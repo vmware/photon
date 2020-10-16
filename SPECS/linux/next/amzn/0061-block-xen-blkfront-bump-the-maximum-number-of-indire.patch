@@ -1,0 +1,41 @@
+From 30ea7f62aca352baa9764155dd2522aaa33a55b1 Mon Sep 17 00:00:00 2001
+From: Frank van der Linden <fllinden@amazon.com>
+Date: Wed, 27 Nov 2019 22:14:28 +0000
+Subject: block/xen-blkfront: bump the maximum number of indirect segments up
+ to 64
+
+Bump the maximum number of indirect segments up to 64. For blk-mq without
+a scheduler, which is the default for multi-queued devices, this is needed
+to avoid a throughput regression for 'st1' EBS volumes.
+
+On a c4.8xlarge instance:
+
+sudo fio --bs=1M --name=seqread --ioengine=libaio --rw=read --direct=1 --filename=/dev/sdg --clocksource=clock_gettime --size=1G --numjobs=8
+
+before:
+READ: io=8192.0MB, aggrb=44772KB/s, minb=5596KB/s, maxb=5922KB/s, mint=177050msec, maxt=187361msec
+
+after:
+READ: io=8192.0MB, aggrb=136059KB/s, minb=17007KB/s, maxb=17022KB/s, mint=61600msec, maxt=61654msec
+
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
+---
+ drivers/block/xen-blkfront.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
+index 4a72d6804453..46e6e8ab4312 100644
+--- a/drivers/block/xen-blkfront.c
++++ b/drivers/block/xen-blkfront.c
+@@ -136,7 +136,7 @@ static LIST_HEAD(info_list);
+  * by the backend driver.
+  */
+ 
+-static unsigned int xen_blkif_max_segments = 32;
++static unsigned int xen_blkif_max_segments = 64;
+ module_param_named(max_indirect_segments, xen_blkif_max_segments, uint, 0444);
+ MODULE_PARM_DESC(max_indirect_segments,
+ 		 "Maximum amount of segments in indirect requests (default is 32)");
+-- 
+2.17.2
+

@@ -1,0 +1,64 @@
+From a16dd99e3a1937d78c6b14ad80353b5690465d71 Mon Sep 17 00:00:00 2001
+From: Frank van der Linden <fllinden@amazon.com>
+Date: Fri, 26 Oct 2018 21:27:54 +0000
+Subject: xen: restore pirqs on resume from hibernation.
+
+The hibernation code unlinks event channels from these (legacy) IRQs, so they
+must be reinitialized on wakeup, much like in the Xen suspend/resume case.
+
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Anchal Agarwal <anchalag@amazon.com>
+Reviewed-by: Alakesh Haloi <alakeshh@amazon.com>
+
+CR: https://code.amazon.com/reviews/CR-3702953/
+---
+ arch/x86/xen/suspend.c           | 2 ++
+ drivers/xen/events/events_base.c | 5 +++++
+ include/xen/events.h             | 1 +
+ 3 files changed, 8 insertions(+)
+
+diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
+index affa63d4b6bd..39644923b623 100644
+--- a/arch/x86/xen/suspend.c
++++ b/arch/x86/xen/suspend.c
+@@ -132,6 +132,8 @@ static void xen_syscore_resume(void)
+ 	xen_restore_steal_clock(smp_processor_id());
+ 
+ 	gnttab_resume();
++
++	xen_restore_pirqs();
+ }
+ 
+ /*
+diff --git a/drivers/xen/events/events_base.c b/drivers/xen/events/events_base.c
+index b893536d8af4..20dc19617e7d 100644
+--- a/drivers/xen/events/events_base.c
++++ b/drivers/xen/events/events_base.c
+@@ -1609,6 +1609,11 @@ void xen_shutdown_pirqs(void)
+ 	}
+ }
+ 
++void xen_restore_pirqs(void)
++{
++	restore_pirqs();
++}
++
+ static struct irq_chip xen_dynamic_chip __read_mostly = {
+ 	.name			= "xen-dyn",
+ 
+diff --git a/include/xen/events.h b/include/xen/events.h
+index 39b2c4e4d2ef..9c3ae277eefc 100644
+--- a/include/xen/events.h
++++ b/include/xen/events.h
+@@ -72,6 +72,7 @@ void notify_remote_via_irq(int irq);
+ 
+ void xen_irq_resume(void);
+ void xen_shutdown_pirqs(void);
++void xen_restore_pirqs(void);
+ 
+ /* Clear an irq's pending state, in preparation for polling on it */
+ void xen_clear_irq_pending(int irq);
+-- 
+2.17.2
+

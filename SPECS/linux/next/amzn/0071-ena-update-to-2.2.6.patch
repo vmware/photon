@@ -1,0 +1,543 @@
+From aa482a91f583c23f1dc04d87bbd691741bca3bba Mon Sep 17 00:00:00 2001
+From: Frank van der Linden <fllinden@amazon.com>
+Date: Tue, 7 Apr 2020 17:27:23 +0000
+Subject: ena: update to 2.2.6
+
+Update the ENA driver to version 2.2.6. Changelog since 2.2.3:
+
+**Bug Fixes**
+* Disable rx offset feature
+
+**New Features**
+* Enable dynamic interrupt moderation on ARM64
+
+**Bug Fixes**
+* Use random key to configure RSS instead of static one.
+* Fix multiple issues with the RSS configuration.
+* Restore accidentally deleted meta-descriptor-caching-related code.
+
+**Minor Changes**
+* Set default tx interrupt moderation interval to 64, aligning it to upstream.
+* Align comments surrounding create_queues_with_size_backoff() to upstream code.
+* Minor cosmetic changes.
+* Remove redundant print from ena_init().
+* Change DRV_MODULE_VERSION to DRV_MODULE_GENERATION as in upstream code.
+* Remove redefinition of ENA_HASH_KEY_SIZE in ena_netdev.h.
+* Add missing row to README.
+* Remove unused variable in XDP code.
+* Use HAVE_NETDEV_XMIT_MORE in kcompat.h.
+
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
+---
+ drivers/amazon/net/ena/ena_com.c     | 33 ++++++++--------
+ drivers/amazon/net/ena/ena_com.h     | 19 +++++-----
+ drivers/amazon/net/ena/ena_eth_com.c |  5 +--
+ drivers/amazon/net/ena/ena_ethtool.c | 32 ++++++++++++----
+ drivers/amazon/net/ena/ena_netdev.c  | 57 ++++++++++++++++------------
+ drivers/amazon/net/ena/ena_netdev.h  | 18 ++++-----
+ drivers/amazon/net/ena/kcompat.h     | 38 ++++++++++++++++++-
+ 7 files changed, 129 insertions(+), 73 deletions(-)
+
+diff --git a/drivers/amazon/net/ena/ena_com.c b/drivers/amazon/net/ena/ena_com.c
+index 45278d4baf80..e88884d2673f 100644
+--- a/drivers/amazon/net/ena/ena_com.c
++++ b/drivers/amazon/net/ena/ena_com.c
+@@ -64,15 +64,6 @@
+ 
+ #define ENA_POLL_MS	5
+ 
+-/* Default Microsoft RSS key, used for HRSS. */
+-static const u8 rss_hash_key[ENA_HASH_KEY_SIZE] = {
+-		0x6d, 0x5a, 0x56, 0xda, 0x25, 0x5b, 0x0e, 0xc2,
+-		0x41, 0x67, 0x25, 0x3d, 0x43, 0xa3, 0x8f, 0xb0,
+-		0xd0, 0xca, 0x2b, 0xcb, 0xae, 0x7b, 0x30, 0xb4,
+-		0x77, 0xcb, 0x2d, 0xa3, 0x80, 0x30, 0xf2, 0x0c,
+-		0x6a, 0x42, 0xb7, 0x3b, 0xbe, 0xac, 0x01, 0xfa
+-};
+-
+ /*****************************************************************************/
+ /*****************************************************************************/
+ /*****************************************************************************/
+@@ -1079,18 +1070,22 @@ static void ena_com_hash_key_fill_default_key(struct ena_com_dev *ena_dev)
+ 	struct ena_admin_feature_rss_flow_hash_control *hash_key =
+ 		(ena_dev->rss).hash_key;
+ 
+-	memcpy(hash_key->key, rss_hash_key, sizeof(rss_hash_key));
++	netdev_rss_key_fill(&hash_key->key, sizeof(hash_key->key));
+ 	/* The key is stored in the device in u32 array
+ 	 * as well as the API requires the key to be passed in this
+ 	 * format. Thus the size of our array should be divided by 4
+ 	 */
+-	hash_key->keys_num = sizeof(rss_hash_key) / sizeof(u32);
++	hash_key->keys_num = sizeof(hash_key->key) / sizeof(u32);
+ }
+ 
+ static int ena_com_hash_key_allocate(struct ena_com_dev *ena_dev)
+ {
+ 	struct ena_rss *rss = &ena_dev->rss;
+ 
++	if (!ena_com_check_supported_feature_id(ena_dev,
++						ENA_ADMIN_RSS_HASH_FUNCTION))
++		return -EOPNOTSUPP;
++
+ 	rss->hash_key =
+ 		dma_zalloc_coherent(ena_dev->dmadev, sizeof(*rss->hash_key),
+ 				    &rss->hash_key_dma_addr, GFP_KERNEL);
+@@ -2194,7 +2189,7 @@ int ena_com_get_dev_basic_stats(struct ena_com_dev *ena_dev,
+ 	return ret;
+ }
+ 
+-int ena_com_set_dev_mtu(struct ena_com_dev *ena_dev, u32 mtu)
++int ena_com_set_dev_mtu(struct ena_com_dev *ena_dev, int mtu)
+ {
+ 	struct ena_com_admin_queue *admin_queue;
+ 	struct ena_admin_set_feat_cmd cmd;
+@@ -2672,12 +2667,16 @@ int ena_com_rss_init(struct ena_com_dev *ena_dev, u16 indr_tbl_log_size)
+ 	if (unlikely(rc))
+ 		goto err_indr_tbl;
+ 
++	/* The following function might return unsupported in case the
++	 * device doesn't support setting the key / hash function. We can safely
++	 * ignore this error and have indirection table support only.
++	 */
+ 	rc = ena_com_hash_key_allocate(ena_dev);
+-	if (unlikely(rc))
++	if (likely(!rc))
++		ena_com_hash_key_fill_default_key(ena_dev);
++	else if (rc != -EOPNOTSUPP)
+ 		goto err_hash_key;
+ 
+-	ena_com_hash_key_fill_default_key(ena_dev);
+-
+ 	rc = ena_com_hash_ctrl_init(ena_dev);
+ 	if (unlikely(rc))
+ 		goto err_hash_ctrl;
+@@ -2895,8 +2894,8 @@ int ena_com_config_dev_mode(struct ena_com_dev *ena_dev,
+ 			    struct ena_admin_feature_llq_desc *llq_features,
+ 			    struct ena_llq_configurations *llq_default_cfg)
+ {
++	struct ena_com_llq_info *llq_info = &ena_dev->llq_info;
+ 	int rc;
+-	struct ena_com_llq_info *llq_info = &(ena_dev->llq_info);;
+ 
+ 	if (!llq_features->max_llq_num) {
+ 		ena_dev->tx_mem_queue_type = ENA_ADMIN_PLACEMENT_POLICY_HOST;
+@@ -2910,7 +2909,7 @@ int ena_com_config_dev_mode(struct ena_com_dev *ena_dev,
+ 	ena_dev->tx_max_header_size = llq_info->desc_list_entry_size -
+ 		(llq_info->descs_num_before_header * sizeof(struct ena_eth_io_tx_desc));
+ 
+-	if (ena_dev->tx_max_header_size == 0) {
++	if (unlikely(ena_dev->tx_max_header_size == 0)) {
+ 		pr_err("the size of the LLQ entry is smaller than needed\n");
+ 		return -EINVAL;
+ 	}
+diff --git a/drivers/amazon/net/ena/ena_com.h b/drivers/amazon/net/ena/ena_com.h
+index d753c824a86d..ba117e6f9332 100644
+--- a/drivers/amazon/net/ena/ena_com.h
++++ b/drivers/amazon/net/ena/ena_com.h
+@@ -43,6 +43,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/types.h>
+ #include <linux/wait.h>
++#include <linux/netdevice.h>
+ 
+ #include "kcompat.h"
+ #include "ena_common_defs.h"
+@@ -53,9 +54,9 @@
+ #undef pr_fmt
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+ 
+-#define ENA_MAX_NUM_IO_QUEUES		128U
++#define ENA_MAX_NUM_IO_QUEUES 128U
+ /* We need to queues for each IO (on for Tx and one for Rx) */
+-#define ENA_TOTAL_NUM_QUEUES		(2 * (ENA_MAX_NUM_IO_QUEUES))
++#define ENA_TOTAL_NUM_QUEUES (2 * (ENA_MAX_NUM_IO_QUEUES))
+ 
+ #define ENA_MAX_HANDLERS 256
+ 
+@@ -72,15 +73,15 @@
+ /*****************************************************************************/
+ /* ENA adaptive interrupt moderation settings */
+ 
+-#define ENA_INTR_INITIAL_TX_INTERVAL_USECS		0
+-#define ENA_INTR_INITIAL_RX_INTERVAL_USECS		0
+-#define ENA_DEFAULT_INTR_DELAY_RESOLUTION		1
++#define ENA_INTR_INITIAL_TX_INTERVAL_USECS 64
++#define ENA_INTR_INITIAL_RX_INTERVAL_USECS 0
++#define ENA_DEFAULT_INTR_DELAY_RESOLUTION 1
+ 
+-#define ENA_HASH_KEY_SIZE                              40
++#define ENA_HASH_KEY_SIZE 40
+ 
+-#define ENA_HW_HINTS_NO_TIMEOUT				0xFFFF
++#define ENA_HW_HINTS_NO_TIMEOUT	0xFFFF
+ 
+-#define ENA_FEATURE_MAX_QUEUE_EXT_VER	1
++#define ENA_FEATURE_MAX_QUEUE_EXT_VER 1
+ 
+ struct ena_llq_configurations {
+ 	enum ena_admin_llq_header_location llq_header_location;
+@@ -635,7 +636,7 @@ int ena_com_get_dev_basic_stats(struct ena_com_dev *ena_dev,
+  *
+  * @return: 0 on Success and negative value otherwise.
+  */
+-int ena_com_set_dev_mtu(struct ena_com_dev *ena_dev, u32 mtu);
++int ena_com_set_dev_mtu(struct ena_com_dev *ena_dev, int mtu);
+ 
+ /* ena_com_get_offload_settings - Retrieve the device offloads capabilities
+  * @ena_dev: ENA communication layer struct
+diff --git a/drivers/amazon/net/ena/ena_eth_com.c b/drivers/amazon/net/ena/ena_eth_com.c
+index b23baf806bfd..e7533dae92e3 100644
+--- a/drivers/amazon/net/ena/ena_eth_com.c
++++ b/drivers/amazon/net/ena/ena_eth_com.c
+@@ -216,8 +216,8 @@ static int ena_com_sq_update_llq_tail(struct ena_com_io_sq *io_sq)
+ 
+ 		pkt_ctrl->curr_bounce_buf =
+ 			ena_com_get_next_bounce_buffer(&io_sq->bounce_buf_ctrl);
+-			memset(io_sq->llq_buf_ctrl.curr_bounce_buf,
+-			       0x0, llq_info->desc_list_entry_size);
++		memset(io_sq->llq_buf_ctrl.curr_bounce_buf,
++		       0x0, llq_info->desc_list_entry_size);
+ 
+ 		pkt_ctrl->idx = 0;
+ 		if (unlikely(llq_info->desc_stride_ctrl == ENA_ADMIN_SINGLE_DESC_PER_ENTRY))
+@@ -574,7 +574,6 @@ int ena_com_rx_pkt(struct ena_com_io_cq *io_cq,
+ 	}
+ 
+ 	cdesc = ena_com_rx_cdesc_idx_to_ptr(io_cq, cdesc_idx);
+-	ena_rx_ctx->pkt_offset = cdesc->offset;
+ 
+ 	do {
+ 		ena_buf->len = cdesc->length;
+diff --git a/drivers/amazon/net/ena/ena_ethtool.c b/drivers/amazon/net/ena/ena_ethtool.c
+index 4169142bcc99..5e0e4607270f 100755
+--- a/drivers/amazon/net/ena/ena_ethtool.c
++++ b/drivers/amazon/net/ena/ena_ethtool.c
+@@ -214,7 +214,7 @@ int ena_get_sset_count(struct net_device *netdev, int sset)
+ 		return -EOPNOTSUPP;
+ 
+ 	return adapter->num_io_queues * (ENA_STATS_ARRAY_TX + ENA_STATS_ARRAY_RX)
+-	       + ENA_STATS_ARRAY_GLOBAL + ENA_STATS_ARRAY_ENA_COM;
++		+ ENA_STATS_ARRAY_GLOBAL + ENA_STATS_ARRAY_ENA_COM;
+ }
+ 
+ static void ena_queue_strings(struct ena_adapter *adapter, u8 **data)
+@@ -440,7 +440,7 @@ static void ena_get_drvinfo(struct net_device *dev,
+ 	struct ena_adapter *adapter = netdev_priv(dev);
+ 
+ 	strlcpy(info->driver, DRV_MODULE_NAME, sizeof(info->driver));
+-	strlcpy(info->version, DRV_MODULE_VERSION, sizeof(info->version));
++	strlcpy(info->version, DRV_MODULE_GENERATION, sizeof(info->version));
+ 	strlcpy(info->bus_info, pci_name(adapter->pdev),
+ 		sizeof(info->bus_info));
+ }
+@@ -739,7 +739,7 @@ static int ena_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
+ 			u8 *hfunc)
+ {
+ 	struct ena_adapter *adapter = netdev_priv(netdev);
+-	enum ena_admin_hash_functions ena_func = ENA_ADMIN_TOEPLITZ;
++	enum ena_admin_hash_functions ena_func;
+ 	u8 func;
+ 	int rc;
+ 
+@@ -747,12 +747,19 @@ static int ena_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
+ 	if (rc)
+ 		return rc;
+ 
+-	rc = ena_com_get_hash_key(adapter->ena_dev, key);
+-	if (rc)
++	/* We call this function in order to check if the device
++	 * supports getting/setting the hash function.
++	 */
++	rc = ena_com_get_hash_function(adapter->ena_dev, &ena_func);
++	if (rc) {
++		if (rc == -EOPNOTSUPP)
++			rc = 0;
++
+ 		return rc;
++	}
+ 
+-	rc = ena_com_get_hash_function(adapter->ena_dev, &ena_func);
+-	if (rc && rc != -EOPNOTSUPP)
++	rc = ena_com_get_hash_key(adapter->ena_dev, key);
++	if (rc)
+ 		return rc;
+ 
+ 	switch (ena_func) {
+@@ -783,6 +790,17 @@ static int ena_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key)
+ 	if (rc)
+ 		return rc;
+ 
++	/* We call this function in order to check if the device
++	 * supports getting/setting the hash function.
++	 */
++	rc = ena_com_get_hash_function(adapter->ena_dev, &ena_func);
++	if (rc) {
++		if (rc == -EOPNOTSUPP)
++			rc = 0;
++
++		return rc;
++	}
++
+ 	rc = ena_com_get_hash_key(adapter->ena_dev, key);
+ 	if (rc)
+ 		return rc;
+diff --git a/drivers/amazon/net/ena/ena_netdev.c b/drivers/amazon/net/ena/ena_netdev.c
+index 6d7b628adf0d..561842a90cba 100755
+--- a/drivers/amazon/net/ena/ena_netdev.c
++++ b/drivers/amazon/net/ena/ena_netdev.c
+@@ -56,12 +56,12 @@
+ #include "ena_pci_id_tbl.h"
+ #include "ena_sysfs.h"
+ 
+-static char version[] = DEVICE_NAME " v" DRV_MODULE_VERSION "\n";
++static char version[] = DEVICE_NAME " v" DRV_MODULE_GENERATION "\n";
+ 
+ MODULE_AUTHOR("Amazon.com, Inc. or its affiliates");
+ MODULE_DESCRIPTION(DEVICE_NAME);
+ MODULE_LICENSE("GPL");
+-MODULE_VERSION(DRV_MODULE_VERSION);
++MODULE_VERSION(DRV_MODULE_GENERATION);
+ 
+ /* Time in jiffies before concluding the transmitter is hung. */
+ #define TX_TIMEOUT  (5 * HZ)
+@@ -347,7 +347,6 @@ static int ena_xdp_xmit_buff(struct net_device *dev,
+ 	struct ena_com_tx_ctx ena_tx_ctx = {0};
+ 	struct ena_tx_buffer *tx_info;
+ 	struct ena_ring *xdp_ring;
+-	struct ena_ring *rx_ring;
+ 	u16 next_to_use, req_id;
+ 	int rc;
+ 	void *push_hdr;
+@@ -358,8 +357,6 @@ static int ena_xdp_xmit_buff(struct net_device *dev,
+ 	req_id = xdp_ring->free_ids[next_to_use];
+ 	tx_info = &xdp_ring->tx_buffer_info[req_id];
+ 	tx_info->num_of_bufs = 0;
+-	rx_ring = &xdp_ring->adapter->rx_ring[qid -
+-		  xdp_ring->adapter->xdp_first_ring];
+ 	page_ref_inc(rx_info->page);
+ 	tx_info->xdp_rx_page = rx_info->page;
+ 
+@@ -701,6 +698,7 @@ static void ena_init_io_rings(struct ena_adapter *adapter,
+ 		txr->sgl_size = adapter->max_tx_sgl_size;
+ 		txr->smoothed_interval =
+ 			ena_com_get_nonadaptive_moderation_interval_tx(ena_dev);
++		txr->disable_meta_caching = adapter->disable_meta_caching;
+ 
+ 		/* Don't init RX queues for xdp queues */
+ 		if (!ENA_IS_XDP_INDEX(adapter, i)) {
+@@ -1522,9 +1520,8 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
+ 		req_id = ena_bufs[buf].req_id;
+ 
+ 		rc = validate_rx_req_id(rx_ring, req_id);
+-		if (unlikely(rc < 0)) {
++		if (unlikely(rc < 0))
+ 			return NULL;
+-		}
+ 
+ 		rx_info = &rx_ring->rx_buffer_info[req_id];
+ 	} while (1);
+@@ -2639,7 +2636,8 @@ static int ena_create_all_io_rx_queues(struct ena_adapter *adapter)
+ }
+ 
+ static void set_io_rings_size(struct ena_adapter *adapter,
+-				     int new_tx_size, int new_rx_size)
++			      int new_tx_size,
++			      int new_rx_size)
+ {
+ 	int i;
+ 
+@@ -2653,17 +2651,16 @@ static void set_io_rings_size(struct ena_adapter *adapter,
+  * low on memory. If there is not enough memory to allocate io queues
+  * the driver will try to allocate smaller queues.
+  *
+- * The heuristic is as follows:
++ * The backoff algorithm is as follows:
++ *  1. Try to allocate TX and RX and if successful.
++ *  1.1. return success
+  *
+- * 1. Try to allocate TX and RX and if successful return success.
+- * 2. If TX and RX are both smaller or equal to 256 return failure.
++ *  2. Divide by 2 the size of the larger of RX and TX queues (or both if their size is the same).
+  *
+- * 3. If TX and RX sizes differ:
+- * 3.1. Divide by 2 the size of the larger one and go back to 1.
+- *
+- * 4. Else (TX and RX sizes are the same)
+- * 4.1 Divide both RX and TX sizes by 2
+- * and go back to 1
++ *  3. If TX or RX is smaller than 256
++ *  3.1. return failure.
++ *  4. else
++ *  4.1. go back to 1.
+  */
+ static int create_queues_with_size_backoff(struct ena_adapter *adapter)
+ {
+@@ -2773,6 +2770,14 @@ static int ena_up(struct ena_adapter *adapter)
+ 	 */
+ 	ena_init_napi_in_range(adapter, 0, io_queue_count);
+ 
++#ifdef CONFIG_ARM64
++	/* enable DIM by default on ARM machines, also needs to happen
++	 * before enabling IRQs since DIM is ran from napi routine
++	 */
++	if (ena_com_interrupt_moderation_supported(adapter->ena_dev))
++		ena_com_enable_adaptive_moderation(adapter->ena_dev);
++#endif
++
+ 	rc = ena_request_io_irq(adapter);
+ 	if (rc)
+ 		goto err_req_irq;
+@@ -3271,8 +3276,12 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	}
+ 
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
++#ifdef HAVE_NETDEV_XMIT_MORE
+ 	if (netif_xmit_stopped(txq) || !netdev_xmit_more()) {
+-#endif
++#else
++	if (netif_xmit_stopped(txq) || !skb->xmit_more) {
++#endif /* HAVE_NETDEV_XMIT_MORE */
++#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0) */
+ 		/* trigger the dma engine. ena_com_write_sq_doorbell()
+ 		 * has a mb
+ 		 */
+@@ -3382,14 +3391,13 @@ static void ena_config_host_info(struct ena_com_dev *ena_dev, struct pci_dev *pd
+ 	strncpy(host_info->os_dist_str, utsname()->release,
+ 		sizeof(host_info->os_dist_str) - 1);
+ 	host_info->driver_version =
+-		(DRV_MODULE_VER_MAJOR) |
+-		(DRV_MODULE_VER_MINOR << ENA_ADMIN_HOST_INFO_MINOR_SHIFT) |
+-		(DRV_MODULE_VER_SUBMINOR << ENA_ADMIN_HOST_INFO_SUB_MINOR_SHIFT) |
++		(DRV_MODULE_GEN_MAJOR) |
++		(DRV_MODULE_GEN_MINOR << ENA_ADMIN_HOST_INFO_MINOR_SHIFT) |
++		(DRV_MODULE_GEN_SUBMINOR << ENA_ADMIN_HOST_INFO_SUB_MINOR_SHIFT) |
+ 		("g"[0] << ENA_ADMIN_HOST_INFO_MODULE_TYPE_SHIFT);
+ 	host_info->num_cpus = num_online_cpus();
+ 
+ 	host_info->driver_supported_features =
+-		ENA_ADMIN_HOST_INFO_RX_OFFSET_MASK |
+ 		ENA_ADMIN_HOST_INFO_INTERRUPT_MODERATION_MASK |
+ 		ENA_ADMIN_HOST_INFO_MAP_RX_BUF_BIDIRECTIONAL_MASK;
+ 
+@@ -3962,6 +3970,7 @@ static int ena_restore_device(struct ena_adapter *adapter)
+ 
+ 	mod_timer(&adapter->timer_service, round_jiffies(jiffies + HZ));
+ 	adapter->last_keep_alive_jiffies = jiffies;
++
+ 	dev_err(&pdev->dev,
+ 		"Device reset completed successfully, Driver info: %s\n",
+ 		version);
+@@ -4626,7 +4635,7 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	calc_queue_ctx.get_feat_ctx = &get_feat_ctx;
+ 	calc_queue_ctx.pdev = pdev;
+ 
+-	/* initial TX and RX interrupt delay, Assumes 1 usec granularity.
++	/* Initial TX and RX interrupt delay. Assumes 1 usec granularity.
+ 	 * Updated during device initialization with the real granularity
+ 	 */
+ 	ena_dev->intr_moder_tx_interval = ENA_INTR_INITIAL_TX_INTERVAL_USECS;
+@@ -4904,8 +4913,6 @@ static struct pci_driver ena_pci_driver = {
+ 
+ static int __init ena_init(void)
+ {
+-	pr_info("%s", version);
+-
+ 	ena_wq = create_singlethread_workqueue(DRV_MODULE_NAME);
+ 	if (!ena_wq) {
+ 		pr_err("Failed to create workqueue\n");
+diff --git a/drivers/amazon/net/ena/ena_netdev.h b/drivers/amazon/net/ena/ena_netdev.h
+index 1648be44e2eb..48f20d54830f 100755
+--- a/drivers/amazon/net/ena/ena_netdev.h
++++ b/drivers/amazon/net/ena/ena_netdev.h
+@@ -51,16 +51,16 @@
+ #include "ena_com.h"
+ #include "ena_eth_com.h"
+ 
+-#define DRV_MODULE_VER_MAJOR	2
+-#define DRV_MODULE_VER_MINOR	2
+-#define DRV_MODULE_VER_SUBMINOR 3
++#define DRV_MODULE_GEN_MAJOR	2
++#define DRV_MODULE_GEN_MINOR	2
++#define DRV_MODULE_GEN_SUBMINOR 6
+ 
+ #define DRV_MODULE_NAME		"ena"
+-#ifndef DRV_MODULE_VERSION
+-#define DRV_MODULE_VERSION \
+-	__stringify(DRV_MODULE_VER_MAJOR) "."	\
+-	__stringify(DRV_MODULE_VER_MINOR) "."	\
+-	__stringify(DRV_MODULE_VER_SUBMINOR) "g"
++#ifndef DRV_MODULE_GENERATION
++#define DRV_MODULE_GENERATION \
++	__stringify(DRV_MODULE_GEN_MAJOR) "."	\
++	__stringify(DRV_MODULE_GEN_MINOR) "."	\
++	__stringify(DRV_MODULE_GEN_SUBMINOR) "g"
+ #endif
+ 
+ #define DEVICE_NAME	"Elastic Network Adapter (ENA)"
+@@ -110,8 +110,6 @@
+ #define ENA_RX_RSS_TABLE_LOG_SIZE  7
+ #define ENA_RX_RSS_TABLE_SIZE	(1 << ENA_RX_RSS_TABLE_LOG_SIZE)
+ 
+-#define ENA_HASH_KEY_SIZE	40
+-
+ /* The number of tx packet completions that will be handled each NAPI poll
+  * cycle is ring_size / ENA_TX_POLL_BUDGET_DIVIDER.
+  */
+diff --git a/drivers/amazon/net/ena/kcompat.h b/drivers/amazon/net/ena/kcompat.h
+index eb4b99d57367..3a801efcec67 100755
+--- a/drivers/amazon/net/ena/kcompat.h
++++ b/drivers/amazon/net/ena/kcompat.h
+@@ -652,8 +652,8 @@ do {									\
+ #endif
+ #endif
+ 
+-#if (LINUX_VERSION_CODE < KERNEL_VERSION(5, 2, 0))
+-#define netdev_xmit_more() ((skb->xmit_more))
++#if (LINUX_VERSION_CODE >= KERNEL_VERSION(5, 2, 0))
++#define HAVE_NETDEV_XMIT_MORE
+ #endif
+ 
+ #ifndef mmiowb
+@@ -699,4 +699,38 @@ do {									\
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,5,0)
+ #define HAVE_NDO_TX_TIMEOUT_STUCK_QUEUE_PARAMETER
+ #endif
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(3,19,0) && \
++    !(RHEL_RELEASE_CODE && ((RHEL_RELEASE_CODE != RHEL_RELEASE_VERSION(7, 1)) && \
++                            (RHEL_RELEASE_CODE > RHEL_RELEASE_VERSION(6, 6)))) && \
++                            !(UBUNTU_VERSION_CODE) && \
++                            !defined(UEK3_RELEASE)
++
++#define DO_ONCE(func, ...)						     \
++	({								     \
++		static bool ___done = false;				     \
++		if (unlikely(!___done)) {				     \
++				func(__VA_ARGS__);			     \
++				___done = true;				     \
++		}							     \
++	})
++
++#define get_random_once(buf, nbytes)					     \
++	DO_ONCE(get_random_bytes, (buf), (nbytes))
++
++#define net_get_random_once(buf, nbytes)				     \
++	get_random_once((buf), (nbytes))
++
++/* RSS keys are 40 or 52 bytes long */
++#define NETDEV_RSS_KEY_LEN 52
++static u8 netdev_rss_key[NETDEV_RSS_KEY_LEN];
++
++static inline void netdev_rss_key_fill(void *buffer, size_t len)
++{
++	BUG_ON(len > sizeof(netdev_rss_key));
++	net_get_random_once(netdev_rss_key, sizeof(netdev_rss_key));
++	memcpy(buffer, netdev_rss_key, len);
++}
++#endif
++
+ #endif /* _KCOMPAT_H_ */
+-- 
+2.17.2
+

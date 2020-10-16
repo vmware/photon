@@ -1,0 +1,46 @@
+From 62ed0a70447ea809394890205abcecce69a7b313 Mon Sep 17 00:00:00 2001
+From: Aleksei Besogonov <cyberax@amazon.com>
+Date: Fri, 27 Oct 2017 17:59:18 +0000
+Subject: PM / hibernate: update the resume offset on SNAPSHOT_SET_SWAP_AREA
+
+The SNAPSHOT_SET_SWAP_AREA is supposed to be used to set the hibernation
+offset on a running kernel to enable hibernating to a swap file.
+However, it doesn't actually update the swsusp_resume_block variable. As
+a result, the hibernation fails at the last step (after all the data is
+written out) in the validation of the swap signature in
+mark_swapfiles().
+
+Before this patch, the command line processing was the only place where
+swsusp_resume_block was set.
+
+Signed-off-by: Aleksei Besogonov <cyberax@amazon.com>
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+CR: https://cr.amazon.com/r/8297650/
+---
+ kernel/power/user.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/power/user.c b/kernel/power/user.c
+index d5eedc2baa2a..e1209cefc103 100644
+--- a/kernel/power/user.c
++++ b/kernel/power/user.c
+@@ -242,8 +242,12 @@ static int snapshot_set_swap_area(struct snapshot_data *data,
+ 		return -EINVAL;
+ 	}
+ 	data->swap = swap_type_of(swdev, offset, &bdev);
+-	if (data->swap < 0)
++	if (data->swap < 0) {
+ 		return -ENODEV;
++	} else {
++		swsusp_resume_device = swdev;
++		swsusp_resume_block = offset;
++	}
+ 
+ 	data->bd_inode = bdev->bd_inode;
+ 	bdput(bdev);
+-- 
+2.17.1
+

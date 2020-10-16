@@ -1,0 +1,2718 @@
+From a1113254d972509d64657eb2def98c155db7b004 Mon Sep 17 00:00:00 2001
+From: Alakesh Haloi <alakeshh@amazon.com>
+Date: Mon, 4 Nov 2019 18:59:31 +0000
+Subject: Update ena driver to version 2.1.3
+
+ENA driver version 2.1.3 has new features:
+ * Replace old adaptive interrupt moderation with new DIM algo.
+ * Introduce driver_supported_features field in host_info, and
+   use it to signal to the device about adaptive interrupt
+   moderation.
+ * Multiple bug fixes.
+
+Signed-off-by: Alakesh Haloi <alakeshh@amazon.com>
+Reviewed-by: Anchal Agarwal <anchalag@amazon.com>
+Reviewed-by: Muhammad Atif <maati@amazon.com>
+---
+ drivers/amazon/net/ena/Makefile         |   3 +-
+ drivers/amazon/net/ena/dim.c            |  87 ++++++
+ drivers/amazon/net/ena/dim.h            | 338 ++++++++++++++++++++
+ drivers/amazon/net/ena/ena_admin_defs.h |   8 +
+ drivers/amazon/net/ena/ena_com.c        | 203 +++---------
+ drivers/amazon/net/ena/ena_com.h        | 152 +--------
+ drivers/amazon/net/ena/ena_ethtool.c    | 113 +++----
+ drivers/amazon/net/ena/ena_netdev.c     | 399 +++++++++++++-----------
+ drivers/amazon/net/ena/ena_netdev.h     |  26 +-
+ drivers/amazon/net/ena/ena_sysfs.c      | 166 +---------
+ drivers/amazon/net/ena/kcompat.h        |  31 +-
+ drivers/amazon/net/ena/net_dim.c        | 250 +++++++++++++++
+ 12 files changed, 1036 insertions(+), 740 deletions(-)
+ create mode 100644 drivers/amazon/net/ena/dim.c
+ create mode 100644 drivers/amazon/net/ena/dim.h
+ create mode 100644 drivers/amazon/net/ena/net_dim.c
+
+diff --git a/drivers/amazon/net/ena/Makefile b/drivers/amazon/net/ena/Makefile
+index 0e671d0b389d..33b4a08d38f4 100644
+--- a/drivers/amazon/net/ena/Makefile
++++ b/drivers/amazon/net/ena/Makefile
+@@ -6,6 +6,7 @@
+ 
+ obj-$(CONFIG_AMAZON_ENA_ETHERNET) += ena.o
+ 
+-ena-y := ena_netdev.o ena_com.o ena_eth_com.o ena_ethtool.o
++ena-y := ena_netdev.o ena_com.o ena_eth_com.o ena_ethtool.o net_dim.o \
++	dim.o
+ 
+ ena-$(CONFIG_SYSFS) += ena_sysfs.o
+diff --git a/drivers/amazon/net/ena/dim.c b/drivers/amazon/net/ena/dim.c
+new file mode 100644
+index 000000000000..55b9106512e3
+--- /dev/null
++++ b/drivers/amazon/net/ena/dim.c
+@@ -0,0 +1,87 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/*
++ * Copyright (c) 2019, Mellanox Technologies inc.  All rights reserved.
++ */
++
++#include "dim.h"
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0)
++
++bool dim_on_top(struct dim *dim)
++{
++	switch (dim->tune_state) {
++	case DIM_PARKING_ON_TOP:
++	case DIM_PARKING_TIRED:
++		return true;
++	case DIM_GOING_RIGHT:
++		return (dim->steps_left > 1) && (dim->steps_right == 1);
++	default: /* DIM_GOING_LEFT */
++		return (dim->steps_right > 1) && (dim->steps_left == 1);
++	}
++}
++EXPORT_SYMBOL(dim_on_top);
++
++void dim_turn(struct dim *dim)
++{
++	switch (dim->tune_state) {
++	case DIM_PARKING_ON_TOP:
++	case DIM_PARKING_TIRED:
++		break;
++	case DIM_GOING_RIGHT:
++		dim->tune_state = DIM_GOING_LEFT;
++		dim->steps_left = 0;
++		break;
++	case DIM_GOING_LEFT:
++		dim->tune_state = DIM_GOING_RIGHT;
++		dim->steps_right = 0;
++		break;
++	}
++}
++EXPORT_SYMBOL(dim_turn);
++
++void dim_park_on_top(struct dim *dim)
++{
++	dim->steps_right  = 0;
++	dim->steps_left   = 0;
++	dim->tired        = 0;
++	dim->tune_state   = DIM_PARKING_ON_TOP;
++}
++EXPORT_SYMBOL(dim_park_on_top);
++
++void dim_park_tired(struct dim *dim)
++{
++	dim->steps_right  = 0;
++	dim->steps_left   = 0;
++	dim->tune_state   = DIM_PARKING_TIRED;
++}
++EXPORT_SYMBOL(dim_park_tired);
++
++void dim_calc_stats(struct dim_sample *start, struct dim_sample *end,
++		    struct dim_stats *curr_stats)
++{
++	/* u32 holds up to 71 minutes, should be enough */
++	u32 delta_us = ktime_us_delta(end->time, start->time);
++	u32 npkts = BIT_GAP(BITS_PER_TYPE(u32), end->pkt_ctr, start->pkt_ctr);
++	u32 nbytes = BIT_GAP(BITS_PER_TYPE(u32), end->byte_ctr,
++			     start->byte_ctr);
++	u32 ncomps = BIT_GAP(BITS_PER_TYPE(u32), end->comp_ctr,
++			     start->comp_ctr);
++
++	if (!delta_us)
++		return;
++
++	curr_stats->ppms = DIV_ROUND_UP(npkts * USEC_PER_MSEC, delta_us);
++	curr_stats->bpms = DIV_ROUND_UP(nbytes * USEC_PER_MSEC, delta_us);
++	curr_stats->epms = DIV_ROUND_UP(DIM_NEVENTS * USEC_PER_MSEC,
++					delta_us);
++	curr_stats->cpms = DIV_ROUND_UP(ncomps * USEC_PER_MSEC, delta_us);
++	if (curr_stats->epms != 0)
++		curr_stats->cpe_ratio = DIV_ROUND_DOWN_ULL(
++			curr_stats->cpms * 100, curr_stats->epms);
++	else
++		curr_stats->cpe_ratio = 0;
++
++}
++EXPORT_SYMBOL(dim_calc_stats);
++
++#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0) */
+diff --git a/drivers/amazon/net/ena/dim.h b/drivers/amazon/net/ena/dim.h
+new file mode 100644
+index 000000000000..633c2473e73a
+--- /dev/null
++++ b/drivers/amazon/net/ena/dim.h
+@@ -0,0 +1,338 @@
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/* Copyright (c) 2019 Mellanox Technologies. */
++
++#ifndef DIM_H
++#define DIM_H
++
++#include <linux/module.h>
++#include "kcompat.h"
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0)
++
++/**
++ * Number of events between DIM iterations.
++ * Causes a moderation of the algorithm run.
++ */
++#define DIM_NEVENTS 64
++
++/**
++ * Is a difference between values justifies taking an action.
++ * We consider 10% difference as significant.
++ */
++#define IS_SIGNIFICANT_DIFF(val, ref) \
++	(((100UL * abs((val) - (ref))) / (ref)) > 10)
++
++/**
++ * Calculate the gap between two values.
++ * Take wrap-around and variable size into consideration.
++ */
++#define BIT_GAP(bits, end, start) ((((end) - (start)) + BIT_ULL(bits)) \
++		& (BIT_ULL(bits) - 1))
++
++/**
++ * Structure for CQ moderation values.
++ * Used for communications between DIM and its consumer.
++ *
++ * @usec: CQ timer suggestion (by DIM)
++ * @pkts: CQ packet counter suggestion (by DIM)
++ * @cq_period_mode: CQ priod count mode (from CQE/EQE)
++ */
++struct dim_cq_moder {
++	u16 usec;
++	u16 pkts;
++	u16 comps;
++	u8 cq_period_mode;
++};
++
++/**
++ * Structure for DIM sample data.
++ * Used for communications between DIM and its consumer.
++ *
++ * @time: Sample timestamp
++ * @pkt_ctr: Number of packets
++ * @byte_ctr: Number of bytes
++ * @event_ctr: Number of events
++ */
++struct dim_sample {
++	ktime_t time;
++	u32 pkt_ctr;
++	u32 byte_ctr;
++	u16 event_ctr;
++	u32 comp_ctr;
++};
++
++/**
++ * Structure for DIM stats.
++ * Used for holding current measured rates.
++ *
++ * @ppms: Packets per msec
++ * @bpms: Bytes per msec
++ * @epms: Events per msec
++ */
++struct dim_stats {
++	int ppms; /* packets per msec */
++	int bpms; /* bytes per msec */
++	int epms; /* events per msec */
++	int cpms; /* completions per msec */
++	int cpe_ratio; /* ratio of completions to events */
++};
++
++/**
++ * Main structure for dynamic interrupt moderation (DIM).
++ * Used for holding all information about a specific DIM instance.
++ *
++ * @state: Algorithm state (see below)
++ * @prev_stats: Measured rates from previous iteration (for comparison)
++ * @start_sample: Sampled data at start of current iteration
++ * @work: Work to perform on action required
++ * @priv: A pointer to the struct that points to dim
++ * @profile_ix: Current moderation profile
++ * @mode: CQ period count mode
++ * @tune_state: Algorithm tuning state (see below)
++ * @steps_right: Number of steps taken towards higher moderation
++ * @steps_left: Number of steps taken towards lower moderation
++ * @tired: Parking depth counter
++ */
++struct dim {
++	u8 state;
++	struct dim_stats prev_stats;
++	struct dim_sample start_sample;
++	struct dim_sample measuring_sample;
++	struct work_struct work;
++	void *priv;
++	u8 profile_ix;
++	u8 mode;
++	u8 tune_state;
++	u8 steps_right;
++	u8 steps_left;
++	u8 tired;
++};
++
++/**
++ * enum dim_cq_period_mode
++ *
++ * These are the modes for CQ period count.
++ *
++ * @DIM_CQ_PERIOD_MODE_START_FROM_EQE: Start counting from EQE
++ * @DIM_CQ_PERIOD_MODE_START_FROM_CQE: Start counting from CQE (implies timer reset)
++ * @DIM_CQ_PERIOD_NUM_MODES: Number of modes
++ */
++enum {
++	DIM_CQ_PERIOD_MODE_START_FROM_EQE = 0x0,
++	DIM_CQ_PERIOD_MODE_START_FROM_CQE = 0x1,
++	DIM_CQ_PERIOD_NUM_MODES
++};
++
++/**
++ * enum dim_state
++ *
++ * These are the DIM algorithm states.
++ * These will determine if the algorithm is in a valid state to start an iteration.
++ *
++ * @DIM_START_MEASURE: This is the first iteration (also after applying a new profile)
++ * @DIM_MEASURE_IN_PROGRESS: Algorithm is already in progress - check if
++ * need to perform an action
++ * @DIM_APPLY_NEW_PROFILE: DIM consumer is currently applying a profile - no need to measure
++ */
++enum {
++	DIM_START_MEASURE,
++	DIM_MEASURE_IN_PROGRESS,
++	DIM_APPLY_NEW_PROFILE,
++};
++
++/**
++ * enum dim_tune_state
++ *
++ * These are the DIM algorithm tune states.
++ * These will determine which action the algorithm should perform.
++ *
++ * @DIM_PARKING_ON_TOP: Algorithm found a local top point - exit on significant difference
++ * @DIM_PARKING_TIRED: Algorithm found a deep top point - don't exit if tired > 0
++ * @DIM_GOING_RIGHT: Algorithm is currently trying higher moderation levels
++ * @DIM_GOING_LEFT: Algorithm is currently trying lower moderation levels
++ */
++enum {
++	DIM_PARKING_ON_TOP,
++	DIM_PARKING_TIRED,
++	DIM_GOING_RIGHT,
++	DIM_GOING_LEFT,
++};
++
++/**
++ * enum dim_stats_state
++ *
++ * These are the DIM algorithm statistics states.
++ * These will determine the verdict of current iteration.
++ *
++ * @DIM_STATS_WORSE: Current iteration shows worse performance than before
++ * @DIM_STATS_WORSE: Current iteration shows same performance than before
++ * @DIM_STATS_WORSE: Current iteration shows better performance than before
++ */
++enum {
++	DIM_STATS_WORSE,
++	DIM_STATS_SAME,
++	DIM_STATS_BETTER,
++};
++
++/**
++ * enum dim_step_result
++ *
++ * These are the DIM algorithm step results.
++ * These describe the result of a step.
++ *
++ * @DIM_STEPPED: Performed a regular step
++ * @DIM_TOO_TIRED: Same kind of step was done multiple times - should go to
++ * tired parking
++ * @DIM_ON_EDGE: Stepped to the most left/right profile
++ */
++enum {
++	DIM_STEPPED,
++	DIM_TOO_TIRED,
++	DIM_ON_EDGE,
++};
++
++/**
++ *	dim_on_top - check if current state is a good place to stop (top location)
++ *	@dim: DIM context
++ *
++ * Check if current profile is a good place to park at.
++ * This will result in reducing the DIM checks frequency as we assume we
++ * shouldn't probably change profiles, unless traffic pattern wasn't changed.
++ */
++bool dim_on_top(struct dim *dim);
++
++/**
++ *	dim_turn - change profile alterning direction
++ *	@dim: DIM context
++ *
++ * Go left if we were going right and vice-versa.
++ * Do nothing if currently parking.
++ */
++void dim_turn(struct dim *dim);
++
++/**
++ *	dim_park_on_top - enter a parking state on a top location
++ *	@dim: DIM context
++ *
++ * Enter parking state.
++ * Clear all movement history.
++ */
++void dim_park_on_top(struct dim *dim);
++
++/**
++ *	dim_park_tired - enter a tired parking state
++ *	@dim: DIM context
++ *
++ * Enter parking state.
++ * Clear all movement history and cause DIM checks frequency to reduce.
++ */
++void dim_park_tired(struct dim *dim);
++
++/**
++ *	dim_calc_stats - calculate the difference between two samples
++ *	@start: start sample
++ *	@end: end sample
++ *	@curr_stats: delta between samples
++ *
++ * Calculate the delta between two samples (in data rates).
++ * Takes into consideration counter wrap-around.
++ */
++void dim_calc_stats(struct dim_sample *start, struct dim_sample *end,
++		    struct dim_stats *curr_stats);
++
++/**
++ *	dim_update_sample - set a sample's fields with give values
++ *	@event_ctr: number of events to set
++ *	@packets: number of packets to set
++ *	@bytes: number of bytes to set
++ *	@s: DIM sample
++ */
++static inline void
++dim_update_sample(u16 event_ctr, u64 packets, u64 bytes, struct dim_sample *s)
++{
++	s->time	     = ktime_get();
++	s->pkt_ctr   = packets;
++	s->byte_ctr  = bytes;
++	s->event_ctr = event_ctr;
++}
++
++/**
++ *	dim_update_sample_with_comps - set a sample's fields with given
++ *	values including the completion parameter
++ *	@event_ctr: number of events to set
++ *	@packets: number of packets to set
++ *	@bytes: number of bytes to set
++ *	@comps: number of completions to set
++ *	@s: DIM sample
++ */
++static inline void
++dim_update_sample_with_comps(u16 event_ctr, u64 packets, u64 bytes, u64 comps,
++			     struct dim_sample *s)
++{
++	dim_update_sample(event_ctr, packets, bytes, s);
++	s->comp_ctr = comps;
++}
++
++/* Net DIM */
++
++/**
++ *	net_dim_get_rx_moderation - provide a CQ moderation object for the given RX profile
++ *	@cq_period_mode: CQ period mode
++ *	@ix: Profile index
++ */
++struct dim_cq_moder net_dim_get_rx_moderation(u8 cq_period_mode, int ix);
++
++/**
++ *	net_dim_get_def_rx_moderation - provide the default RX moderation
++ *	@cq_period_mode: CQ period mode
++ */
++struct dim_cq_moder net_dim_get_def_rx_moderation(u8 cq_period_mode);
++
++/**
++ *	net_dim_get_tx_moderation - provide a CQ moderation object for the given TX profile
++ *	@cq_period_mode: CQ period mode
++ *	@ix: Profile index
++ */
++struct dim_cq_moder net_dim_get_tx_moderation(u8 cq_period_mode, int ix);
++
++/**
++ *	net_dim_get_def_tx_moderation - provide the default TX moderation
++ *	@cq_period_mode: CQ period mode
++ */
++struct dim_cq_moder net_dim_get_def_tx_moderation(u8 cq_period_mode);
++
++/**
++ *	net_dim - main DIM algorithm entry point
++ *	@dim: DIM instance information
++ *	@end_sample: Current data measurement
++ *
++ * Called by the consumer.
++ * This is the main logic of the algorithm, where data is processed in order to decide on next
++ * required action.
++ */
++void net_dim(struct dim *dim, struct dim_sample end_sample);
++
++/* RDMA DIM */
++
++/*
++ * RDMA DIM profile:
++ * profile size must be of RDMA_DIM_PARAMS_NUM_PROFILES.
++ */
++#define RDMA_DIM_PARAMS_NUM_PROFILES 9
++#define RDMA_DIM_START_PROFILE 0
++
++/**
++ * rdma_dim - Runs the adaptive moderation.
++ * @dim: The moderation struct.
++ * @completions: The number of completions collected in this round.
++ *
++ * Each call to rdma_dim takes the latest amount of completions that
++ * have been collected and counts them as a new event.
++ * Once enough events have been collected the algorithm decides a new
++ * moderation level.
++ */
++void rdma_dim(struct dim *dim, u64 completions);
++
++#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0) */
++
++#endif /* DIM_H */
+diff --git a/drivers/amazon/net/ena/ena_admin_defs.h b/drivers/amazon/net/ena/ena_admin_defs.h
+index 1d5a3bea7110..f8731ff4567c 100755
+--- a/drivers/amazon/net/ena/ena_admin_defs.h
++++ b/drivers/amazon/net/ena/ena_admin_defs.h
+@@ -820,6 +820,12 @@ struct ena_admin_host_info {
+ 	u16 num_cpus;
+ 
+ 	u16 reserved;
++
++	/* 1:0 : reserved
++	 * 2 : interrupt_moderation
++	 * 31:3 : reserved
++	 */
++	u32 driver_supported_features;
+ };
+ 
+ struct ena_admin_rss_ind_table_entry {
+@@ -1131,6 +1137,8 @@ struct ena_admin_ena_mmio_req_read_less_resp {
+ #define ENA_ADMIN_HOST_INFO_DEVICE_MASK                     GENMASK(7, 3)
+ #define ENA_ADMIN_HOST_INFO_BUS_SHIFT                       8
+ #define ENA_ADMIN_HOST_INFO_BUS_MASK                        GENMASK(15, 8)
++#define ENA_ADMIN_HOST_INFO_INTERRUPT_MODERATION_SHIFT      2
++#define ENA_ADMIN_HOST_INFO_INTERRUPT_MODERATION_MASK       BIT(2)
+ 
+ /* feature_rss_ind_table */
+ #define ENA_ADMIN_FEATURE_RSS_IND_TABLE_ONE_ENTRY_UPDATE_MASK BIT(0)
+diff --git a/drivers/amazon/net/ena/ena_com.c b/drivers/amazon/net/ena/ena_com.c
+index 9d8f1f1d3205..04747d864462 100644
+--- a/drivers/amazon/net/ena/ena_com.c
++++ b/drivers/amazon/net/ena/ena_com.c
+@@ -206,6 +206,11 @@ static struct ena_comp_ctx *get_comp_ctxt(struct ena_com_admin_queue *queue,
+ 		return NULL;
+ 	}
+ 
++	if (unlikely(!queue->comp_ctx)) {
++		pr_err("Completion context is NULL\n");
++		return NULL;
++	}
++
+ 	if (unlikely(queue->comp_ctx[command_id].occupied && capture)) {
+ 		pr_err("Completion context is occupied\n");
+ 		return NULL;
+@@ -1252,64 +1257,29 @@ static int ena_com_ind_tbl_convert_to_device(struct ena_com_dev *ena_dev)
+ 	return 0;
+ }
+ 
+-static int ena_com_ind_tbl_convert_from_device(struct ena_com_dev *ena_dev)
+-{
+-	u16 dev_idx_to_host_tbl[ENA_TOTAL_NUM_QUEUES] = { (u16)-1 };
+-	struct ena_rss *rss = &ena_dev->rss;
+-	u8 idx;
+-	u16 i;
+-
+-	for (i = 0; i < ENA_TOTAL_NUM_QUEUES; i++)
+-		dev_idx_to_host_tbl[ena_dev->io_sq_queues[i].idx] = i;
+-
+-	for (i = 0; i < 1 << rss->tbl_log_size; i++) {
+-		if (rss->rss_ind_tbl[i].cq_idx > ENA_TOTAL_NUM_QUEUES)
+-			return -EINVAL;
+-		idx = (u8)rss->rss_ind_tbl[i].cq_idx;
+-
+-		if (dev_idx_to_host_tbl[idx] > ENA_TOTAL_NUM_QUEUES)
+-			return -EINVAL;
+-
+-		rss->host_rss_ind_tbl[i] = dev_idx_to_host_tbl[idx];
+-	}
+-
+-	return 0;
+-}
+-
+-static int ena_com_init_interrupt_moderation_table(struct ena_com_dev *ena_dev)
+-{
+-	size_t size;
+-
+-	size = sizeof(struct ena_intr_moder_entry) * ENA_INTR_MAX_NUM_OF_LEVELS;
+-
+-	ena_dev->intr_moder_tbl =
+-		devm_kzalloc(ena_dev->dmadev, size, GFP_KERNEL);
+-	if (!ena_dev->intr_moder_tbl)
+-		return -ENOMEM;
+-
+-	ena_com_config_default_interrupt_moderation_table(ena_dev);
+-
+-	return 0;
+-}
+-
+ static void ena_com_update_intr_delay_resolution(struct ena_com_dev *ena_dev,
+ 						 u16 intr_delay_resolution)
+ {
+-	struct ena_intr_moder_entry *intr_moder_tbl = ena_dev->intr_moder_tbl;
+-	unsigned int i;
++	u16 prev_intr_delay_resolution = ena_dev->intr_delay_resolution;
+ 
+-	if (!intr_delay_resolution) {
++	if (unlikely(!intr_delay_resolution)) {
+ 		pr_err("Illegal intr_delay_resolution provided. Going to use default 1 usec resolution\n");
+-		intr_delay_resolution = 1;
++		intr_delay_resolution = ENA_DEFAULT_INTR_DELAY_RESOLUTION;
+ 	}
+-	ena_dev->intr_delay_resolution = intr_delay_resolution;
+ 
+ 	/* update Rx */
+-	for (i = 0; i < ENA_INTR_MAX_NUM_OF_LEVELS; i++)
+-		intr_moder_tbl[i].intr_moder_interval /= intr_delay_resolution;
++	ena_dev->intr_moder_rx_interval =
++		ena_dev->intr_moder_rx_interval *
++		prev_intr_delay_resolution /
++		intr_delay_resolution;
+ 
+ 	/* update Tx */
+-	ena_dev->intr_moder_tx_interval /= intr_delay_resolution;
++	ena_dev->intr_moder_tx_interval =
++		ena_dev->intr_moder_tx_interval *
++		prev_intr_delay_resolution /
++		intr_delay_resolution;
++
++	ena_dev->intr_delay_resolution = intr_delay_resolution;
+ }
+ 
+ /*****************************************************************************/
+@@ -2685,10 +2655,6 @@ int ena_com_indirect_table_get(struct ena_com_dev *ena_dev, u32 *ind_tbl)
+ 	if (!ind_tbl)
+ 		return 0;
+ 
+-	rc = ena_com_ind_tbl_convert_from_device(ena_dev);
+-	if (unlikely(rc))
+-		return rc;
+-
+ 	for (i = 0; i < (1 << rss->tbl_log_size); i++)
+ 		ind_tbl[i] = rss->host_rss_ind_tbl[i];
+ 
+@@ -2847,42 +2813,35 @@ bool ena_com_interrupt_moderation_supported(struct ena_com_dev *ena_dev)
+ 						  ENA_ADMIN_INTERRUPT_MODERATION);
+ }
+ 
+-int ena_com_update_nonadaptive_moderation_interval_tx(struct ena_com_dev *ena_dev,
+-						      u32 tx_coalesce_usecs)
++static int ena_com_update_nonadaptive_moderation_interval(u32 coalesce_usecs,
++							  u32 intr_delay_resolution,
++							  u32 *intr_moder_interval)
+ {
+-	if (!ena_dev->intr_delay_resolution) {
++	if (!intr_delay_resolution) {
+ 		pr_err("Illegal interrupt delay granularity value\n");
+ 		return -EFAULT;
+ 	}
+ 
+-	ena_dev->intr_moder_tx_interval = tx_coalesce_usecs /
+-		ena_dev->intr_delay_resolution;
++	*intr_moder_interval = coalesce_usecs / intr_delay_resolution;
+ 
+ 	return 0;
+ }
+ 
+-int ena_com_update_nonadaptive_moderation_interval_rx(struct ena_com_dev *ena_dev,
+-						      u32 rx_coalesce_usecs)
+-{
+-	if (!ena_dev->intr_delay_resolution) {
+-		pr_err("Illegal interrupt delay granularity value\n");
+-		return -EFAULT;
+-	}
+-
+-	/* We use LOWEST entry of moderation table for storing
+-	 * nonadaptive interrupt coalescing values
+-	 */
+-	ena_dev->intr_moder_tbl[ENA_INTR_MODER_LOWEST].intr_moder_interval =
+-		rx_coalesce_usecs / ena_dev->intr_delay_resolution;
+ 
+-	return 0;
++int ena_com_update_nonadaptive_moderation_interval_tx(struct ena_com_dev *ena_dev,
++						      u32 tx_coalesce_usecs)
++{
++	return ena_com_update_nonadaptive_moderation_interval(tx_coalesce_usecs,
++							      ena_dev->intr_delay_resolution,
++							      &ena_dev->intr_moder_tx_interval);
+ }
+ 
+-void ena_com_destroy_interrupt_moderation(struct ena_com_dev *ena_dev)
++int ena_com_update_nonadaptive_moderation_interval_rx(struct ena_com_dev *ena_dev,
++						      u32 rx_coalesce_usecs)
+ {
+-	if (ena_dev->intr_moder_tbl)
+-		devm_kfree(ena_dev->dmadev, ena_dev->intr_moder_tbl);
+-	ena_dev->intr_moder_tbl = NULL;
++	return ena_com_update_nonadaptive_moderation_interval(rx_coalesce_usecs,
++							      ena_dev->intr_delay_resolution,
++							      &ena_dev->intr_moder_rx_interval);
+ }
+ 
+ int ena_com_init_interrupt_moderation(struct ena_com_dev *ena_dev)
+@@ -2909,10 +2868,6 @@ int ena_com_init_interrupt_moderation(struct ena_com_dev *ena_dev)
+ 		return rc;
+ 	}
+ 
+-	rc = ena_com_init_interrupt_moderation_table(ena_dev);
+-	if (rc)
+-		goto err;
+-
+ 	/* if moderation is supported by device we set adaptive moderation */
+ 	delay_resolution = get_resp.u.intr_moderation.intr_delay_resolution;
+ 	ena_com_update_intr_delay_resolution(ena_dev, delay_resolution);
+@@ -2921,52 +2876,6 @@ int ena_com_init_interrupt_moderation(struct ena_com_dev *ena_dev)
+ 	ena_com_disable_adaptive_moderation(ena_dev);
+ 
+ 	return 0;
+-err:
+-	ena_com_destroy_interrupt_moderation(ena_dev);
+-	return rc;
+-}
+-
+-void ena_com_config_default_interrupt_moderation_table(struct ena_com_dev *ena_dev)
+-{
+-	struct ena_intr_moder_entry *intr_moder_tbl = ena_dev->intr_moder_tbl;
+-
+-	if (!intr_moder_tbl)
+-		return;
+-
+-	intr_moder_tbl[ENA_INTR_MODER_LOWEST].intr_moder_interval =
+-		ENA_INTR_LOWEST_USECS;
+-	intr_moder_tbl[ENA_INTR_MODER_LOWEST].pkts_per_interval =
+-		ENA_INTR_LOWEST_PKTS;
+-	intr_moder_tbl[ENA_INTR_MODER_LOWEST].bytes_per_interval =
+-		ENA_INTR_LOWEST_BYTES;
+-
+-	intr_moder_tbl[ENA_INTR_MODER_LOW].intr_moder_interval =
+-		ENA_INTR_LOW_USECS;
+-	intr_moder_tbl[ENA_INTR_MODER_LOW].pkts_per_interval =
+-		ENA_INTR_LOW_PKTS;
+-	intr_moder_tbl[ENA_INTR_MODER_LOW].bytes_per_interval =
+-		ENA_INTR_LOW_BYTES;
+-
+-	intr_moder_tbl[ENA_INTR_MODER_MID].intr_moder_interval =
+-		ENA_INTR_MID_USECS;
+-	intr_moder_tbl[ENA_INTR_MODER_MID].pkts_per_interval =
+-		ENA_INTR_MID_PKTS;
+-	intr_moder_tbl[ENA_INTR_MODER_MID].bytes_per_interval =
+-		ENA_INTR_MID_BYTES;
+-
+-	intr_moder_tbl[ENA_INTR_MODER_HIGH].intr_moder_interval =
+-		ENA_INTR_HIGH_USECS;
+-	intr_moder_tbl[ENA_INTR_MODER_HIGH].pkts_per_interval =
+-		ENA_INTR_HIGH_PKTS;
+-	intr_moder_tbl[ENA_INTR_MODER_HIGH].bytes_per_interval =
+-		ENA_INTR_HIGH_BYTES;
+-
+-	intr_moder_tbl[ENA_INTR_MODER_HIGHEST].intr_moder_interval =
+-		ENA_INTR_HIGHEST_USECS;
+-	intr_moder_tbl[ENA_INTR_MODER_HIGHEST].pkts_per_interval =
+-		ENA_INTR_HIGHEST_PKTS;
+-	intr_moder_tbl[ENA_INTR_MODER_HIGHEST].bytes_per_interval =
+-		ENA_INTR_HIGHEST_BYTES;
+ }
+ 
+ unsigned int ena_com_get_nonadaptive_moderation_interval_tx(struct ena_com_dev *ena_dev)
+@@ -2976,49 +2885,7 @@ unsigned int ena_com_get_nonadaptive_moderation_interval_tx(struct ena_com_dev *
+ 
+ unsigned int ena_com_get_nonadaptive_moderation_interval_rx(struct ena_com_dev *ena_dev)
+ {
+-	struct ena_intr_moder_entry *intr_moder_tbl = ena_dev->intr_moder_tbl;
+-
+-	if (intr_moder_tbl)
+-		return intr_moder_tbl[ENA_INTR_MODER_LOWEST].intr_moder_interval;
+-
+-	return 0;
+-}
+-
+-void ena_com_init_intr_moderation_entry(struct ena_com_dev *ena_dev,
+-					enum ena_intr_moder_level level,
+-					struct ena_intr_moder_entry *entry)
+-{
+-	struct ena_intr_moder_entry *intr_moder_tbl = ena_dev->intr_moder_tbl;
+-
+-	if (level >= ENA_INTR_MAX_NUM_OF_LEVELS)
+-		return;
+-
+-	intr_moder_tbl[level].intr_moder_interval = entry->intr_moder_interval;
+-	if (ena_dev->intr_delay_resolution)
+-		intr_moder_tbl[level].intr_moder_interval /=
+-			ena_dev->intr_delay_resolution;
+-	intr_moder_tbl[level].pkts_per_interval = entry->pkts_per_interval;
+-
+-	/* use hardcoded value until ethtool supports bytecount parameter */
+-	if (entry->bytes_per_interval != ENA_INTR_BYTE_COUNT_NOT_SUPPORTED)
+-		intr_moder_tbl[level].bytes_per_interval = entry->bytes_per_interval;
+-}
+-
+-void ena_com_get_intr_moderation_entry(struct ena_com_dev *ena_dev,
+-				       enum ena_intr_moder_level level,
+-				       struct ena_intr_moder_entry *entry)
+-{
+-	struct ena_intr_moder_entry *intr_moder_tbl = ena_dev->intr_moder_tbl;
+-
+-	if (level >= ENA_INTR_MAX_NUM_OF_LEVELS)
+-		return;
+-
+-	entry->intr_moder_interval = intr_moder_tbl[level].intr_moder_interval;
+-	if (ena_dev->intr_delay_resolution)
+-		entry->intr_moder_interval *= ena_dev->intr_delay_resolution;
+-	entry->pkts_per_interval =
+-	intr_moder_tbl[level].pkts_per_interval;
+-	entry->bytes_per_interval = intr_moder_tbl[level].bytes_per_interval;
++	return ena_dev->intr_moder_rx_interval;
+ }
+ 
+ int ena_com_config_dev_mode(struct ena_com_dev *ena_dev,
+diff --git a/drivers/amazon/net/ena/ena_com.h b/drivers/amazon/net/ena/ena_com.h
+index 1d76586b8b48..e4e64f2387f5 100644
+--- a/drivers/amazon/net/ena/ena_com.h
++++ b/drivers/amazon/net/ena/ena_com.h
+@@ -72,46 +72,15 @@
+ /*****************************************************************************/
+ /* ENA adaptive interrupt moderation settings */
+ 
+-#define ENA_INTR_LOWEST_USECS           (0)
+-#define ENA_INTR_LOWEST_PKTS            (3)
+-#define ENA_INTR_LOWEST_BYTES           (2 * 1524)
++#define ENA_INTR_INITIAL_TX_INTERVAL_USECS		0
++#define ENA_INTR_INITIAL_RX_INTERVAL_USECS		0
++#define ENA_DEFAULT_INTR_DELAY_RESOLUTION		1
+ 
+-#define ENA_INTR_LOW_USECS              (32)
+-#define ENA_INTR_LOW_PKTS               (12)
+-#define ENA_INTR_LOW_BYTES              (16 * 1024)
+-
+-#define ENA_INTR_MID_USECS              (80)
+-#define ENA_INTR_MID_PKTS               (48)
+-#define ENA_INTR_MID_BYTES              (64 * 1024)
+-
+-#define ENA_INTR_HIGH_USECS             (128)
+-#define ENA_INTR_HIGH_PKTS              (96)
+-#define ENA_INTR_HIGH_BYTES             (128 * 1024)
+-
+-#define ENA_INTR_HIGHEST_USECS          (192)
+-#define ENA_INTR_HIGHEST_PKTS           (128)
+-#define ENA_INTR_HIGHEST_BYTES          (192 * 1024)
+-
+-#define ENA_INTR_INITIAL_TX_INTERVAL_USECS		196
+-#define ENA_INTR_INITIAL_RX_INTERVAL_USECS		4
+-#define ENA_INTR_DELAY_OLD_VALUE_WEIGHT			6
+-#define ENA_INTR_DELAY_NEW_VALUE_WEIGHT			4
+-#define ENA_INTR_MODER_LEVEL_STRIDE			1
+-#define ENA_INTR_BYTE_COUNT_NOT_SUPPORTED		0xFFFFFF
+ 
+ #define ENA_HW_HINTS_NO_TIMEOUT				0xFFFF
+ 
+ #define ENA_FEATURE_MAX_QUEUE_EXT_VER	1
+ 
+-enum ena_intr_moder_level {
+-	ENA_INTR_MODER_LOWEST = 0,
+-	ENA_INTR_MODER_LOW,
+-	ENA_INTR_MODER_MID,
+-	ENA_INTR_MODER_HIGH,
+-	ENA_INTR_MODER_HIGHEST,
+-	ENA_INTR_MAX_NUM_OF_LEVELS,
+-};
+-
+ struct ena_llq_configurations {
+ 	enum ena_admin_llq_header_location llq_header_location;
+ 	enum ena_admin_llq_ring_entry_size llq_ring_entry_size;
+@@ -120,12 +89,6 @@ struct ena_llq_configurations {
+ 	u16 llq_ring_entry_size_value;
+ };
+ 
+-struct ena_intr_moder_entry {
+-	unsigned int intr_moder_interval;
+-	unsigned int pkts_per_interval;
+-	unsigned int bytes_per_interval;
+-};
+-
+ enum queue_direction {
+ 	ENA_COM_IO_QUEUE_DIRECTION_TX,
+ 	ENA_COM_IO_QUEUE_DIRECTION_RX
+@@ -386,7 +349,13 @@ struct ena_com_dev {
+ 	struct ena_host_attribute host_attr;
+ 	bool adaptive_coalescing;
+ 	u16 intr_delay_resolution;
++
++	/* interrupt moderation intervals are in usec divided by
++	 * intr_delay_resolution, which is supplied by the device.
++	 */
+ 	u32 intr_moder_tx_interval;
++	u32 intr_moder_rx_interval;
++
+ 	struct ena_intr_moder_entry *intr_moder_tbl;
+ 
+ 	struct ena_com_llq_info llq_info;
+@@ -951,11 +920,6 @@ int ena_com_execute_admin_command(struct ena_com_admin_queue *admin_queue,
+  */
+ int ena_com_init_interrupt_moderation(struct ena_com_dev *ena_dev);
+ 
+-/* ena_com_destroy_interrupt_moderation - Destroy interrupt moderation resources
+- * @ena_dev: ENA communication layer struct
+- */
+-void ena_com_destroy_interrupt_moderation(struct ena_com_dev *ena_dev);
+-
+ /* ena_com_interrupt_moderation_supported - Return if interrupt moderation
+  * capability is supported by the device.
+  *
+@@ -963,12 +927,6 @@ void ena_com_destroy_interrupt_moderation(struct ena_com_dev *ena_dev);
+  */
+ bool ena_com_interrupt_moderation_supported(struct ena_com_dev *ena_dev);
+ 
+-/* ena_com_config_default_interrupt_moderation_table - Restore the interrupt
+- * moderation table back to the default parameters.
+- * @ena_dev: ENA communication layer struct
+- */
+-void ena_com_config_default_interrupt_moderation_table(struct ena_com_dev *ena_dev);
+-
+ /* ena_com_update_nonadaptive_moderation_interval_tx - Update the
+  * non-adaptive interval in Tx direction.
+  * @ena_dev: ENA communication layer struct
+@@ -1005,29 +963,6 @@ unsigned int ena_com_get_nonadaptive_moderation_interval_tx(struct ena_com_dev *
+  */
+ unsigned int ena_com_get_nonadaptive_moderation_interval_rx(struct ena_com_dev *ena_dev);
+ 
+-/* ena_com_init_intr_moderation_entry - Update a single entry in the interrupt
+- * moderation table.
+- * @ena_dev: ENA communication layer struct
+- * @level: Interrupt moderation table level
+- * @entry: Entry value
+- *
+- * Update a single entry in the interrupt moderation table.
+- */
+-void ena_com_init_intr_moderation_entry(struct ena_com_dev *ena_dev,
+-					enum ena_intr_moder_level level,
+-					struct ena_intr_moder_entry *entry);
+-
+-/* ena_com_get_intr_moderation_entry - Init ena_intr_moder_entry.
+- * @ena_dev: ENA communication layer struct
+- * @level: Interrupt moderation table level
+- * @entry: Entry to fill.
+- *
+- * Initialize the entry according to the adaptive interrupt moderation table.
+- */
+-void ena_com_get_intr_moderation_entry(struct ena_com_dev *ena_dev,
+-				       enum ena_intr_moder_level level,
+-				       struct ena_intr_moder_entry *entry);
+-
+ /* ena_com_config_dev_mode - Configure the placement policy of the device.
+  * @ena_dev: ENA communication layer struct
+  * @llq_features: LLQ feature descriptor, retrieve via
+@@ -1053,75 +988,6 @@ static inline void ena_com_disable_adaptive_moderation(struct ena_com_dev *ena_d
+ 	ena_dev->adaptive_coalescing = false;
+ }
+ 
+-/* ena_com_calculate_interrupt_delay - Calculate new interrupt delay
+- * @ena_dev: ENA communication layer struct
+- * @pkts: Number of packets since the last update
+- * @bytes: Number of bytes received since the last update.
+- * @smoothed_interval: Returned interval
+- * @moder_tbl_idx: Current table level as input update new level as return
+- * value.
+- */
+-static inline void ena_com_calculate_interrupt_delay(struct ena_com_dev *ena_dev,
+-						     unsigned int pkts,
+-						     unsigned int bytes,
+-						     unsigned int *smoothed_interval,
+-						     unsigned int *moder_tbl_idx)
+-{
+-	enum ena_intr_moder_level curr_moder_idx, new_moder_idx;
+-	struct ena_intr_moder_entry *curr_moder_entry;
+-	struct ena_intr_moder_entry *pred_moder_entry;
+-	struct ena_intr_moder_entry *new_moder_entry;
+-	struct ena_intr_moder_entry *intr_moder_tbl = ena_dev->intr_moder_tbl;
+-	unsigned int interval;
+-
+-	/* We apply adaptive moderation on Rx path only.
+-	 * Tx uses static interrupt moderation.
+-	 */
+-	if (!pkts || !bytes)
+-		/* Tx interrupt, or spurious interrupt,
+-		 * in both cases we just use same delay values
+-		 */
+-		return;
+-
+-	curr_moder_idx = (enum ena_intr_moder_level)(*moder_tbl_idx);
+-	if (unlikely(curr_moder_idx >= ENA_INTR_MAX_NUM_OF_LEVELS)) {
+-		pr_err("Wrong moderation index %u\n", curr_moder_idx);
+-		return;
+-	}
+-
+-	curr_moder_entry = &intr_moder_tbl[curr_moder_idx];
+-	new_moder_idx = curr_moder_idx;
+-
+-	if (curr_moder_idx == ENA_INTR_MODER_LOWEST) {
+-		if ((pkts > curr_moder_entry->pkts_per_interval) ||
+-		    (bytes > curr_moder_entry->bytes_per_interval))
+-			new_moder_idx =
+-				(enum ena_intr_moder_level)(curr_moder_idx + ENA_INTR_MODER_LEVEL_STRIDE);
+-	} else {
+-		pred_moder_entry = &intr_moder_tbl[curr_moder_idx - ENA_INTR_MODER_LEVEL_STRIDE];
+-
+-		if ((pkts <= pred_moder_entry->pkts_per_interval) ||
+-		    (bytes <= pred_moder_entry->bytes_per_interval))
+-			new_moder_idx =
+-				(enum ena_intr_moder_level)(curr_moder_idx - ENA_INTR_MODER_LEVEL_STRIDE);
+-		else if ((pkts > curr_moder_entry->pkts_per_interval) ||
+-			 (bytes > curr_moder_entry->bytes_per_interval)) {
+-			if (curr_moder_idx != ENA_INTR_MODER_HIGHEST)
+-				new_moder_idx =
+-					(enum ena_intr_moder_level)(curr_moder_idx + ENA_INTR_MODER_LEVEL_STRIDE);
+-		}
+-	}
+-	new_moder_entry = &intr_moder_tbl[new_moder_idx];
+-
+-	interval = new_moder_entry->intr_moder_interval;
+-	*smoothed_interval = (
+-		(interval * ENA_INTR_DELAY_NEW_VALUE_WEIGHT +
+-		ENA_INTR_DELAY_OLD_VALUE_WEIGHT * (*smoothed_interval)) + 5) /
+-		10;
+-
+-	*moder_tbl_idx = new_moder_idx;
+-}
+-
+ /* ena_com_update_intr_reg - Prepare interrupt register
+  * @intr_reg: interrupt register to update.
+  * @rx_delay_interval: Rx interval in usecs
+diff --git a/drivers/amazon/net/ena/ena_ethtool.c b/drivers/amazon/net/ena/ena_ethtool.c
+index 462e618a608a..6c17ed0e5f7a 100755
+--- a/drivers/amazon/net/ena/ena_ethtool.c
++++ b/drivers/amazon/net/ena/ena_ethtool.c
+@@ -138,7 +138,7 @@ static void ena_queue_stats(struct ena_adapter *adapter, u64 **data)
+ 	u64 *ptr;
+ 	int i, j;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		/* Tx stats */
+ 		ring = &adapter->tx_ring[i];
+ 
+@@ -205,7 +205,7 @@ static void ena_get_ethtool_stats(struct net_device *netdev,
+ 
+ static int get_stats_sset_count(struct ena_adapter *adapter)
+ {
+-	return  adapter->num_queues * (ENA_STATS_ARRAY_TX + ENA_STATS_ARRAY_RX)
++	return  adapter->num_io_queues * (ENA_STATS_ARRAY_TX + ENA_STATS_ARRAY_RX)
+ 		+ ENA_STATS_ARRAY_GLOBAL + ENA_STATS_ARRAY_ENA_COM;
+ }
+ 
+@@ -228,7 +228,7 @@ static void ena_queue_strings(struct ena_adapter *adapter, u8 **data)
+ 	const struct ena_stats *ena_stats;
+ 	int i, j;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		/* Tx stats */
+ 		for (j = 0; j < ENA_STATS_ARRAY_TX; j++) {
+ 			ena_stats = &ena_stats_tx_strings[j];
+@@ -381,35 +381,45 @@ static int ena_get_coalesce(struct net_device *net_dev,
+ 	struct ena_adapter *adapter = netdev_priv(net_dev);
+ 	struct ena_com_dev *ena_dev = adapter->ena_dev;
+ 
+-	if (!ena_com_interrupt_moderation_supported(ena_dev)) {
+-		/* the devie doesn't support interrupt moderation */
++	if (!ena_com_interrupt_moderation_supported(ena_dev))
+ 		return -EOPNOTSUPP;
+-	}
++
+ 	coalesce->tx_coalesce_usecs =
+-		ena_com_get_nonadaptive_moderation_interval_tx(ena_dev) /
++		ena_com_get_nonadaptive_moderation_interval_tx(ena_dev) *
+ 			ena_dev->intr_delay_resolution;
+-	if (!ena_com_get_adaptive_moderation_enabled(ena_dev)) {
+-		coalesce->rx_coalesce_usecs =
+-			ena_com_get_nonadaptive_moderation_interval_rx(ena_dev)
+-			/ ena_dev->intr_delay_resolution;
+-	}
++
++	coalesce->rx_coalesce_usecs =
++		ena_com_get_nonadaptive_moderation_interval_rx(ena_dev)
++		* ena_dev->intr_delay_resolution;
++
+ 	coalesce->use_adaptive_rx_coalesce =
+ 		ena_com_get_adaptive_moderation_enabled(ena_dev);
+ 
+ 	return 0;
+ }
+ 
+-static void ena_update_tx_rings_intr_moderation(struct ena_adapter *adapter)
++static void ena_update_tx_rings_nonadaptive_intr_moderation(struct ena_adapter *adapter)
+ {
+ 	unsigned int val;
+ 	int i;
+ 
+ 	val = ena_com_get_nonadaptive_moderation_interval_tx(adapter->ena_dev);
+ 
+-	for (i = 0; i < adapter->num_queues; i++)
++	for (i = 0; i < adapter->num_io_queues; i++)
+ 		adapter->tx_ring[i].smoothed_interval = val;
+ }
+ 
++static void ena_update_rx_rings_nonadaptive_intr_moderation(struct ena_adapter *adapter)
++{
++	unsigned int val;
++	int i;
++
++	val = ena_com_get_nonadaptive_moderation_interval_rx(adapter->ena_dev);
++
++	for (i = 0; i < adapter->num_io_queues; i++)
++		adapter->rx_ring[i].smoothed_interval = val;
++}
++
+ static int ena_set_coalesce(struct net_device *net_dev,
+ 			    struct ethtool_coalesce *coalesce)
+ {
+@@ -417,63 +427,30 @@ static int ena_set_coalesce(struct net_device *net_dev,
+ 	struct ena_com_dev *ena_dev = adapter->ena_dev;
+ 	int rc;
+ 
+-	if (!ena_com_interrupt_moderation_supported(ena_dev)) {
+-		/* the devie doesn't support interrupt moderation */
++	if (!ena_com_interrupt_moderation_supported(ena_dev))
+ 		return -EOPNOTSUPP;
+-	}
+ 
+-	if (coalesce->rx_coalesce_usecs_irq ||
+-	    coalesce->rx_max_coalesced_frames_irq ||
+-	    coalesce->tx_coalesce_usecs_irq ||
+-	    coalesce->tx_max_coalesced_frames ||
+-	    coalesce->tx_max_coalesced_frames_irq ||
+-	    coalesce->stats_block_coalesce_usecs ||
+-	    coalesce->use_adaptive_tx_coalesce ||
+-	    coalesce->pkt_rate_low ||
+-	    coalesce->tx_coalesce_usecs_low ||
+-	    coalesce->tx_max_coalesced_frames_low ||
+-	    coalesce->pkt_rate_high ||
+-	    coalesce->tx_coalesce_usecs_high ||
+-	    coalesce->tx_max_coalesced_frames_high ||
+-	    coalesce->rate_sample_interval)
+-		return -EINVAL;
+-
+-	/* Note, adaptive coalescing settings are updated through sysfs */
+-	if (coalesce->rx_max_coalesced_frames ||
+-	    coalesce->rx_coalesce_usecs_low ||
+-	    coalesce->rx_max_coalesced_frames_low ||
+-	    coalesce->rx_coalesce_usecs_high ||
+-	    coalesce->rx_max_coalesced_frames_high)
+-		return -EINVAL;
+ 	rc = ena_com_update_nonadaptive_moderation_interval_tx(ena_dev,
+ 							       coalesce->tx_coalesce_usecs);
+ 	if (rc)
+ 		return rc;
+ 
+-	ena_update_tx_rings_intr_moderation(adapter);
++	ena_update_tx_rings_nonadaptive_intr_moderation(adapter);
+ 
+-	if (ena_com_get_adaptive_moderation_enabled(ena_dev)) {
+-		if (!coalesce->use_adaptive_rx_coalesce) {
+-			ena_com_disable_adaptive_moderation(ena_dev);
+-			rc = ena_com_update_nonadaptive_moderation_interval_rx(ena_dev,
+-									       coalesce->rx_coalesce_usecs);
+-			return rc;
+-		} else {
+-			/* was in adaptive mode and remains in it,
+-			 * allow to update only tx_usecs, rx is managed through sysfs
+-			 */
+-			if (coalesce->rx_coalesce_usecs)
+-				return -EINVAL;
+-		}
+-	} else { /* was in non-adaptive mode */
+-		if (coalesce->use_adaptive_rx_coalesce) {
+-			ena_com_enable_adaptive_moderation(ena_dev);
+-		} else {
+-			rc = ena_com_update_nonadaptive_moderation_interval_rx(ena_dev,
+-									       coalesce->rx_coalesce_usecs);
+-			return rc;
+-		}
+-	}
++	rc = ena_com_update_nonadaptive_moderation_interval_rx(ena_dev,
++							       coalesce->rx_coalesce_usecs);
++	if (rc)
++		return rc;
++
++	ena_update_rx_rings_nonadaptive_intr_moderation(adapter);
++
++	if ((coalesce->use_adaptive_rx_coalesce) &&
++	    (!ena_com_get_adaptive_moderation_enabled(ena_dev)))
++		ena_com_enable_adaptive_moderation(ena_dev);
++
++	if ((!coalesce->use_adaptive_rx_coalesce) &&
++	    (ena_com_get_adaptive_moderation_enabled(ena_dev)))
++		ena_com_disable_adaptive_moderation(ena_dev);
+ 
+ 	return 0;
+ }
+@@ -712,7 +689,7 @@ static int ena_get_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *info,
+ 
+ 	switch (info->cmd) {
+ 	case ETHTOOL_GRXRINGS:
+-		info->data = adapter->num_queues;
++		info->data = adapter->num_io_queues;
+ 		rc = 0;
+ 		break;
+ 	case ETHTOOL_GRXFH:
+@@ -905,12 +882,12 @@ static void ena_get_channels(struct net_device *netdev,
+ {
+ 	struct ena_adapter *adapter = netdev_priv(netdev);
+ 
+-	channels->max_rx = adapter->num_queues;
+-	channels->max_tx = adapter->num_queues;
++	channels->max_rx = adapter->max_num_io_queues;
++	channels->max_tx = adapter->max_num_io_queues;
+ 	channels->max_other = 0;
+ 	channels->max_combined = 0;
+-	channels->rx_count = adapter->num_queues;
+-	channels->tx_count = adapter->num_queues;
++	channels->rx_count = adapter->num_io_queues;
++	channels->tx_count = adapter->num_io_queues;
+ 	channels->other_count = 0;
+ 	channels->combined_count = 0;
+ }
+diff --git a/drivers/amazon/net/ena/ena_netdev.c b/drivers/amazon/net/ena/ena_netdev.c
+index c65dc989bdbf..34c799070e85 100755
+--- a/drivers/amazon/net/ena/ena_netdev.c
++++ b/drivers/amazon/net/ena/ena_netdev.c
+@@ -80,6 +80,10 @@ static int force_large_llq_header;
+ module_param(force_large_llq_header, int, S_IRUGO);
+ MODULE_PARM_DESC(force_large_llq_header, "Increases maximum supported header size in LLQ mode to 224 bytes, while reducing the maximum TX queue size by half.\n");
+ 
++static int num_io_queues = ENA_MAX_NUM_IO_QUEUES;
++module_param(num_io_queues, int, 0444);
++MODULE_PARM_DESC(num_io_queues, "Sets number of RX/TX queues to allocate to device. The maximum value depends on the device and number of online CPUs.\n");
++
+ static struct ena_aenq_handlers aenq_handlers;
+ 
+ static struct workqueue_struct *ena_wq;
+@@ -114,7 +118,7 @@ static void update_rx_ring_mtu(struct ena_adapter *adapter, int mtu)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_queues; i++)
++	for (i = 0; i < adapter->num_io_queues; i++)
+ 		adapter->rx_ring[i].mtu = mtu;
+ }
+ 
+@@ -150,10 +154,10 @@ static int ena_init_rx_cpu_rmap(struct ena_adapter *adapter)
+ 	u32 i;
+ 	int rc;
+ 
+-	adapter->netdev->rx_cpu_rmap = alloc_irq_cpu_rmap(adapter->num_queues);
++	adapter->netdev->rx_cpu_rmap = alloc_irq_cpu_rmap(adapter->num_io_queues);
+ 	if (!adapter->netdev->rx_cpu_rmap)
+ 		return -ENOMEM;
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		int irq_idx = ENA_IO_IRQ_IDX(i);
+ 
+ 		rc = irq_cpu_rmap_add(adapter->netdev->rx_cpu_rmap,
+@@ -183,7 +187,6 @@ static void ena_init_io_rings_common(struct ena_adapter *adapter,
+ 	ring->adapter = adapter;
+ 	ring->ena_dev = adapter->ena_dev;
+ 	ring->per_napi_packets = 0;
+-	ring->per_napi_bytes = 0;
+ 	ring->cpu = 0;
+ 	ring->first_interrupt = false;
+ 	ring->no_interrupt_event_cnt = 0;
+@@ -198,7 +201,7 @@ static void ena_init_io_rings(struct ena_adapter *adapter)
+ 
+ 	ena_dev = adapter->ena_dev;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		txr = &adapter->tx_ring[i];
+ 		rxr = &adapter->rx_ring[i];
+ 
+@@ -221,6 +224,7 @@ static void ena_init_io_rings(struct ena_adapter *adapter)
+ 		rxr->smoothed_interval =
+ 			ena_com_get_nonadaptive_moderation_interval_rx(ena_dev);
+ 		rxr->empty_rx_queue = 0;
++		adapter->ena_napi[i].dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
+ 	}
+ }
+ 
+@@ -319,7 +323,7 @@ static int ena_setup_all_tx_resources(struct ena_adapter *adapter)
+ {
+ 	int i, rc = 0;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		rc = ena_setup_tx_resources(adapter, i);
+ 		if (rc)
+ 			goto err_setup_tx;
+@@ -347,7 +351,7 @@ static void ena_free_all_io_tx_resources(struct ena_adapter *adapter)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_queues; i++)
++	for (i = 0; i < adapter->num_io_queues; i++)
+ 		ena_free_tx_resources(adapter, i);
+ }
+ 
+@@ -456,7 +460,7 @@ static int ena_setup_all_rx_resources(struct ena_adapter *adapter)
+ {
+ 	int i, rc = 0;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		rc = ena_setup_rx_resources(adapter, i);
+ 		if (rc)
+ 			goto err_setup_rx;
+@@ -484,7 +488,7 @@ static void ena_free_all_io_rx_resources(struct ena_adapter *adapter)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_queues; i++)
++	for (i = 0; i < adapter->num_io_queues; i++)
+ 		ena_free_rx_resources(adapter, i);
+ }
+ 
+@@ -560,13 +564,9 @@ static int ena_refill_rx_bufs(struct ena_ring *rx_ring, u32 num)
+ 		struct ena_rx_buffer *rx_info;
+ 
+ 		req_id = rx_ring->free_ids[next_to_use];
+-		rc = validate_rx_req_id(rx_ring, req_id);
+-		if (unlikely(rc < 0))
+-			break;
+ 
+ 		rx_info = &rx_ring->rx_buffer_info[req_id];
+ 
+-
+ 		rc = ena_alloc_rx_page(rx_ring, rx_info,
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 15, 0)
+ 				       GFP_ATOMIC | __GFP_COMP);
+@@ -632,7 +632,7 @@ static void ena_refill_all_rx_bufs(struct ena_adapter *adapter)
+ 	struct ena_ring *rx_ring;
+ 	int i, rc, bufs_num;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		rx_ring = &adapter->rx_ring[i];
+ 		bufs_num = rx_ring->ring_size - 1;
+ 		rc = ena_refill_rx_bufs(rx_ring, bufs_num);
+@@ -648,7 +648,7 @@ static void ena_free_all_rx_bufs(struct ena_adapter *adapter)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_queues; i++)
++	for (i = 0; i < adapter->num_io_queues; i++)
+ 		ena_free_rx_bufs(adapter, i);
+ }
+ 
+@@ -720,7 +720,7 @@ static void ena_free_all_tx_bufs(struct ena_adapter *adapter)
+ 	struct ena_ring *tx_ring;
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		tx_ring = &adapter->tx_ring[i];
+ 		ena_free_tx_bufs(tx_ring);
+ 	}
+@@ -731,7 +731,7 @@ static void ena_destroy_all_tx_queues(struct ena_adapter *adapter)
+ 	u16 ena_qid;
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		ena_qid = ENA_IO_TXQ_IDX(i);
+ 		ena_com_destroy_io_queue(adapter->ena_dev, ena_qid);
+ 	}
+@@ -742,8 +742,9 @@ static void ena_destroy_all_rx_queues(struct ena_adapter *adapter)
+ 	u16 ena_qid;
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		ena_qid = ENA_IO_RXQ_IDX(i);
++		cancel_work_sync(&adapter->ena_napi[i].dim.work);
+ 		ena_com_destroy_io_queue(adapter->ena_dev, ena_qid);
+ 	}
+ }
+@@ -862,9 +863,6 @@ static int ena_clean_tx_irq(struct ena_ring *tx_ring, u32 budget)
+ 		__netif_tx_unlock(txq);
+ 	}
+ 
+-	tx_ring->per_napi_bytes += tx_bytes;
+-	tx_ring->per_napi_packets += tx_pkts;
+-
+ 	return tx_pkts;
+ }
+ 
+@@ -902,9 +900,16 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
+ 	bool polling;
+ #endif
+ 	void *va;
++	int rc;
+ 
+ 	len = ena_bufs[buf].len;
+ 	req_id = ena_bufs[buf].req_id;
++
++	rc = validate_rx_req_id(rx_ring, req_id);
++	if (unlikely(rc < 0)) {
++		return NULL;
++	}
++
+ 	rx_info = &rx_ring->rx_buffer_info[req_id];
+ 
+ 	if (unlikely(!rx_info->page)) {
+@@ -986,6 +991,12 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
+ 		buf++;
+ 		len = ena_bufs[buf].len;
+ 		req_id = ena_bufs[buf].req_id;
++
++		rc = validate_rx_req_id(rx_ring, req_id);
++		if (unlikely(rc < 0)) {
++			return NULL;
++		}
++
+ 		rx_info = &rx_ring->rx_buffer_info[req_id];
+ 	} while (1);
+ 
+@@ -1193,7 +1204,6 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
+ 	} while (likely(res_budget));
+ 
+ 	work_done = budget - res_budget;
+-	rx_ring->per_napi_bytes += total_len;
+ 	rx_ring->per_napi_packets += work_done;
+ 	u64_stats_update_begin(&rx_ring->syncp);
+ 	rx_ring->rx_stats.bytes += total_len;
+@@ -1230,35 +1240,50 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
+ 	return 0;
+ }
+ 
+-void ena_adjust_intr_moderation(struct ena_ring *rx_ring,
+-				       struct ena_ring *tx_ring)
++static void ena_dim_work(struct work_struct *w)
+ {
+-	/* We apply adaptive moderation on Rx path only.
+-	 * Tx uses static interrupt moderation.
+-	 */
+-	ena_com_calculate_interrupt_delay(rx_ring->ena_dev,
+-					  rx_ring->per_napi_packets,
+-					  rx_ring->per_napi_bytes,
+-					  &rx_ring->smoothed_interval,
+-					  &rx_ring->moder_tbl_idx);
+-
+-	/* Reset per napi packets/bytes */
+-	tx_ring->per_napi_packets = 0;
+-	tx_ring->per_napi_bytes = 0;
++	struct dim *dim = container_of(w, struct dim, work);
++	struct dim_cq_moder cur_moder =
++		net_dim_get_rx_moderation(dim->mode, dim->profile_ix);
++	struct ena_napi *ena_napi = container_of(dim, struct ena_napi, dim);
++
++	ena_napi->rx_ring->smoothed_interval = cur_moder.usec;
++	dim->state = DIM_START_MEASURE;
++}
++
++static void ena_adjust_adaptive_rx_intr_moderation(struct ena_napi *ena_napi)
++{
++	struct dim_sample dim_sample;
++	struct ena_ring *rx_ring = ena_napi->rx_ring;
++
++	if (!rx_ring->per_napi_packets)
++		return;
++
++	rx_ring->non_empty_napi_events++;
++
++	dim_update_sample(rx_ring->non_empty_napi_events,
++			  rx_ring->rx_stats.cnt,
++			  rx_ring->rx_stats.bytes,
++			  &dim_sample);
++
++	net_dim(&ena_napi->dim, dim_sample);
++
+ 	rx_ring->per_napi_packets = 0;
+-	rx_ring->per_napi_bytes = 0;
+ }
+ 
+ static void ena_unmask_interrupt(struct ena_ring *tx_ring,
+ 					struct ena_ring *rx_ring)
+ {
+ 	struct ena_eth_io_intr_reg intr_reg;
++	u32 rx_interval = ena_com_get_adaptive_moderation_enabled(rx_ring->ena_dev) ?
++		rx_ring->smoothed_interval :
++		ena_com_get_nonadaptive_moderation_interval_rx(rx_ring->ena_dev);
+ 
+ 	/* Update intr register: rx intr delay,
+ 	 * tx intr delay and interrupt unmask
+ 	 */
+ 	ena_com_update_intr_reg(&intr_reg,
+-				rx_ring->smoothed_interval,
++				rx_interval,
+ 				tx_ring->smoothed_interval,
+ 				true);
+ 
+@@ -1344,9 +1369,11 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
+ 		napi_complete_done(napi, rx_work_done);
+ 		if (atomic_cmpxchg(&ena_napi->unmask_interrupt, 1, 0)) {
+ #endif
+-			/* Tx and Rx share the same interrupt vector */
++			/* We apply adaptive moderation on Rx path only.
++			 * Tx uses static interrupt moderation.
++			 */
+ 			if (ena_com_get_adaptive_moderation_enabled(rx_ring->ena_dev))
+-				ena_adjust_intr_moderation(rx_ring, tx_ring);
++				ena_adjust_adaptive_rx_intr_moderation(ena_napi);
+ 
+ 			ena_unmask_interrupt(tx_ring, rx_ring);
+ 		}
+@@ -1409,7 +1436,7 @@ static irqreturn_t ena_intr_msix_io(int irq, void *data)
+  * the number of potential io queues is the minimum of what the device
+  * supports and the number of vCPUs.
+  */
+-static int ena_enable_msix(struct ena_adapter *adapter, int num_queues)
++static int ena_enable_msix(struct ena_adapter *adapter)
+ {
+ 	int msix_vecs, irq_cnt;
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 8, 0)
+@@ -1423,7 +1450,7 @@ static int ena_enable_msix(struct ena_adapter *adapter, int num_queues)
+ 	}
+ 
+ 	/* Reserved the max msix vectors we might need */
+-	msix_vecs = ENA_MAX_MSIX_VEC(num_queues);
++	msix_vecs = ENA_MAX_MSIX_VEC(adapter->num_io_queues);
+ 	netif_dbg(adapter, probe, adapter->netdev,
+ 		  "trying to enable MSI-X, vectors %d\n", msix_vecs);
+ 
+@@ -1456,7 +1483,7 @@ static int ena_enable_msix(struct ena_adapter *adapter, int num_queues)
+ 		netif_notice(adapter, probe, adapter->netdev,
+ 			     "enable only %d MSI-X (out of %d), reduce the number of queues\n",
+ 			     irq_cnt, msix_vecs);
+-		adapter->num_queues = irq_cnt - ENA_ADMIN_MSIX_VEC;
++		adapter->num_io_queues = irq_cnt - ENA_ADMIN_MSIX_VEC;
+ 	}
+ 
+ 	if (ena_init_rx_cpu_rmap(adapter))
+@@ -1498,7 +1525,7 @@ static void ena_setup_io_intr(struct ena_adapter *adapter)
+ 
+ 	netdev = adapter->netdev;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		irq_idx = ENA_IO_IRQ_IDX(i);
+ 		cpu = i % num_online_cpus();
+ 
+@@ -1639,7 +1666,7 @@ static void ena_del_napi(struct ena_adapter *adapter)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		napi_hash_del(&adapter->ena_napi[i].napi);
+ 		netif_napi_del(&adapter->ena_napi[i].napi);
+ 	}
+@@ -1650,7 +1677,7 @@ static void ena_init_napi(struct ena_adapter *adapter)
+ 	struct ena_napi *napi;
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		napi = &adapter->ena_napi[i];
+ 
+ 		netif_napi_add(adapter->netdev,
+@@ -1672,7 +1699,7 @@ static void ena_napi_disable_all(struct ena_adapter *adapter)
+ 	struct ena_ring *rx_ring;
+ 	int i, timeout;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		napi_disable(&adapter->ena_napi[i].napi);
+ 
+ 		rx_ring = &adapter->rx_ring[i];
+@@ -1696,7 +1723,7 @@ static void ena_napi_disable_all(struct ena_adapter *adapter)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_queues; i++)
++	for (i = 0; i < adapter->num_io_queues; i++)
+ 		napi_disable(&adapter->ena_napi[i].napi);
+ }
+ #endif
+@@ -1705,7 +1732,7 @@ static void ena_napi_enable_all(struct ena_adapter *adapter)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_queues; i++)
++	for (i = 0; i < adapter->num_io_queues; i++)
+ 		napi_enable(&adapter->ena_napi[i].napi);
+ }
+ 
+@@ -1825,7 +1852,7 @@ static int ena_create_all_io_tx_queues(struct ena_adapter *adapter)
+ 	struct ena_com_dev *ena_dev = adapter->ena_dev;
+ 	int rc, i;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		rc = ena_create_io_tx_queue(adapter, i);
+ 		if (rc)
+ 			goto create_err;
+@@ -1893,8 +1920,9 @@ static int ena_create_all_io_rx_queues(struct ena_adapter *adapter)
+ 	struct ena_com_dev *ena_dev = adapter->ena_dev;
+ 	int rc, i;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		rc = ena_create_io_rx_queue(adapter, i);
++		INIT_WORK(&adapter->ena_napi[i].dim.work, ena_dim_work);
+ 		if (rc)
+ 			goto create_err;
+ 	}
+@@ -1902,8 +1930,10 @@ static int ena_create_all_io_rx_queues(struct ena_adapter *adapter)
+ 	return 0;
+ 
+ create_err:
+-	while (i--)
++	while (i--) {
++		cancel_work_sync(&adapter->ena_napi[i].dim.work);
+ 		ena_com_destroy_io_queue(ena_dev, ENA_IO_RXQ_IDX(i));
++	}
+ 
+ 	return rc;
+ }
+@@ -1913,7 +1943,7 @@ static void set_io_rings_size(struct ena_adapter *adapter,
+ {
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		adapter->tx_ring[i].ring_size = new_tx_size;
+ 		adapter->rx_ring[i].ring_size = new_rx_size;
+ 	}
+@@ -2034,6 +2064,13 @@ static int ena_up(struct ena_adapter *adapter)
+ 	if (rc)
+ 		goto err_req_irq;
+ 
++	netif_info(adapter, ifup, adapter->netdev, "creating %d io queues. rx queue size: %d tx queue size. %d LLQ is %s\n",
++		   adapter->num_io_queues,
++		   adapter->requested_rx_ring_size,
++		   adapter->requested_tx_ring_size,
++		   (adapter->ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV) ?
++		   "ENABLED" : "DISABLED");
++
+ 	rc = create_queues_with_size_backoff(adapter);
+ 	if (rc)
+ 		goto err_create_queues_with_backoff;
+@@ -2052,14 +2089,14 @@ static int ena_up(struct ena_adapter *adapter)
+ 	set_bit(ENA_FLAG_DEV_UP, &adapter->flags);
+ 
+ 	/* Enable completion queues interrupt */
+-	for (i = 0; i < adapter->num_queues; i++)
++	for (i = 0; i < adapter->num_io_queues; i++)
+ 		ena_unmask_interrupt(&adapter->tx_ring[i],
+ 				     &adapter->rx_ring[i]);
+ 
+ 	/* schedule napi in case we had pending packets
+ 	 * from the last time we disable napi
+ 	 */
+-	for (i = 0; i < adapter->num_queues; i++)
++	for (i = 0; i < adapter->num_io_queues; i++)
+ 		napi_schedule(&adapter->ena_napi[i].napi);
+ 
+ 	return rc;
+@@ -2134,13 +2171,13 @@ static int ena_open(struct net_device *netdev)
+ 	int rc;
+ 
+ 	/* Notify the stack of the actual queue counts. */
+-	rc = netif_set_real_num_tx_queues(netdev, adapter->num_queues);
++	rc = netif_set_real_num_tx_queues(netdev, adapter->num_io_queues);
+ 	if (rc) {
+ 		netif_err(adapter, ifup, netdev, "Can't set num tx queues\n");
+ 		return rc;
+ 	}
+ 
+-	rc = netif_set_real_num_rx_queues(netdev, adapter->num_queues);
++	rc = netif_set_real_num_rx_queues(netdev, adapter->num_io_queues);
+ 	if (rc) {
+ 		netif_err(adapter, ifup, netdev, "Can't set num rx queues\n");
+ 		return rc;
+@@ -2533,7 +2570,7 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	return NETDEV_TX_OK;
+ }
+ 
+-#ifdef HAVE_NDO_SELECT_QUEUE_ACCEL_FALLBACK_V3
++#if defined HAVE_NDO_SELECT_QUEUE_ACCEL_FALLBACK_V3
+ static u16 ena_select_queue(struct net_device *dev, struct sk_buff *skb,
+ 			    struct net_device *sb_dev)
+ #elif defined HAVE_NDO_SELECT_QUEUE_ACCEL_FALLBACK_V2
+@@ -2626,6 +2663,9 @@ static void ena_config_host_info(struct ena_com_dev *ena_dev, struct pci_dev *pd
+ 		("g"[0] << ENA_ADMIN_HOST_INFO_MODULE_TYPE_SHIFT);
+ 	host_info->num_cpus = num_online_cpus();
+ 
++	host_info->driver_supported_features =
++		ENA_ADMIN_HOST_INFO_INTERRUPT_MODERATION_MASK;
++
+ 	rc = ena_com_set_host_attributes(ena_dev);
+ 	if (rc) {
+ 		if (rc == -EOPNOTSUPP)
+@@ -2709,7 +2749,7 @@ static struct rtnl_link_stats64 *ena_get_stats64(struct net_device *netdev,
+ 		return NULL;
+ #endif
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		u64 bytes, packets;
+ 
+ 		tx_ring = &adapter->tx_ring[i];
+@@ -2769,7 +2809,7 @@ static struct net_device_stats *ena_get_stats(struct net_device *netdev)
+ 	int i;
+ 
+ 	memset(stats, 0, sizeof(*stats));
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		unsigned long bytes, packets;
+ 
+ 		tx_ring = &adapter->tx_ring[i];
+@@ -2890,10 +2930,75 @@ static int ena_device_validate_params(struct ena_adapter *adapter,
+ 	return 0;
+ }
+ 
++static void set_default_llq_configurations(struct ena_llq_configurations *llq_config,
++						  struct ena_admin_feature_llq_desc *llq)
++{
++	llq_config->llq_header_location = ENA_ADMIN_INLINE_HEADER;
++	llq_config->llq_stride_ctrl = ENA_ADMIN_MULTIPLE_DESCS_PER_ENTRY;
++	llq_config->llq_num_decs_before_header = ENA_ADMIN_LLQ_NUM_DESCS_BEFORE_HEADER_2;
++	if ((llq->entry_size_ctrl_supported & ENA_ADMIN_LIST_ENTRY_SIZE_256B) &&
++	    force_large_llq_header) {
++		llq_config->llq_ring_entry_size = ENA_ADMIN_LIST_ENTRY_SIZE_256B;
++		llq_config->llq_ring_entry_size_value = 256;
++	} else {
++		llq_config->llq_ring_entry_size = ENA_ADMIN_LIST_ENTRY_SIZE_128B;
++		llq_config->llq_ring_entry_size_value = 128;
++	}
++}
++
++static int ena_set_queues_placement_policy(struct pci_dev *pdev,
++					   struct ena_com_dev *ena_dev,
++					   struct ena_admin_feature_llq_desc *llq,
++					   struct ena_llq_configurations *llq_default_configurations)
++{
++	bool has_mem_bar;
++	int rc;
++	u32 llq_feature_mask;
++
++	llq_feature_mask = 1 << ENA_ADMIN_LLQ;
++	if (!(ena_dev->supported_features & llq_feature_mask)) {
++		dev_err(&pdev->dev,
++			"LLQ is not supported Fallback to host mode policy.\n");
++		ena_dev->tx_mem_queue_type = ENA_ADMIN_PLACEMENT_POLICY_HOST;
++		return 0;
++	}
++
++	has_mem_bar = pci_select_bars(pdev, IORESOURCE_MEM) & BIT(ENA_MEM_BAR);
++
++	rc = ena_com_config_dev_mode(ena_dev, llq, llq_default_configurations);
++	if (unlikely(rc)) {
++		dev_err(&pdev->dev,
++			"Failed to configure the device mode.  Fallback to host mode policy.\n");
++		ena_dev->tx_mem_queue_type = ENA_ADMIN_PLACEMENT_POLICY_HOST;
++		return 0;
++	}
++
++	/* Nothing to config, exit */
++	if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_HOST)
++		return 0;
++
++	if (!has_mem_bar) {
++		dev_err(&pdev->dev,
++			"ENA device does not expose LLQ bar. Fallback to host mode policy.\n");
++		ena_dev->tx_mem_queue_type = ENA_ADMIN_PLACEMENT_POLICY_HOST;
++		return 0;
++	}
++
++	ena_dev->mem_bar = devm_ioremap_wc(&pdev->dev,
++					   pci_resource_start(pdev, ENA_MEM_BAR),
++					   pci_resource_len(pdev, ENA_MEM_BAR));
++
++	if (!ena_dev->mem_bar)
++		return -EFAULT;
++
++	return 0;
++}
++
+ static int ena_device_init(struct ena_com_dev *ena_dev, struct pci_dev *pdev,
+ 			   struct ena_com_dev_get_features_ctx *get_feat_ctx,
+ 			   bool *wd_state)
+ {
++	struct ena_llq_configurations llq_config;
+ 	struct device *dev = &pdev->dev;
+ 	bool readless_supported;
+ 	u32 aenq_groups;
+@@ -2984,6 +3089,15 @@ static int ena_device_init(struct ena_com_dev *ena_dev, struct pci_dev *pdev,
+ 
+ 	*wd_state = !!(aenq_groups & BIT(ENA_ADMIN_KEEP_ALIVE));
+ 
++	set_default_llq_configurations(&llq_config, &get_feat_ctx->llq);
++
++	rc = ena_set_queues_placement_policy(pdev, ena_dev, &get_feat_ctx->llq,
++					       &llq_config);
++	if (rc) {
++		dev_err(&pdev->dev, "ena device init failed\n");
++		goto err_admin_init;
++	}
++
+ 	return 0;
+ 
+ err_admin_init:
+@@ -2995,14 +3109,13 @@ static int ena_device_init(struct ena_com_dev *ena_dev, struct pci_dev *pdev,
+ 	return rc;
+ }
+ 
+-static int ena_enable_msix_and_set_admin_interrupts(struct ena_adapter *adapter,
+-						    int io_vectors)
++static int ena_enable_msix_and_set_admin_interrupts(struct ena_adapter *adapter)
+ {
+ 	struct ena_com_dev *ena_dev = adapter->ena_dev;
+ 	struct device *dev = &adapter->pdev->dev;
+ 	int rc;
+ 
+-	rc = ena_enable_msix(adapter, io_vectors);
++	rc = ena_enable_msix(adapter);
+ 	if (rc) {
+ 		dev_err(dev, "Can not reserve msix vectors\n");
+ 		return rc;
+@@ -3096,8 +3209,7 @@ static int ena_restore_device(struct ena_adapter *adapter)
+ 		goto err_device_destroy;
+ 	}
+ 
+-	rc = ena_enable_msix_and_set_admin_interrupts(adapter,
+-						      adapter->num_queues);
++	rc = ena_enable_msix_and_set_admin_interrupts(adapter);
+ 	if (rc) {
+ 		dev_err(&pdev->dev, "Enable MSI-X failed\n");
+ 		goto err_device_destroy;
+@@ -3123,6 +3235,7 @@ static int ena_restore_device(struct ena_adapter *adapter)
+ 		netif_carrier_on(adapter->netdev);
+ 
+ 	mod_timer(&adapter->timer_service, round_jiffies(jiffies + HZ));
++	adapter->last_keep_alive_jiffies = jiffies;
+ 	dev_err(&pdev->dev,
+ 		"Device reset completed successfully, Driver info: %s\n",
+ 		version);
+@@ -3269,7 +3382,7 @@ static void check_for_missing_completions(struct ena_adapter *adapter)
+ 
+ 	budget = ENA_MONITORED_TX_QUEUES;
+ 
+-	for (i = adapter->last_monitored_tx_qid; i < adapter->num_queues; i++) {
++	for (i = adapter->last_monitored_tx_qid; i < adapter->num_io_queues; i++) {
+ 		tx_ring = &adapter->tx_ring[i];
+ 		rx_ring = &adapter->rx_ring[i];
+ 
+@@ -3286,7 +3399,7 @@ static void check_for_missing_completions(struct ena_adapter *adapter)
+ 			break;
+ 	}
+ 
+-	adapter->last_monitored_tx_qid = i % adapter->num_queues;
++	adapter->last_monitored_tx_qid = i % adapter->num_io_queues;
+ }
+ 
+ /* trigger napi schedule after 2 consecutive detections */
+@@ -3316,7 +3429,7 @@ static void check_for_empty_rx_ring(struct ena_adapter *adapter)
+ 	if (test_bit(ENA_FLAG_TRIGGER_RESET, &adapter->flags))
+ 		return;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		rx_ring = &adapter->rx_ring[i];
+ 
+ 		refill_required = ena_com_free_q_entries(rx_ring->ena_com_io_sq);
+@@ -3463,16 +3576,16 @@ static void ena_timer_service(unsigned long data)
+ 	mod_timer(&adapter->timer_service, jiffies + HZ);
+ }
+ 
+-static int ena_calc_io_queue_num(struct pci_dev *pdev,
+-				 struct ena_com_dev *ena_dev,
+-				 struct ena_com_dev_get_features_ctx *get_feat_ctx)
++static u32 ena_calc_max_io_queue_num(struct pci_dev *pdev,
++				     struct ena_com_dev *ena_dev,
++				     struct ena_com_dev_get_features_ctx *get_feat_ctx)
+ {
+-	int io_tx_sq_num, io_tx_cq_num, io_rx_num, io_queue_num;
++	u32 io_tx_sq_num, io_tx_cq_num, io_rx_num, max_num_io_queues;
+ 
+ 	if (ena_dev->supported_features & BIT(ENA_ADMIN_MAX_QUEUES_EXT)) {
+ 		struct ena_admin_queue_ext_feature_fields *max_queue_ext =
+ 			&get_feat_ctx->max_queue_ext.max_queue_ext;
+-		io_rx_num = min_t(int, max_queue_ext->max_rx_sq_num,
++		io_rx_num = min_t(u32, max_queue_ext->max_rx_sq_num,
+ 				  max_queue_ext->max_rx_cq_num);
+ 
+ 		io_tx_sq_num = max_queue_ext->max_tx_sq_num;
+@@ -3482,73 +3595,25 @@ static int ena_calc_io_queue_num(struct pci_dev *pdev,
+ 			&get_feat_ctx->max_queues;
+ 		io_tx_sq_num = max_queues->max_sq_num;
+ 		io_tx_cq_num = max_queues->max_cq_num;
+-		io_rx_num = min_t(int, io_tx_sq_num, io_tx_cq_num);
++		io_rx_num = min_t(u32, io_tx_sq_num, io_tx_cq_num);
+ 	}
+ 
+ 	/* In case of LLQ use the llq fields for the tx SQ/CQ */
+ 	if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV)
+ 		io_tx_sq_num = get_feat_ctx->llq.max_llq_num;
+ 
+-	io_queue_num = min_t(int, num_online_cpus(), ENA_MAX_NUM_IO_QUEUES);
+-	io_queue_num = min_t(int, io_queue_num, io_rx_num);
+-	io_queue_num = min_t(int, io_queue_num, io_tx_sq_num);
+-	io_queue_num = min_t(int, io_queue_num, io_tx_cq_num);
++	max_num_io_queues = min_t(u32, num_online_cpus(), ENA_MAX_NUM_IO_QUEUES);
++	max_num_io_queues = min_t(u32, max_num_io_queues, io_rx_num);
++	max_num_io_queues = min_t(u32, max_num_io_queues, io_tx_sq_num);
++	max_num_io_queues = min_t(u32, max_num_io_queues, io_tx_cq_num);
+ 	/* 1 IRQ for for mgmnt and 1 IRQs for each IO direction */
+-	io_queue_num = min_t(int, io_queue_num, pci_msix_vec_count(pdev) - 1);
+-	if (unlikely(!io_queue_num)) {
++	max_num_io_queues = min_t(u32, max_num_io_queues, pci_msix_vec_count(pdev) - 1);
++	if (unlikely(!max_num_io_queues)) {
+ 		dev_err(&pdev->dev, "The device doesn't have io queues\n");
+ 		return -EFAULT;
+ 	}
+ 
+-	return io_queue_num;
+-}
+-
+-static int ena_set_queues_placement_policy(struct pci_dev *pdev,
+-					   struct ena_com_dev *ena_dev,
+-					   struct ena_admin_feature_llq_desc *llq,
+-					   struct ena_llq_configurations *llq_default_configurations)
+-{
+-	bool has_mem_bar;
+-	int rc;
+-	u32 llq_feature_mask;
+-
+-	llq_feature_mask = 1 << ENA_ADMIN_LLQ;
+-	if (!(ena_dev->supported_features & llq_feature_mask)) {
+-		dev_err(&pdev->dev,
+-			"LLQ is not supported Fallback to host mode policy.\n");
+-		ena_dev->tx_mem_queue_type = ENA_ADMIN_PLACEMENT_POLICY_HOST;
+-		return 0;
+-	}
+-
+-	has_mem_bar = pci_select_bars(pdev, IORESOURCE_MEM) & BIT(ENA_MEM_BAR);
+-
+-	rc = ena_com_config_dev_mode(ena_dev, llq, llq_default_configurations);
+-	if (unlikely(rc)) {
+-		dev_err(&pdev->dev,
+-			"Failed to configure the device mode.  Fallback to host mode policy.\n");
+-		ena_dev->tx_mem_queue_type = ENA_ADMIN_PLACEMENT_POLICY_HOST;
+-		return 0;
+-	}
+-
+-	/* Nothing to config, exit */
+-	if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_HOST)
+-		return 0;
+-
+-	if (!has_mem_bar) {
+-		dev_err(&pdev->dev,
+-			"ENA device does not expose LLQ bar. Fallback to host mode policy.\n");
+-		ena_dev->tx_mem_queue_type = ENA_ADMIN_PLACEMENT_POLICY_HOST;
+-		return 0;
+-	}
+-
+-	ena_dev->mem_bar = devm_ioremap_wc(&pdev->dev,
+-					   pci_resource_start(pdev, ENA_MEM_BAR),
+-					   pci_resource_len(pdev, ENA_MEM_BAR));
+-
+-	if (!ena_dev->mem_bar)
+-		return -EFAULT;
+-
+-	return 0;
++	return max_num_io_queues;
+ }
+ 
+ static void ena_set_dev_offloads(struct ena_com_dev_get_features_ctx *feat,
+@@ -3642,7 +3707,7 @@ static int ena_rss_init_default(struct ena_adapter *adapter)
+ 	}
+ 
+ 	for (i = 0; i < ENA_RX_RSS_TABLE_SIZE; i++) {
+-		val = ethtool_rxfh_indir_default(i, adapter->num_queues);
++		val = ethtool_rxfh_indir_default(i, adapter->num_io_queues);
+ 		rc = ena_com_indirect_table_fill_entry(ena_dev, i,
+ 						       ENA_IO_RXQ_IDX(val));
+ 		if (unlikely(rc && (rc != -EOPNOTSUPP))) {
+@@ -3680,23 +3745,8 @@ static void ena_release_bars(struct ena_com_dev *ena_dev, struct pci_dev *pdev)
+ 	pci_release_selected_regions(pdev, release_bars);
+ }
+ 
+-static void set_default_llq_configurations(struct ena_llq_configurations *llq_config,
+-						  struct ena_admin_feature_llq_desc *llq)
+-{
+-	llq_config->llq_header_location = ENA_ADMIN_INLINE_HEADER;
+-	llq_config->llq_stride_ctrl = ENA_ADMIN_MULTIPLE_DESCS_PER_ENTRY;
+-	llq_config->llq_num_decs_before_header = ENA_ADMIN_LLQ_NUM_DESCS_BEFORE_HEADER_2;
+-	if ((llq->entry_size_ctrl_supported & ENA_ADMIN_LIST_ENTRY_SIZE_256B) &&
+-	    force_large_llq_header) {
+-		llq_config->llq_ring_entry_size = ENA_ADMIN_LIST_ENTRY_SIZE_256B;
+-		llq_config->llq_ring_entry_size_value = 256;
+-	} else {
+-		llq_config->llq_ring_entry_size = ENA_ADMIN_LIST_ENTRY_SIZE_128B;
+-		llq_config->llq_ring_entry_size_value = 128;
+-	}
+-}
+ 
+-static int ena_calc_queue_size(struct ena_calc_queue_size_ctx *ctx)
++static int ena_calc_io_queue_size(struct ena_calc_queue_size_ctx *ctx)
+ {
+ 	struct ena_admin_feature_llq_desc *llq = &ctx->get_feat_ctx->llq;
+ 	struct ena_com_dev *ena_dev = ctx->ena_dev;
+@@ -3704,7 +3754,7 @@ static int ena_calc_queue_size(struct ena_calc_queue_size_ctx *ctx)
+ 	u32 max_tx_queue_size;
+ 	u32 max_rx_queue_size;
+ 
+-	if (ctx->ena_dev->supported_features & BIT(ENA_ADMIN_MAX_QUEUES_EXT)) {
++	if (ena_dev->supported_features & BIT(ENA_ADMIN_MAX_QUEUES_EXT)) {
+ 		struct ena_admin_queue_ext_feature_fields *max_queue_ext =
+ 			&ctx->get_feat_ctx->max_queue_ext.max_queue_ext;
+ 		max_rx_queue_size = min_t(u32, max_queue_ext->max_rx_cq_depth,
+@@ -3790,14 +3840,13 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ {
+ 	struct ena_calc_queue_size_ctx calc_queue_ctx = { 0 };
+ 	struct ena_com_dev_get_features_ctx get_feat_ctx;
+-	struct ena_llq_configurations llq_config;
+ 	struct ena_com_dev *ena_dev = NULL;
+ 	struct ena_adapter *adapter;
+-	int io_queue_num, bars, rc;
+ 	struct net_device *netdev;
+ 	static int adapters_found;
+-	char *queue_type_str;
++	u32 max_num_io_queues;
+ 	bool wd_state;
++	int bars, rc;
+ 
+ 	dev_dbg(&pdev->dev, "%s\n", __func__);
+ 
+@@ -3844,39 +3893,25 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		goto err_free_region;
+ 	}
+ 
+-	set_default_llq_configurations(&llq_config, &get_feat_ctx.llq);
+-
+-	rc = ena_set_queues_placement_policy(pdev, ena_dev, &get_feat_ctx.llq,
+-					     &llq_config);
+-	if (rc) {
+-		dev_err(&pdev->dev, "ena device init failed\n");
+-		goto err_device_destroy;
+-	}
+-
+ 	calc_queue_ctx.ena_dev = ena_dev;
+ 	calc_queue_ctx.get_feat_ctx = &get_feat_ctx;
+ 	calc_queue_ctx.pdev = pdev;
+ 
+-	/* initial Tx interrupt delay, Assumes 1 usec granularity.
+-	* Updated during device initialization with the real granularity
+-	*/
++	/* initial TX and RX interrupt delay, Assumes 1 usec granularity.
++	 * Updated during device initialization with the real granularity
++	 */
+ 	ena_dev->intr_moder_tx_interval = ENA_INTR_INITIAL_TX_INTERVAL_USECS;
+-	io_queue_num = ena_calc_io_queue_num(pdev, ena_dev, &get_feat_ctx);
+-	rc = ena_calc_queue_size(&calc_queue_ctx);
+-	if (rc || io_queue_num <= 0) {
++	ena_dev->intr_moder_rx_interval = ENA_INTR_INITIAL_RX_INTERVAL_USECS;
++	ena_dev->intr_delay_resolution = ENA_DEFAULT_INTR_DELAY_RESOLUTION;
++	max_num_io_queues = ena_calc_max_io_queue_num(pdev, ena_dev, &get_feat_ctx);
++	rc = ena_calc_io_queue_size(&calc_queue_ctx);
++	if (rc || !max_num_io_queues) {
+ 		rc = -EFAULT;
+ 		goto err_device_destroy;
+ 	}
+ 
+-	dev_info(&pdev->dev, "creating %d io queues. rx queue size: %d tx queue size. %d LLQ is %s\n",
+-		 io_queue_num,
+-		 calc_queue_ctx.rx_queue_size,
+-		 calc_queue_ctx.tx_queue_size,
+-		 (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV) ?
+-		 "ENABLED" : "DISABLED");
+-
+ 	/* dev zeroed in init_etherdev */
+-	netdev = alloc_etherdev_mq(sizeof(struct ena_adapter), io_queue_num);
++	netdev = alloc_etherdev_mq(sizeof(struct ena_adapter), max_num_io_queues);
+ 	if (!netdev) {
+ 		dev_err(&pdev->dev, "alloc_etherdev_mq failed\n");
+ 		rc = -ENOMEM;
+@@ -3904,7 +3939,9 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	adapter->max_tx_sgl_size = calc_queue_ctx.max_tx_sgl_size;
+ 	adapter->max_rx_sgl_size = calc_queue_ctx.max_rx_sgl_size;
+ 
+-	adapter->num_queues = io_queue_num;
++	adapter->num_io_queues = clamp_val(num_io_queues, ENA_MIN_NUM_IO_QUEUES,
++					   max_num_io_queues);
++	adapter->max_num_io_queues = max_num_io_queues;
+ 	adapter->last_monitored_tx_qid = 0;
+ 
+ 	adapter->rx_copybreak = ENA_DEFAULT_RX_COPYBREAK;
+@@ -3933,7 +3970,7 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	u64_stats_init(&adapter->syncp);
+ 
+-	rc = ena_enable_msix_and_set_admin_interrupts(adapter, io_queue_num);
++	rc = ena_enable_msix_and_set_admin_interrupts(adapter);
+ 	if (rc) {
+ 		dev_err(&pdev->dev,
+ 			"Failed to enable and set the admin interrupts\n");
+@@ -3982,15 +4019,10 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ #endif
+ 	mod_timer(&adapter->timer_service, round_jiffies(jiffies + HZ));
+ 
+-	if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_HOST)
+-		queue_type_str = "Regular";
+-	else
+-		queue_type_str = "Low Latency";
+-
+ 	dev_info(&pdev->dev,
+-		 "%s found at mem %lx, mac addr %pM Queues %d, Placement policy: %s\n",
++		 "%s found at mem %lx, mac addr %pM\n",
+ 		 DEVICE_NAME, (long)pci_resource_start(pdev, 0),
+-		 netdev->dev_addr, io_queue_num, queue_type_str);
++		 netdev->dev_addr);
+ 
+ 	set_bit(ENA_FLAG_DEVICE_RUNNING, &adapter->flags);
+ 
+@@ -4011,7 +4043,6 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	ena_free_mgmnt_irq(adapter);
+ 	ena_disable_msix(adapter);
+ err_worker_destroy:
+-	ena_com_destroy_interrupt_moderation(ena_dev);
+ 	del_timer(&adapter->timer_service);
+ err_netdev_destroy:
+ 	free_netdev(netdev);
+@@ -4074,8 +4105,6 @@ static void ena_remove(struct pci_dev *pdev)
+ 
+ 	pci_disable_device(pdev);
+ 
+-	ena_com_destroy_interrupt_moderation(ena_dev);
+-
+ 	vfree(ena_dev);
+ }
+ 
+diff --git a/drivers/amazon/net/ena/ena_netdev.h b/drivers/amazon/net/ena/ena_netdev.h
+index d36eaefad2eb..f9e2bb6da812 100755
+--- a/drivers/amazon/net/ena/ena_netdev.h
++++ b/drivers/amazon/net/ena/ena_netdev.h
+@@ -33,7 +33,13 @@
+ #ifndef ENA_H
+ #define ENA_H
+ 
++#include "kcompat.h"
+ #include <linux/bitops.h>
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0)
++#include "dim.h"
++#else
++#include <linux/dim.h>
++#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0) */
+ #include <linux/etherdevice.h>
+ #include <linux/inetdevice.h>
+ #include <linux/interrupt.h>
+@@ -41,13 +47,12 @@
+ #include <linux/skbuff.h>
+ #include <linux/u64_stats_sync.h>
+ 
+-#include "kcompat.h"
+ #include "ena_com.h"
+ #include "ena_eth_com.h"
+ 
+ #define DRV_MODULE_VER_MAJOR	2
+ #define DRV_MODULE_VER_MINOR	1
+-#define DRV_MODULE_VER_SUBMINOR 1
++#define DRV_MODULE_VER_SUBMINOR 3
+ 
+ #define DRV_MODULE_NAME		"ena"
+ #ifndef DRV_MODULE_VERSION
+@@ -83,6 +88,8 @@
+ #define ENA_DEFAULT_RING_SIZE	(1024)
+ #define ENA_MIN_RING_SIZE	(256)
+ 
++#define ENA_MIN_NUM_IO_QUEUES	(1)
++
+ #define ENA_TX_WAKEUP_THRESH		(MAX_SKB_FRAGS + 2)
+ #define ENA_DEFAULT_RX_COPYBREAK	(256 - NET_IP_ALIGN)
+ 
+@@ -158,16 +165,17 @@ struct ena_napi {
+ 	atomic_t unmask_interrupt;
+ #endif
+ 	u32 qid;
++	struct dim dim;
+ };
+ 
+ struct ena_calc_queue_size_ctx {
+ 	struct ena_com_dev_get_features_ctx *get_feat_ctx;
+ 	struct ena_com_dev *ena_dev;
+ 	struct pci_dev *pdev;
+-	u16 tx_queue_size;
+-	u16 rx_queue_size;
+-	u16 max_tx_queue_size;
+-	u16 max_rx_queue_size;
++	u32 tx_queue_size;
++	u32 rx_queue_size;
++	u32 max_tx_queue_size;
++	u32 max_rx_queue_size;
+ 	u16 max_tx_sgl_size;
+ 	u16 max_rx_sgl_size;
+ };
+@@ -288,8 +296,7 @@ struct ena_ring {
+ 	struct ena_com_rx_buf_info ena_bufs[ENA_PKT_MAX_BUFS];
+ 	u32  smoothed_interval;
+ 	u32  per_napi_packets;
+-	u32  per_napi_bytes;
+-	enum ena_intr_moder_level moder_tbl_idx;
++	u16 non_empty_napi_events;
+ 	struct u64_stats_sync syncp;
+ 	union {
+ 		struct ena_stats_tx tx_stats;
+@@ -344,7 +351,8 @@ struct ena_adapter {
+ 	u32 rx_copybreak;
+ 	u32 max_mtu;
+ 
+-	int num_queues;
++	u32 num_io_queues;
++	u32 max_num_io_queues;
+ 
+ #if LINUX_VERSION_CODE < KERNEL_VERSION(4, 8, 0)
+ 	struct msix_entry *msix_entries;
+diff --git a/drivers/amazon/net/ena/ena_sysfs.c b/drivers/amazon/net/ena/ena_sysfs.c
+index bea56370af77..26850a7f31fb 100755
+--- a/drivers/amazon/net/ena/ena_sysfs.c
++++ b/drivers/amazon/net/ena/ena_sysfs.c
+@@ -39,12 +39,6 @@
+ #include "ena_netdev.h"
+ #include "ena_sysfs.h"
+ 
+-struct dev_ext_ena_attribute {
+-        struct device_attribute attr;
+-        void *var;
+-};
+-
+-#define to_ext_attr(x) container_of(x, struct dev_ext_ena_attribute, attr)
+ 
+ static ssize_t ena_store_rx_copybreak(struct device *dev,
+ 				      struct device_attribute *attr,
+@@ -65,7 +59,7 @@ static ssize_t ena_store_rx_copybreak(struct device *dev,
+ 	rtnl_lock();
+ 	adapter->rx_copybreak = rx_copybreak;
+ 
+-	for (i = 0; i < adapter->num_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues; i++) {
+ 		rx_ring = &adapter->rx_ring[i];
+ 		rx_ring->rx_copybreak = rx_copybreak;
+ 	}
+@@ -86,159 +80,13 @@ static DEVICE_ATTR(rx_copybreak, S_IRUGO | S_IWUSR, ena_show_rx_copybreak,
+ 		   ena_store_rx_copybreak);
+ 
+ 
+-/* adaptive interrupt moderation */
+-static ssize_t ena_show_intr_moderation(struct device *dev,
+-					struct device_attribute *attr,
+-					char *buf)
+-{
+-	struct ena_intr_moder_entry entry;
+-	struct dev_ext_ena_attribute *ea = to_ext_attr(attr);
+-	enum ena_intr_moder_level level = (enum ena_intr_moder_level)ea->var;
+-	struct ena_adapter *adapter = dev_get_drvdata(dev);
+-	ssize_t rc = 0;
+-
+-	ena_com_get_intr_moderation_entry(adapter->ena_dev, level, &entry);
+-
+-	rc = sprintf(buf, "%u %u %u\n",
+-		     entry.intr_moder_interval,
+-		     entry.pkts_per_interval,
+-		     entry.bytes_per_interval);
+-
+-	return rc;
+-}
+-
+-static ssize_t ena_store_intr_moderation(struct device *dev,
+-					 struct device_attribute *attr,
+-					 const char *buf,
+-					 size_t count)
+-{
+-	struct ena_intr_moder_entry entry;
+-	struct dev_ext_ena_attribute *ea = to_ext_attr(attr);
+-	struct ena_adapter *adapter = dev_get_drvdata(dev);
+-	enum ena_intr_moder_level level = (enum ena_intr_moder_level)ea->var;
+-	int cnt;
+-
+-	cnt = sscanf(buf, "%u %u %u",
+-		     &entry.intr_moder_interval,
+-		     &entry.pkts_per_interval,
+-		     &entry.bytes_per_interval);
+-
+-	if (cnt != 3)
+-		return -EINVAL;
+-
+-	ena_com_init_intr_moderation_entry(adapter->ena_dev, level, &entry);
+-
+-	return count;
+-}
+-
+-static ssize_t ena_store_intr_moderation_restore_default(struct device *dev,
+-							 struct device_attribute *attr,
+-							 const char *buf,
+-							 size_t len)
+-{
+-	struct ena_adapter *adapter = dev_get_drvdata(dev);
+-	struct ena_com_dev *ena_dev = adapter->ena_dev;
+-	unsigned long restore_default;
+-	int err;
+-
+-	err = kstrtoul(buf, 10, &restore_default);
+-	if (err < 0)
+-		return err;
+-
+-	if (ena_com_interrupt_moderation_supported(ena_dev) && restore_default) {
+-		ena_com_config_default_interrupt_moderation_table(ena_dev);
+-		ena_com_enable_adaptive_moderation(ena_dev);
+-	}
+-
+-	return len;
+-}
+-
+-static ssize_t ena_store_enable_adaptive_intr_moderation(struct device *dev,
+-							 struct device_attribute *attr,
+-							 const char *buf,
+-							 size_t len)
+-{
+-	struct ena_adapter *adapter = dev_get_drvdata(dev);
+-	unsigned long enable_moderation;
+-	int err;
+-
+-	err = kstrtoul(buf, 10, &enable_moderation);
+-	if (err < 0)
+-		return err;
+-
+-	if (enable_moderation == 0)
+-		ena_com_disable_adaptive_moderation(adapter->ena_dev);
+-	else
+-		ena_com_enable_adaptive_moderation(adapter->ena_dev);
+-
+-	return len;
+-}
+-
+-static ssize_t ena_show_enable_adaptive_intr_moderation(struct device *dev,
+-							struct device_attribute *attr,
+-							char *buf)
+-{
+-	struct ena_adapter *adapter = dev_get_drvdata(dev);
+-
+-	return sprintf(buf, "%d\n",
+-		       ena_com_get_adaptive_moderation_enabled(adapter->ena_dev));
+-}
+-
+-static DEVICE_ATTR(enable_adaptive_intr_moderation, S_IRUGO | S_IWUSR,
+-		ena_show_enable_adaptive_intr_moderation,
+-		ena_store_enable_adaptive_intr_moderation);
+-
+-static DEVICE_ATTR(intr_moderation_restore_default, S_IWUSR | S_IWGRP,
+-		NULL, ena_store_intr_moderation_restore_default);
+-
+-#define INTR_MODERATION_PREPARE_ATTR(_name, _type) {			\
+-	__ATTR(intr_moderation_##_name, (S_IRUGO | S_IWUSR | S_IWGRP),	\
+-		ena_show_intr_moderation, ena_store_intr_moderation), \
+-		(void *)_type }
+-
+-/* Device attrs - intr moderation */
+-static struct dev_ext_ena_attribute dev_attr_intr_moderation[] = {
+-	INTR_MODERATION_PREPARE_ATTR(lowest, ENA_INTR_MODER_LOWEST),
+-	INTR_MODERATION_PREPARE_ATTR(low, ENA_INTR_MODER_LOW),
+-	INTR_MODERATION_PREPARE_ATTR(mid, ENA_INTR_MODER_MID),
+-	INTR_MODERATION_PREPARE_ATTR(high, ENA_INTR_MODER_HIGH),
+-	INTR_MODERATION_PREPARE_ATTR(highest, ENA_INTR_MODER_HIGHEST),
+-};
+-
+ /******************************************************************************
+  *****************************************************************************/
+ int ena_sysfs_init(struct device *dev)
+ {
+-	int i, rc;
+-	struct ena_adapter *adapter = dev_get_drvdata(dev);
+-
+ 
+ 	if (device_create_file(dev, &dev_attr_rx_copybreak))
+ 		dev_err(dev, "failed to create rx_copybreak sysfs entry");
+-
+-	if (ena_com_interrupt_moderation_supported(adapter->ena_dev)) {
+-		if (device_create_file(dev,
+-				       &dev_attr_intr_moderation_restore_default))
+-			dev_err(dev,
+-				"failed to create intr_moderation_restore_default");
+-
+-		if (device_create_file(dev,
+-				       &dev_attr_enable_adaptive_intr_moderation))
+-			dev_err(dev,
+-				"failed to create adaptive_intr_moderation_enable");
+-
+-		for (i = 0; i < ARRAY_SIZE(dev_attr_intr_moderation); i++) {
+-			rc = sysfs_create_file(&dev->kobj,
+-					       &dev_attr_intr_moderation[i].attr.attr);
+-			if (rc) {
+-				dev_err(dev,
+-					"%s: sysfs_create_file(intr_moderation %d) failed\n",
+-					__func__, i);
+-				return rc;
+-			}
+-		}
+-	}
+-
+ 	return 0;
+ }
+ 
+@@ -246,17 +94,5 @@ int ena_sysfs_init(struct device *dev)
+  *****************************************************************************/
+ void ena_sysfs_terminate(struct device *dev)
+ {
+-	struct ena_adapter *adapter = dev_get_drvdata(dev);
+-	int i;
+-
+ 	device_remove_file(dev, &dev_attr_rx_copybreak);
+-	if (ena_com_interrupt_moderation_supported(adapter->ena_dev)) {
+-		for (i = 0; i < ARRAY_SIZE(dev_attr_intr_moderation); i++)
+-			sysfs_remove_file(&dev->kobj,
+-					  &dev_attr_intr_moderation[i].attr.attr);
+-		device_remove_file(dev,
+-				   &dev_attr_enable_adaptive_intr_moderation);
+-		device_remove_file(dev,
+-				   &dev_attr_intr_moderation_restore_default);
+-	}
+ }
+diff --git a/drivers/amazon/net/ena/kcompat.h b/drivers/amazon/net/ena/kcompat.h
+index ab3b47732b42..1c2918847839 100755
+--- a/drivers/amazon/net/ena/kcompat.h
++++ b/drivers/amazon/net/ena/kcompat.h
+@@ -158,6 +158,9 @@ Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
+ #define SLE_VERSION(a,b,c) KERNEL_VERSION(a,b,c)
+ #endif
+ #ifdef CONFIG_SUSE_KERNEL
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 12, 14)
++#include <linux/suse_version.h>
++#endif
+ #if ( LINUX_VERSION_CODE >= KERNEL_VERSION(3,12,28) )
+ /* SLES12 is at least 3.12.28+ based */
+ #define SLE_VERSION_CODE SLE_VERSION(12,0,0)
+@@ -166,6 +169,9 @@ Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
+ #ifndef SLE_VERSION_CODE
+ #define SLE_VERSION_CODE 0
+ #endif /* SLE_VERSION_CODE */
++#ifndef SUSE_VERSION
++#define SUSE_VERSION 0
++#endif /* SUSE_VERSION */
+ 
+ 
+ /******************************************************************************/
+@@ -358,7 +364,9 @@ static inline u32 ethtool_rxfh_indir_default(u32 index, u32 n_rx_rings)
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,2,0))
+ #define HAVE_NDO_SELECT_QUEUE_ACCEL_FALLBACK_V3
+ #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(4,19,0)) || \
+-      (RHEL_RELEASE_CODE && (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,0)))
++      (RHEL_RELEASE_CODE && (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,0)))|| \
++      (SUSE_VERSION && ((SUSE_VERSION == 15 && SUSE_PATCHLEVEL >= 1) || \
++      (SUSE_VERSION > 15)))
+ #define HAVE_NDO_SELECT_QUEUE_ACCEL_FALLBACK_V2
+ #else
+ 
+@@ -651,4 +659,25 @@ do {									\
+ #define MMIOWB_NOT_DEFINED
+ #endif
+ 
++#ifndef _ULL
++#define _ULL(x) (_AC(x, ULL))
++#endif
++
++#ifndef ULL
++#define ULL(x) (_ULL(x))
++#endif
++
++#ifndef BIT_ULL
++#define BIT_ULL(nr) (ULL(1) << (nr))
++#endif
++
++#ifndef BITS_PER_TYPE
++#define BITS_PER_TYPE(type) (sizeof(type) * BITS_PER_BYTE)
++#endif
++
++#ifndef DIV_ROUND_DOWN_ULL
++#define DIV_ROUND_DOWN_ULL(ll, d) \
++	({ unsigned long long _tmp = (ll); do_div(_tmp, d); _tmp; })
++#endif
++
+ #endif /* _KCOMPAT_H_ */
+diff --git a/drivers/amazon/net/ena/net_dim.c b/drivers/amazon/net/ena/net_dim.c
+new file mode 100644
+index 000000000000..b15f6f0a4441
+--- /dev/null
++++ b/drivers/amazon/net/ena/net_dim.c
+@@ -0,0 +1,250 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/*
++ * Copyright (c) 2018, Mellanox Technologies inc.  All rights reserved.
++ */
++
++#include "dim.h"
++
++#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0)
++
++/*
++ * Net DIM profiles:
++ *        There are different set of profiles for each CQ period mode.
++ *        There are different set of profiles for RX/TX CQs.
++ *        Each profile size must be of NET_DIM_PARAMS_NUM_PROFILES
++ */
++#define NET_DIM_PARAMS_NUM_PROFILES 5
++#define NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE 256
++#define NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE 128
++#define NET_DIM_DEF_PROFILE_CQE 1
++#define NET_DIM_DEF_PROFILE_EQE 1
++
++#define NET_DIM_RX_EQE_PROFILES { \
++	{1,   NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
++	{8,   NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
++	{64,  NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
++	{128, NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
++	{256, NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
++}
++
++#define NET_DIM_RX_CQE_PROFILES { \
++	{2,  256},             \
++	{8,  128},             \
++	{16, 64},              \
++	{32, 64},              \
++	{64, 64}               \
++}
++
++#define NET_DIM_TX_EQE_PROFILES { \
++	{1,   NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
++	{8,   NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
++	{32,  NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
++	{64,  NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
++	{128, NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE}   \
++}
++
++#define NET_DIM_TX_CQE_PROFILES { \
++	{5,  128},  \
++	{8,  64},  \
++	{16, 32},  \
++	{32, 32},  \
++	{64, 32}   \
++}
++
++static const struct dim_cq_moder
++rx_profile[DIM_CQ_PERIOD_NUM_MODES][NET_DIM_PARAMS_NUM_PROFILES] = {
++	NET_DIM_RX_EQE_PROFILES,
++	NET_DIM_RX_CQE_PROFILES,
++};
++
++static const struct dim_cq_moder
++tx_profile[DIM_CQ_PERIOD_NUM_MODES][NET_DIM_PARAMS_NUM_PROFILES] = {
++	NET_DIM_TX_EQE_PROFILES,
++	NET_DIM_TX_CQE_PROFILES,
++};
++
++struct dim_cq_moder
++net_dim_get_rx_moderation(u8 cq_period_mode, int ix)
++{
++	struct dim_cq_moder cq_moder = rx_profile[cq_period_mode][ix];
++
++	cq_moder.cq_period_mode = cq_period_mode;
++	return cq_moder;
++}
++EXPORT_SYMBOL(net_dim_get_rx_moderation);
++
++struct dim_cq_moder
++net_dim_get_def_rx_moderation(u8 cq_period_mode)
++{
++	u8 profile_ix = cq_period_mode == DIM_CQ_PERIOD_MODE_START_FROM_CQE ?
++			NET_DIM_DEF_PROFILE_CQE : NET_DIM_DEF_PROFILE_EQE;
++
++	return net_dim_get_rx_moderation(cq_period_mode, profile_ix);
++}
++EXPORT_SYMBOL(net_dim_get_def_rx_moderation);
++
++struct dim_cq_moder
++net_dim_get_tx_moderation(u8 cq_period_mode, int ix)
++{
++	struct dim_cq_moder cq_moder = tx_profile[cq_period_mode][ix];
++
++	cq_moder.cq_period_mode = cq_period_mode;
++	return cq_moder;
++}
++EXPORT_SYMBOL(net_dim_get_tx_moderation);
++
++struct dim_cq_moder
++net_dim_get_def_tx_moderation(u8 cq_period_mode)
++{
++	u8 profile_ix = cq_period_mode == DIM_CQ_PERIOD_MODE_START_FROM_CQE ?
++			NET_DIM_DEF_PROFILE_CQE : NET_DIM_DEF_PROFILE_EQE;
++
++	return net_dim_get_tx_moderation(cq_period_mode, profile_ix);
++}
++EXPORT_SYMBOL(net_dim_get_def_tx_moderation);
++
++static int net_dim_step(struct dim *dim)
++{
++	if (dim->tired == (NET_DIM_PARAMS_NUM_PROFILES * 2))
++		return DIM_TOO_TIRED;
++
++	switch (dim->tune_state) {
++	case DIM_PARKING_ON_TOP:
++	case DIM_PARKING_TIRED:
++		break;
++	case DIM_GOING_RIGHT:
++		if (dim->profile_ix == (NET_DIM_PARAMS_NUM_PROFILES - 1))
++			return DIM_ON_EDGE;
++		dim->profile_ix++;
++		dim->steps_right++;
++		break;
++	case DIM_GOING_LEFT:
++		if (dim->profile_ix == 0)
++			return DIM_ON_EDGE;
++		dim->profile_ix--;
++		dim->steps_left++;
++		break;
++	}
++
++	dim->tired++;
++	return DIM_STEPPED;
++}
++
++static void net_dim_exit_parking(struct dim *dim)
++{
++	dim->tune_state = dim->profile_ix ? DIM_GOING_LEFT : DIM_GOING_RIGHT;
++	net_dim_step(dim);
++}
++
++static int net_dim_stats_compare(struct dim_stats *curr,
++				 struct dim_stats *prev)
++{
++	if (!prev->bpms)
++		return curr->bpms ? DIM_STATS_BETTER : DIM_STATS_SAME;
++
++	if (IS_SIGNIFICANT_DIFF(curr->bpms, prev->bpms))
++		return (curr->bpms > prev->bpms) ? DIM_STATS_BETTER :
++						   DIM_STATS_WORSE;
++
++	if (!prev->ppms)
++		return curr->ppms ? DIM_STATS_BETTER :
++				    DIM_STATS_SAME;
++
++	if (IS_SIGNIFICANT_DIFF(curr->ppms, prev->ppms))
++		return (curr->ppms > prev->ppms) ? DIM_STATS_BETTER :
++						   DIM_STATS_WORSE;
++
++	if (!prev->epms)
++		return DIM_STATS_SAME;
++
++	if (IS_SIGNIFICANT_DIFF(curr->epms, prev->epms))
++		return (curr->epms < prev->epms) ? DIM_STATS_BETTER :
++						   DIM_STATS_WORSE;
++
++	return DIM_STATS_SAME;
++}
++
++static bool net_dim_decision(struct dim_stats *curr_stats, struct dim *dim)
++{
++	int prev_state = dim->tune_state;
++	int prev_ix = dim->profile_ix;
++	int stats_res;
++	int step_res;
++
++	switch (dim->tune_state) {
++	case DIM_PARKING_ON_TOP:
++		stats_res = net_dim_stats_compare(curr_stats,
++						  &dim->prev_stats);
++		if (stats_res != DIM_STATS_SAME)
++			net_dim_exit_parking(dim);
++		break;
++
++	case DIM_PARKING_TIRED:
++		dim->tired--;
++		if (!dim->tired)
++			net_dim_exit_parking(dim);
++		break;
++
++	case DIM_GOING_RIGHT:
++	case DIM_GOING_LEFT:
++		stats_res = net_dim_stats_compare(curr_stats,
++						  &dim->prev_stats);
++		if (stats_res != DIM_STATS_BETTER)
++			dim_turn(dim);
++
++		if (dim_on_top(dim)) {
++			dim_park_on_top(dim);
++			break;
++		}
++
++		step_res = net_dim_step(dim);
++		switch (step_res) {
++		case DIM_ON_EDGE:
++			dim_park_on_top(dim);
++			break;
++		case DIM_TOO_TIRED:
++			dim_park_tired(dim);
++			break;
++		}
++
++		break;
++	}
++
++	if (prev_state != DIM_PARKING_ON_TOP ||
++	    dim->tune_state != DIM_PARKING_ON_TOP)
++		dim->prev_stats = *curr_stats;
++
++	return dim->profile_ix != prev_ix;
++}
++
++void net_dim(struct dim *dim, struct dim_sample end_sample)
++{
++	struct dim_stats curr_stats;
++	u16 nevents;
++
++	switch (dim->state) {
++	case DIM_MEASURE_IN_PROGRESS:
++		nevents = BIT_GAP(BITS_PER_TYPE(u16),
++				  end_sample.event_ctr,
++				  dim->start_sample.event_ctr);
++		if (nevents < DIM_NEVENTS)
++			break;
++		dim_calc_stats(&dim->start_sample, &end_sample, &curr_stats);
++		if (net_dim_decision(&curr_stats, dim)) {
++			dim->state = DIM_APPLY_NEW_PROFILE;
++			schedule_work(&dim->work);
++			break;
++		}
++		/* fall through */
++	case DIM_START_MEASURE:
++		dim_update_sample(end_sample.event_ctr, end_sample.pkt_ctr,
++				  end_sample.byte_ctr, &dim->start_sample);
++		dim->state = DIM_MEASURE_IN_PROGRESS;
++		break;
++	case DIM_APPLY_NEW_PROFILE:
++		break;
++	}
++}
++EXPORT_SYMBOL(net_dim);
++
++#endif /* LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0) */
+-- 
+2.17.2
+

@@ -1,0 +1,3731 @@
+From d6dc9734d50367f67eeab4813e57af460ee5df95 Mon Sep 17 00:00:00 2001
+From: Frank van der Linden <fllinden@amazon.com>
+Date: Wed, 26 Feb 2020 23:58:49 +0000
+Subject: ena: update to 2.2.3
+
+Update the ena driver to version 2.2.3. Relase notes for versions since
+2.1.3:
+
+**Bug Fixes**
+* Revert VXLAN TX checksum offloading support due to issues with other tunnel
+* Avoid unnecessary constant rearming of interrupt vector when busy-polling.
+
+**Bug Fixes**
+* Fix compilation error in SLES 12 SP5
+
+**Bug Fixes**
+* fix incorrect parameter to ena_indirection_table_get() in kernels in
+  range [3.8, 3.16)
+
+**New Features**
+* Implement XDP support for DROP and TX actions.
+* Add VXLAN TX checksum offloading support.
+* Map rx buffers bidirectionally to support traffic mirroring.
+* Introduce disable meta descriptor caching feature required by llq
+  accelerated mode.
+* Revert extra_properties feature implementation via ethtool priv-flags.
+* Support set_channels() callback in ethtool.
+
+**Bug Fixes**
+* Fix multiple issues with the RSS feature.
+* Fix uses of round_jiffies() in timer_service.
+* Add missing ethtool TX timestamping indication.
+* Fix ENA_REGS_RESET_DRIVER_INVALID_STATE error during hibernation.
+* Fix race condition causing an incorrect wake up of a TX queue when it is
+  down.
+* Fix dim exported symbols conflicts by removing all EXPORT_SYMBOL directives
+  from dim files.
+* Fix first interrupt accounting in XDP by adding first_interrupt field to
+  napi struct.
+* Fix napi handler misbehavior when the napi budget is zero.
+* Add max value check in ena_set_channels() to disalow setting the number
+  of queues to a higher than allowed maximum number.
+* Fix race condition when setting the number of queues immediately after
+  loading the driver, which caused a crash when changing the number of queues
+  to a larger number than currently set.
+* Fix incorrect setting of number of msix vectors according to num_io_queues,
+  causing crash when changing the number of queues to a larger number after
+  driver reset.
+* Fix ena_tx_timeout() signature for kernels >= 5.5
+
+**Minor Changes**
+* Add RX drops and TX drops counters to ethtool -S command.
+* Aggregate accelerated mode features under struct ena_admin_accel_mode_req
+  currently including the new disable meta descriptor caching feature and
+  the existing max tx burst size feature.
+* Add debug prints to failed commands.
+* Make ena rxfh support ETH_RSS_HASH_NO_CHANGE.
+* Change MTU parameter to be unsigned in ena_com_set_dev_mtu().
+* Remove unused ena_restore_ethtool_params() and relevant fields.
+* Use combined channels instead of separate RX/TX channels in ethtool -l/L.
+* Use SHUTDOWN as reset reason when closing interface.
+* Change RSS default function on probe to Toeplitz.
+* Enable setting the RSS hash function only without changing the key in
+  ethtool.
+* Remove superfulous print of number of queues during ena_up().
+* Remove unnecessary parentheses to pass checkpatch.
+* Add unmask interrupts statistics to ethtool.
+* Arrange local variables in ena_com_fill_hash_function() in reverse christma
+  tree order.
+* Separate RSS hash function retrieval and RSS key retreival into 2 different
+  functions.
+
+**New Features**
+* Add support for the RX offset feature - where the device writes data
+  with an offset from the beginning of an RX buffer.
+
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
+---
+ drivers/amazon/net/ena/dim.c             |    5 -
+ drivers/amazon/net/ena/ena_admin_defs.h  |   60 +-
+ drivers/amazon/net/ena/ena_com.c         |  203 ++--
+ drivers/amazon/net/ena/ena_com.h         |   91 +-
+ drivers/amazon/net/ena/ena_common_defs.h |    2 +-
+ drivers/amazon/net/ena/ena_eth_com.c     |   82 +-
+ drivers/amazon/net/ena/ena_eth_com.h     |    1 +
+ drivers/amazon/net/ena/ena_eth_io_defs.h |    4 +-
+ drivers/amazon/net/ena/ena_ethtool.c     |  247 +++--
+ drivers/amazon/net/ena/ena_netdev.c      | 1143 ++++++++++++++++++----
+ drivers/amazon/net/ena/ena_netdev.h      |  102 +-
+ drivers/amazon/net/ena/kcompat.h         |   25 +-
+ drivers/amazon/net/ena/net_dim.c         |    5 -
+ 13 files changed, 1438 insertions(+), 532 deletions(-)
+
+diff --git a/drivers/amazon/net/ena/dim.c b/drivers/amazon/net/ena/dim.c
+index 55b9106512e3..1b200be4b370 100644
+--- a/drivers/amazon/net/ena/dim.c
++++ b/drivers/amazon/net/ena/dim.c
+@@ -19,7 +19,6 @@ bool dim_on_top(struct dim *dim)
+ 		return (dim->steps_right > 1) && (dim->steps_left == 1);
+ 	}
+ }
+-EXPORT_SYMBOL(dim_on_top);
+ 
+ void dim_turn(struct dim *dim)
+ {
+@@ -37,7 +36,6 @@ void dim_turn(struct dim *dim)
+ 		break;
+ 	}
+ }
+-EXPORT_SYMBOL(dim_turn);
+ 
+ void dim_park_on_top(struct dim *dim)
+ {
+@@ -46,7 +44,6 @@ void dim_park_on_top(struct dim *dim)
+ 	dim->tired        = 0;
+ 	dim->tune_state   = DIM_PARKING_ON_TOP;
+ }
+-EXPORT_SYMBOL(dim_park_on_top);
+ 
+ void dim_park_tired(struct dim *dim)
+ {
+@@ -54,7 +51,6 @@ void dim_park_tired(struct dim *dim)
+ 	dim->steps_left   = 0;
+ 	dim->tune_state   = DIM_PARKING_TIRED;
+ }
+-EXPORT_SYMBOL(dim_park_tired);
+ 
+ void dim_calc_stats(struct dim_sample *start, struct dim_sample *end,
+ 		    struct dim_stats *curr_stats)
+@@ -82,6 +78,5 @@ void dim_calc_stats(struct dim_sample *start, struct dim_sample *end,
+ 		curr_stats->cpe_ratio = 0;
+ 
+ }
+-EXPORT_SYMBOL(dim_calc_stats);
+ 
+ #endif /* LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0) */
+diff --git a/drivers/amazon/net/ena/ena_admin_defs.h b/drivers/amazon/net/ena/ena_admin_defs.h
+index f8731ff4567c..c1836183d293 100755
+--- a/drivers/amazon/net/ena/ena_admin_defs.h
++++ b/drivers/amazon/net/ena/ena_admin_defs.h
+@@ -408,6 +408,10 @@ struct ena_admin_basic_stats {
+ 	u32 rx_drops_low;
+ 
+ 	u32 rx_drops_high;
++
++	u32 tx_drops_low;
++
++	u32 tx_drops_high;
+ };
+ 
+ struct ena_admin_acq_get_stats_resp {
+@@ -491,6 +495,36 @@ enum ena_admin_llq_stride_ctrl {
+ 	ENA_ADMIN_MULTIPLE_DESCS_PER_ENTRY          = 2,
+ };
+ 
++enum ena_admin_accel_mode_feat {
++	ENA_ADMIN_DISABLE_META_CACHING              = 0,
++	ENA_ADMIN_LIMIT_TX_BURST                    = 1,
++};
++
++struct ena_admin_accel_mode_get {
++	/* bit field of enum ena_admin_accel_mode_feat */
++	u16 supported_flags;
++
++	/* maximum burst size between two doorbells. The size is in bytes */
++	u16 max_tx_burst_size;
++};
++
++struct ena_admin_accel_mode_set {
++	/* bit field of enum ena_admin_accel_mode_feat */
++	u16 enabled_flags;
++
++	u16 reserved;
++};
++
++struct ena_admin_accel_mode_req {
++	union {
++		u32 raw[2];
++
++		struct ena_admin_accel_mode_get get;
++
++		struct ena_admin_accel_mode_set set;
++	} u;
++};
++
+ struct ena_admin_feature_llq_desc {
+ 	u32 max_llq_num;
+ 
+@@ -536,10 +570,13 @@ struct ena_admin_feature_llq_desc {
+ 	/* the stride control the driver selected to use */
+ 	u16 descriptors_stride_ctrl_enabled;
+ 
+-	/* Maximum size in bytes taken by llq entries in a single tx burst.
+-	 * Set to 0 when there is no such limit.
++	/* reserved */
++	u32 reserved1;
++
++	/* accelerated low latency queues requirment. driver needs to
++	 * support those requirments in order to use accelerated llq
+ 	 */
+-	u32 max_tx_burst_size;
++	struct ena_admin_accel_mode_req accel_mode;
+ };
+ 
+ struct ena_admin_queue_ext_feature_fields {
+@@ -821,9 +858,11 @@ struct ena_admin_host_info {
+ 
+ 	u16 reserved;
+ 
+-	/* 1:0 : reserved
++	/* 0 : mutable_rss_table_size
++	 * 1 : rx_offset
+ 	 * 2 : interrupt_moderation
+-	 * 31:3 : reserved
++	 * 3 : map_rx_buf_bidirectional
++	 * 31:4 : reserved
+ 	 */
+ 	u32 driver_supported_features;
+ };
+@@ -905,7 +944,7 @@ struct ena_admin_queue_ext_feature_desc {
+ 		struct ena_admin_queue_ext_feature_fields max_queue_ext;
+ 
+ 		u32 raw[10];
+-	};
++	} ;
+ };
+ 
+ struct ena_admin_get_feat_resp {
+@@ -1038,6 +1077,10 @@ struct ena_admin_aenq_keep_alive_desc {
+ 	u32 rx_drops_low;
+ 
+ 	u32 rx_drops_high;
++
++	u32 tx_drops_low;
++
++	u32 tx_drops_high;
+ };
+ 
+ struct ena_admin_ena_mmio_req_read_less_resp {
+@@ -1137,8 +1180,13 @@ struct ena_admin_ena_mmio_req_read_less_resp {
+ #define ENA_ADMIN_HOST_INFO_DEVICE_MASK                     GENMASK(7, 3)
+ #define ENA_ADMIN_HOST_INFO_BUS_SHIFT                       8
+ #define ENA_ADMIN_HOST_INFO_BUS_MASK                        GENMASK(15, 8)
++#define ENA_ADMIN_HOST_INFO_MUTABLE_RSS_TABLE_SIZE_MASK     BIT(0)
++#define ENA_ADMIN_HOST_INFO_RX_OFFSET_SHIFT                 1
++#define ENA_ADMIN_HOST_INFO_RX_OFFSET_MASK                  BIT(1)
+ #define ENA_ADMIN_HOST_INFO_INTERRUPT_MODERATION_SHIFT      2
+ #define ENA_ADMIN_HOST_INFO_INTERRUPT_MODERATION_MASK       BIT(2)
++#define ENA_ADMIN_HOST_INFO_MAP_RX_BUF_BIDIRECTIONAL_SHIFT  3
++#define ENA_ADMIN_HOST_INFO_MAP_RX_BUF_BIDIRECTIONAL_MASK   BIT(3)
+ 
+ /* feature_rss_ind_table */
+ #define ENA_ADMIN_FEATURE_RSS_IND_TABLE_ONE_ENTRY_UPDATE_MASK BIT(0)
+diff --git a/drivers/amazon/net/ena/ena_com.c b/drivers/amazon/net/ena/ena_com.c
+index 04747d864462..45278d4baf80 100644
+--- a/drivers/amazon/net/ena/ena_com.c
++++ b/drivers/amazon/net/ena/ena_com.c
+@@ -64,6 +64,15 @@
+ 
+ #define ENA_POLL_MS	5
+ 
++/* Default Microsoft RSS key, used for HRSS. */
++static const u8 rss_hash_key[ENA_HASH_KEY_SIZE] = {
++		0x6d, 0x5a, 0x56, 0xda, 0x25, 0x5b, 0x0e, 0xc2,
++		0x41, 0x67, 0x25, 0x3d, 0x43, 0xa3, 0x8f, 0xb0,
++		0xd0, 0xca, 0x2b, 0xcb, 0xae, 0x7b, 0x30, 0xb4,
++		0x77, 0xcb, 0x2d, 0xa3, 0x80, 0x30, 0xf2, 0x0c,
++		0x6a, 0x42, 0xb7, 0x3b, 0xbe, 0xac, 0x01, 0xfa
++};
++
+ /*****************************************************************************/
+ /*****************************************************************************/
+ /*****************************************************************************/
+@@ -111,7 +120,7 @@ static int ena_com_admin_init_sq(struct ena_com_admin_queue *queue)
+ 	struct ena_com_admin_sq *sq = &queue->sq;
+ 	u16 size = ADMIN_SQ_SIZE(queue->q_depth);
+ 
+-	sq->entries = dma_alloc_coherent(queue->q_dmadev, size, &sq->dma_addr,
++	sq->entries = dma_zalloc_coherent(queue->q_dmadev, size, &sq->dma_addr,
+ 					  GFP_KERNEL);
+ 
+ 	if (!sq->entries) {
+@@ -133,7 +142,7 @@ static int ena_com_admin_init_cq(struct ena_com_admin_queue *queue)
+ 	struct ena_com_admin_cq *cq = &queue->cq;
+ 	u16 size = ADMIN_CQ_SIZE(queue->q_depth);
+ 
+-	cq->entries = dma_alloc_coherent(queue->q_dmadev, size, &cq->dma_addr,
++	cq->entries = dma_zalloc_coherent(queue->q_dmadev, size, &cq->dma_addr,
+ 					  GFP_KERNEL);
+ 
+ 	if (!cq->entries) {
+@@ -156,7 +165,7 @@ static int ena_com_admin_init_aenq(struct ena_com_dev *dev,
+ 
+ 	dev->aenq.q_depth = ENA_ASYNC_QUEUE_DEPTH;
+ 	size = ADMIN_AENQ_SIZE(ENA_ASYNC_QUEUE_DEPTH);
+-	aenq->entries = dma_alloc_coherent(dev->dmadev, size, &aenq->dma_addr,
++	aenq->entries = dma_zalloc_coherent(dev->dmadev, size, &aenq->dma_addr,
+ 					    GFP_KERNEL);
+ 
+ 	if (!aenq->entries) {
+@@ -350,13 +359,13 @@ static int ena_com_init_io_sq(struct ena_com_dev *ena_dev,
+ 		dev_node = dev_to_node(ena_dev->dmadev);
+ 		set_dev_node(ena_dev->dmadev, ctx->numa_node);
+ 		io_sq->desc_addr.virt_addr =
+-			dma_alloc_coherent(ena_dev->dmadev, size,
++			dma_zalloc_coherent(ena_dev->dmadev, size,
+ 					    &io_sq->desc_addr.phys_addr,
+ 					    GFP_KERNEL);
+ 		set_dev_node(ena_dev->dmadev, dev_node);
+ 		if (!io_sq->desc_addr.virt_addr) {
+ 			io_sq->desc_addr.virt_addr =
+-				dma_alloc_coherent(ena_dev->dmadev, size,
++				dma_zalloc_coherent(ena_dev->dmadev, size,
+ 						    &io_sq->desc_addr.phys_addr,
+ 						    GFP_KERNEL);
+ 		}
+@@ -402,6 +411,8 @@ static int ena_com_init_io_sq(struct ena_com_dev *ena_dev,
+ 		       0x0, io_sq->llq_info.desc_list_entry_size);
+ 		io_sq->llq_buf_ctrl.descs_left_in_line =
+ 			io_sq->llq_info.descs_num_before_header;
++		io_sq->disable_meta_caching =
++			io_sq->llq_info.disable_meta_caching;
+ 
+ 		if (io_sq->llq_info.max_entries_in_tx_burst > 0)
+ 			io_sq->entries_in_tx_burst_left =
+@@ -436,12 +447,12 @@ static int ena_com_init_io_cq(struct ena_com_dev *ena_dev,
+ 	prev_node = dev_to_node(ena_dev->dmadev);
+ 	set_dev_node(ena_dev->dmadev, ctx->numa_node);
+ 	io_cq->cdesc_addr.virt_addr =
+-		dma_alloc_coherent(ena_dev->dmadev, size,
++		dma_zalloc_coherent(ena_dev->dmadev, size,
+ 				    &io_cq->cdesc_addr.phys_addr, GFP_KERNEL);
+ 	set_dev_node(ena_dev->dmadev, prev_node);
+ 	if (!io_cq->cdesc_addr.virt_addr) {
+ 		io_cq->cdesc_addr.virt_addr =
+-			dma_alloc_coherent(ena_dev->dmadev, size,
++			dma_zalloc_coherent(ena_dev->dmadev, size,
+ 					    &io_cq->cdesc_addr.phys_addr,
+ 					    GFP_KERNEL);
+ 	}
+@@ -617,6 +628,14 @@ static int ena_com_set_llq(struct ena_com_dev *ena_dev)
+ 	cmd.u.llq.desc_num_before_header_enabled = llq_info->descs_num_before_header;
+ 	cmd.u.llq.descriptors_stride_ctrl_enabled = llq_info->desc_stride_ctrl;
+ 
++	if (llq_info->disable_meta_caching)
++		cmd.u.llq.accel_mode.u.set.enabled_flags |=
++			BIT(ENA_ADMIN_DISABLE_META_CACHING);
++
++	if (llq_info->max_entries_in_tx_burst)
++		cmd.u.llq.accel_mode.u.set.enabled_flags |=
++			BIT(ENA_ADMIN_LIMIT_TX_BURST);
++
+ 	ret = ena_com_execute_admin_command(admin_queue,
+ 					    (struct ena_admin_aq_entry *)&cmd,
+ 					    sizeof(cmd),
+@@ -733,9 +752,15 @@ static int ena_com_config_llq_info(struct ena_com_dev *ena_dev,
+ 		       llq_default_cfg->llq_num_decs_before_header,
+ 		       supported_feat, llq_info->descs_num_before_header);
+ 	}
++	/* Check for accelerated queue supported */
++	llq_info->disable_meta_caching =
++		llq_features->accel_mode.u.get.supported_flags &
++		BIT(ENA_ADMIN_DISABLE_META_CACHING);
+ 
+-	llq_info->max_entries_in_tx_burst =
+-		(u16)(llq_features->max_tx_burst_size /	llq_default_cfg->llq_ring_entry_size_value);
++	if (llq_features->accel_mode.u.get.supported_flags & BIT(ENA_ADMIN_LIMIT_TX_BURST))
++		llq_info->max_entries_in_tx_burst =
++			llq_features->accel_mode.u.get.max_tx_burst_size /
++			llq_default_cfg->llq_ring_entry_size_value;
+ 
+ 	rc = ena_com_set_llq(ena_dev);
+ 	if (rc)
+@@ -1044,12 +1069,30 @@ static int ena_com_get_feature(struct ena_com_dev *ena_dev,
+ 				      feature_ver);
+ }
+ 
++int ena_com_get_current_hash_function(struct ena_com_dev *ena_dev)
++{
++	return ena_dev->rss.hash_func;
++}
++
++static void ena_com_hash_key_fill_default_key(struct ena_com_dev *ena_dev)
++{
++	struct ena_admin_feature_rss_flow_hash_control *hash_key =
++		(ena_dev->rss).hash_key;
++
++	memcpy(hash_key->key, rss_hash_key, sizeof(rss_hash_key));
++	/* The key is stored in the device in u32 array
++	 * as well as the API requires the key to be passed in this
++	 * format. Thus the size of our array should be divided by 4
++	 */
++	hash_key->keys_num = sizeof(rss_hash_key) / sizeof(u32);
++}
++
+ static int ena_com_hash_key_allocate(struct ena_com_dev *ena_dev)
+ {
+ 	struct ena_rss *rss = &ena_dev->rss;
+ 
+ 	rss->hash_key =
+-		dma_alloc_coherent(ena_dev->dmadev, sizeof(*rss->hash_key),
++		dma_zalloc_coherent(ena_dev->dmadev, sizeof(*rss->hash_key),
+ 				    &rss->hash_key_dma_addr, GFP_KERNEL);
+ 
+ 	if (unlikely(!rss->hash_key))
+@@ -1073,7 +1116,7 @@ static int ena_com_hash_ctrl_init(struct ena_com_dev *ena_dev)
+ 	struct ena_rss *rss = &ena_dev->rss;
+ 
+ 	rss->hash_ctrl =
+-		dma_alloc_coherent(ena_dev->dmadev, sizeof(*rss->hash_ctrl),
++		dma_zalloc_coherent(ena_dev->dmadev, sizeof(*rss->hash_ctrl),
+ 				    &rss->hash_ctrl_dma_addr, GFP_KERNEL);
+ 
+ 	if (unlikely(!rss->hash_ctrl))
+@@ -1117,7 +1160,7 @@ static int ena_com_indirect_table_allocate(struct ena_com_dev *ena_dev,
+ 		sizeof(struct ena_admin_rss_ind_table_entry);
+ 
+ 	rss->rss_ind_tbl =
+-		dma_alloc_coherent(ena_dev->dmadev, tbl_size,
++		dma_zalloc_coherent(ena_dev->dmadev, tbl_size,
+ 				    &rss->rss_ind_tbl_dma_addr, GFP_KERNEL);
+ 	if (unlikely(!rss->rss_ind_tbl))
+ 		goto mem_err1;
+@@ -1648,7 +1691,7 @@ int ena_com_mmio_reg_read_request_init(struct ena_com_dev *ena_dev)
+ 
+ 	spin_lock_init(&mmio_read->lock);
+ 	mmio_read->read_resp =
+-		dma_alloc_coherent(ena_dev->dmadev,
++		dma_zalloc_coherent(ena_dev->dmadev,
+ 				    sizeof(*mmio_read->read_resp),
+ 				    &mmio_read->read_resp_dma_addr, GFP_KERNEL);
+ 	if (unlikely(!mmio_read->read_resp))
+@@ -1870,61 +1913,6 @@ int ena_com_get_link_params(struct ena_com_dev *ena_dev,
+ 	return ena_com_get_feature(ena_dev, resp, ENA_ADMIN_LINK_CONFIG, 0);
+ }
+ 
+-int ena_com_extra_properties_strings_init(struct ena_com_dev *ena_dev)
+-{
+-	struct ena_admin_get_feat_resp resp;
+-	struct ena_extra_properties_strings *extra_properties_strings =
+-			&ena_dev->extra_properties_strings;
+-	u32 rc;
+-	extra_properties_strings->size = ENA_ADMIN_EXTRA_PROPERTIES_COUNT *
+-		ENA_ADMIN_EXTRA_PROPERTIES_STRING_LEN;
+-
+-	extra_properties_strings->virt_addr =
+-		dma_alloc_coherent(ena_dev->dmadev,
+-				    extra_properties_strings->size,
+-				    &extra_properties_strings->dma_addr,
+-				    GFP_KERNEL);
+-	if (unlikely(!extra_properties_strings->virt_addr)) {
+-		pr_err("Failed to allocate extra properties strings\n");
+-		return 0;
+-	}
+-
+-	rc = ena_com_get_feature_ex(ena_dev, &resp,
+-				    ENA_ADMIN_EXTRA_PROPERTIES_STRINGS,
+-				    extra_properties_strings->dma_addr,
+-				    extra_properties_strings->size, 0);
+-	if (rc) {
+-		pr_debug("Failed to get extra properties strings\n");
+-		goto err;
+-	}
+-
+-	return resp.u.extra_properties_strings.count;
+-err:
+-	ena_com_delete_extra_properties_strings(ena_dev);
+-	return 0;
+-}
+-
+-void ena_com_delete_extra_properties_strings(struct ena_com_dev *ena_dev)
+-{
+-	struct ena_extra_properties_strings *extra_properties_strings =
+-				&ena_dev->extra_properties_strings;
+-
+-	if (extra_properties_strings->virt_addr) {
+-		dma_free_coherent(ena_dev->dmadev,
+-				  extra_properties_strings->size,
+-				  extra_properties_strings->virt_addr,
+-				  extra_properties_strings->dma_addr);
+-		extra_properties_strings->virt_addr = NULL;
+-	}
+-}
+-
+-int ena_com_get_extra_properties_flags(struct ena_com_dev *ena_dev,
+-				       struct ena_admin_get_feat_resp *resp)
+-{
+-	return ena_com_get_feature(ena_dev, resp,
+-				   ENA_ADMIN_EXTRA_PROPERTIES_FLAGS, 0);
+-}
+-
+ int ena_com_get_dev_attr_feat(struct ena_com_dev *ena_dev,
+ 			      struct ena_com_dev_get_features_ctx *get_feat_ctx)
+ {
+@@ -2047,7 +2035,7 @@ void ena_com_aenq_intr_handler(struct ena_com_dev *dev, void *data)
+ 	struct ena_admin_aenq_entry *aenq_e;
+ 	struct ena_admin_aenq_common_desc *aenq_common;
+ 	struct ena_com_aenq *aenq  = &dev->aenq;
+-	unsigned long long timestamp;
++	u64 timestamp;
+ 	ena_aenq_handler handler_cb;
+ 	u16 masked_head, processed = 0;
+ 	u8 phase;
+@@ -2065,9 +2053,8 @@ void ena_com_aenq_intr_handler(struct ena_com_dev *dev, void *data)
+ 		 */
+ 		dma_rmb();
+ 
+-		timestamp =
+-			(unsigned long long)aenq_common->timestamp_low |
+-			((unsigned long long)aenq_common->timestamp_high << 32);
++		timestamp = (u64)aenq_common->timestamp_low |
++			    ((u64)aenq_common->timestamp_high << 32);
+ 		pr_debug("AENQ! Group[%x] Syndrom[%x] timestamp: [%llus]\n",
+ 			 aenq_common->group, aenq_common->syndrom, timestamp);
+ 
+@@ -2207,7 +2194,7 @@ int ena_com_get_dev_basic_stats(struct ena_com_dev *ena_dev,
+ 	return ret;
+ }
+ 
+-int ena_com_set_dev_mtu(struct ena_com_dev *ena_dev, int mtu)
++int ena_com_set_dev_mtu(struct ena_com_dev *ena_dev, u32 mtu)
+ {
+ 	struct ena_com_admin_queue *admin_queue;
+ 	struct ena_admin_set_feat_cmd cmd;
+@@ -2322,12 +2309,14 @@ int ena_com_fill_hash_function(struct ena_com_dev *ena_dev,
+ 			       enum ena_admin_hash_functions func,
+ 			       const u8 *key, u16 key_len, u32 init_val)
+ {
+-	struct ena_rss *rss = &ena_dev->rss;
++	struct ena_admin_feature_rss_flow_hash_control *hash_key;
+ 	struct ena_admin_get_feat_resp get_resp;
+-	struct ena_admin_feature_rss_flow_hash_control *hash_key =
+-		rss->hash_key;
++	enum ena_admin_hash_functions old_func;
++	struct ena_rss *rss = &ena_dev->rss;
+ 	int rc;
+ 
++	hash_key = rss->hash_key;
++
+ 	/* Make sure size is a mult of DWs */
+ 	if (unlikely(key_len & 0x3))
+ 		return -EINVAL;
+@@ -2339,22 +2328,23 @@ int ena_com_fill_hash_function(struct ena_com_dev *ena_dev,
+ 	if (unlikely(rc))
+ 		return rc;
+ 
+-	if (!((1 << func) & get_resp.u.flow_hash_func.supported_func)) {
++	if (!(BIT(func) & get_resp.u.flow_hash_func.supported_func)) {
+ 		pr_err("Flow hash function %d isn't supported\n", func);
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+ 	switch (func) {
+ 	case ENA_ADMIN_TOEPLITZ:
+-		if (key_len > sizeof(hash_key->key)) {
+-			pr_err("key len (%hu) is bigger than the max supported (%zu)\n",
+-			       key_len, sizeof(hash_key->key));
+-			return -EINVAL;
++		if (key) {
++			if (key_len != sizeof(hash_key->key)) {
++				pr_err("key len (%hu) doesn't equal the supported size (%zu)\n",
++				       key_len, sizeof(hash_key->key));
++				return -EINVAL;
++			}
++			memcpy(hash_key->key, key, key_len);
++			rss->hash_init_val = init_val;
++			hash_key->keys_num = key_len >> 2;
+ 		}
+-
+-		memcpy(hash_key->key, key, key_len);
+-		rss->hash_init_val = init_val;
+-		hash_key->keys_num = key_len >> 2;
+ 		break;
+ 	case ENA_ADMIN_CRC32:
+ 		rss->hash_init_val = init_val;
+@@ -2364,36 +2354,47 @@ int ena_com_fill_hash_function(struct ena_com_dev *ena_dev,
+ 		return -EINVAL;
+ 	}
+ 
++	old_func = rss->hash_func;
+ 	rss->hash_func = func;
+ 	rc = ena_com_set_hash_function(ena_dev);
+ 
+ 	/* Restore the old function */
+ 	if (unlikely(rc))
+-		ena_com_get_hash_function(ena_dev, NULL, NULL);
++		rss->hash_func = old_func;
+ 
+ 	return rc;
+ }
+ 
+ int ena_com_get_hash_function(struct ena_com_dev *ena_dev,
+-			      enum ena_admin_hash_functions *func,
+-			      u8 *key)
++			      enum ena_admin_hash_functions *func)
+ {
+ 	struct ena_rss *rss = &ena_dev->rss;
+ 	struct ena_admin_get_feat_resp get_resp;
+-	struct ena_admin_feature_rss_flow_hash_control *hash_key =
+-		rss->hash_key;
+ 	int rc;
+ 
+-	rc = ena_com_get_feature_ex(ena_dev, &get_resp,
+-				    ENA_ADMIN_RSS_HASH_FUNCTION,
+-				    rss->hash_key_dma_addr,
+-				    sizeof(*rss->hash_key), 0);
+-	if (unlikely(rc))
+-		return rc;
++	if (func) {
++		rc = ena_com_get_feature_ex(ena_dev, &get_resp,
++					    ENA_ADMIN_RSS_HASH_FUNCTION,
++					    rss->hash_key_dma_addr,
++					    sizeof(*rss->hash_key), 0);
++		if (unlikely(rc))
++			return rc;
++
++		/* ffs returns 1 in case the lsb is set */
++		rss->hash_func = ffs(get_resp.u.flow_hash_func.selected_func);
++		if (rss->hash_func)
++			rss->hash_func--;
+ 
+-	rss->hash_func = get_resp.u.flow_hash_func.selected_func;
+-	if (func)
+ 		*func = rss->hash_func;
++	}
++
++	return 0;
++}
++
++int ena_com_get_hash_key(struct ena_com_dev *ena_dev, u8 *key)
++{
++	struct ena_admin_feature_rss_flow_hash_control *hash_key =
++		ena_dev->rss.hash_key;
+ 
+ 	if (key)
+ 		memcpy(key, hash_key->key, (size_t)(hash_key->keys_num) << 2);
+@@ -2675,6 +2676,8 @@ int ena_com_rss_init(struct ena_com_dev *ena_dev, u16 indr_tbl_log_size)
+ 	if (unlikely(rc))
+ 		goto err_hash_key;
+ 
++	ena_com_hash_key_fill_default_key(ena_dev);
++
+ 	rc = ena_com_hash_ctrl_init(ena_dev);
+ 	if (unlikely(rc))
+ 		goto err_hash_ctrl;
+@@ -2704,7 +2707,7 @@ int ena_com_allocate_host_info(struct ena_com_dev *ena_dev)
+ 	struct ena_host_attribute *host_attr = &ena_dev->host_attr;
+ 
+ 	host_attr->host_info =
+-		dma_alloc_coherent(ena_dev->dmadev, SZ_4K,
++		dma_zalloc_coherent(ena_dev->dmadev, SZ_4K,
+ 				    &host_attr->host_info_dma_addr, GFP_KERNEL);
+ 	if (unlikely(!host_attr->host_info))
+ 		return -ENOMEM;
+@@ -2722,7 +2725,7 @@ int ena_com_allocate_debug_area(struct ena_com_dev *ena_dev,
+ 	struct ena_host_attribute *host_attr = &ena_dev->host_attr;
+ 
+ 	host_attr->debug_area_virt_addr =
+-		dma_alloc_coherent(ena_dev->dmadev, debug_area_size,
++		dma_zalloc_coherent(ena_dev->dmadev, debug_area_size,
+ 				    &host_attr->debug_area_dma_addr, GFP_KERNEL);
+ 	if (unlikely(!host_attr->debug_area_virt_addr)) {
+ 		host_attr->debug_area_size = 0;
+diff --git a/drivers/amazon/net/ena/ena_com.h b/drivers/amazon/net/ena/ena_com.h
+index e4e64f2387f5..d753c824a86d 100644
+--- a/drivers/amazon/net/ena/ena_com.h
++++ b/drivers/amazon/net/ena/ena_com.h
+@@ -76,6 +76,7 @@
+ #define ENA_INTR_INITIAL_RX_INTERVAL_USECS		0
+ #define ENA_DEFAULT_INTR_DELAY_RESOLUTION		1
+ 
++#define ENA_HASH_KEY_SIZE                              40
+ 
+ #define ENA_HW_HINTS_NO_TIMEOUT				0xFFFF
+ 
+@@ -125,6 +126,7 @@ struct ena_com_llq_info {
+ 	u16 descs_num_before_header;
+ 	u16 descs_per_entry;
+ 	u16 max_entries_in_tx_burst;
++	bool disable_meta_caching;
+ };
+ 
+ struct ena_com_io_cq {
+@@ -189,6 +191,8 @@ struct ena_com_io_sq {
+ 	enum queue_direction direction;
+ 	enum ena_admin_placement_policy_type mem_queue_type;
+ 
++	bool disable_meta_caching;
++
+ 	u32 msix_vector;
+ 	struct ena_com_tx_meta cached_tx_meta;
+ 	struct ena_com_llq_info llq_info;
+@@ -318,12 +322,6 @@ struct ena_host_attribute {
+ 	dma_addr_t host_info_dma_addr;
+ };
+ 
+-struct ena_extra_properties_strings {
+-	u8 *virt_addr;
+-	dma_addr_t dma_addr;
+-	u32 size;
+-};
+-
+ /* Each ena_dev is a PCI function. */
+ struct ena_com_dev {
+ 	struct ena_com_admin_queue admin_queue;
+@@ -359,7 +357,6 @@ struct ena_com_dev {
+ 	struct ena_intr_moder_entry *intr_moder_tbl;
+ 
+ 	struct ena_com_llq_info llq_info;
+-	struct ena_extra_properties_strings extra_properties_strings;
+ };
+ 
+ struct ena_com_dev_get_features_ctx {
+@@ -405,7 +402,7 @@ struct ena_aenq_handlers {
+  */
+ int ena_com_mmio_reg_read_request_init(struct ena_com_dev *ena_dev);
+ 
+-/* ena_com_set_mmio_read_mode - Enable/disable the mmio reg read mechanism
++/* ena_com_set_mmio_read_mode - Enable/disable the indirect mmio reg read mechanism
+  * @ena_dev: ENA communication layer struct
+  * @readless_supported: readless mode (enable/disable)
+  */
+@@ -539,7 +536,7 @@ void ena_com_set_admin_auto_polling_mode(struct ena_com_dev *ena_dev,
+ /* ena_com_admin_q_comp_intr_handler - admin queue interrupt handler
+  * @ena_dev: ENA communication layer struct
+  *
+- * This method go over the admin completion queue and wake up all the pending
++ * This method goes over the admin completion queue and wakes up all the pending
+  * threads that wait on the commands wait event.
+  *
+  * @note: Should be called after MSI-X interrupt.
+@@ -549,7 +546,7 @@ void ena_com_admin_q_comp_intr_handler(struct ena_com_dev *ena_dev);
+ /* ena_com_aenq_intr_handler - AENQ interrupt handler
+  * @ena_dev: ENA communication layer struct
+  *
+- * This method go over the async event notification queue and call the proper
++ * This method goes over the async event notification queue and calls the proper
+  * aenq handler.
+  */
+ void ena_com_aenq_intr_handler(struct ena_com_dev *dev, void *data);
+@@ -566,14 +563,14 @@ void ena_com_abort_admin_commands(struct ena_com_dev *ena_dev);
+ /* ena_com_wait_for_abort_completion - Wait for admin commands abort.
+  * @ena_dev: ENA communication layer struct
+  *
+- * This method wait until all the outstanding admin commands will be completed.
++ * This method waits until all the outstanding admin commands are completed.
+  */
+ void ena_com_wait_for_abort_completion(struct ena_com_dev *ena_dev);
+ 
+ /* ena_com_validate_version - Validate the device parameters
+  * @ena_dev: ENA communication layer struct
+  *
+- * This method validate the device parameters are the same as the saved
++ * This method verifies the device parameters are the same as the saved
+  * parameters in ena_dev.
+  * This method is useful after device reset, to validate the device mac address
+  * and the device offloads are the same as before the reset.
+@@ -594,31 +591,6 @@ int ena_com_validate_version(struct ena_com_dev *ena_dev);
+ int ena_com_get_link_params(struct ena_com_dev *ena_dev,
+ 			    struct ena_admin_get_feat_resp *resp);
+ 
+-/* ena_com_extra_properties_strings_init - Initialize the extra properties strings buffer.
+- * @ena_dev: ENA communication layer struct
+- *
+- * Initialize the extra properties strings buffer.
+- */
+-int ena_com_extra_properties_strings_init(struct ena_com_dev *ena_dev);
+-
+-/* ena_com_delete_extra_properties_strings - Free the extra properties strings buffer.
+- * @ena_dev: ENA communication layer struct
+- *
+- * Free the allocated extra properties strings buffer.
+- */
+-void ena_com_delete_extra_properties_strings(struct ena_com_dev *ena_dev);
+-
+-/* ena_com_get_extra_properties_flags - Retrieve extra properties flags.
+- * @ena_dev: ENA communication layer struct
+- * @resp: Extra properties flags.
+- *
+- * Retrieve the extra properties flags.
+- *
+- * @return - 0 on Success negative value otherwise.
+- */
+-int ena_com_get_extra_properties_flags(struct ena_com_dev *ena_dev,
+-				       struct ena_admin_get_feat_resp *resp);
+-
+ /* ena_com_get_dma_width - Retrieve physical dma address width the device
+  * supports.
+  * @ena_dev: ENA communication layer struct
+@@ -663,7 +635,7 @@ int ena_com_get_dev_basic_stats(struct ena_com_dev *ena_dev,
+  *
+  * @return: 0 on Success and negative value otherwise.
+  */
+-int ena_com_set_dev_mtu(struct ena_com_dev *ena_dev, int mtu);
++int ena_com_set_dev_mtu(struct ena_com_dev *ena_dev, u32 mtu);
+ 
+ /* ena_com_get_offload_settings - Retrieve the device offloads capabilities
+  * @ena_dev: ENA communication layer struct
+@@ -693,6 +665,14 @@ int ena_com_rss_init(struct ena_com_dev *ena_dev, u16 log_size);
+  */
+ void ena_com_rss_destroy(struct ena_com_dev *ena_dev);
+ 
++/* ena_com_get_current_hash_function - Get RSS hash function
++ * @ena_dev: ENA communication layer struct
++ *
++ * Return the current hash function.
++ * @return: 0 or one of the ena_admin_hash_functions values.
++ */
++int ena_com_get_current_hash_function(struct ena_com_dev *ena_dev);
++
+ /* ena_com_fill_hash_function - Fill RSS hash function
+  * @ena_dev: ENA communication layer struct
+  * @func: The hash function (Toeplitz or crc)
+@@ -724,13 +704,11 @@ int ena_com_fill_hash_function(struct ena_com_dev *ena_dev,
+  */
+ int ena_com_set_hash_function(struct ena_com_dev *ena_dev);
+ 
+-/* ena_com_get_hash_function - Retrieve the hash function and the hash key
+- * from the device.
++/* ena_com_get_hash_function - Retrieve the hash function from the device.
+  * @ena_dev: ENA communication layer struct
+  * @func: hash function
+- * @key: hash key
+  *
+- * Retrieve the hash function and the hash key from the device.
++ * Retrieve the hash function from the device.
+  *
+  * @note: If the caller called ena_com_fill_hash_function but didn't flash
+  * it to the device, the new configuration will be lost.
+@@ -738,9 +716,20 @@ int ena_com_set_hash_function(struct ena_com_dev *ena_dev);
+  * @return: 0 on Success and negative value otherwise.
+  */
+ int ena_com_get_hash_function(struct ena_com_dev *ena_dev,
+-			      enum ena_admin_hash_functions *func,
+-			      u8 *key);
++			      enum ena_admin_hash_functions *func);
+ 
++/* ena_com_get_hash_key - Retrieve the hash key
++ * @ena_dev: ENA communication layer struct
++ * @key: hash key
++ *
++ * Retrieve the hash key.
++ *
++ * @note: If the caller called ena_com_fill_hash_key but didn't flash
++ * it to the device, the new configuration will be lost.
++ *
++ * @return: 0 on Success and negative value otherwise.
++ */
++int ena_com_get_hash_key(struct ena_com_dev *ena_dev, u8 *key);
+ /* ena_com_fill_hash_ctrl - Fill RSS hash control
+  * @ena_dev: ENA communication layer struct.
+  * @proto: The protocol to configure.
+@@ -775,7 +764,7 @@ int ena_com_set_hash_ctrl(struct ena_com_dev *ena_dev);
+  *
+  * Retrieve the hash control from the device.
+  *
+- * @note, If the caller called ena_com_fill_hash_ctrl but didn't flash
++ * @note: If the caller called ena_com_fill_hash_ctrl but didn't flash
+  * it to the device, the new configuration will be lost.
+  *
+  * @return: 0 on Success and negative value otherwise.
+@@ -827,7 +816,7 @@ int ena_com_indirect_table_set(struct ena_com_dev *ena_dev);
+  *
+  * Retrieve the RSS indirection table from the device.
+  *
+- * @note: If the caller called ena_com_indirect_table_fill_entry but didn't flash
++ * @note: If the caller called ena_com_indirect_table_fill_entry but didn't flush
+  * it to the device, the new configuration will be lost.
+  *
+  * @return: 0 on Success and negative value otherwise.
+@@ -853,14 +842,14 @@ int ena_com_allocate_debug_area(struct ena_com_dev *ena_dev,
+ /* ena_com_delete_debug_area - Free the debug area resources.
+  * @ena_dev: ENA communication layer struct
+  *
+- * Free the allocate debug area.
++ * Free the allocated debug area.
+  */
+ void ena_com_delete_debug_area(struct ena_com_dev *ena_dev);
+ 
+ /* ena_com_delete_host_info - Free the host info resources.
+  * @ena_dev: ENA communication layer struct
+  *
+- * Free the allocate host info.
++ * Free the allocated host info.
+  */
+ void ena_com_delete_host_info(struct ena_com_dev *ena_dev);
+ 
+@@ -901,9 +890,9 @@ int ena_com_destroy_io_cq(struct ena_com_dev *ena_dev,
+  * @cmd_completion: command completion return value.
+  * @cmd_comp_size: command completion size.
+ 
+- * Submit an admin command and then wait until the device will return a
++ * Submit an admin command and then wait until the device returns a
+  * completion.
+- * The completion will be copyed into cmd_comp.
++ * The completion will be copied into cmd_comp.
+  *
+  * @return - 0 on success, negative value on failure.
+  */
+@@ -992,7 +981,7 @@ static inline void ena_com_disable_adaptive_moderation(struct ena_com_dev *ena_d
+  * @intr_reg: interrupt register to update.
+  * @rx_delay_interval: Rx interval in usecs
+  * @tx_delay_interval: Tx interval in usecs
+- * @unmask: unask enable/disable
++ * @unmask: unmask enable/disable
+  *
+  * Prepare interrupt update register with the supplied parameters.
+  */
+diff --git a/drivers/amazon/net/ena/ena_common_defs.h b/drivers/amazon/net/ena/ena_common_defs.h
+index 8370b203f907..77ab0c1f8c73 100755
+--- a/drivers/amazon/net/ena/ena_common_defs.h
++++ b/drivers/amazon/net/ena/ena_common_defs.h
+@@ -45,4 +45,4 @@ struct ena_common_mem_addr {
+ 	u16 reserved16;
+ };
+ 
+-#endif /*_ENA_COMMON_H_ */
++#endif /* _ENA_COMMON_H_ */
+diff --git a/drivers/amazon/net/ena/ena_eth_com.c b/drivers/amazon/net/ena/ena_eth_com.c
+index 01fcff765766..b23baf806bfd 100644
+--- a/drivers/amazon/net/ena/ena_eth_com.c
++++ b/drivers/amazon/net/ena/ena_eth_com.c
+@@ -176,8 +176,10 @@ static int ena_com_close_bounce_buffer(struct ena_com_io_sq *io_sq)
+ 	if (pkt_ctrl->idx) {
+ 		rc = ena_com_write_bounce_buffer_to_dev(io_sq,
+ 							pkt_ctrl->curr_bounce_buf);
+-		if (unlikely(rc))
++		if (unlikely(rc)) {
++			pr_err("failed to write bounce buffer to device\n");
+ 			return rc;
++		}
+ 
+ 		pkt_ctrl->curr_bounce_buf =
+ 			ena_com_get_next_bounce_buffer(&io_sq->bounce_buf_ctrl);
+@@ -207,8 +209,10 @@ static int ena_com_sq_update_llq_tail(struct ena_com_io_sq *io_sq)
+ 	if (!pkt_ctrl->descs_left_in_line) {
+ 		rc = ena_com_write_bounce_buffer_to_dev(io_sq,
+ 							pkt_ctrl->curr_bounce_buf);
+-		if (unlikely(rc))
++		if (unlikely(rc)) {
++			pr_err("failed to write bounce buffer to device\n");
+ 			return rc;
++		}
+ 
+ 		pkt_ctrl->curr_bounce_buf =
+ 			ena_com_get_next_bounce_buffer(&io_sq->bounce_buf_ctrl);
+@@ -287,11 +291,10 @@ static u16 ena_com_cdesc_rx_pkt_get(struct ena_com_io_cq *io_cq,
+ 	return count;
+ }
+ 
+-static int ena_com_create_and_store_tx_meta_desc(struct ena_com_io_sq *io_sq,
+-							struct ena_com_tx_ctx *ena_tx_ctx)
++static int ena_com_create_meta(struct ena_com_io_sq *io_sq,
++			       struct ena_com_tx_meta *ena_meta)
+ {
+ 	struct ena_eth_io_tx_meta_desc *meta_desc = NULL;
+-	struct ena_com_tx_meta *ena_meta = &ena_tx_ctx->ena_meta;
+ 
+ 	meta_desc = get_sq_desc(io_sq);
+ 	memset(meta_desc, 0x0, sizeof(struct ena_eth_io_tx_meta_desc));
+@@ -311,12 +314,13 @@ static int ena_com_create_and_store_tx_meta_desc(struct ena_com_io_sq *io_sq,
+ 
+ 	/* Extended meta desc */
+ 	meta_desc->len_ctrl |= ENA_ETH_IO_TX_META_DESC_ETH_META_TYPE_MASK;
+-	meta_desc->len_ctrl |= ENA_ETH_IO_TX_META_DESC_META_STORE_MASK;
+ 	meta_desc->len_ctrl |= (io_sq->phase <<
+ 		ENA_ETH_IO_TX_META_DESC_PHASE_SHIFT) &
+ 		ENA_ETH_IO_TX_META_DESC_PHASE_MASK;
+ 
+ 	meta_desc->len_ctrl |= ENA_ETH_IO_TX_META_DESC_FIRST_MASK;
++	meta_desc->len_ctrl |= ENA_ETH_IO_TX_META_DESC_META_STORE_MASK;
++
+ 	meta_desc->word2 |= ena_meta->l3_hdr_len &
+ 		ENA_ETH_IO_TX_META_DESC_L3_HDR_LEN_MASK;
+ 	meta_desc->word2 |= (ena_meta->l3_hdr_offset <<
+@@ -327,13 +331,34 @@ static int ena_com_create_and_store_tx_meta_desc(struct ena_com_io_sq *io_sq,
+ 		ENA_ETH_IO_TX_META_DESC_L4_HDR_LEN_IN_WORDS_SHIFT) &
+ 		ENA_ETH_IO_TX_META_DESC_L4_HDR_LEN_IN_WORDS_MASK;
+ 
+-	meta_desc->len_ctrl |= ENA_ETH_IO_TX_META_DESC_META_STORE_MASK;
++	return ena_com_sq_update_tail(io_sq);
++}
+ 
+-	/* Cached the meta desc */
+-	memcpy(&io_sq->cached_tx_meta, ena_meta,
+-	       sizeof(struct ena_com_tx_meta));
++static int ena_com_create_and_store_tx_meta_desc(struct ena_com_io_sq *io_sq,
++						 struct ena_com_tx_ctx *ena_tx_ctx,
++						 bool *have_meta)
++{
++	struct ena_com_tx_meta *ena_meta = &ena_tx_ctx->ena_meta;
+ 
+-	return ena_com_sq_update_tail(io_sq);
++	/* When disable meta caching is set, don't bother to save the meta and
++	 * compare it to the stored version, just create the meta
++	 */
++	if (io_sq->disable_meta_caching) {
++		if (unlikely(!ena_tx_ctx->meta_valid))
++			return -EINVAL;
++
++		*have_meta = true;
++		return ena_com_create_meta(io_sq, ena_meta);
++	} else if (ena_com_meta_desc_changed(io_sq, ena_tx_ctx)) {
++		*have_meta = true;
++		/* Cache the meta desc */
++		memcpy(&io_sq->cached_tx_meta, ena_meta,
++		       sizeof(struct ena_com_tx_meta));
++		return ena_com_create_meta(io_sq, ena_meta);
++	} else {
++		*have_meta = false;
++		return 0;
++	}
+ }
+ 
+ static void ena_com_rx_set_flags(struct ena_com_rx_ctx *ena_rx_ctx,
+@@ -397,24 +422,26 @@ int ena_com_prepare_tx(struct ena_com_io_sq *io_sq,
+ 	}
+ 
+ 	if (unlikely(io_sq->mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV &&
+-		     !buffer_to_push))
++		     !buffer_to_push)) {
++		pr_err("push header wasn't provided on LLQ mode\n");
+ 		return -EINVAL;
++	}
+ 
+ 	rc = ena_com_write_header_to_bounce(io_sq, buffer_to_push, header_len);
+ 	if (unlikely(rc))
+ 		return rc;
+ 
+-	have_meta = ena_tx_ctx->meta_valid && ena_com_meta_desc_changed(io_sq,
+-			ena_tx_ctx);
+-	if (have_meta) {
+-		rc = ena_com_create_and_store_tx_meta_desc(io_sq, ena_tx_ctx);
+-		if (unlikely(rc))
+-			return rc;
++	rc = ena_com_create_and_store_tx_meta_desc(io_sq, ena_tx_ctx, &have_meta);
++	if (unlikely(rc)) {
++		pr_err("failed to create and store tx meta desc\n");
++		return rc;
+ 	}
+ 
+ 	/* If the caller doesn't want to send packets */
+ 	if (unlikely(!num_bufs && !header_len)) {
+ 		rc = ena_com_close_bounce_buffer(io_sq);
++		if (rc)
++			pr_err("failed to write buffers to LLQ\n");
+ 		*nb_hw_desc = io_sq->tail - start_tail;
+ 		return rc;
+ 	}
+@@ -474,8 +501,10 @@ int ena_com_prepare_tx(struct ena_com_io_sq *io_sq,
+ 		/* The first desc share the same desc as the header */
+ 		if (likely(i != 0)) {
+ 			rc = ena_com_sq_update_tail(io_sq);
+-			if (unlikely(rc))
++			if (unlikely(rc)) {
++				pr_err("failed to update sq tail\n");
+ 				return rc;
++			}
+ 
+ 			desc = get_sq_desc(io_sq);
+ 			if (unlikely(!desc))
+@@ -504,10 +533,14 @@ int ena_com_prepare_tx(struct ena_com_io_sq *io_sq,
+ 	desc->len_ctrl |= ENA_ETH_IO_TX_DESC_LAST_MASK;
+ 
+ 	rc = ena_com_sq_update_tail(io_sq);
+-	if (unlikely(rc))
++	if (unlikely(rc)) {
++		pr_err("failed to update sq tail of the last descriptor\n");
+ 		return rc;
++	}
+ 
+ 	rc = ena_com_close_bounce_buffer(io_sq);
++	if (rc)
++		pr_err("failed when closing bounce buffer\n");
+ 
+ 	*nb_hw_desc = io_sq->tail - start_tail;
+ 	return rc;
+@@ -521,7 +554,7 @@ int ena_com_rx_pkt(struct ena_com_io_cq *io_cq,
+ 	struct ena_eth_io_rx_cdesc_base *cdesc = NULL;
+ 	u16 cdesc_idx = 0;
+ 	u16 nb_hw_desc;
+-	u16 i;
++	u16 i = 0;
+ 
+ 	WARN(io_cq->direction != ENA_COM_IO_QUEUE_DIRECTION_RX, "wrong Q type");
+ 
+@@ -540,13 +573,14 @@ int ena_com_rx_pkt(struct ena_com_io_cq *io_cq,
+ 		return -ENOSPC;
+ 	}
+ 
+-	for (i = 0; i < nb_hw_desc; i++) {
+-		cdesc = ena_com_rx_cdesc_idx_to_ptr(io_cq, cdesc_idx + i);
++	cdesc = ena_com_rx_cdesc_idx_to_ptr(io_cq, cdesc_idx);
++	ena_rx_ctx->pkt_offset = cdesc->offset;
+ 
++	do {
+ 		ena_buf->len = cdesc->length;
+ 		ena_buf->req_id = cdesc->req_id;
+ 		ena_buf++;
+-	}
++	} while ((++i < nb_hw_desc) && (cdesc = ena_com_rx_cdesc_idx_to_ptr(io_cq, cdesc_idx + i)));
+ 
+ 	/* Update SQ head ptr */
+ 	io_sq->next_to_comp += nb_hw_desc;
+diff --git a/drivers/amazon/net/ena/ena_eth_com.h b/drivers/amazon/net/ena/ena_eth_com.h
+index bda5d4bf2827..8b1afd3b32f2 100644
+--- a/drivers/amazon/net/ena/ena_eth_com.h
++++ b/drivers/amazon/net/ena/ena_eth_com.h
+@@ -73,6 +73,7 @@ struct ena_com_rx_ctx {
+ 	u32 hash;
+ 	u16 descs;
+ 	int max_bufs;
++	u8 pkt_offset;
+ };
+ 
+ int ena_com_prepare_tx(struct ena_com_io_sq *io_sq,
+diff --git a/drivers/amazon/net/ena/ena_eth_io_defs.h b/drivers/amazon/net/ena/ena_eth_io_defs.h
+index d88f748ab9dd..4dd382e15ed3 100755
+--- a/drivers/amazon/net/ena/ena_eth_io_defs.h
++++ b/drivers/amazon/net/ena/ena_eth_io_defs.h
+@@ -264,7 +264,9 @@ struct ena_eth_io_rx_cdesc_base {
+ 
+ 	u16 sub_qid;
+ 
+-	u16 reserved;
++	u8 offset;
++
++	u8 reserved;
+ };
+ 
+ /* 8-word format */
+diff --git a/drivers/amazon/net/ena/ena_ethtool.c b/drivers/amazon/net/ena/ena_ethtool.c
+index 6c17ed0e5f7a..4169142bcc99 100755
+--- a/drivers/amazon/net/ena/ena_ethtool.c
++++ b/drivers/amazon/net/ena/ena_ethtool.c
+@@ -66,6 +66,8 @@ static const struct ena_stats ena_stats_global_strings[] = {
+ 	ENA_STAT_GLOBAL_ENTRY(interface_up),
+ 	ENA_STAT_GLOBAL_ENTRY(interface_down),
+ 	ENA_STAT_GLOBAL_ENTRY(admin_q_pause),
++	ENA_STAT_GLOBAL_ENTRY(rx_drops),
++	ENA_STAT_GLOBAL_ENTRY(tx_drops),
+ };
+ 
+ static const struct ena_stats ena_stats_tx_strings[] = {
+@@ -83,6 +85,7 @@ static const struct ena_stats ena_stats_tx_strings[] = {
+ 	ENA_STAT_TX_ENTRY(bad_req_id),
+ 	ENA_STAT_TX_ENTRY(llq_buffer_copy),
+ 	ENA_STAT_TX_ENTRY(missed_tx),
++	ENA_STAT_TX_ENTRY(unmask_interrupt),
+ };
+ 
+ static const struct ena_stats ena_stats_rx_strings[] = {
+@@ -203,24 +206,15 @@ static void ena_get_ethtool_stats(struct net_device *netdev,
+ 	ena_dev_admin_queue_stats(adapter, &data);
+ }
+ 
+-static int get_stats_sset_count(struct ena_adapter *adapter)
+-{
+-	return  adapter->num_io_queues * (ENA_STATS_ARRAY_TX + ENA_STATS_ARRAY_RX)
+-		+ ENA_STATS_ARRAY_GLOBAL + ENA_STATS_ARRAY_ENA_COM;
+-}
+-
+ int ena_get_sset_count(struct net_device *netdev, int sset)
+ {
+ 	struct ena_adapter *adapter = netdev_priv(netdev);
+ 
+-	switch (sset) {
+-	case ETH_SS_STATS:
+-		return get_stats_sset_count(adapter);
+-	case ETH_SS_PRIV_FLAGS:
+-		return adapter->ena_extra_properties_count;
+-	default:
++	if (sset != ETH_SS_STATS)
+ 		return -EOPNOTSUPP;
+-	}
++
++	return adapter->num_io_queues * (ENA_STATS_ARRAY_TX + ENA_STATS_ARRAY_RX)
++	       + ENA_STATS_ARRAY_GLOBAL + ENA_STATS_ARRAY_ENA_COM;
+ }
+ 
+ static void ena_queue_strings(struct ena_adapter *adapter, u8 **data)
+@@ -262,54 +256,25 @@ static void ena_com_dev_strings(u8 **data)
+ 	}
+ }
+ 
+-static void get_stats_strings(struct ena_adapter *adapter, u8 *data)
++static void ena_get_strings(struct net_device *netdev, u32 sset, u8 *data)
+ {
++	struct ena_adapter *adapter = netdev_priv(netdev);
+ 	const struct ena_stats *ena_stats;
+ 	int i;
+ 
++	if (sset != ETH_SS_STATS)
++		return;
++
+ 	for (i = 0; i < ENA_STATS_ARRAY_GLOBAL; i++) {
+ 		ena_stats = &ena_stats_global_strings[i];
+ 		memcpy(data, ena_stats->name, ETH_GSTRING_LEN);
+ 		data += ETH_GSTRING_LEN;
+ 	}
++
+ 	ena_queue_strings(adapter, &data);
+ 	ena_com_dev_strings(&data);
+ }
+ 
+-static void get_private_flags_strings(struct ena_adapter *adapter, u8 *data)
+-{
+-	struct ena_com_dev *ena_dev = adapter->ena_dev;
+-	u8 *strings = ena_dev->extra_properties_strings.virt_addr;
+-	int i;
+-
+-	if (unlikely(!strings)) {
+-		adapter->ena_extra_properties_count = 0;
+-		return;
+-	}
+-
+-	for (i = 0; i < adapter->ena_extra_properties_count; i++) {
+-		strlcpy(data, strings + ENA_ADMIN_EXTRA_PROPERTIES_STRING_LEN * i,
+-			ETH_GSTRING_LEN);
+-		data += ETH_GSTRING_LEN;
+-	}
+-}
+-
+-static void ena_get_strings(struct net_device *netdev, u32 sset, u8 *data)
+-{
+-	struct ena_adapter *adapter = netdev_priv(netdev);
+-
+-	switch (sset) {
+-	case ETH_SS_STATS:
+-		get_stats_strings(adapter, data);
+-		break;
+-	case ETH_SS_PRIV_FLAGS:
+-		get_private_flags_strings(adapter, data);
+-		break;
+-	default:
+-		break;
+-	}
+-}
+-
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0)
+ static int ena_get_link_ksettings(struct net_device *netdev,
+ 				  struct ethtool_link_ksettings *link_ksettings)
+@@ -444,12 +409,12 @@ static int ena_set_coalesce(struct net_device *net_dev,
+ 
+ 	ena_update_rx_rings_nonadaptive_intr_moderation(adapter);
+ 
+-	if ((coalesce->use_adaptive_rx_coalesce) &&
+-	    (!ena_com_get_adaptive_moderation_enabled(ena_dev)))
++	if (coalesce->use_adaptive_rx_coalesce &&
++	    !ena_com_get_adaptive_moderation_enabled(ena_dev))
+ 		ena_com_enable_adaptive_moderation(ena_dev);
+ 
+-	if ((!coalesce->use_adaptive_rx_coalesce) &&
+-	    (ena_com_get_adaptive_moderation_enabled(ena_dev)))
++	if (!coalesce->use_adaptive_rx_coalesce &&
++	    ena_com_get_adaptive_moderation_enabled(ena_dev))
+ 		ena_com_disable_adaptive_moderation(ena_dev);
+ 
+ 	return 0;
+@@ -478,7 +443,6 @@ static void ena_get_drvinfo(struct net_device *dev,
+ 	strlcpy(info->version, DRV_MODULE_VERSION, sizeof(info->version));
+ 	strlcpy(info->bus_info, pci_name(adapter->pdev),
+ 		sizeof(info->bus_info));
+-	info->n_priv_flags = adapter->ena_extra_properties_count;
+ }
+ 
+ static void ena_get_ringparam(struct net_device *netdev,
+@@ -721,29 +685,82 @@ static u32 ena_get_rxfh_key_size(struct net_device *netdev)
+ }
+ #endif
+ 
++
++static int ena_indirection_table_set(struct ena_adapter *adapter,
++				     const u32 *indir)
++{
++	struct ena_com_dev *ena_dev = adapter->ena_dev;
++	int i, rc;
++
++	for (i = 0; i < ENA_RX_RSS_TABLE_SIZE; i++) {
++		rc = ena_com_indirect_table_fill_entry(ena_dev,
++						       i,
++						       ENA_IO_RXQ_IDX(indir[i]));
++		if (unlikely(rc)) {
++			netif_err(adapter, drv, adapter->netdev,
++				  "Cannot fill indirect table (index is too large)\n");
++			return rc;
++		}
++	}
++
++	rc = ena_com_indirect_table_set(ena_dev);
++	if (rc) {
++		netif_err(adapter, drv, adapter->netdev,
++			  "Cannot set indirect table\n");
++		return rc == -EPERM ? -EOPNOTSUPP : rc;
++	}
++	return rc;
++}
++
++static int ena_indirection_table_get(struct ena_adapter *adapter, u32 *indir)
++{
++	struct ena_com_dev *ena_dev = adapter->ena_dev;
++	int i, rc;
++
++	if (!indir)
++		return 0;
++
++	rc = ena_com_indirect_table_get(ena_dev, indir);
++	if (rc)
++		return rc;
++
++	/* Our internal representation of the indices is: even indices
++	 * for Tx and uneven indices for Rx. We need to convert the Rx
++	 * indices to be consecutive
++	 */
++	for (i = 0; i < ENA_RX_RSS_TABLE_SIZE; i++)
++		indir[i] = ENA_IO_RXQ_IDX_TO_COMBINED_IDX(indir[i]);
++
++	return rc;
++}
++
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
+ static int ena_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
+ 			u8 *hfunc)
+ {
+ 	struct ena_adapter *adapter = netdev_priv(netdev);
+-	enum ena_admin_hash_functions ena_func;
++	enum ena_admin_hash_functions ena_func = ENA_ADMIN_TOEPLITZ;
+ 	u8 func;
+ 	int rc;
+ 
+-	rc = ena_com_indirect_table_get(adapter->ena_dev, indir);
++	rc = ena_indirection_table_get(adapter, indir);
+ 	if (rc)
+ 		return rc;
+ 
+-	rc = ena_com_get_hash_function(adapter->ena_dev, &ena_func, key);
++	rc = ena_com_get_hash_key(adapter->ena_dev, key);
+ 	if (rc)
+ 		return rc;
+ 
++	rc = ena_com_get_hash_function(adapter->ena_dev, &ena_func);
++	if (rc && rc != -EOPNOTSUPP)
++		return rc;
++
+ 	switch (ena_func) {
+ 	case ENA_ADMIN_TOEPLITZ:
+ 		func = ETH_RSS_HASH_TOP;
+ 		break;
+ 	case ENA_ADMIN_CRC32:
+-		func = ETH_RSS_HASH_XOR;
++		func = ETH_RSS_HASH_CRC32;
+ 		break;
+ 	default:
+ 		netif_err(adapter, drv, netdev,
+@@ -754,7 +771,7 @@ static int ena_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key,
+ 	if (hfunc)
+ 		*hfunc = func;
+ 
+-	return rc;
++	return 0;
+ }
+ #elif LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0)
+ static int ena_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key)
+@@ -762,14 +779,13 @@ static int ena_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key)
+ 	struct ena_adapter *adapter = netdev_priv(netdev);
+ 	int rc;
+ 
+-	rc = ena_com_indirect_table_get(adapter->ena_dev, indir);
++	rc = ena_indirection_table_get(adapter, indir);
+ 	if (rc)
+ 		return rc;
+ 
+-	rc = ena_com_get_hash_function(adapter->ena_dev, NULL, key);
+-	if (rc) {
++	rc = ena_com_get_hash_key(adapter->ena_dev, key);
++	if (rc)
+ 		return rc;
+-	}
+ 
+ 	return rc;
+ }
+@@ -778,7 +794,7 @@ static int ena_get_rxfh(struct net_device *netdev, u32 *indir)
+ {
+ 	struct ena_adapter *adapter = netdev_priv(netdev);
+ 
+-	return ena_com_indirect_table_get(adapter->ena_dev, indir);
++	return ena_indirection_table_get(adapter, indir);
+ }
+ #endif /* >= 3.8.0 */
+ 
+@@ -793,35 +809,24 @@ static int ena_set_rxfh(struct net_device *netdev, const u32 *indir,
+ {
+ 	struct ena_adapter *adapter = netdev_priv(netdev);
+ 	struct ena_com_dev *ena_dev = adapter->ena_dev;
+-	enum ena_admin_hash_functions func;
+-	int rc, i;
++	enum ena_admin_hash_functions func = 0;
++	int rc;
+ 
+ 	if (indir) {
+-		for (i = 0; i < ENA_RX_RSS_TABLE_SIZE; i++) {
+-			rc = ena_com_indirect_table_fill_entry(ena_dev,
+-							       i,
+-							       ENA_IO_RXQ_IDX(indir[i]));
+-			if (unlikely(rc)) {
+-				netif_err(adapter, drv, netdev,
+-					  "Cannot fill indirect table (index is too large)\n");
+-				return rc;
+-			}
+-		}
+-
+-		rc = ena_com_indirect_table_set(ena_dev);
+-		if (rc) {
+-			netif_err(adapter, drv, netdev,
+-				  "Cannot set indirect table\n");
+-			return rc == -EPERM ? -EOPNOTSUPP : rc;
+-		}
++		rc = ena_indirection_table_set(adapter, indir);
++		if (rc)
++			return rc;
+ 	}
+ 
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0)
+ 	switch (hfunc) {
++	case ETH_RSS_HASH_NO_CHANGE:
++		func = ena_com_get_current_hash_function(ena_dev);
++		break;
+ 	case ETH_RSS_HASH_TOP:
+ 		func = ENA_ADMIN_TOEPLITZ;
+ 		break;
+-	case ETH_RSS_HASH_XOR:
++	case ETH_RSS_HASH_CRC32:
+ 		func = ENA_ADMIN_CRC32;
+ 		break;
+ 	default:
+@@ -833,7 +838,7 @@ static int ena_set_rxfh(struct net_device *netdev, const u32 *indir,
+ 	func = ENA_ADMIN_TOEPLITZ;
+ #endif
+ 
+-	if (key) {
++	if (key || func) {
+ 		rc = ena_com_fill_hash_function(ena_dev, func, key,
+ 						ENA_HASH_KEY_SIZE,
+ 						0xFFFFFFFF);
+@@ -849,28 +854,12 @@ static int ena_set_rxfh(struct net_device *netdev, const u32 *indir,
+ static int ena_set_rxfh(struct net_device *netdev, const u32 *indir)
+ {
+ 	struct ena_adapter *adapter = netdev_priv(netdev);
+-	struct ena_com_dev *ena_dev = adapter->ena_dev;
+-	int rc, i;
+-
+-	if (!indir)
+-		return 0;
+-	for (i = 0; i < ENA_RX_RSS_TABLE_SIZE; i++) {
+-		rc = ena_com_indirect_table_fill_entry(ena_dev, i,
+-						       ENA_IO_RXQ_IDX(indir[i]));
+-		if (unlikely(rc)) {
+-			netif_err(adapter, drv, netdev,
+-				  "Cannot fill indirect table (index is too large)\n");
+-			return rc;
+-		}
+-	}
++	int rc = 0;
+ 
+-	rc = ena_com_indirect_table_set(ena_dev);
+-	if (unlikely(rc)) {
+-		netif_err(adapter, drv, netdev, "Cannot set indirect table\n");
+-		return rc == -EPERM ? -EOPNOTSUPP : rc;
+-	}
++	if (indir)
++		rc = ena_indirection_table_set(adapter, indir);
+ 
+-	return 0;
++	return rc;
+ }
+ #endif /* Kernel >= 3.8 */
+ #endif /* ETHTOOL_GRXFH */
+@@ -882,14 +871,29 @@ static void ena_get_channels(struct net_device *netdev,
+ {
+ 	struct ena_adapter *adapter = netdev_priv(netdev);
+ 
+-	channels->max_rx = adapter->max_num_io_queues;
+-	channels->max_tx = adapter->max_num_io_queues;
+-	channels->max_other = 0;
+-	channels->max_combined = 0;
+-	channels->rx_count = adapter->num_io_queues;
+-	channels->tx_count = adapter->num_io_queues;
+-	channels->other_count = 0;
+-	channels->combined_count = 0;
++	channels->max_combined = adapter->max_num_io_queues;
++	channels->combined_count = adapter->num_io_queues;
++}
++
++static int ena_set_channels(struct net_device *netdev,
++			    struct ethtool_channels *channels)
++{
++	struct ena_adapter *adapter = netdev_priv(netdev);
++	u32 count = channels->combined_count;
++	/* The check for max value is already done in ethtool */
++#ifdef ENA_XDP_SUPPORT
++	if (count < ENA_MIN_NUM_IO_QUEUES ||
++	    (ena_xdp_present(adapter) &&
++	    !ena_xdp_legal_queue_count(adapter, channels->combined_count)))
++#else
++	if (count < ENA_MIN_NUM_IO_QUEUES)
++#endif /* ENA_XDP_SUPPORT */
++		return -EINVAL;
++	if (count > adapter->max_num_io_queues)
++		return -EINVAL;
++
++
++	return ena_update_queue_count(adapter, count);
+ }
+ #endif /* ETHTOOL_SCHANNELS */
+ 
+@@ -939,20 +943,6 @@ static int ena_set_tunable(struct net_device *netdev,
+ }
+ #endif /* 3.18.0 */
+ 
+-static u32 ena_get_priv_flags(struct net_device *netdev)
+-{
+-	struct ena_adapter *adapter = netdev_priv(netdev);
+-	struct ena_com_dev *ena_dev = adapter->ena_dev;
+-	struct ena_admin_get_feat_resp get_resp;
+-	u32 rc;
+-
+-	rc = ena_com_get_extra_properties_flags(ena_dev, &get_resp);
+-	if (!rc)
+-		return get_resp.u.extra_properties_flags.flags;
+-
+-	return 0;
+-}
+-
+ static const struct ethtool_ops ena_ethtool_ops = {
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0)
+ 	.get_link_ksettings	= ena_get_link_ksettings,
+@@ -988,13 +978,16 @@ static const struct ethtool_ops ena_ethtool_ops = {
+ #ifndef HAVE_RHEL6_ETHTOOL_OPS_EXT_STRUCT
+ #ifdef ETHTOOL_SCHANNELS
+ 	.get_channels		= ena_get_channels,
++	.set_channels		= ena_set_channels,
+ #endif /* ETHTOOL_SCHANNELS */
+ #endif
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 18, 0)
+ 	.get_tunable		= ena_get_tunable,
+ 	.set_tunable		= ena_set_tunable,
+ #endif
+-	.get_priv_flags		= ena_get_priv_flags,
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(3, 5, 0)
++	.get_ts_info            = ethtool_op_get_ts_info,
++#endif
+ };
+ 
+ void ena_set_ethtool_ops(struct net_device *netdev)
+diff --git a/drivers/amazon/net/ena/ena_netdev.c b/drivers/amazon/net/ena/ena_netdev.c
+index 34c799070e85..6d7b628adf0d 100755
+--- a/drivers/amazon/net/ena/ena_netdev.c
++++ b/drivers/amazon/net/ena/ena_netdev.c
+@@ -36,7 +36,6 @@
+ #include <linux/cpu_rmap.h>
+ #endif /* CONFIG_RFS_ACCEL */
+ #include <linux/ethtool.h>
+-#include <linux/if_vlan.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+@@ -51,6 +50,9 @@
+ #include <net/ip.h>
+ 
+ #include "ena_netdev.h"
++#ifdef ENA_XDP_SUPPORT
++#include <linux/bpf_trace.h>
++#endif /* ENA_XDP_SUPPORT */
+ #include "ena_pci_id_tbl.h"
+ #include "ena_sysfs.h"
+ 
+@@ -95,7 +97,43 @@ static void check_for_admin_com_state(struct ena_adapter *adapter);
+ static void ena_destroy_device(struct ena_adapter *adapter, bool graceful);
+ static int ena_restore_device(struct ena_adapter *adapter);
+ 
++#ifdef ENA_XDP_SUPPORT
++static void ena_init_io_rings(struct ena_adapter *adapter,
++			      int first_index, int count);
++static void ena_init_napi_in_range(struct ena_adapter *adapter, int first_index,
++				   int count);
++static void ena_del_napi_in_range(struct ena_adapter *adapter, int first_index,
++				  int count);
++static int ena_setup_tx_resources(struct ena_adapter *adapter, int qid);
++static int ena_setup_tx_resources_in_range(struct ena_adapter *adapter,
++					   int first_index,
++					   int count);
++static int ena_create_io_tx_queue(struct ena_adapter *adapter, int qid);
++static void ena_free_tx_resources(struct ena_adapter *adapter, int qid);
++static int ena_clean_xdp_irq(struct ena_ring *xdp_ring, u32 budget);
++static void ena_destroy_all_tx_queues(struct ena_adapter *adapter);
++static void ena_free_all_io_tx_resources(struct ena_adapter *adapter);
++static void ena_napi_disable_in_range(struct ena_adapter *adapter,
++				      int first_index, int count);
++static void ena_napi_enable_in_range(struct ena_adapter *adapter,
++				     int first_index, int count);
++static int ena_up(struct ena_adapter *adapter);
++static void ena_down(struct ena_adapter *adapter);
++static void ena_unmask_interrupt(struct ena_ring *tx_ring,
++				 struct ena_ring *rx_ring);
++static void ena_update_ring_numa_node(struct ena_ring *tx_ring,
++				      struct ena_ring *rx_ring);
++static void ena_unmap_tx_buff(struct ena_ring *tx_ring,
++			      struct ena_tx_buffer *tx_info);
++static int ena_create_io_tx_queues_in_range(struct ena_adapter *adapter,
++					    int first_index, int count);
++#endif /* ENA_XDP_SUPPORT */
++
++#ifdef HAVE_NDO_TX_TIMEOUT_STUCK_QUEUE_PARAMETER
++static void ena_tx_timeout(struct net_device *dev, unsigned int txqueue)
++#else
+ static void ena_tx_timeout(struct net_device *dev)
++#endif
+ {
+ 	struct ena_adapter *adapter = netdev_priv(dev);
+ 
+@@ -148,6 +186,449 @@ static int ena_change_mtu(struct net_device *dev, int new_mtu)
+ 	return ret;
+ }
+ 
++static int ena_xmit_common(struct net_device *dev,
++			   struct ena_ring *ring,
++			   struct ena_tx_buffer *tx_info,
++			   struct ena_com_tx_ctx *ena_tx_ctx,
++			   u16 next_to_use,
++			   u32 bytes)
++{
++	struct ena_adapter *adapter = netdev_priv(dev);
++	int rc, nb_hw_desc;
++
++	if (unlikely(ena_com_is_doorbell_needed(ring->ena_com_io_sq,
++						ena_tx_ctx))) {
++		netif_dbg(adapter, tx_queued, dev,
++			  "llq tx max burst size of queue %d achieved, writing doorbell to send burst\n",
++			  ring->qid);
++		ena_com_write_sq_doorbell(ring->ena_com_io_sq);
++	}
++
++	/* prepare the packet's descriptors to dma engine */
++	rc = ena_com_prepare_tx(ring->ena_com_io_sq, ena_tx_ctx,
++				&nb_hw_desc);
++
++	/* In case there isn't enough space in the queue for the packet,
++	 * we simply drop it. All other failure reasons of
++	 * ena_com_prepare_tx() are fatal and therefore require a device reset.
++	 */
++	if (unlikely(rc)) {
++		netif_err(adapter, tx_queued, dev,
++			  "failed to prepare tx bufs\n");
++		u64_stats_update_begin(&ring->syncp);
++		ring->tx_stats.prepare_ctx_err++;
++		u64_stats_update_end(&ring->syncp);
++		if (rc != -ENOMEM) {
++			adapter->reset_reason =
++				ENA_REGS_RESET_DRIVER_INVALID_STATE;
++			set_bit(ENA_FLAG_TRIGGER_RESET, &adapter->flags);
++		}
++		return rc;
++	}
++
++	u64_stats_update_begin(&ring->syncp);
++	ring->tx_stats.cnt++;
++	ring->tx_stats.bytes += bytes;
++	u64_stats_update_end(&ring->syncp);
++
++	tx_info->tx_descs = nb_hw_desc;
++	tx_info->last_jiffies = jiffies;
++	tx_info->print_once = 0;
++
++	ring->next_to_use = ENA_TX_RING_IDX_NEXT(next_to_use,
++						 ring->ring_size);
++	return 0;
++}
++
++#ifdef ENA_XDP_SUPPORT
++/* This is the XDP napi callback. XDP queues use a separate napi callback
++ * than Rx/Tx queues.
++ */
++static int ena_xdp_io_poll(struct napi_struct *napi, int budget)
++{
++	struct ena_napi *ena_napi = container_of(napi, struct ena_napi, napi);
++	u32 xdp_work_done, xdp_budget;
++	struct ena_ring *xdp_ring;
++	int napi_comp_call = 0;
++	int ret;
++
++	xdp_ring = ena_napi->xdp_ring;
++	xdp_ring->first_interrupt = ena_napi->first_interrupt;
++
++	xdp_budget = budget;
++
++	if (!test_bit(ENA_FLAG_DEV_UP, &xdp_ring->adapter->flags) ||
++	    test_bit(ENA_FLAG_TRIGGER_RESET, &xdp_ring->adapter->flags)) {
++		napi_complete_done(napi, 0);
++		return 0;
++	}
++
++	xdp_work_done = ena_clean_xdp_irq(xdp_ring, xdp_budget);
++
++	/* If the device is about to reset or down, avoid unmask
++	 * the interrupt and return 0 so NAPI won't reschedule
++	 */
++	if (unlikely(!test_bit(ENA_FLAG_DEV_UP, &xdp_ring->adapter->flags))) {
++		napi_complete_done(napi, 0);
++		ret = 0;
++	} else if (xdp_budget > xdp_work_done) {
++		napi_comp_call = 1;
++		if (napi_complete_done(napi, xdp_work_done))
++			ena_unmask_interrupt(xdp_ring, NULL);
++		ena_update_ring_numa_node(xdp_ring, NULL);
++		ret = xdp_work_done;
++	} else {
++		ret = xdp_budget;
++	}
++
++	u64_stats_update_begin(&xdp_ring->syncp);
++	xdp_ring->tx_stats.napi_comp += napi_comp_call;
++	xdp_ring->tx_stats.tx_poll++;
++	u64_stats_update_end(&xdp_ring->syncp);
++
++	return ret;
++}
++
++static int ena_xdp_tx_map_buff(struct ena_ring *xdp_ring,
++			       struct ena_tx_buffer *tx_info,
++			       struct xdp_buff *xdp,
++			       void **push_hdr,
++			       u32 *push_len)
++{
++	struct ena_adapter *adapter = xdp_ring->adapter;
++	struct ena_com_buf *ena_buf;
++	dma_addr_t dma = 0;
++	u32 size;
++
++	tx_info->xdpf = xdp_convert_buff_to_frame(xdp);
++	size = tx_info->xdpf->len;
++	ena_buf = tx_info->bufs;
++
++	/* llq push buffer */
++	*push_len = min_t(u32, size, xdp_ring->tx_max_header_size);
++	*push_hdr = tx_info->xdpf->data;
++
++	if (size - *push_len > 0) {
++		dma = dma_map_single(xdp_ring->dev,
++				     *push_hdr + *push_len,
++				     size - *push_len,
++				     DMA_TO_DEVICE);
++		if (unlikely(dma_mapping_error(xdp_ring->dev, dma)))
++			goto error_report_dma_error;
++
++		tx_info->map_linear_data = 1;
++		tx_info->num_of_bufs = 1;
++	}
++
++	ena_buf->paddr = dma;
++	ena_buf->len = size;
++
++	return 0;
++
++error_report_dma_error:
++	u64_stats_update_begin(&xdp_ring->syncp);
++	xdp_ring->tx_stats.dma_mapping_err++;
++	u64_stats_update_end(&xdp_ring->syncp);
++	netdev_warn(adapter->netdev, "failed to map xdp buff\n");
++
++	xdp_return_frame_rx_napi(tx_info->xdpf);
++	tx_info->xdpf = NULL;
++	tx_info->num_of_bufs = 0;
++
++	return -EINVAL;
++}
++
++static int ena_xdp_xmit_buff(struct net_device *dev,
++			     struct xdp_buff *xdp,
++			     int qid,
++			     struct ena_rx_buffer *rx_info)
++{
++	struct ena_adapter *adapter = netdev_priv(dev);
++	struct ena_com_tx_ctx ena_tx_ctx = {0};
++	struct ena_tx_buffer *tx_info;
++	struct ena_ring *xdp_ring;
++	struct ena_ring *rx_ring;
++	u16 next_to_use, req_id;
++	int rc;
++	void *push_hdr;
++	u32 push_len;
++
++	xdp_ring = &adapter->tx_ring[qid];
++	next_to_use = xdp_ring->next_to_use;
++	req_id = xdp_ring->free_ids[next_to_use];
++	tx_info = &xdp_ring->tx_buffer_info[req_id];
++	tx_info->num_of_bufs = 0;
++	rx_ring = &xdp_ring->adapter->rx_ring[qid -
++		  xdp_ring->adapter->xdp_first_ring];
++	page_ref_inc(rx_info->page);
++	tx_info->xdp_rx_page = rx_info->page;
++
++	rc = ena_xdp_tx_map_buff(xdp_ring, tx_info, xdp, &push_hdr, &push_len);
++	if (unlikely(rc))
++		goto error_drop_packet;
++
++	ena_tx_ctx.ena_bufs = tx_info->bufs;
++	ena_tx_ctx.push_header = push_hdr;
++	ena_tx_ctx.num_bufs = tx_info->num_of_bufs;
++	ena_tx_ctx.req_id = req_id;
++	ena_tx_ctx.header_len = push_len;
++
++	rc = ena_xmit_common(dev,
++			     xdp_ring,
++			     tx_info,
++			     &ena_tx_ctx,
++			     next_to_use,
++			     xdp->data_end - xdp->data);
++	if (rc)
++		goto error_unmap_dma;
++	/* trigger the dma engine. ena_com_write_sq_doorbell()
++	 * has a mb
++	 */
++	ena_com_write_sq_doorbell(xdp_ring->ena_com_io_sq);
++	u64_stats_update_begin(&xdp_ring->syncp);
++	xdp_ring->tx_stats.doorbells++;
++	u64_stats_update_end(&xdp_ring->syncp);
++
++	return NETDEV_TX_OK;
++
++error_unmap_dma:
++	ena_unmap_tx_buff(xdp_ring, tx_info);
++	tx_info->xdpf = NULL;
++error_drop_packet:
++
++	return NETDEV_TX_OK;
++}
++
++static int ena_xdp_execute(struct ena_ring *rx_ring,
++			   struct xdp_buff *xdp,
++			   struct ena_rx_buffer *rx_info)
++{
++	struct bpf_prog *xdp_prog;
++	u32 verdict = XDP_PASS;
++
++	rcu_read_lock();
++	xdp_prog = READ_ONCE(rx_ring->xdp_bpf_prog);
++
++	if (!xdp_prog)
++		goto out;
++
++	verdict = bpf_prog_run_xdp(xdp_prog, xdp);
++
++	if (verdict == XDP_TX)
++		ena_xdp_xmit_buff(rx_ring->netdev,
++				  xdp,
++				  rx_ring->qid + rx_ring->adapter->num_io_queues,
++				  rx_info);
++	else if (unlikely(verdict == XDP_ABORTED))
++		trace_xdp_exception(rx_ring->netdev, xdp_prog, verdict);
++	else if (unlikely(verdict > XDP_TX))
++		bpf_warn_invalid_xdp_action(verdict);
++out:
++	rcu_read_unlock();
++	return verdict;
++}
++
++static void ena_init_all_xdp_queues(struct ena_adapter *adapter)
++{
++	adapter->xdp_first_ring = adapter->num_io_queues;
++	adapter->xdp_num_queues = adapter->num_io_queues;
++
++	ena_init_io_rings(adapter,
++			  adapter->xdp_first_ring,
++			  adapter->xdp_num_queues);
++}
++
++static int ena_setup_and_create_all_xdp_queues(struct ena_adapter *adapter)
++{
++	int rc = 0;
++
++	rc = ena_setup_tx_resources_in_range(adapter, adapter->xdp_first_ring,
++					     adapter->xdp_num_queues);
++	if (rc)
++		goto setup_err;
++
++	rc = ena_create_io_tx_queues_in_range(adapter,
++					      adapter->xdp_first_ring,
++					      adapter->xdp_num_queues);
++	if (rc)
++		goto create_err;
++
++	return 0;
++
++create_err:
++	ena_free_all_io_tx_resources(adapter);
++setup_err:
++	return rc;
++}
++
++/* Provides a way for both kernel and bpf-prog to know
++ * more about the RX-queue a given XDP frame arrived on.
++ */
++static int ena_xdp_register_rxq_info(struct ena_ring *rx_ring)
++{
++	int rc;
++
++	rc = xdp_rxq_info_reg(&rx_ring->xdp_rxq, rx_ring->netdev, rx_ring->qid);
++
++	if (rc) {
++		netif_err(rx_ring->adapter, ifup, rx_ring->netdev,
++			  "Failed to register xdp rx queue info. RX queue num %d rc: %d\n",
++			  rx_ring->qid, rc);
++		goto err;
++	}
++
++	rc = xdp_rxq_info_reg_mem_model(&rx_ring->xdp_rxq, MEM_TYPE_PAGE_SHARED,
++					NULL);
++
++	if (rc) {
++		netif_err(rx_ring->adapter, ifup, rx_ring->netdev,
++			  "Failed to register xdp rx queue info memory model. RX queue num %d rc: %d\n",
++			  rx_ring->qid, rc);
++		xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
++	}
++
++err:
++	return rc;
++}
++
++static void ena_xdp_unregister_rxq_info(struct ena_ring *rx_ring)
++{
++	xdp_rxq_info_unreg_mem_model(&rx_ring->xdp_rxq);
++	xdp_rxq_info_unreg(&rx_ring->xdp_rxq);
++}
++
++void ena_xdp_exchange_program_rx_in_range(struct ena_adapter *adapter,
++					  struct bpf_prog *prog,
++					  int first,
++					  int count)
++{
++	struct ena_ring *rx_ring;
++	int i = 0;
++
++	for (i = first; i < count; i++) {
++		rx_ring = &adapter->rx_ring[i];
++		xchg(&rx_ring->xdp_bpf_prog, prog);
++		if (prog) {
++			ena_xdp_register_rxq_info(rx_ring);
++			rx_ring->rx_headroom = XDP_PACKET_HEADROOM;
++		} else {
++			ena_xdp_unregister_rxq_info(rx_ring);
++			rx_ring->rx_headroom = 0;
++		}
++	}
++}
++
++void ena_xdp_exchange_program(struct ena_adapter *adapter,
++			      struct bpf_prog *prog)
++{
++	struct bpf_prog *old_bpf_prog = xchg(&adapter->xdp_bpf_prog, prog);
++
++	ena_xdp_exchange_program_rx_in_range(adapter,
++					     prog,
++					     0,
++					     adapter->num_io_queues);
++
++	if (old_bpf_prog)
++		bpf_prog_put(old_bpf_prog);
++}
++
++static int ena_destroy_and_free_all_xdp_queues(struct ena_adapter *adapter)
++{
++	bool was_up;
++	int rc;
++
++	was_up = test_bit(ENA_FLAG_DEV_UP, &adapter->flags);
++
++	if (was_up)
++		ena_down(adapter);
++
++	adapter->xdp_first_ring = 0;
++	adapter->xdp_num_queues = 0;
++	ena_xdp_exchange_program(adapter, NULL);
++	if (was_up) {
++		rc = ena_up(adapter);
++		if (rc)
++			return rc;
++	}
++	return 0;
++}
++
++static int ena_xdp_set(struct net_device *netdev, struct netdev_bpf *bpf)
++{
++	struct ena_adapter *adapter = netdev_priv(netdev);
++	struct bpf_prog *prog = bpf->prog;
++	struct bpf_prog *old_bpf_prog;
++	int rc, prev_mtu;
++	bool is_up;
++
++	is_up = test_bit(ENA_FLAG_DEV_UP, &adapter->flags);
++	rc = ena_xdp_allowed(adapter);
++	if (rc == ENA_XDP_ALLOWED) {
++		old_bpf_prog = adapter->xdp_bpf_prog;
++		if (prog) {
++			if (!is_up) {
++				ena_init_all_xdp_queues(adapter);
++			} else if (!old_bpf_prog) {
++				ena_down(adapter);
++				ena_init_all_xdp_queues(adapter);
++			}
++			ena_xdp_exchange_program(adapter, prog);
++
++			if (is_up && !old_bpf_prog) {
++				rc = ena_up(adapter);
++				if (rc)
++					return rc;
++			}
++		} else if (old_bpf_prog) {
++			rc = ena_destroy_and_free_all_xdp_queues(adapter);
++			if (rc)
++				return rc;
++		}
++
++		prev_mtu = netdev->max_mtu;
++		netdev->max_mtu = prog ? ENA_XDP_MAX_MTU : adapter->max_mtu;
++
++		if (!old_bpf_prog)
++			netif_info(adapter, drv, adapter->netdev,
++				   "xdp program set, changing the max_mtu from %d to %d",
++				   prev_mtu, netdev->max_mtu);
++
++	} else if (rc == ENA_XDP_CURRENT_MTU_TOO_LARGE) {
++		netif_err(adapter, drv, adapter->netdev,
++			  "Failed to set xdp program, the current MTU (%d) is larger than the maximum allowed MTU (%lu) while xdp is on",
++			  netdev->mtu, ENA_XDP_MAX_MTU);
++		NL_SET_ERR_MSG_MOD(bpf->extack,
++				   "Failed to set xdp program, the current MTU is larger than the maximum allowed MTU. Check the dmesg for more info");
++		return -EINVAL;
++	} else if (rc == ENA_XDP_NO_ENOUGH_QUEUES) {
++		netif_err(adapter, drv, adapter->netdev,
++			  "Failed to set xdp program, the Rx/Tx channel count should be at most half of the maximum allowed channel count. The current queue count (%d), the maximal queue count (%d)\n",
++			  adapter->num_io_queues, adapter->max_num_io_queues);
++		NL_SET_ERR_MSG_MOD(bpf->extack,
++				   "Failed to set xdp program, there is no enough space for allocating XDP queues, Check the dmesg for more info");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++/* This is the main xdp callback, it's used by the kernel to set/unset the xdp
++ * program as well as to query the current xdp program id.
++ */
++static int ena_xdp(struct net_device *netdev, struct netdev_bpf *bpf)
++{
++	struct ena_adapter *adapter = netdev_priv(netdev);
++
++	switch (bpf->command) {
++	case XDP_SETUP_PROG:
++		return ena_xdp_set(netdev, bpf);
++	default:
++		return -EINVAL;
++	}
++	return 0;
++}
++#endif /* ENA_XDP_SUPPORT */
++
+ static int ena_init_rx_cpu_rmap(struct ena_adapter *adapter)
+ {
+ #ifdef CONFIG_RFS_ACCEL
+@@ -193,7 +678,8 @@ static void ena_init_io_rings_common(struct ena_adapter *adapter,
+ 	u64_stats_init(&ring->syncp);
+ }
+ 
+-static void ena_init_io_rings(struct ena_adapter *adapter)
++static void ena_init_io_rings(struct ena_adapter *adapter,
++			      int first_index, int count)
+ {
+ 	struct ena_com_dev *ena_dev;
+ 	struct ena_ring *txr, *rxr;
+@@ -201,13 +687,12 @@ static void ena_init_io_rings(struct ena_adapter *adapter)
+ 
+ 	ena_dev = adapter->ena_dev;
+ 
+-	for (i = 0; i < adapter->num_io_queues; i++) {
++	for (i = first_index; i < first_index + count; i++) {
+ 		txr = &adapter->tx_ring[i];
+ 		rxr = &adapter->rx_ring[i];
+ 
+-		/* TX/RX common ring state */
++		/* TX common ring state */
+ 		ena_init_io_rings_common(adapter, txr, i);
+-		ena_init_io_rings_common(adapter, rxr, i);
+ 
+ 		/* TX specific ring state */
+ 		txr->ring_size = adapter->requested_tx_ring_size;
+@@ -217,14 +702,20 @@ static void ena_init_io_rings(struct ena_adapter *adapter)
+ 		txr->smoothed_interval =
+ 			ena_com_get_nonadaptive_moderation_interval_tx(ena_dev);
+ 
+-		/* RX specific ring state */
+-		rxr->ring_size = adapter->requested_rx_ring_size;
+-		rxr->rx_copybreak = adapter->rx_copybreak;
+-		rxr->sgl_size = adapter->max_rx_sgl_size;
+-		rxr->smoothed_interval =
+-			ena_com_get_nonadaptive_moderation_interval_rx(ena_dev);
+-		rxr->empty_rx_queue = 0;
+-		adapter->ena_napi[i].dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
++		/* Don't init RX queues for xdp queues */
++		if (!ENA_IS_XDP_INDEX(adapter, i)) {
++			/* RX common ring state */
++			ena_init_io_rings_common(adapter, rxr, i);
++
++			/* RX specific ring state */
++			rxr->ring_size = adapter->requested_rx_ring_size;
++			rxr->rx_copybreak = adapter->rx_copybreak;
++			rxr->sgl_size = adapter->max_rx_sgl_size;
++			rxr->smoothed_interval =
++				ena_com_get_nonadaptive_moderation_interval_rx(ena_dev);
++			rxr->empty_rx_queue = 0;
++			adapter->ena_napi[i].dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_EQE;
++		}
+ 	}
+ }
+ 
+@@ -314,16 +805,13 @@ static void ena_free_tx_resources(struct ena_adapter *adapter, int qid)
+ 	tx_ring->push_buf_intermediate_buf = NULL;
+ }
+ 
+-/* ena_setup_all_tx_resources - allocate I/O Tx queues resources for All queues
+- * @adapter: private structure
+- *
+- * Return 0 on success, negative on failure
+- */
+-static int ena_setup_all_tx_resources(struct ena_adapter *adapter)
++static int ena_setup_tx_resources_in_range(struct ena_adapter *adapter,
++					   int first_index,
++					   int count)
+ {
+ 	int i, rc = 0;
+ 
+-	for (i = 0; i < adapter->num_io_queues; i++) {
++	for (i = first_index; i < first_index + count; i++) {
+ 		rc = ena_setup_tx_resources(adapter, i);
+ 		if (rc)
+ 			goto err_setup_tx;
+@@ -337,11 +825,20 @@ static int ena_setup_all_tx_resources(struct ena_adapter *adapter)
+ 		  "Tx queue %d: allocation failed\n", i);
+ 
+ 	/* rewind the index freeing the rings as we go */
+-	while (i--)
++	while (first_index < i--)
+ 		ena_free_tx_resources(adapter, i);
+ 	return rc;
+ }
+ 
++static void ena_free_all_io_tx_resources_in_range(struct ena_adapter *adapter,
++						  int first_index, int count)
++{
++	int i;
++
++	for (i = first_index; i < first_index + count; i++)
++		ena_free_tx_resources(adapter, i);
++}
++
+ /* ena_free_all_io_tx_resources - Free I/O Tx Resources for All Queues
+  * @adapter: board private structure
+  *
+@@ -349,10 +846,10 @@ static int ena_setup_all_tx_resources(struct ena_adapter *adapter)
+  */
+ static void ena_free_all_io_tx_resources(struct ena_adapter *adapter)
+ {
+-	int i;
+-
+-	for (i = 0; i < adapter->num_io_queues; i++)
+-		ena_free_tx_resources(adapter, i);
++	ena_free_all_io_tx_resources_in_range(adapter,
++					      0,
++					      adapter->xdp_num_queues +
++					      adapter->num_io_queues);
+ }
+ 
+ static int validate_rx_req_id(struct ena_ring *rx_ring, u16 req_id)
+@@ -512,7 +1009,7 @@ static int ena_alloc_rx_page(struct ena_ring *rx_ring,
+ 	}
+ 
+ 	dma = dma_map_page(rx_ring->dev, page, 0, ENA_PAGE_SIZE,
+-			   DMA_FROM_DEVICE);
++			   DMA_BIDIRECTIONAL);
+ 	if (unlikely(dma_mapping_error(rx_ring->dev, dma))) {
+ 		u64_stats_update_begin(&rx_ring->syncp);
+ 		rx_ring->rx_stats.dma_mapping_err++;
+@@ -527,8 +1024,8 @@ static int ena_alloc_rx_page(struct ena_ring *rx_ring,
+ 	rx_info->page = page;
+ 	rx_info->page_offset = 0;
+ 	ena_buf = &rx_info->ena_buf;
+-	ena_buf->paddr = dma;
+-	ena_buf->len = ENA_PAGE_SIZE;
++	ena_buf->paddr = dma + rx_ring->rx_headroom;
++	ena_buf->len = ENA_PAGE_SIZE - rx_ring->rx_headroom;
+ 
+ 	return 0;
+ }
+@@ -545,7 +1042,8 @@ static void ena_free_rx_page(struct ena_ring *rx_ring,
+ 		return;
+ 	}
+ 
+-	dma_unmap_page(rx_ring->dev, ena_buf->paddr, ENA_PAGE_SIZE,
++	dma_unmap_page(rx_ring->dev, ena_buf->paddr - rx_ring->rx_headroom,
++		       ENA_PAGE_SIZE,
+ 		       DMA_FROM_DEVICE);
+ 
+ 	__free_page(page);
+@@ -652,8 +1150,8 @@ static void ena_free_all_rx_bufs(struct ena_adapter *adapter)
+ 		ena_free_rx_bufs(adapter, i);
+ }
+ 
+-static void ena_unmap_tx_skb(struct ena_ring *tx_ring,
+-				    struct ena_tx_buffer *tx_info)
++static void ena_unmap_tx_buff(struct ena_ring *tx_ring,
++			      struct ena_tx_buffer *tx_info)
+ {
+ 	struct ena_com_buf *ena_buf;
+ 	u32 cnt;
+@@ -707,7 +1205,7 @@ static void ena_free_tx_bufs(struct ena_ring *tx_ring)
+ 				   tx_ring->qid, i);
+ 		}
+ 
+-		ena_unmap_tx_skb(tx_ring, tx_info);
++		ena_unmap_tx_buff(tx_ring, tx_info);
+ 
+ 		dev_kfree_skb_any(tx_info->skb);
+ 	}
+@@ -720,7 +1218,7 @@ static void ena_free_all_tx_bufs(struct ena_adapter *adapter)
+ 	struct ena_ring *tx_ring;
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_io_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues + adapter->xdp_num_queues; i++) {
+ 		tx_ring = &adapter->tx_ring[i];
+ 		ena_free_tx_bufs(tx_ring);
+ 	}
+@@ -731,7 +1229,7 @@ static void ena_destroy_all_tx_queues(struct ena_adapter *adapter)
+ 	u16 ena_qid;
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_io_queues; i++) {
++	for (i = 0; i < adapter->num_io_queues + adapter->xdp_num_queues; i++) {
+ 		ena_qid = ENA_IO_TXQ_IDX(i);
+ 		ena_com_destroy_io_queue(adapter->ena_dev, ena_qid);
+ 	}
+@@ -755,6 +1253,32 @@ static void ena_destroy_all_io_queues(struct ena_adapter *adapter)
+ 	ena_destroy_all_rx_queues(adapter);
+ }
+ 
++static int handle_invalid_req_id(struct ena_ring *ring, u16 req_id,
++				 struct ena_tx_buffer *tx_info, bool is_xdp)
++{
++	if (tx_info)
++		netif_err(ring->adapter,
++			  tx_done,
++			  ring->netdev,
++			  "tx_info doesn't have valid %s",
++			   is_xdp ? "xdp frame" : "skb");
++	else
++		netif_err(ring->adapter,
++			  tx_done,
++			  ring->netdev,
++			  "Invalid req_id: %hu\n",
++			  req_id);
++
++	u64_stats_update_begin(&ring->syncp);
++	ring->tx_stats.bad_req_id++;
++	u64_stats_update_end(&ring->syncp);
++
++	/* Trigger device reset */
++	ring->adapter->reset_reason = ENA_REGS_RESET_INV_TX_REQ_ID;
++	set_bit(ENA_FLAG_TRIGGER_RESET, &ring->adapter->flags);
++	return -EFAULT;
++}
++
+ static int validate_tx_req_id(struct ena_ring *tx_ring, u16 req_id)
+ {
+ 	struct ena_tx_buffer *tx_info = NULL;
+@@ -765,22 +1289,23 @@ static int validate_tx_req_id(struct ena_ring *tx_ring, u16 req_id)
+ 			return 0;
+ 	}
+ 
+-	if (tx_info)
+-		netif_err(tx_ring->adapter, tx_done, tx_ring->netdev,
+-			  "tx_info doesn't have valid skb\n");
+-	else
+-		netif_err(tx_ring->adapter, tx_done, tx_ring->netdev,
+-			  "Invalid req_id: %hu\n", req_id);
++	return handle_invalid_req_id(tx_ring, req_id, tx_info, false);
++}
+ 
+-	u64_stats_update_begin(&tx_ring->syncp);
+-	tx_ring->tx_stats.bad_req_id++;
+-	u64_stats_update_end(&tx_ring->syncp);
++#ifdef ENA_XDP_SUPPORT
++static int validate_xdp_req_id(struct ena_ring *xdp_ring, u16 req_id)
++{
++	struct ena_tx_buffer *tx_info = NULL;
+ 
+-	/* Trigger device reset */
+-	tx_ring->adapter->reset_reason = ENA_REGS_RESET_INV_TX_REQ_ID;
+-	set_bit(ENA_FLAG_TRIGGER_RESET, &tx_ring->adapter->flags);
+-	return -EFAULT;
++	if (likely(req_id < xdp_ring->ring_size)) {
++		tx_info = &xdp_ring->tx_buffer_info[req_id];
++		if (likely(tx_info->xdpf))
++			return 0;
++	}
++
++	return handle_invalid_req_id(xdp_ring, req_id, tx_info, true);
+ }
++#endif /* ENA_XDP_SUPPORT */
+ 
+ static int ena_clean_tx_irq(struct ena_ring *tx_ring, u32 budget)
+ {
+@@ -818,7 +1343,7 @@ static int ena_clean_tx_irq(struct ena_ring *tx_ring, u32 budget)
+ 		tx_info->skb = NULL;
+ 		tx_info->last_jiffies = 0;
+ 
+-		ena_unmap_tx_skb(tx_ring, tx_info);
++		ena_unmap_tx_buff(tx_ring, tx_info);
+ 
+ 		netif_dbg(tx_ring->adapter, tx_done, tx_ring->netdev,
+ 			  "tx_poll: q %d skb %p completed\n", tx_ring->qid,
+@@ -854,7 +1379,8 @@ static int ena_clean_tx_irq(struct ena_ring *tx_ring, u32 budget)
+ 		above_thresh =
+ 			ena_com_sq_have_enough_space(tx_ring->ena_com_io_sq,
+ 						     ENA_TX_WAKEUP_THRESH);
+-		if (netif_tx_queue_stopped(txq) && above_thresh) {
++		if (netif_tx_queue_stopped(txq) && above_thresh &&
++		    test_bit(ENA_FLAG_DEV_UP, &tx_ring->adapter->flags)) {
+ 			netif_tx_wake_queue(txq);
+ 			u64_stats_update_begin(&tx_ring->syncp);
+ 			tx_ring->tx_stats.queue_wakeup++;
+@@ -891,7 +1417,8 @@ static struct sk_buff *ena_alloc_skb(struct ena_ring *rx_ring, bool frags)
+ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
+ 				  struct ena_com_rx_buf_info *ena_bufs,
+ 				  u32 descs,
+-				  u16 *next_to_clean)
++				  u16 *next_to_clean,
++				  u8 offset)
+ {
+ 	struct sk_buff *skb;
+ 	struct ena_rx_buffer *rx_info;
+@@ -906,11 +1433,11 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
+ 	req_id = ena_bufs[buf].req_id;
+ 
+ 	rc = validate_rx_req_id(rx_ring, req_id);
+-	if (unlikely(rc < 0)) {
++	if (unlikely(rc < 0))
+ 		return NULL;
+-	}
+ 
+ 	rx_info = &rx_ring->rx_buffer_info[req_id];
++	rx_info->page_offset = offset;
+ 
+ 	if (unlikely(!rx_info->page)) {
+ 		netif_err(rx_ring->adapter, rx_err, rx_ring->netdev,
+@@ -974,6 +1501,8 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
+ 
+ 		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, rx_info->page,
+ 				rx_info->page_offset, len, ENA_PAGE_SIZE);
++		/* The offset is non zero only for the first buffer */
++		rx_info->page_offset = 0;
+ 
+ 		netif_dbg(rx_ring->adapter, rx_status, rx_ring->netdev,
+ 			  "rx skb updated. len %d. data_len %d\n",
+@@ -1110,6 +1639,35 @@ static void ena_set_rx_hash(struct ena_ring *rx_ring,
+ #endif /* NETIF_F_RXHASH */
+ }
+ 
++#ifdef ENA_XDP_SUPPORT
++int ena_xdp_handle_buff(struct ena_ring *rx_ring, struct xdp_buff *xdp)
++{
++	struct ena_rx_buffer *rx_info;
++	int ret;
++
++	rx_info = &rx_ring->rx_buffer_info[rx_ring->ena_bufs[0].req_id];
++	xdp->data = page_address(rx_info->page) +
++		rx_info->page_offset + rx_ring->rx_headroom;
++	xdp_set_data_meta_invalid(xdp);
++	xdp->data_hard_start = page_address(rx_info->page);
++	xdp->data_end = xdp->data + rx_ring->ena_bufs[0].len;
++	/* If for some reason we received a bigger packet than
++	 * we expect, then we simply drop it
++	 */
++	if (unlikely(rx_ring->ena_bufs[0].len > ENA_XDP_MAX_MTU))
++		return XDP_DROP;
++
++	ret = ena_xdp_execute(rx_ring, xdp, rx_info);
++
++	/* The xdp program might expand the headers */
++	if (ret == XDP_PASS) {
++		rx_info->page_offset = xdp->data - xdp->data_hard_start;
++		rx_ring->ena_bufs[0].len = xdp->data_end - xdp->data;
++	}
++
++	return ret;
++}
++#endif /* ENA_XDP_SUPPORT */
+ /* ena_clean_rx_irq - Cleanup RX irq
+  * @rx_ring: RX ring to clean
+  * @napi: napi handler
+@@ -1121,26 +1679,39 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
+ 			    u32 budget)
+ {
+ 	u16 next_to_clean = rx_ring->next_to_clean;
+-	u32 res_budget, work_done;
+-
+ 	struct ena_com_rx_ctx ena_rx_ctx;
+ 	struct ena_adapter *adapter;
++	u32 res_budget, work_done;
++	int rx_copybreak_pkt = 0;
++	int refill_threshold;
+ 	struct sk_buff *skb;
+ 	int refill_required;
+-	int refill_threshold;
+-	int rc = 0;
++#ifdef ENA_XDP_SUPPORT
++	struct xdp_buff xdp;
++#endif /* ENA_XDP_SUPPORT */
+ 	int total_len = 0;
+-	int rx_copybreak_pkt = 0;
++#ifdef ENA_XDP_SUPPORT
++	int xdp_verdict;
++#endif /* ENA_XDP_SUPPORT */
++	int rc = 0;
+ 	int i;
+ 
+ 	netif_dbg(rx_ring->adapter, rx_status, rx_ring->netdev,
+ 		  "%s qid %d\n", __func__, rx_ring->qid);
+ 	res_budget = budget;
++#ifdef ENA_XDP_SUPPORT
++	xdp.rxq = &rx_ring->xdp_rxq;
++#endif /* ENA_XDP_SUPPORT */
+ 
+ 	do {
++#ifdef ENA_XDP_SUPPORT
++		xdp_verdict = XDP_PASS;
++		skb = NULL;
++#endif /* ENA_XDP_SUPPORT */
+ 		ena_rx_ctx.ena_bufs = rx_ring->ena_bufs;
+ 		ena_rx_ctx.max_bufs = rx_ring->sgl_size;
+ 		ena_rx_ctx.descs = 0;
++		ena_rx_ctx.pkt_offset = 0;
+ 		rc = ena_com_rx_pkt(rx_ring->ena_com_io_cq,
+ 				    rx_ring->ena_com_io_sq,
+ 				    &ena_rx_ctx);
+@@ -1155,12 +1726,29 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
+ 			  rx_ring->qid, ena_rx_ctx.descs, ena_rx_ctx.l3_proto,
+ 			  ena_rx_ctx.l4_proto, ena_rx_ctx.hash);
+ 
++#ifdef ENA_XDP_SUPPORT
++		if (ena_xdp_present_ring(rx_ring))
++			xdp_verdict = ena_xdp_handle_buff(rx_ring, &xdp);
++
+ 		/* allocate skb and fill it */
++		if (xdp_verdict == XDP_PASS)
++			skb = ena_rx_skb(rx_ring,
++					 rx_ring->ena_bufs,
++					 ena_rx_ctx.descs,
++					 &next_to_clean, ena_rx_ctx.pkt_offset);
++#else
+ 		skb = ena_rx_skb(rx_ring, rx_ring->ena_bufs, ena_rx_ctx.descs,
+-				 &next_to_clean);
++				 &next_to_clean, ena_rx_ctx.pkt_offset);
++#endif /* ENA_XDP_SUPPORT */
+ 
+-		/* exit if we failed to retrieve a buffer */
+ 		if (unlikely(!skb)) {
++#ifdef ENA_XDP_SUPPORT
++			if (xdp_verdict == XDP_TX) {
++				ena_free_rx_page(rx_ring,
++						 &rx_ring->rx_buffer_info[rx_ring->ena_bufs[0].req_id]);
++				res_budget--;
++			}
++#endif /* ENA_XDP_SUPPORT */
+ 			for (i = 0; i < ena_rx_ctx.descs; i++) {
+ 				rx_ring->free_ids[next_to_clean] =
+ 					rx_ring->ena_bufs[i].req_id;
+@@ -1168,6 +1756,10 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
+ 					ENA_RX_RING_IDX_NEXT(next_to_clean,
+ 							     rx_ring->ring_size);
+ 			}
++#ifdef ENA_XDP_SUPPORT
++			if (xdp_verdict == XDP_TX || xdp_verdict == XDP_DROP)
++				continue;
++#endif /* ENA_XDP_SUPPORT */
+ 			break;
+ 		}
+ 
+@@ -1275,9 +1867,14 @@ static void ena_unmask_interrupt(struct ena_ring *tx_ring,
+ 					struct ena_ring *rx_ring)
+ {
+ 	struct ena_eth_io_intr_reg intr_reg;
+-	u32 rx_interval = ena_com_get_adaptive_moderation_enabled(rx_ring->ena_dev) ?
+-		rx_ring->smoothed_interval :
+-		ena_com_get_nonadaptive_moderation_interval_rx(rx_ring->ena_dev);
++	u32 rx_interval = 0;
++	/* Rx ring can be NULL when for XDP tx queues which don't have an
++	 * accompanying rx_ring pair.
++	 */
++	if (rx_ring)
++		rx_interval = ena_com_get_adaptive_moderation_enabled(rx_ring->ena_dev) ?
++			rx_ring->smoothed_interval :
++			ena_com_get_nonadaptive_moderation_interval_rx(rx_ring->ena_dev);
+ 
+ 	/* Update intr register: rx intr delay,
+ 	 * tx intr delay and interrupt unmask
+@@ -1290,8 +1887,9 @@ static void ena_unmask_interrupt(struct ena_ring *tx_ring,
+ 	/* It is a shared MSI-X.
+ 	 * Tx and Rx CQ have pointer to it.
+ 	 * So we use one of them to reach the intr reg
++	 * The Tx ring is used because the rx_ring is NULL for XDP queues
+ 	 */
+-	ena_com_unmask_intr(rx_ring->ena_com_io_cq, &intr_reg);
++	ena_com_unmask_intr(tx_ring->ena_com_io_cq, &intr_reg);
+ }
+ 
+ static void ena_update_ring_numa_node(struct ena_ring *tx_ring,
+@@ -1309,24 +1907,86 @@ static void ena_update_ring_numa_node(struct ena_ring *tx_ring,
+ 
+ 	if (numa_node != NUMA_NO_NODE) {
+ 		ena_com_update_numa_node(tx_ring->ena_com_io_cq, numa_node);
+-		ena_com_update_numa_node(rx_ring->ena_com_io_cq, numa_node);
++		if (rx_ring)
++			ena_com_update_numa_node(rx_ring->ena_com_io_cq,
++						 numa_node);
+ 	}
+ 
+ 	tx_ring->cpu = cpu;
+-	rx_ring->cpu = cpu;
++	if (rx_ring)
++		rx_ring->cpu = cpu;
+ 
+ 	return;
+ out:
+ 	put_cpu();
+ }
+ 
++#ifdef ENA_XDP_SUPPORT
++static int ena_clean_xdp_irq(struct ena_ring *xdp_ring, u32 budget)
++{
++	u32 total_done = 0;
++	u16 next_to_clean;
++	u32 tx_bytes = 0;
++	int tx_pkts = 0;
++	u16 req_id;
++	int rc;
++
++	if (unlikely(!xdp_ring))
++		return 0;
++	next_to_clean = xdp_ring->next_to_clean;
++
++	while (tx_pkts < budget) {
++		struct ena_tx_buffer *tx_info;
++		struct xdp_frame *xdpf;
++
++		rc = ena_com_tx_comp_req_id_get(xdp_ring->ena_com_io_cq,
++						&req_id);
++		if (rc)
++			break;
++
++		rc = validate_xdp_req_id(xdp_ring, req_id);
++		if (rc)
++			break;
++
++		tx_info = &xdp_ring->tx_buffer_info[req_id];
++		xdpf = tx_info->xdpf;
++
++		tx_info->xdpf = NULL;
++		tx_info->last_jiffies = 0;
++		ena_unmap_tx_buff(xdp_ring, tx_info);
++
++		netif_dbg(xdp_ring->adapter, tx_done, xdp_ring->netdev,
++			  "tx_poll: q %d skb %p completed\n", xdp_ring->qid,
++			  xdpf);
++
++		tx_bytes += xdpf->len;
++		tx_pkts++;
++		total_done += tx_info->tx_descs;
++
++		__free_page(tx_info->xdp_rx_page);
++		xdp_ring->free_ids[next_to_clean] = req_id;
++		next_to_clean = ENA_TX_RING_IDX_NEXT(next_to_clean,
++						     xdp_ring->ring_size);
++	}
++
++	xdp_ring->next_to_clean = next_to_clean;
++	ena_com_comp_ack(xdp_ring->ena_com_io_sq, total_done);
++	ena_com_update_dev_comp_head(xdp_ring->ena_com_io_cq);
++
++	netif_dbg(xdp_ring->adapter, tx_done, xdp_ring->netdev,
++		  "tx_poll: q %d done. total pkts: %d\n",
++		  xdp_ring->qid, tx_pkts);
++
++	return tx_pkts;
++}
++#endif /* ENA_XDP_SUPPORT */
++
+ static int ena_io_poll(struct napi_struct *napi, int budget)
+ {
+ 	struct ena_napi *ena_napi = container_of(napi, struct ena_napi, napi);
+ 	struct ena_ring *tx_ring, *rx_ring;
+-
+-	u32 tx_work_done;
+-	u32 rx_work_done;
++	int tx_work_done;
++	int rx_work_done = 0;
+ 	int tx_budget;
+ 	int napi_comp_call = 0;
+ 	int ret;
+@@ -1334,6 +1994,9 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
+ 	tx_ring = ena_napi->tx_ring;
+ 	rx_ring = ena_napi->rx_ring;
+ 
++	tx_ring->first_interrupt = ena_napi->first_interrupt;
++	rx_ring->first_interrupt = ena_napi->first_interrupt;
++
+ 	tx_budget = tx_ring->ring_size / ENA_TX_POLL_BUDGET_DIVIDER;
+ 
+ 	if (!test_bit(ENA_FLAG_DEV_UP, &tx_ring->adapter->flags) ||
+@@ -1347,7 +2010,11 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
+ #endif
+ 
+ 	tx_work_done = ena_clean_tx_irq(tx_ring, tx_budget);
+-	rx_work_done = ena_clean_rx_irq(rx_ring, napi, budget);
++	/* On netpoll the budget is zero and the handler should only clean the
++	 * tx completions.
++	 */
++	if (likely(budget))
++		rx_work_done = ena_clean_rx_irq(rx_ring, napi, budget);
+ 
+ 	/* If the device is about to reset or down, avoid unmask
+ 	 * the interrupt and return 0 so NAPI won't reschedule
+@@ -1364,7 +2031,8 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
+ 		 * from the interrupt context (vs from sk_busy_loop)
+ 		 */
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)
+-		if (napi_complete_done(napi, rx_work_done)) {
++		if (napi_complete_done(napi, rx_work_done) &&
++		    atomic_cmpxchg(&ena_napi->unmask_interrupt, 1, 0)) {
+ #else
+ 		napi_complete_done(napi, rx_work_done);
+ 		if (atomic_cmpxchg(&ena_napi->unmask_interrupt, 1, 0)) {
+@@ -1375,6 +2043,9 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
+ 			if (ena_com_get_adaptive_moderation_enabled(rx_ring->ena_dev))
+ 				ena_adjust_adaptive_rx_intr_moderation(ena_napi);
+ 
++			u64_stats_update_begin(&tx_ring->syncp);
++			tx_ring->tx_stats.unmask_interrupt++;
++			u64_stats_update_end(&tx_ring->syncp);
+ 			ena_unmask_interrupt(tx_ring, rx_ring);
+ 		}
+ 
+@@ -1417,16 +2088,11 @@ static irqreturn_t ena_intr_msix_io(int irq, void *data)
+ {
+ 	struct ena_napi *ena_napi = data;
+ 
+-	ena_napi->tx_ring->first_interrupt = true;
+-	ena_napi->rx_ring->first_interrupt = true;
++	ena_napi->first_interrupt = true;
+ 
+-#if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)
+-	napi_schedule_irqoff(&ena_napi->napi);
+-#else
+ 	smp_mb__before_atomic();
+ 	atomic_set(&ena_napi->unmask_interrupt, 1);
+ 	napi_schedule_irqoff(&ena_napi->napi);
+-#endif
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -1450,7 +2116,7 @@ static int ena_enable_msix(struct ena_adapter *adapter)
+ 	}
+ 
+ 	/* Reserved the max msix vectors we might need */
+-	msix_vecs = ENA_MAX_MSIX_VEC(adapter->num_io_queues);
++	msix_vecs = ENA_MAX_MSIX_VEC(adapter->max_num_io_queues);
+ 	netif_dbg(adapter, probe, adapter->netdev,
+ 		  "trying to enable MSI-X, vectors %d\n", msix_vecs);
+ 
+@@ -1522,10 +2188,12 @@ static void ena_setup_io_intr(struct ena_adapter *adapter)
+ {
+ 	struct net_device *netdev;
+ 	int irq_idx, i, cpu;
++	int io_queue_count;
+ 
+ 	netdev = adapter->netdev;
++	io_queue_count = adapter->num_io_queues + adapter->xdp_num_queues;
+ 
+-	for (i = 0; i < adapter->num_io_queues; i++) {
++	for (i = 0; i < io_queue_count; i++) {
+ 		irq_idx = ENA_IO_IRQ_IDX(i);
+ 		cpu = i % num_online_cpus();
+ 
+@@ -1570,6 +2238,7 @@ static int ena_request_mgmnt_irq(struct ena_adapter *adapter)
+ 
+ static int ena_request_io_irq(struct ena_adapter *adapter)
+ {
++	u32 io_queue_count = adapter->num_io_queues + adapter->xdp_num_queues;
+ 	unsigned long flags = 0;
+ 	struct ena_irq *irq;
+ 	int rc = 0, i, k;
+@@ -1580,7 +2249,7 @@ static int ena_request_io_irq(struct ena_adapter *adapter)
+ 		return -EINVAL;
+ 	}
+ 
+-	for (i = ENA_IO_IRQ_FIRST_IDX; i < adapter->msix_vecs; i++) {
++	for (i = ENA_IO_IRQ_FIRST_IDX; i < ENA_MAX_MSIX_VEC(io_queue_count); i++) {
+ 		irq = &adapter->irq_tbl[i];
+ 		rc = request_irq(irq->vector, irq->handler, flags, irq->name,
+ 				 irq->data);
+@@ -1619,6 +2288,7 @@ static void ena_free_mgmnt_irq(struct ena_adapter *adapter)
+ 
+ static void ena_free_io_irq(struct ena_adapter *adapter)
+ {
++	u32 io_queue_count = adapter->num_io_queues + adapter->xdp_num_queues;
+ 	struct ena_irq *irq;
+ 	int i;
+ 
+@@ -1629,7 +2299,7 @@ static void ena_free_io_irq(struct ena_adapter *adapter)
+ 	}
+ #endif /* CONFIG_RFS_ACCEL */
+ 
+-	for (i = ENA_IO_IRQ_FIRST_IDX; i < adapter->msix_vecs; i++) {
++	for (i = ENA_IO_IRQ_FIRST_IDX; i < ENA_MAX_MSIX_VEC(io_queue_count); i++) {
+ 		irq = &adapter->irq_tbl[i];
+ 		irq_set_affinity_hint(irq->vector, NULL);
+ 		free_irq(irq->vector, irq->data);
+@@ -1653,55 +2323,86 @@ static void ena_disable_msix(struct ena_adapter *adapter)
+ 
+ static void ena_disable_io_intr_sync(struct ena_adapter *adapter)
+ {
++	u32 io_queue_count = adapter->num_io_queues + adapter->xdp_num_queues;
+ 	int i;
+ 
+ 	if (!netif_running(adapter->netdev))
+ 		return;
+ 
+-	for (i = ENA_IO_IRQ_FIRST_IDX; i < adapter->msix_vecs; i++)
++	for (i = ENA_IO_IRQ_FIRST_IDX; i < ENA_MAX_MSIX_VEC(io_queue_count); i++)
+ 		synchronize_irq(adapter->irq_tbl[i].vector);
+ }
+ 
+-static void ena_del_napi(struct ena_adapter *adapter)
++static void ena_del_napi_in_range(struct ena_adapter *adapter,
++				  int first_index,
++				  int count)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_io_queues; i++) {
++	for (i = first_index; i < first_index + count; i++) {
++#ifdef ENA_XDP_SUPPORT
++		/* Check if napi was initialized before */
++		if (!ENA_IS_XDP_INDEX(adapter, i) ||
++		    adapter->ena_napi[i].xdp_ring) {
++			napi_hash_del(&adapter->ena_napi[i].napi);
++			netif_napi_del(&adapter->ena_napi[i].napi);
++		}
++#else
+ 		napi_hash_del(&adapter->ena_napi[i].napi);
+ 		netif_napi_del(&adapter->ena_napi[i].napi);
++#endif /* ENA_XDP_SUPPORT */
++#ifdef ENA_XDP_SUPPORT
++		else
++			WARN_ON(ENA_IS_XDP_INDEX(adapter, i) &&
++				adapter->ena_napi[i].xdp_ring);
++#endif /* ENA_XDP_SUPPORT */
+ 	}
+ }
+ 
+-static void ena_init_napi(struct ena_adapter *adapter)
++static void ena_init_napi_in_range(struct ena_adapter *adapter,
++				   int first_index, int count)
+ {
+-	struct ena_napi *napi;
++	struct ena_napi *napi = {0};
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_io_queues; i++) {
++	for (i = first_index; i < first_index + count; i++) {
+ 		napi = &adapter->ena_napi[i];
+ 
+ 		netif_napi_add(adapter->netdev,
+ 			       &adapter->ena_napi[i].napi,
++#ifdef ENA_XDP_SUPPORT
++			       ENA_IS_XDP_INDEX(adapter, i) ? ena_xdp_io_poll : ena_io_poll,
++#else
+ 			       ena_io_poll,
++#endif /* ENA_XDP_SUPPORT */
+ 			       ENA_NAPI_BUDGET);
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 5, 0)
+-		napi_hash_add(&adapter->ena_napi[i].napi);
+-#endif
+-		napi->rx_ring = &adapter->rx_ring[i];
+-		napi->tx_ring = &adapter->tx_ring[i];
++
++		if (!ENA_IS_XDP_INDEX(adapter, i)) {
++			napi->rx_ring = &adapter->rx_ring[i];
++			napi->tx_ring = &adapter->tx_ring[i];
++		} else {
++#ifdef ENA_XDP_SUPPORT
++			napi->xdp_ring = &adapter->tx_ring[i];
++#endif /* ENA_XDP_SUPPORT */
++		}
+ 		napi->qid = i;
+ 	}
+ }
+ 
+ #if ENA_BUSY_POLL_SUPPORT
+-static void ena_napi_disable_all(struct ena_adapter *adapter)
++static void ena_napi_disable_in_range(struct ena_adapter *adapter,
++				      int first_index,
++				      int count)
+ {
+ 	struct ena_ring *rx_ring;
+ 	int i, timeout;
+ 
+-	for (i = 0; i < adapter->num_io_queues; i++) {
++	for (i = first_index; i < first_index + count; i++) {
+ 		napi_disable(&adapter->ena_napi[i].napi);
+ 
++		/* XDP doesn't have rx_ring */
++		if (ENA_IS_XDP_INDEX(adapter, i))
++			continue;
+ 		rx_ring = &adapter->rx_ring[i];
+ 		timeout = 100;
+ 		while (!ena_bp_disable(rx_ring)) {
+@@ -1719,31 +2420,27 @@ static void ena_napi_disable_all(struct ena_adapter *adapter)
+ 	}
+ }
+ #else
+-static void ena_napi_disable_all(struct ena_adapter *adapter)
++static void ena_napi_disable_in_range(struct ena_adapter *adapter,
++				      int first_index,
++				      int count)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_io_queues; i++)
++	for (i = first_index; i < first_index + count; i++)
+ 		napi_disable(&adapter->ena_napi[i].napi);
+ }
+ #endif
+ 
+-static void ena_napi_enable_all(struct ena_adapter *adapter)
++static void ena_napi_enable_in_range(struct ena_adapter *adapter,
++				     int first_index,
++				     int count)
+ {
+ 	int i;
+ 
+-	for (i = 0; i < adapter->num_io_queues; i++)
++	for (i = first_index; i < first_index + count; i++)
+ 		napi_enable(&adapter->ena_napi[i].napi);
+ }
+ 
+-static void ena_restore_ethtool_params(struct ena_adapter *adapter)
+-{
+-	adapter->tx_usecs = 0;
+-	adapter->rx_usecs = 0;
+-	adapter->tx_frames = 1;
+-	adapter->rx_frames = 1;
+-}
+-
+ /* Configure the Rx forwarding */
+ static int ena_rss_configure(struct ena_adapter *adapter)
+ {
+@@ -1793,9 +2490,9 @@ static int ena_up_complete(struct ena_adapter *adapter)
+ 	/* enable transmits */
+ 	netif_tx_start_all_queues(adapter->netdev);
+ 
+-	ena_restore_ethtool_params(adapter);
+-
+-	ena_napi_enable_all(adapter);
++	ena_napi_enable_in_range(adapter,
++				 0,
++				 adapter->xdp_num_queues + adapter->num_io_queues);
+ 
+ 	return 0;
+ }
+@@ -1847,12 +2544,13 @@ static int ena_create_io_tx_queue(struct ena_adapter *adapter, int qid)
+ 	return rc;
+ }
+ 
+-static int ena_create_all_io_tx_queues(struct ena_adapter *adapter)
++static int ena_create_io_tx_queues_in_range(struct ena_adapter *adapter,
++					    int first_index, int count)
+ {
+ 	struct ena_com_dev *ena_dev = adapter->ena_dev;
+ 	int rc, i;
+ 
+-	for (i = 0; i < adapter->num_io_queues; i++) {
++	for (i = first_index; i < first_index + count; i++) {
+ 		rc = ena_create_io_tx_queue(adapter, i);
+ 		if (rc)
+ 			goto create_err;
+@@ -1861,7 +2559,7 @@ static int ena_create_all_io_tx_queues(struct ena_adapter *adapter)
+ 	return 0;
+ 
+ create_err:
+-	while (i--)
++	while (i-- > first_index)
+ 		ena_com_destroy_io_queue(ena_dev, ENA_IO_TXQ_IDX(i));
+ 
+ 	return rc;
+@@ -1906,12 +2604,14 @@ static int ena_create_io_rx_queue(struct ena_adapter *adapter, int qid)
+ 		netif_err(adapter, ifup, adapter->netdev,
+ 			  "Failed to get RX queue handlers. RX queue num %d rc: %d\n",
+ 			  qid, rc);
+-		ena_com_destroy_io_queue(ena_dev, ena_qid);
+-		return rc;
++		goto err;
+ 	}
+ 
+ 	ena_com_update_numa_node(rx_ring->ena_com_io_cq, ctx.numa_node);
+ 
++	return rc;
++err:
++	ena_com_destroy_io_queue(ena_dev, ena_qid);
+ 	return rc;
+ }
+ 
+@@ -1977,11 +2677,23 @@ static int create_queues_with_size_backoff(struct ena_adapter *adapter)
+ 			  adapter->requested_rx_ring_size);
+ 
+ 	while (1) {
+-		rc = ena_setup_all_tx_resources(adapter);
++#ifdef ENA_XDP_SUPPORT
++		if (ena_xdp_present(adapter)) {
++			rc = ena_setup_and_create_all_xdp_queues(adapter);
++
++			if (rc)
++				goto err_setup_tx;
++		}
++#endif /* ENA_XDP_SUPPORT */
++		rc = ena_setup_tx_resources_in_range(adapter,
++						     0,
++						     adapter->num_io_queues);
+ 		if (rc)
+ 			goto err_setup_tx;
+ 
+-		rc = ena_create_all_io_tx_queues(adapter);
++		rc = ena_create_io_tx_queues_in_range(adapter,
++						      0,
++						      adapter->num_io_queues);
+ 		if (rc)
+ 			goto err_create_tx_queues;
+ 
+@@ -2047,10 +2759,11 @@ static int create_queues_with_size_backoff(struct ena_adapter *adapter)
+ 
+ static int ena_up(struct ena_adapter *adapter)
+ {
+-	int rc, i;
++	int io_queue_count, rc, i;
+ 
+ 	netdev_dbg(adapter->netdev, "%s\n", __func__);
+ 
++	io_queue_count = adapter->num_io_queues + adapter->xdp_num_queues;
+ 	ena_setup_io_intr(adapter);
+ 
+ 	/* napi poll functions should be initialized before running
+@@ -2058,19 +2771,12 @@ static int ena_up(struct ena_adapter *adapter)
+ 	 * interrupt, causing the ISR to fire immediately while the poll
+ 	 * function wasn't set yet, causing a null dereference
+ 	 */
+-	ena_init_napi(adapter);
++	ena_init_napi_in_range(adapter, 0, io_queue_count);
+ 
+ 	rc = ena_request_io_irq(adapter);
+ 	if (rc)
+ 		goto err_req_irq;
+ 
+-	netif_info(adapter, ifup, adapter->netdev, "creating %d io queues. rx queue size: %d tx queue size. %d LLQ is %s\n",
+-		   adapter->num_io_queues,
+-		   adapter->requested_rx_ring_size,
+-		   adapter->requested_tx_ring_size,
+-		   (adapter->ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV) ?
+-		   "ENABLED" : "DISABLED");
+-
+ 	rc = create_queues_with_size_backoff(adapter);
+ 	if (rc)
+ 		goto err_create_queues_with_backoff;
+@@ -2096,7 +2802,7 @@ static int ena_up(struct ena_adapter *adapter)
+ 	/* schedule napi in case we had pending packets
+ 	 * from the last time we disable napi
+ 	 */
+-	for (i = 0; i < adapter->num_io_queues; i++)
++	for (i = 0; i < io_queue_count; i++)
+ 		napi_schedule(&adapter->ena_napi[i].napi);
+ 
+ 	return rc;
+@@ -2109,13 +2815,15 @@ static int ena_up(struct ena_adapter *adapter)
+ err_create_queues_with_backoff:
+ 	ena_free_io_irq(adapter);
+ err_req_irq:
+-	ena_del_napi(adapter);
++	ena_del_napi_in_range(adapter, 0, io_queue_count);
+ 
+ 	return rc;
+ }
+ 
+ static void ena_down(struct ena_adapter *adapter)
+ {
++	int io_queue_count = adapter->num_io_queues + adapter->xdp_num_queues;
++
+ 	netif_info(adapter, ifdown, adapter->netdev, "%s\n", __func__);
+ 
+ 	clear_bit(ENA_FLAG_DEV_UP, &adapter->flags);
+@@ -2128,7 +2836,7 @@ static void ena_down(struct ena_adapter *adapter)
+ 	netif_tx_disable(adapter->netdev);
+ 
+ 	/* After this point the napi handler won't enable the tx queue */
+-	ena_napi_disable_all(adapter);
++	ena_napi_disable_in_range(adapter, 0, io_queue_count);
+ 
+ 	/* After destroy the queue there won't be any new interrupts */
+ 
+@@ -2146,7 +2854,7 @@ static void ena_down(struct ena_adapter *adapter)
+ 
+ 	ena_disable_io_intr_sync(adapter);
+ 	ena_free_io_irq(adapter);
+-	ena_del_napi(adapter);
++	ena_del_napi_in_range(adapter, 0, io_queue_count);
+ 
+ 	ena_free_all_tx_bufs(adapter);
+ 	ena_free_all_rx_bufs(adapter);
+@@ -2230,17 +2938,65 @@ int ena_update_queue_sizes(struct ena_adapter *adapter,
+ 			   u32 new_tx_size,
+ 			   u32 new_rx_size)
+ {
+-	bool dev_up;
++	bool dev_was_up;
+ 
+-	dev_up = test_bit(ENA_FLAG_DEV_UP, &adapter->flags);
++	dev_was_up = test_bit(ENA_FLAG_DEV_UP, &adapter->flags);
+ 	ena_close(adapter->netdev);
+ 	adapter->requested_tx_ring_size = new_tx_size;
+ 	adapter->requested_rx_ring_size = new_rx_size;
+-	ena_init_io_rings(adapter);
+-	return dev_up ? ena_up(adapter) : 0;
++	ena_init_io_rings(adapter,
++			  0,
++			  adapter->xdp_num_queues +
++			  adapter->num_io_queues);
++	return dev_was_up ? ena_up(adapter) : 0;
+ }
+ 
+-static void ena_tx_csum(struct ena_com_tx_ctx *ena_tx_ctx, struct sk_buff *skb)
++int ena_update_queue_count(struct ena_adapter *adapter, u32 new_channel_count)
++{
++	struct ena_com_dev *ena_dev = adapter->ena_dev;
++#ifdef ENA_XDP_SUPPORT
++	int prev_channel_count;
++#endif /* ENA_XDP_SUPPORT */
++	bool dev_was_up;
++
++	dev_was_up = test_bit(ENA_FLAG_DEV_UP, &adapter->flags);
++	ena_close(adapter->netdev);
++#ifdef ENA_XDP_SUPPORT
++	prev_channel_count = adapter->num_io_queues;
++#endif /* ENA_XDP_SUPPORT */
++	adapter->num_io_queues = new_channel_count;
++#ifdef ENA_XDP_SUPPORT
++	if (ena_xdp_present(adapter) &&
++	    ena_xdp_allowed(adapter) == ENA_XDP_ALLOWED) {
++		adapter->xdp_first_ring = new_channel_count;
++		adapter->xdp_num_queues = new_channel_count;
++		if (prev_channel_count > new_channel_count)
++			ena_xdp_exchange_program_rx_in_range(adapter,
++							     NULL,
++							     new_channel_count,
++							     prev_channel_count);
++		else
++			ena_xdp_exchange_program_rx_in_range(adapter,
++							     adapter->xdp_bpf_prog,
++							     prev_channel_count,
++							     new_channel_count);
++	}
++#endif /* ENA_XDP_SUPPORT */
++
++	/* We need to destroy the rss table so that the indirection
++	 * table will be reinitialized by ena_up()
++	 */
++	ena_com_rss_destroy(ena_dev);
++	ena_init_io_rings(adapter,
++			  0,
++			  adapter->xdp_num_queues +
++			  adapter->num_io_queues);
++	return dev_was_up ? ena_open(adapter->netdev) : 0;
++}
++
++static void ena_tx_csum(struct ena_com_tx_ctx *ena_tx_ctx,
++			struct sk_buff *skb,
++			bool disable_meta_caching)
+ {
+ 	u32 mss = skb_shinfo(skb)->gso_size;
+ 	struct ena_com_tx_meta *ena_meta = &ena_tx_ctx->ena_meta;
+@@ -2284,7 +3040,9 @@ static void ena_tx_csum(struct ena_com_tx_ctx *ena_tx_ctx, struct sk_buff *skb)
+ 		ena_meta->l3_hdr_len = skb_network_header_len(skb);
+ 		ena_meta->l3_hdr_offset = skb_network_offset(skb);
+ 		ena_tx_ctx->meta_valid = 1;
+-
++	} else if (disable_meta_caching) {
++		memset(ena_meta, 0, sizeof(*ena_meta));
++		ena_tx_ctx->meta_valid = 1;
+ 	} else {
+ 		ena_tx_ctx->meta_valid = 0;
+ 	}
+@@ -2420,7 +3178,7 @@ static int ena_tx_map_skb(struct ena_ring *tx_ring,
+ 	tx_info->skb = NULL;
+ 
+ 	tx_info->num_of_bufs += i;
+-	ena_unmap_tx_skb(tx_ring, tx_info);
++	ena_unmap_tx_buff(tx_ring, tx_info);
+ 
+ 	return -EINVAL;
+ }
+@@ -2435,7 +3193,7 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	struct netdev_queue *txq;
+ 	void *push_hdr;
+ 	u16 next_to_use, req_id, header_len;
+-	int qid, rc, nb_hw_desc;
++	int qid, rc;
+ 
+ 	netif_dbg(adapter, tx_queued, dev, "%s skb %p\n", __func__, skb);
+ 	/*  Determine which tx ring we will be placed on */
+@@ -2468,49 +3226,16 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	ena_tx_ctx.header_len = header_len;
+ 
+ 	/* set flags and meta data */
+-	ena_tx_csum(&ena_tx_ctx, skb);
+-
+-	if (unlikely(ena_com_is_doorbell_needed(tx_ring->ena_com_io_sq, &ena_tx_ctx))) {
+-		netif_dbg(adapter, tx_queued, dev,
+-			  "llq tx max burst size of queue %d achieved, writing doorbell to send burst\n",
+-			  qid);
+-		ena_com_write_sq_doorbell(tx_ring->ena_com_io_sq);
+-	}
+-
+-	/* prepare the packet's descriptors to dma engine */
+-	rc = ena_com_prepare_tx(tx_ring->ena_com_io_sq, &ena_tx_ctx,
+-				&nb_hw_desc);
+-
+-	/* ena_com_prepare_tx() can't fail due to overflow of tx queue,
+-	 * since the number of free descriptors in the queue is checked
+-	 * after sending the previous packet. In case there isn't enough
+-	 * space in the queue for the next packet, it is stopped
+-	 * until there is again enough available space in the queue.
+-	 * All other failure reasons of ena_com_prepare_tx() are fatal
+-	 * and therefore require a device reset.
+-	 */
+-	if (unlikely(rc)) {
+-		netif_err(adapter, tx_queued, dev,
+-			  "failed to prepare tx bufs\n");
+-		u64_stats_update_begin(&tx_ring->syncp);
+-		tx_ring->tx_stats.prepare_ctx_err++;
+-		u64_stats_update_end(&tx_ring->syncp);
+-		adapter->reset_reason = ENA_REGS_RESET_DRIVER_INVALID_STATE;
+-		set_bit(ENA_FLAG_TRIGGER_RESET, &adapter->flags);
++	ena_tx_csum(&ena_tx_ctx, skb, tx_ring->disable_meta_caching);
++
++	rc = ena_xmit_common(dev,
++			     tx_ring,
++			     tx_info,
++			     &ena_tx_ctx,
++			     next_to_use,
++			     skb->len);
++	if (rc)
+ 		goto error_unmap_dma;
+-	}
+-
+-	u64_stats_update_begin(&tx_ring->syncp);
+-	tx_ring->tx_stats.cnt++;
+-	tx_ring->tx_stats.bytes += skb->len;
+-	u64_stats_update_end(&tx_ring->syncp);
+-
+-	tx_info->tx_descs = nb_hw_desc;
+-	tx_info->last_jiffies = jiffies;
+-	tx_info->print_once = 0;
+-
+-	tx_ring->next_to_use = ENA_TX_RING_IDX_NEXT(next_to_use,
+-		tx_ring->ring_size);
+ 
+ 	/* stop the queue when no more space available, the packet can have up
+ 	 * to sgl_size + 2. one for the meta descriptor and one for header
+@@ -2562,7 +3287,7 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	return NETDEV_TX_OK;
+ 
+ error_unmap_dma:
+-	ena_unmap_tx_skb(tx_ring, tx_info);
++	ena_unmap_tx_buff(tx_ring, tx_info);
+ 	tx_info->skb = NULL;
+ 
+ error_drop_packet:
+@@ -2664,7 +3389,9 @@ static void ena_config_host_info(struct ena_com_dev *ena_dev, struct pci_dev *pd
+ 	host_info->num_cpus = num_online_cpus();
+ 
+ 	host_info->driver_supported_features =
+-		ENA_ADMIN_HOST_INFO_INTERRUPT_MODERATION_MASK;
++		ENA_ADMIN_HOST_INFO_RX_OFFSET_MASK |
++		ENA_ADMIN_HOST_INFO_INTERRUPT_MODERATION_MASK |
++		ENA_ADMIN_HOST_INFO_MAP_RX_BUF_BIDIRECTIONAL_MASK;
+ 
+ 	rc = ena_com_set_host_attributes(ena_dev);
+ 	if (rc) {
+@@ -2719,14 +3446,6 @@ static void ena_config_debug_area(struct ena_adapter *adapter)
+ 	ena_com_delete_debug_area(adapter->ena_dev);
+ }
+ 
+-static void ena_extra_properties_strings_destroy(struct net_device *netdev)
+-{
+-	struct ena_adapter *adapter = netdev_priv(netdev);
+-
+-	ena_com_delete_extra_properties_strings(adapter->ena_dev);
+-	adapter->ena_extra_properties_count = 0;
+-}
+-
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,36))
+ #ifdef NDO_GET_STATS_64_V2
+ static void ena_get_stats64(struct net_device *netdev,
+@@ -2740,6 +3459,7 @@ static struct rtnl_link_stats64 *ena_get_stats64(struct net_device *netdev,
+ 	struct ena_ring *rx_ring, *tx_ring;
+ 	unsigned int start;
+ 	u64 rx_drops;
++	u64 tx_drops;
+ 	int i;
+ 
+ 	if (!test_bit(ENA_FLAG_DEV_UP, &adapter->flags))
+@@ -2778,9 +3498,11 @@ static struct rtnl_link_stats64 *ena_get_stats64(struct net_device *netdev,
+ 	do {
+ 		start = u64_stats_fetch_begin_irq(&adapter->syncp);
+ 		rx_drops = adapter->dev_stats.rx_drops;
++		tx_drops = adapter->dev_stats.tx_drops;
+ 	} while (u64_stats_fetch_retry_irq(&adapter->syncp, start));
+ 
+ 	stats->rx_dropped = rx_drops;
++	stats->tx_dropped = tx_drops;
+ 
+ 	stats->multicast = 0;
+ 	stats->collisions = 0;
+@@ -2905,6 +3627,9 @@ static const struct net_device_ops ena_netdev_ops = {
+ #if ENA_BUSY_POLL_SUPPORT
+ 	.ndo_busy_poll		= ena_busy_poll,
+ #endif
++#ifdef ENA_XDP_SUPPORT
++	.ndo_bpf		= ena_xdp,
++#endif /* ENA_XDP_SUPPORT */
+ };
+ 
+ static int ena_device_validate_params(struct ena_adapter *adapter,
+@@ -3181,6 +3906,7 @@ static void ena_destroy_device(struct ena_adapter *adapter, bool graceful)
+ 
+ 	ena_com_mmio_reg_read_request_destroy(ena_dev);
+ 
++	/* return reset reason to default value */
+ 	adapter->reset_reason = ENA_REGS_RESET_NORMAL;
+ 
+ 	clear_bit(ENA_FLAG_TRIGGER_RESET, &adapter->flags);
+@@ -3367,7 +4093,9 @@ static void check_for_missing_completions(struct ena_adapter *adapter)
+ 	struct ena_ring *tx_ring;
+ 	struct ena_ring *rx_ring;
+ 	int i, budget, rc;
++	int io_queue_count;
+ 
++	io_queue_count = adapter->xdp_num_queues + adapter->num_io_queues;
+ 	/* Make sure the driver doesn't turn the device in other process */
+ 	smp_rmb();
+ 
+@@ -3382,7 +4110,7 @@ static void check_for_missing_completions(struct ena_adapter *adapter)
+ 
+ 	budget = ENA_MONITORED_TX_QUEUES;
+ 
+-	for (i = adapter->last_monitored_tx_qid; i < adapter->num_io_queues; i++) {
++	for (i = adapter->last_monitored_tx_qid; i < io_queue_count; i++) {
+ 		tx_ring = &adapter->tx_ring[i];
+ 		rx_ring = &adapter->rx_ring[i];
+ 
+@@ -3390,7 +4118,8 @@ static void check_for_missing_completions(struct ena_adapter *adapter)
+ 		if (unlikely(rc))
+ 			return;
+ 
+-		rc = check_for_rx_interrupt_queue(adapter, rx_ring);
++		rc =  !ENA_IS_XDP_INDEX(adapter, i) ?
++			check_for_rx_interrupt_queue(adapter, rx_ring) : 0;
+ 		if (unlikely(rc))
+ 			return;
+ 
+@@ -3399,7 +4128,7 @@ static void check_for_missing_completions(struct ena_adapter *adapter)
+ 			break;
+ 	}
+ 
+-	adapter->last_monitored_tx_qid = i % adapter->num_io_queues;
++	adapter->last_monitored_tx_qid = i % io_queue_count;
+ }
+ 
+ /* trigger napi schedule after 2 consecutive detections */
+@@ -3464,8 +4193,8 @@ static void check_for_missing_keep_alive(struct ena_adapter *adapter)
+ 	if (adapter->keep_alive_timeout == ENA_HW_HINTS_NO_TIMEOUT)
+ 		return;
+ 
+-	keep_alive_expired = round_jiffies(adapter->last_keep_alive_jiffies +
+-					   adapter->keep_alive_timeout);
++	keep_alive_expired = adapter->last_keep_alive_jiffies +
++			     adapter->keep_alive_timeout;
+ 	if (unlikely(time_is_before_jiffies(keep_alive_expired))) {
+ 		netif_err(adapter, drv, adapter->netdev,
+ 			  "Keep alive watchdog timeout.\n");
+@@ -3573,7 +4302,7 @@ static void ena_timer_service(unsigned long data)
+ 	}
+ 
+ 	/* Reset the timer */
+-	mod_timer(&adapter->timer_service, jiffies + HZ);
++	mod_timer(&adapter->timer_service, round_jiffies(jiffies + HZ));
+ }
+ 
+ static u32 ena_calc_max_io_queue_num(struct pci_dev *pdev,
+@@ -3716,7 +4445,7 @@ static int ena_rss_init_default(struct ena_adapter *adapter)
+ 		}
+ 	}
+ 
+-	rc = ena_com_fill_hash_function(ena_dev, ENA_ADMIN_CRC32, NULL,
++	rc = ena_com_fill_hash_function(ena_dev, ENA_ADMIN_TOEPLITZ, NULL,
+ 					ENA_HASH_KEY_SIZE, 0xFFFFFFFF);
+ 	if (unlikely(rc && (rc != -EOPNOTSUPP))) {
+ 		dev_err(dev, "Cannot fill hash function\n");
+@@ -3944,7 +4673,15 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	adapter->max_num_io_queues = max_num_io_queues;
+ 	adapter->last_monitored_tx_qid = 0;
+ 
++	adapter->xdp_first_ring = 0;
++	adapter->xdp_num_queues = 0;
++
+ 	adapter->rx_copybreak = ENA_DEFAULT_RX_COPYBREAK;
++	if (ena_dev->tx_mem_queue_type == ENA_ADMIN_PLACEMENT_POLICY_DEV)
++		adapter->disable_meta_caching =
++			!!(get_feat_ctx.llq.accel_mode.u.get.supported_flags &
++			   BIT(ENA_ADMIN_DISABLE_META_CACHING));
++
+ 	adapter->wd_state = wd_state;
+ 
+ 	snprintf(adapter->name, ENA_NAME_MAX_LEN, "ena_%d", adapters_found);
+@@ -3955,7 +4692,10 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 			"Failed to query interrupt moderation feature\n");
+ 		goto err_netdev_destroy;
+ 	}
+-	ena_init_io_rings(adapter);
++	ena_init_io_rings(adapter,
++			  0,
++			  adapter->xdp_num_queues +
++			  adapter->num_io_queues);
+ 
+ 	netdev->netdev_ops = &ena_netdev_ops;
+ 	netdev->watchdog_timeo = TX_TIMEOUT;
+@@ -3989,9 +4729,6 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 
+ 	ena_config_debug_area(adapter);
+ 
+-	adapter->ena_extra_properties_count =
+-		ena_com_extra_properties_strings_init(ena_dev);
+-
+ 	memcpy(adapter->netdev->perm_addr, adapter->mac_addr, netdev->addr_len);
+ 
+ 	netif_carrier_off(netdev);
+@@ -4031,7 +4768,6 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	return 0;
+ 
+ err_rss:
+-	ena_extra_properties_strings_destroy(netdev);
+ 	ena_com_delete_debug_area(ena_dev);
+ 	ena_com_rss_destroy(ena_dev);
+ err_terminate_sysfs:
+@@ -4086,6 +4822,7 @@ static void ena_remove(struct pci_dev *pdev)
+ 	cancel_work_sync(&adapter->reset_task);
+ 
+ 	rtnl_lock();
++	adapter->reset_reason = ENA_REGS_RESET_SHUTDOWN;
+ 	ena_destroy_device(adapter, true);
+ 	rtnl_unlock();
+ 
+@@ -4099,8 +4836,6 @@ static void ena_remove(struct pci_dev *pdev)
+ 
+ 	ena_com_delete_host_info(ena_dev);
+ 
+-	ena_extra_properties_strings_destroy(netdev);
+-
+ 	ena_release_bars(ena_dev, pdev);
+ 
+ 	pci_disable_device(pdev);
+@@ -4146,6 +4881,7 @@ static int ena_resume(struct pci_dev *pdev)
+ 	u64_stats_update_end(&adapter->syncp);
+ 
+ 	rtnl_lock();
++	pci_set_power_state(pdev, PCI_D0);
+ 	rc = ena_restore_device(adapter);
+ 	rtnl_unlock();
+ 	return rc;
+@@ -4221,14 +4957,17 @@ static void ena_keep_alive_wd(void *adapter_data,
+ 	struct ena_adapter *adapter = (struct ena_adapter *)adapter_data;
+ 	struct ena_admin_aenq_keep_alive_desc *desc;
+ 	u64 rx_drops;
++	u64 tx_drops;
+ 
+ 	desc = (struct ena_admin_aenq_keep_alive_desc *)aenq_e;
+ 	adapter->last_keep_alive_jiffies = jiffies;
+ 
+ 	rx_drops = ((u64)desc->rx_drops_high << 32) | desc->rx_drops_low;
++	tx_drops = ((u64)desc->tx_drops_high << 32) | desc->tx_drops_low;
+ 
+ 	u64_stats_update_begin(&adapter->syncp);
+ 	adapter->dev_stats.rx_drops = rx_drops;
++	adapter->dev_stats.tx_drops = tx_drops;
+ 	u64_stats_update_end(&adapter->syncp);
+ }
+ 
+diff --git a/drivers/amazon/net/ena/ena_netdev.h b/drivers/amazon/net/ena/ena_netdev.h
+index f9e2bb6da812..1648be44e2eb 100755
+--- a/drivers/amazon/net/ena/ena_netdev.h
++++ b/drivers/amazon/net/ena/ena_netdev.h
+@@ -41,6 +41,7 @@
+ #include <linux/dim.h>
+ #endif /* LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0) */
+ #include <linux/etherdevice.h>
++#include <linux/if_vlan.h>
+ #include <linux/inetdevice.h>
+ #include <linux/interrupt.h>
+ #include <linux/netdevice.h>
+@@ -51,7 +52,7 @@
+ #include "ena_eth_com.h"
+ 
+ #define DRV_MODULE_VER_MAJOR	2
+-#define DRV_MODULE_VER_MINOR	1
++#define DRV_MODULE_VER_MINOR	2
+ #define DRV_MODULE_VER_SUBMINOR 3
+ 
+ #define DRV_MODULE_NAME		"ena"
+@@ -135,6 +136,8 @@
+ 
+ #define ENA_IO_TXQ_IDX(q)	(2 * (q))
+ #define ENA_IO_RXQ_IDX(q)	(2 * (q) + 1)
++#define ENA_IO_TXQ_IDX_TO_COMBINED_IDX(q)	((q) / 2)
++#define ENA_IO_RXQ_IDX_TO_COMBINED_IDX(q)	(((q) - 1) / 2)
+ 
+ #define ENA_MGMNT_IRQ_IDX		0
+ #define ENA_IO_IRQ_FIRST_IDX		1
+@@ -148,6 +151,22 @@
+ 
+ #define ENA_MMIO_DISABLE_REG_READ	BIT(0)
+ 
++/* The max MTU size is configured to be the ethernet frame size without
++ * the overhead of the ethernet header, which can have a VLAN header, and
++ * a frame check sequence (FCS).
++ * The buffer size we share with the device is defined to be ENA_PAGE_SIZE
++ */
++
++#ifdef ENA_XDP_SUPPORT
++#define ENA_XDP_MAX_MTU (ENA_PAGE_SIZE - ETH_HLEN - ETH_FCS_LEN - \
++				VLAN_HLEN - XDP_PACKET_HEADROOM)
++
++#define ENA_IS_XDP_INDEX(adapter, index) (((index) >= (adapter)->xdp_first_ring) && \
++	((index) < (adapter)->xdp_first_ring + (adapter)->xdp_num_queues))
++#else
++#define ENA_IS_XDP_INDEX(adapter, index) (false)
++#endif /* ENA_XDP_SUPPORT */
++
+ struct ena_irq {
+ 	irq_handler_t handler;
+ 	void *data;
+@@ -161,9 +180,11 @@ struct ena_napi {
+ 	struct napi_struct napi ____cacheline_aligned;
+ 	struct ena_ring *tx_ring;
+ 	struct ena_ring *rx_ring;
+-#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 10, 0)
++#ifdef ENA_XDP_SUPPORT
++	struct ena_ring *xdp_ring;
++#endif /* ENA_XDP_SUPPORT */
++	bool first_interrupt;
+ 	atomic_t unmask_interrupt;
+-#endif
+ 	u32 qid;
+ 	struct dim dim;
+ };
+@@ -189,6 +210,19 @@ struct ena_tx_buffer {
+ 	/* num of buffers used by this skb */
+ 	u32 num_of_bufs;
+ 
++#ifdef ENA_XDP_SUPPORT
++	/* XDP buffer structure which is used for sending packets in
++	 * the xdp queues
++	 */
++	struct xdp_frame *xdpf;
++	/* The rx page for the rx buffer that was received in rx and
++	 * re transmitted on xdp tx queues as a result of XDP_TX action.
++	 * We need to free the page once we finished cleaning the buffer in
++	 * clean_xdp_irq()
++	 */
++	struct page *xdp_rx_page;
++#endif /* ENA_XDP_SUPPORT */
++
+ 	/* Indicate if bufs[0] map the linear data of the skb. */
+ 	u8 map_linear_data;
+ 
+@@ -229,6 +263,7 @@ struct ena_stats_tx {
+ 	u64 bad_req_id;
+ 	u64 llq_buffer_copy;
+ 	u64 missed_tx;
++	u64 unmask_interrupt;
+ };
+ 
+ struct ena_stats_rx {
+@@ -272,10 +307,15 @@ struct ena_ring {
+ 	struct ena_adapter *adapter;
+ 	struct ena_com_io_cq *ena_com_io_cq;
+ 	struct ena_com_io_sq *ena_com_io_sq;
++#ifdef ENA_XDP_SUPPORT
++	struct bpf_prog *xdp_bpf_prog;
++	struct xdp_rxq_info xdp_rxq;
++#endif
+ 
+ 	u16 next_to_use;
+ 	u16 next_to_clean;
+ 	u16 rx_copybreak;
++	u16 rx_headroom;
+ 	u16 qid;
+ 	u16 mtu;
+ 	u16 sgl_size;
+@@ -284,6 +324,7 @@ struct ena_ring {
+ 	u8 tx_max_header_size;
+ 
+ 	bool first_interrupt;
++	bool disable_meta_caching;
+ 	u16 no_interrupt_event_cnt;
+ 
+ 	/* cpu for TPH */
+@@ -327,6 +368,7 @@ struct ena_stats_dev {
+ 	u64 interface_down;
+ 	u64 admin_q_pause;
+ 	u64 rx_drops;
++	u64 tx_drops;
+ };
+ 
+ enum ena_flags_t {
+@@ -361,9 +403,6 @@ struct ena_adapter {
+ 
+ 	u32 missing_tx_completion_threshold;
+ 
+-	u32 tx_usecs, rx_usecs; /* interrupt moderation */
+-	u32 tx_frames, rx_frames; /* interrupt moderation */
+-
+ 	u32 requested_tx_ring_size;
+ 	u32 requested_rx_ring_size;
+ 
+@@ -401,6 +440,7 @@ struct ena_adapter {
+ 
+ 	bool wd_state;
+ 	bool dev_up_before_reset;
++	bool disable_meta_caching;
+ 	unsigned long last_keep_alive_jiffies;
+ 
+ 	struct u64_stats_sync syncp;
+@@ -411,7 +451,11 @@ struct ena_adapter {
+ 
+ 	enum ena_regs_reset_reason_types reset_reason;
+ 
+-	u8 ena_extra_properties_count;
++#ifdef ENA_XDP_SUPPORT
++	struct bpf_prog *xdp_bpf_prog;
++#endif
++	u32 xdp_first_ring;
++	u32 xdp_num_queues;
+ };
+ 
+ void ena_set_ethtool_ops(struct net_device *netdev);
+@@ -424,6 +468,8 @@ int ena_update_queue_sizes(struct ena_adapter *adapter,
+ 			   u32 new_tx_size,
+ 			   u32 new_rx_size);
+ 
++int ena_update_queue_count(struct ena_adapter *adapter, u32 new_channel_count);
++
+ int ena_get_sset_count(struct net_device *netdev, int sset);
+ 
+ #if ENA_BUSY_POLL_SUPPORT
+@@ -528,4 +574,46 @@ static inline bool ena_bp_disable(struct ena_ring *rx_ring)
+ }
+ #endif /* ENA_BUSY_POLL_SUPPORT */
+ 
++
++#ifdef ENA_XDP_SUPPORT
++enum ena_xdp_errors_t {
++	ENA_XDP_ALLOWED = 0,
++	ENA_XDP_CURRENT_MTU_TOO_LARGE,
++	ENA_XDP_NO_ENOUGH_QUEUES,
++};
++
++static inline bool ena_xdp_queues_present(struct ena_adapter *adapter)
++{
++	return adapter->xdp_first_ring != 0;
++}
++
++static inline bool ena_xdp_present(struct ena_adapter *adapter)
++{
++	return !!adapter->xdp_bpf_prog;
++}
++
++static inline bool ena_xdp_present_ring(struct ena_ring *ring)
++{
++	return !!ring->xdp_bpf_prog;
++}
++
++static inline int ena_xdp_legal_queue_count(struct ena_adapter *adapter,
++					    u32 queues)
++{
++	return 2 * queues <= adapter->max_num_io_queues;
++}
++
++static inline enum ena_xdp_errors_t ena_xdp_allowed(struct ena_adapter *adapter)
++{
++	enum ena_xdp_errors_t rc = ENA_XDP_ALLOWED;
++
++	if (adapter->netdev->mtu > ENA_XDP_MAX_MTU)
++		rc = ENA_XDP_CURRENT_MTU_TOO_LARGE;
++	else if (!ena_xdp_legal_queue_count(adapter, adapter->num_io_queues))
++		rc = ENA_XDP_NO_ENOUGH_QUEUES;
++
++	return rc;
++}
++#endif /* ENA_XDP_SUPPORT */
++
+ #endif /* !(ENA_H) */
+diff --git a/drivers/amazon/net/ena/kcompat.h b/drivers/amazon/net/ena/kcompat.h
+index 1c2918847839..eb4b99d57367 100755
+--- a/drivers/amazon/net/ena/kcompat.h
++++ b/drivers/amazon/net/ena/kcompat.h
+@@ -364,9 +364,10 @@ static inline u32 ethtool_rxfh_indir_default(u32 index, u32 n_rx_rings)
+ #if (LINUX_VERSION_CODE >= KERNEL_VERSION(5,2,0))
+ #define HAVE_NDO_SELECT_QUEUE_ACCEL_FALLBACK_V3
+ #elif (LINUX_VERSION_CODE >= KERNEL_VERSION(4,19,0)) || \
+-      (RHEL_RELEASE_CODE && (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,0)))|| \
+-      (SUSE_VERSION && ((SUSE_VERSION == 15 && SUSE_PATCHLEVEL >= 1) || \
+-      (SUSE_VERSION > 15)))
++      (RHEL_RELEASE_CODE && (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,0))) || \
++      (SUSE_VERSION && ((SUSE_VERSION == 12 && SUSE_PATCHLEVEL >= 5) || \
++		        (SUSE_VERSION == 15 && SUSE_PATCHLEVEL >= 1) || \
++			(SUSE_VERSION > 15)))
+ #define HAVE_NDO_SELECT_QUEUE_ACCEL_FALLBACK_V2
+ #else
+ 
+@@ -659,6 +660,15 @@ do {									\
+ #define MMIOWB_NOT_DEFINED
+ #endif
+ 
++/* In the driver we currently only support CRC32 and Toeplitz.
++ * Since in kernel erlier than 4.12 the CRC32 define didn't exist
++ * We define it here to be XOR. Any user who wishes to select CRC32
++ * as the hash function, can do so by choosing xor through ethtool.
++ */
++#ifndef ETH_RSS_HASH_CRC32
++#define ETH_RSS_HASH_CRC32 ETH_RSS_HASH_XOR
++#endif
++
+ #ifndef _ULL
+ #define _ULL(x) (_AC(x, ULL))
+ #endif
+@@ -680,4 +690,13 @@ do {									\
+ 	({ unsigned long long _tmp = (ll); do_div(_tmp, d); _tmp; })
+ #endif
+ 
++/* values are taken from here: https://github.com/iovisor/bcc/blob/master/docs/kernel-versions.md */
++
++#if defined(CONFIG_BPF) && LINUX_VERSION_CODE >= KERNEL_VERSION(5,0,0)
++#define ENA_XDP_SUPPORT
++#endif
++
++#if LINUX_VERSION_CODE >= KERNEL_VERSION(5,5,0)
++#define HAVE_NDO_TX_TIMEOUT_STUCK_QUEUE_PARAMETER
++#endif
+ #endif /* _KCOMPAT_H_ */
+diff --git a/drivers/amazon/net/ena/net_dim.c b/drivers/amazon/net/ena/net_dim.c
+index b15f6f0a4441..af46903cd53e 100644
+--- a/drivers/amazon/net/ena/net_dim.c
++++ b/drivers/amazon/net/ena/net_dim.c
+@@ -71,7 +71,6 @@ net_dim_get_rx_moderation(u8 cq_period_mode, int ix)
+ 	cq_moder.cq_period_mode = cq_period_mode;
+ 	return cq_moder;
+ }
+-EXPORT_SYMBOL(net_dim_get_rx_moderation);
+ 
+ struct dim_cq_moder
+ net_dim_get_def_rx_moderation(u8 cq_period_mode)
+@@ -81,7 +80,6 @@ net_dim_get_def_rx_moderation(u8 cq_period_mode)
+ 
+ 	return net_dim_get_rx_moderation(cq_period_mode, profile_ix);
+ }
+-EXPORT_SYMBOL(net_dim_get_def_rx_moderation);
+ 
+ struct dim_cq_moder
+ net_dim_get_tx_moderation(u8 cq_period_mode, int ix)
+@@ -91,7 +89,6 @@ net_dim_get_tx_moderation(u8 cq_period_mode, int ix)
+ 	cq_moder.cq_period_mode = cq_period_mode;
+ 	return cq_moder;
+ }
+-EXPORT_SYMBOL(net_dim_get_tx_moderation);
+ 
+ struct dim_cq_moder
+ net_dim_get_def_tx_moderation(u8 cq_period_mode)
+@@ -101,7 +98,6 @@ net_dim_get_def_tx_moderation(u8 cq_period_mode)
+ 
+ 	return net_dim_get_tx_moderation(cq_period_mode, profile_ix);
+ }
+-EXPORT_SYMBOL(net_dim_get_def_tx_moderation);
+ 
+ static int net_dim_step(struct dim *dim)
+ {
+@@ -245,6 +241,5 @@ void net_dim(struct dim *dim, struct dim_sample end_sample)
+ 		break;
+ 	}
+ }
+-EXPORT_SYMBOL(net_dim);
+ 
+ #endif /* LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0) */
+-- 
+2.17.2
+

@@ -1,0 +1,37 @@
+From 7bc14afe6525dd36df8f9ac5a9433222c269ee11 Mon Sep 17 00:00:00 2001
+From: Frank van der Linden <fllinden@amazon.com>
+Date: Thu, 31 Jan 2019 21:50:37 +0000
+Subject: xen-netfront: call netif_device_attach on resume
+
+When xennet_connect is called in the resume path, it needs
+to re-attach the netif, otherwise it will no longer be
+found by various operations (such as ethtool ioctls, etc).
+
+Signed-off-by: Frank van der Linden <fllinden@amazon.com>
+Reviewed-by: Alakesh Haloi <alakeshh@amazon.com>
+Reviewed-by: Vallish Vaidyeshwara <vallish@amazon.com>
+---
+ drivers/net/xen-netfront.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
+index d3769ea971c3..22a7641c4d36 100644
+--- a/drivers/net/xen-netfront.c
++++ b/drivers/net/xen-netfront.c
+@@ -2052,6 +2052,13 @@ static int xennet_connect(struct net_device *dev)
+ 			device_unregister(&np->xbdev->dev);
+ 			return err;
+ 		}
++	} else {
++		/*
++		 * In the resume / thaw case, the netif needs to be
++		 * reattached, as it was detached in netfront_freeze().
++		 */
++		if (np->freeze_state == NETIF_FREEZE_STATE_FROZEN)
++			netif_device_attach(dev);
+ 	}
+ 
+ 	rtnl_lock();
+-- 
+2.17.2
+

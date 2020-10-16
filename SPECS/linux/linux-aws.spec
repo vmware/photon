@@ -1,9 +1,15 @@
+%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %global security_hardening none
 %global photon_checksum_generator_version 1.1
+%ifarch x86_64
+%define arch x86_64
+%define archdir x86
+%endif
+
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.127
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        5.9.0
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,119 +18,114 @@ Distribution: 	Photon
 
 %define uname_r %{version}-%{release}-aws
 
-Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=5da7a67e59fcc7133fa26515f85ef325d20b5d2d
-Source1:        config-aws
-Source2:        initramfs.trigger
+
+Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
+%define sha1 linux=26fefa389c711da70543092fbb121a023f1b0fb8
+Source1:	config-aws
+Source2:	initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
 Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
 %define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
 Source6:        genhmac.inc
-# common
-Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
-Patch1:         double-tcp_mem-limits.patch
-# TODO: disable this patch, check for regressions
-#Patch2:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch3:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
-Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
-Patch5:         vsock-transport-for-9p.patch
-Patch6:         4.18-x86-vmware-STA-support.patch
-Patch7:         vsock-delay-detach-of-QP-with-outgoing-data.patch
-#HyperV patches
-Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 
-# Fix CVE-2019-19072
-Patch17:        0001-tracing-Have-error-path-in-predicate_parse-free-its-.patch
-# Fix CVE-2019-19073
-Patch18:        0001-ath9k_htc-release-allocated-buffer-if-timed-out.patch
-# Fix CVE-2019-19074
-Patch19:        0001-ath9k-release-allocated-buffer-if-timed-out.patch
+# common
+Patch0:         net-Double-tcp_mem-limits.patch
+Patch1:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
+Patch2:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
+Patch3:         9p-transport-for-9p.patch
+Patch4:         vsock-delay-detach-of-QP-with-outgoing-data-59.patch
+# RDRAND-based RNG driver to enhance the kernel's entropy pool:
+Patch5:         hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
+
+#HyperV patches
+Patch6:        vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
-#Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
-Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix for CVE-2020-14331
-Patch27:        4.19-0001-vgacon-Fix-buffer-over-write-vulnerability-in-vgacon.patch
-# Fix CVE-2017-1000252
-Patch28:        kvm-dont-accept-wrong-gsi-values.patch
+#Patchx:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
+Patch7:        fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 # Out-of-tree patches from AppArmor:
-Patch29:        4.17-0001-apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
-Patch30:        4.17-0002-apparmor-af_unix-mediation.patch
-Patch31:        4.17-0003-apparmor-fix-use-after-free-in-sk_peer_label.patch
-# RDRAND-based RNG driver to enhance the kernel's entropy pool:
-Patch32:        4.18-0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
-# Fix for CVE-2019-12456
-Patch33:        0001-scsi-mpt3sas_ctl-fix-double-fetch-bug-in-_ctl_ioctl_.patch
+Patch8:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
+Patch9:        apparmor-af_unix-mediation.patch
+
+# VMW:
+Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
+Patch56:        x86-vmware-Log-kmsg-dump-on-panic.patch
+
+# CVE:
+Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
+# Fix CVE-2017-1000252
+Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
-Patch34:        0001-consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2019-12380
-Patch35:        0001-efi-x86-Add-missing-error-handling-to-old_memmap-1-1.patch
-# Fix for CVE-2019-12381
-Patch36:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
-# Fix for CVE-2019-12378
-Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
-# Fix for CVE-2019-12455
-Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
+Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 
+#Amazon AWS
+Patch201:       0002-bump-the-default-TTL-to-255.patch
+Patch202:       0003-bump-default-tcp_wmem-from-16KB-to-20KB.patch
+Patch203:       0005-drivers-introduce-AMAZON_DRIVER_UPDATES.patch
+Patch204:       0006-drivers-amazon-add-network-device-drivers-support.patch
+Patch205:       0007-drivers-amazon-introduce-AMAZON_ENA_ETHERNET.patch
+Patch206:       0008-Importing-Amazon-ENA-driver-1.5.0-into-amazon-4.14.y.patch
+Patch207:       0009-xen-manage-keep-track-of-the-on-going-suspend-mode.patch
+Patch208:       0010-xen-manage-introduce-helper-function-to-know-the-on-.patch
+Patch209:       0011-xenbus-add-freeze-thaw-restore-callbacks-support.patch
+Patch210:       0012-x86-xen-Introduce-new-function-to-map-HYPERVISOR_sha.patch
+Patch211:       0013-x86-xen-add-system-core-suspend-and-resume-callbacks.patch
+Patch212:       0014-xen-blkfront-add-callbacks-for-PM-suspend-and-hibern.patch
+Patch213:       0015-xen-netfront-add-callbacks-for-PM-suspend-and-hibern.patch
+Patch214:       0016-xen-time-introduce-xen_-save-restore-_steal_clock.patch
+Patch215:       0017-x86-xen-save-and-restore-steal-clock.patch
+Patch216:       0018-xen-events-add-xen_shutdown_pirqs-helper-function.patch
+Patch217:       0019-x86-xen-close-event-channels-for-PIRQs-in-system-cor.patch
+Patch218:       0020-PM-hibernate-update-the-resume-offset-on-SNAPSHOT_SE.patch
+Patch219:       0021-Not-for-upstream-PM-hibernate-Speed-up-hibernation-b.patch
+Patch220:       0022-xen-blkfront-add-persistent_grants-parameter.patch
+Patch221:       0023-Revert-xen-dont-fiddle-with-event-channel-masking-in.patch
+Patch222:       0024-xen-blkfront-Fixed-blkfront_restore-to-remove-a-call.patch
+Patch223:       0025-x86-tsc-avoid-system-instability-in-hibernation.patch
+Patch224:       0026-block-xen-blkfront-consider-new-dom0-features-on-res.patch
+Patch225:       0028-xen-restore-pirqs-on-resume-from-hibernation.patch
+Patch226:       0029-xen-Only-restore-the-ACPI-SCI-interrupt-in-xen_resto.patch
+Patch227:       0030-net-ena-Import-the-ENA-v2-driver-2.0.2g.patch
+Patch228:       0031-xen-netfront-call-netif_device_attach-on-resume.patch
+Patch229:       0032-net-ena-replace-dma_zalloc_coherent-with-dma_alloc_c.patch
+Patch230:       0060-xen-Restore-xen-pirqs-on-resume-from-hibernation.patch
+Patch231:       0061-block-xen-blkfront-bump-the-maximum-number-of-indire.patch
+Patch232:       0063-linux-ena-update-ENA-linux-driver-to-version-2.1.1.patch
+Patch233:       0064-Update-ena-driver-to-version-2.1.3.patch
+Patch234:       0065-Add-Amazon-EFA-driver-version-1.4.patch
+Patch235:       0066-libfs-revert-d4f4de5e5ef8efde85febb6876cd3c8ab163199.patch
+Patch236:       0070-ena-update-to-2.2.3.patch
+Patch237:       0071-ena-update-to-2.2.6.patch
+Patch238:       0082-ena-Update-to-2.2.10.patch
+Patch239:       0123-drivers-amazon-efa-update-to-1.9.0.patch
+
+# Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
-Patch98:        0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
+Patch500:       crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
-Patch99:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
-# Patch to perform continuous testing on RNG from Noise Source
-Patch100:       0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
-
-# Amazon AWS
-Patch101: 0002-watchdog-Disable-watchdog-on-virtual-machines.patch
-Patch102: 0004-bump-the-default-TTL-to-255.patch
-Patch103: 0005-bump-default-tcp_wmem-from-16KB-to-20KB.patch
-Patch105: 0009-drivers-introduce-AMAZON_DRIVER_UPDATES.patch
-Patch106: 0010-drivers-amazon-add-network-device-drivers-support.patch
-Patch107: 0011-drivers-amazon-introduce-AMAZON_ENA_ETHERNET.patch
-Patch108: 0012-Importing-Amazon-ENA-driver-1.5.0-into-amazon-4.14.y.patch
-Patch109: 0013-xen-manage-keep-track-of-the-on-going-suspend-mode.patch
-Patch110: 0014-xen-manage-introduce-helper-function-to-know-the-on-.patch
-Patch111: 0015-xenbus-add-freeze-thaw-restore-callbacks-support.patch
-Patch112: 0016-x86-xen-Introduce-new-function-to-map-HYPERVISOR_sha.patch
-Patch113: 0017-x86-xen-add-system-core-suspend-and-resume-callbacks.patch
-Patch114: 0018-xen-blkfront-add-callbacks-for-PM-suspend-and-hibern.patch
-Patch115: 0019-xen-netfront-add-callbacks-for-PM-suspend-and-hibern.patch
-Patch116: 0020-xen-time-introduce-xen_-save-restore-_steal_clock.patch
-Patch117: 0021-x86-xen-save-and-restore-steal-clock.patch
-Patch118: 0022-xen-events-add-xen_shutdown_pirqs-helper-function.patch
-Patch119: 0023-x86-xen-close-event-channels-for-PIRQs-in-system-cor.patch
-Patch120: 0024-PM-hibernate-update-the-resume-offset-on-SNAPSHOT_SE.patch
-Patch121: 0025-Not-for-upstream-PM-hibernate-Speed-up-hibernation-b.patch
-Patch122: 0026-xen-blkfront-resurrect-request-based-mode.patch
-Patch123: 0027-xen-blkfront-add-persistent_grants-parameter.patch
-Patch125: 0029-Revert-xen-dont-fiddle-with-event-channel-masking-in.patch
-Patch131: 0035-xen-blkfront-Fixed-blkfront_restore-to-remove-a-call.patch
-Patch133: 0037-x86-tsc-avoid-system-instability-in-hibernation.patch
-Patch152: 0056-Amazon-ENA-driver-Update-to-version-1.6.0.patch
+Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 
 %if 0%{?kat_build:1}
-Patch1000:	fips-kat-tests.patch
+Patch510:       crypto-testmgr-break-KAT-fips-intentionally.patch
 %endif
 
 BuildArch:      x86_64
 BuildRequires:  bc
-BuildRequires:  kbd
 BuildRequires:  kmod-devel
 BuildRequires:  glib-devel
-BuildRequires:  xerces-c-devel
-BuildRequires:  xml-security-c-devel
-BuildRequires:  libdnet-devel
-BuildRequires:  libmspack-devel
-BuildRequires:  Linux-PAM-devel
+BuildRequires:  elfutils-devel
+BuildRequires:  libunwind-devel
+#BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
-BuildRequires:	audit-devel
+BuildRequires:  audit-devel
 Requires:       filesystem kmod
 Requires(pre): (coreutils or toybox)
 Requires(preun): (coreutils or toybox)
-Requires(post):(coreutils or toybox)
-Requires(postun):(coreutils or toybox)
+Requires(post): (coreutils or toybox)
+Requires(postun): (coreutils or toybox)
 
 %description
 The Linux package contains the Linux kernel.
@@ -159,8 +160,8 @@ Requires:       python3
 The Linux package contains the Linux kernel doc files
 
 %package hmacgen
-Summary:	HMAC SHA256/HMAC SHA512 generator
-Group:		System Environment/Kernel
+Summary:        HMAC SHA256/HMAC SHA512 generator
+Group:          System Environment/Kernel
 Requires:      %{name} = %{version}-%{release}
 Enhances:       %{name}
 %description hmacgen
@@ -175,85 +176,91 @@ Requires:       %{name} = %{version}-%{release}
 Kernel driver for oprofile, a statistical profiler for Linux systems
 %endif
 
-
 %prep
+#TODO: remove rcN after 5.9 goes out of rc
 %setup -q -n linux-%{version}
 %setup -D -b 5 -n linux-%{version}
 
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
-%patch13 -p1
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
-%patch26 -p1
-%patch27 -p1
-%patch28 -p1
-%patch29 -p1
-%patch30 -p1
-%patch31 -p1
-%patch32 -p1
-%patch33 -p1
-%patch34 -p1
-%patch35 -p1
-%patch36 -p1
-%patch38 -p1
-%patch39 -p1
+%patch8 -p1
+%patch9 -p1
 
-%patch98 -p1
-%patch99 -p1
+# VMW
+%patch55 -p1
+%patch56 -p1
+
+# CVE
 %patch100 -p1
-
 %patch101 -p1
 %patch102 -p1
-%patch103 -p1
-%patch105 -p1
-%patch106 -p1
-%patch107 -p1
-%patch108 -p1
-%patch109 -p1
-%patch110 -p1
-%patch111 -p1
-%patch112 -p1
-%patch113 -p1
-%patch114 -p1
-%patch115 -p1
-%patch116 -p1
-%patch117 -p1
-%patch118 -p1
-%patch119 -p1
-%patch120 -p1
-%patch121 -p1
-%patch122 -p1
-%patch123 -p1
-%patch125 -p1
-%patch131 -p1
-%patch133 -p1
-%patch152 -p1
+
+#Amazon AWS
+%patch201 -p1
+%patch202 -p1
+%patch203 -p1
+%patch204 -p1
+%patch205 -p1
+%patch206 -p1
+%patch207 -p1
+%patch208 -p1
+%patch209 -p1
+%patch210 -p1
+%patch211 -p1
+%patch212 -p1
+%patch213 -p1
+%patch214 -p1
+%patch215 -p1
+%patch216 -p1
+%patch217 -p1
+%patch218 -p1
+%patch219 -p1
+%patch220 -p1
+%patch221 -p1
+%patch222 -p1
+%patch223 -p1
+%patch224 -p1
+%patch225 -p1
+%patch226 -p1
+%patch227 -p1
+%patch228 -p1
+%patch229 -p1
+%patch230 -p1
+%patch231 -p1
+%patch232 -p1
+%patch233 -p1
+%patch234 -p1
+%patch235 -p1
+%patch236 -p1
+%patch237 -p1
+%patch238 -p1
+%patch239 -p1
+
+
+# crypto
+%patch500 -p1
+%patch501 -p1
 
 %if 0%{?kat_build:1}
-%patch1000 -p1
+%patch510 -p1
 %endif
+
 
 %build
 make mrproper
-
-%ifarch x86_64
 cp %{SOURCE1} .config
-arch="x86_64"
-archdir="x86"
-%endif
 
 sed -i 's/CONFIG_LOCALVERSION="-aws"/CONFIG_LOCALVERSION="-%{release}-aws"/' .config
 
 %include %{SOURCE4}
 
-make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
+make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
 
 #build photon-checksum-generator module
 bldroot=`pwd`
@@ -282,10 +289,10 @@ for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
 %{nil}
 
 %install
-install -vdm 755 %{buildroot}/etc
+install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
-install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
-install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{uname_r}
+install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{uname_r}
+install -vdm 755 %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
 
@@ -315,7 +322,7 @@ install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 # Restrict the permission on System.map-X file
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
-cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
+cp -r Documentation/*        %{buildroot}%{_docdir}/%{name}-%{uname_r}
 install -vm 644 vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
 # `perf test vmlinux` needs it
 ln -s vmlinux-%{uname_r} %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux
@@ -337,18 +344,18 @@ EOF
 rm -rf %{buildroot}/lib/modules/%{uname_r}/source
 rm -rf %{buildroot}/lib/modules/%{uname_r}/build
 
-find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
-find arch/${archdir}/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
-find $(find arch/${archdir} -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
-find arch/${archdir}/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}/usr/src/%{name}-headers-%{uname_r}' copy
+find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+find arch/%{archdir}/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
+find arch/%{archdir}/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}' copy
 %ifarch x86_64
 # CONFIG_STACK_VALIDATION=y requires objtool to build external modules
 install -vsm 755 tools/objtool/objtool %{buildroot}/usr/src/%{name}-headers-%{uname_r}/tools/objtool/
 install -vsm 755 tools/objtool/fixdep %{buildroot}/usr/src/%{name}-headers-%{uname_r}/tools/objtool/
 %endif
 
-cp .config %{buildroot}/usr/src/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
-ln -sf "/usr/src/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
+cp .config %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r} # copy .config manually to be where it's expected to be
+ln -sf "%{_usrsrc}/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 # disable (JOBS=1) parallel build to fix this issue:
@@ -402,7 +409,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %files devel
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/build
-/usr/src/%{name}-headers-%{uname_r}
+%{_usrsrc}/%{name}-headers-%{uname_r}
 
 %files drivers-gpu
 %defattr(-,root,root)
@@ -425,6 +432,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Oct 28 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.9.0-1
+-   Update to version 5.9.0
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.19.127-3
 -   openssl 1.1.1
 *   Mon Jul 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.127-2

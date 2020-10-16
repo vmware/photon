@@ -1,0 +1,140 @@
+From 89798dd8385d599a687ef6e0f392baaa6b2dfb53 Mon Sep 17 00:00:00 2001
+From: Anchal Agarwal <anchalag@amazon.com>
+Date: Thu, 15 Aug 2019 22:26:27 +0000
+Subject: xen: Restore xen-pirqs on resume from hibernation
+
+shutdown_pirq is invoked during hibernation path and hence
+PIRQs should be restarted during resume. [Commit: xen: Only
+restore the ACPI SCI interrupt in xen_restore_pirqs] restores
+only ACPI SCI interrupt however, that is not the right thing
+to do as all pirqs should be enabled as a part of
+resume_device_irqs during suspend/resume device interrupts.
+Apparently, chip->irq_startup is called only if IRQD_IRQ_STARTED
+is unset during irq_startup on resume. This flag gets cleared by
+free_irq->irq_shutdown during suspend.
+
+free_irq() never gets explicitly called for ioapic-edge and
+ioapic-level interrupts as respective drivers do nothing during
+suspend/resume. So we shut them down explicitly in the first place
+in syscore_suspend path to clear IRQ<>event channel mapping.
+shutdown_pirq being called explicitly during suspend does not
+clear this flags, hence .irq_enable is called in irq_startup
+during resume instead and pirq's never start up.
+
+This commit exports irq_state_clr_started API to clear the flag
+during shutdown_pirq. Also, following the order in which
+ipis/virqs/pirqs are restored during xen resume, the same order
+should be followed for hibernation path. As per the flow of
+hibernation_platform_enter, we should not restore pirqs explicitly
+in syscore_resume ops and it should be done in resume devices path.
+
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+---
+ arch/x86/xen/suspend.c           |  1 -
+ drivers/xen/events/events_base.c | 42 +-------------------------------
+ include/linux/irq.h              |  2 ++
+ kernel/irq/chip.c                |  4 +--
+ 4 files changed, 5 insertions(+), 44 deletions(-)
+
+diff --git a/arch/x86/xen/suspend.c b/arch/x86/xen/suspend.c
+index 39644923b623..8be6ffa6bfbe 100644
+--- a/arch/x86/xen/suspend.c
++++ b/arch/x86/xen/suspend.c
+@@ -133,7 +133,6 @@ static void xen_syscore_resume(void)
+ 
+ 	gnttab_resume();
+ 
+-	xen_restore_pirqs();
+ }
+ 
+ /*
+diff --git a/drivers/xen/events/events_base.c b/drivers/xen/events/events_base.c
+index 16593437b2a3..01c1e5bbf6e4 100644
+--- a/drivers/xen/events/events_base.c
++++ b/drivers/xen/events/events_base.c
+@@ -1610,50 +1610,10 @@ void xen_shutdown_pirqs(void)
+ 			continue;
+ 
+ 		shutdown_pirq(irq_get_irq_data(info->irq));
++		irq_state_clr_started(irq_to_desc(info->irq));
+ 	}
+ }
+ 
+-/*
+- * For now, only restore the ACPI SCI pirq.
+- */
+-void xen_restore_pirqs(void)
+-{
+-#ifdef CONFIG_ACPI
+-	int pirq, rc, irq, gsi;
+-	struct physdev_map_pirq map_irq;
+-	struct irq_info *info;
+-
+-	list_for_each_entry(info, &xen_irq_list_head, list) {
+-		if (info->type != IRQT_PIRQ)
+-			continue;
+-
+-		pirq = info->u.pirq.pirq;
+-		gsi = info->u.pirq.gsi;
+-		irq = info->irq;
+-
+-		if (gsi != acpi_gbl_FADT.sci_interrupt)
+-			continue;
+-
+-		map_irq.domid = DOMID_SELF;
+-		map_irq.type = MAP_PIRQ_TYPE_GSI;
+-		map_irq.index = gsi;
+-		map_irq.pirq = pirq;
+-
+-		rc = HYPERVISOR_physdev_op(PHYSDEVOP_map_pirq, &map_irq);
+-		if (rc) {
+-			pr_warn("xen: ACPI SCI interrupt map failed, rc=%d\n",
+-				rc);
+-			xen_free_irq(irq);
+-			continue;
+-		}
+-
+-		printk(KERN_DEBUG "xen: restored ACPI SCI interrupt\n");
+-
+-		__startup_pirq(irq);
+-	}
+-#endif
+-}
+-
+ static struct irq_chip xen_dynamic_chip __read_mostly = {
+ 	.name			= "xen-dyn",
+ 
+diff --git a/include/linux/irq.h b/include/linux/irq.h
+index f8755e5fcd74..ab9d956e21b3 100644
+--- a/include/linux/irq.h
++++ b/include/linux/irq.h
+@@ -764,6 +764,8 @@ extern int irq_set_msi_desc_off(unsigned int irq_base, unsigned int irq_offset,
+ 				struct msi_desc *entry);
+ extern struct irq_data *irq_get_irq_data(unsigned int irq);
+ 
++extern void irq_state_clr_started(struct irq_desc *desc);
++
+ static inline struct irq_chip *irq_get_chip(unsigned int irq)
+ {
+ 	struct irq_data *d = irq_get_irq_data(irq);
+diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
+index b76703b2c0af..a84f495340f9 100644
+--- a/kernel/irq/chip.c
++++ b/kernel/irq/chip.c
+@@ -173,11 +173,11 @@ static void irq_state_clr_masked(struct irq_desc *desc)
+ 	irqd_clear(&desc->irq_data, IRQD_IRQ_MASKED);
+ }
+ 
+-static void irq_state_clr_started(struct irq_desc *desc)
++void irq_state_clr_started(struct irq_desc *desc)
+ {
+ 	irqd_clear(&desc->irq_data, IRQD_IRQ_STARTED);
+ }
+-
++EXPORT_SYMBOL_GPL(irq_state_clr_started);
+ static void irq_state_set_started(struct irq_desc *desc)
+ {
+ 	irqd_set(&desc->irq_data, IRQD_IRQ_STARTED);
+-- 
+2.17.2
+

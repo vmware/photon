@@ -1,0 +1,82 @@
+From ddaef8a279359e42d8b332eab9c154cb98808d46 Mon Sep 17 00:00:00 2001
+From: Eduardo Valentin <eduval@amazon.com>
+Date: Thu, 18 Oct 2018 22:13:48 +0000
+Subject: block: xen-blkfront: consider new dom0 features on restore
+
+On regular start, the instance will perform a regular boot, in which rootfs
+is mounted accordingly to the xen-blkback features (in particular
+feature-barrier and feature-flush-cache). That will setup the journal
+accordingly to the provided features on SB.
+On a start from hibernation, the instance boots, detects that a hibernation
+image is present, push the image to memory and jumps back where it was. There
+is no regular mount of the rootfs, it uses the data structures already in
+the previous saved memory image.
+Now, When the instance hibernates, it may move from its original dom0 to a new dom0
+when it is restarted.
+So, given the above, if the xen-blkback features change then the guest
+can be in trouble. And I see the original assumption was that the
+dom0 environment would be preserved. I did a couple of experiments,
+and I confirm that these particular features change quite a lot across
+hibernation attempts:
+[ 2343.157903] blkfront: xvda: barrier or flush: disabled; persistent grants: disabled; indirect descriptors: enabled;
+[ 2444.712339] blkfront: xvda: barrier or flush: disabled; persistent grants: disabled; indirect descriptors: enabled;
+[ 2537.105884] blkfront: xvda: flush diskcache: enabled; persistent grants: disabled; indirect descriptors: enabled;
+[ 2636.641298] blkfront: xvda: barrier or flush: disabled; persistent grants: disabled; indirect descriptors: enabled;
+[ 2729.868349] blkfront: xvda: flush diskcache: enabled; persistent grants: disabled; indirect descriptors: enabled;
+[ 2827.118979] blkfront: xvda: flush diskcache: enabled; persistent grants: disabled; indirect descriptors: enabled;
+[ 2924.812599] blkfront: xvda: flush diskcache: enabled; persistent grants: disabled; indirect descriptors: enabled;
+[ 3018.063399] blkfront: xvda: flush diskcache: enabled; persistent grants: disabled; indirect descriptors: enabled;
+[ 3116.685040] blkfront: xvda: flush diskcache: enabled; persistent grants: disabled; indirect descriptors: enabled;
+[ 3209.164475] blkfront: xvda: barrier or flush: disabled; persistent grants: disabled; indirect descriptors: enabled;
+[ 3317.981362] blkfront: xvda: barrier or flush: disabled; persistent grants: disabled; indirect descriptors: enabled;
+[ 3415.939725] blkfront: xvda: flush diskcache: enabled; persistent grants: disabled; indirect descriptors: enabled;
+[ 3514.202478] blkfront: xvda: barrier or flush: disabled; persistent grants: disabled; indirect descriptors: enabled;
+[ 3619.355791] blkfront: xvda: barrier or flush: disabled; persistent grants: disabled; indirect descriptors: enabled;
+
+Now, considering the above, this patch fixes the following scenario:
+a. Instance boots and sets up bio queue on a dom0 A with softbarrier supported.
+b. hibernates
+c. When asked to restore, the instance is back on dom0 B with unsupported
+softbarrier.
+d. Restoration goes well until next journal commit is issued. Remember that
+it is still using the previous image rootfs data structures, therefore
+is gonna request a softbarrier.
+e. The bio will error out and throw a "operation not supported" message
+and cause the journal to fail, and it will decide to remount
+the rootfs as RO.
+[ 1138.909290] print_req_error: operation not supported error, dev xvda, sector 4470400, flags 6008
+[ 1139.025685] Aborting journal on device xvda1-8.
+[ 1139.029758] print_req_error: operation not supported error, dev xvda, sector 4460544, flags 26008
+[ 1139.326119] Buffer I/O error on dev xvda1, logical block 0, lost sync page write
+[ 1139.331398] EXT4-fs error (device xvda1): ext4_journal_check_start:61: Detected aborted journal
+[ 1139.337296] EXT4-fs (xvda1): Remounting filesystem read-only
+[ 1139.341006] EXT4-fs (xvda1): previous I/O error to superblock detected
+[ 1139.345704] print_req_error: operation not supported error, dev xvda, sector 4096, flags 26008
+
+The fix is essentially to read xenbus to query the new xen
+blkback capabilities and update them into the request queue.
+
+Reviewed-by: Balbir Singh <sblbir@amazon.com>
+Reviewed-by: Vallish Vaidyeshwara <vallish@amazon.com>
+Signed-off-by: Eduardo Valentin <eduval@amazon.com>
+---
+ drivers/block/xen-blkfront.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
+index c7936a30404f..4a72d6804453 100644
+--- a/drivers/block/xen-blkfront.c
++++ b/drivers/block/xen-blkfront.c
+@@ -2772,6 +2772,9 @@ static int blkfront_restore(struct xenbus_device *dev)
+ {
+ 	struct blkfront_info *info = dev_get_drvdata(&dev->dev);
+ 	int err = 0;
++
++	blkfront_gather_backend_features(info);
++	xlvbd_flush(info);
+ 	err = talk_to_blkback(dev, info);
+ 	if (err)
+ 		goto out;
+-- 
+2.17.2
+
