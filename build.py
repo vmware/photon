@@ -20,7 +20,7 @@ import glob
 configdict = {}
 
 targetList = {
-        "image":["iso", "ami", "gce", "azure", "rpi3", "ova", "ova_uefi", "all", "src-iso",
+        "image":["iso", "ami", "gce", "azure", "rpi", "ova", "ova_uefi", "all", "src-iso",
                 "photon-docker-image", "k8s-docker-images", "all-images", "minimal-iso", "rt-iso"],
 
         "rpmBuild": ["packages", "packages-minimal", "packages-initrd", "packages-docker",
@@ -720,7 +720,7 @@ class CheckTools:
             raise Exception("Not able to install photon docker image")
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# class BuildImage does the job of building all the images like iso, rpi3, ami, gce, azure, ova...                              +
+# class BuildImage does the job of building all the images like iso, rpi, ami, gce, azure, ova...                              +
 # It uses class ImageBuilder to build different images.                                                                         +
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -1057,7 +1057,7 @@ def main():
             if options.targetName in ["iso", "src-iso", "minimal-iso", "rt-iso"]:
                 buildImage.set_Iso_Parameters(options.targetName)
                 buildImage.build_iso()
-            elif options.targetName in ["ami", "gce", "ova", "ova_uefi", "rpi3", "azure"]:
+            elif options.targetName in ["ami", "gce", "ova", "ova_uefi", "rpi", "azure"]:
                 buildImage.build_image()
             else:
                 attr = getattr(buildImage, configdict["targetName"])

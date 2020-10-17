@@ -3,7 +3,7 @@
         "arch": "aarch64",
         "bootmode": "efi",
         "hostname": "photon-machine",
-        "packagelist_file": "packages_rpi3.json",
+        "packagelist_file": "packages_rpi.json",
         "partition_type": "msdos",
         "partitions": [
             {"mountpoint": "/boot/efi", "size": 30, "filesystem": "vfat", "type": "0c01"},
@@ -18,10 +18,10 @@
                             {"resizefs.sh": "/usr/local/bin/resizefs.sh"},
                             {"resizefs.service": "/lib/systemd/system/resizefs.service"}
         ],
-        "postinstallscripts": ["rpi3-custom-patch.sh" ],
+        "postinstallscripts": ["rpi-custom-patch.sh" ],
         "linux_flavor": "linux"
     },
-    "image_type": "rpi3",
+    "image_type": "rpi",
     "size": 512,
     "artifacttype": "xz",
     "keeprawdisk": true

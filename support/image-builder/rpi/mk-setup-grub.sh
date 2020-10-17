@@ -10,10 +10,7 @@ ROOT_PARTITION_PATH=$2
 BOOT_PARTITION_PATH=$3
 BOOT_DIRECTORY=$4
 
-# Raspberry prorpiaetary GPU bootloader (1st stage)
-cp -r $SCRIPT_PATH/esp/* $BUILDROOT/boot/efi/
-
-EXTRA_PARAMS="rootwait rw console=ttyS0,115200n8 console=tty0 cma=256M"
+EXTRA_PARAMS="rootwait rw console=ttyS0,115200n8 console=tty0"
 
 cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
 # Begin /boot/grub2/grub.cfg
