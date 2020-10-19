@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.9.0
-Release:        rc7.1%{?kat_build:.kat}%{?dist}
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -23,12 +23,8 @@ Distribution: 	Photon
 
 %define uname_r %{version}-%{release}
 
-#TODO: remove rcN after 5.9 goes out of rc
-%define lnx_rc_ver 5.9.0-rc7
-%define lnx_rc_local_ver .1%{?kat_build:.kat}%{?dist}
-
-Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{lnx_rc_ver}.tar.xz
-%define sha1 linux=b8809bb16a9591303ac2bb84e19a597e26b69c4c
+Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
+%define sha1 linux=26fefa389c711da70543092fbb121a023f1b0fb8
 Source1:	config_%{_arch}
 Source2:	initramfs.trigger
 %define ena_version 2.2.11
@@ -286,14 +282,14 @@ This Linux package contains hmac sha generator kernel module.
 
 %prep
 #TODO: remove rcN after 5.9 goes out of rc
-%setup -q -n linux-%{lnx_rc_ver}
+%setup -q -n linux-%{version}
 %ifarch x86_64
-%setup -D -b 3 -n linux-%{lnx_rc_ver}
-%setup -D -b 4 -n linux-%{lnx_rc_ver}
-%setup -D -b 5 -n linux-%{lnx_rc_ver}
-%setup -D -b 10 -n linux-%{lnx_rc_ver}
+%setup -D -b 3 -n linux-%{version}
+%setup -D -b 4 -n linux-%{version}
+%setup -D -b 5 -n linux-%{version}
+%setup -D -b 10 -n linux-%{version}
 %endif
-%setup -D -b 8 -n linux-%{lnx_rc_ver}
+%setup -D -b 8 -n linux-%{version}
 
 %patch0 -p1
 %patch1 -p1
@@ -417,7 +413,7 @@ This Linux package contains hmac sha generator kernel module.
 make mrproper
 cp %{SOURCE1} .config
 
-sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="%{lnx_rc_local_ver}"/' .config
+sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
 %include %{SOURCE7}
 
@@ -722,6 +718,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Oct 19 2020 Bo Gan <ganb@vmware.com> 5.9.0-1
+-   Update to 5.9.0
 *   Wed Sep 30 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-rc7.1
 -   Update to version 5.9.0-rc7
 *   Mon Sep 21 2020 Bo Gan <ganb@vmware.com> 5.9.0-rc4.1
