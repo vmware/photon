@@ -1,11 +1,17 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        4.7.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
 %define sha1    libvirt=57d116782f5b6ef3371d6bb29c06df019fe9ec57
+Patch0:         libvirt-CVE-2019-3840.patch
+Patch1:         libvirt-CVE-2019-10166.patch
+Patch2:         libvirt-CVE-2019-10167.patch
+Patch3:         libvirt-CVE-2019-10168.patch
+Patch4:         libvirt-4.7.0-CVE-2019-20485.patch
+Patch5:         libvirt-CVE-2020-10703.patch
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -58,6 +64,12 @@ This contains development tools and libraries for libvirt.
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
 %build
 %configure \
     --disable-silent-rules \
@@ -114,6 +126,9 @@ make check
 %{_mandir}/*
 
 %changelog
+*   Mon Aug 19 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 4.7.0-4
+-   fix CVE-2019-10166, CVE-2019-10167, CVE-2019-10168,
+-   CVE-2019-3840,CVE-2019-20485,CVE-2020-10703
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 4.7.0-3
 -   Build with python3
 -   Mass removal python2
