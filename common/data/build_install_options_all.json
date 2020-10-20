@@ -9,20 +9,15 @@
         "packagelist_file" : "packages_developer.json",
         "visible" : true
     },
-    "edge" : {
-        "title" : "3. Photon Edge",
-        "packagelist_file" : "packages_edge.json",
-        "visible" : true
-    },
     "ostree_host" : {
-        "title" : "4. Photon OSTree Host",
+        "title" : "3. Photon OSTree Host",
         "packagelist_file" : "packages_ostree_host.json",
         "visible" : true,
         "include" : [],
         "additional-files" : ["ostree-repo.tar.gz"]
     },
     "realtime" : {
-        "title" : "5. Photon Real Time",
+        "title" : "4. Photon Real Time",
         "packagelist_file" : "packages_rt.json",
         "visible" : true
     },
