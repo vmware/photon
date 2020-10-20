@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.237
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.240
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=24ac65c871a62940d710c4769a3fa454955cae87
+%define sha1 linux=ce790bba110e57662d8278d3b3685ef1a870feea
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -59,10 +59,6 @@ Patch33:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 Patch34:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
 Patch35:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 
-# Fix for CVE-2020-14386
-Patch38:        0001-net-packet-make-tp_drops-atomic.patch
-Patch39:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
-
 Patch44:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
 Patch45:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
@@ -86,8 +82,6 @@ Patch56:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 Patch57:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 #Fix for CVE-2019-3900
 Patch59: 0001-vhost-vsock-add-weight-support.patch
-# Fix for CVE-2020-25211
-Patch60:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 # Fix CVE-2019-18885
 Patch61:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch62:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
@@ -249,8 +243,6 @@ EOF
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
-%patch38 -p1
-%patch39 -p1
 %patch44 -p1
 %patch45 -p1
 %patch48 -p1
@@ -264,7 +256,6 @@ EOF
 %patch56 -p1
 %patch57 -p1
 %patch59 -p1
-%patch60 -p1
 %patch61 -p1
 %patch62 -p1
 %patch63 -p1
@@ -438,6 +429,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 19 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.240-1
+-   Update to version 4.9.240
 *   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.9.237-3
 -   Fix for CVE-2020-16120
 *   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-2

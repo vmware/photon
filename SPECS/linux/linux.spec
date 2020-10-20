@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.237
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.240
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=24ac65c871a62940d710c4769a3fa454955cae87
+%define sha1 linux=ce790bba110e57662d8278d3b3685ef1a870feea
 Source1:        config
 Source2:        initramfs.trigger
 %define ena_version 1.1.3
@@ -49,8 +49,6 @@ Patch23:        0014-hv_sock-introduce-Hyper-V-Sockets.patch
 Patch24:        0001-Revert-crypto-testmgr-Disable-fips-allowed-for-authe.patch
 Patch25:        0002-allow-also-ecb-cipher_null.patch
 Patch26:        add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
-# Fix for CVE-2020-25211
-Patch27:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 Patch30:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
@@ -58,9 +56,6 @@ Patch31:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 # To fix kernel PANIC in cascade
 Patch32:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
 Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
-# Fix for CVE-2020-14386
-Patch34:        0001-net-packet-make-tp_drops-atomic.patch
-Patch35:        0001-net-packet-fix-overflow-in-tpacket_rcv.patch
 
 Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
@@ -245,14 +240,11 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
-%patch27 -p1
 %patch28 -p1
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
-%patch34 -p1
-%patch35 -p1
 %patch42 -p1
 %patch43 -p1
 %patch46 -p1
@@ -482,6 +474,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Oct 19 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.240-1
+-   Update to version 4.9.240
 *   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.9.237-4
 -   Fix for CVE-2020-16120
 *   Mon Oct 12 2020 Ankit Jain <ankitja@vmware.com> 4.9.237-3
