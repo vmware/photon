@@ -2,7 +2,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        7.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -12,8 +12,8 @@ Source0:        %{name}-%{version}.tar.gz
 %define sha1    powershell=b56eac631c7d3085d93ccc5e2c517422be0e26d4
 Source1:        %{name}-native-7.0.0.tar.gz
 %define sha1    powershell-native=7606e94dc5691d6d9297b5c4452a08728c93d526
-Source2:        %{name}-linux-%{version}-x64.tar.gz
-%define sha1    powershell-linux=d4d4f9e998e41cb57c52421fe20103d32dbf8af0
+Source2:        %{name}-linux-%{version}-1-x64.tar.gz
+%define sha1    powershell-linux=e7bc433d9dc118c6b4cd119a83f7941ac87bc3c1
 Source3:        build.sh
 Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 BuildArch:      x86_64
@@ -36,7 +36,7 @@ It consists of a cross-platform command-line shell and associated scripting lang
 %prep
 %setup -qn PowerShell-%{version}
 %setup -qcTDa 1 -n PowerShell-Native
-%setup -qcTDa 2 -n %{name}-linux-%{version}-x64
+%setup -qcTDa 2 -n %{name}-linux-%{version}-1-x64
 
 %build
 cd %{_builddir}/PowerShell-%{version}
@@ -63,8 +63,9 @@ mkdir -p %{buildroot}%{_bindir}
 chmod 0755 %{buildroot}/%{_libdir}/powershell/pwsh
 ln -sf %{_libdir}/powershell/pwsh %{buildroot}%{_bindir}/pwsh
 mkdir -p %{buildroot}%{_libdir}/powershell/ref
-cp %{_builddir}/powershell-linux-%{version}-x64/ref/* %{buildroot}%{_libdir}/powershell/ref
-cp -r %{_builddir}/powershell-linux-%{version}-x64/Modules/{PSReadLine,PowerShellGet,PackageManagement} \
+cp %{_builddir}/powershell-linux-%{version}-1-x64/ref/* %{buildroot}%{_libdir}/powershell/ref
+cp %{_builddir}/powershell-linux-%{version}-1-x64/libmi.so %{buildroot}%{_libdir}/powershell/
+cp -r %{_builddir}/powershell-linux-%{version}-1-x64/Modules/{PSReadLine,PowerShellGet,PackageManagement} \
 %{buildroot}%{_libdir}/powershell/Modules
 
 %check
@@ -97,6 +98,8 @@ fi
     %{_docdir}/*
 
 %changelog
+*   Sat Oct 17 2020 Satya Naga Rajesh <svasamsetty@vmware.com> 7.0.0-2
+-   Fix powershell compatibility with openssl 1.1.1
 *   Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 7.0.0-1
 -   Automatic Version Bump
 *   Thu Mar 26 2020 Alexey Makhalov <amakhalov@vmware.com> 6.2.3-5
