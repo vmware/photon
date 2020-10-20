@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.237
-Release:        5%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.240
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=9ee097efa36c9f54db9adbe0837f1635daa2fb0e
+%define sha1 linux=58f7f86728af35370e4cbe472bf2e30dfeecf434
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -49,8 +49,6 @@ Patch22:        0001-9p-Transport-error-uninitialized.patch
 Patch23:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
 # Fix for CVE-2018-5995
 Patch24:        0001-percpu-stop-printing-kernel-addresses.patch
-# Fix for CVE-2020-25211
-Patch25:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 
 Patch26:        Implement-the-f-xattrat-family-of-functions.patch
 Patch27:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
@@ -98,9 +96,6 @@ Patch56:        0001-Initialize-fid-iounit-during-creation-of-p9_fid.patch
 Patch57:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
 Patch58:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
 Patch59:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
-
-# Fix for CVE-2020-14390
-Patch63:        0001-tty-vt-consw-con_scrolldelta-cleanup.patch
 
 Patch64:        0001-xen-events-don-t-use-chip_data-for-legacy-IRQs.patch
 
@@ -230,7 +225,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch22 -p1
 %patch23 -p1
 %patch24 -p1
-%patch25 -p1
 %patch26 -p1
 %patch27 -p1
 %patch28 -p1
@@ -261,7 +255,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch57 -p1
 %patch58 -p1
 %patch59 -p1
-%patch63 -p1
 %patch64 -p1
 %patch65 -p1
 %patch67 -p1
@@ -438,6 +431,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Oct 19 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.240-1
+-   Update to version 4.4.240
 *   Thu Oct 15 2020 Srinidhi Rao <srinidhir@vmware.com> 4.4.237-5
 -   Fix for CVE-2019-19377
 *   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.4.237-4

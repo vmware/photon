@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.237
-Release:       5%{?dist}
+Version:       4.4.240
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:  Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=9ee097efa36c9f54db9adbe0837f1635daa2fb0e
+%define sha1 linux=58f7f86728af35370e4cbe472bf2e30dfeecf434
 Source1:       config-esx
 Source2:       pre-preun-postun-tasks.inc
 
@@ -52,8 +52,6 @@ Patch31:       0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
 Patch32:       0001-9p-fscache-Don-t-use-writeback-fid-for-cache-when-en.patch
 # Fix for CVE-2018-5995
 Patch33:        0001-percpu-stop-printing-kernel-addresses.patch
-# Fix for CVE-2020-25211
-Patch34:        0001-netfilter-ctnetlink-add-a-range-check-for-l3-l4-prot.patch
 
 Patch35:       0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
@@ -97,8 +95,6 @@ Patch60:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 Patch61:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
 Patch62:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
 Patch63:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
-# Fix for CVE-2020-14390
-Patch67:        0001-tty-vt-consw-con_scrolldelta-cleanup.patch
 # Fix for CVE-2019-19377
 Patch68:        0001-btrfs-Don-t-submit-any-btree-write-bio-if-the-fs-has.patch
 
@@ -197,7 +193,6 @@ The Linux package contains the Linux kernel doc files
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
-%patch34 -p1
 %patch35 -p1
 %patch36 -p1
 %patch37 -p1
@@ -226,7 +221,6 @@ The Linux package contains the Linux kernel doc files
 %patch61 -p1
 %patch62 -p1
 %patch63 -p1
-%patch67 -p1
 %patch68 -p1
 
 %patch70 -p1
@@ -335,6 +329,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 19 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.240-1
+-   Update to version 4.4.240
 *   Thu Oct 15 2020 Srinidhi Rao <srinidhir@vmware.com> 4.4.237-5
 -   Fix for CVE-2019-19377
 *   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.4.237-4
