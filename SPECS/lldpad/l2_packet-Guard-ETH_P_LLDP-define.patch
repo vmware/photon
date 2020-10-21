@@ -1,0 +1,27 @@
+From 273caec484cd37c3d96b40b1754ef4c63b530eff Mon Sep 17 00:00:00 2001
+From: Scott Register <sreg@sreg.io>
+Date: Tue, 22 Oct 2019 09:11:06 -0700
+Subject: [PATCH] l2_packet: Guard ETH_P_LLDP define
+
+ETH_P_LLDP is now defined in if_ether.h on new kernels. Guarding this prevents
+double definition when building on 5.3 kernels.
+
+Signed-off-by: Scott Register <sreg@sreg.io>
+---
+ lldp/l2_packet.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/lldp/l2_packet.h b/lldp/l2_packet.h
+index b82b894..607b8a3 100644
+--- a/lldp/l2_packet.h
++++ b/lldp/l2_packet.h
+@@ -37,7 +37,9 @@
+ #define IP2STR(a) (a)[0], (a)[1], (a)[2], (a)[3], (a)[4], (a)[5]
+ #define IPSTR "%02x:%02x:%02x:%02x:%02x:%02x"
+ 
++#ifndef ETH_P_LLDP
+ #define ETH_P_LLDP 0x88cc
++#endif
+ 
+ #define ETH_P_ECP	0x88b7		/* Draft 0.2 */
+ #define ETH_P_ECP22	0x8940		/* Ratified standard */
