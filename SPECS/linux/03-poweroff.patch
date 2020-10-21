@@ -1,41 +1,90 @@
-From 98580173d5aeffd33b2d0ae532a05aa55bfe02bb Mon Sep 17 00:00:00 2001
+From 7a0dc425efe76bcca5772ad76142b9fbe66abba1 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
-Date: Tue, 29 Sep 2015 16:01:17 -0700
-Subject: [PATCH] reboot.c: Hardcodded piix4 poweroff
+Date: Tue, 20 Oct 2020 17:22:12 -0700
+Subject: [PATCH] vmware: poweroff support for no firmware case
 
-In case of missing ACPI or acpi=off we still want to
-be able to power off the VM. It can be done by sending
-Power off command (0x2000) into chipset power management
-control register (0x1004).
+This commit consists of 2 parts:
+1) Chipset PM initialization.
+2) PM usage to perform "poweroff".
+
+Poweroff in VMware VM works through Intel PIIX4 Power
+Management. BIOS or EFI firmware is responsible to
+initialize it. Initialization means: assigning PM IO base
+and enabling PM IO. In case of no firmware boot such as
+direct boot, PM remains uninitialized.
+
+Use quirk_piix4_acpi() to check whether PM is initialized
+and if not - initialize it.
+
+pm_power_off is a pointer to the function which performs
+machine poweroff (see native_machine_power_off()). In
+VMware VM, ACPI subsystem provides pm_power_off handler.
+
+If ACPI is not available (direct boot or 'noacpi' kernel
+parameter) pm_power_off is not set, and poweroff request
+will perform halt (see 'reboot' syscall implementation).
+Luckily, Linux kernel has native driver for PIIX4 Power
+Management drivers/power/reset/piix4-poweroff.c developed
+for MIPS architecture. So, reuse it iff pm_power_off is
+not set.
 ---
- arch/x86/kernel/cpu/vmware.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/pci/quirks.c                 | 12 ++++++++++++
+ drivers/power/reset/Kconfig          |  2 +-
+ drivers/power/reset/piix4-poweroff.c |  4 ++++
+ 3 files changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
-index 2b1d07183fba..8cf03fe161f2 100644
---- a/arch/x86/kernel/cpu/vmware.c
-+++ b/arch/x86/kernel/cpu/vmware.c
-@@ -351,3 +351,20 @@ static void kmsg_dumper_vmware_log(struct kmsg_dumper *dumper,
- 			break;
- 	}
- }
-+
-+static void vmware_power_off(void)
-+{
-+	/* PIIX4 Power Off */
-+	outw(0x2000, 0x1004);
-+}
-+
-+static __init int vmware_poweroff_init(void)
-+{
-+	if (!pm_power_off) {
-+		pr_info("Using non-ACPI power off method.\n");
-+		pm_power_off = vmware_power_off;
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 0862cb633849..632970db18ca 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -696,7 +696,19 @@ static void piix4_mem_quirk(struct pci_dev *dev, const char *name, unsigned int
+ static void quirk_piix4_acpi(struct pci_dev *dev)
+ {
+ 	u32 res_a;
++	u16 pm_io_enabled;
+ 
++	pci_read_config_word(dev, 0x80, &pm_io_enabled);
++	if ((pm_io_enabled & 1) == 0) {
++		/*
++		 * No firmware case, such as direct boot.
++		 * Set PM IO Base to 0x1000 and enable it.
++		 */
++		pci_write_config_word(dev, 0x40, 0x1000);
++		pci_write_config_word(dev, 0x80, pm_io_enabled | 1);
++		quirk_io_region(dev, 0x40, 64, PCI_BRIDGE_RESOURCES, "PIIX4 PM");
++		return;
 +	}
-+	return 0;
-+}
+ 	quirk_io_region(dev, 0x40, 64, PCI_BRIDGE_RESOURCES, "PIIX4 ACPI");
+ 	quirk_io_region(dev, 0x90, 16, PCI_BRIDGE_RESOURCES+1, "PIIX4 SMB");
+ 
+diff --git a/drivers/power/reset/Kconfig b/drivers/power/reset/Kconfig
+index 6533aa560aa1..cbb04d2edfa0 100644
+--- a/drivers/power/reset/Kconfig
++++ b/drivers/power/reset/Kconfig
+@@ -125,7 +125,7 @@ config POWER_RESET_OCELOT_RESET
+ config POWER_RESET_PIIX4_POWEROFF
+ 	tristate "Intel PIIX4 power-off driver"
+ 	depends on PCI
+-	depends on MIPS || COMPILE_TEST
++	depends on X86 || MIPS || COMPILE_TEST
+ 	help
+ 	  This driver supports powering off a system using the Intel PIIX4
+ 	  southbridge, for example the MIPS Malta development board. The
+diff --git a/drivers/power/reset/piix4-poweroff.c b/drivers/power/reset/piix4-poweroff.c
+index 20ce3ff5e039..9fc9c2e87f5a 100644
+--- a/drivers/power/reset/piix4-poweroff.c
++++ b/drivers/power/reset/piix4-poweroff.c
+@@ -68,6 +68,10 @@ static int piix4_poweroff_probe(struct pci_dev *dev,
+ {
+ 	int res;
+ 
++	/* Do not overwrite default (ACPI) handler */
++	if (pm_power_off)
++		return -EBUSY;
 +
-+late_initcall(vmware_poweroff_init);
+ 	if (pm_dev)
+ 		return -EINVAL;
+ 
 -- 
-2.14.2
+2.11.0
 

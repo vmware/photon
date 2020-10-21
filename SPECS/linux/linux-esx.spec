@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.150
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -416,6 +416,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Oct 21 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.150-2
+-   Improve 03-poweroff patch to support direct boot.
+-   .config: enable CONFIG_POWER_RESET_PIIX4_POWEROFF.
 *   Tue Oct 13 2020 Ajay Kaher <akaher@vmware.com> 4.19.150-1
 -   Update to version 4.19.150
 *   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-7
