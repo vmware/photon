@@ -1,7 +1,7 @@
 Summary:	Man pages
 Name:		man-pages
 Version:	4.16
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+ and BSD
 URL:		http://www.kernel.org/doc/man-pages
 Group:		System Environment/Base
@@ -23,8 +23,8 @@ make DESTDIR=%{buildroot} install
 # The following man pages conflict with other packages
 rm -vf %{buildroot}%{_mandir}/man3/getspnam.3
 rm -vf %{buildroot}%{_mandir}/man5/passwd.5
-# /usr/share/man/man2/move_pages.2.gz conflict with libnuma-devel-2.0.13-1.ph3.x86_64
-rm -vf %{buildroot}%{_mandir}/man2/move_pages.2.gz
+# /usr/share/man/man2/move_pages.2 conflict with libnuma-devel-2.0.13-1.ph3.x86_64
+rm -vf %{buildroot}%{_mandir}/man2/move_pages.2
 
 %files
 %defattr(-,root,root)
@@ -38,6 +38,8 @@ rm -vf %{buildroot}%{_mandir}/man2/move_pages.2.gz
 %{_mandir}/man8/*
 
 %changelog
+*   Wed Oct 21 2020 Sharan Turlapati <sturlapati@vmware.com>  4.16-3
+-   Remove conflict with libnuma-devel
 *   Fri Sep 25 2020 Michelle Wang <michellew@vmware.com> 4.16-2
 -   Remove conflict with libnuma-devel
 *   Thu Sep 06 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.16-1
