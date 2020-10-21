@@ -1,18 +1,18 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
 %define jdk_major_version 11.0
-%define subversion 8
+%define subversion 9
 Summary:	OpenJDK
 Name:		openjdk11
-Version:	11.0.8
-Release:	2%{?dist}
+Version:	11.0.9
+Release:	1%{?dist}
 License:	GNU General Public License V2
 URL:		https://openjdk.java.net
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk/jdk11/openjdk-%{version}.tar.gz
-%define sha1 openjdk-11.0=bd6bf67183a8adefc9251c1b8395dbcbd6b252bf
+%define sha1 openjdk-11.0=a198a4776fdd54db35e963cde7bdcac54dfacb53
 BuildArch:      x86_64
 BuildRequires:  pcre-devel
 BuildRequires:	which
@@ -189,6 +189,8 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+*   Wed Oct 21 2020 Tapas Kundu <tkundu@vmware.com> 11.0.9-1
+-   Updated to 11.0.9 tag - jdk-11.0.9+10
 *   Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 11.0.8-2
 -   Added a check in %postun to avoid alternatives --remove
 -   after new version is installed.
