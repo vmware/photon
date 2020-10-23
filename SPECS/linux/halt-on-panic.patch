@@ -1,0 +1,45 @@
+From 2fee0bb245fe81dbb76b6b1cad228eba593bfe9f Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Thu, 22 Oct 2020 18:54:49 -0700
+Subject: [PATCH] kernel/panic: halt on panic implementation
+
+Can be used by CRX to collect guest dump on panic.
+Guest dump can be trigerred by triple fault (in debug
+builds) or by cli;hlt event in the guest for directly
+booted VM (debug and release builds).
+---
+ kernel/panic.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/kernel/panic.c b/kernel/panic.c
+index 8138a676fb7d..a0e8351f4b93 100644
+--- a/kernel/panic.c
++++ b/kernel/panic.c
+@@ -41,6 +41,7 @@ static int pause_on_oops;
+ static int pause_on_oops_flag;
+ static DEFINE_SPINLOCK(pause_on_oops_lock);
+ bool crash_kexec_post_notifiers;
++bool halt_on_panic;
+ int panic_on_warn __read_mostly;
+ 
+ int panic_timeout = CONFIG_PANIC_TIMEOUT;
+@@ -297,6 +298,8 @@ void panic(const char *fmt, ...)
+ #endif
+ 	pr_emerg("---[ end Kernel panic - not syncing: %s ]---\n", buf);
+ 	local_irq_enable();
++	if (halt_on_panic)
++		machine_halt();
+ 	for (i = 0; ; i += PANIC_TIMER_STEP) {
+ 		touch_softlockup_watchdog();
+ 		if (i >= i_next) {
+@@ -658,6 +661,7 @@ core_param(panic, panic_timeout, int, 0644);
+ core_param(pause_on_oops, pause_on_oops, int, 0644);
+ core_param(panic_on_warn, panic_on_warn, int, 0644);
+ core_param(crash_kexec_post_notifiers, crash_kexec_post_notifiers, bool, 0644);
++core_param(halt_on_panic, halt_on_panic, bool, 0644);
+ 
+ static int __init oops_setup(char *s)
+ {
+-- 
+2.11.0
+

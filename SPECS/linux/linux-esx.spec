@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.150
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -50,6 +50,7 @@ Patch19:        07-vmware-only.patch
 Patch20:        initramfs-support-for-page-aligned-format-newca.patch
 Patch21:        enabling-configuring-options-for-geneve-device.patch
 Patch22:        initramfs-multiple-image-extraction-support.patch
+Patch23:        halt-on-panic.patch
 
 Patch30:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 
@@ -223,6 +224,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch20 -p1
 %patch21 -p1
 %patch22 -p1
+%patch23 -p1
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
@@ -416,6 +418,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Oct 22 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.150-3
+-   halt_on_panic kernel cmdline.
 *   Wed Oct 21 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.150-2
 -   Improve 03-poweroff patch to support direct boot.
 -   .config: enable CONFIG_POWER_RESET_PIIX4_POWEROFF.
