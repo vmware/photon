@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           apparmor
 Version:        3.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -39,6 +39,8 @@ BuildRequires:  dejagnu
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  python3-setuptools, python3-xml
+
+Patch0:         fix-build-failure-in-apparmor.patch
 
 %description
 AppArmor is a file and network mandatory access control
@@ -153,6 +155,8 @@ This package contains the AppArmor module for perl.
 
 %prep
 %setup -q -n %{name}-%{version}
+
+%patch0 -p1
 
 %build
 #Building libapparmor
@@ -348,6 +352,8 @@ make DESTDIR=%{buildroot} install
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+*   Fri Oct 23 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.0.0-2
+-   Fix build failure in apparmor on linux 5.9-rc7
 *   Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.0-1
 -   Automatic Version Bump
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.13.4-2
