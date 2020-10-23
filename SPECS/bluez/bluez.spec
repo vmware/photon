@@ -1,7 +1,7 @@
 Summary:	Bluetooth utilities
 Name:		bluez
 Version:	5.52
-Release: 	2%{?dist}
+Release: 	3%{?dist}
 License:	GPLv2+
 Group:		Applications/System
 Vendor:		VMware, Inc.
@@ -11,6 +11,7 @@ Source0:	http://www.kernel.org/pub/linux/bluetooth/bluez-%{version}.tar.xz
 
 Patch1:         0001-HOGP-must-only-accept-data-from-bonded-devices.patch
 Patch2:         0002-HID-accepts-bonded-device-connections-only.patch
+Patch3:         0001-shared-att-Fix-possible-crash-on-disconnect.patch
 
 BuildRequires:  libical-devel
 BuildRequires:  glib-devel
@@ -39,6 +40,7 @@ use in Bluetooth applications.
 %setup -q
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 %configure \
@@ -90,6 +92,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/*
 
 %changelog
+* Fri Oct 23 2020 Ajay Kaher <akaher@vmware.com> 5.52-3
+- Fix CVE-2020-27153
 * Mon Mar 23 2020 Ajay Kaher <akaher@vmware.com> 5.52-2
 - Fix CVE-2020-0556
 * Mon Jan 6 2020 Ajay Kaher <akaher@vmware.com> 5.52-1

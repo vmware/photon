@@ -1,0 +1,147 @@
+From 1cd644db8c23a2f530ddb93cebed7dacc5f5721a Mon Sep 17 00:00:00 2001
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Date: Wed, 15 Jul 2020 18:25:37 -0700
+Subject: [PATCH] shared/att: Fix possible crash on disconnect
+
+If there are pending request while disconnecting they would be notified
+but clients may endup being freed in the proccess which will then be
+calling bt_att_cancel to cancal its requests causing the following
+trace:
+
+Invalid read of size 4
+   at 0x1D894C: enable_ccc_callback (gatt-client.c:1627)
+   by 0x1D247B: disc_att_send_op (att.c:417)
+   by 0x1CCC17: queue_remove_all (queue.c:354)
+   by 0x1D47B7: disconnect_cb (att.c:635)
+   by 0x1E0707: watch_callback (io-glib.c:170)
+   by 0x48E963B: g_main_context_dispatch (in /usr/lib/libglib-2.0.so.0.6400.4)
+   by 0x48E9AC7: ??? (in /usr/lib/libglib-2.0.so.0.6400.4)
+   by 0x48E9ECF: g_main_loop_run (in /usr/lib/libglib-2.0.so.0.6400.4)
+   by 0x1E0E97: mainloop_run (mainloop-glib.c:79)
+   by 0x1E13B3: mainloop_run_with_signal (mainloop-notify.c:201)
+   by 0x12BC3B: main (main.c:770)
+ Address 0x7d40a28 is 24 bytes inside a block of size 32 free'd
+   at 0x484A2E0: free (vg_replace_malloc.c:540)
+   by 0x1CCC17: queue_remove_all (queue.c:354)
+   by 0x1CCC83: queue_destroy (queue.c:73)
+   by 0x1D7DD7: bt_gatt_client_free (gatt-client.c:2209)
+   by 0x16497B: batt_free (battery.c:77)
+   by 0x16497B: batt_remove (battery.c:286)
+   by 0x1A0013: service_remove (service.c:176)
+   by 0x1A9B7B: device_remove_gatt_service (device.c:3691)
+   by 0x1A9B7B: gatt_service_removed (device.c:3805)
+   by 0x1CC90B: queue_foreach (queue.c:220)
+   by 0x1DE27B: notify_service_changed.isra.0.part.0 (gatt-db.c:369)
+   by 0x1DE387: notify_service_changed (gatt-db.c:361)
+   by 0x1DE387: gatt_db_service_destroy (gatt-db.c:385)
+   by 0x1DE3EF: gatt_db_remove_service (gatt-db.c:519)
+   by 0x1D674F: discovery_op_complete (gatt-client.c:388)
+   by 0x1D6877: discover_primary_cb (gatt-client.c:1260)
+   by 0x1E220B: discovery_op_complete (gatt-helpers.c:628)
+   by 0x1E249B: read_by_grp_type_cb (gatt-helpers.c:730)
+   by 0x1D247B: disc_att_send_op (att.c:417)
+   by 0x1CCC17: queue_remove_all (queue.c:354)
+   by 0x1D47B7: disconnect_cb (att.c:635)
+
+[Ajay: Regenerated the patch for v5.52]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ src/shared/att.c | 46 ++++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 40 insertions(+), 6 deletions(-)
+
+diff --git a/src/shared/att.c b/src/shared/att.c
+index 0ea6d55..b0fdb8e 100644
+--- a/src/shared/att.c
++++ b/src/shared/att.c
+@@ -62,6 +62,7 @@ struct bt_att {
+ 	struct queue *ind_queue;	/* Queued ATT protocol indications */
+ 	struct att_send_op *pending_ind;
+ 	struct queue *write_queue;	/* Queue of PDUs ready to send */
++	bool in_disc;			/* Cleanup queues on disconnect_cb */
+ 	bool writer_active;
+ 
+ 	struct queue *notify_list;	/* List of registered callbacks */
+@@ -211,8 +212,10 @@ static void destroy_att_send_op(void *data)
+ 	free(op);
+ }
+ 
+-static void cancel_att_send_op(struct att_send_op *op)
++static void cancel_att_send_op(void *data)
+ {
++	struct att_send_op *op = data;
++
+ 	if (op->destroy)
+ 		op->destroy(op->user_data);
+ 
+@@ -572,11 +575,6 @@ static bool disconnect_cb(struct io *io, void *user_data)
+ 	att->io = NULL;
+ 	att->fd = -1;
+ 
+-	/* Notify request callbacks */
+-	queue_remove_all(att->req_queue, NULL, NULL, disc_att_send_op);
+-	queue_remove_all(att->ind_queue, NULL, NULL, disc_att_send_op);
+-	queue_remove_all(att->write_queue, NULL, NULL, disc_att_send_op);
+-
+ 	if (att->pending_req) {
+ 		disc_att_send_op(att->pending_req);
+ 		att->pending_req = NULL;
+@@ -589,6 +587,15 @@ static bool disconnect_cb(struct io *io, void *user_data)
+ 
+ 	bt_att_ref(att);
+ 
++	att->in_disc = true;
++
++	/* Notify request callbacks */
++	queue_remove_all(att->req_queue, NULL, NULL, disc_att_send_op);
++	queue_remove_all(att->ind_queue, NULL, NULL, disc_att_send_op);
++	queue_remove_all(att->write_queue, NULL, NULL, disc_att_send_op);
++
++	att->in_disc = false;
++
+ 	queue_foreach(att->disconn_list, disconn_handler, INT_TO_PTR(err));
+ 
+ 	bt_att_unregister_all(att);
+@@ -1306,6 +1313,30 @@ static bool match_op_id(const void *a, const void *b)
+ 	return op->id == id;
+ }
+ 
++static bool bt_att_disc_cancel(struct bt_att *att, unsigned int id)
++{
++	struct att_send_op *op;
++
++	op = queue_find(att->req_queue, match_op_id, UINT_TO_PTR(id));
++	if (op)
++		goto done;
++
++	op = queue_find(att->ind_queue, match_op_id, UINT_TO_PTR(id));
++	if (op)
++		goto done;
++
++	op = queue_find(att->write_queue, match_op_id, UINT_TO_PTR(id));
++
++done:
++	if (!op)
++		return false;
++
++	/* Just cancel since disconnect_cb will be cleaning up */
++	cancel_att_send_op(op);
++
++	return true;
++}
++
+ bool bt_att_cancel(struct bt_att *att, unsigned int id)
+ {
+ 	struct att_send_op *op;
+@@ -1325,6 +1356,9 @@ bool bt_att_cancel(struct bt_att *att, unsigned int id)
+ 		return true;
+ 	}
+ 
++	if (att->in_disc)
++		return bt_att_disc_cancel(att, id);
++
+ 	op = queue_remove_if(att->req_queue, match_op_id, UINT_TO_PTR(id));
+ 	if (op)
+ 		goto done;
+-- 
+2.7.4
+
