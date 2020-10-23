@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.241
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -126,6 +126,9 @@ Patch94:        0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch95:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch96:        0007-btrfs-tree-checker-Verify-inode-item.patch
 Patch97:        0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
+
+# Fix for CVE-2020-25645
+Patch98:        0001-geneve-add-transport-ports-in-route-lookup-for-genev.patch
 
 # Amazon AWS
 Patch101: 0002-lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
@@ -322,6 +325,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch95 -p1
 %patch96 -p1
 %patch97 -p1
+%patch98 -p1
 
 %patch101 -p1
 %patch102 -p1
@@ -517,6 +521,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Tue Nov 03 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.241-2
+-   Fix CVE-2020-25645
 *   Mon Nov 02 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-1
 -   Update to version 4.9.241
 *   Mon Oct 19 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.240-1

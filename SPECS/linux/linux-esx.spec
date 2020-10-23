@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.241
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -113,6 +113,10 @@ Patch89: 0016-netns-restore-ops-before-calling-ops_exit_list.patch
 Patch90:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
 Patch91:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch92:        0003-ovl-verify-permissions-in-ovl_path_open.patch
+
+# Fix for CVE-2020-25645
+Patch95:        0001-geneve-add-transport-ports-in-route-lookup-for-genev.patch
+
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -226,6 +230,7 @@ The Linux package contains the Linux kernel doc files
 %patch90 -p1
 %patch91 -p1
 %patch92 -p1
+%patch95 -p1
 
 %build
 
@@ -321,6 +326,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Nov 03 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.241-2
+-   Fix CVE-2020-25645
 *   Mon Nov 02 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-1
 -   Update to version 4.9.241
 *   Mon Oct 19 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.240-1
