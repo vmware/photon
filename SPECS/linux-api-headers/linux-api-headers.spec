@@ -2,25 +2,19 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
 Version:	5.9.0
-Release:	rc7.1%{?dist}
+Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
 Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
-Distribution: Photon
-
-#TODO: remove rcN after 5.9 goes out of rc
-%define lnx_rc_ver 5.9.0-rc7
-%define lnx_rc_local_ver .1%{?kat_build:.kat}%{?dist}
-
-Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{lnx_rc_ver}.tar.xz
-%define sha1 linux=b8809bb16a9591303ac2bb84e19a597e26b69c4c
+Distribution:	Photon
+Source0:	http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
+%define sha1 linux=26fefa389c711da70543092fbb121a023f1b0fb8
 BuildArch:	noarch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
 %prep
-#TODO: remove rcN after 5.9 goes out of rc
-%setup -q -n linux-%{lnx_rc_ver}
+%setup -q -n linux-%{version}
 
 %build
 make mrproper
@@ -28,7 +22,7 @@ make mrproper
 [ "%{_arch}" = "x86_64" ] && ARCH=x86_64
 [ "%{_arch}" = "aarch64" ] && ARCH=arm64
 [ "%{_arch}" = "i686" ] && ARCH=i386
-cd %{_builddir}/linux-%{lnx_rc_ver}
+cd %{_builddir}/linux-%{version}
 make ARCH=$ARCH headers_check
 # 'make headers_install' needs rsync, but we would prefer not to add
 # that dependency to linux-api-headers. So prepare the headers and
@@ -46,6 +40,8 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %{_includedir}/*
 
 %changelog
+*   Tue Oct 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-1
+-   Update to version 5.9.0
 *   Wed Sep 30 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-rc7.1
 -   Update to version 5.9.0-rc7
 *   Tue Jun 23 2020 Keerthana K <keerthanak@vmware.com> 4.19.127-1
