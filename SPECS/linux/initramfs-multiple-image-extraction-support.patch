@@ -1,4 +1,4 @@
-From 18e451b735a50736fa2a996f6631881f75238aa3 Mon Sep 17 00:00:00 2001
+From a1377f01a182b81a7c779cd5d04f1a29ab6b4cb1 Mon Sep 17 00:00:00 2001
 From: Him Kalyan Bordoloi <bordoloih@vmware.com>
 Date: Tue, 22 Sep 2020 19:22:56 +0000
 Subject: [PATCH] initramfs multiple image extraction support
@@ -8,7 +8,7 @@ Subject: [PATCH] initramfs multiple image extraction support
  1 file changed, 23 insertions(+), 4 deletions(-)
 
 diff --git a/init/initramfs.c b/init/initramfs.c
-index 7beaaf9149bd..2b51d5e6efa1 100644
+index 7beaaf9149bd..8d8ad9eb834c 100644
 --- a/init/initramfs.c
 +++ b/init/initramfs.c
 @@ -14,6 +14,8 @@
@@ -66,7 +66,7 @@ index 7beaaf9149bd..2b51d5e6efa1 100644
  	if (S_ISREG(mode)) {
  		int ml = maybe_link();
 +		if (is_overwrite(collected))
-+			error("file overwrite attempted");
++			panic("initramfs: file already exists %s", collected);
  		if (ml >= 0) {
  			int openflags = O_WRONLY|O_CREAT;
  			if (ml != 1)

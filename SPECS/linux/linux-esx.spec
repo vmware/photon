@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.150
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -418,6 +418,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Oct 26 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.150-4
+-   panic on initramfs file overwrite
 *   Thu Oct 22 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.150-3
 -   halt_on_panic kernel cmdline.
 *   Wed Oct 21 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.150-2
