@@ -3,7 +3,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.02
-Release:    14%{?dist}
+Release:    15%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -11,6 +11,10 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    ftp://ftp.gnu.org/gnu/grub/grub-2.02.tar.xz
 %define sha1 grub=3d7eb6eaab28b88cb969ba9ab24af959f4d1b178
+%ifarch x86_64
+Source1:    grub2-2.02-grubx64.efi.gz
+%define sha1 grub2-2.02-grubx64=32d5ee61df1256152ba13b7d629eac67e0f3a911
+%endif
 Patch0:     release-to-master.patch
 Patch1:     0001-Add-support-for-Linux-EFI-stub-loading.patch
 Patch2:     0002-Rework-linux-command.patch
@@ -162,7 +166,10 @@ rm -rf %{buildroot}%{_infodir}
 # Generate grub efi image
 install -d %{buildroot}/boot/efi/EFI/BOOT
 %ifarch x86_64
-./install-for-efi/usr/bin/grub2-mkimage -d ./install-for-efi/usr/lib/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/grub2 -O x86_64-efi fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
+# Use presigned image from tarball as of now.
+gunzip -c %{SOURCE1} > %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi
+# ./install-for-efi/usr/bin/grub2-mkimage -d ./install-for-efi/usr/lib/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/grub2 -O x86_64-efi fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
+
 %endif
 %ifarch aarch64
 cat > grub-embed-config.cfg << EOF
@@ -214,6 +221,8 @@ EOF
 %{_datarootdir}/locale/*
 
 %changelog
+*   Mon Oct 26 2020 Alexey Makhalov <amakhalov@vmware.com> 2.02-15
+-   Use prebuilt and presigned grubx64.efi.
 *   Tue Mar 10 2020 Alexey Makhalov <amakhalov@vmware.com> 2.02-14
 -   Package grubx64.efi (bootaa64.efi) into -efi-image subpackage.
 *   Wed Aug 14 2019 Alexey Makhalov <amakhalov@vmware.com> 2.02-13
