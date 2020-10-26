@@ -1,0 +1,27 @@
+From 74129a127676e4f0edac0db4296c103e76ec6694 Mon Sep 17 00:00:00 2001
+From: lc85446 <lc85446@alibaba-inc.com>
+Date: Thu, 26 Nov 2015 11:46:40 +0800
+Subject: [PATCH] core:execute: fix fork() fail handling in exec_spawn()
+
+    If pid < 0 after fork(), 0 is always returned because r =
+    exec_context_load_environment() has exited successfully.
+
+    This will make the caller of exec_spawn() not able to handle
+    the fork() error case and make systemd abort assert() possibly.
+---
+ src/core/execute.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/core/execute.c b/src/core/execute.c
+index 677480cbe1f..4f67a9de83c 100644
+--- a/src/core/execute.c
++++ b/src/core/execute.c
+@@ -2056,7 +2056,7 @@ int exec_spawn(Unit *unit,
+                    NULL);
+         pid = fork();
+         if (pid < 0)
+-                return log_unit_error_errno(unit, r, "Failed to fork: %m");
++                return log_unit_error_errno(unit, errno, "Failed to fork: %m");
+ 
+         if (pid == 0) {
+                 int exit_status;

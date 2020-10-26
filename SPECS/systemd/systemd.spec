@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          59%{?dist}
+Release:          60%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -63,6 +63,7 @@ Patch45:          systemd-228-CVE-2019-20386.patch
 Patch46:          systemd-228-CVE-2020-1712.patch
 Patch47:          systemd-228-safe-atou32-full.patch
 Patch48:          systemd-228-CVE-2020-13776.patch
+Patch49:          systemd-228-fix-fork-fail-handling.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -147,6 +148,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
+%patch49 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -288,6 +290,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*    Mon Oct 26 2020 Tapas Kundu <tkundu@vmware.com> 228-60
+-    fix fork() fail handling in exec_spawn
 *    Sat Jun 06 2020 Susant Sahani <ssahani@vmware.com> 228-59
 -    Fix CVE-2020-13776
 *    Wed Jun 03 2020 Susant Sahani <ssahani@vmware.com> 228-58
