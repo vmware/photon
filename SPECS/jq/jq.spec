@@ -1,7 +1,7 @@
 Summary:       jq is a lightweight and flexible command-line JSON processor.
 Name:          jq
 Version:       1.6
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       MIT
@@ -11,7 +11,7 @@ Source0:       https://github.com/stedolan/jq/releases/download/jq-%{version}/jq
 Distribution:  Photon
 %if %{with_check}
 BuildRequires: which
-BuildRequires: oniguruma-devel
+
 %endif
 
 %description
@@ -30,7 +30,7 @@ Development files for jq
 
 %build
 autoreconf -fi
-%configure --disable-static
+%configure --with-oniguruma=no --disable-static
 make %{?_smp_mflags}
 
 %install
@@ -51,14 +51,14 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_datadir}/*
 %{_libdir}/libjq.so.*
-%{_libdir}/libonig*
-%{_libdir}/pkgconfig/oniguruma.pc
 
 %files devel
 %{_libdir}/libjq.so
 %{_includedir}/*
 
 %changelog
+*  Tue Oct 27 2020 Dweep Advani <dadvani@vmware.com> 1.6-2
+-  Removed bundled oniguruma library
 *  Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6-1
 -  Automatic Version Bump
 *  Mon Nov 19 2018 Ashwin H<ashwinh@vmware.com> 1.5-4
