@@ -28,7 +28,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  /* the next printk record to read after the last 'clear' command */
  static u64 clear_seq;
  
-@@ -2938,6 +2936,7 @@ EXPORT_SYMBOL_GPL(kmsg_dump_reason_str);
+@@ -2932,6 +2930,7 @@ EXPORT_SYMBOL_GPL(kmsg_dump_reason_str);
   */
  void kmsg_dump(enum kmsg_dump_reason reason)
  {
@@ -36,7 +36,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	struct kmsg_dumper *dumper;
  
  	rcu_read_lock();
-@@ -2955,16 +2954,18 @@ void kmsg_dump(enum kmsg_dump_reason rea
+@@ -2949,16 +2948,18 @@ void kmsg_dump(enum kmsg_dump_reason rea
  		if (reason > max_reason)
  			continue;
  
@@ -62,7 +62,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	}
  	rcu_read_unlock();
  }
-@@ -3076,9 +3077,7 @@ bool kmsg_dump_get_line(struct kmsg_dump
+@@ -3070,9 +3071,7 @@ bool kmsg_dump_get_line(struct kmsg_dump
  {
  	bool ret;
  
@@ -72,7 +72,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	return ret;
  }
-@@ -3230,9 +3229,7 @@ void kmsg_dump_rewind_nolock(struct kmsg
+@@ -3224,9 +3223,7 @@ void kmsg_dump_rewind_nolock(struct kmsg
   */
  void kmsg_dump_rewind(struct kmsg_dumper *dumper)
  {

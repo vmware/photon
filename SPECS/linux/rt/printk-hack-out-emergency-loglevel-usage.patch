@@ -32,7 +32,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  			if (con->printk_seq < seq)
  				con->printk_seq = seq;
  			continue;
-@@ -3239,7 +3232,7 @@ static bool console_can_emergency(int le
+@@ -3233,7 +3226,7 @@ static bool console_can_emergency(int le
  	for_each_console(con) {
  		if (!(con->flags & CON_ENABLED))
  			continue;
@@ -41,7 +41,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  			return true;
  		if (con->write && (con->flags & CON_BOOT))
  			return true;
-@@ -3255,7 +3248,7 @@ static void call_emergency_console_drive
+@@ -3249,7 +3242,7 @@ static void call_emergency_console_drive
  	for_each_console(con) {
  		if (!(con->flags & CON_ENABLED))
  			continue;

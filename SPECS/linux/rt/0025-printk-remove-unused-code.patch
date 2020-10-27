@@ -9,9 +9,9 @@ Signed-off-by: John Ogness <john.ogness@linutronix.de>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
  kernel/printk/internal.h |   43 ------------
- kernel/printk/printk.c   |  161 ++++-------------------------------------------
+ kernel/printk/printk.c   |  167 ++++-------------------------------------------
  lib/bust_spinlocks.c     |    3 
- 3 files changed, 16 insertions(+), 191 deletions(-)
+ 3 files changed, 16 insertions(+), 197 deletions(-)
  delete mode 100644 kernel/printk/internal.h
 
 --- a/kernel/printk/internal.h
@@ -215,7 +215,20 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  {
  	return vprintk_emit(0, LOGLEVEL_DEFAULT, NULL, 0, fmt, args);
  }
-@@ -2074,31 +2023,6 @@ asmlinkage __visible int printk(const ch
+@@ -2035,12 +1984,6 @@ asmlinkage int vprintk(const char *fmt,
+ }
+ EXPORT_SYMBOL(vprintk);
+ 
+-int vprintk_default(const char *fmt, va_list args)
+-{
+-	return vprintk_emit(0, LOGLEVEL_DEFAULT, NULL, 0, fmt, args);
+-}
+-EXPORT_SYMBOL_GPL(vprintk_default);
+-
+ /**
+  * printk - print a kernel message
+  * @fmt: format string
+@@ -2074,31 +2017,6 @@ asmlinkage __visible int printk(const ch
  	return r;
  }
  EXPORT_SYMBOL(printk);
@@ -247,7 +260,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #endif /* CONFIG_PRINTK */
  
  #ifdef CONFIG_EARLY_PRINTK
-@@ -2402,15 +2326,10 @@ void console_unblank(void)
+@@ -2402,15 +2320,10 @@ void console_unblank(void)
  void console_flush_on_panic(enum con_flush_mode mode)
  {
  	/*
@@ -266,7 +279,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  }
  
  /*
-@@ -2801,43 +2720,6 @@ static int __init printk_late_init(void)
+@@ -2801,43 +2714,6 @@ static int __init printk_late_init(void)
  late_initcall(printk_late_init);
  
  #if defined CONFIG_PRINTK
@@ -310,12 +323,13 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  static int printk_kthread_func(void *data)
  {
  	struct prb_iterator iter;
-@@ -2904,22 +2786,9 @@ static int __init init_printk_kthread(vo
+@@ -2904,22 +2780,9 @@ static int __init init_printk_kthread(vo
  }
  late_initcall(init_printk_kthread);
  
 -void defer_console_output(void)
--{
++__printf(1, 0) static int vprintk_deferred(const char *fmt, va_list args)
+ {
 -	preempt_disable();
 -	__this_cpu_or(printk_pending, PRINTK_PENDING_OUTPUT);
 -	irq_work_queue(this_cpu_ptr(&wake_up_klogd_work));
@@ -323,8 +337,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 -}
 -
 -int vprintk_deferred(const char *fmt, va_list args)
-+static int vprintk_deferred(const char *fmt, va_list args)
- {
+-{
 -	int r;
 -
 -	r = vprintk_emit(0, LOGLEVEL_SCHED, NULL, 0, fmt, args);

@@ -32,7 +32,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		if (copy_to_user(buf + len, text, textlen))
  			len = -EFAULT;
  		else
-@@ -3153,7 +3156,7 @@ bool kmsg_dump_get_buffer(struct kmsg_du
+@@ -3147,7 +3150,7 @@ bool kmsg_dump_get_buffer(struct kmsg_du
  		ret = prb_iter_next(&iter, msgbuf, PRINTK_RECORD_MAX, &seq);
  		if (ret == 0) {
  			break;

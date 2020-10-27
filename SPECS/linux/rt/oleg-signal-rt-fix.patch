@@ -62,7 +62,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #endif
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
-@@ -946,6 +946,10 @@ struct task_struct {
+@@ -959,6 +959,10 @@ struct task_struct {
  	/* Restored if set_restore_sigmask() was used: */
  	sigset_t			saved_sigmask;
  	struct sigpending		pending;

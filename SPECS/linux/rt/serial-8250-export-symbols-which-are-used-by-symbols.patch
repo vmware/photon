@@ -28,7 +28,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  /*
 --- a/kernel/printk/printk.c
 +++ b/kernel/printk/printk.c
-@@ -2257,6 +2257,7 @@ int is_console_locked(void)
+@@ -2251,6 +2251,7 @@ int is_console_locked(void)
  {
  	return console_locked;
  }

@@ -72,7 +72,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
   * The preempt_count offset after preempt_disable();
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
-@@ -999,6 +999,9 @@ struct task_struct {
+@@ -1004,6 +1004,9 @@ struct task_struct {
  	int				softirq_context;
  	int				irq_config;
  #endif

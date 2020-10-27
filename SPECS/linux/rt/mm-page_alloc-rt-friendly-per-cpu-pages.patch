@@ -141,7 +141,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	return page;
  }
  
-@@ -3438,7 +3446,8 @@ struct page *rmqueue(struct zone *prefer
+@@ -3445,7 +3453,8 @@ struct page *rmqueue(struct zone *prefer
  	 * allocate greater than order-1 page units with __GFP_NOFAIL.
  	 */
  	WARN_ON_ONCE((gfp_flags & __GFP_NOFAIL) && (order > 1));
@@ -151,7 +151,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  
  	do {
  		page = NULL;
-@@ -3458,7 +3467,7 @@ struct page *rmqueue(struct zone *prefer
+@@ -3471,7 +3480,7 @@ struct page *rmqueue(struct zone *prefer
  
  	__count_zid_vm_events(PGALLOC, page_zonenum(page), 1 << order);
  	zone_statistics(preferred_zone, zone);
@@ -160,7 +160,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  
  out:
  	/* Separate test+clear to avoid unnecessary atomics */
-@@ -3471,7 +3480,7 @@ struct page *rmqueue(struct zone *prefer
+@@ -3484,7 +3493,7 @@ struct page *rmqueue(struct zone *prefer
  	return page;
  
  failed:
@@ -169,7 +169,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	return NULL;
  }
  
-@@ -8742,7 +8751,7 @@ void zone_pcp_reset(struct zone *zone)
+@@ -8755,7 +8764,7 @@ void zone_pcp_reset(struct zone *zone)
  	struct per_cpu_pageset *pset;
  
  	/* avoid races with drain_pages()  */
@@ -178,7 +178,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	if (zone->pageset != &boot_pageset) {
  		for_each_online_cpu(cpu) {
  			pset = per_cpu_ptr(zone->pageset, cpu);
-@@ -8751,7 +8760,7 @@ void zone_pcp_reset(struct zone *zone)
+@@ -8764,7 +8773,7 @@ void zone_pcp_reset(struct zone *zone)
  		free_percpu(zone->pageset);
  		zone->pageset = &boot_pageset;
  	}

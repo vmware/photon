@@ -41,7 +41,7 @@ Cc: stable-rt@vger.kernel.org
 
 --- a/mm/slub.c
 +++ b/mm/slub.c
-@@ -2499,9 +2499,6 @@ static void flush_all(struct kmem_cache
+@@ -2495,9 +2495,6 @@ static void flush_all(struct kmem_cache
  	for_each_online_cpu(cpu) {
  		struct slub_free_list *f;
  

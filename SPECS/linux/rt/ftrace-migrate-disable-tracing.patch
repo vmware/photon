@@ -5,10 +5,10 @@ Subject: trace: Add migrate-disabled counter to tracing output
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
  include/linux/trace_events.h |    1 +
- kernel/trace/trace.c         |   16 ++++++++++------
+ kernel/trace/trace.c         |   25 +++++++++++++++++++------
  kernel/trace/trace_events.c  |    1 +
  kernel/trace/trace_output.c  |    5 +++++
- 4 files changed, 17 insertions(+), 6 deletions(-)
+ 4 files changed, 26 insertions(+), 6 deletions(-)
 
 --- a/include/linux/trace_events.h
 +++ b/include/linux/trace_events.h
@@ -22,16 +22,32 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  #define TRACE_EVENT_TYPE_MAX						\
 --- a/kernel/trace/trace.c
 +++ b/kernel/trace/trace.c
-@@ -2457,6 +2457,8 @@ tracing_generic_entry_update(struct trac
+@@ -2437,6 +2437,15 @@ enum print_line_t trace_handle_return(st
+ }
+ EXPORT_SYMBOL_GPL(trace_handle_return);
+ 
++static unsigned short migration_disable_value(struct task_struct *tsk)
++{
++#if defined(CONFIG_SMP) && defined(CONFIG_PREEMPT_RT)
++	return tsk ? tsk->migration_disabled : 0;
++#else
++	return 0;
++#endif
++}
++
+ void
+ tracing_generic_entry_update(struct trace_entry *entry, unsigned short type,
+ 			     unsigned long flags, int pc)
+@@ -2457,6 +2466,8 @@ tracing_generic_entry_update(struct trac
  		((pc & SOFTIRQ_OFFSET) ? TRACE_FLAG_SOFTIRQ : 0) |
  		(tif_need_resched() ? TRACE_FLAG_NEED_RESCHED : 0) |
  		(test_preempt_need_resched() ? TRACE_FLAG_PREEMPT_RESCHED : 0);
 +
-+	entry->migrate_disable = (tsk) ? __migrate_disabled(tsk) & 0xFF : 0;
++	entry->migrate_disable = migration_disable_value(tsk);
  }
  EXPORT_SYMBOL_GPL(tracing_generic_entry_update);
  
-@@ -3787,9 +3789,10 @@ static void print_lat_help_header(struct
+@@ -3789,9 +3800,10 @@ static void print_lat_help_header(struct
  		    "#                  | / _----=> need-resched    \n"
  		    "#                  || / _---=> hardirq/softirq \n"
  		    "#                  ||| / _--=> preempt-depth   \n"
@@ -45,7 +61,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  }
  
  static void print_event_info(struct array_buffer *buf, struct seq_file *m)
-@@ -3827,9 +3830,10 @@ static void print_func_help_header_irq(s
+@@ -3829,9 +3841,10 @@ static void print_func_help_header_irq(s
  	seq_printf(m, "#                            %.*s / _----=> need-resched\n", prec, space);
  	seq_printf(m, "#                            %.*s| / _---=> hardirq/softirq\n", prec, space);
  	seq_printf(m, "#                            %.*s|| / _--=> preempt-depth\n", prec, space);

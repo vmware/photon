@@ -17,7 +17,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 
 --- a/mm/slub.c
 +++ b/mm/slub.c
-@@ -1749,10 +1749,18 @@ static struct page *allocate_slab(struct
+@@ -1745,10 +1745,18 @@ static struct page *allocate_slab(struct
  	void *start, *p, *next;
  	int idx;
  	bool shuffle;
@@ -36,7 +36,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  		local_irq_enable();
  
  	flags |= s->allocflags;
-@@ -1811,7 +1819,7 @@ static struct page *allocate_slab(struct
+@@ -1807,7 +1815,7 @@ static struct page *allocate_slab(struct
  	page->frozen = 1;
  
  out:
@@ -45,7 +45,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  		local_irq_disable();
  	if (!page)
  		return NULL;
-@@ -2865,6 +2873,10 @@ static __always_inline void *slab_alloc_
+@@ -2861,6 +2869,10 @@ static __always_inline void *slab_alloc_
  	unsigned long tid;
  	struct obj_cgroup *objcg = NULL;
  
@@ -56,7 +56,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	s = slab_pre_alloc_hook(s, &objcg, 1, gfpflags);
  	if (!s)
  		return NULL;
-@@ -3330,6 +3342,10 @@ int kmem_cache_alloc_bulk(struct kmem_ca
+@@ -3326,6 +3338,10 @@ int kmem_cache_alloc_bulk(struct kmem_ca
  	int i;
  	struct obj_cgroup *objcg = NULL;
  

@@ -27,9 +27,9 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	if ((lflags & LOG_CONT) || !(lflags & LOG_NEWLINE)) {
  		 cont_add(ctx, cpu, caller_id, facility, level, lflags, text, text_len);
-@@ -2788,7 +2788,7 @@ late_initcall(init_printk_kthread);
+@@ -2782,7 +2782,7 @@ late_initcall(init_printk_kthread);
  
- static int vprintk_deferred(const char *fmt, va_list args)
+ __printf(1, 0) static int vprintk_deferred(const char *fmt, va_list args)
  {
 -	return vprintk_emit(0, LOGLEVEL_SCHED, NULL, 0, fmt, args);
 +	return vprintk_emit(0, LOGLEVEL_DEFAULT, NULL, 0, fmt, args);

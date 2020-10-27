@@ -23,7 +23,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  #include <linux/page-flags-layout.h>
  #include <linux/workqueue.h>
  
-@@ -538,6 +539,9 @@ struct mm_struct {
+@@ -548,6 +549,9 @@ struct mm_struct {
  		bool tlb_flush_batched;
  #endif
  		struct uprobes_state uprobes_state;
@@ -77,7 +77,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	struct mm_struct *mm;
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -3635,9 +3635,13 @@ static struct rq *finish_task_switch(str
+@@ -4080,9 +4080,13 @@ static struct rq *finish_task_switch(str
  	 *   provided by mmdrop(),
  	 * - a sync_core for SYNC_CORE.
  	 */
@@ -92,7 +92,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	}
  	if (unlikely(prev_state == TASK_DEAD)) {
  		if (prev->sched_class->task_dead)
-@@ -6674,6 +6678,7 @@ void sched_setnuma(struct task_struct *p
+@@ -7097,6 +7101,7 @@ void sched_setnuma(struct task_struct *p
  #endif /* CONFIG_NUMA_BALANCING */
  
  #ifdef CONFIG_HOTPLUG_CPU

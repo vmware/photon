@@ -16,101 +16,101 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/kernel/locking/rtmutex.c
 +++ b/kernel/locking/rtmutex.c
-@@ -1139,6 +1139,7 @@ void __sched rt_spin_lock_slowunlock(str
- void __lockfunc rt_spin_lock(spinlock_t *lock)
+@@ -1136,6 +1136,7 @@ void __lockfunc rt_spin_lock(spinlock_t
  {
- 	sleeping_lock_inc();
-+	rcu_read_lock();
- 	migrate_disable();
  	spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
  	rt_spin_lock_fastlock(&lock->lock, rt_spin_lock_slowlock);
-@@ -1154,6 +1155,7 @@ void __lockfunc __rt_spin_lock(struct rt
- void __lockfunc rt_spin_lock_nested(spinlock_t *lock, int subclass)
- {
- 	sleeping_lock_inc();
 +	rcu_read_lock();
  	migrate_disable();
+ }
+ EXPORT_SYMBOL(rt_spin_lock);
+@@ -1150,6 +1151,7 @@ void __lockfunc rt_spin_lock_nested(spin
+ {
  	spin_acquire(&lock->dep_map, subclass, 0, _RET_IP_);
  	rt_spin_lock_fastlock(&lock->lock, rt_spin_lock_slowlock);
-@@ -1164,6 +1166,7 @@ void __lockfunc rt_spin_lock_nest_lock(s
- 				       struct lockdep_map *nest_lock)
- {
- 	sleeping_lock_inc();
 +	rcu_read_lock();
  	migrate_disable();
+ }
+ EXPORT_SYMBOL(rt_spin_lock_nested);
+@@ -1159,6 +1161,7 @@ void __lockfunc rt_spin_lock_nest_lock(s
+ {
  	spin_acquire_nest(&lock->dep_map, 0, 0, nest_lock, _RET_IP_);
  	rt_spin_lock_fastlock(&lock->lock, rt_spin_lock_slowlock);
-@@ -1177,6 +1180,7 @@ void __lockfunc rt_spin_unlock(spinlock_
++	rcu_read_lock();
+ 	migrate_disable();
+ }
+ EXPORT_SYMBOL(rt_spin_lock_nest_lock);
+@@ -1169,6 +1172,7 @@ void __lockfunc rt_spin_unlock(spinlock_
+ 	/* NOTE: we always pass in '1' for nested, for simplicity */
  	spin_release(&lock->dep_map, _RET_IP_);
- 	rt_spin_lock_fastunlock(&lock->lock, rt_spin_lock_slowunlock);
  	migrate_enable();
 +	rcu_read_unlock();
- 	sleeping_lock_dec();
+ 	rt_spin_lock_fastunlock(&lock->lock, rt_spin_lock_slowunlock);
  }
  EXPORT_SYMBOL(rt_spin_unlock);
-@@ -1208,6 +1212,7 @@ int __lockfunc rt_spin_trylock(spinlock_
+@@ -1198,6 +1202,7 @@ int __lockfunc rt_spin_trylock(spinlock_
  	ret = __rt_mutex_trylock(&lock->lock);
  	if (ret) {
  		spin_acquire(&lock->dep_map, 0, 1, _RET_IP_);
-+		rcu_read_lock();
- 	} else {
- 		migrate_enable();
- 		sleeping_lock_dec();
-@@ -1224,6 +1229,7 @@ int __lockfunc rt_spin_trylock_bh(spinlo
- 	ret = __rt_mutex_trylock(&lock->lock);
- 	if (ret) {
- 		sleeping_lock_inc();
 +		rcu_read_lock();
  		migrate_disable();
+ 	}
+ 	return ret;
+@@ -1212,6 +1217,7 @@ int __lockfunc rt_spin_trylock_bh(spinlo
+ 	ret = __rt_mutex_trylock(&lock->lock);
+ 	if (ret) {
  		spin_acquire(&lock->dep_map, 0, 1, _RET_IP_);
- 	} else
++		rcu_read_lock();
+ 		migrate_disable();
+ 	} else {
+ 		local_bh_enable();
 --- a/kernel/locking/rwlock-rt.c
 +++ b/kernel/locking/rwlock-rt.c
-@@ -273,6 +273,7 @@ int __lockfunc rt_read_trylock(rwlock_t
+@@ -270,6 +270,7 @@ int __lockfunc rt_read_trylock(rwlock_t
  	ret = __read_rt_trylock(rwlock);
  	if (ret) {
  		rwlock_acquire_read(&rwlock->dep_map, 0, 1, _RET_IP_);
 +		rcu_read_lock();
- 	} else {
- 		migrate_enable();
- 		sleeping_lock_dec();
-@@ -290,6 +291,7 @@ int __lockfunc rt_write_trylock(rwlock_t
+ 		migrate_disable();
+ 	}
+ 	return ret;
+@@ -283,6 +284,7 @@ int __lockfunc rt_write_trylock(rwlock_t
  	ret = __write_rt_trylock(rwlock);
  	if (ret) {
  		rwlock_acquire(&rwlock->dep_map, 0, 1, _RET_IP_);
 +		rcu_read_lock();
- 	} else {
- 		migrate_enable();
- 		sleeping_lock_dec();
-@@ -301,6 +303,7 @@ EXPORT_SYMBOL(rt_write_trylock);
- void __lockfunc rt_read_lock(rwlock_t *rwlock)
+ 		migrate_disable();
+ 	}
+ 	return ret;
+@@ -293,6 +295,7 @@ void __lockfunc rt_read_lock(rwlock_t *r
  {
- 	sleeping_lock_inc();
-+	rcu_read_lock();
- 	migrate_disable();
  	rwlock_acquire_read(&rwlock->dep_map, 0, 0, _RET_IP_);
  	__read_rt_lock(rwlock);
-@@ -310,6 +313,7 @@ EXPORT_SYMBOL(rt_read_lock);
- void __lockfunc rt_write_lock(rwlock_t *rwlock)
- {
- 	sleeping_lock_inc();
 +	rcu_read_lock();
  	migrate_disable();
+ }
+ EXPORT_SYMBOL(rt_read_lock);
+@@ -301,6 +304,7 @@ void __lockfunc rt_write_lock(rwlock_t *
+ {
  	rwlock_acquire(&rwlock->dep_map, 0, 0, _RET_IP_);
  	__write_rt_lock(rwlock);
-@@ -321,6 +325,7 @@ void __lockfunc rt_read_unlock(rwlock_t
++	rcu_read_lock();
+ 	migrate_disable();
+ }
+ EXPORT_SYMBOL(rt_write_lock);
+@@ -309,6 +313,7 @@ void __lockfunc rt_read_unlock(rwlock_t
+ {
  	rwlock_release(&rwlock->dep_map, _RET_IP_);
- 	__read_rt_unlock(rwlock);
  	migrate_enable();
 +	rcu_read_unlock();
- 	sleeping_lock_dec();
+ 	__read_rt_unlock(rwlock);
  }
  EXPORT_SYMBOL(rt_read_unlock);
-@@ -330,6 +335,7 @@ void __lockfunc rt_write_unlock(rwlock_t
+@@ -317,6 +322,7 @@ void __lockfunc rt_write_unlock(rwlock_t
+ {
  	rwlock_release(&rwlock->dep_map, _RET_IP_);
- 	__write_rt_unlock(rwlock);
  	migrate_enable();
 +	rcu_read_unlock();
- 	sleeping_lock_dec();
+ 	__write_rt_unlock(rwlock);
  }
  EXPORT_SYMBOL(rt_write_unlock);

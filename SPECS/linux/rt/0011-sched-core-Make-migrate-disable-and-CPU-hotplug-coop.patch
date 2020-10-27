@@ -1,0 +1,128 @@
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Mon, 5 Oct 2020 16:57:28 +0200
+Subject: [PATCH 11/17] sched/core: Make migrate disable and CPU hotplug
+ cooperative
+
+On CPU unplug tasks which are in a migrate disabled region cannot be pushed
+to a different CPU until they returned to migrateable state.
+
+Account the number of tasks on a runqueue which are in a migrate disabled
+section and make the hotplug wait mechanism respect that.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/sched/core.c  |   36 ++++++++++++++++++++++++++++++------
+ kernel/sched/sched.h |    4 ++++
+ 2 files changed, 34 insertions(+), 6 deletions(-)
+
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -1725,10 +1725,17 @@ static void migrate_disable_switch(struc
+ 
+ void migrate_disable(void)
+ {
+-	if (current->migration_disabled++)
++	struct task_struct *p = current;
++
++	if (p->migration_disabled) {
++		p->migration_disabled++;
+ 		return;
++	}
+ 
+-	barrier();
++	preempt_disable();
++	this_rq()->nr_pinned++;
++	p->migration_disabled = 1;
++	preempt_enable();
+ }
+ EXPORT_SYMBOL_GPL(migrate_disable);
+ 
+@@ -1755,6 +1762,7 @@ void migrate_enable(void)
+ 	 */
+ 	barrier();
+ 	p->migration_disabled = 0;
++	this_rq()->nr_pinned--;
+ 	preempt_enable();
+ }
+ EXPORT_SYMBOL_GPL(migrate_enable);
+@@ -1764,6 +1772,11 @@ static inline bool is_migration_disabled
+ 	return p->migration_disabled;
+ }
+ 
++static inline bool rq_has_pinned_tasks(struct rq *rq)
++{
++	return rq->nr_pinned;
++}
++
+ #endif
+ 
+ /*
+@@ -2637,6 +2650,11 @@ static inline bool is_migration_disabled
+ 	return false;
+ }
+ 
++static inline bool rq_has_pinned_tasks(struct rq *rq)
++{
++	return false;
++}
++
+ #endif
+ 
+ static void
+@@ -7006,15 +7024,20 @@ static bool balance_push(struct rq *rq)
+ 	 * Both the cpu-hotplug and stop task are in this case and are
+ 	 * required to complete the hotplug process.
+ 	 */
+-	if (is_per_cpu_kthread(push_task)) {
++	if (is_per_cpu_kthread(push_task) || is_migration_disabled(push_task)) {
+ 		/*
+ 		 * If this is the idle task on the outgoing CPU try to wake
+ 		 * up the hotplug control thread which might wait for the
+ 		 * last task to vanish. The rcuwait_active() check is
+ 		 * accurate here because the waiter is pinned on this CPU
+ 		 * and can't obviously be running in parallel.
++		 *
++		 * On RT kernels this also has to check whether there are
++		 * pinned and scheduled out tasks on the runqueue. They
++		 * need to leave the migrate disabled section first.
+ 		 */
+-		if (!rq->nr_running && rcuwait_active(&rq->hotplug_wait)) {
++		if (!rq->nr_running && !rq_has_pinned_tasks(rq) &&
++		    rcuwait_active(&rq->hotplug_wait)) {
+ 			raw_spin_unlock(&rq->lock);
+ 			rcuwait_wake_up(&rq->hotplug_wait);
+ 			raw_spin_lock(&rq->lock);
+@@ -7063,7 +7086,8 @@ static void balance_hotplug_wait(void)
+ {
+ 	struct rq *rq = this_rq();
+ 
+-	rcuwait_wait_event(&rq->hotplug_wait, rq->nr_running == 1,
++	rcuwait_wait_event(&rq->hotplug_wait,
++			   rq->nr_running == 1 && !rq_has_pinned_tasks(rq),
+ 			   TASK_UNINTERRUPTIBLE);
+ }
+ 
+@@ -7309,7 +7333,7 @@ int sched_cpu_dying(unsigned int cpu)
+ 	sched_tick_stop(cpu);
+ 
+ 	rq_lock_irqsave(rq, &rf);
+-	BUG_ON(rq->nr_running != 1);
++	BUG_ON(rq->nr_running != 1 || rq_has_pinned_tasks(rq));
+ 	rq_unlock_irqrestore(rq, &rf);
+ 
+ 	calc_load_migrate(rq);
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -1053,6 +1053,10 @@ struct rq {
+ 	/* Must be inspected within a rcu lock section */
+ 	struct cpuidle_state	*idle_state;
+ #endif
++
++#if defined(CONFIG_PREEMPT_RT) && defined(CONFIG_SMP)
++	unsigned int		nr_pinned;
++#endif
+ };
+ 
+ #ifdef CONFIG_FAIR_GROUP_SCHED

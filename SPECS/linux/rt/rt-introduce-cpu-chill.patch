@@ -56,8 +56,8 @@ Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
  include/linux/delay.h |    6 ++++++
- kernel/time/hrtimer.c |   32 ++++++++++++++++++++++++++++++++
- 2 files changed, 38 insertions(+)
+ kernel/time/hrtimer.c |   30 ++++++++++++++++++++++++++++++
+ 2 files changed, 36 insertions(+)
 
 --- a/include/linux/delay.h
 +++ b/include/linux/delay.h
@@ -74,7 +74,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #endif /* defined(_LINUX_DELAY_H) */
 --- a/kernel/time/hrtimer.c
 +++ b/kernel/time/hrtimer.c
-@@ -1993,6 +1993,38 @@ SYSCALL_DEFINE2(nanosleep_time32, struct
+@@ -1993,6 +1993,36 @@ SYSCALL_DEFINE2(nanosleep_time32, struct
  }
  #endif
  
@@ -96,9 +96,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 +	chill_time = ktime_set(0, NSEC_PER_MSEC);
 +
 +	current->flags |= PF_NOFREEZE;
-+	sleeping_lock_inc();
 +	schedule_hrtimeout(&chill_time, HRTIMER_MODE_REL_HARD);
-+	sleeping_lock_dec();
 +	if (!freeze_flag)
 +		current->flags &= ~PF_NOFREEZE;
 +
