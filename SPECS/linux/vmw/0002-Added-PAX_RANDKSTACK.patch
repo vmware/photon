@@ -99,10 +99,10 @@ index 70dea93..e600cd4 100644
  
 +#ifdef CONFIG_PAX_RANDKSTACK
 +.macro PAX_RAND_KSTACK
-+	movq    %rsp, %rdi
-+	call    pax_randomize_kstack
-+	movq    %rsp, %rdi
-+	movq    %rax, %rsp
++	movq	%rsp, %rdi
++	call	pax_randomize_kstack
++	movq	%rsp, %rdi
++	movq	%rax, %rsp
 +.endm
 +#endif
 +
@@ -119,21 +119,21 @@ index 70dea93..e600cd4 100644
 +	 * argument (%rdi) and pointer to pt_regs as the second argument (%rsi).
 +	 */
 +#ifdef CONFIG_PAX_RANDKSTACK
-+	pushq   %rax
-+	movq    %rsp, %rdi
-+	call    pax_randomize_kstack
-+	popq    %rdi
-+	movq    %rsp, %rsi
-+	movq    %rax, %rsp
++	pushq	%rax
++	movq	%rsp, %rdi
++	call	pax_randomize_kstack
++	popq	%rdi
++	movq	%rsp, %rsi
++	movq	%rax, %rsp
 +
-+	pushq   %rsi
++	pushq	%rsi
 +#else
  	movq	%rax, %rdi
  	movq	%rsp, %rsi
 +#endif
  	call	do_syscall_64		/* returns with IRQs disabled */
 +#ifdef CONFIG_PAX_RANDKSTACK
-+	popq    %rsp
++	popq	%rsp
 +#endif
  
  	/*
@@ -144,13 +144,13 @@ index 70dea93..e600cd4 100644
  	UNWIND_HINT_REGS
 +#ifdef CONFIG_PAX_RANDKSTACK
 +	PAX_RAND_KSTACK
-+	pushq   %rdi
++	pushq	%rdi
 +#else
  	movq	%rsp, %rdi
 +#endif
  	call	syscall_exit_to_user_mode	/* returns with IRQs disabled */
 +#ifdef CONFIG_PAX_RANDKSTACK
-+	popq    %rsp
++	popq	%rsp
 +#endif
  	jmp	swapgs_restore_regs_and_return_to_usermode
  

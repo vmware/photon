@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.9.0
-Release:        rc7.1%{?kat_build:.kat}%{?dist}
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -11,12 +11,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 %define uname_r %{version}-%{release}-secure
-#TODO: remove rcN after 5.9 goes out of rc
-%define lnx_rc_ver 5.9.0-rc7
-%define lnx_rc_local_ver .1%{?kat_build:.kat}%{?dist}
 
-Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{lnx_rc_ver}.tar.xz
-%define sha1 linux=b8809bb16a9591303ac2bb84e19a597e26b69c4c
+Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
+%define sha1 linux=26fefa389c711da70543092fbb121a023f1b0fb8
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -118,8 +115,8 @@ Enhances:       %{name}
 This Linux package contains hmac sha generator kernel module.
 
 %prep
-%setup -q -n linux-%{lnx_rc_ver}
-%setup -D -b 5 -n linux-%{lnx_rc_ver}
+%setup -q -n linux-%{version}
+%setup -D -b 5 -n linux-%{version}
 
 %patch0 -p1
 %patch1 -p1
@@ -162,7 +159,7 @@ This Linux package contains hmac sha generator kernel module.
 %build
 make mrproper
 cp %{SOURCE1} .config
-sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="%{lnx_rc_local_ver}-secure"/' .config
+sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
 
 %include %{SOURCE4}
 
@@ -284,6 +281,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Oct 22 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-1
+-   Update to 5.9.0
 *   Wed Oct 14 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-rc7.1
 -   Update to 5.9.0-rc7
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.19.127-4
