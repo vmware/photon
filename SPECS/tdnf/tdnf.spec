@@ -4,8 +4,8 @@
 #
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        2.1.1
-Release:        3%{?dist}
+Version:        3.0.0
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -15,6 +15,7 @@ Requires:       rpm-libs
 Requires:       curl
 Requires:       tdnf-cli-libs = %{version}-%{release}
 Requires:       libsolv
+Requires:       libmetalink
 BuildRequires:  popt-devel
 BuildRequires:  rpm-devel
 BuildRequires:  openssl-devel >= 1.1.1
@@ -32,17 +33,8 @@ BuildRequires:  libxml2
 %endif
 Obsoletes:      yum
 Provides:       yum
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    tdnf=643e0dd1bf62b7b7261fdbf292d6e3db45b9d015
-Source1:        cache-updateinfo
-Source2:        cache-updateinfo.service
-Source3:        cache-updateinfo.timer
-Source4:        updateinfo.sh
-Source5:        tdnfrepogpgcheck.conf
-
-Patch0:         tdnf_fix_project_version.patch
-Patch1:         Fix-unhandled-error-code-message.patch
-Patch2:         Report-missing-providers-when-achieving-goal.patch
+Source0:        %{name}-%{version}-beta.tar.gz
+%define sha1    tdnf=ccde34eb3c75afcd1d672fae05a0dd2aae7feaa1
 
 %description
 tdnf is a yum/dnf equivalent which uses libsolv and libcurl
@@ -81,8 +73,17 @@ Requires:       python3
 %description python
 python bindings for tdnf
 
+%package automatic
+Summary:   %{name} - automated upgrades
+Group:     Development/Libraries
+Requires:  %{name} = %{version}-%{release}
+%{?systemd_requires}
+
+%description automatic
+Systemd units that can periodically download package upgrades and apply them.
+
 %prep
-%autosetup -n %{name}-%{version} -p1
+%autosetup -n %{name}-%{version}-beta
 
 %build
 mkdir build && cd build
@@ -100,16 +101,13 @@ cd build && make %{?_smp_mflags} check
 cd build && make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.a' -delete
 mkdir -p %{buildroot}/var/cache/tdnf
+mkdir -p %{buildroot}/%{_libdir}/systemd/system/
 ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
 ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/yum
-install -v -D -m 0755 %{SOURCE1} %{buildroot}%{_bindir}/tdnf-cache-updateinfo
-install -v -D -m 0644 %{SOURCE2} %{buildroot}%{_libdir}/systemd/system/tdnf-cache-updateinfo.service
-install -v -D -m 0644 %{SOURCE3} %{buildroot}%{_libdir}/systemd/system/tdnf-cache-updateinfo.timer
-install -v -D -m 0755 %{SOURCE4} %{buildroot}%{_sysconfdir}/motdgen.d/02-tdnf-updateinfo.sh
-install -v -D -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/tdnf/pluginconf.d/tdnfrepogpgcheck.conf
 mv %{buildroot}/usr/lib/pkgconfig/tdnfcli.pc %{buildroot}/usr/lib/pkgconfig/tdnf-cli-libs.pc
 mkdir -p %{buildroot}/%{_tdnfpluginsdir}/tdnfrepogpgcheck
 mv %{buildroot}/%{_tdnfpluginsdir}/libtdnfrepogpgcheck.so %{buildroot}/%{_tdnfpluginsdir}/tdnfrepogpgcheck/libtdnfrepogpgcheck.so
+mv %{buildroot}/lib/systemd/system/ %{buildroot}/%{_libdir}/systemd/
 
 pushd python
 python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
@@ -182,6 +180,21 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     # First argument is 0 => Uninstall
     # First argument is 1 => Upgrade
 
+%post automatic
+%systemd_post %{name}-automatic.timer
+%systemd_post %{name}-automatic-notifyonly.timer
+%systemd_post %{name}-automatic-install.timer
+
+%preun automatic
+%systemd_preun %{name}-automatic.timer
+%systemd_preun %{name}-automatic-notifyonly.timer
+%systemd_preun %{name}-automatic-install.timer
+
+%postun automatic
+%systemd_postun_with_restart %{name}-automatic.timer
+%systemd_postun_with_restart %{name}-automatic-notifyonly.timer
+%systemd_postun_with_restart %{name}-automatic-install.timer
+
 %files
     %defattr(-,root,root,0755)
     %{_bindir}/tdnf
@@ -219,7 +232,20 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %defattr(-,root,root)
     %{python3_sitelib}/*
 
+%files automatic
+    %defattr(-,root,root,0755)
+    %{_bindir}/%{name}-automatic
+    %config(noreplace) %{_sysconfdir}/%{name}/automatic.conf
+    %{_libdir}/systemd/system/%{name}-automatic.timer
+    %{_libdir}/systemd/system/%{name}-automatic.service
+    %{_libdir}/systemd/system/%{name}-automatic-install.timer
+    %{_libdir}/systemd/system/%{name}-automatic-install.service
+    %{_libdir}/systemd/system/%{name}-automatic-notifyonly.timer
+    %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
+
 %changelog
+*   Tue Oct 27 2020 Keerthana K <keerthanak@vmware.com> 3.0.0-1
+-   Update to v3.0.0-beta
 *   Sun Sep 06 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.1-3
 -   Rebuild with openssl 1.1.1
 *   Sat Aug 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.1.1-2

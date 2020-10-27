@@ -1,0 +1,64 @@
+Author: Tapas Kundu <tkundu@vmware.com>
+Date:   Thu Oct 22 13:19:59 2020 +0000
+
+    Fix pszUrlGPGKey in pmd
+
+    tdnf 2.1.2 have modified pszUrlGPGKeys from
+    string to string array. This commit fixes that
+    incompatibility.
+
+    Change-Id: I279878198659fffa13dfc664754a41faa54b54c8
+    Signed-off-by: Tapas Kundu <tkundu@vmware.com>
+
+diff --git a/client/pkgmgmt_api.c b/client/pkgmgmt_api.c
+index da1a6ab..c445919 100644
+--- a/client/pkgmgmt_api.c
++++ b/client/pkgmgmt_api.c
+@@ -1060,7 +1060,7 @@ pkg_free_repos(
+         PMD_SAFE_FREE_MEMORY(pRepo->pszName);
+         PMD_SAFE_FREE_MEMORY(pRepo->pszBaseUrl);
+         PMD_SAFE_FREE_MEMORY(pRepo->pszMetaLink);
+-        PMD_SAFE_FREE_MEMORY(pRepo->pszUrlGPGKey);
++        PMDFreeStringArray(pRepo->ppszUrlGPGKeys);
+
+         pRepos = pRepo->pNext;
+         PMD_SAFE_FREE_MEMORY(pRepo);
+diff --git a/server/pkgmgmtrestapi.c b/server/pkgmgmtrestapi.c
+index 653a290..ccfbd81 100644
+--- a/server/pkgmgmtrestapi.c
++++ b/server/pkgmgmtrestapi.c
+@@ -718,6 +718,8 @@ get_repodata_json_string(
+     uint32_t dwError = 0;
+     char *pszJson = NULL;
+     json_t *pRoot = NULL;
++    json_t *pszUrlGPGKeyArray = NULL;
++    int i = 0;
+
+     if(!pRepoData || !ppszJson)
+     {
+@@ -732,13 +734,24 @@ get_repodata_json_string(
+         BAIL_ON_PMD_ERROR(dwError);
+     }
+
++    pszUrlGPGKeyArray = json_array();
++    if(!pszUrlGPGKeyArray)
++    {
++        dwError = ERROR_PMD_OUT_OF_MEMORY;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
+     for(; pRepoData; pRepoData = pRepoData->pNext)
+     {
+         json_t *pRepoObj = json_object();
+         json_object_set_new(pRepoObj, "id", json_string(pRepoData->pszId));
+         json_object_set_new(pRepoObj, "name", json_string(pRepoData->pszName));
+         json_object_set_new(pRepoObj, "baseurl", json_string(pRepoData->pszBaseUrl));
+-        json_object_set_new(pRepoObj, "gpgkey", json_string(pRepoData->pszUrlGPGKey));
++        json_object_set_new(pRepoObj, "gpgkey", pszUrlGPGKeyArray);
++        for(i = 0; pRepoData->ppszUrlGPGKeys[i]; i++)
++        {
++            json_array_append_new(pszUrlGPGKeyArray, json_string(pRepoData->ppszUrlGPGKeys[i]));
++        }
+         json_object_set_new(pRepoObj, "metadata_expire", json_integer(0));
+         json_object_set_new(pRepoObj, "skip_if_unavailable", json_boolean(pRepoData->nSkipIfUnavailable));
+         json_object_set_new(pRepoObj, "enabled", json_boolean(pRepoData->nEnabled));
