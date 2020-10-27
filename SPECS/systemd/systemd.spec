@@ -1,7 +1,7 @@
 Name:             systemd
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Version:          245.5
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 Summary:          System and Service Manager
 
@@ -20,6 +20,7 @@ Source6:          10-defaults.preset
 
 Patch0:           systemd-245-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:           systemd-245-default-dns-from-env.patch
+Patch2:           util-return-the-correct-correct-wd-from-inotify-help.patch
 
 Requires:         Linux-PAM
 Requires:         bzip2
@@ -107,6 +108,7 @@ sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 if [ %{_host} != %{_build} ]; then
@@ -338,6 +340,8 @@ rm -rf %{buildroot}/*
 %files lang -f ../%{name}.lang
 
 %changelog
+*    Tue Oct 27 2020 Susant Sahani <ssahani@vmware.com>  245.5-3
+-    util: return the correct correct wd from inotify helpers
 *    Sun Aug 16 2020 Susant Sahani <ssahani@vmware.com>  245.5-2
 -    Drop meson macro
 *    Tue May 12 2020 Susant Sahani <ssahani@vmware.com>  245.5-1
