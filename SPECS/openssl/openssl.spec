@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.1.1g
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -92,10 +92,8 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/ssl/certs
-%{_sysconfdir}/ssl/misc/CA.pl
 %{_sysconfdir}/ssl/ct_log_list.cnf
 %{_sysconfdir}/ssl/ct_log_list.cnf.dist
-%{_sysconfdir}/ssl/misc/tsget.pl
 %{_sysconfdir}/ssl/openssl.cnf.dist
 %{_sysconfdir}/ssl/openssl.cnf
 %{_sysconfdir}/ssl/private
@@ -116,6 +114,7 @@ rm -rf %{buildroot}/*
 
 %files perl
 /%{_sysconfdir}/ssl/misc/tsget
+/%{_sysconfdir}/ssl/misc/tsget.pl
 /%{_sysconfdir}/ssl/misc/CA.pl
 
 %files c_rehash
@@ -123,6 +122,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Tue Oct 27 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1g-3
+-   move perl dependencies to perl sub-package
 *   Mon Sep 28 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1g-2
 -   Add libcrypto symlinks
 *   Wed Jul 22 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1g-1
