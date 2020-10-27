@@ -39,7 +39,10 @@ then
   sudo docker run --privileged -v ${SRCROOT}:/photon -v ${STAGE_DIR}/RPMS:/RPMS -v ${STAGE_DIR}/ostree-repo:/srv/rpm-ostree -w="/photon/support/image-builder/ostree-tools/" vmware/photon-build:rpm-ostree-aarch64-3.0 ./mk-ostree-server.sh /
 fi
 
-(cd ${STAGE_DIR}/ostree-repo/repo/; tar -zcf ../../ostree-repo.tar.gz .; )
+REPODIR=${STAGE_DIR}/ostree-repo/repo
+if [ -d "$REPODIR" ]; then
+  tar -zcf ${STAGE_DIR}/ostree-repo.tar.gz -C ${REPODIR} .
+fi
 
 # Restore file
 mv -f ${SRCROOT}/support/image-builder/ostree-tools/photon-ostree.repo.bak ${SRCROOT}/support/image-builder/ostree-tools/photon-ostree.repo
