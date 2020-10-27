@@ -14,7 +14,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.9.0
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -718,6 +718,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Oct 27 2020 Piyush Gupta <gpiyush@vmware.com> 5.9.0-2
+-   Fix aarch64 build failure due to missing CONFIG_FB_ARMLCD
 *   Mon Oct 19 2020 Bo Gan <ganb@vmware.com> 5.9.0-1
 -   Update to 5.9.0
 *   Wed Sep 30 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-rc7.1
