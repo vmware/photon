@@ -5,7 +5,7 @@
 Summary:	The NetBSD Editline library
 Name:		libedit
 Version:	3.1.20180525
-Release:	1%{?dist}
+Release:	2%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	libedit-%{libedit_release}-%{libedit_version}.tar.gz
@@ -33,8 +33,7 @@ Development files for libedit
 %setup -qn libedit-%{libedit_release}-%{libedit_version}
 
 %build
-./configure \
---prefix=%{_prefix} \
+%configure \
 --disable-static
 
 make %{?_smp_mflags}
@@ -42,6 +41,8 @@ make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
+# Remove history.3, a solftlink to editline, which conflicts with readline-devel
+rm -f %{buildroot}/%{_mandir}/man3/history.3
 
 # Pre-install
 %pre
@@ -76,8 +77,8 @@ rm -rf %{buildroot}/*
 
 %files
     %defattr(-,root,root,0755)
-    %exclude %{_libdir}/debug
-    %{_libdir}/*.so.*
+    %exclude %dir %{_libdir}/debug
+    %{_libdir}/%{name}.so.*
     %{_mandir}/*
 
 %files devel
@@ -87,5 +88,7 @@ rm -rf %{buildroot}/*
     %{_includedir}/*
 
 %changelog
+*   Tue Oct 27 2020 Dweep Advani <dadvani@vmware.com> 3.1.20180525-2
+-   Fix conflict of /usr/share/man/man3/history.3 with readline-devel
 *   Tue Aug 14 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.20180525-1
 -   Initial

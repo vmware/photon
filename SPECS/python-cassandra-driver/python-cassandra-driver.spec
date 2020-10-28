@@ -6,7 +6,7 @@
 Summary:        A modern, feature-rich and highly-tunable Python client library for Apache Cassandra (2.1+)
 Name:           python-cassandra-driver
 Version:        3.15.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://github.com/datastax/python-driver#datastax-python-driver-for-apache-cassandra
 License:        Apache 2.0
 Group:          Development/Languages/Python
@@ -14,6 +14,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/datastax/python-driver/archive/cassandra-driver-%{version}.tar.gz
 %define sha1    cassandra-driver=cf83c56599ef95c23c1f1b26e9d7209f2fe3ae87
+Patch0:         python-cassandra-driver-libev.patch
 BuildRequires:  python2
 BuildRequires:  cython
 BuildRequires:  python2-libs
@@ -23,6 +24,14 @@ BuildRequires:  python-pip
 BuildRequires:  python-pytest
 BuildRequires:  libev-devel
 BuildRequires:  libev
+BuildRequires:  python3
+BuildRequires:  cython3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-pip
+BuildRequires:  python3-pytest
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
@@ -37,14 +46,6 @@ The driver supports Python 2.7, 3.3, 3.4, 3.5, and 3.6.
 
 %package -n     python3-cassandra-driver
 Summary:        python3-cassandra-driver
-BuildRequires:  python3
-BuildRequires:  cython3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-pip
-BuildRequires:  python3-pytest
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -53,6 +54,7 @@ Python 3 version.
 
 %prep
 %setup -q -n cassandra-driver-%{version}
+%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -113,6 +115,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Oct 28 2020 Dweep Advani <dadvani@vmware.com> 3.15.1-3
+-   Changed for the new location libev/ev.h in libev-devel
 *   Wed Dec 12 2018 Tapas Kundu <tkundu@vmware.com> 3.15.1-2
 -   Fix make check
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 3.15.1-1

@@ -1,0 +1,15 @@
+The patch is created to correctly consume header files from libev-devel package.
+The header files in libev-devel package are moved from /usr/include to
+/usr/include/libev to resolve the install time conflict with libev-devel
+package. /usr/include/event.h conflicted between those packages.
+
+diff -Naurp a/cassandra/io/libevwrapper.c b/cassandra/io/libevwrapper.c
+--- a/cassandra/io/libevwrapper.c	2020-10-28 06:38:02.283278880 +0000
++++ b/cassandra/io/libevwrapper.c	2020-10-28 06:38:29.800398165 +0000
+@@ -1,5 +1,5 @@
+ #include <Python.h>
+-#include <ev.h>
++#include <libev/ev.h>
+ 
+ typedef struct libevwrapper_Loop {
+     PyObject_HEAD

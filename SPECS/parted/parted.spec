@@ -1,7 +1,7 @@
 Summary:        GNU Parted manipulates partition tables
 Name:           parted
 Version:        3.2
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPLv3+
 URL:            http://ftp.gnu.org/gnu/parted/parted-3.2.tar.xz
 Group:          Applications/System
@@ -44,8 +44,11 @@ make DESTDIR=%{buildroot} install
 %{_includedir}/*
 %{_infodir}/*
 %{_datadir}/*
+%exclude %{_infodir}/dir
 
 %changelog
+*  Tue Oct 27 2020 Dweep Advani <dadvani@vmware.com> 3.2-9
+-  Remove conflict causing /usr/share/info/dir from packaging
 *  Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 3.2-8
 -  Do not conflict with toybox >= 0.8.2-2
 *  Tue Oct 2 2018 Michelle Wang <michellew@vmware.com> 3.2-7

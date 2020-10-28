@@ -1,7 +1,7 @@
 Summary:	A full-featured and high-performance event loop
 Name:		libev
 Version:	4.24
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD-2-Clause
 URL:		http://software.schmorp.de/pkg/libev.html
 Source0:	http://dist.schmorp.de/libev/%{name}-%{version}.tar.gz
@@ -32,7 +32,7 @@ The subpackage includes all development related headers and library for libev
 make %{?_smp_mflags}
 
 %install
-%makeinstall
+%makeinstall includedir=%{buildroot}%{_includedir}/libev
 find %{buildroot} -name '*.la' -delete
 
 %check
@@ -51,5 +51,7 @@ make %{?_smp_mflags} -k check
 %{_libdir}/*.so
 
 %changelog
-*	Mon Apr 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.24-1
--       Initial Version.
+* Wed Oct 28 2020 Dweep Advani <dadvani@vmware.com> 4.24-2
+- Resolved conflict of /usr/include/event.h with libevent-devel
+* Mon Apr 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.24-1
+- Initial Version.
