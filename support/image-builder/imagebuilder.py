@@ -163,14 +163,14 @@ def verifyImageTypeAndConfig(config_file, img_name):
     config = None
     if img_name and img_name != '':
         # Verify there is a directory corresponding to image
-        if img_name not in next(os.walk('.'))[1]:
+        if img_name not in next(os.walk(os.path.dirname(__file__)))[1]:
             return (False, config)
         if config_file and config_file != '' and os.path.isfile(config_file):
             config = Utils.jsonread(config_file)
             if 'image_type' in config and config['image_type'] != img_name:
                 return (False, config)
         else:
-            config_file = img_name + "/config_" + img_name + ".json"
+            config_file = os.path.join(os.path.dirname(__file__), img_name, "config_" + img_name + ".json")
             if os.path.isfile(config_file):
                 config = Utils.jsonread(config_file)
                 if 'image_type' not in config:

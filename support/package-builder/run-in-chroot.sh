@@ -8,7 +8,7 @@
 set -o errexit
 set -o nounset
 set +h
-source common.inc
+source $(dirname $(realpath -s $0))/common.inc
 
 LOGFILE="$(date +%Y-%m-%d).log"
 PRGNAME=${0##*/}

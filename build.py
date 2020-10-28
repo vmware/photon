@@ -487,7 +487,6 @@ class RpmBuildTarget:
 
         Builder.get_packages_with_build_options(configdict['photon-build-param']['pkg-build-options'])
 
-        os.chdir(str(PurePath(curDir, "support", "package-builder")))
         if not check_prerequesite["generate-dep-lists"]:
             SPECS()
         if constants.buildArch != constants.targetArch:
@@ -530,13 +529,11 @@ class RpmBuildTarget:
             RpmBuildTarget.create_repo()
         else:
             BuildEnvironmentSetup.packages_cached()
-        os.chdir(curDir)
 
     def package(self, pkgName):
         check_prerequesite["package"] = True
         self.logger.debug("Package to build:" + pkgName)
         Builder.buildSpecifiedPackages([pkgName], Build_Config.buildThreads, Build_Config.pkgBuildType)
-        os.chdir(curDir)
 
     def packages_minimal(self):
         check_prerequesite["packages-minimal"] = True
@@ -545,7 +542,6 @@ class RpmBuildTarget:
                     Build_Config.buildThreads, Build_Config.pkgBuildType, Build_Config.pkgInfoFile, self.logger)
         else:
             BuildEnvironmentSetup.packages_cached()
-        os.chdir(curDir)
 
     def packages_rt(self):
         check_prerequesite["packages-rt"] = True
@@ -554,31 +550,26 @@ class RpmBuildTarget:
                     Build_Config.buildThreads, Build_Config.pkgBuildType, Build_Config.pkgInfoFile, self.logger)
         else:
             BuildEnvironmentSetup.packages_cached()
-        os.chdir(curDir)
 
     def packages_initrd(self):
         check_prerequesite["packages-initrd"] = True
         Builder.buildPackagesInJson(os.path.join(Build_Config.dataDir, "packages_installer_initrd.json"), \
                 Build_Config.buildThreads, Build_Config.pkgBuildType, Build_Config.pkgInfoFile, self.logger)
-        os.chdir(curDir)
 
     def packages_docker(self):
         check_prerequesite["packages-docker"] = True
         Builder.buildPackagesForAllSpecs(Build_Config.buildThreads, Build_Config.pkgBuildType, Build_Config.pkgInfoFile, self.logger)
-        os.chdir(curDir)
 
     def updated_packages(self):
         check_prerequesite["updated-packages"] = True
         constants.setRpmPath(Build_Config.updatedRpmPath)
         Builder.buildPackagesForAllSpecs(Build_Config.buildThreads, Build_Config.pkgBuildType, Build_Config.pkgInfoFile, self.logger)
-        os.chdir(curDir)
 
     def check(self):
         check_prerequesite["check"] = True
         constants.setRPMCheck(True)
         constants.setRpmCheckStopOnError(True)
         Builder.buildPackagesForAllSpecs(Build_Config.buildThreads, Build_Config.pkgBuildType, Build_Config.pkgInfoFile, self.logger)
-        os.chdir(curDir)
 
     def distributed_build():
         from DistributedBuilder import DistributedBuilder
@@ -594,8 +585,6 @@ class RpmBuildTarget:
         distributedBuilder.copyFromNfs()
         distributedBuilder.deleteBuild()
         distributedBuilder.clean()
-
-        os.chdir(curDir)
 
     def tool_chain_stage1(self):
         from PackageManager import PackageManager
@@ -622,7 +611,6 @@ class RpmBuildTarget:
         if not check_prerequesite["packages"]:
             rpmBuildTarget = RpmBuildTarget()
             rpmBuildTarget.packages()
-        os.chdir(curDir + "/support/package-builder")
         if "generate-pkg-list" in configdict["photon-build-param"] and configdict["photon-build-param"]["generate-pkg-list"]:
             GenerateOSSFiles.buildPackagesList(os.path.join(Build_Config.stagePath, "packages_list.csv"))
         else:
@@ -630,7 +618,6 @@ class RpmBuildTarget:
             logger = Logger.getLogger("GenerateYamlFiles", constants.logPath, constants.logLevel)
             GenerateOSSFiles.buildSourcesList(Build_Config.stagePath, blackListPkgs, logger)
             GenerateOSSFiles.buildSRPMList(constants.sourceRpmPath, Build_Config.stagePath, blackListPkgs, constants.dist, logger)
-        os.chdir(curDir)
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # class CheckTools does the job of checking weather all the tools required for starting build process are present on the system  +
@@ -806,9 +793,7 @@ class BuildImage:
             RpmBuildTarget.ostree_repo()
         self.generated_data_path = Build_Config.generatedDataPath
         print("Building Full ISO...")
-        os.chdir(str(PurePath(curDir, "support", "image-builder")))
         imagebuilder.createIso(self)
-        os.chdir(curDir)
 
     def build_image(self):
 
@@ -827,9 +812,7 @@ class BuildImage:
         if not check_prerequesite["ostree-repo"]:
             RpmBuildTarget.ostree_repo()
         print("Building image " + self.img_name)
-        os.chdir(str(PurePath(curDir, "support", "image-builder")))
         imagebuilder.createImage(self)
-        os.chdir(curDir)
 
     @staticmethod
     def photon_docker_image():

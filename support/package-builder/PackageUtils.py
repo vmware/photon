@@ -208,7 +208,7 @@ class PackageUtils(object):
     def adjustGCCSpecs(self, sandbox, package, version):
         # TODO: need to harden cross compiller also
         opt = " " + SPECS.getData().getSecurityHardeningOption(package, version)
-        sandbox.put(self.adjustGCCSpecScript, "/tmp")
+        sandbox.put(os.path.join(os.path.dirname(__file__), self.adjustGCCSpecScript), "/tmp")
         cmd = "/tmp/" + self.adjustGCCSpecScript + opt
         returnVal = sandbox.run(cmd, logfn=self.logger.debug)
         if returnVal == 0:

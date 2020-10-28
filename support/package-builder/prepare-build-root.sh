@@ -8,10 +8,9 @@
 set -o errexit
 set -o nounset
 set +h
-source common.inc
+source $(dirname $(realpath -s $0))/common.inc
 
 PRGNAME=${0##*/}
-
 if [ $# -lt 1 ]; then
     fail "${PRGNAME}: No build root specified. Usage : ${PRGNAME} <build-root>"
 fi

@@ -32,8 +32,8 @@ class Chroot(Sandbox):
     def __init__(self, logger):
         Sandbox.__init__(self, logger)
         self.chrootID = None
-        self.prepareBuildRootCmd = "./prepare-build-root.sh"
-        self.runInChrootCommand = ("./run-in-chroot.sh " + constants.sourcePath +
+        self.prepareBuildRootCmd = os.path.join(os.path.dirname(__file__), "prepare-build-root.sh")
+        self.runInChrootCommand = (str(os.path.join(os.path.dirname(__file__), "run-in-chroot.sh ")) + constants.sourcePath +
                                    " " + constants.rpmPath)
         self.chrootCmdPrefix = None
 
