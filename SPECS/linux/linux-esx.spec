@@ -458,7 +458,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %changelog
 *   Mon Oct 19 2020 Bo Gan <ganb@vmware.com> 5.9.0-1
 -   Update to 5.9.0
-*   Wed Oct 08 2020 Ankit Jain <ankitja@vmware.com> 5.9.0-rc7.2
+*   Thu Oct 08 2020 Ankit Jain <ankitja@vmware.com> 5.9.0-rc7.2
 -   Added vtar Support.
 -   Disabled by default, Enable CONFIG_VTAR as builtin only
 *   Wed Sep 30 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-rc7.1
