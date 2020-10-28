@@ -4,7 +4,7 @@
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
 Version:	0.181
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 URL:    	https://sourceware.org/elfutils
@@ -152,6 +152,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_bindir}/eu-*
 %{_bindir}/debuginfod
 %{_bindir}/debuginfod-find
+%{_libdir}/libdebuginfod-%{version}.so
 %{_libdir}/libasm-%{version}.so
 %{_libdir}/libdw-%{version}.so
 %{_libdir}/libasm.so.*
@@ -172,7 +173,6 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_includedir}/elfutils/debuginfod.h
 %{_libdir}/libdw.so
 %{_libdir}/libdebuginfod.so
-%{_libdir}/libdebuginfod-%{version}.so
 %{_libdir}/pkgconfig/*.pc
 %{_mandir}/man3/elf_*.3*
 %{_mandir}/man3/debuginfod*.3*
@@ -201,6 +201,8 @@ rm -rf ${RPM_BUILD_ROOT}
 %defattr(-,root,root)
 
 %changelog
+* Wed Oct 28 2020 Piyush Gupta <gpiyush@vmware.com> 0.181-2
+- Moved libdebuginfod-%{version}.so from devel to elfutils
 * Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.181-1
 - Automatic Version Bump
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 0.180-1
