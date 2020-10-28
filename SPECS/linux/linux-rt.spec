@@ -11,7 +11,7 @@ Name:           linux-rt
 Version:        5.9.0
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt16
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -298,6 +298,8 @@ Patch531:       genirq-disable-irqpoll-on-rt.patch
 Patch532:       sysfs-realtime-entry.patch
 # Keep rt_version matched up with this patch.
 Patch533:       localversion.patch
+
+Patch600:       0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
 
 %if 0%{?kat_build:1}
 Patch1000:        %{kat_build}.patch
@@ -604,6 +606,7 @@ The Linux package contains the Linux kernel doc files
 %patch531 -p1
 %patch532 -p1
 %patch533 -p1
+%patch600 -p1
 
 
 %if 0%{?kat_build:1}
@@ -765,6 +768,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Oct 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-2
+-   Revert d254087 (clockevents: Stop unused clockevent devices)
+-   Solve cyclictest regression introduced in 4.1
 *   Tue Oct 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-1
 -   Update to version 5.9.0
 *   Tue Oct 06 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-rc7.1
