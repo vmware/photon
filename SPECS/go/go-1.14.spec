@@ -11,7 +11,7 @@
 Summary:        Go
 Name:           go
 Version:        1.14.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -104,9 +104,15 @@ rm -rf %{buildroot}/*
 %{gopath}/src
 %exclude %{goroot}/src/pkg/debug/dwarf/testdata
 %exclude %{goroot}/src/pkg/debug/elf/testdata
+%ifarch aarch64
+%exclude %{goroot}/src/debug/dwarf/testdata
+%exclude %{goroot}/src/debug/elf/testdata
+%endif
 %{_bindir}/*
 
 %changelog
+*   Wed Oct 28 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.14.8-2
+-   Fix glibc dependency on aarch64
 *   Tue Oct 06 2020 Ashwin H <ashwinh@vmware.com> 1.14.8-1
 -   Update to 1.14.8
 *   Thu Mar 05 2020 <ashwinh@vmware.com> 1.14-1
