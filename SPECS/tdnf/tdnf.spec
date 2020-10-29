@@ -5,7 +5,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -22,6 +22,7 @@ BuildRequires:  openssl-devel >= 1.1.1
 BuildRequires:  libsolv-devel
 BuildRequires:  curl-devel
 BuildRequires:  libmetalink-devel
+BuildRequires:  systemd
 #plugin repogpgcheck
 BuildRequires:  gpgme-devel
 BuildRequires:  cmake
@@ -35,6 +36,7 @@ Obsoletes:      yum
 Provides:       yum
 Source0:        %{name}-%{version}-beta.tar.gz
 %define sha1    tdnf=ccde34eb3c75afcd1d672fae05a0dd2aae7feaa1
+Patch0:         fix-coverity-issues.patch
 
 %description
 tdnf is a yum/dnf equivalent which uses libsolv and libcurl
@@ -83,7 +85,7 @@ Requires:  %{name} = %{version}-%{release}
 Systemd units that can periodically download package upgrades and apply them.
 
 %prep
-%autosetup -n %{name}-%{version}-beta
+%autosetup -n %{name}-%{version}-beta -p1
 
 %build
 mkdir build && cd build
@@ -244,6 +246,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
 
 %changelog
+*   Thu Oct 29 2020 Keerthana K <keerthanak@vmware.com> 3.0.0-2
+-   Fix coverity scan issues and fedora pytest issue.
 *   Tue Oct 27 2020 Keerthana K <keerthanak@vmware.com> 3.0.0-1
 -   Update to v3.0.0-beta
 *   Sun Sep 06 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.1-3
