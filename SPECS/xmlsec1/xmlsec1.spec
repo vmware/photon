@@ -1,7 +1,7 @@
 Summary:        Library providing support for "XML Signature" and "XML Encryption" standards
 Name:           xmlsec1
 Version:        1.2.30
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,8 +11,10 @@ Source0:        http://www.aleksey.com/xmlsec/download/%{name}-%{version}.tar.gz
 %define sha1 xmlsec1=c8e34b20eac7a2ed23eb5696dcae793ffd78250b
 BuildRequires: libxml2-devel
 BuildRequires: libltdl-devel
+BuildRequires: libxslt-devel
 Requires:      libxml2
 Requires:      libltdl
+Requires:      libxslt
 Requires:      nss
 
 %description
@@ -26,6 +28,8 @@ Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
 Requires: libxml2-devel
 Requires: libltdl-devel
+Requires: libxslt-devel
+
 
 %description devel
 Libraries, includes, etc. you can use to develop applications with XML Digital
@@ -82,6 +86,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_prefix}/share/man/man1/xmlsec1-config.1.gz
 
 %changelog
+*   Wed Oct 28 2020 Siju Maliakkal <smaliakkal@vmware.com> 1.2.30-3
+-   Added xslt support
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2.30-2
 -   openssl 1.1.1
 *   Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.30-1
