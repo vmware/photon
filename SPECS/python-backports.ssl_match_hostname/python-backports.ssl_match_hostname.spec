@@ -2,7 +2,7 @@
 
 Name:           python3-backports.ssl_match_hostname
 Version:        3.7.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Backported python ssl_match_hostname
 License:        PSFL
 Group:          Development/Languages/Python
@@ -31,12 +31,17 @@ python3 setup.py build
 
 %install
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
+%{__rm} -f %{buildroot}%{python3_sitelib}/backports/__init__.py*
+find %{buildroot}%{python3_sitelib}/ -name '*.pyc' -delete -o \
+    -name '*__pycache__' -delete
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Oct 28 2020 Dweep Advani <dadvani@vmware.com> 3.7.0.1-2
+-   Fixed install conflicts with python3-configparser
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.7.0.1-1
 -   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 3.5.0.1-2
