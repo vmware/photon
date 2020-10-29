@@ -1,0 +1,22 @@
+--- a/vmdir/gssapi-plugins/srp/srp_del_sec_ctx.c	2020-10-30 14:53:10.749090254 +0530
++++ b/vmdir/gssapi-plugins/srp/srp_del_sec_ctx.c	2020-10-30 14:54:18.759034913 +0530
+@@ -84,6 +84,7 @@ srp_gss_delete_sec_context(
+     }
+ 
+     HMAC_CTX_reset(srp_ctx->hmac_ctx);
++    HMAC_CTX_free(srp_ctx->hmac_ctx);
+ #ifdef SRP_FIPS_ENABLED
+     if (srp_ctx->evp_encrypt_ctx)
+     {
+--- a/vmdir/gssapi-plugins/unix/unix_del_sec_ctx.c	2020-10-29 12:33:14.114443815 +0530
++++ b/vmdir/gssapi-plugins/unix/unix_del_sec_ctx.c	2020-10-30 14:51:20.465936847 +0530
+@@ -94,7 +94,8 @@ srp_gss_delete_sec_context(
+         srp_ctx->krb5_ctx = NULL;
+     }
+ 
+-    HMAC_CTX_cleanup(&srp_ctx->hmac_ctx);
++    HMAC_CTX_reset(srp_ctx->hmac_ctx);
++    HMAC_CTX_free(srp_ctx->hmac_ctx);
+ #ifdef SRP_FIPS_ENABLED
+     if (srp_ctx->evp_encrypt_ctx)
+     {
