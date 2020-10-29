@@ -818,7 +818,7 @@ class BuildImage:
             CheckTools.check_kpartx()
         if not check_prerequesite["photon-stage"]:
             BuildEnvironmentSetup.photon_stage()
-        if not check_prerequesite["vixdiskutil"]:
+        if not check_prerequesite["vixdiskutil"] and constants.buildArch == "x86_64":
             vixdiskutil()
         rpmBuildTarget = None
         if not check_prerequesite["packages"]:
