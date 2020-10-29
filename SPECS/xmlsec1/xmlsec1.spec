@@ -1,7 +1,7 @@
 Summary:        Library providing support for "XML Signature" and "XML Encryption" standards
 Name:           xmlsec1
 Version:        1.2.29
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,8 +11,10 @@ Source0:        http://www.aleksey.com/xmlsec/download/%{name}-%{version}.tar.gz
 %define sha1 xmlsec1=dff1279c410817bf0fe5d3b7444fb72d5ad6b021
 BuildRequires: libxml2-devel
 BuildRequires: libltdl-devel
+BuildRequires: libxslt-devel
 Requires:      libxml2
-Requires:      libltdl
+requires:      libltdl
+requires:      libxslt
 Requires:      nss
 
 %description
@@ -26,6 +28,8 @@ Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
 Requires: libxml2-devel
 Requires: libltdl-devel
+Requires: libxslt-devel
+
 
 %description devel
 Libraries, includes, etc. you can use to develop applications with XML Digital
@@ -35,7 +39,7 @@ Signatures and XML Encryption support.
 %setup -q
 
 %build
-%configure --disable-static
+%configure  --disable-static
 make %{?_smp_mflags}
 
 %install
@@ -82,7 +86,9 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_prefix}/share/man/man1/xmlsec1-config.1.gz
 
 %changelog
-*   Tue Oct 28 2019 Piyush Gupta <guptapi@vmware.com> 1.2.29-2
+*   Wed Oct 28 2020 Siju Maliakkal <smaliakkal@vmware.com> 1.2.29-3
+-   Added XSLT requirement
+*   Mon Oct 28 2019 Piyush Gupta <guptapi@vmware.com> 1.2.29-2
 -   Added nss as requires
 *   Thu Oct 17 2019 Srinidhi Rao <srinidhir@vmware.com> 1.2.29-1
 -   Update to version 1.2.29
