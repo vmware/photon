@@ -3,7 +3,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        3.11.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -26,6 +26,8 @@ BuildRequires:  wget
 Requires:       openjre8
 Requires:       gawk
 Requires:       shadow
+Requires:       python3
+
 %description
 Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store.
 Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
@@ -72,6 +74,8 @@ cp bin/sstablescrub %{buildroot}%{_bindir}/
 cp bin/sstableupgrade %{buildroot}%{_bindir}/
 cp bin/sstableutil %{buildroot}%{_bindir}/
 cp bin/sstableverify %{buildroot}%{_bindir}/
+cp bin/cqlsh %{buildroot}%{_bindir}/
+cp bin/cqlsh.py %{buildroot}%{_bindir}/
 cp conf/cassandra-env.sh %{buildroot}%{_sysconfdir}/cassandra/
 cp conf/cassandra.yaml %{buildroot}%{_sysconfdir}/cassandra/
 cp conf/cassandra-jaas.config %{buildroot}%{_sysconfdir}/cassandra/
@@ -142,6 +146,9 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Thu Oct 29 2020 Ankit Jain <ankitja@vmware.com> 3.11.8-2
+-   Added cqlsh and cqlsh.py.
+-   Since, python-cqlsh is deprecated.
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 3.11.8-1
 -   Automatic Version Bump
 *   Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.11.7-1
