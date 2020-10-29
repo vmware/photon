@@ -748,15 +748,22 @@ class BuildImage:
         if imgName == "iso":
             self.iso_path = os.path.join(Build_Config.stagePath, "photon-"+constants.releaseVersion+"-"+constants.buildNumber+".iso")
             self.debug_iso_path = self.iso_path.rpartition(".")[0]+".debug.iso"
+            if 'SKIP_DEBUG_ISO' in os.environ:
+               self.debug_iso_path = None
 
         if imgName == "minimal-iso":
             self.iso_path = os.path.join(Build_Config.stagePath, "photon-minimal-"+constants.releaseVersion+"-"+constants.buildNumber+".iso")
             self.debug_iso_path = self.iso_path.rpartition(".")[0]+".debug.iso"
+            if 'SKIP_DEBUG_ISO' in os.environ:
+                self.debug_iso_path = None
             self.package_list_file = os.path.join(Build_Config.dataDir, "build_install_options_minimal.json")
             self.pkg_to_be_copied_conf_file = os.path.join(Build_Config.generatedDataPath, "build_install_options_minimal.json")
+
         elif imgName == "rt-iso":
             self.iso_path = os.path.join(Build_Config.stagePath, "photon-rt-"+constants.releaseVersion+"-"+constants.buildNumber+".iso")
             self.debug_iso_path = self.iso_path.rpartition(".")[0]+".debug.iso"
+            if 'SKIP_DEBUG_ISO' in os.environ:
+                self.debug_iso_path = None
             self.package_list_file = os.path.join(Build_Config.dataDir, "build_install_options_rt.json")
             self.pkg_to_be_copied_conf_file = os.path.join(Build_Config.generatedDataPath, "build_install_options_rt.json")
 
