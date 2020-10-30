@@ -1,7 +1,7 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.6.35
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
@@ -9,6 +9,7 @@ Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.t
 Patch0:         libsolv-xmlparser.patch
 Patch1:         libsolv-rpm4-IndexOoB-fix.patch
 Patch2:         CVE-2019-20387.patch
+Patch3:         CVE-2018-20532-20533-20534.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -37,6 +38,7 @@ for developing applications that use libsolv.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 %build
 cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
@@ -69,6 +71,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Oct 30 2020 Ankit Jain <ankitja@vmware.com> 0.6.35-4
+-   Fix for CVE-2018-20532, CVE-2018-20533, CVE-2018-20534.
 *   Tue Feb 25 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.6.35-3
 -   provides pkgconfig(libsolvext).
 *   Mon Feb 03 2020 Keerthana K <keerthanak@vmware.com> 0.6.35-2
