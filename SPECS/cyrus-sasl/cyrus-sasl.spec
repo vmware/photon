@@ -1,7 +1,7 @@
 Summary:        Cyrus Simple Authentication Service Layer (SASL) library
 Name:           cyrus-sasl
 Version:        2.1.27
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Custom
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
@@ -11,6 +11,7 @@ Source0:        ftp://ftp.cyrusimap.org/cyrus-sasl/%{name}-%{version}.tar.gz
 %define sha1    cyrus-sasl=fbfe6f298b0d2efcdab6a40bf47e16d003ae5dc6
 Patch0:         cyrus-sasl-2.1.26-fix-cross-compiling.patch
 Patch1:         avoid-to-call-AC_TRY_RUN.patch
+Patch2:         cyrus-sasl-CVE-2019-19906.patch
 BuildRequires:  systemd
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel >= 1.12
@@ -34,6 +35,7 @@ protocol and the connection.
 if [ %{_host} != %{_build} ]; then
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 fi
 
 %build
@@ -133,6 +135,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/saslauthd.8.gz
 
 %changelog
+*   Fri Oct 30 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com>  2.1.27-4
+-   Fix CVE-2019-19906
 *   Mon Oct 05 2020 Tapas Kundu <tkundu@vmware.com> 2.1.27-3
 -   Enable login and plain
 *   Tue Sep 01 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com>  2.1.27-2
