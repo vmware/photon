@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        20.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -25,7 +25,8 @@ Patch6:     ds-identity.patch
 Patch7:     ds-guestinfo-photon.patch
 Patch8:     cloud-cfg.patch
 Patch9:     passwd-field.patch
-Patch10:    fix-make-check.patch
+Patch10:    networkd.patch
+Patch11:    fix-make-check.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -156,6 +157,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Sun Nov 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.3-4
+-   Added support for network config v1 & v2
 *   Fri Nov 06 2020 Tapas Kundu <tkundu@vmware.com> 20.3-3
 -   Updated using python 3.9 lib
 *   Mon Oct 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.3-2
