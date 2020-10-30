@@ -1,15 +1,86 @@
-From d56386e1522514ce04bcb132fd6ecc17945675dc Mon Sep 17 00:00:00 2001
+From d7a80d14f246fd563db423e9ce33282031c24ee6 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Mon, 24 Aug 2020 19:46:40 +0530
 Subject: [PATCH] fix make check
 
-Fixes the apis accordingly as needed after applying instance-dir.patch
+Fixes the APIs accordingly as needed after applying instance-dir.patch
+
+Fixes test_net tests after networkd.patch
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
+ tests/unittests/test_net.py  | 19 +++++++++++++++++--
  tests/unittests/test_util.py | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ 2 files changed, 23 insertions(+), 8 deletions(-)
 
+diff --git a/tests/unittests/test_net.py b/tests/unittests/test_net.py
+index 01119e0a..3a619741 100644
+--- a/tests/unittests/test_net.py
++++ b/tests/unittests/test_net.py
+@@ -5,7 +5,7 @@ from cloudinit import distros
+ from cloudinit.net import cmdline
+ from cloudinit.net import (
+     eni, interface_has_own_mac, natural_sort_key, netplan, network_state,
+-    renderers, sysconfig)
++    renderers, sysconfig, networkd)
+ from cloudinit.sources.helpers import openstack
+ from cloudinit import temp_utils
+ from cloudinit import util
+@@ -4575,6 +4575,8 @@ class TestNetRenderers(CiTestCase):
+         self.assertRaises(net.RendererNotFoundError, renderers.select,
+                           priority=['sysconfig', 'eni'])
+ 
++    # needed for networkd.patch
++    @mock.patch("cloudinit.net.renderers.networkd.available")
+     @mock.patch("cloudinit.net.renderers.netplan.available")
+     @mock.patch("cloudinit.net.renderers.sysconfig.available")
+     @mock.patch("cloudinit.net.renderers.sysconfig.available_sysconfig")
+@@ -4585,7 +4587,8 @@ class TestNetRenderers(CiTestCase):
+                                                              m_eni, m_sys_nm,
+                                                              m_sys_scfg,
+                                                              m_sys_avail,
+-                                                             m_netplan):
++                                                             m_netplan,
++                                                             m_networkd):
+         """sysconfig only selected on specific distros (rhel/sles)."""
+ 
+         # Ubuntu with Network-Manager installed
+@@ -4594,6 +4597,7 @@ class TestNetRenderers(CiTestCase):
+         m_sys_nm.return_value = True      # network-manager is installed
+         m_netplan.return_value = True     # netplan is installed
+         m_sys_avail.return_value = False  # no sysconfig on Ubuntu
++        m_networkd.return_value = False   # no networkd
+         m_distro.return_value = ('ubuntu', None, None)
+         self.assertEqual('netplan', renderers.select(priority=None)[0])
+ 
+@@ -4603,6 +4607,7 @@ class TestNetRenderers(CiTestCase):
+         m_sys_nm.return_value = True     # network-manager is installed
+         m_netplan.return_value = False   # netplan is not installed
+         m_sys_avail.return_value = True  # sysconfig is available on centos
++        m_networkd.return_value = False  # no networkd
+         m_distro.return_value = ('centos', None, None)
+         self.assertEqual('sysconfig', renderers.select(priority=None)[0])
+ 
+@@ -4612,9 +4617,19 @@ class TestNetRenderers(CiTestCase):
+         m_sys_nm.return_value = True     # network-manager is installed
+         m_netplan.return_value = False   # netplan is not installed
+         m_sys_avail.return_value = True  # sysconfig is available on opensuse
++        m_networkd.return_value = False  # no networkd
+         m_distro.return_value = ('opensuse', None, None)
+         self.assertEqual('sysconfig', renderers.select(priority=None)[0])
+ 
++        m_eni.return_value = False       # no ifupdown (ifquery)
++        m_sys_scfg.return_value = False  # no sysconfig/ifup/ifdown
++        m_sys_nm.return_value = False    # no network-manager
++        m_netplan.return_value = False   # netplan is not installed
++        m_sys_avail.return_value = False # sysconfig is available on opensuse
++        m_networkd.return_value = True   # networkd is available
++        m_distro.return_value = ('photon', None, None)
++        self.assertEqual('networkd', renderers.select(priority=None)[0])
++
+     @mock.patch("cloudinit.net.sysconfig.available_sysconfig")
+     @mock.patch("cloudinit.util.get_linux_distro")
+     def test_sysconfig_available_uses_variant_mapping(self, m_distro, m_avail):
 diff --git a/tests/unittests/test_util.py b/tests/unittests/test_util.py
 index 0e71db82..96d7a7b4 100644
 --- a/tests/unittests/test_util.py
@@ -51,5 +122,5 @@ index 0e71db82..96d7a7b4 100644
          self.assertTrue(os.path.exists(path))
          self.assertTrue(os.path.isfile(path))
 -- 
-2.28.0
+2.29.2
 

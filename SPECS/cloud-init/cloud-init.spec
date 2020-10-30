@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        19.4
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -30,7 +30,8 @@ Patch11:    Support-update-gc-status.patch
 Patch12:    Default-Custom-Script-Support.patch
 Patch13:    passwd-field.patch
 Patch14:    instance-dir.patch
-Patch15:    fix-make-check.patch
+Patch15:    networkd.patch
+Patch16:    fix-make-check.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -153,6 +154,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Fri Oct 23 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.4-11
+-   Improve network config handling & support Network cfg v1 & v2
 *   Mon Oct 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.4-10
 -   Fixed creating `[Route]` entries while creating network files
 -   Updated DataSourceVMwareGuestInfo (till commit abc387c7)

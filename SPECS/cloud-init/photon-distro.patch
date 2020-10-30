@@ -1,41 +1,58 @@
 diff --git a/cloudinit/distros/photon.py b/cloudinit/distros/photon.py
 new file mode 100644
-index 00000000..ad60505b
+index 00000000..08e1be55
 --- /dev/null
 +++ b/cloudinit/distros/photon.py
-@@ -0,0 +1,475 @@
+@@ -0,0 +1,396 @@
 +# vi: ts=4 expandtab
 +#
 +# Copyright (C) 2020 VMware Inc.
-+# Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 +#
 +
 +import os
 +import fnmatch
 +
++from cloudinit import util
 +from cloudinit import distros
 +from cloudinit import helpers
 +from cloudinit import log as logging
-+from cloudinit import util
 +from cloudinit.distros import net_util
++from cloudinit.settings import PER_INSTANCE
 +from cloudinit.distros import rhel_util as rhutil
 +from cloudinit.distros.parsers.hostname import HostnameConf
 +from cloudinit.net.network_state import mask_to_net_prefix
 +
-+from cloudinit.settings import PER_INSTANCE
-+from pwd import getpwnam
-+from grp import getgrnam
 +
 +LOG = logging.getLogger(__name__)
 +
 +
++def network_file_name(dirname, dev_name):
++    network_file_pattern = '*' + dev_name + '.network*'
++    for node in os.listdir(dirname):
++        if fnmatch.fnmatch(node, network_file_pattern):
++            node_fullpath = os.path.join(dirname, node)
++            util.del_file(node_fullpath)
++            return node
++    return ''
++
++
 +class Distro(distros.Distro):
-+    hostname_conf_fn = "/etc/hostname"
-+    locale_conf_fn = "/etc/default/locale"
++    hostname_conf_fn = '/etc/hostname'
++    locale_conf_fn = '/etc/default/locale'
++    network_conf_dir = '/etc/systemd/network/'
 +    systemd_locale_conf_fn = '/etc/locale.conf'
-+    network_conf_dir = "/etc/systemd/network/"
-+    resolve_conf_fn = "/etc/systemd/resolved.conf"
++    resolve_conf_fn = '/etc/systemd/resolved.conf'
++
++    renderer_configs = {
++            'networkd': {
++                'resolv_conf_fn': resolve_conf_fn,
++                'network_conf_dir': network_conf_dir,
++                'network_fname_fptr': network_file_name,
++            }
++    }
++
 +    init_cmd = ['systemctl']  # init scripts
++
 +
 +    def __init__(self, name, cfg, paths):
 +        distros.Distro.__init__(self, name, cfg, paths)
@@ -44,6 +61,7 @@ index 00000000..ad60505b
 +        # should only happen say once per instance...)
 +        self._runner = helpers.Runners(paths)
 +        self.osfamily = 'photon'
++
 +
 +    def apply_locale(self, locale, out_fn=None):
 +        if self.uses_systemd():
@@ -61,124 +79,27 @@ index 00000000..ad60505b
 +        # For locale change to take effect, reboot is needed or we can restart systemd-localed
 +        # This is equivalent of localectl
 +        cmd = ['systemctl', 'restart', 'systemd-localed']
-+        LOG.debug("Attempting to restart localed using command %s", cmd)
++        LOG.debug('Attempting to restart localed using command %s', cmd)
 +        try:
 +            (_out, err) = util.subp(cmd)
 +            if len(err):
-+                LOG.warn("Running %s resulted in stderr output: %s", cmd, err)
++                LOG.warn('Running %s resulted in stderr output: %s', cmd, err)
 +        except util.ProcessExecutionError:
-+            util.logexc(LOG, "Restart of localed using command %s failed", cmd)
++            util.logexc(LOG, 'Restart of localed using command %s failed', cmd)
++
 +
 +    def install_packages(self, pkglist):
 +        # self.update_package_sources()
 +        self.package_command('install', pkgs=pkglist)
 +
++
 +    def _write_network_config(self, netconfig):
-+        ifindex = 10
++        return self._supported_write_network_config(netconfig)
 +
-+        LOG.debug("Setting Networking Config Version 2")
-+
-+        for k, v in netconfig.items():
-+            if (k == "ethernets"):
-+                for key, val in v.items():
-+                    link = key
-+
-+                    conf = "[Match]\n"
-+                    # Generate [Match] section
-+                    if ('match' in val):
-+                        match = val['match']
-+
-+                        for i in match:
-+                            if (i == 'macaddress'):
-+                                conf += "MACAddress=%s\n\n" % (
-+                                    match['macaddress'])
-+                            elif (i == 'driver'):
-+                                conf += "Driver=%s\n" % (match['driver'])
-+                                conf += "Name=%s\n\n" % (link)
-+                            elif (i == 'name'):
-+                                conf += "Name=%s\n\n" % (match['name'])
-+                    else:
-+                        conf += "Name=%s\n\n" % link
-+
-+                    # Generate [Link] section
-+                    if ('mtu' in val):
-+                        conf += "[Link]\nMTUBytes=%s\n\n" % (val['mtu'])
-+
-+                    # Generate [Network] section
-+                    conf += "[Network]\n"
-+
-+                    if ('dhcp4' in val and 'dhcp6' in val):
-+                        if (val['dhcp4'] == True and val['dhcp6'] == True):
-+                            conf += "DHCP=yes\n"
-+                        if (val['dhcp4'] == True and val['dhcp6'] == False):
-+                            conf += "DHCP=ipv4\n"
-+                        if (val['dhcp4'] == False and val['dhcp6'] == True):
-+                            conf += "DHCP=ipv6\n"
-+                        if (val['dhcp4'] == False and val['dhcp6'] == False):
-+                            conf += "DHCP=no\n"
-+                    elif ('dhcp4' in val):
-+                        if val['dhcp4'] == True:
-+                            conf += "DHCP=ipv4\n"
-+                    elif ('dhcp6' in val):
-+                        if (val['dhcp6'] == True):
-+                            conf += "DHCP=ipv6\n"
-+
-+                    if ('nameservers' in val):
-+                        nameservers = val['nameservers']
-+
-+                        if ('search' in nameservers):
-+                            search = nameservers['search']
-+                            s = ' '.join(search)
-+                            conf += "Domains=%s\n" % s
-+                        if ('addresses' in nameservers):
-+                            s = nameservers['addresses']
-+                            conf += "DNS=%s\n" % ' '.join(s)
-+
-+                    #  Generate [DHCP] section
-+                    if ('dhcp4domain' in val):
-+                        if val['dhcp4domain'] == True:
-+                            conf += "\n[DHCP]\nUseDomains=yes\n\n"
-+                        else:
-+                            conf += "\n[DHCP]\nUseDomains=no\n\n"
-+
-+                    # Generate [Address] section
-+                    if ('addresses' in val):
-+                        for i in val['addresses']:
-+                            conf += "\n[Address]\nAddress=%s\n" % (i)
-+
-+                    # Generate [Route] section
-+                    if ('gateway4' in val):
-+                        conf += "\n[Route]\nGateway=%s\n" % (val['gateway4'])
-+
-+                    if ('gateway6' in val):
-+                        conf += "\n[Route]\nGateway=%s\n" % (val['gateway6'])
-+
-+                    if ('routes' in val):
-+                        routes = val['routes']
-+                        conf += "\n[Route]\n"
-+
-+                        for i in routes:
-+                            if (i['via']):
-+                                conf += "Gateway=%s\n" % (i['via'])
-+                            if (i['to']):
-+                                conf += "Destination=%s\n" % (i['to'])
-+                            if (i['metric']):
-+                                conf += "Metric=%s\n" % (i['metric'])
-+
-+                    net_fn = network_file_name(self.network_conf_dir, link)
-+                    if not net_fn:
-+                        net_fn = self.network_conf_dir + \
-+                            str(ifindex) + '-' + link + '.network'
-+                    else:
-+                        net_fn = self.network_conf_dir + net_fn
-+
-+                    util.write_file(net_fn, conf)
-+                    os.chown(net_fn, getpwnam('systemd-network')
-+                             [2], getgrnam('systemd-network')[2])
 +
 +    def _write_network(self, settings):
 +        entries = net_util.translate_network(settings)
-+        LOG.debug("Translated ubuntu style network settings %s into %s",
++        LOG.debug('Translated ubuntu style network settings %s into %s',
 +                  settings, entries)
 +        route_entries = []
 +        route_entries = translate_routes(settings)
@@ -217,9 +138,9 @@ index 00000000..ad60505b
 +            if info.get('hwaddress'):
 +                net_cfg['MACAddress'] = info.get('hwaddress')
 +            if info.get('address'):
-+                net_cfg['Address'] = "%s" % (info.get('address'))
++                net_cfg['Address'] = '%s' % (info.get('address'))
 +                if info.get('netmask'):
-+                    net_cfg['Address'] += "/%s" % (
++                    net_cfg['Address'] += '/%s' % (
 +                        mask_to_net_prefix(info.get('netmask')))
 +            if info.get('gateway'):
 +                net_cfg['Gateway'] = info.get('gateway')
@@ -250,10 +171,10 @@ index 00000000..ad60505b
 +
 +        resolve_data = []
 +        new_resolve_data = []
-+        with open(self.resolve_conf_fn, "r") as rf:
++        with open(self.resolve_conf_fn, 'r') as rf:
 +            resolve_data = rf.readlines()
-+        LOG.debug("Old Resolve Data\n")
-+        LOG.debug("%s", resolve_data)
++        LOG.debug('Old Resolve Data\n')
++        LOG.debug('%s', resolve_data)
 +        for item in resolve_data:
 +            if (nameservers and ('DNS=' in item)) or (searchdomains and ('Domains=' in item)):
 +                continue
@@ -262,31 +183,32 @@ index 00000000..ad60505b
 +
 +        new_resolve_data = new_resolve_data + \
 +            convert_resolv_conf(nameservers, searchdomains)
-+        LOG.debug("New resolve data\n")
-+        LOG.debug("%s", new_resolve_data)
++        LOG.debug('New resolve data\n')
++        LOG.debug('%s', new_resolve_data)
 +        if nameservers or searchdomains:
 +            util.write_file(self.resolve_conf_fn, ''.join(new_resolve_data))
 +
 +        return dev_names
 +
++
 +    def _write_interface_file(self, net_fn, net_cfg, route_entry):
 +        if not net_cfg['Name']:
 +            return
-+        content = "[Match]\n"
-+        content += "Name=%s\n" % (net_cfg['Name'])
++        content = '[Match]\n'
++        content += 'Name=%s\n' % (net_cfg['Name'])
 +        if 'MACAddress' in net_cfg:
-+            content += "MACAddress=%s\n" % (net_cfg['MACAddress'])
-+        content += "[Network]\n"
++            content += 'MACAddress=%s\n' % (net_cfg['MACAddress'])
++        content += '[Network]\n'
 +
 +        if 'DHCP' in net_cfg and net_cfg['DHCP'] in {'yes', 'ipv4', 'ipv6'}:
-+            content += "DHCP=%s\n" % (net_cfg['DHCP'])
++            content += 'DHCP=%s\n' % (net_cfg['DHCP'])
 +        else:
 +            if 'Address' in net_cfg:
-+                content += "Address=%s\n" % (net_cfg['Address'])
++                content += 'Address=%s\n' % (net_cfg['Address'])
 +            if 'Gateway' in net_cfg:
-+                content += "Gateway=%s\n" % (net_cfg['Gateway'])
++                content += 'Gateway=%s\n' % (net_cfg['Gateway'])
 +            if 'DHCP' in net_cfg and net_cfg['DHCP'] == 'no':
-+                content += "DHCP=%s\n" % (net_cfg['DHCP'])
++                content += 'DHCP=%s\n' % (net_cfg['DHCP'])
 +
 +            route_index = 0
 +            found = True
@@ -294,12 +216,12 @@ index 00000000..ad60505b
 +                while found:
 +                    route_name = 'routes.' + str(route_index)
 +                    if route_name in route_entry:
-+                        content += "[Route]\n"
++                        content += '[Route]\n'
 +                        if len(route_entry[route_name]) != 2:
 +                            continue
-+                        content += "Gateway=%s\n" % (
++                        content += 'Gateway=%s\n' % (
 +                            route_entry[route_name][0])
-+                        content += "Destination=%s\n" % (
++                        content += 'Destination=%s\n' % (
 +                            route_entry[route_name][1])
 +                    else:
 +                        found = False
@@ -307,18 +229,20 @@ index 00000000..ad60505b
 +
 +        util.write_file(net_fn, content)
 +
++
 +    def _bring_up_interfaces(self, device_names):
 +        cmd = ['systemctl', 'restart', 'systemd-networkd', 'systemd-resolved']
-+        LOG.debug("Attempting to run bring up interfaces using command %s",
++        LOG.debug('Attempting to run bring up interfaces using command %s',
 +                  cmd)
 +        try:
 +            (_out, err) = util.subp(cmd)
 +            if len(err):
-+                LOG.warn("Running %s resulted in stderr output: %s", cmd, err)
++                LOG.warn('Running %s resulted in stderr output: %s', cmd, err)
 +            return True
 +        except util.ProcessExecutionError:
-+            util.logexc(LOG, "Running network bringup command %s failed", cmd)
++            util.logexc(LOG, 'Running network bringup command %s failed', cmd)
 +            return False
++
 +
 +    def _select_hostname(self, hostname, fqdn):
 +        # Prefer the the fully-qualified domain name over the short host name.
@@ -328,6 +252,7 @@ index 00000000..ad60505b
 +        if not hostname or (isinstance(fqdn, str) and fqdn.find('.') > 0):
 +            return fqdn
 +        return hostname
++
 +
 +    def _write_hostname(self, your_hostname, out_fn):
 +        conf = None
@@ -342,14 +267,17 @@ index 00000000..ad60505b
 +        conf.set_hostname(your_hostname)
 +        util.write_file(out_fn, str(conf), mode=0o644)
 +
++
 +    def _read_system_hostname(self):
 +        sys_hostname = self._read_hostname(self.hostname_conf_fn)
 +        return (self.hostname_conf_fn, sys_hostname)
++
 +
 +    def _read_hostname_conf(self, filename):
 +        conf = HostnameConf(util.load_file(filename))
 +        conf.parse()
 +        return conf
++
 +
 +    def _read_hostname(self, filename, default=None):
 +        hostname = None
@@ -362,11 +290,14 @@ index 00000000..ad60505b
 +            return default
 +        return hostname
 +
++
 +    def _get_localhost_ip(self):
-+        return "127.0.1.1"
++        return '127.0.1.1'
++
 +
 +    def set_timezone(self, tz):
 +        distros.set_etc_timezone(tz=tz, tz_file=self._find_tz_file(tz))
++
 +
 +    def package_command(self, command, args=None, pkgs=None):
 +        if pkgs is None:
@@ -375,7 +306,7 @@ index 00000000..ad60505b
 +        cmd = ['tdnf']
 +        # Determines whether or not tdnf prompts for confirmation
 +        # of critical actions. We don't want to prompt...
-+        cmd.append("-y")
++        cmd.append('-y')
 +
 +        if args and isinstance(args, str):
 +            cmd.append(args)
@@ -390,22 +321,22 @@ index 00000000..ad60505b
 +        # Allow the output of this to flow outwards (ie not be captured)
 +        util.subp(cmd, capture=False)
 +
++
 +    def update_package_sources(self):
-+        self._runner.run("update-sources", self.package_command,
-+                         ["makecache"], freq=PER_INSTANCE)
++        self._runner.run('update-sources', self.package_command, ['makecache'], freq=PER_INSTANCE)
 +
 +
 +def convert_resolv_conf(nameservers, searchdomains):
-+    """Returns a string formatted for resolv.conf."""
++    ''' Returns a string formatted for resolv.conf '''
 +    result = []
 +    if nameservers:
-+        nslist = "DNS="
++        nslist = 'DNS='
 +        for ns in nameservers:
 +            nslist = nslist + '%s ' % ns
 +        nslist = nslist + '\n'
 +        result.append(str(nslist))
 +    if searchdomains:
-+        sdlist = "Domains="
++        sdlist = 'Domains='
 +        for sd in searchdomains:
 +            sdlist = sdlist + '%s ' % sd
 +        sdlist = sdlist + '\n'
@@ -417,7 +348,7 @@ index 00000000..ad60505b
 +    entries = []
 +    for line in settings.splitlines():
 +        line = line.strip()
-+        if not line or line.startswith("#"):
++        if not line or line.startswith('#'):
 +            continue
 +        split_up = line.split(None, 1)
 +        if len(split_up) <= 1:
@@ -469,13 +400,3 @@ index 00000000..ad60505b
 +        else:
 +            out_ifaces[dev_name] = route_info
 +    return out_ifaces
-+
-+
-+def network_file_name(dirname, dev_name):
-+    network_file_pattern = "*" + dev_name + ".network*"
-+    for node in os.listdir(dirname):
-+        node_fullpath = os.path.join(dirname, node)
-+        if fnmatch.fnmatch(node, network_file_pattern):
-+            util.del_file(node_fullpath)
-+            return node
-+    return ""
