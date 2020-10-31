@@ -3,7 +3,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.04
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -69,6 +69,8 @@ Patch307:   0067-Fix-security-issue-when-reading-username-and-passwor.patch
 Patch308:   0224-Rework-how-the-fdt-command-builds.patch
 %ifarch aarch64
 Patch400:   0001-efinet-do-not-start-EFI-networking-at-module-init-ti.patch
+#TODO: make this patch noarch
+Patch401:   0000-efi-Set-image-base-address-before-jumping-to-the-PE-.patch
 %endif
 
 BuildRequires:  device-mapper-devel
@@ -155,6 +157,7 @@ GRUB UEFI image signed by vendor key
 %patch308 -p1
 %ifarch aarch64
 %patch400 -p1
+%patch401 -p1
 %endif
 
 %build
@@ -276,6 +279,9 @@ EOF
 %{_datarootdir}/locale/*
 
 %changelog
+*   Fri Oct 30 2020 Bo Gan <ganb@vmware.com> 2.04-2
+-   Fix boot failure on aarch64
+-   ERROR: (FIRMWARE BUG: efi_loaded_image_t::image_base has bogus value)
 *   Thu Oct 29 2020 Alexey Makhalov <amakhalov@vmware.com> 2.04-1
 -   Fixes for CVE-2020-10713, CVE-2020-14308, CVE-2020-14309,
     CVE-2020-14310, CVE-2020-14311, CVE-2020-15705, CVE-2020-15706
