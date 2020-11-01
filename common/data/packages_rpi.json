@@ -3,7 +3,7 @@
 		"grub2-theme", "grub2-efi-image",
                 "pkg-config", "bash", "bzip2", "shadow", "procps-ng",
 		"coreutils", "bc", "libtool", "net-tools", "findutils", "xz",
-		"iproute2", "util-linux", "kmod", "linux",
+		"iproute2", "util-linux", "kmod", "linux", "initramfs",
 		"raspberrypi-firmware-pi3", "raspberrypi-firmware-pi4",
 		"dtb-raspberrypi", "u-boot-rpi3", "u-boot-rpi4",
 		"ca-certificates", "curl", "iptables", "Linux-PAM", "systemd",

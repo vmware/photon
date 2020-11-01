@@ -10,6 +10,8 @@ ROOT_PARTITION_PATH=$2
 BOOT_PARTITION_PATH=$3
 BOOT_DIRECTORY=$4
 
+FSUUID=$(blkid -s UUID -o value $ROOT_PARTITION_PATH)
+
 EXTRA_PARAMS="rootwait rw console=ttyS0,115200n8 console=tty0"
 
 cat > $BUILDROOT/boot/grub2/grub.cfg << EOF
@@ -36,7 +38,7 @@ if [ -f  ${BOOT_DIRECTORY}systemd.cfg ]; then
 else
     set systemd_cmdline=net.ifnames=0
 fi
-set rootpartition=/dev/mmcblk0p2
+set rootpartition=UUID=$FSUUID
 
 menuentry "Photon" {
     linux ${BOOT_DIRECTORY}\$photon_linux root=\$rootpartition \$photon_cmdline \$systemd_cmdline $EXTRA_PARAMS
