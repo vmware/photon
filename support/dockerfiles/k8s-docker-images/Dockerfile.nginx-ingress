@@ -12,6 +12,8 @@ RUN ln -sf /proc/1/fd/1 /var/log/nginx/access.log && \
 
 COPY [ "./tmp/nginxinc/usr/share/nginx-ingress/docker/nginx.ingress.tmpl", \
        "./tmp/nginxinc/usr/share/nginx-ingress/docker/nginx.tmpl", \
+       "./tmp/nginxinc/usr/share/nginx-ingress/docker/nginx.virtualserver.tmpl", \
+       "./tmp/nginxinc/usr/share/nginx-ingress/docker/nginx.transportserver.tmpl", \
        "./tmp/nginxinc/usr/bin/nginx-ingress", \
        "/" ]
 

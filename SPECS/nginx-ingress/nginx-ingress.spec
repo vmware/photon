@@ -1,7 +1,7 @@
 Summary:        NGINX Ingress Controller for Kubernetes
 Name:           nginx-ingress
 Version:        1.8.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/nginxinc/kubernetes-ingress
 Source0:        %{name}-%{version}.tar.gz
@@ -31,6 +31,8 @@ install -vpm 0755 -t %{buildroot}%{_bindir} nginx-ingress
 install -vdm 0755 %{buildroot}/usr/share/nginx-ingress/docker
 install -vpm 0755 -t %{buildroot}/usr/share/nginx-ingress/docker/ ../../internal/configs/version1/nginx.ingress.tmpl
 install -vpm 0755 -t %{buildroot}/usr/share/nginx-ingress/docker/ ../../internal/configs/version1/nginx.tmpl
+install -vpm 0755 -t %{buildroot}/usr/share/nginx-ingress/docker/ ../../internal/configs/version2/nginx.virtualserver.tmpl
+install -vpm 0755 -t %{buildroot}/usr/share/nginx-ingress/docker/ ../../internal/configs/version2/nginx.transportserver.tmpl
 
 %files
 %defattr(-,root,root)
@@ -38,6 +40,8 @@ install -vpm 0755 -t %{buildroot}/usr/share/nginx-ingress/docker/ ../../internal
 /usr/share/nginx-ingress/docker/nginx.*
 
 %changelog
+*   Sun Nov 01 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.8.1-2
+-   Added missing nginx.virtualserver.tmpl file
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.1-1
 -   Automatic Version Bump
 *   Fri Sep 7 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.3.0-1
