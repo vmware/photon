@@ -9,7 +9,13 @@ To find the locale, run the the `localectl` command:
        VC Keymap: n/a
       X11 Layout: n/a
 
-To change the locale, choose the languages that you want from `/usr/share/locale/locale.alias`, add them to `/etc/locale-gen.conf`, and then regenerate the locale list by running the following command as root: 
+To change the locale, 
+
+first install glibc-i18n:
+
+    tdnf install glibc-i18n
+
+ then choose the languages that you want from `/usr/share/locale/locale.alias`, add them to `/etc/locale-gen.conf`, and then regenerate the locale list by running the following command as root: 
 
     locale-gen.sh
 
