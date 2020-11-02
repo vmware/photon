@@ -4,7 +4,7 @@
 Summary:        Package for Google Compute Engine Linux images
 Name:           google-compute-engine
 Version:        20191210
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,6 +19,7 @@ Requires:       python3
 Requires:       python3-setuptools
 Requires:       python3-libs
 Requires:       python3-boto
+Requires:       python3-distro
 Obsoletes:      google-daemon
 BuildArch:      noarch
 
@@ -88,6 +89,8 @@ systemctl --no-reload disable google-startup-scripts.service
 %{_libdir}/systemd/system/*.service
 
 %changelog
+*   Mon Nov 02 2020 Prashant S Chauhan <psinghchauhau@vmware.com> 20191210-2
+-   Add python3-distro as requires
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 20191210-1
 -   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 20180905-2
