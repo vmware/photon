@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.150
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.154
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bad0a44a158ae6e230ad47f02edfdfe8f3568b8f
+%define sha1 linux=ac446414683726048a056f1f5f8bf9a64ca7a5e5
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -418,6 +418,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Nov 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-1
+-   Update to version 4.19.154
 *   Mon Oct 26 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.150-4
 -   panic on initramfs file overwrite
 *   Thu Oct 22 2020 Alexey Makhalov <amakhalov@vmware.com> 4.19.150-3

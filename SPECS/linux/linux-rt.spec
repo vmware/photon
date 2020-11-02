@@ -2,7 +2,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.150
+Version:        4.19.154
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt59
 Release:        1%{?kat_build:.%kat}%{?dist}
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bad0a44a158ae6e230ad47f02edfdfe8f3568b8f
+%define sha1 linux=ac446414683726048a056f1f5f8bf9a64ca7a5e5
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
@@ -1006,6 +1006,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Mon Nov 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-1
+-   Update to version 4.19.154
 *   Tue Oct 13 2020 Ajay Kaher <akaher@vmware.com> 4.19.150-1
 -   Update to version 4.19.150
 *   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-5

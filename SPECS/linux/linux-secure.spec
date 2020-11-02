@@ -2,7 +2,7 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.150
+Version:        4.19.154
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bad0a44a158ae6e230ad47f02edfdfe8f3568b8f
+%define sha1 linux=ac446414683726048a056f1f5f8bf9a64ca7a5e5
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -388,6 +388,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Nov 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-1
+-   Update to version 4.19.154
 *   Tue Oct 13 2020 Ajay Kaher <akaher@vmware.com> 4.19.150-1
 -   Update to version 4.19.150
 *   Mon Oct 12 2020 Ajay Kaher <akaher@vmware.com> 4.19.148-4
