@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.30.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -21,6 +21,9 @@ Source0:        http://www.cpan.org/src/5.0/%{name}-%{version}.tar.xz
 Patch0:         make-check-failure.patch
 Patch1:         make-check-failure2.patch
 %endif
+Patch2:         CVE-2020-10878-1.patch
+Patch3:         CVE-2020-10878-2.patch
+Patch4:         CVE-2020-12723.patch
 Source1:	https://github.com/arsv/perl-cross/releases/download/1.2/perl-cross-1.2.tar.gz
 %define sha1	perl-cross=ded421469e0295ae6dde40e0cbcb2238b4e724e3
 Provides:       perl >= 0:5.003000
@@ -44,6 +47,9 @@ sed -i 's/-fstack-protector/&-all/' Configure
 %patch0 -p1
 %patch1 -p1
 %endif
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 export BUILD_ZLIB=False
@@ -89,6 +95,8 @@ make test TEST_SKIP_VERSION_CHECK=1
 %{_mandir}/*/*
 
 %changelog
+*   Mon Nov 02 2020 Prashant S Chauhan <psinghchauha@vmware.com> 5.30.1-2
+-   Fix CVE-2020-10878 CVE-2020-12723
 *   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 5.30.1-1
 -   Upgraded to version 5.30.1
 *   Tue Feb 25 2020 Prashant S Chauhan <psinghchauha@vmware.com> 5.28.0-5
