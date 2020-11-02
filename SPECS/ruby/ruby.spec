@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.5.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://cache.ruby-lang.org/pub/ruby/2.5/%{name}-%{version}.tar.bz2
 %define sha1    ruby=823b6b009a6e44fef27d2dacb069067fe355d5d8
+Patch0:         CVE-2020-25613.patch
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
@@ -23,12 +24,15 @@ This is useful for object-oriented scripting.
 
 %prep
 %setup -q
+%patch0 -p1
+
 %build
 %configure \
         --enable-shared \
         --docdir=%{_docdir}/%{name}-%{version} \
         --with-compress-debug-sections=no
 make %{?_smp_mflags} COPY="cp -p"
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
@@ -39,8 +43,10 @@ sudo -u test  make check TESTS="-v"
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -52,7 +58,10 @@ rm -rf %{buildroot}/*
 %{_datadir}/ri/*
 %{_docdir}/%{name}-%{version}
 %{_mandir}/man1/*
+
 %changelog
+*   Mon Nov 02 2020 Sujay G <gsujay@vmware.com> 2.5.8-2
+-   Fix CVE-2020-25613
 *   Mon May 11 2020 Sujay G <gsujay@vmware.com> 2.5.8-1
 -   Bump version to 2.5.8 to fix CVE-2020-10933
 *   Fri Dec 13 2019 Sujay G <gsujay@vmware.com> 2.5.7-1
