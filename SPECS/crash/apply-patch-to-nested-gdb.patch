@@ -1,0 +1,41 @@
+From 21e3526df587000f2833b39dc0ca37322a72619a Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Mon, 2 Nov 2020 19:10:48 +0530
+Subject: [PATCH] apply patch to nested gdb.
+
+---
+ Makefile    | 4 ++++
+ configure.c | 2 +-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/Makefile b/Makefile
+index add5dbf..9e954e9 100644
+--- a/Makefile
++++ b/Makefile
+@@ -276,6 +276,10 @@ gdb_patch:
+ 		fi; \
+ 	fi
+ 
++	if [ -f CVE-2017-7226.patch ]; then \
++		patch -p1 < CVE-2017-7226.patch; \
++	fi
++
+ library: make_build_data ${OBJECT_FILES}
+ 	ar -rs ${PROGRAM}lib.a ${OBJECT_FILES}
+ 
+diff --git a/configure.c b/configure.c
+index 75006e8..0ed6c1d 100644
+--- a/configure.c
++++ b/configure.c
+@@ -240,7 +240,7 @@ struct supported_gdb_version {
+ 	    "7.6",
+ 	    "GDB_FILES=${GDB_7.6_FILES}",
+ 	    "GDB_OFILES=${GDB_7.6_OFILES}",
+-	    "GDB_PATCH_FILES=gdb-7.6.patch gdb-7.6-ppc64le-support.patch gdb-7.6-proc_service.h.patch",
++	    "GDB_PATCH_FILES=gdb-7.6.patch gdb-7.6-ppc64le-support.patch gdb-7.6-proc_service.h.patch CVE-2017-7226.patch",
+ 	    "GDB_FLAGS=-DGDB_7_6",
+ 	    "GPLv3"
+ 	},
+-- 
+2.7.4
+

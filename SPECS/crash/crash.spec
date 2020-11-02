@@ -1,6 +1,6 @@
 Name:          crash
 Version:       7.2.8
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:	       VMware, Inc.
@@ -14,7 +14,10 @@ Source1:       http://people.redhat.com/anderson/extensions/crash-gcore-command-
 Source2:       https://ftp.gnu.org/gnu/gdb/gdb-7.6.tar.gz
 %define sha1 gdb=026f4c9e1c8152a2773354551c523acd32d7f00e
 Source3:       gcore_defs.patch
+Source4:       CVE-2017-7226.patch
 Patch0:        vmware_guestdump-new-input-format.patch
+Patch1:        apply-patch-to-nested-gdb.patch
+
 License:       GPL
 BuildRequires: binutils
 BuildRequires: glibc-devel
@@ -40,10 +43,12 @@ This package contains libraries and header files need for development.
 %setup -q -n %{name}-%{version}
 %setup -a 1
 %patch0 -p1
+%patch1 -p1
 
 %build
 sed -i "s/tar --exclude-from/tar --no-same-owner --exclude-from/" Makefile
 cp %{SOURCE2} .
+cp %{SOURCE4} .
 make GDB=gdb-7.6 RPMPKG=%{version}-%{release}
 cd crash-gcore-command-%{GCORE_VERSION}
 %ifarch x86_64
@@ -82,6 +87,8 @@ install -pm 755 crash-gcore-command-%{GCORE_VERSION}/gcore.so %{buildroot}%{_lib
 %{_includedir}/crash/*.h
 
 %changelog
+*   Mon Nov 02 2020 Ajay Kaher <akaher@vmware.com> 7.2.8-3
+-   Fix for CVE-2017-7226
 *   Thu Sep 24 2020 Alexey Makhalov <amakhalov@vmware.com> 7.2.8-2
 -   debug.guest (debug.vmem) support
 *   Mon May 04 2020 Alexey Makhalov <amakhalov@vmware.com> 7.2.8-1
