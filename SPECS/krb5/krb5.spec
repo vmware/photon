@@ -1,7 +1,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.17
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos/
 Group:          System Environment/Security
@@ -119,6 +119,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+*   Mon Nov 02 2020 Tapas Kundu <tkundu@vmware.com> 1.17-4
+-   Fix krb5 build.
 *   Thu Oct 29 2020 Shreyas B. <shreyasb@vmware.com> 1.17-3
 -   krb5 v1.18.2 is not stable, creating panic for PMD-Client, so downgrading to v1.17.
 *   Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.18.2-1

@@ -24,7 +24,7 @@ x86_64/readline-7.0-1.ph1.x86_64.rpm
 x86_64/gettext-0.19.5.1-1.ph1.x86_64.rpm
 x86_64/perl-5.22.1-2.ph1.x86_64.rpm
 x86_64/man-db-2.7.5-1.ph1.x86_64.rpm
-x86_64/elfutils-libelf-0.165-1.ph1.x86_64.rpm
+x86_64/elfutils-libelf-0.169-2.ph2.x86_64.rpm
 x86_64/gdbm-1.11-1.ph1.x86_64.rpm
 x86_64/autoconf-2.69-3.ph1.x86_64.rpm
 x86_64/rpm-devel-4.13.0.1-5.ph2.x86_64.rpm
@@ -54,13 +54,13 @@ x86_64/sqlite-autoconf-3.11.0-1.ph1.x86_64.rpm
 x86_64/flex-2.5.39-1.ph1.x86_64.rpm
 x86_64/libstdc++-devel-7.3.0-2.ph2.x86_64.rpm
 x86_64/openssl-1.0.2g-1.ph1.x86_64.rpm
-x86_64/elfutils-0.165-1.ph1.x86_64.rpm
+x86_64/elfutils-0.169-2.ph2.x86_64.rpm
 x86_64/expat-2.1.0-1.ph1.x86_64.rpm
 x86_64/popt-1.16-1.ph1.x86_64.rpm
 x86_64/mpc-1.0.3-1.ph1.x86_64.rpm
 x86_64/bzip2-1.0.6-4.ph1.x86_64.rpm
 x86_64/glibc-2.22-3.ph1.x86_64.rpm
-x86_64/elfutils-devel-0.165-1.ph1.x86_64.rpm
+x86_64/elfutils-devel-0.169-2.ph2.x86_64.rpm
 x86_64/patch-2.7.5-1.ph1.x86_64.rpm
 x86_64/xz-5.2.2-1.ph1.x86_64.rpm
 x86_64/binutils-2.31-9.ph1.x86_64.rpm
@@ -69,7 +69,7 @@ x86_64/libgomp-devel-7.3.0-2.ph2.x86_64.rpm
 x86_64/bzip2-devel-1.0.6-4.ph1.x86_64.rpm
 x86_64/libgcc-7.3.0-2.ph2.x86_64.rpm
 x86_64/gzip-1.6-1.ph1.x86_64.rpm
-x86_64/elfutils-libelf-devel-0.165-1.ph1.x86_64.rpm
+x86_64/elfutils-libelf-devel-0.169-2.ph2.x86_64.rpm
 x86_64/openssl-devel-1.0.2g-1.ph1.x86_64.rpm
 x86_64/pkg-config-0.28-1.ph1.x86_64.rpm
 x86_64/popt-devel-1.16-1.ph1.x86_64.rpm
