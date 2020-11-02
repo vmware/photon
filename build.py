@@ -204,11 +204,12 @@ class Utilities:
         if not os.path.isdir(Build_Config.generatedDataPath):
             cmdUtils.runCommandInShell("mkdir -p " + Build_Config.generatedDataPath)
 
-        if configdict["targetName"] in ["pkgtree", "who-needs", "print-upward-deps"] and "pkg" not in os.environ:
-            raise Exception("pkg not present in os.environ")
-        elif configdict["targetName"] in ["pkgtree", "who-needs", "print-upward-deps"]:
-            self.pkg = os.environ["pkg"]
-            self.display_option = "tree"
+        if configdict["targetName"] in ["pkgtree", "who_needs", "print_upward_deps"]:
+            if "pkg" not in os.environ:
+                raise Exception("Please provide environment variable pkg as make <target> pkg=<pkg-name>")
+            else:
+                self.pkg = os.environ["pkg"]
+                self.display_option = "tree"
 
         if configdict["targetName"] == "imgtree" and "img" not in os.environ:
             raise Exception("img not present in os.environ")
