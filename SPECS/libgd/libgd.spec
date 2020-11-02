@@ -1,7 +1,7 @@
 Summary:        GD is an open source code library for the dynamic creation of images by programmers.
 Name:           libgd
 Version:        2.2.5
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MIT
 URL:            https://libgd.github.io/
 Group:          System/Libraries
@@ -16,6 +16,8 @@ Patch1:         libgd-CVE-2019-6978.patch
 Patch2:         libgd-CVE-2019-6977.patch
 Patch3:         libgd-CVE-2018-14553.patch
 Patch4:         libgd-CVE-2017-6363.patch
+Patch5:         libgd-CVE-2019-11038.patch
+Patch6:         libgd-CVE-2019-11038-testcase.patch
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  libpng-devel
 BuildRequires:  libwebp-devel
@@ -44,6 +46,8 @@ cp libgd-tests/bug00383.gd2 tests/gd2/
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
+%patch6 -p1
 
 %build
 # To use the system installed automake latest version instead of given version in source
@@ -68,6 +72,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Mon Nov 02 2020 Piyush Gupta <gpiyush@vmware.com>  2.2.5-7
+-   Fix for CVE-2019-11038
 *   Tue Mar 10 2020 Ankit Jain <ankitja@vmware.com>  2.2.5-6
 -   Fix for CVE-2017-6363
 *   Tue Feb 18 2020 Ankit Jain <ankitja@vmware.com>  2.2.5-5
