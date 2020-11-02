@@ -1,7 +1,7 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
 Version:    3.3.3
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
@@ -17,6 +17,7 @@ Patch4:     libarchive-CVE-2019-1000019.patch
 Patch5:     libarchive-CVE-2019-1000020.patch
 Patch6:     libarchive-CVE-2019-18408.patch
 Patch7:     libarchive-CVE-2019-19221.patch
+Patch8:     libarchive-CVE-2020-21674.patch
 BuildRequires:  xz-libs
 BuildRequires:  xz-devel
 Requires:       xz-libs
@@ -25,7 +26,7 @@ Multi-format archive and compression library
 
 %package	devel
 Summary:	Header and development files
-Requires:	%{name} = %{version}
+Requires:	%{name} = %{version}-%{release}
 %description	devel
 It contains the libraries and header files to create applications
 
@@ -39,6 +40,7 @@ It contains the libraries and header files to create applications
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -70,6 +72,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Nov 02 2020 Ankit Jain <ankitja@vmware.com> 3.3.3-6
+-   Fix for CVE-2020-21674
 *   Tue Feb 04 2020 Ankit Jain <ankitja@vmware.com> 3.3.3-5
 -   Fix for CVE-2019-19221
 *   Fri Nov 08 2019 Ankit Jain <ankitja@vmware.com> 3.3.3-4
