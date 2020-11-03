@@ -9,7 +9,7 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -44,7 +44,7 @@ Patch0:         pmd-rename-DNS_MODE_INVALID-with-DNS_MODE_UNKNOWN.patch
 Patch1:         pmd-fw-bugfix.patch
 Patch2:         pmd-tdnf-updateinfosummary.patch
 Patch3:         fix_pszUrlGPGKey.patch
-
+Patch4:         added_null_check.patch
 %description
 Photon Management Daemon
 
@@ -86,6 +86,7 @@ Python3 bindings for photon management daemon
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 sed -i 's/pmd, 0.0.1/pmd, 0.0.6/' configure.ac
@@ -301,6 +302,8 @@ rm -rf %{buildroot}/*
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
+*   Tue Nov 03 2020 Tapas Kundu <tkundu@vmware.com> 0.0.6-6
+-   Added null check for pszgpgkeys
 *   Tue Oct 27 2020 Keerthana K <keerthanak@vmware.com> 0.0.6-5
 -   Build with tdnf v3.0.0-beta
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.0.6-4
