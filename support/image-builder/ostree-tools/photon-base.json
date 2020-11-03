@@ -27,9 +27,10 @@
                  "procps-ng", "rpm", "sed", "sudo", "tzdata", "util-linux",
                  "vim", "which", "dracut-tools", "rpm-ostree", "nss-altfiles",
                  "openssh", "systemd", "openssl", "grub2", "grub2-efi",
-                 "shadow", "ncurses", "grub2-theme-ostree", "selinux-policy"],
+                 "grub2-efi-image", "shadow", "ncurses", "grub2-theme-ostree",
+                 "selinux-policy"],
 
-    "packages-x86_64": ["grub2-pc", "grub2-efi-image", "open-vm-tools"],
+    "packages-x86_64": ["grub2-pc", "open-vm-tools"],
 
     "units": ["sshd-keygen.service", "sshd.service"]
 }
