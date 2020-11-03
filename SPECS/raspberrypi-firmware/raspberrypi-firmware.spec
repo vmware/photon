@@ -5,7 +5,7 @@
 Name:		raspberrypi-firmware
 Summary:	Raspberry Pi firmware
 Version:	1.2020.09.02
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Broadcom Corporation and Raspberry Pi (Trading) Ltd
 URL:		https://github.com/raspberrypi/firmware
 Group:		System Environment/Boot
@@ -111,5 +111,7 @@ install -vm 644 %{SOURCE1} %{buildroot}/boot/efi/config.txt
 /boot/efi/fixup4x.dat
 
 %changelog
+*   Mon Nov 02 2020 Bo Gan <ganb@vmware.com> 1.2020.09.02-2
+-   Use miniuart-bt and fixed core_freq to accommodate for rpi3 uart
 *   Mon Sep 21 2020 Bo Gan <ganb@vmware.com> 1.2020.09.02-1
 -   Initial packaging

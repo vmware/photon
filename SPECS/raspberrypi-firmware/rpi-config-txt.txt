@@ -7,8 +7,9 @@ initial_turbo=60
 enable_uart=1
 
 [pi3]
-dtoverlay=upstream
+dtoverlay=upstream,miniuart-bt
 kernel=u-boot-rpi3.bin
+core_freq=250
 
 [pi4]
 dtoverlay=upstream-pi4
