@@ -1,6 +1,5 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %global security_hardening none
-%global photon_checksum_generator_version 1.1
 %ifarch x86_64
 %define arch x86_64
 %define archdir x86
@@ -9,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.9.0
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -25,10 +24,6 @@ Source1:	config-aws
 Source2:	initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
-# Photon-checksum-generator kernel module
-Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
-%define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
-Source6:        genhmac.inc
 
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
@@ -159,14 +154,6 @@ Requires:       python3
 %description docs
 The Linux package contains the Linux kernel doc files
 
-%package hmacgen
-Summary:        HMAC SHA256/HMAC SHA512 generator
-Group:          System Environment/Kernel
-Requires:      %{name} = %{version}-%{release}
-Enhances:       %{name}
-%description hmacgen
-This Linux package contains hmac sha generator kernel module.
-
 %ifarch x86_64
 %package oprofile
 Summary:        Kernel driver for oprofile, a statistical profiler for Linux systems
@@ -179,7 +166,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %prep
 #TODO: remove rcN after 5.9 goes out of rc
 %setup -q -n linux-%{version}
-%setup -D -b 5 -n linux-%{version}
 
 %patch0 -p1
 %patch1 -p1
@@ -262,12 +248,6 @@ sed -i 's/CONFIG_LOCALVERSION="-aws"/CONFIG_LOCALVERSION="-%{release}-aws"/' .co
 
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
 
-#build photon-checksum-generator module
-bldroot=`pwd`
-pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
-make -C $bldroot M=`pwd` modules
-popd
-
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
     ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
@@ -276,8 +256,6 @@ for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
     done \
 %{nil}
 
-%include %{SOURCE6}
-
 # We want to compress modules after stripping. Extra step is added to
 # the default __spec_install_post.
 %define __spec_install_post\
@@ -285,7 +263,6 @@ for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
     %{__arch_install_post}\
     %{__os_install_post}\
     %{__modules_install_post}\
-    %{__modules_gen_hmac}\
 %{nil}
 
 %install
@@ -295,12 +272,6 @@ install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
-
-#install photon-checksum-generator module
-bldroot=`pwd`
-pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
-make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
-popd
 
 %ifarch x86_64
 
@@ -369,9 +340,6 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 /sbin/depmod -aq %{uname_r}
 ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
-%post hmacgen
-/sbin/depmod -a %{uname_r}
-
 %post drivers-gpu
 /sbin/depmod -aq %{uname_r}
 
@@ -388,7 +356,6 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /boot/System.map-%{uname_r}
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
-/boot/.vmlinuz-%{uname_r}.hmac
 %config(noreplace) /boot/%{name}-%{uname_r}.cfg
 %config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 %defattr(0644,root,root)
@@ -396,8 +363,6 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %exclude /lib/modules/%{uname_r}/build
 %exclude /lib/modules/%{uname_r}/kernel/drivers/gpu
 %exclude /lib/modules/%{uname_r}/kernel/sound
-%exclude /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
-%exclude /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 %ifarch x86_64
 %exclude /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 %endif
@@ -416,11 +381,6 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %exclude /lib/modules/%{uname_r}/kernel/drivers/gpu/drm/cirrus/
 /lib/modules/%{uname_r}/kernel/drivers/gpu
 
-%files hmacgen
-%defattr(-,root,root)
-/lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
-/lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
-
 %files sound
 %defattr(-,root,root)
 /lib/modules/%{uname_r}/kernel/sound
@@ -432,6 +392,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 5.9.0-2
+-   Remove the support of fipsify and hmacgen
 *   Wed Oct 28 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.9.0-1
 -   Update to version 5.9.0
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.19.127-3

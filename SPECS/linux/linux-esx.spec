@@ -1,9 +1,8 @@
 %global security_hardening none
-%global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.9.0
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -18,11 +17,6 @@ Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
-# Photon-checksum-generator kernel module
-Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
-%define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
-Source6:        genhmac.inc
-
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
 # TODO: disable this patch, check for regressions
@@ -197,17 +191,8 @@ Requires:      %{name} = %{version}-%{release}
 %description docs
 The Linux package contains the Linux kernel doc files
 
-%package hmacgen
-Summary:	HMAC SHA256/HMAC SHA512 generator
-Group:		System Environment/Kernel
-Requires:      %{name} = %{version}-%{release}
-Enhances:       %{name}
-%description hmacgen
-This Linux package contains hmac sha generator kernel module.
-
 %prep
 %setup -q -n linux-%{version}
-%setup -D -b 5 -n linux-%{version}
 
 %patch0 -p1
 %patch1 -p1
@@ -346,19 +331,11 @@ sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .co
 
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 
-#build photon-checksum-generator module
-bldroot=`pwd`
-pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
-make -C $bldroot M=`pwd` modules
-popd
-
 # Do not compress modules which will be loaded at boot time
 # to speed up boot process
 %define __modules_install_post \
     find %{buildroot}/lib/modules/%{uname_r} -name "*.ko" \! \"(" -name "*evdev*" -o -name "*mousedev*" -o -name "*sr_mod*"  -o -name "*cdrom*" -o -name "*vmwgfx*" -o -name "*drm_kms_helper*" -o -name "*ttm*" -o -name "*psmouse*" -o -name "*drm*" -o -name "*apa_piix*" -o -name "*vmxnet3*" -o -name "*i2c_core*" -o -name "*libata*" -o -name "*processor*" -o -path "*ipv6*" \")" | xargs xz \
 %{nil}
-
-%include %{SOURCE6}
 
 # We want to compress modules after stripping. Extra step is added to
 # the default __spec_install_post.
@@ -367,7 +344,6 @@ popd
     %{__arch_install_post}\
     %{__os_install_post}\
     %{__modules_install_post}\
-    %{__modules_gen_hmac}\
 %{nil}
 
 %install
@@ -383,12 +359,6 @@ install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
 cp -r Documentation/*        %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 install -vm 644 vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
-
-#install photon-checksum-generator module
-bldroot=`pwd`
-pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
-make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
-popd
 
 # TODO: noacpi acpi=off noapic pci=conf1,nodomains pcie_acpm=off pnpacpi=off
 cat > %{buildroot}/boot/linux-%{uname_r}.cfg << "EOF"
@@ -427,21 +397,15 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 /sbin/depmod -a %{uname_r}
 ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 
-%post hmacgen
-/sbin/depmod -a %{uname_r}
-
 %files
 %defattr(-,root,root)
 /boot/System.map-%{uname_r}
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
-/boot/.vmlinuz-%{uname_r}.hmac
 %config(noreplace) /boot/linux-%{uname_r}.cfg
 %config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 /lib/modules/*
 %exclude /lib/modules/%{uname_r}/build
-%exclude /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
-%exclude /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %files docs
 %defattr(-,root,root)
@@ -452,12 +416,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/build
 %{_usrsrc}/linux-headers-%{uname_r}
 
-%files hmacgen
-%defattr(-,root,root)
-/lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
-/lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
-
 %changelog
+*   Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 5.9.0-3
+-   Remove the support of fipsify and hmacgen
 *   Tue Oct 27 2020 Srinidhi Rao <srinidhir@vmware.com> 5.9.0-2
 -   Enable vtarfs support as module
 *   Mon Oct 19 2020 Bo Gan <ganb@vmware.com> 5.9.0-1

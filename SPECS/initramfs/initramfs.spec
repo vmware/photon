@@ -1,7 +1,7 @@
 Summary:	initramfs
 Name:		initramfs
 Version:	2.0
-Release:	5%{?dist}
+Release:	6%{?dist}
 Source0:	fscks.conf
 License:	Apache License
 Group:		System Environment/Base
@@ -19,7 +19,7 @@ install -D -m644 %{SOURCE0} %{buildroot}%{_sysconfdir}/dracut.conf.d/
 install -d -m755 %{buildroot}%{_localstatedir}/lib/initramfs/kernel
 
 %define watched_path %{_sbindir} %{_libdir}/udev/rules.d %{_libdir}/systemd/system /lib/modules %{_sysconfdir}/dracut.conf.d
-%define watched_pkgs e2fsprogs, systemd, kpartx, device-mapper-multipath fipsify
+%define watched_pkgs e2fsprogs, systemd, kpartx, device-mapper-multipath
 
 %define removal_action() rm -rf %{_localstatedir}/lib/rpm-state/initramfs
 
@@ -111,6 +111,8 @@ echo "initramfs" %{version}-%{release} "postun" >&2
 %dir %{_localstatedir}/lib/initramfs/kernel
 
 %changelog
+*   Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 2.0-6
+-   Remove the trigger for fipsify
 *   Tue Mar 17 2020 Vikash Bansal <bvikas@vmware.com> 2.0-5
 -   Added trigger for fipsify
 *   Mon Aug 27 2018 Dheeraj Shetty <dheerajs@vmware.com> 2.0-4

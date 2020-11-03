@@ -75,7 +75,7 @@ class Installer(object):
 
     default_partitions = [{"mountpoint": "/", "size": 0, "filesystem": "ext4"}]
     all_linux_flavors = ["linux", "linux-esx", "linux-aws", "linux-secure", "linux-rt"]
-    linux_dependencies = ["devel", "drivers", "docs", "oprofile", "dtb", "hmacgen"]
+    linux_dependencies = ["devel", "drivers", "docs", "oprofile", "dtb"]
 
     def __init__(self, working_directory="/mnt/photon-root",
                  rpm_path=os.path.dirname(__file__)+"/../stage/RPMS", log_path=os.path.dirname(__file__)+"/../stage/LOGS"):

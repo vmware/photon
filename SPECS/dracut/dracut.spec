@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        050
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -19,8 +19,7 @@ Source1:        https://www.gnu.org/licenses/lgpl-2.1.txt
 Patch0:         disable-xattr.patch
 Patch1:         fix-initrd-naming-for-photon.patch
 Patch2:         lvm-no-read-only-locking.patch
-Patch3:         fips-changes.patch
-Patch4:         fix-hostonly.patch
+Patch3:         fix-hostonly.patch
 
 BuildRequires:  bash git
 BuildRequires:  pkg-config
@@ -68,6 +67,7 @@ make %{?_smp_mflags} install \
 
 echo "DRACUT_VERSION=%{version}-%{release}" > $RPM_BUILD_ROOT/%{dracutlibdir}/dracut-version.sh
 
+rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/01fips
 rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/02fips-aesni
 
 rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/00bootchart
@@ -156,6 +156,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*   Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 050-5
+-   Remove fipsify support
 *   Fri Oct 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 050-4
 -   Fixed hostonly setting logic to generate initrd properly
 *   Mon Oct 05 2020 Susant Sahani <ssahani@vmware.com> 050-3

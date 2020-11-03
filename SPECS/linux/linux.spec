@@ -1,6 +1,5 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %global security_hardening none
-%global photon_checksum_generator_version 1.1
 %ifarch x86_64
 %define arch x86_64
 %define archdir x86
@@ -14,7 +13,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.9.0
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -37,10 +36,6 @@ Source5:	https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCA
 %define sha1 DCAP=6161846c2ba03099a2307f28a91e9d45627614d7
 Source6:        pre-preun-postun-tasks.inc
 Source7:        check_for_config_applicability.inc
-# Photon-checksum-generator kernel module
-Source8:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
-%define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
-Source9:        genhmac.inc
 %define i40e_version 2.12.6
 Source10:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
 %define sha1 i40e=e1a28cdf7c122f177ed75b7615a0a0e221d21ff4
@@ -272,14 +267,6 @@ Requires:       python3
 This package provides a module that permits applications written in the
 Python programming language to use the interface to manipulate perf events.
 
-%package hmacgen
-Summary:	HMAC SHA256/HMAC SHA512 generator
-Group:		System Environment/Kernel
-Requires:      %{name} = %{version}-%{release}
-Enhances:       %{name}
-%description hmacgen
-This Linux package contains hmac sha generator kernel module.
-
 %prep
 #TODO: remove rcN after 5.9 goes out of rc
 %setup -q -n linux-%{version}
@@ -289,7 +276,6 @@ This Linux package contains hmac sha generator kernel module.
 %setup -D -b 5 -n linux-%{version}
 %setup -D -b 10 -n linux-%{version}
 %endif
-%setup -D -b 8 -n linux-%{version}
 
 %patch0 -p1
 %patch1 -p1
@@ -460,12 +446,6 @@ make -C src KSRC=$bldroot %{?_smp_mflags}
 popd
 %endif
 
-#build photon-checksum-generator module
-bldroot=`pwd`
-pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
-make -C $bldroot M=`pwd` modules
-popd
-
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
     ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
@@ -474,8 +454,6 @@ for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
     done \
 %{nil}
 
-%include %{SOURCE9}
-
 # We want to compress modules after stripping. Extra step is added to
 # the default __spec_install_post.
 %define __spec_install_post\
@@ -483,7 +461,6 @@ for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
     %{__arch_install_post}\
     %{__os_install_post}\
     %{__modules_install_post}\
-    %{__modules_gen_hmac}\
 %{nil}
 
 %install
@@ -536,12 +513,6 @@ if [ "$ID1" != "$ID2" ] ; then
 fi
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 %endif
-
-#install photon-checksum-generator module
-bldroot=`pwd`
-pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
-make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
-popd
 
 %ifarch aarch64
 install -vm 644 arch/arm64/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
@@ -603,9 +574,6 @@ make -C tools ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} mandir=%{_mand
 /sbin/depmod -a %{uname_r}
 ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
-%post hmacgen
-/sbin/depmod -a %{uname_r}
-
 %post drivers-gpu
 /sbin/depmod -a %{uname_r}
 
@@ -626,7 +594,6 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 /boot/System.map-%{uname_r}
 /boot/config-%{uname_r}
 /boot/vmlinuz-%{uname_r}
-/boot/.vmlinuz-%{uname_r}.hmac
 %config(noreplace) /boot/%{name}-%{uname_r}.cfg
 %config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 %defattr(0644,root,root)
@@ -634,8 +601,6 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %exclude /lib/modules/%{uname_r}/build
 %exclude /lib/modules/%{uname_r}/kernel/drivers/gpu
 %exclude /lib/modules/%{uname_r}/kernel/sound
-%exclude /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
-%exclude /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 %ifarch aarch64
 %exclude /lib/modules/%{uname_r}/kernel/drivers/staging/vc04_services/bcm2835-audio
 %endif
@@ -668,11 +633,6 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %ifarch aarch64
 /lib/modules/%{uname_r}/kernel/drivers/staging/vc04_services/bcm2835-audio
 %endif
-
-%files hmacgen
-%defattr(-,root,root)
-/lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
-/lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %ifarch x86_64
 %files drivers-intel-sgx
@@ -718,6 +678,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 5.9.0-3
+-   Remove the support of fipsify and hmacgen
 *   Tue Oct 27 2020 Piyush Gupta <gpiyush@vmware.com> 5.9.0-2
 -   Fix aarch64 build failure due to missing CONFIG_FB_ARMLCD
 *   Mon Oct 19 2020 Bo Gan <ganb@vmware.com> 5.9.0-1
