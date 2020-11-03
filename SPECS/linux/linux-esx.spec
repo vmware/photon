@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.241
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -122,6 +122,9 @@ Patch83:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
 Patch84:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch85:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 
+#Fix for CVE-2020-25645
+Patch86:        0001-geneve-add-transport-ports-in-route-lookup-for-genev.patch
+
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -239,6 +242,7 @@ The Linux package contains the Linux kernel doc files
 %patch83 -p1
 %patch84 -p1
 %patch85 -p1
+%patch86 -p1
 
 %build
 # patch vmw_balloon driver
@@ -329,6 +333,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Nov 03 2020 Sharan Turlapati <sturlapati@vmware.com> 4.4.241-2
+-   Fix for CVE-2020-25645
 *   Mon Nov 02 2020 Keerthana K <keerthanak@vmware.com> 4.4.241-1
 -   Update to version 4.4.241
 *   Mon Oct 19 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.240-1

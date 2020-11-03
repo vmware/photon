@@ -1,0 +1,178 @@
+From 0d7f84cb604990dbe53ad692fa08d395f8182fb6 Mon Sep 17 00:00:00 2001
+From: Mark Gray <mark.d.gray@redhat.com>
+Date: Wed, 16 Sep 2020 05:19:35 -0400
+Subject: [PATCH] geneve: add transport ports in route lookup for geneve
+
+
+This patch adds transport ports information for route lookup so that
+IPsec can select Geneve tunnel traffic to do encryption. This is
+needed for OVS/OVN IPsec with encrypted Geneve tunnels.
+
+This can be tested by configuring a host-host VPN using an IKE
+daemon and specifying port numbers. For example, for an
+Openswan-type configuration, the following parameters should be
+configured on both hosts and IPsec set up as-per normal:
+
+$ cat /etc/ipsec.conf
+
+conn in
+...
+left=$IP1
+right=$IP2
+...
+leftprotoport=udp/6081
+rightprotoport=udp
+...
+conn out
+...
+left=$IP1
+right=$IP2
+...
+leftprotoport=udp
+rightprotoport=udp/6081
+...
+
+The tunnel can then be setup using "ip" on both hosts (but
+changing the relevant IP addresses):
+
+$ ip link add tun type geneve id 1000 remote $IP2
+$ ip addr add 192.168.0.1/24 dev tun
+$ ip link set tun up
+
+This can then be tested by pinging from $IP1:
+
+$ ping 192.168.0.2
+
+Without this patch the traffic is unencrypted on the wire.
+
+Fixes: 2d07dc79fe04 ("geneve: add initial netdev driver for GENEVE tunnels")
+Signed-off-by: Qiuyu Xiao <qiuyu.xiao.qyx@gmail.com>
+Signed-off-by: Mark Gray <mark.d.gray@redhat.com>
+Reviewed-by: Greg Rose <gvrose8192@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[ Sharan: Regenerated patch for 4.4. Patch uses geneve->dst_port for
+          geneve->cfg.info.key.tp_dst used in mainline ]
+Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
+---
+ drivers/net/geneve.c | 38 +++++++++++++++++++++++++++-----------
+ 1 file changed, 27 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/net/geneve.c b/drivers/net/geneve.c
+index ec13e2ae6d16..85a6f690f1a3 100644
+--- a/drivers/net/geneve.c
++++ b/drivers/net/geneve.c
+@@ -711,7 +711,8 @@ free_dst:
+ static struct rtable *geneve_get_v4_rt(struct sk_buff *skb,
+ 				       struct net_device *dev,
+ 				       struct flowi4 *fl4,
+-				       struct ip_tunnel_info *info)
++				       const struct ip_tunnel_info *info,
++				       __be16 dport, __be16 sport)
+ {
+ 	struct geneve_dev *geneve = netdev_priv(dev);
+ 	struct rtable *rt = NULL;
+@@ -720,6 +721,8 @@ static struct rtable *geneve_get_v4_rt(struct sk_buff *skb,
+ 	memset(fl4, 0, sizeof(*fl4));
+ 	fl4->flowi4_mark = skb->mark;
+ 	fl4->flowi4_proto = IPPROTO_UDP;
++	fl4->fl4_dport = dport;
++	fl4->fl4_sport = sport;
+ 
+ 	if (info) {
+ 		fl4->daddr = info->key.u.ipv4.dst;
+@@ -754,7 +757,8 @@ static struct rtable *geneve_get_v4_rt(struct sk_buff *skb,
+ static struct dst_entry *geneve_get_v6_dst(struct sk_buff *skb,
+ 					   struct net_device *dev,
+ 					   struct flowi6 *fl6,
+-					   struct ip_tunnel_info *info)
++					   const struct ip_tunnel_info *info,
++					   __be16 dport, __be16 sport)
+ {
+ 	struct geneve_dev *geneve = netdev_priv(dev);
+ 	struct geneve_sock *gs6 = geneve->sock6;
+@@ -764,6 +768,8 @@ static struct dst_entry *geneve_get_v6_dst(struct sk_buff *skb,
+ 	memset(fl6, 0, sizeof(*fl6));
+ 	fl6->flowi6_mark = skb->mark;
+ 	fl6->flowi6_proto = IPPROTO_UDP;
++	fl6->fl6_dport = dport;
++	fl6->fl6_sport = sport;
+ 
+ 	if (info) {
+ 		fl6->daddr = info->key.u.ipv6.dst;
+@@ -834,13 +840,15 @@ static netdev_tx_t geneve_xmit_skb(struct sk_buff *skb, struct net_device *dev,
+ 			goto tx_error;
+ 	}
+ 
+-	rt = geneve_get_v4_rt(skb, dev, &fl4, info);
++	sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
++	rt = geneve_get_v4_rt(skb, dev, &fl4, info,
++			      geneve->dst_port, sport);
++
+ 	if (IS_ERR(rt)) {
+ 		err = PTR_ERR(rt);
+ 		goto tx_error;
+ 	}
+ 
+-	sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
+ 	skb_reset_mac_header(skb);
+ 
+ 	if (info) {
+@@ -916,13 +924,14 @@ static netdev_tx_t geneve6_xmit_skb(struct sk_buff *skb, struct net_device *dev,
+ 		}
+ 	}
+ 
+-	dst = geneve_get_v6_dst(skb, dev, &fl6, info);
++	sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
++	dst = geneve_get_v6_dst(skb, dev, &fl6, info,
++				geneve->dst_port, sport);
+ 	if (IS_ERR(dst)) {
+ 		err = PTR_ERR(dst);
+ 		goto tx_error;
+ 	}
+ 
+-	sport = udp_flow_src_port(geneve->net, skb, 1, USHRT_MAX, true);
+ 	skb_reset_mac_header(skb);
+ 
+ 	if (info) {
+@@ -1011,17 +1020,25 @@ static int geneve_fill_metadata_dst(struct net_device *dev, struct sk_buff *skb)
+ 	struct dst_entry *dst;
+ 	struct flowi6 fl6;
+ #endif
++	__be16 sport;
+ 
+ 	if (ip_tunnel_info_af(info) == AF_INET) {
+-		rt = geneve_get_v4_rt(skb, dev, &fl4, info);
++
++		sport = udp_flow_src_port(geneve->net, skb,
++					  1, USHRT_MAX, true);
++		rt = geneve_get_v4_rt(skb, dev, &fl4, info,
++				      geneve->dst_port, sport);
+ 		if (IS_ERR(rt))
+ 			return PTR_ERR(rt);
+-
+ 		ip_rt_put(rt);
+ 		info->key.u.ipv4.src = fl4.saddr;
+ #if IS_ENABLED(CONFIG_IPV6)
+ 	} else if (ip_tunnel_info_af(info) == AF_INET6) {
+-		dst = geneve_get_v6_dst(skb, dev, &fl6, info);
++		sport = udp_flow_src_port(geneve->net, skb,
++					  1, USHRT_MAX, true);
++
++		dst = geneve_get_v6_dst(skb, dev, &fl6, info,
++					geneve->dst_port, sport);
+ 		if (IS_ERR(dst))
+ 			return PTR_ERR(dst);
+ 
+@@ -1032,8 +1049,7 @@ static int geneve_fill_metadata_dst(struct net_device *dev, struct sk_buff *skb)
+ 		return -EINVAL;
+ 	}
+ 
+-	info->key.tp_src = udp_flow_src_port(geneve->net, skb,
+-					     1, USHRT_MAX, true);
++	info->key.tp_src = sport;
+ 	info->key.tp_dst = geneve->dst_port;
+ 	return 0;
+ }
+-- 
+2.23.0
+
