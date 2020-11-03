@@ -1,0 +1,181 @@
+--- a/lsass/server/ntlm/verifysign.c	2020-11-03 15:57:16.499186728 +0530
++++ b/lsass/server/ntlm/verifysign.c	2020-11-03 16:09:08.788017430 +0530
+@@ -122,7 +122,9 @@ NtlmVerifySignature(
+         }
+ 
+         c = HMAC_CTX_new();
+-        HMAC_CTX_reset(c);
++        if (c != NULL) {
++            HMAC_CTX_reset(c);
++        }
+ 
+         HMAC_Init_ex(
+                 c,
+@@ -143,8 +145,10 @@ NtlmVerifySignature(
+             if ((pData->BufferType & ~SECBUFFER_ATTRMASK) == SECBUFFER_DATA)
+             {
+                 if (!pData->pvBuffer)
+-                {
+-                    HMAC_CTX_free(c);
++                {
++                    if (c != NULL) {
++                        HMAC_CTX_free(c);
++                    }
+                     dwError = LW_ERROR_INVALID_PARAMETER;
+                     BAIL_ON_LSA_ERROR(dwError);
+                 }
+@@ -160,7 +164,9 @@ NtlmVerifySignature(
+ 
+         if (!bFoundData)
+         {
+-            HMAC_CTX_free(c);
++            if (c != NULL) {
++               HMAC_CTX_free(c);
++            }
+             dwError = LW_ERROR_INVALID_PARAMETER;
+             BAIL_ON_LSA_ERROR(dwError);
+         }
+@@ -169,8 +175,9 @@ NtlmVerifySignature(
+                 c,
+                 tempHmac,
+                 NULL);
+-
+-        HMAC_CTX_free(c);
++        if (c != NULL) {
++            HMAC_CTX_free(c);
++        }
+ 
+         // The davenport doc says that the hmac is sealed after being generated
+         // with the signing key. In reality that only happens if the key
+--- a/lsass/server/ntlm/makesign.c	2020-11-03 15:57:43.271969106 +0530
++++ b/lsass/server/ntlm/makesign.c	2020-11-03 16:11:23.987973491 +0530
+@@ -156,7 +156,9 @@ NtlmInitializeSignature(
+             {
+                 if (!pData->pvBuffer)
+                 {
+-                    HMAC_CTX_free(c);
++                    if (c != NULL) {
++                        HMAC_CTX_free(c);
++                    }
+                     dwError = LW_ERROR_INVALID_PARAMETER;
+                     BAIL_ON_LSA_ERROR(dwError);
+                 }
+@@ -172,7 +174,9 @@ NtlmInitializeSignature(
+ 
+         if (!bFoundData)
+         {
+-            HMAC_CTX_free(c);
++            if (c != NULL) {
++                HMAC_CTX_free(c);
++            }
+             dwError = LW_ERROR_INVALID_PARAMETER;
+             BAIL_ON_LSA_ERROR(dwError);
+         }
+@@ -181,8 +185,9 @@ NtlmInitializeSignature(
+                 c,
+                 tempHmac,
+                 NULL);
+-
+-        HMAC_CTX_free(c);
++        if (c != NULL) {
++            HMAC_CTX_free(c);
++        }
+ 
+         // Copy only the first part of the hmac
+         memcpy(pSignature->v2.encrypted.hmac,
+--- a/lsass/client/rpc/netlogon/netr_credentials.c	2020-11-03 15:58:16.456938965 +0530
++++ b/lsass/client/rpc/netlogon/netr_credentials.c	2020-11-03 16:13:17.779303393 +0530
+@@ -98,7 +98,9 @@ NetrCredentialsInit(
+     if (pCreds == NULL) return;
+ 
+     HmacCtx = HMAC_CTX_new();
+-    HMAC_CTX_reset(HmacCtx);
++    if (HmacCtx != NULL) {
++        HMAC_CTX_reset(HmacCtx);
++    }
+     memset(&MD5Ctx, 0, sizeof(MD5Ctx));
+ 
+     pCreds->negotiate_flags = NegFlags;
+@@ -127,7 +129,9 @@ NetrCredentialsInit(
+         HMAC_Update(HmacCtx, Digest, sizeof(Digest));
+         HMAC_Final(HmacCtx, pCreds->session_key, &dwSessionKeyLen);
+ 
+-        HMAC_CTX_free(HmacCtx);
++        if (HmacCtx != NULL) {
++            HMAC_CTX_free(HmacCtx);
++        }
+ 
+         ntStatus = NetrEncryptChallenge(pCreds->cli_chal.data,
+                                         CliChal,
+--- a/libschannel/src/schn_util.c	2020-11-03 15:58:41.853681274 +0530
++++ b/libschannel/src/schn_util.c	2020-11-03 16:17:22.282411197 +0530
+@@ -68,8 +68,9 @@ void schn_sign_digest(unsigned char sess
+     HMAC_Init_ex(hmac_ctx, (void*)sess_key, 16, EVP_md5(), NULL);
+     HMAC_Update(hmac_ctx, (unsigned char*)dig, sizeof(dig));
+     HMAC_Final(hmac_ctx, (unsigned char*)digest, &digest_len);
+-
+-    HMAC_CTX_free(hmac_ctx);
++    if (hmac_ctx != NULL) {
++        HMAC_CTX_free(hmac_ctx);
++    }
+ }
+ 
+ 
+@@ -112,19 +113,25 @@ void schn_sign_update_seqnum(const unsig
+     memset(&rc4_key, 0, sizeof(rc4_key));
+ 
+     hmac_ctx = HMAC_CTX_new();
+-    HMAC_CTX_reset(hmac_ctx);
++    if (hmac_ctx != NULL) {
++        HMAC_CTX_reset(hmac_ctx);
++    }
+ 
+     HMAC_Init_ex(hmac_ctx, (unsigned char*)sess_key, 16, EVP_md5(), NULL);
+     HMAC_Update(hmac_ctx, (unsigned char*)init_buffer, 4);
+     HMAC_Final(hmac_ctx, (unsigned char*)dig, &dig_len);
+ 
+-    HMAC_CTX_reset(hmac_ctx);
++    if (hmac_ctx != NULL) {
++        HMAC_CTX_reset(hmac_ctx);
++    }
+ 
+     HMAC_Init_ex(hmac_ctx, (unsigned char*)dig, 16, EVP_md5(), NULL);
+     HMAC_Update(hmac_ctx, (unsigned char*)digest, 8);
+     HMAC_Final(hmac_ctx, (unsigned char*)seq_key, &seq_key_len);
+ 
+-    HMAC_CTX_free(hmac_ctx);
++    if (hmac_ctx != NULL) {
++        HMAC_CTX_free(hmac_ctx);
++    }
+ 
+     RC4_set_key(&rc4_key, sizeof(seq_key), (unsigned char*)seq_key);
+     RC4(&rc4_key, 8, (unsigned char*)sequence,(unsigned char*)sequence);
+@@ -153,19 +160,25 @@ void schn_seal_generate_key(const unsign
+     }
+ 
+     hmac_ctx = HMAC_CTX_new();
+-    HMAC_CTX_reset(hmac_ctx);
++    if (hmac_ctx != NULL) {
++        HMAC_CTX_reset(hmac_ctx);
++    }
+ 
+     HMAC_Init_ex(hmac_ctx, (unsigned char*)key, 16, EVP_md5(), NULL);
+     HMAC_Update(hmac_ctx, (unsigned char*)init_buffer, 4);
+     HMAC_Final(hmac_ctx, digest, &digest_len);
+ 
+-    HMAC_CTX_reset(hmac_ctx);
++    if (hmac_ctx != NULL) {
++        HMAC_CTX_reset(hmac_ctx);
++    }
+ 
+     HMAC_Init_ex(hmac_ctx, (unsigned char*)digest, 16, EVP_md5(), NULL);
+     HMAC_Update(hmac_ctx, (unsigned char*)seq_number, 8);
+     HMAC_Final(hmac_ctx, seal_key, &seal_key_len);
+ 
+-    HMAC_CTX_free(hmac_ctx);
++    if (hmac_ctx != NULL) {
++        HMAC_CTX_free(hmac_ctx);
++    }
+ }
+ 
+ 

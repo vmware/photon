@@ -1,7 +1,7 @@
 Name: 		likewise-open
 Summary: 	Likewise Open
 Version: 	6.2.11.13
-Release: 	3%{?dist}
+Release: 	4%{?dist}
 Group:   	Development/Libraries
 Vendor: 	VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
@@ -9,6 +9,7 @@ URL: 		https://github.com/vmware/likewise-open
 Source0: 	%{name}-%{version}.tar.gz
 %define sha1 likewise-open=7012d73820c8cbdb8f0fa3b38f7478bce74f59a6
 Patch0:         likewise-open-openssl-1.1.1.patch
+Patch1:         likewise-open-openssl-1.1.1-FixV2.patch
 Distribution:   Photon
 Requires:       Linux-PAM
 Requires:       (coreutils >= 8.22 or toybox)
@@ -47,6 +48,7 @@ This package provides files for developing against the Likewise APIs
 %prep
 %setup -q
 %patch0 -p0
+%patch1 -p1
 
 %build
 # hack against glibc-2.26 to avoid getopt declaration mismatch
@@ -301,6 +303,8 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+*   Tue Nov 03 2020 Shreyas B. <shreyasb@vmware.com> 6.2.11.13-4
+-   Check NULL prior to use of HMAC_CTX_reset() & HMAC_CTX_free()
 *   Mon Aug 17 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.2.11.13-3
 -   Apply patches to use openssl-1.1.1
 *   Thu Apr 02 2020 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.13-2
