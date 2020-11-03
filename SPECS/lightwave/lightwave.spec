@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       10%{?dist}
+Release:       11%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -12,6 +12,7 @@ Distribution:  Photon
 Patch0:        lightwave_build_with_python3.patch
 Patch1:        lightwave-openssl-1.1.1.patch
 Patch2:        lightwave-openssl-1.1.1-fixV2.patch
+Patch3:        lightwave-openssl-1.1.1-fixV3.patch
 Requires:      apache-tomcat >= 8.5.8
 Requires:      boost = 1.74.0
 Requires:      commons-daemon >= 1.0.15
@@ -163,6 +164,7 @@ sed -i 's|http://central.maven.org|https://search.maven.org|' config/jdepends/bu
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 
@@ -1399,6 +1401,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Tue Nov 03 2020 Tapas Kundu <tkundu@vmware.com> 1.3.1.34-11
+-   Check hmac_ctx for NULL before calling reset and free.
 *   Thu Oct 29 2020 Shreyas B. <shreyasb@vmware.com> 1.3.1.34-10
 -   Resolve shared library “libgssapi_unix.so” loading issue
 -   Cleanup Undefined symbol "HMAC_CTX_cleanup"
