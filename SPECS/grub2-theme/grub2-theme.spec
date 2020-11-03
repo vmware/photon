@@ -1,14 +1,14 @@
 Summary:    Photon theme for grub2
 Name:       grub2-theme
-Version:    3.2
-Release:    3%{?dist}
+Version:    4.0
+Release:    1%{?dist}
 License:    Apache License
 Group:      System Environment/Base
 URL:        https://vmware.github.io/photon/
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    %{name}-%{version}p1.tar.xz
-%define sha1 grub2-theme=3fee3f9d516958e00fcb2b9ceb957327ede15605
+Source0:    %{name}-%{version}beta.tar.xz
+%define sha1 grub2-theme=66a0530f0bf0d31592fd937a0bcc67c964773aa1
 BuildArch:  noarch
 
 %description
@@ -28,14 +28,6 @@ GRUB fonts required by Ostree
 install -d %{buildroot}/boot
 cp -a grub2 %{buildroot}/boot/
 ln -s grub2 %{buildroot}/boot/grub
-# TODO: move fonts to proper place in source tarball
-# Moving ascii to grub2/fonts will allow to load it by
-# loadfont ascii
-install -d %{buildroot}/boot/grub2/fonts
-cp ascii.pf2 %{buildroot}/boot/grub2/fonts/
-# Required for ostree in efi boot
-cp unicode.pf2 %{buildroot}/boot/grub2/fonts/
-cp unifont.pf2 %{buildroot}/boot/grub2/fonts/
 
 %files
 %defattr(-,root,root,-)
@@ -61,6 +53,8 @@ cp unifont.pf2 %{buildroot}/boot/grub2/fonts/
 /boot/grub2/fonts/unifont.pf2
 
 %changelog
+* Mon Nov 02 2020 Alexey Makhalov <amakhalov@vmware.com> 4.0-1
+- Updated boot splash image.
 * Tue May 12 2020 Ankit Jain <ankitja@vmware.com> 3.2-3
 - Added unicode.pf2 and unifont.pf2 to grub2/fonts folder.
 * Wed Mar 11 2020 Alexey Makhalov <amakhalov@vmware.com> 3.2-2
