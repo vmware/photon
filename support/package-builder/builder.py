@@ -36,6 +36,9 @@ class Builder:
         with open(pkgJsonInput) as jsonData:
             pkg_list_json = json.load(jsonData)
             listPackages = pkg_list_json["packages"]
+            archSpecificPkgs = "packages_" + constants.buildArch
+            if archSpecificPkgs in pkg_list_json:
+                listPackages += pkg_list_json[archSpecificPkgs]
         Builder.buildSpecifiedPackages(listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile, logger)
 
 

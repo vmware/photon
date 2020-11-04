@@ -3,6 +3,7 @@
 #    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 
 import os
+import platform
 from jsonwrapper import JsonWrapper
 from menu import Menu
 from window import Window
@@ -36,7 +37,6 @@ class PackageSelector(object):
                                                 option['packagelist_file']))
             package_list_json = json_wrapper_package_list.read()
 
-            import platform
             platform_packages = "packages_" + platform.machine()
             if platform_packages in package_list_json:
                 return package_list_json["packages"] + package_list_json[platform_packages]
@@ -59,6 +59,10 @@ class PackageSelector(object):
         if len(options_sorted) == 1:
             self.inactive_screen = True
             list(options_sorted)[0][1]['visible'] = True
+
+        if platform.machine() == "aarch64" and 'realtime' in dict(options_sorted):
+            dict(options_sorted)['realtime']['visible'] = False
+
 
         default_selected = 0
         visible_options_cnt = 0
