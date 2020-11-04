@@ -1,3 +1,4 @@
+commit 37a6b36b0be9523a200163641cb1804b7caa7af1 (HEAD -> fix_gpg_key)
 Author: Tapas Kundu <tkundu@vmware.com>
 Date:   Thu Oct 22 13:19:59 2020 +0000
 
@@ -24,7 +25,7 @@ index da1a6ab..c445919 100644
          pRepos = pRepo->pNext;
          PMD_SAFE_FREE_MEMORY(pRepo);
 diff --git a/server/pkgmgmtrestapi.c b/server/pkgmgmtrestapi.c
-index 653a290..ccfbd81 100644
+index 653a290..658cb3d 100644
 --- a/server/pkgmgmtrestapi.c
 +++ b/server/pkgmgmtrestapi.c
 @@ -718,6 +718,8 @@ get_repodata_json_string(
@@ -36,7 +37,7 @@ index 653a290..ccfbd81 100644
 
      if(!pRepoData || !ppszJson)
      {
-@@ -732,13 +734,24 @@ get_repodata_json_string(
+@@ -732,13 +734,27 @@ get_repodata_json_string(
          BAIL_ON_PMD_ERROR(dwError);
      }
 
@@ -55,9 +56,12 @@ index 653a290..ccfbd81 100644
          json_object_set_new(pRepoObj, "baseurl", json_string(pRepoData->pszBaseUrl));
 -        json_object_set_new(pRepoObj, "gpgkey", json_string(pRepoData->pszUrlGPGKey));
 +        json_object_set_new(pRepoObj, "gpgkey", pszUrlGPGKeyArray);
-+        for(i = 0; pRepoData->ppszUrlGPGKeys[i]; i++)
++        if (pRepoData->ppszUrlGPGKeys != NULL)
 +        {
-+            json_array_append_new(pszUrlGPGKeyArray, json_string(pRepoData->ppszUrlGPGKeys[i]));
++            for(i = 0; pRepoData->ppszUrlGPGKeys[i]; i++)
++            {
++                json_array_append_new(pszUrlGPGKeyArray, json_string(pRepoData->ppszUrlGPGKeys[i]));
++            }
 +        }
          json_object_set_new(pRepoObj, "metadata_expire", json_integer(0));
          json_object_set_new(pRepoObj, "skip_if_unavailable", json_boolean(pRepoData->nSkipIfUnavailable));
