@@ -3,9 +3,9 @@
                  "minimal",
                  "linux",
                  "initramfs",
-                 "linux-esx",
                  "lvm2",
                  "less",
                  "sudo"
-                 ]
+                 ],
+    "packages_x86_64": ["linux-esx"]
 }

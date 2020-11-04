@@ -152,6 +152,12 @@ class Installer(object):
         """
         Add default install_config settings if not specified
         """
+
+        # set arch to host's one if not defined
+        arch = subprocess.check_output(['uname', '-m'], universal_newlines=True).rstrip('\n')
+        if 'arch' not in install_config:
+            install_config['arch'] = arch
+
         # extend 'packages' by 'packagelist_file' and 'additional_packages'
         packages = []
         if 'packagelist_file' in install_config:
@@ -160,7 +166,11 @@ class Installer(object):
                 plf = os.path.join(os.path.dirname(__file__), plf)
             json_wrapper_package_list = JsonWrapper(plf)
             package_list_json = json_wrapper_package_list.read()
-            packages.extend(package_list_json["packages"])
+
+            if "packages_" + install_config['arch'] in package_list_json:
+                packages.extend(package_list_json["packages"] + package_list_json["packages_"+install_config['arch']])
+            else:
+                packages.extend(package_list_json["packages"])
 
         if 'additional_packages' in install_config:
             packages.extend(install_config['additional_packages'])
@@ -169,11 +179,6 @@ class Installer(object):
             install_config['packages'] = list(set(packages + install_config['packages']))
         else:
             install_config['packages'] = packages
-
-        # set arch to host's one if not defined
-        arch = subprocess.check_output(['uname', '-m'], universal_newlines=True).rstrip('\n')
-        if 'arch' not in install_config:
-            install_config['arch'] = arch
 
         # 'bootmode' mode
         if 'bootmode' not in install_config:

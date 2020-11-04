@@ -213,6 +213,10 @@ def buildPackagesInJson(pkgJsonInput, buildThreads, pkgBuildType, pkgInfoJsonFil
     with open(pkgJsonInput) as jsonData:
         pkg_list_json = json.load(jsonData)
         listPackages = pkg_list_json["packages"]
+        archSpecificPkgs = "packages_" + constants.buildArch
+        if archSpecificPkgs in pkg_list_json:
+            listPackages += pkg_list_json[archSpecificPkgs]
+
     buildSpecifiedPackages(listPackages, buildThreads, pkgBuildType, pkgInfoJsonFile, logger)
 
 
