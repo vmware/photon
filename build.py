@@ -861,7 +861,7 @@ class BuildImage:
         os.chdir(curDir)
 
     def all_images(self):
-        images = ["ami", "gce", "azure", "ova_uefi", "ova", "rpi", "ls1012afrwy"]
+        images = ["ami", "gce", "azure", "ova_uefi", "ova"]
         for img in images:
            self.img_name = img
            self.build_image()
