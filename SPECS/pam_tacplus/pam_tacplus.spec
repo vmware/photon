@@ -1,7 +1,7 @@
 Summary:        PAM Tacacs+ module
 Name:           pam_tacplus
-Version:        1.5.1
-Release:        2%{?dist}
+Version:        1.6.1
+Release:        1%{?dist}
 License:        GPL
 URL:            http://tacplus.sourceforge.net/
 Group:          System
@@ -9,9 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    pam_tacplus=a0103f8e907889d5e22379c4288f7870f52fc93b
-
-Patch0: CVE-2020-13881.patch
+%define sha1    pam_tacplus=d39193bb09286492a33131aa193184484a6c1183
 
 BuildRequires:  Linux-PAM-devel
 
@@ -71,6 +69,8 @@ rm -rf %{buildroot}/*
 %doc %{_docdir}/*
 
 %changelog
+* Thu Nov 05 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-1
+- Bump version to 1.6.1, fixes CVE-2020-27743
 * Sat Aug 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.5.1-2
 - Fixed CVE-2020-13881
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.1-1
