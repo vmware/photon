@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.51
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -18,6 +18,7 @@ Patch1:         apache-tomcat-CVE-2020-9484.patch
 Patch2:         apache-tomcat-CVE-2020-11996.patch
 Patch3:         apache-tomcat-CVE-2020-13934.patch
 Patch4:         apache-tomcat-CVE-2020-13935.patch
+Patch5:         apache-tomcat-CVE-2020-13943.patch
 BuildRequires:  openjre
 BuildRequires:  openjdk
 BuildRequires:  apache-ant
@@ -46,6 +47,7 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
@@ -110,6 +112,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Thu Nov 05 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.51-5
+-   Fix CVE-2020-13943
 *   Fri Jul 17 2020 Dweep Advani <dadvani@vmware.com> 8.5.51-4
 -   Patched for CVE-2020-13934 and CVE-2020-13935
 *   Fri Jul 03 2020 Dweep Advani <dadvani@vmware.com> 8.5.51-3
