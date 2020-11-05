@@ -79,19 +79,18 @@ class Utils(object):
     def generatePhotonVmx(old_file, new_file, pattern, disk):
         with open(old_file, "r") as old, open(new_file, "w") as new:
             for line in old:
-                if "scsi0:" in line:
-                    line = re.sub(pattern, pattern + "0", line)
-                    new.write(line)
-                    in_text = "scsi0:0"
-                    _in_text = pattern + "0"
-                    for i in range(1,disk):
-                        nline = copy.copy(line)
-                        replace_text = "scsi0:" + str(i)
-                        _replace_text = pattern + str(i)
-                        nline = re.sub(in_text, replace_text, nline)
-                        nline = re.sub(_in_text, _replace_text, nline)
-                        new.write(nline)
-                else:
+                line_as_is = True
+                for device in ["scsi0:", "sata0:"]:
+                    if device in line:
+                        line_as_is = False
+                        line = re.sub(pattern, pattern + "0", line)
+                        new.write(line)
+                        for i in range(1,disk):
+                            nline = copy.copy(line)
+                            nline = re.sub(device + "0", device + str(i), nline)
+                            nline = re.sub(pattern + "0", pattern + str(i), nline)
+                            new.write(nline)
+                if line_as_is:
                     new.write(line)
 
     @staticmethod
