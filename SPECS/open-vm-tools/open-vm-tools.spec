@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        11.1.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -21,6 +21,7 @@ Source3:        vgauthd.service
 # If patch is taken from open-vm-tools repo, prefix it with 'ovt-'
 # If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
 Patch0:     ovt-linux-deployment.patch
+Patch1:     gosc-add-user-section.patch
 
 BuildRequires:  glib-devel
 BuildRequires:  libxml2-devel
@@ -138,6 +139,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Thu Nov 05 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.5-5
+-   GOSC - add users section of cloud config yaml only if password field is present
 *   Mon Oct 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.5-4
 -   Fixed systemd in `Requires` section
 -   Updated gosc to 1.3.1 & following are new changes in gosc
