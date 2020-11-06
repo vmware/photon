@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.154
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -325,6 +325,8 @@ Patch511:        halt-on-panic.patch
 Patch1000:      fips-kat-tests.patch
 %endif
 
+Patch2000:      0001-add-path_put.patch
+
 BuildArch:     x86_64
 BuildRequires: bc
 BuildRequires: kbd
@@ -622,6 +624,10 @@ This Linux package contains hmac sha generator kernel module.
 %patch1000 -p1
 %endif
 
+pushd ../photon-checksum-generator-%{photon_checksum_generator_version}
+%patch2000 -p1
+popd
+
 %build
 # patch vmw_balloon driver
 sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
@@ -747,6 +753,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Nov 19 2020 Vikash Bansal <bvikas@vmware.com> 4.19.154-10
+-   hmacgen: Add path_put to hmac_gen_hash
 *   Tue Nov 17 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.154-9
 -   Fix kernel panic on hard-link in initrd
 *   Fri Nov 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.154-8

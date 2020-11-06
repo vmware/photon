@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.154
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -123,6 +123,9 @@ Patch109:       0008-macflap_macflaplong.patch
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
 %endif
+
+Patch2000:      0001-add-path_put.patch
+
 BuildArch:      x86_64
 BuildRequires:  bc
 BuildRequires:  kbd
@@ -252,6 +255,10 @@ popd
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
+
+pushd ../photon-checksum-generator-%{photon_checksum_generator_version}
+%patch2000 -p1
+popd
 
 %build
 # patch vmw_balloon driver
@@ -400,6 +407,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Nov 16 2020 Vikash Bansal <bvikas@vmware.com> 4.19.154-6
+-   hmacgen: Add path_put to hmac_gen_hash
 *   Fri Nov 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.154-5
 -   Fix CVE-2020-25668
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-4

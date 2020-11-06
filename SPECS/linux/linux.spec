@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.154
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -232,6 +232,8 @@ Patch234:        0001-fsl_dpaa_mac-wait-for-phy-probe-to-complete.patch
 %if 0%{?kat_build:1}
 Patch1000:       fips-kat-tests.patch
 %endif
+
+Patch2000:       0001-add-path_put.patch
 
 BuildRequires:  bc
 BuildRequires:  kbd
@@ -518,6 +520,10 @@ This Linux package contains hmac sha generator kernel module.
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
+
+pushd ../photon-checksum-generator-%{photon_checksum_generator_version}
+%patch2000 -p1
+popd
 
 %build
 make mrproper
@@ -856,6 +862,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Mon Nov 16 2020 Vikash Bansal <bvikas@vmware.com> 4.19.154-9
+-   hmacgen: Add path_put to hmac_gen_hash
 *   Fri Nov 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.154-8
 -   Fix CVE-2020-25668
 *   Thu Nov 12 2020 Sharan Turlapati <sturlapati@vmware.com> 4.19.154-7
