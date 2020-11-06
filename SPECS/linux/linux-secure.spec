@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.9.0
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -53,6 +53,8 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+#Fix for CVE-2020-25704
+Patch103:       perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -133,6 +135,7 @@ The Linux package contains the Linux kernel doc files
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
+%patch103 -p1
 
 # crypto
 %patch500 -p1
@@ -241,6 +244,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-3
+-   Fix CVE-2020-25704
 *   Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 5.9.0-2
 -   Remove the support of fipsify and hmacgen
 *   Thu Oct 22 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-1

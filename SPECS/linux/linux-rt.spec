@@ -11,7 +11,7 @@ Name:           linux-rt
 Version:        5.9.0
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt16
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -62,6 +62,8 @@ Patch56:        x86-vmware-Log-kmsg-dump-on-panic.patch
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix for CVE-2019-12379
 Patch101:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+#Fix for CVE-2020-25704
+Patch102:       perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 Patch301:       0001-printk-rb-add-printk-ring-buffer-documentation.patch
@@ -371,6 +373,7 @@ The Linux package contains the Linux kernel doc files
 # CVE
 %patch100 -p1
 %patch101 -p1
+%patch102 -p1
 
 # RT
 %patch301 -p1
@@ -768,6 +771,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-3
+-   Fix CVE-2020-25704
 *   Tue Oct 27 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.9.0-2
 -   Revert d254087 (clockevents: Stop unused clockevent devices)
 -   Solve cyclictest regression introduced in 4.1

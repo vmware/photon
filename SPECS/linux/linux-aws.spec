@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.9.0
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -54,6 +54,8 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+#Fix for CVE-2020-25704
+Patch103:       perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 
 #Amazon AWS
 Patch201:       0002-bump-the-default-TTL-to-255.patch
@@ -186,6 +188,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
+%patch103 -p1
 
 #Amazon AWS
 %patch201 -p1
@@ -392,6 +395,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-3
+-   Fix CVE-2020-25704
 *   Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 5.9.0-2
 -   Remove the support of fipsify and hmacgen
 *   Wed Oct 28 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.9.0-1
