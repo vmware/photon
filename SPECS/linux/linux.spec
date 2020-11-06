@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.154
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -112,6 +112,8 @@ Patch62:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch63:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch64:        0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
 Patch65:        0005-ovl-check-permission-to-open-real-file.patch
+#Fix for CVE-2020-25704
+Patch66:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -399,6 +401,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch63 -p1
 %patch64 -p1
 %patch65 -p1
+%patch66 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -824,6 +827,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-2
+-   Fix CVE-2020-25704
 *   Mon Nov 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-1
 -   Update to version 4.19.154
 *   Tue Oct 13 2020 Ajay Kaher <akaher@vmware.com> 4.19.150-1

@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.154
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt59
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -76,6 +76,8 @@ Patch61:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch62:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch63:        0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
 Patch64:        0005-ovl-check-permission-to-open-real-file.patch
+#Fix for CVE-2020-25704
+Patch65:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -505,6 +507,7 @@ The Linux package contains the Linux kernel doc files
 %patch62 -p1
 %patch63 -p1
 %patch64 -p1
+%patch65 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -1006,6 +1009,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-2
+-   Fix CVE-2020-25704
 *   Mon Nov 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-1
 -   Update to version 4.19.154
 *   Tue Oct 13 2020 Ajay Kaher <akaher@vmware.com> 4.19.150-1

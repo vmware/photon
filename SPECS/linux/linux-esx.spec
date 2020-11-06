@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.154
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -64,6 +64,8 @@ Patch40:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch41:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 Patch42:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
+#Fix for CVE-2020-25704
+Patch43:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 
 # 9p patches
 Patch54:        0001-fs-9p-Add-opt_metaonly-option.patch
@@ -387,6 +389,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch40 -p1
 %patch41 -p1
 %patch42 -p1
+%patch43 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -731,6 +734,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-4
+-   Fix CVE-2020-25704
 *   Tue Nov 03 2020 Ajay Kaher <akaher@vmware.com> 4.19.154-3
 -   Adding sev-es: patch set v3
 *   Tue Nov 03 2020 Ajay Kaher <akaher@vmware.com> 4.19.154-2
