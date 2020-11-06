@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.241
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -140,7 +140,8 @@ Patch106:       0003-ovl-verify-permissions-in-ovl_path_open.patch
 
 # Fix for CVE-2020-25645
 Patch108:       0001-geneve-add-transport-ports-in-route-lookup-for-genev.patch
-
+#Fix for CVE-2020-25704
+Patch109:       perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
 
 %if 0%{?kat_build:1}
@@ -305,6 +306,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch105 -p1
 %patch106 -p1
 %patch108 -p1
+%patch109 -p1
 
 %patch111 -p1
 
@@ -478,6 +480,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-3
+-   Fix CVE-2020-25704
 *   Tue Nov 03 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.241-2
 -   Fix CVE-2020-25645
 *   Mon Nov 02 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-1
