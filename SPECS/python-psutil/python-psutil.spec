@@ -2,15 +2,15 @@
 %{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
 Summary:        A library for retrieving information onrunning processes and system utilization
 Name:           python3-psutil
-Version:        5.7.2
-Release:        2%{?dist}
+Version:        5.7.3
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/psutil
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/psutil/psutil-%{version}.tar.gz
-%define sha1    psutil=96b2286d1b06b6093aa0b5cb192bce7eb60c831a
+%define sha1    psutil=0b093faed351cf89e930d1c3ba380831b068ebc1
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -58,6 +58,8 @@ LANG=en_US.UTF-8 make test PYTHON=python%{python3_version}
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 5.7.3-1
+-   Automatic Version Bump
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.7.2-2
 -   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 5.7.2-1

@@ -3,7 +3,7 @@
 
 Summary:        World timezone definitions, modern and historical
 Name:           python3-pytz
-Version:        2020.1
+Version:        2020.4
 Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/pytz
 License:        MIT
@@ -11,7 +11,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/p/pytz/pytz-%{version}.tar.gz
-%define sha1    pytz=60f6db35e92688c4701c16bd3d2b9cbfac1fd604
+%define sha1    pytz=7b6b52156e0c532e9e500665a2c720397765bd64
 BuildArch:      noarch
 
 BuildRequires:  python3
@@ -55,6 +55,8 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 2020.4-1
+-   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2020.1-1
 -   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 2018.5-2

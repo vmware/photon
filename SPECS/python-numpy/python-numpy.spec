@@ -2,15 +2,15 @@
 
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python3-numpy
-Version:        1.19.2
-Release:        3%{?dist}
+Version:        1.19.4
+Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/numpy
 Source0:        https://pypi.python.org/packages/a5/16/8a678404411842fe02d780b5f0a676ff4d79cd58f0f22acddab1b392e230/numpy-%{version}.zip
-%define sha1    numpy=91073326e6241846ceabef8bc8ec1166336a10b0
+%define sha1    numpy=9b000c77efc890b8267354c51120ca2b07adde1d
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -57,6 +57,8 @@ rm -rf test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 1.19.4-1
+-   Automatic Version Bump
 *   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 1.19.2-3
 -   Build with python 3.9
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.19.2-2

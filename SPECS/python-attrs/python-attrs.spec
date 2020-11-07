@@ -2,15 +2,15 @@
 
 Summary:        Attributes without boilerplate.
 Name:           python3-attrs
-Version:        20.2.0
-Release:        2%{?dist}
+Version:        20.3.0
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/attrs
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        attrs-%{version}.tar.gz
-%define sha1    attrs=a87318d8fa3f613b8e7a5f78396c26d628081330
+%define sha1    attrs=05215357efc6bcfa1f0f76fbc01671e484e3e30a
 
 BuildArch:      noarch
 
@@ -51,6 +51,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 20.3.0-1
+-   Automatic Version Bump
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 20.2.0-2
 -   openssl 1.1.1
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 20.2.0-1
