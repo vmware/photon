@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        10.10
-Release:        5%{?dist}
+Version:        10.15
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -9,11 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=388b082ea05e385f42ce1521f1a9f7d11561227b
-Patch0:         CVE-2020-1720.patch
-Patch1:         postgresql-CVE-2020-14349-1.patch
-Patch2:         postgresql-CVE-2020-14349-2.patch
-Patch3:         postgresql-CVE-2020-14350.patch
+%define sha1    postgresql=3d688f05d2de7c9ed89ef6be8d33906a4e7a833d
 # Common libraries needed
 BuildRequires:  krb5-devel
 BuildRequires:  libxml2-devel
@@ -59,10 +55,6 @@ developing applications that use postgresql.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h &&
@@ -169,6 +161,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Thu Nov 19 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 10.15-1
+-   update version to 10.15
 *   Wed Sep 02 2020 Dweep Advani <dadvani@vmware.com> 10.10-5
 -   Patched for CVE-2020-14349 and CVE-2020-14350
 *   Fri Apr 03 2020 Anisha Kumari <kanisha@vmware.com> 10.10-4
