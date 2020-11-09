@@ -1,0 +1,37 @@
+From ec1d0c2045a8f8f4b17d673a8a4b6a3d40fd7989 Mon Sep 17 00:00:00 2001
+From: Mounesh Badiger <badigerm@vmware.com>
+Date: Sun, 8 Nov 2020 22:05:48 -0800
+Subject: [PATCH] [9p]  [VDFS]Initialize fid->iounit during creation of p9_fid
+
+In 9p, each fid has iounit feild, if iounit != 0
+then read and write sizes are MIN(count, iounit, msize - HDRSZ).
+for tlcreat/tlopen iounit comes from server
+and in those cases vdfs initializes iounit to 0.
+But in WALK/XATTRWALK cases its garbage value
+
+This also is a performance problem with reads/writes,
+where we require multiple round trips to server to
+complete reads and writes. for e.g -> 400 bytes read
+and iounit value is 2 and it required us to have 200
+round trips to complete reads, but it is not the case
+with vdfs-zero-copy, where we don't consider iounit
+value for issuing read and writes.
+---
+ net/9p/client.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 22c5517..6b67a52 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -957,6 +957,7 @@ static struct p9_fid *p9_fid_create(struct p9_client *clnt)
+ 	fid->uid = current_fsuid();
+ 	fid->clnt = clnt;
+ 	fid->rdir = NULL;
++	fid->iounit = 0;
+ 	fid->fid = 0;
+ 
+ 	idr_preload(GFP_KERNEL);
+-- 
+1.8.5.6
+

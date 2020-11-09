@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.154
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -118,6 +118,10 @@ Patch66:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 Patch67:        powercap-restrict-energy-meter-to-root-access.patch
 #Fix slab-out-of-bounds read in fbcon
 Patch68:        0001-vt-Disable-KD_FONT_OP_COPY.patch
+
+#Fix for 9p
+Patch70:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
+Patch71:        0001-9p-VDFS-Initialize-fid-iounit-during-creation-of-p9_.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -408,6 +412,9 @@ This Linux package contains hmac sha generator kernel module.
 %patch66 -p1
 %patch67 -p1
 %patch68 -p1
+
+%patch70 -p1
+%patch71 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -833,6 +840,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Wed Nov 11 2020 Albert Guo <aguo@vmware.com> 4.19.154-5
+-   9P: Ensure seekdir work correctly when readdir hasn't reached eof
+-   9P: [VDFS]Initialize fid->iounit during creation of p9_fid
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-4
 -   Fix slab-out-of-bounds read in fbcon
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-3

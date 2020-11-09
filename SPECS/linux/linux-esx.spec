@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.154
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -77,6 +77,8 @@ Patch55:        0001-p9fs_dir_readdir-offset-support.patch
 Patch56:	0002-Add-9p-zero-copy-data-path-using-crossfd.patch
 Patch57:	0003-Enable-cache-loose-for-vdfs-9p.patch
 Patch58:	0004-Calculate-zerocopy-pages-with-considering-buffer-ali.patch
+Patch59:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
+Patch60:        0001-9p-VDFS-Initialize-fid-iounit-during-creation-of-p9_.patch
 
 # 9p new function iov_iter_to_pfns()
 Patch61:        0001-lib-iov_iter-adding-new-function-iov_iter_to_pfns.patch
@@ -401,6 +403,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch56 -p1
 %patch57 -p1
 %patch58 -p1
+%patch59 -p1
+%patch60 -p1
 %patch61 -p1
 %patch62 -p1
 %patch63 -p1
@@ -740,6 +744,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Nov 11 2020 Albert Guo <aguo@vmware.com> 4.19.154-7
+-   9P: Ensure seekdir work correctly when readdir hasn't reached eof
+-   9P: [VDFS]Initialize fid->iounit during creation of p9_fid
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-6
 -   Fix slab-out-of-bounds read in fbcon
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-5
