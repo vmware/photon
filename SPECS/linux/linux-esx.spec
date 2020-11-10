@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.241
-Release:       3%{?dist}
+Release:       4%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -126,6 +126,8 @@ Patch85:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch86:        0001-geneve-add-transport-ports-in-route-lookup-for-genev.patch
 #Fix for CVE-2020-8694
 Patch87:        powercap-restrict-energy-meter-to-root-access.patch
+#Fix slab-out-of-bounds read in fbcon
+Patch88:        0001-vt-Disable-KD_FONT_OP_COPY.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -246,6 +248,7 @@ The Linux package contains the Linux kernel doc files
 %patch85 -p1
 %patch86 -p1
 %patch87 -p1
+%patch88 -p1
 
 %build
 # patch vmw_balloon driver
@@ -336,6 +339,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.4.241-4
+-   Fix slab-out-of-bounds read in fbcon
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.4.241-3
 -   Fix for CVE-2020-8694
 *   Tue Nov 03 2020 Sharan Turlapati <sturlapati@vmware.com> 4.4.241-2
