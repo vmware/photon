@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.241
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -142,6 +142,8 @@ Patch106:       0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch108:       0001-geneve-add-transport-ports-in-route-lookup-for-genev.patch
 #Fix for CVE-2020-25704
 Patch109:       perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
+#Fix for CVE-2020-8694
+Patch110:        powercap-restrict-energy-meter-to-root-access.patch
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
 
 %if 0%{?kat_build:1}
@@ -307,6 +309,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch106 -p1
 %patch108 -p1
 %patch109 -p1
+%patch110 -p1
 
 %patch111 -p1
 
@@ -480,6 +483,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-4
+-   Fix CVE-2020-8694
 *   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-3
 -   Fix CVE-2020-25704
 *   Tue Nov 03 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.241-2
