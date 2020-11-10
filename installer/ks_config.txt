@@ -241,4 +241,11 @@ Kickstart config file is a json format with following possible parameters:
 	Acceptable values are: "linux", "linux-esx", "linux-rt", "linux-aws", and "linux-secure"
 	Example: { "linux_flavor": "linux-esx" }
 
+"photon_docker_image" (optional)
+	Contains the docker image <name:tag>
+	are present in "packages" or "packagelist_file"
+	Acceptable values are: "photon:1.0", "photon:2.0", "photon:3.0", "photon" etc.
+        Default value: "photon:latest"
+	Example: { "photon_docker_image": "photon:3.0" }
+
 For reference, look at "sample_ks.cfg" file

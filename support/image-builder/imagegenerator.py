@@ -17,6 +17,8 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
     photon_build_num = os.environ['PHOTON_BUILD_NUM']
     image_name = config.get('image_name', 'photon-' + config['image_type']
                        + '-' + photon_release_ver + '-' + photon_build_num)
+    photon_docker_image = config['installer'].get('photon_docker_image',
+                                                           'photon:latest')
     new_name = []
     if type(raw_image_path) is not list:
         raw_image_path = [raw_image_path]
@@ -53,8 +55,8 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
 
         cmd  = "tdnf install -y qemu-img > /dev/null 2>&1; qemu-img info -f raw --output json {}"
         if not dockerenv:
-            cmd = "docker run -v {}:/mnt:rw photon:{} /bin/bash -c '" + cmd + "'"
-            cmd = cmd.format(src_root, 3.0, '/mnt/' + relrawpath)
+            cmd = "docker run -v {}:/mnt:rw {} /bin/bash -c '" + cmd + "'"
+            cmd = cmd.format(src_root, photon_docker_image, '/mnt/' + relrawpath)
         else:
             cmd = cmd.format(raw_image[0])
         info_output = Utils.runshellcommand(cmd)
@@ -64,8 +66,8 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
 
         cmd = "tdnf install -y qemu-img > /dev/null 2>&1; qemu-img resize -f raw {} {}"
         if not dockerenv:
-            cmd = "docker run -v {}:/mnt:rw photon:{} /bin/bash -c '" + cmd + "'"
-            cmd = cmd.format(src_root, 3.0, '/mnt/' + relrawpath, mbroundedsize)
+            cmd = "docker run -v {}:/mnt:rw {} /bin/bash -c '" + cmd + "'"
+            cmd = cmd.format(src_root, photon_docker_image, '/mnt/' + relrawpath, mbroundedsize)
         else:
             cmd = cmd.format(raw_image[0], mbroundedsize)
         Utils.runshellcommand(cmd)
@@ -73,8 +75,8 @@ def createOutputArtifact(raw_image_path, config, src_root, tools_bin_path):
         cmd = "tdnf install -y qemu-img > /dev/null 2>&1; qemu-img convert {} -O " + \
                "vpc -o subformat=fixed,force_size {}"
         if not dockerenv:
-            cmd = "docker run -v {}:/mnt:rw photon:{} /bin/bash -c '" + cmd + "'"
-            cmd = cmd.format(src_root, 3.0, '/mnt/' + relrawpath, '/mnt/'
+            cmd = "docker run -v {}:/mnt:rw {} /bin/bash -c '" + cmd + "'"
+            cmd = cmd.format(src_root, photon_docker_image, '/mnt/' + relrawpath, '/mnt/'
                             + os.path.dirname(relrawpath) + vhdname)
         else:
             cmd = cmd.format(raw_image[0], os.path.dirname(raw_image[0]) + vhdname)
