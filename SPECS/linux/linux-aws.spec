@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.154
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -80,6 +80,8 @@ Patch60:        0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
 Patch61:        0005-ovl-check-permission-to-open-real-file.patch
 #Fix for CVE-2020-25704
 Patch62:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
+#Fix for CVE-2020-8694
+Patch63:        powercap-restrict-energy-meter-to-root-access.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -239,6 +241,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch60 -p1
 %patch61 -p1
 %patch62 -p1
+%patch63 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -470,6 +473,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-3
+-   Fix CVE-2020-8694
 *   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-2
 -   Fix CVE-2020-25704
 *   Mon Nov 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-1

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.154
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -83,6 +83,8 @@ Patch62:        0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
 Patch63:        0005-ovl-check-permission-to-open-real-file.patch
 #Fix for CVE-2020-25704
 Patch64:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
+#Fix for CVE-2020-8694
+Patch65:        powercap-restrict-energy-meter-to-root-access.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -214,6 +216,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch62 -p1
 %patch63 -p1
 %patch64 -p1
+%patch65 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -391,6 +394,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-3
+-   Fix CVE-2020-8694
 *   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-2
 -   Fix CVE-2020-25704
 *   Mon Nov 02 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-1

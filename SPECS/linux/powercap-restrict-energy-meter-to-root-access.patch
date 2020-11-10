@@ -1,0 +1,42 @@
+From: Len Brown <len.brown@intel.com>
+Date: Sat, 17 Oct 2020 16:06:48 +0200
+Subject: [PATCH] powercap: Restrict energy meter to root access
+
+Remove non-privileged user access to power data contained in
+/sys/class/powercap/intel_rapl/*/energy_uj.
+
+Non-privileged users currently have read access to power data
+and can use this data to form a security attack. Some privileged
+drivers/applications need read access to this data, but don't expose it
+to non-privileged users.
+
+For example, thermald uses this data to ensure that power management
+works correctly. Thus removing non-privileged access is preferred
+over completely disabling this power reporting capability with
+CONFIG_INTEL_RAPL=n.
+
+Fixes: 95677a9a3847 ("PowerCap: Fix mode for energy counter")
+Signed-off-by: Len Brown <len.brown@intel.com>
+Acked-by: Borislav Petkov <bp@suse.de>
+---
+ drivers/powercap/powercap_sys.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/powercap/powercap_sys.c b/drivers/powercap/powercap_sys.c
+index f808c5fa9838..3f0b8e2ef3d4 100644
+--- a/drivers/powercap/powercap_sys.c
++++ b/drivers/powercap/powercap_sys.c
+@@ -367,9 +367,9 @@ static void create_power_zone_common_attributes(
+ 					&dev_attr_max_energy_range_uj.attr;
+ 	if (power_zone->ops->get_energy_uj) {
+ 		if (power_zone->ops->reset_energy_uj)
+-			dev_attr_energy_uj.attr.mode = S_IWUSR | S_IRUGO;
++			dev_attr_energy_uj.attr.mode = S_IWUSR | S_IRUSR;
+ 		else
+-			dev_attr_energy_uj.attr.mode = S_IRUGO;
++			dev_attr_energy_uj.attr.mode = S_IRUSR;
+ 		power_zone->zone_dev_attrs[count++] =
+ 					&dev_attr_energy_uj.attr;
+ 	}
+--
+2.21.0
