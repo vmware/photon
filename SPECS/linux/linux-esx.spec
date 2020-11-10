@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.154
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -68,6 +68,8 @@ Patch42:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
 Patch43:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 #Fix for CVE-2020-8694
 Patch44:        powercap-restrict-energy-meter-to-root-access.patch
+#Fix slab-out-of-bounds read in fbcon
+Patch45:        0001-vt-Disable-KD_FONT_OP_COPY.patch
 
 # 9p patches
 Patch54:        0001-fs-9p-Add-opt_metaonly-option.patch
@@ -393,6 +395,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch42 -p1
 %patch43 -p1
 %patch44 -p1
+%patch45 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -737,6 +740,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-6
+-   Fix slab-out-of-bounds read in fbcon
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-5
 -   Fix CVE-2020-8694
 *   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-4

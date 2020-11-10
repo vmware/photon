@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.154
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt59
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -80,6 +80,8 @@ Patch64:        0005-ovl-check-permission-to-open-real-file.patch
 Patch65:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 #Fix for CVE-2020-8694
 Patch66:        powercap-restrict-energy-meter-to-root-access.patch
+#Fix slab-out-of-bounds read in fbcon
+Patch67:        0001-vt-Disable-KD_FONT_OP_COPY.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -511,6 +513,7 @@ The Linux package contains the Linux kernel doc files
 %patch64 -p1
 %patch65 -p1
 %patch66 -p1
+%patch67 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -1012,6 +1015,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-4
+-   Fix slab-out-of-bounds read in fbcon
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-3
 -   Fix CVE-2020-8694
 *   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-2
