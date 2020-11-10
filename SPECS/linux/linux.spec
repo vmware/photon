@@ -13,7 +13,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.9.0
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -79,6 +79,8 @@ Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 #Fix for CVE-2020-25704
 Patch103:       perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
+#Fix for CVE-2020-8694
+Patch104:        powercap-restrict-energy-meter-to-root-access.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -305,6 +307,7 @@ Python programming language to use the interface to manipulate perf events.
 %patch101 -p1
 %patch102 -p1
 %patch103 -p1
+%patch104 -p1
 
 # crypto
 %patch500 -p1
@@ -681,6 +684,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-5
+-   Fix CVE-2020-8694
 *   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-4
 -   Fix CVE-2020-25704
 *   Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 5.9.0-3
