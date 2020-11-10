@@ -1,12 +1,12 @@
 Summary:        The Linux PTP Project
 Name:           linuxptp
-Version:        2.0
+Version:        3.1
 Release:        1%{?dist}
 License:        GPL v2
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
 Source0:        %{name}-%{version}.tgz
-%define sha1    linuxptp=592ca42c6146a79c1fcabed7c19fa7af4803d4f6
+%define sha1    linuxptp=9a3869dbd322252c9a6bc0dbdfe8941586810a7f
 Source1:        ptp4l.service
 Source2:        phc2sys.service
 Source3:        phc2sys
@@ -72,14 +72,19 @@ rm -rf %{buildroot}
 %{_sbindir}/pmc
 %{_sbindir}/ptp4l
 %{_sbindir}/timemaster
+%{_sbindir}/ts2phc
 %{_mandir}/man8/hwstamp_ctl.8.gz
 %{_mandir}/man8/phc2sys.8.gz
 %{_mandir}/man8/phc_ctl.8.gz
 %{_mandir}/man8/pmc.8.gz
 %{_mandir}/man8/ptp4l.8.gz
 %{_mandir}/man8/timemaster.8.gz
+%{_mandir}/man8/nsm.8.gz
+%{_mandir}/man8/ts2phc.8.gz
 
 
 %changelog
+*   Mon Nov 09 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.1-1
+-   Update to version 3.1
 *   Tue May 19 2020 Tapas Kundu <tkundu@vmware.com> 2.0-1
 -   Initial version.
