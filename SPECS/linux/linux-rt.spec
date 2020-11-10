@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.154
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt59
-Release:        4%{?kat_build:.%kat}%{?dist}
+Release:        5%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -22,9 +22,13 @@ Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
 %define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
 Source4:        pre-preun-postun-tasks.inc
 Source5:        check_for_config_applicability.inc
-%define i40e_version 2.11.29
+%define i40e_version 2.13.10
 Source6:	https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha1 i40e=9dcd03653430d15154572c64b7a92c6d2521cf2a
+%define sha1 i40e=126bfdabd708033b38840e49762d7ec3e64bbc96
+# Prerequisite patch to use PTP_SYS_OFFSET_EXTENDED ioctl in i40e
+# driver.
+Source7:        0001-Add-support-for-gettimex64-interface.patch
+
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
 Patch1:         double-tcp_mem-limits.patch
@@ -93,6 +97,11 @@ Patch85:        0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
 Patch86:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
 Patch87:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
 Patch88:        0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
+
+# Support for PTP_SYS_OFFSET_EXTENDED ioctl
+Patch91:        0001-ptp-reorder-declarations-in-ptp_ioctl.patch
+Patch92:        0002-ptp-add-PTP_SYS_OFFSET_EXTENDED-ioctl.patch
+Patch93:        0003-ptp-deprecate-gettime64-in-favor-of-gettimex64.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 Patch201:        0001-ARM-at91-add-TCB-registers-definitions.patch
@@ -525,6 +534,10 @@ The Linux package contains the Linux kernel doc files
 %patch87 -p1
 %patch88 -p1
 
+%patch91 -p1
+%patch92 -p1
+%patch93 -p1
+
 %patch201 -p1
 %patch202 -p1
 %patch203 -p1
@@ -884,6 +897,7 @@ popd
 # build i40e module
 bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
+patch -p1 --fuzz=0 < %{SOURCE7}
 make -C src KSRC=$bldroot clean
 make -C src KSRC=$bldroot %{?_smp_mflags}
 popd
@@ -1015,6 +1029,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Nov 10 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.154-5
+-   Add support for PTP_SYS_OFFSET_EXTENDED ioctl
+-   Update i40e out-of-tree driver to version 2.13.10
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-4
 -   Fix slab-out-of-bounds read in fbcon
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-3

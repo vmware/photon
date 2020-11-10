@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.154
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -31,9 +31,12 @@ Source8:        https://github.com/vmware/photon-checksum-generator/releases/pho
 Source9:        genhmac.inc
 Source10:	https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCAP_1.6.tar.gz
 %define sha1 DCAP=84df31e729c4594f25f4fcb335940e06a2408ffc
-%define i40e_version 2.11.29
+%define i40e_version 2.13.10
 Source11:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha1 i40e=9dcd03653430d15154572c64b7a92c6d2521cf2a
+%define sha1 i40e=126bfdabd708033b38840e49762d7ec3e64bbc96
+# Prerequisite patch to use PTP_SYS_OFFSET_EXTENDED ioctl in i40e
+# driver.
+Source12:       0001-Add-support-for-gettimex64-interface.patch
 
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
@@ -142,6 +145,11 @@ Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 # Patch to perform continuous testing on RNG from Noise Source
 Patch101:        0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
+
+# Support for PTP_SYS_OFFSET_EXTENDED ioctl
+Patch121:        0001-ptp-reorder-declarations-in-ptp_ioctl.patch
+Patch122:        0002-ptp-add-PTP_SYS_OFFSET_EXTENDED-ioctl.patch
+Patch123:        0003-ptp-deprecate-gettime64-in-favor-of-gettimex64.patch
 
 # Lockdown support
 Patch150:        lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
@@ -431,6 +439,10 @@ This Linux package contains hmac sha generator kernel module.
 %patch100 -p1
 %patch101 -p1
 
+%patch121 -p1
+%patch122 -p1
+%patch123 -p1
+
 %patch150 -p1
 %patch151 -p1
 %patch152 -p1
@@ -547,6 +559,7 @@ popd
 # build i40e module
 bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
+patch -p1 --fuzz=0 < %{SOURCE12}
 make -C src KSRC=$bldroot clean
 make -C src KSRC=$bldroot %{?_smp_mflags}
 popd
@@ -840,6 +853,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Wed Nov 11 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.154-6
+-   Add support for PTP_SYS_OFFSET_EXTENDED ioctl
+-   Update i40e out-of-tree driver to version 2.13.10
 *   Wed Nov 11 2020 Albert Guo <aguo@vmware.com> 4.19.154-5
 -   9P: Ensure seekdir work correctly when readdir hasn't reached eof
 -   9P: [VDFS]Initialize fid->iounit during creation of p9_fid
