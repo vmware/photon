@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.241
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.243
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=1b029aca0c9d4af168f7e315b9706471013a055b
+%define sha1 linux=d6ad75540bead9f97712fed66cdfdeb9e63ee970
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -97,8 +97,6 @@ Patch57:        0001-vfio-type1-Support-faulting-PFNMAP-vmas.patch
 Patch58:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
 Patch59:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
 
-Patch64:        0001-xen-events-don-t-use-chip_data-for-legacy-IRQs.patch
-
 #Fix for CVE-2019-19377
 Patch65:        0001-btrfs-Don-t-submit-any-btree-write-bio-if-the-fs-has.patch
 
@@ -127,10 +125,6 @@ Patch82:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 
 #Fix for CVE-2020-25645
 Patch83:        0001-geneve-add-transport-ports-in-route-lookup-for-genev.patch
-#Fix for CVE-2020-8694
-Patch84:        powercap-restrict-energy-meter-to-root-access.patch
-#Fix slab-out-of-bounds read in fbcon
-Patch85:        0001-vt-Disable-KD_FONT_OP_COPY.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -262,7 +256,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch57 -p1
 %patch58 -p1
 %patch59 -p1
-%patch64 -p1
 %patch65 -p1
 %patch67 -p1
 %patch68 -p1
@@ -281,8 +274,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch81 -p1
 %patch82 -p1
 %patch83 -p1
-%patch84 -p1
-%patch85 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -441,6 +432,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Wed Nov 11 2020 Keerthana K <keerthanak@vmware.com> 4.4.243-1
+-   Update to version 4.4.243
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.4.241-4
 -   Fix slab-out-of-bounds read in fbcon
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.4.241-3
