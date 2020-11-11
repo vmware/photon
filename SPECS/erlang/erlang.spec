@@ -1,6 +1,6 @@
 Name:         erlang
 Summary:      erlang
-Version:      22.1
+Version:      23.1
 Release:      1%{?dist}
 Group:        Development/Languages
 Vendor:       VMware, Inc.
@@ -8,7 +8,7 @@ Distribution: Photon
 License:      ASL2.0
 URL:          http://erlang.com
 Source0:      OTP-%{version}.tar.gz
-%define sha1  OTP=62fed3198da14dcc42773e24c572027c63e46e46
+%define sha1  OTP=2d6eaefe960f52cc79d7614c11256b73174e4161
 BuildRequires: unzip
 %description
 erlang programming language
@@ -37,6 +37,8 @@ make install DESTDIR=$RPM_BUILD_ROOT
 %exclude %{_libdir}/debug
 
 %changelog
+* Wed Nov 11 2020 Harinadh D <hdommaraju@vmware.com> 23.1-1
+- Update to version 23-1 and make compatible with rabbitmq 3.8.x
 * Tue Oct 29 2019 Keerthana K <keerthanak@vmware.com> 22.1-1
 - Update to latest version 22.1
 * Thu Jan 31 2019 Siju Maliakkal <smaliakkal@vmware.com> 19.3-3
