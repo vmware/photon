@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.241
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        5%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -145,6 +145,8 @@ Patch109:       perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 #Fix for CVE-2020-8694
 Patch110:        powercap-restrict-energy-meter-to-root-access.patch
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
+#Fix slab-out-of-bounds read in fbcon
+Patch112:        0001-vt-Disable-KD_FONT_OP_COPY.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -312,6 +314,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch110 -p1
 
 %patch111 -p1
+%patch112 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -483,6 +486,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-5
+-   Fix slab-out-of-bounds read in fbcon
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-4
 -   Fix CVE-2020-8694
 *   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-3

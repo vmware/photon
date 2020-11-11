@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.241
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Release:        5%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -182,6 +182,8 @@ Patch144: 0052-drivers-amazon-ena-update-to-1.4.0.patch
 Patch145: 0053-PM-hibernate-update-the-resume-offset-on-SNAPSHOT_SE.patch
 Patch146: 0054-Not-for-upstream-PM-hibernate-Speed-up-hibernation-b.patch
 
+#Fix slab-out-of-bounds read in fbcon
+Patch147:        0001-vt-Disable-KD_FONT_OP_COPY.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -379,6 +381,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch144 -p1
 %patch145 -p1
 %patch146 -p1
+%patch147 -p1
 
 
 %if 0%{?kat_build:1}
@@ -527,6 +530,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-5
+-   Fix slab-out-of-bounds read in fbcon
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-4
 -   Fix CVE-2020-8694
 *   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-3
