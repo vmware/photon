@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.241
-Release:        6%{?dist}
+Version:        4.9.243
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c43c0af09d138b12b13330522528b2fd44c93aca
+%define sha1 linux=6da3e0168c3b64fe9b5a3ccc2bf8f7995086f72c
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -120,10 +120,6 @@ Patch92:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch95:        0001-geneve-add-transport-ports-in-route-lookup-for-genev.patch
 #Fix for CVE-2020-25704
 Patch96:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
-#Fix for CVE-2020-8694
-Patch97:        powercap-restrict-energy-meter-to-root-access.patch
-#Fix slab-out-of-bounds read in fbcon
-Patch98:        0001-vt-Disable-KD_FONT_OP_COPY.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -240,8 +236,6 @@ The Linux package contains the Linux kernel doc files
 %patch92 -p1
 %patch95 -p1
 %patch96 -p1
-%patch97 -p1
-%patch98 -p1
 
 %build
 
@@ -337,6 +331,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Nov 13 2020 Keerthana K <keerthanak@vmware.com> 4.9.243-1
+-   Update to version 4.9.243
 *   Thu Nov 12 2020 Vikash Bansal <bvikas@vmware.com> 4.9.241-6
 -   Add patch to fix CVE-2019-20811
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-5

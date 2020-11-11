@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.241
-Release:        6%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.243
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c43c0af09d138b12b13330522528b2fd44c93aca
+%define sha1 linux=6da3e0168c3b64fe9b5a3ccc2bf8f7995086f72c
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -139,10 +139,6 @@ Patch98: 0001-geneve-add-transport-ports-in-route-lookup-for-genev.patch
 Patch99:        LKCM.patch
 #Fix for CVE-2020-25704
 Patch100:       perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
-#Fix for CVE-2020-8694
-Patch101:        powercap-restrict-energy-meter-to-root-access.patch
-#Fix slab-out-of-bounds read in fbcon
-Patch102:        0001-vt-Disable-KD_FONT_OP_COPY.patch
 
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
 
@@ -320,8 +316,6 @@ pushd ..
 popd
 
 %patch100 -p1
-%patch101 -p1
-%patch102 -p1
 %patch111 -p1
 
 %if 0%{?kat_build:1}
@@ -445,6 +439,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Nov 13 2020 Keerthana K <keerthanak@vmware.com> 4.9.243-1
+-   Update to version 4.9.243
 *   Thu Nov 12 2020 Vikash Bansal <bvikas@vmware.com> 4.9.241-6
 -   Add patch to fix CVE-2019-20811
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-5

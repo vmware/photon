@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.241
-Release:        6%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.243
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c43c0af09d138b12b13330522528b2fd44c93aca
+%define sha1 linux=6da3e0168c3b64fe9b5a3ccc2bf8f7995086f72c
 Source1:        config
 Source2:        initramfs.trigger
 %define ena_version 1.1.3
@@ -94,8 +94,6 @@ Patch63: 0001-vhost-vsock-add-weight-support.patch
 Patch65:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch66:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
-# Fix mp_irqdomain_activate crash
-Patch67:        0001-xen-events-don-t-use-chip_data-for-legacy-IRQs.patch
 # Out-of-tree patches from AppArmor:
 Patch71: 0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
 Patch72: 0002-apparmor-Fix-quieting-of-audit-messages-for-network-.patch
@@ -144,11 +142,7 @@ Patch106:       0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch108:       0001-geneve-add-transport-ports-in-route-lookup-for-genev.patch
 #Fix for CVE-2020-25704
 Patch109:       perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
-#Fix for CVE-2020-8694
-Patch110:        powercap-restrict-energy-meter-to-root-access.patch
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
-#Fix slab-out-of-bounds read in fbcon
-Patch112:        0001-vt-Disable-KD_FONT_OP_COPY.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -277,7 +271,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch63 -p1
 %patch65 -p1
 %patch66 -p1
-%patch67 -p1
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
@@ -314,10 +307,8 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch106 -p1
 %patch108 -p1
 %patch109 -p1
-%patch110 -p1
 
 %patch111 -p1
-%patch112 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -489,6 +480,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri Nov 13 2020 Keerthana K <keerthanak@vmware.com> 4.9.243-1
+-   Update to version 4.9.243
 *   Thu Nov 12 2020 Vikash Bansal <bvikas@vmware.com> 4.9.241-6
 -   Add patch to fix CVE-2019-20811
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-5

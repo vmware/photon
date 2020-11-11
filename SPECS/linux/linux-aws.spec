@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.241
-Release:        6%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.243
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c43c0af09d138b12b13330522528b2fd44c93aca
+%define sha1 linux=6da3e0168c3b64fe9b5a3ccc2bf8f7995086f72c
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -82,9 +82,6 @@ Patch57: 0001-vhost-vsock-add-weight-support.patch
 Patch59:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch60:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 
-# Fix: mp_irqdomain_activate crash
-Patch61:        0001-xen-events-don-t-use-chip_data-for-legacy-IRQs.patch
-
 # Fix for CVE-2020-16119
 Patch62:        0001-timer-Prepare-to-change-timer-callback-argument-type.patch
 Patch63:        0002-net-dccp-Convert-timers-to-use-timer_setup.patch
@@ -133,8 +130,6 @@ Patch97:        0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
 Patch98:        0001-geneve-add-transport-ports-in-route-lookup-for-genev.patch
 #Fix for CVE-2020-25704
 Patch99:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
-#Fix for CVE-2020-8694
-Patch100:        powercap-restrict-energy-meter-to-root-access.patch
 
 # Amazon AWS
 Patch101: 0002-lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
@@ -183,9 +178,6 @@ Patch143: 0051-xen-netfront-add-longer-default-freeze-timeout-as-a-.patch
 Patch144: 0052-drivers-amazon-ena-update-to-1.4.0.patch
 Patch145: 0053-PM-hibernate-update-the-resume-offset-on-SNAPSHOT_SE.patch
 Patch146: 0054-Not-for-upstream-PM-hibernate-Speed-up-hibernation-b.patch
-
-#Fix slab-out-of-bounds read in fbcon
-Patch147:        0001-vt-Disable-KD_FONT_OP_COPY.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -298,7 +290,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch57 -p1
 %patch59 -p1
 %patch60 -p1
-%patch61 -p1
 %patch62 -p1
 %patch63 -p1
 %patch64 -p1
@@ -336,7 +327,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch97 -p1
 %patch98 -p1
 %patch99 -p1
-%patch100 -p1
 
 %patch101 -p1
 %patch102 -p1
@@ -384,7 +374,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch144 -p1
 %patch145 -p1
 %patch146 -p1
-%patch147 -p1
 
 
 %if 0%{?kat_build:1}
@@ -533,6 +522,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Fri Nov 13 2020 Keerthana K <keerthanak@vmware.com> 4.9.243-1
+-   Update to version 4.9.243
 *   Thu Nov 12 2020 Vikash Bansal <bvikas@vmware.com> 4.9.241-6
 -   Add patch to fix CVE-2019-20811
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-5
