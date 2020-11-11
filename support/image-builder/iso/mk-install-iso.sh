@@ -31,6 +31,7 @@ PHOTON_COMMON_DIR=$(dirname "${PACKAGE_LIST_FILE}")
 PACKAGE_LIST_FILE_BASE_NAME=$(basename "${PACKAGE_LIST_FILE}")
 INITRD=${WORKINGDIR}/photon-chroot
 PACKAGES=$8
+PHOTON_DOCKER_IMAGE=$9
 
 rm -rf $WORKINGDIR/*
 mkdir -p $INITRD
@@ -62,8 +63,8 @@ rpm --root $INITRD --initdb --dbpath /var/lib/rpm
 
 TDNF_CMD="tdnf install -y --installroot $INITRD --rpmverbosity 10 -c ${WORKINGDIR}/tdnf.conf -q $PACKAGES"
 
-# run host's tdnf, if fails - try one from photon:3.0 docker image
-$TDNF_CMD || docker run -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR photon:3.0 $TDNF_CMD
+# run host's tdnf, if fails - try one from photon:latest docker image
+$TDNF_CMD || docker run -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR $PHOTON_DOCKER_IMAGE $TDNF_CMD
 
 rm -f ${WORKINGDIR}/photon-local.repo ${WORKINGDIR}/tdnf.conf
 

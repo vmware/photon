@@ -128,7 +128,8 @@ def createIso(options):
                                   working_directory, options.iso_path,
                                   options.rpm_path, options.package_list_file,
                                   rpm_list, options.stage_path, files_to_copy,
-                                  options.generated_data_path, initrd_pkgs])
+                                  options.generated_data_path, initrd_pkgs,
+                                  options.photon_docker_image])
 
         if retval:
             raise Exception("Unable to create install ISO")
@@ -205,6 +206,11 @@ def createImage(options):
     grub_script = replaceScript(script_dir, image_type, "mk-setup-grub.sh", options.installer_path)
     install_config['setup_grub_script'] = grub_script
 
+    # if 'photon_docker_image' is defined in config_<img>.json then ignore
+    # commandline param 'PHOTON_DOCKER_IMAGE'
+    if 'photon_docker_image' not in install_config:
+        install_config['photon_docker_image'] = options.photon_docker_image
+
     # Set absolute path for 'packagelist_file'
     if 'packagelist_file' in install_config:
         plf = install_config['packagelist_file']
@@ -269,6 +275,7 @@ if __name__ == '__main__':
     parser.add_argument("-p", "--package-list-file", dest="package_list_file", default="../../common/data/build_install_options_all.json")
     parser.add_argument("-d", "--pkg-to-rpm-map-file", dest="pkg_to_rpm_map_file", default="../../stage/pkg_info.json")
     parser.add_argument("-z", "--pkg-to-be-copied-conf-file", dest="pkg_to_be_copied_conf_file")
+    parser.add_argument("-q", "--photon-docker-image", dest="photon_docker_image", default="photon:latest")
 
     options = parser.parse_args()
     if options.config_file and options.config_file != '':

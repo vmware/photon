@@ -65,6 +65,7 @@ class Installer(object):
         'postinstall',
         'postinstallscripts',
         'public_key',
+        'photon_docker_image',
         'search_path',
         'setup_grub_script',
         'shadow_password',
@@ -234,6 +235,10 @@ class Installer(object):
 
 
         install_config['install_linux_esx'] = False
+
+        # Default Photon docker image
+        if 'photon_docker_image' not in install_config:
+            install_config['photon_docker_image'] = "photon:latest"
 
     def _check_install_config(self, install_config):
         """
@@ -625,7 +630,7 @@ class Installer(object):
             retval = self.cmd.run(['docker', 'run',
                                    '-v', self.rpm_cache_dir+':'+self.rpm_cache_dir,
                                    '-v', self.working_directory+':'+self.working_directory,
-                                   'photon:3.0', '/bin/sh', '-c', tdnf_cmd])
+                                   self.install_config['photon_docker_image'], '/bin/sh', '-c', tdnf_cmd])
             if retval != 0:
                 self.logger.error("Failed to install filesystem rpm")
                 self.exit_gracefully()
@@ -929,7 +934,7 @@ class Installer(object):
                 retval = self.cmd.run(['docker', 'run',
                                    '-v', self.rpm_cache_dir+':'+self.rpm_cache_dir,
                                    '-v', self.working_directory+':'+self.working_directory,
-                                   'photon:3.0', '/bin/sh', '-c', tdnf_cmd])
+                                   self.install_config['photon_docker_image'], '/bin/sh', '-c', tdnf_cmd])
 
         # 0 : succeed; 137 : package already installed; 65 : package not found in repo.
         if retval != 0 and retval != 137:
