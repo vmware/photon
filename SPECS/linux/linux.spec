@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.154
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -60,6 +60,9 @@ Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 Patch14:        0001-drm-vmwgfx-Don-t-use-the-HB-port-if-memory-encryptio.patch
 Patch15:        0002-drm-vmwgfx-Fix-the-refuse_dma-mode-when-using-guest-.patch
 Patch16:        0003-drm-vmwgfx-Refuse-DMA-operation-when-SEV-encryption-.patch
+
+# floppy:
+Patch17:        0001-floppy-lower-printk-message-priority.patch
 %endif
 
 # TODO: Is CONFIG_HYPERV_VSOCKETS the same?
@@ -385,6 +388,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 %endif
 
 %patch25 -p1
@@ -862,6 +866,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Fri Nov 20 2020 Ajay Kaher <akaher@vmware.com> 4.19.154-10
+-   floppy: lower printk message priority
 *   Mon Nov 16 2020 Vikash Bansal <bvikas@vmware.com> 4.19.154-9
 -   hmacgen: Add path_put to hmac_gen_hash
 *   Fri Nov 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.154-8

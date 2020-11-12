@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.154
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -40,6 +40,9 @@ Patch10:        9p-file-attributes-caching-support.patch
 # -esx
 Patch11:        fs-9p-support-for-local-file-lock.patch
 Patch12:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
+
+# floppy:
+Patch17:        0001-floppy-lower-printk-message-priority.patch
 
 Patch30:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 
@@ -386,6 +389,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
+%patch17 -p1
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
@@ -753,6 +757,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri Nov 20 2020 Ajay Kaher <akaher@vmware.com> 4.19.154-11
+-   floppy: lower printk message priority
 *   Thu Nov 19 2020 Vikash Bansal <bvikas@vmware.com> 4.19.154-10
 -   hmacgen: Add path_put to hmac_gen_hash
 *   Tue Nov 17 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.154-9

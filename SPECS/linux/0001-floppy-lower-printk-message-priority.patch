@@ -1,0 +1,37 @@
+From 550bbfc4765d9cf682291beba17f23d2765aa89f Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Wed, 18 Nov 2020 23:44:35 +0530
+Subject: [PATCH] floppy: lower printk message priority
+
+---
+ block/blk-core.c | 14 ++++++++++----
+ 1 file changed, 10 insertions(+), 4 deletions(-)
+
+diff --git a/block/blk-core.c b/block/blk-core.c
+index 445b878..33dc829 100644
+--- a/block/blk-core.c
++++ b/block/blk-core.c
+@@ -256,10 +256,16 @@ static void print_req_error(struct request *req, blk_status_t status)
+ 	if (WARN_ON_ONCE(idx >= ARRAY_SIZE(blk_errors)))
+ 		return;
+ 
+-	printk_ratelimited(KERN_ERR "%s: %s error, dev %s, sector %llu\n",
+-			   __func__, blk_errors[idx].name, req->rq_disk ?
+-			   req->rq_disk->disk_name : "?",
+-			   (unsigned long long)blk_rq_pos(req));
++	if (req->rq_disk && !strncmp("fd", req->rq_disk->disk_name, strlen("fd")))
++		printk_ratelimited(KERN_INFO "%s: %s error, dev %s, sector %llu\n",
++				   __func__, blk_errors[idx].name, req->rq_disk ?
++				   req->rq_disk->disk_name : "?",
++				   (unsigned long long)blk_rq_pos(req));
++	else
++		printk_ratelimited(KERN_ERR "%s: %s error, dev %s, sector %llu\n",
++				   __func__, blk_errors[idx].name, req->rq_disk ?
++				   req->rq_disk->disk_name : "?",
++				   (unsigned long long)blk_rq_pos(req));
+ }
+ 
+ static void req_bio_endio(struct request *rq, struct bio *bio,
+-- 
+2.7.4
+
