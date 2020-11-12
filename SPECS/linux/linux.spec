@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.154
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -853,6 +853,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Thu Nov 12 2020 Sharan Turlapati <sturlapati@vmware.com> 4.19.154-7
+-   Enable CONFIG_IFB
 *   Wed Nov 11 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.154-6
 -   Add support for PTP_SYS_OFFSET_EXTENDED ioctl
 -   Update i40e out-of-tree driver to version 2.13.10

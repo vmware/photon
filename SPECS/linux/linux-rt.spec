@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.154
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt59
-Release:        5%{?kat_build:.%kat}%{?dist}
+Release:        6%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1029,6 +1029,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Nov 12 2020 Sharan Turlapati <sturlapati@vmware.com> 4.19.154-6
+-   Enable CONFIG_IFB
 *   Tue Nov 10 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.154-5
 -   Add support for PTP_SYS_OFFSET_EXTENDED ioctl
 -   Update i40e out-of-tree driver to version 2.13.10
