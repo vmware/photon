@@ -1,0 +1,65 @@
+From d9d215be3a3aa8b3638f2705826f52a7fb84cf24 Mon Sep 17 00:00:00 2001
+From: YueHaibing <yuehaibing@huawei.com>
+Date: Tue, 19 Mar 2019 10:16:53 +0800
+Subject: [PATCH] net-sysfs: call dev_hold if kobject_init_and_add success
+
+[ Upstream commit a3e23f719f5c4a38ffb3d30c8d7632a4ed8ccd9e ]
+
+In netdev_queue_add_kobject and rx_queue_add_kobject,
+if sysfs_create_group failed, kobject_put will call
+netdev_queue_release to decrease dev refcont, however
+dev_hold has not be called. So we will see this while
+unregistering dev:
+
+unregister_netdevice: waiting for bcsh0 to become free. Usage count = -1
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: d0d668371679 ("net: don't decrement kobj reference count on init failure")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ net/core/net-sysfs.c     |  6 ++++--
+ 1 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 3fb5d8ecc849..cd043e62d322 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -914,6 +914,8 @@ static int rx_queue_add_kobject(struct net_device *dev, int index)
+ 	if (error)
+ 		goto exit;
+ 
++	dev_hold(queue->dev);
++
+ 	if (dev->sysfs_rx_queue_group) {
+ 		error = sysfs_create_group(kobj, dev->sysfs_rx_queue_group);
+ 		if (error)
+@@ -921,7 +923,6 @@ static int rx_queue_add_kobject(struct net_device *dev, int index)
+ 	}
+ 
+ 	kobject_uevent(kobj, KOBJ_ADD);
+-	dev_hold(queue->dev);
+ 
+ 	return error;
+ exit:
+@@ -1306,6 +1307,8 @@ static int netdev_queue_add_kobject(struct net_device *dev, int index)
+ 	if (error)
+ 		goto exit;
+ 
++	dev_hold(queue->dev);
++
+ #ifdef CONFIG_BQL
+ 	error = sysfs_create_group(kobj, &dql_group);
+ 	if (error)
+@@ -1313,7 +1316,6 @@ static int netdev_queue_add_kobject(struct net_device *dev, int index)
+ #endif
+ 
+ 	kobject_uevent(kobj, KOBJ_ADD);
+-	dev_hold(queue->dev);
+ 
+ 	return 0;
+ exit:
+-- 
+2.23.3
+

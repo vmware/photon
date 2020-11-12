@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.241
-Release:        5%{?kat_build:.%kat_build}%{?dist}
+Release:        6%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -56,6 +56,8 @@ Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
 Patch43:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
+# Fix for CVE-2019-20811
+Patch44:        0001-net-sysfs-call-dev_hold-if-kobject_init_and_add-succ.patch
 # Fix for CVE-2018-10322
 Patch46:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch47:        0002-xfs-verify-dinode-header-first.patch
@@ -282,6 +284,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch33 -p1
 %patch42 -p1
 %patch43 -p1
+%patch44 -p1
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
@@ -530,6 +533,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Thu Nov 12 2020 Vikash Bansal <bvikas@vmware.com> 4.9.241-6
+-   Add patch to fix CVE-2019-20811
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-5
 -   Fix slab-out-of-bounds read in fbcon
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-4

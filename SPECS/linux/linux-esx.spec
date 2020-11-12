@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.241
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -53,6 +53,8 @@ Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 Patch41:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
 Patch43:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
+# Fix for CVE-2019-20811
+Patch44:        linux/0001-net-sysfs-call-dev_hold-if-kobject_init_and_add-succ.patch
 # Fix for CVE-2018-10322
 Patch46:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch47:        0002-xfs-verify-dinode-header-first.patch
@@ -191,6 +193,7 @@ The Linux package contains the Linux kernel doc files
 %patch33 -p1
 %patch41 -p1
 %patch43 -p1
+%patch44 -p1
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
@@ -334,6 +337,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Nov 12 2020 Vikash Bansal <bvikas@vmware.com> 4.9.241-6
+-   Add patch to fix CVE-2019-20811
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-5
 -   Fix slab-out-of-bounds read in fbcon
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.9.241-4
