@@ -1,10 +1,10 @@
-From 87dc5fa070c8d28ca266fedb2a41308233133907 Mon Sep 17 00:00:00 2001
-Message-Id: <87dc5fa070c8d28ca266fedb2a41308233133907.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From db4685b6ece0a5291be68b9848b870f6f5aab5cc Mon Sep 17 00:00:00 2001
+Message-Id: <db4685b6ece0a5291be68b9848b870f6f5aab5cc.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 24 Jul 2018 14:48:55 +0200
-Subject: [PATCH 019/329] x86/efi: drop task_lock() from efi_switch_mm()
+Subject: [PATCH 019/333] x86/efi: drop task_lock() from efi_switch_mm()
 
 efi_switch_mm() is a wrapper around switch_mm() which saves current's
 ->active_mm, sets the requests mm as ->active_mm and invokes

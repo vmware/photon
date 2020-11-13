@@ -1,10 +1,10 @@
-From 95cca5d507581b837f2f755e5e8c5f4037ce5390 Mon Sep 17 00:00:00 2001
-Message-Id: <95cca5d507581b837f2f755e5e8c5f4037ce5390.1594742967.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 15fb516e52029eb4ae1836a9ce7df46b18c157d3 Mon Sep 17 00:00:00 2001
+Message-Id: <15fb516e52029eb4ae1836a9ce7df46b18c157d3.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Scott Wood <swood@redhat.com>
 Date: Tue, 24 Sep 2019 14:36:41 +0200
-Subject: [PATCH 298/329] =?UTF-8?q?sched:=20migrate=5Fdis/enable:=20Use=20?=
+Subject: [PATCH 298/333] =?UTF-8?q?sched:=20migrate=5Fdis/enable:=20Use=20?=
  =?UTF-8?q?sleeping=5Flock=E2=80=A6()=20to=20annotate=20sleeping=20points?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -41,10 +41,10 @@ index 0d3cf1654318..0fec4bb3d79b 100644
  	preempt_disable();
  	preempt_lazy_disable();
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 083e8f55c220..593aa5c2f394 100644
+index c9a83db14cde..07b70eb3660f 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -7365,7 +7365,10 @@ void migrate_enable(void)
+@@ -7367,7 +7367,10 @@ void migrate_enable(void)
  			unpin_current_cpu();
  			preempt_lazy_enable();
  			preempt_enable();

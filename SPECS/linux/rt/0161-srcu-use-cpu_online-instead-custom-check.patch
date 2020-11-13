@@ -1,10 +1,10 @@
-From 433eb289b0a03c71187d7162e27e401d25e018dc Mon Sep 17 00:00:00 2001
-Message-Id: <433eb289b0a03c71187d7162e27e401d25e018dc.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 52b3468b48cc769119b166fcd54df21981f0c44e Mon Sep 17 00:00:00 2001
+Message-Id: <52b3468b48cc769119b166fcd54df21981f0c44e.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 13 Sep 2017 14:43:41 +0200
-Subject: [PATCH 161/329] srcu: use cpu_online() instead custom check
+Subject: [PATCH 161/333] srcu: use cpu_online() instead custom check
 
 The current check via srcu_online is slightly racy because after looking
 at srcu_online there could be an interrupt that interrupted us long

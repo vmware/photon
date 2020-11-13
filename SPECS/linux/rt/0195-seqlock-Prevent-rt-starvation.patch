@@ -1,10 +1,10 @@
-From 8cc7c1e95ea40b40a3103e616773ba1ed1fe6d0b Mon Sep 17 00:00:00 2001
-Message-Id: <8cc7c1e95ea40b40a3103e616773ba1ed1fe6d0b.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 3ef4a11f4e25325eaf6ece08551d78fa896d8099 Mon Sep 17 00:00:00 2001
+Message-Id: <3ef4a11f4e25325eaf6ece08551d78fa896d8099.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 22 Feb 2012 12:03:30 +0100
-Subject: [PATCH 195/329] seqlock: Prevent rt starvation
+Subject: [PATCH 195/333] seqlock: Prevent rt starvation
 
 If a low prio writer gets preempted while holding the seqlock write
 locked, a high prio reader spins forever on RT.
@@ -28,7 +28,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  2 files changed, 48 insertions(+), 15 deletions(-)
 
 diff --git a/include/linux/seqlock.h b/include/linux/seqlock.h
-index bcf4cf26b8c8..689ed53016c7 100644
+index a42a29952889..a3768cfce914 100644
 --- a/include/linux/seqlock.h
 +++ b/include/linux/seqlock.h
 @@ -221,20 +221,30 @@ static inline int read_seqcount_retry(const seqcount_t *s, unsigned start)
@@ -66,7 +66,7 @@ index bcf4cf26b8c8..689ed53016c7 100644
  /**
   * raw_write_seqcount_barrier - do a seq write barrier
   * @s: pointer to seqcount_t
-@@ -428,10 +438,33 @@ typedef struct {
+@@ -435,10 +445,33 @@ typedef struct {
  /*
   * Read side functions for starting and finalizing a read side section.
   */
@@ -100,7 +100,7 @@ index bcf4cf26b8c8..689ed53016c7 100644
  
  static inline unsigned read_seqretry(const seqlock_t *sl, unsigned start)
  {
-@@ -446,36 +479,36 @@ static inline unsigned read_seqretry(const seqlock_t *sl, unsigned start)
+@@ -453,36 +486,36 @@ static inline unsigned read_seqretry(const seqlock_t *sl, unsigned start)
  static inline void write_seqlock(seqlock_t *sl)
  {
  	spin_lock(&sl->lock);
@@ -143,7 +143,7 @@ index bcf4cf26b8c8..689ed53016c7 100644
  	spin_unlock_irq(&sl->lock);
  }
  
-@@ -484,7 +517,7 @@ static inline unsigned long __write_seqlock_irqsave(seqlock_t *sl)
+@@ -491,7 +524,7 @@ static inline unsigned long __write_seqlock_irqsave(seqlock_t *sl)
  	unsigned long flags;
  
  	spin_lock_irqsave(&sl->lock, flags);
@@ -152,7 +152,7 @@ index bcf4cf26b8c8..689ed53016c7 100644
  	return flags;
  }
  
-@@ -494,7 +527,7 @@ static inline unsigned long __write_seqlock_irqsave(seqlock_t *sl)
+@@ -501,7 +534,7 @@ static inline unsigned long __write_seqlock_irqsave(seqlock_t *sl)
  static inline void
  write_sequnlock_irqrestore(seqlock_t *sl, unsigned long flags)
  {

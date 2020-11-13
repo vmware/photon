@@ -1,10 +1,10 @@
-From f5cdeb20f9bf3932bd736a4b056aa499a57fd2f5 Mon Sep 17 00:00:00 2001
-Message-Id: <f5cdeb20f9bf3932bd736a4b056aa499a57fd2f5.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 4df3834de3459227dc2e8c53632981ae4fd1081d Mon Sep 17 00:00:00 2001
+Message-Id: <4df3834de3459227dc2e8c53632981ae4fd1081d.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Marc Kleine-Budde <mkl@pengutronix.de>
 Date: Wed, 5 Mar 2014 00:49:47 +0100
-Subject: [PATCH 033/329] net: sched: Use msleep() instead of yield()
+Subject: [PATCH 033/333] net: sched: Use msleep() instead of yield()
 
 On PREEMPT_RT enabled systems the interrupt handler run as threads at prio 50
 (by default). If a high priority userspace process tries to shut down a busy
@@ -49,10 +49,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/net/sched/sch_generic.c b/net/sched/sch_generic.c
-index 119e20cad662..49d60ae006ed 100644
+index bd96fd261dba..06681749e736 100644
 --- a/net/sched/sch_generic.c
 +++ b/net/sched/sch_generic.c
-@@ -1205,7 +1205,7 @@ void dev_deactivate_many(struct list_head *head)
+@@ -1222,7 +1222,7 @@ void dev_deactivate_many(struct list_head *head)
  	/* Wait for outstanding qdisc_run calls. */
  	list_for_each_entry(dev, head, close_list) {
  		while (some_qdisc_is_busy(dev))

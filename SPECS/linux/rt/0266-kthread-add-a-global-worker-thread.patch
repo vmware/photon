@@ -1,10 +1,10 @@
-From 7f76ec5f80e3f2615dc4d1c5c95ce8f88e22412b Mon Sep 17 00:00:00 2001
-Message-Id: <7f76ec5f80e3f2615dc4d1c5c95ce8f88e22412b.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 3d5214d3ca94b1ae396d1269cf2ee9648027fb3a Mon Sep 17 00:00:00 2001
+Message-Id: <3d5214d3ca94b1ae396d1269cf2ee9648027fb3a.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 12 Feb 2019 15:09:38 +0100
-Subject: [PATCH 266/329] kthread: add a global worker thread.
+Subject: [PATCH 266/333] kthread: add a global worker thread.
 
 [ Upstream commit 0532e87d9d44795221aa921ba7024bde689cc894 ]
 
@@ -31,7 +31,7 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  create mode 100644 include/linux/kthread-cgroup.h
 
 diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index 728681a20b7f..ec7442545b84 100644
+index 19042b42a8ba..629589a36b0a 100644
 --- a/drivers/block/loop.c
 +++ b/drivers/block/loop.c
 @@ -70,7 +70,7 @@
@@ -134,10 +134,10 @@ index ad292898f7f2..7cf56eb54103 100644
 +
  #endif /* _LINUX_KTHREAD_H */
 diff --git a/init/main.c b/init/main.c
-index 7c064c6aff55..064bdf98544b 100644
+index 2180c6388eb9..7b173ca08e22 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -1131,6 +1131,7 @@ static noinline void __init kernel_init_freeable(void)
+@@ -1130,6 +1130,7 @@ static noinline void __init kernel_init_freeable(void)
  	smp_prepare_cpus(setup_max_cpus);
  
  	workqueue_init();
@@ -146,7 +146,7 @@ index 7c064c6aff55..064bdf98544b 100644
  	init_mm_internals();
  
 diff --git a/kernel/kthread.c b/kernel/kthread.c
-index 5641b55783a6..9db017761a1f 100644
+index 81aa14daa5fe..42294c806ad0 100644
 --- a/kernel/kthread.c
 +++ b/kernel/kthread.c
 @@ -20,6 +20,7 @@
@@ -157,7 +157,7 @@ index 5641b55783a6..9db017761a1f 100644
  #include <trace/events/sched.h>
  
  static DEFINE_SPINLOCK(kthread_create_lock);
-@@ -1180,6 +1181,19 @@ void kthread_destroy_worker(struct kthread_worker *worker)
+@@ -1193,6 +1194,19 @@ void kthread_destroy_worker(struct kthread_worker *worker)
  }
  EXPORT_SYMBOL(kthread_destroy_worker);
  

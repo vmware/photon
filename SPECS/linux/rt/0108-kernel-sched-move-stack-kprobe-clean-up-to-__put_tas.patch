@@ -1,10 +1,10 @@
-From c8f01c68c10d0615999b6f7a53cc7a9238319c61 Mon Sep 17 00:00:00 2001
-Message-Id: <c8f01c68c10d0615999b6f7a53cc7a9238319c61.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 8d450ac6f352d58221e0deebd10be8f03f158623 Mon Sep 17 00:00:00 2001
+Message-Id: <8d450ac6f352d58221e0deebd10be8f03f158623.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 21 Nov 2016 19:31:08 +0100
-Subject: [PATCH 108/329] kernel/sched: move stack + kprobe clean up to
+Subject: [PATCH 108/333] kernel/sched: move stack + kprobe clean up to
  __put_task_struct()
 
 There is no need to free the stack before the task struct (except for reasons
@@ -48,10 +48,10 @@ index d4ec53c72577..29b54a64daf5 100644
  	task_numa_free(tsk, true);
  	security_task_free(tsk);
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index fae976506632..7927ce657c44 100644
+index ec979c93a488..3600139cb690 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -2741,15 +2741,6 @@ static struct rq *finish_task_switch(struct task_struct *prev)
+@@ -2743,15 +2743,6 @@ static struct rq *finish_task_switch(struct task_struct *prev)
  		if (prev->sched_class->task_dead)
  			prev->sched_class->task_dead(prev);
  

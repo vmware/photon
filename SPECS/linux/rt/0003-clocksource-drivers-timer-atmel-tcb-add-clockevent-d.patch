@@ -1,10 +1,10 @@
-From 973df36d2ea81e30640a9618db832a77d03287f6 Mon Sep 17 00:00:00 2001
-Message-Id: <973df36d2ea81e30640a9618db832a77d03287f6.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From ea307931a4acb863ac17fc02f635abf48802bf2d Mon Sep 17 00:00:00 2001
+Message-Id: <ea307931a4acb863ac17fc02f635abf48802bf2d.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Date: Thu, 13 Sep 2018 13:30:20 +0200
-Subject: [PATCH 003/329] clocksource/drivers: timer-atmel-tcb: add clockevent
+Subject: [PATCH 003/333] clocksource/drivers: timer-atmel-tcb: add clockevent
  device on separate channel
 
 Add an other clockevent device that uses a separate TCB channel when

@@ -1,10 +1,10 @@
-From 9c88015bd83ae931c56e9e5454d4d7a04f620556 Mon Sep 17 00:00:00 2001
-Message-Id: <9c88015bd83ae931c56e9e5454d4d7a04f620556.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 9eb5ccd3fa705a26e104692b11c9e584d6a08e46 Mon Sep 17 00:00:00 2001
+Message-Id: <9eb5ccd3fa705a26e104692b11c9e584d6a08e46.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 24 Jun 2019 19:39:06 +0200
-Subject: [PATCH 271/329] timers: Redo the notification of canceling timers on
+Subject: [PATCH 271/333] timers: Redo the notification of canceling timers on
  -RT
 
 [ Upstream commit c71273154c2ad12e13333aada340ff30e826a11b ]
@@ -463,7 +463,7 @@ index ddb21145211a..725bd230a8db 100644
  
  void common_timer_get(struct k_itimer *timr, struct itimerspec64 *cur_setting);
 diff --git a/kernel/time/timer.c b/kernel/time/timer.c
-index 2fcd56aa6092..1c67aab34ff5 100644
+index bdbfd52b1cfd..716364bbe5be 100644
 --- a/kernel/time/timer.c
 +++ b/kernel/time/timer.c
 @@ -45,7 +45,6 @@
@@ -474,7 +474,7 @@ index 2fcd56aa6092..1c67aab34ff5 100644
  
  #include <linux/uaccess.h>
  #include <asm/unistd.h>
-@@ -198,9 +197,7 @@ EXPORT_SYMBOL(jiffies_64);
+@@ -199,9 +198,7 @@ EXPORT_SYMBOL(jiffies_64);
  struct timer_base {
  	raw_spinlock_t		lock;
  	struct timer_list	*running_timer;
@@ -485,7 +485,7 @@ index 2fcd56aa6092..1c67aab34ff5 100644
  	unsigned long		clk;
  	unsigned long		next_expiry;
  	unsigned int		cpu;
-@@ -1189,33 +1186,6 @@ void add_timer_on(struct timer_list *timer, int cpu)
+@@ -1201,33 +1198,6 @@ void add_timer_on(struct timer_list *timer, int cpu)
  }
  EXPORT_SYMBOL_GPL(add_timer_on);
  
@@ -519,7 +519,7 @@ index 2fcd56aa6092..1c67aab34ff5 100644
  /**
   * del_timer - deactivate a timer.
   * @timer: the timer to be deactivated
-@@ -1245,14 +1215,8 @@ int del_timer(struct timer_list *timer)
+@@ -1257,14 +1227,8 @@ int del_timer(struct timer_list *timer)
  }
  EXPORT_SYMBOL(del_timer);
  
@@ -536,7 +536,7 @@ index 2fcd56aa6092..1c67aab34ff5 100644
  {
  	struct timer_base *base;
  	unsigned long flags;
-@@ -1260,7 +1224,7 @@ int try_to_del_timer_sync(struct timer_list *timer)
+@@ -1272,7 +1236,7 @@ int try_to_del_timer_sync(struct timer_list *timer)
  
  	debug_assert_init(timer);
  
@@ -545,7 +545,7 @@ index 2fcd56aa6092..1c67aab34ff5 100644
  
  	if (base->running_timer != timer)
  		ret = detach_if_pending(timer, base, true);
-@@ -1269,9 +1233,42 @@ int try_to_del_timer_sync(struct timer_list *timer)
+@@ -1281,9 +1245,42 @@ int try_to_del_timer_sync(struct timer_list *timer)
  
  	return ret;
  }
@@ -588,7 +588,7 @@ index 2fcd56aa6092..1c67aab34ff5 100644
  /**
   * del_timer_sync - deactivate a timer and wait for the handler to finish.
   * @timer: the timer to be deactivated
-@@ -1327,12 +1324,8 @@ int del_timer_sync(struct timer_list *timer)
+@@ -1339,12 +1336,8 @@ int del_timer_sync(struct timer_list *timer)
  	 * could lead to deadlock.
  	 */
  	WARN_ON(in_irq() && !(timer->flags & TIMER_IRQSAFE));
@@ -603,7 +603,7 @@ index 2fcd56aa6092..1c67aab34ff5 100644
  }
  EXPORT_SYMBOL(del_timer_sync);
  #endif
-@@ -1397,11 +1390,15 @@ static void expire_timers(struct timer_base *base, struct hlist_head *head)
+@@ -1409,11 +1402,15 @@ static void expire_timers(struct timer_base *base, struct hlist_head *head)
  			raw_spin_unlock(&base->lock);
  			call_timer_fn(timer, fn);
  			base->running_timer = NULL;
@@ -619,7 +619,7 @@ index 2fcd56aa6092..1c67aab34ff5 100644
  			raw_spin_lock_irq(&base->lock);
  		}
  	}
-@@ -1698,6 +1695,7 @@ static inline void __run_timers(struct timer_base *base)
+@@ -1717,6 +1714,7 @@ static inline void __run_timers(struct timer_base *base)
  	if (!time_after_eq(jiffies, base->clk))
  		return;
  
@@ -627,7 +627,7 @@ index 2fcd56aa6092..1c67aab34ff5 100644
  	raw_spin_lock_irq(&base->lock);
  
  	/*
-@@ -1725,7 +1723,7 @@ static inline void __run_timers(struct timer_base *base)
+@@ -1744,7 +1742,7 @@ static inline void __run_timers(struct timer_base *base)
  			expire_timers(base, heads + levels);
  	}
  	raw_spin_unlock_irq(&base->lock);
@@ -636,7 +636,7 @@ index 2fcd56aa6092..1c67aab34ff5 100644
  }
  
  /*
-@@ -1972,9 +1970,7 @@ static void __init init_timer_cpu(int cpu)
+@@ -1991,9 +1989,7 @@ static void __init init_timer_cpu(int cpu)
  		base->cpu = cpu;
  		raw_spin_lock_init(&base->lock);
  		base->clk = jiffies;

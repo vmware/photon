@@ -1,10 +1,10 @@
-From d2f572428eb2121a8e698318d5880c10b0e6a5d6 Mon Sep 17 00:00:00 2001
-Message-Id: <d2f572428eb2121a8e698318d5880c10b0e6a5d6.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From edde436a8706e899d01277a9255d9f7f44a50111 Mon Sep 17 00:00:00 2001
+Message-Id: <edde436a8706e899d01277a9255d9f7f44a50111.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Mike Galbraith <umgwanakikbuti@gmail.com>
 Date: Sat, 27 Feb 2016 09:01:42 +0100
-Subject: [PATCH 252/329] drm,i915: Use local_lock/unlock_irq() in
+Subject: [PATCH 252/333] drm,i915: Use local_lock/unlock_irq() in
  intel_pipe_update_start/end()
 
 [    8.014039] BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:918

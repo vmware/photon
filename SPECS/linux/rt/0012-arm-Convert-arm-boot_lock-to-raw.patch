@@ -1,10 +1,10 @@
-From 8f09b49880e9787d12d0d4374d3389e9fa98b998 Mon Sep 17 00:00:00 2001
-Message-Id: <8f09b49880e9787d12d0d4374d3389e9fa98b998.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 0ea58b04477d78345dfa50bc264972f0776e4941 Mon Sep 17 00:00:00 2001
+Message-Id: <0ea58b04477d78345dfa50bc264972f0776e4941.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Frank Rowand <frank.rowand@am.sony.com>
 Date: Mon, 19 Sep 2011 14:51:14 -0700
-Subject: [PATCH 012/329] arm: Convert arm boot_lock to raw
+Subject: [PATCH 012/333] arm: Convert arm boot_lock to raw
 
 The arm boot_lock is used by the secondary processor startup code.  The locking
 task is the idle thread, which has idle->sched_class == &idle_sched_class.

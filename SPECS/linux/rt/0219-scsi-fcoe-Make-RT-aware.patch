@@ -1,10 +1,10 @@
-From f7ff442a59c1345be55873e574297f4925eb0c88 Mon Sep 17 00:00:00 2001
-Message-Id: <f7ff442a59c1345be55873e574297f4925eb0c88.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From b8edddcd39d89a3795c1f68421418700ea365fdd Mon Sep 17 00:00:00 2001
+Message-Id: <b8edddcd39d89a3795c1f68421418700ea365fdd.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sat, 12 Nov 2011 14:00:48 +0100
-Subject: [PATCH 219/329] scsi/fcoe: Make RT aware.
+Subject: [PATCH 219/333] scsi/fcoe: Make RT aware.
 
 Do not disable preemption while taking sleeping locks. All user look safe
 for migrate_diable() only.
@@ -75,7 +75,7 @@ index 6768b2e8148a..c20f51af6bdf 100644
  }
  
 diff --git a/drivers/scsi/fcoe/fcoe_ctlr.c b/drivers/scsi/fcoe/fcoe_ctlr.c
-index 24cbd0a2cc69..ccf60801fe9d 100644
+index 658c0726581f..bceab74eecf7 100644
 --- a/drivers/scsi/fcoe/fcoe_ctlr.c
 +++ b/drivers/scsi/fcoe/fcoe_ctlr.c
 @@ -838,7 +838,7 @@ static unsigned long fcoe_ctlr_age_fcfs(struct fcoe_ctlr *fip)

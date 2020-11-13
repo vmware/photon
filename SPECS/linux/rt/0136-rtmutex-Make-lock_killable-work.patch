@@ -1,10 +1,10 @@
-From 494edddcde6065246e4fc06c04664a75f6544b33 Mon Sep 17 00:00:00 2001
-Message-Id: <494edddcde6065246e4fc06c04664a75f6544b33.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 13ced57c5f0e9c1468e2a1a5d0a9af826f6f2c64 Mon Sep 17 00:00:00 2001
+Message-Id: <13ced57c5f0e9c1468e2a1a5d0a9af826f6f2c64.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sat, 1 Apr 2017 12:50:59 +0200
-Subject: [PATCH 136/329] rtmutex: Make lock_killable work
+Subject: [PATCH 136/333] rtmutex: Make lock_killable work
 
 Locking an rt mutex killable does not work because signal handling is
 restricted to TASK_INTERRUPTIBLE.

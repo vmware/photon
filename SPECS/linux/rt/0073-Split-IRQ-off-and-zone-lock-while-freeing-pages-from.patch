@@ -1,10 +1,10 @@
-From 1212c4e9c6d7769a6b923e0bea6b8791b7395b90 Mon Sep 17 00:00:00 2001
-Message-Id: <1212c4e9c6d7769a6b923e0bea6b8791b7395b90.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 51a5d8c52c70b1dcbe2025eeed1cfad5cc624213 Mon Sep 17 00:00:00 2001
+Message-Id: <51a5d8c52c70b1dcbe2025eeed1cfad5cc624213.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Peter Zijlstra <peterz@infradead.org>
 Date: Mon, 28 May 2018 15:24:21 +0200
-Subject: [PATCH 073/329] Split IRQ-off and zone->lock while freeing pages from
+Subject: [PATCH 073/333] Split IRQ-off and zone->lock while freeing pages from
  PCP list #2
 
 Split the IRQ-off section while accessing the PCP list from zone->lock
@@ -20,10 +20,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 50 insertions(+), 10 deletions(-)
 
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index bab65ef53eda..6c45b7713e56 100644
+index 6aba50a3bae3..773f29e741b0 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -1105,8 +1105,8 @@ static inline void prefetch_buddy(struct page *page)
+@@ -1106,8 +1106,8 @@ static inline void prefetch_buddy(struct page *page)
   * And clear the zone's pages_scanned counter, to hold off the "all pages are
   * pinned" detection logic.
   */
@@ -34,7 +34,7 @@ index bab65ef53eda..6c45b7713e56 100644
  {
  	bool isolated_pageblocks;
  	struct page *page, *tmp;
-@@ -1121,12 +1121,27 @@ static void free_pcppages_bulk(struct zone *zone, int count,
+@@ -1122,12 +1122,27 @@ static void free_pcppages_bulk(struct zone *zone, int count,
  	 */
  	list_for_each_entry_safe(page, tmp, head, lru) {
  		int mt = get_pcppage_migratetype(page);
@@ -62,7 +62,7 @@ index bab65ef53eda..6c45b7713e56 100644
  		__free_one_page(page, page_to_pfn(page), zone, 0, mt);
  		trace_mm_page_pcpu_drain(page, 0, mt);
  	}
-@@ -2558,7 +2573,7 @@ void drain_zone_pages(struct zone *zone, struct per_cpu_pages *pcp)
+@@ -2564,7 +2579,7 @@ void drain_zone_pages(struct zone *zone, struct per_cpu_pages *pcp)
  	local_irq_restore(flags);
  
  	if (to_drain > 0)
@@ -71,7 +71,7 @@ index bab65ef53eda..6c45b7713e56 100644
  }
  #endif
  
-@@ -2588,7 +2603,7 @@ static void drain_pages_zone(unsigned int cpu, struct zone *zone)
+@@ -2594,7 +2609,7 @@ static void drain_pages_zone(unsigned int cpu, struct zone *zone)
  	local_irq_restore(flags);
  
  	if (count)
@@ -80,7 +80,7 @@ index bab65ef53eda..6c45b7713e56 100644
  }
  
  /*
-@@ -2781,7 +2796,8 @@ static bool free_unref_page_prepare(struct page *page, unsigned long pfn)
+@@ -2787,7 +2802,8 @@ static bool free_unref_page_prepare(struct page *page, unsigned long pfn)
  	return true;
  }
  
@@ -90,7 +90,7 @@ index bab65ef53eda..6c45b7713e56 100644
  {
  	struct zone *zone = page_zone(page);
  	struct per_cpu_pages *pcp;
-@@ -2810,10 +2826,8 @@ static void free_unref_page_commit(struct page *page, unsigned long pfn)
+@@ -2816,10 +2832,8 @@ static void free_unref_page_commit(struct page *page, unsigned long pfn)
  	pcp->count++;
  	if (pcp->count >= pcp->high) {
  		unsigned long batch = READ_ONCE(pcp->batch);
@@ -102,7 +102,7 @@ index bab65ef53eda..6c45b7713e56 100644
  	}
  }
  
-@@ -2824,13 +2838,17 @@ void free_unref_page(struct page *page)
+@@ -2830,13 +2844,17 @@ void free_unref_page(struct page *page)
  {
  	unsigned long flags;
  	unsigned long pfn = page_to_pfn(page);
@@ -121,7 +121,7 @@ index bab65ef53eda..6c45b7713e56 100644
  }
  
  /*
-@@ -2841,6 +2859,11 @@ void free_unref_page_list(struct list_head *list)
+@@ -2847,6 +2865,11 @@ void free_unref_page_list(struct list_head *list)
  	struct page *page, *next;
  	unsigned long flags, pfn;
  	int batch_count = 0;
@@ -133,7 +133,7 @@ index bab65ef53eda..6c45b7713e56 100644
  
  	/* Prepare pages for freeing */
  	list_for_each_entry_safe(page, next, list, lru) {
-@@ -2853,10 +2876,12 @@ void free_unref_page_list(struct list_head *list)
+@@ -2859,10 +2882,12 @@ void free_unref_page_list(struct list_head *list)
  	local_irq_save(flags);
  	list_for_each_entry_safe(page, next, list, lru) {
  		unsigned long pfn = page_private(page);
@@ -147,7 +147,7 @@ index bab65ef53eda..6c45b7713e56 100644
  
  		/*
  		 * Guard against excessive IRQ disabled times when we get
-@@ -2869,6 +2894,21 @@ void free_unref_page_list(struct list_head *list)
+@@ -2875,6 +2900,21 @@ void free_unref_page_list(struct list_head *list)
  		}
  	}
  	local_irq_restore(flags);

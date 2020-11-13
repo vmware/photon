@@ -1,10 +1,10 @@
-From 94af52bb2fd890ab8f8a396016ae0c1cfaf69e82 Mon Sep 17 00:00:00 2001
-Message-Id: <94af52bb2fd890ab8f8a396016ae0c1cfaf69e82.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 22385b5b3976a2ccf72d330de9f04807be918769 Mon Sep 17 00:00:00 2001
+Message-Id: <22385b5b3976a2ccf72d330de9f04807be918769.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 13 Aug 2019 12:30:12 +0200
-Subject: [PATCH 286/329] i2c: exynos5: Remove IRQF_ONESHOT
+Subject: [PATCH 286/333] i2c: exynos5: Remove IRQF_ONESHOT
 
 [ Upstream commit 4b217df0ab3f7910c96e42091cc7d9f221d05f01 ]
 

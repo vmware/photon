@@ -1,10 +1,10 @@
-From 6de086b99c4e4b3fbf978f04612591cc50c6ac79 Mon Sep 17 00:00:00 2001
-Message-Id: <6de086b99c4e4b3fbf978f04612591cc50c6ac79.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 4b8250c086e2d718c4b39c298cf4ad79f80d5c55 Mon Sep 17 00:00:00 2001
+Message-Id: <4b8250c086e2d718c4b39c298cf4ad79f80d5c55.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Sat, 27 May 2017 19:02:06 +0200
-Subject: [PATCH 027/329] kernel/sched/core: add migrate_disable()
+Subject: [PATCH 027/333] kernel/sched/core: add migrate_disable()
 
 ---
  include/linux/preempt.h |  23 +++++++
@@ -88,7 +88,7 @@ index 9fb239e12b82..5801e516ba63 100644
   * Callback to arch code if there's nosmp or maxcpus=0 on the
   * boot command line:
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 85d663321fb9..fbdf142013b9 100644
+index 42343f58cea4..77afdcb4d3ba 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -1008,7 +1008,15 @@ void set_cpus_allowed_common(struct task_struct *p, const struct cpumask *new_ma
@@ -147,7 +147,7 @@ index 85d663321fb9..fbdf142013b9 100644
  	if (task_running(rq, p) || p->state == TASK_WAKING) {
  		struct migration_arg arg = { p, dest_cpu };
  		/* Need help from migration thread: drop lock and wait. */
-@@ -7107,3 +7136,100 @@ const u32 sched_prio_to_wmult[40] = {
+@@ -7109,3 +7138,100 @@ const u32 sched_prio_to_wmult[40] = {
  };
  
  #undef CREATE_TRACE_POINTS

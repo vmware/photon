@@ -1,10 +1,10 @@
-From 335e9df9c9c22975b4405ed6477dd63fd399fe04 Mon Sep 17 00:00:00 2001
-Message-Id: <335e9df9c9c22975b4405ed6477dd63fd399fe04.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 529c7d7623ca9abde8bfa74172f87a3287a21db4 Mon Sep 17 00:00:00 2001
+Message-Id: <529c7d7623ca9abde8bfa74172f87a3287a21db4.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 20 Oct 2017 11:29:53 +0200
-Subject: [PATCH 172/329] fs/dcache: disable preemption on i_dir_seq's write
+Subject: [PATCH 172/333] fs/dcache: disable preemption on i_dir_seq's write
  side
 
 i_dir_seq is an opencoded seqcounter. Based on the code it looks like we
@@ -26,10 +26,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  3 files changed, 9 insertions(+), 7 deletions(-)
 
 diff --git a/fs/dcache.c b/fs/dcache.c
-index 10225a9135fb..dcde8ffe384c 100644
+index 5b2814634a84..b1a5edf1103e 100644
 --- a/fs/dcache.c
 +++ b/fs/dcache.c
-@@ -2404,9 +2404,10 @@ EXPORT_SYMBOL(d_rehash);
+@@ -2406,9 +2406,10 @@ EXPORT_SYMBOL(d_rehash);
  static inline unsigned start_dir_add(struct inode *dir)
  {
  
@@ -42,7 +42,7 @@ index 10225a9135fb..dcde8ffe384c 100644
  			return n;
  		cpu_relax();
  	}
-@@ -2414,7 +2415,8 @@ static inline unsigned start_dir_add(struct inode *dir)
+@@ -2416,7 +2417,8 @@ static inline unsigned start_dir_add(struct inode *dir)
  
  static inline void end_dir_add(struct inode *dir, unsigned n)
  {
@@ -52,7 +52,7 @@ index 10225a9135fb..dcde8ffe384c 100644
  }
  
  static void d_wait_lookup(struct dentry *dentry)
-@@ -2447,7 +2449,7 @@ struct dentry *d_alloc_parallel(struct dentry *parent,
+@@ -2449,7 +2451,7 @@ struct dentry *d_alloc_parallel(struct dentry *parent,
  
  retry:
  	rcu_read_lock();
@@ -61,7 +61,7 @@ index 10225a9135fb..dcde8ffe384c 100644
  	r_seq = read_seqbegin(&rename_lock);
  	dentry = __d_lookup_rcu(parent, name, &d_seq);
  	if (unlikely(dentry)) {
-@@ -2475,7 +2477,7 @@ struct dentry *d_alloc_parallel(struct dentry *parent,
+@@ -2477,7 +2479,7 @@ struct dentry *d_alloc_parallel(struct dentry *parent,
  	}
  
  	hlist_bl_lock(b);
@@ -84,7 +84,7 @@ index c9eb5041ffae..e1fb0b743c96 100644
  	inode->dirtied_when = 0;
  
 diff --git a/include/linux/fs.h b/include/linux/fs.h
-index 8d568b51778b..f964aeac78bd 100644
+index 876bfb6df06a..0b102f962518 100644
 --- a/include/linux/fs.h
 +++ b/include/linux/fs.h
 @@ -679,7 +679,7 @@ struct inode {

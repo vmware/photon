@@ -1,10 +1,10 @@
-From ae23d611aae11ce024a695eebdf3e9001e51898a Mon Sep 17 00:00:00 2001
-Message-Id: <ae23d611aae11ce024a695eebdf3e9001e51898a.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 504ef7e877e2cc3cac65befd7a80284bab46bc80 Mon Sep 17 00:00:00 2001
+Message-Id: <504ef7e877e2cc3cac65befd7a80284bab46bc80.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: "Paul E. McKenney" <paulmck@linux.ibm.com>
 Date: Mon, 29 Oct 2018 11:53:01 +0100
-Subject: [PATCH 023/329] EXP rcu: Revert expedited GP parallelization
+Subject: [PATCH 023/333] EXP rcu: Revert expedited GP parallelization
  cleverness
 
 (Commit 258ba8e089db23f760139266c232f01bad73f85c from linux-rcu)

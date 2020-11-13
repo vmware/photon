@@ -1,10 +1,10 @@
-From 18a4d5ba2aee960585e70cbbb404d7607da4a434 Mon Sep 17 00:00:00 2001
-Message-Id: <18a4d5ba2aee960585e70cbbb404d7607da4a434.1594742967.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From cfa89c034e9668230dc78896cf52118e8c9490f2 Mon Sep 17 00:00:00 2001
+Message-Id: <cfa89c034e9668230dc78896cf52118e8c9490f2.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 12 Dec 2019 10:53:59 +0100
-Subject: [PATCH 314/329] sched: migrate_enable: Busy loop until the migration
+Subject: [PATCH 314/333] sched: migrate_enable: Busy loop until the migration
  request is completed
 
 [ Upstream commit 140d7f54a5fff02898d2ca9802b39548bf7455f1 ]
@@ -30,10 +30,10 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  1 file changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 8f0870474a82..fee3b5427f8b 100644
+index 2509cb37531d..ab34c573b79c 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -7322,7 +7322,7 @@ void migrate_enable(void)
+@@ -7324,7 +7324,7 @@ void migrate_enable(void)
  
  	WARN_ON(smp_processor_id() != cpu);
  	if (!is_cpu_allowed(p, cpu)) {
@@ -42,7 +42,7 @@ index 8f0870474a82..fee3b5427f8b 100644
  		struct cpu_stop_work work;
  		struct rq_flags rf;
  
-@@ -7335,7 +7335,10 @@ void migrate_enable(void)
+@@ -7337,7 +7337,10 @@ void migrate_enable(void)
  				    &arg, &work);
  		tlb_migrate_finish(p->mm);
  		__schedule(true);

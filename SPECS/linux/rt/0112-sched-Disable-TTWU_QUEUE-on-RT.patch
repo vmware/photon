@@ -1,10 +1,10 @@
-From fae184a847d770acc42344912d7a7ee4dd076e71 Mon Sep 17 00:00:00 2001
-Message-Id: <fae184a847d770acc42344912d7a7ee4dd076e71.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From f87366620a0309ff5705cbf91c7ec0b9046e5d0f Mon Sep 17 00:00:00 2001
+Message-Id: <f87366620a0309ff5705cbf91c7ec0b9046e5d0f.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 13 Sep 2011 16:42:35 +0200
-Subject: [PATCH 112/329] sched: Disable TTWU_QUEUE on RT
+Subject: [PATCH 112/333] sched: Disable TTWU_QUEUE on RT
 
 The queued remote wakeup mechanism can introduce rather large
 latencies if the number of migrated tasks is high. Disable it for RT.

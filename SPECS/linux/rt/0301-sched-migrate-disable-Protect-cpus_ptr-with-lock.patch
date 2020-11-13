@@ -1,10 +1,10 @@
-From f5bd71472372edd09e275283f6c5bc42b66514eb Mon Sep 17 00:00:00 2001
-Message-Id: <f5bd71472372edd09e275283f6c5bc42b66514eb.1594742967.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 5aab2313a74a6692e08a2ae8bb7ebc529aad6685 Mon Sep 17 00:00:00 2001
+Message-Id: <5aab2313a74a6692e08a2ae8bb7ebc529aad6685.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Scott Wood <swood@redhat.com>
 Date: Sat, 27 Jul 2019 00:56:34 -0500
-Subject: [PATCH 301/329] sched: migrate disable: Protect cpus_ptr with lock
+Subject: [PATCH 301/333] sched: migrate disable: Protect cpus_ptr with lock
 
 [ Upstream commit 27ee52a891ed2c7e2e2c8332ccae0de7c2674b09 ]
 
@@ -19,10 +19,10 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 03b3ff43d39f..c03ad7ae5f96 100644
+index 7109b23c7a60..0d64d14f0b39 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -7243,9 +7243,8 @@ migrate_disable_update_cpus_allowed(struct task_struct *p)
+@@ -7245,9 +7245,8 @@ migrate_disable_update_cpus_allowed(struct task_struct *p)
  	struct rq *rq;
  	struct rq_flags rf;
  
@@ -33,7 +33,7 @@ index 03b3ff43d39f..c03ad7ae5f96 100644
  	update_nr_migratory(p, -1);
  	p->nr_cpus_allowed = 1;
  	task_rq_unlock(rq, p, &rf);
-@@ -7257,9 +7256,8 @@ migrate_enable_update_cpus_allowed(struct task_struct *p)
+@@ -7259,9 +7258,8 @@ migrate_enable_update_cpus_allowed(struct task_struct *p)
  	struct rq *rq;
  	struct rq_flags rf;
  

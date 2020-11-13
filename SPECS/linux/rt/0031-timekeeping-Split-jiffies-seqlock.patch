@@ -1,10 +1,10 @@
-From c475b279431f075c7a47aa0eaea252ef670eb27b Mon Sep 17 00:00:00 2001
-Message-Id: <c475b279431f075c7a47aa0eaea252ef670eb27b.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 0eedc2a806ff521e4a3ccf0f5029ac84716db955 Mon Sep 17 00:00:00 2001
+Message-Id: <0eedc2a806ff521e4a3ccf0f5029ac84716db955.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 14 Feb 2013 22:36:59 +0100
-Subject: [PATCH 031/329] timekeeping: Split jiffies seqlock
+Subject: [PATCH 031/333] timekeeping: Split jiffies seqlock
 
 Replace jiffies_lock seqlock with a simple seqcounter and a rawlock so
 it can be taken in atomic context on RT.
@@ -138,10 +138,10 @@ index 48403fb653c2..e774a49176cc 100644
  	ts->timer_expires_base = basemono;
  
 diff --git a/kernel/time/timekeeping.c b/kernel/time/timekeeping.c
-index 81ee5b83c920..512db778f442 100644
+index c66fd11d94bc..5e5f8ab2ab73 100644
 --- a/kernel/time/timekeeping.c
 +++ b/kernel/time/timekeeping.c
-@@ -2394,8 +2394,10 @@ EXPORT_SYMBOL(hardpps);
+@@ -2393,8 +2393,10 @@ EXPORT_SYMBOL(hardpps);
   */
  void xtime_update(unsigned long ticks)
  {

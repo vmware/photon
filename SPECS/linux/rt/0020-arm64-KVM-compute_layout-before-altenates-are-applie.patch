@@ -1,10 +1,10 @@
-From 44752bc069e62368005b7e0d78b5f55972476ab5 Mon Sep 17 00:00:00 2001
-Message-Id: <44752bc069e62368005b7e0d78b5f55972476ab5.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From a4f8770030f015aa75d8c090891fb943fc8e320a Mon Sep 17 00:00:00 2001
+Message-Id: <a4f8770030f015aa75d8c090891fb943fc8e320a.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 26 Jul 2018 09:13:42 +0200
-Subject: [PATCH 020/329] arm64: KVM: compute_layout before altenates are
+Subject: [PATCH 020/333] arm64: KVM: compute_layout before altenates are
  applied
 
 compute_layout() is invoked as part of an alternative fixup under
@@ -20,7 +20,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  3 files changed, 8 insertions(+), 6 deletions(-)
 
 diff --git a/arch/arm64/include/asm/alternative.h b/arch/arm64/include/asm/alternative.h
-index 1a7ba3de7079..d011309e7ad0 100644
+index 844f05b23115..04b950d4c7f5 100644
 --- a/arch/arm64/include/asm/alternative.h
 +++ b/arch/arm64/include/asm/alternative.h
 @@ -35,6 +35,12 @@ void apply_alternatives_module(void *start, size_t length);
@@ -37,10 +37,10 @@ index 1a7ba3de7079..d011309e7ad0 100644
  	" .word 661b - .\n"				/* label           */ \
  	" .word 663f - .\n"				/* new instruction */ \
 diff --git a/arch/arm64/kernel/alternative.c b/arch/arm64/kernel/alternative.c
-index b5d603992d40..f92815d56d17 100644
+index 0d345622bbba..ab96c1c3ab77 100644
 --- a/arch/arm64/kernel/alternative.c
 +++ b/arch/arm64/kernel/alternative.c
-@@ -224,6 +224,7 @@ static int __apply_alternatives_multi_stop(void *unused)
+@@ -212,6 +212,7 @@ static int __apply_alternatives_multi_stop(void *unused)
  void __init apply_alternatives_all(void)
  {
  	/* better not try code patching on a live SMP system */

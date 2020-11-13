@@ -1,10 +1,10 @@
-From 3df3c9149f18b2e3acaee0522e78d1c101a936ca Mon Sep 17 00:00:00 2001
-Message-Id: <3df3c9149f18b2e3acaee0522e78d1c101a936ca.1594742967.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 5097b5228ddd85b2878c82b9d0d110a325f739b0 Mon Sep 17 00:00:00 2001
+Message-Id: <5097b5228ddd85b2878c82b9d0d110a325f739b0.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Waiman Long <longman@redhat.com>
 Date: Thu, 3 Oct 2019 16:36:08 -0400
-Subject: [PATCH 302/329] lib/smp_processor_id: Don't use cpumask_equal()
+Subject: [PATCH 302/333] lib/smp_processor_id: Don't use cpumask_equal()
 
 [ Upstream commit 659252061477862f45b79e1de169e6030f5c8918 ]
 

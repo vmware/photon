@@ -1,10 +1,10 @@
-From f3341ec1d01c68f154e6804208950561843d5345 Mon Sep 17 00:00:00 2001
-Message-Id: <f3341ec1d01c68f154e6804208950561843d5345.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From dab44900e6f73d79e19096176e47c14a54cf761d Mon Sep 17 00:00:00 2001
+Message-Id: <dab44900e6f73d79e19096176e47c14a54cf761d.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 13 Mar 2018 13:49:16 +0100
-Subject: [PATCH 284/329] block: blk-mq: move blk_queue_usage_counter_release()
+Subject: [PATCH 284/333] block: blk-mq: move blk_queue_usage_counter_release()
  into process context
 
 [ Upstream commit 61c928ecf4fe200bda9b49a0813b5ba0f43995b5 ]
@@ -57,7 +57,7 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  2 files changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/block/blk-core.c b/block/blk-core.c
-index 4860cd26cd5a..7d709465876e 100644
+index 8926b5d998fa..1a2ec9f3323a 100644
 --- a/block/blk-core.c
 +++ b/block/blk-core.c
 @@ -973,12 +973,21 @@ void blk_queue_exit(struct request_queue *q)
@@ -83,7 +83,7 @@ index 4860cd26cd5a..7d709465876e 100644
  }
  
  static void blk_rq_timed_out_timer(struct timer_list *t)
-@@ -1075,6 +1084,7 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id,
+@@ -1077,6 +1086,7 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id,
  	queue_flag_set_unlocked(QUEUE_FLAG_BYPASS, q);
  
  	init_waitqueue_head(&q->mq_freeze_wq);

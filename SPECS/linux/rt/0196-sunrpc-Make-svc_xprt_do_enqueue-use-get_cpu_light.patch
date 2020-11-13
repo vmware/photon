@@ -1,10 +1,10 @@
-From 03378d7b8239e5f03dcd6c1cd14d6d96d104da43 Mon Sep 17 00:00:00 2001
-Message-Id: <03378d7b8239e5f03dcd6c1cd14d6d96d104da43.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From f65b279c449b18a1af6c6201476fa17fe7ef02b5 Mon Sep 17 00:00:00 2001
+Message-Id: <f65b279c449b18a1af6c6201476fa17fe7ef02b5.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Mike Galbraith <umgwanakikbuti@gmail.com>
 Date: Wed, 18 Feb 2015 16:05:28 +0100
-Subject: [PATCH 196/329] sunrpc: Make svc_xprt_do_enqueue() use
+Subject: [PATCH 196/333] sunrpc: Make svc_xprt_do_enqueue() use
  get_cpu_light()
 
 |BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:915
@@ -37,10 +37,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/net/sunrpc/svc_xprt.c b/net/sunrpc/svc_xprt.c
-index c8ee8e801edb..26fa306c4359 100644
+index 709c082dc905..2629e0eb7d82 100644
 --- a/net/sunrpc/svc_xprt.c
 +++ b/net/sunrpc/svc_xprt.c
-@@ -393,7 +393,7 @@ void svc_xprt_do_enqueue(struct svc_xprt *xprt)
+@@ -402,7 +402,7 @@ void svc_xprt_do_enqueue(struct svc_xprt *xprt)
  	if (test_and_set_bit(XPT_BUSY, &xprt->xpt_flags))
  		return;
  
@@ -49,7 +49,7 @@ index c8ee8e801edb..26fa306c4359 100644
  	pool = svc_pool_for_cpu(xprt->xpt_server, cpu);
  
  	atomic_long_inc(&pool->sp_stats.packets);
-@@ -417,7 +417,7 @@ void svc_xprt_do_enqueue(struct svc_xprt *xprt)
+@@ -426,7 +426,7 @@ void svc_xprt_do_enqueue(struct svc_xprt *xprt)
  	rqstp = NULL;
  out_unlock:
  	rcu_read_unlock();

@@ -1,10 +1,10 @@
-From 7b06e6d47b0282d98d760f57b6e09fcb2527a943 Mon Sep 17 00:00:00 2001
-Message-Id: <7b06e6d47b0282d98d760f57b6e09fcb2527a943.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 9a4a3bc65713916e16e805a75d663535dc02085a Mon Sep 17 00:00:00 2001
+Message-Id: <9a4a3bc65713916e16e805a75d663535dc02085a.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 14 Jul 2015 14:26:34 +0200
-Subject: [PATCH 048/329] powerpc: Use generic rwsem on RT
+Subject: [PATCH 048/333] powerpc: Use generic rwsem on RT
 
 Use generic code which uses rtmutex
 

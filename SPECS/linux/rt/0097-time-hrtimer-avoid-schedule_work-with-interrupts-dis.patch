@@ -1,10 +1,10 @@
-From 2f88e5f4c41b1ff5bf3338f2a8bd3f1ed178e2e3 Mon Sep 17 00:00:00 2001
-Message-Id: <2f88e5f4c41b1ff5bf3338f2a8bd3f1ed178e2e3.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From cc517513674f6dbfb72739d068aede5af49d9086 Mon Sep 17 00:00:00 2001
+Message-Id: <cc517513674f6dbfb72739d068aede5af49d9086.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 15 Nov 2017 17:29:51 +0100
-Subject: [PATCH 097/329] time/hrtimer: avoid schedule_work() with interrupts
+Subject: [PATCH 097/333] time/hrtimer: avoid schedule_work() with interrupts
  disabled
 
 The NOHZ code tries to schedule a workqueue with interrupts disabled.
@@ -16,10 +16,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 11 insertions(+), 4 deletions(-)
 
 diff --git a/kernel/time/timer.c b/kernel/time/timer.c
-index 9019c9caf146..3fab1c50bf1b 100644
+index ecc23d2c21a9..753b75751f0a 100644
 --- a/kernel/time/timer.c
 +++ b/kernel/time/timer.c
-@@ -217,8 +217,7 @@ static DEFINE_PER_CPU(struct timer_base, timer_bases[NR_BASES]);
+@@ -218,8 +218,7 @@ static DEFINE_PER_CPU(struct timer_base, timer_bases[NR_BASES]);
  static DEFINE_STATIC_KEY_FALSE(timers_nohz_active);
  static DEFINE_MUTEX(timer_keys_mutex);
  
@@ -29,7 +29,7 @@ index 9019c9caf146..3fab1c50bf1b 100644
  
  #ifdef CONFIG_SMP
  unsigned int sysctl_timer_migration = 1;
-@@ -236,7 +235,7 @@ static void timers_update_migration(void)
+@@ -237,7 +236,7 @@ static void timers_update_migration(void)
  static inline void timers_update_migration(void) { }
  #endif /* !CONFIG_SMP */
  
@@ -38,7 +38,7 @@ index 9019c9caf146..3fab1c50bf1b 100644
  {
  	mutex_lock(&timer_keys_mutex);
  	timers_update_migration();
-@@ -246,9 +245,17 @@ static void timer_update_keys(struct work_struct *work)
+@@ -247,9 +246,17 @@ static void timer_update_keys(struct work_struct *work)
  
  void timers_update_nohz(void)
  {

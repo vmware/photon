@@ -1,10 +1,10 @@
-From b16baaea8beaa395bcf9150ca30f9f60fed4a3d3 Mon Sep 17 00:00:00 2001
-Message-Id: <b16baaea8beaa395bcf9150ca30f9f60fed4a3d3.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 2567978b2f8e32ef33e67f327e5fed92030226c1 Mon Sep 17 00:00:00 2001
+Message-Id: <2567978b2f8e32ef33e67f327e5fed92030226c1.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Frank Rowand <frank.rowand@am.sony.com>
 Date: Sat, 1 Oct 2011 18:58:13 -0700
-Subject: [PATCH 080/329] ARM: Initialize split page table locks for vector
+Subject: [PATCH 080/333] ARM: Initialize split page table locks for vector
  page
 
 Without this patch, ARM can not use SPLIT_PTLOCK_CPUS if

@@ -1,10 +1,10 @@
-From 8110c4679cb552291c1ba1765416e889d07ef28e Mon Sep 17 00:00:00 2001
-Message-Id: <8110c4679cb552291c1ba1765416e889d07ef28e.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From d23069c744836d76091abfcac0fdd6b2ffe2bd7a Mon Sep 17 00:00:00 2001
+Message-Id: <d23069c744836d76091abfcac0fdd6b2ffe2bd7a.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 12 Oct 2017 17:11:19 +0200
-Subject: [PATCH 142/329] rtmutex: add sleeping lock implementation
+Subject: [PATCH 142/333] rtmutex: add sleeping lock implementation
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
@@ -1146,7 +1146,7 @@ index 5955ad2aa2a8..6fcf0a3e180d 100644
  #ifdef CONFIG_DEBUG_RT_MUTEXES
  # include "rtmutex-debug.h"
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 09a3bd47ac4d..9c20e213ef80 100644
+index 2197f965f9bb..c94224ddfb73 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -401,9 +401,15 @@ static bool set_nr_if_polling(struct task_struct *p)

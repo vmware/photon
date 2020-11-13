@@ -1,10 +1,10 @@
-From 2b7bb0e5b7caeb66dc770e424e5b57da568c3737 Mon Sep 17 00:00:00 2001
-Message-Id: <2b7bb0e5b7caeb66dc770e424e5b57da568c3737.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 13752735123c2b5ba79a5ef711ee6638764dcac5 Mon Sep 17 00:00:00 2001
+Message-Id: <13752735123c2b5ba79a5ef711ee6638764dcac5.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 6 Apr 2010 16:51:31 +0200
-Subject: [PATCH 181/329] md: raid5: Make raid5_percpu handling RT aware
+Subject: [PATCH 181/333] md: raid5: Make raid5_percpu handling RT aware
 
 __raid_run_ops() disables preemption with get_cpu() around the access
 to the raid5_percpu variables. That causes scheduling while atomic
@@ -22,7 +22,7 @@ Tested-by: Udo van den Heuvel <udovdh@xs4all.nl>
  2 files changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/md/raid5.c b/drivers/md/raid5.c
-index 01021382131b..379ce2f57512 100644
+index d91154d65455..8d571170cb89 100644
 --- a/drivers/md/raid5.c
 +++ b/drivers/md/raid5.c
 @@ -2069,8 +2069,9 @@ static void raid_run_ops(struct stripe_head *sh, unsigned long ops_request)
@@ -46,7 +46,7 @@ index 01021382131b..379ce2f57512 100644
  }
  
  static void free_stripe(struct kmem_cache *sc, struct stripe_head *sh)
-@@ -6815,6 +6817,7 @@ static int raid456_cpu_up_prepare(unsigned int cpu, struct hlist_node *node)
+@@ -6816,6 +6818,7 @@ static int raid456_cpu_up_prepare(unsigned int cpu, struct hlist_node *node)
  			__func__, cpu);
  		return -ENOMEM;
  	}
@@ -54,7 +54,7 @@ index 01021382131b..379ce2f57512 100644
  	return 0;
  }
  
-@@ -6825,7 +6828,6 @@ static int raid5_alloc_percpu(struct r5conf *conf)
+@@ -6826,7 +6829,6 @@ static int raid5_alloc_percpu(struct r5conf *conf)
  	conf->percpu = alloc_percpu(struct raid5_percpu);
  	if (!conf->percpu)
  		return -ENOMEM;

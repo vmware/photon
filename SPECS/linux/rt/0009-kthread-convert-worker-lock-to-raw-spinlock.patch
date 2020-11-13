@@ -1,10 +1,10 @@
-From c9d7a2fed0bcf2c9a82c59ebcbc2a9a11a198f3b Mon Sep 17 00:00:00 2001
-Message-Id: <c9d7a2fed0bcf2c9a82c59ebcbc2a9a11a198f3b.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From b8bcc76d14ef6172ff858cc24d131177691eff13 Mon Sep 17 00:00:00 2001
+Message-Id: <b8bcc76d14ef6172ff858cc24d131177691eff13.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Julia Cartwright <julia@ni.com>
 Date: Fri, 28 Sep 2018 21:03:51 +0000
-Subject: [PATCH 009/329] kthread: convert worker lock to raw spinlock
+Subject: [PATCH 009/333] kthread: convert worker lock to raw spinlock
 
 In order to enable the queuing of kthread work items from hardirq
 context even when PREEMPT_RT_FULL is enabled, convert the worker
@@ -38,10 +38,10 @@ index c1961761311d..ad292898f7f2 100644
  	struct list_head	delayed_work_list;
  	struct task_struct	*task;
 diff --git a/kernel/kthread.c b/kernel/kthread.c
-index 087d18d771b5..5641b55783a6 100644
+index b786eda90bb5..81aa14daa5fe 100644
 --- a/kernel/kthread.c
 +++ b/kernel/kthread.c
-@@ -599,7 +599,7 @@ void __kthread_init_worker(struct kthread_worker *worker,
+@@ -612,7 +612,7 @@ void __kthread_init_worker(struct kthread_worker *worker,
  				struct lock_class_key *key)
  {
  	memset(worker, 0, sizeof(struct kthread_worker));
@@ -50,7 +50,7 @@ index 087d18d771b5..5641b55783a6 100644
  	lockdep_set_class_and_name(&worker->lock, key, name);
  	INIT_LIST_HEAD(&worker->work_list);
  	INIT_LIST_HEAD(&worker->delayed_work_list);
-@@ -641,21 +641,21 @@ int kthread_worker_fn(void *worker_ptr)
+@@ -654,21 +654,21 @@ int kthread_worker_fn(void *worker_ptr)
  
  	if (kthread_should_stop()) {
  		__set_current_state(TASK_RUNNING);
@@ -76,7 +76,7 @@ index 087d18d771b5..5641b55783a6 100644
  
  	if (work) {
  		__set_current_state(TASK_RUNNING);
-@@ -812,12 +812,12 @@ bool kthread_queue_work(struct kthread_worker *worker,
+@@ -825,12 +825,12 @@ bool kthread_queue_work(struct kthread_worker *worker,
  	bool ret = false;
  	unsigned long flags;
  
@@ -91,7 +91,7 @@ index 087d18d771b5..5641b55783a6 100644
  	return ret;
  }
  EXPORT_SYMBOL_GPL(kthread_queue_work);
-@@ -843,7 +843,7 @@ void kthread_delayed_work_timer_fn(struct timer_list *t)
+@@ -856,7 +856,7 @@ void kthread_delayed_work_timer_fn(struct timer_list *t)
  	if (WARN_ON_ONCE(!worker))
  		return;
  
@@ -100,7 +100,7 @@ index 087d18d771b5..5641b55783a6 100644
  	/* Work must not be used with >1 worker, see kthread_queue_work(). */
  	WARN_ON_ONCE(work->worker != worker);
  
-@@ -852,7 +852,7 @@ void kthread_delayed_work_timer_fn(struct timer_list *t)
+@@ -865,7 +865,7 @@ void kthread_delayed_work_timer_fn(struct timer_list *t)
  	list_del_init(&work->node);
  	kthread_insert_work(worker, work, &worker->work_list);
  
@@ -109,7 +109,7 @@ index 087d18d771b5..5641b55783a6 100644
  }
  EXPORT_SYMBOL(kthread_delayed_work_timer_fn);
  
-@@ -908,14 +908,14 @@ bool kthread_queue_delayed_work(struct kthread_worker *worker,
+@@ -921,14 +921,14 @@ bool kthread_queue_delayed_work(struct kthread_worker *worker,
  	unsigned long flags;
  	bool ret = false;
  
@@ -126,7 +126,7 @@ index 087d18d771b5..5641b55783a6 100644
  	return ret;
  }
  EXPORT_SYMBOL_GPL(kthread_queue_delayed_work);
-@@ -951,7 +951,7 @@ void kthread_flush_work(struct kthread_work *work)
+@@ -964,7 +964,7 @@ void kthread_flush_work(struct kthread_work *work)
  	if (!worker)
  		return;
  
@@ -135,7 +135,7 @@ index 087d18d771b5..5641b55783a6 100644
  	/* Work must not be used with >1 worker, see kthread_queue_work(). */
  	WARN_ON_ONCE(work->worker != worker);
  
-@@ -963,7 +963,7 @@ void kthread_flush_work(struct kthread_work *work)
+@@ -976,7 +976,7 @@ void kthread_flush_work(struct kthread_work *work)
  	else
  		noop = true;
  
@@ -144,7 +144,7 @@ index 087d18d771b5..5641b55783a6 100644
  
  	if (!noop)
  		wait_for_completion(&fwork.done);
-@@ -996,9 +996,9 @@ static bool __kthread_cancel_work(struct kthread_work *work, bool is_dwork,
+@@ -1009,9 +1009,9 @@ static bool __kthread_cancel_work(struct kthread_work *work, bool is_dwork,
  		 * any queuing is blocked by setting the canceling counter.
  		 */
  		work->canceling++;
@@ -156,7 +156,7 @@ index 087d18d771b5..5641b55783a6 100644
  		work->canceling--;
  	}
  
-@@ -1045,7 +1045,7 @@ bool kthread_mod_delayed_work(struct kthread_worker *worker,
+@@ -1058,7 +1058,7 @@ bool kthread_mod_delayed_work(struct kthread_worker *worker,
  	unsigned long flags;
  	int ret = false;
  
@@ -165,7 +165,7 @@ index 087d18d771b5..5641b55783a6 100644
  
  	/* Do not bother with canceling when never queued. */
  	if (!work->worker)
-@@ -1062,7 +1062,7 @@ bool kthread_mod_delayed_work(struct kthread_worker *worker,
+@@ -1075,7 +1075,7 @@ bool kthread_mod_delayed_work(struct kthread_worker *worker,
  fast_queue:
  	__kthread_queue_delayed_work(worker, dwork, delay);
  out:
@@ -174,7 +174,7 @@ index 087d18d771b5..5641b55783a6 100644
  	return ret;
  }
  EXPORT_SYMBOL_GPL(kthread_mod_delayed_work);
-@@ -1076,7 +1076,7 @@ static bool __kthread_cancel_work_sync(struct kthread_work *work, bool is_dwork)
+@@ -1089,7 +1089,7 @@ static bool __kthread_cancel_work_sync(struct kthread_work *work, bool is_dwork)
  	if (!worker)
  		goto out;
  
@@ -183,7 +183,7 @@ index 087d18d771b5..5641b55783a6 100644
  	/* Work must not be used with >1 worker, see kthread_queue_work(). */
  	WARN_ON_ONCE(work->worker != worker);
  
-@@ -1090,13 +1090,13 @@ static bool __kthread_cancel_work_sync(struct kthread_work *work, bool is_dwork)
+@@ -1103,13 +1103,13 @@ static bool __kthread_cancel_work_sync(struct kthread_work *work, bool is_dwork)
  	 * In the meantime, block any queuing by setting the canceling counter.
  	 */
  	work->canceling++;

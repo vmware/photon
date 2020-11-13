@@ -1,10 +1,10 @@
-From 3ba4d8eee40b02f3d072aa382b26c302b18a6e1e Mon Sep 17 00:00:00 2001
-Message-Id: <3ba4d8eee40b02f3d072aa382b26c302b18a6e1e.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 2ac6c581bfe590882422084b6647689bfcd1ce9e Mon Sep 17 00:00:00 2001
+Message-Id: <2ac6c581bfe590882422084b6647689bfcd1ce9e.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sat, 25 Jun 2011 09:21:04 +0200
-Subject: [PATCH 109/329] sched: Add saved_state for tasks blocked on sleeping
+Subject: [PATCH 109/333] sched: Add saved_state for tasks blocked on sleeping
  locks
 
 Spinlocks are state preserving in !RT. RT changes the state when a
@@ -42,7 +42,7 @@ index 9a0e01e48602..42846a65df9a 100644
  
  #ifdef CONFIG_SMP
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 7927ce657c44..dba77f924ec8 100644
+index 3600139cb690..53d9f8927619 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -1999,8 +1999,27 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)

@@ -1,10 +1,10 @@
-From 0393a98b00493daec3caf00a7e579c3f2fb07404 Mon Sep 17 00:00:00 2001
-Message-Id: <0393a98b00493daec3caf00a7e579c3f2fb07404.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From f43131881f75fa754c3e67d689fe89d1f4642dff Mon Sep 17 00:00:00 2001
+Message-Id: <f43131881f75fa754c3e67d689fe89d1f4642dff.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 4 Apr 2017 12:50:16 +0200
-Subject: [PATCH 026/329] kernel: sched: Provide a pointer to the valid CPU
+Subject: [PATCH 026/333] kernel: sched: Provide a pointer to the valid CPU
  mask
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -336,7 +336,7 @@ index 1a2d18e98bf9..bc182d6fa2a9 100644
  	/*
  	 * One for us, one for whoever does the "release_task()" (usually
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 843394d0ea42..85d663321fb9 100644
+index faef74f63262..42343f58cea4 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -878,7 +878,7 @@ static inline bool is_per_cpu_kthread(struct task_struct *p)
@@ -450,7 +450,7 @@ index 843394d0ea42..85d663321fb9 100644
  	 * CPU.
  	 *
  	 * Since this is common to all placement strategies, this lives here.
-@@ -2402,7 +2402,7 @@ void wake_up_new_task(struct task_struct *p)
+@@ -2403,7 +2403,7 @@ void wake_up_new_task(struct task_struct *p)
  #ifdef CONFIG_SMP
  	/*
  	 * Fork balancing, do it here and not earlier because:
@@ -459,7 +459,7 @@ index 843394d0ea42..85d663321fb9 100644
  	 *  - any previously selected CPU might disappear through hotplug
  	 *
  	 * Use __set_task_cpu() to avoid calling sched_class::migrate_task_rq,
-@@ -4317,7 +4317,7 @@ static int __sched_setscheduler(struct task_struct *p,
+@@ -4319,7 +4319,7 @@ static int __sched_setscheduler(struct task_struct *p,
  			 * the entire root_domain to become SCHED_DEADLINE. We
  			 * will also fail if there's no bandwidth available.
  			 */
@@ -468,7 +468,7 @@ index 843394d0ea42..85d663321fb9 100644
  			    rq->rd->dl_bw.bw == 0) {
  				task_rq_unlock(rq, p, &rf);
  				return -EPERM;
-@@ -4916,7 +4916,7 @@ long sched_getaffinity(pid_t pid, struct cpumask *mask)
+@@ -4918,7 +4918,7 @@ long sched_getaffinity(pid_t pid, struct cpumask *mask)
  		goto out_unlock;
  
  	raw_spin_lock_irqsave(&p->pi_lock, flags);
@@ -477,7 +477,7 @@ index 843394d0ea42..85d663321fb9 100644
  	raw_spin_unlock_irqrestore(&p->pi_lock, flags);
  
  out_unlock:
-@@ -5497,7 +5497,7 @@ int task_can_attach(struct task_struct *p,
+@@ -5499,7 +5499,7 @@ int task_can_attach(struct task_struct *p,
  	 * allowed nodes is unnecessary.  Thus, cpusets are not
  	 * applicable for such threads.  This prevents checking for
  	 * success of set_cpus_allowed_ptr() on all attached tasks
@@ -486,7 +486,7 @@ index 843394d0ea42..85d663321fb9 100644
  	 */
  	if (p->flags & PF_NO_SETAFFINITY) {
  		ret = -EINVAL;
-@@ -5524,7 +5524,7 @@ int migrate_task_to(struct task_struct *p, int target_cpu)
+@@ -5526,7 +5526,7 @@ int migrate_task_to(struct task_struct *p, int target_cpu)
  	if (curr_cpu == target_cpu)
  		return 0;
  
@@ -495,7 +495,7 @@ index 843394d0ea42..85d663321fb9 100644
  		return -EINVAL;
  
  	/* TODO: This is not properly updating schedstats */
-@@ -5663,7 +5663,7 @@ static void migrate_tasks(struct rq *dead_rq, struct rq_flags *rf)
+@@ -5665,7 +5665,7 @@ static void migrate_tasks(struct rq *dead_rq, struct rq_flags *rf)
  		put_prev_task(rq, next);
  
  		/*
@@ -575,7 +575,7 @@ index 8aecfb143859..311b3cf1270e 100644
  				     !dl_task(task) ||
  				     !task_on_rq_queued(task))) {
 diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index a05bcb5f5c26..97de4ea7dbea 100644
+index 63a630f8dd1e..2443f921b19f 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
 @@ -1691,7 +1691,7 @@ static void task_numa_compare(struct task_numa_env *env,
@@ -694,7 +694,7 @@ index a05bcb5f5c26..97de4ea7dbea 100644
  				env->flags |= LBF_DST_PINNED;
  				env->new_dst_cpu = cpu;
  				break;
-@@ -7827,7 +7827,7 @@ check_cpu_capacity(struct rq *rq, struct sched_domain *sd)
+@@ -7835,7 +7835,7 @@ check_cpu_capacity(struct rq *rq, struct sched_domain *sd)
  
  /*
   * Group imbalance indicates (and tries to solve) the problem where balancing
@@ -703,7 +703,7 @@ index a05bcb5f5c26..97de4ea7dbea 100644
   *
   * Imagine a situation of two groups of 4 CPUs each and 4 tasks each with a
   * cpumask covering 1 CPU of the first group and 3 CPUs of the second group.
-@@ -8442,7 +8442,7 @@ static struct sched_group *find_busiest_group(struct lb_env *env)
+@@ -8450,7 +8450,7 @@ static struct sched_group *find_busiest_group(struct lb_env *env)
  	/*
  	 * If the busiest group is imbalanced the below checks don't
  	 * work because they assume all things are equal, which typically
@@ -712,7 +712,7 @@ index a05bcb5f5c26..97de4ea7dbea 100644
  	 */
  	if (busiest->group_type == group_imbalanced)
  		goto force_balance;
-@@ -8838,7 +8838,7 @@ static int load_balance(int this_cpu, struct rq *this_rq,
+@@ -8846,7 +8846,7 @@ static int load_balance(int this_cpu, struct rq *this_rq,
  			 * if the curr task on busiest CPU can't be
  			 * moved to this_cpu:
  			 */
@@ -744,10 +744,10 @@ index b980cc96604f..b6ca4a630050 100644
  				     !rt_task(task) ||
  				     !task_on_rq_queued(task))) {
 diff --git a/kernel/trace/trace_hwlat.c b/kernel/trace/trace_hwlat.c
-index 8030e24dbf14..862f4b0139fc 100644
+index 568918fae8d4..35512ed26d9f 100644
 --- a/kernel/trace/trace_hwlat.c
 +++ b/kernel/trace/trace_hwlat.c
-@@ -279,7 +279,7 @@ static void move_to_next_cpu(void)
+@@ -280,7 +280,7 @@ static void move_to_next_cpu(void)
  	 * of this thread, than stop migrating for the duration
  	 * of the current test.
  	 */

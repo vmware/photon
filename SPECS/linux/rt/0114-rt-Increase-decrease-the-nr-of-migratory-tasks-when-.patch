@@ -1,10 +1,10 @@
-From 1e802fce8a92be8cf3b201d8c658def007b2cbde Mon Sep 17 00:00:00 2001
-Message-Id: <1e802fce8a92be8cf3b201d8c658def007b2cbde.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From a39e1d5717404d4624286db2df812da3cd999df0 Mon Sep 17 00:00:00 2001
+Message-Id: <a39e1d5717404d4624286db2df812da3cd999df0.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Daniel Bristot de Oliveira <bristot@redhat.com>
 Date: Mon, 26 Jun 2017 17:07:15 +0200
-Subject: [PATCH 114/329] rt: Increase/decrease the nr of migratory tasks when
+Subject: [PATCH 114/333] rt: Increase/decrease the nr of migratory tasks when
  enabling/disabling migration
 
 There is a problem in the migrate_disable()/enable() implementation
@@ -84,10 +84,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 44 insertions(+), 5 deletions(-)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 7071cbc98e01..3a9b540fd3b9 100644
+index be048e7066d1..25dd44553ea6 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -7178,6 +7178,47 @@ const u32 sched_prio_to_wmult[40] = {
+@@ -7180,6 +7180,47 @@ const u32 sched_prio_to_wmult[40] = {
  
  #if defined(CONFIG_PREEMPT_COUNT) && defined(CONFIG_SMP)
  
@@ -135,7 +135,7 @@ index 7071cbc98e01..3a9b540fd3b9 100644
  void migrate_disable(void)
  {
  	struct task_struct *p = current;
-@@ -7201,10 +7242,9 @@ void migrate_disable(void)
+@@ -7203,10 +7244,9 @@ void migrate_disable(void)
  	}
  
  	preempt_disable();
@@ -148,7 +148,7 @@ index 7071cbc98e01..3a9b540fd3b9 100644
  
  	preempt_enable();
  }
-@@ -7236,9 +7276,8 @@ void migrate_enable(void)
+@@ -7238,9 +7278,8 @@ void migrate_enable(void)
  
  	preempt_disable();
  

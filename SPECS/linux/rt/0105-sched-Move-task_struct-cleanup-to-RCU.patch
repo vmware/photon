@@ -1,10 +1,10 @@
-From 75fee459d34af546834611d9cd9a2f002df91bf7 Mon Sep 17 00:00:00 2001
-Message-Id: <75fee459d34af546834611d9cd9a2f002df91bf7.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 60a45eab53c69220d73c2dfc10850c4e5e82a6d0 Mon Sep 17 00:00:00 2001
+Message-Id: <60a45eab53c69220d73c2dfc10850c4e5e82a6d0.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 31 May 2011 16:59:16 +0200
-Subject: [PATCH 105/329] sched: Move task_struct cleanup to RCU
+Subject: [PATCH 105/333] sched: Move task_struct cleanup to RCU
 
 __put_task_struct() does quite some expensive work. We don't want to
 burden random tasks with that.

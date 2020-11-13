@@ -1,10 +1,10 @@
-From 8e8547bae6810bd2b32db0735d7e3607139f8177 Mon Sep 17 00:00:00 2001
-Message-Id: <8e8547bae6810bd2b32db0735d7e3607139f8177.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 865ee327fb085a2393af6fc6363ddbf64fd37157 Mon Sep 17 00:00:00 2001
+Message-Id: <865ee327fb085a2393af6fc6363ddbf64fd37157.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 29 Jun 2011 19:34:01 +0200
-Subject: [PATCH 137/329] spinlock: Split the lock types header
+Subject: [PATCH 137/333] spinlock: Split the lock types header
 
 Split raw_spinlock into its own file and the remaining spinlock_t into
 its own non-RT header. The non-RT header will be replaced later by sleeping

@@ -1,10 +1,10 @@
-From 71d2e16cc060770b11a4c867f3a5989141ee159b Mon Sep 17 00:00:00 2001
-Message-Id: <71d2e16cc060770b11a4c867f3a5989141ee159b.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 61bedf2aad232e1bdae375622b1b6aa0ba4b3d02 Mon Sep 17 00:00:00 2001
+Message-Id: <61bedf2aad232e1bdae375622b1b6aa0ba4b3d02.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Peter Zijlstra <peterz@infradead.org>
 Date: Fri, 2 Sep 2011 14:41:29 +0200
-Subject: [PATCH 058/329] printk: Add "force_early_printk" boot param to help
+Subject: [PATCH 058/333] printk: Add "force_early_printk" boot param to help
  with debugging
 
 Gives me an option to screw printk and actually see what the machine
@@ -19,7 +19,7 @@ Link: http://lkml.kernel.org/n/tip-ykb97nsfmobq44xketrxs977@git.kernel.org
  1 file changed, 7 insertions(+)
 
 diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 29838e532f46..f934baed564d 100644
+index f1eddc8279f2..cf6bda1fffd1 100644
 --- a/kernel/printk/printk.c
 +++ b/kernel/printk/printk.c
 @@ -435,6 +435,13 @@ asmlinkage void early_printk(const char *fmt, ...)

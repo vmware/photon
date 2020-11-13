@@ -1,10 +1,10 @@
-From 4b967e907820a2c6af47ee605519c24058ee7cb0 Mon Sep 17 00:00:00 2001
-Message-Id: <4b967e907820a2c6af47ee605519c24058ee7cb0.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 21fb593e9e306d99e5e7a97b64e66fe0b02ee79d Mon Sep 17 00:00:00 2001
+Message-Id: <21fb593e9e306d99e5e7a97b64e66fe0b02ee79d.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 13 Jan 2016 15:55:02 +0100
-Subject: [PATCH 198/329] net: move xmit_recursion to per-task variable on -RT
+Subject: [PATCH 198/333] net: move xmit_recursion to per-task variable on -RT
 
 A softirq on -RT can be preempted. That means one task is in
 __dev_queue_xmit(), gets preempted and another task may enter
@@ -192,7 +192,7 @@ index 4a4f03a8d8d4..37334ec1ab3e 100644
  	int				pagefault_disabled;
  #ifdef CONFIG_MMU
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 598398e3c841..bb93ab3f0b1f 100644
+index fc1dfd57d4c0..03572f1205c6 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
 @@ -3825,7 +3825,11 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
@@ -207,7 +207,7 @@ index 598398e3c841..bb93ab3f0b1f 100644
  			if (dev_xmit_recursion())
  				goto recursion_alert;
  
-@@ -8572,7 +8576,7 @@ static void netdev_init_one_queue(struct net_device *dev,
+@@ -8570,7 +8574,7 @@ static void netdev_init_one_queue(struct net_device *dev,
  	/* Initialize queue lock */
  	spin_lock_init(&queue->_xmit_lock);
  	netdev_set_xmit_lockdep_class(&queue->_xmit_lock, dev->type);

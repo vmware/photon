@@ -1,10 +1,10 @@
-From 63bf7c61a6cfcad6e5c1ddeb1159d816922cf00f Mon Sep 17 00:00:00 2001
-Message-Id: <63bf7c61a6cfcad6e5c1ddeb1159d816922cf00f.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From b4e78f171384f98815c9a761b57708756ed114f0 Mon Sep 17 00:00:00 2001
+Message-Id: <b4e78f171384f98815c9a761b57708756ed114f0.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 14 Sep 2016 14:35:49 +0200
-Subject: [PATCH 189/329] fs/dcache: use swait_queue instead of waitqueue
+Subject: [PATCH 189/333] fs/dcache: use swait_queue instead of waitqueue
 
 __d_lookup_done() invokes wake_up_all() while holding a hlist_bl_lock()
 which disables preemption. As a workaround convert it to swait.
@@ -38,10 +38,10 @@ index 3925a7bfc74d..33f7723fb83e 100644
  	cifs_dbg(FYI, "%s: for %s\n", __func__, name->name);
  
 diff --git a/fs/dcache.c b/fs/dcache.c
-index dcde8ffe384c..b2a00f3ff7df 100644
+index b1a5edf1103e..c47d94e7b1d8 100644
 --- a/fs/dcache.c
 +++ b/fs/dcache.c
-@@ -2421,21 +2421,24 @@ static inline void end_dir_add(struct inode *dir, unsigned n)
+@@ -2423,21 +2423,24 @@ static inline void end_dir_add(struct inode *dir, unsigned n)
  
  static void d_wait_lookup(struct dentry *dentry)
  {
@@ -77,7 +77,7 @@ index dcde8ffe384c..b2a00f3ff7df 100644
  {
  	unsigned int hash = name->hash;
  	struct hlist_bl_head *b = in_lookup_hash(parent, hash);
-@@ -2550,7 +2553,7 @@ void __d_lookup_done(struct dentry *dentry)
+@@ -2552,7 +2555,7 @@ void __d_lookup_done(struct dentry *dentry)
  	hlist_bl_lock(b);
  	dentry->d_flags &= ~DCACHE_PAR_LOOKUP;
  	__hlist_bl_del(&dentry->d_u.d_in_lookup_hash);
@@ -122,7 +122,7 @@ index 327844fedf3d..5114c8111807 100644
  	if (unlikely(IS_DEADDIR(dir_inode)))
  		return -ENOENT;
 diff --git a/fs/nfs/dir.c b/fs/nfs/dir.c
-index c60b20884c45..7e653c14c7ed 100644
+index e166bc8be849..96d736b46c4c 100644
 --- a/fs/nfs/dir.c
 +++ b/fs/nfs/dir.c
 @@ -457,7 +457,7 @@ static
@@ -134,7 +134,7 @@ index c60b20884c45..7e653c14c7ed 100644
  	struct dentry *dentry;
  	struct dentry *alias;
  	struct inode *dir = d_inode(parent);
-@@ -1516,7 +1516,7 @@ int nfs_atomic_open(struct inode *dir, struct dentry *dentry,
+@@ -1519,7 +1519,7 @@ int nfs_atomic_open(struct inode *dir, struct dentry *dentry,
  		    struct file *file, unsigned open_flags,
  		    umode_t mode)
  {

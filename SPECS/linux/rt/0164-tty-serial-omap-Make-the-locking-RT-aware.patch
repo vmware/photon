@@ -1,10 +1,10 @@
-From 79dd3527650081cf9b3cc4d470db9c8a4fcb0d7b Mon Sep 17 00:00:00 2001
-Message-Id: <79dd3527650081cf9b3cc4d470db9c8a4fcb0d7b.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 196e38012f69ebf6f2a93c897fd973c22a28309d Mon Sep 17 00:00:00 2001
+Message-Id: <196e38012f69ebf6f2a93c897fd973c22a28309d.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 28 Jul 2011 13:32:57 +0200
-Subject: [PATCH 164/329] tty/serial/omap: Make the locking RT aware
+Subject: [PATCH 164/333] tty/serial/omap: Make the locking RT aware
 
 The lock is a sleeping lock and local_irq_save() is not the
 optimsation we are looking for. Redo it to make it work on -RT and

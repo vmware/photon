@@ -1,10 +1,10 @@
-From d7c4971ed35222efb7237485812eab5b3e72938e Mon Sep 17 00:00:00 2001
-Message-Id: <d7c4971ed35222efb7237485812eab5b3e72938e.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From f3f351a8353a2b9e9cdbbe4d6604e75362829e24 Mon Sep 17 00:00:00 2001
+Message-Id: <f3f351a8353a2b9e9cdbbe4d6604e75362829e24.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Date: Thu, 13 Sep 2018 13:30:22 +0200
-Subject: [PATCH 005/329] ARM: at91: Implement clocksource selection
+Subject: [PATCH 005/333] ARM: at91: Implement clocksource selection
 
 Allow selecting and unselecting the PIT clocksource driver so it doesn't
 have to be compile when unused.

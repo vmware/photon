@@ -1,10 +1,10 @@
-From 316706beeb9c64804201fd12d6777b9c638c4a16 Mon Sep 17 00:00:00 2001
-Message-Id: <316706beeb9c64804201fd12d6777b9c638c4a16.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 75530b4a8a49db5ae53c264cec3a8a3e9544068d Mon Sep 17 00:00:00 2001
+Message-Id: <75530b4a8a49db5ae53c264cec3a8a3e9544068d.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Mike Galbraith <efault@gmx.de>
 Date: Sun, 19 Aug 2018 08:28:35 +0200
-Subject: [PATCH 229/329] sched: Allow pinned user tasks to be awakened to the
+Subject: [PATCH 229/333] sched: Allow pinned user tasks to be awakened to the
  CPU they pinned
 
 Since commit 7af443ee16976 ("sched/core: Require cpu_active() in
@@ -24,7 +24,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 1abd32af7918..173557e65689 100644
+index f13cc0073bbc..297934719db9 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -904,7 +904,7 @@ static inline bool is_cpu_allowed(struct task_struct *p, int cpu)

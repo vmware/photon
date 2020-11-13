@@ -1,10 +1,10 @@
-From fe2b32241ea0797ff22b67eac8d314bc374c854a Mon Sep 17 00:00:00 2001
-Message-Id: <fe2b32241ea0797ff22b67eac8d314bc374c854a.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 44ba0c34fd98b410751568417fdcd39ad9477a67 Mon Sep 17 00:00:00 2001
+Message-Id: <44ba0c34fd98b410751568417fdcd39ad9477a67.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 26 Jul 2009 02:21:32 +0200
-Subject: [PATCH 052/329] x86: Use generic rwsem_spinlocks on -rt
+Subject: [PATCH 052/333] x86: Use generic rwsem_spinlocks on -rt
 
 Simplifies the separation of anon_rw_semaphores and rw_semaphores for
 -rt.

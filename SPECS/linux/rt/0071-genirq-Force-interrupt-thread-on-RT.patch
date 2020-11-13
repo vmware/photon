@@ -1,10 +1,10 @@
-From 5ba03b8944101e0f576b7b359eaf19543a7fee9b Mon Sep 17 00:00:00 2001
-Message-Id: <5ba03b8944101e0f576b7b359eaf19543a7fee9b.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From de543d4bf251e951baca436783cd83720300b69a Mon Sep 17 00:00:00 2001
+Message-Id: <de543d4bf251e951baca436783cd83720300b69a.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 3 Apr 2011 11:57:29 +0200
-Subject: [PATCH 071/329] genirq: Force interrupt thread on RT
+Subject: [PATCH 071/333] genirq: Force interrupt thread on RT
 
 Force threaded_irqs and optimize the code (force_irqthreads) in regard
 to this.
@@ -32,7 +32,7 @@ index eeceac3376fc..315f852b4981 100644
  #define force_irqthreads	(0)
  #endif
 diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index efcb54ee0922..0809bf7743af 100644
+index 3b66c77670d9..98f9bb27ce37 100644
 --- a/kernel/irq/manage.c
 +++ b/kernel/irq/manage.c
 @@ -24,6 +24,7 @@

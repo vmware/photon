@@ -1,10 +1,10 @@
-From 2b79d1f51fed6a5007974ef9097554f96946a485 Mon Sep 17 00:00:00 2001
-Message-Id: <2b79d1f51fed6a5007974ef9097554f96946a485.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 672966ff93fa03c3aa957164fa946ab99bc2361e Mon Sep 17 00:00:00 2001
+Message-Id: <672966ff93fa03c3aa957164fa946ab99bc2361e.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Clark Williams <williams@redhat.com>
 Date: Sat, 30 Jul 2011 21:55:53 -0500
-Subject: [PATCH 214/329] sysfs: Add /sys/kernel/realtime entry
+Subject: [PATCH 214/333] sysfs: Add /sys/kernel/realtime entry
 
 Add a /sys/kernel entry to indicate that the kernel is a
 realtime kernel.

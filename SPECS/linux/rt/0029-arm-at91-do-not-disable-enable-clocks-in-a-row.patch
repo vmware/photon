@@ -1,10 +1,10 @@
-From 19083799e26fad55fbebf807fd419af8d1aa1f8a Mon Sep 17 00:00:00 2001
-Message-Id: <19083799e26fad55fbebf807fd419af8d1aa1f8a.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From ed49a8dc4c8da73920653081c08e51cbd3c9a28a Mon Sep 17 00:00:00 2001
+Message-Id: <ed49a8dc4c8da73920653081c08e51cbd3c9a28a.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 9 Mar 2016 10:51:06 +0100
-Subject: [PATCH 029/329] arm: at91: do not disable/enable clocks in a row
+Subject: [PATCH 029/333] arm: at91: do not disable/enable clocks in a row
 
 Currently the driver will disable the clock and enable it one line later
 if it is switching from periodic mode into one shot.

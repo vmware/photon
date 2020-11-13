@@ -1,10 +1,10 @@
-From b7bf15cc61470fee2fce877652d997f62af399c7 Mon Sep 17 00:00:00 2001
-Message-Id: <b7bf15cc61470fee2fce877652d997f62af399c7.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 8fe61659fe423be200af5100ec82ccb4341b9f38 Mon Sep 17 00:00:00 2001
+Message-Id: <8fe61659fe423be200af5100ec82ccb4341b9f38.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 4 Oct 2017 10:24:23 +0200
-Subject: [PATCH 091/329] pci/switchtec: Don't use completion's wait queue
+Subject: [PATCH 091/333] pci/switchtec: Don't use completion's wait queue
 
 The poll callback is using completion's wait_queue_head_t member and
 puts it in poll_wait() so the poll() caller gets a wakeup after command

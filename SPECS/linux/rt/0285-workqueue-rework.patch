@@ -1,10 +1,10 @@
-From 415fbb6671284badb2bdd179a9dc07264c96ab79 Mon Sep 17 00:00:00 2001
-Message-Id: <415fbb6671284badb2bdd179a9dc07264c96ab79.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From f6edf9fe7413cb86a9fc098eddbcde7eac102ec3 Mon Sep 17 00:00:00 2001
+Message-Id: <f6edf9fe7413cb86a9fc098eddbcde7eac102ec3.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 29 May 2019 18:52:27 +0200
-Subject: [PATCH 285/329] workqueue: rework
+Subject: [PATCH 285/333] workqueue: rework
 
 [ Upstream commit d15a862f24df983458533aebd6fa207ecdd1095a ]
 
@@ -37,7 +37,7 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  delete mode 100644 include/linux/kthread-cgroup.h
 
 diff --git a/block/blk-core.c b/block/blk-core.c
-index 7d709465876e..752c9e754509 100644
+index 1a2ec9f3323a..77596d604867 100644
 --- a/block/blk-core.c
 +++ b/block/blk-core.c
 @@ -973,7 +973,7 @@ void blk_queue_exit(struct request_queue *q)
@@ -58,7 +58,7 @@ index 7d709465876e..752c9e754509 100644
  }
  
  static void blk_rq_timed_out_timer(struct timer_list *t)
-@@ -1084,7 +1084,7 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id,
+@@ -1086,7 +1086,7 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id,
  	queue_flag_set_unlocked(QUEUE_FLAG_BYPASS, q);
  
  	init_waitqueue_head(&q->mq_freeze_wq);
@@ -68,7 +68,7 @@ index 7d709465876e..752c9e754509 100644
  	/*
  	 * Init percpu_ref in atomic mode so that it's faster to shutdown.
 diff --git a/drivers/block/loop.c b/drivers/block/loop.c
-index ec7442545b84..728681a20b7f 100644
+index 629589a36b0a..19042b42a8ba 100644
 --- a/drivers/block/loop.c
 +++ b/drivers/block/loop.c
 @@ -70,7 +70,7 @@
@@ -311,10 +311,10 @@ index 60d673e15632..546aa73fba6a 100644
  
  extern bool queue_work_on(int cpu, struct workqueue_struct *wq,
 diff --git a/init/main.c b/init/main.c
-index 064bdf98544b..7c064c6aff55 100644
+index 7b173ca08e22..2180c6388eb9 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -1131,7 +1131,6 @@ static noinline void __init kernel_init_freeable(void)
+@@ -1130,7 +1130,6 @@ static noinline void __init kernel_init_freeable(void)
  	smp_prepare_cpus(setup_max_cpus);
  
  	workqueue_init();
@@ -323,7 +323,7 @@ index 064bdf98544b..7c064c6aff55 100644
  	init_mm_internals();
  
 diff --git a/kernel/kthread.c b/kernel/kthread.c
-index 9db017761a1f..5641b55783a6 100644
+index 42294c806ad0..81aa14daa5fe 100644
 --- a/kernel/kthread.c
 +++ b/kernel/kthread.c
 @@ -20,7 +20,6 @@
@@ -334,7 +334,7 @@ index 9db017761a1f..5641b55783a6 100644
  #include <trace/events/sched.h>
  
  static DEFINE_SPINLOCK(kthread_create_lock);
-@@ -1181,19 +1180,6 @@ void kthread_destroy_worker(struct kthread_worker *worker)
+@@ -1194,19 +1193,6 @@ void kthread_destroy_worker(struct kthread_worker *worker)
  }
  EXPORT_SYMBOL(kthread_destroy_worker);
  
@@ -355,10 +355,10 @@ index 9db017761a1f..5641b55783a6 100644
  /**
   * kthread_associate_blkcg - associate blkcg to current kthread
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 5bfe4eab5b0a..083e8f55c220 100644
+index 9337303a9f43..c9a83db14cde 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -3607,6 +3607,7 @@ static inline void sched_submit_work(struct task_struct *tsk)
+@@ -3609,6 +3609,7 @@ static inline void sched_submit_work(struct task_struct *tsk)
  {
  	if (!tsk->state)
  		return;

@@ -1,10 +1,10 @@
-From 033640b308c05afca115999c55e7733ee6946b6a Mon Sep 17 00:00:00 2001
-Message-Id: <033640b308c05afca115999c55e7733ee6946b6a.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From d5a4f534aac6ab3861f8847771bd4e5ea0a91eaf Mon Sep 17 00:00:00 2001
+Message-Id: <d5a4f534aac6ab3861f8847771bd4e5ea0a91eaf.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 27 Mar 2018 16:24:15 +0200
-Subject: [PATCH 034/329] dm rq: remove BUG_ON(!irqs_disabled) check
+Subject: [PATCH 034/333] dm rq: remove BUG_ON(!irqs_disabled) check
 
 In commit 052189a2ec95 ("dm: remove superfluous irq disablement in
 dm_request_fn") the spin_lock_irq() was replaced with spin_lock() + a
@@ -23,10 +23,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 1 deletion(-)
 
 diff --git a/drivers/md/dm-rq.c b/drivers/md/dm-rq.c
-index 4d36373e1c0f..12ed08245130 100644
+index 9fde174ce396..e6bffe4b9439 100644
 --- a/drivers/md/dm-rq.c
 +++ b/drivers/md/dm-rq.c
-@@ -692,7 +692,6 @@ static void dm_old_request_fn(struct request_queue *q)
+@@ -689,7 +689,6 @@ static void dm_old_request_fn(struct request_queue *q)
  		/* Establish tio->ti before queuing work (map_tio_request) */
  		tio->ti = ti;
  		kthread_queue_work(&md->kworker, &tio->work);

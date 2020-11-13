@@ -1,10 +1,10 @@
-From 88ad37991950318c862016a9beba42af7bfa91d4 Mon Sep 17 00:00:00 2001
-Message-Id: <88ad37991950318c862016a9beba42af7bfa91d4.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 74601093612924052c32c4bf5b745a5baf303387 Mon Sep 17 00:00:00 2001
+Message-Id: <74601093612924052c32c4bf5b745a5baf303387.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Steven Rostedt <rostedt@goodmis.org>
 Date: Mon, 18 Mar 2013 15:12:49 -0400
-Subject: [PATCH 113/329] sched/workqueue: Only wake up idle workers if not
+Subject: [PATCH 113/333] sched/workqueue: Only wake up idle workers if not
  blocked on sleeping spin lock
 
 In -rt, most spin_locks() turn into mutexes. One of these spin_lock
@@ -27,10 +27,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index dec4822184bb..7071cbc98e01 100644
+index 2aa1d2a9ee5e..be048e7066d1 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -3539,8 +3539,10 @@ static void __sched notrace __schedule(bool preempt)
+@@ -3541,8 +3541,10 @@ static void __sched notrace __schedule(bool preempt)
  			 * If a worker went to sleep, notify and ask workqueue
  			 * whether it wants to wake up a task to maintain
  			 * concurrency.

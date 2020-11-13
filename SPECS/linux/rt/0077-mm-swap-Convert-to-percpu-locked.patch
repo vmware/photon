@@ -1,10 +1,10 @@
-From 2f5c7c8e52ba0322a60691186db870ca4d57c5cb Mon Sep 17 00:00:00 2001
-Message-Id: <2f5c7c8e52ba0322a60691186db870ca4d57c5cb.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From bba22a060892ac7c506bd155c1f0639c1b70b288 Mon Sep 17 00:00:00 2001
+Message-Id: <bba22a060892ac7c506bd155c1f0639c1b70b288.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Ingo Molnar <mingo@elte.hu>
 Date: Fri, 3 Jul 2009 08:29:51 -0500
-Subject: [PATCH 077/329] mm/swap: Convert to percpu locked
+Subject: [PATCH 077/333] mm/swap: Convert to percpu locked
 
 Replace global locks (get_cpu + local_irq_save) with "local_locks()".
 Currently there is one of for "rotate" and one for "swap".
@@ -58,10 +58,10 @@ index 5079ddbec8f9..c40d3a13cbbd 100644
  				cc->last_migrated_pfn = 0;
  			}
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 63bf99bdcabc..1d25236411a7 100644
+index 6b0fc3393a94..6ea5ce7ae2af 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -7238,8 +7238,9 @@ void __init free_area_init(unsigned long *zones_size)
+@@ -7245,8 +7245,9 @@ void __init free_area_init(unsigned long *zones_size)
  
  static int page_alloc_cpu_dead(unsigned int cpu)
  {

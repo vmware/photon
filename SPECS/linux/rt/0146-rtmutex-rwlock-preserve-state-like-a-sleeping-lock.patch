@@ -1,10 +1,10 @@
-From 43c60224c5e3818f45e5d36849f3992786957014 Mon Sep 17 00:00:00 2001
-Message-Id: <43c60224c5e3818f45e5d36849f3992786957014.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 48edc88ed5258a1f9812632c4f3b49277ce06c4a Mon Sep 17 00:00:00 2001
+Message-Id: <48edc88ed5258a1f9812632c4f3b49277ce06c4a.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 11 Jan 2019 21:16:31 +0100
-Subject: [PATCH 146/329] rtmutex/rwlock: preserve state like a sleeping lock
+Subject: [PATCH 146/333] rtmutex/rwlock: preserve state like a sleeping lock
 
 The rwlock is spinning while acquiring a lock. Therefore it must become
 a sleeping lock on RT and preserve its task state while sleeping and

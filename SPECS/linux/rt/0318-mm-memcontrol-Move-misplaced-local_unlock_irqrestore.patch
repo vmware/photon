@@ -1,10 +1,10 @@
-From 1926409737d11d6e33791301a0b7e30ff77b9d37 Mon Sep 17 00:00:00 2001
-Message-Id: <1926409737d11d6e33791301a0b7e30ff77b9d37.1594742967.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 6a6e368ba49a29a5c7210225e7371fb55a5f2505 Mon Sep 17 00:00:00 2001
+Message-Id: <6a6e368ba49a29a5c7210225e7371fb55a5f2505.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Matt Fleming <matt@codeblueprint.co.uk>
 Date: Sun, 26 Jan 2020 21:19:45 +0000
-Subject: [PATCH 318/329] mm/memcontrol: Move misplaced
+Subject: [PATCH 318/333] mm/memcontrol: Move misplaced
  local_unlock_irqrestore()
 
 [ Upstream commit 071a1d6a6e14d0dec240a8c67b425140d7f92f6a ]
@@ -24,7 +24,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/mm/memcontrol.c b/mm/memcontrol.c
-index 4156a4e766fb..d059e2a99441 100644
+index a54cfafba8ad..7b506d178aa0 100644
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
 @@ -6538,10 +6538,10 @@ void mem_cgroup_swapout(struct page *page, swp_entry_t entry)

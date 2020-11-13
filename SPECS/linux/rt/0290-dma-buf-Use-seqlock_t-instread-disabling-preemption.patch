@@ -1,10 +1,10 @@
-From 7be655e87046989c0790c608d35c4b2fcc7611a6 Mon Sep 17 00:00:00 2001
-Message-Id: <7be655e87046989c0790c608d35c4b2fcc7611a6.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 867a2e37498f6ca821a81352ef7756e5606f93f4 Mon Sep 17 00:00:00 2001
+Message-Id: <867a2e37498f6ca821a81352ef7756e5606f93f4.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 14 Aug 2019 16:38:43 +0200
-Subject: [PATCH 290/329] dma-buf: Use seqlock_t instread disabling preemption
+Subject: [PATCH 290/333] dma-buf: Use seqlock_t instread disabling preemption
 
 [ Upstream commit 240610aa31094f51f299f06eb8dae8d4cd8d4500 ]
 

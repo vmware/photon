@@ -1,10 +1,10 @@
-From 96f44f96d14cb5465687b6c7d6ec2cf4d26d449d Mon Sep 17 00:00:00 2001
-Message-Id: <96f44f96d14cb5465687b6c7d6ec2cf4d26d449d.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 5b055f716432638452842ce00bc3ede98ed9f9db Mon Sep 17 00:00:00 2001
+Message-Id: <5b055f716432638452842ce00bc3ede98ed9f9db.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Date: Thu, 13 Sep 2018 13:30:23 +0200
-Subject: [PATCH 006/329] ARM: configs: at91: use new TCB timer driver
+Subject: [PATCH 006/333] ARM: configs: at91: use new TCB timer driver
 
 Unselecting ATMEL_TCLIB switches the TCB timer driver from tcb_clksrc to
 timer-atmel-tcb.

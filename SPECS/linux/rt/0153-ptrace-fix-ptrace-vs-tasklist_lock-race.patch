@@ -1,10 +1,10 @@
-From 1c70b9f99adf1d6cb45b18b13c25d5afa92bcd90 Mon Sep 17 00:00:00 2001
-Message-Id: <1c70b9f99adf1d6cb45b18b13c25d5afa92bcd90.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 6ce7ffbed44e633fabca08181a98bf4767c1e41d Mon Sep 17 00:00:00 2001
+Message-Id: <6ce7ffbed44e633fabca08181a98bf4767c1e41d.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 29 Aug 2013 18:21:04 +0200
-Subject: [PATCH 153/329] ptrace: fix ptrace vs tasklist_lock race
+Subject: [PATCH 153/333] ptrace: fix ptrace vs tasklist_lock race
 
 As explained by Alexander Fyodorov <halcy@yandex.ru>:
 
@@ -122,7 +122,7 @@ index b93eb4eaf7ac..a38b304fb9fd 100644
  	}
  	spin_unlock_irq(&task->sighand->siglock);
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 9c20e213ef80..1fc8a3fcc34d 100644
+index c94224ddfb73..3128a5b95fd7 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -1349,6 +1349,18 @@ int migrate_swap(struct task_struct *cur, struct task_struct *p,

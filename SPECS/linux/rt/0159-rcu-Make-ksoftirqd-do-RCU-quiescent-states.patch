@@ -1,10 +1,10 @@
-From 4bb3f9983975f5f2ca73d8e9fd18e9ba57ad2796 Mon Sep 17 00:00:00 2001
-Message-Id: <4bb3f9983975f5f2ca73d8e9fd18e9ba57ad2796.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From a8d6420d2bcc49affefeff55880643639c1b56f1 Mon Sep 17 00:00:00 2001
+Message-Id: <a8d6420d2bcc49affefeff55880643639c1b56f1.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: "Paul E. McKenney" <paulmck@linux.vnet.ibm.com>
 Date: Wed, 5 Oct 2011 11:45:18 -0700
-Subject: [PATCH 159/329] rcu: Make ksoftirqd do RCU quiescent states
+Subject: [PATCH 159/333] rcu: Make ksoftirqd do RCU quiescent states
 
 Implementing RCU-bh in terms of RCU-preempt makes the system vulnerable
 to network-based denial-of-service attacks.  This patch therefore

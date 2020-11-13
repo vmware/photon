@@ -1,10 +1,10 @@
-From 000a39fe9c2683f5c4e4d51e0556638f942661b4 Mon Sep 17 00:00:00 2001
-Message-Id: <000a39fe9c2683f5c4e4d51e0556638f942661b4.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From d315a4cc99d6ee383c0e729b883df41c5907fdc5 Mon Sep 17 00:00:00 2001
+Message-Id: <d315a4cc99d6ee383c0e729b883df41c5907fdc5.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 26 Jul 2018 15:03:16 +0200
-Subject: [PATCH 056/329] efi: Disable runtime services on RT
+Subject: [PATCH 056/333] efi: Disable runtime services on RT
 
 Based on meassurements the EFI functions get_variable /
 get_next_variable take up to 2us which looks okay.
@@ -31,7 +31,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
-index 22cf4dd07b03..a2e3e3b34562 100644
+index 263459bc4d14..e03e37a053f2 100644
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
 @@ -87,7 +87,7 @@ struct mm_struct efi_mm = {

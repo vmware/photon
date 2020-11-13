@@ -1,10 +1,10 @@
-From 23ffee65aa85e7f8a6ebfcbb8f4c1901a7435cdf Mon Sep 17 00:00:00 2001
-Message-Id: <23ffee65aa85e7f8a6ebfcbb8f4c1901a7435cdf.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From a9b1e07c64c95f363df0bb9c89648e40e5cdec23 Mon Sep 17 00:00:00 2001
+Message-Id: <a9b1e07c64c95f363df0bb9c89648e40e5cdec23.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 21 Aug 2012 20:38:50 +0200
-Subject: [PATCH 227/329] random: Make it work on rt
+Subject: [PATCH 227/333] random: Make it work on rt
 
 Delegate the random insertion to the forced threaded interrupt
 handler. Store the return IP of the hard interrupt handler in the irq
@@ -23,7 +23,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  7 files changed, 26 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index d5f970d039bb..838950ff569f 100644
+index 80dedecfe15c..a446100b61d9 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
 @@ -1232,28 +1232,27 @@ static __u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
@@ -79,10 +79,10 @@ index 12bc9fa21111..278f03f50147 100644
  
  static int hv_ce_set_next_event(unsigned long delta,
 diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index fb22b72fd535..cfbcc2dce208 100644
+index 0699c6018889..cb106e256fc6 100644
 --- a/drivers/hv/vmbus_drv.c
 +++ b/drivers/hv/vmbus_drv.c
-@@ -1070,6 +1070,8 @@ static void vmbus_isr(void)
+@@ -1074,6 +1074,8 @@ static void vmbus_isr(void)
  	void *page_addr = hv_cpu->synic_event_page;
  	struct hv_message *msg;
  	union hv_synic_event_flags *event;
@@ -91,7 +91,7 @@ index fb22b72fd535..cfbcc2dce208 100644
  	bool handled = false;
  
  	if (unlikely(page_addr == NULL))
-@@ -1113,7 +1115,7 @@ static void vmbus_isr(void)
+@@ -1117,7 +1119,7 @@ static void vmbus_isr(void)
  			tasklet_schedule(&hv_cpu->msg_dpc);
  	}
  
@@ -113,7 +113,7 @@ index 875c41b23f20..ff5eb8d1ede4 100644
  	struct cpumask		*percpu_enabled;
  	const struct cpumask	*percpu_affinity;
 diff --git a/include/linux/random.h b/include/linux/random.h
-index 445a0ea4ff49..a7b7d9f97580 100644
+index 37209b3b22ae..c4342f7658cd 100644
 --- a/include/linux/random.h
 +++ b/include/linux/random.h
 @@ -32,7 +32,7 @@ static inline void add_latent_entropy(void) {}
@@ -148,10 +148,10 @@ index 38554bc35375..06a80bbf78af 100644
  	if (!noirqdebug)
  		note_interrupt(desc, retval);
 diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index 1a3cf77b11f8..9591a451e05a 100644
+index a68fec893dbf..4051708339a3 100644
 --- a/kernel/irq/manage.c
 +++ b/kernel/irq/manage.c
-@@ -1063,6 +1063,12 @@ static int irq_thread(void *data)
+@@ -1100,6 +1100,12 @@ static int irq_thread(void *data)
  		if (action_ret == IRQ_WAKE_THREAD)
  			irq_wake_secondary(desc, action);
  

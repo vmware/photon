@@ -1,10 +1,10 @@
-From 4bf6bad97c9674124fcbb9e9a7296fb9ca3182b0 Mon Sep 17 00:00:00 2001
-Message-Id: <4bf6bad97c9674124fcbb9e9a7296fb9ca3182b0.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 9924afc02a07d4e9c307a5f2813580bf809b4e0c Mon Sep 17 00:00:00 2001
+Message-Id: <9924afc02a07d4e9c307a5f2813580bf809b4e0c.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 17 Jul 2011 21:56:42 +0200
-Subject: [PATCH 116/329] trace: Add migrate-disabled counter to tracing output
+Subject: [PATCH 116/333] trace: Add migrate-disabled counter to tracing output
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
@@ -28,7 +28,7 @@ index 0643c083ed86..1cc4d2da954c 100644
  
  #define TRACE_EVENT_TYPE_MAX						\
 diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 4966410bb0f4..a7b187f74f34 100644
+index 6bf617ff0369..121ced1269b1 100644
 --- a/kernel/trace/trace.c
 +++ b/kernel/trace/trace.c
 @@ -2151,6 +2151,8 @@ tracing_generic_entry_update(struct trace_entry *entry, unsigned long flags,
@@ -40,7 +40,7 @@ index 4966410bb0f4..a7b187f74f34 100644
  }
  EXPORT_SYMBOL_GPL(tracing_generic_entry_update);
  
-@@ -3354,9 +3356,10 @@ static void print_lat_help_header(struct seq_file *m)
+@@ -3357,9 +3359,10 @@ static void print_lat_help_header(struct seq_file *m)
  		    "#                | / _----=> need-resched    \n"
  		    "#                || / _---=> hardirq/softirq \n"
  		    "#                ||| / _--=> preempt-depth   \n"
@@ -55,7 +55,7 @@ index 4966410bb0f4..a7b187f74f34 100644
  
  static void print_event_info(struct trace_buffer *buf, struct seq_file *m)
 diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
-index ec340e1cbffc..1febb0ca4c81 100644
+index 0fc06a7da87f..b1c1170d2236 100644
 --- a/kernel/trace/trace_events.c
 +++ b/kernel/trace/trace_events.c
 @@ -188,6 +188,8 @@ static int trace_define_common_fields(void)

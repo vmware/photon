@@ -1,10 +1,10 @@
-From 6b3e471581877b22e9fbfb1e6472956c9efa7705 Mon Sep 17 00:00:00 2001
-Message-Id: <6b3e471581877b22e9fbfb1e6472956c9efa7705.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From de4bafaca5afbdcb0d3febdb4278a68920b595d9 Mon Sep 17 00:00:00 2001
+Message-Id: <de4bafaca5afbdcb0d3febdb4278a68920b595d9.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Grygorii Strashko <Grygorii.Strashko@linaro.org>
 Date: Tue, 21 Jul 2015 19:43:56 +0300
-Subject: [PATCH 132/329] pid.h: include atomic.h
+Subject: [PATCH 132/333] pid.h: include atomic.h
 
 This patch fixes build error:
   CC      kernel/pid_namespace.o

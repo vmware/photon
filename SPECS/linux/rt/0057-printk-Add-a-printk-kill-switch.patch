@@ -1,10 +1,10 @@
-From 4ffb1d59149f330e94cf7d65a55d7129cc29a07c Mon Sep 17 00:00:00 2001
-Message-Id: <4ffb1d59149f330e94cf7d65a55d7129cc29a07c.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 9c745045f4e7779273f7bdce442c371a903c9c55 Mon Sep 17 00:00:00 2001
+Message-Id: <9c745045f4e7779273f7bdce442c371a903c9c55.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Ingo Molnar <mingo@elte.hu>
 Date: Fri, 22 Jul 2011 17:58:40 +0200
-Subject: [PATCH 057/329] printk: Add a printk kill switch
+Subject: [PATCH 057/333] printk: Add a printk kill switch
 
 Add a prinkt-kill-switch. This is used from (NMI) watchdog to ensure that
 it does not dead-lock with the early printk code.
@@ -17,7 +17,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  3 files changed, 71 insertions(+), 20 deletions(-)
 
 diff --git a/include/linux/printk.h b/include/linux/printk.h
-index cf3eccfe1543..30ebf5f82a7c 100644
+index 6dd867e39365..b9d050428456 100644
 --- a/include/linux/printk.h
 +++ b/include/linux/printk.h
 @@ -140,9 +140,11 @@ struct va_format {
@@ -33,7 +33,7 @@ index cf3eccfe1543..30ebf5f82a7c 100644
  
  #ifdef CONFIG_PRINTK_NMI
 diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
-index 7a2fdc097c8c..29838e532f46 100644
+index cf272aba362b..f1eddc8279f2 100644
 --- a/kernel/printk/printk.c
 +++ b/kernel/printk/printk.c
 @@ -405,6 +405,58 @@ DEFINE_RAW_SPINLOCK(logbuf_lock);
@@ -95,7 +95,7 @@ index 7a2fdc097c8c..29838e532f46 100644
  #ifdef CONFIG_PRINTK
  DECLARE_WAIT_QUEUE_HEAD(log_wait);
  /* the next printk record to read by syslog(READ) or /proc/kmsg */
-@@ -1905,6 +1957,13 @@ asmlinkage int vprintk_emit(int facility, int level,
+@@ -1933,6 +1985,13 @@ asmlinkage int vprintk_emit(int facility, int level,
  	unsigned long flags;
  	u64 curr_log_seq;
  
@@ -109,7 +109,7 @@ index 7a2fdc097c8c..29838e532f46 100644
  	if (level == LOGLEVEL_SCHED) {
  		level = LOGLEVEL_DEFAULT;
  		in_sched = true;
-@@ -2049,26 +2108,6 @@ static bool suppress_message_printing(int level) { return false; }
+@@ -2077,26 +2136,6 @@ static bool suppress_message_printing(int level) { return false; }
  
  #endif /* CONFIG_PRINTK */
  

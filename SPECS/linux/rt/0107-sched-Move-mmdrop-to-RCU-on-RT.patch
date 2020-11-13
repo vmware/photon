@@ -1,10 +1,10 @@
-From d91e269d2b5e4934af93621c9b40c63bd78b7c4d Mon Sep 17 00:00:00 2001
-Message-Id: <d91e269d2b5e4934af93621c9b40c63bd78b7c4d.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From faa90a8ff5c69c6be5bacc23068fa34bc7615db7 Mon Sep 17 00:00:00 2001
+Message-Id: <faa90a8ff5c69c6be5bacc23068fa34bc7615db7.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Mon, 6 Jun 2011 12:20:33 +0200
-Subject: [PATCH 107/329] sched: Move mmdrop to RCU on RT
+Subject: [PATCH 107/333] sched: Move mmdrop to RCU on RT
 
 Takes sleeping locks and calls into the memory allocator, so nothing
 we want to do in task switch and oder atomic contexts.
@@ -86,10 +86,10 @@ index 309f4a20d4ac..d4ec53c72577 100644
  {
  	struct mm_struct *mm;
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 1fe932aac00f..fae976506632 100644
+index 87c04b6a78d2..ec979c93a488 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -2729,9 +2729,13 @@ static struct rq *finish_task_switch(struct task_struct *prev)
+@@ -2731,9 +2731,13 @@ static struct rq *finish_task_switch(struct task_struct *prev)
  	 *   provided by mmdrop(),
  	 * - a sync_core for SYNC_CORE.
  	 */
@@ -104,7 +104,7 @@ index 1fe932aac00f..fae976506632 100644
  	}
  	if (unlikely(prev_state == TASK_DEAD)) {
  		if (prev->sched_class->task_dead)
-@@ -5602,6 +5606,7 @@ void sched_setnuma(struct task_struct *p, int nid)
+@@ -5604,6 +5608,7 @@ void sched_setnuma(struct task_struct *p, int nid)
  #endif /* CONFIG_NUMA_BALANCING */
  
  #ifdef CONFIG_HOTPLUG_CPU

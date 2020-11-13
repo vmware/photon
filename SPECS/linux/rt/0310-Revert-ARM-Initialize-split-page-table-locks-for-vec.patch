@@ -1,10 +1,10 @@
-From 80e65b14339d324ee5558ecf6b199ef64761ce76 Mon Sep 17 00:00:00 2001
-Message-Id: <80e65b14339d324ee5558ecf6b199ef64761ce76.1594742967.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 6306c3c06efc287821471e9fc8ca38ec22f35eb2 Mon Sep 17 00:00:00 2001
+Message-Id: <6306c3c06efc287821471e9fc8ca38ec22f35eb2.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 18 Oct 2019 13:04:15 +0200
-Subject: [PATCH 310/329] Revert "ARM: Initialize split page table locks for
+Subject: [PATCH 310/333] Revert "ARM: Initialize split page table locks for
  vector page"
 
 [ Upstream commit 247074c44d8c3e619dfde6404a52295d8d671d38 ]

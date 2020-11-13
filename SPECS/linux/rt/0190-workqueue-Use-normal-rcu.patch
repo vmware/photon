@@ -1,10 +1,10 @@
-From 64a91064b24a6f930c3d94ca1eb20013ac5b7b01 Mon Sep 17 00:00:00 2001
-Message-Id: <64a91064b24a6f930c3d94ca1eb20013ac5b7b01.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 73c1399f26046f6e455759c6021cb61014616c83 Mon Sep 17 00:00:00 2001
+Message-Id: <73c1399f26046f6e455759c6021cb61014616c83.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 24 Jul 2013 15:26:54 +0200
-Subject: [PATCH 190/329] workqueue: Use normal rcu
+Subject: [PATCH 190/333] workqueue: Use normal rcu
 
 There is no need for sched_rcu. The undocumented reason why sched_rcu
 is used is to avoid a few explicit rcu_read_lock()/unlock() pairs by

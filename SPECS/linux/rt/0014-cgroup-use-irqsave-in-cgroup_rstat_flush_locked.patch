@@ -1,10 +1,10 @@
-From aabbb543ca4b9a9bc2922b2c0b5538fd8c1460b8 Mon Sep 17 00:00:00 2001
-Message-Id: <aabbb543ca4b9a9bc2922b2c0b5538fd8c1460b8.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From e0cd2e92ffe68b4e88caafc7c006f845db42e755 Mon Sep 17 00:00:00 2001
+Message-Id: <e0cd2e92ffe68b4e88caafc7c006f845db42e755.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 3 Jul 2018 18:19:48 +0200
-Subject: [PATCH 014/329] cgroup: use irqsave in cgroup_rstat_flush_locked()
+Subject: [PATCH 014/333] cgroup: use irqsave in cgroup_rstat_flush_locked()
 
 All callers of cgroup_rstat_flush_locked() acquire cgroup_rstat_lock
 either with spin_lock_irq() or spin_lock_irqsave().

@@ -1,10 +1,10 @@
-From d21255321c6af2fa14dc3c940f2da153d911a4f7 Mon Sep 17 00:00:00 2001
-Message-Id: <d21255321c6af2fa14dc3c940f2da153d911a4f7.1594742967.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From d719b50749a48aa1771c8c2181aba5bd0ea6f708 Mon Sep 17 00:00:00 2001
+Message-Id: <d719b50749a48aa1771c8c2181aba5bd0ea6f708.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Scott Wood <swood@redhat.com>
 Date: Sat, 27 Jul 2019 00:56:32 -0500
-Subject: [PATCH 299/329] sched: __set_cpus_allowed_ptr: Check cpus_mask, not
+Subject: [PATCH 299/333] sched: __set_cpus_allowed_ptr: Check cpus_mask, not
  cpus_ptr
 
 [ Upstream commit e5606fb7b042db634ed62b4dd733d62e050e468f ]
@@ -24,7 +24,7 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 593aa5c2f394..c2aebfab8556 100644
+index 07b70eb3660f..357bf627799f 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -1157,7 +1157,7 @@ static int __set_cpus_allowed_ptr(struct task_struct *p,

@@ -1,10 +1,10 @@
-From ab81e84c1791a02eb1efe5eafb7dda84a67bb17f Mon Sep 17 00:00:00 2001
-Message-Id: <ab81e84c1791a02eb1efe5eafb7dda84a67bb17f.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From befc6ffad8ea0ff95a0e57f7efdeb4efe0aec912 Mon Sep 17 00:00:00 2001
+Message-Id: <befc6ffad8ea0ff95a0e57f7efdeb4efe0aec912.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
 Date: Fri, 20 Sep 2019 17:50:54 -0400
-Subject: [PATCH 283/329] revert-block
+Subject: [PATCH 283/333] revert-block
 
 Revert swork version of: block: blk-mq: move blk_queue_usage_counter_release() into process context
 
@@ -17,7 +17,7 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  2 files changed, 1 insertion(+), 15 deletions(-)
 
 diff --git a/block/blk-core.c b/block/blk-core.c
-index 13bf37156bb0..4860cd26cd5a 100644
+index 964da7e39870..8926b5d998fa 100644
 --- a/block/blk-core.c
 +++ b/block/blk-core.c
 @@ -973,21 +973,12 @@ void blk_queue_exit(struct request_queue *q)
@@ -43,7 +43,7 @@ index 13bf37156bb0..4860cd26cd5a 100644
  }
  
  static void blk_rq_timed_out_timer(struct timer_list *t)
-@@ -1084,7 +1075,6 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id,
+@@ -1086,7 +1077,6 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id,
  	queue_flag_set_unlocked(QUEUE_FLAG_BYPASS, q);
  
  	init_waitqueue_head(&q->mq_freeze_wq);
@@ -51,7 +51,7 @@ index 13bf37156bb0..4860cd26cd5a 100644
  
  	/*
  	 * Init percpu_ref in atomic mode so that it's faster to shutdown.
-@@ -3974,8 +3964,6 @@ int __init blk_dev_init(void)
+@@ -3976,8 +3966,6 @@ int __init blk_dev_init(void)
  	if (!kblockd_workqueue)
  		panic("Failed to create kblockd\n");
  

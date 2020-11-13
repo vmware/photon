@@ -1,10 +1,10 @@
-From 6d433304f1894bb7aefb0b6e58e8e41e5e18a6b4 Mon Sep 17 00:00:00 2001
-Message-Id: <6d433304f1894bb7aefb0b6e58e8e41e5e18a6b4.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 890aeaf492e76b7b0e7dfd78b1979bc3017feaf8 Mon Sep 17 00:00:00 2001
+Message-Id: <890aeaf492e76b7b0e7dfd78b1979bc3017feaf8.1604089290.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 6 Nov 2011 12:26:18 +0100
-Subject: [PATCH 090/329] x86: kvm Require const tsc for RT
+Subject: [PATCH 090/333] x86: kvm Require const tsc for RT
 
 Non constant TSC is a nightmare on bare metal already, but with
 virtualization it becomes a complete disaster because the workarounds
@@ -17,10 +17,10 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  1 file changed, 7 insertions(+)
 
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 0aa5c4134b90..5dcb794b88e2 100644
+index dd182228be71..29d869a3879d 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -6848,6 +6848,13 @@ int kvm_arch_init(void *opaque)
+@@ -6857,6 +6857,13 @@ int kvm_arch_init(void *opaque)
  		goto out;
  	}
  

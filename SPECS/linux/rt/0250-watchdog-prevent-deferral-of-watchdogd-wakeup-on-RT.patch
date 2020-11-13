@@ -1,10 +1,10 @@
-From cc76e3461b86d564e0fe0a8eded6357a6a6feea3 Mon Sep 17 00:00:00 2001
-Message-Id: <cc76e3461b86d564e0fe0a8eded6357a6a6feea3.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From 02908e2e2451f22b431fddfc6e9b34246a480418 Mon Sep 17 00:00:00 2001
+Message-Id: <02908e2e2451f22b431fddfc6e9b34246a480418.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Julia Cartwright <julia@ni.com>
 Date: Fri, 28 Sep 2018 21:03:51 +0000
-Subject: [PATCH 250/329] watchdog: prevent deferral of watchdogd wakeup on RT
+Subject: [PATCH 250/333] watchdog: prevent deferral of watchdogd wakeup on RT
 
 When PREEMPT_RT_FULL is enabled, all hrtimer expiry functions are
 deferred for execution into the context of ktimersoftd unless otherwise
@@ -39,7 +39,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/watchdog/watchdog_dev.c b/drivers/watchdog/watchdog_dev.c
-index 1c322caec..822a0a20d 100644
+index 1c322caecf7f..822a0a20da2e 100644
 --- a/drivers/watchdog/watchdog_dev.c
 +++ b/drivers/watchdog/watchdog_dev.c
 @@ -145,7 +145,7 @@ static inline void watchdog_update_worker(struct watchdog_device *wdd)

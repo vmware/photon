@@ -1,10 +1,10 @@
-From 9f19a10ac9dade26a00dc5f2858f6fcb7a8235c9 Mon Sep 17 00:00:00 2001
-Message-Id: <9f19a10ac9dade26a00dc5f2858f6fcb7a8235c9.1594742966.git.zanussi@kernel.org>
-In-Reply-To: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
-References: <832f7d97d6b989a5b4860dd2dbec58ad6ad5ab81.1594742966.git.zanussi@kernel.org>
+From a41fe9b56eb4d377811fd23e3c9b3e18946c736b Mon Sep 17 00:00:00 2001
+Message-Id: <a41fe9b56eb4d377811fd23e3c9b3e18946c736b.1604089291.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 5 Jul 2018 14:44:51 +0200
-Subject: [PATCH 155/329] sched/migrate_disable: fallback to preempt_disable()
+Subject: [PATCH 155/333] sched/migrate_disable: fallback to preempt_disable()
  instead barrier()
 
 On SMP + !RT migrate_disable() is still around. It is not part of spin_lock()
@@ -96,7 +96,7 @@ index 50197f5c4506..4a4f03a8d8d4 100644
  # endif
  #endif
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index e3f838371f94..20842da53a59 100644
+index d10698fa8cad..453e1a45dcbf 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -1031,7 +1031,7 @@ void set_cpus_allowed_common(struct task_struct *p, const struct cpumask *new_ma
@@ -126,7 +126,7 @@ index e3f838371f94..20842da53a59 100644
  	if (__migrate_disabled(p)) {
  		p->migrate_disable_update = 1;
  		goto out;
-@@ -7203,7 +7203,7 @@ const u32 sched_prio_to_wmult[40] = {
+@@ -7205,7 +7205,7 @@ const u32 sched_prio_to_wmult[40] = {
  
  #undef CREATE_TRACE_POINTS
  
@@ -135,7 +135,7 @@ index e3f838371f94..20842da53a59 100644
  
  static inline void
  update_nr_migratory(struct task_struct *p, long delta)
-@@ -7351,45 +7351,44 @@ EXPORT_SYMBOL(migrate_enable);
+@@ -7353,45 +7353,44 @@ EXPORT_SYMBOL(migrate_enable);
  #elif !defined(CONFIG_SMP) && defined(CONFIG_PREEMPT_RT_BASE)
  void migrate_disable(void)
  {
