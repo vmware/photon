@@ -1,7 +1,7 @@
 %{!?python2_sitelib: %global python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
-Version:        6.0.1
+Version:        10.0.1
 Release:        1%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
@@ -9,7 +9,7 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
-%define sha1    lldb=907a32c7170067f485121a1e8ff793b16d1ff491
+%define sha1    lldb=90b946ff7b850bcded598509a10d0795e7da3f63
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
 BuildRequires:  clang-devel = %{version}
@@ -17,6 +17,7 @@ BuildRequires:  ncurses-devel
 BuildRequires:  swig
 BuildRequires:  zlib-devel
 BuildRequires:  libxml2-devel
+BuildRequires:  python2-devel
 Requires:       llvm = %{version}
 Requires:       clang = %{version}
 Requires:       ncurses
@@ -24,24 +25,23 @@ Requires:       zlib
 Requires:       libxml2
 
 %description
-LLDB is a next generation, high-performance debugger. It is built as a set of reusable components which highly leverage existing libraries in the larger LLVM Project, such as the Clang expression parser and LLVM disassembler.
+LLDB is a next generation, high-performance debugger.
+It is built as a set of reusable components which highly leverage existing libraries in the larger LLVM Project,
+such as the Clang expression parser and LLVM disassembler.
 
-%package devel
+%package        devel
 Summary:        Development headers for lldb
 Requires:       %{name} = %{version}-%{release}
-
-%description devel
+%description    devel
 The lldb-devel package contains libraries, header files and documentation
 for developing applications that use lldb.
 
-%package -n python-lldb
+%package -n     python-lldb
 Summary:        Python module for lldb
 Requires:       %{name} = %{version}-%{release}
-BuildRequires:  python2-devel
 Requires:       python-six
-
 %description -n python-lldb
-The package contains the LLDB Python module.
+The package contains the LLDB Python3 module.
 
 %prep
 %setup -q -n %{name}-%{version}.src
@@ -56,7 +56,6 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr           \
       -DLLVM_DIR=/usr/lib/cmake/llvm        \
       -DLLVM_BUILD_LLVM_DYLIB=ON ..         \
       -DLLDB_DISABLE_LIBEDIT:BOOL=ON
-
 make %{?_smp_mflags}
 
 %install
@@ -86,7 +85,6 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_libdir}/liblldb.so
 %{_libdir}/liblldbIntelFeatures.so
-%{_libdir}/*.a
 %{_includedir}/*
 
 %files -n python-lldb
@@ -94,6 +92,8 @@ rm -rf %{buildroot}/*
 %{python2_sitelib}/*
 
 %changelog
+*   Wed Nov 11 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.0.1-1
+-   Version Bump to 10.0.1
 *   Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.0.1-1
 -   Update to version 6.0.1 to get it to build with gcc 7.3
 -   Make python2_sitelib macro global to fix build error.

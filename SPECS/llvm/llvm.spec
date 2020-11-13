@@ -1,14 +1,14 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
-Version:        6.0.1
-Release:        3%{?dist}
+Version:        10.0.1
+Release:        1%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
-%define sha1    llvm=09a6316c5225cab255ba12391e7abe5ff4d28935
+%define sha1    llvm=25d07260f3b7bf4f647e115c4a663fdeda130fbd
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
 BuildRequires:  libffi-devel
@@ -16,13 +16,14 @@ BuildRequires:  python2
 Requires:       libxml2
 
 %description
-The LLVM Project is a collection of modular and reusable compiler and toolchain technologies. Despite its name, LLVM has little to do with traditional virtual machines, though it does provide helpful libraries that can be used to build them. The name "LLVM" itself is not an acronym; it is the full name of the project.
+The LLVM Project is a collection of modular and reusable compiler and toolchain technologies.
+Despite its name, LLVM has little to do with traditional virtual machines, though it does provide helpful libraries that can be used to build them.
+The name "LLVM" itself is not an acronym; it is the full name of the project.
 
-%package devel
+%package        devel
 Summary:        Development headers for llvm
 Requires:       %{name} = %{version}-%{release}
-
-%description devel
+%description    devel
 The llvm-devel package contains libraries, header files and documentation
 for developing applications that use llvm.
 
@@ -33,13 +34,13 @@ for developing applications that use llvm.
 mkdir -p build
 cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr           \
-      -DLLVM_ENABLE_FFI=ON                  \
+      -DLLVM_ENABLE_FFI=BOOL=ON                  \
       -DCMAKE_BUILD_TYPE=Release            \
-      -DLLVM_BUILD_LLVM_DYLIB=ON            \
+      -DLLVM_BUILD_LLVM_DYLIB=BOOL=ON            \
       -DLLVM_TARGETS_TO_BUILD="host;AMDGPU;BPF" \
       -DLLVM_INCLUDE_GO_TESTS=No            \
+      -DLLVM_ENABLE_RTTI:BOOL=ON            \
       -Wno-dev ..
-
 make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
@@ -71,13 +72,15 @@ rm -rf %{buildroot}/*
 %{_datadir}/opt-viewer/optrecord.py
 %{_datadir}/opt-viewer/style.css
 
-
 %files devel
 %{_libdir}/*.a
 %{_libdir}/cmake/*
 %{_includedir}/*
 
 %changelog
+*   Wed Nov 11 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.0.1-1
+-   Version Bump to 10.0.1
+-   Enable LLVM_ENABLE_RTTI
 *   Mon Jan 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 6.0.1-3
 -   Added python2 dependency
 *   Wed Jun 26 2019 Keerthana K <keerthanak@vmware.com> 6.0.1-2
