@@ -39,7 +39,7 @@ def get(package, source, sha1, sourcesPath, URLs, logger):
             logger.info("sha1 of " + sourcePath[0] + " does not match. " + sha1 +
                         " vs " + getFileHash(sourcePath[0]))
     for baseurl in URLs:
-        #form url: https://dl.bintray.com/vmware/photon_sources/1.0/<filename>.
+        #form url: https://packages.vmware.com/photon/photon_sources/1.0/<filename>.
         url = '%s/%s' % (baseurl, source)
         destfile = os.path.join(sourcesPath, source)
         logger.debug("Downloading: " + url)

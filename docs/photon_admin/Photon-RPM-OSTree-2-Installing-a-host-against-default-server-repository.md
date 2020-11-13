@@ -12,7 +12,7 @@ This is also the fastest way to install a host, as we've included in the ISO/cdr
 
 ## Installing the ISO
 
-User will first download [Photon 3.0 ISO file](https://bintray.com/artifact/download/vmware/photon/photon-1.0-13c08b6.iso) that contains the installer, which is able to deploy any of the supported Photon installation profiles.
+User will first download [Photon 3.0 ISO file](https://packages.vmware.com/photon/3.0/Rev2/iso/photon-3.0-58f9c74.iso) that contains the installer, which is able to deploy any of the supported Photon installation profiles.
 
 There are some steps common to all Photon installation profiles, starting with adding a VM in VMware Fusion, Workstation or ESXi, selecting the OS family, then customizing for disk size, CPU, memory size, network interface etc. (or leaving the defaults) and selecting the ISO image as cdrom. The installer will launch, that will go through disk partitioning and accepting the license agreement screens, followed by selecting an installation profile.
 These steps are described at the page linked below, so I won't repeat them, just that instead of setting up a Photon Minimal profile, we will install a Photon OSTree host:   

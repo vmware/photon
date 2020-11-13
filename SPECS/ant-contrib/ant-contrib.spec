@@ -1,14 +1,14 @@
 Summary:	Ant contrib
 Name:		ant-contrib
 Version:	1.0b3
-Release:	14%{?dist}
+Release:	15%{?dist}
 License:	Apache
 URL:		http://ant-contrib.sourceforget.net
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      noarch
-Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}-src.tar.gz
+Source0:	https://packages.vmware.com/photon/photon_sources/1.0/%{name}-%{version}-src.tar.gz
 %define sha1 ant-contrib=b28d2bf18656b263611187fa9fbb95cec93d47c8
 Patch0:         use-system-provided-commons-httpclient-jar.patch
 BuildRequires: openjre8
@@ -49,6 +49,8 @@ cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.
 %{_prefix}/lib/*.jar
 
 %changelog
+*   Thu Nov 12 2020 Michelle Wang <michellew@vmware.com> 1.0b3-15
+-   Update Source0 use https://packages.vmware.com/photon/photon_sources
 *   Tue Oct 06 2020 Ankit Jain <ankitja@vmware.com> 1.0b3-14
 -   Use systems commons-httpclient
 *   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 1.0b3-13
@@ -63,8 +65,8 @@ cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.
 -   Updated JAVA_HOME path to point to latest.
 *   Tue Oct 04 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0b3-8
 -   Updated JAVA_HOME path to point to latest.
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0b3-7
--	GA - Bump release of all rpms
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0b3-7
+-   GA - Bump release of all rpms
 *   Fri May 20 2016 Divya Thaluru<dthaluru@vmware.com> 1.0b3-6
 -   Updated JAVA_HOME path to point to latest.
 *   Wed Mar 02 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.0b3.0-5

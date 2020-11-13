@@ -13,7 +13,7 @@ Before you use Photon OS with Amazon Elastic Cloud Compute(AWS EC2), perform the
 
 1. Download the Photon OS image for Amazon. 
 
-   VMware packages Photon OS as a cloud-ready Amazon machine image (AMI) that you can download for free from [Bintray](https://bintray.com/vmware/photon).
+   VMware packages Photon OS as a cloud-ready Amazon machine image (AMI) that you can download for free from [https://packages.vmware.com/photon](https://packages.vmware.com/photon).
 
    Download the Photon OS AMI and save it on your workstation. For more infromation, see [Downloading Photon OS](Downloading-Photon-OS.md).
 

@@ -173,7 +173,7 @@ The following are the contents of the `photon-packer-templates/vars/iso-3.0GA.js
 {
    "product_version" : "3.0GA",
    "iso_sha1sum" : "1c38dd6d00e11d3cbf7768ce93fc3eb8913a9673",
-   "iso_file" : "http://dl.bintray.com/vmware/photon/3.0/GA/iso/photon-3.0-26156e2.iso"
+   "iso_file" : "https://packages.vmware.com/photon/3.0/GA/iso/photon-3.0-26156e2.iso"
 }
 ```
 

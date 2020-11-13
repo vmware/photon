@@ -936,7 +936,7 @@ def set_default_value_of_config():
 
     global configdict
 
-    configdict["pull-sources-config"] = os.path.join(curDir , "support/package-builder/bintray.conf")
+    configdict["pull-sources-config"] = os.path.join(curDir , "support/package-builder/sources.conf")
     configdict.setdefault("additional-path", {}).setdefault("photon-cache-path", None)
     configdict["photon-build-param"]["input-photon-build-number"]=subprocess.check_output(["git rev-parse --short HEAD"], shell=True).decode('ASCII').rstrip()
     configdict.setdefault('additional-path', {}).setdefault('photon-sources-path', None)

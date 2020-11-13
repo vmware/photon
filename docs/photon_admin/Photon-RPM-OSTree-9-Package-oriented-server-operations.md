@@ -84,16 +84,16 @@ Going back to our JSON file, **repos** is a multi-value setting that tells RPM-O
 root [ /srv/rpm-ostree ]# cat /etc/yum.repos.d/photon.repo 
 [photon]
 name=VMware Photon Linux 3.0(x86_64)
-baseurl=https://dl.bintray.com/vmware/photon_release_$releasever_$basearch
+baseurl=https://packages.vmware.com/photon/$releasever/photon_release_$releasever_$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
 skip_if_unavailable=True
 ```
 
-In this case, `rpm-ostree` is instructed to download its packages in RPM format from the bintray URL, that is the location of an online RPMS repo maintained by the WMware Photon OS team. To make sure those packages are genuine, signed by VMware, the signature is checked against the official VMware public key.
+In this case, `rpm-ostree` is instructed to download its packages in RPM format from the https://packages.vmware.com/photon URL, that is the location of an online RPMS repo maintained by the WMware Photon OS team. To make sure those packages are genuine, signed by VMware, the signature is checked against the official VMware public key.
 
-So what's in an RPMS repository? If we point the browser to https://dl.bintray.com/vmware/photon_release_3.0_x86_64, we can see there are three top directories:
+So what's in an RPMS repository? If we point the browser to https://packages.vmware.com/photon/3.0/photon_release_3.0_x86_64/, we can see there are three top directories:
 * noarch - where all packages that don't depend on the architecture reside. Those may contain scripts, platform neutral source files, configuration.
 * x86_64 - platform dependent packages for Intel 32 and 64 bits CPUs.
 * repodata - internal repo management data, like a catalog of all packages, and for every package its name, id, version, architecture and full path file/directory list. There is also a compressed XML file containing the history of changelogs extracted from github, as packages in RPM format were built by Photon OS team members from sources.
@@ -248,7 +248,7 @@ This takes several minutes. Then why is the RPM-OSTree server installing so fast
 ## Automatic version prefix
 
 If you recall the filetree version explained earlier, this is where it comes into play. When a tree is composed from scratch, the first version (0) associated to the initial commit is going to get that human readable value. Any subsequent compose operation will auto-increment to .1, .2, .3 and so on.  
-It's a good idea to start a versionning scheme of your own, so that your customized Photon builds that may get different packages of your choice don't get the same version numbers as the official Photon team builds, coming from VMware's bintray OSTree repository. There is no conflict, it's just confusing to have same name for different commits coming from different repos,  
+It's a good idea to start a versionning scheme of your own, so that your customized Photon builds that may get different packages of your choice don't get the same version numbers as the official Photon team builds, coming from VMware's OSTree repository in https://packages.vmware.com/photon. There is no conflict, it's just confusing to have same name for different commits coming from different repos,  
 So if you work for a company named Big Data Inc., you may want to switch to a new versioning scheme `"automatic_version_prefix": "1.0_bigdata"`.
 
 ## Installing package updates

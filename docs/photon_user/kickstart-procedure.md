@@ -30,7 +30,7 @@ To build Photon OS manually, run the following:
 
 ```
 packer build \
-        -var 'iso_file=http://dl.bintray.com/vmware/photon/3.0/GA/iso/photon-3.0-26156e2.iso' \
+        -var 'iso_file=https://packages.vmware.com/photon/3.0/GA/iso/photon-3.0-26156e2.iso' \
         -var 'iso_sha1sum=1c38dd6d00e11d3cbf7768ce93fc3eb8913a9673' \
         -var 'product_version=3.0GA' \
         packer-photon.json
@@ -49,7 +49,7 @@ or:
 ```
 packer build \
        -only=vagrant-vmware_desktop \
-       -var 'iso_file= http://dl.bintray.com/vmware/photon/3.0/GA/iso/photon-3.0-26156e2.iso ' \
+       -var 'iso_file= https://packages.vmware.com/photon/3.0/GA/iso/photon-3.0-26156e2.iso ' \
        -var 'iso_sha1sum= 1c38dd6d00e11d3cbf7768ce93fc3eb8913a9673' \
        -var 'product_version=3.0GA' \
        packer-photon.json

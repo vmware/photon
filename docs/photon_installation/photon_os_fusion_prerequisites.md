@@ -26,7 +26,7 @@ Before you use Photon OS within Fusion, perform the following prerequisite tasks
 	</tr>
 	<tr>
 	<td>Distribution File</td>
-	<td>Photon OS ISO or OVA file downloaded from bintray (<a href="https://bintray.com/vmware/photon/">https://bintray.com/vmware/photon/</a>).</td>
+	<td>Photon OS ISO or OVA file downloaded from (<a href="https://packages.vmware.com/photon">https://packages.vmware.com/photon/</a>).</td>
 	</tr>
 	</tbody>
 	</table>
@@ -42,8 +42,8 @@ Before you use Photon OS within Fusion, perform the following prerequisite tasks
 
     To get Photon OS up and running quickly, use the OVA.
     
-1. Download Photon OS. Go to the following Bintray URL and download the latest release of Photon OS:
+1. Download Photon OS. Go to the following URL and download the latest release of Photon OS:
 
-    [https://bintray.com/vmware/photon/](https://bintray.com/vmware/photon/)
+    [https://packages.vmware.com/photon/](https://packages.vmware.com/photon/)
     
     For instructions, see [Downloading Photon OS](Downloading-Photon-OS.md).

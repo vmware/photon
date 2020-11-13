@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.10.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -12,7 +12,7 @@ Source0:	http://apache.mirrors.lucidnetworks.net//ant/source/%{name}-%{version}-
 %define sha1 apache-ant=74027a785d96715f61619b0a4d9296517bba3aa5
 Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
-Source2:    http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
+Source2:    https://packages.vmware.com/photon/photon_sources/1.0//maven-ant-tasks-2.1.3.tar.gz
 %define sha1 maven-ant-tasks=f38c0cc7b38007b09638366dbaa4ee902d9c255b
 Requires:      openjre8
 BuildRequires: openjre8
@@ -122,6 +122,8 @@ bootstrap/bin/ant -v run-tests
 %{_bindir}/runant.pl
 
 %changelog
+*   Thu Nov 12 2020 Michelle Wang <michellew@vmware.com> 1.10.8-2
+-   Update Source0 with using https://packages.vmware.com/photon
 *   Mon Jul 27 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.8-1
 -   Bump to version 1.10.8
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.10.5-5

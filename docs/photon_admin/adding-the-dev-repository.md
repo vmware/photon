@@ -9,7 +9,7 @@ Perform th following steps:
 cat > /etc/yum.repos.d/photon-dev.repo << "EOF" 
     [photon-dev]
     name=VMware Photon Linux Dev(x86_64)
-    baseurl=https://dl.bintray.com/vmware/photon_dev_$basearch
+    baseurl=https://packages.vmware.com/photon/dev/photon_dev_$basearch
     gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
     gpgcheck=1
     enabled=1

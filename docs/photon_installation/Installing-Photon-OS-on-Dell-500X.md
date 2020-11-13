@@ -10,7 +10,7 @@ You can install Photon OS 3.0 on Dell Gateway 500X. You can download Photon OS a
 1.	Verify that you have the following resources:
     - Dell Edge Gateway 500x.
     - USB pen drive. Format the pen drive with FAT32 with at least 8 GB of space.
-2.	Download the Photon OS ISO image from [Bintray](https://bintray.com/vmware/photon/).
+2.	Download the Photon OS ISO image from [https://packages.vmware.com/photon](https://packages.vmware.com/photon/).
 
 ## Installing the ISO Image for Photon OS
 
