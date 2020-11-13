@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p14
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -23,6 +23,7 @@ BuildRequires:  libevent-devel
 Requires:       systemd
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires:       openssl
+Requires:       libevent
 Requires:       libcap >= 2.24
 Requires:       perl-Net-SSLeay
 Requires:       perl-IO-Socket-SSL
@@ -146,6 +147,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Thu Nov 12 2020 Siju Maliakkal <smaliakkal@vmware.com> 4.2.8p14-3
+-   Added libevent in requires
 *   Mon Nov 02 2020 Siju Maliakkal <smaliakkal@vmware.com> 4.2.8p14-2
 -   Use system libevent instead of bundled libevent source
 *   Wed Apr 29 2020 Dweep Advani <dadvani@vmware.com> 4.2.8p14-1
