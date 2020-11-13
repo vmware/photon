@@ -1,0 +1,49 @@
+From e0b60903b434a7ee21ba8d8659f207ed84101e89 Mon Sep 17 00:00:00 2001
+From: Jouni Hogander <jouni.hogander@unikie.com>
+Date: Thu, 5 Dec 2019 15:57:07 +0200
+Subject: [PATCH 1/2] net-sysfs: Call dev_hold always in netdev_queue_add_kobject
+
+commit e0b60903b434a7ee21ba8d8659f207ed84101e89 upstream
+
+Dev_hold has to be called always in netdev_queue_add_kobject.
+Otherwise usage count drops below 0 in case of failure in
+kobject_init_and_add.
+
+Fixes: b8eb718348b8 ("net-sysfs: Fix reference count leak in rx|netdev_queue_add_kobject")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Cc: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc: David Miller <davem@davemloft.net>
+Cc: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+---
+ net/core/net-sysfs.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index cd043e62d322..d3ca568951a4 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -1301,14 +1301,17 @@ static int netdev_queue_add_kobject(struct net_device *dev, int index)
+ 	struct kobject *kobj = &queue->kobj;
+ 	int error = 0;
+ 
++	/* Kobject_put later will trigger netdev_queue_release call
++	 * which decreases dev refcount: Take that reference here
++	 */
++	dev_hold(queue->dev);
++
+ 	kobj->kset = dev->queues_kset;
+ 	error = kobject_init_and_add(kobj, &netdev_queue_ktype, NULL,
+ 	    "tx-%u", index);
+ 	if (error)
+ 		goto exit;
+ 
+-	dev_hold(queue->dev);
+-
+ #ifdef CONFIG_BQL
+ 	error = sysfs_create_group(kobj, &dql_group);
+ 	if (error)
+-- 
+2.17.1
+

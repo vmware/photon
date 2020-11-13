@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.243
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -49,12 +49,14 @@ Patch30:        vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
 Patch31:        vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
 Patch32:        netfilter-ipset-pernet-ops-must-be-unregistered-last.patch
 Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
+# Fix for CVE-2019-20811
+Patch34:        0001-net-sysfs-call-dev_hold-if-kobject_init_and_add-succ.patch
+Patch35:        0001-net-sysfs-Call-dev_hold-always-in-netdev_queue_add_k.patch
+Patch36:        0002-net-sysfs-Call-dev_hold-always-in-rx_queue_add_kobje.patch
 
 Patch41:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
 Patch43:        0001-scsi-libsas-direct-call-probe-and-destruct.patch
-# Fix for CVE-2019-20811
-Patch44:        linux/0001-net-sysfs-call-dev_hold-if-kobject_init_and_add-succ.patch
 # Fix for CVE-2018-10322
 Patch46:        0001-xfs-move-inode-fork-verifiers-to-xfs-dinode-verify.patch
 Patch47:        0002-xfs-verify-dinode-header-first.patch
@@ -187,9 +189,11 @@ The Linux package contains the Linux kernel doc files
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
+%patch34 -p1
+%patch35 -p1
+%patch36 -p1
 %patch41 -p1
 %patch43 -p1
-%patch44 -p1
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
@@ -331,6 +335,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Nov 13 2020 Vikash Bansal <bvikas@vmware.com> 4.9.243-2
+-   Fixes on top of CVE-2019-20811 fix
 *   Fri Nov 13 2020 Keerthana K <keerthanak@vmware.com> 4.9.243-1
 -   Update to version 4.9.243
 *   Thu Nov 12 2020 Vikash Bansal <bvikas@vmware.com> 4.9.241-6
