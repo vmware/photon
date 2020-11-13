@@ -40,7 +40,7 @@ Create photon-extras.repo as follows (in /etc/yum.repos.d) - this is for likewis
 root@photon-machine [ /etc/yum.repos.d ]# cat photon-extras.repo 
 [photon-extras]
 name=VMware Photon Extras
-baseurl=https://dl.bintray.com/vmware/photon_extras
+baseurl=https://packages.vmware.com/photon/1.0/photon_extras
 gpgkey=file:///etc/pki/rpm-gpg/PHOTON-RPM-GPG-KEY
 gpgcheck=0
 enabled=1

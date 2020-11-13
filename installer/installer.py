@@ -95,7 +95,7 @@ class Installer(object):
             self.window.show_window()
             self.progress_bar.initialize('Initializing installation...')
             self.progress_bar.show()
-            #self.rpm_path = "https://dl.bintray.com/vmware/photon_release_1.0_TP2_x86_64"
+            #self.rpm_path = "https://packages.vmware.com/photon/1.0/TP2"
             if self.rpm_path.startswith("https://") or self.rpm_path.startswith("http://"):
                 cmdoption = 's/baseurl.*/baseurl={}/g'.format(self.rpm_path.replace('/','\/'))
                 process = subprocess.Popen(['sed', '-i', cmdoption,'/etc/yum.repos.d/photon-iso.repo']) 

@@ -7,7 +7,7 @@ Photon supports pxe boot over netwrok, this is describe how you can setup a PXE 
 To setup PXE server you will need to have:
 * DHCP server to allow hosts to get an IP address.
 * TFTP server which is file transfer protocol which is similar to FTP with no authintication.
-* Optionally http server, this http serevr is going to serve the RPMs yum repo, or you can use the official Photon repo on bintray. Also this http serevr can be used if you want to provide kickstart config for unattended installation.
+* Optionally http server, this http serevr is going to serve the RPMs yum repo, or you can use the official Photon repo on https://packages.vmware.com/photon/1.0. Also this http serevr can be used if you want to provide kickstart config for unattended installation.
 
 Setting up server instruction is based on an Ubuntu 14.04 machine assuming that it has an static IP adderess `172.16.78.134`.
 
@@ -86,7 +86,7 @@ cp ~/syslinux-6.03/bios/core/pxelinux.0 .
 mkdir pxelinux.cfg
 mv isolinux.cfg pxelinux.cfg/default
 ```
-* Update repo param to point to http yum repo, you may pass official photon bintray repo.
+* Update repo param to point to http yum repo, you may pass official photon https://packages.vmware.com/photon/1.0 repo.
 ```
 sed -i "s/append/append repo=http:\/\/172.16.78.134\/RPMS/g" menu.cfg
 popd

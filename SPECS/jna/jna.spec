@@ -4,14 +4,14 @@
 Summary:	Java Native Access
 Name:		jna
 Version:	4.2.1
-Release:	11%{?dist}
+Release:	12%{?dist}
 License:	Apache
 URL:		http://github.com/twall/jna
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      x86_64
-Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}.tar.gz
+Source0:	https://packages.vmware.com/photon/photon_sources/1.0//%{name}-%{version}.tar.gz
 Patch0:         jna-4.2.1-remove-clover-jar.patch
 %define sha1 jna=30a1132f9ca6b3222eccd380a3f4149aa7df3f59
 Requires: openjre
@@ -77,6 +77,8 @@ ant -Ddist=$JNA_DIST_DIR dist -Drelease=true
 %{_prefix}/*sources.jar
 
 %changelog
+*   Thu Nov 12 2020 Michelle Wang <michellew@vmware.com> 4.2.1-12
+-   Update Sources0 not use packages.vmware.com link
 *   Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 4.2.1-11
 -   Modified the path of JAVA_HOME
 *   Thu Aug 17 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.2.1-10

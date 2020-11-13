@@ -357,12 +357,12 @@ sources-cached:
 	 $(CP) -rf $(PHOTON_SOURCES_PATH)/* $(PHOTON_SRCS_DIR)/
 
 publish-rpms:
-	@echo "Pulling publish rpms from bintray..."
+	@echo "Pulling publish rpms from https://packages.vmware.com ..."
 	@cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
 	$(PHOTON_PULL_PUBLISH_RPMS) $(PHOTON_PUBLISH_RPMS_DIR)
 
 publish-x-rpms:
-	@echo "Pulling publish X rpms from bintray..."
+	@echo "Pulling publish X rpms from https://packages.vmware.com ..."
 	@cd $(PHOTON_PULL_PUBLISH_RPMS_DIR) && \
 	$(PHOTON_PULL_PUBLISH_X_RPMS) $(PHOTON_PUBLISH_XRPMS_DIR)
 

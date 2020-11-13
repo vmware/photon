@@ -1,20 +1,20 @@
-Summary:	Ant contrib
-Name:		ant-contrib
-Version:	1.0b3
-Release:	14%{?dist}
-License:	Apache
-URL:		http://ant-contrib.sourceforget.net
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:        Ant contrib
+Name:           ant-contrib
+Version:        1.0b3
+Release:        15%{?dist}
+License:        Apache
+URL:            http://ant-contrib.sourceforget.net
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
 BuildArch:      noarch
-Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}-src.tar.gz
-%define sha1 ant-contrib=b28d2bf18656b263611187fa9fbb95cec93d47c8
-BuildRequires: openjre
-BuildRequires: openjdk
-BuildRequires: apache-ant
-Requires: openjre
-Requires: apache-ant
+Source0:        https://packages.vmware.com/photon/photon_sources/1.0/%{name}-%{version}-src.tar.gz
+%define sha1    ant-contrib=b28d2bf18656b263611187fa9fbb95cec93d47c8
+BuildRequires:  openjre
+BuildRequires:  openjdk
+BuildRequires:  apache-ant
+Requires:       openjre
+Requires:       apache-ant
 %define _prefix /var/opt/ant-contrib
 
 %description
@@ -35,6 +35,7 @@ ant -Ddist.dir="." -Dproject.version=%{version} dist
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 mkdir -p -m 700 %{buildroot}/var/opt
 cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.tar.gz --wildcards "*.jar"
+
 %files
 %defattr(-,root,root)
 %dir %{_prefix}
@@ -43,6 +44,8 @@ cd %{buildroot}/var/opt && tar xvzf %{_builddir}/%{name}/%{name}-%{version}-bin.
 %{_prefix}/lib/*.jar
 
 %changelog
+*   Thu Nov 12 2020 Michelle Wang <michellew@vmware.com> 1.0b3-15
+-   Update Sources0 not use packages.vmware.com link
 *   Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 1.0b3-14
 -   Modified the path of JAVA_HOME
 *   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 1.0b3-13

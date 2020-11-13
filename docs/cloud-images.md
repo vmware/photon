@@ -101,13 +101,11 @@ The ova image uses a custom linux kernel, which is an optimized kernel based on 
 Please refer [bosh docs] (http://bosh.io/docs) to deploy BOSH on Photon 
 
 ##Links to the pre-built TP2 images
-[GCE] (https://dl.bintray.com/vmware/photon/gce/1.0TP2/x86_64/photon-1.0TP2.tar.gz)  Alternatively, you can download the source tar file from the [following] (https://console.developers.google.com/m/cloudstorage/b/photon-1-0-tp2/o/photon-gce.tar.gz) Google cloud storage bucket location
+[GCE] (https://packages.vmware.com/photon/1.0/TP2/gce/photon-gce-1.0TP2.tar.gz)  Alternatively, you can download the source tar file from the [following] (https://console.developers.google.com/m/cloudstorage/b/photon-1-0-tp2/o/photon-gce.tar.gz) Google cloud storage bucket location
 
-[Azure] (https://dl.bintray.com/vmware/photon/azure/1.0TP2/x86_64/photon-1.0TP2.vhd)
+[AMI] (https://packages.vmware.com/photon/1.0/TP2/ami/photon-ami-1.0TP2.tar.gz)
 
-[AMI] (https://dl.bintray.com/vmware/photon/ami/1.0TP2/x86_64/photon-1.0TP2.tar.gz)
+[OVA for Workstation/Fusion] (https://packages.vmware.com/photon/1.0/TP2/ova/photon-ova-1.0TP2.ova)
 
-[OVA for Workstation/Fusion] (https://dl.bintray.com/vmware/photon/ova/1.0TP2/x86_64/photon-1.0TP2.ova)
-
-[vSphere Photon bosh-stemcell] (https://bintray.com/artifact/download/vmware/photon/vSpherePhotonStemcell/1.0TP2/bosh-stemcell-0000-vsphere-esxi-photon-TP2-go_agent.tgz)
+[vSphere Photon bosh-stemcell] (https://packages.vmware.com/photon/1.0/TP2/vSpherePhotonStemcell/bosh-stemcell-0000-vsphere-esxi-photon-TP2-go_agent.tgz)
 

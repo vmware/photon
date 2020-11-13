@@ -1,7 +1,7 @@
 Summary:        Apache Ant
 Name:           apache-ant
 Version:        1.10.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache
 URL:            http://ant.apache.org
 Group:          Applications/System
@@ -12,7 +12,7 @@ Source0:        http://apache.mirrors.lucidnetworks.net//ant/source/%{name}-%{ve
 %define sha1 apache-ant=74027a785d96715f61619b0a4d9296517bba3aa5
 Source1:        http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
-Source2:        http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
+Source2:        https://packages.vmware.com/photon/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
 %define sha1 maven-ant-tasks=f38c0cc7b38007b09638366dbaa4ee902d9c255b
 Patch0:         apache-ant-CVE-2020-11979.patch
 Requires:       openjre
@@ -110,6 +110,8 @@ chmod 644 $MAVEN_ANT_TASKS_DIR/*
 %{_bindir}/runant.pl
 
 %changelog
+*   Thu Nov 12 2020 Michelle Wang <michellew@vmware.com> 1.10.8-3
+-   Update Sources0 not use packages.vmware.com link
 *   Fri Oct 16 2020 Dweep Advani <dadvani@vmware.com> 1.10.8-2
 -   Patched for CVE-2020-11979
 *   Wed May 27 2020 Ankit Jain <ankitja@vmware.com> 1.10.8-1
