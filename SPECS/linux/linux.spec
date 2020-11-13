@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.154
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -121,6 +121,8 @@ Patch66:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 Patch67:        powercap-restrict-energy-meter-to-root-access.patch
 #Fix slab-out-of-bounds read in fbcon
 Patch68:        0001-vt-Disable-KD_FONT_OP_COPY.patch
+# Fix for CVE-2020-25668
+Patch69:        0001-tty-make-FONTX-ioctl-use-the-tty-pointer-they-were-a.patch
 
 #Fix for 9p
 Patch70:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
@@ -420,6 +422,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch66 -p1
 %patch67 -p1
 %patch68 -p1
+%patch69 -p1
 
 %patch70 -p1
 %patch71 -p1
@@ -853,6 +856,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Fri Nov 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.154-8
+-   Fix CVE-2020-25668
 *   Thu Nov 12 2020 Sharan Turlapati <sturlapati@vmware.com> 4.19.154-7
 -   Enable CONFIG_IFB
 *   Wed Nov 11 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.154-6

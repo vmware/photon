@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.154
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -87,6 +87,8 @@ Patch64:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 Patch65:        powercap-restrict-energy-meter-to-root-access.patch
 #Fix slab-out-of-bounds read in fbcon
 Patch66:        0001-vt-Disable-KD_FONT_OP_COPY.patch
+# Fix for CVE-2020-25668
+Patch67:        0001-tty-make-FONTX-ioctl-use-the-tty-pointer-they-were-a.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -220,6 +222,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch64 -p1
 %patch65 -p1
 %patch66 -p1
+%patch67 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -397,6 +400,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Nov 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.154-5
+-   Fix CVE-2020-25668
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-4
 -   Fix slab-out-of-bounds read in fbcon
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.19.154-3

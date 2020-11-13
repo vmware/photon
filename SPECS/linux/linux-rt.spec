@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.154
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt65
-Release:        7%{?kat_build:.%kat}%{?dist}
+Release:        8%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -86,6 +86,8 @@ Patch65:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 Patch66:        powercap-restrict-energy-meter-to-root-access.patch
 #Fix slab-out-of-bounds read in fbcon
 Patch67:        0001-vt-Disable-KD_FONT_OP_COPY.patch
+# Fix for CVE-2020-25668
+Patch68:        0001-tty-make-FONTX-ioctl-use-the-tty-pointer-they-were-a.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -530,6 +532,7 @@ The Linux package contains the Linux kernel doc files
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
+%patch68 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -1040,6 +1043,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Fri Nov 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.154-8
+-   Fix CVE-2020-25668
 *   Fri Nov 13 2020 Sharan Turlapati <sturlapati@vmware.com> 4.19.154-7
 -   Upgrade RT patchset version to -rt65
 *   Thu Nov 12 2020 Sharan Turlapati <sturlapati@vmware.com> 4.19.154-6
