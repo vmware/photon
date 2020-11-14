@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          29%{?dist}
+Release:          30%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -119,7 +119,7 @@ Requires:  %{name} = %{version}-%{release}
 Language pack for systemd
 
 %prep
-%setup -q
+%autosetup -p1
 cat > config.cache << "EOF"
 KILL=/bin/kill
 HAVE_BLKID=1
@@ -127,51 +127,6 @@ BLKID_LIBS="-lblkid"
 BLKID_CFLAGS="-I/usr/include/blkid"
 cc_cv_CFLAGS__flto=no
 EOF
-
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
-%patch20 -p1
-%patch21 -p1
-%patch22 -p1
-%patch23 -p1
-%patch24 -p1
-%patch25 -p1
-%patch26 -p1
-%patch27 -p1
-%patch28 -p1
-%patch29 -p1
-%patch30 -p1
-%patch31 -p1
-%patch32 -p1
-%patch33 -p1
-%patch34 -p1
-%patch35 -p1
-%patch36 -p1
-%patch37 -p1
-%patch38 -p1
-%patch39 -p1
-%patch40 -p1
-%patch41 -p1
-%patch42 -p1
-%patch43 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -358,6 +313,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Sat Nov 14 2020 Susant Sahani <ssahani@vmware.com> 239-30
+-    switch to autosetup
 *    Wed Sep 09 2020 Susant Sahani <ssahani@vmware.com> 239-29
 -    Increase WatchdogSec of systemd-journald, systemd-resolved and systemd-udevd
 *    Mon Aug 24 2020 Susant Sahani <ssahani@vmware.com> 239-28
