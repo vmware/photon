@@ -1,7 +1,7 @@
 Summary:	The package automatically configure source code
 Name:		autoconf
 Version:	2.69
-Release:	8%{?dist}
+Release:	9%{?dist}
 License:	GPLv2
 URL:		http://www.gnu.org/software/autoconf
 Group:		System Environment/Base
@@ -12,6 +12,7 @@ Source0:	http://ftp.gnu.org/gnu/autoconf/%{name}-%{version}.tar.xz
 Patch0:		autoconf-make-check.patch
 %if %{with_check}
 Patch1:         make-check-failure.patch
+Patch2:         make-check-failure1.patch
 %endif
 Requires:	perl
 BuildRequires:	m4
@@ -26,6 +27,7 @@ automatically configure source code.
 %patch0 -p1
 %if %{with_check}
 %patch1 -p1
+%patch2 -p1
 %endif
 %build
 %configure \
@@ -44,6 +46,8 @@ make -k check %{?_smp_mflags}  TESTSUITEFLAGS="1-500"
 %{_mandir}/*/*
 %{_datarootdir}/autoconf/*
 %changelog
+*   Sun Nov 15 2020 Prashant Singh Chauhan <psinghchauha@vmware.com> 2.69-9
+-   Fix for make check failure port test to bash 5.0
 *   Wed Sep 11 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 2.69-8
 -   Fix for make check failure
 *   Wed Oct 17 2018 Dweep Advani <dadvani@vmware.com> 2.69-7

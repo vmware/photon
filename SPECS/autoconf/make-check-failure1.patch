@@ -1,0 +1,63 @@
+From 5b9db67786a428164abafe626ab11a2754aad528 Mon Sep 17 00:00:00 2001
+From: Ondrej Dubaj <odubaj@redhat.com>
+Date: Wed, 28 Aug 2019 07:39:50 +0200
+Subject: Port tests to Bash 5
+
+* tests/local.at (AT_CHECK_ENV, AT_CONFIG_CMP):
+Add BASH_ARGC, BASH_ARGV to list of variables to be ignored when
+comparing variable space dumps.
+(AT_CONFIG_CMP): Also ignore LINENO.
+* tests/m4sh.at: Also unset LINENO in 'reference' and 'test/test-1'.
+---
+ tests/local.at | 5 ++++-
+ tests/m4sh.at  | 4 ++--
+ 2 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/tests/local.at b/tests/local.at
+index a22958c0..852be285 100644
+--- a/tests/local.at
++++ b/tests/local.at
+@@ -325,7 +325,7 @@ if test -f state-env.before && test -f state-env.after; then
+       [AWK|LEX|LEXLIB|LEX_OUTPUT_ROOT|LN_S|M4|MKDIR_P|RANLIB|SET_MAKE|YACC],
+       [GREP|[EF]GREP|SED],
+       [[_@]|.[*#?$].],
+-      [argv|ARGC|LINENO|OLDPWD|PIPESTATUS|RANDOM|SECONDS]))=' \
++      [argv|ARGC|LINENO|BASH_ARGC|BASH_ARGV|OLDPWD|PIPESTATUS|RANDOM|SECONDS]))=' \
+      $act_file ||
+        test $? -eq 1 || echo failed >&2
+     ) 2>stderr-$act_file |
+@@ -382,6 +382,9 @@ do
+ 	/'\'\\\$\''=/ d
+ 	/^argv=/ d
+ 	/^ARGC=/ d
++	/^BASH_ARGC=/ d
++	/^BASH_ARGV=/ d
++	/^LINENO=/ d
+ 	' $act_file >at_config_vars-$act_file
+ done
+ AT_CMP([at_config_vars-$1], [at_config_vars-$2])[]dnl
+diff --git a/tests/m4sh.at b/tests/m4sh.at
+index e9d70b02..cbdfcb62 100644
+--- a/tests/m4sh.at
++++ b/tests/m4sh.at
+@@ -254,7 +254,7 @@ AT_CHECK([autom4te -l m4sh $1.as -o $1])
+ # `_oline_', once processed and ran, produces our reference.
+ # We check that we find ourselves by looking at a string which is
+ # available only in the original script: `_oline_'.
+-AT_DATA_LINENO([reference], [false], [__OLINE__], [_oline__])
++AT_DATA_LINENO([reference], [true], [__OLINE__], [_oline__])
+ AT_CHECK([./reference], 0, [stdout])
+ 
+ # The reference:
+@@ -264,7 +264,7 @@ mv stdout expout
+ # Be sure to be out of the PATH.
+ AT_CHECK([mkdir test || exit 77])
+ 
+-AT_DATA_LINENO([test/test-1], [false], [__LINENO__], [LINENO])
++AT_DATA_LINENO([test/test-1], [true], [__LINENO__], [LINENO])
+ AT_CHECK([./test/test-1],                          0, [expout])
+ AT_CHECK([(PATH=test$PATH_SEPARATOR$PATH; export PATH; exec test-1)],
+ 						   0, [expout])
+-- 
+cgit v1.2.1
+
