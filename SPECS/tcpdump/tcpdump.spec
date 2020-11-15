@@ -1,12 +1,13 @@
 Summary:        Packet Analyzer
 Name:           tcpdump
 Version:        4.9.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            http://www.tcpdump.org
 Source0:        http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
 %define sha1 tcpdump=59b309f3620ac4b709de2eaf7bf3a83bf04bc048
 Patch0:         CVE-2018-19519.patch
+Patch1:         CVE-2020-8037.patch
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -21,6 +22,8 @@ transmitted or received over a network to which the computer is attached.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+
 %build
 %configure
 make %{?_smp_mflags}
@@ -38,6 +41,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man1/*
 
 %changelog
+*   Sun Nov 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.9.3-2
+-   Added patch, fixes CVE-2020-8037
 *   Wed Oct 09 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 4.9.3-1
 -   Update to version 4.9.3 to fix multiple CVE
 *   Mon Aug 26 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 4.9.2-3
