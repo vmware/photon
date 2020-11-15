@@ -1,7 +1,7 @@
 Summary:	Programs for generating Makefiles
 Name:		automake
 Version:	1.16.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/automake/
 Group:		System Environment/Base
@@ -9,6 +9,9 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/automake/%{name}-%{version}.tar.xz
 %define sha1 automake=1012bc79956013d53da0890f8493388a6cb20831
+%if %{with_check}
+Patch0:         make-check.patch
+%endif
 BuildRequires:	autoconf
 BuildArch:      noarch
 
@@ -16,10 +19,13 @@ BuildArch:      noarch
 Contains programs for generating Makefiles for use with Autoconf.
 %prep
 %setup -q
+%if %{with_check}
+%patch0 -p1
+%endif
+
 %build
 sed -i 's:/\\\${:/\\\$\\{:' bin/automake.in
-./configure \
-	--prefix=%{_prefix} \
+%configure \
 	--docdir=%{_defaultdocdir}/%{name}-%{version} \
 	--disable-silent-rules
 make %{?_smp_mflags}
@@ -31,6 +37,7 @@ rm -rf %{buildroot}%{_infodir}
 %check
 sed -i "s:./configure:LEXLIB=/usr/lib/libfl.a &:" t/lex-{clean,depend}-cxx.sh
 sed -i "s|test ! -s stderr||g" t/distcheck-no-prefix-or-srcdir-override.sh
+sed -i '53d' t/nobase-python.sh
 make %{?_smp_mflags} check
 
 %files
@@ -42,6 +49,8 @@ make %{?_smp_mflags} check
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*   Sun Nov 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.16.1-2
+-   Added patch,Fix make check failure in python tests
 *   Thu Sep 06 2018 Anish Swaminathan <anishs@vmware.com> 1.16.1-1
 -   Update version to 1.16.1
 *	Tue Jan 02 2018 Alexey Makhalov <amakhalov@vmware.com> 1.15.1-1

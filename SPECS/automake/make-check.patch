@@ -1,0 +1,185 @@
+As of Python 3.5, but unoptimized and optimized bytecode are stored
+within .pyc files; .pyo files are no longer generated. Update the Python
+tests such that the test do not fail if .pyo files are missing.
+
+* t/py-compile-basedir.sh: Remove all .pyo checks.
+* t/py-compile-basic.sh: Likewise.
+* t/py-compile-destdir.sh: Likewise.
+* t/py-compile-option-terminate.sh: Likewise.
+* t/python-virtualenv.sh: Likewise.
+* t/python10.sh: Likewise.
+* t/python12.sh: Likewise.
+* t/python3.sh: Likewise.
+---
+ t/py-compile-basedir.sh          |  2 --
+ t/py-compile-basic.sh            |  3 ---
+ t/py-compile-destdir.sh          | 12 +++++-------
+ t/py-compile-option-terminate.sh |  5 -----
+ t/python-virtualenv.sh           |  4 ----
+ t/python10.sh                    |  6 ------
+ t/python12.sh                    |  3 +--
+ t/python3.sh                     |  1 -
+ 8 files changed, 6 insertions(+), 30 deletions(-)
+
+diff --git a/t/py-compile-basedir.sh b/t/py-compile-basedir.sh
+index 6921d16d5..9f927d066 100644
+--- a/t/py-compile-basedir.sh
++++ b/t/py-compile-basedir.sh
+@@ -40,9 +40,7 @@ for d in foo foo/bar "$(pwd)/foo" . .. ../foo ''; do
+   ./py-compile --basedir "$d" "$f.py" "sub/$f.py"
+   find "$d2" # For debugging.
+   py_installed "$d2/$f.pyc"
+-  py_installed "$d2/$f.pyo"
+   py_installed "$d2/sub/$f.pyc"
+-  py_installed "$d2/sub/$f.pyo"
+   files=$(find "$d2" | grep '\.py[co]$')
+   test $(echo "$files" | wc -l) -eq 4
+   case $d2 in
+diff --git a/t/py-compile-basic.sh b/t/py-compile-basic.sh
+index 24df600cb..4c5cf57aa 100644
+--- a/t/py-compile-basic.sh
++++ b/t/py-compile-basic.sh
+@@ -61,10 +61,7 @@ mkdir -p 1/_/2/_/3/_
+ 
+ ./py-compile foo.py sub/bar.py 1/_/2/_/3/_/0.py
+ py_installed foo.pyc
+-py_installed foo.pyo
+ py_installed sub/bar.pyc
+-py_installed sub/bar.pyo
+ py_installed 1/_/2/_/3/_/0.pyc
+-py_installed 1/_/2/_/3/_/0.pyo
+ 
+ :
+diff --git a/t/py-compile-destdir.sh b/t/py-compile-destdir.sh
+index 07aa1f44f..d2ccafee5 100644
+--- a/t/py-compile-destdir.sh
++++ b/t/py-compile-destdir.sh
+@@ -34,13 +34,11 @@ echo 'def bar (): return "bar"' > $destdir/sub/bar.py
+ 
+ find $destdir # For debugging.
+ st=0
+-for x in c o; do
+-  for b in foo sub/bar; do
+-    f=$(pyc_location -p "$destdir/$b.py$x")
+-    test -f "$f"
+-    strings "$f" || : # For debugging.
+-    $FGREP $destdir $f && { echo BAD: $f; st=1; }
+-  done
++for b in foo sub/bar; do
++  f=$(pyc_location -p "$destdir/$b.pyc")
++  test -f "$f"
++  strings "$f" || : # For debugging.
++  $FGREP $destdir $f && { echo BAD: $f; st=1; }
+ done
+ exit $st
+ 
+diff --git a/t/py-compile-option-terminate.sh b/t/py-compile-option-terminate.sh
+index 1aaeec21b..80ae55a88 100644
+--- a/t/py-compile-option-terminate.sh
++++ b/t/py-compile-option-terminate.sh
+@@ -27,17 +27,12 @@ cp "$am_scriptdir/py-compile" . \
+ : > ./--foo.py
+ ./py-compile -- -o.py --foo.py
+ py_installed ./-o.pyc
+-py_installed ./-o.pyo
+ py_installed ./--foo.pyc
+-py_installed ./--foo.pyo
+ rm -f ./-*.py[co]
+ : > x.py
+ ./py-compile x.py -o.py --foo.py
+ py_installed ./x.pyc
+-py_installed ./x.pyo
+ py_installed ./-o.pyc
+-py_installed ./-o.pyo
+ py_installed ./--foo.pyc
+-py_installed ./--foo.pyo
+ 
+ :
+diff --git a/t/python-virtualenv.sh b/t/python-virtualenv.sh
+index 3bcd6ec76..7f9708866 100644
+--- a/t/python-virtualenv.sh
++++ b/t/python-virtualenv.sh
+@@ -124,10 +124,8 @@ check_install ()
+ 
+   test -f      "$py_site"/am_foo.py
+   py_installed "$py_site"/am_foo.pyc
+-  py_installed "$py_site"/am_foo.pyo
+   py_installed "$py_site"/am_virtenv/__init__.py
+   py_installed "$py_site"/am_virtenv/__init__.pyc
+-  py_installed "$py_site"/am_virtenv/__init__.pyo
+   test -f      "$py_site"/libquux.a
+   test -f      "$py_site"/am_virtenv/libzardoz.a
+ }
+@@ -138,10 +136,8 @@ check_uninstall ()
+ 
+   test ! -e          "$py_site"/am_foo.py
+   py_installed --not "$py_site"/am_foo.pyc
+-  py_installed --not "$py_site"/am_foo.pyo
+   test ! -e          "$py_site"/am_virtenv/__init__.py
+   py_installed --not "$py_site"/am_virtenv/__init__.pyc
+-  py_installed --not "$py_site"/am_virtenv/__init__.pyo
+   test ! -e          "$py_site"/libquux.a
+   test ! -e          "$py_site"/am_virtenv/libzardoz.a
+ }
+diff --git a/t/python10.sh b/t/python10.sh
+index 4def103ff..9c7a46175 100644
+--- a/t/python10.sh
++++ b/t/python10.sh
+@@ -60,27 +60,21 @@ cwd=$(pwd) || fatal_ "getting current working directory"
+ $MAKE install
+ test -f            "$inst/your/two.py"
+ py_installed       "$inst/your/two.pyc"
+-py_installed       "$inst/your/two.pyo"
+ py_installed --not "$inst/my/one.py"
+ py_installed --not "$inst/my/one.pyc"
+-py_installed --not "$inst/my/one.pyo"
+ $MAKE uninstall
+ py_installed --not "$inst/your/two.py"
+ py_installed --not "$inst/your/two.pyc"
+-py_installed --not "$inst/your/two.pyo"
+ 
+ ../configure --prefix=$cwd/"$inst" one=1
+ $MAKE install
+ py_installed --not "$inst/your/two.py"
+ py_installed --not "$inst/your/two.pyc"
+-py_installed --not "$inst/your/two.pyo"
+ test -f            "$inst/my/one.py"
+ py_installed       "$inst/my/one.pyc"
+-py_installed       "$inst/my/one.pyo"
+ $MAKE uninstall
+ py_installed --not "$inst/my/one.py"
+ py_installed --not "$inst/my/one.pyc"
+-py_installed --not "$inst/my/one.pyo"
+ 
+ $MAKE disttest
+ 
+diff --git a/t/python12.sh b/t/python12.sh
+index d998ae8ad..cca057e6d 100644
+--- a/t/python12.sh
++++ b/t/python12.sh
+@@ -44,11 +44,10 @@ $MAKE install DESTDIR=$destdir
+ 
+ # Perfunctory test that the files were created.
+ test -f "$destdir/usr/share/my/my.py"
+-pyo=$(pyc_location -p "$destdir/usr/share/my/my.pyo")
+ pyc=$(pyc_location -p "$destdir/usr/share/my/my.pyc")
+ 
+ # If DESTDIR has made it into the byte compiled files, fail the test.
+-st=0; $FGREP "$destdir" "$pyc" "$pyo" || st=$?
++st=0; $FGREP "$destdir" "$pyc" || st=$?
+ test $st -eq 1
+ 
+ :
+diff --git a/t/python3.sh b/t/python3.sh
+index 0008eadd7..131aeb48d 100644
+--- a/t/python3.sh
++++ b/t/python3.sh
+@@ -42,6 +42,5 @@ cd build
+ $MAKE install
+ py_installed inst/my/one.py
+ py_installed inst/my/one.pyc
+-py_installed inst/my/one.pyo
+ 
+ :
+--
+2.17.0
