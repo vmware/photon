@@ -5,7 +5,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        2.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -217,6 +217,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 30 2020 Tapas Kundu <tkundu@vmware.com> 2.1.2-2
+-   Bump up tdnf to rebuild with libsolv patches.
 *   Fri Oct 16 2020 Keerthana K <keerthanak@vmware.com> 2.1.2-1
 -   Update to 2.1.2
 *   Tue Aug 11 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 2.1.1-3
