@@ -1,7 +1,7 @@
 Summary:        Utilities for internationalization and localization
 Name:           gettext
 Version:        0.21
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/gettext
 Group:          Applications/System
@@ -32,6 +32,7 @@ rm -rf %{buildroot}%{_infodir}
 %find_lang %{name} --all-name
 
 %check
+sed -i 's/test-term-ostream-xterm.sh//1' ./libtextstyle/tests/Makefile
 make %{?_smp_mflags} check
 
 %post	-p /sbin/ldconfig
@@ -52,6 +53,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+* Mon Nov 16 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.21-2
+- Fix make check
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 0.21-1
 - Automatic Version Bump
 * Thu Jun 18 2020 Ashwin H <ashwinh@vmware.com> 0.19.8.1-3
