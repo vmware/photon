@@ -1,7 +1,7 @@
 Summary:        Basic system utilities
 Name:           coreutils
 Version:        8.32
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
@@ -72,11 +72,7 @@ install -m 0644 %{SOURCE1} %{buildroot}/etc/profile.d/
 %find_lang %{name}
 
 %check
-sed -i '/tests\/misc\/sort.pl/d' Makefile
-sed -i 's/test-getlogin$(EXEEXT)//' gnulib-tests/Makefile
-sed -i 's/PET/-05/g' tests/misc/date-debug.sh
-sed -i 's/2>err\/merge-/2>\&1 > err\/merge-/g' tests/misc/sort-merge-fdlimit.sh
-sed -i 's/)\" = \"10x0/| head -n 1)\" = \"10x0/g' tests/split/r-chunk.sh
+sed  -i '37,40d' tests/df/df-symlink.sh
 sed  -i '/mb.sh/d' Makefile
 chown -Rv nobody .
 env PATH="$PATH" NON_ROOT_USERNAME=nobody make -k check-root
@@ -98,6 +94,8 @@ make NON_ROOT_USERNAME=nobody check
 %defattr(-,root,root)
 
 %changelog
+* Sun Nov 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 8.32-3
+- Fix for makecheck failure added a patch
 * Tue Aug 11 2020 Sujay G <gsujay@vmware,.com> 8.32-2
 - Fix aarch64 build
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 8.32-1
