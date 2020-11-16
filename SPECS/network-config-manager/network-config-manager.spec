@@ -1,6 +1,6 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
-Version:        0.1
+Version:        0.2
 Release:        1%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/vmware/network-config-manager
@@ -8,16 +8,20 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/vmware/network-config-manager/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=c50aceeb4b865d42f9aad1c581eb300a0285c26d
+%define sha1    %{name}-%{version}=c739bc918a25c0c8fff30ace79b65120d5b74760
 
 BuildRequires:  meson
 BuildRequires:  systemd-devel
 BuildRequires:  libyaml-devel
-BuildRequires:  glib-devel
+BuildRequires:  libmnl-devel
+BuildRequires:  libnftnl-devel
+BuildRequires:  nftables-devel
 
 Requires:       libyaml
 Requires:       systemd
 Requires:       glib
+Requires:       libmnl
+Requires:       nftables
 
 %description
 The network-config-manager nmctl allows to configure and introspect
@@ -63,5 +67,7 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+*   Sun Nov 15 2020 Susant Sahani <ankitja@vmware.com> 0.2-1
+-   Update to v0.2
 *   Wed Sep 30 2020 Ankit Jain <ankitja@vmware.com> 0.1-1
 -   Initial build. First version
