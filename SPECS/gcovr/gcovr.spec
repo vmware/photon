@@ -3,7 +3,7 @@
 Summary:	The gcovr command provides a utility for managing the use of the GNU gcov utility
 Name:		gcovr
 Version:	4.2
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD Clause-3
 URL:		http://gcovr.com/
 Source0:	https://github.com/gcovr/gcovr/archive/%{name}-%{version}.tar.gz
@@ -42,7 +42,7 @@ mv %{buildroot}/%{_bindir}/gcovr  %{buildroot}/%{_bindir}/gcovr3
 
 %check
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 funcsigs pathlib2 pluggy utils atomicwrites more_itertools
+$easy_install_3 funcsigs pathlib2 pluggy utils atomicwrites more_itertools iniconfig
 $easy_install_3 pyutilib
 python3 setup.py test
 
@@ -53,6 +53,8 @@ python3 setup.py test
 %{python3_sitelib}*
 
 %changelog
+*   Mon Nov 16 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.2-3
+-   Fix makecheck, install missing iniconfig module
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.2-2
 -   openssl 1.1.1
 *   Tue Jul 29 2020 Gerrit Photon <photon-checkins@vmware.com> 4.2-1
