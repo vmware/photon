@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.154
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -747,6 +747,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Nov 17 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.154-9
+-   Fix kernel panic on hard-link in initrd
 *   Fri Nov 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.154-8
 -   Fix CVE-2020-25668
 *   Wed Nov 11 2020 Albert Guo <aguo@vmware.com> 4.19.154-7

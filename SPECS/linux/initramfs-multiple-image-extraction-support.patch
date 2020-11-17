@@ -1,26 +1,35 @@
-From a1377f01a182b81a7c779cd5d04f1a29ab6b4cb1 Mon Sep 17 00:00:00 2001
+From 86b4d28714c430efd5b808e734243c68afff984e Mon Sep 17 00:00:00 2001
 From: Him Kalyan Bordoloi <bordoloih@vmware.com>
 Date: Tue, 22 Sep 2020 19:22:56 +0000
 Subject: [PATCH] initramfs multiple image extraction support
 
 ---
- init/initramfs.c | 27 +++++++++++++++++++++++----
- 1 file changed, 23 insertions(+), 4 deletions(-)
+ init/initramfs.c | 39 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 34 insertions(+), 5 deletions(-)
 
 diff --git a/init/initramfs.c b/init/initramfs.c
-index 7beaaf9149bd..8d8ad9eb834c 100644
+index 7beaaf9149bd..4dcfb6bd35fa 100644
 --- a/init/initramfs.c
 +++ b/init/initramfs.c
-@@ -14,6 +14,8 @@
+@@ -14,6 +14,17 @@
  
  static __initdata bool page_aligned_fmt = false;
  
 +static int __initdata do_retain_initrd;
 +
++static __initdata bool initrd_no_file_overwrite = false;
++
++static int __init initrd_no_file_overwrite_setup(char *__unused)
++{
++	initrd_no_file_overwrite = true;
++	return 1;
++}
++__setup("initrd_no_file_overwrite", initrd_no_file_overwrite_setup);
++
  static ssize_t __init xadd_pages(int fd, const char *p, size_t count)
  {
  	ssize_t ret = 0;
-@@ -284,15 +286,22 @@ static int __init do_collect(void)
+@@ -284,15 +295,22 @@ static int __init do_collect(void)
  
  static int __init do_header(void)
  {
@@ -44,7 +53,7 @@ index 7beaaf9149bd..8d8ad9eb834c 100644
  	else if (memcmp(collected, "070701", 6)) {
  		error("no cpio magic");
  		return 1;
-@@ -365,6 +374,16 @@ static int __init maybe_link(void)
+@@ -365,6 +383,16 @@ static int __init maybe_link(void)
  	return 0;
  }
  
@@ -61,16 +70,20 @@ index 7beaaf9149bd..8d8ad9eb834c 100644
  static __initdata int wfd;
  
  static int __init do_name(void)
-@@ -378,6 +397,8 @@ static int __init do_name(void)
- 	clean_path(collected, mode);
- 	if (S_ISREG(mode)) {
+@@ -380,8 +408,11 @@ static int __init do_name(void)
  		int ml = maybe_link();
-+		if (is_overwrite(collected))
-+			panic("initramfs: file already exists %s", collected);
  		if (ml >= 0) {
  			int openflags = O_WRONLY|O_CREAT;
- 			if (ml != 1)
-@@ -556,8 +577,6 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+-			if (ml != 1)
++			if (ml != 1) {
++				if (initrd_no_file_overwrite && is_overwrite(collected))
++					panic("initramfs: file already exists %s", collected);
+ 				openflags |= O_TRUNC;
++			}
+ 			wfd = ksys_open(collected, openflags, mode);
+ 
+ 			if (wfd >= 0) {
+@@ -556,8 +587,6 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
  	return message;
  }
  
@@ -79,7 +92,7 @@ index 7beaaf9149bd..8d8ad9eb834c 100644
  static int __init retain_initrd_param(char *str)
  {
  	if (*str)
-@@ -578,7 +597,7 @@ static void __init free_initrd(void)
+@@ -578,7 +607,7 @@ static void __init free_initrd(void)
  	unsigned long crashk_start = (unsigned long)__va(crashk_res.start);
  	unsigned long crashk_end   = (unsigned long)__va(crashk_res.end);
  #endif
