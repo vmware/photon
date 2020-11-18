@@ -1,7 +1,7 @@
 Summary:        Mobile broadband modem manager
 Name:           ModemManager
 Version:        1.14.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
@@ -12,6 +12,9 @@ Source0:        https://www.freedesktop.org/software/ModemManager/ModemManager-%
 BuildRequires:  libqmi-devel
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  libxslt
+%if %{with_check}
+BuildRequires:  dbus-devel
+%endif
 Requires:       libqmi
 Requires:       gobject-introspection
 %description
@@ -70,6 +73,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libmm-glib.la
 
 %changelog
+*   Wed Nov 18 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.2-2
+-   Fix make check
 *   Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.2-1
 -   Automatic Version Bump
 *   Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.0-1
