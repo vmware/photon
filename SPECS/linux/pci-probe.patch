@@ -163,7 +163,7 @@ index 5f040619..f914d2b0 100644
 +
 +	{0x15ad, 0x07b0,   /*VMware VMXNET3 Ethernet Controller*/
 +	4,         /*Number of bars*/
-+	{0xfffff000, 0xfffff000, 0xffffe000, 0xfffffff1, 0, 0, /*Bars*/
++	{0xffffffff, 0xfffff000, 0xffffe000, 0xfffffff1, 0, 0, /*Bars*/
 +	0, 0, 0xffff0000, 0, 0} },           /*Rom + Extra*/
 +
 +	{0x15ad, 0x07c0,   /*VMware PVSCSI SCSI Controller*/

@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.243
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -333,6 +333,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Nov 18 2020 Vikash Bansal <bvikas@vmware.com> 4.4.243-2
+-   Mark BAR0 (at offset 0x10) for PCI device 15ad:07b0 (VMXNET3) as variable
 *   Wed Nov 11 2020 Keerthana K <keerthanak@vmware.com> 4.4.243-1
 -   Update to version 4.4.243
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.4.241-4
