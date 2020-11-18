@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.9.0
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -427,6 +427,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Nov 18 2020 Vikash Bansal <bvikas@vmware.com> 5.9.0-7
+-   Mark BAR0 (at offset 0x10) for PCI device 15ad:07b0 (VMXNET3) as variable
 *   Thu Nov 12 2020 Ajay Kaher <akaher@vmware.com> 5.9.0-6
 -   .config: support for floppy disk and ch341 usb to serial
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-5
