@@ -1,6 +1,6 @@
 Name:           chrony
 Version:        4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An NTP client/server
 License:        GPLv2
 Vendor:         VMware, Inc.
@@ -70,7 +70,7 @@ echo 'chronyd.service' > \
         %{buildroot}%{_prefix}/lib/systemd/ntp-units.d/50-chronyd.list
 
 %check
-make %{?_smp_mflags} -C test/simulation/clknetsim
+make %{?_smp_mflags}
 make quickcheck
 
 %post
@@ -100,6 +100,8 @@ make quickcheck
 %dir %attr(-,root,root) %{_localstatedir}/log/chrony
 
 %changelog
+*  Thu Nov 19 2020 Piyush Gupta <gpiyush@vmware.com> 4.0-2
+-  Make check fix
 *  Mon Jul 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.0-1
 -  Initial version for Photon
 
