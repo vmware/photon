@@ -18,7 +18,7 @@ To view the the format and information that a new repository configuration file 
 	cat /etc/yum.repos.d/lightwave.repo
 	[lightwave]
 	name=VMware Lightwave 1.0(x86_64)
-	baseurl=https://dl.bintray.com/vmware/lightwave
+	baseurl=https://packages.vmware.com/photon/1.0/lightwave
 	gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 	gpgcheck=1
 	enabled=1

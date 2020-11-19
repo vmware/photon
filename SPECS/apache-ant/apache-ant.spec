@@ -12,7 +12,7 @@ Source0:        http://apache.mirrors.lucidnetworks.net/ant/source/%{name}-%{ver
 %define sha1 apache-ant=74027a785d96715f61619b0a4d9296517bba3aa5
 Source1:        http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
-Source2:        http://dl.bintray.com/vmware/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
+Source2:        https://packages.vmware.com/photon/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
 %define sha1 maven-ant-tasks=f38c0cc7b38007b09638366dbaa4ee902d9c255b
 Patch0:         apache-ant-CVE-2020-11979.patch
 Requires:       openjre8

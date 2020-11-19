@@ -8,7 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      noarch
-Source0:	http://dl.bintray.com/vmware/photon_release_1.0_TP1_x86_64/%{name}-%{version}-src.tar.gz
+Source0:	https://packages.vmware.com/photon/photon_sources/1.0/%{name}-%{version}-src.tar.gz
 %define sha1 ant-contrib=b28d2bf18656b263611187fa9fbb95cec93d47c8
 Patch0:         use-system-provided-commons-httpclient-jar.patch
 BuildRequires: openjre8

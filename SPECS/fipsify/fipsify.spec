@@ -3,7 +3,7 @@ Name:           fipsify
 Version:        1.0
 Release:        2%{?dist}
 License:        GPLv2+
-URL:            http://dl.bintray.com/vmware/photon_sources/1.0/fipsify-1.0.tar.gz
+URL:            https://packages.vmware.com/photon/photon_sources/1.0/fipsify-1.0.tar.gz
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon

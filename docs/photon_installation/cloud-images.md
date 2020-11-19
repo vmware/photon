@@ -1,6 +1,6 @@
 # Compatible Cloud Images
 
-The [Bintray website](https://bintray.com/vmware/photon/) contains the following cloud-ready images of Photon OS: 
+The [https://packages.vmware.com/photon](https://packages.vmware.com/photon) contains the following cloud-ready images of Photon OS: 
 
 1. GCE - Google Compute Engine
 
@@ -8,7 +8,7 @@ The [Bintray website](https://bintray.com/vmware/photon/) contains the following
 
 1. OVA
 
-Because the cloud-ready images of Photon OS are built to be compatible with their corresponding cloud platform or format, you typically do not need to build a cloud image--just go to Bintray and download the image for the platform that you are working on. 
+Because the cloud-ready images of Photon OS are built to be compatible with their corresponding cloud platform or format, you typically do not need to build a cloud image--just go to https://packages.vmware.com/photon and download the image for the platform that you are working on. 
 
 If, however, you want to build your own cloud image, perhaps because you seek to customize the code, see the next section on how to build cloud images.
 
