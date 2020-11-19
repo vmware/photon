@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.44
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_44_1_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
@@ -94,6 +94,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %exclude %{_libdir}/libnss3.so
 %exclude %{_libdir}/libnssutil3.so
 %exclude %{_libdir}/libsoftokn3.so
+%exclude %{_libdir}/libfreeblpriv3.chk
+%exclude %{_libdir}/libsoftokn3.chk
 
 %files devel
 %{_includedir}/*
@@ -102,11 +104,15 @@ sudo -u test ./all.sh && userdel test -r -f
 
 %files libs
 %{_libdir}/libfreeblpriv3.so
+%{_libdir}/libfreeblpriv3.chk
 %{_libdir}/libnss3.so
 %{_libdir}/libnssutil3.so
 %{_libdir}/libsoftokn3.so
+%{_libdir}/libsoftokn3.chk
 
 %changelog
+*   Wed Nov 18 2020 Tapas Kundu <tkundu@vmware.com> 3.44-4
+-   Package libsoftokn3.chk and libfreeblpriv3.chk in nss-libs
 *   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 3.44-3
 -   Use latest sqlite
 *   Fri Aug 09 2019 Ashwin H <ashwinh@vmware.com> 3.44-2
