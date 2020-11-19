@@ -2,16 +2,16 @@
 
 Summary:          Elastic Search
 Name:             elasticsearch
-Version:          6.8.12
+Version:          6.8.13
 Release:          1%{?dist}
 License:          Apache License Version 2.0
 URL:              https://github.com/elastic/elasticsearch/archive/v%{version}.tar.gz
 Source0:          %{name}-%{version}.tar.gz
-%define sha1      %{name}-%{version}.tar.gz=839759ac0d778f5ff21d33e47de34d5c3d1e9829
+%define sha1      %{name}-%{version}.tar.gz=a6123f7a54abdfe3c6af1d483d8dae5978f4f628
 Source1:          cacerts
 %define sha1      cacerts=f584c7c1f48c552f39acfb5560a300a657d9f3bb
 Source2:          distribution-for-%{name}-%{version}.tar.gz
-%define sha1      distribution-for-%{name}=b0abd483947bfd6fb261b1701b90d12afa23363a
+%define sha1      distribution-for-%{name}=af63a63fc053d7097786c9eb19aece9467f2333e
 Group:            Development/Daemons
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -28,6 +28,7 @@ BuildRequires:    tar
 BuildRequires:    wget
 BuildRequires:    patch
 BuildRequires:    texinfo
+Requires:         openjdk8
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 %define ExtraBuildRequires openjdk12
@@ -122,6 +123,8 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+*   Wed Nov 18 2020 Piyush Gupta <gpiyush@vmware.com> 6.8.13-1
+-   Update to 6.8.13, Fix for CVE-2020-7020
 *   Mon Aug 31 2020 Piyush Gupta <gpiyush@vmware.com> 6.8.12-1
 -   Update to 6.8.12
 *   Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 6.8.10-1
