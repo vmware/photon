@@ -67,7 +67,7 @@ class pullSources:
             self._config = json.load(jsonFile)
 
     def downloadFile(self, package, filename, file_path):
-        #form url: https://dl.bintray.com/vmware/photon_sources/1.0/<filename>.
+        #form url: https://packages.vmware.com/photon/photon_sources/1.0/<filename>.
         url = '%s/%s' % (self._config['baseurl'], filename)
 
         self.logger.info("Downloading: "+url)

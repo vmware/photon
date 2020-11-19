@@ -35,7 +35,7 @@ A. Photon OS™ is an open source Linux container host optimized for cloud-nativ
 
 ## Q. How do I get started with Photon OS?
 A. Start by deciding your target platform. Photon OS 2.0 has been certified in public cloud environments - Microsoft Azure (new), Google Compute Engine (GCE), Amazon Elastic Compute Cloud (EC2) - as well as on VMware vSphere, VMware Fusion, and VMware Workstation.
-Next, download the latest binary distributions for your target platform. The binaries are hosted on [https://bintray.com/vmware/photon/](https://bintray.com/vmware/photon/). For download instructions, see [Downloading Photon OS](Downloading-Photon-OS.md).
+Next, download the latest binary distributions for your target platform. The binaries are hosted on [https://packages.vmware.com/photon/](https://packages.vmware.com/photon/). For download instructions, see [Downloading Photon OS](Downloading-Photon-OS.md).
 Finally, go to the installation instructions for your target platform, which are listed here:  [Quick Start](photon-admin-guide.md#getting-started-with-photon-os-20).
 
 ## Q. Can I upgrade my existing Photon OS 1.0 VMs?

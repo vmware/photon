@@ -8,7 +8,7 @@ To set up a PXE server, you will need to have the following:
 
 * A DHCP server to allow hosts to get an IP address.
 * A TFTP server, which is a file transfer protocol similar to FTP with no authentication.
-* Optionally, an HTTP server. The HTTP server will serve the RPMs yum repo, or you can use the official Photon OS repo on Bintray. Also, this HTTP server can be used if you want to provide a kickstart config for unattended installation.
+* Optionally, an HTTP server. The HTTP server will serve the RPMs yum repo, or you can use the official Photon OS repo on https://packages.vmware.com/photon/. Also, this HTTP server can be used if you want to provide a kickstart config for unattended installation.
 
 The instructions to set up the servers assume you have an Ubuntu 14.04 machine with a static IP address of `172.16.78.134`.
 
@@ -88,7 +88,7 @@ cp ~/syslinux-6.03/bios/core/pxelinux.0 .
 mkdir pxelinux.cfg
 mv isolinux.cfg pxelinux.cfg/default
 ```
-* Update repo param to point to http yum repo; you may pass official photon bintray repo.
+* Update repo param to point to http yum repo; you may pass official photon https://packages.vmware.com/photon/2.0/photon_release_2.0_x86_64/ repo.
 ```
 sed -i "s/append/append repo=http:\/\/172.16.78.134\/RPMS/g" menu.cfg
 popd

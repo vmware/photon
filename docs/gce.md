@@ -25,7 +25,7 @@ Following is the list (extracted from [this link](https://cloud.google.com/compu
 
 ## The GCE-Ready Image of Photon OS 
 
-The latest version of Photon OS does all of this for you. It bundles the Google startup scripts, daemon, and cloud SDK into a GCE-ready image that has been modified to meet the configuration requirements of GCE. To download the GCE-ready image of Photon OS for free, go to [Bintray](https://bintray.com/vmware/photon/). To use Photon OS with GCE, you do not need to perform the following steps unless you want to go through the exercise of customizing Photon OS to work with GCE. The Photon OS team has already done it for you. For more information, see [Running Photon OS on Google Compute Engine](Running-Photon-OS-on-Google-Compute-Engine.md). 
+The latest version of Photon OS does all of this for you. It bundles the Google startup scripts, daemon, and cloud SDK into a GCE-ready image that has been modified to meet the configuration requirements of GCE. To download the GCE-ready image of Photon OS for free, go to [https://packages.vmware.com/photon/](https://packages.vmware.com/photon/). To use Photon OS with GCE, you do not need to perform the following steps unless you want to go through the exercise of customizing Photon OS to work with GCE. The Photon OS team has already done it for you. For more information, see [Running Photon OS on Google Compute Engine](Running-Photon-OS-on-Google-Compute-Engine.md). 
 
 ## Creating Photon image for GCE
 ### 1. Prepare Photon Disk

@@ -17,7 +17,7 @@ This article uses an Ubuntu 14.04 workstation to generate the keys and certifica
 
 ## Downloading the Photon OS Image for Amazon
 
-VMware packages Photon OS as a cloud-ready Amazon machine image (AMI) that you can download for free from [Bintray](https://bintray.com/vmware/photon).
+VMware packages Photon OS as a cloud-ready Amazon machine image (AMI) that you can download for free from [https://packages.vmware.com/photon/](https://packages.vmware.com/photon/).
 
 Download the Photon OS AMI now and save it on your workstation. For instructions, see [Downloading Photon OS](Downloading-Photon-OS.md).
 

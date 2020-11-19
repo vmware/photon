@@ -3,9 +3,9 @@
 This is the server that is going to be used by a system administrator or a package installer developer to compose filesystem trees and make them available to hosts (or clients) to pull (download) and deploy.  
 
 The first step is to download the ISO for the desired release, if you have not done that already:  
-[Photon 1.0 GA ISO file](https://bintray.com/artifact/download/vmware/photon/photon-1.0-13c08b6.iso)  
-[Photon 1.0 Rev2 ISO file](https://bintray.com/artifact/download/vmware/photon/photon-1.0-62c543d.iso)  
-[Photon OS 2.0 Beta ISO file](https://bintray.com/vmware/photon/download_file?file_path=2.0%2FBeta%2Fiso%2Fphoton-2.0-8553d58.iso)  
+[Photon 1.0 GA ISO file](https://packages.vmware.com/photon/1.0/GA/iso/photon-1.0-13c08b6.iso)  
+[Photon 1.0 Rev2 ISO file](https://packages.vmware.com/photon/1.0/Rev2/iso/photon-1.0-62c543d.iso)  
+[Photon OS 2.0 Beta ISO file](https://packages.vmware.com/photon/2.0/Beta/iso/photon-2.0-8553d58.iso)  
 
 Installation steps are the same to all Photon OS versions, except that under the hood:
 * Photon 1.0 sets up a 'minimal' sample file tree, so it's ready to accept host pull/install requests right away.

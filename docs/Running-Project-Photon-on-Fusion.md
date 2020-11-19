@@ -26,7 +26,7 @@ Using Photon OS within VMware Fusion requires the following resources:
 | VMware Fusion | VMware Fusion (v7.0 or higher) must be installed. The latest version is recommended. |
 | Memory | 2GB of free RAM (recommended) |
 | Storage | **Minimal Photon install** : 512MB of free space (minimum); **Full Photon install** : 4GB of free space (minimum); 8GB recommended. |
-| Distribution File | Photon OS ISO or OVA file downloaded from bintray ( [https://bintray.com/vmware/photon/](https://bintray.com/vmware/photon/)). |
+| Distribution File | Photon OS ISO or OVA file downloaded from ( [https://packages.vmware.com/photon/](https://packages.vmware.com/photon/)). |
 
 Resource requirements and recommendations vary depending on several factors, including the host environment (for example, VMware Fusion and VMware vSphere), the distribution file used (ISO or OVA), and the selected installation settings (for example, full or basic installation).
 
@@ -45,9 +45,9 @@ If you're just looking for the fastest way to get up and running, start with the
 
 # Downloading Photon OS
 
-Once you've decided which way to install, you'll need to download the correct binaries. Go to the following Bintray URL and download the latest release of Photon OS:
+Once you've decided which way to install, you'll need to download the correct binaries. Go to the following https://packages.vmware.com/photon/ URL and download the latest release of Photon OS:
 
-[https://bintray.com/vmware/photon/](https://bintray.com/vmware/photon/)
+[https://packages.vmware.com/photon/](https://packages.vmware.com/photon/)
 
 For instructions, see  [Downloading Photon OS](Downloading-Photon-OS.md).
 

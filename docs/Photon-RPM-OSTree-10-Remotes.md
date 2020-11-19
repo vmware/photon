@@ -11,7 +11,7 @@ photon
 We can inquiry about the URL for that remote name, which for the default host is the expected Photon OS online OSTree repo.
 ```
 root@photon-host-def [ ~ ]# ostree remote show-url photon
-https://dl.bintray.com/vmware/photon/rpm-ostree/1.0
+https://packages.vmware.com/photon/1.0/GA/rpm-ostree
 ```
 But where is this information stored? The repo's config file has it.
 ```
@@ -21,7 +21,7 @@ repo_version=1
 mode=bare
 
 [remote "photon"]
-url=https://dl.bintray.com/vmware/photon/rpm-ostree/1.0
+url=https://packages.vmware.com/photon/1.0/GA/rpm-ostree
 gpg-verify=false
 ```
 
@@ -39,7 +39,7 @@ There is a whole chapter about signing, importing keys and so on that I will not
 
 ## 10.3 Switching repositories
 Since mapping name/url is stored in the repo's config file, in principle you can re-assign a different URL, connecting the host to a different server. The next upgrade will get the latest commit chain from the new server.   
-If we edit photon-host-def's repo config and replace the bintray URL by photon-srv1's IP address, all original packages in the original 1.0_minimal version will be preserved, but any new package change (addition, removal, upgrade) added after that (in 1.0_minimal.1, 1.0_minimal.2) will be reverted and all new commits from photon-srv1 (that may have same version) will be applied. This is because the two repos are identical copies, so they have the same original commit ID as a common ancestor, but they diverge from there.  
+If we edit photon-host-def's repo config and replace the https://packages.vmware.com/photon URL by photon-srv1's IP address, all original packages in the original 1.0_minimal version will be preserved, but any new package change (addition, removal, upgrade) added after that (in 1.0_minimal.1, 1.0_minimal.2) will be reverted and all new commits from photon-srv1 (that may have same version) will be applied. This is because the two repos are identical copies, so they have the same original commit ID as a common ancestor, but they diverge from there.  
 This may create confusion and it's one of the reasons I insisted on creating your own scheme of versioning.
   
 If the old and new repo have nothing in common (no common ancestor commit), this will undo even the original commit, so all commits from the new tree will be applied.  

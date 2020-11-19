@@ -21,7 +21,7 @@ Updating from: photon:photon/1.0/x86_64/minimal
 
 No upgrade available.
 ```  
-It's good idea to check periodically for updates. In fact, VMware released in July 2016 Photon OS 1.0 Revision 2, that included an ISO containing an updated OSTree repo, mirrored online at same bintray site location. The updated OSTree repo contains new versions all packages that have been updated between since the 1.0 GA (general availability) in September 2015.  
+It's good idea to check periodically for updates. In fact, VMware released in July 2016 Photon OS 1.0 Revision 2, that included an ISO containing an updated OSTree repo, mirrored online at same https://packages.vmware.com/photon site location. The updated OSTree repo contains new versions all packages that have been updated between since the 1.0 GA (general availability) in September 2015.  
 
 To simplify our example, let's assume that an updated Photon OS release for this branch (Refspec) contains three new packages: **gawk**, **sudo** and **wget**.
 To check if there are any new updates without actually applying them, we will pass the --check-diff flag, that would list the different packages as added, modified or deleted - if such operations were to happen.

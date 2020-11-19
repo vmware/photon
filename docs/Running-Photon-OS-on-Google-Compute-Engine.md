@@ -28,7 +28,7 @@ VMware recommends that administrators use the Photon OS image for Google Compute
 
 You can download the Photon OS image for GCE from the following URL:
 
-[https://bintray.com/vmware/photon](https://bintray.com/vmware/photon)
+[https://packages.vmware.com/photon/](https://packages.vmware.com/photon/)
 
 For instructions, see [Downloading Photon OS](Downloading-Photon-OS.md).
 

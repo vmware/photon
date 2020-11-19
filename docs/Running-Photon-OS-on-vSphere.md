@@ -25,7 +25,7 @@ Using Photon OS within VMware vSphere requires the following resources:
 | VMware vSphere installed | VMware web client (v6.5) for ESXi hosts (recommended) **Note:** vSphere 6 and vSphere 5.5 (these clients provide limited support; not all features are available). |
 | Memory | ESXi host with 2GB of free RAM (recommended) |
 | Storage | **Minimal Photon install** : ESXi host with at least 512MB of free space (minimum); **Full Photon install** : ESXi host with at least 4GB of free space (minimum); 16GB is recommended |
-| Distribution File | Photon OS ISO or OVA file downloaded from Bintray |
+| Distribution File | Photon OS ISO or OVA file downloaded from https://packages.vmware.com |
 
 Resource requirements and recommendations vary depending on several factors, including the host environment (for example, VMware vSphere and VMware Fusion), the distribution file used (ISO or OVA), and the selected installation settings (for example, full or basic installation).
 
@@ -42,9 +42,9 @@ If you're just looking for the fastest way to get up and running, start with the
 
 ## Downloading Photon OS
 
-Once you've decided which way to install, you'll need to download the correct binaries. Go to the following Bintray URL and download the latest release of Photon OS:
+Once you've decided which way to install, you'll need to download the correct binaries. Go to the following https://packages.vmware.com URL and download the latest release of Photon OS:
 
-[https://bintray.com/vmware/photon/](https://bintray.com/vmware/photon/)
+[https://packages.vmware.com/photon/](https://packages.vmware.com/photon/)
 
 For instructions, see [Downloading Photon OS](Downloading-Photon-OS.md).
 
@@ -374,7 +374,7 @@ In order to install and start using Photon OS with VMware vSphere, the following
 * VMware vSphere 5.5 or VMware vSphere 6.0 installed 
 * ESXi host with recommended 2GB of free RAM
 * ESXi host with recommended 8GB of free disk space
-* The Photon OS ISO downloaded from Bintray
+* The Photon OS ISO downloaded from https://packages.vmware.com
 
 This document uses VMware vSphere 6. VMware recommends that you use the latest version, though vSphere 5.5 or later should work as well. 
 

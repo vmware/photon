@@ -11,7 +11,7 @@ This is also the fastest way to install a host (18 seconds on my Mac with SSD af
 Note: It is also possible to install an RPM-OSTree host against the official online repo via PXE boot, without the benefit of fast, local pull from cdrom. This will be covered in the PXE boot/kickstart chapter, as it requires additional configuration.
 
 ## 2.2 Installing the ISO, step by step
-User will first download [Photon 1.0 ISO file](https://bintray.com/artifact/download/vmware/photon/photon-1.0-13c08b6.iso) or the newer [Photon 1.0 Rev2 ISO file](https://bintray.com/artifact/download/vmware/photon/photon-1.0-62c543d.iso) that contains the installer, which is able to deploy any of the supported Photon installation profiles.
+User will first download [Photon 1.0 ISO file](https://packages.vmware.com/photon/1.0/GA/iso/photon-1.0-13c08b6.iso) or the newer [Photon 1.0 Rev2 ISO file](https://packages.vmware.com/photon/1.0/Rev2/iso/photon-1.0-62c543d.iso) that contains the installer, which is able to deploy any of the supported Photon installation profiles.
 
 There are some steps common to all Photon installation profiles, starting with adding a VM in VMware Fusion, Workstation or ESXi, selecting the OS family, then customizing for disk size, CPU, memory size, network interface etc. (or leaving the defaults) and selecting the ISO image as cdrom. The installer will launch, that will go through disk partitioning and accepting the license agreement screens, followed by selecting an installation profile.
 These steps are described at the page linked below, so I won't repeat them, just that instead of setting up a Photon Minimal profile, we will install a Photon OSTree host:   
