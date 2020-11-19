@@ -1,17 +1,16 @@
 Name:            kibana
 Summary:         Browser-based analytics and search dashboard for Elasticsearch.
-Version:         6.8.12
-Release:         2%{?dist}
+Version:         6.8.13
+Release:         1%{?dist}
 License:         Apache License Version 2.0
 URL:             https://www.elastic.co/products/kibana
 Source0:         https://github.com/elastic/kibana/archive/%{name}-%{version}.tar.gz
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           System Environment/Daemons
-%define sha1     %{name}-%{version}=13b278dc47075746515e7ca1b2c56224181653b8
-Patch0:          0001-Nodejs-version-upgrade-for-CVE-2020-8252.patch
-Source1:         kibana_build-%{version}p1.tar.gz
-%define sha1     kibana_build-%{version}p1=a04e853e00d462a9ba2415713600bcc08a6bc3c1
+%define sha1     %{name}-%{version}=55d20b02fdfbb4d8f4e22bc19e6368fbe02d9581
+Source1:         kibana_build-%{version}.tar.gz
+%define sha1     kibana_build-%{version}=bfce9ed418624e458f2848ab264166c861a674af
 BuildArch:       x86_64
 BuildRequires:   git
 BuildRequires:   yarn
@@ -39,7 +38,6 @@ It enables visual exploration and real-time analysis of your data in Elasticsear
 # 4) cd ..
 # 5) tar -zcvf kibana-6.7.0.tar.gz kibana-%{version}
 %setup -q -n %{name}-%{version}
-%patch0 -p1
 
 %build
 export PATH=${PATH}:/usr/bin
@@ -135,6 +133,8 @@ exit
 %{_datadir}/%{name}
 
 %changelog
+*   Wed Nov 18 2020 Piyush Gupta <gpiyush@vmware.com> 6.8.13-1
+-   Upgrade to 6.8.13, Fix for CVE-2020-7020
 *   Wed Oct 07 2020 Piyush Gupta <gpiyush@vmware.com> 6.8.12-2
 -   Release bump up for CVE-2020-8252
 *   Mon Aug 31 2020 Piyush Gupta <gpiyush@vmware.com> 6.8.12-1
