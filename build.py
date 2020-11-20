@@ -512,12 +512,12 @@ class RpmBuildTarget:
         if not check_prerequesite["start-docker"]:
             CheckTools.start_docker()
         if constants.currentArch == "x86_64":
-            photon_docker_image = "vmware/photon-build:rpm-ostree-3.0"
+            ph_docker_image = "vmware/photon-build:rpm-ostree-3.0"
         else:
-            photon_docker_image = "vmware/photon-build:rpm-ostree-aarch64-3.0"
+            ph_docker_image = "vmware/photon-build:rpm-ostree-aarch64-3.0"
         if not os.path.isfile(os.path.join(Build_Config.stagePath, "ostree-repo.tar.gz")):
             process = subprocess.Popen([curDir + "/support/image-builder/ostree-tools/make-ostree-image.sh", curDir, Build_Config.stagePath,
-                                                                                                                        photon_docker_image])
+                                                                                                                        ph_docker_image])
 
             retval = process.wait()
             if retval != 0:
@@ -747,7 +747,7 @@ class BuildImage:
         self.rpm_path = constants.rpmPath
         self.srpm_path = constants.sourceRpmPath
         self.pkg_to_rpm_map_file = os.path.join(Build_Config.stagePath, "pkg_info.json")
-        self.photon_docker_image = configdict["photon-build-param"]["photon-docker-image"]
+        self.ph_docker_image = configdict["photon-build-param"]["photon-docker-image"]
 
     def set_Iso_Parameters(self, imgName):
         self.generated_data_path = Build_Config.stagePath + "/common/data"

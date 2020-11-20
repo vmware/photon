@@ -129,7 +129,7 @@ def createIso(options):
                                   options.rpm_path, options.package_list_file,
                                   rpm_list, options.stage_path, files_to_copy,
                                   options.generated_data_path, initrd_pkgs,
-                                  options.photon_docker_image])
+                                  options.ph_docker_image])
 
         if retval:
             raise Exception("Unable to create install ISO")
@@ -232,7 +232,7 @@ def createImage(options):
     # if 'photon_docker_image' is defined in config_<img>.json then ignore
     # commandline param 'PHOTON_DOCKER_IMAGE' and 'config.json' value
     if 'photon_docker_image' not in install_config:
-        install_config['photon_docker_image'] = options.photon_docker_image
+        install_config['photon_docker_image'] = options.ph_docker_image
 
     if 'size' in config and 'disks' in config:
         raise Exception("Both 'size' and 'disks' key should not be defined together.Please use 'disks' for defining multidisks only.")
@@ -311,7 +311,7 @@ if __name__ == '__main__':
     parser.add_argument("-p", "--package-list-file", dest="package_list_file", default="../../common/data/build_install_options_all.json")
     parser.add_argument("-d", "--pkg-to-rpm-map-file", dest="pkg_to_rpm_map_file", default="../../stage/pkg_info.json")
     parser.add_argument("-z", "--pkg-to-be-copied-conf-file", dest="pkg_to_be_copied_conf_file")
-    parser.add_argument("-q", "--photon-docker-image", dest="photon_docker_image", default="photon:latest")
+    parser.add_argument("-q", "--photon-docker-image", dest="ph_docker_image", default="photon:latest")
 
     options = parser.parse_args()
     if options.config_file and options.config_file != '':
