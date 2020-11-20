@@ -2,20 +2,19 @@
 %define __os_install_post %{nil}
 Summary:        CLI tool for spawning and running containers per OCI spec.
 Name:           runc
-Version:        1.0.0.rc9
-Release:        3%{?dist}
+Version:        1.0.0.rc10
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://runc.io/
 Source0:        https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
-%define sha1    runc=83a1cf67e9c400eba7da5bdc37f90f37a3f48eba
+%define sha1    runc=5adc714492dd7ba32ec8e3a6c9bb0148329afc6b
 # Must be in sync with package version
-%define RUNC_COMMIT d736ef14f0288d6993a1845745d6756cfc9ddd5a
+%define RUNC_COMMIT dc9208a3303feef5b3839f4323d9beb36df0a9dd
 # use major.minor.patch-rcX
-%define RUNC_VERSION 1.0.0-rc9
+%define RUNC_VERSION 1.0.0-rc10
 
 %define RUNC_BRANCH v%{RUNC_VERSION}
 %define gopath_comp github.com/opencontainers/runc
-Patch0:         CVE-2019-19921-runc-rc9.patch
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -38,9 +37,6 @@ Documentation for runc
 
 %prep
 %setup -q -c
-pushd %{name}-%{RUNC_VERSION}
-%patch0 -p1
-popd
 mkdir -p "$(dirname "src/%{gopath_comp}")"
 mv %{name}-%{RUNC_VERSION} src/%{gopath_comp}
 
@@ -65,6 +61,8 @@ make DESTDIR=%{buildroot} PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot}%{_bi
 %{_mandir}/man8/*
 
 %changelog
+*   Fri Nov 20 2020 Ankit Jain <ankitja@vmware.com> 1.0.0.rc10-1
+-   Updated to 1.0.0.rc10
 *   Wed Jun 03 2020 Harinadh D <hdommaraju@vmware.com> 1.0.0.rc9-3
 -   Fix CVE-2019-19921
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.0.0.rc9-2

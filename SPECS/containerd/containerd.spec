@@ -2,7 +2,7 @@
 %define __os_install_post %{nil}
 Summary:        Containerd
 Name:           containerd
-Version:        1.2.14
+Version:        1.3.7
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
@@ -10,14 +10,16 @@ Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha1 containerd=8775937491b58cf01963dc209f7dbc8a07371750
+%define sha1 containerd=f0f390538001267c8dd96ebca0b68af180ecd7d4
 # Must be in sync with package version
-%define CONTAINERD_GITCOMMIT f8777f13022dd16c2a339d621bb55465fe603b19
+%define CONTAINERD_GITCOMMIT 8fba4e9a7d01810a393d5d25a3621dc101981175
 
 Source1:        containerd.service
 Source2:        containerd-config.toml
 Source3:        disable-containerd-by-default.preset
 %define gopath_comp github.com/containerd/containerd
+
+Patch0:         containerd-1.3-Fix-CVE-2020-15257.patch
 
 BuildRequires:  btrfs-progs
 BuildRequires:  btrfs-progs-devel
@@ -30,7 +32,7 @@ Requires:       libseccomp
 Requires:       systemd
 # containerd works only with a specific runc version
 # Refer to containerd/RUNC.md
-Requires:       runc = 1.0.0.rc9
+Requires:       runc = 1.0.0.rc10
 
 %description
 Containerd is an open source project. It is available as a daemon for Linux,
@@ -53,6 +55,9 @@ Documentation for containerd.
 
 %prep
 %setup -q -c
+pushd %{name}-%{version}
+%patch0 -p1
+popd
 mkdir -p "$(dirname "src/%{gopath_comp}")"
 mv %{name}-%{version} src/%{gopath_comp}
 
@@ -99,15 +104,18 @@ make integration
 %files extras
 %defattr(-,root,root)
 %{_bindir}/containerd-shim-runc-v1
+%{_bindir}/containerd-shim-runc-v2
 %{_bindir}/containerd-stress
 
 %files doc
 %defattr(-,root,root)
 %doc
-%{_mandir}/man1/*
 %{_mandir}/man5/*
+%{_mandir}/man8/*
 
 %changelog
+*   Fri Nov 20 2020 Ankit Jain <ankitja@vmware.com> 1.3.7-1
+-   Update to 1.3.7 to fix CVE-2020-15257
 *   Fri Oct 16 2020 Ashwin H <ashwinh@vmware.com> 1.2.14-1
 -   Update to 1.2.14 to fix CVE-2020-15157
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.2.10-3
