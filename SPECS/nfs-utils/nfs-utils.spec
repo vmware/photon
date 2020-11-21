@@ -1,7 +1,7 @@
 Summary:          NFS client utils
 Name:             nfs-utils
 Version:          2.5.1
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          GPLv2+
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
@@ -124,6 +124,8 @@ fi
 %{_libdir}/libnfsidmap.so
 %{_libdir}/pkgconfig/libnfsidmap.pc
 %changelog
+*   Sun Nov 22 2020 Tapas Kundu <tkundu@vmware.com> 2.5.1-2
+-   Restrict nfs-mountd to start after rpcbind.socket
 *   Thu Jul 16 2020 Tapas Kundu <tkundu@vmware.com> 2.5.1-1
 -   Automatic Version Bump
 -   Use system installed rpcgen
