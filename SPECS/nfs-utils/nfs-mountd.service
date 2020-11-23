@@ -4,6 +4,7 @@ DefaultDependencies=no
 Requires=proc-fs-nfsd.mount
 After=proc-fs-nfsd.mount
 After=network.target local-fs.target
+After=rpcbind.socket
 BindsTo=nfs-server.service
 
 [Service]

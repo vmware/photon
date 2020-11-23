@@ -1,7 +1,7 @@
 Summary:        NFS client utils
 Name:           nfs-utils
 Version:        1.3.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        GPLv2+
 URL:            http://sourceforge.net/projects/nfs
 Group:          Applications/Nfs-utils-client
@@ -66,6 +66,8 @@ install -m644 systemd/proc-fs-nfsd.mount %{buildroot}/lib/systemd/system/
 /lib/systemd/system/*
 
 %changelog
+*   Mon Nov 23 2020 Tapas Kundu <tkundu@vmware.com> 1.3.3-9
+-   Restrict nfs-mountd to start after rpcbind.socket
 *   Thu Jun 07 2018 Anish Swaminathan <anishs@vmware.com> 1.3.3-8
 -   Add noreplace qualifier to config files
 *   Tue Feb 27 2018 Xiaolin Li <xiaolinl@vmware.com> 1.3.3-7
