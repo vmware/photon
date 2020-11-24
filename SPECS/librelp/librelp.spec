@@ -1,7 +1,7 @@
 Summary:	RELP Library
 Name:		librelp
 Version:	1.8.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.librelp.com
 Source0:	http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
@@ -49,15 +49,9 @@ make DESTDIR=%{buildroot} install
 #Due to above dependecy overhead which needs more analysis
 #and since tests are not using any valgrind functionality,
 #disabling valgrind.
-sed -ie 's/export valgrind=.*/export valgrind""/' tests/test-framework.sh
-
-# * TODO *
-# tls-basic-brokencert test is broken and it is mentioned in the official git
-# repo (https://github.com/rsyslog/librelp/blob/master/tests/Makefile.am)
-# Comment says:
-# reenable tests when stable tls-basic-brokencert.sh. This holds good till
-# librelp-1.4.0 release.
-sed -i '/tls-basic-brokencert.sh \\/d' tests/Makefile.am
+sed -i '/VALGRIND_TESTS= \\/d' tests/Makefile.am
+sed -i '/duplicate-receiver-vg.sh \\/d' tests/Makefile.am
+sed -i '/basic-sessionbreak-vg.sh/d' tests/Makefile.am
 
 make check
 
@@ -75,6 +69,8 @@ make check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Nov 24 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0-2
+- Fix make check
 * Tue Sep 29 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.0-1
 - Automatic Version Bump
 * Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1
