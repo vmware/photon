@@ -3,7 +3,7 @@
 
 Name:           pycurl3
 Version:        7.43.0.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X
@@ -11,6 +11,9 @@ URL:            http://pycurl.sourceforge.net/
 Source0:        http://pycurl.sourceforge.net/download/pycurl-%{version}.tar.gz
 %define sha1    pycurl=b9ba304bb5b6f1cb3a90a264aa31d000ff7065a2
 Patch0:         add_convert_docstring.patch
+%if %{with_check}
+Patch1:         Fix_makecheck.patch
+%endif
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  openssl-devel
@@ -46,7 +49,9 @@ rm -r pycurl-*
 rm -f doc/*.xml_validity
 #chmod a-x examples/*
 %patch0 -p1
-
+%if %{with_check}
+%patch1 -p1
+%endif
 # removing prebuilt-binaries
 rm -f tests/fake-curl/libcurl/*.so
 
@@ -62,7 +67,7 @@ chmod 755 %{buildroot}%{python3_sitelib}/pycurl*.so
 %check
 export PYCURL_VSFTPD_PATH=vsftpd
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 nose nose-show-skipped bottle flaky pyflakes
+$easy_install_3 nose nose-show-skipped bottle==0.12.16 flaky pyflakes
 rm -f tests/multi_option_constants_test.py tests/ftp_test.py tests/option_constants_test.py tests/seek_cb_test.py
 LANG=en_US.UTF-8  make test PYTHON=python%{python3_version} NOSETESTS="nosetests-3.4 -v"
 
@@ -78,6 +83,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+*   Tue Nov 24 2020 Tapas Kundu <tkundu@vmware.com> 7.43.0.6-3
+-   Fix make check
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.43.0.6-2
 -   openssl 1.1.1
 *   Thu Sep 10 2020 Gerrit Photon <photon-checkins@vmware.com> 7.43.0.6-1
