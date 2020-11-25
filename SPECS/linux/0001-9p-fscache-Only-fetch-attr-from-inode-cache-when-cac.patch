@@ -1,0 +1,116 @@
+From 98801f6c249b1380edf504165f5a3993d3a58bfd Mon Sep 17 00:00:00 2001
+From: Albert Guo <aguo@vmware.com>
+Date: Mon, 16 Nov 2020 04:38:54 -0800
+Subject: [PATCH] [9p] fscache: Only fetch attr from inode cache when cache is
+ valid
+
+When setattr is called, the ctime of the file system entry will be updated.
+The ctime in the inode cache will be inconsistent with the server. atime and
+mtime is incorrect as well as they're truncated according to time granularity.
+See setattr_copy().
+In this case, attr cache in the inode has already been marked as invalid
+by v9fs_invalidate_inode_attr().
+When a following getattr is called, we only fetch from attr cache when
+cache in inode is valid. If it invalid, the attr will be fetched from the
+server, this ensures 9p client always get consistent timestamp.
+After we fetch attr from 9p server, the cache will become valid by calling
+v9fs_stat2inode_dotl(), so the next getattr will be read from cache again as
+long as there is no other operations which invalidate the cache.
+
+Testing Done:
+Manual test:
+1) Test with a test program: http://engweb.vmware.com/~aguo/test_tools/check_stat.c
+Before fix:
+nsec is always 0 for getattr after setattr within the same open.
+[ /vsfs/dfa5a037-d5df-4012-83c5-8b2e7e535c0b/vdfsops0ac0d7c3/0309c55f-8da0-6245-e60c-02003870d120/volumes/default ]# /root/check_stat fiofile
+now.sec = 1607059081, now.usec = 842920
+fstat1: atime.sec=1607059080, atime.nsec=0, mtime.sec=1607059080, mtime.nsec=0, ctime.sec=1607059081, ctime.nsec=0.
+
+After fix:
+nsec is correct.
+/vsfs/dfa5a037-d5df-4012-83c5-8b2e7e535c0b/vdfsops0ac0d7c3/0309c55f-8da0-6245-e60c-02003870d120/volumes/default ]# /root/check_stat fiofile
+now.sec = 1607067440, now.usec = 464677
+fstat1: atime.sec=1607067439, atime.nsec=464677000, mtime.sec=1607067439, mtime.nsec=464677000, ctime.sec=1607067440, ctime.nsec=474962468.
+
+2) Tested with Samba durable reconnect.
+While fio is running from Windows client, disconnect container network for 30
+seconds.
+`docker network disconnect 8e88fcecf152 vdfsops0aa1bfa9 && sleep 30 && docker network connect --ip 10.161.191.169  8e88fcecf152 vdfsops0aa1bfa9`
+fio is still kept running without error. I verified from network trace that durable reconnect succeeded. Samba didn't show any durable reconnect failure log.
+Notes: the default durable reconnect timeout is 60 seconds in Samba, so the network disconnection can't be last for a long time.
+---
+ fs/9p/v9fs_vfs.h       |  6 ++++++
+ fs/9p/vfs_inode.c      |  9 ++++++---
+ fs/9p/vfs_inode_dotl.c | 13 ++++++++++---
+ 3 files changed, 22 insertions(+), 6 deletions(-)
+
+diff --git a/fs/9p/v9fs_vfs.h b/fs/9p/v9fs_vfs.h
+index 10c9fde..94f95f4 100644
+--- a/fs/9p/v9fs_vfs.h
++++ b/fs/9p/v9fs_vfs.h
+@@ -87,6 +87,12 @@ static inline void v9fs_invalidate_inode_attr(struct inode *inode)
+ 	v9inode->cache_validity |= V9FS_INO_INVALID_ATTR;
+ 	return;
+ }
++static inline bool v9fs_inode_attr_is_valid(struct inode *inode)
++{
++	struct v9fs_inode *v9inode;
++	v9inode = V9FS_I(inode);
++	return !(v9inode->cache_validity & V9FS_INO_INVALID_ATTR);
++}
+ 
+ int v9fs_open_to_dotl_flags(int flags);
+ 
+diff --git a/fs/9p/vfs_inode.c b/fs/9p/vfs_inode.c
+index 3feccad..5b1d14d 100644
+--- a/fs/9p/vfs_inode.c
++++ b/fs/9p/vfs_inode.c
+@@ -1079,10 +1079,13 @@ int v9fs_vfs_rmdir(struct inode *i, struct dentry *d)
+ 	struct p9_fid *fid;
+ 	struct p9_wstat *st;
+ 
+-	p9_debug(P9_DEBUG_VFS, "dentry: %p\n", dentry);
++	p9_debug(P9_DEBUG_VFS, "dentry: %p(%pd)\n", dentry, dentry);
+ 	v9ses = v9fs_dentry2v9ses(dentry);
+-	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE ||
+-	    (v9ses->cache == CACHE_STAT && d_really_is_positive(dentry))) {
++	if (v9fs_inode_attr_is_valid(d_inode(dentry)) &&
++	    (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE ||
++	    (v9ses->cache == CACHE_STAT && d_really_is_positive(dentry)))) {
++		p9_debug(P9_DEBUG_VFS, "cache hit: dentry: %p(%pd)\n",
++			dentry, dentry);
+ 		generic_fillattr(d_inode(dentry), stat);
+ 		return 0;
+ 	}
+diff --git a/fs/9p/vfs_inode_dotl.c b/fs/9p/vfs_inode_dotl.c
+index 965e708..8474902 100644
+--- a/fs/9p/vfs_inode_dotl.c
++++ b/fs/9p/vfs_inode_dotl.c
+@@ -478,14 +478,21 @@ static int v9fs_vfs_mkdir_dotl(struct inode *dir,
+ 	struct v9fs_session_info *v9ses;
+ 	struct p9_fid *fid;
+ 	struct p9_stat_dotl *st;
++	struct inode *inode = d_inode(dentry);
+ 
+-	p9_debug(P9_DEBUG_VFS, "dentry: %p\n", dentry);
++	p9_debug(P9_DEBUG_VFS, "dentry: %p(%pd)\n", dentry, dentry);
+ 	v9ses = v9fs_dentry2v9ses(dentry);
+-	if (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE ||
+-	    (v9ses->cache == CACHE_STAT && d_really_is_positive(dentry))) {
++	if (v9fs_inode_attr_is_valid(inode) &&
++	    (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE ||
++	    (v9ses->cache == CACHE_STAT && d_really_is_positive(dentry)))) {
++		p9_debug(P9_DEBUG_VFS, "cache hit: dentry: %p(%pd)\n",
++			dentry, dentry);
+ 		generic_fillattr(d_inode(dentry), stat);
+ 		return 0;
+ 	}
++	p9_debug(P9_DEBUG_VFS, "cache miss: dentry: %p(%pd)\n",
++			dentry, dentry);
++
+ 	fid = v9fs_fid_lookup(dentry);
+ 	if (IS_ERR(fid))
+ 		return PTR_ERR(fid);
+-- 
+1.8.5.6
+

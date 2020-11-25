@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.154
-Release:        12%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -134,6 +134,7 @@ Patch206:	0007-vdfs-9p-Fix-recovery-logic-and-cleanup-tags.patch
 
 # VDFS 9p changes
 Patch225:      0001-9p-fscache-Don-t-use-writeback-fid-for-cache-when-en.patch
+Patch226:      0001-9p-fscache-Only-fetch-attr-from-inode-cache-when-cac.patch
 
 # VKD 9p changes
 Patch250:        0001-fs-9p-support-no_icache-flag-to-disable-dentry-inode.patch
@@ -446,6 +447,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch206 -p1
 
 %patch225 -p1
+%patch226 -p1
 %patch250 -p1
 %patch251 -p1
 %patch252 -p1
@@ -757,6 +759,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri Dec 4 2020 Albert Guo <aguo@vmware.com> 4.19.154-13
+-   9p: fscache: Only fetch attr from inode cache when cache is valid
 *   Mon Nov 30 2020 Vikash Bansal <bvikas@vmware.com> 4.19.154-12
 -   Mark BAR0 (at offset 0x10) for PCI device 15ad:07b0 (VMXNET3) as variable
 *   Fri Nov 20 2020 Ajay Kaher <akaher@vmware.com> 4.19.154-11
