@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.154
-Release:        13%{?kat_build:.kat}%{?dist}
+Version:        4.19.160
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=ac446414683726048a056f1f5f8bf9a64ca7a5e5
+%define sha1 linux=7a9a126abf572e8b5a04f90da14ce0cd5cea783f
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -67,14 +67,11 @@ Patch40:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch41:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
 Patch42:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
-#Fix for CVE-2020-25704
-Patch43:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
-#Fix for CVE-2020-8694
-Patch44:        powercap-restrict-energy-meter-to-root-access.patch
-#Fix slab-out-of-bounds read in fbcon
-Patch45:        0001-vt-Disable-KD_FONT_OP_COPY.patch
-# Fix for CVE-2020-25668
-Patch46:        0001-tty-make-FONTX-ioctl-use-the-tty-pointer-they-were-a.patch
+#Fix for CVE-2019-20908
+Patch43:        efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.patch
+#Fix for CVE-2019-19338
+Patch44:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
+Patch45:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 
 # 9p patches
 Patch54:        0001-fs-9p-Add-opt_metaonly-option.patch
@@ -94,14 +91,6 @@ Patch63:        0002-fs-9p-Add-read_cache_pages_inchunks.patch
 # 9p improve write pages cache
 Patch64:        0001-fs-9p-write-pages-together-if-pages-are-consecutive-.patch
 
-#Fix for CVE-2019-19813 and CVE-2019-19816
-Patch66:        0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
-Patch67:        0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
-Patch68:        0003-btrfs-tree-checker-Make-btrfs_check_chunk_valid-retu.patch
-Patch69:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
-Patch70:        0005-btrfs-tree-checker-Verify-dev-item.patch
-Patch71:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
-Patch72:        0007-btrfs-tree-checker-Verify-inode-item.patch
 # Fix for CVE-2020-16119
 Patch73:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
 Patch74:        0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
@@ -407,7 +396,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
-%patch46 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -419,13 +407,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch62 -p1
 %patch63 -p1
 %patch64 -p1
-%patch66 -p1
-%patch67 -p1
-%patch68 -p1
-%patch69 -p1
-%patch70 -p1
-%patch71 -p1
-%patch72 -p1
 %patch73 -p1
 %patch74 -p1
 %patch75 -p1
@@ -759,6 +740,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri Dec 4 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.160-1
+-   Update to version 4.19.160
+-   Fix CVE-2019-19338 and CVE-2019-20908
 *   Fri Dec 4 2020 Albert Guo <aguo@vmware.com> 4.19.154-13
 -   9p: fscache: Only fetch attr from inode cache when cache is valid
 *   Mon Nov 30 2020 Vikash Bansal <bvikas@vmware.com> 4.19.154-12

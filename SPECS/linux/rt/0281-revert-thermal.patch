@@ -1,10 +1,10 @@
 From 13924250c21d6f6627830e57458b6d4cca5de5de Mon Sep 17 00:00:00 2001
-Message-Id: <13924250c21d6f6627830e57458b6d4cca5de5de.1604089291.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <13924250c21d6f6627830e57458b6d4cca5de5de.1605897048.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
 Date: Fri, 20 Sep 2019 17:50:53 -0400
-Subject: [PATCH 281/333] revert-thermal
+Subject: [PATCH 281/335] revert-thermal
 
 Revert: thermal: Defer thermal wakups to threads
 

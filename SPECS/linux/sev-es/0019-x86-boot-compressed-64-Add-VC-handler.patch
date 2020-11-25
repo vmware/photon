@@ -134,7 +134,7 @@ index d2c25a1..30c1ebb 100755
 --- a/arch/x86/include/asm/msr-index.h
 +++ b/arch/x86/include/asm/msr-index.h
 @@ -375,6 +375,7 @@
- #define MSR_AMD64_IBSBRTARGET		0xc001103b
+ #define MSR_AMD64_ICIBSEXTDCTL		0xc001103c
  #define MSR_AMD64_IBSOPDATA4		0xc001103d
  #define MSR_AMD64_IBS_REG_COUNT_MAX	8 /* includes MSR_AMD64_IBSBRTARGET */
 +#define MSR_AMD64_SEV_ES_GHCB		0xc0010130

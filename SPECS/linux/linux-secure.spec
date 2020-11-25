@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.154
-Release:        7%{?kat_build:.kat}%{?dist}
+Version:        4.19.160
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=ac446414683726048a056f1f5f8bf9a64ca7a5e5
+%define sha1 linux=7a9a126abf572e8b5a04f90da14ce0cd5cea783f
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -63,14 +63,9 @@ Patch39:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch41:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch42:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
-#Fix for CVE-2019-19813 and CVE-2019-19816
-Patch50:        0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
-Patch51:        0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
-Patch52:        0003-btrfs-tree-checker-Make-btrfs_check_chunk_valid-retu.patch
-Patch53:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
-Patch54:        0005-btrfs-tree-checker-Verify-dev-item.patch
-Patch55:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
-Patch56:        0007-btrfs-tree-checker-Verify-inode-item.patch
+#Fix for CVE-2019-19338
+Patch43:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
+Patch44:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 # Fix for CVE-2020-16119
 Patch57:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
 Patch58:        0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
@@ -81,14 +76,6 @@ Patch60:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch61:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch62:        0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
 Patch63:        0005-ovl-check-permission-to-open-real-file.patch
-#Fix for CVE-2020-25704
-Patch64:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
-#Fix for CVE-2020-8694
-Patch65:        powercap-restrict-energy-meter-to-root-access.patch
-#Fix slab-out-of-bounds read in fbcon
-Patch66:        0001-vt-Disable-KD_FONT_OP_COPY.patch
-# Fix for CVE-2020-25668
-Patch67:        0001-tty-make-FONTX-ioctl-use-the-tty-pointer-they-were-a.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -241,14 +228,9 @@ This Linux package contains hmac sha generator kernel module.
 %patch39 -p1
 %patch41 -p1
 %patch42 -p1
+%patch43 -p1
+%patch44 -p1
 
-%patch50 -p1
-%patch51 -p1
-%patch52 -p1
-%patch53 -p1
-%patch54 -p1
-%patch55 -p1
-%patch56 -p1
 %patch57 -p1
 %patch58 -p1
 %patch59 -p1
@@ -256,10 +238,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch61 -p1
 %patch62 -p1
 %patch63 -p1
-%patch64 -p1
-%patch65 -p1
-%patch66 -p1
-%patch67 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -475,6 +453,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Dec 02 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.160-1
+-   Update to version 4.19.160
+-   Fix CVE-2019-19338
 *   Tue Dec 01 2020 Vikash Bansal <bvikas@vmware.com> 4.19.154-7
 -   Lockdown patches
 *   Mon Nov 16 2020 Vikash Bansal <bvikas@vmware.com> 4.19.154-6

@@ -1,10 +1,10 @@
 From 636dc2a3d3f95fea49449d21dd5c9aa49304e185 Mon Sep 17 00:00:00 2001
-Message-Id: <636dc2a3d3f95fea49449d21dd5c9aa49304e185.1604089291.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <636dc2a3d3f95fea49449d21dd5c9aa49304e185.1605897048.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 3 Jul 2009 08:44:56 -0500
-Subject: [PATCH 259/333] signals: Allow rt tasks to cache one sigqueue struct
+Subject: [PATCH 259/335] signals: Allow rt tasks to cache one sigqueue struct
 
 To avoid allocation allow rt tasks to cache one sigqueue struct in
 task struct.
@@ -81,7 +81,7 @@ index 6f7191a72103..45748993f777 100644
  #include <linux/tty.h>
  #include <linux/binfmts.h>
 @@ -397,13 +398,30 @@ void task_join_group_stop(struct task_struct *task)
- 	}
+ 	task_set_jobctl_pending(task, mask | JOBCTL_STOP_PENDING);
  }
  
 +static inline struct sigqueue *get_task_cache(struct task_struct *t)

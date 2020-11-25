@@ -1,10 +1,10 @@
 From 770f6c8c0729d0912bddccdc1765e7abeefa0772 Mon Sep 17 00:00:00 2001
-Message-Id: <770f6c8c0729d0912bddccdc1765e7abeefa0772.1604089290.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <770f6c8c0729d0912bddccdc1765e7abeefa0772.1605897047.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Date: Thu, 13 Sep 2018 13:30:24 +0200
-Subject: [PATCH 007/333] ARM: configs: at91: unselect PIT
+Subject: [PATCH 007/335] ARM: configs: at91: unselect PIT
 
 The PIT is not required anymore to successfully boot and may actually harm
 in case preempt-rt is used because the PIT interrupt is shared.

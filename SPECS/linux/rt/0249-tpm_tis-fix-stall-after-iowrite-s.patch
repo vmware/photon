@@ -1,10 +1,10 @@
 From 195591c01bed6e69e1afeeb669dea69fcb8718b4 Mon Sep 17 00:00:00 2001
-Message-Id: <195591c01bed6e69e1afeeb669dea69fcb8718b4.1604089291.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <195591c01bed6e69e1afeeb669dea69fcb8718b4.1605897048.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Haris Okanovic <haris.okanovic@ni.com>
 Date: Tue, 15 Aug 2017 15:13:08 -0500
-Subject: [PATCH 249/333] tpm_tis: fix stall after iowrite*()s
+Subject: [PATCH 249/335] tpm_tis: fix stall after iowrite*()s
 
 ioread8() operations to TPM MMIO addresses can stall the cpu when
 immediately following a sequence of iowrite*()'s to the same region.
@@ -60,8 +60,8 @@ index f08949a5f678..9fefcfcae593 100644
 +	tpm_tis_flush(iobase);
 +}
 +
- static bool interrupts = true;
- module_param(interrupts, bool, 0444);
+ static int interrupts = -1;
+ module_param(interrupts, int, 0444);
  MODULE_PARM_DESC(interrupts, "Enable interrupts");
 @@ -150,7 +175,7 @@ static int tpm_tcg_write_bytes(struct tpm_tis_data *data, u32 addr, u16 len,
  	struct tpm_tis_tcg_phy *phy = to_tpm_tis_tcg_phy(data);

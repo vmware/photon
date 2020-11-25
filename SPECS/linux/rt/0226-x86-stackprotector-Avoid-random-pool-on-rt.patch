@@ -1,10 +1,10 @@
 From 9de7451f7afe1489aafaf4fbab6cdc102faf7ef5 Mon Sep 17 00:00:00 2001
-Message-Id: <9de7451f7afe1489aafaf4fbab6cdc102faf7ef5.1604089291.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <9de7451f7afe1489aafaf4fbab6cdc102faf7ef5.1605897048.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 16 Dec 2010 14:25:18 +0100
-Subject: [PATCH 226/333] x86: stackprotector: Avoid random pool on rt
+Subject: [PATCH 226/335] x86: stackprotector: Avoid random pool on rt
 
 CPU bringup calls into the random pool to initialize the stack
 canary. During boot that works nicely even on RT as the might sleep

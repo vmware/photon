@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.154
+Version:        4.19.160
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt65
-Release:        8%{?kat_build:.%kat}%{?dist}
+%define rt_version rt66
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=ac446414683726048a056f1f5f8bf9a64ca7a5e5
+%define sha1 linux=7a9a126abf572e8b5a04f90da14ce0cd5cea783f
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
@@ -62,14 +62,11 @@ Patch36:        0001-ip_sockglue-Fix-missing-check-bug-in-ip_ra_control.patch
 Patch38:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 # Fix for CVE-2019-12455
 Patch39:        0001-clk-sunxi-fix-a-missing-check-bug-in-sunxi_divs_clk_.patch
-#Fix for CVE-2019-19813 and CVE-2019-19816
-Patch51:        0001-btrfs-Move-btrfs_check_chunk_valid-to-tree-check.-ch.patch
-Patch52:        0002-btrfs-tree-checker-Make-chunk-item-checker-messages-.patch
-Patch53:        0003-btrfs-tree-checker-Make-btrfs_check_chunk_valid-retu.patch
-Patch54:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
-Patch55:        0005-btrfs-tree-checker-Verify-dev-item.patch
-Patch56:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
-Patch57:        0007-btrfs-tree-checker-Verify-inode-item.patch
+#Fix for CVE-2019-20908
+Patch40:        efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.patch
+#Fix for CVE-2019-19338
+Patch41:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
+Patch42:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 # Fix for CVE-2020-16119
 Patch58:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
 Patch59:        0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
@@ -80,14 +77,6 @@ Patch61:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch62:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch63:        0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
 Patch64:        0005-ovl-check-permission-to-open-real-file.patch
-#Fix for CVE-2020-25704
-Patch65:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
-#Fix for CVE-2020-8694
-Patch66:        powercap-restrict-energy-meter-to-root-access.patch
-#Fix slab-out-of-bounds read in fbcon
-Patch67:        0001-vt-Disable-KD_FONT_OP_COPY.patch
-# Fix for CVE-2020-25668
-Patch68:        0001-tty-make-FONTX-ioctl-use-the-tty-pointer-they-were-a.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -439,8 +428,10 @@ Patch529:       0329-signal-Prevent-double-free-of-user-struct.patch
 Patch530:       0330-Bluetooth-Acquire-sk_lock.slock-without-disabling-in.patch
 Patch531:       0331-net-phy-fixed_phy-Remove-unused-seqcount.patch
 Patch532:       0332-net-xfrm-fix-compress-vs-decompress-serialization.patch
+Patch533:       0333-mm-memcontrol-Disable-preemption-in-__mod_memcg_lruv.patch
+Patch534:       0334-ptrace-fix-ptrace_unfreeze_traced-race-with-rt-lock.patch
 # Keep rt_version matched up with this patch.
-Patch533:       0333-Linux-4.19.152-rt65-REBASE.patch
+Patch535:       0335-Linux-4.19.152-rt66-REBASE.patch
 
 #Photon Specific Changes
 Patch600:        0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
@@ -515,13 +506,9 @@ The Linux package contains the Linux kernel doc files
 %patch36 -p1
 %patch38 -p1
 %patch39 -p1
-%patch51 -p1
-%patch52 -p1
-%patch53 -p1
-%patch54 -p1
-%patch55 -p1
-%patch56 -p1
-%patch57 -p1
+%patch40 -p1
+%patch41 -p1
+%patch42 -p1
 %patch58 -p1
 %patch59 -p1
 %patch60 -p1
@@ -529,10 +516,6 @@ The Linux package contains the Linux kernel doc files
 %patch62 -p1
 %patch63 -p1
 %patch64 -p1
-%patch65 -p1
-%patch66 -p1
-%patch67 -p1
-%patch68 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -881,6 +864,8 @@ The Linux package contains the Linux kernel doc files
 %patch531 -p1
 %patch532 -p1
 %patch533 -p1
+%patch534 -p1
+%patch535 -p1
 %patch600 -p1
 
 %if 0%{?kat_build:1}
@@ -1043,6 +1028,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Nov 24 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.160-1
+-   Update to version 4.19.160
+-   Fix CVE-2019-19338 and CVE-2019-20908
 *   Fri Nov 13 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.154-8
 -   Fix CVE-2020-25668
 *   Fri Nov 13 2020 Sharan Turlapati <sturlapati@vmware.com> 4.19.154-7

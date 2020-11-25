@@ -1,10 +1,10 @@
 From 6029a580f90ff21a3ba75262f8c0cec41bbb1523 Mon Sep 17 00:00:00 2001
-Message-Id: <6029a580f90ff21a3ba75262f8c0cec41bbb1523.1604089290.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <6029a580f90ff21a3ba75262f8c0cec41bbb1523.1605897047.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 24 Jul 2011 12:11:43 +0200
-Subject: [PATCH 039/333] kconfig: Disable config options which are not RT
+Subject: [PATCH 039/335] kconfig: Disable config options which are not RT
  compatible
 
 Disable stuff which is known to have issues on RT

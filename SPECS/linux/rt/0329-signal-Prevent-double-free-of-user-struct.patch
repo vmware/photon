@@ -1,10 +1,10 @@
 From b350c545c9373c7ba5a5dd3db63525290d869f5c Mon Sep 17 00:00:00 2001
-Message-Id: <b350c545c9373c7ba5a5dd3db63525290d869f5c.1604089291.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <b350c545c9373c7ba5a5dd3db63525290d869f5c.1605897049.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Matt Fleming <matt@codeblueprint.co.uk>
 Date: Tue, 7 Apr 2020 10:54:13 +0100
-Subject: [PATCH 329/333] signal: Prevent double-free of user struct
+Subject: [PATCH 329/335] signal: Prevent double-free of user struct
 
 [ Upsteam commit 9567db2ebe566a93485e1a27d8759969d0002d7a ]
 

@@ -1,10 +1,10 @@
 From d75b071a154647501d3424b750b9135f6b757c56 Mon Sep 17 00:00:00 2001
-Message-Id: <d75b071a154647501d3424b750b9135f6b757c56.1604089290.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <d75b071a154647501d3424b750b9135f6b757c56.1605897047.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 10 Sep 2018 18:00:31 +0200
-Subject: [PATCH 094/333] work-simple: drop a shit statement in
+Subject: [PATCH 094/335] work-simple: drop a shit statement in
  SWORK_EVENT_PENDING
 
 Dan Carpenter reported

@@ -1,10 +1,10 @@
 From 9ff6d9c6d6c17a15e9413f995554df9ac4bfeb2e Mon Sep 17 00:00:00 2001
-Message-Id: <9ff6d9c6d6c17a15e9413f995554df9ac4bfeb2e.1604089291.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <9ff6d9c6d6c17a15e9413f995554df9ac4bfeb2e.1605897048.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Daniel Wagner <wagi@monom.org>
 Date: Tue, 17 Feb 2015 09:37:44 +0100
-Subject: [PATCH 282/333] thermal: Defer thermal wakups to threads
+Subject: [PATCH 282/335] thermal: Defer thermal wakups to threads
 
 [ Upstream commit ad2408dc248fe58536eef5b2b5734d8f9d3a280b ]
 

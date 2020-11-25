@@ -1,10 +1,10 @@
 From 541780d11a1f9258bd12fef8ebfa73c0f6a83af6 Mon Sep 17 00:00:00 2001
-Message-Id: <541780d11a1f9258bd12fef8ebfa73c0f6a83af6.1604089291.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <541780d11a1f9258bd12fef8ebfa73c0f6a83af6.1605897049.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 7 Oct 2019 16:45:18 +0200
-Subject: [PATCH 303/333] futex: Make the futex_hash_bucket spinlock_t again
+Subject: [PATCH 303/335] futex: Make the futex_hash_bucket spinlock_t again
  and bring back its old state
 
 [ Upstream commit 954ad80c23edfe71f4e8ce70b961eac884320c3a ]
@@ -67,7 +67,7 @@ index 3c604e3eb20a..81c8908eae3d 100644
  	/*
  	 * If pi_state->owner is NULL, the owner is most probably dying
 @@ -868,7 +868,9 @@ static struct futex_pi_state *__put_pi_state(struct futex_pi_state *pi_state)
- 		raw_spin_unlock_irq(&pi_state->pi_mutex.wait_lock);
+ 		raw_spin_unlock_irqrestore(&pi_state->pi_mutex.wait_lock, flags);
  	}
  
 -	if (!current->pi_state_cache) {

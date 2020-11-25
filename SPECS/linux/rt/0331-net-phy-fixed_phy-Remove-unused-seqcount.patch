@@ -1,10 +1,10 @@
 From 999939bec23efa1d753a9fccd72f1024ac672ac4 Mon Sep 17 00:00:00 2001
-Message-Id: <999939bec23efa1d753a9fccd72f1024ac672ac4.1604089291.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <999939bec23efa1d753a9fccd72f1024ac672ac4.1605897049.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: "Ahmed S. Darwish" <a.darwish@linutronix.de>
 Date: Wed, 10 Jun 2020 12:53:00 +0200
-Subject: [PATCH 331/333] net: phy: fixed_phy: Remove unused seqcount
+Subject: [PATCH 331/335] net: phy: fixed_phy: Remove unused seqcount
 
 [ Upstream commit 6554eac9ef2bd1c968886b31cc7266b49258a463 ]
 

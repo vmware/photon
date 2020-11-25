@@ -1,10 +1,10 @@
 From 5b9420a7b6236678ba86de30d8de8765aeb2a740 Mon Sep 17 00:00:00 2001
-Message-Id: <5b9420a7b6236678ba86de30d8de8765aeb2a740.1604089290.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <5b9420a7b6236678ba86de30d8de8765aeb2a740.1605897047.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Mon, 28 May 2018 15:24:22 +0200
-Subject: [PATCH 074/333] mm/SLxB: change list_lock to raw_spinlock_t
+Subject: [PATCH 074/335] mm/SLxB: change list_lock to raw_spinlock_t
 
 The list_lock is used with used with IRQs off on RT. Make it a raw_spinlock_t
 otherwise the interrupts won't be disabled on -RT.  The locking rules remain

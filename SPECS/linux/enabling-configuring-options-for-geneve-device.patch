@@ -78,7 +78,7 @@ index 817c290b78cd..e62c9676df26 100644
 +			geneve->config_md_mode) {
  		__be16 flags;
  
- 		flags = TUNNEL_KEY | TUNNEL_GENEVE_OPT |
+ 		flags = TUNNEL_KEY | (gnvh->oam ? TUNNEL_OAM : 0) |
 @@ -251,6 +287,9 @@ static void geneve_rx(struct geneve_dev *geneve, struct geneve_sock *gs,
  
  	skb_reset_mac_header(skb);

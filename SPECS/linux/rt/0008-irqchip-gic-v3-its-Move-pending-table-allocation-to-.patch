@@ -1,10 +1,10 @@
 From 312fb6c8d24f000f5ce574d51a8afc63e73cfec9 Mon Sep 17 00:00:00 2001
-Message-Id: <312fb6c8d24f000f5ce574d51a8afc63e73cfec9.1604089290.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <312fb6c8d24f000f5ce574d51a8afc63e73cfec9.1605897047.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Marc Zyngier <marc.zyngier@arm.com>
 Date: Fri, 27 Jul 2018 13:38:54 +0100
-Subject: [PATCH 008/333] irqchip/gic-v3-its: Move pending table allocation to
+Subject: [PATCH 008/335] irqchip/gic-v3-its: Move pending table allocation to
  init time
 
 Signed-off-by: Marc Zyngier <marc.zyngier@arm.com>

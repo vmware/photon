@@ -1,10 +1,10 @@
 From f5ab864faeb0b766a1986882b2f5372b601b7cf5 Mon Sep 17 00:00:00 2001
-Message-Id: <f5ab864faeb0b766a1986882b2f5372b601b7cf5.1604089290.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <f5ab864faeb0b766a1986882b2f5372b601b7cf5.1605897048.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 16 Jun 2017 19:03:16 +0200
-Subject: [PATCH 122/333] net/core: use local_bh_disable() in netif_rx_ni()
+Subject: [PATCH 122/335] net/core: use local_bh_disable() in netif_rx_ni()
 
 In 2004 netif_rx_ni() gained a preempt_disable() section around
 netif_rx() and its do_softirq() + testing for it. The do_softirq() part

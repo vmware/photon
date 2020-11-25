@@ -1,10 +1,10 @@
 From fd1c95ac473ed5fc96f5a117bc9afa5069a5f12c Mon Sep 17 00:00:00 2001
-Message-Id: <fd1c95ac473ed5fc96f5a117bc9afa5069a5f12c.1604089291.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <fd1c95ac473ed5fc96f5a117bc9afa5069a5f12c.1605897049.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 4 Feb 2020 13:29:50 +0100
-Subject: [PATCH 319/333] locallock: Include header for the `current' macro
+Subject: [PATCH 319/335] locallock: Include header for the `current' macro
 
 [ Upstream commit e693075a5fd852043fa8d2b0467e078d9e5cb782 ]
 

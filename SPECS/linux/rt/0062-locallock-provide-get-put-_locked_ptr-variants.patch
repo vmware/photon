@@ -1,10 +1,10 @@
 From 6603d45ce898c630d100a6dee2ea243b043059a9 Mon Sep 17 00:00:00 2001
-Message-Id: <6603d45ce898c630d100a6dee2ea243b043059a9.1604089290.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <6603d45ce898c630d100a6dee2ea243b043059a9.1605897047.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Julia Cartwright <julia@ni.com>
 Date: Mon, 7 May 2018 08:58:56 -0500
-Subject: [PATCH 062/333] locallock: provide {get,put}_locked_ptr() variants
+Subject: [PATCH 062/335] locallock: provide {get,put}_locked_ptr() variants
 
 Provide a set of locallocked accessors for pointers to per-CPU data;
 this is useful for dynamically-allocated per-CPU regions, for example.

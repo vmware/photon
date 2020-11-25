@@ -1,10 +1,10 @@
 From a9b1e07c64c95f363df0bb9c89648e40e5cdec23 Mon Sep 17 00:00:00 2001
-Message-Id: <a9b1e07c64c95f363df0bb9c89648e40e5cdec23.1604089291.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <a9b1e07c64c95f363df0bb9c89648e40e5cdec23.1605897048.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 21 Aug 2012 20:38:50 +0200
-Subject: [PATCH 227/333] random: Make it work on rt
+Subject: [PATCH 227/335] random: Make it work on rt
 
 Delegate the random insertion to the forced threaded interrupt
 handler. Store the return IP of the hard interrupt handler in the irq

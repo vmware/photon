@@ -1,10 +1,10 @@
 From 8d450ac6f352d58221e0deebd10be8f03f158623 Mon Sep 17 00:00:00 2001
-Message-Id: <8d450ac6f352d58221e0deebd10be8f03f158623.1604089290.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <8d450ac6f352d58221e0deebd10be8f03f158623.1605897048.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 21 Nov 2016 19:31:08 +0100
-Subject: [PATCH 108/333] kernel/sched: move stack + kprobe clean up to
+Subject: [PATCH 108/335] kernel/sched: move stack + kprobe clean up to
  __put_task_struct()
 
 There is no need to free the stack before the task struct (except for reasons

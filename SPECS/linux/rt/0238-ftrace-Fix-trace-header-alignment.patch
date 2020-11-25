@@ -1,10 +1,10 @@
 From 8fd2bf262dcccd2ac900ee6027bb9cadc6aaba02 Mon Sep 17 00:00:00 2001
-Message-Id: <8fd2bf262dcccd2ac900ee6027bb9cadc6aaba02.1604089291.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <8fd2bf262dcccd2ac900ee6027bb9cadc6aaba02.1605897048.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Mike Galbraith <umgwanakikbuti@gmail.com>
 Date: Sun, 16 Oct 2016 05:08:30 +0200
-Subject: [PATCH 238/333] ftrace: Fix trace header alignment
+Subject: [PATCH 238/335] ftrace: Fix trace header alignment
 
 Line up helper arrows to the right column.
 

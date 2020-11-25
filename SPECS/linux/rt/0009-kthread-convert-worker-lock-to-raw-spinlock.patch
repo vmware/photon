@@ -1,10 +1,10 @@
 From b8bcc76d14ef6172ff858cc24d131177691eff13 Mon Sep 17 00:00:00 2001
-Message-Id: <b8bcc76d14ef6172ff858cc24d131177691eff13.1604089290.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1604089290.git.zanussi@kernel.org>
+Message-Id: <b8bcc76d14ef6172ff858cc24d131177691eff13.1605897047.git.zanussi@kernel.org>
+In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
 From: Julia Cartwright <julia@ni.com>
 Date: Fri, 28 Sep 2018 21:03:51 +0000
-Subject: [PATCH 009/333] kthread: convert worker lock to raw spinlock
+Subject: [PATCH 009/335] kthread: convert worker lock to raw spinlock
 
 In order to enable the queuing of kthread work items from hardirq
 context even when PREEMPT_RT_FULL is enabled, convert the worker
@@ -101,8 +101,8 @@ index b786eda90bb5..81aa14daa5fe 100644
  	WARN_ON_ONCE(work->worker != worker);
  
 @@ -865,7 +865,7 @@ void kthread_delayed_work_timer_fn(struct timer_list *t)
- 	list_del_init(&work->node);
- 	kthread_insert_work(worker, work, &worker->work_list);
+ 	if (!work->canceling)
+ 		kthread_insert_work(worker, work, &worker->work_list);
  
 -	spin_unlock(&worker->lock);
 +	raw_spin_unlock(&worker->lock);
