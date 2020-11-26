@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.243
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.246
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6da3e0168c3b64fe9b5a3ccc2bf8f7995086f72c
+%define sha1 linux=3bdb948b2c29353a5b0ba8f3b30d728ad996e80d
 Source1:        config
 Source2:        initramfs.trigger
 %define ena_version 1.1.3
@@ -60,6 +60,12 @@ Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 Patch34:        0001-net-sysfs-call-dev_hold-if-kobject_init_and_add-succ.patch
 Patch35:        0001-net-sysfs-Call-dev_hold-always-in-netdev_queue_add_k.patch
 Patch36:        0002-net-sysfs-Call-dev_hold-always-in-rx_queue_add_kobje.patch
+
+#Fix for CVE-2019-20908
+Patch37:        efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.patch
+#Fix for CVE-2019-19338
+Patch38:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
+Patch39:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 
 Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
@@ -140,10 +146,6 @@ Patch104:       0001-ovl-pass-correct-flags-for-opening-real-directory.patch
 Patch105:       0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch106:       0003-ovl-verify-permissions-in-ovl_path_open.patch
 
-# Fix for CVE-2020-25645
-Patch108:       0001-geneve-add-transport-ports-in-route-lookup-for-genev.patch
-#Fix for CVE-2020-25704
-Patch109:       perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
 
 %if 0%{?kat_build:1}
@@ -254,6 +256,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
+%patch37 -p1
+%patch38 -p1
+%patch39 -p1
 %patch42 -p1
 %patch43 -p1
 %patch46 -p1
@@ -309,8 +314,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch104 -p1
 %patch105 -p1
 %patch106 -p1
-%patch108 -p1
-%patch109 -p1
 
 %patch111 -p1
 
@@ -484,6 +487,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Nov 24 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.246-1
+-   Update to version 4.9.246
+-   Fix CVE-2019-19338 and CVE-2019-20908
 *   Fri Nov 13 2020 Vikash Bansal <bvikas@vmware.com> 4.9.243-2
 -   Fixes on top of CVE-2019-20811 fix
 *   Fri Nov 13 2020 Keerthana K <keerthanak@vmware.com> 4.9.243-1

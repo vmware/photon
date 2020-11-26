@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.243
-Release:        3%{?dist}
+Version:        4.9.246
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6da3e0168c3b64fe9b5a3ccc2bf8f7995086f72c
+%define sha1 linux=3bdb948b2c29353a5b0ba8f3b30d728ad996e80d
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -53,6 +53,11 @@ Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 Patch34:        0001-net-sysfs-call-dev_hold-if-kobject_init_and_add-succ.patch
 Patch35:        0001-net-sysfs-Call-dev_hold-always-in-netdev_queue_add_k.patch
 Patch36:        0002-net-sysfs-Call-dev_hold-always-in-rx_queue_add_kobje.patch
+#Fix for CVE-2019-20908
+Patch37:        efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.patch
+#Fix for CVE-2019-19338
+Patch38:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
+Patch39:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 
 Patch41:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
@@ -118,10 +123,6 @@ Patch90:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
 Patch91:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch92:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 
-# Fix for CVE-2020-25645
-Patch95:        0001-geneve-add-transport-ports-in-route-lookup-for-genev.patch
-#Fix for CVE-2020-25704
-Patch96:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -192,6 +193,9 @@ The Linux package contains the Linux kernel doc files
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
+%patch37 -p1
+%patch38 -p1
+%patch39 -p1
 %patch41 -p1
 %patch43 -p1
 %patch46 -p1
@@ -238,8 +242,6 @@ The Linux package contains the Linux kernel doc files
 %patch90 -p1
 %patch91 -p1
 %patch92 -p1
-%patch95 -p1
-%patch96 -p1
 
 %build
 
@@ -335,6 +337,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Nov 24 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.246-1
+-   Update to version 4.9.246
+-   Fix CVE-2019-19338 and CVE-2019-20908
 *   Wed Nov 18 2020 Vikash Bansal <bvikas@vmware.com> 4.9.243-3
 -   Mark BAR0 (at offset 0x10) for PCI device 15ad:07b0 (VMXNET3) as variable
 *   Fri Nov 13 2020 Vikash Bansal <bvikas@vmware.com> 4.9.243-2

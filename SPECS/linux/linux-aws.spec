@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.243
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.246
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=6da3e0168c3b64fe9b5a3ccc2bf8f7995086f72c
+%define sha1 linux=3bdb948b2c29353a5b0ba8f3b30d728ad996e80d
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -56,6 +56,11 @@ Patch33:        vmxnet3-fix-incorrect-dereference-when-rxvlan-is-disabled.patch
 Patch34:        0001-net-sysfs-call-dev_hold-if-kobject_init_and_add-succ.patch
 Patch35:        0001-net-sysfs-Call-dev_hold-always-in-netdev_queue_add_k.patch
 Patch36:        0002-net-sysfs-Call-dev_hold-always-in-rx_queue_add_kobje.patch
+#Fix for CVE-2019-20908
+Patch37:        efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.patch
+#Fix for CVE-2019-19338
+Patch38:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
+Patch39:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 
 Patch42:        0001-hwrng-rdrand-Add-RNG-driver-based-on-x86-rdrand-inst.patch
 # Fix for CVE-2017-18232
@@ -127,11 +132,6 @@ Patch94:        0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch95:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch96:        0007-btrfs-tree-checker-Verify-inode-item.patch
 Patch97:        0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
-
-# Fix for CVE-2020-25645
-Patch98:        0001-geneve-add-transport-ports-in-route-lookup-for-genev.patch
-#Fix for CVE-2020-25704
-Patch99:        perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 
 # Amazon AWS
 Patch101: 0002-lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
@@ -279,6 +279,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch34 -p1
 %patch35 -p1
 %patch36 -p1
+%patch37 -p1
+%patch38 -p1
+%patch39 -p1
 %patch42 -p1
 %patch43 -p1
 %patch46 -p1
@@ -329,8 +332,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch95 -p1
 %patch96 -p1
 %patch97 -p1
-%patch98 -p1
-%patch99 -p1
 
 %patch101 -p1
 %patch102 -p1
@@ -526,6 +527,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Tue Nov 24 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.246-1
+-   Update to version 4.9.246
+-   Fix CVE-2019-19338 and CVE-2019-20908
+-   Disabled CONFIG_JFS_FS because it is not in use
 *   Fri Nov 13 2020 Vikash Bansal <bvikas@vmware.com> 4.9.243-2
 -   Fixes on top of CVE-2019-20811 fix
 *   Fri Nov 13 2020 Keerthana K <keerthanak@vmware.com> 4.9.243-1
