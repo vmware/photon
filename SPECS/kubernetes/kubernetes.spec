@@ -10,7 +10,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.17.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -233,5 +233,7 @@ fi
 %endif
 
 %changelog
+*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.17.11-2
+-   Bump up version to compile with new go
 *   Wed Sep 16 2020 Ashwin H <ashwinh@vmware.com> 1.17.11-1
 -   Initial version 1.17.11

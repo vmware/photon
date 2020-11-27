@@ -3,7 +3,7 @@
 Summary:     Git extension for versioning large files
 Name:        git-lfs
 Version:     2.12.0
-Release:     1%{?dist}
+Release:     2%{?dist}
 URL:         https://github.com/git-lfs/git-lfs/archive/v%{version}.tar.gz
 Source0:     %{name}-%{version}.tar.gz
 License:     MIT
@@ -54,5 +54,7 @@ rm -rf %{buildroot}
 %{_mandir}/man5/*
 
 %changelog
+*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 2.12.0-2
+-   Bump up version to compile with new go
 * Fri Sep 18 2020 Him Kalyan Bordoloi <bordoloih@vmware.com>  2.12.0-1
 - Initial release.
