@@ -1,0 +1,90 @@
+--- a/gssapi-unix/unix/gssapiP_unix.h	2020-11-17 07:54:41.047123898 +0000
++++ b/gssapi-unix/unix/gssapiP_unix.h	2020-11-18 16:49:47.990374713 +0000
+@@ -163,7 +163,7 @@ typedef struct {
+         unsigned char     aes_encrypt_iv[AES_BLOCK_SIZE];
+         unsigned char     aes_decrypt_iv[AES_BLOCK_SIZE];
+ #endif
+-        HMAC_CTX          hmac_ctx;
++        HMAC_CTX          *hmac_ctx;
+         char              *unix_username; /* UNIX username */
+         char              *upn_name;     /* Kerberos UPN Name */
+         unsigned char     *srp_session_key;
+--- a/gssapi-unix/unix/unix_encrypt.c	2020-11-17 07:54:41.051124016 +0000
++++ b/gssapi-unix/unix/unix_encrypt.c	2020-11-18 16:54:36.246762303 +0000
+@@ -108,24 +108,24 @@ srp_expand_session_key(
+ 
+ static int
+ srp_init_hmac(
+-    HMAC_CTX *phctx,
++    HMAC_CTX **phctx,
+     unsigned char *key,
+     int key_len)
+ {
+     int sts = 0;
+-    HMAC_CTX hctx;
++    HMAC_CTX *hctx;
+     unsigned char md[40] = {0};
+     unsigned int mdlen = 0;
+ 
+-    memset(&hctx, 0, sizeof(hctx));
+-    HMAC_CTX_init(&hctx);
+-    sts = HMAC_Init_ex(&hctx, key, key_len, EVP_sha1(), NULL);
++    hctx = HMAC_CTX_new();
++    HMAC_CTX_reset(hctx);
++    sts = HMAC_Init_ex(hctx, key, key_len, EVP_sha1(), NULL);
+     if (sts == 0)
+     {
+         return sts;
+     }
+-    HMAC_Update(&hctx, "", 0);
+-    HMAC_Final(&hctx, md, &mdlen);
++    HMAC_Update(hctx, "", 0);
++    HMAC_Final(hctx, md, &mdlen);
+ 
+     *phctx = hctx;
+     return 0;
+@@ -133,7 +133,7 @@ srp_init_hmac(
+ 
+ static int
+ srp_compute_hmac(
+-    HMAC_CTX hctx,
++    HMAC_CTX *hctx,
+     unsigned char *data,
+     int data_len,
+     unsigned char *md,
+@@ -142,17 +142,17 @@ srp_compute_hmac(
+     int sts = 0;
+ 
+     /* These functions return 0 on error, 1 for success */
+-    sts = HMAC_Init_ex(&hctx, NULL, 0, EVP_sha1(), NULL);
++    sts = HMAC_Init_ex(hctx, NULL, 0, EVP_sha1(), NULL);
+     if (sts == 0)
+     {
+         return sts;
+     }
+-    sts = HMAC_Update(&hctx, data, data_len);
++    sts = HMAC_Update(hctx, data, data_len);
+     if (sts == 0)
+     {
+         return sts;
+     }
+-    sts = HMAC_Final(&hctx, md, md_len);
++    sts = HMAC_Final(hctx, md, md_len);
+     if (sts == 0)
+     {
+         return sts;
+--- a/gssapi-unix/unix/unix_del_sec_ctx.c	2020-11-17 10:03:27.718743926 +0000
++++ b/gssapi-unix/unix/unix_del_sec_ctx.c	2020-11-18 16:57:19.387521981 +0000
+@@ -94,7 +94,11 @@ srp_gss_delete_sec_context(
+         srp_ctx->krb5_ctx = NULL;
+     }
+ 
+-    HMAC_CTX_cleanup(&srp_ctx->hmac_ctx);
++    if (srp_ctx->hmac_ctx != NULL)
++    {
++        HMAC_CTX_reset(srp_ctx->hmac_ctx);
++        HMAC_CTX_free(srp_ctx->hmac_ctx);
++    }
+ #ifdef SRP_FIPS_ENABLED
+     if (srp_ctx->evp_encrypt_ctx)
+     {

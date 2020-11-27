@@ -1,0 +1,485 @@
+From 7caade0e385674302b116d8734facfdd22328582 Mon Sep 17 00:00:00 2001
+From: Tapas Kundu <tkundu@vmware.com>
+Date: Tue, 25 Aug 2020 06:46:51 +0000
+Subject: [PATCH] Add python APIs for newly added pmd-cli commands
+
+    - clean
+    - provides
+    - search
+    - check-update
+
+Change-Id: Ia7f30e192e1af81958f7725cbd2ee26b45a68893
+Signed-off-by: Tapas Kundu <tkundu@vmware.com>
+---
+ python/pkgmgmt_package_py.c |  75 ++++++++-
+ python/pkgmgmt_py.c         | 296 +++++++++++++++++++++++++++++++++++-
+ python/prototypes.h         |  12 ++
+ 3 files changed, 376 insertions(+), 7 deletions(-)
+
+diff --git a/python/pkgmgmt_package_py.c b/python/pkgmgmt_package_py.c
+index 97d7955..7d28ff1 100644
+--- a/python/pkgmgmt_package_py.c
++++ b/python/pkgmgmt_package_py.c
+@@ -118,12 +118,15 @@ package_init(
+     PyObject *version = NULL;
+     PyObject *arch = NULL;
+     PyObject *release = NULL;
++    PyObject *summary = NULL;
++    PyObject *description = NULL;
++    PyObject *reponame = NULL;
+     PyObject *tmp = NULL;
+ 
+-    static char *kwlist[] = {"name", "version", "arch", "release", NULL};
++    static char *kwlist[] = {"name", "version", "arch", "release", "summary", "description", "reponame", NULL};
+ 
+-    if (! PyArg_ParseTupleAndKeywords(args, kwds, "|SSSS", kwlist,
+-                                      &name, &version, &arch, &release))
++    if (! PyArg_ParseTupleAndKeywords(args, kwds, "|SSSSSSS", kwlist,
++                                      &name, &version, &arch, &release, &summary, &description, &reponame))
+     {
+         dwError = ERROR_PMD_INVALID_PARAMETER;
+         BAIL_ON_PMD_ERROR(dwError);
+@@ -157,6 +160,27 @@ package_init(
+         self->release = release;
+         Py_XDECREF(tmp);
+     }
++    if (summary)
++    {
++        tmp = self->summary;
++        Py_INCREF(summary);
++        self->summary = summary;
++        Py_XDECREF(tmp);
++    }
++    if (description)
++    {
++        tmp = self->description;
++        Py_INCREF(description);
++        self->description = description;
++        Py_XDECREF(tmp);
++    }
++    if (reponame)
++    {
++        tmp = self->reponame;
++        Py_INCREF(reponame);
++        self->reponame = reponame;
++        Py_XDECREF(tmp);
++    }
+ 
+ cleanup:
+     return dwError > 0 ? -1 : 0;
+@@ -166,6 +190,47 @@ package_init(
+     goto cleanup;
+ }
+ 
++
++PyObject*
++pkginfo_repr(
++    PyObject *self
++    )
++{
++    uint32_t dwError = 0;
++    PyObject *pyRepr = Py_None;
++    PPY_PKG_PACKAGE pPyPackage = NULL;
++    char *pszRepr = NULL;
++
++    pPyPackage = (PPY_PKG_PACKAGE)self;
++    dwError = PMDAllocateStringPrintf(
++                  &pszRepr,
++                  "{%s: %s}",
++                  pPyPackage->name ? PyBytes_AsString(pPyPackage->name) : "",
++                  pPyPackage->description ? PyBytes_AsString(pPyPackage->description) : "");
++    BAIL_ON_PMD_ERROR(dwError);
++
++    pyRepr = Py_BuildValue("s", pszRepr);
++    Py_INCREF(pyRepr);
++
++cleanup:
++    PMD_SAFE_FREE_MEMORY(pszRepr);
++    return pyRepr;
++
++error:
++    printf("Error = %d\n", dwError);
++    pyRepr = Py_None;
++    goto cleanup;
++
++}
++
++PyObject*
++pkginfo_str(
++    PyObject *self
++    )
++{
++    return pkginfo_repr(self);
++}
++
+ uint32_t
+ py_make_package(
+    PTDNF_PKG_INFO pPackage,
+@@ -271,13 +336,13 @@ PyTypeObject packageType = {
+     0,                         /*tp_getattr*/
+     0,                         /*tp_setattr*/
+     0,                         /*tp_compare*/
+-    0,                         /*tp_repr*/
++    pkginfo_repr,                         /*tp_repr*/
+     0,                         /*tp_as_number*/
+     0,                         /*tp_as_sequence*/
+     0,                         /*tp_as_mapping*/
+     0,                         /*tp_hash */
+     0,                         /*tp_call*/
+-    0,                         /*tp_str*/
++    pkginfo_str,                         /*tp_str*/
+     0,                         /*tp_getattro*/
+     0,                         /*tp_setattro*/
+     0,                         /*tp_as_buffer*/
+diff --git a/python/pkgmgmt_py.c b/python/pkgmgmt_py.c
+index c1e1c9a..70940fe 100644
+--- a/python/pkgmgmt_py.c
++++ b/python/pkgmgmt_py.c
+@@ -159,8 +159,265 @@ pkg_init(PY_NET *self, PyObject *args, PyObject *kwds)
+     return 0;
+ }
+ 
++
+ static PyObject *
+-pkg_py_packages(
++pkg_py_search(
++    PPY_PKG self,
++    PyObject *args,
++    PyObject *kwds
++    )
++{
++    uint32_t dwError = 0;
++    int dwCount = 0;
++    static char *kwlist[] = {"packages", NULL};
++    PyObject *pyPkgList = NULL;
++    char **ppszPackages = NULL;
++    PyObject *pyPackageList = Py_None;
++    PPKGHANDLE hPkgHandle = NULL;
++    TDNF_CMD_ARGS stArgs = {0};
++    PTDNF_PKG_INFO pPkgInfo = NULL;
++    char *ppszCmdsC[] = {"search"};
++    int i = 0;
++    size_t nPkgCount = 0;
++
++    if (! PyArg_ParseTupleAndKeywords(args,
++                                      kwds,
++                                      "|O!",
++                                      kwlist,
++                                      &PyList_Type,
++                                      &pyPkgList))
++    {
++        dwError = ERROR_PMD_INVALID_PARAMETER;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    if(pyPkgList)
++    {
++        dwError = py_list_as_string_list(pyPkgList, &ppszPackages, &nPkgCount);
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    stArgs.nCmdCount = nPkgCount + 1;
++    dwError = PMDAllocateMemory(sizeof(char *) * stArgs.nCmdCount,
++                                (void **)&stArgs.ppszCmds);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    dwError = PMDAllocateString(*ppszCmdsC, &stArgs.ppszCmds[0]);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    for(i = 1; i < stArgs.nCmdCount; ++i)
++    {
++        dwError = PMDAllocateString(ppszPackages[i-1], &stArgs.ppszCmds[i]);
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    dwError = pkg_open_handle(self->hHandle, &stArgs, &hPkgHandle);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    dwError = pkg_search(self->hHandle,
++                       hPkgHandle,
++                       &stArgs,
++                       &pPkgInfo,
++                       (uint32_t*)&dwCount);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    pyPackageList = PyList_New(0);
++    if(!pyPackageList)
++    {
++        dwError = ERROR_PMD_OUT_OF_MEMORY;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    for(i = 0; i < dwCount; ++i)
++    {
++        PyObject *pPyPackage = NULL;
++
++        dwError = py_make_package(pPkgInfo + i, &pPyPackage);
++        BAIL_ON_PMD_ERROR(dwError);
++
++        if(PyList_Append(pyPackageList, pPyPackage) == -1)
++        {
++            dwError = ERROR_PMD_OUT_OF_MEMORY;
++            BAIL_ON_PMD_ERROR(dwError);
++        }
++    }
++
++cleanup:
++    if(self && self->hHandle && hPkgHandle)
++    {
++        pkg_close_handle(self->hHandle, hPkgHandle);
++    }
++    if(pPkgInfo)
++    {
++        pkg_free_package_info_array(pPkgInfo, dwCount);
++    }
++    PMDFreeStringArray(ppszPackages);
++    PMDFreeStringArrayWithCount(stArgs.ppszCmds, stArgs.nCmdCount);
++    return pyPackageList;
++
++error:
++    pyPackageList = NULL;
++    raise_pkg_exception(self, dwError);
++    goto cleanup;
++
++}
++
++static PyObject *
++pkg_py_clean(
++    PPY_PKG self,
++    PyObject *args
++    )
++{
++    uint32_t dwError = 0;
++    uint32_t dwCount = 0;
++    PyObject *pyPackageList = Py_None;
++    PPKGHANDLE hPkgHandle = NULL;
++    TDNF_CMD_ARGS stArgs = {0};
++    PTDNF_CLEAN_INFO pCleanInfo = NULL;
++    char *ppszCmdsC[] = {"clean"};
++    char **pwszReposUsed = NULL;
++
++    stArgs.nCmdCount = 1;
++    stArgs.ppszCmds = ppszCmdsC;
++
++    dwError = pkg_open_handle(self->hHandle, &stArgs, &hPkgHandle);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    dwError = pkg_clean(self->hHandle,
++                        hPkgHandle,
++                        CLEANTYPE_ALL,
++                        &pCleanInfo);
++    BAIL_ON_PMD_ERROR(dwError);
++
++cleanup:
++    if(self && self->hHandle && hPkgHandle)
++    {
++        pkg_close_handle(self->hHandle, hPkgHandle);
++    }
++    if(pCleanInfo && pCleanInfo->ppszReposUsed != NULL)
++    {
++        pwszReposUsed = pCleanInfo->ppszReposUsed;
++        while(pwszReposUsed && *pwszReposUsed)
++        {
++            PMD_SAFE_FREE_MEMORY(*pwszReposUsed);
++            ++pwszReposUsed;
++        }
++        PMD_SAFE_FREE_MEMORY(pCleanInfo->ppszReposUsed);
++        PMD_SAFE_FREE_MEMORY(pCleanInfo);
++    }
++    return pyPackageList;
++
++error:
++    pyPackageList = NULL;
++    raise_pkg_exception(self, dwError);
++    goto cleanup;
++
++}
++static PyObject *
++pkg_py_provides(
++    PPY_PKG self,
++    PyObject *args,
++    PyObject *kwds
++    )
++{
++    uint32_t dwError = 0;
++    uint32_t dwCount = 0;
++    static char *kwlist[] = {"packages", NULL};
++    PyObject *pyPackageList = Py_None;
++    char **ppszPackages = NULL;
++    PPKGHANDLE hPkgHandle = NULL;
++    TDNF_CMD_ARGS stArgs = {0};
++    PTDNF_PKG_INFO pPkgInfo = NULL;
++    PTDNF_PKG_INFO pTempPkgInfo = NULL;
++    char *ppszCmdsC[] = {"provides"};
++    PyObject *pyPkgList = NULL;
++    int i = 0;
++    size_t nPkgCount = 0;
++
++    if (! PyArg_ParseTupleAndKeywords(args,
++                                      kwds,
++                                      "|O!",
++                                      kwlist,
++                                      &PyList_Type,
++                                      &pyPkgList))
++    {
++        dwError = ERROR_PMD_INVALID_PARAMETER;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    if(pyPkgList)
++    {
++        dwError = py_list_as_string_list(pyPkgList, &ppszPackages, &nPkgCount);
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    stArgs.nCmdCount = nPkgCount + 1;
++    dwError = PMDAllocateMemory(sizeof(char *) * stArgs.nCmdCount,
++                                (void **)&stArgs.ppszCmds);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    dwError = PMDAllocateString(*ppszCmdsC, &stArgs.ppszCmds[0]);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    for(i = 1; i < stArgs.nCmdCount; ++i)
++    {
++        dwError = PMDAllocateString(ppszPackages[i-1], &stArgs.ppszCmds[i]);
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    dwError = pkg_open_handle(self->hHandle, &stArgs, &hPkgHandle);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    dwError = pkg_provides(self->hHandle,
++                           hPkgHandle,
++                           stArgs.ppszCmds[1],
++                           &pPkgInfo);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    pyPackageList = PyList_New(0);
++    if(!pyPackageList)
++    {
++        dwError = ERROR_PMD_OUT_OF_MEMORY;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++    pTempPkgInfo = pPkgInfo;
++    while(pTempPkgInfo)
++    {
++        PyObject *pPyPackage = NULL;
++
++        dwError = py_make_package(pTempPkgInfo, &pPyPackage);
++        BAIL_ON_PMD_ERROR(dwError);
++
++        if(PyList_Append(pyPackageList, pPyPackage) == -1)
++        {
++            dwError = ERROR_PMD_OUT_OF_MEMORY;
++            BAIL_ON_PMD_ERROR(dwError);
++        }
++        pTempPkgInfo = pTempPkgInfo->pNext;
++    }
++
++cleanup:
++    if(self && self->hHandle && hPkgHandle)
++    {
++        pkg_close_handle(self->hHandle, hPkgHandle);
++    }
++    if(pPkgInfo)
++    {
++        pkg_free_package_info_list(pPkgInfo);
++    }
++    PMDFreeStringArray(ppszPackages);
++    PMDFreeStringArrayWithCount(stArgs.ppszCmds, stArgs.nCmdCount);
++    return pyPackageList;
++
++error:
++    pyPackageList = NULL;
++    raise_pkg_exception(self, dwError);
++    goto cleanup;
++}
++
++static PyObject *
++pkg_py_list(
++    TDNF_SCOPE ScopeType,
+     PPY_PKG self,
+     PyObject *args,
+     PyObject *kwds
+@@ -208,7 +465,7 @@ pkg_py_packages(
+ 
+     dwError = pkg_list(self->hHandle,
+                        hPkgHandle,
+-                       0,
++                       ScopeType,
+                        ppszPkgNameSpecs,
+                        &pPkgInfo,
+                        &dwCount);
+@@ -253,6 +510,26 @@ pkg_py_packages(
+     goto cleanup;
+ }
+ 
++static PyObject *
++pkg_py_packages_check_update(
++PPY_PKG self,
++    PyObject *args,
++    PyObject *kwds
++    )
++{
++    return pkg_py_list(SCOPE_UPGRADES, self, args, kwds);
++}
++
++static PyObject *
++pkg_py_packages(
++    PPY_PKG self,
++    PyObject *args,
++    PyObject *kwds
++    )
++{
++    return pkg_py_list(SCOPE_ALL, self, args, kwds);
++}
++
+ static PyObject *
+ pkg_py_repos(
+     PPY_PKG self,
+@@ -674,6 +951,21 @@ static PyMethodDef pkg_methods[] =
+     {"resolve", (PyCFunction)pkg_py_resolve, METH_VARARGS|METH_KEYWORDS,
+      "pkg.resolve(action=install, packages=['pkg1', 'pkg2']) \n\
+      solve for install/update/erase of package or packages. return a solve object which has information on packages affected.\n"},
++    {"check_update", (PyCFunction)pkg_py_packages_check_update, METH_VARARGS|METH_KEYWORDS,
++     "pkg.check_update(packages) \n\
++     filter: string array of package names. Optional.\n\
++     return list of packages updates in all enabled repositories.\n"},
++    {"search", (PyCFunction)pkg_py_search, METH_VARARGS|METH_KEYWORDS,
++     "pkg.search(packages) \n\
++     filter: string array of package or binary names. Mandatory.\n\
++     return list of packages matching the search in all enabled repositories.\n"},
++    {"provides", (PyCFunction)pkg_py_provides, METH_VARARGS|METH_KEYWORDS,
++     "pkg.provides(packages) \n\
++     filter: find which package provides this rpm. Mandatory.\n\
++     return list of packages matching rpms providing this package in all enabled repositories.\n"},
++    {"clean", (PyCFunction)pkg_py_clean, METH_NOARGS,
++     "pkg.clean(filter) \n\
++     Always clean cache of all repos as other options not supported in tdnf\n"},
+     {NULL, NULL, 0, NULL}        /* Sentinel */
+ };
+ 
+diff --git a/python/prototypes.h b/python/prototypes.h
+index 2036802..f5e618f 100644
+--- a/python/prototypes.h
++++ b/python/prototypes.h
+@@ -76,6 +76,18 @@ py_make_package(
+    PyObject **ppPyPackage
+    );
+ 
++uint32_t
++py_make_clean_info(
++    PTDNF_CLEAN_INFO pCleanInfo,
++    PyObject **ppPyPackage
++    );
++
++uint32_t
++py_make_stringlist(
++    char **ppszList,
++    PyObject **ppyList
++    );
++
+ //pkgmgmt_solvedinfo.c
+ uint32_t
+ py_make_solvedinfo(

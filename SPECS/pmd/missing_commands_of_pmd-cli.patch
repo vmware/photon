@@ -1,0 +1,1130 @@
+From c9a3f0b83ecea9038a2102f53190e3aa52df41f8 Mon Sep 17 00:00:00 2001
+From: Tapas Kundu <tkundu@vmware.com>
+Date: Mon, 17 Aug 2020 05:37:07 +0000
+Subject: [PATCH] Add missing commands for pmd-cli
+
+-check-local
+-provides
+-check-update
+-clean
+
+Change-Id: Ic68a4051e681b46c9471d65d891edf087d89fe68
+Signed-off-by: Tapas Kundu <tkundu@vmware.com>
+---
+ client/pkgmgmt_api.c           | 213 +++++++++++++++++++++++++++++++++
+ client/prototypes.h            |   6 +
+ client/rpcmem.c                |  61 ++++++++++
+ idl/pkgmgmt.idl                |  22 ++++
+ idl/pkgmgmt_privsep.idl        |  23 ++++
+ idl/pkgmgmtrpctypes.h          |  10 ++
+ include/pmd_pkgmgmt.h          |  28 +++++
+ pmd.spec.in                    |   4 +-
+ privsep/pkgmgmt.h              |  20 ++++
+ privsep/pkgmgmtapi.c           | 120 +++++++++++++++++++
+ privsep/pkgmgmtrpcapi.c        | 142 ++++++++++++++++++++++
+ server/pkgmgmtrpcapi.c         |  93 ++++++++++++++
+ server/prototypes.h            |  22 ++++
+ tools/cli/pkgmgmt/pkg_main.c   |  87 +++++++++++---
+ tools/cli/pkgmgmt/prototypes.h |  28 +++++
+ 15 files changed, 859 insertions(+), 20 deletions(-)
+
+diff --git a/client/pkgmgmt_api.c b/client/pkgmgmt_api.c
+index bac79a5..da1a6ab 100644
+--- a/client/pkgmgmt_api.c
++++ b/client/pkgmgmt_api.c
+@@ -85,6 +85,144 @@ pkg_close_handle(
+     return dwError;
+ }
+ 
++uint32_t
++pkg_clean_w(
++    PPMDHANDLE hHandle,
++    PPKGHANDLE hPkgHandle,
++    TDNF_CLEANTYPE nCleanType,
++    PTDNF_RPC_CLEAN_INFO* ppCleanInfo
++    )
++{
++    uint32_t dwError = 0;
++    if(hHandle->nPrivSep)
++    {
++        DO_RPC(pkg_privsep_rpc_clean(hHandle->hRpc,
++                                     hPkgHandle,
++                                     nCleanType,
++                                     ppCleanInfo),
++                                     dwError);
++    }
++    else
++    {
++        DO_RPC(pkg_rpc_clean(hHandle->hRpc, hPkgHandle, nCleanType, ppCleanInfo),
++               dwError);
++    }
++    BAIL_ON_PMD_ERROR(dwError);
++cleanup:
++    return dwError;
++error:
++    goto cleanup;
++}
++
++uint32_t
++pkg_clean(
++    PPMDHANDLE hHandle,
++    PPKGHANDLE hPkgHandle,
++    TDNF_CLEANTYPE nCleanType,
++    PTDNF_CLEAN_INFO* ppCleanInfo
++    )
++{
++    uint32_t dwError = 0;
++    PTDNF_RPC_CLEAN_INFO pRpcCleanInfo = NULL;
++    PTDNF_CLEAN_INFO pCleanInfo = NULL;
++    char **pwszReposUsed = NULL;
++    dwError = pkg_clean_w(hHandle, hPkgHandle, nCleanType, &pRpcCleanInfo);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    dwError = PMDRpcClientConvertCleanInfo(pRpcCleanInfo, &pCleanInfo);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    *ppCleanInfo = pCleanInfo;
++cleanup:
++    if (pRpcCleanInfo && pRpcCleanInfo->pszReposUsed != NULL)
++    {
++        int i = 0;
++        for (i = 0; i < pRpcCleanInfo->pszReposUsed->dwCount; i++)
++        {
++            PMD_SAFE_FREE_MEMORY(pRpcCleanInfo->pszReposUsed->ppwszStrings[i]);
++        }
++        PMD_SAFE_FREE_MEMORY(pRpcCleanInfo->pszReposUsed->ppwszStrings);
++        PMD_SAFE_FREE_MEMORY(pRpcCleanInfo->pszReposUsed);
++    }
++    PMD_SAFE_FREE_MEMORY(pRpcCleanInfo);
++    return dwError;
++error:
++    if(ppCleanInfo)
++    {
++        *ppCleanInfo = NULL;
++    }
++    if(pCleanInfo)
++    {
++        if (pCleanInfo->ppszReposUsed != NULL)
++        {
++            pwszReposUsed = pCleanInfo->ppszReposUsed;
++            while(pwszReposUsed && *pwszReposUsed)
++            {
++                PMD_SAFE_FREE_MEMORY(*pwszReposUsed);
++                ++pwszReposUsed;
++            }
++        }
++        PMD_SAFE_FREE_MEMORY(pCleanInfo->ppszReposUsed);
++        PMD_SAFE_FREE_MEMORY(pCleanInfo);
++    }
++    goto cleanup;
++
++}
++uint32_t
++pkg_check_local_w(
++    PPMDHANDLE hHandle,
++    PPKGHANDLE hPkgHandle,
++    wstring_t pwszFolder
++    )
++{
++
++    uint32_t dwError = 0;
++
++    if(hHandle->nPrivSep)
++    {
++        DO_RPC(pkg_privsep_rpc_check_local(hHandle->hRpc,
++                                           hPkgHandle,
++                                           pwszFolder),
++                                           dwError);
++    }
++    else
++    {
++        DO_RPC(pkg_rpc_check_local(hHandle->hRpc, hPkgHandle, pwszFolder),
++               dwError);
++    }
++    BAIL_ON_PMD_ERROR(dwError);
++cleanup:
++    return dwError;
++error:
++    goto cleanup;
++}
++
++uint32_t
++pkg_check_local(
++    PPMDHANDLE hHandle,
++    PPKGHANDLE hPkgHandle,
++    const char *pszFolder
++    )
++{
++    uint32_t dwError = 0;
++    wstring_t pwszFolder = NULL;
++
++    dwError = PMDAllocateStringWFromA(
++                  pszFolder,
++                  &pwszFolder);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    dwError = pkg_check_local_w(hHandle, hPkgHandle, pwszFolder);
++    BAIL_ON_PMD_ERROR(dwError);
++
++cleanup:
++    PMD_SAFE_FREE_MEMORY(pwszFolder);
++    return dwError;
++error:
++    goto cleanup;
++}
++
++
+ uint32_t
+ pkg_search_w(
+     PPMDHANDLE hHandle,
+@@ -169,6 +307,81 @@ pkg_search(
+     goto cleanup;
+ }
+ 
++uint32_t
++pkg_provides_w(
++    PPMDHANDLE hHandle,
++    PPKGHANDLE hPkgHandle,
++    wstring_t pwszSpec,
++    PTDNF_RPC_PKGINFO_ARRAY* pRpcInfo
++    )
++{
++
++    uint32_t dwError = 0;
++
++    if(hHandle->nPrivSep)
++    {
++        DO_RPC(pkg_privsep_rpc_provides(hHandle->hRpc,
++                                        hPkgHandle,
++                                        pwszSpec,
++                                        pRpcInfo),
++                                        dwError);
++    }
++    else
++    {
++        DO_RPC(pkg_rpc_provides(hHandle->hRpc, hPkgHandle, pwszSpec, pRpcInfo),
++               dwError);
++    }
++    BAIL_ON_PMD_ERROR(dwError);
++cleanup:
++    return dwError;
++error:
++    goto cleanup;
++}
++
++uint32_t
++pkg_provides(
++    PPMDHANDLE hHandle,
++    PPKGHANDLE hPkgHandle,
++    const char *pszSpec,
++    PTDNF_PKG_INFO *ppPkgInfo
++    )
++{
++    uint32_t dwError = 0;
++    wstring_t pwszSpec = NULL;
++    PTDNF_RPC_PKGINFO_ARRAY pRpcPkgInfo = NULL;
++    PTDNF_PKG_INFO pPkgInfo = NULL;
++
++    dwError = PMDAllocateStringWFromA(
++                  pszSpec,
++                  &pwszSpec);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    dwError = pkg_provides_w(hHandle, hPkgHandle, pwszSpec, &pRpcPkgInfo);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    dwError = PMDRpcClientConvertPkgInfoList(pRpcPkgInfo, &pPkgInfo);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    *ppPkgInfo = pPkgInfo;
++cleanup:
++    PMD_SAFE_FREE_MEMORY(pwszSpec);
++    if(pRpcPkgInfo)
++    {
++        PMDRpcClientFreePkgInfoArray(pRpcPkgInfo);
++    }
++    return dwError;
++error:
++    if(ppPkgInfo)
++    {
++        *ppPkgInfo = NULL;
++    }
++    if(pPkgInfo)
++    {
++        pkg_free_package_info_list(pPkgInfo);
++    }
++    goto cleanup;
++}
++
+ uint32_t
+ pkg_list_w(
+     PPMDHANDLE hHandle,
+diff --git a/client/prototypes.h b/client/prototypes.h
+index ab73c82..7c5ca91 100644
+--- a/client/prototypes.h
++++ b/client/prototypes.h
+@@ -37,6 +37,12 @@ get_client_rpc_binding(
+     );
+ 
+ //rpcmem.c
++uint32_t
++PMDRpcClientConvertCleanInfo(
++    PTDNF_RPC_CLEAN_INFO pRpcCleanInfo,
++    PTDNF_CLEAN_INFO *ppCleanInfo
++    );
++
+ uint32_t
+ PMDRpcClientConvertPkgInfo(
+     PTDNF_RPC_PKGINFO_ARRAY pRpcPkgInfo,
+diff --git a/client/rpcmem.c b/client/rpcmem.c
+index 7e4abe7..355be0f 100644
+--- a/client/rpcmem.c
++++ b/client/rpcmem.c
+@@ -154,6 +154,67 @@ PMDRpcClientConvertPkgInfoList(
+     goto cleanup;
+ }
+ 
++
++uint32_t
++PMDRpcClientConvertCleanInfo(
++    PTDNF_RPC_CLEAN_INFO pRpcCleanInfo,
++    PTDNF_CLEAN_INFO *ppCleanInfo
++    )
++{
++    uint32_t dwError = 0;
++    uint32_t dwCount = 0;
++    uint32_t i = 0;
++    PTDNF_CLEAN_INFO pCleanInfo = NULL;
++
++    if(!ppCleanInfo || !pRpcCleanInfo)
++    {
++        dwError = ERROR_PMD_INVALID_PARAMETER;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    dwError = PMDAllocateMemory(sizeof(TDNF_CLEAN_INFO),
++                                         (void**)&pCleanInfo);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    pCleanInfo->nCleanAll = pRpcCleanInfo->nCleanAll;
++    pCleanInfo->nRpmDbFilesRemoved = pRpcCleanInfo->nRpmDbFilesRemoved;
++    pCleanInfo->nMetadataFilesRemoved = pRpcCleanInfo->nMetadataFilesRemoved;
++    pCleanInfo->nDbCacheFilesRemoved = pRpcCleanInfo->nDbCacheFilesRemoved;
++    pCleanInfo->nPackageFilesRemoved = pRpcCleanInfo->nPackageFilesRemoved;
++
++    
++    if(pRpcCleanInfo->pszReposUsed &&
++       pRpcCleanInfo->pszReposUsed->dwCount)
++    {
++        uint32_t dwCount = pRpcCleanInfo->pszReposUsed->dwCount;
++
++        dwError = PMDAllocateMemory(
++                      sizeof(char *) * (dwCount + 1),
++                      (void **)&pCleanInfo->ppszReposUsed);
++        BAIL_ON_PMD_ERROR(dwError);
++
++        for(i = 0; i < dwCount; ++i)
++        {
++            dwError = PMDAllocateStringAFromW(
++                          pRpcCleanInfo->pszReposUsed->ppwszStrings[i],
++                          &pCleanInfo->ppszReposUsed[i]);
++            BAIL_ON_PMD_ERROR(dwError);
++        }
++    }
++    else
++    {
++        pRpcCleanInfo->pszReposUsed = NULL;
++    }
++
++    *ppCleanInfo = pCleanInfo;
++
++cleanup:
++    return dwError;
++
++error:
++    goto cleanup;
++}
++
+ uint32_t
+ PMDRpcClientConvertPkgInfo(
+     PTDNF_RPC_PKGINFO_ARRAY pRpcPkgInfoArray,
+diff --git a/idl/pkgmgmt.idl b/idl/pkgmgmt.idl
+index 0f2d5a0..dfb8b4e 100644
+--- a/idl/pkgmgmt.idl
++++ b/idl/pkgmgmt.idl
+@@ -46,6 +46,13 @@ typedef [context_handle] void *pkg_handle_t;
+         [out] wstring_t *ppwszVersion
+         );
+ 
++    unsigned32
++    pkg_rpc_clean(
++        [in] handle_t hBinding,
++        [in] pkg_handle_t hPkgHandle,
++        [in] unsigned32 nCleanType,
++        [out] PTDNF_RPC_CLEAN_INFO* ppCleanInfo
++    );
+     unsigned32
+     pkg_rpc_search(
+         [in] handle_t hHandle,
+@@ -55,6 +62,21 @@ typedef [context_handle] void *pkg_handle_t;
+         [out] unsigned32 *punCount
+     );
+ 
++    unsigned32
++    pkg_rpc_check_local(
++        [in] handle_t hHandle,
++        [in] pkg_handle_t hPkgHandle,
++        [in] wstring_t pszFolder
++    );
++
++    unsigned32
++    pkg_rpc_provides(
++        [in] handle_t hHandle,
++        [in] pkg_handle_t hPkgHandle,
++        [in] wstring_t pszSpec,
++        [out] PTDNF_RPC_PKGINFO_ARRAY* ppPkgInfo
++    );
++
+     unsigned32
+     pkg_rpc_count(
+         [in] handle_t hBinding,
+diff --git a/idl/pkgmgmt_privsep.idl b/idl/pkgmgmt_privsep.idl
+index 5b98af1..327b5e1 100644
+--- a/idl/pkgmgmt_privsep.idl
++++ b/idl/pkgmgmt_privsep.idl
+@@ -55,6 +55,29 @@ typedef [context_handle] void *pkg_privsep_handle_t;
+         [out] unsigned32 *punCount
+     );
+ 
++    unsigned32
++    pkg_privsep_rpc_clean(
++        [in] handle_t hBinding,
++        [in] pkg_privsep_handle_t hPkgHandle,
++        [in] unsigned32 nCleanType,
++        [out] PTDNF_RPC_CLEAN_INFO* ppRpcCleanInfo
++    );
++
++    unsigned32
++    pkg_privsep_rpc_check_local(
++        [in] handle_t hHandle,
++        [in] pkg_privsep_handle_t hPkgHandle,
++        [in] wstring_t pszFolder
++    );
++
++    unsigned32
++    pkg_privsep_rpc_provides(
++        [in] handle_t hHandle,
++        [in] pkg_privsep_handle_t hPkgHandle,
++        [in] wstring_t pszSpec,
++        [out] PTDNF_RPC_PKGINFO_ARRAY* ppPkgInfo
++    );
++
+     unsigned32
+     pkg_privsep_rpc_count(
+         [in] handle_t hBinding,
+diff --git a/idl/pkgmgmtrpctypes.h b/idl/pkgmgmtrpctypes.h
+index f1f3809..50d81c7 100644
+--- a/idl/pkgmgmtrpctypes.h
++++ b/idl/pkgmgmtrpctypes.h
+@@ -83,6 +83,16 @@ typedef struct _TDNF_RPC_REPODATA_
+     wstring_t  pwszName;
+ }TDNF_RPC_REPODATA, *PTDNF_RPC_REPODATA;
+ 
++typedef struct _TDNF_RPC_CLEAN_INFO_
++{
++    unsigned32 nCleanAll;
++    unsigned32 nRpmDbFilesRemoved;
++    unsigned32 nMetadataFilesRemoved;
++    unsigned32 nDbCacheFilesRemoved;
++    unsigned32 nPackageFilesRemoved;
++    PPMD_WSTRING_ARRAY pszReposUsed;
++}TDNF_RPC_CLEAN_INFO, *PTDNF_RPC_CLEAN_INFO;
++
+ typedef struct _TDNF_RPC_REPODATA_ARRAY_
+ {
+     unsigned32 dwCount;
+diff --git a/include/pmd_pkgmgmt.h b/include/pmd_pkgmgmt.h
+index 7177ed4..78f860d 100644
+--- a/include/pmd_pkgmgmt.h
++++ b/include/pmd_pkgmgmt.h
+@@ -35,6 +35,29 @@ pkg_close_handle(
+     PPKGHANDLE hPkgHandle
+     );
+ 
++uint32_t
++pkg_check_local(
++    PPMDHANDLE hHandle,
++    PPKGHANDLE hPkgHandle,
++    const char *pszFolder
++    );
++
++uint32_t
++pkg_clean(
++    PPMDHANDLE hHandle,
++    PPKGHANDLE hPkgHandle,
++    TDNF_CLEANTYPE nCleanType,
++    PTDNF_CLEAN_INFO* ppCleanInfo
++    );
++
++uint32_t
++pkg_provides(
++    PPMDHANDLE hHandle,
++    PPKGHANDLE hPkgHandle,
++    const char *pszSpec,
++    PTDNF_PKG_INFO* ppPkgInfo
++    );
++
+ uint32_t
+ pkg_search(
+     PPMDHANDLE hHandle,
+@@ -119,6 +142,11 @@ pkg_free_repos(
+     PTDNF_REPO_DATA pRepos
+     );
+ 
++void
++pkg_free_package_info(
++    PTDNF_PKG_INFO pPkgInfo
++    );
++
+ void
+ pkg_free_package_info_array(
+     PTDNF_PKG_INFO pPkgInfo,
+diff --git a/pmd.spec.in b/pmd.spec.in
+index 8aa4976..0eba635 100644
+--- a/pmd.spec.in
++++ b/pmd.spec.in
+@@ -5,7 +5,7 @@
+ Summary:	Photon Management Daemon
+ Name:		pmd
+ Version:	@VERSION@
+-Release:	4%{?dist}
++Release:	5%{?dist}
+ License:	Apache 2.0
+ URL:            https://www.github.com/vmware/pmd
+ Group:		Applications/System
+@@ -302,6 +302,8 @@ rm -rf %{buildroot}/*
+     %{_python3_sitearch}/%{name}_python-*.egg-info
+ 
+ %changelog
++*       Fri Aug 21 2020 Tapas Kundu <tkundu@vmware.com> 0.1-5
++-       Added clean, check-local, provides and check-update
+ *       Fri Jul 24 2020 Tapas Kundu <tkundu@vmware.com> 0.1-4
+ -       Add search command
+ *       Sat May 16 2020 Tapas Kundu <tkundu@vmware.com> 0.1-3
+diff --git a/privsep/pkgmgmt.h b/privsep/pkgmgmt.h
+index f40b0f3..bb56cc2 100644
+--- a/privsep/pkgmgmt.h
++++ b/privsep/pkgmgmt.h
+@@ -32,6 +32,26 @@ pkg_get_scope_from_string(
+     TDNF_SCOPE *pnScope
+     );
+ 
++unsigned32
++pkg_check_local_s(
++    PTDNF pTdnf,
++    const char *pszFolder
++    );
++
++unsigned32
++pkg_clean_s(
++    PTDNF pTdnf,
++    TDNF_CLEANTYPE nCleanType,
++    PTDNF_CLEAN_INFO *ppCleanInfo
++    );
++
++unsigned32
++pkg_provides_s(
++    PTDNF pTdnf,
++    const char *pszSpec,
++    PTDNF_PKG_INFO *ppPkgInfo
++    );
++
+ unsigned32
+ pkg_search_s(
+     PTDNF pTdnf,
+diff --git a/privsep/pkgmgmtapi.c b/privsep/pkgmgmtapi.c
+index 294daf3..9239d7b 100644
+--- a/privsep/pkgmgmtapi.c
++++ b/privsep/pkgmgmtapi.c
+@@ -92,6 +92,126 @@ pkg_close_handle_s(
+     goto cleanup;
+ }
+ 
++unsigned32
++pkg_clean_s(
++    PTDNF pTdnf,
++    TDNF_CLEANTYPE nCleanType,
++    PTDNF_CLEAN_INFO *ppCleanInfo
++    )
++{
++    uint32_t dwError = 0;
++    int nLocked = 0;
++    PTDNF_CLEAN_INFO pCleanInfo = NULL;
++
++    if(!pTdnf || !ppCleanInfo)
++    {
++        dwError = ERROR_PMD_INVALID_PARAMETER;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    pthread_mutex_lock(&gpServerEnv->mutexPkgMgmtApi);
++    nLocked = 1;
++
++    dwError = TDNFClean(pTdnf, nCleanType, &pCleanInfo);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    pthread_mutex_unlock(&gpServerEnv->mutexPkgMgmtApi);
++    nLocked = 0;
++
++    *ppCleanInfo = pCleanInfo;
++cleanup:
++    if(nLocked)
++    {
++        pthread_mutex_unlock(&gpServerEnv->mutexPkgMgmtApi);
++        nLocked = 0;
++    }
++    return dwError;
++error:
++    *ppCleanInfo = NULL;
++    if(pCleanInfo)
++    {
++        TDNFFreeCleanInfo(pCleanInfo);
++    }
++    goto cleanup;
++}
++unsigned32
++pkg_check_local_s(
++    PTDNF pTdnf,
++    const char *pszFolder
++    )
++{
++    uint32_t dwError = 0;
++    int nLocked = 0;
++
++    if(!pTdnf || !pszFolder)
++    {
++        dwError = ERROR_PMD_INVALID_PARAMETER;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    pthread_mutex_lock(&gpServerEnv->mutexPkgMgmtApi);
++    nLocked = 1;
++
++    dwError = TDNFCheckLocalPackages(pTdnf, pszFolder);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    pthread_mutex_unlock(&gpServerEnv->mutexPkgMgmtApi);
++    nLocked = 0;
++
++cleanup:
++    if(nLocked)
++    {
++        pthread_mutex_unlock(&gpServerEnv->mutexPkgMgmtApi);
++        nLocked = 0;
++    }
++    return dwError;
++error:
++    goto cleanup;
++}
++
++unsigned32
++pkg_provides_s(
++    PTDNF pTdnf,
++    const char *pszSpec,
++    PTDNF_PKG_INFO *ppPkgInfo
++    )
++{
++    uint32_t dwError = 0;
++    int nLocked = 0;
++    PTDNF_PKG_INFO pPkgInfo;
++
++    if(!pTdnf || !pszSpec || !ppPkgInfo)
++    {
++        dwError = ERROR_PMD_INVALID_PARAMETER;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    pthread_mutex_lock(&gpServerEnv->mutexPkgMgmtApi);
++    nLocked = 1;
++
++    dwError = TDNFProvides(pTdnf, pszSpec, &pPkgInfo);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    pthread_mutex_unlock(&gpServerEnv->mutexPkgMgmtApi);
++    nLocked = 0;
++
++    *ppPkgInfo = pPkgInfo;
++cleanup:
++    if(nLocked)
++    {
++        pthread_mutex_unlock(&gpServerEnv->mutexPkgMgmtApi);
++        nLocked = 0;
++    }
++    return dwError;
++error:
++    if(ppPkgInfo)
++    {
++        *ppPkgInfo = NULL;
++    }
++    goto cleanup;
++}
++
++
+ unsigned32
+ pkg_search_s(
+     PTDNF pTdnf,
+diff --git a/privsep/pkgmgmtrpcapi.c b/privsep/pkgmgmtrpcapi.c
+index ea1d250..2155a71 100644
+--- a/privsep/pkgmgmtrpcapi.c
++++ b/privsep/pkgmgmtrpcapi.c
+@@ -86,6 +86,148 @@ pkg_privsep_rpc_close_handle(
+     goto cleanup;
+ }
+ 
++unsigned32
++pkg_privsep_rpc_check_local(
++    handle_t hBinding,
++    pkg_privsep_handle_t hPkgHandle,
++    wstring_t pwszFolder
++    )
++{
++    uint32_t dwError = 0;
++    char *pszFolder = NULL;
++
++    dwError = PMDAllocateStringAFromW(pwszFolder, &pszFolder);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    if(!hBinding || !hPkgHandle || !pszFolder)
++    {
++        dwError = ERROR_PMD_INVALID_PARAMETER;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    dwError = check_connection_integrity(hBinding);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    dwError =  pkg_check_local_s(hPkgHandle, pszFolder);
++    BAIL_ON_PMD_ERROR(dwError);
++
++cleanup:
++    PMD_SAFE_FREE_MEMORY(pszFolder);
++    return dwError;
++error:
++
++    goto cleanup;
++}
++
++unsigned32
++pkg_privsep_rpc_provides(
++    handle_t hBinding,
++    pkg_privsep_handle_t hPkgHandle,
++    wstring_t pwszSpec,
++    PTDNF_RPC_PKGINFO_ARRAY *ppInfo
++    )
++{
++    uint32_t dwError = 0;
++    char *pszSpec = NULL;
++    PTDNF_PKG_INFO pPkgInfo = NULL;
++    PTDNF_RPC_PKGINFO_ARRAY pInfo = NULL;
++    uint32_t dwCount = 0;
++
++    dwError = PMDAllocateStringAFromW(pwszSpec, &pszSpec);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    if(!hBinding || !hPkgHandle || !pszSpec)
++    {
++        dwError = ERROR_PMD_INVALID_PARAMETER;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    dwError = check_connection_integrity(hBinding);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    dwError =  pkg_provides_s(hPkgHandle, pszSpec, &pPkgInfo);
++    BAIL_ON_PMD_ERROR(dwError);
++    dwError = PMDRpcServerConvertPkgInfoList(pPkgInfo, &pInfo);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    *ppInfo = pInfo;
++cleanup:
++    PMD_SAFE_FREE_MEMORY(pszSpec);
++    if(pPkgInfo)
++    {
++        TDNFFreePackageInfo(pPkgInfo);
++    }
++    return dwError;
++error:
++    if(pInfo)
++    {
++        PMDRpcServerFreeMemory(pInfo);
++    }
++    goto cleanup;
++}
++
++unsigned32
++pkg_privsep_rpc_clean(
++    handle_t hBinding,
++    pkg_privsep_handle_t hPkgHandle,
++    unsigned32 nCleanType,
++    PTDNF_RPC_CLEAN_INFO* ppRpcCleanInfo
++    )
++{
++    uint32_t dwError = 0;
++    PTDNF_CLEAN_INFO pCleanInfo = NULL;
++    PTDNF_RPC_CLEAN_INFO pRpcCleanInfo = NULL;
++
++    if(!hBinding || !hPkgHandle || !ppRpcCleanInfo)
++    {
++        dwError = ERROR_PMD_INVALID_PARAMETER;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    dwError = check_connection_integrity(hBinding);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    dwError =  pkg_clean_s(hPkgHandle, nCleanType, &pCleanInfo);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    dwError = PMDRpcServerAllocateMemory(sizeof(TDNF_RPC_CLEAN_INFO),
++                                         (void**)&pRpcCleanInfo);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    pRpcCleanInfo->nCleanAll = pCleanInfo->nCleanAll;
++    pRpcCleanInfo->nRpmDbFilesRemoved = pCleanInfo->nRpmDbFilesRemoved;
++    pRpcCleanInfo->nMetadataFilesRemoved = pCleanInfo->nMetadataFilesRemoved;
++    pRpcCleanInfo->nDbCacheFilesRemoved = pCleanInfo->nDbCacheFilesRemoved;
++    pRpcCleanInfo->nPackageFilesRemoved = pCleanInfo->nPackageFilesRemoved;
++
++    dwError = PMDRpcServerCopyStringArray(pCleanInfo->ppszReposUsed,
++                                          &(pRpcCleanInfo->pszReposUsed));
++    BAIL_ON_PMD_ERROR(dwError);
++
++    *ppRpcCleanInfo = pRpcCleanInfo;
++
++cleanup:
++    if(pCleanInfo)
++    {
++        TDNFFreeCleanInfo(pCleanInfo);
++    }
++    return dwError;
++error:
++    *ppRpcCleanInfo = NULL;
++    if (pRpcCleanInfo && pRpcCleanInfo->pszReposUsed)
++    {
++        int i = 0;
++        for (i = 0; i < pRpcCleanInfo->pszReposUsed->dwCount; i++)
++        {
++            PMDRpcServerFreeMemory(pRpcCleanInfo->pszReposUsed->ppwszStrings[i]);
++        }
++        PMDRpcServerFreeMemory(pRpcCleanInfo->pszReposUsed->ppwszStrings);
++        PMDRpcServerFreeMemory(pRpcCleanInfo->pszReposUsed);
++        PMDRpcServerFreeMemory(pRpcCleanInfo);
++    }
++    goto cleanup;
++}
++
+ unsigned32
+ pkg_privsep_rpc_search(
+     handle_t hBinding,
+diff --git a/server/pkgmgmtrpcapi.c b/server/pkgmgmtrpcapi.c
+index 93c6d79..e8c7e6b 100644
+--- a/server/pkgmgmtrpcapi.c
++++ b/server/pkgmgmtrpcapi.c
+@@ -91,6 +91,99 @@ pkg_rpc_close_handle(
+     goto cleanup;
+ }
+ 
++unsigned32
++pkg_rpc_clean(
++    handle_t hBinding,
++    pkg_handle_t hPkgHandle,
++    unsigned32 nCleanType,
++    PTDNF_RPC_CLEAN_INFO* pCleanInfo
++    )
++{
++    uint32_t dwError = 0;
++    PPMDHANDLE hPMD = NULL;
++
++    if(!hBinding || !hPkgHandle || !pCleanInfo)
++    {
++        dwError = ERROR_PMD_INVALID_PARAMETER;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    CHECK_RPC_ACCESS(hBinding, dwError);
++
++    dwError = privsep_handle_list_get(hPkgHandle, &hPMD);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    dwError = pkg_clean_w(hPMD, hPkgHandle, nCleanType, pCleanInfo);
++    BAIL_ON_PMD_ERROR(dwError);
++
++cleanup:
++    return dwError;
++error:
++    goto cleanup;
++}
++
++unsigned32
++pkg_rpc_check_local(
++    handle_t hBinding,
++    pkg_handle_t hPkgHandle,
++    wstring_t pszFolder
++    )
++{
++    uint32_t dwError = 0;
++    PPMDHANDLE hPMD = NULL;
++
++    if(!hBinding || !hPkgHandle || !pszFolder)
++    {
++        dwError = ERROR_PMD_INVALID_PARAMETER;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    CHECK_RPC_ACCESS(hBinding, dwError);
++
++    dwError = privsep_handle_list_get(hPkgHandle, &hPMD);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    dwError = pkg_check_local_w(hPMD, hPkgHandle, pszFolder);
++    BAIL_ON_PMD_ERROR(dwError);
++
++cleanup:
++    return dwError;
++error:
++    goto cleanup;
++}
++
++unsigned32
++pkg_rpc_provides(
++    handle_t hBinding,
++    pkg_handle_t hPkgHandle,
++    wstring_t pszSpec,
++    PTDNF_RPC_PKGINFO_ARRAY* pRpcInfo
++    )
++{
++    uint32_t dwError = 0;
++    PPMDHANDLE hPMD = NULL;
++
++    if(!hBinding || !hPkgHandle || !pszSpec)
++    {
++        dwError = ERROR_PMD_INVALID_PARAMETER;
++        BAIL_ON_PMD_ERROR(dwError);
++    }
++
++    CHECK_RPC_ACCESS(hBinding, dwError);
++
++    dwError = privsep_handle_list_get(hPkgHandle, &hPMD);
++    BAIL_ON_PMD_ERROR(dwError);
++
++    dwError = pkg_provides_w(hPMD, hPkgHandle, pszSpec, pRpcInfo);
++    BAIL_ON_PMD_ERROR(dwError);
++
++cleanup:
++    return dwError;
++error:
++    goto cleanup;
++}
++
++
+ unsigned32
+ pkg_rpc_search(
+     handle_t hBinding,
+diff --git a/server/prototypes.h b/server/prototypes.h
+index 0e81383..a0654dd 100644
+--- a/server/prototypes.h
++++ b/server/prototypes.h
+@@ -776,6 +776,28 @@ pkg_search_w(
+     uint32_t* punCount
+     );
+ 
++uint32_t
++pkg_clean_w(
++    PPMDHANDLE hHandle,
++    PPKGHANDLE hPkgHandle,
++    TDNF_CLEANTYPE nCleanType,
++    PTDNF_RPC_CLEAN_INFO* ppCleanInfo
++    );
++uint32_t
++pkg_check_local_w(
++    PPMDHANDLE hHandle,
++    PPKGHANDLE hPkgHandle,
++    wstring_t pwszFolder
++    );
++
++uint32_t
++pkg_provides_w(
++    PPMDHANDLE hHandle,
++    PPKGHANDLE hPkgHandle,
++    wstring_t pwszSpec,
++    PTDNF_RPC_PKGINFO_ARRAY* pRpcInfo
++    );
++
+ uint32_t
+ pkg_list_w(
+     PPMDHANDLE hHandle,
+diff --git a/tools/cli/pkgmgmt/pkg_main.c b/tools/cli/pkgmgmt/pkg_main.c
+index 4772a94..f2e0300 100644
+--- a/tools/cli/pkgmgmt/pkg_main.c
++++ b/tools/cli/pkgmgmt/pkg_main.c
+@@ -61,14 +61,18 @@ pkg_main(
+ 
+     stContext.pUserData = &stCliContext;
+ 
+-    stContext.pFnCount      = pkg_invoke_count;
+-    stContext.pFnAlter      = pkg_invoke_alter;
+-    stContext.pFnInfo       = pkg_invoke_info;
+-    stContext.pFnList       = pkg_invoke_list;
+-    stContext.pFnRepoList   = pkg_invoke_repolist;
+-    stContext.pFnResolve    = pkg_invoke_resolve;
+-    stContext.pFnUpdateInfo = pkg_invoke_updateinfo;
+-    stContext.pFnSearch     = pkg_invoke_search;
++    stContext.pFnCount        = pkg_invoke_count;
++    stContext.pFnAlter        = pkg_invoke_alter;
++    stContext.pFnInfo         = pkg_invoke_info;
++    stContext.pFnList         = pkg_invoke_list;
++    stContext.pFnRepoList     = pkg_invoke_repolist;
++    stContext.pFnResolve      = pkg_invoke_resolve;
++    stContext.pFnUpdateInfo   = pkg_invoke_updateinfo;
++    stContext.pFnSearch       = pkg_invoke_search;
++    stContext.pFnProvides     = pkg_invoke_provides;
++    stContext.pFnCheckLocal   = pkg_invoke_checklocal;
++    stContext.pFnCheckUpdate  = pkg_invoke_check_update;
++    stContext.pFnClean        = pkg_invoke_clean;
+     stContext.pFnUpdateInfoSummary = pkg_invoke_updateinfo_summary;
+ 
+     dwError = pkg_parse_args(argc, argv, &pCmdArgs);
+@@ -146,6 +150,32 @@ pkg_main(
+     goto cleanup;
+ }
+ 
++uint32_t
++pkg_invoke_checklocal(
++    PTDNF_CLI_CONTEXT pContext,
++    const char *pszFolder
++    )
++{
++    PPMD_PKG_CLI_CONTEXT pLocalContext = pContext->pUserData;
++    return pkg_check_local(pLocalContext->hPMD,
++                           pLocalContext->hPkgHandle,
++                           pszFolder);
++}
++
++uint32_t
++pkg_invoke_provides(
++    PTDNF_CLI_CONTEXT pContext,
++    const char *pszSpec,
++    PTDNF_PKG_INFO* ppPkgInfo
++    )
++{
++    PPMD_PKG_CLI_CONTEXT pLocalContext = pContext->pUserData;
++    return pkg_provides(pLocalContext->hPMD,
++                      pLocalContext->hPkgHandle,
++                      pszSpec,
++                      ppPkgInfo);
++}
++
+ uint32_t
+ pkg_invoke_search(
+     PTDNF_CLI_CONTEXT pContext,
+@@ -162,6 +192,19 @@ pkg_invoke_search(
+                       punCount);
+ }
+ 
++uint32_t
++pkg_invoke_clean(
++    PTDNF_CLI_CONTEXT pContext,
++    TDNF_CLEANTYPE nCleanType,
++    PTDNF_CLEAN_INFO* ppCleanInfo
++    )
++{
++    PPMD_PKG_CLI_CONTEXT pLocalContext = pContext->pUserData;
++    return pkg_clean(pLocalContext->hPMD,
++                     pLocalContext->hPkgHandle,
++                     nCleanType,
++                     ppCleanInfo);
++}
+ uint32_t
+ pkg_invoke_alter(
+     PTDNF_CLI_CONTEXT pContext,
+@@ -176,17 +219,6 @@ pkg_invoke_alter(
+                      pSolvedPkgInfo);
+ }
+ 
+-uint32_t
+-pkg_invoke_check_update(
+-    PTDNF_CLI_CONTEXT pContext,
+-    char** ppszPackageArgs,
+-    PTDNF_PKG_INFO *ppPkgInfo,
+-    uint32_t *pdwCount
+-    )
+-{
+-    PPMD_PKG_CLI_CONTEXT pLocalContext = pContext->pUserData;
+-    return 0;
+-}
+ 
+ uint32_t
+ pkg_invoke_count(
+@@ -232,6 +264,23 @@ pkg_invoke_list(
+                     pdwCount);
+ }
+ 
++uint32_t
++pkg_invoke_check_update(
++    PTDNF_CLI_CONTEXT pContext,
++    char** ppszPackageArgs,
++    PTDNF_PKG_INFO *ppPkgInfo,
++    uint32_t *pdwCount
++    )
++{
++    PPMD_PKG_CLI_CONTEXT pLocalContext = pContext->pUserData;
++    return pkg_list(pLocalContext->hPMD,
++                    pLocalContext->hPkgHandle,
++                    SCOPE_UPGRADES,
++                    ppszPackageArgs,
++                    ppPkgInfo,
++                    pdwCount);
++}
++
+ uint32_t
+ pkg_invoke_repolist(
+     PTDNF_CLI_CONTEXT pContext,
+diff --git a/tools/cli/pkgmgmt/prototypes.h b/tools/cli/pkgmgmt/prototypes.h
+index e0da729..267abcb 100644
+--- a/tools/cli/pkgmgmt/prototypes.h
++++ b/tools/cli/pkgmgmt/prototypes.h
+@@ -30,6 +30,34 @@ pkg_invoke_search(
+     uint32_t* punCount
+     );
+ 
++uint32_t
++pkg_invoke_clean(
++    PTDNF_CLI_CONTEXT pContext,
++    TDNF_CLEANTYPE nCleanType,
++    PTDNF_CLEAN_INFO* ppCleanInfo
++    );
++
++uint32_t
++pkg_invoke_check_update(
++    PTDNF_CLI_CONTEXT pContext,
++    char** ppszPackageArgs,
++    PTDNF_PKG_INFO *ppPkgInfo,
++    uint32_t *pdwCount
++    );
++
++uint32_t
++pkg_invoke_provides(
++    PTDNF_CLI_CONTEXT pContext,
++    const char *pszSpec,
++    PTDNF_PKG_INFO* ppPkgInfo
++    );
++
++uint32_t
++pkg_invoke_checklocal(
++    PTDNF_CLI_CONTEXT pContext,
++    const char *pszFolder
++    );
++
+ uint32_t
+ pkg_invoke_alter(
+     PTDNF_CLI_CONTEXT pContext,

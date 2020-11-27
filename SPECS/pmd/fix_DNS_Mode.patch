@@ -1,0 +1,278 @@
+From 25b5f03c071abd9d151a6e033163647d00ab6363 Mon Sep 17 00:00:00 2001
+From: Tapas Kundu <tkundu@vmware.com>
+Date: Sun, 17 Mar 2019 15:02:06 +0000
+Subject: [PATCH] pmd: compatible wih netmgmt 1.2.0
+
+rename DNS_MODE_INVALID with DNS_MODE_UNKNOWN
+
+Change-Id: I957d14afe0bce9de47ad9328dfb7cfe577d21bc2
+
+Fix change in TDNFUpdateInfoSummary API signature
+
+Change-Id: I341a75b24bc46923719d7bd305a8350efad4fa4f
+Signed-off-by: Tapas Kundu <tkundu@vmware.com>
+---
+ client/netmgr_api.c          |  2 +-
+ client/pkgmgmt_api.c         |  3 ---
+ include/pmd_pkgmgmt.h        |  1 -
+ pmd.spec.in                  |  5 ++++-
+ privsep/pkgmgmt.h            |  1 -
+ privsep/pkgmgmtapi.c         |  2 --
+ privsep/pkgmgmtrpcapi.c      |  1 -
+ python/netmgmt_py.c          | 12 ++++++------
+ server/netmgmtrestapi.c      |  4 ++--
+ server/pkgmgmtrpcapi.c       |  1 -
+ server/prototypes.h          |  1 -
+ tools/cli/netmgmt/net_main.c |  2 +-
+ tools/cli/pkgmgmt/pkg_main.c |  1 -
+ 13 files changed, 14 insertions(+), 22 deletions(-)
+
+diff --git a/client/netmgr_api.c b/client/netmgr_api.c
+index b6371f4..3ca9dbd 100644
+--- a/client/netmgr_api.c
++++ b/client/netmgr_api.c
+@@ -2595,7 +2595,7 @@ netmgr_client_get_dns_servers(
+ error:
+     if (pMode)
+     {
+-        *pMode = DNS_MODE_INVALID;
++        *pMode = DNS_MODE_UNKNOWN;
+     }
+     if (pCount)
+     {
+diff --git a/client/pkgmgmt_api.c b/client/pkgmgmt_api.c
+index 3b0a75b..bd4a25d 100644
+--- a/client/pkgmgmt_api.c
++++ b/client/pkgmgmt_api.c
+@@ -432,7 +432,6 @@ uint32_t
+ pkg_updateinfo_summary_w(
+     PPMDHANDLE hHandle,
+     PPKGHANDLE hPkgHandle,
+-    TDNF_AVAIL nAvail,
+     PTDNF_RPC_UPDATEINFO_SUMMARY_ARRAY *ppRpcSummary
+     )
+ {
+@@ -465,7 +464,6 @@ uint32_t
+ pkg_updateinfo_summary(
+     PPMDHANDLE hHandle,
+     PPKGHANDLE hPkgHandle,
+-    TDNF_AVAIL nAvail,
+     char **ppszPackageNameSpecs,
+     PTDNF_UPDATEINFO_SUMMARY *ppSummary
+     )
+@@ -485,7 +483,6 @@ pkg_updateinfo_summary(
+     dwError = pkg_updateinfo_summary_w(
+                   hHandle,
+                   hPkgHandle,
+-                  nAvail,
+                   &pRpcSummary);
+     BAIL_ON_PMD_ERROR(dwError);
+ 
+diff --git a/include/pmd_pkgmgmt.h b/include/pmd_pkgmgmt.h
+index 906750b..8457c33 100644
+--- a/include/pmd_pkgmgmt.h
++++ b/include/pmd_pkgmgmt.h
+@@ -72,7 +72,6 @@ uint32_t
+ pkg_updateinfo_summary(
+     PPMDHANDLE hHandle,
+     PPKGHANDLE phPkgHandle,
+-    TDNF_AVAIL nAvail,
+     char **ppszPackageNameSpecs,
+     PTDNF_UPDATEINFO_SUMMARY *ppSummary
+     );
+diff --git a/pmd.spec.in b/pmd.spec.in
+index cb8fc19..cc7b5f7 100644
+--- a/pmd.spec.in
++++ b/pmd.spec.in
+@@ -5,7 +5,7 @@
+ Summary:	Photon Management Daemon
+ Name:		pmd
+ Version:	@VERSION@
+-Release:	2%{?dist}
++Release:	3%{?dist}
+ License:	Apache 2.0
+ URL:            https://www.github.com/vmware/pmd
+ Group:		Applications/System
+@@ -302,6 +302,9 @@ rm -rf %{buildroot}/*
+     %{_python3_sitearch}/%{name}_python-*.egg-info
+ 
+ %changelog
++*       Sat May 16 2020 Tapas Kundu <tkundu@vmware.com> 0.1-3
++-       fix TDNFUpdateInfoSummary
++-       compatible with netmgmt 1.2.0
+ *       Thu Jul 18 2019 Tapas Kundu <tkundu@vmware.com> 0.1-2
+ -       Updated the spec for including role mgmt changes.
+ *       Thu May 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.1-1
+diff --git a/privsep/pkgmgmt.h b/privsep/pkgmgmt.h
+index 943cce0..5901cc6 100644
+--- a/privsep/pkgmgmt.h
++++ b/privsep/pkgmgmt.h
+@@ -63,7 +63,6 @@ pkg_info_s(
+ unsigned32
+ pkg_updateinfo_s(
+     PTDNF pTdnf,
+-    TDNF_AVAIL nAvail,
+     char **ppszPackageNameSpecs,
+     PTDNF_UPDATEINFO_SUMMARY* ppUpdateInfoSummary
+     );
+diff --git a/privsep/pkgmgmtapi.c b/privsep/pkgmgmtapi.c
+index 087e0de..229d3d0 100644
+--- a/privsep/pkgmgmtapi.c
++++ b/privsep/pkgmgmtapi.c
+@@ -260,7 +260,6 @@ pkg_info_s(
+ unsigned32
+ pkg_updateinfo_s(
+     PTDNF pTdnf,
+-    TDNF_AVAIL nAvail,
+     char **ppszPackageNameSpecs,
+     PTDNF_UPDATEINFO_SUMMARY* ppUpdateInfoSummary
+     )
+@@ -283,7 +282,6 @@ pkg_updateinfo_s(
+ 
+     dwError = TDNFUpdateInfoSummary(
+                   pTdnf,
+-                  nAvail,
+                   ppszPackageNameSpecs,
+                   &pUpdateInfoSummary);
+     BAIL_ON_PMD_ERROR(dwError);
+diff --git a/privsep/pkgmgmtrpcapi.c b/privsep/pkgmgmtrpcapi.c
+index 9550111..6d1a1e9 100644
+--- a/privsep/pkgmgmtrpcapi.c
++++ b/privsep/pkgmgmtrpcapi.c
+@@ -298,7 +298,6 @@ pkg_privsep_rpc_updateinfo_summary(
+ 
+     dwError = pkg_updateinfo_s(
+                   hPkgHandle,
+-                  0,
+                   &pszPackageNameSpecs,
+                   &pUpdateInfoSummary);
+     BAIL_ON_PMD_ERROR(dwError);
+diff --git a/python/netmgmt_py.c b/python/netmgmt_py.c
+index 0f7e4c5..9b3c36a 100644
+--- a/python/netmgmt_py.c
++++ b/python/netmgmt_py.c
+@@ -1222,7 +1222,7 @@ get_dns_servers(
+ {
+     uint32_t dwError = 0;
+     size_t i = 0, count = 0;
+-    NET_DNS_MODE dnsMode = DNS_MODE_INVALID;
++    NET_DNS_MODE dnsMode = DNS_MODE_UNKNOWN;
+     char *pszInterfaceName = NULL;
+     char *pszDnsMode = NULL;
+     char **ppszDnsServers = NULL;
+@@ -1254,7 +1254,7 @@ get_dns_servers(
+         }
+     }
+ 
+-    if (dnsMode == DNS_MODE_INVALID)
++    if (dnsMode == DNS_MODE_UNKNOWN)
+     {
+         pszDnsMode = "invalid";
+     }
+@@ -1731,7 +1731,7 @@ fill_link_info(
+     size_t i = 0, j = 0;
+     NET_LINK_MODE linkMode = LINK_MODE_UNKNOWN;
+     NET_LINK_STATE linkState = LINK_STATE_UNKNOWN;
+-    NET_DNS_MODE dnsMode = DNS_MODE_INVALID;
++    NET_DNS_MODE dnsMode = DNS_MODE_UNKNOWN;
+     NET_IPV4_ADDR_MODE addrMode = IPV4_ADDR_MODE_NONE;
+     char *pszDuid = 0, *pszIfName = NULL, *pszAddrMode = NULL;
+     char *pszMacAddress = NULL, *pszIpv4Addr =NULL, *pszDnsMode = NULL;
+@@ -1830,7 +1830,7 @@ fill_link_info(
+     }
+     BAIL_ON_PMD_ERROR(dwError);
+ 
+-    if (dnsMode == DNS_MODE_INVALID)
++    if (dnsMode == DNS_MODE_UNKNOWN)
+     {
+         pszDnsMode = "invalid";
+     }
+@@ -2056,7 +2056,7 @@ get_system_network_info(
+     uint32_t dwError = 0;
+     size_t j = 0;
+     size_t countDnsServers = 0, countDnsDomains = 0, countNtpServers = 0;
+-    NET_DNS_MODE dnsMode = DNS_MODE_INVALID;
++    NET_DNS_MODE dnsMode = DNS_MODE_UNKNOWN;
+     PPY_SYSTEM pPySystemObject = NULL;
+     char *pszDuid = 0, *pszDnsMode = NULL;
+     char **ppszDnsServers = NULL, **ppszDnsDomains = NULL;
+@@ -2085,7 +2085,7 @@ get_system_network_info(
+     }
+     BAIL_ON_PMD_ERROR(dwError);
+ 
+-    if (dnsMode == DNS_MODE_INVALID)
++    if (dnsMode == DNS_MODE_UNKNOWN)
+     {
+         pszDnsMode = "invalid";
+     }
+diff --git a/server/netmgmtrestapi.c b/server/netmgmtrestapi.c
+index 5e951be..3cb95df 100644
+--- a/server/netmgmtrestapi.c
++++ b/server/netmgmtrestapi.c
+@@ -211,7 +211,7 @@ net_str_to_dns_mode(
+     )
+ {
+     uint32_t dwError = 0;
+-    NET_DNS_MODE nMode = DNS_MODE_INVALID;
++    NET_DNS_MODE nMode = DNS_MODE_UNKNOWN;
+ 
+     if (!pMode)
+     {
+@@ -229,7 +229,7 @@ net_str_to_dns_mode(
+     }
+     else
+     {
+-        nMode = DNS_MODE_INVALID;
++        nMode = DNS_MODE_UNKNOWN;
+     }
+ 
+     *pMode = nMode;
+diff --git a/server/pkgmgmtrpcapi.c b/server/pkgmgmtrpcapi.c
+index 512ada4..05a520f 100644
+--- a/server/pkgmgmtrpcapi.c
++++ b/server/pkgmgmtrpcapi.c
+@@ -265,7 +265,6 @@ pkg_rpc_updateinfo_summary(
+     dwError = pkg_updateinfo_summary_w(
+                   hPMD,
+                   hPkgHandle,
+-                  AVAIL_AVAILABLE,
+                   &pRpcUpdateInfoArray);
+     BAIL_ON_PMD_ERROR(dwError);
+ 
+diff --git a/server/prototypes.h b/server/prototypes.h
+index 8abae75..45434f9 100644
+--- a/server/prototypes.h
++++ b/server/prototypes.h
+@@ -794,7 +794,6 @@ uint32_t
+ pkg_updateinfo_summary_w(
+     PPMDHANDLE hHandle,
+     PPKGHANDLE hPkgHandle,
+-    TDNF_AVAIL nAvail,
+     PTDNF_RPC_UPDATEINFO_SUMMARY_ARRAY *ppRpcSummary
+     );
+ 
+diff --git a/tools/cli/netmgmt/net_main.c b/tools/cli/netmgmt/net_main.c
+index e6f69d4..09ce588 100644
+--- a/tools/cli/netmgmt/net_main.c
++++ b/tools/cli/netmgmt/net_main.c
+@@ -677,7 +677,7 @@ cmd_dns_servers(
+ {
+     uint32_t dwError = 0, add = 0;
+     size_t dwCount = 0, i = 0;
+-    NET_DNS_MODE dnsMode = DNS_MODE_INVALID;
++    NET_DNS_MODE dnsMode = DNS_MODE_UNKNOWN;
+     char *pszIfname = NULL, *pszMode = NULL;
+     char *pszDnsServers = NULL, *pszNoRestart = NULL;
+     char *s1, *s2, *pszServers = NULL, **ppszDnsServersList = NULL;
+diff --git a/tools/cli/pkgmgmt/pkg_main.c b/tools/cli/pkgmgmt/pkg_main.c
+index e490683..e1ade91 100644
+--- a/tools/cli/pkgmgmt/pkg_main.c
++++ b/tools/cli/pkgmgmt/pkg_main.c
+@@ -267,7 +267,6 @@ pkg_invoke_updateinfo_summary(
+     return pkg_updateinfo_summary(
+                pLocalContext->hPMD,
+                pLocalContext->hPkgHandle,
+-               nAvail,
+                pInfoArgs->ppszPackageNameSpecs,
+                ppSummary);
+ }

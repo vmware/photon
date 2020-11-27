@@ -5,11 +5,12 @@
 %define _mech_file /etc/gss/mech
 %define _mech_id 1.3.6.1.4.1.6876.11711.2.1.2
 %define _python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
+%define gssapi_unix_ver 1.0
 
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.6
-Release:        6%{?dist}
+Release:        7%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -18,13 +19,13 @@ Group:          Applications/System
 Requires:       copenapi
 Requires:       c-rest-engine >= 1.1
 Requires:       jansson
-Requires:       likewise-open >= 6.2.9
 Requires:       netmgmt
 Requires:       systemd
 Requires:       tdnf >= 2.1.1
-Requires:       lightwave-client-libs
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       shadow
+Requires:       dcerpc
+Requires:       openldap
 BuildRequires:  copenapi-devel
 BuildRequires:  c-rest-engine-devel >= 1.1
 BuildRequires:  curl-devel
@@ -32,25 +33,43 @@ BuildRequires:  expat-devel
 BuildRequires:  libsolv-devel
 BuildRequires:  jansson-devel
 BuildRequires:  krb5-devel
-BuildRequires:  likewise-open-devel >= 6.2.9
 BuildRequires:  netmgmt-cli-devel
 BuildRequires:  netmgmt-devel
 BuildRequires:  tdnf-devel >= 2.1.1
-BuildRequires:  lightwave-devel
 BuildRequires:  python3-devel >= 3.5
+BuildRequires:  dcerpc-devel
+BuildRequires:  openldap
+BuildRequires:  openssl-devel
+BuildRequires:  e2fsprogs-devel
+
+# PMD Source Code tarball
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    pmd=a8a3a920647a80e08094d23437330fb498770700
-Patch0:         pmd-rename-DNS_MODE_INVALID-with-DNS_MODE_UNKNOWN.patch
-Patch1:         pmd-fw-bugfix.patch
-Patch2:         pmd-tdnf-updateinfosummary.patch
-Patch3:         fix_pszUrlGPGKey.patch
-Patch4:         added_null_check.patch
+
+# gssapi_unix Source Code tarball
+Source1:        gssapi-unix-%{gssapi_unix_ver}.tar.gz
+%define sha1    gssapi-unix-%{gssapi_unix_ver}=1b4e9f5f47e4591ec19ac4f84bd43d106835aa48
+
+# Apply PMD Patches
+Patch0:         pmd-fw-bugfix.patch
+Patch1:         fix_DNS_Mode.patch
+Patch2:         tdnf_options_to_pmd_cli.patch
+Patch3:         missing_commands_of_pmd-cli.patch
+Patch4:         python_APIs_for_new_Cmd.patch
+Patch5:         fix_pszUrlGPGKey.patch
+Patch6:         pseudo_code_for_wide_char.patch
+Patch7:         remove_lightwave.patch
+Patch8:         remove_likewise.patch
+
+# Apply gssapi_unix Patches
+Patch9:        gssapi-unix-openssl-1.1.1.patch
+
 %description
 Photon Management Daemon
 
-%package libs
-Summary: photon management daemon libs
-Requires: likewise-open >= 6.2.0
+%package  libs
+Summary:  photon management daemon libs
+Requires: pmd-gssapi-unix = %{version}-%{release}
 
 %description libs
 photon management daemon libs used by server and clients
@@ -58,8 +77,6 @@ photon management daemon libs used by server and clients
 %package cli
 Summary: photon management daemon cmd line cli
 Requires: %{name}-libs = %{version}-%{release}
-Requires: likewise-open >= 6.2.0
-Requires: lightwave-client-libs
 
 %description cli
 photon management daemon cmd line cli
@@ -80,6 +97,20 @@ Requires: %{name}-cli = %{version}-%{release}
 %description python3
 Python3 bindings for photon management daemon
 
+# sub-package: gssapi_unix
+%package gssapi-unix
+Summary:        gssapi-unix for unix authentication
+Group:          System Environment/Security
+Requires:       cyrus-sasl
+Requires:       krb5
+Requires:       dcerpc
+Requires:       openldap
+Requires:       openssl
+Requires:       e2fsprogs
+
+%description gssapi-unix
+gssapi-unix for unix authentication
+
 %prep
 %setup -q
 %patch0 -p1
@@ -87,24 +118,43 @@ Python3 bindings for photon management daemon
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+
+# extract gssapi_unix code
+cd ../
+tar -xf %{SOURCE1} --no-same-owner
+%patch9 -p1
 
 %build
-sed -i 's/pmd, 0.0.1/pmd, 0.0.6/' configure.ac
+sed -i 's/pmd, 0.0.1/pmd, 0.0.7/' configure.ac
 sed -i 's,-lcrypto,-lcrypto -lgssapi_krb5 @top_builddir@/client/libpmdclient.la,' server/Makefile.am
 autoreconf -mif
 %configure \
-    --with-likewise=/opt/likewise \
-    --enable-python=no \
-    --disable-static
-make
+    --disable-static \
+    --enable-python=no
+make %{?_smp_mflags}
 
 pushd python
 python3 setup.py build
 popd
 
+# Build gssapi_unix
+cd ../gssapi-unix
+export CFLAGS="-Wno-error=unused-but-set-variable -Wno-error=implicit-function-declaration -Wno-error=sizeof-pointer-memaccess -Wno-error=unused-local-typedefs -Wno-error=pointer-sign -Wno-error=address -Wno-unused-but-set-variable -Wno-unused-const-variable -Wno-misleading-indentation"
+autoreconf -mif &&
+aclocal && libtoolize && automake --add-missing && autoreconf &&
+%configure \
+    LDFLAGS=-ldl \
+    --sysconfdir=/etc \
+    --localstatedir=/var/lib/vmware
+make %{?_smp_mflags}
+
 %install
 cd $RPM_BUILD_DIR/%{name}-%{version}
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm -f %{buildroot}%{_libdir}/*.la
 
 pushd python
@@ -126,39 +176,37 @@ install -m 0644 conf/pmd-tmpfiles.conf %{buildroot}/usr/lib/tmpfiles.d/%{name}.c
 install -d -m 0755 %{buildroot}/etc/pmd.roles.d/
 install -d -m 0755 %{buildroot}/etc/pmd.roles.plugins.d/
 
+# gssapi_unix
+cd ../gssapi-unix
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+
+# copy binaries for GSSAPI
+mkdir -p %{buildroot}/%{_libdir}/gssapi_unix
+mkdir -p %{buildroot}/%{_bindir}/gssapi_unix
+mkdir -p %{buildroot}/%{_includedir}/gssapi_unix
+mv %{buildroot}/%{_libdir}/libgssapi* %{buildroot}/%{_libdir}/gssapi_unix/
+mv %{buildroot}/%{_bindir}/unix_srp %{buildroot}/%{_bindir}/gssapi_unix/
+mv %{buildroot}/%{_includedir}/gssapi_creds_plugin.h %{buildroot}/%{_includedir}/gssapi_unix/
+mv %{buildroot}/%{_includedir}/includes.h %{buildroot}/%{_includedir}/gssapi_unix/
+
 # Pre-install
 %pre
 if ! getent group %{name} >/dev/null; then
     /sbin/groupadd -r %{name}
 fi
+
 if ! getent passwd %{name} >/dev/null; then
     /sbin/useradd -g %{name} %{name} -s /sbin/nologin
 fi
 
 # Post-install
 %post
-
     # First argument is 1 => New Installation
     # First argument is 2 => Upgrade
     sed -i "s/IPADDRESS_MARKER/`ifconfig eth0 | grep -Eo 'inet (addr:)?([0-9]*\.){3}[0-9]*' | grep -Eo '([0-9]*\.){3}[0-9]*' | grep -v '127.0.0.1'`/g" /etc/pmd/restapispec.json
     /sbin/ldconfig
     %systemd_post pmd.service
     %systemd_post pmdprivsepd.service
-
-    if [ ! -d "%{_libdir}/gss" ] ; then
-        mkdir %{_libdir}/gss
-    fi
-
-    # Add libgssapi_unix.so to GSSAPI plugin directory
-    if [ ! -h %{_libdir}/gss/libgssapi_unix.so ]; then
-        /bin/ln -sf %{_libdir}/libgssapi_unix.so %{_libdir}/gss/libgssapi_unix.so
-    fi
-    # Add gssapi_unix plugin configuration to GSS mech file
-    if [ -f "%{_mech_file}" ]; then
-        if [ `grep -c "%{_mech_id}" "%{_mech_file}"` -lt 1 ]; then
-            echo "unix %{_mech_id} libgssapi_unix.so" >> "%{_mech_file}"
-        fi
-    fi
 
     if [ "$1" = 1 ]; then
       openssl req \
@@ -170,6 +218,7 @@ fi
           -subj "/C=US/ST=WA/L=Bellevue/O=vmware/CN=photon-pmd-default" \
           -keyout /etc/pmd/server.key \
           -out /etc/pmd/server.crt
+
       chmod 0400 /etc/pmd/server.key
       chown %{name} /etc/pmd/server.key
       openssl genrsa -out /etc/pmd/privsep_priv.key 2048
@@ -181,33 +230,13 @@ fi
 
 # Pre-uninstall
 %preun
-
     # First argument is 0 => Uninstall
     # First argument is 1 => Upgrade
     %systemd_preun pmd.service
     %systemd_preun pmdprivsepd.service
-if [ "$1" = 0 ]; then
-    if [ ! -e %{_bindir}/pmd-cli ]; then
-        # Cleanup GSSAPI UNIX symlink
-        if [ -h %{_libdir}/gss/libgssapi_unix.so ]; then
-            rm -f %{_libdir}/gss/libgssapi_unix.so
-        fi
-        # Remove GSSAPI SRP plugin configuration from GSS mech file
-        if [ -f "%{_mech_file}" ]; then
-            if [ `grep -c  "%{_mech_id}" "%{_mech_file}"` -gt 0 ]; then
-                cat "%{_mech_file}" | sed '/%{_mech_id}/d' > "/tmp/mech-$$"
-                if [ -s /tmp/mech-$$ ]; then
-                    mv "/tmp/mech-$$" "%{_mech_file}"
-                fi
-            fi
-        fi
-    fi
-fi
-
 
 # Post-uninstall
 %postun
-
     /sbin/ldconfig
 
     %systemd_postun_with_restart pmd.service
@@ -224,49 +253,74 @@ if [ $1 -eq 0 ] ; then
     fi
 fi
 
-# Post pmd-cli
-%post cli
+# Post-uninstall
+%postun cli
+    /sbin/ldconfig
+
+%post gssapi-unix
+    # Create directory "/usr/lib/gss" if not exist
     if [ ! -d "%{_libdir}/gss" ] ; then
-        mkdir %{_libdir}/gss
+        mkdir -p %{_libdir}/gss
     fi
 
-    # Add libgssapi_unix.so to GSSAPI plugin directory
-    if [ ! -h %{_libdir}/gss/libgssapi_unix.so ]; then
-        /bin/ln -sf %{_libdir}/libgssapi_unix.so %{_libdir}/gss/libgssapi_unix.so
+    # Create directory "/etc/gss" if not exist
+    if [ ! -d "%{_sysconfdir}/gss" ] ; then
+        mkdir -p %{_sysconfdir}/gss
     fi
-    # Add gssapi_unix plugin configuration to GSS mech file
+
+    # Create file "/etc/gss/mech" if not exist
+    if [ ! -f "%{_mech_file}" ]; then
+        touch %{_mech_file}
+    fi
+
+    # Add symlink of libgssapi_unix_creds.so to %{_libdir} directory
+    if [ ! -h %{_libdir}/libgssapi_unix_creds.so ]; then
+        /bin/ln -s %{_libdir}/gssapi_unix/libgssapi_unix_creds.so %{_libdir}/libgssapi_unix_creds.so
+    fi
+
+    # Add libgssapi_unix.so to gssapi_unix directory
+    if [ ! -h %{_libdir}/gss/libgssapi_unix.so ]; then
+        /bin/ln -sf %{_libdir}/gssapi_unix/libgssapi_unix.so %{_libdir}/gss/libgssapi_unix.so
+    fi
+
+    # Update file "/etc/gss/mech" with GSSAPI mech_id
     if [ -f "%{_mech_file}" ]; then
         if [ `grep -c "%{_mech_id}" "%{_mech_file}"` -lt 1 ]; then
             echo "unix %{_mech_id} libgssapi_unix.so" >> "%{_mech_file}"
         fi
     fi
 
-# Pre-uninstall cli
-%preun cli
+    chmod 644 %{_mech_file}
+
+    /sbin/ldconfig
+
+# Pre-uninstall gssapi-unix
+%preun gssapi-unix
 
     # First argument is 0 => Uninstall
     # First argument is 1 => Upgrade
 
 if [ "$1" = 0 ]; then
-    if [ ! -e %{_bindir}/pmd ]; then
-        # Cleanup GSSAPI UNIX symlink
-        if [ -h %{_libdir}/gss/libgssapi_unix.so ]; then
-            rm -f %{_libdir}/gss/libgssapi_unix.so
-        fi
-        # Remove GSSAPI SRP plugin configuration from GSS mech file
-        if [ -f "%{_mech_file}" ]; then
-            if [ `grep -c  "%{_mech_id}" "%{_mech_file}"` -gt 0 ]; then
-                cat "%{_mech_file}" | sed '/%{_mech_id}/d' > "/tmp/mech-$$"
-                if [ -s /tmp/mech-$$ ]; then
-                    mv "/tmp/mech-$$" "%{_mech_file}"
-                fi
+    # Cleanup libgssapi_unix_creds.so symlink
+    if [ -h %{_libdir}/libgssapi_unix_creds.so ]; then
+        rm -f %{_libdir}/libgssapi_unix_creds.so
+    fi
+
+    # Cleanup GSSAPI UNIX symlink
+    if [ -h %{_libdir}/gss/libgssapi_unix.so ]; then
+        rm -f %{_libdir}/gss/libgssapi_unix.so
+    fi
+
+    # Remove GSSAPI configuration from GSS mech file
+    if [ -f "%{_mech_file}" ]; then
+        if [ `grep -c  "%{_mech_id}" "%{_mech_file}"` -gt 0 ]; then
+            cat "%{_mech_file}" | sed '/%{_mech_id}/d' > "/tmp/mech-$$"
+            if [ -s /tmp/mech-$$ ]; then
+                mv "/tmp/mech-$$" "%{_mech_file}"
             fi
         fi
     fi
 fi
-# Post-uninstall
-%postun cli
-    /sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
@@ -288,20 +342,43 @@ rm -rf %{buildroot}/*
     %dir /etc/pmd.roles.d/
 
 %files libs
+    %defattr(-,root,root)
     %{_libdir}/libpmdclient.so*
 
 %files cli
+    %defattr(-,root,root)
     %{_bindir}/pmd-cli
+    %exclude %{_libdir}/libpmdclient.a
 
 %files devel
+    %defattr(-,root,root)
     %{_includedir}/pmd/*.h
     %{_libdir}/pkgconfig/pmdclient.pc
 
 %files python3
+    %defattr(-,root,root)
     %{_python3_sitearch}/%{name}/
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
+# gssapi_unix
+%files gssapi-unix
+    %defattr(-,root,root)
+    %dir %{_libdir}/gssapi_unix
+    %dir %{_bindir}/gssapi_unix
+    %dir %{_includedir}/gssapi_unix
+    %{_libdir}/gssapi_unix/*.so*
+    %{_bindir}/gssapi_unix/unix_srp
+    %{_includedir}/gssapi_unix/*.h
+    %exclude %{_libdir}/gssapi_unix/*.a
+    %exclude %{_libdir}/gssapi_unix/*.la
+
 %changelog
+*   Thu Nov 19 2020 Shreyas B <shreyasb@vmware.com> 0.0.6-7
+-   Remove LightWave & LikeWise dependency.
+-   Add dcerpc & openldap dependency.
+-   Build gssapi_unix as subpackage of PMD.
+-   Support for OpenSSL v1.1.1.
+-   Fix Build issues.
 *   Tue Nov 03 2020 Tapas Kundu <tkundu@vmware.com> 0.0.6-6
 -   Added null check for pszgpgkeys
 *   Tue Oct 27 2020 Keerthana K <keerthanak@vmware.com> 0.0.6-5
