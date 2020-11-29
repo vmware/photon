@@ -945,6 +945,7 @@ def set_default_value_of_config():
     configdict['photon-build-param']['pkg-build-options'] = curDir + "/common/data/" + configdict['photon-build-param']['pkg-build-options']
     configdict.setdefault("additional-path", {}).setdefault("conf-file", None)
     configdict.setdefault("photon-build-param", {}).setdefault("start-scheduler-server", False)
+    configdict.setdefault("photon-build-param", {}).setdefault("base-commit", '')
 
 
 def main():
