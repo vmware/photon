@@ -1,22 +1,21 @@
 Name:          crash
-Version:       7.2.8
-Release:       3%{?dist}
+Version:       7.2.9
+Release:       1%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
 Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://people.redhat.com/anderson/
 Source0:       http://people.redhat.com/anderson/crash-%{version}.tar.gz
-%define sha1 crash=334bce71a69ccf8abefaf8c4bc5eec67c9b43c9e
-%define GCORE_VERSION	1.5.1
+%define sha1 crash=20865107a4a2ffcb31d9b2f390f72e1dcc3a5dbc
+%define GCORE_VERSION	1.6.0
 Source1:       http://people.redhat.com/anderson/extensions/crash-gcore-command-%{GCORE_VERSION}.tar.gz
-%define sha1 crash-gcore=9c542d8503824e5f16d00c47bfdb38a7481ed752
+%define sha1 crash-gcore=ccea791bec2229bdf1d164bc6773d8ce5597024c
 Source2:       https://ftp.gnu.org/gnu/gdb/gdb-7.6.tar.gz
 %define sha1 gdb=026f4c9e1c8152a2773354551c523acd32d7f00e
 Source3:       gcore_defs.patch
 Source4:       CVE-2017-7226.patch
-Patch0:        vmware_guestdump-new-input-format.patch
-Patch1:        apply-patch-to-nested-gdb.patch
+Patch0:        apply-patch-to-nested-gdb.patch
 
 License:       GPL
 BuildRequires: binutils
@@ -43,7 +42,6 @@ This package contains libraries and header files need for development.
 %setup -q -n %{name}-%{version}
 %setup -a 1
 %patch0 -p1
-%patch1 -p1
 
 %build
 sed -i "s/tar --exclude-from/tar --no-same-owner --exclude-from/" Makefile
@@ -87,6 +85,8 @@ install -pm 755 crash-gcore-command-%{GCORE_VERSION}/gcore.so %{buildroot}%{_lib
 %{_includedir}/crash/*.h
 
 %changelog
+*   Mon Nov 30 2020 Alexey Makhalov <amakhalov@vmware.com> 7.2.9-1
+-   Version update
 *   Mon Nov 02 2020 Ajay Kaher <akaher@vmware.com> 7.2.8-3
 -   Fix for CVE-2017-7226
 *   Thu Sep 24 2020 Alexey Makhalov <amakhalov@vmware.com> 7.2.8-2
