@@ -1,0 +1,43 @@
+From 1957a85b0032a81e6482ca4aab883643b8dae06e Mon Sep 17 00:00:00 2001
+From: Matthew Garrett <matthewgarrett@google.com>
+Date: Mon, 19 Aug 2019 17:18:04 -0700
+Subject: [PATCH] efi: Restrict efivar_ssdt_load when the kernel is locked down
+
+efivar_ssdt_load allows the kernel to import arbitrary ACPI code from an
+EFI variable, which gives arbitrary code execution in ring 0. Prevent
+that when the kernel is locked down.
+
+Signed-off-by: Matthew Garrett <mjg59@google.com>
+Acked-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Cc: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Cc: linux-efi@vger.kernel.org
+Signed-off-by: James Morris <jmorris@namei.org>
+---
+ drivers/firmware/efi/efi.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/firmware/efi/efi.c b/drivers/firmware/efi/efi.c
+index 4b7cf7bc0ded9..5f98374f77f44 100644
+--- a/drivers/firmware/efi/efi.c
++++ b/drivers/firmware/efi/efi.c
+@@ -30,6 +30,7 @@
+ #include <linux/acpi.h>
+ #include <linux/ucs2_string.h>
+ #include <linux/memblock.h>
++#include <linux/security.h>
+ 
+ #include <asm/early_ioremap.h>
+ 
+@@ -241,6 +242,11 @@ static void generic_ops_unregister(void)
+ static char efivar_ssdt[EFIVAR_SSDT_NAME_MAX] __initdata;
+ static int __init efivar_ssdt_setup(char *str)
+ {
++	int ret = security_locked_down(LOCKDOWN_ACPI_TABLES);
++
++	if (ret)
++		return ret;
++
+ 	if (strlen(str) < sizeof(efivar_ssdt))
+ 		memcpy(efivar_ssdt, str, strlen(str));
+ 	else

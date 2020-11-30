@@ -1,0 +1,87 @@
+From b07a5c53d42a8c87b208614129e947dd2338ff9c Mon Sep 17 00:00:00 2001
+From: Paolo Bonzini <pbonzini@redhat.com>
+Date: Mon, 18 Nov 2019 12:23:01 -0500
+Subject: [PATCH] KVM: vmx: use MSR_IA32_TSX_CTRL to hard-disable TSX on guest
+ that lack it
+
+If X86_FEATURE_RTM is disabled, the guest should not be able to access
+MSR_IA32_TSX_CTRL.  We can therefore use it in KVM to force all
+transactions from the guest to abort.
+
+Tested-by: Jim Mattson <jmattson@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ arch/x86/kvm/vmx.c | 43 +++++++++++++++++++++++++++++--------------
+ 1 file changed, 29 insertions(+), 14 deletions(-)
+
+diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
+index 0954e6a6cddf..21e52b176f81 100644
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -1584,6 +1584,22 @@ static struct shared_msr_entry *find_msr_entry(struct vcpu_vmx *vmx, u32 msr)
+ 	return NULL;
+ }
+ 
++static int vmx_set_guest_msr(struct vcpu_vmx *vmx, struct shared_msr_entry *msr, u64 data)
++{
++	int ret = 0;
++
++	u64 old_msr_data = msr->data;
++	msr->data = data;
++	if (msr - vmx->guest_msrs < vmx->save_nmsrs) {
++		preempt_disable();
++		ret = kvm_set_shared_msr(msr->index, msr->data,
++		                         msr->mask);
++		preempt_enable();
++		if (ret)
++			msr->data = old_msr_data;
++	}
++	return ret;
++}
+ static void vmcs_clear(struct vmcs *vmcs)
+ {
+ 	u64 phys_addr = __pa(vmcs);
+@@ -3412,20 +3428,10 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
+ 	default:
+ 	find_shared_msr:
+ 		msr = find_msr_entry(vmx, msr_index);
+-		if (msr) {
+-			u64 old_msr_data = msr->data;
+-			msr->data = data;
+-			if (msr - vmx->guest_msrs < vmx->save_nmsrs) {
+-				preempt_disable();
+-				ret = kvm_set_shared_msr(msr->index, msr->data,
+-							 msr->mask);
+-				preempt_enable();
+-				if (ret)
+-					msr->data = old_msr_data;
+-			}
+-			break;
+-		}
+-		ret = kvm_set_msr_common(vcpu, msr_info);
++		if (msr)
++			ret = vmx_set_guest_msr(vmx, msr, data);
++		else
++			ret = kvm_set_msr_common(vcpu, msr_info);
+ 	}
+ 
+ 	return ret;
+@@ -9727,6 +9733,15 @@ static void vmx_cpuid_update(struct kvm_vcpu *vcpu)
+ 			vmx->nested.nested_vmx_secondary_ctls_high &=
+ 				~SECONDARY_EXEC_PCOMMIT;
+ 	}
++
++	if (boot_cpu_has(X86_FEATURE_RTM)) {
++		struct shared_msr_entry *msr;
++		msr = find_msr_entry(vmx, MSR_IA32_TSX_CTRL);
++		if (msr) {
++			bool enabled = guest_cpuid_has_rtm(vcpu);
++			vmx_set_guest_msr(vmx, msr, enabled ? 0 : TSX_CTRL_RTM_DISABLE);
++		}
++	}
+ }
+ 
+ static void vmx_set_supported_cpuid(u32 func, struct kvm_cpuid_entry2 *entry)
+-- 
+2.17.1
+

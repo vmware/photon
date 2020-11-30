@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.243
-Release:       2%{?dist}
+Version:       4.4.246
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:  Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d6ad75540bead9f97712fed66cdfdeb9e63ee970
+%define sha1 linux=68de1a6538415aad06bd5f51a91c6f0222f99ad1
 Source1:       config-esx
 Source2:       pre-preun-postun-tasks.inc
 
@@ -122,8 +122,9 @@ Patch83:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
 Patch84:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch85:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 
-#Fix for CVE-2020-25645
-Patch86:        0001-geneve-add-transport-ports-in-route-lookup-for-genev.patch
+#Fix for CVE-2019-19338
+Patch86:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
+Patch87:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -243,6 +244,7 @@ The Linux package contains the Linux kernel doc files
 %patch84 -p1
 %patch85 -p1
 %patch86 -p1
+%patch87 -p1
 
 %build
 # patch vmw_balloon driver
@@ -333,6 +335,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Sun Nov 29 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.246-1
+-   Update to version 4.4.246
+-   Fix CVE-2019-19338
 *   Wed Nov 18 2020 Vikash Bansal <bvikas@vmware.com> 4.4.243-2
 -   Mark BAR0 (at offset 0x10) for PCI device 15ad:07b0 (VMXNET3) as variable
 *   Wed Nov 11 2020 Keerthana K <keerthanak@vmware.com> 4.4.243-1

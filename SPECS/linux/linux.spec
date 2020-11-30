@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.243
+Version:    	4.4.246
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=d6ad75540bead9f97712fed66cdfdeb9e63ee970
+%define sha1 linux=68de1a6538415aad06bd5f51a91c6f0222f99ad1
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -123,8 +123,9 @@ Patch80:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
 Patch81:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch82:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 
-#Fix for CVE-2020-25645
-Patch83:        0001-geneve-add-transport-ports-in-route-lookup-for-genev.patch
+#Fix for CVE-2019-19338
+Patch83:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
+Patch84:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -274,6 +275,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch81 -p1
 %patch82 -p1
 %patch83 -p1
+%patch84 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -432,6 +434,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Sun Nov 29 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.246-1
+-   Update to version 4.4.246
+-   Fix CVE-2019-19338
 *   Wed Nov 11 2020 Keerthana K <keerthanak@vmware.com> 4.4.243-1
 -   Update to version 4.4.243
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 4.4.241-4
