@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -215,6 +215,16 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 %postun -p /sbin/ldconfig
 
+%posttrans iconv
+/usr/sbin/iconvconfig
+
+%postun iconv
+if [ -e /usr/lib64/gconv/gconv-modules.cache ]
+then
+    rm /usr/lib64/gconv/gconv-modules.cache
+fi
+
+
 %files
 %defattr(-,root,root)
 %{_libdir}/locale/*
@@ -295,6 +305,9 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Mon Nov 30 2020 Ajay Kaher <akaher@vmware.com> 2.32-2
+-   Added post for glibc-iconv, to have:
+-   fast-loading gconv module configuration cache file
 *   Mon Aug 24 2020 Keerthana K <keerthanak@vmware.com> 2.32-1
 -   Update to version 2.32
 *   Thu Mar 12 2020 Alexey Makhalov <amakhalov@vmware.com> 2.31-1
