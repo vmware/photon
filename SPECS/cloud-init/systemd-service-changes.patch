@@ -1,5 +1,5 @@
 diff --git a/systemd/cloud-init.service.tmpl b/systemd/cloud-init.service.tmpl
-index 9ad3574c..66b51ef1 100644
+index f140344d..53d53cb7 100644
 --- a/systemd/cloud-init.service.tmpl
 +++ b/systemd/cloud-init.service.tmpl
 @@ -1,7 +1,6 @@
@@ -10,7 +10,7 @@ index 9ad3574c..66b51ef1 100644
  Wants=cloud-init-local.service
  Wants=sshd-keygen.service
  Wants=sshd.service
-@@ -21,15 +20,9 @@ After=wicked.service
+@@ -21,17 +20,9 @@ After=wicked.service
  After=dbus.service
  {% endif %}
  Before=network-online.target
@@ -19,9 +19,11 @@ index 9ad3574c..66b51ef1 100644
  Before=sshd.service
 -{% if variant in ["ubuntu", "unknown", "debian"] %}
 -Before=sysinit.target
+-Before=shutdown.target
 -Conflicts=shutdown.target
 -{% endif %}
 -{% if variant in ["suse"] %}
+-Before=shutdown.target
 -Conflicts=shutdown.target
 -{% endif %}
  Before=systemd-user-sessions.service

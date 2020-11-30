@@ -1,8 +1,8 @@
 diff --git a/cloudinit/sources/DataSourceAzure.py b/cloudinit/sources/DataSourceAzure.py
-index f3c6452b..259aa300 100755
+index 04ff2131..aa29cee3 100755
 --- a/cloudinit/sources/DataSourceAzure.py
 +++ b/cloudinit/sources/DataSourceAzure.py
-@@ -43,7 +43,7 @@ LOG = logging.getLogger(__name__)
+@@ -48,7 +48,7 @@ LOG = logging.getLogger(__name__)
  
  DS_NAME = 'Azure'
  DEFAULT_METADATA = {"instance-id": "iid-AZURE-NODE"}
@@ -12,7 +12,7 @@ index f3c6452b..259aa300 100755
  BOUNCE_COMMAND_IFUP = [
      'sh', '-xc',
 diff --git a/cloudinit/sources/helpers/azure.py b/cloudinit/sources/helpers/azure.py
-index b968a96f..4eae04c7 100755
+index d3055d08..3546fd3f 100755
 --- a/cloudinit/sources/helpers/azure.py
 +++ b/cloudinit/sources/helpers/azure.py
 @@ -9,6 +9,7 @@ import struct
@@ -20,10 +20,10 @@ index b968a96f..4eae04c7 100755
  import textwrap
  import zlib
 +import configobj
+ from errno import ENOENT
  
  from cloudinit.settings import CFG_BUILTIN
- from cloudinit.net import dhcp
-@@ -25,6 +26,7 @@ from cloudinit import distros
+@@ -27,6 +28,7 @@ from cloudinit import distros
  from cloudinit.reporting import events
  from cloudinit.net.dhcp import EphemeralDHCPv4
  from datetime import datetime
@@ -31,7 +31,7 @@ index b968a96f..4eae04c7 100755
  
  LOG = logging.getLogger(__name__)
  
-@@ -36,6 +38,8 @@ BOOT_EVENT_TYPE = 'boot-telemetry'
+@@ -38,6 +40,8 @@ BOOT_EVENT_TYPE = 'boot-telemetry'
  SYSTEMINFO_EVENT_TYPE = 'system-info'
  DIAGNOSTIC_EVENT_TYPE = 'diagnostic'
  COMPRESSED_EVENT_TYPE = 'compressed'
@@ -40,7 +40,7 @@ index b968a96f..4eae04c7 100755
  # Maximum number of bytes of the cloud-init.log file that can be dumped to KVP
  # at once. This number is based on the analysis done on a large sample of
  # cloud-init.log files where the P95 of the file sizes was 537KB and the time
-@@ -653,6 +657,32 @@ class WALinuxAgentShim:
+@@ -781,6 +785,32 @@ class WALinuxAgentShim:
                  ) from e
          return dhcp_options
  
@@ -73,11 +73,11 @@ index b968a96f..4eae04c7 100755
      @staticmethod
      @azure_ds_telemetry_reporter
      def _get_value_from_dhcpoptions(dhcp_options):
-@@ -700,6 +730,7 @@ class WALinuxAgentShim:
-             LOG.debug('Finding Azure endpoint from hook json...')
+@@ -832,6 +862,7 @@ class WALinuxAgentShim:
+                 logger_func=LOG.debug)
              dhcp_options = WALinuxAgentShim._load_dhclient_json()
              value = WALinuxAgentShim._get_value_from_dhcpoptions(dhcp_options)
 +            LOG.debug('networkd value from lease %s', value)
          if value is None:
              # Fallback and check the leases file if unsuccessful
-             report_diagnostic_event("No Azure endpoint from dhclient logs")
+             report_diagnostic_event(

@@ -1,8 +1,8 @@
 %define python3_sitelib /usr/lib/python3.9/site-packages
 
 Name:           cloud-init
-Version:        20.3
-Release:        4%{?dist}
+Version:        20.4
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc
 Distribution:   Photon
 
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 cloud-init=f25d8f4e776948671c40d33840a92532fb0916ff
+%define sha1 cloud-init=e1c845ad00f2170555af21cdf3351402bf10b283
 Source1:        99-disable-networking-config.cfg
 Source2:        dscheck_VMwareGuestInfo
 
@@ -157,6 +157,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Thu Dec 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.4-1
+-   Upgrade to version 20.4
 *   Sun Nov 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.3-4
 -   Added support for network config v1 & v2
 *   Fri Nov 06 2020 Tapas Kundu <tkundu@vmware.com> 20.3-3
