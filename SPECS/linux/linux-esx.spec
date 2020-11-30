@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.154
-Release:        11%{?kat_build:.kat}%{?dist}
+Release:        12%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -757,6 +757,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Nov 30 2020 Vikash Bansal <bvikas@vmware.com> 4.19.154-12
+-   Mark BAR0 (at offset 0x10) for PCI device 15ad:07b0 (VMXNET3) as variable
 *   Fri Nov 20 2020 Ajay Kaher <akaher@vmware.com> 4.19.154-11
 -   floppy: lower printk message priority
 *   Thu Nov 19 2020 Vikash Bansal <bvikas@vmware.com> 4.19.154-10
