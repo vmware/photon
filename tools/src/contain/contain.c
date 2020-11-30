@@ -71,6 +71,7 @@ int main(int argc, char **argv) {
   switch (child = fork()) {
     case -1:
       error(1, errno, "fork");
+      break;
     case 0:
       raise(SIGSTOP);
       if (geteuid() != 0)
@@ -101,9 +102,17 @@ int main(int argc, char **argv) {
   kill(child, SIGCONT);
   waitforexit(child);
 
-  setgid(0);
-  setgroups(0, NULL);
-  setuid(0);
+  if (setgid(0)) {
+      error(1, errno, "setgid");
+  }
+
+  if (setgroups(0, NULL)) {
+      error(1, errno, "setgroups");
+  }
+
+  if (setuid(0)) {
+      error(1, errno, "setuid");
+  }
 
   master = stdio ? -1 : getconsole();
   createroot(argv[optind], master, inside, bind);
@@ -112,6 +121,7 @@ int main(int argc, char **argv) {
   switch (child = fork()) {
     case -1:
       error(1, errno, "fork");
+      break;
     case 0:
       mountproc();
       if (!hostnet)
