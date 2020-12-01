@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -24,6 +24,7 @@ Patch6:         CVE-2020-10029.patch
 Patch7:         CVE-2020-1752.patch
 Patch8:         CVE-2019-19126.patch
 Patch9:         Fix-rwlock-stall-with-PREFER_WRITER_NONRECURSIVE_NP.patch
+Patch10:        glibc-fix-CVE-2019-7309.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -87,6 +88,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -291,6 +293,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Tue Dec 01 2020 Keerthana K <keerthanak@vmware.com> 2.28-9
+-   Fix CVE-2019-7309
 *   Fri Aug 07 2020 Alexey Makhalov <amakhalov@vmware.com> 2.28-8
 -   Fix rwlock stall
 *   Thu Jun 04 2020 Keerthana K <keerthanak@vmware.com> 2.28-7
