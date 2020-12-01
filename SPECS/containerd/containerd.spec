@@ -2,7 +2,7 @@
 %define __os_install_post %{nil}
 Summary:        Containerd
 Name:           containerd
-Version:        1.3.7
+Version:        1.3.9
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
@@ -10,16 +10,14 @@ Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha1 containerd=f0f390538001267c8dd96ebca0b68af180ecd7d4
+%define sha1 containerd=887aa6c644ce80754e09791cc5795d205e5b4e28
 # Must be in sync with package version
-%define CONTAINERD_GITCOMMIT 8fba4e9a7d01810a393d5d25a3621dc101981175
+%define CONTAINERD_GITCOMMIT ea765aba0d05254012b0b9e595e995c09186427f
 
 Source1:        containerd.service
 Source2:        containerd-config.toml
 Source3:        disable-containerd-by-default.preset
 %define gopath_comp github.com/containerd/containerd
-
-Patch0:         containerd-1.3-Fix-CVE-2020-15257.patch
 
 BuildRequires:  btrfs-progs
 BuildRequires:  btrfs-progs-devel
@@ -55,9 +53,6 @@ Documentation for containerd.
 
 %prep
 %setup -q -c
-pushd %{name}-%{version}
-%patch0 -p1
-popd
 mkdir -p "$(dirname "src/%{gopath_comp}")"
 mv %{name}-%{version} src/%{gopath_comp}
 
@@ -114,6 +109,8 @@ make integration
 %{_mandir}/man8/*
 
 %changelog
+*   Mon Nov 30 2020 Bo Gan <ganb@vmware.com> 1.3.9-1
+-   Update to 1.3.9 for upstream fix of CVE-2020-15257
 *   Fri Nov 20 2020 Ankit Jain <ankitja@vmware.com> 1.3.7-1
 -   Update to 1.3.7 to fix CVE-2020-15257
 *   Fri Oct 16 2020 Ashwin H <ashwinh@vmware.com> 1.2.14-1
