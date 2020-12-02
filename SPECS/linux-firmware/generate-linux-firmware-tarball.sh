@@ -7,6 +7,7 @@ mkdir $DST
 
 git clone https://github.com/RPi-Distro/firmware-nonfree.git --depth=1
 git clone https://github.com/NXP/qoriq-engine-pfe-bin.git --depth=1
+git clone git://git.kernel.org/pub/scm/linux/kernel/git/sforshee/wireless-regdb.git --depth=1
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git --depth=1
 
 cp linux-firmware/WHENCE $DST/
@@ -58,5 +59,11 @@ mkdir $DST/bnx2x
 cp linux-firmware/bnx2x/bnx2x-e2-7.13.1.0.fw $DST/bnx2x/
 cp linux-firmware/ql2500_fw.bin $DST/
 cp linux-firmware/LICENCE.qla2xxx $DST/
+
+# rpi4 b requires:
+cp linux-firmware/brcm/brcmfmac43455-sdio.raspberrypi,4-model-b.txt $DST/brcm/
+cp wireless-regdb/regulatory.db $DST/
+cp wireless-regdb/regulatory.db.p7s $DST/
+cp wireless-regdb/LICENSE $DST/LICENSE.wireless-regdb
 
 tar -czvf $DST.tar.gz $DST

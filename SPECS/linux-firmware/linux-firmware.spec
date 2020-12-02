@@ -5,7 +5,7 @@
 
 Summary:	Linux Firmware
 Name:		linux-firmware
-Version:	20200115
+Version:	20201202
 Release:	1%{?dist}
 License:	GPL+ and GPLv2+ and MIT and Redistributable, no modification permitted
 URL:		http://www.kernel.org/
@@ -13,7 +13,7 @@ Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 linux=24f338030e4c250f62ff14a45c4a06f12435a733
+%define sha1 linux=5ad8f087725724d292cbdf606b19a8de112485e0
 BuildArch:	noarch
 
 %description
@@ -34,6 +34,9 @@ cp -r * %{buildroot}%{_firmwarepath}
 %{_firmwarepath}/*
 
 %changelog
+*   Wed Dec 02 2020 Ankit Jain <ankitja@vmware.com> 20201202-1
+-   Added NVRAM config file for the BCM43455 for rpi4b firmware
+-   Added regulatory db for rpi4b firmware
 *   Wed Jan 15 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 20200115-1
 -   Added ilo4 nic firmware
 *   Thu Oct 24 2019 Ajay Kaher <akaher@vmware.com> 20191030-1
