@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.160
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -678,7 +678,7 @@ EOF
 # Register myself to initramfs
 mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
 cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "tmem xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn lvm dm-mod megaraid_sas"
+--add-drivers "tmem xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn lvm dm-mod megaraid_sas nvme nvme-core"
 EOF
 
 #    Cleanup dangling symlinks
@@ -846,6 +846,10 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Tue Dec 08 2020 Ankit Jain <ankitja@vmware.com> 4.19.160-2
+-   Enable CONFIG_NET_VENDOR_AMAZON and CONFIG_ENA_ETHERNET
+-   to add support for ami in arm in linux generic
+-   Added nvme and nvme-core to initrd modules
 *   Wed Dec 02 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.160-1
 -   Update to version 4.19.160
 -   Fix CVE-2019-19338

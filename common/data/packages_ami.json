@@ -1,12 +1,13 @@
 {
     "packages":[
                 "minimal",
-                "linux-aws",
                 "initramfs",
                 "sudo",
                 "gawk",
                 "cloud-utils",
                 "gptfdisk",
                 "tar"
-                ]
+                ],
+    "packages_aarch64":["linux"],
+    "packages_x86_64":["linux-aws"]
 }
