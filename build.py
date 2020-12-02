@@ -305,7 +305,7 @@ class BuildEnvironmentSetup:
             raise Exception("Cannot run publish-rpms-cached")
 
     def publish_x_rpms_cached():
-        check_prerequesite["publish-x-rpms-cached"]=True
+        check_prerequesite["publish-x-rpms-cached"] = True
         if not os.path.isdir(constants.prevPublishXRPMRepo + "/" + constants.currentArch):
             os.makedirs(constants.prevPublishXRPMRepo + "/" + constants.currentArch)
         if not os.path.isdir(constants.prevPublishRPMRepo + "/noarch"):
@@ -319,7 +319,7 @@ class BuildEnvironmentSetup:
     def publish_x_rpms():
         if configdict['additional-path']['photon-publish-x-rpms-path'] is None:
             check_prerequesite["publish-x-rpms"]=True
-            print("\nPulling X toolchain RPMS...")
+            print("\nPulling X toolchain RPMS from packages.vmware.com ...")
             if subprocess.Popen(["cd " + Build_Config.pullPublishRPMSDir + " && " + Build_Config.pullPublishXRPMS \
                     + " " + constants.prevPublishXRPMRepo], shell=True).wait() != 0:
                 raise Exception("Cannot run publishx-rpms")
@@ -980,7 +980,7 @@ def main():
         configdict["photon-path"] = os.path.dirname(options.configPath)
 
     if 'INPUT_PHOTON_BUILD_NUMBER' in os.environ:
-        configdict["photon-build-param"]["input-photon-build-number"]=os.environ['IMPUT_PHOTON_BUILD_NUMBER']
+        configdict["photon-build-param"]["input-photon-build-number"] = os.environ['IMPUT_PHOTON_BUILD_NUMBER']
 
     if 'BASE_COMMIT' in os.environ:
         configdict["photon-build-param"]["base-commit"] = os.environ['BASE_COMMIT']
@@ -995,16 +995,16 @@ def main():
         configdict['pull-sources-config'] = os.environ['PHOTON_PULLSOURCES_CONFIG']
 
     if 'PHOTON_CACHE_PATH' in os.environ:
-        configdict.setdefault("additional-path", {}).setdefault("photon-cache-path", os.environ['PHOTON_CACHE_PATH'])
+        configdict['additional-path']['photon-cache-path'] =  os.environ['PHOTON_CACHE_PATH']
 
     if 'PHOTON_SOURCES_PATH' in os.environ:
-        configdict.setdefault('additional-path', {}).setdefault('photon-sources-path', os.environ["PHOTON_SOURCES_PATH"])
+        configdict['additional-path']['photon-sources-path'] =  os.environ['PHOTON_SOURCES_PATH']
 
     if 'PHOTON_PUBLISH_RPMS_PATH' in os.environ:
-        configdict.setdefault('additional-path', {}).setdefault('photon-publish-rpms-path', os.environ['PHOTON_PUBLISH_RPMS_PATH'])
+        configdict['additional-path']['photon-publish-rpms-path'] =  os.environ['PHOTON_PUBLISH_RPMS_PATH']
 
     if 'PHOTON_PUBLISH_XRPMS_PATH' in os.environ:
-        configdict.setdefault('additional-path', {}).setdefault('photon-publish-x-rpms-path', os.environ['PHOTON_PUBLISH_XRPMS_PATH'])
+        configdict['additional-path']['photon-publish-x-rpms-path'] =  os.environ['PHOTON_PUBLISH_XRPMS_PATH']
 
     if "PHOTON_PKG_BLACKLIST_FILE" in os.environ:
         configdict["additional-path"]["pkg-black-list-file"] = os.environ["PHOTON_PKG_BLACKLIST_FILE"]
