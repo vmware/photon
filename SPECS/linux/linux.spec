@@ -13,7 +13,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.9.0
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -547,7 +547,15 @@ EOF
 # Register myself to initramfs
 mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
 cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
+
+%ifarch x86_64
 --add-drivers "tmem xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn lvm dm-mod megaraid_sas"
+%endif
+
+%ifarch aarch64
+--add-drivers "tmem xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn lvm dm-mod megaraid_sas nvme nvme-core"
+%endif
+
 EOF
 
 #    Cleanup dangling symlinks
@@ -689,6 +697,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Dec 01 2020 Prashant S Chauhan <psinghchauha@vmware.com> 5.9.0-8
+-   Added ami for arm support in linux generic, added multiple drivers
+-   in aarch64 to support aws ami
 *   Thu Nov 12 2020 Ajay Kaher <akaher@vmware.com> 5.9.0-7
 -   .config: support for floppy disk and ch341 usb to serial
 *   Wed Nov 11 2020 Tapas Kundu <tkundu@vmware.com> 5.9.0-6

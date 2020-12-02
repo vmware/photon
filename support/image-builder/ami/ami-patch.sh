@@ -66,3 +66,14 @@ sed -i 's/$photon_cmdline/init=\/lib\/systemd\/systemd loglevel=3 ro console=tty
 
 # Remove kernel symbols
 rm -f /boot/System.map*
+
+arch="$(uname -m)"
+
+if [[ "$arch" == "aarch64" ]]; then
+kver="$(rpm -q --queryformat "%{VERSION}-%{RELEASE}" linux)"
+
+# Regenerate initramfs to reflect the new dracut config and also without the host-only flag
+# TODO: improve mkinitrd to simplify the command line
+
+dracut_args='-N --force' mkinitrd "/boot/initrd.img-$kver" "$kver"
+fi
