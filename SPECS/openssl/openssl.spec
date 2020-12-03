@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.1.1g
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -9,6 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.openssl.org/source/openssl-1.1.1g.tar.gz
 %define sha1    openssl=18012543aface209ea2579cb628a49e22ea4ec29
+Patch0:         01-DirectoryString-is-a-CHOICE-type-and-therefore-uses-explicit-tagging.patch
+Patch1:         02-Correctly-compare-EdiPartyName-in-GENERAL_NAME_cmp.patch
+Patch2:         03-Check-that-multi-strings-CHOICE-types-dont-use-implicit-tagging.patch
+Patch3:         04-Complain-if-we-are-attempting-to-encode-with-an-invalid-ASN.1-template.patch
+Patch4:         05-Add-a-test-for-GENERAL_NAME_cmp.patch
+Patch5:         06-Add-a-test-for-encoding-decoding-using-an-invalid-ASN.1-template.patch
 Source1:        rehash_ca_certificates.sh
 %if %{with_check}
 BuildRequires: zlib-devel
@@ -49,6 +55,12 @@ Perl scripts that convert certificates and keys to various formats.
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
 
 %build
 if [ %{_host} != %{_build} ]; then
@@ -122,6 +134,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Thu Dec 03 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1g-4
+-   Fix CVE-2020-1971
 *   Tue Oct 27 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1g-3
 -   move perl dependencies to perl sub-package
 *   Mon Sep 28 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1g-2
