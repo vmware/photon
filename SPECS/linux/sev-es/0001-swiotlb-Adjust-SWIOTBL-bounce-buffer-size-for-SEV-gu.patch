@@ -103,7 +103,7 @@ index 8d9f33f..1c66d7b 100644
 +unsigned long adjust_swiotlb_default_size(unsigned long default_size);
 +#else
 +static inline unsigned long adjust_swiotlb_default_size
-+		(unsigned long default_size);
++		(unsigned long default_size)
 +{
 +	return default_size;
 +}
