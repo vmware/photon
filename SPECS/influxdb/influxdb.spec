@@ -1,6 +1,6 @@
 Name:           influxdb
 Version:        1.6.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        InfluxDB is an open source time series database
 License:        MIT
 URL:            https://influxdata.com
@@ -84,6 +84,9 @@ Source38:       cpuid.tar.gz
 %define sha1    cpuid=e3fafb37e0d46282784c26bed14cde2f4979be86
 Source39:       yamux.tar.gz
 %define sha1    yamux=306f059060067e4c093e5ebf1e2dbd47bbc573d0
+
+Patch0: CVE-2019-20933.patch
+
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Applications/Database
@@ -138,6 +141,9 @@ It's useful for recording metrics, events, and performing analytics.
 %setup -D -c -T -a 37 -n build/src/go.uber.org/
 %setup -D -c -T -a 38 -n build/src/github.com/klauspost
 %setup -D -c -T -a 39 -n build/src/github.com/influxdata
+
+cd influxdb-%{version}
+%patch0 -p1
 
 %build
 cd ../../../
@@ -226,6 +232,8 @@ fi
 %exclude %{_bindir}/test_client
 
 %changelog
+*   Thu Dec 03 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.6.0-10
+-   Fix for CVE-2019-20933
 *   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.6.0-9
 -   Bump up version to compile with new go
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.6.0-8
