@@ -1,0 +1,55 @@
+From 761b557315ff9c1642cf3b0e5797cd3d983a24c0 Mon Sep 17 00:00:00 2001
+From: David Norton <dgnorton@gmail.com>
+Date: Tue, 2 Apr 2019 11:26:57 -0400
+Subject: [PATCH] fix(httpd): fail bearerauth if shared secret blank
+
+---
+ services/httpd/handler.go      |  5 +++++
+ services/httpd/handler_test.go | 18 ++++++++++++++++++
+ 2 files changed, 23 insertions(+)
+
+diff --git a/services/httpd/handler.go b/services/httpd/handler.go
+index e3a4508c460..8968a7586d9 100644
+--- a/services/httpd/handler.go
++++ b/services/httpd/handler.go
+@@ -1581,6 +1581,11 @@ func authenticate(inner func(http.ResponseWriter, *http.Request, meta.User), h *
+ 					return
+ 				}
+ 			case BearerAuthentication:
++				if h.Config.SharedSecret == "" {
++					atomic.AddInt64(&h.stats.AuthenticationFailures, 1)
++					h.httpError(w, "bearer auth disabled", http.StatusUnauthorized)
++					return
++				}
+ 				keyLookupFn := func(token *jwt.Token) (interface{}, error) {
+ 					// Check for expected signing method.
+ 					if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+diff --git a/services/httpd/handler_test.go b/services/httpd/handler_test.go
+index df408c0044e..16471e508a9 100644
+--- a/services/httpd/handler_test.go
++++ b/services/httpd/handler_test.go
+@@ -232,6 +232,24 @@ func TestHandler_Query_Auth(t *testing.T) {
+ 		t.Fatalf("unexpected body: %s", body)
+ 	}
+ 
++	// Test that auth fails if shared secret is blank.
++	origSecret := h.Config.SharedSecret
++	h.Config.SharedSecret = ""
++	token, _ = MustJWTToken("user1", h.Config.SharedSecret, false)
++	signedToken, err = token.SignedString([]byte(h.Config.SharedSecret))
++	if err != nil {
++		t.Fatal(err)
++	}
++	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", signedToken))
++	w = httptest.NewRecorder()
++	h.ServeHTTP(w, req)
++	if w.Code != http.StatusUnauthorized {
++		t.Fatalf("unexpected status: %d: %s", w.Code, w.Body.String())
++	} else if body := strings.TrimSpace(w.Body.String()); body != `{"error":"bearer auth disabled"}` {
++		t.Fatalf("unexpected body: %s", body)
++	}
++	h.Config.SharedSecret = origSecret
++
+ 	// Test the handler with valid user and password in the url and invalid in
+ 	// basic auth (prioritize url).
+ 	w = httptest.NewRecorder()
