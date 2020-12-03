@@ -104,3 +104,5 @@ noarch/man-pages-4.10-1.ph2.noarch.rpm
 aarch64/zstd-1.4.5-1.ph3.aarch64.rpm
 aarch64/zstd-libs-1.4.5-1.ph3.aarch64.rpm
 aarch64/zstd-devel-1.4.5-1.ph3.aarch64.rpm
+aarch64/libgcrypt-1.8.7-1.ph3.aarch64.rpm
+aarch64/libgpg-error-1.32-1.ph3.aarch64.rpm

@@ -1,0 +1,201 @@
+diff --git a/ChangeLog b/ChangeLog
+index d46caaa0d..41d6e99d9 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,8 @@
++2020-12-08  16:24  Christos Zoulas <christos@zoulas.com>
++
++	* fix multithreaded decompression file descriptor issue
++	  by using close-on-exec (Denys Vlasenko)
++
+ 2020-06-14  20:02  Christos Zoulas <christos@zoulas.com>
+
+	* release 5.39
+diff --git a/configure.ac b/configure.ac
+index 64c9f42e3..521dc12db 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -166,7 +166,7 @@ else
+ fi])
+
+ dnl Checks for functions
+-AC_CHECK_FUNCS(strndup mkstemp mkostemp utimes utime wcwidth strtof newlocale uselocale freelocale memmem)
++AC_CHECK_FUNCS(strndup mkstemp mkostemp utimes utime wcwidth strtof newlocale uselocale freelocale memmem pipe2)
+
+ dnl Provide implementation of some required functions if necessary
+ AC_REPLACE_FUNCS(getopt_long asprintf vasprintf strlcpy strlcat getline ctime_r asctime_r localtime_r gmtime_r pread strcasestr fmtcheck dprintf)
+diff --git a/src/compress.c b/src/compress.c
+index cbc2ce19b..9f65e4fa1 100644
+--- a/src/compress.c
++++ b/src/compress.c
+@@ -35,7 +35,7 @@
+ #include "file.h"
+
+ #ifndef lint
+-FILE_RCSID("@(#)$File: compress.c,v 1.127 2020/05/31 00:11:06 christos Exp $")
++FILE_RCSID("@(#)$File: compress.c,v 1.129 2020/12/08 21:26:00 christos Exp $")
+ #endif
+
+ #include "magic.h"
+@@ -844,8 +844,23 @@ uncompressbuf(int fd, size_t bytes_max, size_t method, const unsigned char *old,
+	for (i = 0; i < __arraycount(fdp); i++)
+		fdp[i][0] = fdp[i][1] = -1;
+
+-	if ((fd == -1 && pipe(fdp[STDIN_FILENO]) == -1) ||
+-	    pipe(fdp[STDOUT_FILENO]) == -1 || pipe(fdp[STDERR_FILENO]) == -1) {
++	/*
++	 * There are multithreaded users who run magic_file()
++	 * from dozens of threads. If two parallel magic_file() calls
++	 * analyze two large compressed files, both will spawn
++	 * an uncompressing child here, which writes out uncompressed data.
++	 * We read some portion, then close the pipe, then waitpid() the child.
++	 * If uncompressed data is larger, child shound get EPIPE and exit.
++	 * However, with *parallel* calls OTHER child may unintentionally
++	 * inherit pipe fds, thus keeping pipe open and making writes in
++	 * our child block instead of failing with EPIPE!
++	 * (For the bug to occur, two threads must mutually inherit their pipes,
++	 * and both must have large outputs. Thus it happens not that often).
++	 * To avoid this, be sure to create pipes with O_CLOEXEC.
++	 */
++	if ((fd == -1 && file_pipe_closexec(fdp[STDIN_FILENO]) == -1) ||
++	    file_pipe_closexec(fdp[STDOUT_FILENO]) == -1 ||
++	    file_pipe_closexec(fdp[STDERR_FILENO]) == -1) {
+		closep(fdp[STDIN_FILENO]);
+		closep(fdp[STDOUT_FILENO]);
+		return makeerror(newch, n, "Cannot create pipe, %s",
+@@ -876,16 +891,20 @@ uncompressbuf(int fd, size_t bytes_max, size_t method, const unsigned char *old,
+			if (fdp[STDIN_FILENO][1] > 2)
+				(void) close(fdp[STDIN_FILENO][1]);
+		}
++		file_clear_closexec(STDIN_FILENO);
++
+ ///FIXME: if one of the fdp[i][j] is 0 or 1, this can bomb spectacularly
+		if (copydesc(STDOUT_FILENO, fdp[STDOUT_FILENO][1]))
+			(void) close(fdp[STDOUT_FILENO][1]);
+		if (fdp[STDOUT_FILENO][0] > 2)
+			(void) close(fdp[STDOUT_FILENO][0]);
++		file_clear_closexec(STDOUT_FILENO);
+
+		if (copydesc(STDERR_FILENO, fdp[STDERR_FILENO][1]))
+			(void) close(fdp[STDERR_FILENO][1]);
+		if (fdp[STDERR_FILENO][0] > 2)
+			(void) close(fdp[STDERR_FILENO][0]);
++		file_clear_closexec(STDERR_FILENO);
+
+		(void)execvp(compr[method].argv[0],
+		    RCAST(char *const *, RCAST(intptr_t, compr[method].argv)));
+diff --git a/src/file.h b/src/file.h
+index f00e8010b..6c3900479 100644
+--- a/src/file.h
++++ b/src/file.h
+@@ -27,7 +27,7 @@
+  */
+ /*
+  * file.h - definitions for file(1) program
+- * @(#)$File: file.h,v 1.220 2020/06/08 17:38:27 christos Exp $
++ * @(#)$File: file.h,v 1.223 2020/12/08 21:26:00 christos Exp $
+  */
+
+ #ifndef __file_h__
+@@ -143,6 +143,14 @@
+ #define	MAX(a,b)	(((a) > (b)) ? (a) : (b))
+ #endif
+
++#ifndef O_CLOEXEC
++# define O_CLOEXEC 0
++#endif
++
++#ifndef FD_CLOEXEC
++# define FD_CLOEXEC 1
++#endif
++
+ #define FILE_BADSIZE CAST(size_t, ~0ul)
+ #define MAXDESC	64		/* max len of text description/MIME type */
+ #define MAXMIME	80		/* max len of text MIME type */
+@@ -540,6 +548,8 @@ protected char * file_printable(char *, size_t, const char *, size_t);
+ protected int file_os2_apptype(struct magic_set *, const char *, const void *,
+     size_t);
+ #endif /* __EMX__ */
++protected int file_pipe_closexec(int *);
++protected int file_clear_closexec(int);
+
+ protected void buffer_init(struct buffer *, int, const struct stat *,
+     const void *, size_t);
+diff --git a/src/funcs.c b/src/funcs.c
+index ecbfa28c5..bcf9ddaae 100644
+--- a/src/funcs.c
++++ b/src/funcs.c
+@@ -27,7 +27,7 @@
+ #include "file.h"
+
+ #ifndef	lint
+-FILE_RCSID("@(#)$File: funcs.c,v 1.115 2020/02/20 15:50:20 christos Exp $")
++FILE_RCSID("@(#)$File: funcs.c,v 1.118 2020/12/08 21:26:00 christos Exp $")
+ #endif	/* lint */
+
+ #include "magic.h"
+@@ -36,6 +36,9 @@ FILE_RCSID("@(#)$File: funcs.c,v 1.117 2020/06/25 16:52:48 christos Exp $")
+ #include <stdlib.h>
+ #include <string.h>
+ #include <ctype.h>
++#ifdef HAVE_UNISTD_H
++#include <unistd.h>	/* for pipe2() */
++#endif
+ #if defined(HAVE_WCHAR_H)
+ #include <wchar.h>
+ #endif
+@@ -784,3 +787,22 @@ file_print_guid(char *str, size_t len, const uint64_t *guid)
+	    g->data4[2], g->data4[3], g->data4[4], g->data4[5],
+	    g->data4[6], g->data4[7]);
+ }
++
++protected int
++file_pipe_closexec(int *fds)
++{
++#ifdef HAVE_PIPE2
++	return pipe2(fds, O_CLOEXEC);
++#else
++	if (pipe(fds) == -1)
++		return -1;
++	(void)fcntl(fds[0], F_SETFD, FD_CLOEXEC);
++	(void)fcntl(fds[1], F_SETFD, FD_CLOEXEC);
++	return 0;
++#endif
++}
++
++protected int
++file_clear_closexec(int fd) {
++	return fcntl(fd, F_SETFD, 0);
++}
+diff --git a/src/magic.c b/src/magic.c
+index 17a7077d8..89f4e16c0 100644
+--- a/src/magic.c
++++ b/src/magic.c
+@@ -33,7 +33,7 @@
+ #include "file.h"
+
+ #ifndef	lint
+-FILE_RCSID("@(#)$File: magic.c,v 1.112 2020/06/08 19:44:10 christos Exp $")
++FILE_RCSID("@(#)$File: magic.c,v 1.113 2020/12/08 21:26:00 christos Exp $")
+ #endif	/* lint */
+
+ #include "magic.h"
+@@ -436,7 +436,7 @@ file_or_fd(struct magic_set *ms, const char *inname, int fd)
+		_setmode(STDIN_FILENO, O_BINARY);
+ #endif
+	if (inname != NULL) {
+-		int flags = O_RDONLY|O_BINARY|O_NONBLOCK;
++		int flags = O_RDONLY|O_BINARY|O_NONBLOCK|O_CLOEXEC;
+		errno = 0;
+		if ((fd = open(inname, flags)) < 0) {
+			okstat = stat(inname, &sb) == 0;
+@@ -460,6 +460,9 @@ file_or_fd(struct magic_set *ms, const char *inname, int fd)
+			rv = 0;
+			goto done;
+		}
++#if O_CLOEXEC == 0
++		(void)fcntl(fd, F_SETFD, FD_CLOEXEC);
++#endif
+	}
+
+	if (fd != -1) {

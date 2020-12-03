@@ -1,10 +1,21 @@
-diff -Naur a/scripts/find-debuginfo.sh b/scripts/find-debuginfo.sh
---- a/scripts/find-debuginfo.sh	2017-04-19 15:48:24.650406279 -0700
-+++ b/scripts/find-debuginfo.sh	2017-04-19 15:49:16.090962375 -0700
-@@ -292,10 +292,10 @@
+From b5c8eb30d3fd9fd40416916b47d9c62eef7a3545 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Fri, 11 Dec 2020 15:54:57 +0530
+Subject: [PATCH] find debuginfo do not generate dir entries
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ scripts/find-debuginfo.sh | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/scripts/find-debuginfo.sh b/scripts/find-debuginfo.sh
+index e0c36ebb6..7c3c97628 100755
+--- a/scripts/find-debuginfo.sh
++++ b/scripts/find-debuginfo.sh
+@@ -585,10 +585,10 @@ if [ -s "$SOURCEFILE" ]; then
  fi
  
- if [ -d "${RPM_BUILD_ROOT}/usr/lib" -o -d "${RPM_BUILD_ROOT}/usr/src" ]; then
+ if [ -d "${RPM_BUILD_ROOT}/usr/lib" ] || [ -d "${RPM_BUILD_ROOT}/usr/src" ]; then
 -  ((nout > 0)) ||
 -  test ! -d "${RPM_BUILD_ROOT}/usr/lib" ||
 -  (cd "${RPM_BUILD_ROOT}/usr/lib"; find debug -type d) |
@@ -16,12 +27,15 @@ diff -Naur a/scripts/find-debuginfo.sh b/scripts/find-debuginfo.sh
  
    (cd "${RPM_BUILD_ROOT}/usr"
     test ! -d lib/debug || find lib/debug ! -type d
-@@ -467,7 +467,7 @@
+@@ -660,7 +660,7 @@ while ((i < nout)); do
    mv "${LISTFILE}.new" "$LISTFILE"
    ((++i))
  done
 -if ((nout > 0)); then
 +if ((0 && nout > 0)); then
-   # Now add the right %dir lines to each output list.
-   (cd "${RPM_BUILD_ROOT}"; find usr/lib/debug -type d) |
-   sed 's#^.*$#\\@^/&/@{h;s@^.*$@%dir /&@p;g;}#' |
+   # Generate %dir lines for each output list.
+   generate_percent_dir()
+   {
+-- 
+2.17.1
+

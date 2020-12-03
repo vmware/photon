@@ -1,6 +1,6 @@
 Name:           bpftrace
-Version:        0.11.1
-Release:        2%{?dist}
+Version:        0.11.4
+Release:        1%{?dist}
 Summary:        High-level tracing language for Linux eBPF
 License:        ASL 2.0
 Vendor:         VMware, Inc.
@@ -9,7 +9,7 @@ Group:          System Environment/Security
 
 URL:            https://github.com/iovisor/bpftrace
 Source0:        https://github.com/iovisor/bpftrace/archive/%{name}-%{version}.tar.gz
-%define sha1    bpftrace=6bb8d682de04ffd47d565eb2542bc7c7d7b5da84
+%define sha1    bpftrace=50437f7c3ca09c0868daffed2a6cd083be8a05d4
 
 BuildRequires:  bison
 BuildRequires:  flex
@@ -69,6 +69,7 @@ find %{buildroot}%{_datadir}/%{name}/tools -type f -exec \
 %{_datadir}/%{name}/tools/doc/*.txt
 
 %changelog
+* Mon Feb 08 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.11.4-1
 * Sat Oct 17 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.11.1-2
 - Fix aarch64 build errors
 * Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 0.11.1-1

@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.30.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
@@ -22,6 +22,8 @@ Requires:       perl-DBI
 Requires:       perl-CGI
 Requires:       subversion-perl
 Requires:       python3
+
+%include %{_rpmconfigdir}/macros.perl
 
 %description
 Git is a free and open source, distributed version control system
@@ -92,6 +94,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Mon Feb 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.30.0-2
+-   Fix build with new rpm
 *   Sat Jan 23 2021 Susant Sahani <ssahani@vmware.com> 2.30.0-1
 -   Update version
 *   Tue Sep 01 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.28.0-2

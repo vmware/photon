@@ -1,14 +1,14 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
-Version:        10.0.1
-Release:        3%{?dist}
+Version:        11.0.1
+Release:        1%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
-%define sha1    llvm=25d07260f3b7bf4f647e115c4a663fdeda130fbd
+%define sha1    llvm=1a911295260d4e41116b72788eb602702b4bb252
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
 BuildRequires:  libffi-devel
@@ -90,7 +90,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
-*   Tue Sep 22 2020 Harinadh D <hdommaraju@vmware.com> 10.0.1-3
+*   Thu Feb 04 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.0.1-1
+-   Upgrade to v11.0.1
+*   Tue Sep 22 2020 Harinadh D <hdommaraju@vmware.com> 10.0.1-1
 -   add libLLVM.so to libllvm
 *   Thu Sep 10 2020 Susant Sahani Sahani <ssahani@vmware.com> 10.0.1-2
 -   Enable LLVM_ENABLE_RTTI

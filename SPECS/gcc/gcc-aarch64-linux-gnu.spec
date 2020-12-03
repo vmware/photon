@@ -8,7 +8,7 @@
 Name:    gcc-aarch64-linux-gnu
 Summary: Cross GCC for Aarch64
 Version: 7.3.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group:   Development/Tools
 Vendor:  VMware, Inc.
 Distribution: Photon
@@ -64,6 +64,8 @@ ln -sf `ls -1d ../mpc-*/` mpc
 sed -i '/^NO_PIE_CFLAGS = /s/@NO_PIE_CFLAGS@//' gcc/Makefile.in
 
 %build
+
+%install
 
 # Create usrmove symlinks
 mkdir -p %{sysroot}/usr/lib && ln -s usr/lib %{sysroot}/lib
@@ -180,9 +182,6 @@ cd $builddir/build-gcc-%{target_arch} && \
 make %{?_smp_mflags} all && \
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
-
-%install
-
 CROSS_TOOLCHAIN_PKG_CONFIG=%{buildroot}%{_bindir}/%{target_arch}-pkg-config
 
 cat > $CROSS_TOOLCHAIN_PKG_CONFIG << EOF
@@ -213,6 +212,8 @@ chmod +x $CROSS_TOOLCHAIN_PKG_CONFIG
 %{_prefix}/%{target_arch}/*
 
 %changelog
+* Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 7.3.0-2
+- Fix build with new rpm
 * Fri Nov 02 2018 Alexey Makhalov <amakhalov@vmware.com> 7.3.0-1
 - Cloned from cross-aarch64-tools.spec
 * Thu Nov 1 2018 Sriram Nambakam <snambakam@vmware.com> 1.0.0-3

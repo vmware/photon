@@ -1,7 +1,7 @@
 Summary:        Contains a utility for determining file types
 Name:           file
 Version:        5.39
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            http://www.darwinsys.com/file
 Group:          Applications/File
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.astron.com/pub/file/%{name}-%{version}.tar.gz
 %define sha1    file=a5a8941a8e4c436fe22933db6a71c5161c3fb10b
+Patch0:         file-5.39-CLOEXEC.patch
 Requires:       %{name}-libs = %{version}-%{release}
 Conflicts:      toybox < 0.8.2-2
 %description
@@ -27,11 +28,13 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications.
 
 %prep
-%setup -q
+%autosetup -p1
+
 %build
-%configure \
-    --disable-silent-rules
+autoreconf -fi
+%configure --disable-silent-rules
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot}%{_libdir} -name '*.la' -delete
@@ -60,6 +63,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/libmagic.pc
 
 %changelog
+*   Thu Feb 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.39-2
+-   Fix close_on_exec multithreaded decompression issue
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 5.39-1
 -   Automatic Version Bump
 *   Tue Jul 07 2020 Gerrit Photon <photon-checkins@vmware.com> 5.38-1

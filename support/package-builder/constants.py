@@ -219,6 +219,8 @@ class constants(object):
         "zstd-devel",
         "lua",
         "lua-devel",
+        "libgcrypt",
+        "libgpg-error",
         "rpm",
         "rpm-build",
         "rpm-devel",

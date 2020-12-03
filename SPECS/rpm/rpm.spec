@@ -2,18 +2,22 @@
 
 Summary:        Package manager
 Name:           rpm
-Version:        4.14.2
-Release:        11%{?dist}
+Version:        4.16.1.2
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
-%define sha1    rpm=8cd4fb1df88c3c73ac506f8ac92be8c39fa610eb
+%define sha1    rpm=0775036a64ca03cbea6403c9e9bf98ad547a1219
 Source1:        macros
 Source2:        brp-strip-debug-symbols
 Source3:        brp-strip-unneeded
+Source4:        macros.ldconfig
+Source5:        macros.perl
+Source6:        macros.vpath
+Source7:        macros.php
 Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
 Requires:       bash
 Requires:       libdb
@@ -21,6 +25,8 @@ Requires:       rpm-libs = %{version}-%{release}
 Requires:       libarchive
 Requires:       lua
 Requires:       openssl >= 1.1.1
+Requires:       libgcrypt
+BuildRequires:  libgcrypt-devel
 BuildRequires:  lua-devel
 BuildRequires:  libarchive-devel
 BuildRequires:  libdb-devel
@@ -122,9 +128,13 @@ find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
 # System macros and prefix
 install -dm 755 %{buildroot}%{_sysconfdir}/rpm
-install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm/
-install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm/
-install -vm755 %{SOURCE3} %{buildroot}%{_libdir}/rpm/
+install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm
+install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm
+install -vm755 %{SOURCE3} %{buildroot}%{_libdir}/rpm
+install -vm644 %{SOURCE4} %{buildroot}%{_libdir}/rpm
+install -vm644 %{SOURCE5} %{buildroot}%{_libdir}/rpm
+install -vm644 %{SOURCE6} %{buildroot}%{_libdir}/rpm
+install -vm644 %{SOURCE7} %{buildroot}%{_libdir}/rpm
 
 pushd python
 python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
@@ -157,15 +167,18 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/tgpg
 %{_libdir}/rpm/platform
 %{_libdir}/rpm-plugins/*
-%{_libdir}/rpm/python-macro-helper
 %{_libdir}/rpm/pythondistdeps.py
-%{_mandir}/man8/rpm.8.gz
 %{_mandir}/man8/rpm2cpio.8.gz
 %{_mandir}/man8/rpmdb.8.gz
 %{_mandir}/man8/rpmgraph.8.gz
 %{_mandir}/man8/rpmkeys.8.gz
 %{_mandir}/man8/rpm-misc.8.gz
-%{_mandir}/man8/rpm-plugin-systemd-inhibit.8.gz
+%{_mandir}/man8/rpm-plugin-ima.8.gz
+%{_mandir}/man8/rpm-plugin-prioreset.8.gz
+%{_mandir}/man8/rpm-plugin-syslog.8.gz
+%{_mandir}/man8/rpm-plugins.8.gz
+%{_mandir}/man8/rpm.8.gz
+%{_mandir}/man8/rpm2archive.8.gz
 %exclude %{_mandir}/fr/man8/*.gz
 %exclude %{_mandir}/ja/man8/*.gz
 %exclude %{_mandir}/ko/man8/*.gz
@@ -181,7 +194,6 @@ rm -rf %{buildroot}
 %{_libdir}/librpm.so.*
 %{_libdir}/rpm/macros
 %{_libdir}/rpm/rpmrc
-%{_libdir}/rpm/platform/*
 
 %files build
 %{_bindir}/rpmbuild
@@ -196,10 +208,6 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/find-provides
 %{_libdir}/rpm/find-requires
 %{_libdir}/rpm/brp-*
-%{_libdir}/rpm/mono-find-provides
-%{_libdir}/rpm/mono-find-requires
-%{_libdir}/rpm/ocaml-find-provides.sh
-%{_libdir}/rpm/ocaml-find-requires.sh
 %{_libdir}/rpm/fileattrs/*
 %{_libdir}/rpm/script.req
 %{_libdir}/rpm/check-buildroot
@@ -207,18 +215,15 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/check-prereqs
 %{_libdir}/rpm/check-rpaths
 %{_libdir}/rpm/check-rpaths-worker
-%{_libdir}/rpm/config.guess
-%{_libdir}/rpm/config.sub
 %{_libdir}/rpm/debugedit
 %{_libdir}/rpm/elfdeps
 %{_libdir}/rpm/libtooldeps.sh
 %{_libdir}/rpm/mkinstalldirs
 %{_libdir}/rpm/pkgconfigdeps.sh
+%{_libdir}/rpm/ocamldeps.sh
 %{_libdir}/rpm/*.prov
 %{_libdir}/rpm/sepdebugcrcfix
 
-
-%{_libdir}/rpm/pythondeps.sh
 %{_libdir}/rpm/rpmdeps
 
 %{_mandir}/man1/gendiff.1*
@@ -244,6 +249,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Feb 04 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.2-1
+-   Version upgrade to 4.16.1.2
 *   Tue Oct 13 2020 Anisha Kumari <kanisha@vmware.com> 4.14.2-11
 -   Add build conditional and enable zstd support
 *   Tue Sep 08 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.14.2-10

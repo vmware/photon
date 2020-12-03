@@ -1,17 +1,20 @@
 Summary:	cpio archive utility
 Name:		cpio
 Version:	2.13
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
-URL:		http://www.gnu.org/software/cpio/
-Group:		System Environment/System utilities
-Vendor:		VMware, Inc.
-Distribution: 	Photon
-Source0:	http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
+URL:        http://www.gnu.org/software/cpio/
+Group:      System Environment/System utilities
+Vendor:     VMware, Inc.
+Distribution:   Photon
+Source0:        http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
 %define sha1 cpio=4dcefc0e1bc36b11506a354768d82b15e3fe6bb8
 Conflicts:      toybox < 0.8.2-2
-Patch0:		newca-new-archive-format.patch
+Patch0:         newca-new-archive-format.patch
 Patch1:         cpio-2.12-gcc-10.patch
+BuildRequires:  lua
+Requires:       lua
+
 %description
 The cpio package contains tools for archiving.
 
@@ -56,6 +59,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Mon Feb 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.13-3
+- Fix build with new rpm
 * Tue Jan 12 2021 Alexey Makhalov <amakhalov@vmware.com> 2.13-2
 - GCC-10 support
 * Thu May 28 2020 Alexey Makhalov <amakhalov@vmware.com> 2.13-1

@@ -5,7 +5,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -245,6 +245,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
 
 %changelog
+*   Wed Feb 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.0.0-4
+-   bump version as a part of rpm upgrade
 *   Fri Jan 20 2021 Oliver Kurth <okurth@vmware.com> 3.0.0-3
 -   update to v3.0.0-rc2
 *   Thu Oct 29 2020 Keerthana K <keerthanak@vmware.com> 3.0.0-2
