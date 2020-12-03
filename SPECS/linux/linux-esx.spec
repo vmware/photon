@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.9.0
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -46,7 +46,7 @@ Patch50:        init-do_mounts-recreate-dev-root.patch
 Patch51:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 Patch52:        01-clear-linux.patch
 Patch53:        02-pci-probe.patch
-Patch54:        03-poweroff.patch
+Patch54:        poweroff-without-firmware.patch
 Patch55:        04-quiet-boot.patch
 Patch56:        05-pv-ops-clocksource.patch
 # TODO: make it working for v5.9+
@@ -56,6 +56,7 @@ Patch59:        initramfs-support-for-page-aligned-format-newca.patch
 Patch60:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
 Patch61:        0001-fs-VTAR-archive-to-TPMFS-extractor.patch
 Patch62:        0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
+Patch63:        halt-on-panic.patch
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -234,6 +235,7 @@ The Linux package contains the Linux kernel doc files
 %patch60 -p1
 %patch61 -p1
 %patch62 -p1
+%patch63 -p1
 
 # CVE
 %patch100 -p1
@@ -427,6 +429,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Dec 03 2020 Alexey Makhalov <amakhalov@vmware.com> 5.9.0-8
+-   halt_on_panic kernel cmdline.
+-   Improve no ACPI poweroff patch to support direct boot.
+-   .config: enable CONFIG_POWER_RESET_PIIX4_POWEROFF.
 *   Wed Nov 18 2020 Vikash Bansal <bvikas@vmware.com> 5.9.0-7
 -   Mark BAR0 (at offset 0x10) for PCI device 15ad:07b0 (VMXNET3) as variable
 *   Thu Nov 12 2020 Ajay Kaher <akaher@vmware.com> 5.9.0-6
