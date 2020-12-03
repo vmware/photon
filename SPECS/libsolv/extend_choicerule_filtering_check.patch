@@ -1,0 +1,188 @@
+From 958c8396ade46920b87f29f1f75456d97cc63812 Mon Sep 17 00:00:00 2001
+From: Michael Schroeder <mls@suse.de>
+Date: Fri, 13 Nov 2020 15:58:51 +0100
+Subject: [PATCH] Further extend choicerule filtering check
+
+Also add testcases. Fixes issue #406.
+
+This is getting quite complicated...
+---
+
+From 894382f0c4ddf6d34b264544c3523a9094ec2a09 Mon Sep 17 00:00:00 2001
+From: Michael Schroeder <mls@suse.de>
+Date: Tue, 6 Oct 2020 13:29:12 +0200
+Subject: [PATCH] Only do extra choicerule checking for newest packages
+
+For old versions we prefer the choicerule so that we do
+not switch to different providers instead of updating
+the package.
+---
+Regenerated both patches for 0.6.35 libsolv release.
+Signed-off-by: Tapas Kundu <tkundu@vmware.com>
+
+--- a/src/rules.c_org	2020-11-16 12:31:55.798893485 +0530
++++ b/src/rules.c	2020-11-16 12:40:15.297632104 +0530
+@@ -2928,6 +2928,78 @@ solver_choicerulecheck(Solver *solv, Id
+   return 1;	/* none of the new packages provided it */
+ }
+ 
++static int
++solver_choicerulecheck2(Solver *solv, Id pi, Id pt, Queue *q)
++{
++  Pool *pool = solv->pool;
++  Rule *ur;
++  Id p, pp;
++  int i;
++
++  if (!q->count || q->elements[0] != pi)
++    {
++      if (q->count)
++        queue_empty(q);
++      ur = solv->rules + solv->updaterules + (pi - pool->installed->start);
++      if (!ur->p)
++        ur = solv->rules + solv->featurerules + (pi - pool->installed->start);
++      if (!ur->p)
++	return 0;
++      queue_push2(q, pi, 0);
++      FOR_RULELITERALS(p, pp, ur)
++	if (p > 0 && p != pi)
++	  queue_push(q, p);
++      queue_push(q, pi);
++    }
++  if (q->count <= 3)
++    return q->count == 3 && q->elements[2] == pt ? 1 : 0;
++  if (!q->elements[1])
++    {
++      queue_deleten(q, 0, 2);
++      policy_filter_unwanted(solv, q, POLICY_MODE_CHOOSE);
++      queue_unshift(q, 1);	/* filter mark */
++      queue_unshift(q, pi);
++    }
++  for (i = 2; i < q->count; i++)
++    if (q->elements[i] == pt)
++      return 1;
++  return 0;	/* not newest */
++}
++
++static int
++solver_choicerulecheck3(Solver *solv, Id pt, Queue *q)
++{
++  Pool *pool = solv->pool;
++  Id p, pp;
++  int i;
++
++  if (!q->count || q->elements[0] != pt)
++    {
++      Solvable *s = pool->solvables + pt;
++      if (q->count)
++        queue_empty(q);
++      /* no installed package, so check all with same name */
++      queue_push2(q, pt, 0);
++      FOR_PROVIDES(p, pp, s->name)
++        if (pool->solvables[p].name == s->name && p != pt)
++          queue_push(q, p);
++      queue_push(q, pt);
++    }
++  if (q->count <= 3)
++    return q->count == 3 && q->elements[2] == pt ? 1 : 0;
++  if (!q->elements[1])
++    {
++      queue_deleten(q, 0, 2);
++      policy_filter_unwanted(solv, q, POLICY_MODE_CHOOSE);
++      queue_unshift(q, 1);	/* filter mark */
++      queue_unshift(q, pt);
++    }
++  for (i = 2; i < q->count; i++)
++    if (q->elements[i] == pt)
++      return 1;
++  return 0;	/* not newest */
++}
++
+ static inline void
+ queue_removeelement(Queue *q, Id el)
+ {
+@@ -2950,7 +3022,7 @@ solver_addchoicerules(Solver *solv)
+   Pool *pool = solv->pool;
+   Map m, mneg;
+   Rule *r;
+-  Queue q, qi, qcheck;
++  Queue q, qi, qcheck, qcheck2;
+   int i, j, rid, havechoice;
+   Id p, d, pp;
+   Id p2, pp2;
+@@ -2958,6 +3030,7 @@ solver_addchoicerules(Solver *solv)
+   Id lastaddedp, lastaddedd;
+   int lastaddedcnt;
+   unsigned int now;
++  int isnewest = 0;
+ 
+   solv->choicerules = solv->nrules;
+   if (!pool->installed)
+@@ -2970,6 +3043,7 @@ solver_addchoicerules(Solver *solv)
+   queue_init(&q);
+   queue_init(&qi);
+   queue_init(&qcheck);
++  queue_init(&qcheck2);
+   map_init(&m, pool->nsolvables);
+   map_init(&mneg, pool->nsolvables);
+   /* set up negative assertion map from infarch and dup rules */
+@@ -3000,6 +3074,7 @@ solver_addchoicerules(Solver *solv)
+ 	    continue;
+ 	  if (s->repo == pool->installed)
+ 	    {
++              queue_push2(&qi, p, p);
+ 	      queue_push(&q, p);
+ 	      continue;
+ 	    }
+@@ -3074,6 +3149,10 @@ solver_addchoicerules(Solver *solv)
+ 	  /* package p is independent of the installed ones */
+ 	  havechoice = 1;
+ 	}
++#if 0
++      printf("havechoice: %d qcount %d qicount %d\n", havechoice, q.count, qi.count);
++#endif
++
+       if (!havechoice || !q.count || !qi.count)
+ 	continue;	/* no choice */
+ 
+@@ -3081,13 +3160,31 @@ solver_addchoicerules(Solver *solv)
+         if (p > 0)
+ 	  MAPSET(&m, p);
+ 
++      isnewest = 1;
++      FOR_RULELITERALS(p, pp, r)
++      {
++	  if (p > 0)
++	    break;
++	  p2 = choicerule_find_installed(pool, -p);
++	  if (p2 && !solver_choicerulecheck2(solv, p2, -p, &qcheck2))
++	    {
++	      isnewest = 0;
++	      break;
++	    }
++          if (!p2 && !solver_choicerulecheck3(solv, -p, &qcheck2))
++	    {
++	      isnewest = 0;
++	      break;
++	    }
++      }
++
+       /* do extra checking */
+       for (i = j = 0; i < qi.count; i += 2)
+ 	{
+ 	  p2 = qi.elements[i];
+ 	  if (!p2)
+ 	    continue;
+-	  if (solver_choicerulecheck(solv, p2, r, &m, &qcheck))
++	  if (isnewest && solver_choicerulecheck(solv, p2, r, &m, &qcheck))
+ 	    {
+ 	      /* oops, remove element p from q */
+ 	      queue_removeelement(&q, qi.elements[i + 1]);
+@@ -3169,6 +3266,7 @@ solver_addchoicerules(Solver *solv)
+   queue_free(&q);
+   queue_free(&qi);
+   queue_free(&qcheck);
++  queue_free(&qcheck2);
+   map_free(&m);
+   map_free(&mneg);
+   solv->choicerules_end = solv->nrules;

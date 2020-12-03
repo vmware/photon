@@ -1,7 +1,7 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.6.35
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
@@ -13,6 +13,8 @@ Patch2:         CVE-2019-20387.patch
 Patch3:         libsolv-Add-support-for-modular.patch
 Patch4:         libsolv-Add-selection_make-support.patch
 Patch5:         CVE-2018-20532-20533-20534.patch
+Patch6:         extend_choicerule_filtering_check.patch
+Patch7:         Refactor_solver_addchoicerules_function.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -44,6 +46,9 @@ for developing applications that use libsolv.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
+%patch7 -p1
+
 %build
 cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
@@ -76,6 +81,9 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Dec 03 2020 Tapas Kundu <tkundu@vmware.com> 0.6.35-6
+-   Further extend choicerule filtering check
+-   Refactor solver addchoicerules function
 *   Thu Oct 29 2020 Keerthana K <keerthanak@vmware.com> 0.6.35-5
 -   Fix CVE-2018-20532 CVE-2018-20533 CVE-2018-20534
 *   Fri Aug 14 2020 Ankit Jain <ankitja@vmware.com> 0.6.35-4
