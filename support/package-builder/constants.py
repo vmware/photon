@@ -1,4 +1,5 @@
 from Logger import Logger
+import platform
 
 class constants(object):
     specPath = ""
@@ -27,6 +28,7 @@ class constants(object):
     katBuild = False
     testForceRPMS = []
     tmpDirPath = "/dev/shm"
+    buildArch = platform.machine()
     buildOptions = {}
     # will be extended later from listMakeCheckRPMPkgtoInstall
     listMakeCheckRPMPkgWithVersionstoInstall = None
