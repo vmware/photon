@@ -1,0 +1,116 @@
+From 709c6b15ea437b2d3fa5241ab39ce7bb779caae4 Mon Sep 17 00:00:00 2001
+From: Matt Caswell <matt@openssl.org>
+Date: Mon, 30 Nov 2020 14:46:47 +0000
+Subject: [PATCH] Add a test for encoding/decoding using an invalid ASN.1
+ Template
+
+If you have a CHOICE type that it must use explicit tagging - otherwise
+the template is invalid. We add tests for this.
+---
+ test/asn1_decode_test.c | 36 ++++++++++++++++++++++++++++++++++++
+ test/asn1_encode_test.c | 33 +++++++++++++++++++++++++++++++++
+ 2 files changed, 69 insertions(+)
+
+diff --git a/test/asn1_decode_test.c b/test/asn1_decode_test.c
+index 369023d5f1..94a22c6682 100644
+--- a/test/asn1_decode_test.c
++++ b/test/asn1_decode_test.c
+@@ -160,6 +160,41 @@ static int test_uint64(void)
+     return 1;
+ }
+ 
++typedef struct {
++    ASN1_STRING *invalidDirString;
++} INVALIDTEMPLATE;
++
++ASN1_SEQUENCE(INVALIDTEMPLATE) = {
++    /*
++     * DirectoryString is a CHOICE type so it must use explicit tagging -
++     * but we deliberately use implicit here, which makes this template invalid.
++     */
++    ASN1_IMP(INVALIDTEMPLATE, invalidDirString, DIRECTORYSTRING, 12)
++} static_ASN1_SEQUENCE_END(INVALIDTEMPLATE)
++
++IMPLEMENT_STATIC_ASN1_ENCODE_FUNCTIONS(INVALIDTEMPLATE)
++IMPLEMENT_STATIC_ASN1_ALLOC_FUNCTIONS(INVALIDTEMPLATE)
++
++/* Empty sequence for invalid template test */
++static unsigned char t_invalid_template[] = {
++    0x30, 0x03,                  /* SEQUENCE tag + length */
++    0x0c, 0x01, 0x41             /* UTF8String, length 1, "A" */
++};
++
++static int test_invalid_template(void)
++{
++    const unsigned char *p = t_invalid_template;
++    INVALIDTEMPLATE *tmp = d2i_INVALIDTEMPLATE(NULL, &p,
++                                               sizeof(t_invalid_template));
++
++    /* We expect a NULL pointer return */
++    if (TEST_ptr_null(tmp))
++        return 1;
++
++    INVALIDTEMPLATE_free(tmp);
++    return 0;
++}
++
+ int setup_tests(void)
+ {
+ #if OPENSSL_API_COMPAT < 0x10200000L
+@@ -169,5 +204,6 @@ int setup_tests(void)
+     ADD_TEST(test_uint32);
+     ADD_TEST(test_int64);
+     ADD_TEST(test_uint64);
++    ADD_TEST(test_invalid_template);
+     return 1;
+ }
+diff --git a/test/asn1_encode_test.c b/test/asn1_encode_test.c
+index ed920a4d66..afbd18be6f 100644
+--- a/test/asn1_encode_test.c
++++ b/test/asn1_encode_test.c
+@@ -856,6 +856,38 @@ static int test_uint64(void)
+     return test_intern(&uint64_test_package);
+ }
+ 
++typedef struct {
++    ASN1_STRING *invalidDirString;
++} INVALIDTEMPLATE;
++
++ASN1_SEQUENCE(INVALIDTEMPLATE) = {
++    /*
++     * DirectoryString is a CHOICE type so it must use explicit tagging -
++     * but we deliberately use implicit here, which makes this template invalid.
++     */
++    ASN1_IMP(INVALIDTEMPLATE, invalidDirString, DIRECTORYSTRING, 12)
++} static_ASN1_SEQUENCE_END(INVALIDTEMPLATE)
++
++IMPLEMENT_STATIC_ASN1_ENCODE_FUNCTIONS(INVALIDTEMPLATE)
++IMPLEMENT_STATIC_ASN1_ALLOC_FUNCTIONS(INVALIDTEMPLATE)
++
++static int test_invalid_template(void)
++{
++    INVALIDTEMPLATE *temp = INVALIDTEMPLATE_new();
++    int ret;
++
++    if (!TEST_ptr(temp))
++        return 0;
++
++    ret = i2d_INVALIDTEMPLATE(temp, NULL);
++
++    INVALIDTEMPLATE_free(temp);
++
++    /* We expect the i2d operation to fail */
++    return ret < 0;
++}
++
++
+ int setup_tests(void)
+ {
+ #if OPENSSL_API_COMPAT < 0x10200000L
+@@ -866,5 +898,6 @@ int setup_tests(void)
+     ADD_TEST(test_uint32);
+     ADD_TEST(test_int64);
+     ADD_TEST(test_uint64);
++    ADD_TEST(test_invalid_template);
+     return 1;
+ }

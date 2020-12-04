@@ -1,0 +1,98 @@
+From c521851116486d0cb351c46506d309dce0ae4c56 Mon Sep 17 00:00:00 2001
+From: Matt Caswell <matt@openssl.org>
+Date: Thu, 12 Nov 2020 11:58:12 +0000
+Subject: [PATCH] Check that multi-strings/CHOICE types don't use implicit
+ tagging
+
+It never makes sense for multi-string or CHOICE types to use implicit
+tagging since the content would be ambiguous. It is an error in the
+template if this ever happens. If we detect it we should stop parsing.
+
+Thanks to David Benjamin from Google for reporting this issue.
+---
+ crypto/asn1/asn1_err.c    |  1 +
+ crypto/asn1/tasn_dec.c    | 19 +++++++++++++++++++
+ crypto/err/openssl.txt    |  1 +
+ include/openssl/asn1err.h |  1 +
+ 4 files changed, 22 insertions(+)
+
+diff --git a/crypto/asn1/asn1_err.c b/crypto/asn1/asn1_err.c
+index 613f9ae713..99a087dcd2 100644
+--- a/crypto/asn1/asn1_err.c
++++ b/crypto/asn1/asn1_err.c
+@@ -160,6 +160,7 @@ static const ERR_STRING_DATA ASN1_str_reasons[] = {
+     "asn1 sig parse error"},
+     {ERR_PACK(ERR_LIB_ASN1, 0, ASN1_R_AUX_ERROR), "aux error"},
+     {ERR_PACK(ERR_LIB_ASN1, 0, ASN1_R_BAD_OBJECT_HEADER), "bad object header"},
++    {ERR_PACK(ERR_LIB_ASN1, 0, ASN1_R_BAD_TEMPLATE), "bad template"},
+     {ERR_PACK(ERR_LIB_ASN1, 0, ASN1_R_BMPSTRING_IS_WRONG_LENGTH),
+     "bmpstring is wrong length"},
+     {ERR_PACK(ERR_LIB_ASN1, 0, ASN1_R_BN_LIB), "bn lib"},
+diff --git a/crypto/asn1/tasn_dec.c b/crypto/asn1/tasn_dec.c
+index 2332b204ed..1021705f43 100644
+--- a/crypto/asn1/tasn_dec.c
++++ b/crypto/asn1/tasn_dec.c
+@@ -182,6 +182,15 @@ static int asn1_item_embed_d2i(ASN1_VALUE **pval, const unsigned char **in,
+                                      tag, aclass, opt, ctx);
+ 
+     case ASN1_ITYPE_MSTRING:
++        /*
++         * It never makes sense for multi-strings to have implicit tagging, so
++         * if tag != -1, then this looks like an error in the template.
++         */
++        if (tag != -1) {
++            ASN1err(ASN1_F_ASN1_ITEM_EMBED_D2I, ASN1_R_BAD_TEMPLATE);
++            goto err;
++        }
++
+         p = *in;
+         /* Just read in tag and class */
+         ret = asn1_check_tlen(NULL, &otag, &oclass, NULL, NULL,
+@@ -199,6 +208,7 @@ static int asn1_item_embed_d2i(ASN1_VALUE **pval, const unsigned char **in,
+             ASN1err(ASN1_F_ASN1_ITEM_EMBED_D2I, ASN1_R_MSTRING_NOT_UNIVERSAL);
+             goto err;
+         }
++
+         /* Check tag matches bit map */
+         if (!(ASN1_tag2bit(otag) & it->utype)) {
+             /* If OPTIONAL, assume this is OK */
+@@ -215,6 +225,15 @@ static int asn1_item_embed_d2i(ASN1_VALUE **pval, const unsigned char **in,
+         return ef->asn1_ex_d2i(pval, in, len, it, tag, aclass, opt, ctx);
+ 
+     case ASN1_ITYPE_CHOICE:
++        /*
++         * It never makes sense for CHOICE types to have implicit tagging, so
++         * if tag != -1, then this looks like an error in the template.
++         */
++        if (tag != -1) {
++            ASN1err(ASN1_F_ASN1_ITEM_EMBED_D2I, ASN1_R_BAD_TEMPLATE);
++            goto err;
++        }
++
+         if (asn1_cb && !asn1_cb(ASN1_OP_D2I_PRE, pval, it, NULL))
+             goto auxerr;
+         if (*pval) {
+diff --git a/crypto/err/openssl.txt b/crypto/err/openssl.txt
+index 0b5873ebbc..2f93221a86 100644
+--- a/crypto/err/openssl.txt
++++ b/crypto/err/openssl.txt
+@@ -1771,6 +1771,7 @@ ASN1_R_ASN1_PARSE_ERROR:203:asn1 parse error
+ ASN1_R_ASN1_SIG_PARSE_ERROR:204:asn1 sig parse error
+ ASN1_R_AUX_ERROR:100:aux error
+ ASN1_R_BAD_OBJECT_HEADER:102:bad object header
++ASN1_R_BAD_TEMPLATE:230:bad template
+ ASN1_R_BMPSTRING_IS_WRONG_LENGTH:214:bmpstring is wrong length
+ ASN1_R_BN_LIB:105:bn lib
+ ASN1_R_BOOLEAN_IS_WRONG_LENGTH:106:boolean is wrong length
+diff --git a/include/openssl/asn1err.h b/include/openssl/asn1err.h
+index faed5a5518..9070e26df4 100644
+--- a/include/openssl/asn1err.h
++++ b/include/openssl/asn1err.h
+@@ -145,6 +145,7 @@ int ERR_load_ASN1_strings(void);
+ # define ASN1_R_ASN1_SIG_PARSE_ERROR                      204
+ # define ASN1_R_AUX_ERROR                                 100
+ # define ASN1_R_BAD_OBJECT_HEADER                         102
++# define ASN1_R_BAD_TEMPLATE                              230
+ # define ASN1_R_BMPSTRING_IS_WRONG_LENGTH                 214
+ # define ASN1_R_BN_LIB                                    105
+ # define ASN1_R_BOOLEAN_IS_WRONG_LENGTH                   106
