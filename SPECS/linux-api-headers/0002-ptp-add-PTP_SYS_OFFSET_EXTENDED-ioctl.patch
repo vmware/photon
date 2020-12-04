@@ -1,0 +1,195 @@
+From b591647a909ac7cca14f13d603aa5b19af1dde2a Mon Sep 17 00:00:00 2001
+From: Miroslav Lichvar <mlichvar@redhat.com>
+Date: Fri, 9 Nov 2018 11:14:44 +0100
+Subject: [PATCH 2/3] ptp: add PTP_SYS_OFFSET_EXTENDED ioctl
+
+commit 361800876f80da3915c46e388fc682532228b2c3 upstream.
+
+The PTP_SYS_OFFSET ioctl, which can be used to measure the offset
+between a PHC and the system clock, includes the total time that the
+driver needs to read the PHC timestamp.
+
+This typically involves reading of multiple PCI registers (sometimes in
+multiple iterations) and the register that contains the lowest bits of
+the timestamp is not read in the middle between the two readings of the
+system clock. This asymmetry causes the measured offset to have a
+significant error.
+
+Introduce a new ioctl, driver function, and helper functions, which
+allow the reading of the lowest register to be isolated from the other
+readings in order to reduce the asymmetry. The ioctl returns three
+timestamps for each measurement:
+- system time right before reading the lowest bits of the PHC timestamp
+- PHC time
+- system time immediately after reading the lowest bits of the PHC
+  timestamp
+
+Cc: Richard Cochran <richardcochran@gmail.com>
+Cc: Jacob Keller <jacob.e.keller@intel.com>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Signed-off-by: Miroslav Lichvar <mlichvar@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Vivek Thampi <vithampi@vmware.com>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/ptp/ptp_chardev.c        | 33 +++++++++++++++++++++++++++++++++
+ include/linux/ptp_clock_kernel.h | 31 +++++++++++++++++++++++++++++++
+ include/uapi/linux/ptp_clock.h   | 12 ++++++++++++
+ 3 files changed, 76 insertions(+)
+
+diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
+index 3c681be..aad0d36 100644
+--- a/drivers/ptp/ptp_chardev.c
++++ b/drivers/ptp/ptp_chardev.c
+@@ -122,10 +122,12 @@ int ptp_open(struct posix_clock *pc, fmode_t fmode)
+ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ {
+ 	struct ptp_clock *ptp = container_of(pc, struct ptp_clock, clock);
++	struct ptp_sys_offset_extended *extoff = NULL;
+ 	struct ptp_sys_offset_precise precise_offset;
+ 	struct system_device_crosststamp xtstamp;
+ 	struct ptp_clock_info *ops = ptp->info;
+ 	struct ptp_sys_offset *sysoff = NULL;
++	struct ptp_system_timestamp sts;
+ 	struct ptp_clock_request req;
+ 	struct ptp_clock_caps caps;
+ 	struct ptp_clock_time *pct;
+@@ -211,6 +213,36 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 			err = -EFAULT;
+ 		break;
+ 
++	case PTP_SYS_OFFSET_EXTENDED:
++		if (!ptp->info->gettimex64) {
++			err = -EOPNOTSUPP;
++			break;
++		}
++		extoff = memdup_user((void __user *)arg, sizeof(*extoff));
++		if (IS_ERR(extoff)) {
++			err = PTR_ERR(extoff);
++			extoff = NULL;
++			break;
++		}
++		if (extoff->n_samples > PTP_MAX_SAMPLES) {
++			err = -EINVAL;
++			break;
++		}
++		for (i = 0; i < extoff->n_samples; i++) {
++			err = ptp->info->gettimex64(ptp->info, &ts, &sts);
++			if (err)
++				goto out;
++			extoff->ts[i][0].sec = sts.pre_ts.tv_sec;
++			extoff->ts[i][0].nsec = sts.pre_ts.tv_nsec;
++			extoff->ts[i][1].sec = ts.tv_sec;
++			extoff->ts[i][1].nsec = ts.tv_nsec;
++			extoff->ts[i][2].sec = sts.post_ts.tv_sec;
++			extoff->ts[i][2].nsec = sts.post_ts.tv_nsec;
++		}
++		if (copy_to_user((void __user *)arg, extoff, sizeof(*extoff)))
++			err = -EFAULT;
++		break;
++
+ 	case PTP_SYS_OFFSET:
+ 		sysoff = memdup_user((void __user *)arg, sizeof(*sysoff));
+ 		if (IS_ERR(sysoff)) {
+@@ -284,6 +316,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 	}
+ 
+ out:
++	kfree(extoff);
+ 	kfree(sysoff);
+ 	return err;
+ }
+diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
+index 51349d1..a1ec044 100644
+--- a/include/linux/ptp_clock_kernel.h
++++ b/include/linux/ptp_clock_kernel.h
+@@ -39,6 +39,15 @@ struct ptp_clock_request {
+ };
+ 
+ struct system_device_crosststamp;
++
++/**
++ * struct ptp_system_timestamp - system time corresponding to a PHC timestamp
++ */
++struct ptp_system_timestamp {
++	struct timespec64 pre_ts;
++	struct timespec64 post_ts;
++};
++
+ /**
+  * struct ptp_clock_info - decribes a PTP hardware clock
+  *
+@@ -75,6 +84,14 @@ struct ptp_clock_request {
+  * @gettime64:  Reads the current time from the hardware clock.
+  *              parameter ts: Holds the result.
+  *
++ * @gettimex64:  Reads the current time from the hardware clock and optionally
++ *               also the system clock.
++ *               parameter ts: Holds the PHC timestamp.
++ *               parameter sts: If not NULL, it holds a pair of timestamps from
++ *               the system clock. The first reading is made right before
++ *               reading the lowest bits of the PHC timestamp and the second
++ *               reading immediately follows that.
++ *
+  * @getcrosststamp:  Reads the current time from the hardware clock and
+  *                   system clock simultaneously.
+  *                   parameter cts: Contains timestamp (device,system) pair,
+@@ -124,6 +141,8 @@ struct ptp_clock_info {
+ 	int (*adjfreq)(struct ptp_clock_info *ptp, s32 delta);
+ 	int (*adjtime)(struct ptp_clock_info *ptp, s64 delta);
+ 	int (*gettime64)(struct ptp_clock_info *ptp, struct timespec64 *ts);
++	int (*gettimex64)(struct ptp_clock_info *ptp, struct timespec64 *ts,
++			  struct ptp_system_timestamp *sts);
+ 	int (*getcrosststamp)(struct ptp_clock_info *ptp,
+ 			      struct system_device_crosststamp *cts);
+ 	int (*settime64)(struct ptp_clock_info *p, const struct timespec64 *ts);
+@@ -247,4 +266,16 @@ static inline int ptp_schedule_worker(struct ptp_clock *ptp,
+ 
+ #endif
+ 
++static inline void ptp_read_system_prets(struct ptp_system_timestamp *sts)
++{
++	if (sts)
++		ktime_get_real_ts64(&sts->pre_ts);
++}
++
++static inline void ptp_read_system_postts(struct ptp_system_timestamp *sts)
++{
++	if (sts)
++		ktime_get_real_ts64(&sts->post_ts);
++}
++
+ #endif
+diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
+index 3039bf6..d73d839 100644
+--- a/include/uapi/linux/ptp_clock.h
++++ b/include/uapi/linux/ptp_clock.h
+@@ -84,6 +84,16 @@ struct ptp_sys_offset {
+ 	struct ptp_clock_time ts[2 * PTP_MAX_SAMPLES + 1];
+ };
+ 
++struct ptp_sys_offset_extended {
++	unsigned int n_samples; /* Desired number of measurements. */
++	unsigned int rsv[3];    /* Reserved for future use. */
++	/*
++	 * Array of [system, phc, system] time stamps. The kernel will provide
++	 * 3*n_samples time stamps.
++	 */
++	struct ptp_clock_time ts[PTP_MAX_SAMPLES][3];
++};
++
+ struct ptp_sys_offset_precise {
+ 	struct ptp_clock_time device;
+ 	struct ptp_clock_time sys_realtime;
+@@ -136,6 +146,8 @@ struct ptp_pin_desc {
+ #define PTP_PIN_SETFUNC    _IOW(PTP_CLK_MAGIC, 7, struct ptp_pin_desc)
+ #define PTP_SYS_OFFSET_PRECISE \
+ 	_IOWR(PTP_CLK_MAGIC, 8, struct ptp_sys_offset_precise)
++#define PTP_SYS_OFFSET_EXTENDED \
++	_IOW(PTP_CLK_MAGIC, 9, struct ptp_sys_offset_extended)
+ 
+ struct ptp_extts_event {
+ 	struct ptp_clock_time t; /* Time event occured. */
+-- 
+1.8.3.1
+
