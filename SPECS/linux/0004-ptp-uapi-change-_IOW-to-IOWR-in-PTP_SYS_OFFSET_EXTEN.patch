@@ -1,0 +1,31 @@
+From b7ea4894aa867aaf1c31bfb4b00a3c3e38eedf95 Mon Sep 17 00:00:00 2001
+From: Eugene Syromiatnikov <esyr@redhat.com>
+Date: Mon, 7 Jan 2019 16:22:38 +0100
+Subject: [PATCH] ptp: uapi: change _IOW to IOWR in PTP_SYS_OFFSET_EXTENDED
+ definition
+
+The ioctl command is read/write (or just read, if the fact that user space
+writes n_samples field is ignored).
+
+Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+---
+ include/uapi/linux/ptp_clock.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
+index d73d83950265..1bc794ad957a 100644
+--- a/include/uapi/linux/ptp_clock.h
++++ b/include/uapi/linux/ptp_clock.h
+@@ -147,7 +147,7 @@ struct ptp_pin_desc {
+ #define PTP_SYS_OFFSET_PRECISE \
+ 	_IOWR(PTP_CLK_MAGIC, 8, struct ptp_sys_offset_precise)
+ #define PTP_SYS_OFFSET_EXTENDED \
+-	_IOW(PTP_CLK_MAGIC, 9, struct ptp_sys_offset_extended)
++	_IOWR(PTP_CLK_MAGIC, 9, struct ptp_sys_offset_extended)
+ 
+ struct ptp_extts_event {
+ 	struct ptp_clock_time t; /* Time event occured. */
+-- 
+2.17.1
+

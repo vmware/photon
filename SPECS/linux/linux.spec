@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.160
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -141,6 +141,7 @@ Patch101:        0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
 Patch121:        0001-ptp-reorder-declarations-in-ptp_ioctl.patch
 Patch122:        0002-ptp-add-PTP_SYS_OFFSET_EXTENDED-ioctl.patch
 Patch123:        0003-ptp-deprecate-gettime64-in-favor-of-gettimex64.patch
+Patch124:        0004-ptp-uapi-change-_IOW-to-IOWR-in-PTP_SYS_OFFSET_EXTEN.patch
 
 # Lockdown support
 Patch150:        lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
@@ -429,6 +430,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch121 -p1
 %patch122 -p1
 %patch123 -p1
+%patch124 -p1
 
 %patch150 -p1
 %patch151 -p1
@@ -846,6 +848,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Tue Dec 08 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.160-3
+-   Change PTP_SYS_OFFSET_EXTENDED IOCTL to _IOWR
 *   Tue Dec 08 2020 Ankit Jain <ankitja@vmware.com> 4.19.160-2
 -   Enable CONFIG_NET_VENDOR_AMAZON and CONFIG_ENA_ETHERNET
 -   to add support for ami in arm in linux generic

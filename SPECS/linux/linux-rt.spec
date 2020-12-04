@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.160
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt66
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -93,6 +93,7 @@ Patch88:        0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
 Patch91:        0001-ptp-reorder-declarations-in-ptp_ioctl.patch
 Patch92:        0002-ptp-add-PTP_SYS_OFFSET_EXTENDED-ioctl.patch
 Patch93:        0003-ptp-deprecate-gettime64-in-favor-of-gettimex64.patch
+Patch94:        0004-ptp-uapi-change-_IOW-to-IOWR-in-PTP_SYS_OFFSET_EXTEN.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/4.19/
@@ -530,6 +531,7 @@ The Linux package contains the Linux kernel doc files
 %patch91 -p1
 %patch92 -p1
 %patch93 -p1
+%patch94 -p1
 
 %patch201 -p1
 %patch202 -p1
@@ -1028,6 +1030,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Dec 08 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.160-2
+-   Change PTP_SYS_OFFSET_EXTENDED IOCTL to _IOWR
 *   Tue Nov 24 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.160-1
 -   Update to version 4.19.160
 -   Fix CVE-2019-19338 and CVE-2019-20908

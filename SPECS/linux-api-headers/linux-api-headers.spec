@@ -1,7 +1,7 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
 Version:	4.19.160
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
 Group:		System Environment/Kernel
@@ -14,6 +14,7 @@ Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar
 Patch0:		0001-ptp-reorder-declarations-in-ptp_ioctl.patch
 Patch1:		0002-ptp-add-PTP_SYS_OFFSET_EXTENDED-ioctl.patch
 Patch2:		0003-ptp-deprecate-gettime64-in-favor-of-gettimex64.patch
+Patch3:		0004-ptp-uapi-change-_IOW-to-IOWR-in-PTP_SYS_OFFSET_EXTEN.patch
 
 BuildArch:	noarch
 %description
@@ -24,6 +25,7 @@ The Linux API Headers expose the kernel's API for use by Glibc.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 make mrproper
@@ -36,6 +38,8 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+*   Tue Dec 08 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.160-3
+-   Change PTP_SYS_OFFSET_EXTENDED IOCTL to _IOWR
 *   Tue Dec 08 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.160-2
 -   Add support for PTP_SYS_OFFSET_EXTENDED ioctl
 *   Tue Nov 24 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.160-1
