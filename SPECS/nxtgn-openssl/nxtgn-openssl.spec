@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           nxtgn-openssl
 Version:        1.1.1g
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -9,9 +9,14 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.openssl.org/source/openssl-%{version}.tar.gz
 %define sha1    openssl=18012543aface209ea2579cb628a49e22ea4ec29
+Patch0:         01-DirectoryString-is-a-CHOICE-type-and-therefore-uses-explicit-tagging.patch
+Patch1:         02-Correctly-compare-EdiPartyName-in-GENERAL_NAME_cmp.patch
+Patch2:         03-Check-that-multi-strings-CHOICE-types-dont-use-implicit-tagging.patch
+Patch3:         04-Complain-if-we-are-attempting-to-encode-with-an-invalid-ASN.1-template.patch
+Patch4:         05-Add-a-test-for-GENERAL_NAME_cmp.patch
+Patch5:         06-Add-a-test-for-encoding-decoding-using-an-invalid-ASN.1-template.patch
 Source1:        nxtgn-rehash_ca_certificates.sh
-Patch1:         nxtgn-c_rehash.patch
-
+Patch6:         nxtgn-c_rehash.patch
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -52,7 +57,13 @@ Perl scripts that convert certificates and keys to various formats.
 
 %prep
 %setup -q -n openssl-%{version}
+%patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -119,6 +130,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/nxtgn-rehash_ca_certificates.sh
 
 %changelog
+*   Wed Dec 09 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1g-2
+-   Fix CVE-2020-1971
 *   Tue Apr 21 2020 Srinidhi Rao <srinidhir@vmware.com> 1.1.1g-1
 -   Upgrade to openssl-1.1.1g release.
 *   Thu Apr 16 2020 Srinidhi Rao <srinidhir@vmware.com> 1.1.1d-3
