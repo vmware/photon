@@ -1,7 +1,7 @@
 Summary:        DCERPC
 Name:           dcerpc
 Version:        1.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Novell DCE-RPC - BSD
 URL:            https://github.com/vmware/likewise-open/tree/lcifs/dcerpc
 Group:          Applications/System
@@ -9,9 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        dcerpc-%{version}.tar.gz
 %define sha1    dcerpc=63abc1d5d1c421baabc5442b9b9a1a7653ef4271
+Patch0:         fix_arm_build.patch
 BuildRequires:  krb5-devel
 BuildRequires:  curl-devel
 BuildRequires:  e2fsprogs-devel
+BuildRequires:  util-linux-devel
 Requires:       curl
 Requires:       krb5
 Requires:       e2fsprogs
@@ -28,6 +30,7 @@ It contains the libraries and header files to create applications.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 autoreconf -fi
@@ -122,9 +125,9 @@ rm -rf %{buildroot}/*
 %{_includedir}/dce/twr.idl
 %{_includedir}/dce/uuid.h
 %{_includedir}/dce/uuid.idl
-%{_includedir}/dce/x86_64/marshall.h
-%{_includedir}/dce/x86_64/ndr_rep.h
-%{_includedir}/dce/x86_64/ndrtypes.h
+%{_includedir}/dce/%{_arch}/marshall.h
+%{_includedir}/dce/%{_arch}/ndr_rep.h
+%{_includedir}/dce/%{_arch}/ndrtypes.h
 %{_includedir}/ncklib/comsoc_sys.h
 %{_includedir}/ncklib/cs_s_conv.c
 %{_includedir}/ncklib/sysconf.h
@@ -133,5 +136,7 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/libdcerpc.a
 
 %changelog
+*   Fri Dec 04 2020 Tapas Kundu <tkundu@vmware.com> 1.2.0-2
+-   Fix arm build issue.
 *   Tue Nov 24 2020 Tapas Kundu <tkundu@vmware.com> 1.2.0-1
 -   Initial build.  First version
