@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.160
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -124,6 +124,7 @@ Patch206:	0007-vdfs-9p-Fix-recovery-logic-and-cleanup-tags.patch
 # VDFS 9p changes
 Patch225:      0001-9p-fscache-Don-t-use-writeback-fid-for-cache-when-en.patch
 Patch226:      0001-9p-fscache-Only-fetch-attr-from-inode-cache-when-cac.patch
+Patch227:      0001-9p-fscache-Make-dcache-work-with-case-insensitive-vo.patch
 
 # VKD 9p changes
 Patch250:        0001-fs-9p-support-no_icache-flag-to-disable-dentry-inode.patch
@@ -429,6 +430,7 @@ This Linux package contains hmac sha generator kernel module.
 
 %patch225 -p1
 %patch226 -p1
+%patch227 -p1
 %patch250 -p1
 %patch251 -p1
 %patch252 -p1
@@ -740,6 +742,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri Dec 6 2020 Albert Guo <aguo@vmware.com> 4.19.160-2
+-   9p: fscache: Make dcache work with case insensitive volumes
 *   Fri Dec 4 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.160-1
 -   Update to version 4.19.160
 -   Fix CVE-2019-19338 and CVE-2019-20908

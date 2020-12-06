@@ -1,0 +1,310 @@
+From 730cf51b739a9279c74398fa7953ad25689e1279 Mon Sep 17 00:00:00 2001
+From: Albert Guo <aguo@vmware.com>
+Date: Tue, 10 Nov 2020 00:06:46 -0800
+Subject: [PATCH] 9p: fscache Make dcache work with case insensitive volumes
+
+We run Samba on top of VDFS 9p volumes to support SMB protocol for Windows
+clients which is case insensitive. In order to speed up the Samba
+create/delete operation, we enhanced VDFS to support case insensitive lookup.
+This functionality is turned on by setting xattr "VMware CaseInsensitive Volume"
+as "ci-share" on the default volume.
+However, the directory cache for 9p volumes is case sensitive by default.
+Due to the above inconsistence, we found incorrect behavior like below:
+Step 1: touch a.txt
+Step 2: rm A.TXT      // a.txt is removed from VDFS volume, but not from dcache.
+Step 3: touch a.txt   // 9p client finds this entry from dache, so it won't
+                      // actually send create command to 9p server. As a
+                      // result, this file never gets created.
+
+This patches now checks whether a volume has "VMware CaseInsensitive Volume"
+xattr set. When this xattr is set, case insensitive dentry operations will be
+set.
+To support case insenstive dentry operations, we customized two functions:
+d_compare and d_hash.
+
+Testing Done:
+From a 9p mount point which has turn on CI support:
+$ touch a.txt && rm A.TXT && touch a.txt
+
+Before fix: a.txt can't be listed in the directory
+
+After fix: a.txt can be seen in the directory
+
+Test unicode string as well, it works as expected.
+---
+ fs/9p/v9fs_vfs.h   |   1 +
+ fs/9p/vfs_dentry.c |  63 +++++++++++++++++++++++++
+ fs/9p/vfs_super.c  | 136 ++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 3 files changed, 199 insertions(+), 1 deletion(-)
+
+diff --git a/fs/9p/v9fs_vfs.h b/fs/9p/v9fs_vfs.h
+index 94f95f4..ed4f61e 100644
+--- a/fs/9p/v9fs_vfs.h
++++ b/fs/9p/v9fs_vfs.h
+@@ -52,6 +52,7 @@
+ extern const struct file_operations v9fs_dir_operations_dotl;
+ extern const struct dentry_operations v9fs_dentry_operations;
+ extern const struct dentry_operations v9fs_cached_dentry_operations;
++extern const struct dentry_operations v9fs_cached_dentry_ci_operations;
+ extern const struct file_operations v9fs_cached_file_operations;
+ extern const struct file_operations v9fs_cached_file_operations_dotl;
+ extern const struct file_operations v9fs_mmap_file_operations;
+diff --git a/fs/9p/vfs_dentry.c b/fs/9p/vfs_dentry.c
+index bd456c6..1b5ad45 100644
+--- a/fs/9p/vfs_dentry.c
++++ b/fs/9p/vfs_dentry.c
+@@ -23,6 +23,7 @@
+  *
+  */
+ 
++#include <linux/ctype.h>  /* For toupper() */
+ #include <linux/module.h>
+ #include <linux/errno.h>
+ #include <linux/fs.h>
+@@ -109,6 +110,59 @@ static int v9fs_lookup_revalidate(struct dentry *dentry, unsigned int flags)
+ 	return 1;
+ }
+ 
++/**
++ * v9fs_dentry_ci_compare - Case insensitive comparison of @name and @str
++ * @dentry:  dentry in question
++ * @len:     The len of the str
++ * @str:     The name of the dentry
++ * @name:    The new name to compare
++ * @return 0 if the name matches by case insensitive comparison.
++ */
++int v9fs_dentry_ci_compare(const struct dentry *dentry,
++		unsigned int len, const char *str, const struct qstr *name)
++{
++	if (str == NULL || name == NULL) {
++		return 1;
++	}
++
++	p9_debug(P9_DEBUG_VFS, "str=%s, name=%s\n", str, name->name);
++	/*
++	 * We make the assumption here that uppercase characters in the local
++	 * codepage are always the same length as their lowercase counterparts.
++	 *
++	 * If that's ever not the case, then this will fail to match it.
++	 */
++	if (name->len != len)
++		return 1;
++
++	/*
++	 * We assume the 9p name is always encoded with UTF8.
++	 */
++	return strncasecmp(str, name->name, len);
++}
++
++/**
++ * v9fs_dentry_ci_hash - Compute the hash after converting to upper case
++ * @dentry: dentry in question
++ * @q:      The name to compute hash
++ * The hash will be stored in q.
++ * @return 0
++ */
++
++static int v9fs_dentry_ci_hash(const struct dentry *dentry, struct qstr *q)
++{
++	unsigned long hash;
++	int i;
++
++	hash = init_name_hash(dentry);
++	for (i = 0; i < q->len; i += 1) {
++		hash = partial_name_hash(toupper(q->name[i]), hash);
++	}
++	q->hash = end_name_hash(hash);
++
++	return 0;
++}
++
+ const struct dentry_operations v9fs_cached_dentry_operations = {
+ 	.d_revalidate = v9fs_lookup_revalidate,
+ 	.d_weak_revalidate = v9fs_lookup_revalidate,
+@@ -116,6 +170,15 @@ static int v9fs_lookup_revalidate(struct dentry *dentry, unsigned int flags)
+ 	.d_release = v9fs_dentry_release,
+ };
+ 
++const struct dentry_operations v9fs_cached_dentry_ci_operations = {
++	.d_revalidate = v9fs_lookup_revalidate,
++	.d_weak_revalidate = v9fs_lookup_revalidate,
++	.d_delete = v9fs_cached_dentry_delete,
++	.d_release = v9fs_dentry_release,
++	.d_compare = v9fs_dentry_ci_compare,
++	.d_hash = v9fs_dentry_ci_hash,
++};
++
+ const struct dentry_operations v9fs_dentry_operations = {
+ 	.d_delete = always_delete_dentry,
+ 	.d_release = v9fs_dentry_release,
+diff --git a/fs/9p/vfs_super.c b/fs/9p/vfs_super.c
+index ee443fd..80cdb1e 100644
+--- a/fs/9p/vfs_super.c
++++ b/fs/9p/vfs_super.c
+@@ -41,6 +41,7 @@
+ #include <linux/magic.h>
+ #include <net/9p/9p.h>
+ #include <net/9p/client.h>
++#include <linux/namei.h>
+ 
+ #include "v9fs.h"
+ #include "v9fs_vfs.h"
+@@ -111,6 +112,128 @@ static int v9fs_set_super(struct super_block *s, void *data)
+ }
+ 
+ /**
++ * v9fs_release_dentry_before_d_op - Call this function to release a dentry
++ * before whether a volume is a ci volume is determined.
++ */
++static void v9fs_release_dentry_before_d_op(struct dentry *entry)
++{
++	if(!IS_ERR(entry) && entry) {
++		/*
++		 * dentry caches direcotroy operations.
++		 * We shouldn't cache dentry before d_op is finalized.
++		 */
++		d_drop(entry);
++		dput(entry);
++	}
++}
++
++/**
++ * v9fs_lookup_comp - Lookup one component from current directory
++ * @parent - dentry for current directory
++ * @comp_name - the name to lookup
++ * @flags - lookup flags
++ * @return dentry for the @comp_anme if found, else return NULL
++ * The caller needs to release the dentry.
++ */
++static struct dentry *v9fs_lookup_comp(
++		struct dentry *parent, const char *comp_name, int flags)
++{
++	struct qstr comp_qstr = \
++			   QSTR_INIT(comp_name, strlen(comp_name));
++	struct dentry *new_dentry = d_alloc(parent, &comp_qstr);
++	struct dentry *res = NULL;
++	struct inode *inode = parent->d_inode;
++	if (new_dentry == NULL) {
++		return NULL;
++	}
++	res = inode->i_op->lookup(inode, new_dentry, flags);
++	if (IS_ERR(res)) {
++		p9_debug(P9_DEBUG_VFS, "Failed to lookup '%s' in dir %p\n",
++				comp_name, parent);
++		v9fs_release_dentry_before_d_op(new_dentry);
++		new_dentry = NULL;
++	} else if (res) {
++		v9fs_release_dentry_before_d_op(new_dentry);
++		new_dentry = res;
++	}
++	p9_debug(P9_DEBUG_VFS, "dir (%p), found new dentry(%p, %s).\n",
++			parent, new_dentry, comp_name);
++	return new_dentry;
++}
++
++/**
++ * v9fs_ci_volume - Check whether a volume is a case insenstive volume by
++ * checking "VMware CaseInsensitive Volume" xattr on "volumes/default"
++ *
++ * @root - root dentry for the volume
++ * @flags - lookup flags
++ * @return true if the volume is a case insenstive volume, else false
++ * Note: This is for VDFS SMB file system only, for other 9p file systems, false
++ * will be returned.
++ */
++static bool v9fs_ci_volume(struct dentry *root, int flags)
++{
++	bool ret = false;
++	struct dentry *subvol_dentry = NULL, *vol_dentry = NULL;
++	struct dentry *sym_dentry = NULL, *default_dentry = NULL;
++	char buf[256];
++	ssize_t xattr_size;
++	const char *ci_xattr_name = "VMware CaseInsensitive Volume";
++	const char *ci_xattr_value = "ci-share";
++	char sub_vol_uuid[40] = {0};
++	struct inode *inode = NULL;
++	const char *link_target;
++	int vol_uuid_len = 0;
++	struct delayed_call call;
++	vol_dentry = v9fs_lookup_comp(root, "volumes", flags);
++	if (IS_ERR(vol_dentry) || vol_dentry == NULL) {
++		goto out;
++	}
++	sym_dentry = v9fs_lookup_comp(vol_dentry, "default", flags);
++	if (IS_ERR(sym_dentry) || sym_dentry == NULL) {
++		goto out;
++	}
++
++	inode = sym_dentry->d_inode;
++	if (inode->i_op->get_link == NULL) {
++		goto out;
++	}
++	link_target = inode->i_op->get_link(sym_dentry, inode, &call);
++	if (IS_ERR(link_target)) {
++		goto out;
++	}
++
++	p9_debug(P9_DEBUG_VFS, "Got link target %s\n", link_target);
++	vol_uuid_len = strstr(link_target, "/") - link_target;
++	if (vol_uuid_len > 0 && vol_uuid_len < sizeof(sub_vol_uuid)) {
++		strncpy(sub_vol_uuid, link_target, vol_uuid_len);
++	} else {
++		goto out;
++	}
++
++	p9_debug(P9_DEBUG_VFS, "Got sub vol UUID %s\n", sub_vol_uuid);
++	subvol_dentry = v9fs_lookup_comp(vol_dentry, sub_vol_uuid, flags);
++	if (IS_ERR(subvol_dentry) || subvol_dentry == NULL) {
++		goto out;
++	}
++
++	default_dentry = v9fs_lookup_comp(subvol_dentry, "default", flags);
++
++	xattr_size = v9fs_xattr_get(default_dentry,
++			ci_xattr_name, buf, sizeof(buf));
++	if (xattr_size > 0 &&
++	    memcmp(ci_xattr_value, buf, strlen(ci_xattr_value)) == 0) {
++		ret = true;
++	}
++out:
++	v9fs_release_dentry_before_d_op(vol_dentry);
++	v9fs_release_dentry_before_d_op(sym_dentry);
++	v9fs_release_dentry_before_d_op(subvol_dentry);
++	v9fs_release_dentry_before_d_op(default_dentry);
++	return ret;
++}
++
++/**
+  * v9fs_mount - mount a superblock
+  * @fs_type: file system type
+  * @flags: mount flags
+@@ -130,7 +253,7 @@ static struct dentry *v9fs_mount(struct file_system_type *fs_type, int flags,
+ 	struct p9_fid *fid;
+ 	int retval = 0;
+ 
+-	p9_debug(P9_DEBUG_VFS, "\n");
++	p9_debug(P9_DEBUG_VFS, "mount options='%s'\n", (char *)data);
+ 
+ 	v9ses = kzalloc(sizeof(struct v9fs_session_info), GFP_KERNEL);
+ 	if (!v9ses)
+@@ -198,6 +321,17 @@ static struct dentry *v9fs_mount(struct file_system_type *fs_type, int flags,
+ 		goto release_sb;
+ 	v9fs_fid_add(root, fid);
+ 
++	/* VDFS: Determine whether the volume has ci xattr set*/
++	if (!(v9ses->flags & V9FS_NO_ICACHE) &&
++	    (v9ses->cache == CACHE_LOOSE || v9ses->cache == CACHE_FSCACHE)) {
++		if (v9fs_ci_volume(root, flags)) {
++			sb->s_d_op = &v9fs_cached_dentry_ci_operations;
++			/* Refresh the dentry operations in the root dentry */
++			d_set_d_op(sb->s_root, sb->s_d_op);
++			p9_debug(P9_DEBUG_VFS, "ci volume: root dentry %p\n",
++					sb->s_root);
++		}
++	}
+ 	p9_debug(P9_DEBUG_VFS, " simple set mount, return 0\n");
+ 	return dget(sb->s_root);
+ 
+-- 
+1.8.5.6
+
