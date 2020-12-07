@@ -1,7 +1,7 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
 Version:        0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/vmware/network-config-manager
 Group:          Applications/System
@@ -33,6 +33,12 @@ Gateways and also hostname, DNS, NTP or Domain.
 Summary:        Headers for building against network-config-manager
 Group:          Development/Libraries/C and C++
 Requires:       %{name} = %{version}-%{release}
+Requires:       libmnl-devel
+Requires:       libnftnl-devel
+Requires:       nftables-devel
+Requires:       systemd-devel
+Requires:       libyaml-devel
+Requires:       glib-devel
 
 %description devel
 This package contains the headers necessary for building.
@@ -67,6 +73,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+*   Mon Dec 07 2020 Ankit Jain <ankitja@vmware.com> 0.2-2
+-   Added requires for devel package to fix install failure
 *   Sun Nov 15 2020 Susant Sahani <ankitja@vmware.com> 0.2-1
 -   Update to v0.2
 *   Wed Sep 30 2020 Ankit Jain <ankitja@vmware.com> 0.1-1
