@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.61.1
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -20,6 +20,9 @@ Patch7:         curl-CVE-2019-5481.patch
 Patch8:         curl-CVE-2019-5482.patch
 Patch9:         curl-CVE-2020-8177.patch
 Patch10:        curl-CVE-2020-8231.patch
+Patch11:        curl-CVE-2020-8284.patch
+Patch12:        curl-CVE-2020-8285.patch
+Patch13:        curl-CVE-2020-8286.patch
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
@@ -65,6 +68,9 @@ This package contains minimal set of shared curl libraries.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
 
 %build
 %configure \
@@ -114,6 +120,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Mon Dec 07 2020 Dweep Advani <dadvani@vmware.com> 7.61.1-9
+-   Patched for  CVE-2020-8284, CVE-2020-8285 and CVE-2020-8286
 *   Wed Aug 12 2020 Harinadh D <hdommaraju@vmware.com> 7.61.1-8
 -   Fix CVE-2020-8231
 *   Wed Jun 17 2020 Ankit Jain <ankitja@vmware.com> 7.61.1-7
