@@ -1,4 +1,4 @@
-From d52d91b920d4b6ae17adc42375649f1ae190006b Mon Sep 17 00:00:00 2001
+From c6d9dc693051da8f33055c6d7512fb3f4fdd4c38 Mon Sep 17 00:00:00 2001
 From: Phil Elwell <phil@raspberrypi.org>
 Date: Thu, 14 Jun 2018 15:07:26 +0100
 Subject: [PATCH] of: configfs: Use of_overlay_fdt_apply API call

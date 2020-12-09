@@ -13,7 +13,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.9.0
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -84,6 +84,13 @@ Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 Patch103:       perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
 #Fix for CVE-2020-8694
 Patch104:        powercap-restrict-energy-meter-to-root-access.patch
+
+%ifarch aarch64
+# Rpi of_configfs patches
+Patch201:        0001-OF-DT-Overlay-configfs-interface.patch
+Patch202:        0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
+Patch203:        0003-of-overlay-Correct-symbol-path-fixups.patch
+%endif
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -313,6 +320,13 @@ Python programming language to use the interface to manipulate perf events.
 %patch102 -p1
 %patch103 -p1
 %patch104 -p1
+
+%ifarch aarch64
+# Rpi of_configfs patches
+%patch201 -p1
+%patch202 -p1
+%patch203 -p1
+%endif
 
 # crypto
 %patch500 -p1
@@ -697,6 +711,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Dec 09 2020 Ajay Kaher <akaher@vmware.com> 5.9.0-9
+-   To dynamic load Overlays adding of_configfs patches v5.9.y.
 *   Tue Dec 01 2020 Prashant S Chauhan <psinghchauha@vmware.com> 5.9.0-8
 -   Added ami for arm support in linux generic, added multiple drivers
 -   in aarch64 to support aws ami
