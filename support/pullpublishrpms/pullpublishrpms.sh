@@ -19,7 +19,7 @@ if [ $# -eq 2 ]; then
    PUBLISHCACHE=$2
    while read FILE; do cp -r $PUBLISHCACHE/$FILE $PUBLISHRPMSPATHDIR/$FILE; done < rpmfilelist
 else
-   cat rpmfilelist | awk '{print "https://packages.vmware.com/photon/photon_publish_rpms/"$1}' | xargs -n 1 -P 10 wget --user-agent Mozilla/4.0 -c -nv -nc -r -nH --cut-dirs=4 -P ${PUBLISHRPMSPATHDIR}
+   cat rpmfilelist | awk '{print "https://packages.vmware.com/photon/photon_publish_rpms/"$1}' | xargs -n 1 -P 10 wget --user-agent Mozilla/4.0 -c -nv -nc -r -nH --cut-dirs=2 -P ${PUBLISHRPMSPATHDIR}
 fi
 
 ls ${PUBLISHRPMSPATHDIR}/*.rpm
