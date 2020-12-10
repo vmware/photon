@@ -126,6 +126,13 @@ class ToolChainUtils(object):
         self.logger.debug(packages)
         cmd = (self.rpmCommand + " -i -v --nodeps --noorder --force --root " +
                chroot.getID() +" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles)
+
+        # if rpm doesnt has zstd support
+        if CommandUtils.runCommandInShell('rpm --showrc | grep -i "rpmlib(PayloadIsZstd)"', logfn=self.logger.debug):
+            cmd = ("docker run -i -v " + constants.prevPublishRPMRepo + ":" + constants.prevPublishRPMRepo +
+                   " -v " + constants.rpmPath + ":" + constants.rpmPath + " -v " + chroot.getID() + ":" +
+                   chroot.getID() + " photon_builder:latest " + "/bin/bash -c \"" + cmd + "\"")
+
         retVal = CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug)
         if retVal != 0:
             self.logger.debug("Command Executed:" + cmd)

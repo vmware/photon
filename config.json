@@ -8,7 +8,8 @@
             "full-package-list-file" : "build_install_options_all.json",
             "pkg-build-options" : "pkg_build_options.json",
             "photon-docker-image" : "photon:3.0",
-            "target": "iso"
+            "target": "iso",
+            "compression-macro": "w19.zstdio"
     },
     "photon-path" : "",
     "stage-path" : "" ,

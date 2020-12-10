@@ -1,7 +1,7 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.6.35
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
@@ -24,6 +24,8 @@ BuildRequires:  libdb-devel
 BuildRequires:  cmake
 BuildRequires:  rpm-devel
 BuildRequires:  expat-devel
+BuildRequires:  zstd-devel
+
 %description
 Libsolv is a free package management library, using SAT technology to solve requests.
 It supports debian, rpm, archlinux and haiku style distributions.
@@ -81,6 +83,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Dec 09 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.6.35-7
+-   Add zstd-devel as Build Requires
 *   Thu Dec 03 2020 Tapas Kundu <tkundu@vmware.com> 0.6.35-6
 -   Further extend choicerule filtering check
 -   Refactor solver addchoicerules function

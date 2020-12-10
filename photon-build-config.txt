@@ -80,6 +80,12 @@ Build config file is a json format with possible parameters:
         Default value: [Makefile targets]
         Example: { "photon-build-param": { "target" : "iso" } }
 
+  # zstd level range from 1-22, with increase in level means more compression ratio and more time
+  "compression-macro":
+        Default value: "w19.zstdio"
+        values: ["w[1-22].zstdio", "gzip9"]
+        Example: { "photon-build-param": { "compression-macro" : "w19.zstdio" } }
+
 "input-rpms-path":
         Default: [src-root]/inputRPMS
         Example: { "input-rpms-path": [input RPMS path] }

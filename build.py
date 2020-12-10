@@ -932,6 +932,7 @@ def initialize_constants():
     Builder.get_packages_with_build_options(configdict['photon-build-param']['pkg-build-options'])
     Build_Config.setCommonDir(PurePath(curDir, "common", "data"))
     constants.setStartSchedulerServer(configdict["photon-build-param"]['start-scheduler-server'])
+    constants.setCompressionMacro(configdict["photon-build-param"]["compression-macro"])
     constants.initialize()
 
 

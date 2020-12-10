@@ -442,6 +442,11 @@ class constants(object):
         constants.katBuild = katBuild
 
     @staticmethod
+    def setCompressionMacro(compressionMacro):
+        constants.addMacro("_source_payload", compressionMacro)
+        constants.addMacro("_binary_payload", compressionMacro)
+
+    @staticmethod
     def initialize():
         if constants.rpmCheck:
             constants.testLogger = Logger.getLogger("MakeCheckTest",

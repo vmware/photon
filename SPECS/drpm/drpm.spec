@@ -1,7 +1,7 @@
 Name:            drpm
 Summary:         A library for making, reading and applying deltarpm packages
 Version:         0.5.0
-Release:         2%{?dist}
+Release:         3%{?dist}
 License:         LGPLv2+ and BSD
 URL:             https://github.com/rpm-software-management/%{name}
 Source0:         https://github.com/rpm-software-management/drpm/releases/download/0.5.0/drpm-%{version}.tar.bz2
@@ -36,7 +36,7 @@ mkdir build
 
 %build
 pushd build
-cmake .. -DWITH_ZSTD:BOOL=no -DHAVE_LZLIB_DEVEL:BOOL=0 -DCMAKE_INSTALL_PREFIX=/usr
+cmake .. -DWITH_ZSTD:BOOL=yes -DHAVE_LZLIB_DEVEL:BOOL=0 -DCMAKE_INSTALL_PREFIX=/usr
 make %{?_smp_mflags}
 popd
 
@@ -64,6 +64,8 @@ popd
 %{_lib64dir}/pkgconfig/%{name}.pc
 
 %changelog
+*   Fri Nov 13 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.5.0-3
+-   make drpm build with zstd
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.5.0-2
 -   openssl 1.1.1
 *   Fri Jun 26 2020 Keerthana K <keerthanak@vmware.com> 0.5.0-1

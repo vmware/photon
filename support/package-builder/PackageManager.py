@@ -32,6 +32,20 @@ class PackageManager(object):
         if self.pkgBuildType == "container":
             import docker
             self.dockerClient = docker.from_env(version="auto")
+        cmdUtils = CommandUtils()
+        # if rpm doesnt have zstd support
+        if cmdUtils.runCommandInShell('rpm --showrc | grep -i "rpmlib(PayloadIsZstd)"', logfn=self.logger.debug):
+            self.createZstdBuilderImage()
+
+    def createZstdBuilderImage(self):
+        import docker
+        self.dockerClient = docker.from_env(version="auto")
+        self.logger.info("creating photon builder docker image")
+        image = self.dockerClient.images.build(tag='photon_builder:latest',
+                                       path="./support/package-builder",
+                                       rm=True,
+                                       dockerfile="Dockerfile.photon_builder")
+        self.logger.debug("Created Image %s"%image)
 
     def buildToolChain(self):
         self.logger.info("Step 1 : Building the core toolchain packages for " + constants.currentArch)
