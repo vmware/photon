@@ -1,0 +1,195 @@
+From e8c7d14ac6c37c173ec606907d38802b00302988 Mon Sep 17 00:00:00 2001
+From: Luis Chamberlain <mcgrof@kernel.org>
+Date: Fri, 19 Jun 2020 20:47:25 +0000
+Subject: [PATCH] block: revert back to synchronous request_queue removal
+
+    Upstream commit ID: e8c7d14ac6c37c173ec606907d38802b00302988
+
+Commit dc9edc44de6c ("block: Fix a blk_exit_rl() regression") merged on
+v4.12 moved the work behind blk_release_queue() into a workqueue after a
+splat floated around which indicated some work on blk_release_queue()
+could sleep in blk_exit_rl(). This splat would be possible when a driver
+called blk_put_queue() or blk_cleanup_queue() (which calls blk_put_queue()
+as its final call) from an atomic context.
+
+blk_put_queue() decrements the refcount for the request_queue kobject, and
+upon reaching 0 blk_release_queue() is called. Although blk_exit_rl() is
+now removed through commit db6d99523560 ("block: remove request_list code")
+on v5.0, we reserve the right to be able to sleep within
+blk_release_queue() context.
+
+The last reference for the request_queue must not be called from atomic
+context. *When* the last reference to the request_queue reaches 0 varies,
+and so let's take the opportunity to document when that is expected to
+happen and also document the context of the related calls as best as
+possible so we can avoid future issues, and with the hopes that the
+synchronous request_queue removal sticks.
+
+We revert back to synchronous request_queue removal because asynchronous
+removal creates a regression with expected userspace interaction with
+several drivers. An example is when removing the loopback driver, one
+uses ioctls from userspace to do so, but upon return and if successful,
+one expects the device to be removed. Likewise if one races to add another
+device the new one may not be added as it is still being removed. This was
+expected behavior before and it now fails as the device is still present
+and busy still. Moving to asynchronous request_queue removal could have
+broken many scripts which relied on the removal to have been completed if
+there was no error. Document this expectation as well so that this
+doesn't regress userspace again.
+
+Using asynchronous request_queue removal however has helped us find
+other bugs. In the future we can test what could break with this
+arrangement by enabling CONFIG_DEBUG_KOBJECT_RELEASE.
+
+While at it, update the docs with the context expectations for the
+request_queue / gendisk refcount decrement, and make these
+expectations explicit by using might_sleep().
+
+Fixes: dc9edc44de6c ("block: Fix a blk_exit_rl() regression")
+Suggested-by: Nicolai Stange <nstange@suse.de>
+Signed-off-by: Luis Chamberlain <mcgrof@kernel.org>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Cc: Bart Van Assche <bvanassche@acm.org>
+Cc: Omar Sandoval <osandov@fb.com>
+Cc: Hannes Reinecke <hare@suse.com>
+Cc: Nicolai Stange <nstange@suse.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Michal Hocko <mhocko@kernel.org>
+Cc: yu kuai <yukuai3@huawei.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+[Srinidhi Rao: Regenerated the patch for v4.19]
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+---
+ block/blk-core.c       |  5 +++++
+ block/blk-sysfs.c      | 44 ++++++++++++++++++++----------------------
+ block/genhd.c          |  4 ++++
+ include/linux/blkdev.h |  2 --
+ 4 files changed, 30 insertions(+), 25 deletions(-)
+
+diff --git a/block/blk-core.c b/block/blk-core.c
+index 445b878e3519..93aeb9bb2e93 100644
+--- a/block/blk-core.c
++++ b/block/blk-core.c
+@@ -751,11 +751,16 @@ void blk_exit_queue(struct request_queue *q)
+  *
+  * Mark @q DYING, drain all pending requests, mark @q DEAD, destroy and
+  * put it.  All future requests will be failed immediately with -ENODEV.
++ *
++ * Context: can sleep
+  */
+ void blk_cleanup_queue(struct request_queue *q)
+ {
+ 	spinlock_t *lock = q->queue_lock;
+ 
++	/* cannot be called from atomic context */
++	might_sleep();
++
+ 	/* mark @q DYING, no new request or merges will be allowed afterwards */
+ 	mutex_lock(&q->sysfs_lock);
+ 	blk_set_queue_dying(q);
+diff --git a/block/blk-sysfs.c b/block/blk-sysfs.c
+index 8286640d4d66..da69dc02e2ce 100644
+--- a/block/blk-sysfs.c
++++ b/block/blk-sysfs.c
+@@ -795,25 +795,32 @@ static void blk_free_queue_rcu(struct rcu_head *rcu_head)
+ }
+ 
+ /**
+- * __blk_release_queue - release a request queue when it is no longer needed
+- * @work: pointer to the release_work member of the request queue to be released
++ * blk_release_queue - releases all allocated resources of the request_queue
++ * @kobj: pointer to a kobject, whose container is a request_queue
+  *
+- * Description:
+- *     blk_release_queue is the counterpart of blk_init_queue(). It should be
+- *     called when a request queue is being released; typically when a block
+- *     device is being de-registered. Its primary task it to free the queue
+- *     itself.
++ * This function releases all allocated resources of the request queue.
+  *
+- * Notes:
+- *     The low level driver must have finished any outstanding requests first
+- *     via blk_cleanup_queue().
++ * The struct request_queue refcount is incremented with blk_get_queue() and
++ * decremented with blk_put_queue(). Once the refcount reaches 0 this function
++ * is called.
+  *
+- *     Although blk_release_queue() may be called with preemption disabled,
+- *     __blk_release_queue() may sleep.
++ * For drivers that have a request_queue on a gendisk and added with
++ * __device_add_disk() the refcount to request_queue will reach 0 with
++ * the last put_disk() called by the driver. For drivers which don't use
++ * __device_add_disk() this happens with blk_cleanup_queue().
++ *
++ * Drivers exist which depend on the release of the request_queue to be
++ * synchronous, it should not be deferred.
++ *
++ * Context: can sleep
+  */
+-static void __blk_release_queue(struct work_struct *work)
++
++static void blk_release_queue(struct kobject *kobj)
+ {
+-	struct request_queue *q = container_of(work, typeof(*q), release_work);
++	struct request_queue *q =
++		container_of(kobj, struct request_queue, kobj);
++
++	might_sleep();
+ 
+ 	if (test_bit(QUEUE_FLAG_POLL_STATS, &q->queue_flags))
+ 		blk_stat_remove_callback(q, q->poll_cb);
+@@ -863,15 +870,6 @@ static void __blk_release_queue(struct work_struct *work)
+ 	call_rcu(&q->rcu_head, blk_free_queue_rcu);
+ }
+ 
+-static void blk_release_queue(struct kobject *kobj)
+-{
+-	struct request_queue *q =
+-		container_of(kobj, struct request_queue, kobj);
+-
+-	INIT_WORK(&q->release_work, __blk_release_queue);
+-	schedule_work(&q->release_work);
+-}
+-
+ static const struct sysfs_ops queue_sysfs_ops = {
+ 	.show	= queue_attr_show,
+ 	.store	= queue_attr_store,
+diff --git a/block/genhd.c b/block/genhd.c
+index 2b2a936cf848..b7bb479658b2 100644
+--- a/block/genhd.c
++++ b/block/genhd.c
+@@ -744,6 +744,8 @@ void del_gendisk(struct gendisk *disk)
+ 	blk_integrity_del(disk);
+ 	disk_del_events(disk);
+ 
++	might_sleep();
++
+ 	/*
+ 	 * Block lookups of the disk until all bdevs are unhashed and the
+ 	 * disk is marked as dead (GENHD_FL_UP cleared).
+@@ -1291,6 +1293,8 @@ static void disk_release(struct device *dev)
+ {
+ 	struct gendisk *disk = dev_to_disk(dev);
+ 
++	might_sleep();
++
+ 	blk_free_devt(dev->devt);
+ 	disk_release_events(disk);
+ 	kfree(disk->random);
+diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
+index 745b2d0dcf78..3af29b5f54b2 100644
+--- a/include/linux/blkdev.h
++++ b/include/linux/blkdev.h
+@@ -669,8 +669,6 @@ struct request_queue {
+ 	size_t			cmd_size;
+ 	void			*rq_alloc_data;
+ 
+-	struct work_struct	release_work;
+-
+ #define BLK_MAX_WRITE_HINTS	5
+ 	u64			write_hints[BLK_MAX_WRITE_HINTS];
+ };
+-- 
+2.19.0
+

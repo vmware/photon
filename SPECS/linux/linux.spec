@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.160
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -112,6 +112,10 @@ Patch62:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch63:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch64:        0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
 Patch65:        0005-ovl-check-permission-to-open-real-file.patch
+
+# Fix for CVE-2019-19770
+Patch66:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
+Patch67:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 
 #Fix for 9p
 Patch70:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
@@ -408,6 +412,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch63 -p1
 %patch64 -p1
 %patch65 -p1
+%patch66 -p1
+%patch67 -p1
 
 %patch70 -p1
 %patch71 -p1
@@ -848,6 +854,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Wed Dec 09 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.160-4
+-   Fix for CVE-2019-19770
 *   Tue Dec 08 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.160-3
 -   Change PTP_SYS_OFFSET_EXTENDED IOCTL to _IOWR
 *   Tue Dec 08 2020 Ankit Jain <ankitja@vmware.com> 4.19.160-2

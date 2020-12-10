@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.160
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -72,6 +72,10 @@ Patch43:        efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.pat
 #Fix for CVE-2019-19338
 Patch44:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch45:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
+
+# Fix for CVE-2019-19770
+Patch46:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
+Patch47:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 
 # 9p patches
 Patch54:        0001-fs-9p-Add-opt_metaonly-option.patch
@@ -397,6 +401,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch43 -p1
 %patch44 -p1
 %patch45 -p1
+%patch46 -p1
+%patch47 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -742,6 +748,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Dec 09 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.160-3
+-   Fix for CVE-2019-19770
 *   Fri Dec 6 2020 Albert Guo <aguo@vmware.com> 4.19.160-2
 -   9p: fscache: Make dcache work with case insensitive volumes
 *   Fri Dec 4 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.160-1

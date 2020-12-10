@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.160
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt66
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -77,6 +77,10 @@ Patch61:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch62:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch63:        0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
 Patch64:        0005-ovl-check-permission-to-open-real-file.patch
+
+# Fix for CVE-2019-19770
+Patch65:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
+Patch66:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -517,6 +521,8 @@ The Linux package contains the Linux kernel doc files
 %patch62 -p1
 %patch63 -p1
 %patch64 -p1
+%patch65 -p1
+%patch66 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -1030,6 +1036,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Dec 09 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.160-3
+-   Fix for CVE-2019-19770
 *   Tue Dec 08 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.160-2
 -   Change PTP_SYS_OFFSET_EXTENDED IOCTL to _IOWR
 *   Tue Nov 24 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.160-1
