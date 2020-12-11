@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.177
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -124,6 +124,15 @@ Patch203:	0004-vdfs-9p-Handle-failure-during-recovery.patch
 Patch204:	0005-vdfs-9p-Adding-claim-tags-support-in-9p.patch
 Patch205:	0006-vdfs-9p-xattrcreate-recovery.patch
 Patch206:	0007-vdfs-9p-Fix-recovery-logic-and-cleanup-tags.patch
+
+# VDFS 9p shared memory patches
+Patch207:	0001-VDFS-9p-01-Add-shared-memory-support.patch
+Patch208:	0002-VDFS-9p-2-shared-memory-support-ring-buffer-manageme.patch
+Patch209:	0003-VDFS-9p-3-Add-9p-handlers-for-shared-memory-operatio.patch
+Patch210:	0004-VDFS-9p-4-Add-poller-thread-for-polling-completion-r.patch
+Patch211:	0005-VDFS-9p-05-Integrate-9p-IO-path-with-shared-memory.patch
+Patch212:	0006-VDFS-9p-06-Add-support-for-claim-tags.patch
+Patch213:	0007-VDFS-9p-07-Integrate-shared-memory-with-recovery-log.patch
 
 # VDFS 9p changes
 Patch225:      0001-9p-fscache-Don-t-use-writeback-fid-for-cache-when-en.patch
@@ -446,6 +455,13 @@ This Linux package contains hmac sha generator kernel module.
 %patch204 -p1
 %patch205 -p1
 %patch206 -p1
+%patch207 -p1
+%patch208 -p1
+%patch209 -p1
+%patch210 -p1
+%patch211 -p1
+%patch212 -p1
+%patch213 -p1
 
 %patch225 -p1
 %patch226 -p1
@@ -778,6 +794,14 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Mar 25 2021 Mounesh Badiger <badigerm@vmware.com> 4.19.177-5
+-   9p: VDFS: Integrate shared memory with recovery logic
+-   9p: VDFS: Add support claim tags in shared memory
+-   9p: VDFS: Integrate 9p IO path with shared memory
+-   9p: VDFS: Poller thread for polling completion rings
+-   9p: VDFS: Add 9p handlers for shared memory operatios
+-   9p: VDFS: Shared memory ring buffer management support
+-   9p: VDFS: Add shared memory mmap support in 9p
 *   Wed Mar 17 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.177-4
 -   Introduce kernel panic on initramfs unpack failure
 *   Thu Mar 04 2021 Ankit Jain <ankitja@vmware.com> 4.19.177-3

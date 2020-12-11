@@ -1,0 +1,1030 @@
+From 65feef7ea1fe9d3c5c80fa6ae5b395dfe91dc08e Mon Sep 17 00:00:00 2001
+From: Mounesh Badiger <badigerm@vmware.com>
+Date: Wed, 24 Mar 2021 12:40:46 -0700
+Subject: [PATCH 3/7] [VDFS-9p-3] Add 9p handlers for shared memory operations
+
+IO thread, allocates ring buffer and fills T_ part of P9ZCCmdDesc{}, enqueues cmdIdx
+(ring buffer idx) into submission ring and waits for IO to completion. After IO completion
+reads R_ part of P9ZCCmdDesc{}, frees the ring buffer and completes the IO.
+---
+ include/net/9p/9p.h     |  12 +
+ include/net/9p/client.h |   4 +
+ net/9p/client.c         |   6 +-
+ net/9p/recovery.h       |   1 +
+ net/9p/trans_vdfs.c     | 886 ++++++++++++++++++++++++++++++++++++++++++++++++
+ net/9p/trans_vdfs.h     |  34 ++
+ 6 files changed, 940 insertions(+), 3 deletions(-)
+
+diff --git a/include/net/9p/9p.h b/include/net/9p/9p.h
+index e1b2223..218c83e 100644
+--- a/include/net/9p/9p.h
++++ b/include/net/9p/9p.h
+@@ -218,6 +218,18 @@ enum p9_msg_t {
+ 	P9_RSHMMAP,
+ 	P9_TSHMUNMAP = 130,
+ 	P9_RSHMUNMAP,
++	P9_TSYMLINKX = 134,
++	P9_RSYMLINKX,
++	P9_TXATTRSETX = 136,
++	P9_RXATTRSETX,
++	P9_TXATTRGETX = 138,
++	P9_RXATTRGETX,
++	P9_TREADDIRX = 140,
++	P9_RREADDIRX,
++	P9_TREADLINKX = 142,
++	P9_RREADLINKX,
++	P9_TSHMCMD = 144,
++	P9_RSHMCMD,
+ };
+ 
+ /**
+diff --git a/include/net/9p/client.h b/include/net/9p/client.h
+index b28adb0..e48570a 100644
+--- a/include/net/9p/client.h
++++ b/include/net/9p/client.h
+@@ -339,6 +339,10 @@ int p9_client_shm_create(struct p9_client *c, u32 flags,
+ void p9_client_shm_delete(struct p9_client *c, u32 flags,
+ 			  unsigned long *entries,
+ 			  u32 num_entries, u32 entry_size);
++int p9_vdfs_handle_xattrset(struct p9_fid *file_fid, const char *name,
++			    const void *value, size_t value_len, int flags);
++size_t p9_vdfs_handle_xattrget(struct p9_fid *fid, const char *name,
++			       void *buffer, size_t buffer_size);
+ 
+ static inline void p9_recov_ops_inflight_get(struct p9_client *clnt)
+ {
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 57bdf92..9d490dc 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -878,8 +878,8 @@ static int p9_client_flush(struct p9_client *c, struct p9_req_t *oldreq)
+  * return recovery status after wait is completed..
+  */
+ 
+-static int
+-p9_client_wait_for_recovery(struct p9_client *c, int8_t op, bool is_retry)
++int
++p9_client_wait_for_recovery(struct p9_client *c, u8 op, bool is_retry)
+ {
+ 	unsigned long flags;
+ 	int recovery_state;
+@@ -1204,7 +1204,7 @@ static struct p9_fid *p9_fid_create(struct p9_client *clnt)
+ 	return NULL;
+ }
+ 
+-static void p9_fid_destroy(struct p9_fid *fid)
++void p9_fid_destroy(struct p9_fid *fid)
+ {
+ 	struct p9_client *clnt;
+ 	unsigned long flags;
+diff --git a/net/9p/recovery.h b/net/9p/recovery.h
+index 06de022..732b272 100644
+--- a/net/9p/recovery.h
++++ b/net/9p/recovery.h
+@@ -70,4 +70,5 @@ void p9_recovery_breakpoint(struct p9_client *client, char *breakpoint);
+ bool p9_req_needs_claimtags(struct p9_client *clnt, struct p9_req_t *r);
+ int p9_client_claim_tags(void *data);
+ bool p9_op_needs_refcounting(int8_t op);
++int p9_client_wait_for_recovery(struct p9_client *clnt, u8 op, bool is_retry);
+ #endif // NET_9P_RECOVERY_H
+diff --git a/net/9p/trans_vdfs.c b/net/9p/trans_vdfs.c
+index 2efcf02..37609cd 100644
+--- a/net/9p/trans_vdfs.c
++++ b/net/9p/trans_vdfs.c
+@@ -640,3 +640,889 @@ p9_vdfs_free_desc(P9ZCCmdDesc *desc)
+ 	pool->freed_pool[pool->next_freed_idx] = idx;
+ 	pool->next_freed_idx++;
+ }
++
++
++/*
++ * p9_vdfs_tag_alloc --
++ *	Allocates unique tag. p9_req_t is not used for shared memory backend.
++ */
++
++static int
++p9_vdfs_tag_alloc(struct p9_client *c, int cmdIdx)
++{
++	int tag;
++
++	idr_preload(GFP_NOFS);
++	spin_lock_irq(&c->lock);
++
++	tag = idr_alloc(&c->reqs, NULL, 0, P9_NOTAG, GFP_NOWAIT);
++	spin_unlock_irq(&c->lock);
++	idr_preload_end();
++
++	//pr_info("cmdIdx %d req - %px tag - %d \n", cmdIdx, req, tag);
++
++	return tag;
++}
++
++
++/*
++ * p9_vdfs_alloc_init_desc --
++ */
++static P9ZCCmdDesc *
++p9_vdfs_alloc_init_desc(struct p9_client *c, int op)
++{
++	P9ZCCmdDesc *desc = p9_vdfs_alloc_desc();
++
++	desc->op = op;
++	desc->tag = p9_vdfs_tag_alloc(c, desc->idx);
++	desc->err = 0;
++	desc->completed = false;
++	desc->clnt = c;
++
++	//pr_info("shared memory: op - %d tag - %d \n", op, desc->tag);
++
++	return desc;
++}
++
++
++/*
++ * p9_vdfs_wait_for_completion --
++ *	Enqueues the cmd into submission ring and waits for completion of cmd.
++ *	checks for recovery progress and waits for it to complete.
++ */
++
++static void
++p9_vdfs_wait_for_completion(struct p9_client *clnt, P9ZCCmdDesc *desc, int *err)
++{
++	u32 idx;
++	int ret, rstate;
++	ring_info_t *ring_info = (ring_info_t *)clnt->shm_ring;
++	Ring *ring;
++
++retry:
++	rstate = p9_client_wait_for_recovery(clnt, desc->op, false);
++	if (rstate == RECOVERY_FAILED) {
++		*err = EIO;
++		return;
++	}
++
++	ring = ring_info->ring_header.subRing;
++
++	*err = 0;
++	idx = desc->idx;
++	p9_debug(P9_DEBUG_9P, "wait for io ring %px  %d cmd idx=%d \n",
++		 desc, desc->op, idx);
++
++	ret = p9_vdfs_enqueue_ring(ring, &idx, 1);
++	BUG_ON(ret != 1);
++
++        if (desc->completed) {
++		*err = desc->err;
++		return;
++        }
++
++	wait_event(shm_info.waitqs[idx],
++		   (desc->completed == true ||
++		    (clnt->rstate == RECOVERY_PENDING &&
++		    clnt->recovery_thread != current)));
++
++	if (desc->completed) {
++		*err = desc->err;
++		return;
++	}
++
++	goto retry;
++}
++
++/*
++ * p9_vdfs_copy_qid --
++ *	Helper function to copy P9Qid to p9_qid
++ */
++static void
++p9_vdfs_copy_qid(struct p9_qid *qid, const P9Qid *sqid)
++{
++	qid->type = sqid->type;
++	qid->path = sqid->path;
++	qid->version = sqid->version;
++}
++
++/*
++ * p9_vdfs_handle_walkx --
++ */
++int p9_vdfs_handle_walkx(struct p9_fid *oldfid, struct p9_fid *fid,
++			 uint16_t nwname, const unsigned char *const *wnames)
++{
++	int err, i;
++	struct p9_client *clnt;
++	P9ZCCmdDesc *desc;
++	struct P9CmdWalkX *walkx;
++
++	clnt = oldfid->clnt;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TWALKX);
++	walkx = &desc->walkx;
++
++	walkx->twalk.fid = oldfid->fid;
++	walkx->twalk.nfid = fid->fid;
++	walkx->twalk.nwname = nwname;
++
++	for (i = 0; i < walkx->twalk.nwname; i++) {
++		strncpy(walkx->twalk.elem[i].name, wnames[i],
++			strlen(wnames[i]) + 1);
++		p9_debug(P9_DEBUG_9P, "walkx->twalk.elem[%d].name - %s cmdIdx-%d\n", i,
++			 walkx->twalk.elem[i].name, desc->idx);
++	}
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	if (err) {
++		p9_debug(P9_DEBUG_ERROR, "walkx returned error %d\n", err);
++		p9_vdfs_free_desc(desc);
++		return -err;
++	}
++
++	if (nwname)
++		p9_vdfs_copy_qid(&fid->qid, &walkx->rwalkx.rwalk.qid[nwname - 1]);
++	else
++		fid->qid = oldfid->qid;
++
++	if (current != clnt->recovery_thread) {
++		err = p9_update_twalk_desc(clnt, fid, oldfid, nwname, wnames,
++					   walkx->rwalkx.globalId);
++		if (err)
++			pr_err("Adding twalk to recovery state (%d, %d, nwname %ud "
++				"wname %s) failed", fid->fid, oldfid->fid, nwname,
++				wnames ? wnames[0] : NULL);
++	}
++
++	p9_vdfs_free_desc(desc);
++	return 0;
++}
++
++
++/*
++ * p9_vdfs_handle_createx --
++ */
++
++int p9_vdfs_handle_createx(struct p9_fid *ofid, const char *name, u32 flags,
++			   u32 mode, kgid_t gid, struct p9_qid *qid)
++{
++	int err = 0;
++	struct p9_client *clnt;
++	P9ZCCmdDesc *desc;
++	struct P9CmdLCreateX *lcreatex;
++
++
++	clnt = ofid->clnt;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TLCREATEX);
++
++	lcreatex = &desc->lcreatex;
++
++	lcreatex->tlcreate.fid = ofid->fid;
++	strncpy(lcreatex->tlcreate.file.name, name,
++		sizeof(lcreatex->tlcreate.file.name));
++	lcreatex->tlcreate.flags = flags;
++	lcreatex->tlcreate.mode = mode;
++	lcreatex->tlcreate.gid = __kgid_val(gid);
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++	if (err) {
++		p9_debug(P9_DEBUG_ERROR, "createx returned error:%d\n", err);
++		p9_vdfs_free_desc(desc);
++		return -err;
++	}
++
++	p9_vdfs_copy_qid(qid, &lcreatex->rlcreatex.rlcreate.qid);
++	ofid->mode = mode;
++	ofid->iounit = lcreatex->rlcreatex.rlcreate.iounit;
++
++	err = p9_update_tlcreatex_desc(clnt, ofid, name,
++				       lcreatex->rlcreatex.globalId);
++	if (err)
++		pr_err("Adding tlcreatex to recovery state (%d %s) failed\n",
++		       ofid->fid, name);
++
++	p9_vdfs_free_desc(desc);
++	return 0;
++}
++
++/*
++ * p9_vdfs_handle_read_write_x --
++ */
++int p9_vdfs_handle_read_write_x(struct p9_fid *fid, u64 off,
++				int rsize, u32 pageoff,
++				u32 maxpages, unsigned long *ppns,
++				bool write)
++{
++	struct p9_client *clnt;
++	int err, i;
++	P9ZCCmdDesc *desc;
++	int rcount;
++	struct P9CmdTReadX *ptr;
++
++
++	clnt = fid->clnt;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, write ? P9_TWRITEX : P9_TREADX);
++
++	if (write)
++		ptr = (struct P9CmdTReadX *) &desc->writex.twritex;
++	else
++		ptr = &desc->readx.treadx;
++
++	for (i = 0; i < maxpages; i++)
++		ptr->ppns[i] = ppns[i];
++
++	ptr->fid = fid->fid;
++	ptr->offset = off;
++	ptr->start = pageoff;
++	ptr->npages = maxpages;
++	ptr->size = rsize;
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	if (err) {
++		p9_debug(P9_DEBUG_ERROR, "%s returned error:%d\n",
++			 write? "writex" : "readx", err);
++		p9_vdfs_free_desc(desc);
++		return -err;
++	}
++
++	rcount = write ? desc->writex.rwritex.count :
++			desc->readx.rreadx.count;
++
++	p9_vdfs_free_desc(desc);
++
++	return rcount;
++}
++
++/*
++ * p9_vdfs_kva_to_ppns --
++ *	converts kernel virtual address to ppns.
++ */
++static void
++p9_vdfs_kva_to_ppns(const void *p, u32 len, u32 *off, u32 *npages,
++		    u64 *ppns)
++{
++	u32 i;
++
++	*npages = DIV_ROUND_UP((unsigned long)p + len, PAGE_SIZE) -
++				(unsigned long)p / PAGE_SIZE;
++
++	p -= (*off = (unsigned long)p % PAGE_SIZE);
++
++	p9_debug(P9_DEBUG_9P, "npages = %u start = %u \n", *npages, *off);
++
++	for (i = 0; i < *npages; i++) {
++		if (is_vmalloc_addr(p))
++			ppns[i] = page_to_pfn(vmalloc_to_page(p));
++		else
++			ppns[i] = page_to_pfn(kmap_to_page((void *)(uintptr_t)p));
++		p += (unsigned long)PAGE_SIZE;
++	}
++}
++
++/*
++ * p9_vdfs_handle_symlinkx --
++ */
++int p9_vdfs_handle_symlinkx(struct p9_fid *dfid, const char *name,
++			    const char *symtgt, kgid_t gid,
++			    struct p9_qid *qid)
++{
++	struct p9_client *clnt = dfid->clnt;
++	int err;
++	P9ZCCmdDesc *desc;
++	struct P9CmdSymlinkX *symlinkx;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TSYMLINKX);
++
++	symlinkx = &desc->symlinkx;
++
++	symlinkx->tsymlinkx.fid = dfid->fid;
++	symlinkx->tsymlinkx.gid = __kgid_val(gid);
++	strncpy(symlinkx->tsymlinkx.name.name, name,
++		sizeof(symlinkx->tsymlinkx.name.name));
++
++	p9_vdfs_kva_to_ppns(symtgt, P9_MAXPATH_LEN,
++			    &symlinkx->tsymlinkx.pageOff,
++			    &symlinkx->tsymlinkx.npages,
++			    symlinkx->tsymlinkx.ppns);
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	if (err) {
++		p9_debug(P9_DEBUG_ERROR, "symlinkx returned error:%d\n", err);
++		return -err;
++	}
++
++	p9_vdfs_copy_qid(qid, &symlinkx->rsymlink.qid);
++
++	p9_vdfs_free_desc(desc);
++	return 0;
++}
++
++/*
++ * p9_vdfs_handle_link --
++ */
++int p9_vdfs_handle_link(struct p9_fid *dfid, struct p9_fid *oldfid,
++			const char *newname)
++{
++	struct p9_client *clnt = dfid->clnt;
++	P9ZCCmdDesc *desc;
++	int err;
++	struct P9CmdLink *link;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TLINK);
++
++	link = &desc->link;
++
++	link->tlink.dfid = dfid->fid;
++	link->tlink.fid = oldfid->fid;
++	strncpy(link->tlink.name.name, newname, sizeof(link->tlink.name.name));
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	p9_vdfs_free_desc(desc);
++
++	if (err)
++		return -err;
++
++	return err;
++}
++
++//no-op for vdfs until we unstable writes.
++int p9_vdfs_handle_fsync(struct p9_fid *fid, int datasync)
++{
++	return 0;
++}
++
++/*
++ * p9_vdfs_handle_clunk --
++ */
++int p9_vdfs_handle_clunk(struct p9_fid *fid)
++{
++	struct p9_client *clnt = fid->clnt;
++	P9ZCCmdDesc *desc;
++	int err;
++	struct P9CmdClunk *clunk;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TCLUNK);
++
++	clunk = &desc->clunk;
++
++	clunk->tclunk.fid = fid->fid;
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	p9_update_tclunk_desc(clnt, fid, true);
++
++	p9_vdfs_free_desc(desc);
++
++	p9_fid_destroy(fid);
++	if (err)
++		return -err;
++
++	return 0;
++}
++
++/*
++ * p9_vdfs_handle_unlinkat --
++ */
++int p9_vdfs_handle_unlinkat(struct p9_fid *dfid, const char *name, int flags)
++{
++	struct p9_client *clnt = dfid->clnt;
++	P9ZCCmdDesc *desc;
++	int err;
++	struct P9CmdUnlinkAt *unlinkat;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TUNLINKAT);
++
++	unlinkat = &desc->unlinkat;
++
++	unlinkat->tunlinkat.fid = dfid->fid;
++	unlinkat->tunlinkat.flags = flags;
++	strncpy(unlinkat->tunlinkat.name.name, name,
++		sizeof(unlinkat->tunlinkat.name.name));
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	p9_vdfs_free_desc(desc);
++
++	if (err)
++		return -err;
++
++	return 0;
++}
++
++/*
++ * p9_vdfs_handle_getattr --
++ */
++int p9_vdfs_handle_getattr(struct p9_fid *fid, u64 request_mask,
++			   struct p9_stat_dotl *attr)
++{
++	struct p9_client *clnt = fid->clnt;
++	P9ZCCmdDesc *desc;
++	int err;
++	struct P9CmdGetAttr *getattr;
++	struct P9CmdRGetAttr *rattr;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TGETATTR);
++
++	getattr = &desc->getattr;
++
++	getattr->tgetattr.fid = fid->fid;
++	getattr->tgetattr.mask = request_mask;
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	if (err) {
++		p9_debug(P9_DEBUG_ERROR, "gettattr returned error:%d \n", err);
++		p9_vdfs_free_desc(desc);
++		return -err;
++	}
++
++	rattr = &getattr->rgetattr;
++
++	attr->st_result_mask = rattr->valid;
++	attr->st_mode = rattr->attr.mode;
++	p9_vdfs_copy_qid(&attr->qid, &rattr->qid);
++
++	memcpy(&attr->st_uid, &rattr->attr.uid, sizeof(u32));
++	memcpy(&attr->st_gid, &rattr->attr.gid, sizeof(u32));
++	attr->st_nlink = rattr->attr.nlink;
++	attr->st_rdev = rattr->attr.rdev;
++	attr->st_size = rattr->attr.size;
++	attr->st_blksize = rattr->attr.blksize;
++	attr->st_blocks = rattr->attr.nblocks;
++	attr->st_atime_sec = rattr->attr.atime_sec;
++	attr->st_atime_nsec = rattr->attr.atime_nsec;
++	attr->st_mtime_sec = rattr->attr.mtime_sec;
++	attr->st_mtime_nsec = rattr->attr.mtime_nsec;
++	attr->st_ctime_sec = rattr->attr.ctime_sec;
++	attr->st_ctime_nsec = rattr->attr.ctime_nsec;
++	attr->st_btime_sec = rattr->attr.btime_sec;
++	attr->st_btime_nsec = rattr->attr.btime_nsec;
++	attr->st_gen = rattr->attr.gen;
++	attr->st_data_version = rattr->attr.data_version;
++
++	p9_debug(P9_DEBUG_9P,
++		"<<< RGETATTR st_result_mask=%lld\n"
++		"<<< qid=%x.%llx.%x\n"
++		"<<< st_mode=%8.8x st_nlink=%llu\n"
++		"<<< st_uid=%d st_gid=%d\n"
++		"<<< st_rdev=%llx st_size=%llx st_blksize=%llu st_blocks=%llu\n"
++		"<<< st_atime_sec=%lld st_atime_nsec=%lld\n"
++		"<<< st_mtime_sec=%lld st_mtime_nsec=%lld\n"
++		"<<< st_ctime_sec=%lld st_ctime_nsec=%lld\n"
++		"<<< st_btime_sec=%lld st_btime_nsec=%lld\n"
++		"<<< st_gen=%lld st_data_version=%lld",
++		attr->st_result_mask, attr->qid.type, attr->qid.path,
++		attr->qid.version, attr->st_mode, attr->st_nlink,
++		from_kuid(&init_user_ns, attr->st_uid),
++		from_kgid(&init_user_ns, attr->st_gid),
++		attr->st_rdev, attr->st_size, attr->st_blksize,
++		attr->st_blocks, attr->st_atime_sec, attr->st_atime_nsec,
++		attr->st_mtime_sec, attr->st_mtime_nsec, attr->st_ctime_sec,
++		attr->st_ctime_nsec, attr->st_btime_sec, attr->st_btime_nsec,
++		attr->st_gen, attr->st_data_version);
++
++	p9_vdfs_free_desc(desc);
++	return 0;
++}
++
++/*
++ * p9_vdfs_handle_setattr --
++ */
++int p9_vdfs_handle_setattr(struct p9_fid *fid, struct p9_iattr_dotl *p9attr)
++{
++	struct p9_client *clnt = fid->clnt;
++	P9ZCCmdDesc *desc;
++	int err;
++	struct P9CmdSetAttr *setattr;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TSETATTR);
++
++	setattr = &desc->setattr;
++
++	setattr->tsetattr.fid = fid->fid;
++	setattr->tsetattr.valid = p9attr->valid;
++	setattr->tsetattr.attr.mode = p9attr->mode;
++	setattr->tsetattr.attr.uid = __kuid_val(p9attr->uid);
++	setattr->tsetattr.attr.gid = __kgid_val(p9attr->gid);
++	setattr->tsetattr.attr.size = p9attr->size;
++	setattr->tsetattr.attr.atime_sec = p9attr->atime_sec;
++	setattr->tsetattr.attr.atime_nsec = p9attr->atime_nsec;
++	setattr->tsetattr.attr.mtime_sec = p9attr->mtime_sec;
++	setattr->tsetattr.attr.mtime_nsec = p9attr->mtime_nsec;
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	p9_vdfs_free_desc(desc);
++
++	if (err)
++		return -err;
++
++	return 0;
++}
++
++/*
++ * p9_vdfs_handle_statfs --
++ */
++int p9_vdfs_handle_statfs(struct p9_fid *fid, struct p9_rstatfs *sb)
++{
++	struct p9_client *clnt = fid->clnt;
++	int err;
++	P9ZCCmdDesc *desc;
++	struct P9CmdStatfs *statfs;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TSTATFS);
++
++	statfs = &desc->statfs;
++
++	statfs->tstatfs.fid = fid->fid;
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	if (err) {
++		p9_debug(P9_DEBUG_ERROR, "statfs returned error:%d\n", err);
++		p9_vdfs_free_desc(desc);
++		return -err;
++	}
++
++	sb->type = statfs->rstatfs.type;
++	sb->bsize = statfs->rstatfs.bsize;
++	sb->blocks = statfs->rstatfs.blocks;
++	sb->bfree = statfs->rstatfs.bfree;
++	sb->bavail = statfs->rstatfs.bavail;
++	sb->files = statfs->rstatfs.files;
++	sb->ffree = statfs->rstatfs.ffree;
++	sb->fsid = statfs->rstatfs.fsid;
++	sb->namelen = statfs->rstatfs.namelen;
++
++	p9_vdfs_free_desc(desc);
++	return 0;
++}
++
++/*
++ * p9_vdfs_handle_renameat --
++ */
++int p9_vdfs_handle_renameat(struct p9_fid *olddirfid, const char *old_name,
++			    struct p9_fid *newdirfid, const char *new_name)
++{
++	struct p9_client *clnt = olddirfid->clnt;
++	int err;
++	P9ZCCmdDesc *desc;
++	struct P9CmdRenameAt *renameat;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TRENAMEAT);
++
++	renameat = &desc->renameat;
++
++	renameat->trenameat.fid = olddirfid->fid;
++	renameat->trenameat.nfid = newdirfid->fid;
++	strncpy(renameat->trenameat.old_name.name, old_name,
++		sizeof(renameat->trenameat.old_name.name));
++	strncpy(renameat->trenameat.new_name.name, new_name,
++	        sizeof(renameat->trenameat.new_name.name));
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	p9_vdfs_free_desc(desc);
++
++	if (err)
++		return -err;
++
++	return 0;
++}
++
++
++/*
++ * p9_vdfs_handle_xattrset --
++ */
++int p9_vdfs_handle_xattrset(struct p9_fid *file_fid, const char *name,
++			    const void *value, size_t value_len, int flags)
++{
++	struct p9_client *clnt = file_fid->clnt;
++	int err;
++	P9ZCCmdDesc *desc;
++	struct P9CmdXAttrSetX *xattrsetx;
++
++	p9_debug(P9_DEBUG_9P, "xattrset fid -> %d name -> %s \n", file_fid->fid, name);
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TXATTRSETX);
++
++	xattrsetx = &desc->xattrsetx;
++
++	xattrsetx->txattrsetx.fid = file_fid->fid;
++	strncpy(xattrsetx->txattrsetx.name.name, name,
++		sizeof(xattrsetx->txattrsetx.name.name));
++
++	xattrsetx->txattrsetx.flags = flags;
++	xattrsetx->txattrsetx.attrsize = value_len;
++
++	p9_vdfs_kva_to_ppns(value, value_len,
++			    &xattrsetx->txattrsetx.pageoff,
++			    &xattrsetx->txattrsetx.npages,
++			    xattrsetx->txattrsetx.ppns);
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	p9_vdfs_free_desc(desc);
++
++	if (err)
++		return -err;
++
++	return 0;
++}
++EXPORT_SYMBOL(p9_vdfs_handle_xattrset);
++
++/*
++ * p9_vdfs_handle_xattrget --
++ */
++size_t p9_vdfs_handle_xattrget(struct p9_fid *fid, const char *name,
++			       void *buffer, size_t buffer_size)
++{
++	struct p9_client *clnt = fid->clnt;
++	int err;
++	P9ZCCmdDesc *desc;
++	struct P9CmdXAttrGetX *xattrgetx;
++	size_t rsize;
++
++	p9_debug(P9_DEBUG_9P, "xattrget fid -> %d name -> %s \n", fid->fid, name);
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TXATTRGETX);
++
++	xattrgetx = &desc->xattrgetx;
++
++	xattrgetx->txattrgetx.fid = fid->fid;
++	strncpy(xattrgetx->txattrgetx.name.name, name,
++		sizeof(xattrgetx->txattrgetx.name.name));
++
++	xattrgetx->txattrgetx.attrsize = buffer_size;
++
++	p9_vdfs_kva_to_ppns(buffer, buffer_size,
++			    &xattrgetx->txattrgetx.pageoff,
++			    &xattrgetx->txattrgetx.npages,
++			    xattrgetx->txattrgetx.ppns);
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	rsize = xattrgetx->rxattrgetx.size;
++
++	p9_vdfs_free_desc(desc);
++
++	if (err) {
++		if (buffer_size == 0)
++			return rsize;
++		else
++			return -err;
++	}
++
++	return rsize;
++}
++EXPORT_SYMBOL(p9_vdfs_handle_xattrget);
++
++
++/*
++ * p9_vdfs_p9dirent_read --
++ *	Helper function to read directory entry from shared memory descriptor
++ */
++int p9_vdfs_p9dirent_read(struct p9_client *clnt, char *buf,
++			  int len, struct p9_dirent *dirent)
++{
++	P9CmdRReaddirEntry *entry;
++	int size = sizeof(P9Qid) + sizeof (u64) + sizeof (u8) + sizeof(u16);
++
++	entry = (P9CmdRReaddirEntry *) buf;
++
++	size = sizeof(P9CmdRReaddirEntry);
++
++	if (len < size)
++		return -1;
++
++	p9_debug(P9_DEBUG_9P, "entry->name :%s off=%llu\n",
++		 entry->name.name, entry->offset);
++
++	p9_vdfs_copy_qid(&dirent->qid, &entry->qid);
++	dirent->d_off = entry->offset;
++	dirent->d_type = entry->type;
++	strncpy(dirent->d_name, entry->name.name, sizeof(dirent->d_name));
++
++	return size;
++}
++EXPORT_SYMBOL(p9_vdfs_p9dirent_read);
++
++/*
++ * p9_vdfs_handle_readdirx --
++ */
++int p9_vdfs_handle_readdirx(struct p9_fid *fid, char *data, u32 count,
++			    u64 offset)
++{
++	struct p9_client *clnt = fid->clnt;
++	int err;
++	P9ZCCmdDesc *desc;
++	struct P9CmdReaddirX *readdirx;
++	int rcount;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TREADDIRX);
++
++	readdirx = &desc->readdirx;
++
++	readdirx->treaddirx.fid = fid->fid;
++	readdirx->treaddirx.offset = offset;
++	readdirx->treaddirx.count = count;
++	p9_vdfs_kva_to_ppns(data, count, &readdirx->treaddirx.start,
++			    &readdirx->treaddirx.npages,
++			    readdirx->treaddirx.ppns);
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	rcount = readdirx->rreaddirx.count;
++
++	p9_vdfs_free_desc(desc);
++	if (err) {
++		p9_debug(P9_DEBUG_ERROR, "readdir returned error:%d \n", err);
++		return -err;
++	}
++
++	return rcount;
++}
++
++/*
++ * p9_vdfs_handle_mknod--
++ */
++
++int p9_vdfs_handle_mknod(struct p9_fid *fid, const char *name, int mode,
++			 dev_t rdev, kgid_t gid, struct p9_qid *qid)
++{
++	struct p9_client *clnt = fid->clnt;
++	int err;
++	P9ZCCmdDesc *desc;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TMKNOD);
++
++	desc->mknod.tmknod.dfid = fid->fid;
++	desc->mknod.tmknod.mode = mode;
++	desc->mknod.tmknod.major = MAJOR(rdev);
++	desc->mknod.tmknod.minor = MINOR(rdev);
++	desc->mknod.tmknod.gid = __kgid_val(gid);
++	strncpy(desc->mknod.tmknod.name.name, name,
++		sizeof(desc->mknod.tmknod.name.name));
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	if (!err)
++		p9_vdfs_copy_qid(qid, &desc->mknod.rmknod.qid);
++
++	p9_vdfs_free_desc(desc);
++
++	if (err)
++		return -err;
++
++	return 0;
++}
++
++/*
++ * p9_vdfs_handle_mkdir --
++ */
++
++int p9_vdfs_handle_mkdir(struct p9_fid *fid, const char *name, int mode,
++			 kgid_t gid, struct p9_qid *qid)
++{
++	struct p9_client *clnt = fid->clnt;
++	int err;
++	P9ZCCmdDesc *desc;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TMKDIR);
++
++	desc->mkdir.tmkdir.fid = fid->fid;
++	desc->mkdir.tmkdir.mode = mode;
++	desc->mkdir.tmkdir.gid = __kgid_val(gid);
++	strncpy(desc->mkdir.tmkdir.dir.name, name,
++		sizeof(desc->mkdir.tmkdir.dir.name));
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	if (!err)
++		p9_vdfs_copy_qid(qid, &desc->mkdir.rmkdir.qid);
++
++	p9_vdfs_free_desc(desc);
++
++	if (err)
++		return -err;
++
++	return 0;
++}
++
++/*
++ * p9_vdfs_handle_readlinkx --
++ */
++
++int p9_vdfs_handle_readlinkx(struct p9_fid *fid, char **target)
++{
++	struct p9_client *clnt = fid->clnt;
++	int err;
++	P9ZCCmdDesc *desc;
++
++	*target = kzalloc(P9_MAXPATH_LEN, GFP_NOFS);
++	if (*target == NULL)
++		return -ENOMEM;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TREADLINKX);
++
++	desc->readlinkx.treadlinkx.fid = fid->fid;
++	desc->readlinkx.treadlinkx.size = P9_MAXPATH_LEN;
++
++	p9_vdfs_kva_to_ppns(*target, P9_MAXPATH_LEN,
++			    &desc->readlinkx.treadlinkx.pageOff,
++			    &desc->readlinkx.treadlinkx.npages,
++			    desc->readlinkx.treadlinkx.ppns);
++
++	p9_debug(P9_DEBUG_9P, "READLINK cmdIdx = %u npages = %u start = %u \n",
++		desc->idx, desc->readlinkx.treadlinkx.npages,
++		desc->readlinkx.treadlinkx.pageOff);
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++	if (err)
++		kfree(*target);
++	else
++		p9_debug(P9_DEBUG_9P, "<<< RREADLINKX target %s\n", *target);
++
++	p9_vdfs_free_desc(desc);
++
++	if (err)
++		return -err;
++
++	return 0;
++}
++
++/*
++ * p9_vdfs_handle_lopen --
++ */
++
++int p9_vdfs_handle_lopen(struct p9_fid *fid, int mode, struct p9_qid *qid)
++{
++	struct p9_client *clnt = fid->clnt;
++	int err;
++	P9ZCCmdDesc *desc;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TLOPEN);
++
++	desc->lopen.tlopen.flags = mode;
++	desc->lopen.tlopen.fid = fid->fid;
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	if (!err) {
++		fid->mode = mode;
++		p9_vdfs_copy_qid(qid, &desc->lopen.rlopen.qid);
++		fid->iounit = desc->lopen.rlopen.iounit;
++	} else {
++		err = -err;
++	}
++
++	p9_vdfs_free_desc(desc);
++
++	return err;
++}
+diff --git a/net/9p/trans_vdfs.h b/net/9p/trans_vdfs.h
+index c58f213..e0c59de 100644
+--- a/net/9p/trans_vdfs.h
++++ b/net/9p/trans_vdfs.h
+@@ -152,5 +152,39 @@ void p9_vdfs_shm_cleanup(void);
+ void p9_vdfs_client_shm_cleanup(struct p9_client *clnt);
+ void p9_vdfs_free_desc(P9ZCCmdDesc *desc);
+ P9ZCCmdDesc * p9_vdfs_alloc_desc(void);
++int p9_vdfs_handle_walkx(struct p9_fid *oldfid, struct p9_fid *fid,
++			 uint16_t nwname, const unsigned char *const *wnames);
++int p9_vdfs_handle_createx(struct p9_fid *ofid, const char *name, u32 flags,
++			   u32 mode, kgid_t gid, struct p9_qid *qid);
++int p9_vdfs_handle_read_write_x(struct p9_fid *fid, u64 off,
++				int rsize, u32 pageoff, u32 maxpages,
++				unsigned long *ppns, bool write);
++int p9_vdfs_handle_symlinkx(struct p9_fid *dfid, const char *name,
++			    const char *symtgt, kgid_t gid,
++			    struct p9_qid *qid);
++int p9_vdfs_handle_link(struct p9_fid *dfid, struct p9_fid *oldfid,
++			const char *newname);
++int p9_vdfs_handle_fsync(struct p9_fid *fid, int datasync);
++int p9_vdfs_handle_clunk(struct p9_fid *fid);
++int p9_vdfs_handle_unlinkat(struct p9_fid *dfid, const char *name, int flags);
++int p9_vdfs_handle_getattr(struct p9_fid *fid, u64 request_mask,
++			   struct p9_stat_dotl *attr);
++int p9_vdfs_handle_setattr(struct p9_fid *fid, struct p9_iattr_dotl *p9attr);
++int p9_vdfs_handle_statfs(struct p9_fid *fid, struct p9_rstatfs *sb);
++int p9_vdfs_handle_renameat(struct p9_fid *olddirfid, const char *old_name,
++			    struct p9_fid *newdirfid, const char *new_name);
++int p9_vdfs_handle_xattrset(struct p9_fid *file_fid, const char *name,
++			    const void *value, size_t value_len, int flags);
++size_t p9_vdfs_handle_xattrget(struct p9_fid *fid, const char *name,
++			       void *buffer, size_t buffer_size);
++int p9_vdfs_handle_readdirx(struct p9_fid *fid, char *data, u32 count,
++			    u64 offset);
++int p9_vdfs_handle_mknod(struct p9_fid *fid, const char *name, int mode,
++			 dev_t rdev, kgid_t gid, struct p9_qid *qid);
++int p9_vdfs_handle_mkdir(struct p9_fid *fid, const char *name, int mode,
++			 kgid_t gid, struct p9_qid *qid);
++int p9_vdfs_handle_readlinkx(struct p9_fid *fid, char **target);
++int p9_vdfs_handle_lopen(struct p9_fid *fid, int mode, struct p9_qid *qid);
++void p9_fid_destroy(struct p9_fid *fid);
+ 
+ #endif
+-- 
+2.7.4
+

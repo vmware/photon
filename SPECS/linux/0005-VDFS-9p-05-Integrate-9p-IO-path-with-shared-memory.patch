@@ -1,0 +1,370 @@
+From 8e505eb325bacd4c94002db753981f01c6372fe6 Mon Sep 17 00:00:00 2001
+From: Mounesh Badiger <badigerm@vmware.com>
+Date: Wed, 24 Mar 2021 12:49:22 -0700
+Subject: [PATCH 5/7] [VDFS-9p-05] Integrate 9p IO path with shared memory
+
+Add hooks into 9p io path to use shared memory functionality.
+---
+ fs/9p/vfs_dir.c         |  15 +++++--
+ fs/9p/xattr.c           |  14 ++++++-
+ include/net/9p/client.h |   2 +
+ net/9p/client.c         | 108 +++++++++++++++++++++++++++++++++++++++++++++---
+ 4 files changed, 128 insertions(+), 11 deletions(-)
+
+diff --git a/fs/9p/vfs_dir.c b/fs/9p/vfs_dir.c
+index ad7fb4d..a5bef29 100644
+--- a/fs/9p/vfs_dir.c
++++ b/fs/9p/vfs_dir.c
+@@ -223,9 +223,18 @@ static int v9fs_dir_readdir_dotl(struct file *file, struct dir_context *ctx)
+ 
+ 		while (rdir->head < rdir->tail) {
+ 
+-			err = p9dirent_read(fid->clnt, rdir->buf + rdir->head,
+-					    rdir->tail - rdir->head,
+-					    &curdirent);
++			if (!p9_client_shared_memory_enabled(fid->clnt)) {
++
++				err = p9dirent_read(fid->clnt, rdir->buf + rdir->head,
++						    rdir->tail - rdir->head,
++						    &curdirent);
++			} else {
++				err = p9_vdfs_p9dirent_read(fid->clnt,
++							    rdir->buf + rdir->head,
++							    rdir->tail - rdir->head,
++							    &curdirent);
++			}
++
+ 			if (err < 0) {
+ 				p9_debug(P9_DEBUG_VFS, "returned %d\n", err);
+ 				return -EIO;
+diff --git a/fs/9p/xattr.c b/fs/9p/xattr.c
+index 352abc3..f8cbc2d 100644
+--- a/fs/9p/xattr.c
++++ b/fs/9p/xattr.c
+@@ -32,6 +32,11 @@ ssize_t v9fs_fid_xattr_get(struct p9_fid *fid, const char *name,
+ 	struct iov_iter to;
+ 	int err;
+ 
++	if (p9_client_shared_memory_enabled(fid->clnt)) {
++		return p9_vdfs_handle_xattrget(fid, name, buffer,
++					       buffer_size);
++	}
++
+ 	iov_iter_kvec(&to, READ | ITER_KVEC, &kvec, 1, buffer_size);
+ 
+ 	attr_fid = p9_client_xattrwalk(fid, name, &attr_size);
+@@ -107,11 +112,16 @@ int v9fs_fid_xattr_set(struct p9_fid *fid, const char *name,
+ 	struct iov_iter from;
+ 	int retval, err;
+ 
+-	iov_iter_kvec(&from, WRITE | ITER_KVEC, &kvec, 1, value_len);
+-
+ 	p9_debug(P9_DEBUG_VFS, "name = %s value_len = %zu flags = %d\n",
+ 		 name, value_len, flags);
+ 
++	if (p9_client_shared_memory_enabled(fid->clnt)) {
++		return p9_vdfs_handle_xattrset(fid, name, value, value_len,
++					       flags);
++	}
++
++	iov_iter_kvec(&from, WRITE | ITER_KVEC, &kvec, 1, value_len);
++
+ 	/* Clone it */
+ 	fid = clone_fid(fid);
+ 	if (IS_ERR(fid))
+diff --git a/include/net/9p/client.h b/include/net/9p/client.h
+index e48570a..71ac5da 100644
+--- a/include/net/9p/client.h
++++ b/include/net/9p/client.h
+@@ -343,6 +343,8 @@ int p9_vdfs_handle_xattrset(struct p9_fid *file_fid, const char *name,
+ 			    const void *value, size_t value_len, int flags);
+ size_t p9_vdfs_handle_xattrget(struct p9_fid *fid, const char *name,
+ 			       void *buffer, size_t buffer_size);
++int p9_vdfs_p9dirent_read(struct p9_client *clnt, char *buf, int len,
++			  struct p9_dirent *dirent);
+ 
+ static inline void p9_recov_ops_inflight_get(struct p9_client *clnt)
+ {
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 9d490dc..0ce3334 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -1604,6 +1604,13 @@ struct p9_fid *p9_client_walk(struct p9_fid *oldfid, uint16_t nwname,
+ 	p9_debug(P9_DEBUG_9P, ">>> TWALK fids %d,%d nwname %ud wname[0] %s\n",
+ 		 oldfid->fid, fid->fid, nwname, wnames ? wnames[0] : NULL);
+ 
++	if (p9_client_shared_memory_enabled(clnt)) {
++		err = p9_vdfs_handle_walkx(oldfid, fid, nwname, wnames);
++		if (err)
++			return ERR_PTR(err);
++		return fid;
++	}
++
+ 	req = p9_client_rpc(clnt, clnt->recovery_enabled ? P9_TWALKX : P9_TWALK,
+                             "ddT", oldfid->fid, fid->fid,
+                             nwname, wnames);
+@@ -1617,7 +1624,7 @@ struct p9_fid *p9_client_walk(struct p9_fid *oldfid, uint16_t nwname,
+         } else {
+                 err = p9pdu_readf(&req->rc, clnt->proto_version, "R", &nwqids, &wqids);
+         }
+- 
++
+ 	if (err) {
+ 		trace_9p_protocol_dump(clnt, &req->rc);
+ 		p9_tag_remove(clnt, req);
+@@ -1644,7 +1651,7 @@ struct p9_fid *p9_client_walk(struct p9_fid *oldfid, uint16_t nwname,
+ 		fid->qid = oldfid->qid;
+ 
+ 	kfree(wqids);
+-        if (clnt->recovery_enabled) {
++        if (clnt->recovery_enabled && current != clnt->recovery_thread) {
+                 err = p9_update_twalk_desc(clnt, fid, oldfid, nwname, wnames, globalId);
+                 if (err) {
+                       pr_err("Adding twalk to recovery state (%d, %d, nwname %ud wname %s) failed",
+@@ -1683,6 +1690,11 @@ int p9_client_open(struct p9_fid *fid, int mode)
+ 	if (fid->mode != -1)
+ 		return -EINVAL;
+ 
++	if (p9_client_shared_memory_enabled(clnt)) {
++		err = p9_vdfs_handle_lopen(fid, mode, &qid);
++		return err;
++	}
++
+ 	if (p9_is_proto_dotl(clnt))
+ 		req = p9_client_rpc(clnt, P9_TLOPEN, "dd", fid->fid, mode);
+ 	else
+@@ -1730,6 +1742,10 @@ int p9_client_create_dotl(struct p9_fid *ofid, const char *name, u32 flags, u32
+ 	if (ofid->mode != -1)
+ 		return -EINVAL;
+ 
++	if (p9_client_shared_memory_enabled(clnt)) {
++		return p9_vdfs_handle_createx(ofid, name, flags, mode, gid, qid);
++	}
++
+ 	req = p9_client_rpc(clnt, clnt->recovery_enabled ? P9_TLCREATEX : P9_TLCREATE,
+                            "dsddg", ofid->fid, name, flags,
+ 		           mode, gid);
+@@ -1829,6 +1845,11 @@ int p9_client_symlink(struct p9_fid *dfid, const char *name,
+ 			dfid->fid, name, symtgt);
+ 	clnt = dfid->clnt;
+ 
++	if (p9_client_shared_memory_enabled(clnt)) {
++		return p9_vdfs_handle_symlinkx(dfid, name, symtgt,
++					       gid, qid);
++	}
++
+ 	req = p9_client_rpc(clnt, P9_TSYMLINK, "dssg", dfid->fid, name, symtgt,
+ 			gid);
+ 	if (IS_ERR(req)) {
+@@ -1860,6 +1881,10 @@ int p9_client_link(struct p9_fid *dfid, struct p9_fid *oldfid, const char *newna
+ 	p9_debug(P9_DEBUG_9P, ">>> TLINK dfid %d oldfid %d newname %s\n",
+ 			dfid->fid, oldfid->fid, newname);
+ 	clnt = dfid->clnt;
++	if (p9_client_shared_memory_enabled(clnt)) {
++		return p9_vdfs_handle_link(dfid, oldfid, newname);
++	}
++
+ 	req = p9_client_rpc(clnt, P9_TLINK, "dds", dfid->fid, oldfid->fid,
+ 			newname);
+ 	if (IS_ERR(req))
+@@ -1879,6 +1904,10 @@ int p9_client_fsync(struct p9_fid *fid, int datasync)
+ 
+ 	p9_debug(P9_DEBUG_9P, ">>> TFSYNC fid %d datasync:%d\n",
+ 			fid->fid, datasync);
++	if (p9_client_shared_memory_enabled(fid->clnt)) {
++		return p9_vdfs_handle_fsync(fid, datasync);
++	}
++
+ 	err = 0;
+ 	clnt = fid->clnt;
+ 
+@@ -1917,6 +1946,10 @@ int p9_client_clunk(struct p9_fid *fid)
+ 	err = 0;
+ 	clnt = fid->clnt;
+ 
++	if (p9_client_shared_memory_enabled(clnt)) {
++		return p9_vdfs_handle_clunk(fid);
++	}
++
+ 	req = p9_client_rpc(clnt, P9_TCLUNK, "d", fid->fid);
+ 	if (IS_ERR(req)) {
+ 		err = PTR_ERR(req);
+@@ -1986,6 +2019,11 @@ int p9_client_unlinkat(struct p9_fid *dfid, const char *name, int flags)
+ 		   dfid->fid, name, flags);
+ 
+ 	clnt = dfid->clnt;
++
++	if (p9_client_shared_memory_enabled(clnt)) {
++		return p9_vdfs_handle_unlinkat(dfid, name, flags);
++	}
++
+ 	req = p9_client_rpc(clnt, P9_TUNLINKAT, "dsd", dfid->fid, name, flags);
+ 	if (IS_ERR(req)) {
+ 		err = PTR_ERR(req);
+@@ -2002,9 +2040,12 @@ EXPORT_SYMBOL(p9_client_unlinkat);
+ static int
+ dotx_can_zc(const struct iov_iter *iter, struct p9_client *clnt)
+ {
+-       return !iter_is_kvec(iter) &&
+-              clnt->is_dotx_ok &&
+-              iov_iter_count(iter) >= clnt->minzcpages * PAGE_SIZE;
++	if (p9_client_shared_memory_enabled(clnt)) //always zercopy
++		return true;
++
++        return !iter_is_kvec(iter) &&
++               clnt->is_dotx_ok &&
++               iov_iter_count(iter) >= clnt->minzcpages * PAGE_SIZE;
+ }
+ 
+ static int
+@@ -2104,6 +2145,12 @@ p9_client_read_dotx(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *er
+        if (*err)
+                 goto error;
+ 
++       if (p9_client_shared_memory_enabled(clnt)) {
++	       count = p9_vdfs_handle_read_write_x(fid, offset, rsize, off,
++						   maxpages, ppns, false);
++	       goto readdone;
++       }
++
+        req = p9_client_rpc(clnt, P9_TREADX, "dqddp", fid->fid, offset, rsize,
+                            (unsigned int) off, maxpages, ppns);
+        if (IS_ERR(req)) {
+@@ -2123,6 +2170,7 @@ p9_client_read_dotx(struct p9_fid *fid, u64 offset, struct iov_iter *to, int *er
+                goto put_pages;
+        }
+ 
++readdone:
+        if (count == 0)
+                goto put_pages;
+ 
+@@ -2268,6 +2316,12 @@ p9_client_write_dotx(struct p9_fid *fid, u64 offset, struct iov_iter *from, int
+        if (*err)
+                goto error;
+ 
++       if (p9_client_shared_memory_enabled(clnt)) {
++	       count = p9_vdfs_handle_read_write_x(fid, offset, rsize, off,
++						   maxpages, ppns, true);
++	       goto writedone;
++       }
++
+        req = p9_client_rpc(clnt, P9_TWRITEX, "dqddp", fid->fid, offset, rsize,
+                            (unsigned int) off, maxpages, ppns);
+        if (IS_ERR(req)) {
+@@ -2286,6 +2340,7 @@ p9_client_write_dotx(struct p9_fid *fid, u64 offset, struct iov_iter *from, int
+                goto put_pages;
+        }
+ 
++writedone:
+        iov_iter_advance(from, count);
+        total = count;
+ put_pages:
+@@ -2414,6 +2469,15 @@ struct p9_stat_dotl *p9_client_getattr_dotl(struct p9_fid *fid,
+ 	err = 0;
+ 	clnt = fid->clnt;
+ 
++	if (p9_client_shared_memory_enabled(clnt)) {
++		err = p9_vdfs_handle_getattr(fid, request_mask, ret);
++		if (err) {
++			kfree(ret);
++			return ERR_PTR(err);
++		}
++		return ret;
++	}
++
+ 	req = p9_client_rpc(clnt, P9_TGETATTR, "dq", fid->fid, request_mask);
+ 	if (IS_ERR(req)) {
+ 		err = PTR_ERR(req);
+@@ -2479,7 +2543,8 @@ static int p9_client_statsize(struct p9_wstat *wst, int proto_version)
+ 	if ((proto_version == p9_proto_2000u) ||
+ 		(proto_version == p9_proto_2000L) ||
+ 		(proto_version == p9_proto_2000X) ||
+-                (proto_version == p9_proto_2000XR)) {
++                (proto_version == p9_proto_2000XR) ||
++		(proto_version == p9_proto_2000XRS)) {
+ 		ret += 2+4+4+4;	/* extension[s] n_uid[4] n_gid[4] n_muid[4] */
+ 		if (wst->extension)
+ 			ret += strlen(wst->extension);
+@@ -2544,6 +2609,10 @@ int p9_client_setattr(struct p9_fid *fid, struct p9_iattr_dotl *p9attr)
+ 		p9attr->size, p9attr->atime_sec, p9attr->atime_nsec,
+ 		p9attr->mtime_sec, p9attr->mtime_nsec);
+ 
++	if (p9_client_shared_memory_enabled(clnt)) {
++		return p9_vdfs_handle_setattr(fid, p9attr);
++	}
++
+ 	req = p9_client_rpc(clnt, P9_TSETATTR, "dI", fid->fid, p9attr);
+ 
+ 	if (IS_ERR(req)) {
+@@ -2568,6 +2637,10 @@ int p9_client_statfs(struct p9_fid *fid, struct p9_rstatfs *sb)
+ 
+ 	p9_debug(P9_DEBUG_9P, ">>> TSTATFS fid %d\n", fid->fid);
+ 
++	if (p9_client_shared_memory_enabled(clnt)) {
++		return p9_vdfs_handle_statfs(fid, sb);
++	}
++
+ 	req = p9_client_rpc(clnt, P9_TSTATFS, "d", fid->fid);
+ 	if (IS_ERR(req)) {
+ 		err = PTR_ERR(req);
+@@ -2638,6 +2711,11 @@ int p9_client_renameat(struct p9_fid *olddirfid, const char *old_name,
+ 		   " newdirfid %d new name %s\n", olddirfid->fid, old_name,
+ 		   newdirfid->fid, new_name);
+ 
++	if (p9_client_shared_memory_enabled(clnt)) {
++		return p9_vdfs_handle_renameat(olddirfid, old_name, newdirfid,
++					       new_name);
++	}
++
+ 	req = p9_client_rpc(clnt, P9_TRENAMEAT, "dsds", olddirfid->fid,
+ 			    old_name, newdirfid->fid, new_name);
+ 	if (IS_ERR(req)) {
+@@ -2771,6 +2849,10 @@ int p9_client_readdir(struct p9_fid *fid, char *data, u32 count, u64 offset)
+ 	if (count < rsize)
+ 		rsize = count;
+ 
++	if (p9_client_shared_memory_enabled(clnt)) {
++		return p9_vdfs_handle_readdirx(fid, data, count, offset);
++	}
++
+ 	/* Don't bother zerocopy for small IO (< 1024) */
+ 	if (clnt->trans_mod->zc_request && rsize > 1024) {
+ 		/*
+@@ -2825,6 +2907,11 @@ int p9_client_mknod_dotl(struct p9_fid *fid, const char *name, int mode,
+ 	clnt = fid->clnt;
+ 	p9_debug(P9_DEBUG_9P, ">>> TMKNOD fid %d name %s mode %d major %d "
+ 		"minor %d\n", fid->fid, name, mode, MAJOR(rdev), MINOR(rdev));
++
++	if (p9_client_shared_memory_enabled(clnt)) {
++		return p9_vdfs_handle_mknod(fid, name, mode, rdev, gid, qid);
++	}
++
+ 	req = p9_client_rpc(clnt, P9_TMKNOD, "dsdddg", fid->fid, name, mode,
+ 		MAJOR(rdev), MINOR(rdev), gid);
+ 	if (IS_ERR(req))
+@@ -2856,6 +2943,11 @@ int p9_client_mkdir_dotl(struct p9_fid *fid, const char *name, int mode,
+ 	clnt = fid->clnt;
+ 	p9_debug(P9_DEBUG_9P, ">>> TMKDIR fid %d name %s mode %d gid %d\n",
+ 		 fid->fid, name, mode, from_kgid(&init_user_ns, gid));
++
++	if (p9_client_shared_memory_enabled(clnt)) {
++		return p9_vdfs_handle_mkdir(fid, name, mode, gid, qid);
++	}
++
+ 	req = p9_client_rpc(clnt, P9_TMKDIR, "dsdg", fid->fid, name, mode,
+ 		gid);
+ 	if (IS_ERR(req))
+@@ -3012,6 +3104,10 @@ int p9_client_readlink(struct p9_fid *fid, char **target)
+ 	clnt = fid->clnt;
+ 	p9_debug(P9_DEBUG_9P, ">>> TREADLINK fid %d\n", fid->fid);
+ 
++	if (p9_client_shared_memory_enabled(clnt)) {
++		return p9_vdfs_handle_readlinkx(fid, target);
++	}
++
+ 	req = p9_client_rpc(clnt, P9_TREADLINK, "d", fid->fid);
+ 	if (IS_ERR(req))
+ 		return PTR_ERR(req);
+-- 
+2.7.4
+

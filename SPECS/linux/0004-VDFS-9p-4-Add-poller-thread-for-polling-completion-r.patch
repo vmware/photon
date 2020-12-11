@@ -1,0 +1,179 @@
+From 2877d7e97ef917fcfb2c8106b5ec1f8168248f2a Mon Sep 17 00:00:00 2001
+From: Mounesh Badiger <badigerm@vmware.com>
+Date: Wed, 24 Mar 2021 12:47:04 -0700
+Subject: [PATCH 4/7] [VDFS-9p-4] Add poller thread for polling completion ring
+
+Poller thread:
+   Poller thread polls for the each client's completion rings for completed 9p requests.
+   Critical path is lockless and it only holds locks for client addition or deletion which
+   is rare operation.
+---
+ net/9p/trans_vdfs.c | 131 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 131 insertions(+)
+
+diff --git a/net/9p/trans_vdfs.c b/net/9p/trans_vdfs.c
+index 37609cd..657c929 100644
+--- a/net/9p/trans_vdfs.c
++++ b/net/9p/trans_vdfs.c
+@@ -134,6 +134,8 @@ typedef struct ring_info_t {
+ 
+ static struct p9_vdfs_shared_mem shm_info;
+ 
++static int p9_vdfs_poller_thread(void *data);
++
+ /*
+  * p9_vdfs_ring_init --
+  *	Init shared rings.
+@@ -371,6 +373,13 @@ p9_vdfs_shm_init(struct p9_client *clnt)
+ 		shm_info.shm_phys_4m_ppns[i] = virt_to_phys(shm_info.mapaddr[i]) >> PAGE_SHIFT;
+ 	}
+ 
++	shm_info.poller_thread = kthread_create(p9_vdfs_poller_thread, clnt,
++					       "p9_vdfs_poller_thread");
++	if (IS_ERR(shm_info.poller_thread)) {
++		pr_err("Failed to create poller thread\n");
++		goto error;
++	}
++
+ 	ret = p9_client_shm_create(clnt, RING_BUFFER_PAGES,
+ 				   shm_info.shm_phys_4m_ppns,
+ 				   npages_4m,
+@@ -455,6 +464,8 @@ void p9_vdfs_shm_cleanup(void)
+ 
+ 	shm_info.terminate = true;
+ 
++	kthread_stop(shm_info.poller_thread);
++
+ 	p9_vdfs_mempool_cleanup();
+ 
+ 	kfree(shm_info.waitqs);
+@@ -465,6 +476,126 @@ void p9_vdfs_shm_cleanup(void)
+ 	shm_info.init = false;
+ }
+ 
++/*
++ * p9_vdfs_poller_thread --
++ *
++ *	Poller thread for shared rings. Locks are only used when new client
++ *	is deleted or added.
++ *
++ *	- Polls for active rings.
++ *	- Takes care of adding new client and deleting DISCONNECTED client.
++ *
++ *	Poller thread sleeps for if the thread is idle for given duration.
++ *      #TODO Make idle and sleep duration tunable.
++ */
++
++static int
++p9_vdfs_poller_thread(void *data)
++{
++	uint32_t idle_iter = 0;
++	uint32_t active_iter = 0;
++	bool idle = true;
++	int iter = 0;
++	ktime_t active_time = ktime_get();
++
++	while (!kthread_should_stop()) {
++		struct list_head *curr, *next;
++		idle = true;
++		iter = 0;
++
++		list_for_each_safe(curr, next, &shm_info.client_list) {
++			u32 values[MAX_BURST_SIZE];
++			int ret, i;
++			ring_info_t *ring_info;
++			Ring *compRing;
++
++
++			struct p9_client *clnt = list_entry(curr,
++							    struct p9_client,
++							    shm_link);
++			if (clnt->wait_for_shm_cleanup) {
++				spin_lock(&shm_lock);
++				list_del_init(&clnt->shm_link);
++				clnt->shm_removed = true;
++				wake_up(&clnt->shm_queue);
++				spin_unlock(&shm_lock);
++
++				pr_info("%s: clnt removed from the active list\n",
++					clnt->aname);
++				continue;
++			}
++			iter++;
++
++			ring_info = (ring_info_t *)clnt->shm_ring;
++			compRing = ring_info->ring_header.compRing;
++
++			ret = p9_vdfs_dequeue_ring(compRing, values,
++						   MAX_BURST_SIZE);
++
++			if (ret == 0 && shm_info.terminate)
++				return 0;
++
++			for (i = 0; i < ret; i++) {
++				P9ZCCmdDesc *desc;
++				idle = false;
++				active_time = ktime_get();
++				desc = (P9ZCCmdDesc
++					*)IDX_TO_RINGBUF(shm_info.mapaddr[values[i]
++							 / NPAGES_4M],
++								     values[i] %
++								     NPAGES_4M);
++				if (desc->op == P9_TCLAIMTAGS) {
++					kthread_stop((struct task_struct*)
++						     desc->claimtags.thread);
++				}
++
++				wake_up(&shm_info.waitqs[values[i]]);
++			}
++		}
++		if (unlikely(shm_info.new_client_added)) {
++			struct list_head *x, *y;
++			idle = false;
++			active_time = ktime_get();
++			shm_info.new_client_added = false;
++			pr_info("New client entry is added \n");
++			spin_lock(&shm_lock);
++			list_for_each_safe(x, y, &shm_info.new_list) {
++				struct p9_client *c = list_entry(x, struct p9_client,
++								 shm_link);
++				list_del_init(&c->shm_link);
++				list_add_tail(&c->shm_link, &shm_info.client_list);
++			}
++			spin_unlock(&shm_lock);
++		}
++		if (idle) {
++			if (idle_iter % 100 == 0) {
++				yield();
++			}
++			// sleep if not active for more 100us
++			if (((long long)ktime_to_ns(ktime_sub(ktime_get(),
++							      active_time)) >> 10)
++			    > 1000 * 1000) {
++				bool *val = (bool *)(shm_info.mapaddr[0]);
++				*val = true;
++				mb();
++
++				usleep_range(500, 1000);
++				*val = false;
++				idle_iter = 0;
++				idle = false;
++			}
++		} else {
++			if (active_iter++ == 10000) {
++				active_iter = 0;
++				yield();
++			}
++		}
++	}
++
++	return 0;
++}
++
++
+ // buffer allocation part
+ /*
+  * Global Pool -> which is queue and protected by lock.
+-- 
+2.7.4
+

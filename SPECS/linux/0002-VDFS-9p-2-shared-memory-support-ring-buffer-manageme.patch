@@ -1,0 +1,887 @@
+From 470b9889bba5f559bf53d8c2791f85d26c2cde33 Mon Sep 17 00:00:00 2001
+From: Mounesh Badiger <badigerm@vmware.com>
+Date: Sun, 27 Dec 2020 21:35:52 -0800
+Subject: [PATCH 2/7] [VDFS-9p-2] shared memory support - ring buffer
+ management
+
+Ring Buffers management:
+   Global pool and per cpu pool is used for managing buffers. Each CPU requests SLAB of
+   Buffer from global pool and puts them into per CPU pool, any request from the CPU uses
+   buffer from local cpu pool. Buffer is freed to local cpu pool and if pool reaches to limit
+   it will free buffers to global pool.
+   Global pool simple FIFO queue and is protected spin lock.
+
+New 9p cmd:
+   with shared memory approach, T_ and R_ message is encapsulated in the same ring buffer,
+   which simplifies buffer management and only 9p client manages the buffers and VDFS use
+   same buffer and dequeues from submission ring and processes and enqueues into
+   completion ring.
+
+    net/9p/vdfs_9p.h -> is shared file between vdfs and 9p.
+---
+ net/9p/client.c     |   1 +
+ net/9p/trans_vdfs.c | 207 +++++++++++++++++++
+ net/9p/trans_vdfs.h |   5 +
+ net/9p/vdfs_9p.h    | 582 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 795 insertions(+)
+ create mode 100644 net/9p/vdfs_9p.h
+
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 1cfe582..57bdf92 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -3085,5 +3085,6 @@ int __init p9_client_init(void)
+ 
+ void __exit p9_client_exit(void)
+ {
++	p9_vdfs_shm_cleanup();
+ 	kmem_cache_destroy(p9_req_cache);
+ }
+diff --git a/net/9p/trans_vdfs.c b/net/9p/trans_vdfs.c
+index 8edc622..2efcf02 100644
+--- a/net/9p/trans_vdfs.c
++++ b/net/9p/trans_vdfs.c
+@@ -49,6 +49,34 @@
+ #define RINGBUF_TO_IDX(mapaddr, ring_buf)   (((uintptr_t)ring_buf - (uintptr_t)mapaddr) >> RING_BUFFER_BITS)
+ #define ALIGN_UP_LOCAL(size, align) (((size) + (align-1)) & ~(align-1))
+ 
++static void p9_vdfs_mempool_cleanup(void);
++static int p9_vdfs_mempool_init(void);
++
++/*
++ * p9_vdfs_cpu_pool -- Per CPU memory pool
++ */
++struct p9_vdfs_cpu_pool {
++        u32 avail_pool[ALLOC_SLAB_SIZE];
++        u32 next_avail_idx;
++	u32 total_avail;
++
++        u32 freed_pool[ALLOC_SLAB_SIZE];
++        u32 next_freed_idx;
++};
++
++/*
++ * p9_vdfs_global_pool -- Global queue which manages shared memory pages
++ */
++struct p9_vdfs_global_pool {
++	u32 pool_size;
++	u32 head;
++	u32 tail;
++	wait_queue_head_t queue;
++	spinlock_t lock;
++	u32 mem_pool[];
++};
++
++
+ /*
+  * p9_vdfs_shared_mem -- shared memory structure.
+  * @mapaddr: start address of shared memory
+@@ -356,6 +384,7 @@ p9_vdfs_shm_init(struct p9_client *clnt)
+ 	shm_info.npages = npages;
+ 	shm_info.npages_4m = npages_4m;
+ 	shm_info.start_idx = 1;  //0th paged for some metadata
++	p9_vdfs_mempool_init();
+ 
+ 	INIT_LIST_HEAD(&shm_info.new_list);
+ 	INIT_LIST_HEAD(&shm_info.client_list);
+@@ -426,6 +455,8 @@ void p9_vdfs_shm_cleanup(void)
+ 
+ 	shm_info.terminate = true;
+ 
++	p9_vdfs_mempool_cleanup();
++
+ 	kfree(shm_info.waitqs);
+ 
+ 	for (i = 0; i < shm_info.npages_4m; i++) {
+@@ -433,3 +464,179 @@ void p9_vdfs_shm_cleanup(void)
+ 	}
+ 	shm_info.init = false;
+ }
++
++// buffer allocation part
++/*
++ * Global Pool -> which is queue and protected by lock.
++ * Per CPU Pool -> per cpu pool buffer pool. lockless.
++ *
++ * Allocating buffer:
++ *	IO thread tries to allocate from local CPU pool, if not available
++ *	it tries to acquire buffers from global pool and which can block.
++ *
++ * Freeing buffer:
++ *	Frees to local pool buffers, if local freed pool is full then
++ *	it releases buffers to global pool which holds spin lock.
++ */
++
++static void
++p9_vdfs_mempool_cleanup(void)
++{
++	kfree(shm_info.global_pool);
++	kfree(shm_info.cpu_pool);
++}
++
++
++static int
++p9_vdfs_mempool_init(void)
++{
++	struct p9_vdfs_global_pool *gpool;
++	struct p9_vdfs_cpu_pool *cpu_pool;
++	u32 numcpus = num_online_cpus();
++	u32 i;
++	u32 size = sizeof(struct p9_vdfs_global_pool) +
++			(shm_info.npages - shm_info.start_idx) * sizeof (u32);
++
++	gpool = kzalloc(size, GFP_KERNEL);
++	if (gpool == NULL) {
++		return -ENOMEM;
++	}
++
++	gpool->pool_size = shm_info.npages - shm_info.start_idx;
++	gpool->head = shm_info.npages - shm_info.start_idx;
++	gpool->tail = 0;
++	init_waitqueue_head(&gpool->queue);
++	spin_lock_init(&gpool->lock);
++
++
++	for (i = 0; i < gpool->pool_size; i++) {
++		gpool->mem_pool[i] = shm_info.start_idx + i;
++	}
++
++	cpu_pool = kzalloc(numcpus * sizeof(struct p9_vdfs_cpu_pool),
++			   GFP_KERNEL);
++
++	if (cpu_pool == NULL) {
++		kfree(gpool);
++		return -ENOMEM;
++	}
++
++	pr_info("cpu_pool %px num_cpus %d gpool %px \n", cpu_pool,
++		numcpus, gpool);
++
++	shm_info.global_pool = gpool;
++	shm_info.cpu_pool = cpu_pool;
++
++	return 0;
++}
++
++static int
++p9_vdfs_alloc_from_global_pool(u32 *pool, u32 n)
++{
++	struct p9_vdfs_global_pool *gpool = shm_info.global_pool;
++	u32 min_entries, i;
++
++	spin_lock(&gpool->lock);
++again:
++	if (gpool->head == gpool->tail) { // wait
++		int err;
++		err = wait_event_interruptible_lock_irq(gpool->queue,
++						        gpool->head != gpool->tail,
++						        gpool->lock);
++		if (err == -ERESTARTSYS)
++			goto again;
++	}
++
++	min_entries = min(n, gpool->head - gpool->tail);
++
++	for (i = 0; i < min_entries; i++) {
++		pool[i] = gpool->mem_pool[(gpool->tail + i) % gpool->pool_size];
++	}
++
++	gpool->tail += min_entries;
++
++	spin_unlock(&gpool->lock);
++
++	return min_entries;
++}
++
++
++static void
++p9_vdfs_free_to_global_pool(u32 *pool, u32 n)
++{
++	struct p9_vdfs_global_pool *gpool = shm_info.global_pool;
++	u32 i;
++
++	spin_lock(&gpool->lock);
++
++	for (i = 0; i < n; i++)
++		gpool->mem_pool[(gpool->head + i) % gpool->pool_size] = pool[i];
++
++	gpool->head += n;
++
++	wake_up(&gpool->queue);
++
++	spin_unlock(&gpool->lock);
++
++	return;
++}
++
++P9ZCCmdDesc *
++p9_vdfs_alloc_desc(void)
++{
++	struct p9_vdfs_cpu_pool *pool;
++	int idx;
++	P9ZCCmdDesc *desc;
++
++	pool = (struct p9_vdfs_cpu_pool *)((uintptr_t)shm_info.cpu_pool +
++					   sizeof (struct p9_vdfs_cpu_pool) *
++					   smp_processor_id());
++
++	p9_debug(P9_DEBUG_9P, "cpu:%u 0th pool %px pool %px - total avail %d next_avail_idx %d \n",
++		 smp_processor_id(), shm_info.cpu_pool,  pool,
++		 pool->total_avail, pool->next_avail_idx);
++
++	if (pool->total_avail == 0) { // TODO try to use buffers from local freed pool
++		// allocate from global pool
++		int ret = p9_vdfs_alloc_from_global_pool(pool->avail_pool,
++							 ALLOC_SLAB_SIZE);
++		BUG_ON(ret <= 0);
++		pool->next_avail_idx = 0;
++		pool->total_avail = ret;
++	}
++
++	idx = pool->avail_pool[pool->next_avail_idx];
++	pool->next_avail_idx++;
++	pool->total_avail--;
++
++	BUG_ON(idx == 0);
++	desc = (P9ZCCmdDesc *)IDX_TO_RINGBUF(shm_info.mapaddr[idx / NPAGES_4M],
++					     idx % NPAGES_4M);
++
++	desc->idx = idx;
++
++	return desc;
++}
++
++
++void
++p9_vdfs_free_desc(P9ZCCmdDesc *desc)
++{
++	struct p9_vdfs_cpu_pool *pool;
++	u32 idx = desc->idx;
++
++	pool = (struct p9_vdfs_cpu_pool *)((uintptr_t)shm_info.cpu_pool +
++					   sizeof (struct p9_vdfs_cpu_pool)
++					   * smp_processor_id());
++
++	p9_debug(P9_DEBUG_9P, "cpu:%u pool %px - next_freed_idx %u desc %px \n",
++		 smp_processor_id(), pool, pool->next_freed_idx, desc);
++
++	if (pool->next_freed_idx == ALLOC_SLAB_SIZE) {
++		p9_vdfs_free_to_global_pool(pool->freed_pool, ALLOC_SLAB_SIZE);
++		pool->next_freed_idx = 0;
++	}
++
++	pool->freed_pool[pool->next_freed_idx] = idx;
++	pool->next_freed_idx++;
++}
+diff --git a/net/9p/trans_vdfs.h b/net/9p/trans_vdfs.h
+index 227644b..c58f213 100644
+--- a/net/9p/trans_vdfs.h
++++ b/net/9p/trans_vdfs.h
+@@ -27,6 +27,8 @@
+ #include <net/9p/9p.h>
+ #include <net/9p/client.h>
+ 
++#include "vdfs_9p.h"
++
+ // ring flags
+ #define RING_HEADER_PAGES 0x1
+ #define RING_BUFFER_PAGES 0x2
+@@ -148,4 +150,7 @@ p9_vdfs_dequeue_ring(Ring *ring,
+ int p9_vdfs_shm_init(struct p9_client *c);
+ void p9_vdfs_shm_cleanup(void);
+ void p9_vdfs_client_shm_cleanup(struct p9_client *clnt);
++void p9_vdfs_free_desc(P9ZCCmdDesc *desc);
++P9ZCCmdDesc * p9_vdfs_alloc_desc(void);
++
+ #endif
+diff --git a/net/9p/vdfs_9p.h b/net/9p/vdfs_9p.h
+new file mode 100644
+index 00000000..e1726df
+--- /dev/null
++++ b/net/9p/vdfs_9p.h
+@@ -0,0 +1,582 @@
++/*
++ *  net/9p/vdfs_9p.h --
++ *
++ *  Copyright (C) 2020 by Mounesh Badiger <mounesh.b@gmail.com>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program; if not, write to:
++ *  Free Software Foundation
++ *  51 Franklin Street, Fifth Floor
++ *  Boston, MA  02111-1301  USA
++ *
++ */
++
++#include <linux/unistd.h>
++#include <net/9p/9p.h>
++#include <net/9p/client.h>
++
++#define P9_FILENAME_LEN 256
++#define P9_MAXPATH_LEN 4096
++
++#define VDFS_ZC_MAXPAGES  256
++#define P9_GLOBALID_SIZE   32
++
++/*
++ * TREAD/TWRITE are serialized like this:
++ *
++ *     size[4] Tread tag[2] fid[4] offset[8] count[4]
++ *     size[4] Rread tag[2] count[4] data[count]
++ *
++ *     size[4] Twrite tag[2] fid[4] offset[8] count[4] data[count]
++ *     size[4] Rwrite tag[2] count[4]
++ *
++ * So when we have to size a payload we use the constant below to approximate
++ * the overhead of a read/write header.
++ */
++#define P9_RW_HDR_LEN  24
++
++#define P9_VDFS_NUMTAGS 1024
++typedef u64 P9QidPath; /* guest inode number */
++typedef u16 P9CmdTag;
++
++typedef struct __attribute((__packed__)) P9Qid {
++	P9QidPath    path;
++	u32	     version;
++	u8	     type;   /* a P9QidType */
++} P9Qid;
++
++/*
++ * The attributes of each fs object.
++ */
++typedef struct __attribute__((__packed__)) P9ObjectAttr {
++	u32       mode;
++	u32       uid;
++	u32       gid;
++	u64       nlink;
++
++	u64       rdev;
++	u64       size;
++	u64       blksize;
++	u64       nblocks;
++
++	u64       atime_sec;
++	u64       atime_nsec;
++	u64       mtime_sec;
++	u64       mtime_nsec;
++	u64       ctime_sec;
++	u64       ctime_nsec;
++	u64       btime_sec;
++	u64       btime_nsec;
++
++	u64       gen;
++	u64       data_version;
++} P9ObjectAttr;
++
++/*
++ * The attributes of a volume.
++ */
++typedef struct __attribute__((__packed__)) P9FSAttr {
++	u32       type;
++	u32       bsize;
++	u64       blocks;
++	u64       bfree;
++	u64       bavail;
++	u64       files;
++	u64       ffree;
++	u64       fsid;
++	u32       namelen;
++} P9FSAttr;
++
++struct __attribute__((__packed__)) P9CmdTAttach {
++	u32	fid;
++	u32	afid;
++	char	uname[256];
++	char	aname[256];
++	u32	n_uname;
++};
++
++/*
++ * Descriptor for tattach.
++ */
++struct __attribute__((__packed__)) P9CmdRAttach {
++	P9Qid        qid;
++};
++
++struct __attribute__((__packed__))  P9CmdTFlush {
++	int16_t     oldtag;
++};
++
++struct __attribute__((__packed__)) P9CmdTFsync {
++	u32       fid;
++};
++
++struct __attribute__((__packed__)) P9CmdTGetAttr {
++	u32       fid;
++	u64       mask;
++};
++
++struct __attribute__((__packed__)) P9CmdRGetAttr {
++	u64		valid;
++	P9Qid   qid;
++	P9ObjectAttr	attr;
++};
++
++struct __attribute__((__packed__)) P9CmdTVersion {
++	u32	msize;
++	char	versionStr[64];
++};
++
++struct __attribute__((__packed__)) P9CmdRVersion {
++	u32	msize;
++	char	versionStr[64];
++};
++
++struct __attribute__((__packed__)) P9CmdTClunk {
++	u32 fid;
++};
++
++typedef struct __attribute__((__packed__)) P9CmdElement {
++	char         name[P9_FILENAME_LEN];
++} P9CmdElement;
++
++#define P9_WNAME_MAX       8
++struct __attribute__((__packed__)) P9CmdTWalk {
++	u32		fid;
++	u32		nfid;
++	u16		nwname; // 8 max
++	P9CmdElement	elem[P9_WNAME_MAX];
++};
++
++struct __attribute__((__packed__)) P9CmdRWalk {
++	u16		nqid;
++	P9Qid   qid[P9_WNAME_MAX];
++};
++
++struct __attribute__((__packed__)) P9CmdRWalkX {
++	struct P9CmdRWalk rwalk;
++	u8                globalId[P9_GLOBALID_SIZE];
++};
++
++struct __attribute__((__packed__)) P9CmdTMkdir {
++	u32		fid;
++	P9CmdElement	dir;
++	u32		mode;
++	u32		gid;
++};
++
++struct __attribute__((__packed__))  P9CmdRMkdir {
++	P9Qid        qid;
++};
++
++struct __attribute__((__packed__)) P9CmdRLError {
++	u32       err;
++};
++
++struct __attribute__((__packed__)) P9CmdTStatfs {
++   u32       fid;
++};
++
++struct __attribute__((__packed__)) P9CmdTLOpen {
++	u32       fid;
++	u32       flags;
++};
++
++struct __attribute__((__packed__)) P9CmdRLOpen {
++	P9Qid   qid;
++	u32	iounit;
++};
++
++struct __attribute__((__packed__)) P9CmdTReaddir {
++	u32       fid;
++	u64       offset;
++	u32       count;
++};
++
++typedef struct __attribute__((__packed__)) P9CmdRReaddirEntry {
++	P9Qid	qid;
++	u64		offset;
++	u8		type;
++	P9CmdElement	name;
++} P9CmdRReaddirEntry;
++
++#define P9_VDFS_NUMDIRENTS 128
++
++typedef struct __attribute__((__packed__)) P9CmdRReaddir {
++	u32			count; /* only used during unmarshal */
++	u32			numEntries;
++	P9CmdRReaddirEntry   entries[P9_VDFS_NUMDIRENTS];
++} P9CmdRReaddir;
++
++struct __attribute__((__packed__)) P9CmdTLCreate {
++	u32		fid;
++	P9CmdElement	file;
++	u32		flags;
++	u32		mode;
++	u32		gid;
++};
++
++struct __attribute__((__packed__)) P9CmdRLCreate {
++	P9Qid	qid;
++	u32		iounit;
++};
++
++struct __attribute__((__packed__)) P9CmdRLCreateX {
++	struct P9CmdRLCreate rlcreate;
++	u8                   globalId[P9_GLOBALID_SIZE];
++};
++
++struct __attribute__((__packed__)) P9CmdTReadlinkX {
++	u32		fid;
++	u32		size;
++	u32		pageOff;
++	u32		npages;
++	u64		ppns[256];
++};
++
++struct __attribute__((__packed__)) P9CmdTReadlink {
++	u32     fid;
++};
++
++struct __attribute__((__packed__)) P9CmdRReadlink {
++	char	target[P9_MAXPATH_LEN];
++};
++
++struct __attribute__((__packed__)) P9CmdTRead {
++	u32       fid;
++	u64       offset;
++	u32       size;
++};
++
++struct __attribute__((__packed__)) P9CmdRRead {
++	u32       count;
++	u8       *data;
++};
++
++struct __attribute__((__packed__))  P9CmdTWrite {
++	u32       fid;
++	u64       offset;
++	u32       size;
++	u8       *data;
++};
++
++struct __attribute__((__packed__)) P9CmdRWrite {
++	u32       count;
++};
++
++struct __attribute__((__packed__)) P9CmdTReadX {
++	u32       fid;
++	u64       offset;
++	u32       size;
++	u32       start;
++	u32       npages;
++	u64       ppns[VDFS_ZC_MAXPAGES];
++};
++
++struct __attribute__((__packed__)) P9CmdRReadX {
++	u32       count;
++};
++
++struct __attribute__((__packed__)) P9CmdTWriteX {
++	u32       fid;
++	u64       offset;
++	u32       size;
++	u32       start;
++	u32       npages;
++	u64       ppns[VDFS_ZC_MAXPAGES];
++};
++
++struct __attribute__((__packed__))  P9CmdRWriteX {
++	u32       count;
++};
++
++struct __attribute__((__packed__)) P9CmdTXAttrSetX {
++	u32		fid;
++	P9CmdElement	name;
++	u32		flags;
++	u64		attrsize;
++	u32		pageoff;
++	u32		npages;
++	u64		ppns[256];
++};
++
++struct __attribute__((__packed__)) P9CmdTXAttrGetX {
++	u32		fid;
++	P9CmdElement    name;
++	u64		attrsize;
++	u32		pageoff;
++	u32		npages;
++	u64		ppns[256];
++};
++
++struct __attribute__((__packed__)) P9CmdRXAttrGetX {
++	u64 size;
++};
++
++struct __attribute__((__packed__)) P9CmdTUnlinkAt {
++	u32		fid;
++	P9CmdElement	name;
++	u32		flags;
++};
++
++struct __attribute__((__packed__)) P9CmdTRenameAt {
++	u32		fid;
++	P9CmdElement	old_name;
++	u32		nfid;
++	P9CmdElement	new_name;
++};
++
++struct __attribute__((__packed__)) P9CmdTSymlinkX {
++	u32		fid;
++	P9CmdElement	name;
++	u32		gid;
++	u32		pageOff;
++	u32		npages;
++	u64		ppns[256];
++};
++
++
++struct __attribute__((__packed__)) P9CmdRSymlink {
++	P9Qid        qid;
++};
++
++struct __attribute__((__packed__)) P9CmdTLink {
++	u32		dfid;
++	u32		fid;
++	P9CmdElement	name;
++};
++
++struct __attribute__((__packed__)) P9CmdTLock {
++	u64		start;
++	int64_t         length;
++	u32		fid;
++	u32		flags;
++	u32		pid;
++	u8		type;
++	P9CmdElement	cid;
++};
++
++struct __attribute__((__packed__)) P9CmdRLock {
++	u8        status;
++};
++
++struct __attribute__((__packed__)) P9CmdTMkNod {
++	u32		dfid;
++	P9CmdElement	name;
++	u32		mode;
++	u32		major;
++	u32		minor;
++	u32		gid;
++};
++
++struct __attribute__((__packed__)) P9CmdRMkNod {
++	P9Qid        qid;
++};
++
++typedef struct __attribute__((__packed__)) P9CmdTSetAttr {
++	u32		fid;
++	u32		valid; // cf P9_SETATTR_XXX
++	P9ObjectAttr	attr;
++} P9CmdTSetAttr;
++
++
++typedef struct __attribute__((__packed__)) P9CmdTClaimTags {
++	u32	numtags;
++	u16	tags[P9_VDFS_NUMTAGS];
++} P9CmdTClaimTags;
++
++
++struct __attribute__((__packed__)) P9CmdAttach {
++	struct P9CmdTAttach tattach;
++	struct P9CmdRAttach rattach;
++};
++
++struct __attribute__((__packed__)) P9CmdFlush {
++	struct P9CmdTFlush tflush;
++};
++
++struct __attribute__((__packed__)) P9CmdFsync {
++	struct P9CmdTFsync tfsync;
++};
++
++struct __attribute__((__packed__)) P9CmdGetAttr {
++	struct P9CmdTGetAttr tgetattr;
++	struct P9CmdRGetAttr rgetattr;
++};
++
++
++struct __attribute__((__packed__)) P9CmdVersion {
++	struct P9CmdTVersion tversion;
++	struct P9CmdRVersion rversion;
++};
++
++struct __attribute__((__packed__)) P9CmdClunk {
++	struct P9CmdTClunk tclunk;
++};
++
++struct __attribute__((__packed__)) P9CmdClaimTags {
++	struct P9CmdTClaimTags tclaimtags;
++	void *thread;
++};
++
++struct __attribute__((__packed__)) P9CmdWalkX {
++	struct P9CmdTWalk twalk;
++	struct P9CmdRWalkX rwalkx;
++};
++
++struct __attribute__((__packed__)) P9CmdMkdir {
++	struct P9CmdTMkdir tmkdir;
++	struct P9CmdRMkdir rmkdir;
++};
++
++struct __attribute__((__packed__)) P9CmdStatfs {
++	struct P9CmdTStatfs tstatfs;
++	struct P9FSAttr rstatfs;
++};
++
++struct __attribute__((__packed__)) P9CmdLOpen {
++	struct P9CmdTLOpen tlopen;
++	struct P9CmdRLOpen rlopen;
++};
++
++struct __attribute__((__packed__)) P9CmdLCreateX {
++	struct P9CmdTLCreate tlcreate;
++	struct P9CmdRLCreateX rlcreatex;
++};
++
++struct __attribute__((__packed__)) P9CmdReadlinkX {
++	struct P9CmdTReadlinkX treadlinkx;
++};
++
++struct __attribute__((__packed__)) P9CmdReadlink {
++	struct P9CmdTReadlink treadlink;
++	struct P9CmdRReadlink rreadlink;
++};
++
++struct __attribute__((__packed__)) P9CmdRead {
++	struct P9CmdRRead rread;
++	struct P9CmdTRead tread;
++};
++
++struct __attribute__((__packed__)) P9CmdWrite {
++	struct P9CmdTWrite twrite;
++	struct P9CmdRWrite rwrite;
++};
++
++struct __attribute__((__packed__)) P9CmdReadX {
++	struct P9CmdTReadX treadx;
++	struct P9CmdRReadX rreadx;
++};
++
++struct __attribute__((__packed__)) P9CmdWriteX {
++	struct P9CmdTWriteX twritex;
++	struct P9CmdRWriteX rwritex;
++};
++
++struct __attribute__((__packed__)) P9CmdXAttrSetX {
++	struct P9CmdTXAttrSetX txattrsetx;
++};
++
++struct __attribute__((__packed__)) P9CmdXAttrGetX {
++	struct P9CmdTXAttrGetX txattrgetx;
++	struct P9CmdRXAttrGetX rxattrgetx;
++};
++
++struct __attribute__((__packed__)) P9CmdUnlinkAt {
++	struct P9CmdTUnlinkAt tunlinkat;
++};
++
++struct __attribute__((__packed__)) P9CmdRenameAt {
++	struct P9CmdTRenameAt trenameat;
++};
++
++struct __attribute__((__packed__)) P9CmdSymlinkX {
++	struct P9CmdTSymlinkX tsymlinkx;
++	struct P9CmdRSymlink  rsymlink;
++};
++
++struct __attribute__((__packed__)) P9CmdLink {
++	struct P9CmdTLink tlink;
++};
++
++struct __attribute__((__packed__)) P9CmdLock {
++	struct P9CmdRLock rlock;
++	struct P9CmdTLock tlock;
++};
++
++struct __attribute__((__packed__)) P9CmdMkNod {
++	struct P9CmdRMkNod rmknod;
++	struct P9CmdTMkNod tmknod;
++};
++
++
++struct __attribute__((__packed__)) P9CmdSetAttr {
++	struct P9CmdTSetAttr tsetattr;
++};
++
++struct __attribute__((__packed__)) P9CmdTReaddirX {
++	u32		fid;
++	u64		offset;
++	u32		count;
++	u32		start;
++	u32		npages;
++	u64             ppns[256];
++};
++
++struct __attribute__((__packed__)) P9CmdRReaddirX {
++	u32       count;
++	u32       numEntries;
++};
++
++struct __attribute__((__packed__)) P9CmdReaddirX {
++	struct P9CmdTReaddirX treaddirx;
++	struct P9CmdRReaddirX rreaddirx;
++};
++
++typedef struct __attribute__((__packed__)) P9ZCCmdDesc {
++	u8		completed;
++	u8		conn_broken;
++	u8		op;
++	u16		idx;
++	int16_t		tag;
++	u32		err;
++	struct p9_client *clnt;
++	union {
++		void *bufCmdDesc;
++
++		struct P9CmdVersion	    version;
++		struct P9CmdAttach	    attach;
++		struct P9CmdFlush	    flush;
++		struct P9CmdGetAttr         getattr;	    // 32
++		struct P9CmdWalkX           walkx;          // 4108
++		struct P9CmdClunk           clunk;          // 4
++		struct P9CmdLCreateX        lcreatex;       // 272
++		struct P9CmdLOpen           lopen;          // 8
++		struct P9CmdStatfs          statfs;         // 4
++		struct P9CmdMkdir           mkdir;          // 268
++		struct P9CmdReaddirX        readdirx;
++		struct P9CmdWrite           write;          // 32
++		struct P9CmdRead            read;           // 24
++		struct P9CmdWriteX          writex;
++		struct P9CmdReadX           readx;
++		struct P9CmdReadlinkX	    readlinkx;       // 4
++		struct P9CmdSetAttr         setattr;        // 144
++		struct P9CmdXAttrSetX	    xattrsetx;
++		struct P9CmdXAttrGetX       xattrgetx;
++		struct P9CmdUnlinkAt        unlinkat;       // 264
++		struct P9CmdRenameAt        renameat;       // 520
++		struct P9CmdSymlinkX        symlinkx;
++		struct P9CmdLink            link;           // 264
++		struct P9CmdLock            lock;           // 288
++		struct P9CmdMkNod           mknod;          // 276
++		struct P9CmdClaimTags       claimtags;	    // 2052
++	};
++} P9ZCCmdDesc;
+-- 
+2.7.4
+

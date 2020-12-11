@@ -1,0 +1,212 @@
+From 68398f569fe676cda01068cc62f6e274fb58cc4d Mon Sep 17 00:00:00 2001
+From: Mounesh Badiger <badigerm@vmware.com>
+Date: Wed, 24 Mar 2021 12:51:05 -0700
+Subject: [PATCH 6/7] [VDFS-9p-06] Add support for claim tags
+
+---
+ net/9p/client.c     |   2 +-
+ net/9p/recovery.c   |   7 ++--
+ net/9p/recovery.h   |   2 +-
+ net/9p/trans_vdfs.c | 117 ++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 122 insertions(+), 6 deletions(-)
+
+diff --git a/net/9p/client.c b/net/9p/client.c
+index 0ce3334..0266360 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -511,7 +511,7 @@ int p9_tag_remove(struct p9_client *c, struct p9_req_t *r)
+ 	p9_debug(P9_DEBUG_MUX, "clnt %p req %p tag: %d\n", c, r, tag);
+ 	spin_lock_irqsave(&c->lock, flags);
+ 
+-	if (!p9_req_needs_claimtags(c, r)) {
++	if (!p9_req_needs_claimtags(c, r->tc.id)) {
+ 		idr_remove(&c->reqs, tag);
+ 		spin_unlock_irqrestore(&c->lock, flags);
+ 		goto out;
+diff --git a/net/9p/recovery.c b/net/9p/recovery.c
+index 28bc4b0..5b87f39 100644
+--- a/net/9p/recovery.c
++++ b/net/9p/recovery.c
+@@ -1162,14 +1162,12 @@ void p9_recovery_breakpoint(struct p9_client *clnt, char *bp)
+ 
+ /* p9_req_needs_claimtags - check if the request needs to claim tags
+  * @clnt: p9_client structu
+- * @r: p9_req_t sturct
++ * @r: 9p operation
+  */
+ 
+ bool
+-p9_req_needs_claimtags(struct p9_client *clnt, struct p9_req_t *r)
++p9_req_needs_claimtags(struct p9_client *clnt, u8 op)
+ {
+-	u8 op = r->tc.id;
+-
+ 	if (!clnt->recovery_enabled)
+ 		return false;
+ 
+@@ -1185,6 +1183,7 @@ p9_req_needs_claimtags(struct p9_client *clnt, struct p9_req_t *r)
+ 		op != P9_TREAD && op != P9_TREADX && op != P9_TWRITE &&
+ 		op != P9_TWRITEX && op != P9_TLOPEN && op != P9_TREADDIR &&
+ 		op != P9_TVERSION && op != P9_TATTACH && op != P9_TREADLINK &&
++		op != P9_TREADLINKX && op != P9_TREADDIRX &&
+ 		op != P9_TFLUSH && op != P9_TFLUSH && op != P9_TGETLOCK &&
+ 		op != P9_TFSYNC);
+ }
+diff --git a/net/9p/recovery.h b/net/9p/recovery.h
+index 732b272..acec01d 100644
+--- a/net/9p/recovery.h
++++ b/net/9p/recovery.h
+@@ -67,7 +67,7 @@ int p9_recovery_test_init(struct p9_client *client);
+ void p9_recovery_test_cleanup(struct p9_client *client);
+ void p9_recovery_breakpoint(struct p9_client *client, char *breakpoint);
+ 
+-bool p9_req_needs_claimtags(struct p9_client *clnt, struct p9_req_t *r);
++bool p9_req_needs_claimtags(struct p9_client *clnt, u8 op);
+ int p9_client_claim_tags(void *data);
+ bool p9_op_needs_refcounting(int8_t op);
+ int p9_client_wait_for_recovery(struct p9_client *clnt, u8 op, bool is_retry);
+diff --git a/net/9p/trans_vdfs.c b/net/9p/trans_vdfs.c
+index 657c929..e7189f2 100644
+--- a/net/9p/trans_vdfs.c
++++ b/net/9p/trans_vdfs.c
+@@ -51,6 +51,10 @@
+ 
+ static void p9_vdfs_mempool_cleanup(void);
+ static int p9_vdfs_mempool_init(void);
++static P9ZCCmdDesc *p9_vdfs_alloc_init_desc(struct p9_client *c, int op);
++static void p9_vdfs_wait_for_completion(struct p9_client *clnt,
++					P9ZCCmdDesc *desc,
++					int *err);
+ 
+ /*
+  * p9_vdfs_cpu_pool -- Per CPU memory pool
+@@ -712,6 +716,117 @@ p9_vdfs_free_to_global_pool(u32 *pool, u32 n)
+ 	return;
+ }
+ 
++
++/*
++ * p9_claim_tags --
++ *	claim tags structure passed to claim thread
++ */
++struct p9_claim_tags {
++	u16 tags[MAX_CLAIM_TAGS];
++	int numtags;
++	struct p9_client *clnt;
++};
++
++/* Claim tags -
++ *
++ *	For supporting non-idempotent operations, server keeps tags in
++ *	journal, clients keeps tags until they are safe to free when
++ *	operation completes. Claim tags operation is handled in
++ *	separate thread.
++ */
++
++// TODO use worker function
++static int
++p9_vdfs_claim_tags(void *data)
++{
++	struct p9_claim_tags *ctags = data;
++	struct p9_client *clnt = ctags->clnt;
++	P9ZCCmdDesc *desc;
++	int err, i;
++	struct P9CmdClaimTags *claimtags;
++	unsigned long flags;
++
++	desc = p9_vdfs_alloc_init_desc(clnt, P9_TCLAIMTAGS);
++
++	claimtags = &desc->claimtags;
++
++	for (i = 0; i < ctags->numtags; i++) {
++		claimtags->tclaimtags.tags[i] = ctags->tags[i];
++	}
++	claimtags->tclaimtags.numtags = ctags->numtags;
++	claimtags->thread = (void *)current;
++
++	p9_vdfs_wait_for_completion(clnt, desc, &err);
++
++	p9_vdfs_free_desc(desc);
++
++	spin_lock_irqsave(&clnt->lock, flags);
++	for (i = 0; i < ctags->numtags; i++) {
++		idr_remove(&clnt->reqs, ctags->tags[i]);
++	}
++	spin_unlock_irqrestore(&clnt->lock, flags);
++
++	kfree(ctags);
++
++	return 0;
++}
++
++static void p9_vdfs_handle_claim_tags(struct p9_client *c, u16 *tags)
++{
++	struct task_struct *claim_thread;
++	struct p9_claim_tags *ctags;
++
++	ctags = kmalloc(sizeof(struct p9_claim_tags), GFP_KERNEL);
++	if (ctags == NULL) {
++		pr_info("failed to allocate memory for claim tags\n");
++		return;
++	}
++
++	ctags->numtags = MAX_CLAIM_TAGS;
++	ctags->clnt = c;
++	memcpy(ctags->tags, tags, sizeof(ctags->tags));
++
++	claim_thread = kthread_create(p9_vdfs_claim_tags, ctags,
++				      "p9_vdfs_claim_thread");
++	if (IS_ERR(claim_thread)) {
++		pr_info("failed to claim threads \n");
++		kfree(ctags);
++	}
++}
++
++static void
++p9_vdfs_tag_free(struct p9_client *c, P9ZCCmdDesc *desc)
++{
++	u16 tag = desc->tag;
++	unsigned long flags;
++	u16 tags[MAX_CLAIM_TAGS];
++	bool claim_tags = false;
++
++
++	spin_lock_irqsave(&c->lock, flags);
++
++	if (p9_req_needs_claimtags(c, desc->op)) {
++		pr_info("claim tags op - %d \n", desc->op);
++		c->claim_tags[c->n_unclaimed_tags++] = tag;
++
++		if (c->n_unclaimed_tags == MAX_CLAIM_TAGS) {
++			// needs to send claim tags
++			memcpy(tags, c->claim_tags, sizeof(tags));
++			c->n_unclaimed_tags = 0;
++			claim_tags = true;
++		}
++		goto unlock;
++	}
++
++	idr_remove(&c->reqs, tag);
++unlock:
++	spin_unlock_irqrestore(&c->lock, flags);
++
++	if (claim_tags) {
++		p9_vdfs_handle_claim_tags(c, tags);
++	}
++}
++
+ P9ZCCmdDesc *
+ p9_vdfs_alloc_desc(void)
+ {
+@@ -756,6 +871,8 @@ p9_vdfs_free_desc(P9ZCCmdDesc *desc)
+ 	struct p9_vdfs_cpu_pool *pool;
+ 	u32 idx = desc->idx;
+ 
++	p9_vdfs_tag_free(desc->clnt, desc);
++
+ 	pool = (struct p9_vdfs_cpu_pool *)((uintptr_t)shm_info.cpu_pool +
+ 					   sizeof (struct p9_vdfs_cpu_pool)
+ 					   * smp_processor_id());
+-- 
+2.7.4
+

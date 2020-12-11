@@ -1,0 +1,201 @@
+From 9a6f12c40beb1b1bff147da5acb7d2df11bce68f Mon Sep 17 00:00:00 2001
+From: Mounesh Badiger <badigerm@vmware.com>
+Date: Wed, 24 Mar 2021 12:52:04 -0700
+Subject: [PATCH 7/7] [VDFS-9p-07] Integrate shared memory with recovery logic
+
+Recovery thread walks over all shared memory descriptors
+and wakesup inflight IO threads and they wait for recovery
+to complete
+---
+ net/9p/recovery.c   | 26 +++++++++++++++++------
+ net/9p/trans_vdfs.c | 59 +++++++++++++++++++++++++++++++++++++++++++++++++++--
+ net/9p/trans_vdfs.h |  3 +--
+ 3 files changed, 78 insertions(+), 10 deletions(-)
+
+diff --git a/net/9p/recovery.c b/net/9p/recovery.c
+index 5b87f39..477a270 100644
+--- a/net/9p/recovery.c
++++ b/net/9p/recovery.c
+@@ -43,6 +43,7 @@
+ 
+ #include "protocol.h"
+ #include "recovery.h"
++#include "trans_vdfs.h"
+ 
+ // Number of path components for globalid path in volume "/globalid/$globalid"
+ #define GLOBALID_PATH_COMPONENTS   2
+@@ -88,8 +89,7 @@ struct p9_tattach {
+ };
+ 
+ struct p9_twalk {
+-	uint32_t       fid;
+-	uint32_t       nfid;
++	struct p9_fid  *nfid;
+ 	struct p9_globalid globalid;
+ };
+ 
+@@ -110,7 +110,7 @@ struct p9_txattrcreate {
+ typedef struct p9_recovery_desc {
+ 	struct list_head recovery_link;
+ 	struct p9_fid *fid;  // back pointer to p9_fid
+-	uint32_t attach_fid;
++	struct p9_fid *attach_fid;
+ 	uint8_t	op;
+ 
+ 	struct p9_tattach	*attach;
+@@ -255,7 +255,7 @@ int p9_update_tattach_desc(struct p9_client *client,
+ 
+ 	attach->fid = fid->fid;
+ 	attach->afid = afid;
+-	rfid->attach_fid = fid->fid;
++	rfid->attach_fid = fid;
+ 
+ 	if (uname) {
+ 		strncpy(attach->uname, uname, sizeof(attach->uname));
+@@ -325,8 +325,7 @@ int p9_update_twalk_desc(struct p9_client *client,
+ 	rfid->walk = twalk;
+ 	rfid->attach_fid = ((p9_recovery_desc *)(ofid->recovery_desc))->attach_fid;
+ 
+-	twalk->nfid = fid->fid;
+-	twalk->fid = ofid->fid;
++	twalk->nfid = fid;
+ 
+ 	p9_globalid_deserialize(globalid, &twalk->globalid);
+ 
+@@ -816,6 +815,13 @@ p9_recovery_handle_walk(struct p9_client *client,
+ 
+ 	p9_debug(P9_DEBUG_9P, "RECOV: globalId %s\n", globalIdStr);
+ 
++	if (p9_client_shared_memory_enabled(client)) {
++		err = p9_vdfs_handle_walkx(desc->attach_fid, twalk->nfid,
++					   GLOBALID_PATH_COMPONENTS,
++					   (const unsigned char * const*)wnames);
++		return err;
++	}
++
+ 	req = p9_client_rpc(client, P9_TWALKX, "ddT", desc->attach_fid,
+ 			    twalk->nfid, GLOBALID_PATH_COMPONENTS, wnames);
+ 
+@@ -958,6 +964,14 @@ p9_replay_shadow(struct p9_client *client)
+ 
+ 	p9_recovery_wait_for_inflight(client);
+ 
++	if (p9_client_shared_memory_enabled(client)) {
++		ret = p9_vdfs_recover_shm_ios(client);
++		if (ret != 0) {
++			pr_err("%s: Failed to setup shared memory \n", client->aname);
++			return ret;
++		}
++	}
++
+ 	list_for_each_entry(desc, &client->recovery_list, recovery_link) {
+ 
+ 		switch (desc->op) {
+diff --git a/net/9p/trans_vdfs.c b/net/9p/trans_vdfs.c
+index e7189f2..1db6d36 100644
+--- a/net/9p/trans_vdfs.c
++++ b/net/9p/trans_vdfs.c
+@@ -55,6 +55,8 @@ static P9ZCCmdDesc *p9_vdfs_alloc_init_desc(struct p9_client *c, int op);
+ static void p9_vdfs_wait_for_completion(struct p9_client *clnt,
+ 					P9ZCCmdDesc *desc,
+ 					int *err);
++static P9ZCCmdDesc *p9_vdfs_alloc_desc(void);
++static void p9_vdfs_free_desc(P9ZCCmdDesc *desc);
+ 
+ /*
+  * p9_vdfs_cpu_pool -- Per CPU memory pool
+@@ -827,7 +829,7 @@ p9_vdfs_tag_free(struct p9_client *c, P9ZCCmdDesc *desc)
+ 	}
+ }
+ 
+-P9ZCCmdDesc *
++static P9ZCCmdDesc *
+ p9_vdfs_alloc_desc(void)
+ {
+ 	struct p9_vdfs_cpu_pool *pool;
+@@ -865,7 +867,7 @@ p9_vdfs_alloc_desc(void)
+ }
+ 
+ 
+-void
++static void
+ p9_vdfs_free_desc(P9ZCCmdDesc *desc)
+ {
+ 	struct p9_vdfs_cpu_pool *pool;
+@@ -1774,3 +1776,56 @@ int p9_vdfs_handle_lopen(struct p9_fid *fid, int mode, struct p9_qid *qid)
+ 
+ 	return err;
+ }
++
++
++/* Recovering shared memory */
++
++int p9_vdfs_recover_shm_ios(struct p9_client *clnt)
++{
++	ring_info_t *ring_info = (ring_info_t *)clnt->shm_ring;
++	int ret, i, j;
++	unsigned long ppns[ring_info->npages];
++
++
++	// wakeup threads for which cmds belong to cmds
++	for (i = 0; i < shm_info.npages_4m; i++) {
++		for (j = 0; j < NPAGES_4M; j++) {
++			P9ZCCmdDesc *desc;
++			desc =
++				(P9ZCCmdDesc*)(IDX_TO_RINGBUF(shm_info.mapaddr[i],
++							      j));
++			if (desc->clnt != clnt) {
++				continue;
++			}
++			desc->conn_broken = true;
++			wake_up(&shm_info.waitqs[i]);
++		}
++	}
++
++	//reset the per client ring
++	p9_vdfs_ring_init(&ring_info->ring_header, ring_info->shared_ring_addr,
++			 ring_info->ring_size, shm_info.npages);
++
++	for (i = 0; i < ring_info->npages; i++) {
++		ppns[i] = page_to_pfn(ring_info->pages[i]);
++	}
++
++	ret = p9_client_shm_create(clnt, RING_HEADER_PAGES, ppns,
++				   ring_info->npages, PAGE_SIZE);
++	if (ret < 0) {
++		pr_err("Failed to send ring header pages, %d\n", ret);
++		return ret;
++	}
++
++	mutex_lock(&shm_mtx);
++	ret = p9_client_shm_create(clnt, RING_BUFFER_PAGES,
++				   shm_info.shm_phys_4m_ppns,
++				   shm_info.npages_4m,
++				   shm_info.npages << 12);
++	if (ret != 0) {
++		pr_info("shm_create failed during recovery \n");
++	}
++	mutex_unlock(&shm_mtx);
++
++	return ret;
++}
+diff --git a/net/9p/trans_vdfs.h b/net/9p/trans_vdfs.h
+index e0c59de..8ff0d2d 100644
+--- a/net/9p/trans_vdfs.h
++++ b/net/9p/trans_vdfs.h
+@@ -147,11 +147,10 @@ p9_vdfs_dequeue_ring(Ring *ring,
+ 	return num_entries;
+ }
+ 
++int p9_vdfs_recover_shm_ios(struct p9_client *clnt);
+ int p9_vdfs_shm_init(struct p9_client *c);
+ void p9_vdfs_shm_cleanup(void);
+ void p9_vdfs_client_shm_cleanup(struct p9_client *clnt);
+-void p9_vdfs_free_desc(P9ZCCmdDesc *desc);
+-P9ZCCmdDesc * p9_vdfs_alloc_desc(void);
+ int p9_vdfs_handle_walkx(struct p9_fid *oldfid, struct p9_fid *fid,
+ 			 uint16_t nwname, const unsigned char *const *wnames);
+ int p9_vdfs_handle_createx(struct p9_fid *ofid, const char *name, u32 flags,
+-- 
+2.7.4
+

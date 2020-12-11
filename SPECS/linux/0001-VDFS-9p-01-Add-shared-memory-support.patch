@@ -1,0 +1,930 @@
+From 496a069903916ba6125e9f706187afe2ac9674ca Mon Sep 17 00:00:00 2001
+From: Mounesh Badiger <badigerm@vmware.com>
+Date: Sun, 27 Dec 2020 10:00:32 -0800
+Subject: [PATCH 1/7] [VDFS-9p-01] Add shared memory support
+
+Shared rings:
+   each connection between vdfs and 9p will have pair of rings a submission and
+   completion ring. Rings are multiple producer and single consumer rings and uses
+   CAS for updating producer pointers.
+
+   For submission ring, 9p io threads produces the entry and vdfs poller consumes and
+   dispatches requests amongs VDFS IO threads,
+
+   For completion ring, vdfs IO threads process requests and produced completed
+   entry and 9p poller consumes and wakesup IO thread waiting for completion.
+
+Shared Ring buffers:
+   On first connection 9p allocates chunk of contiguous pages as passed in mount args.
+   Ring buffer size is Page size. Allocated shared memory pages are released only on module
+   unload.
+
+Adds new protocol 9P2000XRS -> for shared memory support and new mount argument
+`shmpages` to pass number of shared memory pages.
+---
+ include/net/9p/9p.h     |   8 +
+ include/net/9p/client.h |  22 ++-
+ net/9p/Makefile         |   1 +
+ net/9p/client.c         | 101 ++++++++++-
+ net/9p/trans_vdfs.c     | 435 ++++++++++++++++++++++++++++++++++++++++++++++++
+ net/9p/trans_vdfs.h     | 151 +++++++++++++++++
+ 6 files changed, 714 insertions(+), 4 deletions(-)
+ create mode 100644 net/9p/trans_vdfs.c
+ create mode 100644 net/9p/trans_vdfs.h
+
+diff --git a/include/net/9p/9p.h b/include/net/9p/9p.h
+index 79ea8bb..e1b2223 100644
+--- a/include/net/9p/9p.h
++++ b/include/net/9p/9p.h
+@@ -121,6 +121,10 @@ void _p9_debug(enum p9_debug_flags level, const char *func,
+  * @P9_RSTAT: response with file entity attributes
+  * @P9_TWSTAT: request to update file entity attributes
+  * @P9_RWSTAT: response when file entity attributes are updated
++ * @P9_TSHMMAP: request to create shared memory between server and client
++ * @P9_RSHMMAP: response for shared memory creation request
++ * @P9_TSHMUNMAP: request to unmap shared memory at server
++ * @P9_RSHMUNMAP: response for shared memory unmap request
+  *
+  * There are 14 basic operations in 9P2000, paired as
+  * requests and responses.  The one special case is ERROR
+@@ -210,6 +214,10 @@ enum p9_msg_t {
+ 	P9_RSTAT,
+ 	P9_TWSTAT = 126,
+ 	P9_RWSTAT,
++	P9_TSHMMAP = 128,
++	P9_RSHMMAP,
++	P9_TSHMUNMAP = 130,
++	P9_RSHMUNMAP,
+ };
+ 
+ /**
+diff --git a/include/net/9p/client.h b/include/net/9p/client.h
+index 19a1f66..b28adb0 100644
+--- a/include/net/9p/client.h
++++ b/include/net/9p/client.h
+@@ -38,6 +38,7 @@
+  * @p9_proto_2000L: 9P2000.L extension
+  * @p9_proto_2000X: 9P2000.X extension      // dotx zero copy
+  * @p9_proto_2000XR: 9P2000.XR extension    // zerocopy + recovery enabled
++ * @p9_proto_2000XRS: 9P2000.XRS extension  // zerocopy + recovery + shared memory
+  */
+ 
+ enum p9_proto_versions{
+@@ -46,6 +47,7 @@ enum p9_proto_versions{
+ 	p9_proto_2000L,
+ 	p9_proto_2000X,
+ 	p9_proto_2000XR,
++	p9_proto_2000XRS,
+ };
+ 
+ 
+@@ -114,6 +116,8 @@ enum recovery_state {
+ };
+ 
+ 
++#define MAX_CLAIM_TAGS 64
++
+ /**
+  * struct p9_client - per client instance state
+  * @lock: protect @fids and @reqs
+@@ -191,7 +195,16 @@ struct p9_client {
+ 	char *aname;
+ 	u16 n_unclaimed_tags;
+ 	bool claim_tags_in_progress;
+-
++	u16 claim_tags[MAX_CLAIM_TAGS];
++	bool using_shm;
++	u32 shmpages;
++	u64 server_id;
++
++	void *shm_ring;
++	struct list_head shm_link;
++	bool shm_removed;
++	bool wait_for_shm_cleanup;
++	wait_queue_head_t shm_queue;
+ 	char name[__NEW_UTS_LEN + 1];
+ };
+ 
+@@ -319,6 +332,13 @@ struct p9_req_t *
+ p9_client_rpc(struct p9_client *c, int8_t type, const char *fmt, ...);
+ int p9_tag_remove(struct p9_client *c, struct p9_req_t *r);
+ int p9_client_version(struct p9_client *c);
++bool p9_client_shared_memory_enabled(struct p9_client *clnt);
++int p9_client_shm_create(struct p9_client *c, u32 flags,
++			 unsigned long *entries,
++			 u32 num_entries, u32 entry_size);
++void p9_client_shm_delete(struct p9_client *c, u32 flags,
++			  unsigned long *entries,
++			  u32 num_entries, u32 entry_size);
+ 
+ static inline void p9_recov_ops_inflight_get(struct p9_client *clnt)
+ {
+diff --git a/net/9p/Makefile b/net/9p/Makefile
+index 50af6e1..fad3147 100644
+--- a/net/9p/Makefile
++++ b/net/9p/Makefile
+@@ -13,6 +13,7 @@ obj-$(CONFIG_NET_9P_RDMA) += 9pnet_rdma.o
+ 	trans_fd.o \
+ 	trans_common.o \
+         recovery.o \
++        trans_vdfs.o \
+ 
+ 9pnet_virtio-objs := \
+ 	trans_virtio.o \
+diff --git a/net/9p/client.c b/net/9p/client.c
+index d265d4a..1cfe582 100644
+--- a/net/9p/client.c
++++ b/net/9p/client.c
+@@ -45,6 +45,7 @@
+ #include <linux/kthread.h>
+ #include "protocol.h"
+ #include "recovery.h"
++#include "trans_vdfs.h"
+ 
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/9p.h>
+@@ -65,6 +66,7 @@ enum {
+ 	Opt_minzcpages,
+         Opt_testport,
+         Opt_testip,
++	Opt_shmpages,
+         Opt_aname,
+ 	Opt_err,
+ };
+@@ -77,6 +79,7 @@ static const match_table_t tokens = {
+ 	{Opt_minzcpages, "minzcpages=%d"},
+         {Opt_testport, "testport=%d"},
+         {Opt_testip, "testip=%s"},
++	{Opt_shmpages, "shmpages=%d"},
+         {Opt_aname,  "aname=%s"},
+ 	{Opt_err, NULL},
+ };
+@@ -85,7 +88,8 @@ inline int p9_is_proto_dotl(struct p9_client *clnt)
+ {
+ 	return clnt->proto_version == p9_proto_2000L ||
+ 	       clnt->proto_version == p9_proto_2000X ||
+-               clnt->proto_version == p9_proto_2000XR;
++               clnt->proto_version == p9_proto_2000XR ||
++	       clnt->proto_version == p9_proto_2000XRS;
+ }
+ EXPORT_SYMBOL(p9_is_proto_dotl);
+ 
+@@ -122,10 +126,17 @@ EXPORT_SYMBOL(p9_show_client_options);
+ inline int p9_is_proto_dotx(struct p9_client *clnt)
+ {
+ 	return clnt->proto_version == p9_proto_2000X ||
+-               clnt->proto_version == p9_proto_2000XR;
++               clnt->proto_version == p9_proto_2000XR ||
++	       clnt->proto_version == p9_proto_2000XRS;
+ }
+ EXPORT_SYMBOL(p9_is_proto_dotx);
+ 
++static inline bool p9_is_proto_dotxr(struct p9_client *clnt)
++{
++	return clnt->proto_version == p9_proto_2000XR ||
++		clnt->proto_version == p9_proto_2000XRS;
++}
++
+ inline int p9_is_fid_proto_dotx(struct p9_fid *fid)
+ {
+    return p9_is_proto_dotx(fid->clnt);
+@@ -134,11 +145,18 @@ EXPORT_SYMBOL(p9_is_fid_proto_dotx);
+ 
+ static int p9_is_client_test_enabled(struct p9_client *clnt)
+ {
+-   return clnt->proto_version == p9_proto_2000XR &&
++   return p9_is_proto_dotxr(clnt) &&
+           clnt->testport != 0 &&
+           clnt->testip != NULL;
+ }
+ 
++bool p9_client_shared_memory_enabled(struct p9_client *clnt)
++{
++	return clnt->proto_version ==  p9_proto_2000XRS;
++}
++EXPORT_SYMBOL(p9_client_shared_memory_enabled);
++
++
+ /*
+  * Some error codes are taken directly from the server replies,
+  * make sure they are valid.
+@@ -173,6 +191,9 @@ static int get_protocol_version(char *s)
+ 	} else if (!strcmp(s, "9p2000.XR")) {
+                 version = p9_proto_2000XR;
+                 p9_debug(P9_DEBUG_9P, "Protocol version: 9P2000.XR\n");
++	} else if (!strcmp(s, "9p2000.XRS")) {
++		version = p9_proto_2000XRS;
++		p9_debug(P9_DEBUG_9P, "Protocol version: 9P2000.XRS\n");
+         } else
+ 		pr_info("Unknown protocol version %s\n", s);
+ 
+@@ -292,6 +313,17 @@ static int parse_opts(char *opts, struct p9_client *clnt)
+                         }
+                         clnt->aname = s;
+                         break;
++		case Opt_shmpages:
++			r = match_int(&args[0], &option);
++			if (r < 0 || option < 0) {
++				p9_debug(P9_DEBUG_ERROR,
++					 "integer field, but no/negative number?\n");
++				ret = r;
++				continue;
++			}
++			pr_info("shmpages = %d\n", option);
++			clnt->shmpages = option;
++			break;
+ 		case Opt_version:
+ 			s = match_strdup(&args[0]);
+ 			if (!s) {
+@@ -1259,6 +1291,11 @@ int p9_client_version(struct p9_client *c)
+ 	if (msize < c->msize)
+ 		c->msize = msize;
+ 
++	err = p9_vdfs_shm_init(c);
++	if (err) {
++		pr_info("%s: shm_init failed\n", c->aname);
++	}
++
+ error:
+ 	kfree(version);
+ 	p9_tag_remove(c, req);
+@@ -1287,6 +1324,13 @@ struct p9_client *p9_client_create(const char *dev_name, char *options)
+ 	clnt->testport = 0;
+ 	clnt->testconn = NULL;
+ 	clnt->recovery_thread = NULL;
++	clnt->shmpages = 0;
++	clnt->shm_ring = NULL;
++	clnt->shm_removed = false;
++	clnt->wait_for_shm_cleanup = false;
++	clnt->using_shm = false;
++	clnt->server_id = 0;
++	init_waitqueue_head(&clnt->shm_queue);
+ 
+ 	client_id = utsname()->nodename;
+ 	memcpy(clnt->name, client_id, strlen(client_id) + 1);
+@@ -1397,6 +1441,8 @@ void p9_client_destroy(struct p9_client *clnt)
+ 
+ 	p9_tag_cleanup(clnt);
+ 
++	p9_vdfs_client_shm_cleanup(clnt);
++
+ 	kfree(clnt->aname);
+ 	kfree(clnt->testip);
+ 	kfree(clnt->options);
+@@ -2982,6 +3028,55 @@ int p9_client_readlink(struct p9_fid *fid, char **target)
+ }
+ EXPORT_SYMBOL(p9_client_readlink);
+ 
++int p9_client_shm_create(struct p9_client *clnt,
++			 u32 flags,
++			 unsigned long *entries,
++			 u32 num_entries,
++			 u32 entry_size)
++{
++	struct p9_req_t *req;
++
++	pr_info("P9_TSHMMAP %d %d %d \n", flags, entry_size, num_entries);
++retry:
++	req = p9_client_rpc(clnt, P9_TSHMMAP, "ddp", flags,
++			    entry_size, num_entries, entries);
++	if (IS_ERR(req)) {
++		p9_debug(P9_DEBUG_9P, "rpc error \n");
++		if (PTR_ERR(req) == -ENXIO) {
++			msleep(10);
++			goto retry;
++		}
++		return PTR_ERR(req);
++	}
++	pr_info("P9_TSHMMAP - rpc completed \n");
++
++	p9_tag_remove(clnt, req);
++
++	return 0;
++}
++
++void
++p9_client_shm_delete(struct p9_client *clnt,
++		     u32 flags,
++		     unsigned long *entries,
++		     u32 num_entries,
++		     u32 entry_size)
++{
++	struct p9_req_t *req;
++
++	pr_info("P9_TSHMUNMAP %d %d %d \n",
++		flags, entry_size, num_entries);
++
++	req = p9_client_rpc(clnt, P9_TSHMUNMAP, "ddp", flags, entry_size,
++			    num_entries, entries);
++	if (IS_ERR(req)) {
++		p9_debug(P9_DEBUG_9P, "rpc error \n");
++		return;
++	}
++
++	p9_tag_remove(clnt, req);
++}
++
+ int __init p9_client_init(void)
+ {
+ 	p9_req_cache = KMEM_CACHE(p9_req_t, SLAB_TYPESAFE_BY_RCU);
+diff --git a/net/9p/trans_vdfs.c b/net/9p/trans_vdfs.c
+new file mode 100644
+index 00000000..8edc622
+--- /dev/null
++++ b/net/9p/trans_vdfs.c
+@@ -0,0 +1,435 @@
++/*
++ * net/9p/trans_vdfs.c --
++ *
++ * Shared memory backend for VDFS 9p mounts.
++ *
++ *	Copyright (C) 2020, VMware, Inc.
++ *	Author : Mounesh Badiger <mounesh.b@gmail.com>>
++ *
++ *	This program is free software; you can redistribute it and/or modify
++ *	it under the terms of the GNU General Public License version 2
++ *	as published by the Free Software Foundation.
++ *
++ *	This program is distributed in the hope that it will be useful,
++ *	but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *	GNU General Public License for more details.
++ *
++ *	You should have received a copy of the GNU General Public License
++ *	along with this program; if not, write to:
++ *	Free Software Foundation
++ *	51 Franklin Street, Fifth Floor
++ *	Boston, MA      02111-1301      USA
++ *
++ */
++
++#include <net/sock.h>
++#include <linux/mm.h>
++#include <linux/uaccess.h>
++#include <uapi/linux/vm_sockets.h>
++#include <linux/vmw_vmci_defs.h>
++#include <linux/vmalloc.h>
++#include <linux/wait.h>
++#include <linux/delay.h>
++#include <linux/kthread.h>
++#include <linux/cpumask.h>
++#include <linux/timekeeping.h>
++
++#include "trans_vdfs.h"
++#include "recovery.h"
++
++#define MAX_BURST_SIZE 64
++#define RING_BUFFER_SIZE 4096
++#define RING_BUFFER_BITS 12
++#define NPAGES_4M 1024
++
++#define ALLOC_SLAB_SIZE 63
++
++#define IDX_TO_RINGBUF(mapaddr, idx)	    ((uintptr_t)mapaddr + idx * RING_BUFFER_SIZE)
++#define RINGBUF_TO_IDX(mapaddr, ring_buf)   (((uintptr_t)ring_buf - (uintptr_t)mapaddr) >> RING_BUFFER_BITS)
++#define ALIGN_UP_LOCAL(size, align) (((size) + (align-1)) & ~(align-1))
++
++/*
++ * p9_vdfs_shared_mem -- shared memory structure.
++ * @mapaddr: start address of shared memory
++ * @init: shared memory init, first client sets it to true
++ * @terminate: poller thread to exit notification
++ * @poller_thread: global poller thread polls for all clients shared rings
++ * @waitqs: waitqs for each shared ring buffer
++ * @shm_phys_ppns[]: physical page numbers of mapaddr
++ * @npages: number of shared memory pages
++ * @refcount: number of clients using shared memory transport
++ * @start_idx: non-zero if first couple of pages are used for metadata
++ * @client_list: List of active clients using shared memory, used by poller thread for polling.
++ * @new_list: Newly added clients, while polling in progress
++ * @new_client_added: @new_list is not empty, notifying poller thread to copy @client_list.
++ * @global_pool: Global queue for managing shared ring buffers
++ * @cpu_pool: Per CPU memory pool
++ */
++struct p9_vdfs_shared_mem {
++	void *mapaddr[32];
++	bool init;
++	bool terminate;
++	struct task_struct *poller_thread;
++	wait_queue_head_t *waitqs;
++	/* max shared memory ring buffers of size 128M */
++	unsigned long shm_phys_4m_ppns[32];
++	u32 npages_4m;
++	u32 npages;
++	u32 refcount;
++	u32 start_idx;
++	struct list_head client_list;
++	struct list_head new_list;
++	bool new_client_added;
++
++	struct p9_vdfs_global_pool *global_pool;
++	struct p9_vdfs_cpu_pool *cpu_pool;
++};
++
++static DEFINE_MUTEX(shm_mtx); // lock to protect multiple client initializing
++static DEFINE_SPINLOCK(shm_lock); // lock to protect to client_list
++
++/*
++ * ring_info_t -- per client ring info structure
++ * @ring_header: ring header both submission and completion rings.
++ * @pages: memory pages for ring
++ * @npages: number of pages for ring header
++ * @ring_size: size of each ring.
++ */
++typedef struct ring_info_t {
++        SharedRingHeader ring_header;
++        struct page **pages;
++        unsigned int npages;
++	u32 ring_size;
++	void *shared_ring_addr;
++} ring_info_t;
++
++static struct p9_vdfs_shared_mem shm_info;
++
++/*
++ * p9_vdfs_ring_init --
++ *	Init shared rings.
++ */
++static void
++p9_vdfs_ring_init(SharedRingHeader *ringHeader, void *addr,
++		  u32 ring_size, u32 npages)
++{
++
++	pr_info("ring_header:%px ring_size = %d npages:%u\n", ringHeader,
++		ring_size, npages);
++
++	ringHeader->subRing = (Ring *) addr;
++	ringHeader->compRing = (Ring *) (void *)((uint8_t *)addr + ring_size);
++
++	ringHeader->subRing->p_head = 0;
++	ringHeader->subRing->p_tail = 0;
++	ringHeader->subRing->c_tail = 0;
++	ringHeader->subRing->c_head = 0;
++	ringHeader->compRing->p_head = 0;
++	ringHeader->compRing->p_tail = 0;
++	ringHeader->compRing->c_tail = 0;
++	ringHeader->compRing->c_head = 0;
++
++	ringHeader->subRing->ring_size = npages;
++	ringHeader->subRing->ring_mask = npages - 1;
++	ringHeader->compRing->ring_size = npages;
++	ringHeader->compRing->ring_mask = npages - 1;
++	ringHeader->subRing->size = ring_size;
++
++	pr_info("sub_ring %px comp_ring %px \n", ringHeader->subRing,
++		ringHeader->compRing);
++}
++
++
++/*
++ * p9_vdfs_client_ring_init --
++ * @clnt: Ring owner client
++ * @shm_pages: number of shared ring buffer pages
++ */
++
++static int
++p9_vdfs_client_ring_init(struct p9_client *clnt, u32 shm_pages)
++{
++	ring_info_t *ring_info;
++	u32 npages, i, j;
++	size_t ring_size = sizeof(Ring);
++	int ret;
++	unsigned long *ppns = NULL;
++	void *addr;
++
++	ring_size += (sizeof(u32) * shm_pages);
++
++	ring_size = ALIGN(ring_size, 64); // cache align
++
++	npages = PAGE_ALIGN(ring_size * 2) >> PAGE_SHIFT; // for completion ring
++
++	ppns = kmalloc(sizeof(unsigned long) * npages, GFP_KERNEL);
++	if (ppns == NULL) {
++		return -ENOMEM;
++	}
++
++	ring_info = kmalloc(sizeof(ring_info_t), GFP_KERNEL);
++	if (ring_info == NULL) {
++		kfree(ppns);
++		return -ENOMEM;
++	}
++
++	ring_info->pages = kmalloc(sizeof(struct page *) * npages,
++				   GFP_KERNEL);
++	if (ring_info->pages == NULL) {
++		kfree(ppns);
++		kfree(ring_info);
++		return -ENOMEM;
++	}
++
++	for (i = 0; i < npages; i++) {
++		ring_info->pages[i] = alloc_page(GFP_KERNEL);
++		if (unlikely(!ring_info->pages[i])) {
++			goto error;
++		}
++		set_page_private(ring_info->pages[i], (unsigned long)ring_info);
++		ppns[i] = page_to_pfn(ring_info->pages[i]);
++		p9_debug(P9_DEBUG_9P, "%s: %d th ppn - %lu \n", clnt->aname,
++			 i, ppns[i]);
++	}
++	addr = vmap(ring_info->pages, npages, VM_MAP, PAGE_KERNEL);
++	if (!addr) {
++		goto error;
++	}
++	ring_info->shared_ring_addr = addr;
++	ring_info->npages = npages;
++	ring_info->ring_size = ring_size;
++
++	p9_debug(P9_DEBUG_9P, "addr = %px, ring_info = %px npages %d \n", addr,
++		 ring_info, npages);
++
++	p9_vdfs_ring_init(&ring_info->ring_header, addr, ring_size, shm_pages);
++
++	ret = p9_client_shm_create(clnt, RING_HEADER_PAGES, ppns, npages,
++				   PAGE_SIZE);
++	if (ret < 0) {
++		goto error;
++	}
++
++	clnt->shm_ring = ring_info;
++
++	spin_lock(&shm_lock);
++	list_add_tail(&clnt->shm_link, &shm_info.new_list);
++	shm_info.new_client_added = true;
++	spin_unlock(&shm_lock);
++
++	kfree(ppns);
++
++	return 0;
++
++error:
++	for (j = 0; j < i; j++) {
++		__free_page(ring_info->pages[i]);
++	}
++
++	kfree(ppns);
++	kfree(ring_info->pages);
++	kfree(ring_info);
++
++	return -1;
++}
++
++
++/*
++ * p9_vdfs_ring_cleanup --
++ *	Cleanup per client ring.
++ */
++
++static void
++p9_vdfs_ring_cleanup(struct p9_client *clnt)
++{
++	unsigned long ppns[20];
++	u32 i;
++	int err;
++	ring_info_t *ring_info = clnt->shm_ring;
++
++	spin_lock(&shm_lock);
++	clnt->wait_for_shm_cleanup = true;
++again:
++	err = wait_event_interruptible_lock_irq(clnt->shm_queue,
++						clnt->shm_removed,
++						shm_lock);
++	if (err == -ERESTARTSYS) {
++		goto again;
++	}
++
++	spin_unlock(&shm_lock);
++
++	for (i = 0; i < ring_info->npages; i++) {
++		ppns[i] = page_to_pfn(ring_info->pages[i]);
++		set_page_private(ring_info->pages[i], 0);
++	}
++
++	p9_client_shm_delete(clnt, RING_HEADER_PAGES, ppns,
++			     ring_info->npages,
++			     PAGE_SIZE);
++	clnt->shm_ring = NULL;
++	kfree(ring_info->pages);
++	kfree(ring_info);
++}
++
++/*
++ * p9_vdfs_shm_init --
++ *	Called for each client.
++ *
++ *	For the first client, shared ring buffers are allocated
++ *	and shm_info is initialized.
++ */
++int
++p9_vdfs_shm_init(struct p9_client *clnt)
++{
++	int npages = clnt->shmpages;
++	void *addr = NULL;
++	int ret, i;
++	wait_queue_head_t *queues = NULL;
++	u32 npages_4m;
++
++	if (!p9_client_shared_memory_enabled(clnt) || clnt->recovery_thread ==
++	    current)
++		return 0;
++
++	mutex_lock(&shm_mtx);
++
++	if (shm_info.init) {
++		// server may have restarted in between lets resend RING BUFFERS
++		if (shm_info.refcount == 0) {
++			ret = p9_client_shm_create(clnt, RING_BUFFER_PAGES,
++						   shm_info.shm_phys_4m_ppns,
++						   shm_info.npages_4m,
++						   shm_info.npages << 12);
++			if (ret != 0) {
++				pr_info("shm_create failed to setup shared memory\n");
++				mutex_unlock(&shm_mtx);
++				return  ret;
++			}
++		}
++		ret = p9_vdfs_client_ring_init(clnt, npages);
++		if (ret < 0) {
++			pr_err("ring init failed for client \n");
++			mutex_unlock(&shm_mtx);
++			return ret;
++		}
++		clnt->using_shm = true;
++		shm_info.refcount++;
++		mutex_unlock(&shm_mtx);
++		return 0;
++	}
++
++	queues = kmalloc(sizeof (wait_queue_head_t) * npages, GFP_KERNEL);
++	if (queues == NULL) {
++		pr_info("Failed to allocated memory for queues \n");
++		ret = -ENOMEM;
++		goto error;
++	}
++	for (i = 0; i < npages; i++) {
++		init_waitqueue_head(&queues[i]);
++	}
++
++	npages_4m = npages / 1024;
++
++	for (i = 0; i < npages_4m; i++) {
++		shm_info.mapaddr[i] = alloc_pages_exact(npages << 12, GFP_KERNEL |
++					       __GFP_ZERO);
++		if (shm_info.mapaddr[i] == NULL) {
++			pr_info("Failed to allocate %u pages", npages << 12);
++			ret = -ENOMEM;
++			goto error;
++		}
++		shm_info.shm_phys_4m_ppns[i] = virt_to_phys(shm_info.mapaddr[i]) >> PAGE_SHIFT;
++	}
++
++	ret = p9_client_shm_create(clnt, RING_BUFFER_PAGES,
++				   shm_info.shm_phys_4m_ppns,
++				   npages_4m,
++				   npages << 12);
++	if (ret != 0) {
++		pr_info("shm_create failed \n");
++		goto error;
++	}
++
++	shm_info.waitqs = queues;
++	shm_info.npages = npages;
++	shm_info.npages_4m = npages_4m;
++	shm_info.start_idx = 1;  //0th paged for some metadata
++
++	INIT_LIST_HEAD(&shm_info.new_list);
++	INIT_LIST_HEAD(&shm_info.client_list);
++
++	shm_info.init = true;
++
++	ret = p9_vdfs_client_ring_init(clnt, npages);
++	if (ret < 0) {
++		pr_err("ring init failed for client \n");
++		mutex_unlock(&shm_mtx);
++		return ret;
++	}
++
++
++	clnt->using_shm = true;
++	shm_info.refcount = 1;
++
++	wake_up_process(shm_info.poller_thread);
++	mutex_unlock(&shm_mtx);
++
++	return 0;
++
++error:
++	kfree(queues);
++	kfree(addr);
++	memset(&shm_info, 0, sizeof(shm_info));
++
++	mutex_unlock(&shm_mtx);
++
++	return ret;
++}
++
++/*
++ * p9_vdfs_client_shm_cleanup --
++ *
++ *	Cleanup function for each client
++ */
++
++void p9_vdfs_client_shm_cleanup(struct p9_client *clnt)
++{
++
++	if (!p9_client_shared_memory_enabled(clnt) || !clnt->using_shm)
++		return;
++
++	mutex_lock(&shm_mtx);
++	BUG_ON(!shm_info.init);
++
++	clnt->using_shm = false;
++	--shm_info.refcount;
++
++	mutex_unlock(&shm_mtx);
++	p9_vdfs_ring_cleanup(clnt);
++}
++
++
++/*
++ * p9_vdfs_shm_cleanup --
++ *	Called during module cleanup, shared memory ring buffers are freed.
++ */
++
++void p9_vdfs_shm_cleanup(void)
++{
++	int i;
++
++	if (!shm_info.init) {
++		return;
++	}
++
++	shm_info.terminate = true;
++
++	kfree(shm_info.waitqs);
++
++	for (i = 0; i < shm_info.npages_4m; i++) {
++		free_pages_exact(shm_info.mapaddr[i], shm_info.npages << PAGE_SHIFT);
++	}
++	shm_info.init = false;
++}
+diff --git a/net/9p/trans_vdfs.h b/net/9p/trans_vdfs.h
+new file mode 100644
+index 00000000..227644b
+--- /dev/null
++++ b/net/9p/trans_vdfs.h
+@@ -0,0 +1,151 @@
++/*
++ *  net/9p/trans_vdfs.h --
++ *
++ *  Copyright (C) 2020 by Mounesh Badiger <mounesh.b@gmail.com>
++ *
++ *  This program is free software; you can redistribute it and/or modify
++ *  it under the terms of the GNU General Public License version 2
++ *  as published by the Free Software Foundation.
++ *
++ *  This program is distributed in the hope that it will be useful,
++ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
++ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ *  GNU General Public License for more details.
++ *
++ *  You should have received a copy of the GNU General Public License
++ *  along with this program; if not, write to:
++ *  Free Software Foundation
++ *  51 Franklin Street, Fifth Floor
++ *  Boston, MA  02111-1301  USA
++ *
++ */
++
++#ifndef NET_9P_TRANS_VDFS_H
++#define NET_9P_TRANS_VDFS_H
++
++#include <linux/unistd.h>
++#include <net/9p/9p.h>
++#include <net/9p/client.h>
++
++// ring flags
++#define RING_HEADER_PAGES 0x1
++#define RING_BUFFER_PAGES 0x2
++
++typedef struct __attribute__((__packed__)) Ring {
++   volatile uint32_t p_head, p_tail;
++   uint8_t pad1[56];
++   volatile uint32_t c_head, c_tail;
++   uint8_t pad2[56];
++   uint32_t ring_size;
++   uint32_t ring_mask;
++   uint32_t size;
++   uint8_t  pad3[48];
++   uint32_t values[];
++} Ring;
++
++
++typedef struct __attribute__((__packed__)) SharedRingHeader {
++   Ring *subRing;
++   Ring *compRing;
++} SharedRingHeader;
++
++
++static u32
++p9_vdfs_update_prod_head(Ring *ring,
++			 u32 num_items,   // IN
++			 u32 *old_head)   // OUT
++{
++	u32 newval;
++	bool success = false;
++
++	do {
++		int free_entries;
++		*old_head = ring->p_head;
++		free_entries = ring->ring_size + (ring->c_tail - *old_head);
++		if (num_items > free_entries) {
++			return 0;
++		}
++		newval = *old_head + num_items;
++		success = __sync_bool_compare_and_swap(&ring->p_head, *old_head, newval);
++	} while (!success);
++
++	return num_items;
++}
++
++
++
++/*
++ * p9_vdfs_update_prod_tail --
++ *
++ *      Update producer tail pointer.
++ *
++ */
++
++static inline void
++p9_vdfs_update_prod_tail(Ring *ring,
++			 u32 oldval,
++			 int numitems)
++{
++	u32 newval = oldval + numitems;
++
++	while (ring->p_tail != oldval) {
++		cpu_relax();
++	}
++	ring->p_tail = newval;
++}
++
++
++static inline u32
++p9_vdfs_enqueue_ring(Ring *ring,
++		     const u32  *values,
++		     int   numitems)
++{
++	int i;
++	u32 localhead;
++
++	/* update head to reserve slots */
++	i = p9_vdfs_update_prod_head(ring, numitems, &localhead);
++	if (i != numitems) {
++		return 0;
++	}
++
++	for (i = 0; i < numitems; i++) {
++		ring->values[(localhead + i) & ring->ring_mask] = values[i];
++	}
++
++	p9_vdfs_update_prod_tail(ring, localhead, numitems);
++
++	return numitems;
++}
++
++static inline u32
++p9_vdfs_dequeue_ring(Ring *ring,
++		     u32 *values,
++		     int num_items)
++{
++	int num_entries, i;
++	int filled_entries = ring->p_tail - ring->c_head;
++	u32 local_head;
++
++	if (filled_entries == 0) {
++		return 0;
++	}
++
++	num_entries = min(num_items, filled_entries);
++
++	/* update consumer head */
++	local_head = ring->c_head;
++	ring->c_head = (ring->c_head + num_entries);
++
++	for (i = 0; i < num_entries; i++) {
++		values[i] = ring->values[(local_head + i) & ring->ring_mask];
++	}
++	ring->c_tail = ring->c_head;
++
++	return num_entries;
++}
++
++int p9_vdfs_shm_init(struct p9_client *c);
++void p9_vdfs_shm_cleanup(void);
++void p9_vdfs_client_shm_cleanup(struct p9_client *clnt);
++#endif
+-- 
+2.7.4
+
