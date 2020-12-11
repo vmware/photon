@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.160
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -129,6 +129,7 @@ Patch206:	0007-vdfs-9p-Fix-recovery-logic-and-cleanup-tags.patch
 Patch225:      0001-9p-fscache-Don-t-use-writeback-fid-for-cache-when-en.patch
 Patch226:      0001-9p-fscache-Only-fetch-attr-from-inode-cache-when-cac.patch
 Patch227:      0001-9p-fscache-Make-dcache-work-with-case-insensitive-vo.patch
+Patch228:      0001-9p-fscache-Ensure-consistent-blksize-is-returned-fro.patch
 
 # VKD 9p changes
 Patch250:        0001-fs-9p-support-no_icache-flag-to-disable-dentry-inode.patch
@@ -437,6 +438,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch225 -p1
 %patch226 -p1
 %patch227 -p1
+%patch228 -p1
 %patch250 -p1
 %patch251 -p1
 %patch252 -p1
@@ -748,6 +750,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri Dec 11 2020 Albert Guo <aguo@vmware.com> 4.19.160-4
+-   9p: fscache: Ensure consistent blksize is returned from 9p client.
 *   Wed Dec 09 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.160-3
 -   Fix for CVE-2019-19770
 *   Fri Dec 6 2020 Albert Guo <aguo@vmware.com> 4.19.160-2

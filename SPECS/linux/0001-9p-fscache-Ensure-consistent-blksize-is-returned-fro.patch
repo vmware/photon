@@ -1,0 +1,135 @@
+From f9c4e33ef3920ecc3080291b76926518010219ef Mon Sep 17 00:00:00 2001
+From: Albert Guo <aguo@vmware.com>
+Date: Thu, 10 Dec 2020 21:01:14 -0800
+Subject: [PATCH] 9p: fscache: Ensure consistent blksize is returned from 9p
+ client.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+When blksize is read from inode cache, it is inherited from
+superblock; when blksize is read from 9p server directly, 9p client reset
+the blksize explicitly with value got from 9p server.
+
+9p client cacluates the block size of super block from msize in the mount
+option, the relevant code is showed here:
+> v9ses->maxdata = v9ses->clnt->msize - P9_IOHDRSZ;
+> sb->s_blocksize_bits = fls(v9ses->maxdata - 1);
+For vSAN File Service, msize is 16300 in our FSVM, so the blksize becomes 16k
+in super block.
+However, VDFS server always returns 4k blksize which is the block size of VDFS
+file system itself. As a result, we saw below in vSAN File service env:
+blksize is 16k if it's read from inode cache, else it will be 4k.
+This kind of inconsistent behavior has caused failure in smb durable reconnect
+check.
+
+This fix ensure the behavior in the two cases are consistent. i.e. Save
+the blksize as blkbits in the inode so that the blksize got from inode cache is
+the same as that got from 9p server. The blksize reported for each inode can be
+different from that of the file system.
+
+Some reference:
+1) man page of stat(2)
+https://man7.org/linux/man-pages/man2/stat.2.html
+The st_blksize doesn't not necessary need to be the same as file system's
+block size.
+
+Explaination about st_blksize from stat(2):
+blksize_t st_blksize;     /* blocksize for filesystem I/O */
+The st_blksize field gives the "preferred" blocksize for efficient filesystem
+I/O.  (Writing to a file in smaller chunks may cause an inefficient
+read-modify-re‐write.)
+
+2) NFS client behavior
+NFS uses wsize as IO block size
+build-scripts.eng.vmware.com:/scripts on /dbc/sc-dbc1105/build/scripts type nfs4 (rw,relatime,vers=4.0,rsize=32768,wsize=32768,namlen=255,hard,proto=tcp,timeo=600,retrans=2,sec=sys,clientaddr=10.162.210.5,local_lock=none,addr=10.184.242.20)
+
+$ stat /dbc/sc-dbc1105/build/scripts/README
+  File: ‘/dbc/sc-dbc1105/build/scripts/README’
+  Size: 151             Blocks: 113        IO Block: 32768  regular file
+Device: 2ch/44d Inode: 199622690   Links: 1
+Access: (0644/-rw-r--r--)  Uid: (2047837/  syncer)   Gid: (   99/  nobody)
+Access: 2016-12-15 14:54:13.206754033 -0800
+Modify: 2016-12-15 14:54:13.206754033 -0800
+Change: 2019-10-02 03:31:13.505042428 -0700
+
+Note: VDFS server will also need corresponding change so as to has similar
+behavior as NFS.
+
+Testing Done:
+1) blksize is always 16k regardless of whether it's read from inode cache or not.
+Use a tool to reproduce/test the issue: http://engweb.vmware.com/~aguo/test_tools/check_stat.c
+ /check_stat /vsfs/04a44f8d-80d5-417c-b016-70ce395b27d0/h10-161-165-163/f512d25f-d8d0-3d42-afab-020047464a4b/volumes/default/testfile
+now.sec = 1607702476, now.usec = 503448
+getattr from cache:
+fstat: atime.sec=1607702442, atime.nsec=836342000, mtime.sec=1607702476, mtime.nsec=259390272, ctime.sec=1607702476, ctime.nsec=259390272, blksize=4096.
+getattr from 9p server:
+fstat: atime.sec=1607702475, atime.nsec=503448000, mtime.sec=1607702475, mtime.nsec=503448000, ctime.sec=1607702476, ctime.nsec=273242695, blksize=4096.
+getattr from cache:
+fstat: atime.sec=1607702475, atime.nsec=503448000, mtime.sec=1607702475, mtime.nsec=503448000, ctime.sec=1607702476, ctime.nsec=273242695, blksize=4096.
+
+2) Tested Samba durable reconnect works fine.
+docker network disconnect 683de6a3741d h10-161-165-163 && sleep 20 &&  docker network connect --ip=10.161.165.163 683de6a3741d h10-161-165-163
+
+Before fix:
+Durable reconnect failed due to below error:
+   vfs_default_durable_reconnect (fiofile): stat_ex.st_ex_blksize differs: cookie:4096 != stat:16384, denying durable reconnect
+ [2020/12/11 00:15:31.016476,  3] ../../source3/smbd/smb2_create.c:835(smbd_smb2_create_send)
+   smbd_smb2_create_send: durable_reconnect failed: NT_STATUS_OBJECT_NAME_NOT_FOUND => NT_STATUS_OBJECT_NAME_NOT_FOUND
+
+After fix:
+Durable reconnect succeeded.
+---
+ fs/9p/vfs_inode_dotl.c | 8 ++++++--
+ fs/9p/vfs_super.c      | 2 ++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
+
+diff --git a/fs/9p/vfs_inode_dotl.c b/fs/9p/vfs_inode_dotl.c
+index 8474902..b42d6fa 100644
+--- a/fs/9p/vfs_inode_dotl.c
++++ b/fs/9p/vfs_inode_dotl.c
+@@ -507,8 +507,6 @@ static int v9fs_vfs_mkdir_dotl(struct inode *dir,
+ 
+ 	v9fs_stat2inode_dotl(st, d_inode(dentry), 0);
+ 	generic_fillattr(d_inode(dentry), stat);
+-	/* Change block size to what the server returned */
+-	stat->blksize = st->st_blksize;
+ 
+ 	kfree(st);
+ 	return 0;
+@@ -645,6 +643,9 @@ int v9fs_vfs_setattr_dotl(struct dentry *dentry, struct iattr *iattr)
+ 		if (!(flags & V9FS_STAT2INODE_KEEP_ISIZE))
+ 			v9fs_i_size_write(inode, stat->st_size);
+ 		inode->i_blocks = stat->st_blocks;
++		if (stat->st_blksize != 0) {
++			inode->i_blkbits = fls(stat->st_blksize - 1);
++		}
+ 	} else {
+ 		if (stat->st_result_mask & P9_STATS_ATIME) {
+ 			inode->i_atime.tv_sec = stat->st_atime_sec;
+@@ -678,6 +679,9 @@ int v9fs_vfs_setattr_dotl(struct dentry *dentry, struct iattr *iattr)
+ 			v9fs_i_size_write(inode, stat->st_size);
+ 		if (stat->st_result_mask & P9_STATS_BLOCKS)
+ 			inode->i_blocks = stat->st_blocks;
++		if (stat->st_blksize != 0) {
++			inode->i_blkbits = fls(stat->st_blksize - 1);
++		}
+ 	}
+ 	if (stat->st_result_mask & P9_STATS_GEN)
+ 		inode->i_generation = stat->st_gen;
+diff --git a/fs/9p/vfs_super.c b/fs/9p/vfs_super.c
+index 80cdb1e..573237a 100644
+--- a/fs/9p/vfs_super.c
++++ b/fs/9p/vfs_super.c
+@@ -81,6 +81,8 @@ static int v9fs_set_super(struct super_block *s, void *data)
+ 
+ 	sb->s_maxbytes = MAX_LFS_FILESIZE;
+ 	sb->s_blocksize_bits = fls(v9ses->maxdata - 1);
++	p9_debug(P9_DEBUG_VFS, "maxdata=%d, s_blocksize_bits=%d\n",
++		v9ses->maxdata, sb->s_blocksize_bits);
+ 	sb->s_blocksize = 1 << sb->s_blocksize_bits;
+ 	sb->s_magic = V9FS_MAGIC;
+ 	if (v9fs_proto_dotl(v9ses)) {
+-- 
+1.8.5.6
+
