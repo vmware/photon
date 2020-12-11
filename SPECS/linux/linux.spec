@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.160
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -37,6 +37,9 @@ Source11:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40
 # Prerequisite patch to use PTP_SYS_OFFSET_EXTENDED ioctl in i40e
 # driver.
 Source12:       0001-Add-support-for-gettimex64-interface.patch
+%define iavf_version 4.0.1
+Source13:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
+%define sha1 iavf=51fa70f3b1ac28778c811532a47b862b3fd62c9d
 
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
@@ -362,6 +365,7 @@ This Linux package contains hmac sha generator kernel module.
 %setup -D -b 5 -n linux-%{version}
 %setup -D -b 10 -n linux-%{version}
 %setup -D -b 11 -n linux-%{version}
+%setup -D -b 13 -n linux-%{version}
 %endif
 %setup -D -b 8 -n linux-%{version}
 
@@ -564,6 +568,13 @@ patch -p1 --fuzz=0 < %{SOURCE12}
 make -C src KSRC=$bldroot clean
 make -C src KSRC=$bldroot %{?_smp_mflags}
 popd
+
+# build iavf module
+bldroot=`pwd`
+pushd ../iavf-%{iavf_version}
+make -C src KSRC=$bldroot clean
+make -C src KSRC=$bldroot %{?_smp_mflags}
+popd
 %endif
 
 #build photon-checksum-generator module
@@ -632,6 +643,12 @@ popd
 # install i40e module
 bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
+make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+popd
+
+# install iavf module
+bldroot=`pwd`
+pushd ../iavf-%{iavf_version}
 make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
@@ -766,6 +783,7 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %ifarch x86_64
 %exclude /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 %exclude /lib/modules/%{uname_r}/extra/intel_sgx.ko.xz
+/etc/modprobe.d/iavf.conf
 %endif
 
 %files docs
@@ -854,6 +872,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Thu Dec 10 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.160-5
+-   Add latest out of tree version of iavf driver
+-   Enable CONFIG_NET_TEAM
 *   Wed Dec 09 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.160-4
 -   Fix for CVE-2019-19770
 *   Tue Dec 08 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.160-3

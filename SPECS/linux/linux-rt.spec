@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.160
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt66
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -28,6 +28,9 @@ Source6:	https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_versi
 # Prerequisite patch to use PTP_SYS_OFFSET_EXTENDED ioctl in i40e
 # driver.
 Source7:        0001-Add-support-for-gettimex64-interface.patch
+%define iavf_version 4.0.1
+Source8:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
+%define sha1 iavf=51fa70f3b1ac28778c811532a47b862b3fd62c9d
 
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
@@ -489,6 +492,7 @@ The Linux package contains the Linux kernel doc files
 %ifarch x86_64
 %setup -D -b 3 -n linux-%{version}
 %setup -D -b 6 -n linux-%{version}
+%setup -D -b 8 -n linux-%{version}
 %endif
 
 %patch0 -p1
@@ -908,6 +912,13 @@ patch -p1 --fuzz=0 < %{SOURCE7}
 make -C src KSRC=$bldroot clean
 make -C src KSRC=$bldroot %{?_smp_mflags}
 popd
+
+# build iavf module
+bldroot=`pwd`
+pushd ../iavf-%{iavf_version}
+make -C src KSRC=$bldroot clean
+make -C src KSRC=$bldroot %{?_smp_mflags}
+popd
 %endif
 
 %define __modules_install_post \
@@ -950,6 +961,12 @@ popd
 # install i40e module
 bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
+make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+popd
+
+# install iavf module
+bldroot=`pwd`
+pushd ../iavf-%{iavf_version}
 make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
@@ -1024,6 +1041,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %defattr(0644,root,root)
 /lib/modules/%{uname_r}/*
 %exclude /lib/modules/%{uname_r}/build
+/etc/modprobe.d/iavf.conf
 
 %files docs
 %defattr(-,root,root)
@@ -1036,6 +1054,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Dec 10 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.160-4
+-   Add latest out of tree version of iavf driver
+-   Enable CONFIG_NET_TEAM
 *   Wed Dec 09 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.160-3
 -   Fix for CVE-2019-19770
 *   Tue Dec 08 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.160-2
