@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.1.1i
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -46,6 +46,13 @@ Requires: perl-DBD-SQLite
 Requires: openssl = %{version}-%{release}
 %description c_rehash
 Perl scripts that convert certificates and keys to various formats.
+
+%package docs
+Summary: openssl docs
+Group: Documentation
+Requires: openssl = %{version}-%{release}
+%description docs
+The package contains openssl doc files.
 
 %prep
 %setup -q
@@ -100,10 +107,6 @@ rm -rf %{buildroot}/*
 %{_bindir}/openssl
 %{_libdir}/*.so.*
 %{_libdir}/engines*/*
-%{_mandir}/man1/*
-%{_mandir}/man5/*
-%{_mandir}/man7/*
-%{_docdir}/*
 
 %files devel
 %{_includedir}/*
@@ -121,7 +124,16 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 /%{_bindir}/rehash_ca_certificates.sh
 
+%files docs
+%defattr(-,root,root)
+%{_docdir}/*
+%{_mandir}/man1/*
+%{_mandir}/man5/*
+%{_mandir}/man7/*
+
 %changelog
+*   Mon Dec 14 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1i-2
+-   Move documents to docs sub-package
 *   Thu Dec 10 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1i-1
 -   Update openssl to 1.1.1i
 *   Thu Dec 03 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1g-4
