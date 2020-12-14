@@ -1,23 +1,24 @@
 %global _default_patch_fuzz 2
-Summary:	OpenLdap-2.4.48
-Name:		openldap
-Version:	2.4.48
-Release:	2%{?dist}
-License:	OpenLDAP
-URL:		http://cyrusimap.web.cmu.edu/
-Group:		System Environment/Security
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
+Summary:        OpenLdap-2.4.48
+Name:           openldap
+Version:        2.4.48
+Release:        3%{?dist}
+License:        OpenLDAP
+URL:            http://cyrusimap.web.cmu.edu/
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
 %define sha1 openldap=c1984e80f6db038b317bf931866adb38e5537dcd
 Patch0:         openldap-2.4.40-gssapi-1.patch
-Patch1:		openldap-2.4.44-consolidated-2.patch
+Patch1:         openldap-2.4.44-consolidated-2.patch
 Patch2:         openldap-CVE-2020-12243.patch
+Patch3:         openldap-CVE-2020-25692.patch
 Requires:       openssl >= 1.0.1, cyrus-sasl >= 2.1
 BuildRequires:  cyrus-sasl >= 2.1
 BuildRequires:  openssl-devel >= 1.0.1
-BuildRequires:	groff
-BuildRequires:	e2fsprogs-devel
+BuildRequires:  groff
+BuildRequires:  e2fsprogs-devel
 
 %description
 OpenLDAP is an open source suite of LDAP (Lightweight Directory Access
@@ -33,6 +34,8 @@ libraries, and documentation for OpenLDAP.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+
 %build
 
 autoconf
@@ -49,6 +52,7 @@ export CPPFLAGS="-D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D_AVL_H"
 
 make depend
 make %{?_smp_mflags}
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make install DESTDIR=%{buildroot}
@@ -56,11 +60,12 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 
 %check
+
 make %{?_smp_mflags} test
 
-%post	-p /sbin/ldconfig
+%post -p /sbin/ldconfig
 
-%postun	-p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
@@ -77,6 +82,8 @@ rm -rf %{buildroot}/*
 /etc/openldap/*
 
 %changelog
+*   Mon Dec 14 2020 Dweep Advani <dadvani@vmware.com> 2.4.48-3
+-   Patched for CVE-2020-25692
 *   Mon May 11 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.48-2
 -   Fix CVE-2020-12243
 *   Fri Aug 16 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.48-1
@@ -100,4 +107,4 @@ rm -rf %{buildroot}/*
 *   Fri Aug 14 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.40-2
 -   Patches for CVE-2015-1545 and CVE-2015-1546.
 *   Wed Oct 08 2014 Divya Thaluru <dthaluru@vmware.com> 2.4.40-1
--   Initial build.	First version
+-   Initial build.        First version
