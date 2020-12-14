@@ -4,7 +4,7 @@
 Summary:        OpenLdap-2.4.43
 Name:           openldap
 Version:        2.4.53
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        OpenLDAP
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
@@ -14,13 +14,14 @@ Source0:        ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{v
 %define sha1 openldap=9a03db5cc02fd8b0afc5bf11fb10f7cd5260bcf0
 
 Patch0:         openldap-2.4.51-consolidated-2.patch
+Patch1:         openldap-CVE-2020-25692.patch
 
 Requires:       openssl >= 1.0.1, cyrus-sasl >= 2.1
 
 BuildRequires:  cyrus-sasl >= 2.1
 BuildRequires:  openssl-devel >= 1.0.1
-BuildRequires:	groff
-BuildRequires:	e2fsprogs-devel
+BuildRequires:  groff
+BuildRequires:  e2fsprogs-devel
 BuildRequires:  libtool
 BuildRequires:  systemd
 
@@ -36,6 +37,7 @@ libraries, and documentation for OpenLDAP.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 autoconf
@@ -71,6 +73,7 @@ if [ %{_host} != %{_build} ]; then
 fi
 make depend
 make %{?_smp_mflags}
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make install DESTDIR=%{buildroot}
@@ -92,7 +95,8 @@ popd
 %check
 make %{?_smp_mflags} test
 
-%post	-p /sbin/ldconfig
+%post -p /sbin/ldconfig
+
 %postun -p /sbin/ldconfig
 
 %clean
@@ -111,6 +115,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*   Mon Dec 14 2020 Dweep Advani <dadvani@vmware.com> 2.4.53-3
+-   Patched for CVE-2020-25692
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.53-2
 -   openssl 1.1.1
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.53-1
@@ -144,4 +150,4 @@ rm -rf %{buildroot}/*
 *   Fri Aug 14 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.40-2
 -   Patches for CVE-2015-1545 and CVE-2015-1546.
 *   Wed Oct 08 2014 Divya Thaluru <dthaluru@vmware.com> 2.4.40-1
--   Initial build.	First version
+-   Initial build. First version
