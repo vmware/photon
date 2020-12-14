@@ -279,6 +279,12 @@
         <package id="sudo"/>
         <package id="swig"/>
         <package id="systemd"/>
+        <package id="systemd-libs"
+                 spec="systemd"/>
+        <package id="systemd-pam"
+                 spec="systemd"/>
+        <package id="systemd-udev"
+                 spec="systemd"/>
         <package id="tar"/>
         <package id="tcpdump"/>
         <package id="tdnf"/>
@@ -448,7 +454,7 @@
         <pkgref id="util-linux"/>
         <pkgref id="xz"/>
         <pkgref id="zlib"/>
-    </package-group> 
+    </package-group>
     <package-group id="minimal">
         <pkgref id="attr"/>
         <pkgref id="bash"/>

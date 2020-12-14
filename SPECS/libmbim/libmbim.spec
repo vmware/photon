@@ -1,7 +1,7 @@
 Summary:        Library for talking to WWAN modems and devices
 Name:           libmbim
 Version:        1.24.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
@@ -10,7 +10,17 @@ Distribution:   Photon
 Source0:        https://www.freedesktop.org/software/libmbim/libmbim-%{version}.tar.xz
 %define sha1    libmbim=1162a4302be250ca3334f3bfd1e7d04770e4b4ff
 BuildRequires:  libgudev-devel
+BuildRequires:  libgudev
+BuildRequires:  systemd-devel
+BuildRequires:  systemd-libs
+BuildRequires:  python3
+BuildRequires:  gcc
+BuildRequires:  glib-devel
+BuildRequires:  pkg-config
+BuildRequires:  automake autoconf libtool
+
 Requires:       libgudev
+
 %description
 The libmbim package contains a GLib-based library for talking to WWAN modems
 and devices which speak the Mobile Interface Broadband Model (MBIM) protocol.
@@ -23,7 +33,7 @@ Requires:      libgudev-devel
 It contains the libraries and header files for libmbim
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure --disable-static
@@ -55,6 +65,8 @@ make  %{?_smp_mflags} check
 %{_datadir}/gtk-doc/*
 
 %changelog
+*   Mon Dec 14 2020 Susant Sahani<ssahani@vmware.com> 1.24.2-2
+-   Add build requires
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.24.2-1
 -   Automatic Version Bump
 *   Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.16.2-1

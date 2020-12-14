@@ -3,15 +3,16 @@
 
 Name:           dbus-python3
 Version:        1.2.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python bindings for D-Bus
 License:        MIT
 Group:          Development/Libraries/Python
 Url:            http://www.freedesktop.org/wiki/Software/DBusBindings/
 Source0:        http://dbus.freedesktop.org/releases/dbus-python/dbus-python-%{version}.tar.gz
 %define         sha1 dbus-python=de05308c75baa2ce5434de73d60428c005ac0cc1
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -19,6 +20,8 @@ BuildRequires:  python3-docutils
 BuildRequires:  dbus-devel
 BuildRequires:  glib-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  systemd-devel
+
 Requires:       python3-xml
 Requires:       dbus
 
@@ -64,5 +67,7 @@ make check
 %{_libdir}/pkgconfig/dbus-python.pc
 
 %changelog
+*   Mon Dec 14 2020 Susant Sahani <ssahani@vmware.com> 1.2.16-2
+-   Add build requires
 *   Thu Mar 19 2020 Tapas Kundu <tkundu@vmware.com> 1.2.16-1
 -   Initial release

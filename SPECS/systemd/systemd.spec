@@ -1,7 +1,7 @@
 Name:             systemd
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
-Version:          245.5
-Release:          3%{?dist}
+Version:          247
+Release:          1%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 Summary:          System and Service Manager
 
@@ -10,7 +10,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0:          %{name}-stable-%{version}.tar.gz
-%define sha1      systemd=eb92a3cf4dac32a5e125aff2d90a0d6eb8a875f5
+%define sha1      systemd=352aa4ebb76385af788dc2037a8fd138aaec56b3
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          systemd.cfg
@@ -18,20 +18,24 @@ Source4:          99-dhcp-en.network
 Source5:          10-rdrand-rng.conf
 Source6:          10-defaults.preset
 
-Patch0:           systemd-245-enoX-uses-instance-number-for-vmware-hv.patch
-Patch1:           systemd-245-default-dns-from-env.patch
-Patch2:           util-return-the-correct-correct-wd-from-inotify-help.patch
+Patch0:           systemd-247-enoX-uses-instance-number-for-vmware-hv.patch
+Patch1:           systemd-247-default-dns-from-env.patch
 
 Requires:         Linux-PAM
 Requires:         bzip2
+Requires:         curl
 Requires:         elfutils
 Requires:         filesystem >= 1.1
 Requires:         glib
 Requires:         gnutls
 Requires:         kmod
+Requires:         %{name}-pam = %{version}-%{release}
+Requires:         %{name}-rpm-macros = %{version}-%{release}
+Requires:         %{name}-libs = %{version}-%{release}
 Requires:         libacl
 Requires:         libcap
 Requires:         libgcrypt
+Requires:         libmicrohttpd
 Requires:         libseccomp
 Requires:         libselinux
 Requires:         lz4
@@ -39,6 +43,7 @@ Requires:         pcre
 Requires:         xz
 
 BuildRequires:   bzip2-devel
+BuildRequires:   curl-devel
 BuildRequires:   docbook-xml
 BuildRequires:   docbook-xsl
 BuildRequires:   gettext
@@ -58,6 +63,7 @@ BuildRequires:   libxslt
 BuildRequires:   Linux-PAM-devel
 BuildRequires:   lz4-devel
 BuildRequires:   meson
+BuildRequires:   libmicrohttpd-devel
 BuildRequires:   ninja-build
 BuildRequires:   openssl-devel
 BuildRequires:   pcre-devel
@@ -86,13 +92,88 @@ runtime directories and settings, and daemons to manage simple network
 configuration, network time synchronization, log forwarding, and name
 resolution.
 
+%package libs
+Summary:        systemd libraries
+License:        LGPLv2+ and MIT
+Provides:       nss-myhostname = 0.4
+Requires(post): coreutils
+Requires(post): sed
+Requires(post): grep
+
+%description libs
+Libraries for systemd and udev.
+
+%package pam
+Summary:        systemd PAM module
+Requires:       %{name} = %{version}-%{release}
+
+%description pam
+Systemd PAM module registers the session with systemd-logind.
+
+%package rpm-macros
+Summary:        Macros that define paths and scriptlets related to systemd
+BuildArch:      noarch
+
+%description rpm-macros
+Just the definitions of rpm macros.
+
 %package devel
 Summary:        Development headers for systemd
-Requires:       %{name} = %{version}-%{release}
+Requires:       %{name}-libs = %{version}-%{release}
+Requires:       %{name}-pam = %{version}-%{release}
 Requires:       glib-devel
+Provides:       libudev-devel = %{version}
 
 %description devel
 Development headers for developing applications linking to libsystemd
+
+%package udev
+Summary: Rule-based device node and kernel event manager
+License:        LGPLv2+
+
+Requires:       %{name} = %{version}-%{release}
+Requires(post):   systemd
+Requires(preun):  systemd
+Requires(postun): systemd
+Requires(post):   grep
+Requires:         kmod
+Provides:         udev = %{version}
+
+%description udev
+This package contains systemd-udev and the rules and hardware database
+needed to manage device nodes. This package is necessary on physical
+machines and in virtual machines, but not in containers.
+
+%package container
+Summary: Tools for containers and VMs
+Requires:       %{name} = %{version}-%{release}
+Requires(post):   systemd
+Requires(preun):  systemd
+Requires(postun): systemd
+License:          LGPLv2+
+
+%description container
+Systemd tools to spawn and manage containers and virtual machines.
+
+This package contains systemd-nspawn, machinectl, systemd-machined,
+and systemd-importd.
+
+%package journal-remote
+Summary:        Tools to send journal events over the network
+Requires:       %{name} = %{version}-%{release}
+License:        LGPLv2+
+Requires(post):   systemd
+Requires(preun):  systemd
+Requires(postun): systemd
+Requires:         libmicrohttpd
+Provides:         systemd-journal-gateway = %{version}-%{release}
+
+%description journal-remote
+Programs to forward journal entries over the network, using encrypted HTTP,
+and to write journal files from serialized journal contents.
+
+This package contains systemd-journal-gatewayd,
+systemd-journal-remote, and systemd-journal-upload.
 
 %package lang
 Summary:        Language pack for systemd
@@ -101,14 +182,19 @@ Requires:       %{name} = %{version}-%{release}
 %description lang
 Language pack for systemd
 
+%package tests
+Summary:       Internal unit tests for systemd
+Requires:      %{name} = %{version}-%{release}
+License:       LGPLv2+
+
+%description tests
+"Installed tests" that are usually run as part of the build system.
+They can be useful to test systemd internals.
+
 %prep
-%setup -n %{name}-stable-%{version}
+%autosetup -n %{name}-stable-%{version} -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
-
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
 if [ %{_host} != %{_build} ]; then
@@ -147,7 +233,10 @@ fi
 
 CONFIGURE_OPTS=(
        --prefix=%{_prefix}
+       -Dmode=release
        -Dkmod=true
+       -Duser-path=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin
+       -Dservice-watchdog=
        -Dblkid=true
        -Dseccomp=true
        -Ddefault-dnssec=no
@@ -166,9 +255,13 @@ CONFIGURE_OPTS=(
        -Dpam=true
        -Dpolkit=true
        -Dselinux=true
+       -Dlibcurl=true
+       -Dgnutls=true
+       -Db_ndebug=false
        -Dhwdb=true
        -Ddefault-kill-user-processes=false
        -Dtests=unsafe
+       -Dinstall-tests=true
        -Dnobody-user=nobody
        -Dnobody-group=nobody
        -Dsplit-usr=false
@@ -178,6 +271,8 @@ CONFIGURE_OPTS=(
        -Ddefault-hierarchy=hybrid
        -Dsysvinit-path=/etc/rc.d/init.d
        -Drc-local=/etc/rc.d/rc.local
+       -Dfallback-hostname=photon
+       -Doomd=true
        -Dversion-tag=v%{version}-%{release}
        $CROSS_COMPILE_CONFIG
 )
@@ -193,12 +288,11 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 DESTDIR=%{buildroot} ninja -C build install
 
-install -vdm 755 %{buildroot}/sbin
-for tool in runlevel reboot shutdown poweroff halt telinit; do
-     ln -sfv ../bin/systemctl %{buildroot}/sbin/${tool}
-done
+sed -i '/srv/d' %{buildroot}/usr/lib/tmpfiles.d/home.conf
+sed -i "s:0775 root lock:0755 root root:g" %{buildroot}/usr/lib/tmpfiles.d/legacy.conf
+sed -i "s:NamePolicy=kernel database onboard slot path:NamePolicy=kernel database:g" %{buildroot}/usr/lib/systemd/network/99-default.link
+sed -i "s:#LLMNR=yes:LLMNR=false:g" %{buildroot}/etc/systemd/resolved.conf
 
-ln -sfv ../lib/systemd/systemd %{buildroot}/sbin/init
 rm -f %{buildroot}%{_var}/log/README
 mkdir -p %{buildroot}%{_localstatedir}/opt/journal/log
 mkdir -p %{buildroot}%{_localstatedir}/log
@@ -232,16 +326,24 @@ systemctl daemon-reexec &>/dev/null || {
 
 journalctl --update-catalog &>/dev/null || :
 systemd-tmpfiles --create &>/dev/null || :
-udevadm hwdb --update &>/dev/null || :
 
 # See https://github.com/systemd/systemd/blob/master/NEWS#L1273
-if [ $1 -gt 0 ] ; then
+if [ $1 -eq 1 ] ; then
         systemctl preset-all &>/dev/null || :
         systemctl --global preset-all &>/dev/null || :
 fi
 
 %clean
 rm -rf %{buildroot}/*
+
+%post udev
+udevadm hwdb --update &>/dev/null || :
+
+%preun udev
+%systemd_preun systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-timesyncd.service
+
+%postun udev
+%systemd_postun_with_restart systemd-udevd.service
 
 %files
 %defattr(-,root,root)
@@ -257,9 +359,10 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/sysctl.d/50-security-hardening.conf
 %{_sysconfdir}/xdg/systemd
 %{_sysconfdir}/rc.d/init.d/README
-%{_sysconfdir}/systemd/sleep.conf
-%{_sysconfdir}/pam.d/systemd-user
 
+%config(noreplace) %{_sysconfdir}/oomd.conf
+
+%config(noreplace) %{_sysconfdir}/systemd/sleep.conf
 %config(noreplace) %{_sysconfdir}/systemd/system.conf
 %config(noreplace) %{_sysconfdir}/systemd/user.conf
 %config(noreplace) %{_sysconfdir}/systemd/logind.conf
@@ -275,30 +378,73 @@ rm -rf %{buildroot}/*
 %endif
 %config(noreplace) %{_sysconfdir}/systemd/network/99-dhcp-en.network
 
-%dir %{_sysconfdir}/udev
-%dir %{_sysconfdir}/udev/rules.d
-%dir %{_sysconfdir}/udev/hwdb.d
-
-%{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
-%config(noreplace) %{_sysconfdir}/udev/udev.conf
 %config(noreplace) /boot/systemd.cfg
+
+%{_sbindir}/halt
+%{_sbindir}/init
+%{_sbindir}/poweroff
+%{_sbindir}/reboot
+%{_sbindir}/runlevel
+%{_sbindir}/shutdown
+%{_sbindir}/telinit
+%{_sbindir}/resolvconf
+
+%{_bindir}/busctl
+%{_bindir}/coredumpctl
+%{_bindir}/hostnamectl
+%{_bindir}/journalctl
+%{_bindir}/localectl
+%{_bindir}/loginctl
+%{_bindir}/networkctl
+%{_bindir}/portablectl
+%{_bindir}/resolvectl
+%{_bindir}/systemctl
+%{_bindir}/systemd-analyze
+%{_bindir}/systemd-ask-password
+%{_bindir}/systemd-cat
+%{_bindir}/systemd-cgls
+%{_bindir}/systemd-cgtop
+%{_bindir}/systemd-delta
+%{_bindir}/systemd-detect-virt
+%{_bindir}/systemd-escape
+%{_bindir}/systemd-id128
+%{_bindir}/systemd-inhibit
+%{_bindir}/systemd-machine-id-setup
+%{_bindir}/systemd-mount
+%{_bindir}/systemd-notify
+%{_bindir}/systemd-path
+%{_bindir}/systemd-resolve
+%{_bindir}/systemd-run
+%{_bindir}/systemd-socket-activate
+%{_bindir}/systemd-stdio-bridge
+%{_bindir}/systemd-tmpfiles
+%{_bindir}/systemd-tty-ask-password-agent
+%{_bindir}/systemd-umount
+%{_bindir}/timedatectl
+%{_bindir}/userdbctl
+%{_bindir}/systemd-repart
+%{_bindir}/systemd-dissect
+%{_bindir}/oomctl
+
+%{_libdir}/tmpfiles.d/etc.conf
+%{_libdir}/tmpfiles.d/home.conf
+%{_libdir}/tmpfiles.d/journal-nocow.conf
+%{_libdir}/tmpfiles.d/legacy.conf
+%{_libdir}/tmpfiles.d/portables.conf
+%{_libdir}/tmpfiles.d/static-nodes-permissions.conf
+%{_libdir}/tmpfiles.d/systemd-nologin.conf
+%{_libdir}/tmpfiles.d/systemd-tmp.conf
+%{_libdir}/tmpfiles.d/systemd.conf
+%{_libdir}/tmpfiles.d/tmp.conf
+%{_libdir}/tmpfiles.d/var.conf
+%{_libdir}/tmpfiles.d/x11.conf
 
 %{_libdir}/environment.d/99-environment.conf
 %exclude %{_datadir}/locale
 %{_libdir}/binfmt.d
-%{_libdir}/kernel
-%{_libdir}/modules-load.d
 %{_libdir}/rpm
-%{_libdir}/*.so*
 %{_libdir}/sysctl.d
 %{_libdir}/systemd
-%{_libdir}/tmpfiles.d
-%{_libdir}/udev
-%{_libdir}/security/pam_systemd.so
-%{_libdir}/modprobe.d/systemd.conf
-%{_bindir}/*
-%{_sbindir}/*
-/sbin/*
 
 %{_datadir}/bash-completion/*
 %{_datadir}/factory/*
@@ -327,6 +473,7 @@ rm -rf %{buildroot}/*
 %ghost %dir %attr(0755,-,-) /etc/systemd/system
 
 %files devel
+%defattr(-,root,root)
 %dir %{_includedir}/systemd
 %{_libdir}/libudev.so
 %{_libdir}/libsystemd.so
@@ -337,15 +484,183 @@ rm -rf %{buildroot}/*
 %{_datadir}/pkgconfig/systemd.pc
 %{_datadir}/pkgconfig/udev.pc
 
+%files udev
+%defattr(-,root,root)
+%dir %{_sysconfdir}/udev
+%{_sysconfdir}/udev/rules.d/99-vmware-hotplug.rules
+%dir %{_sysconfdir}/kernel
+%dir %{_sysconfdir}/modules-load.d
+%{_sysconfdir}/systemd/pstore.conf
+%{_sysconfdir}/systemd/sleep.conf
+%{_sysconfdir}/systemd/timesyncd.conf
+%{_sysconfdir}/udev/udev.conf
+%{_libdir}/tmpfiles.d/systemd-pstore.conf
+%{_bindir}/bootctl
+%{_bindir}/kernel-install
+%{_bindir}/systemd-hwdb
+%{_bindir}/udevadm
+
+%{_libdir}/udev/v4l_id
+%{_libdir}/kernel
+%{_libdir}/modprobe.d
+%{_libdir}/modules-load.d
+%{_libdir}/systemd/network/99-default.link
+%{_libdir}/systemd/ntp-units.d/80-systemd-timesync.list
+%{_libdir}/systemd/system-generators/systemd-bless-boot-generator
+%{_libdir}/systemd/system-generators/systemd-hibernate-resume-generator
+%{_libdir}/systemd/system-sleep
+%{_libdir}/systemd/system/hibernate.target
+%{_libdir}/systemd/system/hybrid-sleep.target
+%{_libdir}/systemd/system/initrd-udevadm-cleanup-db.service
+%{_libdir}/systemd/system/kmod-static-nodes.service
+%{_libdir}/systemd/system/quotaon.service
+%{_libdir}/systemd/system/sleep.target
+%{_libdir}/systemd/system/sockets.target.wants/systemd-udevd-control.socket
+%{_libdir}/systemd/system/sockets.target.wants/systemd-udevd-kernel.socket
+%{_libdir}/systemd/system/suspend-then-hibernate.target
+%{_libdir}/systemd/system/suspend.target
+%{_libdir}/systemd/system/sysinit.target.wants/kmod-static-nodes.service
+%{_libdir}/systemd/system/sysinit.target.wants/systemd-boot-system-token.service
+%{_libdir}/systemd/system/sysinit.target.wants/systemd-hwdb-update.service
+%{_libdir}/systemd/system/sysinit.target.wants/systemd-modules-load.service
+%{_libdir}/systemd/system/sysinit.target.wants/systemd-random-seed.service
+%{_libdir}/systemd/system/sysinit.target.wants/systemd-tmpfiles-setup-dev.service
+%{_libdir}/systemd/system/sysinit.target.wants/systemd-udevd.service
+%{_libdir}/systemd/system/systemd-backlight@.service
+%{_libdir}/systemd/system/systemd-bless-boot.service
+%{_libdir}/systemd/system/systemd-boot-system-token.service
+%{_libdir}/systemd/system/systemd-fsck-root.service
+%{_libdir}/systemd/system/systemd-fsck@.service
+%{_libdir}/systemd/system/systemd-hibernate-resume@.service
+%{_libdir}/systemd/system/systemd-hibernate.service
+%{_libdir}/systemd/system/systemd-hwdb-update.service
+%{_libdir}/systemd/system/systemd-hybrid-sleep.service
+%{_libdir}/systemd/system/systemd-modules-load.service
+%{_libdir}/systemd/system/systemd-pstore.service
+%{_libdir}/systemd/system/systemd-quotacheck.service
+%{_libdir}/systemd/system/systemd-random-seed.service
+%{_libdir}/systemd/system/systemd-remount-fs.service
+%{_libdir}/systemd/system/systemd-rfkill.service
+%{_libdir}/systemd/system/systemd-rfkill.socket
+%{_libdir}/systemd/system/systemd-suspend-then-hibernate.service
+%{_libdir}/systemd/system/systemd-suspend.service
+%{_libdir}/systemd/system/systemd-timesyncd.service
+%{_libdir}/systemd/system/systemd-tmpfiles-setup-dev.service
+%{_libdir}/systemd/system/systemd-udev-settle.service
+%{_libdir}/systemd/system/systemd-udevd-control.socket
+%{_libdir}/systemd/system/systemd-udevd-kernel.socket
+%{_libdir}/systemd/system/systemd-udevd.service
+%{_libdir}/systemd/system/systemd-vconsole-setup.service
+%{_libdir}/systemd/system/systemd-volatile-root.service
+%{_libdir}/systemd/systemd-backlight
+%{_libdir}/systemd/systemd-bless-boot
+%{_libdir}/systemd/systemd-fsck
+%{_libdir}/systemd/systemd-growfs
+%{_libdir}/systemd/systemd-hibernate-resume
+%{_libdir}/systemd/systemd-makefs
+%{_libdir}/systemd/systemd-modules-load
+%{_libdir}/systemd/systemd-pstore
+%{_libdir}/systemd/systemd-quotacheck
+%{_libdir}/systemd/systemd-random-seed
+%{_libdir}/systemd/systemd-remount-fs
+%{_libdir}/systemd/systemd-rfkill
+%{_libdir}/systemd/systemd-sleep
+%{_libdir}/systemd/systemd-timesyncd
+%{_libdir}/systemd/systemd-udevd
+%{_libdir}/systemd/systemd-vconsole-setup
+%{_libdir}/systemd/systemd-volatile-root
+
+%dir %{_libdir}/udev
+%{_libdir}/udev/ata_id
+%{_libdir}/udev/cdrom_id
+%{_libdir}/udev/fido_id
+
+%dir %{_libdir}/udev/hwdb.d
+%{_libdir}/udev/hwdb.d/*
+%{_libdir}/udev/mtd_probe
+
+%dir %{_libdir}/udev/rules.d
+%{_libdir}/udev/rules.d/*
+%{_libdir}/udev/scsi_id
+
+%{_datadir}/bash-completion/completions/bootctl
+%{_datadir}/bash-completion/completions/kernel-install
+%{_datadir}/bash-completion/completions/udevadm
+
+%{_datadir}/dbus-1/system-services/org.freedesktop.timesync1.service
+%{_datadir}/dbus-1/system.d/org.freedesktop.timesync1.conf
+
+%{_datadir}/zsh/site-functions/_bootctl
+%{_datadir}/zsh/site-functions/_kernel-install
+%{_datadir}/zsh/site-functions/_udevadm
+
+%files libs
+%defattr(-,root,root)
+%{_libdir}/libnss_myhostname.so.2
+%{_libdir}/libnss_mymachines.so.2
+%{_libdir}/libnss_resolve.so.2
+%{_libdir}/libnss_systemd.so.2
+%{_libdir}/libsystemd.so.0
+%{_libdir}/libsystemd.so.0.30.0
+%{_libdir}/libudev.so.1.7.0
+%{_libdir}/libudev.so.1
+
+%files pam
+%defattr(-,root,root)
+%{_libdir}/security/pam_systemd.so
+%{_libdir}/pam.d/systemd-user
+
+%files container
+%defattr(-,root,root)
+%{_bindir}/systemd-nspawn
+%{_bindir}/machinectl
+
+%{_libdir}/systemd/systemd-machined
+%{_libdir}/systemd/system/systemd-machined.service
+%{_libdir}/systemd/system/systemd-nspawn@.service
+%{_libdir}/systemd/system/dbus-org.freedesktop.machine1.service
+%{_libdir}/systemd/system/var-lib-machines.mount
+%{_libdir}/systemd/system/machine.slice
+%{_libdir}/systemd/system/machines.target.wants
+%{_libdir}/tmpfiles.d/systemd-nspawn.conf
+
+%{_datadir}/dbus-1/system.d/org.freedesktop.machine1.conf
+%{_datadir}/dbus-1/system-services/org.freedesktop.machine1.service
+%{_datadir}/polkit-1/actions/org.freedesktop.machine1.policy
+
+%files journal-remote
+%defattr(-,root,root)
+%config(noreplace) %{_sysconfdir}/systemd/journal-upload.conf
+%config(noreplace) %{_sysconfdir}/systemd/journal-remote.conf
+
+%{_libdir}/systemd/systemd-journal-gatewayd
+%{_libdir}/systemd/systemd-journal-remote
+%{_libdir}/systemd/systemd-journal-upload
+
+%{_libdir}/systemd/system/systemd-journal-gatewayd.service
+%{_libdir}/systemd/system/systemd-journal-gatewayd.socket
+%{_libdir}/systemd/system/systemd-journal-remote.service
+%{_libdir}/systemd/system/systemd-journal-remote.socket
+%{_libdir}/systemd/system/systemd-journal-upload.service
+
+%files rpm-macros
+%{_libdir}/rpm/macros.d
+
+%files tests
+%{_libdir}/systemd/tests
+
 %files lang -f ../%{name}.lang
 
 %changelog
+*    Mon Dec 14 2020 Susant Sahani <ssahani@vmware.com>  247-1
+-    Upgrade to 247
+-    Split out systemd package to multiple packages
 *    Tue Oct 27 2020 Susant Sahani <ssahani@vmware.com>  245.5-3
 -    util: return the correct correct wd from inotify helpers
 *    Sun Aug 16 2020 Susant Sahani <ssahani@vmware.com>  245.5-2
 -    Drop meson macro
 *    Tue May 12 2020 Susant Sahani <ssahani@vmware.com>  245.5-1
--    Update to version 245.4 stable
+-    Update to version 245.5 stable
 *    Mon May 04 2020 Alexey Makhalov <amakhalov@vmware.com> 239-14
 -    Fix compilation issue with gcc-8.4.0
 -    Build with debug info.

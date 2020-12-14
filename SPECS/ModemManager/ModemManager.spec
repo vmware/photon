@@ -1,7 +1,7 @@
 Summary:        Mobile broadband modem manager
 Name:           ModemManager
 Version:        1.14.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
@@ -11,10 +11,19 @@ Source0:        https://www.freedesktop.org/software/ModemManager/ModemManager-%
 %define sha1    ModemManager=07e36664c9effa548b6d58cd7d7dce5da10a16ca
 BuildRequires:  libqmi-devel
 BuildRequires:  gobject-introspection-devel
+BuildRequires:  libgudev-devel
+BuildRequires:  systemd-devel
+BuildRequires:  systemd-libs
+BuildRequires:  gcc
+BuildRequires:  pkg-config
+BuildRequires:  automake autoconf libtool
 BuildRequires:  libxslt
+
 %if %{with_check}
 BuildRequires:  dbus-devel
 %endif
+
+Requires:       libgudev
 Requires:       libqmi
 Requires:       gobject-introspection
 %description
@@ -55,6 +64,7 @@ make %{?_smp_mflags} check
 %{_libdir}/libmm-glib.so*
 %{_libdir}/girepository-1.0/ModemManager-1.0.typelib
 %{_libdir}/ModemManager/*
+%{_libdir}/systemd/system/ModemManager.service
 %exclude %{_libdir}/debug
 %{_mandir}/man1/mmcli.1.gz
 %{_mandir}/man8/ModemManager.8.gz
@@ -73,6 +83,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libmm-glib.la
 
 %changelog
+*   Mon Dec 14 2020 Susant Sahani <ssahani@vmware.com> 1.14.2-3
+-   Add build requires
 *   Wed Nov 18 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.2-2
 -   Fix make check
 *   Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.2-1
