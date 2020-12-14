@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.246
+Version:       4.4.248
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -12,7 +12,7 @@ Distribution:  Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=68de1a6538415aad06bd5f51a91c6f0222f99ad1
+%define sha1 linux=f19315012e78f25c335fb8688087cae60a587844
 Source1:       config-esx
 Source2:       pre-preun-postun-tasks.inc
 
@@ -109,7 +109,6 @@ Patch74:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
 Patch75:        0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch76:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch77:        0007-btrfs-tree-checker-Verify-inode-item.patch
-Patch78:        0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
 
 # Fix for CVE-2020-16119
 Patch79:        0001-timer-Prepare-to-change-timer-callback-argument-type.patch
@@ -235,7 +234,6 @@ The Linux package contains the Linux kernel doc files
 %patch75 -p1
 %patch76 -p1
 %patch77 -p1
-%patch78 -p1
 %patch79 -p1
 %patch80 -p1
 %patch81 -p1
@@ -335,6 +333,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Dec 14 2020 Vikash Bansal <bvikas@vmware.com> 4.4.248-1
+-   Update to version 4.4.248
 *   Sun Nov 29 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.246-1
 -   Update to version 4.4.246
 -   Fix CVE-2019-19338

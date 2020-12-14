@@ -20,13 +20,13 @@ Reviewed-by: David Sterba <dsterba@suse.com>
 Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
 ---
- fs/btrfs/tree-checker.c | 100 ++++++++++++++++++++++++++++++++++++++++
+ fs/btrfs/tree-checker.c | 100 ++++++++++++++++++++++++++++++++++++++
  fs/btrfs/tree-checker.h |   4 ++
- fs/btrfs/volumes.c      |  96 +-------------------------------------
- 3 files changed, 105 insertions(+), 95 deletions(-)
+ fs/btrfs/volumes.c      | 103 +---------------------------------------
+ 3 files changed, 105 insertions(+), 102 deletions(-)
 
 diff --git a/fs/btrfs/tree-checker.c b/fs/btrfs/tree-checker.c
-index 5b98f3c76ce4..8a1c1a93874d 100644
+index 2c5c1701..e7988703 100644
 --- a/fs/btrfs/tree-checker.c
 +++ b/fs/btrfs/tree-checker.c
 @@ -409,6 +409,106 @@ static int check_block_group_item(struct btrfs_fs_info *fs_info,
@@ -137,7 +137,7 @@ index 5b98f3c76ce4..8a1c1a93874d 100644
   * Common point to switch the item-specific validation.
   */
 diff --git a/fs/btrfs/tree-checker.h b/fs/btrfs/tree-checker.h
-index 3d53e8d6fda0..fee37ff4ee33 100644
+index 3d53e8d6..fee37ff4 100644
 --- a/fs/btrfs/tree-checker.h
 +++ b/fs/btrfs/tree-checker.h
 @@ -35,4 +35,8 @@ int btrfs_check_leaf_relaxed(struct btrfs_root *root,
@@ -150,7 +150,7 @@ index 3d53e8d6fda0..fee37ff4ee33 100644
 +
  #endif
 diff --git a/fs/btrfs/volumes.c b/fs/btrfs/volumes.c
-index 55ce6543050d..98326690c345 100644
+index f9636605..2223d0d3 100644
 --- a/fs/btrfs/volumes.c
 +++ b/fs/btrfs/volumes.c
 @@ -41,6 +41,7 @@
@@ -161,7 +161,7 @@ index 55ce6543050d..98326690c345 100644
  
  const struct btrfs_raid_attr btrfs_raid_array[BTRFS_NR_RAID_TYPES] = {
  	[BTRFS_RAID_RAID10] = {
-@@ -6208,101 +6209,6 @@ struct btrfs_device *btrfs_alloc_device(struct btrfs_fs_info *fs_info,
+@@ -6210,108 +6211,6 @@ struct btrfs_device *btrfs_alloc_device(struct btrfs_fs_info *fs_info,
  	return dev;
  }
  
@@ -218,6 +218,13 @@ index 55ce6543050d..98326690c345 100644
 -		return -EIO;
 -	}
 -
+-	if (!is_power_of_2(type & BTRFS_BLOCK_GROUP_PROFILE_MASK) &&
+-	    (type & BTRFS_BLOCK_GROUP_PROFILE_MASK) != 0) {
+-		btrfs_err(root->fs_info,
+-		"invalid chunk profile flag: 0x%llx, expect 0 or 1 bit set",
+-			  type & BTRFS_BLOCK_GROUP_PROFILE_MASK);
+-		return -EUCLEAN;
+-	}
 -	if ((type & BTRFS_BLOCK_GROUP_TYPE_MASK) == 0) {
 -		btrfs_err(root->fs_info, "missing chunk type flag: 0x%llx", type);
 -		return -EIO;

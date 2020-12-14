@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.246
+Version:    	4.4.248
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=68de1a6538415aad06bd5f51a91c6f0222f99ad1
+%define sha1 linux=f19315012e78f25c335fb8688087cae60a587844
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -111,7 +111,6 @@ Patch71:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
 Patch72:        0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch73:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch74:        0007-btrfs-tree-checker-Verify-inode-item.patch
-Patch75:        0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
 # Fix for CVE-2020-16119
 Patch76:        0001-timer-Prepare-to-change-timer-callback-argument-type.patch
 Patch77:        0002-net-dccp-Convert-timers-to-use-timer_setup.patch
@@ -266,7 +265,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch72 -p1
 %patch73 -p1
 %patch74 -p1
-%patch75 -p1
 %patch76 -p1
 %patch77 -p1
 %patch78 -p1
@@ -434,6 +432,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Dec 14 2020 Vikash Bansal <bvikas@vmware.com> 4.4.248-1
+-   Update to version 4.4.248
 *   Sun Nov 29 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.246-1
 -   Update to version 4.4.246
 -   Fix CVE-2019-19338
