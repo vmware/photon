@@ -1,23 +1,24 @@
 %global _default_patch_fuzz 2
-Summary:	OpenLdap-2.4.48
-Name:		openldap
-Version:	2.4.48
-Release:	2%{?dist}
-License:	OpenLDAP
-URL:		http://cyrusimap.web.cmu.edu/
-Group:		System Environment/Security
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
+Summary:        OpenLdap-2.4.48
+Name:           openldap
+Version:        2.4.48
+Release:        3%{?dist}
+License:        OpenLDAP
+URL:            http://cyrusimap.web.cmu.edu/
+Group:          System Environment/Security
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
 %define sha1 openldap=c1984e80f6db038b317bf931866adb38e5537dcd
-Patch0:		openldap-2.4.44-consolidated-2.patch
-Patch1:		openldap-2.4.40-gssapi-1.patch
+Patch0:         openldap-2.4.44-consolidated-2.patch
+Patch1:         openldap-2.4.40-gssapi-1.patch
 Patch2:         openldap-CVE-2020-12243.patch
+Patch3:         openldap-CVE-2020-25692.patch
 Requires:       openssl >= 1.0.1, cyrus-sasl >= 2.1
 BuildRequires:  cyrus-sasl >= 2.1
 BuildRequires:  openssl-devel >= 1.0.1
-BuildRequires:	groff
-BuildRequires:	e2fsprogs-devel
+BuildRequires:  groff
+BuildRequires:  e2fsprogs-devel
 
 %description
 OpenLDAP is an open source suite of LDAP (Lightweight Directory Access
@@ -33,6 +34,8 @@ libraries, and documentation for OpenLDAP.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+
 %build
 
 autoconf
@@ -58,9 +61,9 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 %check
 make %{?_smp_mflags} test
 
-%post	-p /sbin/ldconfig
+%post -p /sbin/ldconfig
 
-%postun	-p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
@@ -77,6 +80,8 @@ rm -rf %{buildroot}/*
 /etc/openldap/*
 
 %changelog
+*   Mon Dec 14 2020 Dweep Advani <svasamsetty@vmware.com> 2.4.48-3
+-   Patched for CVE-2020-25692
 *   Tue May 12 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.48-2
 -   Fix CVE-2020-12243
 *   Fri Aug 16 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.48-1
@@ -85,17 +90,17 @@ rm -rf %{buildroot}/*
 -   export CPPFLAGS before invoking configure
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 2.4.44-3
 -   Use standard configure macros
-*	Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.44-2
--	Applied patch for CVE-2017-9287
-*	Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.44-1
--	Update to 2.4.44
+*   Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.44-2
+-   Applied patch for CVE-2017-9287
+*   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.44-1
+-   Update to 2.4.44
 *   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.4.43-3
 -   Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.43-2
--	GA - Bump release of all rpms
-* 	Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.43-1
-- 	Updated to version 2.4.43
-*	Fri Aug 14 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.40-2
--	Patches for CVE-2015-1545 and CVE-2015-1546.
-*	Wed Oct 08 2014 Divya Thaluru <dthaluru@vmware.com> 2.4.40-1
--	Initial build.	First version
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.43-2
+-   GA - Bump release of all rpms
+*   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.43-1
+-   Updated to version 2.4.43
+*   Fri Aug 14 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.40-2
+-   Patches for CVE-2015-1545 and CVE-2015-1546.
+*   Wed Oct 08 2014 Divya Thaluru <dthaluru@vmware.com> 2.4.40-1
+-   Initial build.        First version
