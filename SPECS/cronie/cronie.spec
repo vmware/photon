@@ -1,11 +1,11 @@
 Summary:        Cron Daemon
 Name:           cronie
-Version:        1.5.1
+Version:        1.5.5
 Release:        1%{?dist}
 License:        GPLv2+ and MIT and BSD and ISC
 URL:            https://github.com/cronie-crond/cronie
 Source0:        https://github.com/cronie-crond/cronie/releases/download/cronie-%{version}/cronie-%{version}.tar.gz
-%define sha1    cronie=0d757921c1ed248cffa14a754a50ccd27e9a8245
+%define sha1    cronie=1e616d6d119b3b313f05edb381436e45f98477be
 Source1:        run-parts.sh
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -16,19 +16,21 @@ BuildRequires:  systemd
 Requires:       systemd
 Requires:       libselinux
 Requires:       Linux-PAM
+
 %description
 Cronie contains the standard UNIX daemon crond that runs specified programs at
 scheduled times and related tools. It is based on the original cron and
 has security and configuration enhancements like the ability to use pam and
 SELinux.
+
 %prep
 %setup -q
 sed -i 's/^\s*auth\s*include\s*password-auth$/auth       include    system-auth/g;
      s/^\s*account\s*include\s*password-auth$/account    include    system-account/g;
      s/^\s*session\s*include\s*password-auth$/session    include    system-session/g;' pam/crond
+
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --sysconfdir=/etc   \
     --localstatedir=/var\
     --with-pam          \
@@ -36,6 +38,7 @@ sed -i 's/^\s*auth\s*include\s*password-auth$/auth       include    system-auth/
     --enable-pie        \
     --enable-relro
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 install -vdm700 %{buildroot}%{_localstatedir}/spool/cron
@@ -87,9 +90,7 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_lib}/systemd/system/cron.service
 %{_libdir}/systemd/system/crond.service
-
 %config(noreplace) %{_sysconfdir}/pam.d/crond
-
 %dir %{_localstatedir}/spool/cron
 %dir %{_sysconfdir}/cron.d
 %config(noreplace) %{_sysconfdir}/cron.d/0hourly
@@ -99,19 +100,16 @@ make %{?_smp_mflags} check
 %dir %{_sysconfdir}/cron.daily
 %dir %{_sysconfdir}/cron.weekly
 %dir %{_sysconfdir}/cron.monthly
-
 %attr(4755,root,root) %{_bindir}/crontab
 %{_bindir}/run-parts
+%{_bindir}/cronnext
 %{_sbindir}/crond
 %{_sbindir}/anacron
-
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
-
 %config(noreplace) %{_sysconfdir}/cron.deny
 %config(noreplace) %{_sysconfdir}/sysconfig/crond
-
 %dir /var/spool/anacron
 %config(noreplace) %{_sysconfdir}/anacrontab
 %ghost %attr(0600,root,root) %{_localstatedir}/spool/anacron/cron.daily
@@ -119,6 +117,8 @@ make %{?_smp_mflags} check
 %ghost %attr(0600,root,root) %{_localstatedir}/spool/anacron/cron.weekly
 
 %changelog
+*   Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.5-1
+-   Automatic Version Bump
 *   Mon Apr 24 2017 Bo Gan <ganb@vmware.com> 1.5.1-1
 -   Update to 1.5.1
 *   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.5.0-13
