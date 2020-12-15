@@ -2,31 +2,39 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 # Got this spec from http://downloads.sourceforge.net/cracklib/cracklib-2.9.6.tar.gz
 
-Summary:        A password strength-checking library.
-Name:           cracklib
-Version:        2.9.6
-Release:        8%{?dist}
-Group:          System Environment/Libraries
-Source:         cracklib-%{version}.tar.gz
-%define sha1    cracklib-%{version}=9199e7b8830717565a844430653f5a90a04fcd65
-Source1:        cracklib-words-%{version}.gz
-%define sha1    cracklib-words-%{version}=b0739c990431a0971545dff347b50f922604c1cd
-Patch0:         CVE-2016-6318.patch
-URL:            http://sourceforge.net/projects/cracklib/
-License:        GPL
-Vendor:         VMware, Inc.
-Distribution:   Photon
+Summary:          A password strength-checking library.
+Name:             cracklib
+Version:          2.9.7
+Release:          1%{?dist}
+Group:            System Environment/Libraries
+Source:           cracklib-%{version}.tar.gz
+%define sha1      cracklib-%{version}=ffe455aba4da8d49fcdbe6964aa35367a7438581
+Source1:          cracklib-words-%{version}.gz
+%define sha1      cracklib-words-%{version}=6491f1cc63233c678e9e5983f32ff98208d0b05a
+URL:              http://sourceforge.net/projects/cracklib/
+License:          GPL
+Vendor:           VMware, Inc.
+Distribution:     Photon
 Requires:         /bin/ln
 Requires(post):   /bin/ln
 Requires(postun): /bin/rm
+BuildRequires:    python2
+BuildRequires:    python2-libs
+BuildRequires:    python2-devel
+BuildRequires:    python-setuptools
+BuildRequires:    python3
+BuildRequires:    python3-libs
+BuildRequires:    python3-devel
+BuildRequires:    python3-setuptools
+BuildRequires:    python3-xml
 
 %description
 CrackLib tests passwords to determine whether they match certain
 security-oriented characteristics. You can use CrackLib to stop
 users from choosing passwords which would be easy to guess. CrackLib
-performs certain tests: 
+performs certain tests:
 
-* It tries to generate words from a username and gecos entry and 
+* It tries to generate words from a username and gecos entry and
   checks those words against the password;
 * It checks for simplistic patterns in passwords;
 * It checks for the password in a dictionary.
@@ -42,10 +50,10 @@ passwords to see if they are at least minimally secure. If you
 install CrackLib, you'll also want to install the cracklib-dicts
 package.
 
-%package    dicts
-Summary:    The standard CrackLib dictionaries.
-Group:      System Environment/Utilities
-Requires:   cracklib
+%package        dicts
+Summary:        The standard CrackLib dictionaries.
+Group:          System Environment/Utilities
+Requires:       cracklib
 
 %description    dicts
 The cracklib-dicts package includes the CrackLib dictionaries.
@@ -55,63 +63,49 @@ the utilities necessary for the creation of new dictionaries.
 
 If you are installing CrackLib, you should also install cracklib-dicts.
 
-%package devel
-Summary:    Cracklib link library & header file
-Group:      Development/Libraries
-Requires:   cracklib
+%package        devel
+Summary:        Cracklib link library & header file
+Group:          Development/Libraries
+Requires:       cracklib
 
-%description devel
+%description    devel
 The cracklib devel package include the needed library link and
 header files for development.
 
-%package    python
-Summary:    The cracklib python module
-Group:      Development/Languages/Python
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
-
-Requires:   cracklib
-Requires:   python2
-Requires:   python2-libs
-
-%description python
-The cracklib python module
-
-%package -n python3-cracklib
+%package        python
 Summary:        The cracklib python module
 Group:          Development/Languages/Python
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
+Requires:       cracklib
+Requires:       python2
+Requires:       python2-libs
 
-Requires:   cracklib
-Requires:   python3
-Requires:   python3-libs
+%description    python
+The cracklib python module
+
+%package -n     python3-cracklib
+Summary:        The cracklib python module
+Group:          Development/Languages/Python
+Requires:       cracklib
+Requires:       python3
+Requires:       python3-libs
 
 %description -n python3-cracklib
 The cracklib python3 module
 
-%package lang
-Summary:    The CrackLib language pack.
-Group:      System Environment/Libraries
+%package        lang
+Summary:        The CrackLib language pack.
+Group:          System Environment/Libraries
 
-%description lang
+%description    lang
 The CrackLib language pack.
 
 %prep
-
 %setup -q -n cracklib-%{version}
-%patch0 -p1
 chmod -R og+rX .
 mkdir -p dicts
 install %{SOURCE1} dicts/
 
 %build
-
 CFLAGS="$RPM_OPT_FLAGS" ./configure \
   --prefix=%{_prefix} \
   --mandir=%{_mandir} \
@@ -120,7 +114,6 @@ CFLAGS="$RPM_OPT_FLAGS" ./configure \
   --datadir=%{_datadir} \
   --disable-static \
   --without-python
-
 make
 pushd python
 python2 setup.py build
@@ -211,6 +204,8 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 %{_datadir}/locale/*
 
 %changelog
+*   Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.7-1
+-   Automatic Version Bump
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-8
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Sun Jun 04 2017 Bo Gan <ganb@vmware.com> 2.9.6-7
@@ -221,7 +216,7 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 -   Fix CVE-2016-6318, trigger for cracklib-dicts
 -   Trigger for dynamic symlink for dict
 *   Sun Nov 20 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-4
--   Revert compressing pw_dict.pwd back. Python code 
+-   Revert compressing pw_dict.pwd back. Python code
     cracklib.VeryFascistCheck does not handle it.
 *   Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 2.9.6-3
 -   Remove any dicts from cracklib main package
@@ -232,5 +227,4 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 *   Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 2.9.6-1
 -   Updated to version 2.9.6
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.9.2-2
--   Updated group.
-
+-   Updated group
