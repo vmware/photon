@@ -1,11 +1,11 @@
 Summary:	Portable and efficient C programming interface (API) to determine the call-chain of a program.
 Name:		libunwind
-Version:	1.2
-Release:	3%{?dist}
+Version:	1.2.1
+Release:	1%{?dist}
 License:	X11
 URL:		http://www.nongnu.org/libunwind/
 Source0:	http://download.savannah.gnu.org/releases/%{name}/%{name}-%{version}.tar.gz
-%define sha1 libunwind=a33e52d7ecd18b9375508369b566eeb2cc6eec3b
+%define sha1 libunwind=4ce18ee9c168ed6de85126534d855ddcb696bb17
 Group:		Utilities/Libraries
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -44,6 +44,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/libunwind*
 
 %changelog
+*   Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.1-1
+-   Automatic Version Bump
 *   Sun Sep 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 1.2-3
 -   libunwind-devel needs libunwind.
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.2-2
