@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.246
+Version:        4.9.248
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=3bdb948b2c29353a5b0ba8f3b30d728ad996e80d
+%define sha1 linux=18af4d91e5fe2cb0714c378f67946f80d47b40d3
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -131,7 +131,6 @@ Patch93:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
 Patch94:        0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch95:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch96:        0007-btrfs-tree-checker-Verify-inode-item.patch
-Patch97:        0008-btrfs-inode-Verify-inode-mode-to-avoid-NULL-pointer.patch
 
 # Amazon AWS
 Patch101: 0002-lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
@@ -331,7 +330,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch94 -p1
 %patch95 -p1
 %patch96 -p1
-%patch97 -p1
 
 %patch101 -p1
 %patch102 -p1
@@ -527,6 +525,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Mon Dec 14 2020 Vikash Bansal <bvikas@vmware.com> 4.9.248-1
+-   Update to version 4.9.248
 *   Tue Nov 24 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.246-1
 -   Update to version 4.9.246
 -   Fix CVE-2019-19338 and CVE-2019-20908
