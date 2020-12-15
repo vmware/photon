@@ -3,8 +3,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux
-Version:        4.19.160
-Release:        6%{?kat_build:.kat}%{?dist}
+Version:        4.19.163
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=7a9a126abf572e8b5a04f90da14ce0cd5cea783f
+%define sha1 linux=c3fbce21f618e8bfce4e12f09bdd0c7beb50d9e8
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -1178,10 +1178,11 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Tue Dec 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.163-1
+-   Update to version 4.19.163
 *   Fri Dec 11 2020 Ajay Kaher <akaher@vmware.com> 4.19.160-6
 -   Adding sev-es: patch set v3
 -   x86/efi,boot: GDT handling cleanup/fixes
--   x86: Add guard pages to exception and interrupt stacks<<<<< HEAD
 *   Thu Dec 10 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.160-5
 -   Add latest out of tree version of iavf driver
 -   Enable CONFIG_NET_TEAM

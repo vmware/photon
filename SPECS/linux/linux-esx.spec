@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.160
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.163
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=7a9a126abf572e8b5a04f90da14ce0cd5cea783f
+%define sha1 linux=c3fbce21f618e8bfce4e12f09bdd0c7beb50d9e8
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -750,6 +750,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Dec 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.163-1
+-   Update to version 4.19.163
 *   Fri Dec 11 2020 Albert Guo <aguo@vmware.com> 4.19.160-4
 -   9p: fscache: Ensure consistent blksize is returned from 9p client.
 *   Wed Dec 09 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.160-3
