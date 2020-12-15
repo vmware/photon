@@ -1,11 +1,11 @@
 Summary: LTTng-UST is an Userspace Tracer library
 Name:    lttng-ust
-Version: 2.10.2
-Release: 2%{?dist}
+Version: 2.10.7
+Release: 1%{?dist}
 License: GPLv2, LGPLv2.1 and MIT
 URL: https://lttng.org/download/
 Source: https://lttng.org/files/lttng-ust/%{name}-%{version}.tar.bz2
-%define sha1 lttng-ust=b92d789c7277362715a6a9557f65f7e6066d8130
+%define sha1 lttng-ust=6e82de6a2153abe8894706b8b8af7f2be294d9aa
 Group:      Development/Libraries
 Vendor:     VMware, Inc.
 Distribution:  Photon
@@ -16,7 +16,7 @@ BuildRequires: perl
 %endif
 Requires:      userspace-rcu
 %description
-This library may be used by user-space applications to generate 
+This library may be used by user-space applications to generate
 trace-points using LTTng.
 
 %package devel
@@ -30,7 +30,7 @@ The libraries and header files needed for LTTng-UST development.
 %setup -q
 
 %build
-./configure \
+%configure \
 	--prefix=%{_prefix} \
 	--docdir=%{_docdir}/%{name} \
 	--disable-static
@@ -60,6 +60,8 @@ rm -vf %{buildroot}%{_libdir}/*.la
 %{_libdir}/pkgconfig/lttng-ust*.pc
 
 %changelog
+*       Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 2.10.7-1
+-       Automatic Version Bump
 *       Wed Jan 02 2019 Keerthana K <keerthanak@vmware.com> 2.10.2-2
 -       Added make check.
 *	Wed Sep 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.10.2-1
