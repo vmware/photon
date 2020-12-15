@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        050
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -156,6 +156,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 050-6
+-   Adjust hostonly based on running environment
 *   Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 050-5
 -   Remove fipsify support
 *   Fri Oct 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 050-4

@@ -1,20 +1,56 @@
-diff --color -Naurp -rupN dracut-050/mkinitrd-dracut.sh dracut-050-new/mkinitrd-dracut.sh
---- dracut-050/mkinitrd-dracut.sh	2020-10-09 12:23:19.108347969 +0530
-+++ dracut-050-new/mkinitrd-dracut.sh	2020-10-09 12:23:40.832349012 +0530
-@@ -61,7 +61,15 @@ default_kernel_images() {
+From c06a5e795b9213b749ded74e5f9ced0e63ad93f4 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 21 Dec 2020 12:41:51 +0530
+Subject: [PATCH] adjust host_only flag based on running environment
+
+host_only decides the nature of initrd.
+If initrd is getting generated in docker/chroot environemnt, it should
+be generic. Otherwise cloud-images & ova will have a host specific
+initrd which may fail to boot on a different host.
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ mkinitrd-dracut.sh | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/mkinitrd-dracut.sh b/mkinitrd-dracut.sh
+index 01c989c3..6d502a09 100755
+--- a/mkinitrd-dracut.sh
++++ b/mkinitrd-dracut.sh
+@@ -60,9 +60,6 @@ default_kernel_images() {
+ 	kernels="$kernels $kernel_version"
          targets="$targets $boot_dir/initrd.img-$kernel_version"
      done
- 
+-
 -    host_only=1
-+    # don't set hostonly flag if running in docker env
-+    # if set initrd will be incomplete
-+    # https://fedoraproject.org/wiki/Features/DracutHostOnly#Detailed_Description
-+    # https://man7.org/linux/man-pages/man5/dracut.conf.5.html
-+    if grep -qc docker /proc/self/cgroup; then
-+      host_only=0
-+    else
-+      host_only=1
-+    fi
-     force=1
+-    force=1
  }
  
+ while (($# > 0)); do
+@@ -148,6 +145,23 @@ done
+ targets=( $targets )
+ [[ $kernels ]] && kernels=( $kernels )
+ 
++# don't set hostonly flag if running in docker env
++# if set initrd will be incomplete
++# https://fedoraproject.org/wiki/Features/DracutHostOnly#Detailed_Description
++# https://man7.org/linux/man-pages/man5/dracut.conf.5.html
++if grep -qc docker /proc/self/cgroup; then
++  echo "--- Generating initrd under docker environment ---"
++  host_only=0
++elif [ "$(stat -c %d:%i /)" != "$(stat -c %d:%i /proc/1/root/.)" ]; then
++  # set host_only=0 if initrd is generated in chroot
++  # otherwise cloud images generated in a Photon host will have bad initrd
++  echo "--- Generating initrd under chroot environment ---"
++  host_only=0
++else
++  host_only=1
++fi
++force=1
++
+ [[ $host_only == 1 ]] && dracut_args="${dracut_args} -H"
+ [[ $force == 1 ]]     && dracut_args="${dracut_args} -f"
+ 
+-- 
+2.17.1
+

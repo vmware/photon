@@ -750,6 +750,7 @@ class BuildImage:
         self.srpm_path = constants.sourceRpmPath
         self.pkg_to_rpm_map_file = os.path.join(Build_Config.stagePath, "pkg_info.json")
         self.ph_docker_image = configdict["photon-build-param"]["photon-docker-image"]
+        self.ova_cloud_images = ["ami", "gce", "azure", "ova_uefi", "ova"]
 
     def set_Iso_Parameters(self, imgName):
         self.generated_data_path = Build_Config.stagePath + "/common/data"
@@ -829,7 +830,7 @@ class BuildImage:
             rpmBuildTarget.packages()
         if not check_prerequesite["ostree-repo"]:
             RpmBuildTarget.ostree_repo()
-        print("Building image " + self.img_name)
+        print("Building " + self.img_name + " image")
         imagebuilder.createImage(self)
 
     @staticmethod
@@ -865,8 +866,7 @@ class BuildImage:
         os.chdir(curDir)
 
     def all_images(self):
-        images = ["ami", "gce", "azure", "ova_uefi", "ova"]
-        for img in images:
+        for img in self.ova_cloud_images:
            self.img_name = img
            self.build_image()
 
@@ -1078,7 +1078,7 @@ def main():
             if options.targetName in ["iso", "src-iso", "minimal-iso", "rt-iso"]:
                 buildImage.set_Iso_Parameters(options.targetName)
                 buildImage.build_iso()
-            elif options.targetName in ["ami", "gce", "ova", "ova_uefi", "azure", "rpi", "ls1012afrwy"]:
+            elif options.targetName in buildImage.ova_cloud_images + ["rpi", "ls1012afrwy"]:
                 buildImage.build_image()
             else:
                 attr = getattr(buildImage, configdict["targetName"])
