@@ -1,12 +1,12 @@
 Summary:        DBus for systemd
 Name:           dbus
-Version:        1.13.6
-Release:        2%{?dist}
+Version:        1.13.8
+Release:        1%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
-Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.gz
-%define sha1    dbus=368c14e3dde9524dd9d0775227ebf3932802c023
+Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
+%define sha1    dbus=6e9a99e0140f71800c1ed6283af80c26f7e3f39b
 Patch0:         CVE-2019-12749.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,24 +19,25 @@ Requires:       xz
 %description
 The dbus package contains dbus.
 
-%package    devel
-Summary:    Header and development files
-Requires:   %{name} = %{version}
-Requires:  expat-devel
+%package        devel
+Summary:        Header and development files
+Requires:       %{name} = %{version}
+Requires:       expat-devel
 %description    devel
 It contains the libraries and header files to create applications
 
 %prep
 %setup -q
 %patch0 -p1
-%build
-%configure                                      \
-            --localstatedir=%{_var}             \
-            --docdir=%{_datadir}/doc/dbus-1.11.12  \
-            --enable-libaudit=no --enable-selinux=no \
-            --with-console-auth-dir=/run/console
 
+%build
+%configure                                   \
+    --localstatedir=%{_var}                  \
+    --docdir=%{_datadir}/doc/dbus-1.11.12    \
+    --enable-libaudit=no --enable-selinux=no \
+    --with-console-auth-dir=/run/console
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 install -vdm755 %{buildroot}%{_lib}
@@ -58,10 +59,9 @@ make %{?_smp_mflags} check
 %{_libexecdir}/*
 %{_docdir}/*
 %{_datadir}/dbus-1
-
 #%{_sharedstatedir}/*
 
-%files  devel
+%files devel
 %defattr(-,root,root)
 %{_includedir}/*
 %{_datadir}/xml/dbus-1
@@ -74,6 +74,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
+*   Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 1.13.8-1
+-   Automatic Version Bump
 *   Fri Oct 18 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.13.6-2
 -   Fix CVE-2019-12749
 *   Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 1.13.6-1
