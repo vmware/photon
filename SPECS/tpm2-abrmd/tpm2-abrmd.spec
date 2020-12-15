@@ -1,6 +1,6 @@
 Summary:	TPM2 Access Broker & Resource Management Daemon implementing the TCG spec
 Name:		tpm2-abrmd
-Version:	2.1.0
+Version:	2.1.1
 Release:	1%{?dist}
 License:	BSD 2-Clause
 URL:		https://github.com/tpm2-software/tpm2-tools
@@ -8,7 +8,7 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	%{name}-%{version}.tar.gz
-%define sha1 tpm2=0a1c72bf0b2d2511191425c62b9258e65c84c4db
+%define sha1 tpm2=54e92602ea4234d6b57a2528b77d64df272f5ada
 BuildRequires:	which dbus-devel glib-devel tpm2-tss-devel
 Requires:	dbus glib tpm2-tss
 %description
@@ -57,5 +57,7 @@ make DESTDIR=%{buildroot} install
 %{_mandir}/man7
 
 %changelog
+*   Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 2.1.1-1
+-   Automatic Version Bump
 *   Thu Feb 21 2019 Alexey Makhalov <amakhalov@vmware.com> 2.1.0-1
 -   Initial build. First version
