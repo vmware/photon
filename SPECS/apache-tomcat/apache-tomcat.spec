@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.51
-Release:        5%{?dist}
+Version:        8.5.60
+Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -9,16 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
 Source0:        https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1    apache-tomcat=b49dc1568d74d3a44a764b04763020088d502ae7
+%define sha1    apache-tomcat=4cd25e0585f4df84b963ceb80c03bd228cbd75b2
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha1    base=37dbbd946c473a4dbb87b0edd44275dee2694734
+%define sha1    base=912491fe407c6052f4d0b1526f8f310523eecb09
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
-Patch1:         apache-tomcat-CVE-2020-9484.patch
-Patch2:         apache-tomcat-CVE-2020-11996.patch
-Patch3:         apache-tomcat-CVE-2020-13934.patch
-Patch4:         apache-tomcat-CVE-2020-13935.patch
-Patch5:         apache-tomcat-CVE-2020-13943.patch
 BuildRequires:  openjre
 BuildRequires:  openjdk
 BuildRequires:  apache-ant
@@ -43,11 +38,6 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 %setup -D -b 1 -n %{name}-%{version}-src
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
 
 %build
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
@@ -112,6 +102,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Wed Dec 16 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.60-1
+-   Update to version 8.5.60
 *   Thu Nov 05 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.51-5
 -   Fix CVE-2020-13943
 *   Fri Jul 17 2020 Dweep Advani <dadvani@vmware.com> 8.5.51-4
