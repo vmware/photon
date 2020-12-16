@@ -1,0 +1,189 @@
+From f44fda4ffd1f36026c9779138c1dc61428940243 Mon Sep 17 00:00:00 2001
+From: Prashant Singh Chauhan <psinghchauha@vmware.com>
+Date: Sun, 13 Dec 2020 15:24:01 +0530
+Subject: [PATCH] installer: Add support for insecure_installation
+
+This patch adds kernel command line argument: 'insecure_installation'
+as a flag that user can set to 1 to allow some operations that aren't
+normally allowed due to security concerns. This is disabled by default
+and it is up to the user to the ensure security when this options is
+enabled.
+
+This patch also disables by default download of ks_config file from non-HTTPS
+sources.
+
+Following cases can arise:
+1) insecure_installation=1 passed as kernel param in cmdline
+   insecure_installation key if present in ks_config ignored
+   - ks_config and rpms from untrusted sources -> allowed
+2) insecure_installation=0 passed as kernel param in cmdline
+   insecure_installation key if present in ks_config ignored
+   - ks_config and rpms from untrusted sources -> not allowed
+3) insecure_installation not passed as kernel param in cmdline
+     insecure_installation: true passed in ks_config
+   - ks_config from http -> not allowed
+   - rpms from untrusted sources -> allowed
+4) insecure_installation not passed as kernel param in cmdline
+     insecure_installation: false passed in ks_config
+   - ks_config from http -> not allowed
+   - rpms from untrusted sources -> not allowed
+
+We do sslverify=0 to download rpms from untrusted sources too.
+We pass insecure_installation key from isoInstaller.py to installer.py in
+install_config.
+In the case when insecure_installation is passed in command line but no
+ks_config is provided, meaning install_config passed to installer.py should
+be empty. Hence to accomodate this we always pop the insecure_installaion key
+first if present and add it at later point.
+---
+ photon_installer/installer.py    | 11 ++++++++++-
+ photon_installer/isoInstaller.py | 32 +++++++++++++++++++++++---------
+ photon_installer/ks_config.txt   |  7 +++++++
+ 3 files changed, 40 insertions(+), 10 deletions(-)
+
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index a8c90b9..72ed2de 100755
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -56,6 +56,7 @@ class Installer(object):
+         'disk',
+         'eject_cdrom',
+         'hostname',
++        'insecure_installation',
+         'install_linux_esx',
+         'linux_flavor',
+         'live',
+@@ -115,6 +116,8 @@ def __init__(self, working_directory="/mnt/photon-root",
+     create, append and validate configuration date - install_config
+     """
+     def configure(self, install_config, ui_config = None):
++        if install_config and 'insecure_installation' in install_config:
++            insecure_installation = install_config.pop('insecure_installation')
+         # Initialize logger and cmd first
+         if not install_config:
+             # UI installation
+@@ -133,6 +136,8 @@ def configure(self, install_config, ui_config = None):
+             config = IsoConfig()
+             install_config = curses.wrapper(config.configure, ui_config)
+ 
++        if 'insecure_installation' in locals():
++            install_config['insecure_installation'] = insecure_installation
+         self._add_defaults(install_config)
+ 
+         issue = self._check_install_config(install_config)
+@@ -251,6 +256,9 @@ def _add_defaults(self, install_config):
+         if 'photon_docker_image' not in install_config:
+             install_config['photon_docker_image'] = "photon:latest"
+ 
++        if 'insecure_installation' not in install_config:
++            install_config['insecure_installation'] = False
++
+     def _check_install_config(self, install_config):
+         """
+         Sanity check of install_config before its execution.
+@@ -851,6 +859,8 @@ def _setup_install_repo(self):
+                 repo_file.write("baseurl=file://{}\n".format(self.rpm_cache_dir))
+                 keepcache = True
+             repo_file.write("gpgcheck=0\nenabled=1\n")
++            if self.install_config['insecure_installation']:
++                repo_file.write("sslverify=0\n")
+         with open(self.tdnf_conf_path, "w") as conf_file:
+             conf_file.writelines([
+                 "[main]\n",
+@@ -1300,4 +1310,3 @@ def getfile(self, filename):
+             if os.path.exists(filepath):
+                 return filepath
+         raise Exception("File {} not found in the following directories {}".format(filename, self.install_config['search_path']))
+-
+diff --git a/photon_installer/isoInstaller.py b/photon_installer/isoInstaller.py
+index 7b8a2c5..8babe5c 100755
+--- a/photon_installer/isoInstaller.py
++++ b/photon_installer/isoInstaller.py
+@@ -29,6 +29,7 @@ def __init__(self, options):
+         # if not provided - use /RPMS path from photon_media,
+         # exit otherwise.
+         repo_path = options.repo_path
++        self.insecure_installation = None
+ 
+         with open('/proc/cmdline', 'r') as f:
+             kernel_params = shlex.split(f.read().replace('\n', ''))
+@@ -42,6 +43,8 @@ def __init__(self, options):
+                     repo_path = arg[len("repo="):]
+             elif arg.startswith("photon.media="):
+                 photon_media = arg[len("photon.media="):]
++            elif arg.startswith("insecure_installation="):
++                self.insecure_installation = bool(int(arg[len("insecure_installation="):]))
+ 
+         if photon_media:
+             self.mount_media(photon_media)
+@@ -54,7 +57,13 @@ def __init__(self, options):
+                 return
+ 
+         if ks_path:
+-            install_config=self._load_ks_config(ks_path)
++            install_config = self._load_ks_config(ks_path)
++
++        # insecure_installation flag added through commandline overrides that of ks_config
++        if self.insecure_installation:
++            if not install_config:
++                install_config = {}
++            install_config['insecure_installation'] = self.insecure_installation
+ 
+         if options.ui_config_file:
+             ui_config = (JsonWrapper(options.ui_config_file)).read()
+@@ -77,7 +86,12 @@ def __init__(self, options):
+ 
+     def _load_ks_config(self, path):
+         """kick start configuration"""
+-        if path.startswith("http://"):
++
++        if path.startswith("http://") and not self.insecure_installation:
++            raise Exception("Refusing to download kick start configuration from non-https URLs. \
++                            \nPass insecure_installation=1 as a parameter when giving http url in ks.")
++
++        if path.startswith("https://") or path.startswith("http://"):
+             # Do 5 trials to get the kick start
+             # TODO: make sure the installer run after network is up
+             ks_file_error = "Failed to get the kickstart file at {0}".format(path)
+@@ -85,16 +99,16 @@ def _load_ks_config(self, path):
+             for _ in range(0, 5):
+                 err_msg = ""
+                 try:
+-                    response = requests.get(path, timeout=3)
+-                    if response.ok:
+-                        return json.loads(response.text)
+-                    err_msg = response.text
++                    if self.insecure_installation:
++                        response = requests.get(path, timeout=3, verify=False)
++                    else:
++                        response = requests.get(path, timeout=3, verify=True)
+                 except Exception as e:
+                     err_msg = e
++                else:
++                    return json.loads(response.text)
+ 
+-                print(ks_file_error)
+-                print("error msg: {0}".format(err_msg))
+-                print("retry in a second")
++                print("error msg: {0}  Retry after {1} seconds".format(err_msg, wait))
+                 time.sleep(wait)
+                 wait = wait * 2
+ 
+diff --git a/photon_installer/ks_config.txt b/photon_installer/ks_config.txt
+index e975b47..ce8fcb8 100644
+--- a/photon_installer/ks_config.txt
++++ b/photon_installer/ks_config.txt
+@@ -54,6 +54,13 @@ Kickstart config file is a json format with following possible parameters:
+ 	Default value: "photon-<randomized string>"
+ 	Example: { "hostname": "photon-machine" }
+ 
++"insecure_installation" (optional)
++	Allow untrusted(selfsigned) https in kickstart iso and
++	disable ssl cert verification in repo for rpms installation.
++	Boolean: true or false
++	Default value: false
++	Example: { "insecure_installation": false }
++
+ "live" (optional)
+ 	Should be set to flase if target system will not be run on
+ 	host machine. When it set to false, installer will not add EFI boot
