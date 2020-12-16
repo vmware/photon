@@ -1,18 +1,18 @@
-From 8d053c2be779c1bdcdb1f47ccaf9985f0c78b93d Mon Sep 17 00:00:00 2001
+From c1601203eef2be95326125916c858d2ab8b2853e Mon Sep 17 00:00:00 2001
 From: Vikash Bansal <bvikas@vmware.com>
-Date: Wed, 18 Mar 2020 16:15:18 +0000
+Date: Fri, 18 Dec 2020 11:39:49 +0530
 Subject: [PATCH] fips changes
 
 ---
- modules.d/01fips/fips.sh         | 66 +++++++++++++++++++++++++++-----
- modules.d/01fips/module-setup.sh | 15 ++++++--
- 2 files changed, 69 insertions(+), 12 deletions(-)
+ modules.d/01fips/fips.sh         | 73 ++++++++++++++++++++++++++++----
+ modules.d/01fips/module-setup.sh | 15 +++++--
+ 2 files changed, 76 insertions(+), 12 deletions(-)
 
 diff --git a/modules.d/01fips/fips.sh b/modules.d/01fips/fips.sh
-index 9bc089f..4b54d2e 100755
+index 9bc089f..2070dd7 100755
 --- a/modules.d/01fips/fips.sh
 +++ b/modules.d/01fips/fips.sh
-@@ -82,10 +82,36 @@ do_fips()
+@@ -82,10 +82,43 @@ do_fips()
  
      info "Loading and integrity checking all crypto modules"
      mv /etc/modprobe.d/fips.conf /etc/modprobe.d/fips.conf.bak
@@ -48,10 +48,17 @@ index 9bc089f..4b54d2e 100755
              if ! modprobe "${_module}"; then
 -                # check if kernel provides generic algo
 +		warn "modprobe for $_module failed"
++		if [ "$_module" == "aesni-intel" ]; then
++		    grep -q aes /proc/cpuinfo
++		    if [ "$?" = "1" ]; then
++		        warn "Underlying CPU doesn't Support AESNI instruction set"
++		        continue
++		    fi
++		fi
                  _found=0
                  while read _k _s _v || [ -n "$_k" ]; do
                      [ "$_k" != "name" -a "$_k" != "driver" ] && continue
-@@ -99,9 +125,6 @@ do_fips()
+@@ -99,9 +132,6 @@ do_fips()
      done
      mv /etc/modprobe.d/fips.conf.bak /etc/modprobe.d/fips.conf
  
@@ -61,7 +68,7 @@ index 9bc089f..4b54d2e 100755
  
      info "Checking integrity of kernel"
      if [ -e "/run/initramfs/live/vmlinuz0" ]; then
-@@ -127,13 +150,38 @@ do_fips()
+@@ -127,13 +157,38 @@ do_fips()
          fi
  
          BOOT_IMAGE_HMAC="/boot/${BOOT_IMAGE_PATH}.${BOOT_IMAGE_NAME}.hmac"
@@ -105,7 +112,7 @@ index 9bc089f..4b54d2e 100755
      info "All initrd crypto checks done"
  
 diff --git a/modules.d/01fips/module-setup.sh b/modules.d/01fips/module-setup.sh
-index f3af4d9..f7e9e2e 100755
+index f3af4d9..7de3270 100755
 --- a/modules.d/01fips/module-setup.sh
 +++ b/modules.d/01fips/module-setup.sh
 @@ -13,8 +13,8 @@ depends() {
@@ -134,10 +141,10 @@ index f3af4d9..f7e9e2e 100755
 +	inst_any -d $MODULE $MODULE
 +    done
 +
-+    inst_multiple find hmacgen rmmod insmod mount uname umount dirname basename
++    inst_multiple find hmacgen grep rmmod insmod mount uname umount dirname basename
  
      inst_simple /etc/system-fips
      [ -c ${initdir}/dev/random ] || mknod ${initdir}/dev/random c 1 8 \
 -- 
-2.23.1
+2.17.1
 

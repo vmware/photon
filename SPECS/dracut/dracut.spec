@@ -5,7 +5,7 @@
 
 Name:           dracut
 Version:        048
-Release:        4%{?dist}
+Release:        5%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -157,6 +157,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*   Wed Dec 23 2020 Vikash Bansal <bvikas@vmware.com> 048-5
+-   Fix for processors which don't support AESNI
 *   Wed Dec 23 2020 Shreenidhi Shedi <sshedi@vmware.com> 048-4
 -   Adjust hostonly based on running environment
 *   Tue Jan 28 2020 Vikash Bansal <bvikas@vmware.com> 048-3
