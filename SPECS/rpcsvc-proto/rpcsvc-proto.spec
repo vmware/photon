@@ -1,9 +1,9 @@
 Summary:        rcpsvc protocol.x files and headers
 Name:           rpcsvc-proto
-Version:        1.4
+Version:        1.4.2
 Release:        1%{?dist}
-Source0:        https://github.com/thkukuk/rpcsvc-proto/releases/download/v1.4/rpcsvc-proto-1.4.tar.gz
-%define sha1    rpcsvc=01267dbc7d999c4ffdda1f69532e1f8331489b5f
+Source0:        https://github.com/thkukuk/rpcsvc-proto/releases/download/v1.4/%{name}-%{version}.tar.gz
+%define sha1    rpcsvc=3a6d81abcd1d178b94c15c830ef9ee16edd7c5db
 License:        LGPLv2+
 Group:          System Environment/Libraries
 URL:            https://github.com/thkukuk/rpcsvc-proto
@@ -42,5 +42,7 @@ make install DESTDIR=%{buildroot}
 %{_includedir}/rpcsvc/*
 
 %changelog
+* Thu Dec 17 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.2-1
+- Automatic Version Bump
 * Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 1.4-1
 - Initial version
