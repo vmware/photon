@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.164
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -319,6 +319,7 @@ Patch508:        initramfs-support-for-page-aligned-format-newca.patch
 Patch509:        enabling-configuring-options-for-geneve-device.patch
 Patch510:        initramfs-multiple-image-extraction-support.patch
 Patch511:        halt-on-panic.patch
+Patch512:        x86-setup-remove-redundant-mem-size-check.patch
 
 
 %if 0%{?kat_build:1}
@@ -618,6 +619,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch509 -p1
 %patch510 -p1
 %patch511 -p1
+%patch512 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -752,6 +754,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Jan 12 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.164-3
+-   Remove redundant mem size check.
 *   Thu Jan 07 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.164-2
 -   Avoid TSC recalibration
 *   Mon Jan 04 2021 Ankit Jain <ankitja@vmware.com> 4.19.164-1

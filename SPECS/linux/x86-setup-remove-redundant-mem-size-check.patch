@@ -1,0 +1,54 @@
+From bbc85af0bcd374d59a1417ee4313d6968eec274c Mon Sep 17 00:00:00 2001
+From: Mike Rapoport <rppt@linux.ibm.com>
+Date: Tue, 13 Oct 2020 16:58:12 -0700
+Subject: [PATCH] x86/setup: remove redundant mem size check
+
+Based on 3c45ee6dc7a1384de747e8afaa80ffb4b[1;3A08be39f
+("x86/setup: simplify initrd relocation and reservation")
+commit upstream.
+
+Currently, initrd image is reserved very early during setup and then it
+might be relocated and re-reserved after the initial physical memory
+mapping is created.  The "late" reservation of memblock verifies that
+mapped memory size exceeds the size of initrd, then checks whether the
+relocation required and, if yes, relocates inirtd to a new memory
+allocated from memblock and frees the old location.
+
+The check for memory size is excessive as memblock allocation will anyway
+fail if there is not enough memory.
+
+Remove the redundant check.
+
+It improves minimal memore requirements for page aligned initrds.
+---
+ arch/x86/kernel/setup.c | 7 -------
+ 1 file changed, 7 deletions(-)
+
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index 90ecc108bc8a..f6b8f6d06f3d 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -356,7 +356,6 @@ static void __init reserve_initrd(void)
+ 	u64 ramdisk_image = get_ramdisk_image();
+ 	u64 ramdisk_size  = get_ramdisk_size();
+ 	u64 ramdisk_end   = PAGE_ALIGN(ramdisk_image + ramdisk_size);
+-	u64 mapped_size;
+ 
+ 	if (!boot_params.hdr.type_of_loader ||
+ 	    !ramdisk_image || !ramdisk_size)
+@@ -364,12 +363,6 @@ static void __init reserve_initrd(void)
+ 
+ 	initrd_start = 0;
+ 
+-	mapped_size = memblock_mem_size(max_pfn_mapped);
+-	if (ramdisk_size >= (mapped_size>>1))
+-		panic("initrd too large to handle, "
+-		       "disabling initrd (%lld needed, %lld available)\n",
+-		       ramdisk_size, mapped_size>>1);
+-
+ 	printk(KERN_INFO "RAMDISK: [mem %#010llx-%#010llx]\n", ramdisk_image,
+ 			ramdisk_end - 1);
+ 
+-- 
+2.14.2
+
