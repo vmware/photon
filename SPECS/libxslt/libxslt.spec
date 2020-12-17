@@ -1,7 +1,7 @@
-Summary:        Libxslt-1.1.29
+Summary:        Libxslt
 Name:           libxslt
 Version:        1.1.34
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http:/http://xmlsoft.org/libxslt/
 Group:          System Environment/General Libraries
@@ -10,7 +10,9 @@ Distribution:   Photon
 Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
 %define sha1    libxslt=5b42a1166a1688207028e4a5e72090828dd2a61e
 Requires:       libxml2-devel
+Requires:       libgcrypt
 BuildRequires:  libxml2-devel
+BuildRequires:  libgcrypt-devel
 %description
 The libxslt package contains XSLT libraries used for extending libxml2 libraries to support XSLT files.
 
@@ -61,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Dec 18 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.1.34-2
+-   Fix build with new rpm
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.34-1
 -   Automatic Version Bump
 *   Tue Dec 17 2019 Shreyas B. <shreyasb@vmware.com> 1.1.32-3

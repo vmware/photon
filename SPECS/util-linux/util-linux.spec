@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.36
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -10,6 +10,8 @@ Distribution:   Photon
 Source0:        %{name}-%{version}.tar.xz
 %define sha1    util-linux=cf99c3df18cf0a13033ec2d3d1a31587eba825d9
 BuildRequires:  ncurses-devel
+BuildRequires:  pkg-config
+
 %if %{with_check}
 BuildRequires:  ncurses-terminfo
 %endif
@@ -30,6 +32,7 @@ These are the additional language files of util-linux.
 Summary: Header and library files for util-linux
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
+Requires:  pkg-config
 %description devel
 These are the header and library files of util-linux.
 
@@ -96,6 +99,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.36-2
+-   Fix build with new rpm
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.36-1
 -   Automatic Version Bump
 *   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.35.1-1
@@ -134,4 +139,3 @@ rm -rf %{buildroot}/lib/systemd/system
 -   Update according to UsrMove.
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.24.1-1
 -   Initial build. First version
-

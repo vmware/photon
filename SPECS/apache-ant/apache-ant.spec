@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.10.8
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -43,18 +43,18 @@ tar xf %{SOURCE2} --no-same-owner
 rm -rf %{buildroot}
 
 %build
+
+%install
 ANT_DIST_DIR=%{buildroot}%{_prefix}
 cp -v ./hamcrest-1.3/hamcrest-core-1.3.jar ./lib/optional
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
+export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK-*)
 mkdir -p -m 700 $ANT_DIST_DIR
 ./bootstrap.sh && ./build.sh -Ddist.dir=$ANT_DIST_DIR
 
-%install
 cp %{_builddir}/%{name}-%{version}/maven-ant-tasks-2.1.3/maven-ant-tasks-2.1.3.jar %{buildroot}/%{_libdir}/
 mkdir -p %{buildroot}%{_datadir}/java/ant
 
-for jar in %{buildroot}/%{_libdir}/*.jar
-do
+for jar in %{buildroot}/%{_libdir}/*.jar; do
     jarname=$(basename $jar .jar)
     ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/ant/${jarname}.jar
 done
@@ -62,8 +62,7 @@ rm -rf %{buildroot}%{_bindir}/*.bat
 rm -rf %{buildroot}%{_bindir}/*.cmd
 
 mkdir -p %{buildroot}/bin
-for b in %{buildroot}%{_bindir}/*
-do
+for b in %{buildroot}%{_bindir}/*; do
     binaryname=$(basename $b)
     ln -sfv %{_bindir}/${binaryname} %{buildroot}/bin/${binaryname}
 done
@@ -122,6 +121,8 @@ bootstrap/bin/ant -v run-tests
 %{_bindir}/runant.pl
 
 %changelog
+*   Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.10.8-3
+-   Fix build with new rpm
 *   Thu Nov 12 2020 Michelle Wang <michellew@vmware.com> 1.10.8-2
 -   Update Source0 with using https://packages.vmware.com/photon
 *   Mon Jul 27 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.8-1

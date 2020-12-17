@@ -4,7 +4,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.12.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
@@ -25,9 +25,12 @@ BuildRequires:  openssl-devel
 BuildRequires:  zchunk-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-sphinx
-Requires:       curl-libs
-Requires:       gpgme
-Requires:       zchunk
+
+Requires:   python3-packaging
+Requires:   curl-libs
+Requires:   gpgme
+Requires:   zchunk
+Requires:   python3-sphinx
 
 %description
 A library providing C and Python (libcURL like) API to downloading repository
@@ -42,12 +45,12 @@ Requires:       %{name} = %{version}-%{release}
 %description devel
 Development files for librepo.
 
-%package -n python3-%{name}
+%package -n python3-librepo
 Summary:        Python 3 bindings for the librepo library
-%{?python_provide:%python_provide python3-%{name}}
+Provides:       python3-librepo
 Requires:       %{name} = %{version}-%{release}
 
-%description -n python3-%{name}
+%description -n python3-librepo
 Python 3 bindings for the librepo library.
 
 %prep
@@ -79,10 +82,12 @@ popd
 %{_libdir}/pkgconfig/%{name}.pc
 %{_includedir}/%{name}/
 
-%files -n python3-%{name}
+%files -n python3-librepo
 %{_python3_sitearch}/%{name}/
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.12.1-4
+-   Fix build with new rpm
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.12.1-3
 -   openssl 1.1.1
 *   Mon Sep 07 2020 Ankit Jain <ankitja@vmware.com> 1.12.1-2

@@ -1,16 +1,21 @@
-Summary:	software font engine.
-Name:		freetype2
-Version:	2.10.2
-Release:	1%{?dist}
-License:	BSD/GPL
-URL:		http://www.freetype.org/
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://download.savannah.gnu.org/releases/freetype/freetype-%{version}.tar.gz
+Summary:        software font engine.
+Name:           freetype2
+Version:        2.10.2
+Release:        2%{?dist}
+License:        BSD/GPL
+URL:            http://www.freetype.org/
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://download.savannah.gnu.org/releases/freetype/freetype-%{version}.tar.gz
 %define sha1 freetype=2c53944cd7eaefb9cb207672d8a4368c31aa97c4
+
 BuildRequires:	libtool
 BuildRequires:	zlib-devel
+BuildRequires:	glibc
+BuildRequires:	pkg-config
+BuildRequires:	bash
+
 
 %description
 FreeType is a software font engine that is designed to be small, efficient, highly customizable, and portable while capable of producing high-quality output (glyph images). It can be used in graphics libraries, display servers, font conversion tools, text image generation tools, and many other products as well.
@@ -54,15 +59,17 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.10.2-2
+- Fix build with new rpm
 * Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 2.10.2-1
 - Automatic Version Bump
-*	Wed Sep 12 2018 Sujay G <gsujay@vmware.com> 2.9.1-1
--	version bump to 2.9.1
-*       Thu Jun 14 2018 Tapas Kundu <tkundu@vmware.com> 2.7.1-4
--       CVE-2018-6942
-*       Mon May 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.1-3
--       CVE-2017-8287
-*       Fri Apr 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.1-2
--       CVE-2017-7857, CVE-2017-7858 and CVE-2017-7864
-*       Fri Nov 11 2016 Dheeraj Shetty <dheerajs@vmware.com> 2.7.1-1
--       Initial version
+* Wed Sep 12 2018 Sujay G <gsujay@vmware.com> 2.9.1-1
+- Version bump to 2.9.1
+* Thu Jun 14 2018 Tapas Kundu <tkundu@vmware.com> 2.7.1-4
+- CVE-2018-6942
+* Mon May 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.1-3
+- CVE-2017-8287
+* Fri Apr 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.1-2
+- CVE-2017-7857, CVE-2017-7858 and CVE-2017-7864
+* Fri Nov 11 2016 Dheeraj Shetty <dheerajs@vmware.com> 2.7.1-1
+- Initial version

@@ -1,7 +1,7 @@
 Summary:	Apache Maven
 Name:		apache-maven
 Version:	3.6.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache License 2.0
 URL:		http://maven.apache.org
 Group:		Applications/System
@@ -27,31 +27,26 @@ The Maven package contains binaries for a build system
 %prep
 
 %setup -q
-#find . -name build.xml | xargs sed -i 's/timeout="600000"/timeout="1200000"/g'
 
 %clean
 rm -rf %{buildroot}
 
 %build
-MAVEN_DIST_DIR=%{buildroot}%{_prefix}
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
-
-sed -i 's/www.opensource/opensource/g' DEPENDENCIES
-
-mvn -DdistributionTargetDir=$MAVEN_DIST_DIR clean package
 
 %install
-mkdir -p %{buildroot}%{_datadir}/java/maven
+MAVEN_DIST_DIR=%{buildroot}%{_prefix}
+export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK-*)
+sed -i 's/www.opensource/opensource/g' DEPENDENCIES
+mvn -DdistributionTargetDir=$MAVEN_DIST_DIR clean package
 
-for jar in %{buildroot}/%{_libdir}/*.jar
-do
+mkdir -p %{buildroot}%{_datadir}/java/maven
+for jar in %{buildroot}/%{_libdir}/*.jar; do
     jarname=$(basename $jar .jar)
     ln -sfv %{_libdir}/${jarname}.jar %{buildroot}%{_datadir}/java/maven/${jarname}.jar
 done
 
 mkdir -p %{buildroot}/bin
-for b in %{buildroot}%{_bindir}/*
-do
+for b in %{buildroot}%{_bindir}/*; do
     binaryname=$(basename $b)
     ln -sfv %{_bindir}/${binaryname} %{buildroot}/bin/${binaryname}
 done
@@ -78,6 +73,8 @@ done
 %exclude %{_libdir}/jansi-native
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.6.3-2
+-   Fix build with new rpm
 *   Tue Jun 30 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.6.3-1
 -   Update to 3.6.3
 *   Fri Apr 17 2020 Tapas Kundu <tkundu@vmware.com> 3.5.4-4

@@ -1,7 +1,7 @@
 Summary:        Grep for perl compatible regular expressions
 Name:           pcre
 Version:        8.44
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/pcre-%{version}.tar.bz2
 Group:          Applications/System
@@ -9,8 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.csx.cam.ac.uk/pub/software/programming/pcre/%{name}-%{version}.tar.bz2
 %define sha1    pcre=8179b083053fce9b4a766513fa1f14807aabee42
+
 BuildRequires:  bzip2-devel
 BuildRequires:  readline-devel
+BuildRequires:  glibc
+
 Requires:       libgcc
 Requires:       readline
 Requires:       libstdc++
@@ -86,6 +89,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libpcre.so.*
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 8.44-2
+-   Fix build with new rpm
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 8.44-1
 -   Automatic Version Bump
 *   Fri Nov 09 2018 Alexey Makhalov <amakhalov@vmware.com> 8.42-2

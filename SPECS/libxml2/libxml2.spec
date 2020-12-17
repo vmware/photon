@@ -3,7 +3,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.10
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -15,9 +15,12 @@ Patch0:         CVE-2020-7595.patch
 Patch1:         CVE-2020-24977.patch
 Patch2:         fix_build_with_python3.9.patch
 Patch3:         CVE-2019-20388.patch
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-BuildRequires:  python3-devel
+BuildRequires:  zlib
+BuildRequires:  pkg-config
+
 Provides:       pkgconfig(libxml-2.0)
 
 %description
@@ -95,6 +98,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.9.10-6
+-   Fix build with new rpm
 *   Sat Nov 07 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.10-5
 -   Fix CVE-2019-20388(memory leak issue)
 *   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 2.9.10-4

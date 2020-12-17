@@ -59,20 +59,19 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/gudev-1.0.pc
 
 %changelog
-*       Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 234-1
--       Automatic Version Bump
-*       Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 233-1
--       Automatic Version Bump
-*       Sun Sep 30 2018 Bo Gan <ganb@vmware.com> 232-1
--       Update to 232
-*	Mon Apr 10 2017 Harish Udaiya kumar <hudaiyakumar@vmware.com> 231-1
--	Updated to version 231.
-*       Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  230-4
--       Change systemd dependency
-*       Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 230-3
--       GA - Bump release of all rpms
-*       Thu Aug 13 2015 Vinay Kulkarni <kulkarniv@vmware.com> 230-2
--       Split header files into devel package.
-*       Tue Aug 11 2015 Vinay Kulkarni <kulkarniv@vmware.com> 230-1
--       Add libgudev v230
-
+* Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 234-1
+- Automatic Version Bump
+* Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 233-1
+- Automatic Version Bump
+* Sun Sep 30 2018 Bo Gan <ganb@vmware.com> 232-1
+- Update to 232
+* Mon Apr 10 2017 Harish Udaiya kumar <hudaiyakumar@vmware.com> 231-1
+- Updated to version 231.
+* Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  230-4
+- Change systemd dependency
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 230-3
+- GA - Bump release of all rpms
+* Thu Aug 13 2015 Vinay Kulkarni <kulkarniv@vmware.com> 230-2
+- Split header files into devel package.
+* Tue Aug 11 2015 Vinay Kulkarni <kulkarniv@vmware.com> 230-1
+- Add libgudev v230

@@ -1,7 +1,7 @@
 Summary:        libssh2 is a library implementing the SSH2 protocol.
 Name:           libssh2
 Version:        1.9.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://www.libssh2.org/
 Group:          System Environment/NetworkingLibraries
@@ -12,6 +12,7 @@ Source0:        https://www.libssh2.org/download/libssh2-%{version}.tar.gz
 Patch0:         CVE-2019-17498.patch
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
+BuildRequires:  pkg-config
 
 Requires:       openssl
 Requires:       zlib
@@ -58,6 +59,8 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.9.0-3
+-   Fix build with new rpm
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.9.0-2
 -   openssl 1.1.1
 *   Mon Mar 16 2020 Sujay G <gsujay@vmware.com> 1.9.0-1
@@ -68,5 +71,3 @@ find %{buildroot} -name '*.la' -exec rm -f {} ';'
 -   Fix for CVE-2019-3855
 *   Wed Nov 30 2016 Xiaolin Li <xiaolinl@vmware.com> 1.8.0-1
 -   Add libssh2 1.8.0 package.
-
-

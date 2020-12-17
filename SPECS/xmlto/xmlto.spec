@@ -1,7 +1,7 @@
 Summary:    The  purpose  of  xmlto is to convert an XML file to the desired format
 Name:       xmlto
 Version:    0.0.28
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2+
 URL:        https://pagure.io/xmlto
 Group:      Applications/System
@@ -12,9 +12,12 @@ Source0:     http://releases.pagure.org/xmlto/%{name}-%{version}.tar.gz
 BuildRequires:    docbook-xsl
 BuildRequires:    docbook-xml
 BuildRequires:    libxslt-devel
-Requires:         systemd
-Requires:	  docbook-xsl
-Requires:	  libxslt
+BuildRequires:    libgcrypt-devel
+
+Requires:   libgcrypt
+Requires:   systemd
+Requires:   docbook-xsl
+Requires:   libxslt
 
 %description
 The  purpose  of  xmlto is to convert an XML file to the desired format
@@ -23,8 +26,7 @@ The  purpose  of  xmlto is to convert an XML file to the desired format
 %setup -q
 
 %build
-./configure \
-    --prefix=%{_prefix}
+%configure
 
 make %{?_smp_mflags}
 
@@ -47,5 +49,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datadir}/xmlto/*
 
 %changelog
+*   Tue Jan 05 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.0.28-2
+-   Fix build with new rpm
 *   Thu Apr 06 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.0.28-1
 -   Initial build.  First version

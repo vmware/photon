@@ -1,7 +1,7 @@
 Summary:       A Metalink library written in C language
 Name:          libmetalink
 Version:       0.1.3
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
 License:       MIT
@@ -9,8 +9,13 @@ URL:           https://launchpad.net/%{name}
 Source0:       %{url}/trunk/%{name}-%{version}/+download/%{name}-%{version}.tar.bz2
 %define sha1 %{name}-%{version}=20ccbea4b495d60ab6d9dd3e40b3a429cfa2584b
 Distribution:  Photon
+
 Requires:      expat
+Requires:      glibc
+
 BuildRequires: expat-devel
+BuildRequires: glibc
+BuildRequires: glibc-devel
 
 %description
 A Metalink library written in C language.
@@ -56,6 +61,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+*  Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.1.3-3
+-  Fix build with new rpm
 *  Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 0.1.3-2
 -  Used configure macro
 *  Thu Jun 04 2020 Tapas Kundu <tkundu@vmware.com> 0.1.3-1

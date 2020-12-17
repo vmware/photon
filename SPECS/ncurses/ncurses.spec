@@ -2,7 +2,7 @@
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
 Version:        6.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://invisible-island.net/ncurses/
 Group:          Applications/System
@@ -11,7 +11,9 @@ Distribution:   Photon
 Source0:        ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-%{ncursessubversion}.tgz
 %define sha1    ncurses=29dc11e20ffa9dd034595dfdb1b25ee1fbbf9eb9
 Requires:       ncurses-libs = %{version}-%{release}
-BuildRequires:  gcc
+Requires:       glibc
+
+BuildRequires:  gcc glibc
 BuildRequires:  pkg-config
 
 %description
@@ -186,6 +188,8 @@ make
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 6.2-3
+-   Fix build with new rpm
 *   Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 6.2-2
 -   Automatic Version Bump
 *   Thu Aug 13 2020 Susant Sahani <ssahani@vmware.com> 6.2-1

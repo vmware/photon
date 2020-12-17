@@ -1,7 +1,7 @@
 Summary:	Cmake
 Name:		cmake
 Version:	3.18.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
 Source0:	http://www.cmake.org/files/v3.16/%{name}-%{version}.tar.gz
@@ -23,7 +23,10 @@ BuildRequires:  libarchive
 BuildRequires:  libarchive-devel
 BuildRequires:  bzip2
 BuildRequires:  bzip2-devel
-Requires:	ncurses
+BuildRequires:  libgcrypt-devel
+
+Requires:       libgcrypt
+Requires:       ncurses
 Requires:       expat
 Requires:       zlib
 Requires:       libarchive
@@ -59,6 +62,8 @@ make  %{?_smp_mflags} test
 %{_libdir}/rpm/macros.d/macros.cmake
 
 %changelog
+*       Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.18.3-3
+-       Fix build with new rpm
 *       Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.18.3-2
 -       Bump for openssl 1.1.1 compatibility
 *       Tue Sep 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.18.3-1
