@@ -1,6 +1,6 @@
 Name:             systemd
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
-Version:          247
+Version:          247.2
 Release:          1%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 Summary:          System and Service Manager
@@ -10,7 +10,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0:          %{name}-stable-%{version}.tar.gz
-%define sha1      systemd=352aa4ebb76385af788dc2037a8fd138aaec56b3
+%define sha1      systemd=328a1818511ceb1e4c11cd1e4824fca7b56accf0
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          systemd.cfg
@@ -257,6 +257,7 @@ CONFIGURE_OPTS=(
        -Dselinux=true
        -Dlibcurl=true
        -Dgnutls=true
+       -Dopenssl=true
        -Db_ndebug=false
        -Dhwdb=true
        -Ddefault-kill-user-processes=false
@@ -272,7 +273,8 @@ CONFIGURE_OPTS=(
        -Dsysvinit-path=/etc/rc.d/init.d
        -Drc-local=/etc/rc.d/rc.local
        -Dfallback-hostname=photon
-       -Doomd=true
+       -Doomd=false
+       -Dhomed=false
        -Dversion-tag=v%{version}-%{release}
        $CROSS_COMPILE_CONFIG
 )
@@ -360,8 +362,6 @@ udevadm hwdb --update &>/dev/null || :
 %{_sysconfdir}/xdg/systemd
 %{_sysconfdir}/rc.d/init.d/README
 
-%config(noreplace) %{_sysconfdir}/oomd.conf
-
 %config(noreplace) %{_sysconfdir}/systemd/sleep.conf
 %config(noreplace) %{_sysconfdir}/systemd/system.conf
 %config(noreplace) %{_sysconfdir}/systemd/user.conf
@@ -424,7 +424,6 @@ udevadm hwdb --update &>/dev/null || :
 %{_bindir}/userdbctl
 %{_bindir}/systemd-repart
 %{_bindir}/systemd-dissect
-%{_bindir}/oomctl
 
 %{_libdir}/tmpfiles.d/etc.conf
 %{_libdir}/tmpfiles.d/home.conf
@@ -652,6 +651,9 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+*    Thu Dec 17 2020 Susant Sahani <ssahani@vmware.com>  247.2-1
+-    Upgrade to 247.2
+-    Enable openssl and drop systemd-oomd
 *    Mon Dec 14 2020 Susant Sahani <ssahani@vmware.com>  247-1
 -    Upgrade to 247
 -    Split out systemd package to multiple packages
