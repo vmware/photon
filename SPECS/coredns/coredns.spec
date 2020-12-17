@@ -7,7 +7,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.2.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/coredns/coredns/releases/v%{version}.tar.gz
 Source0:        coredns-%{version}.tar.gz
@@ -42,7 +42,9 @@ cp -rf . ${GOPATH}/src/${PKG}
 pushd ${GOPATH}/src/${PKG}
 # Just download (do not compile), since it's not compilable with go-1.9.
 # TODO: use prefetched tarball instead.
-sed -i 's#go get -u github.com/mholt/caddy#go get -u -d github.com/mholt/caddy#' Makefile
+find . -type f -exec sed -i 's|github.com/mholt/caddy|github.com/caddyserver/caddy|' {} +
+sed -i 's#go get -u github.com/caddyserver/caddy#go get -u -d github.com/caddyserver/caddy#' Makefile
+sed -i 's#v0.10.11#v0.10.11 \&\& find . -type f -exec sed -i "s\|github.com/mholt/caddy\|github.com/caddyserver/caddy\|" {} + #g' Makefile
 sed -i 's#go get -u github.com/miekg/dns#go get -u -d github.com/miekg/dns#' Makefile
 make
 
@@ -58,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/coredns
 
 %changelog
+*   Thu Dec 17 2020 Ankit Jain <ankitja@vmware.com> 1.2.0-8
+-   Repo changed from github.com/mholt/caddy to github.com/caddyserver/caddy
 *   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.2.0-7
 -   Bump up version to compile with new go
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.2.0-6
