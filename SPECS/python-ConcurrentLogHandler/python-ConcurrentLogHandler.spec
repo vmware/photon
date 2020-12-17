@@ -2,7 +2,7 @@
 
 Name:           python3-ConcurrentLogHandler
 Version:        0.9.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Concurrent logging handler (drop-in replacement for RotatingFileHandler) Python 2.6+
 License:        Apache-2.0
 Group:          Development/Languages/Python
@@ -15,7 +15,9 @@ Distribution:   Photon
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+%if %{with_check}
 BuildRequires:  python3-pytest
+%endif
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-setuptools
@@ -47,6 +49,8 @@ python3 stresstest.py
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.9.1-5
+-   Fix build with new rpm
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.9.1-4
 -   Mass removal python2
 *   Mon Dec 03 2018 Ashwin H <ashwinh@vmware.com> 0.9.1-3

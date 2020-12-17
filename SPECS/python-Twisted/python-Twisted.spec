@@ -3,7 +3,7 @@
 Summary:        An asynchronous networking framework written in Python
 Name:           python3-Twisted
 Version:        20.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -13,12 +13,14 @@ Source0:        https://pypi.python.org/packages/source/T/Twisted/Twisted-%{vers
 %define sha1 Twisted=915f782b902aca3ea5547ef333089961101e0871
 Patch0:         extra_dependency.patch
 Patch1:         no_packet.patch
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-incremental
 BuildRequires:  python3-zope.interface
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-automat
 
 %if %{with_check}
 BuildRequires:  net-tools
@@ -26,6 +28,7 @@ BuildRequires:  sudo
 BuildRequires:  shadow
 BuildRequires:  curl-devel
 %endif
+
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-zope.interface
@@ -38,10 +41,9 @@ Requires:       python3-PyHamcrest
 Requires:       python3-service_identity >= 18.1.0
 
 %description
-Twisted is an event-driven networking engine written in Python and licensed under the open source ​MIT license. Twisted runs on Python 2 and an ever growing subset also works with Python 3.
-
-Twisted also supports many common network protocols, including SMTP, POP3, IMAP, SSHv2, and DNS.
-
+Twisted is an event-driven networking engine written in Python and licensed under the open source ​MIT
+license. Twisted runs on Python 2 and an ever growing subset also works with Python 3. Twisted also supports
+many common network protocols, including SMTP, POP3, IMAP, SSHv2, and DNS.
 
 %prep
 %setup -q -n Twisted-%{version}
@@ -85,6 +87,8 @@ popd
 %{_bindir}/cftp3
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.3.0-2
+-   Fix build with new rpm
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20.3.0-1
 -   Automatic Version Bump
 *   Wed Jul 08 2020 Tapas Kundu <tkundu@vmware.com> 19.10.0-5

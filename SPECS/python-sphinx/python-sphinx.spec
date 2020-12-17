@@ -3,7 +3,7 @@
 Summary:       Python documentation generator
 Name:          python3-sphinx
 Version:       3.3.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Development/Tools
 License:       BSD-2-Clause
 URL:           http://www.vmware.com
@@ -25,9 +25,27 @@ BuildRequires: python3-imagesize
 BuildRequires: python3-requests
 BuildRequires: python3-snowballstemmer
 BuildRequires: python3-typing
-BuildRequires: python3-pytest
 BuildRequires: python3-pip
+BuildRequires: python3-packaging
+BuildRequires: python3-sphinxcontrib-applehelp
+BuildRequires: python3-sphinxcontrib-devhelp
+BuildRequires: python3-sphinxcontrib-qthelp
+BuildRequires: python3-sphinxcontrib-htmlhelp
+BuildRequires: python3-sphinxcontrib-jsmath
+BuildRequires: python3-sphinxcontrib-serializinghtml
+BuildRequires: python3-packaging
 
+%if %{with_check}
+BuildRequires: python3-pytest
+%endif
+
+Requires:      python3-sphinxcontrib-applehelp
+Requires:      python3-sphinxcontrib-devhelp
+Requires:      python3-sphinxcontrib-qthelp
+Requires:      python3-sphinxcontrib-htmlhelp
+Requires:      python3-sphinxcontrib-jsmath
+Requires:      python3-sphinxcontrib-serializinghtml
+Requires:      python3-packaging
 Requires:      python3
 Requires:      python3-libs
 Requires:      python3-babel
@@ -79,6 +97,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.3.0-2
+-   Fix build with new rpm
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 3.3.0-1
 -   Automatic Version Bump
 *   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.1-1

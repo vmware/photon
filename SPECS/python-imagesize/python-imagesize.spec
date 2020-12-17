@@ -2,7 +2,7 @@
 
 Name:           python3-imagesize
 Version:        1.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        python module to analyze jpeg/jpeg2000/png/gif image header and return image size.
 License:        MIT
 Group:          Development/Languages/Python
@@ -16,7 +16,12 @@ BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-packaging
+
+%if %{with_check}
 BuildRequires:  python3-pytest
+%endif
+
 Requires:       python3
 Requires:       python3-libs
 
@@ -24,7 +29,6 @@ BuildArch:      noarch
 
 %description
 python module to analyze jpeg/jpeg2000/png/gif image header and return image size.
-
 
 %prep
 %setup -n imagesize-%{version}
@@ -43,6 +47,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.2.0-2
+-   Fix build with new rpm
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.0-1
 -   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 1.1.0-2

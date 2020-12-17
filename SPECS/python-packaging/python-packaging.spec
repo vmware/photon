@@ -3,7 +3,7 @@
 Summary:        Core utilities for Python packages
 Name:           python3-packaging
 Version:        20.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/packaging
 License:        BSD or ASL 2.0
 Group:          Development/Languages/Python
@@ -30,6 +30,8 @@ Requires:       python3-six
 
 BuildArch:      noarch
 
+Provides: python3.9dist(packaging)
+
 %description
 Cryptography is a Python library which exposes cryptographic recipes and primitives.
 
@@ -53,6 +55,8 @@ PYTHONPATH=./ pytest
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.4-3
+-   Fix build with new rpm
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 20.4-2
 -   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20.4-1

@@ -2,7 +2,7 @@
 
 Name:           python3-appdirs
 Version:        1.4.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Group:          Development/Languages/Python
@@ -18,6 +18,8 @@ Requires:       python3
 Requires:       python3-libs
 
 BuildArch:      noarch
+
+Provides:       python3.9dist(appdirs) = %{version}
 
 %description
 A small Python module for determining appropriate platform-specific dirs, e.g. a "user data dir".
@@ -43,6 +45,8 @@ python3 test_api.py
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.4.4-2
+-   Fix build with new rpm
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.4-1
 -   Automatic Version Bump
 *   Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 1.4.3-4

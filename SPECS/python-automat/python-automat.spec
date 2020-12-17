@@ -3,7 +3,7 @@
 Summary:        Self-service finite-state machines for the programmer on the go.
 Name:           python3-automat
 Version:        20.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -16,21 +16,19 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-m2r
 BuildRequires:  python3-setuptools_scm
-BuildRequires:  python3-attrs
-BuildRequires:  python3-six
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  python3-docutils
 BuildRequires:  python3-mistune
 BuildRequires:  python3-graphviz
-BuildRequires:  python3-Twisted
+BuildRequires:  python3-attrs
+BuildRequires:  python3-six
 
+Requires:       python3-six
+Requires:       python3-attrs
 Requires:       python3
 Requires:       python3-libs
-Requires:       python3-attrs
-Requires:       python3-six
 Requires:       python3-graphviz
-Requires:       python3-Twisted
 
 BuildArch:      noarch
 
@@ -58,6 +56,8 @@ python3 setup.py test
 %{_bindir}/automat-visualize3
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.2.0-2
+-   Fix build with new rpm
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20.2.0-1
 -   Automatic Version Bump
 *   Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 0.7.0-2

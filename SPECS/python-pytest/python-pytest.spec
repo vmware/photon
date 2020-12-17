@@ -3,7 +3,7 @@
 
 Name:           python3-pytest
 Version:        6.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        pytest is a mature full-featured Python testing tool that helps you write better programs
 License:        MIT
 Group:          Development/Languages/Python
@@ -13,16 +13,25 @@ Distribution:   Photon
 Source0:        https://pypi.python.org/packages/00/e9/f77dcd80bdb2e52760f38dbd904016da018ab4373898945da744e5e892e9/pytest-%{version}.tar.gz
 %define sha1    pytest=aef7f0b5a3a5be7dc8c4a65b95d000f95df8b525
 
-BuildRequires:  python3
 BuildRequires:  python3-devel
-BuildRequires:  python3-py
-BuildRequires:  python3-hypothesis
-BuildRequires:  python3-Twisted
 BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 BuildRequires:  python3-setuptools_scm
+BuildRequires:  python3-attrs
+BuildRequires:  python3-iniconfig
+BuildRequires:  python3-more-itertools
+BuildRequires:  python3-packaging
+BuildRequires:  python3-pluggy
+BuildRequires:  python3-py
+BuildRequires:  python3-toml
+BuildRequires:  python3-wcwidth
+
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-pluggy
+Requires:       python3-iniconfig
+Requires:       python3-packaging
+Requires:       python3-toml
+Requires:       python3-attrs
 Requires:       python3-py
 
 BuildArch:      noarch
@@ -55,6 +64,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 6.1.2-2
+-   Fix build with new rpm
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 6.1.2-1
 -   Automatic Version Bump
 *   Tue Sep 29 2020 Gerrit Photon <photon-checkins@vmware.com> 6.1.0-1

@@ -2,7 +2,7 @@
 
 Name:           python3-hypothesis
 Version:        5.41.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python library for creating unit tests which are simpler to write and more powerful
 License:        MPLv2.0
 Group:          Development/Languages/Python
@@ -11,13 +11,17 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.python.org/packages/cf/d5/b3d491e4b5094be0ef69b910d637096c8e23f84a9bdc4eba0b869220d1f0/hypothesis-%{version}.tar.gz
 %define sha1    hypothesis=0dd5ec7449665f248d9d30ed2bb9101be8dafe56
+
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-sortedcontainers
+BuildRequires:  python3-attrs
 
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-sortedcontainers
 
 BuildArch:      noarch
 
@@ -43,6 +47,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/hypothesis
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 5.41.1-2
+-   Fix build with new rpm
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 5.41.1-1
 -   Automatic Version Bump
 *   Tue Sep 29 2020 Gerrit Photon <photon-checkins@vmware.com> 5.36.1-1

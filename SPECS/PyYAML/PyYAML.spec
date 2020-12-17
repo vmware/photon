@@ -2,7 +2,7 @@
 
 Name:           python3-PyYAML
 Version:        5.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 License:        MIT
@@ -19,6 +19,8 @@ BuildRequires:  python3-libs
 Requires:       python3
 Requires:       python3-libs
 Requires:       libyaml
+
+Provides:       python3.9dist(pyyaml)
 
 %description
 YAML is a data serialization format designed for human readability and
@@ -59,6 +61,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Wed Dec 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 5.3.1-2
+-   Fix build with new rpm
 *   Wed Jul 29 2020 Gerrit Photon <photon-checkins@vmware.com> 5.3.1-1
 -   Automatic Version Bump
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 3.13-6

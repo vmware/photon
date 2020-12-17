@@ -2,7 +2,7 @@
 
 Name:           python3-mako
 Version:        1.1.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python templating language
 License:        MIT
 Group:          Development/Languages/Python
@@ -15,7 +15,10 @@ Source0:        Mako-%{version}.tar.gz
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+
+%if %{with_check}
 BuildRequires:  python3-pytest
+%endif
 
 Requires:       python3
 Requires:       python3-libs
@@ -44,6 +47,8 @@ python3 setup.py test
 %{_bindir}/mako-render3
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.1.3-2
+-   Fix build with new rpm
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.3-1
 -   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 1.0.7-2

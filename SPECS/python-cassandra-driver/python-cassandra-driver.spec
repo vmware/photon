@@ -4,7 +4,7 @@
 Summary:        A modern, feature-rich and highly-tunable Python client library for Apache Cassandra (2.1+)
 Name:           python3-cassandra-driver
 Version:        3.24.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://github.com/datastax/python-driver#datastax-python-driver-for-apache-cassandra
 License:        Apache 2.0
 Group:          Development/Languages/Python
@@ -12,26 +12,31 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/datastax/python-driver/archive/cassandra-driver-%{version}.tar.gz
 %define sha1    cassandra-driver=3affe07f7c0bea76d202f60627d11c3b445908c0
+
 BuildRequires:  python3
 BuildRequires:  cython3
 BuildRequires:  python3-libs
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-pip
-BuildRequires:  python3-pytest
 BuildRequires:  libev-devel
 BuildRequires:  libev
+
 %if %{with_check}
+BuildRequires:  python3-pytest
+BuildRequires:  python3-packaging
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  iana-etc
 %endif
+
 Requires:       python3
 Requires:       python3-libs
 
 %description
-A modern, feature-rich and highly-tunable Python client library for Apache Cassandra (2.1+) using exclusively Cassandra's binary protocol and Cassandra Query Language v3.
-The driver supports Python 2.7, 3.3, 3.4, 3.5, and 3.6.
+A modern, feature-rich and highly-tunable Python client library for Apache Cassandra (2.1+)
+using exclusively Cassandra's binary protocol and Cassandra Query Language v3. The driver
+supports Python 2.7, 3.3, 3.4, 3.5, and 3.6.
 
 %prep
 %setup -q -n cassandra-driver-%{version}
@@ -65,6 +70,8 @@ python3 setup.py eventlet_nosetests
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.24.0-3
+-   Fix build with new rpm
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.24.0-2
 -   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.24.0-1

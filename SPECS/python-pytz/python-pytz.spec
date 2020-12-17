@@ -4,7 +4,7 @@
 Summary:        World timezone definitions, modern and historical
 Name:           python3-pytz
 Version:        2020.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/pytz
 License:        MIT
 Group:          Development/Languages/Python
@@ -19,11 +19,13 @@ BuildRequires:  python3-libs
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  unzip
-BuildRequires:  python3-pytest
+
 %if %{with_check}
 BuildRequires: python3-setuptools
 BuildRequires: python3-xml
+BuildRequires: python3-pytest
 %endif
+
 Requires:       python3
 Requires:       python3-libs
 Requires:       tzdata
@@ -55,6 +57,8 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2020.4-2
+-   Fix build with new rpm
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 2020.4-1
 -   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2020.1-1

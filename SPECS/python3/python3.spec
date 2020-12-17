@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.9.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -127,6 +127,8 @@ Group:          Development/Tools
 BuildArch:      noarch
 Requires:       python3 = %{version}-%{release}
 Requires:       python3-xml = %{version}-%{release}
+
+Provides:       python3.9dist(setuptools)
 
 %description    setuptools
 setuptools is a collection of enhancements to the Python distutils that allow you to more easily build and distribute Python packages, especially ones that have dependencies on other packages.
@@ -296,9 +298,11 @@ rm -rf %{buildroot}/*
 %{_libdir}/rpm/macros.d/macros.python
 
 %changelog
-*   Fri Jan 08 2021 Taoas Kundu <tkundu@vmware.com> 3.9.1-1
+*   Sat Jan 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.9.1-2
+-   Fix build with new rpm
+*   Fri Jan 08 2021 Tapas Kundu <tkundu@vmware.com> 3.9.1-1
 -   Update to 3.9.1
-*   Tue Oct 13 2020 Taoas Kundu <tkundu@vmware.com> 3.9.0-1
+*   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 3.9.0-1
 -   Update to 3.9.0
 *   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 3.8.6-1
 -   Automatic Version Bump

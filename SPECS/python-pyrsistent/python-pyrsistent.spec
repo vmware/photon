@@ -3,7 +3,7 @@
 Summary:        Persistent/Functional/Immutable data structures
 Name:           python3-pyrsistent
 Version:        0.17.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT License (MIT)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -17,6 +17,9 @@ BuildRequires:  python3-six
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  python3-hypothesis
+BuildRequires:  python3-attrs
+BuildRequires:  python3-sortedcontainers
+Requires:       python3-attrs
 Requires:       python3
 Requires:       python3-libs
 
@@ -52,6 +55,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.17.3-2
+-   Fix build with new rpm
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.17.3-1
 -   Automatic Version Bump
 *   Thu Jul 30 2020 Tapas Kundu <tkundu@vmware.com> 0.16.0-1

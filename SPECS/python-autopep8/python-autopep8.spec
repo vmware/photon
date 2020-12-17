@@ -3,7 +3,7 @@
 Summary:        autopep8 automatically formats Python code
 Name:           python3-autopep8
 Version:        1.5.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/python-autopep8/
 License:        MIT
 Group:          Development/Languages/Python
@@ -19,7 +19,9 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-toml
 
+Requires:       python3-toml
 Requires:       python3
 Requires:       python3-libs
 
@@ -47,6 +49,8 @@ python3 setup.py test
 %{_bindir}/autopep8
 
 %changelog
+*   Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.5.4-2
+-   Add python3-toml to requires
 *   Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.4-1
 -   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.3-1
