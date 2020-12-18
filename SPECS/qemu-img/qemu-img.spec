@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:    QEMU disk image utility
 Name:       qemu-img
-Version:    4.2.0
+Version:    4.2.1
 Release:    1%{?dist}
 License:    GNU GPLv2
 URL:        https://www.qemu.org
@@ -9,7 +9,7 @@ Group:      Development/Tools
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://download.qemu.org/qemu-%{version}.tar.xz
-%define sha1 qemu=b27aa828a8457bd8551ae3c81b80cc365e1f6bfe
+%define sha1 qemu=03d221806203a32795042279e0a21413a0c5ffc3
 BuildRequires:  python3-devel
 BuildRequires:  glib-devel
 BuildRequires:  pixman-devel
@@ -155,5 +155,7 @@ popd
 %{_datadir}/qemu
 
 %changelog
+*   Thu Dec 17 2020 Gerrit Photon <photon-checkins@vmware.com> 4.2.1-1
+-   Automatic Version Bump
 *   Mon Mar 09 2020 Ankit Jain <ankitja@vmware.com> 4.2.0-1
 -   Initial build.  First version
