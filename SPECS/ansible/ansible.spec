@@ -2,8 +2,8 @@
 
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.8.10
-Release:        3%{?dist}
+Version:        2.8.18
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -11,15 +11,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha1 %{name}=4e1e909fb8f01c4327766f8a544362dfa3ca1c4e
+%define sha1 %{name}=87eca3d8ce07d829d190974d415b53748288879d
 
 Patch0:         ansible-tdnf.patch
-Patch1:         CVE-2020-1733.patch
-Patch2:         CVE-2020-1735.patch
-Patch3:         CVE-2020-1738.patch
-Patch4:         CVE-2020-1739.patch
-Patch5:         CVE-2020-1740.patch
-Patch6:         CVE-2020-10684.patch
 
 BuildArch:      noarch
 
@@ -42,15 +36,7 @@ Requires:       python3-devel
 Ansible is a radically simple IT automation system. It handles configuration-management, application deployment, cloud provisioning, ad-hoc task-execution, and multinode orchestration - including trivializing things like zero downtime rolling updates with load balancers.
 
 %prep
-%setup -q
-
-%patch0 -p2
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
+%autosetup -p1
 
 %build
 python3 setup.py build
@@ -68,6 +54,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 17 2020 Gerrit Photon <photon-checkins@vmware.com> 2.8.18-1
+-   Automatic Version Bump
 *   Wed Oct 07 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.10-3
 -   Removed python2 dependency
 *   Mon Apr 20 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.10-2
