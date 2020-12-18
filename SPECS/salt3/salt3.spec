@@ -8,7 +8,7 @@
 %define _salttesting_ver 2016.5.11
 
 Name: salt3
-Version: 2019.2.7
+Version: 2019.2.8
 Release: 1%{?dist}
 Summary: A parallel remote execution system with python3
 Group:   System Environment/Daemons
@@ -16,8 +16,8 @@ License: ASL 2.0
 URL:     http://saltstack.org/
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0: https://github.com/saltstack/salt/releases/download/v%{version}/salt/salt-%{version}.tar.gz
-%define sha1 salt=58c5034116a64140f92050f1583467f5997835aa
+Source0: https://files.pythonhosted.org/packages/0c/6f/c8394676b59948978f80815cdfc5e89b4eaf808f23e9dac8011d04f7d486/salt-%{version}.tar.gz
+%define sha1 salt=2bb0fc68e862c3f7e0f2be54c052db4fec11471d
 Source1: https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-2016.5.11.tar.gz
 %define sha1 SaltTesting=474dbd7029e3d48cdb468be3c63b2262e47556c8
 Source2: salt-master.service
@@ -297,6 +297,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Thu Dec 17 2020 Siju Maliakkal <smaliakkal@vmware.com> 2019.2.8-1
+- Upgrade to 2019.2.8
 * Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 2019.2.7-1
 - Update to version 2019.2.7
 * Tue May 12 2020 Keerthana K <keerthanak@vmware.com> 2019.2.4-1
