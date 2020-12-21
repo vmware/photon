@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.0.2x
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -15,6 +15,7 @@ Patch1:         openssl-ipv6apps.patch
 Patch2:         openssl-init-conslidate.patch
 Patch3:         openssl-drbg-default-read-system-fips.patch
 Patch4:         fips-2.20-vmw.patch
+Patch5:         openssl-optimized-curves.patch
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -62,6 +63,7 @@ Perl scripts that convert certificates and keys to various formats.
 %if 0%{?_with_fips:1}
 %patch4 -p1
 %endif
+%patch5 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -124,6 +126,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Mon Dec 21 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2x-2
+-   modify FIPS EC list to only use optimized curves
 *   Fri Dec 11 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2x-1
 -   Update to openssl 1.0.2x
 *   Fri Dec 04 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2w-2
