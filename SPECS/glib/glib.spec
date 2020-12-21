@@ -1,7 +1,7 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.58.3
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		http://ftp.gnome.org/pub/gnome/sources/glib/2.58/%{name}-%{version}.tar.xz
 Group:		Applications/System
@@ -11,6 +11,7 @@ Source0:	http://ftp.gnome.org/pub/gnome/sources/glib/2.58/%{name}-%{version}.tar
 %define sha1 glib=9499377d09ad52d94b4ab9f38c4040e9dce875e5
 Patch0:         glib-CVE-2019-12450.patch
 Patch1:         glib-CVE-2019-13012.patch
+Patch2:         glib-CVE-2020-35457.patch
 BuildRequires:	pcre-devel
 BuildRequires:	libffi
 BuildRequires:	pkg-config
@@ -57,6 +58,8 @@ Gsettings schemas compiling tool
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+
 %build
 ./autogen.sh
 ./configure --prefix=/usr --with-pcre=system 
@@ -95,6 +98,8 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Mon Dec 21 2020 Ankit Jain <ankitja@vmware.com> 2.58.3-2
+- Fix for CVE-2020-35457
 * Mon Jul 08 2019 Ankit Jain <ankitja@vmware.com> 2.58.3-1
 - Updated to 2.58.3 to fix CVE-2019-13012
 * Mon Jun 03 2019 Ankit Jain <ankitja@vmware.com> 2.47.6-4
