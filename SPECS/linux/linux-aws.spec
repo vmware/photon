@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.163
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -77,6 +77,9 @@ Patch61:        0005-ovl-check-permission-to-open-real-file.patch
 # Fix for CVE-2019-19770
 Patch62:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch63:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
+
+# Fix for CVE-2020-29569
+Patch64:        0001-xen-blkback-set-ring-xenblkd-to-NULL-after-kthread_stop.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -234,6 +237,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch61 -p1
 %patch62 -p1
 %patch63 -p1
+%patch64 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -469,6 +473,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Dec 21 2020 Ajay Kaher <akaher@vmware.com> 4.19.163-2
+-   Fix for CVE-2020-29569
 *   Tue Dec 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.163-1
 -   Update to version 4.19.163
 *   Wed Dec 09 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.160-2

@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.163
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -112,6 +112,9 @@ Patch65:        0005-ovl-check-permission-to-open-real-file.patch
 # Fix for CVE-2019-19770
 Patch66:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch67:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
+
+# Fix for CVE-2020-29569
+Patch68:        0001-xen-blkback-set-ring-xenblkd-to-NULL-after-kthread_stop.patch
 
 #Fix for 9p
 Patch70:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
@@ -570,6 +573,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
+%patch68 -p1
 
 %patch70 -p1
 %patch71 -p1
@@ -1178,6 +1182,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Mon Dec 21 2020 Ajay Kaher <akaher@vmware.com> 4.19.163-2
+-   Fix for CVE-2020-29569
 *   Tue Dec 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.163-1
 -   Update to version 4.19.163
 *   Fri Dec 11 2020 Ajay Kaher <akaher@vmware.com> 4.19.160-6
