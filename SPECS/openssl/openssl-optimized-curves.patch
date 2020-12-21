@@ -1,0 +1,74 @@
+commit c1220c3525859d668c6199798f05ffc97e5980de
+Author: Kevin Christopher <kevinc@vmware.com>
+Date:   Thu Dec 17 11:06:10 2020 -0800
+
+    openssl fips: default to sane list of EC curves
+    
+    OpenSSL has a nice default list of EC curves ... but has a second list of
+    curves to be used in FIPS mode, and the FIPS list is unsorted. Which results
+    in us using the "sect571r1" curve (which lacks an optimized implementation)
+    instead of the "secp256r1" curve (which has an optimized implementation),
+    and a 6-7x slowdown in client handshake.
+    
+    Most of our software never noticed because when we use OpenSSL from C, we
+    override the default curve list. But python doesn't have a way to override
+    the default curve list, so we need to patch openssl itself. And the default
+    FIPS curve list is sorted by strength/expense, which is bogus.
+    
+    Of note, upstream openssl-1.1 changed the normal list from a long list to just
+    five entries: Ed{25519,448} and secp{256,384,521}r1. So this issue will not
+    affect future versions of OpenSSL.
+    
+    The list I'm using here matches the openssl-1.1 list (including sort
+    order), with Ed curves removed (they aren't supported by our 1.0.2 FOM).
+    Anyone needing more exotic curves can still set the list to what they
+    want.
+
+diff --git a/ssl/t1_lib.c b/ssl/t1_lib.c
+index 8c1f3ae570..7edcacf7fd 100644
+--- a/ssl/t1_lib.c
++++ b/ssl/t1_lib.c
+@@ -337,43 +337,9 @@ static const unsigned char suiteb_curves[] = {
+ # ifdef OPENSSL_FIPS
+ /* Brainpool not allowed in FIPS mode */
+ static const unsigned char fips_curves_default[] = {
+-#  ifndef OPENSSL_NO_EC2M
+-    0, 14,                      /* sect571r1 (14) */
+-    0, 13,                      /* sect571k1 (13) */
+-#  endif
++    0, 23,                      /* secp256r1 (23) */
+     0, 25,                      /* secp521r1 (25) */
+-#  ifndef OPENSSL_NO_EC2M
+-    0, 11,                      /* sect409k1 (11) */
+-    0, 12,                      /* sect409r1 (12) */
+-#  endif
+     0, 24,                      /* secp384r1 (24) */
+-#  ifndef OPENSSL_NO_EC2M
+-    0, 9,                       /* sect283k1 (9) */
+-    0, 10,                      /* sect283r1 (10) */
+-#  endif
+-    0, 22,                      /* secp256k1 (22) */
+-    0, 23,                      /* secp256r1 (23) */
+-#  ifndef OPENSSL_NO_EC2M
+-    0, 8,                       /* sect239k1 (8) */
+-    0, 6,                       /* sect233k1 (6) */
+-    0, 7,                       /* sect233r1 (7) */
+-#  endif
+-    0, 20,                      /* secp224k1 (20) */
+-    0, 21,                      /* secp224r1 (21) */
+-#  ifndef OPENSSL_NO_EC2M
+-    0, 4,                       /* sect193r1 (4) */
+-    0, 5,                       /* sect193r2 (5) */
+-#  endif
+-    0, 18,                      /* secp192k1 (18) */
+-    0, 19,                      /* secp192r1 (19) */
+-#  ifndef OPENSSL_NO_EC2M
+-    0, 1,                       /* sect163k1 (1) */
+-    0, 2,                       /* sect163r1 (2) */
+-    0, 3,                       /* sect163r2 (3) */
+-#  endif
+-    0, 15,                      /* secp160k1 (15) */
+-    0, 16,                      /* secp160r1 (16) */
+-    0, 17,                      /* secp160r2 (17) */
+ };
+ # endif
