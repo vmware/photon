@@ -1,0 +1,102 @@
+From ab8fe128bac37fe0b3fb93ed45aad96d7f60d609 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Wed, 11 Nov 2020 16:22:23 -0800
+Subject: [PATCH] use excludes for all alter commands, not just update
+
+---
+ client/goal.c | 60 ++++++++++++++++++++++-----------------------------
+ 1 file changed, 26 insertions(+), 34 deletions(-)
+
+diff --git a/client/goal.c b/client/goal.c
+index be4ea42..80e266b 100644
+--- a/client/goal.c
++++ b/client/goal.c
+@@ -323,12 +323,8 @@ TDNFGoal(
+         BAIL_ON_TDNF_ERROR(dwError);
+     }
+ 
+-    if (nAlterType == ALTER_UPGRADEALL ||
+-        nAlterType == ALTER_UPGRADE)
+-    {
+-        dwError = TDNFPkgsToExclude(pTdnf, &dwExcludeCount, &ppszExcludes);
+-        BAIL_ON_TDNF_ERROR(dwError);
+-    }
++    dwError = TDNFPkgsToExclude(pTdnf, &dwExcludeCount, &ppszExcludes);
++    BAIL_ON_TDNF_ERROR(dwError);
+ 
+     queue_init(&queueJobs);
+     if (nAlterType == ALTER_UPGRADEALL)
+@@ -364,19 +360,15 @@ TDNFGoal(
+     dwError = SolvAddFlagsToJobs(&queueJobs, nFlags);
+     BAIL_ON_TDNF_ERROR(dwError);
+ 
+-    if (nAlterType == ALTER_UPGRADEALL ||
+-        nAlterType == ALTER_UPGRADE)
++    if (dwExcludeCount != 0 && ppszExcludes)
+     {
+-        if (dwExcludeCount != 0 && ppszExcludes)
++        if (!pTdnf->pSack || !pTdnf->pSack->pPool)
+         {
+-            if (!pTdnf->pSack || !pTdnf->pSack->pPool)
+-            {
+-                dwError = ERROR_TDNF_INVALID_PARAMETER;
+-                BAIL_ON_TDNF_ERROR(dwError);
+-            }
+-            dwError = SolvAddExcludes(pTdnf->pSack->pPool, ppszExcludes);
++            dwError = ERROR_TDNF_INVALID_PARAMETER;
+             BAIL_ON_TDNF_ERROR(dwError);
+         }
++        dwError = SolvAddExcludes(pTdnf->pSack->pPool, ppszExcludes);
++        BAIL_ON_TDNF_ERROR(dwError);
+     }
+ 
+     pSolv = solver_create(pTdnf->pSack->pPool);
+@@ -483,29 +475,29 @@ TDNFAddGoal(
+         BAIL_ON_TDNF_ERROR(dwError);
+     }
+ 
+-    if (nAlterType == ALTER_UPGRADE)
++    if (dwCount != 0 && ppszExcludes)
+     {
+-        if (dwCount != 0 && ppszExcludes)
++        dwError = SolvGetPkgNameFromId(
++                      pTdnf->pSack,
++                      dwId,
++                      &pszName);
++        BAIL_ON_TDNF_ERROR(dwError);
++        ppszPackagesTemp = ppszExcludes;
++
++        while(ppszPackagesTemp && *ppszPackagesTemp)
+         {
+-            dwError = SolvGetPkgNameFromId(
+-                          pTdnf->pSack,
+-                          dwId,
+-                          &pszName);
+-            BAIL_ON_TDNF_ERROR(dwError);
+-            ppszPackagesTemp = ppszExcludes;
+-            while(ppszPackagesTemp && *ppszPackagesTemp)
++            if (SolvIsGlob(*ppszPackagesTemp))
++            {
++                if (!fnmatch(*ppszPackagesTemp, pszName, 0))
++                {
++                    goto cleanup;
++                }
++            }
++            else if (!strcmp(pszName, *ppszPackagesTemp))
+             {
+-               if (SolvIsGlob(*ppszPackagesTemp))
+-               {
+-                   if (!fnmatch(*ppszPackagesTemp, pszName, 0))
+-                      goto cleanup;
+-               }
+-               else if (!strcmp(pszName, *ppszPackagesTemp))
+-               {
+-                   goto cleanup;
+-               }
+-               ++ppszPackagesTemp;
++                goto cleanup;
+             }
++            ++ppszPackagesTemp;
+         }
+     }
+ 

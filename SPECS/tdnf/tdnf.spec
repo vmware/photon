@@ -5,7 +5,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        2.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -40,6 +40,8 @@ Source2:        cache-updateinfo.service
 Source3:        cache-updateinfo.timer
 Source4:        updateinfo.sh
 Source5:        tdnfrepogpgcheck.conf
+
+Patch0:     use-excludes-for-all-alter-commands.patch
 
 %description
 tdnf is a yum/dnf equivalent which uses libsolv and libcurl
@@ -79,7 +81,7 @@ Requires:       python3
 python bindings for tdnf
 
 %prep
-%setup -qn %{name}-%{version}
+%autosetup -n %{name}-%{version} -p1
 
 %build
 mkdir build && cd build
@@ -217,6 +219,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{python3_sitelib}/*
 
 %changelog
+*   Tue Dec 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.1.2-3
+-   Add generic exclude patch
 *   Mon Nov 30 2020 Tapas Kundu <tkundu@vmware.com> 2.1.2-2
 -   Bump up tdnf to rebuild with libsolv patches.
 *   Fri Oct 16 2020 Keerthana K <keerthanak@vmware.com> 2.1.2-1
