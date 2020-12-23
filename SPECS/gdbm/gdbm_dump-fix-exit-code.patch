@@ -1,0 +1,48 @@
+From 87eb208385efbe5ef3341d9bdd9c06b8e7659e2d Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Wed, 23 Dec 2020 18:24:58 +0530
+Subject: [PATCH] gdbm_dump: fix exit code
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ src/gdbm_dump.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/src/gdbm_dump.c b/src/gdbm_dump.c
+index 81dbc2c..e6a4fed 100644
+--- a/src/gdbm_dump.c
++++ b/src/gdbm_dump.c
+@@ -69,7 +69,7 @@ main (int argc, char **argv)
+ 	      }
+ 	  }
+ 	break;
+-	
++
+       default:
+ 	error (_("unknown option"));
+ 	exit (EXIT_USAGE);
+@@ -90,7 +90,7 @@ main (int argc, char **argv)
+       error (_("too many arguments; try `%s -h' for more info"), progname);
+       exit (EXIT_USAGE);
+     }
+-  
++
+   dbname = argv[0];
+   if (argc == 2)
+     filename = argv[1];
+@@ -124,9 +124,9 @@ main (int argc, char **argv)
+     {
+       gdbm_perror (_("dump error"), filename);
+     }
+-  
++
+   gdbm_close (dbf);
+ 
+-  exit (rc ? EXIT_OK : EXIT_FATAL);
++  exit (rc == GDBM_NO_ERROR ? EXIT_OK : EXIT_FATAL);
+ }
+-  
++
+-- 
+2.17.1
+

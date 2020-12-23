@@ -1,7 +1,7 @@
 Summary:        The GNU Database Manager
 Name:           gdbm
 Version:        1.13
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/gdbm
 Group:          Applications/Databases
@@ -9,6 +9,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/gdbm/%{name}-%{version}.tar.gz
 %define sha1    gdbm=7f2a8301497bbcac91808b011ca533380914fd21
+
+Patch0:         gdbm_dump-fix-exit-code.patch
 
 %description
 This is a disk file format database which stores key/data-pairs in
@@ -31,6 +33,7 @@ It contains the libraries and header files to create applications.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 ./configure \
@@ -69,6 +72,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Dec 23 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.13-4
+-   Fix exit code of gdbm_dump
 *   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.13-3
 -   Add devel package.
 *   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 1.13-2
