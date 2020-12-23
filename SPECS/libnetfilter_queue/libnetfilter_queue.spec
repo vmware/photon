@@ -1,6 +1,6 @@
 Summary:    Provides API to packets queued by kernel packet filter
 Name:       libnetfilter_queue
-Version:    1.0.3
+Version:    1.0.5
 Release:    1%{?dist}
 License:    GPLv2
 URL:        http://www.netfilter.org/projects/libnetfilter_queue/index.html
@@ -8,7 +8,7 @@ Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
-%define sha1 libnetfilter_queue=3d182e3211b633d0a0f8a2b12ef80dc2621f53cb
+%define sha1 libnetfilter_queue=799e991428e14d65a5dc44d914e9af10a80a3526
 
 BuildRequires:  libmnl-devel
 BuildRequires:  libnfnetlink-devel
@@ -30,10 +30,10 @@ The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-%configure --disable-static 
+%configure --disable-static
 make %{?_smp_mflags}
 
 %install
@@ -43,7 +43,7 @@ make %{?_smp_mflags}
 %postun -p /sbin/ldconfig
 
 %files
-%doc COPYING 
+%doc COPYING
 %{_libdir}/*.so.*
 
 %files devel
@@ -53,10 +53,9 @@ make %{?_smp_mflags}
 %{_libdir}/*.la
 
 %changelog
+*   Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.5-1
+-   Automatic Version Bump
 *   Mon Sep 17 2018 Bo Gan <ganb@vmware.com> 1.0.3-1
 -   Update to 1.0.3
 *   Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 1.0.2-1
 -   Initial packaging
-
-
-

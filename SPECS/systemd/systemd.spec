@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          30%{?dist}
+Release:          31%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -313,6 +313,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Tue Dec 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 239-31
+-    Bump version as a part of autospec library upgrade
 *    Sat Nov 14 2020 Susant Sahani <ssahani@vmware.com> 239-30
 -    switch to autosetup
 *    Wed Sep 09 2020 Susant Sahani <ssahani@vmware.com> 239-29

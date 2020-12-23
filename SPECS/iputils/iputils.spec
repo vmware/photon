@@ -1,7 +1,7 @@
 Summary:          Programs for basic networking
 Name:             iputils
 Version:          20180629
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          BSD-3 and GPLv2+
 URL:              https://github.com/iputils/iputils
 Group:            Applications/Communications
@@ -66,6 +66,8 @@ mv -f RELNOTES.tmp RELNOTES.old
 %caps(cap_net_raw=p cap_net_admin=p) %{_bindir}/ping6
 
 %changelog
+*   Tue Dec 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 20180629-3
+-   Bump version as a part of autospec library upgrade
 *   Thu Oct 10 2019 Tapas Kundu <tkundu@vmware.com> 20180629-2
 -   Provided ping6 as symlink of ping
 *   Thu Sep 06 2018 Ankit Jain <ankitja@vmware.com> 20180629-1

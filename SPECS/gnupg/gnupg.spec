@@ -1,7 +1,7 @@
 Summary:	OpenPGP standard implementation used for encrypted communication and data storage.
 Name:		gnupg
 Version:	2.2.18
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		https://gnupg.org/index.html
 Group:		Applications/Cryptography.
@@ -58,6 +58,8 @@ make %{?_smp_mflags} check
 %exclude /usr/share/doc/*
 
 %changelog
+*   Tue Dec 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.2.18-2
+-   Bump version as a part of libgcrypt upgrade
 *   Thu Apr 02 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 2.2.18-1
 -   Upgrade to 2.2.18 to fix CVE-2019-14855
 *   Tue Jul 16 2019 Ashwin H <ashwinh@vmware.com> 2.2.17-1

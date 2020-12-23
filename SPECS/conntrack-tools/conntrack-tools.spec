@@ -1,7 +1,7 @@
 Summary:        The conntrack-tools are a set of userspace tools for Linux
 Name:           conntrack-tools
 Version:        1.4.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://conntrack-tools.netfilter.org
 Group:          System Environment/Base
@@ -113,6 +113,8 @@ exit
 %{_sharedstatedir}/conntrackd
 
 %changelog
+*   Tue Dec 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.4.5-3
+-   Bump version as a part of autospec library upgrade
 *   Wed Sep 11 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.5-2
 -   Add provides for conntrack
 *   Fri Mar 01 2019 Ankit Jain <ankitja@vmware.com> 1.4.5-1

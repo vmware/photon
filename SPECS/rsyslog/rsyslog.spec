@@ -1,7 +1,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.2001.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
@@ -87,7 +87,10 @@ make %{?_smp_mflags} check
 %dir %{_sysconfdir}/rsyslog.d
 %{_sysconfdir}/systemd/journald.conf.d/*
 %config(noreplace) %{_sysconfdir}/rsyslog.conf
+
 %changelog
+*   Tue Dec 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 8.2001.0-3
+-   Bump version as a part of autospec library upgrade
 *   Tue Jul 28 2020 Tapas Kundu <tkundu@vmware.com> 8.2001.0-2
 -   Fix for segfault on imfile read
 *   Mon Jan 27 2020 Tapas Kundu <tkundu@vmware.com> 8.2001.0-1

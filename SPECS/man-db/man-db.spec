@@ -1,7 +1,7 @@
 Summary:        Programs for finding and viewing man pages
 Name:           man-db
 Version:        2.8.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.nongnu.org/man-db
 Group:          Applications/System
@@ -76,6 +76,8 @@ fi
 %{_libdir}/tmpfiles.d/man-db.conf
 
 %changelog
+*   Tue Dec 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.4-2
+-   Bump version as a part of autospec library upgrade
 *   Mon Oct 22 2018 Sujay G <gsujay@vmware.com> 2.8.4-1
 -   Bump man-db version to 2.8.4
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.7.6-4

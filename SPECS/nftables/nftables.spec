@@ -3,7 +3,7 @@
 Summary:        Netfilter Tables userspace utillites
 Name:           nftables
 Version:        0.9.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -116,5 +116,7 @@ chmod 700 $RPM_BUILD_ROOT/%{_sysconfdir}/nftables
 %{python3_sitelib}/nftables/
 
 %changelog
+* Tue Dec 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.9.6-2
+- Bump version as a part of libnftnl upgrade
 * Tue Oct 20 2020 Susant Sahani <ssahani@vmware.com> 0.9.6-1
 - Initial RPM release

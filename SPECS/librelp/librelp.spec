@@ -1,11 +1,11 @@
 Summary:	RELP Library
 Name:		librelp
-Version:	1.2.17
-Release:	3%{?dist}
+Version:	1.2.18
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.librelp.com
 Source0:	http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
-%define sha1 librelp=701d69e7723fe614b96750af8cba5ee9a54085fe
+%define sha1 librelp=531e3e770cf3df0e3e05a482a003953376a33cd2
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -26,7 +26,7 @@ The package contains libraries and header files for
 developing applications that use librelp.
 
 %prep
-%setup -q
+%autosetup -p1
 autoreconf -fiv
 
 %build
@@ -58,13 +58,15 @@ sed -i '/tls-basic-brokencert.sh \\/d' tests/Makefile.am
 
 make check
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 %{_libdir}/*.la
 %{_libdir}/*.a
+
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*.h
@@ -72,6 +74,8 @@ make check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.18-1
+- Automatic Version Bump
 * Mon Aug 19 2019 Shreenidhi Shedi <sshedi@vmware.com> 1.2.17-3
 - Further fix for make check
 * Tue Nov 20 2018 Ashwin H <ashwinh@vmware.com> 1.2.17-2

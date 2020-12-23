@@ -1,16 +1,16 @@
 Summary:	Crypto Libraries
 Name:		libgcrypt
-Version:	1.8.5
+Version:	1.8.7
 Release:	1%{?dist}
-License:        GPLv2+ and LGPLv2+
-URL:            http://www.gnu.org/software/libgcrypt/
-Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
-%define sha1 libgcrypt=2d8781e92f88706707a1e76fb628b499ad538a30
+License:    GPLv2+ and LGPLv2+
+URL:        http://www.gnu.org/software/libgcrypt/
+Source0:    ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
+%define sha1 libgcrypt=ea79a279b27bf25cb1564f96693128f8fc9f41d6
 Patch0:     libgcrypt-00-ac_cv_sys_symbol_underscore.patch
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 BuildRequires:	libgpg-error-devel
-Requires:	libgpg-error
+Requires:	    libgpg-error
 Distribution:	Photon
 %description
 The libgcrypt package contains a general purpose crypto library based on the code used in GnuPG. The library provides a high level interface to cryptographic building blocks using an extendable and flexible API.
@@ -25,15 +25,12 @@ The package contains libraries and header files for
 developing applications that use libgcrypt.
 
 %prep
-%setup -q
-
-%patch0 -p1
+%autosetup -p1
 
 %build
 if [ %{_host} != %{_build} ] ; then
-%configure \
-    --with-sysroot=/target-%{_arch} \
-    ac_cv_sys_symbol_underscore=no
+%configure --with-sysroot=/target-%{_arch} \
+            ac_cv_sys_symbol_underscore=no
 else
 %configure
 fi
@@ -64,6 +61,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/libgcrypt.pc
 
 %changelog
+*   Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.7-1
+-   Automatic Version Bump
 *   Thu Oct 17 2019 Ankit Jain <ankitja@vmware.com> 1.8.5-1
 -   Updated to version 1.8.5
 *   Tue Nov 06 2018 Sriram Nambakam <snambakam@vmware.com> 1.8.3-2
