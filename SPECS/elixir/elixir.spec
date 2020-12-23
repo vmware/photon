@@ -2,7 +2,7 @@
 Name:            elixir
 Summary:         A modern approach to programming for the Erlang VM
 Version:         1.10.4
-Release:         2%{?dist}
+Release:         3%{?dist}
 License:         ASL 2.0
 URL:             http://elixir-lang.org/
 Source0:         https://github.com/elixir-lang/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
@@ -30,6 +30,7 @@ export LANG="en_US.UTF-8"
 make compile
 
 %check
+export LANG="en_US.UTF-8"
 make test
 
 %install
@@ -48,6 +49,8 @@ ln -s %{_datadir}/%{name}/%{version}/bin/{elixir,elixirc,iex,mix} %{buildroot}/%
 %{_datadir}/%{name}
 
 %changelog
+*   Mon Dec 21 2020 Sujay G <gsujay@vmware.com> 1.10.4-3
+-   Fix %check
 *   Fri Aug 14 2020 Sujay G <gsujay@vmware.com> 1.10.4-2
 -   Added openldap in buildrequires to fix package build issues
 *   Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.10.4-1
