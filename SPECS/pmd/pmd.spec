@@ -9,8 +9,8 @@
 
 Summary:        Photon Management Daemon
 Name:           pmd
-Version:        0.0.6
-Release:        7%{?dist}
+Version:        0.0.7
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -19,7 +19,7 @@ Group:          Applications/System
 Requires:       copenapi
 Requires:       c-rest-engine >= 1.1
 Requires:       jansson
-Requires:       netmgmt
+Requires:       network-config-manager
 Requires:       systemd
 Requires:       tdnf >= 2.1.1
 Requires:       %{name}-libs = %{version}-%{release}
@@ -33,8 +33,7 @@ BuildRequires:  expat-devel
 BuildRequires:  libsolv-devel
 BuildRequires:  jansson-devel
 BuildRequires:  krb5-devel
-BuildRequires:  netmgmt-cli-devel
-BuildRequires:  netmgmt-devel
+BuildRequires:  network-config-manager-devel
 BuildRequires:  tdnf-devel >= 2.1.1
 BuildRequires:  python3-devel >= 3.5
 BuildRequires:  dcerpc-devel
@@ -43,26 +42,15 @@ BuildRequires:  openssl-devel
 BuildRequires:  e2fsprogs-devel
 
 # PMD Source Code tarball
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    pmd=a8a3a920647a80e08094d23437330fb498770700
+Source0:        %{name}-%{version}-beta.tar.gz
+%define sha1    pmd=762125b9a9462694905aa8b1203686c6f8116f0c
 
 # gssapi_unix Source Code tarball
 Source1:        gssapi-unix-%{gssapi_unix_ver}.tar.gz
 %define sha1    gssapi-unix-%{gssapi_unix_ver}=1b4e9f5f47e4591ec19ac4f84bd43d106835aa48
 
-# Apply PMD Patches
-Patch0:         pmd-fw-bugfix.patch
-Patch1:         fix_DNS_Mode.patch
-Patch2:         tdnf_options_to_pmd_cli.patch
-Patch3:         missing_commands_of_pmd-cli.patch
-Patch4:         python_APIs_for_new_Cmd.patch
-Patch5:         fix_pszUrlGPGKey.patch
-Patch6:         pseudo_code_for_wide_char.patch
-Patch7:         remove_lightwave.patch
-Patch8:         remove_likewise.patch
-
 # Apply gssapi_unix Patches
-Patch9:        gssapi-unix-openssl-1.1.1.patch
+Patch0:        gssapi-unix-openssl-1.1.1.patch
 
 %description
 Photon Management Daemon
@@ -112,24 +100,14 @@ Requires:       e2fsprogs
 gssapi-unix for unix authentication
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
+%setup -qn %{name}-%{version}-beta
 
 # extract gssapi_unix code
 cd ../
 tar -xf %{SOURCE1} --no-same-owner
-%patch9 -p1
+%patch0 -p1
 
 %build
-sed -i 's/pmd, 0.0.1/pmd, 0.0.7/' configure.ac
 sed -i 's,-lcrypto,-lcrypto -lgssapi_krb5 @top_builddir@/client/libpmdclient.la,' server/Makefile.am
 autoreconf -mif
 %configure \
@@ -153,7 +131,7 @@ aclocal && libtoolize && automake --add-missing && autoreconf &&
 make %{?_smp_mflags}
 
 %install
-cd $RPM_BUILD_DIR/%{name}-%{version}
+cd $RPM_BUILD_DIR/%{name}-%{version}-beta
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm -f %{buildroot}%{_libdir}/*.la
 
@@ -322,6 +300,14 @@ if [ "$1" = 0 ]; then
     fi
 fi
 
+%check
+pushd tests/net
+# pmd-cli net tests
+python3 pmd_net_cli.py
+# pmd.server.net python3 tests
+python3 pmd_net_python3.py
+popd
+
 %clean
 rm -rf %{buildroot}/*
 
@@ -373,6 +359,13 @@ rm -rf %{buildroot}/*
     %exclude %{_libdir}/gssapi_unix/*.la
 
 %changelog
+*   Thu Dec 24 2020 Tapas Kundu <tkundu@vmware.com> 0.0.7-1
+-   Update to 0.0.7-beta
+-   Added support for network-config-manager
+-   Support for "pmd-cli net" and python3 "server.net"
+-   Added test directory which includes tests for both
+-   pmd-cli and python3 for net to test changes locally
+-   Removed support for netmgmt
 *   Thu Nov 19 2020 Shreyas B <shreyasb@vmware.com> 0.0.6-7
 -   Remove LightWave & LikeWise dependency.
 -   Add dcerpc & openldap dependency.
