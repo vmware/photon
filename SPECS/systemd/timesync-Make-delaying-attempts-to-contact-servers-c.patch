@@ -1,0 +1,162 @@
+From 2c96cc7073cd7783ed1722feb7816d1b7cf950c5 Mon Sep 17 00:00:00 2001
+From: Susant Sahani <ssahani@vmware.com>
+Date: Thu, 10 Dec 2020 19:54:19 +0100
+Subject: [PATCH] timesync: Make delaying attempts to contact servers
+ configurable
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+```
+❯ ssh sus@xx.xx.xx.xx
+Last login: Sat Nov 14 17:32:08 2020 from 10.104.45.138
+ 17:36:19 up 0 min,  0 users,  load average: 0.00, 0.00, 0.00
+> systemd-analyze blame
+Bootup is not yet finished (org.freedesktop.systemd1.Manager.FinishTimestampMonotonic=0).
+Please try again later.
+Hint: Use 'systemctl list-jobs' to see active jobs
+> systemd-analyze blame
+43.954s systemd-time-wait-sync.service
+ 1.969s systemd-networkd-wait-online.service
+ 1.559s cloud-init-local.service
+ 1.039s cloud-init.service
+  414ms cloud-final.service
+  387ms dracut-initqueue.service
+  382ms initrd-switch-root.service
+  380ms cloud-config.service
+  198ms systemd-journal-flush.service
+  136ms systemd-udev-trigger.service
+  115ms initrd-parse-etc.service
+   97ms systemd-timesyncd.service
+   84ms systemd-journald.service
+
+```
+
+After made it configurable and set to 5s
+
+```
+❯ ssh sus@xx.xx.xx.xx
+Last login: Sat Nov 14 18:41:42 2020 from 10.104.45.138
+ 18:42:36 up 0 min,  0 users,  load average: 0.16, 0.03, 0.01
+> systemd-analyze blame
+10.450s systemd-time-wait-sync.service
+ 8.303s systemd-networkd-wait-online.service
+ 1.621s cloud-init-local.service
+ 1.068s cloud-init.service
+```
+---
+ man/timesyncd.conf.xml             |  6 ++++++
+ src/timesync/timesyncd-conf.c      |  5 +++++
+ src/timesync/timesyncd-gperf.gperf | 13 +++++++------
+ src/timesync/timesyncd-manager.c   |  6 ++++--
+ src/timesync/timesyncd-manager.h   |  3 +++
+ 5 files changed, 25 insertions(+), 8 deletions(-)
+
+diff --git a/man/timesyncd.conf.xml b/man/timesyncd.conf.xml
+index 1cbea9eaa5..da2b320a43 100644
+--- a/man/timesyncd.conf.xml
++++ b/man/timesyncd.conf.xml
+@@ -91,6 +91,12 @@
+         <varname>PollIntervalMaxSec=</varname> defaults to 2048 seconds.</para></listitem>
+       </varlistentry>
+ 
++      <varlistentry>
++        <term><varname>ConnectionRetrySec=</varname></term>
++        <listitem><para>Specifies the delaying attempts to contact servers after network is online. Takes a time value (in seconds).
++        Defaults to 30 seconds and must not be smaller than 1 seconds.</para></listitem>
++      </varlistentry>
++
+     </variablelist>
+   </refsect1>
+ 
+diff --git a/src/timesync/timesyncd-conf.c b/src/timesync/timesyncd-conf.c
+index 2c3114613b..8f34441e15 100644
+--- a/src/timesync/timesyncd-conf.c
++++ b/src/timesync/timesyncd-conf.c
+@@ -124,5 +124,10 @@ int manager_parse_config_file(Manager *m) {
+                 m->poll_interval_max_usec = MAX(NTP_POLL_INTERVAL_MAX_USEC, m->poll_interval_min_usec * 32);
+         }
+ 
++        if (m->connection_retry_usec < 1 * USEC_PER_SEC) {
++                log_warning("Invalid ConnectionRetrySec=. Using default value.");
++                m->connection_retry_usec = DEFAULT_CONNECTION_RETRY_USEC;
++        }
++
+         return r;
+ }
+diff --git a/src/timesync/timesyncd-gperf.gperf b/src/timesync/timesyncd-gperf.gperf
+index b5020276af..76e4f63277 100644
+--- a/src/timesync/timesyncd-gperf.gperf
++++ b/src/timesync/timesyncd-gperf.gperf
+@@ -17,9 +17,10 @@ struct ConfigPerfItem;
+ %struct-type
+ %includes
+ %%
+-Time.NTP,                 config_parse_servers, SERVER_SYSTEM,   0
+-Time.Servers,             config_parse_servers, SERVER_SYSTEM,   0
+-Time.FallbackNTP,         config_parse_servers, SERVER_FALLBACK, 0
+-Time.RootDistanceMaxSec,  config_parse_sec,     0,               offsetof(Manager, max_root_distance_usec)
+-Time.PollIntervalMinSec,  config_parse_sec,     0,               offsetof(Manager, poll_interval_min_usec)
+-Time.PollIntervalMaxSec,  config_parse_sec,     0,               offsetof(Manager, poll_interval_max_usec)
++Time.NTP,                            config_parse_servers, SERVER_SYSTEM,   0
++Time.Servers,                        config_parse_servers, SERVER_SYSTEM,   0
++Time.FallbackNTP,                    config_parse_servers, SERVER_FALLBACK, 0
++Time.RootDistanceMaxSec,             config_parse_sec,     0,               offsetof(Manager, max_root_distance_usec)
++Time.PollIntervalMinSec,             config_parse_sec,     0,               offsetof(Manager, poll_interval_min_usec)
++Time.PollIntervalMaxSec,             config_parse_sec,     0,               offsetof(Manager, poll_interval_max_usec)
++Time.ConnectionRetrySec,             config_parse_sec,     0,               offsetof(Manager, connection_retry_usec)
+diff --git a/src/timesync/timesyncd-manager.c b/src/timesync/timesyncd-manager.c
+index 93ba4ef87d..07fee57391 100644
+--- a/src/timesync/timesyncd-manager.c
++++ b/src/timesync/timesyncd-manager.c
+@@ -50,7 +50,6 @@
+ /* Maximum number of missed replies before selecting another source. */
+ #define NTP_MAX_MISSED_REPLIES          2
+ 
+-#define RETRY_USEC (30*USEC_PER_SEC)
+ #define RATELIMIT_INTERVAL_USEC (10*USEC_PER_SEC)
+ #define RATELIMIT_BURST 10
+ 
+@@ -787,7 +786,8 @@ int manager_connect(Manager *m) {
+         if (!ratelimit_below(&m->ratelimit)) {
+                 log_debug("Delaying attempts to contact servers.");
+ 
+-                r = sd_event_add_time_relative(m->event, &m->event_retry, clock_boottime_or_monotonic(), RETRY_USEC, 0, manager_retry_connect, m);
++                r = sd_event_add_time_relative(m->event, &m->event_retry, clock_boottime_or_monotonic(), m->connection_retry_usec,
++                                               0, manager_retry_connect, m);
+                 if (r < 0)
+                         return log_error_errno(r, "Failed to create retry timer: %m");
+ 
+@@ -1085,6 +1085,8 @@ int manager_new(Manager **ret) {
+         m->poll_interval_min_usec = NTP_POLL_INTERVAL_MIN_USEC;
+         m->poll_interval_max_usec = NTP_POLL_INTERVAL_MAX_USEC;
+ 
++        m->connection_retry_usec = DEFAULT_CONNECTION_RETRY_USEC;
++
+         m->server_socket = m->clock_watch_fd = -1;
+ 
+         m->ratelimit = (RateLimit) { RATELIMIT_INTERVAL_USEC, RATELIMIT_BURST };
+diff --git a/src/timesync/timesyncd-manager.h b/src/timesync/timesyncd-manager.h
+index 940a88ed7b..37cf406190 100644
+--- a/src/timesync/timesyncd-manager.h
++++ b/src/timesync/timesyncd-manager.h
+@@ -27,6 +27,8 @@ typedef struct Manager Manager;
+ #define NTP_RETRY_INTERVAL_MIN_USEC     (15 * USEC_PER_SEC)
+ #define NTP_RETRY_INTERVAL_MAX_USEC     (6 * 60 * USEC_PER_SEC) /* 6 minutes */
+ 
++#define DEFAULT_CONNECTION_RETRY_USEC (30*USEC_PER_SEC)
++
+ struct Manager {
+         sd_bus *bus;
+         sd_event *event;
+@@ -60,6 +62,7 @@ struct Manager {
+         struct timespec trans_time_mon;
+         struct timespec trans_time;
+         usec_t retry_interval;
++        usec_t connection_retry_usec;
+         bool pending;
+ 
+         /* poll timer */
+-- 
+2.30.0
+

@@ -1,7 +1,7 @@
 Name:             systemd
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Version:          247.2
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 Summary:          System and Service Manager
 
@@ -20,6 +20,7 @@ Source6:          10-defaults.preset
 
 Patch0:           systemd-247-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:           systemd-247-default-dns-from-env.patch
+Patch2:           timesync-Make-delaying-attempts-to-contact-servers-c.patch
 
 Requires:         Linux-PAM
 Requires:         bzip2
@@ -651,6 +652,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+*    Mon Jan 04 2021 Susant Sahani <ssahani@vmware.com>  247.2-2
+-    Backport timesync: ConnectionRetrySec=
 *    Thu Dec 17 2020 Susant Sahani <ssahani@vmware.com>  247.2-1
 -    Upgrade to 247.2
 -    Enable openssl and drop systemd-oomd
