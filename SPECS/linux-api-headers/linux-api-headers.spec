@@ -1,6 +1,6 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
-Version:	4.9.248
+Version:	4.9.249
 Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
@@ -8,7 +8,7 @@ Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=18af4d91e5fe2cb0714c378f67946f80d47b40d3
+%define sha1 linux=46e3cdb2c4bee14f19106cd34b52e045c094c791
 BuildArch:	noarch
 Patch0:         Implement-the-f-xattrat-family-of-functions.patch
 %description
@@ -27,6 +27,8 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+*   Mon Jan 04 2021 Ankit Jain <ankitja@vmware.com> 4.9.249-1
+-   Update to version 4.9.249
 *   Mon Dec 14 2020 Vikash Bansal <bvikas@vmware.com> 4.9.248-1
 -   Update to version 4.9.248
 *   Tue Nov 24 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.246-1
