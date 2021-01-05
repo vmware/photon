@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.164
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -236,6 +236,7 @@ Patch290:        0006-x86-vmware-Fix-steal-time-clock-under-SEV.patch
 
 Patch291:        0001-x86-insn-eval-Add-support-for-64-bit-kernel-mode.patch
 Patch292:        0001-drm-vmwgfx-Update-the-backdoor-call-with-support-for.patch
+Patch293:        0001-x86-vmware-avoid-TSC-recalibration.patch
 
 # vmw: gfx
 Patch301:        0001-drm-vmwgfx-Don-t-use-the-HB-port-if-memory-encryptio.patch
@@ -679,6 +680,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch290 -p1
 %patch291 -p1
 %patch292 -p1
+%patch293 -p1
 
 %patch301 -p1
 %patch302 -p1
@@ -1178,6 +1180,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Thu Jan 07 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.164-2
+-   Avoid TSC recalibration
 *   Mon Jan 04 2021 Ankit Jain <ankitja@vmware.com> 4.19.164-1
 -   Update to version 4.19.164
 *   Mon Dec 21 2020 Ajay Kaher <akaher@vmware.com> 4.19.163-2
