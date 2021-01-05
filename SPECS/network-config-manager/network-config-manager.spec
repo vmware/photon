@@ -1,15 +1,17 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
-Version:        0.2
-Release:        2%{?dist}
+Version:        0.3
+Release:        1%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/vmware/network-config-manager
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/vmware/network-config-manager/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=c739bc918a25c0c8fff30ace79b65120d5b74760
+%define sha1    %{name}-%{version}=594b93b60f7f2053f241f89e34210940dbf310c4
 
+BuildRequires:  glib-devel
+BuildRequires:  json-c-devel
 BuildRequires:  meson
 BuildRequires:  systemd-devel
 BuildRequires:  libyaml-devel
@@ -17,6 +19,7 @@ BuildRequires:  libmnl-devel
 BuildRequires:  libnftnl-devel
 BuildRequires:  nftables-devel
 
+Requires:       json-c
 Requires:       libyaml
 Requires:       systemd
 Requires:       glib
@@ -34,6 +37,7 @@ Summary:        Headers for building against network-config-manager
 Group:          Development/Libraries/C and C++
 Requires:       %{name} = %{version}-%{release}
 Requires:       libmnl-devel
+Requires:       json-c-devel
 Requires:       libnftnl-devel
 Requires:       nftables-devel
 Requires:       systemd-devel
@@ -73,6 +77,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+*   Tue Jan 05 2021 Susant Sahani <ssahani@vmware.com> 0.3-1
+-   Update to v0.3
 *   Mon Dec 07 2020 Ankit Jain <ankitja@vmware.com> 0.2-2
 -   Added requires for devel package to fix install failure
 *   Sun Nov 15 2020 Susant Sahani <ankitja@vmware.com> 0.2-1
