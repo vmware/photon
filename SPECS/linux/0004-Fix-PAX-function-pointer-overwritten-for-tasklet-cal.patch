@@ -1,0 +1,35 @@
+From bbcfac6abd6a009e7e59703072a5f6619d62575d Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Wed, 6 Jan 2021 07:35:04 +0000
+Subject: [PATCH] Fix PAX function pointer overwritten for tasklet callback
+
+Tasklet_struct has union of function pointers which is called based on
+use_callback bool value. GCC RAP plugin has a bug which does not generate
+RAP hash for the function pointers declared inside union. Fix here is to remove
+the union of function pointers and declare it separately.
+
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ include/linux/interrupt.h | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
+index ee8299eb1..d1498e678 100644
+--- a/include/linux/interrupt.h
++++ b/include/linux/interrupt.h
+@@ -612,10 +612,8 @@ struct tasklet_struct
+ 	unsigned long state;
+ 	atomic_t count;
+ 	bool use_callback;
+-	union {
+-		void (*func)(unsigned long data);
+-		void (*callback)(struct tasklet_struct *t);
+-	};
++	void (*func)(unsigned long data);
++	void (*callback)(struct tasklet_struct *t);
+ 	unsigned long data;
+ };
+ 
+-- 
+2.28.0
+

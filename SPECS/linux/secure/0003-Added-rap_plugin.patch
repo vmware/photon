@@ -3507,7 +3507,7 @@ index 259d5ad0e..98dc38ae3 100644
  	return nfsd4_decode_xattr_name(argp, &removexattr->rmxa_name);
  }
  
-@@ -2096,92 +2149,92 @@ nfsd4_decode_notsupp(struct nfsd4_compoundargs *argp, void *p)
+@@ -2096,92 +2149,90 @@ nfsd4_decode_notsupp(struct nfsd4_compoundargs *argp, void *p)
  typedef __be32(*nfsd4_dec)(struct nfsd4_compoundargs *argp, void *);
  
  static const nfsd4_dec nfsd4_dec_ops[] = {
@@ -3548,6 +3548,7 @@ index 259d5ad0e..98dc38ae3 100644
 -	[OP_VERIFY]		= (nfsd4_dec)nfsd4_decode_verify,
 -	[OP_WRITE]		= (nfsd4_dec)nfsd4_decode_write,
 -	[OP_RELEASE_LOCKOWNER]	= (nfsd4_dec)nfsd4_decode_release_lockowner,
+-
 +	[OP_ACCESS]		= nfsd4_decode_access,
 +	[OP_CLOSE]		= nfsd4_decode_close,
 +	[OP_COMMIT]		= nfsd4_decode_commit,
@@ -3584,8 +3585,6 @@ index 259d5ad0e..98dc38ae3 100644
 +	[OP_SETCLIENTID_CONFIRM] = nfsd4_decode_setclientid_confirm,
 +	[OP_VERIFY]		= nfsd4_decode_verify,
 +	[OP_WRITE]		= nfsd4_decode_write,
-+	[OP_RELEASE_LOCKOWNER]	= nfsd4_decode_release_lockowner,
- 
  	/* new operations for NFSv4.1 */
 -	[OP_BACKCHANNEL_CTL]	= (nfsd4_dec)nfsd4_decode_backchannel_ctl,
 -	[OP_BIND_CONN_TO_SESSION]= (nfsd4_dec)nfsd4_decode_bind_conn_to_session,
@@ -3649,7 +3648,7 @@ index 259d5ad0e..98dc38ae3 100644
 -	[OP_LAYOUTSTATS]	= (nfsd4_dec)nfsd4_decode_notsupp,
 -	[OP_OFFLOAD_CANCEL]	= (nfsd4_dec)nfsd4_decode_offload_status,
 -	[OP_OFFLOAD_STATUS]	= (nfsd4_dec)nfsd4_decode_offload_status,
--	[OP_READ_PLUS]		= (nfsd4_dec)nfsd4_decode_notsupp,
+-	[OP_READ_PLUS]		= (nfsd4_dec)nfsd4_decode_read,
 -	[OP_SEEK]		= (nfsd4_dec)nfsd4_decode_seek,
 -	[OP_WRITE_SAME]		= (nfsd4_dec)nfsd4_decode_notsupp,
 -	[OP_CLONE]		= (nfsd4_dec)nfsd4_decode_clone,
@@ -4138,7 +4137,7 @@ index 259d5ad0e..98dc38ae3 100644
  	struct xdr_stream *xdr = &resp->xdr;
  	__be32 *p;
  
-@@ -4919,93 +5011,93 @@ typedef __be32(* nfsd4_enc)(struct nfsd4_compoundres *, __be32, void *);
+@@ -5040,93 +5130,93 @@ typedef __be32(* nfsd4_enc)(struct nfsd4_compoundres *, __be32, void *);
   * done in the decoding phase.
   */
  static const nfsd4_enc nfsd4_enc_ops[] = {
@@ -4280,7 +4279,7 @@ index 259d5ad0e..98dc38ae3 100644
 -	[OP_LAYOUTSTATS]	= (nfsd4_enc)nfsd4_encode_noop,
 -	[OP_OFFLOAD_CANCEL]	= (nfsd4_enc)nfsd4_encode_noop,
 -	[OP_OFFLOAD_STATUS]	= (nfsd4_enc)nfsd4_encode_offload_status,
--	[OP_READ_PLUS]		= (nfsd4_enc)nfsd4_encode_noop,
+-	[OP_READ_PLUS]		= (nfsd4_enc)nfsd4_encode_read_plus,
 -	[OP_SEEK]		= (nfsd4_enc)nfsd4_encode_seek,
 -	[OP_WRITE_SAME]		= (nfsd4_enc)nfsd4_encode_noop,
 -	[OP_CLONE]		= (nfsd4_enc)nfsd4_encode_noop,
@@ -6227,11 +6226,11 @@ index eb4fff299..578f960bf 100644
  	bool "Randomize kernel stack base"
  	depends on X86_TSC && X86
 diff --git a/tools/objtool/check.c b/tools/objtool/check.c
-index e034a8f24..6c8a7188d 100644
+index c6ab44543..c4d04275e 100644
 --- a/tools/objtool/check.c
 +++ b/tools/objtool/check.c
-@@ -2855,14 +2855,9 @@ int check(const char *_objname, bool orc)
- 	}
+@@ -2921,13 +2921,9 @@ int check(struct objtool_file *file)
+ 	warnings += ret;
  
  out:
 -	if (ret < 0) {
@@ -6241,14 +6240,12 @@ index e034a8f24..6c8a7188d 100644
 -		 *  build.
 -		 */
 -		return ret;
--	}
--
-+    /* ignore warnings for now until we get all the code cleaned up */
-+    if (ret || warnings) {
-+        return 0;
-+    }
++	/* ignore warnings for now until we get all the code cleaned up */
++	if (ret || warnings) {
++		return 0;
+ 	}
+ 
  	return 0;
- }
 -- 
 2.28.0
 

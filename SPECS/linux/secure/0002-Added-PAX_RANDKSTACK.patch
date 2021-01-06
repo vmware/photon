@@ -90,19 +90,19 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  3 files changed, 68 insertions(+)
 
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index 70dea93..e600cd4 100644
+index cad08703c..df7620668 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
 @@ -54,6 +54,15 @@ SYM_CODE_START(native_usergs_sysret64)
  SYM_CODE_END(native_usergs_sysret64)
- #endif /* CONFIG_PARAVIRT */
+ #endif /* CONFIG_PARAVIRT_XXL */
  
 +#ifdef CONFIG_PAX_RANDKSTACK
 +.macro PAX_RAND_KSTACK
-+	movq	%rsp, %rdi
-+	call	pax_randomize_kstack
-+	movq	%rsp, %rdi
-+	movq	%rax, %rsp
++	movq  %rsp, %rdi
++	call  pax_randomize_kstack
++	movq  %rsp, %rdi
++	movq  %rax, %rsp
 +.endm
 +#endif
 +

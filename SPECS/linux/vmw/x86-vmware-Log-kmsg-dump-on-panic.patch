@@ -15,16 +15,15 @@ diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
 index 258d2ab..532165d 100644
 --- a/arch/x86/kernel/cpu/vmware.c
 +++ b/arch/x86/kernel/cpu/vmware.c
-@@ -27,6 +27,8 @@
+@@ -27,6 +27,7 @@
  #include <linux/clocksource.h>
  #include <linux/cpu.h>
  #include <linux/reboot.h>
 +#include <linux/kmsg_dump.h>
-+#include <linux/frame.h>
  #include <asm/div64.h>
  #include <asm/x86_init.h>
  #include <asm/hypervisor.h>
-@@ -43,6 +45,7 @@
+@@ -43,6 +44,7 @@
  #define VMWARE_CMD_GETHZ         45
  #define VMWARE_CMD_GETVCPU_INFO  68
  #define VMWARE_CMD_LEGACY_X2APIC  3
@@ -32,7 +31,7 @@ index 258d2ab..532165d 100644
  #define VMWARE_CMD_VCPU_RESERVED 31
  #define VMWARE_CMD_STEALCLOCK    91
  
-@@ -50,6 +53,8 @@
+@@ -50,6 +52,8 @@
  #define STEALCLOCK_DISABLED        0
  #define STEALCLOCK_ENABLED         1
  
@@ -41,7 +40,7 @@ index 258d2ab..532165d 100644
  #define VMWARE_CMD(cmd, eax, ebx, ecx, edx)				\
  	__asm__(VMWARE_HYPERCALL :					\
  		"=a"(eax), "=c"(ecx), "=d"(edx), "=b"(ebx) :		\
-@@ -115,6 +120,13 @@ static unsigned long vmware_get_tsc_khz(void)
+@@ -115,6 +119,13 @@ static unsigned long vmware_get_tsc_khz(void)
  	return vmware_tsc_khz;
  }
  
@@ -55,7 +54,7 @@ index 258d2ab..532165d 100644
  #ifdef CONFIG_PARAVIRT
  static struct cyc2ns_data vmware_cyc2ns __ro_after_init;
  static bool vmw_sched_clock __initdata = true;
-@@ -420,6 +432,8 @@ static void __init vmware_platform_setup(void)
+@@ -420,6 +431,8 @@ static void __init vmware_platform_setup(void)
  #endif
  
  	vmware_set_capabilities();
@@ -64,9 +63,9 @@ index 258d2ab..532165d 100644
  }
  
  static u8 __init vmware_select_hypercall(void)
-@@ -479,3 +493,131 @@ const __initconst struct hypervisor_x86 x86_hyper_vmware = {
- 	.init.init_platform	= vmware_platform_setup,
- 	.init.x2apic_available	= vmware_legacy_x2apic_available,
+@@ -519,3 +532,131 @@ const __initconst struct hypervisor_x86 x86_hyper_vmware = {
+ 	.runtime.sev_es_hcall_finish	= vmware_sev_es_hcall_finish,
+ #endif
  };
 +
 +#define MESSAGE_STATUS_SUCCESS  (0x01 << 16)

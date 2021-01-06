@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.9.0
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        5.10.4
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=26fefa389c711da70543092fbb121a023f1b0fb8
+%define sha1 linux=62605305a3cbae68780612d35e0585cfc4983afd
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -46,6 +46,7 @@ Patch90:        0001-bpf-ext4-bonding-Fix-compilation-errors.patch
 Patch91:        0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
 Patch92:        0002-Added-PAX_RANDKSTACK.patch
 Patch93:        0003-Added-rap_plugin.patch
+Patch94:        0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -53,10 +54,6 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-#Fix for CVE-2020-25704
-Patch103:       perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
-#Fix for CVE-2020-8694
-Patch104:        powercap-restrict-energy-meter-to-root-access.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -132,13 +129,12 @@ The Linux package contains the Linux kernel doc files
 %patch91 -p1
 %patch92 -p1
 %patch93 -p1
+%patch94 -p1
 
 # CVE
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
-%patch103 -p1
-%patch104 -p1
 
 # crypto
 %patch500 -p1
@@ -247,6 +243,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jan 06 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-1
+-   Update to 5.10.4.
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-4
 -   Fix CVE-2020-8694
 *   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-3

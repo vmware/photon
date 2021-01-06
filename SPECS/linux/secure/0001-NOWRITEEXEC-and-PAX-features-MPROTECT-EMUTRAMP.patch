@@ -421,19 +421,19 @@ index 5d5b032..9db038e 100644
  #endif
  
 diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index 496c3ff..5bb772f 100644
+index 5a9238f6c..133d67096 100644
 --- a/include/linux/mm_types.h
 +++ b/include/linux/mm_types.h
-@@ -542,6 +542,9 @@ struct mm_struct {
+@@ -552,6 +552,9 @@ struct mm_struct {
  		atomic_long_t hugetlb_usage;
  #endif
  		struct work_struct async_put_work;
 +#if defined(CONFIG_PAX)
-+		unsigned long pax_flags;
++	unsigned long pax_flags;
 +#endif
- 	} __randomize_layout;
  
- 	/*
+ #ifdef CONFIG_IOMMU_SUPPORT
+ 		u32 pasid;
 diff --git a/include/linux/sched.h b/include/linux/sched.h
 index 43731fe..cc0395d4 100644
 --- a/include/linux/sched.h
