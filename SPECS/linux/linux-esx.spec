@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.174
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -754,6 +754,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Feb 11 2021 Ajay Kaher <akaher@vmware.com> 4.19.174-2
+-   Enable CONFIG_WDAT_WDT
 *   Tue Feb 09 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.174-1
 -   Update to version 4.19.174
 *   Tue Jan 12 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.164-3

@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.174
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1180,6 +1180,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Thu Feb 11 2021 Ajay Kaher <akaher@vmware.com> 4.19.174-2
+-   Enable CONFIG_WDAT_WDT
 *   Tue Feb 09 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.174-1
 -   Update to version 4.19.174
 *   Thu Jan 07 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.164-2
