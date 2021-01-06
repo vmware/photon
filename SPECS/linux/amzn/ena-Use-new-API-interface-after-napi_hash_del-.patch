@@ -1,0 +1,37 @@
+From cc7fd8833c3c09ce981a224445e9cfbe99ab4bef Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Wed, 6 Jan 2021 01:37:49 -0800
+Subject: [PATCH] linux/ena: Use new API interface after napi_hash_del removal
+
+Since 5198d54, napi_hash_del was removed. Refactor the code to
+utilize the new API, refer to drivers/net/ethernet/broadcom/bnx2x/bnx2x_cmn.h
+
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ kernel/linux/ena/ena_netdev.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/linux/ena/ena_netdev.c b/kernel/linux/ena/ena_netdev.c
+index 9fe9515..c0ef5e7 100644
+--- a/kernel/linux/ena/ena_netdev.c
++++ b/kernel/linux/ena/ena_netdev.c
+@@ -2572,14 +2572,14 @@ static void ena_del_napi_in_range(struct ena_adapter *adapter,
+ 	int i;
+ 
+ 	for (i = first_index; i < first_index + count; i++) {
+-		napi_hash_del(&adapter->ena_napi[i].napi);
+-		netif_napi_del(&adapter->ena_napi[i].napi);
++		__netif_napi_del(&adapter->ena_napi[i].napi);
+ 
+ #ifdef ENA_XDP_SUPPORT
+ 		WARN_ON(!ENA_IS_XDP_INDEX(adapter, i) &&
+ 			adapter->ena_napi[i].xdp_ring);
+ #endif /* ENA_XDP_SUPPORT */
+ 	}
++	synchronize_net();
+ }
+ 
+ static void ena_init_napi_in_range(struct ena_adapter *adapter,
+-- 
+2.7.4
+
