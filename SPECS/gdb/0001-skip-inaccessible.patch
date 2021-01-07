@@ -16,34 +16,31 @@ Then that memory region is inaccessible, so should not be dumped.
  gdb/linux-tdep.c | 17 ++++++++++++++---
  1 file changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/gdb/linux-tdep.c b/gdb/linux-tdep.c
-index 59d04c4..f0bec9b 100644
---- a/gdb/linux-tdep.c
-+++ b/gdb/linux-tdep.c
-@@ -1332,9 +1332,20 @@ linux_find_memory_regions_full (struct gdbarch *gdbarch,
+--- a/gdb/linux-tdep.c	2021-01-08 17:06:02.507368433 +0530
++++ b/gdb/linux-tdep.c	2021-01-08 20:12:11.921436309 +0530
+@@ -1423,10 +1423,21 @@ linux_find_memory_regions_full (struct g
  	    }
  
  	  if (has_anonymous)
--	    should_dump_p = dump_mapping_p (filterflags, &v, priv,
--					    mapping_anon_p, mapping_file_p,
--					    filename, addr, offset);
+-	    should_dump_p = should_dump_mapping_p (filterflags, &v, priv,
+-					           mapping_anon_p,
+-						   mapping_file_p,
+-					           filename, addr, offset);
 +	    {
 +	      if (read == 0 && write == 0 && exec == 0)
-+		{
-+		  /* This is an inaccessible region and should not
-+		     be dumped */
-+		  should_dump_p = 0;
-+		}
++	        {
++	          /* This is an inaccessible region and should not
++	             be dumped */
++	          should_dump_p = 0;
++	        }
 +	      else
-+		{
-+		  should_dump_p = dump_mapping_p (filterflags, &v, priv,
-+						  mapping_anon_p, mapping_file_p,
-+						  filename, addr, offset);
-+		}
++	        { 
++	          should_dump_p = should_dump_mapping_p (filterflags, &v, priv,
++		       			                 mapping_anon_p,
++						         mapping_file_p,
++					                 filename, addr, offset);
++	        }
 +	    }
  	  else
  	    {
  	      /* Older Linux kernels did not support the "Anonymous:" counter.
--- 
-2.17.1
-
