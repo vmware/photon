@@ -49,7 +49,7 @@ index b45ea4b..8a64d5f 100644
  #include <linux/reboot.h>
 +#include <asm/pci_x86.h>
  #include <linux/kmsg_dump.h>
- #include <linux/frame.h>
+ #include <linux/objtool.h>
  #include <asm/div64.h>
 @@ -471,6 +472,10 @@ static void __init vmware_platform_setup(void)
  	vmware_set_capabilities();

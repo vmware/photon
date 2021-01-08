@@ -16,7 +16,7 @@ index c910e74..59e1c7c 100644
 +++ b/drivers/video/fbdev/core/fbcon.c
 @@ -148,7 +148,7 @@ static const struct consw fb_con;
  
- static int fbcon_set_origin(struct vc_data *);
+ #define advance_row(p, delta) (unsigned short *)((unsigned long)(p) + (delta) * vc->vc_size_row)
  
 -static int fbcon_cursor_noblink;
 +static int fbcon_cursor_noblink = 1;
