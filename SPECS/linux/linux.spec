@@ -13,7 +13,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.4
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -180,7 +180,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 Summary:        This package contains the 'perf' performance analysis tools for Linux kernel
 Group:          System/Tools
 Requires:       (%{name} = %{version} or linux-esx = %{version} or linux-aws = %{version} or linux-rt = %{version})
-Requires:       audit elfutils-libelf binutils-libs xz-libs libunwind slang python3
+Requires:       audit elfutils-libelf binutils-libs xz-libs libunwind slang python3 traceevent-plugins
 %ifarch x86_64
 Requires:       pciutils
 %endif
@@ -520,10 +520,10 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %files tools
 %defattr(-,root,root)
 %ifarch x86_64
-/usr/lib64/traceevent
+%exclude /usr/lib64/traceevent
 %endif
 %ifarch aarch64
-/usr/lib/traceevent
+%exclude /usr/lib/traceevent
 %endif
 %{_bindir}
 %{_sysconfdir}/bash_completion.d/perf
@@ -550,6 +550,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jan 13 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-3
+-   Remove traceevent/plugins from linux-tools
 *   Mon Jan 11 2021 Bo Gan <ganb@vmware.com> 5.10.4-2
 -   Fix aarch64 build failure
 *   Mon Jan 04 2021 Bo Gan <ganb@vmware.com> 5.10.4-1
