@@ -1,6 +1,6 @@
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.9.0
+Version:        3.9.1
 Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
@@ -8,7 +8,7 @@ Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=ff1fc8c37d5d4b09ec3bf0d84f3e5b97745c6704
+%define sha1    Python=77f4105846f6740297e50d7535a42c02d6b8e7db
 Source1:        macros.python
 Patch0:         cgi3.patch
 BuildRequires:  pkg-config >= 0.28
@@ -296,6 +296,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/rpm/macros.d/macros.python
 
 %changelog
+*   Fri Jan 08 2021 Taoas Kundu <tkundu@vmware.com> 3.9.1-1
+-   Update to 3.9.1
 *   Tue Oct 13 2020 Taoas Kundu <tkundu@vmware.com> 3.9.0-1
 -   Update to 3.9.0
 *   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 3.8.6-1
