@@ -1,6 +1,6 @@
 Summary:        Time zone data
 Name:           tzdata
-Version:        2019c
+Version:        2020f
 Release:        1%{?dist}
 URL:            http://www.iana.org/time-zones
 License:        Public Domain
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.iana.org//time-zones/repository/releases/%{name}%{version}.tar.gz
-%define sha1    tzdata=0a95c8fb31b837e1f1e4a2beff7e0c88d72586a3
+%define sha1    tzdata=bdac7a65054017253d1e2d6cef4731c0355998c0
 BuildArch:      noarch
 
 %description
@@ -26,7 +26,7 @@ cd %{blddir}
 ZONEINFO=%{buildroot}%{_datarootdir}/zoneinfo
 install -vdm 755 $ZONEINFO/{posix,right}
 for tz in etcetera southamerica northamerica europe africa antarctica  \
-    asia australasia backward pacificnew systemv; do
+    asia australasia backward; do
     zic -L /dev/null    -d $ZONEINFO        -y "sh yearistype.sh" ${tz}
     zic -L /dev/null    -d $ZONEINFO/posix  -y "sh yearistype.sh" ${tz}
     zic -L leapseconds  -d $ZONEINFO/right  -y "sh yearistype.sh" ${tz}
@@ -42,6 +42,8 @@ ln -svf %{_datarootdir}/zoneinfo/UTC %{buildroot}%{_sysconfdir}/localtime
 %{_datadir}/*
 
 %changelog
+*   Fri Jan 08 2021 Gerrit Photon <photon-checkins@vmware.com> 2020f-1
+-   Automatic Version Bump
 *   Fri Oct 11 2019 Gerrit Photon <photon-checkins@vmware.com> 2019c-1
 -   Automatic Version Bump
 *   Fri Aug 16 2019 Gerrit Photon <photon-checkins@vmware.com> 2019b-1
