@@ -18,7 +18,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -2986,9 +2986,9 @@ static void drain_local_pages_wq(struct
+@@ -3045,9 +3045,9 @@ static void drain_local_pages_wq(struct
  	 * cpu which is allright but we also have to make sure to not move to
  	 * a different one.
  	 */

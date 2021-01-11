@@ -32,7 +32,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/kernel/signal.c
 +++ b/kernel/signal.c
-@@ -494,8 +494,8 @@ static void sigqueue_free_current(struct
+@@ -495,8 +495,8 @@ static void sigqueue_free_current(struct
  
  	up = q->user;
  	if (rt_prio(current->normal_prio) && !put_task_cache(current, q)) {

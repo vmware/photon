@@ -13,27 +13,28 @@ Drop local_bh_disable() around __inet_hash() which acquires
 listening_hash->lock, invoke inet_ehash_nolisten() with disabled BH.
 inet_unhash() conditionally acquires listening_hash->lock.
 
+Reported-by: Mike Galbraith <efault@gmx.de>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Link: https://lore.kernel.org/linux-rt-users/12d6f9879a97cd56c09fb53dee343cbb14f7f1f7.camel@gmx.de/
+Link: https://lkml.kernel.org/r/X9CheYjuXWc75Spa@hirez.programming.kicks-ass.net
 ---
- net/ipv4/inet_hashtables.c  | 19 ++++++++++++-------
- net/ipv6/inet6_hashtables.c |  5 +----
+ net/ipv4/inet_hashtables.c  |   19 ++++++++++++-------
+ net/ipv6/inet6_hashtables.c |    5 +----
  2 files changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index 239e54474b653..fcb105cbb5465 100644
 --- a/net/ipv4/inet_hashtables.c
 +++ b/net/ipv4/inet_hashtables.c
-@@ -585,7 +585,9 @@ int __inet_hash(struct sock *sk, struct sock *osk)
+@@ -635,7 +635,9 @@ int __inet_hash(struct sock *sk, struct
  	int err = 0;
  
  	if (sk->sk_state != TCP_LISTEN) {
 +		local_bh_disable();
- 		inet_ehash_nolisten(sk, osk);
+ 		inet_ehash_nolisten(sk, osk, NULL);
 +		local_bh_enable();
  		return 0;
  	}
  	WARN_ON(!sk_unhashed(sk));
-@@ -617,11 +619,8 @@ int inet_hash(struct sock *sk)
+@@ -667,11 +669,8 @@ int inet_hash(struct sock *sk)
  {
  	int err = 0;
  
@@ -46,7 +47,7 @@ index 239e54474b653..fcb105cbb5465 100644
  
  	return err;
  }
-@@ -632,17 +631,20 @@ void inet_unhash(struct sock *sk)
+@@ -682,17 +681,20 @@ void inet_unhash(struct sock *sk)
  	struct inet_hashinfo *hashinfo = sk->sk_prot->h.hashinfo;
  	struct inet_listen_hashbucket *ilb = NULL;
  	spinlock_t *lock;
@@ -69,7 +70,7 @@ index 239e54474b653..fcb105cbb5465 100644
  	if (sk_unhashed(sk))
  		goto unlock;
  
-@@ -655,7 +657,10 @@ void inet_unhash(struct sock *sk)
+@@ -705,7 +707,10 @@ void inet_unhash(struct sock *sk)
  	__sk_nulls_del_node_init_rcu(sk);
  	sock_prot_inuse_add(sock_net(sk), sk->sk_prot, -1);
  unlock:
@@ -81,11 +82,9 @@ index 239e54474b653..fcb105cbb5465 100644
  }
  EXPORT_SYMBOL_GPL(inet_unhash);
  
-diff --git a/net/ipv6/inet6_hashtables.c b/net/ipv6/inet6_hashtables.c
-index 2d3add9e61162..50fd17cbf3ec7 100644
 --- a/net/ipv6/inet6_hashtables.c
 +++ b/net/ipv6/inet6_hashtables.c
-@@ -335,11 +335,8 @@ int inet6_hash(struct sock *sk)
+@@ -333,11 +333,8 @@ int inet6_hash(struct sock *sk)
  {
  	int err = 0;
  
@@ -98,6 +97,3 @@ index 2d3add9e61162..50fd17cbf3ec7 100644
  
  	return err;
  }
--- 
-2.28.0
-

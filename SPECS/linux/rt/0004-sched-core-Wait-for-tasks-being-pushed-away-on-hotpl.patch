@@ -1,6 +1,6 @@
 From: Thomas Gleixner <tglx@linutronix.de>
-Date: Mon, 5 Oct 2020 16:57:21 +0200
-Subject: [PATCH 04/17] sched/core: Wait for tasks being pushed away on hotplug
+Date: Fri, 23 Oct 2020 12:12:02 +0200
+Subject: [PATCH 04/19] sched/core: Wait for tasks being pushed away on hotplug
 
 RT kernels need to ensure that all tasks which are not per CPU kthreads
 have left the outgoing CPU to guarantee that no tasks are force migrated
@@ -23,7 +23,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -6897,8 +6897,21 @@ static bool balance_push(struct rq *rq)
+@@ -6897,8 +6897,21 @@ static void balance_push(struct rq *rq)
  	 * Both the cpu-hotplug and stop task are in this case and are
  	 * required to complete the hotplug process.
  	 */
@@ -41,12 +41,12 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 +			rcuwait_wake_up(&rq->hotplug_wait);
 +			raw_spin_lock(&rq->lock);
 +		}
- 		return false;
+ 		return;
 +	}
  
  	get_task_struct(push_task);
  	/*
-@@ -6931,6 +6944,20 @@ static void balance_push_set(int cpu, bo
+@@ -6929,6 +6942,20 @@ static void balance_push_set(int cpu, bo
  	rq_unlock_irqrestore(rq, &rf);
  }
  
@@ -66,8 +66,8 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 +
  #else
  
- static inline bool balance_push(struct rq *rq)
-@@ -6942,6 +6969,10 @@ static void balance_push_set(int cpu, bo
+ static inline void balance_push(struct rq *rq)
+@@ -6939,6 +6966,10 @@ static inline void balance_push_set(int
  {
  }
  
@@ -78,7 +78,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #endif /* CONFIG_HOTPLUG_CPU */
  
  void set_rq_online(struct rq *rq)
-@@ -7096,6 +7127,10 @@ int sched_cpu_deactivate(unsigned int cp
+@@ -7093,6 +7124,10 @@ int sched_cpu_deactivate(unsigned int cp
  		return ret;
  	}
  	sched_domains_numa_masks_clear(cpu);
@@ -89,7 +89,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	return 0;
  }
  
-@@ -7336,6 +7371,9 @@ void __init sched_init(void)
+@@ -7333,6 +7368,9 @@ void __init sched_init(void)
  
  		rq_csd_init(rq, &rq->nohz_csd, nohz_csd_func);
  #endif
@@ -101,7 +101,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		atomic_set(&rq->nr_iowait, 0);
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
-@@ -1004,6 +1004,10 @@ struct rq {
+@@ -998,6 +998,10 @@ struct rq {
  
  	/* This is used to determine avg_idle's max value */
  	u64			max_idle_balance_cost;

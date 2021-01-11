@@ -22,8 +22,8 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 +#include <linux/rcupdate.h>
  #include <linux/page-flags-layout.h>
  #include <linux/workqueue.h>
- 
-@@ -548,6 +549,9 @@ struct mm_struct {
+ #include <linux/seqlock.h>
+@@ -556,6 +557,9 @@ struct mm_struct {
  		bool tlb_flush_batched;
  #endif
  		struct uprobes_state uprobes_state;
@@ -47,15 +47,15 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 +		call_rcu(&mm->delayed_drop, __mmdrop_delayed);
 +}
 +#else
-+# define mmdrop_delayed(mm)	mmdrop(mm)
++# define mmdrop_delayed(mm)    mmdrop(mm)
 +#endif
 +
- /*
-  * This has to be called after a get_task_mm()/mmget_not_zero()
-  * followed by taking the mmap_lock for writing before modifying the
+ /**
+  * mmget() - Pin the address space associated with a &struct mm_struct.
+  * @mm: The address space to pin.
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
-@@ -687,6 +687,19 @@ void __mmdrop(struct mm_struct *mm)
+@@ -688,6 +688,19 @@ void __mmdrop(struct mm_struct *mm)
  }
  EXPORT_SYMBOL_GPL(__mmdrop);
  
@@ -77,7 +77,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	struct mm_struct *mm;
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -4080,9 +4080,13 @@ static struct rq *finish_task_switch(str
+@@ -4248,9 +4248,13 @@ static struct rq *finish_task_switch(str
  	 *   provided by mmdrop(),
  	 * - a sync_core for SYNC_CORE.
  	 */
@@ -92,7 +92,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	}
  	if (unlikely(prev_state == TASK_DEAD)) {
  		if (prev->sched_class->task_dead)
-@@ -7097,6 +7101,7 @@ void sched_setnuma(struct task_struct *p
+@@ -7265,6 +7269,7 @@ void sched_setnuma(struct task_struct *p
  #endif /* CONFIG_NUMA_BALANCING */
  
  #ifdef CONFIG_HOTPLUG_CPU

@@ -13,15 +13,15 @@ Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
 ---
  arch/arm64/Kconfig                   |    1 +
  arch/arm64/include/asm/preempt.h     |   25 ++++++++++++++++++++++++-
- arch/arm64/include/asm/thread_info.h |    6 +++++-
+ arch/arm64/include/asm/thread_info.h |    7 ++++++-
  arch/arm64/kernel/asm-offsets.c      |    1 +
  arch/arm64/kernel/entry.S            |   13 +++++++++++--
  arch/arm64/kernel/signal.c           |    2 +-
- 6 files changed, 43 insertions(+), 5 deletions(-)
+ 6 files changed, 44 insertions(+), 5 deletions(-)
 
 --- a/arch/arm64/Kconfig
 +++ b/arch/arm64/Kconfig
-@@ -169,6 +169,7 @@ config ARM64
+@@ -173,6 +173,7 @@ config ARM64
  	select HAVE_PERF_EVENTS
  	select HAVE_PERF_REGS
  	select HAVE_PERF_USER_STACK_DUMP
@@ -79,27 +79,25 @@ Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
  	union {
  		u64		preempt_count;	/* 0 => preemptible, <0 => bug */
  		struct {
-@@ -67,6 +68,7 @@ void arch_release_task_struct(struct tas
- #define TIF_FOREIGN_FPSTATE	3	/* CPU's FP state is not current's */
+@@ -68,6 +69,7 @@ void arch_release_task_struct(struct tas
  #define TIF_UPROBE		4	/* uprobe breakpoint or singlestep */
  #define TIF_FSCHECK		5	/* Check FS is USER_DS on return */
-+#define TIF_NEED_RESCHED_LAZY	6
+ #define TIF_MTE_ASYNC_FAULT	6	/* MTE Asynchronous Tag Check Fault */
++#define TIF_NEED_RESCHED_LAZY	7
  #define TIF_SYSCALL_TRACE	8	/* syscall trace active */
  #define TIF_SYSCALL_AUDIT	9	/* syscall auditing */
  #define TIF_SYSCALL_TRACEPOINT	10	/* syscall tracepoint for ftrace */
-@@ -93,14 +95,16 @@ void arch_release_task_struct(struct tas
- #define _TIF_SYSCALL_EMU	(1 << TIF_SYSCALL_EMU)
- #define _TIF_UPROBE		(1 << TIF_UPROBE)
- #define _TIF_FSCHECK		(1 << TIF_FSCHECK)
-+#define _TIF_NEED_RESCHED_LAZY	(1 << TIF_NEED_RESCHED_LAZY)
- #define _TIF_SINGLESTEP		(1 << TIF_SINGLESTEP)
+@@ -98,11 +100,14 @@ void arch_release_task_struct(struct tas
  #define _TIF_32BIT		(1 << TIF_32BIT)
  #define _TIF_SVE		(1 << TIF_SVE)
+ #define _TIF_MTE_ASYNC_FAULT	(1 << TIF_MTE_ASYNC_FAULT)
++#define _TIF_NEED_RESCHED_LAZY	(1 << TIF_NEED_RESCHED_LAZY)
  
  #define _TIF_WORK_MASK		(_TIF_NEED_RESCHED | _TIF_SIGPENDING | \
  				 _TIF_NOTIFY_RESUME | _TIF_FOREIGN_FPSTATE | \
--				 _TIF_UPROBE | _TIF_FSCHECK)
-+				 _TIF_UPROBE | _TIF_FSCHECK | _TIF_NEED_RESCHED_LAZY)
+-				 _TIF_UPROBE | _TIF_FSCHECK | _TIF_MTE_ASYNC_FAULT)
++				 _TIF_UPROBE | _TIF_FSCHECK | _TIF_MTE_ASYNC_FAULT | \
++				 _TIF_NEED_RESCHED_LAZY)
  
 +#define _TIF_NEED_RESCHED_MASK	(_TIF_NEED_RESCHED | _TIF_NEED_RESCHED_LAZY)
  #define _TIF_SYSCALL_WORK	(_TIF_SYSCALL_TRACE | _TIF_SYSCALL_AUDIT | \
@@ -117,7 +115,7 @@ Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
    DEFINE(TSK_TI_TTBR0,		offsetof(struct task_struct, thread_info.ttbr0));
 --- a/arch/arm64/kernel/entry.S
 +++ b/arch/arm64/kernel/entry.S
-@@ -624,9 +624,18 @@ alternative_if ARM64_HAS_IRQ_PRIO_MASKIN
+@@ -649,9 +649,18 @@ alternative_if ARM64_HAS_IRQ_PRIO_MASKIN
  	mrs	x0, daif
  	orr	x24, x24, x0
  alternative_else_nop_endif
@@ -137,10 +135,10 @@ Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
 +2:
  #endif
  
- #ifdef CONFIG_ARM64_PSEUDO_NMI
+ 	mov	x0, sp
 --- a/arch/arm64/kernel/signal.c
 +++ b/arch/arm64/kernel/signal.c
-@@ -921,7 +921,7 @@ asmlinkage void do_notify_resume(struct
+@@ -925,7 +925,7 @@ asmlinkage void do_notify_resume(struct
  		/* Check valid user FS if needed */
  		addr_limit_user_check();
  

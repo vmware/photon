@@ -14,7 +14,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/arch/arm64/kernel/fpsimd.c
 +++ b/arch/arm64/kernel/fpsimd.c
-@@ -224,6 +224,16 @@ static void sve_free(struct task_struct
+@@ -226,6 +226,16 @@ static void sve_free(struct task_struct
  	__sve_free(task);
  }
  
@@ -31,7 +31,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  /*
   * TIF_SVE controls whether a task can use SVE without trapping while
   * in userspace, and also the way a task's FPSIMD/SVE state is stored
-@@ -1020,6 +1030,7 @@ void fpsimd_thread_switch(struct task_st
+@@ -1022,6 +1032,7 @@ void fpsimd_thread_switch(struct task_st
  void fpsimd_flush_thread(void)
  {
  	int vl, supported_vl;
@@ -39,7 +39,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	if (!system_supports_fpsimd())
  		return;
-@@ -1032,7 +1043,7 @@ void fpsimd_flush_thread(void)
+@@ -1034,7 +1045,7 @@ void fpsimd_flush_thread(void)
  
  	if (system_supports_sve()) {
  		clear_thread_flag(TIF_SVE);
@@ -48,7 +48,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  		/*
  		 * Reset the task vector length as required.
-@@ -1066,6 +1077,7 @@ void fpsimd_flush_thread(void)
+@@ -1068,6 +1079,7 @@ void fpsimd_flush_thread(void)
  	}
  
  	put_cpu_fpsimd_context();

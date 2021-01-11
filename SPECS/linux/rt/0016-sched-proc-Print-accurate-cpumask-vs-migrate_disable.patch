@@ -1,6 +1,6 @@
 From: Peter Zijlstra <peterz@infradead.org>
-Date: Mon, 5 Oct 2020 16:57:33 +0200
-Subject: [PATCH 16/17] sched/proc: Print accurate cpumask vs migrate_disable()
+Date: Fri, 23 Oct 2020 12:12:14 +0200
+Subject: [PATCH 16/19] sched/proc: Print accurate cpumask vs migrate_disable()
 
 Ensure /proc/*/status doesn't print 'random' cpumasks due to
 migrate_disable().

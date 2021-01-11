@@ -9,7 +9,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/include/linux/smp.h
 +++ b/include/linux/smp.h
-@@ -236,6 +236,9 @@ static inline int get_boot_cpu_id(void)
+@@ -239,6 +239,9 @@ static inline int get_boot_cpu_id(void)
  #define get_cpu()		({ preempt_disable(); __smp_processor_id(); })
  #define put_cpu()		preempt_enable()
  

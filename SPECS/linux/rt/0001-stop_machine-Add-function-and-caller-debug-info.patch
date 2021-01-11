@@ -1,6 +1,6 @@
 From: Peter Zijlstra <peterz@infradead.org>
-Date: Mon, 5 Oct 2020 16:57:18 +0200
-Subject: [PATCH 01/17] stop_machine: Add function and caller debug info
+Date: Fri, 23 Oct 2020 12:11:59 +0200
+Subject: [PATCH 01/19] stop_machine: Add function and caller debug info
 
 Crashes in stop-machine are hard to connect to the calling code, add a
 little something to help with that.

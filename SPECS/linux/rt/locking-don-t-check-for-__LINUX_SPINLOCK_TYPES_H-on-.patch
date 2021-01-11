@@ -22,8 +22,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  arch/s390/include/asm/spinlock_types.h    |    4 ----
  arch/sh/include/asm/spinlock_types.h      |    4 ----
  arch/xtensa/include/asm/spinlock_types.h  |    4 ----
- include/linux/spinlock_types_up.h         |    4 ----
- 10 files changed, 40 deletions(-)
+ 9 files changed, 36 deletions(-)
 
 --- a/arch/alpha/include/asm/spinlock_types.h
 +++ b/arch/alpha/include/asm/spinlock_types.h
@@ -142,16 +141,3 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #include <asm-generic/qspinlock_types.h>
  #include <asm-generic/qrwlock_types.h>
  
---- a/include/linux/spinlock_types_up.h
-+++ b/include/linux/spinlock_types_up.h
-@@ -1,10 +1,6 @@
- #ifndef __LINUX_SPINLOCK_TYPES_UP_H
- #define __LINUX_SPINLOCK_TYPES_UP_H
- 
--#ifndef __LINUX_SPINLOCK_TYPES_H
--# error "please don't include this file directly"
--#endif
--
- /*
-  * include/linux/spinlock_types_up.h - spinlock type definitions for UP
-  *

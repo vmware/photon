@@ -12,7 +12,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -63,7 +63,11 @@ const_debug unsigned int sysctl_sched_fe
+@@ -64,7 +64,11 @@ const_debug unsigned int sysctl_sched_fe
   * Number of tasks to iterate in a single balance run.
   * Limited because this is done with IRQs disabled.
   */

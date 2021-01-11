@@ -96,7 +96,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	}
  	return mpol;
  }
-@@ -3582,9 +3583,10 @@ static int shmem_reconfigure(struct fs_c
+@@ -3592,9 +3593,10 @@ static int shmem_reconfigure(struct fs_c
  	struct shmem_options *ctx = fc->fs_private;
  	struct shmem_sb_info *sbinfo = SHMEM_SB(fc->root->d_sb);
  	unsigned long inodes;
@@ -108,7 +108,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	inodes = sbinfo->max_inodes - sbinfo->free_inodes;
  	if ((ctx->seen & SHMEM_SEEN_BLOCKS) && ctx->blocks) {
  		if (!sbinfo->max_blocks) {
-@@ -3629,14 +3631,15 @@ static int shmem_reconfigure(struct fs_c
+@@ -3639,14 +3641,15 @@ static int shmem_reconfigure(struct fs_c
  	 * Preserve previous mempolicy unless mpol remount option was specified.
  	 */
  	if (ctx->mpol) {
@@ -127,7 +127,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	return invalfc(fc, "%s", err);
  }
  
-@@ -3753,7 +3756,7 @@ static int shmem_fill_super(struct super
+@@ -3763,7 +3766,7 @@ static int shmem_fill_super(struct super
  	sbinfo->mpol = ctx->mpol;
  	ctx->mpol = NULL;
  

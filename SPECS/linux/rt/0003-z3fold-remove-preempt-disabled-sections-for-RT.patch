@@ -1,0 +1,79 @@
+From: Vitaly Wool <vitaly.wool@konsulko.com>
+Date: Mon, 14 Dec 2020 19:12:36 -0800
+Subject: [PATCH 3/3] z3fold: remove preempt disabled sections for RT
+
+Replace get_cpu_ptr() with migrate_disable()+this_cpu_ptr() so RT can take
+spinlocks that become sleeping locks.
+
+Signed-off-by Mike Galbraith <efault@gmx.de>
+
+Link: https://lkml.kernel.org/r/20201209145151.18994-3-vitaly.wool@konsulko.com
+Signed-off-by: Vitaly Wool <vitaly.wool@konsulko.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ mm/z3fold.c |   17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+--- a/mm/z3fold.c
++++ b/mm/z3fold.c
+@@ -623,14 +623,16 @@ static inline void add_to_unbuddied(stru
+ {
+ 	if (zhdr->first_chunks == 0 || zhdr->last_chunks == 0 ||
+ 			zhdr->middle_chunks == 0) {
+-		struct list_head *unbuddied = get_cpu_ptr(pool->unbuddied);
+-
++		struct list_head *unbuddied;
+ 		int freechunks = num_free_chunks(zhdr);
++
++		migrate_disable();
++		unbuddied = this_cpu_ptr(pool->unbuddied);
+ 		spin_lock(&pool->lock);
+ 		list_add(&zhdr->buddy, &unbuddied[freechunks]);
+ 		spin_unlock(&pool->lock);
+ 		zhdr->cpu = smp_processor_id();
+-		put_cpu_ptr(pool->unbuddied);
++		migrate_enable();
+ 	}
+ }
+ 
+@@ -880,8 +882,9 @@ static inline struct z3fold_header *__z3
+ 	int chunks = size_to_chunks(size), i;
+ 
+ lookup:
++	migrate_disable();
+ 	/* First, try to find an unbuddied z3fold page. */
+-	unbuddied = get_cpu_ptr(pool->unbuddied);
++	unbuddied = this_cpu_ptr(pool->unbuddied);
+ 	for_each_unbuddied_list(i, chunks) {
+ 		struct list_head *l = &unbuddied[i];
+ 
+@@ -899,7 +902,7 @@ static inline struct z3fold_header *__z3
+ 		    !z3fold_page_trylock(zhdr)) {
+ 			spin_unlock(&pool->lock);
+ 			zhdr = NULL;
+-			put_cpu_ptr(pool->unbuddied);
++			migrate_enable();
+ 			if (can_sleep)
+ 				cond_resched();
+ 			goto lookup;
+@@ -913,7 +916,7 @@ static inline struct z3fold_header *__z3
+ 		    test_bit(PAGE_CLAIMED, &page->private)) {
+ 			z3fold_page_unlock(zhdr);
+ 			zhdr = NULL;
+-			put_cpu_ptr(pool->unbuddied);
++			migrate_enable();
+ 			if (can_sleep)
+ 				cond_resched();
+ 			goto lookup;
+@@ -928,7 +931,7 @@ static inline struct z3fold_header *__z3
+ 		kref_get(&zhdr->refcount);
+ 		break;
+ 	}
+-	put_cpu_ptr(pool->unbuddied);
++	migrate_enable();
+ 
+ 	if (!zhdr) {
+ 		int cpu;

@@ -110,7 +110,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	struct gnet_stats_queue	qstats;
  	unsigned long		state;
  	struct Qdisc            *next_sched;
-@@ -138,7 +139,11 @@ static inline bool qdisc_is_running(stru
+@@ -141,7 +142,11 @@ static inline bool qdisc_is_running(stru
  {
  	if (qdisc->flags & TCQ_F_NOLOCK)
  		return spin_is_locked(&qdisc->seqlock);
@@ -122,7 +122,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  }
  
  static inline bool qdisc_is_percpu_stats(const struct Qdisc *q)
-@@ -162,17 +167,27 @@ static inline bool qdisc_run_begin(struc
+@@ -165,17 +170,27 @@ static inline bool qdisc_run_begin(struc
  	} else if (qdisc_is_running(qdisc)) {
  		return false;
  	}
@@ -150,7 +150,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	if (qdisc->flags & TCQ_F_NOLOCK)
  		spin_unlock(&qdisc->seqlock);
  }
-@@ -547,7 +562,7 @@ static inline spinlock_t *qdisc_root_sle
+@@ -550,7 +565,7 @@ static inline spinlock_t *qdisc_root_sle
  	return qdisc_lock(root);
  }
  
@@ -261,7 +261,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	.busylock	=	__SPIN_LOCK_UNLOCKED(noop_qdisc.busylock),
  	.gso_skb = {
  		.next = (struct sk_buff *)&noop_qdisc.gso_skb,
-@@ -858,9 +862,15 @@ struct Qdisc *qdisc_alloc(struct netdev_
+@@ -845,9 +849,15 @@ struct Qdisc *qdisc_alloc(struct netdev_
  	lockdep_set_class(&sch->busylock,
  			  dev->qdisc_tx_busylock ?: &qdisc_tx_busylock);
  

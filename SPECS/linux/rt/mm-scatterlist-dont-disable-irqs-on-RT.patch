@@ -12,7 +12,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 
 --- a/lib/scatterlist.c
 +++ b/lib/scatterlist.c
-@@ -811,7 +811,7 @@ void sg_miter_stop(struct sg_mapping_ite
+@@ -892,7 +892,7 @@ void sg_miter_stop(struct sg_mapping_ite
  			flush_kernel_dcache_page(miter->page);
  
  		if (miter->__flags & SG_MITER_ATOMIC) {

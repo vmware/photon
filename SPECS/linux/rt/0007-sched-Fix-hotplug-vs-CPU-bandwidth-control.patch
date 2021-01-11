@@ -1,6 +1,6 @@
 From: Peter Zijlstra <peterz@infradead.org>
-Date: Mon, 5 Oct 2020 16:57:24 +0200
-Subject: [PATCH 07/17] sched: Fix hotplug vs CPU bandwidth control
+Date: Fri, 23 Oct 2020 12:12:05 +0200
+Subject: [PATCH 07/19] sched: Fix hotplug vs CPU bandwidth control
 
 Since we now migrate tasks away before DYING, we should also move
 bandwidth unthrottle, otherwise we can gain tasks from unthrottle
@@ -18,13 +18,13 @@ Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
  kernel/sched/core.c     |   14 ++++++++++----
- kernel/sched/deadline.c |    5 +----
- kernel/sched/rt.c       |    5 +----
- 3 files changed, 12 insertions(+), 12 deletions(-)
+ kernel/sched/deadline.c |    2 +-
+ kernel/sched/rt.c       |    2 +-
+ 3 files changed, 12 insertions(+), 6 deletions(-)
 
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -6981,6 +6981,8 @@ int sched_cpu_activate(unsigned int cpu)
+@@ -6978,6 +6978,8 @@ int sched_cpu_activate(unsigned int cpu)
  
  int sched_cpu_deactivate(unsigned int cpu)
  {
@@ -33,7 +33,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	int ret;
  
  	set_cpu_active(cpu, false);
-@@ -6995,6 +6997,14 @@ int sched_cpu_deactivate(unsigned int cp
+@@ -6992,6 +6994,14 @@ int sched_cpu_deactivate(unsigned int cp
  
  	balance_push_set(cpu, true);
  
@@ -48,7 +48,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #ifdef CONFIG_SCHED_SMT
  	/*
  	 * When going down, decrement the number of cores with SMT present.
-@@ -7076,10 +7086,6 @@ int sched_cpu_dying(unsigned int cpu)
+@@ -7073,10 +7083,6 @@ int sched_cpu_dying(unsigned int cpu)
  	sched_tick_stop(cpu);
  
  	rq_lock_irqsave(rq, &rf);
@@ -61,7 +61,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
 --- a/kernel/sched/deadline.c
 +++ b/kernel/sched/deadline.c
-@@ -543,7 +543,7 @@ static int push_dl_task(struct rq *rq);
+@@ -565,7 +565,7 @@ static int push_dl_task(struct rq *rq);
  
  static inline bool need_pull_dl_task(struct rq *rq, struct task_struct *prev)
  {
@@ -70,16 +70,6 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  }
  
  static DEFINE_PER_CPU(struct callback_head, dl_push_head);
-@@ -2323,9 +2323,6 @@ static void rq_online_dl(struct rq *rq)
- /* Assumes rq->lock is held */
- static void rq_offline_dl(struct rq *rq)
- {
--	if (rq->dl.overloaded)
--		dl_clear_overload(rq);
--
- 	cpudl_clear(&rq->rd->cpudl, rq->cpu);
- 	cpudl_clear_freecpu(&rq->rd->cpudl, rq->cpu);
- }
 --- a/kernel/sched/rt.c
 +++ b/kernel/sched/rt.c
 @@ -265,7 +265,7 @@ static void pull_rt_task(struct rq *this
@@ -91,13 +81,3 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  }
  
  static inline int rt_overloaded(struct rq *rq)
-@@ -2245,9 +2245,6 @@ static void rq_online_rt(struct rq *rq)
- /* Assumes rq->lock is held */
- static void rq_offline_rt(struct rq *rq)
- {
--	if (rq->rt.overloaded)
--		rt_clear_overload(rq);
--
- 	__disable_runtime(rq);
- 
- 	cpupri_set(&rq->rd->cpupri, rq->cpu, CPUPRI_INVALID);

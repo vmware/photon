@@ -48,7 +48,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	spin_lock_bh(&net->xfrm.xfrm_state_lock);
  	write_seqcount_begin(&xfrm_state_hash_generation);
  
-@@ -2557,6 +2562,8 @@ int __net_init xfrm_state_init(struct ne
+@@ -2664,6 +2669,8 @@ int __net_init xfrm_state_init(struct ne
  	net->xfrm.state_num = 0;
  	INIT_WORK(&net->xfrm.state_hash_work, xfrm_hash_resize);
  	spin_lock_init(&net->xfrm.xfrm_state_lock);

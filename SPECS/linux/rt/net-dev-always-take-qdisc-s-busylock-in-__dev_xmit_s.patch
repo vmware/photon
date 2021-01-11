@@ -20,7 +20,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -3764,7 +3764,11 @@ static inline int __dev_xmit_skb(struct
+@@ -3767,7 +3767,11 @@ static inline int __dev_xmit_skb(struct
  	 * This permits qdisc->running owner to get the lock more
  	 * often and dequeue packets faster.
  	 */

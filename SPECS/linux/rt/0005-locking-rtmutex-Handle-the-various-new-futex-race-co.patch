@@ -1,6 +1,6 @@
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 10 Jun 2011 11:04:15 +0200
-Subject: [PATCH 05/23] locking/rtmutex: Handle the various new futex race
+Subject: [PATCH 05/22] locking/rtmutex: Handle the various new futex race
  conditions
 
 RT opens a few new interesting race conditions in the rtmutex/futex
@@ -16,7 +16,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 
 --- a/kernel/futex.c
 +++ b/kernel/futex.c
-@@ -2145,6 +2145,16 @@ static int futex_requeue(u32 __user *uad
+@@ -2149,6 +2149,16 @@ static int futex_requeue(u32 __user *uad
  				 */
  				requeue_pi_wake_futex(this, &key2, hb2);
  				continue;
@@ -33,7 +33,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  			} else if (ret) {
  				/*
  				 * rt_mutex_start_proxy_lock() detected a
-@@ -3171,7 +3181,7 @@ static int futex_wait_requeue_pi(u32 __u
+@@ -3187,7 +3197,7 @@ static int futex_wait_requeue_pi(u32 __u
  	struct hrtimer_sleeper timeout, *to;
  	struct futex_pi_state *pi_state = NULL;
  	struct rt_mutex_waiter rt_waiter;
@@ -42,7 +42,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	union futex_key key2 = FUTEX_KEY_INIT;
  	struct futex_q q = futex_q_init;
  	int res, ret;
-@@ -3223,20 +3233,55 @@ static int futex_wait_requeue_pi(u32 __u
+@@ -3239,20 +3249,55 @@ static int futex_wait_requeue_pi(u32 __u
  	/* Queue the futex_q, drop the hb lock, wait for wakeup. */
  	futex_wait_queue_me(hb, &q, to);
  
@@ -109,7 +109,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  
  	/* Check if the requeue code acquired the second futex for us. */
  	if (!q.rt_waiter) {
-@@ -3245,7 +3290,8 @@ static int futex_wait_requeue_pi(u32 __u
+@@ -3261,7 +3306,8 @@ static int futex_wait_requeue_pi(u32 __u
  		 * did a lock-steal - fix up the PI-state in that case.
  		 */
  		if (q.pi_state && (q.pi_state->owner != current)) {
@@ -119,7 +119,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  			ret = fixup_pi_state_owner(uaddr2, &q, current);
  			if (ret && rt_mutex_owner(&q.pi_state->pi_mutex) == current) {
  				pi_state = q.pi_state;
-@@ -3256,7 +3302,7 @@ static int futex_wait_requeue_pi(u32 __u
+@@ -3272,7 +3318,7 @@ static int futex_wait_requeue_pi(u32 __u
  			 * the requeue_pi() code acquired for us.
  			 */
  			put_pi_state(q.pi_state);
@@ -128,7 +128,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  		}
  	} else {
  		struct rt_mutex *pi_mutex;
-@@ -3270,7 +3316,8 @@ static int futex_wait_requeue_pi(u32 __u
+@@ -3286,7 +3332,8 @@ static int futex_wait_requeue_pi(u32 __u
  		pi_mutex = &q.pi_state->pi_mutex;
  		ret = rt_mutex_wait_proxy_lock(pi_mutex, to, &rt_waiter);
  

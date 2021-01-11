@@ -7,16 +7,16 @@ Implement the powerpc pieces for lazy preempt.
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
  arch/powerpc/Kconfig                   |    1 +
- arch/powerpc/include/asm/thread_info.h |   16 ++++++++++++----
+ arch/powerpc/include/asm/thread_info.h |   17 +++++++++++++----
  arch/powerpc/kernel/asm-offsets.c      |    1 +
  arch/powerpc/kernel/entry_32.S         |   23 ++++++++++++++++-------
  arch/powerpc/kernel/exceptions-64e.S   |   16 ++++++++++++----
  arch/powerpc/kernel/syscall_64.c       |    9 ++++++---
- 6 files changed, 48 insertions(+), 18 deletions(-)
+ 6 files changed, 49 insertions(+), 18 deletions(-)
 
 --- a/arch/powerpc/Kconfig
 +++ b/arch/powerpc/Kconfig
-@@ -225,6 +225,7 @@ config PPC
+@@ -230,6 +230,7 @@ config PPC
  	select HAVE_HARDLOCKUP_DETECTOR_PERF	if PERF_EVENTS && HAVE_PERF_EVENTS_NMI && !HAVE_HARDLOCKUP_DETECTOR_ARCH
  	select HAVE_PERF_REGS
  	select HAVE_PERF_USER_STACK_DUMP
@@ -35,7 +35,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	unsigned long	local_flags;		/* private flags for thread */
  #ifdef CONFIG_LIVEPATCH
  	unsigned long *livepatch_sp;
-@@ -98,11 +100,12 @@ void arch_setup_new_exec(void);
+@@ -97,11 +99,12 @@ void arch_setup_new_exec(void);
  #define TIF_SINGLESTEP		8	/* singlestepping active */
  #define TIF_NOHZ		9	/* in adaptive nohz mode */
  #define TIF_SECCOMP		10	/* secure computing */
@@ -51,7 +51,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  #define TIF_EMULATE_STACK_STORE	16	/* Is an instruction emulation
  						for stack store? */
  #define TIF_MEMDIE		17	/* is terminating due to OOM killer */
-@@ -111,6 +114,9 @@ void arch_setup_new_exec(void);
+@@ -110,6 +113,9 @@ void arch_setup_new_exec(void);
  #endif
  #define TIF_POLLING_NRFLAG	19	/* true if poll_idle() is polling TIF_NEED_RESCHED */
  #define TIF_32BIT		20	/* 32 bit binary */
@@ -61,20 +61,21 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  
  /* as above, but as bit values */
  #define _TIF_SYSCALL_TRACE	(1<<TIF_SYSCALL_TRACE)
-@@ -130,6 +136,7 @@ void arch_setup_new_exec(void);
+@@ -129,6 +135,7 @@ void arch_setup_new_exec(void);
  #define _TIF_SYSCALL_TRACEPOINT	(1<<TIF_SYSCALL_TRACEPOINT)
  #define _TIF_EMULATE_STACK_STORE	(1<<TIF_EMULATE_STACK_STORE)
  #define _TIF_NOHZ		(1<<TIF_NOHZ)
 +#define _TIF_NEED_RESCHED_LAZY	(1<<TIF_NEED_RESCHED_LAZY)
- #define _TIF_FSCHECK		(1<<TIF_FSCHECK)
  #define _TIF_SYSCALL_EMU	(1<<TIF_SYSCALL_EMU)
  #define _TIF_SYSCALL_DOTRACE	(_TIF_SYSCALL_TRACE | _TIF_SYSCALL_AUDIT | \
-@@ -139,8 +146,9 @@ void arch_setup_new_exec(void);
+ 				 _TIF_SECCOMP | _TIF_SYSCALL_TRACEPOINT | \
+@@ -136,8 +143,10 @@ void arch_setup_new_exec(void);
+ 
  #define _TIF_USER_WORK_MASK	(_TIF_SIGPENDING | _TIF_NEED_RESCHED | \
  				 _TIF_NOTIFY_RESUME | _TIF_UPROBE | \
- 				 _TIF_RESTORE_TM | _TIF_PATCH_PENDING | \
--				 _TIF_FSCHECK)
-+				 _TIF_FSCHECK | _TIF_NEED_RESCHED_LAZY)
+-				 _TIF_RESTORE_TM | _TIF_PATCH_PENDING)
++				 _TIF_RESTORE_TM | _TIF_PATCH_PENDING | \
++				 _TIF_NEED_RESCHED_LAZY)
  #define _TIF_PERSYSCALL_MASK	(_TIF_RESTOREALL|_TIF_NOERROR)
 +#define _TIF_NEED_RESCHED_MASK	(_TIF_NEED_RESCHED | _TIF_NEED_RESCHED_LAZY)
  
@@ -82,7 +83,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  /* Don't move TLF_NAPPING without adjusting the code in entry_32.S */
 --- a/arch/powerpc/kernel/asm-offsets.c
 +++ b/arch/powerpc/kernel/asm-offsets.c
-@@ -188,6 +188,7 @@ int main(void)
+@@ -189,6 +189,7 @@ int main(void)
  	OFFSET(TI_FLAGS, thread_info, flags);
  	OFFSET(TI_LOCAL_FLAGS, thread_info, local_flags);
  	OFFSET(TI_PREEMPT, thread_info, preempt_count);
@@ -92,7 +93,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	OFFSET(DCACHEL1BLOCKSIZE, ppc64_caches, l1d.block_size);
 --- a/arch/powerpc/kernel/entry_32.S
 +++ b/arch/powerpc/kernel/entry_32.S
-@@ -415,7 +415,9 @@
+@@ -411,7 +411,9 @@
  	mtmsr	r10
  	lwz	r9,TI_FLAGS(r2)
  	li	r8,-MAX_ERRNO
@@ -103,7 +104,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	bne-	syscall_exit_work
  	cmplw	0,r3,r8
  	blt+	syscall_exit_cont
-@@ -532,13 +534,13 @@ END_FTR_SECTION_IFSET(CPU_FTR_NEED_PAIRE
+@@ -527,13 +529,13 @@ END_FTR_SECTION_IFSET(CPU_FTR_NEED_PAIRE
  	b	syscall_dotrace_cont
  
  syscall_exit_work:
@@ -119,7 +120,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	bne-	1f
  	lwz	r11,_CCR(r1)			/* Load CR */
  	neg	r3,r3
-@@ -547,12 +549,12 @@ END_FTR_SECTION_IFSET(CPU_FTR_NEED_PAIRE
+@@ -542,12 +544,12 @@ END_FTR_SECTION_IFSET(CPU_FTR_NEED_PAIRE
  
  1:	stw	r6,RESULT(r1)	/* Save result */
  	stw	r3,GPR3(r1)	/* Update return value */
@@ -134,7 +135,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	addi	r12,r2,TI_FLAGS
  3:	lwarx	r8,0,r12
  	andc	r8,r8,r11
-@@ -942,7 +944,14 @@ user_exc_return:		/* r10 contains MSR_KE
+@@ -924,7 +926,14 @@ user_exc_return:		/* r10 contains MSR_KE
  	cmpwi	0,r0,0		/* if non-zero, just restore regs and return */
  	bne	restore_kuap
  	andi.	r8,r8,_TIF_NEED_RESCHED
@@ -149,7 +150,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	lwz	r3,_MSR(r1)
  	andi.	r0,r3,MSR_EE	/* interrupts off? */
  	beq	restore_kuap	/* don't schedule if so */
-@@ -1265,7 +1274,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_NEED_PAIRE
+@@ -1245,7 +1254,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_NEED_PAIRE
  #endif /* !(CONFIG_4xx || CONFIG_BOOKE) */
  
  do_work:			/* r10 contains MSR_KERNEL here */
@@ -158,8 +159,8 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	beq	do_user_signal
  
  do_resched:			/* r10 contains MSR_KERNEL here */
-@@ -1286,7 +1295,7 @@ do_resched:			/* r10 contains MSR_KERNEL
- 	SYNC
+@@ -1264,7 +1273,7 @@ do_resched:			/* r10 contains MSR_KERNEL
+ 	LOAD_REG_IMMEDIATE(r10,MSR_KERNEL)
  	mtmsr	r10		/* disable interrupts */
  	lwz	r9,TI_FLAGS(r2)
 -	andi.	r0,r9,_TIF_NEED_RESCHED
@@ -169,7 +170,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	beq	restore_user
 --- a/arch/powerpc/kernel/exceptions-64e.S
 +++ b/arch/powerpc/kernel/exceptions-64e.S
-@@ -1081,7 +1081,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+@@ -1080,7 +1080,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
  	li	r10, -1
  	mtspr	SPRN_DBSR,r10
  	b	restore
@@ -178,7 +179,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	beq	2f
  	bl	restore_interrupts
  	SCHEDULE_USER
-@@ -1133,12 +1133,20 @@ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+@@ -1132,12 +1132,20 @@ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
  	bne-	0b
  1:
  
@@ -201,7 +202,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	cmpwi	cr0,r8,0
  	bne	restore
  	ld	r0,SOFTE(r1)
-@@ -1159,7 +1167,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+@@ -1158,7 +1166,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
  	 * interrupted after loading SRR0/1.
  	 */
  	wrteei	0

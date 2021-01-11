@@ -48,7 +48,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
-@@ -2301,7 +2301,7 @@ static void drain_all_stock(struct mem_c
+@@ -2353,7 +2353,7 @@ static void drain_all_stock(struct mem_c
  	 * as well as workers from this path always operate on the local
  	 * per-cpu data. CPU up doesn't touch memcg_stock at all.
  	 */
@@ -57,7 +57,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	for_each_online_cpu(cpu) {
  		struct memcg_stock_pcp *stock = &per_cpu(memcg_stock, cpu);
  		struct mem_cgroup *memcg;
-@@ -2324,7 +2324,7 @@ static void drain_all_stock(struct mem_c
+@@ -2376,7 +2376,7 @@ static void drain_all_stock(struct mem_c
  				schedule_work_on(cpu, &stock->work);
  		}
  	}

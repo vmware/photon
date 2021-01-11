@@ -18,7 +18,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -964,6 +964,7 @@ config CFS_BANDWIDTH
+@@ -969,6 +969,7 @@ config CFS_BANDWIDTH
  config RT_GROUP_SCHED
  	bool "Group scheduling for SCHED_RR/FIFO"
  	depends on CGROUP_SCHED

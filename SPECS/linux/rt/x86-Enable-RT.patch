@@ -11,7 +11,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -25,6 +25,7 @@ config X86_64
+@@ -26,6 +26,7 @@ config X86_64
  	# Options that are inherently 64-bit kernel only:
  	select ARCH_HAS_GIGANTIC_PAGE
  	select ARCH_SUPPORTS_INT128 if CC_HAS_INT128

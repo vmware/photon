@@ -41,7 +41,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  # define net_seq_begin(__r)		read_seqcount_begin(__r)
 --- a/include/net/sch_generic.h
 +++ b/include/net/sch_generic.h
-@@ -168,8 +168,16 @@ static inline bool qdisc_run_begin(struc
+@@ -171,8 +171,16 @@ static inline bool qdisc_run_begin(struc
  		return false;
  	}
  #ifdef CONFIG_PREEMPT_RT

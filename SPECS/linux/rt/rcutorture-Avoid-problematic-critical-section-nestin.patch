@@ -42,7 +42,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/kernel/rcu/rcutorture.c
 +++ b/kernel/rcu/rcutorture.c
-@@ -74,10 +74,13 @@ MODULE_AUTHOR("Paul E. McKenney <paulmck
+@@ -61,10 +61,13 @@ MODULE_AUTHOR("Paul E. McKenney <paulmck
  #define RCUTORTURE_RDR_RBH	 0x08	/*  ... rcu_read_lock_bh(). */
  #define RCUTORTURE_RDR_SCHED	 0x10	/*  ... rcu_read_lock_sched(). */
  #define RCUTORTURE_RDR_RCU	 0x20	/*  ... entering another RCU reader. */
@@ -58,7 +58,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #define RCUTORTURE_RDR_MAX_LOOPS 0x7	/* Maximum reader extensions. */
  					/* Must be power of two minus one. */
  #define RCUTORTURE_RDR_MAX_SEGS (RCUTORTURE_RDR_MAX_LOOPS + 3)
-@@ -1246,31 +1249,53 @@ static void rcutorture_one_extend(int *r
+@@ -1235,31 +1238,53 @@ static void rcutorture_one_extend(int *r
  	WARN_ON_ONCE((idxold >> RCUTORTURE_RDR_SHIFT) > 1);
  	rtrsp->rt_readstate = newstate;
  
@@ -119,7 +119,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	if (statesold & RCUTORTURE_RDR_RCU) {
  		bool lockit = !statesnew && !(torture_random(trsp) & 0xffff);
  
-@@ -1313,6 +1338,12 @@ rcutorture_extend_mask(int oldmask, stru
+@@ -1302,6 +1327,12 @@ rcutorture_extend_mask(int oldmask, stru
  	int mask = rcutorture_extend_mask_max();
  	unsigned long randmask1 = torture_random(trsp) >> 8;
  	unsigned long randmask2 = randmask1 >> 3;
@@ -132,7 +132,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	WARN_ON_ONCE(mask >> RCUTORTURE_RDR_SHIFT);
  	/* Mostly only one bit (need preemption!), sometimes lots of bits. */
-@@ -1320,11 +1351,49 @@ rcutorture_extend_mask(int oldmask, stru
+@@ -1309,11 +1340,49 @@ rcutorture_extend_mask(int oldmask, stru
  		mask = mask & randmask2;
  	else
  		mask = mask & (1 << (randmask2 % RCUTORTURE_RDR_NBITS));

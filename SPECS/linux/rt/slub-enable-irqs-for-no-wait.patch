@@ -45,7 +45,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  		local_irq_disable();
  	if (!page)
  		return NULL;
-@@ -2861,6 +2869,10 @@ static __always_inline void *slab_alloc_
+@@ -2865,6 +2873,10 @@ static __always_inline void *slab_alloc_
  	unsigned long tid;
  	struct obj_cgroup *objcg = NULL;
  
@@ -56,7 +56,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	s = slab_pre_alloc_hook(s, &objcg, 1, gfpflags);
  	if (!s)
  		return NULL;
-@@ -3326,6 +3338,10 @@ int kmem_cache_alloc_bulk(struct kmem_ca
+@@ -3331,6 +3343,10 @@ int kmem_cache_alloc_bulk(struct kmem_ca
  	int i;
  	struct obj_cgroup *objcg = NULL;
  

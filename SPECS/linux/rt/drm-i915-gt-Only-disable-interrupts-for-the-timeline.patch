@@ -20,7 +20,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/drivers/gpu/drm/i915/gt/intel_engine_pm.c
 +++ b/drivers/gpu/drm/i915/gt/intel_engine_pm.c
-@@ -59,9 +59,10 @@ static int __engine_unpark(struct intel_
+@@ -60,9 +60,10 @@ static int __engine_unpark(struct intel_
  
  static inline unsigned long __timeline_mark_lock(struct intel_context *ce)
  {
@@ -33,7 +33,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	mutex_acquire(&ce->timeline->mutex.dep_map, 2, 0, _THIS_IP_);
  
  	return flags;
-@@ -71,7 +72,8 @@ static inline void __timeline_mark_unloc
+@@ -72,7 +73,8 @@ static inline void __timeline_mark_unloc
  					  unsigned long flags)
  {
  	mutex_release(&ce->timeline->mutex.dep_map, _THIS_IP_);

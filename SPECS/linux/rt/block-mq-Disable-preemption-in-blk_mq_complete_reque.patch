@@ -1,0 +1,31 @@
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 30 Oct 2020 19:23:14 +0100
+Subject: [PATCH] block-mq: Disable preemption in
+ blk_mq_complete_request_remote()
+
+There callers of blk_mq_complete_request() which invoke it in
+preemptible context.
+
+Disable preemption while an item is added on the local-CPU to ensure
+that the softirq is fired on the same CPU.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ block/blk-mq.c |    3 +++
+ 1 file changed, 3 insertions(+)
+
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -644,9 +644,12 @@ bool blk_mq_complete_request_remote(stru
+ 	} else {
+ 		if (rq->q->nr_hw_queues > 1)
+ 			return false;
++
++		preempt_disable();
+ 		cpu_list = this_cpu_ptr(&blk_cpu_done);
+ 		if (llist_add(&rq->ipi_list, cpu_list))
+ 			raise_softirq(BLOCK_SOFTIRQ);
++		preempt_enable();
+ 	}
+ 
+ 	return true;

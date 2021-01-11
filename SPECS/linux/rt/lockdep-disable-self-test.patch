@@ -17,7 +17,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/lib/Kconfig.debug
 +++ b/lib/Kconfig.debug
-@@ -1349,7 +1349,7 @@ config DEBUG_ATOMIC_SLEEP
+@@ -1330,7 +1330,7 @@ config DEBUG_ATOMIC_SLEEP
  
  config DEBUG_LOCKING_API_SELFTESTS
  	bool "Locking API boot-time self-tests"

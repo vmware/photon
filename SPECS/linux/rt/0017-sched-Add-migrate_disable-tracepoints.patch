@@ -1,6 +1,6 @@
 From: Peter Zijlstra <peterz@infradead.org>
-Date: Mon, 5 Oct 2020 16:57:34 +0200
-Subject: [PATCH 17/17] sched: Add migrate_disable() tracepoints
+Date: Fri, 23 Oct 2020 12:12:15 +0200
+Subject: [PATCH 17/19] sched: Add migrate_disable() tracepoints
 
 XXX write a tracer:
 
@@ -22,7 +22,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/include/trace/events/sched.h
 +++ b/include/trace/events/sched.h
-@@ -646,6 +646,18 @@ DECLARE_TRACE(sched_update_nr_running_tp
+@@ -650,6 +650,18 @@ DECLARE_TRACE(sched_update_nr_running_tp
  	TP_PROTO(struct rq *rq, int change),
  	TP_ARGS(rq, change));
  
@@ -43,7 +43,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  /* This part must be outside protection */
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -1732,6 +1732,8 @@ void migrate_disable(void)
+@@ -1728,6 +1728,8 @@ void migrate_disable(void)
  		return;
  	}
  
@@ -52,7 +52,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	preempt_disable();
  	this_rq()->nr_pinned++;
  	p->migration_disabled = 1;
-@@ -1764,6 +1766,8 @@ void migrate_enable(void)
+@@ -1760,6 +1762,8 @@ void migrate_enable(void)
  	p->migration_disabled = 0;
  	this_rq()->nr_pinned--;
  	preempt_enable();
@@ -63,7 +63,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
 --- a/kernel/sched/deadline.c
 +++ b/kernel/sched/deadline.c
-@@ -2245,6 +2245,7 @@ static void pull_dl_task(struct rq *this
+@@ -2278,6 +2278,7 @@ static void pull_dl_task(struct rq *this
  				goto skip;
  
  			if (is_migration_disabled(p)) {

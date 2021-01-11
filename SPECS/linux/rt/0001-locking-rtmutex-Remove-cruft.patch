@@ -1,6 +1,6 @@
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 29 Sep 2020 15:21:17 +0200
-Subject: [PATCH 01/23] locking/rtmutex: Remove cruft
+Subject: [PATCH 01/22] locking/rtmutex: Remove cruft
 
 Most of this is around since the very beginning. I'm not sure if this
 was used while the rtmutex-deadlock-tester was around but today it seems

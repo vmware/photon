@@ -1,0 +1,157 @@
+From: John Ogness <john.ogness@linutronix.de>
+Date: Mon, 30 Nov 2020 01:41:58 +0106
+Subject: [PATCH 03/21] printk: use seqcount_latch for clear_seq
+
+kmsg_dump_rewind_nolock() locklessly reads @clear_seq. However,
+this is not done atomically. Since @clear_seq is 64-bit, this
+cannot be an atomic operation for all platforms. Therefore, use
+a seqcount_latch to allow readers to always read a consistent
+value.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk.c |   62 +++++++++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 53 insertions(+), 9 deletions(-)
+
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -402,8 +402,21 @@ static u64 console_seq;
+ static u64 exclusive_console_stop_seq;
+ static unsigned long console_dropped;
+ 
+-/* the next printk record to read after the last 'clear' command */
+-static u64 clear_seq;
++struct latched_seq {
++	seqcount_latch_t	latch;
++	u64			val[2];
++};
++
++/*
++ * The next printk record to read after the last 'clear' command. There are
++ * two copies (updated with seqcount_latch) so that reads can locklessly
++ * access a valid value. Writers are synchronized by @syslog_lock.
++ */
++static struct latched_seq clear_seq = {
++	.latch		= SEQCNT_LATCH_ZERO(clear_seq.latch),
++	.val[0]		= 0,
++	.val[1]		= 0,
++};
+ 
+ #ifdef CONFIG_PRINTK_CALLER
+ #define PREFIX_MAX		48
+@@ -452,6 +465,31 @@ bool printk_percpu_data_ready(void)
+ 	return __printk_percpu_data_ready;
+ }
+ 
++/* Must be called under logbuf_lock. */
++void latched_seq_write(struct latched_seq *ls, u64 val)
++{
++	raw_write_seqcount_latch(&ls->latch);
++	ls->val[0] = val;
++	raw_write_seqcount_latch(&ls->latch);
++	ls->val[1] = val;
++}
++
++/* Can be called from any context. */
++u64 latched_seq_read_nolock(struct latched_seq *ls)
++{
++	unsigned int seq;
++	unsigned int idx;
++	u64 val;
++
++	do {
++		seq = raw_read_seqcount_latch(&ls->latch);
++		idx = seq & 0x1;
++		val = ls->val[idx];
++	} while (read_seqcount_latch_retry(&ls->latch, seq));
++
++	return val;
++}
++
+ /* Return log buffer address */
+ char *log_buf_addr_get(void)
+ {
+@@ -797,7 +835,7 @@ static loff_t devkmsg_llseek(struct file
+ 		 * like issued by 'dmesg -c'. Reading /dev/kmsg itself
+ 		 * changes no global state, and does not clear anything.
+ 		 */
+-		user->seq = clear_seq;
++		user->seq = latched_seq_read_nolock(&clear_seq);
+ 		break;
+ 	case SEEK_END:
+ 		/* after the last record */
+@@ -955,6 +993,9 @@ void log_buf_vmcoreinfo_setup(void)
+ 
+ 	VMCOREINFO_SIZE(atomic_long_t);
+ 	VMCOREINFO_TYPE_OFFSET(atomic_long_t, counter);
++
++	VMCOREINFO_STRUCT_SIZE(latched_seq);
++	VMCOREINFO_OFFSET(latched_seq, val);
+ }
+ #endif
+ 
+@@ -1476,6 +1517,7 @@ static int syslog_print_all(char __user
+ 	struct printk_info info;
+ 	unsigned int line_count;
+ 	struct printk_record r;
++	u64 clr_seq;
+ 	char *text;
+ 	int len = 0;
+ 	u64 seq;
+@@ -1487,15 +1529,17 @@ static int syslog_print_all(char __user
+ 
+ 	time = printk_time;
+ 	logbuf_lock_irq();
++	clr_seq = latched_seq_read_nolock(&clear_seq);
++
+ 	/*
+ 	 * Find first record that fits, including all following records,
+ 	 * into the user-provided buffer for this dump.
+ 	 */
+-	prb_for_each_info(clear_seq, prb, seq, &info, &line_count)
++	prb_for_each_info(clr_seq, prb, seq, &info, &line_count)
+ 		len += get_record_print_text_size(&info, line_count, true, time);
+ 
+ 	/* move first record forward until length fits into the buffer */
+-	prb_for_each_info(clear_seq, prb, seq, &info, &line_count) {
++	prb_for_each_info(clr_seq, prb, seq, &info, &line_count) {
+ 		if (len <= size)
+ 			break;
+ 		len -= get_record_print_text_size(&info, line_count, true, time);
+@@ -1526,7 +1570,7 @@ static int syslog_print_all(char __user
+ 	}
+ 
+ 	if (clear)
+-		clear_seq = seq;
++		latched_seq_write(&clear_seq, seq);
+ 	logbuf_unlock_irq();
+ 
+ 	kfree(text);
+@@ -1536,7 +1580,7 @@ static int syslog_print_all(char __user
+ static void syslog_clear(void)
+ {
+ 	logbuf_lock_irq();
+-	clear_seq = prb_next_seq(prb);
++	latched_seq_write(&clear_seq, prb_next_seq(prb));
+ 	logbuf_unlock_irq();
+ }
+ 
+@@ -3269,7 +3313,7 @@ void kmsg_dump(enum kmsg_dump_reason rea
+ 		dumper->active = true;
+ 
+ 		logbuf_lock_irqsave(flags);
+-		dumper->cur_seq = clear_seq;
++		dumper->cur_seq = latched_seq_read_nolock(&clear_seq);
+ 		dumper->next_seq = prb_next_seq(prb);
+ 		logbuf_unlock_irqrestore(flags);
+ 
+@@ -3476,7 +3520,7 @@ EXPORT_SYMBOL_GPL(kmsg_dump_get_buffer);
+  */
+ void kmsg_dump_rewind_nolock(struct kmsg_dumper *dumper)
+ {
+-	dumper->cur_seq = clear_seq;
++	dumper->cur_seq = latched_seq_read_nolock(&clear_seq);
+ 	dumper->next_seq = prb_next_seq(prb);
+ }
+ 

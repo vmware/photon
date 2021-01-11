@@ -17,7 +17,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 
 --- a/lib/locking-selftest.c
 +++ b/lib/locking-selftest.c
-@@ -2058,6 +2058,7 @@ void locking_selftest(void)
+@@ -2455,6 +2455,7 @@ void locking_selftest(void)
  
  	printk("  --------------------------------------------------------------------------\n");
  
@@ -25,10 +25,10 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	/*
  	 * irq-context testcases:
  	 */
-@@ -2070,6 +2071,28 @@ void locking_selftest(void)
+@@ -2469,6 +2470,28 @@ void locking_selftest(void)
+ 	DO_TESTCASE_6x2x2RW("irq read-recursion #2", irq_read_recursion2);
+ 	DO_TESTCASE_6x2x2RW("irq read-recursion #3", irq_read_recursion3);
  
- 	DO_TESTCASE_6x2("irq read-recursion", irq_read_recursion);
- //	DO_TESTCASE_6x2B("irq read-recursion #2", irq_read_recursion2);
 +#else
 +	/* On -rt, we only do hardirq context test for raw spinlock */
 +	DO_TESTCASE_1B("hard-irqs-on + irq-safe-A", irqsafe1_hard_spin, 12);
@@ -51,6 +51,6 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 +	DO_TESTCASE_1B("hard-safe-A + unsafe-B #2", irqsafe4_hard_spin, 312);
 +	DO_TESTCASE_1B("hard-safe-A + unsafe-B #2", irqsafe4_hard_spin, 321);
 +#endif
- 
  	ww_tests();
  
+ 	force_read_lock_recursive = 0;

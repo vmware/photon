@@ -25,7 +25,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  
  #else /* #ifdef CONFIG_PREEMPT_RCU */
  
-@@ -70,6 +75,8 @@ static inline int rcu_preempt_depth(void
+@@ -77,6 +82,8 @@ static inline int rcu_preempt_depth(void
  	return 0;
  }
  
@@ -36,7 +36,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  /* Internal to kernel */
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -7712,7 +7712,7 @@ void __init sched_init(void)
+@@ -7877,7 +7877,7 @@ void __init sched_init(void)
  #ifdef CONFIG_DEBUG_ATOMIC_SLEEP
  static inline int preempt_count_equals(int preempt_offset)
  {

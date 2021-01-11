@@ -22,7 +22,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 
 --- a/arch/x86/kernel/cpu/mshyperv.c
 +++ b/arch/x86/kernel/cpu/mshyperv.c
-@@ -75,11 +75,12 @@ EXPORT_SYMBOL_GPL(hv_remove_vmbus_irq);
+@@ -80,11 +80,12 @@ EXPORT_SYMBOL_GPL(hv_remove_vmbus_irq);
  DEFINE_IDTENTRY_SYSVEC(sysvec_hyperv_stimer0)
  {
  	struct pt_regs *old_regs = set_irq_regs(regs);
@@ -92,7 +92,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  
  #include <linux/delay.h>
  #include <linux/notifier.h>
-@@ -1303,6 +1304,8 @@ static void vmbus_isr(void)
+@@ -1307,6 +1308,8 @@ static void vmbus_isr(void)
  	void *page_addr = hv_cpu->synic_event_page;
  	struct hv_message *msg;
  	union hv_synic_event_flags *event;
@@ -101,12 +101,12 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	bool handled = false;
  
  	if (unlikely(page_addr == NULL))
-@@ -1347,7 +1350,7 @@ static void vmbus_isr(void)
+@@ -1351,7 +1354,7 @@ static void vmbus_isr(void)
  			tasklet_schedule(&hv_cpu->msg_dpc);
  	}
  
--	add_interrupt_randomness(HYPERVISOR_CALLBACK_VECTOR, 0);
-+	add_interrupt_randomness(HYPERVISOR_CALLBACK_VECTOR, 0, ip);
+-	add_interrupt_randomness(hv_get_vector(), 0);
++	add_interrupt_randomness(hv_get_vector(), 0, ip);
  }
  
  /*
@@ -153,7 +153,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  		note_interrupt(desc, retval);
 --- a/kernel/irq/manage.c
 +++ b/kernel/irq/manage.c
-@@ -1175,6 +1175,12 @@ static int irq_thread(void *data)
+@@ -1177,6 +1177,12 @@ static int irq_thread(void *data)
  		if (action_ret == IRQ_WAKE_THREAD)
  			irq_wake_secondary(desc, action);
  

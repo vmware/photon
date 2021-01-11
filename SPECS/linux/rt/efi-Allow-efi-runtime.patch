@@ -13,7 +13,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/drivers/firmware/efi/efi.c
 +++ b/drivers/firmware/efi/efi.c
-@@ -93,6 +93,9 @@ static int __init parse_efi_cmdline(char
+@@ -97,6 +97,9 @@ static int __init parse_efi_cmdline(char
  	if (parse_option_str(str, "noruntime"))
  		disable_runtime = true;
  

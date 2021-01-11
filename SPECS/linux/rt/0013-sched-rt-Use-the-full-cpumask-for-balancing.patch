@@ -1,6 +1,6 @@
 From: Peter Zijlstra <peterz@infradead.org>
-Date: Mon, 5 Oct 2020 16:57:30 +0200
-Subject: [PATCH 13/17] sched,rt: Use the full cpumask for balancing
+Date: Fri, 23 Oct 2020 12:12:11 +0200
+Subject: [PATCH 13/19] sched,rt: Use the full cpumask for balancing
 
 We want migrate_disable() tasks to get PULLs in order for them to PUSH
 away the higher priority task.
@@ -52,7 +52,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		 * We have to ensure that we have at least one bit
 --- a/kernel/sched/deadline.c
 +++ b/kernel/sched/deadline.c
-@@ -1888,7 +1888,7 @@ static void task_fork_dl(struct task_str
+@@ -1918,7 +1918,7 @@ static void task_fork_dl(struct task_str
  static int pick_dl_task(struct rq *rq, struct task_struct *p, int cpu)
  {
  	if (!task_running(rq, p) &&
@@ -61,7 +61,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		return 1;
  	return 0;
  }
-@@ -2038,7 +2038,7 @@ static struct rq *find_lock_later_rq(str
+@@ -2068,7 +2068,7 @@ static struct rq *find_lock_later_rq(str
  		/* Retry if something changed. */
  		if (double_lock_balance(rq, later_rq)) {
  			if (unlikely(task_rq(task) != rq ||

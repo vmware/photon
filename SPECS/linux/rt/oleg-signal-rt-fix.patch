@@ -62,7 +62,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #endif
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
-@@ -959,6 +959,10 @@ struct task_struct {
+@@ -994,6 +994,10 @@ struct task_struct {
  	/* Restored if set_restore_sigmask() was used: */
  	sigset_t			saved_sigmask;
  	struct sigpending		pending;
@@ -75,7 +75,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	unsigned int			sas_ss_flags;
 --- a/kernel/entry/common.c
 +++ b/kernel/entry/common.c
-@@ -151,6 +151,14 @@ static unsigned long exit_to_user_mode_l
+@@ -152,6 +152,14 @@ static unsigned long exit_to_user_mode_l
  		if (ti_work & _TIF_NEED_RESCHED)
  			schedule();
  
@@ -92,7 +92,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
 --- a/kernel/signal.c
 +++ b/kernel/signal.c
-@@ -1313,6 +1313,34 @@ force_sig_info_to_task(struct kernel_sig
+@@ -1314,6 +1314,34 @@ force_sig_info_to_task(struct kernel_sig
  	struct k_sigaction *action;
  	int sig = info->si_signo;
  

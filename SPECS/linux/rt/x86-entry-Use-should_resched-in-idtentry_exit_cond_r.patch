@@ -17,7 +17,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/kernel/entry/common.c
 +++ b/kernel/entry/common.c
-@@ -354,7 +354,7 @@ void irqentry_exit_cond_resched(void)
+@@ -363,7 +363,7 @@ void irqentry_exit_cond_resched(void)
  		rcu_irq_exit_check_preempt();
  		if (IS_ENABLED(CONFIG_DEBUG_ENTRY))
  			WARN_ON_ONCE(!on_thread_stack());

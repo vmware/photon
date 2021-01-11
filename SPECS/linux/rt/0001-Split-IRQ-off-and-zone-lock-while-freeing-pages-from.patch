@@ -17,7 +17,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -1282,7 +1282,7 @@ static inline void prefetch_buddy(struct
+@@ -1329,7 +1329,7 @@ static inline void prefetch_buddy(struct
  }
  
  /*
@@ -26,7 +26,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
   * Assumes all pages on list are in same zone, and of same order.
   * count is the number of pages to free.
   *
-@@ -1293,14 +1293,40 @@ static inline void prefetch_buddy(struct
+@@ -1340,14 +1340,40 @@ static inline void prefetch_buddy(struct
   * pinned" detection logic.
   */
  static void free_pcppages_bulk(struct zone *zone, int count,
@@ -52,7 +52,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 +		if (unlikely(isolated_pageblocks))
 +			mt = get_pageblock_migratetype(page);
 +
-+		__free_one_page(page, page_to_pfn(page), zone, 0, mt, true);
++		__free_one_page(page, page_to_pfn(page), zone, 0, mt, FPI_NONE);
 +		trace_mm_page_pcpu_drain(page, 0, mt);
 +	}
 +	spin_unlock_irqrestore(&zone->lock, flags);
@@ -71,7 +71,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	/*
  	 * Ensure proper count is passed which otherwise would stuck in the
-@@ -1337,7 +1363,7 @@ static void free_pcppages_bulk(struct zo
+@@ -1384,7 +1410,7 @@ static void free_pcppages_bulk(struct zo
  			if (bulkfree_pcp_prepare(page))
  				continue;
  
@@ -80,7 +80,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  			/*
  			 * We are going to put the page back to the global
-@@ -1352,26 +1378,6 @@ static void free_pcppages_bulk(struct zo
+@@ -1399,26 +1425,6 @@ static void free_pcppages_bulk(struct zo
  				prefetch_buddy(page);
  		} while (--count && --batch_free && !list_empty(list));
  	}
@@ -100,14 +100,14 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 -		if (unlikely(isolated_pageblocks))
 -			mt = get_pageblock_migratetype(page);
 -
--		__free_one_page(page, page_to_pfn(page), zone, 0, mt, true);
+-		__free_one_page(page, page_to_pfn(page), zone, 0, mt, FPI_NONE);
 -		trace_mm_page_pcpu_drain(page, 0, mt);
 -	}
 -	spin_unlock(&zone->lock);
  }
  
  static void free_one_page(struct zone *zone,
-@@ -2876,13 +2882,18 @@ void drain_zone_pages(struct zone *zone,
+@@ -2935,13 +2941,18 @@ void drain_zone_pages(struct zone *zone,
  {
  	unsigned long flags;
  	int to_drain, batch;
@@ -127,7 +127,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  }
  #endif
  
-@@ -2898,14 +2909,21 @@ static void drain_pages_zone(unsigned in
+@@ -2957,14 +2968,21 @@ static void drain_pages_zone(unsigned in
  	unsigned long flags;
  	struct per_cpu_pageset *pset;
  	struct per_cpu_pages *pcp;
@@ -151,7 +151,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  }
  
  /*
-@@ -3133,7 +3151,10 @@ static void free_unref_page_commit(struc
+@@ -3193,7 +3211,10 @@ static void free_unref_page_commit(struc
  	pcp->count++;
  	if (pcp->count >= pcp->high) {
  		unsigned long batch = READ_ONCE(pcp->batch);

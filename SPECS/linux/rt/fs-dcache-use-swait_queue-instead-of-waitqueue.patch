@@ -112,7 +112,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	/* Don't go there if it's already dead */
  	if (unlikely(IS_DEADDIR(inode)))
-@@ -3018,7 +3018,7 @@ static struct dentry *lookup_open(struct
+@@ -3019,7 +3019,7 @@ static struct dentry *lookup_open(struct
  	struct dentry *dentry;
  	int error, create_error = 0;
  	umode_t mode = op->mode;
@@ -132,7 +132,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	struct dentry *dentry;
  	struct dentry *alias;
  	struct inode *inode;
-@@ -1665,7 +1665,7 @@ int nfs_atomic_open(struct inode *dir, s
+@@ -1660,7 +1660,7 @@ int nfs_atomic_open(struct inode *dir, s
  		    struct file *file, unsigned open_flags,
  		    umode_t mode)
  {
@@ -171,7 +171,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #include <trace/events/oom.h>
  #include "internal.h"
  #include "fd.h"
-@@ -2033,7 +2034,7 @@ bool proc_fill_cache(struct file *file,
+@@ -2038,7 +2039,7 @@ bool proc_fill_cache(struct file *file,
  
  	child = d_hash_and_lookup(dir, &qname);
  	if (!child) {
@@ -182,7 +182,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  			goto end_instantiate;
 --- a/fs/proc/proc_sysctl.c
 +++ b/fs/proc/proc_sysctl.c
-@@ -685,7 +685,7 @@ static bool proc_sys_fill_cache(struct f
+@@ -683,7 +683,7 @@ static bool proc_sys_fill_cache(struct f
  
  	child = d_lookup(dir, &qname);
  	if (!child) {

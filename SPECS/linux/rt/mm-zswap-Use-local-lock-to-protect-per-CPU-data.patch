@@ -23,8 +23,8 @@ Cc: linux-mm@kvack.org
 Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- mm/zswap.c |   41 ++++++++++++++++++++++++++---------------
- 1 file changed, 26 insertions(+), 15 deletions(-)
+ mm/zswap.c |   43 ++++++++++++++++++++++++++++---------------
+ 1 file changed, 28 insertions(+), 15 deletions(-)
 
 --- a/mm/zswap.c
 +++ b/mm/zswap.c
@@ -36,7 +36,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #include <linux/types.h>
  #include <linux/atomic.h>
  #include <linux/frontswap.h>
-@@ -387,27 +388,35 @@ static struct zswap_entry *zswap_entry_f
+@@ -387,27 +388,37 @@ static struct zswap_entry *zswap_entry_f
  /*********************************
  * per-cpu code
  **********************************/
@@ -47,7 +47,9 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 +	u8 *dstmem;
 +};
 +
-+static DEFINE_PER_CPU(struct zswap_comp, zswap_comp);
++static DEFINE_PER_CPU(struct zswap_comp, zswap_comp) = {
++	.lock = INIT_LOCAL_LOCK(lock),
++};
  
  static int zswap_dstmem_prepare(unsigned int cpu)
  {
@@ -78,7 +80,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	return 0;
  }
-@@ -919,10 +928,11 @@ static int zswap_writeback_entry(struct
+@@ -919,10 +930,11 @@ static int zswap_writeback_entry(struct
  		dlen = PAGE_SIZE;
  		src = (u8 *)zhdr + sizeof(struct zswap_header);
  		dst = kmap_atomic(page);
@@ -92,7 +94,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		kunmap_atomic(dst);
  		BUG_ON(ret);
  		BUG_ON(dlen != PAGE_SIZE);
-@@ -1074,12 +1084,12 @@ static int zswap_frontswap_store(unsigne
+@@ -1074,12 +1086,12 @@ static int zswap_frontswap_store(unsigne
  	}
  
  	/* compress */
@@ -108,7 +110,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	if (ret) {
  		ret = -EINVAL;
  		goto put_dstmem;
-@@ -1103,7 +1113,7 @@ static int zswap_frontswap_store(unsigne
+@@ -1103,7 +1115,7 @@ static int zswap_frontswap_store(unsigne
  	memcpy(buf, &zhdr, hlen);
  	memcpy(buf + hlen, dst, dlen);
  	zpool_unmap_handle(entry->pool->zpool, handle);
@@ -117,7 +119,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	/* populate entry */
  	entry->offset = offset;
-@@ -1131,7 +1141,7 @@ static int zswap_frontswap_store(unsigne
+@@ -1131,7 +1143,7 @@ static int zswap_frontswap_store(unsigne
  	return 0;
  
  put_dstmem:
@@ -126,7 +128,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	zswap_pool_put(entry->pool);
  freepage:
  	zswap_entry_cache_free(entry);
-@@ -1176,9 +1186,10 @@ static int zswap_frontswap_load(unsigned
+@@ -1176,9 +1188,10 @@ static int zswap_frontswap_load(unsigned
  	if (zpool_evictable(entry->pool->zpool))
  		src += sizeof(struct zswap_header);
  	dst = kmap_atomic(page);

@@ -1,6 +1,6 @@
 From: Peter Zijlstra <peterz@infradead.org>
-Date: Mon, 5 Oct 2020 16:57:29 +0200
-Subject: [PATCH 12/17] sched,rt: Use cpumask_any*_distribute()
+Date: Fri, 23 Oct 2020 12:12:10 +0200
+Subject: [PATCH 12/19] sched,rt: Use cpumask_any*_distribute()
 
 Replace a bunch of cpumask_any*() instances with
 cpumask_any*_distribute(), by injecting this little bit of random in
@@ -11,10 +11,10 @@ Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
  include/linux/cpumask.h |    6 ++++++
- kernel/sched/deadline.c |    2 +-
+ kernel/sched/deadline.c |    6 +++---
  kernel/sched/rt.c       |    6 +++---
  lib/cpumask.c           |   18 ++++++++++++++++++
- 4 files changed, 28 insertions(+), 4 deletions(-)
+ 4 files changed, 30 insertions(+), 6 deletions(-)
 
 --- a/include/linux/cpumask.h
 +++ b/include/linux/cpumask.h
@@ -40,7 +40,18 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
   * for_each_cpu - iterate over every cpu in a mask
 --- a/kernel/sched/deadline.c
 +++ b/kernel/sched/deadline.c
-@@ -2001,7 +2001,7 @@ static int find_later_rq(struct task_str
+@@ -2008,8 +2008,8 @@ static int find_later_rq(struct task_str
+ 				return this_cpu;
+ 			}
+ 
+-			best_cpu = cpumask_first_and(later_mask,
+-							sched_domain_span(sd));
++			best_cpu = cpumask_any_and_distribute(later_mask,
++							      sched_domain_span(sd));
+ 			/*
+ 			 * Last chance: if a CPU being in both later_mask
+ 			 * and current sd span is valid, that becomes our
+@@ -2031,7 +2031,7 @@ static int find_later_rq(struct task_str
  	if (this_cpu != -1)
  		return this_cpu;
  

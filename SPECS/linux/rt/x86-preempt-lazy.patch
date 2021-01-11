@@ -15,7 +15,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -209,6 +209,7 @@ config X86
+@@ -211,6 +211,7 @@ config X86
  	select HAVE_PCI
  	select HAVE_PERF_REGS
  	select HAVE_PERF_USER_STACK_DUMP
@@ -110,7 +110,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  #define TIF_MEMDIE		20	/* is terminating due to OOM killer */
  #define TIF_POLLING_NRFLAG	21	/* idle is polling for TIF_NEED_RESCHED */
  #define TIF_IO_BITMAP		22	/* uses I/O bitmap */
-@@ -123,6 +131,7 @@ struct thread_info {
+@@ -122,6 +130,7 @@ struct thread_info {
  #define _TIF_NOTSC		(1 << TIF_NOTSC)
  #define _TIF_IA32		(1 << TIF_IA32)
  #define _TIF_SLD		(1 << TIF_SLD)
@@ -118,7 +118,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  #define _TIF_POLLING_NRFLAG	(1 << TIF_POLLING_NRFLAG)
  #define _TIF_IO_BITMAP		(1 << TIF_IO_BITMAP)
  #define _TIF_FORCED_TF		(1 << TIF_FORCED_TF)
-@@ -156,6 +165,8 @@ struct thread_info {
+@@ -154,6 +163,8 @@ struct thread_info {
  
  #define _TIF_WORK_CTXSW_NEXT	(_TIF_WORK_CTXSW)
  
@@ -140,7 +140,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  /**
 --- a/kernel/entry/common.c
 +++ b/kernel/entry/common.c
-@@ -148,7 +148,7 @@ static unsigned long exit_to_user_mode_l
+@@ -149,7 +149,7 @@ static unsigned long exit_to_user_mode_l
  
  		local_irq_enable_exit_to_user(ti_work);
  

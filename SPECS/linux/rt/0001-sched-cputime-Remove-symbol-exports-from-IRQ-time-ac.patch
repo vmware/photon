@@ -1,0 +1,64 @@
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Wed, 2 Dec 2020 12:57:28 +0100
+Subject: [PATCH 1/5] sched/cputime: Remove symbol exports from IRQ time
+ accounting
+
+account_irq_enter_time() and account_irq_exit_time() are not called
+from modules. EXPORT_SYMBOL_GPL() can be safely removed from the IRQ
+cputime accounting functions called from there.
+
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20201202115732.27827-2-frederic@kernel.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/s390/kernel/vtime.c |   10 +++++-----
+ kernel/sched/cputime.c   |    2 --
+ 2 files changed, 5 insertions(+), 7 deletions(-)
+
+--- a/arch/s390/kernel/vtime.c
++++ b/arch/s390/kernel/vtime.c
+@@ -226,7 +226,7 @@ void vtime_flush(struct task_struct *tsk
+  * Update process times based on virtual cpu times stored by entry.S
+  * to the lowcore fields user_timer, system_timer & steal_clock.
+  */
+-void vtime_account_irq_enter(struct task_struct *tsk)
++void vtime_account_kernel(struct task_struct *tsk)
+ {
+ 	u64 timer;
+ 
+@@ -245,12 +245,12 @@ void vtime_account_irq_enter(struct task
+ 
+ 	virt_timer_forward(timer);
+ }
+-EXPORT_SYMBOL_GPL(vtime_account_irq_enter);
+-
+-void vtime_account_kernel(struct task_struct *tsk)
+-__attribute__((alias("vtime_account_irq_enter")));
+ EXPORT_SYMBOL_GPL(vtime_account_kernel);
+ 
++void vtime_account_irq_enter(struct task_struct *tsk)
++__attribute__((alias("vtime_account_kernel")));
++
++
+ /*
+  * Sorted add to a list. List is linear searched until first bigger
+  * element is found.
+--- a/kernel/sched/cputime.c
++++ b/kernel/sched/cputime.c
+@@ -71,7 +71,6 @@ void irqtime_account_irq(struct task_str
+ 	else if (in_serving_softirq() && curr != this_cpu_ksoftirqd())
+ 		irqtime_account_delta(irqtime, delta, CPUTIME_SOFTIRQ);
+ }
+-EXPORT_SYMBOL_GPL(irqtime_account_irq);
+ 
+ static u64 irqtime_tick_accounted(u64 maxtime)
+ {
+@@ -434,7 +433,6 @@ void vtime_account_irq_enter(struct task
+ 	else
+ 		vtime_account_kernel(tsk);
+ }
+-EXPORT_SYMBOL_GPL(vtime_account_irq_enter);
+ #endif /* __ARCH_HAS_VTIME_ACCOUNT */
+ 
+ void cputime_adjust(struct task_cputime *curr, struct prev_cputime *prev,

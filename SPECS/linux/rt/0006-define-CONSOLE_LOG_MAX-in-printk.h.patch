@@ -1,0 +1,89 @@
+From: John Ogness <john.ogness@linutronix.de>
+Date: Thu, 10 Dec 2020 12:48:01 +0106
+Subject: [PATCH 06/21] define CONSOLE_LOG_MAX in printk.h
+
+CONSOLE_EXT_LOG_MAX for extended console messages is already defined
+in printk.h. Define CONSOLE_LOG_MAX there as well so that future
+changes can make use of the constant for non-extended console
+messages.
+
+Use CONSOLE_LOG_MAX instead of LOG_LINE_MAX + PREFIX_MAX.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/printk.h |    1 +
+ kernel/printk/printk.c |   14 ++++++--------
+ 2 files changed, 7 insertions(+), 8 deletions(-)
+
+--- a/include/linux/printk.h
++++ b/include/linux/printk.h
+@@ -45,6 +45,7 @@ static inline const char *printk_skip_he
+ }
+ 
+ #define CONSOLE_EXT_LOG_MAX	8192
++#define CONSOLE_LOG_MAX		1024
+ 
+ /* printk's without a loglevel use this.. */
+ #define MESSAGE_LOGLEVEL_DEFAULT CONFIG_MESSAGE_LOGLEVEL_DEFAULT
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -427,7 +427,7 @@ static struct latched_seq clear_seq = {
+ #else
+ #define PREFIX_MAX		32
+ #endif
+-#define LOG_LINE_MAX		(1024 - PREFIX_MAX)
++#define LOG_LINE_MAX		(CONSOLE_LOG_MAX - PREFIX_MAX)
+ 
+ #define LOG_LEVEL(v)		((v) & 0x07)
+ #define LOG_FACILITY(v)		((v) >> 3 & 0xff)
+@@ -1455,11 +1455,11 @@ static int syslog_print(char __user *buf
+ 	char *text;
+ 	int len = 0;
+ 
+-	text = kmalloc(LOG_LINE_MAX + PREFIX_MAX, GFP_KERNEL);
++	text = kmalloc(CONSOLE_LOG_MAX, GFP_KERNEL);
+ 	if (!text)
+ 		return -ENOMEM;
+ 
+-	prb_rec_init_rd(&r, &info, text, LOG_LINE_MAX + PREFIX_MAX);
++	prb_rec_init_rd(&r, &info, text, CONSOLE_LOG_MAX);
+ 
+ 	while (size > 0) {
+ 		size_t n;
+@@ -1530,7 +1530,7 @@ static int syslog_print_all(char __user
+ 	u64 seq;
+ 	bool time;
+ 
+-	text = kmalloc(LOG_LINE_MAX + PREFIX_MAX, GFP_KERNEL);
++	text = kmalloc(CONSOLE_LOG_MAX, GFP_KERNEL);
+ 	if (!text)
+ 		return -ENOMEM;
+ 
+@@ -1552,7 +1552,7 @@ static int syslog_print_all(char __user
+ 		len -= get_record_print_text_size(&info, line_count, true, time);
+ 	}
+ 
+-	prb_rec_init_rd(&r, &info, text, LOG_LINE_MAX + PREFIX_MAX);
++	prb_rec_init_rd(&r, &info, text, CONSOLE_LOG_MAX);
+ 
+ 	len = 0;
+ 	prb_for_each_record(seq, prb, seq, &r) {
+@@ -2194,8 +2194,6 @@ EXPORT_SYMBOL(printk);
+ 
+ #else /* CONFIG_PRINTK */
+ 
+-#define LOG_LINE_MAX		0
+-#define PREFIX_MAX		0
+ #define printk_time		false
+ 
+ #define prb_read_valid(rb, seq, r)	false
+@@ -2506,7 +2504,7 @@ static inline int can_use_console(void)
+ void console_unlock(void)
+ {
+ 	static char ext_text[CONSOLE_EXT_LOG_MAX];
+-	static char text[LOG_LINE_MAX + PREFIX_MAX];
++	static char text[CONSOLE_LOG_MAX];
+ 	unsigned long flags;
+ 	bool do_cond_resched, retry;
+ 	struct printk_info info;

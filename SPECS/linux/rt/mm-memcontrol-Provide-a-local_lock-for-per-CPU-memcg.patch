@@ -20,7 +20,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/mm/memcontrol.c
 +++ b/mm/memcontrol.c
-@@ -2154,6 +2154,7 @@ void unlock_page_memcg(struct page *page
+@@ -2206,6 +2206,7 @@ void unlock_page_memcg(struct page *page
  EXPORT_SYMBOL(unlock_page_memcg);
  
  struct memcg_stock_pcp {
@@ -28,7 +28,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	struct mem_cgroup *cached; /* this never be root cgroup */
  	unsigned int nr_pages;
  
-@@ -2205,7 +2206,7 @@ static bool consume_stock(struct mem_cgr
+@@ -2257,7 +2258,7 @@ static bool consume_stock(struct mem_cgr
  	if (nr_pages > MEMCG_CHARGE_BATCH)
  		return ret;
  
@@ -37,7 +37,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	stock = this_cpu_ptr(&memcg_stock);
  	if (memcg == stock->cached && stock->nr_pages >= nr_pages) {
-@@ -2213,7 +2214,7 @@ static bool consume_stock(struct mem_cgr
+@@ -2265,7 +2266,7 @@ static bool consume_stock(struct mem_cgr
  		ret = true;
  	}
  
@@ -46,7 +46,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	return ret;
  }
-@@ -2248,14 +2249,14 @@ static void drain_local_stock(struct wor
+@@ -2300,14 +2301,14 @@ static void drain_local_stock(struct wor
  	 * The only protection from memory hotplug vs. drain_stock races is
  	 * that we always operate on local CPU stock here with IRQ disabled
  	 */
@@ -63,7 +63,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  }
  
  /*
-@@ -2267,7 +2268,7 @@ static void refill_stock(struct mem_cgro
+@@ -2319,7 +2320,7 @@ static void refill_stock(struct mem_cgro
  	struct memcg_stock_pcp *stock;
  	unsigned long flags;
  
@@ -72,7 +72,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	stock = this_cpu_ptr(&memcg_stock);
  	if (stock->cached != memcg) { /* reset if necessary */
-@@ -2280,7 +2281,7 @@ static void refill_stock(struct mem_cgro
+@@ -2332,7 +2333,7 @@ static void refill_stock(struct mem_cgro
  	if (stock->nr_pages > MEMCG_CHARGE_BATCH)
  		drain_stock(stock);
  
@@ -81,7 +81,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  }
  
  /*
-@@ -3084,7 +3085,7 @@ static bool consume_obj_stock(struct obj
+@@ -3145,7 +3146,7 @@ static bool consume_obj_stock(struct obj
  	unsigned long flags;
  	bool ret = false;
  
@@ -90,7 +90,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	stock = this_cpu_ptr(&memcg_stock);
  	if (objcg == stock->cached_objcg && stock->nr_bytes >= nr_bytes) {
-@@ -3092,7 +3093,7 @@ static bool consume_obj_stock(struct obj
+@@ -3153,7 +3154,7 @@ static bool consume_obj_stock(struct obj
  		ret = true;
  	}
  
@@ -99,7 +99,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	return ret;
  }
-@@ -3151,7 +3152,7 @@ static void refill_obj_stock(struct obj_
+@@ -3212,7 +3213,7 @@ static void refill_obj_stock(struct obj_
  	struct memcg_stock_pcp *stock;
  	unsigned long flags;
  
@@ -108,7 +108,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	stock = this_cpu_ptr(&memcg_stock);
  	if (stock->cached_objcg != objcg) { /* reset if necessary */
-@@ -3165,7 +3166,7 @@ static void refill_obj_stock(struct obj_
+@@ -3226,7 +3227,7 @@ static void refill_obj_stock(struct obj_
  	if (stock->nr_bytes > PAGE_SIZE)
  		drain_obj_stock(stock);
  
@@ -117,7 +117,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  }
  
  int obj_cgroup_charge(struct obj_cgroup *objcg, gfp_t gfp, size_t size)
-@@ -7050,9 +7051,13 @@ static int __init mem_cgroup_init(void)
+@@ -7138,9 +7139,13 @@ static int __init mem_cgroup_init(void)
  	cpuhp_setup_state_nocalls(CPUHP_MM_MEMCQ_DEAD, "mm/memctrl:dead", NULL,
  				  memcg_hotplug_cpu_dead);
  

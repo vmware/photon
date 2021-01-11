@@ -1,0 +1,100 @@
+From: Thomas Gleixner <tglx@linutronix.de>
+Subject: softirq: Move various protections into inline helpers
+Date: Fri, 13 Nov 2020 15:02:20 +0100
+
+To allow reuse of the bulk of softirq processing code for RT and to avoid
+#ifdeffery all over the place, split protections for various code sections
+out into inline helpers so the RT variant can just replace them in one go.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+V2: Adapt to Frederics rework
+---
+ kernel/softirq.c |   39 ++++++++++++++++++++++++++++++++-------
+ 1 file changed, 32 insertions(+), 7 deletions(-)
+
+--- a/kernel/softirq.c
++++ b/kernel/softirq.c
+@@ -204,6 +204,32 @@ void __local_bh_enable_ip(unsigned long
+ }
+ EXPORT_SYMBOL(__local_bh_enable_ip);
+ 
++static inline void softirq_handle_begin(void)
++{
++	__local_bh_disable_ip(_RET_IP_, SOFTIRQ_OFFSET);
++}
++
++static inline void softirq_handle_end(void)
++{
++	__local_bh_enable(SOFTIRQ_OFFSET);
++	WARN_ON_ONCE(in_interrupt());
++}
++
++static inline void ksoftirqd_run_begin(void)
++{
++	local_irq_disable();
++}
++
++static inline void ksoftirqd_run_end(void)
++{
++	local_irq_enable();
++}
++
++static inline bool should_wake_ksoftirqd(void)
++{
++	return true;
++}
++
+ static inline void invoke_softirq(void)
+ {
+ 	if (ksoftirqd_running(local_softirq_pending()))
+@@ -316,7 +342,7 @@ asmlinkage __visible void __softirq_entr
+ 
+ 	pending = local_softirq_pending();
+ 
+-	__local_bh_disable_ip(_RET_IP_, SOFTIRQ_OFFSET);
++	softirq_handle_begin();
+ 	in_hardirq = lockdep_softirq_start();
+ 	account_softirq_enter(current);
+ 
+@@ -367,8 +393,7 @@ asmlinkage __visible void __softirq_entr
+ 
+ 	account_softirq_exit(current);
+ 	lockdep_softirq_end(in_hardirq);
+-	__local_bh_enable(SOFTIRQ_OFFSET);
+-	WARN_ON_ONCE(in_interrupt());
++	softirq_handle_end();
+ 	current_restore_flags(old_flags, PF_MEMALLOC);
+ }
+ 
+@@ -463,7 +488,7 @@ inline void raise_softirq_irqoff(unsigne
+ 	 * Otherwise we wake up ksoftirqd to make sure we
+ 	 * schedule the softirq soon.
+ 	 */
+-	if (!in_interrupt())
++	if (!in_interrupt() && should_wake_ksoftirqd())
+ 		wakeup_softirqd();
+ }
+ 
+@@ -641,18 +666,18 @@ static int ksoftirqd_should_run(unsigned
+ 
+ static void run_ksoftirqd(unsigned int cpu)
+ {
+-	local_irq_disable();
++	ksoftirqd_run_begin();
+ 	if (local_softirq_pending()) {
+ 		/*
+ 		 * We can safely run softirq on inline stack, as we are not deep
+ 		 * in the task stack here.
+ 		 */
+ 		__do_softirq();
+-		local_irq_enable();
++		ksoftirqd_run_end();
+ 		cond_resched();
+ 		return;
+ 	}
+-	local_irq_enable();
++	ksoftirqd_run_end();
+ }
+ 
+ #ifdef CONFIG_HOTPLUG_CPU

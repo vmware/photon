@@ -1,0 +1,40 @@
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 27 Oct 2020 11:09:50 +0100
+Subject: [PATCH] x86/fpu: Simplify fpregs_[un]lock()
+
+There is no point in disabling preemption and then disabling bottom
+halfs.
+
+Just disabling bottom halfs is sufficient as it implicitly disables
+preemption on !RT kernels.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20201027101349.455380473@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/x86/include/asm/fpu/api.h |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+--- a/arch/x86/include/asm/fpu/api.h
++++ b/arch/x86/include/asm/fpu/api.h
+@@ -29,17 +29,18 @@ extern void fpregs_mark_activate(void);
+  * A context switch will (and softirq might) save CPU's FPU registers to
+  * fpu->state and set TIF_NEED_FPU_LOAD leaving CPU's FPU registers in
+  * a random state.
++ *
++ * local_bh_disable() protects against both preemption and soft interrupts
++ * on !RT kernels.
+  */
+ static inline void fpregs_lock(void)
+ {
+-	preempt_disable();
+ 	local_bh_disable();
+ }
+ 
+ static inline void fpregs_unlock(void)
+ {
+ 	local_bh_enable();
+-	preempt_enable();
+ }
+ 
+ #ifdef CONFIG_X86_DEBUG_FPU

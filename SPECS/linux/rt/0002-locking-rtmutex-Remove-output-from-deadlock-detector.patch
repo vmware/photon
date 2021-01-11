@@ -1,6 +1,6 @@
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 29 Sep 2020 16:05:11 +0200
-Subject: [PATCH 02/23] locking/rtmutex: Remove output from deadlock detector.
+Subject: [PATCH 02/22] locking/rtmutex: Remove output from deadlock detector.
 
 In commit
   f5694788ad8da ("rt_mutex: Add lockdep annotations")

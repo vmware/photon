@@ -1,6 +1,6 @@
 From: Peter Zijlstra <peterz@infradead.org>
-Date: Mon, 5 Oct 2020 16:57:19 +0200
-Subject: [PATCH 02/17] sched: Fix balance_callback()
+Date: Fri, 23 Oct 2020 12:12:00 +0200
+Subject: [PATCH 02/19] sched: Fix balance_callback()
 
 The intent of balance_callback() has always been to delay executing
 balancing operations until the end of the current rq->lock section.
@@ -28,7 +28,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -3489,6 +3489,69 @@ static inline void finish_task(struct ta
+@@ -3490,6 +3490,69 @@ static inline void finish_task(struct ta
  #endif
  }
  
@@ -98,7 +98,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  static inline void
  prepare_lock_switch(struct rq *rq, struct task_struct *next, struct rq_flags *rf)
  {
-@@ -3514,6 +3577,7 @@ static inline void finish_lock_switch(st
+@@ -3515,6 +3578,7 @@ static inline void finish_lock_switch(st
  	 * prev into current:
  	 */
  	spin_acquire(&rq->lock.dep_map, 0, 0, _THIS_IP_);
@@ -106,7 +106,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	raw_spin_unlock_irq(&rq->lock);
  }
  
-@@ -3655,43 +3719,6 @@ static struct rq *finish_task_switch(str
+@@ -3656,43 +3720,6 @@ static struct rq *finish_task_switch(str
  	return rq;
  }
  
@@ -150,7 +150,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  /**
   * schedule_tail - first thing a freshly forked thread must call.
   * @prev: the thread we just switched away from.
-@@ -3711,7 +3738,6 @@ asmlinkage __visible void schedule_tail(
+@@ -3712,7 +3739,6 @@ asmlinkage __visible void schedule_tail(
  	 */
  
  	rq = finish_task_switch(prev);
@@ -158,7 +158,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	preempt_enable();
  
  	if (current->set_child_tid)
-@@ -4527,10 +4553,11 @@ static void __sched notrace __schedule(b
+@@ -4528,10 +4554,11 @@ static void __sched notrace __schedule(b
  		rq = context_switch(rq, prev, next, &rf);
  	} else {
  		rq->clock_update_flags &= ~(RQCF_ACT_SKIP|RQCF_REQ_SKIP);
@@ -173,7 +173,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  }
  
  void __noreturn do_task_dead(void)
-@@ -4938,9 +4965,11 @@ void rt_mutex_setprio(struct task_struct
+@@ -4943,9 +4970,11 @@ void rt_mutex_setprio(struct task_struct
  out_unlock:
  	/* Avoid rq from going away on us: */
  	preempt_disable();
@@ -187,7 +187,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	preempt_enable();
  }
  #else
-@@ -5214,6 +5243,7 @@ static int __sched_setscheduler(struct t
+@@ -5219,6 +5248,7 @@ static int __sched_setscheduler(struct t
  	int retval, oldprio, oldpolicy = -1, queued, running;
  	int new_effective_prio, policy = attr->sched_policy;
  	const struct sched_class *prev_class;
@@ -195,7 +195,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	struct rq_flags rf;
  	int reset_on_fork;
  	int queue_flags = DEQUEUE_SAVE | DEQUEUE_MOVE | DEQUEUE_NOCLOCK;
-@@ -5452,6 +5482,7 @@ static int __sched_setscheduler(struct t
+@@ -5457,6 +5487,7 @@ static int __sched_setscheduler(struct t
  
  	/* Avoid rq from going away on us: */
  	preempt_disable();
@@ -203,7 +203,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	task_rq_unlock(rq, p, &rf);
  
  	if (pi) {
-@@ -5460,7 +5491,7 @@ static int __sched_setscheduler(struct t
+@@ -5465,7 +5496,7 @@ static int __sched_setscheduler(struct t
  	}
  
  	/* Run balance callbacks after we've adjusted the PI chain: */
@@ -214,7 +214,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	return 0;
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
-@@ -1221,6 +1221,9 @@ static inline void rq_pin_lock(struct rq
+@@ -1215,6 +1215,9 @@ static inline void rq_pin_lock(struct rq
  	rq->clock_update_flags &= (RQCF_REQ_SKIP|RQCF_ACT_SKIP);
  	rf->clock_update_flags = 0;
  #endif
