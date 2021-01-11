@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2020.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
@@ -151,6 +151,8 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+*   Mon Jan 11 2021 Ankit Jain <ankitja@vmware.com> 2020.5-5
+-   Added systemd-udev in mkostreerepo
 *   Tue Nov 03 2020 Ankit Jain <ankitja@vmware.com> 2020.5-4
 -   Adding grub2-efi-image for both x86 and aarch64 in mkostreerepo
 *   Mon Oct 05 2020 Ankit Jain <ankitja@vmware.com> 2020.5-3
