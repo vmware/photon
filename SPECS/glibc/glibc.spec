@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.22
-Release:        31%{?dist}
+Release:        32%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -60,6 +60,7 @@ Patch32:        glibc-fix-CVE-2020-1752.patch
 Patch33:        glibc-fix-CVE-2020-10029.patch
 Patch34:        glibc-fix-CVE-2019-7309.patch
 Patch35:        glibc-fix-CVE-2020-29573.patch
+Patch36:        glibc-fix-CVE-2019-25013.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -121,6 +122,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch33 -p1
 %patch34 -p1
 %patch35 -p1
+%patch36 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -248,6 +250,8 @@ popd
 %{_datarootdir}/locale/locale.alias
 
 %changelog
+*   Mon Jan 11 2021 Ajay Kaher <akaher@vmware.com> 2.22-32
+-   Fix CVE-2019-25013
 *   Fri Dec 18 2020 Keerthana K <keerthanak@vmware.com> 2.22-31
 -   Fix CVE-2020-29573
 *   Tue Dec 01 2020 Keerthana K <keerthanak@vmware.com> 2.22-30
