@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.32
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -24,6 +24,9 @@ Patch8:         binutils-sync-libiberty-add-no-recurse-limit-make-check-fix.patc
 Patch9:         binutils-CVE-2019-1010204.patch
 Patch10:        binutils-CVE-2019-17450.patch
 Patch11:        binutils-CVE-2019-17451.patch
+Patch12:        binutils-CVE-2020-35495-CVE-2020-35496-CVE-2020-35507.patch
+Patch13:        binutils-CVE-2020-35494.patch
+Patch14:        binutils-CVE-2020-35493.patch
 
 %description
 The Binutils package contains a linker, an assembler,
@@ -59,6 +62,9 @@ for handling compiled objects.
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
 
 %build
 %configure \
@@ -147,6 +153,8 @@ make %{?_smp_mflags} check
 %{_lib64dir}/libiberty.a
 
 %changelog
+*   Mon Jan 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.32-4
+-   Fix CVE-2020-35496,CVE-2020-35495,CVE-2020-35494,CVE-2020-35507,CVE-2020-35493
 *   Wed Nov 13 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.32-3
 -   Fix CVE-2019-17450 and CVE-2019-17451
 *   Sun Sep 29 2019 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 2.32-2
