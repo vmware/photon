@@ -13,7 +13,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.4
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -550,6 +550,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jan 11 2021 Bo Gan <ganb@vmware.com> 5.10.4-2
+-   Fix aarch64 build failure
 *   Mon Jan 04 2021 Bo Gan <ganb@vmware.com> 5.10.4-1
 -   Update to 5.10.4
 -   Drop out-of-tree SEV-ES functional patches (already upstreamed).
