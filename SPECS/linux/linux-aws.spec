@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.249
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -525,6 +525,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Tue Jan 12 2021 Ankit Jain <ankitja@vmware.com> 4.9.249-2
+-   Disabled CONFIG_TARGET_CORE to fix CVE-2020-28374
 *   Mon Jan 04 2021 Ankit Jain <ankitja@vmware.com> 4.9.249-1
 -   Update to version 4.9.249
 *   Mon Dec 14 2020 Vikash Bansal <bvikas@vmware.com> 4.9.248-1
