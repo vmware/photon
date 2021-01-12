@@ -24,23 +24,23 @@ CR: https://cr.amazon.com/r/8297650/
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/power/user.c b/kernel/power/user.c
-index d5eedc2baa2a..e1209cefc103 100644
+index 740723bb3885..c557eb8ab455 100644
 --- a/kernel/power/user.c
 +++ b/kernel/power/user.c
-@@ -242,8 +242,12 @@ static int snapshot_set_swap_area(struct snapshot_data *data,
- 		return -EINVAL;
- 	}
- 	data->swap = swap_type_of(swdev, offset, &bdev);
+@@ -230,8 +230,12 @@ static int snapshot_set_swap_area(struct snapshot_data *data,
+ 	 * so we need to recode them
+ 	 */
+ 	data->swap = swap_type_of(swdev, offset);
 -	if (data->swap < 0)
 +	if (data->swap < 0) {
- 		return -ENODEV;
+ 		return swdev ? -ENODEV : -EINVAL;
 +	} else {
 +		swsusp_resume_device = swdev;
 +		swsusp_resume_block = offset;
 +	}
- 
- 	data->bd_inode = bdev->bd_inode;
- 	bdput(bdev);
+ 	data->dev = swdev;
+ 	return 0;
+ }
 -- 
 2.17.1
 

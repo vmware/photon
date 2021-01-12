@@ -31,7 +31,7 @@ CR: https://cr.amazon.com/r/8297651/
  1 file changed, 201 insertions(+), 33 deletions(-)
 
 diff --git a/kernel/power/swap.c b/kernel/power/swap.c
-index ca0fcb5ced71..1d9b91009b39 100644
+index c73f2e295167..1e8e9548a3b3 100644
 --- a/kernel/power/swap.c
 +++ b/kernel/power/swap.c
 @@ -60,6 +60,11 @@ static bool clean_pages_on_decompress;
@@ -46,21 +46,23 @@ index ca0fcb5ced71..1d9b91009b39 100644
  /*
   * Number of free pages that are not high.
   */
-@@ -226,6 +231,7 @@ struct hib_bio_batch {
- 	atomic_t		count;
+@@ -227,6 +232,7 @@ struct hib_bio_batch {
  	wait_queue_head_t	wait;
  	blk_status_t		error;
-+	struct bio *current_bio;
+ 	struct blk_plug		plug;
++	struct bio 		*current_bio;
  };
  
  static void hib_init_batch(struct hib_bio_batch *hb)
-@@ -233,25 +239,30 @@ static void hib_init_batch(struct hib_bio_batch *hb)
- 	atomic_set(&hb->count, 0);
+@@ -235,6 +241,7 @@ static void hib_init_batch(struct hib_bio_batch *hb)
  	init_waitqueue_head(&hb->wait);
  	hb->error = BLK_STS_OK;
+ 	blk_start_plug(&hb->plug);
 +	hb->current_bio = 0;
  }
  
+ static void hib_finish_batch(struct hib_bio_batch *hb)
+@@ -245,20 +252,24 @@ static void hib_finish_batch(struct hib_bio_batch *hb)
  static void hib_end_io(struct bio *bio)
  {
  	struct hib_bio_batch *hb = bio->bi_private;
@@ -92,7 +94,7 @@ index ca0fcb5ced71..1d9b91009b39 100644
  	if (bio->bi_status && !hb->error)
  		hb->error = bio->bi_status;
  	if (atomic_dec_and_test(&hb->count))
-@@ -260,6 +271,66 @@ static void hib_end_io(struct bio *bio)
+@@ -267,6 +278,66 @@ static void hib_end_io(struct bio *bio)
  	bio_put(bio);
  }
  
@@ -159,7 +161,7 @@ index ca0fcb5ced71..1d9b91009b39 100644
  static int hib_submit_io(int op, int op_flags, pgoff_t page_off, void *addr,
  		struct hib_bio_batch *hb)
  {
-@@ -268,6 +339,8 @@ static int hib_submit_io(int op, int op_flags, pgoff_t page_off, void *addr,
+@@ -275,6 +346,8 @@ static int hib_submit_io(int op, int op_flags, pgoff_t page_off, void *addr,
  	int error = 0;
  
  	bio = bio_alloc(GFP_NOIO | __GFP_HIGH, 1);
@@ -168,7 +170,7 @@ index ca0fcb5ced71..1d9b91009b39 100644
  	bio->bi_iter.bi_sector = page_off * (PAGE_SIZE >> 9);
  	bio_set_dev(bio, hib_resume_bdev);
  	bio_set_op_attrs(bio, op, op_flags);
-@@ -280,10 +353,7 @@ static int hib_submit_io(int op, int op_flags, pgoff_t page_off, void *addr,
+@@ -287,10 +360,7 @@ static int hib_submit_io(int op, int op_flags, pgoff_t page_off, void *addr,
  	}
  
  	if (hb) {
@@ -180,7 +182,7 @@ index ca0fcb5ced71..1d9b91009b39 100644
  	} else {
  		error = submit_bio_wait(bio);
  		bio_put(bio);
-@@ -294,6 +364,10 @@ static int hib_submit_io(int op, int op_flags, pgoff_t page_off, void *addr,
+@@ -301,6 +371,10 @@ static int hib_submit_io(int op, int op_flags, pgoff_t page_off, void *addr,
  
  static blk_status_t hib_wait_io(struct hib_bio_batch *hb)
  {
@@ -188,10 +190,10 @@ index ca0fcb5ced71..1d9b91009b39 100644
 +		send_bio(hb, hb->current_bio);
 +		hb->current_bio = 0;
 +	}
- 	wait_event(hb->wait, atomic_read(&hb->count) == 0);
- 	return blk_status_to_errno(hb->error);
- }
-@@ -396,6 +470,21 @@ static int write_page(void *buf, sector_t offset, struct hib_bio_batch *hb)
+ 	/*
+ 	 * We are relying on the behavior of blk_plug that a thread with
+ 	 * a plug will flush the plug list before sleeping.
+@@ -404,6 +478,21 @@ static int write_page(void *buf, sector_t offset, struct hib_bio_batch *hb)
  	} else {
  		src = buf;
  	}
@@ -213,7 +215,7 @@ index ca0fcb5ced71..1d9b91009b39 100644
  	return hib_submit_io(REQ_OP_WRITE, REQ_SYNC, offset, src, hb);
  }
  
-@@ -1004,35 +1093,106 @@ static int get_swap_reader(struct swap_map_handle *handle,
+@@ -1014,35 +1103,106 @@ static int get_swap_reader(struct swap_map_handle *handle,
  	return 0;
  }
  
@@ -339,7 +341,7 @@ index ca0fcb5ced71..1d9b91009b39 100644
  static int swap_reader_finish(struct swap_map_handle *handle)
  {
  	release_swap_reader(handle);
-@@ -1289,8 +1449,13 @@ static int load_image_lzo(struct swap_map_handle *handle,
+@@ -1300,8 +1460,13 @@ static int load_image_lzo(struct swap_map_handle *handle,
  		goto out_finish;
  
  	for(;;) {
@@ -355,7 +357,7 @@ index ca0fcb5ced71..1d9b91009b39 100644
  			if (ret) {
  				/*
  				 * On real read error, finish. On end of data,
-@@ -1304,7 +1469,10 @@ static int load_image_lzo(struct swap_map_handle *handle,
+@@ -1315,7 +1480,10 @@ static int load_image_lzo(struct swap_map_handle *handle,
  					break;
  				}
  			}
@@ -368,5 +370,5 @@ index ca0fcb5ced71..1d9b91009b39 100644
  		}
  		asked += i;
 -- 
-2.17.2
+2.17.1
 

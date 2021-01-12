@@ -78,21 +78,21 @@ Signed-off-by: Frank van der Linden <fllinden@amazon.com>
 ---
  drivers/amazon/net/ena/dim.c             |    5 -
  drivers/amazon/net/ena/ena_admin_defs.h  |   60 +-
- drivers/amazon/net/ena/ena_com.c         |  203 ++--
- drivers/amazon/net/ena/ena_com.h         |   91 +-
+ drivers/amazon/net/ena/ena_com.c         |  203 +++---
+ drivers/amazon/net/ena/ena_com.h         |   91 ++-
  drivers/amazon/net/ena/ena_common_defs.h |    2 +-
- drivers/amazon/net/ena/ena_eth_com.c     |   82 +-
+ drivers/amazon/net/ena/ena_eth_com.c     |   82 ++-
  drivers/amazon/net/ena/ena_eth_com.h     |    1 +
  drivers/amazon/net/ena/ena_eth_io_defs.h |    4 +-
- drivers/amazon/net/ena/ena_ethtool.c     |  247 +++--
- drivers/amazon/net/ena/ena_netdev.c      | 1143 ++++++++++++++++++----
- drivers/amazon/net/ena/ena_netdev.h      |  102 +-
+ drivers/amazon/net/ena/ena_ethtool.c     |  247 ++++---
+ drivers/amazon/net/ena/ena_netdev.c      | 1139 ++++++++++++++++++++++++------
+ drivers/amazon/net/ena/ena_netdev.h      |  102 ++-
  drivers/amazon/net/ena/kcompat.h         |   25 +-
  drivers/amazon/net/ena/net_dim.c         |    5 -
- 13 files changed, 1438 insertions(+), 532 deletions(-)
+ 13 files changed, 1434 insertions(+), 532 deletions(-)
 
 diff --git a/drivers/amazon/net/ena/dim.c b/drivers/amazon/net/ena/dim.c
-index 55b9106512e3..1b200be4b370 100644
+index 55b9106..1b200be 100644
 --- a/drivers/amazon/net/ena/dim.c
 +++ b/drivers/amazon/net/ena/dim.c
 @@ -19,7 +19,6 @@ bool dim_on_top(struct dim *dim)
@@ -135,7 +135,7 @@ index 55b9106512e3..1b200be4b370 100644
  
  #endif /* LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0) */
 diff --git a/drivers/amazon/net/ena/ena_admin_defs.h b/drivers/amazon/net/ena/ena_admin_defs.h
-index f8731ff4567c..c1836183d293 100755
+index f8731ff..c183618 100755
 --- a/drivers/amazon/net/ena/ena_admin_defs.h
 +++ b/drivers/amazon/net/ena/ena_admin_defs.h
 @@ -408,6 +408,10 @@ struct ena_admin_basic_stats {
@@ -252,7 +252,7 @@ index f8731ff4567c..c1836183d293 100755
  /* feature_rss_ind_table */
  #define ENA_ADMIN_FEATURE_RSS_IND_TABLE_ONE_ENTRY_UPDATE_MASK BIT(0)
 diff --git a/drivers/amazon/net/ena/ena_com.c b/drivers/amazon/net/ena/ena_com.c
-index 04747d864462..45278d4baf80 100644
+index 04747d8..45278d4 100644
 --- a/drivers/amazon/net/ena/ena_com.c
 +++ b/drivers/amazon/net/ena/ena_com.c
 @@ -64,6 +64,15 @@
@@ -662,7 +662,7 @@ index 04747d864462..45278d4baf80 100644
  	if (unlikely(!host_attr->debug_area_virt_addr)) {
  		host_attr->debug_area_size = 0;
 diff --git a/drivers/amazon/net/ena/ena_com.h b/drivers/amazon/net/ena/ena_com.h
-index e4e64f2387f5..d753c824a86d 100644
+index e4e64f2..d753c824 100644
 --- a/drivers/amazon/net/ena/ena_com.h
 +++ b/drivers/amazon/net/ena/ena_com.h
 @@ -76,6 +76,7 @@
@@ -907,7 +907,7 @@ index e4e64f2387f5..d753c824a86d 100644
   * Prepare interrupt update register with the supplied parameters.
   */
 diff --git a/drivers/amazon/net/ena/ena_common_defs.h b/drivers/amazon/net/ena/ena_common_defs.h
-index 8370b203f907..77ab0c1f8c73 100755
+index 8370b20..77ab0c1 100755
 --- a/drivers/amazon/net/ena/ena_common_defs.h
 +++ b/drivers/amazon/net/ena/ena_common_defs.h
 @@ -45,4 +45,4 @@ struct ena_common_mem_addr {
@@ -917,7 +917,7 @@ index 8370b203f907..77ab0c1f8c73 100755
 -#endif /*_ENA_COMMON_H_ */
 +#endif /* _ENA_COMMON_H_ */
 diff --git a/drivers/amazon/net/ena/ena_eth_com.c b/drivers/amazon/net/ena/ena_eth_com.c
-index 01fcff765766..b23baf806bfd 100644
+index 01fcff7..b23baf8 100644
 --- a/drivers/amazon/net/ena/ena_eth_com.c
 +++ b/drivers/amazon/net/ena/ena_eth_com.c
 @@ -176,8 +176,10 @@ static int ena_com_close_bounce_buffer(struct ena_com_io_sq *io_sq)
@@ -1103,7 +1103,7 @@ index 01fcff765766..b23baf806bfd 100644
  	/* Update SQ head ptr */
  	io_sq->next_to_comp += nb_hw_desc;
 diff --git a/drivers/amazon/net/ena/ena_eth_com.h b/drivers/amazon/net/ena/ena_eth_com.h
-index bda5d4bf2827..8b1afd3b32f2 100644
+index bda5d4b..8b1afd3b 100644
 --- a/drivers/amazon/net/ena/ena_eth_com.h
 +++ b/drivers/amazon/net/ena/ena_eth_com.h
 @@ -73,6 +73,7 @@ struct ena_com_rx_ctx {
@@ -1115,7 +1115,7 @@ index bda5d4bf2827..8b1afd3b32f2 100644
  
  int ena_com_prepare_tx(struct ena_com_io_sq *io_sq,
 diff --git a/drivers/amazon/net/ena/ena_eth_io_defs.h b/drivers/amazon/net/ena/ena_eth_io_defs.h
-index d88f748ab9dd..4dd382e15ed3 100755
+index d88f748..4dd382e1 100755
 --- a/drivers/amazon/net/ena/ena_eth_io_defs.h
 +++ b/drivers/amazon/net/ena/ena_eth_io_defs.h
 @@ -264,7 +264,9 @@ struct ena_eth_io_rx_cdesc_base {
@@ -1130,7 +1130,7 @@ index d88f748ab9dd..4dd382e15ed3 100755
  
  /* 8-word format */
 diff --git a/drivers/amazon/net/ena/ena_ethtool.c b/drivers/amazon/net/ena/ena_ethtool.c
-index 6c17ed0e5f7a..4169142bcc99 100755
+index 6c17ed0..4169142 100755
 --- a/drivers/amazon/net/ena/ena_ethtool.c
 +++ b/drivers/amazon/net/ena/ena_ethtool.c
 @@ -66,6 +66,8 @@ static const struct ena_stats ena_stats_global_strings[] = {
@@ -1553,7 +1553,7 @@ index 6c17ed0e5f7a..4169142bcc99 100755
  
  void ena_set_ethtool_ops(struct net_device *netdev)
 diff --git a/drivers/amazon/net/ena/ena_netdev.c b/drivers/amazon/net/ena/ena_netdev.c
-index 34c799070e85..6d7b628adf0d 100755
+index 7efdbc2..29ef959 100755
 --- a/drivers/amazon/net/ena/ena_netdev.c
 +++ b/drivers/amazon/net/ena/ena_netdev.c
 @@ -36,7 +36,6 @@
@@ -2068,7 +2068,7 @@ index 34c799070e85..6d7b628adf0d 100755
  static int ena_init_rx_cpu_rmap(struct ena_adapter *adapter)
  {
  #ifdef CONFIG_RFS_ACCEL
-@@ -193,7 +678,8 @@ static void ena_init_io_rings_common(struct ena_adapter *adapter,
+@@ -193,7 +674,8 @@ static void ena_init_io_rings_common(struct ena_adapter *adapter,
  	u64_stats_init(&ring->syncp);
  }
  
@@ -2078,7 +2078,7 @@ index 34c799070e85..6d7b628adf0d 100755
  {
  	struct ena_com_dev *ena_dev;
  	struct ena_ring *txr, *rxr;
-@@ -201,13 +687,12 @@ static void ena_init_io_rings(struct ena_adapter *adapter)
+@@ -201,13 +683,12 @@ static void ena_init_io_rings(struct ena_adapter *adapter)
  
  	ena_dev = adapter->ena_dev;
  
@@ -2094,7 +2094,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  		/* TX specific ring state */
  		txr->ring_size = adapter->requested_tx_ring_size;
-@@ -217,14 +702,20 @@ static void ena_init_io_rings(struct ena_adapter *adapter)
+@@ -217,14 +698,20 @@ static void ena_init_io_rings(struct ena_adapter *adapter)
  		txr->smoothed_interval =
  			ena_com_get_nonadaptive_moderation_interval_tx(ena_dev);
  
@@ -2123,7 +2123,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	}
  }
  
-@@ -314,16 +805,13 @@ static void ena_free_tx_resources(struct ena_adapter *adapter, int qid)
+@@ -314,16 +801,13 @@ static void ena_free_tx_resources(struct ena_adapter *adapter, int qid)
  	tx_ring->push_buf_intermediate_buf = NULL;
  }
  
@@ -2144,7 +2144,7 @@ index 34c799070e85..6d7b628adf0d 100755
  		rc = ena_setup_tx_resources(adapter, i);
  		if (rc)
  			goto err_setup_tx;
-@@ -337,11 +825,20 @@ static int ena_setup_all_tx_resources(struct ena_adapter *adapter)
+@@ -337,11 +821,20 @@ static int ena_setup_all_tx_resources(struct ena_adapter *adapter)
  		  "Tx queue %d: allocation failed\n", i);
  
  	/* rewind the index freeing the rings as we go */
@@ -2166,7 +2166,7 @@ index 34c799070e85..6d7b628adf0d 100755
  /* ena_free_all_io_tx_resources - Free I/O Tx Resources for All Queues
   * @adapter: board private structure
   *
-@@ -349,10 +846,10 @@ static int ena_setup_all_tx_resources(struct ena_adapter *adapter)
+@@ -349,10 +842,10 @@ static int ena_setup_all_tx_resources(struct ena_adapter *adapter)
   */
  static void ena_free_all_io_tx_resources(struct ena_adapter *adapter)
  {
@@ -2181,7 +2181,7 @@ index 34c799070e85..6d7b628adf0d 100755
  }
  
  static int validate_rx_req_id(struct ena_ring *rx_ring, u16 req_id)
-@@ -512,7 +1009,7 @@ static int ena_alloc_rx_page(struct ena_ring *rx_ring,
+@@ -512,7 +1005,7 @@ static int ena_alloc_rx_page(struct ena_ring *rx_ring,
  	}
  
  	dma = dma_map_page(rx_ring->dev, page, 0, ENA_PAGE_SIZE,
@@ -2190,7 +2190,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	if (unlikely(dma_mapping_error(rx_ring->dev, dma))) {
  		u64_stats_update_begin(&rx_ring->syncp);
  		rx_ring->rx_stats.dma_mapping_err++;
-@@ -527,8 +1024,8 @@ static int ena_alloc_rx_page(struct ena_ring *rx_ring,
+@@ -527,8 +1020,8 @@ static int ena_alloc_rx_page(struct ena_ring *rx_ring,
  	rx_info->page = page;
  	rx_info->page_offset = 0;
  	ena_buf = &rx_info->ena_buf;
@@ -2201,7 +2201,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  	return 0;
  }
-@@ -545,7 +1042,8 @@ static void ena_free_rx_page(struct ena_ring *rx_ring,
+@@ -545,7 +1038,8 @@ static void ena_free_rx_page(struct ena_ring *rx_ring,
  		return;
  	}
  
@@ -2211,7 +2211,7 @@ index 34c799070e85..6d7b628adf0d 100755
  		       DMA_FROM_DEVICE);
  
  	__free_page(page);
-@@ -652,8 +1150,8 @@ static void ena_free_all_rx_bufs(struct ena_adapter *adapter)
+@@ -652,8 +1146,8 @@ static void ena_free_all_rx_bufs(struct ena_adapter *adapter)
  		ena_free_rx_bufs(adapter, i);
  }
  
@@ -2222,7 +2222,7 @@ index 34c799070e85..6d7b628adf0d 100755
  {
  	struct ena_com_buf *ena_buf;
  	u32 cnt;
-@@ -707,7 +1205,7 @@ static void ena_free_tx_bufs(struct ena_ring *tx_ring)
+@@ -707,7 +1201,7 @@ static void ena_free_tx_bufs(struct ena_ring *tx_ring)
  				   tx_ring->qid, i);
  		}
  
@@ -2231,7 +2231,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  		dev_kfree_skb_any(tx_info->skb);
  	}
-@@ -720,7 +1218,7 @@ static void ena_free_all_tx_bufs(struct ena_adapter *adapter)
+@@ -720,7 +1214,7 @@ static void ena_free_all_tx_bufs(struct ena_adapter *adapter)
  	struct ena_ring *tx_ring;
  	int i;
  
@@ -2240,7 +2240,7 @@ index 34c799070e85..6d7b628adf0d 100755
  		tx_ring = &adapter->tx_ring[i];
  		ena_free_tx_bufs(tx_ring);
  	}
-@@ -731,7 +1229,7 @@ static void ena_destroy_all_tx_queues(struct ena_adapter *adapter)
+@@ -731,7 +1225,7 @@ static void ena_destroy_all_tx_queues(struct ena_adapter *adapter)
  	u16 ena_qid;
  	int i;
  
@@ -2249,7 +2249,7 @@ index 34c799070e85..6d7b628adf0d 100755
  		ena_qid = ENA_IO_TXQ_IDX(i);
  		ena_com_destroy_io_queue(adapter->ena_dev, ena_qid);
  	}
-@@ -755,6 +1253,32 @@ static void ena_destroy_all_io_queues(struct ena_adapter *adapter)
+@@ -755,6 +1249,32 @@ static void ena_destroy_all_io_queues(struct ena_adapter *adapter)
  	ena_destroy_all_rx_queues(adapter);
  }
  
@@ -2282,7 +2282,7 @@ index 34c799070e85..6d7b628adf0d 100755
  static int validate_tx_req_id(struct ena_ring *tx_ring, u16 req_id)
  {
  	struct ena_tx_buffer *tx_info = NULL;
-@@ -765,22 +1289,23 @@ static int validate_tx_req_id(struct ena_ring *tx_ring, u16 req_id)
+@@ -765,22 +1285,23 @@ static int validate_tx_req_id(struct ena_ring *tx_ring, u16 req_id)
  			return 0;
  	}
  
@@ -2319,7 +2319,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  static int ena_clean_tx_irq(struct ena_ring *tx_ring, u32 budget)
  {
-@@ -818,7 +1343,7 @@ static int ena_clean_tx_irq(struct ena_ring *tx_ring, u32 budget)
+@@ -818,7 +1339,7 @@ static int ena_clean_tx_irq(struct ena_ring *tx_ring, u32 budget)
  		tx_info->skb = NULL;
  		tx_info->last_jiffies = 0;
  
@@ -2328,7 +2328,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  		netif_dbg(tx_ring->adapter, tx_done, tx_ring->netdev,
  			  "tx_poll: q %d skb %p completed\n", tx_ring->qid,
-@@ -854,7 +1379,8 @@ static int ena_clean_tx_irq(struct ena_ring *tx_ring, u32 budget)
+@@ -854,7 +1375,8 @@ static int ena_clean_tx_irq(struct ena_ring *tx_ring, u32 budget)
  		above_thresh =
  			ena_com_sq_have_enough_space(tx_ring->ena_com_io_sq,
  						     ENA_TX_WAKEUP_THRESH);
@@ -2338,7 +2338,7 @@ index 34c799070e85..6d7b628adf0d 100755
  			netif_tx_wake_queue(txq);
  			u64_stats_update_begin(&tx_ring->syncp);
  			tx_ring->tx_stats.queue_wakeup++;
-@@ -891,7 +1417,8 @@ static struct sk_buff *ena_alloc_skb(struct ena_ring *rx_ring, bool frags)
+@@ -891,7 +1413,8 @@ static struct sk_buff *ena_alloc_skb(struct ena_ring *rx_ring, bool frags)
  static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
  				  struct ena_com_rx_buf_info *ena_bufs,
  				  u32 descs,
@@ -2348,7 +2348,7 @@ index 34c799070e85..6d7b628adf0d 100755
  {
  	struct sk_buff *skb;
  	struct ena_rx_buffer *rx_info;
-@@ -906,11 +1433,11 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
+@@ -906,11 +1429,11 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
  	req_id = ena_bufs[buf].req_id;
  
  	rc = validate_rx_req_id(rx_ring, req_id);
@@ -2362,7 +2362,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  	if (unlikely(!rx_info->page)) {
  		netif_err(rx_ring->adapter, rx_err, rx_ring->netdev,
-@@ -974,6 +1501,8 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
+@@ -974,6 +1497,8 @@ static struct sk_buff *ena_rx_skb(struct ena_ring *rx_ring,
  
  		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, rx_info->page,
  				rx_info->page_offset, len, ENA_PAGE_SIZE);
@@ -2371,7 +2371,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  		netif_dbg(rx_ring->adapter, rx_status, rx_ring->netdev,
  			  "rx skb updated. len %d. data_len %d\n",
-@@ -1110,6 +1639,35 @@ static void ena_set_rx_hash(struct ena_ring *rx_ring,
+@@ -1110,6 +1635,35 @@ static void ena_set_rx_hash(struct ena_ring *rx_ring,
  #endif /* NETIF_F_RXHASH */
  }
  
@@ -2407,7 +2407,7 @@ index 34c799070e85..6d7b628adf0d 100755
  /* ena_clean_rx_irq - Cleanup RX irq
   * @rx_ring: RX ring to clean
   * @napi: napi handler
-@@ -1121,26 +1679,39 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
+@@ -1121,26 +1675,39 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
  			    u32 budget)
  {
  	u16 next_to_clean = rx_ring->next_to_clean;
@@ -2452,7 +2452,7 @@ index 34c799070e85..6d7b628adf0d 100755
  		rc = ena_com_rx_pkt(rx_ring->ena_com_io_cq,
  				    rx_ring->ena_com_io_sq,
  				    &ena_rx_ctx);
-@@ -1155,12 +1726,29 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
+@@ -1155,12 +1722,29 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
  			  rx_ring->qid, ena_rx_ctx.descs, ena_rx_ctx.l3_proto,
  			  ena_rx_ctx.l4_proto, ena_rx_ctx.hash);
  
@@ -2484,7 +2484,7 @@ index 34c799070e85..6d7b628adf0d 100755
  			for (i = 0; i < ena_rx_ctx.descs; i++) {
  				rx_ring->free_ids[next_to_clean] =
  					rx_ring->ena_bufs[i].req_id;
-@@ -1168,6 +1756,10 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
+@@ -1168,6 +1752,10 @@ static int ena_clean_rx_irq(struct ena_ring *rx_ring, struct napi_struct *napi,
  					ENA_RX_RING_IDX_NEXT(next_to_clean,
  							     rx_ring->ring_size);
  			}
@@ -2495,7 +2495,7 @@ index 34c799070e85..6d7b628adf0d 100755
  			break;
  		}
  
-@@ -1275,9 +1867,14 @@ static void ena_unmask_interrupt(struct ena_ring *tx_ring,
+@@ -1275,9 +1863,14 @@ static void ena_unmask_interrupt(struct ena_ring *tx_ring,
  					struct ena_ring *rx_ring)
  {
  	struct ena_eth_io_intr_reg intr_reg;
@@ -2513,7 +2513,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  	/* Update intr register: rx intr delay,
  	 * tx intr delay and interrupt unmask
-@@ -1290,8 +1887,9 @@ static void ena_unmask_interrupt(struct ena_ring *tx_ring,
+@@ -1290,8 +1883,9 @@ static void ena_unmask_interrupt(struct ena_ring *tx_ring,
  	/* It is a shared MSI-X.
  	 * Tx and Rx CQ have pointer to it.
  	 * So we use one of them to reach the intr reg
@@ -2524,7 +2524,7 @@ index 34c799070e85..6d7b628adf0d 100755
  }
  
  static void ena_update_ring_numa_node(struct ena_ring *tx_ring,
-@@ -1309,24 +1907,86 @@ static void ena_update_ring_numa_node(struct ena_ring *tx_ring,
+@@ -1309,24 +1903,86 @@ static void ena_update_ring_numa_node(struct ena_ring *tx_ring,
  
  	if (numa_node != NUMA_NO_NODE) {
  		ena_com_update_numa_node(tx_ring->ena_com_io_cq, numa_node);
@@ -2616,7 +2616,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	int tx_budget;
  	int napi_comp_call = 0;
  	int ret;
-@@ -1334,6 +1994,9 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
+@@ -1334,6 +1990,9 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
  	tx_ring = ena_napi->tx_ring;
  	rx_ring = ena_napi->rx_ring;
  
@@ -2626,7 +2626,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	tx_budget = tx_ring->ring_size / ENA_TX_POLL_BUDGET_DIVIDER;
  
  	if (!test_bit(ENA_FLAG_DEV_UP, &tx_ring->adapter->flags) ||
-@@ -1347,7 +2010,11 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
+@@ -1347,7 +2006,11 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
  #endif
  
  	tx_work_done = ena_clean_tx_irq(tx_ring, tx_budget);
@@ -2639,7 +2639,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  	/* If the device is about to reset or down, avoid unmask
  	 * the interrupt and return 0 so NAPI won't reschedule
-@@ -1364,7 +2031,8 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
+@@ -1364,7 +2027,8 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
  		 * from the interrupt context (vs from sk_busy_loop)
  		 */
  #if LINUX_VERSION_CODE >= KERNEL_VERSION(4, 10, 0)
@@ -2649,7 +2649,7 @@ index 34c799070e85..6d7b628adf0d 100755
  #else
  		napi_complete_done(napi, rx_work_done);
  		if (atomic_cmpxchg(&ena_napi->unmask_interrupt, 1, 0)) {
-@@ -1375,6 +2043,9 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
+@@ -1375,6 +2039,9 @@ static int ena_io_poll(struct napi_struct *napi, int budget)
  			if (ena_com_get_adaptive_moderation_enabled(rx_ring->ena_dev))
  				ena_adjust_adaptive_rx_intr_moderation(ena_napi);
  
@@ -2659,7 +2659,7 @@ index 34c799070e85..6d7b628adf0d 100755
  			ena_unmask_interrupt(tx_ring, rx_ring);
  		}
  
-@@ -1417,16 +2088,11 @@ static irqreturn_t ena_intr_msix_io(int irq, void *data)
+@@ -1417,16 +2084,11 @@ static irqreturn_t ena_intr_msix_io(int irq, void *data)
  {
  	struct ena_napi *ena_napi = data;
  
@@ -2677,7 +2677,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  	return IRQ_HANDLED;
  }
-@@ -1450,7 +2116,7 @@ static int ena_enable_msix(struct ena_adapter *adapter)
+@@ -1450,7 +2112,7 @@ static int ena_enable_msix(struct ena_adapter *adapter)
  	}
  
  	/* Reserved the max msix vectors we might need */
@@ -2686,7 +2686,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	netif_dbg(adapter, probe, adapter->netdev,
  		  "trying to enable MSI-X, vectors %d\n", msix_vecs);
  
-@@ -1522,10 +2188,12 @@ static void ena_setup_io_intr(struct ena_adapter *adapter)
+@@ -1522,10 +2184,12 @@ static void ena_setup_io_intr(struct ena_adapter *adapter)
  {
  	struct net_device *netdev;
  	int irq_idx, i, cpu;
@@ -2700,7 +2700,7 @@ index 34c799070e85..6d7b628adf0d 100755
  		irq_idx = ENA_IO_IRQ_IDX(i);
  		cpu = i % num_online_cpus();
  
-@@ -1570,6 +2238,7 @@ static int ena_request_mgmnt_irq(struct ena_adapter *adapter)
+@@ -1570,6 +2234,7 @@ static int ena_request_mgmnt_irq(struct ena_adapter *adapter)
  
  static int ena_request_io_irq(struct ena_adapter *adapter)
  {
@@ -2708,7 +2708,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	unsigned long flags = 0;
  	struct ena_irq *irq;
  	int rc = 0, i, k;
-@@ -1580,7 +2249,7 @@ static int ena_request_io_irq(struct ena_adapter *adapter)
+@@ -1580,7 +2245,7 @@ static int ena_request_io_irq(struct ena_adapter *adapter)
  		return -EINVAL;
  	}
  
@@ -2717,7 +2717,7 @@ index 34c799070e85..6d7b628adf0d 100755
  		irq = &adapter->irq_tbl[i];
  		rc = request_irq(irq->vector, irq->handler, flags, irq->name,
  				 irq->data);
-@@ -1619,6 +2288,7 @@ static void ena_free_mgmnt_irq(struct ena_adapter *adapter)
+@@ -1619,6 +2284,7 @@ static void ena_free_mgmnt_irq(struct ena_adapter *adapter)
  
  static void ena_free_io_irq(struct ena_adapter *adapter)
  {
@@ -2725,7 +2725,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	struct ena_irq *irq;
  	int i;
  
-@@ -1629,7 +2299,7 @@ static void ena_free_io_irq(struct ena_adapter *adapter)
+@@ -1629,7 +2295,7 @@ static void ena_free_io_irq(struct ena_adapter *adapter)
  	}
  #endif /* CONFIG_RFS_ACCEL */
  
@@ -2734,7 +2734,7 @@ index 34c799070e85..6d7b628adf0d 100755
  		irq = &adapter->irq_tbl[i];
  		irq_set_affinity_hint(irq->vector, NULL);
  		free_irq(irq->vector, irq->data);
-@@ -1653,55 +2323,86 @@ static void ena_disable_msix(struct ena_adapter *adapter)
+@@ -1653,54 +2319,85 @@ static void ena_disable_msix(struct ena_adapter *adapter)
  
  static void ena_disable_io_intr_sync(struct ena_adapter *adapter)
  {
@@ -2762,12 +2762,10 @@ index 34c799070e85..6d7b628adf0d 100755
 +		/* Check if napi was initialized before */
 +		if (!ENA_IS_XDP_INDEX(adapter, i) ||
 +		    adapter->ena_napi[i].xdp_ring) {
-+			napi_hash_del(&adapter->ena_napi[i].napi);
-+			netif_napi_del(&adapter->ena_napi[i].napi);
++			__netif_napi_del(&adapter->ena_napi[i].napi);
 +		}
 +#else
- 		napi_hash_del(&adapter->ena_napi[i].napi);
- 		netif_napi_del(&adapter->ena_napi[i].napi);
+ 		__netif_napi_del(&adapter->ena_napi[i].napi);
 +#endif /* ENA_XDP_SUPPORT */
 +#ifdef ENA_XDP_SUPPORT
 +		else
@@ -2775,6 +2773,7 @@ index 34c799070e85..6d7b628adf0d 100755
 +				adapter->ena_napi[i].xdp_ring);
 +#endif /* ENA_XDP_SUPPORT */
  	}
++	synchronize_net();
  }
  
 -static void ena_init_napi(struct ena_adapter *adapter)
@@ -2834,7 +2833,7 @@ index 34c799070e85..6d7b628adf0d 100755
  		rx_ring = &adapter->rx_ring[i];
  		timeout = 100;
  		while (!ena_bp_disable(rx_ring)) {
-@@ -1719,31 +2420,27 @@ static void ena_napi_disable_all(struct ena_adapter *adapter)
+@@ -1718,31 +2415,27 @@ static void ena_napi_disable_all(struct ena_adapter *adapter)
  	}
  }
  #else
@@ -2874,7 +2873,7 @@ index 34c799070e85..6d7b628adf0d 100755
  /* Configure the Rx forwarding */
  static int ena_rss_configure(struct ena_adapter *adapter)
  {
-@@ -1793,9 +2490,9 @@ static int ena_up_complete(struct ena_adapter *adapter)
+@@ -1792,9 +2485,9 @@ static int ena_up_complete(struct ena_adapter *adapter)
  	/* enable transmits */
  	netif_tx_start_all_queues(adapter->netdev);
  
@@ -2887,7 +2886,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  	return 0;
  }
-@@ -1847,12 +2544,13 @@ static int ena_create_io_tx_queue(struct ena_adapter *adapter, int qid)
+@@ -1846,12 +2539,13 @@ static int ena_create_io_tx_queue(struct ena_adapter *adapter, int qid)
  	return rc;
  }
  
@@ -2903,7 +2902,7 @@ index 34c799070e85..6d7b628adf0d 100755
  		rc = ena_create_io_tx_queue(adapter, i);
  		if (rc)
  			goto create_err;
-@@ -1861,7 +2559,7 @@ static int ena_create_all_io_tx_queues(struct ena_adapter *adapter)
+@@ -1860,7 +2554,7 @@ static int ena_create_all_io_tx_queues(struct ena_adapter *adapter)
  	return 0;
  
  create_err:
@@ -2912,7 +2911,7 @@ index 34c799070e85..6d7b628adf0d 100755
  		ena_com_destroy_io_queue(ena_dev, ENA_IO_TXQ_IDX(i));
  
  	return rc;
-@@ -1906,12 +2604,14 @@ static int ena_create_io_rx_queue(struct ena_adapter *adapter, int qid)
+@@ -1905,13 +2599,15 @@ static int ena_create_io_rx_queue(struct ena_adapter *adapter, int qid)
  		netif_err(adapter, ifup, adapter->netdev,
  			  "Failed to get RX queue handlers. RX queue num %d rc: %d\n",
  			  qid, rc);
@@ -2923,13 +2922,14 @@ index 34c799070e85..6d7b628adf0d 100755
  
  	ena_com_update_numa_node(rx_ring->ena_com_io_cq, ctx.numa_node);
  
-+	return rc;
+ 	return rc;
 +err:
 +	ena_com_destroy_io_queue(ena_dev, ena_qid);
- 	return rc;
++	return rc;
  }
  
-@@ -1977,11 +2677,23 @@ static int create_queues_with_size_backoff(struct ena_adapter *adapter)
+ static int ena_create_all_io_rx_queues(struct ena_adapter *adapter)
+@@ -1976,11 +2672,23 @@ static int create_queues_with_size_backoff(struct ena_adapter *adapter)
  			  adapter->requested_rx_ring_size);
  
  	while (1) {
@@ -2955,7 +2955,7 @@ index 34c799070e85..6d7b628adf0d 100755
  		if (rc)
  			goto err_create_tx_queues;
  
-@@ -2047,10 +2759,11 @@ static int create_queues_with_size_backoff(struct ena_adapter *adapter)
+@@ -2046,10 +2754,11 @@ static int create_queues_with_size_backoff(struct ena_adapter *adapter)
  
  static int ena_up(struct ena_adapter *adapter)
  {
@@ -2968,7 +2968,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	ena_setup_io_intr(adapter);
  
  	/* napi poll functions should be initialized before running
-@@ -2058,19 +2771,12 @@ static int ena_up(struct ena_adapter *adapter)
+@@ -2057,19 +2766,12 @@ static int ena_up(struct ena_adapter *adapter)
  	 * interrupt, causing the ISR to fire immediately while the poll
  	 * function wasn't set yet, causing a null dereference
  	 */
@@ -2989,7 +2989,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	rc = create_queues_with_size_backoff(adapter);
  	if (rc)
  		goto err_create_queues_with_backoff;
-@@ -2096,7 +2802,7 @@ static int ena_up(struct ena_adapter *adapter)
+@@ -2095,7 +2797,7 @@ static int ena_up(struct ena_adapter *adapter)
  	/* schedule napi in case we had pending packets
  	 * from the last time we disable napi
  	 */
@@ -2998,7 +2998,7 @@ index 34c799070e85..6d7b628adf0d 100755
  		napi_schedule(&adapter->ena_napi[i].napi);
  
  	return rc;
-@@ -2109,13 +2815,15 @@ static int ena_up(struct ena_adapter *adapter)
+@@ -2108,13 +2810,15 @@ static int ena_up(struct ena_adapter *adapter)
  err_create_queues_with_backoff:
  	ena_free_io_irq(adapter);
  err_req_irq:
@@ -3015,7 +3015,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	netif_info(adapter, ifdown, adapter->netdev, "%s\n", __func__);
  
  	clear_bit(ENA_FLAG_DEV_UP, &adapter->flags);
-@@ -2128,7 +2836,7 @@ static void ena_down(struct ena_adapter *adapter)
+@@ -2127,7 +2831,7 @@ static void ena_down(struct ena_adapter *adapter)
  	netif_tx_disable(adapter->netdev);
  
  	/* After this point the napi handler won't enable the tx queue */
@@ -3024,7 +3024,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  	/* After destroy the queue there won't be any new interrupts */
  
-@@ -2146,7 +2854,7 @@ static void ena_down(struct ena_adapter *adapter)
+@@ -2145,7 +2849,7 @@ static void ena_down(struct ena_adapter *adapter)
  
  	ena_disable_io_intr_sync(adapter);
  	ena_free_io_irq(adapter);
@@ -3033,7 +3033,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  	ena_free_all_tx_bufs(adapter);
  	ena_free_all_rx_bufs(adapter);
-@@ -2230,17 +2938,65 @@ int ena_update_queue_sizes(struct ena_adapter *adapter,
+@@ -2229,17 +2933,65 @@ int ena_update_queue_sizes(struct ena_adapter *adapter,
  			   u32 new_tx_size,
  			   u32 new_rx_size)
  {
@@ -3104,7 +3104,7 @@ index 34c799070e85..6d7b628adf0d 100755
  {
  	u32 mss = skb_shinfo(skb)->gso_size;
  	struct ena_com_tx_meta *ena_meta = &ena_tx_ctx->ena_meta;
-@@ -2284,7 +3040,9 @@ static void ena_tx_csum(struct ena_com_tx_ctx *ena_tx_ctx, struct sk_buff *skb)
+@@ -2283,7 +3035,9 @@ static void ena_tx_csum(struct ena_com_tx_ctx *ena_tx_ctx, struct sk_buff *skb)
  		ena_meta->l3_hdr_len = skb_network_header_len(skb);
  		ena_meta->l3_hdr_offset = skb_network_offset(skb);
  		ena_tx_ctx->meta_valid = 1;
@@ -3115,7 +3115,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	} else {
  		ena_tx_ctx->meta_valid = 0;
  	}
-@@ -2420,7 +3178,7 @@ static int ena_tx_map_skb(struct ena_ring *tx_ring,
+@@ -2419,7 +3173,7 @@ static int ena_tx_map_skb(struct ena_ring *tx_ring,
  	tx_info->skb = NULL;
  
  	tx_info->num_of_bufs += i;
@@ -3124,7 +3124,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  	return -EINVAL;
  }
-@@ -2435,7 +3193,7 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
+@@ -2434,7 +3188,7 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
  	struct netdev_queue *txq;
  	void *push_hdr;
  	u16 next_to_use, req_id, header_len;
@@ -3133,7 +3133,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  	netif_dbg(adapter, tx_queued, dev, "%s skb %p\n", __func__, skb);
  	/*  Determine which tx ring we will be placed on */
-@@ -2468,49 +3226,16 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
+@@ -2467,49 +3221,16 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
  	ena_tx_ctx.header_len = header_len;
  
  	/* set flags and meta data */
@@ -3192,7 +3192,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  	/* stop the queue when no more space available, the packet can have up
  	 * to sgl_size + 2. one for the meta descriptor and one for header
-@@ -2562,7 +3287,7 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
+@@ -2561,7 +3282,7 @@ static netdev_tx_t ena_start_xmit(struct sk_buff *skb, struct net_device *dev)
  	return NETDEV_TX_OK;
  
  error_unmap_dma:
@@ -3201,7 +3201,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	tx_info->skb = NULL;
  
  error_drop_packet:
-@@ -2664,7 +3389,9 @@ static void ena_config_host_info(struct ena_com_dev *ena_dev, struct pci_dev *pd
+@@ -2663,7 +3384,9 @@ static void ena_config_host_info(struct ena_com_dev *ena_dev, struct pci_dev *pd
  	host_info->num_cpus = num_online_cpus();
  
  	host_info->driver_supported_features =
@@ -3212,7 +3212,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  	rc = ena_com_set_host_attributes(ena_dev);
  	if (rc) {
-@@ -2719,14 +3446,6 @@ static void ena_config_debug_area(struct ena_adapter *adapter)
+@@ -2718,14 +3441,6 @@ static void ena_config_debug_area(struct ena_adapter *adapter)
  	ena_com_delete_debug_area(adapter->ena_dev);
  }
  
@@ -3227,7 +3227,7 @@ index 34c799070e85..6d7b628adf0d 100755
  #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,36))
  #ifdef NDO_GET_STATS_64_V2
  static void ena_get_stats64(struct net_device *netdev,
-@@ -2740,6 +3459,7 @@ static struct rtnl_link_stats64 *ena_get_stats64(struct net_device *netdev,
+@@ -2739,6 +3454,7 @@ static struct rtnl_link_stats64 *ena_get_stats64(struct net_device *netdev,
  	struct ena_ring *rx_ring, *tx_ring;
  	unsigned int start;
  	u64 rx_drops;
@@ -3235,7 +3235,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	int i;
  
  	if (!test_bit(ENA_FLAG_DEV_UP, &adapter->flags))
-@@ -2778,9 +3498,11 @@ static struct rtnl_link_stats64 *ena_get_stats64(struct net_device *netdev,
+@@ -2777,9 +3493,11 @@ static struct rtnl_link_stats64 *ena_get_stats64(struct net_device *netdev,
  	do {
  		start = u64_stats_fetch_begin_irq(&adapter->syncp);
  		rx_drops = adapter->dev_stats.rx_drops;
@@ -3247,7 +3247,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  	stats->multicast = 0;
  	stats->collisions = 0;
-@@ -2905,6 +3627,9 @@ static const struct net_device_ops ena_netdev_ops = {
+@@ -2904,6 +3622,9 @@ static const struct net_device_ops ena_netdev_ops = {
  #if ENA_BUSY_POLL_SUPPORT
  	.ndo_busy_poll		= ena_busy_poll,
  #endif
@@ -3257,7 +3257,7 @@ index 34c799070e85..6d7b628adf0d 100755
  };
  
  static int ena_device_validate_params(struct ena_adapter *adapter,
-@@ -3181,6 +3906,7 @@ static void ena_destroy_device(struct ena_adapter *adapter, bool graceful)
+@@ -3180,6 +3901,7 @@ static void ena_destroy_device(struct ena_adapter *adapter, bool graceful)
  
  	ena_com_mmio_reg_read_request_destroy(ena_dev);
  
@@ -3265,7 +3265,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	adapter->reset_reason = ENA_REGS_RESET_NORMAL;
  
  	clear_bit(ENA_FLAG_TRIGGER_RESET, &adapter->flags);
-@@ -3367,7 +4093,9 @@ static void check_for_missing_completions(struct ena_adapter *adapter)
+@@ -3366,7 +4088,9 @@ static void check_for_missing_completions(struct ena_adapter *adapter)
  	struct ena_ring *tx_ring;
  	struct ena_ring *rx_ring;
  	int i, budget, rc;
@@ -3275,7 +3275,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	/* Make sure the driver doesn't turn the device in other process */
  	smp_rmb();
  
-@@ -3382,7 +4110,7 @@ static void check_for_missing_completions(struct ena_adapter *adapter)
+@@ -3381,7 +4105,7 @@ static void check_for_missing_completions(struct ena_adapter *adapter)
  
  	budget = ENA_MONITORED_TX_QUEUES;
  
@@ -3284,7 +3284,7 @@ index 34c799070e85..6d7b628adf0d 100755
  		tx_ring = &adapter->tx_ring[i];
  		rx_ring = &adapter->rx_ring[i];
  
-@@ -3390,7 +4118,8 @@ static void check_for_missing_completions(struct ena_adapter *adapter)
+@@ -3389,7 +4113,8 @@ static void check_for_missing_completions(struct ena_adapter *adapter)
  		if (unlikely(rc))
  			return;
  
@@ -3294,7 +3294,7 @@ index 34c799070e85..6d7b628adf0d 100755
  		if (unlikely(rc))
  			return;
  
-@@ -3399,7 +4128,7 @@ static void check_for_missing_completions(struct ena_adapter *adapter)
+@@ -3398,7 +4123,7 @@ static void check_for_missing_completions(struct ena_adapter *adapter)
  			break;
  	}
  
@@ -3303,7 +3303,7 @@ index 34c799070e85..6d7b628adf0d 100755
  }
  
  /* trigger napi schedule after 2 consecutive detections */
-@@ -3464,8 +4193,8 @@ static void check_for_missing_keep_alive(struct ena_adapter *adapter)
+@@ -3463,8 +4188,8 @@ static void check_for_missing_keep_alive(struct ena_adapter *adapter)
  	if (adapter->keep_alive_timeout == ENA_HW_HINTS_NO_TIMEOUT)
  		return;
  
@@ -3314,7 +3314,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	if (unlikely(time_is_before_jiffies(keep_alive_expired))) {
  		netif_err(adapter, drv, adapter->netdev,
  			  "Keep alive watchdog timeout.\n");
-@@ -3573,7 +4302,7 @@ static void ena_timer_service(unsigned long data)
+@@ -3572,7 +4297,7 @@ static void ena_timer_service(unsigned long data)
  	}
  
  	/* Reset the timer */
@@ -3323,7 +3323,7 @@ index 34c799070e85..6d7b628adf0d 100755
  }
  
  static u32 ena_calc_max_io_queue_num(struct pci_dev *pdev,
-@@ -3716,7 +4445,7 @@ static int ena_rss_init_default(struct ena_adapter *adapter)
+@@ -3715,7 +4440,7 @@ static int ena_rss_init_default(struct ena_adapter *adapter)
  		}
  	}
  
@@ -3332,7 +3332,7 @@ index 34c799070e85..6d7b628adf0d 100755
  					ENA_HASH_KEY_SIZE, 0xFFFFFFFF);
  	if (unlikely(rc && (rc != -EOPNOTSUPP))) {
  		dev_err(dev, "Cannot fill hash function\n");
-@@ -3944,7 +4673,15 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+@@ -3943,7 +4668,15 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  	adapter->max_num_io_queues = max_num_io_queues;
  	adapter->last_monitored_tx_qid = 0;
  
@@ -3348,7 +3348,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	adapter->wd_state = wd_state;
  
  	snprintf(adapter->name, ENA_NAME_MAX_LEN, "ena_%d", adapters_found);
-@@ -3955,7 +4692,10 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+@@ -3954,7 +4687,10 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  			"Failed to query interrupt moderation feature\n");
  		goto err_netdev_destroy;
  	}
@@ -3360,7 +3360,7 @@ index 34c799070e85..6d7b628adf0d 100755
  
  	netdev->netdev_ops = &ena_netdev_ops;
  	netdev->watchdog_timeo = TX_TIMEOUT;
-@@ -3989,9 +4729,6 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+@@ -3988,9 +4724,6 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  
  	ena_config_debug_area(adapter);
  
@@ -3370,7 +3370,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	memcpy(adapter->netdev->perm_addr, adapter->mac_addr, netdev->addr_len);
  
  	netif_carrier_off(netdev);
-@@ -4031,7 +4768,6 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+@@ -4030,7 +4763,6 @@ static int ena_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  	return 0;
  
  err_rss:
@@ -3378,7 +3378,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	ena_com_delete_debug_area(ena_dev);
  	ena_com_rss_destroy(ena_dev);
  err_terminate_sysfs:
-@@ -4086,6 +4822,7 @@ static void ena_remove(struct pci_dev *pdev)
+@@ -4085,6 +4817,7 @@ static void ena_remove(struct pci_dev *pdev)
  	cancel_work_sync(&adapter->reset_task);
  
  	rtnl_lock();
@@ -3386,7 +3386,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	ena_destroy_device(adapter, true);
  	rtnl_unlock();
  
-@@ -4099,8 +4836,6 @@ static void ena_remove(struct pci_dev *pdev)
+@@ -4098,8 +4831,6 @@ static void ena_remove(struct pci_dev *pdev)
  
  	ena_com_delete_host_info(ena_dev);
  
@@ -3395,7 +3395,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	ena_release_bars(ena_dev, pdev);
  
  	pci_disable_device(pdev);
-@@ -4146,6 +4881,7 @@ static int ena_resume(struct pci_dev *pdev)
+@@ -4145,6 +4876,7 @@ static int ena_resume(struct pci_dev *pdev)
  	u64_stats_update_end(&adapter->syncp);
  
  	rtnl_lock();
@@ -3403,7 +3403,7 @@ index 34c799070e85..6d7b628adf0d 100755
  	rc = ena_restore_device(adapter);
  	rtnl_unlock();
  	return rc;
-@@ -4221,14 +4957,17 @@ static void ena_keep_alive_wd(void *adapter_data,
+@@ -4220,14 +4952,17 @@ static void ena_keep_alive_wd(void *adapter_data,
  	struct ena_adapter *adapter = (struct ena_adapter *)adapter_data;
  	struct ena_admin_aenq_keep_alive_desc *desc;
  	u64 rx_drops;
@@ -3422,7 +3422,7 @@ index 34c799070e85..6d7b628adf0d 100755
  }
  
 diff --git a/drivers/amazon/net/ena/ena_netdev.h b/drivers/amazon/net/ena/ena_netdev.h
-index f9e2bb6da812..1648be44e2eb 100755
+index f9e2bb6..1648be4 100755
 --- a/drivers/amazon/net/ena/ena_netdev.h
 +++ b/drivers/amazon/net/ena/ena_netdev.h
 @@ -41,6 +41,7 @@
@@ -3636,7 +3636,7 @@ index f9e2bb6da812..1648be44e2eb 100755
 +
  #endif /* !(ENA_H) */
 diff --git a/drivers/amazon/net/ena/kcompat.h b/drivers/amazon/net/ena/kcompat.h
-index 1c2918847839..eb4b99d57367 100755
+index 1c29188..eb4b99d57 100755
 --- a/drivers/amazon/net/ena/kcompat.h
 +++ b/drivers/amazon/net/ena/kcompat.h
 @@ -364,9 +364,10 @@ static inline u32 ethtool_rxfh_indir_default(u32 index, u32 n_rx_rings)
@@ -3684,7 +3684,7 @@ index 1c2918847839..eb4b99d57367 100755
 +#endif
  #endif /* _KCOMPAT_H_ */
 diff --git a/drivers/amazon/net/ena/net_dim.c b/drivers/amazon/net/ena/net_dim.c
-index b15f6f0a4441..af46903cd53e 100644
+index b15f6f0..af46903 100644
 --- a/drivers/amazon/net/ena/net_dim.c
 +++ b/drivers/amazon/net/ena/net_dim.c
 @@ -71,7 +71,6 @@ net_dim_get_rx_moderation(u8 cq_period_mode, int ix)
@@ -3727,5 +3727,5 @@ index b15f6f0a4441..af46903cd53e 100644
  
  #endif /* LINUX_VERSION_CODE < KERNEL_VERSION(5, 3, 0) */
 -- 
-2.17.2
+2.7.4
 

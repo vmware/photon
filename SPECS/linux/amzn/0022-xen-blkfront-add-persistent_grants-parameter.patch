@@ -26,11 +26,11 @@ Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
 
 CR: https://cr.amazon.com/r/8309443
 ---
- drivers/block/xen-blkfront.c | 25 +++++++++++++++++--------
- 1 file changed, 17 insertions(+), 8 deletions(-)
+ drivers/block/xen-blkfront.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
-index 6d810e278c6a..67275e87d2dd 100644
+index 8365f33df47a..bf2d39a839b4 100644
 --- a/drivers/block/xen-blkfront.c
 +++ b/drivers/block/xen-blkfront.c
 @@ -145,6 +145,10 @@ static unsigned int xen_blkif_max_queues = 4;
@@ -44,41 +44,37 @@ index 6d810e278c6a..67275e87d2dd 100644
  /*
   * Maximum order of pages to be used for the shared ring between front and
   * backend, 4KB page granularity is used.
-@@ -1883,11 +1887,13 @@ static int talk_to_blkback(struct xenbus_device *dev,
+@@ -1892,11 +1896,11 @@ static int talk_to_blkback(struct xenbus_device *dev,
  		message = "writing protocol";
  		goto abort_transaction;
  	}
--	err = xenbus_printf(xbt, dev->nodename,
--			    "feature-persistent", "%u", 1);
+-	err = xenbus_printf(xbt, dev->nodename, "feature-persistent", "%u",
+-			info->feature_persistent);
 -	if (err)
 -		dev_warn(&dev->dev,
 -			 "writing persistent grants feature to xenbus");
 +	if (xen_blkif_feature_persistent) {
-+		err = xenbus_printf(xbt, dev->nodename,
-+				    "feature-persistent", "%u", 1);
++		err = xenbus_printf(xbt, dev->nodename,"feature-persistent", "%u", 1);
 +		if (err)
-+			dev_warn(&dev->dev,
-+				 "writing persistent grants feature to xenbus");
++			dev_warn(&dev->dev,"writing persistent grants feature to xenbus");
 +	}
  
  	err = xenbus_transaction_end(xbt, 0);
  	if (err) {
-@@ -2344,9 +2350,12 @@ static void blkfront_gather_backend_features(struct blkfront_info *info)
+@@ -2355,10 +2359,12 @@ static void blkfront_gather_backend_features(struct blkfront_info *info)
  	if (xenbus_read_unsigned(info->xbdev->otherend, "feature-discard", 0))
  		blkfront_setup_discard(info);
  
--	info->feature_persistent =
--		!!xenbus_read_unsigned(info->xbdev->otherend,
--				       "feature-persistent", 0);
+-	if (info->feature_persistent)
 +	if (xen_blkif_feature_persistent)
-+		info->feature_persistent =
-+			!!xenbus_read_unsigned(info->xbdev->otherend,
-+					       "feature-persistent", 0);
+ 		info->feature_persistent =
+ 			!!xenbus_read_unsigned(info->xbdev->otherend,
+ 					       "feature-persistent", 0);
 +	else
 +		info->feature_persistent = 0;
  
  	indirect_segments = xenbus_read_unsigned(info->xbdev->otherend,
  					"feature-max-indirect-segments", 0);
 -- 
-2.17.2
+2.17.1
 

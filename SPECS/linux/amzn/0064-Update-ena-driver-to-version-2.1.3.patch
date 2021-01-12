@@ -1522,9 +1522,9 @@ index c65dc989bdbf..34c799070e85 100755
  
 -	for (i = 0; i < adapter->num_queues; i++) {
 +	for (i = 0; i < adapter->num_io_queues; i++) {
- 		napi_hash_del(&adapter->ena_napi[i].napi);
- 		netif_napi_del(&adapter->ena_napi[i].napi);
+ 		__netif_napi_del(&adapter->ena_napi[i].napi);
  	}
+ }
 @@ -1650,7 +1677,7 @@ static void ena_init_napi(struct ena_adapter *adapter)
  	struct ena_napi *napi;
  	int i;

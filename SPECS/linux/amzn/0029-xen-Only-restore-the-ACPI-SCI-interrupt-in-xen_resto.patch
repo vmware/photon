@@ -28,8 +28,8 @@ index 20dc19617e7d..16593437b2a3 100644
 +#endif
 +
  #include "events_internal.h"
- 
- const struct evtchn_ops *evtchn_ops;
+
+ #undef MODULE_PARAM_PREFIX
 @@ -1609,9 +1613,45 @@ void xen_shutdown_pirqs(void)
  	}
  }

@@ -54,7 +54,7 @@ index 1bb0b522d004..b893536d8af4 100644
  	int ret = -EINVAL;
 -	evtchn_port_t evtchn;
  
- 	if (fifo_events)
+ 	if (xen_fifo_events)
  		ret = xen_evtchn_fifo_init();
 @@ -1701,8 +1709,7 @@ void __init xen_init_IRQ(void)
  	BUG_ON(!evtchn_to_irq);

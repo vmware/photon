@@ -7054,7 +7054,7 @@ new file mode 100644
 index 000000000000..4f82a3df99f7
 --- /dev/null
 +++ b/drivers/amazon/net/ena/ena_netdev.c
-@@ -0,0 +1,3968 @@
+@@ -0,0 +1,3967 @@
 +/*
 + * Copyright 2015 Amazon.com, Inc. or its affiliates.
 + *
@@ -8660,8 +8660,7 @@ index 000000000000..4f82a3df99f7
 +	int i;
 +
 +	for (i = 0; i < adapter->num_queues; i++) {
-+		napi_hash_del(&adapter->ena_napi[i].napi);
-+		netif_napi_del(&adapter->ena_napi[i].napi);
++		__netif_napi_del(&adapter->ena_napi[i].napi);
 +	}
 +}
 +

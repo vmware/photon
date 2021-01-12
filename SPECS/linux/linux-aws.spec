@@ -7,8 +7,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.9.0
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        5.10.4
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -19,7 +19,7 @@ Distribution: 	Photon
 
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=26fefa389c711da70543092fbb121a023f1b0fb8
+%define sha1 linux=62605305a3cbae68780612d35e0585cfc4983afd
 Source1:	config-aws
 Source2:	initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -45,8 +45,8 @@ Patch8:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch9:        apparmor-af_unix-mediation.patch
 
 # VMW:
-Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
-Patch56:        x86-vmware-Log-kmsg-dump-on-panic.patch
+Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
+Patch56:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -54,10 +54,6 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-#Fix for CVE-2020-25704
-Patch103:       perf-core-Fix-a-leak-in-perf-event-parse-addr-filter.patch
-#Fix for CVE-2020-8694
-Patch104:        powercap-restrict-energy-meter-to-root-access.patch
 
 #Amazon AWS
 Patch201:       0002-bump-the-default-TTL-to-255.patch
@@ -99,6 +95,7 @@ Patch236:       0070-ena-update-to-2.2.3.patch
 Patch237:       0071-ena-update-to-2.2.6.patch
 Patch238:       0082-ena-Update-to-2.2.10.patch
 Patch239:       0123-drivers-amazon-efa-update-to-1.9.0.patch
+Patch240:       drivers-amazon-efa-driver-compilation-fix-on-5.10.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -190,8 +187,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
-%patch103 -p1
-%patch104 -p1
 
 #Amazon AWS
 %patch201 -p1
@@ -233,6 +228,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch237 -p1
 %patch238 -p1
 %patch239 -p1
+%patch240 -p1
 
 
 # crypto
@@ -398,6 +394,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Jan 11 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.4-1
+-   Update to version 5.10.4
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-4
 -   Fix CVE-2020-8694
 *   Fri Nov 06 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-3
