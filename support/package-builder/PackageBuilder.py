@@ -53,7 +53,8 @@ class PackageBuilder(object):
             else:
                 tUtils.installToolchainRPMS(self.sandbox, self.package, self.version, availablePackages=self.doneList)
 
-            if self.package not in constants.listCoreToolChainPackages:
+            if ((self.package not in constants.listCoreToolChainPackages) or
+                    (constants.rpmCheck and self.package in constants.testForceRPMS)):
                 self._installDependencies(constants.buildArch)
                 if constants.crossCompiling:
                     self._installDependencies(constants.targetArch)
@@ -67,7 +68,10 @@ class PackageBuilder(object):
             self.logger.error("Failed while building package: " + self.package)
             self.logger.debug("Sandbox: " + self.sandbox.getID() +
                               " not deleted for debugging.")
-            logFileName = os.path.join(self.logPath, self.package + ".log")
+            if constants.rpmCheck and self.package in constants.testForceRPMS:
+                logFileName = os.path.join(self.logPath, self.package + "-test.log")
+            else:
+                logFileName = os.path.join(self.logPath, self.package + ".log")
             fileLog = os.popen('tail -n 100 ' + logFileName).read()
             self.logger.info(fileLog)
             raise e

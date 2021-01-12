@@ -138,12 +138,6 @@ class PackageUtils(object):
         except Exception as e:
             self.logger.error("Failed while building rpm:" + package)
             raise e
-        finally:
-            if (constants.rpmCheck and
-                    package in constants.testForceRPMS and
-                    SPECS.getData().isCheckAvailable(package, version)):
-                cmd = ("sed -i '/^Executing(%check):/,/^Processing files:/{//!b};d' " + logFilePath)
-                CommandUtils().runCommandInShell(cmd, logfn=self.logger.debug)
         self.logger.debug("RPM build is successful")
 
     def findRPMFile(self, package,version="*",arch=None, throw=False):

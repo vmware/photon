@@ -8,7 +8,8 @@
 set -o errexit
 set -o nounset
 set +h
-source $(dirname $(realpath -s $0))/common.inc
+SRCPATH=$(dirname $(realpath -s $0))
+source $SRCPATH/common.inc
 
 LOGFILE="$(date +%Y-%m-%d).log"
 PRGNAME=${0##*/}
@@ -32,7 +33,7 @@ if [ ${EUID} -eq 0 ] ; then
     CHROOT_CMD=chroot
 else
 #    CHROOT_CMD="contain -b $SOURCES:usr/src/photon/SOURCES,$RPMS:usr/src/photon/RPMS -c"
-    CHROOT_CMD="contain -b $RPMS:usr/src/photon/RPMS,$RPMS/../SRPMS:usr/src/photon/SRPMS,$RPMS/../PUBLISHRPMS:publishrpms,$RPMS/../PUBLISHXRPMS:publishxrpms -c -n"
+    CHROOT_CMD="$SRCPATH/../../tools/bin/contain -b $RPMS:usr/src/photon/RPMS,$RPMS/../SRPMS:usr/src/photon/SRPMS,$RPMS/../PUBLISHRPMS:publishrpms,$RPMS/../PUBLISHXRPMS:publishxrpms -c -n"
 fi
 
 
