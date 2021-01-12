@@ -1,0 +1,15 @@
+diff --git a/src/include/tcsd.h b/src/include/tcsd.h
+index 5b9462b..05bae97 100644
+--- a/src/include/tcsd.h
++++ b/src/include/tcsd.h
+@@ -166,8 +166,8 @@ void	   thread_signal_init();
+ 
+ /* signal handling */
+ #ifndef __APPLE__
+-struct sigaction tcsd_sa_int;
+-struct sigaction tcsd_sa_chld;
++extern struct sigaction tcsd_sa_int;
++extern struct sigaction tcsd_sa_chld;
+ #endif
+ 
+ #endif

@@ -1,7 +1,7 @@
 Summary:    TCG Software Stack (TSS)
 Name:       trousers
 Version:    0.3.14
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    BSD
 URL:        https://sourceforge.net/projects/trousers/
 Group:      System Environment/Security
@@ -11,6 +11,7 @@ Source0:    %{name}-%{version}.tar.gz
 %define sha1 trousers=9ca2cc9e1179465f6c5d9055e2b855e25031b85a
 
 Patch0:     tcsd_fixes.patch
+Patch1:     trousers-0.3.14-fno-common.patch
 
 Requires:   libtspi = %{version}-%{release}
 %description
@@ -32,6 +33,7 @@ TSPI library
 %prep
 %setup -q -c %{name}-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
 %configure \
@@ -92,6 +94,8 @@ fi
 %exclude %{_libdir}/libtddl.a
 
 %changelog
+*   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 0.3.14-4
+-   GCC-10 support.
 *   Wed Aug 19 2020 Shreyas B <shreyasb@vmware.com> 0.3.14-3
 -   Fix for CVE-2020-24330, CVE-2020-24331 & CVE-2020-24332
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.14-2

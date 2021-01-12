@@ -1,7 +1,7 @@
 Summary:        SELinux binary policy manipulation library
 Name:           libsepol
 Version:        3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/20200710/%{name}-%{version}.tar.gz
@@ -48,9 +48,8 @@ needed for developing applications that manipulate binary policies.
 %setup -q
 
 %build
-make %{?_smp_mflags}
 # TODO: try to remove CFLAGS on next version update
-#make %{?_smp_mflags} CFLAGS="-Werror -Wall -W -Wundef -Wshadow -Wmissing-format-attribute -O2 -Wno-error=stringop-truncation"
+make %{?_smp_mflags} CFLAGS="-Werror -Wall -W -Wundef -Wshadow -Wmissing-format-attribute -O2 -fno-semantic-interposition -Wno-error=stringop-truncation"
 
 %install
 mkdir -p %{buildroot}/%{_lib}
@@ -92,6 +91,8 @@ rm %{buildroot}%{_mandir}/man8/genpolusers.8
 %{_lib}/libsepol.so.1
 
 %changelog
+* Tue Jan 12 2021 Alexey Makhalov <amakhalov@vmware.com> 3.1-2
+- GCC-10 support
 * Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1
 - Automatic Version Bump
 * Sat Apr 18 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-1

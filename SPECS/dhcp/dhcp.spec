@@ -1,7 +1,7 @@
 Summary:	Dynamic host configuration protocol
 Name:		dhcp
 Version:	4.4.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	ISC
 Url:      	http://isc.org/products/DHCP/
 Source0:  	ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
@@ -11,6 +11,7 @@ Vendor:		VMware, Inc.
 Distribution:	Photon
 Patch0:         dhcp-4.4.2-client_script-1.patch
 Patch1:         dhcp-nowplusinterval.patch
+Patch2:         dhcp-4.4.2-fno-common.patch
 BuildRequires:	systemd
 %description
 The ISC DHCP package contains both the client and server programs for DHCP. dhclient (the client) is used for connecting to a network which uses DHCP to assign network addresses. dhcpd (the server) is used for assigning network addresses on private networks
@@ -43,6 +44,7 @@ The ISC DHCP Client, dhclient, provides a means for configuring one or more netw
 %setup -qn %{name}-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %build
 CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'         \
         -D_PATH_DHCPD_CONF='\"/etc/dhcp/dhcpd.conf\"'               \
@@ -171,6 +173,8 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/dhclient/
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+*   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 4.4.2-2
+-   GCC-10 support.
 *   Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 4.4.2-1
 -   Automatic Version Bump
 *   Thu Sep 19 2019 Keerthana K <keerthanak@vmware.com> 4.3.5-5

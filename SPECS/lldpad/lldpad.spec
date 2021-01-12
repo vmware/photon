@@ -1,11 +1,11 @@
 Summary: Intel LLDP Agent
 Name:    lldpad
-Version: 1.0.1
-Release: 8%{?dist}
+Version: 1.1
+Release: 1%{?dist}
 License: GPLv2
 URL: http://open-lldp.org/
 Source: %{name}-%{version}.tar.gz
-%define sha1 lldpad=71e35298e926f0c03556cede4861dffa36928500
+%define sha1 lldpad=22d302c8600dae7e70c3c1ead086b392dc3c6962
 Group:      System Environment/Daemons
 Vendor:     VMware, Inc.
 Distribution:  Photon
@@ -18,20 +18,11 @@ Requires:       systemd
 Requires:      libconfig
 Requires:      libnl
 
-Patch0:     Come-up-with-STRNCPY_TERMINATED.patch
-Patch1:     Silent-Werror-address-of-packed-member-warnings.patch
-Patch2:     l2_packet-Guard-ETH_P_LLDP-define.patch
-
 %description
 The lldpad package comes with utilities to manage an LLDP interface with support for reading and configuring TLVs. TLVs and interfaces are individual controlled allowing flexible configuration for TX only, RX only, or TX/RX modes per TLV.
 
 %prep
-%setup -q -n open-lldp-036e314
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-sed -i "s/AM_CFLAGS = -Wall -Werror -Wextra -Wformat=2/AM_CFLAGS = -Wall -Werror -Wextra -Wformat=2 -std=gnu89 -Wno-implicit-fallthrough -Wno-format-truncation/" Makefile.am
-sed -i "s/u8 arglen;/u8 arglen = 0;/g" lldp_util.c
+%setup -q -n openlldp-%{version}
 
 %build
 ./bootstrap.sh
@@ -73,6 +64,8 @@ mv %{buildroot}/%{_libdir}/systemd/system/lldpad.socket  \
 
 
 %changelog
+*   Fri Jan 15 2021 Alexey Makhalov <amakhalov@vmware.com> 1.1-1
+-   Version update.
 *   Wed Oct 21 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 1.0.1-8
 -   Fix redefinition of ETH_P_LLDP macro
 *   Fri Apr 03 2020 Alexey Makhalov <amakhalov@vmware.com> 1.0.1-7

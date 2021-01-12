@@ -1,7 +1,7 @@
 Summary:	Tools and libraries to manipulate EFI variables
 Name:		efivar
 Version:	37
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		https://github.com/rhboot/efivar
 Group:		System Environment/System Utilities
@@ -29,7 +29,10 @@ It contains the libraries and header files to create applications
 %patch2 -p1
 
 %build
-make %{?_smp_mflags} PREFIX=%{_prefix} \
+# This package implements symbol versioning with toplevel ASM statments which is
+# incompatible with LTO.  Disable LTO by overiding OPTIMIZE=
+
+make %{?_smp_mflags} PREFIX=%{_prefix} OPTIMIZE="-O2 -Wno-error=stringop-truncation"\
     libdir=%{_libdir} \
     bindir=%{_bindir}
 %install
@@ -58,6 +61,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 37-2
+-   GCC-10 support.
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 37-1
 -   Automatic Version Bump
 *   Thu Apr 02 2020 Alexey Makhalov <amakhalov@vmware.com> 36-2

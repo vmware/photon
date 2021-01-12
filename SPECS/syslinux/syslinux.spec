@@ -2,7 +2,7 @@
 Summary:	Simple kernel loader which boots from a FAT filesystem
 Name:		syslinux
 Version:	6.04
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv2+
 URL:		http://www.syslinux.org
 Group:		Applications/System
@@ -15,6 +15,8 @@ Source1:        http://downloads.sourceforge.net/libpng/libpng-1.2.59.tar.xz
 Source2:        http://www.zlib.net/zlib-1.2.11.tar.xz
 %define sha1    zlib=e1cb0d5c92da8e9a8c2635dfa249c341dfd00322
 Patch0:		0001-Add-install-all-target-to-top-side-of-HAVE_FIRMWARE.patch
+Patch1:         syslinux-6.04_pre1-fcommon.patch
+Patch2:         0006-Replace-builtin-strlen-that-appears-to-get-optimized.patch
 BuildArch:      x86_64
 BuildRequires:	nasm
 BuildRequires:	util-linux-devel
@@ -36,6 +38,8 @@ Headers and libraries for syslinux development.
 %prep
 %setup -q -n %{name}-%{version}-pre1
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 # to have higher versions of libpng, zlib
 rm -rf com32/lib/libpng/
@@ -74,6 +78,8 @@ rm %{buildroot}/%{_bindir}/sha1pass
 %{_datadir}/syslinux/com32/*
 
 %changelog
+*   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 6.04-6
+-   GCC-10 support.
 *   Tue Jun 04 2019 Ajay Kaher <akaher@vmware.com> 6.04-5
 -   Upgrade zlib to v1.2.11 and libpng to v1.2.59
 *   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 6.04-4

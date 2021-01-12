@@ -5,7 +5,7 @@
 Summary:	OpenJDK
 Name:		openjdk10
 Version:	1.10.0.23
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -70,7 +70,7 @@ sh configure \
 	--with-boot-jdk=/var/opt/OpenJDK-%bootstrapjdkversion-bin \
 	--enable-headless-only \
         --with-extra-cxxflags="-Wno-error -std=gnu++98 -fno-delete-null-pointer-checks -fno-lifetime-dse" \
-	--with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse" \
+	--with-extra-cflags="-fno-delete-null-pointer-checks -Wno-error -fno-lifetime-dse -fcommon" \
 	--with-freetype-include=/usr/include/freetype2 \
 	--with-freetype-lib=/usr/lib \
 	--with-stdc++lib=dynamic \
@@ -232,6 +232,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+*   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 1.10.0.23-7
+-   GCC-10 support.
 *   Mon Sep 14 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.10.0.23-6
 -   Fix build issue with make-4.3
 *   Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 1.10.0.23-5

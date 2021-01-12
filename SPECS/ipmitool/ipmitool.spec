@@ -2,7 +2,7 @@
 Summary:        ipmitool - Utility for IPMI control
 Name:           ipmitool
 Version:        1.8.18
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 
 Group:          System Environment/Utilities
@@ -23,6 +23,7 @@ Requires:	openssl
 Requires:	curl
 
 Patch0:         CVE-2020-5208.patch
+Patch1:         0007-hpmfwupg-move-variable-definition-to-c-file.patch
 
 %description
 This package contains a utility for interfacing with devices that support
@@ -42,6 +43,7 @@ setting LAN configuration, and chassis power control.
 %prep
 %setup -q -n %{name}-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
 ./bootstrap
@@ -68,6 +70,8 @@ make %{?_smp_mflags} check
 %doc %{_datadir}/doc/ipmitool
 
 %changelog
+*   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 1.8.18-5
+-   GCC-10 support.
 *   Fri Jul 24 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.8.18-4
 -   Make ipmitool compatible for openssl-1.1.x
 *   Thu Mar 05 2020 Keerthana K <keerthanak@vmware.com> 1.8.18-3

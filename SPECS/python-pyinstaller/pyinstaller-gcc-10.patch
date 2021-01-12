@@ -1,0 +1,31 @@
+From 8ca4091804f414f7fff1533e1c7508f7905ba939 Mon Sep 17 00:00:00 2001
+From: Ruoyang <i@hsury.com>
+Date: Fri, 10 Apr 2020 00:00:01 +0800
+Subject: [PATCH] Bootloader: Fix GCC stringop error.
+
+Resolves #4196, resolves #4784
+---
+ bootloader/wscript | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/bootloader/wscript b/bootloader/wscript
+index 20d3297133..6c75361276 100644
+--- a/bootloader/wscript
++++ b/bootloader/wscript
+@@ -460,10 +460,14 @@ def configure(ctx):
+         ctx.env.append_value('CFLAGS', ['-Wall',
+                                         '-Werror',
+                                         '-Wno-error=unused-variable',
+-                                        '-Wno-error=unused-function'])
++                                        '-Wno-error=unused-function',
++                                        '-Wno-error=stringop-overflow',
++                                        '-Wno-error=stringop-truncation'])
+         if not ctx.options.show_warnings:
+             ctx.env.append_value('CFLAGS', ['-Wno-unused-variable',
+-                                            '-Wno-unused-function'])
++                                            '-Wno-unused-function',
++                                            '-Wno-stringop-overflow',
++                                            '-Wno-stringop-truncation'])
+ 
+     ### Defines, Includes
+ 

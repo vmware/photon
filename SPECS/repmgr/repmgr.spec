@@ -1,7 +1,7 @@
 Summary:        Replication Manager for PostgreSQL Clusters
 Name:           repmgr
 Version:        5.1.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GNU Public License (GPL) v3
 URL:            https://repmgr.org/
 Group:          Applications/Databases
@@ -20,7 +20,7 @@ repmgr is an open-source tool suite for managing replication and failover in a c
 
 %build
 %configure CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
-make
+make %{_smp_mflags} CFLAGS="-O2 -g -fcommon"
 
 %install
 make install DESTDIR=%{buildroot}
@@ -36,6 +36,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+*   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 5.1.0-4
+-   GCC-10 support.
 *   Wed Sep 30 2020 Dweep Advani <photon-checkins@vmware.com> 5.1.0-3
 -   Preferring libedit
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.1.0-2

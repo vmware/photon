@@ -5139,7 +5139,7 @@ new file mode 100644
 index 000000000..8cbed14e9
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap_hash.c
-@@ -0,0 +1,392 @@
+@@ -0,0 +1,396 @@
 +/*
 + * Copyright 2012-2016 by PaX Team <pageexec@freemail.hu>
 + * Licensed under the GPL v2
@@ -5522,7 +5522,11 @@ index 000000000..8cbed14e9
 +#endif
 +		gcc_assert(uid < rap_cgraph_max_uid);
 +
++#if BUILDING_GCC_VERSION < 10000
 +		if (node->global.inlined_to)
++#else
++		if (node->inlined_to)
++#endif
 +			continue;
 +
 +		fndecl = NODE_DECL(node);

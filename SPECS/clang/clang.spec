@@ -42,7 +42,7 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr               \
       -DCMAKE_BUILD_TYPE=Release                \
       -DLLVM_MAIN_INCLUDE_DIR=/usr/include \
       -Wno-dev ..
-make
+make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*

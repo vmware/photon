@@ -1,0 +1,38 @@
+From e67f00b3fcf685c6a3a1da4c0f7bfc20081813cd Mon Sep 17 00:00:00 2001
+From: Neil Jerram <neil@tigera.io>
+Date: Fri, 17 Jul 2020 12:05:39 +0100
+Subject: [PATCH] Add -fcommon to CFLAGS
+
+To fix this problem, which we've been seeing since gcc:latest became
+GCC 10:
+
+    LD -r -o all.o cf-parse.tab.o cf-lex.o conf.o
+    /usr/bin/ld: cf-lex.o:/code/obj/amd64/conf/../lib/krt.h:115: multiple definition of `kif_proto'; cf-parse.tab.o:/code/obj/amd64/conf/../lib/krt.h:115: first defined here
+    collect2: error: ld returned 1 exit status
+
+The GCC 10 release notes say:
+
+    GCC now defaults to -fno-common. As a result, global variable
+    accesses are more efficient on various targets. In C, global
+    variables with multiple tentative definitions now result in linker
+    errors. With -fcommon such definitions are silently merged during
+    linking.
+
+(https://gcc.gnu.org/gcc-10/changes.html)
+---
+ configure.ac | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/configure.in b/configure.in
+index 5fbf9136..b6468a65 100644
+--- a/configure.in
++++ b/configure.in
+@@ -92,6 +92,8 @@ if test -z "$GCC" ; then
+ #	esac
+ #fi
+ 
++CFLAGS="$CFLAGS -fcommon"
++
+ if test "$enable_pthreads" != no ; then
+ 	BIRD_CHECK_PTHREADS
+ 

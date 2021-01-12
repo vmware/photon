@@ -1,7 +1,7 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.2
-Release:       6%{?dist}
+Release:       7%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -51,7 +51,7 @@ autoreconf -mif ..
     --enable-debug=%{_enable_debug} \
     --disable-static
 
-make
+make %{?_smp_mflags} CFLAGS="-O2 -fcommon -Wno-error=unused-result -Wno-error=stringop-truncation -Wno-error=stringop-overflow"
 
 %install
 
@@ -73,6 +73,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 1.2-7
+-  GCC-10 support.
 *  Wed Nov 18 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2-6
 -  Remove make check as unit tests are not present in c-rest-engine
 *  Wed Jul 22 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2-5

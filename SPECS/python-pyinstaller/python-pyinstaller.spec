@@ -3,7 +3,7 @@
 Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
 Name:           python3-pyinstaller
 Version:        4.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://pypi.python.org/pypi/PyInstaller
 License:        GPLv2+
 Group:          Development/Languages/Python
@@ -11,6 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://files.pythonhosted.org/packages/source/P/PyInstaller/PyInstaller-%{version}.tar.gz
 %define sha1    PyInstaller=381cbd30dcfc2d1ef8761afb602a0e0ae547c988
+Patch0:         pyinstaller-gcc-10.patch
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -38,6 +39,7 @@ to make a Linux app you run it in Linux, etc. PyInstaller has been used successf
 
 %prep
 %setup -q -n pyinstaller-%{version}
+%patch0 -p1
 
 %build
 pushd bootloader
@@ -69,6 +71,8 @@ python3 setup.py install --single-version-externally-managed -O1 --root=%{buildr
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
+*   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 4.0-4
+-   GCC-10 support.
 *   Wed Oct 14 2020 Piyush Gupta <gpiyush@vmware.com> 4.0-3
 -   Added Requires pyinstaller-hooks-contrib and altgraph
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.0-2

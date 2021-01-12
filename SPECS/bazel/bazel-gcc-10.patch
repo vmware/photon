@@ -1,0 +1,107 @@
+From 0da3b3884873b057e04d135b33ac340f56aa6351 Mon Sep 17 00:00:00 2001
+From: Yun Peng <pcloudy@google.com>
+Date: Thu, 10 Sep 2020 17:15:51 +0200
+Subject: [PATCH] Patch upb to fix build error with gcc 10
+
+---
+ WORKSPACE                            | 14 ++++++++
+ third_party/grpc/BUILD               |  2 +-
+ third_party/grpc/upb_gcc10_fix.patch | 51 ++++++++++++++++++++++++++++
+ 3 files changed, 66 insertions(+), 1 deletion(-)
+ create mode 100644 third_party/grpc/upb_gcc10_fix.patch
+
+diff --git a/WORKSPACE b/WORKSPACE
+index 117dcb500de..609ee77e595 100644
+--- a/WORKSPACE
++++ b/WORKSPACE
+@@ -1056,6 +1056,20 @@ register_local_rc_exe_toolchains()
+ 
+ register_toolchains("//src/main/res:empty_rc_toolchain")
+ 
++# Patch upb for grpc due to https://github.com/bazelbuild/bazel/issues/12056
++# TODO: Remove the following after upgrading grpc to a newer version that's not affected by this issue.
++http_archive(
++    name = "upb",
++    sha256 = "61d0417abd60e65ed589c9deee7c124fe76a4106831f6ad39464e1525cef1454",
++    patches = ["//third_party/grpc:upb_gcc10_fix.patch"],
++    patch_args = ["-p1"],
++    strip_prefix = "upb-9effcbcb27f0a665f9f345030188c0b291e32482",
++    urls = [
++        "https://mirror.bazel.build/github.com/protocolbuffers/upb/archive/9effcbcb27f0a665f9f345030188c0b291e32482.tar.gz",
++        "https://github.com/protocolbuffers/upb/archive/9effcbcb27f0a665f9f345030188c0b291e32482.tar.gz",
++    ],
++)
++
+ http_archive(
+     name = "com_github_grpc_grpc",
+     urls = [
+diff --git a/third_party/grpc/BUILD b/third_party/grpc/BUILD
+index 71fc09eec21..88071553565 100644
+--- a/third_party/grpc/BUILD
++++ b/third_party/grpc/BUILD
+@@ -18,7 +18,7 @@ load("//tools/distributions:distribution_rules.bzl", "distrib_java_import", "dis
+ 
+ licenses(["notice"])  # Apache v2
+ 
+-exports_files(["grpc_1.26.0.patch"])
++exports_files(["grpc_1.26.0.patch", "upb_gcc10_fix.patch"])
+ 
+ package(default_visibility = ["//visibility:public"])
+ 
+diff --git a/third_party/grpc/upb_gcc10_fix.patch b/third_party/grpc/upb_gcc10_fix.patch
+new file mode 100644
+index 00000000000..5f82d4ea43b
+--- /dev/null
++++ b/third_party/grpc/upb_gcc10_fix.patch
+@@ -0,0 +1,51 @@
++commit 9bd23dab4240b015321a53c45b3c9e4847fbf020
++Author: Joshua Haberman <jhaberman@gmail.com>
++Date:   Tue Apr 7 15:22:11 2020 -0700
++
++    Changed upb status to suit GCC10's warning about strncpy(). (#268)
++    
++    Added tests for all cases. Also removed ellipses from truncated
++    messages, they were more trouble than they are worth.
++
++diff --git a/upb/upb.c b/upb/upb.c
++index cb2cdfd..258192d 100644
++--- a/upb/upb.c
+++++ b/upb/upb.c
++@@ -11,17 +11,6 @@
++ 
++ #include "upb/port_def.inc"
++ 
++-/* Guarantee null-termination and provide ellipsis truncation.
++- * It may be tempting to "optimize" this by initializing these final
++- * four bytes up-front and then being careful never to overwrite them,
++- * this is safer and simpler. */
++-static void nullz(upb_status *status) {
++-  const char *ellipsis = "...";
++-  size_t len = strlen(ellipsis);
++-  UPB_ASSERT(sizeof(status->msg) > len);
++-  memcpy(status->msg + sizeof(status->msg) - len, ellipsis, len);
++-}
++-
++ /* upb_status *****************************************************************/
++ 
++ void upb_status_clear(upb_status *status) {
++@@ -37,8 +26,8 @@ const char *upb_status_errmsg(const upb_status *status) { return status->msg; }
++ void upb_status_seterrmsg(upb_status *status, const char *msg) {
++   if (!status) return;
++   status->ok = false;
++-  strncpy(status->msg, msg, sizeof(status->msg));
++-  nullz(status);
+++  strncpy(status->msg, msg, UPB_STATUS_MAX_MESSAGE - 1);
+++  status->msg[UPB_STATUS_MAX_MESSAGE - 1] = '\0';
++ }
++ 
++ void upb_status_seterrf(upb_status *status, const char *fmt, ...) {
++@@ -52,7 +41,7 @@ void upb_status_vseterrf(upb_status *status, const char *fmt, va_list args) {
++   if (!status) return;
++   status->ok = false;
++   _upb_vsnprintf(status->msg, sizeof(status->msg), fmt, args);
++-  nullz(status);
+++  status->msg[UPB_STATUS_MAX_MESSAGE - 1] = '\0';
++ }
++ 
++ /* upb_alloc ******************************************************************/
