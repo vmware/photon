@@ -3,6 +3,8 @@
 %ifarch x86_64
 %define arch x86_64
 %define archdir x86
+# Remove this flag to build with canister source.
+%global fips 1
 %endif
 
 %ifarch aarch64
@@ -13,7 +15,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.4
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -43,6 +45,11 @@ Source12:       ena-Use-new-API-interface-after-napi_hash_del-.patch
 Source13:       i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
 Source14:       i40e-Remove-read_barrier_depends-in-favor-of-READ_ON.patch
 Source15:       i40e-Fix-minor-compilation-error.patch
+%if 0%{?fips}
+%define fips_canister_version 4.0.1-5.10.4-4
+Source16:       fips-canister-%{fips_canister_version}.tar.bz2
+%define sha1 fips-canister=7e9621a0c07ca32bcfd7eeeb6fdc3323e6d17f87
+%endif
 
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
@@ -91,6 +98,10 @@ Patch203:        0003-of-overlay-Correct-symbol-path-fixups.patch
 Patch500:       crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+%if 0%{?fips}
+# FIPS canister usage patch
+Patch502:       0001-FIPS-canister-binary-usage.patch
+%endif
 
 %if 0%{?kat_build:1}
 Patch510:       crypto-testmgr-break-KAT-fips-intentionally.patch
@@ -128,6 +139,9 @@ Requires(postun): (coreutils or toybox)
 
 %description
 The Linux package contains the Linux kernel.
+%if 0%{?fips}
+This kernel is FIPS certified.
+%endif
 
 %package devel
 Summary:        Kernel Dev
@@ -209,6 +223,10 @@ Python programming language to use the interface to manipulate perf events.
 %setup -D -b 10 -n linux-%{version}
 %endif
 
+%if 0%{?fips}
+%setup -D -b 16 -n linux-%{version}
+%endif
+
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -246,6 +264,9 @@ Python programming language to use the interface to manipulate perf events.
 # crypto
 %patch500 -p1
 %patch501 -p1
+%if 0%{?fips}
+%patch502 -p1
+%endif
 
 %if 0%{?kat_build:1}
 %patch510 -p1
@@ -262,6 +283,9 @@ Python programming language to use the interface to manipulate perf events.
 %build
 make mrproper
 cp %{SOURCE1} .config
+%if 0%{?fips}
+cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
+%endif
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
@@ -546,6 +570,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jan 22 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-5
+-   Build kernel with FIPS canister.
 *   Wed Jan 20 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-4
 -   Handle module.lds for aarch64 in the same way as for x86_64
 *   Wed Jan 13 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-3
