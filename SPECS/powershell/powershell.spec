@@ -1,7 +1,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        7.0.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -15,6 +15,7 @@ Source2:        %{name}-linux-%{version}-x64.tar.gz
 %define sha1    powershell-linux=7e1829cb038519e0b54fd8bd3611089d3bcdc67a
 Source3:        build.sh
 Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
+Patch0:         Powershell-Fix-Build.patch
 
 BuildArch:      x86_64
 BuildRequires:  dotnet-sdk = 3.1.201
@@ -34,6 +35,9 @@ It consists of a cross-platform command-line shell and associated scripting lang
 
 %prep
 %setup -qn PowerShell-%{version}
+cd %{_builddir}/PowerShell-%{version}
+%patch0 -p1
+cd -
 %setup -qcTDa 1 -n PowerShell-Native
 %setup -qcTDa 2 -n %{name}-linux-%{version}-x64
 
@@ -97,6 +101,8 @@ fi
     %{_docdir}/*
 
 %changelog
+*   Wed Jan 13 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.0.3-3
+-   Fix Powershell build issue
 *   Fri Oct 16 2020 Ashwin H <ashwinh@vmware.com> 7.0.3-2
 -   Bump up to use new icu lib.
 *   Sun Oct 11 2020 Shreyas B <shreyasb@vmware.com> 7.0.3-1
