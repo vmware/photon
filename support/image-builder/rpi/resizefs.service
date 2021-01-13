@@ -4,7 +4,7 @@ DefaultDependencies=no
 Conflicts=shutdown.target
 After=systemd-remount-fs.service
 Before=systemd-sysusers.service sysinit.target shutdown.target
-ConditionPathExists=!/dev/mmcblk0p3
+ConditionPathExists=!/dev/disk/by-label/PHOTON_SWAP
 
 [Service]
 Type=oneshot

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "/dev/mmcblk0p3 none swap defaults 0 0" >> /etc/fstab
+echo "LABEL=PHOTON_SWAP none swap defaults 0 0" >> /etc/fstab
 
 chmod +x /usr/local/bin/resizefs.sh
 ln -s /lib/systemd/system/resizefs.service /etc/systemd/system/multi-user.target.wants/resizefs.service
