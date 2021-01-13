@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.4
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -39,7 +39,7 @@ Patch14:        apparmor-af_unix-mediation.patch
 
 # VMW:
 Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
-Patch56:        x86-vmware-Log-kmsg-dump-on-panic.patch
+Patch56:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
 
 #Secure:
 Patch90:        0001-bpf-ext4-bonding-Fix-compilation-errors.patch
@@ -243,6 +243,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jan 13 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-2
+-   Fix build failure.
 *   Wed Jan 06 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-1
 -   Update to 5.10.4.
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-4
