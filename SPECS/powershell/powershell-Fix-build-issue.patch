@@ -1,0 +1,39 @@
+From f493c8a79850b702d9b234facdf843b048bc550e Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh Vasamsetty <svasamsetty@vmware.com>
+Date: Wed, 13 Jan 2021 15:10:56 +0530
+Subject: [PATCH] powershell: Fix build issue
+
+---
+ nuget.config                               | 1 -
+ src/powershell-unix/powershell-unix.csproj | 5 -----
+ 2 files changed, 6 deletions(-)
+
+diff --git a/nuget.config b/nuget.config
+index 74cb016..956c47a 100644
+--- a/nuget.config
++++ b/nuget.config
+@@ -4,7 +4,6 @@
+     <clear />
+     <add key="nuget.org" value="https://api.nuget.org/v3/index.json" />
+     <add key="dotnet-core" value="https://dotnet.myget.org/F/dotnet-core/api/v3/index.json" />
+-    <add key="powershell-core" value="https://powershell.myget.org/F/powershell-core/api/v3/index.json" />
+     <add key="PSGallery" value="https://www.powershellgallery.com/api/v2/" />
+   </packageSources>
+ </configuration>
+diff --git a/src/powershell-unix/powershell-unix.csproj b/src/powershell-unix/powershell-unix.csproj
+index d2619f9..439e6a9 100644
+--- a/src/powershell-unix/powershell-unix.csproj
++++ b/src/powershell-unix/powershell-unix.csproj
+@@ -36,9 +36,4 @@
+     <ProjectReference Include="..\Microsoft.PowerShell.SDK\Microsoft.PowerShell.SDK.csproj" />
+   </ItemGroup>
+ 
+-  <ItemGroup>
+-    <PackageReference Include="PSDesiredStateConfiguration" Version="6.0.0-beta.8" />
+-    <PackageReference Include="PowerShellHelpFiles" Version="1.0.0-*" />
+-  </ItemGroup>
+-
+  </Project>
+-- 
+2.7.4
+

@@ -1,7 +1,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        6.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -10,6 +10,7 @@ Group:          shells
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    powershell=03abf8fa557974e5e765743bad870ab03e301e5b
 Source1:        build.sh
+Patch0:         powershell-Fix-build-issue.patch
 BuildArch:      x86_64
 BuildRequires:  dotnet-sdk = 2.1.403
 BuildRequires:  dotnet-runtime = 2.2.0
@@ -26,6 +27,9 @@ It consists of a cross-platform command-line shell and associated scripting lang
 
 %prep
 %setup -qn PowerShell-%{version}
+cd %{_builddir}/PowerShell-%{version}
+%patch0 -p1
+cd -
 
 %build
 cp %{SOURCE1} .
@@ -51,6 +55,8 @@ ln -sf %{_libdir}/%{name}/pwsh %{buildroot}%{_bindir}/pwsh
     %{_docdir}/*
 
 %changelog
+*   Wed Jan 13 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.1.1-2
+-   Fix Powershell build issue
 *   Mon Jan 14 2019 Dweep Advani <dadvani@vmware.com> 6.1.1-1
 -   upgraded version to 6.1.1
 *   Wed Jan 31 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.0.1-1
