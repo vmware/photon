@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           tuned
 Version:        2.13.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -116,6 +116,7 @@ make test
 %{_unitdir}/tuned.service
 %dir %{_localstatedir}/log/tuned
 %dir /etc/tuned
+%dir /var/lib/tuned
 %{_mandir}/man5/tuned*
 %{_mandir}/man8/tuned*
 %{_datadir}/tuned/grub2
@@ -143,6 +144,8 @@ make test
 %{_mandir}/man8/scomes.*
 
 %changelog
+*   Thu Jan 14 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.13.0-4
+-   Add /var/lib/tuned folder to rpm
 *   Mon Sep 14 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.13.0-3
 -   sysctl plugin verify bug fix
 *   Mon Aug 17 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.13.0-2

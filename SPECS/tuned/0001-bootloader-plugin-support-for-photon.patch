@@ -99,7 +99,7 @@ index 0f8c8f3..4ef1f59 100644
  		s += consts.GRUB2_TEMPLATE_HEADER_END + r"\n"
  		grub2_cfg = re.sub(r"^(\s*###\s+END\s+[^#]+/00_header\s+### *)\n", s, grub2_cfg, flags = re.MULTILINE)
  
-+		grub2_cfg = re.sub(r"(load_env -f /boot/photon.cfg)" , r"\1\nload_env -f /boot/tuned.cfg\n", grub2_cfg)
++		grub2_cfg = re.sub(r"(load_env -f /boot/photon.cfg)" , r"\1\nload_env -f /boot/tuned.cfg", grub2_cfg)
  		d2 = {"linux" : consts.GRUB2_TUNED_VAR, "initrd" : consts.GRUB2_TUNED_INITRD_VAR}
  		for i in d2:
  			# add tuned parameters to all kernels
