@@ -1,0 +1,68 @@
+From 5e027d5b96724c25beebe0bd2361d4689d8d428d Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Tue, 12 Jan 2021 23:20:30 +0530
+Subject: [PATCH 2/5] x86/boot/compressed/64: Sanity-check CPUID results in the
+ early #VC handler
+
+The early #VC handler which doesn't have a GHCB can only handle CPUID
+exit codes. It is needed by the early boot code to handle #VC exceptions
+raised in verify_cpu() and to get the position of the C-bit.
+
+But the CPUID information comes from the hypervisor which is untrusted
+and might return results which trick the guest into the no-SEV boot path
+with no C-bit set in the page-tables. All data written to memory would
+then be unencrypted and could leak sensitive data to the hypervisor.
+
+Add sanity checks to the early #VC handler to make sure the hypervisor
+can not pretend that SEV is disabled.
+
+ [ bp: Massage a bit. ]
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Tom Lendacky <thomas.lendacky@amd.com>
+Link: https://lkml.kernel.org/r/20201028164659.27002-3-joro@8bytes.org
+---
+ arch/x86/kernel/sev-es-shared.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/arch/x86/kernel/sev-es-shared.c b/arch/x86/kernel/sev-es-shared.c
+index 5bfc1f3..78ffcc5 100644
+--- a/arch/x86/kernel/sev-es-shared.c
++++ b/arch/x86/kernel/sev-es-shared.c
+@@ -163,6 +163,32 @@ void __init do_vc_no_ghcb(struct pt_regs *regs, unsigned long exit_code)
+ 		goto fail;
+ 	regs->dx = val >> 32;
+ 
++	/*
++	 * This is a VC handler and the #VC is only raised when SEV-ES is
++	 * active, which means SEV must be active too. Do sanity checks on the
++	 * CPUID results to make sure the hypervisor does not trick the kernel
++	 * into the no-sev path. This could map sensitive data unencrypted and
++	 * make it accessible to the hypervisor.
++	 *
++	 * In particular, check for:
++	 *	- Hypervisor CPUID bit
++	 *	- Availability of CPUID leaf 0x8000001f
++	 *	- SEV CPUID bit.
++	 *
++	 * The hypervisor might still report the wrong C-bit position, but this
++	 * can't be checked here.
++	 */
++
++	if ((fn == 1 && !(regs->cx & BIT(31))))
++		/* Hypervisor bit */
++		goto fail;
++	else if (fn == 0x80000000 && (regs->ax < 0x8000001f))
++		/* SEV leaf check */
++		goto fail;
++	else if ((fn == 0x8000001f && !(regs->ax & BIT(1))))
++		/* SEV bit */
++		goto fail;
++
+ 	regs->ip += 2;
+ 
+ 	return;
+-- 
+2.7.4
+

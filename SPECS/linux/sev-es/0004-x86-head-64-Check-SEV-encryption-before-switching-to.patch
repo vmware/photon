@@ -1,0 +1,73 @@
+From f0efe77932414b131b7119f779e97bd09703962d Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Wed, 13 Jan 2021 15:30:53 +0530
+Subject: [PATCH 4/5] x86/head/64: Check SEV encryption before switching to kernel
+ page-table
+
+When SEV is enabled, the kernel requests the C-bit position again from
+the hypervisor to build its own page-table. Since the hypervisor is an
+untrusted source, the C-bit position needs to be verified before the
+kernel page-table is used.
+
+Call sev_verify_cbit() before writing the CR3.
+
+ [ bp: Massage. ]
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Tom Lendacky <thomas.lendacky@amd.com>
+Link: https://lkml.kernel.org/r/20201028164659.27002-5-joro@8bytes.org
+---
+ arch/x86/kernel/head_64.S | 16 ++++++++++++++++
+ arch/x86/mm/mem_encrypt.c |  1 +
+ 2 files changed, 17 insertions(+)
+
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index 543c9c1..554b107 100644
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -176,6 +176,21 @@ SYM_INNER_LABEL(secondary_startup_64_no_verify, SYM_L_GLOBAL)
+ 
+ 	/* Setup early boot stage 4-/5-level pagetables. */
+ 	addq	phys_base(%rip), %rax
++
++	/*
++	 * For SEV guests: Verify that the C-bit is correct. A malicious
++	 * hypervisor could lie about the C-bit position to perform a ROP
++	 * attack on the guest by writing to the unencrypted stack and wait for
++	 * the next RET instruction.
++	 * %rsi carries pointer to realmode data and is callee-clobbered. Save
++	 * and restore it.
++	 */
++	pushq	%rsi
++	movq	%rax, %rdi
++	call	sev_verify_cbit
++	popq	%rsi
++
++	/* Switch to new page-table */
+ 	movq	%rax, %cr3
+ 
+ 	/* Ensure I am executing from virtual addresses */
+@@ -300,6 +315,7 @@ SYM_INNER_LABEL(secondary_startup_64_no_verify, SYM_L_GLOBAL)
+ END(secondary_startup_64)
+ 
+ #include "verify_cpu.S"
++#include "sev_verify_cbit.S"
+ 
+ #ifdef CONFIG_HOTPLUG_CPU
+ /*
+diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+index 94fbafa..3408faa 100644
+--- a/arch/x86/mm/mem_encrypt.c
++++ b/arch/x86/mm/mem_encrypt.c
+@@ -38,6 +38,7 @@
+  */
+ u64 sme_me_mask __section(.data) = 0;
+ u64 sev_status __section(.data) = 0;
++u64 sev_check_data __section(.data) = 0;
+ EXPORT_SYMBOL(sme_me_mask);
+ DEFINE_STATIC_KEY_FALSE(sev_enable_key);
+ EXPORT_SYMBOL_GPL(sev_enable_key);
+-- 
+2.7.4
+

@@ -1,10 +1,9 @@
-From e6c18675891ac435ba3234ba4427981ecbe1bb4e Mon Sep 17 00:00:00 2001
+From 51ee7d6e3d2b70a3f232cceffab5084a2abd6719 Mon Sep 17 00:00:00 2001
 From: Tom Lendacky <thomas.lendacky@amd.com>
-Date: Wed, 10 Jun 2020 18:21:55 +0530
-Subject: [PATCH 51/75] x86-sev-es-Handle-MMIO-events
+Date: Mon, 7 Sep 2020 15:15:50 +0200
+Subject: [PATCH 51/75] x86/sev-es: Handle MMIO events
 
-x86/sev-es: Handle MMIO events
-Add handler for VC exceptions caused by MMIO intercepts. These
+Add a handler for #VC exceptions caused by MMIO intercepts. These
 intercepts come along as nested page faults on pages with reserved
 bits set.
 
@@ -12,16 +11,18 @@ Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
 [ jroedel@suse.de: Adapt to VC handling framework ]
 Co-developed-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lkml.kernel.org/r/20200907131613.12703-50-joro@8bytes.org
 ---
- arch/x86/include/uapi/asm/svm.h |   5 ++
- arch/x86/kernel/sev-es.c        | 188 ++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 193 insertions(+)
+ arch/x86/include/uapi/asm/svm.h |   5 +
+ arch/x86/kernel/sev-es.c        | 222 ++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 227 insertions(+)
 
 diff --git a/arch/x86/include/uapi/asm/svm.h b/arch/x86/include/uapi/asm/svm.h
-index 3230566..753d425 100755
+index c68d161..8f36ae0 100644
 --- a/arch/x86/include/uapi/asm/svm.h
 +++ b/arch/x86/include/uapi/asm/svm.h
-@@ -80,6 +80,11 @@
+@@ -81,6 +81,11 @@
  #define SVM_EXIT_AVIC_INCOMPLETE_IPI		0x401
  #define SVM_EXIT_AVIC_UNACCELERATED_ACCESS	0x402
  
@@ -34,14 +35,15 @@ index 3230566..753d425 100755
  
  #define SVM_EXIT_REASONS \
 diff --git a/arch/x86/kernel/sev-es.c b/arch/x86/kernel/sev-es.c
-index f4ce3b4..e366272 100644
+index 6c30dbc..a170810 100644
 --- a/arch/x86/kernel/sev-es.c
 +++ b/arch/x86/kernel/sev-es.c
-@@ -294,6 +294,25 @@ static enum es_result vc_read_mem(struct es_em_ctxt *ctxt,
+@@ -359,6 +359,37 @@ static enum es_result vc_read_mem(struct es_em_ctxt *ctxt,
  	return ES_EXCEPTION;
  }
  
-+static phys_addr_t vc_slow_virt_to_phys(struct ghcb *ghcb, unsigned long vaddr)
++static bool vc_slow_virt_to_phys(struct ghcb *ghcb, struct es_em_ctxt *ctxt,
++				 unsigned long vaddr, phys_addr_t *paddr)
 +{
 +	unsigned long va = (unsigned long)vaddr;
 +	unsigned int level;
@@ -49,21 +51,32 @@ index f4ce3b4..e366272 100644
 +	pgd_t *pgd;
 +	pte_t *pte;
 +
-+	pgd = pgd_offset(current->active_mm, va);
++	pgd = __va(read_cr3_pa());
++	pgd = &pgd[pgd_index(va)];
 +	pte = lookup_address_in_pgd(pgd, va, &level);
-+	if (!pte)
-+		return 0;
++	if (!pte) {
++		ctxt->fi.vector     = X86_TRAP_PF;
++		ctxt->fi.cr2        = vaddr;
++		ctxt->fi.error_code = 0;
++
++		if (user_mode(ctxt->regs))
++			ctxt->fi.error_code |= X86_PF_USER;
++
++		return false;
++	}
 +
 +	pa = (phys_addr_t)pte_pfn(*pte) << PAGE_SHIFT;
 +	pa |= va & ~page_level_mask(level);
 +
-+	return pa;
++	*paddr = pa;
++
++	return true;
 +}
 +
  /* Include code shared with pre-decompression boot stage */
  #include "sev-es-shared.c"
  
-@@ -432,6 +451,172 @@ static void __init vc_early_vc_forward_exception(struct es_em_ctxt *ctxt)
+@@ -447,6 +478,194 @@ static void __init vc_early_forward_exception(struct es_em_ctxt *ctxt)
  	do_early_exception(ctxt->regs, trapnr);
  }
  
@@ -88,6 +101,7 @@ index f4ce3b4..e366272 100644
 +{
 +	u64 exit_code, exit_info_1, exit_info_2;
 +	unsigned long ghcb_pa = __pa(ghcb);
++	phys_addr_t paddr;
 +	void __user *ref;
 +
 +	ref = insn_get_addr_ref(&ctxt->insn, ctxt->regs);
@@ -96,8 +110,16 @@ index f4ce3b4..e366272 100644
 +
 +	exit_code = read ? SVM_VMGEXIT_MMIO_READ : SVM_VMGEXIT_MMIO_WRITE;
 +
-+	exit_info_1 = vc_slow_virt_to_phys(ghcb, (unsigned long)ref);
-+	exit_info_2 = bytes;    /* Can never be greater than 8 */
++	if (!vc_slow_virt_to_phys(ghcb, ctxt, (unsigned long)ref, &paddr)) {
++		if (!read)
++			ctxt->fi.error_code |= X86_PF_WRITE;
++
++		return ES_EXCEPTION;
++	}
++
++	exit_info_1 = paddr;
++	/* Can never be greater than 8 */
++	exit_info_2 = bytes;
 +
 +	ghcb->save.sw_scratch = ghcb_pa + offsetof(struct ghcb, shared_buffer);
 +
@@ -128,6 +150,9 @@ index f4ce3b4..e366272 100644
 +
 +		/* Zero extend based on operand size */
 +		reg_data = vc_insn_get_reg(ctxt);
++		if (!reg_data)
++			return ES_DECODE_FAILED;
++
 +		memset(reg_data, 0, insn->opnd_bytes);
 +
 +		memcpy(reg_data, ghcb->shared_buffer, bytes);
@@ -147,6 +172,9 @@ index f4ce3b4..e366272 100644
 +
 +		/* Sign extend based on operand size */
 +		reg_data = vc_insn_get_reg(ctxt);
++		if (!reg_data)
++			return ES_DECODE_FAILED;
++
 +		if (bytes == 1) {
 +			u8 *val = (u8 *)ghcb->shared_buffer;
 +
@@ -186,6 +214,9 @@ index f4ce3b4..e366272 100644
 +			bytes = insn->opnd_bytes;
 +
 +		reg_data = vc_insn_get_reg(ctxt);
++		if (!reg_data)
++			return ES_DECODE_FAILED;
++
 +		memcpy(ghcb->shared_buffer, reg_data, bytes);
 +
 +		ret = vc_do_mmio(ghcb, ctxt, bytes, false);
@@ -216,8 +247,12 @@ index f4ce3b4..e366272 100644
 +			break;
 +
 +		reg_data = vc_insn_get_reg(ctxt);
++		if (!reg_data)
++			return ES_DECODE_FAILED;
++
++		/* Zero-extend for 32-bit operation */
 +		if (bytes == 4)
-+			*reg_data = 0;  /* Zero-extend for 32-bit operation */
++			*reg_data = 0;
 +
 +		memcpy(reg_data, ghcb->shared_buffer, bytes);
 +		break;
@@ -236,7 +271,7 @@ index f4ce3b4..e366272 100644
  static enum es_result vc_handle_exitcode(struct es_em_ctxt *ctxt,
  					 struct ghcb *ghcb,
  					 unsigned long exit_code)
-@@ -445,6 +630,9 @@ static enum es_result vc_handle_exitcode(struct es_em_ctxt *ctxt,
+@@ -460,6 +679,9 @@ static enum es_result vc_handle_exitcode(struct es_em_ctxt *ctxt,
  	case SVM_EXIT_IOIO:
  		result = vc_handle_ioio(ghcb, ctxt);
  		break;

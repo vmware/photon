@@ -1,0 +1,109 @@
+From 184bcfc26d783d7dc9ed92d00eebb8ccc2fa0e35 Mon Sep 17 00:00:00 2001
+From: Arvind Sankar <nivedita@alum.mit.edu>
+Date: Tue, 12 Jan 2021 23:37:07 +0530
+Subject: [PATCH] x86/boot/64: Explicitly map boot_params and command line
+
+Commits
+
+  ca0e22d4f011 ("x86/boot/compressed/64: Always switch to own page table")
+  8570978ea030 ("x86/boot/compressed/64: Don't pre-map memory in KASLR code")
+
+set up a new page table in the decompressor stub, but without explicit
+mappings for boot_params and the kernel command line, relying on the #PF
+handler instead.
+
+This is fragile, as boot_params and the command line mappings are
+required for the main kernel. If EARLY_PRINTK and RANDOMIZE_BASE are
+disabled, a QEMU/OVMF boot never accesses the command line in the
+decompressor stub, and so it never gets mapped. The main kernel accesses
+it from the identity mapping if AMD_MEM_ENCRYPT is enabled, and will
+crash.
+
+Fix this by adding back the explicit mapping of boot_params and the
+command line.
+
+Note: the changes also removed the explicit mapping of the main kernel,
+with the result that .bss and .brk may not be in the identity mapping,
+but those don't get accessed by the main kernel before it switches to
+its own page tables.
+
+ [ bp: Pass boot_params with a MOV %rsp... instead of PUSH/POP. Use
+   block formatting for the comment. ]
+
+Signed-off-by: Arvind Sankar <nivedita@alum.mit.edu>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Joerg Roedel <jroedel@suse.de>
+Link: https://lkml.kernel.org/r/20201016200404.1615994-1-nivedita@alum.mit.edu
+---
+ arch/x86/boot/compressed/head_64.S      |  3 +++
+ arch/x86/boot/compressed/ident_map_64.c | 23 ++++++++++++++++++++---
+ 2 files changed, 23 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index 7cd896d..57e02f3 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -562,6 +562,9 @@ relocated:
+ 	pushq	%rsi
+ 	call	set_sev_encryption_mask
+ 	call	load_stage2_idt
++
++	/* Pass boot_params to initialize_identity_maps() */
++	movq	(%rsp), %rdi
+ 	call	initialize_identity_maps
+ 	popq	%rsi
+ 
+diff --git a/arch/x86/boot/compressed/ident_map_64.c b/arch/x86/boot/compressed/ident_map_64.c
+index d3771d4..50fac25 100644
+--- a/arch/x86/boot/compressed/ident_map_64.c
++++ b/arch/x86/boot/compressed/ident_map_64.c
+@@ -38,6 +38,12 @@ unsigned int pgdir_shift = 39;
+ unsigned int ptrs_per_p4d = 1;
+ #endif
+ 
++#define _SETUP
++#include <asm/setup.h>	/* For COMMAND_LINE_SIZE */
++#undef _SETUP
++
++extern unsigned long get_cmd_line_ptr(void);
++
+ /* Used by PAGE_KERN* macros: */
+ pteval_t __default_kernel_pte_mask __read_mostly = ~0;
+ 
+@@ -109,8 +115,10 @@ static void add_identity_map(unsigned long start, unsigned long end)
+ }
+ 
+ /* Locates and clears a region for a new top level page table. */
+-void initialize_identity_maps(void)
++void initialize_identity_maps(void *rmode)
+ {
++	unsigned long cmdline;
++
+ 	/* Exclude the encryption mask from __PHYSICAL_MASK */
+ 	physical_mask &= ~sme_me_mask;
+ 
+@@ -151,10 +159,19 @@ void initialize_identity_maps(void)
+ 	}
+ 
+ 	/*
+-	 * New page-table is set up - map the kernel image and load it
+-	 * into cr3.
++	 * New page-table is set up - map the kernel image, boot_params and the
++	 * command line. The uncompressed kernel requires boot_params and the
++	 * command line to be mapped in the identity mapping. Map them
++	 * explicitly here in case the compressed kernel does not touch them,
++	 * or does not touch all the pages covering them.
+ 	 */
+ 	add_identity_map((unsigned long)_head, (unsigned long)_end);
++	boot_params = rmode;
++	add_identity_map((unsigned long)boot_params, (unsigned long)(boot_params + 1));
++	cmdline = get_cmd_line_ptr();
++	add_identity_map(cmdline, cmdline + COMMAND_LINE_SIZE);
++
++	/* Load the new page-table. */
+ 	write_cr3(top_level_pgt);
+ }
+ 
+-- 
+2.7.4
+

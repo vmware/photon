@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.174
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -382,6 +382,14 @@ Patch481:        0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch482:        0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
 Patch483:        0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 Patch484:        0082-x86-sev-es-load-idt-before-entering-long-mode-to-han.patch
+Patch485:        0001-x86-boot-64-Explicitly-map-boot_params-and-command-l.patch
+
+# SEV-ES: Security Mitigate
+Patch491:        0001-x86-boot-compressed-64-Introduce-sev_status.patch
+Patch492:        0002-x86-boot-compressed-64-Sanity-check-CPUID-results-in.patch
+Patch493:        0003-x86-boot-compressed-64-Check-SEV-encryption-in-64-bi.patch
+Patch494:        0004-x86-head-64-Check-SEV-encryption-before-switching-to.patch
+Patch495:        0005-x86-sev-es-Do-not-support-MMIO-to-from-encrypted-mem.patch
 
 #Patches for i40e driver
 Patch1500:      0001-Add-support-for-gettimex64-interface.patch
@@ -826,6 +834,12 @@ This Linux package contains hmac sha generator kernel module.
 %patch482 -p1
 %patch483 -p1
 # %patch484 -p1
+%patch485 -p1
+%patch491 -p1
+%patch492 -p1
+%patch493 -p1
+%patch494 -p1
+%patch495 -p1
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -1211,6 +1225,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Thu Feb 11 2021 Ajay Kaher <akaher@vmware.com> 4.19.174-4
+-   sev-es: security fixes
 *   Thu Feb 11 2021 Ankit Jain <ankitja@vmware.com> 4.19.174-3
 -   Added latest out of tree version of Intel ice driver
 *   Thu Feb 11 2021 Ajay Kaher <akaher@vmware.com> 4.19.174-2
