@@ -1,6 +1,6 @@
 Summary:	Sudo
 Name:		sudo
-Version:	1.8.30
+Version:	1.9.5
 Release:	1%{?dist}
 License:	ISC
 URL:		https://www.kernel.org/pub/linux/libs/pam/
@@ -8,15 +8,15 @@ Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha1 sudo=5b30363d4b23ea7edfb882e7224e1fd1111dd106
+%define sha1 sudo=1e9fccda4beccca811ecb48866776388c9c377ae
 BuildRequires:	man-db
 BuildRequires:	Linux-PAM
 Requires:	Linux-PAM
 Requires:	shadow
 
 %description
-The Sudo package allows a system administrator to give certain users (or groups of users) 
-the ability to run some (or all) commands as root or another user while logging the commands and arguments. 
+The Sudo package allows a system administrator to give certain users (or groups of users)
+the ability to run some (or all) commands as root or another user while logging the commands and arguments.
 
 %prep
 %setup -q
@@ -71,6 +71,8 @@ rm -rf %{buildroot}/*
 %files -f %{name}.lang
 %defattr(-,root,root)
 %attr(0440,root,root) %config(noreplace) %{_sysconfdir}/sudoers
+%attr(0640,root,root) %config(noreplace) /etc/sudo.conf
+%attr(0640,root,root) %config(noreplace) /etc/sudo_logsrvd.conf
 %attr(0750,root,root) %dir %{_sysconfdir}/sudoers.d/
 %config(noreplace) %{_sysconfdir}/pam.d/sudo
 %{_bindir}/*
@@ -86,6 +88,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+*   Fri Jan 15 2021 Sujay G <gsujay@vmware.com> 1.9.5-1
+-   Bump version to 1.9.5 to fix CVE-2021-23240
 *   Mon Jan 06 2020 Shreyas B. <shreyasb@vmware.com> 1.8.30-1
 -   Upgrade sudo to v1.8.30 for fixing the CVE-2019-19232 & CVE-2019-19234.
 *   Tue Oct 15 2019 Shreyas B. <shreyasb@vmware.com> 1.8.20p2-2
