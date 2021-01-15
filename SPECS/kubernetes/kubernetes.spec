@@ -10,7 +10,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.18.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -18,7 +18,7 @@ Source0:        kubernetes-%{version}.tar.gz
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Source2:        kubelet.service
-Source3:        10-kubeadm.conf 
+Source3:        10-kubeadm.conf
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -36,7 +36,7 @@ Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 Requires:       socat
 Requires:       (util-linux or toybox)
 Requires:       cri-tools
-Requires:       conntrack-tools 
+Requires:       conntrack-tools
 
 %description
 Kubernetes is an open source implementation of container cluster management.
@@ -108,8 +108,8 @@ install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/windows/%{archname}/ _ou
 # kubeadm install
 install -vdm644 %{buildroot}/etc/systemd/system/kubelet.service.d
 install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/kubeadm
-install -p -m 755 -t %{buildroot}/etc/systemd/system %{SOURCE2} 
-install -p -m 755 -t %{buildroot}/etc/systemd/system/kubelet.service.d %{SOURCE3} 
+install -p -m 755 -t %{buildroot}/etc/systemd/system %{SOURCE2}
+install -p -m 755 -t %{buildroot}/etc/systemd/system/kubelet.service.d %{SOURCE3}
 sed -i '/KUBELET_CGROUP_ARGS=--cgroup-driver=systemd/d' %{buildroot}/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 cd ..
@@ -227,5 +227,7 @@ fi
 %endif
 
 %changelog
+*   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.18.8-2
+-   Bump up version to compile with new go
 *   Wed Aug 26 2020 Ashwin H <ashwinh@vmware.com> 1.18.8-1
 -   Initial version
