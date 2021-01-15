@@ -3,7 +3,7 @@
 
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
-Version:        11.2.0
+Version:        11.2.5
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha1 open-vm-tools=dbb8c914b4a586b5e70bbc44833625021ff5f4c1
+%define sha1 open-vm-tools=fae156a049b39b79fcf4795f998dd7fc01894ae7
 Source1:        https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
 %define sha1 gosc-scripts-%{gosc_ver}=d29400a32bc4c0dad41f7e2183b9870fdf640f03
 Source2:        vmtoolsd.service
@@ -66,13 +66,26 @@ Requires:       %{name} = %{version}-%{release}
 %description    devel
 It contains the libraries and header files to create applications.
 
+%package        sdmp
+Summary:        Service Discovery plugin for open-vm-tools
+Requires:       %{name} = %{version}-%{release}
+
+%description    sdmp
+The "open-vm-tools-sdmp" package contains a plugin for Service Discovery.
+
 %prep
 %autosetup -n %{name}-stable-%{version} -a0 -a1 -p1
 
 %build
 cd %{name}
 autoreconf -i
-sh ./configure --prefix=/usr --without-x --without-kernel-modules --without-icu --disable-static --with-tirpc
+sh ./configure --prefix=/usr \
+               --without-x \
+               --without-kernel-modules \
+               --without-icu --disable-static \
+               --with-tirpc \
+               --enable-servicediscovery
+
 make %{?_smp_mflags}
 
 %install
@@ -138,9 +151,18 @@ fi
 %{_includedir}/*
 %{_libdir}/*.so
 
+%files sdmp
+%{_libdir}/%{name}/plugins/vmsvc/libserviceDiscovery.so
+%{_libdir}/%{name}/serviceDiscovery/scripts/get-versions.sh
+%{_libdir}/%{name}/serviceDiscovery/scripts/get-connection-info.sh
+%{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-info.sh
+%{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-perf-metrics.sh
+
 %changelog
+*   Sat Jan 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.2.5-1
+-   Upgrade to version 11.2.5 & enabled sdmp plugin support
 *   Mon Nov 09 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.2.0-1
--   Upgrade to open-vm-tools to version 11.2.0
+-   Upgrade to version 11.2.0
 *   Thu Nov 05 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.5-5
 -   GOSC - add users section of cloud config yaml only if password field is present
 *   Mon Oct 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.5-4
