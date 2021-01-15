@@ -1,28 +1,26 @@
 Summary:        Sudo
 Name:           sudo
-Version:        1.8.30
-Release:        2%{?dist}
+Version:        1.9.5
+Release:        1%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha1    sudo=5b30363d4b23ea7edfb882e7224e1fd1111dd106
+%define sha1    sudo=1e9fccda4beccca811ecb48866776388c9c377ae
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
 Requires:       Linux-PAM
 Requires:       shadow
-Patch0:         set_rlimit_core.patch
 
 %description
-The Sudo package allows a system administrator to give certain users (or groups of users) 
+The Sudo package allows a system administrator to give certain users (or groups of users)
 the ability to run some (or all) commands as root or another user while logging the commands and arguments.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 %configure \
@@ -75,6 +73,8 @@ rm -rf %{buildroot}/*
 %files -f %{name}.lang
 %defattr(-,root,root)
 %attr(0440,root,root) %config(noreplace) %{_sysconfdir}/sudoers
+%attr(0640,root,root) %config(noreplace) /etc/sudo.conf
+%attr(0640,root,root) %config(noreplace) /etc/sudo_logsrvd.conf
 %attr(0750,root,root) %dir %{_sysconfdir}/sudoers.d/
 %config(noreplace) %{_sysconfdir}/pam.d/sudo
 %{_bindir}/*
@@ -91,6 +91,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+*   Fri Jan 15 2021 Sujay G <gsujay@vmware.com> 1.9.5-1
+-   Bump version to 1.9.5 to fix CVE-2021-23240
 *   Thu Apr 02 2020 Shreyas B. <shreyasb@vmware.com> 1.8.30-2
 -   Fix - Set RLIMIT_CORE to zero when it's failed to set to RLIM_INFINITY.
 *   Mon Jan 06 2020 Shreyas B. <shreyasb@vmware.com> 1.8.30-1
