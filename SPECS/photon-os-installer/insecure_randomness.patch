@@ -1,0 +1,89 @@
+From cca2147f00c23ace2112093ad2a4c9f14b9c3dee Mon Sep 17 00:00:00 2001
+From: Piyush Gupta <gpiyush@vmware.com>
+Date: Wed, 13 Jan 2021 05:27:45 +0000
+Subject: [PATCH] netconfig.py: iso_config.py: installer.py: insecure
+ randomness
+
+While setting up hostname in case user doesn't provide one
+randrange() cannot withstand a cryptographic attack. random.randrange()
+uses stastical PRNGs which is highly predictable.
+
+This change uses secrets in order to set the hostname which in turn
+uses cryptographic PRNGs which is difficult to predict.
+
+Change-Id: Ib04a10979498dc2345906ce5ea046f72ee2e146e
+---
+ photon_installer/installer.py  | 4 ++--
+ photon_installer/iso_config.py | 4 ++--
+ photon_installer/netconfig.py  | 4 ++--
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index 72ed2de..2501fca 100755
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -16,7 +16,7 @@ import signal
+ import sys
+ import glob
+ import modules.commons
+-import random
++import secrets
+ import curses
+ import stat
+ import tempfile
+@@ -209,7 +209,7 @@ class Installer(object):
+ 
+         # define 'hostname' as 'photon-<RANDOM STRING>'
+         if "hostname" not in install_config or install_config['hostname'] == "":
+-            install_config['hostname'] = 'photon-%12x' % random.randrange(16**12)
++            install_config['hostname'] = 'photon-%12x' % secrets.randbelow(16**12)
+ 
+         # Set password if needed.
+         # Installer uses 'shadow_password' and optionally 'password'/'age'
+diff --git a/photon_installer/iso_config.py b/photon_installer/iso_config.py
+index b023f21..96aa6b5 100644
+--- a/photon_installer/iso_config.py
++++ b/photon_installer/iso_config.py
+@@ -5,7 +5,7 @@
+ import os
+ import sys
+ import re
+-import random
++import secrets
+ import requests
+ import cracklib
+ import curses
+@@ -34,7 +34,7 @@ class IsoConfig(object):
+         self.hostname_accepted_chars.extend(range(48, 58))
+         # Adding the . and -
+         self.hostname_accepted_chars.extend([ord('.'), ord('-')])
+-        self.random_id = '%12x' % random.randrange(16**12)
++        self.random_id = '%12x' % secrets.randbelow(16**12)
+         self.random_hostname = "photon-" + self.random_id.strip()
+         self.logger = Logger.get_logger()
+ 
+diff --git a/photon_installer/netconfig.py b/photon_installer/netconfig.py
+index d6d6a91..5703e17 100644
+--- a/photon_installer/netconfig.py
++++ b/photon_installer/netconfig.py
+@@ -7,7 +7,7 @@
+ #     Date: Fri Aug 30 11:28:18 IST 2019
+ #   Author: Ankit Jain <ankitja@vmware.com>
+ 
+-import random
++import secrets
+ from networkmanager import NetworkManager
+ from menu import Menu
+ from window import Window
+@@ -126,7 +126,7 @@ class NetworkConfigure(object):
+ 
+         elif selection == self.NET_CONFIG_OPTION_DHCP_HOSTNAME:
+             network_config = {}
+-            random_id = '%12x' % random.randrange(16**12)
++            random_id = '%12x' % secrets.randbelow(16**12)
+             random_hostname = 'photon-' + random_id.strip()
+             accepted_chars = list(range(ord('A'), ord('Z')+1))
+             accepted_chars = list(range(ord('a'), ord('z')+1))
+-- 
+2.23.0
+

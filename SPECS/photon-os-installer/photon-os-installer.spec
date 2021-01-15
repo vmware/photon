@@ -2,12 +2,13 @@
 Summary:    Photon OS Installer
 Name:       photon-os-installer
 Version:    1.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    Apache 2.0 and GPL 2.0
 Group:      System Environment/Base
 URL:        https://github.com/vmware/photon-os-installer
 Source0:    %{name}-%{version}.tar.gz
 Patch0:     support_insecure_installation.patch
+Patch1:     insecure_randomness.patch
 Vendor:     VMware, Inc.
 Distribution:   Photon
 %define sha1 %{name}=cc86d22b7ef8495164fec1fb7d96bb97a2fb82c6
@@ -25,6 +26,7 @@ This is to create rpm for installer code
 %prep
 %setup -n %{name}-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
 pyinstaller --onefile photon-installer.spec
@@ -41,6 +43,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_bindir}/photon-installer
 
 %changelog
+*   Fri Jan 15 2021 Piyush Gupta <gpiyush@vmware.com> 1.0-3
+-   Generating PRNGs through secrets module.
 *   Wed Dec 16 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.0-2
 -   Add support for insecure_installation so that rpms can be
 -   served from untrusted https url
