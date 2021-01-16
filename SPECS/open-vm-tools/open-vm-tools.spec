@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        11.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -66,13 +66,26 @@ Requires:       %{name} = %{version}-%{release}
 %description    devel
 It contains the libraries and header files to create applications.
 
+%package        sdmp
+Summary:        Service Discovery plugin for open-vm-tools
+Requires:       %{name} = %{version}-%{release}
+
+%description    sdmp
+The "open-vm-tools-sdmp" package contains a plugin for Service Discovery.
+
 %prep
 %autosetup -n %{name}-stable-%{version} -a0 -a1 -p1
 
 %build
 cd %{name}
 autoreconf -i
-sh ./configure --prefix=/usr --without-x --without-kernel-modules --without-icu --disable-static --with-tirpc
+sh ./configure --prefix=/usr \
+               --without-x \
+               --without-kernel-modules \
+               --without-icu --disable-static \
+               --with-tirpc \
+               --enable-servicediscovery
+
 make %{?_smp_mflags}
 
 %install
@@ -138,9 +151,18 @@ fi
 %{_includedir}/*
 %{_libdir}/*.so
 
+%files sdmp
+%{_libdir}/%{name}/plugins/vmsvc/libserviceDiscovery.so
+%{_libdir}/%{name}/serviceDiscovery/scripts/get-versions.sh
+%{_libdir}/%{name}/serviceDiscovery/scripts/get-connection-info.sh
+%{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-info.sh
+%{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-perf-metrics.sh
+
 %changelog
-*   Mon Nov 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.2.0-1
--   Upgrade to open-vm-tools to version 11.2.0
+*   Sat Jan 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.2.0-2
+-   Added sdmp plugin support
+*   Sun Nov 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.2.0-1
+-   Upgrade to version 11.2.0
 *   Thu Nov 05 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.0-9
 -   GOSC - add users section of cloud config yaml only if password field is present
 *   Mon Sep 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.1.0-8
