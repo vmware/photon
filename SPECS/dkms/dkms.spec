@@ -2,7 +2,7 @@
 Summary:	Dynamic Kernel Module Support
 Name:		dkms
 Version:	2.8.2
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://linux.dell.com/dkms/
 Group:		System Environment/Base
@@ -13,6 +13,9 @@ Source0:	https://github.com/dell/dkms/archive/%{name}-%{version}.tar.gz
 BuildArch:	noarch
 BuildRequires:	systemd
 Requires:	systemd
+Requires:	gcc
+Requires:	make
+Requires:	binutils
 %description
 Dynamic Kernel Module Support (DKMS) is a program/framework that enables generating Linux kernel modules whose sources generally reside outside the kernel source tree. The concept is to have DKMS modules automatically rebuilt when a new kernel is installed.
 
@@ -57,6 +60,8 @@ echo "disable dkms.service" > %{buildroot}/usr/lib/systemd/system-preset/50-dkms
 %{_localstatedir}/lib/dkms/dkms_dbversion
 
 %changelog
+*   Mon Jan 18 2021 Ajay Kaher <akaher@vmware.com> 2.8.2-2
+-   Modified Requires list.
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.8.2-1
 -   Automatic Version Bump
 *   Mon Sep 10 2018 Ajay Kaher <akaher@vmware.com> 2.6.1-1
