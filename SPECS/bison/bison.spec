@@ -1,7 +1,7 @@
 Summary:	Contains a parser generator
 Name:		bison
 Version:	3.7.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/bison
 Group:		System Environment/Base
@@ -9,6 +9,9 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/bison/%{name}-%{version}.tar.xz
 %define sha1 bison=534c7ee46331ff1f1fc96a378fd6a9f6b322a242
+%if %{with_check}
+Patch0:         make-check.patch
+%endif
 BuildRequires:	m4
 Requires:	m4
 BuildRequires:	flex
@@ -16,13 +19,16 @@ BuildRequires:	flex
 This package contains a parser generator
 %prep
 %setup -q
+%if %{with_check}
+%patch0 -p1
+%endif
 %build
 #make some fixes required by glibc-2.28:
 sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
 echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
 
-./configure \
-	--prefix=%{_prefix} \
+autoreconf -fiv
+%configure \
 	--disable-silent-rules
 make %{?_smp_mflags}
 %install
@@ -42,6 +48,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 %{_docdir}/bison/*
 %changelog
+* Tue Jan 19 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.1-2
+- Fix make check
 * Wed Sep 02 2020 Gerrit Photon <photon-checkins@vmware.com> 3.7.1-1
 - Automatic Version Bump
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 3.5.2-1
