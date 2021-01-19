@@ -45,7 +45,7 @@ class PackageManager(object):
                                        path="./support/package-builder",
                                        rm=True,
                                        dockerfile="Dockerfile.photon_builder")
-        self.logger.debug("Created Image %s"%image)
+        self.logger.debug("Created Image {0}".format(image))
 
     def buildToolChain(self):
         self.logger.info("Step 1 : Building the core toolchain packages for " + constants.currentArch)
