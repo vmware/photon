@@ -3,7 +3,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        8.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -227,6 +227,8 @@ GFORTRAN_SUM_FILE=host-%{_host}/gcc/testsuite/gfortran/gfortran.sum
 %{_lib64dir}/libgomp.spec
 
 %changelog
+*   Wed Jan 27 2021 Shreenidhi Shedi <sshedi@vmware.com> 8.4.0-2
+-   Bump version with new openssl in publish rpms
 *   Thu May 07 2020 Alexey Makhalov <amakhalov@vmware.com> 8.4.0-1
 -   Version update
 *   Tue Mar 24 2020 Alexey Makhalov <amakhalov@vmware.com> 7.3.0-6
