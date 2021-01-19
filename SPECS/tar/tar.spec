@@ -9,16 +9,11 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	tar/%{name}-%{version}.tar.xz
 %define sha1 tar=162e00af4702565119c05465e8b6f21c75092794
-%if %{with_check}
-Patch0:         make-check-failure.patch
-%endif
 %description
 Contains GNU archiving program
 %prep
 %setup -q
-%if %{with_check}
-%patch0 -p1
-%endif
+
 %build
 FORCE_UNSAFE_CONFIGURE=1  ./configure \
 	--prefix=%{_prefix} \
