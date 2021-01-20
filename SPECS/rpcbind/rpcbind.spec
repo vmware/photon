@@ -1,7 +1,7 @@
 Summary:        RPC program number mapper
 Name:           rpcbind
 Version:        0.2.3
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        BSD
 URL:            http://nfsv4.bullopensource.org
 Group:          Applications/Daemons
@@ -12,10 +12,12 @@ Source2:        rpcbind.socket
 Source3:        rpcbind.sysconfig
 Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/rpcbind-0.2.3-tirpc_fix-1.patch
 Patch1:         rpcbind-CVE-2017-8779.patch
+Patch2:         Disble_remote_calls_by_default.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  libtirpc-devel
 BuildRequires:  systemd
+BuildRequires:  automake
 Requires:       libtirpc
 Requires:       systemd
 Requires(pre):  shadow
@@ -29,15 +31,16 @@ The rpcbind program is a replacement for portmap. It is required for import or e
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 sed -i "/servname/s:rpcbind:sunrpc:" src/rpcbind.c
-./configure --prefix=%{_prefix}      \
-            --bindir=%{_sbindir}     \
-            --enable-warmstarts \
-            --disable-debug \
-            --with-statedir=%{_localstatedir}/lib/rpcbind \
-            --with-rpcuser=rpc
+bash ./autogen.sh
+%configure --bindir=%{_sbindir}     \
+           --enable-warmstarts \
+           --disable-debug \
+           --with-statedir=%{_localstatedir}/lib/rpcbind \
+           --with-rpcuser=rpc
 make
 
 %install
@@ -92,6 +95,9 @@ fi
 rm -rf %{buildroot}/*
 
 %changelog
+*       Wed Jan 20 2021 Tapas Kundu <tkundu@vmware.com> 0.2.3-9
+-       Disable remote calls by default.
+-       This will disble random port reservation by rpcbind
 *	Thu May 18 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.2.3-8
 -	Fix CVE-2017-8779
 *	Fri May 05 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2.3-7
