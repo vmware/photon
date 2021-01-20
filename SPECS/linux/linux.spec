@@ -13,7 +13,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.4
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -429,10 +429,6 @@ cp .config %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r} # copy .config manu
 ln -sf "%{_usrsrc}/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
-%ifarch aarch64
-cp arch/arm64/kernel/module.lds %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}/arch/arm64/kernel/
-%endif
-
 make -C tools ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3
 make -C tools/perf ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} PYTHON=python3 install-python_ext
 %ifarch x86_64
@@ -550,6 +546,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jan 20 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-4
+-   Handle module.lds for aarch64 in the same way as for x86_64
 *   Wed Jan 13 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-3
 -   Remove traceevent/plugins from linux-tools
 *   Mon Jan 11 2021 Bo Gan <ganb@vmware.com> 5.10.4-2
