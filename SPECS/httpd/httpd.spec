@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.46
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -91,7 +91,7 @@ After=network.target remote-fs.target nss-lookup.target
 
 [Service]
 Type=forking
-PIDFile=/var/run/httpd/httpd.pid
+PIDFile=/run/httpd/httpd.pid
 ExecStart=/usr/sbin/httpd -k start
 ExecStop=/usr/sbin/httpd -k stop
 ExecReload=/usr/sbin/httpd -k graceful
@@ -109,7 +109,7 @@ ln -s /etc/httpd/conf/httpd.conf %{buildroot}/etc/httpd/httpd.conf
 
 mkdir -p %{buildroot}%{_libdir}/tmpfiles.d
 cat >> %{buildroot}%{_libdir}/tmpfiles.d/httpd.conf << EOF
-d /var/run/httpd 0755 root root -
+d /run/httpd 0755 root root -
 EOF
 
 %post
@@ -191,6 +191,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Wed Jan 20 2021 Tapas Kundu <tkundu@vmware.com> 2.4.46-5
+-   Fix pid path
 *   Fri Oct 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.4.46-4
 -   Fix GCC path issue
 *   Mon Oct 05 2020 Dweep Advani <dadvani@vmware.com> 2.4.46-3
