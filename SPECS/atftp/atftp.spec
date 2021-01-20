@@ -1,7 +1,7 @@
 Summary:        Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:           atftp
 Version:        0.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://sourceforge.net/projects/atftp
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          System Environment/Daemons
@@ -10,7 +10,7 @@ Distribution:   Photon
 Source0:        http://sourceforge.net/projects/atftp/files/latest/download/%{name}-%{version}.tar.gz
 
 %define sha1 atftp=a05ff68dfcdbe5368b57a955647450b798a07adc
-
+Patch0:         CVE-2020-6097.patch
 BuildRequires:  systemd
 Requires:       systemd
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
@@ -39,6 +39,7 @@ files using the TFTP protocol.
 
 %prep
 %setup
+%patch0 -p1
 sed -i "s/-g -Wall -D_REENTRANT/-g -Wall -D_REENTRANT -std=gnu89/" configure.ac
 
 %build
@@ -130,6 +131,8 @@ fi
 
 
 %changelog
+*   Wed Jan 20 2021 Tapas Kundu <tkundu@vmware.com> 0.7.2-2
+-   Fix CVE-2020-6097
 *   Tue Jun 25 2019 Tapas Kundu <tkundu@vmware.com> 0.7.2-1
 -   Updated to release 0.7.2
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.1-8
