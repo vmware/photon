@@ -1,36 +1,36 @@
-From 07525c4e9e9371a71456f1111da0623639f6ab58 Mon Sep 17 00:00:00 2001
+From 1f81333ed0e2847e859268bf084dce7de3199e22 Mon Sep 17 00:00:00 2001
 From: Alexey Makhalov <amakhalov@vmware.com>
 Date: Sat, 4 Feb 2017 04:15:14 +0000
-Subject: [PATCH 3/3] Added PAX_RANDKSTACK
+Subject: [PATCH] Added PAX_RANDKSTACK
 
 ---
- arch/x86/entry/entry_64.S    | 16 ++++++++++++++++
+ arch/x86/entry/entry_64.S    | 14 ++++++++++++++
  arch/x86/kernel/process_64.c | 21 +++++++++++++++++++++
  security/Kconfig             | 14 ++++++++++++++
- 3 files changed, 51 insertions(+)
+ 3 files changed, 49 insertions(+)
 
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index af4e581..3547f1f 100644
+index c864245f..25d67670 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -55,6 +55,16 @@ ENTRY(native_usergs_sysret64)
+@@ -56,6 +56,16 @@ ENTRY(native_usergs_sysret64)
  ENDPROC(native_usergs_sysret64)
  #endif /* CONFIG_PARAVIRT */
  
 +.macro pax_rand_kstack
 +#ifdef CONFIG_PAX_RANDKSTACK
-+	pushq	%rax
-+	pushq	%r11
-+	call	pax_randomize_kstack
-+	popq	%r11
-+	popq	%rax
++	pushq   %rax
++	pushq   %r11
++	call    pax_randomize_kstack
++	popq    %r11
++	popq    %rax
 +#endif
 +.endm
 +
  .macro TRACE_IRQS_IRETQ
  #ifdef CONFIG_TRACE_IRQFLAGS
- 	bt	$9, EFLAGS(%rsp)		/* interrupts off? */
-@@ -201,6 +201,8 @@ GLOBAL(entry_SYSCALL_64_after_swapgs)
+ 	btl	$9, EFLAGS(%rsp)		/* interrupts off? */
+@@ -201,6 +211,8 @@ GLOBAL(entry_SYSCALL_64_after_swapgs)
  	movq	%rsp, %rdi
  	call	do_syscall_64		/* returns with IRQs disabled */
  
@@ -39,7 +39,7 @@ index af4e581..3547f1f 100644
  	RESTORE_EXTRA_REGS
  	TRACE_IRQS_IRETQ		/* we're about to change IF */
  
-@@ -449,6 +463,7 @@ ENTRY(ret_from_fork)
+@@ -364,6 +376,7 @@ ENTRY(ret_from_fork)
  2:
  	movq	%rsp, %rdi
  	call	syscall_return_slowpath	/* returns with IRQs disabled */
@@ -47,7 +47,7 @@ index af4e581..3547f1f 100644
  	TRACE_IRQS_ON			/* user mode is traced as IRQS on */
  	SWITCH_USER_CR3
  	SWAPGS
-@@ -562,6 +577,7 @@ ret_from_intr:
+@@ -480,6 +493,7 @@ ret_from_intr:
  GLOBAL(retint_user)
  	mov	%rsp,%rdi
  	call	prepare_exit_to_usermode
@@ -56,10 +56,10 @@ index af4e581..3547f1f 100644
  	SWITCH_USER_CR3
  	SWAPGS
 diff --git a/arch/x86/kernel/process_64.c b/arch/x86/kernel/process_64.c
-index 0887d2a..cd76ae8 100644
+index 6d6c15cd..9a17acae 100644
 --- a/arch/x86/kernel/process_64.c
 +++ b/arch/x86/kernel/process_64.c
-@@ -262,7 +262,13 @@ int copy_thread_tls(unsigned long clone_flags, unsigned long sp,
+@@ -264,7 +264,13 @@ int copy_thread_tls(unsigned long clone_flags, unsigned long sp,
  	struct inactive_task_frame *frame;
  	struct task_struct *me = current;
  
@@ -73,7 +73,7 @@ index 0887d2a..cd76ae8 100644
  	childregs = task_pt_regs(p);
  	fork_frame = container_of(childregs, struct fork_frame, regs);
  	frame = &fork_frame->frame;
-@@ -647,3 +653,18 @@ unsigned long KSTK_ESP(struct task_struct *task)
+@@ -653,3 +659,18 @@ unsigned long KSTK_ESP(struct task_struct *task)
  {
  	return task_pt_regs(task)->sp;
  }
@@ -93,7 +93,7 @@ index 0887d2a..cd76ae8 100644
 +}
 +#endif
 diff --git a/security/Kconfig b/security/Kconfig
-index d5641c4..d649311 100644
+index d5641c41..d649311c 100644
 --- a/security/Kconfig
 +++ b/security/Kconfig
 @@ -99,6 +99,20 @@ config PAX_RAP
@@ -117,3 +117,6 @@ index d5641c4..d649311 100644
  endif
  
  source security/keys/Kconfig
+-- 
+2.23.1
+

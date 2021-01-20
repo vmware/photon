@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.249
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.252
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=46e3cdb2c4bee14f19106cd34b52e045c094c791
+%define sha1 linux=2cfe1a86c144e34773cd885fd74bd9411bf1e8a2
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -525,6 +525,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Wed Jan 20 2021 Keerthana K <keerthanak@vmware.com> 4.9.252-1
+-   Update to version 4.9.252
 *   Tue Jan 12 2021 Ankit Jain <ankitja@vmware.com> 4.9.249-2
 -   Disabled CONFIG_TARGET_CORE to fix CVE-2020-28374
 *   Mon Jan 04 2021 Ankit Jain <ankitja@vmware.com> 4.9.249-1
