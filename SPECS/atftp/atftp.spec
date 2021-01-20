@@ -1,7 +1,7 @@
 Summary:        Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:           atftp
 Version:        0.7.1
-Release:        9%{?dist}
+Release:        10%{?dist}
 URL:            http://sourceforge.net/projects/atftp
 License:        GPLv2+ and GPLv3+ and LGPLv2+
 Group:          System Environment/Daemons
@@ -14,7 +14,7 @@ Source0:        http://sourceforge.net/projects/atftp/files/latest/download/%{na
 Patch0:         atftpd-circumvent-tftp-size-restrictions.patch
 Patch1:         CVE-2019-11365.patch
 Patch2:         CVE-2019-11366.patch
-
+Patch3:         CVE-2020-6097.patch
 BuildRequires:  systemd
 Requires:       systemd
 Requires:	    shadow
@@ -43,6 +43,8 @@ files using the TFTP protocol.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+
 sed -i "s/-g -Wall -D_REENTRANT/-g -Wall -D_REENTRANT -std=gnu89/" configure.ac
 
 %build
@@ -132,6 +134,8 @@ fi
 %{_bindir}/atftp
 
 %changelog
+*   Wed Jan 20 2021 Tapas Kundu <tkundu@vmware.com> 0.7.1-10
+-   Fix CVE-2020-6097
 *   Fri Jun 26 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.7.1-9
 -   Fix CVE-2019-11365, CVE-2019-11366
 *   Wed Oct 18 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.1-8
