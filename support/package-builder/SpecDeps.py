@@ -82,6 +82,10 @@ class SpecDependencyGenerator(object):
         with open(jsonFilePath) as jsonData:
             option_list_json = json.load(jsonData)
             packages = option_list_json["packages"]
+            archSpecificPkgs = "packages_" + constants.buildArch
+            if archSpecificPkgs in option_list_json:
+                packages += option_list_json[archSpecificPkgs]
+
             return packages
 
     def updateLevels(self, mapDependencies, inPkg, parent, level):

@@ -56,7 +56,6 @@
         "tdnf",
         "python3-requests",
         "grub2",
-        "grub2-pc",
         "grub2-efi",
         "efivar",
         "efibootmgr",
@@ -67,5 +66,8 @@
         "ostree-grub2",
         "ostree-libs",
         "lvm2",
-        "photon-os-installer"]
+        "photon-os-installer"],
+
+    "packages_x86_64": ["grub2-pc"]
+
 }
