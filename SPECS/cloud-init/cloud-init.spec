@@ -1,7 +1,7 @@
 %define python3_sitelib /usr/lib/python3.9/site-packages
 
 Name:           cloud-init
-Version:        20.4
+Version:        20.4.1
 Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc
 Distribution:   Photon
 
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 cloud-init=e1c845ad00f2170555af21cdf3351402bf10b283
+%define sha1 cloud-init=94470675523920c41e74a10497594ca5acbe5acb
 Source1:        99-disable-networking-config.cfg
 Source2:        dscheck_VMwareGuestInfo
 
@@ -110,7 +110,7 @@ echo -e 'CERT1\nLINE2\nLINE3\nCERT2\nLINE2\nLINE3' > "${crt_file}"
 conf_file='/etc/ca-certificates.conf'
 echo -e 'line1\nline2\nline3\ncloud-init-ca-certs.crt\n' > "${conf_file}"
 
-pip3 install --upgrade pytest-metadata unittest2 mock httpretty attrs
+pip3 install --upgrade pytest-metadata unittest2 mock httpretty attrs iniconfig
 make check
 
 %clean
@@ -157,6 +157,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Wed Jan 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 20.4.1-1
+-   Upgrade to version 20.4.1
 *   Thu Dec 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.4-1
 -   Upgrade to version 20.4
 *   Sun Nov 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.3-4
