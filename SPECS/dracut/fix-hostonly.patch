@@ -1,23 +1,43 @@
-From c06a5e795b9213b749ded74e5f9ced0e63ad93f4 Mon Sep 17 00:00:00 2001
+From a5b0d59012854f91e51f1624c7fb67a26f351169 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
-Date: Mon, 21 Dec 2020 12:41:51 +0530
-Subject: [PATCH] adjust host_only flag based on running environment
+Date: Wed, 20 Jan 2021 23:50:41 +0530
+Subject: [PATCH] Adjust host_only flag based on running environment
 
 host_only decides the nature of initrd.
 If initrd is getting generated in docker/chroot environemnt, it should
 be generic. Otherwise cloud-images & ova will have a host specific
 initrd which may fail to boot on a different host.
 
+Added a command line option to manually set/unset host_only value.
+
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- mkinitrd-dracut.sh | 20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+ mkinitrd-dracut.sh | 34 +++++++++++++++++++++++++++++++---
+ 1 file changed, 31 insertions(+), 3 deletions(-)
 
 diff --git a/mkinitrd-dracut.sh b/mkinitrd-dracut.sh
-index 01c989c3..6d502a09 100755
+index 01c989c3..40472336 100755
 --- a/mkinitrd-dracut.sh
 +++ b/mkinitrd-dracut.sh
-@@ -60,9 +60,6 @@ default_kernel_images() {
+@@ -6,6 +6,8 @@ boot_dir="/boot"
+ quiet=0
+ host_only=0
+ force=0
++set_hostonly=0
++no_hostonly=0
+ 
+ error() { echo "$@" >&2; }
+ 
+@@ -15,6 +17,8 @@ usage () {
+     $cmd "usage: ${0##*/} [--version] [--help] [-v] [-f] [--preload <module>]"
+     $cmd "       [--image-version] [--with=<module>]"
+     $cmd "       [--nocompress]"
++    $cmd "       [--set-hostonly]"
++    $cmd "       [--no-hostonly]"
+     $cmd "       <initrd-image> <kernel-version>"
+     $cmd ""
+     $cmd "       (ex: ${0##*/} /boot/initramfs-$kver.img $kver)"
+@@ -60,9 +64,6 @@ default_kernel_images() {
  	kernels="$kernels $kernel_version"
          targets="$targets $boot_dir/initrd.img-$kernel_version"
      done
@@ -27,7 +47,16 @@ index 01c989c3..6d502a09 100755
  }
  
  while (($# > 0)); do
-@@ -148,6 +145,23 @@ done
+@@ -85,6 +86,8 @@ while (($# > 0)); do
+         --rootfs|-d) read_arg rootfs "$@" || shift $?
+             dracut_args="${dracut_args} --filesystems $rootfs";;
+         --nocompress) dracut_args="$dracut_args --no-compress";;
++        --set-hostonly) set_hostonly=1;;
++        --no-hostonly) no_hostonly=1;;
+         --help) usage -n;;
+         --builtin) ;;
+         --without*) ;;
+@@ -148,6 +151,31 @@ done
  targets=( $targets )
  [[ $kernels ]] && kernels=( $kernels )
  
@@ -35,18 +64,26 @@ index 01c989c3..6d502a09 100755
 +# if set initrd will be incomplete
 +# https://fedoraproject.org/wiki/Features/DracutHostOnly#Detailed_Description
 +# https://man7.org/linux/man-pages/man5/dracut.conf.5.html
-+if grep -qc docker /proc/self/cgroup; then
-+  echo "--- Generating initrd under docker environment ---"
-+  host_only=0
-+elif [ "$(stat -c %d:%i /)" != "$(stat -c %d:%i /proc/1/root/.)" ]; then
-+  # set host_only=0 if initrd is generated in chroot
-+  # otherwise cloud images generated in a Photon host will have bad initrd
-+  echo "--- Generating initrd under chroot environment ---"
-+  host_only=0
++if [ ${set_hostonly} -eq 0 ]; then
++  if grep -qc docker /proc/self/cgroup; then
++    echo "--- Generating initrd under docker environment ---"
++    host_only=0
++  elif [ "$(stat -c %d:%i /)" != "$(stat -c %d:%i /proc/1/root/.)" ]; then
++    # set host_only=0 if initrd is generated in chroot
++    # otherwise cloud images generated in a Photon host will have bad initrd
++    echo "--- Generating initrd under chroot environment ---"
++    host_only=0
++  else
++    host_only=1
++  fi
 +else
 +  host_only=1
 +fi
 +force=1
++
++if [ ${no_hostonly} -eq 1 ]; then
++  host_only=0
++fi
 +
  [[ $host_only == 1 ]] && dracut_args="${dracut_args} -H"
  [[ $force == 1 ]]     && dracut_args="${dracut_args} -f"

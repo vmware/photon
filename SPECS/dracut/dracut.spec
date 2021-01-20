@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        050
-Release:        6%{?dist}
+Release:        7%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -156,6 +156,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*   Wed Jan 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 050-7
+-   Added a command line option to manually override host_only
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 050-6
 -   Adjust hostonly based on running environment
 *   Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 050-5
