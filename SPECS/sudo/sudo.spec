@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.8.30
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
@@ -15,7 +15,10 @@ BuildRequires:  sed
 Requires:       Linux-PAM
 Requires:       shadow
 Patch0:         set_rlimit_core.patch
-
+Patch1:         CVE-2021-3156_1.patch
+Patch2:         CVE-2021-3156_2.patch
+Patch3:         CVE-2021-3156_3.patch
+Patch4:         CVE-2021-3156_4.patch
 %description
 The Sudo package allows a system administrator to give certain users (or groups of users)
 the ability to run some (or all) commands as root or another user while logging the commands and arguments.
@@ -23,6 +26,10 @@ the ability to run some (or all) commands as root or another user while logging 
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 %configure \
@@ -91,6 +98,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+*   Thu Jan 21 2021 Tapas Kundu <tkundu@vmware.com> 1.8.30-3
+-   Fix CVE-2021-3156
 *   Thu Apr 02 2020 Shreyas B. <shreyasb@vmware.com> 1.8.30-2
 -   Fix - Set RLIMIT_CORE to zero when it's failed to set to RLIM_INFINITY.
 *   Mon Jan 06 2020 Shreyas B. <shreyasb@vmware.com> 1.8.30-1
