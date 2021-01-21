@@ -6,7 +6,7 @@
 		"iproute2", "util-linux", "kmod", "linux", "initramfs",
 		"raspberrypi-firmware-pi3", "raspberrypi-firmware-pi4",
 		"dtb-raspberrypi", "u-boot-rpi3", "u-boot-rpi4",
-		"ca-certificates", "curl", "iptables", "Linux-PAM", "systemd",
+		"ca-certificates", "curl", "iptables", "Linux-PAM", "systemd", "systemd-udev",
 		"dbus", "file", "e2fsprogs", "rpm","gawk","gptfdisk",
                 "openssh", "gdbm", "parted", "linux-firmware",
                 "photon-release", "photon-repos",
