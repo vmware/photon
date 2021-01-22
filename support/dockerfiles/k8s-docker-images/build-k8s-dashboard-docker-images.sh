@@ -32,7 +32,7 @@ fi
 mkdir -p tmp/k8dash
 cp ${K8S_DASH_RPM_FILE} tmp/k8dash/
 pushd ./tmp/k8dash
-rpm2cpio ${K8S_DASH_RPM} | cpio -vid
+docker run --rm --privileged -v ${PWD}:${PWD} photon_builder bash -c "cd '${PWD}' && rpm2cpio '${K8S_DASH_RPM}' | cpio -vid"
 mkdir -p img
 cp -p usr/bin/dashboard img/
 cp -p -r opt/k8dashboard/* img/

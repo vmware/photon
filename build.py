@@ -27,8 +27,8 @@ targetList = {
                 "updated-packages", "tool-chain-stage1", "tool-chain-stage2", "check",
                 "ostree-repo", "generate-yaml-files", "create-repo", "distributed-build"],
 
-        "buildEnvironment": ["packages-cached", "sources", "sources-cached", "publish-rpms",
-                "publish-x-rpms", "publish-rpms-cached", "publish-x-rpms-cached", "photon-stage"],
+        "buildEnvironment": ["packages-cached", "sources", "sources-cached", "publish-rpms", "publish-x-rpms",
+                "publish-rpms-cached", "publish-x-rpms-cached", "photon-stage","photon_builder_image"],
 
         "cleanup": ["clean", "clean-install", "clean-chroot", "clean-stage-for-incremental-build"],
 
@@ -365,6 +365,22 @@ class BuildEnvironmentSetup:
         if not os.path.isfile(Build_Config.stagePath + "/EULA.txt"):
             CommandUtils.runCommandInShell("install -m 444 " + curDir + "/EULA.txt " + Build_Config.stagePath + "/EULA.txt")
 
+    def create_photon_builder_image():
+        # docker image with rpm preinstalled
+        check_prerequesite["photon_builder_image"] = True
+        import docker
+        dockerClient = docker.from_env(version="auto")
+        print("Creating photon builder docker image ...")
+        try:
+            image = dockerClient.images.build(tag='photon_builder:latest',
+                                       path="./support/package-builder",
+                                       rm=True,
+                                       dockerfile="Dockerfile.photon_builder")
+            print("Created Image {0}".format(image[0]))
+        except Exception as e:
+            print("Non-zero tdnf code? Try running `docker pull photon:latest`")
+            raise e
+
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # class Cleanup does the job of cleaning up the stage directory...                                              +
 #                                                                                                               +
@@ -496,6 +512,16 @@ class RpmBuildTarget:
             constants.currentArch = constants.targetArch
             constants.crossCompiling = True
 
+        # if rpm doesnt have zstd support we will create and use photon_builder image with preinstalled rpm
+        command="rpm --showrc | grep -i 'rpmlib(PayloadIsZstd)'"
+        process = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        retval = process.wait()
+        if retval !=0 and not check_prerequesite["photon_builder_image"]:
+            constants.hostRpmIsNotUsable = True
+            self.logger.info('rpm doesnt have zstd support')
+            BuildEnvironmentSetup.create_photon_builder_image()
+        else:
+            self.logger.info('rpm has zstd support')
 
     @staticmethod
     def create_repo():
@@ -841,6 +867,8 @@ class BuildImage:
     def k8s_docker_images(self):
         if not check_prerequesite["start-docker"]:
             CheckTools.start_docker()
+        if not check_prerequesite["photon_builder_image"]:
+            BuildEnvironmentSetup.create_photon_builder_image()
         if not check_prerequesite["photon-docker-image"]:
             BuildImage.photon_docker_image()
         if not os.path.isdir(os.path.join(Build_Config.stagePath, "docker_images")):

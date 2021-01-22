@@ -32,7 +32,7 @@ fi
 mkdir -p tmp
 cp ${K8S_COREDNS_RPM_FILE} tmp
 pushd ./tmp
-rpm2cpio ${K8S_COREDNS_RPM} | cpio -vid
+docker run --rm --privileged -v ${PWD}:${PWD} photon_builder bash -c "cd '${PWD}' &&  rpm2cpio '${K8S_COREDNS_RPM}' | cpio -vid"
 popd
 
 docker build --rm -t ${IMG_NAME} -f ./Dockerfile.coredns .

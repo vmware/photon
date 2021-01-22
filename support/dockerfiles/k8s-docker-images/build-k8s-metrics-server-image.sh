@@ -32,7 +32,7 @@ fi
 mkdir -p tmp/k8smetserv
 cp ${K8S_MET_SERV_RPM_FILE} tmp/k8smetserv/
 pushd ./tmp/k8smetserv
-rpm2cpio ${K8S_MET_SERV_RPM} | cpio -vid
+docker run --rm --privileged -v ${PWD}:${PWD} photon_builder bash -c "cd '${PWD}' && rpm2cpio '${K8S_MET_SERV_RPM}' | cpio -vid"
 popd
 
 docker build --rm -t ${IMG_NAME} -f ./Dockerfile.metrics-server .

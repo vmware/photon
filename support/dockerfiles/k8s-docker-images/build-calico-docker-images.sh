@@ -152,16 +152,17 @@ cp ${CALICO_CNI_RPM_FILE} tmp/calico/
 cp ${K8S_CNI_RPM_FILE} tmp/calico/
 cp ${CALICO_K8S_POLICY_RPM_FILE} tmp/calico/
 pushd ./tmp/calico
-rpm2cpio ${CALICO_RPM} | cpio -vid
-rpm2cpio ${CALICO_BGP_RPM} | cpio -vid
-rpm2cpio ${GO_BGP_RPM} | cpio -vid
-rpm2cpio ${CALICO_BIRD_RPM} | cpio -vid
-rpm2cpio ${CONFD_RPM} | cpio -vid
-rpm2cpio ${CALICO_FELIX_RPM} | cpio -vid
-rpm2cpio ${CALICO_LIBNET_RPM} | cpio -vid
-rpm2cpio ${CALICO_CNI_RPM} | cpio -vid
-rpm2cpio ${K8S_CNI_RPM} | cpio -vid
-rpm2cpio ${CALICO_K8S_POLICY_RPM} | cpio -vid
+docker run --rm --privileged -v ${PWD}:${PWD} photon_builder bash -c "cd '${PWD}' && \
+rpm2cpio '${CALICO_RPM}' | cpio -vid && \
+rpm2cpio '${CALICO_BGP_RPM}' | cpio -vid && \
+rpm2cpio '${GO_BGP_RPM}' | cpio -vid && \
+rpm2cpio '${CALICO_BIRD_RPM}' | cpio -vid && \
+rpm2cpio '${CONFD_RPM}' | cpio -vid && \
+rpm2cpio '${CALICO_FELIX_RPM}' | cpio -vid && \
+rpm2cpio '${CALICO_LIBNET_RPM}' | cpio -vid && \
+rpm2cpio '${CALICO_CNI_RPM}' | cpio -vid && \
+rpm2cpio '${K8S_CNI_RPM}' | cpio -vid && \
+rpm2cpio '${CALICO_K8S_POLICY_RPM}' | cpio -vid"
 popd
 
 setup_repo

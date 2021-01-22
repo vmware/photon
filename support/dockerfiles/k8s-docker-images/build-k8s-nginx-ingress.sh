@@ -34,7 +34,7 @@ fi
 mkdir -p tmp/nginxinc
 cp ${NGINX_INC_RPM_FILE} tmp/nginxinc/
 pushd ./tmp/nginxinc
-rpm2cpio ${NGINX_INC_RPM} | cpio -vid
+docker run --rm --privileged -v ${PWD}:${PWD} photon_builder bash -c "cd '${PWD}' && rpm2cpio '${NGINX_INC_RPM}' | cpio -vid"
 popd
 
 setup_repo

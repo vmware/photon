@@ -31,7 +31,7 @@ fi
 mkdir -p tmp/k8heapster
 cp ${K8S_HEAPSTER_RPM_FILE} tmp/k8heapster/
 pushd ./tmp/k8heapster
-rpm2cpio ${K8S_HEAPSTER_RPM} | cpio -vid
+docker run --rm --privileged -v ${PWD}:${PWD} photon_builder bash -c "cd '${PWD}' && rpm2cpio '${K8S_HEAPSTER_RPM}' | cpio -vid"
 popd
 
 K8S_TAR_NAME=k8s-heapster-${K8S_HEAPSTER_VER_REL}.tar

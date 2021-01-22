@@ -35,7 +35,7 @@ done
 mkdir -p tmp/k8dns
 cp ${K8S_DNS_RPM_FILE} tmp/k8dns/
 pushd ./tmp/k8dns
-rpm2cpio ${K8S_DNS_RPM} | cpio -vid
+docker run --rm --privileged -v ${PWD}:${PWD} photon_builder bash -c "cd '${PWD}' && rpm2cpio '${K8S_DNS_RPM}' | cpio -vid"
 popd
 
 setup_repo
