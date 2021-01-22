@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.9.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
@@ -9,6 +9,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
 %define sha1    sudo=1e9fccda4beccca811ecb48866776388c9c377ae
+Patch0:         CVE-2021-3156_1.patch
+Patch1:         CVE-2021-3156_2.patch
+Patch2:         CVE-2021-3156_3.patch
+Patch3:         CVE-2021-3156_4.patch
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
@@ -21,6 +25,10 @@ the ability to run some (or all) commands as root or another user while logging 
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 %configure \
@@ -91,6 +99,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+*   Fri Jan 22 2021 Tapas Kundu <tkundu@vmware.com> 1.9.5-2
+-   Fix CVE-2021-3156
 *   Fri Jan 15 2021 Sujay G <gsujay@vmware.com> 1.9.5-1
 -   Bump version to 1.9.5 to fix CVE-2021-23240
 *   Thu Apr 02 2020 Shreyas B. <shreyasb@vmware.com> 1.8.30-2
