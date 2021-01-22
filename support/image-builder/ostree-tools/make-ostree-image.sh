@@ -18,6 +18,8 @@ cat > ${SRCROOT}/support/image-builder/ostree-tools/mk-ostree-server.sh << EOF
 
 ROOT=$1
 
+sed -i 's#https://dl.bintray.com/vmware#https://packages.vmware.com/photon/\$releasever#g' /etc/yum.repos.d/*.repo
+tdnf install -y rpm
 mkdir -p ${ROOT}/srv/rpm-ostree
 ostree --repo=${ROOT}/srv/rpm-ostree/repo init --mode=archive-z2
 rpm-ostree compose tree --repo=${ROOT}/srv/rpm-ostree/repo photon-base.json
