@@ -2,7 +2,7 @@
 
 Summary:        Netfilter Tables userspace utillites
 Name:           nftables
-Version:        0.9.6
+Version:        0.9.8
 Release:        1%{?dist}
 Group:          Development/Security
 Vendor:         VMware, Inc.
@@ -10,7 +10,7 @@ Distribution:   Photon
 License:        GPLv2
 URL:            https://netfilter.org/projects/nftables/
 Source0:        %{url}/files/%{name}-%{version}.tar.bz2
-%define sha1    nftables=1a7fe23afbf9c324e21d0bd4825a1e083cae49b2
+%define sha1    nftables=c15ac5552959c8358975f6b3e15757841c6904c8
 Source1:        nftables.service
 Source2:        nftables.conf
 
@@ -116,5 +116,7 @@ chmod 700 $RPM_BUILD_ROOT/%{_sysconfdir}/nftables
 %{python3_sitelib}/nftables/
 
 %changelog
+* Sun Jan 24 2021 Susant Sahani <ssahani@vmware.com> 0.9.8-1
+- Version bump
 * Wed Aug 12 2020 Susant Sahani <ssahani@vmware.com> 0.9.6-1
 - Initial RPM release
