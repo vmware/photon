@@ -1,7 +1,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        10.3.10
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -121,6 +121,8 @@ fi
 %{_libdir}/*.so
 
 %changelog
+*   Sun Jan 24 2021 Shreyas B. <shreyasb@vmware.com> 10.3.10-5
+-   Start vmtoolsd after dbus service.
 *   Fri Oct 11 2019 Anish Swaminathan <anishs@vmware.com> 10.3.10-4
 -   Update memory leak fix patch to include
 -   https://github.com/vmware/open-vm-tools/commit/26b9edbeb79d1c67b9ae73a0c97c48999c1fb503
