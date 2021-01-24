@@ -19,7 +19,19 @@ class ToolChainUtils(object):
         self.logName = logName
         self.logPath = logPath
         self.logger = Logger.getLogger(logName, logPath, constants.logLevel)
-        if os.geteuid() == 0:
+        # self.rpmCommand is used for rpm installation of dependent packages
+        # inside the sandbox.
+        # There are 4 possible scenarios:
+        # 1. EUID == 0 and rpm supports all needed features (usable)
+        #    -> use "rpm -i ..."
+        # 2. EUID == 0 and rpm is not usable
+        #    -> use rpm from docker "docker ... -c rpm -i ..."
+        # 3. EUID != 0 and host rpm is usable
+        #    -> use "fakeroot-ng rpm -i ..."
+        # 4. EUID != 0 and rpm is not usable
+        #    -> use rpm from docker "docker ... -c rpm -i ..."
+        #    -> run "chown -R EUID:EGID /" after to do not deal with root owned files.
+        if os.geteuid() == 0 or constants.hostRpmIsNotUsable:
             self.rpmCommand = "rpm"
         else:
             self.rpmCommand = "fakeroot-ng rpm"
@@ -127,15 +139,19 @@ class ToolChainUtils(object):
         cmd = (self.rpmCommand + " -i -v --nodeps --noorder --force --root " +
                chroot.getID() +" --define \'_dbpath /var/lib/rpm\' "+ rpmFiles)
 
-        # if rpm doesnt has zstd support
-        if CommandUtils.runCommandInShell('rpm --showrc | grep -i "rpmlib(PayloadIsZstd)"', logfn=self.logger.debug):
+        # If rpm doesn't have zstd support, use rpm from photon_builder image
+        if constants.hostRpmIsNotUsable:
+            # if we are not root, make installed files owned by effective user to
+            # support pure non-root package building.
+            if os.geteuid() != 0:
+                cmd = cmd + "; chown -R {0}:{1} {2}".format(os.geteuid(), os.getegid(), chroot.getID())
             cmd = ("docker run -i -v " + constants.prevPublishRPMRepo + ":" + constants.prevPublishRPMRepo +
                    " -v " + constants.rpmPath + ":" + constants.rpmPath + " -v " + chroot.getID() + ":" +
                    chroot.getID() + " photon_builder:latest " + "/bin/bash -c \"" + cmd + "\"")
 
+        self.logger.debug("Executing cmd: " + cmd)
         retVal = CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug)
         if retVal != 0:
-            self.logger.debug("Command Executed:" + cmd)
             self.logger.error("Installing toolchain RPMS failed")
             raise Exception("RPM installation failed")
         self.logger.debug("Successfully installed default toolchain RPMS in Chroot:" + chroot.getID())

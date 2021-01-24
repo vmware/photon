@@ -36,6 +36,7 @@ class constants(object):
     targetArch = platform.machine()
     crossCompiling = False
     currentArch = buildArch
+    hostRpmIsNotUsable = False
 
     noDepsPackageList = [
         "texinfo",
