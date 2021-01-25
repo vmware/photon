@@ -1,14 +1,14 @@
 Summary:        The conntrack-tools are a set of userspace tools for Linux
 Name:           conntrack-tools
-Version:        1.4.5
-Release:        3%{?dist}
+Version:        1.4.6
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://conntrack-tools.netfilter.org
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
-%define sha1    %{name}=7d03a8d6d9ef56a9980ebfe25a282123807f8dcb
+%define sha1    %{name}=731252dac79ad80f7c8d2ea4ce876d174fed0ebf
 Source1:        conntrackd.service
 Patch0:         conntrack-tools-compiling-support-libtirpc.patch
 BuildRequires:  libnetfilter_conntrack-devel
@@ -113,6 +113,8 @@ exit
 %{_sharedstatedir}/conntrackd
 
 %changelog
+*   Mon Jan 25 2021 Gerrit Photon <photon-checkins@vmware.com> 1.4.6-1
+-   Automatic Version Bump
 *   Tue Dec 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.4.5-3
 -   Bump version as a part of autospec library upgrade
 *   Wed Sep 11 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.4.5-2
