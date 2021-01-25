@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.4
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -318,6 +318,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jan 25 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-3
+-   Enabled CONFIG_WIREGUARD
 *   Mon Jan 25 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-2
 -   Build kernel with FIPS canister.
 *   Wed Jan 06 2021 Bo Gan <ganb@vmware.com> 5.10.4-1

@@ -15,7 +15,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.4
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -570,6 +570,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jan 25 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-6
+-   Enabled CONFIG_WIREGUARD
 *   Fri Jan 22 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-5
 -   Build kernel with FIPS canister.
 *   Wed Jan 20 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-4

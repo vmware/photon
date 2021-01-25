@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.4
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -394,6 +394,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Jan 25 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-2
+-   Enabled CONFIG_WIREGUARD
 *   Mon Jan 11 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.4-1
 -   Update to version 5.10.4
 *   Tue Nov 10 2020 Keerthana K <keerthanak@vmware.com> 5.9.0-4
