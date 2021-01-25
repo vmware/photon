@@ -1,7 +1,7 @@
 Summary:       Lightning memory-mapped database
 Name:          lmdb
 Version:       0.9.24
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         System/Libraries
 Vendor:        VMware, Inc.
 License:       OpenLDAP
@@ -47,6 +47,10 @@ mkdir -p %{buildroot}%{_libdir}/pkgconfig
 install -m0644 COPYRIGHT %{buildroot}%{_docdir}/%{name}
 install -m0644 LICENSE %{buildroot}%{_defaultlicensedir}/%{name}
 install -m0755 %{SOURCE1} %{buildroot}%{_libdir}/pkgconfig
+# resolve /usr/bin/mdb_stat conflict with ligthwave-post by renaming the binary
+%{__mv} %{buildroot}%{_bindir}/mdb_stat %{buildroot}%{_bindir}/mdb_stat_lmdb
+# accordingly rename the man page
+%{__mv} %{buildroot}%{_mandir}/man1/mdb_stat.1 %{buildroot}%{_mandir}/man1/mdb_stat_lmdb.1
 
 %post
 
@@ -73,6 +77,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %changelog
+*  Fri Jan 22 2021 Dweep Advani <dadvani@vmware.com> 0.9.24-2
+-  Resolve /usr/bin/mdb_stat conflict by renaming to mdb_stat_lmdb
 *  Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 0.9.24-1
 -  Automatic Version Bump
 *  Tue Jan 22 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.9.22-2
