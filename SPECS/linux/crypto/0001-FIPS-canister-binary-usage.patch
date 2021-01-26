@@ -1,18 +1,24 @@
-From 4c9dfeaada0367579e0f7ad1d32bdc5d588a785f Mon Sep 17 00:00:00 2001
+From f6de9a2fa65e4cc916008cc92ba684ab8db422ba Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Mon, 11 Jan 2021 16:46:43 +0000
-Subject: [PATCH] FIPS canister binary usage
+Subject: [PATCH 1/2] FIPS canister binary usage
 
 Build with fips canister and skip building crypto algorithms.
 Invoke fips canister integrity check during kernel startup.
+
+This patch can be used at two stages:
+ 1. Prerequisite patch for canister creation.
+ 2. Binary canister usage time.
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 ---
  arch/x86/crypto/Makefile |  4 ---
- crypto/Makefile          | 69 ++++++++++++++++++++++------------------
+ crypto/Makefile          | 83 +++++++++++++++++++++++++++++++++++++++---------
  init/main.c              |  3 ++
- 3 files changed, 41 insertions(+), 35 deletions(-)
+ 3 files changed, 71 insertions(+), 19 deletions(-)
 
 diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
-index a31de0c6c..610a02749 100644
+index a31de0c6ccde..610a027493fa 100644
 --- a/arch/x86/crypto/Makefile
 +++ b/arch/x86/crypto/Makefile
 @@ -50,10 +50,6 @@ obj-$(CONFIG_CRYPTO_CHACHA20_X86_64) += chacha-x86_64.o
@@ -27,33 +33,21 @@ index a31de0c6c..610a02749 100644
  sha1-ssse3-y := sha1_avx2_x86_64_asm.o sha1_ssse3_asm.o sha1_ssse3_glue.o
  sha1-ssse3-$(CONFIG_AS_SHA1_NI) += sha1_ni_asm.o
 diff --git a/crypto/Makefile b/crypto/Makefile
-index b279483fb..399e63bc0 100644
+index b279483fba50..d8251c2f7e57 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
-@@ -31,17 +31,6 @@ dh_generic-y := dh.o
- dh_generic-y += dh_helper.o
- obj-$(CONFIG_CRYPTO_DH) += dh_generic.o
- 
--$(obj)/rsapubkey.asn1.o: $(obj)/rsapubkey.asn1.c $(obj)/rsapubkey.asn1.h
--$(obj)/rsaprivkey.asn1.o: $(obj)/rsaprivkey.asn1.c $(obj)/rsaprivkey.asn1.h
--$(obj)/rsa_helper.o: $(obj)/rsapubkey.asn1.h $(obj)/rsaprivkey.asn1.h
--
--rsa_generic-y := rsapubkey.asn1.o
--rsa_generic-y += rsaprivkey.asn1.o
--rsa_generic-y += rsa.o
--rsa_generic-y += rsa_helper.o
--rsa_generic-y += rsa-pkcs1pad.o
+@@ -40,7 +40,6 @@ rsa_generic-y += rsaprivkey.asn1.o
+ rsa_generic-y += rsa.o
+ rsa_generic-y += rsa_helper.o
+ rsa_generic-y += rsa-pkcs1pad.o
 -obj-$(CONFIG_CRYPTO_RSA) += rsa_generic.o
--
+ 
  $(obj)/sm2signature.asn1.o: $(obj)/sm2signature.asn1.c $(obj)/sm2signature.asn1.h
  $(obj)/sm2.o: $(obj)/sm2signature.asn1.h
+@@ -56,12 +55,10 @@ obj-$(CONFIG_CRYPTO_ACOMP2) += crypto_acompress.o
  
-@@ -54,14 +43,10 @@ crypto_acompress-y := acompress.o
- crypto_acompress-y += scompress.o
- obj-$(CONFIG_CRYPTO_ACOMP2) += crypto_acompress.o
+ cryptomgr-y := algboss.o testmgr.o
  
--cryptomgr-y := algboss.o testmgr.o
--
 -obj-$(CONFIG_CRYPTO_MANAGER2) += cryptomgr.o
  obj-$(CONFIG_CRYPTO_USER) += crypto_user.o
  crypto_user-y := crypto_user_base.o
@@ -63,7 +57,7 @@ index b279483fb..399e63bc0 100644
  obj-$(CONFIG_CRYPTO_VMAC) += vmac.o
  obj-$(CONFIG_CRYPTO_XCBC) += xcbc.o
  obj-$(CONFIG_CRYPTO_NULL2) += crypto_null.o
-@@ -71,9 +56,6 @@ obj-$(CONFIG_CRYPTO_RMD128) += rmd128.o
+@@ -71,9 +68,6 @@ obj-$(CONFIG_CRYPTO_RMD128) += rmd128.o
  obj-$(CONFIG_CRYPTO_RMD160) += rmd160.o
  obj-$(CONFIG_CRYPTO_RMD256) += rmd256.o
  obj-$(CONFIG_CRYPTO_RMD320) += rmd320.o
@@ -73,7 +67,7 @@ index b279483fb..399e63bc0 100644
  obj-$(CONFIG_CRYPTO_SHA3) += sha3_generic.o
  obj-$(CONFIG_CRYPTO_SM3) += sm3_generic.o
  obj-$(CONFIG_CRYPTO_STREEBOG) += streebog_generic.o
-@@ -83,14 +65,10 @@ obj-$(CONFIG_CRYPTO_TGR192) += tgr192.o
+@@ -83,14 +77,10 @@ obj-$(CONFIG_CRYPTO_TGR192) += tgr192.o
  obj-$(CONFIG_CRYPTO_BLAKE2B) += blake2b_generic.o
  obj-$(CONFIG_CRYPTO_BLAKE2S) += blake2s_generic.o
  obj-$(CONFIG_CRYPTO_GF128MUL) += gf128mul.o
@@ -88,7 +82,7 @@ index b279483fb..399e63bc0 100644
  obj-$(CONFIG_CRYPTO_KEYWRAP) += keywrap.o
  obj-$(CONFIG_CRYPTO_ADIANTUM) += adiantum.o
  obj-$(CONFIG_CRYPTO_NHPOLY1305) += nhpoly1305.o
-@@ -120,7 +98,6 @@ endif
+@@ -120,7 +110,6 @@ endif
  
  obj-$(CONFIG_CRYPTO_PCRYPT) += pcrypt.o
  obj-$(CONFIG_CRYPTO_CRYPTD) += cryptd.o
@@ -96,7 +90,7 @@ index b279483fb..399e63bc0 100644
  obj-$(CONFIG_CRYPTO_FCRYPT) += fcrypt.o
  obj-$(CONFIG_CRYPTO_BLOWFISH) += blowfish_generic.o
  obj-$(CONFIG_CRYPTO_BLOWFISH_COMMON) += blowfish_common.o
-@@ -128,7 +105,6 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
+@@ -128,7 +117,6 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
  obj-$(CONFIG_CRYPTO_TWOFISH_COMMON) += twofish_common.o
  obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
  CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
@@ -104,7 +98,7 @@ index b279483fb..399e63bc0 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4_generic.o
  obj-$(CONFIG_CRYPTO_AES_TI) += aes_ti.o
-@@ -157,12 +133,9 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
+@@ -157,8 +145,6 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
  obj-$(CONFIG_CRYPTO_842) += 842.o
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
@@ -113,22 +107,15 @@ index b279483fb..399e63bc0 100644
  CFLAGS_jitterentropy.o = -O0
  KASAN_SANITIZE_jitterentropy.o = n
  UBSAN_SANITIZE_jitterentropy.o = n
--jitterentropy_rng-y := jitterentropy.o jitterentropy-kcapi.o
- obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
- obj-$(CONFIG_CRYPTO_GHASH) += ghash-generic.o
- obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
-@@ -176,10 +149,6 @@ obj-$(CONFIG_CRYPTO_ECC) += ecc.o
- obj-$(CONFIG_CRYPTO_ESSIV) += essiv.o
- obj-$(CONFIG_CRYPTO_CURVE25519) += curve25519-generic.o
+@@ -178,7 +164,6 @@ obj-$(CONFIG_CRYPTO_CURVE25519) += curve25519-generic.o
  
--ecdh_generic-y += ecdh.o
--ecdh_generic-y += ecdh_helper.o
+ ecdh_generic-y += ecdh.o
+ ecdh_generic-y += ecdh_helper.o
 -obj-$(CONFIG_CRYPTO_ECDH) += ecdh_generic.o
--
+ 
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
- $(obj)/ecrdsa.o: $(obj)/ecrdsa_params.asn1.h $(obj)/ecrdsa_pub_key.asn1.h
-@@ -197,3 +166,47 @@ obj-$(CONFIG_ASYMMETRIC_KEY_TYPE) += asymmetric_keys/
+@@ -197,3 +182,71 @@ obj-$(CONFIG_ASYMMETRIC_KEY_TYPE) += asymmetric_keys/
  obj-$(CONFIG_CRYPTO_HASH_INFO) += hash_info.o
  crypto_simd-y := simd.o
  obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
@@ -169,34 +156,58 @@ index b279483fb..399e63bc0 100644
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_DES)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_DES=y)
 +endif
++ifneq ($(subst Y,y,$(CONFIG_CRYPTO_ECB)),y)
++  $(error FIPS canister requires CONFIG_CRYPTO_ECB=y)
++endif
++ifneq ($(subst Y,y,$(CONFIG_CRYPTO_CBC)),y)
++  $(error FIPS canister requires CONFIG_CRYPTO_CBC=y)
++endif
++ifneq ($(subst Y,y,$(CONFIG_CRYPTO_XTS)),y)
++  $(error FIPS canister requires CONFIG_CRYPTO_XTS=y)
++endif
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_CTR)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_CTR=y)
 +endif
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_DRBG)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_DRBG=y)
 +endif
++ifneq ($(subst Y,y,$(CONFIG_CRYPTO_DRBG_HASH)),y)
++  $(error FIPS canister requires CONFIG_CRYPTO_DRBG_HASH=y)
++endif
++ifneq ($(subst Y,y,$(CONFIG_CRYPTO_DRBG_CTR)),y)
++  $(error FIPS canister requires CONFIG_CRYPTO_DRBG_CTR=y)
++endif
++ifneq ($(subst Y,y,$(CONFIG_CRYPTO_JITTERENTROPY)),y)
++  $(error FIPS canister requires CONFIG_CRYPTO_JITTERENTROPY=y)
++endif
++ifneq ($(subst Y,y,$(CONFIG_CRYPTO_ECDH)),y)
++  $(error FIPS canister requires CONFIG_CRYPTO_ECDH=y)
++endif
++ifneq ($(subst Y,y,$(CONFIG_CRYPTO_AES_NI_INTEL)),y)
++  $(error FIPS canister requires CONFIG_CRYPTO_AES_NI_INTEL=y)
++endif
 +endif
 diff --git a/init/main.c b/init/main.c
-index 32b2a8aff..2e015a478 100644
+index 9d964511fe0c..bcc6d5bb766d 100644
 --- a/init/main.c
 +++ b/init/main.c
-@@ -845,6 +845,8 @@ void __init __weak arch_call_rest_init(void)
- 	rest_init();
+@@ -840,6 +840,8 @@ static void __init mm_init(void)
+ 	pti_init();
  }
  
 +extern int fips_integrity_init(void);
 +
- asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+ void __init __weak arch_call_rest_init(void)
  {
- 	char *command_line;
-@@ -1050,6 +1052,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
- 	delayacct_init();
+ 	rest_init();
+@@ -893,6 +895,7 @@ asmlinkage __visible void __init __no_sanitize_address start_kernel(void)
+ 		parse_args("Setting extra init args", extra_init_args,
+ 			   NULL, 0, -1, -1, NULL, set_init_arg);
  
- 	poking_init();
 +	fips_integrity_init();
- 	check_bugs();
- 
- 	acpi_subsystem_init();
+ 	/*
+ 	 * These use large bootmem allocations and must precede
+ 	 * kmem_cache_init()
 -- 
-2.28.0
+2.11.0
 

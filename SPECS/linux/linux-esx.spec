@@ -1,8 +1,10 @@
 %global security_hardening none
+# Set this flag to 0 to build without canister
+%global fips 1
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.4
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -17,6 +19,11 @@ Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
+%if 0%{?fips}
+%define fips_canister_version 4.0.1-5.10.4-4
+Source16:       fips-canister-%{fips_canister_version}.tar.bz2
+%define sha1 fips-canister=7e9621a0c07ca32bcfd7eeeb6fdc3323e6d17f87
+%endif
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
 # TODO: disable this patch, check for regressions
@@ -71,6 +78,12 @@ Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 Patch500:       crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+%if 0%{?fips}
+# FIPS canister usage patch
+Patch502:       0001-FIPS-canister-binary-usage.patch
+# FIPS canister wrapper for -esx
+Patch503:       fips_canister_wrapper-esx.patch
+%endif
 
 %if 0%{?kat_build:1}
 Patch510:       crypto-testmgr-break-KAT-fips-intentionally.patch
@@ -103,6 +116,9 @@ Requires(postun):(coreutils or toybox)
 
 %description
 The Linux kernel build for GOS for VMware hypervisor.
+%if 0%{?fips}
+This kernel is FIPS certified.
+%endif
 
 %package devel
 Summary:       Kernel Dev
@@ -122,6 +138,9 @@ The Linux package contains the Linux kernel doc files
 
 %prep
 %setup -q -n linux-%{version}
+%if 0%{?fips}
+%setup -D -b 16 -n linux-%{version}
+%endif
 
 %patch0 -p1
 %patch1 -p1
@@ -167,6 +186,10 @@ The Linux package contains the Linux kernel doc files
 # crypto
 %patch500 -p1
 %patch501 -p1
+%if 0%{?fips}
+%patch502 -p1
+%patch503 -p1
+%endif
 
 %if 0%{?kat_build:1}
 %patch510 -p1
@@ -181,6 +204,28 @@ The Linux package contains the Linux kernel doc files
 %build
 make mrproper
 cp %{SOURCE1} .config
+%if 0%{?fips}
+cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
+# Change m to y for modules that are in the canister
+sed -i 's/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/' .config
+sed -i 's/CONFIG_CRYPTO_AEAD=m/CONFIG_CRYPTO_AEAD=y/' .config
+sed -i 's/CONFIG_CRYPTO_RNG_DEFAULT=m/CONFIG_CRYPTO_RNG_DEFAULT=y/' .config
+sed -i 's/CONFIG_CRYPTO_KPP=m/CONFIG_CRYPTO_KPP=y/' .config
+sed -i 's/CONFIG_CRYPTO_CRYPTD=m/CONFIG_CRYPTO_CRYPTD=y/' .config
+sed -i 's/CONFIG_CRYPTO_SIMD=m/CONFIG_CRYPTO_SIMD=y/' .config
+sed -i 's/CONFIG_CRYPTO_GLUE_HELPER_X86=m/CONFIG_CRYPTO_GLUE_HELPER_X86=y/' .config
+sed -i 's/CONFIG_CRYPTO_ECC=m/CONFIG_CRYPTO_ECC=y/' .config
+sed -i 's/CONFIG_CRYPTO_ECDH=m/CONFIG_CRYPTO_ECDH=y/' .config
+sed -i 's/CONFIG_CRYPTO_CTR=m/CONFIG_CRYPTO_CTR=y/' .config
+sed -i 's/CONFIG_CRYPTO_ECB=m/CONFIG_CRYPTO_ECB=y/' .config
+sed -i 's/CONFIG_CRYPTO_XTS=m/CONFIG_CRYPTO_XTS=y/' .config
+sed -i 's/CONFIG_CRYPTO_AES_NI_INTEL=m/CONFIG_CRYPTO_AES_NI_INTEL=y/' .config
+sed -i 's/CONFIG_CRYPTO_DES=m/CONFIG_CRYPTO_DES=y/' .config
+sed -i 's/CONFIG_CRYPTO_DRBG_MENU=m/CONFIG_CRYPTO_DRBG_MENU=y/' .config
+sed -i 's/CONFIG_CRYPTO_DRBG=m/CONFIG_CRYPTO_DRBG=y/' .config
+sed -i 's/CONFIG_CRYPTO_JITTERENTROPY=m/CONFIG_CRYPTO_JITTERENTROPY=y/' .config
+sed -i 's/CONFIG_CRYPTO_LIB_DES=m/CONFIG_CRYPTO_LIB_DES=y/' .config
+%endif
 sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
 
 %include %{SOURCE4}
@@ -273,6 +318,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jan 25 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-2
+-   Build kernel with FIPS canister.
 *   Wed Jan 06 2021 Bo Gan <ganb@vmware.com> 5.10.4-1
 -   Update to 5.10.4
 -   Drop out-of-tree SEV-ES functional patches (already upstreamed).
