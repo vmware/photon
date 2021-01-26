@@ -14,7 +14,7 @@ Name:           linux-rt
 Version:        5.10.4
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt22
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -31,15 +31,17 @@ Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
 %define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
 Source4:        pre-preun-postun-tasks.inc
 Source5:        check_for_config_applicability.inc
-%define i40e_version 2.12.6
+%define i40e_version 2.13.10
 Source6:	https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha1 i40e=e1a28cdf7c122f177ed75b7615a0a0e221d21ff4
+%define sha1 i40e=126bfdabd708033b38840e49762d7ec3e64bbc96
+%define iavf_version 4.0.2
+Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
+%define sha1 iavf=a53cb104a3b04cbfbec417f7cadda6fddf51b266
 %if 0%{?fips}
 %define fips_canister_version 4.0.1-5.10.4-4-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha1 fips-canister=659fd4bc1076f643d9b7d566f6738e3e29c51799
 %endif
-
 
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
@@ -349,9 +351,10 @@ Patch1000:        %{kat_build}.patch
 Patch1010:       0001-FIPS-canister-binary-usage.patch
 %endif
 
-Patch1500:        i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
-Patch1501:        i40e-Remove-read_barrier_depends-in-favor-of-READ_ON.patch
-Patch1502:        i40e-Fix-minor-compilation-error.patch
+#Patches for i40e driver
+Patch1500:      i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
+Patch1501:      i40e-Fix-minor-compilation-error.patch
+Patch1502:      0001-Add-support-for-gettimex64-interface.patch
 
 BuildArch:      x86_64
 
@@ -400,6 +403,7 @@ The Linux package contains the Linux kernel doc files
 %ifarch x86_64
 %setup -D -b 3 -n linux-%{version}
 %setup -D -b 6 -n linux-%{version}
+%setup -D -b 7 -n linux-%{version}
 %endif
 %if 0%{?fips}
 %setup -D -b 16 -n linux-%{version}
@@ -706,6 +710,7 @@ The Linux package contains the Linux kernel doc files
 %patch1010 -p1
 %endif
 
+#Patches for i40e driver
 pushd ../i40e-%{i40e_version}
 %patch1500 -p1
 %patch1501 -p1
@@ -765,23 +770,30 @@ pushd ../i40e-%{i40e_version}
 make -C src KSRC=$bldroot clean
 make -C src KSRC=$bldroot %{?_smp_mflags}
 popd
+
+# build iavf module
+bldroot=`pwd`
+pushd ../iavf-%{iavf_version}
+make -C src KSRC=$bldroot clean
+make -C src KSRC=$bldroot %{?_smp_mflags}
+popd
 %endif
 
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
-    ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
-    rm -f $MODULE.{sig,dig} \
-    xz $MODULE \
-    done \
+./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
+rm -f $MODULE.{sig,dig} \
+xz $MODULE \
+done \
 %{nil}
 
 # We want to compress modules after stripping. Extra step is added to
 # the default __spec_install_post.
 %define __spec_install_post\
-    %{?__debug_package:%{__debug_install_post}}\
-    %{__arch_install_post}\
-    %{__os_install_post}\
-    %{__modules_install_post}\
+%{?__debug_package:%{__debug_install_post}}\
+%{__arch_install_post}\
+%{__os_install_post}\
+%{__modules_install_post}\
 %{nil}
 
 %install
@@ -807,6 +819,12 @@ pushd ../i40e-%{i40e_version}
 make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
+# install iavf module
+bldroot=`pwd`
+pushd ../iavf-%{iavf_version}
+make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+popd
+
 # Verify for build-id match
 # We observe different IDs sometimes
 # TODO: debug it
@@ -814,10 +832,10 @@ ID1=`readelf -n vmlinux | grep "Build ID"`
 ./scripts/extract-vmlinux arch/x86/boot/bzImage > extracted-vmlinux
 ID2=`readelf -n extracted-vmlinux | grep "Build ID"`
 if [ "$ID1" != "$ID2" ] ; then
-	echo "Build IDs do not match"
-	echo $ID1
-	echo $ID2
-	exit 1
+echo "Build IDs do not match"
+echo $ID1
+echo $ID2
+exit 1
 fi
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 %endif
@@ -878,6 +896,7 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %defattr(0644,root,root)
 /lib/modules/%{uname_r}/*
 %exclude /lib/modules/%{uname_r}/build
+/etc/modprobe.d/iavf.conf
 
 %files docs
 %defattr(-,root,root)
@@ -890,6 +909,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Feb 03 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.4-4
+-   Update i40e driver to v2.13.10
+-   Add out of tree iavf driver
+-   Enable CONFIG_NET_TEAM
 *   Wed Jan 27 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-3
 -   Build kernel with FIPS canister.
 *   Mon Jan 25 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-2

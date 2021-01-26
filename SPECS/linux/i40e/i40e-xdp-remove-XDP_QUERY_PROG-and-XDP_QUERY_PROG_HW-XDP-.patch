@@ -17,7 +17,7 @@ index 6750c3c..ac35887 100644
 @@ -13204,12 +13204,6 @@ static int i40e_xdp(struct net_device *dev,
  	switch (xdp->command) {
  	case XDP_SETUP_PROG:
- 		return i40e_xdp_setup(vsi, xdp->prog);
+ 		return i40e_xdp_setup(vsi, xdp->prog, xdp->extack);
 -	case XDP_QUERY_PROG:
 -#ifndef NO_NETDEV_BPF_PROG_ATTACHED
 -		xdp->prog_attached = i40e_enabled_xdp_vsi(vsi);

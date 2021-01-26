@@ -1,0 +1,149 @@
+From bd1fac681986ff29507442ed56eaa7e78f213c8f Mon Sep 17 00:00:00 2001
+From: Vivek Thampi <vithampi@vmware.com>
+Date: Wed, 4 Nov 2020 01:46:06 -0800
+Subject: [PATCH] Add support for gettimex64 interface
+
+Signed-off-by: Vivek Thampi <vithampi@vmware.com>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ src/i40e_ptp.c | 24 +++++++++++++++---------
+ src/kcompat.h  | 22 +---------------------
+ 2 files changed, 16 insertions(+), 30 deletions(-)
+
+diff --git a/src/i40e_ptp.c b/src/i40e_ptp.c
+index 0244c5a..1b9ee11 100644
+--- a/src/i40e_ptp.c
++++ b/src/i40e_ptp.c
+@@ -266,19 +266,23 @@ static int i40e_ptp_verify(struct ptp_clock_info *ptp, unsigned int pin,
+  * i40e_ptp_read - Read the PHC time from the device
+  * @pf: Board private structure
+  * @ts: timespec structure to hold the current time value
++ * @sts: structure to hold the system time before and after reading the PHC
+  *
+  * This function reads the PRTTSYN_TIME registers and stores them in a
+  * timespec. However, since the registers are 64 bits of nanoseconds, we must
+  * convert the result to a timespec before we can return.
+  **/
+-static void i40e_ptp_read(struct i40e_pf *pf, struct timespec64 *ts)
++static void i40e_ptp_read(struct i40e_pf *pf, struct timespec64 *ts,
++			  struct ptp_system_timestamp *sts)
+ {
+ 	struct i40e_hw *hw = &pf->hw;
+ 	u32 hi, lo;
+ 	u64 ns;
+ 
+ 	/* The timer latches on the lowest register read. */
++	ptp_read_system_prets(sts);
+ 	lo = rd32(hw, I40E_PRTTSYN_TIME_L);
++	ptp_read_system_postts(sts);
+ 	hi = rd32(hw, I40E_PRTTSYN_TIME_H);
+ 
+ 	ns = (((u64)hi) << 32) | lo;
+@@ -385,7 +389,7 @@ static void i40e_ptp_set_1pps_signal_hw(struct i40e_pf *pf)
+ 	wr32(hw, I40E_PRTTSYN_AUX_1(1), I40E_PRTTSYN_AUX_1_INSTNT);
+ 	wr32(hw, I40E_PRTTSYN_AUX_0(1), I40E_PRTTSYN_AUX_0_OUT_ENABLE);
+ 
+-	i40e_ptp_read(pf, &now);
++	i40e_ptp_read(pf, &now, NULL);
+ 	now.tv_sec += I40E_PTP_2_SEC_DELAY;
+ 	now.tv_nsec = 0;
+ 	ns = timespec64_to_ns(&now);
+@@ -434,7 +438,7 @@ static int i40e_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 		struct timespec64 then, now;
+ 
+ 		then = ns_to_timespec64(delta);
+-		i40e_ptp_read(pf, &now);
++		i40e_ptp_read(pf, &now, NULL);
+ 		now = timespec64_add(now, then);
+ 		i40e_ptp_write(pf, (const struct timespec64 *)&now);
+ 		i40e_ptp_set_1pps_signal_hw(pf);
+@@ -445,19 +449,21 @@ static int i40e_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ }
+ 
+ /**
+- * i40e_ptp_gettime - Get the time of the PHC
++ * i40e_ptp_gettimex - Get the time of the PHC
+  * @ptp: The PTP clock structure
+  * @ts: timespec64 structure to hold the current time value
++ * @sts: structure to hold the system time before and after reading the PHC
+  *
+  * Read the device clock and return the correct value on ns, after converting it
+  * into a timespec struct.
+  **/
+-static int i40e_ptp_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
++static int i40e_ptp_gettimex(struct ptp_clock_info *ptp, struct timespec64 *ts,
++			     struct ptp_system_timestamp *sts)
+ {
+ 	struct i40e_pf *pf = container_of(ptp, struct i40e_pf, ptp_caps);
+ 
+ 	mutex_lock(&pf->tmreg_lock);
+-	i40e_ptp_read(pf, ts);
++	i40e_ptp_read(pf, ts, sts);
+ 	mutex_unlock(&pf->tmreg_lock);
+ 	return 0;
+ }
+@@ -495,7 +501,7 @@ static int i40e_ptp_gettime32(struct ptp_clock_info *ptp, struct timespec *ts)
+ 	struct timespec64 ts64;
+ 	int err;
+ 
+-	err = i40e_ptp_gettime(ptp, &ts64);
++	err = i40e_ptp_gettimex(ptp, &ts64, NULL);
+ 	if (err)
+ 		return err;
+ 
+@@ -1446,7 +1452,7 @@ static long i40e_ptp_create_clock(struct i40e_pf *pf)
+ 	pf->ptp_caps.adjfreq = i40e_ptp_adjfreq;
+ 	pf->ptp_caps.adjtime = i40e_ptp_adjtime;
+ #ifdef HAVE_PTP_CLOCK_INFO_GETTIME64
+-	pf->ptp_caps.gettime64 = i40e_ptp_gettime;
++	pf->ptp_caps.gettimex64 = i40e_ptp_gettimex;
+ 	pf->ptp_caps.settime64 = i40e_ptp_settime;
+ #else
+ 	pf->ptp_caps.gettime = i40e_ptp_gettime32;
+@@ -1493,7 +1499,7 @@ void i40e_ptp_save_hw_time(struct i40e_pf *pf)
+ 	if (!(pf->flags & I40E_FLAG_PTP))
+ 		return;
+ 
+-	i40e_ptp_gettime(&pf->ptp_caps, &pf->ptp_prev_hw_time);
++	i40e_ptp_gettimex(&pf->ptp_caps, &pf->ptp_prev_hw_time, NULL);
+ 	/* Get a monotonic starting time for this reset */
+ 	pf->ptp_reset_start = ktime_get();
+ }
+diff --git a/src/kcompat.h b/src/kcompat.h
+index a48b6d3..526f99c 100644
+--- a/src/kcompat.h
++++ b/src/kcompat.h
+@@ -6834,29 +6834,9 @@ _kc_dev_change_flags(struct net_device *netdev, unsigned int flags,
+ 
+ #define dev_change_flags _kc_dev_change_flags
+ #endif /* !(RHEL_RELEASE_CODE && RHEL > RHEL(8,0)) */
+-#if (RHEL_RELEASE_CODE && \
+-     (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(7,7) && \
+-      RHEL_RELEASE_CODE < RHEL_RELEASE_VERSION(8,0)) || \
+-     (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,1)))
+-#define HAVE_PTP_SYS_OFFSET_EXTENDED_IOCTL
+-#else /* RHEL >= 7.7 && RHEL < 8.0 || RHEL >= 8.1 */
+-struct ptp_system_timestamp {
+-	struct timespec64 pre_ts;
+-	struct timespec64 post_ts;
+-};
+ 
+-static inline void
+-ptp_read_system_prets(struct ptp_system_timestamp __always_unused *sts)
+-{
+-	;
+-}
++#define HAVE_PTP_SYS_OFFSET_EXTENDED_IOCTL
+ 
+-static inline void
+-ptp_read_system_postts(struct ptp_system_timestamp __always_unused *sts)
+-{
+-	;
+-}
+-#endif /* !(RHEL >= 7.7 && RHEL != 8.0) */
+ #if (RHEL_RELEASE_CODE && (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,1)))
+ #define HAVE_NDO_BRIDGE_SETLINK_EXTACK
+ #endif /* RHEL 8.1 */
+-- 
+1.8.3.1
+
