@@ -5538,10 +5538,10 @@ index 000000000..8cbed14e9
 +}
 diff --git a/scripts/gcc-plugins/rap_plugin/rap_plugin.c b/scripts/gcc-plugins/rap_plugin/rap_plugin.c
 new file mode 100644
-index 000000000..36a3837bd
+index 000000000..a15bbb019
 --- /dev/null
 +++ b/scripts/gcc-plugins/rap_plugin/rap_plugin.c
-@@ -0,0 +1,538 @@
+@@ -0,0 +1,539 @@
 +/*
 + * Copyright 2012-2016 by PaX Team <pageexec@freemail.hu>
 + * Licensed under the GPL v2
@@ -6061,6 +6061,10 @@ index 000000000..36a3837bd
 +	register_callback(plugin_name, PLUGIN_INFO, NULL, &rap_plugin_info);
 +
 +	if (enable_call) {
++		register_callback(plugin_name, PLUGIN_PASS_MANAGER_SETUP, NULL, &rap_fptr_pass_info);
++	}
++
++	if (enable_call || enable_abs_finish) {
 +#if BUILDING_GCC_VERSION >= 4007
 +		if (enable_abs)
 +			register_callback(plugin_name, PLUGIN_FINISH_DECL, rap_finish_decl, NULL);
@@ -6068,16 +6072,13 @@ index 000000000..36a3837bd
 +#warning TODO
 +#endif
 +		register_callback(plugin_name, PLUGIN_PASS_MANAGER_SETUP, NULL, &rap_unignore_pass_info);
-+		register_callback(plugin_name, PLUGIN_START_UNIT, rap_start_unit_common, NULL);
 +		register_callback(plugin_name, PLUGIN_REGISTER_GGC_ROOTS, NULL, (void *)&gt_ggc_r_gt_rap);
++		register_callback(plugin_name, PLUGIN_START_UNIT, rap_start_unit_common, NULL);
 +		if (enable_abs_finish)
 +			register_callback(plugin_name, PLUGIN_FINISH_UNIT, rap_finish_unit, NULL);
-+		register_callback(plugin_name, PLUGIN_PASS_MANAGER_SETUP, NULL, &rap_fptr_pass_info);
 +		register_callback(plugin_name, PLUGIN_ALL_IPA_PASSES_START, rap_calculate_func_hashes, NULL);
 +		register_callback (plugin_name, PLUGIN_TYPE_CAST, handle_type_cast, NULL);
-+
 +	}
-+
 +	return 0;
 +}
 diff --git a/scripts/gcc-plugins/rap_plugin/sip.c b/scripts/gcc-plugins/rap_plugin/sip.c

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.4
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -243,6 +243,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jan 27 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-3
+-   Fix rap_plugin code to generate rap_hashes when abs-finish is enabled.
 *   Wed Jan 13 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-2
 -   Fix build failure.
 *   Wed Jan 06 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-1
