@@ -1,8 +1,9 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%define debug_package %{nil}
 
 Name:           python3-PyYAML
-Version:        5.3.1
-Release:        2%{?dist}
+Version:        5.4.1
+Release:        1%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 License:        MIT
@@ -10,12 +11,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://pyyaml.org/
 Source0:        http://pyyaml.org/download/pyyaml/PyYAML-%{version}.tar.gz
-%define sha1 PyYAML=3b20272e119990b2bbeb03815a1dd3f3e48af07e
+%define sha1 PyYAML=dfa0009b17652ae1605bf0328fabd983ff238a5c
 BuildRequires:  libyaml-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
-
+BuildRequires:  python3-setuptools
+Requires:       python3-setuptools
 Requires:       python3
 Requires:       python3-libs
 Requires:       libyaml
@@ -61,6 +63,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Wed Jan 27 2021 Tapas Kundu <tkundu@vmware.com> 5.4.1-1
+-   Update to 5.4.1
 *   Wed Dec 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 5.3.1-2
 -   Fix build with new rpm
 *   Wed Jul 29 2020 Gerrit Photon <photon-checkins@vmware.com> 5.3.1-1
