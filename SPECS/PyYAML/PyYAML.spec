@@ -3,7 +3,7 @@
 
 Name:           PyYAML
 Version:        3.13
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 License:        MIT
@@ -18,6 +18,7 @@ Patch2:         change_default_loader.patch
 Patch3:         PyYAML-lib3-CVE-2017-18342.patch
 Patch4:         PyYAML-CVE-2019-20477.patch
 Patch5:         PyYAML-CVE-2020-1747.patch
+Patch6:         PyYAML-CVE-2020-14343.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -62,6 +63,7 @@ Python 3 version.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 rm -rf ../p3dir
 cp -a . ../p3dir
@@ -103,6 +105,8 @@ rm -rf $RPM_BUILD_ROOT
 
 
 %changelog
+*   Wed Jan 27 2021 Tapas Kundu <tkundu@vmware.com> 3.13-6
+-   Fix CVE-2020-14343
 *   Wed Apr 08 2020 Tapas Kundu <tkundu@vmware.com> 3.13-5
 -   Fix for CVE-2020-1747
 *   Sat Mar 07 2020 Tapas Kundu <tkundu@vmware.com> 3.13-4
