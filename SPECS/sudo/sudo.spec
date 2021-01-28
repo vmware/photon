@@ -1,7 +1,7 @@
 Summary:        Sudo
 Name:           sudo
 Version:        1.9.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
@@ -47,7 +47,7 @@ make install DESTDIR=%{buildroot}
 install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 find %{buildroot}/%{_libdir} -name '*.so~' -delete
-sed -i '/#includedir.*/i \
+sed -i '/@includedir.*/i \
 %wheel ALL=(ALL) ALL \
 %sudo   ALL=(ALL) ALL' %{buildroot}/etc/sudoers
 install -vdm755 %{buildroot}/etc/pam.d
@@ -99,6 +99,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+*   Thu Jan 28 2021 Shreyas B. <shreyasb@vmware.com> 1.9.5-3
+-   Fix "/etc/sudoers" to allow group wheel.
 *   Fri Jan 22 2021 Tapas Kundu <tkundu@vmware.com> 1.9.5-2
 -   Fix CVE-2021-3156
 *   Mon Jan 18 2021 Sujay G <gsujay@vmware.com> 1.9.5-1
