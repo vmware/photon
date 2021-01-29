@@ -1,8 +1,12 @@
 %global security_hardening none
+
+# Set this flag to 0 to build without canister
+%global fips 1
+
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.4
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -17,6 +21,11 @@ Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
+%if 0%{?fips}
+%define fips_canister_version 4.0.1-5.10.4-4-secure
+Source16:       fips-canister-%{fips_canister_version}.tar.bz2
+%define sha1 fips-canister=659fd4bc1076f643d9b7d566f6738e3e29c51799
+%endif
 
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
@@ -60,6 +69,10 @@ Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 Patch500:       crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+%if 0%{?fips}
+# FIPS canister usage patch
+Patch502:       0001-FIPS-canister-binary-usage.patch
+%endif
 
 %if 0%{?kat_build:1}
 Patch510:       crypto-testmgr-break-KAT-fips-intentionally.patch
@@ -85,6 +98,9 @@ Requires(postun):(coreutils or toybox)
 
 %description
 Security hardened Linux kernel.
+%if 0%{?fips}
+This kernel is FIPS certified.
+%endif
 
 %package devel
 Summary:       Kernel Dev
@@ -104,6 +120,9 @@ The Linux package contains the Linux kernel doc files
 
 %prep
 %setup -q -n linux-%{version}
+%if 0%{?fips}
+%setup -D -b 16 -n linux-%{version}
+%endif
 
 %patch0 -p1
 %patch1 -p1
@@ -139,6 +158,9 @@ The Linux package contains the Linux kernel doc files
 # crypto
 %patch500 -p1
 %patch501 -p1
+%if 0%{?fips}
+%patch502 -p1
+%endif
 
 %if 0%{?kat_build:1}
 %patch510 -p1
@@ -147,6 +169,11 @@ The Linux package contains the Linux kernel doc files
 %build
 make mrproper
 cp %{SOURCE1} .config
+%if 0%{?fips}
+cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
+cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
+sed -i 's/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/' .config
+%endif
 sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
 
 %include %{SOURCE4}
@@ -243,6 +270,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jan 28 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-5
+-   Build with secure FIPS canister.
 *   Thu Jan 28 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-4
 -   Enabled CONFIG_WIREGUARD
 *   Wed Jan 27 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-3

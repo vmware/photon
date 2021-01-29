@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.4
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -20,9 +20,9 @@ Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 %if 0%{?fips}
-%define fips_canister_version 4.0.1-5.10.4-4
+%define fips_canister_version 4.0.1-5.10.4-4-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=7e9621a0c07ca32bcfd7eeeb6fdc3323e6d17f87
+%define sha1 fips-canister=659fd4bc1076f643d9b7d566f6738e3e29c51799
 %endif
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
@@ -81,8 +81,6 @@ Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch502:       0001-FIPS-canister-binary-usage.patch
-# FIPS canister wrapper for -esx
-Patch503:       fips_canister_wrapper-esx.patch
 %endif
 
 %if 0%{?kat_build:1}
@@ -188,7 +186,6 @@ The Linux package contains the Linux kernel doc files
 %patch501 -p1
 %if 0%{?fips}
 %patch502 -p1
-%patch503 -p1
 %endif
 
 %if 0%{?kat_build:1}
@@ -206,6 +203,7 @@ make mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
+cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
 # Change m to y for modules that are in the canister
 sed -i 's/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/' .config
 sed -i 's/CONFIG_CRYPTO_AEAD=m/CONFIG_CRYPTO_AEAD=y/' .config
@@ -318,6 +316,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jan 28 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-4
+-   Use secure FIPS canister.
 *   Mon Jan 25 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-3
 -   Enabled CONFIG_WIREGUARD
 *   Mon Jan 25 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-2

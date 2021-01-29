@@ -6,12 +6,15 @@
 %define archdir x86
 %endif
 
+# Set this flag to 0 to build without canister
+%global fips 1
+
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.4
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt22
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -31,6 +34,11 @@ Source5:        check_for_config_applicability.inc
 %define i40e_version 2.12.6
 Source6:	https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
 %define sha1 i40e=e1a28cdf7c122f177ed75b7615a0a0e221d21ff4
+%if 0%{?fips}
+%define fips_canister_version 4.0.1-5.10.4-4-secure
+Source16:       fips-canister-%{fips_canister_version}.tar.bz2
+%define sha1 fips-canister=659fd4bc1076f643d9b7d566f6738e3e29c51799
+%endif
 
 
 # common
@@ -336,6 +344,10 @@ Patch600:       0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
 %if 0%{?kat_build:1}
 Patch1000:        %{kat_build}.patch
 %endif
+%if 0%{?fips}
+# FIPS canister usage patch
+Patch1010:       0001-FIPS-canister-binary-usage.patch
+%endif
 
 Patch1500:        i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
 Patch1501:        i40e-Remove-read_barrier_depends-in-favor-of-READ_ON.patch
@@ -364,6 +376,9 @@ Requires(postun):(coreutils or toybox)
 %description
 The Linux package contains the Linux kernel with RT (real-time)
 features.
+%if 0%{?fips}
+This kernel is FIPS certified.
+%endif
 
 %package devel
 Summary:        Kernel Dev
@@ -385,6 +400,9 @@ The Linux package contains the Linux kernel doc files
 %ifarch x86_64
 %setup -D -b 3 -n linux-%{version}
 %setup -D -b 6 -n linux-%{version}
+%endif
+%if 0%{?fips}
+%setup -D -b 16 -n linux-%{version}
 %endif
 
 %patch0 -p1
@@ -684,6 +702,9 @@ The Linux package contains the Linux kernel doc files
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
+%if 0%{?fips}
+%patch1010 -p1
+%endif
 
 pushd ../i40e-%{i40e_version}
 %patch1500 -p1
@@ -697,6 +718,32 @@ make mrproper
 %ifarch x86_64
 cp %{SOURCE1} .config
 arch="x86_64"
+%endif
+%if 0%{?fips}
+cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
+cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
+# Change m to y for modules that are in the canister
+sed -i 's/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/' .config
+sed -i 's/CONFIG_CRYPTO_AEAD=m/CONFIG_CRYPTO_AEAD=y/' .config
+sed -i 's/CONFIG_CRYPTO_SKCIPHER=m/CONFIG_CRYPTO_SKCIPHER=y/' .config
+sed -i 's/CONFIG_CRYPTO_RNG=m/CONFIG_CRYPTO_RNG=y/' .config
+sed -i 's/CONFIG_CRYPTO_RNG_DEFAULT=m/CONFIG_CRYPTO_RNG_DEFAULT=y/' .config
+sed -i 's/CONFIG_CRYPTO_KPP=m/CONFIG_CRYPTO_KPP=y/' .config
+sed -i 's/CONFIG_CRYPTO_CRYPTD=m/CONFIG_CRYPTO_CRYPTD=y/' .config
+sed -i 's/CONFIG_CRYPTO_SIMD=m/CONFIG_CRYPTO_SIMD=y/' .config
+sed -i 's/CONFIG_CRYPTO_GLUE_HELPER_X86=m/CONFIG_CRYPTO_GLUE_HELPER_X86=y/' .config
+sed -i 's/CONFIG_CRYPTO_ECC=m/CONFIG_CRYPTO_ECC=y/' .config
+sed -i 's/CONFIG_CRYPTO_ECDH=m/CONFIG_CRYPTO_ECDH=y/' .config
+sed -i 's/CONFIG_CRYPTO_CBC=m/CONFIG_CRYPTO_CBC=y/' .config
+sed -i 's/CONFIG_CRYPTO_CTR=m/CONFIG_CRYPTO_CTR=y/' .config
+sed -i 's/CONFIG_CRYPTO_ECB=m/CONFIG_CRYPTO_ECB=y/' .config
+sed -i 's/CONFIG_CRYPTO_XTS=m/CONFIG_CRYPTO_XTS=y/' .config
+sed -i 's/CONFIG_CRYPTO_AES_NI_INTEL=m/CONFIG_CRYPTO_AES_NI_INTEL=y/' .config
+sed -i 's/CONFIG_CRYPTO_DES=m/CONFIG_CRYPTO_DES=y/' .config
+sed -i 's/CONFIG_CRYPTO_DRBG_MENU=m/CONFIG_CRYPTO_DRBG_MENU=y/' .config
+sed -i 's/CONFIG_CRYPTO_DRBG=m/CONFIG_CRYPTO_DRBG=y/' .config
+sed -i 's/CONFIG_CRYPTO_JITTERENTROPY=m/CONFIG_CRYPTO_JITTERENTROPY=y/' .config
+sed -i 's/CONFIG_CRYPTO_LIB_DES=m/CONFIG_CRYPTO_LIB_DES=y/' .config
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .config
@@ -843,6 +890,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Jan 27 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-3
+-   Build kernel with FIPS canister.
 *   Mon Jan 25 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-2
 -   Enabled CONFIG_WIREGUARD
 *   Mon Jan 11 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.4-1

@@ -15,7 +15,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.4
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -46,9 +46,9 @@ Source13:       i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
 Source14:       i40e-Remove-read_barrier_depends-in-favor-of-READ_ON.patch
 Source15:       i40e-Fix-minor-compilation-error.patch
 %if 0%{?fips}
-%define fips_canister_version 4.0.1-5.10.4-4
+%define fips_canister_version 4.0.1-5.10.4-4-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=7e9621a0c07ca32bcfd7eeeb6fdc3323e6d17f87
+%define sha1 fips-canister=659fd4bc1076f643d9b7d566f6738e3e29c51799
 %endif
 
 # common
@@ -285,6 +285,7 @@ make mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
+cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
@@ -570,6 +571,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jan 28 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-7
+-   Use secure FIPS canister.
 *   Mon Jan 25 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-6
 -   Enabled CONFIG_WIREGUARD
 *   Fri Jan 22 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-5
