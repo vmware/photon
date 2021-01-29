@@ -1,24 +1,24 @@
 Summary:        Sudo
 Name:           sudo
-Version:        1.8.30
-Release:        3%{?dist}
+Version:        1.9.5
+Release:        1%{?dist}
 License:        ISC
 URL:            https://www.sudo.ws/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha1    sudo=5b30363d4b23ea7edfb882e7224e1fd1111dd106
+%define sha1    sudo=1e9fccda4beccca811ecb48866776388c9c377ae
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
 Requires:       Linux-PAM
 Requires:       shadow
-Patch0:         set_rlimit_core.patch
-Patch1:         CVE-2021-3156_1.patch
-Patch2:         CVE-2021-3156_2.patch
-Patch3:         CVE-2021-3156_3.patch
-Patch4:         CVE-2021-3156_4.patch
+Patch0:         CVE-2021-3156_1.patch
+Patch1:         CVE-2021-3156_2.patch
+Patch2:         CVE-2021-3156_3.patch
+Patch3:         CVE-2021-3156_4.patch
+
 %description
 The Sudo package allows a system administrator to give certain users (or groups of users)
 the ability to run some (or all) commands as root or another user while logging the commands and arguments.
@@ -29,7 +29,6 @@ the ability to run some (or all) commands as root or another user while logging 
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
-%patch4 -p1
 
 %build
 %configure \
@@ -48,7 +47,7 @@ make install DESTDIR=%{buildroot}
 install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 find %{buildroot}/%{_libdir} -name '*.so~' -delete
-sed -i '/#includedir.*/i \
+sed -i '/@includedir.*/i \
 %wheel ALL=(ALL) ALL \
 %sudo   ALL=(ALL) ALL' %{buildroot}/etc/sudoers
 install -vdm755 %{buildroot}/etc/pam.d
@@ -82,6 +81,8 @@ rm -rf %{buildroot}/*
 %files -f %{name}.lang
 %defattr(-,root,root)
 %attr(0440,root,root) %config(noreplace) %{_sysconfdir}/sudoers
+%attr(0640,root,root) %config(noreplace) /etc/sudo.conf
+%attr(0640,root,root) %config(noreplace) /etc/sudo_logsrvd.conf
 %attr(0750,root,root) %dir %{_sysconfdir}/sudoers.d/
 %config(noreplace) %{_sysconfdir}/pam.d/sudo
 %{_bindir}/*
@@ -98,6 +99,8 @@ rm -rf %{buildroot}/*
 %exclude  /etc/sudoers.dist
 
 %changelog
+*   Fri Jan 29 2021 Shreyas B. <shreyasb@vmware.com> 1.9.5-1
+-   Upgrade sudo to v1.9.5
 *   Thu Jan 21 2021 Tapas Kundu <tkundu@vmware.com> 1.8.30-3
 -   Fix CVE-2021-3156
 *   Thu Apr 02 2020 Shreyas B. <shreyasb@vmware.com> 1.8.30-2
