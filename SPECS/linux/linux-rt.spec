@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.174
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt72
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -25,12 +25,12 @@ Source5:        check_for_config_applicability.inc
 %define i40e_version 2.13.10
 Source6:	https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
 %define sha1 i40e=126bfdabd708033b38840e49762d7ec3e64bbc96
-# Prerequisite patch to use PTP_SYS_OFFSET_EXTENDED ioctl in i40e
-# driver.
-Source7:        0001-Add-support-for-gettimex64-interface.patch
 %define iavf_version 4.0.1
 Source8:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
 %define sha1 iavf=51fa70f3b1ac28778c811532a47b862b3fd62c9d
+%define ice_version 1.3.2
+Source9:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
+%define sha1 ice=19507794824da33827756389ac8018aa84e9c427
 
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
@@ -452,6 +452,12 @@ Patch602:       0002-RT-PATCH-sched-rt-RT_RUNTIME_GREED-sched-feature.patch
 Patch1000:       fips-kat-tests.patch
 %endif
 
+#Patches for i40e driver
+Patch1500:      0001-Add-support-for-gettimex64-interface.patch
+
+#Patches for ice driver
+Patch1510:      0001-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+
 BuildArch:      x86_64
 
 BuildRequires:  bc
@@ -497,6 +503,7 @@ The Linux package contains the Linux kernel doc files
 %setup -D -b 3 -n linux-%{version}
 %setup -D -b 6 -n linux-%{version}
 %setup -D -b 8 -n linux-%{version}
+%setup -D -b 9 -n linux-%{version}
 %endif
 
 %patch0 -p1
@@ -890,6 +897,16 @@ The Linux package contains the Linux kernel doc files
 %patch1000 -p1
 %endif
 
+#Patches for i40e driver
+pushd ../i40e-%{i40e_version}
+%patch1500 -p1
+popd
+
+#Patches for ice driver
+pushd ../ice-%{ice_version}
+%patch1510 -p1
+popd
+
 %build
 make mrproper
 
@@ -914,7 +931,6 @@ popd
 # build i40e module
 bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
-patch -p1 --fuzz=0 < %{SOURCE7}
 make -C src KSRC=$bldroot clean
 make -C src KSRC=$bldroot %{?_smp_mflags}
 popd
@@ -922,6 +938,13 @@ popd
 # build iavf module
 bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
+make -C src KSRC=$bldroot clean
+make -C src KSRC=$bldroot %{?_smp_mflags}
+popd
+
+# build ice module
+bldroot=`pwd`
+pushd ../ice-%{ice_version}
 make -C src KSRC=$bldroot clean
 make -C src KSRC=$bldroot %{?_smp_mflags}
 popd
@@ -973,6 +996,12 @@ popd
 # install iavf module
 bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
+make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+popd
+
+# install ice module
+bldroot=`pwd`
+pushd ../ice-%{ice_version}
 make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
@@ -1048,6 +1077,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/*
 %exclude /lib/modules/%{uname_r}/build
 /etc/modprobe.d/iavf.conf
+# ICE driver firmware files are packaged in linux-firmware
+%exclude /lib/firmware/updates/intel/ice
 
 %files docs
 %defattr(-,root,root)
@@ -1060,6 +1091,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Feb 11 2021 Ankit Jain <ankitja@vmware.com> 4.19.174-3
+-   Added latest out of tree version of Intel ice driver
 *   Thu Feb 11 2021 Vikash Bansal <bvikas@vmware.com> 4.19.174-2
 -   Added support for RT RUNTIME GREED
 *   Tue Feb 09 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.174-1

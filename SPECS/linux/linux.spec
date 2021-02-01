@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.174
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -34,12 +34,12 @@ Source10:	https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DC
 %define i40e_version 2.13.10
 Source11:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
 %define sha1 i40e=126bfdabd708033b38840e49762d7ec3e64bbc96
-# Prerequisite patch to use PTP_SYS_OFFSET_EXTENDED ioctl in i40e
-# driver.
-Source12:       0001-Add-support-for-gettimex64-interface.patch
 %define iavf_version 4.0.1
 Source13:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
 %define sha1 iavf=51fa70f3b1ac28778c811532a47b862b3fd62c9d
+%define ice_version 1.3.2
+Source14:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
+%define sha1 ice=19507794824da33827756389ac8018aa84e9c427
 
 # common
 Patch1:         double-tcp_mem-limits.patch
@@ -382,6 +382,12 @@ Patch481:        0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch482:        0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
 Patch483:        0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 Patch484:        0082-x86-sev-es-load-idt-before-entering-long-mode-to-han.patch
+
+#Patches for i40e driver
+Patch1500:      0001-Add-support-for-gettimex64-interface.patch
+
+#Patches for ice driver
+Patch1510:      0001-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 %endif
 
 
@@ -524,6 +530,7 @@ This Linux package contains hmac sha generator kernel module.
 %setup -D -b 10 -n linux-%{version}
 %setup -D -b 11 -n linux-%{version}
 %setup -D -b 13 -n linux-%{version}
+%setup -D -b 14 -n linux-%{version}
 %endif
 %setup -D -b 8 -n linux-%{version}
 
@@ -819,6 +826,16 @@ This Linux package contains hmac sha generator kernel module.
 %patch482 -p1
 %patch483 -p1
 # %patch484 -p1
+
+#Patches for i40e driver
+pushd ../i40e-%{i40e_version}
+%patch1500 -p1
+popd
+
+#Patches for ice driver
+pushd ../ice-%{ice_version}
+%patch1510 -p1
+popd
 %endif
 
 %if 0%{?kat_build:1}
@@ -872,7 +889,6 @@ popd
 # build i40e module
 bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
-patch -p1 --fuzz=0 < %{SOURCE12}
 make -C src KSRC=$bldroot clean
 make -C src KSRC=$bldroot %{?_smp_mflags}
 popd
@@ -880,6 +896,13 @@ popd
 # build iavf module
 bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
+make -C src KSRC=$bldroot clean
+make -C src KSRC=$bldroot %{?_smp_mflags}
+popd
+
+# build ice module
+bldroot=`pwd`
+pushd ../ice-%{ice_version}
 make -C src KSRC=$bldroot clean
 make -C src KSRC=$bldroot %{?_smp_mflags}
 popd
@@ -957,6 +980,12 @@ popd
 # install iavf module
 bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
+make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+popd
+
+# install ice module
+bldroot=`pwd`
+pushd ../ice-%{ice_version}
 make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
@@ -1092,6 +1121,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %exclude /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 %exclude /lib/modules/%{uname_r}/extra/intel_sgx.ko.xz
 /etc/modprobe.d/iavf.conf
+# ICE driver firmware files are packaged in linux-firmware
+%exclude /lib/firmware/updates/intel/ice
 %endif
 
 %files docs
@@ -1180,6 +1211,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Thu Feb 11 2021 Ankit Jain <ankitja@vmware.com> 4.19.174-3
+-   Added latest out of tree version of Intel ice driver
 *   Thu Feb 11 2021 Ajay Kaher <akaher@vmware.com> 4.19.174-2
 -   Enable CONFIG_WDAT_WDT
 *   Tue Feb 09 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.174-1
