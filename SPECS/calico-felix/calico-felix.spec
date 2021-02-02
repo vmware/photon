@@ -1,13 +1,13 @@
 Summary:       A per-host daemon for Calico
 Name:          calico-felix
-Version:       3.16.0
-Release:       3%{?dist}
+Version:       3.17.1
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
 URL:           https://github.com/projectcalico/felix
 Source0:       %{name}-%{version}.tar.gz
-%define sha1 calico-felix=028cf9ca32ebb1b8d2f6e18515236cc0e9ed67e8
+%define sha1 calico-felix=7f934f44b20b72efe04e221d0a66851d9d8e9a94
 Distribution:  Photon
 BuildRequires: git
 BuildRequires: go
@@ -33,6 +33,8 @@ install bin/calico-felix %{buildroot}%{_bindir}/
 %{_bindir}/calico-felix
 
 %changelog
+*   Tue Feb 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.17.1-1
+-   Update to version 3.17.1
 *   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 3.16.0-3
 -   Bump up version to compile with new go
 *   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 3.16.0-2
