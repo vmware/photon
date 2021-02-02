@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.174
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt72
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -441,8 +441,12 @@ Patch534:       0334-ptrace-fix-ptrace_unfreeze_traced-race-with-rt-lock.patch
 # Keep rt_version matched up with this patch.
 Patch535:       0335-Linux-4.19.173-rt72-REBASE.patch
 
+
 #Photon Specific Changes
 Patch600:        0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
+#RT Runtine Greed changes
+Patch601:       0001-sched-rt-Disable-RT_RUNTIME_SHARE-by-default.patch
+Patch602:       0002-RT-PATCH-sched-rt-RT_RUNTIME_GREED-sched-feature.patch
 
 %if 0%{?kat_build:1}
 Patch1000:       fips-kat-tests.patch
@@ -879,6 +883,8 @@ The Linux package contains the Linux kernel doc files
 %patch534 -p1
 %patch535 -p1
 %patch600 -p1
+%patch601 -p1
+%patch602 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -1054,6 +1060,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Feb 11 2021 Vikash Bansal <bvikas@vmware.com> 4.19.174-2
+-   Added support for RT RUNTIME GREED
 *   Tue Feb 09 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.174-1
 -   Update to version 4.19.174
 *   Mon Jan 04 2021 Ankit Jain <ankitja@vmware.com> 4.19.164-1

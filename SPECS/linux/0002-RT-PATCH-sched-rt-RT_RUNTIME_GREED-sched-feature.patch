@@ -1,0 +1,156 @@
+From aac7502cb165ba2caa8ef66cdd801b019ee09d55 Mon Sep 17 00:00:00 2001
+Message-Id: <aac7502cb165ba2caa8ef66cdd801b019ee09d55.1500050872.git.bristot@redhat.com>
+From: Daniel Bristot de Oliveira <bristot@redhat.com>
+Date: Fri, 14 Jul 2017 12:42:09 -0400
+Subject: [RT PATCH] sched/rt: RT_RUNTIME_GREED sched feature
+To: kernel-rt-team@redhat.com
+
+This patch was not accepted upstream. That is because peterz wants
+something based on sched deadline, which will not be possible
+neither in the near feature nor without breaking RHEL7 ABI, so
+we decided to go with this patch by our own, but only in the
+real-time kernel.
+
+Bugzilla: 1401061
+
+    The rt throttling mechanism prevents the starvation of non-real-time
+    tasks by CPU intensive real-time tasks. In terms of percentage,
+    the default behavior allows real-time tasks to run up to 95% of a
+    given period, leaving the other 5% of the period for non-real-time
+    tasks. In the absence of non-rt tasks, the system goes idle for 5%
+    of the period.
+
+    Although this behavior works fine for the purpose of avoiding
+    bad real-time tasks that can hang the system, some greed users
+    want to allow the real-time task to continue running in the absence
+    of non-real-time tasks starving. In other words, they do not want to
+    see the system going idle.
+
+    This patch implements the RT_RUNTIME_GREED scheduler feature for greedy
+    users (TM). When enabled, this feature will check if non-rt tasks are
+    starving before throttling the real-time task. If the real-time task
+    becomes throttled, it will be unthrottled as soon as the system goes
+    idle, or when the next period starts, whichever comes first.
+
+    This feature is enabled with the following command:
+       # echo RT_RUNTIME_GREED > /sys/kernel/debug/sched_features
+
+    The user might also want to disable NO_RT_RUNTIME_SHARE logic,
+    to keep all CPUs with the same rt_runtime.
+       # echo NO_RT_RUNTIME_SHARE > /sys/kernel/debug/sched_features
+
+    With these two options set, the user will guarantee some runtime
+    for non-rt-tasks on all CPUs, while keeping real-time tasks running
+    as much as possible.
+
+    The feature is disabled by default, keeping the current behavior.
+
+    Signed-off-by: Daniel Bristot de Oliveira <bristot@redhat.com>
+    Reviewed-by: Steven Rostedt <rostedt@goodmis.org>
+    Cc: Ingo Molnar <mingo@redhat.com>
+    Cc: Peter Zijlstra <peterz@infradead.org>
+    Cc: Steven Rostedt <rostedt@goodmis.org>
+    Cc: Christoph Lameter <cl@linux.com>
+    Cc: linux-rt-users <linux-rt-users@vger.kernel.org>
+    Cc: LKML <linux-kernel@vger.kernel.org>
+Signed-off-by: Daniel Bristot de Oliveira <bristot@redhat.com>
+---
+ kernel/sched/core.c     |  8 ++++++++
+ kernel/sched/features.h |  1 +
+ kernel/sched/rt.c       | 28 ++++++++++++++++++++++++++++
+ kernel/sched/sched.h    |  2 ++
+ 4 files changed, 39 insertions(+)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index b166320f7633..f5685f57f336 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -3377,6 +3377,14 @@ pick_next_task(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
+ 		if (p) {
+ 			if (unlikely(p == RETRY_TASK))
+ 				goto again;
++			/*
++			 * This is a non-upstream, kernel-rt specific check.
++			 */
++			if (sched_feat(RT_RUNTIME_GREED)) {
++				if (p->sched_class == &idle_sched_class)
++					if (try_to_unthrottle_rt_rq(&rq->rt))
++						goto again;
++			}
+ 			return p;
+ 		}
+ 	}
+diff --git a/kernel/sched/features.h b/kernel/sched/features.h
+index f7f309820127..36909488a45a 100644
+--- a/kernel/sched/features.h
++++ b/kernel/sched/features.h
+@@ -79,6 +79,7 @@ SCHED_FEAT(RT_PUSH_IPI, true)
+ #endif
+ 
+ SCHED_FEAT(RT_RUNTIME_SHARE, false)
++SCHED_FEAT(RT_RUNTIME_GREED, false)
+ SCHED_FEAT(LB_MIN, false)
+ SCHED_FEAT(ATTACH_AGE_LOAD, true)
+ 
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index b980cc96604f..4f6cdbfdc079 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -623,6 +623,22 @@ static inline struct rt_bandwidth *sched_rt_bandwidth(struct rt_rq *rt_rq)
+ 
+ #endif /* CONFIG_RT_GROUP_SCHED */
+ 
++static inline void unthrottle_rt_rq(struct rt_rq *rt_rq)
++{
++	rt_rq->rt_time = 0;
++	rt_rq->rt_throttled = 0;
++	sched_rt_rq_enqueue(rt_rq);
++}
++
++int try_to_unthrottle_rt_rq(struct rt_rq *rt_rq)
++{
++	if (rt_rq_throttled(rt_rq)) {
++		unthrottle_rt_rq(rt_rq);
++		return 1;
++	}
++	return 0;
++}
++
+ bool sched_rt_bandwidth_account(struct rt_rq *rt_rq)
+ {
+ 	struct rt_bandwidth *rt_b = sched_rt_bandwidth(rt_rq);
+@@ -927,6 +943,18 @@ static int sched_rt_runtime_exceeded(struct rt_rq *rt_rq)
+ 		 * but accrue some time due to boosting.
+ 		 */
+ 		if (likely(rt_b->rt_runtime)) {
++			if (sched_feat(RT_RUNTIME_GREED)) {
++				struct rq *rq = rq_of_rt_rq(rt_rq);
++				/*
++				 * If there is no other tasks able to run
++				 * on this rq, lets be greed and reset our
++				 * rt_time.
++				 */
++				if (rq->nr_running == rt_rq->rt_nr_running) {
++					rt_rq->rt_time = 0;
++					return 0;
++				}
++			}
+ 			rt_rq->rt_throttled = 1;
+ 			printk_deferred_once("sched: RT throttling activated\n");
+ 		} else {
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 41b7954be68b..7d1aea727d52 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -622,6 +622,8 @@ static inline bool rt_rq_is_runnable(struct rt_rq *rt_rq)
+ 	return rt_rq->rt_queued && rt_rq->rt_nr_running;
+ }
+ 
++int try_to_unthrottle_rt_rq(struct rt_rq *rt_rq);
++
+ /* Deadline class' related fields in a runqueue */
+ struct dl_rq {
+ 	/* runqueue is an rbtree, ordered by deadline */
+-- 
+2.17.1
+
