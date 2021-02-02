@@ -2,6 +2,7 @@ import sys
 import os.path
 import subprocess
 import shutil
+import time
 from constants import constants
 from Logger import Logger
 from CommandUtils import CommandUtils
@@ -119,12 +120,17 @@ class Chroot(Sandbox):
 
     def _removeChroot(self, chrootPath):
         cmd = "rm -rf " + chrootPath
-        process = subprocess.Popen("%s" %cmd, shell=True,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.PIPE)
-        retval = process.wait()
+        retval = CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug)
         if retval != 0:
-            raise Exception("Unable to remove files from chroot " + chrootPath)
+            self.logger.debug("Unable to remove files from chroot " + chrootPath)
+            # Some files are hold by some processes?
+            # Print lsof output, wait 10 seconds and repeat
+            CommandUtils.runCommandInShell("lsof +D " + chrootPath, logfn=self.logger.debug)
+            time.sleep(10)
+            retval = CommandUtils.runCommandInShell(cmd, logfn=self.logger.debug)
+            if retval != 0:
+                raise Exception("Unable to remove files from chroot " + chrootPath)
+
 
     def unmountAll(self):
         self._unmountAll(self.chrootID)

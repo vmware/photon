@@ -79,30 +79,6 @@ index 50051d7c..7b2b8956 100644
  # define DEFAULT_MAIN_THREAD_STACK_PAGES 2048
  # define OS_X_10_9_0_KERNEL_MAJOR_VERSION 13
  #endif
-diff --git a/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c b/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c
-index a53c2893..af3b0301 100644
---- a/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c
-+++ b/jdk/src/solaris/native/java/net/PlainDatagramSocketImpl.c
-@@ -41,7 +41,6 @@
- #endif
- #ifdef __linux__
- #include <unistd.h>
--#include <sys/sysctl.h>
- #include <sys/utsname.h>
- #include <netinet/ip.h>
- 
-diff --git a/jdk/src/solaris/native/java/net/PlainSocketImpl.c b/jdk/src/solaris/native/java/net/PlainSocketImpl.c
-index 71cbdf8c..373c5e36 100644
---- a/jdk/src/solaris/native/java/net/PlainSocketImpl.c
-+++ b/jdk/src/solaris/native/java/net/PlainSocketImpl.c
-@@ -43,7 +43,6 @@
- #endif
- #ifdef __linux__
- #include <unistd.h>
--#include <sys/sysctl.h>
- #endif
- 
- #include "jvm.h"
 diff --git a/jdk/src/solaris/native/sun/management/OperatingSystemImpl.c b/jdk/src/solaris/native/sun/management/OperatingSystemImpl.c
 index aa21f019..4a9b2e2c 100644
 --- a/jdk/src/solaris/native/sun/management/OperatingSystemImpl.c

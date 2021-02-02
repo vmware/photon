@@ -2,7 +2,7 @@
 Summary:	A fast JSON parser/generator for C++ with both SAX/DOM style API
 Name:		rapidjson
 Version:	1.1.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD, JSON, MIT
 URL:		https://github.com/gcc-mirror/gcc/blob/master/gcc/gcov.c
 Source0:	https://github.com/miloyip/rapidjson/archive/%{name}-%{version}.tar.gz
@@ -15,6 +15,9 @@ BuildRequires:	cmake
 
 Patch1: 0001-Supress-implicit-fallthrough-in-GCC.patch
 Patch2: 0001-Onley-apply-to-GCC-7.patch
+%ifarch aarch64
+Patch3: Fix-build-warnings-emitted-by-GCC-10-on-Aarch64.patch
+%endif
 
 %description
 RapidJSON is a JSON parser and generator for C++. It was inspired by RapidXml.
@@ -33,6 +36,9 @@ This package contains development headers and examples.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%ifarch aarch64
+%patch3 -p1
+%endif
 
 %build
 mkdir build && cd build
@@ -55,6 +61,8 @@ make test
 %{_includedir}
 %{_datadir}
 %changelog
+*   Tue Feb 09 2021 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-5
+-   Fix compilation issue with gcc-10.2.0 for aarch64
 *   Fri Apr 03 2020 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-4
 -   Fix compilation issue with gcc-8.4.0
 *   Mon Nov 19 2018 Vasavi Sirnapalli <vsirnapalli@vmware.com> 1.1.0-3

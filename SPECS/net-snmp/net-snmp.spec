@@ -2,7 +2,7 @@
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.8
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSD (like)
 URL:            http://net-snmp.sourceforge.net/
 Group:          Productivity/Networking/Other
@@ -48,7 +48,7 @@ The net-snmp-devel package contains headers and libraries for building SNMP appl
                 --disable-static \
                 --with-x=no \
                 --enable-as-needed
-make
+make %{?_smp_mflags}
 
 %install
 make install DESTDIR=%{buildroot}
@@ -103,6 +103,8 @@ rm -rf %{buildroot}/*
 %exclude /usr/lib/perl5/*/*/perllocal.pod
 
 %changelog
+*   Wed Feb 10 2021 Alexey Makhalov <amakhalov@vmware.com> 5.8-6
+-   Enable parallel build
 *   Tue Oct 06 2020 Ankit Jain <ankitja@vmware.com> 5.8-5
 -   Moved snmpconf-data files to base pkg to
 -   fix "snmpconf -g basic_setup"

@@ -9,7 +9,7 @@
 Summary:        Practical Extraction and Report Language
 Name:           perl
 Version:        5.30.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv1+
 URL:            http://www.perl.org/
 Group:          Development/Languages
@@ -54,6 +54,9 @@ sed -i 's/-fstack-protector/&-all/' Configure
 %build
 export BUILD_ZLIB=False
 export BUILD_BZIP2=0
+%ifarch aarch64
+sed -i 's/off64_t/off_t/g' perl.h
+%endif
 
 if [ %{_host} != %{_build} ]; then
 tar --strip-components=1 --no-same-owner -xf %{SOURCE1}
@@ -95,6 +98,8 @@ make test TEST_SKIP_VERSION_CHECK=1
 %{_mandir}/*/*
 
 %changelog
+*   Wed Feb 10 2021 Alexey Makhalov <amakhalov@vmware.com> 5.30.1-3
+-   Fix compilation issue with gcc-10.2.0 for aarch64
 *   Mon Nov 02 2020 Prashant S Chauhan <psinghchauha@vmware.com> 5.30.1-2
 -   Fix CVE-2020-10878 CVE-2020-12723
 *   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 5.30.1-1

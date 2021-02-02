@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.4
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -325,7 +325,11 @@ grep -q CONFIG_CROSS_COMPILE= .config && sed -i '/^CONFIG_CROSS_COMPILE=/c\CONFI
 fi
 
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
-make ARCH=%{arch} -C tools perf PYTHON=python3
+
+%ifarch aarch64
+ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
+%endif
+make ARCH=%{arch} -C tools perf PYTHON=python3 $ARCH_FLAGS
 
 %ifarch x86_64
 #build turbostat and cpupower
@@ -490,7 +494,10 @@ cp .config %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r} # copy .config manu
 ln -sf "%{_usrsrc}/%{name}-headers-%{uname_r}" "%{buildroot}/lib/modules/%{uname_r}/build"
 find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
-make -C tools ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3
+%ifarch aarch64
+ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
+%endif
+make -C tools ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3 $ARCH_FLAGS
 make -C tools/perf ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} PYTHON=python3 install-python_ext
 %ifarch x86_64
 make -C tools ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
@@ -608,6 +615,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Feb 16 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-10
+-   Fix perf compilation issue with gcc-10.2.0 for aarch64
 *   Mon Feb 15 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-9
 -   Added crypto_self_test and kattest module.
 -   These patches are applied when kat_build is enabled.

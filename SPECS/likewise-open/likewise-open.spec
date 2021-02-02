@@ -1,7 +1,7 @@
 Name: 		likewise-open
 Summary: 	Likewise Open
 Version: 	6.2.11.13
-Release: 	4%{?dist}
+Release: 	5%{?dist}
 Group:   	Development/Libraries
 Vendor: 	VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
@@ -61,7 +61,7 @@ export LW_FEATURE_LEVEL="auth"
 export LSA_RPC_SERVERS="yes"
 export LW_DEVICE_PROFILE="photon"
 
-export CFLAGS="-Wno-error=unused-but-set-variable -Wno-error=implicit-function-declaration -Wno-error=sizeof-pointer-memaccess -Wno-error=unused-local-typedefs -Wno-error=pointer-sign -Wno-error=address -Wno-unused-but-set-variable -Wno-unused-const-variable -Wno-misleading-indentation -Wno-error=format-overflow -Wno-error=format-truncation"
+export CFLAGS="-Wno-error=unused-but-set-variable -Wno-error=implicit-function-declaration -Wno-error=sizeof-pointer-memaccess -Wno-error=unused-local-typedefs -Wno-error=pointer-sign -Wno-error=address -Wno-unused-but-set-variable -Wno-unused-const-variable -Wno-misleading-indentation -Wno-error=format-overflow -Wno-error=format-truncation -Wno-error=address-of-packed-member -Wno-error=nonnull"
 ../configure  --prefix=/opt/likewise \
              --libdir=/opt/likewise/lib64 \
              --datadir=/opt/likewise/share \
@@ -303,6 +303,8 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+*   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.13-5
+-   GCC-10 support.
 *   Tue Nov 03 2020 Shreyas B. <shreyasb@vmware.com> 6.2.11.13-4
 -   Check NULL prior to use of HMAC_CTX_reset() & HMAC_CTX_free()
 *   Mon Aug 17 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.2.11.13-3

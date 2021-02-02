@@ -1,7 +1,7 @@
 Summary:        The source repository for the TPM (Trusted Platform Module) 2 tools
 Name:           tpm2-tools
 Version:        4.3.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD 2-Clause
 URL:            https://github.com/tpm2-software/tpm2-tools
 Group:          System Environment/Security
@@ -26,6 +26,7 @@ The source repository for the TPM (Trusted Platform Module) 2 tools
 %autosetup -p1
 
 %build
+sed -i "/compatibility/a extern int BN_bn2binpad(const BIGNUM *a, unsigned char *to, int tolen);" lib/tpm2_openssl.c
 %configure --disable-static
 make %{?_smp_mflags}
 
@@ -48,6 +49,8 @@ make %{?_smp_mflags} check
 /usr/share/bash-completion/*
 
 %changelog
+*   Tue Feb 09 2021 Alexey Makhalov <amakhalov@vmware.com> 4.3.0-4
+-   Fix compilation issue with BN_bn2binpad
 *   Tue Jan 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.3.0-3
 -   Removed patch which was added to fix a build issue
 *   Thu Oct 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.3.0-2

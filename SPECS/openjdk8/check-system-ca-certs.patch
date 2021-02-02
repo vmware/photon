@@ -1,34 +1,89 @@
-diff -r 6b81fd2227d1 -r 3334efeacd83 src/share/classes/sun/security/ssl/TrustManagerFactoryImpl.java
---- a/jdk/src/share/classes/sun/security/ssl/TrustManagerFactoryImpl.java	Fri Apr 01 05:33:37 2016 +0100
-+++ b/jdk/src/share/classes/sun/security/ssl/TrustManagerFactoryImpl.java	Fri Apr 01 06:04:05 2016 +0100
-@@ -174,15 +174,20 @@
-                     storeFile = new File(storeFileName);
-                     fis = getFileInputStream(storeFile);
-                 } else {
--                    String javaHome = props.get("javaHome");
--                    storeFile = new File(javaHome + sep + "lib" + sep
--                                                    + "security" + sep +
--                                                    "jssecacerts");
-+                    /* Check system cacerts DB first; /etc/pki/java/cacerts */
-+                    storeFile = new File(sep + "etc" + sep + "pki" + sep
-+                                         + "java" + sep + "cacerts");
-                     if ((fis = getFileInputStream(storeFile)) == null) {
-+                        String javaHome = props.get("javaHome");
-                         storeFile = new File(javaHome + sep + "lib" + sep
--                                                    + "security" + sep +
--                                                    "cacerts");
--                        fis = getFileInputStream(storeFile);
-+                                             + "security" + sep +
-+                                             "jssecacerts");
-+                        if ((fis = getFileInputStream(storeFile)) == null) {
-+                            storeFile = new File(javaHome + sep + "lib" + sep
-+                                                 + "security" + sep +
-+                                                 "cacerts");
-+                            fis = getFileInputStream(storeFile);
-+                        }
-                     }
-                 }
+--- a/jdk/src/share/classes/sun/security/ssl/TrustStoreManager.java	2019-08-07 14:45:14.153223422 +0530
++++ b/jdk/src/share/classes/sun/security/ssl/TrustStoreManager.java	2019-08-08 18:11:13.141723077 +0530
+@@ -76,6 +76,10 @@ final class TrustStoreManager {
+      */
+     private static final class TrustStoreDescriptor {
+         private static final String fileSep = File.separator;
++		/* Check system cacerts DB first; /etc/pki/java/cacerts */
++		private static final String systemCacertsPath =
++				fileSep + "etc" + fileSep + "pki" + fileSep +"java" +
++				fileSep + "cacerts";
+         private static final String defaultStorePath =
+                 GetPropertyAction.privilegedGetProperty("java.home") +
+                 fileSep + "lib" + fileSep + "security";
+@@ -131,8 +135,8 @@ final class TrustStoreManager {
+                 @Override
+                 public TrustStoreDescriptor run() {
+                     // Get the system properties for trust store.
+-                    String storePropName = System.getProperty(
+-                            "javax.net.ssl.trustStore", jsseDefaultStore);
++                    String storePropName1 = System.getProperty(
++                            "javax.net.ssl.trustStore", systemCacertsPath);
+                     String storePropType = System.getProperty(
+                             "javax.net.ssl.trustStoreType",
+                             KeyStore.getDefaultType());
+@@ -144,30 +148,36 @@ final class TrustStoreManager {
+                     String temporaryName = "";
+                     File temporaryFile = null;
+                     long temporaryTime = 0L;
+-                    if (!"NONE".equals(storePropName)) {
+-                        String[] fileNames =
+-                                new String[] {storePropName, defaultStore};
+-                        for (String fileName : fileNames) {
+-                            File f = new File(fileName);
+-                            if (f.isFile() && f.canRead()) {
+-                                temporaryName = fileName;;
+-                                temporaryFile = f;
+-                                temporaryTime = f.lastModified();
+-
+-                                break;
+-                            }
+-
+-                            // Not break, the file is inaccessible.
+-                            if (SSLLogger.isOn &&
+-                                    SSLLogger.isOn("trustmanager")) {
+-                                SSLLogger.fine(
+-                                        "Inaccessible trust store: " +
+-                                        storePropName);
+-                            }
+-                        }
+-                    } else {
+-                        temporaryName = storePropName;
+-                    }
++                    if (!"NONE".equals(storePropName1)) {
++	                    String storePropName2 = System.getProperty(
++                            "javax.net.ssl.trustStore", jsseDefaultStore);
++ 						if (!"NONE".equals(storePropName2)) {
++								String[] fileNames =
++										new String[] {storePropName2, defaultStore};
++								for (String fileName : fileNames) {
++									File f = new File(fileName);
++									if (f.isFile() && f.canRead()) {
++										temporaryName = fileName;
++										temporaryFile = f;
++										temporaryTime = f.lastModified();
++
++										break;
++									}
++
++									// Not break, the file is inaccessible.
++									if (SSLLogger.isOn &&
++										SSLLogger.isOn("trustmanager")) {
++									    SSLLogger.fine(
++											"Inaccessible trust store: " +
++											storePropName2);
++									}
++								}
++							} else {
++								temporaryName = storePropName2;
++							}
++					} else {
++                        temporaryName = storePropName1;
++					}
  
+                     return new TrustStoreDescriptor(
+                             temporaryName, storePropType, storePropProvider,
+
 diff -r 6b81fd2227d1 -r 3334efeacd83 src/share/classes/sun/security/tools/KeyStoreUtil.java
 --- a/jdk/src/share/classes/sun/security/tools/KeyStoreUtil.java	Fri Apr 01 05:33:37 2016 +0100
 +++ b/jdk/src/share/classes/sun/security/tools/KeyStoreUtil.java	Fri Apr 01 06:04:05 2016 +0100

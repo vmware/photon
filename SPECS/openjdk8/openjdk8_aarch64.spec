@@ -1,21 +1,21 @@
 %define _use_internal_dependency_generator 0
 %global security_hardening none
-%define _jdk_update 181
-%define _jdk_build 15
-%define _repo_ver aarch64-jdk8u%{_jdk_update}-b%{_jdk_build}
+%define _jdk_update 282
+%define _jdk_build b08
+%define _repo_ver aarch64-shenandoah-jdk8u%{_jdk_update}-%{_jdk_build}
 %define _url_src https://github.com/AdoptOpenJDK/openjdk-aarch64-jdk8u/
 
 Summary:	OpenJDK
 Name:		openjdk8
-Version:	1.8.0.181
-Release:	2%{?dist}
+Version:	1.8.0.282
+Release:	1%{?dist}
 License:	GNU GPL
 URL:		http://hg.openjdk.java.net/aarch64-port/jdk8u/
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	%{_url_src}/archive/%{_repo_ver}.tar.gz
-%define sha1 %{_repo_ver}=079a6f09987a91c9e8fbf285e50bb3cbd069a3f6
+%define sha1 %{_repo_ver}=4975feac2ca84d74ecd9f831c19208e4e5f780e7
 Patch0:		Awt_build_headless_only.patch
 Patch1:		check-system-ca-certs.patch
 Patch2:		sysctl-fix.patch
@@ -118,6 +118,7 @@ install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
 chown -R root:root %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}
 install -vdm755 %{buildroot}%{_bindir}
 find /usr/local/jvm/openjdk-1.8.0-internal/jre/lib/aarch64 -iname \*.diz -delete
+find /usr/local/jvm/openjdk-1.8.0-internal/bin -iname \*.diz -delete
 mv /usr/local/jvm/openjdk-1.8.0-internal/* %{buildroot}%{_libdir}/jvm/OpenJDK-%{version}/
 
 %post
@@ -185,7 +186,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/THIRD_PARTY_README
 %{_libdir}/jvm/OpenJDK-%{version}/lib
 %{_libdir}/jvm/OpenJDK-%{version}/include/
+%{_libdir}/jvm/OpenJDK-%{version}/bin/clhsdb
 %{_libdir}/jvm/OpenJDK-%{version}/bin/extcheck
+%{_libdir}/jvm/OpenJDK-%{version}/bin/hsdb
 %{_libdir}/jvm/OpenJDK-%{version}/bin/idlj
 %{_libdir}/jvm/OpenJDK-%{version}/bin/jar
 %{_libdir}/jvm/OpenJDK-%{version}/bin/jarsigner
@@ -198,6 +201,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/bin/jconsole
 %{_libdir}/jvm/OpenJDK-%{version}/bin/jdb
 %{_libdir}/jvm/OpenJDK-%{version}/bin/jdeps
+%{_libdir}/jvm/OpenJDK-%{version}/bin/jfr
 %{_libdir}/jvm/OpenJDK-%{version}/bin/jhat
 %{_libdir}/jvm/OpenJDK-%{version}/bin/jinfo
 %{_libdir}/jvm/OpenJDK-%{version}/bin/jjs
@@ -230,7 +234,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/bin/tnameserv
 %{_libdir}/jvm/OpenJDK-%{version}/bin/unpack200
 %{_libdir}/jvm/OpenJDK-%{version}/lib/aarch64/jli/
-%exclude %{_libdir}/jvm/OpenJDK-%{version}/lib/aarch64/*.diz
 
 %files sample
 %defattr(-,root,root)
@@ -246,6 +249,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/jvm/OpenJDK-%{version}/src.zip
 
 %changelog
+*   Wed Feb 10 2021 Alexey Makhalov <amakhalov@vmware.com> 1.8.0.282-1
+-   Version update
 *   Thu Oct 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0.181-2
 -   Fixed sysctl includes
 -   Updated jdk build to 15
