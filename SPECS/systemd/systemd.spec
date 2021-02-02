@@ -1,7 +1,7 @@
 Name:             systemd
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
-Version:          247.2
-Release:          2%{?dist}
+Version:          247.3
+Release:          1%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 Summary:          System and Service Manager
 
@@ -10,7 +10,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0:          %{name}-stable-%{version}.tar.gz
-%define sha1      systemd=328a1818511ceb1e4c11cd1e4824fca7b56accf0
+%define sha1      systemd=9bad8622d0198406e6570ca7c54de0eac47e468e
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          systemd.cfg
@@ -652,6 +652,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+*    Wed Feb 03 2021 Susant Sahani <ssahani@vmware.com>  247.3-1
+-    Version bump
 *    Mon Jan 04 2021 Susant Sahani <ssahani@vmware.com>  247.2-2
 -    Backport timesync: ConnectionRetrySec=
 *    Thu Dec 17 2020 Susant Sahani <ssahani@vmware.com>  247.2-1
