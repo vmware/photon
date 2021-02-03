@@ -1,4 +1,4 @@
-From 0ffa8532ab2c273cda19479c7a820ca46cf19690 Mon Sep 17 00:00:00 2001
+From fa348f87a790c4a57a090d96c2b4c37a2092f738 Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
 Date: Wed, 7 Oct 2020 12:50:40 +0000
 Subject: [PATCH] fs: VTAR archive to TPMFS extractor
@@ -22,22 +22,18 @@ allocation for file content data.
 
 Signed-off-by: Ankit Jain <ankitja@vmware.com>
 ---
- fs/Kconfig         |   1 +
- fs/Makefile        |   1 +
- fs/vtar/Kconfig    |  21 +++
- fs/vtar/Makefile   |   7 +
- fs/vtar/README.md  |  33 ++++
- fs/vtar/vtar.h     |  84 +++++++++
- fs/vtar/vtar_sys.c | 223 ++++++++++++++++++++++++
- fs/vtar/vtar_sys.h |  21 +++
- fs/vtar/vtarfs.c   | 413 +++++++++++++++++++++++++++++++++++++++++++++
- 9 files changed, 804 insertions(+)
+ fs/Kconfig        |   1 +
+ fs/Makefile       |   1 +
+ fs/vtar/Kconfig   |  21 ++
+ fs/vtar/Makefile  |   7 +
+ fs/vtar/README.md |  33 +++
+ fs/vtar/vtar.h    |  84 ++++++++
+ fs/vtar/vtarfs.c  | 534 ++++++++++++++++++++++++++++++++++++++++++++++
+ 7 files changed, 681 insertions(+)
  create mode 100644 fs/vtar/Kconfig
  create mode 100644 fs/vtar/Makefile
  create mode 100644 fs/vtar/README.md
  create mode 100644 fs/vtar/vtar.h
- create mode 100644 fs/vtar/vtar_sys.c
- create mode 100644 fs/vtar/vtar_sys.h
  create mode 100644 fs/vtar/vtarfs.c
 
 diff --git a/fs/Kconfig b/fs/Kconfig
@@ -53,7 +49,7 @@ index aa4c12282301..00420c8e7de9 100644
  endif # MISC_FILESYSTEMS
  
 diff --git a/fs/Makefile b/fs/Makefile
-index 1c7b0e3f6daa..2a33569c952a 100644
+index 999d1a23f036..8a47d8fe8627 100644
 --- a/fs/Makefile
 +++ b/fs/Makefile
 @@ -136,3 +136,4 @@ obj-$(CONFIG_EFIVAR_FS)		+= efivarfs/
@@ -90,7 +86,7 @@ index 000000000000..e9628c8c8a01
 +        module will be called vtarfs. If unsure, say N.
 diff --git a/fs/vtar/Makefile b/fs/vtar/Makefile
 new file mode 100644
-index 000000000000..e812c591e642
+index 000000000000..1a81f51c1bff
 --- /dev/null
 +++ b/fs/vtar/Makefile
 @@ -0,0 +1,7 @@
@@ -100,7 +96,7 @@ index 000000000000..e812c591e642
 +
 +obj-$(CONFIG_VTAR) += vtar.o
 +
-+vtar-objs := vtarfs.o vtar_sys.o
++vtar-objs := vtarfs.o
 diff --git a/fs/vtar/README.md b/fs/vtar/README.md
 new file mode 100644
 index 000000000000..5b3b8b6a0c09
@@ -230,268 +226,12 @@ index 000000000000..97823c3a1d73
 +};
 +
 +#endif
-diff --git a/fs/vtar/vtar_sys.c b/fs/vtar/vtar_sys.c
-new file mode 100644
-index 000000000000..9bfc13bf5880
---- /dev/null
-+++ b/fs/vtar/vtar_sys.c
-@@ -0,0 +1,223 @@
-+/*
-+ * Routines that mimic syscalls.
-+ *
-+ * Copyright 2020 VMware, Inc. All Rights Reserved.
-+ * SPDX-License-Identifier: GPL-2.0
-+ *
-+ * Licensed under the GNU Lesser General Public License version 2 (the "License");
-+ * you may not use this file except in compliance with the License. The terms
-+ * of the License are located in the LICENSE file of this distribution.
-+ *
-+ */
-+#include <linux/init.h>
-+#include <linux/mount.h>
-+#include <linux/namei.h>
-+#include <linux/fs.h>
-+#include <linux/fs_struct.h>
-+#include <linux/file.h>
-+#include <linux/security.h>
-+
-+#include "vtar_sys.h"
-+#include "../internal.h"
-+
-+int vtar_sys_mount(const char __user *dev_name, const char __user *dir_name,
-+		const char __user *type_page, unsigned long flags, void __user *data_page)
-+{
-+	int ret;
-+	char *kernel_type;
-+	char *kernel_dev;
-+	void *options;
-+
-+	kernel_type = copy_mount_string(type_page);
-+	ret = PTR_ERR(kernel_type);
-+	if (IS_ERR(kernel_type))
-+		goto out_type;
-+
-+	kernel_dev = copy_mount_string(dev_name);
-+	ret = PTR_ERR(kernel_dev);
-+	if (IS_ERR(kernel_dev))
-+		goto out_dev;
-+
-+	options = copy_mount_options(data_page);
-+	ret = PTR_ERR(options);
-+	if (IS_ERR(options))
-+		goto out_data;
-+
-+	ret = do_mount(kernel_dev, dir_name, kernel_type, flags, options);
-+
-+	kfree(options);
-+out_data:
-+	kfree(kernel_dev);
-+out_dev:
-+	kfree(kernel_type);
-+out_type:
-+	return ret;
-+}
-+
-+int vtar_sys_umount(const char __user *name, int flags)
-+{
-+	int lookup_flags = LOOKUP_MOUNTPOINT;
-+	struct path path;
-+	int ret;
-+
-+	if (!(flags & UMOUNT_NOFOLLOW))
-+		lookup_flags |= LOOKUP_FOLLOW;
-+	ret = user_path_at(AT_FDCWD, name, lookup_flags, &path);
-+	if (ret)
-+		return ret;
-+	return path_umount(&path, flags);
-+}
-+
-+int vtar_sys_chdir(const char __user *filename)
-+{
-+	struct path path;
-+	int error;
-+	unsigned int lookup_flags = LOOKUP_FOLLOW | LOOKUP_DIRECTORY;
-+retry:
-+	error = user_path_at(AT_FDCWD, filename, lookup_flags, &path);
-+	if (error)
-+		goto out;
-+
-+	error = inode_permission(path.dentry->d_inode, MAY_EXEC | MAY_CHDIR);
-+	if (error)
-+		goto dput_and_out;
-+
-+	set_fs_pwd(current->fs, &path);
-+
-+dput_and_out:
-+	path_put(&path);
-+	if (retry_estale(error, lookup_flags)) {
-+		lookup_flags |= LOOKUP_REVAL;
-+		goto retry;
-+	}
-+out:
-+	return error;
-+}
-+
-+int vtar_sys_chroot(const char __user *filename)
-+{
-+	struct path path;
-+	int error;
-+	unsigned int lookup_flags = LOOKUP_FOLLOW | LOOKUP_DIRECTORY;
-+retry:
-+	error = user_path_at(AT_FDCWD, filename, lookup_flags, &path);
-+	if (error)
-+		goto out;
-+
-+	error = inode_permission(path.dentry->d_inode, MAY_EXEC | MAY_CHDIR);
-+	if (error)
-+		goto dput_and_out;
-+
-+	error = -EPERM;
-+	if (!ns_capable(current_user_ns(), CAP_SYS_CHROOT))
-+		goto dput_and_out;
-+	error = security_path_chroot(&path);
-+	if (error)
-+		goto dput_and_out;
-+
-+	set_fs_root(current->fs, &path);
-+	error = 0;
-+dput_and_out:
-+	path_put(&path);
-+	if (retry_estale(error, lookup_flags)) {
-+		lookup_flags |= LOOKUP_REVAL;
-+		goto retry;
-+	}
-+out:
-+	return error;
-+}
-+
-+int vtar_sys_chown(const char __user *filename, uid_t user, gid_t group, int flags)
-+{
-+	return do_fchownat(AT_FDCWD, filename, user, group, 0);
-+}
-+
-+static int do_fchmodat(int dfd, const char __user *filename, umode_t mode)
-+{
-+	struct path path;
-+	int error;
-+	unsigned int lookup_flags = LOOKUP_FOLLOW;
-+retry:
-+	error = user_path_at(dfd, filename, lookup_flags, &path);
-+	if (!error) {
-+		error = chmod_common(&path, mode);
-+		path_put(&path);
-+		if (retry_estale(error, lookup_flags)) {
-+			lookup_flags |= LOOKUP_REVAL;
-+			goto retry;
-+		}
-+	}
-+	return error;
-+}
-+
-+int vtar_sys_chmod(const char __user *filename, umode_t mode)
-+{
-+	return do_fchmodat(AT_FDCWD, filename, mode);
-+}
-+
-+static long do_symlinkat(const char __user *oldname, int newdfd,
-+		  const char __user *newname)
-+{
-+	int error;
-+	struct filename *from;
-+	struct dentry *dentry;
-+	struct path path;
-+	unsigned int lookup_flags = 0;
-+
-+	from = getname(oldname);
-+	if (IS_ERR(from))
-+		return PTR_ERR(from);
-+retry:
-+	dentry = user_path_create(newdfd, newname, &path, lookup_flags);
-+	error = PTR_ERR(dentry);
-+	if (IS_ERR(dentry))
-+		goto out_putname;
-+
-+	error = security_path_symlink(&path, dentry, from->name);
-+	if (!error)
-+		error = vfs_symlink(path.dentry->d_inode, dentry, from->name);
-+	done_path_create(&path, dentry);
-+	if (retry_estale(error, lookup_flags)) {
-+		lookup_flags |= LOOKUP_REVAL;
-+		goto retry;
-+	}
-+out_putname:
-+	putname(from);
-+	return error;
-+}
-+
-+int vtar_sys_symlink(const char __user *oldname, const char __user *newname)
-+{
-+	return do_symlinkat(oldname, AT_FDCWD, newname);
-+}
-+
-+static long do_mkdirat(int dfd, const char __user *pathname, umode_t mode)
-+{
-+	struct dentry *dentry;
-+	struct path path;
-+	int error;
-+	unsigned int lookup_flags = LOOKUP_DIRECTORY;
-+
-+retry:
-+	dentry = user_path_create(dfd, pathname, &path, lookup_flags);
-+	if (IS_ERR(dentry))
-+		return PTR_ERR(dentry);
-+
-+	if (!IS_POSIXACL(path.dentry->d_inode))
-+		mode &= ~current_umask();
-+	error = security_path_mkdir(&path, dentry, mode);
-+	if (!error)
-+		error = vfs_mkdir(path.dentry->d_inode, dentry, mode);
-+	done_path_create(&path, dentry);
-+	if (retry_estale(error, lookup_flags)) {
-+		lookup_flags |= LOOKUP_REVAL;
-+		goto retry;
-+	}
-+	return error;
-+}
-+
-+int vtar_sys_mkdir(const char __user *pathname, umode_t mode)
-+{
-+	return do_mkdirat(AT_FDCWD, pathname, mode);
-+}
-+
-diff --git a/fs/vtar/vtar_sys.h b/fs/vtar/vtar_sys.h
-new file mode 100644
-index 000000000000..9ee14f80b0b6
---- /dev/null
-+++ b/fs/vtar/vtar_sys.h
-@@ -0,0 +1,21 @@
-+/*
-+ * vtar internal header
-+ *
-+ * Copyright 2020 VMware, Inc. All Rights Reserved.
-+ * SPDX-License-Identifier: GPL-2.0
-+ *
-+ * Licensed under the GNU Lesser General Public License version 2 (the "License");
-+ * you may not use this file except in compliance with the License. The terms
-+ * of the License are located in the LICENSE file of this distribution.
-+ *
-+ */
-+
-+int vtar_sys_mount(const char __user *dev_name, const char __user *dir_name,
-+		const char __user *type_page, unsigned long flags, void __user *data_page);
-+int vtar_sys_umount(const char __user *name, int flags);
-+int vtar_sys_chdir(const char __user *filename);
-+int vtar_sys_chroot(const char __user *filename);
-+int vtar_sys_chown(const char __user *filename, uid_t user, gid_t group, int flags);
-+int vtar_sys_chmod(const char __user *filename, umode_t mode);
-+int vtar_sys_symlink(const char __user *oldname, const char __user *newname);
-+int vtar_sys_mkdir(const char __user *pathname, umode_t mode);
 diff --git a/fs/vtar/vtarfs.c b/fs/vtar/vtarfs.c
 new file mode 100644
-index 000000000000..9eced8d4806a
+index 000000000000..5a5b012bec72
 --- /dev/null
 +++ b/fs/vtar/vtarfs.c
-@@ -0,0 +1,413 @@
+@@ -0,0 +1,534 @@
 +/*
 + * Filesystem to directly mount tar archive.
 + *
@@ -511,24 +251,141 @@ index 000000000000..9eced8d4806a
 +#include <linux/slab.h>
 +#include <linux/syscalls.h>
 +#include <linux/file.h>
++#include <linux/fs_struct.h>
++#include <linux/namei.h>
++#include <linux/mount.h>
 +#include <uapi/linux/mount.h>
 +
 +#include "vtar.h"
-+#include "vtar_sys.h"
++#include "../internal.h"
 +
 +static struct vtar_img_map_t vtar_img_map;
++
++static int vtar_do_mount(const char *dev_name, const char *dir_name,
++		const char *type_page, unsigned long flags, void *data_page)
++{
++	struct path path;
++	int ret;
++
++	ret = kern_path(dir_name, LOOKUP_FOLLOW, &path);
++	if (ret)
++		return ret;
++	ret = path_mount(dev_name, &path, type_page, flags, data_page);
++	path_put(&path);
++	return ret;
++}
++
++static int vtar_umount(const char *name, int flags)
++{
++	int lookup_flags = LOOKUP_MOUNTPOINT;
++	struct path path;
++	int ret;
++
++	if (!(flags & UMOUNT_NOFOLLOW))
++		lookup_flags |= LOOKUP_FOLLOW;
++	ret = kern_path(name, lookup_flags, &path);
++	if (ret)
++		return ret;
++	return path_umount(&path, flags);
++}
++
++static int vtar_chdir(const char *filename)
++{
++	struct path path;
++	int error;
++
++	error = kern_path(filename, LOOKUP_FOLLOW | LOOKUP_DIRECTORY, &path);
++	if (error)
++		return error;
++	error = inode_permission(path.dentry->d_inode, MAY_EXEC | MAY_CHDIR);
++	if (!error)
++		set_fs_pwd(current->fs, &path);
++	path_put(&path);
++	return error;
++}
++
++static int vtar_chown(const char *filename, uid_t user, gid_t group, int flags)
++{
++	int lookup_flags = (flags & AT_SYMLINK_NOFOLLOW) ? 0 : LOOKUP_FOLLOW;
++	struct path path;
++	int error;
++
++	error = kern_path(filename, lookup_flags, &path);
++	if (error)
++		return error;
++	error = mnt_want_write(path.mnt);
++	if (!error) {
++		error = chown_common(&path, user, group);
++		mnt_drop_write(path.mnt);
++	}
++	path_put(&path);
++	return error;
++}
++
++static int vtar_chmod(const char *filename, umode_t mode)
++{
++	struct path path;
++	int error;
++
++	error = kern_path(filename, LOOKUP_FOLLOW, &path);
++	if (error)
++		return error;
++	error = chmod_common(&path, mode);
++	path_put(&path);
++	return error;
++}
++
++static int vtar_symlink(const char *oldname, const char *newname)
++{
++	struct dentry *dentry;
++	struct path path;
++	int error;
++
++	dentry = kern_path_create(AT_FDCWD, newname, &path, 0);
++	if (IS_ERR(dentry))
++		return PTR_ERR(dentry);
++	error = security_path_symlink(&path, dentry, oldname);
++	if (!error)
++		error = vfs_symlink(path.dentry->d_inode, dentry, oldname);
++	done_path_create(&path, dentry);
++	return error;
++}
++
++static int vtar_mkdir(const char *pathname, umode_t mode)
++{
++	struct dentry *dentry;
++	struct path path;
++	int error;
++
++	dentry = kern_path_create(AT_FDCWD, pathname, &path, LOOKUP_DIRECTORY);
++	if (IS_ERR(dentry))
++		return PTR_ERR(dentry);
++	if (!IS_POSIXACL(path.dentry->d_inode))
++		mode &= ~current_umask();
++	error = security_path_mkdir(&path, dentry, mode);
++	if (!error)
++		error = vfs_mkdir(path.dentry->d_inode, dentry, mode);
++	done_path_create(&path, dentry);
++	return error;
++}
++
 +
 +static char *build_name(struct vtar_header_type *header)
 +{
 +	char *name;
-+	char *prefix_end = memchr(header->prefix, 0, sizeof(header->prefix));
-+	char *name_end = memchr(header->name, 0, sizeof(header->name));
++	size_t prefix_len = 0;
++	size_t name_len = 0;
++	char *prefix_end = memchr(header->prefix, '\0', sizeof(header->prefix));
++	char *name_end = memchr(header->name, '\0', sizeof(header->name));
 +
-+	size_t prefix_len = prefix_end - header->prefix;
-+	size_t name_len = name_end - header->name;
++	if (!prefix_end || !name_end) {
++		pr_err("%s : Header name is not proper!!", __func__);
++		return NULL;
++	}
++	prefix_len = prefix_end - header->prefix;
++	name_len = name_end - header->name;
 +
 +	name = kzalloc(prefix_len + name_len + 1, GFP_KERNEL);
-+
 +	if (!name) {
 +		pr_err("%s: Unable to allocate memory for full name!!, error=%ld ", __func__, PTR_ERR(name));
 +		return NULL;
@@ -568,9 +425,19 @@ index 000000000000..9eced8d4806a
 +
 +	for (pn = 0; pn < pages; pn++) {
 +		page = read_mapping_page(vtar_img_map.tarfs_img_map, (header->offset >> PAGE_SHIFT) + pn, NULL);
++		if (IS_ERR(page)) {
++			pr_err("%s: read_mapping_page failed  ret=%lu", __func__, PTR_ERR(page));
++			return PTR_ERR(page);
++		}
++		if (PageError(page)) {
++			pr_err("%s: read_mapping_page failed  pn=%d", __func__, pn);
++			put_page(page);
++			continue;
++		}
 +		ret = add_to_page_cache_lru(page, mapping, pn, gfp_mask);
 +		if (ret) {
 +			pr_err("%s: failed add_to_page_cache_lru ret=%lu", __func__, ret);
++			put_page(page);
 +			goto out;
 +		}
 +		SetPageUptodate(page);
@@ -597,7 +464,6 @@ index 000000000000..9eced8d4806a
 +	umode_t mode;
 +	uid_t uid;
 +	gid_t gid;
-+	mm_segment_t old_fs = get_fs();
 +
 +	page = read_mapping_page(vtar_img_map.tarfs_img_map, offset >> PAGE_SHIFT, NULL);
 +	if (IS_ERR(page)) {
@@ -645,22 +511,21 @@ index 000000000000..9eced8d4806a
 +		full_name = base_name + strlen(base_name);
 +	}
 +	dir_name = full_name;
-+	set_fs(KERNEL_DS);
 +	if (header.typeflag  == DIRTYPE) {
-+		vtar_sys_mkdir(base_name, mode);
-+		vtar_sys_chown(base_name, uid, gid, 0);
-+		vtar_sys_chmod(base_name, mode);
++		vtar_mkdir(base_name, mode);
++		vtar_chown(base_name, uid, gid, 0);
++		vtar_chmod(base_name, mode);
 +	} else if (header.typeflag  == SYMTYPE) {
 +		if (strlen(dir_name) != 0) {
-+			vtar_sys_chdir(dir_name);
++			vtar_chdir(dir_name);
 +		}
-+		vtar_sys_symlink(header.linkname, base_name);
-+		vtar_sys_chown(base_name, uid, gid, 0);
-+		vtar_sys_chmod(base_name, mode);
++		vtar_symlink(header.linkname, base_name);
++		vtar_chown(base_name, uid, gid, 0);
++		vtar_chmod(base_name, mode);
 +	} else {
 +		openflags = O_WRONLY|O_CREAT;
 +		if (strlen(dir_name) != 0) {
-+			vtar_sys_chdir(dir_name);
++			vtar_chdir(dir_name);
 +		}
 +		wfile = filp_open(base_name, openflags, mode);
 +		if (IS_ERR(wfile))
@@ -670,7 +535,6 @@ index 000000000000..9eced8d4806a
 +		xadd_pages(wfile, &header);
 +		fput(wfile);
 +	}
-+	set_fs(old_fs);
 +
 +out:
 +	if (dir_name < base_name)
@@ -756,6 +620,7 @@ index 000000000000..9eced8d4806a
 +	sb->s_time_gran	=	1;
 +	sb->s_flags	|=	MS_RDONLY | MS_NOATIME; /* Read only file system */
 +
++	vtar_chdir(data);
 +	if ((err = vtar_open()) < 0) {
 +		pr_err("%s:failed to read tar index, error:%d", __func__, err);
 +		goto err_fill_super;
@@ -796,7 +661,7 @@ index 000000000000..9eced8d4806a
 +		goto err_fill_super;
 +	}
 +	inode->i_op = &page_symlink_inode_operations;
-+	inode->i_link = vtar_img_map.data;
++	inode->i_link = data;
 +	d_add(dentry, inode);
 +	return 0;
 +
@@ -809,10 +674,7 @@ index 000000000000..9eced8d4806a
 +		const char *dev_name, void *data)
 +{
 +	struct file *fp = NULL;
-+	char size[MAX_INPUT];
 +	int ret = 0;
-+	mm_segment_t old_fs = get_fs();
-+
 +
 +	pr_debug("%s: dev_name = %s, data=%s",__func__, dev_name, (char *)data);
 +	fp = filp_open(dev_name, O_RDONLY, 0);
@@ -830,32 +692,31 @@ index 000000000000..9eced8d4806a
 +		filp_close(fp, NULL);
 +		return NULL;
 +	}
-+	snprintf(size, MAX_INPUT, "size=%lld", vtar_img_map.tarfs_img_map->host->i_size);
-+	set_fs(KERNEL_DS);
-+	ret = vtar_sys_mount("tmpfs", data, "tmpfs", MS_SILENT, size);
++	vtar_img_map.data = kstrdup(data, GFP_KERNEL);
++	vtar_mkdir(vtar_img_map.data, 0755);
++	ret = vtar_do_mount("tmpfs", vtar_img_map.data, "tmpfs", MS_SILENT, NULL);
 +	if (ret) {
-+		pr_err("%s: Failed to mount %s as tmpfs! Error:%d",__func__, (char *)data, ret);
++		pr_err("%s: Failed to mount %s as tmpfs! Error:%d",__func__, (char *)vtar_img_map.data, ret);
++		do_rmdir(AT_FDCWD, getname_kernel(vtar_img_map.data));
++		kfree(vtar_img_map.data);
 +		filp_close(fp, NULL);
 +		return NULL;
 +	}
-+	vtar_sys_chdir(data);
-+	set_fs(old_fs);
-+	vtar_img_map.data = kstrdup(data, GFP_KERNEL);
-+	return mount_nodev(fs_type, flags, data, &vtar_fill_super);
++	return mount_nodev(fs_type, flags, vtar_img_map.data, &vtar_fill_super);
 +}
 +
 +static void vtar_kill_super(struct super_block *sb)
 +{
-+	mm_segment_t old_fs = get_fs();
-+
 +	pr_info("%s: Kill super", __func__);
-+	set_fs(KERNEL_DS);
-+	vtar_sys_umount(vtar_img_map.data, 0);
-+	set_fs(old_fs);
-+	kfree(vtar_img_map.data);
-+	kfree(sb->s_fs_info);
++
 +	evict_inodes(sb);
++	kfree(sb->s_fs_info);
++	sb->s_fs_info = NULL;
 +	kill_litter_super(sb);
++	vtar_chdir("/");
++	vtar_umount(vtar_img_map.data, MNT_FORCE);
++	do_rmdir(AT_FDCWD, getname_kernel(vtar_img_map.data));
++	kfree(vtar_img_map.data);
 +	filp_close(vtar_img_map.fp, NULL);
 +}
 +

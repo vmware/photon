@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.4
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -316,6 +316,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Feb 03 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-5
+-   Replaced syscalls routines based on user space address
+-   Removed set_fs() calls
 *   Thu Jan 28 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-4
 -   Use secure FIPS canister.
 *   Mon Jan 25 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-3
