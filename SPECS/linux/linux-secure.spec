@@ -3,10 +3,15 @@
 # Set this flag to 0 to build without canister
 %global fips 1
 
+# If kat_build is enabled, canister is not used.
+%if 0%{?kat_build:1}
+%global fips 0
+%endif
+
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.4
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -22,9 +27,9 @@ Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 %if 0%{?fips}
-%define fips_canister_version 4.0.1-5.10.4-4-secure
+%define fips_canister_version 4.0.1-5.10.4-5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=659fd4bc1076f643d9b7d566f6738e3e29c51799
+%define sha1 fips-canister=91b5031dc9599c6997931d5cb8982df9a181df7a
 %endif
 
 # common
@@ -72,10 +77,13 @@ Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch502:       0001-FIPS-canister-binary-usage.patch
-%endif
-
+%else
 %if 0%{?kat_build:1}
-Patch510:       crypto-testmgr-break-KAT-fips-intentionally.patch
+Patch507:       0001-Skip-rap-plugin-for-aesni-intel-modules.patch
+Patch508:       0001-Initialize-jitterentropy-before-ecdh.patch
+Patch509:       0002-FIPS-crypto-self-tests.patch
+Patch510:       0003-FIPS-broken-kattest.patch
+%endif
 %endif
 
 BuildArch:      x86_64
@@ -160,10 +168,13 @@ The Linux package contains the Linux kernel doc files
 %patch501 -p1
 %if 0%{?fips}
 %patch502 -p1
-%endif
-
+%else
 %if 0%{?kat_build:1}
+%patch507 -p1
+%patch508 -p1
+%patch509 -p1
 %patch510 -p1
+%endif
 %endif
 
 %build
@@ -270,6 +281,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Feb 02 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-6
+-   Added crypto_self_test and kattest module.
+-   These patches are applied when kat_build is enabled.
 *   Thu Jan 28 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-5
 -   Build with secure FIPS canister.
 *   Thu Jan 28 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-4

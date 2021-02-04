@@ -4,17 +4,23 @@
 %ifarch x86_64
 %define arch x86_64
 %define archdir x86
-%endif
 
 # Set this flag to 0 to build without canister
 %global fips 1
+
+# If kat_build is enabled, canister is not used.
+%if 0%{?kat_build:1}
+%global fips 0
+%endif
+
+%endif
 
 Summary:        Kernel
 Name:           linux-rt
 Version:        5.10.4
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt22
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -38,10 +44,11 @@ Source6:	https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_versi
 Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
 %define sha1 iavf=a53cb104a3b04cbfbec417f7cadda6fddf51b266
 %if 0%{?fips}
-%define fips_canister_version 4.0.1-5.10.4-4-secure
+%define fips_canister_version 4.0.1-5.10.4-5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=659fd4bc1076f643d9b7d566f6738e3e29c51799
+%define sha1 fips-canister=91b5031dc9599c6997931d5cb8982df9a181df7a
 %endif
+Source17:        modify_kernel_configs.inc
 
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
@@ -343,12 +350,15 @@ Patch568:        localversion.patch
 
 Patch600:       0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
 
-%if 0%{?kat_build:1}
-Patch1000:        %{kat_build}.patch
-%endif
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch1010:       0001-FIPS-canister-binary-usage.patch
+%else
+%if 0%{?kat_build:1}
+Patch1011:       0001-Initialize-jitterentropy-before-ecdh.patch
+Patch1012:       0002-FIPS-crypto-self-tests.patch
+Patch1013:       0003-FIPS-broken-kattest.patch
+%endif
 %endif
 
 #Patches for i40e driver
@@ -702,12 +712,14 @@ The Linux package contains the Linux kernel doc files
 
 %patch600 -p1
 
-
-%if 0%{?kat_build:1}
-%patch1000 -p1
-%endif
 %if 0%{?fips}
 %patch1010 -p1
+%else
+%if 0%{?kat_build:1}
+%patch1011 -p1
+%patch1012 -p1
+%patch1013 -p1
+%endif
 %endif
 
 #Patches for i40e driver
@@ -728,27 +740,12 @@ arch="x86_64"
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
 cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
 # Change m to y for modules that are in the canister
-sed -i 's/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/' .config
-sed -i 's/CONFIG_CRYPTO_AEAD=m/CONFIG_CRYPTO_AEAD=y/' .config
-sed -i 's/CONFIG_CRYPTO_SKCIPHER=m/CONFIG_CRYPTO_SKCIPHER=y/' .config
-sed -i 's/CONFIG_CRYPTO_RNG=m/CONFIG_CRYPTO_RNG=y/' .config
-sed -i 's/CONFIG_CRYPTO_RNG_DEFAULT=m/CONFIG_CRYPTO_RNG_DEFAULT=y/' .config
-sed -i 's/CONFIG_CRYPTO_KPP=m/CONFIG_CRYPTO_KPP=y/' .config
-sed -i 's/CONFIG_CRYPTO_CRYPTD=m/CONFIG_CRYPTO_CRYPTD=y/' .config
-sed -i 's/CONFIG_CRYPTO_SIMD=m/CONFIG_CRYPTO_SIMD=y/' .config
-sed -i 's/CONFIG_CRYPTO_GLUE_HELPER_X86=m/CONFIG_CRYPTO_GLUE_HELPER_X86=y/' .config
-sed -i 's/CONFIG_CRYPTO_ECC=m/CONFIG_CRYPTO_ECC=y/' .config
-sed -i 's/CONFIG_CRYPTO_ECDH=m/CONFIG_CRYPTO_ECDH=y/' .config
-sed -i 's/CONFIG_CRYPTO_CBC=m/CONFIG_CRYPTO_CBC=y/' .config
-sed -i 's/CONFIG_CRYPTO_CTR=m/CONFIG_CRYPTO_CTR=y/' .config
-sed -i 's/CONFIG_CRYPTO_ECB=m/CONFIG_CRYPTO_ECB=y/' .config
-sed -i 's/CONFIG_CRYPTO_XTS=m/CONFIG_CRYPTO_XTS=y/' .config
-sed -i 's/CONFIG_CRYPTO_AES_NI_INTEL=m/CONFIG_CRYPTO_AES_NI_INTEL=y/' .config
-sed -i 's/CONFIG_CRYPTO_DES=m/CONFIG_CRYPTO_DES=y/' .config
-sed -i 's/CONFIG_CRYPTO_DRBG_MENU=m/CONFIG_CRYPTO_DRBG_MENU=y/' .config
-sed -i 's/CONFIG_CRYPTO_DRBG=m/CONFIG_CRYPTO_DRBG=y/' .config
-sed -i 's/CONFIG_CRYPTO_JITTERENTROPY=m/CONFIG_CRYPTO_JITTERENTROPY=y/' .config
-sed -i 's/CONFIG_CRYPTO_LIB_DES=m/CONFIG_CRYPTO_LIB_DES=y/' .config
+%include %{SOURCE17}
+%else
+%if 0%{?kat_build:1}
+# Change m to y for modules in katbuild
+%include %{SOURCE17}
+%endif
 %endif
 
 sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .config
@@ -909,6 +906,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Mon Feb 15 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-5
+-   Added crypto_self_test and kattest module.
+-   These patches are applied when kat_build is enabled.
 *   Wed Feb 03 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.4-4
 -   Update i40e driver to v2.13.10
 -   Add out of tree iavf driver

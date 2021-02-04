@@ -1,0 +1,369 @@
+From d968dbb6f8452e67d9b693d09250529c6f7891b2 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Thu, 4 Feb 2021 04:48:55 +0000
+Subject: [PATCH] Skip rap plugin for aesni-intel modules
+
+This patch removes rap plugin for aesni-intel modules and also
+remove glue-helper API usage.
+---
+ arch/x86/crypto/Makefile                 |   1 +
+ arch/x86/crypto/aesni-intel_asm.S        |  14 +-
+ arch/x86/crypto/aesni-intel_avx-x86_64.S |  16 +--
+ arch/x86/crypto/aesni-intel_glue.c       | 158 ++++++++++++++++++++++-
+ 4 files changed, 170 insertions(+), 19 deletions(-)
+
+diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
+index a31de0c6c..eeeff312d 100644
+--- a/arch/x86/crypto/Makefile
++++ b/arch/x86/crypto/Makefile
+@@ -53,6 +53,7 @@ chacha-x86_64-$(CONFIG_AS_AVX512) += chacha-avx512vl-x86_64.o
+ obj-$(CONFIG_CRYPTO_AES_NI_INTEL) += aesni-intel.o
+ aesni-intel-y := aesni-intel_asm.o aesni-intel_glue.o
+ aesni-intel-$(CONFIG_64BIT) += aesni-intel_avx-x86_64.o aes_ctrby8_avx-x86_64.o
++CFLAGS_REMOVE_aesni-intel_glue.o = -fplugin-arg-rap_plugin-check=call
+ 
+ obj-$(CONFIG_CRYPTO_SHA1_SSSE3) += sha1-ssse3.o
+ sha1-ssse3-y := sha1_avx2_x86_64_asm.o sha1_ssse3_asm.o sha1_ssse3_glue.o
+diff --git a/arch/x86/crypto/aesni-intel_asm.S b/arch/x86/crypto/aesni-intel_asm.S
+index f1a396f1d..1852b19a7 100644
+--- a/arch/x86/crypto/aesni-intel_asm.S
++++ b/arch/x86/crypto/aesni-intel_asm.S
+@@ -1701,7 +1701,7 @@ SYM_FUNC_END(aesni_gcm_enc)
+ *                     const u8 *aad,      // Additional Authentication Data (AAD)
+ *                     u64 aad_len)        // Length of AAD in bytes.
+ */
+-RAP_FUNC_START(aesni_gcm_init)
++SYM_FUNC_START(aesni_gcm_init)
+ 	FUNC_SAVE
+ 	GCM_INIT %arg3, %arg4,%arg5, %arg6
+ 	FUNC_RESTORE
+@@ -1716,7 +1716,7 @@ SYM_FUNC_END(aesni_gcm_init)
+ *                    const u8 *in,       // Plaintext input
+ *                    u64 plaintext_len,  // Length of data in bytes for encryption.
+ */
+-RAP_FUNC_START(aesni_gcm_enc_update)
++SYM_FUNC_START(aesni_gcm_enc_update)
+ 	FUNC_SAVE
+ 	GCM_ENC_DEC enc
+ 	FUNC_RESTORE
+@@ -1731,7 +1731,7 @@ SYM_FUNC_END(aesni_gcm_enc_update)
+ *                    const u8 *in,       // Plaintext input
+ *                    u64 plaintext_len,  // Length of data in bytes for encryption.
+ */
+-RAP_FUNC_START(aesni_gcm_dec_update)
++SYM_FUNC_START(aesni_gcm_dec_update)
+ 	FUNC_SAVE
+ 	GCM_ENC_DEC dec
+ 	FUNC_RESTORE
+@@ -1746,7 +1746,7 @@ SYM_FUNC_END(aesni_gcm_dec_update)
+ *                    u64 auth_tag_len);  // Authenticated Tag Length in bytes. Valid values are 16 (most likely),
+ *                                        // 12 or 8.
+ */
+-RAP_FUNC_START(aesni_gcm_finalize)
++SYM_FUNC_START(aesni_gcm_finalize)
+ 	FUNC_SAVE
+ 	GCM_COMPLETE %arg3 %arg4
+ 	FUNC_RESTORE
+@@ -1943,7 +1943,7 @@ SYM_FUNC_END(aesni_set_key)
+ /*
+  * void aesni_enc(const void *ctx, u8 *dst, const u8 *src)
+  */
+-RAP_FUNC_START(aesni_enc)
++SYM_FUNC_START(aesni_enc)
+ 	FRAME_BEGIN
+ #ifndef __x86_64__
+ 	pushl KEYP
+@@ -2132,7 +2132,7 @@ SYM_FUNC_END(_aesni_enc4)
+ /*
+  * void aesni_dec (const void *ctx, u8 *dst, const u8 *src)
+  */
+-RAP_FUNC_START(aesni_dec)
++SYM_FUNC_START(aesni_dec)
+ 	FRAME_BEGIN
+ #ifndef __x86_64__
+ 	pushl KEYP
+@@ -2637,7 +2637,7 @@ SYM_FUNC_END(_aesni_inc)
+  * void aesni_ctr_enc(struct crypto_aes_ctx *ctx, const u8 *dst, u8 *src,
+  *		      size_t len, u8 *iv)
+  */
+-RAP_FUNC_START(aesni_ctr_enc)
++SYM_FUNC_START(aesni_ctr_enc)
+ 	FRAME_BEGIN
+ 	cmp $16, LEN
+ 	jb .Lctr_enc_just_ret
+diff --git a/arch/x86/crypto/aesni-intel_avx-x86_64.S b/arch/x86/crypto/aesni-intel_avx-x86_64.S
+index 25954355a..5fee47956 100644
+--- a/arch/x86/crypto/aesni-intel_avx-x86_64.S
++++ b/arch/x86/crypto/aesni-intel_avx-x86_64.S
+@@ -1773,7 +1773,7 @@ _initial_blocks_done\@:
+ #        const   u8 *aad, /* Additional Authentication Data (AAD)*/
+ #        u64     aad_len) /* Length of AAD in bytes. With RFC4106 this is going to be 8 or 12 Bytes */
+ #############################################################
+-RAP_FUNC_START(aesni_gcm_init_avx_gen2)
++SYM_FUNC_START(aesni_gcm_init_avx_gen2)
+         FUNC_SAVE
+         INIT GHASH_MUL_AVX, PRECOMPUTE_AVX
+         FUNC_RESTORE
+@@ -1788,7 +1788,7 @@ SYM_FUNC_END(aesni_gcm_init_avx_gen2)
+ #        const   u8 *in, /* Plaintext input */
+ #        u64     plaintext_len) /* Length of data in Bytes for encryption. */
+ ###############################################################################
+-RAP_FUNC_START(aesni_gcm_enc_update_avx_gen2)
++SYM_FUNC_START(aesni_gcm_enc_update_avx_gen2)
+         FUNC_SAVE
+         mov     keysize, %eax
+         cmp     $32, %eax
+@@ -1817,7 +1817,7 @@ SYM_FUNC_END(aesni_gcm_enc_update_avx_gen2)
+ #        const   u8 *in, /* Ciphertext input */
+ #        u64     plaintext_len) /* Length of data in Bytes for encryption. */
+ ###############################################################################
+-RAP_FUNC_START(aesni_gcm_dec_update_avx_gen2)
++SYM_FUNC_START(aesni_gcm_dec_update_avx_gen2)
+         FUNC_SAVE
+         mov     keysize,%eax
+         cmp     $32, %eax
+@@ -1846,7 +1846,7 @@ SYM_FUNC_END(aesni_gcm_dec_update_avx_gen2)
+ #        u64     auth_tag_len)# /* Authenticated Tag Length in bytes.
+ #				Valid values are 16 (most likely), 12 or 8. */
+ ###############################################################################
+-RAP_FUNC_START(aesni_gcm_finalize_avx_gen2)
++SYM_FUNC_START(aesni_gcm_finalize_avx_gen2)
+         FUNC_SAVE
+         mov	keysize,%eax
+         cmp     $32, %eax
+@@ -2741,7 +2741,7 @@ _initial_blocks_done\@:
+ #        const   u8 *aad, /* Additional Authentication Data (AAD)*/
+ #        u64     aad_len) /* Length of AAD in bytes. With RFC4106 this is going to be 8 or 12 Bytes */
+ #############################################################
+-RAP_FUNC_START(aesni_gcm_init_avx_gen4)
++SYM_FUNC_START(aesni_gcm_init_avx_gen4)
+         FUNC_SAVE
+         INIT GHASH_MUL_AVX2, PRECOMPUTE_AVX2
+         FUNC_RESTORE
+@@ -2756,7 +2756,7 @@ SYM_FUNC_END(aesni_gcm_init_avx_gen4)
+ #        const   u8 *in, /* Plaintext input */
+ #        u64     plaintext_len) /* Length of data in Bytes for encryption. */
+ ###############################################################################
+-RAP_FUNC_START(aesni_gcm_enc_update_avx_gen4)
++SYM_FUNC_START(aesni_gcm_enc_update_avx_gen4)
+         FUNC_SAVE
+         mov     keysize,%eax
+         cmp     $32, %eax
+@@ -2785,7 +2785,7 @@ SYM_FUNC_END(aesni_gcm_enc_update_avx_gen4)
+ #        const   u8 *in, /* Ciphertext input */
+ #        u64     plaintext_len) /* Length of data in Bytes for encryption. */
+ ###############################################################################
+-RAP_FUNC_START(aesni_gcm_dec_update_avx_gen4)
++SYM_FUNC_START(aesni_gcm_dec_update_avx_gen4)
+         FUNC_SAVE
+         mov     keysize,%eax
+         cmp     $32, %eax
+@@ -2814,7 +2814,7 @@ SYM_FUNC_END(aesni_gcm_dec_update_avx_gen4)
+ #        u64     auth_tag_len)# /* Authenticated Tag Length in bytes.
+ #                              Valid values are 16 (most likely), 12 or 8. */
+ ###############################################################################
+-RAP_FUNC_START(aesni_gcm_finalize_avx_gen4)
++SYM_FUNC_START(aesni_gcm_finalize_avx_gen4)
+         FUNC_SAVE
+         mov	keysize,%eax
+         cmp     $32, %eax
+diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
+index ad8a7188a..81fe0c9b6 100644
+--- a/arch/x86/crypto/aesni-intel_glue.c
++++ b/arch/x86/crypto/aesni-intel_glue.c
+@@ -35,6 +35,7 @@
+ #include <linux/spinlock.h>
+ #ifdef CONFIG_X86_64
+ #include <asm/crypto/glue_helper.h>
++#include <crypto/gf128mul.h>
+ #endif
+ 
+ 
+@@ -536,15 +537,164 @@ static int xts_aesni_setkey(struct crypto_skcipher *tfm, const u8 *key,
+ 				  key + keylen, keylen);
+ }
+ 
++static void x86_aesni_glue_xts_crypt_128bit_one(const void *ctx, u8 *dst, const u8 *src,
++			       le128 *iv, common_glue_func_t fn)
++{
++	le128 ivblk = *iv;
++
++	/* generate next IV */
++	gf128mul_x_ble(iv, &ivblk);
++
++	/* CC <- T xor C */
++	u128_xor((u128 *)dst, (const u128 *)src, (u128 *)&ivblk);
++
++	/* PP <- D(Key2,CC) */
++	fn(ctx, dst, dst);
++
++	/* P <- T xor PP */
++	u128_xor((u128 *)dst, (u128 *)dst, (u128 *)&ivblk);
++}
++
++static unsigned int __x86_aesni_glue_xts_req_128bit(const struct common_glue_ctx *gctx,
++					  void *ctx,
++					  struct skcipher_walk *walk)
++{
++	const unsigned int bsize = 128 / 8;
++	unsigned int nbytes = walk->nbytes;
++	u128 *src = walk->src.virt.addr;
++	u128 *dst = walk->dst.virt.addr;
++	unsigned int num_blocks, func_bytes;
++	unsigned int i;
++
++	/* Process multi-block batch */
++	for (i = 0; i < gctx->num_funcs; i++) {
++		num_blocks = gctx->funcs[i].num_blocks;
++		func_bytes = bsize * num_blocks;
++
++		if (nbytes >= func_bytes) {
++			do {
++				gctx->funcs[i].fn_u.xts(ctx, (u8 *)dst,
++							(const u8 *)src,
++							walk->iv);
++
++				src += num_blocks;
++				dst += num_blocks;
++				nbytes -= func_bytes;
++			} while (nbytes >= func_bytes);
++
++			if (nbytes < bsize)
++				goto done;
++		}
++	}
++
++done:
++	return nbytes;
++}
++
++static int x86_aesni_glue_xts_req_128bit(const struct common_glue_ctx *gctx,
++			struct skcipher_request *req,
++			common_glue_func_t tweak_fn, void *tweak_ctx,
++			void *crypt_ctx, bool decrypt)
++{
++	const bool cts = (req->cryptlen % XTS_BLOCK_SIZE);
++	const unsigned int bsize = 128 / 8;
++	struct skcipher_request subreq;
++	struct skcipher_walk walk;
++	bool fpu_enabled = false;
++	unsigned int nbytes, tail;
++	int err;
++
++	if (req->cryptlen < XTS_BLOCK_SIZE)
++		return -EINVAL;
++
++	if (unlikely(cts)) {
++		struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
++
++		tail = req->cryptlen % XTS_BLOCK_SIZE + XTS_BLOCK_SIZE;
++
++		skcipher_request_set_tfm(&subreq, tfm);
++		skcipher_request_set_callback(&subreq,
++					      crypto_skcipher_get_flags(tfm),
++					      NULL, NULL);
++		skcipher_request_set_crypt(&subreq, req->src, req->dst,
++					   req->cryptlen - tail, req->iv);
++		req = &subreq;
++	}
++
++	err = skcipher_walk_virt(&walk, req, false);
++	nbytes = walk.nbytes;
++	if (err)
++		return err;
++
++	/* set minimum length to bsize, for tweak_fn */
++	fpu_enabled = glue_fpu_begin(bsize, gctx->fpu_blocks_limit,
++				     &walk, fpu_enabled,
++				     nbytes < bsize ? bsize : nbytes);
++
++	/* calculate first value of T */
++	tweak_fn(tweak_ctx, walk.iv, walk.iv);
++
++	while (nbytes) {
++		nbytes = __x86_aesni_glue_xts_req_128bit(gctx, crypt_ctx, &walk);
++
++		err = skcipher_walk_done(&walk, nbytes);
++		nbytes = walk.nbytes;
++	}
++
++	if (unlikely(cts)) {
++		u8 *next_tweak, *final_tweak = req->iv;
++		struct scatterlist *src, *dst;
++		struct scatterlist s[2], d[2];
++		le128 b[2];
++
++		dst = src = scatterwalk_ffwd(s, req->src, req->cryptlen);
++		if (req->dst != req->src)
++			dst = scatterwalk_ffwd(d, req->dst, req->cryptlen);
++
++		if (decrypt) {
++			next_tweak = memcpy(b, req->iv, XTS_BLOCK_SIZE);
++			gf128mul_x_ble(b, b);
++		} else {
++			next_tweak = req->iv;
++		}
++
++		skcipher_request_set_crypt(&subreq, src, dst, XTS_BLOCK_SIZE,
++					   next_tweak);
++
++		err = skcipher_walk_virt(&walk, req, false) ?:
++		      skcipher_walk_done(&walk,
++				__x86_aesni_glue_xts_req_128bit(gctx, crypt_ctx, &walk));
++		if (err)
++			goto out;
++
++		scatterwalk_map_and_copy(b, dst, 0, XTS_BLOCK_SIZE, 0);
++		memcpy(b + 1, b, tail - XTS_BLOCK_SIZE);
++		scatterwalk_map_and_copy(b, src, XTS_BLOCK_SIZE,
++					 tail - XTS_BLOCK_SIZE, 0);
++		scatterwalk_map_and_copy(b, dst, 0, tail, 1);
++
++		skcipher_request_set_crypt(&subreq, dst, dst, XTS_BLOCK_SIZE,
++					   final_tweak);
++
++		err = skcipher_walk_virt(&walk, req, false) ?:
++		      skcipher_walk_done(&walk,
++				__x86_aesni_glue_xts_req_128bit(gctx, crypt_ctx, &walk));
++	}
++
++out:
++	glue_fpu_end(fpu_enabled);
++
++	return err;
++}
+ 
+ static void aesni_xts_enc(const void *ctx, u8 *dst, const u8 *src, le128 *iv)
+ {
+-	glue_xts_crypt_128bit_one(ctx, dst, src, iv, aesni_enc);
++	x86_aesni_glue_xts_crypt_128bit_one(ctx, dst, src, iv, aesni_enc);
+ }
+ 
+ static void aesni_xts_dec(const void *ctx, u8 *dst, const u8 *src, le128 *iv)
+ {
+-	glue_xts_crypt_128bit_one(ctx, dst, src, iv, aesni_dec);
++	x86_aesni_glue_xts_crypt_128bit_one(ctx, dst, src, iv, aesni_dec);
+ }
+ 
+ static void aesni_xts_enc8(const void *ctx, u8 *dst, const u8 *src, le128 *iv)
+@@ -588,7 +738,7 @@ static int xts_encrypt(struct skcipher_request *req)
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct aesni_xts_ctx *ctx = crypto_skcipher_ctx(tfm);
+ 
+-	return glue_xts_req_128bit(&aesni_enc_xts, req, aesni_enc,
++	return x86_aesni_glue_xts_req_128bit(&aesni_enc_xts, req, aesni_enc,
+ 				   aes_ctx(ctx->raw_tweak_ctx),
+ 				   aes_ctx(ctx->raw_crypt_ctx),
+ 				   false);
+@@ -599,7 +749,7 @@ static int xts_decrypt(struct skcipher_request *req)
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct aesni_xts_ctx *ctx = crypto_skcipher_ctx(tfm);
+ 
+-	return glue_xts_req_128bit(&aesni_dec_xts, req, aesni_enc,
++	return x86_aesni_glue_xts_req_128bit(&aesni_dec_xts, req, aesni_enc,
+ 				   aes_ctx(ctx->raw_tweak_ctx),
+ 				   aes_ctx(ctx->raw_crypt_ctx),
+ 				   true);
+-- 
+2.28.0
+

@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.4
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -102,10 +102,6 @@ Patch240:       drivers-amazon-efa-driver-compilation-fix-on-5.10.patch
 Patch500:       crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
-
-%if 0%{?kat_build:1}
-Patch510:       crypto-testmgr-break-KAT-fips-intentionally.patch
-%endif
 
 BuildArch:      x86_64
 BuildRequires:  bc
@@ -234,11 +230,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 # crypto
 %patch500 -p1
 %patch501 -p1
-
-%if 0%{?kat_build:1}
-%patch510 -p1
-%endif
-
 
 %build
 make mrproper
@@ -394,6 +385,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Feb 02 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-3
+-   Removed katbuild patch.
 *   Mon Jan 25 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-2
 -   Enabled CONFIG_WIREGUARD
 *   Mon Jan 11 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.4-1

@@ -1,10 +1,17 @@
 %global security_hardening none
+
 # Set this flag to 0 to build without canister
 %global fips 1
+
+# If kat_build is enabled, canister is not used.
+%if 0%{?kat_build:1}
+%global fips 0
+%endif
+
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.4
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -19,10 +26,11 @@ Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
+Source5:        modify_kernel_configs.inc
 %if 0%{?fips}
-%define fips_canister_version 4.0.1-5.10.4-4-secure
+%define fips_canister_version 4.0.1-5.10.4-5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=659fd4bc1076f643d9b7d566f6738e3e29c51799
+%define sha1 fips-canister=91b5031dc9599c6997931d5cb8982df9a181df7a
 %endif
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
@@ -81,10 +89,12 @@ Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch502:       0001-FIPS-canister-binary-usage.patch
-%endif
-
+%else
 %if 0%{?kat_build:1}
-Patch510:       crypto-testmgr-break-KAT-fips-intentionally.patch
+Patch508:       0001-Initialize-jitterentropy-before-ecdh.patch
+Patch509:       0002-FIPS-crypto-self-tests.patch
+Patch510:       0003-FIPS-broken-kattest.patch
+%endif
 %endif
 
 # SEV:
@@ -186,10 +196,12 @@ The Linux package contains the Linux kernel doc files
 %patch501 -p1
 %if 0%{?fips}
 %patch502 -p1
-%endif
-
+%else
 %if 0%{?kat_build:1}
+%patch508 -p1
+%patch509 -p1
 %patch510 -p1
+%endif
 %endif
 
 # SEV
@@ -205,24 +217,12 @@ cp %{SOURCE1} .config
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
 cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
 # Change m to y for modules that are in the canister
-sed -i 's/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/' .config
-sed -i 's/CONFIG_CRYPTO_AEAD=m/CONFIG_CRYPTO_AEAD=y/' .config
-sed -i 's/CONFIG_CRYPTO_RNG_DEFAULT=m/CONFIG_CRYPTO_RNG_DEFAULT=y/' .config
-sed -i 's/CONFIG_CRYPTO_KPP=m/CONFIG_CRYPTO_KPP=y/' .config
-sed -i 's/CONFIG_CRYPTO_CRYPTD=m/CONFIG_CRYPTO_CRYPTD=y/' .config
-sed -i 's/CONFIG_CRYPTO_SIMD=m/CONFIG_CRYPTO_SIMD=y/' .config
-sed -i 's/CONFIG_CRYPTO_GLUE_HELPER_X86=m/CONFIG_CRYPTO_GLUE_HELPER_X86=y/' .config
-sed -i 's/CONFIG_CRYPTO_ECC=m/CONFIG_CRYPTO_ECC=y/' .config
-sed -i 's/CONFIG_CRYPTO_ECDH=m/CONFIG_CRYPTO_ECDH=y/' .config
-sed -i 's/CONFIG_CRYPTO_CTR=m/CONFIG_CRYPTO_CTR=y/' .config
-sed -i 's/CONFIG_CRYPTO_ECB=m/CONFIG_CRYPTO_ECB=y/' .config
-sed -i 's/CONFIG_CRYPTO_XTS=m/CONFIG_CRYPTO_XTS=y/' .config
-sed -i 's/CONFIG_CRYPTO_AES_NI_INTEL=m/CONFIG_CRYPTO_AES_NI_INTEL=y/' .config
-sed -i 's/CONFIG_CRYPTO_DES=m/CONFIG_CRYPTO_DES=y/' .config
-sed -i 's/CONFIG_CRYPTO_DRBG_MENU=m/CONFIG_CRYPTO_DRBG_MENU=y/' .config
-sed -i 's/CONFIG_CRYPTO_DRBG=m/CONFIG_CRYPTO_DRBG=y/' .config
-sed -i 's/CONFIG_CRYPTO_JITTERENTROPY=m/CONFIG_CRYPTO_JITTERENTROPY=y/' .config
-sed -i 's/CONFIG_CRYPTO_LIB_DES=m/CONFIG_CRYPTO_LIB_DES=y/' .config
+%include %{SOURCE5}
+%else
+%if 0%{?kat_build:1}
+# Change m to y for modules in katbuild
+%include %{SOURCE5}
+%endif
 %endif
 sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
 
@@ -316,6 +316,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Feb 11 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-6
+-   Added crypto_self_test and kattest module.
+-   These patches are applied when kat_build is enabled.
 *   Wed Feb 03 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-5
 -   Replaced syscalls routines based on user space address
 -   Removed set_fs() calls

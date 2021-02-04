@@ -3,8 +3,15 @@
 %ifarch x86_64
 %define arch x86_64
 %define archdir x86
-# Remove this flag to build with canister source.
+
+# Set this flag to 0 to build without canister
 %global fips 1
+
+# If kat_build is enabled, canister is not used.
+%if 0%{?kat_build:1}
+%global fips 0
+%endif
+
 %endif
 
 %ifarch aarch64
@@ -15,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.4
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -46,9 +53,9 @@ Source11:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iav
 %define sha1 iavf=a53cb104a3b04cbfbec417f7cadda6fddf51b266
 Source12:       ena-Use-new-API-interface-after-napi_hash_del-.patch
 %if 0%{?fips}
-%define fips_canister_version 4.0.1-5.10.4-4-secure
+%define fips_canister_version 4.0.1-5.10.4-5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=659fd4bc1076f643d9b7d566f6738e3e29c51799
+%define sha1 fips-canister=91b5031dc9599c6997931d5cb8982df9a181df7a
 %endif
 
 # common
@@ -101,11 +108,14 @@ Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch502:       0001-FIPS-canister-binary-usage.patch
+%else
+%if 0%{?kat_build:1}
+Patch508:       0001-Initialize-jitterentropy-before-ecdh.patch
+Patch509:       0002-FIPS-crypto-self-tests.patch
+Patch510:       0003-FIPS-broken-kattest.patch
+%endif
 %endif
 
-%if 0%{?kat_build:1}
-Patch510:       crypto-testmgr-break-KAT-fips-intentionally.patch
-%endif
 
 # SEV on VMware:
 Patch600:       0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
@@ -272,10 +282,12 @@ Python programming language to use the interface to manipulate perf events.
 %patch501 -p1
 %if 0%{?fips}
 %patch502 -p1
-%endif
-
+%else
 %if 0%{?kat_build:1}
+%patch508 -p1
+%patch509 -p1
 %patch510 -p1
+%endif
 %endif
 
 %ifarch x86_64
@@ -596,6 +608,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Feb 15 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-9
+-   Added crypto_self_test and kattest module.
+-   These patches are applied when kat_build is enabled.
 *   Wed Feb 03 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.4-8
 -   Update i40e driver to v2.13.10
 -   Add out of tree iavf driver
