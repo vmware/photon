@@ -5,7 +5,7 @@
 
 Summary:	Linux Firmware
 Name:		linux-firmware
-Version:	20200115
+Version:	20210204
 Release:	1%{?dist}
 License:	GPL+ and GPLv2+ and MIT and Redistributable, no modification permitted
 URL:		http://www.kernel.org/
@@ -13,7 +13,7 @@ Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 linux=24f338030e4c250f62ff14a45c4a06f12435a733
+%define sha1 linux=543a0f5f40fd804c9b72998d3334f423d8e74bce
 BuildArch:	noarch
 
 %description
@@ -34,6 +34,8 @@ cp -r * %{buildroot}%{_firmwarepath}
 %{_firmwarepath}/*
 
 %changelog
+*   Thu Feb 04 2021 Ankit Jain <ankitja@vmware.com> 20210204-1
+-   Added firmware for Intel's ice-1.3.2 driver
 *   Wed Jan 15 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 20200115-1
 -   Added ilo4 nic firmware
 *   Thu Oct 24 2019 Ajay Kaher <akaher@vmware.com> 20191030-1

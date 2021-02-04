@@ -8,6 +8,11 @@ mkdir $DST
 git clone https://github.com/RPi-Distro/firmware-nonfree.git --depth=1
 git clone https://github.com/NXP/qoriq-engine-pfe-bin.git --depth=1
 git clone git://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git --depth=1
+# ICE driver firmware
+# Version should be same as provided in linux/linux-rt spec
+ice_version=1.3.2
+wget https://sourceforge.net/projects/e1000/files/ice%20stable/$ice_version/ice-$ice_version.tar.gz
+tar -xpf ice-$ice_version.tar.gz
 
 cp linux-firmware/WHENCE $DST/
 
@@ -50,6 +55,13 @@ cp linux-firmware/LICENSE.i915 $DST/
 mkdir $DST/intel
 cp linux-firmware/intel/ibt-11-5.* $DST/intel/
 cp linux-firmware/LICENCE.ibt_firmware $DST/
+# ICE driver firmware and license
+mkdir -p $DST/updates/intel/ice/ddp
+cp ice-$ice_version/ddp/ice-1.3.20.0.pkg $DST/updates/intel/ice/ddp/
+cp ice-$ice_version/ddp/LICENSE $DST/updates/intel/ice/ddp/
+chmod 0644 $DST/updates/intel/ice/ddp/ice-1.3.20.0.pkg
+chmod 0644 $DST/updates/intel/ice/ddp/LICENSE
+ln -s ice-1.3.20.0.pkg $DST/updates/intel/ice/ddp/ice.pkg
 
 cp linux-firmware/iwlwifi-8000C-*.ucode $DST/
 cp linux-firmware/LICENCE.iwlwifi_firmware $DST/
