@@ -1,19 +1,13 @@
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
-Version:        2.82
-Release:        3%{?dist}
+Version:        2.84
+Release:        1%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            http://www.thekelleys.org.uk/dnsmasq/
 Source:         %{name}-%{version}.tar.xz
-%define sha1    dnsmasq=4eb84825d5a3b7e4d7de1fc58c56dd4eb8cace71
+%define sha1    dnsmasq=60f6b8a6a86987613247c8dc32f61e28599ae285
 Patch0:         enable_dnssec.patch
-Patch1:         0001-Fix-remote-buffer-overflow-CERT-VU-434904.patch
-Patch2:         0002-Check-destination-of-DNS-UDP-query-replies.patch
-Patch3:         0003-Use-SHA-256-to-provide-security-against-DNS-cache-po.patch
-Patch4:         0004-Handle-multiple-identical-near-simultaneous-DNS-quer.patch
-Patch5:         0005-Support-hash-function-from-nettle-only.patch
-Patch6:         0006-Small-cleanups-in-frec_src-datastucture-handling.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  nettle-devel
@@ -29,14 +23,7 @@ Summary:        Utilities for changing DHCP server leases
 Utilities that use DHCP protocol to query and remove a DHCP server's leases
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
+%autosetup
 
 %build
 make %{?_smp_mflags}
@@ -105,6 +92,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+*   Thu Feb 04 2021 Ankit Jain <ankitja@vmware.com> 2.84-1
+-   Update to 2.84
 *   Sat Jan 09 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.82-3
 -   Fix CVE-2020-25681,CVE-2020-25682,CVE-2020-25683,CVE-2020-25684
 -   CVE-2020-25685,CVE-2020-25686,CVE-2020-25687
