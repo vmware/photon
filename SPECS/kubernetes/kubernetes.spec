@@ -10,13 +10,15 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.17.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
 %define sha1    kubernetes-%{version}.tar.gz=f5634a00f087ea6c7d15848de837d6cd0a1b3e3f
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
+Patch0:         CVE-2020-8564.patch
+Patch1:         CVE-2020-8566.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -68,6 +70,8 @@ sed -i '/KUBE_ALLOW_PRIV/d' contrib-0.7.0/init/systemd/kubelet.service
 sed -i 's|KUBELET_ADDRESS|KUBELET_CONFIG|g' contrib-0.7.0/init/systemd/kubelet.service
 sed -i 's|.*KUBELET_ADDRESS.*|KUBELET_CONFIG="--config=/var/lib/kubelet/config.yaml"|g' contrib-0.7.0/init/systemd/environ/kubelet
 cd %{name}-%{version}
+%patch0 -p1
+%patch1 -p1
 
 %build
 make
@@ -233,6 +237,8 @@ fi
 %endif
 
 %changelog
+*   Wed Feb 03 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-3
+-   Fix CVE-2020-8564, CVE-2020-8566
 *   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.17.11-2
 -   Bump up version to compile with new go
 *   Wed Sep 16 2020 Ashwin H <ashwinh@vmware.com> 1.17.11-1
