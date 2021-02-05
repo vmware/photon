@@ -1,14 +1,14 @@
-Summary:	C/C++ library for network traffic capture
-Name:		libpcap
-Version:	1.9.1
-Release:	1%{?dist}
-License:	BSD
-URL:		http://www.tcpdump.org
-Source0:	http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
-%define sha1 libpcap=04d6e619defad5bb17af15f6d2304e79b649786c
-Group:		Networking/Libraries
-Vendor:		VMware, Inc.
-Distribution: 	Photon
+Summary:     C/C++ library for network traffic capture
+Name:        libpcap
+Version:     1.10.0
+Release:     1%{?dist}
+License:      BSD
+URL:          http://www.tcpdump.org
+Source0:      http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
+%define sha1 libpcap=3d8c1843ae4ea0d7871c8689b58508406e5743c9
+Group:        Networking/Libraries
+Vendor:       VMware, Inc.
+Distribution: Photon
 
 %description
 Libpcap provides a portable framework for low-level network
@@ -31,7 +31,7 @@ This package contains libraries and header files for
 developing applications that use %{name}.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure
@@ -67,20 +67,22 @@ make DESTDIR=%{buildroot} install
 %{_mandir}/man7/*
 
 %changelog
-*       Mon Oct 14 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.9.1-1
--       Update to 1.9.1
-*	Mon Nov 26 2018 Ashwin H <ashwinh@vmware.com> 1.9.0-2
--       Fix %check
-*       Sun Sep 30 2018 Bo Gan <ganb@vmware.com> 1.9.0-1
--       Update to 1.9.0
--       Split devel package
-*	Tue Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.1-1
--	Updated to version 1.8.1
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.4-2
--	GA - Bump release of all rpms
-* 	Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.4-1
-- 	Updated to version 1.7.4
-*   Mon Apr 6 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 1.7.2-1
--   Version upgrade to 1.7.2
-*	Wed Jan 21 2015 Divya Thaluru <dthaluru@vmware.com> 1.6.2-1
--	Initial build. First version
+* Fri Feb 05 2021 Susant Sahani <ssahani@vmware.com> 1.10.0-1
+- Version bump
+* Mon Oct 14 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.9.1-1
+- Update to 1.9.1
+* Mon Nov 26 2018 Ashwin H <ashwinh@vmware.com> 1.9.0-2
+- Fix %check
+* Sun Sep 30 2018 Bo Gan <ganb@vmware.com> 1.9.0-1
+- Update to 1.9.0
+- Split devel package
+* Tue Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.1-1
+- Updated to version 1.8.1
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.4-2
+- GA - Bump release of all rpms
+* Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.4-1
+- Updated to version 1.7.4
+* Mon Apr 6 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 1.7.2-1
+- Version upgrade to 1.7.2
+* Wed Jan 21 2015 Divya Thaluru <dthaluru@vmware.com> 1.6.2-1
+- Initial build. First version
