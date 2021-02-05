@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        13.0
-Release:        3%{?dist}
+Version:        13.1
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -9,26 +9,30 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=f580717bc2872be532d43307b9d5319c5c1838c3
+%define sha1    postgresql=3760c704f4d195100a28a983c0bc5331076259ee
 
 # Common libraries needed
+BuildRequires:  diffutils
+BuildRequires:  gcc
 BuildRequires:  krb5-devel
+BuildRequires:  libedit-devel
 BuildRequires:  libxml2-devel
+BuildRequires:  linux-api-headers
 BuildRequires:  openldap
 BuildRequires:  perl
 BuildRequires:  readline-devel
-BuildRequires:  libedit-devel
 BuildRequires:  openssl-devel
-BuildRequires:  zlib-devel
+BuildRequires:  tar
 BuildRequires:  tzdata
+BuildRequires:  zlib-devel
 Requires:       krb5
+Requires:       libedit
 Requires:       libxml2
 Requires:       openldap
 Requires:       openssl
 Requires:       readline
-Requires:       libedit
-Requires:       zlib
 Requires:       tzdata
+Requires:       zlib
 
 Requires:   %{name}-libs = %{version}-%{release}
 
@@ -165,6 +169,10 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Fri Feb 5 2021 Michael Paquier <mpaquier@vmware.com> 13.1-1
+-   Fix and reorganize list of BuildRequires
+-   Removal of custom patch for CVE-2016-5423 committed in upstream.
+-   Upgraded to version 13.1
 *   Wed Sep 30 2020 Dweep Advani <dadvani@vmware.com> 13.0-3
 -   Prefer libedit over readline
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 13.0-2
