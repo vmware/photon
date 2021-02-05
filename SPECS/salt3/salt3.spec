@@ -9,7 +9,7 @@
 
 Name:           salt3
 Version:        3001.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A parallel remote execution system with python3
 Group:          System Environment/Daemons
 License:        ASL 2.0
@@ -36,7 +36,7 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  systemd
 BuildRequires:  python3-distro
-Requires:       python3-pycrypto
+Requires:       python3-pycryptodomex
 Requires:       python3-jinja2
 Requires:       python3-msgpack
 Requires:       python3-PyYAML
@@ -302,6 +302,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Wed Feb 03 2021 Tapas Kundu <tkundu@vmware.com> 3001.1-2
+- Depends on pycrptodomex instead of pycrypto
 * Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 3001.1-1
 - Automatic Version Bump
 * Mon Jul 27 2020 Tapas Kundu <tkundu@vmware.com> 2019.2.5-1
