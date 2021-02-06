@@ -9,12 +9,12 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.18.8
-Release:        3%{?dist}
+Version:        1.19.7
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=01e8669db0350176660d7227a5496df156cf592c
+%define sha1    kubernetes-%{version}.tar.gz=f6ed22f7287f900fa6e6376643e001ca639fd384
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Source2:        kubelet.service
@@ -227,6 +227,8 @@ fi
 %endif
 
 %changelog
+*   Tue Feb 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.7-1
+-   Update to v1.19.7
 *   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.18.8-3
 -   Bump up version to compile with new go
 *   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.18.8-2
