@@ -15,7 +15,7 @@
 Summary:        Go
 Name:           go
 Version:        1.13.15
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -25,6 +25,7 @@ Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
 %define sha1    go=54860ef92533677bb1366e6441716a77e5ec6f13
 Patch0:         go-1.13-CVE-2020-28367.patch
 Patch1:         go-CVE-2020-28366.patch
+Patch2:         go-1.13-CVE-2021-3115.patch
 Requires:       glibc
 %define ExtraBuildRequires go
 
@@ -35,6 +36,7 @@ Go is an open source programming language that makes it easy to build simple, re
 %setup -qn %{name}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 export GOHOSTOS=linux
@@ -116,6 +118,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.13.15-3
+-   Fix CVE-2020-28367,CVE-2020-28366
 *   Wed Nov 25 2020 Harinadh D <hdommaraju@vmware.com> 1.13.15-2
 -   Fix CVE-2020-28367,CVE-2020-28366
 *   Thu Sep 10 2020 Ashwin H <ashwinh@vmware.com> 1.13.15-1

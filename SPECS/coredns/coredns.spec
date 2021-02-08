@@ -7,7 +7,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.2.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/coredns/coredns/releases/v%{version}.tar.gz
 Source0:        coredns-%{version}.tar.gz
@@ -60,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/coredns
 
 %changelog
+*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.2.0-9
+-   Bump up version to compile with new go
 *   Thu Dec 17 2020 Ankit Jain <ankitja@vmware.com> 1.2.0-8
 -   Repo changed from github.com/mholt/caddy to github.com/caddyserver/caddy
 *   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.2.0-7

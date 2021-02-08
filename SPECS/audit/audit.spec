@@ -4,7 +4,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.5
-Release:        6%{?dist}
+Release:        7%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=62fcac8cbd20c796b909b91f8f615f8556b22a24
 License:        GPLv2+
@@ -163,6 +163,8 @@ mkdir -p /var/log/audit
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 2.8.5-7
+-   Bump up version to compile with new go
 *   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 2.8.5-6
 -   Bump up version to compile with new go
 *   Wed Jun 17 2020 Alexey Makhalov <amakhalov@vmware.com> 2.8.5-5

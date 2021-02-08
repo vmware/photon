@@ -3,7 +3,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.3.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
@@ -109,6 +109,8 @@ make integration
 %{_mandir}/man8/*
 
 %changelog
+*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.3.9-3
+-   Bump up version to compile with new go
 *   Tue Dec 1 2020 HarinadhD <hdommaraju@vmware.com> 1.3.9-2
 -   Bump up version to compile with new go
 *   Mon Nov 30 2020 Bo Gan <ganb@vmware.com> 1.3.9-1
