@@ -1,7 +1,7 @@
 Summary:       A per-host daemon for Calico
 Name:          calico-felix
 Version:       3.16.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
@@ -33,6 +33,8 @@ install bin/calico-felix %{buildroot}%{_bindir}/
 %{_bindir}/calico-felix
 
 %changelog
+*   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 3.16.0-3
+-   Bump up version to compile with new go
 *   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 3.16.0-2
 -   Bump up version to compile with new go
 *   Tue Jun 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.16.0-1
