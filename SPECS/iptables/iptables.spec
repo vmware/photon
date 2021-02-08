@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.8.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -14,11 +14,14 @@ Source2:        iptables
 Source3:        iptables.stop
 Source4:        ip4save
 Source5:        ip6save
+
 BuildRequires:  jansson-devel
 BuildRequires:  libmnl-devel
 BuildRequires:  libnftnl-devel
 BuildRequires:  systemd
+
 Requires:       systemd
+
 %description
 The next part of this chapter deals with firewalls. The principal
 firewall tool for Linux is Iptables. You will need to install
@@ -97,6 +100,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Feb 08 2021 Susant Sahani <ssahani@vmware.com> 1.8.3-2
+-   Set wait option for iptables-restore calls
 *   Tue Jul 30 2019 Shreyas B. <shreyasb@vmware.com> 1.8.3-1
 -   Updated to version 1.8.3
 *   Tue Feb 26 2019 Alexey Makhalov <amakhalov@vmware.com> 1.8.0-2
