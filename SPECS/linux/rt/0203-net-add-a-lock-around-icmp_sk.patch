@@ -1,7 +1,7 @@
-From 623b9a6ff8310e55182cafd442753071e0d4d6c5 Mon Sep 17 00:00:00 2001
-Message-Id: <623b9a6ff8310e55182cafd442753071e0d4d6c5.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 2e1525a8a54cc3cae60acea07b3a5c817592c1e2 Mon Sep 17 00:00:00 2001
+Message-Id: <2e1525a8a54cc3cae60acea07b3a5c817592c1e2.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 31 Aug 2016 17:54:09 +0200
 Subject: [PATCH 203/335] net: add a lock around icmp_sk()
@@ -17,7 +17,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 8 insertions(+)
 
 diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 4efa5e33513e..de67d595e298 100644
+index 59c0b1a86e51..e5031baa189d 100644
 --- a/net/ipv4/icmp.c
 +++ b/net/ipv4/icmp.c
 @@ -77,6 +77,7 @@

@@ -1,7 +1,7 @@
-From a39e1d5717404d4624286db2df812da3cd999df0 Mon Sep 17 00:00:00 2001
-Message-Id: <a39e1d5717404d4624286db2df812da3cd999df0.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From ef5a2c122bcee4dc074d085d9f47f4a45dddfb41 Mon Sep 17 00:00:00 2001
+Message-Id: <ef5a2c122bcee4dc074d085d9f47f4a45dddfb41.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Daniel Bristot de Oliveira <bristot@redhat.com>
 Date: Mon, 26 Jun 2017 17:07:15 +0200
 Subject: [PATCH 114/335] rt: Increase/decrease the nr of migratory tasks when
@@ -84,10 +84,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 44 insertions(+), 5 deletions(-)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index be048e7066d1..25dd44553ea6 100644
+index 0915e400eff8..d9e80ccb4dbf 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -7180,6 +7180,47 @@ const u32 sched_prio_to_wmult[40] = {
+@@ -7176,6 +7176,47 @@ const u32 sched_prio_to_wmult[40] = {
  
  #if defined(CONFIG_PREEMPT_COUNT) && defined(CONFIG_SMP)
  
@@ -135,7 +135,7 @@ index be048e7066d1..25dd44553ea6 100644
  void migrate_disable(void)
  {
  	struct task_struct *p = current;
-@@ -7203,10 +7244,9 @@ void migrate_disable(void)
+@@ -7199,10 +7240,9 @@ void migrate_disable(void)
  	}
  
  	preempt_disable();
@@ -148,7 +148,7 @@ index be048e7066d1..25dd44553ea6 100644
  
  	preempt_enable();
  }
-@@ -7238,9 +7278,8 @@ void migrate_enable(void)
+@@ -7234,9 +7274,8 @@ void migrate_enable(void)
  
  	preempt_disable();
  

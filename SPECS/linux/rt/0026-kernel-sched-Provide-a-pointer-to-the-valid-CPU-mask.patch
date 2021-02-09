@@ -1,7 +1,7 @@
-From f43131881f75fa754c3e67d689fe89d1f4642dff Mon Sep 17 00:00:00 2001
-Message-Id: <f43131881f75fa754c3e67d689fe89d1f4642dff.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 74a9128f0c96b3e87bcbd505bbec195ba49c50c2 Mon Sep 17 00:00:00 2001
+Message-Id: <74a9128f0c96b3e87bcbd505bbec195ba49c50c2.1612799231.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 4 Apr 2017 12:50:16 +0200
 Subject: [PATCH 026/335] kernel: sched: Provide a pointer to the valid CPU
@@ -273,7 +273,7 @@ index 9eb99a43f849..e4d0cfebaac5 100644
  
  static inline void task_core_dumping(struct seq_file *m, struct mm_struct *mm)
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index c69f308f3a53..463c20160105 100644
+index 5524cd5c6abe..92ede00e5c81 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
 @@ -660,7 +660,8 @@ struct task_struct {
@@ -286,7 +286,7 @@ index c69f308f3a53..463c20160105 100644
  
  #ifdef CONFIG_PREEMPT_RCU
  	int				rcu_read_lock_nesting;
-@@ -1398,7 +1399,7 @@ extern struct pid *cad_pid;
+@@ -1399,7 +1400,7 @@ extern struct pid *cad_pid;
  #define PF_KTHREAD		0x00200000	/* I am a kernel thread */
  #define PF_RANDOMIZE		0x00400000	/* Randomize virtual address space */
  #define PF_SWAPWRITE		0x00800000	/* Allowed to write to swap */
@@ -323,7 +323,7 @@ index ff956ccbb6df..7bb129c5b412 100644
  }
  
 diff --git a/kernel/fork.c b/kernel/fork.c
-index 1a2d18e98bf9..bc182d6fa2a9 100644
+index cf535b9d5db7..f28a903e5077 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
 @@ -850,6 +850,8 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
@@ -336,7 +336,7 @@ index 1a2d18e98bf9..bc182d6fa2a9 100644
  	/*
  	 * One for us, one for whoever does the "release_task()" (usually
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index faef74f63262..42343f58cea4 100644
+index 013b1c6cb4ed..5a852bdb3f3b 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -878,7 +878,7 @@ static inline bool is_per_cpu_kthread(struct task_struct *p)
@@ -477,7 +477,7 @@ index faef74f63262..42343f58cea4 100644
  	raw_spin_unlock_irqrestore(&p->pi_lock, flags);
  
  out_unlock:
-@@ -5499,7 +5499,7 @@ int task_can_attach(struct task_struct *p,
+@@ -5495,7 +5495,7 @@ int task_can_attach(struct task_struct *p,
  	 * allowed nodes is unnecessary.  Thus, cpusets are not
  	 * applicable for such threads.  This prevents checking for
  	 * success of set_cpus_allowed_ptr() on all attached tasks
@@ -486,7 +486,7 @@ index faef74f63262..42343f58cea4 100644
  	 */
  	if (p->flags & PF_NO_SETAFFINITY) {
  		ret = -EINVAL;
-@@ -5526,7 +5526,7 @@ int migrate_task_to(struct task_struct *p, int target_cpu)
+@@ -5522,7 +5522,7 @@ int migrate_task_to(struct task_struct *p, int target_cpu)
  	if (curr_cpu == target_cpu)
  		return 0;
  
@@ -495,7 +495,7 @@ index faef74f63262..42343f58cea4 100644
  		return -EINVAL;
  
  	/* TODO: This is not properly updating schedstats */
-@@ -5665,7 +5665,7 @@ static void migrate_tasks(struct rq *dead_rq, struct rq_flags *rf)
+@@ -5661,7 +5661,7 @@ static void migrate_tasks(struct rq *dead_rq, struct rq_flags *rf)
  		put_prev_task(rq, next);
  
  		/*
@@ -544,7 +544,7 @@ index daaadf939ccb..f7d2c10b4c92 100644
  			/*
  			 * We have to ensure that we have at least one bit
 diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
-index 8aecfb143859..311b3cf1270e 100644
+index aa592dc3cb40..288d199005c4 100644
 --- a/kernel/sched/deadline.c
 +++ b/kernel/sched/deadline.c
 @@ -539,7 +539,7 @@ static struct rq *dl_task_offline_migration(struct rq *rq, struct task_struct *p
@@ -744,7 +744,7 @@ index b980cc96604f..b6ca4a630050 100644
  				     !rt_task(task) ||
  				     !task_on_rq_queued(task))) {
 diff --git a/kernel/trace/trace_hwlat.c b/kernel/trace/trace_hwlat.c
-index 568918fae8d4..35512ed26d9f 100644
+index ade6c3070c62..164e5c618cce 100644
 --- a/kernel/trace/trace_hwlat.c
 +++ b/kernel/trace/trace_hwlat.c
 @@ -280,7 +280,7 @@ static void move_to_next_cpu(void)

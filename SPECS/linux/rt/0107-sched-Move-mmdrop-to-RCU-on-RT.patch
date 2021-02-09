@@ -1,7 +1,7 @@
-From faa90a8ff5c69c6be5bacc23068fa34bc7615db7 Mon Sep 17 00:00:00 2001
-Message-Id: <faa90a8ff5c69c6be5bacc23068fa34bc7615db7.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From b811ef9da5c86f46c182c82392bb7fd7de3c534f Mon Sep 17 00:00:00 2001
+Message-Id: <b811ef9da5c86f46c182c82392bb7fd7de3c534f.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Mon, 6 Jun 2011 12:20:33 +0200
 Subject: [PATCH 107/335] sched: Move mmdrop to RCU on RT
@@ -40,7 +40,7 @@ index 3a9a996af229..202b736ccbfa 100644
  		atomic_long_t hugetlb_usage;
  #endif
 diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
-index 766bbe813861..51828764f932 100644
+index 8d3b7e731b74..e8aa1fe3d2e8 100644
 --- a/include/linux/sched/mm.h
 +++ b/include/linux/sched/mm.h
 @@ -49,6 +49,17 @@ static inline void mmdrop(struct mm_struct *mm)
@@ -62,7 +62,7 @@ index 766bbe813861..51828764f932 100644
  
  /*
 diff --git a/kernel/fork.c b/kernel/fork.c
-index 309f4a20d4ac..d4ec53c72577 100644
+index e6885631bc0f..29d7430dc3c5 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
 @@ -642,6 +642,19 @@ void __mmdrop(struct mm_struct *mm)
@@ -86,7 +86,7 @@ index 309f4a20d4ac..d4ec53c72577 100644
  {
  	struct mm_struct *mm;
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 87c04b6a78d2..ec979c93a488 100644
+index 74f718d17e67..c4a289b5fa5b 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -2731,9 +2731,13 @@ static struct rq *finish_task_switch(struct task_struct *prev)
@@ -104,7 +104,7 @@ index 87c04b6a78d2..ec979c93a488 100644
  	}
  	if (unlikely(prev_state == TASK_DEAD)) {
  		if (prev->sched_class->task_dead)
-@@ -5604,6 +5608,7 @@ void sched_setnuma(struct task_struct *p, int nid)
+@@ -5600,6 +5604,7 @@ void sched_setnuma(struct task_struct *p, int nid)
  #endif /* CONFIG_NUMA_BALANCING */
  
  #ifdef CONFIG_HOTPLUG_CPU

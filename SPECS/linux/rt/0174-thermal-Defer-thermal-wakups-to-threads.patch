@@ -1,7 +1,7 @@
-From 4c431d2cb6a2a6521885c7c1b702370f258a672f Mon Sep 17 00:00:00 2001
-Message-Id: <4c431d2cb6a2a6521885c7c1b702370f258a672f.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From df539767d547b561709d4e42b7935626925d2cc8 Mon Sep 17 00:00:00 2001
+Message-Id: <df539767d547b561709d4e42b7935626925d2cc8.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Daniel Wagner <wagi@monom.org>
 Date: Tue, 17 Feb 2015 09:37:44 +0100
 Subject: [PATCH 174/335] thermal: Defer thermal wakups to threads

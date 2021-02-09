@@ -1,7 +1,7 @@
-From db4685b6ece0a5291be68b9848b870f6f5aab5cc Mon Sep 17 00:00:00 2001
-Message-Id: <db4685b6ece0a5291be68b9848b870f6f5aab5cc.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From f5f620231cff765049da41cc79da87e07493fe1e Mon Sep 17 00:00:00 2001
+Message-Id: <f5f620231cff765049da41cc79da87e07493fe1e.1612799231.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 24 Jul 2018 14:48:55 +0200
 Subject: [PATCH 019/335] x86/efi: drop task_lock() from efi_switch_mm()
@@ -26,10 +26,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 4 insertions(+), 6 deletions(-)
 
 diff --git a/arch/x86/platform/efi/efi_64.c b/arch/x86/platform/efi/efi_64.c
-index 52dd59af873e..04f05173e6ff 100644
+index 77d05b56089a..cd7e4bfb43cf 100644
 --- a/arch/x86/platform/efi/efi_64.c
 +++ b/arch/x86/platform/efi/efi_64.c
-@@ -617,18 +617,16 @@ void __init efi_dump_pagetable(void)
+@@ -619,18 +619,16 @@ void __init efi_dump_pagetable(void)
  
  /*
   * Makes the calling thread switch to/from efi_mm context. Can be used

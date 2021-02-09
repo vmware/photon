@@ -1,7 +1,7 @@
-From 2ac6c581bfe590882422084b6647689bfcd1ce9e Mon Sep 17 00:00:00 2001
-Message-Id: <2ac6c581bfe590882422084b6647689bfcd1ce9e.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 861b456e5f811b31f529c6f0e445cbccf240d331 Mon Sep 17 00:00:00 2001
+Message-Id: <861b456e5f811b31f529c6f0e445cbccf240d331.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sat, 25 Jun 2011 09:21:04 +0200
 Subject: [PATCH 109/335] sched: Add saved_state for tasks blocked on sleeping
@@ -21,7 +21,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  3 files changed, 36 insertions(+), 1 deletion(-)
 
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 9a0e01e48602..42846a65df9a 100644
+index 10586984049a..67f6fec7975f 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
 @@ -600,6 +600,8 @@ struct task_struct {
@@ -33,7 +33,7 @@ index 9a0e01e48602..42846a65df9a 100644
  
  	/*
  	 * This begins the randomizable portion of task_struct. Only
-@@ -1621,6 +1623,7 @@ extern struct task_struct *find_get_task_by_vpid(pid_t nr);
+@@ -1622,6 +1624,7 @@ extern struct task_struct *find_get_task_by_vpid(pid_t nr);
  
  extern int wake_up_state(struct task_struct *tsk, unsigned int state);
  extern int wake_up_process(struct task_struct *tsk);
@@ -42,7 +42,7 @@ index 9a0e01e48602..42846a65df9a 100644
  
  #ifdef CONFIG_SMP
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 3600139cb690..53d9f8927619 100644
+index 39db9580e21d..066e616aaba5 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -1999,8 +1999,27 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)
@@ -94,10 +94,10 @@ index 3600139cb690..53d9f8927619 100644
  {
  	return try_to_wake_up(p, state, 0);
 diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 5f0eb4565957..96823c632599 100644
+index 7b7ba91e319b..494d21b04b1d 100644
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
-@@ -1445,6 +1445,7 @@ static inline int task_on_rq_migrating(struct task_struct *p)
+@@ -1446,6 +1446,7 @@ static inline int task_on_rq_migrating(struct task_struct *p)
  #define WF_SYNC			0x01		/* Waker goes to sleep after wakeup */
  #define WF_FORK			0x02		/* Child wakeup after fork */
  #define WF_MIGRATED		0x4		/* Internal use, task got migrated */

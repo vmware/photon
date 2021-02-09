@@ -1,7 +1,7 @@
-From cfde3d635ce65b1a060ce0a63a37ac60fb9d0f53 Mon Sep 17 00:00:00 2001
-Message-Id: <cfde3d635ce65b1a060ce0a63a37ac60fb9d0f53.1605897049.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 80a1a5a9578d5f082d059714d348b944dfbb8116 Mon Sep 17 00:00:00 2001
+Message-Id: <80a1a5a9578d5f082d059714d348b944dfbb8116.1612799233.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Oleg Nesterov <oleg@redhat.com>
 Date: Tue, 3 Nov 2020 12:39:01 +0100
 Subject: [PATCH 334/335] ptrace: fix ptrace_unfreeze_traced() race with
@@ -25,7 +25,7 @@ Signed-off-by: Tom Zanussi <zanussi@kernel.org>
  1 file changed, 15 insertions(+), 8 deletions(-)
 
 diff --git a/kernel/ptrace.c b/kernel/ptrace.c
-index a38b304fb9fd..cbefb0234be3 100644
+index d0d1a091cdf6..9db31efb5b08 100644
 --- a/kernel/ptrace.c
 +++ b/kernel/ptrace.c
 @@ -191,8 +191,8 @@ static bool ptrace_freeze_traced(struct task_struct *task)

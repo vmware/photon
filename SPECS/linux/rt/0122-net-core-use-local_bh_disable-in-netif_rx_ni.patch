@@ -1,7 +1,7 @@
-From f5ab864faeb0b766a1986882b2f5372b601b7cf5 Mon Sep 17 00:00:00 2001
-Message-Id: <f5ab864faeb0b766a1986882b2f5372b601b7cf5.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From cd1fb414fc4b03f66bb7d4e708044cfa5ef52df6 Mon Sep 17 00:00:00 2001
+Message-Id: <cd1fb414fc4b03f66bb7d4e708044cfa5ef52df6.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 16 Jun 2017 19:03:16 +0200
 Subject: [PATCH 122/335] net/core: use local_bh_disable() in netif_rx_ni()
@@ -21,7 +21,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/net/core/dev.c b/net/core/dev.c
-index ccedc620795c..414e4d7e2082 100644
+index b891e698a257..6437ea1e5edc 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
 @@ -4526,11 +4526,9 @@ int netif_rx_ni(struct sk_buff *skb)

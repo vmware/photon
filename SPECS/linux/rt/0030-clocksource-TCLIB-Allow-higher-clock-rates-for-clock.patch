@@ -1,7 +1,7 @@
-From 519d851b41a99967d3f956dd7af9342d1fac4097 Mon Sep 17 00:00:00 2001
-Message-Id: <519d851b41a99967d3f956dd7af9342d1fac4097.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From cc4c8a61776d0338c5abd559fbe9eb48f5057025 Mon Sep 17 00:00:00 2001
+Message-Id: <cc4c8a61776d0338c5abd559fbe9eb48f5057025.1612799231.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Benedikt Spranger <b.spranger@linutronix.de>
 Date: Mon, 8 Mar 2010 18:57:04 +0100
 Subject: [PATCH 030/335] clocksource: TCLIB: Allow higher clock rates for

@@ -1,7 +1,7 @@
-From 65d719b3311f31e7c604f44af09ddbf445910f37 Mon Sep 17 00:00:00 2001
-Message-Id: <65d719b3311f31e7c604f44af09ddbf445910f37.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 7608187ee6d3ef035590faef64d6d5f92dd4fa6c Mon Sep 17 00:00:00 2001
+Message-Id: <7608187ee6d3ef035590faef64d6d5f92dd4fa6c.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 15 Sep 2016 10:51:27 +0200
 Subject: [PATCH 128/335] fs/nfs: turn rmdir_sem into a semaphore
@@ -52,7 +52,7 @@ index 733fd9e4f0a1..e166bc8be849 100644
  		error = NFS_PROTO(dir)->rmdir(dir, &dentry->d_name);
  	trace_nfs_rmdir_exit(dir, dentry, error);
 diff --git a/fs/nfs/inode.c b/fs/nfs/inode.c
-index e4cd3a2fe698..6f22c8d65760 100644
+index aee66d8f1330..26d3e271b6a0 100644
 --- a/fs/nfs/inode.c
 +++ b/fs/nfs/inode.c
 @@ -2104,7 +2104,11 @@ static void init_once(void *foo)

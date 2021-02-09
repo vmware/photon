@@ -1,7 +1,7 @@
-From 09ebac1a4a03e3c29fc969650c3a1cffb3bde6ea Mon Sep 17 00:00:00 2001
-Message-Id: <09ebac1a4a03e3c29fc969650c3a1cffb3bde6ea.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From e6d58ff3f6caef4c2566269163ece17deaa91079 Mon Sep 17 00:00:00 2001
+Message-Id: <e6d58ff3f6caef4c2566269163ece17deaa91079.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 12 Oct 2017 16:36:39 +0200
 Subject: [PATCH 141/335] rtmutex: export lockdep-less version of rt_mutex's
@@ -17,7 +17,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  2 files changed, 46 insertions(+), 24 deletions(-)
 
 diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
-index 921345c31161..d732976d0f05 100644
+index e9255b28de8f..e24699290bb7 100644
 --- a/kernel/locking/rtmutex.c
 +++ b/kernel/locking/rtmutex.c
 @@ -1494,12 +1494,33 @@ rt_mutex_fastunlock(struct rt_mutex *lock,
@@ -137,10 +137,10 @@ index 921345c31161..d732976d0f05 100644
   * rt_mutex_unlock - unlock a rt_mutex
   *
 diff --git a/kernel/locking/rtmutex_common.h b/kernel/locking/rtmutex_common.h
-index cb9815f0c766..5955ad2aa2a8 100644
+index 66deb94765fb..53a8c5d03d28 100644
 --- a/kernel/locking/rtmutex_common.h
 +++ b/kernel/locking/rtmutex_common.h
-@@ -162,6 +162,9 @@ extern bool __rt_mutex_futex_unlock(struct rt_mutex *lock,
+@@ -161,6 +161,9 @@ extern bool __rt_mutex_futex_unlock(struct rt_mutex *lock,
  extern void rt_mutex_postunlock(struct wake_q_head *wake_q);
  /* RW semaphore special interface */
  

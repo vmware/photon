@@ -1,7 +1,7 @@
-From 93998cacad927ec44bdae93edc5c0a380a19c1cb Mon Sep 17 00:00:00 2001
-Message-Id: <93998cacad927ec44bdae93edc5c0a380a19c1cb.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 5d063b919508f60cd07861428a013835208c0c2f Mon Sep 17 00:00:00 2001
+Message-Id: <5d063b919508f60cd07861428a013835208c0c2f.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 14 May 2019 17:07:44 +0200
 Subject: [PATCH 267/335] arm: imx6: cpuidle: Use raw_spinlock_t

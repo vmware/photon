@@ -1,7 +1,7 @@
-From d83ee8531f737529ece4db92389896abf076300e Mon Sep 17 00:00:00 2001
-Message-Id: <d83ee8531f737529ece4db92389896abf076300e.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 33d294cd9a4a6f1d6d7f0f69b3620ae393b1ce39 Mon Sep 17 00:00:00 2001
+Message-Id: <33d294cd9a4a6f1d6d7f0f69b3620ae393b1ce39.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 9 Jun 2011 11:43:52 +0200
 Subject: [PATCH 135/335] rtmutex: Add rtmutex_lock_killable()
@@ -28,7 +28,7 @@ index 6fd615a0eea9..81ece6a8291a 100644
  			       struct hrtimer_sleeper *timeout);
  
 diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
-index 1c3f56d3d9b6..a4b2af7718f8 100644
+index 069f025180b8..81bae2e3d82e 100644
 --- a/kernel/locking/rtmutex.c
 +++ b/kernel/locking/rtmutex.c
 @@ -1562,6 +1562,25 @@ int __sched __rt_mutex_futex_trylock(struct rt_mutex *lock)

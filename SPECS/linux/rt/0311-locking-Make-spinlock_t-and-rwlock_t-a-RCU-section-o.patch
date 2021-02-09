@@ -1,7 +1,7 @@
-From b40b714c20719771f087f0b2247b0391b29f60f1 Mon Sep 17 00:00:00 2001
-Message-Id: <b40b714c20719771f087f0b2247b0391b29f60f1.1605897049.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From fef129d9f5f9fd740ab2e8c368ab70fba4bb4707 Mon Sep 17 00:00:00 2001
+Message-Id: <fef129d9f5f9fd740ab2e8c368ab70fba4bb4707.1612799233.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 19 Nov 2019 09:25:04 +0100
 Subject: [PATCH 311/335] locking: Make spinlock_t and rwlock_t a RCU section
@@ -23,7 +23,7 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  2 files changed, 12 insertions(+)
 
 diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
-index 63b3d6f306fa..c7d3ae01b4e5 100644
+index dc95a81ae3a6..fe5153fc7665 100644
 --- a/kernel/locking/rtmutex.c
 +++ b/kernel/locking/rtmutex.c
 @@ -1142,6 +1142,7 @@ void __sched rt_spin_lock_slowunlock(struct rt_mutex *lock)

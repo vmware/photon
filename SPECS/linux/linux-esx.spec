@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.164
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.174
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=18d5ba7c5d729c56aea8148d12dea75848b6c5c8
+%define sha1 linux=d0755977c35500db4fa7ea2cdc22d6e303e61f58
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -754,6 +754,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Feb 09 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.174-1
+-   Update to version 4.19.174
 *   Tue Jan 12 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.164-3
 -   Remove redundant mem size check.
 *   Thu Jan 07 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.164-2
@@ -766,7 +768,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 -   9p: fscache: Ensure consistent blksize is returned from 9p client.
 *   Wed Dec 09 2020 Srinidhi Rao <srinidhir@vmware.com> 4.19.160-3
 -   Fix for CVE-2019-19770
-*   Fri Dec 6 2020 Albert Guo <aguo@vmware.com> 4.19.160-2
+*   Sun Dec 6 2020 Albert Guo <aguo@vmware.com> 4.19.160-2
 -   9p: fscache: Make dcache work with case insensitive volumes
 *   Fri Dec 4 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.160-1
 -   Update to version 4.19.160

@@ -1,7 +1,7 @@
-From 9387bffbac9d593cefc349eea78a438c228c87ed Mon Sep 17 00:00:00 2001
-Message-Id: <9387bffbac9d593cefc349eea78a438c228c87ed.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From eb11d721887870d9cafdc6e42f567360070c6994 Mon Sep 17 00:00:00 2001
+Message-Id: <eb11d721887870d9cafdc6e42f567360070c6994.1612799231.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Date: Thu, 13 Sep 2018 13:30:19 +0200
 Subject: [PATCH 002/335] clocksource/drivers: Add a new driver for the Atmel

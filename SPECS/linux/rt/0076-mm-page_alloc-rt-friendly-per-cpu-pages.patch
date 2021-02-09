@@ -1,7 +1,7 @@
-From 1cb9f5be37c26e3df52084a14bf9dfb091d59374 Mon Sep 17 00:00:00 2001
-Message-Id: <1cb9f5be37c26e3df52084a14bf9dfb091d59374.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 3b75c7e4cb0f1b65aea6bb6bdcbc3ccfd735a825 Mon Sep 17 00:00:00 2001
+Message-Id: <3b75c7e4cb0f1b65aea6bb6bdcbc3ccfd735a825.1612799231.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Ingo Molnar <mingo@elte.hu>
 Date: Fri, 3 Jul 2009 08:29:37 -0500
 Subject: [PATCH 076/335] mm: page_alloc: rt-friendly per-cpu pages
@@ -20,7 +20,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  1 file changed, 43 insertions(+), 20 deletions(-)
 
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 773f29e741b0..6b0fc3393a94 100644
+index 622b27a52dda..9e12c615ded8 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
 @@ -60,6 +60,7 @@
@@ -218,7 +218,7 @@ index 773f29e741b0..6b0fc3393a94 100644
  	return NULL;
  }
  
-@@ -8134,7 +8157,7 @@ void zone_pcp_reset(struct zone *zone)
+@@ -8139,7 +8162,7 @@ void zone_pcp_reset(struct zone *zone)
  	struct per_cpu_pageset *pset;
  
  	/* avoid races with drain_pages()  */
@@ -227,7 +227,7 @@ index 773f29e741b0..6b0fc3393a94 100644
  	if (zone->pageset != &boot_pageset) {
  		for_each_online_cpu(cpu) {
  			pset = per_cpu_ptr(zone->pageset, cpu);
-@@ -8143,7 +8166,7 @@ void zone_pcp_reset(struct zone *zone)
+@@ -8148,7 +8171,7 @@ void zone_pcp_reset(struct zone *zone)
  		free_percpu(zone->pageset);
  		zone->pageset = &boot_pageset;
  	}

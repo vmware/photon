@@ -1,7 +1,7 @@
-From 9120128a4316a5432c6c27533126110aaf6a6c33 Mon Sep 17 00:00:00 2001
-Message-Id: <9120128a4316a5432c6c27533126110aaf6a6c33.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From bdc4d6b27d0d3cf8bbd7b43cde681e1af3becd1b Mon Sep 17 00:00:00 2001
+Message-Id: <bdc4d6b27d0d3cf8bbd7b43cde681e1af3becd1b.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 7 Jun 2011 09:19:06 +0200
 Subject: [PATCH 110/335] sched: Do not account rcu_preempt_depth on RT in
@@ -42,10 +42,10 @@ index 68cbe111420b..027c58cdbb6e 100644
  
  /* Internal to kernel */
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 53d9f8927619..2aa1d2a9ee5e 100644
+index 066e616aaba5..d90e666c991a 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -6193,7 +6193,7 @@ void __init sched_init(void)
+@@ -6189,7 +6189,7 @@ void __init sched_init(void)
  #ifdef CONFIG_DEBUG_ATOMIC_SLEEP
  static inline int preempt_count_equals(int preempt_offset)
  {

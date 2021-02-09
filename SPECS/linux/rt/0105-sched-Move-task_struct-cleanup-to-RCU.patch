@@ -1,7 +1,7 @@
-From 60a45eab53c69220d73c2dfc10850c4e5e82a6d0 Mon Sep 17 00:00:00 2001
-Message-Id: <60a45eab53c69220d73c2dfc10850c4e5e82a6d0.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From c0e4d69d9b1e4b04bcf9702c25a61064bc74c778 Mon Sep 17 00:00:00 2001
+Message-Id: <c0e4d69d9b1e4b04bcf9702c25a61064bc74c778.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 31 May 2011 16:59:16 +0200
 Subject: [PATCH 105/335] sched: Move task_struct cleanup to RCU
@@ -17,10 +17,10 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  3 files changed, 27 insertions(+), 2 deletions(-)
 
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index b6fbc5aa3d5d..9a0e01e48602 100644
+index d090eacc56c1..10586984049a 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
-@@ -1194,6 +1194,9 @@ struct task_struct {
+@@ -1196,6 +1196,9 @@ struct task_struct {
  	unsigned int			sequential_io;
  	unsigned int			sequential_io_avg;
  #endif
@@ -60,7 +60,7 @@ index 44c6f15800ff..d2b33e57c636 100644
  
  #ifdef CONFIG_ARCH_WANTS_DYNAMIC_TASK_STRUCT
 diff --git a/kernel/fork.c b/kernel/fork.c
-index ccfcd44a370f..309f4a20d4ac 100644
+index 7d075c311582..e6885631bc0f 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
 @@ -676,7 +676,9 @@ static inline void put_signal_struct(struct signal_struct *sig)

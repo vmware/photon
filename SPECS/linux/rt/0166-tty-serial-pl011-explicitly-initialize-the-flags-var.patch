@@ -1,7 +1,7 @@
-From e404bb52d0191a64b23fef988c368a0ccb37d3e5 Mon Sep 17 00:00:00 2001
-Message-Id: <e404bb52d0191a64b23fef988c368a0ccb37d3e5.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 17da54bcbbcca6e123683805e5dbc3ccb01651f9 Mon Sep 17 00:00:00 2001
+Message-Id: <17da54bcbbcca6e123683805e5dbc3ccb01651f9.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Kurt Kanzenbach <kurt@linutronix.de>
 Date: Mon, 24 Sep 2018 10:29:01 +0200
 Subject: [PATCH 166/335] tty: serial: pl011: explicitly initialize the flags
@@ -30,10 +30,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index f4a01c7909fb..0b535a85d282 100644
+index f9103eb566d0..f9066c5c1a92 100644
 --- a/drivers/tty/serial/amba-pl011.c
 +++ b/drivers/tty/serial/amba-pl011.c
-@@ -2209,7 +2209,7 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
+@@ -2212,7 +2212,7 @@ pl011_console_write(struct console *co, const char *s, unsigned int count)
  {
  	struct uart_amba_port *uap = amba_ports[co->index];
  	unsigned int old_cr = 0, new_cr;

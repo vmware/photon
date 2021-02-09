@@ -1,7 +1,7 @@
-From b4e78f171384f98815c9a761b57708756ed114f0 Mon Sep 17 00:00:00 2001
-Message-Id: <b4e78f171384f98815c9a761b57708756ed114f0.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From a5032330cd0036300807485774733248fd55f7d4 Mon Sep 17 00:00:00 2001
+Message-Id: <a5032330cd0036300807485774733248fd55f7d4.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 14 Sep 2016 14:35:49 +0200
 Subject: [PATCH 189/335] fs/dcache: use swait_queue instead of waitqueue
@@ -38,7 +38,7 @@ index 3925a7bfc74d..33f7723fb83e 100644
  	cifs_dbg(FYI, "%s: for %s\n", __func__, name->name);
  
 diff --git a/fs/dcache.c b/fs/dcache.c
-index b1a5edf1103e..c47d94e7b1d8 100644
+index 1ae163d54925..6e1c0b4c04f4 100644
 --- a/fs/dcache.c
 +++ b/fs/dcache.c
 @@ -2423,21 +2423,24 @@ static inline void end_dir_add(struct inode *dir, unsigned n)
@@ -166,10 +166,10 @@ index ce9100b5604d..839bfa76f41e 100644
  	status = -EBUSY;
  	spin_lock(&dentry->d_lock);
 diff --git a/fs/proc/base.c b/fs/proc/base.c
-index 3b9b726b1a6c..a45d4d640f01 100644
+index 5e705fa9a913..6cc3d66589a4 100644
 --- a/fs/proc/base.c
 +++ b/fs/proc/base.c
-@@ -1890,7 +1890,7 @@ bool proc_fill_cache(struct file *file, struct dir_context *ctx,
+@@ -1889,7 +1889,7 @@ bool proc_fill_cache(struct file *file, struct dir_context *ctx,
  
  	child = d_hash_and_lookup(dir, &qname);
  	if (!child) {
@@ -192,7 +192,7 @@ index c95f32b83a94..75f500cb7e74 100644
  		if (IS_ERR(child))
  			return false;
 diff --git a/include/linux/dcache.h b/include/linux/dcache.h
-index 0880baefd85f..8b4d6c8c1f7f 100644
+index 02b1b40fea5b..50cbde278301 100644
 --- a/include/linux/dcache.h
 +++ b/include/linux/dcache.h
 @@ -105,7 +105,7 @@ struct dentry {

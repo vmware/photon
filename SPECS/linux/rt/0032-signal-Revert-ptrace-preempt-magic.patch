@@ -1,7 +1,7 @@
-From da97d21b9b1824a99084d57bcd66b0046657c129 Mon Sep 17 00:00:00 2001
-Message-Id: <da97d21b9b1824a99084d57bcd66b0046657c129.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From e1751a45b3357daaaf29eb3b541444ebcf17e288 Mon Sep 17 00:00:00 2001
+Message-Id: <e1751a45b3357daaaf29eb3b541444ebcf17e288.1612799231.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 21 Sep 2011 19:57:12 +0200
 Subject: [PATCH 032/335] signal: Revert ptrace preempt magic
@@ -16,10 +16,10 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  1 file changed, 8 deletions(-)
 
 diff --git a/kernel/signal.c b/kernel/signal.c
-index 6a5692118139..f810797e48cb 100644
+index a02a25acf205..fc63ceba81ce 100644
 --- a/kernel/signal.c
 +++ b/kernel/signal.c
-@@ -2108,15 +2108,7 @@ static void ptrace_stop(int exit_code, int why, int clear_code, siginfo_t *info)
+@@ -2109,15 +2109,7 @@ static void ptrace_stop(int exit_code, int why, int clear_code, siginfo_t *info)
  		if (gstop_done && ptrace_reparented(current))
  			do_notify_parent_cldstop(current, false, why);
  

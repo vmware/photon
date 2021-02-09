@@ -1,7 +1,7 @@
-From b8e2cfcbea10ebcaab73dbe2c4fab3a45b354af7 Mon Sep 17 00:00:00 2001
-Message-Id: <b8e2cfcbea10ebcaab73dbe2c4fab3a45b354af7.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 0de3f5e5b33ce326e292bdb18588727b4dfef7dc Mon Sep 17 00:00:00 2001
+Message-Id: <0de3f5e5b33ce326e292bdb18588727b4dfef7dc.1612799231.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 9 Apr 2015 15:23:01 +0200
 Subject: [PATCH 054/335] cpufreq: drop K8's driver from beeing selected

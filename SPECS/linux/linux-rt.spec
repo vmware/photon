@@ -2,9 +2,9 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.164
+Version:        4.19.174
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt66
+%define rt_version rt72
 Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=18d5ba7c5d729c56aea8148d12dea75848b6c5c8
+%define sha1 linux=d0755977c35500db4fa7ea2cdc22d6e303e61f58
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
@@ -439,7 +439,7 @@ Patch532:       0332-net-xfrm-fix-compress-vs-decompress-serialization.patch
 Patch533:       0333-mm-memcontrol-Disable-preemption-in-__mod_memcg_lruv.patch
 Patch534:       0334-ptrace-fix-ptrace_unfreeze_traced-race-with-rt-lock.patch
 # Keep rt_version matched up with this patch.
-Patch535:       0335-Linux-4.19.152-rt66-REBASE.patch
+Patch535:       0335-Linux-4.19.173-rt72-REBASE.patch
 
 #Photon Specific Changes
 Patch600:        0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
@@ -1054,6 +1054,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Feb 09 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.174-1
+-   Update to version 4.19.174
 *   Mon Jan 04 2021 Ankit Jain <ankitja@vmware.com> 4.19.164-1
 -   Update to version 4.19.164
 *   Tue Dec 15 2020 Vikash Bansal <bvikas@vmware.com> 4.19.163-1

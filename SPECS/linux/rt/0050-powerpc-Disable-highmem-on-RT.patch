@@ -1,7 +1,7 @@
-From ff941da9bdc664d1ff3cdea68a3e14237bf5f110 Mon Sep 17 00:00:00 2001
-Message-Id: <ff941da9bdc664d1ff3cdea68a3e14237bf5f110.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 7a74c61b44229134bb3ec185a2824dc47ec535c7 Mon Sep 17 00:00:00 2001
+Message-Id: <7a74c61b44229134bb3ec185a2824dc47ec535c7.1612799231.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Mon, 18 Jul 2011 17:08:34 +0200
 Subject: [PATCH 050/335] powerpc: Disable highmem on RT
@@ -14,10 +14,10 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index 53fa972c2548..8455293d1435 100644
+index db3390c26387..19e55c98a17b 100644
 --- a/arch/powerpc/Kconfig
 +++ b/arch/powerpc/Kconfig
-@@ -399,7 +399,7 @@ menu "Kernel options"
+@@ -400,7 +400,7 @@ menu "Kernel options"
  
  config HIGHMEM
  	bool "High memory support"

@@ -1,7 +1,7 @@
-From 0ee95b9390a36955c3854ca3cf687316da95d71e Mon Sep 17 00:00:00 2001
-Message-Id: <0ee95b9390a36955c3854ca3cf687316da95d71e.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 0d10de380a0bb4cdd59c31eaef20c4ad91912665 Mon Sep 17 00:00:00 2001
+Message-Id: <0d10de380a0bb4cdd59c31eaef20c4ad91912665.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: John Stultz <johnstul@us.ibm.com>
 Date: Fri, 3 Jul 2009 08:29:58 -0500
 Subject: [PATCH 104/335] posix-timers: Thread posix-cpu-timers on -rt
@@ -21,7 +21,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  4 files changed, 164 insertions(+), 3 deletions(-)
 
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 3b0a95e10939..b6fbc5aa3d5d 100644
+index 7e785a280eeb..d090eacc56c1 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
 @@ -832,6 +832,9 @@ struct task_struct {
@@ -60,10 +60,10 @@ index 0b49b9cf5571..9e3362748214 100644
  	.thread_group	= LIST_HEAD_INIT(init_task.thread_group),
  	.thread_node	= LIST_HEAD_INIT(init_signals.thread_head),
 diff --git a/kernel/fork.c b/kernel/fork.c
-index bc182d6fa2a9..ccfcd44a370f 100644
+index f28a903e5077..7d075c311582 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
-@@ -1590,6 +1590,9 @@ static void rt_mutex_init_task(struct task_struct *p)
+@@ -1586,6 +1586,9 @@ static void rt_mutex_init_task(struct task_struct *p)
   */
  static void posix_cpu_timers_init(struct task_struct *tsk)
  {

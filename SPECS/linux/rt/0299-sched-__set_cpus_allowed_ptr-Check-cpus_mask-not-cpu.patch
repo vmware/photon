@@ -1,7 +1,7 @@
-From d719b50749a48aa1771c8c2181aba5bd0ea6f708 Mon Sep 17 00:00:00 2001
-Message-Id: <d719b50749a48aa1771c8c2181aba5bd0ea6f708.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 4612ccc026b41684a5966c8d773d1a4542d7c248 Mon Sep 17 00:00:00 2001
+Message-Id: <4612ccc026b41684a5966c8d773d1a4542d7c248.1612799233.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Scott Wood <swood@redhat.com>
 Date: Sat, 27 Jul 2019 00:56:32 -0500
 Subject: [PATCH 299/335] sched: __set_cpus_allowed_ptr: Check cpus_mask, not
@@ -24,7 +24,7 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 07b70eb3660f..357bf627799f 100644
+index b27edd65e852..9789380369c0 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -1157,7 +1157,7 @@ static int __set_cpus_allowed_ptr(struct task_struct *p,

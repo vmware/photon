@@ -1,7 +1,7 @@
-From cc2dd94b9330ab1866f1a6f59a5f6c78d1fc734e Mon Sep 17 00:00:00 2001
-Message-Id: <cc2dd94b9330ab1866f1a6f59a5f6c78d1fc734e.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 1d279650918c8836b023210e2ecf3c375d5803f3 Mon Sep 17 00:00:00 2001
+Message-Id: <1d279650918c8836b023210e2ecf3c375d5803f3.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 4 Aug 2017 18:31:00 +0200
 Subject: [PATCH 230/335] hotplug: duct-tape RT-rwlock usage for non-RT
@@ -16,7 +16,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/cpu.c b/kernel/cpu.c
-index f9e0e3db440a..8f5b80c0743b 100644
+index 67b1e5aa5476..7ec8d1de5a1e 100644
 --- a/kernel/cpu.c
 +++ b/kernel/cpu.c
 @@ -76,7 +76,7 @@ static DEFINE_PER_CPU(struct cpuhp_cpu_state, cpuhp_state) = {
@@ -60,7 +60,7 @@ index f9e0e3db440a..8f5b80c0743b 100644
  }
  
  DEFINE_STATIC_PERCPU_RWSEM(cpu_hotplug_lock);
-@@ -902,7 +906,9 @@ static int take_cpu_down(void *_param)
+@@ -906,7 +910,9 @@ static int take_cpu_down(void *_param)
  
  static int takedown_cpu(unsigned int cpu)
  {
@@ -70,7 +70,7 @@ index f9e0e3db440a..8f5b80c0743b 100644
  	struct cpuhp_cpu_state *st = per_cpu_ptr(&cpuhp_state, cpu);
  	int err;
  
-@@ -915,14 +921,18 @@ static int takedown_cpu(unsigned int cpu)
+@@ -919,14 +925,18 @@ static int takedown_cpu(unsigned int cpu)
  	 */
  	irq_lock_sparse();
  
@@ -89,7 +89,7 @@ index f9e0e3db440a..8f5b80c0743b 100644
  		/* CPU refused to die */
  		irq_unlock_sparse();
  		/* Unpark the hotplug thread so we can rollback there */
-@@ -941,7 +951,9 @@ static int takedown_cpu(unsigned int cpu)
+@@ -945,7 +955,9 @@ static int takedown_cpu(unsigned int cpu)
  	wait_for_ap_thread(st, false);
  	BUG_ON(st->state != CPUHP_AP_IDLE_DEAD);
  

@@ -1,7 +1,7 @@
-From 992923bf0e42e247a3c7ab7114ed94801f72526c Mon Sep 17 00:00:00 2001
-Message-Id: <992923bf0e42e247a3c7ab7114ed94801f72526c.1605897049.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 0c370ff0748baa7755abb070b2039d90fa34ad62 Mon Sep 17 00:00:00 2001
+Message-Id: <0c370ff0748baa7755abb070b2039d90fa34ad62.1612799233.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Scott Wood <swood@redhat.com>
 Date: Sat, 12 Oct 2019 01:52:13 -0500
 Subject: [PATCH 308/335] sched: Lazy migrate_disable processing
@@ -69,7 +69,7 @@ index e67645924404..87347ccbba0c 100644
  #endif	/* !CONFIG_HOTPLUG_CPU */
  
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index bdae37091808..729127d0e536 100644
+index 765cd23de594..5e4f99c5a707 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
 @@ -227,6 +227,8 @@ extern void io_schedule_finish(int token);
@@ -100,7 +100,7 @@ index bdae37091808..729127d0e536 100644
  # endif
  #endif
  #ifdef CONFIG_PREEMPT_RT_FULL
-@@ -2058,4 +2057,6 @@ static inline void rseq_syscall(struct pt_regs *regs)
+@@ -2059,4 +2058,6 @@ static inline void rseq_syscall(struct pt_regs *regs)
  
  #endif
  
@@ -123,7 +123,7 @@ index 9e3362748214..4e5af4616dbd 100644
  	.active_mm	= &init_mm,
  	.restart_block	= {
 diff --git a/kernel/cpu.c b/kernel/cpu.c
-index 0fec4bb3d79b..bf698d84ac2a 100644
+index 23d1d21170ef..14ceb3ef6533 100644
 --- a/kernel/cpu.c
 +++ b/kernel/cpu.c
 @@ -76,11 +76,6 @@ static DEFINE_PER_CPU(struct cpuhp_cpu_state, cpuhp_state) = {
@@ -196,7 +196,7 @@ index 0fec4bb3d79b..bf698d84ac2a 100644
  DEFINE_STATIC_PERCPU_RWSEM(cpu_hotplug_lock);
  
  void cpus_read_lock(void)
-@@ -881,6 +825,15 @@ static int take_cpu_down(void *_param)
+@@ -885,6 +829,15 @@ static int take_cpu_down(void *_param)
  	int err, cpu = smp_processor_id();
  	int ret;
  
@@ -212,7 +212,7 @@ index 0fec4bb3d79b..bf698d84ac2a 100644
  	/* Ensure this CPU doesn't handle any more interrupts. */
  	err = __cpu_disable();
  	if (err < 0)
-@@ -908,11 +861,10 @@ static int take_cpu_down(void *_param)
+@@ -912,11 +865,10 @@ static int take_cpu_down(void *_param)
  	return 0;
  }
  
@@ -226,7 +226,7 @@ index 0fec4bb3d79b..bf698d84ac2a 100644
  	struct cpuhp_cpu_state *st = per_cpu_ptr(&cpuhp_state, cpu);
  	int err;
  
-@@ -925,17 +877,38 @@ static int takedown_cpu(unsigned int cpu)
+@@ -929,17 +881,38 @@ static int takedown_cpu(unsigned int cpu)
  	 */
  	irq_lock_sparse();
  
@@ -269,7 +269,7 @@ index 0fec4bb3d79b..bf698d84ac2a 100644
  #endif
  		/* CPU refused to die */
  		irq_unlock_sparse();
-@@ -955,8 +928,8 @@ static int takedown_cpu(unsigned int cpu)
+@@ -959,8 +932,8 @@ static int takedown_cpu(unsigned int cpu)
  	wait_for_ap_thread(st, false);
  	BUG_ON(st->state != CPUHP_AP_IDLE_DEAD);
  
@@ -281,7 +281,7 @@ index 0fec4bb3d79b..bf698d84ac2a 100644
  	/* Interrupts are moved away from the dying cpu, reenable alloc/free */
  	irq_unlock_sparse();
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index c5685d5d9526..bbde7b29dee2 100644
+index 031690288325..05657455eff1 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -1065,7 +1065,8 @@ static int migration_cpu_stop(void *data)
@@ -354,7 +354,7 @@ index c5685d5d9526..bbde7b29dee2 100644
  	/* Promote REQ to ACT */
  	rq->clock_update_flags <<= 1;
  	update_rq_clock(rq);
-@@ -5778,6 +5770,8 @@ static void migrate_tasks(struct rq *dead_rq, struct rq_flags *rf)
+@@ -5774,6 +5766,8 @@ static void migrate_tasks(struct rq *dead_rq, struct rq_flags *rf)
  		BUG_ON(!next);
  		put_prev_task(rq, next);
  
@@ -363,7 +363,7 @@ index c5685d5d9526..bbde7b29dee2 100644
  		/*
  		 * Rules for changing task_struct::cpus_mask are holding
  		 * both pi_lock and rq->lock, such that holding either
-@@ -7242,14 +7236,9 @@ update_nr_migratory(struct task_struct *p, long delta)
+@@ -7238,14 +7232,9 @@ update_nr_migratory(struct task_struct *p, long delta)
  static inline void
  migrate_disable_update_cpus_allowed(struct task_struct *p)
  {
@@ -378,7 +378,7 @@ index c5685d5d9526..bbde7b29dee2 100644
  }
  
  static inline void
-@@ -7267,54 +7256,35 @@ migrate_enable_update_cpus_allowed(struct task_struct *p)
+@@ -7263,54 +7252,35 @@ migrate_enable_update_cpus_allowed(struct task_struct *p)
  
  void migrate_disable(void)
  {
@@ -449,7 +449,7 @@ index c5685d5d9526..bbde7b29dee2 100644
  
  	WARN_ON_ONCE(p->migrate_disable <= 0);
  	if (p->migrate_disable > 1) {
-@@ -7324,67 +7294,69 @@ void migrate_enable(void)
+@@ -7320,67 +7290,69 @@ void migrate_enable(void)
  
  	preempt_disable();
  
@@ -559,7 +559,7 @@ index c5685d5d9526..bbde7b29dee2 100644
  #endif
  	barrier();
  }
-@@ -7395,20 +7367,14 @@ void migrate_enable(void)
+@@ -7391,20 +7363,14 @@ void migrate_enable(void)
  #ifdef CONFIG_SCHED_DEBUG
  	struct task_struct *p = current;
  
@@ -585,10 +585,10 @@ index c5685d5d9526..bbde7b29dee2 100644
 +}
  #endif
 diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 005874299b04..8b0c0b63ab22 100644
+index ccb08446c9bc..6ae25f77c494 100644
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
-@@ -919,6 +919,10 @@ struct rq {
+@@ -913,6 +913,10 @@ struct rq {
  	/* Must be inspected within a rcu lock section */
  	struct cpuidle_state	*idle_state;
  #endif

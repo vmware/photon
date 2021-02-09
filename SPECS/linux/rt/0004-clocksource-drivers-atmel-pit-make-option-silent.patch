@@ -1,7 +1,7 @@
-From 7dc8efedd9c8c3de3e55853c4b657346db2987e5 Mon Sep 17 00:00:00 2001
-Message-Id: <7dc8efedd9c8c3de3e55853c4b657346db2987e5.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From a36f47121235b10ee13ba217899d6eb29ac5117a Mon Sep 17 00:00:00 2001
+Message-Id: <a36f47121235b10ee13ba217899d6eb29ac5117a.1612799231.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Date: Thu, 13 Sep 2018 13:30:21 +0200
 Subject: [PATCH 004/335] clocksource/drivers: atmel-pit: make option silent

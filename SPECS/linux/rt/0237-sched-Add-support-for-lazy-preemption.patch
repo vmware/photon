@@ -1,7 +1,7 @@
-From 093afacab14af3f71e2fb9e230548f1b0eca6153 Mon Sep 17 00:00:00 2001
-Message-Id: <093afacab14af3f71e2fb9e230548f1b0eca6153.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From d9ffb8d446e0d6f07171b48bb611e7f379180248 Mon Sep 17 00:00:00 2001
+Message-Id: <d9ffb8d446e0d6f07171b48bb611e7f379180248.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 26 Oct 2012 18:50:54 +0100
 Subject: [PATCH 237/335] sched: Add support for lazy preemption
@@ -146,10 +146,10 @@ index ed8413e7140f..9c74a019bf57 100644
  } while (0)
  
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index ff1fe0b3c1e3..852b1221cd40 100644
+index 4030629af031..395dec128ca9 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
-@@ -1733,6 +1733,44 @@ static inline int test_tsk_need_resched(struct task_struct *tsk)
+@@ -1734,6 +1734,44 @@ static inline int test_tsk_need_resched(struct task_struct *tsk)
  	return unlikely(test_tsk_thread_flag(tsk,TIF_NEED_RESCHED));
  }
  
@@ -247,7 +247,7 @@ index 907d72b3ba95..306567f72a3e 100644
  	prompt "Preemption Model"
  	default PREEMPT_NONE
 diff --git a/kernel/cpu.c b/kernel/cpu.c
-index 8f5b80c0743b..0d3cf1654318 100644
+index 7ec8d1de5a1e..6889721866a6 100644
 --- a/kernel/cpu.c
 +++ b/kernel/cpu.c
 @@ -305,11 +305,13 @@ void pin_current_cpu(void)
@@ -265,7 +265,7 @@ index 8f5b80c0743b..0d3cf1654318 100644
  		__read_rt_unlock(cpuhp_pin);
  		goto again;
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 297934719db9..64edaf6fe151 100644
+index da1176ee324e..6286dde4af70 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -493,6 +493,48 @@ void resched_curr(struct rq *rq)
@@ -386,7 +386,7 @@ index 297934719db9..64edaf6fe151 100644
  	do {
  		/*
  		 * Because the function tracer can trace preempt_count_sub()
-@@ -5506,7 +5580,9 @@ void init_idle(struct task_struct *idle, int cpu)
+@@ -5502,7 +5576,9 @@ void init_idle(struct task_struct *idle, int cpu)
  
  	/* Set the preempt count _outside_ the spinlocks! */
  	init_idle_preempt_count(idle, cpu);
@@ -397,7 +397,7 @@ index 297934719db9..64edaf6fe151 100644
  	/*
  	 * The idle tasks have their own, simple scheduling class:
  	 */
-@@ -7223,6 +7299,7 @@ void migrate_disable(void)
+@@ -7219,6 +7295,7 @@ void migrate_disable(void)
  	}
  
  	preempt_disable();
@@ -405,7 +405,7 @@ index 297934719db9..64edaf6fe151 100644
  	pin_current_cpu();
  
  	migrate_disable_update_cpus_allowed(p);
-@@ -7290,6 +7367,7 @@ void migrate_enable(void)
+@@ -7286,6 +7363,7 @@ void migrate_enable(void)
  			arg.dest_cpu = dest_cpu;
  
  			unpin_current_cpu();
@@ -413,7 +413,7 @@ index 297934719db9..64edaf6fe151 100644
  			preempt_enable();
  			stop_one_cpu(task_cpu(p), migration_cpu_stop, &arg);
  			tlb_migrate_finish(p->mm);
-@@ -7298,6 +7376,7 @@ void migrate_enable(void)
+@@ -7294,6 +7372,7 @@ void migrate_enable(void)
  		}
  	}
  	unpin_current_cpu();
@@ -512,10 +512,10 @@ index 68de18405857..12a12be6770b 100644
  
  /*
 diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
-index 96823c632599..005874299b04 100644
+index 494d21b04b1d..ccb08446c9bc 100644
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
-@@ -1640,6 +1640,15 @@ extern void reweight_task(struct task_struct *p, int prio);
+@@ -1641,6 +1641,15 @@ extern void reweight_task(struct task_struct *p, int prio);
  extern void resched_curr(struct rq *rq);
  extern void resched_cpu(int cpu);
  
@@ -532,7 +532,7 @@ index 96823c632599..005874299b04 100644
  extern void init_rt_bandwidth(struct rt_bandwidth *rt_b, u64 period, u64 runtime);
  
 diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 121ced1269b1..8fdd611ecd90 100644
+index e323fde236e4..8651c1ac8644 100644
 --- a/kernel/trace/trace.c
 +++ b/kernel/trace/trace.c
 @@ -2139,6 +2139,7 @@ tracing_generic_entry_update(struct trace_entry *entry, unsigned long flags,
@@ -553,7 +553,7 @@ index 121ced1269b1..8fdd611ecd90 100644
  		(test_preempt_need_resched() ? TRACE_FLAG_PREEMPT_RESCHED : 0);
  
  	entry->migrate_disable = (tsk) ? __migrate_disabled(tsk) & 0xFF : 0;
-@@ -3354,15 +3356,17 @@ get_total_entries(struct trace_buffer *buf,
+@@ -3355,15 +3357,17 @@ get_total_entries(struct trace_buffer *buf,
  
  static void print_lat_help_header(struct seq_file *m)
  {
@@ -580,7 +580,7 @@ index 121ced1269b1..8fdd611ecd90 100644
  }
  
  static void print_event_info(struct trace_buffer *buf, struct seq_file *m)
-@@ -3400,15 +3404,17 @@ static void print_func_help_header_irq(struct trace_buffer *buf, struct seq_file
+@@ -3401,15 +3405,17 @@ static void print_func_help_header_irq(struct trace_buffer *buf, struct seq_file
  		   tgid ? tgid_space : space);
  	seq_printf(m, "#                          %s / _----=> need-resched\n",
  		   tgid ? tgid_space : space);
@@ -604,7 +604,7 @@ index 121ced1269b1..8fdd611ecd90 100644
  }
  
 diff --git a/kernel/trace/trace.h b/kernel/trace/trace.h
-index ee0c6a313ed1..5986f494e2b0 100644
+index afaeef6c15b3..159db0513e7e 100644
 --- a/kernel/trace/trace.h
 +++ b/kernel/trace/trace.h
 @@ -127,6 +127,7 @@ struct kretprobe_trace_entry_head {

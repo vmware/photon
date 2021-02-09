@@ -1,7 +1,7 @@
-From 6b06bfb5fc0c4418bb2bded16df73746457ced75 Mon Sep 17 00:00:00 2001
-Message-Id: <6b06bfb5fc0c4418bb2bded16df73746457ced75.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 8a4ab836a20742c38dcdcac7fb67d3d82ca8fad3 Mon Sep 17 00:00:00 2001
+Message-Id: <8a4ab836a20742c38dcdcac7fb67d3d82ca8fad3.1612799233.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Clark Williams <williams@redhat.com>
 Date: Mon, 15 Jul 2019 15:25:00 -0500
 Subject: [PATCH 289/335] thermal/x86_pkg_temp: make pkg_temp_lock a raw

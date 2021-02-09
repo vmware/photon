@@ -1,7 +1,7 @@
-From e6d4597b31ac674e59d1953e6269f34116fc79f4 Mon Sep 17 00:00:00 2001
-Message-Id: <e6d4597b31ac674e59d1953e6269f34116fc79f4.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 7fbdc5417081fcd37ca1f4cbbef44655a529eebe Mon Sep 17 00:00:00 2001
+Message-Id: <7fbdc5417081fcd37ca1f4cbbef44655a529eebe.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 15 Jun 2011 12:36:06 +0200
 Subject: [PATCH 115/335] hotplug: Lightweight get online cpus
@@ -45,7 +45,7 @@ index aab4273810e3..e67645924404 100644
  
  /* Wrappers which go away once all code is converted */
 diff --git a/kernel/cpu.c b/kernel/cpu.c
-index 08b9d6ba0807..267fcad3a81e 100644
+index 9a39a24f6025..3e67b131ecac 100644
 --- a/kernel/cpu.c
 +++ b/kernel/cpu.c
 @@ -282,6 +282,21 @@ static int cpu_hotplug_disabled;
@@ -71,10 +71,10 @@ index 08b9d6ba0807..267fcad3a81e 100644
  
  void cpus_read_lock(void)
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 25dd44553ea6..2197f965f9bb 100644
+index d9e80ccb4dbf..66f99dc4dac3 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -7244,6 +7244,7 @@ void migrate_disable(void)
+@@ -7240,6 +7240,7 @@ void migrate_disable(void)
  	}
  
  	preempt_disable();
@@ -82,7 +82,7 @@ index 25dd44553ea6..2197f965f9bb 100644
  
  	migrate_disable_update_cpus_allowed(p);
  	p->migrate_disable = 1;
-@@ -7309,12 +7310,15 @@ void migrate_enable(void)
+@@ -7305,12 +7306,15 @@ void migrate_enable(void)
  			arg.task = p;
  			arg.dest_cpu = dest_cpu;
  

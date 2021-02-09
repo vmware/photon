@@ -26,7 +26,7 @@ Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
  2 files changed, 39 insertions(+), 21 deletions(-)
 
 diff --git a/arch/x86/kvm/vmx.c b/arch/x86/kvm/vmx.c
-index d6bcbce6c15c..7372164b43f8 100644
+index 77b9ed5223f3..0b9090474a74 100644
 --- a/arch/x86/kvm/vmx.c
 +++ b/arch/x86/kvm/vmx.c
 @@ -1375,6 +1375,7 @@ static const u32 vmx_msr_index[] = {
@@ -58,7 +58,7 @@ index d6bcbce6c15c..7372164b43f8 100644
 +		goto find_shared_msr;
  	case MSR_IA32_SPEC_CTRL:
  		if (!msr_info->host_initiated &&
- 		    !guest_cpuid_has(vcpu, X86_FEATURE_SPEC_CTRL))
+ 		    !guest_has_spec_ctrl_msr(vcpu))
 @@ -4114,8 +4123,9 @@ static int vmx_get_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
  		if (!msr_info->host_initiated &&
  		    !guest_cpuid_has(vcpu, X86_FEATURE_RDTSCP))
@@ -83,7 +83,7 @@ index d6bcbce6c15c..7372164b43f8 100644
 +		goto find_shared_msr;
  	case MSR_IA32_PRED_CMD:
  		if (!msr_info->host_initiated &&
- 		    !guest_cpuid_has(vcpu, X86_FEATURE_SPEC_CTRL))
+ 		    !guest_has_pred_cmd_msr(vcpu))
 @@ -4298,8 +4315,9 @@ static int vmx_set_msr(struct kvm_vcpu *vcpu, struct msr_data *msr_info)
  		/* Check reserved bit, higher 32 bits should be zero */
  		if ((data >> 32) != 0)
@@ -118,10 +118,10 @@ index d6bcbce6c15c..7372164b43f8 100644
  	}
  
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index dd182228be71..43237fd2fc4b 100644
+index 8e4eef73531a..5cea960f1535 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -1198,29 +1198,16 @@ u64 kvm_get_arch_capabilities(void)
+@@ -1199,29 +1199,16 @@ u64 kvm_get_arch_capabilities(void)
  		data |= ARCH_CAP_MDS_NO;
  
  	/*

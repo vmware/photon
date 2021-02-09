@@ -1,7 +1,7 @@
-From dfa65e91f7119bcae54d26a4e0c66357e203429f Mon Sep 17 00:00:00 2001
-Message-Id: <dfa65e91f7119bcae54d26a4e0c66357e203429f.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From b14be8dc53555032ce4ea93e1fc164e2127bade0 Mon Sep 17 00:00:00 2001
+Message-Id: <b14be8dc53555032ce4ea93e1fc164e2127bade0.1612799231.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 1 Dec 2017 10:42:03 +0100
 Subject: [PATCH 047/335] arm*: disable NEON in kernel mode
@@ -23,10 +23,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  3 files changed, 17 insertions(+), 16 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index 91ba9fe945ff..bd9d180db5c7 100644
+index 749c11519440..63ca5b08493b 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
-@@ -2163,7 +2163,7 @@ config NEON
+@@ -2165,7 +2165,7 @@ config NEON
  
  config KERNEL_MODE_NEON
  	bool "Support for NEON in kernel mode"

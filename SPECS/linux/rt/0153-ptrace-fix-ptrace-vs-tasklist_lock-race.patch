@@ -1,7 +1,7 @@
-From 6ce7ffbed44e633fabca08181a98bf4767c1e41d Mon Sep 17 00:00:00 2001
-Message-Id: <6ce7ffbed44e633fabca08181a98bf4767c1e41d.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From a34113246501eb14a7a0b12d28bebd699a2bae65 Mon Sep 17 00:00:00 2001
+Message-Id: <a34113246501eb14a7a0b12d28bebd699a2bae65.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 29 Aug 2013 18:21:04 +0200
 Subject: [PATCH 153/335] ptrace: fix ptrace vs tasklist_lock race
@@ -33,7 +33,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  3 files changed, 68 insertions(+), 7 deletions(-)
 
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index a0d1a009aa56..d207f79c2ecb 100644
+index 116fc34eb965..50124bb1a17c 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
 @@ -101,12 +101,8 @@ struct task_group;
@@ -49,7 +49,7 @@ index a0d1a009aa56..d207f79c2ecb 100644
  #define task_contributes_to_load(task)	((task->state & TASK_UNINTERRUPTIBLE) != 0 && \
  					 (task->flags & PF_FROZEN) == 0 && \
  					 (task->state & TASK_NOLOAD) == 0)
-@@ -1717,6 +1713,51 @@ static inline int test_tsk_need_resched(struct task_struct *tsk)
+@@ -1718,6 +1714,51 @@ static inline int test_tsk_need_resched(struct task_struct *tsk)
  	return unlikely(test_tsk_thread_flag(tsk,TIF_NEED_RESCHED));
  }
  
@@ -102,7 +102,7 @@ index a0d1a009aa56..d207f79c2ecb 100644
   * cond_resched() and cond_resched_lock(): latency reduction via
   * explicit rescheduling in places that are safe. The return
 diff --git a/kernel/ptrace.c b/kernel/ptrace.c
-index b93eb4eaf7ac..a38b304fb9fd 100644
+index ecdb7402072f..d0d1a091cdf6 100644
 --- a/kernel/ptrace.c
 +++ b/kernel/ptrace.c
 @@ -174,7 +174,14 @@ static bool ptrace_freeze_traced(struct task_struct *task)
@@ -122,7 +122,7 @@ index b93eb4eaf7ac..a38b304fb9fd 100644
  	}
  	spin_unlock_irq(&task->sighand->siglock);
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index c94224ddfb73..3128a5b95fd7 100644
+index 140228327b8c..482c1dbb2415 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -1349,6 +1349,18 @@ int migrate_swap(struct task_struct *cur, struct task_struct *p,

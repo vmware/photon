@@ -1,7 +1,7 @@
-From 61944e4bd19b9be7d4f392e1c4835b8f12b343c4 Mon Sep 17 00:00:00 2001
-Message-Id: <61944e4bd19b9be7d4f392e1c4835b8f12b343c4.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 7e4fe4f7f818c81e57001289a6d82c8483b57029 Mon Sep 17 00:00:00 2001
+Message-Id: <7e4fe4f7f818c81e57001289a6d82c8483b57029.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 4 Oct 2012 14:20:47 +0100
 Subject: [PATCH 121/335] softirq: Split softirq locks
@@ -180,10 +180,10 @@ index 9984f2b75b73..27c3176d88d2 100644
  #define in_task()		(!(preempt_count() & \
  				   (NMI_MASK | HARDIRQ_MASK | SOFTIRQ_OFFSET)))
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 42846a65df9a..30895ae9e82d 100644
+index 67f6fec7975f..8552c7c3f863 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
-@@ -1198,6 +1198,8 @@ struct task_struct {
+@@ -1200,6 +1200,8 @@ struct task_struct {
  #endif
  #ifdef CONFIG_PREEMPT_RT_BASE
  	struct rcu_head			put_rcu;
@@ -192,14 +192,14 @@ index 42846a65df9a..30895ae9e82d 100644
  #endif
  #ifdef CONFIG_DEBUG_ATOMIC_SLEEP
  	unsigned long			task_state_change;
-@@ -1395,6 +1397,7 @@ extern struct pid *cad_pid;
+@@ -1397,6 +1399,7 @@ extern struct pid *cad_pid;
  /*
   * Per process flags
   */
 +#define PF_IN_SOFTIRQ		0x00000001      /* Task is serving softirq */
  #define PF_IDLE			0x00000002	/* I am an IDLE thread */
  #define PF_EXITING		0x00000004	/* Getting shut down */
- #define PF_EXITPIDONE		0x00000008	/* PI exit done on shut down */
+ #define PF_VCPU			0x00000010	/* I'm a virtual CPU */
 diff --git a/init/main.c b/init/main.c
 index fdfef08da0c4..2180c6388eb9 100644
 --- a/init/main.c

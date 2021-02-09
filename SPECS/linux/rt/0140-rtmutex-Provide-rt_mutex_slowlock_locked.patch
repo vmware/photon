@@ -1,7 +1,7 @@
-From 851e268f5e986b0b6f9519e4357927860e50d6dd Mon Sep 17 00:00:00 2001
-Message-Id: <851e268f5e986b0b6f9519e4357927860e50d6dd.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 0d31a5170d23888f26facf6f376578af78aa607a Mon Sep 17 00:00:00 2001
+Message-Id: <0d31a5170d23888f26facf6f376578af78aa607a.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 12 Oct 2017 16:14:22 +0200
 Subject: [PATCH 140/335] rtmutex: Provide rt_mutex_slowlock_locked()
@@ -16,7 +16,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  2 files changed, 45 insertions(+), 29 deletions(-)
 
 diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
-index f058bb976212..921345c31161 100644
+index 333c4b7aa8e8..e9255b28de8f 100644
 --- a/kernel/locking/rtmutex.c
 +++ b/kernel/locking/rtmutex.c
 @@ -1244,35 +1244,16 @@ static void rt_mutex_handle_deadlock(int res, int detect_deadlock,
@@ -118,7 +118,7 @@ index f058bb976212..921345c31161 100644
  	raw_spin_unlock_irqrestore(&lock->wait_lock, flags);
  
 diff --git a/kernel/locking/rtmutex_common.h b/kernel/locking/rtmutex_common.h
-index 461527f3f7af..cb9815f0c766 100644
+index 202e2b0d1251..66deb94765fb 100644
 --- a/kernel/locking/rtmutex_common.h
 +++ b/kernel/locking/rtmutex_common.h
 @@ -15,6 +15,7 @@
@@ -129,7 +129,7 @@ index 461527f3f7af..cb9815f0c766 100644
  
  /*
   * This is the control structure for tasks blocked on a rt_mutex,
-@@ -159,6 +160,12 @@ extern bool __rt_mutex_futex_unlock(struct rt_mutex *lock,
+@@ -158,6 +159,12 @@ extern bool __rt_mutex_futex_unlock(struct rt_mutex *lock,
  				 struct wake_q_head *wqh);
  
  extern void rt_mutex_postunlock(struct wake_q_head *wake_q);

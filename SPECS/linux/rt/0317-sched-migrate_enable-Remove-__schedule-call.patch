@@ -1,7 +1,7 @@
-From de6b50070d6eeb2d34ec1091f2b9ad308856f90a Mon Sep 17 00:00:00 2001
-Message-Id: <de6b50070d6eeb2d34ec1091f2b9ad308856f90a.1605897049.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From b344423d8714e1d1c4bb8f8072d8b8d42c5a9a3e Mon Sep 17 00:00:00 2001
+Message-Id: <b344423d8714e1d1c4bb8f8072d8b8d42c5a9a3e.1612799233.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Scott Wood <swood@redhat.com>
 Date: Fri, 24 Jan 2020 06:11:47 -0500
 Subject: [PATCH 317/335] sched: migrate_enable: Remove __schedule() call
@@ -27,10 +27,10 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  1 file changed, 1 deletion(-)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 098e88f7a216..0fa94ebdce85 100644
+index 9c8d4610a7e1..fab87a1965dd 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -7346,7 +7346,6 @@ void migrate_enable(void)
+@@ -7342,7 +7342,6 @@ void migrate_enable(void)
  		stop_one_cpu_nowait(task_cpu(p), migration_cpu_stop,
  				    arg, work);
  		tlb_migrate_finish(p->mm);

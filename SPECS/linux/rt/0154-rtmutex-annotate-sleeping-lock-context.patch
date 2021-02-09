@@ -1,7 +1,7 @@
-From ec2d7859930cb247a958443575ffbb8cb31a3e5f Mon Sep 17 00:00:00 2001
-Message-Id: <ec2d7859930cb247a958443575ffbb8cb31a3e5f.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From a18025017c101794a25c74776b070e198d955dd1 Mon Sep 17 00:00:00 2001
+Message-Id: <a18025017c101794a25c74776b070e198d955dd1.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 21 Sep 2017 14:25:13 +0200
 Subject: [PATCH 154/335] rtmutex: annotate sleeping lock context
@@ -56,7 +56,7 @@ index 27c3176d88d2..9eafc34898b4 100644
  #define migrate_disable()		barrier()
  #define migrate_enable()		barrier()
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index d207f79c2ecb..50197f5c4506 100644
+index 50124bb1a17c..148588bb7137 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
 @@ -673,6 +673,15 @@ struct task_struct {
@@ -75,7 +75,7 @@ index d207f79c2ecb..50197f5c4506 100644
  #endif
  
  #ifdef CONFIG_PREEMPT_RCU
-@@ -1810,6 +1819,23 @@ static __always_inline bool need_resched(void)
+@@ -1811,6 +1820,23 @@ static __always_inline bool need_resched(void)
  	return unlikely(tif_need_resched());
  }
  
@@ -100,7 +100,7 @@ index d207f79c2ecb..50197f5c4506 100644
   * Wrappers for p->thread_info->cpu access. No-op on UP.
   */
 diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
-index 94788662b2f2..2a9bf2443acc 100644
+index 11bcae2184c4..ded2296f848a 100644
 --- a/kernel/locking/rtmutex.c
 +++ b/kernel/locking/rtmutex.c
 @@ -1141,6 +1141,7 @@ void __sched rt_spin_lock_slowunlock(struct rt_mutex *lock)
@@ -252,10 +252,10 @@ index 5f6de49dc78e..35f3552b7463 100644
  	    !t->rcu_read_unlock_special.b.blocked) {
  
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 3128a5b95fd7..d10698fa8cad 100644
+index 482c1dbb2415..6ca2f8087a2e 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -7349,4 +7349,49 @@ void migrate_enable(void)
+@@ -7345,4 +7345,49 @@ void migrate_enable(void)
  	preempt_enable();
  }
  EXPORT_SYMBOL(migrate_enable);

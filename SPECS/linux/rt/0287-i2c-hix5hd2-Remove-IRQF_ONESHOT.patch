@@ -1,7 +1,7 @@
-From 707e3ac4250d65f76cb76fc759459313b1da2e9d Mon Sep 17 00:00:00 2001
-Message-Id: <707e3ac4250d65f76cb76fc759459313b1da2e9d.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 7cdb488ca5a32623da2b6b8094a622b0795a41c0 Mon Sep 17 00:00:00 2001
+Message-Id: <7cdb488ca5a32623da2b6b8094a622b0795a41c0.1612799233.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 13 Aug 2019 12:30:37 +0200
 Subject: [PATCH 287/335] i2c: hix5hd2: Remove IRQF_ONESHOT

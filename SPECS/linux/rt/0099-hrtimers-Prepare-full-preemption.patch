@@ -1,7 +1,7 @@
-From f97a28dfbf35ad03ba43286e4bdd06326a89bbc3 Mon Sep 17 00:00:00 2001
-Message-Id: <f97a28dfbf35ad03ba43286e4bdd06326a89bbc3.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From db30992688e3041c4fc0f99fe695e04666b1c3b6 Mon Sep 17 00:00:00 2001
+Message-Id: <db30992688e3041c4fc0f99fe695e04666b1c3b6.1612799231.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Ingo Molnar <mingo@elte.hu>
 Date: Fri, 3 Jul 2009 08:29:34 -0500
 Subject: [PATCH 099/335] hrtimers: Prepare full preemption
@@ -175,10 +175,10 @@ index c6f755495a63..e135cb27db39 100644
  }
  
 diff --git a/kernel/time/itimer.c b/kernel/time/itimer.c
-index 9a65713c8309..55b0e58368bf 100644
+index 2e2b335ef101..7650ee736964 100644
 --- a/kernel/time/itimer.c
 +++ b/kernel/time/itimer.c
-@@ -215,6 +215,7 @@ int do_setitimer(int which, struct itimerval *value, struct itimerval *ovalue)
+@@ -211,6 +211,7 @@ int do_setitimer(int which, struct itimerval *value, struct itimerval *ovalue)
  		/* We are sharing ->siglock with it_real_fn() */
  		if (hrtimer_try_to_cancel(timer) < 0) {
  			spin_unlock_irq(&tsk->sighand->siglock);

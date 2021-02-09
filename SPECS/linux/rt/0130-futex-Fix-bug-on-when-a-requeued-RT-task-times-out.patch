@@ -1,7 +1,7 @@
-From 3d808bda3d89d1e8c484c3e9b653fde3166680e0 Mon Sep 17 00:00:00 2001
-Message-Id: <3d808bda3d89d1e8c484c3e9b653fde3166680e0.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From e936fc7a819731298de237acef75237a2557c49f Mon Sep 17 00:00:00 2001
+Message-Id: <e936fc7a819731298de237acef75237a2557c49f.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Steven Rostedt <rostedt@goodmis.org>
 Date: Tue, 14 Jul 2015 14:26:34 +0200
 Subject: [PATCH 130/335] futex: Fix bug on when a requeued RT task times out
@@ -58,7 +58,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  2 files changed, 31 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
-index 71d161c93b98..1c3f56d3d9b6 100644
+index 9d472eb48ba7..069f025180b8 100644
 --- a/kernel/locking/rtmutex.c
 +++ b/kernel/locking/rtmutex.c
 @@ -137,7 +137,8 @@ static void fixup_rt_mutex_waiters(struct rt_mutex *lock)
@@ -71,7 +71,7 @@ index 71d161c93b98..1c3f56d3d9b6 100644
  }
  
  /*
-@@ -1784,6 +1785,34 @@ int __rt_mutex_start_proxy_lock(struct rt_mutex *lock,
+@@ -1783,6 +1784,34 @@ int __rt_mutex_start_proxy_lock(struct rt_mutex *lock,
  	if (try_to_take_rt_mutex(lock, task, NULL))
  		return 1;
  
@@ -107,7 +107,7 @@ index 71d161c93b98..1c3f56d3d9b6 100644
  	ret = task_blocks_on_rt_mutex(lock, waiter, task,
  				      RT_MUTEX_FULL_CHAINWALK);
 diff --git a/kernel/locking/rtmutex_common.h b/kernel/locking/rtmutex_common.h
-index f4b6596d224a..461527f3f7af 100644
+index 8f39bc139735..202e2b0d1251 100644
 --- a/kernel/locking/rtmutex_common.h
 +++ b/kernel/locking/rtmutex_common.h
 @@ -131,6 +131,7 @@ enum rtmutex_chainwalk {

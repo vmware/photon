@@ -1,7 +1,7 @@
-From 03d0141fc3b485682d1b460626681fec82e58afb Mon Sep 17 00:00:00 2001
-Message-Id: <03d0141fc3b485682d1b460626681fec82e58afb.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From d2da48ca95d4421582450156ee4d01c39a2da2b5 Mon Sep 17 00:00:00 2001
+Message-Id: <d2da48ca95d4421582450156ee4d01c39a2da2b5.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 22 Jun 2011 19:47:03 +0200
 Subject: [PATCH 193/335] sched: Distangle worker accounting from rqlock
@@ -36,7 +36,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  3 files changed, 47 insertions(+), 100 deletions(-)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 453e1a45dcbf..f13cc0073bbc 100644
+index a0b5e4914895..8c89bcdb2724 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -1704,10 +1704,6 @@ static inline void ttwu_activate(struct rq *rq, struct task_struct *p, int en_fl
@@ -172,7 +172,7 @@ index 453e1a45dcbf..f13cc0073bbc 100644
  EXPORT_SYMBOL(schedule);
  
 diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index 21484e3938a6..77ae44a1a9ee 100644
+index d663b779f77a..d6b1cf164273 100644
 --- a/kernel/workqueue.c
 +++ b/kernel/workqueue.c
 @@ -843,43 +843,32 @@ static void wake_up_worker(struct worker_pool *pool)

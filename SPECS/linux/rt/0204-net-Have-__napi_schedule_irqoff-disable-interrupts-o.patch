@@ -1,7 +1,7 @@
-From 457f1a3c227458cd69707cf2d9e26c8f1500550d Mon Sep 17 00:00:00 2001
-Message-Id: <457f1a3c227458cd69707cf2d9e26c8f1500550d.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 0130e806eb6af9028975a0d59d71f608d8dd37e3 Mon Sep 17 00:00:00 2001
+Message-Id: <0130e806eb6af9028975a0d59d71f608d8dd37e3.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Steven Rostedt <rostedt@goodmis.org>
 Date: Tue, 6 Dec 2016 17:50:30 -0500
 Subject: [PATCH 204/335] net: Have __napi_schedule_irqoff() disable interrupts
@@ -55,7 +55,7 @@ index 7bf58533f955..0e34e8051ac2 100644
  static inline bool napi_disable_pending(struct napi_struct *n)
  {
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 9b15c663b3f8..b73cbe6c8096 100644
+index a1c28660295f..3d870f79190b 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
 @@ -5941,6 +5941,7 @@ bool napi_schedule_prep(struct napi_struct *n)

@@ -1,7 +1,7 @@
-From a9b1e07c64c95f363df0bb9c89648e40e5cdec23 Mon Sep 17 00:00:00 2001
-Message-Id: <a9b1e07c64c95f363df0bb9c89648e40e5cdec23.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From b041fe6166e767408efa01528e98ff67321a1f2f Mon Sep 17 00:00:00 2001
+Message-Id: <b041fe6166e767408efa01528e98ff67321a1f2f.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 21 Aug 2012 20:38:50 +0200
 Subject: [PATCH 227/335] random: Make it work on rt
@@ -23,7 +23,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  7 files changed, 26 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 80dedecfe15c..a446100b61d9 100644
+index 98925d49c96b..908a05cc576b 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
 @@ -1232,28 +1232,27 @@ static __u32 get_reg(struct fast_pool *f, struct pt_regs *regs)

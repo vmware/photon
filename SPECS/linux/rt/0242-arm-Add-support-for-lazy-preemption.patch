@@ -1,7 +1,7 @@
-From cce55e794f64b27bc5ac9f6b86023bb666c5220b Mon Sep 17 00:00:00 2001
-Message-Id: <cce55e794f64b27bc5ac9f6b86023bb666c5220b.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 843887e65baee85e3dd1a4fb4a005be4854416e3 Mon Sep 17 00:00:00 2001
+Message-Id: <843887e65baee85e3dd1a4fb4a005be4854416e3.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 31 Oct 2012 12:04:11 +0100
 Subject: [PATCH 242/335] arm: Add support for lazy preemption
@@ -19,7 +19,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  6 files changed, 33 insertions(+), 8 deletions(-)
 
 diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
-index bd9d180db5c7..9945e699e0a4 100644
+index 63ca5b08493b..ba7f66d42b3e 100644
 --- a/arch/arm/Kconfig
 +++ b/arch/arm/Kconfig
 @@ -90,6 +90,7 @@ config ARM

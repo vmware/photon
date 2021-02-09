@@ -1,7 +1,7 @@
-From cc517513674f6dbfb72739d068aede5af49d9086 Mon Sep 17 00:00:00 2001
-Message-Id: <cc517513674f6dbfb72739d068aede5af49d9086.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 7378c491c2b8ea62da44c2f7ec9446503018635b Mon Sep 17 00:00:00 2001
+Message-Id: <7378c491c2b8ea62da44c2f7ec9446503018635b.1612799231.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 15 Nov 2017 17:29:51 +0100
 Subject: [PATCH 097/335] time/hrtimer: avoid schedule_work() with interrupts
@@ -16,7 +16,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 11 insertions(+), 4 deletions(-)
 
 diff --git a/kernel/time/timer.c b/kernel/time/timer.c
-index ecc23d2c21a9..753b75751f0a 100644
+index 0043bf8e2c90..3cb79167852f 100644
 --- a/kernel/time/timer.c
 +++ b/kernel/time/timer.c
 @@ -218,8 +218,7 @@ static DEFINE_PER_CPU(struct timer_base, timer_bases[NR_BASES]);

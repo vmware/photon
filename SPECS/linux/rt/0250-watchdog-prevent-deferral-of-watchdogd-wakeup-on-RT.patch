@@ -1,7 +1,7 @@
-From 02908e2e2451f22b431fddfc6e9b34246a480418 Mon Sep 17 00:00:00 2001
-Message-Id: <02908e2e2451f22b431fddfc6e9b34246a480418.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 82a01f5979aab0680961216498ec41e460230853 Mon Sep 17 00:00:00 2001
+Message-Id: <82a01f5979aab0680961216498ec41e460230853.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Julia Cartwright <julia@ni.com>
 Date: Fri, 28 Sep 2018 21:03:51 +0000
 Subject: [PATCH 250/335] watchdog: prevent deferral of watchdogd wakeup on RT
@@ -39,7 +39,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/watchdog/watchdog_dev.c b/drivers/watchdog/watchdog_dev.c
-index 1c322caecf7f..822a0a20da2e 100644
+index 8fe59b7d8eec..516782cff8d2 100644
 --- a/drivers/watchdog/watchdog_dev.c
 +++ b/drivers/watchdog/watchdog_dev.c
 @@ -145,7 +145,7 @@ static inline void watchdog_update_worker(struct watchdog_device *wdd)
@@ -60,7 +60,7 @@ index 1c322caecf7f..822a0a20da2e 100644
  		return 0;
  	}
  
-@@ -957,7 +957,7 @@ static int watchdog_cdev_register(struct watchdog_device *wdd)
+@@ -959,7 +959,7 @@ static int watchdog_cdev_register(struct watchdog_device *wdd)
  	dev_set_name(&wd_data->dev, "watchdog%d", wdd->id);
  
  	kthread_init_work(&wd_data->work, watchdog_ping_work);
@@ -69,7 +69,7 @@ index 1c322caecf7f..822a0a20da2e 100644
  	wd_data->timer.function = watchdog_timer_expired;
  
  	if (wdd->id == 0) {
-@@ -1005,7 +1005,7 @@ static int watchdog_cdev_register(struct watchdog_device *wdd)
+@@ -1007,7 +1007,7 @@ static int watchdog_cdev_register(struct watchdog_device *wdd)
  		__module_get(wdd->ops->owner);
  		get_device(&wd_data->dev);
  		if (handle_boot_enabled)

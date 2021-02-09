@@ -1,7 +1,7 @@
-From 356ab6e25921f777242e809269803d311a738ea1 Mon Sep 17 00:00:00 2001
-Message-Id: <356ab6e25921f777242e809269803d311a738ea1.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From ee2d00dda766d74a846a86d9894230b8c0d9fa42 Mon Sep 17 00:00:00 2001
+Message-Id: <ee2d00dda766d74a846a86d9894230b8c0d9fa42.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 4 Aug 2017 17:40:42 +0200
 Subject: [PATCH 156/335] locking: don't check for __LINUX_SPINLOCK_TYPES_H on

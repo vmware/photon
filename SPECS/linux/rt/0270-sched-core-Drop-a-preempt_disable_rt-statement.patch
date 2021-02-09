@@ -1,7 +1,7 @@
-From 5663e40978311fa9c5bfcd6db045fbbd9e221c62 Mon Sep 17 00:00:00 2001
-Message-Id: <5663e40978311fa9c5bfcd6db045fbbd9e221c62.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 9d3b3bf4a0b1133fef807cdac4203ad44b5e2b53 Mon Sep 17 00:00:00 2001
+Message-Id: <9d3b3bf4a0b1133fef807cdac4203ad44b5e2b53.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 24 Jun 2019 19:33:16 +0200
 Subject: [PATCH 270/335] sched/core: Drop a preempt_disable_rt() statement
@@ -18,7 +18,7 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  1 file changed, 2 insertions(+), 7 deletions(-)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 8d2452cb5793..9337303a9f43 100644
+index 01006c93bc7f..c9cdc12b3225 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -558,14 +558,11 @@ void resched_cpu(int cpu)

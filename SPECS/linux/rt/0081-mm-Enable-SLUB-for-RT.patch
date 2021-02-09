@@ -1,7 +1,7 @@
-From ad8a47e5a57de2d77fb6c0e7a57f266381a99040 Mon Sep 17 00:00:00 2001
-Message-Id: <ad8a47e5a57de2d77fb6c0e7a57f266381a99040.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 648012a184c9a25e61635bd72d0c7af424782283 Mon Sep 17 00:00:00 2001
+Message-Id: <648012a184c9a25e61635bd72d0c7af424782283.1612799231.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 25 Oct 2012 10:32:35 +0100
 Subject: [PATCH 081/335] mm: Enable SLUB for RT
@@ -16,7 +16,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 6 insertions(+)
 
 diff --git a/mm/slub.c b/mm/slub.c
-index f613c501ccbf..b1201a491169 100644
+index c858088df148..970fbceff021 100644
 --- a/mm/slub.c
 +++ b/mm/slub.c
 @@ -3726,6 +3726,11 @@ static void list_slab_objects(struct kmem_cache *s, struct page *page,

@@ -1,7 +1,7 @@
-From f3f12a098120f4ee17d919073f5e2df5c65ec7c6 Mon Sep 17 00:00:00 2001
-Message-Id: <f3f12a098120f4ee17d919073f5e2df5c65ec7c6.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From b285377351c358b13ca508fdf048dadb34effc03 Mon Sep 17 00:00:00 2001
+Message-Id: <b285377351c358b13ca508fdf048dadb34effc03.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 13 Nov 2011 17:17:09 +0100
 Subject: [PATCH 119/335] softirq: Check preemption after reenabling interrupts
@@ -119,7 +119,7 @@ index 86a709954f5a..9c069ef83d6d 100644
  	return 0;
  }
 diff --git a/net/core/dev.c b/net/core/dev.c
-index c77d12a35f92..ccedc620795c 100644
+index 5d9800804d4a..b891e698a257 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
 @@ -2723,6 +2723,7 @@ static void __netif_reschedule(struct Qdisc *q)
@@ -169,7 +169,7 @@ index c77d12a35f92..ccedc620795c 100644
  }
  EXPORT_SYMBOL(__napi_schedule);
  
-@@ -9503,6 +9509,7 @@ static int dev_cpu_dead(unsigned int oldcpu)
+@@ -9508,6 +9514,7 @@ static int dev_cpu_dead(unsigned int oldcpu)
  
  	raise_softirq_irqoff(NET_TX_SOFTIRQ);
  	local_irq_enable();

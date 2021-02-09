@@ -1,7 +1,7 @@
-From e3656959459968bc726a979d54fcf85f36f2dbc6 Mon Sep 17 00:00:00 2001
-Message-Id: <e3656959459968bc726a979d54fcf85f36f2dbc6.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From dc04046cb08a80bd79dad6a55f861b54daab3a88 Mon Sep 17 00:00:00 2001
+Message-Id: <dc04046cb08a80bd79dad6a55f861b54daab3a88.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 17 Jul 2011 21:42:26 +0200
 Subject: [PATCH 191/335] workqueue: Use local irq lock instead of irq disable
@@ -16,7 +16,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  1 file changed, 30 insertions(+), 15 deletions(-)
 
 diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index 29dc939dad4e..f34586370fcb 100644
+index 7e56d0c1e165..cba820bfacfa 100644
 --- a/kernel/workqueue.c
 +++ b/kernel/workqueue.c
 @@ -49,6 +49,7 @@

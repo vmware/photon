@@ -1,7 +1,7 @@
-From 8f60732ef94f72772f606b8e6ff7d5f55df97e20 Mon Sep 17 00:00:00 2001
-Message-Id: <8f60732ef94f72772f606b8e6ff7d5f55df97e20.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 69dd096bb7f612e541070ef17b9c147577b5f74e Mon Sep 17 00:00:00 2001
+Message-Id: <69dd096bb7f612e541070ef17b9c147577b5f74e.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 12 Jul 2011 15:38:34 +0200
 Subject: [PATCH 197/335] net: Use skbufhead with raw lock
@@ -30,7 +30,7 @@ index 4e14926433ed..8fff010fff6e 100644
  };
  
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 703ce71caeac..9d6dfbfafcc2 100644
+index 06176ef2a842..8af2e56e0fe3 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
 @@ -287,6 +287,7 @@ struct sk_buff_head {
@@ -41,7 +41,7 @@ index 703ce71caeac..9d6dfbfafcc2 100644
  };
  
  struct sk_buff;
-@@ -1730,6 +1731,12 @@ static inline void skb_queue_head_init(struct sk_buff_head *list)
+@@ -1735,6 +1736,12 @@ static inline void skb_queue_head_init(struct sk_buff_head *list)
  	__skb_queue_head_init(list);
  }
  
@@ -55,7 +55,7 @@ index 703ce71caeac..9d6dfbfafcc2 100644
  		struct lock_class_key *class)
  {
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 414e4d7e2082..fc1dfd57d4c0 100644
+index 6437ea1e5edc..c71db0a668d3 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
 @@ -219,14 +219,14 @@ static inline struct hlist_head *dev_index_hash(struct net *net, int ifindex)
@@ -118,7 +118,7 @@ index 414e4d7e2082..fc1dfd57d4c0 100644
  	for (;;) {
  		struct napi_struct *n;
  
-@@ -9521,10 +9531,13 @@ static int dev_cpu_dead(unsigned int oldcpu)
+@@ -9526,10 +9536,13 @@ static int dev_cpu_dead(unsigned int oldcpu)
  		netif_rx_ni(skb);
  		input_queue_head_incr(oldsd);
  	}
@@ -133,7 +133,7 @@ index 414e4d7e2082..fc1dfd57d4c0 100644
  
  	return 0;
  }
-@@ -9835,8 +9848,9 @@ static int __init net_dev_init(void)
+@@ -9840,8 +9853,9 @@ static int __init net_dev_init(void)
  
  		INIT_WORK(flush, flush_backlog);
  

@@ -1,7 +1,7 @@
-From 8fd2bf262dcccd2ac900ee6027bb9cadc6aaba02 Mon Sep 17 00:00:00 2001
-Message-Id: <8fd2bf262dcccd2ac900ee6027bb9cadc6aaba02.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From a8c01e7f7cf053c19b12e23420976e583253b524 Mon Sep 17 00:00:00 2001
+Message-Id: <a8c01e7f7cf053c19b12e23420976e583253b524.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Mike Galbraith <umgwanakikbuti@gmail.com>
 Date: Sun, 16 Oct 2016 05:08:30 +0200
 Subject: [PATCH 238/335] ftrace: Fix trace header alignment
@@ -17,10 +17,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 11 insertions(+), 11 deletions(-)
 
 diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index 8fdd611ecd90..5c526a61c049 100644
+index 8651c1ac8644..45f34620b694 100644
 --- a/kernel/trace/trace.c
 +++ b/kernel/trace/trace.c
-@@ -3356,17 +3356,17 @@ get_total_entries(struct trace_buffer *buf,
+@@ -3357,17 +3357,17 @@ get_total_entries(struct trace_buffer *buf,
  
  static void print_lat_help_header(struct seq_file *m)
  {

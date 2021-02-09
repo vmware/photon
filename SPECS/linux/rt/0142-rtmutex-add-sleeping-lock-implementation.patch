@@ -1,7 +1,7 @@
-From d23069c744836d76091abfcac0fdd6b2ffe2bd7a Mon Sep 17 00:00:00 2001
-Message-Id: <d23069c744836d76091abfcac0fdd6b2ffe2bd7a.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 58921f908673a65e05f1036da3a883f3e5d317a5 Mon Sep 17 00:00:00 2001
+Message-Id: <58921f908673a65e05f1036da3a883f3e5d317a5.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 12 Oct 2017 17:11:19 +0200
 Subject: [PATCH 142/335] rtmutex: add sleeping lock implementation
@@ -16,11 +16,11 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  include/linux/spinlock_rt.h       | 156 +++++++++++
  include/linux/spinlock_types_rt.h |  48 ++++
  kernel/fork.c                     |   1 +
- kernel/futex.c                    |  11 +-
+ kernel/futex.c                    |  10 +-
  kernel/locking/rtmutex.c          | 436 +++++++++++++++++++++++++++---
  kernel/locking/rtmutex_common.h   |  14 +-
  kernel/sched/core.c               |  28 +-
- 11 files changed, 695 insertions(+), 59 deletions(-)
+ 11 files changed, 695 insertions(+), 58 deletions(-)
  create mode 100644 include/linux/spinlock_rt.h
  create mode 100644 include/linux/spinlock_types_rt.h
 
@@ -105,7 +105,7 @@ index a355289b1fa1..138bd1e183e0 100644
   * rt_mutex_is_locked - is the mutex locked
   * @lock: the mutex to be queried
 diff --git a/include/linux/sched.h b/include/linux/sched.h
-index 30895ae9e82d..a0d1a009aa56 100644
+index 8552c7c3f863..116fc34eb965 100644
 --- a/include/linux/sched.h
 +++ b/include/linux/sched.h
 @@ -134,6 +134,9 @@ struct task_group;
@@ -398,7 +398,7 @@ index 000000000000..3e3d8c5f7a9a
 +
 +#endif
 diff --git a/kernel/fork.c b/kernel/fork.c
-index 29b54a64daf5..ecec0f8bef7e 100644
+index ca586216cb24..4562bbb218a6 100644
 --- a/kernel/fork.c
 +++ b/kernel/fork.c
 @@ -900,6 +900,7 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
@@ -410,10 +410,10 @@ index 29b54a64daf5..ecec0f8bef7e 100644
  	account_kernel_stack(tsk, 1);
  
 diff --git a/kernel/futex.c b/kernel/futex.c
-index cde7ff6f9a48..084527af43d4 100644
+index 198edf499f03..5b58dbd04cc4 100644
 --- a/kernel/futex.c
 +++ b/kernel/futex.c
-@@ -1496,6 +1496,7 @@ static int wake_futex_pi(u32 __user *uaddr, u32 uval, struct futex_pi_state *pi_
+@@ -1575,6 +1575,7 @@ static int wake_futex_pi(u32 __user *uaddr, u32 uval, struct futex_pi_state *pi_
  	struct task_struct *new_owner;
  	bool postunlock = false;
  	DEFINE_WAKE_Q(wake_q);
@@ -421,14 +421,15 @@ index cde7ff6f9a48..084527af43d4 100644
  	int ret = 0;
  
  	new_owner = rt_mutex_next_owner(&pi_state->pi_mutex);
-@@ -1555,13 +1556,13 @@ static int wake_futex_pi(u32 __user *uaddr, u32 uval, struct futex_pi_state *pi_
- 	pi_state->owner = new_owner;
- 	raw_spin_unlock(&new_owner->pi_lock);
+@@ -1624,14 +1625,15 @@ static int wake_futex_pi(u32 __user *uaddr, u32 uval, struct futex_pi_state *pi_
+ 		 * not fail.
+ 		 */
+ 		pi_state_update_owner(pi_state, new_owner);
+-		postunlock = __rt_mutex_futex_unlock(&pi_state->pi_mutex, &wake_q);
++		postunlock = __rt_mutex_futex_unlock(&pi_state->pi_mutex, &wake_q,
++						     &wake_sleeper_q);
+ 	}
  
--	postunlock = __rt_mutex_futex_unlock(&pi_state->pi_mutex, &wake_q);
--
-+	postunlock = __rt_mutex_futex_unlock(&pi_state->pi_mutex, &wake_q,
-+					     &wake_sleeper_q);
  out_unlock:
  	raw_spin_unlock_irq(&pi_state->pi_mutex.wait_lock);
  
@@ -438,7 +439,7 @@ index cde7ff6f9a48..084527af43d4 100644
  
  	return ret;
  }
-@@ -2890,7 +2891,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
+@@ -2993,7 +2995,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
  		goto no_block;
  	}
  
@@ -447,7 +448,7 @@ index cde7ff6f9a48..084527af43d4 100644
  
  	/*
  	 * On PREEMPT_RT_FULL, when hb->lock becomes an rt_mutex, we must not
-@@ -3283,7 +3284,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+@@ -3371,7 +3373,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
  	 * The waiter is allocated on our stack, manipulated by the requeue
  	 * code while we sleep on uaddr.
  	 */
@@ -457,7 +458,7 @@ index cde7ff6f9a48..084527af43d4 100644
  	ret = get_futex_key(uaddr2, flags & FLAGS_SHARED, &key2, VERIFY_WRITE);
  	if (unlikely(ret != 0))
 diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
-index d732976d0f05..88df1ff7ca2d 100644
+index e24699290bb7..5ff2189f1199 100644
 --- a/kernel/locking/rtmutex.c
 +++ b/kernel/locking/rtmutex.c
 @@ -7,6 +7,11 @@
@@ -1065,7 +1066,7 @@ index d732976d0f05..88df1ff7ca2d 100644
  
  /**
   * rt_mutex_init_proxy_locked - initialize and lock a rt_mutex on behalf of a
-@@ -1949,6 +2294,7 @@ int rt_mutex_wait_proxy_lock(struct rt_mutex *lock,
+@@ -1948,6 +2293,7 @@ int rt_mutex_wait_proxy_lock(struct rt_mutex *lock,
  			       struct hrtimer_sleeper *to,
  			       struct rt_mutex_waiter *waiter)
  {
@@ -1073,7 +1074,7 @@ index d732976d0f05..88df1ff7ca2d 100644
  	int ret;
  
  	raw_spin_lock_irq(&lock->wait_lock);
-@@ -1960,6 +2306,24 @@ int rt_mutex_wait_proxy_lock(struct rt_mutex *lock,
+@@ -1959,6 +2305,24 @@ int rt_mutex_wait_proxy_lock(struct rt_mutex *lock,
  	 * have to fix that up.
  	 */
  	fixup_rt_mutex_waiters(lock);
@@ -1099,7 +1100,7 @@ index d732976d0f05..88df1ff7ca2d 100644
  
  	return ret;
 diff --git a/kernel/locking/rtmutex_common.h b/kernel/locking/rtmutex_common.h
-index 5955ad2aa2a8..6fcf0a3e180d 100644
+index 53a8c5d03d28..7c1dd1bd95c7 100644
 --- a/kernel/locking/rtmutex_common.h
 +++ b/kernel/locking/rtmutex_common.h
 @@ -30,6 +30,7 @@ struct rt_mutex_waiter {
@@ -1110,16 +1111,16 @@ index 5955ad2aa2a8..6fcf0a3e180d 100644
  #ifdef CONFIG_DEBUG_RT_MUTEXES
  	unsigned long		ip;
  	struct pid		*deadlock_task_pid;
-@@ -139,7 +140,7 @@ extern void rt_mutex_init_proxy_locked(struct rt_mutex *lock,
+@@ -138,7 +139,7 @@ extern struct task_struct *rt_mutex_next_owner(struct rt_mutex *lock);
+ extern void rt_mutex_init_proxy_locked(struct rt_mutex *lock,
  				       struct task_struct *proxy_owner);
- extern void rt_mutex_proxy_unlock(struct rt_mutex *lock,
- 				  struct task_struct *proxy_owner);
+ extern void rt_mutex_proxy_unlock(struct rt_mutex *lock);
 -extern void rt_mutex_init_waiter(struct rt_mutex_waiter *waiter);
 +extern void rt_mutex_init_waiter(struct rt_mutex_waiter *waiter, bool savetate);
  extern int __rt_mutex_start_proxy_lock(struct rt_mutex *lock,
  				     struct rt_mutex_waiter *waiter,
  				     struct task_struct *task);
-@@ -157,9 +158,12 @@ extern int __rt_mutex_futex_trylock(struct rt_mutex *l);
+@@ -156,9 +157,12 @@ extern int __rt_mutex_futex_trylock(struct rt_mutex *l);
  
  extern void rt_mutex_futex_unlock(struct rt_mutex *lock);
  extern bool __rt_mutex_futex_unlock(struct rt_mutex *lock,
@@ -1134,7 +1135,7 @@ index 5955ad2aa2a8..6fcf0a3e180d 100644
  /* RW semaphore special interface */
  
  extern int __rt_mutex_lock_state(struct rt_mutex *lock, int state);
-@@ -169,6 +173,10 @@ int __sched rt_mutex_slowlock_locked(struct rt_mutex *lock, int state,
+@@ -168,6 +172,10 @@ int __sched rt_mutex_slowlock_locked(struct rt_mutex *lock, int state,
  				     struct hrtimer_sleeper *timeout,
  				     enum rtmutex_chainwalk chwalk,
  				     struct rt_mutex_waiter *waiter);
@@ -1146,7 +1147,7 @@ index 5955ad2aa2a8..6fcf0a3e180d 100644
  #ifdef CONFIG_DEBUG_RT_MUTEXES
  # include "rtmutex-debug.h"
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 2197f965f9bb..c94224ddfb73 100644
+index 66f99dc4dac3..140228327b8c 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -401,9 +401,15 @@ static bool set_nr_if_polling(struct task_struct *p)

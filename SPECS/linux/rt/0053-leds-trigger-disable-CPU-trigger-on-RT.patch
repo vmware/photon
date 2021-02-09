@@ -1,7 +1,7 @@
-From d578373db51b20c45cc4c576e6b21cbc6628a56d Mon Sep 17 00:00:00 2001
-Message-Id: <d578373db51b20c45cc4c576e6b21cbc6628a56d.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From a342aabfd476318774746399d68bae8861525971 Mon Sep 17 00:00:00 2001
+Message-Id: <a342aabfd476318774746399d68bae8861525971.1612799231.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 23 Jan 2014 14:45:59 +0100
 Subject: [PATCH 053/335] leds: trigger: disable CPU trigger on -RT

@@ -1,7 +1,7 @@
-From 4d4e060ccf7b26468111fa2de0685d51acb1eae3 Mon Sep 17 00:00:00 2001
-Message-Id: <4d4e060ccf7b26468111fa2de0685d51acb1eae3.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 7ec4824231dae3e2bd350f9b44d164c2d8b1715f Mon Sep 17 00:00:00 2001
+Message-Id: <7ec4824231dae3e2bd350f9b44d164c2d8b1715f.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 26 Jun 2019 11:59:44 +0200
 Subject: [PATCH 276/335] futex: Make the futex_hash_bucket lock raw
@@ -21,11 +21,11 @@ lockchain.
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
 ---
- kernel/futex.c | 88 +++++++++++++++++++++++++-------------------------
- 1 file changed, 44 insertions(+), 44 deletions(-)
+ kernel/futex.c | 86 +++++++++++++++++++++++++-------------------------
+ 1 file changed, 43 insertions(+), 43 deletions(-)
 
 diff --git a/kernel/futex.c b/kernel/futex.c
-index 9900c3f30124..8e8658df69d9 100644
+index 43ad938df8c6..9035bc29a0f7 100644
 --- a/kernel/futex.c
 +++ b/kernel/futex.c
 @@ -243,7 +243,7 @@ struct futex_q {
@@ -46,7 +46,7 @@ index 9900c3f30124..8e8658df69d9 100644
  	struct plist_head chain;
  } ____cacheline_aligned_in_smp;
  
-@@ -928,7 +928,7 @@ void exit_pi_state_list(struct task_struct *curr)
+@@ -952,7 +952,7 @@ static void exit_pi_state_list(struct task_struct *curr)
  		}
  		raw_spin_unlock_irq(&curr->pi_lock);
  
@@ -55,7 +55,7 @@ index 9900c3f30124..8e8658df69d9 100644
  		raw_spin_lock_irq(&pi_state->pi_mutex.wait_lock);
  		raw_spin_lock(&curr->pi_lock);
  		/*
-@@ -938,7 +938,7 @@ void exit_pi_state_list(struct task_struct *curr)
+@@ -962,7 +962,7 @@ static void exit_pi_state_list(struct task_struct *curr)
  		if (head->next != next) {
  			/* retain curr->pi_lock for the loop invariant */
  			raw_spin_unlock(&pi_state->pi_mutex.wait_lock);
@@ -64,7 +64,7 @@ index 9900c3f30124..8e8658df69d9 100644
  			put_pi_state(pi_state);
  			continue;
  		}
-@@ -950,7 +950,7 @@ void exit_pi_state_list(struct task_struct *curr)
+@@ -974,7 +974,7 @@ static void exit_pi_state_list(struct task_struct *curr)
  
  		raw_spin_unlock(&curr->pi_lock);
  		raw_spin_unlock_irq(&pi_state->pi_mutex.wait_lock);
@@ -73,7 +73,7 @@ index 9900c3f30124..8e8658df69d9 100644
  
  		rt_mutex_futex_unlock(&pi_state->pi_mutex);
  		put_pi_state(pi_state);
-@@ -1444,7 +1444,7 @@ static void __unqueue_futex(struct futex_q *q)
+@@ -1523,7 +1523,7 @@ static void __unqueue_futex(struct futex_q *q)
  {
  	struct futex_hash_bucket *hb;
  
@@ -82,7 +82,7 @@ index 9900c3f30124..8e8658df69d9 100644
  	    || WARN_ON(plist_node_empty(&q->list)))
  		return;
  
-@@ -1572,21 +1572,21 @@ static inline void
+@@ -1643,21 +1643,21 @@ static inline void
  double_lock_hb(struct futex_hash_bucket *hb1, struct futex_hash_bucket *hb2)
  {
  	if (hb1 <= hb2) {
@@ -110,7 +110,7 @@ index 9900c3f30124..8e8658df69d9 100644
  }
  
  /*
-@@ -1614,7 +1614,7 @@ futex_wake(u32 __user *uaddr, unsigned int flags, int nr_wake, u32 bitset)
+@@ -1685,7 +1685,7 @@ futex_wake(u32 __user *uaddr, unsigned int flags, int nr_wake, u32 bitset)
  	if (!hb_waiters_pending(hb))
  		goto out_put_key;
  
@@ -119,7 +119,7 @@ index 9900c3f30124..8e8658df69d9 100644
  
  	plist_for_each_entry_safe(this, next, &hb->chain, list) {
  		if (match_futex (&this->key, &key)) {
-@@ -1633,7 +1633,7 @@ futex_wake(u32 __user *uaddr, unsigned int flags, int nr_wake, u32 bitset)
+@@ -1704,7 +1704,7 @@ futex_wake(u32 __user *uaddr, unsigned int flags, int nr_wake, u32 bitset)
  		}
  	}
  
@@ -128,7 +128,7 @@ index 9900c3f30124..8e8658df69d9 100644
  	wake_up_q(&wake_q);
  out_put_key:
  	put_futex_key(&key);
-@@ -2238,7 +2238,7 @@ static inline struct futex_hash_bucket *queue_lock(struct futex_q *q)
+@@ -2326,7 +2326,7 @@ static inline struct futex_hash_bucket *queue_lock(struct futex_q *q)
  
  	q->lock_ptr = &hb->lock;
  
@@ -137,7 +137,7 @@ index 9900c3f30124..8e8658df69d9 100644
  	return hb;
  }
  
-@@ -2246,7 +2246,7 @@ static inline void
+@@ -2334,7 +2334,7 @@ static inline void
  queue_unlock(struct futex_hash_bucket *hb)
  	__releases(&hb->lock)
  {
@@ -146,7 +146,7 @@ index 9900c3f30124..8e8658df69d9 100644
  	hb_waiters_dec(hb);
  }
  
-@@ -2285,7 +2285,7 @@ static inline void queue_me(struct futex_q *q, struct futex_hash_bucket *hb)
+@@ -2373,7 +2373,7 @@ static inline void queue_me(struct futex_q *q, struct futex_hash_bucket *hb)
  	__releases(&hb->lock)
  {
  	__queue_me(q, hb);
@@ -155,7 +155,7 @@ index 9900c3f30124..8e8658df69d9 100644
  }
  
  /**
-@@ -2301,41 +2301,41 @@ static inline void queue_me(struct futex_q *q, struct futex_hash_bucket *hb)
+@@ -2389,41 +2389,41 @@ static inline void queue_me(struct futex_q *q, struct futex_hash_bucket *hb)
   */
  static int unqueue_me(struct futex_q *q)
  {
@@ -208,7 +208,7 @@ index 9900c3f30124..8e8658df69d9 100644
  		ret = 1;
  	}
  
-@@ -2357,7 +2357,7 @@ static void unqueue_me_pi(struct futex_q *q)
+@@ -2445,7 +2445,7 @@ static void unqueue_me_pi(struct futex_q *q)
  	put_pi_state(q->pi_state);
  	q->pi_state = NULL;
  
@@ -216,8 +216,8 @@ index 9900c3f30124..8e8658df69d9 100644
 +	raw_spin_unlock(q->lock_ptr);
  }
  
- static int fixup_pi_state_owner(u32 __user *uaddr, struct futex_q *q,
-@@ -2490,7 +2490,7 @@ static int fixup_pi_state_owner(u32 __user *uaddr, struct futex_q *q,
+ static int __fixup_pi_state_owner(u32 __user *uaddr, struct futex_q *q,
+@@ -2569,7 +2569,7 @@ static int __fixup_pi_state_owner(u32 __user *uaddr, struct futex_q *q,
  	 */
  handle_err:
  	raw_spin_unlock_irq(&pi_state->pi_mutex.wait_lock);
@@ -226,7 +226,7 @@ index 9900c3f30124..8e8658df69d9 100644
  
  	switch (err) {
  	case -EFAULT:
-@@ -2508,7 +2508,7 @@ static int fixup_pi_state_owner(u32 __user *uaddr, struct futex_q *q,
+@@ -2586,7 +2586,7 @@ static int __fixup_pi_state_owner(u32 __user *uaddr, struct futex_q *q,
  		break;
  	}
  
@@ -235,7 +235,7 @@ index 9900c3f30124..8e8658df69d9 100644
  	raw_spin_lock_irq(&pi_state->pi_mutex.wait_lock);
  
  	/*
-@@ -2604,7 +2604,7 @@ static void futex_wait_queue_me(struct futex_hash_bucket *hb, struct futex_q *q,
+@@ -2700,7 +2700,7 @@ static void futex_wait_queue_me(struct futex_hash_bucket *hb, struct futex_q *q,
  	/*
  	 * The task state is guaranteed to be set before another task can
  	 * wake it. set_current_state() is implemented using smp_store_mb() and
@@ -244,7 +244,7 @@ index 9900c3f30124..8e8658df69d9 100644
  	 * access to the hash list and forcing another memory barrier.
  	 */
  	set_current_state(TASK_INTERRUPTIBLE);
-@@ -2895,7 +2895,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
+@@ -2999,7 +2999,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
  	 * before __rt_mutex_start_proxy_lock() is done.
  	 */
  	raw_spin_lock_irq(&q.pi_state->pi_mutex.wait_lock);
@@ -253,7 +253,7 @@ index 9900c3f30124..8e8658df69d9 100644
  	/*
  	 * __rt_mutex_start_proxy_lock() unconditionally enqueues the @rt_waiter
  	 * such that futex_unlock_pi() is guaranteed to observe the waiter when
-@@ -2916,7 +2916,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
+@@ -3020,7 +3020,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
  	ret = rt_mutex_wait_proxy_lock(&q.pi_state->pi_mutex, to, &rt_waiter);
  
  cleanup:
@@ -262,7 +262,7 @@ index 9900c3f30124..8e8658df69d9 100644
  	/*
  	 * If we failed to acquire the lock (deadlock/signal/timeout), we must
  	 * first acquire the hb->lock before removing the lock from the
-@@ -3017,7 +3017,7 @@ static int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
+@@ -3107,7 +3107,7 @@ static int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
  		return ret;
  
  	hb = hash_futex(&key);
@@ -271,7 +271,7 @@ index 9900c3f30124..8e8658df69d9 100644
  
  	/*
  	 * Check waiters first. We do not trust user space values at
-@@ -3051,7 +3051,7 @@ static int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
+@@ -3141,7 +3141,7 @@ static int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
  		 * rt_waiter. Also see the WARN in wake_futex_pi().
  		 */
  		raw_spin_lock_irq(&pi_state->pi_mutex.wait_lock);
@@ -280,7 +280,7 @@ index 9900c3f30124..8e8658df69d9 100644
  
  		/* drops pi_state->pi_mutex.wait_lock */
  		ret = wake_futex_pi(uaddr, uval, pi_state);
-@@ -3090,7 +3090,7 @@ static int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
+@@ -3180,7 +3180,7 @@ static int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
  	 * owner.
  	 */
  	if ((ret = cmpxchg_futex_value_locked(&curval, uaddr, uval, 0))) {
@@ -289,7 +289,7 @@ index 9900c3f30124..8e8658df69d9 100644
  		switch (ret) {
  		case -EFAULT:
  			goto pi_faulted;
-@@ -3110,7 +3110,7 @@ static int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
+@@ -3200,7 +3200,7 @@ static int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
  	ret = (curval == uval) ? 0 : -EAGAIN;
  
  out_unlock:
@@ -298,7 +298,7 @@ index 9900c3f30124..8e8658df69d9 100644
  out_putkey:
  	put_futex_key(&key);
  	return ret;
-@@ -3284,9 +3284,9 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+@@ -3373,9 +3373,9 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
  	/* Queue the futex_q, drop the hb lock, wait for wakeup. */
  	futex_wait_queue_me(hb, &q, to);
  
@@ -310,25 +310,16 @@ index 9900c3f30124..8e8658df69d9 100644
  	if (ret)
  		goto out_put_keys;
  
-@@ -3306,7 +3306,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+@@ -3395,7 +3395,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
  		 * did a lock-steal - fix up the PI-state in that case.
  		 */
  		if (q.pi_state && (q.pi_state->owner != current)) {
 -			spin_lock(q.lock_ptr);
 +			raw_spin_lock(q.lock_ptr);
  			ret = fixup_pi_state_owner(uaddr2, &q, current);
- 			if (ret && rt_mutex_owner(&q.pi_state->pi_mutex) == current) {
- 				pi_state = q.pi_state;
-@@ -3317,7 +3317,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
- 			 * the requeue_pi() code acquired for us.
- 			 */
- 			put_pi_state(q.pi_state);
--			spin_unlock(q.lock_ptr);
-+			raw_spin_unlock(q.lock_ptr);
- 		}
- 	} else {
- 		struct rt_mutex *pi_mutex;
-@@ -3331,7 +3331,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+ 			/*
+ 			 * Drop the reference to the pi state which
+@@ -3421,7 +3421,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
  		pi_mutex = &q.pi_state->pi_mutex;
  		ret = rt_mutex_wait_proxy_lock(pi_mutex, to, &rt_waiter);
  
@@ -337,7 +328,7 @@ index 9900c3f30124..8e8658df69d9 100644
  		if (ret && !rt_mutex_cleanup_proxy_lock(pi_mutex, &rt_waiter))
  			ret = 0;
  
-@@ -3998,7 +3998,7 @@ static int __init futex_init(void)
+@@ -4181,7 +4181,7 @@ static int __init futex_init(void)
  	for (i = 0; i < futex_hashsize; i++) {
  		atomic_set(&futex_queues[i].waiters, 0);
  		plist_head_init(&futex_queues[i].chain);

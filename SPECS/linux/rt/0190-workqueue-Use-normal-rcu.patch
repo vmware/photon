@@ -1,7 +1,7 @@
-From 73c1399f26046f6e455759c6021cb61014616c83 Mon Sep 17 00:00:00 2001
-Message-Id: <73c1399f26046f6e455759c6021cb61014616c83.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 6ff51edb9d104be44e9cab665b98cafe4012b7df Mon Sep 17 00:00:00 2001
+Message-Id: <6ff51edb9d104be44e9cab665b98cafe4012b7df.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 24 Jul 2013 15:26:54 +0200
 Subject: [PATCH 190/335] workqueue: Use normal rcu
@@ -17,7 +17,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  1 file changed, 52 insertions(+), 43 deletions(-)
 
 diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index eef77c82d2e1..29dc939dad4e 100644
+index cd98ef48345e..7e56d0c1e165 100644
 --- a/kernel/workqueue.c
 +++ b/kernel/workqueue.c
 @@ -127,7 +127,7 @@ enum {
@@ -250,7 +250,7 @@ index eef77c82d2e1..29dc939dad4e 100644
  }
  
  /**
-@@ -4221,7 +4226,7 @@ void destroy_workqueue(struct workqueue_struct *wq)
+@@ -4228,7 +4233,7 @@ void destroy_workqueue(struct workqueue_struct *wq)
  		 * The base ref is never dropped on per-cpu pwqs.  Directly
  		 * schedule RCU free.
  		 */
@@ -259,7 +259,7 @@ index eef77c82d2e1..29dc939dad4e 100644
  	} else {
  		/*
  		 * We're the sole accessor of @wq at this point.  Directly
-@@ -4331,7 +4336,8 @@ bool workqueue_congested(int cpu, struct workqueue_struct *wq)
+@@ -4338,7 +4343,8 @@ bool workqueue_congested(int cpu, struct workqueue_struct *wq)
  	struct pool_workqueue *pwq;
  	bool ret;
  
@@ -269,7 +269,7 @@ index eef77c82d2e1..29dc939dad4e 100644
  
  	if (cpu == WORK_CPU_UNBOUND)
  		cpu = smp_processor_id();
-@@ -4342,7 +4348,8 @@ bool workqueue_congested(int cpu, struct workqueue_struct *wq)
+@@ -4349,7 +4355,8 @@ bool workqueue_congested(int cpu, struct workqueue_struct *wq)
  		pwq = unbound_pwq_by_node(wq, cpu_to_node(cpu));
  
  	ret = !list_empty(&pwq->delayed_works);
@@ -279,7 +279,7 @@ index eef77c82d2e1..29dc939dad4e 100644
  
  	return ret;
  }
-@@ -4368,15 +4375,15 @@ unsigned int work_busy(struct work_struct *work)
+@@ -4375,15 +4382,15 @@ unsigned int work_busy(struct work_struct *work)
  	if (work_pending(work))
  		ret |= WORK_BUSY_PENDING;
  
@@ -299,7 +299,7 @@ index eef77c82d2e1..29dc939dad4e 100644
  
  	return ret;
  }
-@@ -4561,7 +4568,7 @@ void show_workqueue_state(void)
+@@ -4568,7 +4575,7 @@ void show_workqueue_state(void)
  	unsigned long flags;
  	int pi;
  
@@ -308,7 +308,7 @@ index eef77c82d2e1..29dc939dad4e 100644
  
  	pr_info("Showing busy workqueues and worker pools:\n");
  
-@@ -4626,7 +4633,7 @@ void show_workqueue_state(void)
+@@ -4633,7 +4640,7 @@ void show_workqueue_state(void)
  		touch_nmi_watchdog();
  	}
  
@@ -317,7 +317,7 @@ index eef77c82d2e1..29dc939dad4e 100644
  }
  
  /* used to show worker information through /proc/PID/{comm,stat,status} */
-@@ -5013,16 +5020,16 @@ bool freeze_workqueues_busy(void)
+@@ -5020,16 +5027,16 @@ bool freeze_workqueues_busy(void)
  		 * nr_active is monotonically decreasing.  It's safe
  		 * to peek without lock.
  		 */
@@ -337,7 +337,7 @@ index eef77c82d2e1..29dc939dad4e 100644
  	}
  out_unlock:
  	mutex_unlock(&wq_pool_mutex);
-@@ -5217,7 +5224,8 @@ static ssize_t wq_pool_ids_show(struct device *dev,
+@@ -5224,7 +5231,8 @@ static ssize_t wq_pool_ids_show(struct device *dev,
  	const char *delim = "";
  	int node, written = 0;
  
@@ -347,7 +347,7 @@ index eef77c82d2e1..29dc939dad4e 100644
  	for_each_node(node) {
  		written += scnprintf(buf + written, PAGE_SIZE - written,
  				     "%s%d:%d", delim, node,
-@@ -5225,7 +5233,8 @@ static ssize_t wq_pool_ids_show(struct device *dev,
+@@ -5232,7 +5240,8 @@ static ssize_t wq_pool_ids_show(struct device *dev,
  		delim = " ";
  	}
  	written += scnprintf(buf + written, PAGE_SIZE - written, "\n");

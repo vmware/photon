@@ -1,7 +1,7 @@
-From 48a8794658f154a64ebe333535791974fe1ccaea Mon Sep 17 00:00:00 2001
-Message-Id: <48a8794658f154a64ebe333535791974fe1ccaea.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 8885c43690936c6ccaab480d0f46d0cf362b1976 Mon Sep 17 00:00:00 2001
+Message-Id: <8885c43690936c6ccaab480d0f46d0cf362b1976.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 1 Mar 2013 11:17:42 +0100
 Subject: [PATCH 131/335] futex: Ensure lock/unlock symetry versus pi_lock and
@@ -34,10 +34,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 2 insertions(+)
 
 diff --git a/kernel/futex.c b/kernel/futex.c
-index c922e994f524..cde7ff6f9a48 100644
+index 62730ac53ba4..198edf499f03 100644
 --- a/kernel/futex.c
 +++ b/kernel/futex.c
-@@ -938,7 +938,9 @@ void exit_pi_state_list(struct task_struct *curr)
+@@ -962,7 +962,9 @@ static void exit_pi_state_list(struct task_struct *curr)
  		if (head->next != next) {
  			/* retain curr->pi_lock for the loop invariant */
  			raw_spin_unlock(&pi_state->pi_mutex.wait_lock);

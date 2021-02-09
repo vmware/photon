@@ -1,7 +1,7 @@
-From 5839c68c16c1f182a741c345e716e38c787c4ab9 Mon Sep 17 00:00:00 2001
-Message-Id: <5839c68c16c1f182a741c345e716e38c787c4ab9.1605897049.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 1522de6fe941a219524ad0ab20766a26d0dfc1a3 Mon Sep 17 00:00:00 2001
+Message-Id: <1522de6fe941a219524ad0ab20766a26d0dfc1a3.1612799233.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Scott Wood <swood@redhat.com>
 Date: Sat, 12 Oct 2019 01:52:12 -0500
 Subject: [PATCH 307/335] sched: migrate_enable: Use select_fallback_rq()
@@ -21,10 +21,10 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  1 file changed, 10 insertions(+), 15 deletions(-)
 
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 0d64d14f0b39..c5685d5d9526 100644
+index 96497f8b20dd..031690288325 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -7330,6 +7330,7 @@ void migrate_enable(void)
+@@ -7326,6 +7326,7 @@ void migrate_enable(void)
  	if (p->migrate_disable_update) {
  		struct rq *rq;
  		struct rq_flags rf;
@@ -32,7 +32,7 @@ index 0d64d14f0b39..c5685d5d9526 100644
  
  		rq = task_rq_lock(p, &rf);
  		update_rq_clock(rq);
-@@ -7339,21 +7340,15 @@ void migrate_enable(void)
+@@ -7335,21 +7336,15 @@ void migrate_enable(void)
  
  		p->migrate_disable_update = 0;
  

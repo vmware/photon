@@ -1,7 +1,7 @@
-From b350c545c9373c7ba5a5dd3db63525290d869f5c Mon Sep 17 00:00:00 2001
-Message-Id: <b350c545c9373c7ba5a5dd3db63525290d869f5c.1605897049.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 08b7f2761f31c18034ea18bf5a6746c7a97dacab Mon Sep 17 00:00:00 2001
+Message-Id: <08b7f2761f31c18034ea18bf5a6746c7a97dacab.1612799233.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Matt Fleming <matt@codeblueprint.co.uk>
 Date: Tue, 7 Apr 2020 10:54:13 +0100
 Subject: [PATCH 329/335] signal: Prevent double-free of user struct
@@ -38,10 +38,10 @@ Signed-off-by: Tom Zanussi <zanussi@kernel.org>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/kernel/signal.c b/kernel/signal.c
-index 45748993f777..05c9b5a6b3ae 100644
+index 947731042b7c..0275c582421b 100644
 --- a/kernel/signal.c
 +++ b/kernel/signal.c
-@@ -488,8 +488,8 @@ static void sigqueue_free_current(struct sigqueue *q)
+@@ -489,8 +489,8 @@ static void sigqueue_free_current(struct sigqueue *q)
  
  	up = q->user;
  	if (rt_prio(current->normal_prio) && !put_task_cache(current, q)) {

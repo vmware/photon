@@ -1,7 +1,7 @@
-From b4f2230397775a35d611cb2caa53d718f0f307e5 Mon Sep 17 00:00:00 2001
-Message-Id: <b4f2230397775a35d611cb2caa53d718f0f307e5.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From b68200be710b889a53ad3ae26ee91aba4cb27485 Mon Sep 17 00:00:00 2001
+Message-Id: <b68200be710b889a53ad3ae26ee91aba4cb27485.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 23 Jun 2015 15:32:51 +0200
 Subject: [PATCH 205/335] irqwork: push most work into softirq context
@@ -249,10 +249,10 @@ index 2b0ddd50e879..4d31ec98e968 100644
  
  /*
 diff --git a/kernel/time/timer.c b/kernel/time/timer.c
-index 753b75751f0a..bdbfd52b1cfd 100644
+index 3cb79167852f..c7bd68db6f63 100644
 --- a/kernel/time/timer.c
 +++ b/kernel/time/timer.c
-@@ -1754,6 +1754,8 @@ static __latent_entropy void run_timer_softirq(struct softirq_action *h)
+@@ -1747,6 +1747,8 @@ static __latent_entropy void run_timer_softirq(struct softirq_action *h)
  {
  	struct timer_base *base = this_cpu_ptr(&timer_bases[BASE_STD]);
  

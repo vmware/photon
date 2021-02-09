@@ -1,7 +1,7 @@
-From 0eedc2a806ff521e4a3ccf0f5029ac84716db955 Mon Sep 17 00:00:00 2001
-Message-Id: <0eedc2a806ff521e4a3ccf0f5029ac84716db955.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 7be16eec0979fe30a7c28243a34f02b3ca0afddd Mon Sep 17 00:00:00 2001
+Message-Id: <7be16eec0979fe30a7c28243a34f02b3ca0afddd.1612799231.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 14 Feb 2013 22:36:59 +0100
 Subject: [PATCH 031/335] timekeeping: Split jiffies seqlock
@@ -45,10 +45,10 @@ index 497719127bf9..62acb8914c9e 100644
  }
  EXPORT_SYMBOL(get_jiffies_64);
 diff --git a/kernel/time/tick-common.c b/kernel/time/tick-common.c
-index a02e0f6b287c..32f5101f07ce 100644
+index 0a3cc37e4b83..7bd136b646d4 100644
 --- a/kernel/time/tick-common.c
 +++ b/kernel/time/tick-common.c
-@@ -79,13 +79,15 @@ int tick_is_oneshot_available(void)
+@@ -80,13 +80,15 @@ int tick_is_oneshot_available(void)
  static void tick_periodic(int cpu)
  {
  	if (tick_do_timer_cpu == cpu) {
@@ -66,7 +66,7 @@ index a02e0f6b287c..32f5101f07ce 100644
  		update_wall_time();
  	}
  
-@@ -157,9 +159,9 @@ void tick_setup_periodic(struct clock_event_device *dev, int broadcast)
+@@ -158,9 +160,9 @@ void tick_setup_periodic(struct clock_event_device *dev, int broadcast)
  		ktime_t next;
  
  		do {

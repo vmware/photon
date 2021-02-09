@@ -1,7 +1,7 @@
-From 3bf57f39624d2b24b99a08346c0331143abd74db Mon Sep 17 00:00:00 2001
-Message-Id: <3bf57f39624d2b24b99a08346c0331143abd74db.1605897047.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 2d525e1c566b9696a8cb92d4ebee5f17ae145d49 Mon Sep 17 00:00:00 2001
+Message-Id: <2d525e1c566b9696a8cb92d4ebee5f17ae145d49.1612799231.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Ingo Molnar <mingo@elte.hu>
 Date: Fri, 3 Jul 2009 08:29:34 -0500
 Subject: [PATCH 089/335] timers: Prepare for full preemption
@@ -32,7 +32,7 @@ index 7b066fd38248..54627d046b3a 100644
  #else
  # define del_timer_sync(t)		del_timer(t)
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 541c7222ffc2..c0058e62a3fc 100644
+index 85f7c609493a..f07c6f53312a 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -498,11 +498,14 @@ void resched_cpu(int cpu)
@@ -62,7 +62,7 @@ index 541c7222ffc2..c0058e62a3fc 100644
  }
  
 diff --git a/kernel/time/timer.c b/kernel/time/timer.c
-index 61e41ea3a96e..ecc23d2c21a9 100644
+index a6e88d9bb931..0043bf8e2c90 100644
 --- a/kernel/time/timer.c
 +++ b/kernel/time/timer.c
 @@ -45,6 +45,7 @@
@@ -153,7 +153,7 @@ index 61e41ea3a96e..ecc23d2c21a9 100644
  			raw_spin_lock_irq(&base->lock);
  		}
  	}
-@@ -1702,8 +1736,8 @@ static inline void __run_timers(struct timer_base *base)
+@@ -1695,8 +1729,8 @@ static inline void __run_timers(struct timer_base *base)
  		while (levels--)
  			expire_timers(base, heads + levels);
  	}
@@ -163,7 +163,7 @@ index 61e41ea3a96e..ecc23d2c21a9 100644
  }
  
  /*
-@@ -1948,6 +1982,9 @@ static void __init init_timer_cpu(int cpu)
+@@ -1941,6 +1975,9 @@ static void __init init_timer_cpu(int cpu)
  		base->cpu = cpu;
  		raw_spin_lock_init(&base->lock);
  		base->clk = jiffies;

@@ -1,7 +1,7 @@
-From 4de30d3c3b44eb8bb68db58ccee3a4f7b59feb9f Mon Sep 17 00:00:00 2001
-Message-Id: <4de30d3c3b44eb8bb68db58ccee3a4f7b59feb9f.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 032605d1bd7c3e6ce8d38c8adc7425c50bba86ad Mon Sep 17 00:00:00 2001
+Message-Id: <032605d1bd7c3e6ce8d38c8adc7425c50bba86ad.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 14 Jul 2015 14:26:34 +0200
 Subject: [PATCH 225/335] panic: skip get_random_bytes for RT_FULL in

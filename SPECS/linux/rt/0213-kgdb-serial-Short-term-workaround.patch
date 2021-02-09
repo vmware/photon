@@ -1,7 +1,7 @@
-From 3305a98c6826ca0eba952b73f30725fbb4222a3e Mon Sep 17 00:00:00 2001
-Message-Id: <3305a98c6826ca0eba952b73f30725fbb4222a3e.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From 16533b378631a5c16dcf05f801b3835151e5a56e Mon Sep 17 00:00:00 2001
+Message-Id: <16533b378631a5c16dcf05f801b3835151e5a56e.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Jason Wessel <jason.wessel@windriver.com>
 Date: Thu, 28 Jul 2011 12:42:23 -0500
 Subject: [PATCH 213/335] kgdb/serial: Short term workaround
@@ -68,10 +68,10 @@ index 68bd88223417..e033b25b0b72 100644
  static inline int kdb_register(char *cmd, kdb_func_t func, char *usage,
  			       char *help, short minlen) { return 0; }
 diff --git a/kernel/debug/kdb/kdb_io.c b/kernel/debug/kdb/kdb_io.c
-index 6a4b41484afe..197cb422f6e1 100644
+index b45576ca3b0d..ad1a3bc7908f 100644
 --- a/kernel/debug/kdb/kdb_io.c
 +++ b/kernel/debug/kdb/kdb_io.c
-@@ -857,9 +857,11 @@ int kdb_printf(const char *fmt, ...)
+@@ -861,9 +861,11 @@ int kdb_printf(const char *fmt, ...)
  	va_list ap;
  	int r;
  

@@ -1,7 +1,7 @@
-From f6edf9fe7413cb86a9fc098eddbcde7eac102ec3 Mon Sep 17 00:00:00 2001
-Message-Id: <f6edf9fe7413cb86a9fc098eddbcde7eac102ec3.1605897048.git.zanussi@kernel.org>
-In-Reply-To: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
-References: <d0fc635a2f7132e977af42eb2a0646b87f598722.1605897047.git.zanussi@kernel.org>
+From d6fb68a3c573883a7b54099713b0fbe0a7b9ac6c Mon Sep 17 00:00:00 2001
+Message-Id: <d6fb68a3c573883a7b54099713b0fbe0a7b9ac6c.1612799232.git.zanussi@kernel.org>
+In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 29 May 2019 18:52:27 +0200
 Subject: [PATCH 285/335] workqueue: rework
@@ -323,7 +323,7 @@ index 7b173ca08e22..2180c6388eb9 100644
  	init_mm_internals();
  
 diff --git a/kernel/kthread.c b/kernel/kthread.c
-index 42294c806ad0..81aa14daa5fe 100644
+index 43cbd0d6ca71..c903176d8325 100644
 --- a/kernel/kthread.c
 +++ b/kernel/kthread.c
 @@ -20,7 +20,6 @@
@@ -334,7 +334,7 @@ index 42294c806ad0..81aa14daa5fe 100644
  #include <trace/events/sched.h>
  
  static DEFINE_SPINLOCK(kthread_create_lock);
-@@ -1194,19 +1193,6 @@ void kthread_destroy_worker(struct kthread_worker *worker)
+@@ -1195,19 +1194,6 @@ void kthread_destroy_worker(struct kthread_worker *worker)
  }
  EXPORT_SYMBOL(kthread_destroy_worker);
  
@@ -355,7 +355,7 @@ index 42294c806ad0..81aa14daa5fe 100644
  /**
   * kthread_associate_blkcg - associate blkcg to current kthread
 diff --git a/kernel/sched/core.c b/kernel/sched/core.c
-index 9337303a9f43..c9a83db14cde 100644
+index c9cdc12b3225..7a0c8fad4723 100644
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
 @@ -3609,6 +3609,7 @@ static inline void sched_submit_work(struct task_struct *tsk)
@@ -409,7 +409,7 @@ index ed5d8d51ca91..94d97eae0a46 100644
  #else
  
 diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index 9c10264d2679..e6a96fe8896b 100644
+index 275281e59970..7cbc690a7620 100644
 --- a/kernel/workqueue.c
 +++ b/kernel/workqueue.c
 @@ -49,8 +49,6 @@
@@ -1245,7 +1245,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  
  	/*
  	 * During [un]freezing, the caller is responsible for ensuring that
-@@ -3618,7 +3569,7 @@ static void pwq_adjust_max_active(struct pool_workqueue *pwq)
+@@ -3625,7 +3576,7 @@ static void pwq_adjust_max_active(struct pool_workqueue *pwq)
  		pwq->max_active = 0;
  	}
  
@@ -1254,7 +1254,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  }
  
  /* initialize newly alloced @pwq which is associated with @wq and @pool */
-@@ -3791,8 +3742,8 @@ apply_wqattrs_prepare(struct workqueue_struct *wq,
+@@ -3798,8 +3749,8 @@ apply_wqattrs_prepare(struct workqueue_struct *wq,
  
  	ctx = kzalloc(struct_size(ctx, pwq_tbl, nr_node_ids), GFP_KERNEL);
  
@@ -1265,7 +1265,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  	if (!ctx || !new_attrs || !tmp_attrs)
  		goto out_free;
  
-@@ -3928,7 +3879,7 @@ static int apply_workqueue_attrs_locked(struct workqueue_struct *wq,
+@@ -3935,7 +3886,7 @@ static int apply_workqueue_attrs_locked(struct workqueue_struct *wq,
   *
   * Return: 0 on success and -errno on failure.
   */
@@ -1274,7 +1274,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  			  const struct workqueue_attrs *attrs)
  {
  	int ret;
-@@ -3939,7 +3890,6 @@ int apply_workqueue_attrs(struct workqueue_struct *wq,
+@@ -3946,7 +3897,6 @@ int apply_workqueue_attrs(struct workqueue_struct *wq,
  
  	return ret;
  }
@@ -1282,7 +1282,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  
  /**
   * wq_update_unbound_numa - update NUMA affinity of a wq for CPU hot[un]plug
-@@ -4017,9 +3967,9 @@ static void wq_update_unbound_numa(struct workqueue_struct *wq, int cpu,
+@@ -4024,9 +3974,9 @@ static void wq_update_unbound_numa(struct workqueue_struct *wq, int cpu,
  
  use_dfl_pwq:
  	mutex_lock(&wq->mutex);
@@ -1294,7 +1294,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  	old_pwq = numa_pwq_tbl_install(wq, node, wq->dfl_pwq);
  out_unlock:
  	mutex_unlock(&wq->mutex);
-@@ -4138,7 +4088,7 @@ struct workqueue_struct *__alloc_workqueue_key(const char *fmt,
+@@ -4145,7 +4095,7 @@ struct workqueue_struct *__alloc_workqueue_key(const char *fmt,
  		return NULL;
  
  	if (flags & WQ_UNBOUND) {
@@ -1303,7 +1303,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  		if (!wq->unbound_attrs)
  			goto err_free_wq;
  	}
-@@ -4225,9 +4175,9 @@ void destroy_workqueue(struct workqueue_struct *wq)
+@@ -4232,9 +4182,9 @@ void destroy_workqueue(struct workqueue_struct *wq)
  		struct worker *rescuer = wq->rescuer;
  
  		/* this prevents new queueing */
@@ -1315,7 +1315,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  
  		/* rescuer will empty maydays list before exiting */
  		kthread_stop(rescuer->task);
-@@ -4422,10 +4372,10 @@ unsigned int work_busy(struct work_struct *work)
+@@ -4429,10 +4379,10 @@ unsigned int work_busy(struct work_struct *work)
  	rcu_read_lock();
  	pool = get_work_pool(work);
  	if (pool) {
@@ -1328,7 +1328,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  	}
  	rcu_read_unlock();
  
-@@ -4632,10 +4582,10 @@ void show_workqueue_state(void)
+@@ -4639,10 +4589,10 @@ void show_workqueue_state(void)
  		pr_info("workqueue %s: flags=0x%x\n", wq->name, wq->flags);
  
  		for_each_pwq(pwq, wq) {
@@ -1341,7 +1341,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  			/*
  			 * We could be printing a lot from atomic context, e.g.
  			 * sysrq-t -> show_workqueue_state(). Avoid triggering
-@@ -4649,7 +4599,7 @@ void show_workqueue_state(void)
+@@ -4656,7 +4606,7 @@ void show_workqueue_state(void)
  		struct worker *worker;
  		bool first = true;
  
@@ -1350,7 +1350,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  		if (pool->nr_workers == pool->nr_idle)
  			goto next_pool;
  
-@@ -4668,7 +4618,7 @@ void show_workqueue_state(void)
+@@ -4675,7 +4625,7 @@ void show_workqueue_state(void)
  		}
  		pr_cont("\n");
  	next_pool:
@@ -1359,7 +1359,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  		/*
  		 * We could be printing a lot from atomic context, e.g.
  		 * sysrq-t -> show_workqueue_state(). Avoid triggering
-@@ -4698,7 +4648,7 @@ void wq_worker_comm(char *buf, size_t size, struct task_struct *task)
+@@ -4705,7 +4655,7 @@ void wq_worker_comm(char *buf, size_t size, struct task_struct *task)
  		struct worker_pool *pool = worker->pool;
  
  		if (pool) {
@@ -1368,7 +1368,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  			/*
  			 * ->desc tracks information (wq name or
  			 * set_worker_desc()) for the latest execution.  If
-@@ -4712,7 +4662,7 @@ void wq_worker_comm(char *buf, size_t size, struct task_struct *task)
+@@ -4719,7 +4669,7 @@ void wq_worker_comm(char *buf, size_t size, struct task_struct *task)
  					scnprintf(buf + off, size - off, "-%s",
  						  worker->desc);
  			}
@@ -1377,7 +1377,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  		}
  	}
  
-@@ -4743,7 +4693,7 @@ static void unbind_workers(int cpu)
+@@ -4750,7 +4700,7 @@ static void unbind_workers(int cpu)
  
  	for_each_cpu_worker_pool(pool, cpu) {
  		mutex_lock(&wq_pool_attach_mutex);
@@ -1386,7 +1386,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  
  		/*
  		 * We've blocked all attach/detach operations. Make all workers
-@@ -4757,7 +4707,7 @@ static void unbind_workers(int cpu)
+@@ -4764,7 +4714,7 @@ static void unbind_workers(int cpu)
  
  		pool->flags |= POOL_DISASSOCIATED;
  
@@ -1395,7 +1395,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  		mutex_unlock(&wq_pool_attach_mutex);
  
  		/*
-@@ -4783,9 +4733,9 @@ static void unbind_workers(int cpu)
+@@ -4790,9 +4740,9 @@ static void unbind_workers(int cpu)
  		 * worker blocking could lead to lengthy stalls.  Kick off
  		 * unbound chain execution of currently pending work items.
  		 */
@@ -1407,7 +1407,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  	}
  }
  
-@@ -4812,7 +4762,7 @@ static void rebind_workers(struct worker_pool *pool)
+@@ -4819,7 +4769,7 @@ static void rebind_workers(struct worker_pool *pool)
  		WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task,
  						  pool->attrs->cpumask) < 0);
  
@@ -1416,7 +1416,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  
  	pool->flags &= ~POOL_DISASSOCIATED;
  
-@@ -4851,7 +4801,7 @@ static void rebind_workers(struct worker_pool *pool)
+@@ -4858,7 +4808,7 @@ static void rebind_workers(struct worker_pool *pool)
  		WRITE_ONCE(worker->flags, worker_flags);
  	}
  
@@ -1425,7 +1425,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  }
  
  /**
-@@ -5303,7 +5253,7 @@ static struct workqueue_attrs *wq_sysfs_prep_attrs(struct workqueue_struct *wq)
+@@ -5310,7 +5260,7 @@ static struct workqueue_attrs *wq_sysfs_prep_attrs(struct workqueue_struct *wq)
  
  	lockdep_assert_held(&wq_pool_mutex);
  
@@ -1434,7 +1434,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  	if (!attrs)
  		return NULL;
  
-@@ -5725,7 +5675,7 @@ static void __init wq_numa_init(void)
+@@ -5732,7 +5682,7 @@ static void __init wq_numa_init(void)
  		return;
  	}
  
@@ -1443,7 +1443,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  	BUG_ON(!wq_update_unbound_numa_attrs_buf);
  
  	/*
-@@ -5800,7 +5750,7 @@ int __init workqueue_init_early(void)
+@@ -5807,7 +5757,7 @@ int __init workqueue_init_early(void)
  	for (i = 0; i < NR_STD_WORKER_POOLS; i++) {
  		struct workqueue_attrs *attrs;
  
@@ -1452,7 +1452,7 @@ index 9c10264d2679..e6a96fe8896b 100644
  		attrs->nice = std_nice[i];
  		unbound_std_wq_attrs[i] = attrs;
  
-@@ -5809,7 +5759,7 @@ int __init workqueue_init_early(void)
+@@ -5816,7 +5766,7 @@ int __init workqueue_init_early(void)
  		 * guaranteed by max_active which is enforced by pwqs.
  		 * Turn off NUMA so that dfl_pwq is used for all nodes.
  		 */
