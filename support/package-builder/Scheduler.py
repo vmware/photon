@@ -615,21 +615,27 @@ class Scheduler(object):
 
     @staticmethod
     def _checkNextPackageIsReadyToBuild(package):
-        numOfChildren = 0
-        numOfChildrenBuilt = 0
         pkgNode = Scheduler.mapPackagesToGraphNodes[package]
-        numOfChildren = len(pkgNode.childPkgNodes)
         if pkgNode.built == 1:
             Scheduler.logger.warning("This pkg %s-%s is already built," \
                                      "but still present in listOfPackagesToBuild" \
                                      % (pkgNode.packageName, pkgNode.packageVersion))
             return False
-        if numOfChildren != 0:
-            for childPkgNode in pkgNode.childPkgNodes:
-                if childPkgNode.built == 1:
-                    numOfChildrenBuilt = numOfChildrenBuilt + 1
 
-        return numOfChildren == numOfChildrenBuilt
+        if Scheduler.coreToolChainBuild:
+            # For CoreToolchain list just use the graph
+            for childPkgNode in pkgNode.childPkgNodes:
+                if childPkgNode.built == 0:
+                    return False
+        else:
+            # For the rest of the packages with parallel build we have to conside entire tree of dependencies:
+            # BuildRequires and their Requires tree + Requires and their Requires tree
+            allRequires = SPECS.getData().getRequiresTreeOfBasePkgsForPkg(package)
+            for p in allRequires:
+                if Scheduler.mapPackagesToGraphNodes[p].built == 0:
+                    return False
+
+        return True
 
     @staticmethod
     def _markPkgNodeAsBuilt(package):

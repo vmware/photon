@@ -184,6 +184,13 @@ class SpecDependencyGenerator(object):
             self.logger.info(whoNeedsList)
             return whoNeedsList
 
+        elif inputType == "all-requires":
+            pkg=inputValue+"-"+SPECS.getData().getHighestVersion(inputValue)
+            requires = SPECS.getData().getRequiresTreeOfBasePkgsForPkg(pkg)
+            requires.sort()
+            self.logger.info(requires)
+            return requires
+
         elif inputType == "is-toolchain-pkg":
             for specFile in inputValue.split(":"):
                 if specFile in SPECS.getData().mapSpecFileNameToSpecObj:
@@ -245,7 +252,8 @@ def main():
             logger.info("Upward dependencies: " + str(whoNeedsList))
         # To display/print package dependencies on console
         elif (options.input_type == "pkg" or
-                options.input_type == "who-needs"):
+                options.input_type == "who-needs" or
+                options.input_type == "all-requires"):
             specDeps.process(options.input_type, options.pkg, options.display_option)
 
         elif options.input_type == "json":

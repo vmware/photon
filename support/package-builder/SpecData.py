@@ -159,6 +159,27 @@ class SpecData(object):
         package, version = StringUtils.splitPackageNameAndVersion(pkg)
         return self.getRequiresAllForPackage(package, version)
 
+    # Get BuildRequires and Requires + all their Requires trees
+    # Basically list of all subpackages needed to be installed in order to build pkg
+    def getRequiresTreeForPkg(self, pkg):
+        requires = self.getBuildRequiresForPkg(pkg) + self.getRequiresForPkg(pkg)
+        for p in requires:
+            for pc in SPECS.getData().getRequiresForPkg(p):
+                if pc not in requires:
+                    requires.append(pc)
+        return requires
+
+    # Similar to getRequiresTreeForPkg, but returns smaller list containing only base packages
+    # Can be used to track whether pkg build can be started.
+    def getRequiresTreeOfBasePkgsForPkg(self, pkg):
+        result = []
+        requires = self.getRequiresTreeForPkg(pkg)
+        for p in requires:
+            bp = self.getBasePkg(p)
+            if bp not in result and bp != pkg:
+                result.append(bp)
+        return result
+
     def getRequiresForPackage(self, package, version):
         requiresList=[]
         for specObj in self.getSpecObjects(package):
