@@ -2415,7 +2415,7 @@ CONFIG_IXGBE_DCB=y
 CONFIG_IXGBEVF=m
 # CONFIG_I40E is not set
 # CONFIG_I40EVF is not set
-CONFIG_ICE=m
+# CONFIG_ICE is not set
 CONFIG_FM10K=m
 # CONFIG_IGC is not set
 CONFIG_JME=m
@@ -5743,8 +5743,6 @@ CONFIG_ARCH_STACKWALK=y
 CONFIG_SBITMAP=y
 # CONFIG_STRING_SELFTEST is not set
 # end of Library routines
-
-CONFIG_PLDMFW=y
 
 #
 # Kernel hacking

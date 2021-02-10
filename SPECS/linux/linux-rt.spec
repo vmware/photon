@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.4
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt22
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -43,6 +43,9 @@ Source6:	https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_versi
 %define iavf_version 4.0.2
 Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
 %define sha1 iavf=a53cb104a3b04cbfbec417f7cadda6fddf51b266
+%define ice_version 1.3.2
+Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
+%define sha1 ice=19507794824da33827756389ac8018aa84e9c427
 %if 0%{?fips}
 %define fips_canister_version 4.0.1-5.10.4-5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
@@ -368,6 +371,9 @@ Patch1500:      i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
 Patch1501:      i40e-Fix-minor-compilation-error.patch
 Patch1502:      0001-Add-support-for-gettimex64-interface.patch
 
+#Patches for ice driver
+Patch1510:      0001-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+
 BuildArch:      x86_64
 
 BuildRequires:  bc
@@ -416,6 +422,7 @@ The Linux package contains the Linux kernel doc files
 %setup -D -b 3 -n linux-%{version}
 %setup -D -b 6 -n linux-%{version}
 %setup -D -b 7 -n linux-%{version}
+%setup -D -b 8 -n linux-%{version}
 %endif
 %if 0%{?fips}
 %setup -D -b 16 -n linux-%{version}
@@ -732,6 +739,11 @@ pushd ../i40e-%{i40e_version}
 %patch1502 -p1
 popd
 
+#Patches for ice driver
+pushd ../ice-%{ice_version}
+%patch1510 -p1
+popd
+
 %build
 make mrproper
 
@@ -774,6 +786,13 @@ popd
 # build iavf module
 bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
+make -C src KSRC=$bldroot clean
+make -C src KSRC=$bldroot %{?_smp_mflags}
+popd
+
+# build ice module
+bldroot=`pwd`
+pushd ../ice-%{ice_version}
 make -C src KSRC=$bldroot clean
 make -C src KSRC=$bldroot %{?_smp_mflags}
 popd
@@ -822,6 +841,12 @@ popd
 # install iavf module
 bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
+make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+popd
+
+# install ice module
+bldroot=`pwd`
+pushd ../ice-%{ice_version}
 make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
@@ -897,6 +922,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/*
 %exclude /lib/modules/%{uname_r}/build
 /etc/modprobe.d/iavf.conf
+# ICE driver firmware files are packaged in linux-firmware
+%exclude /lib/firmware/updates/intel/ice
 
 %files docs
 %defattr(-,root,root)
@@ -909,6 +936,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Feb 17 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-7
+-   Added latest out of tree version of Intel ice driver
 *   Wed Feb 17 2021 Vikash Bansal <bvikas@vmware.com> 5.10.4-6
 -   Added support for RT RUNTIME GREED
 *   Mon Feb 15 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-5

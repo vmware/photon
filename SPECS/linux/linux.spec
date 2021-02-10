@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.4
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -52,6 +52,9 @@ Source10:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40
 Source11:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
 %define sha1 iavf=a53cb104a3b04cbfbec417f7cadda6fddf51b266
 Source12:       ena-Use-new-API-interface-after-napi_hash_del-.patch
+%define ice_version 1.3.2
+Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
+%define sha1 ice=19507794824da33827756389ac8018aa84e9c427
 %if 0%{?fips}
 %define fips_canister_version 4.0.1-5.10.4-5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
@@ -127,6 +130,9 @@ Patch603:       x86-sev-es-load-idt-before-entering-long-mode-to-han-510.patch
 Patch1500:      i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
 Patch1501:      i40e-Fix-minor-compilation-error.patch
 Patch1502:      0001-Add-support-for-gettimex64-interface.patch
+
+#Patches for ice driver
+Patch1510:      0001-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 
 BuildRequires:  bc
 BuildRequires:  kmod-devel
@@ -237,6 +243,7 @@ Python programming language to use the interface to manipulate perf events.
 %setup -D -b 5 -n linux-%{version}
 %setup -D -b 10 -n linux-%{version}
 %setup -D -b 11 -n linux-%{version}
+%setup -D -b 13 -n linux-%{version}
 %endif
 
 %if 0%{?fips}
@@ -304,6 +311,11 @@ pushd ../i40e-%{i40e_version}
 %patch1502 -p1
 popd
 
+#Patches for ice driver
+pushd ../ice-%{ice_version}
+%patch1510 -p1
+popd
+
 %endif
 
 %build
@@ -367,6 +379,13 @@ pushd ../iavf-%{iavf_version}
 make -C src KSRC=$bldroot clean
 make -C src KSRC=$bldroot %{?_smp_mflags}
 popd
+
+# build ice module
+bldroot=`pwd`
+pushd ../ice-%{ice_version}
+make -C src KSRC=$bldroot clean
+make -C src KSRC=$bldroot %{?_smp_mflags}
+popd
 %endif
 
 %define __modules_install_post \
@@ -425,6 +444,12 @@ popd
 # install iavf module
 bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
+make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+popd
+
+# install ice module
+bldroot=`pwd`
+pushd ../ice-%{ice_version}
 make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
@@ -544,6 +569,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %exclude /lib/modules/%{uname_r}/kernel/arch/x86/oprofile/
 %exclude /lib/modules/%{uname_r}/extra/intel_sgx.ko.xz
 /etc/modprobe.d/iavf.conf
+# ICE driver firmware files are packaged in linux-firmware
+%exclude /lib/firmware/updates/intel/ice
 %endif
 
 %files docs
@@ -615,6 +642,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Feb 17 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-11
+-   Added latest out of tree version of Intel ice driver
 *   Tue Feb 16 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-10
 -   Fix perf compilation issue with gcc-10.2.0 for aarch64
 *   Mon Feb 15 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-9

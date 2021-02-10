@@ -1,0 +1,47 @@
+From 49215085c6144fec9f84d0f12a1b7ed26d362a45 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Mon, 1 Feb 2021 13:45:41 +0000
+Subject: [PATCH] Use PTP_SYS_OFFSET_EXTENDED_IOCTL support
+
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ src/kcompat.h | 22 ----------------------
+ 1 file changed, 22 deletions(-)
+
+diff --git a/src/kcompat.h b/src/kcompat.h
+index a27dc2b..f25f388 100644
+--- a/src/kcompat.h
++++ b/src/kcompat.h
+@@ -3144,29 +3144,7 @@ _kc_dev_change_flags(struct net_device *netdev, unsigned int flags,
+ 
+ #define dev_change_flags _kc_dev_change_flags
+ #endif /* !(RHEL_RELEASE_CODE && RHEL > RHEL(8,0)) */
+-#if (RHEL_RELEASE_CODE && \
+-     (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(7,7) && \
+-      RHEL_RELEASE_CODE < RHEL_RELEASE_VERSION(8,0)) || \
+-     (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,1)))
+ #define HAVE_PTP_SYS_OFFSET_EXTENDED_IOCTL
+-#else /* RHEL >= 7.7 && RHEL < 8.0 || RHEL >= 8.1 */
+-struct ptp_system_timestamp {
+-	struct timespec64 pre_ts;
+-	struct timespec64 post_ts;
+-};
+-
+-static inline void
+-ptp_read_system_prets(struct ptp_system_timestamp __always_unused *sts)
+-{
+-	;
+-}
+-
+-static inline void
+-ptp_read_system_postts(struct ptp_system_timestamp __always_unused *sts)
+-{
+-	;
+-}
+-#endif /* !(RHEL >= 7.7 && RHEL != 8.0) */
+ #if (RHEL_RELEASE_CODE && (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,1)))
+ #define HAVE_NDO_BRIDGE_SETLINK_EXTACK
+ #endif /* RHEL 8.1 */
+-- 
+2.23.1
+
