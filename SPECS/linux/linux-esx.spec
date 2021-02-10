@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.4
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -316,6 +316,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Feb 18 2021 Ajay Kaher <akaher@vmware.com> 5.10.4-8
+-   lower the loglevel for floppy driver
 *   Mon Feb 15 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-7
 -   Enable CONFIG_NF_TABLES support
 *   Thu Feb 11 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-6

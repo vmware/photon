@@ -1,17 +1,18 @@
-From cf08138a02a94058dd9875dbd5fd7d1442c171a4 Mon Sep 17 00:00:00 2001
+From 31f2f08468421a134b03fbbe511f71554102e87a Mon Sep 17 00:00:00 2001
 From: Ajay Kaher <akaher@vmware.com>
-Date: Thu, 19 Nov 2020 17:06:56 +0530
+Date: Wed, 10 Feb 2021 11:12:40 +0530
 Subject: [PATCH] floppy: lower printk message priority
 
 ---
- block/blk-core.c | 30 +++++++++++++++++++++---------
- 1 file changed, 21 insertions(+), 9 deletions(-)
+ block/blk-core.c       | 30 +++++++++++++++++++++---------
+ fs/buffer.c            | 16 ++++++++++++----
+ 3 files changed, 33 insertions(+), 13 deletions(-)
 
 diff --git a/block/blk-core.c b/block/blk-core.c
-index 10c08ac..085d0c0 100644
+index 2db8bda..bd59d6c 100644
 --- a/block/blk-core.c
 +++ b/block/blk-core.c
-@@ -221,15 +221,27 @@ static void print_req_error(struct request *req, blk_status_t status,
+@@ -225,15 +225,27 @@ static void print_req_error(struct request *req, blk_status_t status,
  	if (WARN_ON_ONCE(idx >= ARRAY_SIZE(blk_errors)))
  		return;
  
@@ -48,6 +49,33 @@ index 10c08ac..085d0c0 100644
  }
  
  static void req_bio_endio(struct request *rq, struct bio *bio,
+diff --git a/fs/buffer.c b/fs/buffer.c
+index 23f6456..7ad9a81 100644
+--- a/fs/buffer.c
++++ b/fs/buffer.c
+@@ -125,10 +125,18 @@ EXPORT_SYMBOL(__wait_on_buffer);
+ 
+ static void buffer_io_error(struct buffer_head *bh, char *msg)
+ {
+-	if (!test_bit(BH_Quiet, &bh->b_state))
+-		printk_ratelimited(KERN_ERR
+-			"Buffer I/O error on dev %pg, logical block %llu%s\n",
+-			bh->b_bdev, (unsigned long long)bh->b_blocknr, msg);
++	if (!test_bit(BH_Quiet, &bh->b_state)) {
++		char dev_name[64];
++		snprintf(dev_name, sizeof(dev_name), "%pg", bh->b_bdev);
++		if( !strncmp("fd", dev_name, strlen("fd")))
++			printk_ratelimited(KERN_INFO
++				"Buffer I/O error on dev %pg, logical block %llu%s\n",
++				bh->b_bdev, (unsigned long long)bh->b_blocknr, msg);
++		else
++			printk_ratelimited(KERN_ERR
++				"Buffer I/O error on dev %pg, logical block %llu%s\n",
++				bh->b_bdev, (unsigned long long)bh->b_blocknr, msg);
++	}
+ }
+ 
+ /*
 -- 
 2.7.4
 
