@@ -1,0 +1,119 @@
+From 50cacca8f73050216f54422cd90b2d460c31a72e Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Wed, 10 Feb 2021 15:45:59 +0530
+Subject: [PATCH] Be more lenient with acceptable user/group names - non
+ upstreamable
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ libmisc/chkname.c  | 38 ++++++++++++++++++++++++++++----------
+ man/groupadd.8.xml | 10 ++++++----
+ man/useradd.8.xml  | 12 ++++++++----
+ 3 files changed, 42 insertions(+), 18 deletions(-)
+
+diff --git a/libmisc/chkname.c b/libmisc/chkname.c
+index bdd1e72a..0fb9a98b 100644
+--- a/libmisc/chkname.c
++++ b/libmisc/chkname.c
+@@ -55,26 +55,44 @@ static bool is_valid_name (const char *name)
+ 	}
+ 
+ 	/*
+-	 * User/group names must match [a-z_][a-z0-9_-]*[$]
+-	 */
++         * User/group names must match gnu e-regex:
++         *    [a-zA-Z0-9_.][a-zA-Z0-9_.-]{0,30}[a-zA-Z0-9_.$-]?
++         *
++         * as a non-POSIX, extension, allow "$" as the last char for
++         * sake of Samba 3.x "add machine script"
++         *
++         * Also do not allow fully numeric names or just "." or "..".
++         */
++	int numeric;
+ 
+-	if (('\0' == *name) ||
+-	    !((('a' <= *name) && ('z' >= *name)) || ('_' == *name))) {
++	if ('\0' == *name ||
++	    ('.' == *name && (('.' == name[1] && '\0' == name[2]) ||
++			      '\0' == name[1])) ||
++	    !((*name >= 'a' && *name <= 'z') ||
++	      (*name >= 'A' && *name <= 'Z') ||
++	      (*name >= '0' && *name <= '9') ||
++	      *name == '_' ||
++	      *name == '.')) {
+ 		return false;
+ 	}
+ 
++	numeric = isdigit(*name);
++
+ 	while ('\0' != *++name) {
+-		if (!(( ('a' <= *name) && ('z' >= *name) ) ||
+-		      ( ('0' <= *name) && ('9' >= *name) ) ||
+-		      ('_' == *name) ||
+-		      ('-' == *name) ||
+-		      ( ('$' == *name) && ('\0' == *(name + 1)) )
++		if (!((*name >= 'a' && *name <= 'z') ||
++		      (*name >= 'A' && *name <= 'Z') ||
++		      (*name >= '0' && *name <= '9') ||
++		      *name == '_' ||
++		      *name == '.' ||
++		      *name == '-' ||
++		      (*name == '$' && name[1] == '\0')
+ 		     )) {
+ 			return false;
+ 		}
++		numeric &= isdigit(*name);
+ 	}
+ 
+-	return true;
++	return !numeric;
+ }
+ 
+ bool is_valid_user_name (const char *name)
+diff --git a/man/groupadd.8.xml b/man/groupadd.8.xml
+index f838c91e..a15524d7 100644
+--- a/man/groupadd.8.xml
++++ b/man/groupadd.8.xml
+@@ -289,10 +289,12 @@
+    <refsect1 id='caveats'>
+      <title>CAVEATS</title>
+      <para>
+-       Groupnames must start with a lower case letter or an underscore,
+-       followed by lower case letters, digits, underscores, or dashes.
+-       They can end with a dollar sign.
+-       In regular expression terms: [a-z_][a-z0-9_-]*[$]?
++       Groupnames may contain only lower and upper case letters, digits,
++       underscores, or dashes. They can end with a dollar sign.
++
++       Dashes are not allowed at the beginning of the groupname.
++       Fully numeric groupnames and groupnames . or .. are
++       also disallowed.
+      </para>
+      <para>
+        Groupnames may only be up to &GROUP_NAME_MAX_LENGTH; characters long.
+diff --git a/man/useradd.8.xml b/man/useradd.8.xml
+index 28c6d578..4c486f4b 100644
+--- a/man/useradd.8.xml
++++ b/man/useradd.8.xml
+@@ -664,10 +664,14 @@
+     </para>
+ 
+     <para>
+-      Usernames must start with a lower case letter or an underscore,
+-      followed by lower case letters, digits, underscores, or dashes.
+-      They can end with a dollar sign.
+-      In regular expression terms: [a-z_][a-z0-9_-]*[$]?
++      Usernames may contain only lower and upper case letters, digits,
++      underscores, or dashes. They can end with a dollar sign.
++
++      Dashes are not allowed at the beginning of the username.
++      Fully numeric usernames and usernames . or .. are
++      also disallowed. It is not recommended to use usernames beginning
++      with . character as their home directories will be hidden in
++      the <command>ls</command> output.
+     </para>
+     <para>
+       Usernames may only be up to 32 characters long.
+-- 
+2.17.1
+

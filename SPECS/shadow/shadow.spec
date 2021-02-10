@@ -1,7 +1,7 @@
 Summary:        Programs for handling passwords in a secure way
 Name:           shadow
 Version:        4.8.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://github.com/shadow-maint/
 License:        BSD
 Group:          Applications/System
@@ -20,6 +20,7 @@ Source8:        system-account
 Source9:        system-auth
 Source10:       system-password
 Source11:       system-session
+Patch0:         shadow-4.8.1-goodname.patch
 BuildRequires:  cracklib
 BuildRequires:  cracklib-devel
 Requires:       cracklib
@@ -48,7 +49,7 @@ Requires:    %{name} = %{version}-%{release}
 These are the additional language files of shadow.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 sed -i 's/groups$(EXEEXT) //' src/Makefile.in
 find man -name Makefile.in -exec sed -i 's/groups\.1 / /' {} \;
 sed -i -e 's@#ENCRYPT_METHOD DES@ENCRYPT_METHOD SHA512@' \
@@ -168,6 +169,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+*   Wed Feb 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.8.1-3
+-   Added patch to be lenient with usernames
 *   Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 4.8.1-2
 -   pam_cracklib has been deprecated.
 -   Replaced it with pam_pwquality
