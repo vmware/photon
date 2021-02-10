@@ -1,0 +1,187 @@
+From e998879d4fb7991856916972168cf27c0d86ed12 Mon Sep 17 00:00:00 2001
+From: Ashish Kalra <ashish.kalra@amd.com>
+Date: Thu, 10 Dec 2020 01:25:15 +0000
+Subject: [PATCH] x86,swiotlb: Adjust SWIOTLB bounce buffer size for SEV guests
+
+For SEV, all DMA to and from guest has to use shared (un-encrypted) pages.
+SEV uses SWIOTLB to make this happen without requiring changes to device
+drivers.  However, depending on the workload being run, the default 64MB
+of it might not be enough and it may run out of buffers to use for DMA,
+resulting in I/O errors and/or performance degradation for high
+I/O workloads.
+
+Adjust the default size of SWIOTLB for SEV guests using a
+percentage of the total memory available to guest for the SWIOTLB buffers.
+
+Adds a new sev_setup_arch() function which is invoked from setup_arch()
+and it calls into a new swiotlb generic code function swiotlb_adjust_size()
+to do the SWIOTLB buffer adjustment.
+
+v5 fixed build errors and warnings as
+Reported-by: kbuild test robot <lkp@intel.com>
+
+Signed-off-by: Ashish Kalra <ashish.kalra@amd.com>
+Co-developed-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Signed-off-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+---
+ arch/x86/include/asm/mem_encrypt.h |  2 ++
+ arch/x86/kernel/setup.c            |  6 ++++++
+ arch/x86/mm/mem_encrypt.c          | 31 +++++++++++++++++++++++++++++++
+ include/linux/swiotlb.h            |  8 ++++++++
+ kernel/dma/swiotlb.c               | 20 ++++++++++++++++++--
+ 5 files changed, 65 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
+index 2f62bbd..31c4df1 100644
+--- a/arch/x86/include/asm/mem_encrypt.h
++++ b/arch/x86/include/asm/mem_encrypt.h
+@@ -37,6 +37,7 @@ void __init sme_map_bootdata(char *real_mode_data);
+ void __init sme_unmap_bootdata(char *real_mode_data);
+ 
+ void __init sme_early_init(void);
++void __init sev_setup_arch(void);
+ 
+ void __init sme_encrypt_kernel(struct boot_params *bp);
+ void __init sme_enable(struct boot_params *bp);
+@@ -69,6 +70,7 @@ static inline void __init sme_map_bootdata(char *real_mode_data) { }
+ static inline void __init sme_unmap_bootdata(char *real_mode_data) { }
+ 
+ static inline void __init sme_early_init(void) { }
++static inline void __init sev_setup_arch(void) { }
+ 
+ static inline void __init sme_encrypt_kernel(struct boot_params *bp) { }
+ static inline void __init sme_enable(struct boot_params *bp) { }
+diff --git a/arch/x86/kernel/setup.c b/arch/x86/kernel/setup.c
+index 84f581c..874b2c1 100644
+--- a/arch/x86/kernel/setup.c
++++ b/arch/x86/kernel/setup.c
+@@ -1054,6 +1054,12 @@ void __init setup_arch(char **cmdline_p)
+ 	memblock_set_current_limit(ISA_END_ADDRESS);
+ 	e820__memblock_setup();
+ 
++	/*
++	 * Needs to run after memblock setup because it needs the physical
++	 * memory size.
++	 */
++	sev_setup_arch();
++
+ 	reserve_bios_regions();
+ 
+ 	efi_fake_memmap();
+diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+index bc08337..c79e573 100644
+--- a/arch/x86/mm/mem_encrypt.c
++++ b/arch/x86/mm/mem_encrypt.c
+@@ -198,6 +198,37 @@ void __init sme_early_init(void)
+ 		swiotlb_force = SWIOTLB_FORCE;
+ }
+ 
++void __init sev_setup_arch(void)
++{
++	phys_addr_t total_mem = memblock_phys_mem_size();
++	unsigned long size;
++
++	if (!sev_active())
++		return;
++
++	/*
++	 * For SEV, all DMA has to occur via shared/unencrypted pages.
++	 * SEV uses SWIOTLB to make this happen without changing device
++	 * drivers. However, depending on the workload being run, the
++	 * default 64MB of SWIOTLB may not be enough and SWIOTLB may
++	 * run out of buffers for DMA, resulting in I/O errors and/or
++	 * performance degradation especially with high I/O workloads.
++	 *
++	 * Adjust the default size of SWIOTLB for SEV guests using
++	 * a percentage of guest memory for SWIOTLB buffers.
++	 * Also, as the SWIOTLB bounce buffer memory is allocated
++	 * from low memory, ensure that the adjusted size is within
++	 * the limits of low available memory.
++	 *
++	 * The percentage of guest memory used here for SWIOTLB buffers
++	 * is more of an approximation of the static adjustment which
++	 * 64MB for <1G, and ~128M to 256M for 1G-to-4G, i.e., the 6%
++	 */
++	size = total_mem * 6 / 100;
++	size = clamp_val(size, IO_TLB_DEFAULT_SIZE, SZ_1G);
++	swiotlb_adjust_size(size);
++}
++
+ static void __init __set_clr_pte_enc(pte_t *kpte, int level, bool enc)
+ {
+ 	pgprot_t old_prot, new_prot;
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index fbdc657..d9c9fc9 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -30,6 +30,9 @@ enum swiotlb_force {
+  */
+ #define IO_TLB_SHIFT 11
+ 
++/* default to 64MB */
++#define IO_TLB_DEFAULT_SIZE (64UL<<20)
++
+ extern void swiotlb_init(int verbose);
+ int swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose);
+ extern unsigned long swiotlb_nr_tbl(void);
+@@ -78,6 +81,7 @@ void __init swiotlb_exit(void);
+ unsigned int swiotlb_max_segment(void);
+ size_t swiotlb_max_mapping_size(struct device *dev);
+ bool is_swiotlb_active(void);
++void __init swiotlb_adjust_size(unsigned long new_size);
+ #else
+ #define swiotlb_force SWIOTLB_NO_FORCE
+ static inline bool is_swiotlb_buffer(phys_addr_t paddr)
+@@ -100,6 +104,10 @@ static inline bool is_swiotlb_active(void)
+ {
+ 	return false;
+ }
++
++static inline void swiotlb_adjust_size(unsigned long new_size)
++{
++}
+ #endif /* CONFIG_SWIOTLB */
+ 
+ extern void swiotlb_print_info(void);
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 781b9dc..7c42df6 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -152,8 +152,6 @@ void swiotlb_set_max_segment(unsigned int val)
+ 		max_segment = rounddown(val, PAGE_SIZE);
+ }
+ 
+-/* default to 64MB */
+-#define IO_TLB_DEFAULT_SIZE (64UL<<20)
+ unsigned long swiotlb_size_or_default(void)
+ {
+ 	unsigned long size;
+@@ -163,6 +161,24 @@ unsigned long swiotlb_size_or_default(void)
+ 	return size ? size : (IO_TLB_DEFAULT_SIZE);
+ }
+ 
++void __init swiotlb_adjust_size(unsigned long new_size)
++{
++	unsigned long size;
++
++	/*
++	 * If swiotlb parameter has not been specified, give a chance to
++	 * architectures such as those supporting memory encryption to
++	 * adjust/expand SWIOTLB size for their use.
++	 */
++	if (!io_tlb_nslabs) {
++		size = ALIGN(new_size, 1 << IO_TLB_SHIFT);
++		io_tlb_nslabs = size >> IO_TLB_SHIFT;
++		io_tlb_nslabs = ALIGN(io_tlb_nslabs, IO_TLB_SEGSIZE);
++
++		pr_info("SWIOTLB bounce buffer size adjusted to %luMB", size >> 20);
++	}
++}
++
+ void swiotlb_print_info(void)
+ {
+ 	unsigned long bytes = io_tlb_nslabs << IO_TLB_SHIFT;
+-- 
+2.7.4
+

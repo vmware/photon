@@ -1,0 +1,32 @@
+commit 62a08a7193dc9107904aaa51a04ba3ba2959f745
+Author: Tom Lendacky <thomas.lendacky@amd.com>
+Date:   Mon Feb 1 12:26:27 2021 -0600
+
+    x86/sev-es: Do not unroll string I/O for SEV-ES guests
+    
+    Under the GHCB specification, SEV-ES guests can support string I/O.
+    The current #VC handler contains this support, so remove the need to
+    unroll kernel string I/O operations. This will reduce the number of #VC
+    exceptions generated as well as the number VM exits for the guest.
+    
+    Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+    Signed-off-by: Borislav Petkov <bp@suse.de>
+    Link: https://lkml.kernel.org/r/3de04b5b638546ac75d42ba52307fe1a922173d3.1612203987.git.thomas.lendacky@amd.com
+
+diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+index c79e5736ab2b..d55ea77e1ca8 100644
+--- a/arch/x86/mm/mem_encrypt.c
++++ b/arch/x86/mm/mem_encrypt.c
+@@ -474,9 +474,10 @@ void __init mem_encrypt_init(void)
+ 	swiotlb_update_mem_attributes();
+ 
+ 	/*
+-	 * With SEV, we need to unroll the rep string I/O instructions.
++	 * With SEV, we need to unroll the rep string I/O instructions,
++	 * but SEV-ES supports them through the #VC handler.
+ 	 */
+-	if (sev_active())
++	if (sev_active() && !sev_es_active())
+ 		static_branch_enable(&sev_enable_key);
+ 
+ 	print_mem_encrypt_feature_info();

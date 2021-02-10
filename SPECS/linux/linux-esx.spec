@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.4
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -102,6 +102,9 @@ Patch600:       0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch601:       0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
 Patch602:       0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 Patch603:       x86-sev-es-load-idt-before-entering-long-mode-to-han-510.patch
+Patch604:       x86-swiotlb-Adjust-SWIOTLB-bounce-buffer-size-for-SE.patch
+Patch605:       x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
+Patch606:       x86-sev-es-Handle-string-port-IO-to-kernel-memory-properly.patch
 
 BuildArch:     x86_64
 BuildRequires: bc
@@ -209,6 +212,9 @@ The Linux package contains the Linux kernel doc files
 %patch601 -p1
 %patch602 -p1
 %patch603 -p1
+%patch604 -p1
+%patch605 -p1
+%patch606 -p1
 
 %build
 make mrproper
@@ -316,6 +322,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Feb 19 2021 Ajay Kaher <akaher@vmware.com> 5.10.4-11
+-   Added SEV-ES improvement patches
 *   Thu Feb 18 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-10
 -   Disable fips canister.
 *   Thu Feb 18 2021 Ajay Kaher <akaher@vmware.com> 5.10.4-9

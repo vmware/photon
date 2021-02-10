@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.4
-Release:        14%{?kat_build:.kat}%{?dist}
+Release:        15%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -125,6 +125,9 @@ Patch600:       0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
 Patch601:       0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
 Patch602:       0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 Patch603:       x86-sev-es-load-idt-before-entering-long-mode-to-han-510.patch
+Patch604:       x86-swiotlb-Adjust-SWIOTLB-bounce-buffer-size-for-SE.patch
+Patch605:       x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
+Patch606:       x86-sev-es-Handle-string-port-IO-to-kernel-memory-properly.patch
 
 #Patches for i40e driver
 Patch1500:      i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
@@ -303,6 +306,9 @@ Python programming language to use the interface to manipulate perf events.
 %patch601 -p1
 %patch602 -p1
 %patch603 -p1
+%patch604 -p1
+%patch605 -p1
+%patch606 -p1
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -642,6 +648,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Feb 19 2021 Ajay Kaher <akaher@vmware.com> 5.10.4-15
+-   Added SEV-ES improvement patches
 *   Thu Feb 18 2021 Ajay Kaher <akaher@vmware.com> 5.10.4-14
 -   Enable CONFIG_WDAT_WDT
 *   Thu Feb 18 2021 Ajay Kaher <akaher@vmware.com> 5.10.4-13
