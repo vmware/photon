@@ -5,7 +5,7 @@
 
 Summary:	Linux Firmware
 Name:		linux-firmware
-Version:	20201202
+Version:	20210209
 Release:	1%{?dist}
 License:	GPL+ and GPLv2+ and MIT and Redistributable, no modification permitted
 URL:		http://www.kernel.org/
@@ -13,7 +13,7 @@ Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 linux=5ad8f087725724d292cbdf606b19a8de112485e0
+%define sha1 linux=7d4f0fde2fabc33c2a6055dbce6262512ce6d9a7
 BuildArch:	noarch
 
 %description
@@ -34,6 +34,8 @@ cp -r * %{buildroot}%{_firmwarepath}
 %{_firmwarepath}/*
 
 %changelog
+*   Tue Feb 09 2021 Ankit Jain <ankitja@vmware.com> 20210209-1
+-   Added firmware for Intel's ice-1.3.2 driver
 *   Wed Dec 02 2020 Ankit Jain <ankitja@vmware.com> 20201202-1
 -   Added NVRAM config file for the BCM43455 for rpi4b firmware
 -   Added regulatory db for rpi4b firmware
