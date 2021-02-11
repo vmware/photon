@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.174
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -650,6 +650,10 @@ popd
 # Do not compress modules which will be loaded at boot time
 # to speed up boot process
 %define __modules_install_post \
+    for MODULE in `find %{buildroot}/lib/modules/%{uname_r}/kernel/crypto -name *.ko` ; do \
+        ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
+        rm -f $MODULE.{sig,dig} \
+    done \
     find %{buildroot}/lib/modules/%{uname_r} -name "*.ko" \! \"(" -name "*evdev*" -o -name "*mousedev*" -o -name "*sr_mod*"  -o -name "*cdrom*" -o -name "*vmwgfx*" -o -name "*drm_kms_helper*" -o -name "*ttm*" -o -name "*psmouse*" -o -name "*drm*" -o -name "*apa_piix*" -o -name "*vmxnet3*" -o -name "*i2c_core*" -o -name "*libata*" -o -name "*processor*" -o -path "*ipv6*" \")" | xargs xz \
 %{nil}
 
@@ -754,6 +758,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Feb 11 2021 Srinidhi Rao <srinidhir@vmware.com> 4.19.174-3
+-   Sign the crypto modules as they will be verified when FIPS mode is set.
 *   Thu Feb 11 2021 Ajay Kaher <akaher@vmware.com> 4.19.174-2
 -   Enable CONFIG_WDAT_WDT
 *   Tue Feb 09 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.174-1
