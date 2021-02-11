@@ -1,6 +1,6 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
-Version:        1.8.4
+Version:        1.8.7
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
-%define sha1    %{name}-%{version}=cd5fe776fb2b0479b3234758fc333777caa1239b
+%define sha1    %{name}-%{version}=05ef75415cb7cb7641f51d51e74f3ea29cc31ab1
 Source1:        iptables.service
 Source2:        iptables
 Source3:        iptables.stop
@@ -24,6 +24,9 @@ BuildRequires:  jansson-devel
 BuildRequires:  libmnl-devel
 BuildRequires:  libnftnl-devel
 BuildRequires:  systemd
+BuildRequires:  libpcap-devel
+
+Requires:       libpcap
 
 %description
 The next part of this chapter deals with firewalls. The principal
@@ -37,7 +40,7 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
@@ -47,7 +50,8 @@ It contains the libraries and header files to create applications.
     --with-pkgconfigdir=%{_libdir}/pkgconfig \
     --disable-nftables \
     --enable-libipq \
-    --enable-devel
+    --enable-devel  \
+    --enable-bpf-compiler
 
 make V=0
 %install
@@ -101,6 +105,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Feb 11 2021 Susant Sahani <ssahani@vmware.com> 1.8.7-1
+-   Updated to version
 *   Mon Apr 06 2020 Susant Sahani <ssahani@vmware.com> 1.8.4-1
 -   Updated to version 1.8.4
 *   Tue Jul 30 2019 Shreyas B. <shreyasb@vmware.com> 1.8.3-1
