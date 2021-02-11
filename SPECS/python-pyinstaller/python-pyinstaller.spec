@@ -4,7 +4,7 @@
 Summary:        PyInstaller bundles a Python application and all its dependencies into a single package.
 Name:           python-pyinstaller
 Version:        3.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/PyInstaller
 License:        GPLv2+
 Group:          Development/Languages/Python
@@ -37,6 +37,10 @@ Requires:       python2
 Requires:       python2-libs
 Requires:       python-setuptools
 Requires:       python-xml
+Requires:       python-altgraph
+Requires:       python-macholib
+Requires:       python-pefile
+Requires:       python-dis3
 
 %description
 PyInstaller bundles a Python application and all its dependencies into a single package. The user can run the packaged app without installing a Python interpreter or any modules.
@@ -50,6 +54,9 @@ Requires:       python3-libs
 Requires:       zlib
 Requires:       python3-setuptools
 Requires:       python3-xml
+Requires:       python3-altgraph
+Requires:       python3-macholib
+Requires:       python3-pefile
 
 %description -n python3-pyinstaller
 Python 3 version.
@@ -138,6 +145,8 @@ LANG=en_US.UTF-8 py.test2 tests/unit tests/functional \
 %exclude %{python3_sitelib}/PyInstaller/bootloader/Windows-64bit
 
 %changelog
+*   Thu Feb 11 2021 Ankit Jain <ankitja@vmware.com> 3.4-3
+-   Fix pyinstaller by adding requires
 *   Fri Dec 07 2018 Tapas Kundu <tkundu@vmware.com> 3.4-2
 -   Fix makecheck.
 *   Fri Sep 14 2018 Tapas Kundu <tkundu@vmware.com> 3.4-1
