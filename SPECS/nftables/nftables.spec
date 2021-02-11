@@ -3,7 +3,7 @@
 Summary:        Netfilter Tables userspace utillites
 Name:           nftables
 Version:        0.9.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -13,6 +13,7 @@ Source0:        %{url}/files/%{name}-%{version}.tar.bz2
 %define sha1    nftables=c15ac5552959c8358975f6b3e15757841c6904c8
 Source1:        nftables.service
 Source2:        nftables.conf
+Source3:        nft_ruleset_photon.nft
 
 BuildRequires:  gcc
 BuildRequires:  flex
@@ -80,6 +81,7 @@ cp -a %{SOURCE2} $RPM_BUILD_ROOT/%{_sysconfdir}/sysconfig/
 chmod 600 $RPM_BUILD_ROOT/%{_sysconfdir}/sysconfig/nftables.conf
 
 mkdir -m 700 -p $RPM_BUILD_ROOT/%{_sysconfdir}/nftables
+cp -a %{SOURCE3} $RPM_BUILD_ROOT/%{_sysconfdir}/nftables
 chmod 600 $RPM_BUILD_ROOT/%{_sysconfdir}/nftables/*.nft
 chmod 700 $RPM_BUILD_ROOT/%{_sysconfdir}/nftables
 
@@ -116,6 +118,8 @@ chmod 700 $RPM_BUILD_ROOT/%{_sysconfdir}/nftables
 %{python3_sitelib}/nftables/
 
 %changelog
+* Thu Feb 11 2021 Susant Sahani <ssahani@vmware.com> 0.9.8-2
+- Add default rule set for photon
 * Sun Jan 24 2021 Susant Sahani <ssahani@vmware.com> 0.9.8-1
 - Version bump
 * Wed Aug 12 2020 Susant Sahani <ssahani@vmware.com> 0.9.6-1
