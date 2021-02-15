@@ -1,0 +1,25 @@
+diff --git a/Makefile b/Makefile
+index 2d8de04..cf503f2 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,6 +1,6 @@
+ BASE_DIR         = $(shell pwd)
+ ERLANG_BIN       = $(shell dirname $(shell which erl))
+-GIT_VERSION      = $(shell git describe --tags)
++GIT_VERSION      = "1.11.0"
+ OVERLAY_VARS    ?=
+ REBAR ?= $(BASE_DIR)/rebar3
+
+diff --git a/rebar.config b/rebar.config
+index 1645a71..8b60ff1 100644
+--- a/rebar.config
++++ b/rebar.config
+@@ -55,7 +55,7 @@
+    {schema_discovery, false}]}.
+ 
+ {relx,
+- [{release, {vernemq, semver},
++ [{release, {vernemq, "1.11.0"},
+    [
+     sasl,
+     inets,
