@@ -2,12 +2,15 @@
 
 Name:           python3-M2Crypto
 Version:        0.36.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Crypto and SSL toolkit for Python
 Group:          Development/Languages/Python
 License:        MIT
 URL:            https://pypi.python.org/pypi/M2Crypto/0.26.0
 Source0:        https://pypi.python.org/packages/11/29/0b075f51c38df4649a24ecff9ead1ffc57b164710821048e3d997f1363b9/M2Crypto-%{version}.tar.gz
+%if %{with_check}
+Patch0:         makecheck.patch
+%endif
 Vendor:         VMware, Inc.
 Distribution:   Photon
 %define sha1    M2Crypto=666735839ad0d9b414cc39937ffad2675297bb02
@@ -34,6 +37,9 @@ messenger for Zope.
 
 %prep
 %setup -q -n M2Crypto-%{version}
+%if %{with_check}
+%patch0 -p1
+%endif
 
 %build
 CFLAGS="%{optflags}" python3 setup.py build --openssl=/usr/include --bundledlls
@@ -53,6 +59,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Feb 16 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.36.0-3
+-   Fix make check
 *   Mon Jul 27 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.36.0-2
 -   Openssl 1.1.1 compatibility
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.36.0-1
