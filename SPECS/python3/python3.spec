@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.5
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -115,16 +115,6 @@ Requires:       python3 = %{version}-%{release}
 The Python package includes several development tools that are used
 to build python programs.
 
-%package        pip
-Summary:        The PyPA recommended tool for installing Python packages.
-Group:          Development/Tools
-BuildArch:      noarch
-Requires:       python3 = %{version}-%{release}
-Requires:       python3-xml = %{version}-%{release}
-
-%description    pip
-The PyPA recommended tool for installing Python packages.
-
 %package        setuptools
 Summary:        Download, build, install, upgrade, and uninstall Python packages.
 Group:          Development/Tools
@@ -212,6 +202,10 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/python3.7/idlelib/idle_test
 %exclude %{_libdir}/python3.7/test
 %exclude %{_libdir}/python3.7/lib-dynload/_ctypes_test.*.so
+%exclude %{_bindir}/pip3
+%exclude %{_bindir}/pip3.7
+%exclude %{_libdir}/python3.7/site-packages/pip/*
+%exclude %{_libdir}/python3.7/site-packages/pip-19.2.3.dist-info/*
 
 %files libs
 %defattr(-,root,root)
@@ -261,12 +255,6 @@ rm -rf %{buildroot}/*
 %{_bindir}/2to3-3.7
 %exclude %{_bindir}/idle*
 
-%files pip
-%defattr(-,root,root,755)
-%{_libdir}/python3.7/site-packages/pip/*
-%{_libdir}/python3.7/site-packages/pip-19.2.3.dist-info/*
-%{_bindir}/pip*
-
 %files setuptools
 %defattr(-,root,root,755)
 %{_libdir}/python3.7/site-packages/pkg_resources/*
@@ -278,6 +266,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.7/test/*
 
 %changelog
+*   Tue Feb 16 2021 Tapas Kundu <tkundu@vmware.com> 3.7.5-10
+-   Packages python3-pip as separate spec
 *   Mon Jan 01 2021 Shreyas B. <shreyasb@vmware.com> 3.7.5-9
 -   Fix CVE-2021-3177
 *   Thu Nov 05 2020 Tapas Kundu <tkundu@vmware.com> 3.7.5-8
