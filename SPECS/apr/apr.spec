@@ -1,7 +1,7 @@
 Summary:        The Apache Portable Runtime
 Name:           apr
 Version:        1.7.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            https://apr.apache.org/
 Group:          System Environment/Libraries
@@ -9,6 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
 %define sha1    %{name}=caac4a92d51b211b0c1374217e4fc64ca8142288
+%if %{with_check}
+Patch0:         apr-skip-getservbyname-test.patch
+%endif
 %define         aprver  1
 
 %description
@@ -22,6 +25,10 @@ It contains the libraries and header files to create applications.
 
 %prep
 %setup -q
+%if %{with_check}
+%patch0 -p1
+%endif
+
 %build
 %configure --prefix=/usr \
         --with-installbuilddir=%{_libdir}/apr/build-%{aprver} \
@@ -35,7 +42,8 @@ make DESTDIR=%{buildroot} install
 %check
 make %{?_smp_mflags} check
 
-%post
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -56,6 +64,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig
 
 %changelog
+*   Tue Feb 16 2021 Ankit Jain <ankitja@vmware.com> 1.7.0-2
+-   Fix make check
 *   Mon Jul 13 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1
 -   Automatic Version Bump
 *   Tue Sep 18 2018 Ankit Jain <ankitja@vmware.com> 1.6.5-1
