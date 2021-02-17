@@ -51,7 +51,8 @@ cmake \
 %ninja_install
 
 %check
-make %{?_smp_mflags} check
+%global _smp_mflags -j1
+ctest
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
