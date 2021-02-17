@@ -1,0 +1,550 @@
+From 453a4d9ed118e216034e95e1578656520c4303eb Mon Sep 17 00:00:00 2001
+From: Sharan Turlapati <sturlapati@vmware.com>
+Date: Tue, 23 Mar 2021 17:42:40 +0000
+Subject: [PATCH] stalld: Support denylisting of tasks in stalld
+
+This change allows certain tasks to be
+specified from command line that will prevent
+their priorities from being boosted even if
+they are experiencing starvation.This is useful
+in scenarios where boosting a certain application's
+priority and in turn causing it to run interferes
+with the purpose/logic of the application
+
+The way to specify which task is to be ignored
+(referred to here as the denylisting feature)
+is through regular expressions. The regex of
+the task name that needs to be ignored can be
+passed in.
+
+There are two ways to specify the denylisting.
+Either threads can be specified to be ignored (-i)
+or processes can be specified to be ignored (-I).
+When a process is specified to be ignored, all
+the threads that are created by that process will
+also be ignored from consideration for priority
+boosting.
+
+Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
+---
+ man/stalld.8     |  10 +++
+ src/stalld.c     | 170 ++++++++++++++++++++++++++++++++++++++++++++++-
+ src/stalld.h     |  38 ++++++++++-
+ src/throttling.c |   1 +
+ src/utils.c      | 118 +++++++++++++++++++++++++++++++-
+ 5 files changed, 334 insertions(+), 3 deletions(-)
+
+diff --git a/man/stalld.8 b/man/stalld.8
+index 2415607..1fc1469 100644
+--- a/man/stalld.8
++++ b/man/stalld.8
+@@ -9,6 +9,8 @@ stalld \- detect starving threads and boost them
+ [ -r time-in-ns ]
+ [ -d time-in-sec ]
+ [ -t time-in-sec ]
++[ -i regexes-of-thread-names ]
++[ -I regexes-of-process-names ]
+ .br
+ 
+ .SH DESCRIPTION
+@@ -73,6 +75,14 @@ dispatch one thread per cpu run-queue, even if thre are no starving
+ threads (uses more power).
+ .B [false]
+ .TP
++.B \-i|\-\-ignore_threads
++regexes (comma-separated) of thread names that must be ignored from
++being boosted
++.TP
++.B \-I|\-\-ignore_processes
++regexes (comma-separated) of process names that must be ignored from
++being boosted
++.TP
+ .B \-h|\-\-help
+ print options
+ .SH FILES
+diff --git a/src/stalld.c b/src/stalld.c
+index 5d68fec..f4b8cf7 100644
+--- a/src/stalld.c
++++ b/src/stalld.c
+@@ -36,6 +36,7 @@
+ #include <unistd.h>
+ #include <linux/sched.h>
+ #include <sys/file.h>
++#include <regex.h>
+ 
+ #include "stalld.h"
+ 
+@@ -52,6 +53,7 @@ int config_write_kmesg = 0;
+ int config_log_syslog = 1;
+ int config_log_only = 0;
+ int config_foreground = 0;
++int config_ignore = 0;
+ 
+ /*
+  * boost parameters (time in nanoseconds).
+@@ -101,7 +103,104 @@ int boost_policy;
+ int running = 1;
+ 
+ /*
+-* read the contents of /proc/sched_debug into
++ * variables related to the threads to be ignored
++ */
++unsigned int nr_thread_ignore = 0;
++regex_t *compiled_regex_thread = NULL;
++
++/*
++ * variables related to the processes to be ignored
++ */
++unsigned int nr_process_ignore = 0;
++regex_t *compiled_regex_process = NULL;
++
++/*
++ * API to fetch process name from process group ID
++ */
++char *get_process_comm(int tgid) {
++	char *process_name;
++	int n;
++	FILE *fp;
++	char file_location[PROC_PID_FILE_PATH_LEN];
++
++	process_name = calloc(COMM_SIZE + 1, sizeof(char));
++	if (process_name == NULL)
++		return NULL;
++
++	n = sprintf(file_location, "/proc/%d/comm", tgid);
++	if (n < 0)
++		goto out_error;
++
++	if ((fp = fopen(file_location, "r")) == NULL)
++		goto out_error;
++
++	if (fscanf(fp, "%s", process_name) != 1)
++		goto out_close_fd;
++
++	fclose(fp);
++	return process_name;
++
++out_close_fd:
++	fclose(fp);
++out_error:
++	free(process_name);
++	return NULL;
++}
++
++/*
++ * API to fetch the process group ID for a thread/process
++ */
++int get_tgid(int pid) {
++	char file_location[PROC_PID_FILE_PATH_LEN];
++	char *status = NULL;
++	int tgid;
++	FILE *fp;
++	const char tgid_field[TGID_FIELD] = "Tgid:";
++
++	status = calloc(TMP_BUFFER_SIZE, sizeof(char));
++	if (status == NULL) {
++		return -ENOMEM;
++	}
++	int n = sprintf(file_location, "/proc/%d/status", pid);
++	if (n < 0)
++		goto out_free_mem;
++
++	if ((fp = fopen(file_location, "r")) == NULL)
++		goto out_free_mem;
++
++	/*
++	 * Iterate till we find the tgid field
++	 */
++	while (1) {
++		if (fgets(status, TMP_BUFFER_SIZE, fp) == NULL)
++			goto out_close_fd;
++		if (!(strncmp(status, tgid_field, (TGID_FIELD - 1))))
++			break;
++		/*
++		 * Zero out the buffer just in case
++		 */
++		memset(status, 0, TMP_BUFFER_SIZE);
++	}
++	/*
++	 * since we're now at the line we're interested in,
++	 * let's read in the field that we want
++	 */
++	if (sscanf(status, "%*s %d", &tgid) != 1)
++		goto out_close_fd;
++
++	fclose(fp);
++	free(status);
++	return tgid;
++
++out_close_fd:
++	fclose(fp);
++out_free_mem:
++	free(status);
++	return -EINVAL;
++}
++
++/*
++ * read the contents of /proc/sched_debug into
+  * the input buffer
+  */
+ int read_sched_debug(char *buffer, int size)
+@@ -344,6 +443,9 @@ int parse_new_task_format(char *buffer, struct task_info *task_info, int nr_entr
+ 
+ 		task->pid = strtol(start, &end, 10);
+ 
++		/* get the id of the thread group leader */
++		task->tgid = get_tgid(task->pid);
++
+ 		/*
+ 		 * go to the end of the pid
+ 		 */
+@@ -544,6 +646,7 @@ int parse_old_task_format(char *buffer, struct task_info *task_info, int nr_entr
+ 			strncpy(task->comm, comm, comm_size);
+ 			task->comm[comm_size] = 0;
+ 			task->pid = pid;
++			task->tgid = get_tgid(task->pid);
+ 			task->ctxsw = ctxsw;
+ 			task->prio = prio;
+ 			task->since = time(NULL);
+@@ -820,6 +923,60 @@ int boost_starving_task(int pid)
+ 
+ }
+ 
++/*
++ * API to check if the task must not be considered
++ * for priority boosting. The task's name itself will
++ * be checked or the name of the task group it is a
++ * part of will be checked
++ */
++int check_task_ignore(struct task_info *task) {
++	unsigned int i;
++	int ret = -EINVAL;
++	char *group_comm = NULL;
++	/*
++	 * check if this task's name has been passed as part of the
++	 * thread ignore regex
++	 */
++	for (i = 0; i < nr_thread_ignore; i++) {
++		ret = regexec(&compiled_regex_thread[i], task->comm, REGEXEC_NO_NMATCH,
++				REGEXEC_NO_MATCHPTR, REGEXEC_NO_FLAGS);
++		if (!ret) {
++			log_msg("Ignoring the thread %s from consideration for boosting\n", task->comm);
++			return ret;
++		}
++	}
++	ret = -EINVAL;
++
++	/*
++	 * if a valid tgid has been found and its not that of the
++	 * swapper (because its not listed on the /proc filesystem)
++	 * then proceed to fetch the name of the process
++	 */
++	if (task->tgid > SWAPPER) {
++		group_comm = get_process_comm(task->tgid);
++		if (group_comm == NULL) {
++			warn("Ran into a tgid without process name");
++			return ret;
++		}
++		/*
++		 * check if the process group that this task is a part has been
++		 * requested to be ignored
++		 */
++		for (i = 0; i < nr_process_ignore; i++) {
++			ret = regexec(&compiled_regex_process[i], group_comm, REGEXEC_NO_NMATCH,
++					REGEXEC_NO_MATCHPTR, REGEXEC_NO_FLAGS);
++			if (!ret) {
++				log_msg("Ignoring the thread %s(spawned by %s) from consideration for boosting\n", task->comm, group_comm);
++				goto free_mem;
++			}
++		}
++	}
++free_mem:
++	if (group_comm != NULL)
++		free(group_comm);
++	return ret;
++}
++
+ int check_starving_tasks(struct cpu_info *cpu)
+ {
+ 	struct task_info *tasks = cpu->starving;
+@@ -836,6 +993,15 @@ int check_starving_tasks(struct cpu_info *cpu)
+ 				task->comm, task->pid, cpu->id,
+ 				(time(NULL) - task->since));
+ 
++			/* check if this task needs to be ignored from being boosted
++			 * if yes, update the time stamp so that it doesn't keep
++			 * getting reported as being starved
++			 */
++			if (config_ignore && !(check_task_ignore(task))) {
++				task->since = time(NULL);
++				continue;
++			}
++
+ 			starving+=1;
+ 
+ 			/*
+@@ -1154,6 +1320,8 @@ int main(int argc, char **argv)
+ 	else
+ 		conservative_main(cpus, nr_cpus);
+ 
++	cleanup_regex(&nr_thread_ignore, &compiled_regex_thread);
++	cleanup_regex(&nr_process_ignore, &compiled_regex_process);
+ 	if (config_log_syslog)
+ 		closelog();
+ 
+diff --git a/src/stalld.h b/src/stalld.h
+index 4b3842d..7c8d653 100644
+--- a/src/stalld.h
++++ b/src/stalld.h
+@@ -12,10 +12,40 @@
+ #define BUFFER_SIZE		(100*1024)
+ #define MAX_WAITING_PIDS	30
+ 
+-#define COMM_SIZE		15
++/*
++ * workqueue worker names are now more verbose and needs
++ * to be taken into consideration.
++ * Reference - https://lkml.org/lkml/2018/5/17/16
++ * This change is also taken into consideration by
++ * procps-ng
++ * Commit - 2cfdbbe897f0d4e41460c7c2b92acfc5804652c8
++ */
++#define COMM_SIZE		63
++
++/* macros related to the denylisting feature */
++#define SWAPPER 0
++#define IGNORE_THREADS 1
++#define IGNORE_PROCESSES 2
++#define TGID_FIELD 6
++#define REGEXEC_NO_NMATCH 0
++#define REGEXEC_NO_MATCHPTR NULL
++#define REGEXEC_NO_FLAGS 0
++#define TMP_BUFFER_SIZE 100
++
++/*
++ * this macro defines the size of a character array
++ * to save strings of the form "/proc/pid/comm" or
++ * "/proc/pid/status". PIDs can be configured up to
++ * (2^22) on 64 bit systems which maps to 7 digits.
++ * So 30 characters worth of storage should
++ * be enough
++ */
++#define PROC_PID_FILE_PATH_LEN 30
++
+ /* informnation about running tasks on a cpu */
+ struct task_info {
+        int pid;
++       int tgid;
+        int prio;
+        int ctxsw;
+        time_t since;
+@@ -100,6 +130,7 @@ long get_long_from_str(char *start);
+ long get_long_after_colon(char *start);
+ long get_variable_long_value(char *buffer, const char *variable);
+ 
++void cleanup_regex();
+ int turn_off_rt_throttling(void);
+ int setup_signal_handling(void);
+ void deamonize(void);
+@@ -119,6 +150,7 @@ extern int config_write_kmesg;
+ extern int config_log_syslog;
+ extern int config_log_only;
+ extern int config_foreground;
++extern int config_ignore;
+ extern unsigned long config_dl_period;
+ extern unsigned long config_dl_runtime;
+ extern unsigned long config_fifo_priority;
+@@ -129,4 +161,8 @@ extern long config_aggressive;
+ extern int config_monitor_all_cpus;
+ extern char *config_monitored_cpus;
+ extern char pidfile[];
++extern unsigned int nr_thread_ignore;
++extern unsigned int nr_process_ignore;
++extern regex_t *compiled_regex_thread;
++extern regex_t *compiled_regex_process;
+ #endif /* __STALLD_H__ */
+diff --git a/src/throttling.c b/src/throttling.c
+index 69c1ba9..1e86288 100644
+--- a/src/throttling.c
++++ b/src/throttling.c
+@@ -27,6 +27,7 @@
+ #include <time.h>
+ #include <unistd.h>
+ #include <linux/sched.h>
++#include <regex.h>
+ 
+ #include "stalld.h"
+ 
+diff --git a/src/utils.c b/src/utils.c
+index f129bf4..b4c3ca0 100644
+--- a/src/utils.c
++++ b/src/utils.c
+@@ -26,6 +26,7 @@
+ #include <unistd.h>
+ #include <linux/sched.h>
+ #include <sys/sysinfo.h>
++#include <regex.h>
+ 
+ #include "stalld.h"
+ 
+@@ -321,6 +322,40 @@ void deamonize(void)
+ 		die("Cannot change directory to '/'");
+ }
+ 
++/*
++ * function to generate a meaningful error message
++ * from an error code generated by one of the
++ * regex functions
++ */
++char *get_regerror(int errcode, regex_t *compiled)
++{
++	size_t length = regerror(errcode, compiled, NULL, 0);
++	char *buffer = malloc(length);
++	if (buffer == NULL) {
++		warn("Malloc failure!!");
++		return NULL;
++	}
++	regerror(errcode, compiled, buffer, length);
++	return buffer;
++}
++
++/*
++ * Cleanup the regex compiled expressions
++ * and free up the memory
++ */
++void cleanup_regex(unsigned int *nr_task, regex_t **compiled_expr)
++{
++	unsigned int i;
++	regex_t *compiled = *compiled_expr;
++	if (compiled != NULL) {
++		for (i = 0; i < *nr_task; i++) {
++			regfree(&compiled[i]);
++		}
++		free(compiled);
++	}
++	*nr_task = 0;
++}
++
+ /*
+  * Set HRTICK and frinds: Based on cyclicdeadline by Steven Rostedt.
+  */
+@@ -484,6 +519,11 @@ static void print_usage(void)
+ 		"          -t/--starving_threshold: how long [s] the starving task will wait before being boosted",
+ 		"          -A/--aggressive_mode: dispatch one thread per run queue, even when there is no starving",
+ 		"                               threads on all CPU (uses more CPU/power).",
++		"        ignoring options:",
++		"          -i/--ignore_threads: regexes (comma-separated) of thread names that must be ignored",
++		"                               from being boosted",
++		"          -I/--ignore_processes: regexes (comma-separated) of process names that must be ignored",
++		"                               from being boosted",
+ 		"	misc:",
+ 		"          --pidfile: write daemon pid to specified file",
+ 		"          -h/--help: print this menu",
+@@ -513,6 +553,72 @@ void usage(const char *fmt, ...)
+ 	exit(EINVAL);
+ }
+ 
++static void compile_regex(char *task_ignore_string, unsigned int *nr_task, regex_t **compiled_expr,
++				unsigned int ignore_flag)
++{
++	char *input = task_ignore_string;
++	char *separator = ",";
++	char *args;
++	regex_t *compiled;
++	int err;
++	char *err_str = NULL;
++
++	args = strtok(input, separator);
++	while (args != NULL) {
++		(*nr_task)++;
++		/* make space for the regex and copy it over */
++		*compiled_expr = realloc(*compiled_expr, (*nr_task) * sizeof(regex_t));
++		if (*compiled_expr == NULL) {
++			warn("compile_regex: Unable to allocate memory. Tasks cannot be ignored");
++			(*nr_task)--;
++			/*
++			 * if we are unable to make space for any regex, then these set of
++			 * arguments will be discarded
++			 */
++			goto error;
++		}
++
++		/* dereference and assign to a temporary variable */
++		compiled = *compiled_expr;
++
++		/* compile the regex pattern */
++		err = regcomp(&compiled[(*nr_task) - 1], args, REG_EXTENDED | REG_NOSUB);
++		if (err) {
++			/* the regex couldn't be compiled, so denylisting will not work */
++			err_str = get_regerror(err, &compiled[(*nr_task) - 1]);
++			if (err_str) {
++				warn("regcomp: regex compilation failed. %s", err_str);
++				free(err_str);
++			}
++			goto error;
++		}
++		args = strtok(NULL, separator);
++	}
++	return;
++error:
++	if (ignore_flag == IGNORE_THREADS)
++		warn("-i arguments will be discarded");
++	else if (ignore_flag == IGNORE_PROCESSES)
++		warn("-I arguments will be discarded");
++	cleanup_regex(nr_task, compiled_expr);
++}
++
++static void parse_task_ignore_string(char *task_ignore_string, unsigned int ignore_flag)
++{
++	log_msg("task ignore string %s\n", task_ignore_string);
++
++	switch (ignore_flag) {
++		case IGNORE_THREADS:
++			compile_regex(task_ignore_string, &nr_thread_ignore, &compiled_regex_thread,
++					ignore_flag);
++			break;
++		case IGNORE_PROCESSES:
++			compile_regex(task_ignore_string, &nr_process_ignore, &compiled_regex_process,
++					ignore_flag);
++			break;
++	}
++}
++
+ static void parse_cpu_list(char *cpulist)
+ {
+ 	const char *p;
+@@ -588,13 +694,15 @@ int parse_args(int argc, char **argv)
+ 			{"pidfile",             required_argument, 0, 'P'},
+ 			{"force_fifo", 		no_argument, 	   0, 'F'},
+ 			{"version", 		no_argument,       0, 'V'},
++			{"ignore_threads",      required_argument, 0, 'i'},
++			{"ignore_processes",    required_argument, 0, 'I'},
+ 			{0, 0, 0, 0}
+ 		};
+ 
+ 		/* getopt_long stores the option index here. */
+ 		int option_index = 0;
+ 
+-		c = getopt_long(argc, argv, "lvkfAhsp:r:d:t:c:FV",
++		c = getopt_long(argc, argv, "lvkfAhsp:r:d:t:c:FVi:I:",
+ 				 long_options, &option_index);
+ 
+ 		/* Detect the end of the options. */
+@@ -606,6 +714,14 @@ int parse_args(int argc, char **argv)
+ 			config_monitor_all_cpus = 0;
+ 			parse_cpu_list(optarg);
+ 			break;
++		case 'i':
++			config_ignore = 1;
++			parse_task_ignore_string(optarg, IGNORE_THREADS);
++			break;
++		case 'I':
++			config_ignore = 1;
++			parse_task_ignore_string(optarg, IGNORE_PROCESSES);
++			break;
+ 		case 'l':
+ 			config_log_only = 1;
+ 			break;
+-- 
+2.28.0
+
