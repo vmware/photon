@@ -5,7 +5,10 @@ Description=Stall Monitor
 Type=simple
 # Type=forking
 EnvironmentFile=/etc/sysconfig/stalld
-ExecStart=/usr/bin/stalld $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF
+
+#In case the regex passed to IT or IP includes C escape sequences,
+#use ${IT} or ${IP} instead of $IT or $IP
+ExecStart=/usr/bin/stalld $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $IT $IP
 
 [Install]
 WantedBy=multi-user.target
