@@ -1,7 +1,7 @@
 Summary:        Daemon that finds starving tasks in the system and gives them a temporary boost
 Name:           stalld
 Version:        1.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          System/Tools
 URL:            https://git.kernel.org/pub/scm/utils/stalld/stalld.git
@@ -17,6 +17,7 @@ BuildRequires:  gcc
 BuildRequires:  make
 BuildRequires:  systemd
 Requires:       systemd
+Patch0:         0001-Support-denylisting-of-tasks-in-stalld.patch
 
 %description
 The stalld program monitors the set of system threads, looking for
@@ -26,7 +27,8 @@ temporary boost using the SCHED_DEADLINE policy. The runtime given to
 such stalled threads is configurable by the user.
 
 %prep
-%autosetup
+%setup
+%patch0 -p1
 
 %build
 make %{?_smp_mflags}
@@ -61,5 +63,7 @@ rm -rf %{buildroot}
 %license %{_datadir}/licenses/%{name}/gpl-2.0.txt
 
 %changelog
+* Tue Feb 16 2021 Sharan Turlapati <sturlapati@vmware.com> 1.3.0-2
+- Support denylisting of tasks in stalld
 * Mon Nov 23 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 1.3.0-1
 - Add stalld to Photon OS.
