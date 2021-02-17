@@ -4,7 +4,7 @@
 Summary:        Amazon Web Services Library.
 Name:           python3-boto
 Version:        2.49.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -17,6 +17,7 @@ BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 %if %{with_check}
+Patch0:         makecheck.patch
 BuildRequires:  python3-requests
 %endif
 Requires:       python3
@@ -30,6 +31,9 @@ Boto is a Python package that provides interfaces to Amazon Web Services. Curren
 
 %prep
 %setup -q -n boto-%{version}
+%if %{with_check}
+%patch0 -p1
+%endif
 
 %build
 python3 setup.py build
@@ -73,6 +77,8 @@ python3 ./tests/test.py unit
 %{_bindir}/taskadmin-%{python3_version}
 
 %changelog
+*   Wed Feb 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.49.0-3
+-   Fix makecheck
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 2.49.0-2
 -   Mass removal python2
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.49.0-1
