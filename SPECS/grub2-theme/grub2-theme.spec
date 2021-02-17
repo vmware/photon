@@ -1,14 +1,14 @@
 Summary:    Photon theme for grub2
 Name:       grub2-theme
 Version:    4.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache License
 Group:      System Environment/Base
 URL:        https://vmware.github.io/photon/
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    %{name}-%{version}beta.tar.xz
-%define sha1 grub2-theme=66a0530f0bf0d31592fd937a0bcc67c964773aa1
+Source0:    %{name}-%{version}.tar.xz
+%define sha1 grub2-theme=5bb81b3aa5f82555f8ea507130618aad9fe96c1d
 BuildArch:  noarch
 
 %description
@@ -53,6 +53,8 @@ ln -s grub2 %{buildroot}/boot/grub
 /boot/grub2/fonts/unifont.pf2
 
 %changelog
+* Tue Feb 16 2021 Anish Swaminathan <anishs@vmware.com> 4.0-2
+- Update GA boot splash image.
 * Mon Nov 02 2020 Alexey Makhalov <amakhalov@vmware.com> 4.0-1
 - Updated boot splash image.
 * Tue May 12 2020 Ankit Jain <ankitja@vmware.com> 3.2-3
