@@ -368,17 +368,21 @@ class PackageUtils(object):
         listSRPMFiles = []
         stageLogFile = logFile.replace(constants.topDirPath + "/LOGS", constants.logPath )
         with open(stageLogFile, 'r') as logfile:
-            fileContents = logfile.readlines()
-            for i in range(0, len(fileContents)):
-                if re.search("^Wrote:", fileContents[i]):
-                    listcontents = fileContents[i].split()
-                    if ((len(listcontents) == 2) and
-                            listcontents[1].strip().endswith(".rpm") and
-                            "/RPMS/" in listcontents[1]):
-                        listRPMFiles.append(listcontents[1])
-                    if ((len(listcontents) == 2) and
-                            listcontents[1].strip().endswith(".src.rpm") and
-                            "/SRPMS/" in listcontents[1]):
-                        listSRPMFiles.append(listcontents[1])
+            try:
+                fileContents = logfile.readlines()
+                for i in range(0, len(fileContents)):
+                    if re.search("^Wrote:", fileContents[i]):
+                        listcontents = fileContents[i].split()
+                        if ((len(listcontents) == 2) and
+                                listcontents[1].strip().endswith(".rpm") and
+                                "/RPMS/" in listcontents[1]):
+                            listRPMFiles.append(listcontents[1])
+                        if ((len(listcontents) == 2) and
+                                listcontents[1].strip().endswith(".src.rpm") and
+                                "/SRPMS/" in listcontents[1]):
+                            listSRPMFiles.append(listcontents[1])
+            except UnicodeDecodeError:
+                pass
+
         return listRPMFiles, listSRPMFiles
 

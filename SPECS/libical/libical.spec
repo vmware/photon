@@ -48,7 +48,7 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
 %if 0%{?with_check}
-make %{?_smp_mflags} -k check
+make test ARGS="-V" -C build %{?_smp_mflags}
 %endif
 
 %post -p /sbin/ldconfig
