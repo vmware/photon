@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        9.6.20
+Version:        9.6.21
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=13aa206da020a550e56dbf524ca227bc2191fa48
+%define sha1    postgresql=e24333824d361968958613f546ae06011d9d1dfc
 # Common libraries needed
 BuildRequires:  krb5-devel
 BuildRequires:  libxml2-devel
@@ -152,10 +152,12 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Thu Feb 18 2021 Michael Paquier <mpaquier@vmware.com> 9.6.21-1
+-   Updated to version 9.6.21
 *   Fri Nov 20 2020 Dweep Advani <dadvani@vmware.com> 9.6.20-1
--   Upgrading to 9.6.20 for addressing multipls CVEs
+-   Upgrading to 9.6.20 for addressing multiple CVEs
 *   Tue Sep 01 2020 Dweep Advani <dadvani@vmware.com> 9.6.19-1
--   Upgrading to 9.6.19 for addressing multipls CVEs
+-   Upgrading to 9.6.19 for addressing multiple CVEs
 *   Fri Apr 03 2020 Anisha Kumari <kanisha@vmware.com> 9.6.14-3
 -   Added patch to fix CVE-2020-1720
 *   Mon Nov 18 2019 Prashant S Chauhan <psinghchauha@vmware.com> 9.6.14-2
@@ -183,12 +185,12 @@ rm -rf %{buildroot}/*
 *   Tue Jun 06 2017 Divya Thaluru <dthaluru@vmware.com> 9.6.3-1
 -   Upgraded to 9.6.3
 *   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 9.6.2-1
--   Upgrade to 9.6.2 for Photon upgrade bump 
+-   Upgrade to 9.6.2 for Photon upgrade bump
 *   Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-6
 -   Applied CVE-2016-5423.patch
 *   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 9.5.3-5
 -   Required krb5-devel.
-*   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 9.5.3-4 
+*   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 9.5.3-4
 -   Modified %check
 *   Thu May 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-3
 -   Add tzdata to buildrequires and requires.
