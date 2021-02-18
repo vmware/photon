@@ -3,7 +3,7 @@
 Summary:        This library brings the updated configparser from Python 3.5 to Python 2.6-3.5.
 Name:           python3-configparser
 Version:        5.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -39,7 +39,8 @@ find %{buildroot}%{python3_sitelib}/ -name '*.pyc' -delete -o \
     -name '*__pycache__' -delete
 
 %check
-easy_install py
+easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+$easy_install_3 py
 python3 setup.py test
 
 %files
@@ -47,6 +48,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Feb 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.0.1-2
+-   Fix make check
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 5.0.1-1
 -   Automatic Version Bump
 *   Wed Oct 28 2020 Dweep Advani <dadvani@vmware.com> 5.0.0-2
