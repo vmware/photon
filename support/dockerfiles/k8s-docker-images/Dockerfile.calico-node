@@ -26,6 +26,6 @@ COPY [ "./tmp/calico/usr/bin/calico-node", \
        "./tmp/calico/usr/bin/calico-felix", \
        "./tmp/calico/usr/share/calico/docker/libnetwork-plugin", \
        "/usr/bin/" ]
-COPY [ "./tmp/calico/etc/calico", "/etc/" ]
+COPY [ "./tmp/calico/etc", "/etc/" ]
 
 CMD ["start_runit"]
