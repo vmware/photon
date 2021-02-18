@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.177
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -328,6 +328,7 @@ Patch509:        enabling-configuring-options-for-geneve-device.patch
 Patch510:        initramfs-multiple-image-extraction-support.patch
 Patch511:        halt-on-panic.patch
 Patch512:        x86-setup-remove-redundant-mem-size-check.patch
+Patch513:        0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
 
 
 %if 0%{?kat_build:1}
@@ -636,6 +637,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch510 -p1
 %patch511 -p1
 %patch512 -p1
+%patch513 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -774,6 +776,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Mar 04 2021 Ankit Jain <ankitja@vmware.com> 4.19.177-3
+-   Added vtarfs support
 *   Wed Mar 03 2021 Ankit Jain <ankitja@vmware.com> 4.19.177-2
 -   Enable CONFIG_ISCSI_TCP support
 *   Fri Feb 26 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.177-1

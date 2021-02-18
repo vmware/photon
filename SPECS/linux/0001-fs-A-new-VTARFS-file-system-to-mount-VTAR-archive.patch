@@ -1,0 +1,1366 @@
+From 59b9ba6a0de0c9cdb564272bc9308122a77c06ea Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhir@vmware.com>
+Date: Wed, 16 Sep 2020 18:07:58 +0000
+Subject: [PATCH] fs: A new VTARFS file system to mount VTAR archive
+
+- GNU TAR Archieve consists of header with information of the
+files and directories. This GNU TAR format can be extended to VTAR
+format by ensuring that each file content data starts from a
+PAGE ALIGNED address. This start address of the file can be stored
+in a field in the header itself which will help to navigate to the
+file content.
+
+- Such an archive image (VTAR) when stored in RAMFS can be easily
+mounted instead of extraction using VTARFS.
+- VTARFS only creates and maintains metadata, inodes and dentries
+of files & directries. For a file, the entry for that particular
+file will point to the start address offset of the VTAR archive
+image whenever the file is read or executed.
+- Unlike VTAR Extractor which creates files and directory using
+syscalls, In VTARFS, inodes and dentries are created and maintained.
+Also, file operations like read_iter, mmap and others are defined
+and implemented.
+
+- Mounting operation is very quick and avoids additional memory
+allocation for file content data.
+
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+---
+ fs/Kconfig                      |   1 +
+ fs/Makefile                     |   1 +
+ fs/vtarfs/Kconfig               |  21 ++
+ fs/vtarfs/Makefile              |   9 +
+ fs/vtarfs/README.md             |   3 +
+ fs/vtarfs/vtarfs.h              | 171 ++++++++++
+ fs/vtarfs/vtarfs_file_dir_ops.c | 484 +++++++++++++++++++++++++++
+ fs/vtarfs/vtarfs_inode.c        | 573 ++++++++++++++++++++++++++++++++
+ 8 files changed, 1263 insertions(+)
+ create mode 100644 fs/vtarfs/Kconfig
+ create mode 100644 fs/vtarfs/Makefile
+ create mode 100644 fs/vtarfs/README.md
+ create mode 100644 fs/vtarfs/vtarfs.h
+ create mode 100644 fs/vtarfs/vtarfs_file_dir_ops.c
+ create mode 100644 fs/vtarfs/vtarfs_inode.c
+
+diff --git a/fs/Kconfig b/fs/Kconfig
+index ac474a61be37..66b33458e8d5 100644
+--- a/fs/Kconfig
++++ b/fs/Kconfig
+@@ -255,6 +255,7 @@ source "fs/pstore/Kconfig"
+ source "fs/sysv/Kconfig"
+ source "fs/ufs/Kconfig"
+ source "fs/exofs/Kconfig"
++source "fs/vtarfs/Kconfig"
+ 
+ endif # MISC_FILESYSTEMS
+ 
+diff --git a/fs/Makefile b/fs/Makefile
+index 293733f61594..839321e7c3c8 100644
+--- a/fs/Makefile
++++ b/fs/Makefile
+@@ -128,3 +128,4 @@ obj-y				+= exofs/ # Multiple modules
+ obj-$(CONFIG_CEPH_FS)		+= ceph/
+ obj-$(CONFIG_PSTORE)		+= pstore/
+ obj-$(CONFIG_EFIVAR_FS)		+= efivarfs/
++obj-$(CONFIG_VTARFS)		+= vtarfs/
+diff --git a/fs/vtarfs/Kconfig b/fs/vtarfs/Kconfig
+new file mode 100644
+index 000000000000..872a3a8dfb29
+--- /dev/null
++++ b/fs/vtarfs/Kconfig
+@@ -0,0 +1,21 @@
++config VTARFS
++	tristate "Virtual TARFS file system support"
++	depends on TMPFS
++	help
++	  The GNU TAR archive format can be modified into Virtual TAR archive
++	  format by ensuring that each file starts from a PAGE ALIGNED address.
++	  This start address of each file is stored as an offset in the VTAR
++	  Header itself which helps to navigate to the start of file content.
++	  VTARFS will mount such an archive and extracting such archive will
++	  no longer be necessary. The files will appear virtually in the mounted
++	  directory path. The actual file inode mapping will point to the file
++	  offset of the VTAR archive image.
++
++	  This file system will mount the VTAR archive as READ ONLY.
++
++	  Usually container base images are stored as VTAR archive.
++
++	  Say Y or M if you want to read files from VTAR archive image.
++
++	  To compile this file system support as a module, choose M here: the
++	  module will be called vtarfs.  If unsure, say N.
+diff --git a/fs/vtarfs/Makefile b/fs/vtarfs/Makefile
+new file mode 100644
+index 000000000000..988edc7d7012
+--- /dev/null
++++ b/fs/vtarfs/Makefile
+@@ -0,0 +1,9 @@
++#
++# Makefile for the vtarfs routines.
++#
++
++obj-$(CONFIG_VTARFS) += vtarfs.o
++
++CFLAGS_vtarfs_file_dir_ops.o := -I$(src)
++CFLAGS_vtarfs_inode.o := -I$(src)
++vtarfs-objs := vtarfs_file_dir_ops.o vtarfs_inode.o
+diff --git a/fs/vtarfs/README.md b/fs/vtarfs/README.md
+new file mode 100644
+index 000000000000..fe38b05c5320
+--- /dev/null
++++ b/fs/vtarfs/README.md
+@@ -0,0 +1,3 @@
++# vmware_tarfs
++
++This projects provides a way to mount the vmware format tar ball to a directory
+\ No newline at end of file
+diff --git a/fs/vtarfs/vtarfs.h b/fs/vtarfs/vtarfs.h
+new file mode 100644
+index 000000000000..3b6b48b9b147
+--- /dev/null
++++ b/fs/vtarfs/vtarfs.h
+@@ -0,0 +1,171 @@
++/*
++ * Filesystem to directly mount vtar archive.
++ *
++ * Copyright 2020 VMware, Inc. All Rights Reserved.
++ * SPDX-License-Identifier: GPL v2.0
++ *
++ * Licensed under the GNU Lesser General Public License version 2 (the "License");
++ * you may not use this file except in compliance with the License. The terms
++ * of the License are located in the LICENSE file of this distribution.
++ *
++ */
++
++#ifndef vtarfs
++#define vtarfs
++
++#include<linux/fs.h>
++#include<linux/radix-tree.h>
++
++#define MAX_PAGES_PER_FILE (MAX_LFS_FILESIZE/PAGE_SIZE)
++#define ROOT_INO (0)
++
++#define DEBUG_PRINT
++#ifdef DEBUG_PRINT
++#define tarfs_debug(fmt, args...)  do {				\
++		pr_debug("[%s:]" fmt, __FUNCTION__, ##args);	\
++	}while(0);
++#else
++#define tarfs_debug(fmt, args...)
++#endif
++
++struct vtarfs_img_map_t {
++	struct file *fp;
++	struct address_space *tarfs_img_map;
++	struct inode *inode;
++};
++/* Values used in typeflag field.  */
++#define REGTYPE  '0'            /* regular file */
++#define AREGTYPE '\0'           /* regular file */
++#define LNKTYPE  '1'            /* link */
++#define SYMTYPE  '2'            /* reserved */
++#define CHRTYPE  '3'            /* character special */
++#define BLKTYPE  '4'            /* block special */
++#define DIRTYPE  '5'            /* directory */
++#define FIFOTYPE '6'            /* FIFO special */
++#define CONTTYPE '7'            /* reserved */
++
++#define vtarfs_MAGIC "visor  " /* 8 chars and NULL */
++
++struct vtarfs_header_type
++{                              /* byte offset */
++	char name[100];               /*   0 */
++	char mode[8];                 /* 100 */
++	char uid[8];                  /* 108 */
++	char gid[8];                  /* 116 */
++	char size[12];                /* 124 */
++	char mtime[12];               /* 136 */
++	char chksum[8];               /* 148 */
++	char typeflag;                /* 156 */
++	char linkname[100];           /* 157 */
++	char magic[6];                /* 257 */
++	char version[2];              /* 263 */
++	char uname[32];               /* 265 */
++	char gname[32];               /* 297 */
++	char devmajor[8];             /* 329 */
++	char devminor[8];             /* 337 */
++	char prefix[151];             /* 345 */
++	unsigned int offset;          /* 496 */ // Offset of the file in the archive
++	unsigned int textOffset;      /* 500 */ // Offset of the text section in the file
++	unsigned int textSize;        /* 504 */ // Size of text section
++	unsigned int numFixupPgs;     /* 508 */ // Number of pages affected by relocation
++                                      /* 512 */
++};
++
++struct vtarfs_entry {
++
++	struct vtarfs_header_type	header;
++
++	char		*dir_name;
++
++	char		*base_name;
++
++	unsigned int	offset;
++
++	unsigned int	data_offset;
++
++	unsigned int	num_pages;
++
++	struct page	**pages;
++
++	size_t		data_size;
++
++	unsigned long	inode;
++
++	struct inode	*ptr_inode;
++
++	umode_t		mode;
++
++	uid_t		uid;
++
++	gid_t		gid;
++
++	unsigned int fileoffset;      // Offset of the file in the archive
++	unsigned int textOffset;  // Offset of the text section in the file
++	unsigned int textSize;    // Size of text section
++	unsigned int numFixupPgs; // Number of pages affected by relocation
++
++	struct vtarfs_entry *next;
++
++	struct radix_tree_root root_tree;
++
++	unsigned long radix_root_key;
++};
++
++struct vtarfs_fault {
++	struct inode *inode;
++	struct vtarfs_entry *entry;
++	unsigned long pgoff;
++};
++
++extern int vtarfs_create(struct inode *dir, struct dentry *dentry, umode_t mode, bool excl);
++extern int vtarfs_file_release(struct inode *inode, struct file *file);
++extern int vtarfs_getattr(const struct path *path, struct kstat *stat, u32 request_mask, unsigned int flags);
++extern int vtarfs_mkdir(struct inode * dir, struct dentry * dentry, umode_t mode);
++extern int vtarfs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, dev_t dev);
++extern int vtarfs_physmem_mmap(struct file *file, struct vm_area_struct *vma);
++extern int vtarfs_read_dir(struct file *file, struct dir_context *ctx);
++extern mode_t vtarfs_entry_mode(struct vtarfs_entry *entry);
++extern ssize_t vtarfs_file_read_iter(struct kiocb *iocb, struct iov_iter *to);
++extern struct  dentry  *vtarfs_lookup(struct inode *inode, struct dentry *dentry, unsigned int flags);
++extern vm_fault_t vtarfs_fault_handler(struct vm_fault *vmf);
++
++static const struct file_operations vtarfs_file_operations = {
++	.llseek   = generic_file_llseek,
++	.read_iter     = vtarfs_file_read_iter,
++	.mmap     = vtarfs_physmem_mmap,
++	.open     = generic_file_open,
++	.release  = vtarfs_file_release,
++};
++
++static const struct inode_operations vtarfs_file_inode_operations = {
++	.getattr = vtarfs_getattr,
++};
++
++static const struct inode_operations vtarfs_dir_inode_operations = {
++	.lookup = vtarfs_lookup,
++	.getattr = vtarfs_getattr,
++};
++
++static const struct inode_operations vtarfs_symlink_inode_operations = {
++	.get_link = simple_get_link,
++	.getattr = vtarfs_getattr,
++};
++
++static const struct file_operations vtarfs_dir_operations = {
++	.open = dcache_dir_open,
++	.release = dcache_dir_close,
++	.llseek	= dcache_dir_lseek,
++	.read = generic_read_dir,
++	.iterate_shared = vtarfs_read_dir,
++	.fsync = noop_fsync,
++};
++
++static const struct vm_operations_struct vtarfs_ops = {
++	.fault	=	vtarfs_fault_handler,
++};
++
++static const struct address_space_operations vtarfs_ram_addr_ops = {
++	.readpage       = simple_readpage,
++};
++
++#endif
+diff --git a/fs/vtarfs/vtarfs_file_dir_ops.c b/fs/vtarfs/vtarfs_file_dir_ops.c
+new file mode 100644
+index 000000000000..170e45edfbc8
+--- /dev/null
++++ b/fs/vtarfs/vtarfs_file_dir_ops.c
+@@ -0,0 +1,484 @@
++/*
++ * Filesystem to directly mount vtar archive.
++ *
++ * Copyright 2020 VMware, Inc. All Rights Reserved.
++ * SPDX-License-Identifier: GPL v2.0
++ *
++ * Licensed under the GNU Lesser General Public License version 2 (the "License");
++ * you may not use this file except in compliance with the License. The terms
++ * of the License are located in the LICENSE file of this distribution.
++ *
++ */
++
++#include <linux/module.h>
++#include <linux/fs.h>
++#include <linux/mm.h>
++#include <linux/pagemap.h>
++#include <linux/highmem.h>
++#include <linux/init.h>
++#include <linux/string.h>
++#include <linux/backing-dev.h>
++#include <linux/pagevec.h>
++#include <linux/mman.h>
++#include <linux/sched.h>
++#include <linux/slab.h>
++#include <linux/uio.h>
++#include <linux/pfn_t.h>
++#include <linux/mm.h>
++#include <linux/mm_types.h>
++#include <linux/uaccess.h>
++#include <linux/radix-tree.h>
++
++#include "vtarfs.h"
++
++#define WRITE_MASK (0222)
++
++extern struct vtarfs_img_map_t vtarfs_img_map;
++
++mode_t tar_type_to_posix(int typeflag)
++{
++	switch(typeflag) {
++		case REGTYPE:
++	case AREGTYPE:
++	case CONTTYPE:
++		return S_IFREG;
++	case DIRTYPE:
++		return S_IFDIR;
++	case SYMTYPE:
++		return S_IFLNK;
++	case CHRTYPE:
++		return S_IFCHR;
++	case BLKTYPE:
++		return S_IFBLK;
++	case FIFOTYPE:
++		return S_IFIFO;
++
++	default:
++		return 0;
++	}
++}
++
++/**
++ * @brief Returns the POSIX file mode of \a entry.
++ * @param entry the entry to get the file mode from
++ * @return the file mode
++ */
++mode_t vtarfs_entry_mode(struct vtarfs_entry *entry)
++{
++  mode_t mode = entry->mode & ~WRITE_MASK;
++  mode |= tar_type_to_posix(entry->header.typeflag);
++  return mode;
++}
++EXPORT_SYMBOL(vtarfs_entry_mode);
++
++/**
++ * @brief Returns the vtarfs entry by searching based on inode number.
++ * @param  entry: Pointer to the ROOT entry of vtarfs
++	   inode: inode number which is mapped to the entry to be found.
++ * @return the vtarfs entry containing the inode number.
++ */
++static struct
++vtarfs_entry *vtarfs_find_by_inode(struct vtarfs_entry *entry,
++							unsigned long inode)
++{
++
++	struct vtarfs_entry *entry_node = NULL;
++        struct radix_tree_iter iter;
++        void **slot = NULL;
++
++	tarfs_debug("In vtarfs_find_by_node, inode = %ld", inode);
++
++        radix_tree_for_each_slot(slot, &entry->root_tree, &iter, 0) {
++
++                entry_node = radix_tree_deref_slot(slot);
++                if ( unlikely(!entry_node) )
++                        continue;
++
++                if (radix_tree_exception(entry_node)) {
++                        if (radix_tree_deref_retry(entry_node))
++                                slot = radix_tree_iter_retry(&iter);
++
++                        continue;
++                }
++
++                if  ( inode == entry_node->inode) {
++                        tarfs_debug("\n FOUND %ld\n", entry_node->inode);
++			return entry_node;
++                }
++
++        }
++	return NULL;
++}
++
++/**
++ * @brief Returns the vtarfs entry by searching based on name of the file.
++ * @param  entry: Pointer to the ROOT entry of vtarfs
++	   dir_name: Directory name/path in which the file resides.
++	   base_name: Name of the file.
++ * @return the vtarfs entry containing the name.
++ */
++struct
++vtarfs_entry *vtarfs_find(struct vtarfs_entry *entry,
++			const char *dir_name, const char *base_name)
++{
++	struct vtarfs_entry *entry_node = NULL;
++	struct radix_tree_iter iter;
++	void **slot = NULL;
++
++	radix_tree_for_each_slot(slot, &entry->root_tree, &iter, 0) {
++
++		entry_node = radix_tree_deref_slot(slot);
++		if ( unlikely(!entry_node) )
++			continue;
++
++		if (radix_tree_exception(entry_node)) {
++			if (radix_tree_deref_retry(entry_node))
++				slot = radix_tree_iter_retry(&iter);
++
++			continue;
++		}
++
++		if  (!strcmp(entry_node->base_name, base_name) &&
++				!strcmp(entry_node->dir_name, dir_name)) {
++			return entry_node;
++		}
++
++	}
++
++	return NULL;
++}
++
++/*
++ * @brief Returns the Full name of a file by combining path and file name.
++ * @param  entry: Pointer to the entry of vtarfs file
++ * @return the full name.
++ */
++static char *vtarfs_full_name(struct vtarfs_entry *entry)
++{
++	size_t dir_len = strlen(entry->dir_name);
++	size_t base_len = strlen(entry->base_name);
++	size_t len = dir_len + base_len + 2;
++	char *name = kzalloc(len, GFP_KERNEL);
++
++	if ( !name ) {
++		pr_err("\n Error in allocating memory for name %ld\n",
++				PTR_ERR(name));
++		return NULL;
++	}
++
++	/* Ignore the first / for a top level directory */
++	if ( dir_len < 1 )
++		strncpy(name, entry->base_name, base_len);
++	else if (dir_len == 1)
++		strncpy(name, entry->dir_name, dir_len);
++	else
++		snprintf(name, len, "%s/%s",entry->dir_name, entry->base_name);
++
++	tarfs_debug("found name = %s", name);
++
++	return name;
++
++}
++
++/*
++ * @brief Returns the Full name of a file based on inode number.
++ * @param  root_entry: Pointer to the ROOT entry of vtarfs file
++ *	   inode: inode pointer of the vtarfs file.
++ * @return the full name.
++ */
++static char *build_lookup_path(struct inode *inode, struct vtarfs_entry *root_entry)
++{
++	struct vtarfs_entry *entry = NULL;
++
++	tarfs_debug("i_ino = %ld", inode->i_ino);
++	if ( inode->i_ino == ROOT_INO ) {
++		return kzalloc(1, GFP_KERNEL);
++	}
++
++	entry = vtarfs_find_by_inode(root_entry, inode->i_ino);
++	if (!entry) {
++		pr_err("\n Failed to find inode by entry, root->entry = %s \n",
++				root_entry->base_name);
++		return NULL;
++	}
++
++	tarfs_debug("full_name = %s%s ", entry->dir_name, entry->base_name);
++	return vtarfs_full_name(entry);
++}
++
++/*
++ * @brief Emits the contents of a directory.
++ * @param  file: file pointer of a directory
++ *	   ctx: context of fs on how dir entries will be filled.
++ * @return 0 on SUCCESS negetive errno on failure.
++ */
++int vtarfs_read_dir(struct file *file, struct dir_context *ctx)
++{
++	struct inode *inode = file_inode(file);
++	struct super_block *sb = inode->i_sb;
++	struct vtarfs_entry *entry =
++				(struct vtarfs_entry *)sb->s_fs_info;
++	char *dir_path = build_lookup_path(inode, entry);
++	int namelen = 0;
++
++	if ( ctx->pos > 0 )
++		goto err;
++
++
++	tarfs_debug("In vtarfs_read_dir dir_path=%s", dir_path);
++
++	/* Loop through the entry to find matching entry node with inode */
++	if ( !dir_emit_dots(file, ctx)) {
++		goto err;
++	}
++	if ( !dir_path ) {
++		pr_err("\n Failed to get dir path %ld \n", PTR_ERR(dir_path));
++		return -ENOENT;
++	}
++
++	while (entry) {
++		tarfs_debug("dir_path=%s entry->dir_name = %s base_name=%s",
++				dir_path, entry->dir_name, entry->base_name );
++		if (!strcmp(dir_path, entry->dir_name)) {
++			ctx->pos++;
++			/* Print all sub dirs by iterating through entry */
++			namelen = strlen(entry->base_name);
++			if (!dir_emit(ctx, entry->base_name, namelen,
++					entry->inode, entry->mode >> 12)){
++				break;
++			}
++		}
++		entry = entry->next;
++	}
++	tarfs_debug("return dir_path=%s", dir_path);
++err:
++	kfree(dir_path);
++	return 0;
++}
++EXPORT_SYMBOL(vtarfs_read_dir);
++
++/*
++ * @brief lookup function to iterate through the contents of a directory.
++ * @param  dir: inode pointer of a directory
++ *	   dentry: dentry information of the entry of a file or sub dir.
++ *	   flags: Currently unused.
++ * @return dentry of the file or sub dir.
++ */
++struct	dentry
++*vtarfs_lookup(struct inode *dir, struct dentry *dentry,
++					unsigned int flags)
++{
++
++	struct vtarfs_entry *entry = NULL;
++	struct vtarfs_entry *found_entry = NULL;
++	char *dir_path = NULL;
++	struct inode *build_inode = NULL;
++
++	tarfs_debug("In vtarfs_lookup");
++
++	if ( !dir->i_sb ) {
++		pr_err("\n Err: Missing superblock in vtarfs_lookup \n");
++		return NULL;
++	}
++
++	entry = (struct vtarfs_entry *)dir->i_sb->s_fs_info;
++
++	dir_path = build_lookup_path(dir, entry);
++
++	found_entry = vtarfs_find(entry, dir_path, dentry->d_name.name);
++
++	if ( found_entry ) {
++		build_inode = found_entry->ptr_inode;
++		tarfs_debug("found entry->name = %s%s & entry->inode = %ld",
++			found_entry->dir_name, found_entry->base_name,
++			found_entry->inode);
++	} else {
++		tarfs_debug("Dir entry not found %s",dir_path);
++	}
++	kfree(dir_path);
++
++	pr_debug("%s: ends dir_path=%s",__FUNCTION__, dir_path);
++	return d_splice_alias(build_inode, dentry);
++
++}
++EXPORT_SYMBOL(vtarfs_lookup);
++
++/*
++ * @brief Get attributes of a file or dir.
++ * @param  path: real path of the file or directory.
++ *	   stat: pointer to stat structure to be filled.
++ *	   request_mask: Currently unused.
++ *	   flags: Currently unused.
++ * @return dentry of the file or sub dir.
++ */
++int vtarfs_getattr(const struct path *path, struct kstat *stat,
++				u32 request_mask, unsigned int flags)
++{
++
++	struct inode *inode = d_inode(path->dentry);
++
++	generic_fillattr(inode, stat);
++	stat->blocks = inode->i_mapping->nrpages << (PAGE_SHIFT - 9);
++
++	return 0;
++}
++EXPORT_SYMBOL(vtarfs_getattr);
++
++/*
++ * @brief Iteratively read a file using IO Vectors..
++ * @param  iocb: iov object.
++ *	   to: info about the stage of iteration.
++ * @return number of bytes read.
++ */
++ssize_t vtarfs_file_read_iter(struct kiocb *iocb, struct iov_iter *to)
++{
++	struct file *file = iocb->ki_filp;
++	struct inode *inode  = file_inode(file);
++	struct vtarfs_entry *root_entry =
++			(struct vtarfs_entry *)(inode->i_sb->s_fs_info);
++	struct vtarfs_entry *entry;
++	ssize_t count;
++	loff_t pos = iocb->ki_pos;
++	ssize_t res = 0, copy = 0;
++	off_t	file_offset, pg_off;
++	int size = 0, i = 0, start = 0, end = 0;
++
++        entry = vtarfs_find_by_inode(root_entry, inode->i_ino);
++        if (!entry) {
++                pr_err("%s: No entry found for the file ",__FUNCTION__);
++                return -ENOENT;
++        }
++	count = min_t(size_t, iov_iter_count(to), entry->data_size - pos);
++	if ( pos < 0 )
++		return -EINVAL;
++	if (pos >= entry->data_size || !count) {
++                pr_err("%s: File read complete pos=%llu size=%ld \n",
++				__FUNCTION__,pos,entry->data_size);
++                return 0;
++        }
++	if ( count > (entry->data_size - pos) )
++		count = entry->data_size - pos;
++
++	file_offset = entry->fileoffset + pos;
++	size = count;
++	start = pos >> PAGE_SHIFT;
++	end = ((pos + count) >> PAGE_SHIFT);
++
++	tarfs_debug("\ncount = %ld, page[%d] = %p \n", count, start,
++						entry->pages[start]);
++
++	for ( i = start; i <= end && size > 0; i++) {
++		pg_off = pos % PAGE_SIZE;
++		copy = min_t(size_t, size, PAGE_SIZE);
++		tarfs_debug("pg_off = %ld, copy = %ld, page[%d]=%p",pg_off,
++						copy, i, entry->pages[i]);
++		res = copy_page_to_iter(entry->pages[i], pg_off, copy, to);
++		size -= res;
++	}
++	if ( count == size ) {
++		pr_err("%s: Failed to read any bytes %d \n",
++					 __FUNCTION__,size);
++	}
++	iocb->ki_pos += (count - size);
++	tarfs_debug("Return count=%ld res=%d",count,size);
++	return (count - size);
++}
++EXPORT_SYMBOL_GPL(vtarfs_file_read_iter);
++
++/*
++ * @brief Handle page fault for executables.
++ * @param  vmf: fault info
++ * @return FAULT state.
++ */
++vm_fault_t vtarfs_fault_handler(struct vm_fault *vmf)
++{
++	struct vtarfs_fault *fault_info =
++			(struct vtarfs_fault *)vmf->vma->vm_private_data;
++	struct vtarfs_entry *entry = fault_info->entry;
++	size_t size = vmf->vma->vm_end - vmf->vma->vm_start;
++	unsigned long pg_off = vmf->pgoff;
++	int start = 0, end = 0;
++
++	tarfs_debug("\nEntered , pg_off = %ld \n", pg_off);
++	start = pg_off;
++	end = start + (size >> PAGE_SHIFT);
++
++	if (pg_off > entry->num_pages) {
++		pr_err("\n%s: Exceed number of pages %ld > %d\n",
++				__FUNCTION__, pg_off, entry->num_pages);
++		return -EFAULT;
++	}
++
++	vmf->page = pagecache_get_page(vtarfs_img_map.tarfs_img_map,
++			(entry->fileoffset >> PAGE_SHIFT)+pg_off, 0, 0);
++
++	return VM_FAULT_LOCKED;
++}
++EXPORT_SYMBOL(vtarfs_fault_handler);
++
++static struct vtarfs_fault vtarfs_fault;
++
++/*
++ * @brief mmap handler of vtarfs.
++ * @param  file: file pointer of the file which needs to be mmapped
++ *	   vma: vma_area info
++ * @return 0 on SUCCESS, negetive errno on FAILURE.
++ */
++int vtarfs_physmem_mmap(struct file *file, struct vm_area_struct *vma)
++{
++	struct inode *inode = file_inode(file);
++	struct vtarfs_entry *entry, *root_entry =
++			(struct vtarfs_entry *)(inode->i_sb->s_fs_info);
++	size_t size;
++	unsigned long pgoff;
++	unsigned int pages;
++	int start = 0, end = 0, ret = 0;
++
++	tarfs_debug("%s: IN",__FUNCTION__);
++	entry = vtarfs_find_by_inode(root_entry, inode->i_ino);
++        if (!entry) {
++                pr_err("%s: No entry found for the file ",__FUNCTION__);
++                return -ENOENT;
++        }
++	size = vma->vm_end - vma->vm_start;
++	pgoff = vma->vm_pgoff;
++	if (pgoff > entry->num_pages) {
++		tarfs_debug("num_pages=%d > pgoff=%lu",entry->num_pages,pgoff);
++		return 0;
++	}
++	pages = min(vma_pages(vma), entry->num_pages - pgoff);
++	start = pgoff;
++	end = start + (size >> PAGE_SHIFT);
++
++
++	vtarfs_fault.inode = inode;
++	vtarfs_fault.entry = entry;
++	vtarfs_fault.pgoff = pgoff;
++
++	vma->vm_private_data = &vtarfs_fault;
++
++	file->f_mapping->a_ops = &vtarfs_ram_addr_ops;
++	ret = generic_file_mmap(file, vma);
++	if ( ret ) {
++		pr_err("%s: Failed to do generic mmap %d\n",__FUNCTION__, ret);
++	}
++	vma->vm_ops = &vtarfs_ops;
++	return 0;
++}
++EXPORT_SYMBOL(vtarfs_physmem_mmap);
++
++/*
++ * @brief close call handler for a file.
++ * @param  inode: inode pointer of the file
++ *	   file: file pointer of the file
++ * @return 0 on SUCCESS, negetive errno on FAILURE.
++ */
++int vtarfs_file_release(struct inode *inode, struct file *file)
++{
++
++	/* TODO: do kfree of cache and other data here */
++
++	return 0;
++
++}
++EXPORT_SYMBOL(vtarfs_file_release);
+diff --git a/fs/vtarfs/vtarfs_inode.c b/fs/vtarfs/vtarfs_inode.c
+new file mode 100644
+index 000000000000..366983d00ff4
+--- /dev/null
++++ b/fs/vtarfs/vtarfs_inode.c
+@@ -0,0 +1,573 @@
++/*
++ * Filesystem to directly mount vtar archive.
++ *
++ * Copyright 2020 VMware, Inc. All Rights Reserved.
++ * SPDX-License-Identifier: GPL v2.0
++ *
++ * Licensed under the GNU Lesser General Public License version 2 (the "License");
++ * you may not use this file except in compliance with the License. The terms
++ * of the License are located in the LICENSE file of this distribution.
++ *
++ */
++
++#include <linux/module.h>
++#include <linux/fs.h>
++#include <linux/file.h>
++#include <linux/pagemap.h>
++#include <linux/pfn_t.h>
++#include <linux/ramfs.h>
++#include <linux/slab.h>
++#include <linux/init.h>
++#include <linux/string.h>
++#include <linux/parser.h>
++#include <linux/mtd/mtd.h>
++#include <linux/mtd/super.h>
++#include <linux/slab.h>
++#include <linux/vfs.h>
++#include <linux/mutex.h>
++#include <linux/slab_def.h>
++#include <linux/uaccess.h>
++#include <linux/vmalloc.h>
++
++#include "vtarfs.h"
++
++/* ALIGNS of a 512 byte boundary */
++#define ALIGN_SECTOR(x) (((x) % 512 > 0) ? 512 - ((x) % 512) : 0)
++
++struct vtarfs_img_map_t vtarfs_img_map;
++EXPORT_SYMBOL(vtarfs_img_map);
++
++/* TODO: implement show_options */
++static struct super_operations vtarfs_super_ops = {
++  .statfs         = simple_statfs,
++  //.show_options   = vtarfs_show_options,
++};
++
++struct vtarfs_mount_opts {
++	umode_t mode;
++};
++
++struct vtarfs_fs_info {
++	struct vtarfs_mount_opts mount_opts;
++};
++
++/*
++ * vtarfs_get_inode : Allocate inode for ROOT Node
++ * sb : Superblock of the file system
++ * dir : inode of directory of ROOT
++ * mode : Permissions
++ * dev : nodev (NON BLOCK based device)
++ */
++struct inode *vtarfs_get_inode(struct super_block *sb,
++		const struct inode *dir, umode_t mode, dev_t dev)
++{
++
++	struct inode * inode = new_inode(sb);
++
++	if (inode) {
++		INIT_HLIST_NODE(&inode->i_hash);
++		pr_debug("%s inode created !!",__FUNCTION__);
++		inode->i_ino = 0;
++		inode->i_mapping->a_ops = &vtarfs_ram_addr_ops;
++		mapping_set_gfp_mask(inode->i_mapping, GFP_HIGHUSER);
++		mapping_set_unevictable(inode->i_mapping);
++		inode->i_sb = sb;
++
++		inode->i_op = &vtarfs_dir_inode_operations;
++		inode->i_fop = &vtarfs_dir_operations;
++		inode_init_owner(inode, NULL, S_IFDIR | 0555);
++
++		/*directory inodes start off with i_nlink=2(for "." entry)*/
++		inc_nlink(inode);
++	}
++	tarfs_debug("returning inode !!\n");
++	return inode;
++
++}
++
++/*
++ * vtarfs_create_inode : Allocate inode for file, dir and symlinks
++ * sb : Superblock of the file system
++ * entry : vtarfs entry of ROOT
++ * mode : Permissions
++ */
++struct inode *vtarfs_create_inode(struct super_block *sb,
++				struct vtarfs_entry *entry, umode_t mode)
++{
++
++	struct inode * inode = NULL;
++	struct inode * dentry_inode = d_inode(sb->s_root);
++
++	inode = new_inode(sb);
++	if ( !inode ) {
++		pr_err("\n Failed to allocate new inode \n");
++		return NULL;
++	}
++	INIT_HLIST_NODE(&inode->i_hash);
++	tarfs_debug("In %s",__FUNCTION__);
++
++	inode->i_ino = get_next_ino();
++	entry->inode = inode->i_ino;
++	tarfs_debug("inode create = %ld", entry->inode);
++	inode->i_mode = vtarfs_entry_mode(entry);
++	i_uid_write(inode, entry->uid);
++	i_gid_write(inode, entry->gid);
++	inode->i_size = entry->data_size;
++	inode->i_sb = sb;
++	__insert_inode_hash(inode, dentry_inode->i_ino);
++	entry->ptr_inode = inode;
++	switch ( entry->header.typeflag ) {
++
++		case DIRTYPE:
++				inode->i_op = &vtarfs_dir_inode_operations;
++				inode->i_fop = &vtarfs_dir_operations;
++				inc_nlink(inode);
++				break;
++		case SYMTYPE:
++				inode->i_op = &vtarfs_symlink_inode_operations;
++				inode->i_link = entry->header.linkname;
++				break;
++
++		default:
++				inode->i_op = &vtarfs_file_inode_operations;
++				inode->i_fop = &vtarfs_file_operations;
++				inc_nlink(inode);
++				break;
++	}
++	tarfs_debug("Returing %s",__FUNCTION__);
++	return inode;
++}
++
++static char *build_name(struct vtarfs_header_type *header)
++{
++	char *name;
++	size_t prefix_len;
++	size_t name_len;
++	char *prefix_end = memchr(header->prefix, 0, sizeof(header->prefix));
++	char *name_end = memchr(header->name, 0, sizeof(header->name));
++
++	if (!prefix_end || !name_end) {
++		pr_err("%s : Header name is not proper!!", __func__);
++		return NULL;
++	}
++	tarfs_debug("Full name length = %ld , %ld\n",prefix_len, name_len);
++
++	prefix_len = prefix_end - header->prefix;
++	name_len = name_end - header->name;
++	name = kzalloc(prefix_len + name_len + 1, GFP_KERNEL);
++	if (!name) {
++		pr_err("\n Unable to allocate memory for full name \n");
++		return NULL;
++	}
++
++	memcpy(name, header->prefix, prefix_len);
++	memcpy(name + prefix_len, header->name, name_len);
++	name[prefix_len + name_len] = 0x0;
++
++	// The path name ends with a slash if the entry is a directory
++	if (name[prefix_len + name_len - 1] == '/')
++		name[prefix_len + name_len - 1] = 0x0;
++
++	return name;
++
++}
++
++/**
++ * @brief Reads a tar header at the \a offset.
++ * @param sb the superblock to read from
++ * @param offset the 512-byte aligned offset
++ * @return the entry on success, else \c NULL
++ */
++struct
++vtarfs_entry *vtarfs_read_entry(struct super_block *sb,
++			off_t offset)
++{
++	struct vtarfs_header_type header;
++	struct vtarfs_entry *entry = NULL;
++	char *full_name = NULL,*basename=NULL;
++        struct page *page = NULL;
++        void *k_mapped_page = NULL;
++        char *kmap_buf = kzalloc(PAGE_SIZE*sizeof(char), GFP_KERNEL);
++	int i = 0;
++	off_t pg_off;
++
++        if (IS_ERR(kmap_buf)) {
++                pr_err("\n%s: Failed to alloc buf %ld",__FUNCTION__,
++					PTR_ERR(kmap_buf));
++                return NULL;
++        }
++
++	tarfs_debug("offset = %ld and img_map = %p",offset,
++					vtarfs_img_map.tarfs_img_map);
++
++	pg_off = offset >> PAGE_SHIFT;
++
++        page = read_mapping_page(vtarfs_img_map.tarfs_img_map,
++				pg_off, NULL);
++        if (IS_ERR(page)) {
++                pr_err("%s: page map failure %ld",__FUNCTION__, PTR_ERR(page));
++		goto err_lvl1;
++        }
++        k_mapped_page = kmap(page);
++        if (!k_mapped_page) {
++                pr_err("%s: kmap failure %ld",__FUNCTION__,
++				PTR_ERR(k_mapped_page));
++		goto err_lvl1;
++        }
++        memcpy(kmap_buf, k_mapped_page, PAGE_SIZE);
++        if (memcpy(&header, k_mapped_page+(offset%PAGE_SIZE),
++		sizeof(struct vtarfs_header_type)) == NULL) {
++                pr_err("%s: read failure",__FUNCTION__);
++		goto err_lvl2;
++        }
++
++	// Check for the header magic value
++	if (memcmp(header.magic, vtarfs_MAGIC,
++				sizeof(header.magic)) != 0) {
++		pr_err("%s: magic=%s",__FUNCTION__,header.magic);
++		goto err_lvl2;
++	}
++
++	entry = kzalloc(sizeof(struct vtarfs_entry), GFP_KERNEL);
++	// Parse the data length from the header
++	if (kstrtouint(header.size, 8, (unsigned int *)&entry->data_size) !=
++									0) {
++		pr_err("%s: failed to read size",__FUNCTION__);
++		goto err_lvl3;
++	}
++	if (kstrtouint(header.mode, 8, (unsigned int *)&entry->mode) != 0) {
++		pr_err("%s: failed to read mode",__FUNCTION__);
++		goto err_lvl3;
++	}
++	if (kstrtouint(header.uid, 8, (unsigned int *)&entry->uid) != 0) {
++		pr_err("%s: failed to read uid",__FUNCTION__);
++		goto err_lvl3;
++	}
++	if (kstrtouint(header.gid, 8, (unsigned int *)&entry->gid) !=0) {
++		pr_err("%s: failed to read gid",__FUNCTION__);
++		goto err_lvl3;
++	}
++        entry->fileoffset = header.offset;
++	entry->textOffset = header.textOffset;
++	entry->textSize = header.textSize;
++	entry->numFixupPgs = header.numFixupPgs;
++
++	entry->num_pages = entry->data_size >> PAGE_SHIFT;
++	if ( entry->data_size % PAGE_SIZE)
++		entry->num_pages++;
++
++	entry->pages = kzalloc((sizeof(struct page)*(entry->num_pages)),
++							GFP_KERNEL);
++	if (IS_ERR_OR_NULL(entry->pages)) {
++		pr_err("\n%s:Error in allocating mem for pages %ld\n",
++			__FUNCTION__, PTR_ERR(entry->pages));
++		goto err_lvl3;
++	}
++	pr_debug("%s: After getting page maps, num = %d, fileoffset = %d ",
++			__FUNCTION__, entry->num_pages, entry->fileoffset);
++	for ( i = 0; i < entry->num_pages; i++) {
++		entry->pages[i] = read_mapping_page(
++					vtarfs_img_map.tarfs_img_map,
++				(entry->fileoffset >> PAGE_SHIFT) + i, NULL);
++		if (IS_ERR(entry->pages[i])) {
++			pr_err("%s: page map failure %ld",
++				__FUNCTION__, PTR_ERR(entry->pages[i]));
++			goto err_lvl4;
++		}
++	}
++
++	full_name = build_name(&header);
++	if (!full_name) {
++		pr_err("%s: name allocation error",__FUNCTION__);
++		goto err_lvl4;
++	}
++	basename = strrchr(full_name, '/');
++	if (basename) {
++		*basename = 0x0;
++		basename++;
++	} else {
++		basename = full_name;
++		full_name = basename + strlen(basename);
++	}
++	entry->dir_name = full_name;
++	entry->base_name = basename;
++	tarfs_debug("full_name = %s | %s ", entry->dir_name, entry->base_name);
++	entry->header = header;
++	entry->offset = offset;
++	entry->data_offset = offset + sizeof(header) +
++						ALIGN_SECTOR(sizeof(header));
++
++        kfree(kmap_buf);
++        kunmap(k_mapped_page);
++
++	tarfs_debug("%s: Returning entry",__FUNCTION__);
++	return entry;
++
++err_lvl4:
++	kfree(entry->pages);
++err_lvl3:
++	kfree(entry);
++err_lvl2:
++	kunmap(k_mapped_page);
++err_lvl1:
++	kfree(kmap_buf);
++	return NULL;
++}
++
++static int
++vtarfs_parse_mount_ops(char *data, struct vtarfs_mount_opts *opts)
++{
++	/*TODO: Hardcode it to Read Only mode */
++	opts->mode = S_IRUGO | S_IXUGO;
++	return 0;
++}
++
++/*
++ * vtarfs_open_first_entry : Allocate inode for first entry
++ * sb : Superblock of the file system
++ */
++static struct vtarfs_entry *vtarfs_open_first_entry(struct super_block *sb)
++{
++	struct vtarfs_entry *first = vtarfs_read_entry(sb, 0);
++	struct inode *alloc_inode = NULL;
++
++	alloc_inode = vtarfs_create_inode(sb, first, first->mode);
++	if (alloc_inode == NULL) {
++		pr_err("%s: alloc_inode failed !!",__FUNCTION__);
++		first->inode = 2;
++	}
++	return first;
++}
++
++/**
++ * @brief Reads all file headers from the \a sb
++ * @param sb the underlying super block
++ * @return the first entry, pointing at all other entries
++ */
++struct vtarfs_entry *vtarfs_open(struct super_block *sb, struct vtarfs_entry *first)
++{
++	struct vtarfs_entry *parent = first;
++	struct vtarfs_entry *next;
++	struct inode *alloc_inode = NULL;
++	int err = 0;
++
++	do {
++		next = vtarfs_read_entry(sb, parent->data_offset);
++		parent->next = next;
++		parent = next;
++		if (IS_ERR_OR_NULL(parent))
++			break;
++
++		alloc_inode = vtarfs_create_inode(sb, parent, parent->mode);
++		if (alloc_inode == NULL) {
++			pr_err("%s: alloc_inode failed !!",__FUNCTION__);
++			parent->inode = 2;
++			break;
++		}
++		radix_tree_preload(GFP_NOIO);
++		err = radix_tree_insert(&first->root_tree,
++			(unsigned long)parent->ptr_inode->i_ino, parent);
++		if ( err )
++			pr_err("\n%s:Radix tree insert err=%d, inode %ld\n",
++				__FUNCTION__, err, parent->ptr_inode->i_ino);
++
++		radix_tree_preload_end();
++		first->radix_root_key = parent->inode;
++	}while(parent);
++
++	return first;
++}
++
++/*
++ * vtarfs_fill_super : Fill the super block structure
++ * sb : Superblock of the file system
++ * data : Options passed by user through mount command
++ * silent : unused.
++ */
++static int
++vtarfs_fill_super(struct super_block *sb, void *data, int silent)
++{
++	struct vtarfs_fs_info * info = NULL;
++	struct vtarfs_entry *entry = NULL;
++	int err = -EINVAL;
++	struct inode *inode = NULL;
++
++	tarfs_debug("%s: data = %p ",__FUNCTION__, data);
++
++	info = kzalloc(sizeof(struct vtarfs_fs_info), GFP_KERNEL);
++	if ( IS_ERR(info) ) {
++		pr_err("\nErr in allocating memory for info %ld\n",
++			PTR_ERR(info));
++		return PTR_ERR(info);
++	}
++	err = vtarfs_parse_mount_ops( data, &info->mount_opts);
++	if ( err ) {
++		pr_err("\n Error in reading mount options for vtarfs\n");
++		goto err_fill_super;
++	}
++	sb->s_maxbytes	=	MAX_LFS_FILESIZE;
++	sb->s_blocksize	=	PAGE_SIZE;
++	sb->s_blocksize_bits =	PAGE_SHIFT;
++	if (kstrtoul(vtarfs_MAGIC,8,&sb->s_magic) != 0) {
++		tarfs_debug("%s: failed to read magic number %s",
++				__FUNCTION__,vtarfs_MAGIC);
++	}
++	sb->s_op	=	&vtarfs_super_ops;
++	sb->s_d_op	=	&simple_dentry_operations;
++	sb->s_time_gran	=	1;
++	sb->s_flags	|=	MS_RDONLY | MS_NOATIME;/*Read only file system*/
++
++	inode = vtarfs_get_inode(sb, NULL, S_IFDIR |
++				info->mount_opts.mode, 0);
++	sb->s_root = d_make_root(inode);
++	if ( !sb->s_root ) {
++		pr_err("\n Error in creating root point for vtarfs \n");
++		err = -ENOMEM;
++		goto err_fill_super;
++	}
++	inode->i_op = &vtarfs_dir_inode_operations;
++	inode->i_fop = &vtarfs_dir_operations;
++	tarfs_debug("populate_first_entry");
++	__insert_inode_hash(inode, inode->i_ino);
++	entry = vtarfs_open_first_entry(sb);
++	if (!entry) {
++		pr_err("\n%s: Failed to read first entry \n",__FUNCTION__);
++		goto err_fill_super;
++	}
++	radix_tree_preload(GFP_NOIO);
++	INIT_RADIX_TREE(&entry->root_tree, GFP_NOIO);
++	err = radix_tree_insert(&entry->root_tree, (unsigned long)inode->i_ino,
++					entry);
++	if ( err )
++		pr_err("\n%s: Radix tree insert err - inode %ld, err = %d\n",
++				__FUNCTION__, inode->i_ino, err);
++
++	radix_tree_preload_end();
++	entry->radix_root_key = inode->i_ino;
++	sb->s_fs_info	= entry;
++	tarfs_debug("first allocated root inode num = %ld and sb = %p",
++				inode->i_ino, sb);
++
++	if (!(entry = vtarfs_open(sb, entry))) {
++		pr_err("failed to read tar index");
++		goto err_fill_super;
++	}
++	return 0;
++
++err_fill_super:
++	kfree(info);
++	return err;
++}
++
++/*
++ * vtarfs_mount : Mount call for the vtarfs filesystem
++ * fs_type : file system type, name etc.
++ * flags :for special options
++ * dev_name : binary image format of the file system.
++ * data : options passed by user through mount command
++ */
++static struct
++dentry *vtarfs_mount(struct file_system_type *fs_type, int flags,
++				const char *dev_name, void *data)
++{
++	struct file *fp = NULL;
++
++	tarfs_debug("dev_name = %s", dev_name);
++
++        fp = filp_open(dev_name, O_RDONLY, 0);
++        if (IS_ERR(fp)) {
++                pr_err("\n Failed to open the file %s for mount %ld\n",
++                                dev_name, PTR_ERR(fp));
++                return NULL;
++        }
++        vtarfs_img_map.tarfs_img_map = (void *)fp->f_mapping;
++        vtarfs_img_map.inode = vtarfs_img_map.tarfs_img_map->host;
++	vtarfs_img_map.fp = fp;
++
++	return mount_nodev(fs_type, flags, data, &vtarfs_fill_super);
++}
++
++/*
++ * vtarfs_kill_super : Destroy the super block of vtarfs
++ * sb : super block structure
++ */
++static void vtarfs_kill_super(struct super_block *sb)
++{
++	struct vtarfs_entry *entry =
++			(struct vtarfs_entry *)sb->s_fs_info;
++
++	struct inode *inode = NULL;
++
++	tarfs_debug("Kill super");
++	while(entry) {
++		struct vtarfs_entry *next = entry->next;
++		tarfs_debug("basename=%s dirn=%s",entry->base_name,
++				entry->dir_name);
++
++		if (entry->dir_name < entry->base_name)
++			kfree(entry->dir_name);
++		else
++			kfree(entry->base_name);
++
++		inode = ilookup(sb, entry->inode);
++		iput(inode);
++		kfree(entry);
++		entry = next;
++	}
++	evict_inodes(sb);
++	kill_litter_super(sb);
++	filp_close(vtarfs_img_map.fp, NULL);
++}
++
++static struct file_system_type vtarfs_type = {
++
++	.owner = THIS_MODULE,
++
++	.name = "vtarfs",
++
++	.mount = vtarfs_mount,
++
++	.kill_sb = vtarfs_kill_super,
++
++	.fs_flags = FS_USERNS_MOUNT | FS_BINARY_MOUNTDATA,
++
++};
++
++
++static int __init vtarfs_init(void)
++{
++	int err = 0;
++
++	pr_info("%s: filesystem module load start",__FUNCTION__);
++
++	err = register_filesystem(&vtarfs_type);
++	if (unlikely(err)) {
++		pr_err("\nFailed to register vtarfs type %d. Exiting\n", err);
++		goto err;
++	}
++	tarfs_debug("filesystem module registered");
++
++	return 0;
++err:
++	return err;
++}
++
++static void __exit vtarfs_exit(void)
++{
++	int err = 0;
++
++	pr_info("%s: filesystem module unload",__FUNCTION__);
++
++	err = unregister_filesystem(&vtarfs_type);
++
++	if (unlikely(err))
++		pr_err("\n Failed to unregister vtarfs filesystem %d\n", err);
++
++
++}
++
++module_init(vtarfs_init);
++module_exit(vtarfs_exit);
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("VMware Photon OS : Srinidhi Rao <srinidhir@vmware.com>");
++MODULE_AUTHOR("VMware Photon OS : Ankit Jain <ankitja@vmware.com>");
+-- 
+2.23.1
+
