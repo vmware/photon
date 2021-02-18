@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.4
-Release:        11%{?kat_build:.kat}%{?dist}
+Release:        12%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -642,6 +642,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Feb 18 2021 Sharan Turlapati<sturlapati@vmware.com> 5.10.4-12
+-   Enable CONFIG_IFB
 *   Wed Feb 17 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-11
 -   Added latest out of tree version of Intel ice driver
 *   Tue Feb 16 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-10
