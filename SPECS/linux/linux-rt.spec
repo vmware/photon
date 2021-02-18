@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.4
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt22
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -349,6 +349,8 @@ Patch567:	sysfs-realtime-entry.patch
 Patch568:        localversion.patch
 
 Patch600:       0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
+# RT Runtime Greed
+Patch601:       0001-RT-PATCH-sched-rt-RT_RUNTIME_GREED-sched-feature.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
@@ -711,6 +713,7 @@ The Linux package contains the Linux kernel doc files
 %patch568 -p1
 
 %patch600 -p1
+%patch601 -p1
 
 %if 0%{?fips}
 %patch1010 -p1
@@ -906,6 +909,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Feb 17 2021 Vikash Bansal <bvikas@vmware.com> 5.10.4-6
+-   Added support for RT RUNTIME GREED
 *   Mon Feb 15 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-5
 -   Added crypto_self_test and kattest module.
 -   These patches are applied when kat_build is enabled.
