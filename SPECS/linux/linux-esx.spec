@@ -1,7 +1,7 @@
 %global security_hardening none
 
 # Set this flag to 0 to build without canister
-%global fips 1
+%global fips 0
 
 # If kat_build is enabled, canister is not used.
 %if 0%{?kat_build:1}
@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.4
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -316,6 +316,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Feb 18 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-10
+-   Disable fips canister.
 *   Thu Feb 18 2021 Ajay Kaher <akaher@vmware.com> 5.10.4-9
 -   Enable CONFIG_WDAT_WDT
 *   Thu Feb 18 2021 Ajay Kaher <akaher@vmware.com> 5.10.4-8
