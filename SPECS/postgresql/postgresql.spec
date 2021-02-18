@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        10.15
+Version:        10.16
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=3d688f05d2de7c9ed89ef6be8d33906a4e7a833d
+%define sha1    postgresql=594d7f1c604a9666499510d69b6dece97632a61d
 # Common libraries needed
 BuildRequires:  krb5-devel
 BuildRequires:  libxml2-devel
@@ -161,6 +161,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Thu Feb 18 2021 Michael Paquier <mpaquier@vmware.com> 10.16-1
+-   update version to 10.16
 *   Thu Nov 19 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 10.15-1
 -   update version to 10.15
 *   Wed Sep 02 2020 Dweep Advani <dadvani@vmware.com> 10.10-5
