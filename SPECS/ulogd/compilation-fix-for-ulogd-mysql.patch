@@ -1,0 +1,26 @@
+From 34f7c4734d70c3b62fa1ad0f0a107193cea5560a Mon Sep 17 00:00:00 2001
+From: VIKASH BANSAL <bvikas@vmware.com>
+Date: Wed, 3 Jul 2019 16:48:03 +0530
+Subject: [PATCH] Compilation fix for ulogd-mysql. ulogd-mysql is mysql output
+ plugin for ulogd
+
+---
+ output/mysql/ulogd_output_MYSQL.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/output/mysql/ulogd_output_MYSQL.c b/output/mysql/ulogd_output_MYSQL.c
+index 643320c..494fc8b 100644
+--- a/output/mysql/ulogd_output_MYSQL.c
++++ b/output/mysql/ulogd_output_MYSQL.c
+@@ -42,7 +42,7 @@
+ #include <errno.h>
+ #include <time.h>
+ #include <arpa/inet.h>
+-#include <mysql/mysql.h>
++#include <mysql.h>
+ #include <ulogd/ulogd.h>
+ #include <ulogd/conffile.h>
+ #include <ulogd/db.h>
+--
+2.17.1
+
