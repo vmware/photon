@@ -1,0 +1,84 @@
+From 42b92893d32d1a41fc0fb101b095d093acc5b76f Mon Sep 17 00:00:00 2001
+From: Piyush Gupta <gpiyush@vmware.com>
+Date: Fri, 19 Feb 2021 14:12:10 +0000
+Subject: [PATCH] custompartition.py: selectdisk.py: Initialize devices during
+ display
+
+PR 2720706: Devices are not properly getting initialized while using
+lsblk to list block devices if we immediately trigger installer code
+after systemd services starts up.
+
+Ideally we should be listing the block devices if user selects Accept
+on licensing screen. This change moves listing of block devices to
+display function which will be triggered after user accepts the license.
+
+Change-Id: I33e7e919562cc8da85f8d1ee380525181ae92bee
+---
+ photon_installer/custompartition.py | 16 +++++++++++-----
+ photon_installer/selectdisk.py      |  3 ++-
+ 2 files changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/photon_installer/custompartition.py b/photon_installer/custompartition.py
+index a011dde..a4e8055 100755
+--- a/photon_installer/custompartition.py
++++ b/photon_installer/custompartition.py
+@@ -28,24 +28,30 @@ class CustomPartition(object):
+         self.text_width = self.win_width - 6
+         self.cp_config = {}
+         self.cp_config['partitionsnumber'] = 0
+-        self.devices = Device.refresh_devices_bytes()
++        self.devices = None
+         self.has_slash = False
+         self.has_remain = False
+         self.has_empty = False
+
+         self.disk_size = []
+         self.disk_to_index = {}
++
++        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx,
++                             'Welcome to the Photon installer', False, can_go_next=False)
++        Device.refresh_devices()
++
++    def initialize_devices(self):
++        self.devices = Device.refresh_devices_bytes()
++
+         # Subtract BIOS&ESP SIZE from the disk_size since this much is hardcoded for bios
+         # and efi partition in installer.py
+         for index, device in enumerate(self.devices):
+             self.disk_size.append((device.path, int(device.size) / 1048576 - (BIOSSIZE + ESPSIZE + 2)))
+             self.disk_to_index[device.path] = index
+
+-        self.window = Window(self.win_height, self.win_width, self.maxy, self.maxx,
+-                             'Welcome to the Photon installer', False, can_go_next=False)
+-        Device.refresh_devices()
+-
+     def display(self):
++        self.initialize_devices()
++
+         if 'autopartition' in self.install_config and self.install_config['autopartition'] == True:
+             return ActionResult(True, None)
+
+diff --git a/photon_installer/selectdisk.py b/photon_installer/selectdisk.py
+index 04e72a5..fbe66d7 100755
+--- a/photon_installer/selectdisk.py
++++ b/photon_installer/selectdisk.py
+@@ -35,7 +35,7 @@ class SelectDisk(object):
+                              'Select a disk', True,
+                              items=self.disk_buttom_items, menu_helper=self.save_index,
+                              position=2, tab_enabled=False)
+-        self.devices = Device.refresh_devices()
++        self.devices = None
+
+     def display(self):
+         self.window.addstr(0, 0, 'Please select a disk and a method how to partition it:\n' +
+@@ -44,6 +44,7 @@ class SelectDisk(object):
+
+         self.disk_menu_items = []
+
++        self.devices = Device.refresh_devices()
+         # Fill in the menu items
+         for index, device in enumerate(self.devices):
+             #if index > 0:
+--
+2.23.0
+
