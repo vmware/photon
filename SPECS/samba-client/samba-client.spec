@@ -1,6 +1,6 @@
 Summary:        Samba Client Programs
 Name:           samba-client
-Version:        4.12.0
+Version:        4.13.4
 Release:        1%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
@@ -8,12 +8,13 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.samba.org
 Source0:        https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
-%define sha1 samba=c852939a700d273c78663a47944d944c5bc81498
+%define sha1 samba=491057e200b5851a9d7e34ff3653a7f069dab678
 %define samba_ver %{version}-%{release}
 Source1:        smb.conf.vendor
 
-Patch1:         rename_dcerpc_to_smbdcerpc.patch
+Patch1:         rename_dcerpc_to_smbdcerpc_%{version}.patch
 
+Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 
 BuildRequires: libtirpc-devel
@@ -36,6 +37,7 @@ BuildRequires: libxml2-devel
 BuildRequires: lmdb
 BuildRequires: openldap
 BuildRequires: perl-Parse-Yapp
+BuildRequires: dbus-devel
 
 Requires:      samba-client-libs = %{samba_ver}
 Requires:      libtirpc
@@ -49,6 +51,7 @@ Requires:      libxml2
 Requires:      lmdb
 Requires:      openldap
 Requires:      perl-Parse-Yapp
+Requires:      dbus
 
 Provides:      samba4-client = %{samba_ver}
 
@@ -162,7 +165,6 @@ for file_dir in \
    %{_libdir}/samba/libxattr-tdb-samba4.so \
    %{_libdir}/security/pam_winbind.so \
    %{_libdir}/libdcerpc-samr.* \
-   %{_libdir}/libdcerpc-server-core.* \
    %{_libdir}/libnss_winbind.so* \
    %{_libdir}/libnss_wins.so* \
    %{_libdir}/libsamba-policy.cpython-37m-x86-64-linux-gnu.* \
@@ -304,7 +306,16 @@ for aarch64_file_dir in \
 done
 %endif
 
+%post
+/sbin/ldconfig
+
 %postun
+/sbin/ldconfig
+
+%post libs
+/sbin/ldconfig
+
+%postun libs
 /sbin/ldconfig
 
 # Samba Client
@@ -465,7 +476,6 @@ done
 %{_libdir}/samba/libsmb-transport-samba4.so
 %{_libdir}/samba/libsmbclient-raw-samba4.so
 %{_libdir}/samba/libsmbd-base-samba4.so
-%{_libdir}/samba/libsmbd-conn-samba4.so
 %{_libdir}/samba/libsmbd-shim-samba4.so
 %{_libdir}/samba/libsmbldaphelper-samba4.so
 %{_libdir}/samba/libsys-rw-samba4.so
@@ -501,6 +511,7 @@ done
 %{_libdir}/samba/pdb/ldapsam.so
 %{_libdir}/samba/pdb/smbpasswd.so
 %{_libdir}/samba/pdb/tdbsam.so
+%{_libdir}/libdcerpc-server-core.*
 
 # Devel
 %files -n samba-client-devel
@@ -527,5 +538,7 @@ done
 %{_mandir}/man7/libsmbclient.7*
 
 %changelog
+*   Fri Feb 19 2021 Shreyas B. <shreyasb@vmware.com> 4.13.4-1
+-   Upgrade to version 4.13.4
 *   Fri May 29 2020 Shreyas B. <shreyasb@vmware.com> 4.12.0-1
 -   Initial version of samba spec.
