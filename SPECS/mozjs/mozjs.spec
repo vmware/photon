@@ -4,7 +4,7 @@
 Summary:       Mozilla's JavaScript engine.
 Name:          mozjs
 Version:       78.3.1
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
@@ -31,7 +31,6 @@ Requires:      python3
 Requires:      python3-libs
 Obsoletes:     mozjs60
 Obsoletes:     js
-%define ExtraBuildRequires python2 python2-libs python2-devel python-xml
 
 %description
 Mozilla's JavaScript engine includes a just-in-time compiler (JIT) that compiles
@@ -90,6 +89,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/mozjs-%{major}.pc
 
 %changelog
+*   Fri Feb 19 2021 Alexey Makhalov <amakhalov@vmware.com> 78.3.1-2
+-   Remove python2 requirements
 *   Mon Oct 05 2020 Ankit Jain <ankitja@vmware.com> 78.3.1-1
 -   Updated to 78.3.1
 *   Tue Aug 25 2020 Ankit Jain <ankitja@vmware.com> 68.11.0-2

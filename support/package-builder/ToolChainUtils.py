@@ -119,16 +119,8 @@ class ToolChainUtils(object):
                     raise Exception("%s-%s.%s not found in available packages" % (package, version, constants.buildArch))
 
                 # Safe to use published RPM
-
-                # sqlite-autoconf package was renamed, but it still published as sqlite-autoconf
-                if (package == "sqlite") and (constants.buildArch == "x86_64"):
-                    package = "sqlite-autoconf"
                 rpmFile = self._findPublishedRPM(package, constants.prevPublishRPMRepo)
                 if rpmFile is None:
-                    if package in constants.listOfRPMsProvidedAfterBuild:
-                        self.logger.debug("No old version of " + package +
-                                         " exists, skip until the new version is built")
-                        continue
                     self.logger.error("Unable to find published rpm " + package)
                     raise Exception("Input Error")
             rpmFiles += " " + rpmFile

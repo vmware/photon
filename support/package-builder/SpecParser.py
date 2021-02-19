@@ -331,7 +331,7 @@ class SpecParser(object):
                     if provider is not None:
                         packageName = provider
                     else:
-                        raise Exception('What package does provide %s? Please modify providedBy in constants.py' % (listContents[i]))
+                        raise Exception("Error in {0}\nWhat package does provide {1} ? Please modify providedBy in constants.py".format(self.specfile, listContents[i]))
                     i += 1
                 if i + 2 < len(listContents):
                     if listContents[i+1] in (">=", "<=", "=", "<", ">"):

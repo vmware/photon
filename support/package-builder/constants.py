@@ -106,7 +106,6 @@ class constants(object):
         "bison",
         "popt",
         "nspr",
-        "nspr-devel",
         "sqlite",
         "nss",
         "elfutils",
@@ -119,9 +118,10 @@ class constants(object):
         "autoconf",
         "automake",
         "openssl",
-        "openssl-devel",
         "zstd",
         "libdb",
+        "libgpg-error",
+        "libgcrypt",
         "rpm"]
 
     # List or RPMS that will be installed in a chroot prior to build each
@@ -219,32 +219,13 @@ class constants(object):
         "zstd-devel",
         "lua",
         "lua-devel",
-        "libgcrypt",
         "libgpg-error",
+        "libgcrypt",
         "rpm",
         "rpm-build",
         "rpm-devel",
         "rpm-libs",
         "cpio"]
-
-    # List of RPMs which are not published. They will be created during the
-    # build process
-    listOfRPMsProvidedAfterBuild = [
-        "util-linux-devel",
-        "flex-devel",
-        "nspr-devel",
-        "glibc-iconv",
-        "glibc-tools",
-        "bzip2-libs",
-        "expat-libs",
-        "ncurses-libs",
-        "util-linux-libs",
-        "nss-libs",
-        "xz-libs",
-        "sqlite",
-        "sqlite-libs",
-        "file-libs",
-        "rpm-libs"]
 
     # List of packages that will be installed in addition for each
     # package to make check
@@ -324,9 +305,8 @@ class constants(object):
         "/usr/sbin/groupadd":"shadow",
         "/sbin/service":"initscripts",
         "/usr/bin/which":"which",
-        "/usr/bin/python":"python2",
-        "/bin/python":"python2",
-        "/bin/python2":"python2",
+        "/usr/bin/python":"python3",
+        "/bin/python":"python3",
         "/bin/python3":"python3",
         "/bin/awk":"gawk",
         "/bin/gawk":"gawk",
