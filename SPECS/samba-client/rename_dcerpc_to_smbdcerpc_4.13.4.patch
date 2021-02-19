@@ -1,0 +1,178 @@
+Auther: Shreyas B. <shreyasb@vmware.con>
+Date: Thu, 18 Feb 2021 14:54:25.630742141 +0530
+Subject: rename libdcerpc.so to libsmbdcerpc.so to avoid conflicts with libdcerpc.so from DCERPC
+
+---
+
+--- a/source4/librpc/wscript_build	2021-02-18 14:54:25.630742141 +0530
++++ b/source4/librpc/wscript_build	2021-02-18 14:57:52.796161189 +0530
+@@ -138,20 +138,20 @@ bld.SAMBA_SUBSYSTEM('ndr-table',
+ 
+ bld.SAMBA_SUBSYSTEM('RPC_NDR_IRPC',
+ 	source='gen_ndr/ndr_irpc_c.c',
+-	public_deps='dcerpc NDR_IRPC'
++	public_deps='smbdcerpc NDR_IRPC'
+ 	)
+ 
+ bld.SAMBA_LIBRARY('dcerpc-samr',
+ 	source='',
+ 	pc_files='dcerpc_samr.pc',
+ 	vnum='0.0.1',
+-	public_deps='dcerpc ndr-standard RPC_NDR_SAMR',
++	public_deps='smbdcerpc ndr-standard RPC_NDR_SAMR',
+ 	public_headers='../../librpc/gen_ndr/ndr_samr_c.h',
+ 	header_path='gen_ndr'
+ 	)
+ 
+ 
+-bld.SAMBA_LIBRARY('dcerpc',
++bld.SAMBA_LIBRARY('smbdcerpc',
+ 	source='''rpc/dcerpc.c rpc/dcerpc_auth.c rpc/dcerpc_schannel.c
+ 	rpc/dcerpc_util.c rpc/dcerpc_smb.c rpc/dcerpc_sock.c
+ 	rpc/dcerpc_roh_channel_in.c rpc/dcerpc_roh_channel_out.c rpc/dcerpc_roh.c
+@@ -182,7 +182,7 @@ pyparam_util = bld.pyembed_libname('pypa
+ 
+ bld.SAMBA_SUBSYSTEM(pyrpc_util,
+         source='rpc/pyrpc_util.c',
+-        public_deps='%s %s dcerpc MESSAGING' % (pytalloc_util, pyparam_util),
++        public_deps='%s %s smbdcerpc MESSAGING' % (pytalloc_util, pyparam_util),
+         pyext=True,
+         enabled=bld.PYTHON_BUILD_IS_ENABLED(),
+         )
+@@ -327,7 +327,7 @@ bld.SAMBA_PYTHON('python_initshutdown',
+ 
+ bld.SAMBA_PYTHON('python_epmapper',
+         source='../../librpc/gen_ndr/py_epmapper.c',
+-        deps='dcerpc %s %s' % (pytalloc_util, pyrpc_util),
++        deps='smbdcerpc %s %s' % (pytalloc_util, pyrpc_util),
+         realname='samba/dcerpc/epmapper.so',
+         cflags_end=gen_cflags
+         )
+@@ -335,7 +335,7 @@ bld.SAMBA_PYTHON('python_epmapper',
+ 
+ bld.SAMBA_PYTHON('python_mgmt',
+         source='../../librpc/gen_ndr/py_mgmt.c',
+-        deps='dcerpc %s %s' % (pytalloc_util, pyrpc_util),
++        deps='smbdcerpc %s %s' % (pytalloc_util, pyrpc_util),
+         realname='samba/dcerpc/mgmt.so',
+         cflags_end=gen_cflags
+         )
+--- a/source4/dsdb/wscript_build	2021-02-18 14:58:05.640502057 +0530
++++ b/source4/dsdb/wscript_build	2021-02-18 14:58:47.817624742 +0530
+@@ -77,7 +77,7 @@ bld.SAMBA_PYTHON('python_dsdb',
+                  # the dependency on dcerpc here is because gensec
+                  # depends on dcerpc but the waf circular dependency finder
+                  # removes it so we end up with unresolved symbols.
+-                 deps='samdb %s dcerpc com_err %s %s dsdb_garbage_collect_tombstones scavenge_dns_records' %\
++                 deps='samdb %s smbdcerpc com_err %s %s dsdb_garbage_collect_tombstones scavenge_dns_records' %\
+                  (pyldb_util, pyrpc_util, pyparam_util),
+                  realname='samba/dsdb.so',
+                  enabled=bld.AD_DC_BUILD_IS_ENABLED()
+--- a/source4/libnet/wscript_build	2021-02-18 14:59:02.334012287 +0530
++++ b/source4/libnet/wscript_build	2021-02-18 14:59:53.307377439 +0530
+@@ -8,7 +8,7 @@ auto_proto='libnet_proto.h'
+ bld.SAMBA_LIBRARY(name,
+         source='libnet.c libnet_passwd.c libnet_time.c libnet_rpc.c libnet_join.c libnet_site.c libnet_become_dc.c libnet_unbecome_dc.c libnet_vampire.c libnet_user.c libnet_group.c libnet_share.c libnet_lookup.c libnet_domain.c userinfo.c groupinfo.c userman.c groupman.c prereq_domain.c',
+         autoproto=auto_proto,
+-        public_deps='samba-credentials dcerpc dcerpc-samr RPC_NDR_LSA RPC_NDR_SRVSVC RPC_NDR_DRSUAPI cli_composite LIBCLI_RESOLVE LIBCLI_FINDDCS cli_cldap LIBCLI_FINDDCS gensec_schannel LIBCLI_AUTH ndr smbpasswdparser %s LIBCLI_SAMSYNC LIBTSOCKET GNUTLS_HELPERS' % (provision),
++        public_deps='samba-credentials smbdcerpc dcerpc-samr RPC_NDR_LSA RPC_NDR_SRVSVC RPC_NDR_DRSUAPI cli_composite LIBCLI_RESOLVE LIBCLI_FINDDCS cli_cldap LIBCLI_FINDDCS gensec_schannel LIBCLI_AUTH ndr smbpasswdparser %s LIBCLI_SAMSYNC LIBTSOCKET GNUTLS_HELPERS' % (provision),
+         private_library=True,
+         pyembed=True,
+         enabled=bld.PYTHON_BUILD_IS_ENABLED()
+--- a/source4/torture/wscript_build	2021-02-18 15:00:29.104339900 +0530
++++ b/source4/torture/wscript_build	2021-02-18 15:01:23.633811458 +0530
+@@ -315,7 +315,7 @@ TORTURE_MODULES = 'TORTURE_BASIC TORTURE
+ bld.SAMBA_SUBSYSTEM('torturemain',
+                     source='smbtorture.c torture.c shell.c',
+                     subsystem_name='smbtorture',
+-                    deps='torture popt POPT_SAMBA POPT_CREDENTIALS dcerpc LIBCLI_SMB SMBREADLINE ' + TORTURE_MODULES,
++                    deps='torture popt POPT_SAMBA POPT_CREDENTIALS smbdcerpc LIBCLI_SMB SMBREADLINE ' + TORTURE_MODULES,
+                     enabled=bld.PYTHON_BUILD_IS_ENABLED()
+                     )
+ 
+@@ -323,7 +323,7 @@ bld.SAMBA_BINARY('smbtorture',
+                  source=[],
+                  manpages='man/smbtorture.1',
+                  private_headers='smbtorture.h',
+-                 deps='torturemain torture popt POPT_SAMBA POPT_CREDENTIALS dcerpc LIBCLI_SMB SMBREADLINE ' + TORTURE_MODULES,
++                 deps='torturemain torture popt POPT_SAMBA POPT_CREDENTIALS smbdcerpc LIBCLI_SMB SMBREADLINE ' + TORTURE_MODULES,
+                  pyembed=True,
+                  enabled=bld.PYTHON_BUILD_IS_ENABLED()
+                  )
+--- a/source4/lib/registry/wscript_build	2021-02-18 15:01:57.378725140 +0530
++++ b/source4/lib/registry/wscript_build	2021-02-18 15:02:29.827605760 +0530
+@@ -12,7 +12,7 @@ bld.SAMBA_SUBSYSTEM('TDR_REGF',
+ 
+ bld.SAMBA_LIBRARY('registry',
+ 	source='interface.c util.c samba.c patchfile_dotreg.c patchfile_preg.c patchfile.c regf.c hive.c local.c ldb.c rpc.c',
+-	public_deps='dcerpc samba-util TDR_REGF ldb RPC_NDR_WINREG ldbsamba util_reg',
++	public_deps='smbdcerpc samba-util TDR_REGF ldb RPC_NDR_WINREG ldbsamba util_reg',
+ 	private_headers='registry.h',
+ 	private_library=True
+ 	)
+--- a/source4/lib/messaging/wscript_build	2021-02-18 15:02:37.839823492 +0530
++++ b/source4/lib/messaging/wscript_build	2021-02-18 15:03:03.304516219 +0530
+@@ -15,7 +15,7 @@ bld.SAMBA_LIBRARY('MESSAGING',
+             UNIX_PRIVS
+             cluster
+             ndr
+-            dcerpc
++            smbdcerpc
+             messages_util
+             server_id_db
+             talloc_report_printf
+--- a/source4/rpc_server/wscript_build	2021-02-18 15:03:17.568904737 +0530
++++ b/source4/rpc_server/wscript_build	2021-02-18 15:03:34.045353909 +0530
+@@ -25,7 +25,7 @@ bld.SAMBA_LIBRARY('dcerpc_server',
+ 	source='dcerpc_server.c',
+ 	pc_files='dcerpc_server.pc',
+ 	deps='LIBCLI_AUTH ndr samba_server_gensec service auth',
+-	public_deps='dcerpc dcerpc-server-core',
++	public_deps='smbdcerpc dcerpc-server-core',
+ 	autoproto='dcerpc_server_proto.h',
+ 	public_headers='dcerpc_server.h',
+ 	vnum='0.0.1',
+--- a/source4/torture/drs/wscript_build	2021-02-18 15:03:52.025844562 +0530
++++ b/source4/torture/drs/wscript_build	2021-02-18 15:04:20.054610372 +0530
+@@ -5,7 +5,7 @@ bld.SAMBA_MODULE('TORTURE_DRS',
+ 	autoproto='proto.h',
+ 	subsystem='smbtorture',
+ 	init_function='torture_drs_init',
+-	deps='samba-util ldb POPT_SAMBA samba-errors torture ldbsamba talloc dcerpc ndr NDR_DRSUAPI gensec samba-hostconfig RPC_NDR_DRSUAPI DSDB_MODULE_HELPERS asn1util samdb NDR_DRSBLOBS samba-credentials samdb-common LIBCLI_RESOLVE LP_RESOLVE torturemain',
++	deps='samba-util ldb POPT_SAMBA samba-errors torture ldbsamba talloc smbdcerpc ndr NDR_DRSUAPI gensec samba-hostconfig RPC_NDR_DRSUAPI DSDB_MODULE_HELPERS asn1util samdb NDR_DRSBLOBS samba-credentials samdb-common LIBCLI_RESOLVE LP_RESOLVE torturemain',
+ 	internal_module=True,
+ 	enabled=bld.PYTHON_BUILD_IS_ENABLED()
+ 	)
+--- a/librpc/wscript_build	2021-02-18 15:04:39.807150733 +0530
++++ b/librpc/wscript_build	2021-02-18 15:05:07.943921386 +0530
+@@ -676,7 +676,7 @@ bld.SAMBA_SUBSYSTEM('NDR_WINBIND',
+ 
+ bld.SAMBA_SUBSYSTEM('RPC_NDR_WINBIND',
+ 	source='gen_ndr/ndr_winbind_c.c',
+-	public_deps='dcerpc NDR_WINBIND'
++	public_deps='smbdcerpc NDR_WINBIND'
+ 	)
+ 
+ bld.SAMBA_SUBSYSTEM('NDR_FSRVP_STATE',
+--- a/source4/wscript_build	2021-02-18 15:05:23.404345274 +0530
++++ b/source4/wscript_build	2021-02-18 15:06:08.909594622 +0530
+@@ -2,7 +2,7 @@
+ 
+ bld.SAMBA_BINARY('client/smbclient'  + bld.env.suffix4,
+ 	source='client/client.c',
+-	deps='samba-hostconfig SMBREADLINE samba-util LIBCLI_SMB RPC_NDR_SRVSVC LIBCLI_LSA popt POPT_SAMBA POPT_CREDENTIALS smbclient-raw param_options dcerpc',
++	deps='samba-hostconfig SMBREADLINE samba-util LIBCLI_SMB RPC_NDR_SRVSVC LIBCLI_LSA popt POPT_SAMBA POPT_CREDENTIALS smbclient-raw param_options smbdcerpc',
+ 	install=False
+ 	)
+ 
+--- a/source4/libcli/wscript_build	2021-02-18 15:06:27.318100715 +0530
++++ b/source4/libcli/wscript_build	2021-02-18 15:06:53.534822121 +0530
+@@ -12,7 +12,7 @@ bld.SAMBA_SUBSYSTEM('LIBSAMBA_TSOCKET',
+ bld.SAMBA_SUBSYSTEM('LIBCLI_LSA',
+ 	source='util/clilsa.c',
+ 	autoproto='util/clilsa.h',
+-	public_deps='RPC_NDR_LSA dcerpc',
++	public_deps='RPC_NDR_LSA smbdcerpc',
+ 	deps='samba-security'
+ 	)
+ 
