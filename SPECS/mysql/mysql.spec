@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.21
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -78,6 +78,8 @@ make test
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Fri Feb 19 2021 Harinadh D <hdommaraju@vmware.com> 8.0.21-2
+-   Version bump up to build with latest protobuf
 *   Mon Oct 05 2020 Tapas Kundu <tkundu@vmware.com> 8.0.21-1
 -   Update to 8.0.21
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.0.19-2
