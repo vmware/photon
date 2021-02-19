@@ -9,7 +9,7 @@
 
 Name: salt3
 Version: 2019.2.4
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system with python3
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -25,6 +25,8 @@ Source3: salt-syndic.service
 Source4: salt-minion.service
 Source5: salt-api.service
 Source6: logrotate.salt
+Patch1:  patches_2021_01_28_2019.2.5.patch
+Patch2:  patches_2021_02_05_2019.2.5.patch
 
 BuildRoot: %{_tmppath}/salt-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch: noarch
@@ -119,6 +121,8 @@ Salt Package Manager
 %prep
 %setup -c -n salt-%{version}
 cd salt-%{version}
+%patch1 -p1
+%patch2 -p1
 
 %build
 
@@ -296,6 +300,10 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Fri Feb 19 2021 Keerthana K <keerthanak@vmware.com> 2019.2.4-2
+- Fix CVE-2020-28243 CVE-2020-28972 CVE-2020-35662 CVE-2021-3148
+- CVE-2021-3144 CVE-2021-25281 CVE-2021-25282 CVE-2021-25283
+- CVE-2021-25284 CVE-2021-3197.
 * Tue May 12 2020 Keerthana K <keerthanak@vmware.com> 2019.2.4-1
 - Update to 2019.2.4 to fix CVE-2020-11651 CVE-2020-11652.
 * Thu Jan 30 2020 Keerthana K <keerthanak@vmware.com> 2018.3.3-2
