@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.177
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt72
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -25,9 +25,9 @@ Source5:        check_for_config_applicability.inc
 %define i40e_version 2.13.10
 Source6:	https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
 %define sha1 i40e=126bfdabd708033b38840e49762d7ec3e64bbc96
-%define iavf_version 4.0.1
+%define iavf_version 4.0.2
 Source8:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha1 iavf=51fa70f3b1ac28778c811532a47b862b3fd62c9d
+%define sha1 iavf=a53cb104a3b04cbfbec417f7cadda6fddf51b266
 %define ice_version 1.3.2
 Source9:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
 %define sha1 ice=19507794824da33827756389ac8018aa84e9c427
@@ -1091,6 +1091,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Mar 03 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.177-2
+-   Update iavf driver to v4.0.2
 *   Fri Feb 26 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.177-1
 -   Update to version 4.19.177
 *   Fri Feb 19 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.174-4
