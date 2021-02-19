@@ -2,6 +2,7 @@
 # pmd spec file
 #
 
+
 %define _mech_file /etc/gss/mech
 %define _mech_id 1.3.6.1.4.1.6876.11711.2.1.2
 %define _python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
@@ -10,7 +11,7 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -42,8 +43,8 @@ BuildRequires:  openssl-devel
 BuildRequires:  e2fsprogs-devel
 
 # PMD Source Code tarball
-Source0:        %{name}-%{version}-beta.tar.gz
-%define sha1    pmd=762125b9a9462694905aa8b1203686c6f8116f0c
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    pmd=97694042554dd10d99e5e4f15913a27dc22299b1
 
 # gssapi_unix Source Code tarball
 Source1:        gssapi-unix-%{gssapi_unix_ver}.tar.gz
@@ -100,7 +101,7 @@ Requires:       e2fsprogs
 gssapi-unix for unix authentication
 
 %prep
-%setup -qn %{name}-%{version}-beta
+%setup -qn %{name}-%{version}
 
 # extract gssapi_unix code
 cd ../
@@ -131,7 +132,7 @@ aclocal && libtoolize && automake --add-missing && autoreconf &&
 make %{?_smp_mflags}
 
 %install
-cd $RPM_BUILD_DIR/%{name}-%{version}-beta
+cd $RPM_BUILD_DIR/%{name}-%{version}
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm -f %{buildroot}%{_libdir}/*.la
 
@@ -359,6 +360,8 @@ rm -rf %{buildroot}/*
     %exclude %{_libdir}/gssapi_unix/*.la
 
 %changelog
+*   Sat Feb 20 2021 Tapas Kundu <tkundu@vmware.com> 0.0.7-3
+-   Update to 0.0.7-GA
 *   Fri Feb 19 2021 Tapas Kundu <tkundu@vmware.com> 0.0.7-2
 -   Bump to consume latest tdnf
 *   Thu Dec 24 2020 Tapas Kundu <tkundu@vmware.com> 0.0.7-1
