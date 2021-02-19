@@ -1,7 +1,7 @@
 Summary:	An XML parser library
 Name:		expat
 Version:	2.2.9
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	MIT
 URL:		http://expat.sourceforge.net/
 Group:		System Environment/GeneralLibraries
@@ -24,6 +24,13 @@ Summary: Libraries for expat
 Group:      System Environment/Libraries
 %description libs
 This package contains minimal set of shared expat libraries.
+
+%package docs
+Summary: expat docs
+Group: Documentation
+Requires: expat = %{version}-%{release}
+%description docs
+The package contains expat doc files.
 
 %prep
 %setup -q
@@ -65,7 +72,6 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%doc AUTHORS Changes
 %{_bindir}/*
 
 ## TODO: There's some change in man page build path according to release notes.
@@ -81,7 +87,13 @@ rm -rf %{buildroot}/*
 %files libs
 %{_libdir}/libexpat.so.*
 
+%files docs
+%defattr(-,root,root)
+%doc AUTHORS Changes
+
 %changelog
+*   Fri Feb 19 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.2.9-3
+-   Move documents to docs sub-package
 *   Mon Oct 05 2020 Tapas Kundu <tkundu@vmware.com> 2.2.9-2
 -   Use ldconfig to resolve dependencies for lib
 *   Tue Oct 29 2019 Tapas Kundu <tkundu@vmware.com> 2.2.9-1

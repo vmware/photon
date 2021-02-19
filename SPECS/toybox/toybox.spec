@@ -1,6 +1,6 @@
 Name:           toybox
 Version:        0.8.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox/
@@ -19,6 +19,13 @@ Toybox combines common Linux command line utilities together into a single
 BSD-licensed executable that's simple, small, fast, reasonably
 standards-compliant, and powerful enough to turn Android into a development
 environment.
+
+%package docs
+Summary: toybox docs
+Group: Documentation
+Requires: toybox = %{version}-%{release}
+%description docs
+The package contains toybox doc files.
 
 %prep
 %setup -q -n toybox-%{version}
@@ -295,7 +302,6 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 
 %files
 %defattr(-,root,root)
-%doc README LICENSE
 /bin/toybox
 /bin/toybox-toys
 
@@ -539,7 +545,13 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 /usr/bin/uudecode
 /usr/bin/uuencode
 
+%files docs
+%defattr(-,root,root)
+%doc README LICENSE
+
 %changelog
+*   Fri Feb 19 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.3-2
+-   Move documents to docs sub-package
 *   Wed Oct 14 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.3-1
 -   Version update to 0.8.3
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.2-5

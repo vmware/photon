@@ -1,7 +1,7 @@
 Summary:        Bourne-Again SHell
 Name:           bash
 Version:        5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/bash/
 Group:          System Environment/Base
@@ -35,6 +35,13 @@ Group: System Environment/Base
 Requires: bash >= 4.4
 %description lang
 These are the additional language files of bash.
+
+%package docs
+Summary: bash docs
+Group: Documentation
+Requires: bash = %{version}-%{release}
+%description docs
+The package contains bash doc files.
 
 %prep
 %setup -q -n bash-%{version}
@@ -312,9 +319,6 @@ fi
 /bin/*
 %{_libdir}/%{name}/*
 %{_sysconfdir}/
-%{_defaultdocdir}/%{name}-%{version}/*
-%{_defaultdocdir}/%{name}/*
-%{_mandir}/*/*
 /usr/share/bash-completion/
 
 %files devel
@@ -324,7 +328,15 @@ fi
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
+%files docs
+%defattr(-,root,root)
+%{_defaultdocdir}/%{name}-%{version}/*
+%{_defaultdocdir}/%{name}/*
+%{_mandir}/*/*
+
 %changelog
+*   Fri Feb 19 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.0-2
+-   Move documents to docs sub-package
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 5.0-1
 -   Automatic Version Bump
 *   Mon Sep 24 2018 Sujay G <gsujay@vmware.com> 4.4.18-1
