@@ -325,7 +325,8 @@ class constants(object):
         "/bin/chown":"coreutils",
         "/bin/cp":"coreutils",
         "/bin/rm":"coreutils",
-        "/bin/mv":"coreutils"
+        "/bin/mv":"coreutils",
+        "/sbin/ldconfig":"glibc"
     }
 
     @staticmethod
