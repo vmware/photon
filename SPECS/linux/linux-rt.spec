@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.174
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt72
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1091,6 +1091,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Fri Feb 19 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.174-4
+-   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Thu Feb 11 2021 Ankit Jain <ankitja@vmware.com> 4.19.174-3
 -   Added latest out of tree version of Intel ice driver
 *   Thu Feb 11 2021 Vikash Bansal <bvikas@vmware.com> 4.19.174-2

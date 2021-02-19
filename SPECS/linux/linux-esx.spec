@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.174
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -774,6 +774,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri Feb 19 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.174-5
+-   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Thu Feb 11 2021 Ajay Kaher <akaher@vmware.com> 4.19.174-4
 -   sev-es: security fixes
 *   Thu Feb 11 2021 Srinidhi Rao <srinidhir@vmware.com> 4.19.174-3

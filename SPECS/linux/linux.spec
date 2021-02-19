@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.174
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1225,6 +1225,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Fri Feb 19 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.174-5
+-   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Thu Feb 11 2021 Ajay Kaher <akaher@vmware.com> 4.19.174-4
 -   sev-es: security fixes
 *   Thu Feb 11 2021 Ankit Jain <ankitja@vmware.com> 4.19.174-3
