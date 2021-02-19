@@ -5,14 +5,14 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.0.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
 URL:            http://www.vmware.com
 Group:          Applications/RPM
 Requires:       rpm-libs
-Requires:       curl
+Requires:       curl-libs
 Requires:       tdnf-cli-libs = %{version}-%{release}
 Requires:       libsolv
 Requires:       libmetalink
@@ -34,8 +34,8 @@ BuildRequires:  libxml2
 %endif
 Obsoletes:      yum
 Provides:       yum
-Source0:        %{name}-%{version}-rc2.tar.gz
-%define sha1    tdnf=9be63eb144486e8abaade6d181161d3b9853a191
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    tdnf=c04baef5964adcff0ebaa75cfe1cce4e7815a99f
 
 %description
 tdnf is a yum/dnf equivalent which uses libsolv and libcurl
@@ -84,7 +84,7 @@ Requires:  %{name} = %{version}-%{release}
 Systemd units that can periodically download package upgrades and apply them.
 
 %prep
-%autosetup -n %{name}-%{version}-rc2
+%autosetup -n %{name}-%{version}
 
 %build
 mkdir build && cd build
@@ -245,9 +245,12 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
 
 %changelog
+*   Thu Feb 18 2021 Oliver Kurth <okurth@vmware.com> 3.0.0-5
+-   update to v3.0.0 (GA)
+-   depend on curl-libs instead of curl
 *   Wed Feb 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.0.0-4
 -   bump version as a part of rpm upgrade
-*   Fri Jan 20 2021 Oliver Kurth <okurth@vmware.com> 3.0.0-3
+*   Wed Jan 20 2021 Oliver Kurth <okurth@vmware.com> 3.0.0-3
 -   update to v3.0.0-rc2
 *   Thu Oct 29 2020 Keerthana K <keerthanak@vmware.com> 3.0.0-2
 -   Fix coverity scan issues and fedora pytest issue.
