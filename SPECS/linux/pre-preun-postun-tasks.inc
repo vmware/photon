@@ -20,7 +20,7 @@ fi
 
 %postun
 if [ ! -e /boot/photon.cfg ]; then
-  list=`ls -tu /boot/linux-*.cfg 2>/dev/null | head -n1`
+  list="$(basename "$(ls -1 -tu /boot/linux-*.cfg 2>/dev/null | head -n1)")"
   test -n "$list" && ln -sf "$list" /boot/photon.cfg
 fi
 

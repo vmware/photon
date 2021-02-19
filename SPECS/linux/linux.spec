@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.4
-Release:        15%{?kat_build:.kat}%{?dist}
+Release:        16%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -648,13 +648,15 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Feb 19 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-16
+-   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Fri Feb 19 2021 Ajay Kaher <akaher@vmware.com> 5.10.4-15
 -   Added SEV-ES improvement patches
 *   Thu Feb 18 2021 Ajay Kaher <akaher@vmware.com> 5.10.4-14
 -   Enable CONFIG_WDAT_WDT
 *   Thu Feb 18 2021 Ajay Kaher <akaher@vmware.com> 5.10.4-13
 -   lower the loglevel for floppy driver
-*   Thu Feb 18 2021 Sharan Turlapati<sturlapati@vmware.com> 5.10.4-12
+*   Thu Feb 18 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-12
 -   Enable CONFIG_IFB
 *   Wed Feb 17 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-11
 -   Added latest out of tree version of Intel ice driver

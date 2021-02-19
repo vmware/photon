@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -385,6 +385,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-4
+-   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Tue Feb 02 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-3
 -   Removed katbuild patch.
 *   Mon Jan 25 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-2

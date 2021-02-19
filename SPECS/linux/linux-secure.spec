@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.4
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -281,6 +281,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-7
+-   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Tue Feb 02 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-6
 -   Added crypto_self_test and kattest module.
 -   These patches are applied when kat_build is enabled.

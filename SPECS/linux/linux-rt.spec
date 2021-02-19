@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.4
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt22
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -936,7 +936,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
-*   Thu Feb 18 2021 Sharan Turlapati<sturlapati@vmware.com> 5.10.4-8
+*   Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-9
+-   Fix /boot/photon.cfg symlink when /boot is a separate partition.
+*   Thu Feb 18 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-8
 -   Enable CONFIG_IFB
 *   Wed Feb 17 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-7
 -   Added latest out of tree version of Intel ice driver

@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.4
-Release:        11%{?kat_build:.kat}%{?dist}
+Release:        12%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -322,6 +322,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Feb 19 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-12
+-   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Fri Feb 19 2021 Ajay Kaher <akaher@vmware.com> 5.10.4-11
 -   Added SEV-ES improvement patches
 *   Thu Feb 18 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-10
