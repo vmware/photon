@@ -9,7 +9,7 @@
 
 Name: salt3
 Version: 2019.2.8
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: A parallel remote execution system with python3
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -25,6 +25,8 @@ Source3: salt-syndic.service
 Source4: salt-minion.service
 Source5: salt-api.service
 Source6: logrotate.salt
+Patch1:  patches_2021_01_28_2019.2.5.patch
+Patch2:  patches_2021_02_05_2019.2.5.patch
 
 
 BuildRoot: %{_tmppath}/salt-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -120,6 +122,8 @@ Salt Package Manager
 %prep
 %setup -c -n salt-%{version}
 cd salt-%{version}
+%patch1 -p1
+%patch2 -p1
 
 %build
 
@@ -297,6 +301,10 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Fri Feb 19 2021 Keerthana K <keerthanak@vmware.com> 2019.2.8-3
+- Fix CVE-2020-28243 CVE-2020-28972 CVE-2020-35662 CVE-2021-3148
+- CVE-2021-3144 CVE-2021-25281 CVE-2021-25282 CVE-2021-25283
+- CVE-2021-25284 CVE-2021-3197
 * Tue Jan 19 2021 Tapas Kundu <tkundu@vmware.com> 2019.2.8-2
 - Depends on pycrptodomex instead of pycrypto
 * Thu Dec 17 2020 Siju Maliakkal <smaliakkal@vmware.com> 2019.2.8-1
