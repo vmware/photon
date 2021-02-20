@@ -39,7 +39,7 @@ tdnf install -y rpm
 
 rpm --root $TEMP_CHROOT/ --initdb
 
-tdnf --installroot $TEMP_CHROOT/ --rpmverbosity 10 install -y filesystem bash toybox tdnf photon-release photon-repos
+tdnf --installroot $TEMP_CHROOT/ --rpmverbosity 10 install -y filesystem bash toybox tdnf photon-release photon-repos curl
 
 rpm --root $TEMP_CHROOT/ --import $TEMP_CHROOT/etc/pki/rpm-gpg/*
 
