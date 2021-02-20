@@ -1,7 +1,7 @@
 Summary:	Photon repo files, gpg keys
 Name:		photon-repos
 Version:	4.0
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache License
 Group:		System Environment/Base
 URL:		https://vmware.github.io/photon/
@@ -13,6 +13,7 @@ Source3:        photon-updates.repo
 Source4:        photon-iso.repo
 Source5:        photon-debuginfo.repo
 Source6:        photon-extras.repo
+Source7:        photon-release.repo
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Provides:	photon-repos
@@ -32,6 +33,7 @@ install -m 644 %{SOURCE3} $RPM_BUILD_ROOT/etc/yum.repos.d
 install -m 644 %{SOURCE4} $RPM_BUILD_ROOT/etc/yum.repos.d
 install -m 644 %{SOURCE5} $RPM_BUILD_ROOT/etc/yum.repos.d
 install -m 644 %{SOURCE6} $RPM_BUILD_ROOT/etc/yum.repos.d
+install -m 644 %{SOURCE7} $RPM_BUILD_ROOT/etc/yum.repos.d
 
 install -d -m 755 $RPM_BUILD_ROOT/etc/pki/rpm-gpg
 install -m 644 %{SOURCE1} $RPM_BUILD_ROOT/etc/pki/rpm-gpg
@@ -48,8 +50,11 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/yum.repos.d/photon.repo
 %config(noreplace) /etc/yum.repos.d/photon-updates.repo
 %config(noreplace) /etc/yum.repos.d/photon-extras.repo
+%config(noreplace) /etc/yum.repos.d/photon-release.repo
 
 %changelog
+*   Fri Feb 19 2021 Anish Swaminathan <anishs@vmware.com> 4.0-2
+-   Add a release repo and all updates repo
 *   Wed Oct 07 2020 Anish Swaminathan <anishs@vmware.com> 4.0-1
 -   Update to 4.0
 *   Wed Sep 23 2020 Michelle Wang <michellew@vmware.com> 3.0-5

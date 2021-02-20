@@ -1,7 +1,7 @@
-[photon]
+[photon-release]
 name=VMware Photon Linux $releasever ($basearch)
-baseurl=https://packages.vmware.com/photon/$releasever/photon_$releasever_$basearch
+baseurl=https://packages.vmware.com/photon/$releasever/photon_release_$releasever_$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
-enabled=0
+enabled=1
 skip_if_unavailable=True
