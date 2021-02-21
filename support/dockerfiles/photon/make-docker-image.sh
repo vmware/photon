@@ -1,19 +1,17 @@
 #!/bin/bash
 
+set -ex
+
 if [ "$#" -lt 1 ]; then
-	echo "Script to create new photon base docker image."
-	echo "Usage: $0 <path to workspace>"
-	exit -1
+   echo "Script to create new photon base docker image."
+   echo "Usage: $0 <path to workspace>"
+   exit 1
 fi
 
-set -e
-set -x
-
+echo PHOTON_RELEASE_VERSION=$PHOTON_RELEASE_VERSION
 PROGRAM=$0
 MAIN_PACKAGE=$1
-
 DOCK_ARCH=`uname -m`
-
 TEMP_CHROOT=$(pwd)/temp_chroot
 ROOTFS_TAR_FILENAME=photon-rootfs-$PHOTON_RELEASE_VERSION-$PHOTON_BUILD_NUMBER.tar.gz
 STAGE_DIR=$(pwd)/stage
@@ -23,7 +21,7 @@ rm -rf /etc/yum.repos.d/*
 cat > /etc/yum.repos.d/photon-local.repo <<- EOF
 
 [photon-local]
-name=VMware Photon Linux 4.0($DOCK_ARCH)
+name=VMware Photon Linux ${PHOTON_RELEASE_VERSION}($DOCK_ARCH)
 baseurl=file://$(pwd)/stage/RPMS
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY
 gpgcheck=0
@@ -36,15 +34,12 @@ rm -rf $TEMP_CHROOT
 mkdir $TEMP_CHROOT
 
 tdnf install -y rpm
-
-rpm --root $TEMP_CHROOT/ --initdb
-
-tdnf --installroot $TEMP_CHROOT/ --rpmverbosity 10 install -y filesystem bash toybox tdnf photon-release photon-repos curl
-
+tdnf install -y rpm bzip2;rpm --root $TEMP_CHROOT/ --initdb
+tdnf --releasever ${PHOTON_RELEASE_VERSION} --installroot $TEMP_CHROOT/ --rpmverbosity 10 install -y filesystem bash toybox tdnf photon-release photon-repos curl
 rpm --root $TEMP_CHROOT/ --import $TEMP_CHROOT/etc/pki/rpm-gpg/*
 
-cd $TEMP_CHROOT
 # cleanup anything not needed inside rootfs
+cd $TEMP_CHROOT
 rm -rf usr/src/
 rm -rf home/*
 # rm -rf var/lib/yum/*
