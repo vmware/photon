@@ -1,0 +1,20 @@
+From 848cdae078f4963880a0cee7e661c08d42661ac7 Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Sun, 21 Feb 2021 17:59:41 +0000
+Subject: [PATCH] ostree-release-repo: Point to 4.0
+
+---
+ photon_installer/ostree-release-repo.conf | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/photon_installer/ostree-release-repo.conf b/photon_installer/ostree-release-repo.conf
+index e9af151..e7fc09b 100644
+--- a/photon_installer/ostree-release-repo.conf
++++ b/photon_installer/ostree-release-repo.conf
+@@ -1,2 +1,2 @@
+-OSTREEREPOURL=https://packages.vmware.com/photon/rpm-ostree/base/dev/x86_64/repo
++OSTREEREPOURL=https://packages.vmware.com/photon/rpm-ostree/base/4.0/x86_64/repo
+ OSTREEREFS=photon/4.0/x86_64/minimal
+-- 
+2.23.1
+
