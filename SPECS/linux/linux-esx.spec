@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.257
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -125,6 +125,9 @@ Patch85:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch86:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch87:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 
+#Part of the fix for CVE-2021-3347
+Patch88:        0001-futex-Ensure-the-correct-return-value-from-futex_loc.patch
+
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -243,6 +246,7 @@ The Linux package contains the Linux kernel doc files
 %patch85 -p1
 %patch86 -p1
 %patch87 -p1
+%patch88 -p1
 
 %build
 # patch vmw_balloon driver
@@ -333,6 +337,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Feb 23 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.257-2
+-   Part of the fix for CVE-2021-3347
 *   Tue Feb 23 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.257-1
 -   Update to version 4.4.257
 *   Mon Jan 11 2021 Ankit Jain <ankitja@vmware.com> 4.4.250-1

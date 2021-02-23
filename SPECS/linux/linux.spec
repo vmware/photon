@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.257
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -125,6 +125,9 @@ Patch82:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 #Fix for CVE-2019-19338
 Patch83:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch84:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
+
+#Part of the fix for CVE-2021-3347
+Patch85:        0001-futex-Ensure-the-correct-return-value-from-futex_loc.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -274,6 +277,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch82 -p1
 %patch83 -p1
 %patch84 -p1
+%patch85 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -432,6 +436,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Feb 23 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.257-2
+-   Part of the fix for CVE-2021-3347
 *   Tue Feb 23 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.257-1
 -   Update to version 4.4.257
 *   Mon Jan 11 2021 Ankit Jain <ankitja@vmware.com> 4.4.250-1
