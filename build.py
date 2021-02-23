@@ -746,6 +746,7 @@ class BuildImage:
         self.pkg_to_rpm_map_file = os.path.join(Build_Config.stagePath, "pkg_info.json")
         self.ph_docker_image = configdict["photon-build-param"]["photon-docker-image"]
         self.ova_cloud_images = ["ami", "gce", "azure", "ova_uefi", "ova"]
+        self.photon_release_version = constants.releaseVersion
 
     def set_Iso_Parameters(self, imgName):
         self.generated_data_path = Build_Config.stagePath + "/common/data"

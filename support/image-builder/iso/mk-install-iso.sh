@@ -60,7 +60,7 @@ EOF
 
 rpm --root $INITRD --initdb --dbpath /var/lib/rpm
 
-TDNF_CMD="tdnf install -y --installroot $INITRD --rpmverbosity 10 -c ${WORKINGDIR}/tdnf.conf -q $PACKAGES"
+TDNF_CMD="tdnf install -y --releasever $PHOTON_RELEASE_VER --installroot $INITRD --rpmverbosity 10 -c ${WORKINGDIR}/tdnf.conf -q $PACKAGES"
 
 # run host's tdnf, if fails - try one from photon:latest docker image
 $TDNF_CMD || docker run -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR $PHOTON_DOCKER_IMAGE $TDNF_CMD
@@ -143,7 +143,7 @@ cd /installer
 ACTIVE_CONSOLE="\$(< /sys/devices/virtual/tty/console/active)"
 
 install() {
-  LANG=en_US.UTF-8 photon-installer -i iso -o $PACKAGE_LIST_FILE_BASE_NAME -e EULA.txt -t "VMWARE 4.0 LICENSE AGREEMENT" && shutdown -r now
+  LANG=en_US.UTF-8 photon-installer -i iso -o $PACKAGE_LIST_FILE_BASE_NAME -e EULA.txt -t "VMWARE 4.0 LICENSE AGREEMENT" -v $PHOTON_RELEASE_VER && shutdown -r now
 }
 
 try_run_installer() {

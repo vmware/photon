@@ -200,6 +200,7 @@ def createImage(options):
 
     install_config = config['installer']
 
+    install_config['photon_release_version'] = options.photon_release_version
     image_type = config['image_type']
     image_name = config.get('image_name', 'photon-' + image_type)
     workingDir = os.path.abspath(options.stage_path + "/" + image_type)
@@ -311,6 +312,7 @@ if __name__ == '__main__':
     parser.add_argument("-d", "--pkg-to-rpm-map-file", dest="pkg_to_rpm_map_file", default="../../stage/pkg_info.json")
     parser.add_argument("-z", "--pkg-to-be-copied-conf-file", dest="pkg_to_be_copied_conf_file")
     parser.add_argument("-q", "--photon-docker-image", dest="ph_docker_image", default="photon:latest")
+    parser.add_argument("-v", "--photon-release-version", dest="photon_release_version")
 
     options = parser.parse_args()
     if options.config_file and options.config_file != '':

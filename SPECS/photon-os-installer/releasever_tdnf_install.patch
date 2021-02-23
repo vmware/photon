@@ -1,0 +1,120 @@
+From cbef434149f9a1733ae438d6c27fe875c8f22efe Mon Sep 17 00:00:00 2001
+From: Piyush Gupta <gpiyush@vmware.com>
+Date: Tue, 23 Feb 2021 09:19:28 +0000
+Subject: [PATCH] installer.py: Adding releasever to tdnf.conf
+
+Change-Id: Ifaa4e7c2910e3572543c34dbac181f515346550f
+---
+ photon-installer.py              |  1 +
+ photon_installer/installer.py    | 18 ++++++++++++++----
+ photon_installer/isoInstaller.py |  5 +++++
+ photon_installer/ks_config.txt   |  4 ++++
+ 4 files changed, 24 insertions(+), 4 deletions(-)
+
+diff --git a/photon-installer.py b/photon-installer.py
+index 3c43a30..4f0ea56 100644
+--- a/photon-installer.py
++++ b/photon-installer.py
+@@ -18,6 +18,7 @@ if __name__ == '__main__':
+     parser.add_argument("-l", "--log-path", dest="log_path")
+     parser.add_argument("-e", "--eula-file", dest="eula_file_path", default=None)
+     parser.add_argument("-t", "--license-title", dest="license_display_title", default=None)
++    parser.add_argument("-v", "--photon-release-version", dest="photon_release_version")
+ 
+     options = parser.parse_args()
+ 
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index 2501fca..686d5e2 100755
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -66,6 +66,7 @@ class Installer(object):
+         'packagelist_file',
+         'partition_type',
+         'partitions',
++        'photon_release_version',
+         'network',
+         'password',
+         'postinstall',
+@@ -118,6 +119,10 @@ class Installer(object):
+     def configure(self, install_config, ui_config = None):
+         if install_config and 'insecure_installation' in install_config:
+             insecure_installation = install_config.pop('insecure_installation')
++
++        if install_config and 'photon_release_version' in install_config:
++            photon_release_version = install_config.pop('photon_release_version')
++
+         # Initialize logger and cmd first
+         if not install_config:
+             # UI installation
+@@ -138,6 +143,9 @@ class Installer(object):
+ 
+         if 'insecure_installation' in locals():
+             install_config['insecure_installation'] = insecure_installation
++
++        if 'photon_release_version' in locals():
++            install_config['photon_release_version'] = photon_release_version
+         self._add_defaults(install_config)
+ 
+         issue = self._check_install_config(install_config)
+@@ -653,8 +661,9 @@ class Installer(object):
+             self.exit_gracefully()
+ 
+         # Install filesystem rpm
+-        tdnf_cmd = "tdnf install filesystem --installroot {0} --assumeyes -c {1}".format(self.photon_root,
+-                        self.tdnf_conf_path)
++        tdnf_cmd = "tdnf install  filesystem --releasever {0} --installroot {1} --assumeyes -c {2}".format(
++                    self.install_config['photon_release_version'], self.photon_root,
++                    self.tdnf_conf_path)
+         retval = self.cmd.run(tdnf_cmd)
+         if retval != 0:
+             retval = self.cmd.run(['docker', 'run',
+@@ -894,8 +903,9 @@ class Installer(object):
+         packages_to_install = {}
+         total_size = 0
+         stderr = None
+-        tdnf_cmd = "tdnf install --installroot {0} --assumeyes -c {1} {2}".format(self.photon_root,
+-                        self.tdnf_conf_path, " ".join(selected_packages))
++        tdnf_cmd = "tdnf install --releasever {0} --installroot {1} --assumeyes -c {2} {3}".format(
++                    self.install_config['photon_release_version'], self.photon_root,
++                    self.tdnf_conf_path, " ".join(selected_packages))
+         self.logger.debug(tdnf_cmd)
+ 
+         # run in shell to do not throw exception if tdnf not found
+diff --git a/photon_installer/isoInstaller.py b/photon_installer/isoInstaller.py
+index 8babe5c..bc02b60 100755
+--- a/photon_installer/isoInstaller.py
++++ b/photon_installer/isoInstaller.py
+@@ -59,12 +59,17 @@ class IsoInstaller(object):
+         if ks_path:
+             install_config = self._load_ks_config(ks_path)
+ 
++
+         # insecure_installation flag added through commandline overrides that of ks_config
+         if self.insecure_installation:
+             if not install_config:
+                 install_config = {}
+             install_config['insecure_installation'] = self.insecure_installation
+ 
++        if not install_config:
++            install_config = {}
++        install_config['photon_release_version'] = options.photon_release_version
++
+         if options.ui_config_file:
+             ui_config = (JsonWrapper(options.ui_config_file)).read()
+         else:
+diff --git a/photon_installer/ks_config.txt b/photon_installer/ks_config.txt
+index ce8fcb8..b7ed03b 100644
+--- a/photon_installer/ks_config.txt
++++ b/photon_installer/ks_config.txt
+@@ -259,4 +259,8 @@ Kickstart config file is a json format with following possible parameters:
+         Default value: "photon:latest"
+ 	Example: { "photon_docker_image": "photon:3.0" }
+ 
++"photon_release_version"
++	Contains the photon release version
++	Acceptable values are: "4.0"
++	Example: {"photon_release_version": "4.0"}
+ For reference, look at "sample_ks.cfg" file
+-- 
+2.23.0
+
