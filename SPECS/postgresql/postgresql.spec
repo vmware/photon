@@ -37,10 +37,19 @@ Requires:       zlib
 Requires:   %{name}-libs = %{version}-%{release}
 
 %description
-PostgreSQL is an object-relational database management system.
+PostgreSQL is an advanced Object-Relational database management system (DBMS).
+The base postgresql package contains the client programs that you'll need to
+access a PostgreSQL DBMS server. These client programs can be located on the
+same machine as the PostgreSQL server, or on a remote machine that accesses
+a PostgreSQL server over a network connection. The PostgreSQL server can be
+found in the postgresql-server sub-package.
+
+If you want to manipulate a PostgreSQL database on a local or remote PostgreSQL
+server, you need this package. You also need to install this package
+if you're installing the postgresql-server package.
 
 %package libs
-Summary:    Libraries for use with PostgreSQL
+Summary:    The shared libraries required for any PostgreSQL clients
 Group:      Applications/Databases
 
 %description libs
@@ -49,14 +58,44 @@ PostgreSQL client program or interface. You will need to install this package
 to use any other PostgreSQL package or any clients that need to connect to a
 PostgreSQL server.
 
-%package        devel
-Summary:        Development files for postgresql.
-Group:          Development/Libraries
-Requires:       postgresql = %{version}-%{release}
+%package server
+Summary:	The programs needed to create and run a PostgreSQL server
+Requires:	%{name} = %{version}-%{release}
+Requires:	%{name}-libs = %{version}-%{release}
 
-%description    devel
-The postgresql-devel package contains libraries and header files for
-developing applications that use postgresql.
+%description server
+PostgreSQL is an advanced Object-Relational database management system (DBMS).
+The postgresql-server package contains the programs needed to create
+and run a PostgreSQL server, which will in turn allow you to create
+and maintain PostgreSQL databases.
+
+%package docs
+Summary:	Extra documentation for PostgreSQL
+
+%description docs
+The postgresql-docs package includes the documentation.
+
+%package contrib
+Summary:	Contributed source and binaries distributed with PostgreSQL
+Requires:	%{name} = %{version}-%{release}
+Requires:	%{name}-libs = %{version}-%{release}
+Requires:	%{name}-server = %{version}-%{release}
+
+%description contrib
+The postgresql-contrib package contains various extension modules that are
+included in the PostgreSQL distribution.
+
+%package devel
+Summary:	PostgreSQL development header files and libraries
+Requires:	%{name} = %{version}-%{release}
+Requires:	%{name}-libs = %{version}-%{release}
+
+%description devel
+The postgresql-devel package contains the header files and libraries
+needed to compile C or C++ applications which will directly interact
+with a PostgreSQL database management server. It also contains the ecpg
+Embedded C Postgres preprocessor. You need to install this package if you
+want to develop applications which will interact with a PostgreSQL server.
 
 %prep
 %setup -q
@@ -73,22 +112,12 @@ sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_man
     --with-libedit-preferred \
     --with-readline \
     --with-system-tzdata=%{_datadir}/zoneinfo \
-    --docdir=%{_docdir}/postgresql
-
-make %{?_smp_mflags}
-cd contrib && make %{?_smp_mflags}
+	--docdir=%{_docdir}/postgresql
+make world %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot}
-cd contrib && make install DESTDIR=%{buildroot}
-
-# For postgresql 10+, commands are renamed
-# Ref: https://wiki.postgresql.org/wiki/New_in_postgres_10
-ln -sf pg_receivewal %{buildroot}%{_bindir}/pg_receivexlog
-ln -sf pg_resetwal %{buildroot}%{_bindir}/pg_resetxlog
-ln -sf  pg_waldump %{buildroot}%{_bindir}/pg_xlogdump
-%{_fixperms} %{buildroot}/*
+make install-world DESTDIR=%{buildroot}
 
 %check
 sed -i '2219s/",/  ; EXIT_STATUS=$? ; sleep 5 ; exit $EXIT_STATUS",/g'  src/test/regress/pg_regress.c
@@ -102,73 +131,230 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_bindir}/initdb
-%{_bindir}/oid2name
-%{_bindir}/pg_archivecleanup
-%{_bindir}/pg_basebackup
-%{_bindir}/pg_controldata
-%{_bindir}/pg_ctl
-%{_bindir}/pg_receivewal
-%{_bindir}/pg_receivexlog
-%{_bindir}/pg_recvlogical
-%{_bindir}/pg_resetwal
-%{_bindir}/pg_resetxlog
-%{_bindir}/pg_rewind
-%{_bindir}/pg_standby
-%{_bindir}/pg_test_fsync
-%{_bindir}/pg_test_timing
-%{_bindir}/pg_upgrade
-%{_bindir}/pg_waldump
-%{_bindir}/pg_xlogdump
-%{_bindir}/pg_checksums
-%{_bindir}/pg_verifybackup
-%{_bindir}/pgbench
-%{_bindir}/postgres
-%{_bindir}/postmaster
-%{_bindir}/vacuumlo
-%{_datadir}/postgresql/*
-%{_libdir}/postgresql/*
-%{_docdir}/postgresql/extension/*.example
-%exclude %{_datadir}/postgresql/pg_service.conf.sample
-%exclude %{_datadir}/postgresql/psqlrc.sample
-
-%files libs
 %{_bindir}/clusterdb
 %{_bindir}/createdb
 %{_bindir}/createuser
 %{_bindir}/dropdb
 %{_bindir}/dropuser
-%{_bindir}/ecpg
+%{_bindir}/pgbench
+%{_bindir}/pg_basebackup
 %{_bindir}/pg_config
 %{_bindir}/pg_dump
 %{_bindir}/pg_dumpall
 %{_bindir}/pg_isready
+%{_bindir}/pg_receivewal
 %{_bindir}/pg_restore
+%{_bindir}/pg_waldump
 %{_bindir}/psql
 %{_bindir}/reindexdb
 %{_bindir}/vacuumdb
-%{_libdir}/libecpg*.so.*
-%{_libdir}/libpgtypes*.so.*
-%{_libdir}/libpq*.so.*
-%{_datadir}/postgresql/pg_service.conf.sample
-%{_datadir}/postgresql/psqlrc.sample
+%{_datadir}/postgresql/errcodes.txt
+%{_mandir}/man1/clusterdb.*
+%{_mandir}/man1/createdb.*
+%{_mandir}/man1/createuser.*
+%{_mandir}/man1/dropdb.*
+%{_mandir}/man1/dropuser.*
+%{_mandir}/man1/pgbench.*
+%{_mandir}/man1/pg_basebackup.*
+%{_mandir}/man1/pg_config.*
+%{_mandir}/man1/pg_dump.*
+%{_mandir}/man1/pg_dumpall.*
+%{_mandir}/man1/pg_isready.*
+%{_mandir}/man1/pg_restore.*
+%{_mandir}/man1/psql.*
+%{_mandir}/man1/reindexdb.*
+%{_mandir}/man1/vacuumdb.*
+%{_mandir}/man3/*
+%{_mandir}/man7/*
+
+%files libs
+%defattr(-,root,root)
+%{_libdir}/libpq.so.*
+%{_libdir}/libecpg.so*
+%{_libdir}/libpgtypes.so.*
+%{_libdir}/libecpg_compat.so.*
+%{_libdir}/postgresql/libpqwalreceiver.so
+
+%files server
+%defattr(-,root,root)
+%{_bindir}/initdb
+%{_bindir}/pg_archivecleanup
+%{_bindir}/pg_checksums
+%{_bindir}/pg_controldata
+%{_bindir}/pg_ctl
+%{_bindir}/pg_resetwal
+%{_bindir}/pg_rewind
+%{_bindir}/pg_test_fsync
+%{_bindir}/pg_test_timing
+%{_bindir}/pg_upgrade
+%{_bindir}/pg_verifybackup
+%{_bindir}/postgres
+%{_bindir}/postmaster
+%{_mandir}/man1/initdb.*
+%{_mandir}/man1/pg_archivecleanup.*
+%{_mandir}/man1/pg_checksums.*
+%{_mandir}/man1/pg_controldata.*
+%{_mandir}/man1/pg_ctl.*
+%{_mandir}/man1/pg_resetwal.*
+%{_mandir}/man1/pg_receivewal.*
+%{_mandir}/man1/pg_rewind.*
+%{_mandir}/man1/pg_test_fsync.*
+%{_mandir}/man1/pg_test_timing.*
+%{_mandir}/man1/pg_upgrade.*
+%{_mandir}/man1/pg_verifybackup.*
+%{_mandir}/man1/pg_waldump.*
+%{_mandir}/man1/postgres.*
+%{_mandir}/man1/postmaster.*
+%{_datadir}/postgresql/*.sample
+%{_datadir}/postgresql/postgres.bki
+%{_datadir}/postgresql/information_schema.sql
+%{_datadir}/postgresql/snowball_create.sql
+%{_datadir}/postgresql/sql_features.txt
+%{_datadir}/postgresql/system_views.sql
+%dir %{_datadir}/postgresql/extension
+%{_datadir}/postgresql/extension/plpgsql*
+%{_datadir}/postgresql/timezonesets/*
+%{_datadir}/postgresql/tsearch_data/*.affix
+%{_datadir}/postgresql/tsearch_data/*.dict
+%{_datadir}/postgresql/tsearch_data/*.ths
+%{_datadir}/postgresql/tsearch_data/*.rules
+%{_datadir}/postgresql/tsearch_data/*.stop
+%{_datadir}/postgresql/tsearch_data/*.syn
+%{_libdir}/postgresql/dict_int.so
+%{_libdir}/postgresql/dict_snowball.so
+%{_libdir}/postgresql/dict_xsyn.so
+%{_libdir}/postgresql/euc2004_sjis2004.so
+%{_libdir}/postgresql/pgoutput.so
+%{_libdir}/postgresql/plpgsql.so
+%{_libdir}/postgresql/*_and_*.so
+
+%files docs
+%defattr(-,root,root)
+%{_docdir}/postgresql/html/*
+
+%files contrib
+%defattr(-,root,root)
+%{_bindir}/oid2name
+%{_bindir}/vacuumlo
+%{_bindir}/pg_recvlogical
+%{_bindir}/pg_standby
+%{_datadir}/postgresql/extension/adminpack*
+%{_datadir}/postgresql/extension/amcheck*
+%{_datadir}/postgresql/extension/autoinc*
+%{_datadir}/postgresql/extension/bloom*
+%{_datadir}/postgresql/extension/btree_gin*
+%{_datadir}/postgresql/extension/btree_gist*
+%{_datadir}/postgresql/extension/citext*
+%{_datadir}/postgresql/extension/cube*
+%{_datadir}/postgresql/extension/dblink*
+%{_datadir}/postgresql/extension/dict_int*
+%{_datadir}/postgresql/extension/dict_xsyn*
+%{_datadir}/postgresql/extension/earthdistance*
+%{_datadir}/postgresql/extension/file_fdw*
+%{_datadir}/postgresql/extension/fuzzystrmatch*
+%{_datadir}/postgresql/extension/hstore.control
+%{_datadir}/postgresql/extension/hstore--*.sql
+%{_datadir}/postgresql/extension/insert_username*
+%{_datadir}/postgresql/extension/intagg*
+%{_datadir}/postgresql/extension/intarray*
+%{_datadir}/postgresql/extension/isn*
+%{_datadir}/postgresql/extension/lo*
+%{_datadir}/postgresql/extension/ltree.control
+%{_datadir}/postgresql/extension/ltree--*.sql
+%{_datadir}/postgresql/extension/moddatetime*
+%{_datadir}/postgresql/extension/pageinspect*
+%{_datadir}/postgresql/extension/pg_buffercache*
+%{_datadir}/postgresql/extension/pg_freespacemap*
+%{_datadir}/postgresql/extension/pg_prewarm*
+%{_datadir}/postgresql/extension/pg_stat_statements*
+%{_datadir}/postgresql/extension/pg_trgm*
+%{_datadir}/postgresql/extension/pg_visibility*
+%{_datadir}/postgresql/extension/pgcrypto*
+%{_datadir}/postgresql/extension/pgrowlocks*
+%{_datadir}/postgresql/extension/pgstattuple*
+%{_datadir}/postgresql/extension/postgres_fdw*
+%{_datadir}/postgresql/extension/refint*
+%{_datadir}/postgresql/extension/seg*
+%{_datadir}/postgresql/extension/sslinfo*
+%{_datadir}/postgresql/extension/tablefunc*
+%{_datadir}/postgresql/extension/tcn*
+%{_datadir}/postgresql/extension/tsm_system_rows*
+%{_datadir}/postgresql/extension/tsm_system_time*
+%{_datadir}/postgresql/extension/unaccent*
+%{_datadir}/postgresql/extension/xml2*
+%{_docdir}/postgresql/extension/*.example
+%{_libdir}/postgresql/_int.so
+%{_libdir}/postgresql/adminpack.so
+%{_libdir}/postgresql/amcheck.so
+%{_libdir}/postgresql/auth_delay.so
+%{_libdir}/postgresql/autoinc.so
+%{_libdir}/postgresql/auto_explain.so
+%{_libdir}/postgresql/bloom.so
+%{_libdir}/postgresql/btree_gin.so
+%{_libdir}/postgresql/btree_gist.so
+%{_libdir}/postgresql/citext.so
+%{_libdir}/postgresql/cube.so
+%{_libdir}/postgresql/dblink.so
+%{_libdir}/postgresql/earthdistance.so
+%{_libdir}/postgresql/file_fdw.so*
+%{_libdir}/postgresql/fuzzystrmatch.so
+%{_libdir}/postgresql/insert_username.so
+%{_libdir}/postgresql/isn.so
+%{_libdir}/postgresql/hstore.so
+%{_libdir}/postgresql/lo.so
+%{_libdir}/postgresql/ltree.so
+%{_libdir}/postgresql/moddatetime.so
+%{_libdir}/postgresql/pageinspect.so
+%{_libdir}/postgresql/passwordcheck.so
+%{_libdir}/postgresql/pgcrypto.so
+%{_libdir}/postgresql/pgrowlocks.so
+%{_libdir}/postgresql/pgstattuple.so
+%{_libdir}/postgresql/pg_buffercache.so
+%{_libdir}/postgresql/pg_freespacemap.so
+%{_libdir}/postgresql/pg_prewarm.so
+%{_libdir}/postgresql/pg_stat_statements.so
+%{_libdir}/postgresql/pg_trgm.so
+%{_libdir}/postgresql/pg_visibility.so
+%{_libdir}/postgresql/pgxml.so
+%{_libdir}/postgresql/postgres_fdw.so
+%{_libdir}/postgresql/refint.so
+%{_libdir}/postgresql/seg.so
+%{_libdir}/postgresql/sslinfo.so
+%{_libdir}/postgresql/tablefunc.so
+%{_libdir}/postgresql/tcn.so
+%{_libdir}/postgresql/test_decoding.so
+%{_libdir}/postgresql/tsm_system_rows.so
+%{_libdir}/postgresql/tsm_system_time.so
+%{_libdir}/postgresql/unaccent.so
+%{_mandir}/man1/oid2name.*
+%{_mandir}/man1/pg_recvlogical.*
+%{_mandir}/man1/pg_standby.*
+%{_mandir}/man1/vacuumlo.*
 
 %files devel
 %defattr(-,root,root)
+%{_bindir}/ecpg
 %{_includedir}/*
-%{_libdir}/pkgconfig/*
-%{_libdir}/libecpg*.so
-%{_libdir}/libpgtypes*.so
-%{_libdir}/libpq*.so
-%{_libdir}/libpgcommon*.a
-%{_libdir}/libpgfeutils.a
-%{_libdir}/libpgport*.a
+%{_libdir}/libpq.so
+%{_libdir}/libecpg.so
 %{_libdir}/libpq.a
 %{_libdir}/libecpg.a
+%{_libdir}/libecpg_compat.so
 %{_libdir}/libecpg_compat.a
+%{_libdir}/libpgcommon.a
+%{_libdir}/libpgcommon_shlib.a
+%{_libdir}/libpgfeutils.a
+%{_libdir}/libpgport.a
+%{_libdir}/libpgport_shlib.a
+%{_libdir}/libpgtypes.so
 %{_libdir}/libpgtypes.a
+%{_libdir}/pkgconfig/*
+%{_libdir}/postgresql/pgxs/*
+%{_mandir}/man1/ecpg.*
 
 %changelog
+*   Mon Feb 22 2021 Michael Paquier <mpaquier@vmware.com>
+-   Redesign of the packages, splitting client, server and contrib.
 *   Fri Feb 19 2021 Michael Paquier <mpaquier@vmware.com> 13.2-1
 -   Upgraded to version 13.2
 *   Fri Feb 5 2021 Michael Paquier <mpaquier@vmware.com> 13.1-1
