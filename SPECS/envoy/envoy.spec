@@ -3,11 +3,12 @@
 Summary:        C++ L7 proxy and communication bus
 Name:           envoy
 Version:        1.15.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/lyft/envoy
 Source0:        %{name}-v%{version}.tar.gz
 %define sha1    envoy=f560c3c4ed1d8a87600cb1ababcf9c4e7f904b54
+Patch0:         envoy1.15.2-CVE-2020-35471.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -62,6 +63,9 @@ Envoy is a L7 proxy and communication bus designed for large modern service orie
 
 %prep
 %setup -q -c -n %{name}-v%{version}
+pushd %{name}-%{version}
+%patch0 -p1
+popd
 
 %build
 cd envoy-%{version}
@@ -82,6 +86,8 @@ cp -rf configs/* %{buildroot}%{_sysconfdir}/envoy
 %config(noreplace) %{_sysconfdir}/envoy/*
 
 %changelog
+*   Fri Feb 19 2021 Harinadh D <hdommaraju@vmware.com> 1.15.2-2
+-   Fix CVE-2020-35471
 *   Fri Oct 16 2020 Harinadh D <hdommaraju@vmware.com> 1.15.2-1
 -   Fix CVE-2020-25018 and CVE-2020-25027
 *   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.15.0-2
