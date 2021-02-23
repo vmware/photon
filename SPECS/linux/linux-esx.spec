@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.252
+Version:        4.9.258
 Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=2cfe1a86c144e34773cd885fd74bd9411bf1e8a2
+%define sha1 linux=4cb67679baa0c8dd301245647072477b21aca679
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -335,6 +335,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Feb 23 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.258-1
+-   Update to version 4.9.258
 *   Wed Jan 20 2021 Keerthana K <keerthanak@vmware.com> 4.9.252-1
 -   Update to version 4.9.252
 *   Mon Jan 04 2021 Ankit Jain <ankitja@vmware.com> 4.9.249-1
