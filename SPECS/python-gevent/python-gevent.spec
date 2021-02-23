@@ -3,7 +3,7 @@
 Summary:        Coroutine-based network library
 Name:           python3-gevent
 Version:        20.9.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -27,6 +27,7 @@ BuildRequires: python3-test
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-greenlet
+Requires:       python3-zope.event
 
 %description
 gevent is a coroutine-based Python networking library.
@@ -60,6 +61,8 @@ nosetests
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Feb 23 2021 Tapas Kundu <tkundu@vmware.com> 20.9.0-3
+-   Added requires for python3-zope.event
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 20.9.0-2
 -   openssl 1.1.1
 *   Tue Sep 22 2020 Gerrit Photon <photon-checkins@vmware.com> 20.9.0-1

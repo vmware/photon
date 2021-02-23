@@ -2,7 +2,7 @@
 Summary:        Utility tools for control groups of Linux
 Name:           cgroup-utils
 Version:        0.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -17,6 +17,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-curses
+Requires:       python3-argparse
 
 %description
 cgroup-utils provides utility tools and libraries for control groups of Linux. For example,
@@ -44,6 +45,8 @@ python3 test_all.py
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Feb 23 2021 Tapas Kundu <tkundu@vmware.com> 0.8-3
+-   Add requires for python3-argparse
 *   Tue Jul 14 2020 Tapas Kundu <tkundu@vmware.com> 0.8-2
 -   Mass removal python2
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.8-1
