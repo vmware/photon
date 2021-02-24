@@ -1,7 +1,7 @@
 Summary:	Contains a parser generator
 Name:		bison
 Version:	3.7.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/bison
 Group:		System Environment/Base
@@ -13,7 +13,9 @@ Source0:	http://ftp.gnu.org/gnu/bison/%{name}-%{version}.tar.xz
 Patch0:         make-check.patch
 %endif
 BuildRequires:	m4
+BuildRequires:	gettext
 Requires:	m4
+Requires:	gettext
 BuildRequires:	flex
 %description
 This package contains a parser generator
@@ -48,6 +50,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 %{_docdir}/bison/*
 %changelog
+* Tue Jan 26 2021 Anish Swaminathan <anishs@vmware.com> 3.7.1-3
+- Add missing dependency for gettext
 * Tue Jan 19 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.1-2
 - Fix make check
 * Wed Sep 02 2020 Gerrit Photon <photon-checkins@vmware.com> 3.7.1-1
