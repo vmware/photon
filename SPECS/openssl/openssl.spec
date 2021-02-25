@@ -1,14 +1,14 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2x
-Release:        2%{?dist}
+Version:        1.0.2y
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.openssl.org/source/vmware-OpenSSL_1_0_2x.tar.gz
-%define sha1    vmware-OpenSSL_1_0_2x=f9e7fa0aeaf23d9c43b815334f91a7c522b9bd13
+Source0:        http://www.openssl.org/source/vmware-OpenSSL_1_0_2y.tar.gz
+%define sha1    vmware-OpenSSL_1_0_2y=de813c005cac687ca3e67aa889b6bb8284fef123
 Source1:        rehash_ca_certificates.sh
 %if 0%{?with_fips:1}
 Source100:      openssl-fips-2.0.20-vmw.tar.gz
@@ -61,7 +61,7 @@ Requires: openssl = %{version}-%{release}
 Perl scripts that convert certificates and keys to various formats.
 
 %prep
-%setup -q -n vmware-OpenSSL_1_0_2x
+%setup -q -n vmware-OpenSSL_1_0_2y
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -139,6 +139,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Thu Feb 25 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2y-1
+-   Update to openssl 1.0.2y
 *   Fri Dec 18 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2x-2
 -   modify FIPS EC list to only use optimized curves
 *   Thu Dec 10 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2x-1
