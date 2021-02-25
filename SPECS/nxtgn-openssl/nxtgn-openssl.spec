@@ -1,6 +1,6 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           nxtgn-openssl
-Version:        1.1.1i
+Version:        1.1.1j
 Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
@@ -8,7 +8,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.openssl.org/source/openssl-%{version}.tar.gz
-%define sha1    openssl=eb684ba4ed31fe2c48062aead75233ecd36882a6
+%define sha1    openssl=04c340b086828eecff9df06dceff196790bb9268
 Source1:        nxtgn-rehash_ca_certificates.sh
 Patch0:         nxtgn-c_rehash.patch
 %if %{with_check}
@@ -118,6 +118,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/nxtgn-rehash_ca_certificates.sh
 
 %changelog
+*   Thu Feb 25 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1j-1
+-   update to openssl 1.1.1j
 *   Fri Dec 11 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1i-1
 -   Update openssl to 1.1.1i
 *   Wed Dec 09 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1g-2
