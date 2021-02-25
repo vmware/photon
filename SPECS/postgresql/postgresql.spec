@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        13.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -353,6 +353,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/ecpg.*
 
 %changelog
+*   Fri Feb 26 2021 Michael Paquier <mpaquier@vmware.com> 13.2-2
+-   Bump sub-release number as per the package redesign.
 *   Mon Feb 22 2021 Michael Paquier <mpaquier@vmware.com>
 -   Redesign of the packages, splitting client, server and contrib.
 *   Fri Feb 19 2021 Michael Paquier <mpaquier@vmware.com> 13.2-1
