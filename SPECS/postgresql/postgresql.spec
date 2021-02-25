@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        13.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -161,7 +161,6 @@ rm -f %{buildroot}/%{_datadir}/postgresql/extension/*plpythonu-*
 rm -f %{buildroot}/%{_datadir}/postgresql/extension/*_plpythonu.control
 
 %check
-sed -i '2219s/",/  ; EXIT_STATUS=$? ; sleep 5 ; exit $EXIT_STATUS",/g'  src/test/regress/pg_regress.c
 chown -Rv nobody .
 sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 
@@ -421,6 +420,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/plpython3.so
 
 %changelog
+*   Tue Mar 02 2021 Michael Paquier <mpaquier@vmware.com> 13.2-4
+-   Removed unnecessary tweak for pg_regress.c for check phase
 *   Mon Mar 01 2021 Michael Paquier <mpaquier@vmware.com> 13.2-3
 -   Add new packages for PL/Perl, PL/Python and PL/Tcl
 *   Fri Feb 26 2021 Michael Paquier <mpaquier@vmware.com> 13.2-2
