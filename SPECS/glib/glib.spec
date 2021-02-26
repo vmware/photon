@@ -1,7 +1,7 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.58.3
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	LGPLv2+
 URL:		http://ftp.gnome.org/pub/gnome/sources/glib/2.58/%{name}-%{version}.tar.xz
 Group:		Applications/System
@@ -12,6 +12,22 @@ Source0:	http://ftp.gnome.org/pub/gnome/sources/glib/2.58/%{name}-%{version}.tar
 Patch0:         glib-CVE-2019-12450.patch
 Patch1:         glib-CVE-2019-13012.patch
 Patch2:         glib-CVE-2020-35457.patch
+# CVE-2021-27218
+Patch3:         0001-gbytearray-Do-not-accept-too-large-byte-arrays.patch
+# CVE-2021-27219
+Patch4:         0001-gstrfuncs-Add-g_memdup2-function.patch
+Patch5:         0002-gio-Use-g_memdup2-instead-of-g_memdup-in-obvious-pla.patch
+Patch6:         0003-gobject-Use-g_memdup2-instead-of-g_memdup-in-obvious.patch
+Patch7:         0004-glib-Use-g_memdup2-instead-of-g_memdup-in-obvious-pl.patch
+Patch8:         0005-gwinhttpfile-Avoid-arithmetic-overflow-when-calculat.patch
+Patch9:         0006-gdatainputstream-Handle-stop_chars_len-internally-as.patch
+Patch10:        0007-gwin32-Use-gsize-internally-in-g_wcsdup.patch
+Patch11:        0008-gkeyfilesettingsbackend-Handle-long-keys-when-conver.patch
+Patch12:        0009-gsocket-Use-gsize-to-track-native-sockaddr-s-size.patch
+Patch13:        0010-gtlspassword-Forbid-very-long-TLS-passwords.patch
+Patch14:        0011-giochannel-Forbid-very-long-line-terminator-strings.patch
+Patch15:        0012-glib-Enable-g_memdup2-for-all-glib-version.patch
+
 BuildRequires:	pcre-devel
 BuildRequires:	libffi
 BuildRequires:	pkg-config
@@ -59,6 +75,19 @@ Gsettings schemas compiling tool
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
+%patch9 -p1
+%patch10 -p1
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
+%patch15 -p1
 
 %build
 ./autogen.sh
@@ -98,6 +127,8 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Fri Feb 26 2021 Ankit Jain <ankitja@vmware.com> 2.58.3-3
+- Fix for CVE-2021-27218 and CVE-2021-27219
 * Mon Dec 21 2020 Ankit Jain <ankitja@vmware.com> 2.58.3-2
 - Fix for CVE-2020-35457
 * Mon Jul 08 2019 Ankit Jain <ankitja@vmware.com> 2.58.3-1

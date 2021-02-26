@@ -1,0 +1,196 @@
+From ec5cb964a4db85bb14af30cb63c97fa0f2644d6a Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Thu, 4 Feb 2021 13:37:56 +0000
+Subject: [PATCH 02/12] gio: Use g_memdup2() instead of g_memdup() in obvious
+ places
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Convert all the call sites which use `g_memdup()`’s length argument
+trivially (for example, by passing a `sizeof()`), so that they use
+`g_memdup2()` instead.
+
+In almost all of these cases the use of `g_memdup()` would not have
+caused problems, but it will soon be deprecated, so best port away from
+it.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+Helps: #2319
+---
+ gio/gdbusconnection.c                 | 4 ++--
+ gio/gdbusinterfaceskeleton.c          | 2 +-
+ gio/gfile.c                           | 6 +++---
+ gio/gsettingsschema.c                 | 4 ++--
+ gio/gwin32registrykey.c               | 6 +++---
+ gio/tests/async-close-output-stream.c | 4 ++--
+ gio/tests/gdbus-export.c              | 4 ++--
+ gio/win32/gwinhttpfile.c              | 8 ++++----
+ 8 files changed, 19 insertions(+), 19 deletions(-)
+
+diff --git a/gio/gdbusconnection.c b/gio/gdbusconnection.c
+index 543ca0b..0e04d8b 100644
+--- a/gio/gdbusconnection.c
++++ b/gio/gdbusconnection.c
+@@ -3961,7 +3961,7 @@ _g_dbus_interface_vtable_copy (const GDBusInterfaceVTable *vtable)
+   /* Don't waste memory by copying padding - remember to update this
+    * when changing struct _GDBusInterfaceVTable in gdbusconnection.h
+    */
+-  return g_memdup ((gconstpointer) vtable, 3 * sizeof (gpointer));
++  return g_memdup2 ((gconstpointer) vtable, 3 * sizeof (gpointer));
+ }
+ 
+ static void
+@@ -3978,7 +3978,7 @@ _g_dbus_subtree_vtable_copy (const GDBusSubtreeVTable *vtable)
+   /* Don't waste memory by copying padding - remember to update this
+    * when changing struct _GDBusSubtreeVTable in gdbusconnection.h
+    */
+-  return g_memdup ((gconstpointer) vtable, 3 * sizeof (gpointer));
++  return g_memdup2 ((gconstpointer) vtable, 3 * sizeof (gpointer));
+ }
+ 
+ static void
+diff --git a/gio/gdbusinterfaceskeleton.c b/gio/gdbusinterfaceskeleton.c
+index 96bd520..4f94256 100644
+--- a/gio/gdbusinterfaceskeleton.c
++++ b/gio/gdbusinterfaceskeleton.c
+@@ -697,7 +697,7 @@ add_connection_locked (GDBusInterfaceSkeleton *interface_,
+        * properly before building the hooked_vtable, so we create it
+        * once at the last minute.
+        */
+-      interface_->priv->hooked_vtable = g_memdup (g_dbus_interface_skeleton_get_vtable (interface_), sizeof (GDBusInterfaceVTable));
++      interface_->priv->hooked_vtable = g_memdup2 (g_dbus_interface_skeleton_get_vtable (interface_), sizeof (GDBusInterfaceVTable));
+       interface_->priv->hooked_vtable->method_call = skeleton_intercept_handle_method_call;
+     }
+ 
+diff --git a/gio/gfile.c b/gio/gfile.c
+index a5709a4..b13d356 100644
+--- a/gio/gfile.c
++++ b/gio/gfile.c
+@@ -7738,7 +7738,7 @@ measure_disk_usage_progress (gboolean reporting,
+   g_main_context_invoke_full (g_task_get_context (task),
+                               g_task_get_priority (task),
+                               measure_disk_usage_invoke_progress,
+-                              g_memdup (&progress, sizeof progress),
++                              g_memdup2 (&progress, sizeof progress),
+                               g_free);
+ }
+ 
+@@ -7756,7 +7756,7 @@ measure_disk_usage_thread (GTask        *task,
+                                  data->progress_callback ? measure_disk_usage_progress : NULL, task,
+                                  &result.disk_usage, &result.num_dirs, &result.num_files,
+                                  &error))
+-    g_task_return_pointer (task, g_memdup (&result, sizeof result), g_free);
++    g_task_return_pointer (task, g_memdup2 (&result, sizeof result), g_free);
+   else
+     g_task_return_error (task, error);
+ }
+@@ -7780,7 +7780,7 @@ g_file_real_measure_disk_usage_async (GFile                        *file,
+ 
+   task = g_task_new (file, cancellable, callback, user_data);
+   g_task_set_source_tag (task, g_file_real_measure_disk_usage_async);
+-  g_task_set_task_data (task, g_memdup (&data, sizeof data), g_free);
++  g_task_set_task_data (task, g_memdup2 (&data, sizeof data), g_free);
+   g_task_set_priority (task, io_priority);
+ 
+   g_task_run_in_thread (task, measure_disk_usage_thread);
+diff --git a/gio/gsettingsschema.c b/gio/gsettingsschema.c
+index 38c9d78..d4a074e 100644
+--- a/gio/gsettingsschema.c
++++ b/gio/gsettingsschema.c
+@@ -1057,9 +1057,9 @@ g_settings_schema_list_children (GSettingsSchema *schema)
+ 
+       if (g_str_has_suffix (key, "/"))
+         {
+-          gint length = strlen (key);
++          gsize length = strlen (key);
+ 
+-          strv[j] = g_memdup (key, length);
++          strv[j] = g_memdup2 (key, length);
+           strv[j][length - 1] = '\0';
+           j++;
+         }
+diff --git a/gio/gwin32registrykey.c b/gio/gwin32registrykey.c
+index c19fede..2cd7249 100644
+--- a/gio/gwin32registrykey.c
++++ b/gio/gwin32registrykey.c
+@@ -247,7 +247,7 @@ g_win32_registry_value_iter_copy (const GWin32RegistryValueIter *iter)
+   new_iter->value_name_size = iter->value_name_size;
+ 
+   if (iter->value_data != NULL)
+-    new_iter->value_data = g_memdup (iter->value_data, iter->value_data_size);
++    new_iter->value_data = g_memdup2 (iter->value_data, iter->value_data_size);
+ 
+   new_iter->value_data_size = iter->value_data_size;
+ 
+@@ -268,8 +268,8 @@ g_win32_registry_value_iter_copy (const GWin32RegistryValueIter *iter)
+   new_iter->value_data_expanded_charsize = iter->value_data_expanded_charsize;
+ 
+   if (iter->value_data_expanded_u8 != NULL)
+-    new_iter->value_data_expanded_u8 = g_memdup (iter->value_data_expanded_u8,
+-                                                 iter->value_data_expanded_charsize);
++    new_iter->value_data_expanded_u8 = g_memdup2 (iter->value_data_expanded_u8,
++                                                  iter->value_data_expanded_charsize);
+ 
+   new_iter->value_data_expanded_u8_size = iter->value_data_expanded_charsize;
+ 
+diff --git a/gio/tests/async-close-output-stream.c b/gio/tests/async-close-output-stream.c
+index 5f66202..00e0687 100644
+--- a/gio/tests/async-close-output-stream.c
++++ b/gio/tests/async-close-output-stream.c
+@@ -147,9 +147,9 @@ prepare_data (SetupData *data,
+ 
+   data->expected_size = g_memory_output_stream_get_data_size (G_MEMORY_OUTPUT_STREAM (data->data_stream));
+ 
+-  g_assert_cmpint (data->expected_size, >, 0);
++  g_assert_cmpuint (data->expected_size, >, 0);
+ 
+-  data->expected_output = g_memdup (written, (guint)data->expected_size);
++  data->expected_output = g_memdup2 (written, data->expected_size);
+ 
+   /* then recreate the streams and prepare them for the asynchronous close */
+   destroy_streams (data);
+diff --git a/gio/tests/gdbus-export.c b/gio/tests/gdbus-export.c
+index 4d6d3a4..a2815a7 100644
+--- a/gio/tests/gdbus-export.c
++++ b/gio/tests/gdbus-export.c
+@@ -652,7 +652,7 @@ subtree_introspect (GDBusConnection       *connection,
+       g_assert_not_reached ();
+     }
+ 
+-  return g_memdup (interfaces, 2 * sizeof (void *));
++  return g_memdup2 (interfaces, 2 * sizeof (void *));
+ }
+ 
+ static const GDBusInterfaceVTable *
+@@ -708,7 +708,7 @@ dynamic_subtree_introspect (GDBusConnection       *connection,
+ {
+   const GDBusInterfaceInfo *interfaces[2] = { &dyna_interface_info, NULL };
+ 
+-  return g_memdup (interfaces, 2 * sizeof (void *));
++  return g_memdup2 (interfaces, 2 * sizeof (void *));
+ }
+ 
+ static const GDBusInterfaceVTable *
+diff --git a/gio/win32/gwinhttpfile.c b/gio/win32/gwinhttpfile.c
+index d5df16d..b580f29 100644
+--- a/gio/win32/gwinhttpfile.c
++++ b/gio/win32/gwinhttpfile.c
+@@ -393,10 +393,10 @@ g_winhttp_file_resolve_relative_path (GFile      *file,
+   child = g_object_new (G_TYPE_WINHTTP_FILE, NULL);
+   child->vfs = winhttp_file->vfs;
+   child->url = winhttp_file->url;
+-  child->url.lpszScheme = g_memdup (winhttp_file->url.lpszScheme, (winhttp_file->url.dwSchemeLength+1)*2);
+-  child->url.lpszHostName = g_memdup (winhttp_file->url.lpszHostName, (winhttp_file->url.dwHostNameLength+1)*2);
+-  child->url.lpszUserName = g_memdup (winhttp_file->url.lpszUserName, (winhttp_file->url.dwUserNameLength+1)*2);
+-  child->url.lpszPassword = g_memdup (winhttp_file->url.lpszPassword, (winhttp_file->url.dwPasswordLength+1)*2);
++  child->url.lpszScheme = g_memdup2 (winhttp_file->url.lpszScheme, (winhttp_file->url.dwSchemeLength+1)*2);
++  child->url.lpszHostName = g_memdup2 (winhttp_file->url.lpszHostName, (winhttp_file->url.dwHostNameLength+1)*2);
++  child->url.lpszUserName = g_memdup2 (winhttp_file->url.lpszUserName, (winhttp_file->url.dwUserNameLength+1)*2);
++  child->url.lpszPassword = g_memdup2 (winhttp_file->url.lpszPassword, (winhttp_file->url.dwPasswordLength+1)*2);
+   child->url.lpszUrlPath = wnew_path;
+   child->url.dwUrlPathLength = wcslen (wnew_path);
+   child->url.lpszExtraInfo = NULL;
+-- 
+2.23.1
+

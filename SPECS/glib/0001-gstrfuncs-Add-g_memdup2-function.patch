@@ -1,0 +1,141 @@
+From 78ed4e535c697b5f5a299ddb43e2fe864cec5faf Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Thu, 4 Feb 2021 13:30:52 +0000
+Subject: [PATCH 01/12] gstrfuncs: Add g_memdup2() function
+
+This will replace the existing `g_memdup()` function, which has an
+unavoidable security flaw of taking its `byte_size` argument as a
+`guint` rather than as a `gsize`. Most callers will expect it to be a
+`gsize`, and may pass in large values which could silently be truncated,
+resulting in an undersize allocation compared to what the caller
+expects.
+
+This could lead to a classic buffer overflow vulnerability for many
+callers of `g_memdup()`.
+
+`g_memdup2()`, in comparison, takes its `byte_size` as a `gsize`.
+
+Spotted by Kevin Backhouse of GHSL.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+Helps: GHSL-2021-045
+Helps: #2319
+---
+ docs/reference/glib/glib-sections.txt |  1 +
+ glib/gstrfuncs.c                      | 32 +++++++++++++++++++++++++++
+ glib/gstrfuncs.h                      |  4 ++++
+ glib/tests/strfuncs.c                 | 21 ++++++++++++++++++
+ 4 files changed, 58 insertions(+)
+
+diff --git a/docs/reference/glib/glib-sections.txt b/docs/reference/glib/glib-sections.txt
+index 8c733e0..d007af9 100644
+--- a/docs/reference/glib/glib-sections.txt
++++ b/docs/reference/glib/glib-sections.txt
+@@ -1057,6 +1057,7 @@ g_newa
+ <SUBSECTION>
+ g_memmove
+ g_memdup
++g_memdup2
+ 
+ <SUBSECTION>
+ GMemVTable
+diff --git a/glib/gstrfuncs.c b/glib/gstrfuncs.c
+index a9889dd..645f701 100644
+--- a/glib/gstrfuncs.c
++++ b/glib/gstrfuncs.c
+@@ -397,6 +397,38 @@ g_memdup (gconstpointer mem,
+   return new_mem;
+ }
+ 
++/**
++ * g_memdup2:
++ * @mem: (nullable): the memory to copy.
++ * @byte_size: the number of bytes to copy.
++ *
++ * Allocates @byte_size bytes of memory, and copies @byte_size bytes into it
++ * from @mem. If @mem is %NULL it returns %NULL.
++ *
++ * This replaces g_memdup(), which was prone to integer overflows when
++ * converting the argument from a #gsize to a #guint.
++ *
++ * Returns: (nullable): a pointer to the newly-allocated copy of the memory,
++ *    or %NULL if @mem is %NULL.
++ * Since: 2.68
++ */
++gpointer
++g_memdup2 (gconstpointer mem,
++           gsize         byte_size)
++{
++  gpointer new_mem;
++
++  if (mem && byte_size != 0)
++    {
++      new_mem = g_malloc (byte_size);
++      memcpy (new_mem, mem, byte_size);
++    }
++  else
++    new_mem = NULL;
++
++  return new_mem;
++}
++
+ /**
+  * g_strndup:
+  * @str: the string to duplicate
+diff --git a/glib/gstrfuncs.h b/glib/gstrfuncs.h
+index 6b6ce52..17a9a98 100644
+--- a/glib/gstrfuncs.h
++++ b/glib/gstrfuncs.h
+@@ -257,6 +257,10 @@ GLIB_AVAILABLE_IN_ALL
+ gpointer              g_memdup	       (gconstpointer mem,
+ 					guint	       byte_size) G_GNUC_ALLOC_SIZE(2);
+ 
++GLIB_AVAILABLE_IN_2_68
++gpointer              g_memdup2        (gconstpointer mem,
++                                        gsize         byte_size) G_GNUC_ALLOC_SIZE(2);
++
+ /* NULL terminated string arrays.
+  * g_strsplit(), g_strsplit_set() split up string into max_tokens tokens
+  * at delim and return a newly allocated string array.
+diff --git a/glib/tests/strfuncs.c b/glib/tests/strfuncs.c
+index d974ad4..a60f463 100644
+--- a/glib/tests/strfuncs.c
++++ b/glib/tests/strfuncs.c
+@@ -260,6 +260,26 @@ test_strdupv (void)
+   g_strfreev (copy);
+ }
+ 
++/* Testing g_memdup2() function with various positive and negative cases */
++static void
++test_memdup2 (void)
++{
++  gchar *str_dup = NULL;
++  const gchar *str = "The quick brown fox jumps over the lazy dog";
++
++  /* Testing negative cases */
++  g_assert_null (g_memdup2 (NULL, 1024));
++  g_assert_null (g_memdup2 (str, 0));
++  g_assert_null (g_memdup2 (NULL, 0));
++
++  /* Testing normal usage cases */
++  str_dup = g_memdup2 (str, strlen (str) + 1);
++  g_assert_nonnull (str_dup);
++  g_assert_cmpstr (str, ==, str_dup);
++
++  g_free (str_dup);
++}
++
+ static void
+ test_strnfill (void)
+ {
+@@ -1735,6 +1755,7 @@ main (int   argc,
+   g_test_add_func ("/strfuncs/strndup", test_strndup);
+   g_test_add_func ("/strfuncs/strdup-printf", test_strdup_printf);
+   g_test_add_func ("/strfuncs/strdupv", test_strdupv);
++  g_test_add_func ("/strfuncs/memdup2", test_memdup2);
+   g_test_add_func ("/strfuncs/strnfill", test_strnfill);
+   g_test_add_func ("/strfuncs/strconcat", test_strconcat);
+   g_test_add_func ("/strfuncs/strjoin", test_strjoin);
+-- 
+2.23.1
+
