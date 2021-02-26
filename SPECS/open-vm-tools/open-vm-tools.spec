@@ -1,31 +1,32 @@
+%global gosc_scripts gosc-scripts
+%define gosc_ver 1.3.1
+
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
-Version:        10.3.10
-Release:        5%{?dist}
+Version:        11.2.5
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha1 open-vm-tools=de11691d0d2149d7cff4d3a17e9a74bb5bdbab05
-Source1:        gosc-scripts-1.2.tar.gz
-%define sha1 gosc-scripts-1.2=5031dd9b3b0569a40d2ee0caaa55a1cbf782345e
+%define sha1 open-vm-tools=fae156a049b39b79fcf4795f998dd7fc01894ae7
+Source1:        https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
+%define sha1 gosc-scripts-%{gosc_ver}=d29400a32bc4c0dad41f7e2183b9870fdf640f03
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
-Patch0:         IPv6Support.patch
-Patch1:         hostnameReCustomizationFix.patch
-Patch2:         PureIPv6-hosts.patch
-Patch3:         GOSC-libDeploy.patch
-Patch4:         timezoneCust.patch
-Patch5:         gosc-post-custom.patch
-Patch6:         fix-memleak-in-vix.patch
+
+# If patch is taken from open-vm-tools repo, prefix it with 'ovt-'
+# If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
+Patch0:     ovt-linux-deployment.patch
+Patch1:     gosc-add-user-section.patch
+
 BuildRequires:  glib-devel
-BuildRequires:  xerces-c-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  xmlsec1-devel
 BuildRequires:  libltdl-devel
-BuildRequires:  xml-security-c-devel
 BuildRequires:  libdnet-devel
 BuildRequires:  libmspack-devel
 BuildRequires:  Linux-PAM-devel
@@ -33,54 +34,64 @@ BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  fuse-devel
 BuildRequires:  systemd
+BuildRequires:  libtirpc-devel
+BuildRequires:  xmlsec1-devel
+
 Requires:       fuse
-Requires:       xerces-c
 Requires:       libdnet
 Requires:       libmspack
 Requires:       glib
-Requires:       xml-security-c
 Requires:       openssl
-Requires:       systemd
 Requires:       libstdc++
+Requires:       libtirpc
 Requires:       xmlsec1
+Requires:       which
+Requires:       systemd
+
 %description
 VmWare virtualization user mode tools
 
 %package        devel
 Summary:        Header and development files for open-vm-tools
 Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 It contains the libraries and header files to create applications.
 
-%prep
-%setup -q -n %{name}-stable-%{version}/%{name}
-%setup -a 1 -n %{name}-stable-%{version}/%{name}
-%patch0 -p0
-%patch1 -p0
-%patch2 -p0
-%patch3 -p2
-%patch4 -p0
-%patch5 -p0
-%patch6 -p2
-%build
-touch ChangeLog
-autoreconf -i
-sh ./configure --prefix=/usr --without-x --without-kernel-modules --without-icu --disable-static
-make %{?_smp_mflags}
-%install
+%package        sdmp
+Summary:        Service Discovery plugin for open-vm-tools
+Requires:       %{name} = %{version}-%{release}
 
+%description    sdmp
+The "open-vm-tools-sdmp" package contains a plugin for Service Discovery.
+
+%prep
+%autosetup -n %{name}-stable-%{version} -a0 -a1 -p1
+
+%build
+cd %{name}
+autoreconf -i
+sh ./configure --prefix=/usr \
+               --without-x \
+               --without-kernel-modules \
+               --without-icu --disable-static \
+               --with-tirpc \
+               --enable-servicediscovery
+
+make %{?_smp_mflags}
+
+%install
 #collecting hacks to manually drop the vmhgfs module
 install -vdm 755 %{buildroot}/lib/systemd/system
-install -vdm 755 %{buildroot}/usr/share/open-vm-tools/GOSC/
-cp -r gosc-scripts %{buildroot}/usr/share/open-vm-tools/GOSC
+install -vdm 755 %{buildroot}/usr/share/open-vm-tools/
+cp -r %{gosc_scripts} %{buildroot}/usr/share/open-vm-tools/
 install -p -m 644 %{SOURCE2} %{buildroot}/lib/systemd/system
 install -p -m 644 %{SOURCE3} %{buildroot}/lib/systemd/system
 
+cd %{name}
 make DESTDIR=%{buildroot} install
 rm -f %{buildroot}/sbin/mount.vmhgfs
 chmod -x %{buildroot}/etc/pam.d/vmtoolsd
-# Move vm-support to /usr/bin
-mv %{buildroot}%{_sysconfdir}/vmware-tools/vm-support %{buildroot}%{_bindir}
 find %{buildroot}/usr/lib/ -name '*.la' -delete
 
 %check
@@ -100,13 +111,25 @@ if [ "$1" = "0" -a                      \
    %{_bindir}/vmware-rpctool 'tools.set.version 0' &> /dev/null || /bin/true
 fi
 
-%postun 
+%postun
 /sbin/ldconfig
 %systemd_postun_with_restart vmtoolsd.service vgauthd.service
 
-%files 
+%files
 %defattr(-,root,root)
-%{_libdir}/open-vm-tools/plugins/*
+%dir %{_libdir}/%{name}
+%dir %{_libdir}/%{name}/plugins
+%dir %{_libdir}/%{name}/plugins/common
+%dir %{_libdir}/%{name}/plugins/vmsvc
+%{_libdir}/%{name}/plugins/vmsvc/libdeployPkgPlugin.so
+%{_libdir}/%{name}/plugins/vmsvc/libguestInfo.so
+%{_libdir}/%{name}/plugins/vmsvc/libpowerOps.so
+%{_libdir}/%{name}/plugins/vmsvc/libresolutionKMS.so
+%{_libdir}/%{name}/plugins/vmsvc/libtimeSync.so
+%{_libdir}/%{name}/plugins/vmsvc/libvmbackup.so
+%{_libdir}/%{name}/plugins/common/libhgfsServer.so
+%{_libdir}/%{name}/plugins/common/libvix.so
+%{_libdir}/%{name}/plugins/vmsvc/libappInfo.so
 %{_libdir}/*.so.*
 %{_bindir}/*
 %{_sysconfdir}/*
@@ -120,7 +143,16 @@ fi
 %{_includedir}/*
 %{_libdir}/*.so
 
+%files sdmp
+%{_libdir}/%{name}/plugins/vmsvc/libserviceDiscovery.so
+%{_libdir}/%{name}/serviceDiscovery/scripts/get-versions.sh
+%{_libdir}/%{name}/serviceDiscovery/scripts/get-connection-info.sh
+%{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-info.sh
+%{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-perf-metrics.sh
+
 %changelog
+*   Sat Feb 27 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.2.5-1
+-   Upgrade to version 11.2.5 & enabled sdmp plugin support
 *   Sun Jan 24 2021 Shreyas B. <shreyasb@vmware.com> 10.3.10-5
 -   Start vmtoolsd after dbus service.
 *   Fri Oct 11 2019 Anish Swaminathan <anishs@vmware.com> 10.3.10-4
