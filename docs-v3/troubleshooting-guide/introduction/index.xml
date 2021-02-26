@@ -1,0 +1,276 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Introduction</title>
+    <link>/docs-v3/troubleshooting-guide/introduction/</link>
+    <description>Recent content in Introduction on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs-v3/troubleshooting-guide/introduction/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs-V3: Systemd and TDNF</title>
+      <link>/docs-v3/troubleshooting-guide/introduction/systemd-and-tdnf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/introduction/systemd-and-tdnf/</guid>
+      <description>
+        
+        
+        &lt;p&gt;By using systemd, Photon OS adopts a contemporary Linux standard to bootstrap the user space and concurrently start services, an architecture that differs from traditional Linux systems such as SUSE Linux Enterprise Server 11.&lt;/p&gt;
+&lt;p&gt;A traditional Linux system contains an initialization system called SysVinit. With SLES 11, for instance, SysVinit-style init programs control how the system starts up and shuts down. Init implements system runlevels. A SysVinit runlevel defines a state in which a process or service runs. In contrast to a SysVinit system, systemd defines no such runlevels. Instead, systemd uses a dependency tree of &lt;em&gt;targets&lt;/em&gt; to determine which services to start when.&lt;/p&gt;
+&lt;p&gt;Because the systemd commands differ from those of an init.d-based Linux system, a section later in this guide illustrates how to troubleshoot by using systemctl commands instead of init.d-style commands.&lt;/p&gt;
+&lt;p&gt;Tdnf keeps the operating system as small as possible while preserving yum&amp;rsquo;s robust package-management capabilities. On Photon OS, tdnf is the default package manager for installing new packages. Since troubleshooting with tdnf differs from using yum, a later section of this guide describes how to solve problems with packages and repositories by using tdnf commands.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: The Root Account and the `sudo` and `su` Commands</title>
+      <link>/docs-v3/troubleshooting-guide/introduction/root-account-sudo-and-su-commands/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/introduction/root-account-sudo-and-su-commands/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The &lt;em&gt;Troubleshooting Guide&lt;/em&gt; assumes that you are logged in to Photon OS with the root account and running commands as root. The &lt;code&gt;sudo&lt;/code&gt; program comes with the full version of Photon OS. On the minimal version, you must install &lt;code&gt;sudo&lt;/code&gt; with tdnf if you want to use it. As an alternative to installing &lt;code&gt;sudo&lt;/code&gt; on the minimal version, you can switch users as needed with the &lt;code&gt;su&lt;/code&gt; command to run commands that require root privileges.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Checking the Version and Build Number</title>
+      <link>/docs-v3/troubleshooting-guide/introduction/checking-the-version-and-build-number/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/introduction/checking-the-version-and-build-number/</guid>
+      <description>
+        
+        
+        &lt;p&gt;To check the version and build number of Photon OS, concatenate &lt;code&gt;/etc/photon-release&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat /etc/photon-release
+VMware Photon Linux 1.0
+PHOTON_BUILD_NUMBER=a6f0f63
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The build number in the results maps to the commit number on the VMware Photon OS GitHub &lt;a href=&#34;https://github.com/vmware/photon/commits/master&#34;&gt;commits page&lt;/a&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: General Best Practices</title>
+      <link>/docs-v3/troubleshooting-guide/introduction/general-best-practices/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/introduction/general-best-practices/</guid>
+      <description>
+        
+        
+        &lt;p&gt;When troubleshooting, it is recommended that you follow some general best practices:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Take a snapshot.&lt;/strong&gt; Before you do anything to a virtual machine running Photon OS, take a snapshot of the VM so that you can restore it if need be.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Make a backup copy.&lt;/strong&gt; Before you change a configuration file, make a copy of the original file. For example: &lt;code&gt;cp /etc/tdnf/tdnf.conf /etc/tdnf/tdnf.conf.orig&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Collect logs.&lt;/strong&gt; Save the log files associated with a Photon OS problem. Include not only the log files on the guest but also the &lt;code&gt;vmware.log&lt;/code&gt; file on the host. The &lt;code&gt;vmware.log&lt;/code&gt; file is in the host&amp;rsquo;s directory that contains the VM.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Know what is in your toolbox.&lt;/strong&gt; View the man page for a tool before you use it so that you know what your options are. The options can help focus the command&amp;rsquo;s output on the problem you&amp;rsquo;re trying to solve.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Understand the system.&lt;/strong&gt; The more you know about the operating system and how it works, the better you can troubleshoot.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Photon OS Logs</title>
+      <link>/docs-v3/troubleshooting-guide/introduction/photon-os-logs/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/introduction/photon-os-logs/</guid>
+      <description>
+        
+        
+        &lt;p&gt;On Photon OS, all the system logs except the installation logs and the cloud-init logs are written into the systemd journal. The &lt;code&gt;journalctl&lt;/code&gt; command queries the contents of the systemd journal.&lt;/p&gt;
+&lt;p&gt;The installation log files and the cloud-init log files reside in &lt;code&gt;/var/log&lt;/code&gt;. If Photon OS is running on a virtual machine in a VMware hypervisor, the log file for the VMware tools, &lt;code&gt;vmware-vmsvc.log&lt;/code&gt;, also resides in &lt;code&gt;/var/log&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;##Journalctl
+Journalctl is a utility to query and display logs from journald and systemd’s logging service. Since journald stores log data in a binary format instead of a plain text format, &lt;code&gt;journalctl&lt;/code&gt; is the standard way of reading log messages processed by journald.&lt;/p&gt;
+&lt;p&gt;Journald is a service provided by systemd. To see the staus of the daemon, run the following commands:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# systemctl status systemd-journald
+● systemd-journald.service - Journal Service
+Loaded: loaded (/lib/systemd/system/systemd-journald.service; static; vendor preset: enabled)
+Active: active (running) since Tue 2020-04-07 14:33:41 CST; 2 days ago
+Docs: man:systemd-journald.service(8)
+man:journald.conf(5)
+Main PID: 943 (systemd-journal)
+Status: &amp;quot;Processing requests...&amp;quot;
+Tasks: 1 (limit: 4915)
+Memory: 18.0M
+CGroup: /system.slice/systemd-journald.service
+└─943 /lib/systemd/systemd-journald
+
+
+
+Apr 07 14:33:41 photon-4a0e7f2307d4 systemd-journald[943]: Journal started
+Apr 07 14:33:41 photon-4a0e7f2307d4 systemd-journald[943]: Runtime journal (/run/log/journal/b8cebc61a6cb446a968ee1d4c5bbbbd5) is 8.0M, max 1.5G, 1.5G free.
+Apr 07 14:33:41 photon-4a0e7f2307d4 systemd-journald[943]: Time spent on flushing to /var is 88.263ms for 1455 entries.
+Apr 07 14:33:41 photon-4a0e7f2307d4 systemd-journald[943]: System journal (/var/log/journal/b8cebc61a6cb446a968ee1d4c5bbbbd5) is 40.0M, max 4.0G, 3.9G free.
+root@photon-4a0e7f2307d4 [ ~ ]#
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The following command are related to &lt;code&gt;journalctl&lt;/code&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;journalctl&lt;/code&gt; : This command displays all the logs after the system has booted up. &lt;code&gt;journalctl&lt;/code&gt; splits the results into pages, similar to the &lt;code&gt;less&lt;/code&gt; command in Linux. You can navigate using the arrow keys, the Page Up, Page Down keys or the Space bar. To quit navigation, press the &lt;strong&gt;q&lt;/strong&gt; key.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;journalctl -b&lt;/code&gt; : This command displays the logs for the current boot.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The following commands pull logs based on a time range:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;journalctl --since &amp;quot;1 hour ago&amp;quot;&lt;/code&gt; : This command displays the journal logs from the past 1 hour.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;journalctl --since &amp;quot;2 days ago&amp;quot;&lt;/code&gt; : This command displays the logs generated in the past 2 days.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;journalctl --since &amp;quot;2020-03-25 00:00:00&amp;quot; --until &amp;quot;2020-04-09 00:00:00&amp;quot;&lt;/code&gt; : This command displays the logs generated between the mentioned time frame.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To traverse for logs in the reverse order, run the following command:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;journalctl -r&lt;/code&gt; : This command displays the logs in reverse order.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: If you add &lt;code&gt;-r&lt;/code&gt; at the end of a command, the logs are displayed in the reverse order. For example: &lt;code&gt;journalctl -u unit.service -r&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;To pull logs related to a particular daemon, run the following command:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;journalctl -u unit.service&lt;/code&gt; : This command displays logs for a specific service. mention the name of the service instead of &lt;code&gt;unit&lt;/code&gt;. This command helps when a service is not behaving properly or when there are crash/core dumps.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To see Journal logs by their priority, run the following command:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;journalctl -p &amp;quot;emerg&amp;quot;..&amp;quot;crit&lt;/code&gt; : This command displays logs &lt;strong&gt;emerg&lt;/strong&gt; to &lt;strong&gt;critical&lt;/strong&gt;. For example: core dumps.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Journalctl can print log messages to the console as they are added, like the Linux &lt;code&gt;tail&lt;/code&gt; command. Add the &lt;code&gt;-f&lt;/code&gt; switch to follow a specific service or daemon.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;journalctl -u unit.service -f
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;To list the boots of the system, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;journalctl --list-boots
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can maintain the journalctl logs manually, by running the following &lt;code&gt;vacuum&lt;/code&gt; commands:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;journalctl --vacuum-time=2d&lt;/code&gt; : This command retains the logs from the last 2 days.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;journalctl --vacuum-size=500M&lt;/code&gt; : This command helps retain logs with a maximum size of 500 MB.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;You can configure Journald using the conf file located at &lt;strong&gt;/etc/systemd/journald.conf&lt;/strong&gt;. Run the following command to configure the file:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# cat /etc/systemd/journald.conf
+# This file is part of systemd.
+#
+# systemd is free software; you can redistribute it and/or modify it
+# under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation; either version 2.1 of the License, or
+# (at your option) any later version.
+#
+# Entries in this file show the compile time defaults.
+# You can change settings by editing this file.
+# Defaults can be restored by simply deleting this file.
+#
+# See journald.conf(5) for details.
+
+[Journal]
+#Storage=auto
+#Compress=yes
+#Seal=yes
+#SplitMode=uid
+#SyncIntervalSec=5m
+#RateLimitIntervalSec=30s
+#RateLimitBurst=10000
+#SystemMaxUse=
+#SystemKeepFree=
+#SystemMaxFileSize=
+#SystemMaxFiles=100
+#RuntimeMaxUse=
+#RuntimeKeepFree=
+#RuntimeMaxFileSize=
+#RuntimeMaxFiles=100
+#MaxRetentionSec=
+#MaxFileSec=1month
+#ForwardToSyslog=no
+#ForwardToKMsg=no
+#ForwardToConsole=no
+#ForwardToWall=yes
+#TTYPath=/dev/console
+#MaxLevelStore=debug
+#MaxLevelSyslog=debug
+#MaxLevelKMsg=notice
+#MaxLevelConsole=info
+#MaxLevelWall=emerg
+#LineMax=48K
+root@photon-4a0e7f2307d4 [ ~ ]#
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;By default &lt;code&gt;rotate&lt;/code&gt; is disable in Photon. Once the changes are made to the conf file, for the changes to take effect you must restart the systemd-journald by running the &lt;code&gt;systemctl restart systemd-journald&lt;/code&gt; command.&lt;/p&gt;
+&lt;p&gt;##Cloud-init Logs
+Cloud-init is the industry standard multi-distribution method for cross-platform cloud instance initialisation.&lt;/p&gt;
+&lt;p&gt;If there are with the Cloud-init behaviour, we can debug them by looking at the logs. Run the following command to look at Cloud-init logs:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;journalctl -u cloud-init
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For better understanding/debugging, You can also look at logs from the following locations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;/var/log/cloud-init.log&lt;/strong&gt; : This log contains information from each stage of Cloud-init.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;/var/log/cloud-init-output.log&lt;/strong&gt; : This log contains errors, warnings, etc..&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;##Syslog
+Syslog is the general standard for logging system and program messages in the Linux environment.&lt;/p&gt;
+&lt;p&gt;Photon provides the following two packages to support syslog:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;syslog-ng&lt;/strong&gt; : syslog-ng is syslog with some advanced next gen features. It supports TLS encryption, TCP for transport with other existing features. Configurations can be added to the &lt;strong&gt;/etc/syslog-ng/syslog-ng.conf&lt;/strong&gt; file.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;rsyslog&lt;/strong&gt; : The official RSYSLOG website defines the utility as &amp;ldquo;the rocket-fast system for log processing&amp;rdquo;. rsyslog supports some advanced features like relp, imfile, omfile, gnutls protocols. Configurations can be added to the &lt;strong&gt;/etc/rsyslog.conf&lt;/strong&gt; file. You can configure the required TLS certificates by editing the conf file.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;##Logs for RPMS on Photon
+Logs for a particular RPM can be checked in the following ways:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;If the RPM provides a daemon, we can see the status of daemon by running &lt;code&gt;systemctl&lt;/code&gt; command and check logs using &lt;code&gt;journactl -u &amp;lt;service name&amp;gt;&lt;/code&gt; command.&lt;/li&gt;
+&lt;li&gt;For additional logs, check if a conf file is provided by the RPM by running the &lt;code&gt;rpm -ql &amp;lt;rpm name&amp;gt; | grep conf&lt;/code&gt; command and find the file path of the log file. You can also check the &lt;strong&gt;/var/log&lt;/strong&gt; folder.&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Troubleshooting Progression</title>
+      <link>/docs-v3/troubleshooting-guide/introduction/troubleshooting-progression/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/introduction/troubleshooting-progression/</guid>
+      <description>
+        
+        
+        &lt;p&gt;If you encounter a problem running an application or appliance on Photon OS and you suspect it involves the operating system, you can troubleshoot by proceeding as follows.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Check the services running on Photon OS:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;systemctl status&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Check your application log files for errors. For VMware applications, see &lt;a href=&#34;https://kb.vmware.com/selfservice/microsites/search.do?language=en_US&amp;amp;cmd=displayKC&amp;amp;externalId=1021806&#34;&gt;Location of Log Files for VMware Products&lt;/a&gt;.)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Check the service controller or service monitor for your application or appliance.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Check the network interfaces and other aspects of the network service with &lt;code&gt;systemd-network&lt;/code&gt; commands.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Check the operating system log files:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;journalctl&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Next, run the following commands to view all services according to the order in which they were started:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;systemd-analyze critical-chain&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Use the troubleshooting tool that you think is most likely to help with the issue at hand. For example, use &lt;code&gt;strace&lt;/code&gt; to identify the location of the failure.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

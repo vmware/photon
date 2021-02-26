@@ -1,0 +1,63 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Setting Up Networking for Multiple NICs</title>
+    <link>/docs/administration-guide/managing-network-configuration/setting-up-networking-for-multiple-nics/</link>
+    <description>Recent content in Setting Up Networking for Multiple NICs on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs/administration-guide/managing-network-configuration/setting-up-networking-for-multiple-nics/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs: Combining DHCP and Static IP Addresses with IPv4 and IPv6</title>
+      <link>/docs/administration-guide/managing-network-configuration/setting-up-networking-for-multiple-nics/combining-dhcp-and-static-ip-addresses-with-ipv4-and-ipv6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/managing-network-configuration/setting-up-networking-for-multiple-nics/combining-dhcp-and-static-ip-addresses-with-ipv4-and-ipv6/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can combine DHCP and static IP addresses with both IPv4 and IPv6.&lt;/p&gt;
+&lt;h2 id=&#34;examples&#34;&gt;Examples&lt;/h2&gt;
+&lt;p&gt;The following example shows how to use DHCP to allocate both IPv4 and IPv6 addresses:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=yes
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows how to use DHCP to allocate only IPv4 addresses:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=ipv4
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows how to use DHCP to allocate only IPv6 addresses:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=ipv6
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows how to use DHCP for IPv4 addresses and static IP addresses for IPv6 addresses:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=ipv4
+Address=fd00::1/48
+Gateway=fd00::252
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows how to use DHCP for IPv6 addresses and static IP addresses for IPv4:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=ipv6
+Address=10.10.10.1/24
+Gateway=10.10.10.253
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows how to use static IP addresses for both IPv4 and IPv6:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=ipv6
+Address=10.10.10.1/24
+Gateway=10.10.10.253
+Address=fd00::1/48
+Gateway=fd00::252&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

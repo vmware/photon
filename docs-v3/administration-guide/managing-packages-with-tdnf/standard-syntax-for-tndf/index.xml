@@ -1,0 +1,240 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Standard Syntax for tdnf Commands</title>
+    <link>/docs-v3/administration-guide/managing-packages-with-tdnf/standard-syntax-for-tndf/</link>
+    <description>Recent content in Standard Syntax for tdnf Commands on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs-v3/administration-guide/managing-packages-with-tdnf/standard-syntax-for-tndf/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs-V3: tndf Commands</title>
+      <link>/docs-v3/administration-guide/managing-packages-with-tdnf/standard-syntax-for-tndf/commands/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-packages-with-tdnf/standard-syntax-for-tndf/commands/</guid>
+      <description>
+        
+        
+        &lt;p&gt;&lt;strong&gt;check&lt;/strong&gt;: Checks for problems in installed and available packages for all enabled repositories. The command has no arguments. You can use &lt;code&gt;--enablerepo&lt;/code&gt; and &lt;code&gt;--disablerepo&lt;/code&gt; to control the repos used. Supported in Photon OS 2.0 (only).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;check-local&lt;/strong&gt;: This command resolves dependencies by using the local RPMs to help check RPMs for quality assurance before publishing them. To check RPMs with this command, you must create a local directory and place your RPMs in it. The command, which includes no options, takes the path to the local directory containing the RPMs as its argument. The command does not recursively parse directories. It checks the RPMs only in the directory that you specify. For example, after creating a directory named &lt;code&gt;/tmp/myrpms&lt;/code&gt; and placing your RPMs in it, you can run the following command to check them:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf check-local /tmp/myrpms
+Checking all packages from: /tmp/myrpms
+Found 10 packages
+Check completed without issues
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;check-update&lt;/strong&gt;: This command checks for updates to packages. It takes no arguments. The &lt;code&gt;tdnf list updates&lt;/code&gt; command performs the same function. Here is an example of the &lt;code&gt;check update&lt;/code&gt; command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf check-update
+rpm-devel.x86_64 	4.11.2-8.ph1 	photon
+yum.noarch      	3.4.3-3.ph1 	photon
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;clean&lt;/strong&gt;: This command cleans up temporary files, data, and metadata. It takes the argument &lt;code&gt;all&lt;/code&gt;. Example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf clean all
+Cleaning repos: photon photon-extras photon-updates lightwave
+Cleaning up everything
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;distro-sync&lt;/strong&gt;: This command synchronizes the machine&amp;rsquo;s RPMs with the latest version of all the packages in the repository. The following is an abridged example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf distro-sync
+
+Upgrading:
+zookeeper                             x86_64        3.4.8-2.ph1               3.38 M
+yum                                   noarch        3.4.3-3.ph1               4.18 M
+
+Total installed size: 113.01 M
+
+Reinstalling:
+zlib-devel                            x86_64        1.2.8-2.ph1             244.25 k
+zlib                                  x86_64        1.2.8-2.ph1             103.93 k
+yum-metadata-parser                   x86_64        1.1.4-1.ph1              57.10 k
+
+Total installed size: 1.75 G
+
+Obsoleting:
+tftp                                  x86_64        5.2-3.ph1                32.99 k
+
+Total installed size: 32.99 k
+Is this ok [y/N]:
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;downgrade&lt;/strong&gt;: This command downgrades the package that you specify as an argument to the next lower package version. The following is an example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf downgrade boost
+Downgrading:
+boost                                 x86_64        1.56.0-2.ph1              8.20 M
+Total installed size: 8.20 M
+Is this ok [y/N]:y
+Downloading:
+boost                                  2591470    100%
+Testing transaction
+Running transaction
+Complete!
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To downgrade to a version lower than the next one, you must specify it by name, epoch, version, and release, all properly hyphenated. The following is an example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf downgrade boost-1.56.0-2.ph1 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;erase&lt;/strong&gt;: This command removes the package that you specify as an argument.&lt;/p&gt;
+&lt;p&gt;To remove a package, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf erase pkgname
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following is an example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf erase vim
+Removing:
+vim                                   x86_64        7.4-4.ph1                 1.94 M
+Total installed size: 1.94 M
+Is this ok [y/N]:
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can also erase multiple packages:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf erase docker cloud-init
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;info&lt;/strong&gt;: This command displays information about packages. It can take the name of a package. Or it can take one of the following arguments: all, available, installed, extras, obsoletes, recent, upgrades. The following are examples:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf info ruby
+tdnf info obsoletes
+tdnf info upgrades
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;install&lt;/strong&gt;: This command takes the name of a package as its argument. It then installs the package and its dependencies.&lt;/p&gt;
+&lt;p&gt;To install a package, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf install pkgname
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following are examples:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf install kubernetes
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can also install multiple packages:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf install python-curses lsof audit gettext chkconfig ntsysv bindutils 
+     wget gawk irqbalance lvm2 cifs-utils c-ares distrib-compat
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;list&lt;/strong&gt;: This command lists the packages of the package that you specify as the argument. The command can take one of the following arguments: all, available, installed, extras, obsoletes, recent, upgrades.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf list updates
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The list of packages might be long. To more easily view it, you can concatenate it into a text file, and then open the text file in a text editor:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf list all &amp;gt; pkgs.txt
+vi pkgs.txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To list enabled repositories, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf repolist
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;makecache&lt;/strong&gt;: This command updates the cached binary metadata for all known repositories. The following is an example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf makecache
+Refreshing metadata for: &#39;VMware Lightwave 1.0(x86_64)&#39;
+Refreshing metadata for: &#39;VMware Photon Linux 1.0(x86_64)Updates&#39;
+Refreshing metadata for: &#39;VMware Photon Extras 1.0(x86_64)&#39;
+Refreshing metadata for: &#39;VMware Photon Linux 1.0(x86_64)&#39;
+Metadata cache created.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;provides&lt;/strong&gt;: This command finds the packages that provide the package that you supply as an argument. The following is an example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf provides docker
+docker-1.11.0-1.ph1.x86_64 : Docker
+Repo     : photon
+docker-1.11.0-1.ph1.x86_64 : Docker
+Repo     : @System
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;reinstall&lt;/strong&gt;: This command reinstalls the packages that you specify. If some packages are unavailable or not installed, the command fails. The following is an example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf reinstall docker kubernetes
+
+Reinstalling:
+kubernetes                            x86_64        1.1.8-1.ph1             152.95 M
+docker                                x86_64        1.11.0-1.ph1             57.20 M
+
+Total installed size: 210.15 M
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;remove&lt;/strong&gt;: This command removes a package. When removing a package, tdnf by default also removes dependencies that are no longer used if they were was installed by tdnf as a dependency without being explicitly requested by a user. You can modify the dependency removal by changing the &lt;code&gt;clean_requirements_on_remove&lt;/code&gt; option in /etc/tdnf/tdnf.conf to &lt;code&gt;false&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf remove packagename
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;search&lt;/strong&gt;: This command searches for the attributes of packages. The argument can be the names of packages. The following is an example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf search docker kubernetes
+docker : Docker
+docker : Docker
+docker-debuginfo : Debug information for package docker
+docker : Docker
+kubernetes : Kubernetes cluster management
+kubernetes : Kubernetes cluster management
+kubernetes-debuginfo : Debug information for package kubernetes
+kubernetes : Kubernetes cluster management
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The argument of the search command can also be a keyword or a combination of keywords and packages:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf search terminal bash
+rubygem-terminal-table : Simple, feature rich ascii table generation library
+ncurses : Libraries for terminal handling of character screens
+mingetty : A minimal getty program for virtual terminals
+ncurses : Libraries for terminal handling of character screens
+ncurses : Libraries for terminal handling of character screens
+bash : Bourne-Again SHell
+bash-lang : Additional language files for bash
+bash-lang : Additional language files for bash
+bash : Bourne-Again SHell
+bash-debuginfo : Debug information for package bash
+bash : Bourne-Again SHell
+bash-lang : Additional language files for bash
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;upgrade&lt;/strong&gt;: This command upgrades the package or packages that you specify to an available higher version that tdnf can resolve. If the package is already the latest version, the command returns &lt;code&gt;Nothing to do&lt;/code&gt;. The following is an example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf upgrade boost
+
+Upgrading:
+boost                                 x86_64        1.60.0-1.ph1              8.11 M
+
+Total installed size: 8.11 M
+Is this ok [y/N]:y
+
+Downloading:
+boost                                  2785950    100%
+Testing transaction
+Running transaction
+
+Complete!
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can also run the &lt;code&gt;upgrade&lt;/code&gt; command with the &lt;code&gt;refresh&lt;/code&gt; option to update the cached metadata with the latest information from the repositories. The following example refreshes the metadata and then checks for a new version of tdnf but does not find one, so tdnf takes no action:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf upgrade tdnf --refresh
+Refreshing metadata for: &#39;VMware Lightwave 1.0(x86_64)&#39;
+Refreshing metadata for: &#39;VMware Photon Linux 1.0(x86_64)Updates&#39;
+Refreshing metadata for: &#39;VMware Photon Extras 1.0(x86_64)&#39;
+Refreshing metadata for: &#39;VMware Photon Linux 1.0(x86_64)&#39;
+Nothing to do.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;upgrade-to&lt;/strong&gt;: This command upgrades to the version of the package that you specify. EThe following is an example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf upgrade-to ruby2.3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The commands and options of tdnf are a subset of those of dnf. For more help with &lt;code&gt;tdnf&lt;/code&gt; commands, see the &lt;a href=&#34;https://media.readthedocs.org/pdf/dnf/latest/dnf.pdf&#34;&gt;DNF documentation&lt;/a&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: tndf Command Options</title>
+      <link>/docs-v3/administration-guide/managing-packages-with-tdnf/standard-syntax-for-tndf/options-for-commands/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-packages-with-tdnf/standard-syntax-for-tndf/options-for-commands/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can add the following options to &lt;code&gt;tdnf&lt;/code&gt; commands. If the option to override a configuration is unavailable in a command, you can add it to the &lt;code&gt;/etc/tdnf/tdnf.conf&lt;/code&gt; configuration file.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;OPTION                     DESCRIPTION
+--allowerasing             Allow erasing of installed packages to resolve dependencies
+--assumeno                 Answer no for all questions
+--best                     Try the best available package versions in transactions
+--debugsolver              Dump data aiding in dependency solver debugging info.
+--disablerepo=&amp;lt;repoid&amp;gt;     Disable specific repositories by an id or a glob.
+--enablerepo=&amp;lt;repoid&amp;gt;      Enable specific repositories
+-h, --help                 Display help
+--refresh                  Set metadata as expired before running command
+--nogpgcheck               Skip gpg check on packages
+--rpmverbosity=&amp;lt;debug level name&amp;gt;
+                           Debug level for rpm
+--version                  Print version and exit
+-y, --assumeyes            Answer yes to all questions
+-q, --quiet                Quiet operation
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following is an example that adds the short form of the &lt;code&gt;assumeyes&lt;/code&gt; option to the install command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf -y install gcc
+Upgrading:
+gcc 	x86_64	5.3.0-1.ph1 	91.35 M
+&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

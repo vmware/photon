@@ -1,0 +1,46 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Kubernetes on Photon OS</title>
+    <link>/docs-v3/user-guide/kubernetes-on-photon-os/</link>
+    <description>Recent content in Kubernetes on Photon OS on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs-v3/user-guide/kubernetes-on-photon-os/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs-V3: Prerequisites</title>
+      <link>/docs-v3/user-guide/kubernetes-on-photon-os/kubernetes-prerequisites/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/user-guide/kubernetes-on-photon-os/kubernetes-prerequisites/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You need two or more machines with the 3.0 general availability or later version of Photon OS installed.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Running Kubernetes on Photon OS</title>
+      <link>/docs-v3/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The procedure describes how to break the services up between the hosts.&lt;/p&gt;
+&lt;p&gt;The first host, &lt;code&gt;photon-master&lt;/code&gt;, is the Kubernetes master.  This host runs the &lt;code&gt;kube-apiserver&lt;/code&gt;, &lt;code&gt;kube-controller-manager&lt;/code&gt;, and &lt;code&gt;kube-scheduler&lt;/code&gt;.  In addition, the master also runs &lt;code&gt;etcd&lt;/code&gt;. Although &lt;code&gt;etcd&lt;/code&gt; is not needed on the master if &lt;code&gt;etcd&lt;/code&gt; runs on a different host, this guide assumes that &lt;code&gt;etcd&lt;/code&gt; and the Kubernetes master run on the same host. The remaining host, &lt;code&gt;photon-node&lt;/code&gt;, is the node and runs &lt;code&gt;kubelet&lt;/code&gt;, &lt;code&gt;proxy&lt;/code&gt;, and &lt;code&gt;docker&lt;/code&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

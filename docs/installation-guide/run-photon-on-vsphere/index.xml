@@ -1,0 +1,335 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Running Photon OS on vSphere</title>
+    <link>/docs/installation-guide/run-photon-on-vsphere/</link>
+    <description>Recent content in Running Photon OS on vSphere on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs/installation-guide/run-photon-on-vsphere/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs: Prerequisites for Running Photon OS on vSphere</title>
+      <link>/docs/installation-guide/run-photon-on-vsphere/prerequisites-for-photon-os-on-vsphere/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/installation-guide/run-photon-on-vsphere/prerequisites-for-photon-os-on-vsphere/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Resource requirements and recommendations vary depending on several factors, including the host environment (for example, VMware vSphere and VMware Fusion), the distribution file used (ISO or OVA), and the selected installation settings (for example, full or basic installation).&lt;/p&gt;
+&lt;p&gt;Before you use Photon OS within VMware vSphere, perform the following prerequisite tasks:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Verify that you have the following resources:&lt;/p&gt;
+ &lt;table style=&#34;height: 170px;&#34; border=&#34;1&#34; width=&#34;157&#34; cellspacing=&#34;0&#34; cellpadding=&#34;10&#34;&gt;
+ &lt;tbody&gt;
+ &lt;tr&gt;
+ &lt;td&gt;&lt;b&gt;Resource&lt;/b&gt;&lt;/td&gt;
+ &lt;td&gt;&lt;b&gt;Description&lt;/b&gt;&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt; VMware vSphere installed&lt;/td&gt;
+ &lt;td&gt;VMware web client (v6.5) for ESXi hosts (recommended) &lt;p&gt;&lt;b&gt;Note&lt;/b&gt;: vSphere 6 and vSphere 5.5 (these clients provide limited support; Not all features are available).&lt;/p&gt;&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt;Memory&lt;/td&gt;
+ &lt;td&gt;ESXi host with 2GB of free RAM (recommended)&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt;Storage&lt;/td&gt;
+ &lt;td&gt;&lt;b&gt;Minimal Photon install&lt;/b&gt;: ESXi host with at least 512MB of free space (minimum); &lt;b&gt;Full Photon install&lt;/b&gt;: ESXi host with at least 4GB of free space (minimum); 16GB is recommended; 16GB recommended.&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt;Distribution File&lt;/td&gt;
+ &lt;td&gt;Photon OS ISO or OVA file downloaded from [https://packages.vmware.com/photon/](https://packages.vmware.com/photon/).&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;/tbody&gt;
+ &lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; The setup instructions in this guide use VMware vSphere 6 and the vSphere web client.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Decide whether to use the OVA or ISO distribution to set up Photon OS.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;OVA import&lt;/strong&gt; : Because of the nature of an OVA, you&amp;rsquo;re getting a pre-installed version of Photon OS. You can choose the hardware version you want (OVA with hardware version 13 or 11). The OVA benefits from a simple import process and some kernel tuning for VMware environments. However, because it&amp;rsquo;s a pre-installed version, the set of packages that are installed are predetermined. Any additional packages that you need can be installed using tdnf.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ISO install&lt;/strong&gt; : The ISO, on the other hand, allows for a more complete installation or automated installation via kickstart.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To get Photon OS up and running quickly, use the OVA.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Download Photon OS. Go to the following URL and download the latest release of Photon OS:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://packages.vmware.com/photon/&#34;&gt;https://packages.vmware.com/photon/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;For instructions, see &lt;a href=&#34;https://github.com/vmware/photon/wiki/Downloading-Photon-OS&#34;&gt;https://github.com/vmware/photon/wiki/Downloading-Photon-OS&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; For ISO installation, you must upload to a datashare that is attached to the ESXi host, or mount the file share where the ISO resides as a data store.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Importing the OVA for Photon OS 4.0</title>
+      <link>/docs/installation-guide/run-photon-on-vsphere/importing-photon-os-from-ova-on-vsphere/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/installation-guide/run-photon-on-vsphere/importing-photon-os-from-ova-on-vsphere/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Using the OVA is a fast and easy way to create a Photon OS VM on VMware vSphere.&lt;/p&gt;
+&lt;p&gt;After you have downloaded the OVA, log in to your vSphere environment and perform the following steps:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Start the Import Process&lt;/p&gt;
+&lt;p&gt;From the Actions pull-down menu, choose &lt;strong&gt;Create/Register VM&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;In the Select creation type window, choose  &lt;strong&gt;Deploy a virtual machine from an OVF or OVA file&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/vs-iso-new.png&#34; alt=&#34;Create new virtual machine&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Choose &lt;strong&gt;Next&lt;/strong&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Select the OVA File&lt;/p&gt;
+&lt;p&gt;Enter a name for the virtual machine, and select the OVA file.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/vs-ova-name-selected.png&#34; alt=&#34;OVA file&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Choose &lt;strong&gt;Next&lt;/strong&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Specify the Target Datastore&lt;/p&gt;
+&lt;p&gt;From the Select storage screen, select the target datastore for your VM.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/vs-ova-storage.png&#34; alt=&#34;Target datastore&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Choose  &lt;strong&gt;Next&lt;/strong&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Accept the License Agreement&lt;/p&gt;
+&lt;p&gt;Read through the Photon OS License Agreement, and then choose &lt;strong&gt;I Agree&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/vs-ova-license.png&#34; alt=&#34;License&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Choose &lt;strong&gt;Next&lt;/strong&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Select Deployment Options&lt;/p&gt;
+&lt;p&gt;Photon OS is provisioned with a maximum disk size. By default, Photon OS uses only the portion of disk space that it needs, usually much less that the entire disk size ( &lt;strong&gt;Thin&lt;/strong&gt; client). If you want to pre-allocate the entire disk size (reserving it entirely for Photon OS instead), select &lt;strong&gt;Thick&lt;/strong&gt;  instead.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/vs-ova-deployment-options.png&#34; alt=&#34;Deployment Options&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Choose &lt;strong&gt;Next&lt;/strong&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Verify Deployment Settings&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/vs-ova-settings.png&#34; alt=&#34;Deployment settings&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Click &lt;strong&gt;Finish&lt;/strong&gt;. vSphere uploads and validates your OVA. Depending on bandwidth, this operation might take a while.&lt;/p&gt;
+&lt;p&gt;When finished, vShield powers up a new VM based on your selections.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Change Login Settings&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/splashscreen23.png&#34; alt=&#34;Login prompt&#34;&gt;&lt;/p&gt;
+&lt;p&gt;After the VM is booted, open the command window. vSphere prompts you to log in.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: Because of limitations within OVA support on vSphere, it was necessary to specify a default password for the OVA option. However, all Photon OS instances that are created by importing the OVA require an immediate password change upon login. The default account credentials are:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; - Username: ``root``
+ - Password: ``changeme``
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;After you provide these credentials, vSphere prompts you to create a new password and type it a second time to verify it.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; For security, Photon OS forbids common dictionary words for the root password.  &lt;/p&gt;
+&lt;p&gt;Once logged in, you will see the shell prompt.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/vs-ova-login.png&#34; alt=&#34;Shell prompt&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Once complete, proceed to &lt;a href=&#34;../../deploying-a-containerized-application-in-photon-os/&#34;&gt;Deploying a Containerized Application in Photon OS&lt;/a&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Export the VM as a Template (Optional)&lt;/p&gt;
+&lt;p&gt;Consider converting this imported VM into a template (from the Actions menu, choose &lt;strong&gt;Export&lt;/strong&gt; ) so that you have a master Photon OS instance that can be combined with vSphere Guest Customization to enable rapid provisioning of Photon OS instances.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Installing the ISO Image for Photon OS 4.0</title>
+      <link>/docs/installation-guide/run-photon-on-vsphere/installing-photon-os-from-iso-image-on-vsphere/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/installation-guide/run-photon-on-vsphere/installing-photon-os-from-iso-image-on-vsphere/</guid>
+      <description>
+        
+        
+        &lt;p&gt;After you download the Photon OS ISO image into a folder of your choice, complete the following steps.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Upload the ISO Image&lt;/p&gt;
+&lt;p&gt;Upload the ISO image to a datastore that is attached to the host on which you&amp;rsquo;ll create the Photon OS virtual machine.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Create a new VM&lt;/p&gt;
+&lt;p&gt;Log in to your vSphere environment. In the Virtual Machines window, choose &lt;strong&gt;Create/Register VM&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;On the Select creation type screen, select &lt;strong&gt;Create a new virtual machine&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/vs-iso-new.png&#34; alt=&#34;Create new virtual machine&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Choose &lt;strong&gt;Next&lt;/strong&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Configure VM Settings&lt;/p&gt;
+&lt;p&gt;Specify a VM name.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/vs-iso-name.png&#34; alt=&#34;VM name&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Specify a guest operating system.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;For Compatibility, select &lt;strong&gt;ESXi 6.7&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;For Guest OS family, select &lt;strong&gt;Linux&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;For Guest OS version, select &lt;strong&gt;VMware Photon OS (64-bit)&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/guestossettings3.png&#34; alt=&#34;Guest operating system&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Choose  &lt;strong&gt;Next&lt;/strong&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Select the Target Datastore&lt;/p&gt;
+&lt;p&gt;Select the datastore where you want to store the VM.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/storage4.png&#34; alt=&#34;Target datastore&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Click &lt;strong&gt;Next&lt;/strong&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Customize VM Settings&lt;/p&gt;
+&lt;p&gt;Customize the virtual machine settings.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/settings5.png&#34; alt=&#34;Settings&#34;&gt;&lt;/p&gt;
+&lt;p&gt;For CD/DVD Drive 1, click the drop-down and select &lt;strong&gt;Datastore ISO file&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;In the Datastore browser, select the ISO that you want to import.&lt;/p&gt;
+&lt;p&gt;Change other settings as applicable.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The recommended virtual hardware settings for your Photon VM are heavily dependent upon the container load you intend to run within Photon OS – more containers or more intensive containers will require you to adjust these settings for your application load. VMware suggests 2 vCPU, 1024MB memory, 20GB hard disk. Any unwanted devices should be removed. Be sure to mount the Photon OS ISO on the CD/DVD Drive and put a check in the box next to, Connect At Power On.&lt;/li&gt;
+&lt;li&gt;If you want to configure a secure boot for the Photon OS VM you created, choose the VM Options tab, expand Boot Options, and select EFI from the firmware drop-down.  An EFI boot ensures that the ISO content is signed by VMware and that the entire stack is secure.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Choose &lt;strong&gt;Next&lt;/strong&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Verify VM Settings&lt;/p&gt;
+&lt;p&gt;The installer displays a summary of your selected settings.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/overview6.png&#34; alt=&#34;Summary&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Click &lt;strong&gt;Finish&lt;/strong&gt;. vSphere creates the VM.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Power on the VM&lt;/p&gt;
+&lt;p&gt;Select the VM and power it on.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/bootscreen7.png&#34; alt=&#34;Power on VM&#34;&gt;&lt;/p&gt;
+&lt;p&gt;When you see the Photon Installer boot menu, press Enter on your keyboard to start installing.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Accept the License Agreement&lt;/p&gt;
+&lt;p&gt;Read the License Agreement and press the Enter key to accept.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/license8.png&#34; alt=&#34;License Agreement&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Configure the Partition&lt;/p&gt;
+&lt;p&gt;The installer detects one disk, which should be the 16GB volume configured as part of the virtual machine creation. Choose &lt;strong&gt;Auto&lt;/strong&gt;  to have the installer automatically allocate the partition, or choose &lt;strong&gt;Custom&lt;/strong&gt;  if you want to configure individual partitions, and then press the Enter key.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/diskselection9.png&#34; alt=&#34;Partition&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;  If you choose Custom, the installer displays the following screen.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/manualpartition10.png&#34; alt=&#34;Custom Partition&#34;&gt;&lt;/p&gt;
+&lt;p&gt;For each custom partition, choose &lt;strong&gt;Create New&lt;/strong&gt;  and specify the following information:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/custompartitionsetting11.png&#34; alt=&#34;New Partition&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Size&lt;/strong&gt; - Preallocated size of this partition, in MB.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Type&lt;/strong&gt; - One of the following options:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;ext3&lt;/strong&gt; - ext3 file system&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ext4&lt;/strong&gt; - ext4 file system&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;swap&lt;/strong&gt; - swap partition&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Mountpoint&lt;/strong&gt; - Mount point for this partition.&lt;/p&gt;
+&lt;p&gt;Choose &lt;strong&gt;OK&lt;/strong&gt; and press the Enter key. When you are done defining custom partitions, choose &lt;strong&gt;Next&lt;/strong&gt; and press the Enter key.&lt;/p&gt;
+&lt;p&gt;The installer prompts you to confirm that you want to erase the entire disk.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/erasedisk21.png&#34; alt=&#34;Erase disk&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Choose &lt;strong&gt;Yes&lt;/strong&gt; and press the Enter key.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Select an Installation Option&lt;/p&gt;
+&lt;p&gt;After partitioning the disk, the installer prompts you to select an installation option.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/flavorselection12.png&#34; alt=&#34;Installation Option&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Each install option provides a different run-time environment, depending on your requirements.&lt;/p&gt;
+   &lt;table style=&#34;height: 170px;&#34; border=&#34;1&#34; cellspacing=&#34;0&#34; cellpadding=&#34;10&#34;&gt;
+     &lt;tbody&gt;
+     &lt;tr&gt;
+     &lt;td&gt;&lt;b&gt;Option&lt;/b&gt;&lt;/td&gt;
+     &lt;td&gt;&lt;b&gt;Description&lt;/b&gt;&lt;/td&gt;
+     &lt;/tr&gt;
+     &lt;tr&gt;
+     &lt;td&gt;&lt;b&gt;Photon Minimal&lt;/b&gt;&lt;/td&gt;
+     &lt;td&gt;Photon Minimum is a very lightweight version of the container host runtime that is best suited for  for devices that have limited compute and memory capabilities. There is sufficient packaging and functionality to allow most common operations around modifying existing containers, as well as being a highly performant and full-featured runtime.&lt;/p&gt;&lt;/td&gt;
+     &lt;/tr&gt;
+     &lt;tr&gt;
+     &lt;td&gt;&lt;b&gt;Photon Developer&lt;/b&gt;&lt;/td&gt;
+     &lt;td&gt;Photon Developer includes several additional packages to enhance the authoring and packaging of containerized applications and/or system customization. Use Photon Developer for developing and packaging the application that will be run as a container, as well as authoring the container, itself. For testing and validation purposes, Photon Developer includes all components necessary to run containers.&lt;/td&gt;
+     &lt;/tr&gt;
+     &lt;tr&gt;
+     &lt;td&gt;&lt;b&gt;Photon OSTree Host&lt;b&gt;&lt;/td&gt;
+     &lt;td&gt;This installation profile creates a Photon OS instance that will source its packages from a central rpm-ostree server and continue to have the library and state of packages managed by the definition that is maintained on the central rpm-ostree server.&lt;/td&gt;
+     &lt;/tr&gt;
+     &lt;tr&gt;
+     &lt;td&gt;&lt;b&gt;Photon Real Time&lt;b&gt;&lt;/td&gt;
+     &lt;td&gt;This profile is available only for the x86_64 architecture. &lt;/td&gt;
+     &lt;/tr&gt;
+     &lt;/tbody&gt;
+     &lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;  The option you choose determines the disk and memory resources required for your installation.&lt;/p&gt;
+&lt;p&gt;Select the option you want and press the Enter key.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;strong&gt;Network Configuration&lt;/strong&gt; screen appears, select one of the four options to configure your network.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../../images/networkconfig13.png&#34; alt=&#34;Network Configuration&#34;&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Choose &lt;strong&gt;Configure network automatically&lt;/strong&gt; and select &lt;strong&gt;Next&lt;/strong&gt; to configure the network automatically.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;To configure network automatically with the DHCP hostname, select &lt;strong&gt;Configure network automatically with a DHCP hostname&lt;/strong&gt; and select &lt;strong&gt;Next&lt;/strong&gt;. Enter the DHCP Hostname and select &lt;strong&gt;Next&lt;/strong&gt;.
+&lt;img src=&#34;../../../images/dhcphostname14.png&#34; alt=&#34;../images/DHCP_hostname_for_your_system.png&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;To configure the network manually, select &lt;strong&gt;Configure Network manually&lt;/strong&gt;. In the window that appears, enter the IP Address, Netmask, Gateway and Nameserver and select &lt;strong&gt;OK&lt;/strong&gt;.
+&lt;img src=&#34;../../../images/Configure_Network_Manually.png&#34; alt=&#34;../images/Configure_Network_Manually.png&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;If your network interface is directly connected to the VLAN trunk port, choose &lt;strong&gt;YES&lt;/strong&gt; on the Configure the network screen. Enter the VLAN ID and select &lt;strong&gt;Next&lt;/strong&gt;.
+&lt;img src=&#34;../../../images/Configure_the_network.png&#34; alt=&#34;Configure the network&#34;&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Select the Linux Kernel&lt;/p&gt;
+&lt;p&gt;Select a Linux kernel to install.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/linuxflavor17.png&#34; alt=&#34;Linux Kernel&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Hypervisor&lt;/strong&gt;  optimized means that any components that are not needed for running under a VMware hypervisor have been removed for faster boot times.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Generic&lt;/strong&gt;  means that all components are included.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Choose &lt;strong&gt;Next&lt;/strong&gt; and press the Enter key.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Specify the Hostname&lt;/p&gt;
+&lt;p&gt;The installer prompts you for a hostname and suggest a randomly generated, unique hostname that you can change if you want.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/hostname18.png&#34; alt=&#34;Hostname&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Press the Enter key.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Specify the System root Password&lt;/p&gt;
+&lt;p&gt;The installer prompts you to enter the system root password.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Note: Photon OS will not permit commonly used dictionary words to be set as a root password.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/rootpassword19.png&#34; alt=&#34;Root password&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Type a password and press the Enter key.&lt;/p&gt;
+&lt;p&gt;The installer prompts you to confirm your root password by typing it a second time.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/confirmrootpassword20.png&#34; alt=&#34;Password confirmation&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; If you have trouble with unintentional repeated characters in the Remote Console, follow VMware KB 196 ( &lt;a href=&#34;http://kb.vmware.com/kb/196&#34;&gt;http://kb.vmware.com/kb/196&lt;/a&gt;) for a setting to apply to the virtual machine.&lt;/p&gt;
+&lt;p&gt;Press the &lt;code&gt;Enter&lt;/code&gt; key. The installer proceeds to install the software. Installation times will vary based on the system hardware and installation options you selected. Most installations complete in less than one minute.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Reboot the VM and Log In&lt;/p&gt;
+&lt;p&gt;Once finished, the installer displays a confirmation message (which includes how long it took to install Photon OS) and prompts you to press a key on your keyboard to boot the new VM.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/installationcomplete22.png&#34; alt=&#34;Boot VM&#34;&gt;&lt;/p&gt;
+&lt;p&gt;As the initial boot process begins, the installer displays the Photon splash screen, and then a login prompt.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/splashscreen23.png&#34; alt=&#34;Login prompt&#34;&gt;&lt;/p&gt;
+&lt;p&gt;At the login prompt, type &lt;strong&gt;root&lt;/strong&gt;  as the username and provide the password chosen during the installation.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/loginprompt24.png&#34; alt=&#34;Password&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;You can now use your container runtime environment and deploy a containerized application.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

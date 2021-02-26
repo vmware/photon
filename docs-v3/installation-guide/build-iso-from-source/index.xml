@@ -1,0 +1,177 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Build an ISO from the Source Code for Photon OS</title>
+    <link>/docs-v3/installation-guide/build-iso-from-source/</link>
+    <description>Recent content in Build an ISO from the Source Code for Photon OS on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs-v3/installation-guide/build-iso-from-source/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs-V3: Folder Layout</title>
+      <link>/docs-v3/installation-guide/build-iso-from-source/folder-layout/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/installation-guide/build-iso-from-source/folder-layout/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The structure of the directories on GitHub that contain the source code for Photon OS is as follows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;photon/
+├── Makefile
+├── README
+├── Dockerfile
+├── Vagrantfile
+├── SPECS        # RPM SPEC files
+├── common       # Build, packaging config
+├── docs         # Documentation
+├── installer    # Installer used at runtime
+├── support      # Build scripts
+└── tools
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Build Prerequisites</title>
+      <link>/docs-v3/installation-guide/build-iso-from-source/build-prerequisites/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/installation-guide/build-iso-from-source/build-prerequisites/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Before you build the ISO, verify that you have the performed the following tasks:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Installed a build operating system running the 64-bit version of Ubuntu 14.04 or later version.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Downloaded and installed the following packages: &lt;code&gt;bison&lt;/code&gt;, &lt;code&gt;gawk&lt;/code&gt;, &lt;code&gt;g++&lt;/code&gt;, &lt;code&gt;createrepo&lt;/code&gt;, &lt;code&gt;python-aptdaemon&lt;/code&gt;, &lt;code&gt;genisoimage&lt;/code&gt;, &lt;code&gt;texinfo&lt;/code&gt;, &lt;code&gt;python-requests&lt;/code&gt;, &lt;code&gt;libfuse-dev, libssl-dev, uuid-dev, libreadline-dev, kpartx, git, bc&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Installed Docker&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Downloaded the source code from the Photon OS repository on GitHub into &lt;code&gt;$HOME/workspaces/photon&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Building the ISO</title>
+      <link>/docs-v3/installation-guide/build-iso-from-source/build-the-iso/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/installation-guide/build-iso-from-source/build-the-iso/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Perform the following steps to install the packages on Ubuntu:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Install the packages:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt-get -y install bison gawk g++ createrepo python-aptdaemon genisoimage texinfo python-requests libfuse-dev libssl-dev uuid-dev libreadline-dev kpartx git bc
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Get Docker:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;wget -qO- https://get.docker.com/ | sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Install pip and docker 2.3.0&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt install python3-pip
+pip3 install docker==2.3.0
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If you encounter an error for LOCALE when you run these commands, then export the following variables in the terminal:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;export LC_ALL=&amp;quot;en_US.UTF-8&amp;quot;
+export LC_CTYPE=&amp;quot;en_US.UTF-8&amp;quot;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Make the ISO. The example below assumes that you checked out the workspace under &lt;code&gt;$HOME/workspaces/photon&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cd $HOME/workspaces/photon
+sudo make iso
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;This command first builds all RPMs corresponding to the SPEC files in your Photon repository and then builds a bootable ISO containing those RPMs.&lt;/p&gt;
+&lt;p&gt;The RPMs thus built are stored under &lt;code&gt;stage/RPMS/&lt;/code&gt; directory within the repository, using the following directory hierarchy:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$HOME/workspaces/photon/stage/:
+├──RPMS/:
+    ├──noarch/*.noarch.rpm    [Architecture-independent RPMs]
+    ├──x86_64/*.x86_64.rpm    [RPMs built for the x86-64 architecture]
+    ├──aarch64/*.aarch64.rpm  [RPMs built for the aarch64 (ARM64) architecture]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The ISO is created at &lt;code&gt;$HOME/workspaces/photon/stage/photon.iso&lt;/code&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Use the Cached Toolchain and RPMS</title>
+      <link>/docs-v3/installation-guide/build-iso-from-source/use-cached-toolchain-and-rpms/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/installation-guide/build-iso-from-source/use-cached-toolchain-and-rpms/</guid>
+      <description>
+        
+        
+        &lt;p&gt;When the necessary RPMs are available under the &lt;code&gt;stage/RPMS/&lt;/code&gt; directory, the commands that you use to create any Photon artifact such as, ISO or OVA will reuse those RPMs to create the specified image.&lt;/p&gt;
+&lt;p&gt;If you already have the Photon RPMs available elsewhere, and not under &lt;code&gt;stage/RPMS/&lt;/code&gt; in the Photon repository, you can build Photon artifacts using those cached RPMs by setting the &lt;code&gt;PHOTON_CACHE_PATH&lt;/code&gt; variable to point to the directory containing those RPMs.&lt;/p&gt;
+&lt;p&gt;For example, if your RPMs are located under &lt;code&gt;$HOME/photon-cache/&lt;/code&gt;, then use the following command to build an ISO:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sudo make iso PHOTON_CACHE_PATH=$HOME/photon-cache&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;$HOME/photon-cache/&lt;/code&gt; directory should follow the same structure as the &lt;code&gt;stage/RPMS/&lt;/code&gt; directory:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;photon-cache/:
+├──RPMS/:
+    ├──noarch/*.noarch.rpm
+    ├──x86_64/*.x86_64.rpm
+    ├──aarch64/*.aarch64.rpm
+
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Use Cached Sources</title>
+      <link>/docs-v3/installation-guide/build-iso-from-source/use-cached-sources/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/installation-guide/build-iso-from-source/use-cached-sources/</guid>
+      <description>
+        
+        
+        &lt;p&gt;To use the cached sources, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mkdir $HOME/photon-sources
+sudo make iso PHOTON_SOURCES_PATH=$HOME/photon-sources
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The directory format of &lt;code&gt;PHOTON_SOURCES_PATH&lt;/code&gt; is as follows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;photon-sources/
+├──src1.tar.gz
+├──src2.tar.gz
+└──...
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: View Build Logs</title>
+      <link>/docs-v3/installation-guide/build-iso-from-source/view-build-logs/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/installation-guide/build-iso-from-source/view-build-logs/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can view package build logs and image build logs at the following location:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$HOME/workspaces/photon/stage/LOGS
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+  </channel>
+</rss>

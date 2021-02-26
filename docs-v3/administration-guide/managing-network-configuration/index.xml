@@ -1,0 +1,2485 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Managing the Network Configuration</title>
+    <link>/docs-v3/administration-guide/managing-network-configuration/</link>
+    <description>Recent content in Managing the Network Configuration on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs-v3/administration-guide/managing-network-configuration/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs-V3: Commands to Manage Network Service</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/network-management-commands/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/network-management-commands/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You manage the network service by using systemd commands, such as &lt;code&gt;systemd-networkd&lt;/code&gt;, &lt;code&gt;systemd-resolvd&lt;/code&gt;, and &lt;code&gt;networkctl&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;To check the status of the network service, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl status systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Output&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;* systemd-networkd.service - Network Service
+   Loaded: loaded (/usr/lib/systemd/system/systemd-networkd.service; enabled; vendor preset: enabled)
+   Active: active (running) since Fri 2016-04-29 15:08:51 UTC; 6 days ago
+     Docs: man:systemd-networkd.service(8)
+ Main PID: 291 (systemd-network)
+   Status: &amp;quot;Processing requests...&amp;quot;
+   CGroup: /system.slice/systemd-networkd.service
+           `-291 /lib/systemd/systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Because Photon OS relies on systemd to manage services, you must use the &lt;code&gt;systemd&lt;/code&gt; suite of commands and not the deprecated &lt;code&gt;init.d&lt;/code&gt; commands or other deprecated commands to manage networking.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Using the Network Configuration Manager</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/using-the-network-configuration-manager/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/using-the-network-configuration-manager/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The Network Configuration Manager library that ships with Photon OS 3.0 provides a collection of C, Python, and CLI APIs that simplify common onfiguration tasks for:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;interfaces&lt;/li&gt;
+&lt;li&gt;IP addresses (IPv4 and IPv6 addresses)&lt;/li&gt;
+&lt;li&gt;routes&lt;/li&gt;
+&lt;li&gt;DNS server and domain settings&lt;/li&gt;
+&lt;li&gt;DHCP DUID and IAID settings&lt;/li&gt;
+&lt;li&gt;NTP server settings&lt;/li&gt;
+&lt;li&gt;service management&lt;/li&gt;
+&lt;li&gt;object parameters (interfaces and files)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For more information, see:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;CLI&lt;/strong&gt; - see the &lt;code&gt;-net&lt;/code&gt; commands in the &lt;a href=&#34;../../../command-line-reference/commnad-line-interfaces/photon-management-daemon-cli/&#34;&gt;Photon Management Daemon Command-line Interface (pmd-cli)&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;C APIs&lt;/strong&gt; - &lt;a href=&#34;../netmgr.c/&#34;&gt;Network Configuration Manager - C API&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Python APIs&lt;/strong&gt; - &lt;a href=&#34;../netmgr.python/&#34;&gt;Network Configuration Manager - Python API&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Use `ip` and `ss` Commands</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/use-ip-and-ss-commands/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/use-ip-and-ss-commands/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Use the &lt;code&gt;ip&lt;/code&gt; and &lt;code&gt;ss&lt;/code&gt; commands to view a list of network interfaces and information for IP addresses.&lt;/p&gt;
+&lt;p&gt;Although the &lt;code&gt;ifconfig&lt;/code&gt; command and the &lt;code&gt;netstat&lt;/code&gt; command work on Photon OS, VMware recommends that you use the &lt;code&gt;ip&lt;/code&gt; or &lt;code&gt;ss&lt;/code&gt; commands. The &lt;code&gt;ipconfig&lt;/code&gt; and &lt;code&gt;netstat&lt;/code&gt; commands are deprecated.&lt;/p&gt;
+&lt;p&gt;For example, to display a list of network interfaces, run the &lt;code&gt;ss&lt;/code&gt; command instead of &lt;code&gt;netstat&lt;/code&gt;. To display information for IP addresses, run the &lt;code&gt;ip addr&lt;/code&gt; command instead of &lt;code&gt;ifconfig -a&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Examples are as follows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;USE THIS IPROUTE COMMAND 	INSTEAD OF THIS NET-TOOL COMMAND
+ip addr 					ifconfig -a
+ss 							netstat
+ip route 					route
+ip maddr 					netstat -g
+ip link set eth0 up 		ifconfig eth0 up
+ip -s neigh					arp -v
+ip link set eth0 mtu 9000	ifconfig eth0 mtu 9000
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Using the &lt;code&gt;ip route&lt;/code&gt; version of a command instead of the net-tools version often provides more complete and accurate information on Photon OS. Examples are as follows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ip neigh
+198.51.100.2 dev eth0 lladdr 00:50:56:e2:02:0f STALE
+198.51.100.254 dev eth0 lladdr 00:50:56:e7:13:d9 STALE
+198.51.100.1 dev eth0 lladdr 00:50:56:c0:00:08 DELAY
+
+arp -a
+? (198.51.100.2) at 00:50:56:e2:02:0f [ether] on eth0
+? (198.51.100.254) at 00:50:56:e7:13:d9 [ether] on eth0
+? (198.51.100.1) at 00:50:56:c0:00:08 [ether] on eth0
+&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Configuring Network Interfaces</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/configuring-network-interfaces/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/configuring-network-interfaces/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Network configuration files for systemd-networkd reside in &lt;code&gt;/etc/systemd/network&lt;/code&gt; and &lt;code&gt;/usr/lib/systemd/network&lt;/code&gt;. Example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;root@photon-rc [ ~ ]# ls /etc/systemd/network/
+99-dhcp-en.network
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;By default, when Photon OS starts, it creates a DHCP network configuration file, or rule, which appears in /etc/systemd/network, the highest priority directory for network configuration files with the lowest priority filename:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat /etc/systemd/network/99-dhcp-en.network
+[Match]
+Name=e*
+
+[Network]
+DHCP=yes
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Network configuration files can also appear in the system network directory, &lt;code&gt;/usr/lib/systemd/network&lt;/code&gt;, as the results of the following search illustrate:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;root@photon-rc [ ~ ]# updatedb
+root@photon-rc [ ~ ]# locate systemd/network
+/etc/systemd/network
+/etc/systemd/network/99-dhcp-en.network
+/usr/lib/systemd/network
+/usr/lib/systemd/network/80-container-host0.network
+/usr/lib/systemd/network/80-container-ve.network
+/usr/lib/systemd/network/99-default.link
+root@photon-rc [ ~ ]#
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In the above search, the &lt;code&gt;/usr/lib/systemd/network&lt;/code&gt; directory contains several network configuration files. Photon OS applies the configuration files in &lt;a href=&#34;https://en.wikipedia.org/wiki/Lexicographical_order&#34;&gt;lexicographical order&lt;/a&gt; specified by the file names without regard for the network configuration directory in which the file resides unless the file name is the same. Photon OS processes files with identical names by giving precedence to files in the &lt;code&gt;/etc&lt;/code&gt; directory over the other directory. Thus, the settings in &lt;code&gt;/etc/systemd/network&lt;/code&gt; override those in &lt;code&gt;/usr/lib/systemd/network&lt;/code&gt;. Once Photon OS matches an interface in a file, Photon OS ignores the interface if it appears in files processed later in the lexicographical order.&lt;/p&gt;
+&lt;p&gt;Each .network file contains a matching rule and a configuration that Photon OS applies when a device matches the rule. Set the matching rule and the configuration as sections containing vertical sets of key-value pairs according to the information in &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/systemd.network.html&#34;&gt;systemd network configuration&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;To configure Photon OS to handle a networking use case, such as setting a static IP address or adding a name server,  create a configuration file with a &lt;code&gt;.network&lt;/code&gt; extension and place it in the &lt;code&gt;/etc/systemd/network directory&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;After you create a network configuration file with a &lt;code&gt;.network&lt;/code&gt; extension, you must run the &lt;code&gt;chmod&lt;/code&gt; command to set the new file&amp;rsquo;s mode bits to &lt;code&gt;644&lt;/code&gt;. Example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;chown systemd-network:systemd-network 10-static-en.network
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For Photon OS to apply the new configuration, you must restart the &lt;code&gt;systemd-networkd&lt;/code&gt; service by running the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl restart systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For information about network configuration files, their processing order, and their matching rules, sections, and keys, see &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/systemd.network.html&#34;&gt;https://www.freedesktop.org/software/systemd/man/systemd.network.html&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;For information about creating virtual network device files (&lt;code&gt;.netdev&lt;/code&gt;), see &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/systemd.netdev.html&#34;&gt;https://www.freedesktop.org/software/systemd/man/systemd.netdev.html&lt;/a&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Setting a Static IP Address</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/setting-a-static-ip-address/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/setting-a-static-ip-address/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Before you set a static IP address, obtain the name of your Ethernet link by running the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;networkctl
+IDX LINK             TYPE               OPERATIONAL SETUP
+  1 lo               loopback           carrier     unmanaged
+  2 eth0             ether              routable    configured
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In the results of the command, you can see the name of an Ethernet link, &lt;code&gt;eth0&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;To create a network configuration file that systemd-networkd uses to establish a static IP address for the eth0 network interface, execute the following command as root:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat &amp;gt; /etc/systemd/network/10-static-en.network &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
+
+[Match]
+Name=eth0
+
+[Network]
+Address=198.51.0.2/24
+Gateway=198.51.0.1
+EOF
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Change the new file&amp;rsquo;s mode bits by running the &lt;code&gt;chmod&lt;/code&gt; command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;chmod 644 10-static-en.network
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Apply the configuration by running the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl restart systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For more information, see the man page for systemd-networkd: &lt;code&gt;man systemd.network&lt;/code&gt;&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Turning Off DHCP</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/turning-off-dhcp/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/turning-off-dhcp/</guid>
+      <description>
+        
+        
+        &lt;p&gt;By default, when Photon OS first starts, it creates a DHCP network configuration file or rule, which appears in &lt;code&gt;/etc/systemd/network&lt;/code&gt;, the highest priority directory for network configuration files with the lowest priority filename:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat /etc/systemd/network/99-dhcp-en.network
+[Match]
+Name=e*
+
+[Network]
+DHCP=yes
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To turn off DHCP for all Ethernet interfaces, change the value of &lt;code&gt;DHCP&lt;/code&gt; from &lt;code&gt;yes&lt;/code&gt; to &lt;code&gt;no&lt;/code&gt;, save the changes, and then restart the &lt;code&gt;systemd-networkd&lt;/code&gt; service:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl restart systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If you create a configuration file with a higher priority filename (e.g. &lt;code&gt;10-static-en.network&lt;/code&gt;), it is not necessary but still recommended to turn off DHCP.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Adding a DNS Server</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/adding-a-dns-server/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/adding-a-dns-server/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Photon OS uses &lt;code&gt;systemd-resolved&lt;/code&gt; to resolve domain names, IP addresses, and network names for local applications. The &lt;code&gt;systemd-resolved&lt;/code&gt; daemon automatically creates and maintains the &lt;code&gt;/etc/resolv.conf&lt;/code&gt; file, into which systemd-resolved places the IP address of the DNS server. You must not modify the &lt;code&gt;/etc/resolv.conf&lt;/code&gt; file.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: If you want to implement a local resolver like &lt;code&gt;bind&lt;/code&gt; instead of &lt;code&gt;systemd-resolved&lt;/code&gt;, stop the &lt;code&gt;systemd-resolved&lt;/code&gt; service and disable it.&lt;/p&gt;
+&lt;p&gt;If you open the default &lt;code&gt;/etc/resolv.conf&lt;/code&gt; file after you deploy Photon OS, it looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;root@photon-rc [ ~ ]# cat /etc/resolv.conf
+# This file is managed by systemd-resolved(8). Do not edit.
+#
+# Third party programs must not access this file directly, but
+# only through the symlink at /etc/resolv.conf. To manage
+# resolv.conf(5) in a different way, replace the symlink by a
+# static file or a different symlink.
+
+nameserver 198.51.100.2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To add a DNS server, insert a DNS key into the Network section of the static network configuration file, for example,  &lt;code&gt;/etc/systemd/network/10-eth0-static.network&lt;/code&gt; and set it to the IP address of your DNS server:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Match]
+Name=e*
+
+[Network]
+Address=198.51.0.2/24
+Gateway=198.51.0.1
+DNS=198.51.0.1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: To apply the changes made to &lt;code&gt;/etc/systemd/network/*.network&lt;/code&gt; files, perform the following:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Restart &lt;code&gt;systemd-networkd&lt;/code&gt; and &lt;code&gt;systemd-resolved&lt;/code&gt; services by running the following commands:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;systemctl restart systemd-networkd&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;systemctl restart systemd-resolved&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;If your machine is working with DHCP, you can add a DNS server by modifying the &lt;code&gt;/etc/systemd/resolved.conf--a&lt;/code&gt; method.&lt;/p&gt;
+&lt;p&gt;For more information, see &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/resolved.conf.html&#34;&gt;https://www.freedesktop.org/software/systemd/man/resolved.conf.html&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;You can optionally activate the local DNS stub resolver of systemd-resolved by adding &lt;code&gt;dns&lt;/code&gt; and &lt;code&gt;resolve&lt;/code&gt; to the  &lt;code&gt;/etc/nsswitch.conf&lt;/code&gt; file. To do so, make a backup copy of the &lt;code&gt;/etc/nsswitch.conf&lt;/code&gt; file and then execute the following command as root:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sed -i &#39;s/^hosts.*$/hosts: files resolve dns/&#39; /etc/nsswitch.conf
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For more information about the &lt;code&gt;systemd-resolved&lt;/code&gt; service, see &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/systemd-resolved.service.html&#34;&gt;https://www.freedesktop.org/software/systemd/man/systemd-resolved.service.html&lt;/a&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Setting Up Networking for Multiple NICs</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/setting-up-networking-for-multiple-nics/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/setting-up-networking-for-multiple-nics/</guid>
+      <description>
+        
+        
+        &lt;p&gt;If your machine contains multiple NICs, it is recommend that you create a &lt;code&gt;.network&lt;/code&gt; configuration file for each network interface. The following scenario demonstrates how to set one wired network interface to use a static IP address and another wired network interface to use a dynamic IP address obtained through DHCP.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: The following configurations are examples and you must change the IP addresses and other information to match your network and requirements.&lt;/p&gt;
+&lt;p&gt;First, create the &lt;code&gt;.network&lt;/code&gt; file for the static Ethernet connection in &lt;code&gt;/etc/systemd/network&lt;/code&gt;. A best practice is to match the exact name of the network interface, which is &lt;code&gt;eth0&lt;/code&gt; in this example. This example file also includes a DNS server for the static IP address. As a result, the configuration sets the UseDNS key to false in the DHCP column so that Photon OS ignores the DHCP server for DNS for this interface.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat &amp;gt; /etc/systemd/network/10-eth0-static-en.network &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
+[Match]
+Name=eth0
+
+[Network]
+Address=10.137.20.11/19
+Gateway=10.137.23.253
+DNS=10.132.71.1
+
+[DHCP]
+UseDNS=false
+EOF
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Second, create the &lt;code&gt;.network&lt;/code&gt; file for the second network interface, which is &lt;code&gt;eth1&lt;/code&gt; in this example. This configuration file sets the eth1 interface to an IP address from DHCP and sets DHCP as the source for DNS lookups. Setting the DHCP key to &lt;code&gt;yes&lt;/code&gt; acquires an IP address for IPv4 and IPv6. To acquire an IP address for IPv4 only, set the DHCP key to &lt;code&gt;ipv4&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat &amp;gt; /etc/systemd/network/50-eth1-dhcp-en.network &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
+
+[Match]
+Name=eth1
+
+[Network]
+DHCP=yes  
+
+[DHCP]
+UseDNS=true
+EOF&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Clearing the Machine ID of a Cloned Instance for DHCP</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/clearing-the-machine-id-of-a-cloned-instance-for-dhcp/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/clearing-the-machine-id-of-a-cloned-instance-for-dhcp/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Photon OS uses the contents of &lt;code&gt;/etc/machine-id&lt;/code&gt; to determine the DHCP unique identifier (duid) that is used for DHCP requests. If you use a Photon OS instance as the base system for cloning, to create additional Photon OS instances, you must clear the &lt;code&gt;machine-id&lt;/code&gt; with this command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;echo -n &amp;gt; /etc/machine-id
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;When the value is cleared, &lt;code&gt;systemd&lt;/code&gt; regenerates the machine-id and all DHCP requests will contain a unique duid.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Using Predictable Network Interface Names</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/using-predictable-network-interface-names/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/using-predictable-network-interface-names/</guid>
+      <description>
+        
+        
+        &lt;p&gt;When you run Photon OS on a virtual machine or a bare-metal machine, the Ethernet network interface name might shift from one device to another if you add or remove a card and reboot the machine. For example, a device named &lt;code&gt;eth2&lt;/code&gt; might become &lt;code&gt;eth1&lt;/code&gt; after you remove a NIC and restart the machine.&lt;/p&gt;
+&lt;p&gt;You can prevent interface names from reordering by turning on &lt;a href=&#34;https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/&#34;&gt;predictable network interface names&lt;/a&gt;. The naming schemes that Photon OS uses can then assign fixed, predictable names to network interfaces even after you add or remove cards or other firmware and the restart the system.&lt;/p&gt;
+&lt;p&gt;When you enable predictable network interface names, you can use one of the following options to assign persistent names to network interfaces:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Apply the &lt;code&gt;slot&lt;/code&gt; name policy to set the name of networking devices in the &lt;code&gt;ens&lt;/code&gt; format with a statically assigned PCI slot number.&lt;/li&gt;
+&lt;li&gt;Apply the &lt;code&gt;mac&lt;/code&gt; name policy to set the name of networking devices in the &lt;code&gt;enx&lt;/code&gt; format a unique MAC address.&lt;/li&gt;
+&lt;li&gt;Apply the &lt;code&gt;path&lt;/code&gt; name policy to set the name of networking devices in the &lt;code&gt;enpXsY&lt;/code&gt; format derived from a device connector&amp;rsquo;s physical location.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Though Photon OS supports the &lt;code&gt;onboard&lt;/code&gt; name policy to set the name of networking devices from index numbers given by the firmware in the &lt;code&gt;eno&lt;/code&gt; format, the policy might result in nonpersistent names.&lt;/p&gt;
+&lt;p&gt;The option to choose depends on your use case and your unique networking requirements. For example, when you clone virtual machines and require the MAC addresses to be different from one another but the interface name to be the same, consider using &lt;code&gt;ens&lt;/code&gt; to keep the slot the same after system reboots.&lt;/p&gt;
+&lt;p&gt;Alternatively, if the cloning function supports &lt;code&gt;enx&lt;/code&gt;, you can use it to set a MAC address which persists after reboots.&lt;/p&gt;
+&lt;p&gt;Perform the following steps to turn on predictable network interface names:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Make a backup copy of the following file in case you need to restore it later:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cp /boot/grub/grub.cfg /boot/grub/grub.cfg.original
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;To turn on predictable network interface names, edit &lt;code&gt;/boot/grub/grub.cfg&lt;/code&gt; to remove the following string:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.ifnames=0Item
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The string appears near the bottom of the file in the &lt;code&gt;menuentry&lt;/code&gt; section:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;menuentry &amp;quot;Photon&amp;quot; {
+   linux &amp;quot;/boot/&amp;quot;$photon_linux root=$rootpartition net.ifnames=0 $photon_cmdline
+   if [ &amp;quot;$photon_initrd&amp;quot; ]; then
+        initrd &amp;quot;/boot/&amp;quot;$photon_initrd
+   fi
+}
+# End /boot/grub2/grub.cfg
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Edit out &lt;code&gt;net.ifnames=0&lt;/code&gt;, but make no other changes to the file, and then save it.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Specify the types of policies that you want to use for predictable interface names by modifying the &lt;code&gt;NamePolicy&lt;/code&gt; option in &lt;code&gt;/lib/systemd/network/99-default.link&lt;/code&gt;. The file contents are as follows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat /lib/systemd/network/99-default.link
+[Link]
+NamePolicy=kernel database
+MACAddressPolicy=persistent
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;To use the &lt;code&gt;ens&lt;/code&gt; or &lt;code&gt;enx&lt;/code&gt; option, the &lt;code&gt;slot&lt;/code&gt; policy or the &lt;code&gt;mac&lt;/code&gt; policy can be added to the space-separated list of policies that follow the &lt;code&gt;NamePolicy&lt;/code&gt; option in the default link file, &lt;code&gt;/lib/systemd/network/99-default.link&lt;/code&gt;. The order of the policies matters. Photon OS applies the policy listed first before proceeding to the next policy if the first one fails.&lt;/p&gt;
+&lt;p&gt;For example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/lib/systemd/network/99-default.link
+    [Link]
+    NamePolicy=slot mac kernel database
+    MACAddressPolicy=persistent
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;With the name policy specified in the above example, you might still have an Ethernet-style interface name if the two previous policies, &lt;code&gt;slot&lt;/code&gt; and &lt;code&gt;mac&lt;/code&gt;, fail.&lt;/p&gt;
+&lt;p&gt;For information on setting name policies, see &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/systemd.link.html&#34;&gt;systemd.link&amp;ndash;network device configuration&lt;/a&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Inspecting the Status of Network Links with `networkctl`</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/inspecting-the-status-of-network-links-with-networkctl/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/inspecting-the-status-of-network-links-with-networkctl/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can inspect information about network connections by using the &lt;code&gt;networkctl&lt;/code&gt; command. This can help you configure networking services and troubleshoot networking problems.&lt;/p&gt;
+&lt;p&gt;You can progressively add options and arguments to the &lt;code&gt;networkctl&lt;/code&gt; command to move from general information about network connections to specific information about a network connection.&lt;/p&gt;
+&lt;h1 id=&#34;networkctl-command-without-options&#34;&gt;&lt;code&gt;networkctl&lt;/code&gt; Command Without Options&lt;/h1&gt;
+&lt;p&gt;Run the &lt;code&gt;networkctl&lt;/code&gt; command without options to default to the list command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;networkctl
+IDX LINK             TYPE               OPERATIONAL SETUP
+  1 lo               loopback           carrier     unmanaged
+  2 eth0             ether              routable    configured
+  3 docker0          ether              routable    unmanaged
+ 11 vethb0aa7a6      ether              degraded    unmanaged
+ 4 links listed.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;networkctl-status-command&#34;&gt;&lt;code&gt;networkctl status&lt;/code&gt; Command&lt;/h2&gt;
+&lt;p&gt;Run &lt;code&gt;networkctl&lt;/code&gt; with the status command to display the following information:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;root@photon-rc [ ~ ]# networkctl status
+	*      State: routable
+	     Address: 198.51.100.131 on eth0
+	              172.17.0.1 on docker0
+	              fe80::20c:29ff:fe55:3ca6 on eth0
+	              fe80::42:f0ff:fef7:bd81 on docker0
+	              fe80::4c84:caff:fe76:a23f on vethb0aa7a6
+	     Gateway: 198.51.100.2 on eth0
+	         DNS: 198.51.100.2
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can see that there are active network links with IP addresses for not only the Ethernet connection but also a Docker container.&lt;/p&gt;
+&lt;h3 id=&#34;networkctl-status-command-with-network-link-option&#34;&gt;&lt;code&gt;networkctl status&lt;/code&gt; Command With Network Link Option&lt;/h3&gt;
+&lt;p&gt;You can add a network link, such as the Ethernet connection, as the argument of the &lt;code&gt;status&lt;/code&gt; command to show specific information about the link:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;	root@photon-rc [ ~ ]# networkctl status eth0
+	* 2: eth0
+	       Link File: /usr/lib/systemd/network/99-default.link
+	    Network File: /etc/systemd/network/99-dhcp-en.network
+	            Type: ether
+	           State: routable (configured)
+	            Path: pci-0000:02:01.0
+	          Driver: e1000
+	      HW Address: 00:0c:29:55:3c:a6 (VMware, Inc.)
+	             MTU: 1500
+	         Address: 198.51.100.131
+	                  fe80::20c:29ff:fe55:3ca6
+	         Gateway: 198.51.100.2
+	             DNS: 198.51.100.2
+	        CLIENTID: ffb6220feb00020000ab116724f520a0a77337
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;networkctl-status-command-with-docker-option&#34;&gt;&lt;code&gt;networkctl status&lt;/code&gt; Command With Docker Option&lt;/h3&gt;
+&lt;p&gt;You can add a Docker container as the argument of the &lt;code&gt;status&lt;/code&gt; command to show specific information about the container:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;networkctl status docker0
+	* 3: docker0
+	       Link File: /usr/lib/systemd/network/99-default.link
+	    Network File: n/a
+	            Type: ether
+	           State: routable (unmanaged)
+	          Driver: bridge
+	      HW Address: 02:42:f0:f7:bd:81
+	             MTU: 1500
+	         Address: 172.17.0.1
+	                  fe80::42:f0ff:fef7:bd81
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;In the example above, the state of the Docker container is unmanaged because Docker handles managing the networking for the containers without using systemd-resolved or systemd-networkd. Docker manages the container connection by using its bridge drive.&lt;/p&gt;
+&lt;p&gt;For more information about &lt;code&gt;networkctl&lt;/code&gt; commands and options, see &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/networkctl.html&#34;&gt;https://www.freedesktop.org/software/systemd/man/networkctl.html&lt;/a&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Turning On Network Debugging</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/turning-on-network-debugging/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/turning-on-network-debugging/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can set &lt;code&gt;systemd-networkd&lt;/code&gt; to work in debug mode so that you can analyze log files with debugging information to help troubleshoot networking problems.&lt;/p&gt;
+&lt;p&gt;You can turn on network debugging by adding a drop-in file in &lt;code&gt;/etc/systemd&lt;/code&gt; to customize the default systemd configuration in &lt;code&gt;/usr/lib/systemd&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Procedure&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Run the following command as root to create a directory with the name &lt;code&gt;systemd-networkd.service.d&lt;/code&gt;, including the &lt;code&gt;.d&lt;/code&gt; extension:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;mkdir -p /etc/systemd/system/systemd-networkd.service.d/&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+1. Run the following command as root to establish a `systemd` drop-in unit with a debugging configuration for the network service:
+
+    ```
+cat &amp;gt; /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
+	[Service]
+	Environment=SYSTEMD_LOG_LEVEL=debug
+	EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Reload the &lt;code&gt;systemctl&lt;/code&gt; daemon and restart the &lt;code&gt;systemd-networkd&lt;/code&gt; service for the changes to take effect:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;systemctl daemon-reload
+systemctl restart systemd-networkd&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+1. Verify your changes:
+
+    ```
+systemd-delta --type=extended
+&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;View the log files by running this command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;journalctl -u systemd-networkd&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+1. After debugging the network connections, turn debugging off by deleting the drop-in file: 
+	
+    ```
+rm /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Mounting a Network File System</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/mounting-a-network-file-system/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/mounting-a-network-file-system/</guid>
+      <description>
+        
+        
+        &lt;p&gt;To mount a network file system, Photon OS requires &lt;code&gt;nfs-utils&lt;/code&gt;. The &lt;code&gt;nfs-utils&lt;/code&gt; package contains the daemon, userspace server, and client tools for the kernel Network File System (NFS). The tools include &lt;code&gt;mount.nfs&lt;/code&gt;, &lt;code&gt;umount.nfs&lt;/code&gt;, and &lt;code&gt;showmount&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;nfs-utils&lt;/code&gt; package is installed by default in the full version of Photon OS but not in the minimal version. To install &lt;code&gt;nfs-utils&lt;/code&gt; in the minimal version, run the following command as root:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf install nfs-utils
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For instructions on how to use &lt;code&gt;nfs-utils&lt;/code&gt; to share files over a network, see &lt;a href=&#34;../../../user-guide/mounting-remote-file-systems/&#34;&gt;Photon OS nfs-utils&lt;/a&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Network Configuration Manager - C API</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/netmgr.c/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/netmgr.c/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Photon OS 2.0 provides a C API for the Network Configuration Manager.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#about-the-network-configuration-manager-c-api&#34;&gt;About the Network Configuration Manager C API&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#interface-configuration-apis&#34;&gt;Interface Configuration APIs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#ip-address-configuration-apis&#34;&gt;IP Address Configuration APIs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#route-configuration-apis&#34;&gt;Route Configuration APIs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#dns-configuration-apis&#34;&gt;DNS Configuration APIs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#dhcp-options-duid-and-iaid-configuration-apis&#34;&gt;DHCP Options DUID and IAID Configuration APIs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#ntp-configuration-apis&#34;&gt;NTP Configuration APIs&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#service-management-apis&#34;&gt;Service Management APIs&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;about-the-network-configuration-manager-c-api&#34;&gt;About the Network Configuration Manager C API&lt;/h1&gt;
+&lt;p&gt;Use the Network Configuration Manager C API to simplify common network configuration tasks for:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;interfaces&lt;/li&gt;
+&lt;li&gt;IP addresses (IPv4 and IPv6 addresses)&lt;/li&gt;
+&lt;li&gt;routes&lt;/li&gt;
+&lt;li&gt;DNS server and domain settings&lt;/li&gt;
+&lt;li&gt;DHCP DUID and IAID settings&lt;/li&gt;
+&lt;li&gt;NTP server settings&lt;/li&gt;
+&lt;li&gt;service management&lt;/li&gt;
+&lt;li&gt;object parameters (interfaces and files)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;header-file&#34;&gt;Header File&lt;/h2&gt;
+&lt;p&gt;Header files for all the C APIs are defined in the following location:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/vmware/pmd/tree/master/include&#34;&gt;https://github.com/&lt;/a&gt; &lt;a href=&#34;https://github.com/vmware/pmd/tree/master/include&#34;&gt;vmware&lt;/a&gt; &lt;a href=&#34;https://github.com/vmware/pmd/tree/master/include&#34;&gt;/pmd/tree/master/include&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;To install the Network Configuration Manager header file, run the following command:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;tdnf install netmgmt-devel&lt;/code&gt;
+n
+Once installed, you can reference the header file in the following location:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;/usr/include/netmgmt/netmgr.h&lt;/code&gt;&lt;/p&gt;
+&lt;h2 id=&#34;freeing-memory&#34;&gt;Freeing Memory&lt;/h2&gt;
+&lt;p&gt;For all get APIs that take a pointer-to-pointer parameter, the caller has the responsibility to free the memory upon successful response from API by calling free().&lt;/p&gt;
+&lt;h2 id=&#34;error-codes&#34;&gt;Error Codes&lt;/h2&gt;
+&lt;p&gt;All C API calls return 0 for success, or one of the following error codes for failure.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;4097 - NM_ERR_INVALID_PARAMETER&lt;/li&gt;
+&lt;li&gt;4098 - NM_ERR_NOT_SUPPORTED&lt;/li&gt;
+&lt;li&gt;4099 - NM_ERR_OUT_OF_MEMORY&lt;/li&gt;
+&lt;li&gt;4100 - NM_ERR_VALUE_NOT_FOUND&lt;/li&gt;
+&lt;li&gt;4101 - NM_ERR_VALUE_EXISTS&lt;/li&gt;
+&lt;li&gt;4102 - NM_ERR_INVALID_INTERFACE&lt;/li&gt;
+&lt;li&gt;4103 - NM_ERR_INVALID_ADDRESS&lt;/li&gt;
+&lt;li&gt;4104 - NM_ERR_INVALID_MODE&lt;/li&gt;
+&lt;li&gt;4105 - NM_ERR_BAD_CONFIG_FILE&lt;/li&gt;
+&lt;li&gt;4106 - NM_ERR_WRITE_FAILED&lt;/li&gt;
+&lt;li&gt;4107 - NM_ERR_TIME_OUT&lt;/li&gt;
+&lt;li&gt;4108 - NM_ERR_DHCP_TIME_OUT&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Use nm_get_error_info to retrieve information about an error code.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; const char \*
+ nm_get_error_info(
+     uint32_t nmErrCode
+ );``
+&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;interface-configuration-apis&#34;&gt;Interface Configuration APIs&lt;/h1&gt;
+&lt;p&gt;The Photon OS 2.0 network manager C API enables you to manage network interfaces.&lt;/p&gt;
+&lt;h2 id=&#34;structure-declarations&#34;&gt;Structure Declarations&lt;/h2&gt;
+&lt;h3 id=&#34;link-mode&#34;&gt;Link Mode&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Link mode. Available settings:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;LINK_AUTO&lt;/code&gt; - the specified interface is managed and configured by systemd network manager&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_MANUAL&lt;/code&gt; - systemd will not bring up or configure the specified interface&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_MODE_UNKNOWN&lt;/code&gt; - the link mode is unknown&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; typedef enum _NET_LINK_MODE
+ {
+     LINK_AUTO = 0,
+     LINK_MANUAL,
+     LINK_MODE_UNKNOWN
+ } NET_LINK_MODE;``
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;link-state&#34;&gt;Link State&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Link state. Available settings:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;LINK_DOWN&lt;/code&gt; - the link is being administratively down or has no carrier signal&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_UP&lt;/code&gt; - the link is configured up and has carrier signal&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_STATE_UNKNOWN&lt;/code&gt; - link state is unknown&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; typedef enum _NET_LINK_STATE
+ {
+     LINK_DOWN = 0,
+     LINK_UP,
+     LINK_STATE_UNKNOWN,
+ } NET_LINK_STATE;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;link-information&#34;&gt;Link Information&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Link information. Includes the following information:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszMacAddress&lt;/code&gt; - interface hardware address specified in a colon-separated format (for example: &amp;ldquo;00:0c:29:99:a5:7b&amp;rdquo;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;mtu&lt;/code&gt; - maximum transmission unit (MTU)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;mode&lt;/code&gt; - link mode (see above)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;state&lt;/code&gt; - link state (see above)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; typedef struct _NET_LINK_INFO
+ {
+     struct _NET_LINK_INFO \*pNext;
+     char \*pszInterfaceName;
+     char \*pszMacAddress;
+     uint32_t mtu;
+     NET_LINK_MODE mode;
+     NET_LINK_STATE state;
+ } NET_LINK_INFO, \*PNET_LINK_INFO;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;nm_set_link_mac_addr&#34;&gt;nm_set_link_mac_addr&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Set the MAC address of the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+
+nm_set_link_mac_addr(
+
+     const char \*pszInterfaceName,
+     const char \*pszMacAddress
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszMacAddress&lt;/code&gt; - interface hardware address specified in a colon-separated format (for example: &amp;ldquo;00:0c:29:99:a5:7b&amp;rdquo;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_link_mac_addr&#34;&gt;nm_get_link_mac_addr&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get the MAC address of the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_get_link_mac_addr(
+     const char \*pszInterfaceName,
+     char \*\*ppszMacAddress
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ppszMacAddress&lt;/code&gt; - interface hardware address specified in a colon-separated format (for example: &amp;ldquo;00:0c:29:99:a5:7b&amp;rdquo;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_set_link_mode&#34;&gt;nm_set_link_mode&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Set the mode of the interface (auto or manual).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_set_link_mode(
+     const char \*pszInterfaceName,
+     NET_LINK_MODE mode
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;mode&lt;/code&gt; - link mode. One of the following values:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;LINK_AUTO&lt;/code&gt; - the specified interface is managed and configured by systemd network manager&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_MANUAL&lt;/code&gt; - systemd will not bring up or configure the specified interface&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_MODE_UNKNOWN&lt;/code&gt; - the link mode is unknown&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_link_mode&#34;&gt;nm_get_link_mode&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get the mode of the interface (auto or manual).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_get_link_mode(
+     const char \*pszInterfaceName,
+     NET_LINK_MODE \*pLinkMode
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pLinkMode&lt;/code&gt; - link mode. One of the following values:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;LINK_AUTO&lt;/code&gt; - the specified interface is managed and configured by systemd network manager&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_MANUAL&lt;/code&gt; - systemd will not bring up or configure the specified interface&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_MODE_UNKNOWN&lt;/code&gt; - the link mode is unknown&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_set_link_mtu&#34;&gt;nm_set_link_mtu&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Set the maximum transmission unit (MTU) of the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_set_link_mtu(
+     const char \*pszInterfaceName,
+     uint32_t mtu
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;mtu&lt;/code&gt; - maximum transmission unit (MTU)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_link_mtu&#34;&gt;nm_get_link_mtu&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get the maximum transmission unit (MTU) of the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;nm_get_link_mtu
+ uint32_t
+ nm_get_link_mtu(
+     const char \*pszInterfaceName,
+     uint32_t \*pMtu
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pMtu&lt;/code&gt; - maximum transmission unit (MTU)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_set_link_state&#34;&gt;nm_set_link_state&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Set the link state of the interface (up or down).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_set_link_state(
+     const char \*pszInterfaceName,
+     NET_LINK_STATE state
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;state&lt;/code&gt; - link state. One of the following values:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;LINK_DOWN&lt;/code&gt; - the link is being administratively down or has no carrier signal.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_UP&lt;/code&gt; - the link is configured up and has carrier signal.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_STATE_UNKNOWN&lt;/code&gt; - the link state is unknown&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_link_state&#34;&gt;nm_get_link_state&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get the link state of the interface (up or down).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_get_link_state(
+     const char \*pszInterfaceName,
+     NET_LINK_STATE \*pLinkState
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pLinkState&lt;/code&gt; - link state. One of the following values:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;LINK_DOWN&lt;/code&gt; - the link is being administratively down or has no carrier signal&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_UP&lt;/code&gt; - the link is configured up and has carrier signal&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_STATE_UNKNOWN&lt;/code&gt; - the link state is unknown&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_ifup&#34;&gt;nm_ifup&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Set the specified interface state to UP. Additionally, if the interface is configured to have an IP address, it waits for the interface to acquire the IP address, and then updates neighbors of its IP address via the address resolution protocol (ARP) messages.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_ifup(
+     const char \*pszInterfaceName
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_ifdown&#34;&gt;nm_ifdown&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Set the specified interface state to DOWN.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_ifdown(
+     const char \*pszInterfaceName
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_link_info&#34;&gt;nm_get_link_info&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get link information for the interface. The caller is responsible for freeing ppLinkInfo by calling nm_free_link_info.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_get_link_info(
+     const char \*pszInterfaceName,
+     NET_LINK_INFO \*\*ppLinkInfo
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ppLinkInfo&lt;/code&gt;, which includes the following information:
+&lt;ul&gt;
+&lt;li&gt;*&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;*&lt;code&gt;pszMacAddress&lt;/code&gt; - interface hardware address specified in a colon-separated format (for example: &amp;ldquo;00:0c:29:99:a5:7b&amp;rdquo;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;mtu&lt;/code&gt; - maximum transmission unit (MTU)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;mode&lt;/code&gt; - One of the following values:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;LINK_AUTO&lt;/code&gt; - the specified interface is managed and configured by systemd network manager&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_MANUAL&lt;/code&gt; - systemd will not bring up or configure the specified interface&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_MODE_UNKNOWN&lt;/code&gt; - the link mode is unknown&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;state&lt;/code&gt; - One of the following values:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;LINK_DOWN&lt;/code&gt; - the link is being administratively down or has no carrier signal&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_UP&lt;/code&gt; - the link is configured up and has carrier signal&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_STATE_UNKNOWN&lt;/code&gt; - the link state is unknown&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_free_link_info&#34;&gt;nm_free_link_info&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Frees the NET_LINK_INFO structure returned by a successful nm_get_link_info call.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;void
+ nm_free_link_info(
+     NET_LINK_INFO \*pNetLinkInfo
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pNetLinkInfo&lt;/code&gt;, which includes the following information:
+&lt;ul&gt;
+&lt;li&gt;*&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;*&lt;code&gt;pszMacAddress&lt;/code&gt; - interface hardware address specified in a colon-separated format (for example: &amp;ldquo;00:0c:29:99:a5:7b&amp;rdquo;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;mtu&lt;/code&gt; - maximum transmission unit (MTU)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;mode&lt;/code&gt; - One of the following values:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;LINK_AUTO&lt;/code&gt; - the specified interface is managed and configured by systemd network manager&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_MANUAL&lt;/code&gt; - systemd will not bring up or configure the specified interface&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_MODE_UNKNOWN&lt;/code&gt; - the link mode is unknown&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;state&lt;/code&gt; - One of the following values:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;LINK_DOWN&lt;/code&gt; - the link is being administratively down or has no carrier signal&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_UP&lt;/code&gt; - the link is configured up and has carrier signal&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_STATE_UNKNOWN&lt;/code&gt; - the link state is unknown&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;ip-address-configuration-apis&#34;&gt;IP Address Configuration APIs&lt;/h1&gt;
+&lt;p&gt;The Photon OS 2.0 network manager C API enables you to manage IP addresses for interfaces that are managed by systemd network manager.&lt;/p&gt;
+&lt;h2 id=&#34;structure-declarations-1&#34;&gt;Structure Declarations&lt;/h2&gt;
+&lt;h3 id=&#34;ip-address-mode&#34;&gt;IP Address Mode&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Defines the IP address mode. One of the following values:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;IPV4_ADDR_MODE_NONE&lt;/code&gt; - no IPv4 address configured on the interface&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;IPV4_ADDR_MODE_STATIC&lt;/code&gt; - the interface is configured with a static IPv4 address&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;IPV4_ADDR_MODE_DHCP&lt;/code&gt; -  the interface is configured with a DHCP IPv4 address&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; typedef enum _NET_IPV4_ADDR_MODE
+ {
+     IPV4_ADDR_MODE_NONE = 0,
+     IPV4_ADDR_MODE_STATIC,
+     IPV4_ADDR_MODE_DHCP,
+     IPV4_ADDR_MODE_MAX
+ } NET_IPV4_ADDR_MODE;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;address-type&#34;&gt;Address Type&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Defines the type of IP address. One of the following options:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;STATIC_IPV4&lt;/code&gt; - static IPv4 address&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;STATIC_IPV6&lt;/code&gt; - static IPv6 address&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;DHCP_IPV4&lt;/code&gt; - DHCP IPv4 address&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;DHCP_IPV6&lt;/code&gt; - DHCP IPv6 address&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;AUTO_IPV6&lt;/code&gt; - stateless dynamic IPv6 address&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_LOCAL_IPV6&lt;/code&gt; - link local IPv6 address&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; typedef enum _NET_ADDR_TYPE
+ {
+     STATIC_IPV4        =  0x00000001,
+     STATIC_IPV6        =  0x00000002,
+     DHCP_IPV4          =  0x00000010,
+     DHCP_IPV6          =  0x00000020,
+     AUTO_IPV6          =  0x00000040,
+     LINK_LOCAL_IPV6    =  0x00000080,
+ } NET_ADDR_TYPE;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;ip-addresses&#34;&gt;IP Addresses&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Defines IP addresses.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;type&lt;/code&gt; - address type&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszIPAddrPrefix&lt;/code&gt; - IP address&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Declarations&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; typedef struct _NET_IP_ADDR
+ {
+     char \*pszInterfaceName;
+     NET_ADDR_TYPE type;
+     char \*pszIPAddrPrefix;
+ } NET_IP_ADDR, \*PNET_IP_ADDR;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;nm_set_ipv4_addr_gateway&#34;&gt;nm_set_ipv4_addr_gateway&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Set the IPv4 address and (optionally) the default gateway address for the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+
+ nm_set_ipv4_addr_gateway(
+
+     const char \*pszInterfaceName,
+     NET_IPV4_ADDR_MODE mode,
+     const char \*pszIPv4AddrPrefix,
+     const char \*pszIPv4Gateway
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;mode&lt;/code&gt; - IP address mode; one of the following values:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;IPV4_ADDR_MODE_NONE&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;IPV4_ADDR_MODE_STATIC&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;IPV4_ADDR_MODE_DHCP&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszIPv4AddrPrefix&lt;/code&gt; - IPv4 address specified in dot-decimal / prefix notation (for example, 10.10.10.101/23). If the prefix is not specified, then a /32 prefix is assumed.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszIPv4Gateway&lt;/code&gt; - IPv4 gateway (optional) specified in the dot-decimal format (for example,10.10.20.30).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_ipv4_addr_gateway&#34;&gt;nm_get_ipv4_addr_gateway&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get the IPv4 address and the default gateway address for the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_get_ipv4_addr_gateway(
+     const char \*pszInterfaceName,
+     NET_IPV4_ADDR_MODE \*pMode,
+     char \*\*ppszIPv4AddrPrefix,
+     char \*\*ppszIPv4Gateway
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pmode&lt;/code&gt; - IP mode; one of the following values:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;IPV4_ADDR_MODE_NONE&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;IPV4_ADDR_MODE_STATIC&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;IPV4_ADDR_MODE_DHCP&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ppszIPv4AddrPrefix&lt;/code&gt; - IPv4 address returned in dot-decimal / prefix notation (for example, 10.10.10.101/23). If the prefix is not specified, then a /32 prefix is assumed.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ppszIPv4Gateway&lt;/code&gt; - IPv4 gateway (optional) returned in the dot-decimal format (for example,10.10.10.250).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_add_static_ipv6_addr&#34;&gt;nm_add_static_ipv6_addr&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Add an IPv6 address to the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_add_static_ipv6_addr(
+     const char \*pszInterfaceName,
+     const char \*pszIPv6AddrPrefix
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszIPv6AddrPrefix&lt;/code&gt; - IPv6 address specified in the standard colon-separated IPv6 address format followed by the prefix (for example, 2010:a1:b2::25/64). If the not prefix is specified, then a /128 prefix is assumed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_delete_static_ipv6_addr&#34;&gt;nm_delete_static_ipv6_addr&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Delete a static IPv6 address from the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_delete_static_ipv6_addr(
+     const char \*pszInterfaceName,
+     const char \*pszIPv6AddrPrefix
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszIPv6AddrPrefix&lt;/code&gt; - IPv6 address specified in the standard colon-separated IPv6 address format followed by the prefix (for example, 2010:a1:b2::25/64). If the not prefix is specified, then a /128 prefix is assumed.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_set_ipv6_addr_mode&#34;&gt;nm_set_ipv6_addr_mode&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Set the mode for the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_set_ipv6_addr_mode(
+     const char \*pszInterfaceName,
+     uint32_t enableDhcp,
+     uint32_t enableAutoconf
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;enableDhcp&lt;/code&gt; - enable (1) or disable (0) DHCP; enabling configures the interface to acquire a DHCP IPv6 address.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;enableAutoconf&lt;/code&gt; - enable (1) or disable (0) autoconf; enabling configures the interface to acquire a stateless autoconfiguration IPv6 address.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_ipv6_addr_mode&#34;&gt;nm_get_ipv6_addr_mode&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get the mode for the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_get_ipv6_addr_mode(
+     const char \*pszInterfaceName,
+     uint32_t \*pDhcpEnabled,
+     uint32_t \*pAutoconfEnabled
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pDhcpEnabled&lt;/code&gt; - returns whether IPv6 DHCP is enabled (1) or disabled (0).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pAutoconfEnabled&lt;/code&gt; - returns whether IPv6 stateless autoconfiguration is enabled (1) or disabled (0).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_ip_addr&#34;&gt;nm_get_ip_addr&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get the IP address for the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_get_ip_addr(
+     const char \*pszInterfaceName,
+     uint32_t addrTypes,
+     size_t \*pCount,
+     NET_IP_ADDR \*\*\*pppIpAddrList
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;addrTypes&lt;/code&gt; - type of IP address; one of the following values:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;STATIC_IPV4&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;STATIC_IPV6&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;DHCP_IPV4&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;DHCP_IPV6&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;AUTO_IPV6&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_LOCAL_IPV6&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pCount&lt;/code&gt; - number of IP address structures in the pppIpAddrList array returned by the API call.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pppIpAddrList&lt;/code&gt; - array of NET_IP_ADDR elements that includes the following:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;type&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszIPAddrPrefix&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_set_ipv6_gateway&#34;&gt;nm_set_ipv6_gateway&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Set the default IPv6 gateway for the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_set_ipv6_gateway(
+     const char \*pszInterfaceName,
+     const char \*pszIPv6Gateway
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszIPv6Gateway&lt;/code&gt; - IPv6 gateway specified in the standard colon-separated IPv6 address format (for example, 2010:125::100)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_ipv6_gateway&#34;&gt;nm_get_ipv6_gateway&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get the default IPv6 gateway for the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_get_ipv6_gateway(
+     const char \*pszInterfaceName,
+     char \*\*ppszIPv6Gateway
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ppszIPv6Gateway&lt;/code&gt; - IPv6 gateway specified in the standard colon-separated IPv6 address format (for example, 2010:125::100)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;route-configuration-apis&#34;&gt;Route Configuration APIs&lt;/h1&gt;
+&lt;p&gt;The Photon OS 2.0 network manager C API enables you to manage static IP routes configuration.&lt;/p&gt;
+&lt;h2 id=&#34;structure-declarations-2&#34;&gt;Structure Declarations&lt;/h2&gt;
+&lt;h3 id=&#34;route-scope&#34;&gt;Route Scope&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Defines the scope of a route. One of the following options.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;GLOBAL_ROUTE&lt;/code&gt; - route to a destination one or more hops away&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_ROUTE&lt;/code&gt; - route to a destination on the local network&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;HOST_ROUTE&lt;/code&gt; - route to a destination address on the local host&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; typedef enum _NET_ROUTE_SCOPE
+ {
+     GLOBAL_ROUTE = 0,
+     LINK_ROUTE,
+     HOST_ROUTE,
+     NET_ROUTE_SCOPE_MAX
+ } NET_ROUTE_SCOPE;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;ip-route&#34;&gt;IP Route&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Defines an IP route. Includes the following information:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface through which the specified destination network can be reached&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszDestNetwork&lt;/code&gt; - destination IP network reached by the specified route&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszSourceNetwork&lt;/code&gt; - source network for the specified route&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszGateway&lt;/code&gt; - IP gateway through which the specified destination network can be reached&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;scope&lt;/code&gt; - scope of this route entry; one of the following values: GLOBAL_ROUTE, LINK_ROUTE, or HOST_ROUTE as defined above&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;metric&lt;/code&gt; - metric of this route, an unsigned integer&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;table&lt;/code&gt; - identifier for the route table to which this route belongs.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; typedef struct _NET_IP_ROUTE
+ {
+     char \*pszInterfaceName;
+     char \*pszDestNetwork;
+     char \*pszSourceNetwork;
+     char \*pszGateway;
+     NET_ROUTE_SCOPE scope;
+     uint32_t metric;
+     uint32_t table;
+ } NET_IP_ROUTE, \*PNET_IP_ROUTE;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;nm_add_static_ip_route&#34;&gt;nm_add_static_ip_route&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Add a static IP route.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_add_static_ip_route(
+     NET_IP_ROUTE \*pRoute
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pRoute&lt;/code&gt; - static IP route&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_delete_static_ip_route&#34;&gt;nm_delete_static_ip_route&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Delete a static IP route.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_delete_static_ip_route(
+     NET_IP_ROUTE \*pRoute
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pRoute&lt;/code&gt; - static IP route&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_static_ip_routes&#34;&gt;nm_get_static_ip_routes&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get the static IP routes for an interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_get_static_ip_routes(
+     const char \*pszInterfaceName,
+     size_t \*pCount,
+     NET_IP_ROUTE \*\*\*pppRouteList
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pCount&lt;/code&gt; - number of NET_IP_ROUTE elements returned in the pppRouteList array by the API call upon success&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pppRouteList&lt;/code&gt; - array of static IP routes&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;dns-configuration-apis&#34;&gt;DNS Configuration APIs&lt;/h1&gt;
+&lt;p&gt;The Photon OS 2.0 network manager C API enables you to manage the DNS and Domains configuration.&lt;/p&gt;
+&lt;h2 id=&#34;structure-declarations-3&#34;&gt;Structure Declarations&lt;/h2&gt;
+&lt;h3 id=&#34;dns-mode&#34;&gt;DNS Mode&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;DNS mode. Any of the following values:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;DNS_MODE_INVALID&lt;/code&gt; - DNS mode is unknown&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;STATIC_DNS&lt;/code&gt; - DNS servers are statically configured&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;DHCP_DNS&lt;/code&gt; - DNS servers configuration is acquired from DHCP protocol.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; typedef enum _NET_DNS_MODE
+ {
+     DNS_MODE_INVALID = 0,
+     STATIC_DNS,
+     DHCP_DNS,
+     DNS_MODE_MAX,
+ } NET_DNS_MODE;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;nm_set_dns_servers&#34;&gt;nm_set_dns_servers&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Set the DNS servers list for the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_set_dns_servers(
+     const char \*pszInterfaceName,
+     NET_DNS_MODE mode,
+     size_t count,
+     const char \*\*ppszDnsServers
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name (optional, can be NULL)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;mode&lt;/code&gt; - DNS mode. One of the following values:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;DNS_MODE_INVALID&lt;/code&gt; = 0&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;DNS_MODE_MA&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;DHCP_DNS&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;STATIC_DNS&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;count&lt;/code&gt; - number of NUL terminated DNS server entries passed in the ppszDnsServers array to the API call (for example, 10.10.10.200 or 2020::40)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ppszDnsServers&lt;/code&gt; - array of DNS servers&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_add_dns_server&#34;&gt;nm_add_dns_server&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Add a server to the DNS servers list associated with an interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_add_dns_server(
+     const char \*pszInterfaceName,
+     const char \*pszDnsServer
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name (optional, can be NULL)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ppszDnsServer&lt;/code&gt; - server to add to the DNS server list&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_delete_dns_server&#34;&gt;nm_delete_dns_server&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Delete a server from the DNS servers list associated with an interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_delete_dns_server(
+     const char \*pszInterfaceName,
+     const char \*pszDnsServer
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name (optional, can be NULL)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ppszDnsServer&lt;/code&gt; - server to remove from the DNS server list&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_dns_servers&#34;&gt;nm_get_dns_servers&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get the the DNS servers list for the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_get_dns_servers(
+     const char \*pszInterfaceName,
+     NET_DNS_MODE \*pMode,
+     size_t \*pCount,
+     char \*\*\*pppszDnsServers
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name (optional, can be NULL)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pMode&lt;/code&gt; - DNS mode. One of the following values:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;DNS_MODE_INVALID&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;DHCP_DNS&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;STATIC_DNS&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pCount&lt;/code&gt; - number of NUL terminated DNS server entries in the pppszDnsServers array returned by the API call (for example, 10.10.10.200 or 2020::40)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pppszDnsServers&lt;/code&gt; - array of DNS servers&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_set_dns_domains&#34;&gt;nm_set_dns_domains&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Set the DNS domain list.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_set_dns_domains(
+     const char \*pszInterfaceName,
+     size_t count,
+     const char \*\*ppszDnsDomains
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name (optional, can be NULL)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;count&lt;/code&gt; - number of DNS domains specified in the ppszDnsDomains array to the API call (for example, if count = 2, then there are two elements: ppszDnsDomains[0] and ppszDnsDomains[1])&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ppszDnsDomains&lt;/code&gt; - array of DNS domains&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_add_dns_domain&#34;&gt;nm_add_dns_domain&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Add a DNS domain to the DNS domain list.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_add_dns_domain(
+     const char \*pszInterfaceName,
+     const char \*pszDnsDomain
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name (optional, can be NULL)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszDnsDomain&lt;/code&gt; - DNS domain to add to the list&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_delete_dns_domain&#34;&gt;nm_delete_dns_domain&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Delete a DNS domain from the DNS domain list.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_delete_dns_domain(
+     const char \*pszInterfaceName,
+     const char \*pszDnsDomain
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name (optional, can be NULL)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszDnsDomain&lt;/code&gt; - DNS domain to remove from the list&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_dns_domains&#34;&gt;nm_get_dns_domains&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get the list of DNS domains.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_get_dns_domains(
+     const char \*pszInterfaceName,
+     size_t \*pCount,
+     char \*\*\*pppszDnsDomains
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name (optional, can be NULL)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pCount&lt;/code&gt; - number of DNS domains returned in the pppszDnsDomains from the API call (for example, if count = 2, then there are two elements: ppszDnsDomains[0] and ppszDnsDomains[1])&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pppszDnsDomains&lt;/code&gt; - array of DNS domains&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;dhcp-options-duid-and-iaid-configuration-apis&#34;&gt;DHCP Options DUID and IAID Configuration APIs&lt;/h1&gt;
+&lt;p&gt;The Photon OS 2.0 network manager C API enables you to manage DHCP DUID and Interface IAID.&lt;/p&gt;
+&lt;h2 id=&#34;nm_set_iaid&#34;&gt;nm_set_iaid&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Set the IAID for the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_set_iaid(
+     const char \*pszInterfaceName,
+     uint32_t iaid
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;iaid&lt;/code&gt; - interface association identifier (IAID)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_iaid&#34;&gt;nm_get_iaid&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get the IAID for the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_get_iaid(
+     const char \*pszInterfaceName,
+     uint32_t \*pIaid
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pIaid&lt;/code&gt; - interface association identifier (IAID)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_set_duid&#34;&gt;nm_set_duid&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Set the DUID for the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_set_duid(
+     const char \*pszInterfaceName,
+     const char \*pszDuid
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name (optional, specify NULL to set system global DUID configuration)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszDuid&lt;/code&gt; - DHCP unique identifier (DUID)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_duid&#34;&gt;nm_get_duid&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get the DUID for the interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_get_duid(
+     const char \*pszInterfaceName,
+     char \*\*ppszDuid
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name (optional, specify NULL to query system global DUID configuration)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ppszDuid&lt;/code&gt; - DHCP unique identifier (DUID)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;ntp-configuration-apis&#34;&gt;NTP Configuration APIs&lt;/h1&gt;
+&lt;p&gt;The Photon OS 2.0 network manager C API enables you to manage NTP servers configured for the system.&lt;/p&gt;
+&lt;h2 id=&#34;nm_set_ntp_servers&#34;&gt;nm_set_ntp_servers&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Set the list of NTP servers.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_set_ntp_servers(
+     size_t count,
+     const char \*\*ppszNtpServers
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;count&lt;/code&gt; - number of NTP servers in the ppszNtpServers array passed to the API call.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ppszNtpServers&lt;/code&gt; - array of NTP servers&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_add_ntp_servers&#34;&gt;nm_add_ntp_servers&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Add a server to the NTP servers list.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_add_ntp_servers(
+     size_t count,
+     const char \*\*ppszNtpServers
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;count&lt;/code&gt; - number of NTP servers to add (specified in the ppszNtpServers array) passed to the API call.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ppszNtpServers&lt;/code&gt; - array of NTP servers to add&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_delete_ntp_servers&#34;&gt;nm_delete_ntp_servers&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Delete a server from the NTP servers list.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_delete_ntp_servers(
+     size_t count,
+     const char \*\*ppszNtpServers
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;count&lt;/code&gt; - number of NTP servers to delete (specified in the ppszNtpServers array) passed to the API call&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ppszNtpServers&lt;/code&gt; - array of NTP servers to delete&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_ntp_servers&#34;&gt;nm_get_ntp_servers&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get the NTP servers list.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_get_ntp_servers(
+     size_t \*pCount,
+     char \*\*\*pppszNtpServers
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pCount&lt;/code&gt; - number of NTP servers in the pppszNtpServers array returned from the API call&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pppszNtpServers&lt;/code&gt; - array of NTP servers&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Other APIs&lt;/p&gt;
+&lt;h2 id=&#34;nm_set_hostname&#34;&gt;nm_set_hostname&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Set the host name for the system.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_set_hostname(
+     const char \*pszHostname
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszHostname&lt;/code&gt; - host name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_hostname&#34;&gt;nm_get_hostname&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get the host name for the system.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_get_hostname(
+     char \*\*ppszHostname
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ppszHostname&lt;/code&gt; - host name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_wait_for_link_up&#34;&gt;nm_wait_for_link_up&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Wait for the specified interface to come up.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_wait_for_link_up(
+     const char \*pszInterfaceName,
+     uint32_t timeout
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;timeout&lt;/code&gt; - maximum time (in seconds) to wait (until the link is up) before timing out of the request; specify 0 for no timeout (wait indefinitely)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_wait_for_ip&#34;&gt;nm_wait_for_ip&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Wait for the interface to acquire an IP address of the specified IP address type.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_wait_for_ip(
+     const char \*pszInterfaceName,
+     uint32_t timeout,
+     NET_ADDR_TYPE addrTypes
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszInterfaceName&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;timeout&lt;/code&gt; - maximum time (in seconds) to wait (until the link has an IP address of the specified address type) before timing out of the request; specify 0 for no timeout (wait indefinitely)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;addrTypes&lt;/code&gt; - type of IP address; one of the following values:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;STATIC_IPV4&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;STATIC_IPV6&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;DHCP_IPV4&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;DHCP_IPV6&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;AUTO_IPV6&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LINK_LOCAL_IPV6&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_set_network_param&#34;&gt;nm_set_network_param&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Set the value of a network parameter for an object.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_set_network_param(
+     const char \*pszObjectName,
+     const char \*pszParamName,
+     const char \*pszParamValue
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszObjectName&lt;/code&gt; - an interface name (for example, &amp;ldquo;eth0&amp;rdquo;) or a file name (for example, /etc/systemd/resolved.conf)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszParamName&lt;/code&gt; - name of a parameter associated with the object; specified in the format SectionName_KeyName (for example, Link_MTUBytes represents the MtuBytes key in [Link] section in &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/systemd.network.html&#34;&gt;https://www.freedesktop.org/software/systemd/man/systemd.network.html&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszParamValue&lt;/code&gt; - points to the parameter value to set; you can add (+) or remove (-) a parameter by prepending the parameter name with + or -. For example:&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;netmgr net_info &amp;ndash;set &amp;ndash;object eth1 &amp;ndash;paramname +Network_Address &amp;ndash;paramvalue &amp;ldquo;10.10.10.1/24&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_get_network_param&#34;&gt;nm_get_network_param&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Get the value of a network parameter associated with an object.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_get_network_param(
+     const char \*pszObjectName,
+     const char \*pszParamName,
+     char \*\*ppszParamValue
+ );
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Arguments&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;pszObjectName&lt;/code&gt; - an interface name (for example, &amp;ldquo;eth0&amp;rdquo;) or a file name (for example, /etc/systemd/resolved.conf)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pszParamName&lt;/code&gt; - name of a parameter associated with the object; returned in the format SectionName_KeyName (for example, Link_MTUBytes represents the MtuBytes key in [Link] section in  &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/systemd.network.html&#34;&gt;https://www.freedesktop.org/software/systemd/man/systemd.network.html&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ppszParamValue&lt;/code&gt; - parameter value&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;service-management-apis&#34;&gt;Service Management APIs&lt;/h1&gt;
+&lt;h2 id=&#34;nm_stop_network_service&#34;&gt;nm_stop_network_service&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Stop the network service.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_stop_network_service();
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_restart_network_service&#34;&gt;nm_restart_network_service&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Restart the network service.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_restart_network_service();
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;nm_stop_dns_service&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Stop the DNS service.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;uint32_t
+ nm_stop_dns_service();
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_restart_dns_service&#34;&gt;nm_restart_dns_service&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Restart the DNS service.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_restart_dns_service();
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_stop_ntp_service&#34;&gt;nm_stop_ntp_service&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Stop the NTP service.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_stop_ntp_service();
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;nm_restart_ntp_service&#34;&gt;nm_restart_ntp_service&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Description&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Restart the NTP service.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Declaration&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; uint32_t
+ nm_restart_ntp_service();
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: error code&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Network Configuration Manager - Python API</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/netmgr.python/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/netmgr.python/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Photon OS 2.0 provides a Python API for the Network Configuration Manager.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#setup-instructions&#34;&gt;Setup Instructions&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#initialization-steps&#34;&gt;Initialization Steps&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#get-online-help&#34;&gt;Get Online Help&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#basic-information&#34;&gt;Basic Information&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#interface-configuration&#34;&gt;Interface Configuration&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#ip-address-configuration&#34;&gt;IP Address Configuration&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#dns-configuration&#34;&gt;DNS Configuration&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#dhcp-options-duid-and-iaid-configuration&#34;&gt;DHCP Options, DUID, and IAID Configuration&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#ntp-servers&#34;&gt;NTP Servers&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;setup-instructions&#34;&gt;Setup Instructions&lt;/h2&gt;
+&lt;p&gt;To set up and run the latest version of the Network Manager API for Python:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# tdnf install pmd pmd-python3
+# systemctl start pmd
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;initialization-steps&#34;&gt;Initialization Steps&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;# python3
+&amp;gt;&amp;gt;&amp;gt; import pmd
+&amp;gt;&amp;gt;&amp;gt; net = pmd.server().net
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;get-online-help&#34;&gt;Get Online Help&lt;/h2&gt;
+&lt;p&gt;Get help for all commands.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt; help(net)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Get help for a specific command.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt; help(net.add_ntp_servers)
+-in function add_ntp_servers:
+add_ntp_servers(...) method of  [server.net](http://server.net/) instance
+    net.add_ntp_servers(ntpservers = [&amp;quot;20.20.20.20&amp;quot;, &amp;quot;25.30.40.70&amp;quot;])
+    adds ntp servers. returns success: 0, failure: exception.
+(END)
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;basic-information&#34;&gt;Basic Information&lt;/h2&gt;
+&lt;h3 id=&#34;get_system_network_info&#34;&gt;get_system_network_info&lt;/h3&gt;
+&lt;p&gt;Get network information details that are common to the entire system.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_system_network_info()
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;details about the system network (DUID, DNS mode, DNS server list, DNS domain list, NTP server list)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt; system_network_info = netmgmt.get_system_network_info()
+
+&amp;gt;&amp;gt;&amp;gt; print ( system_network_info)
+
+[{DUID: 00:02:11:22:33:44:55:66:77:20, DNS Mode: (null), DNS ServerList: [&#39;10.10.100.100&#39;, &#39;20.20.200.10&#39;], DNS domain list: [&#39; [abcd.com](http://abcd.com)&#39;], NTP ServerList: (null)}]
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;get_err_info&#34;&gt;get_err_info&lt;/h3&gt;
+&lt;p&gt;Get information about the specified error number.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_err_info(error = &amp;lt;error_number&amp;gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;error - error number&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Here is the list of error numbers:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;4097 - invalid parameter&lt;/li&gt;
+&lt;li&gt;4098 - not supported&lt;/li&gt;
+&lt;li&gt;4099 - out of memory&lt;/li&gt;
+&lt;li&gt;4100 - value not found&lt;/li&gt;
+&lt;li&gt;4101 - value exists&lt;/li&gt;
+&lt;li&gt;4102 - invalid interface&lt;/li&gt;
+&lt;li&gt;4103 - invalid mode&lt;/li&gt;
+&lt;li&gt;4104 - bad configuration file&lt;/li&gt;
+&lt;li&gt;4105 - write failed&lt;/li&gt;
+&lt;li&gt;4106 - timout&lt;/li&gt;
+&lt;li&gt;4107 - DCHP timeout&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Example&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt; net.get_err_info(error = 4097)
+
+&#39;invalid parameter&#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;interface-configuration&#34;&gt;Interface Configuration&lt;/h2&gt;
+&lt;p&gt;Use these commands to manage the configuration for a network interface.&lt;/p&gt;
+&lt;h3 id=&#34;get_link_info&#34;&gt;get_link_info&lt;/h3&gt;
+&lt;p&gt;Get the link info for the specified interface or for all interfaces (if no interface is specified).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_link_info(ifname = interface_name)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name (optional)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: link info&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;get_link_macaddr&#34;&gt;get_link_macaddr&lt;/h3&gt;
+&lt;p&gt;Get the MAC address for the specified interface or for all interfaces (if no interface is specified).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_link_macaddr(ifname = interface_name)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name (optional)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: MAC address&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;get_link_mode&#34;&gt;get_link_mode&lt;/h3&gt;
+&lt;p&gt;Get the link mode for the specified interface (auto or manual), or for all interfaces (if no interface is specified).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_link_mode(ifname = interface_name)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name (optional)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: link mode (auto, manual, or unknown)&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;get_link_mtu&#34;&gt;get_link_mtu&lt;/h3&gt;
+&lt;p&gt;Get the MTU of the specified interface or for all interfaces (if no interface is specified).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_link_mtu(ifname = interface_name)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name (optional)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: link MTU&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;get_link_state&#34;&gt;get_link_state&lt;/h3&gt;
+&lt;p&gt;Get the link state of the specified interface or for all interfaces (if no interface is specified).&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_link_state(ifname = interface_name)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name (optional)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: link state (up, down, unknown)&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;set_link_down&#34;&gt;set_link_down&lt;/h3&gt;
+&lt;p&gt;Bring down the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.set_link_down(ifname = interface_name)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;set_link_macaddr&#34;&gt;set_link_macaddr&lt;/h3&gt;
+&lt;p&gt;Set the MAC address of the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.set_link_macaddr(ifname = interface_name, macaddr = mac_address)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;macaddr&lt;/code&gt; = MAC address&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;set_link_mode&#34;&gt;set_link_mode&lt;/h3&gt;
+&lt;p&gt;Set the mode (auto or manual) of the specifed interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.set_link_mode(ifname = interface_name, link_mode = [auto, manual])
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;link_mode&lt;/code&gt; - auto or manual&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;set_link_mtu&#34;&gt;set_link_mtu&lt;/h3&gt;
+&lt;p&gt;Set the MTU for the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.set_link_mtu(ifname = interface_name, mtu = mtu)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;mtu&lt;/code&gt; - &lt;code&gt;mtu&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;set_link_state&#34;&gt;set_link_state&lt;/h3&gt;
+&lt;p&gt;Set the state (up or down) of the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.set_link_state(ifname = interface_name, link_state = [down, up])
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;link_state&lt;/code&gt; - down or up&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;set_link_up&#34;&gt;set_link_up&lt;/h3&gt;
+&lt;p&gt;Brings up the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.set_link_up(ifname = interface_name)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;link_state&lt;/code&gt; - down or up&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;ip-address-configuration&#34;&gt;IP Address Configuration&lt;/h2&gt;
+&lt;p&gt;Use these commands to manage IP address configuration for a network interface.&lt;/p&gt;
+&lt;h3 id=&#34;add_static_ipv6_addr&#34;&gt;add_static_ipv6_addr&lt;/h3&gt;
+&lt;p&gt;Add a static IPv6 address to the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.add_static_ipv6_addr(ifname = interface_name, addr_prefix = ipv6address_prefix)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;addr_prefix&lt;/code&gt; - IPv6 address prefix&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;del_static_ipv6_addr&#34;&gt;del_static_ipv6_addr&lt;/h3&gt;
+&lt;p&gt;Delete a static IPv6 address from the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.del_static_ipv6_addr(ifname = interface_name, addr_prefix = ipv6address_prefix)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;addr_prefix&lt;/code&gt; - IPv6 address prefix&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;get_ipv4_addr_gateway&#34;&gt;get_ipv4_addr_gateway&lt;/h3&gt;
+&lt;p&gt;Get the IPv4 address with the prefix and gateway for the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_ipv4_addr_gateway(ifname = interface_name)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: IPv4 address with the prefix and gateway&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;get_ipv6_addr&#34;&gt;get_ipv6_addr&lt;/h3&gt;
+&lt;p&gt;Get the list of IPv6 addresses for the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_ipv6_addr(ifname = interface_name)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: IPv6 address list&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;get_ipv6_addr_mode&#34;&gt;get_ipv6_addr_mode&lt;/h3&gt;
+&lt;p&gt;Get the address mode for the specified interface to determine whether DHCPv6, autoconf are enabled or disabled.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_ipv6_addr_mode(ifname = interface_name)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Status for DHCPv6, autoconf (True=enabled, False=disabled)&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;get_ipv6_gateway&#34;&gt;get_ipv6_gateway&lt;/h3&gt;
+&lt;p&gt;Get the IPv6 gateway for the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_ipv6_gateway(ifname = interface_name)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: IPv6 gateway&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;set_ipv4_addr_gateway&#34;&gt;set_ipv4_addr_gateway&lt;/h3&gt;
+&lt;p&gt;Set the IPv4 address with the prefix and gateway for the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_ipv4_addr_gateway(ifname = interface_name, addr_mode = [dhcp, static, none], addr_prefix = ipv4addressprefix, gateway = ipv4gateway)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;addr_mode&lt;/code&gt; - address mode - dhcp, static, or none&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;addr_prefix&lt;/code&gt; -  IPv4 address or prefix&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;gateway&lt;/code&gt; - IPv4 gateway&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;set_ipv6_addr_mode&#34;&gt;set_ipv6_addr_mode&lt;/h3&gt;
+&lt;p&gt;Set the address mode for the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.set_ipv6_addr_mode(ifname = interface_name, enable_dhcp = [True, False], enable_autoconf = [True, False])
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;enable_dhcp&lt;/code&gt; - True to enable, False to disable&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;enable_autoconf&lt;/code&gt; - True to enable, False to disable&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;set_ipv6_gateway&#34;&gt;set_ipv6_gateway&lt;/h3&gt;
+&lt;p&gt;Set the IPv6 gateway for the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.set_ipv6_gateway(ifname = interface_name, gateway = ipv6gateway)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;gateway&lt;/code&gt; - IPv6 gateway&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;dns-configuration&#34;&gt;DNS Configuration&lt;/h2&gt;
+&lt;p&gt;Use these commands to manage DNS domains and servers for a network interface.&lt;/p&gt;
+&lt;h3 id=&#34;get_dns_domains&#34;&gt;get_dns_domains&lt;/h3&gt;
+&lt;p&gt;Get the list of DNS domains for the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_dns_domains(ifname = interface_name)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: list of DNS domains&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;get_dns_servers&#34;&gt;get_dns_servers&lt;/h3&gt;
+&lt;p&gt;Get the list of DNS servers and the mode for the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_dns_servers(ifname = interface_name)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: list of DNS servers and mode&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;set_dns_domains&#34;&gt;set_dns_domains&lt;/h3&gt;
+&lt;p&gt;Set the list of DNS domains for the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.set_dns_domains(domains = [&amp;quot;domain1&amp;quot;,&amp;quot;domain2&amp;quot;,...], ifname = interface_name)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;domains&lt;/code&gt; - comma-separated list of one or more domains&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;set_dns_servers&#34;&gt;set_dns_servers&lt;/h3&gt;
+&lt;p&gt;Set the list of DNS servers for the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.set_dns_servers(dns_mode = [dhcp, static], servers = [&amp;quot;server1&amp;quot;,&amp;quot;server2&amp;quot;, ...], ifname = interface_name)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;dns_mode&lt;/code&gt; - dhcp or static&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;servers&lt;/code&gt; - comma-separate list of one or more servers&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;dhcp-options-duid-and-iaid-configuration&#34;&gt;DHCP Options DUID and IAID Configuration&lt;/h2&gt;
+&lt;h3 id=&#34;get_link_iaid&#34;&gt;get_link_iaid&lt;/h3&gt;
+&lt;p&gt;Get the IAID for the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_link_iaid(ifname = interface)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: IAID&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;set_link_iaid&#34;&gt;set_link_iaid&lt;/h3&gt;
+&lt;p&gt;Set the IAID for the specified interface.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.set_link_iaid(ifname = interface_name, iaid = &amp;lt;iaid&amp;gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;iaid - IAID&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;get_dhcp_duid&#34;&gt;get_dhcp_duid&lt;/h3&gt;
+&lt;p&gt;Get the DCHP DUID.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_dhcp_duid(ifname = interface_name)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name (optional)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: DUID&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;set_dhcp_duid&#34;&gt;set_dhcp_duid&lt;/h3&gt;
+&lt;p&gt;Set the DCHP DUID.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.set_dhcp_duid(ifname = interface_name duid = duid)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name (optional)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;duid&lt;/code&gt; - DUID to set&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;ntp-servers&#34;&gt;NTP Servers&lt;/h2&gt;
+&lt;p&gt;Use these commands to manage the NTP servers list.&lt;/p&gt;
+&lt;h3 id=&#34;add_ntp_servers&#34;&gt;add_ntp_servers&lt;/h3&gt;
+&lt;p&gt;Add one or more NTP servers to the NTP servers list.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.add_ntp_servers(ntpservers = [&amp;quot;server1&amp;quot;, &amp;quot;server2&amp;quot;, ...])
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ntpservers&lt;/code&gt; - Comma-separated list of NTP servers to add to the list.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;del_ntp_servers&#34;&gt;del_ntp_servers&lt;/h3&gt;
+&lt;p&gt;Remove one or more NTP servers from the NTP servers list.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.del_ntp_servers(ntpservers = [&amp;quot;server1&amp;quot;, &amp;quot;server2&amp;quot;, ...])
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ntpservers&lt;/code&gt; - Comma-separated list of NTP servers to remove from the list.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;get_ntp_servers&#34;&gt;get_ntp_servers&lt;/h3&gt;
+&lt;p&gt;Get the NTP servers list.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_ntp_servers()
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: NTP servers list&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;set_ntp_servers&#34;&gt;set_ntp_servers&lt;/h3&gt;
+&lt;p&gt;Set the NTP servers list.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.set_ntp_servers(ntpservers = [&amp;quot;server1&amp;quot;, &amp;quot;server2&amp;quot;, ...])
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ntpservers&lt;/code&gt; - Comma-separated list of NTP servers to set in the list.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;get_hostname&#34;&gt;get_hostname&lt;/h3&gt;
+&lt;p&gt;Get the host name.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;net.get_hostname()&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: host name&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;set_hostname&#34;&gt;set_hostname&lt;/h3&gt;
+&lt;p&gt;Set the host name.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.set_hostname(hostname)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;hostname&lt;/code&gt; - name to assign to the host&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;wait_for_ip&#34;&gt;wait_for_ip&lt;/h3&gt;
+&lt;p&gt;Wait for the specified interface to acquire a valid IP address of the specified IP address type.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.wait_for_ip(ifname = interface_name, timeout = timeout, addrtypes = [ipv4, ipv6, static_ipv4, static_ipv6, dhcp_ipv4, dhcp_ipv6, auto_ipv6, link_local_ipv6])
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;timeout&lt;/code&gt; - maximum time (in seconds) to wait (until the link is up) before timing out of the request; specify 0 for no timeout (wait indefinitely)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;addrtypes&lt;/code&gt; - one of the following address types: ipv4, ipv6, static_ipv4, static_ipv6, dhcp_ipv4, dhcp_ipv6, auto_ipv6, or link_local_ipv6&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0 (when the link has an IP of the specified type)&lt;/li&gt;
+&lt;li&gt;failure: exception (for example, timeout expired)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;wait_for_link_up&#34;&gt;wait_for_link_up&lt;/h3&gt;
+&lt;p&gt;Wait for the specified interface to come up.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.wait_for_link_up(ifname = interface_name, timeout = timeout)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ifname&lt;/code&gt; - interface name&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;timeout&lt;/code&gt; - maximum time (in seconds) to wait (until the link is up) before timing out of the request; specify 0 for no timeout (wait indefinitely)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0 (when link is up)&lt;/li&gt;
+&lt;li&gt;failure: exception (for example, timeout expired)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;get_network_param&#34;&gt;get_network_param&lt;/h3&gt;
+&lt;p&gt;Get the specified network configuration parameter for the specified interface or filename.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.get_network_param(object = IfName or Filename, paramname = SectionName_KeyName)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;object&lt;/code&gt; - an interface name (for example, &amp;quot;eth0&amp;quot;) or a file name (for example, /etc/systemd/resolved.conf)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;paramname&lt;/code&gt; - name of a parameter associated with the object; specified in the format SectionName_KeyName (for example, Link_MTUBytes represents the MtuBytes key in [Link] section in  &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/systemd.network.html&#34;&gt;https://www.freedesktop.org/software/systemd/man/systemd.network.html&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;set_network_param&#34;&gt;set_network_param&lt;/h3&gt;
+&lt;p&gt;Set the value of a network configuration parameter for the specified interface or filename.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Syntax&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;net.set_network_param(object = interface_name or filename, paramname = SectionName_KeyName, paramvalue = key_value)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Parameters&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;object&lt;/code&gt; - an interface name (for example, &amp;quot;eth0&amp;quot;) or a file name (for example, /etc/systemd/resolved.conf)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;paramname&lt;/code&gt; - name of a parameter associated with the object; specified in the format SectionName_KeyName (for example, Link_MTUBytes represents the MtuBytes key in [Link] section in  &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/systemd.network.html&#34;&gt;https://www.freedesktop.org/software/systemd/man/systemd.network.html&lt;/a&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Returns&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;success: 0&lt;/li&gt;
+&lt;li&gt;failure: exception&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: </title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/installing-the-packages-for-tcpdump-and-netcat-with-tdnf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/installing-the-packages-for-tcpdump-and-netcat-with-tdnf/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Photon OS includes the following networking tools:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;tcpdump&lt;/strong&gt;. A networking tool that captures and analyzes packets on a network interface. &lt;code&gt;tcpdump&lt;/code&gt; is not available with the minimal version of Photon OS but available in the repository. The minimal version includes the &lt;code&gt;iproute2&lt;/code&gt; tools by default.&lt;/p&gt;
+&lt;p&gt;You can install &lt;code&gt;tcpdump&lt;/code&gt; and its accompanying package &lt;code&gt;libpcap&lt;/code&gt;, a C/C++ library for capturing network traffic, by using &lt;code&gt;tdnf&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;tdnf install tcpdump&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+- **netcat**. A tool to send data over network connections with TCP or UDP. This tool is not included in either the minimal or the full version of Photon OS. But since `netcat` furnishes powerful options for analyzing, troubleshooting, and debugging network connections, you might want to install it. To install `netcat&#39;, run the following command: 
+
+    ```
+tdnf install netcat
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+  </channel>
+</rss>

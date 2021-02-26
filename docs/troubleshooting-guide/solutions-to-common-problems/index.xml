@@ -1,0 +1,190 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Solutions to Common Problems</title>
+    <link>/docs/troubleshooting-guide/solutions-to-common-problems/</link>
+    <description>Recent content in Solutions to Common Problems on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs/troubleshooting-guide/solutions-to-common-problems/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs: Boot in Emergency Mode</title>
+      <link>/docs/troubleshooting-guide/solutions-to-common-problems/boot-in-emergency-mode/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/troubleshooting-guide/solutions-to-common-problems/boot-in-emergency-mode/</guid>
+      <description>
+        
+        
+        &lt;p&gt;If you encounter problems during normal boot, you can boot in Emergency Mode.&lt;/p&gt;
+&lt;p&gt;Perform the following steps to boot in Emergency Mode:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Restart the Photon OS machine or the virtual machine running Photon OS.&lt;/p&gt;
+&lt;p&gt;When the Photon OS splash screen appears, as it restarts, type the letter &lt;code&gt;e&lt;/code&gt; quickly.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Append &lt;code&gt;emergency&lt;/code&gt; to the kernel command line.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Press &lt;code&gt;F10&lt;/code&gt; to proceed with the boot.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;At the command prompt, provide the root password to log in to Emergency Mode.&lt;/p&gt;
+&lt;p&gt;By default, &lt;code&gt;/&lt;/code&gt; is mounted as read-only.&lt;/p&gt;
+&lt;p&gt;To make modifications, run the following command to remount with write access:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;mount -o remount,rw /&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Resetting a Lost Root Password</title>
+      <link>/docs/troubleshooting-guide/solutions-to-common-problems/resetting-a-lost-root-password/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/troubleshooting-guide/solutions-to-common-problems/resetting-a-lost-root-password/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Perform the following steps to rest a lost password:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Restart the Photon OS machine or the virtual machine running Photon OS.&lt;/p&gt;
+&lt;p&gt;When the Photon OS splash screen appears as it restarts, type the letter &lt;code&gt;e&lt;/code&gt; to go to the GNU GRUB edit menu quickly. Because Photon OS reboots so quickly, you won&amp;rsquo;t have much time to type &lt;code&gt;e&lt;/code&gt;. Remember that in vSphere and Workstation, you might have to give the console focus by clicking in its window before it will register input from the keyboard.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Second, in the GNU GRUB edit menu, go to the end of the line that starts with &lt;code&gt;linux&lt;/code&gt;, add a space, and then add the following code exactly as it appears below:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;rw init=/bin/bash
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;After you add this code, the GNU GRUB edit menu should look exactly like this:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/grub-edit-menu-changepw.png&#34; alt=&#34;The modified GNU GRUB edit menu&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Now type &lt;code&gt;F10&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;At the command prompt, type &lt;code&gt;passwd&lt;/code&gt; and then type (and re-enter) a new root password that conforms to the password complexity rules of Photon OS. Remember the password.&lt;/p&gt;
+&lt;p&gt;Next, type the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;umount /
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Finally, type the following command. You must include the &lt;code&gt;-f&lt;/code&gt; option to force a reboot; otherwise, the kernel enters a state of panic.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;reboot -f
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This sequence of commands should look like this:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/resetpw.png&#34; alt=&#34;The series of commands to reset the root password&#34;&gt;&lt;/p&gt;
+&lt;p&gt;After the Photon OS machine reboots, log in with the new root password.&lt;/p&gt;
+&lt;h2 id=&#34;resetting-the-failed-logon-count&#34;&gt;Resetting the failed logon count&lt;/h2&gt;
+&lt;p&gt;Resetting the root password will not reset the failed logon count, if you&amp;rsquo;ve had to many failed attempts, you may not be able to logon after resetting the password.&lt;/p&gt;
+&lt;p&gt;You will know if this is the case, if you see &lt;code&gt;Account locked due to X failed logins&lt;/code&gt; at the photon console.&lt;/p&gt;
+&lt;p&gt;To reset the count, before you unmount the filesystem, run the following&amp;hellip;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/sbin/pam_tally2 --reset --user root
+&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Fixing Permissions on Network Config Files</title>
+      <link>/docs/troubleshooting-guide/solutions-to-common-problems/fixing-permissions-on-network-config-files/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/troubleshooting-guide/solutions-to-common-problems/fixing-permissions-on-network-config-files/</guid>
+      <description>
+        
+        
+        &lt;p&gt;When you create a new network configuration file as root user, the network service might be unable to process it until you set the file mode bits to &lt;code&gt;644&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;If you query the journal with &lt;code&gt;journalctl -u systemd-networkd&lt;/code&gt;, you might see the following error message along with an indication that the network service did not start:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;`could not load configuration files. permission denied`
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The permissions on the network files might cause this problem. Without the correct permissions, &lt;code&gt;networkd-systemd&lt;/code&gt; cannot parse and apply the settings, and the network configuration that you created will not be loaded.&lt;/p&gt;
+&lt;p&gt;After you create a network configuration file with a &lt;code&gt;.network&lt;/code&gt; extension, you must run the &lt;code&gt;chmod&lt;/code&gt; command to set the new file&amp;rsquo;s mode bits to &lt;code&gt;644&lt;/code&gt;. Example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;`chmod 644 10-static-en.network`
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For Photon OS to apply the new configuration, you must restart the &lt;code&gt;systemd-networkd&lt;/code&gt; service by running the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;`systemctl restart systemd-networkd`
+&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Permitting Root Login with SSH</title>
+      <link>/docs/troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The full version of Photon OS prevents root login with SSH by default. To permit root login over SSH, open &lt;code&gt;/etc/ssh/sshd_config&lt;/code&gt; with the vim text editor and set &lt;code&gt;PermitRootLogin&lt;/code&gt; to &lt;code&gt;yes&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Vim is the default text editor available in both the full and minimal versions of Photon OS. The full version also contains Nano. After you modify the SSH daemon&amp;rsquo;s configuration file, you must restart the sshd daemon for the changes to take effect. Example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vim /etc/ssh/sshd_config
+
+# override default of no subsystems
+Subsystem       sftp    /usr/libexec/sftp-server
+
+# Example of overriding settings on a per-user basis
+#Match User anoncvs
+#       X11Forwarding no
+#       AllowTcpForwarding no
+#       PermitTTY no
+#       ForceCommand cvs server
+PermitRootLogin yes
+UsePAM yes
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Save your changes in vim and then restart the sshd daemon:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl restart sshd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can then connect to the Photon OS machine with the root account over SSH:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;steve@ubuntu:~$ ssh root@198.51.100.131
+&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Fixing Sendmail</title>
+      <link>/docs/troubleshooting-guide/solutions-to-common-problems/fixing-sendmail/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/troubleshooting-guide/solutions-to-common-problems/fixing-sendmail/</guid>
+      <description>
+        
+        
+        &lt;p&gt;If Sendmail is not behaving as expected or hangs during installation, it might be because FQDN is not set.&lt;/p&gt;
+&lt;p&gt;Perform the following steps:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Set an FQDN for your Photon OS machine.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Run the following commands in the order below:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;echo $(hostname -f) &amp;gt; /etc/mail/local-host-names
+       
+    cat &amp;gt; /etc/mail/aliases &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
+        postmaster: root
+        MAILER-DAEMON: root
+        EOF
+   
+    /bin/newaliases
+   
+    cd /etc/mail
+   
+    m4 m4/cf.m4 sendmail.mc &amp;gt; sendmail.cf
+   
+    chmod 700 /var/spool/clientmqueue
+   
+    chown smmsp:smmsp /var/spool/clientmqueue
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

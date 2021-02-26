@@ -1,0 +1,289 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Administration Guide</title>
+    <link>/docs-v3/administration-guide/</link>
+    <description>Recent content in Administration Guide on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs-v3/administration-guide/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs-V3: Photon OS Packages</title>
+      <link>/docs-v3/administration-guide/photon-os-packages/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/photon-os-packages/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The design of Photon OS simplifies life-cycle management and improves the security of packages. Photon reduces the burden and complexity of managing clusters of Linux machines by providing curated package repositories and by securing packages with GPG signatures.&lt;/p&gt;
+&lt;p&gt;Photon OS is available in a variety of pre-built packages in binary formats.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Package Management in Photon OS with `tdnf`</title>
+      <link>/docs-v3/administration-guide/managing-packages-with-tdnf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-packages-with-tdnf/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Photon OS manages packages with an open source, yum-compatible package manager called &lt;code&gt;tdnf&lt;/code&gt;, for &lt;a href=&#34;https://github.com/vmware/tdnf&#34;&gt;Tiny Dandified Yum&lt;/a&gt;. Tdnf keeps the operating system as small as possible while preserving yum&amp;rsquo;s robust package-management capabilities.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Managing Services with `systemd`</title>
+      <link>/docs-v3/administration-guide/managing-services-withsystemd/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-services-withsystemd/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Photon OS manages services with &lt;code&gt;systemd&lt;/code&gt;. By using &lt;code&gt;systemd&lt;/code&gt;, Photon OS adopts a contemporary Linux standard to bootstrap the user space and concurrently start services. This is an architecture that differs from traditional Linux systems such as SUSE Linux Enterprise Server.&lt;/p&gt;
+&lt;p&gt;A traditional Linux system contains an initialization system called SysVinit. With SLES 11, for instance, the SysVinit-style init programs control how the system starts up and shuts down. Init implements system runlevels. A SysVinit runlevel defines a state in which a process or service runs.&lt;/p&gt;
+&lt;p&gt;In contrast to a SysVinit system, &lt;code&gt;systemd&lt;/code&gt; defines no such runlevels. Instead, &lt;code&gt;systemd&lt;/code&gt; uses a dependency tree of targets to determine which services to start when. Combined with the declarative nature of &lt;code&gt;systemd&lt;/code&gt; commands, &lt;code&gt;systemd&lt;/code&gt; targets reduce the amount of code needed to run a command, leaving you with code that is easier to maintain and probably faster to execute. For an overview of &lt;code&gt;systemd&lt;/code&gt;, see &lt;a href=&#34;https://www.freedesktop.org/wiki/Software/systemd/&#34;&gt;systemd System and Service Manager&lt;/a&gt; and the &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/systemd.html&#34;&gt;man page for systemd&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;On Photon OS, you must manage services with systemd and &lt;code&gt;systemctl&lt;/code&gt;, its command-line utility for inspecting and controlling the system, and not the deprecated commands of &lt;code&gt;init.d&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;For more information, see the index of all the systemd man pages, including systemctl, at
+&lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/&#34;&gt;https://www.freedesktop.org/software/systemd/man/&lt;/a&gt;&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Configure Wireless Networking</title>
+      <link>/docs-v3/administration-guide/configure-wireless-networking/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/configure-wireless-networking/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can configure wireless networking in Photon OS. Connect to an open network or a WPA2 protected network using &lt;code&gt;wpa_cli&lt;/code&gt; and configure &lt;code&gt;systemd-networkd&lt;/code&gt; to assign an IP address to the network.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#connect-using-wpa-cli&#34;&gt;Connect using &lt;code&gt;wpa_cli&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#assign-ip-address-to-network&#34;&gt;Assign IP address to network&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;connect-using-wpa_cli&#34;&gt;Connect Using wpa_cli&lt;/h2&gt;
+&lt;p&gt;When you connect using &lt;code&gt;wpa_cli&lt;/code&gt;, you can scan for available networks and associate the network with a network ID.&lt;/p&gt;
+&lt;p&gt;Perform the following steps:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Ensure that the &lt;code&gt;wpa_supplicant service&lt;/code&gt; is running on the WLAN interface:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Systemctl status wpa_supplicant@&amp;lt;wlan-interface&amp;gt;.service&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Connect to &lt;code&gt;wpa_cli&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;wpa_cli -i wlan0&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Scan for available networks:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;scan&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;To see the list of networks, use the following command:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;scan_results&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Add the network:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;add_network&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;This command returns a network ID.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Associate the network with the network ID.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;set_network  &amp;lt;network ID&amp;gt; ssid “&amp;lt;ssid-name&amp;gt;”&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;For a WPA2 network, set the passphrase:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;set_network &amp;lt;network ID&amp;gt; psk “&amp;lt;passphrase&amp;gt;”&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Enable the network:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;enable_network &amp;lt;network ID&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Save the configuration file:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;save_config&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;To exit the &lt;code&gt;wpa_cli&lt;/code&gt;, type &amp;lsquo;quit`.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;assign-ip-address-to-network&#34;&gt;Assign IP Address To Network&lt;/h2&gt;
+&lt;p&gt;Configure &lt;code&gt;systemd-networkd&lt;/code&gt; to assign IP address to network. Perform the following steps:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Create a &lt;code&gt;/etc/systemd/network/98-dhcp-wlan.network&lt;/code&gt; file with the following contents:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Match]
+Name=wlan*
+[Network]
+DHCP=yes
+IPv6AcceptRA=no
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Restart &lt;code&gt;systemd-networkd&lt;/code&gt; using:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Systemctl restart systemd-networkd&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Managing the Network Configuration</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The network service, which is enabled by default, starts when the system boots.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Prioritize eth0 Route Over WLAN</title>
+      <link>/docs-v3/administration-guide/prioritize-eth0-route-over-wlan0/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/prioritize-eth0-route-over-wlan0/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can prioritise the eth0 route over the WLAN route. Perform the following steps:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Modify the &lt;code&gt;/etc/systemd/network/99-dhcp-en.network&lt;/code&gt; file and add the following content:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[DHCP]
+RouteMetric=512
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Restart &lt;code&gt;systemd-networkd&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Cloud-Init on Photon OS</title>
+      <link>/docs-v3/administration-guide/cloud-init-on-photon-os/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/cloud-init-on-photon-os/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The minimal and full versions of Photon OS include the cloud-init service as a built-in component. Cloud-init is a set of Python scripts that initialize cloud instances of Linux machines. The cloud-init scripts configure SSH keys and run commands to customize the machine without user interaction. The commands can set the root password, create a hostname, configure networking, write files to disk, upgrade packages, run custom scripts, and restart the system.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Containers</title>
+      <link>/docs-v3/administration-guide/containers/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/containers/</guid>
+      <description>
+        
+        
+        &lt;p&gt;A container is a process that runs on the Photon OS host with its own isolated application, file system, and networking.&lt;/p&gt;
+&lt;p&gt;Photon OS includes the open source version of Docker. With Docker, Photon OS becomes a Linux run-time host for containers, that is, a Linux cloud container.&lt;/p&gt;
+&lt;p&gt;The full version of Photon OS includes Kubernetes so you can manage clusters of containers.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Changing the Locale</title>
+      <link>/docs-v3/administration-guide/changing-the-locale/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/changing-the-locale/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can change the locale if the default locale does not meet your requirements.&lt;/p&gt;
+&lt;p&gt;To find the locale, run the the &lt;code&gt;localectl&lt;/code&gt; command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;localectl
+System Locale: LANG=en_US.UTF-8
+   VC Keymap: n/a
+  X11 Layout: n/a
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To change the locale, choose the languages that you want from &lt;code&gt;/usr/share/locale/locale.alias&lt;/code&gt;, add them to &lt;code&gt;/etc/locale-gen.conf&lt;/code&gt;, and then regenerate the locale list by running the following command as root:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;locale-gen.sh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Finally, run the following command to set the new locale, replacing the example (&lt;code&gt;en_US.UTF-8&lt;/code&gt;) with the locale that you require:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;localectl set-locale LANG=&amp;quot;de_CH.UTF-8&amp;quot; LC_CTYPE=&amp;quot;de_CH.UTF-8&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;changing-the-keyboard-layout&#34;&gt;Changing the keyboard layout&lt;/h1&gt;
+&lt;p&gt;See which keymaps are currently available on your system:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;localectl list-keymaps
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If the response to that command is the all-too-common &lt;code&gt;Couldn&#39;t find any console keymaps&lt;/code&gt;, install the key tables files and utilities:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf install kbd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You should now be able to find a keymap matching your keyboard. As an example, here I&amp;rsquo;m searching for the German keyboard layout (so I&amp;rsquo;m expecting something with &lt;code&gt;de&lt;/code&gt; in the name) used in Switzerland:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;localectl list-keymaps | grep de
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;    ...
+    de-latin1
+    de-latin1-nodeadkeys
+    de-mobii
+    de_CH-latin1
+    de_alt_UTF-8
+    ...
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;de_CH-latin1&lt;/code&gt; seems to be what we&amp;rsquo;re looking for, so change your current layout to that keymap:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;localectl set-keymap de_CH-latin1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;and confirm that the change has been made:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;localectl
+System Locale: LANG=de_CH.UTF-8
+   VC Keymap: de_CH-latin1
+  X11 Layout: n/a
+&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Security Policy</title>
+      <link>/docs-v3/administration-guide/security-policy/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/security-policy/</guid>
+      <description>
+        
+        
+        &lt;p&gt;This section describes the security policy of Photon OS.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Photon RPM OSTree: a simple guide</title>
+      <link>/docs-v3/administration-guide/photon-rpm-ostree/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/photon-rpm-ostree/</guid>
+      <description>
+        
+        
+        
+      </description>
+    </item>
+    
+  </channel>
+</rss>

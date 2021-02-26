@@ -1,0 +1,1243 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="generator" content="Hugo 0.80.0" /><link rel="canonical" type="text/html" href="../../../docs/command-line-reference/">
+<link rel="alternate" type="application/rss&#43;xml" href="../../../docs/command-line-reference/index.xml">
+<META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+
+
+<link rel="shortcut icon" href="../../../favicons/favicon.ico" >
+<link rel="apple-touch-icon" href="../../../favicons/apple-touch-icon-180x180.png" sizes="180x180">
+<link rel="icon" type="image/png" href="../../../favicons/favicon-16x16.png" sizes="16x16">
+<link rel="icon" type="image/png" href="../../../favicons/favicon-32x32.png" sizes="32x32">
+<link rel="icon" type="image/png" href="../../../favicons/android-36x36.png" sizes="36x36">
+<link rel="icon" type="image/png" href="../../../favicons/android-48x48.png" sizes="48x48">
+<link rel="icon" type="image/png" href="../../../favicons/android-72x72.png" sizes="72x72">
+<link rel="icon" type="image/png" href="../../../favicons/android-96x96.png" sizes="96x96">
+<link rel="icon" type="image/png" href="../../../favicons/android-144x144.png" sizes="144x144">
+<link rel="icon" type="image/png" href="../../../favicons/android-192x192.png" sizes="192x192">
+
+<title>Command-Line Reference | </title><meta property="og:title" content="Command-Line Reference" />
+<meta property="og:description" content="VMware Photon docs" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="/docs/command-line-reference/" />
+
+<meta itemprop="name" content="Command-Line Reference">
+<meta itemprop="description" content="VMware Photon docs">
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Command-Line Reference"/>
+<meta name="twitter:description" content="VMware Photon docs"/>
+
+
+
+
+
+<link rel="preload" href="../../../scss/main.min.3c7f29cc9739c2baa2b1de0546f161f28fc1ceb090ccf38884f6f98b2a3fe087.css" as="style">
+<link href="../../../scss/main.min.3c7f29cc9739c2baa2b1de0546f161f28fc1ceb090ccf38884f6f98b2a3fe087.css" rel="stylesheet" integrity="">
+
+
+<script
+  src="https://code.jquery.com/jquery-3.5.1.min.js"
+  integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+  crossorigin="anonymous"></script>
+
+<script
+  src="https://unpkg.com/lunr@2.3.8/lunr.min.js"
+  integrity="sha384-vRQ9bDyE0Wnu+lMfm57BlYLO0/XauFuKpVsZPs7KEDwYKktWi5+Kz3MP8++DFlRY"
+  crossorigin="anonymous"></script>
+
+
+
+
+  </head>
+  <body class="td-section">
+    <header>
+      
+
+
+	<div class="container-fluid pl-3 pr-3" id="navbarish">
+
+
+	
+  <nav class="navbar navbar-default navbar-dark navbar-expand-md d-flex justify-content-between " role="navigation" data-toggle="collapse" data-target="#menu_items" aria-expanded="false" aria-controls="navbar">
+	<div class="navbar-header d-flex align-items-center justify-content-between">   
+		<a class="navbar-brand" href="../../../">
+		<span class="navbar-logo"><svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 511.4375 135.7375" height="135.7375" width="511.4375" id="svg3355"><defs id="defs3359"><clipPath id="clipPath3387" clipPathUnits="userSpaceOnUse"><path id="path3389" d="M142.293 245.191 637.223 582.551 74.8398 348.098"/></clipPath><linearGradient id="linearGradient3391" spreadMethod="pad" gradientTransform="matrix(-493.8,-339.007,339.007,-493.8,601.845,634.081)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3393" offset="0" style="stop-opacity:1;stop-color:#fff"/><stop id="stop3395" offset="1" style="stop-opacity:1;stop-color:#80c64c"/></linearGradient><clipPath id="clipPath3405" clipPathUnits="userSpaceOnUse"><path id="path3407" d="M85.2852 570.719 516.813 593.84 54.5195 690.582"/></clipPath><linearGradient id="linearGradient3409" spreadMethod="pad" gradientTransform="matrix(-304.079,-208.759,208.759,-304.079,420.197,734.568)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3411" offset="0" style="stop-opacity:1;stop-color:#fff"/><stop id="stop3413" offset="1" style="stop-opacity:1;stop-color:#22437e"/></linearGradient><clipPath id="clipPath3423" clipPathUnits="userSpaceOnUse"><path id="path3425" d="m538.137 270.234 95.324 293.5-205.699-247.089"/></clipPath><linearGradient id="linearGradient3427" spreadMethod="pad" gradientTransform="matrix(-255.101,-175.134,175.134,-255.101,686.667,486.234)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3429" offset="0" style="stop-opacity:1;stop-color:#fff"/><stop id="stop3431" offset="1" style="stop-opacity:1;stop-color:#65a5de"/></linearGradient><clipPath id="clipPath3441" clipPathUnits="userSpaceOnUse"><path id="path3443" d="M857.758 94.3906 656.035 546.801 745.172 53.6406"/></clipPath><linearGradient id="linearGradient3445" spreadMethod="pad" gradientTransform="matrix(-102.35,-449.574,449.574,-102.35,800.888,513.826)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3447" offset="0" style="stop-opacity:1;stop-color:#fff"/><stop id="stop3449" offset="1" style="stop-opacity:1;stop-color:#c6da3a"/></linearGradient><clipPath id="clipPath3459" clipPathUnits="userSpaceOnUse"><path id="path3461" d="M481.316 864.746 635.938 602.125 594.625 903.445"/></clipPath><linearGradient id="linearGradient3463" spreadMethod="pad" gradientTransform="matrix(67.7401,274.401,-274.401,67.7401,532.514,627.656)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3465" offset="0" style="stop-opacity:1;stop-color:#fff"/><stop id="stop3467" offset="1" style="stop-opacity:1;stop-color:#c6da3a"/></linearGradient><clipPath id="clipPath3477" clipPathUnits="userSpaceOnUse"><path id="path3479" d="M1085.54 913.828 683.598 585.359 1140.12 805.109"/></clipPath><linearGradient id="linearGradient3481" spreadMethod="pad" gradientTransform="matrix(441.375,262.068,-262.068,441.375,675.147,599.59)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3483" offset="0" style="stop-opacity:1;stop-color:#fff"/><stop id="stop3485" offset="1" style="stop-opacity:1;stop-color:#22638b"/></linearGradient><clipPath id="clipPath3495" clipPathUnits="userSpaceOnUse"><path id="path3497" d="M1177.19 335.031 693.664 556.211 1106.69 235.887"/></clipPath><linearGradient id="linearGradient3499" spreadMethod="pad" gradientTransform="matrix(450.785,-274.875,274.875,450.785,694.818,558.101)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3501" offset="0" style="stop-opacity:1;stop-color:#fff"/><stop id="stop3503" offset="1" style="stop-opacity:1;stop-color:#a6dbe7"/></linearGradient><clipPath id="clipPath3513" clipPathUnits="userSpaceOnUse"><path id="path3515" d="M209.754 773.73 592.074 586.313 280.926 872.391"/></clipPath><linearGradient id="linearGradient3517" spreadMethod="pad" gradientTransform="matrix(-360.263,223.047,-223.047,-360.263,601.957,602.271)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3519" offset="0" style="stop-opacity:1;stop-color:#fff"/><stop id="stop3521" offset="1" style="stop-opacity:1;stop-color:#a6dbe7"/></linearGradient></defs><g transform="matrix(1.25,0,0,-1.25,0,135.7375)" id="g3363"><g transform="scale(0.1,0.1)" id="g3365"><path id="path3367" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m1544.2 536.77c69.27.0 114.66 37.031 114.66 91.972v1.192c0 59.726-44.79 90.781-112.28 90.781h-105.7V536.77h103.32zm-150.51 203.652c0 13.141 10.75 23.891 23.29 23.891h133.19c94.36.0 156.47-50.172 156.47-132.586v-1.192c0-90.183-75.25-136.765-164.24-136.765h-101.52v-126.622c0-13.132-10.76-23.886-23.9-23.886-12.54.0-23.29 10.754-23.29 23.886v373.274"/><path id="path3369" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m1765.51 743.41c0 13.141 10.76 23.887 23.29 23.887 13.14.0 23.9-10.746 23.9-23.887v-164.836h241.28v164.836c0 13.141 10.74 23.887 23.88 23.887 12.55.0 23.3-10.746 23.3-23.887v-376.262c0-13.132-10.75-23.886-23.3-23.886-13.14.0-23.88 10.754-23.88 23.886v167.227H1812.7v-167.227c0-13.132-10.76-23.886-23.9-23.886-12.53.0-23.29 10.754-23.29 23.886v376.262"/><path id="path3371" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m2554.86 554.082v1.203c0 94.957-69.28 172.598-164.83 172.598-95.56.0-163.65-76.445-163.65-171.406v-1.192c0-94.961 69.28-172.597 164.84-172.597 95.55.0 163.64 76.445 163.64 171.394zm-377.45.0v1.203c0 115.262 86.6 216.192 213.81 216.192 127.2.0 212.6-99.739 212.6-215v-1.192c0-115.265-86.59-216.203-213.79-216.203-127.22.0-212.62 99.738-212.62 215"/><path id="path3373" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m2756.35 720.715h-121.24c-11.94.0-22.09 9.555-22.09 21.5.0 11.941 10.15 22.098 22.09 22.098h290.26c11.94.0 22.1-10.157 22.1-22.098.0-11.945-10.16-21.5-22.1-21.5h-121.23V367.148c0-13.132-10.75-23.886-23.9-23.886-13.13.0-23.89 10.754-23.89 23.886v353.567"/><path id="path3375" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m3332.78 554.082v1.203c0 94.957-69.28 172.598-164.83 172.598-95.56.0-163.65-76.445-163.65-171.406v-1.192c0-94.961 69.28-172.597 164.84-172.597 95.55.0 163.64 76.445 163.64 171.394zm-377.45.0v1.203c0 115.262 86.6 216.192 213.81 216.192 127.2.0 212.6-99.739 212.6-215v-1.192c0-115.265-86.59-216.203-213.79-216.203-127.22.0-212.62 99.738-212.62 215"/><path id="path3377" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m3458.31 742.813c0 12.539 10.75 23.292 23.29 23.292h6.57c10.75.0 17.32-5.375 23.89-13.742l253.83-323.691v315.332c0 12.547 10.14 23.293 23.29 23.293 12.54.0 22.69-10.746 22.69-23.293v-377.449c0-12.539-8.96-22.09-21.5-22.09h-2.4c-10.14.0-17.31 5.965-24.48 14.324l-259.2 331.465v-323.699c0-12.539-10.14-23.293-23.29-23.293-12.54.0-22.69 10.754-22.69 23.293v376.258"/><path id="path3379" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m3982.91 759.98c0 4.528 3.13 7.665 7.66 7.665h2.09c3.14.0 5.22-1.395 6.97-3.829l37.6-58.503 38.3 58.503c1.74 2.434 3.83 3.829 6.61 3.829h2.09c3.83.0 7.32-3.485 7.32-7.665v-94.011c0-4.18-3.49-7.66-7.66-7.66-4.18.0-7.31 3.48-7.31 7.66v72.426l-32.38-48.403c-1.75-2.785-3.83-4.527-6.97-4.527-3.13.0-5.22 1.742-6.96 4.527l-32.04 48.403v-72.426c0-4.18-3.48-7.66-7.66-7.66s-7.66 3.48-7.66 7.66v94.011zm-73.47-7.308h-28.91c-3.82.0-7.3 3.48-7.3 7.308.0 3.836 3.48 7.317 7.3 7.317h72.78c4.18.0 7.31-3.481 7.31-7.317.0-3.828-3.13-7.308-7.31-7.308h-28.55v-86.703c0-4.18-3.48-7.66-8.01-7.66-4.18.0-7.31 3.48-7.31 7.66v86.703"/><path id="path3381" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m597.898 989.039c-236.39.0-428.714-192.324-428.714-428.719.0-236.39 192.324-428.715 428.714-428.715 236.395.0 428.722 192.325 428.722 428.715.0 236.395-192.327 428.719-428.722 428.719zm0-954.289c-289.796.0-525.566 235.773-525.566 525.57s235.77 525.57 525.566 525.57c289.801.0 525.572-235.773 525.572-525.57s-235.771-525.57-525.572-525.57"/><g id="g3383"><g clip-path="url(#clipPath3387)" id="g3385"><path id="path3397" style="fill:url(#linearGradient3391);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M142.293 245.191 637.223 582.551 74.8398 348.098"/></g></g><path id="path3399" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m167.938 304.09c-4.524 34.332-36.024 58.496-70.356 53.973-34.332-4.52-58.5-36.02-53.9765-70.352 4.5234-34.336 36.0234-58.5 70.3555-53.977 34.332 4.524 58.5 36.02 53.977 70.356"/><g id="g3401"><g clip-path="url(#clipPath3405)" id="g3403"><path id="path3415" style="fill:url(#linearGradient3409);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M85.2852 570.719 516.813 593.84 54.5195 690.582"/></g></g><path id="path3417" style="fill:#133a73;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m124.875 636.605c-4.523 34.333-36.0234 58.5-70.3555 53.977C20.1875 686.059-3.98047 654.559.542969 620.227 5.06641 585.895 36.5664 561.727 70.8984 566.25c34.3356 4.523 58.4996 36.023 53.9766 70.355"/><g id="g3419"><g clip-path="url(#clipPath3423)" id="g3421"><path id="path3433" style="fill:url(#linearGradient3427);fill-opacity:1;fill-rule:nonzero;stroke:none" d="m538.137 270.234 95.324 293.5-205.699-247.089"/></g></g><path id="path3435" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m541.352 289.715c-4.524 34.332-36.024 58.5-70.356 53.973-34.336-4.52-58.5-36.02-53.976-70.352 4.523-34.336 36.023-58.5 70.355-53.977 34.332 4.524 58.496 36.024 53.977 70.356"/><g id="g3437"><g clip-path="url(#clipPath3441)" id="g3439"><path id="path3451" style="fill:url(#linearGradient3445);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M857.758 94.3906 656.035 546.801 745.172 53.6406"/></g></g><path id="path3453" style="fill:#b9d110;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m846.91 110.883c-26.609 22.164-66.144 18.558-88.308-8.051-22.164-26.6132-18.559-66.1406 8.05-88.3125 26.61-22.16013 66.145-18.55075 88.309 8.0586 22.164 26.6016 18.559 66.1446-8.051 88.3049"/><g id="g3455"><g clip-path="url(#clipPath3459)" id="g3457"><path id="path3469" style="fill:url(#linearGradient3463);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M481.316 864.746 635.938 602.125 594.625 903.445"/></g></g><path id="path3471" style="fill:#b9d110;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m491.863 848.059c26.203-22.645 65.797-19.758 88.442 6.441 22.64 26.203 19.758 65.797-6.446 88.441-26.199 22.645-65.796 19.758-88.437-6.445-22.645-26.199-19.762-65.797 6.441-88.437"/><g id="g3473"><g clip-path="url(#clipPath3477)" id="g3475"><path id="path3487" style="fill:url(#linearGradient3481);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M1085.54 913.828 683.598 585.359 1140.12 805.109"/></g></g><path id="path3489" style="fill:#22638b;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m1050.12 855.145c2.26-34.555 32.1-60.743 66.66-58.485 34.55 2.254 60.74 32.098 58.48 66.653-2.25 34.554-32.09 60.742-66.65 58.484-34.56-2.254-60.74-32.098-58.49-66.652"/><g id="g3491"><g clip-path="url(#clipPath3495)" id="g3493"><path id="path3505" style="fill:url(#linearGradient3499);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M1177.19 335.031 693.664 556.211 1106.69 235.887"/></g></g><path id="path3507" style="fill:#91d2e1;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m1108.75 338.84c-29.47-18.176-38.63-56.805-20.46-86.281 18.18-29.477 56.81-38.637 86.29-20.461 29.47 18.179 38.63 56.808 20.45 86.285-18.17 29.476-56.8 38.637-86.28 20.457"/><g id="g3509"><g clip-path="url(#clipPath3513)" id="g3511"><path id="path3523" style="fill:url(#linearGradient3517);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M209.754 773.73 592.074 586.313 280.926 872.391"/></g></g><path id="path3525" style="fill:#91d2e1;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m278.168 769.453c29.598 17.977 39.02 56.543 21.043 86.145-17.977 29.597-56.543 39.019-86.145 21.043C183.469 858.664 174.047 820.098 192.023 790.5 210 760.898 248.566 751.477 278.168 769.453"/><path id="path3527" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m714.422 718.262c8.172-9.321 22.351-10.246 31.672-2.074 9.316 8.175 10.246 22.355 2.07 31.675-8.172 9.317-22.351 10.246-31.672 2.071-9.316-8.172-10.246-22.356-2.07-31.672"/><path id="path3529" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m827.305 484.969c8.175-9.321 22.355-10.25 31.672-2.074 9.32 8.171 10.25 22.355 2.074 31.671-8.172 9.321-22.356 10.247-31.672 2.075-9.32-8.176-10.246-22.356-2.074-31.672"/><path id="path3531" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m906.813 877.289c8.175-9.316 22.355-10.246 31.675-2.07 9.317 8.172 10.246 22.351 2.071 31.672-8.172 9.32-22.356 10.246-31.672 2.074-9.321-8.176-10.246-22.356-2.074-31.676"/><path id="path3533" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m987.531 166.984c8.172-9.32 22.359-10.246 31.669-2.074 9.32 8.176 10.25 22.356 2.08 31.676-8.18 9.316-22.358 10.242-31.678 2.07-9.317-8.176-10.247-22.355-2.071-31.672"/><path id="path3535" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m140.008 473.707c8.172-9.32 22.351-10.246 31.672-2.074 9.316 8.176 10.246 22.355 2.074 31.676-8.176 9.316-22.356 10.246-31.676 2.07-9.316-8.172-10.246-22.356-2.07-31.672"/><path id="path3537" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m609.063 315.641c8.171-9.321 22.355-10.246 31.671-2.075 9.321 8.176 10.246 22.356 2.075 31.676-8.176 9.317-22.356 10.246-31.676 2.071-9.317-8.172-10.246-22.352-2.07-31.672"/><path id="path3539" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m458.551 398.422c8.172-9.317 22.351-10.246 31.672-2.07 9.32 8.171 10.246 22.351 2.074 31.671-8.176 9.317-22.356 10.247-31.676 2.071-9.316-8.172-10.246-22.352-2.07-31.672"/><path id="path3541" style="fill:#133a73;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m518.754 661.82c8.176-9.32 22.355-10.246 31.672-2.074 9.32 8.176 10.25 22.356 2.074 31.676-8.176 9.316-22.355 10.246-31.672 2.07-9.32-8.172-10.25-22.355-2.074-31.672"/><path id="path3543" style="fill:#133a73;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m744.523 394.66c8.172-9.32 22.356-10.246 31.672-2.074 9.321 8.176 10.246 22.355 2.075 31.676-8.176 9.316-22.356 10.246-31.672 2.07-9.321-8.172-10.25-22.355-2.075-31.672"/><path id="path3545" style="fill:#133a73;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m714.422 605.379c8.172-9.32 22.351-10.246 31.672-2.074 9.316 8.172 10.246 22.355 2.07 31.672-8.172 9.32-22.351 10.246-31.672 2.074-9.316-8.176-10.246-22.356-2.07-31.672"/><path id="path3547" style="fill:#133a73;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m368.242 469.918c8.172-9.32 22.356-10.25 31.672-2.074 9.32 8.172 10.246 22.355 2.074 31.672-8.175 9.32-22.355 10.246-31.675 2.074-9.317-8.176-10.247-22.356-2.071-31.672"/><path id="path3549" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m633.461 620.176c8.172-9.317 22.355-10.246 31.672-2.071 9.32 8.172 10.246 22.356 2.074 31.672-8.176 9.321-22.355 10.246-31.676 2.075-9.316-8.176-10.246-22.356-2.07-31.676"/><path id="path3551" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m646.691 752.129c8.172-9.32 22.352-10.25 31.672-2.074 9.321 8.172 10.246 22.355 2.075 31.672-8.176 9.32-22.356 10.246-31.676 2.074-9.317-8.176-10.246-22.356-2.071-31.672"/><path id="path3553" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m819.777 334.453c8.176-9.316 22.356-10.246 31.676-2.07 9.317 8.172 10.246 22.351 2.07 31.672-8.171 9.32-22.351 10.246-31.671 2.074-9.321-8.176-10.247-22.356-2.075-31.676"/><path id="path3555" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m812.242 571.512c8.176-9.321 22.356-10.246 31.676-2.074 9.316 8.175 10.246 22.355 2.07 31.675-8.172 9.317-22.351 10.246-31.672 2.071-9.316-8.172-10.246-22.356-2.074-31.672"/><path id="path3557" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m382.156 392.988c8.172-9.316 22.356-10.246 31.672-2.07 9.32 8.172 10.246 22.355 2.074 31.672-8.175 9.32-22.355 10.246-31.672 2.074-9.32-8.176-10.25-22.355-2.074-31.676"/><path id="path3559" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m613.543 476.398c8.176-9.32 22.355-10.25 31.676-2.074 9.316 8.176 10.246 22.356 2.07 31.672-8.172 9.32-22.355 10.246-31.672 2.074-9.32-8.175-10.246-22.355-2.074-31.672"/><path id="path3561" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m435.969 645.902c8.172-9.32 22.351-10.246 31.672-2.074 9.32 8.176 10.246 22.356 2.074 31.676-8.176 9.316-22.356 10.246-31.676 2.07-9.316-8.172-10.246-22.355-2.07-31.672"/><path id="path3563" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m629.688 164.293c8.171-9.32 22.355-10.246 31.671-2.074 9.321 8.176 10.246 22.355 2.075 31.676-8.176 9.316-22.356 10.246-31.672 2.07-9.321-8.172-10.25-22.356-2.074-31.672"/><path id="path3565" style="fill:#b9d110;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m499.398 462.395c12.329-1.301 23.379 7.632 24.684 19.96 1.305 12.325-7.633 23.375-19.961 24.68-12.324 1.305-23.375-7.633-24.68-19.957-1.304-12.328 7.633-23.379 19.957-24.683"/><path id="path3567" style="fill:#b9d110;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m721.23 510.641c-12.3 1.527-23.511-7.207-25.039-19.508-1.527-12.301 7.207-23.512 19.508-25.039 12.301-1.528 23.512 7.207 25.039 19.508 1.528 12.3-7.207 23.507-19.508 25.039"/><path id="path3569" style="fill:#22638b;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m594.34 420.676c-7.543 9.836-21.629 11.695-31.469 4.152-9.836-7.543-11.691-21.633-4.148-31.469s21.632-11.695 31.468-4.152 11.696 21.633 4.149 31.469"/><path id="path3571" style="fill:#22638b;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m594.828 581.156c-7.543 9.836-21.633 11.696-31.469 4.153s-11.695-21.633-4.152-31.469c7.547-9.836 21.633-11.695 31.469-4.152 9.836 7.542 11.695 21.632 4.152 31.468"/><path id="path3573" style="fill:#91d2e1;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m458.199 576.973c5.156 11.273.199 24.59-11.07 29.75-11.274 5.156-24.59.199-29.746-11.071-5.16-11.273-.203-24.589 11.066-29.75 11.274-5.156 24.594-.199 29.75 11.071"/><path id="path3575" style="fill:#91d2e1;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m635.691 569.449c-5.234-11.234-.367-24.59 10.868-29.82 11.238-5.234 24.589-.371 29.824 10.867 5.234 11.234.367 24.586-10.867 29.82-11.239 5.235-24.59.372-29.825-10.867"/></g></g></svg></span><span class="text-uppercase font-weight-bold"></span>
+		</a>
+	</div>
+	<div class="ml-auto">
+		<button type="button" class="navbar-toggler third-button collapsed" data-toggle="collapse" data-target="#menu_items" aria-expanded="false" aria-controls="navbar">
+			<div class="animated-icon">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+		</button>
+	</div>
+	<div id="menu_items" class="navbar-collapse collapse ml-md-auto justify-content-end text-center">
+		<ul class="nav navbar-nav">
+		
+		
+		<li class="nav-item p-0">
+			
+			
+			
+			
+			<a  class="nav-link" href="../../../" ><span>Home</span></a>
+		</li>
+		
+		<li class="nav-item p-0">
+			
+			
+			
+			
+			
+			
+			<a  class="nav-link" href="../../../blog/" ><span>Blog</span></a>
+		</li>
+		
+		<li class="nav-item p-0">
+			
+			
+			
+			
+			<a  class="nav-link" href="../../../#features" ><span>Features</span></a>
+		</li>
+		
+		<li class="nav-item p-0">
+			
+			
+			
+			
+			<a  class="nav-link" href="../../../#contributing" ><span>Contribute</span></a>
+		</li>
+		
+		<li class="nav-item p-0">
+			
+			
+			
+			
+			<a  class="nav-link" href="../../../docs/" ><span>Docs</span></a>
+		</li>
+		
+		<li class="nav-item p-0">
+			
+			
+			
+			
+			<a  class="nav-link" href="https://github.com/vmware/photon" target="_blank" ><span>Github</span></a>
+		</li>
+		
+		
+		
+		
+		
+		
+		
+		<div class="navbar-nav dropdown border-0">
+			<li class="nav-item">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	Release
+</a>
+<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+	
+	<a class="dropdown-item" href="../../../docs/">v4 - Latest</a>
+	
+	<a class="dropdown-item" href="../../../docs-v3/">v3</a>
+	
+	<a class="dropdown-item" href="../../../docs-old/assets/files/html/3.0/">v3 (old)</a>
+	
+	<a class="dropdown-item" href="../../../docs-old/assets/files/html/1.0-2.0/">v2 and v1</a>
+	
+</div>
+
+			</li>
+		</div>
+		
+		
+
+		</ul>
+	</div>
+  </nav>
+</div>
+
+    </header>
+    <div class="container-fluid td-outer">
+      <div class="td-main">
+        <div class="row flex-xl-nowrap">
+          <div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+          </div>
+          <div class="d-none d-xl-block col-xl-2 td-toc d-print-none">
+          </div>
+          <main class="col-12 col-md-9 col-xl-8 pl-md-5" role="main">
+            
+
+
+
+
+<div class="td-content">
+<div class="pageinfo pageinfo-primary d-print-none">
+<p>
+This the multi-page printable view of this section.
+<a href="#" onclick="print();return false;">Click here to print</a>.
+</p><p>
+<a href="../../../docs/command-line-reference/">Return to the regular view of this page</a>.
+</p>
+</div>
+
+
+
+<h1 class="title">Command-Line Reference</h1>
+
+
+
+
+
+    <ul>
+    
+  
+  
+  
+  
+
+  
+    
+    
+	
+<li>1: <a href="#pg-108c8be60349f80ed2fa1d40951c15a7">Command-line Interfaces</a></li>
+
+
+    
+    <ul>
+        
+  
+  
+  
+  
+
+  
+    
+    
+	
+<li>1.1: <a href="#pg-f05528a6ba8fdbf06e535912d97d5811">Photon Management Daemon Command-line Interface (pmd-cli)</a></li>
+
+
+    
+  
+    
+    
+	
+<li>1.2: <a href="#pg-0451f1b066f757da7d2004f4800d8c68">Photon Network Config Manager Command-line Interface (nmctl)</a></li>
+
+
+    
+  
+    
+    
+	
+<li>1.3: <a href="#pg-11a388c580ecc399f748da69eeed2d7d">Photon Real-Time Operating System Command-line Interface</a></li>
+
+
+    
+  
+
+    </ul>
+    
+  
+
+    </ul>
+
+
+<div class="content">
+      <p>The Photon OS <em>Command-Line Reference</em> provides information about the command-line interfaces available in Photon OS.</p>
+<p><strong>Product version: 4.0</strong></p>
+<p>This documentation applies to all 4.0.x releases.</p>
+<h2 id="intended-audiences">Intended Audiences</h2>
+<p>This information is intended for Photon OS administrators and users.</p>
+
+</div>
+</div>
+
+
+  
+  
+  
+  
+
+  
+  
+
+  
+    
+    
+	
+    
+
+<div class="td-content" style="">
+    
+	<h1 id="pg-108c8be60349f80ed2fa1d40951c15a7">1 - Command-line Interfaces</h1>
+    
+	<p>Photon OS includes the following command-line utilities:</p>
+
+</div>
+
+
+
+    
+      
+  
+  
+  
+  
+
+  
+  
+
+  
+    
+    
+	
+    
+
+<div class="td-content" style="">
+    
+	<h1 id="pg-f05528a6ba8fdbf06e535912d97d5811">1.1 - Photon Management Daemon Command-line Interface (pmd-cli)</h1>
+    
+	<p>Photon OS provides the Photon Management Daemon command line interface (pmd-cli).</p>
+<ul>
+<li><a href="#setup-steps">Setup Steps</a></li>
+<li><a href="#syntax">Syntax</a></li>
+<li><a href="#firewall-management">Firewall Management</a></li>
+<li><a href="#network-management">Network Management</a></li>
+<li><a href="#package-management">Package Management</a></li>
+<li><a href="#user-management">User Management</a></li>
+</ul>
+<h1 id="setup-steps">Setup Steps</h1>
+<p>The pmd-cli utility is included with your Photon OS distribution. To make sure that you have the latest version, you can run:</p>
+<pre><code>tdnf install pmd-cli
+</code></pre><h1 id="syntax">Syntax</h1>
+<pre><code>pmd-cli [connection_auth_options] &lt;component&gt; &lt;command&gt; [command_options]
+</code></pre><p>Passed-in parameter values can be enclosed in single (') or double-quotes (&quot;) as long as you use matching characters to denote the beginning and end of the value. Unless a parameter value contains special characters or spaces, you can also omit quotes altogether.</p>
+<h2 id="connection--authorization-options">Connection / Authorization Options</h2>
+<h3 id="local-connections">Local Connections</h3>
+<p>For local connections, you omit the connection and authorization options:</p>
+<pre><code>pmd-cli &lt;component&gt; &lt;cmd&gt; &lt;options&gt;
+</code></pre><p>Permissions for the currently logged-in user apply when executing commands. This is the same as specifying &ndash;servername localhost.</p>
+<h3 id="remote-connections">Remote Connections</h3>
+<p>For connecting to a remote server (a server other than the local server), you specify two connection / authorization options:</p>
+<ul>
+<li><code>--servername</code>: name of the server</li>
+<li><code>--user</code>: username of a user account on the server</li>
+</ul>
+<p><strong>Note:</strong>  For authentication, you can specify the username (–user &lt;username&gt;) on the command line, but never the password. For security reasons, the system must prompt you for the password.</p>
+<p>The option for remote connection is as follows:</p>
+<p><strong>System User</strong></p>
+<pre><code>pmd-cli --servername &lt;server&gt; --user &lt;username&gt;
+</code></pre><h2 id="component">Component</h2>
+<p><code>&lt;component&gt;</code> is one of the following values:</p>
+<ul>
+<li><code>firewall</code></li>
+<li><code>net</code></li>
+<li><code>pkg</code></li>
+<li><code>usr</code></li>
+</ul>
+<h1 id="firewall-management">Firewall Management</h1>
+<p>The Photon Management Daemon provides CLI commands to help you get information about the firewall.</p>
+<h2 id="syntax-1">Syntax</h2>
+<pre><code>pmd-cli [connection_auth_options] firewall &lt;command&gt; [command_options]
+</code></pre><h2 id="firewall-help">firewall help</h2>
+<p>Get help for firewall CLI commands.</p>
+<pre><code>pmd-cli firewall help
+</code></pre><h2 id="firewall-rules">firewall rules</h2>
+<p>Get a list of the current persistent firewall rules.</p>
+<pre><code>pmd-cli firewall rules [command-options]
+</code></pre><p>This command returns information about each firewall rule, such as the chain to which it belongs, the policy to enforce, the table to manipulate, and so on.</p>
+<p>Add a new firewall rule.</p>
+<pre><code>pmd-cli firewall rules --chain &lt;chain_name&gt; --add &lt;rule_specification&gt;
+</code></pre><p>Example:</p>
+<pre><code>pmd-cli firewall rules --chain INPUT --add &quot;-p tcp -m tcp --dport 21 -j ACCEPT&quot;
+</code></pre><p><strong>Note:</strong> To confirm that the firewall rule was added, run iptables -S. Running pmd-cli firewall rules lists only persistent rules.</p>
+<p>Delete a new firewall rule.</p>
+<pre><code>pmd-cli firewall rules --chain &lt;chain_name&gt; --delete &lt;rule_specification&gt;
+</code></pre><p><strong>Note:</strong>  To confirm that the firewall rule was removed, run iptables -S. Running pmd-cli firewall rules lists only persistent rules.</p>
+<p>Make firewall rule changes peristent (add &ndash;persist flag)</p>
+<pre><code>pmd-cli firewall rules --chain &lt;chain_name&gt; --add &lt;rule_specification&gt; --persist
+</code></pre><h2 id="firewall-version">firewall version</h2>
+<p>Get the version number of the fwmgmt component on the server.</p>
+<pre><code>pmd-cli firewall version
+</code></pre><h1 id="network-management">Network Management</h1>
+<p>The Photon Management Daemon provides CLI commands to help you manage network interfaces.</p>
+<h2 id="syntax-2">Syntax</h2>
+<pre><code>pmd-cli [connection_auth_options] net &lt;command&gt; [command_options]
+
+Query and control the netmanager subsystem.
+  -h --help                    Show this help message and exit
+  -v --version                 Show package version
+
+</code></pre><p>Many of these commands require the interface name (–interface &lt;ifname&gt;). Command options are described below.</p>
+<pre><code>**Command                      Command Option                                    Description**
+</code></pre>
+<hr>
+<pre><code>  set-mtu                      [LINK] [MTU]                                      Set Link MTU
+
+
+
+  set-mac                      [LINK] [MAC]                                      Set Link MAC
+
+
+
+  set-link-mode                [LINK] [MODE { yes | no | on | off | 1 | 0} ]     Set Link managed by networkd
+
+
+
+  set-dhcp-mode                [LINK] [DHCP-MODE { yes | no | ipv4 | ipv6 } ]    Set Link DHCP setting
+
+
+  set-dhcp4-client-identifier  [LINK] [IDENTIFIER { mac | duid | duid-only}
+
+
+  set-dhcp-iaid                [LINK] [IAID]                                     Sets the DHCP Identity Association
+                                                                                 Identifier (IAID) for the
+                                                                                 interface, a 32-bit unsigned
+                                                                                 integer.
+
+  set-dhcp-duid                [LINK | system] [DUID { link-layer-time |         Sets the DHCP Client DUID type which
+                                vendor | link-layer | uuid } ] [RAWDATA]         specifies how the DUID should be 
+                                                                                 generated and [RAWDATA] to overides the
+                                                                                 global DUIDRawData.
+
+  set-link-state               [LINK] [STATE { up | down } ]                     Set Link State
+
+  add-link-address              [LINK] [ADDRESS] [PEER] ]                         Add Link Address
+
+  delete-link-address           [LINK]                                            Removes Address from Link
+
+  add-default-gateway          [LINK] [GW address] onlink [ONLINK                 Add Link Default Gateway
+                                { yes | no | on | off | 1 | 0}] 
+
+  delete-gateway               [LINK]                                             Removes Gateway from Link
+
+  add-route                    [LINK] [GW address] metric [METRIC { number }]     Set Link route
+
+  delete-route                 [LINK]                                             Removes route from Link
+
+  add-additional-gw            [LINK] [ADDRESS] [ROUTE address] [GW address]      Configures additional gateway for   
+                               [ROUTING POLICY TABLE number]                      another NIC with routing policy rules
+
+  set-hostname                 [HOSTNAME]                                         Sets hostname
+
+  add-dns                      [LINK | system] [ADDRESS]                          Set Link DNS servers
+
+  add-domain                   [LINK | system] [DOMAIN]                           Set Link DOMAIN 
+
+  revert-resolve-link          [LINK]                                             Flushes all DNS server and Domain 
+                                                                                  settings of the link
+
+ set-link-local-address       [LINK] [LinkLocalAddressing                         Set Link link-local
+                              { yes | no | on | off | 1 | 0}]                     address autoconfiguration
+
+
+set-ipv4ll-route             [LINK] [IPv4LLRoute                                  Set the route needed                              
+                             { yes | no | on | off | 1 | 0}]                      for non-IPv4LL hosts to communicate
+                                                                                   with IPv4LL-only hosts
+
+set-llmnr                    [LINK] [LLMNR { yes | no | on | off | 1 | 0}]        Set Link Link-Local Multicast Name
+                                                                                  Resolution
+
+set-multicast-dns            [LINK] [MulticastDNS { yes | no | on | off | 1 | 0}]  Set Link Multicast DNS
+
+set-lldp                     [LINK] [LLDP { yes | no | on | off | 1 | 0}]          Set Link Ethernet LLDP packet reception
+
+set-emit-lldp                [LINK] [EmitLLDP { yes | no | on | off | 1 | 0}]      Set Link Ethernet LLDP packet emission
+
+set-ipforward                [LINK] [IPForward { yes | no | on | off | 1 | 0}]     Set Link IP packet forwarding for the system
+
+set-ipv6acceptra             [LINK] [IPv6AcceptRA { yes | no | on | off | 1 | 0}]  Set Link IPv6 Router Advertisement (RA) reception
+                                                                                   support for the interface
+
+set-ipmasquerade             [LINK] [IPMasquerade { yes | no | on | off | 1 | 0}]  Set IP masquerading for the network interface
+
+set-dhcp4-use-dns            [LINK] [UseDNS { yes | no | on | off | 1 | 0}]        Set Link DHCP4 Use DNS
+
+set-dhcp4-use-domains        [LINK] [UseDomains { yes | no | on | off | 1 | 0}]    Set Link DHCP4 Use DOMAINS
+
+set-dhcp4-use-mtu            [LINK] [UseMTU { yes | no | on | off | 1 | 0}]        Set Link DHCP4 Use MTU
+
+set-dhcp4-use-ntp            [LINK] [UseNTP { yes | no | on | off | 1 | 0}]        Set Link DHCP4 Use NTP
+
+set-dhcp4-use-dns            [LINK] [UseDNS { yes | no | on | off | 1 | 0}]        Set Link DHCP4 Use DNS
+
+set-dhcp6-use-dns            [LINK] [UseDNS { yes | no | on | off | 1 | 0}]        Set Link DHCP6 Use DNS
+
+set-dhcp6-use-ntp            [LINK] [UseNTP { yes | no | on | off | 1 | 0}]        Set Link DHCP6 Use NTP
+
+add-ntp                      [LINK] [NTP]                                          Add Link NTP server address. This option may be
+                                                                                    specified more than once.
+                                                                                This setting is read by systemd-timesyncd.service(8)
+
+set-ntp                      [LINK] [NTP]                                           Set Link NTP server address. This option may be 
+                                                                                    specified more than once.
+                                                                                This setting is read by systemd-timesyncd.service(8)
+
+delete-ntp                      [LINK] [NTP]                                      Delete Link NTP server address. This option may be                                                                           
+                                                                                    specified more than once.
+                                                                                This setting is read by systemd-timesyncd.service(8)
+
+disable-ipv6                 [LINK]                                             Disables IPv6 on the interface.
+
+enable-ipv6                  [LINK]                                             Enables IPv6 on the interface.
+
+create-vlan                  [VLAN name] dev [LINK master] id [ID INTEGER]      Creates vlan netdev and sets master to device
+
+create-bridge                [BRIDGE name] [LINK] [LINK] ...                    Creates bridge netdev and sets master to device
+
+create-bond                  [BOND name] mode [MODE {balance-rr                 Creates bond netdev and sets master to device
+                             | active-backup | balance-xor | broadcast
+                             | 802.3ad | balance-tlb | balance-alb}]
+                             [LINK] [LINK] ...
+
+create-vxlan                 [VXLAN name] [dev LINK] vni [INTEGER]               Creates vxlan VXLAN
+                             [local ADDRESS] [remote ADDRESS]                  (Virtual eXtensible Local Area Network) tunneling.                
+                             [port PORT] 
+                             [independent { yes | no | on | off | 1 | 0}].
+
+create-macvlan               [MACVLAN name] dev [LINK] mode                     Creates macvlan virtualized bridged networking.
+                             [MODE {private | vepa | bridge | 
+                              passthru | source}] 
+
+create-macvtap               [MACVTAP name] dev [LINK] mode [MODE               Creates macvtap virtualized bridged networking.
+                           {private | vepa | bridge | passthru | source}] 
+
+create-ipvlan                [IPVLAN name] dev [LINK] mode                      Creates ipvlan, virtual LAN, separates    
+                             [MODE {l2 | l3 | l3s}]                           broadcast domains by adding tags to network packet.
+
+create-ipvtap                [IPVTAP name] dev [LINK]                          Create ipvtap.
+                             mode [MODE {l2 | l3 | l3s}]
+
+create-vrf                   [VRF name] table [INTEGER}]                       Creates Virtual routing and forwarding (VRF).
+
+create-veth                  [VETH name] peer [PEER name}]                      Creates virtual Ethernet devices.
+
+create-ipip                  [IPIP name] [dev LINK] local [ADDRESS]             Creates ipip tunnel.
+                             remote [ADDRESS] [independent
+                              { yes | no | on | off | 1 | 0}]
+
+create-sit                    [SIT name] [dev LINK] local [ADDRESS]             Creates sit tunnel.
+                              remote [ADDRESS] [independent 
+                              { yes | no | on | off | 1 | 0}]
+
+create-vti                    [VTI name] [dev LINK] local [ADDRESS]             Creates vti tunnel.
+                              remote [ADDRESS] [independent
+                              { yes | no | on | off | 1 | 0}]
+
+create-gre                   [GRE name] [dev LINK] local [ADDRESS]              Creates gre tunnel.
+                             remote [ADDRESS] [independent 
+                             { yes | no | on | off | 1 | 0}]
+
+create-wg                    [WIREGUARD name] private-key [PRIVATEKEY]          Creates a wireguard tunnel.
+                             listen-port [PORT INTEGER] public-key
+                             [PUBLICKEY] preshared-key [PRESHAREDKEY]
+                             allowed-ips [IP,IP ...] endpoint [IP:PORT]
+
+ reload                                                                         Reload .network and .netdev files.
+
+reconfigure                  [LINK]                                             Reconfigure Link.
+
+add-nft-table                [FAMILY {ipv4 | ipv6 | ip}] [TABLE]                Adds a new table.
+
+get-nft-tables               [FAMILY {ipv4 | ipv6 | ip}] [TABLE]                shows nftable's tables.
+
+delete-nft-table             [FAMILY {ipv4 | ipv6 | ip}] [TABLE]                deletes a existing nftable's table.
+
+ add-nft-chain                [FAMILY {ipv4 | ip}] [TABLE] [CHAIN]              adds a new nftable's chain.
+
+ get-nft-chains               [FAMILY {ipv4 | ipv6 | ip}] [TABLE] [CHAIN]       shows nftable's chains.
+
+ delete-nft-chain             [FAMILY {ipv4 | ipv6 | ip}] [TABLE] [CHAIN]       deletes a nftable's chain from table
+
+add-nft-rule                 [FAMILY {ipv4 | ipv6 | ip}] [TABLE] [CHAIN]        configures a nft rule for a port.     
+                             [PROTOCOL { tcp | udp}] 
+                           [SOURCE PORT / DESTINATION PORT {sport|dport}]
+                             [PORT] [ACTION {accept | drop}]
+
+get-nft-rules                [TABLE]                                             shows nftable's rules.
+
+delete-nft-rule              [FAMILY {ipv4 | ipv6 | ip}] [TABLE]                  deletes a nftable's rule from table
+                              [CHAIN] [HANDLE] 
+
+ nft-run                                                                          runs a nft command.  See man NFT(8)
+
+is-networkd-running                                                             Check if systemd-networkd is running or not. 
+
+ get-hostname                                                                    Gets hostname
+
+get-dns-servers                                                                  Gets DNS Servers
+
+ get-dns-domains                                                                 Gets DNS Server DOMAINS
+
+get-ntp                         [LINK]                                           Get Link NTP server address
+
+get-link-address                [LINK]                                           Get Link Address
+
+get-link-route                  [LINK]                                           Get Link route
+
+get-dhcp-mode                   [LINK]                                           Get Link DHCP setting. 
+                                                                                 DHCP-MODE { yes | no | ipv4 | ipv6 }
+
+get-mac                         [LINK]                                           Get Link MAC
+
+
+get-mtu                         [LINK]                                           Get Link MTU
+
+get-dhcp-iaid                   [LINK]                                       Get the DHCP Identity Association Identifier (IAID)
+                                                                              for the interface, a 32-bit unsigned integer.
+
+
+get-dhcp4-client-identifier     [LINK]                                        Get Link DHCP4 Client Identifier.
+
+
+
+ net                            -v                                            Get the network-config-manager supported version
+</code></pre>
+<pre><code>**Note** : You can add (+) or remove (-) a parameter by prepending the parameter name with + or -.
+
+# Package Management
+
+The Photon Management Daemon provides CLI commands to help you manage packages and repositories.
+
+## Syntax
+</code></pre><p>pmd-cli [connection options] pkg <command> [command options]</p>
+<pre><code>If a command allows for multiple package names, simply specify on the command line, separated by spaces.
+</code></pre><p>pmd-cli pkg info &lt;package_name_1&gt; &lt;package_name_2&gt; &lt;package_name_3&gt; &hellip;</p>
+<pre><code>
+## pkg check-local 
+
+Checks local rpm folder for problems.
+</code></pre><p>pmd-cli pkg check-local</p>
+<pre><code>
+## pkg check-update
+
+Check for available package upgrades. 
+</code></pre><p>pmd-cli pkg check-update</p>
+<pre><code>
+## pkg clean all
+
+Remove cached data from tdnf.
+</code></pre><p>pmd-cli pkg clean all</p>
+<pre><code>
+
+## pkg help
+
+Get help text for pkg CLI commands.
+</code></pre><p>pmd-cli pkg help</p>
+<pre><code>## pkg count
+
+Get the total number of packages in all repos (including installed).
+</code></pre><p>pmd-cli pkg count</p>
+<pre><code>## pkg distro-sync
+
+Synchronize installed packages to the latest available versions. If no packages are specified, then all available packages are synchronized.
+</code></pre><p>pmd-cli pkg distro-sync</p>
+<pre><code>## pkg downgrade
+
+Downgrade the specified package(s). If no packages are specified, then all available packages are downgraded.
+</code></pre><p>pmd-cli pkg downgrade &lt;package_name&gt;</p>
+<pre><code>## pkg erase
+
+Remove the specified package(s).
+</code></pre><p>pmd-cli pkg erase &lt;package_name&gt;</p>
+<pre><code>## pkg info
+
+Get general information about the specified package(s),  such as name, version, release, repository, install size, and so on.
+</code></pre><p>pmd-cli pkg info &lt;package_name&gt;</p>
+<pre><code>If no packages are specified, then this command returns information about all packages.
+</code></pre><h2 id="pkg-install">pkg install</h2>
+<pre><code>Install the specified package(s). Update the package if an update is available.
+</code></pre><p>pmd-cli pkg install &lt;package_name&gt;</p>
+<pre><code>## pkg list
+
+Get a list of packages or groups of packages.
+</code></pre><p>pmd-cli pkg list</p>
+<pre><code>You can filter by group: all, available, installed, extras, obsoletes, recent, and upgrades.
+</code></pre><p>pmd-cli pkg list upgrades</p>
+<pre><code>You can also filter by wildcards.
+</code></pre><p>pmd-cli pkg list ph*</p>
+<pre><code>
+## pkg provides openssh
+
+Find what package provides the given binary.
+</code></pre><p>pmd-cli pkg provides openssh</p>
+<pre><code>
+## pkg reinstall
+
+Reinstall the specified package(s).
+</code></pre><p>pmd-cli pkg reinstall &lt;package_name&gt;</p>
+<pre><code>## pkg repolist
+
+Get a list of the configured software repositories.
+</code></pre><p>pmd-cli pkg repolist</p>
+<pre><code>This command returns a list of the configured software repositories, including the repository ID, repitory name, and status.
+
+## pkg search ssh
+
+Search package details for the given string. 
+</code></pre><p>pmd-cli pkg search ssh</p>
+<pre><code>If no parameters are specified, then all available packages are updated.
+
+
+## pkg update
+
+Update the specified package(s).
+</code></pre><p>pmd-cli pkg update <em>package_name</em></p>
+<pre><code>If no parameters are specified, then all available packages are updated.
+
+## pkg updateinfo
+
+Get the update information on all enabled repositories (status = enabled). If this command returns nothing, then the update information may not exist on the server.
+</code></pre><p>pmd-cli pkg updateinfo</p>
+<pre><code># User Management
+
+The Photon Management Daemon provides CLI commands to help you manage users and user groups.
+
+## Syntax
+</code></pre><p>pmd-cli [connection options] usr <command> [command options]</p>
+<pre><code>## usr help
+
+Display help text for user commands.
+</code></pre><p>pmd-cli usr users</p>
+<pre><code>## usr users
+
+Get a list of users. This command returns information about each user, including their user name, user ID, user group (if applicable), home directory, and default shell.
+</code></pre><p>pmd-cli usr users</p>
+<pre><code>## usr useradd
+
+Add a new user. Specify the username.
+</code></pre><p>pmd-cli usr useradd <username></p>
+<pre><code>The system assigns a user ID, home directory, and default shell to the new user. The user group is unspecified.
+
+## usr userdel
+
+Delete the specified user.
+</code></pre><p>pmd-cli usr userdel <username></p>
+<pre><code>## usr userid
+
+Get the user ID of the specified user (by name). Used to determine whether the specified user exists.
+</code></pre><p>pmd-cli usr userid <username></p>
+<pre><code>## usr groups
+
+Get a list of user groups. This command returns the following information about each user group: user group name and user group ID.
+</code></pre><p>pmd-cli usr groups</p>
+<pre><code>## usr groupadd
+
+Add a new user group.
+</code></pre><p>pmd-cli usr groupadd &lt;user_group_name&gt;</p>
+<pre><code>The system assigns a group ID to the new user group.
+
+## usr groupdel
+
+Delete the specified user group.
+</code></pre><p>pmd-cli usr groupdel &lt;user_group_name&gt;</p>
+<pre><code>## usr groupid
+
+Get the group ID for the specified user group (by name). Used to determine whether the specified user group exists.
+</code></pre><p>pmd-cli usr groupid &lt;user_group_name&gt;</p>
+<pre><code>## usr version
+
+Get the version of the usermgmt component at the server.
+</code></pre><p>pmd-cli usr version</p>
+<pre><code></code></pre>
+</div>
+
+
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-0451f1b066f757da7d2004f4800d8c68">1.2 - Photon Network Config Manager Command-line Interface (nmctl)</h1>
+    
+	<p>For locally logged-on users, Photon OS provides a command line interface to manage network configuration of the system.</p>
+<p>The network-config-manager <code>nmctl</code> allows to configure and introspect the state of the network links as seen by <code>systemd-networkd</code>.</p>
+<p>Query and control the netmanager subsystem.</p>
+<pre><code> -h --help                    Show this help message and exit
+
+ -v --version                 Show package version
+
+
+**Command                      Option                                    Description**
+
+
+show                                                                Show system status
+
+status                                                              List links
+
+status                       [LINK]                                 Show link status
+
+
+set-mtu                      [LINK] [MTU]                           Set Link MTU
+
+set-mac                      [LINK] [MAC]                           Set Link MAC 
+
+set-link-mode                [LINK] [MODE
+                             { yes | no | on | off | 1 | 0} ]       Set Link managed by networkd
+
+
+set-dhcp-mode                [LINK] [DHCP-MODE 
+                             { yes | no | ipv4 | ipv6 } ]            Set Link DHCP setting
+
+set-dhcp4-client-identifier  [LINK] [IDENTIFIER 
+                             { mac | duid | duid-only} ]
+
+
+set-dhcp-iaid                [LINK] [IAID]                            Sets the DHCP Identity Association Identifier
+                                                                     (IAID) for the interface, a 32-bit unsigned
+                                                                      integer.
+
+set-dhcp-duid                [LINK | system] [DUID 
+                             { link-layer-time | vendor 
+                             | link-layer | uuid } ] [RAWDATA]         Sets the DHCP Client 
+                                                                       DUID type which specifies how the DUID 
+                                                                        should be generated and [RAWDATA] to 
+                                                                        overides the global DUIDRawData.
+
+
+set-link-state               [LINK] [STATE { up | down } ]              Set Link State
+
+add-link-address             [LINK] [ADDRESS] [PEER] ]                  Add Link Address
+
+delete-link-address          [LINK]                                     Removes Address from Link
+
+add-default-gateway          [LINK] [GW address] onlink 
+                             [ONLINK { yes | no | on | off | 1 | 0}]    Add Link Default Gateway
+
+delete-gateway               [LINK]                                     Removes Gateway from Link
+
+add-route                    [LINK] [GW address] metric 
+                             [METRIC { number }]                        Set Link route
+
+delete-route                 [LINK]                                     Removes route from Link
+
+add-additional-gw            [LINK] [ADDRESS] [ROUTE address] 
+                             [GW address] [ROUTING POLICY TABLE number] configures additional gateway for
+                                                                        another NIC with routing policy rules
+
+set-hostname                 [HOSTNAME]                                  Sets hostname
+
+show-dns                                                                 Show DNS Servers
+
+add-dns                      [LINK | system] [ADDRESS]                   Set Link DNS servers
+
+add-domain                   [LINK | system] [DOMAIN]                     Set Link DOMAIN 
+
+show-domains                                                               Show DNS Server DOMAINS
+
+revert-resolve-link          [LINK]                                      Flushes all DNS server and Domain settings
+                                                                           of the link
+
+set-link-local-address       [LINK] [LinkLocalAddressing 
+                             { yes | no | on | off | 1 | 0}]          Set Link link-local address autoconfiguration
+
+set-ipv4ll-route             [LINK] [IPv4LLRoute 
+                             { yes | no | on | off | 1 | 0}]           Set the route needed for non-IPv4LL hosts to
+                                                                        communicate with IPv4LL-only hosts
+      
+                                  
+set-llmnr                    [LINK] [LLMNR 
+                             { yes | no | on | off | 1 | 0}]          Set Link Link-Local Multicast Name Resolution
+
+set-multicast-dns            [LINK] [MulticastDNS  
+                             { yes | no | on | off | 1 | 0}]            Set Link Multicast DNS
+
+set-lldp                     [LINK] [LLDP 
+                             { yes | no | on | off | 1 | 0}]           Set Link Ethernet LLDP packet reception
+
+set-emit-lldp                [LINK] [EmitLLDP 
+                             { yes | no | on | off | 1 | 0}]           Set Link Ethernet LLDP packet emission
+
+set-ipforward                [LINK] [IPForward 
+                             { yes | no | on | off | 1 | 0}]          Set Link IP packet forwarding for the system
+
+set-ipv6acceptra             [LINK] [IPv6AcceptRA 
+                             { yes | no | on | off | 1 | 0}]          Set Link IPv6 Router Advertisement (RA) 
+                                                                      reception support for the interface
+
+set-ipmasquerade             [LINK] [IPMasquerade 
+                             { yes | no | on | off | 1 | 0}]          Set IP masquerading for the network interface
+
+set-dhcp4-use-dns            [LINK] [UseDNS 
+                             { yes | no | on | off | 1 | 0}]           Set Link DHCP4 Use DNS
+
+set-dhcp4-use-domains        [LINK] [UseDomains 
+                             { yes | no | on | off | 1 | 0}]            Set Link DHCP4 Use DOMAINS
+
+set-dhcp4-use-mtu            [LINK] [UseMTU 
+                             { yes | no | on | off | 1 | 0}]              Set Link DHCP4 Use MTU
+
+set-dhcp4-use-ntp            [LINK] [UseNTP 
+                             { yes | no | on | off | 1 | 0}]             Set Link DHCP4 Use NTP
+
+
+set-dhcp4-use-dns            [LINK] [UseDNS 
+                              { yes | no | on | off | 1 | 0}]            Set Link DHCP4 Use DNS
+
+
+set-dhcp6-use-dns            [LINK] [UseDNS 
+                             { yes | no | on | off | 1 | 0}]              Set Link DHCP6 Use DNS
+
+
+set-dhcp6-use-ntp            [LINK] [UseNTP 
+                             { yes | no | on | off | 1 | 0}]              Set Link DHCP6 Use NTP
+
+
+add-ntp                      [LINK] [NTP]                                 Add Link NTP server address. This option
+                                                                          may be specified more than once.
+                                                                          This setting is read by 
+                                                                          systemd-timesyncd.service(8)
+
+
+set-ntp                      [LINK] [NTP]                                  Set Link NTP server address. This option
+                                                                           may be specified more than once.
+                                                                           This setting is read by 
+                                                                           systemd-timesyncd.service(8)
+
+
+delete-ntp                   [LINK]                                          Delete Link NTP server addresses.
+                                                                             This setting is read by 
+                                                                             systemd-timesyncd.service(8)
+
+
+disable-ipv6                 [LINK]                                            Disables IPv6 on the interface.
+
+
+enable-ipv6                  [LINK]                                           Enables IPv6 on the interface.
+
+
+create-vlan                  [VLAN name] dev [LINK master] id [ID INTEGER]   Creates vlan netdev and sets master to
+                                                                             device
+
+
+create-bridge                [BRIDGE name] [LINK] [LINK] ...                 Creates bridge netdev and sets master
+                                                                             to device
+
+
+
+create-bond                  [BOND name] mode [MODE {balance-rr | 
+                             active-backup | balance-xor | broadcast         Creates bond netdev and sets master to
+                             | 802.3ad | balance-tlb | balance-alb}]         device
+                               [LINK] [LINK] ...       
+
+             
+create-vxlan                 [VXLAN name] [dev LINK] vni [INTEGER]        Creates vxlan VXLAN (Virtual eXtensible
+                             [local ADDRESS] [remote ADDRESS]             Local Area Network) tunneling.
+                             [port PORT] [independent 
+                             { yes | no | on | off | 1 | 0}]. 
+			                                         
+                             
+create-macvlan               [MACVLAN name] dev [LINK] mode              Creates macvlan virtualized bridged
+                             [MODE {private | vepa | bridge | passthru    networking.
+                             | source}] 
+                                   
+                              
+create-macvtap               [MACVTAP name] dev [LINK] mode              Creates macvtap virtualized bridged
+                             [MODE {private | vepa | bridge              networking.
+                             | passthru | source}]                    
+                                                        
+    
+create-ipvlan                [IPVLAN name] dev [LINK]                Creates ipvlan, virtual LAN, separates broadcast 
+                             mode [MODE {l2 | l3 | l3s}]             domains by adding tags to network packet.   
+
+
+create-ipvtap                [IPVTAP name] dev [LINK] 
+                             mode [MODE {l2 | l3 | l3s}]             Create ipvtap.
+
+
+create-vrf                   [VRF name] table [INTEGER}]            Creates Virtual routing and forwarding (VRF).
+
+
+create-veth                  [VETH name] peer [PEER name}]          Creates virtual Ethernet devices
+
+
+create-ipip                  [IPIP name] [dev LINK] 
+                             local [ADDRESS] remote [ADDRESS] 
+                             [independent 
+                             { yes | no | on | off | 1 | 0}]                  Creates ipip tunnel.
+
+
+create-sit                   [SIT name] [dev LINK] local 
+                             [ADDRESS] remote [ADDRESS] 
+                             [independent 
+                             { yes | no | on | off | 1 | 0}]                  Creates sit tunnel.
+
+
+create-vti                   [VTI name] [dev LINK] local [ADDRESS]
+                             remote [ADDRESS] [independent 
+                             { yes | no | on | off | 1 | 0}]                   Creates vti tunnel.
+
+
+create-gre                   [GRE name] [dev LINK] local [ADDRESS]
+                             remote [ADDRESS] [independent 
+                              { yes | no | on | off | 1 | 0}]                  Creates gre tunnel.
+
+
+create-wg                    [WIREGUARD name] private-key [PRIVATEKEY]
+                             listen-port [PORT INTEGER] public-key 
+                              [PUBLICKEY] preshared-key [PRESHAREDKEY]
+                                allowed-ips [IP,IP ...] endpoint [IP:PORT]      Creates a wireguard tunnel.
+
+
+reload                                                                         Reload .network and .netdev files.
+
+reconfigure                   [LINK]                                           Reconfigure Link.
+
+
+generate-config-from-yaml     [FILE]                                           Generates network file configuration 
+                                                                               from yaml file.
+
+
+apply-yaml-config                                                              Generates network file configuration from
+                                                                               yaml files found in 
+                                                                               /etc/network-config-manager/yaml.
+
+
+generate-config-from-cmdline [FILE | COMMAND LINE]                            Generates network file configuration from 
+                                                                            command kernel command line or command line.
+
+
+add-nft-table                [FAMILY {ipv4 | ipv6 | ip}] [TABLE]              adds a new table.
+
+show-nft-tables              [FAMILY {ipv4 | ipv6 | ip}]                      shows nftable's tables.
+
+
+delete-nft-table             [FAMILY {ipv4 | ipv6 | ip}] [TABLE]             deletes a existing nftable's table.
+
+
+add-nft-chain                [FAMILY {ipv4 | ip}] [TABLE] [CHAIN]               adds a new nftable's chain.
+
+
+show-nft-chains              [FAMILY {ipv4 | ipv6 | ip}] [TABLE]               shows nftable's chains.
+
+
+delete-nft-chain             [FAMILY {ipv4 | ipv6 | ip}] [TABLE] [CHAIN]       deletes a nftable's chain from table
+
+
+add-nft-rule                 [FAMILY {ipv4 | ipv6 | ip}] 
+                              [TABLE] [CHAIN] [PROTOCOL 
+                             { tcp | udp}] [SOURCE PORT / DESTINATION PORT
+                              {sport|dport}] PORT] [ACTION {accept | drop}]    configures a nft rule for a port.
+
+
+show-nft-rules               [TABLE]                                           shows nftable's rules.
+
+delete-nft-rule              [FAMILY {ipv4 | ipv6 | ip}] [TABLE] 
+                              [CHAIN] [HANDLE]                                 deletes a nftable's rule from table
+
+nft-run                                                                        runs a nft command.  See man NFT(8)</code></pre>
+
+</div>
+
+
+
+    
+	
+  
+    
+    
+	
+    
+
+<div class="td-content" style="page-break-before: always">
+    
+	<h1 id="pg-11a388c580ecc399f748da69eeed2d7d">1.3 - Photon Real-Time Operating System Command-line Interface</h1>
+    
+	<p>Photon Real-Time Operating System provides commands for manipulating real-time properties of processes.</p>
+<h2 id="tuna">tuna</h2>
+<p>The tuna utility can be used to view and modify process priorities, CPU isolation and other real time characteristics in the system.</p>
+<p>Examples:</p>
+<p>View processes and their RT scheduling policies and priorities:
+$ tuna -P</p>
+<pre><code>                 thread    ctxt_switches
+
+pid   SCHED_rtpri  affinity   voluntary    nonvoluntary                    cmd
+
+  1    OTHER    0         0       1211           917                     systemd 
+
+  2    OTHER     0        0       281             0                      kthreadd 
+
+  3    OTHER     0        0         3             1                         rcu_gp
+
+  4    OTHER     0        0         2             1                    rcu_par_gp
+
+  6    OTHER     0        0         8             1            kworker/0:0H-kblockd
+
+ 13    FIFO      1        0       317             1                     rcu_sched
+
+ 16    FIFO     99        0         3             2                posixcputmr/0 
+
+ 17    FIFO     99        0         6             2                    migration/0
+
+679    FIFO     50        0     1647541           1                irq/58-eth0-rxt
+</code></pre>
+<p>The following tasks are performed by using the <code>tuna</code> command:</p>
+<ul>
+<li>
+<p>Isolate a set of CPUs</p>
+<p><code>$ tuna -c &lt;cpulist&gt; -i  (where &lt;cpulist&gt; can be X,Y-Z)</code></p>
+</li>
+<li>
+<p>See the list of processes running on the specific CPUs before and after isolation</p>
+<pre><code>  $ tuna -c &lt;cpulist&gt; --show_threads
+  $ tuna -c &lt;cpulist&gt; -i --show_threads
+</code></pre>
+</li>
+</ul>
+<h2 id="taskset">taskset</h2>
+<p>The taskset command can be used to get/set CPU affinity of tasks:</p>
+<ul>
+<li>
+<p>Run a program bound to a set of CPUs</p>
+<p><code>$ taskset -c &lt;cpulist&gt; ./program (where &lt;cpulist&gt; can be X,Y-Z)</code></p>
+</li>
+<li>
+<p>Move a running task to a set of CPUs
+<code>$ taskset -c p &lt;cpulist&gt; &lt;pid&gt;</code></p>
+</li>
+<li>
+<p>View the CPU affinity settings of a running task
+<code> $ taskset -c -p &lt;pid&gt;</code></p>
+</li>
+</ul>
+<h2 id="chrt">chrt</h2>
+<p>The <code>chrt</code> command can be used to get or set the real-time scheduling policies and priorities of processes:</p>
+<ul>
+<li>Modify the scheduling policy and priority of a running task</li>
+</ul>
+<p><code> $ chrt -f -p &lt;priority&gt; &lt;pid&gt;</code>  (sets the task with pid <pid> to SCHED_FIFO policy with priority <priority>)</p>
+<ul>
+<li>
+<p>View the current scheduling policy and priority of a running task</p>
+<p><code> $ chrt -p &lt;pid&gt;</code></p>
+</li>
+</ul>
+<h2 id="ps">ps</h2>
+<p>The <code>ps</code> command can be used to list processes with their scheduling policies and priorities:</p>
+<pre><code>$ ps -eo cmd,pid,cpu,pri,cls
+
+
+ `CMD `                                              ` PID  CPU   PRI    CLS`
+
+`/lib/systemd/systemd --swit `                       ` 1     -    19    TS`
+
+`[kthreadd]`                                         ` 2     -    19    TS`
+</code></pre>
+
+</div>
+
+
+
+    
+	
+  
+
+    
+	
+  
+
+
+
+          </main>
+        </div>
+      </div>
+      
+<div class="container">
+<footer class="container-fluid p-0 m-0 py-5 row d-print-none">
+  <div class="container-fluid p-0">
+    <div class="row d-flex justify-content-between align-items-center mx-0">
+      <div class="order-sm-1 left-links">
+        
+        
+        
+<ul class="list-inline mb-0">
+  
+  <li class="list-inline-item h1 px-3 m-0" data-toggle="tooltip" data-placement="top" title="GitHub" aria-label="GitHub">
+    <a class="text-dark ml-4" target="_blank" rel="noopener noreferrer" href="https://github.com/vmware/photon#readme">
+      <i class="fab fa-github">&nbsp; </i>
+  
+       GitHub
+    
+    </a>
+  </li>
+  
+  <li class="list-inline-item h1 px-3 m-0" data-toggle="tooltip" data-placement="top" title="Slack" aria-label="Slack">
+    <a class="text-dark ml-4" target="_blank" rel="noopener noreferrer" href="https://vmwarecode.slack.com">
+      <i class="fab fa-slack">&nbsp; </i>
+  
+       Slack
+    
+    </a>
+  </li>
+  
+</ul>
+
+        
+        
+      
+      </div>
+      <div class="order-sm-3 justify-items-end footer-logo"> 
+        <svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 511.4375 135.7375" height="135.7375" width="511.4375" id="svg3355"><defs id="defs3359"><clipPath id="clipPath3387" clipPathUnits="userSpaceOnUse"><path id="path3389" d="M142.293 245.191 637.223 582.551 74.8398 348.098"/></clipPath><linearGradient id="linearGradient3391" spreadMethod="pad" gradientTransform="matrix(-493.8,-339.007,339.007,-493.8,601.845,634.081)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3393" offset="0" style="stop-opacity:1;stop-color:#fff"/><stop id="stop3395" offset="1" style="stop-opacity:1;stop-color:#80c64c"/></linearGradient><clipPath id="clipPath3405" clipPathUnits="userSpaceOnUse"><path id="path3407" d="M85.2852 570.719 516.813 593.84 54.5195 690.582"/></clipPath><linearGradient id="linearGradient3409" spreadMethod="pad" gradientTransform="matrix(-304.079,-208.759,208.759,-304.079,420.197,734.568)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3411" offset="0" style="stop-opacity:1;stop-color:#fff"/><stop id="stop3413" offset="1" style="stop-opacity:1;stop-color:#22437e"/></linearGradient><clipPath id="clipPath3423" clipPathUnits="userSpaceOnUse"><path id="path3425" d="m538.137 270.234 95.324 293.5-205.699-247.089"/></clipPath><linearGradient id="linearGradient3427" spreadMethod="pad" gradientTransform="matrix(-255.101,-175.134,175.134,-255.101,686.667,486.234)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3429" offset="0" style="stop-opacity:1;stop-color:#fff"/><stop id="stop3431" offset="1" style="stop-opacity:1;stop-color:#65a5de"/></linearGradient><clipPath id="clipPath3441" clipPathUnits="userSpaceOnUse"><path id="path3443" d="M857.758 94.3906 656.035 546.801 745.172 53.6406"/></clipPath><linearGradient id="linearGradient3445" spreadMethod="pad" gradientTransform="matrix(-102.35,-449.574,449.574,-102.35,800.888,513.826)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3447" offset="0" style="stop-opacity:1;stop-color:#fff"/><stop id="stop3449" offset="1" style="stop-opacity:1;stop-color:#c6da3a"/></linearGradient><clipPath id="clipPath3459" clipPathUnits="userSpaceOnUse"><path id="path3461" d="M481.316 864.746 635.938 602.125 594.625 903.445"/></clipPath><linearGradient id="linearGradient3463" spreadMethod="pad" gradientTransform="matrix(67.7401,274.401,-274.401,67.7401,532.514,627.656)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3465" offset="0" style="stop-opacity:1;stop-color:#fff"/><stop id="stop3467" offset="1" style="stop-opacity:1;stop-color:#c6da3a"/></linearGradient><clipPath id="clipPath3477" clipPathUnits="userSpaceOnUse"><path id="path3479" d="M1085.54 913.828 683.598 585.359 1140.12 805.109"/></clipPath><linearGradient id="linearGradient3481" spreadMethod="pad" gradientTransform="matrix(441.375,262.068,-262.068,441.375,675.147,599.59)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3483" offset="0" style="stop-opacity:1;stop-color:#fff"/><stop id="stop3485" offset="1" style="stop-opacity:1;stop-color:#22638b"/></linearGradient><clipPath id="clipPath3495" clipPathUnits="userSpaceOnUse"><path id="path3497" d="M1177.19 335.031 693.664 556.211 1106.69 235.887"/></clipPath><linearGradient id="linearGradient3499" spreadMethod="pad" gradientTransform="matrix(450.785,-274.875,274.875,450.785,694.818,558.101)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3501" offset="0" style="stop-opacity:1;stop-color:#fff"/><stop id="stop3503" offset="1" style="stop-opacity:1;stop-color:#a6dbe7"/></linearGradient><clipPath id="clipPath3513" clipPathUnits="userSpaceOnUse"><path id="path3515" d="M209.754 773.73 592.074 586.313 280.926 872.391"/></clipPath><linearGradient id="linearGradient3517" spreadMethod="pad" gradientTransform="matrix(-360.263,223.047,-223.047,-360.263,601.957,602.271)" gradientUnits="userSpaceOnUse" y2="0" x2="1" y1="0" x1="0"><stop id="stop3519" offset="0" style="stop-opacity:1;stop-color:#fff"/><stop id="stop3521" offset="1" style="stop-opacity:1;stop-color:#a6dbe7"/></linearGradient></defs><g transform="matrix(1.25,0,0,-1.25,0,135.7375)" id="g3363"><g transform="scale(0.1,0.1)" id="g3365"><path id="path3367" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m1544.2 536.77c69.27.0 114.66 37.031 114.66 91.972v1.192c0 59.726-44.79 90.781-112.28 90.781h-105.7V536.77h103.32zm-150.51 203.652c0 13.141 10.75 23.891 23.29 23.891h133.19c94.36.0 156.47-50.172 156.47-132.586v-1.192c0-90.183-75.25-136.765-164.24-136.765h-101.52v-126.622c0-13.132-10.76-23.886-23.9-23.886-12.54.0-23.29 10.754-23.29 23.886v373.274"/><path id="path3369" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m1765.51 743.41c0 13.141 10.76 23.887 23.29 23.887 13.14.0 23.9-10.746 23.9-23.887v-164.836h241.28v164.836c0 13.141 10.74 23.887 23.88 23.887 12.55.0 23.3-10.746 23.3-23.887v-376.262c0-13.132-10.75-23.886-23.3-23.886-13.14.0-23.88 10.754-23.88 23.886v167.227H1812.7v-167.227c0-13.132-10.76-23.886-23.9-23.886-12.53.0-23.29 10.754-23.29 23.886v376.262"/><path id="path3371" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m2554.86 554.082v1.203c0 94.957-69.28 172.598-164.83 172.598-95.56.0-163.65-76.445-163.65-171.406v-1.192c0-94.961 69.28-172.597 164.84-172.597 95.55.0 163.64 76.445 163.64 171.394zm-377.45.0v1.203c0 115.262 86.6 216.192 213.81 216.192 127.2.0 212.6-99.739 212.6-215v-1.192c0-115.265-86.59-216.203-213.79-216.203-127.22.0-212.62 99.738-212.62 215"/><path id="path3373" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m2756.35 720.715h-121.24c-11.94.0-22.09 9.555-22.09 21.5.0 11.941 10.15 22.098 22.09 22.098h290.26c11.94.0 22.1-10.157 22.1-22.098.0-11.945-10.16-21.5-22.1-21.5h-121.23V367.148c0-13.132-10.75-23.886-23.9-23.886-13.13.0-23.89 10.754-23.89 23.886v353.567"/><path id="path3375" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m3332.78 554.082v1.203c0 94.957-69.28 172.598-164.83 172.598-95.56.0-163.65-76.445-163.65-171.406v-1.192c0-94.961 69.28-172.597 164.84-172.597 95.55.0 163.64 76.445 163.64 171.394zm-377.45.0v1.203c0 115.262 86.6 216.192 213.81 216.192 127.2.0 212.6-99.739 212.6-215v-1.192c0-115.265-86.59-216.203-213.79-216.203-127.22.0-212.62 99.738-212.62 215"/><path id="path3377" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m3458.31 742.813c0 12.539 10.75 23.292 23.29 23.292h6.57c10.75.0 17.32-5.375 23.89-13.742l253.83-323.691v315.332c0 12.547 10.14 23.293 23.29 23.293 12.54.0 22.69-10.746 22.69-23.293v-377.449c0-12.539-8.96-22.09-21.5-22.09h-2.4c-10.14.0-17.31 5.965-24.48 14.324l-259.2 331.465v-323.699c0-12.539-10.14-23.293-23.29-23.293-12.54.0-22.69 10.754-22.69 23.293v376.258"/><path id="path3379" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m3982.91 759.98c0 4.528 3.13 7.665 7.66 7.665h2.09c3.14.0 5.22-1.395 6.97-3.829l37.6-58.503 38.3 58.503c1.74 2.434 3.83 3.829 6.61 3.829h2.09c3.83.0 7.32-3.485 7.32-7.665v-94.011c0-4.18-3.49-7.66-7.66-7.66-4.18.0-7.31 3.48-7.31 7.66v72.426l-32.38-48.403c-1.75-2.785-3.83-4.527-6.97-4.527-3.13.0-5.22 1.742-6.96 4.527l-32.04 48.403v-72.426c0-4.18-3.48-7.66-7.66-7.66s-7.66 3.48-7.66 7.66v94.011zm-73.47-7.308h-28.91c-3.82.0-7.3 3.48-7.3 7.308.0 3.836 3.48 7.317 7.3 7.317h72.78c4.18.0 7.31-3.481 7.31-7.317.0-3.828-3.13-7.308-7.31-7.308h-28.55v-86.703c0-4.18-3.48-7.66-8.01-7.66-4.18.0-7.31 3.48-7.31 7.66v86.703"/><path id="path3381" style="fill:#696566;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m597.898 989.039c-236.39.0-428.714-192.324-428.714-428.719.0-236.39 192.324-428.715 428.714-428.715 236.395.0 428.722 192.325 428.722 428.715.0 236.395-192.327 428.719-428.722 428.719zm0-954.289c-289.796.0-525.566 235.773-525.566 525.57s235.77 525.57 525.566 525.57c289.801.0 525.572-235.773 525.572-525.57s-235.771-525.57-525.572-525.57"/><g id="g3383"><g clip-path="url(#clipPath3387)" id="g3385"><path id="path3397" style="fill:url(#linearGradient3391);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M142.293 245.191 637.223 582.551 74.8398 348.098"/></g></g><path id="path3399" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m167.938 304.09c-4.524 34.332-36.024 58.496-70.356 53.973-34.332-4.52-58.5-36.02-53.9765-70.352 4.5234-34.336 36.0234-58.5 70.3555-53.977 34.332 4.524 58.5 36.02 53.977 70.356"/><g id="g3401"><g clip-path="url(#clipPath3405)" id="g3403"><path id="path3415" style="fill:url(#linearGradient3409);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M85.2852 570.719 516.813 593.84 54.5195 690.582"/></g></g><path id="path3417" style="fill:#133a73;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m124.875 636.605c-4.523 34.333-36.0234 58.5-70.3555 53.977C20.1875 686.059-3.98047 654.559.542969 620.227 5.06641 585.895 36.5664 561.727 70.8984 566.25c34.3356 4.523 58.4996 36.023 53.9766 70.355"/><g id="g3419"><g clip-path="url(#clipPath3423)" id="g3421"><path id="path3433" style="fill:url(#linearGradient3427);fill-opacity:1;fill-rule:nonzero;stroke:none" d="m538.137 270.234 95.324 293.5-205.699-247.089"/></g></g><path id="path3435" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m541.352 289.715c-4.524 34.332-36.024 58.5-70.356 53.973-34.336-4.52-58.5-36.02-53.976-70.352 4.523-34.336 36.023-58.5 70.355-53.977 34.332 4.524 58.496 36.024 53.977 70.356"/><g id="g3437"><g clip-path="url(#clipPath3441)" id="g3439"><path id="path3451" style="fill:url(#linearGradient3445);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M857.758 94.3906 656.035 546.801 745.172 53.6406"/></g></g><path id="path3453" style="fill:#b9d110;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m846.91 110.883c-26.609 22.164-66.144 18.558-88.308-8.051-22.164-26.6132-18.559-66.1406 8.05-88.3125 26.61-22.16013 66.145-18.55075 88.309 8.0586 22.164 26.6016 18.559 66.1446-8.051 88.3049"/><g id="g3455"><g clip-path="url(#clipPath3459)" id="g3457"><path id="path3469" style="fill:url(#linearGradient3463);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M481.316 864.746 635.938 602.125 594.625 903.445"/></g></g><path id="path3471" style="fill:#b9d110;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m491.863 848.059c26.203-22.645 65.797-19.758 88.442 6.441 22.64 26.203 19.758 65.797-6.446 88.441-26.199 22.645-65.796 19.758-88.437-6.445-22.645-26.199-19.762-65.797 6.441-88.437"/><g id="g3473"><g clip-path="url(#clipPath3477)" id="g3475"><path id="path3487" style="fill:url(#linearGradient3481);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M1085.54 913.828 683.598 585.359 1140.12 805.109"/></g></g><path id="path3489" style="fill:#22638b;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m1050.12 855.145c2.26-34.555 32.1-60.743 66.66-58.485 34.55 2.254 60.74 32.098 58.48 66.653-2.25 34.554-32.09 60.742-66.65 58.484-34.56-2.254-60.74-32.098-58.49-66.652"/><g id="g3491"><g clip-path="url(#clipPath3495)" id="g3493"><path id="path3505" style="fill:url(#linearGradient3499);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M1177.19 335.031 693.664 556.211 1106.69 235.887"/></g></g><path id="path3507" style="fill:#91d2e1;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m1108.75 338.84c-29.47-18.176-38.63-56.805-20.46-86.281 18.18-29.477 56.81-38.637 86.29-20.461 29.47 18.179 38.63 56.808 20.45 86.285-18.17 29.476-56.8 38.637-86.28 20.457"/><g id="g3509"><g clip-path="url(#clipPath3513)" id="g3511"><path id="path3523" style="fill:url(#linearGradient3517);fill-opacity:1;fill-rule:nonzero;stroke:none" d="M209.754 773.73 592.074 586.313 280.926 872.391"/></g></g><path id="path3525" style="fill:#91d2e1;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m278.168 769.453c29.598 17.977 39.02 56.543 21.043 86.145-17.977 29.597-56.543 39.019-86.145 21.043C183.469 858.664 174.047 820.098 192.023 790.5 210 760.898 248.566 751.477 278.168 769.453"/><path id="path3527" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m714.422 718.262c8.172-9.321 22.351-10.246 31.672-2.074 9.316 8.175 10.246 22.355 2.07 31.675-8.172 9.317-22.351 10.246-31.672 2.071-9.316-8.172-10.246-22.356-2.07-31.672"/><path id="path3529" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m827.305 484.969c8.175-9.321 22.355-10.25 31.672-2.074 9.32 8.171 10.25 22.355 2.074 31.671-8.172 9.321-22.356 10.247-31.672 2.075-9.32-8.176-10.246-22.356-2.074-31.672"/><path id="path3531" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m906.813 877.289c8.175-9.316 22.355-10.246 31.675-2.07 9.317 8.172 10.246 22.351 2.071 31.672-8.172 9.32-22.356 10.246-31.672 2.074-9.321-8.176-10.246-22.356-2.074-31.676"/><path id="path3533" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m987.531 166.984c8.172-9.32 22.359-10.246 31.669-2.074 9.32 8.176 10.25 22.356 2.08 31.676-8.18 9.316-22.358 10.242-31.678 2.07-9.317-8.176-10.247-22.355-2.071-31.672"/><path id="path3535" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m140.008 473.707c8.172-9.32 22.351-10.246 31.672-2.074 9.316 8.176 10.246 22.355 2.074 31.676-8.176 9.316-22.356 10.246-31.676 2.07-9.316-8.172-10.246-22.356-2.07-31.672"/><path id="path3537" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m609.063 315.641c8.171-9.321 22.355-10.246 31.671-2.075 9.321 8.176 10.246 22.356 2.075 31.676-8.176 9.317-22.356 10.246-31.676 2.071-9.317-8.172-10.246-22.352-2.07-31.672"/><path id="path3539" style="fill:#62b92c;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m458.551 398.422c8.172-9.317 22.351-10.246 31.672-2.07 9.32 8.171 10.246 22.351 2.074 31.671-8.176 9.317-22.356 10.247-31.676 2.071-9.316-8.172-10.246-22.352-2.07-31.672"/><path id="path3541" style="fill:#133a73;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m518.754 661.82c8.176-9.32 22.355-10.246 31.672-2.074 9.32 8.176 10.25 22.356 2.074 31.676-8.176 9.316-22.355 10.246-31.672 2.07-9.32-8.172-10.25-22.355-2.074-31.672"/><path id="path3543" style="fill:#133a73;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m744.523 394.66c8.172-9.32 22.356-10.246 31.672-2.074 9.321 8.176 10.246 22.355 2.075 31.676-8.176 9.316-22.356 10.246-31.672 2.07-9.321-8.172-10.25-22.355-2.075-31.672"/><path id="path3545" style="fill:#133a73;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m714.422 605.379c8.172-9.32 22.351-10.246 31.672-2.074 9.316 8.172 10.246 22.355 2.07 31.672-8.172 9.32-22.351 10.246-31.672 2.074-9.316-8.176-10.246-22.356-2.07-31.672"/><path id="path3547" style="fill:#133a73;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m368.242 469.918c8.172-9.32 22.356-10.25 31.672-2.074 9.32 8.172 10.246 22.355 2.074 31.672-8.175 9.32-22.355 10.246-31.675 2.074-9.317-8.176-10.247-22.356-2.071-31.672"/><path id="path3549" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m633.461 620.176c8.172-9.317 22.355-10.246 31.672-2.071 9.32 8.172 10.246 22.356 2.074 31.672-8.176 9.321-22.355 10.246-31.676 2.075-9.316-8.176-10.246-22.356-2.07-31.676"/><path id="path3551" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m646.691 752.129c8.172-9.32 22.352-10.25 31.672-2.074 9.321 8.172 10.246 22.355 2.075 31.672-8.176 9.32-22.356 10.246-31.676 2.074-9.317-8.176-10.246-22.356-2.071-31.672"/><path id="path3553" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m819.777 334.453c8.176-9.316 22.356-10.246 31.676-2.07 9.317 8.172 10.246 22.351 2.07 31.672-8.171 9.32-22.351 10.246-31.671 2.074-9.321-8.176-10.247-22.356-2.075-31.676"/><path id="path3555" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m812.242 571.512c8.176-9.321 22.356-10.246 31.676-2.074 9.316 8.175 10.246 22.355 2.07 31.675-8.172 9.317-22.351 10.246-31.672 2.071-9.316-8.172-10.246-22.356-2.074-31.672"/><path id="path3557" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m382.156 392.988c8.172-9.316 22.356-10.246 31.672-2.07 9.32 8.172 10.246 22.355 2.074 31.672-8.175 9.32-22.355 10.246-31.672 2.074-9.32-8.176-10.25-22.355-2.074-31.676"/><path id="path3559" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m613.543 476.398c8.176-9.32 22.355-10.25 31.676-2.074 9.316 8.176 10.246 22.356 2.07 31.672-8.172 9.32-22.355 10.246-31.672 2.074-9.32-8.175-10.246-22.355-2.074-31.672"/><path id="path3561" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m435.969 645.902c8.172-9.32 22.351-10.246 31.672-2.074 9.32 8.176 10.246 22.356 2.074 31.676-8.176 9.316-22.356 10.246-31.676 2.07-9.316-8.172-10.246-22.355-2.07-31.672"/><path id="path3563" style="fill:#4194d7;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m629.688 164.293c8.171-9.32 22.355-10.246 31.671-2.074 9.321 8.176 10.246 22.355 2.075 31.676-8.176 9.316-22.356 10.246-31.672 2.07-9.321-8.172-10.25-22.356-2.074-31.672"/><path id="path3565" style="fill:#b9d110;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m499.398 462.395c12.329-1.301 23.379 7.632 24.684 19.96 1.305 12.325-7.633 23.375-19.961 24.68-12.324 1.305-23.375-7.633-24.68-19.957-1.304-12.328 7.633-23.379 19.957-24.683"/><path id="path3567" style="fill:#b9d110;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m721.23 510.641c-12.3 1.527-23.511-7.207-25.039-19.508-1.527-12.301 7.207-23.512 19.508-25.039 12.301-1.528 23.512 7.207 25.039 19.508 1.528 12.3-7.207 23.507-19.508 25.039"/><path id="path3569" style="fill:#22638b;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m594.34 420.676c-7.543 9.836-21.629 11.695-31.469 4.152-9.836-7.543-11.691-21.633-4.148-31.469s21.632-11.695 31.468-4.152 11.696 21.633 4.149 31.469"/><path id="path3571" style="fill:#22638b;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m594.828 581.156c-7.543 9.836-21.633 11.696-31.469 4.153s-11.695-21.633-4.152-31.469c7.547-9.836 21.633-11.695 31.469-4.152 9.836 7.542 11.695 21.632 4.152 31.468"/><path id="path3573" style="fill:#91d2e1;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m458.199 576.973c5.156 11.273.199 24.59-11.07 29.75-11.274 5.156-24.59.199-29.746-11.071-5.16-11.273-.203-24.589 11.066-29.75 11.274-5.156 24.594-.199 29.75 11.071"/><path id="path3575" style="fill:#91d2e1;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m635.691 569.449c-5.234-11.234-.367-24.59 10.868-29.82 11.238-5.234 24.589-.371 29.824 10.867 5.234 11.234.367 24.586-10.867 29.82-11.239 5.235-24.59.372-29.825-10.867"/></g></g></svg>
+      </div>
+     
+
+
+    
+  </div>
+ 
+  <div class="row d-flex m-0 my-4 justify-content-end align-items-end">
+    <small class="text-dark align-content-center mx-3">&copy; 2021 Photon OS Authors. <a href="https://vmware.github.io"> A VMware Backed Project</a></small>
+ 
+
+
+<div class="text-right">
+  <a href="../../../"> <img class=" vmw-footer-logo" src="../../../img/vmware-logo.svg" /></a>
+</div>
+
+</div>
+  
+    
+</footer>
+</div>
+</div>
+
+
+    </div>
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="../../../js/main.min.f820bfc507c3ebefe17f8881ec4ee10013f3b89ad9555a50acf9bb1771e6823f.js" integrity="sha256-&#43;CC/xQfD6&#43;/hf4iB7E7hABPzuJrZVVpQrPm7F3Hmgj8=" crossorigin="anonymous"></script>
+
+
+<script src='../../../js/animated.js'></script>
+
+
+  </body>
+</html>

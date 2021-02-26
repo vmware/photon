@@ -1,0 +1,182 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Build Other Images for Photon OS</title>
+    <link>/docs/installation-guide/building-images/build-other-images/</link>
+    <description>Recent content in Build Other Images for Photon OS on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs/installation-guide/building-images/build-other-images/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs: Building Cloud Images</title>
+      <link>/docs/installation-guide/building-images/build-other-images/build-cloud-images/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/installation-guide/building-images/build-other-images/build-cloud-images/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Perform the following steps to build the cloud images on Ubuntu:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Install the packages:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt-get -y install bison gawk g++ createrepo python-aptdaemon genisoimage texinfo python-requests libfuse-dev libssl-dev uuid-dev libreadline-dev kpartx git bc
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Get Docker:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;wget -qO- https://get.docker.com/ | sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Install pip&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt install python3-pip
+pip3 install git+https://github.com/vmware/photon-os-installer.git
+git clone https://github.com/vmware/photon.git
+    
+    
+    
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;If you encounter an error for LOCALE when you run these commands, then export the following variables in the terminal:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;   `export LC_ALL=&amp;quot;en_US.UTF-8&amp;quot;`
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt; export LC_CTYPE=&amp;quot;en_US.UTF-8&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;
+&lt;p&gt;Clone`the Photon project:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;git clone https://github.com/vmware/photon.git&lt;/code&gt;
+&lt;code&gt;cd $HOME/workspaces/photon&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Make the cloud image for AMI.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sudo make image IMG_NAME=ami&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Make the cloud image for Azure.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sudo make image IMG_NAME=azure&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Make the cloud image for GCE.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sudo make image IMG_NAME=gce&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;This command first builds all RPMs corresponding to the SPEC files in your Photon repository and then builds a bootable ISO containing those RPMs.&lt;/p&gt;
+&lt;p&gt;The RPMs thus built are stored under &lt;code&gt;stage/RPMS/&lt;/code&gt; directory within the repository, using the following directory hierarchy:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$HOME/workspaces/photon/stage/:
+├──RPMS/:
+    ├──noarch/*.noarch.rpm    [Architecture-independent RPMs]
+    ├──x86_64/*.x86_64.rpm    [RPMs built for the x86-64 architecture]
+    ├──aarch64/*.aarch64.rpm  [RPMs built for the aarch64 (ARM64) architecture]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The cloud image is created at `$HOME/workspaces/photon.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Building OVA image</title>
+      <link>/docs/installation-guide/building-images/build-other-images/build-ova/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/installation-guide/building-images/build-other-images/build-ova/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Perform the following steps to build OVA on Ubuntu:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Install the packages:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt-get -y install bison gawk g++ createrepo python-aptdaemon genisoimage texinfo python-requests libfuse-dev libssl-dev uuid-dev libreadline-dev kpartx git bc
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Get Docker:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;wget -qO- https://get.docker.com/ | sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Install pip&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt install python3-pip
+pip3 install git+https://github.com/vmware/photon-os-installer.git
+git clone https://github.com/vmware/photon.git
+    
+    
+    
+If you encounter an error for LOCALE when you run these commands, then export the following variables in the terminal:
+    
+    
+    export LC_ALL=&amp;quot;en_US.UTF-8&amp;quot;
+`export LC_CTYPE=&amp;quot;en_US.UTF-8&amp;quot;`
+
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Clone the Photon project:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;git clone https://github.com/vmware/photon.git
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;cd $HOME/workspaces/photon&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Download latest VDDK from below link:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://my.vmware.com/web/vmware/downloads/details?downloadGroup=VDDK670&amp;amp;productId=742&#34; title=&#34;Link to VMware ovftool site&#34;&gt;https://my.vmware.com/web/vmware/downloads/details?downloadGroup=VDDK670&amp;amp;productId=742&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Search for &lt;code&gt;VMware-ovftool&lt;/code&gt; in the same site and install it.&lt;/p&gt;
+&lt;p&gt;For example:&lt;/p&gt;
+&lt;p&gt;ovftool downloaded file:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;VMware-ovftool-4.3.0-13981069-lin.x86_64.bundle&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Add exec permission and run it as sudo:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;  $ chmod +x VMware-ovftool-4.3.0-13981069-lin.x86_64.bundle &amp;amp;&amp;amp; sudo ./VMware-ovftool-4.3.0-13981069-lin.x86_64.bundle --eulas-agreed --required&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;For VDDK, if the downloaded file is &lt;code&gt;VMware-vix-disklib-6.7.0-8173251.x86_64.tar.gz&lt;/code&gt;, untar the downloaded tarball:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;$ tar xf VMware-vix-disklib-6.7.0-8173251.x86_64.tar.gz&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Navigate to extracted directory.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Move the header files to /usr/include&lt;/p&gt;
+&lt;p&gt;$ &lt;code&gt;sudo mv include/*.h /usr/include&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Move the shared libs to /usr/lib/vmware
+&lt;code&gt;$ sudo mkdir -p /usr/lib/vmware &amp;amp;&amp;amp; sudo mv lib64/* /usr/lib/vmware &amp;amp;&amp;amp; sudo rm /usr/lib/vmware/libstdc++.so*&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol start=&#34;8&#34;&gt;
+&lt;li&gt;
+&lt;p&gt;Export /usr/lib/vmware library path(only for current session). Do this step every time you try to build an ova image.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;$ export LD_LIBRARY_PATH=/usr/lib/vmware&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Navigate to your intended Photon source repository and run the following command.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;   
+`sudo make image IMG_NAME=ova`
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Make the image for OVA UEFI&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;code&gt;sudo make image IMG_NAME=ova_uefi&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;This command first builds all RPMs corresponding to the SPEC files in your Photon repository and then builds a bootable ISO containing those RPMs.&lt;/p&gt;
+&lt;p&gt;The RPMs thus built are stored under &lt;code&gt;stage/RPMS/&lt;/code&gt; directory within the repository, using the following directory hierarchy:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$HOME/workspaces/photon/stage/:
+├──RPMS/:
+    ├──noarch/*.noarch.rpm    [Architecture-independent RPMs]
+    ├──x86_64/*.x86_64.rpm    [RPMs built for the x86-64 architecture]
+    ├──aarch64/*.aarch64.rpm  [RPMs built for the aarch64 (ARM64) architecture]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The cloud image is created at `$HOME/workspaces/photon.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

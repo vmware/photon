@@ -1,0 +1,659 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Photon OS General Troubleshooting</title>
+    <link>/docs-v3/troubleshooting-guide/photon-os-general-troubleshooting/</link>
+    <description>Recent content in Photon OS General Troubleshooting on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs-v3/troubleshooting-guide/photon-os-general-troubleshooting/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs-V3: Photon Code</title>
+      <link>/docs-v3/troubleshooting-guide/photon-os-general-troubleshooting/photon-code/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/photon-os-general-troubleshooting/photon-code/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Photon is an RPM based Linux distribution similar to variants like CentOS and Fedora. With RPM based distributions granular updates as opposed to updating the whole OS image is possible.&lt;/p&gt;
+&lt;p&gt;##SPEC File
+The &amp;ldquo;Recipe&amp;rdquo; for creating an RPM package is a spec file. The Photon code base&amp;rsquo;s &lt;strong&gt;SPECS&lt;/strong&gt; folder hast the following directory structure:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;SourceRoot
+
+       SPECS
+            linux
+                patch1
+                patch2
+                linux.spec
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;##To Check if a Package is Signed
+Run the following commands to check if the package is signed:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#check if a package is signed
+rpm -q linux --qf &#39;%{NAME}-%{VERSION}-%{RELEASE} %{SIGPGP:pgpsig} %{SIGGPG:pgpsig}\n&#39;
+linux-4.19.79-2.ph3 RSA/SHA1, Thu 31 Oct 2019 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949 (none)
+ 
+#or
+rpm -qi linux | grep &amp;quot;Signature&amp;quot;
+Signature   : RSA/SHA1, Thu 31 Oct 2019 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949
+ 
+#Last 8 chars of Key ID: 66fd4949
+#See if it matches the version of any of the gpg keys installed.
+rpm -qa | grep gpg-pubkey | xargs -n1 rpm -q --queryformat &amp;quot;%{NAME} %{VERSION} %{PACKAGER}\n&amp;quot;
+gpg-pubkey 66fd4949 VMware, Inc. -- Linux Packaging Key -- linux-packages@vmware.com
+gpg-pubkey 3e1ba8d5 Google Cloud Packages RPM Signing Key gc-team@google.com
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;##To Check if Your Image Has Vulnerabilities
+Use the security scanners to find security issues. Alternatively The &lt;code&gt;tdnf updateinfo info&lt;/code&gt; command displays all the applicable security updates the host needs.&lt;/p&gt;
+&lt;p&gt;##To Check if a CVE is Fixed
+The Photon team fix the vulnerabilities and then publish the advisories to (&lt;a href=&#34;https://github.com/vmware/photon/wiki/Security-Advisories)&#34;&gt;https://github.com/vmware/photon/wiki/Security-Advisories)&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;##To Check if Security Updates are Available
+Use the &lt;code&gt;tdnf updateinfo info&lt;/code&gt;, &lt;code&gt;tdnf update --security&lt;/code&gt; or &lt;code&gt;tdnf update ---sec-severity &amp;lt;level&amp;gt;&lt;/code&gt; commands to check if security updates are available. For example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#check if there are any security updates
+root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo
+70 Security notice(s)
+ 
+#check if there are security updates for libssh2. note this is relative to what is installed in local
+root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo list libssh2
+patch:PHSA-2020-3.0-0047 Security libssh2-1.9.0-2.ph3.x86_64.rpm
+patch:PHSA-2019-3.0-0025 Security libssh2-1.9.0-1.ph3.x86_64.rpm
+patch:PHSA-2019-3.0-0009 Security libssh2-1.8.2-1.ph3.x86_64.rpm
+patch:PHSA-2019-3.0-0008 Security libssh2-1.8.0-2.ph3.x86_64.rpm
+ 
+#show details of all the libssh2 updates
+root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo info libssh2
+       Name : libssh2-1.9.0-2.ph3.x86_64.rpm
+  Update ID : patch:PHSA-2020-3.0-0047
+       Type : Security
+    Updated : Wed Jan 15 10:48:25 2020
+Needs Reboot: 0
+Description : Security fixes for {&#39;CVE-2019-17498&#39;}
+       Name : libssh2-1.9.0-1.ph3.x86_64.rpm
+  Update ID : patch:PHSA-2019-3.0-0025
+       Type : Security
+    Updated : Sat Aug 17 16:14:35 2019
+Needs Reboot: 0
+Description : Security fixes for {&#39;CVE-2019-13115&#39;}
+       Name : libssh2-1.8.2-1.ph3.x86_64.rpm
+  Update ID : patch:PHSA-2019-3.0-0009
+       Type : Security
+    Updated : Sat Apr 13 03:34:22 2019
+Needs Reboot: 0
+Description : Security fixes for {&#39;CVE-2019-3859&#39;, &#39;CVE-2019-3862&#39;, &#39;CVE-2019-3861&#39;, &#39;CVE-2019-3857&#39;, &#39;CVE-2019-3858&#39;, &#39;CVE-2019-3863&#39;, &#39;CVE-2019-3860&#39;, &#39;CVE-2019-3856&#39;}
+       Name : libssh2-1.8.0-2.ph3.x86_64.rpm
+  Update ID : patch:PHSA-2019-3.0-0008
+       Type : Security
+    Updated : Fri Mar 29 16:04:18 2019
+Needs Reboot: 0
+Description : Security fixes for {&#39;CVE-2019-3855&#39;}
+ 
+ 
+ 
+#install all security updates &amp;gt;= score 9.0 (CVSS_v3.0_Severity)
+root@photon-9a8c05dd97e9 [ ~ ]# tdnf update --sec-severity 9.0
+Upgrading:
+apache-tomcat                  noarch          8.5.50-1.ph3         photon-updates    9.00M 9440211
+bash                           x86_64          4.4.18-2.ph3         photon-updates    3.16M 3315720
+bzip2                          x86_64          1.0.8-1.ph3          photon-updates  124.99k 127990
+bzip2-libs                     x86_64          1.0.8-1.ph3          photon-updates   74.31k 76096
+file                           x86_64          5.34-2.ph3           photon-updates   43.02k 44056
+file-libs                      x86_64          5.34-2.ph3           photon-updates    5.21M 5458536
+git                            x86_64          2.23.1-2.ph3         photon-updates   24.34M 25519969
+glib                           x86_64          2.58.0-4.ph3         photon-updates    3.11M 3265152
+libseccomp                     x86_64          2.4.0-2.ph3          photon-updates  315.79k 323368
+libssh2                        x86_64          1.9.0-2.ph3          photon-updates  238.41k 244136
+linux-esx                      x86_64          4.19.97-2.ph3        photon-updates   12.68M 13299655
+ 
+Total installed size:  58.28M 61114889
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Package Management</title>
+      <link>/docs-v3/troubleshooting-guide/photon-os-general-troubleshooting/package-management/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/photon-os-general-troubleshooting/package-management/</guid>
+      <description>
+        
+        
+        &lt;p&gt;&lt;a href=&#34;https://github.com/vmware/tdnf&#34;&gt;TDNF&lt;/a&gt; is the default package manager for Photon OS. The standard syntax for &lt;code&gt;tdnf&lt;/code&gt; commands is the same as that for DNF and YUM. TDNF reads YUM repositories from &lt;strong&gt;/etc/yum.repos.d/&lt;/strong&gt;.&lt;/p&gt;
+&lt;p&gt;To find the main configuration file and see its contents, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat /etc/tdnf/tdnf.conf
+[main]
+gpgcheck=1
+installonly_limit=3
+clean_requirements_on_remove=true
+repodir=/etc/yum.repos.d
+cachedir=/var/cache/tdnf
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Repositories have a &lt;strong&gt;.repo&lt;/strong&gt; file extension, The following repositories are available in &lt;strong&gt;/etc/yum.repos.d/&lt;/strong&gt; :&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ls /etc/yum.repos.d/
+lightwave.repo
+photon-extras.repo
+photon-iso.repo
+photon-updates.repo
+photon.repo
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Use the &lt;code&gt;tdnf repolist&lt;/code&gt; command to list the repositories. Tdnf filters the results by their status &lt;strong&gt;enabled&lt;/strong&gt;, &lt;strong&gt;disabled&lt;/strong&gt;, and &lt;strong&gt;all&lt;/strong&gt;. Running the &lt;code&gt;tdnf repolist&lt;/code&gt; command without arguments displays the enabled repositories.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#tdnf repolist
+
+repo id repo name status
+photon-extras        VMware Photon Extras 3.0(x86_64) enabled
+photon-debuginfo VMware Photon Linux debuginfo 3.0(x86_64)enabled
+photon                    VMware Photon Linux 3.0(x86_64) enabled
+photon-updates     VMware Photon Linux 3.0(x86_64) Updates enabled
+root@photon-75829bfd01d0 [ ~ ]#
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The following repositories are important for Photon:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;photon-updates : This repo contains RPM updates for CVE/version and updates/others fixes.&lt;/li&gt;
+&lt;li&gt;photon-debuginfo : This repo contains information about RPMs with debug symbols.&lt;/li&gt;
+&lt;li&gt;photon : This repo generally contains the RPM versions packaged with the released ISO.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To check the local cache data from the repository, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ls -l /var/cache/tdnf/photon
+total 12
+-r--r----- 1 root root 0 Apr 3 22:34 lastrefresh
+drwxr-x--- 2 root root 4096 Apr 3 22:34 repodata
+drwxr-x--- 4 root root 4096 Feb 4 14:31 rpms
+drwxr-x--- 2 root root 4096 Apr 3 22:34 solvcache
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;##Usage
+The &lt;code&gt;tdnf&lt;/code&gt; command can be used in the following ways:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;#tdnf repolist --refresh&lt;/code&gt; : This command is used to refresh the repolist. Generally there is a cache of the repo data stored in the local VM.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;#tdnf install &amp;lt;rpm name&amp;gt;&lt;/code&gt; : This command is used to install a RPM. This command installs the latest version of the RPM.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;#tdnf install &amp;lt;pkg-name&amp;gt;-&amp;lt;verison&amp;gt;-&amp;lt;release&amp;gt;.&amp;lt;photon-release&amp;gt;&lt;/code&gt; : This command is used to install a particular RPM version. For example, run &lt;code&gt;# tdnf install systemd-239-11.ph3&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;#tdnf list systemd&lt;/code&gt; : This command is used to list the available RPM versions in the repository.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;#tdnf makecache&lt;/code&gt; : This command updates the cached binary metadata for all known repositories.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;tdnf clean all&lt;/code&gt; : This command cleans up temporary files, data, and metadata. It takes the argument &lt;code&gt;all&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#tdnf list systemd
+
+Refreshing metadata for: &#39;VMware Photon Linux 3.0(x86_64)&#39;
+
+systemd.x86_64                                                                       239-15.ph3                                            @System
+
+systemd.x86_64                                                                       239-11.ph3                                     photon-updates
+
+systemd.x86_64                                                                       239-12.ph3                                     photon-updates
+
+systemd.x86_64                                                                       239-13.ph3                                     photon-updates
+
+systemd.x86_64                                                                       239-14.ph3                                     photon-updates
+
+systemd.x86_64                                                                       239-15.ph3                                     photon-updates
+
+systemd.x86_64                                                                       239-17.ph3                                     photon-updates
+
+systemd.x86_64                                                                       239-18.ph3                                     photon-updates
+
+systemd.x86_64                                                                       239-19.ph3                                     photon-updates
+
+systemd.x86_64                                                                       239-10.ph3                                             photon
+
+systemd.x86_64                                                                       239-10.ph3                                             photon
+
+root@photon-4a0e7f2307d4 [ /WS/photon-dev/photon ]#
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Here, &lt;code&gt;@System&lt;/code&gt; indicates that the particular RPM is installed in the VM.&lt;/p&gt;
+&lt;p&gt;To upgrade/downgrade RPMs run the following commands:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#tdnf upgrade &amp;lt;pkg-name&amp;gt;
+
+#tdnf downgrade &amp;lt;pkg-name&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;After upgrade/downgrade the dependent packages must be manually upgraded/downgraded as well. Use the &lt;code&gt;#tdnf remove &amp;lt;pkg-name&amp;gt;&lt;/code&gt; command to remove packages and &lt;code&gt;# tdnf clean all&lt;/code&gt; to clear cached packages, metadata, dbcache, plugins and expire-cache.&lt;/p&gt;
+&lt;p&gt;#RPM
+RPM is an open source package management system capable of building software from source into easily distributable packages. It is used for installing, updating and uninstalling packaged software.
+RPM can also be used to query detailed information about the packaged software and to check if a particular package is installed or not.&lt;/p&gt;
+&lt;p&gt;You can do the following operation using the RPM binaries:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Install/Upgrade/Downgrade/Remove RPMs from a virtual machine.&lt;/li&gt;
+&lt;li&gt;Check the version of the packages installed.&lt;/li&gt;
+&lt;li&gt;Check the package contents.&lt;/li&gt;
+&lt;li&gt;Check the dependencies of a package.&lt;/li&gt;
+&lt;li&gt;Find the source package of a file.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To find the package that contains a particular binary, run &lt;code&gt;rpm -q —whatprovides &amp;lt;binary/file path&amp;gt;&lt;/code&gt; command.&lt;/p&gt;
+&lt;p&gt;##Usage
+The &lt;code&gt;rpm&lt;/code&gt; command can be used in the following ways:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;rpm -ivh &amp;lt;rpm file path&amp;gt;&lt;/code&gt; : This command installs the RPM in a virtual machine.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rpm -Uvh &amp;lt;rpm file path&amp;gt;&lt;/code&gt; : This command is used to upgrade/downgrade the RPM.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rpm -e &amp;lt;rpm file path&amp;gt;&lt;/code&gt; : This command uninstalls the RPM from the virtual machine.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rpm -qp &amp;lt;rpm file path&amp;gt; --provides&lt;/code&gt; : This displays the libraries provided by the RPM.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rpm -qp &amp;lt;rpm file path&amp;gt; --requires&lt;/code&gt; : This displays the binaries/libraries required to install a particular rpm.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rpm -qa&lt;/code&gt; : This displays a list of all installed packages.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;rpm -ql &amp;lt;package file.rpm&amp;gt;&lt;/code&gt; : This command lists all files in the package file.&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Network Configuration</title>
+      <link>/docs-v3/troubleshooting-guide/photon-os-general-troubleshooting/network-configuration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/photon-os-general-troubleshooting/network-configuration/</guid>
+      <description>
+        
+        
+        &lt;p&gt;systemd-networkd is a system daemon that manages network configurations. It detects and configures network devices as they appear. It can also create virtual network devices.&lt;/p&gt;
+&lt;p&gt;##Configuration Examples
+All configurations are stored as &lt;strong&gt;foo.network&lt;/strong&gt; in the &lt;strong&gt;/etc/systemd/network/&lt;/strong&gt;, &lt;strong&gt;/lib/systemd/network/&lt;/strong&gt; and &lt;strong&gt;/run/systemd/network/&lt;/strong&gt; folder. Use the &lt;code&gt;networkctl list&lt;/code&gt; command to list all the devices on the system.&lt;/p&gt;
+&lt;p&gt;After making changes to a configuration file, restart the &lt;strong&gt;systemd-networkd.service&lt;/strong&gt; if version is &amp;lt; 245, for other version run the following commands:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;root@photon [ /home/sus ]# networkctl reload
+root@photon [ /home/sus ]# networkctl reconfigure eth0
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The options mentioned in the configuration files are case sensitive.&lt;/li&gt;
+&lt;li&gt;Set &lt;code&gt;DHCP=yes&lt;/code&gt; to accept IPv4 and IPv6 DHCP requests.&lt;/li&gt;
+&lt;li&gt;Set &lt;code&gt;DHCP=ipv4&lt;/code&gt; to accept IPv4 DHCP requests.&lt;/li&gt;
+&lt;li&gt;Set LinkLocalAddressing=no to disable IPv6. Please do not disable IPv6 via sysctl. When &lt;code&gt;LinkLocalAddressing=no&lt;/code&gt; in the .network file, the kernel drops addresses starting with &lt;strong&gt;fe80&lt;/strong&gt;, for example &lt;strong&gt;fe80::20c:29ff:fe4c:7eca&lt;/strong&gt;. If IPv6LL address is not available networkd will not start IPv6 configurations.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To link network configurations using DHCPv4 (IPv6 disabled), run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/etc/systemd/network/20-eth0.network
+[Match]
+Name=eth0
+
+[Network]
+LinkLocalAddressing=no
+
+DHCP=ipv4
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;To link network configurations using DHCPv6, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/etc/systemd/network/20-eth0.network
+[Match]
+Name=eth0
+
+[Network]
+IPv6AcceptRA=yes
+
+DHCP=ipv6
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;To link network configurations using a static IP address, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/etc/systemd/network/20-wired.network
+[Match]
+Name=enp1s0
+
+[Network]
+Address=10.1.10.9/24
+Gateway=10.1.10.1
+DNS=10.1.10.1
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Here &lt;code&gt;Address=&lt;/code&gt; can be used more than once to configure multiple IPv4 or IPv6 addresses.&lt;/p&gt;
+&lt;p&gt;A &lt;strong&gt;.link&lt;/strong&gt; file can be used to rename an interface. For example, set a predictable interface name for a Ethernet adapter based on its MAC address by running the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/etc/systemd/network/10-test0.link
+[Match]
+MACAddress=12:34:56:78:90:ab
+
+[Link]
+Description=my custom name
+Name=test123
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;##Configuration Files
+Configuration files are located in &lt;strong&gt;/usr/lib/systemd/network/&lt;/strong&gt; folder, the volatile runtime network directory in &lt;strong&gt;/run/systemd/network/&lt;/strong&gt; folder and the local administration network directory in  &lt;strong&gt;/etc/systemd/network/&lt;/strong&gt; folder. Configuration files in &lt;strong&gt;/etc/systemd/network/&lt;/strong&gt; folder have the highest priority.&lt;/p&gt;
+&lt;p&gt;There are three types of configuration files and they use a format similar to systemd unit files.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;.network&lt;/strong&gt; : These files apply a network configuration to a matching device.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;.netdev&lt;/strong&gt; : These files are used to create a virtual network device for a matching environment.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;.link&lt;/strong&gt; : When a network device appears, udev looks for the first matching &lt;strong&gt;.link&lt;/strong&gt; file.
+These link files follow the following rules:&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Only if all conditions in the &lt;code&gt;[Match]&lt;/code&gt; section are matched, the profile will be activated.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;An empty &lt;code&gt;[Match]&lt;/code&gt; section means the profile can apply to any case (can be compared to the * wild card)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;All configuration files are collectively sorted and processed in lexical order, regardless of the directory it resides in.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Files with identical names replace each other.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;##Dupliate Matches
+If we have multiple configuration files matching an interface, the first (in lexical order) network file matching a given device is applied. All other files are ignored even if they match. The following is an example of matching configuration files:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;builder@localhost [ ~ ]$ cat /etc/systemd/network/10-eth0.network
+[Match]
+Name=eth0
+[Network]
+DHCP=yes
+  
+builder@localhost [ ~ ]$ cat /etc/systemd/network/99-dhcp-en.network
+[Match]
+Name=e*
+ 
+[Network]
+DHCP=yes
+IPv6AcceptRA=no
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;##Network Files
+These files are used to set network configuration variables for servers and containers.
+&lt;strong&gt;.network&lt;/strong&gt; files have the following sections:&lt;/p&gt;
+&lt;p&gt;###&lt;code&gt;[Match]&lt;/code&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Parameter&lt;/th&gt;
+&lt;th&gt;Description&lt;/th&gt;
+&lt;th&gt;Accepted Values&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;Name=&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Matches device names. For example: &lt;code&gt;en*&lt;/code&gt;. By using &lt;code&gt;!&lt;/code&gt; prefix the list can be inverted.&lt;/td&gt;
+&lt;td&gt;Device names separated by a white space, logical negation (!).&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;MACAddress=&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Matches MAC addresses. For example: &lt;code&gt;MACAddress=01:23:45:67:89:ab 00-11-22-33-44-55 AABB.CCDD.EEFF&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;MAC addresses with full colon-, hyphen- or dot-delimited hexadecimal separated by a white space.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;Host=&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Matches the host name or the machine ID of the host.&lt;/td&gt;
+&lt;td&gt;Hostname string or Machine ID&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;Virtualization=&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Checks whether the system is running in a virtual environment. &lt;code&gt;Virtualization=false&lt;/code&gt; will only match your host machine, while &lt;code&gt;Virtualization=true&lt;/code&gt; matches containers or VMs. It is also possible to check for a specific virtualization type or implementation.&lt;/td&gt;
+&lt;td&gt;boolean, logical negation (!), type (vm, container), implementation (qemu, kvm, zvm, vmware, microsoft, oracle, xen, bochs, uml, bhyve, qnx, openvz, lxc, lxc-libvirt, systemd-nspawn, docker, podman, rkt, wsl, acrn)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;###&lt;code&gt;[Link]&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;MACAddress=&lt;/code&gt; : Used to spoof MAC address.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;MTUBytes=&lt;/code&gt; : Setting a larger MTU value (For example: when using jumbo frames) can significantly speed up your network transfers.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Multicast&lt;/code&gt; : Enables the use of multicast on interface(s).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;###&lt;code&gt;[Network]&lt;/code&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Parameter&lt;/th&gt;
+&lt;th&gt;Description&lt;/th&gt;
+&lt;th&gt;Accepted Values&lt;/th&gt;
+&lt;th&gt;Default Value&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;DHCP=&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Controls DHCPv4 and/or DHCPv6 client support.&lt;/td&gt;
+&lt;td&gt;Boolean, &lt;code&gt;ipv4&lt;/code&gt;, &lt;code&gt;ipv6&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;false&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;DHCPServer=&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;If enabled, a DHCPv4 server will be started.&lt;/td&gt;
+&lt;td&gt;Boolean&lt;/td&gt;
+&lt;td&gt;false&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;MulticastDNS=&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Enables multicast DNS support. When set to &lt;code&gt;resolve&lt;/code&gt;, only resolution is enabled.&lt;/td&gt;
+&lt;td&gt;Boolean, &lt;code&gt;resolve&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;false&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;DNSSEC=&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Controls the DNSSEC DNS validation support on the link. When set to &lt;code&gt;allow-downgrade&lt;/code&gt;, compatibility with non-DNSSEC capable networks is increased, by automatically turning off DNSSEC.&lt;/td&gt;
+&lt;td&gt;Boolean, &lt;code&gt;allow-downgrade&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;false&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;DNS=&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Configures static DNS addresses. can be specified more than once.&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;	inet_pton&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;Domains=	&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Indicates domains which must be resolved using the DNS servers.&lt;/td&gt;
+&lt;td&gt;domain name, optionally prefixed with a &lt;strong&gt;~&lt;/strong&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;IPForward=&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;If enabled, incoming packets on any network interface will be forwarded to any other interfaces according to the routing table.&lt;/td&gt;
+&lt;td&gt;Boolean, &lt;code&gt;ipv4&lt;/code&gt;, &lt;code&gt;ipv6&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;false&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;IPMasquerade=&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;If enabled, packets forwarded from the network interface appear as if they are coming from the local host.&lt;/td&gt;
+&lt;td&gt;Boolean&lt;/td&gt;
+&lt;td&gt;false&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;IPv6PrivacyExtensions=&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Configures use of stateless temporary addresses that change over time. When set to &lt;code&gt;prefer-public&lt;/code&gt;, the privacy extensions are enabled, but prefers public addresses over temporary addresses. When set to &lt;code&gt;kernel&lt;/code&gt;, the kernel&amp;rsquo;s default setting will be left in place.&lt;/td&gt;
+&lt;td&gt;Boolean, &lt;code&gt;prefer-public&lt;/code&gt;, &lt;code&gt;kernel&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;false&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;###&lt;code&gt;[Address]&lt;/code&gt;
+&lt;code&gt;Address=&lt;/code&gt; option is mandatory unless DHCP is used.&lt;/p&gt;
+&lt;p&gt;###&lt;code&gt;[Route]&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Gateway=&lt;/code&gt; option is mandatory unless DHCP is used.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Destination=&lt;/code&gt; option defines the destination prefix of the route, possibly followed by a slash and the prefix length.
+If Destination is not present in &lt;code&gt;[Route]&lt;/code&gt; section it is treated as a default route.
+&lt;strong&gt;Note:&lt;/strong&gt; You can add the &lt;code&gt;Address=&lt;/code&gt; and &lt;code&gt;Gateway=&lt;/code&gt; keys in the &lt;code&gt;[Network]&lt;/code&gt; section as a short-hand, if the &lt;code&gt;[Address]&lt;/code&gt; section contains only an Address key and &lt;code&gt;[Route]&lt;/code&gt; section contains only a Gateway key.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;###DHCP&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Parameter&lt;/th&gt;
+&lt;th&gt;Description&lt;/th&gt;
+&lt;th&gt;Accepted Values&lt;/th&gt;
+&lt;th&gt;Default Value&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;UseDNS=&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Defines the DHCP server to be used.&lt;/td&gt;
+&lt;td&gt;Boolean&lt;/td&gt;
+&lt;td&gt;true&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;Anonymize=&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;When set to &lt;code&gt;true&lt;/code&gt;, the options sent to the DHCP server will follow RFC7844 (Anonymity Profiles for DHCP Clients) to minimize disclosure of identifying information.&lt;/td&gt;
+&lt;td&gt;Boolean&lt;/td&gt;
+&lt;td&gt;false&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;UseDomains=&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;Defines the DHCP server to be used as the DNS search domain. If set to &lt;code&gt;route&lt;/code&gt;, the domain name received from the DHCP server will be used for routing DNS queries only and not for searching. This option can sometimes fix local name resolving when using systemd-resolved.&lt;/td&gt;
+&lt;td&gt;Boolean, &lt;code&gt;route&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;false&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;###&lt;code&gt;[DHCPServer]&lt;/code&gt;
+The following is an example of a DHCP server configuration which works well with hostapd to create a wireless hotspot. &lt;code&gt;IPMasquerade&lt;/code&gt; adds the firewall rules for NAT and &lt;code&gt;IPForward&lt;/code&gt; enables packet forwarding.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/etc/systemd/network/wlan0.network
+[Match]
+Name=wlan0
+
+[Network]
+Address=10.1.1.1/24
+DHCPServer=true
+IPMasquerade=true
+IPForward=true
+
+[DHCPServer]
+PoolOffset=100
+PoolSize=20
+EmitDNS=yes
+DNS=9.9.9.9
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;##Netdev Files
+These files create virtual network devices. They have the following two sections:&lt;/p&gt;
+&lt;p&gt;###&lt;code&gt;[Match]&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Host=&lt;/code&gt; : The host name.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Virtualization=&lt;/code&gt; : Checks if it is running in a virtual environment.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;###&lt;code&gt;[NetDev]&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Name=&lt;/code&gt; : The interface&amp;rsquo;s name. This is a mandatory field.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Kind=&lt;/code&gt; : For example: bridge, bond, vlan, veth, sit, etc. This is a mandatory field.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;##Link Files
+These files are an alternative to custom udev rules and will be applied by udev as the device appears. They have the following two sections:&lt;/p&gt;
+&lt;p&gt;###&lt;code&gt;[Match]&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;MACAddress=&lt;/code&gt; : The MAC address.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Host=&lt;/code&gt; : The host name.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Virtualization=&lt;/code&gt; : Checks if it is running in a virtual environment.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Type=&lt;/code&gt; : the device type. For example: vlan.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;###&lt;code&gt;[Link]&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;MACAddressPolicy=&lt;/code&gt; : Persistent or random addresses.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;MACAddress=&lt;/code&gt; : The MAC address.
+&lt;strong&gt;Note:&lt;/strong&gt; The system &lt;strong&gt;/usr/lib/systemd/network/99-default.link&lt;/strong&gt; file is sufficient for most cases.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;##Debugging Systemd-networkd
+The log can be generated by creating a drop-in config. For example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# /etc/systemd/system/systemd-networkd.service.d/override.conf
+[Service]
+Environment=SYSTEMD_LOG_LEVEL=debug
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Cloud-init</title>
+      <link>/docs-v3/troubleshooting-guide/photon-os-general-troubleshooting/cloud-init/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/photon-os-general-troubleshooting/cloud-init/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Cloud-init is mixture of Python and Shell scripts that initialize cloud instances of Linux machines.
+Cloud-init performs boot time configuration of a system.
+We can configure users, hostname, host network, write files to disk, manage packages, run custom scripts and so on.&lt;/p&gt;
+&lt;p&gt;##DataSources
+Datasource is the source of configuration data for cloud-init that is typically given by a user (For example: userdata) or obtained from the cloud that created the configuration drive (For example: metadata).
+Userdata includes files, YAML configuration files and shell scripts.
+Metadata includes server name, instance id, display name and other cloud specific details.&lt;/p&gt;
+&lt;p&gt;Currently there are two datasources used in Photon OS, it&amp;rsquo;s usage is described in the following sections:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;DataSourceOVF - Used for GuestOS customization in vSphere.&lt;/li&gt;
+&lt;li&gt;VMwareGuestInfo - Used to read meta, user, and vendor data from VMware vSphere&amp;rsquo;s GuestInfo interface and initialize the system.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;###DataSourceOVF
+The OVF (Open Virtualization Format) Datasource provides a datasource for reading data from an OVF transport ISO.
+The vmtoolsd service extracts the customization spec cab file from the OVF and calls either cloud-init or the GuestOS customization scripts.
+The &lt;code&gt;disable_vmware_customization&lt;/code&gt; flag in &lt;strong&gt;/etc/cloud/cloud.cfg&lt;/strong&gt; file determines if GOSC scripts or cloud-init is used.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;disable_vmware_customization: false&lt;/code&gt; : Cloud-init is used for Guest OS customization&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;disable_vmware_customization: true&lt;/code&gt; : GuestOS customization scripts is used for Guest OS customization&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;:
+The default value for &lt;code&gt;disable_vmware_customization&lt;/code&gt; is set to &lt;code&gt;true&lt;/code&gt; in the &lt;strong&gt;/etc/cloud/cloud.cfg&lt;/strong&gt; file&lt;/p&gt;
+&lt;p&gt;###VMwareGuestInfo
+VMwareGuestInfo data source is configured by setting &lt;code&gt;guestinfo&lt;/code&gt; properties on a VM. This can be set by performing one of the following:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Using the vmware-rpctool provided by open-vmtools.&lt;/li&gt;
+&lt;li&gt;Modifying the &lt;strong&gt;vmx&lt;/strong&gt; file to set the guestinfo properties.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;##Debugging Cloud-init Failures
+Cloud-init has four services which are started in the following sequence:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;cloud-init-local - This service locates local data sources and applies networking configurations provided n the metadata (If there is no metadata it applies Fallback). Use &lt;code&gt;$ systemctl status cloud-init-local&lt;/code&gt; command to check its status.&lt;/li&gt;
+&lt;li&gt;cloud-init - This service processes any user-data that is found and runs the cloud_init_modules in &lt;strong&gt;/etc/cloud/cloud.cfg&lt;/strong&gt;. Use &lt;code&gt;$ systemctl status cloud-init&lt;/code&gt; command to check its status.&lt;/li&gt;
+&lt;li&gt;cloud-config - This service runs the cloud_config_modules in &lt;strong&gt;/etc/cloud/cloud.cfg&lt;/strong&gt; file. Use &lt;code&gt;$ systemctl status cloud-config&lt;/code&gt; command to check its status.&lt;/li&gt;
+&lt;li&gt;cloud-final - This service runs any script that a user is accustomed to running after logging into a system (For example: package installations, configs, user-scripts) and runs cloud_final_modules in &lt;strong&gt;/etc/cloud/cloud.cfg&lt;/strong&gt; file. Use &lt;code&gt;$ systemctl status cloud-final&lt;/code&gt; command to check its status.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Cloud-init logs are available in the &lt;strong&gt;/var/log/cloud-init.log&lt;/strong&gt; file. Logs for GuestOS customization using DataSourceOVF are available in the &lt;strong&gt;/var/log/vmware-imc/toolsDeployPkg.log&lt;/strong&gt; and &lt;strong&gt;/var/log/cloud-init.log&lt;/strong&gt; files.&lt;/p&gt;
+&lt;p&gt;To analyze the cloud-init boot time performance, run the following commands:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;$ cloud-init analyze blame&lt;/code&gt; - The blame command prints in descending order, the units that took the longest to run. This output is useful for observe where cloud-init is spending its time during execution.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$ cloud-init analyze show&lt;/code&gt; - The show command prints a list of units, the time they started and how long they took to complete. It also prints a summary of total time per boot.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$ cloud-init analyze dump&lt;/code&gt; - The dump command dumps the cloud-init logs for the analyze modules and displays a list of dictionaries that can be consumed for other reporting needs.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$ cloud-init status&lt;/code&gt; - To know the overall status of clouf-init.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Cloud-init doesn&amp;rsquo;t configure the network if &lt;strong&gt;/etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg&lt;/strong&gt; file is present and has the following content:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;network:Item&lt;/li&gt;
+&lt;li&gt;config: disabled&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Take a backup of &lt;strong&gt;/etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg&lt;/strong&gt; file and remove it from it&amp;rsquo;s location.
+Reconfigure the machine using metadata, userdata and vendordata.
+Once the configurations are done copy the backup file to the same location.
+Cloud-init will push it&amp;rsquo;s fallback configuration when service is restarted or rebooted and there is no local datasource to configure. To avoid this &lt;strong&gt;/etc/cloud/cloud.cfg.d/99-disable-networking-config.cfg&lt;/strong&gt; file is required.&lt;/p&gt;
+&lt;p&gt;##Run Cloud-init Manually
+To run cloud-init manually, run the following commands:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/usr/bin/cloud-init -d init  (-d for debug)
+/usr/bin/cloud-init -d modules (run all modules)
+/usr/bin/cloud-init --file &amp;lt;config-yaml-file-path&amp;gt; init (if you want to run cloud-init with a configuration yaml file)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;When cloud-init is running, to force it to run with all configs engaged run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;rm -rf /var/lib/cloud/*
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For more information about cloud-init, see
+&lt;a href=&#34;https://cloudinit.readthedocs.io/en/latest/index.html&#34;&gt;https://cloudinit.readthedocs.io/en/latest/index.html&lt;/a&gt;&lt;a href=&#34;https://cloudinit.readthedocs.io/en/latest/index.html&#34;&gt;https://cloudinit.readthedocs.io/en/latest/index.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;For more information about cloud-init CLI, see
+&lt;a href=&#34;https://cloudinit.readthedocs.io/en/latest/topics/cli.html&#34;&gt;https://cloudinit.readthedocs.io/en/latest/topics/cli.html&lt;/a&gt;&lt;a href=&#34;https://cloudinit.readthedocs.io/en/latest/topics/cli.html&#34;&gt;https://cloudinit.readthedocs.io/en/latest/topics/cli.html&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;:Include the cloud-init log tarball and the vmtoolsd logs when you raise an issue.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Collect cloud-init log tarball by running the &lt;code&gt;cloud-init collect-logs&lt;/code&gt; command.&lt;/li&gt;
+&lt;li&gt;Collect the vmtoolsd logs from &lt;strong&gt;/var/log/vmware-imc/toolsDeployPkg.log&lt;/strong&gt; file.&lt;/li&gt;
+&lt;li&gt;Attach the collected logs to the issue ticket.&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Open-vm-tools/Vmtoolsd</title>
+      <link>/docs-v3/troubleshooting-guide/photon-os-general-troubleshooting/vmtoolsd/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/photon-os-general-troubleshooting/vmtoolsd/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Vmtoolsd is a systemd service, using which we can set guestinfo properties metadata, userdata and vendordata etc., which in turn are consumed by cloud-init.
+VMwareGuestInfo Datasource uses this guestinfo properties and applies them to the system.&lt;/p&gt;
+&lt;p&gt;vmware-rpctool is a utility provided by open-vm-tools to set metadata, userdata and vendordata.
+vmware-rpctool provides info.set and info.get options to set and get the guestinfo properties respectively.&lt;/p&gt;
+&lt;p&gt;##Debugging
+To check the status of the vmtoolsd service (vmtoolsd is dependant on vgauthd), run the following commands:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ systemctl status vmtoolsd vgauthd
+
+$ journalctl -u vmtoolsd
+
+$ journalctl -u vgauthd
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;To set and get metadata, userdata and vendordata, run the following commands:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ /usr/bin/vmware-rpctool &#39;info-get guestinfo.metadata&#39;
+
+$ /usr/bin/vmware-rpctool &#39;info-get guestinfo.userdata&#39;
+
+$ /usr/bin/vmware-rpctool &#39;info-get guestinfo.vendordata&#39;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;A YAML file can be used as input to the &lt;strong&gt;rpctool&lt;/strong&gt; using following commands:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vmware-rpctool &amp;quot;info-set guestinfo.userdata.encoding base64&amp;quot;
+vmware-rpctool &amp;quot;info-set guestinfo.metadata.encoding base64&amp;quot;
+
+vmware-rpctool &amp;quot;info-set guestinfo.metadata ${metadata file contents}&amp;quot;
+
+vmware-rpctool &amp;quot;info-set guestinfo.userdata ${userdata file contents}&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;:Include the cloud-init log tarball and the vmtoolsd logs when you raise an issue.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Collect cloud-init log tarball by running the &lt;code&gt;cloud-init collect-logs&lt;/code&gt; command.&lt;/li&gt;
+&lt;li&gt;Collect the vmtoolsd logs from &lt;strong&gt;/var/log/vmware-imc/toolsDeployPkg.log&lt;/strong&gt; file.&lt;/li&gt;
+&lt;li&gt;Attach the logs collected to the issue ticket.&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,141 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Remotely Upgrading a Photon OS Machine</title>
+    <link>/docs/administration-guide/installing-and-using-lightwave/</link>
+    <description>Recent content in Remotely Upgrading a Photon OS Machine on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs/administration-guide/installing-and-using-lightwave/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs: Remotely Upgrade a Single Photon OS Machine With Photon Management Daemon</title>
+      <link>/docs/administration-guide/installing-and-using-lightwave/remotely-upgrade-a-photon-os-machine-with-lightwave-client-and-photon-management-daemon-installed/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/installing-and-using-lightwave/remotely-upgrade-a-photon-os-machine-with-lightwave-client-and-photon-management-daemon-installed/</guid>
+      <description>
+        
+        
+        &lt;p&gt;After you have a configured the Photon Management Daemon on a machine, you can remotely upgrade any installed package on that machine. You can use the &lt;code&gt;root&lt;/code&gt; user credentials.&lt;/p&gt;
+&lt;p&gt;Upgrade process uses &lt;code&gt;pmd-cli&lt;/code&gt; that is supported from Photon Management Daemon. You can initiate the upgrade process from any machine that has Photon Management Daemon CLI installed.&lt;/p&gt;
+&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Have an installed Photon Management Daemon on the client.&lt;/li&gt;
+&lt;li&gt;Have in installed Photon Management Daemon CLI (pmd-cli) on a machine from which you perform the updates.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;procedure&#34;&gt;Procedure&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;To initiate remote upgrade, log in to a machine that has Photon Management Daemon CLI installed over SSH.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Identify packages that can be upgraded on the client machine.
+2. List the available updates for the machine.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; `# pmd-cli --server-name &amp;lt;machine-IP-address&amp;gt; --user root pkg list updates`
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;
+&lt;p&gt;Verify the currently installed version of a package, for example &lt;code&gt;sed&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;# &lt;/code&gt;# pmd-cli &amp;ndash;server-name &lt;machine-IP-address&gt; &amp;ndash;user root pkg installed sed`
+The installed version number shows as earlier than the one listed under the available updates.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Initiate the upgrade, in this example of the &lt;code&gt;sed&lt;/code&gt; package, enter password, and wait for the command to complete.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;# pmd-cli --server-name &amp;lt;machine-IP-address&amp;gt; --user root pkg update sed&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;(Optional) Verify that the client machine package was upgraded successfully.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Log in to the machine that was upgraded over SSH.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;List the installed version of the &lt;code&gt;sed&lt;/code&gt; package.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;# pmd-cli --server-name &amp;lt;machine-IP-address&amp;gt; --user root pkg installed sed&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Remotely Upgrade Multiple Photon OS Machines With Photon Management Daemon</title>
+      <link>/docs/administration-guide/installing-and-using-lightwave/remotely-upgrade-multiple-photon-os-machines-with-lightwave-client-and-photon-management-daemon-installed/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/installing-and-using-lightwave/remotely-upgrade-multiple-photon-os-machines-with-lightwave-client-and-photon-management-daemon-installed/</guid>
+      <description>
+        
+        
+        &lt;p&gt;After you have a configured the Photon Management Daemon (PMD) on multiple machines, you can remotely upgrade any installed package on these machines.&lt;/p&gt;
+&lt;p&gt;Upgrade process uses &lt;code&gt;copenapi_cli&lt;/code&gt; that is supported from Photon Management Daemon. You can initiate the upgrade process from any machine that has Photon Management Daemon installed.&lt;/p&gt;
+&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Have installed Photon Management Daemon on the clients.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;procedure&#34;&gt;Procedure&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;To initiate remote upgrade, log in to a Photon OS machine over SSH to install the Photon Management Daemon CLI.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;# tdnf install pmd-cli&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Edit the &lt;code&gt;copenapi_cli&lt;/code&gt; spec files so that you can specify the machines you want to upgrade and credentials to be used.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Edit the &lt;code&gt;.netrc&lt;/code&gt; file to specify machines to be upgraded and credentials for the PMD service.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;# vi ~/.netrc&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;In the file, enter the IP addresses for the machines and administrative credentials, save and close the file.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;# machine &amp;lt;IP-address&amp;gt; login &amp;lt;pmd-administrative-user&amp;gt; password &amp;lt;pmd-administrative user-password&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;(Optional) Get the location of the &lt;code&gt;restapispec.json&lt;/code&gt; file.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;# cat ~/.copenapi&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;This command returns &lt;code&gt;apispec=/root/restapispec.json&lt;/code&gt; as path for the spec file.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Edit the &lt;code&gt;restapispec.json&lt;/code&gt; file to enter the IP address of the machine to be upgraded.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;# vi /root/restapispec.json&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Change the &lt;code&gt;host&lt;/code&gt; value to the IP address or the hostname of the machine, leave the port number, and save and close the file.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;&amp;quot;host&amp;quot;:&amp;quot;&amp;lt;ip-address&amp;gt;:2081&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Initiate the upgrade, in this example of the &lt;code&gt;sed&lt;/code&gt; package and wait for the command to complete.&lt;/p&gt;
+&lt;p&gt;Specify &lt;code&gt;-k&lt;/code&gt; to force blind trust of certificates and &lt;code&gt;-n&lt;/code&gt; to use the credentials from the &lt;code&gt;.netrc&lt;/code&gt; file.
+&lt;code&gt;# copenapi_cli pkg update --packages sed -kn&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;(Optional) Verify that the package was upgraded successfully.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Log in to the machine that was upgraded over SSH.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;List the installed version of the &lt;code&gt;sed&lt;/code&gt; package.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;# tdnf list installed sed&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

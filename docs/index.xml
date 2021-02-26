@@ -1,0 +1,2521 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Photon OS Documentation</title>
+    <link>/docs/</link>
+    <description>Recent content in Photon OS Documentation on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Wed, 10 Feb 2021 00:00:00 +0000</lastBuildDate>
+    
+	  <atom:link href="/docs/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs-V3: Boot in Emergency Mode</title>
+      <link>/docs-v3/troubleshooting-guide/solutions-to-common-problems/boot-in-emergency-mode/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/solutions-to-common-problems/boot-in-emergency-mode/</guid>
+      <description>
+        
+        
+        &lt;p&gt;If you encounter problems during normal boot, you can boot in Emergency Mode.&lt;/p&gt;
+&lt;p&gt;Perform the following steps to boot in Emergency Mode:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Restart the Photon OS machine or the virtual machine running Photon OS.&lt;/p&gt;
+&lt;p&gt;When the Photon OS splash screen appears, as it restarts, type the letter &lt;code&gt;e&lt;/code&gt; quickly.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Append &lt;code&gt;emergency&lt;/code&gt; to the kernel command line.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Press &lt;code&gt;F10&lt;/code&gt; to proceed with the boot.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;At the command prompt, provide the root password to log in to Emergency Mode.&lt;/p&gt;
+&lt;p&gt;By default, &lt;code&gt;/&lt;/code&gt; is mounted as read-only.&lt;/p&gt;
+&lt;p&gt;To make modifications, run the following command to remount with write access:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;mount -o remount,rw /&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Boot in Emergency Mode</title>
+      <link>/docs/troubleshooting-guide/solutions-to-common-problems/boot-in-emergency-mode/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/troubleshooting-guide/solutions-to-common-problems/boot-in-emergency-mode/</guid>
+      <description>
+        
+        
+        &lt;p&gt;If you encounter problems during normal boot, you can boot in Emergency Mode.&lt;/p&gt;
+&lt;p&gt;Perform the following steps to boot in Emergency Mode:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Restart the Photon OS machine or the virtual machine running Photon OS.&lt;/p&gt;
+&lt;p&gt;When the Photon OS splash screen appears, as it restarts, type the letter &lt;code&gt;e&lt;/code&gt; quickly.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Append &lt;code&gt;emergency&lt;/code&gt; to the kernel command line.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Press &lt;code&gt;F10&lt;/code&gt; to proceed with the boot.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;At the command prompt, provide the root password to log in to Emergency Mode.&lt;/p&gt;
+&lt;p&gt;By default, &lt;code&gt;/&lt;/code&gt; is mounted as read-only.&lt;/p&gt;
+&lt;p&gt;To make modifications, run the following command to remount with write access:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;mount -o remount,rw /&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Building Cloud Images</title>
+      <link>/docs/installation-guide/building-images/build-other-images/build-cloud-images/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/installation-guide/building-images/build-other-images/build-cloud-images/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Perform the following steps to build the cloud images on Ubuntu:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Install the packages:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt-get -y install bison gawk g++ createrepo python-aptdaemon genisoimage texinfo python-requests libfuse-dev libssl-dev uuid-dev libreadline-dev kpartx git bc
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Get Docker:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;wget -qO- https://get.docker.com/ | sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Install pip&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt install python3-pip
+pip3 install git+https://github.com/vmware/photon-os-installer.git
+git clone https://github.com/vmware/photon.git
+    
+    
+    
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;If you encounter an error for LOCALE when you run these commands, then export the following variables in the terminal:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;   `export LC_ALL=&amp;quot;en_US.UTF-8&amp;quot;`
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt; export LC_CTYPE=&amp;quot;en_US.UTF-8&amp;quot;&lt;/code&gt;&lt;/p&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;
+&lt;p&gt;Clone`the Photon project:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;git clone https://github.com/vmware/photon.git&lt;/code&gt;
+&lt;code&gt;cd $HOME/workspaces/photon&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Make the cloud image for AMI.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sudo make image IMG_NAME=ami&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Make the cloud image for Azure.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sudo make image IMG_NAME=azure&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Make the cloud image for GCE.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sudo make image IMG_NAME=gce&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;This command first builds all RPMs corresponding to the SPEC files in your Photon repository and then builds a bootable ISO containing those RPMs.&lt;/p&gt;
+&lt;p&gt;The RPMs thus built are stored under &lt;code&gt;stage/RPMS/&lt;/code&gt; directory within the repository, using the following directory hierarchy:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$HOME/workspaces/photon/stage/:
+├──RPMS/:
+    ├──noarch/*.noarch.rpm    [Architecture-independent RPMs]
+    ├──x86_64/*.x86_64.rpm    [RPMs built for the x86-64 architecture]
+    ├──aarch64/*.aarch64.rpm  [RPMs built for the aarch64 (ARM64) architecture]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The cloud image is created at `$HOME/workspaces/photon.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Checking Disk Space</title>
+      <link>/docs-v3/troubleshooting-guide/file-system-troubleshooting/checking-disk-space/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/file-system-troubleshooting/checking-disk-space/</guid>
+      <description>
+        
+        
+        &lt;p&gt;One of the first simple steps to take while troubleshooting is to check how much disk space is available by running the &lt;code&gt;df&lt;/code&gt; command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;df -h&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Checking Disk Space</title>
+      <link>/docs/troubleshooting-guide/file-system-troubleshooting/checking-disk-space/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/troubleshooting-guide/file-system-troubleshooting/checking-disk-space/</guid>
+      <description>
+        
+        
+        &lt;p&gt;One of the first simple steps to take while troubleshooting is to check how much disk space is available by running the &lt;code&gt;df&lt;/code&gt; command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;df -h&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Cloud-Init Overview</title>
+      <link>/docs-v3/administration-guide/cloud-init-on-photon-os/cloud-init-overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/cloud-init-on-photon-os/cloud-init-overview/</guid>
+      <description>
+        
+        
+        &lt;p&gt;&lt;code&gt;cloud-init&lt;/code&gt; is a multi-distribution package that handles early initialization of a cloud instance.&lt;/p&gt;
+&lt;p&gt;In-depth documentation for cloud-init is available here:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://cloudinit.readthedocs.org/en/latest/&#34;&gt;https://cloudinit.readthedocs.org/en/latest/&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&#34;supported-installations&#34;&gt;Supported installations&lt;/h1&gt;
+&lt;p&gt;Both the full version of and the minimal version of Photon OS support cloud-init.&lt;/p&gt;
+&lt;h1 id=&#34;supported-capabilities&#34;&gt;Supported capabilities&lt;/h1&gt;
+&lt;p&gt;Photon OS supports the following cloud-init capabilities:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;run commands: execute a list of commands with output to console.&lt;/li&gt;
+&lt;li&gt;configure ssh keys: add an entry to ~/.ssh/authorized_keys for the configured user.&lt;/li&gt;
+&lt;li&gt;install package: install additional packages on first boot.&lt;/li&gt;
+&lt;li&gt;configure networking: update /etc/hosts, hostname, etc.&lt;/li&gt;
+&lt;li&gt;write files: write arbitrary files to disk.&lt;/li&gt;
+&lt;li&gt;add yum repository: add a yum repository to /etc/yum.repos.d.&lt;/li&gt;
+&lt;li&gt;create groups and users: add groups and users to the system and set properties for them.&lt;/li&gt;
+&lt;li&gt;run yum upgrade: upgrade all packages.&lt;/li&gt;
+&lt;li&gt;reboot: reboot or power off when done with cloud-init.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;getting-started&#34;&gt;Getting Started&lt;/h1&gt;
+&lt;p&gt;The Amazon Machine Image of Photon OS has an &lt;code&gt;ec2 datasource&lt;/code&gt; turned on by default so an &lt;code&gt;ec2&lt;/code&gt; configuration is accepted.
+However, for testing, the following methods provide ways to do &lt;code&gt;cloud-init&lt;/code&gt; with a standalone instance of Photon OS.&lt;/p&gt;
+&lt;h2 id=&#34;using-a-seed-iso&#34;&gt;Using a Seed ISO&lt;/h2&gt;
+&lt;p&gt;This will be using the &lt;code&gt;nocloud&lt;/code&gt; data source. In order to initialize the system in this way, an ISO file needs to be created with a meta-data file and an user-data file as shown below:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ { echo instance-id: iid-local01; echo local-hostname: cloudimg; } &amp;gt; meta-data
+$ printf &amp;quot;#cloud-config\nhostname: testhost\n&amp;quot; &amp;gt; user-data
+$ genisoimage  -output seed.iso -volid cidata -joliet -rock user-data meta-data
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Attach the &lt;code&gt;seed.iso&lt;/code&gt; generated above to your machine and reboot for the init to take effect.
+In this case, the hostname is set to &lt;code&gt;testhost&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;using-a-seed-disk-file&#34;&gt;Using a Seed Disk File&lt;/h2&gt;
+&lt;p&gt;To init using local disk files, do the following:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mkdir /var/lib/cloud/seed/nocloud
+cd /var/lib/cloud/seed/nocloud
+$ { echo instance-id: iid-local01; echo local-hostname: cloudimg; } &amp;gt; meta-data
+$ printf &amp;quot;#cloud-config\nhostname: testhost\n&amp;quot; &amp;gt; user-data
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Reboot the machine and the hostname will be set to &lt;code&gt;testhost&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;frequencies&#34;&gt;Frequencies&lt;/h2&gt;
+&lt;p&gt;Cloud-init modules have predetermined frequencies. Based on the frequency setting, multiple runs will yield different results. For the scripts to always run, remove the &lt;code&gt;instances&lt;/code&gt; directory before rebooting.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;rm -rf /var/lib/cloud/instances
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;module-frequency-info&#34;&gt;Module Frequency Info&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Name&lt;/th&gt;
+&lt;th&gt;Frequency&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;disable_ec2_metadata&lt;/td&gt;
+&lt;td&gt;Always&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;users_groups&lt;/td&gt;
+&lt;td&gt;Instance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;write_files&lt;/td&gt;
+&lt;td&gt;Instance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;update_hostname&lt;/td&gt;
+&lt;td&gt;Always&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;final_message&lt;/td&gt;
+&lt;td&gt;Always&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;resolv_conf&lt;/td&gt;
+&lt;td&gt;Instance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;growpart&lt;/td&gt;
+&lt;td&gt;Always&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;update_etc_hosts&lt;/td&gt;
+&lt;td&gt;Always&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;power_state_change&lt;/td&gt;
+&lt;td&gt;Instance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;phone_home&lt;/td&gt;
+&lt;td&gt;Instance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Cloud-Init Overview</title>
+      <link>/docs/administration-guide/cloud-init-on-photon-os/cloud-init-overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/cloud-init-on-photon-os/cloud-init-overview/</guid>
+      <description>
+        
+        
+        &lt;p&gt;&lt;code&gt;cloud-init&lt;/code&gt; is a multi-distribution package that handles early initialization of a cloud instance.&lt;/p&gt;
+&lt;p&gt;In-depth documentation for cloud-init is available here:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://cloudinit.readthedocs.org/en/latest/&#34;&gt;https://cloudinit.readthedocs.org/en/latest/&lt;/a&gt;&lt;/p&gt;
+&lt;h1 id=&#34;supported-installations&#34;&gt;Supported installations&lt;/h1&gt;
+&lt;p&gt;Both the full version of and the minimal version of Photon OS support cloud-init.&lt;/p&gt;
+&lt;h1 id=&#34;supported-capabilities&#34;&gt;Supported capabilities&lt;/h1&gt;
+&lt;p&gt;Photon OS supports the following cloud-init capabilities:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;run commands: execute a list of commands with output to console.&lt;/li&gt;
+&lt;li&gt;configure ssh keys: add an entry to ~/.ssh/authorized_keys for the configured user.&lt;/li&gt;
+&lt;li&gt;install package: install additional packages on first boot.&lt;/li&gt;
+&lt;li&gt;configure networking: update /etc/hosts, hostname, etc.&lt;/li&gt;
+&lt;li&gt;write files: write arbitrary files to disk.&lt;/li&gt;
+&lt;li&gt;add yum repository: add a yum repository to /etc/yum.repos.d.&lt;/li&gt;
+&lt;li&gt;create groups and users: add groups and users to the system and set properties for them.&lt;/li&gt;
+&lt;li&gt;run yum upgrade: upgrade all packages.&lt;/li&gt;
+&lt;li&gt;reboot: reboot or power off when done with cloud-init.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;getting-started&#34;&gt;Getting Started&lt;/h1&gt;
+&lt;p&gt;The Amazon Machine Image of Photon OS has an &lt;code&gt;ec2 datasource&lt;/code&gt; turned on by default so an &lt;code&gt;ec2&lt;/code&gt; configuration is accepted.
+However, for testing, the following methods provide ways to do &lt;code&gt;cloud-init&lt;/code&gt; with a standalone instance of Photon OS.&lt;/p&gt;
+&lt;h2 id=&#34;using-a-seed-iso&#34;&gt;Using a Seed ISO&lt;/h2&gt;
+&lt;p&gt;This will be using the &lt;code&gt;nocloud&lt;/code&gt; data source. In order to initialize the system in this way, an ISO file needs to be created with a meta-data file and an user-data file as shown below:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$ { echo instance-id: iid-local01; echo local-hostname: cloudimg; } &amp;gt; meta-data
+$ printf &amp;quot;#cloud-config\nhostname: testhost\n&amp;quot; &amp;gt; user-data
+$ genisoimage  -output seed.iso -volid cidata -joliet -rock user-data meta-data
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Attach the &lt;code&gt;seed.iso&lt;/code&gt; generated above to your machine and reboot for the init to take effect.
+In this case, the hostname is set to &lt;code&gt;testhost&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;using-a-seed-disk-file&#34;&gt;Using a Seed Disk File&lt;/h2&gt;
+&lt;p&gt;To init using local disk files, do the following:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mkdir /var/lib/cloud/seed/nocloud
+cd /var/lib/cloud/seed/nocloud
+$ { echo instance-id: iid-local01; echo local-hostname: cloudimg; } &amp;gt; meta-data
+$ printf &amp;quot;#cloud-config\nhostname: testhost\n&amp;quot; &amp;gt; user-data
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Reboot the machine and the hostname will be set to &lt;code&gt;testhost&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;frequencies&#34;&gt;Frequencies&lt;/h2&gt;
+&lt;p&gt;Cloud-init modules have predetermined frequencies. Based on the frequency setting, multiple runs will yield different results. For the scripts to always run, remove the &lt;code&gt;instances&lt;/code&gt; directory before rebooting.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;rm -rf /var/lib/cloud/instances
+&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;module-frequency-info&#34;&gt;Module Frequency Info&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Name&lt;/th&gt;
+&lt;th&gt;Frequency&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;disable_ec2_metadata&lt;/td&gt;
+&lt;td&gt;Always&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;users_groups&lt;/td&gt;
+&lt;td&gt;Instance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;write_files&lt;/td&gt;
+&lt;td&gt;Instance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;update_hostname&lt;/td&gt;
+&lt;td&gt;Always&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;final_message&lt;/td&gt;
+&lt;td&gt;Always&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;resolv_conf&lt;/td&gt;
+&lt;td&gt;Instance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;growpart&lt;/td&gt;
+&lt;td&gt;Always&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;update_etc_hosts&lt;/td&gt;
+&lt;td&gt;Always&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;power_state_change&lt;/td&gt;
+&lt;td&gt;Instance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;phone_home&lt;/td&gt;
+&lt;td&gt;Instance&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Combining DHCP and Static IP Addresses with IPv4 and IPv6</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/setting-up-networking-for-multiple-nics/combining-dhcp-and-static-ip-addresses-with-ipv4-and-ipv6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/setting-up-networking-for-multiple-nics/combining-dhcp-and-static-ip-addresses-with-ipv4-and-ipv6/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can combine DHCP and static IP addresses with both IPv4 and IPv6.&lt;/p&gt;
+&lt;h2 id=&#34;examples&#34;&gt;Examples&lt;/h2&gt;
+&lt;p&gt;The following example shows how to use DHCP to allocate both IPv4 and IPv6 addresses:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=yes
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows how to use DHCP to allocate only IPv4 addresses:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=ipv4
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows how to use DHCP to allocate only IPv6 addresses:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=ipv6
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows how to use DHCP for IPv4 addresses and static IP addresses for IPv6 addresses:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=ipv4
+Address=fd00::1/48
+Gateway=fd00::252
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows how to use DHCP for IPv6 addresses and static IP addresses for IPv4:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=ipv6
+Address=10.10.10.1/24
+Gateway=10.10.10.253
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows how to use static IP addresses for both IPv4 and IPv6:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=ipv6
+Address=10.10.10.1/24
+Gateway=10.10.10.253
+Address=fd00::1/48
+Gateway=fd00::252&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Combining DHCP and Static IP Addresses with IPv4 and IPv6</title>
+      <link>/docs/administration-guide/managing-network-configuration/setting-up-networking-for-multiple-nics/combining-dhcp-and-static-ip-addresses-with-ipv4-and-ipv6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/managing-network-configuration/setting-up-networking-for-multiple-nics/combining-dhcp-and-static-ip-addresses-with-ipv4-and-ipv6/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can combine DHCP and static IP addresses with both IPv4 and IPv6.&lt;/p&gt;
+&lt;h2 id=&#34;examples&#34;&gt;Examples&lt;/h2&gt;
+&lt;p&gt;The following example shows how to use DHCP to allocate both IPv4 and IPv6 addresses:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=yes
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows how to use DHCP to allocate only IPv4 addresses:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=ipv4
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows how to use DHCP to allocate only IPv6 addresses:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=ipv6
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows how to use DHCP for IPv4 addresses and static IP addresses for IPv6 addresses:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=ipv4
+Address=fd00::1/48
+Gateway=fd00::252
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows how to use DHCP for IPv6 addresses and static IP addresses for IPv4:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=ipv6
+Address=10.10.10.1/24
+Gateway=10.10.10.253
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows how to use static IP addresses for both IPv4 and IPv6:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[Network]
+DHCP=ipv6
+Address=10.10.10.1/24
+Gateway=10.10.10.253
+Address=fd00::1/48
+Gateway=fd00::252&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Commands to Manage Network Service</title>
+      <link>/docs-v3/administration-guide/managing-network-configuration/network-management-commands/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-network-configuration/network-management-commands/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You manage the network service by using systemd commands, such as &lt;code&gt;systemd-networkd&lt;/code&gt;, &lt;code&gt;systemd-resolvd&lt;/code&gt;, and &lt;code&gt;networkctl&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;To check the status of the network service, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl status systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Output&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;* systemd-networkd.service - Network Service
+   Loaded: loaded (/usr/lib/systemd/system/systemd-networkd.service; enabled; vendor preset: enabled)
+   Active: active (running) since Fri 2016-04-29 15:08:51 UTC; 6 days ago
+     Docs: man:systemd-networkd.service(8)
+ Main PID: 291 (systemd-network)
+   Status: &amp;quot;Processing requests...&amp;quot;
+   CGroup: /system.slice/systemd-networkd.service
+           `-291 /lib/systemd/systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Because Photon OS relies on systemd to manage services, you must use the &lt;code&gt;systemd&lt;/code&gt; suite of commands and not the deprecated &lt;code&gt;init.d&lt;/code&gt; commands or other deprecated commands to manage networking.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Commands to Manage Network Service</title>
+      <link>/docs/administration-guide/managing-network-configuration/network-management-commands/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/managing-network-configuration/network-management-commands/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You manage the network service by using systemd commands, such as &lt;code&gt;systemd-networkd&lt;/code&gt;, &lt;code&gt;systemd-resolvd&lt;/code&gt;, and &lt;code&gt;networkctl&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;To check the status of the network service, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl status systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;strong&gt;Output&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;* systemd-networkd.service - Network Service
+   Loaded: loaded (/usr/lib/systemd/system/systemd-networkd.service; enabled; vendor preset: enabled)
+   Active: active (running) since Fri 2016-04-29 15:08:51 UTC; 6 days ago
+     Docs: man:systemd-networkd.service(8)
+ Main PID: 291 (systemd-network)
+   Status: &amp;quot;Processing requests...&amp;quot;
+   CGroup: /system.slice/systemd-networkd.service
+           `-291 /lib/systemd/systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Because Photon OS relies on systemd to manage services, you must use the &lt;code&gt;systemd&lt;/code&gt; suite of commands and not the deprecated &lt;code&gt;init.d&lt;/code&gt; commands or other deprecated commands to manage networking.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Common Tools</title>
+      <link>/docs-v3/troubleshooting-guide/troubleshooting-tools/common-tools/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/troubleshooting-tools/common-tools/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The following are some tools that you can use to troubleshoot:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#top&#34;&gt;top&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#ps&#34;&gt;ps&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#netstat&#34;&gt;netstat&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#find&#34;&gt;find&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#locate&#34;&gt;locate&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#df&#34;&gt;df&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#md5sum&#34;&gt;md5sum&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#sha256sum&#34;&gt;sha256sum&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#strace&#34;&gt;strace&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#file&#34;&gt;file&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#stat&#34;&gt;stat&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#watch&#34;&gt;watch&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#vmstat-and-fdisk&#34;&gt;vmstat and fdisk&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#lsof&#34;&gt;lsof&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#fuser&#34;&gt;fuser&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#ldd&#34;&gt;ldd&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#gdb&#34;&gt;gdb&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: Some of the examples in this section are marked as abridged with ellipsis (&lt;code&gt;...&lt;/code&gt;).&lt;/p&gt;
+&lt;h2 id=&#34;top&#34;&gt;top&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;top&lt;/code&gt; tool monitors system resources, workloads, and performance. It can unmask problems caused by processes or applications overconsuming CPUs, time, or RAM.&lt;/p&gt;
+&lt;p&gt;To view a textual display of resource consumption, run the &lt;code&gt;top&lt;/code&gt; command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;top
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Use can use &amp;lsquo;top&amp;rsquo; to kill a runaway or stalled process by typing &lt;code&gt;k&lt;/code&gt; followed by its process ID (PID).&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/top-in-photon-os.png&#34; alt=&#34;Top on Photon OS&#34;&gt;&lt;/p&gt;
+&lt;p&gt;If the percent of CPU utilization is consistently high with little idle time, there might be a runaway process overconsuming CPUs. Restarting the service might solve the problem.&lt;/p&gt;
+&lt;p&gt;To troubleshoot an unknown issue, run Top in the background in batch mode to write its output to a file and collect data about performance:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;top d 120 b &amp;gt;&amp;gt; top120second.output
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For a list of options that filter top output and other information, see the man page for &lt;code&gt;top&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;ps&#34;&gt;ps&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;ps&lt;/code&gt; tool shows the processes running on the machine. The &lt;code&gt;ps&lt;/code&gt; tool derives flexibility and power from its options, all of which are covered in the tool&amp;rsquo;s Photon OS man page:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;man ps
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can use the following options of &lt;code&gt;ps&lt;/code&gt; for troubleshooting:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Show processes by user:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;ps aux&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Show processes and child processes by user:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;ps auxf&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Show processes containing the string &lt;code&gt;ssh&lt;/code&gt;:
+&lt;code&gt;ps aux | grep ssh&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Show processes and the command and options with which they were started:
+&lt;code&gt;ps auxww&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Example abridged output:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ps auxww
+USER        PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root          1  0.0  0.9  32724  3300 ?        Ss   07:51   0:32 /lib/systemd/systemd --switched-root --system --deserialize 22
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;netstat&#34;&gt;netstat&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;netstat&lt;/code&gt; command can identify bottlenecks causing  performance issues. It lists network connections, listening sockets, port information, and interface statistics for different protocols. Examples:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;netstat --statistics
+netstat --listening
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;find&#34;&gt;find&lt;/h2&gt;
+&lt;p&gt;Use the &lt;code&gt;find&lt;/code&gt; command to troubleshoot a Photon OS machine that has stopped working. The following command lists the files in the root directory that have changed in the past day:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;    find / -mtime -1 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;See the &lt;code&gt;find&lt;/code&gt; &lt;a href=&#34;https://www.gnu.org/software/findutils/manual/find.html&#34;&gt;manual&lt;/a&gt;. Take note of the security considerations listed in the &lt;code&gt;find&lt;/code&gt; manual if you are using &lt;code&gt;find&lt;/code&gt; to troubleshoot an appliance running on Photon OS.&lt;/p&gt;
+&lt;h2 id=&#34;locate&#34;&gt;locate&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;locate&lt;/code&gt; command is a fast way to find files and directories you onlay have a keyword. This command is similar to &lt;code&gt;find&lt;/code&gt; and part of the same &lt;code&gt;findutils&lt;/code&gt; package preinstalled on the full version of Photon OS by default. It finds file names in the file names database.&lt;/p&gt;
+&lt;p&gt;Before you can use &lt;code&gt;locate&lt;/code&gt; accurately, update its database:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;updatedb
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then run &lt;code&gt;locate&lt;/code&gt; to quickly find a file, such as any file name containing &lt;code&gt;.network&lt;/code&gt;, which can be helpful to see all the system&amp;rsquo;s &lt;code&gt;.network&lt;/code&gt; configuration files. The following is an abridged example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;locate .network
+/etc/dbus-1/system.d/org.freedesktop.network1.conf
+/etc/systemd/network/10-dhcp-en.network
+/usr/lib/systemd/network/80-container-host0.network
+/usr/lib/systemd/network/80-container-ve.network
+/usr/lib/systemd/system/busnames.target.wants/org.freedesktop.network1.busname
+/usr/lib/systemd/system/dbus-org.freedesktop.network1.service
+/usr/lib/systemd/system/org.freedesktop.network1.busnname
+/usr/share/dbus-1/system-services/org.freedesktop.network1.service
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;locate&lt;/code&gt; command is also a quick way to see whether a troubleshooting tool is installed on Photon OS. Examples:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;locate strace
+/usr/bin/strace
+/usr/bin/strace-graph
+/usr/bin/strace-log-merge
+/usr/share/man/man1/strace.1.gz
+/usr/share/vim/vim74/syntax/strace.vim
+
+locate traceroute
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In this example, the &lt;code&gt;strace&lt;/code&gt; tool is installed but &lt;code&gt;traceroute&lt;/code&gt; is not.&lt;/p&gt;
+&lt;p&gt;You can install &lt;code&gt;traceroute&lt;/code&gt; from the Photon OS repository:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf install traceroute
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;df&#34;&gt;df&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;df&lt;/code&gt; command reports the disk space available on the file system. Running out of disk space can lead an application to fail and a quick check of the available space makes sense as an early troubleshooting step:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;df -h
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;-h&lt;/code&gt; option prints out the available and used space in human-readable sizes. After checking the space, you should also check the number of available inodes. Too few available inodes can lead to difficult-to-diagnose problems:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;df -i
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;md5sum&#34;&gt;md5sum&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;md5sum&lt;/code&gt; tool calculates 128-bit RSA Data Security, Inc. MD5 Message Digest Algorithm hashes (a message digest, or digital signature, of a file) to uniquely identify a file and verify its integrity after file transfers, downloads, or disk errors when the security of the file is not in question.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;md5sum&lt;/code&gt; can help troubleshooting installation issues by verifying that the version of Photon OS being installed matches the version on the Bintray download page. If, for instance, bytes were dropped during the download, the checksums will not match. Try downloading it again.&lt;/p&gt;
+&lt;h2 id=&#34;sha256sum&#34;&gt;sha256sum&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;sha256sum&lt;/code&gt; tool calculates the authenticity of a file to prevent tampering when security is a concern. Photon OS also includes &lt;code&gt;shasum&lt;/code&gt;, &lt;code&gt;sha1sum&lt;/code&gt;, &lt;code&gt;sha384sum&lt;/code&gt;, and &lt;code&gt;sha512sum&lt;/code&gt;. See the man pages for  &lt;code&gt;md3sum&lt;/code&gt;, &lt;code&gt;sha256sum&lt;/code&gt;, and the other SHA utilities.&lt;/p&gt;
+&lt;h2 id=&#34;strace&#34;&gt;strace&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;strace&lt;/code&gt; utility follows system calls and signals as they are executed so that you can see what an application, command, or process is doing. &lt;code&gt;strace&lt;/code&gt; can trace failed commands, identify where a process obtains its configuration, monitor file activity, and find the location of a crash.&lt;/p&gt;
+&lt;p&gt;By tracing system calls, &lt;code&gt;strace&lt;/code&gt; can help troubleshoot a broad range of problems, including issues with input-output, memory, interprocess communication, network usage, and application performance.&lt;/p&gt;
+&lt;p&gt;For troubleshooting a problem that gives off few or no clues, the following command displays every system call:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace ls -al
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With strace commands, you can route the output to a file to make it easier to analyze:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -o output.txt ls -al
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;strace&lt;/code&gt; can reveal the files that an application tries to open with the &lt;code&gt;-eopen&lt;/code&gt; option. This combination can help troubleshoot an application that is failing because it is missing files or being denied access to a file it needs. If, for example, you see &amp;ldquo;No such file or directory&amp;rdquo; in the results of &lt;code&gt;strace -eopen&lt;/code&gt;, something might be wrong:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -eopen sshd
+open(&amp;quot;/usr/lib/x86_64/libpam.so.0&amp;quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+open(&amp;quot;/usr/lib/libpam.so.0&amp;quot;, O_RDONLY|O_CLOEXEC) = 3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The results above indicate that the first file is missing because it is found in the next line. In other cases, the application might be unable to open one of its configuration files or it might be reading the wrong one. If the results say &amp;ldquo;permission denied&amp;rdquo; for one of the files, check the permissions of the file with &lt;code&gt;ls -l&lt;/code&gt; or &lt;code&gt;stat&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;When troubleshooting with &lt;code&gt;strace&lt;/code&gt;, you can include the process ID in its commands. Here&amp;rsquo;s an example of how to find a process ID:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ps -ef | grep apache
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can then use &lt;code&gt;strace&lt;/code&gt; to examine the file a process is working with:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -e trace=file -p 1719
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;A similar command can trace network traffic:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -p 812 -e trace=network
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If an application is crashing, use &lt;code&gt;strace&lt;/code&gt; to trace the application and then analyze what happens right before the application crashes.&lt;/p&gt;
+&lt;p&gt;You can also trace the child processes that an application spawns with the fork system call, and you can do so with &lt;code&gt;systemctl&lt;/code&gt; commands that start a process to identify why an application crashes immediately or fails to start:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -f -o output.txt systemctl start httpd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Example: If &lt;code&gt;journalctl&lt;/code&gt; is showing that networkd is failing, you can run strace to troubleshoot:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -o output.txt systemctl restart systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then &lt;code&gt;grep&lt;/code&gt; inside the results for something, such as &lt;em&gt;exit&lt;/em&gt; or &lt;em&gt;error&lt;/em&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;grep exit output.txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If the results indicate &lt;code&gt;systemd-resolved&lt;/code&gt; is going wrong, you can then strace it:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -f -o output.txt systemctl restart systemd-resolved
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;file&#34;&gt;file&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;file&lt;/code&gt; command determines the file type, which can help troubleshoot problems when an application mistakes one type of file for another, leading it to errors. Example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;file /usr/sbin/sshd
+/usr/sbin/sshd: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, stripped
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;stat&#34;&gt;stat&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;stat&lt;/code&gt; command can help troubleshoot problems with files or the file system by showing the last date it was modified and other information. Example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;stat /dev/sda1
+File: &#39;/dev/sda1&#39;
+Size: 0               Blocks: 0          IO Block: 4096   block special file
+Device: 6h/6d   Inode: 6614        Links: 1     Device type: 8,1
+Access: (0660/brw-rw----)  Uid: (    0/    root)   Gid: (    8/    disk)
+Access: 2016-09-02 12:23:56.135999936 +0000
+Modify: 2016-09-02 12:23:52.879999981 +0000
+Change: 2016-09-02 12:23:52.879999981 +0000
+Birth: -
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;On Photon OS, &lt;code&gt;stat&lt;/code&gt; is handy to show permissions for a file or directory in both their absolute octal notation and their read-write-execute abbreviation; truncated example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;chmod 777 tester.md
+stat tester.md
+  File: &#39;tester.md&#39;
+  Size: 0               Blocks: 0          IO Block: 4096   regular empty file
+Device: 801h/2049d      Inode: 316385      Links: 1
+Access: (0777/-rwxrwxrwx)  Uid: (    0/    root)   Gid: (    0/    root)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;watch&#34;&gt;watch&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;watch&lt;/code&gt; utility runs a command at regular intervals so you can observe how its output changes over time. &lt;code&gt;watch&lt;/code&gt; can help dynamically monitor network links, routes, and other information when you are troubleshooting networking or performance issues. Examples:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;watch -n0 --differences ss
+watch -n1 --differences ip route
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following is an example with a screenshot of the output. This command monitors the traffic on your network links. The highlighted numbers are updated every second so you can see the traffic fluctuating:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;watch -n1 --differences ip -s link show up
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;images/watchcmd.png&#34; alt=&#34;The dynamic output of the watch utility&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;vmstat-and-fdisk&#34;&gt;vmstat and fdisk&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;vmstat&lt;/code&gt; tool displays statistics about virtual memory, processes, block input-output, disks, and CPU activity. This tool can help diagnose performance problems, especially system bottlenecks.&lt;/p&gt;
+&lt;p&gt;Its output on a Photon OS virtual machine running in VMware Workstation 12 Pro without a heavy load looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vmstat
+procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
+ 0  0      0   5980  72084 172488    0    0    27    44  106  294  1  0 98  1  0
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;These codes are explained in the &lt;code&gt;vmstat&lt;/code&gt; man page.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;- If `r`, the number of runnable processes, is higher than 10, the machine is under stress; consider intervening to reduce the number of processes or to distribute some of the processes to other machines. In other words, the machine has a bottleneck in executing processes.
+- If `cs`, the number of context switches per second, is really high, there may be too many jobs running on the machine.
+- If `in`, the number of interrupts per second, is relatively high, there might be a bottleneck for network or disk IO.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can investigate disk IO further by using vmstat&amp;rsquo;s &lt;code&gt;-d&lt;/code&gt; option to report disk statistics. The following is an abridged example on a machine with little load:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vmstat -d
+disk- ------------reads------------ ------------writes----------- -----IO------
+       total merged sectors      ms  total merged sectors      ms    cur    sec
+ram0       0      0       0       0      0      0       0       0      0      0
+ram1       0      0       0       0      0      0       0       0      0      0
+loop0      0      0       0       0      0      0       0       0      0      0
+loop1      0      0       0       0      0      0       0       0      0      0
+sr0        0      0       0       0      0      0       0       0      0      0
+sda    22744    676  470604   12908  72888  24949  805224  127692      0    130
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;-D&lt;/code&gt; option summarizes disk statistics:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vmstat -D
+           26 disks
+            2 partitions
+        22744 total reads
+          676 merged reads
+       470604 read sectors
+        12908 milli reading
+        73040 writes
+        25001 merged writes
+       806872 written sectors
+       127808 milli writing
+            0 inprogress IO
+          130 milli spent IO
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can also get statistics about a partition. First, run the &lt;code&gt;fdisk -l&lt;/code&gt; command to list the machine&amp;rsquo;s devices. Then run &lt;code&gt;vmstat -p&lt;/code&gt; with the name of a device to view its stats:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;fdisk -l
+Disk /dev/ram0: 4 MiB, 4194304 bytes, 8192 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 4096 bytes
+I/O size (minimum/optimal): 4096 bytes / 4096 bytes
+...
+Device        Start      End  Sectors Size Type
+/dev/sda1      2048 16771071 16769024   8G Linux filesystem
+/dev/sda2  16771072 16777182     6111   3M BIOS boot
+
+vmstat -p /dev/sda1
+sda1          reads   read sectors  writes    requested writes
+               22579     473306      78510     866088
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;See the &lt;code&gt;vmstat&lt;/code&gt; man page for more options.&lt;/p&gt;
+&lt;h2 id=&#34;lsof&#34;&gt;lsof&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;lsof&lt;/code&gt; command lists open files. The tool&amp;rsquo;s definition of an open file  includes directories, libraries, streams, domain sockets, and Internet sockets. THis enables it to identify the files a process is using. Because a Linux system like Photon OS uses files to do its work, you can run &lt;code&gt;lsof&lt;/code&gt; as root to see how the system is using them and to see how an application works.&lt;/p&gt;
+&lt;p&gt;If you cannot unmount a disk because it is in use, you can run &lt;code&gt;lsof&lt;/code&gt; to identify the files on the disk that are being used.&lt;/p&gt;
+&lt;p&gt;The following is an example that shows the processes that are using the root directory:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof /root
+COMMAND    PID USER   FD   TYPE DEVICE SIZE/OFF   NODE NAME
+bash       879 root  cwd    DIR    8,1     4096 262159 /root
+bash      1265 root  cwd    DIR    8,1     4096 262159 /root
+sftp-serv 1326 root  cwd    DIR    8,1     4096 262159 /root
+gdb       1351 root  cwd    DIR    8,1     4096 262159 /root
+bash      1395 root  cwd    DIR    8,1     4096 262159 /root
+lsof      1730 root  cwd    DIR    8,1     4096 262159 /root
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can do the same with an application or virtual appliance by running &lt;code&gt;lsof&lt;/code&gt; with the user name or process ID of the app. The following example lists the open files used by the Apache HTTP Server:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -u apache
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Running the command with the &lt;code&gt;-i&lt;/code&gt; option lists all the open network and Internet files, which can help troubleshoot network problems:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -i
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;See the Unix socket addresses of a user like &lt;em&gt;zookeeper&lt;/em&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -u zookeeper -U
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows the processes running on Ports 1 through 80:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -i TCP:1-80
+COMMAND  PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+httpd    403   root    3u  IPv6  10733      0t0  TCP *:http (LISTEN)
+httpd    407 apache    3u  IPv6  10733      0t0  TCP *:http (LISTEN)
+httpd    408 apache    3u  IPv6  10733      0t0  TCP *:http (LISTEN)
+httpd    409 apache    3u  IPv6  10733      0t0  TCP *:http (LISTEN)
+sshd     820   root    3u  IPv4  11336      0t0  TCP *:ssh (LISTEN)
+sshd     820   root    4u  IPv6  11343      0t0  TCP *:ssh (LISTEN)
+sshd    1258   root    3u  IPv4  48040      0t0  TCP 198.51.100.143:ssh-&amp;gt;198.51.100.1:49759 (ESTABLISHED)
+sshd    1319   root    3u  IPv4  50866      0t0  TCP 198.51.100.143:ssh-&amp;gt;198.51.100.1:51054 (ESTABLISHED)
+sshd    1388   root    3u  IPv4  56438      0t0  TCP 198.51.100.143:ssh-&amp;gt;198.51.100.1:60335 (ESTABLISHED)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can also inspect the files opened by a process ID. The following example queries the files open by the systemd network service:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -p 1917
+COMMAND    PID            USER   FD      TYPE             DEVICE SIZE/OFF   NODE NAME
+systemd-n 1917 systemd-network  cwd       DIR                8,1     4096      2 /
+systemd-n 1917 systemd-network  txt       REG                8,1   887896 272389 /usr/lib/systemd/systemd-networkd
+systemd-n 1917 systemd-network  mem       REG                8,1   270680 262267 /usr/lib/libnss_files-2.22.so
+systemd-n 1917 systemd-network    0r      CHR                1,3      0t0   5959 /dev/null
+systemd-n 1917 systemd-network    1u     unix 0x0000000000000000      0t0  45734 type=STREAM
+systemd-n 1917 systemd-network    3u  netlink                         0t0   6867 ROUTE
+systemd-n 1917 systemd-network    4u     unix 0x0000000000000000      0t0  45744 type=DGRAM
+systemd-n 1917 systemd-network    9u  netlink                         0t0  45754 KOBJECT_UEVENT
+systemd-n 1917 systemd-network   12u  a_inode               0,11        0   5955 [timerfd]
+systemd-n 1917 systemd-network   13u     IPv4             104292      0t0    UDP 198.51.100.143:bootpc
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;fuser&#34;&gt;fuser&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;fuser&lt;/code&gt; command identifies the process IDs of processes using files or sockets. The term &lt;em&gt;process&lt;/em&gt; is, in this case, synonymous with &lt;em&gt;user&lt;/em&gt;. To identify the process ID of a process using a socket, run &lt;code&gt;fuser&lt;/code&gt; with its namespace option and specify &lt;code&gt;tcp&lt;/code&gt; or &lt;code&gt;udp&lt;/code&gt; and the name of the process or port. Examples:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;fuser -n tcp ssh
+ssh/tcp:               940  1308
+fuser -n tcp http
+http/tcp:              592   594   595   596
+fuser -n tcp 80
+80/tcp:                592   594   595   596
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;ldd&#34;&gt;ldd&lt;/h2&gt;
+&lt;p&gt;By revealing the shared libraries that a program depends on, &lt;code&gt;ldd&lt;/code&gt; can help troubleshoot an application that is missing a library or finding the wrong one.&lt;/p&gt;
+&lt;p&gt;For example, if you get a &amp;ldquo;file not found&amp;rdquo; output, check the path to the library.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ldd /usr/sbin/sshd
+linux-vdso.so.1 (0x00007ffc0e3e3000)
+libpam.so.0 =&amp;gt; (file not found)
+libcrypto.so.1.0.0 =&amp;gt; /usr/lib/libcrypto.so.1.0.0 (0x00007f624e570000)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can also use the &lt;code&gt;objdump&lt;/code&gt; command to show dependencies for a program&amp;rsquo;s object files; example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;objdump -p /usr/sbin/sshd | grep NEEDED
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;gdb&#34;&gt;gdb&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;gdb&lt;/code&gt; tool is the GNU debugger. It lets you see inside a program while it executes or when it crashes so that you can catch errors as they occur. The &lt;code&gt;gdb&lt;/code&gt; tool is typically used to debug programs written in C and C++. On Photon OS, &lt;code&gt;gdb&lt;/code&gt; can help you determine why an application crashed. See the man page for &lt;code&gt;gdb&lt;/code&gt; for instructions on how to run it.&lt;/p&gt;
+&lt;p&gt;For an extensive example on how to use &lt;code&gt;gdb&lt;/code&gt; to troubleshoot Photon OS running on a VM when you cannot login to Photon OS, see the section on troubleshooting boot and logon problems.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Common Tools</title>
+      <link>/docs/troubleshooting-guide/troubleshooting-tools/common-tools/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/troubleshooting-guide/troubleshooting-tools/common-tools/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The following are some tools that you can use to troubleshoot:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#top&#34;&gt;top&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#ps&#34;&gt;ps&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#netstat&#34;&gt;netstat&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#find&#34;&gt;find&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#locate&#34;&gt;locate&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#df&#34;&gt;df&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#md5sum&#34;&gt;md5sum&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#sha256sum&#34;&gt;sha256sum&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#strace&#34;&gt;strace&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#file&#34;&gt;file&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#stat&#34;&gt;stat&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#watch&#34;&gt;watch&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#vmstat-and-fdisk&#34;&gt;vmstat and fdisk&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#lsof&#34;&gt;lsof&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#fuser&#34;&gt;fuser&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#ldd&#34;&gt;ldd&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#gdb&#34;&gt;gdb&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: Some of the examples in this section are marked as abridged with ellipsis (&lt;code&gt;...&lt;/code&gt;).&lt;/p&gt;
+&lt;h2 id=&#34;top&#34;&gt;top&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;top&lt;/code&gt; tool monitors system resources, workloads, and performance. It can unmask problems caused by processes or applications overconsuming CPUs, time, or RAM.&lt;/p&gt;
+&lt;p&gt;To view a textual display of resource consumption, run the &lt;code&gt;top&lt;/code&gt; command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;top
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Use can use &amp;lsquo;top&amp;rsquo; to kill a runaway or stalled process by typing &lt;code&gt;k&lt;/code&gt; followed by its process ID (PID).&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/top-in-photon-os.png&#34; alt=&#34;Top on Photon OS&#34;&gt;&lt;/p&gt;
+&lt;p&gt;If the percent of CPU utilization is consistently high with little idle time, there might be a runaway process overconsuming CPUs. Restarting the service might solve the problem.&lt;/p&gt;
+&lt;p&gt;To troubleshoot an unknown issue, run Top in the background in batch mode to write its output to a file and collect data about performance:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;top d 120 b &amp;gt;&amp;gt; top120second.output
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For a list of options that filter top output and other information, see the man page for &lt;code&gt;top&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;ps&#34;&gt;ps&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;ps&lt;/code&gt; tool shows the processes running on the machine. The &lt;code&gt;ps&lt;/code&gt; tool derives flexibility and power from its options, all of which are covered in the tool&amp;rsquo;s Photon OS man page:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;man ps
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can use the following options of &lt;code&gt;ps&lt;/code&gt; for troubleshooting:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Show processes by user:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;ps aux&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Show processes and child processes by user:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;ps auxf&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Show processes containing the string &lt;code&gt;ssh&lt;/code&gt;:
+&lt;code&gt;ps aux | grep ssh&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Show processes and the command and options with which they were started:
+&lt;code&gt;ps auxww&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Example abridged output:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ps auxww
+USER        PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root          1  0.0  0.9  32724  3300 ?        Ss   07:51   0:32 /lib/systemd/systemd --switched-root --system --deserialize 22
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;netstat&#34;&gt;netstat&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;netstat&lt;/code&gt; command can identify bottlenecks causing  performance issues. It lists network connections, listening sockets, port information, and interface statistics for different protocols. Examples:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;netstat --statistics
+netstat --listening
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;find&#34;&gt;find&lt;/h2&gt;
+&lt;p&gt;Use the &lt;code&gt;find&lt;/code&gt; command to troubleshoot a Photon OS machine that has stopped working. The following command lists the files in the root directory that have changed in the past day:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;    find / -mtime -1 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;See the &lt;code&gt;find&lt;/code&gt; &lt;a href=&#34;https://www.gnu.org/software/findutils/manual/find.html&#34;&gt;manual&lt;/a&gt;. Take note of the security considerations listed in the &lt;code&gt;find&lt;/code&gt; manual if you are using &lt;code&gt;find&lt;/code&gt; to troubleshoot an appliance running on Photon OS.&lt;/p&gt;
+&lt;h2 id=&#34;locate&#34;&gt;locate&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;locate&lt;/code&gt; command is a fast way to find files and directories you onlay have a keyword. This command is similar to &lt;code&gt;find&lt;/code&gt; and part of the same &lt;code&gt;findutils&lt;/code&gt; package preinstalled on the full version of Photon OS by default. It finds file names in the file names database.&lt;/p&gt;
+&lt;p&gt;Before you can use &lt;code&gt;locate&lt;/code&gt; accurately, update its database:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;updatedb
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then run &lt;code&gt;locate&lt;/code&gt; to quickly find a file, such as any file name containing &lt;code&gt;.network&lt;/code&gt;, which can be helpful to see all the system&amp;rsquo;s &lt;code&gt;.network&lt;/code&gt; configuration files. The following is an abridged example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;locate .network
+/etc/dbus-1/system.d/org.freedesktop.network1.conf
+/etc/systemd/network/10-dhcp-en.network
+/usr/lib/systemd/network/80-container-host0.network
+/usr/lib/systemd/network/80-container-ve.network
+/usr/lib/systemd/system/busnames.target.wants/org.freedesktop.network1.busname
+/usr/lib/systemd/system/dbus-org.freedesktop.network1.service
+/usr/lib/systemd/system/org.freedesktop.network1.busnname
+/usr/share/dbus-1/system-services/org.freedesktop.network1.service
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;locate&lt;/code&gt; command is also a quick way to see whether a troubleshooting tool is installed on Photon OS. Examples:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;locate strace
+/usr/bin/strace
+/usr/bin/strace-graph
+/usr/bin/strace-log-merge
+/usr/share/man/man1/strace.1.gz
+/usr/share/vim/vim74/syntax/strace.vim
+
+locate traceroute
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In this example, the &lt;code&gt;strace&lt;/code&gt; tool is installed but &lt;code&gt;traceroute&lt;/code&gt; is not.&lt;/p&gt;
+&lt;p&gt;You can install &lt;code&gt;traceroute&lt;/code&gt; from the Photon OS repository:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf install traceroute
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;df&#34;&gt;df&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;df&lt;/code&gt; command reports the disk space available on the file system. Running out of disk space can lead an application to fail and a quick check of the available space makes sense as an early troubleshooting step:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;df -h
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;-h&lt;/code&gt; option prints out the available and used space in human-readable sizes. After checking the space, you should also check the number of available inodes. Too few available inodes can lead to difficult-to-diagnose problems:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;df -i
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;md5sum&#34;&gt;md5sum&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;md5sum&lt;/code&gt; tool calculates 128-bit RSA Data Security, Inc. MD5 Message Digest Algorithm hashes (a message digest, or digital signature, of a file) to uniquely identify a file and verify its integrity after file transfers, downloads, or disk errors when the security of the file is not in question.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;md5sum&lt;/code&gt; can help troubleshooting installation issues by verifying that the version of Photon OS being installed matches the version on the Bintray download page. If, for instance, bytes were dropped during the download, the checksums will not match. Try downloading it again.&lt;/p&gt;
+&lt;h2 id=&#34;sha256sum&#34;&gt;sha256sum&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;sha256sum&lt;/code&gt; tool calculates the authenticity of a file to prevent tampering when security is a concern. Photon OS also includes &lt;code&gt;shasum&lt;/code&gt;, &lt;code&gt;sha1sum&lt;/code&gt;, &lt;code&gt;sha384sum&lt;/code&gt;, and &lt;code&gt;sha512sum&lt;/code&gt;. See the man pages for  &lt;code&gt;md3sum&lt;/code&gt;, &lt;code&gt;sha256sum&lt;/code&gt;, and the other SHA utilities.&lt;/p&gt;
+&lt;h2 id=&#34;strace&#34;&gt;strace&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;strace&lt;/code&gt; utility follows system calls and signals as they are executed so that you can see what an application, command, or process is doing. &lt;code&gt;strace&lt;/code&gt; can trace failed commands, identify where a process obtains its configuration, monitor file activity, and find the location of a crash.&lt;/p&gt;
+&lt;p&gt;By tracing system calls, &lt;code&gt;strace&lt;/code&gt; can help troubleshoot a broad range of problems, including issues with input-output, memory, interprocess communication, network usage, and application performance.&lt;/p&gt;
+&lt;p&gt;For troubleshooting a problem that gives off few or no clues, the following command displays every system call:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace ls -al
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With strace commands, you can route the output to a file to make it easier to analyze:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -o output.txt ls -al
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;strace&lt;/code&gt; can reveal the files that an application tries to open with the &lt;code&gt;-eopen&lt;/code&gt; option. This combination can help troubleshoot an application that is failing because it is missing files or being denied access to a file it needs. If, for example, you see &amp;ldquo;No such file or directory&amp;rdquo; in the results of &lt;code&gt;strace -eopen&lt;/code&gt;, something might be wrong:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -eopen sshd
+open(&amp;quot;/usr/lib/x86_64/libpam.so.0&amp;quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+open(&amp;quot;/usr/lib/libpam.so.0&amp;quot;, O_RDONLY|O_CLOEXEC) = 3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The results above indicate that the first file is missing because it is found in the next line. In other cases, the application might be unable to open one of its configuration files or it might be reading the wrong one. If the results say &amp;ldquo;permission denied&amp;rdquo; for one of the files, check the permissions of the file with &lt;code&gt;ls -l&lt;/code&gt; or &lt;code&gt;stat&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;When troubleshooting with &lt;code&gt;strace&lt;/code&gt;, you can include the process ID in its commands. Here&amp;rsquo;s an example of how to find a process ID:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ps -ef | grep apache
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can then use &lt;code&gt;strace&lt;/code&gt; to examine the file a process is working with:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -e trace=file -p 1719
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;A similar command can trace network traffic:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -p 812 -e trace=network
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If an application is crashing, use &lt;code&gt;strace&lt;/code&gt; to trace the application and then analyze what happens right before the application crashes.&lt;/p&gt;
+&lt;p&gt;You can also trace the child processes that an application spawns with the fork system call, and you can do so with &lt;code&gt;systemctl&lt;/code&gt; commands that start a process to identify why an application crashes immediately or fails to start:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -f -o output.txt systemctl start httpd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Example: If &lt;code&gt;journalctl&lt;/code&gt; is showing that networkd is failing, you can run strace to troubleshoot:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -o output.txt systemctl restart systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then &lt;code&gt;grep&lt;/code&gt; inside the results for something, such as &lt;em&gt;exit&lt;/em&gt; or &lt;em&gt;error&lt;/em&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;grep exit output.txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If the results indicate &lt;code&gt;systemd-resolved&lt;/code&gt; is going wrong, you can then strace it:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -f -o output.txt systemctl restart systemd-resolved
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;file&#34;&gt;file&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;file&lt;/code&gt; command determines the file type, which can help troubleshoot problems when an application mistakes one type of file for another, leading it to errors. Example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;file /usr/sbin/sshd
+/usr/sbin/sshd: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, stripped
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;stat&#34;&gt;stat&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;stat&lt;/code&gt; command can help troubleshoot problems with files or the file system by showing the last date it was modified and other information. Example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;stat /dev/sda1
+File: &#39;/dev/sda1&#39;
+Size: 0               Blocks: 0          IO Block: 4096   block special file
+Device: 6h/6d   Inode: 6614        Links: 1     Device type: 8,1
+Access: (0660/brw-rw----)  Uid: (    0/    root)   Gid: (    8/    disk)
+Access: 2016-09-02 12:23:56.135999936 +0000
+Modify: 2016-09-02 12:23:52.879999981 +0000
+Change: 2016-09-02 12:23:52.879999981 +0000
+Birth: -
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;On Photon OS, &lt;code&gt;stat&lt;/code&gt; is handy to show permissions for a file or directory in both their absolute octal notation and their read-write-execute abbreviation; truncated example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;chmod 777 tester.md
+stat tester.md
+  File: &#39;tester.md&#39;
+  Size: 0               Blocks: 0          IO Block: 4096   regular empty file
+Device: 801h/2049d      Inode: 316385      Links: 1
+Access: (0777/-rwxrwxrwx)  Uid: (    0/    root)   Gid: (    0/    root)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;watch&#34;&gt;watch&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;watch&lt;/code&gt; utility runs a command at regular intervals so you can observe how its output changes over time. &lt;code&gt;watch&lt;/code&gt; can help dynamically monitor network links, routes, and other information when you are troubleshooting networking or performance issues. Examples:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;watch -n0 --differences ss
+watch -n1 --differences ip route
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following is an example with a screenshot of the output. This command monitors the traffic on your network links. The highlighted numbers are updated every second so you can see the traffic fluctuating:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;watch -n1 --differences ip -s link show up
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;images/watchcmd.png&#34; alt=&#34;The dynamic output of the watch utility&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;vmstat-and-fdisk&#34;&gt;vmstat and fdisk&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;vmstat&lt;/code&gt; tool displays statistics about virtual memory, processes, block input-output, disks, and CPU activity. This tool can help diagnose performance problems, especially system bottlenecks.&lt;/p&gt;
+&lt;p&gt;Its output on a Photon OS virtual machine running in VMware Workstation 12 Pro without a heavy load looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vmstat
+procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
+ 0  0      0   5980  72084 172488    0    0    27    44  106  294  1  0 98  1  0
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;These codes are explained in the &lt;code&gt;vmstat&lt;/code&gt; man page.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;- If `r`, the number of runnable processes, is higher than 10, the machine is under stress; consider intervening to reduce the number of processes or to distribute some of the processes to other machines. In other words, the machine has a bottleneck in executing processes.
+- If `cs`, the number of context switches per second, is really high, there may be too many jobs running on the machine.
+- If `in`, the number of interrupts per second, is relatively high, there might be a bottleneck for network or disk IO.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can investigate disk IO further by using vmstat&amp;rsquo;s &lt;code&gt;-d&lt;/code&gt; option to report disk statistics. The following is an abridged example on a machine with little load:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vmstat -d
+disk- ------------reads------------ ------------writes----------- -----IO------
+       total merged sectors      ms  total merged sectors      ms    cur    sec
+ram0       0      0       0       0      0      0       0       0      0      0
+ram1       0      0       0       0      0      0       0       0      0      0
+loop0      0      0       0       0      0      0       0       0      0      0
+loop1      0      0       0       0      0      0       0       0      0      0
+sr0        0      0       0       0      0      0       0       0      0      0
+sda    22744    676  470604   12908  72888  24949  805224  127692      0    130
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;-D&lt;/code&gt; option summarizes disk statistics:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vmstat -D
+           26 disks
+            2 partitions
+        22744 total reads
+          676 merged reads
+       470604 read sectors
+        12908 milli reading
+        73040 writes
+        25001 merged writes
+       806872 written sectors
+       127808 milli writing
+            0 inprogress IO
+          130 milli spent IO
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can also get statistics about a partition. First, run the &lt;code&gt;fdisk -l&lt;/code&gt; command to list the machine&amp;rsquo;s devices. Then run &lt;code&gt;vmstat -p&lt;/code&gt; with the name of a device to view its stats:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;fdisk -l
+Disk /dev/ram0: 4 MiB, 4194304 bytes, 8192 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 4096 bytes
+I/O size (minimum/optimal): 4096 bytes / 4096 bytes
+...
+Device        Start      End  Sectors Size Type
+/dev/sda1      2048 16771071 16769024   8G Linux filesystem
+/dev/sda2  16771072 16777182     6111   3M BIOS boot
+
+vmstat -p /dev/sda1
+sda1          reads   read sectors  writes    requested writes
+               22579     473306      78510     866088
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;See the &lt;code&gt;vmstat&lt;/code&gt; man page for more options.&lt;/p&gt;
+&lt;h2 id=&#34;lsof&#34;&gt;lsof&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;lsof&lt;/code&gt; command lists open files. The tool&amp;rsquo;s definition of an open file  includes directories, libraries, streams, domain sockets, and Internet sockets. THis enables it to identify the files a process is using. Because a Linux system like Photon OS uses files to do its work, you can run &lt;code&gt;lsof&lt;/code&gt; as root to see how the system is using them and to see how an application works.&lt;/p&gt;
+&lt;p&gt;If you cannot unmount a disk because it is in use, you can run &lt;code&gt;lsof&lt;/code&gt; to identify the files on the disk that are being used.&lt;/p&gt;
+&lt;p&gt;The following is an example that shows the processes that are using the root directory:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof /root
+COMMAND    PID USER   FD   TYPE DEVICE SIZE/OFF   NODE NAME
+bash       879 root  cwd    DIR    8,1     4096 262159 /root
+bash      1265 root  cwd    DIR    8,1     4096 262159 /root
+sftp-serv 1326 root  cwd    DIR    8,1     4096 262159 /root
+gdb       1351 root  cwd    DIR    8,1     4096 262159 /root
+bash      1395 root  cwd    DIR    8,1     4096 262159 /root
+lsof      1730 root  cwd    DIR    8,1     4096 262159 /root
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can do the same with an application or virtual appliance by running &lt;code&gt;lsof&lt;/code&gt; with the user name or process ID of the app. The following example lists the open files used by the Apache HTTP Server:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -u apache
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Running the command with the &lt;code&gt;-i&lt;/code&gt; option lists all the open network and Internet files, which can help troubleshoot network problems:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -i
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;See the Unix socket addresses of a user like &lt;em&gt;zookeeper&lt;/em&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -u zookeeper -U
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows the processes running on Ports 1 through 80:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -i TCP:1-80
+COMMAND  PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+httpd    403   root    3u  IPv6  10733      0t0  TCP *:http (LISTEN)
+httpd    407 apache    3u  IPv6  10733      0t0  TCP *:http (LISTEN)
+httpd    408 apache    3u  IPv6  10733      0t0  TCP *:http (LISTEN)
+httpd    409 apache    3u  IPv6  10733      0t0  TCP *:http (LISTEN)
+sshd     820   root    3u  IPv4  11336      0t0  TCP *:ssh (LISTEN)
+sshd     820   root    4u  IPv6  11343      0t0  TCP *:ssh (LISTEN)
+sshd    1258   root    3u  IPv4  48040      0t0  TCP 198.51.100.143:ssh-&amp;gt;198.51.100.1:49759 (ESTABLISHED)
+sshd    1319   root    3u  IPv4  50866      0t0  TCP 198.51.100.143:ssh-&amp;gt;198.51.100.1:51054 (ESTABLISHED)
+sshd    1388   root    3u  IPv4  56438      0t0  TCP 198.51.100.143:ssh-&amp;gt;198.51.100.1:60335 (ESTABLISHED)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can also inspect the files opened by a process ID. The following example queries the files open by the systemd network service:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -p 1917
+COMMAND    PID            USER   FD      TYPE             DEVICE SIZE/OFF   NODE NAME
+systemd-n 1917 systemd-network  cwd       DIR                8,1     4096      2 /
+systemd-n 1917 systemd-network  txt       REG                8,1   887896 272389 /usr/lib/systemd/systemd-networkd
+systemd-n 1917 systemd-network  mem       REG                8,1   270680 262267 /usr/lib/libnss_files-2.22.so
+systemd-n 1917 systemd-network    0r      CHR                1,3      0t0   5959 /dev/null
+systemd-n 1917 systemd-network    1u     unix 0x0000000000000000      0t0  45734 type=STREAM
+systemd-n 1917 systemd-network    3u  netlink                         0t0   6867 ROUTE
+systemd-n 1917 systemd-network    4u     unix 0x0000000000000000      0t0  45744 type=DGRAM
+systemd-n 1917 systemd-network    9u  netlink                         0t0  45754 KOBJECT_UEVENT
+systemd-n 1917 systemd-network   12u  a_inode               0,11        0   5955 [timerfd]
+systemd-n 1917 systemd-network   13u     IPv4             104292      0t0    UDP 198.51.100.143:bootpc
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;fuser&#34;&gt;fuser&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;fuser&lt;/code&gt; command identifies the process IDs of processes using files or sockets. The term &lt;em&gt;process&lt;/em&gt; is, in this case, synonymous with &lt;em&gt;user&lt;/em&gt;. To identify the process ID of a process using a socket, run &lt;code&gt;fuser&lt;/code&gt; with its namespace option and specify &lt;code&gt;tcp&lt;/code&gt; or &lt;code&gt;udp&lt;/code&gt; and the name of the process or port. Examples:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;fuser -n tcp ssh
+ssh/tcp:               940  1308
+fuser -n tcp http
+http/tcp:              592   594   595   596
+fuser -n tcp 80
+80/tcp:                592   594   595   596
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;ldd&#34;&gt;ldd&lt;/h2&gt;
+&lt;p&gt;By revealing the shared libraries that a program depends on, &lt;code&gt;ldd&lt;/code&gt; can help troubleshoot an application that is missing a library or finding the wrong one.&lt;/p&gt;
+&lt;p&gt;For example, if you get a &amp;ldquo;file not found&amp;rdquo; output, check the path to the library.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ldd /usr/sbin/sshd
+linux-vdso.so.1 (0x00007ffc0e3e3000)
+libpam.so.0 =&amp;gt; (file not found)
+libcrypto.so.1.0.0 =&amp;gt; /usr/lib/libcrypto.so.1.0.0 (0x00007f624e570000)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can also use the &lt;code&gt;objdump&lt;/code&gt; command to show dependencies for a program&amp;rsquo;s object files; example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;objdump -p /usr/sbin/sshd | grep NEEDED
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;gdb&#34;&gt;gdb&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;gdb&lt;/code&gt; tool is the GNU debugger. It lets you see inside a program while it executes or when it crashes so that you can catch errors as they occur. The &lt;code&gt;gdb&lt;/code&gt; tool is typically used to debug programs written in C and C++. On Photon OS, &lt;code&gt;gdb&lt;/code&gt; can help you determine why an application crashed. See the man page for &lt;code&gt;gdb&lt;/code&gt; for instructions on how to run it.&lt;/p&gt;
+&lt;p&gt;For an extensive example on how to use &lt;code&gt;gdb&lt;/code&gt; to troubleshoot Photon OS running on a VM when you cannot login to Photon OS, see the section on troubleshooting boot and logon problems.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Default Firewall Settings</title>
+      <link>/docs-v3/administration-guide/security-policy/default-firewall-settings/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/security-policy/default-firewall-settings/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The design of Photon OS emphasizes security. On the minimal and full versions of Photon OS, the default security policy turns on the firewall and drops packets from external interfaces and  applications. As a result, you might need to add rules to iptables to permit forwarding, allow protocols like HTTP, and open ports. You must configure the firewall for your applications and requirements.&lt;/p&gt;
+&lt;p&gt;The default iptables on the full version have the following settings:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;iptables --list
+Chain INPUT (policy DROP)
+target     prot opt source               destination
+ACCEPT     all  --  anywhere             anywhere
+ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED
+ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
+
+Chain FORWARD (policy DROP)
+target     prot opt source               destination
+
+Chain OUTPUT (policy DROP)
+target     prot opt source               destination
+ACCEPT     all  --  anywhere             anywhere
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For more information on how to change the settings, see the man page for iptables.&lt;/p&gt;
+&lt;p&gt;Although the default iptables policy accepts SSH connections, the &lt;code&gt;sshd&lt;/code&gt; configuration file on the full version of Photon OS is set to reject SSH connections. See &lt;a href=&#34;../../../troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/&#34;&gt;Permitting Root Login with SSH&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you are unable to ping a Photon OS machine, check the firewall rules. To verify if the rules allow connectivity for the port and protocol, change the &lt;code&gt;iptables&lt;/code&gt; commands by using &lt;code&gt;lsof&lt;/code&gt; commands to see the processes listening on ports:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -i -P -n&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Default Firewall Settings</title>
+      <link>/docs/administration-guide/security-policy/default-firewall-settings/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/security-policy/default-firewall-settings/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The design of Photon OS emphasizes security. On the minimal and full versions of Photon OS, the default security policy turns on the firewall and drops packets from external interfaces and  applications. As a result, you might need to add rules to iptables to permit forwarding, allow protocols like HTTP, and open ports. You must configure the firewall for your applications and requirements.&lt;/p&gt;
+&lt;p&gt;The default iptables on the full version have the following settings:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;iptables --list
+Chain INPUT (policy DROP)
+target     prot opt source               destination
+ACCEPT     all  --  anywhere             anywhere
+ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED
+ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
+
+Chain FORWARD (policy DROP)
+target     prot opt source               destination
+
+Chain OUTPUT (policy DROP)
+target     prot opt source               destination
+ACCEPT     all  --  anywhere             anywhere
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For more information on how to change the settings, see the man page for iptables.&lt;/p&gt;
+&lt;p&gt;Although the default iptables policy accepts SSH connections, the &lt;code&gt;sshd&lt;/code&gt; configuration file on the full version of Photon OS is set to reject SSH connections. See &lt;a href=&#34;../../../troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/&#34;&gt;Permitting Root Login with SSH&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you are unable to ping a Photon OS machine, check the firewall rules. To verify if the rules allow connectivity for the port and protocol, change the &lt;code&gt;iptables&lt;/code&gt; commands by using &lt;code&gt;lsof&lt;/code&gt; commands to see the processes listening on ports:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -i -P -n&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Docker Containers</title>
+      <link>/docs-v3/administration-guide/containers/docker-containers/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/containers/docker-containers/</guid>
+      <description>
+        
+        
+        &lt;p&gt;On Photon OS, the Docker daemon is enabled by default. To view the status of the daemon, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl status docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Docker is loaded and running by default on the full version of Photon OS. On the minimal version, it is loaded but not running by default. To start it, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl start docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To obtain information about Docker, run the following command as root:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker info
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;After Docker is enabled and started, you can create a container. For example, run the following docker command as root to create a container running Ubuntu 14.04 with an interactive terminal shell:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -i -t ubuntu:14.04 /bin/bash
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Photon OS also enables you to run a docker container that runs Photon OS:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -i -t photon /bin/bash
+&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Docker Containers</title>
+      <link>/docs/administration-guide/containers/docker-containers/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/containers/docker-containers/</guid>
+      <description>
+        
+        
+        &lt;p&gt;On Photon OS, the Docker daemon is enabled by default. To view the status of the daemon, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl status docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Docker is loaded and running by default on the full version of Photon OS. On the minimal version, it is loaded but not running by default. To start it, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl start docker
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To obtain information about Docker, run the following command as root:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker info
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;After Docker is enabled and started, you can create a container. For example, run the following docker command as root to create a container running Ubuntu 14.04 with an interactive terminal shell:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -i -t ubuntu:14.04 /bin/bash
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Photon OS also enables you to run a docker container that runs Photon OS:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;docker run -i -t photon /bin/bash
+&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Downloading Photon OS</title>
+      <link>/docs-v3/installation-guide/downloading-photon/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/installation-guide/downloading-photon/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You download Photon OS from &lt;a href=&#34;https://github.com/vmware/photon/wiki/Downloading-Photon-OS&#34;&gt;https://github.com/vmware/photon/wiki/Downloading-Photon-OS&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Photon OS is available in the following pre-packaged, binary formats.&lt;/p&gt;
+&lt;h2 id=&#34;download-formats&#34;&gt;Download Formats&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Format&lt;/td&gt;
+&lt;td&gt;Description&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;ISO Image&lt;/td&gt;
+&lt;td&gt;Contains everything needed to install either the minimal or full installation of Photon OS. The bootable ISO has a manual installer or can be used with PXE/kickstart environments for automated installations.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;OVA&lt;/td&gt;
+&lt;td&gt;Pre-installed minimal environment, customized for VMware hypervisor environments. These customizations include a highly sanitized and optimized kernel to give improved boot and runtime performance for containers and Linux applications. Since an OVA is a complete virtual machine definition, we&amp;rsquo;ve made available a Photon OS OVA that has virtual hardware version 11; this will allow for compatibility with several versions of VMware platforms or allow for the latest and greatest virtual hardware enhancements.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Amazon AMI&lt;/td&gt;
+&lt;td&gt;Pre-packaged and tested version of Photon OS made ready to deploy in your Amazon EC2 cloud environment. Previously, we&amp;rsquo;d published documentation on how to create an Amazon compatible instance, but, now we&amp;rsquo;ve done the work for you.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Google GCE Image&lt;/td&gt;
+&lt;td&gt;Pre-packaged and tested Google GCE image that is ready to deploy in your Google Compute Engine Environment, with all modifications and package requirements for running Photon OS in GCE.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Azure VHD&lt;/td&gt;
+&lt;td&gt;Pre-packaged and tested Azure HD image that is ready to deploy in your Microsoft Azure Cloud, with all modifications and package requirements for running Photon OS in Azure.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Downloading Photon OS</title>
+      <link>/docs/installation-guide/downloading-photon/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/installation-guide/downloading-photon/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Photon OS can be downloaded from &lt;a href=&#34;https://github.com/vmware/photon/wiki/Downloading-Photon-OS&#34;&gt;https://github.com/vmware/photon/wiki/Downloading-Photon-OS&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Photon OS is available in the following pre-packaged, binary formats.&lt;/p&gt;
+&lt;h2 id=&#34;download-formats&#34;&gt;Download Formats&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;th&gt;&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Format&lt;/td&gt;
+&lt;td&gt;Description&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;img width=1000 class=&#34;px-5&#34;/&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;ISO Image&lt;/td&gt;
+&lt;td&gt;Contains everything needed to install the minimal or full installation of Photon OS or the Real-Time flavor of Photon OS. The bootable ISO has a manual installer or can be used with PXE/kickstart environments for automated installations.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;OVA&lt;/td&gt;
+&lt;td&gt;Pre-installed minimal environment, customized for VMware hypervisor environments. These customizations include a highly sanitized and optimized kernel to give improved boot and runtime performance for containers and Linux applications. Since an OVA is a complete virtual machine definition, we&amp;rsquo;ve made available a Photon OS OVA that has virtual hardware version 13 arm64, version 13, and version 11; this will allow for compatibility with several versions of VMware platforms or allow for the latest and greatest virtual hardware enhancements.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Amazon AMI&lt;/td&gt;
+&lt;td&gt;Pre-packaged and tested version of Photon OS with Amazon AMI and Amazon AMI arm64 packages made ready to deploy in your Amazon EC2 cloud environment. Previously, we&amp;rsquo;d published documentation on how to create an Amazon compatible instance, but, now we&amp;rsquo;ve done the work for you.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Google GCE Image&lt;/td&gt;
+&lt;td&gt;Pre-packaged and tested Google GCE image that is ready to deploy in your Google Compute Engine Environment, with all modifications and package requirements for running Photon OS in GCE.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Azure VHD&lt;/td&gt;
+&lt;td&gt;Pre-packaged and tested Azure HD image that is ready to deploy in your Microsoft Azure Cloud, with all modifications and package requirements for running Photon OS in Azure.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Raspberry Pi Image&lt;/td&gt;
+&lt;td&gt;Pre-packaged and tested Raspberry Pi Image on ARM64 architecture.&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Enabling &#39;systemd&#39; Debug Shell During Boot</title>
+      <link>/docs/troubleshooting-guide/troubleshooting-with-systemd/enabling-systemd-debug/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/troubleshooting-guide/troubleshooting-with-systemd/enabling-systemd-debug/</guid>
+      <description>
+        
+        
+        &lt;p&gt;To diagnose &lt;code&gt;systemd&lt;/code&gt; related boot issues, you can enable early shell access during boot.&lt;/p&gt;
+&lt;p&gt;Perform the following steps to enable early shell access:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Restart the Photon OS machine or the virtual machine running Photon OS.&lt;/p&gt;
+&lt;p&gt;When the Photon OS splash screen appears, as it restarts, type the letter &lt;code&gt;e&lt;/code&gt; quickly.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Append &lt;code&gt;systemd.debug-shell=1&lt;/code&gt; to the kernel command line.&lt;/p&gt;
+&lt;p&gt;Optionally, to change logging level to debug, you can append &lt;code&gt;systemd.log_level=debug&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Press &lt;code&gt;F10&lt;/code&gt; to proceed with the boot.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Press &lt;code&gt;Alt+Ctrl+F9&lt;/code&gt; to switch to &lt;code&gt;tty9&lt;/code&gt; to access the debug shell.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Enabling `systemd` Debug Shell During Boot</title>
+      <link>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/enabling-systemd-debug/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/enabling-systemd-debug/</guid>
+      <description>
+        
+        
+        &lt;p&gt;To diagnose &lt;code&gt;systemd&lt;/code&gt; related boot issues, you can enable early shell access during boot.&lt;/p&gt;
+&lt;p&gt;Perform the following steps to enable early shell access:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Restart the Photon OS machine or the virtual machine running Photon OS.&lt;/p&gt;
+&lt;p&gt;When the Photon OS splash screen appears, as it restarts, type the letter &lt;code&gt;e&lt;/code&gt; quickly.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Append &lt;code&gt;systemd.debug-shell=1&lt;/code&gt; to the kernel command line.&lt;/p&gt;
+&lt;p&gt;Optionally, to change logging level to debug, you can append &lt;code&gt;systemd.log_level=debug&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Press &lt;code&gt;F10&lt;/code&gt; to proceed with the boot.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Press &lt;code&gt;Alt+Ctrl+F9&lt;/code&gt; to switch to &lt;code&gt;tty9&lt;/code&gt; to access the debug shell.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Examining the Packages in the SPECS Directory on Github</title>
+      <link>/docs-v3/administration-guide/photon-os-packages/examining-packages-spec-dir/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/photon-os-packages/examining-packages-spec-dir/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The SPECS directory of the GitHub website for Photon OS contains all the packages that can appear in Photon OS repositories. The following is the path to the SPECS directory :&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;https://github.com/vmware/photon/tree/master/SPECS&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;To see the version of a package, in the SPECS directory, click the name of the subdirectory of the package that you want to examine, and then click the &lt;code&gt;.spec&lt;/code&gt; filename in the subdirectory.&lt;/p&gt;
+&lt;p&gt;For example, the version of OpenJDK, which contains the openjre package that installs the Java class library and the javac Java compiler appears as follows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;%define _use_internal_dependency_generator 0
+Summary:	OpenJDK 
+Name:		openjdk
+Version:	1.8.0.72
+Release:	1%{?dist}
+License:	GNU GPL
+URL:		https://openjdk.java.net
+Group:		Development/Tools
+Vendor:		VMware, Inc.
+Distribution:   Photon
+AutoReqProv: 	no
+Source0:	http://anduin.linuxfromscratch.org/files/BLFS/OpenJDK-%{version}/OpenJDK-%{version}-x86_64-bin.tar.xz
+%define sha1 OpenJDK=0c705d7b13f4e22611d2da654209f469a6297f26
+%description
+The OpenJDK package installs java class library and javac java compiler. 
+
+%package	-n openjre
+Summary:	Jave runtime environment
+AutoReqProv: 	no
+%description	-n openjre
+It contains the libraries files for Java runtime environment
+#%global __requires_exclude ^libgif.*$
+#%filter_from_requires ^libgif.*$...
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Examining the Packages in the SPECS Directory on Github</title>
+      <link>/docs/administration-guide/photon-os-packages/examining-packages-spec-dir/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/photon-os-packages/examining-packages-spec-dir/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The SPECS directory of the GitHub website for Photon OS contains all the packages that can appear in Photon OS repositories. The following is the path to the SPECS directory :&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;https://github.com/vmware/photon/tree/master/SPECS&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;To see the version of a package, in the SPECS directory, click the name of the subdirectory of the package that you want to examine, and then click the &lt;code&gt;.spec&lt;/code&gt; filename in the subdirectory.&lt;/p&gt;
+&lt;p&gt;For example, the version of OpenJDK, which contains the openjre package that installs the Java class library and the javac Java compiler appears as follows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;%define _use_internal_dependency_generator 0
+Summary:	OpenJDK 
+Name:		openjdk
+Version:	1.8.0.72
+Release:	1%{?dist}
+License:	GNU GPL
+URL:		https://openjdk.java.net
+Group:		Development/Tools
+Vendor:		VMware, Inc.
+Distribution:   Photon
+AutoReqProv: 	no
+Source0:	http://anduin.linuxfromscratch.org/files/BLFS/OpenJDK-%{version}/OpenJDK-%{version}-x86_64-bin.tar.xz
+%define sha1 OpenJDK=0c705d7b13f4e22611d2da654209f469a6297f26
+%description
+The OpenJDK package installs java class library and javac java compiler. 
+
+%package	-n openjre
+Summary:	Jave runtime environment
+AutoReqProv: 	no
+%description	-n openjre
+It contains the libraries files for Java runtime environment
+#%global __requires_exclude ^libgif.*$
+#%filter_from_requires ^libgif.*$...
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Folder Layout</title>
+      <link>/docs-v3/installation-guide/build-iso-from-source/folder-layout/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/installation-guide/build-iso-from-source/folder-layout/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The structure of the directories on GitHub that contain the source code for Photon OS is as follows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;photon/
+├── Makefile
+├── README
+├── Dockerfile
+├── Vagrantfile
+├── SPECS        # RPM SPEC files
+├── common       # Build, packaging config
+├── docs         # Documentation
+├── installer    # Installer used at runtime
+├── support      # Build scripts
+└── tools
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Folder Layout</title>
+      <link>/docs/installation-guide/building-images/folder-layout/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/installation-guide/building-images/folder-layout/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The structure of the directories on GitHub that contain the source code for Photon OS is as follows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;photon/
+├── Makefile
+├── README
+├── Dockerfile
+├── Vagrantfile
+├── PUBLISHRPMS_SPECS        # RPM SPEC files
+├── SPECS                    # RPM SPEC files
+├── common                   # Build, packaging config
+├── docs                     # Documentation
+├── build.py                 # Package builder
+├── config.json              # Package builder
+├── support                  # Build scripts
+└── tools
+
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: General Performance Guidelines</title>
+      <link>/docs-v3/troubleshooting-guide/performance-issues/general_performance_guidelines/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/performance-issues/general_performance_guidelines/</guid>
+      <description>
+        
+        
+        &lt;p&gt;If you have no indication what the cause of a performance degradation might be, start by getting a high-level picture of the system&amp;rsquo;s state. Then look for signs in the data that might point to a cause.&lt;/p&gt;
+&lt;p&gt;Use the following guidelines to gain insight into performance data:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Start with the &lt;code&gt;systemd journal&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;code&gt;top&lt;/code&gt; tool can unmask problems caused by processes or applications overconsuming CPUs, time, or RAM. If the percent of CPU utilization is consistently high with little idle time, for example, there might be a runaway process. Restart it.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;code&gt;netstat --statistics&lt;/code&gt; command can identify bottlenecks causing performance issues. It lists interface statistics for different protocols.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;If &lt;code&gt;top&lt;/code&gt; and &lt;code&gt;netstat&lt;/code&gt; reveal no errors, run the &lt;code&gt;strace ls -al&lt;/code&gt; to view every system call.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;code&gt;watch&lt;/code&gt; command can help dynamically monitor a command to help troubleshoot performance issues:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;watch -n0 --differences &amp;lt;command&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;You can also combine &lt;code&gt;watch&lt;/code&gt; with the &lt;code&gt;vmstat&lt;/code&gt; command to dig deeper into statistics about virtual memory, processes, block input-output, disks, and CPU activity. Are there any bottlenecks?&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;You can use the &lt;code&gt;dstat&lt;/code&gt; utility to see the live, running list of statistics about system resources.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;code&gt;systemd-analyze&lt;/code&gt; reveals performance statistics for boot time and can help troubleshoot slow system boots and incorrect unit files.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The additional tools that you select depend on the clues that your initial investigation reveals. The following tools can also help troubleshoot performance: &lt;code&gt;sysstat&lt;/code&gt;, &lt;code&gt;sar&lt;/code&gt;, &lt;code&gt;systemtap&lt;/code&gt;, and &lt;code&gt;crash&lt;/code&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: General Performance Guidelines</title>
+      <link>/docs/troubleshooting-guide/performance-issues/general_performance_guidelines/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/troubleshooting-guide/performance-issues/general_performance_guidelines/</guid>
+      <description>
+        
+        
+        &lt;p&gt;If you have no indication what the cause of a performance degradation might be, start by getting a high-level picture of the system&amp;rsquo;s state. Then look for signs in the data that might point to a cause.&lt;/p&gt;
+&lt;p&gt;Use the following guidelines to gain insight into performance data:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Start with the &lt;code&gt;systemd journal&lt;/code&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;code&gt;top&lt;/code&gt; tool can unmask problems caused by processes or applications overconsuming CPUs, time, or RAM. If the percent of CPU utilization is consistently high with little idle time, for example, there might be a runaway process. Restart it.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;code&gt;netstat --statistics&lt;/code&gt; command can identify bottlenecks causing performance issues. It lists interface statistics for different protocols.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;If &lt;code&gt;top&lt;/code&gt; and &lt;code&gt;netstat&lt;/code&gt; reveal no errors, run the &lt;code&gt;strace ls -al&lt;/code&gt; to view every system call.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;code&gt;watch&lt;/code&gt; command can help dynamically monitor a command to help troubleshoot performance issues:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;watch -n0 --differences &amp;lt;command&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;You can also combine &lt;code&gt;watch&lt;/code&gt; with the &lt;code&gt;vmstat&lt;/code&gt; command to dig deeper into statistics about virtual memory, processes, block input-output, disks, and CPU activity. Are there any bottlenecks?&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;You can use the &lt;code&gt;dstat&lt;/code&gt; utility to see the live, running list of statistics about system resources.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The &lt;code&gt;systemd-analyze&lt;/code&gt; reveals performance statistics for boot time and can help troubleshoot slow system boots and incorrect unit files.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The additional tools that you select depend on the clues that your initial investigation reveals. The following tools can also help troubleshoot performance: &lt;code&gt;sysstat&lt;/code&gt;, &lt;code&gt;sar&lt;/code&gt;, &lt;code&gt;systemtap&lt;/code&gt;, and &lt;code&gt;crash&lt;/code&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Installing Photon OS on Dell Edge Gateway 300X</title>
+      <link>/docs-v3/installation-guide/install-photon-on-dell-gateway/installing-photon-os-on-dell-300x/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/installation-guide/install-photon-on-dell-gateway/installing-photon-os-on-dell-300x/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can install Photon OS 3.0 on Dell Gateway 300X. You can download Photon OS as an ISO file and install it.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#prerequisites&#34;&gt;Prerequisites&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#installing-the-iso-image-for-photon-os&#34;&gt;Installing the ISO Image for Photon OS&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;Verify that you have the following resources:
+&lt;ul&gt;
+&lt;li&gt;Dell Edge Gateway 300x.&lt;/li&gt;
+&lt;li&gt;USB pen drive. Format the pen drive with FAT32 with at least 8 GB of space.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Download the Photon OS ISO image from &lt;a href=&#34;https://bintray.com/vmware/photon/&#34;&gt;Bintray&lt;/a&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;installing-the-iso-image-for-photon-os&#34;&gt;Installing the ISO Image for Photon OS&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Mount the ISO image.&lt;/p&gt;
+&lt;p&gt;For example, run the following command on macOS:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;hdiutil mount photon-3.0-ec12f2c.iso&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Use a similar command in other operating systems.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Copy the contents of the ISO image to a writable directory so that you can edit files.
+For example, run the following commands on macOS.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;mkdir -p /tmp/photonUsb&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cp /Volumes/PHOTON_&amp;lt;timestamp&amp;gt;/* /tmp/photonUsb/
+```
+
+where, `/Volumes/PHOTON_&amp;lt;timestamp&amp;gt;` is the directory where the ISO is mounted with the command in the step above.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Edit the &lt;code&gt;grub.cfg&lt;/code&gt; file to use the kickstart config file:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;cd /tmp/photonUsb&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Add the below parameters to the linux cmd line in &lt;code&gt;boot/grub2/grub.cfg&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;linux /isolinux/vmlinuz root=/dev/ram0 loglevel=3 photon.media=UUID=$photondisk ks=cdrom:/isolinux/sample_ks.cfg console=ttyS0,115200n8
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Edit the &lt;code&gt;isolinux/sample_ks.cfg&lt;/code&gt;  as follows:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Change &lt;code&gt;&amp;quot;disk&amp;quot;: &amp;quot;/dev/sda”,&lt;/code&gt; to &lt;strong&gt;&lt;code&gt;&amp;quot;disk&amp;quot;: &amp;quot;/dev/mmcblk0&amp;quot;,&lt;/code&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Change &lt;code&gt;&amp;quot;echo \&amp;quot;Hello World\&amp;quot; &amp;gt; /etc/postinstall&amp;quot;&lt;/code&gt; to &lt;strong&gt;&lt;code&gt;&amp;quot;sed -i &#39;s/PermitRootLogin no/PermitRootLogin yes/g&#39; /etc/ssh/sshd_config&amp;quot;&lt;/code&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Format the pen drive with FAT-32 and copy all the contents of &lt;code&gt;/tmp/photonUsb&lt;/code&gt; to the pen drive.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Create a &lt;code&gt;UsbInvocationScript.txt&lt;/code&gt; file in the root of the pen drive with below content:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;usb_disable_secure_boot noreset;
+usb_one_time_boot usb nolog;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+1. Insert the pen drive in the Dell Gateway 300X and power on the gateway. 
+    
+    Photon OS installs automatically.
+
+1. After the installation is complete, insert a network cable into the ethernet port and find the IP address corresponding to the MAC address of the Dell Gateway 3000X ethernet port through the DHCP Server or a network analyzer. The MAC address is available on the Dell Gateway 3000X.
+
+1. You can then use `ssh` to access the gateway with the above IP address.
+
+
+
+
+
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Installing the Lightwave Server and Configuring It as a Domain Controller on a Photon Image</title>
+      <link>/docs-v3/installation-guide/installing-and-using-lightwave/installing-lightwave-server-and-setting-up-a-domain/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/installation-guide/installing-and-using-lightwave/installing-lightwave-server-and-setting-up-a-domain/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can configure Lightwave server as domain controller on a Photon client. You install the Lightwave server first. After the server is installed, you configure a new domain.&lt;/p&gt;
+&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Prepare a Photon OS client for the Lightwave server installation.&lt;/li&gt;
+&lt;li&gt;Verify that the hostname of the client can be resolved.&lt;/li&gt;
+&lt;li&gt;Verify that you have 500 MB free for the Lightwave server installation.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;procedure&#34;&gt;Procedure&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Log in to your Photon OS client over SSH as an administrator.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Install the Lightwave server by running the following command.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;# tdnf install lightwave -y&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Configure the Lightwave server as domain controller by selecting a domain name and password for the &lt;code&gt;administrator&lt;/code&gt; user.&lt;/p&gt;
+&lt;p&gt;The minimum required password complexity is 8 characters, one symbol, one upper case letter, and one lower case letter.
+Optionally, if you want to access the domain controller over IP, configure the ip under the &lt;code&gt;--ssl-subject-alt-name&lt;/code&gt; parameter.
+&lt;code&gt;# configure-lightwave-server --domain &amp;lt;your-domain&amp;gt; --password &#39;&amp;lt;administrator-user-password&amp;gt;&#39; --ssl-subject-alt-name &amp;lt;machine-ip-address&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Edit &lt;code&gt;iptables&lt;/code&gt; rules to allow connections to and from the client.&lt;/p&gt;
+&lt;p&gt;The default Photon OS 3.0 firewall settings block all incoming, outgoing, and forwards so that you must reconfigure them.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;# iptables -P INPUT ACCEPT&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;# iptables -P OUTPUT ACCEPT&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;# iptables -P FORWARD ACCEPT&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;In a browser, go to https://&lt;em&gt;lightwave-server-FQDN&lt;/em&gt; to verify that you can log in to the newly created domain controller.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;On the Cascade Identity Services page, enter the domain that you configured and click &lt;strong&gt;Take me to Lightwave Admin&lt;/strong&gt;.&lt;/li&gt;
+&lt;li&gt;On the Welcome page, enter administrator@your-domain as user name and the password that you set during the domain controller configuration and click &lt;strong&gt;LOGIN&lt;/strong&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Installing the pmd Package</title>
+      <link>/docs-v3/installation-guide/photon-management-daemon/installing-pmd-package/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/installation-guide/photon-management-daemon/installing-pmd-package/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The pmd package is included with your Photon OS 3.0 distribution. To make sure that you have the latest version, you can run:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# tdnf install pmd
+# systemctl start pmd
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Installing the pmd Package</title>
+      <link>/docs/administration-guide/photon-management-daemon/installing-pmd-package/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/photon-management-daemon/installing-pmd-package/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The pmd package is included with your Photon OS 4.0 distribution. To make sure that you have the latest version, you can run:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# tdnf install pmd
+# systemctl start pmd
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Introduction to &#39;tdnf&#39;</title>
+      <link>/docs-v3/administration-guide/managing-packages-with-tdnf/intro-to-tndf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-packages-with-tdnf/intro-to-tndf/</guid>
+      <description>
+        
+        
+        &lt;p&gt;On Photon OS, tdnf is the default package manager for installing new packages. It is a C implementation of the DNF package manager without Python dependencies. DNF is the next upcoming major version of yum.&lt;/p&gt;
+&lt;p&gt;Tdnf appears in the minimal and full versions of Photon OS. Tdnf reads yum repositories and works like yum. The full version of Photon OS also includes yum, and you can install packages by using yum if you want.&lt;/p&gt;
+&lt;p&gt;In the minimal version of Photon OS, you can manage packages by using yum, but you must install it first by running the following &lt;code&gt;tdnf&lt;/code&gt; command as root:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf install yum
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Tdnf implements a subset of the &lt;code&gt;dnf&lt;/code&gt; commands as listed in the &lt;a href=&#34;http://dnf.readthedocs.org/en/latest/&#34;&gt;dnf guide&lt;/a&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Introduction to &#39;tdnf&#39;</title>
+      <link>/docs/administration-guide/managing-packages-with-tdnf/intro-to-tdnf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/managing-packages-with-tdnf/intro-to-tdnf/</guid>
+      <description>
+        
+        
+        &lt;p&gt;On Photon OS, &lt;code&gt;tdnf&lt;/code&gt; is the default package manager for installing new packages. It is a C implementation of the DNF package manager without Python dependencies.&lt;/p&gt;
+&lt;p&gt;Tdnf appears in the minimal and full versions of Photon OS.&lt;/p&gt;
+&lt;p&gt;Tdnf implements a subset of the &lt;code&gt;dnf&lt;/code&gt; commands as listed in the &lt;a href=&#34;http://dnf.readthedocs.org/en/latest/&#34;&gt;dnf guide&lt;/a&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Introduction to Photon OS</title>
+      <link>/docs-v3/overview/introduction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/overview/introduction/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Photon OS, is an open-source minimalist Linux operating system from VMware that is optimized for cloud computing platforms, VMware vSphere deployments, and applications native to the cloud.&lt;/p&gt;
+&lt;p&gt;Photon OS is a Linux container host optimized for vSphere and cloud-computing platforms such as Amazon Elastic Compute and Google Compute Engine. As a lightweight and extensible operating system, Photon OS works with the most common container formats, including Docker, Rocket, and Garden. Photon OS includes a yum-compatible, package-based lifecycle management system called tdnf.&lt;/p&gt;
+&lt;p&gt;When used with development tools and environments such as VMware Fusion, VMware Workstation, and production runtime environments (vSphere, vCloud Air), Photon OS lets you seamlessly migrate container-based applications from development to production. With a small footprint and fast boot and run times, Photon OS is optimized for cloud computing and cloud  applications.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Introduction to Photon OS</title>
+      <link>/docs/overview/introduction/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/overview/introduction/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Photon OS, is an open-source minimalist Linux operating system from VMware that is optimized for cloud computing platforms, VMware vSphere deployments, and applications native to the cloud.&lt;/p&gt;
+&lt;p&gt;Photon OS is a Linux container host optimized for vSphere and cloud-computing platforms such as Amazon Elastic Compute and Google Compute Engine. As a lightweight and extensible operating system, Photon OS works with the most common container formats, including Docker, Rocket, and Garden. Photon OS includes a yum-compatible, package-based lifecycle management system called tdnf.&lt;/p&gt;
+&lt;p&gt;When used with development tools and environments such as VMware Fusion, VMware Workstation, and production runtime environments (vSphere), Photon OS lets you seamlessly migrate container-based applications from development to production. With a small footprint and fast boot and run times, Photon OS is optimized for cloud computing and cloud  applications.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Kernel Overview</title>
+      <link>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/kernel-overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/kernel-overview/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can use &lt;code&gt;dmesg&lt;/code&gt; command to troubleshooting kernel errors. The &lt;code&gt;dmesg&lt;/code&gt; command prints messages from the kernel ring buffer.&lt;/p&gt;
+&lt;p&gt;The following command, for example, presents kernel messages in a human-readable format:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;dmesg --human --kernel
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To examine kernel messages as you perform actions, such as reproducing a problem, in another terminal, you can run the command with the &lt;code&gt;--follow&lt;/code&gt; option, which waits for new messages and prints them as they occur:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;dmesg --human --kernel --follow
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The kernel buffer is limited in memory size. As a result, the kernel cyclically overwrites the end of the information in the buffer from which &lt;code&gt;dmesg&lt;/code&gt; pulls information. The systemd journal, however, saves the information from the buffer to a log file so that you can access older information.&lt;/p&gt;
+&lt;p&gt;To view it, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;journalctl -k
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If required, you can check the modules that are loaded on your Photon OS machine by running the &lt;code&gt;lsmod&lt;/code&gt; command. For example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsmod
+Module                  Size  Used by
+vmw_vsock_vmci_transport    28672  1
+vsock                  36864  2 vmw_vsock_vmci_transport
+coretemp               16384  0
+hwmon                  16384  1 coretemp
+crc32c_intel           24576  0
+hid_generic            16384  0
+usbhid                 28672  0
+hid                   106496  2 hid_generic,usbhid
+xt_conntrack           16384  1
+iptable_nat            16384  0
+nf_conntrack_ipv4      16384  2
+nf_defrag_ipv4         16384  1 nf_conntrack_ipv4
+nf_nat_ipv4            16384  1 iptable_nat
+nf_nat                 24576  1 nf_nat_ipv4
+iptable_filter         16384  1
+ip_tables              24576  2 iptable_filter,iptable_nat
+&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Kernel Overview</title>
+      <link>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/kernel-overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/kernel-overview/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can use &lt;code&gt;dmesg&lt;/code&gt; command to troubleshooting kernel errors. The &lt;code&gt;dmesg&lt;/code&gt; command prints messages from the kernel ring buffer.&lt;/p&gt;
+&lt;p&gt;The following command, for example, presents kernel messages in a human-readable format:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;dmesg --human --kernel
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To examine kernel messages as you perform actions, such as reproducing a problem, in another terminal, you can run the command with the &lt;code&gt;--follow&lt;/code&gt; option, which waits for new messages and prints them as they occur:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;dmesg --human --kernel --follow
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The kernel buffer is limited in memory size. As a result, the kernel cyclically overwrites the end of the information in the buffer from which &lt;code&gt;dmesg&lt;/code&gt; pulls information. The systemd journal, however, saves the information from the buffer to a log file so that you can access older information.&lt;/p&gt;
+&lt;p&gt;To view it, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;journalctl -k
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If required, you can check the modules that are loaded on your Photon OS machine by running the &lt;code&gt;lsmod&lt;/code&gt; command. For example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsmod
+Module                  Size  Used by
+vmw_vsock_vmci_transport    28672  1
+vsock                  36864  2 vmw_vsock_vmci_transport
+coretemp               16384  0
+hwmon                  16384  1 coretemp
+crc32c_intel           24576  0
+hid_generic            16384  0
+usbhid                 28672  0
+hid                   106496  2 hid_generic,usbhid
+xt_conntrack           16384  1
+iptable_nat            16384  0
+nf_conntrack_ipv4      16384  2
+nf_defrag_ipv4         16384  1 nf_conntrack_ipv4
+nf_nat_ipv4            16384  1 iptable_nat
+nf_nat                 24576  1 nf_nat_ipv4
+iptable_filter         16384  1
+ip_tables              24576  2 iptable_filter,iptable_nat
+&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Managing the Network Configuration</title>
+      <link>/docs-v3/troubleshooting-guide/network-troubleshooting/managing-the-network-configuration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/network-troubleshooting/managing-the-network-configuration/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The network service, which is enabled by default, starts when the system boots. You manage the network service by using systemd commands, such as &lt;code&gt;systemd-networkd&lt;/code&gt;, &lt;code&gt;systemd-resolvd&lt;/code&gt;, and &lt;code&gt;networkctl&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;You can check the status of the network service by running the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl status systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following is a result of the command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;* systemd-networkd.service - Network Service
+   Loaded: loaded (/usr/lib/systemd/system/systemd-networkd.service; enabled; vendor preset: enabled)
+   Active: active (running) since Fri 2016-04-29 15:08:51 UTC; 6 days ago
+     Docs: man:systemd-networkd.service(8)
+ Main PID: 291 (systemd-network)
+   Status: &amp;quot;Processing requests...&amp;quot;
+   CGroup: /system.slice/systemd-networkd.service
+           `-291 /lib/systemd/systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Managing the Network Configuration</title>
+      <link>/docs/troubleshooting-guide/network-troubleshooting/managing-the-network-configuration/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/troubleshooting-guide/network-troubleshooting/managing-the-network-configuration/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The network service, which is enabled by default, starts when the system boots. You manage the network service by using systemd commands, such as &lt;code&gt;systemd-networkd&lt;/code&gt;, &lt;code&gt;systemd-resolvd&lt;/code&gt;, and &lt;code&gt;networkctl&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;You can check the status of the network service by running the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl status systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following is a result of the command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;* systemd-networkd.service - Network Service
+   Loaded: loaded (/usr/lib/systemd/system/systemd-networkd.service; enabled; vendor preset: enabled)
+   Active: active (running) since Fri 2016-04-29 15:08:51 UTC; 6 days ago
+     Docs: man:systemd-networkd.service(8)
+ Main PID: 291 (systemd-network)
+   Status: &amp;quot;Processing requests...&amp;quot;
+   CGroup: /system.slice/systemd-networkd.service
+           `-291 /lib/systemd/systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Photon Code</title>
+      <link>/docs-v3/troubleshooting-guide/photon-os-general-troubleshooting/photon-code/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/photon-os-general-troubleshooting/photon-code/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Photon is an RPM based Linux distribution similar to variants like CentOS and Fedora. With RPM based distributions granular updates as opposed to updating the whole OS image is possible.&lt;/p&gt;
+&lt;p&gt;##SPEC File
+The &amp;ldquo;Recipe&amp;rdquo; for creating an RPM package is a spec file. The Photon code base&amp;rsquo;s &lt;strong&gt;SPECS&lt;/strong&gt; folder hast the following directory structure:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;SourceRoot
+
+       SPECS
+            linux
+                patch1
+                patch2
+                linux.spec
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;##To Check if a Package is Signed
+Run the following commands to check if the package is signed:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#check if a package is signed
+rpm -q linux --qf &#39;%{NAME}-%{VERSION}-%{RELEASE} %{SIGPGP:pgpsig} %{SIGGPG:pgpsig}\n&#39;
+linux-4.19.79-2.ph3 RSA/SHA1, Thu 31 Oct 2019 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949 (none)
+ 
+#or
+rpm -qi linux | grep &amp;quot;Signature&amp;quot;
+Signature   : RSA/SHA1, Thu 31 Oct 2019 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949
+ 
+#Last 8 chars of Key ID: 66fd4949
+#See if it matches the version of any of the gpg keys installed.
+rpm -qa | grep gpg-pubkey | xargs -n1 rpm -q --queryformat &amp;quot;%{NAME} %{VERSION} %{PACKAGER}\n&amp;quot;
+gpg-pubkey 66fd4949 VMware, Inc. -- Linux Packaging Key -- linux-packages@vmware.com
+gpg-pubkey 3e1ba8d5 Google Cloud Packages RPM Signing Key gc-team@google.com
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;##To Check if Your Image Has Vulnerabilities
+Use the security scanners to find security issues. Alternatively The &lt;code&gt;tdnf updateinfo info&lt;/code&gt; command displays all the applicable security updates the host needs.&lt;/p&gt;
+&lt;p&gt;##To Check if a CVE is Fixed
+The Photon team fix the vulnerabilities and then publish the advisories to (&lt;a href=&#34;https://github.com/vmware/photon/wiki/Security-Advisories)&#34;&gt;https://github.com/vmware/photon/wiki/Security-Advisories)&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;##To Check if Security Updates are Available
+Use the &lt;code&gt;tdnf updateinfo info&lt;/code&gt;, &lt;code&gt;tdnf update --security&lt;/code&gt; or &lt;code&gt;tdnf update ---sec-severity &amp;lt;level&amp;gt;&lt;/code&gt; commands to check if security updates are available. For example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#check if there are any security updates
+root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo
+70 Security notice(s)
+ 
+#check if there are security updates for libssh2. note this is relative to what is installed in local
+root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo list libssh2
+patch:PHSA-2020-3.0-0047 Security libssh2-1.9.0-2.ph3.x86_64.rpm
+patch:PHSA-2019-3.0-0025 Security libssh2-1.9.0-1.ph3.x86_64.rpm
+patch:PHSA-2019-3.0-0009 Security libssh2-1.8.2-1.ph3.x86_64.rpm
+patch:PHSA-2019-3.0-0008 Security libssh2-1.8.0-2.ph3.x86_64.rpm
+ 
+#show details of all the libssh2 updates
+root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo info libssh2
+       Name : libssh2-1.9.0-2.ph3.x86_64.rpm
+  Update ID : patch:PHSA-2020-3.0-0047
+       Type : Security
+    Updated : Wed Jan 15 10:48:25 2020
+Needs Reboot: 0
+Description : Security fixes for {&#39;CVE-2019-17498&#39;}
+       Name : libssh2-1.9.0-1.ph3.x86_64.rpm
+  Update ID : patch:PHSA-2019-3.0-0025
+       Type : Security
+    Updated : Sat Aug 17 16:14:35 2019
+Needs Reboot: 0
+Description : Security fixes for {&#39;CVE-2019-13115&#39;}
+       Name : libssh2-1.8.2-1.ph3.x86_64.rpm
+  Update ID : patch:PHSA-2019-3.0-0009
+       Type : Security
+    Updated : Sat Apr 13 03:34:22 2019
+Needs Reboot: 0
+Description : Security fixes for {&#39;CVE-2019-3859&#39;, &#39;CVE-2019-3862&#39;, &#39;CVE-2019-3861&#39;, &#39;CVE-2019-3857&#39;, &#39;CVE-2019-3858&#39;, &#39;CVE-2019-3863&#39;, &#39;CVE-2019-3860&#39;, &#39;CVE-2019-3856&#39;}
+       Name : libssh2-1.8.0-2.ph3.x86_64.rpm
+  Update ID : patch:PHSA-2019-3.0-0008
+       Type : Security
+    Updated : Fri Mar 29 16:04:18 2019
+Needs Reboot: 0
+Description : Security fixes for {&#39;CVE-2019-3855&#39;}
+ 
+ 
+ 
+#install all security updates &amp;gt;= score 9.0 (CVSS_v3.0_Severity)
+root@photon-9a8c05dd97e9 [ ~ ]# tdnf update --sec-severity 9.0
+Upgrading:
+apache-tomcat                  noarch          8.5.50-1.ph3         photon-updates    9.00M 9440211
+bash                           x86_64          4.4.18-2.ph3         photon-updates    3.16M 3315720
+bzip2                          x86_64          1.0.8-1.ph3          photon-updates  124.99k 127990
+bzip2-libs                     x86_64          1.0.8-1.ph3          photon-updates   74.31k 76096
+file                           x86_64          5.34-2.ph3           photon-updates   43.02k 44056
+file-libs                      x86_64          5.34-2.ph3           photon-updates    5.21M 5458536
+git                            x86_64          2.23.1-2.ph3         photon-updates   24.34M 25519969
+glib                           x86_64          2.58.0-4.ph3         photon-updates    3.11M 3265152
+libseccomp                     x86_64          2.4.0-2.ph3          photon-updates  315.79k 323368
+libssh2                        x86_64          1.9.0-2.ph3          photon-updates  238.41k 244136
+linux-esx                      x86_64          4.19.97-2.ph3        photon-updates   12.68M 13299655
+ 
+Total installed size:  58.28M 61114889
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Photon Code</title>
+      <link>/docs/troubleshooting-guide/photon-os-general-troubleshooting/photon-code/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/troubleshooting-guide/photon-os-general-troubleshooting/photon-code/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Photon is an RPM based Linux distribution similar to variants like CentOS and Fedora. With RPM based distributions granular updates as opposed to updating the whole OS image is possible.&lt;/p&gt;
+&lt;p&gt;##SPEC File
+The &amp;ldquo;Recipe&amp;rdquo; for creating an RPM package is a spec file. The Photon code base&amp;rsquo;s &lt;strong&gt;SPECS&lt;/strong&gt; folder hast the following directory structure:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;SourceRoot
+
+       SPECS
+            linux
+                patch1
+                patch2
+                linux.spec
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;##To Check if a Package is Signed
+Run the following commands to check if the package is signed:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#check if a package is signed
+rpm -q linux --qf &#39;%{NAME}-%{VERSION}-%{RELEASE} %{SIGPGP:pgpsig} %{SIGGPG:pgpsig}\n&#39;
+linux-4.19.79-2.ph3 RSA/SHA1, Thu 31 Oct 2019 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949 (none)
+ 
+#or
+rpm -qi linux | grep &amp;quot;Signature&amp;quot;
+Signature   : RSA/SHA1, Thu 31 Oct 2019 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949
+ 
+#Last 8 chars of Key ID: 66fd4949
+#See if it matches the version of any of the gpg keys installed.
+rpm -qa | grep gpg-pubkey | xargs -n1 rpm -q --queryformat &amp;quot;%{NAME} %{VERSION} %{PACKAGER}\n&amp;quot;
+gpg-pubkey 66fd4949 VMware, Inc. -- Linux Packaging Key -- linux-packages@vmware.com
+gpg-pubkey 3e1ba8d5 Google Cloud Packages RPM Signing Key gc-team@google.com
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;##To Check if Your Image Has Vulnerabilities
+Use the security scanners to find security issues. Alternatively The &lt;code&gt;tdnf updateinfo info&lt;/code&gt; command displays all the applicable security updates the host needs.&lt;/p&gt;
+&lt;p&gt;##To Check if a CVE is Fixed
+The Photon team fix the vulnerabilities and then publish the advisories to (&lt;a href=&#34;https://github.com/vmware/photon/wiki/Security-Advisories)&#34;&gt;https://github.com/vmware/photon/wiki/Security-Advisories)&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;##To Check if Security Updates are Available
+Use the &lt;code&gt;tdnf updateinfo info&lt;/code&gt;, &lt;code&gt;tdnf update --security&lt;/code&gt; or &lt;code&gt;tdnf update ---sec-severity &amp;lt;level&amp;gt;&lt;/code&gt; commands to check if security updates are available. For example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#check if there are any security updates
+root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo
+70 Security notice(s)
+ 
+#check if there are security updates for libssh2. note this is relative to what is installed in local
+root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo list libssh2
+patch:PHSA-2020-3.0-0047 Security libssh2-1.9.0-2.ph3.x86_64.rpm
+patch:PHSA-2019-3.0-0025 Security libssh2-1.9.0-1.ph3.x86_64.rpm
+patch:PHSA-2019-3.0-0009 Security libssh2-1.8.2-1.ph3.x86_64.rpm
+patch:PHSA-2019-3.0-0008 Security libssh2-1.8.0-2.ph3.x86_64.rpm
+ 
+#show details of all the libssh2 updates
+root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo info libssh2
+       Name : libssh2-1.9.0-2.ph3.x86_64.rpm
+  Update ID : patch:PHSA-2020-3.0-0047
+       Type : Security
+    Updated : Wed Jan 15 10:48:25 2020
+Needs Reboot: 0
+Description : Security fixes for {&#39;CVE-2019-17498&#39;}
+       Name : libssh2-1.9.0-1.ph3.x86_64.rpm
+  Update ID : patch:PHSA-2019-3.0-0025
+       Type : Security
+    Updated : Sat Aug 17 16:14:35 2019
+Needs Reboot: 0
+Description : Security fixes for {&#39;CVE-2019-13115&#39;}
+       Name : libssh2-1.8.2-1.ph3.x86_64.rpm
+  Update ID : patch:PHSA-2019-3.0-0009
+       Type : Security
+    Updated : Sat Apr 13 03:34:22 2019
+Needs Reboot: 0
+Description : Security fixes for {&#39;CVE-2019-3859&#39;, &#39;CVE-2019-3862&#39;, &#39;CVE-2019-3861&#39;, &#39;CVE-2019-3857&#39;, &#39;CVE-2019-3858&#39;, &#39;CVE-2019-3863&#39;, &#39;CVE-2019-3860&#39;, &#39;CVE-2019-3856&#39;}
+       Name : libssh2-1.8.0-2.ph3.x86_64.rpm
+  Update ID : patch:PHSA-2019-3.0-0008
+       Type : Security
+    Updated : Fri Mar 29 16:04:18 2019
+Needs Reboot: 0
+Description : Security fixes for {&#39;CVE-2019-3855&#39;}
+ 
+ 
+ 
+#install all security updates &amp;gt;= score 9.0 (CVSS_v3.0_Severity)
+root@photon-9a8c05dd97e9 [ ~ ]# tdnf update --sec-severity 9.0
+Upgrading:
+apache-tomcat                  noarch          8.5.50-1.ph3         photon-updates    9.00M 9440211
+bash                           x86_64          4.4.18-2.ph3         photon-updates    3.16M 3315720
+bzip2                          x86_64          1.0.8-1.ph3          photon-updates  124.99k 127990
+bzip2-libs                     x86_64          1.0.8-1.ph3          photon-updates   74.31k 76096
+file                           x86_64          5.34-2.ph3           photon-updates   43.02k 44056
+file-libs                      x86_64          5.34-2.ph3           photon-updates    5.21M 5458536
+git                            x86_64          2.23.1-2.ph3         photon-updates   24.34M 25519969
+glib                           x86_64          2.58.0-4.ph3         photon-updates    3.11M 3265152
+libseccomp                     x86_64          2.4.0-2.ph3          photon-updates  315.79k 323368
+libssh2                        x86_64          1.9.0-2.ph3          photon-updates  238.41k 244136
+linux-esx                      x86_64          4.19.97-2.ph3        photon-updates   12.68M 13299655
+ 
+Total installed size:  58.28M 61114889
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Prerequisites</title>
+      <link>/docs-v3/user-guide/kickstart-through-http/kickstart-prerequisites/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/user-guide/kickstart-through-http/kickstart-prerequisites/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Before you kick start a build, verify that you have the following resources:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Packer 0.8 or later version.&lt;/li&gt;
+&lt;li&gt;VMware Fusion or Workstation&lt;/li&gt;
+&lt;li&gt;VirtualBox (optional)&lt;/li&gt;
+&lt;li&gt;Photon Packer template. The template contains the following artifacts:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;packer-photon.json&lt;/code&gt; file&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;scripts&lt;/code&gt; folder. The folder that contains the scripts you require to kickstart Photon OS.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;vars&lt;/code&gt; folder. The folder that contains the Photon OS 3.0 ISO URL.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;packages_minimal.json&lt;/code&gt; file. The JSON file that contains the install profile you require.&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Prerequisites</title>
+      <link>/docs-v3/user-guide/kubernetes-on-photon-os/kubernetes-prerequisites/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/user-guide/kubernetes-on-photon-os/kubernetes-prerequisites/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You need two or more machines with the 3.0 general availability or later version of Photon OS installed.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Prerequisites</title>
+      <link>/docs/user-guide/kickstart-through-http/kickstart-prerequisites/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/user-guide/kickstart-through-http/kickstart-prerequisites/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Before you kick start a build, verify that you have the following resources:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Packer 0.8 or later version.&lt;/li&gt;
+&lt;li&gt;VMware Fusion or Workstation&lt;/li&gt;
+&lt;li&gt;VirtualBox (optional)&lt;/li&gt;
+&lt;li&gt;Photon Packer template. The template contains the following artifacts:
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;packer-photon.json&lt;/code&gt; file&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;scripts&lt;/code&gt; folder. The folder that contains the scripts you require to kickstart Photon OS.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;vars&lt;/code&gt; folder. The folder that contains the Photon OS 3.0 ISO URL.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;packages_minimal.json&lt;/code&gt; file. The JSON file that contains the install profile you require.&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Prerequisites</title>
+      <link>/docs/user-guide/kubernetes-on-photon-os/kubernetes-prerequisites/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/user-guide/kubernetes-on-photon-os/kubernetes-prerequisites/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You need two or more machines with the 3.0 general availability or later version of Photon OS installed.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Prerequisites for Running Photon OS on AWS EC2</title>
+      <link>/docs-v3/installation-guide/run-photon-aws-ec2/prerequisites-for-photon-os-on-aws-ec2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/installation-guide/run-photon-aws-ec2/prerequisites-for-photon-os-on-aws-ec2/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Before you use Photon OS with Amazon Elastic Cloud Compute(AWS EC2), perform the following prerequisite tasks:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Verify that you have the following resources:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;AWS account&lt;/strong&gt;. Working with EC2 requires an Amazon account for AWS with valid payment information. Keep in mind that, if you try the examples in this document, you will be charged by Amazon. See &lt;a href=&#34;http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/get-set-up-for-amazon-ec2.html&#34;&gt;Setting Up with Amazon EC2&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Amazon tools&lt;/strong&gt;. The following examples also assume that you have installed and configured the Amazon AWS CLI and the EC2 CLI and AMI tools, including ec2-ami-tools.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For more information, see &lt;a href=&#34;http://docs.aws.amazon.com/cli/latest/userguide/installing.html&#34;&gt;Installing the AWS Command Line Interface&lt;/a&gt;, &lt;a href=&#34;http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/set-up-ec2-cli-linux.html&#34;&gt;Setting Up the Amazon EC2 Command Line Interface Tools on Linux&lt;/a&gt;, and &lt;a href=&#34;http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html&#34;&gt;Configuring AWS Command-Line Interface&lt;/a&gt;. Also see &lt;a href=&#34;http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html&#34;&gt;Setting Up the AMI Tools&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The procedure in this section uses an Ubuntu 14.04 workstation to generate the keys and certificates that AWS requires.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Download the Photon OS image for Amazon.&lt;/p&gt;
+&lt;p&gt;VMware packages Photon OS as a cloud-ready Amazon machine image (AMI) that you can download for free from &lt;a href=&#34;https://bintray.com/vmware/photon&#34;&gt;Bintray&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Download the Photon OS AMI and save it on your workstation. For more infromation, see &lt;a href=&#34;../../downloading-photon/&#34;&gt;Downloading Photon OS&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: The AMI version of Photon is a virtual appliance with the information and packages that Amazon needs to launch an instance of Photon in the cloud. To build the AMI version, VMware starts with the minimal version of Photon OS and adds the sudo and tar packages to it.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Prerequisites for Running Photon OS on AWS EC2</title>
+      <link>/docs/installation-guide/run-photon-aws-ec2/prerequisites-for-photon-os-on-aws-ec2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/installation-guide/run-photon-aws-ec2/prerequisites-for-photon-os-on-aws-ec2/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Before you use Photon OS with Amazon Elastic Cloud Compute(AWS EC2), perform the following prerequisite tasks:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Verify that you have the following resources:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;AWS account&lt;/strong&gt;. Working with EC2 requires an Amazon account for AWS with valid payment information. Keep in mind that, if you try the examples in this document, you will be charged by Amazon. See &lt;a href=&#34;http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/get-set-up-for-amazon-ec2.html&#34;&gt;Setting Up with Amazon EC2&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Amazon tools&lt;/strong&gt;. The following examples also assume that you have installed and configured the Amazon AWS CLI and the EC2 CLI and AMI tools, including ec2-ami-tools.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For more information, see &lt;a href=&#34;http://docs.aws.amazon.com/cli/latest/userguide/installing.html&#34;&gt;Installing the AWS Command Line Interface&lt;/a&gt;, &lt;a href=&#34;http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/set-up-ec2-cli-linux.html&#34;&gt;Setting Up the Amazon EC2 Command Line Interface Tools on Linux&lt;/a&gt;, and &lt;a href=&#34;http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html&#34;&gt;Configuring AWS Command-Line Interface&lt;/a&gt;. Also see &lt;a href=&#34;http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html&#34;&gt;Setting Up the AMI Tools&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The procedure in this section uses an Ubuntu 14.04 workstation to generate the keys and certificates that AWS requires.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Download the Photon OS image for Amazon.&lt;/p&gt;
+&lt;p&gt;VMware packages Photon OS as a cloud-ready Amazon machine image (AMI) that you can download for free from &lt;a href=&#34;https://packages.vmware.com/photon/&#34;&gt;https://packages.vmware.com/photon/&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Download the Photon OS AMI and save it on your workstation. For more infromation, see &lt;a href=&#34;../../downloading-photon/&#34;&gt;Downloading Photon OS&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: The AMI version of Photon is a virtual appliance with the information and packages that Amazon needs to launch an instance of Photon in the cloud. To build the AMI version, VMware starts with the minimal version of Photon OS and adds the sudo and tar packages to it.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Prerequisites for Running Photon OS on Azure</title>
+      <link>/docs-v3/installation-guide/run-photon-on-azure/prerequisites-for-photon-os-on-azure/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/installation-guide/run-photon-on-azure/prerequisites-for-photon-os-on-azure/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Before you use Photon OS with Microsoft Azure, perform the following prerequisite tasks:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Verify that you have a Microsoft Azure account. To create an account, see &lt;a href=&#34;https://azure.microsoft.com&#34;&gt;https://azure.microsoft.com&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Install the latest version of Azure CLI. See &lt;a href=&#34;https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest&#34;&gt;Install Azure CLI 2.0&lt;/a&gt; and &lt;a href=&#34;https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest&#34;&gt;Get started with Azure CLI 2.0&lt;/a&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Verify that that you have a pair of SSH public and private keys.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Download and extract the Photon OS VHD file.&lt;/p&gt;
+&lt;p&gt;VMware packages Photon OS as a cloud-ready virtual hard disk (VHD file) that you can download for free from  &lt;a href=&#34;https://bintray.com/vmware/photon&#34;&gt;Bintray&lt;/a&gt;. This VHD file is a virtual appliance with the information and packages that Azure needs to launch an instance of Photon in the cloud. After you have downloaded the distribution archive, extract the VHD file from it. You will later need to upload this VHD file to Azure, where it will be stored in an Azure storage account. For more information, see &lt;a href=&#34;../../downloading-photon/&#34;&gt;Downloading Photon OS&lt;/a&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Prerequisites for Running Photon OS on Azure</title>
+      <link>/docs/installation-guide/run-photon-on-azure/prerequisites-for-photon-os-on-azure/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/installation-guide/run-photon-on-azure/prerequisites-for-photon-os-on-azure/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Before you use Photon OS with Microsoft Azure, perform the following prerequisite tasks:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Verify that you have a Microsoft Azure account. To create an account, see &lt;a href=&#34;https://azure.microsoft.com&#34;&gt;https://azure.microsoft.com&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Install the latest version of Azure CLI. See &lt;a href=&#34;https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest&#34;&gt;Install Azure CLI 2.0&lt;/a&gt; and &lt;a href=&#34;https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest&#34;&gt;Get started with Azure CLI 2.0&lt;/a&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Verify that that you have a pair of SSH public and private keys.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Download and extract the Photon OS VHD file.&lt;/p&gt;
+&lt;p&gt;VMware packages Photon OS as a cloud-ready virtual hard disk (VHD file) that you can download for free from  &lt;a href=&#34;https://bintray.com/vmware/photon&#34;&gt;Bintray&lt;/a&gt;. This VHD file is a virtual appliance with the information and packages that Azure needs to launch an instance of Photon in the cloud. After you have downloaded the distribution archive, extract the VHD file from it. You will later need to upload this VHD file to Azure, where it will be stored in an Azure storage account. For more information, see &lt;a href=&#34;../../downloading-photon/&#34;&gt;Downloading Photon OS&lt;/a&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Prerequisites for Running Photon OS on Fusion</title>
+      <link>/docs-v3/installation-guide/run-photon-on-fusion/prerequisites-for-photon-os-on-fusion/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/installation-guide/run-photon-on-fusion/prerequisites-for-photon-os-on-fusion/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Resource requirements and recommendations vary depending on several factors, including the host environment (for example, VMware Fusion and VMware vSphere), the distribution file used (ISO or OVA), and the selected installation settings (for example, full or basic installation).&lt;/p&gt;
+&lt;p&gt;Before you use Photon OS within Fusion, perform the following prerequisite tasks:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Verify that you have the following resources:&lt;/p&gt;
+ &lt;table style=&#34;height: 170px;&#34; border=&#34;1&#34; width=&#34;157&#34; cellspacing=&#34;0&#34; cellpadding=&#34;10&#34;&gt;
+ &lt;tbody&gt;
+ &lt;tr&gt;
+ &lt;td&gt;&lt;b&gt;Resource&lt;/b&gt;&lt;/td&gt;
+ &lt;td&gt;&lt;b&gt;Description&lt;/b&gt;&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt;VMware Fusion&lt;/td&gt;
+ &lt;td&gt;VMware Fusion (v7.0 or higher) must be installed. The latest version is recommended.&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt;Memory&lt;/td&gt;
+ &lt;td&gt;2GB of free RAM (recommended)&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt;Storage&lt;/td&gt;
+ &lt;td&gt;&lt;b&gt;Minimal Photon install&lt;/b&gt; : 512MB of free space (minimum); &lt;b&gt;Full Photon install&lt;/b&gt; : 4GB of free space (minimum); 8GB recommended.&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;tr&gt;
+ &lt;td&gt;Distribution File&lt;/td&gt;
+ &lt;td&gt;Photon OS ISO or OVA file downloaded from bintray (&lt;a href=&#34;https://bintray.com/vmware/photon/&#34;&gt;https://bintray.com/vmware/photon/&lt;/a&gt;).&lt;/td&gt;
+ &lt;/tr&gt;
+ &lt;/tbody&gt;
+ &lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; The setup instructions in this guide use VMware Fusion Professional version 8.5.8, as per the following screenshot.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;../../images/fs-version.png&#34; alt=&#34;Fusion version&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Decide whether to use the OVA or ISO distribution to set up Photon OS.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;OVA import&lt;/strong&gt; : Because of the nature of an OVA, you&amp;rsquo;re getting a pre-installed version of Photon OS. You can choose the hardware version you want (OVA with hardware version 13 or 11). The OVA benefits from a simple import process and some kernel tuning for VMware environments. However, because it&amp;rsquo;s a pre-installed version, the set of packages that are installed are predetermined. Any additional packages that you need can be installed using tdnf.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ISO install&lt;/strong&gt; : The ISO, on the other hand, allows for a more complete installation or automated installation via kickstart.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To get Photon OS up and running quickly, use the OVA.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Download Photon OS. Go to the following Bintray URL and download the latest release of Photon OS:&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://bintray.com/vmware/photon/&#34;&gt;https://bintray.com/vmware/photon/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;For instructions, see &lt;a href=&#34;../../downloading-photon/&#34;&gt;Downloading Photon OS&lt;/a&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

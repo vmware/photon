@@ -1,0 +1,444 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Troubleshooting Tools</title>
+    <link>/docs-v3/troubleshooting-guide/troubleshooting-tools/</link>
+    <description>Recent content in Troubleshooting Tools on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs-v3/troubleshooting-guide/troubleshooting-tools/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs-V3: Common Tools</title>
+      <link>/docs-v3/troubleshooting-guide/troubleshooting-tools/common-tools/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/troubleshooting-tools/common-tools/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The following are some tools that you can use to troubleshoot:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#top&#34;&gt;top&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#ps&#34;&gt;ps&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#netstat&#34;&gt;netstat&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#find&#34;&gt;find&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#locate&#34;&gt;locate&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#df&#34;&gt;df&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#md5sum&#34;&gt;md5sum&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#sha256sum&#34;&gt;sha256sum&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#strace&#34;&gt;strace&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#file&#34;&gt;file&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#stat&#34;&gt;stat&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#watch&#34;&gt;watch&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#vmstat-and-fdisk&#34;&gt;vmstat and fdisk&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#lsof&#34;&gt;lsof&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#fuser&#34;&gt;fuser&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#ldd&#34;&gt;ldd&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#gdb&#34;&gt;gdb&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: Some of the examples in this section are marked as abridged with ellipsis (&lt;code&gt;...&lt;/code&gt;).&lt;/p&gt;
+&lt;h2 id=&#34;top&#34;&gt;top&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;top&lt;/code&gt; tool monitors system resources, workloads, and performance. It can unmask problems caused by processes or applications overconsuming CPUs, time, or RAM.&lt;/p&gt;
+&lt;p&gt;To view a textual display of resource consumption, run the &lt;code&gt;top&lt;/code&gt; command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;top
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Use can use &amp;lsquo;top&amp;rsquo; to kill a runaway or stalled process by typing &lt;code&gt;k&lt;/code&gt; followed by its process ID (PID).&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/top-in-photon-os.png&#34; alt=&#34;Top on Photon OS&#34;&gt;&lt;/p&gt;
+&lt;p&gt;If the percent of CPU utilization is consistently high with little idle time, there might be a runaway process overconsuming CPUs. Restarting the service might solve the problem.&lt;/p&gt;
+&lt;p&gt;To troubleshoot an unknown issue, run Top in the background in batch mode to write its output to a file and collect data about performance:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;top d 120 b &amp;gt;&amp;gt; top120second.output
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For a list of options that filter top output and other information, see the man page for &lt;code&gt;top&lt;/code&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;ps&#34;&gt;ps&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;ps&lt;/code&gt; tool shows the processes running on the machine. The &lt;code&gt;ps&lt;/code&gt; tool derives flexibility and power from its options, all of which are covered in the tool&amp;rsquo;s Photon OS man page:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;man ps
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can use the following options of &lt;code&gt;ps&lt;/code&gt; for troubleshooting:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Show processes by user:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;ps aux&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Show processes and child processes by user:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;ps auxf&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Show processes containing the string &lt;code&gt;ssh&lt;/code&gt;:
+&lt;code&gt;ps aux | grep ssh&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Show processes and the command and options with which they were started:
+&lt;code&gt;ps auxww&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Example abridged output:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ps auxww
+USER        PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root          1  0.0  0.9  32724  3300 ?        Ss   07:51   0:32 /lib/systemd/systemd --switched-root --system --deserialize 22
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;netstat&#34;&gt;netstat&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;netstat&lt;/code&gt; command can identify bottlenecks causing  performance issues. It lists network connections, listening sockets, port information, and interface statistics for different protocols. Examples:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;netstat --statistics
+netstat --listening
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;find&#34;&gt;find&lt;/h2&gt;
+&lt;p&gt;Use the &lt;code&gt;find&lt;/code&gt; command to troubleshoot a Photon OS machine that has stopped working. The following command lists the files in the root directory that have changed in the past day:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;    find / -mtime -1 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;See the &lt;code&gt;find&lt;/code&gt; &lt;a href=&#34;https://www.gnu.org/software/findutils/manual/find.html&#34;&gt;manual&lt;/a&gt;. Take note of the security considerations listed in the &lt;code&gt;find&lt;/code&gt; manual if you are using &lt;code&gt;find&lt;/code&gt; to troubleshoot an appliance running on Photon OS.&lt;/p&gt;
+&lt;h2 id=&#34;locate&#34;&gt;locate&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;locate&lt;/code&gt; command is a fast way to find files and directories you onlay have a keyword. This command is similar to &lt;code&gt;find&lt;/code&gt; and part of the same &lt;code&gt;findutils&lt;/code&gt; package preinstalled on the full version of Photon OS by default. It finds file names in the file names database.&lt;/p&gt;
+&lt;p&gt;Before you can use &lt;code&gt;locate&lt;/code&gt; accurately, update its database:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;updatedb
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then run &lt;code&gt;locate&lt;/code&gt; to quickly find a file, such as any file name containing &lt;code&gt;.network&lt;/code&gt;, which can be helpful to see all the system&amp;rsquo;s &lt;code&gt;.network&lt;/code&gt; configuration files. The following is an abridged example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;locate .network
+/etc/dbus-1/system.d/org.freedesktop.network1.conf
+/etc/systemd/network/10-dhcp-en.network
+/usr/lib/systemd/network/80-container-host0.network
+/usr/lib/systemd/network/80-container-ve.network
+/usr/lib/systemd/system/busnames.target.wants/org.freedesktop.network1.busname
+/usr/lib/systemd/system/dbus-org.freedesktop.network1.service
+/usr/lib/systemd/system/org.freedesktop.network1.busnname
+/usr/share/dbus-1/system-services/org.freedesktop.network1.service
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;locate&lt;/code&gt; command is also a quick way to see whether a troubleshooting tool is installed on Photon OS. Examples:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;locate strace
+/usr/bin/strace
+/usr/bin/strace-graph
+/usr/bin/strace-log-merge
+/usr/share/man/man1/strace.1.gz
+/usr/share/vim/vim74/syntax/strace.vim
+
+locate traceroute
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In this example, the &lt;code&gt;strace&lt;/code&gt; tool is installed but &lt;code&gt;traceroute&lt;/code&gt; is not.&lt;/p&gt;
+&lt;p&gt;You can install &lt;code&gt;traceroute&lt;/code&gt; from the Photon OS repository:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf install traceroute
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;df&#34;&gt;df&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;df&lt;/code&gt; command reports the disk space available on the file system. Running out of disk space can lead an application to fail and a quick check of the available space makes sense as an early troubleshooting step:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;df -h
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;-h&lt;/code&gt; option prints out the available and used space in human-readable sizes. After checking the space, you should also check the number of available inodes. Too few available inodes can lead to difficult-to-diagnose problems:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;df -i
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;md5sum&#34;&gt;md5sum&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;md5sum&lt;/code&gt; tool calculates 128-bit RSA Data Security, Inc. MD5 Message Digest Algorithm hashes (a message digest, or digital signature, of a file) to uniquely identify a file and verify its integrity after file transfers, downloads, or disk errors when the security of the file is not in question.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;md5sum&lt;/code&gt; can help troubleshooting installation issues by verifying that the version of Photon OS being installed matches the version on the Bintray download page. If, for instance, bytes were dropped during the download, the checksums will not match. Try downloading it again.&lt;/p&gt;
+&lt;h2 id=&#34;sha256sum&#34;&gt;sha256sum&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;sha256sum&lt;/code&gt; tool calculates the authenticity of a file to prevent tampering when security is a concern. Photon OS also includes &lt;code&gt;shasum&lt;/code&gt;, &lt;code&gt;sha1sum&lt;/code&gt;, &lt;code&gt;sha384sum&lt;/code&gt;, and &lt;code&gt;sha512sum&lt;/code&gt;. See the man pages for  &lt;code&gt;md3sum&lt;/code&gt;, &lt;code&gt;sha256sum&lt;/code&gt;, and the other SHA utilities.&lt;/p&gt;
+&lt;h2 id=&#34;strace&#34;&gt;strace&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;strace&lt;/code&gt; utility follows system calls and signals as they are executed so that you can see what an application, command, or process is doing. &lt;code&gt;strace&lt;/code&gt; can trace failed commands, identify where a process obtains its configuration, monitor file activity, and find the location of a crash.&lt;/p&gt;
+&lt;p&gt;By tracing system calls, &lt;code&gt;strace&lt;/code&gt; can help troubleshoot a broad range of problems, including issues with input-output, memory, interprocess communication, network usage, and application performance.&lt;/p&gt;
+&lt;p&gt;For troubleshooting a problem that gives off few or no clues, the following command displays every system call:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace ls -al
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With strace commands, you can route the output to a file to make it easier to analyze:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -o output.txt ls -al
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;strace&lt;/code&gt; can reveal the files that an application tries to open with the &lt;code&gt;-eopen&lt;/code&gt; option. This combination can help troubleshoot an application that is failing because it is missing files or being denied access to a file it needs. If, for example, you see &amp;ldquo;No such file or directory&amp;rdquo; in the results of &lt;code&gt;strace -eopen&lt;/code&gt;, something might be wrong:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -eopen sshd
+open(&amp;quot;/usr/lib/x86_64/libpam.so.0&amp;quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
+open(&amp;quot;/usr/lib/libpam.so.0&amp;quot;, O_RDONLY|O_CLOEXEC) = 3
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The results above indicate that the first file is missing because it is found in the next line. In other cases, the application might be unable to open one of its configuration files or it might be reading the wrong one. If the results say &amp;ldquo;permission denied&amp;rdquo; for one of the files, check the permissions of the file with &lt;code&gt;ls -l&lt;/code&gt; or &lt;code&gt;stat&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;When troubleshooting with &lt;code&gt;strace&lt;/code&gt;, you can include the process ID in its commands. Here&amp;rsquo;s an example of how to find a process ID:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ps -ef | grep apache
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can then use &lt;code&gt;strace&lt;/code&gt; to examine the file a process is working with:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -e trace=file -p 1719
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;A similar command can trace network traffic:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -p 812 -e trace=network
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If an application is crashing, use &lt;code&gt;strace&lt;/code&gt; to trace the application and then analyze what happens right before the application crashes.&lt;/p&gt;
+&lt;p&gt;You can also trace the child processes that an application spawns with the fork system call, and you can do so with &lt;code&gt;systemctl&lt;/code&gt; commands that start a process to identify why an application crashes immediately or fails to start:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -f -o output.txt systemctl start httpd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Example: If &lt;code&gt;journalctl&lt;/code&gt; is showing that networkd is failing, you can run strace to troubleshoot:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -o output.txt systemctl restart systemd-networkd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Then &lt;code&gt;grep&lt;/code&gt; inside the results for something, such as &lt;em&gt;exit&lt;/em&gt; or &lt;em&gt;error&lt;/em&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;grep exit output.txt
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If the results indicate &lt;code&gt;systemd-resolved&lt;/code&gt; is going wrong, you can then strace it:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;strace -f -o output.txt systemctl restart systemd-resolved
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;file&#34;&gt;file&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;file&lt;/code&gt; command determines the file type, which can help troubleshoot problems when an application mistakes one type of file for another, leading it to errors. Example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;file /usr/sbin/sshd
+/usr/sbin/sshd: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, stripped
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;stat&#34;&gt;stat&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;stat&lt;/code&gt; command can help troubleshoot problems with files or the file system by showing the last date it was modified and other information. Example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;stat /dev/sda1
+File: &#39;/dev/sda1&#39;
+Size: 0               Blocks: 0          IO Block: 4096   block special file
+Device: 6h/6d   Inode: 6614        Links: 1     Device type: 8,1
+Access: (0660/brw-rw----)  Uid: (    0/    root)   Gid: (    8/    disk)
+Access: 2016-09-02 12:23:56.135999936 +0000
+Modify: 2016-09-02 12:23:52.879999981 +0000
+Change: 2016-09-02 12:23:52.879999981 +0000
+Birth: -
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;On Photon OS, &lt;code&gt;stat&lt;/code&gt; is handy to show permissions for a file or directory in both their absolute octal notation and their read-write-execute abbreviation; truncated example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;chmod 777 tester.md
+stat tester.md
+  File: &#39;tester.md&#39;
+  Size: 0               Blocks: 0          IO Block: 4096   regular empty file
+Device: 801h/2049d      Inode: 316385      Links: 1
+Access: (0777/-rwxrwxrwx)  Uid: (    0/    root)   Gid: (    0/    root)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;watch&#34;&gt;watch&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;watch&lt;/code&gt; utility runs a command at regular intervals so you can observe how its output changes over time. &lt;code&gt;watch&lt;/code&gt; can help dynamically monitor network links, routes, and other information when you are troubleshooting networking or performance issues. Examples:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;watch -n0 --differences ss
+watch -n1 --differences ip route
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following is an example with a screenshot of the output. This command monitors the traffic on your network links. The highlighted numbers are updated every second so you can see the traffic fluctuating:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;watch -n1 --differences ip -s link show up
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;images/watchcmd.png&#34; alt=&#34;The dynamic output of the watch utility&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;vmstat-and-fdisk&#34;&gt;vmstat and fdisk&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;vmstat&lt;/code&gt; tool displays statistics about virtual memory, processes, block input-output, disks, and CPU activity. This tool can help diagnose performance problems, especially system bottlenecks.&lt;/p&gt;
+&lt;p&gt;Its output on a Photon OS virtual machine running in VMware Workstation 12 Pro without a heavy load looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vmstat
+procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
+ r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
+ 0  0      0   5980  72084 172488    0    0    27    44  106  294  1  0 98  1  0
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;These codes are explained in the &lt;code&gt;vmstat&lt;/code&gt; man page.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;- If `r`, the number of runnable processes, is higher than 10, the machine is under stress; consider intervening to reduce the number of processes or to distribute some of the processes to other machines. In other words, the machine has a bottleneck in executing processes.
+- If `cs`, the number of context switches per second, is really high, there may be too many jobs running on the machine.
+- If `in`, the number of interrupts per second, is relatively high, there might be a bottleneck for network or disk IO.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can investigate disk IO further by using vmstat&amp;rsquo;s &lt;code&gt;-d&lt;/code&gt; option to report disk statistics. The following is an abridged example on a machine with little load:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vmstat -d
+disk- ------------reads------------ ------------writes----------- -----IO------
+       total merged sectors      ms  total merged sectors      ms    cur    sec
+ram0       0      0       0       0      0      0       0       0      0      0
+ram1       0      0       0       0      0      0       0       0      0      0
+loop0      0      0       0       0      0      0       0       0      0      0
+loop1      0      0       0       0      0      0       0       0      0      0
+sr0        0      0       0       0      0      0       0       0      0      0
+sda    22744    676  470604   12908  72888  24949  805224  127692      0    130
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;-D&lt;/code&gt; option summarizes disk statistics:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;vmstat -D
+           26 disks
+            2 partitions
+        22744 total reads
+          676 merged reads
+       470604 read sectors
+        12908 milli reading
+        73040 writes
+        25001 merged writes
+       806872 written sectors
+       127808 milli writing
+            0 inprogress IO
+          130 milli spent IO
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can also get statistics about a partition. First, run the &lt;code&gt;fdisk -l&lt;/code&gt; command to list the machine&amp;rsquo;s devices. Then run &lt;code&gt;vmstat -p&lt;/code&gt; with the name of a device to view its stats:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;fdisk -l
+Disk /dev/ram0: 4 MiB, 4194304 bytes, 8192 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 4096 bytes
+I/O size (minimum/optimal): 4096 bytes / 4096 bytes
+...
+Device        Start      End  Sectors Size Type
+/dev/sda1      2048 16771071 16769024   8G Linux filesystem
+/dev/sda2  16771072 16777182     6111   3M BIOS boot
+
+vmstat -p /dev/sda1
+sda1          reads   read sectors  writes    requested writes
+               22579     473306      78510     866088
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;See the &lt;code&gt;vmstat&lt;/code&gt; man page for more options.&lt;/p&gt;
+&lt;h2 id=&#34;lsof&#34;&gt;lsof&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;lsof&lt;/code&gt; command lists open files. The tool&amp;rsquo;s definition of an open file  includes directories, libraries, streams, domain sockets, and Internet sockets. THis enables it to identify the files a process is using. Because a Linux system like Photon OS uses files to do its work, you can run &lt;code&gt;lsof&lt;/code&gt; as root to see how the system is using them and to see how an application works.&lt;/p&gt;
+&lt;p&gt;If you cannot unmount a disk because it is in use, you can run &lt;code&gt;lsof&lt;/code&gt; to identify the files on the disk that are being used.&lt;/p&gt;
+&lt;p&gt;The following is an example that shows the processes that are using the root directory:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof /root
+COMMAND    PID USER   FD   TYPE DEVICE SIZE/OFF   NODE NAME
+bash       879 root  cwd    DIR    8,1     4096 262159 /root
+bash      1265 root  cwd    DIR    8,1     4096 262159 /root
+sftp-serv 1326 root  cwd    DIR    8,1     4096 262159 /root
+gdb       1351 root  cwd    DIR    8,1     4096 262159 /root
+bash      1395 root  cwd    DIR    8,1     4096 262159 /root
+lsof      1730 root  cwd    DIR    8,1     4096 262159 /root
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can do the same with an application or virtual appliance by running &lt;code&gt;lsof&lt;/code&gt; with the user name or process ID of the app. The following example lists the open files used by the Apache HTTP Server:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -u apache
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Running the command with the &lt;code&gt;-i&lt;/code&gt; option lists all the open network and Internet files, which can help troubleshoot network problems:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -i
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;See the Unix socket addresses of a user like &lt;em&gt;zookeeper&lt;/em&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -u zookeeper -U
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following example shows the processes running on Ports 1 through 80:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -i TCP:1-80
+COMMAND  PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
+httpd    403   root    3u  IPv6  10733      0t0  TCP *:http (LISTEN)
+httpd    407 apache    3u  IPv6  10733      0t0  TCP *:http (LISTEN)
+httpd    408 apache    3u  IPv6  10733      0t0  TCP *:http (LISTEN)
+httpd    409 apache    3u  IPv6  10733      0t0  TCP *:http (LISTEN)
+sshd     820   root    3u  IPv4  11336      0t0  TCP *:ssh (LISTEN)
+sshd     820   root    4u  IPv6  11343      0t0  TCP *:ssh (LISTEN)
+sshd    1258   root    3u  IPv4  48040      0t0  TCP 198.51.100.143:ssh-&amp;gt;198.51.100.1:49759 (ESTABLISHED)
+sshd    1319   root    3u  IPv4  50866      0t0  TCP 198.51.100.143:ssh-&amp;gt;198.51.100.1:51054 (ESTABLISHED)
+sshd    1388   root    3u  IPv4  56438      0t0  TCP 198.51.100.143:ssh-&amp;gt;198.51.100.1:60335 (ESTABLISHED)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can also inspect the files opened by a process ID. The following example queries the files open by the systemd network service:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -p 1917
+COMMAND    PID            USER   FD      TYPE             DEVICE SIZE/OFF   NODE NAME
+systemd-n 1917 systemd-network  cwd       DIR                8,1     4096      2 /
+systemd-n 1917 systemd-network  txt       REG                8,1   887896 272389 /usr/lib/systemd/systemd-networkd
+systemd-n 1917 systemd-network  mem       REG                8,1   270680 262267 /usr/lib/libnss_files-2.22.so
+systemd-n 1917 systemd-network    0r      CHR                1,3      0t0   5959 /dev/null
+systemd-n 1917 systemd-network    1u     unix 0x0000000000000000      0t0  45734 type=STREAM
+systemd-n 1917 systemd-network    3u  netlink                         0t0   6867 ROUTE
+systemd-n 1917 systemd-network    4u     unix 0x0000000000000000      0t0  45744 type=DGRAM
+systemd-n 1917 systemd-network    9u  netlink                         0t0  45754 KOBJECT_UEVENT
+systemd-n 1917 systemd-network   12u  a_inode               0,11        0   5955 [timerfd]
+systemd-n 1917 systemd-network   13u     IPv4             104292      0t0    UDP 198.51.100.143:bootpc
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;fuser&#34;&gt;fuser&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;fuser&lt;/code&gt; command identifies the process IDs of processes using files or sockets. The term &lt;em&gt;process&lt;/em&gt; is, in this case, synonymous with &lt;em&gt;user&lt;/em&gt;. To identify the process ID of a process using a socket, run &lt;code&gt;fuser&lt;/code&gt; with its namespace option and specify &lt;code&gt;tcp&lt;/code&gt; or &lt;code&gt;udp&lt;/code&gt; and the name of the process or port. Examples:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;fuser -n tcp ssh
+ssh/tcp:               940  1308
+fuser -n tcp http
+http/tcp:              592   594   595   596
+fuser -n tcp 80
+80/tcp:                592   594   595   596
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;ldd&#34;&gt;ldd&lt;/h2&gt;
+&lt;p&gt;By revealing the shared libraries that a program depends on, &lt;code&gt;ldd&lt;/code&gt; can help troubleshoot an application that is missing a library or finding the wrong one.&lt;/p&gt;
+&lt;p&gt;For example, if you get a &amp;ldquo;file not found&amp;rdquo; output, check the path to the library.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ldd /usr/sbin/sshd
+linux-vdso.so.1 (0x00007ffc0e3e3000)
+libpam.so.0 =&amp;gt; (file not found)
+libcrypto.so.1.0.0 =&amp;gt; /usr/lib/libcrypto.so.1.0.0 (0x00007f624e570000)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can also use the &lt;code&gt;objdump&lt;/code&gt; command to show dependencies for a program&amp;rsquo;s object files; example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;objdump -p /usr/sbin/sshd | grep NEEDED
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;gdb&#34;&gt;gdb&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;gdb&lt;/code&gt; tool is the GNU debugger. It lets you see inside a program while it executes or when it crashes so that you can catch errors as they occur. The &lt;code&gt;gdb&lt;/code&gt; tool is typically used to debug programs written in C and C++. On Photon OS, &lt;code&gt;gdb&lt;/code&gt; can help you determine why an application crashed. See the man page for &lt;code&gt;gdb&lt;/code&gt; for instructions on how to run it.&lt;/p&gt;
+&lt;p&gt;For an extensive example on how to use &lt;code&gt;gdb&lt;/code&gt; to troubleshoot Photon OS running on a VM when you cannot login to Photon OS, see the section on troubleshooting boot and logon problems.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Troubleshooting Tools Installed by Default</title>
+      <link>/docs-v3/troubleshooting-guide/troubleshooting-tools/default-tools/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/troubleshooting-tools/default-tools/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The following troubleshooting tools are included in the full version of Photon OS:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;grep&lt;/code&gt;. Searches files for patterns.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ping&lt;/code&gt;. Tests network connectivity.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;strings&lt;/code&gt;. Displays the characters in a file to identify its contents.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;lsmod&lt;/code&gt;. Lists loaded modules.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ipcs&lt;/code&gt;. Shows data about the inter-process communication (IPC) resources to which a process has read access. This data includes shared memory segments, message queues, and semaphore arrays.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;nm&lt;/code&gt;. Lists symbols from object files.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;diff&lt;/code&gt;. Compares files side by side. This tool is useful to compare configuration files of two versions when one version works and the other does not.&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Installing Tools from Repositories</title>
+      <link>/docs-v3/troubleshooting-guide/troubleshooting-tools/installing-tools/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/troubleshooting-tools/installing-tools/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can install several troubleshooting tools from the Photon OS repositories by using the default package management system, &lt;code&gt;tdnf&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;If a tool you require is not installed, search the repositories to see if it is available.&lt;/p&gt;
+&lt;p&gt;For example, the traceroute tool is not installed by default. You can search for it in the repositories as follows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf search traceroute
+traceroute : Traces the route taken by packets over an IPv4/IPv6 network
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The results of the above command show that traceroute exists in the repository. You install it with &lt;code&gt;tdnf&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf install traceroute
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following tools are not installed by default but are in the repository and can be installed with &lt;code&gt;tdnf&lt;/code&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;net-tools&lt;/code&gt;. Networking tools.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;ltrace&lt;/code&gt;. Tool for intercepting and recording dynamic library calls. It can identify the function an application was calling when it crashed, making it useful for debugging.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;nfs-utils&lt;/code&gt;. Client tools for the kernel Network File System, or NFS, including showmount. These are installed by default in the full version of Photon OS but not in the minimal version.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;pcstat&lt;/code&gt;. A tool that inspects which pages of a file or files are being cached by the Linux kernel.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;sysstat&lt;/code&gt; and &lt;code&gt;sar&lt;/code&gt;. Utilities to monitor system performance and usage activity. Installing sysstat also installs sar.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;systemtap&lt;/code&gt; and &lt;code&gt;crash&lt;/code&gt;. The systemtap utility is a programmable instrumentation system for diagnosing problems of performance or function. Installing systemtap also installs crash, which is a kernel crash analysis utility for live systems and dump files.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;dstat&lt;/code&gt;. Tool for viewing and analyzing statistics about system resources.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;dstat&lt;/code&gt; tool can help troubleshoot system performance. The tool shows live, running list of statistics about system resources:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;  dstat
+  You did not select any stats, using -cdngy by default.
+  ----total-cpu-usage---- -dsk/total- -net/total- ---paging-- ---system--
+  usr sys idl wai hiq siq| read  writ| recv  send|  in   out | int   csw
+    1   0  98   1   0   0|4036B   42k|   0     0 |   0     0 |  95   276
+    1   0  98   1   0   0|   0    64k|  60B  940B|   0     0 | 142   320
+    1   1  98   0   0   0|   0    52k|  60B  476B|   0     0 | 149   385
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Linux Troubleshooting Tools</title>
+      <link>/docs-v3/troubleshooting-guide/troubleshooting-tools/linux-troubleshooting-tools/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/troubleshooting-tools/linux-troubleshooting-tools/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The following Linux troubleshoot tools are neither installed on Photon OS by default nor available in the Photon OS repositories:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;iostat&lt;/li&gt;
+&lt;li&gt;telnet (use SSH instead)&lt;/li&gt;
+&lt;li&gt;Iprm&lt;/li&gt;
+&lt;li&gt;hdparm&lt;/li&gt;
+&lt;li&gt;syslog (use journalctl instead)&lt;/li&gt;
+&lt;li&gt;ddd&lt;/li&gt;
+&lt;li&gt;ksysmoops&lt;/li&gt;
+&lt;li&gt;xev&lt;/li&gt;
+&lt;li&gt;GUI tools (because Photon OS has no GUI)&lt;/li&gt;
+&lt;/ul&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

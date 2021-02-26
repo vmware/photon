@@ -1,0 +1,268 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Managing Services with &#39;systemd&#39;</title>
+    <link>/docs/administration-guide/managing-services-withsystemd/</link>
+    <description>Recent content in Managing Services with &#39;systemd&#39; on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs/administration-guide/managing-services-withsystemd/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs: Viewing Services</title>
+      <link>/docs/administration-guide/managing-services-withsystemd/viewing-services/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/managing-services-withsystemd/viewing-services/</guid>
+      <description>
+        
+        
+        &lt;p&gt;To view a description of all the loaded and active units, run the &lt;code&gt;systemctl&lt;/code&gt; command without any options or arguments:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To see all the loaded, active, and inactive units and their description, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl --all
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To see all the unit files and their current status but no description, run thie following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl list-unit-files
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;grep&lt;/code&gt; command filters the services by a search term, a helpful tactic to recall the exact name of a unit file without looking through a long list of names. Example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl list-unit-files | grep network
+org.freedesktop.network1.busname           static
+dbus-org.freedesktop.network1.service      enabled
+systemd-networkd-wait-online.service       enabled
+systemd-networkd.service                   enabled
+systemd-networkd.socket                    enabled
+network-online.target                      static
+network-pre.target                         static
+network.target                             static&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Controlling Services</title>
+      <link>/docs/administration-guide/managing-services-withsystemd/controlling-services/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/managing-services-withsystemd/controlling-services/</guid>
+      <description>
+        
+        
+        &lt;p&gt;To control services on Photon OS, use &lt;code&gt;systemctl&lt;/code&gt; command.&lt;/p&gt;
+&lt;p&gt;For example, instead of running the &lt;code&gt;/etc/init.d/ssh&lt;/code&gt; script to stop and start the OpenSSH server on a init.d-based Linux system, run the following &lt;code&gt;systemctl&lt;/code&gt; commands on Photon OS:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl stop sshd
+systemctl start sshd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The systemctl tool includes a range of commands and options for inspecting and controlling the state of systemd and the service manager. For more information, see the &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/systemctl.html&#34;&gt;systemctl man page&lt;/a&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Creating a Startup Service</title>
+      <link>/docs/administration-guide/managing-services-withsystemd/creating-a-startup-service/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/managing-services-withsystemd/creating-a-startup-service/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Use &lt;code&gt;systemd&lt;/code&gt; to create a sratup service.&lt;/p&gt;
+&lt;p&gt;The following example shows you how to create a systemd startup service that changes the maximum transmission unit (MTU) of the default Ethernet connection, &lt;code&gt;eth0&lt;/code&gt;.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Concatenate the following block of code into a file:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;cat &amp;lt;&amp;lt; EOF &amp;gt;&amp;gt; /lib/systemd/system/eth0.service
+	[Unit]
+	Description=Network interface initialization
+	After=local-fs.target network-online.target network.target
+	Wants=local-fs.target network-online.target network.target
+
+	[Service]
+	ExecStart=/usr/sbin/ifconfig eth0 mtu 1460 up
+	Type=oneshot
+
+	[Install]
+	WantedBy=multi-user.target
+	EOF
+&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;
+&lt;li&gt;Set the service to auto-start when the system boots:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;cd /lib/systemd/system/multi-user.target.wants/
+	ln -s ../eth0.service eth0.service
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Disabling the Photon OS httpd.service</title>
+      <link>/docs/administration-guide/managing-services-withsystemd/disabling-the-photon-os-httpd.service/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/managing-services-withsystemd/disabling-the-photon-os-httpd.service/</guid>
+      <description>
+        
+        
+        &lt;p&gt;If your application or appliance includes its own HTTP server, you must turn off and disable the HTTP server that comes with Photon OS so that it does not conflict with your own HTTP server.&lt;/p&gt;
+&lt;p&gt;To stop it and disable it, run the following commands as root:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl stop httpd.service
+systemctl disable httpd.service
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Auditing System Events with auditd</title>
+      <link>/docs/administration-guide/managing-services-withsystemd/auditing-system-events-with-auditd/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/managing-services-withsystemd/auditing-system-events-with-auditd/</guid>
+      <description>
+        
+        
+        &lt;p&gt;To manage security on Photon OS, the Linux auditing service &lt;code&gt;auditd&lt;/code&gt; is enabled and active by default on the full version of Photon OS.&lt;/p&gt;
+&lt;p&gt;The folloiwng command shows the security status:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemctl status auditd
+	* auditd.service - Security Auditing Service
+	   Loaded: loaded (/usr/lib/systemd/system/auditd.service; enabled; vendor preset: enabled)
+	   Active: active (running) since Fri 2016-04-29 15:08:50 UTC; 1 months 9 days ago
+	 Main PID: 250 (auditd)
+	   CGroup: /system.slice/auditd.service
+	           `-250 /sbin/auditd -n
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;To help improve security, the &lt;code&gt;auditd&lt;/code&gt; service can monitor file changes, system calls, executed commands, authentication events, and network access. After you implement an audit rule to monitor an event, the &lt;code&gt;aureport&lt;/code&gt; tool generates reports to display information about the events.&lt;/p&gt;
+&lt;p&gt;You can use the auditctl utility to set a rule that monitors the &lt;code&gt;sudoers&lt;/code&gt; file for changes:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;auditctl -w /etc/sudoers -p wa -k sudoers_changes
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This rule specifies that the auditd service must watch (&lt;code&gt;-w&lt;/code&gt;) the &lt;code&gt;/etc/sudoers&lt;/code&gt; file to log permissions changes (&lt;code&gt;-p&lt;/code&gt;) to the write access (&lt;code&gt;w&lt;/code&gt;) or attributes (&lt;code&gt;a&lt;/code&gt;) of the file and to identify them in logs as &lt;code&gt;sudoers_changes&lt;/code&gt;. The auditing logs appear in &lt;code&gt;/var/log/audit/audit.log&lt;/code&gt;. You can list the auditing rules as follows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;auditctl -l
+-w /etc/sudoers -p wa -k sudoers_changes
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For more information on the Linux Audit Daemon, see the &lt;code&gt;auditd&lt;/code&gt; man page:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;man auditd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For more information on setting auditing rules and options, see the &lt;code&gt;auditctl&lt;/code&gt; man page:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;man auditctl
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For more information on viewing reports on audited events, see the &lt;code&gt;aureport&lt;/code&gt; man page:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;man aureport&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Analyzing systemd Logs with journalctl</title>
+      <link>/docs/administration-guide/managing-services-withsystemd/analyzing-systemd-logs-with-journalctl/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/managing-services-withsystemd/analyzing-systemd-logs-with-journalctl/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The &lt;code&gt;journalctl&lt;/code&gt; tool queries the contents of the &lt;code&gt;systemd&lt;/code&gt; journal.&lt;/p&gt;
+&lt;p&gt;The following command displays the messages that &lt;code&gt;systemd&lt;/code&gt; generated the last time the machine started:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;journalctl -b
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The following command reveals the messages for the systemd service unit specified by the &lt;code&gt;-u&lt;/code&gt; option:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;journalctl -u auditd
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In the above example, &lt;code&gt;auditd&lt;/code&gt; is the system service unit.&lt;/p&gt;
+&lt;p&gt;For more information, see the &lt;code&gt;journalctl&lt;/code&gt; man page by running the following command on Photon OS:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;man journalctl
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: Migrating Scripts to systemd</title>
+      <link>/docs/administration-guide/managing-services-withsystemd/migrating-scripts-to-systemd/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/managing-services-withsystemd/migrating-scripts-to-systemd/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Although &lt;code&gt;systemd&lt;/code&gt; maintains compatibility with &lt;code&gt;init.d&lt;/code&gt; scripts, as a best practice, you must adapt the scripts that you want to run on Photon OS to &lt;code&gt;systemd&lt;/code&gt; to avoid potential problems.&lt;/p&gt;
+&lt;p&gt;Such a conversion standardizes the scripts, reduces the footprint of your code, makes the scripts easier to read and maintain, and improves their robustness on a &lt;code&gt;systemd&lt;/code&gt; system.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs: </title>
+      <link>/docs/administration-guide/managing-services-withsystemd/installing-sendmail/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/administration-guide/managing-services-withsystemd/installing-sendmail/</guid>
+      <description>
+        
+        
+        &lt;h1 id=&#34;installing-sendmail&#34;&gt;Installing Sendmail&lt;/h1&gt;
+&lt;p&gt;Before you install Sendmail, you should set the fully qualified domain name (FQDN) of your Photon OS machine.&lt;/p&gt;
+&lt;p&gt;By default, Sendmail is not installed with either the minimal or full version of Photon OS. When you install Sendmail, it provides Photon OS with a &lt;code&gt;systemd&lt;/code&gt; service file that typically enables Sendmail. If the service is not enabled after installation, you must enable it.&lt;/p&gt;
+&lt;p&gt;Sendmail resides in the Photon extras repository. You can install it with &lt;code&gt;tdnf&lt;/code&gt; after setting the machine&amp;rsquo;s FQDN.&lt;/p&gt;
+&lt;h2 id=&#34;procedure&#34;&gt;Procedure&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Check whether the FQDN of the machine is set by running the &lt;code&gt;hostnamectl status&lt;/code&gt; command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;hostnamectl status
+Static hostname: photon-d9ee400e194e
+Icon name: computer-vm
+Chassis: vm
+Machine ID: a53b414142f944319bd0c8df6d811f36
+Boot ID: 1f75baca8cc249f79c3794978bd82977
+Virtualization: vmware
+Operating System: VMware Photon/Linux
+Kernel: Linux 4.4.8
+Architecture: x86-64&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+    In the results above, the FQDN is not set. The Photon OS machine only has a short name. If the FQDN were set, the hostname would be in its full form, typically with a domain name. 
+    
+1. If the machine does not have an FQDN, set one by running `hostnamectl set-hostname new-name`, replacing `new-name` with the FQDN that you want. For example:  
+     
+    ```
+hostnamectl set-hostname photon-d9ee400e194e.corp.example.com
+&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;The `hostnamectl status` command now shows that the machine has an FQDN: 
+
+```
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;root@photon-d9ee400e194e [ ~ ]# hostnamectl status
+Static hostname: photon-d9ee400e194e.corp.example.com
+Icon name: computer-vm
+Chassis: vm
+Machine ID: a53b414142f944319bd0c8df6d811f36
+Boot ID: 1f75baca8cc249f79c3794978bd82977
+Virtualization: vmware
+Operating System: VMware Photon/Linux
+Kernel: Linux 4.4.8
+Architecture: x86-64&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+1. Install Sendmail: 
+    
+    ```
+tdnf install sendmail
+&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Verify if Sendmail is enabled:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;systemctl status sendmail&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+1. Enable Sendmail if it is disabled and then start it: 
+    
+    ```
+systemctl enable sendmail
+ systemctl start sendmail
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,135 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Installing Photon OS on Dell Gateways</title>
+    <link>/docs-v3/installation-guide/install-photon-on-dell-gateway/</link>
+    <description>Recent content in Installing Photon OS on Dell Gateways on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs-v3/installation-guide/install-photon-on-dell-gateway/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs-V3: Installing Photon OS on Dell Edge Gateway 300X</title>
+      <link>/docs-v3/installation-guide/install-photon-on-dell-gateway/installing-photon-os-on-dell-300x/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/installation-guide/install-photon-on-dell-gateway/installing-photon-os-on-dell-300x/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can install Photon OS 3.0 on Dell Gateway 300X. You can download Photon OS as an ISO file and install it.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#prerequisites&#34;&gt;Prerequisites&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#installing-the-iso-image-for-photon-os&#34;&gt;Installing the ISO Image for Photon OS&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;Verify that you have the following resources:
+&lt;ul&gt;
+&lt;li&gt;Dell Edge Gateway 300x.&lt;/li&gt;
+&lt;li&gt;USB pen drive. Format the pen drive with FAT32 with at least 8 GB of space.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Download the Photon OS ISO image from &lt;a href=&#34;https://bintray.com/vmware/photon/&#34;&gt;Bintray&lt;/a&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;installing-the-iso-image-for-photon-os&#34;&gt;Installing the ISO Image for Photon OS&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Mount the ISO image.&lt;/p&gt;
+&lt;p&gt;For example, run the following command on macOS:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;hdiutil mount photon-3.0-ec12f2c.iso&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Use a similar command in other operating systems.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Copy the contents of the ISO image to a writable directory so that you can edit files.
+For example, run the following commands on macOS.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;mkdir -p /tmp/photonUsb&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cp /Volumes/PHOTON_&amp;lt;timestamp&amp;gt;/* /tmp/photonUsb/
+```
+
+where, `/Volumes/PHOTON_&amp;lt;timestamp&amp;gt;` is the directory where the ISO is mounted with the command in the step above.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Edit the &lt;code&gt;grub.cfg&lt;/code&gt; file to use the kickstart config file:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;cd /tmp/photonUsb&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Add the below parameters to the linux cmd line in &lt;code&gt;boot/grub2/grub.cfg&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;linux /isolinux/vmlinuz root=/dev/ram0 loglevel=3 photon.media=UUID=$photondisk ks=cdrom:/isolinux/sample_ks.cfg console=ttyS0,115200n8
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Edit the &lt;code&gt;isolinux/sample_ks.cfg&lt;/code&gt;  as follows:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Change &lt;code&gt;&amp;quot;disk&amp;quot;: &amp;quot;/dev/sda”,&lt;/code&gt; to &lt;strong&gt;&lt;code&gt;&amp;quot;disk&amp;quot;: &amp;quot;/dev/mmcblk0&amp;quot;,&lt;/code&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Change &lt;code&gt;&amp;quot;echo \&amp;quot;Hello World\&amp;quot; &amp;gt; /etc/postinstall&amp;quot;&lt;/code&gt; to &lt;strong&gt;&lt;code&gt;&amp;quot;sed -i &#39;s/PermitRootLogin no/PermitRootLogin yes/g&#39; /etc/ssh/sshd_config&amp;quot;&lt;/code&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Format the pen drive with FAT-32 and copy all the contents of &lt;code&gt;/tmp/photonUsb&lt;/code&gt; to the pen drive.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Create a &lt;code&gt;UsbInvocationScript.txt&lt;/code&gt; file in the root of the pen drive with below content:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;usb_disable_secure_boot noreset;
+usb_one_time_boot usb nolog;&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+1. Insert the pen drive in the Dell Gateway 300X and power on the gateway. 
+    
+    Photon OS installs automatically.
+
+1. After the installation is complete, insert a network cable into the ethernet port and find the IP address corresponding to the MAC address of the Dell Gateway 3000X ethernet port through the DHCP Server or a network analyzer. The MAC address is available on the Dell Gateway 3000X.
+
+1. You can then use `ssh` to access the gateway with the above IP address.
+
+
+
+
+
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Installing Photon OS on Dell Edge Gateway 500X</title>
+      <link>/docs-v3/installation-guide/install-photon-on-dell-gateway/installing-photon-os-on-dell-500x/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/installation-guide/install-photon-on-dell-gateway/installing-photon-os-on-dell-500x/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can install Photon OS 3.0 on Dell Gateway 500X. You can download Photon OS as an ISO file and install it.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#prerequisites&#34;&gt;Prerequisites&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#installing-the-iso-image-for-photon-os&#34;&gt;Installing the ISO Image for Photon OS&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;Verify that you have the following resources:
+&lt;ul&gt;
+&lt;li&gt;Dell Edge Gateway 500x.&lt;/li&gt;
+&lt;li&gt;USB pen drive. Format the pen drive with FAT32 with at least 8 GB of space.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Download the Photon OS ISO image from &lt;a href=&#34;https://bintray.com/vmware/photon/&#34;&gt;Bintray&lt;/a&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;installing-the-iso-image-for-photon-os&#34;&gt;Installing the ISO Image for Photon OS&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;Format the pen drive with FAT-32 and copy the ISO image to it.&lt;/li&gt;
+&lt;li&gt;Insert the pen drive in the Dell Gateway 500X and power it on.&lt;/li&gt;
+&lt;li&gt;From the boot options, select the pen drive option.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;: Photon OS is installed on the Dell Gateway 500X.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

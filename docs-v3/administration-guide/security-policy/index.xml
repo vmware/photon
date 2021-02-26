@@ -1,0 +1,138 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Security Policy</title>
+    <link>/docs-v3/administration-guide/security-policy/</link>
+    <description>Recent content in Security Policy on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs-v3/administration-guide/security-policy/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs-V3: Default Firewall Settings</title>
+      <link>/docs-v3/administration-guide/security-policy/default-firewall-settings/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/security-policy/default-firewall-settings/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The design of Photon OS emphasizes security. On the minimal and full versions of Photon OS, the default security policy turns on the firewall and drops packets from external interfaces and  applications. As a result, you might need to add rules to iptables to permit forwarding, allow protocols like HTTP, and open ports. You must configure the firewall for your applications and requirements.&lt;/p&gt;
+&lt;p&gt;The default iptables on the full version have the following settings:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;iptables --list
+Chain INPUT (policy DROP)
+target     prot opt source               destination
+ACCEPT     all  --  anywhere             anywhere
+ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED
+ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
+
+Chain FORWARD (policy DROP)
+target     prot opt source               destination
+
+Chain OUTPUT (policy DROP)
+target     prot opt source               destination
+ACCEPT     all  --  anywhere             anywhere
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For more information on how to change the settings, see the man page for iptables.&lt;/p&gt;
+&lt;p&gt;Although the default iptables policy accepts SSH connections, the &lt;code&gt;sshd&lt;/code&gt; configuration file on the full version of Photon OS is set to reject SSH connections. See &lt;a href=&#34;../../../troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/&#34;&gt;Permitting Root Login with SSH&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you are unable to ping a Photon OS machine, check the firewall rules. To verify if the rules allow connectivity for the port and protocol, change the &lt;code&gt;iptables&lt;/code&gt; commands by using &lt;code&gt;lsof&lt;/code&gt; commands to see the processes listening on ports:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsof -i -P -n&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Default Permissions and umask</title>
+      <link>/docs-v3/administration-guide/security-policy/default-permissions-and-umask/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/security-policy/default-permissions-and-umask/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The &lt;code&gt;umask&lt;/code&gt; on Photon OS is set to &lt;code&gt;0027&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;When you create a new file with the &lt;code&gt;touch&lt;/code&gt; command as root, the default on Photon OS is to set the permissions to &lt;code&gt;0640&lt;/code&gt;&amp;ndash;which translates to &lt;code&gt;read-write&lt;/code&gt; for user, &lt;code&gt;read&lt;/code&gt; for group, and no access for others. Here&amp;rsquo;s an example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;touch newfile.md
+stat newfile.md
+  File: &#39;newfile.md&#39;
+  Size: 0               Blocks: 0          IO Block: 4096   regular empty file
+Device: 801h/2049d      Inode: 316454      Links: 1
+Access: (0640/-rw-r-----)  Uid: (    0/    root)   Gid: (    0/    root)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;When you create a directory as root, Photon OS sets the permissions to &lt;code&gt;0750&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mkdir newdir
+stat newdir
+  File: &#39;newdir&#39;
+  Size: 4096            Blocks: 8          IO Block: 4096   directory
+Device: 801h/2049d      Inode: 316455      Links: 2
+Access: (0750/drwxr-x---)  Uid: (    0/    root)   Gid: (    0/    root)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Because the &lt;code&gt;mkdir&lt;/code&gt; command uses the umask to modify the permissions placed on newly created files or directories, you can see &lt;code&gt;umask&lt;/code&gt; at work in the permissions of the new directory. Its default permissions are set at &lt;code&gt;0750&lt;/code&gt; after the umask subtracts &lt;code&gt;0027&lt;/code&gt; from the full set of open permissions, &lt;code&gt;0777&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Similarly, a new file begins as &lt;code&gt;0666&lt;/code&gt; if you were to set umask to &lt;code&gt;0000&lt;/code&gt;. But because umask is set by default to &lt;code&gt;0027&lt;/code&gt;, a new file&amp;rsquo;s permissions are set to &lt;code&gt;0640&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;So be aware of the default permissions on the directories and files that you create. Some system services and applications might require permissions other than the default. The &lt;code&gt;systemd&lt;/code&gt; network service, for example, requires user-defined configuration files to be set to &lt;code&gt;644&lt;/code&gt;, not the default of &lt;code&gt;640&lt;/code&gt;. Thus, after you create a network configuration file with a &lt;code&gt;.network&lt;/code&gt; extension, you must run the &lt;code&gt;chmod&lt;/code&gt; command to set the new file&amp;rsquo;s mode bits to &lt;code&gt;644&lt;/code&gt;. For example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;chmod 644 10-static-en.network 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;For more information on permissions, see the man pages for &lt;code&gt;stat&lt;/code&gt;, &lt;code&gt;umask&lt;/code&gt;, and &lt;code&gt;acl&lt;/code&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Disabling TLS 1.0 to Improve Transport Layer Security</title>
+      <link>/docs-v3/administration-guide/security-policy/disabling-tls-1.0/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/security-policy/disabling-tls-1.0/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Photon OS includes GnuTLS to help secure the transport layer. &lt;a href=&#34;http://www.gnutls.org/&#34;&gt;GnuTLS&lt;/a&gt; is a library that implements the SSL and TLS protocols to secure communications.&lt;/p&gt;
+&lt;p&gt;On Photon OS, SSL 3.0, which contains a known vulnerability, is disabled by default.&lt;/p&gt;
+&lt;p&gt;However, TLS 1.0, which also contains known vulnerabilities, is enabled by default.&lt;/p&gt;
+&lt;p&gt;To turn off TLS 1.0, perform the follwoing steps:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Create a directory named &lt;code&gt;/etc/gnutls&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;In &lt;code&gt;/etc/gnutls&lt;/code&gt; create a file named &lt;code&gt;default-priorities&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;In the &lt;code&gt;default-priorities&lt;/code&gt; file, specify GnuTLS priority strings that remove TLS 1.0 and SSL 3.0 but retain TLS 1.1 and TLS 1.2.&lt;/li&gt;
+&lt;li&gt;After adding a new &lt;code&gt;default-priorities&lt;/code&gt; file or after modifying it, you must restart all applications, including SSH, with an open TLS session for the changes to take effect.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;The following is an example of a &lt;code&gt;default-priorities&lt;/code&gt; file that contains GnuTLS priorities to disable TLS 1.0 and SSL 3.0:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat /etc/gnutls/default-priorities
+SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In this example, the priority string imposes system-specific policies. The &lt;code&gt;NONE&lt;/code&gt; keyword means that no algorithms, protocols, or compression methods are enabled, so that you can enable specific versions individually later in the string. The priority string then specifies that SSL version 3.0 and TLS version 1.0 be removed, as marked by the exclamation point. The priority string then enables, as marked by the plus sign, versions 1.1 and 1.2 of TLS. The cypher is AES-128-CBC. The key exchange is RSA. The MAC is SHA1. And the compression algorithm is COMP-NULL.&lt;/p&gt;
+&lt;p&gt;On Photon OS, you can verify the system-specific policies in the &lt;code&gt;default-priorities&lt;/code&gt; file as follows:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Concatenate the &lt;code&gt;default-priorities&lt;/code&gt; file to check its contents:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;root@photon-rc [ ~ ]# cat /etc/gnutls/default-priorities
+SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+1. Run the following command to check the protocols that are enabled for the system: 	
+
+    ```
+    root@photon-rc [ /etc/gnutls ]# gnutls-cli --priority @SYSTEM -l
+	Cipher suites for @SYSTEM
+	TLS_RSA_AES_128_CBC_SHA1                                0x00, 0x2f      SSL3.0
+
+	Certificate types: none
+	Protocols: VERS-TLS1.1, VERS-TLS1.2
+	Compression: COMP-NULL
+	Elliptic curves: none
+	PK-signatures: none
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For information about the GnuTLS priority strings, see &lt;a href=&#34;https://gnutls.org/manual/html_node/Priority-Strings.html&#34;&gt;https://gnutls.org/manual/html_node/Priority-Strings.html&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;For information about the vulnerability in SSL 3.0, see &lt;a href=&#34;https://www.us-cert.gov/ncas/alerts/TA14-290A&#34;&gt;SSL 3.0 Protocol Vulnerability and POODLE Attack&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;For information about the vulnerabilities in TLS 1.0, see &lt;a href=&#34;http://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-52r1.pdf&#34;&gt;Guidelines for the Selection, Configuration, and Use of Transport Layer Security (TLS) Implementations&lt;/a&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

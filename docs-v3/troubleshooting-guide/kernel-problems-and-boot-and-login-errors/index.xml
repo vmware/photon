@@ -1,0 +1,509 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Kernel Problems and Boot and Login Errors</title>
+    <link>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/</link>
+    <description>Recent content in Kernel Problems and Boot and Login Errors on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs-V3: Kernel Overview</title>
+      <link>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/kernel-overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/kernel-overview/</guid>
+      <description>
+        
+        
+        &lt;p&gt;You can use &lt;code&gt;dmesg&lt;/code&gt; command to troubleshooting kernel errors. The &lt;code&gt;dmesg&lt;/code&gt; command prints messages from the kernel ring buffer.&lt;/p&gt;
+&lt;p&gt;The following command, for example, presents kernel messages in a human-readable format:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;dmesg --human --kernel
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To examine kernel messages as you perform actions, such as reproducing a problem, in another terminal, you can run the command with the &lt;code&gt;--follow&lt;/code&gt; option, which waits for new messages and prints them as they occur:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;dmesg --human --kernel --follow
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The kernel buffer is limited in memory size. As a result, the kernel cyclically overwrites the end of the information in the buffer from which &lt;code&gt;dmesg&lt;/code&gt; pulls information. The systemd journal, however, saves the information from the buffer to a log file so that you can access older information.&lt;/p&gt;
+&lt;p&gt;To view it, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;journalctl -k
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If required, you can check the modules that are loaded on your Photon OS machine by running the &lt;code&gt;lsmod&lt;/code&gt; command. For example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lsmod
+Module                  Size  Used by
+vmw_vsock_vmci_transport    28672  1
+vsock                  36864  2 vmw_vsock_vmci_transport
+coretemp               16384  0
+hwmon                  16384  1 coretemp
+crc32c_intel           24576  0
+hid_generic            16384  0
+usbhid                 28672  0
+hid                   106496  2 hid_generic,usbhid
+xt_conntrack           16384  1
+iptable_nat            16384  0
+nf_conntrack_ipv4      16384  2
+nf_defrag_ipv4         16384  1 nf_conntrack_ipv4
+nf_nat_ipv4            16384  1 iptable_nat
+nf_nat                 24576  1 nf_nat_ipv4
+iptable_filter         16384  1
+ip_tables              24576  2 iptable_filter,iptable_nat
+&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Boot Process Overview</title>
+      <link>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/boot-process-overview/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/boot-process-overview/</guid>
+      <description>
+        
+        
+        &lt;p&gt;When a Photon OS machine boots, the BIOS initializes the hardware and uses a boot loader to start the kernel. After the kernel starts, &lt;code&gt;systemd&lt;/code&gt; takes over and boots the rest of the operating system.&lt;/p&gt;
+&lt;p&gt;The BIOS checks the memory and initializes the keyboard, the screen, and other peripherals. When the BIOS finds the first hard disk, the boot loader&amp;ndash;GNU GRUB 2.02&amp;ndash;takes over. From the hard disk, GNU GRUB loads the master boot record (MBR) and initializes the root partition of the random-access memory by using initrd. The device manager, udev, provides initrd with the drivers it needs to access the device containing the root file system. Here&amp;rsquo;s what the GNU GRUB edit menu looks like in Photon OS with its default commands to load the boot record and initialize the RAM disk:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;images/grub-edit-menu-orig.png&#34; alt=&#34;The GNU GRUB edit menu in the full and minimal versions of Photon OS&#34;&gt;&lt;/p&gt;
+&lt;p&gt;At this point, the Linux kernel in Photon OS, which is kernel version 4.4.8, takes control. Systemd kicks in, initializes services in parallel, mounts the rest of the file system, and checks the file system for errors.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Blank Screen on Reboot</title>
+      <link>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/blank-screen-on-reboot/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/blank-screen-on-reboot/</guid>
+      <description>
+        
+        
+        &lt;p&gt;If the Photon OS kernel enters a state of panic during a reboot and all you see is a blank screen, note the name of the virtual machine running Photon OS and then power off the VM.&lt;/p&gt;
+&lt;p&gt;In the host, open the &lt;code&gt;vmware.log&lt;/code&gt; file for the VM. When a kernel panics, the guest VM prints the entire kernel log in  &lt;code&gt;vmware.log&lt;/code&gt; in the host directory containing the VM. This log file contains the output of the &lt;code&gt;dmesg&lt;/code&gt; command from the guest, and you can analyze it to help identify the cause of the boot problem.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Example&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;After searching for &lt;code&gt;Guest:&lt;/code&gt; in the following abridged &lt;code&gt;vmware.log&lt;/code&gt;, this line appears, identifying the root cause of the reboot problem:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;```
+2016-08-30T16:02:43.220-07:00| vcpu-0| I125: Guest: 
+    &amp;lt;0&amp;gt;[1.125804] Kernel panic - not syncing: 
+    VFS: Unable to mount root fs on unknown-block(0,0)
+```
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Further inspection finds the following lines:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;2016-08-30T16:02:43.217-07:00| vcpu-0| I125: Guest: 
+&amp;lt;4&amp;gt;[    1.125782] VFS: Cannot open root device &amp;quot;sdc1&amp;quot; or unknown-block(0,0): error -6
+2016-08-30T16:02:43.217-07:00| vcpu-0| I125: Guest: 
+&amp;lt;4&amp;gt;[    1.125783] Please append a correct &amp;quot;root=&amp;quot; boot option; 
+here are the available partitions: 
+2016-08-30T16:02:43.217-07:00| vcpu-0| I125: Guest: 
+&amp;lt;4&amp;gt;[    1.125785] 0100            4096 ram0  (driver?)
+...
+0800         8388608 sda  driver: sd
+2016-08-30T16:02:43.220-07:00| vcpu-0| I125: Guest: 
+&amp;lt;4&amp;gt;[    1.125802]   0801         8384512 sda1 611e2d9a-a3da-4ac7-9eb9-8d09cb151a93
+2016-08-30T16:02:43.220-07:00| vcpu-0| I125: Guest: 
+&amp;lt;4&amp;gt;[    1.125803]   0802            3055 sda2 8159e59c-b382-40b9-9070-3c5586f3c7d6
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;In this unlikely case, the GRUB configuration points to a root device named &lt;code&gt;sdc1&lt;/code&gt; instead of the correct root device, &lt;code&gt;sda1&lt;/code&gt;. You can resolve the problem by restoring the GRUB GNU edit screen and the GRUB configuration file (&lt;code&gt;/boot/grub/grub.cfg&lt;/code&gt;) to their original configurations.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Investigating Unexpected Behavior</title>
+      <link>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/investigating-unexpected-behavior/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/investigating-unexpected-behavior/</guid>
+      <description>
+        
+        
+        &lt;p&gt;If you rebooted to address unexpected behavior before the reboot or if you encountered unexpected behavior during the reboot but have reached the shell, you must analyze what happened since the previous boot.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Run the following command to check the logs:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;`journalctl`
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Run the following command to look at what happened since the penultimate reboot:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;journalctl --boot=-1&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Look at the log from the reboot:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;journalctl -b&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;If required, examine the logs for the kernel:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;`journalctl -k`
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Check which kernel is in use:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;uname -r&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;The kernel version of Photon OS in the full version is 4.4.8. The kernel version of in the OVA version is 4.4.8-esx. With the ESX version of the kernel, some services might not start.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Run this command to check the overall status of services:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;systemctl status&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;If a service is in red, check it:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; systemctl status service-name
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Start it if required:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; systemctl start service-name
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;If looking at the journal and checking the status of services does not resolve your error, run the following &lt;code&gt;systemd-analyze&lt;/code&gt; commands to examine the boot time and the speed with which services start.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;systemd-analyze time
+    systemd-analyze blame
+    systemd-analyze critical-chain
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: The output of these commands might be misleading because one service might just be waiting for another service to finish initializing.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Investigating the Guest Kernel</title>
+      <link>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/investigating-the-guest-kernel/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/investigating-the-guest-kernel/</guid>
+      <description>
+        
+        
+        &lt;p&gt;If a VM running Photon OS and an application or virtual appliance is behaving preventing you from logging in to the machine, you can troubleshoot by extracting the kernel logs from the guest&amp;rsquo;s memory and analyzing them with &lt;code&gt;gdb&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;This advanced troubleshooting method works when you are running Photon OS as the operating system for an application or appliance on VMware Workstation, Fusion, or ESXi. The procedure in this section assumes that the virtual machine running Photon OS is functioning normally.&lt;/p&gt;
+&lt;p&gt;The process to use this troubleshooting method varies by environment. The examples in this section assume that the troublesome Photon OS virtual machine is running in VMware Workstation 12 Pro on a Microsoft Windows 8 Enterprise host. The examples also use an additional, fully functional Photon OS virtual machine running in Workstation.&lt;/p&gt;
+&lt;p&gt;You can use other hosts, hypervisors, and operating systems&amp;ndash;but you will have to adapt the example process below to them. Directory paths, file names, and other aspects might be different on other systems.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#prerequisites&#34;&gt;Prerequisites&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#procedure-overview&#34;&gt;Procedure Overview&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#procedure&#34;&gt;Procedure&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
+&lt;p&gt;Verify that you have the following resources:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Root access to a Linux machine other than the one you are troubleshooting. It can be another Photon OS machine, Ubuntu, or another Linux variant.&lt;/li&gt;
+&lt;li&gt;The &lt;code&gt;vmss2core&lt;/code&gt; utility from VMware. It is installed by default in VMware Workstation and some other VMware products. If your system doesn&amp;rsquo;t already contain it, you can download it for free from &lt;a href=&#34;https://labs.vmware.com/flings/vmss2core&#34;&gt;https://labs.vmware.com/flings/vmss2core&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;A local copy of the Photon OS ISO of the exact same version and release number as the Photon OS machine that you are troubleshooting.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;procedure-overview&#34;&gt;Procedure Overview&lt;/h2&gt;
+&lt;p&gt;The process to apply this troubleshooting method is as follows:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;On a local computer, you open a file on the Photon OS ISO that contains Linux debugging information. Then you suspend the troublesome Photon OS VM and extract the kernel memory logs from the VMware hypervisor running Photon OS.&lt;/li&gt;
+&lt;li&gt;Next, you use the vmss2core tool to convert the memory logs into core dump files. The vmss2core utility converts VMware checkpoint state files into formats that third-party debugging tools understand. It can handle both suspend (.vmss) and snapshot (.vmsn) checkpoint state files (hereafter referred to as a &lt;em&gt;vmss file&lt;/em&gt;) as well as monolithic and non-monolithic (separate .vmem file) encapsulation of checkpoint state data. See &lt;a href=&#34;http://www.vmware.com/pdf/snapshot2core_technote.pdf&#34;&gt;Debugging Virtual Machines with the Checkpoint to Core Tool&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;Finally, you prepare to run the gdb tool by using the debug info file from the ISO to create a &lt;code&gt;.gdbinit&lt;/code&gt; file, which you can then analyze with the gdb shell on your local Linux machine.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;All three components must be in the same directory on a Linux machine.&lt;/p&gt;
+&lt;h2 id=&#34;procedure&#34;&gt;Procedure&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Obtain a local copy of the Photon OS ISO of the exact same version and release number as the Photon OS machine that you are troubleshooting and mount the ISO on a Linux machine (or open it on a Windows machine):&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mount /mnt/cdrom
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Locate the following file. (If you opened the Photon OS ISO on a Windows computer, copy the following file to the root folder of a Linux machine.)&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;/RPMS/x86_64/linux-debuginfo-4.4.8-6.ph1.x86_64.rpm
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;On a Linux machine, run the following &lt;code&gt;rpm2cpio&lt;/code&gt; command to convert the RPM file to a cpio file and to extract the contents of the RPM to the current directory:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;rpm2cpio /mnt/cdrom/RPMS/x86_64/linux-debuginfo-4.4.8-6.ph1.x86_64.rpm | cpio -idmv
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;From the extracted files, copy the following file to your current directory:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cp usr/lib/debug/lib/modules/4.4.8/vmlinux-4.4.8.debug
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Run the following command to download the dmesg functions that will help extract the kernel log from the coredump:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;wget https://www.kernel.org/doc/Documentation/kdump/gdbmacros.txt
+wget https://github.com/vmware/photon/blob/master/tools/scripts/gdbmacros-for-linux.txt
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Move the file as follows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mv gdbmacros-for-linux.txt .gdbinit
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Switch to your host machine so you can get the kernel memory files from the VM. Suspend the troublesome VM and locate the &lt;code&gt;.vmss&lt;/code&gt; and &lt;code&gt;.vmem&lt;/code&gt; files in the virtual machine&amp;rsquo;s directory on the host.&lt;/p&gt;
+&lt;p&gt;Example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;C:\Users\tester\Documents\Virtual Machines\VMware Photon 64-bit (7)&amp;gt;dir
+     Volume in drive C is Windows
+     Directory of C:\Users\tester\Documents\Virtual Machines\VMware Photon 64-bit
+     (7)
+    09/20/2016  12:22 PM    &amp;lt;DIR&amp;gt;          .
+    09/20/2016  12:22 PM    &amp;lt;DIR&amp;gt;          ..
+    09/19/2016  03:39 PM       402,653,184 VMware Photon 64-bit (7)-f6b070cd.vmem
+    09/20/2016  12:11 PM         5,586,907 VMware Photon 64-bit (7)-f6b070cd.vmss
+    09/20/2016  12:11 PM     1,561,001,984 VMware Photon 64-bit (7)-s001.vmdk
+    ...
+    09/20/2016  12:11 PM           300,430 vmware.log
+    ...
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Now that you have located the &lt;code&gt;.vmss&lt;/code&gt; and &lt;code&gt;.vmem&lt;/code&gt; files, convert them to one or more core dump files by using the vmss2core tool that comes with Workstation. Here is an example of how to run the command. Be careful with your pathing, escaping, file names, and so forth&amp;ndash;all of which might be different from this example on your Windows machine.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;   
+    C:\Users\shoenisch\Documents\Virtual Machines\VMware Photon 64-bit (7)&amp;gt;C:\&amp;quot;Program Files (x86)\VMware\VMware Workstation&amp;quot;\vmss2core.exe &amp;quot;VMware Photon 64-bit (7)-f6b070cd.vmss&amp;quot; &amp;quot;VMware Photon 64-bit (7)-f6b070cd.vmem&amp;quot;
+   
+The result of this command is one or more files with a `.core` extension plus a digit. Truncated example: 
+   
+    C:\Users\tester\Documents\Virtual Machines\VMware Photon 64-bit (7)&amp;gt;dir
+     Directory of C:\Users\tester\Documents\Virtual Machines\VMware Photon 64-bit(7)
+    09/20/2016  12:22 PM       729,706,496 vmss.core0
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Copy the &lt;code&gt;.core&lt;/code&gt; file or files to the your current directory on the Linux machine where you so that you can analyze it with gdb.&lt;/p&gt;
+&lt;p&gt;Run the following &lt;code&gt;gdb&lt;/code&gt; command to enter the gdb shell attached to the memory core dump file. You might have to change the name of the &lt;code&gt;vmss.core&lt;/code&gt; file in the example to match your &lt;code&gt;.core&lt;/code&gt; file:&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;gdb vmlinux-4.4.8.debug vmss.core0
+
+	GNU gdb (GDB) 7.8.2
+	Copyright (C) 2014 Free Software Foundation, Inc.
+	License GPLv3+: GNU GPL version 3 or later &amp;lt;http://gnu.org/licenses/gpl.html&amp;gt;
+	This is free software: you are free to change and redistribute it. 
+	There is NO WARRANTY, to the extent permitted by law. ...
+	Type &amp;quot;show configuration&amp;quot; for configuration details.
+	For bug reporting instructions, please see:
+	&amp;lt;http://www.gnu.org/software/gdb/bugs/&amp;gt;.
+	Find the GDB manual and other documentation resources online at: &amp;lt;http://www.gnu.org/software/gdb/documentation/&amp;gt;.
+	For help, type &amp;quot;help&amp;quot;.
+	Type &amp;quot;apropos word&amp;quot; to search for commands related to &amp;quot;word&amp;quot;...
+	Reading symbols from vmlinux-4.4.8.debug...done.
+	warning: core file may not match specified executable file.
+	[New LWP 12345]
+	Core was generated by `GuestVM&#39;.
+	Program terminated with signal SIGSEGV, Segmentation fault.
+	#0  0xffffffff813df39a in insb (count=0, addr=0xffffc90000144000, port=&amp;lt;optimized out&amp;gt;)
+	    at arch/x86/include/asm/io.h:316
+	316     arch/x86/include/asm/io.h: No such file or directory.
+	(gdb)
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;In the results above, the &lt;em&gt;(gdb)&lt;/em&gt; of the last line is the prompt of the gdb shell. You can now analyze the core dump by using commands like &lt;code&gt;bt&lt;/code&gt;, to perform a backtrace, and &lt;code&gt;dmesg&lt;/code&gt;, to view the Photon OS kernel log and see Photon OS kernel error messages.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Kernel Log Replication with VProbes</title>
+      <link>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/kernel-log-replication-with-vprobes/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/kernel-log-replication-with-vprobes/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Replicating the Photon OS kernel logs on the VMware ESXi host is an advanced but powerful method of troubleshooting a kernel problem.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#replication-method&#34;&gt;Replication Method&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;[Using VProbes Script with a Hard-Coded Address](#using-vprobes-script- with-a-hard-coded-address)&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#a-reusable-vprobe-script-using-the-kallsyms-file&#34;&gt;A Reusable VProbe Script Using the kallsyms File&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;replication-method&#34;&gt;Replication Method&lt;/h2&gt;
+&lt;p&gt;This method is applicable when the virtual machine running Photon OS is hanging or inaccessible because, for instance, the hard disk has failed.&lt;/p&gt;
+&lt;p&gt;As a prerequisite, you must have preemptively enabled the VMware VProbes facility on the VM before an error rendered it inaccessible. You must also create a VProbes script on the ESXi host, but you can do that after the error.&lt;/p&gt;
+&lt;p&gt;The method is useful in analyzing kernel issues when testing an application or appliance that is running on Photon OS.&lt;/p&gt;
+&lt;p&gt;There are two similar ways in which you can replicate the Photon OS kernel logs on ESXi by using VProbes.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;The first modifies the VProbes script so that it works only for the VM that you set. It uses a hard-coded address.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The second uses an abstraction instead of a hard-coded address so that the same VProbes script can be used for any VM on an ESXi host that you have enabled for VProbe and copied its kernel symbol table (kallsyms) to ESXi.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For more information on VMware VProbes, see &lt;a href=&#34;https://labs.vmware.com/vmtj/vprobes-deep-observability-into-the-esxi-hypervisor&#34;&gt;VProbes: Deep Observability Into the ESXi Hypervisor&lt;/a&gt; and the &lt;a href=&#34;http://www.vmware.com/pdf/ws7_f3_vprobes_reference.pdf&#34;&gt;VProbes Programming Reference&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;using-vprobes-script-with-a-hard-coded-address&#34;&gt;Using VProbes Script with a Hard-Coded Address&lt;/h2&gt;
+&lt;p&gt;Perform the following steps to set a VProbe for an individual VM:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Power off the VM so that you can turn on the VProbe facility.&lt;/p&gt;
+&lt;p&gt;Edit the &lt;code&gt;.vmx&lt;/code&gt; configuration file for the VM. The file resides in the directory that contains the VM in the ESXi data store. Add the following line of code to the &lt;code&gt;.vmx&lt;/code&gt; file and then power the VM on:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; vprobe.enable = &amp;quot;TRUE&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;When you edit the &lt;code&gt;.vmx&lt;/code&gt; file to add the above line of code, you must first turn off the VM&amp;ndash;otherwise, your changes will not persist.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Obtain the kernel &lt;code&gt;log_store&lt;/code&gt; function address by connecting to the VM with SSH and running the following commands as root.&lt;/p&gt;
+&lt;p&gt;Photon OS uses the &lt;code&gt;kptr_restrict&lt;/code&gt; setting to place restrictions on the kernel addresses exposed through &lt;code&gt;/proc&lt;/code&gt; and other interfaces. This setting hides exposed kernel pointers to prevent attackers from exploiting kernel write vulnerabilities. When you are done using VProbes, you should return &lt;code&gt;kptr_restrict&lt;/code&gt; to the original setting of &lt;code&gt;2&lt;/code&gt; by rebooting.)&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; echo 0 &amp;gt; /proc/sys/kernel/kptr_restrict
+ grep log_store /proc/kallsyms
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The output of the &lt;code&gt;grep&lt;/code&gt; command will look similar to the following string. The first set of characters (without the &lt;code&gt;t&lt;/code&gt;) is the log_store function address:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; ffffffff810bb680 t log_store
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Connect to the ESXi host with SSH so that you can create a VProbes script.&lt;/p&gt;
+&lt;p&gt;Below is the template for the script. &lt;code&gt;log_store&lt;/code&gt; in the first line is a placeholder for the VM&amp;rsquo;s log_store function address:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;GUEST:ENTER:log_store {
+           string dst;
+           getgueststr(dst, getguest(RSP+16) &amp;amp; 0xff, getguest(RSP+8));
+           printf(&amp;quot;%s\n&amp;quot;, dst);
+        }
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;On the ESXi host, create a new file, add the template to it, and then change &lt;code&gt;log_store&lt;/code&gt; to the function address that was the output from the grep command on the VM.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Add a &lt;code&gt;0x&lt;/code&gt; prefix to the function address. In this example, the modified template looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;GUEST:ENTER:0xffffffff810bb680 {
+       string dst;
+       getgueststr(dst, getguest(RSP+16) &amp;amp; 0xff, getguest(RSP+8));
+       printf(&amp;quot;%s\n&amp;quot;, dst);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Save your VProbes script as &lt;code&gt;console.emt&lt;/code&gt; in the &lt;code&gt;/tmp&lt;/code&gt; directory. (The file extension for VProbe scripts is &lt;code&gt;.emt&lt;/code&gt;.)&lt;/p&gt;
+&lt;p&gt;While still connected to the ESXi host with SSH, run the following command to obtain the ID of the virtual machine that you want to troubleshoot:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; vim-cmd vmsvc/getallvms
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This command lists all the VMs running on the ESXi host. Find the VM you want to troubleshoot in the list and make a note of its ID.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Run the following command to print all the kernel messages from Photon OS in your SSH console; replace &lt;code&gt;&amp;lt;VM ID&amp;gt;&lt;/code&gt; with the ID of your VM:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;vprobe -m &amp;lt;VM ID&amp;gt; /tmp/console.emt&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;When you&amp;rsquo;re done, type &lt;code&gt;Ctrl-C&lt;/code&gt; to stop the loop.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;a-reusable-vprobe-script-using-the-kallsyms-file&#34;&gt;A Reusable VProbe Script Using the kallsyms File&lt;/h2&gt;
+&lt;p&gt;Perform the following steps to create one VProbe script and use for all the VMs on your ESXi host.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Power off the VM and turn on the VProbe facility on each VM that you want to be able to analyze.&lt;/p&gt;
+&lt;p&gt;Add &lt;code&gt;vprobe.enable = &amp;quot;TRUE&amp;quot;&lt;/code&gt; to the VM&amp;rsquo;s &lt;code&gt;.vmx&lt;/code&gt; configuration file. See the instructions above.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Power on the VM, connect to it with SSH, and run the following command as root:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;`echo 0 &amp;gt; /proc/sys/kernel/kptr_restrict`
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Connect to the ESXi host with SSH to create the following VProbes script and save it as &lt;code&gt;/tmp/console.emt&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;GUEST:ENTER:log_store {
+       string dst;
+       getgueststr(dst, getguest(RSP+16) &amp;amp; 0xff, getguest(RSP+8));
+       printf(&amp;quot;%s\n&amp;quot;, dst);
+    }
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;From the ESXi host, run the following command to copy the VM&amp;rsquo;s &lt;code&gt;kallysms&lt;/code&gt; file to the &lt;code&gt;tmp&lt;/code&gt; directory on the ESXi host:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;`scp root@&amp;lt;vm ip address&amp;gt;:/proc/kallsyms /tmp`
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;While still connected to the ESXi host with SSH, run the following command to obtain the ID of the virtual machine that you want to troubleshoot:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt; `vim-cmd vmsvc/getallvms`
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This command lists all the VMs running on the ESXi host. Find the VM you want to troubleshoot in the list and make a note of its ID.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Run the following command to print all the kernel messages from Photon OS in your SSH console.&lt;/p&gt;
+&lt;p&gt;Replace &lt;code&gt;&amp;lt;VM ID&amp;gt;&lt;/code&gt; with the ID of your VM. When you&amp;rsquo;re done, type &lt;code&gt;Ctrl-C&lt;/code&gt; to stop the loop.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;vprobe -m &amp;lt;VM ID&amp;gt; -k /tmp/kallysyms /tmp/console.emt&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;You can use a directory other than &lt;code&gt;tmp&lt;/code&gt; if you want.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;!--
+### Deep Kernel Analysis with the Crash Utility
+
+--&gt;
+&lt;!-- 
+
+### Go to the Debug Shell
+
+‘ panic=1 init=/bin/bash’
+mount –o rw,remount /
+cd /lib/systemd/system/multi-user.target.wants
+ln –s ../debug-shell.service
+umount /
+sync
+exit
+
+After reboot debug-shell will be available on tty9. No password required.
+
+--&gt;&lt;blockquote&gt;
+&lt;/blockquote&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Linux Kernel</title>
+      <link>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/troubleshooting-linux-kernel/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/troubleshooting-linux-kernel/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The Linux kernel is the main component of Photon OS and is the core interface between a computer’s hardware and its processes. It communicates between the two, managing resources as efficiently as possible.&lt;/p&gt;
+&lt;p&gt;##Kernel Flavours and Versions
+The following list contains the different Linux kernel flavours available:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;linux&lt;/code&gt; - A generic kernel designed to run everywhere and support everything.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;linux-esx&lt;/code&gt; - Optimized to run only on VMware hypervisor (ESXi, WS, Fusion). It has minimal set of device drivers to support VMware virtual devices. &lt;code&gt;uname -r&lt;/code&gt; displays &lt;code&gt;Linux&lt;/code&gt; . For additional features switch to the generic flavour.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;linux-secure&lt;/code&gt; - Security hardened variant of the generic kernel. &lt;code&gt;uname -r&lt;/code&gt; displays &lt;code&gt;-secure&lt;/code&gt; suffix.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;linux-rt&lt;/code&gt; - This is a Photon Real Time kernel. &lt;code&gt;uname -r&lt;/code&gt; displays &lt;code&gt;-rt&lt;/code&gt; suffix.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;linux-aws&lt;/code&gt; - Optimized for AWS hypervisor kernel. &lt;code&gt;uname -r&lt;/code&gt; displays &lt;code&gt;-aws&lt;/code&gt; suffix.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To see the version of kernel installed, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# rpm -qa | grep -e &amp;quot;^linux\(\|-esx\|-secure\|rt\|aws\)-[[:digit:]]&amp;quot;
+linux-4.9.111-1.ph2.x86_64
+linux-esx-4.9.111-1.ph2.x86_64
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;To see the version of the Kernel that is running currently, run the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# uname -r
+4.9.107-1.ph2-esx
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;From the output, you can see that the kernel running currently doesn&amp;rsquo;t match the installer. This happens when linux-* rpms were updated but was not restarted. Restart is required.&lt;/p&gt;
+&lt;p&gt;##Configuration&lt;/p&gt;
+&lt;p&gt;To find the configurations of the installed Kernel, check the &lt;strong&gt;/boot&lt;/strong&gt; directory by running the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ls /boot/config-*
+config-4.9.111-1.ph2 config-4.9.111-1.ph2-esx
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;To get a copy of the kernel configuration (Not all flavours support this feature), run the &lt;code&gt;zcat /proc/config.gz&lt;/code&gt; command.&lt;/p&gt;
+&lt;p&gt;##Boot Parameters and initrd
+Several kernel flavors can be installed on the system, but only one is used during boot.
+&lt;strong&gt;/boot/photon.cfg&lt;/strong&gt; symlink points to the kernel which is used for boot.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# ls -l /boot/photon.cfg
+lrwxrwxrwx 1 root root 23 Jun 12  2018 /boot/photon.cfg -&amp;gt; linux-4.9.111-1.ph2.cfg
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Its contents can be checked by running the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# cat /boot/photon.cfg
+
+# GRUB Environment Block
+
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta
+
+photon_linux=vmlinuz-4.9.111-1.ph2
+
+photon_initrd=initrd.img-4.9.111-1.ph2
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Where:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;photon_cmdline&lt;/code&gt; - Kernel parameters. This list will be extended by values from &lt;strong&gt;/boot/systemd.cfg&lt;/strong&gt; file and the values are hardcoded to &lt;strong&gt;/boot/grub2/grub.cfg&lt;/strong&gt; file (For example: root=).&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;photon_linux&lt;/code&gt; - Kernel image to boot.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;photon_initrd&lt;/code&gt; - Initrd to use at boot.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Parameters of the kernel loading currently can be found by running the &lt;code&gt;/proc/cmdline&lt;/code&gt; command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;# cat /proc/cmdline
+
+BOOT_IMAGE=/boot/vmlinuz-4.9.107-1.ph2-esx root=PARTUUID=29194d05-4a6e-4e0c-b1f4-5020e5e8472c net.ifnames=0 init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;##Dmesg&lt;/p&gt;
+&lt;p&gt;To view message buffer of the kernel run the &lt;code&gt;dmesg&lt;/code&gt; command.&lt;/p&gt;
+&lt;p&gt;##Sysctl State&lt;/p&gt;
+&lt;p&gt;To view a list of all active units run the &lt;code&gt;systemctl list-units&lt;/code&gt; command.&lt;/p&gt;
+&lt;p&gt;##Kernel Statistics&lt;/p&gt;
+&lt;p&gt;The kernel statitics can be found by running the following commands:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;procfs&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sysfs&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;debugfs&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;##Kernel Modules&lt;/p&gt;
+&lt;p&gt;To view the kernel log buffer run the &lt;code&gt;journalctl -k&lt;/code&gt; command.&lt;/p&gt;
+&lt;p&gt;To view a list of available kernel modules run the &lt;code&gt;lsmod&lt;/code&gt; command.&lt;/p&gt;
+&lt;p&gt;To view detailed information about all connected PCI buses run the &lt;code&gt;lspci&lt;/code&gt; command.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

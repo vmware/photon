@@ -1,0 +1,233 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Package Management in Photon OS with `tdnf`</title>
+    <link>/docs-v3/administration-guide/managing-packages-with-tdnf/</link>
+    <description>Recent content in Package Management in Photon OS with `tdnf` on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs-v3/administration-guide/managing-packages-with-tdnf/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs-V3: Introduction to &#39;tdnf&#39;</title>
+      <link>/docs-v3/administration-guide/managing-packages-with-tdnf/intro-to-tndf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-packages-with-tdnf/intro-to-tndf/</guid>
+      <description>
+        
+        
+        &lt;p&gt;On Photon OS, tdnf is the default package manager for installing new packages. It is a C implementation of the DNF package manager without Python dependencies. DNF is the next upcoming major version of yum.&lt;/p&gt;
+&lt;p&gt;Tdnf appears in the minimal and full versions of Photon OS. Tdnf reads yum repositories and works like yum. The full version of Photon OS also includes yum, and you can install packages by using yum if you want.&lt;/p&gt;
+&lt;p&gt;In the minimal version of Photon OS, you can manage packages by using yum, but you must install it first by running the following &lt;code&gt;tdnf&lt;/code&gt; command as root:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf install yum
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Tdnf implements a subset of the &lt;code&gt;dnf&lt;/code&gt; commands as listed in the &lt;a href=&#34;http://dnf.readthedocs.org/en/latest/&#34;&gt;dnf guide&lt;/a&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Configuration Files and Repositories</title>
+      <link>/docs-v3/administration-guide/managing-packages-with-tdnf/configuration-files-and-repositories/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-packages-with-tdnf/configuration-files-and-repositories/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The main configuration files reside in /etc/tdnf/tdnf.conf. The configuration file appears as follows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat /etc/tdnf/tdnf.conf
+[main]
+gpgcheck=1
+installonly_limit=3
+clean_requirements_on_remove=true
+repodir=/etc/yum.repos.d
+cachedir=/var/cache/tdnf
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The cache files for data and metadata reside in /var/cache/tdnf.&lt;/p&gt;
+&lt;p&gt;The following repositories appear in /etc/yum.repos.d/ with &lt;code&gt;.repo&lt;/code&gt; file extensions:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ls /etc/yum.repos.d/
+lightwave.repo
+photon-extras.repo
+photon-iso.repo
+photon-updates.repo
+photon.repo 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can list the the repositories by using the &lt;code&gt;tdnf repolist&lt;/code&gt; command. Tdnf filters the results with &lt;code&gt;enabled&lt;/code&gt;, &lt;code&gt;disabled&lt;/code&gt;, and &lt;code&gt;all&lt;/code&gt;. Running the command without specifying an argument returns the enabled repositories:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf repolist
+repo id             repo name                               status
+photon-updates      VMware Photon Linux 2.0(x86_64)Updates  enabled
+photon-extras       VMware Photon Extras 2.0(x86_64)        enabled
+photon              VMware Photon Linux 2.0(x86_64)         enabled
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;photon-iso.repo&lt;/code&gt;, however, does not appear in the list of repositories because it is unavailable on the virtual machine from which these examples are taken. The &lt;code&gt;photon-iso.repo&lt;/code&gt; is the default repository and it points to /media/cdrom. The &lt;code&gt;photon-iso.repo&lt;/code&gt; appears as follows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat /etc/yum.repos.d/photon-iso.repo
+[photon-iso]
+name=VMWare Photon Linux 2.0(x86_64)
+baseurl=file:///mnt/cdrom/RPMS
+gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+gpgcheck=1
+enabled=0
+skip_if_unavailable=True
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The local cache is populated with data from the repository:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ls -l /var/cache/tdnf/photon
+total 8
+drwxr-xr-x 2 root root 4096 May 18 22:52 repodata
+d-wxr----t 3 root root 4096 May  3 22:51 rpms
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can clear the cache to help troubleshoot a problem, but doing so might slow the performance of &lt;code&gt;tdnf&lt;/code&gt; until the cache becomes repopulated with data. To clear the cache, use the following command:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf clean all
+Cleaning repos: photon photon-extras photon-updates lightwave
+Cleaning up everything
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The command purges the repository data from the cache:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ls -l /var/cache/tdnf/photon
+total 4
+d-wxr----t 3 root root 4096 May  3 22:51 rpms&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Adding a New Repository</title>
+      <link>/docs-v3/administration-guide/managing-packages-with-tdnf/adding-a-new-repository/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-packages-with-tdnf/adding-a-new-repository/</guid>
+      <description>
+        
+        
+        &lt;p&gt;On Photon OS, you can add a new repository from which &lt;code&gt;tdnf&lt;/code&gt; installs packages. To add a new repository, you create a repository configuration file with a &lt;code&gt;.repo&lt;/code&gt; extension and place it in &lt;code&gt;/etc/yum.repos.d&lt;/code&gt;. The repository can be on either the Internet or a local server containing your in-house applications.&lt;/p&gt;
+&lt;p&gt;Be careful if you add a repository  that is on the Internet. Installing packages from untrusted or unverified sources might put the security, stability, or compatibility of your system at risk. It might also make your system harder to maintain.&lt;/p&gt;
+&lt;p&gt;On Photon OS, the existing repositories appear in the &lt;code&gt;/etc/yum.repos.d&lt;/code&gt; directory:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ls /etc/yum.repos.d/
+lightwave.repo
+photon-extras.repo
+photon-iso.repo
+photon-updates.repo
+photon.repo 
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;To view the the format and information that a new repository configuration file should contain, see one of the &lt;code&gt;.repo&lt;/code&gt; files. The following is an example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat /etc/yum.repos.d/lightwave.repo
+[lightwave]
+name=VMware Lightwave 1.0(x86_64)
+baseurl=https://dl.bintray.com/vmware/lightwave
+gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+gpgcheck=1
+enabled=1
+skip_if_unavailable=True
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The minimal information needed to establish a repository is an ID and human-readable name of the repository and its base URL. The ID, which appears in square brackets, must be one word that is unique amoung the system&amp;rsquo;s repositories; in the example above, it is &lt;code&gt;[lightwave]&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;baseurl&lt;/code&gt; is a URL for the repository&amp;rsquo;s repodata directory. For a repository on a local server that can be accessed directly or mounted as a file system, the base URL can be a file referenced by &lt;code&gt;file://&lt;/code&gt;. Example:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;baseurl=file:///server/repo/
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The &lt;code&gt;gpgcheck&lt;/code&gt; setting specifies whether to check the GPG signature. The &lt;code&gt;gpgkey&lt;/code&gt; setting furnishes the URL for the repository&amp;rsquo;s ASCII-armored GPG key file. Tdnf uses the GPG key to verify a package if its key has not been imported into the RPM database.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;enabled&lt;/code&gt; setting tells &lt;code&gt;tdnf&lt;/code&gt; whether to poll the repository. If &lt;code&gt;enabled&lt;/code&gt; is set to &lt;code&gt;1&lt;/code&gt;, &lt;code&gt;tdnf&lt;/code&gt; polls it; if it is set to &lt;code&gt;0&lt;/code&gt;, &lt;code&gt;tdnf&lt;/code&gt; ignores it.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;skip_if_unavailable&lt;/code&gt; setting instructs &lt;code&gt;tdnf&lt;/code&gt; to continue running if the repository goes offline.&lt;/p&gt;
+&lt;p&gt;Other options and variables can appear in the repository file. The variables that are used with some of the options can reduce future changes to the repository configuration files. There are variables to replace the value of the version of the package and to replace the base architecture. For more information, see the man page for &lt;code&gt;yum.conf&lt;/code&gt; on the full version of Photon OS: &lt;code&gt;man yum.conf&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;The following is an example of how to add a new repository for a local server that &lt;code&gt;tdnf&lt;/code&gt; polls for packages:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;cat &amp;gt; /etc/yum.repos.d/apps.repo &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
+[localapps]
+name=Local In-House Applications(x86_64)
+baseurl=file:///appserver/apps
+enabled=1
+skip_if_unavailable=True
+EOF
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Because this new repository resides on a local server, make sure the Photon OS machine can connect to it by mounting it.&lt;/p&gt;
+&lt;p&gt;After establishing a new repository, you must run the following command to update the cached binary metadata for the repositories that &lt;code&gt;tdnf&lt;/code&gt; polls:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf makecache
+Refreshing metadata for: &#39;VMware Lightwave 1.0(x86_64)&#39;
+Refreshing metadata for: &#39;VMware Photon Linux 1.0(x86_64)Updates&#39;
+Refreshing metadata for: &#39;VMware Photon Extras 1.0(x86_64)&#39;
+Refreshing metadata for: &#39;Local In-House Applications(x86_64)&#39;
+Refreshing metadata for: &#39;VMware Photon Linux 1.0(x86_64)&#39;
+Metadata cache created.&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Configure a Repository</title>
+      <link>/docs-v3/administration-guide/managing-packages-with-tdnf/configure-a-repository/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-packages-with-tdnf/configure-a-repository/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Photon OS comes with a preconfigured repository called &lt;code&gt;photon-iso&lt;/code&gt; that resides in &lt;code&gt;\etc\yum.repos.d.&lt;/code&gt; If you receive an access error message when working with the &lt;code&gt;photon-iso&lt;/code&gt; repository, it is probably because you do not have the Photon OS ISO mounted. Mount the ISO and the run the following command to update the metadata for all known repositories, including &lt;code&gt;photon-iso&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;mount /dev/cdrom /media/cdrom
+tdnf makecache
+
+Refreshing metadata for: &#39;VMware Lightwave 1.0(x86_64)&#39;
+Refreshing metadata for: &#39;VMware Photon Linux 1.0(x86_64)Updates&#39;
+Refreshing metadata for: &#39;VMware Photon Extras 1.0(x86_64)&#39;
+Refreshing metadata for: &#39;VMware Photon Linux 1.0(x86_64)&#39;
+Metadata cache created.
+&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Adding the Dev Repository to Get New Packages from the GitHub Dev Branch</title>
+      <link>/docs-v3/administration-guide/managing-packages-with-tdnf/adding-the-dev-repository/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-packages-with-tdnf/adding-the-dev-repository/</guid>
+      <description>
+        
+        
+        &lt;p&gt;To try out new packages or the latest versions of existing packages as they are merged into the dev branch of the Photon OS GitHub site, add the &lt;code&gt;dev&lt;/code&gt; repository to your repository list.&lt;/p&gt;
+&lt;p&gt;Perform th following steps:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;On your Photon OS machine, run the following command as root to create a repository configuration file named &lt;code&gt;photon-dev.repo&lt;/code&gt;, place it in &lt;code&gt;/etc/yum.repos.d&lt;/code&gt;, and concatenate the repository information into the file:&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;cat &amp;gt; /etc/yum.repos.d/photon-dev.repo &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot; 
+    [photon-dev]
+    name=VMware Photon Linux Dev(x86_64)
+    baseurl=https://dl.bintray.com/vmware/photon_dev_$basearch
+    gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+    gpgcheck=1
+    enabled=1
+    skip_if_unavailable=True
+    EOF
+``` . 
+
+2. After establishing a new repository, run the following command to update the cached binary metadata for the repositories that `tdnf` polls: 
+    
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;tdnf makecache&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+&lt;/code&gt;&lt;/pre&gt;
+      </description>
+    </item>
+    
+    <item>
+      <title>Docs-V3: Standard Syntax for tdnf Commands</title>
+      <link>/docs-v3/administration-guide/managing-packages-with-tdnf/standard-syntax-for-tndf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs-v3/administration-guide/managing-packages-with-tdnf/standard-syntax-for-tndf/</guid>
+      <description>
+        
+        
+        &lt;p&gt;The standard syntax for &lt;code&gt;tdnf&lt;/code&gt; commands is the same as that for DNF and is as follows:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf [options] &amp;lt;command&amp;gt; [&amp;lt;arguments&amp;gt;...]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;You can view help information by using the following commands:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;tdnf --help
+tdnf -h&lt;/code&gt;&lt;/pre&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>

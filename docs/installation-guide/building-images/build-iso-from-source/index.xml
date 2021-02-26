@@ -1,0 +1,80 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title> – Build an ISO from the Source Code for Photon OS</title>
+    <link>/docs/installation-guide/building-images/build-iso-from-source/</link>
+    <description>Recent content in Build an ISO from the Source Code for Photon OS on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    
+	  <atom:link href="/docs/installation-guide/building-images/build-iso-from-source/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+      
+        
+      
+    
+    
+    <item>
+      <title>Docs: Building the ISO</title>
+      <link>/docs/installation-guide/building-images/build-iso-from-source/build-the-iso/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/docs/installation-guide/building-images/build-iso-from-source/build-the-iso/</guid>
+      <description>
+        
+        
+        &lt;p&gt;Perform the following steps to install the packages on Ubuntu:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;Install the packages:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt-get -y install bison gawk g++ createrepo python-aptdaemon genisoimage texinfo python-requests libfuse-dev libssl-dev uuid-dev libreadline-dev kpartx git bc
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Get Docker:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;wget -qO- https://get.docker.com/ | sh
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Install pip and docker 2.3.0&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;sudo apt install python3-pip
+pip3 install docker==2.3.0
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If you encounter an error for LOCALE when you run these commands, then export the following variables in the terminal:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;export LC_ALL=&amp;quot;en_US.UTF-8&amp;quot;
+export LC_CTYPE=&amp;quot;en_US.UTF-8&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The default configuration parameters are available in config.json. If you want to csutomize them, then the configuration information is available at the following location:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;[https://github.com/vmware/photon/blob/dev/photon-build-config.txt](https://github.com/vmware/photon/blob/dev/photon-build-config.txt)
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Clone`the Photon project:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;git clone https://github.com/vmware/photon.git&lt;/code&gt;
+&lt;code&gt;cd $HOME/workspaces/photon&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Make ISO as follows:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt; sudo make iso&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Make Minimal ISO as follows:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sudo make minimal-iso&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Make Real-Time ISO as follows:&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;sudo make rt-iso &lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;Result&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;This command first builds all RPMs corresponding to the SPEC files in your Photon repository and then builds a bootable ISO containing those RPMs.&lt;/p&gt;
+&lt;p&gt;The RPMs thus built are stored under &lt;code&gt;stage/RPMS/&lt;/code&gt; directory within the repository, using the following directory hierarchy:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;$HOME/workspaces/photon/stage/:
+├──RPMS/:
+    ├──noarch/*.noarch.rpm    [Architecture-independent RPMs]
+    ├──x86_64/*.x86_64.rpm    [RPMs built for the x86-64 architecture]
+    ├──aarch64/*.aarch64.rpm  [RPMs built for the aarch64 (ARM64) architecture]
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The ISO is created at &lt;code&gt;$HOME/workspaces/photon/stage/photon.iso&lt;/code&gt;.&lt;/p&gt;
+
+      </description>
+    </item>
+    
+  </channel>
+</rss>
