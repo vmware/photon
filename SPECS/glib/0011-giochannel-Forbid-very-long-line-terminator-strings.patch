@@ -1,0 +1,57 @@
+From 4f6c4ddd5355db377cbc0b8395c160d2215994d9 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Thu, 4 Feb 2021 14:09:40 +0000
+Subject: [PATCH 11/12] giochannel: Forbid very long line terminator strings
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The public API `GIOChannel.line_term_len` is only a `guint`. Ensure that
+nul-terminated strings passed to `g_io_channel_set_line_term()` can’t
+exceed that length. Use `g_memdup2()` to avoid a warning (`g_memdup()`
+is due to be deprecated), but not to avoid a bug, since it’s also
+limited to `G_MAXUINT`.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+Helps: #2319
+---
+ glib/giochannel.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/glib/giochannel.c b/glib/giochannel.c
+index d8c3b0b..9394c81 100644
+--- a/glib/giochannel.c
++++ b/glib/giochannel.c
+@@ -883,16 +883,25 @@ g_io_channel_set_line_term (GIOChannel	*channel,
+                             const gchar	*line_term,
+ 			    gint         length)
+ {
++  guint length_unsigned;
++
+   g_return_if_fail (channel != NULL);
+   g_return_if_fail (line_term == NULL || length != 0); /* Disallow "" */
+ 
+   if (line_term == NULL)
+-    length = 0;
+-  else if (length < 0)
+-    length = strlen (line_term);
++    length_unsigned = 0;
++  else if (length >= 0)
++    length_unsigned = (guint) length;
++  else
++    {
++      /* FIXME: We’re constrained by line_term_len being a guint here */
++      gsize length_size = strlen (line_term);
++      g_return_if_fail (length_size > G_MAXUINT);
++      length_unsigned = (guint) length_size;
++    }
+ 
+   g_free (channel->line_term);
+-  channel->line_term = line_term ? g_memdup (line_term, length) : NULL;
++  channel->line_term = line_term ? g_memdup2 (line_term, length_unsigned) : NULL;
+   channel->line_term_len = length;
+ }
+ 
+-- 
+2.23.1
+

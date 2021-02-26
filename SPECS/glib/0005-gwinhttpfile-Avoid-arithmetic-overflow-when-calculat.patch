@@ -1,0 +1,47 @@
+From 0faffa68f482d3a55e6e96b9b4ec5270eae4cf19 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Thu, 4 Feb 2021 16:12:24 +0000
+Subject: [PATCH 05/12] gwinhttpfile: Avoid arithmetic overflow when
+ calculating a size
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The members of `URL_COMPONENTS` (`winhttp_file->url`) are `DWORD`s, i.e.
+32-bit unsigned integers. Adding to and multiplying them may cause them
+to overflow the unsigned integer bounds, even if the result is passed to
+`g_memdup2()` which accepts a `gsize`.
+
+Cast the `URL_COMPONENTS` members to `gsize` first to ensure that the
+arithmetic is done in terms of `gsize`s rather than unsigned integers.
+
+Spotted by Sebastian Dröge.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+Helps: #2319
+---
+ gio/win32/gwinhttpfile.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/gio/win32/gwinhttpfile.c b/gio/win32/gwinhttpfile.c
+index b580f29..cde86cf 100644
+--- a/gio/win32/gwinhttpfile.c
++++ b/gio/win32/gwinhttpfile.c
+@@ -393,10 +393,10 @@ g_winhttp_file_resolve_relative_path (GFile      *file,
+   child = g_object_new (G_TYPE_WINHTTP_FILE, NULL);
+   child->vfs = winhttp_file->vfs;
+   child->url = winhttp_file->url;
+-  child->url.lpszScheme = g_memdup2 (winhttp_file->url.lpszScheme, (winhttp_file->url.dwSchemeLength+1)*2);
+-  child->url.lpszHostName = g_memdup2 (winhttp_file->url.lpszHostName, (winhttp_file->url.dwHostNameLength+1)*2);
+-  child->url.lpszUserName = g_memdup2 (winhttp_file->url.lpszUserName, (winhttp_file->url.dwUserNameLength+1)*2);
+-  child->url.lpszPassword = g_memdup2 (winhttp_file->url.lpszPassword, (winhttp_file->url.dwPasswordLength+1)*2);
++  child->url.lpszScheme = g_memdup2 (winhttp_file->url.lpszScheme, ((gsize) winhttp_file->url.dwSchemeLength + 1) * 2);
++  child->url.lpszHostName = g_memdup2 (winhttp_file->url.lpszHostName, ((gsize) winhttp_file->url.dwHostNameLength + 1) * 2);
++  child->url.lpszUserName = g_memdup2 (winhttp_file->url.lpszUserName, ((gsize) winhttp_file->url.dwUserNameLength + 1) * 2);
++  child->url.lpszPassword = g_memdup2 (winhttp_file->url.lpszPassword, ((gsize) winhttp_file->url.dwPasswordLength + 1) * 2);
+   child->url.lpszUrlPath = wnew_path;
+   child->url.dwUrlPathLength = wcslen (wnew_path);
+   child->url.lpszExtraInfo = NULL;
+-- 
+2.23.1
+

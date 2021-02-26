@@ -1,0 +1,91 @@
+From aee8d06be1018c0377950171d332d01e5805523b Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Thu, 4 Feb 2021 14:00:53 +0000
+Subject: [PATCH 09/12] =?UTF-8?q?gsocket:=20Use=20gsize=20to=20track=20nat?=
+ =?UTF-8?q?ive=20sockaddr=E2=80=99s=20size?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Don’t use an `int`, that’s potentially too small. In practical terms,
+this is not a problem, since no socket address is going to be that big.
+
+By making these changes we can use `g_memdup2()` without warnings,
+though. Fewer warnings is good.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+Helps: #2319
+---
+ gio/gsocket.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
+
+diff --git a/gio/gsocket.c b/gio/gsocket.c
+index 859e807..1aa5756 100644
+--- a/gio/gsocket.c
++++ b/gio/gsocket.c
+@@ -173,7 +173,7 @@ static gboolean     g_socket_datagram_based_condition_wait       (GDatagramBased
+                                                                   GError          **error);
+ 
+ static GSocketAddress *
+-cache_recv_address (GSocket *socket, struct sockaddr *native, int native_len);
++cache_recv_address (GSocket *socket, struct sockaddr *native, size_t native_len);
+ 
+ static gssize
+ g_socket_receive_message_with_timeout  (GSocket                 *socket,
+@@ -270,7 +270,7 @@ struct _GSocketPrivate
+   struct {
+     GSocketAddress *addr;
+     struct sockaddr *native;
+-    gint native_len;
++    gsize native_len;
+     guint64 last_used;
+   } recv_addr_cache[RECV_ADDR_CACHE_SIZE];
+ };
+@@ -5032,14 +5032,14 @@ g_socket_send_messages_with_timeout (GSocket        *socket,
+ }
+ 
+ static GSocketAddress *
+-cache_recv_address (GSocket *socket, struct sockaddr *native, int native_len)
++cache_recv_address (GSocket *socket, struct sockaddr *native, size_t native_len)
+ {
+   GSocketAddress *saddr;
+   gint i;
+   guint64 oldest_time = G_MAXUINT64;
+   gint oldest_index = 0;
+ 
+-  if (native_len <= 0)
++  if (native_len == 0)
+     return NULL;
+ 
+   saddr = NULL;
+@@ -5047,7 +5047,7 @@ cache_recv_address (GSocket *socket, struct sockaddr *native, int native_len)
+     {
+       GSocketAddress *tmp = socket->priv->recv_addr_cache[i].addr;
+       gpointer tmp_native = socket->priv->recv_addr_cache[i].native;
+-      gint tmp_native_len = socket->priv->recv_addr_cache[i].native_len;
++      gsize tmp_native_len = socket->priv->recv_addr_cache[i].native_len;
+ 
+       if (!tmp)
+         continue;
+@@ -5077,7 +5077,7 @@ cache_recv_address (GSocket *socket, struct sockaddr *native, int native_len)
+       g_free (socket->priv->recv_addr_cache[oldest_index].native);
+     }
+ 
+-  socket->priv->recv_addr_cache[oldest_index].native = g_memdup (native, native_len);
++  socket->priv->recv_addr_cache[oldest_index].native = g_memdup2 (native, native_len);
+   socket->priv->recv_addr_cache[oldest_index].native_len = native_len;
+   socket->priv->recv_addr_cache[oldest_index].addr = g_object_ref (saddr);
+   socket->priv->recv_addr_cache[oldest_index].last_used = g_get_monotonic_time ();
+@@ -5227,6 +5227,9 @@ g_socket_receive_message_with_timeout (GSocket                 *socket,
+       {
+         win32_unset_event_mask (socket, FD_READ);
+ 
++        /* addrlen has to be of type int because that’s how WSARecvFrom() is defined */
++        G_STATIC_ASSERT (sizeof addr <= G_MAXINT);
++
+ 	addrlen = sizeof addr;
+ 	if (address)
+ 	  result = WSARecvFrom (socket->priv->fd,
+-- 
+2.23.1
+

@@ -1,0 +1,86 @@
+From f6054ad7c95c2227337722f0aef8651b5aedda07 Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Thu, 4 Feb 2021 13:49:00 +0000
+Subject: [PATCH 06/12] gdatainputstream: Handle stop_chars_len internally as
+ gsize
+
+Previously it was handled as a `gssize`, which meant that if the
+`stop_chars` string was longer than `G_MAXSSIZE` there would be an
+overflow.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+Helps: #2319
+---
+ gio/gdatainputstream.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
+
+diff --git a/gio/gdatainputstream.c b/gio/gdatainputstream.c
+index 9f207b1..83e4f77 100644
+--- a/gio/gdatainputstream.c
++++ b/gio/gdatainputstream.c
+@@ -856,7 +856,7 @@ static gssize
+ scan_for_chars (GDataInputStream *stream,
+ 		gsize            *checked_out,
+ 		const char       *stop_chars,
+-                gssize            stop_chars_len)
++                gsize             stop_chars_len)
+ {
+   GBufferedInputStream *bstream;
+   const char *buffer;
+@@ -952,7 +952,7 @@ typedef struct
+   gsize checked;
+ 
+   gchar *stop_chars;
+-  gssize stop_chars_len;
++  gsize stop_chars_len;
+   gsize length;
+ } GDataInputStreamReadData;
+ 
+@@ -1078,12 +1078,17 @@ g_data_input_stream_read_async (GDataInputStream    *stream,
+ {
+   GDataInputStreamReadData *data;
+   GTask *task;
++  gsize stop_chars_len_unsigned;
+ 
+   data = g_slice_new0 (GDataInputStreamReadData);
+-  if (stop_chars_len == -1)
+-    stop_chars_len = strlen (stop_chars);
+-  data->stop_chars = g_memdup (stop_chars, stop_chars_len);
+-  data->stop_chars_len = stop_chars_len;
++
++  if (stop_chars_len < 0)
++    stop_chars_len_unsigned = strlen (stop_chars);
++  else
++    stop_chars_len_unsigned = (gsize) stop_chars_len;
++
++  data->stop_chars = g_memdup2 (stop_chars, stop_chars_len_unsigned);
++  data->stop_chars_len = stop_chars_len_unsigned;
+   data->last_saw_cr = FALSE;
+ 
+   task = g_task_new (stream, cancellable, callback, user_data);
+@@ -1338,17 +1343,20 @@ g_data_input_stream_read_upto (GDataInputStream  *stream,
+   gssize found_pos;
+   gssize res;
+   char *data_until;
++  gsize stop_chars_len_unsigned;
+ 
+   g_return_val_if_fail (G_IS_DATA_INPUT_STREAM (stream), NULL);
+ 
+   if (stop_chars_len < 0)
+-    stop_chars_len = strlen (stop_chars);
++    stop_chars_len_unsigned = strlen (stop_chars);
++  else
++    stop_chars_len_unsigned = (gsize) stop_chars_len;
+ 
+   bstream = G_BUFFERED_INPUT_STREAM (stream);
+ 
+   checked = 0;
+ 
+-  while ((found_pos = scan_for_chars (stream, &checked, stop_chars, stop_chars_len)) == -1)
++  while ((found_pos = scan_for_chars (stream, &checked, stop_chars, stop_chars_len_unsigned)) == -1)
+     {
+       if (g_buffered_input_stream_get_available (bstream) ==
+           g_buffered_input_stream_get_buffer_size (bstream))
+-- 
+2.23.1
+

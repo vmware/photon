@@ -1,0 +1,26 @@
+From 772647750102a840909e4b0bac8cbe190f6840bb Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Fri, 26 Feb 2021 06:00:52 +0000
+Subject: [PATCH 12/12] glib: Enable g_memdup2 for all glib version
+
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ glib/gstrfuncs.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/glib/gstrfuncs.h b/glib/gstrfuncs.h
+index 17a9a98..12ebe4b 100644
+--- a/glib/gstrfuncs.h
++++ b/glib/gstrfuncs.h
+@@ -257,7 +257,7 @@ GLIB_AVAILABLE_IN_ALL
+ gpointer              g_memdup	       (gconstpointer mem,
+ 					guint	       byte_size) G_GNUC_ALLOC_SIZE(2);
+ 
+-GLIB_AVAILABLE_IN_2_68
++GLIB_AVAILABLE_IN_ALL
+ gpointer              g_memdup2        (gconstpointer mem,
+                                         gsize         byte_size) G_GNUC_ALLOC_SIZE(2);
+ 
+-- 
+2.23.1
+
