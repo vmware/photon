@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.174
+Version:        4.19.177
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt72
-Release:        4%{?kat_build:.%kat}%{?dist}
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d0755977c35500db4fa7ea2cdc22d6e303e61f58
+%define sha1 linux=e158683b3c4f387e2781da415f8bf9be6dfc2f2a
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
@@ -1091,6 +1091,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Fri Feb 26 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.177-1
+-   Update to version 4.19.177
 *   Fri Feb 19 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.174-4
 -   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Thu Feb 11 2021 Ankit Jain <ankitja@vmware.com> 4.19.174-3
