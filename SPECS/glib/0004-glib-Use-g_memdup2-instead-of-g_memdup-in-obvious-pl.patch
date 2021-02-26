@@ -1,0 +1,191 @@
+From 05fb260ecef62c4d061c2c0151050f5f85430ecf Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Thu, 4 Feb 2021 13:41:21 +0000
+Subject: [PATCH 04/12] glib: Use g_memdup2() instead of g_memdup() in obvious
+ places
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Convert all the call sites which use `g_memdup()`’s length argument
+trivially (for example, by passing a `sizeof()` or an existing `gsize`
+variable), so that they use `g_memdup2()` instead.
+
+In almost all of these cases the use of `g_memdup()` would not have
+caused problems, but it will soon be deprecated, so best port away from
+it
+
+In particular, this fixes an overflow within `g_bytes_new()`, identified
+as GHSL-2021-045 by GHSL team member Kevin Backhouse.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+Fixes: GHSL-2021-045
+Helps: #2319
+---
+ glib/gbytes.c               | 4 ++--
+ glib/gdir.c                 | 2 +-
+ glib/ghash.c                | 2 +-
+ glib/gslice.c               | 2 +-
+ glib/gtestutils.c           | 2 +-
+ glib/gvariant.c             | 6 +++---
+ glib/gvarianttype.c         | 2 +-
+ glib/tests/array-test.c     | 2 +-
+ glib/tests/option-context.c | 4 ++--
+ 9 files changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/glib/gbytes.c b/glib/gbytes.c
+index d56abe6..b03c238 100644
+--- a/glib/gbytes.c
++++ b/glib/gbytes.c
+@@ -95,7 +95,7 @@ g_bytes_new (gconstpointer data,
+ {
+   g_return_val_if_fail (data != NULL || size == 0, NULL);
+ 
+-  return g_bytes_new_take (g_memdup (data, size), size);
++  return g_bytes_new_take (g_memdup2 (data, size), size);
+ }
+ 
+ /**
+@@ -499,7 +499,7 @@ g_bytes_unref_to_data (GBytes *bytes,
+        * Copy: Non g_malloc (or compatible) allocator, or static memory,
+        * so we have to copy, and then unref.
+        */
+-      result = g_memdup (bytes->data, bytes->size);
++      result = g_memdup2 (bytes->data, bytes->size);
+       *size = bytes->size;
+       g_bytes_unref (bytes);
+     }
+diff --git a/glib/gdir.c b/glib/gdir.c
+index cb4ad0b..c15fd90 100644
+--- a/glib/gdir.c
++++ b/glib/gdir.c
+@@ -113,7 +113,7 @@ g_dir_open_with_errno (const gchar *path,
+     return NULL;
+ #endif
+ 
+-  return g_memdup (&dir, sizeof dir);
++  return g_memdup2 (&dir, sizeof dir);
+ }
+ 
+ /**
+diff --git a/glib/ghash.c b/glib/ghash.c
+index 433004c..518ed95 100644
+--- a/glib/ghash.c
++++ b/glib/ghash.c
+@@ -967,7 +967,7 @@ g_hash_table_insert_node (GHashTable *hash_table,
+    * split the table.
+    */
+   if (G_UNLIKELY (hash_table->keys == hash_table->values && hash_table->keys[node_index] != new_value))
+-    hash_table->values = g_memdup (hash_table->keys, sizeof (gpointer) * hash_table->size);
++    hash_table->values = g_memdup2 (hash_table->keys, sizeof (gpointer) * hash_table->size);
+ 
+   /* Step 3: Actually do the write */
+   hash_table->values[node_index] = new_value;
+diff --git a/glib/gslice.c b/glib/gslice.c
+index d1b1fc6..5e3b321 100644
+--- a/glib/gslice.c
++++ b/glib/gslice.c
+@@ -349,7 +349,7 @@ g_slice_get_config_state (GSliceConfig ckey,
+       array[i++] = allocator->contention_counters[address];
+       array[i++] = allocator_get_magazine_threshold (allocator, address);
+       *n_values = i;
+-      return g_memdup (array, sizeof (array[0]) * *n_values);
++      return g_memdup2 (array, sizeof (array[0]) * *n_values);
+     default:
+       return NULL;
+     }
+diff --git a/glib/gtestutils.c b/glib/gtestutils.c
+index 7b29c27..4f43b47 100644
+--- a/glib/gtestutils.c
++++ b/glib/gtestutils.c
+@@ -3461,7 +3461,7 @@ g_test_log_extract (GTestLogBuffer *tbuffer)
+       if (p <= tbuffer->data->str + mlength)
+         {
+           g_string_erase (tbuffer->data, 0, mlength);
+-          tbuffer->msgs = g_slist_prepend (tbuffer->msgs, g_memdup (&msg, sizeof (msg)));
++          tbuffer->msgs = g_slist_prepend (tbuffer->msgs, g_memdup2 (&msg, sizeof (msg)));
+           return TRUE;
+         }
+ 
+diff --git a/glib/gvariant.c b/glib/gvariant.c
+index 2c9f951..d58ee56 100644
+--- a/glib/gvariant.c
++++ b/glib/gvariant.c
+@@ -720,7 +720,7 @@ g_variant_new_variant (GVariant *value)
+   g_variant_ref_sink (value);
+ 
+   return g_variant_new_from_children (G_VARIANT_TYPE_VARIANT,
+-                                      g_memdup (&value, sizeof value),
++                                      g_memdup2 (&value, sizeof value),
+                                       1, g_variant_is_trusted (value));
+ }
+ 
+@@ -1224,7 +1224,7 @@ g_variant_new_fixed_array (const GVariantType  *element_type,
+       return NULL;
+     }
+ 
+-  data = g_memdup (elements, n_elements * element_size);
++  data = g_memdup2 (elements, n_elements * element_size);
+   value = g_variant_new_from_data (array_type, data,
+                                    n_elements * element_size,
+                                    FALSE, g_free, data);
+@@ -1901,7 +1901,7 @@ g_variant_dup_bytestring (GVariant *value,
+   if (length)
+     *length = size;
+ 
+-  return g_memdup (original, size + 1);
++  return g_memdup2 (original, size + 1);
+ }
+ 
+ /**
+diff --git a/glib/gvarianttype.c b/glib/gvarianttype.c
+index f473ad0..fa20f0b 100644
+--- a/glib/gvarianttype.c
++++ b/glib/gvarianttype.c
+@@ -1112,7 +1112,7 @@ g_variant_type_new_tuple (const GVariantType * const *items,
+   g_assert (offset < sizeof buffer);
+   buffer[offset++] = ')';
+ 
+-  return (GVariantType *) g_memdup (buffer, offset);
++  return (GVariantType *) g_memdup2 (buffer, offset);
+ }
+ 
+ /**
+diff --git a/glib/tests/array-test.c b/glib/tests/array-test.c
+index e0a6109..7a41184 100644
+--- a/glib/tests/array-test.c
++++ b/glib/tests/array-test.c
+@@ -1177,7 +1177,7 @@ byte_array_new_take (void)
+   GByteArray *gbarray;
+   guint8 *data;
+ 
+-  data = g_memdup ("woooweeewow", 11);
++  data = g_memdup2 ("woooweeewow", 11);
+   gbarray = g_byte_array_new_take (data, 11);
+   g_assert (gbarray->data == data);
+   g_assert_cmpuint (gbarray->len, ==, 11);
+diff --git a/glib/tests/option-context.c b/glib/tests/option-context.c
+index 34ebfaa..d9c8117 100644
+--- a/glib/tests/option-context.c
++++ b/glib/tests/option-context.c
+@@ -256,7 +256,7 @@ join_stringv (int argc, char **argv)
+ static char **
+ copy_stringv (char **argv, int argc)
+ {
+-  return g_memdup (argv, sizeof (char *) * (argc + 1));
++  return g_memdup2 (argv, sizeof (char *) * (argc + 1));
+ }
+ 
+ static void
+@@ -2318,7 +2318,7 @@ test_group_parse (void)
+   g_option_context_add_group (context, group);
+ 
+   argv = split_string ("program --test arg1 -f arg2 --group-test arg3 --frob arg4 -z arg5", &argc);
+-  orig_argv = g_memdup (argv, (argc + 1) * sizeof (char *));
++  orig_argv = g_memdup2 (argv, (argc + 1) * sizeof (char *));
+ 
+   retval = g_option_context_parse (context, &argc, &argv, &error);
+ 
+-- 
+2.23.1
+

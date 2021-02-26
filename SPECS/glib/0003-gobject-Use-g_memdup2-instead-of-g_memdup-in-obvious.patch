@@ -1,0 +1,103 @@
+From 77ea5c77cf18e875581566b0bb7986174ce76abd Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Thu, 4 Feb 2021 13:39:25 +0000
+Subject: [PATCH 03/12] gobject: Use g_memdup2() instead of g_memdup() in
+ obvious places
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Convert all the call sites which use `g_memdup()`’s length argument
+trivially (for example, by passing a `sizeof()`), so that they use
+`g_memdup2()` instead.
+
+In almost all of these cases the use of `g_memdup()` would not have
+caused problems, but it will soon be deprecated, so best port away from
+it.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+Helps: #2319
+---
+ gobject/gsignal.c     | 2 +-
+ gobject/gtype.c       | 8 ++++----
+ gobject/gtypemodule.c | 2 +-
+ gobject/tests/param.c | 2 +-
+ 4 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/gobject/gsignal.c b/gobject/gsignal.c
+index 76f1dc9..f4f6340 100644
+--- a/gobject/gsignal.c
++++ b/gobject/gsignal.c
+@@ -1724,7 +1724,7 @@ g_signal_newv (const gchar       *signal_name,
+   node->single_va_closure_is_valid = FALSE;
+   node->flags = signal_flags & G_SIGNAL_FLAGS_MASK;
+   node->n_params = n_params;
+-  node->param_types = g_memdup (param_types, sizeof (GType) * n_params);
++  node->param_types = g_memdup2 (param_types, sizeof (GType) * n_params);
+   node->return_type = return_type;
+   node->class_closure_bsa = NULL;
+   if (accumulator)
+diff --git a/gobject/gtype.c b/gobject/gtype.c
+index 1acc0a0..a9bc3dd 100644
+--- a/gobject/gtype.c
++++ b/gobject/gtype.c
+@@ -1467,7 +1467,7 @@ type_add_interface_Wm (TypeNode             *node,
+   iholder->next = iface_node_get_holders_L (iface);
+   iface_node_set_holders_W (iface, iholder);
+   iholder->instance_type = NODE_TYPE (node);
+-  iholder->info = info ? g_memdup (info, sizeof (*info)) : NULL;
++  iholder->info = info ? g_memdup2 (info, sizeof (*info)) : NULL;
+   iholder->plugin = plugin;
+ 
+   /* create an iface entry for this type */
+@@ -1728,7 +1728,7 @@ type_iface_retrieve_holder_info_Wm (TypeNode *iface,
+         INVALID_RECURSION ("g_type_plugin_*", iholder->plugin, NODE_NAME (iface));
+       
+       check_interface_info_I (iface, instance_type, &tmp_info);
+-      iholder->info = g_memdup (&tmp_info, sizeof (tmp_info));
++      iholder->info = g_memdup2 (&tmp_info, sizeof (tmp_info));
+     }
+   
+   return iholder;	/* we don't modify write lock upon returning NULL */
+@@ -2013,10 +2013,10 @@ type_iface_vtable_base_init_Wm (TypeNode *iface,
+       IFaceEntry *pentry = type_lookup_iface_entry_L (pnode, iface);
+       
+       if (pentry)
+-	vtable = g_memdup (pentry->vtable, iface->data->iface.vtable_size);
++	vtable = g_memdup2 (pentry->vtable, iface->data->iface.vtable_size);
+     }
+   if (!vtable)
+-    vtable = g_memdup (iface->data->iface.dflt_vtable, iface->data->iface.vtable_size);
++    vtable = g_memdup2 (iface->data->iface.dflt_vtable, iface->data->iface.vtable_size);
+   entry->vtable = vtable;
+   vtable->g_type = NODE_TYPE (iface);
+   vtable->g_instance_type = NODE_TYPE (node);
+diff --git a/gobject/gtypemodule.c b/gobject/gtypemodule.c
+index 4ecaf8c..9eef35d 100644
+--- a/gobject/gtypemodule.c
++++ b/gobject/gtypemodule.c
+@@ -436,7 +436,7 @@ g_type_module_register_type (GTypeModule     *module,
+   module_type_info->loaded = TRUE;
+   module_type_info->info = *type_info;
+   if (type_info->value_table)
+-    module_type_info->info.value_table = g_memdup (type_info->value_table,
++    module_type_info->info.value_table = g_memdup2 (type_info->value_table,
+ 						   sizeof (GTypeValueTable));
+ 
+   return module_type_info->type;
+diff --git a/gobject/tests/param.c b/gobject/tests/param.c
+index 758289b..7d0b18c 100644
+--- a/gobject/tests/param.c
++++ b/gobject/tests/param.c
+@@ -851,7 +851,7 @@ main (int argc, char *argv[])
+             test_path = g_strdup_printf ("/param/implement/subprocess/%d-%d-%d-%d",
+                                          data.change_this_flag, data.change_this_type,
+                                          data.use_this_flag, data.use_this_type);
+-            test_data = g_memdup (&data, sizeof (TestParamImplementData));
++            test_data = g_memdup2 (&data, sizeof (TestParamImplementData));
+             g_test_add_data_func_full (test_path, test_data, test_param_implement_child, g_free);
+             g_free (test_path);
+           }
+-- 
+2.23.1
+

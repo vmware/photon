@@ -1,0 +1,116 @@
+From 8cf2d9324381dedb14f610d6168641a6077d22cf Mon Sep 17 00:00:00 2001
+From: Philip Withnall <pwithnall@endlessos.org>
+Date: Thu, 4 Feb 2021 13:50:37 +0000
+Subject: [PATCH 07/12] gwin32: Use gsize internally in g_wcsdup()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This allows it to handle strings up to length `G_MAXSIZE` — previously
+it would overflow with such strings.
+
+Update the several copies of it identically.
+
+Signed-off-by: Philip Withnall <pwithnall@endlessos.org>
+Helps: #2319
+---
+ gio/gwin32appinfo.c     | 33 ++++++++++++++++++++++++++-------
+ gio/gwin32registrykey.c | 34 ++++++++++++++++++++++++++--------
+ 2 files changed, 52 insertions(+), 15 deletions(-)
+
+diff --git a/gio/gwin32appinfo.c b/gio/gwin32appinfo.c
+index 499bbb3..e165cda 100644
+--- a/gio/gwin32appinfo.c
++++ b/gio/gwin32appinfo.c
+@@ -464,15 +464,34 @@ static GWin32RegistryKey *applications_key;
+ /* Watch this key */
+ static GWin32RegistryKey *classes_root_key;
+ 
++static gsize
++g_utf16_len (const gunichar2 *str)
++{
++  gsize result;
++
++  for (result = 0; str[0] != 0; str++, result++)
++    ;
++
++  return result;
++}
++
+ static gunichar2 *
+-g_wcsdup (const gunichar2 *str, gssize str_size)
++g_wcsdup (const gunichar2 *str, gssize str_len)
+ {
+-  if (str_size == -1)
+-    {
+-      str_size = wcslen (str) + 1;
+-      str_size *= sizeof (gunichar2);
+-    }
+-  return g_memdup (str, str_size);
++  gsize str_len_unsigned;
++  gsize str_size;
++
++  g_return_val_if_fail (str != NULL, NULL);
++
++  if (str_len < 0)
++    str_len_unsigned = g_utf16_len (str);
++  else
++    str_len_unsigned = (gsize) str_len;
++
++  g_assert (str_len_unsigned <= G_MAXSIZE / sizeof (gunichar2) - 1);
++  str_size = (str_len_unsigned + 1) * sizeof (gunichar2);
++
++  return g_memdup2 (str, str_size);
+ }
+ 
+ #define URL_ASSOCIATIONS L"HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\"
+diff --git a/gio/gwin32registrykey.c b/gio/gwin32registrykey.c
+index 2cd7249..4783699 100644
+--- a/gio/gwin32registrykey.c
++++ b/gio/gwin32registrykey.c
+@@ -125,16 +125,34 @@ typedef enum
+   G_WIN32_REGISTRY_UPDATED_PATH = 1,
+ } GWin32RegistryKeyUpdateFlag;
+ 
++static gsize
++g_utf16_len (const gunichar2 *str)
++{
++  gsize result;
++
++  for (result = 0; str[0] != 0; str++, result++)
++    ;
++
++  return result;
++}
++
+ static gunichar2 *
+-g_wcsdup (const gunichar2 *str,
+-          gssize           str_size)
++g_wcsdup (const gunichar2 *str, gssize str_len)
+ {
+-  if (str_size == -1)
+-    {
+-      str_size = wcslen (str) + 1;
+-      str_size *= sizeof (gunichar2);
+-    }
+-  return g_memdup (str, str_size);
++  gsize str_len_unsigned;
++  gsize str_size;
++
++  g_return_val_if_fail (str != NULL, NULL);
++
++  if (str_len < 0)
++    str_len_unsigned = g_utf16_len (str);
++  else
++    str_len_unsigned = (gsize) str_len;
++
++  g_assert (str_len_unsigned <= G_MAXSIZE / sizeof (gunichar2) - 1);
++  str_size = (str_len_unsigned + 1) * sizeof (gunichar2);
++
++  return g_memdup2 (str, str_size);
+ }
+ 
+ /**
+-- 
+2.23.1
+
