@@ -1,6 +1,6 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
-Version:	2.66.1
+Version:	2.66.7
 Release:	1%{?dist}
 License:	LGPLv2+
 URL:		https://developer.gnome.org/glib/
@@ -8,7 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://ftp.acc.umu.se/pub/gnome/sources/glib/2.66/glib-%{version}.tar.xz
-%define sha1    glib=aaaeb5079ef6afa027e28aecd5bb84c6aad14198
+%define sha1    glib=734a6f1e1edb2292d08e658bfe7f49b41c7eb0c9
 BuildRequires:	pcre-devel
 BuildRequires:	libffi-devel
 BuildRequires:	pkg-config
@@ -111,6 +111,8 @@ DESTDIR=%{buildroot}/ ninja -C _build install
 %doc %{_datadir}/gtk-doc/html/*
 
 %changelog
+*   Fri Feb 26 2021 Ankit Jain <ankitja@vmware.com> 2.66.7-1
+-   Updated to 2.66.7 to fix CVE-2021-27218 and CVE-2021-27219
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.66.1-1
 -   Automatic Version Bump
 *   Mon Aug 24 2020 Keerthana K <keerthanak@vmware.com> 2.64.5-1
