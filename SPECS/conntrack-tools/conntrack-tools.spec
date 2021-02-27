@@ -1,7 +1,7 @@
 Summary:        Connection tracking userspace tools for Linux.
 Name:           conntrack-tools
 Version:        1.4.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://conntrack-tools.netfilter.org/
 Source0:        http://netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
@@ -30,6 +30,7 @@ Requires:      libnetfilter_cthelper
 Requires:      libnetfilter_cttimeout
 Requires:      libnetfilter_queue
 Requires:      libnfnetlink
+Provides:      conntrack
 
 %description
 The conntrack-tools are a set of free software userspace tools for Linux that
@@ -74,5 +75,7 @@ install -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}/
 %systemd_postun conntrackd.service
 
 %changelog
+*  Sat Feb 27 2021 Andrew Williams <andy@tensixtyone.com> 1.4.6-2
+-  Add provide for conntrack
 *  Tue Aug 25 2020 Ashwin H <ashwinh@vmware.com> 1.4.6-1
 -  Initial version
