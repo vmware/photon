@@ -1,7 +1,7 @@
 %define python3_sitelib /usr/lib/python3.9/site-packages
 
 Name:           cloud-init
-Version:        20.4.1
+Version:        21.1
 Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc
 Distribution:   Photon
 
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 cloud-init=94470675523920c41e74a10497594ca5acbe5acb
+%define sha1 cloud-init=2ae378aa2ae23b34b0ff123623ba5e2fbdc4928d
 Source1:        99-disable-networking-config.cfg
 Source2:        dscheck_VMwareGuestInfo
 
@@ -157,6 +157,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Sun Feb 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.1-1
+-   Upgrade to version 21.1
 *   Wed Jan 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 20.4.1-1
 -   Upgrade to version 20.4.1
 *   Thu Dec 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.4-1
