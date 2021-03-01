@@ -1,7 +1,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.6.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -14,6 +14,7 @@ Patch1:         OVS-CVE-2017-9263.patch
 Patch2:         OVS-CVE-2017-14970.patch
 Patch3:         OVS-CVE-2018-17204.patch
 Patch4:         OVS-CVE-2018-17206.patch
+Patch5:         ovs-CVE-2020-35498.patch
 %define sha1    openvswitch=2865fe03b3906b5aea984102c4b65772b5dd7450
 
 BuildRequires:  gcc >= 4.0.0
@@ -66,6 +67,7 @@ It contains the documentation and manpages for openvswitch.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 ./configure \
@@ -147,6 +149,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/man/man8/vtep-ctl.8.gz
 
 %changelog
+*   Thu Feb 25 2021 Dweep Advani <dadvani@vmware.com> 2.6.1-7
+-   Fix for CVE-2020-35498
 *   Fri Apr 03 2020 Shreyas B <shreyasb@vmware.com> 2.6.1-6
 -   Fix for CVE-2018-17204 - Denial of service.
 -   Fix for CVE-2018-17206 - Buffer over-read in lib/ofp-actions.c:decode_bundle().
