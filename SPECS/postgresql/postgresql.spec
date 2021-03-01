@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        13.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -20,9 +20,11 @@ BuildRequires:  libxml2-devel
 BuildRequires:  linux-api-headers
 BuildRequires:  openldap
 BuildRequires:  perl
+BuildRequires:  python3-devel
 BuildRequires:  readline-devel
 BuildRequires:  openssl-devel
 BuildRequires:  tar
+BuildRequires:  tcl-devel
 BuildRequires:  tzdata
 BuildRequires:  zlib-devel
 Requires:       krb5
@@ -97,6 +99,37 @@ with a PostgreSQL database management server. It also contains the ecpg
 Embedded C Postgres preprocessor. You need to install this package if you
 want to develop applications which will interact with a PostgreSQL server.
 
+%package plperl
+Summary:	The Perl procedural language for PostgreSQL
+Requires:	%{name}-server = %{version}-%{release}
+
+%description plperl
+The postgresql-plperl package contains the PL/Perl procedural language,
+which is an extension to the PostgreSQL database server.
+Install this if you want to write database functions in Perl.
+
+%package plpython3
+Summary:	The Python3 procedural language for PostgreSQL
+Requires:	%{name} = %{version}-%{release}
+Requires:	%{name}-server = %{version}-%{release}
+Requires:	python3-libs
+
+%description plpython3
+The postgresql-plpython3 package contains the PL/Python3 procedural language,
+which is an extension to the PostgreSQL database server.
+Install this if you want to write database functions in Python 3.
+
+%package pltcl
+Summary:	The Tcl procedural language for PostgreSQL
+Requires:	%{name} = %{version}-%{release}
+Requires:	%{name}-server = %{version}-%{release}
+Requires:	tcl
+
+%description pltcl
+PostgreSQL is an advanced Object-Relational database management
+system. The %{name}-pltcl package contains the PL/Tcl language
+for the backend.
+
 %prep
 %setup -q
 
@@ -110,14 +143,22 @@ sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_man
     --with-openssl \
     --with-gssapi \
     --with-libedit-preferred \
+    --with-perl \
+    --with-python \
     --with-readline \
     --with-system-tzdata=%{_datadir}/zoneinfo \
-	--docdir=%{_docdir}/postgresql
+    --with-tcl \
+    --docdir=%{_docdir}/postgresql
 make world %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make install-world DESTDIR=%{buildroot}
+# Remove anything related to Python 2.  These have no need to be
+# around as only Python 3 is supported.
+rm -f %{buildroot}/%{_datadir}/postgresql/extension/*plpython2u*
+rm -f %{buildroot}/%{_datadir}/postgresql/extension/*plpythonu-*
+rm -f %{buildroot}/%{_datadir}/postgresql/extension/*_plpythonu.control
 
 %check
 sed -i '2219s/",/  ; EXIT_STATUS=$? ; sleep 5 ; exit $EXIT_STATUS",/g'  src/test/regress/pg_regress.c
@@ -352,7 +393,36 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/pgxs/*
 %{_mandir}/man1/ecpg.*
 
+%files plperl
+%defattr(-,root,root)
+%{_datadir}/postgresql/extension/bool_plperl*
+%{_datadir}/postgresql/extension/hstore_plperl*
+%{_datadir}/postgresql/extension/jsonb_plperl*
+%{_datadir}/postgresql/extension/plperl*
+%{_libdir}/postgresql/bool_plperl.so
+%{_libdir}/postgresql/hstore_plperl.so
+%{_libdir}/postgresql/jsonb_plperl.so
+%{_libdir}/postgresql/plperl.so
+
+%files pltcl
+%defattr(-,root,root)
+%{_datadir}/postgresql/extension/pltcl*
+%{_libdir}/postgresql/pltcl.so
+
+%files plpython3
+%defattr(-,root,root)
+%{_datadir}/postgresql/extension/hstore_plpython3*
+%{_datadir}/postgresql/extension/ltree_plpython3*
+%{_datadir}/postgresql/extension/jsonb_plpython3*
+%{_datadir}/postgresql/extension/plpython3*
+%{_libdir}/postgresql/hstore_plpython3.so
+%{_libdir}/postgresql/jsonb_plpython3.so
+%{_libdir}/postgresql/ltree_plpython3.so
+%{_libdir}/postgresql/plpython3.so
+
 %changelog
+*   Mon Mar 01 2021 Michael Paquier <mpaquier@vmware.com> 13.2-3
+-   Add new packages for PL/Perl, PL/Python and PL/Tcl
 *   Fri Feb 26 2021 Michael Paquier <mpaquier@vmware.com> 13.2-2
 -   Bump sub-release number as per the package redesign.
 *   Mon Feb 22 2021 Michael Paquier <mpaquier@vmware.com>
