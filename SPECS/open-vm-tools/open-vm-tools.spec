@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        11.2.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -22,6 +22,7 @@ Source3:        vgauthd.service
 # If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
 Patch0:     ovt-linux-deployment.patch
 Patch1:     gosc-add-user-section.patch
+Patch2:     gosc-cloud-init-clean.patch
 
 BuildRequires:  glib-devel
 BuildRequires:  libxml2-devel
@@ -151,6 +152,8 @@ fi
 %{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-perf-metrics.sh
 
 %changelog
+*   Mon Mar 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.2.5-2
+-   Fixed an issue with gosc
 *   Sat Feb 27 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.2.5-1
 -   Upgrade to version 11.2.5 & enabled sdmp plugin support
 *   Sun Jan 24 2021 Shreyas B. <shreyasb@vmware.com> 10.3.10-5
