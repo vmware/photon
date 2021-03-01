@@ -8,8 +8,8 @@
 %define _salttesting_ver 2016.5.11
 
 Name: salt3
-Version: 2019.2.8
-Release: 3%{?dist}
+Version: 3002.5
+Release: 1%{?dist}
 Summary: A parallel remote execution system with python3
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -17,7 +17,7 @@ URL:     http://saltstack.org/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0: https://files.pythonhosted.org/packages/0c/6f/c8394676b59948978f80815cdfc5e89b4eaf808f23e9dac8011d04f7d486/salt-%{version}.tar.gz
-%define sha1 salt=2bb0fc68e862c3f7e0f2be54c052db4fec11471d
+%define sha1 salt=32bee510c13035a4179fe25fb8b208c7fa81018e
 Source1: https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-2016.5.11.tar.gz
 %define sha1 SaltTesting=474dbd7029e3d48cdb468be3c63b2262e47556c8
 Source2: salt-master.service
@@ -25,8 +25,6 @@ Source3: salt-syndic.service
 Source4: salt-minion.service
 Source5: salt-api.service
 Source6: logrotate.salt
-Patch1:  patches_2021_01_28_2019.2.5.patch
-Patch2:  patches_2021_02_05_2019.2.5.patch
 
 
 BuildRoot: %{_tmppath}/salt-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -40,6 +38,8 @@ Requires: pciutils
 Requires: python3-backports_abc
 BuildRequires: python3-devel
 BuildRequires: systemd
+BuildRequires: python3-setuptools
+BuildRequires: python3-xml
 Requires: python3-pycryptodomex
 Requires: python3-jinja2
 Requires: python3-msgpack
@@ -47,6 +47,8 @@ Requires: python3-PyYAML
 Requires: python3-requests
 Requires: python3-zmq
 Requires: python3-tornado
+Requires: python3-setuptools
+Requires: python3-xml
 
 %description
 Salt is a distributed remote execution system used to execute commands and
@@ -122,8 +124,6 @@ Salt Package Manager
 %prep
 %setup -c -n salt-%{version}
 cd salt-%{version}
-%patch1 -p1
-%patch2 -p1
 
 %build
 
@@ -301,6 +301,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Mar 01 2021 Keerthana K <keerthanak@vmware.com> 3002.5-1
+- Update to version 3002.5
 * Fri Feb 19 2021 Keerthana K <keerthanak@vmware.com> 2019.2.8-3
 - Fix CVE-2020-28243 CVE-2020-28972 CVE-2020-35662 CVE-2021-3148
 - CVE-2021-3144 CVE-2021-25281 CVE-2021-25282 CVE-2021-25283
