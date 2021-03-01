@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.4
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -77,6 +77,8 @@ Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch502:       0001-FIPS-canister-binary-usage.patch
+# Patch to remove urandom usage in rng module
+Patch503:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 %else
 %if 0%{?kat_build:1}
 Patch507:       0001-Skip-rap-plugin-for-aesni-intel-modules.patch
@@ -168,6 +170,7 @@ The Linux package contains the Linux kernel doc files
 %patch501 -p1
 %if 0%{?fips}
 %patch502 -p1
+%patch503 -p1
 %else
 %if 0%{?kat_build:1}
 %patch507 -p1
@@ -281,6 +284,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Mar 01 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.4-8
+-   Use jitterentropy rng instead of urandom in rng module.
 *   Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-7
 -   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Tue Feb 02 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-6

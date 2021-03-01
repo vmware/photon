@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.4
-Release:        13%{?kat_build:.kat}%{?dist}
+Release:        14%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -89,6 +89,8 @@ Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch502:       0001-FIPS-canister-binary-usage.patch
+# Patch to remove urandom usage in rng module
+Patch503:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 %else
 %if 0%{?kat_build:1}
 Patch508:       0001-Initialize-jitterentropy-before-ecdh.patch
@@ -199,6 +201,7 @@ The Linux package contains the Linux kernel doc files
 %patch501 -p1
 %if 0%{?fips}
 %patch502 -p1
+%patch503 -p1
 %else
 %if 0%{?kat_build:1}
 %patch508 -p1
@@ -322,6 +325,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Mar 01 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.4-14
+-   Use jitterentropy rng instead of urandom in rng module.
 *   Fri Feb 19 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-13
 -   Enable CONFIG_ISCSI_TCP support
 *   Fri Feb 19 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-12

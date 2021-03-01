@@ -1,0 +1,76 @@
+From 0dd719a950c776f212226690e429e80e53ab867a Mon Sep 17 00:00:00 2001
+From: srinidhira0 <srinidhir@vmware.com>
+Date: Mon, 1 Mar 2021 19:51:03 +0000
+Subject: [PATCH] FIPS:crypto:rng: Jitterentropy RNG as the only RND source
+
+  -  RNG module uses urandom during crypto reset if
+prediction reset information is not provides. However,
+as per SP800-90B, urandom entropy source is not
+compliant and hence any crypto module which depends on
+/dev/urandom will not be compliant with SP800-90B.
+
+Hence, remove the urandom read from RNG module in kernel
+if the kernel is booted in FIPS mode. Replace the urandom
+with jitterentropy RNG.
+Jitter entropy rng can be accessed by any crypto module
+
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+---
+ crypto/rng.c | 27 +++++++++++++++++++++++++--
+ 1 file changed, 25 insertions(+), 2 deletions(-)
+
+diff --git a/crypto/rng.c b/crypto/rng.c
+index a888d84b524a..a89aa226e172 100644
+--- a/crypto/rng.c
++++ b/crypto/rng.c
+@@ -19,6 +19,7 @@
+ #include <linux/string.h>
+ #include <linux/cryptouser.h>
+ #include <linux/compiler.h>
++#include <linux/fips.h>
+ #include <net/netlink.h>
+ 
+ #include "internal.h"
+@@ -28,6 +29,25 @@ struct crypto_rng *crypto_default_rng;
+ EXPORT_SYMBOL_GPL(crypto_default_rng);
+ static int crypto_default_rng_refcnt;
+ 
++int get_jent_random_bytes(u8 * buf, unsigned int slen)
++{
++	struct crypto_rng *jitter_entropy =
++		crypto_alloc_rng("jitterentropy_rng", 0, 0);
++	int ret = 0;
++
++	if (IS_ERR_OR_NULL(jitter_entropy)) {
++		pr_err("RNG: Failed to allocated Jitter entropy RNG\n");
++		return -ENOENT;
++	}
++	ret = crypto_rng_get_bytes(jitter_entropy, buf, slen);
++	if (ret) {
++		pr_err("RNG: Failed to read from Jitter entropy RNG\n");
++		return -EAGAIN;
++	}
++	crypto_free_rng(jitter_entropy);
++	jitter_entropy = NULL;
++	return 0;
++}
+ int crypto_rng_reset(struct crypto_rng *tfm, const u8 *seed, unsigned int slen)
+ {
+ 	struct crypto_alg *alg = tfm->base.__crt_alg;
+@@ -41,8 +61,11 @@ int crypto_rng_reset(struct crypto_rng *tfm, const u8 *seed, unsigned int slen)
+ 			crypto_alg_put(alg);
+ 			return -ENOMEM;
+ 		}
+-
+-		err = get_random_bytes_wait(buf, slen);
++		if (fips_enabled) {
++			err = get_jent_random_bytes(buf, slen);
++		} else {
++			err = get_random_bytes_wait(buf, slen);
++		}
+ 		if (err) {
+ 			crypto_alg_put(alg);
+ 			goto out;
+-- 
+2.28.0
+

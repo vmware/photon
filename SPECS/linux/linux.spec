@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.4
-Release:        16%{?kat_build:.kat}%{?dist}
+Release:        17%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -111,6 +111,8 @@ Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch502:       0001-FIPS-canister-binary-usage.patch
+# Patch to remove urandom usage in rng module
+Patch503:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 %else
 %if 0%{?kat_build:1}
 Patch508:       0001-Initialize-jitterentropy-before-ecdh.patch
@@ -118,7 +120,6 @@ Patch509:       0002-FIPS-crypto-self-tests.patch
 Patch510:       0003-FIPS-broken-kattest.patch
 %endif
 %endif
-
 
 # SEV on VMware:
 Patch600:       0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
@@ -292,6 +293,7 @@ Python programming language to use the interface to manipulate perf events.
 %patch501 -p1
 %if 0%{?fips}
 %patch502 -p1
+%patch503 -p1
 %else
 %if 0%{?kat_build:1}
 %patch508 -p1
@@ -648,6 +650,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Mar 01 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.4-17
+-   Use jitterentropy rng instead of urandom in rng module.
 *   Fri Feb 19 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-16
 -   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Fri Feb 19 2021 Ajay Kaher <akaher@vmware.com> 5.10.4-15
