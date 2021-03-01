@@ -3,7 +3,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.12.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -12,7 +12,7 @@ Distribution:   Photon
 
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
 %define sha1 openvswitch=3ee6da7f52aeaad78b816ec6d61f7e7f163902fd
-
+Patch0:         ovs-CVE-2020-35498.patch
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
 BuildRequires:  libcap-ng-devel
@@ -112,6 +112,7 @@ It contains the documentation and manpages for OVN.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 export PYTHON2=no
@@ -272,6 +273,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/ovn-trace.8.gz
 
 %changelog
+*   Thu Feb 25 2021 Dweep Advani <dadvani@vmware.com> 2.12.0-2
+-   Patched for CVE-2020-35498
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 2.12.0-1
 -   Build with Python3
 -   Update to 2.12.0
