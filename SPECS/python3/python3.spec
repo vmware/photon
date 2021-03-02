@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.5
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -19,6 +19,7 @@ Patch6:         CVE-2019-20907.patch
 Patch7:         CVE-2020-26116.patch
 Patch8:         CVE-2020-27619.patch
 Patch9:         CVE-2021-3177.patch
+Patch10:        CVE-2021-23336.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -144,6 +145,7 @@ The test package contains all regression tests for Python as well as the modules
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+%patch10 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -266,9 +268,11 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.7/test/*
 
 %changelog
+*   Tue Mar 02 2021 Piyush Gupta <gpiyush@vmware.com> 3.7.5-11
+-   Fix CVE-2021-23336
 *   Tue Feb 16 2021 Tapas Kundu <tkundu@vmware.com> 3.7.5-10
 -   Packages python3-pip as separate spec
-*   Mon Jan 01 2021 Shreyas B. <shreyasb@vmware.com> 3.7.5-9
+*   Fri Jan 01 2021 Shreyas B. <shreyasb@vmware.com> 3.7.5-9
 -   Fix CVE-2021-3177
 *   Thu Nov 05 2020 Tapas Kundu <tkundu@vmware.com> 3.7.5-8
 -   Fix CVE-2020-27619
