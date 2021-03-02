@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.4
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt22
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -47,9 +47,9 @@ Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf
 Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
 %define sha1 ice=19507794824da33827756389ac8018aa84e9c427
 %if 0%{?fips}
-%define fips_canister_version 4.0.1-5.10.4-5-secure
+%define fips_canister_version 4.0.1-5.10.4-7-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=91b5031dc9599c6997931d5cb8982df9a181df7a
+%define sha1 fips-canister=4dc8578d3ff267ae378c947239fa0136a4bc26c3
 %endif
 Source17:        modify_kernel_configs.inc
 
@@ -936,6 +936,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-10
+-   FIPS canister update
 *   Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-9
 -   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Thu Feb 18 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-8

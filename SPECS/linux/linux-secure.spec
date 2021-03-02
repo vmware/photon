@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.4
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -27,9 +27,9 @@ Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 %if 0%{?fips}
-%define fips_canister_version 4.0.1-5.10.4-5-secure
+%define fips_canister_version 4.0.1-5.10.4-7-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=91b5031dc9599c6997931d5cb8982df9a181df7a
+%define sha1 fips-canister=4dc8578d3ff267ae378c947239fa0136a4bc26c3
 %endif
 
 # common
@@ -281,6 +281,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-8
+-   FIPS canister update
 *   Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-7
 -   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Tue Feb 02 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-6

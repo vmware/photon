@@ -1,4 +1,4 @@
-From a262a890651fcd873c938f9ec59799b22fef9a4c Mon Sep 17 00:00:00 2001
+From 68dba37070bf969af2d2cdb99e649b0308a91356 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Mon, 11 Jan 2021 16:46:43 +0000
 Subject: [PATCH 1/2] FIPS canister binary usage
@@ -13,9 +13,11 @@ This patch can be used at two stages:
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 ---
  arch/x86/crypto/Makefile |  4 ---
- crypto/Makefile          | 83 +++++++++++++++++++++++++++++++++++++++---------
+ crypto/Makefile          | 90 +++++++++++++++++++++++++++++++++++++++---------
  init/main.c              |  3 ++
- 3 files changed, 71 insertions(+), 19 deletions(-)
+ lib/Makefile             |  2 +-
+ lib/crypto/Makefile      |  9 -----
+ 5 files changed, 78 insertions(+), 30 deletions(-)
 
 diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
 index a31de0c6ccde..610a027493fa 100644
@@ -33,7 +35,7 @@ index a31de0c6ccde..610a027493fa 100644
  sha1-ssse3-y := sha1_avx2_x86_64_asm.o sha1_ssse3_asm.o sha1_ssse3_glue.o
  sha1-ssse3-$(CONFIG_AS_SHA1_NI) += sha1_ni_asm.o
 diff --git a/crypto/Makefile b/crypto/Makefile
-index b279483fba50..5ac3a747a6c6 100644
+index b279483fba50..cafd7696c984 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -40,7 +40,6 @@ rsa_generic-y += rsaprivkey.asn1.o
@@ -107,7 +109,13 @@ index b279483fba50..5ac3a747a6c6 100644
  CFLAGS_jitterentropy.o = -O0
  KASAN_SANITIZE_jitterentropy.o = n
  UBSAN_SANITIZE_jitterentropy.o = n
-@@ -178,7 +164,6 @@ obj-$(CONFIG_CRYPTO_CURVE25519) += curve25519-generic.o
+@@ -172,13 +158,11 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+ obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
+ obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
+ obj-$(CONFIG_CRYPTO_OFB) += ofb.o
+-obj-$(CONFIG_CRYPTO_ECC) += ecc.o
+ obj-$(CONFIG_CRYPTO_ESSIV) += essiv.o
+ obj-$(CONFIG_CRYPTO_CURVE25519) += curve25519-generic.o
  
  ecdh_generic-y += ecdh.o
  ecdh_generic-y += ecdh_helper.o
@@ -115,7 +123,7 @@ index b279483fba50..5ac3a747a6c6 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -197,3 +182,74 @@ obj-$(CONFIG_ASYMMETRIC_KEY_TYPE) += asymmetric_keys/
+@@ -197,3 +181,77 @@ obj-$(CONFIG_ASYMMETRIC_KEY_TYPE) += asymmetric_keys/
  obj-$(CONFIG_CRYPTO_HASH_INFO) += hash_info.o
  crypto_simd-y := simd.o
  obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
@@ -183,6 +191,9 @@ index b279483fba50..5ac3a747a6c6 100644
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_JITTERENTROPY)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_JITTERENTROPY=y)
 +endif
++ifneq ($(subst Y,y,$(CONFIG_CRYPTO_ECC)),y)
++  $(error FIPS canister requires CONFIG_CRYPTO_ECC=y)
++endif
 +ifneq ($(subst Y,y,$(CONFIG_CRYPTO_ECDH)),y)
 +  $(error FIPS canister requires CONFIG_CRYPTO_ECDH=y)
 +endif
@@ -211,6 +222,51 @@ index 9d964511fe0c..bcc6d5bb766d 100644
  	/*
  	 * These use large bootmem allocations and must precede
  	 * kmem_cache_init()
+diff --git a/lib/Makefile b/lib/Makefile
+index d415fc7067c5..d4590b81f595 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -32,7 +32,7 @@ KCSAN_SANITIZE_random32.o := n
+ 
+ lib-y := ctype.o string.o vsprintf.o cmdline.o \
+ 	 rbtree.o radix-tree.o timerqueue.o xarray.o \
+-	 idr.o extable.o sha1.o irq_regs.o argv_split.o \
++	 idr.o extable.o irq_regs.o argv_split.o \
+ 	 flex_proportions.o ratelimit.o show_mem.o \
+ 	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \
+ 	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \
+diff --git a/lib/crypto/Makefile b/lib/crypto/Makefile
+index 3a435629d9ce..acb4d9d80e3b 100644
+--- a/lib/crypto/Makefile
++++ b/lib/crypto/Makefile
+@@ -4,9 +4,6 @@
+ obj-y						+= chacha.o
+ obj-$(CONFIG_CRYPTO_LIB_CHACHA_GENERIC)		+= libchacha.o
+ 
+-obj-$(CONFIG_CRYPTO_LIB_AES)			+= libaes.o
+-libaes-y					:= aes.o
+-
+ obj-$(CONFIG_CRYPTO_LIB_ARC4)			+= libarc4.o
+ libarc4-y					:= arc4.o
+ 
+@@ -27,17 +24,11 @@ libcurve25519-generic-y				+= curve25519-generic.o
+ obj-$(CONFIG_CRYPTO_LIB_CURVE25519)		+= libcurve25519.o
+ libcurve25519-y					+= curve25519.o
+ 
+-obj-$(CONFIG_CRYPTO_LIB_DES)			+= libdes.o
+-libdes-y					:= des.o
+-
+ obj-$(CONFIG_CRYPTO_LIB_POLY1305_GENERIC)	+= libpoly1305.o
+ libpoly1305-y					:= poly1305-donna32.o
+ libpoly1305-$(CONFIG_ARCH_SUPPORTS_INT128)	:= poly1305-donna64.o
+ libpoly1305-y					+= poly1305.o
+ 
+-obj-$(CONFIG_CRYPTO_LIB_SHA256)			+= libsha256.o
+-libsha256-y					:= sha256.o
+-
+ ifneq ($(CONFIG_CRYPTO_MANAGER_DISABLE_TESTS),y)
+ libblake2s-y					+= blake2s-selftest.o
+ libchacha20poly1305-y				+= chacha20poly1305-selftest.o
 -- 
 2.11.0
 

@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.4
-Release:        16%{?kat_build:.kat}%{?dist}
+Release:        17%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -56,9 +56,9 @@ Source12:       ena-Use-new-API-interface-after-napi_hash_del-.patch
 Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
 %define sha1 ice=19507794824da33827756389ac8018aa84e9c427
 %if 0%{?fips}
-%define fips_canister_version 4.0.1-5.10.4-5-secure
+%define fips_canister_version 4.0.1-5.10.4-7-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=91b5031dc9599c6997931d5cb8982df9a181df7a
+%define sha1 fips-canister=4dc8578d3ff267ae378c947239fa0136a4bc26c3
 %endif
 
 # common
@@ -648,6 +648,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-17
+-   FIPS canister update
 *   Fri Feb 19 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-16
 -   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Fri Feb 19 2021 Ajay Kaher <akaher@vmware.com> 5.10.4-15

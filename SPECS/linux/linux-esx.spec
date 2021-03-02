@@ -1,7 +1,7 @@
 %global security_hardening none
 
 # Set this flag to 0 to build without canister
-%global fips 0
+%global fips 1
 
 # If kat_build is enabled, canister is not used.
 %if 0%{?kat_build:1}
@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.4
-Release:        13%{?kat_build:.kat}%{?dist}
+Release:        14%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -28,9 +28,9 @@ Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 Source5:        modify_kernel_configs.inc
 %if 0%{?fips}
-%define fips_canister_version 4.0.1-5.10.4-5-secure
+%define fips_canister_version 4.0.1-5.10.4-7-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=91b5031dc9599c6997931d5cb8982df9a181df7a
+%define sha1 fips-canister=4dc8578d3ff267ae378c947239fa0136a4bc26c3
 %endif
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
@@ -322,6 +322,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-14
+-   Enable FIPS canister
 *   Fri Feb 19 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-13
 -   Enable CONFIG_ISCSI_TCP support
 *   Fri Feb 19 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-12
