@@ -1,0 +1,30 @@
+From cebc01cbfd6c257f329e818b68bb1b2eef2afe09 Mon Sep 17 00:00:00 2001
+From: =?utf8?q?Ond=C5=99ej=20Ho=C5=A1ek?= <ondra.hosek@gmail.com>
+Date: Wed, 26 Aug 2020 04:26:50 +0200
+Subject: [PATCH 1/1] x86-64: Fix FMA4 detection in ifunc [BZ #26534]
+
+A typo in commit 107e6a3c2212ba7a3a4ec7cae8d82d73f7c95d0b causes the
+FMA4 code path to be taken on systems that support FMA, even if they do
+not support FMA4. Fix this to detect FMA4.
+
+(cherry picked from commit 23af890b3f04e80da783ba64e6b6d94822e01d54)
+---
+ sysdeps/x86_64/fpu/multiarch/ifunc-fma4.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sysdeps/x86_64/fpu/multiarch/ifunc-fma4.h b/sysdeps/x86_64/fpu/multiarch/ifunc-fma4.h
+index 7659758972..e5fd5ac9cb 100644
+--- a/sysdeps/x86_64/fpu/multiarch/ifunc-fma4.h
++++ b/sysdeps/x86_64/fpu/multiarch/ifunc-fma4.h
+@@ -32,7 +32,7 @@ IFUNC_SELECTOR (void)
+       && CPU_FEATURE_USABLE_P (cpu_features, AVX2))
+     return OPTIMIZE (fma);
+ 
+-  if (CPU_FEATURE_USABLE_P (cpu_features, FMA))
++  if (CPU_FEATURE_USABLE_P (cpu_features, FMA4))
+     return OPTIMIZE (fma4);
+ 
+   return OPTIMIZE (sse2);
+-- 
+2.27.0
+

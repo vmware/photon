@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -16,6 +16,7 @@ Source1:        locale-gen.sh
 Source2:        locale-gen.conf
 Patch0:         http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.31-fhs-1.patch
 Patch1:         0002-malloc-arena-fix.patch
+Patch2:         Fix_FMA4_detection_in_ifunc.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %define ExtraBuildRequires python3, python3-libs
@@ -72,6 +73,7 @@ Name Service Cache Daemon
 sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -305,6 +307,8 @@ fi
 
 
 %changelog
+*   Wed Mar 03 2021 Tapas Kundu <tkundu@vmware.com> 2.32-3
+-   Fix FMA4 detection in ifunc
 *   Mon Nov 30 2020 Ajay Kaher <akaher@vmware.com> 2.32-2
 -   Added post for glibc-iconv, to have:
 -   fast-loading gconv module configuration cache file
