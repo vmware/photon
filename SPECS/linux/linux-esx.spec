@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.177
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -774,6 +774,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Mar 03 2021 Ankit Jain <ankitja@vmware.com> 4.19.177-2
+-   Enable CONFIG_ISCSI_TCP support
 *   Fri Feb 26 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.177-1
 -   Update to version 4.19.177
 *   Fri Feb 19 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.174-5
