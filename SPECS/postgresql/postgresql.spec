@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        13.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -11,9 +11,13 @@ Distribution:   Photon
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
 %define sha1    postgresql=fc40c06ee7f2fd5f4ee5af88c8502f06a44c8698
 
+# Macros to be used by find_lang and such.
+%global pgmajorversion 13
+
 # Common libraries needed
 BuildRequires:  diffutils
 BuildRequires:  gcc
+BuildRequires:  gettext
 BuildRequires:  krb5-devel
 BuildRequires:  libedit-devel
 BuildRequires:  libxml2-devel
@@ -70,6 +74,14 @@ PostgreSQL is an advanced Object-Relational database management system (DBMS).
 The postgresql-server package contains the programs needed to create
 and run a PostgreSQL server, which will in turn allow you to create
 and maintain PostgreSQL databases.
+
+%package i18n
+Summary:    Additional language files for PostgreSQL
+Requires:	%{name} = %{version}-%{release}
+
+%description i18n
+The postgresql-i18n package includes additional language files for
+PostgreSQL.
 
 %package docs
 Summary:	Extra documentation for PostgreSQL
@@ -138,6 +150,7 @@ sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_man
 
 %configure \
     --enable-thread-safety \
+    --enable-nls \
     --with-ldap \
     --with-libxml \
     --with-openssl \
@@ -159,6 +172,40 @@ make install-world DESTDIR=%{buildroot}
 rm -f %{buildroot}/%{_datadir}/postgresql/extension/*plpython2u*
 rm -f %{buildroot}/%{_datadir}/postgresql/extension/*plpythonu-*
 rm -f %{buildroot}/%{_datadir}/postgresql/extension/*_plpythonu.control
+# Create file lists, for --enable-nls and i18n
+%find_lang ecpg-%{pgmajorversion}
+%find_lang ecpglib6-%{pgmajorversion}
+%find_lang initdb-%{pgmajorversion}
+%find_lang libpq5-%{pgmajorversion}
+%find_lang pg_archivecleanup-%{pgmajorversion}
+%find_lang pg_basebackup-%{pgmajorversion}
+%find_lang pg_checksums-%{pgmajorversion}
+%find_lang pg_config-%{pgmajorversion}
+%find_lang pg_controldata-%{pgmajorversion}
+%find_lang pg_ctl-%{pgmajorversion}
+%find_lang pg_dump-%{pgmajorversion}
+%find_lang pg_resetwal-%{pgmajorversion}
+%find_lang pg_rewind-%{pgmajorversion}
+%find_lang pg_test_fsync-%{pgmajorversion}
+%find_lang pg_test_timing-%{pgmajorversion}
+%find_lang pg_upgrade-%{pgmajorversion}
+%find_lang pg_verifybackup-%{pgmajorversion}
+%find_lang pg_waldump-%{pgmajorversion}
+%find_lang pgscripts-%{pgmajorversion}
+%find_lang plperl-%{pgmajorversion}
+cat plperl-%{pgmajorversion}.lang >> pg_i18n.lst
+%find_lang plpgsql-%{pgmajorversion}
+# plpython3 shares message files with plpython
+%find_lang plpython-%{pgmajorversion}
+cat plpython-%{pgmajorversion}.lang >> pg_i18n.lst
+%find_lang pltcl-%{pgmajorversion}
+cat pltcl-%{pgmajorversion}.lang >> pg_i18n.lst
+%find_lang postgres-%{pgmajorversion}
+%find_lang psql-%{pgmajorversion}
+cat libpq5-%{pgmajorversion}.lang >> pg_i18n.lst
+cat pg_config-%{pgmajorversion}.lang ecpg-%{pgmajorversion}.lang ecpglib6-%{pgmajorversion}.lang >> pg_i18n.lst
+cat initdb-%{pgmajorversion}.lang pg_ctl-%{pgmajorversion}.lang psql-%{pgmajorversion}.lang pg_dump-%{pgmajorversion}.lang pg_basebackup-%{pgmajorversion}.lang pgscripts-%{pgmajorversion}.lang >> pg_i18n.lst
+cat postgres-%{pgmajorversion}.lang pg_resetwal-%{pgmajorversion}.lang pg_checksums-%{pgmajorversion}.lang pg_verifybackup-%{pgmajorversion}.lang pg_controldata-%{pgmajorversion}.lang plpgsql-%{pgmajorversion}.lang pg_test_timing-%{pgmajorversion}.lang pg_test_fsync-%{pgmajorversion}.lang pg_archivecleanup-%{pgmajorversion}.lang pg_waldump-%{pgmajorversion}.lang pg_rewind-%{pgmajorversion}.lang pg_upgrade-%{pgmajorversion}.lang >> pg_i18n.lst
 
 %check
 chown -Rv nobody .
@@ -267,6 +314,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/pgoutput.so
 %{_libdir}/postgresql/plpgsql.so
 %{_libdir}/postgresql/*_and_*.so
+
+%files i18n -f pg_i18n.lst
 
 %files docs
 %defattr(-,root,root)
@@ -420,6 +469,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/plpython3.so
 
 %changelog
+*   Thu Mar 04 2021 Michael Paquier <mpaquier@vmware.com> 13.2-5
+-   Add support for internationalization support
 *   Tue Mar 02 2021 Michael Paquier <mpaquier@vmware.com> 13.2-4
 -   Removed unnecessary tweak for pg_regress.c for check phase
 *   Mon Mar 01 2021 Michael Paquier <mpaquier@vmware.com> 13.2-3
