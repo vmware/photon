@@ -1,0 +1,14 @@
+Change all implementations of get_dhcp_pid to use run_command
+
+--- a/azurelinuxagent/common/osutil/photonos.py	2021-03-04 17:14:53.423931243 +0530
++++ b/azurelinuxagent/common/osutil/photonos.py	2021-03-04 17:16:44.143218886 +0530
+@@ -63,8 +63,7 @@ class PhotonOSUtil(DefaultOSUtil):
+         return shellutil.run("systemctl stop waagent", chk_err=False)
+ 
+     def get_dhcp_pid(self):
+-        ret= shellutil.run_get_output("pidof systemd-networkd")
+-        return ret[1] if ret[0] == 0 else None
++        return self._get_dhcp_pid(["pidof", "systemd-networkd"])
+ 
+     def conf_sshd(self, disable_password):
+         pass

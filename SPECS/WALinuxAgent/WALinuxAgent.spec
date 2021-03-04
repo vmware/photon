@@ -1,12 +1,13 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.2.51
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
 Source0:        %{name}-%{version}.tar.gz
 Patch0:         photondistroadd.patch
+Patch1:         modify_get_dhcp_pid.patch
 %define sha1 WALinuxAgent=5534c15cd00d003504d8e9059c4e57b0a1c70f51
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -41,7 +42,7 @@ images that are built to run in the Windows Azure environment.
 %prep
 %setup -q -n %{name}-%{version}
 %patch0 -p1
-
+%patch1 -p1
 %pre -p /bin/sh
 
 %build
@@ -83,6 +84,8 @@ python2 setup.py check && python2 setup.py test
 /usr/lib/python2.7/site-packages/*
 
 %changelog
+* Thu Mar 04 2021 Tapas Kundu <tkundu@vmware.com> 2.2.51-2
+- Change all implementations of get_dhcp_pid to use run_command
 * Wed Jan 06 2021 Tapas Kundu <tkundu@vmware.com> 2.2.51-1
 - Version Bump
 * Mon Aug 10 2020 Anisha Kumari <kanisha@vmware.com> 2.2.40-1
