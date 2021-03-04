@@ -1,14 +1,14 @@
 Summary:        unbound dns server
 Name:           unbound
-Version:        1.11.0
-Release:        2%{?dist}
+Version:        1.12.0
+Release:        1%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
 Distribution:   Photon
 URL:            http://www.unbound.net
 Source0:        https://www.unbound.net/downloads/%{name}-%{version}.tar.gz
-%define sha1    unbound=a6c38b06ceff8ac05297bf2d151f2c6a8e5b6e96
+%define sha1    unbound=68009078d5f5025c95a8c9fe20b9e84335d53e2d
 Source1:        %{name}.service
 Requires:       systemd
 BuildRequires:  systemd
@@ -83,6 +83,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+*  Thu Mar 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.12.0-1
+-  Update to 1.12.0 for openssl 3.0 compatibility
 *  Wed Feb 02 2021 Shreyas B. <shryasb@vmware.com> 1.11.0-2
 -  Fix for CVE-2020-28935
 *  Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 1.11.0-1
