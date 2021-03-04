@@ -1,0 +1,33 @@
+From 6c32569334e2e7aadf4d8e8f9d1c48c3c5ee4c1e Mon Sep 17 00:00:00 2001
+From: Piyush Gupta <gpiyush@vmware.com>
+Date: Thu, 4 Mar 2021 06:25:57 +0000
+Subject: [PATCH] isoInstaller.py: User specified mount media
+
+This change intends to provide more flexibility to user by using
+user specified partition to mount. If a user uses any device other
+than cdrom to boot, the user can specify photon.media=/dev/sdb1 at kernel
+command line and mount_media will use /dev/sdb1 to mount.
+
+Change-Id: I381efd72753ff8e8236193d3b2f257dcdbc4706a
+---
+ photon_installer/isoInstaller.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/photon_installer/isoInstaller.py b/photon_installer/isoInstaller.py
+index bc02b60..1f6fc2d 100755
+--- a/photon_installer/isoInstaller.py
++++ b/photon_installer/isoInstaller.py
+@@ -148,8 +148,8 @@ class IsoInstaller(object):
+         elif photon_media == "cdrom":
+             cmdline.append('/dev/cdrom')
+         else:
+-            print("Unsupported installer media, check photon.media in kernel cmdline")
+-            raise Exception("Can not mount the cd")
++            #User specified mount path
++            cmdline.append(photon_media)
+ 
+         cmdline.extend(['-o', 'ro', mount_path])
+ 
+-- 
+2.23.0
+
