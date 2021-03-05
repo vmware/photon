@@ -1,138 +1,102 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Running Photon OS on Microsoft Azure</title>
-    <link>/docs-v3/installation-guide/run-photon-on-azure/</link>
-    <description>Recent content in Running Photon OS on Microsoft Azure on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs-v3/installation-guide/run-photon-on-azure/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs-V3: Prerequisites for Running Photon OS on Azure</title>
-      <link>/docs-v3/installation-guide/run-photon-on-azure/prerequisites-for-photon-os-on-azure/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/installation-guide/run-photon-on-azure/prerequisites-for-photon-os-on-azure/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Before you use Photon OS with Microsoft Azure, perform the following prerequisite tasks:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Verify that you have a Microsoft Azure account. To create an account, see &lt;a href=&#34;https://azure.microsoft.com&#34;&gt;https://azure.microsoft.com&lt;/a&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Install the latest version of Azure CLI. See &lt;a href=&#34;https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest&#34;&gt;Install Azure CLI 2.0&lt;/a&gt; and &lt;a href=&#34;https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest&#34;&gt;Get started with Azure CLI 2.0&lt;/a&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Verify that that you have a pair of SSH public and private keys.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Download and extract the Photon OS VHD file.&lt;/p&gt;
-&lt;p&gt;VMware packages Photon OS as a cloud-ready virtual hard disk (VHD file) that you can download for free from  &lt;a href=&#34;https://bintray.com/vmware/photon&#34;&gt;Bintray&lt;/a&gt;. This VHD file is a virtual appliance with the information and packages that Azure needs to launch an instance of Photon in the cloud. After you have downloaded the distribution archive, extract the VHD file from it. You will later need to upload this VHD file to Azure, where it will be stored in an Azure storage account. For more information, see &lt;a href=&#34;../../downloading-photon/&#34;&gt;Downloading Photon OS&lt;/a&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Set Up Azure Storage and Uploading the VHD</title>
-      <link>/docs-v3/installation-guide/run-photon-on-azure/setting-up-azure-storage-and-uploading-the-vhd/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/installation-guide/run-photon-on-azure/setting-up-azure-storage-and-uploading-the-vhd/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can use either the Azure Portal or the Azure CLI to set up your Azure storage space, upload the Photon OS VHD file, and create the Photon OS VM.&lt;/p&gt;
-&lt;h2 id=&#34;setting-up-using-the-azure-portal&#34;&gt;Setting Up Using the Azure Portal&lt;/h2&gt;
-&lt;p&gt;You can use the Azure portal to set up Photon OS 3.0 in the Azure cloud. The following instructions are brief. Refer to the Azure documentation for details.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Log in to the Azure portal at  &lt;a href=&#34;http://portal.azure.com/&#34;&gt;http://portal.azure.com&lt;/a&gt;.&lt;/li&gt;
-&lt;li&gt;Create a resource group. In the toolbar, choose Resource Groups, click &lt;strong&gt;+Add&lt;/strong&gt; , fill in the resource group fields, and choose &lt;strong&gt;Create&lt;/strong&gt;.&lt;/li&gt;
-&lt;li&gt;Create a storage account. In the toolbar, choose Storage Accounts, click &lt;strong&gt;+Add&lt;/strong&gt; , fill in the storage account fields (and the resource group you just created), and choose &lt;strong&gt;Create&lt;/strong&gt;.&lt;/li&gt;
-&lt;li&gt;Select the storage account.&lt;/li&gt;
-&lt;li&gt;Scroll down the storage account control bar, click Containers (below BLOB SERVICE), click &lt;strong&gt;+Container&lt;/strong&gt; , fill in the container fields, and choose &lt;strong&gt;Create&lt;/strong&gt;.&lt;/li&gt;
-&lt;li&gt;Select the container you just created.&lt;/li&gt;
-&lt;li&gt;Click &lt;strong&gt;Upload&lt;/strong&gt; and upload the Photon OS VHD image file to this container.&lt;/li&gt;
-&lt;li&gt;Once the VHD file is uploaded, refer to the Azure documentation for instructions on how to create and manage your Photon OS VM.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;setting-up-using-the-azure-cli&#34;&gt;Setting Up Using the Azure CLI&lt;/h2&gt;
-&lt;p&gt;You can use the Azure CLI 2.0 to set up Photon OS.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;  Except where overridden with parameter values, these commands create objects with default settings.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Create a resource group.&lt;/p&gt;
-&lt;p&gt;From the Azure CLI, create a resource group.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;az group create \
- --name &amp;amp;lt;your_resource_group&amp;amp;gt; \
- --location westus
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Create a storage account&lt;/p&gt;
-&lt;p&gt;Create a storage account associated with this resource group.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;az storage account create \
-    --resource-group &amp;amp;lt;your_resource_group&amp;amp;gt; \
-    --location westus \
-    --name &amp;amp;lt;your_account_name&amp;amp;gt; \
-    --kind Storage \
-    --sku Standard_LRS
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;List the Keys for the Storage Account&lt;/p&gt;
-&lt;p&gt;Retrieve the keys associated with your newly created storage account.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;az storage account keys list \
-    --resource-group &amp;amp;lt;your_resource_group&amp;amp;gt; \
-    --account-name &amp;amp;lt;your_account_name&amp;amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Create the Storage Container&lt;/p&gt;
-&lt;p&gt;Create a storage container associated with your newly created storage account.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; The sample create.sh script, described below, does this for you programmatically.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;az storage container create \
-    --account-name &amp;amp;lt;your_account_name&amp;amp;gt; \
-    --name &amp;amp;lt;your_container_name&amp;amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Verify Your Setup in the Azure Portal&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Log into the Azure portal using your account credentials.&lt;/li&gt;
-&lt;li&gt;From the left toolbar, click &lt;strong&gt;Storage Accounts&lt;/strong&gt;. You should see your storage accounts.&lt;/li&gt;
-&lt;li&gt;Select the storage account.&lt;/li&gt;
-&lt;li&gt;Scroll down the storage account control bar and click &lt;strong&gt;Containers&lt;/strong&gt; (below BLOB SERVICE). You should see the container you created.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Upload the Photon OS Distribution to Your Storage Container&lt;/p&gt;
-&lt;p&gt;The Photon OS distribution for Azure is 16GB. You can download it locally or to a mounted, shared location.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;az storage blob upload \
-    --account-name &amp;amp;lt;your_account_name&amp;amp;gt; \
-    --account-key &amp;amp;lt;your_account_key&amp;amp;gt; \
-    --container-name &amp;amp;lt;your_container_name&amp;amp;gt; \
-    --type page \
-    --file &amp;amp;lt;vhd_path&amp;amp;gt; \
-    --name &amp;amp;lt;vm_name&amp;amp;gt;.vhd
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;example-setup-script&#34;&gt;Example Setup Script&lt;/h3&gt;
-&lt;p&gt;You can use the following script (create.sh) to upload your VHD file programmatically and create the VM. Before you run it, specify the following settings:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;resource_group name&lt;/li&gt;
-&lt;li&gt;account_name&lt;/li&gt;
-&lt;li&gt;account_key (public or private)&lt;/li&gt;
-&lt;li&gt;container_name&lt;/li&gt;
-&lt;li&gt;public_key_file&lt;/li&gt;
-&lt;li&gt;vhd_path and and vm_name of the Photon OS VHD distribution file&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;The following script returns the complete IP address of the newly created VM.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;#!/bin/bash
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Running Photon OS on Microsoft Azure</title><link>/docs-v3/installation-guide/run-photon-on-azure/</link><description>Recent content in Running Photon OS on Microsoft Azure on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs-v3/installation-guide/run-photon-on-azure/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs-V3: Prerequisites for Running Photon OS on Azure</title><link>/docs-v3/installation-guide/run-photon-on-azure/prerequisites-for-photon-os-on-azure/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/run-photon-on-azure/prerequisites-for-photon-os-on-azure/</guid><description>
+&lt;p>Before you use Photon OS with Microsoft Azure, perform the following prerequisite tasks:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Verify that you have a Microsoft Azure account. To create an account, see &lt;a href="https://azure.microsoft.com">https://azure.microsoft.com&lt;/a>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Install the latest version of Azure CLI. See &lt;a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest">Install Azure CLI 2.0&lt;/a> and &lt;a href="https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest">Get started with Azure CLI 2.0&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Verify that that you have a pair of SSH public and private keys.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Download and extract the Photon OS VHD file.&lt;/p>
+&lt;p>VMware packages Photon OS as a cloud-ready virtual hard disk (VHD file) that you can download for free from &lt;a href="https://bintray.com/vmware/photon">Bintray&lt;/a>. This VHD file is a virtual appliance with the information and packages that Azure needs to launch an instance of Photon in the cloud. After you have downloaded the distribution archive, extract the VHD file from it. You will later need to upload this VHD file to Azure, where it will be stored in an Azure storage account. For more information, see &lt;a href="../../downloading-photon/">Downloading Photon OS&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>Docs-V3: Set Up Azure Storage and Uploading the VHD</title><link>/docs-v3/installation-guide/run-photon-on-azure/setting-up-azure-storage-and-uploading-the-vhd/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/run-photon-on-azure/setting-up-azure-storage-and-uploading-the-vhd/</guid><description>
+&lt;p>You can use either the Azure Portal or the Azure CLI to set up your Azure storage space, upload the Photon OS VHD file, and create the Photon OS VM.&lt;/p>
+&lt;h2 id="setting-up-using-the-azure-portal">Setting Up Using the Azure Portal&lt;/h2>
+&lt;p>You can use the Azure portal to set up Photon OS 3.0 in the Azure cloud. The following instructions are brief. Refer to the Azure documentation for details.&lt;/p>
+&lt;ol>
+&lt;li>Log in to the Azure portal at &lt;a href="http://portal.azure.com/">http://portal.azure.com&lt;/a>.&lt;/li>
+&lt;li>Create a resource group. In the toolbar, choose Resource Groups, click &lt;strong>+Add&lt;/strong> , fill in the resource group fields, and choose &lt;strong>Create&lt;/strong>.&lt;/li>
+&lt;li>Create a storage account. In the toolbar, choose Storage Accounts, click &lt;strong>+Add&lt;/strong> , fill in the storage account fields (and the resource group you just created), and choose &lt;strong>Create&lt;/strong>.&lt;/li>
+&lt;li>Select the storage account.&lt;/li>
+&lt;li>Scroll down the storage account control bar, click Containers (below BLOB SERVICE), click &lt;strong>+Container&lt;/strong> , fill in the container fields, and choose &lt;strong>Create&lt;/strong>.&lt;/li>
+&lt;li>Select the container you just created.&lt;/li>
+&lt;li>Click &lt;strong>Upload&lt;/strong> and upload the Photon OS VHD image file to this container.&lt;/li>
+&lt;li>Once the VHD file is uploaded, refer to the Azure documentation for instructions on how to create and manage your Photon OS VM.&lt;/li>
+&lt;/ol>
+&lt;h2 id="setting-up-using-the-azure-cli">Setting Up Using the Azure CLI&lt;/h2>
+&lt;p>You can use the Azure CLI 2.0 to set up Photon OS.&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong> Except where overridden with parameter values, these commands create objects with default settings.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Create a resource group.&lt;/p>
+&lt;p>From the Azure CLI, create a resource group.&lt;/p>
+&lt;pre>&lt;code>az group create \
+--name &amp;amp;lt;your_resource_group&amp;amp;gt; \
+--location westus
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Create a storage account&lt;/p>
+&lt;p>Create a storage account associated with this resource group.&lt;/p>
+&lt;pre>&lt;code>az storage account create \
+--resource-group &amp;amp;lt;your_resource_group&amp;amp;gt; \
+--location westus \
+--name &amp;amp;lt;your_account_name&amp;amp;gt; \
+--kind Storage \
+--sku Standard_LRS
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>List the Keys for the Storage Account&lt;/p>
+&lt;p>Retrieve the keys associated with your newly created storage account.&lt;/p>
+&lt;pre>&lt;code>az storage account keys list \
+--resource-group &amp;amp;lt;your_resource_group&amp;amp;gt; \
+--account-name &amp;amp;lt;your_account_name&amp;amp;gt;
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Create the Storage Container&lt;/p>
+&lt;p>Create a storage container associated with your newly created storage account.&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong> The sample create.sh script, described below, does this for you programmatically.&lt;/p>
+&lt;pre>&lt;code>az storage container create \
+--account-name &amp;amp;lt;your_account_name&amp;amp;gt; \
+--name &amp;amp;lt;your_container_name&amp;amp;gt;
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Verify Your Setup in the Azure Portal&lt;/p>
+&lt;ol>
+&lt;li>Log into the Azure portal using your account credentials.&lt;/li>
+&lt;li>From the left toolbar, click &lt;strong>Storage Accounts&lt;/strong>. You should see your storage accounts.&lt;/li>
+&lt;li>Select the storage account.&lt;/li>
+&lt;li>Scroll down the storage account control bar and click &lt;strong>Containers&lt;/strong> (below BLOB SERVICE). You should see the container you created.&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;li>
+&lt;p>Upload the Photon OS Distribution to Your Storage Container&lt;/p>
+&lt;p>The Photon OS distribution for Azure is 16GB. You can download it locally or to a mounted, shared location.&lt;/p>
+&lt;pre>&lt;code>az storage blob upload \
+--account-name &amp;amp;lt;your_account_name&amp;amp;gt; \
+--account-key &amp;amp;lt;your_account_key&amp;amp;gt; \
+--container-name &amp;amp;lt;your_container_name&amp;amp;gt; \
+--type page \
+--file &amp;amp;lt;vhd_path&amp;amp;gt; \
+--name &amp;amp;lt;vm_name&amp;amp;gt;.vhd
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;/ol>
+&lt;h3 id="example-setup-script">Example Setup Script&lt;/h3>
+&lt;p>You can use the following script (create.sh) to upload your VHD file programmatically and create the VM. Before you run it, specify the following settings:&lt;/p>
+&lt;ul>
+&lt;li>resource_group name&lt;/li>
+&lt;li>account_name&lt;/li>
+&lt;li>account_key (public or private)&lt;/li>
+&lt;li>container_name&lt;/li>
+&lt;li>public_key_file&lt;/li>
+&lt;li>vhd_path and and vm_name of the Photon OS VHD distribution file&lt;/li>
+&lt;/ul>
+&lt;p>The following script returns the complete IP address of the newly created VM.&lt;/p>
+&lt;pre>&lt;code>#!/bin/bash
 vhd_path=$1
 vm_name=$2
 export PATH=$PATH:/root/azure_new/bin/az
@@ -144,49 +108,37 @@ container_name=&amp;amp;quot;mydisks&amp;amp;quot;
 url=&amp;amp;quot;https://${account_name}.blob.core.windows.net/${container_name}/${vm_name}.vhd&amp;amp;quot;
 public_key_file=&amp;amp;quot;/root/azure_new/jenkins.pub&amp;amp;quot;
 echo &amp;amp;quot;########################&amp;amp;quot;
-echo &amp;amp;quot;#   Create container   #&amp;amp;quot;
+echo &amp;amp;quot;# Create container #&amp;amp;quot;
 echo &amp;amp;quot;########################&amp;amp;quot;
 /root/azure_new/bin/az storage container create --account-name ${account_name} --name ${container_name}
 echo &amp;amp;quot;##################&amp;amp;quot;
-echo &amp;amp;quot;#   Upload vhd   #&amp;amp;quot;
+echo &amp;amp;quot;# Upload vhd #&amp;amp;quot;
 echo &amp;amp;quot;##################&amp;amp;quot;
 /root/azure_new/bin/az storage blob upload --account-name ${account_name} \
-    --account-key ${account_key} \
-    --container-name ${container_name} \
-    --type page \
-    --file ${vhd_path} \
-    --name ${vm_name}.vhd
+--account-key ${account_key} \
+--container-name ${container_name} \
+--type page \
+--file ${vhd_path} \
+--name ${vm_name}.vhd
 echo &amp;amp;quot;##################&amp;amp;quot;
-echo &amp;amp;quot;#   Create vm    #&amp;amp;quot;
+echo &amp;amp;quot;# Create vm #&amp;amp;quot;
 echo &amp;amp;quot;##################&amp;amp;quot;
 echo &amp;amp;quot;az vm create --resource-group ${resource_group} --location westus --name ${vm_name} --storage-account ${account_name} --os-type linux --admin-username michellew --ssh-key-value ${public_key_file} --image ${url} --use-unmanaged-disk ... ...&amp;amp;quot;
 /root/azure_new/bin/az vm create --resource-group ${resource_group} --location westus --name ${vm_name} --storage-account ${account_name} --os-type linux --admin-username michellew --ssh-key-value ${public_key_file} --image ${url} --use-unmanaged-disk
-&lt;/code&gt;&lt;/pre&gt;
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Remove Photon OS From Azure</title>
-      <link>/docs-v3/installation-guide/run-photon-on-azure/remove-photon-from-azure/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/installation-guide/run-photon-on-azure/remove-photon-from-azure/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can use the following delete.sh script to programmatically and silently remove the VM instance, VHD file, and container.&lt;/p&gt;
-&lt;p&gt;Consider deleting idle VMs so that you are not charged when not in use.&lt;/p&gt;
-&lt;p&gt;Before you run it, specify the following settings:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;resource_group name (from step 1, above)&lt;/li&gt;
-&lt;li&gt;account_name (from step 2, above)&lt;/li&gt;
-&lt;li&gt;account_key (public or private) (from step 3, above)&lt;/li&gt;
-&lt;li&gt;container_name (from step 4, above)&lt;/li&gt;
-&lt;li&gt;public_key_file&lt;/li&gt;
-&lt;li&gt;vm_name of the Photon OS VHD distribution file&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;delete.sh&lt;/strong&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;#!/bin/bash
+&lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Remove Photon OS From Azure</title><link>/docs-v3/installation-guide/run-photon-on-azure/remove-photon-from-azure/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/run-photon-on-azure/remove-photon-from-azure/</guid><description>
+&lt;p>You can use the following delete.sh script to programmatically and silently remove the VM instance, VHD file, and container.&lt;/p>
+&lt;p>Consider deleting idle VMs so that you are not charged when not in use.&lt;/p>
+&lt;p>Before you run it, specify the following settings:&lt;/p>
+&lt;ul>
+&lt;li>resource_group name (from step 1, above)&lt;/li>
+&lt;li>account_name (from step 2, above)&lt;/li>
+&lt;li>account_key (public or private) (from step 3, above)&lt;/li>
+&lt;li>container_name (from step 4, above)&lt;/li>
+&lt;li>public_key_file&lt;/li>
+&lt;li>vm_name of the Photon OS VHD distribution file&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>delete.sh&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>#!/bin/bash
 vm_name=$1
 resource_group=&amp;amp;quot;&amp;amp;quot;
 account_name=&amp;amp;quot;&amp;amp;quot;
@@ -196,39 +148,33 @@ url=&amp;amp;quot;https://${account_name}.blob.core.windows.net/${container_name
 public_key_file=&amp;amp;quot;/root/azure_new/jenkins.pub&amp;amp;quot;
 exit_code=0
 echo &amp;amp;quot;##################&amp;amp;quot;
-echo &amp;amp;quot;#   Delete vm    #&amp;amp;quot;
+echo &amp;amp;quot;# Delete vm #&amp;amp;quot;
 echo &amp;amp;quot;##################&amp;amp;quot;
-echo &amp;amp;quot;az vm list  --resource-group ${resource_group} ... ...&amp;amp;quot;
-/root/azure_new/bin/az vm list  --resource-group ${resource_group}
+echo &amp;amp;quot;az vm list --resource-group ${resource_group} ... ...&amp;amp;quot;
+/root/azure_new/bin/az vm list --resource-group ${resource_group}
 echo &amp;amp;quot;az vm delete --resource-group ${resource_group} --name ${vm_name} --yes ... ...&amp;amp;quot;
 /root/azure_new/bin/az vm delete --resource-group ${resource_group} --name ${vm_name} --yes
 if [$? -ne 0];then
-   exit_code=1
+exit_code=1
 fi
-echo &amp;amp;quot;az vm list  --resource-group ${resource_group} ... ...&amp;amp;quot;
-/root/azure_new/bin/az vm list  --resource-group ${resource_group}
+echo &amp;amp;quot;az vm list --resource-group ${resource_group} ... ...&amp;amp;quot;
+/root/azure_new/bin/az vm list --resource-group ${resource_group}
 echo &amp;amp;quot;##############$####&amp;amp;quot;
-echo &amp;amp;quot;#   Delete vhd    #&amp;amp;quot;
+echo &amp;amp;quot;# Delete vhd #&amp;amp;quot;
 echo &amp;amp;quot;###############$###&amp;amp;quot;
 echo &amp;amp;quot;az storage blob list --account-name ${account_name} --container-name ${container_name} ... ...&amp;amp;quot;
 /root/azure_new/bin/az storage blob list --account-name ${account_name} --container-name ${container_name}
 echo &amp;amp;quot;az storage blob delete --account-name ${account_name} --container-name ${container_name} --name ${vm_name}.vhd ... ...&amp;amp;quot;
 /root/azure_new/bin/az storage blob delete --account-name ${account_name} --container-name ${container_name} --name ${vm_name}.vhd
 if [$? -ne 0];then
-   exit_code=1
+exit_code=1
 fi
 echo &amp;amp;quot;az storage blob list --account-name ${account_name} --container-name ${container_name} ... ...&amp;amp;quot;
 /root/azure_new/bin/az storage blob list --account-name ${account_name} --container-name ${container_name}
 echo &amp;amp;quot;########################&amp;amp;quot;
-echo &amp;amp;quot;#   Delete container   #&amp;amp;quot;
+echo &amp;amp;quot;# Delete container #&amp;amp;quot;
 echo &amp;amp;quot;########################&amp;amp;quot;
 /root/azure_new/bin/az storage container delete --account-name ${account_name} --name ${container_name}
 /root/azure_new/bin/az storage container delete --account-name ${account_name} --name vhds
 exit ${exit_code}
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can now proceed to &lt;a href=&#34;../../deploying-a-containerized-application-in-photon-os/&#34;&gt;Deploying a Containerized Application in Photon OS&lt;/a&gt;.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+&lt;/code>&lt;/pre>&lt;p>You can now proceed to &lt;a href="../../deploying-a-containerized-application-in-photon-os/">Deploying a Containerized Application in Photon OS&lt;/a>.&lt;/p></description></item></channel></rss>

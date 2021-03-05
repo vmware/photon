@@ -1,262 +1,202 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Running Photon OS on Google Compute Engine</title>
-    <link>/docs/installation-guide/run-photon-on-gce/</link>
-    <description>Recent content in Running Photon OS on Google Compute Engine on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs/installation-guide/run-photon-on-gce/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs: Prerequisites for Running Photon OS on GCE</title>
-      <link>/docs/installation-guide/run-photon-on-gce/prerequisites-for-photon-os-on-gce/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/run-photon-on-gce/prerequisites-for-photon-os-on-gce/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Before you use Photon OS within GCE, verify that you have the following resources:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;#google-compute-engine-account&#34;&gt;Google Compute Engine account&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#gce-tools&#34;&gt;GCE tools&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#photon-os-image&#34;&gt;Photon OS Image&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;google-compute-engine-account&#34;&gt;Google Compute Engine Account&lt;/h2&gt;
-&lt;p&gt;Working with GCE requires a Google Compute Engine account with valid payment information. Keep in mind that, if you try the examples in this document, you will be charged by Google. The GCE-ready version of Photon OS is free to use.&lt;/p&gt;
-&lt;h2 id=&#34;gce-tools&#34;&gt;GCE Tools&lt;/h2&gt;
-&lt;p&gt;GCE is a service that lets you run virtual machines on Google&amp;rsquo;s infrastructure. You can customize the virtual machine as much as you want, and you can even install your own custom operating system image. Or, you can adopt one of the public &lt;a href=&#34;https://cloud.google.com/compute/docs/operating-systems/&#34;&gt;images&lt;/a&gt; provided by Google. For any operating system to work with GCE, it must match Google&amp;rsquo;s infrastructure needs. Google provides tools that VM instances require to work correctly on GCE:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;&lt;a href=&#34;https://cloud.google.com/compute/docs/startupscript&#34;&gt;Google startup scripts&lt;/a&gt;&lt;/strong&gt;: You can provide some startup script to configure your instances at startup.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;&lt;a href=&#34;https://cloud.google.com/compute/docs/metadata&#34;&gt;Google Daemon&lt;/a&gt;&lt;/strong&gt;: Google Daemon creates new accounts and configures ssh to accept public keys using the metadata server.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;&lt;a href=&#34;https://cloud.google.com/sdk/&#34;&gt;Google Cloud SDK&lt;/a&gt;&lt;/strong&gt;: Command line tools to manage your images, instances and other objects on GCE.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Perform the following tasks to make Photon OS work on GCE:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Install Google Compute Engine Image packages&lt;/li&gt;
-&lt;li&gt;Install Google Cloud SDK&lt;/li&gt;
-&lt;li&gt;Change GPT partition table to MBR&lt;/li&gt;
-&lt;li&gt;Update the Grub config for new MBR and serial console output&lt;/li&gt;
-&lt;li&gt;Update ssh configuration&lt;/li&gt;
-&lt;li&gt;Delete ssh host keys&lt;/li&gt;
-&lt;li&gt;Set the time zone to UTC&lt;/li&gt;
-&lt;li&gt;Use the Google NTP server&lt;/li&gt;
-&lt;li&gt;Delete the hostname file.&lt;/li&gt;
-&lt;li&gt;Add Google hosts /etc/hosts&lt;/li&gt;
-&lt;li&gt;Set MTU to 1460. SSH will not work without it.&lt;/li&gt;
-&lt;li&gt;Create &lt;code&gt;/etc/ssh/sshd_not_to_be_run&lt;/code&gt; with just the contents “GOOGLE\n”.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;For more information see &lt;a href=&#34;https://cloud.google.com/compute/docs/tutorials/building-images&#34;&gt;Importing Boot Disk Images to Compute Engine&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;For information about upgrading the Photon OS Linux kernel see &lt;a href=&#34;Upgrading-the-Kernel-Version-Requires-Grub-Changes-for-AWS-and-GCE-Images.md&#34;&gt;Upgrading the Kernel Version Requires Grub Changes for AWS and GCE Images&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;photon-os-image&#34;&gt;Photon OS Image&lt;/h2&gt;
-&lt;p&gt;VMware recommends that administrators use the Photon OS image for Google Compute Engine (GCE) to create Photon OS instances on GCE. Photon OS bundles the Google startup scripts, daemon, and cloud SDK into a GCE-ready image that has been modified to meet the configuration requirements of GCE. You can download the Photon OS image for GCE from the following URL:
-&lt;a href=&#34;https://bintray.com/vmware/photon&#34;&gt;https://bintray.com/vmware/photon&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;For instructions, see &lt;a href=&#34;Downloading-Photon-OS.md&#34;&gt;Downloading Photon OS&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;Optionally you can customize Photon OS to work with GCE.&lt;/p&gt;
-&lt;h3 id=&#34;creating-photon-image-for-gce&#34;&gt;Creating Photon image for GCE&lt;/h3&gt;
-&lt;p&gt;Perform the following tasks:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Prepare Photon Disk&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Install Photon Minimal on Fusion/Workstation and install some required packages.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;mount /dev/cdrom /media/cdrom
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Running Photon OS on Google Compute Engine</title><link>/docs/installation-guide/run-photon-on-gce/</link><description>Recent content in Running Photon OS on Google Compute Engine on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/installation-guide/run-photon-on-gce/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Prerequisites for Running Photon OS on GCE</title><link>/docs/installation-guide/run-photon-on-gce/prerequisites-for-photon-os-on-gce/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-on-gce/prerequisites-for-photon-os-on-gce/</guid><description>
+&lt;p>Before you use Photon OS within GCE, verify that you have the following resources:&lt;/p>
+&lt;ol>
+&lt;li>&lt;a href="#google-compute-engine-account">Google Compute Engine account&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#gce-tools">GCE tools&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#photon-os-image">Photon OS Image&lt;/a>&lt;/li>
+&lt;/ol>
+&lt;h2 id="google-compute-engine-account">Google Compute Engine Account&lt;/h2>
+&lt;p>Working with GCE requires a Google Compute Engine account with valid payment information. Keep in mind that, if you try the examples in this document, you will be charged by Google. The GCE-ready version of Photon OS is free to use.&lt;/p>
+&lt;h2 id="gce-tools">GCE Tools&lt;/h2>
+&lt;p>GCE is a service that lets you run virtual machines on Google&amp;rsquo;s infrastructure. You can customize the virtual machine as much as you want, and you can even install your own custom operating system image. Or, you can adopt one of the public &lt;a href="https://cloud.google.com/compute/docs/operating-systems/">images&lt;/a> provided by Google. For any operating system to work with GCE, it must match Google&amp;rsquo;s infrastructure needs. Google provides tools that VM instances require to work correctly on GCE:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>&lt;a href="https://cloud.google.com/compute/docs/startupscript">Google startup scripts&lt;/a>&lt;/strong>: You can provide some startup script to configure your instances at startup.&lt;/li>
+&lt;li>&lt;strong>&lt;a href="https://cloud.google.com/compute/docs/metadata">Google Daemon&lt;/a>&lt;/strong>: Google Daemon creates new accounts and configures ssh to accept public keys using the metadata server.&lt;/li>
+&lt;li>&lt;strong>&lt;a href="https://cloud.google.com/sdk/">Google Cloud SDK&lt;/a>&lt;/strong>: Command line tools to manage your images, instances and other objects on GCE.&lt;/li>
+&lt;/ul>
+&lt;p>Perform the following tasks to make Photon OS work on GCE:&lt;/p>
+&lt;ol>
+&lt;li>Install Google Compute Engine Image packages&lt;/li>
+&lt;li>Install Google Cloud SDK&lt;/li>
+&lt;li>Change GPT partition table to MBR&lt;/li>
+&lt;li>Update the Grub config for new MBR and serial console output&lt;/li>
+&lt;li>Update ssh configuration&lt;/li>
+&lt;li>Delete ssh host keys&lt;/li>
+&lt;li>Set the time zone to UTC&lt;/li>
+&lt;li>Use the Google NTP server&lt;/li>
+&lt;li>Delete the hostname file.&lt;/li>
+&lt;li>Add Google hosts /etc/hosts&lt;/li>
+&lt;li>Set MTU to 1460. SSH will not work without it.&lt;/li>
+&lt;li>Create &lt;code>/etc/ssh/sshd_not_to_be_run&lt;/code> with just the contents “GOOGLE\n”.&lt;/li>
+&lt;/ol>
+&lt;p>For more information see &lt;a href="https://cloud.google.com/compute/docs/tutorials/building-images">Importing Boot Disk Images to Compute Engine&lt;/a>.&lt;/p>
+&lt;p>For information about upgrading the Photon OS Linux kernel see &lt;a href="Upgrading-the-Kernel-Version-Requires-Grub-Changes-for-AWS-and-GCE-Images.md">Upgrading the Kernel Version Requires Grub Changes for AWS and GCE Images&lt;/a>&lt;/p>
+&lt;h2 id="photon-os-image">Photon OS Image&lt;/h2>
+&lt;p>VMware recommends that administrators use the Photon OS image for Google Compute Engine (GCE) to create Photon OS instances on GCE. Photon OS bundles the Google startup scripts, daemon, and cloud SDK into a GCE-ready image that has been modified to meet the configuration requirements of GCE. You can download the Photon OS image for GCE from the following URL:
+&lt;a href="https://bintray.com/vmware/photon">https://bintray.com/vmware/photon&lt;/a>&lt;/p>
+&lt;p>For instructions, see &lt;a href="Downloading-Photon-OS.md">Downloading Photon OS&lt;/a>.&lt;/p>
+&lt;p>Optionally you can customize Photon OS to work with GCE.&lt;/p>
+&lt;h3 id="creating-photon-image-for-gce">Creating Photon image for GCE&lt;/h3>
+&lt;p>Perform the following tasks:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Prepare Photon Disk&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Install Photon Minimal on Fusion/Workstation and install some required packages.&lt;/p>
+&lt;pre>&lt;code>mount /dev/cdrom /media/cdrom
 tdnf install python2-libs ntp sudo wget tar which gptfdisk sed findutils grep gzip -y
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Convert GPT to MBR and update the grub&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt; Photon installer installs GPT partition table by default but GCE only accepts an MBR (msdos) type partition table. So, you must convert GPT to MBR and update the grub. Use the following commands to update the grub:
-    
-      ```
-    # Change partition table to MBR from GPT
-    sgdisk -m 1:2 /dev/sda
-    grub2-install /dev/sda
-       
-    # Enable serial console on grub for GCE.
-    cat &amp;lt;&amp;lt; EOF &amp;gt;&amp;gt; /etc/default/grub
-    GRUB_CMDLINE_LINUX=&amp;quot;console=ttyS0,38400n8&amp;quot;
-    GRUB_TERMINAL=serial
-    GRUB_SERIAL_COMMAND=&amp;quot;serial --speed=38400 --unit=0 --word=8 --parity=no --stop=1&amp;quot;
-    EOF
-       
-    # Create new grub.cfg based on the settings in /etc/default/grub
-    grub2-mkconfig -o /boot/grub2/grub.cfg
-      ```
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Install Google Cloud SDK and GCE Packages&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;      tdnf install -y google-compute-engine google-compute-engine-services
-      cp /usr/lib/systemd/system/google* /lib/systemd/system/
-      cd /lib/systemd/system/multi-user.target.wants/
-         
-      # Create links in multi-user.target to auto-start these scripts and services.
-      for i in ../google*; do  ln -s $i `basename $i`; done
-         
-      cd /tmp/; wget https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz
-      tar -xf google-cloud-sdk.tar.gz
-      cd google-cloud-sdk
-      ./install.sh
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Update /etc/hosts file with GCE values as follows:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;      echo &amp;quot;169.254.169.254 metadata.google.internal metadata&amp;quot; &amp;gt;&amp;gt; /etc/hosts
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Remove all servers from ntp.conf and add Google&amp;rsquo;s ntp server.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;      sed -i -e &amp;quot;/server/d&amp;quot; /etc/ntp.conf
-      cat /etc/ntp.conf
-      echo &amp;quot;server 169.254.169.254&amp;quot; &amp;gt;&amp;gt; /etc/ntp.conf
-      # Create ntpd.service to auto starting ntp server.
-      cat &amp;lt;&amp;lt; EOF &amp;gt;&amp;gt; /lib/systemd/system/ntpd.service
-      [Unit]
-      Description=Network Time Service
-      After=network.target nss-lookup.target
-   
-      [Service]
-      Type=forking
-      PrivateTmp=true
-      ExecStart=/usr/sbin/ntpd -g -u ntp:ntp
-      Restart=always
-         
-      [Install]
-      WantedBy=multi-user.target
-      EOF
-         
-      # Add link in multi-user.target.wants to auto start this service.
-      cd /lib/systemd/system/multi-user.target.wants/
-      ln -s ../ntpd.service ntpd.service
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Set UTC timezone&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;      ln -sf /usr/share/zoneinfo/UTC /etc/localtime
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Update /etc/resolv.conf&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;      echo &amp;quot;nameserver 8.8.8.8&amp;quot; &amp;gt;&amp;gt; /etc/resolv.conf
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Remove ssh host keys and add script to regenerate them at boot time.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;      rm /etc/ssh/ssh_host_*
-      # Depending on the installation, you may need to purge the following keys
-      rm /etc/ssh/ssh_host_rsa_key*
-      rm /etc/ssh/ssh_host_dsa_key*
-      rm /etc/ssh/ssh_host_ecdsa_key*
-   
-      sed -i -e &amp;quot;/exit 0/d&amp;quot; /etc/rc.local
-      echo &amp;quot;[ -f /etc/ssh/ssh_host_key ] &amp;amp;&amp;amp; echo &#39;Keys found.&#39; || ssh-keygen -A&amp;quot; &amp;gt;&amp;gt; /etc/rc.local
-      echo &amp;quot;exit 0&amp;quot; &amp;gt;&amp;gt; /etc/rc.local
-      printf &amp;quot;GOOGLE\n&amp;quot; &amp;gt; /etc/ssh/sshd_not_to_be_run
-         
-      # Edit sshd_config and ssh_config as per instructions on [this link](https://cloud.google.com/compute/docs/tutorials/building-images).
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Change MTU to 1460 for network interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt; # Create a startup service in systemd that will change MTU and exits
-      cat &amp;lt;&amp;lt; EOF &amp;gt;&amp;gt; /lib/systemd/system/eth0.service
-      [Unit]
-      Description=Network interface initialization
-      After=local-fs.target network-online.target network.target
-      Wants=local-fs.target network-online.target network.target
-    
-      [Service]
-      ExecStart=/bin/ifconfig eth0 mtu 1460 up
-      Type=oneshot
-    
-      [Install]
-      WantedBy=multi-user.target
-      EOF
-      # Make this service auto-start at boot.
-      cd /lib/systemd/system/multi-user.target.wants/
-      ln -s ../eth0.service eth0.service
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Pack and upload to GCE.&lt;/p&gt;
-&lt;p&gt;Shut down the Photon VM and copy its disk to THE &lt;code&gt;tmp&lt;/code&gt; folder.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;```
-# You will need to install Google Cloud SDK on host machine to upload the image and play with GCE.
-      cp Virtual\ Machines.localized/photon.vmwarevm/Virtual\ Disk.vmdk /tmp/disk.vmdk
-      cd /tmp
-      # GCE needs disk to be named as disk.raw with raw format.
-      qemu-img convert -f vmdk -O raw disk.vmdk disk.raw
-         
-      # ONLY GNU tar will work to create acceptable tar.gz file for GCE. MAC&#39;s default tar is BSDTar which will not work. 
-      # On Mac OS X ensure that you have gtar &amp;quot;GNU Tar&amp;quot; installed. exmaple: gtar -Szcf photon.tar.gz disk.raw 
-   
-      gtar -Szcf photon.tar.gz disk.raw 
-         
-      # Upload
-      gsutil cp photon.tar.gz gs://photon-bucket
-         
-      # Create image
-      gcloud compute --project &amp;quot;&amp;lt;project name&amp;gt;&amp;quot; images create &amp;quot;photon-beta-vYYYYMMDD&amp;quot; --description &amp;quot;Photon Beta&amp;quot; --source-uri https://storage.googleapis.com/photon-bucket/photon032315.tar.gz
-         
-      # Create instance on GCE of photon image
-      gcloud compute --project &amp;quot;photon&amp;quot; instances create &amp;quot;photon&amp;quot; --zone &amp;quot;us-central1-f&amp;quot; --machine-type &amp;quot;n1-standard-1&amp;quot; --network &amp;quot;default&amp;quot; --maintenance-policy &amp;quot;MIGRATE&amp;quot; --scopes &amp;quot;https://www.googleapis.com/auth/devstorage.read_only&amp;quot; &amp;quot;https://www.googleapis.com/auth/logging.write&amp;quot; --image &amp;quot;https://www.googleapis.com/compute/v1/projects/photon/global/images/photon&amp;quot; --boot-disk-type &amp;quot;pd-standard&amp;quot; --boot-disk-device-name &amp;quot;photon&amp;quot;
-   
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code>
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Convert GPT to MBR and update the grub&lt;/p>
+&lt;pre>&lt;code> Photon installer installs GPT partition table by default but GCE only accepts an MBR (msdos) type partition table. So, you must convert GPT to MBR and update the grub. Use the following commands to update the grub:
 ```
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Installing Photon OS on Google Compute Engine</title>
-      <link>/docs/installation-guide/run-photon-on-gce/installing-photon-os-on-gce/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/run-photon-on-gce/installing-photon-os-on-gce/</guid>
-      <description>
-        
-        
-        &lt;p&gt;After you download the Photon OS image for GCE, log into GCE and install Photon OS.&lt;/p&gt;
-&lt;p&gt;Perform the following steps:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Create a New Bucket&lt;/p&gt;
-&lt;p&gt;Create a new bucket to store your Photon OS image for GCE.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/gce1.jpg&#34; alt=&#34;gce1&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Upload the Photon OS Image&lt;/p&gt;
-&lt;p&gt;While viewing the bucket that created, click the &lt;code&gt;Upload files&lt;/code&gt; button, navigate to your Photon OS image and click the &lt;code&gt;Choose&lt;/code&gt; button.&lt;/p&gt;
-&lt;p&gt;When the upload finishes, you can see the Photon OS compressed image in the file list for the bucket that you created.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/gce2.jpg&#34; alt=&#34;gce2&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Create a New Image&lt;/p&gt;
-&lt;p&gt;To create a new image, click on &lt;code&gt;Images&lt;/code&gt; in the &lt;code&gt;Compute&lt;/code&gt; category in the left panel and then click on the &lt;code&gt;New Image&lt;/code&gt; button.&lt;/p&gt;
-&lt;p&gt;Enter a name for the image in the &lt;code&gt;Name&lt;/code&gt; field and change the &lt;code&gt;Source&lt;/code&gt; to &lt;code&gt;Cloud Storage file&lt;/code&gt; using the pull-down menu. Then, in the &lt;code&gt;Cloud Storage file&lt;/code&gt; field, enter the bucket name and filename as the path to the Photon OS image for GCE. In this example, where the bucket was named &lt;code&gt;photon_storage,&lt;/code&gt; the path is as follows:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt; `photon_storage/photon-gce-2.0-tar.gz`
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The new image form autopopulates the &lt;code&gt;gs://&lt;/code&gt; file path prefix.*&lt;/p&gt;
-&lt;p&gt;Click the &lt;code&gt;Create&lt;/code&gt; button to create your image. You must be able to see the Images catalog and your Photon OS image at the top of the list.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Create a New Instance&lt;/p&gt;
-&lt;p&gt;To create an instance, check the box next to the Photon OS image and click the &lt;code&gt;Create Instance&lt;/code&gt; button.&lt;/p&gt;
-&lt;p&gt;On the &lt;code&gt;Create a new instance&lt;/code&gt; form, provide a name for this instance, confirm the zone into which this instance is to be deployed and, before clicking &lt;code&gt;Create,&lt;/code&gt; check the &lt;code&gt;Allow HTTP traffic&lt;/code&gt; and &lt;code&gt;Allow HTTPS traffic&lt;/code&gt; options.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: The firewall rules in this example are optional. You can configure the ports according to your requirements.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/gce4.jpg&#34; alt=&#34;gce4&#34;&gt;&lt;/p&gt;
-&lt;p&gt;When the instance is created you will be returned to your list of VM instances. If you click on the instance, the status page for the instance will allow you to SSH into your Photon OS environment using the SSH button at the top of the panel.&lt;/p&gt;
-&lt;p&gt;At this point, your instance is running and you are ready to start the Docker engine and run a container workload. For more information, see &lt;a href=&#34;../../deploying-a-containerized-application-in-photon-os/&#34;&gt;Deploying a Containerized Application in Photon OS&lt;/a&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+# Change partition table to MBR from GPT
+sgdisk -m 1:2 /dev/sda
+grub2-install /dev/sda
+# Enable serial console on grub for GCE.
+cat &amp;lt;&amp;lt; EOF &amp;gt;&amp;gt; /etc/default/grub
+GRUB_CMDLINE_LINUX=&amp;quot;console=ttyS0,38400n8&amp;quot;
+GRUB_TERMINAL=serial
+GRUB_SERIAL_COMMAND=&amp;quot;serial --speed=38400 --unit=0 --word=8 --parity=no --stop=1&amp;quot;
+EOF
+# Create new grub.cfg based on the settings in /etc/default/grub
+grub2-mkconfig -o /boot/grub2/grub.cfg
+```
+&lt;/code>&lt;/pre>
+&lt;/li>
+&lt;li>
+&lt;p>Install Google Cloud SDK and GCE Packages&lt;/p>
+&lt;pre>&lt;code> tdnf install -y google-compute-engine google-compute-engine-services
+cp /usr/lib/systemd/system/google* /lib/systemd/system/
+cd /lib/systemd/system/multi-user.target.wants/
+# Create links in multi-user.target to auto-start these scripts and services.
+for i in ../google*; do ln -s $i `basename $i`; done
+cd /tmp/; wget https://dl.google.com/dl/cloudsdk/release/google-cloud-sdk.tar.gz
+tar -xf google-cloud-sdk.tar.gz
+cd google-cloud-sdk
+./install.sh
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Update /etc/hosts file with GCE values as follows:&lt;/p>
+&lt;pre>&lt;code> echo &amp;quot;169.254.169.254 metadata.google.internal metadata&amp;quot; &amp;gt;&amp;gt; /etc/hosts
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Remove all servers from ntp.conf and add Google&amp;rsquo;s ntp server.&lt;/p>
+&lt;pre>&lt;code> sed -i -e &amp;quot;/server/d&amp;quot; /etc/ntp.conf
+cat /etc/ntp.conf
+echo &amp;quot;server 169.254.169.254&amp;quot; &amp;gt;&amp;gt; /etc/ntp.conf
+# Create ntpd.service to auto starting ntp server.
+cat &amp;lt;&amp;lt; EOF &amp;gt;&amp;gt; /lib/systemd/system/ntpd.service
+[Unit]
+Description=Network Time Service
+After=network.target nss-lookup.target
+[Service]
+Type=forking
+PrivateTmp=true
+ExecStart=/usr/sbin/ntpd -g -u ntp:ntp
+Restart=always
+[Install]
+WantedBy=multi-user.target
+EOF
+# Add link in multi-user.target.wants to auto start this service.
+cd /lib/systemd/system/multi-user.target.wants/
+ln -s ../ntpd.service ntpd.service
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Set UTC timezone&lt;/p>
+&lt;pre>&lt;code> ln -sf /usr/share/zoneinfo/UTC /etc/localtime
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Update /etc/resolv.conf&lt;/p>
+&lt;pre>&lt;code> echo &amp;quot;nameserver 8.8.8.8&amp;quot; &amp;gt;&amp;gt; /etc/resolv.conf
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Remove ssh host keys and add script to regenerate them at boot time.&lt;/p>
+&lt;pre>&lt;code> rm /etc/ssh/ssh_host_*
+# Depending on the installation, you may need to purge the following keys
+rm /etc/ssh/ssh_host_rsa_key*
+rm /etc/ssh/ssh_host_dsa_key*
+rm /etc/ssh/ssh_host_ecdsa_key*
+sed -i -e &amp;quot;/exit 0/d&amp;quot; /etc/rc.local
+echo &amp;quot;[ -f /etc/ssh/ssh_host_key ] &amp;amp;&amp;amp; echo 'Keys found.' || ssh-keygen -A&amp;quot; &amp;gt;&amp;gt; /etc/rc.local
+echo &amp;quot;exit 0&amp;quot; &amp;gt;&amp;gt; /etc/rc.local
+printf &amp;quot;GOOGLE\n&amp;quot; &amp;gt; /etc/ssh/sshd_not_to_be_run
+# Edit sshd_config and ssh_config as per instructions on [this link](https://cloud.google.com/compute/docs/tutorials/building-images).
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Change MTU to 1460 for network interface.&lt;/p>
+&lt;pre>&lt;code> # Create a startup service in systemd that will change MTU and exits
+cat &amp;lt;&amp;lt; EOF &amp;gt;&amp;gt; /lib/systemd/system/eth0.service
+[Unit]
+Description=Network interface initialization
+After=local-fs.target network-online.target network.target
+Wants=local-fs.target network-online.target network.target
+[Service]
+ExecStart=/bin/ifconfig eth0 mtu 1460 up
+Type=oneshot
+[Install]
+WantedBy=multi-user.target
+EOF
+# Make this service auto-start at boot.
+cd /lib/systemd/system/multi-user.target.wants/
+ln -s ../eth0.service eth0.service
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Pack and upload to GCE.&lt;/p>
+&lt;p>Shut down the Photon VM and copy its disk to THE &lt;code>tmp&lt;/code> folder.&lt;/p>
+&lt;pre>&lt;code>```
+# You will need to install Google Cloud SDK on host machine to upload the image and play with GCE.
+cp Virtual\ Machines.localized/photon.vmwarevm/Virtual\ Disk.vmdk /tmp/disk.vmdk
+cd /tmp
+# GCE needs disk to be named as disk.raw with raw format.
+qemu-img convert -f vmdk -O raw disk.vmdk disk.raw
+# ONLY GNU tar will work to create acceptable tar.gz file for GCE. MAC's default tar is BSDTar which will not work.
+# On Mac OS X ensure that you have gtar &amp;quot;GNU Tar&amp;quot; installed. exmaple: gtar -Szcf photon.tar.gz disk.raw
+gtar -Szcf photon.tar.gz disk.raw
+# Upload
+gsutil cp photon.tar.gz gs://photon-bucket
+# Create image
+gcloud compute --project &amp;quot;&amp;lt;project name&amp;gt;&amp;quot; images create &amp;quot;photon-beta-vYYYYMMDD&amp;quot; --description &amp;quot;Photon Beta&amp;quot; --source-uri https://storage.googleapis.com/photon-bucket/photon032315.tar.gz
+# Create instance on GCE of photon image
+gcloud compute --project &amp;quot;photon&amp;quot; instances create &amp;quot;photon&amp;quot; --zone &amp;quot;us-central1-f&amp;quot; --machine-type &amp;quot;n1-standard-1&amp;quot; --network &amp;quot;default&amp;quot; --maintenance-policy &amp;quot;MIGRATE&amp;quot; --scopes &amp;quot;https://www.googleapis.com/auth/devstorage.read_only&amp;quot; &amp;quot;https://www.googleapis.com/auth/logging.write&amp;quot; --image &amp;quot;https://www.googleapis.com/compute/v1/projects/photon/global/images/photon&amp;quot; --boot-disk-type &amp;quot;pd-standard&amp;quot; --boot-disk-device-name &amp;quot;photon&amp;quot;
+```
+&lt;/code>&lt;/pre>
+&lt;/li>
+&lt;/ol></description></item><item><title>Docs: Installing Photon OS on Google Compute Engine</title><link>/docs/installation-guide/run-photon-on-gce/installing-photon-os-on-gce/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-on-gce/installing-photon-os-on-gce/</guid><description>
+&lt;p>After you download the Photon OS image for GCE, log into GCE and install Photon OS.&lt;/p>
+&lt;p>Perform the following steps:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Create a New Bucket&lt;/p>
+&lt;p>Create a new bucket to store your Photon OS image for GCE.&lt;/p>
+&lt;p>&lt;img src="../../images/gce1.jpg" alt="gce1">&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Upload the Photon OS Image&lt;/p>
+&lt;p>While viewing the bucket that created, click the &lt;code>Upload files&lt;/code> button, navigate to your Photon OS image and click the &lt;code>Choose&lt;/code> button.&lt;/p>
+&lt;p>When the upload finishes, you can see the Photon OS compressed image in the file list for the bucket that you created.&lt;/p>
+&lt;p>&lt;img src="../../images/gce2.jpg" alt="gce2">&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Create a New Image&lt;/p>
+&lt;p>To create a new image, click on &lt;code>Images&lt;/code> in the &lt;code>Compute&lt;/code> category in the left panel and then click on the &lt;code>New Image&lt;/code> button.&lt;/p>
+&lt;p>Enter a name for the image in the &lt;code>Name&lt;/code> field and change the &lt;code>Source&lt;/code> to &lt;code>Cloud Storage file&lt;/code> using the pull-down menu. Then, in the &lt;code>Cloud Storage file&lt;/code> field, enter the bucket name and filename as the path to the Photon OS image for GCE. In this example, where the bucket was named &lt;code>photon_storage,&lt;/code> the path is as follows:&lt;/p>
+&lt;pre>&lt;code> `photon_storage/photon-gce-2.0-tar.gz`
+&lt;/code>&lt;/pre>
+&lt;p>The new image form autopopulates the &lt;code>gs://&lt;/code> file path prefix.*&lt;/p>
+&lt;p>Click the &lt;code>Create&lt;/code> button to create your image. You must be able to see the Images catalog and your Photon OS image at the top of the list.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Create a New Instance&lt;/p>
+&lt;p>To create an instance, check the box next to the Photon OS image and click the &lt;code>Create Instance&lt;/code> button.&lt;/p>
+&lt;p>On the &lt;code>Create a new instance&lt;/code> form, provide a name for this instance, confirm the zone into which this instance is to be deployed and, before clicking &lt;code>Create,&lt;/code> check the &lt;code>Allow HTTP traffic&lt;/code> and &lt;code>Allow HTTPS traffic&lt;/code> options.&lt;/p>
+&lt;p>&lt;strong>Note&lt;/strong>: The firewall rules in this example are optional. You can configure the ports according to your requirements.&lt;/p>
+&lt;p>&lt;img src="../../images/gce4.jpg" alt="gce4">&lt;/p>
+&lt;p>When the instance is created you will be returned to your list of VM instances. If you click on the instance, the status page for the instance will allow you to SSH into your Photon OS environment using the SSH button at the top of the panel.&lt;/p>
+&lt;p>At this point, your instance is running and you are ready to start the Docker engine and run a container workload. For more information, see &lt;a href="../../deploying-a-containerized-application-in-photon-os/">Deploying a Containerized Application in Photon OS&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;/ol></description></item></channel></rss>

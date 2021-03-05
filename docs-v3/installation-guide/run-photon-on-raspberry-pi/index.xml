@@ -1,161 +1,106 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Running Photon OS on Raspberry Pi 3</title>
-    <link>/docs-v3/installation-guide/run-photon-on-raspberry-pi/</link>
-    <description>Recent content in Running Photon OS on Raspberry Pi 3 on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs-v3/installation-guide/run-photon-on-raspberry-pi/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs-V3: Prerequisites for Running Photon OS on Raspberry Pi 3</title>
-      <link>/docs-v3/installation-guide/run-photon-on-raspberry-pi/prerequisites-for-photon-os-on-rpi/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/installation-guide/run-photon-on-raspberry-pi/prerequisites-for-photon-os-on-rpi/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Before you use Photon OS within RPi3, perform the following prerequisite tasks:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Verify that you have the following resources:&lt;/p&gt;
- &lt;table style=&#34;height: 170px;&#34; border=&#34;1&#34; width=&#34;157&#34; cellspacing=&#34;0&#34; cellpadding=&#34;10&#34;&gt;
- &lt;tbody&gt;
- &lt;tr&gt;
- &lt;td&gt;&lt;b&gt;Resource&lt;/b&gt;&lt;/td&gt;
- &lt;td&gt;&lt;b&gt;Description&lt;/b&gt;&lt;/td&gt;
- &lt;/tr&gt;
- &lt;tr&gt;
- &lt;td&gt;Raspberry Pi 3&lt;/td&gt;
- &lt;td&gt;Raspberry Pi 3 Model B or Model B+ board. This will serve as the target of the installation.&lt;/td&gt;
- &lt;/tr&gt;
- &lt;tr&gt;
- &lt;td&gt;Host computer&lt;/td&gt;
- &lt;td&gt; &lt;p&gt;A computer equipped with the following:&lt;/p&gt; 
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;1.  An SD card reader. 
-&lt;p&gt;2. Software utilities to flash an image onto an SD-card (details and instructions provided below).&lt;/td&gt;
-	&lt;/tr&gt;
-	&lt;tr&gt;
-	&lt;td&gt;Distribution File&lt;/td&gt;
-	&lt;td&gt;Photon OS RPi3 image downloaded from &lt;a href=&#34;https://bintray.com/vmware/photon/3.0#files/3.0%2FBeta%2Frpi3&#34;&gt;bintray&lt;/a&gt; &lt;br&gt; 
-&lt;p&gt;&lt;b&gt;Note&lt;/b&gt;: Photon OS RPi3 image is available only from Photon 3.0 onwards.&lt;/td&gt;
-	&lt;/tr&gt;
-	&lt;/tbody&gt;
-	&lt;/table&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Download Photon OS.&lt;/p&gt;
-&lt;p&gt;To install Photon OS on a Raspberry Pi 3, you must download the Photon OS RPi3 image, which is distributed as a compressed raw disk image with the file extension &lt;code&gt;.raw.xz&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: You cannot use the Photon ISO to install on RPi3.&lt;/p&gt;
-&lt;p&gt;Go to the following bintray URL and download the latest release of Photon OS image for RPi3: &lt;a href=&#34;https://bintray.com/vmware/photon/3.0#files/3.0%2FBeta%2Frpi3&#34;&gt;https://bintray.com/vmware/photon/3.0#files/3.0%2FBeta%2Frpi3&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;For instructions, see &lt;a href=&#34;../../downloading-photon/&#34;&gt;Downloading Photon OS&lt;/a&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Installing Photon OS on Raspberry Pi 3</title>
-      <link>/docs-v3/installation-guide/run-photon-on-raspberry-pi/installing-the-iso-image-for-photon-os-rpi/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/installation-guide/run-photon-on-raspberry-pi/installing-the-iso-image-for-photon-os-rpi/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can get Photon OS up and running on an RPi3 board, by flashing the Photon RPi3 image onto the board&amp;rsquo;s SD card.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;#flash-photon-os-on-raspberry-pi-3&#34;&gt;Flash Photon OS on Raspberry Pi 3&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#boot-photon-os-on-raspberry-pi-3&#34;&gt;Boot Photon OS on Raspberry Pi 3&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#update-login-credentials&#34;&gt;Update login credentials&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;flash-photon-os-on-raspberry-pi-3&#34;&gt;Flash Photon OS on Raspberry Pi 3&lt;/h2&gt;
-&lt;p&gt;After you have downloaded the Photon RPi3 image with the file extension &lt;code&gt;.raw.xz&lt;/code&gt;, you can choose one of the methods below to flash it onto the RPi3 SD card.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Flash Photon to RPi3 using Etcher&lt;/li&gt;
-&lt;li&gt;Flash Photon to RPi3 using Linux CLI&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;flash-photon-to-rpi3-using-etcher&#34;&gt;Flash Photon to RPi3 using Etcher&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;Install Etcher &lt;a href=&#34;https://etcher.io/&#34;&gt;https://etcher.io/&lt;/a&gt;, which is a utility to flash SD cards attached to your host computer.&lt;/li&gt;
-&lt;li&gt;Plug the RPi3 SD card into your host computer&amp;rsquo;s SD card reader.&lt;/li&gt;
-&lt;li&gt;Perform the following steps on the Etcher GUI: &lt;strong&gt;Select image&lt;/strong&gt; -&amp;gt; &lt;strong&gt;Select drive&lt;/strong&gt; -&amp;gt; &lt;strong&gt;Flash&lt;/strong&gt;, by selecting the Photon OS RPi3 as image and the RPi3 SD card as drive.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;flash-photon-to-rpi3-using-linux-cli&#34;&gt;Flash Photon to RPi3 using Linux CLI&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;If you have Linux running on your host computer, install the &lt;code&gt;xz&lt;/code&gt; package, which provides the &lt;code&gt;xz&lt;/code&gt; compression utility and related tools, from your distribution package manager.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Plug the RPi3&amp;rsquo;s SD card into your host computer&amp;rsquo;s SD card reader.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Identify the device file under &lt;code&gt;/dev&lt;/code&gt; that refers to the RPi3 SD card. For example, &lt;code&gt;/dev/sdc&lt;/code&gt;. This file path is used to flash the Photon image onto the RPi3 in the next step.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: Make sure that you are flashing to the device file that refers to your RPi3 SD card. Running the below command with an incorrect device file will overwrite that device without warning and might result in a corrupted disk. The device file &amp;lsquo;/dev/sdc` is an example and might not be the device file in your case.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Run the following command to flash Photon onto the RPi3 SD card:&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;xzcat &amp;lt;photon-rpi3-image.raw.xz&amp;gt; | sudo dd of=/dev/sdc bs=4M conv=fsync&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;boot-photon-os-on-raspberry-pi-3&#34;&gt;Boot Photon OS on Raspberry Pi 3&lt;/h2&gt;
-&lt;p&gt;After you flash Photon OS successfully onto the RPi3 SD card, eject the card from your host computer and plug it back into the RPi3 board.&lt;/p&gt;
-&lt;p&gt;When you power on the Raspberry Pi 3, it boots with Photon OS.&lt;/p&gt;
-&lt;p&gt;After the splash screen, Photon OS prompts you to log in.&lt;/p&gt;
-&lt;h2 id=&#34;update-login-credentials&#34;&gt;Update login credentials&lt;/h2&gt;
-&lt;p&gt;The Photon OS RPi3 image is configured with a default password. However, all Photon OS instances that are created using this image will require an immediate password change upon login. The default account credentials are:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Username: &lt;code&gt;root&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Password: &lt;code&gt;changeme&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;After you provide these credentials, Photon OS prompts you to create a new password and type it a second time to verify it. Photon OS does not allow common dictionary words for the root password. When you are logged in, you will see the shell prompt.&lt;/p&gt;
-&lt;p&gt;You can now run &lt;code&gt;tdnf list&lt;/code&gt; to view all the ARM packages that you can install on Photon OS.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Enabling Rpi3 Interfaces using Device Tree</title>
-      <link>/docs-v3/installation-guide/run-photon-on-raspberry-pi/enabling-rpi-interfaces-using-devicetree/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/installation-guide/run-photon-on-raspberry-pi/enabling-rpi-interfaces-using-devicetree/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS RPI3 images from Photon 3.0 rev2 has Device Tree Overlay support. And these images have compiled Overlays to enable/disable Rpi3 Interface. Perform the following:&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;SPI Interface&lt;/strong&gt;:
-Execute following commands to enable SPI Interface:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;mkdir /sys/kernel/config/device-tree/overlays/
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Running Photon OS on Raspberry Pi 3</title><link>/docs-v3/installation-guide/run-photon-on-raspberry-pi/</link><description>Recent content in Running Photon OS on Raspberry Pi 3 on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs-v3/installation-guide/run-photon-on-raspberry-pi/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs-V3: Prerequisites for Running Photon OS on Raspberry Pi 3</title><link>/docs-v3/installation-guide/run-photon-on-raspberry-pi/prerequisites-for-photon-os-on-rpi/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/run-photon-on-raspberry-pi/prerequisites-for-photon-os-on-rpi/</guid><description>
+&lt;p>Before you use Photon OS within RPi3, perform the following prerequisite tasks:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Verify that you have the following resources:&lt;/p>
+&lt;table style="height: 170px;" border="1" width="157" cellspacing="0" cellpadding="10">
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;b>Resource&lt;/b>&lt;/td>
+&lt;td>&lt;b>Description&lt;/b>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Raspberry Pi 3&lt;/td>
+&lt;td>Raspberry Pi 3 Model B or Model B+ board. This will serve as the target of the installation.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Host computer&lt;/td>
+&lt;td> &lt;p>A computer equipped with the following:&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>1. An SD card reader.
+&lt;p>2. Software utilities to flash an image onto an SD-card (details and instructions provided below).&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Distribution File&lt;/td>
+&lt;td>Photon OS RPi3 image downloaded from &lt;a href="https://bintray.com/vmware/photon/3.0#files/3.0%2FBeta%2Frpi3">bintray&lt;/a> &lt;br>
+&lt;p>&lt;b>Note&lt;/b>: Photon OS RPi3 image is available only from Photon 3.0 onwards.&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;ol>
+&lt;li>
+&lt;p>Download Photon OS.&lt;/p>
+&lt;p>To install Photon OS on a Raspberry Pi 3, you must download the Photon OS RPi3 image, which is distributed as a compressed raw disk image with the file extension &lt;code>.raw.xz&lt;/code>.&lt;/p>
+&lt;p>&lt;strong>Note&lt;/strong>: You cannot use the Photon ISO to install on RPi3.&lt;/p>
+&lt;p>Go to the following bintray URL and download the latest release of Photon OS image for RPi3: &lt;a href="https://bintray.com/vmware/photon/3.0#files/3.0%2FBeta%2Frpi3">https://bintray.com/vmware/photon/3.0#files/3.0%2FBeta%2Frpi3&lt;/a>.&lt;/p>
+&lt;p>For instructions, see &lt;a href="../../downloading-photon/">Downloading Photon OS&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>Docs-V3: Installing Photon OS on Raspberry Pi 3</title><link>/docs-v3/installation-guide/run-photon-on-raspberry-pi/installing-the-iso-image-for-photon-os-rpi/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/run-photon-on-raspberry-pi/installing-the-iso-image-for-photon-os-rpi/</guid><description>
+&lt;p>You can get Photon OS up and running on an RPi3 board, by flashing the Photon RPi3 image onto the board&amp;rsquo;s SD card.&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="#flash-photon-os-on-raspberry-pi-3">Flash Photon OS on Raspberry Pi 3&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#boot-photon-os-on-raspberry-pi-3">Boot Photon OS on Raspberry Pi 3&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#update-login-credentials">Update login credentials&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="flash-photon-os-on-raspberry-pi-3">Flash Photon OS on Raspberry Pi 3&lt;/h2>
+&lt;p>After you have downloaded the Photon RPi3 image with the file extension &lt;code>.raw.xz&lt;/code>, you can choose one of the methods below to flash it onto the RPi3 SD card.&lt;/p>
+&lt;ol>
+&lt;li>Flash Photon to RPi3 using Etcher&lt;/li>
+&lt;li>Flash Photon to RPi3 using Linux CLI&lt;/li>
+&lt;/ol>
+&lt;h3 id="flash-photon-to-rpi3-using-etcher">Flash Photon to RPi3 using Etcher&lt;/h3>
+&lt;ol>
+&lt;li>Install Etcher &lt;a href="https://etcher.io/">https://etcher.io/&lt;/a>, which is a utility to flash SD cards attached to your host computer.&lt;/li>
+&lt;li>Plug the RPi3 SD card into your host computer&amp;rsquo;s SD card reader.&lt;/li>
+&lt;li>Perform the following steps on the Etcher GUI: &lt;strong>Select image&lt;/strong> -&amp;gt; &lt;strong>Select drive&lt;/strong> -&amp;gt; &lt;strong>Flash&lt;/strong>, by selecting the Photon OS RPi3 as image and the RPi3 SD card as drive.&lt;/li>
+&lt;/ol>
+&lt;h3 id="flash-photon-to-rpi3-using-linux-cli">Flash Photon to RPi3 using Linux CLI&lt;/h3>
+&lt;ol>
+&lt;li>
+&lt;p>If you have Linux running on your host computer, install the &lt;code>xz&lt;/code> package, which provides the &lt;code>xz&lt;/code> compression utility and related tools, from your distribution package manager.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Plug the RPi3&amp;rsquo;s SD card into your host computer&amp;rsquo;s SD card reader.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Identify the device file under &lt;code>/dev&lt;/code> that refers to the RPi3 SD card. For example, &lt;code>/dev/sdc&lt;/code>. This file path is used to flash the Photon image onto the RPi3 in the next step.&lt;/p>
+&lt;p>&lt;strong>Note&lt;/strong>: Make sure that you are flashing to the device file that refers to your RPi3 SD card. Running the below command with an incorrect device file will overwrite that device without warning and might result in a corrupted disk. The device file &amp;lsquo;/dev/sdc` is an example and might not be the device file in your case.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Run the following command to flash Photon onto the RPi3 SD card:&lt;/p>
+&lt;p>&lt;code>xzcat &amp;lt;photon-rpi3-image.raw.xz&amp;gt; | sudo dd of=/dev/sdc bs=4M conv=fsync&lt;/code>&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="boot-photon-os-on-raspberry-pi-3">Boot Photon OS on Raspberry Pi 3&lt;/h2>
+&lt;p>After you flash Photon OS successfully onto the RPi3 SD card, eject the card from your host computer and plug it back into the RPi3 board.&lt;/p>
+&lt;p>When you power on the Raspberry Pi 3, it boots with Photon OS.&lt;/p>
+&lt;p>After the splash screen, Photon OS prompts you to log in.&lt;/p>
+&lt;h2 id="update-login-credentials">Update login credentials&lt;/h2>
+&lt;p>The Photon OS RPi3 image is configured with a default password. However, all Photon OS instances that are created using this image will require an immediate password change upon login. The default account credentials are:&lt;/p>
+&lt;ul>
+&lt;li>Username: &lt;code>root&lt;/code>&lt;/li>
+&lt;li>Password: &lt;code>changeme&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>After you provide these credentials, Photon OS prompts you to create a new password and type it a second time to verify it. Photon OS does not allow common dictionary words for the root password. When you are logged in, you will see the shell prompt.&lt;/p>
+&lt;p>You can now run &lt;code>tdnf list&lt;/code> to view all the ARM packages that you can install on Photon OS.&lt;/p></description></item><item><title>Docs-V3: Enabling Rpi3 Interfaces using Device Tree</title><link>/docs-v3/installation-guide/run-photon-on-raspberry-pi/enabling-rpi-interfaces-using-devicetree/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/run-photon-on-raspberry-pi/enabling-rpi-interfaces-using-devicetree/</guid><description>
+&lt;p>Photon OS RPI3 images from Photon 3.0 rev2 has Device Tree Overlay support. And these images have compiled Overlays to enable/disable Rpi3 Interface. Perform the following:&lt;/p>
+&lt;p>&lt;strong>SPI Interface&lt;/strong>:
+Execute following commands to enable SPI Interface:&lt;/p>
+&lt;pre>&lt;code>mkdir /sys/kernel/config/device-tree/overlays/
 cat /boot/broadcom/overlays/bcm2837-rpi-enable-spi0.dtbo &amp;gt; /sys/kernel/config/device-tree/overlays/spi/dtbo
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Audio Interface&lt;/strong&gt;:
-Execute following commands to enable Audio Interface:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;mkdir  /sys/kernel/config/device-tree/overlays/audio
-cat /boot/broadcom/overlays/bcm2837-rpi-enable-audio.dtbo &amp;gt;  /sys/kernel/config/device-tree/overlays/audio/dtbo
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: Ensure that the &lt;strong&gt;linux-drivers-sound&lt;/strong&gt; rpm is installed.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;I2C Interface&lt;/strong&gt;:
-Execute following command to enable I2C Interface:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;modprobe i2c-dev
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;#Customizing Device Tree Overlay&lt;/p&gt;
-&lt;p&gt;Photon OS also provides Device Tree Compilers (i.e. dtc), to compile &lt;strong&gt;Customised Device Tree Overlays&lt;/strong&gt;. Execute following command to install dtc on Photon OS:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf install dtc
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Execute following command to compile the overlay:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;dtc -@ -O dtb -o my_overlay_dt.dtbo my_overlay_dt.dts
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For more information about format of Device Tree Overlay, see
-&lt;a href=&#34;https://www.kernel.org/doc/Documentation/devicetree/overlay-notes.txt&#34;&gt;https://www.kernel.org/doc/Documentation/devicetree/overlay-notes.txt&lt;/a&gt;&lt;/p&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+&lt;/code>&lt;/pre>&lt;p>&lt;strong>Audio Interface&lt;/strong>:
+Execute following commands to enable Audio Interface:&lt;/p>
+&lt;pre>&lt;code>mkdir /sys/kernel/config/device-tree/overlays/audio
+cat /boot/broadcom/overlays/bcm2837-rpi-enable-audio.dtbo &amp;gt; /sys/kernel/config/device-tree/overlays/audio/dtbo
+&lt;/code>&lt;/pre>&lt;p>&lt;strong>Note&lt;/strong>: Ensure that the &lt;strong>linux-drivers-sound&lt;/strong> rpm is installed.&lt;/p>
+&lt;p>&lt;strong>I2C Interface&lt;/strong>:
+Execute following command to enable I2C Interface:&lt;/p>
+&lt;pre>&lt;code>modprobe i2c-dev
+&lt;/code>&lt;/pre>&lt;p>#Customizing Device Tree Overlay&lt;/p>
+&lt;p>Photon OS also provides Device Tree Compilers (i.e. dtc), to compile &lt;strong>Customised Device Tree Overlays&lt;/strong>. Execute following command to install dtc on Photon OS:&lt;/p>
+&lt;pre>&lt;code>tdnf install dtc
+&lt;/code>&lt;/pre>&lt;p>Execute following command to compile the overlay:&lt;/p>
+&lt;pre>&lt;code>dtc -@ -O dtb -o my_overlay_dt.dtbo my_overlay_dt.dts
+&lt;/code>&lt;/pre>&lt;p>For more information about format of Device Tree Overlay, see
+&lt;a href="https://www.kernel.org/doc/Documentation/devicetree/overlay-notes.txt">https://www.kernel.org/doc/Documentation/devicetree/overlay-notes.txt&lt;/a>&lt;/p></description></item></channel></rss>

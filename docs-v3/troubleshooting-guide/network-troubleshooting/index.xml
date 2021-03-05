@@ -1,247 +1,150 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Network Troubleshooting</title>
-    <link>/docs-v3/troubleshooting-guide/network-troubleshooting/</link>
-    <description>Recent content in Network Troubleshooting on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs-v3/troubleshooting-guide/network-troubleshooting/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs-V3: Managing the Network Configuration</title>
-      <link>/docs-v3/troubleshooting-guide/network-troubleshooting/managing-the-network-configuration/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/troubleshooting-guide/network-troubleshooting/managing-the-network-configuration/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The network service, which is enabled by default, starts when the system boots. You manage the network service by using systemd commands, such as &lt;code&gt;systemd-networkd&lt;/code&gt;, &lt;code&gt;systemd-resolvd&lt;/code&gt;, and &lt;code&gt;networkctl&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;You can check the status of the network service by running the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemctl status systemd-networkd
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The following is a result of the command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;* systemd-networkd.service - Network Service
-   Loaded: loaded (/usr/lib/systemd/system/systemd-networkd.service; enabled; vendor preset: enabled)
-   Active: active (running) since Fri 2016-04-29 15:08:51 UTC; 6 days ago
-     Docs: man:systemd-networkd.service(8)
- Main PID: 291 (systemd-network)
-   Status: &amp;quot;Processing requests...&amp;quot;
-   CGroup: /system.slice/systemd-networkd.service
-           `-291 /lib/systemd/systemd-networkd
-&lt;/code&gt;&lt;/pre&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Inspecting IP Addresses</title>
-      <link>/docs-v3/troubleshooting-guide/network-troubleshooting/inspecting-ip-addresses/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/troubleshooting-guide/network-troubleshooting/inspecting-ip-addresses/</guid>
-      <description>
-        
-        
-        &lt;p&gt;VMware recommends that you use the &lt;code&gt;ip&lt;/code&gt; or &lt;code&gt;ss&lt;/code&gt; commands as the &lt;code&gt;ifconfig&lt;/code&gt; and &lt;code&gt;netstat&lt;/code&gt; commands are deprecated.&lt;/p&gt;
-&lt;p&gt;To display a list of network interfaces, run the &lt;code&gt;ss&lt;/code&gt; command. Similarly, to display information for IP addresses, run the &lt;code&gt;ip addr&lt;/code&gt; command.&lt;/p&gt;
-&lt;p&gt;Examples:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;USE THIS IPROUTE COMMAND 	INSTEAD OF THIS NET-TOOL COMMAND
-ip addr 					ifconfig -a
-ss 							netstat
-ip route 					route
-ip maddr 					netstat -g
-ip link set eth0 up 		ifconfig eth0 up
-ip -s neigh					arp -v
-ip link set eth0 mtu 9000	ifconfig eth0 mtu 9000
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Use the &lt;code&gt;ip route&lt;/code&gt; version of a command instead of the net-tools to get accurate information:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;ip neigh
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Network Troubleshooting</title><link>/docs-v3/troubleshooting-guide/network-troubleshooting/</link><description>Recent content in Network Troubleshooting on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs-v3/troubleshooting-guide/network-troubleshooting/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs-V3: Managing the Network Configuration</title><link>/docs-v3/troubleshooting-guide/network-troubleshooting/managing-the-network-configuration/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/network-troubleshooting/managing-the-network-configuration/</guid><description>
+&lt;p>The network service, which is enabled by default, starts when the system boots. You manage the network service by using systemd commands, such as &lt;code>systemd-networkd&lt;/code>, &lt;code>systemd-resolvd&lt;/code>, and &lt;code>networkctl&lt;/code>.&lt;/p>
+&lt;p>You can check the status of the network service by running the following command:&lt;/p>
+&lt;pre>&lt;code>systemctl status systemd-networkd
+&lt;/code>&lt;/pre>
+&lt;p>The following is a result of the command:&lt;/p>
+&lt;pre>&lt;code>* systemd-networkd.service - Network Service
+Loaded: loaded (/usr/lib/systemd/system/systemd-networkd.service; enabled; vendor preset: enabled)
+Active: active (running) since Fri 2016-04-29 15:08:51 UTC; 6 days ago
+Docs: man:systemd-networkd.service(8)
+Main PID: 291 (systemd-network)
+Status: &amp;quot;Processing requests...&amp;quot;
+CGroup: /system.slice/systemd-networkd.service
+`-291 /lib/systemd/systemd-networkd
+&lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Inspecting IP Addresses</title><link>/docs-v3/troubleshooting-guide/network-troubleshooting/inspecting-ip-addresses/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/network-troubleshooting/inspecting-ip-addresses/</guid><description>
+&lt;p>VMware recommends that you use the &lt;code>ip&lt;/code> or &lt;code>ss&lt;/code> commands as the &lt;code>ifconfig&lt;/code> and &lt;code>netstat&lt;/code> commands are deprecated.&lt;/p>
+&lt;p>To display a list of network interfaces, run the &lt;code>ss&lt;/code> command. Similarly, to display information for IP addresses, run the &lt;code>ip addr&lt;/code> command.&lt;/p>
+&lt;p>Examples:&lt;/p>
+&lt;pre>&lt;code>USE THIS IPROUTE COMMAND INSTEAD OF THIS NET-TOOL COMMAND
+ip addr ifconfig -a
+ss netstat
+ip route route
+ip maddr netstat -g
+ip link set eth0 up ifconfig eth0 up
+ip -s neigh arp -v
+ip link set eth0 mtu 9000 ifconfig eth0 mtu 9000
+&lt;/code>&lt;/pre>
+&lt;p>Use the &lt;code>ip route&lt;/code> version of a command instead of the net-tools to get accurate information:&lt;/p>
+&lt;pre>&lt;code>ip neigh
 198.51.100.2 dev eth0 lladdr 00:50:56:e2:02:0f STALE
 198.51.100.254 dev eth0 lladdr 00:50:56:e7:13:d9 STALE
 198.51.100.1 dev eth0 lladdr 00:50:56:c0:00:08 DELAY
-
 arp -a
 ? (198.51.100.2) at 00:50:56:e2:02:0f [ether] on eth0
 ? (198.51.100.254) at 00:50:56:e7:13:d9 [ether] on eth0
 ? (198.51.100.1) at 00:50:56:c0:00:08 [ether] on eth0
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;strong&gt;Important:&lt;/strong&gt; If you modify an IPv6 configuration or add an IPv6 interface, you must restart &lt;code&gt;systemd-networkd&lt;/code&gt;. Traditional methods of using &lt;code&gt;ifconfig&lt;/code&gt; commands will be inadequate to register the changes. Run the following command instead:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemctl restart systemd-networkd
-&lt;/code&gt;&lt;/pre&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Inspecting the Status of Network Links with `networkctl`</title>
-      <link>/docs-v3/troubleshooting-guide/network-troubleshooting/inspecting-network-links-with-networkctl/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/troubleshooting-guide/network-troubleshooting/inspecting-network-links-with-networkctl/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The &lt;code&gt;networkctl&lt;/code&gt; command displays information about network connections that helps you configure networking services and troubleshoot networking problems.&lt;/p&gt;
-&lt;p&gt;You can progressively add options and arguments to the &lt;code&gt;networkctl&lt;/code&gt; command to move from general information about network connections to specific information about a network connection.&lt;/p&gt;
-&lt;p&gt;Running &lt;code&gt;networkctl&lt;/code&gt; without options defaults to the list command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;networkctl
-IDX LINK             TYPE               OPERATIONAL SETUP
-  1 lo               loopback           carrier     unmanaged
-  2 eth0             ether              routable    configured
-  3 docker0          ether              routable    unmanaged
- 11 vethb0aa7a6      ether              degraded    unmanaged
- 4 links listed.
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Run the &lt;code&gt;networkctl&lt;/code&gt; with the status command to display active network links with IP addresses for not only the Ethernet connection, but also the Docker container.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;root@photon-rc [ ~ ]# networkctl status
-*      State: routable
-     Address: 198.51.100.131 on eth0
-              172.17.0.1 on docker0
-              fe80::20c:29ff:fe55:3ca6 on eth0
-              fe80::42:f0ff:fef7:bd81 on docker0
-              fe80::4c84:caff:fe76:a23f on vethb0aa7a6
-     Gateway: 198.51.100.2 on eth0
-         DNS: 198.51.100.2
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;You can add a network link, such as the Ethernet connection, as the argument of the status command to show specific information about the link:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;root@photon-rc [ ~ ]# networkctl status eth0
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Important:&lt;/strong> If you modify an IPv6 configuration or add an IPv6 interface, you must restart &lt;code>systemd-networkd&lt;/code>. Traditional methods of using &lt;code>ifconfig&lt;/code> commands will be inadequate to register the changes. Run the following command instead:&lt;/p>
+&lt;pre>&lt;code>systemctl restart systemd-networkd
+&lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Inspecting the Status of Network Links with `networkctl`</title><link>/docs-v3/troubleshooting-guide/network-troubleshooting/inspecting-network-links-with-networkctl/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/network-troubleshooting/inspecting-network-links-with-networkctl/</guid><description>
+&lt;p>The &lt;code>networkctl&lt;/code> command displays information about network connections that helps you configure networking services and troubleshoot networking problems.&lt;/p>
+&lt;p>You can progressively add options and arguments to the &lt;code>networkctl&lt;/code> command to move from general information about network connections to specific information about a network connection.&lt;/p>
+&lt;p>Running &lt;code>networkctl&lt;/code> without options defaults to the list command:&lt;/p>
+&lt;pre>&lt;code>networkctl
+IDX LINK TYPE OPERATIONAL SETUP
+1 lo loopback carrier unmanaged
+2 eth0 ether routable configured
+3 docker0 ether routable unmanaged
+11 vethb0aa7a6 ether degraded unmanaged
+4 links listed.
+&lt;/code>&lt;/pre>
+&lt;p>Run the &lt;code>networkctl&lt;/code> with the status command to display active network links with IP addresses for not only the Ethernet connection, but also the Docker container.&lt;/p>
+&lt;pre>&lt;code>root@photon-rc [ ~ ]# networkctl status
+* State: routable
+Address: 198.51.100.131 on eth0
+172.17.0.1 on docker0
+fe80::20c:29ff:fe55:3ca6 on eth0
+fe80::42:f0ff:fef7:bd81 on docker0
+fe80::4c84:caff:fe76:a23f on vethb0aa7a6
+Gateway: 198.51.100.2 on eth0
+DNS: 198.51.100.2
+&lt;/code>&lt;/pre>
+&lt;p>You can add a network link, such as the Ethernet connection, as the argument of the status command to show specific information about the link:&lt;/p>
+&lt;pre>&lt;code>root@photon-rc [ ~ ]# networkctl status eth0
 * 2: eth0
-       Link File: /usr/lib/systemd/network/99-default.link
-    Network File: /etc/systemd/network/10-dhcp-en.network
-            Type: ether
-           State: routable (configured)
-            Path: pci-0000:02:01.0
-          Driver: e1000
-      HW Address: 00:0c:29:55:3c:a6 (VMware, Inc.)
-             MTU: 1500
-         Address: 198.51.100.131
-                  fe80::20c:29ff:fe55:3ca6
-         Gateway: 198.51.100.2
-             DNS: 198.51.100.2
-        CLIENTID: ffb6220feb00020000ab116724f520a0a77337
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;You can add a Docker container as follows:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;networkctl status docker0
+Link File: /usr/lib/systemd/network/99-default.link
+Network File: /etc/systemd/network/10-dhcp-en.network
+Type: ether
+State: routable (configured)
+Path: pci-0000:02:01.0
+Driver: e1000
+HW Address: 00:0c:29:55:3c:a6 (VMware, Inc.)
+MTU: 1500
+Address: 198.51.100.131
+fe80::20c:29ff:fe55:3ca6
+Gateway: 198.51.100.2
+DNS: 198.51.100.2
+CLIENTID: ffb6220feb00020000ab116724f520a0a77337
+&lt;/code>&lt;/pre>
+&lt;p>You can add a Docker container as follows:&lt;/p>
+&lt;pre>&lt;code>networkctl status docker0
 * 3: docker0
-       Link File: /usr/lib/systemd/network/99-default.link
-    Network File: n/a
-            Type: ether
-           State: routable (unmanaged)
-          Driver: bridge
-      HW Address: 02:42:f0:f7:bd:81
-             MTU: 1500
-         Address: 172.17.0.1
-                  fe80::42:f0ff:fef7:bd81
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;In the example above, the output indicates that state of the Docker container is unmanaged. Docker uses the bridge drive to handle managing the networking for the containers and not &lt;code&gt;systemd-resolved&lt;/code&gt; or &lt;code&gt;systemd-networkd&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;For more information about &lt;code&gt;networkctl&lt;/code&gt; commands and options, see &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/networkctl.html&#34;&gt;https://www.freedesktop.org/software/systemd/man/networkctl.html&lt;/a&gt;.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Network Debugging</title>
-      <link>/docs-v3/troubleshooting-guide/network-troubleshooting/network-debugging/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/troubleshooting-guide/network-troubleshooting/network-debugging/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can set &lt;code&gt;systemd-networkd&lt;/code&gt; to work in debug mode so that you can analyze log files with debugging information to help troubleshoot networking problems.&lt;/p&gt;
-&lt;p&gt;The following procedure turns on network debugging by adding a drop-in file in &lt;code&gt;/etc/systemd&lt;/code&gt; to customize the default systemd configuration in &lt;code&gt;/usr/lib/systemd&lt;/code&gt;.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Run the following command as root to create a directory with this exact name, including the &lt;code&gt;.d&lt;/code&gt; extension:&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;mkdir -p /etc/systemd/system/systemd-networkd.service.d/&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Run the following command as root to establish a systemd drop-in unit with a debugging configuration for the network service:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;cat &amp;gt; /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
-    [Service]
-    Environment=SYSTEMD_LOG_LEVEL=debug
-    EOF
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Reload the &lt;code&gt;systemctl&lt;/code&gt; daemon and restart the &lt;code&gt;systemd-networkd&lt;/code&gt; service for the changes to take effect:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemctl daemon-reload
-    systemctl restart systemd-networkd
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Verify that your changes took effect:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;`systemd-delta --type=extended`
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;View the log files by running this command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;`journalctl -u systemd-networkd`
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;After debugging the network connections, turn debugging off by deleting the drop-in file:&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;rm /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Checking Firewall Rules</title>
-      <link>/docs-v3/troubleshooting-guide/network-troubleshooting/checking-firewall-rules/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/troubleshooting-guide/network-troubleshooting/checking-firewall-rules/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The design of Photon OS emphasizes security. On the minimal and full versions of Photon OS, the default security policy turns on the firewall and drops packets from external interfaces and  applications. As a result, you might need to add rules to iptables to permit forwarding, allow protocols like HTTP, and open ports. In other words, you must configure the firewall for your applications and requirements.&lt;/p&gt;
-&lt;p&gt;The default iptables settings on the full version look like this:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;iptables --list
+Link File: /usr/lib/systemd/network/99-default.link
+Network File: n/a
+Type: ether
+State: routable (unmanaged)
+Driver: bridge
+HW Address: 02:42:f0:f7:bd:81
+MTU: 1500
+Address: 172.17.0.1
+fe80::42:f0ff:fef7:bd81
+&lt;/code>&lt;/pre>
+&lt;p>In the example above, the output indicates that state of the Docker container is unmanaged. Docker uses the bridge drive to handle managing the networking for the containers and not &lt;code>systemd-resolved&lt;/code> or &lt;code>systemd-networkd&lt;/code>.&lt;/p>
+&lt;p>For more information about &lt;code>networkctl&lt;/code> commands and options, see &lt;a href="https://www.freedesktop.org/software/systemd/man/networkctl.html">https://www.freedesktop.org/software/systemd/man/networkctl.html&lt;/a>.&lt;/p></description></item><item><title>Docs-V3: Network Debugging</title><link>/docs-v3/troubleshooting-guide/network-troubleshooting/network-debugging/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/network-troubleshooting/network-debugging/</guid><description>
+&lt;p>You can set &lt;code>systemd-networkd&lt;/code> to work in debug mode so that you can analyze log files with debugging information to help troubleshoot networking problems.&lt;/p>
+&lt;p>The following procedure turns on network debugging by adding a drop-in file in &lt;code>/etc/systemd&lt;/code> to customize the default systemd configuration in &lt;code>/usr/lib/systemd&lt;/code>.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Run the following command as root to create a directory with this exact name, including the &lt;code>.d&lt;/code> extension:&lt;/p>
+&lt;p>&lt;code>mkdir -p /etc/systemd/system/systemd-networkd.service.d/&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Run the following command as root to establish a systemd drop-in unit with a debugging configuration for the network service:&lt;/p>
+&lt;pre>&lt;code>cat &amp;gt; /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
+[Service]
+Environment=SYSTEMD_LOG_LEVEL=debug
+EOF
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Reload the &lt;code>systemctl&lt;/code> daemon and restart the &lt;code>systemd-networkd&lt;/code> service for the changes to take effect:&lt;/p>
+&lt;pre>&lt;code>systemctl daemon-reload
+systemctl restart systemd-networkd
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Verify that your changes took effect:&lt;/p>
+&lt;pre>&lt;code>`systemd-delta --type=extended`
+&lt;/code>&lt;/pre>
+&lt;/li>
+&lt;li>
+&lt;p>View the log files by running this command:&lt;/p>
+&lt;pre>&lt;code>`journalctl -u systemd-networkd`
+&lt;/code>&lt;/pre>
+&lt;/li>
+&lt;li>
+&lt;p>After debugging the network connections, turn debugging off by deleting the drop-in file:&lt;/p>
+&lt;p>&lt;code>rm /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf&lt;/code>&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>Docs-V3: Checking Firewall Rules</title><link>/docs-v3/troubleshooting-guide/network-troubleshooting/checking-firewall-rules/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/network-troubleshooting/checking-firewall-rules/</guid><description>
+&lt;p>The design of Photon OS emphasizes security. On the minimal and full versions of Photon OS, the default security policy turns on the firewall and drops packets from external interfaces and applications. As a result, you might need to add rules to iptables to permit forwarding, allow protocols like HTTP, and open ports. In other words, you must configure the firewall for your applications and requirements.&lt;/p>
+&lt;p>The default iptables settings on the full version look like this:&lt;/p>
+&lt;pre>&lt;code>iptables --list
 Chain INPUT (policy DROP)
-target     prot opt source               destination
-ACCEPT     all  --  anywhere             anywhere
-ACCEPT     all  --  anywhere             anywhere             ctstate RELATED,ESTABLISHED
-ACCEPT     tcp  --  anywhere             anywhere             tcp dpt:ssh
-
+target prot opt source destination
+ACCEPT all -- anywhere anywhere
+ACCEPT all -- anywhere anywhere ctstate RELATED,ESTABLISHED
+ACCEPT tcp -- anywhere anywhere tcp dpt:ssh
 Chain FORWARD (policy DROP)
-target     prot opt source               destination
-
+target prot opt source destination
 Chain OUTPUT (policy DROP)
-target     prot opt source               destination
-ACCEPT     all  --  anywhere             anywhere
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;To find out how to adjust the settings, see the man page for iptables.&lt;/p&gt;
-&lt;p&gt;Although the default iptables policy accepts SSH connections, the &lt;code&gt;sshd&lt;/code&gt; configuration file on the full version of Photon OS is set to reject SSH connections. See &lt;a href=&#34;../../solutions-to-common-problems/permitting-root-login-with-ssh/&#34;&gt;Permitting Root Login with SSH&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;If you are unable to ping a Photon OS machine, check the firewall rules. Verify if the rules allow connectivity for the port and protocol.&lt;/p&gt;
-&lt;p&gt;You can supplement the &lt;code&gt;iptables&lt;/code&gt; commands by using &lt;code&gt;lsof&lt;/code&gt; to, for instance, see the processes listening on ports:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;lsof -i -P -n
-&lt;/code&gt;&lt;/pre&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Inspect Network Settings with `netmgr`</title>
-      <link>/docs-v3/troubleshooting-guide/network-troubleshooting/inspect-network-settings-with-netmgr/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/troubleshooting-guide/network-troubleshooting/inspect-network-settings-with-netmgr/</guid>
-      <description>
-        
-        
-        &lt;p&gt;If you are running a VMware appliance on Photon OS and the VAMI module has problems or if there are networking issues, you can use the Photon OS &lt;code&gt;netmgr&lt;/code&gt; utility to inspect the networking settings. Make sure that the IP addresses for the DNS server and other infrastructure are correct. Use &lt;code&gt;tcpdump&lt;/code&gt; to analyze the issues.&lt;/p&gt;
-&lt;p&gt;The error code that you get from netmgr is a standard Unix error code. Enter it into a search engine to obtain more information on the error.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+target prot opt source destination
+ACCEPT all -- anywhere anywhere
+&lt;/code>&lt;/pre>
+&lt;p>To find out how to adjust the settings, see the man page for iptables.&lt;/p>
+&lt;p>Although the default iptables policy accepts SSH connections, the &lt;code>sshd&lt;/code> configuration file on the full version of Photon OS is set to reject SSH connections. See &lt;a href="../../solutions-to-common-problems/permitting-root-login-with-ssh/">Permitting Root Login with SSH&lt;/a>.&lt;/p>
+&lt;p>If you are unable to ping a Photon OS machine, check the firewall rules. Verify if the rules allow connectivity for the port and protocol.&lt;/p>
+&lt;p>You can supplement the &lt;code>iptables&lt;/code> commands by using &lt;code>lsof&lt;/code> to, for instance, see the processes listening on ports:&lt;/p>
+&lt;pre>&lt;code>lsof -i -P -n
+&lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Inspect Network Settings with `netmgr`</title><link>/docs-v3/troubleshooting-guide/network-troubleshooting/inspect-network-settings-with-netmgr/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/network-troubleshooting/inspect-network-settings-with-netmgr/</guid><description>
+&lt;p>If you are running a VMware appliance on Photon OS and the VAMI module has problems or if there are networking issues, you can use the Photon OS &lt;code>netmgr&lt;/code> utility to inspect the networking settings. Make sure that the IP addresses for the DNS server and other infrastructure are correct. Use &lt;code>tcpdump&lt;/code> to analyze the issues.&lt;/p>
+&lt;p>The error code that you get from netmgr is a standard Unix error code. Enter it into a search engine to obtain more information on the error.&lt;/p></description></item></channel></rss>

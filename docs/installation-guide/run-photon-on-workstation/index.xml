@@ -1,324 +1,269 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Running Photon OS on Workstation</title>
-    <link>/docs/installation-guide/run-photon-on-workstation/</link>
-    <description>Recent content in Running Photon OS on Workstation on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs/installation-guide/run-photon-on-workstation/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs: Prerequisites for Running Photon OS on Workstation</title>
-      <link>/docs/installation-guide/run-photon-on-workstation/prerequisites-for-photon-os-on-workstation/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/run-photon-on-workstation/prerequisites-for-photon-os-on-workstation/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Before you use Photon OS within Workstation, perform the following prerequisite tasks:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Verify that you have the following resources:&lt;/p&gt;
- &lt;table style=&#34;height: 170px;&#34; border=&#34;1&#34; width=&#34;157&#34; cellspacing=&#34;0&#34; cellpadding=&#34;10&#34;&gt;
- &lt;tbody&gt;
- &lt;tr&gt;
- &lt;td&gt;&lt;b&gt;Resource&lt;/b&gt;&lt;/td&gt;
- &lt;td&gt;&lt;b&gt;Description&lt;/b&gt;&lt;/td&gt;
- &lt;/tr&gt;
- &lt;tr&gt;
- &lt;td&gt; VMware Workstation&lt;/td&gt;
- &lt;td&gt;VMware Workstation must be installed (Workstation 10 or higher). The latest version is recommended.&lt;/p&gt;&lt;/td&gt;
- &lt;/tr&gt;
- &lt;tr&gt;
- &lt;td&gt;Memory&lt;/td&gt;
- &lt;td&gt; 2GB of free RAM (recommended) &lt;/td&gt;
- &lt;/tr&gt;
- &lt;tr&gt;
- &lt;td&gt;Storage&lt;/td&gt;
- &lt;td&gt;&lt;b&gt;Minimal Photon install&lt;/b&gt;: 512MB of free space (minimum); &lt;b&gt;Full Photon install&lt;/b&gt;: 4GB of free space (minimum); 8GB is recommended.&lt;/td&gt;
- &lt;/tr&gt;
- &lt;tr&gt;
- &lt;td&gt;Distribution File&lt;/td&gt;
- &lt;td&gt;Photon OS ISO or OVA file downloaded from bintray (&lt;a href=&#34;https://bintray.com/vmware/photon/&#34;&gt;https://bintray.com/vmware/photon/&lt;/a&gt;).&lt;/td&gt;
- &lt;/tr&gt;
- &lt;/tbody&gt;
- &lt;/table&gt;
-&lt;p&gt;Resource requirements and recommendations vary depending on several factors, including the host environment (for example, VMware Workstation and VMware vSphere), the distribution file used (ISO or OVA), and the selected installation settings (for example, full or basic installation).&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;  The setup instructions in this guide use VMware Workstation Professional version 12.5.7.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws_version.png&#34; alt=&#34;Workstation version&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Decide whether to use the OVA or ISO distribution to set up Photon OS.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;OVA import&lt;/strong&gt; : Because of the nature of an OVA, you&amp;rsquo;re getting a pre-installed version of Photon OS. You can choose the hardware version you want (OVA with hardware version 13 or 11). The OVA benefits from a simple import process and some kernel tuning for VMware environments. However, because it&amp;rsquo;s a pre-installed version, the set of packages that are installed are predetermined. Any additional packages that you need can be installed using tdnf.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;ISO install&lt;/strong&gt; : The ISO, on the other hand, allows for a more complete installation or automated installation via kickstart.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;To get Photon OS up and running quickly, use the OVA.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Download Photon OS. Go to the following Bintray URL and download the latest release of Photon OS:&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://bintray.com/vmware/photon/&#34;&gt;https://bintray.com/vmware/photon/&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;For instructions, see &lt;a href=&#34;../../downloading-photon/&#34;&gt;Downloading Photon OS&lt;/a&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Importing the OVA for Photon OS 4.0</title>
-      <link>/docs/installation-guide/run-photon-on-workstation/importing-photon-os-from-ova-on-workstation/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/run-photon-on-workstation/importing-photon-os-from-ova-on-workstation/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Using the OVA is the easiest way to create a Photon OS VM on VMware Workstation.&lt;/p&gt;
-&lt;p&gt;After you have downloaded the the OVA file (OVA with Hardware Version 11), perform the following steps:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Start the Import Process&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Double-click it to start the import process, or&lt;/li&gt;
-&lt;li&gt;Start VMware Workstation and, from the File menu, choose &lt;strong&gt;Open&lt;/strong&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-ova-import.png&#34; alt=&#34;OVA file&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Specify the Name and Storage Location&lt;/p&gt;
-&lt;p&gt;Change the name and storage location, if you want.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-ova-path.png&#34; alt=&#34;Name and Storage Location&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Choose &lt;strong&gt;Import&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-ova-license.png&#34; alt=&#34;License&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Review the License Agreement and choose &lt;strong&gt;Accept&lt;/strong&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Configure VM Settings&lt;/p&gt;
-&lt;p&gt;Once the OVA is imported, Workstation displays a summary of the settings for your Photon OS VM.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-ova-settings.png&#34; alt=&#34;Settings&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Choose &lt;strong&gt;Edit virtual machine settings&lt;/strong&gt;. Workstation displays the Virtual Machine settings. You can either accept the defaults or change settings as needed.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-ova-settings-edit.png&#34; alt=&#34;OVA settings&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Select the Options tab.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-ova-settings-options.png&#34; alt=&#34;Options&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Under Guest operating system, select &lt;strong&gt;Linux&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;For Version, click the list and select &lt;strong&gt;VMWare Photon 64-bit&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-ova-os.png&#34; alt=&#34;Version&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;  If you want to configure a secure boot for the Photon OS VM, select &lt;strong&gt;Advanced&lt;/strong&gt;  and select (check) &lt;strong&gt;Boot with EFI instead of BIOS&lt;/strong&gt;. The EFI boot ensures that the ISO content is signed by VMware and that the entire stack is secure.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-ova-settings-efi.png&#34; alt=&#34;EFI boot&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Choose &lt;strong&gt;OK&lt;/strong&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Power on the VM&lt;/p&gt;
-&lt;p&gt;From the tab, choose  &lt;strong&gt;Power on this virtual machine&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/splashscreen23.png&#34; alt=&#34;Login prompt&#34;&gt;&lt;/p&gt;
-&lt;p&gt;After the splash screen, Workstation will prompt you to log in.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Update Login Credentials&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt; : Because of limitations within OVA support on Workstation, it was necessary to specify a default password for the OVA option. However, all Photon OS instances that are created by importing the OVA will require an immediate password change upon login. The default account credentials are:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Username: &lt;code&gt;root&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Password: &lt;code&gt;changeme&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;After you provide these credentials, Workstation prompts you to create a new password and type it a second time to verify it. For security, Photon OS forbids common dictionary words for the root password. Once logged in, you will see the shell prompt.&lt;/p&gt;
-&lt;p&gt;Once complete, proceed to &lt;a href=&#34;../../deploying-a-containerized-application-in-photon-os/&#34;&gt;Deploying a Containerized Application in Photon OS&lt;/a&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Installing the ISO Image for Photon OS 4.0</title>
-      <link>/docs/installation-guide/run-photon-on-workstation/installing-photon-os-from-iso-on-workstation/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/run-photon-on-workstation/installing-photon-os-from-iso-on-workstation/</guid>
-      <description>
-        
-        
-        &lt;p&gt;After you have downloaded the latest Photon OS ISO image into a folder of your choice, open VMware Workstation.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Start the Installation Process&lt;/p&gt;
-&lt;p&gt;From the File menu, choose &lt;strong&gt;New Virtual Machine&lt;/strong&gt;  to create a new virtual machine.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-iso-new.png&#34; alt=&#34;New virtural machine&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Select &lt;strong&gt;Typical&lt;/strong&gt; or &lt;strong&gt;Custom&lt;/strong&gt;, and then choose &lt;strong&gt;Next&lt;/strong&gt;. These instructions refer to a Typical installation.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-iso-typical.png&#34; alt=&#34;Typical installation&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Select the ISO Image&lt;/p&gt;
-&lt;p&gt;Select &lt;strong&gt;Installer disc image file (iso)&lt;/strong&gt;, choose &lt;strong&gt;Browse&lt;/strong&gt; and select the Photon OS ISO file.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-iso-selected.png&#34; alt=&#34;Photon ISO file&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Select the Operating System&lt;/p&gt;
-&lt;p&gt;Choose &lt;strong&gt;Next&lt;/strong&gt;. Select the Guest operating system.&lt;/p&gt;
-&lt;p&gt;For the Guest operating system, select &lt;strong&gt;Linux&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;Click the Version dropdown and select &lt;strong&gt;VMware Photon 64-bit&lt;/strong&gt;  from the list.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-iso-os.png&#34; alt=&#34;Operating System&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Specify the VM Name and Location&lt;/p&gt;
-&lt;p&gt;Choose &lt;strong&gt;Next&lt;/strong&gt;. Specify a virtual machine name and location.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-iso-name.png&#34; alt=&#34;VM Name and Location&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Specify Disk Options&lt;/p&gt;
-&lt;p&gt;Choose &lt;strong&gt;Next&lt;/strong&gt;. Specify the maximum disk size and whether you want to split the virtual disk into multiple files or store it as a single file.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-iso-disk.png&#34; alt=&#34;Disk options&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Configure VM Settings&lt;/p&gt;
-&lt;p&gt;Choose &lt;strong&gt;Next&lt;/strong&gt;. Workstation displays a summary of your selections.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-iso-summary.png&#34; alt=&#34;Workstation settings&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Important&lt;/strong&gt; : &lt;em&gt;Before&lt;/em&gt; you finish creating the Photon OS Virtual Machine, we strongly recommend that you customize the virtual machine and remove any unwanted devices that are not needed for a container run-time environment. To remove unnecessary devices, choose &lt;strong&gt;Customize hardware&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-iso-customize.png&#34; alt=&#34;Customize hardware&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Consider removing the following components, which are not used by Photon OS:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Select &lt;strong&gt;Sound Card&lt;/strong&gt;, un-tick the &lt;strong&gt;Connect at power on&lt;/strong&gt; option. Confirm your action and choose &lt;strong&gt;Close&lt;/strong&gt; to return to the VM Settings by .&lt;/li&gt;
-&lt;li&gt;Select &lt;strong&gt;USB Controller&lt;/strong&gt; and ensure that the &lt;strong&gt;Share Bluetooth devices with the virtual machine&lt;/strong&gt; setting is unchecked (it should be unchecked, by default) and then choose &lt;strong&gt;Close&lt;/strong&gt;.&lt;/li&gt;
-&lt;li&gt;Select &lt;strong&gt;Display&lt;/strong&gt; and ensure that the &lt;strong&gt;Accelerate 3D Graphics&lt;/strong&gt; option is unchecked (it should be unchecked, by default) and then choose &lt;strong&gt;Close&lt;/strong&gt;.&lt;/li&gt;
-&lt;li&gt;At this stage we have now made all the necessary customizations and you are ready to select the Photon OS ISO image to boot and begin the installation process.&lt;/li&gt;
-&lt;li&gt;Choose  &lt;strong&gt;Finish&lt;/strong&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;In Workstation, choose &lt;strong&gt;Edit virtual machine settings&lt;/strong&gt;, select &lt;strong&gt;CD/DVD (IDE)&lt;/strong&gt;, and verify that &lt;strong&gt;Connect at power on&lt;/strong&gt; is selected.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-iso-cd.png&#34; alt=&#34;CD/DVD&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Configure a Secure Boot (Optional)&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;  If you want to configure a secure boot for the Photon OS VM, in Workstation, choose  &lt;strong&gt;Edit virtual machine settings&lt;/strong&gt;, select  &lt;strong&gt;Options&lt;/strong&gt;, choose &lt;strong&gt;Advanced&lt;/strong&gt;, and select &lt;strong&gt;Boot with EFI instead of BIOS&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-iso-efi.png&#34; alt=&#34;Boot with EFI&#34;&gt;&lt;/p&gt;
-&lt;p&gt;The EFI boot ensures that the ISO content is signed by VMware and that the entire stack is secure.&lt;/p&gt;
-&lt;p&gt;Choose &lt;strong&gt;OK&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/ws-iso-settings.png&#34; alt=&#34;ISO settings&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Power On the VM&lt;/p&gt;
-&lt;p&gt;Choose &lt;strong&gt;Power on this virtual machine&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;When you see the Photon Installer boot menu, press Enter on your keyboard to start installing.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/bootscreen7.png&#34; alt=&#34;Installer&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Review the license agreement.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/license8.png&#34; alt=&#34;License agreement&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Choose &lt;strong&gt;Accept&lt;/strong&gt; and press Enter.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Configure the Partition&lt;/p&gt;
-&lt;p&gt;The installer will detect one disk, which should be the 8GB volume configured as part of the virtual machine creation. Choose &lt;strong&gt;Auto&lt;/strong&gt;  to have the installer automatically allocate the partition, or choose &lt;strong&gt;Custom&lt;/strong&gt;  if you want to configure individual partitions, and then press the Enter key.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/diskselection9.png&#34; alt=&#34;Partition&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;  If you choose Custom, the installer displays the following screen.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/manualpartition10.png&#34; alt=&#34;Custom Partition&#34;&gt;&lt;/p&gt;
-&lt;p&gt;For each custom partition, choose &lt;strong&gt;Create New&lt;/strong&gt;  and specify the following information:&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/custompartitionsetting11.png&#34; alt=&#34;New Partition&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Size&lt;/strong&gt; - Preallocated size of this partition, in MB.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Type&lt;/strong&gt; - One of the following options:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;ext3&lt;/strong&gt; - ext3 file system&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;ext4&lt;/strong&gt; - ext4 file system&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;swap&lt;/strong&gt; - swap partition&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;Mountpoint&lt;/strong&gt; - Mount point for this partition.&lt;/p&gt;
-&lt;p&gt;Choose &lt;strong&gt;OK&lt;/strong&gt; and press the Enter key. When you are done defining custom partitions, choose &lt;strong&gt;Next&lt;/strong&gt; and press the Enter key.&lt;/p&gt;
-&lt;p&gt;The installer prompts you to confirm that you want to erase the entire disk. Choose  &lt;strong&gt;Yes&lt;/strong&gt;  and press the Enter key.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/erasedisk21.png&#34; alt=&#34;Erase disk&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Select an Installation Option&lt;/p&gt;
-&lt;p&gt;After partitioning the disk, the installer will prompt you to select an installation option.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/flavorselection12.png&#34; alt=&#34;Installation Option&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Each installation option provides a different run-time environment, depending on your requirements.&lt;/p&gt;
- &lt;table style=&#34;height: 170px;&#34; border=&#34;1&#34; cellspacing=&#34;0&#34; cellpadding=&#34;10&#34;&gt;
- &lt;tbody&gt;
- &lt;tr&gt;
- &lt;td&gt;&lt;b&gt;Option&lt;/b&gt;&lt;/td&gt;
- &lt;td&gt;&lt;b&gt;Description&lt;/b&gt;&lt;/td&gt;
- &lt;/tr&gt;
- &lt;tr&gt;
- &lt;td&gt;&lt;b&gt;Photon Minimal&lt;/b&gt;&lt;/td&gt;
- &lt;td&gt;Photon Minimum is a very lightweight version of the container host runtime that is best suited for container management and hosting. There is sufficient packaging and functionality to allow most common operations around modifying existing containers, as well as being a highly performant and full-featured runtime.&lt;/p&gt;&lt;/td&gt;
- &lt;/tr&gt;
- &lt;tr&gt;
- &lt;td&gt;&lt;b&gt;Photon Full&lt;/b&gt;&lt;/td&gt;
- &lt;td&gt;Photon Full includes several additional packages to enhance the authoring and packaging of containerized applications and/or system customization. For simply running containers, Photon Full will be overkill. Use Photon Full for developing and packaging the application that will be run as a container, as well as authoring the container, itself. For testing and validation purposes, Photon Full will include all components necessary to run containers.&lt;/td&gt;
- &lt;/tr&gt;
- &lt;tr&gt;
- &lt;td&gt;&lt;b&gt;Photon OSTree Server&lt;b&gt;&lt;/td&gt;
- &lt;td&gt;This installation profile will create the server instance that will host the filesystem tree and managed definitions for rpm-ostree managed hosts created with the &#34;Photon OSTree Host&#34; installation profile. Most environments should need only one Photon OSTree Server instance to manage the state of the Photon OSTree Hosts. Use Photon OSTree Server when you are establishing a new repository and management node for Photon OS hosts.&lt;/td&gt;
- &lt;/tr&gt;
- &lt;/tbody&gt;
- &lt;/table&gt;
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;  The option you choose determines the disk and memory resources required for your installation.&lt;/p&gt;
-&lt;p&gt;Select the option you want and press the Enter key.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;strong&gt;Network Configuration&lt;/strong&gt; screen appears, select one of the four options to configure your network.
-&lt;img src=&#34;../../../images/networkconfig13.png&#34; alt=&#34;Network Sonfiguration&#34;&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Choose &lt;strong&gt;Configure network automatically&lt;/strong&gt; and select &lt;strong&gt;Next&lt;/strong&gt; to configure the network automatically.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;To configure network automatically with the DHCP hostname, select &lt;strong&gt;Configure network automatically with a DHCP hostname&lt;/strong&gt; and select &lt;strong&gt;Next&lt;/strong&gt;. Enter the DHCP Hostname and select &lt;strong&gt;Next&lt;/strong&gt;.
-&lt;img src=&#34;../../../images/dhcphostname14.png&#34; alt=&#34;../images/DHCP_hostname_for_your_system.png&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;To configure the network manually, select &lt;strong&gt;Configure Network manually&lt;/strong&gt;. In the window that appears, enter the IP Address, Netmask, Gateway and Nameserver and select &lt;strong&gt;OK&lt;/strong&gt;.
-&lt;img src=&#34;../../../images/Configure_Network_Manually.png&#34; alt=&#34;../images/Configure_Network_Manually.png&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;If your network interface is directly connected to the VLAN trunk port, choose &lt;strong&gt;YES&lt;/strong&gt; on the Configure the network screen. Enter the VLAN ID and select &lt;strong&gt;Next&lt;/strong&gt;.
-&lt;img src=&#34;../../../images/Configure_the_network.png&#34; alt=&#34;Configure the network&#34;&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Select the Linux Kernel&lt;/p&gt;
-&lt;p&gt;Select a Linux kernel to install.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/linuxflavor17.png&#34; alt=&#34;Linux Kernel&#34;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Hypervisor optimized&lt;/strong&gt; means that any components that are not needed for running under a VMware hypervisor have been removed for faster boot times.&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Generic&lt;/strong&gt; means that all components are included.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Choose &lt;strong&gt;Next&lt;/strong&gt; and press the Enter key.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Specify the Hostname&lt;/p&gt;
-&lt;p&gt;The installer prompts you for a hostname and suggest a randomly generated, unique hostname that you can change if you want.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/hostname18.png&#34; alt=&#34;Hostname&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Press the Enter key.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Specify the System root Password&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;&lt;em&gt;Note&lt;/em&gt;&lt;/strong&gt; &lt;em&gt;: Photon OS will not permit commonly used dictionary words to be set as a root password.&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;The installer prompts you to enter the system root password. Type the password and press the Enter key.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/rootpassword19.png&#34; alt=&#34;Root password&#34;&gt;&lt;/p&gt;
-&lt;p&gt;The installer prompts you to confirm the root password by typing it a second time.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/confirmrootpassword20.png&#34; alt=&#34;Password confirmation&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Press the Enter key. The installer proceeds to install the software. Installation times will vary based on the system hardware and installation options you selected. Most installations complete in less than one minute.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Reboot the VM and Log In&lt;/p&gt;
-&lt;p&gt;Once finished, the installer displays a confirmation message (which includes how long it took to install Photon OS) and prompts you to press a key on your keyboard to boot the new VM.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/installationcomplete22.png&#34; alt=&#34;Boot VM&#34;&gt;&lt;/p&gt;
-&lt;p&gt;Press any key on the keyboard and the virtual machine will reboot into Photon OS.&lt;/p&gt;
-&lt;p&gt;As the initial boot process begins, the installer displays the Photon splash screen, and then a login prompt.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/splashscreen23.png&#34; alt=&#34;Login prompt&#34;&gt;&lt;/p&gt;
-&lt;p&gt;At the login prompt, type &lt;strong&gt;root&lt;/strong&gt;  as the username and provide the password chosen during the installation.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../../images/loginprompt24.png&#34; alt=&#34;Password&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;You can now use your container runtime environment and deploy a containerized application.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Running Photon OS on Workstation</title><link>/docs/installation-guide/run-photon-on-workstation/</link><description>Recent content in Running Photon OS on Workstation on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/installation-guide/run-photon-on-workstation/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Prerequisites for Running Photon OS on Workstation</title><link>/docs/installation-guide/run-photon-on-workstation/prerequisites-for-photon-os-on-workstation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-on-workstation/prerequisites-for-photon-os-on-workstation/</guid><description>
+&lt;p>Before you use Photon OS within Workstation, perform the following prerequisite tasks:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Verify that you have the following resources:&lt;/p>
+&lt;table style="height: 170px;" border="1" width="157" cellspacing="0" cellpadding="10">
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;b>Resource&lt;/b>&lt;/td>
+&lt;td>&lt;b>Description&lt;/b>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td> VMware Workstation&lt;/td>
+&lt;td>VMware Workstation must be installed (Workstation 10 or higher). The latest version is recommended.&lt;/p>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Memory&lt;/td>
+&lt;td> 2GB of free RAM (recommended) &lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Storage&lt;/td>
+&lt;td>&lt;b>Minimal Photon install&lt;/b>: 512MB of free space (minimum); &lt;b>Full Photon install&lt;/b>: 4GB of free space (minimum); 8GB is recommended.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Distribution File&lt;/td>
+&lt;td>Photon OS ISO or OVA file downloaded from bintray (&lt;a href="https://bintray.com/vmware/photon/">https://bintray.com/vmware/photon/&lt;/a>).&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>Resource requirements and recommendations vary depending on several factors, including the host environment (for example, VMware Workstation and VMware vSphere), the distribution file used (ISO or OVA), and the selected installation settings (for example, full or basic installation).&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong> The setup instructions in this guide use VMware Workstation Professional version 12.5.7.&lt;/p>
+&lt;p>&lt;img src="../../images/ws_version.png" alt="Workstation version">&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Decide whether to use the OVA or ISO distribution to set up Photon OS.&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>OVA import&lt;/strong> : Because of the nature of an OVA, you&amp;rsquo;re getting a pre-installed version of Photon OS. You can choose the hardware version you want (OVA with hardware version 13 or 11). The OVA benefits from a simple import process and some kernel tuning for VMware environments. However, because it&amp;rsquo;s a pre-installed version, the set of packages that are installed are predetermined. Any additional packages that you need can be installed using tdnf.&lt;/li>
+&lt;li>&lt;strong>ISO install&lt;/strong> : The ISO, on the other hand, allows for a more complete installation or automated installation via kickstart.&lt;/li>
+&lt;/ul>
+&lt;p>To get Photon OS up and running quickly, use the OVA.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Download Photon OS. Go to the following Bintray URL and download the latest release of Photon OS:&lt;/p>
+&lt;p>&lt;a href="https://bintray.com/vmware/photon/">https://bintray.com/vmware/photon/&lt;/a>&lt;/p>
+&lt;p>For instructions, see &lt;a href="../../downloading-photon/">Downloading Photon OS&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>Docs: Importing the OVA for Photon OS 4.0</title><link>/docs/installation-guide/run-photon-on-workstation/importing-photon-os-from-ova-on-workstation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-on-workstation/importing-photon-os-from-ova-on-workstation/</guid><description>
+&lt;p>Using the OVA is the easiest way to create a Photon OS VM on VMware Workstation.&lt;/p>
+&lt;p>After you have downloaded the the OVA file (OVA with Hardware Version 11), perform the following steps:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Start the Import Process&lt;/p>
+&lt;ul>
+&lt;li>Double-click it to start the import process, or&lt;/li>
+&lt;li>Start VMware Workstation and, from the File menu, choose &lt;strong>Open&lt;/strong>.&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="../../images/ws-ova-import.png" alt="OVA file">&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Specify the Name and Storage Location&lt;/p>
+&lt;p>Change the name and storage location, if you want.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-ova-path.png" alt="Name and Storage Location">&lt;/p>
+&lt;p>Choose &lt;strong>Import&lt;/strong>.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-ova-license.png" alt="License">&lt;/p>
+&lt;p>Review the License Agreement and choose &lt;strong>Accept&lt;/strong>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Configure VM Settings&lt;/p>
+&lt;p>Once the OVA is imported, Workstation displays a summary of the settings for your Photon OS VM.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-ova-settings.png" alt="Settings">&lt;/p>
+&lt;p>Choose &lt;strong>Edit virtual machine settings&lt;/strong>. Workstation displays the Virtual Machine settings. You can either accept the defaults or change settings as needed.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-ova-settings-edit.png" alt="OVA settings">&lt;/p>
+&lt;p>Select the Options tab.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-ova-settings-options.png" alt="Options">&lt;/p>
+&lt;p>Under Guest operating system, select &lt;strong>Linux&lt;/strong>.&lt;/p>
+&lt;p>For Version, click the list and select &lt;strong>VMWare Photon 64-bit&lt;/strong>.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-ova-os.png" alt="Version">&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong> If you want to configure a secure boot for the Photon OS VM, select &lt;strong>Advanced&lt;/strong> and select (check) &lt;strong>Boot with EFI instead of BIOS&lt;/strong>. The EFI boot ensures that the ISO content is signed by VMware and that the entire stack is secure.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-ova-settings-efi.png" alt="EFI boot">&lt;/p>
+&lt;p>Choose &lt;strong>OK&lt;/strong>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Power on the VM&lt;/p>
+&lt;p>From the tab, choose &lt;strong>Power on this virtual machine&lt;/strong>.&lt;/p>
+&lt;p>&lt;img src="../../images/splashscreen23.png" alt="Login prompt">&lt;/p>
+&lt;p>After the splash screen, Workstation will prompt you to log in.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Update Login Credentials&lt;/p>
+&lt;p>&lt;strong>Note&lt;/strong> : Because of limitations within OVA support on Workstation, it was necessary to specify a default password for the OVA option. However, all Photon OS instances that are created by importing the OVA will require an immediate password change upon login. The default account credentials are:&lt;/p>
+&lt;ul>
+&lt;li>Username: &lt;code>root&lt;/code>&lt;/li>
+&lt;li>Password: &lt;code>changeme&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>After you provide these credentials, Workstation prompts you to create a new password and type it a second time to verify it. For security, Photon OS forbids common dictionary words for the root password. Once logged in, you will see the shell prompt.&lt;/p>
+&lt;p>Once complete, proceed to &lt;a href="../../deploying-a-containerized-application-in-photon-os/">Deploying a Containerized Application in Photon OS&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>Docs: Installing the ISO Image for Photon OS 4.0</title><link>/docs/installation-guide/run-photon-on-workstation/installing-photon-os-from-iso-on-workstation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-on-workstation/installing-photon-os-from-iso-on-workstation/</guid><description>
+&lt;p>After you have downloaded the latest Photon OS ISO image into a folder of your choice, open VMware Workstation.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Start the Installation Process&lt;/p>
+&lt;p>From the File menu, choose &lt;strong>New Virtual Machine&lt;/strong> to create a new virtual machine.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-iso-new.png" alt="New virtural machine">&lt;/p>
+&lt;p>Select &lt;strong>Typical&lt;/strong> or &lt;strong>Custom&lt;/strong>, and then choose &lt;strong>Next&lt;/strong>. These instructions refer to a Typical installation.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-iso-typical.png" alt="Typical installation">&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Select the ISO Image&lt;/p>
+&lt;p>Select &lt;strong>Installer disc image file (iso)&lt;/strong>, choose &lt;strong>Browse&lt;/strong> and select the Photon OS ISO file.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-iso-selected.png" alt="Photon ISO file">&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Select the Operating System&lt;/p>
+&lt;p>Choose &lt;strong>Next&lt;/strong>. Select the Guest operating system.&lt;/p>
+&lt;p>For the Guest operating system, select &lt;strong>Linux&lt;/strong>.&lt;/p>
+&lt;p>Click the Version dropdown and select &lt;strong>VMware Photon 64-bit&lt;/strong> from the list.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-iso-os.png" alt="Operating System">&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Specify the VM Name and Location&lt;/p>
+&lt;p>Choose &lt;strong>Next&lt;/strong>. Specify a virtual machine name and location.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-iso-name.png" alt="VM Name and Location">&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Specify Disk Options&lt;/p>
+&lt;p>Choose &lt;strong>Next&lt;/strong>. Specify the maximum disk size and whether you want to split the virtual disk into multiple files or store it as a single file.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-iso-disk.png" alt="Disk options">&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Configure VM Settings&lt;/p>
+&lt;p>Choose &lt;strong>Next&lt;/strong>. Workstation displays a summary of your selections.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-iso-summary.png" alt="Workstation settings">&lt;/p>
+&lt;p>&lt;strong>Important&lt;/strong> : &lt;em>Before&lt;/em> you finish creating the Photon OS Virtual Machine, we strongly recommend that you customize the virtual machine and remove any unwanted devices that are not needed for a container run-time environment. To remove unnecessary devices, choose &lt;strong>Customize hardware&lt;/strong>.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-iso-customize.png" alt="Customize hardware">&lt;/p>
+&lt;p>Consider removing the following components, which are not used by Photon OS:&lt;/p>
+&lt;ul>
+&lt;li>Select &lt;strong>Sound Card&lt;/strong>, un-tick the &lt;strong>Connect at power on&lt;/strong> option. Confirm your action and choose &lt;strong>Close&lt;/strong> to return to the VM Settings by .&lt;/li>
+&lt;li>Select &lt;strong>USB Controller&lt;/strong> and ensure that the &lt;strong>Share Bluetooth devices with the virtual machine&lt;/strong> setting is unchecked (it should be unchecked, by default) and then choose &lt;strong>Close&lt;/strong>.&lt;/li>
+&lt;li>Select &lt;strong>Display&lt;/strong> and ensure that the &lt;strong>Accelerate 3D Graphics&lt;/strong> option is unchecked (it should be unchecked, by default) and then choose &lt;strong>Close&lt;/strong>.&lt;/li>
+&lt;li>At this stage we have now made all the necessary customizations and you are ready to select the Photon OS ISO image to boot and begin the installation process.&lt;/li>
+&lt;li>Choose &lt;strong>Finish&lt;/strong>.&lt;/li>
+&lt;/ul>
+&lt;p>In Workstation, choose &lt;strong>Edit virtual machine settings&lt;/strong>, select &lt;strong>CD/DVD (IDE)&lt;/strong>, and verify that &lt;strong>Connect at power on&lt;/strong> is selected.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-iso-cd.png" alt="CD/DVD">&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Configure a Secure Boot (Optional)&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong> If you want to configure a secure boot for the Photon OS VM, in Workstation, choose &lt;strong>Edit virtual machine settings&lt;/strong>, select &lt;strong>Options&lt;/strong>, choose &lt;strong>Advanced&lt;/strong>, and select &lt;strong>Boot with EFI instead of BIOS&lt;/strong>.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-iso-efi.png" alt="Boot with EFI">&lt;/p>
+&lt;p>The EFI boot ensures that the ISO content is signed by VMware and that the entire stack is secure.&lt;/p>
+&lt;p>Choose &lt;strong>OK&lt;/strong>.&lt;/p>
+&lt;p>&lt;img src="../../images/ws-iso-settings.png" alt="ISO settings">&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Power On the VM&lt;/p>
+&lt;p>Choose &lt;strong>Power on this virtual machine&lt;/strong>.&lt;/p>
+&lt;p>When you see the Photon Installer boot menu, press Enter on your keyboard to start installing.&lt;/p>
+&lt;p>&lt;img src="../../images/bootscreen7.png" alt="Installer">&lt;/p>
+&lt;p>Review the license agreement.&lt;/p>
+&lt;p>&lt;img src="../../images/license8.png" alt="License agreement">&lt;/p>
+&lt;p>Choose &lt;strong>Accept&lt;/strong> and press Enter.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Configure the Partition&lt;/p>
+&lt;p>The installer will detect one disk, which should be the 8GB volume configured as part of the virtual machine creation. Choose &lt;strong>Auto&lt;/strong> to have the installer automatically allocate the partition, or choose &lt;strong>Custom&lt;/strong> if you want to configure individual partitions, and then press the Enter key.&lt;/p>
+&lt;p>&lt;img src="../../images/diskselection9.png" alt="Partition">&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong> If you choose Custom, the installer displays the following screen.&lt;/p>
+&lt;p>&lt;img src="../../images/manualpartition10.png" alt="Custom Partition">&lt;/p>
+&lt;p>For each custom partition, choose &lt;strong>Create New&lt;/strong> and specify the following information:&lt;/p>
+&lt;p>&lt;img src="../../images/custompartitionsetting11.png" alt="New Partition">&lt;/p>
+&lt;p>&lt;strong>Size&lt;/strong> - Preallocated size of this partition, in MB.&lt;/p>
+&lt;p>&lt;strong>Type&lt;/strong> - One of the following options:&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>ext3&lt;/strong> - ext3 file system&lt;/li>
+&lt;li>&lt;strong>ext4&lt;/strong> - ext4 file system&lt;/li>
+&lt;li>&lt;strong>swap&lt;/strong> - swap partition&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>Mountpoint&lt;/strong> - Mount point for this partition.&lt;/p>
+&lt;p>Choose &lt;strong>OK&lt;/strong> and press the Enter key. When you are done defining custom partitions, choose &lt;strong>Next&lt;/strong> and press the Enter key.&lt;/p>
+&lt;p>The installer prompts you to confirm that you want to erase the entire disk. Choose &lt;strong>Yes&lt;/strong> and press the Enter key.&lt;/p>
+&lt;p>&lt;img src="../../images/erasedisk21.png" alt="Erase disk">&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Select an Installation Option&lt;/p>
+&lt;p>After partitioning the disk, the installer will prompt you to select an installation option.&lt;/p>
+&lt;p>&lt;img src="../../images/flavorselection12.png" alt="Installation Option">&lt;/p>
+&lt;p>Each installation option provides a different run-time environment, depending on your requirements.&lt;/p>
+&lt;table style="height: 170px;" border="1" cellspacing="0" cellpadding="10">
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;b>Option&lt;/b>&lt;/td>
+&lt;td>&lt;b>Description&lt;/b>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;b>Photon Minimal&lt;/b>&lt;/td>
+&lt;td>Photon Minimum is a very lightweight version of the container host runtime that is best suited for container management and hosting. There is sufficient packaging and functionality to allow most common operations around modifying existing containers, as well as being a highly performant and full-featured runtime.&lt;/p>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;b>Photon Full&lt;/b>&lt;/td>
+&lt;td>Photon Full includes several additional packages to enhance the authoring and packaging of containerized applications and/or system customization. For simply running containers, Photon Full will be overkill. Use Photon Full for developing and packaging the application that will be run as a container, as well as authoring the container, itself. For testing and validation purposes, Photon Full will include all components necessary to run containers.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;b>Photon OSTree Server&lt;b>&lt;/td>
+&lt;td>This installation profile will create the server instance that will host the filesystem tree and managed definitions for rpm-ostree managed hosts created with the "Photon OSTree Host" installation profile. Most environments should need only one Photon OSTree Server instance to manage the state of the Photon OSTree Hosts. Use Photon OSTree Server when you are establishing a new repository and management node for Photon OS hosts.&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>&lt;strong>Note:&lt;/strong> The option you choose determines the disk and memory resources required for your installation.&lt;/p>
+&lt;p>Select the option you want and press the Enter key.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The &lt;strong>Network Configuration&lt;/strong> screen appears, select one of the four options to configure your network.
+&lt;img src="../../../images/networkconfig13.png" alt="Network Sonfiguration">&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Choose &lt;strong>Configure network automatically&lt;/strong> and select &lt;strong>Next&lt;/strong> to configure the network automatically.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>To configure network automatically with the DHCP hostname, select &lt;strong>Configure network automatically with a DHCP hostname&lt;/strong> and select &lt;strong>Next&lt;/strong>. Enter the DHCP Hostname and select &lt;strong>Next&lt;/strong>.
+&lt;img src="../../../images/dhcphostname14.png" alt="../images/DHCP_hostname_for_your_system.png">&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>To configure the network manually, select &lt;strong>Configure Network manually&lt;/strong>. In the window that appears, enter the IP Address, Netmask, Gateway and Nameserver and select &lt;strong>OK&lt;/strong>.
+&lt;img src="../../../images/Configure_Network_Manually.png" alt="../images/Configure_Network_Manually.png">&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>If your network interface is directly connected to the VLAN trunk port, choose &lt;strong>YES&lt;/strong> on the Configure the network screen. Enter the VLAN ID and select &lt;strong>Next&lt;/strong>.
+&lt;img src="../../../images/Configure_the_network.png" alt="Configure the network">.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;li>
+&lt;p>Select the Linux Kernel&lt;/p>
+&lt;p>Select a Linux kernel to install.&lt;/p>
+&lt;p>&lt;img src="../../images/linuxflavor17.png" alt="Linux Kernel">&lt;/p>
+&lt;ul>
+&lt;li>&lt;strong>Hypervisor optimized&lt;/strong> means that any components that are not needed for running under a VMware hypervisor have been removed for faster boot times.&lt;/li>
+&lt;li>&lt;strong>Generic&lt;/strong> means that all components are included.&lt;/li>
+&lt;/ul>
+&lt;p>Choose &lt;strong>Next&lt;/strong> and press the Enter key.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Specify the Hostname&lt;/p>
+&lt;p>The installer prompts you for a hostname and suggest a randomly generated, unique hostname that you can change if you want.&lt;/p>
+&lt;p>&lt;img src="../../images/hostname18.png" alt="Hostname">&lt;/p>
+&lt;p>Press the Enter key.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Specify the System root Password&lt;/p>
+&lt;p>&lt;strong>&lt;em>Note&lt;/em>&lt;/strong> &lt;em>: Photon OS will not permit commonly used dictionary words to be set as a root password.&lt;/em>&lt;/p>
+&lt;p>The installer prompts you to enter the system root password. Type the password and press the Enter key.&lt;/p>
+&lt;p>&lt;img src="../../images/rootpassword19.png" alt="Root password">&lt;/p>
+&lt;p>The installer prompts you to confirm the root password by typing it a second time.&lt;/p>
+&lt;p>&lt;img src="../../images/confirmrootpassword20.png" alt="Password confirmation">&lt;/p>
+&lt;p>Press the Enter key. The installer proceeds to install the software. Installation times will vary based on the system hardware and installation options you selected. Most installations complete in less than one minute.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Reboot the VM and Log In&lt;/p>
+&lt;p>Once finished, the installer displays a confirmation message (which includes how long it took to install Photon OS) and prompts you to press a key on your keyboard to boot the new VM.&lt;/p>
+&lt;p>&lt;img src="../../images/installationcomplete22.png" alt="Boot VM">&lt;/p>
+&lt;p>Press any key on the keyboard and the virtual machine will reboot into Photon OS.&lt;/p>
+&lt;p>As the initial boot process begins, the installer displays the Photon splash screen, and then a login prompt.&lt;/p>
+&lt;p>&lt;img src="../../images/splashscreen23.png" alt="Login prompt">&lt;/p>
+&lt;p>At the login prompt, type &lt;strong>root&lt;/strong> as the username and provide the password chosen during the installation.&lt;/p>
+&lt;p>&lt;img src="../../images/loginprompt24.png" alt="Password">&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>You can now use your container runtime environment and deploy a containerized application.&lt;/p></description></item></channel></rss>

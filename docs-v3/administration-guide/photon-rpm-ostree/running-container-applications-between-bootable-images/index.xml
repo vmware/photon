@@ -1,17 +1,1 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Running container applications between bootable images</title>
-    <link>/docs-v3/administration-guide/photon-rpm-ostree/running-container-applications-between-bootable-images/</link>
-    <description>Recent content in Running container applications between bootable images on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs-v3/administration-guide/photon-rpm-ostree/running-container-applications-between-bootable-images/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-  </channel>
-</rss>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Running container applications between bootable images</title><link>/docs-v3/administration-guide/photon-rpm-ostree/running-container-applications-between-bootable-images/</link><description>Recent content in Running container applications between bootable images on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs-v3/administration-guide/photon-rpm-ostree/running-container-applications-between-bootable-images/index.xml" rel="self" type="application/rss+xml"/></channel></rss>

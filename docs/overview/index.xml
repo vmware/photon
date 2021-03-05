@@ -1,130 +1,75 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Overview</title>
-    <link>/docs/overview/</link>
-    <description>Recent content in Overview on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs/overview/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs: Introduction to Photon OS</title>
-      <link>/docs/overview/introduction/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/overview/introduction/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS, is an open-source minimalist Linux operating system from VMware that is optimized for cloud computing platforms, VMware vSphere deployments, and applications native to the cloud.&lt;/p&gt;
-&lt;p&gt;Photon OS is a Linux container host optimized for vSphere and cloud-computing platforms such as Amazon Elastic Compute and Google Compute Engine. As a lightweight and extensible operating system, Photon OS works with the most common container formats, including Docker, Rocket, and Garden. Photon OS includes a yum-compatible, package-based lifecycle management system called tdnf.&lt;/p&gt;
-&lt;p&gt;When used with development tools and environments such as VMware Fusion, VMware Workstation, and production runtime environments (vSphere), Photon OS lets you seamlessly migrate container-based applications from development to production. With a small footprint and fast boot and run times, Photon OS is optimized for cloud computing and cloud  applications.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Flavours</title>
-      <link>/docs/overview/flavours/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/overview/flavours/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS consists of a minimal version, a full version, RPM OSTree, and Photon Real-Time Operating System.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;The minimal version of Photon OS is lightweight container host runtime environment that is suited to managing and hosting containers. The minimal version contains just enough packaging and functionality to manage and modify containers while remaining a fast runtime environment. The minimal version is ready to work with appliances.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The Developer version of Photon OS includes additional packages to help you customize the system and create containerized applications. For running containers, the developer version is excessive. The devloper version helps you create, develop, test, and package an application that runs a container.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;OSTree is a tool to manage bootable, immutable, versioned filesystem trees. Unlike traditional package managers like rpm or dpkg that know how to install, uninstall, configure packages, OSTree has no knowledge of the relationship between files. But when you add rpm capabilities on top of OSTree, it becomes RPM-OSTree, meaning a filetree replication system that is also package-aware.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Photon OS features a kernel flavor called &amp;lsquo;linux-rt&amp;rsquo; to support low-latency real time applications. linux-rt is based on the Linux kernel PREEMPT_RT patchset that turns Linux into a hard real time operating system. In addition to the real time kernel itself, Photon OS 4.0 supports several userspace packages such as tuned, tuna, stalld etc., that are useful to configure the operating system for real time workloads. The linux-rt kernel and the associated userspace packages together are referred to as Photon Real Time (RT).&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: What is New in Photon OS 4.0</title>
-      <link>/docs/overview/whats-new/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/overview/whats-new/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS 4.0  provides support for the Real Time flavor of kernel linux-rt, SELinux , installer improvements, PMD role management improvements and critical updates to OSS packages including linux kernel, systemd, and glibc. This topic summarizes what&amp;rsquo;s new and different in Photon OS 4.0.&lt;/p&gt;
-&lt;h2 id=&#34;new-features&#34;&gt;New Features&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Photon OS 4.0 features a kernel flavor called &amp;lsquo;linux-rt&amp;rsquo; to support low-latency real time applications. &lt;code&gt;linux-rt&lt;/code&gt; is based on the Linux kernel PREEMPT_RT patchset that turns Linux into a hard real time operating system. In addition to the real time kernel itself, Photon OS 4.0 supports several userspace packages such as tuned, tuna, stalld etc., that are useful to configure the operating system for real time workloads. The linux-rt kernel and the associated userspace packages together are referred to as Photon Real Time (RT).&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;SELinux is an implementation of mandatory access controls (MAC) on Linux. Photon OS 4.0 provides an opportunity for the appliance to enable SElinux, either in Permissive or Enforcement mode. Photon OS ships will also include a default policy which the appliance can choose to customise depending on their needs during the build time. Photon also supports SELinux for containers.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Photon 4.0 brings out a completely revamped network configuration management library. It is a totally new avatar of the previous netmgr and has been developed with the goal of providing a set of APIs for common tasks such as configuring IP addresses, network routes, interface states, DNS, etc. This allows the user to configure the network on a Photon OS through simpler API calls that handle much of the complexity of configuring the network, which the user would have to do if they took the route of directly manipulating the various configuration files.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Photon OS 4.0 provides support for Raspberry Pi 4.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;OVA and AMI images for ARM architecture are available in Photon OS 4.0.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;In &lt;code&gt;tdnf&lt;/code&gt;, support is added for the following:&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;ol&gt;
-&lt;li&gt;Validation of externally configured GPGkeys&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;tdnf-automatic&lt;/code&gt; to allow administrators to configure systems to automatically download and perform updates without manual intervention&lt;/li&gt;
-&lt;li&gt;Metalink in the &lt;code&gt;tdnf&lt;/code&gt; repositories allows configuration of multiple mirrors to download the repository data&lt;/li&gt;
-&lt;li&gt;Local and remote URL package installation&lt;/li&gt;
-&lt;li&gt;SSL Options&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;installer-and-build-system-updates&#34;&gt;Installer and Build System Updates&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;Support for distributed builds using Kubernetes&lt;/li&gt;
-&lt;li&gt;Availability of Photon OS installer as RPM&lt;/li&gt;
-&lt;li&gt;Support for multiple disks in image builder&lt;/li&gt;
-&lt;li&gt;Support for untrusted (self-signed) HTTPS in kickstart ISO installation&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;zstd&lt;/code&gt; as the default compression mechanism for RPM&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&#34;package-and-binary-maintenance&#34;&gt;Package and Binary Maintenance&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;Cloud-ready images for rapid deployment on Microsoft Azure (new), Google Compute Engine (GCE), Amazon Elastic Compute Cloud (EC2), and VMware products (vSphere, Fusion, and Workstation)&lt;/li&gt;
-&lt;li&gt;Critical updates to the following base OS packages:
-&lt;ul&gt;
-&lt;li&gt;Linux kernel 5.10 LTS&lt;/li&gt;
-&lt;li&gt;Glibc 2.32&lt;/li&gt;
-&lt;li&gt;systemd 247&lt;/li&gt;
-&lt;li&gt;Python3 3.9&lt;/li&gt;
-&lt;li&gt;Openjdk : 1.8.0.265, 11.0.9&lt;/li&gt;
-&lt;li&gt;Openssl : 1.1.1&lt;/li&gt;
-&lt;li&gt;Cloud-init: 20.4.1&lt;/li&gt;
-&lt;li&gt;GCC: 10.2.0&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Up-to-date versions for most packages available in the repository.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;##Notes
-Openjdk 1.10 is end of life and is being shipped to serve the sole purpose of build dependency. There will no future updates - Updates to security or otherwise will be done to the openjdk10 package.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Overview</title><link>/docs/overview/</link><description>Recent content in Overview on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/overview/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Introduction to Photon OS</title><link>/docs/overview/introduction/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/overview/introduction/</guid><description>
+&lt;p>Photon OS, is an open-source minimalist Linux operating system from VMware that is optimized for cloud computing platforms, VMware vSphere deployments, and applications native to the cloud.&lt;/p>
+&lt;p>Photon OS is a Linux container host optimized for vSphere and cloud-computing platforms such as Amazon Elastic Compute and Google Compute Engine. As a lightweight and extensible operating system, Photon OS works with the most common container formats, including Docker, Rocket, and Garden. Photon OS includes a yum-compatible, package-based lifecycle management system called tdnf.&lt;/p>
+&lt;p>When used with development tools and environments such as VMware Fusion, VMware Workstation, and production runtime environments (vSphere), Photon OS lets you seamlessly migrate container-based applications from development to production. With a small footprint and fast boot and run times, Photon OS is optimized for cloud computing and cloud applications.&lt;/p></description></item><item><title>Docs: Flavours</title><link>/docs/overview/flavours/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/overview/flavours/</guid><description>
+&lt;p>Photon OS consists of a minimal version, a full version, RPM OSTree, and Photon Real-Time Operating System.&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>The minimal version of Photon OS is lightweight container host runtime environment that is suited to managing and hosting containers. The minimal version contains just enough packaging and functionality to manage and modify containers while remaining a fast runtime environment. The minimal version is ready to work with appliances.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The Developer version of Photon OS includes additional packages to help you customize the system and create containerized applications. For running containers, the developer version is excessive. The devloper version helps you create, develop, test, and package an application that runs a container.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>OSTree is a tool to manage bootable, immutable, versioned filesystem trees. Unlike traditional package managers like rpm or dpkg that know how to install, uninstall, configure packages, OSTree has no knowledge of the relationship between files. But when you add rpm capabilities on top of OSTree, it becomes RPM-OSTree, meaning a filetree replication system that is also package-aware.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Photon OS features a kernel flavor called &amp;lsquo;linux-rt&amp;rsquo; to support low-latency real time applications. linux-rt is based on the Linux kernel PREEMPT_RT patchset that turns Linux into a hard real time operating system. In addition to the real time kernel itself, Photon OS 4.0 supports several userspace packages such as tuned, tuna, stalld etc., that are useful to configure the operating system for real time workloads. The linux-rt kernel and the associated userspace packages together are referred to as Photon Real Time (RT).&lt;/p>
+&lt;/li>
+&lt;/ul></description></item><item><title>Docs: What is New in Photon OS 4.0</title><link>/docs/overview/whats-new/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/overview/whats-new/</guid><description>
+&lt;p>Photon OS 4.0 provides support for the Real Time flavor of kernel linux-rt, SELinux , installer improvements, PMD role management improvements and critical updates to OSS packages including linux kernel, systemd, and glibc. This topic summarizes what&amp;rsquo;s new and different in Photon OS 4.0.&lt;/p>
+&lt;h2 id="new-features">New Features&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>Photon OS 4.0 features a kernel flavor called &amp;lsquo;linux-rt&amp;rsquo; to support low-latency real time applications. &lt;code>linux-rt&lt;/code> is based on the Linux kernel PREEMPT_RT patchset that turns Linux into a hard real time operating system. In addition to the real time kernel itself, Photon OS 4.0 supports several userspace packages such as tuned, tuna, stalld etc., that are useful to configure the operating system for real time workloads. The linux-rt kernel and the associated userspace packages together are referred to as Photon Real Time (RT).&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>SELinux is an implementation of mandatory access controls (MAC) on Linux. Photon OS 4.0 provides an opportunity for the appliance to enable SElinux, either in Permissive or Enforcement mode. Photon OS ships will also include a default policy which the appliance can choose to customise depending on their needs during the build time. Photon also supports SELinux for containers.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Photon 4.0 brings out a completely revamped network configuration management library. It is a totally new avatar of the previous netmgr and has been developed with the goal of providing a set of APIs for common tasks such as configuring IP addresses, network routes, interface states, DNS, etc. This allows the user to configure the network on a Photon OS through simpler API calls that handle much of the complexity of configuring the network, which the user would have to do if they took the route of directly manipulating the various configuration files.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Photon OS 4.0 provides support for Raspberry Pi 4.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>OVA and AMI images for ARM architecture are available in Photon OS 4.0.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>In &lt;code>tdnf&lt;/code>, support is added for the following:&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;ol>
+&lt;li>Validation of externally configured GPGkeys&lt;/li>
+&lt;li>&lt;code>tdnf-automatic&lt;/code> to allow administrators to configure systems to automatically download and perform updates without manual intervention&lt;/li>
+&lt;li>Metalink in the &lt;code>tdnf&lt;/code> repositories allows configuration of multiple mirrors to download the repository data&lt;/li>
+&lt;li>Local and remote URL package installation&lt;/li>
+&lt;li>SSL Options&lt;/li>
+&lt;/ol>
+&lt;h3 id="installer-and-build-system-updates">Installer and Build System Updates&lt;/h3>
+&lt;ul>
+&lt;li>Support for distributed builds using Kubernetes&lt;/li>
+&lt;li>Availability of Photon OS installer as RPM&lt;/li>
+&lt;li>Support for multiple disks in image builder&lt;/li>
+&lt;li>Support for untrusted (self-signed) HTTPS in kickstart ISO installation&lt;/li>
+&lt;li>&lt;code>zstd&lt;/code> as the default compression mechanism for RPM&lt;/li>
+&lt;/ul>
+&lt;h3 id="package-and-binary-maintenance">Package and Binary Maintenance&lt;/h3>
+&lt;ul>
+&lt;li>Cloud-ready images for rapid deployment on Microsoft Azure (new), Google Compute Engine (GCE), Amazon Elastic Compute Cloud (EC2), and VMware products (vSphere, Fusion, and Workstation)&lt;/li>
+&lt;li>Critical updates to the following base OS packages:
+&lt;ul>
+&lt;li>Linux kernel 5.10 LTS&lt;/li>
+&lt;li>Glibc 2.32&lt;/li>
+&lt;li>systemd 247&lt;/li>
+&lt;li>Python3 3.9&lt;/li>
+&lt;li>Openjdk : 1.8.0.265, 11.0.9&lt;/li>
+&lt;li>Openssl : 1.1.1&lt;/li>
+&lt;li>Cloud-init: 20.4.1&lt;/li>
+&lt;li>GCC: 10.2.0&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Up-to-date versions for most packages available in the repository.&lt;/li>
+&lt;/ul>
+&lt;p>##Notes
+Openjdk 1.10 is end of life and is being shipped to serve the sole purpose of build dependency. There will no future updates - Updates to security or otherwise will be done to the openjdk10 package.&lt;/p></description></item></channel></rss>

@@ -1,17 +1,1 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Introduction</title>
-    <link>/docs/administration-guide/photon-rpm-ostree/introduction/</link>
-    <description>Recent content in Introduction on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs/administration-guide/photon-rpm-ostree/introduction/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-  </channel>
-</rss>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Introduction</title><link>/docs/administration-guide/photon-rpm-ostree/introduction/</link><description>Recent content in Introduction on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/administration-guide/photon-rpm-ostree/introduction/index.xml" rel="self" type="application/rss+xml"/></channel></rss>

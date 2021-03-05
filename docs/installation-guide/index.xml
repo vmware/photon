@@ -1,474 +1,275 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Installation Guide</title>
-    <link>/docs/installation-guide/</link>
-    <description>Recent content in Installation Guide on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs/installation-guide/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs: Downloading Photon OS</title>
-      <link>/docs/installation-guide/downloading-photon/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/downloading-photon/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS can be downloaded from &lt;a href=&#34;https://github.com/vmware/photon/wiki/Downloading-Photon-OS&#34;&gt;https://github.com/vmware/photon/wiki/Downloading-Photon-OS&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Photon OS is available in the following pre-packaged, binary formats.&lt;/p&gt;
-&lt;h2 id=&#34;download-formats&#34;&gt;Download Formats&lt;/h2&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;&lt;/th&gt;
-&lt;th&gt;&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;Format&lt;/td&gt;
-&lt;td&gt;Description&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;&lt;img width=1000 class=&#34;px-5&#34;/&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;ISO Image&lt;/td&gt;
-&lt;td&gt;Contains everything needed to install the minimal or full installation of Photon OS or the Real-Time flavor of Photon OS. The bootable ISO has a manual installer or can be used with PXE/kickstart environments for automated installations.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;OVA&lt;/td&gt;
-&lt;td&gt;Pre-installed minimal environment, customized for VMware hypervisor environments. These customizations include a highly sanitized and optimized kernel to give improved boot and runtime performance for containers and Linux applications. Since an OVA is a complete virtual machine definition, we&amp;rsquo;ve made available a Photon OS OVA that has virtual hardware version 13 arm64, version 13, and version 11; this will allow for compatibility with several versions of VMware platforms or allow for the latest and greatest virtual hardware enhancements.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;Amazon AMI&lt;/td&gt;
-&lt;td&gt;Pre-packaged and tested version of Photon OS with Amazon AMI and Amazon AMI arm64 packages made ready to deploy in your Amazon EC2 cloud environment. Previously, we&amp;rsquo;d published documentation on how to create an Amazon compatible instance, but, now we&amp;rsquo;ve done the work for you.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;Google GCE Image&lt;/td&gt;
-&lt;td&gt;Pre-packaged and tested Google GCE image that is ready to deploy in your Google Compute Engine Environment, with all modifications and package requirements for running Photon OS in GCE.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;Azure VHD&lt;/td&gt;
-&lt;td&gt;Pre-packaged and tested Azure HD image that is ready to deploy in your Microsoft Azure Cloud, with all modifications and package requirements for running Photon OS in Azure.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;Raspberry Pi Image&lt;/td&gt;
-&lt;td&gt;Pre-packaged and tested Raspberry Pi Image on ARM64 architecture.&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Upgrading to Photon OS 4.0</title>
-      <link>/docs/installation-guide/upgrading-to-photon-os-3/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/upgrading-to-photon-os-3/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can upgrade your existing Photon OS 3.0 VMs to take advantage of the functionality enhancements in Photon OS 4.0. For details, see &lt;a href=&#34;../../overview/whats-new/&#34;&gt;What&amp;rsquo;s New in Photon OS 4.0&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;Photon OS 4.0 provides a seamless upgrade for Photon OS 3.0 implementations. You simply download an upgrade package, run a script, and reboot the VM. The upgrade script will update your packages and retain your 3.0 customizations in your new OS 4.0 VM.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: If your 3.0 VM is a full install, then you will have a 4.0 VM that represents a full install (all packages and dependencies). Upgrading a minimal installation takes less time due to fewer packages.&lt;/p&gt;
-&lt;p&gt;For each Photon OS 3.0 VM that you want to upgrade, complete the following steps:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Back up all existing settings and data for the Photon OS 3.0 VM.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Stop any services (for example, docker) that are currently running in the VM.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Install photon-upgrade package&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# tdnf -y install photon-upgrade
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Run the upgrade script&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# photon-upgrade.sh
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Answer y to reboot the VM. The upgrade script powers down the Photon OS 3.0 VM and powers it on as a Photon OS 4.0 VM.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;After the upgrade, before you deploy into production, test all previous functionality to ensure that everything works as expected.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Building Images</title>
-      <link>/docs/installation-guide/building-images/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/building-images/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can build an ISO from the source code and other images for Photon OS. This section describes how to build the ISO, build other images, use the cached toolchain and RPMS, and cached sources. You can use this method as an alternative to downloading a pre-built version.&lt;/p&gt;
-&lt;p&gt;For information on how to install and build a package on Photon OS from the package&amp;rsquo;s source RPM, see the &lt;a href=&#34;../../administration-guide/photon-os-packages/building-a-package-from-a-source-rpm/&#34;&gt;Photon OS Administration Guide&lt;/a&gt;.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Building Package or Kernel Modules Using a Script</title>
-      <link>/docs/installation-guide/build-package-or-kernel-modules-using-script/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/build-package-or-kernel-modules-using-script/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can use a script to build a single Photon OS package without rebuilding all Photon OS packages. You just need a &lt;code&gt;.spec&lt;/code&gt; specification file and sources. You place the sources and the specification files in the same folder and run the &lt;code&gt;build_spec.sh&lt;/code&gt; script. The script performs the following steps:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Creates sandbox using docker.&lt;/li&gt;
-&lt;li&gt;Installs build tools and &lt;code&gt;.spec&lt;/code&gt; build requirements from the Photon OS repository.&lt;/li&gt;
-&lt;li&gt;Runs &lt;code&gt;rpmbuild&lt;/code&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;Result:&lt;/strong&gt; You have a native Photon OS RPM package.&lt;/p&gt;
-&lt;p&gt;The &lt;code&gt;build-spec.sh&lt;/code&gt; script is located in the &lt;code&gt;photon/tools/scripts/&lt;/code&gt; folder.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;#prerequisites&#34;&gt;Prerequisties&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#procedure&#34;&gt;Procedure&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#example&#34;&gt;Example&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#build-logs&#34;&gt;Build Logs&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
-&lt;p&gt;Before you run the &lt;code&gt;build-spec.sh&lt;/code&gt; script, perform the following steps:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Ensure you have any Linux OS with docker daemon running.&lt;/li&gt;
-&lt;li&gt;Place the source and RPM &lt;code&gt;.spec&lt;/code&gt; files in the same folder, that is, &lt;code&gt;$WORKDIR&lt;/code&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;procedure&#34;&gt;Procedure&lt;/h2&gt;
-&lt;p&gt;Run the script. Provide the RPM &lt;code&gt;.spec&lt;/code&gt; file name, including absolute or relative path, as argument:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;./photon/tools/scripts/build_spec.sh &amp;lt;$WORKDIR/rpm_spec_file.spec&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The RPMs and full build logs are generated in the &lt;code&gt;$WORKDIR/stage&lt;/code&gt; folder.&lt;/p&gt;
-&lt;h2 id=&#34;example&#34;&gt;Example&lt;/h2&gt;
-&lt;p&gt;The following example runs the script with &lt;code&gt;simple-module.spec&lt;/code&gt; as argument, where &lt;code&gt;simple-module.spec&lt;/code&gt; is the specification file:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;./photon/tools/scripts/build_spec.sh ~/photon/tools/examples/build_spec/simple-module.spec
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The following are the contents of the &lt;code&gt;simple-module.spec&lt;/code&gt; file:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;Summary:        Simple Linux module
-Name:           simple-module
-Version:        4.18.9
-Release:        5%{?dist}
-License:    	GPLv2
-Group:        	System Environment/Kernel
-Vendor:         VMware, Inc.
-Distribution: 	Photon
-Source0:        module_example.tar.xz
-BuildRequires:  linux-devel = 4.18.9
-BuildRequires:  kmod
-Requires:       linux = 4.18.9
-
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Installation Guide</title><link>/docs/installation-guide/</link><description>Recent content in Installation Guide on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/installation-guide/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Downloading Photon OS</title><link>/docs/installation-guide/downloading-photon/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/downloading-photon/</guid><description>
+&lt;p>Photon OS can be downloaded from &lt;a href="https://github.com/vmware/photon/wiki/Downloading-Photon-OS">https://github.com/vmware/photon/wiki/Downloading-Photon-OS&lt;/a>&lt;/p>
+&lt;p>Photon OS is available in the following pre-packaged, binary formats.&lt;/p>
+&lt;h2 id="download-formats">Download Formats&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>&lt;/th>
+&lt;th>&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Format&lt;/td>
+&lt;td>Description&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>&lt;img width=1000 class="px-5"/>&lt;/td>
+&lt;td>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>ISO Image&lt;/td>
+&lt;td>Contains everything needed to install the minimal or full installation of Photon OS or the Real-Time flavor of Photon OS. The bootable ISO has a manual installer or can be used with PXE/kickstart environments for automated installations.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>OVA&lt;/td>
+&lt;td>Pre-installed minimal environment, customized for VMware hypervisor environments. These customizations include a highly sanitized and optimized kernel to give improved boot and runtime performance for containers and Linux applications. Since an OVA is a complete virtual machine definition, we&amp;rsquo;ve made available a Photon OS OVA that has virtual hardware version 13 arm64, version 13, and version 11; this will allow for compatibility with several versions of VMware platforms or allow for the latest and greatest virtual hardware enhancements.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Amazon AMI&lt;/td>
+&lt;td>Pre-packaged and tested version of Photon OS with Amazon AMI and Amazon AMI arm64 packages made ready to deploy in your Amazon EC2 cloud environment. Previously, we&amp;rsquo;d published documentation on how to create an Amazon compatible instance, but, now we&amp;rsquo;ve done the work for you.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Google GCE Image&lt;/td>
+&lt;td>Pre-packaged and tested Google GCE image that is ready to deploy in your Google Compute Engine Environment, with all modifications and package requirements for running Photon OS in GCE.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Azure VHD&lt;/td>
+&lt;td>Pre-packaged and tested Azure HD image that is ready to deploy in your Microsoft Azure Cloud, with all modifications and package requirements for running Photon OS in Azure.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Raspberry Pi Image&lt;/td>
+&lt;td>Pre-packaged and tested Raspberry Pi Image on ARM64 architecture.&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table></description></item><item><title>Docs: Upgrading to Photon OS 4.0</title><link>/docs/installation-guide/upgrading-to-photon-os-3/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/upgrading-to-photon-os-3/</guid><description>
+&lt;p>You can upgrade your existing Photon OS 3.0 VMs to take advantage of the functionality enhancements in Photon OS 4.0. For details, see &lt;a href="../../overview/whats-new/">What&amp;rsquo;s New in Photon OS 4.0&lt;/a>.&lt;/p>
+&lt;p>Photon OS 4.0 provides a seamless upgrade for Photon OS 3.0 implementations. You simply download an upgrade package, run a script, and reboot the VM. The upgrade script will update your packages and retain your 3.0 customizations in your new OS 4.0 VM.&lt;/p>
+&lt;p>&lt;strong>Note&lt;/strong>: If your 3.0 VM is a full install, then you will have a 4.0 VM that represents a full install (all packages and dependencies). Upgrading a minimal installation takes less time due to fewer packages.&lt;/p>
+&lt;p>For each Photon OS 3.0 VM that you want to upgrade, complete the following steps:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Back up all existing settings and data for the Photon OS 3.0 VM.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Stop any services (for example, docker) that are currently running in the VM.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Install photon-upgrade package&lt;/p>
+&lt;pre>&lt;code># tdnf -y install photon-upgrade
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Run the upgrade script&lt;/p>
+&lt;pre>&lt;code># photon-upgrade.sh
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Answer y to reboot the VM. The upgrade script powers down the Photon OS 3.0 VM and powers it on as a Photon OS 4.0 VM.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>After the upgrade, before you deploy into production, test all previous functionality to ensure that everything works as expected.&lt;/p></description></item><item><title>Docs: Building Images</title><link>/docs/installation-guide/building-images/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/building-images/</guid><description>
+&lt;p>You can build an ISO from the source code and other images for Photon OS. This section describes how to build the ISO, build other images, use the cached toolchain and RPMS, and cached sources. You can use this method as an alternative to downloading a pre-built version.&lt;/p>
+&lt;p>For information on how to install and build a package on Photon OS from the package&amp;rsquo;s source RPM, see the &lt;a href="../../administration-guide/photon-os-packages/building-a-package-from-a-source-rpm/">Photon OS Administration Guide&lt;/a>.&lt;/p></description></item><item><title>Docs: Building Package or Kernel Modules Using a Script</title><link>/docs/installation-guide/build-package-or-kernel-modules-using-script/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/build-package-or-kernel-modules-using-script/</guid><description>
+&lt;p>You can use a script to build a single Photon OS package without rebuilding all Photon OS packages. You just need a &lt;code>.spec&lt;/code> specification file and sources. You place the sources and the specification files in the same folder and run the &lt;code>build_spec.sh&lt;/code> script. The script performs the following steps:&lt;/p>
+&lt;ul>
+&lt;li>Creates sandbox using docker.&lt;/li>
+&lt;li>Installs build tools and &lt;code>.spec&lt;/code> build requirements from the Photon OS repository.&lt;/li>
+&lt;li>Runs &lt;code>rpmbuild&lt;/code>.&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>Result:&lt;/strong> You have a native Photon OS RPM package.&lt;/p>
+&lt;p>The &lt;code>build-spec.sh&lt;/code> script is located in the &lt;code>photon/tools/scripts/&lt;/code> folder.&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="#prerequisites">Prerequisties&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#procedure">Procedure&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#example">Example&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#build-logs">Build Logs&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="prerequisites">Prerequisites&lt;/h2>
+&lt;p>Before you run the &lt;code>build-spec.sh&lt;/code> script, perform the following steps:&lt;/p>
+&lt;ul>
+&lt;li>Ensure you have any Linux OS with docker daemon running.&lt;/li>
+&lt;li>Place the source and RPM &lt;code>.spec&lt;/code> files in the same folder, that is, &lt;code>$WORKDIR&lt;/code>.&lt;/li>
+&lt;/ul>
+&lt;h2 id="procedure">Procedure&lt;/h2>
+&lt;p>Run the script. Provide the RPM &lt;code>.spec&lt;/code> file name, including absolute or relative path, as argument:&lt;/p>
+&lt;pre>&lt;code>./photon/tools/scripts/build_spec.sh &amp;lt;$WORKDIR/rpm_spec_file.spec&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>The RPMs and full build logs are generated in the &lt;code>$WORKDIR/stage&lt;/code> folder.&lt;/p>
+&lt;h2 id="example">Example&lt;/h2>
+&lt;p>The following example runs the script with &lt;code>simple-module.spec&lt;/code> as argument, where &lt;code>simple-module.spec&lt;/code> is the specification file:&lt;/p>
+&lt;pre>&lt;code>./photon/tools/scripts/build_spec.sh ~/photon/tools/examples/build_spec/simple-module.spec
+&lt;/code>&lt;/pre>&lt;p>The following are the contents of the &lt;code>simple-module.spec&lt;/code> file:&lt;/p>
+&lt;pre>&lt;code>Summary: Simple Linux module
+Name: simple-module
+Version: 4.18.9
+Release: 5%{?dist}
+License: GPLv2
+Group: System Environment/Kernel
+Vendor: VMware, Inc.
+Distribution: Photon
+Source0: module_example.tar.xz
+BuildRequires: linux-devel = 4.18.9
+BuildRequires: kmod
+Requires: linux = 4.18.9
 %description
 Example of building linux module for Photon OS
-
 %prep
 %setup -q -n module_example
-
 %build
 make -C `echo /usr/src/linux-headers-4.18.9*` M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
-
 %install
 make -C `echo /usr/src/linux-headers-4.18.9*` M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
 # fix permissins to generate non empty debuginfo
-find %{buildroot}/lib/modules -name &#39;*.ko&#39; -print0 | xargs -0 chmod u+x
-
+find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 %post
 /sbin/depmod -a
-
 %files
 %defattr(-,root,root)
 /lib/modules/*
-
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;build-logs&#34;&gt;Build Logs&lt;/h2&gt;
-&lt;p&gt;The followiing logs indicate the steps that the script performs internally:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;1. Create sandbox
-	Use local build template image OK
+&lt;/code>&lt;/pre>&lt;h2 id="build-logs">Build Logs&lt;/h2>
+&lt;p>The followiing logs indicate the steps that the script performs internally:&lt;/p>
+&lt;pre>&lt;code>1. Create sandbox
+Use local build template image OK
 2. Prepare build environment
-	Create source folder OK
-	Copy sources from &amp;lt;HOME&amp;gt;/photon/tools/examples/build_spec/simple-module OK
-	Install build requirements OK
+Create source folder OK
+Copy sources from &amp;lt;HOME&amp;gt;/photon/tools/examples/build_spec/simple-module OK
+Install build requirements OK
 3. Build
-	Run rpmbuild OK
+Run rpmbuild OK
 4. Get binaries
-	Copy RPMS OK
-	Copy SRPMS OK
+Copy RPMS OK
+Copy SRPMS OK
 5. Destroy sandbox
-	Stop container OK
-	Remove container OK
-
-Build completed. RPMS are in &#39;&amp;lt;HOME&amp;gt;/photon/tools/examples/build_spec/simple-module/stage&#39; folder
-&lt;/code&gt;&lt;/pre&gt;
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Running Photon OS on vSphere</title>
-      <link>/docs/installation-guide/run-photon-on-vsphere/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/run-photon-on-vsphere/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can use Photon OS as a virtual machine within VMware vSphere. You can download Photon OS, as an OVA or ISO file, and install the Photon OS distribution on vSphere. After you install Photon OS, you can deploy a containerized application in Docker with a single command.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: If you want to upgrade an existing Photon 1.0 VM, see the Upgrade to Photon OS 4.0 section.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Running Photon OS on Fusion</title>
-      <link>/docs/installation-guide/run-photon-on-fusion/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/run-photon-on-fusion/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can use Photon OS as a virtual machine within VMware Fusion. You can download Photon OS, as an OVA or ISO file, and install the Photon OS distribution on Fusion. After you install Photon OS, you can deploy a containerized application in Docker with a single command.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: If you want to upgrade an existing Photon 1.0 VM, refer to the instructions in the Upgrading to Photon OS 4.0 section.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Running Photon OS on Workstation</title>
-      <link>/docs/installation-guide/run-photon-on-workstation/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/run-photon-on-workstation/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can use Photon OS as a virtual machine within VMware Workstation. You can download Photon OS, as an OVA or ISO file, and install the Photon OS distribution on vSphere. After you install Photon OS, you can deploy a containerized application in Docker with a single command.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: If you want to upgrade an existing Photon 1.0 VM, refer to the instructions in the Upgrading to Photon OS 4.0 section.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Running Photon OS on Amazon Elastic Cloud Compute</title>
-      <link>/docs/installation-guide/run-photon-aws-ec2/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/run-photon-aws-ec2/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can set up Photon OS on Amazon Web Services Elastic Cloud Compute (EC2), customize it with cloud-init, connect to it with SSH.&lt;/p&gt;
-&lt;p&gt;After you set up Photon OS, you can run a containerized application.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Running Photon OS on Microsoft Azure</title>
-      <link>/docs/installation-guide/run-photon-on-azure/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/run-photon-on-azure/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can use Photon OS as a run-time environment for Linux containers on Microsoft Azure. You can set up and run the cloud-ready version of Photon OS as an instance of a virtual machine in the Azure cloud. Once Photon OS is running, you can deploy a containerized application in Docker.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; These instructions apply to Photon OS 2.0 and 3.0. There is no Photon OS 1.0 distribution image for Microsoft Azure.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Running Photon OS on Google Compute Engine</title>
-      <link>/docs/installation-guide/run-photon-on-gce/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/run-photon-on-gce/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can use Photon OS as a virtual machine on Google Compute Engine (GCE). You can download Photon OS, as an OVA or ISO file, and install the Photon OS distribution on vSphere. After you install Photon OS, you can deploy a containerized application in Docker with a single command.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Running Photon OS on Raspberry Pi</title>
-      <link>/docs/installation-guide/run-photon-on-raspberry-pi/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/run-photon-on-raspberry-pi/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can use Photon OS as a virtual machine on Raspberry Pi  (RPi). You can download Photon OS and install the Photon OS distribution on vSphere.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Deploying a Containerized Application in Photon OS</title>
-      <link>/docs/installation-guide/deploying-a-containerized-application-in-photon-os/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/deploying-a-containerized-application-in-photon-os/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Now that you have your container runtime environment up and running, you can easily deploy a containerized application. For this example, you will deploy the popular open source Web Server Nginx. The Nginx application has a customized VMware package that is published as a dockerfile and can be downloaded, directly, through the Docker module from the Docker Hub.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Run Docker&lt;/p&gt;
-&lt;p&gt;To run Docker from the command prompt, enter the following command, which initializes the docker engine:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt; systemctl start docker
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;To ensure Docker daemon service runs on every subsequent VM reboot, enter the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt; systemctl enable docker
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Run the Nginx Web Server&lt;/p&gt;
-&lt;p&gt;Now the Docker daemon service is running, it is a simple task to &amp;ldquo;pull&amp;rdquo; and start the Nginx Web Server container from Docker Hub. To do this, type the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt; docker run -d -p 80:80 vmwarecna/nginx
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;This pulls the Nginx Web Server files and appropriate dependent container filesystem layers required for this containerized application to run.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../images/vs-docker-run.png&#34; alt=&#34;Docker run&#34;&gt;&lt;/p&gt;
-&lt;p&gt;After the &lt;strong&gt;docker run&lt;/strong&gt;  process completes, you return to the command prompt. You now have a fully active website up and running in a container!&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Test the Web Server&lt;/p&gt;
-&lt;p&gt;To test that your Web Server is active, run the ifconfig command to get the IP address of the Photon OS Virtual Machine.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../images/vs-docker-ifconfig.png&#34; alt=&#34;IP address&#34;&gt;&lt;/p&gt;
-&lt;p&gt;The output displays a list of adapters that are connected to the virtual machine. Typically, the web server daemon will be bound on &lt;strong&gt;eth0&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;Start a browser on your host machine and enter the IP address of your Photon OS Virtual Machine. You should see a screen similar to the following example as confirmation that your web server is active.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;../images/vs-docker-confirm.png&#34; alt=&#34;Docker confirmation&#34;&gt;&lt;/p&gt;
-&lt;p&gt;You can now run any other containerized application from Docker Hub or your own containerized application within Photon OS.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Compatible Cloud Images</title>
-      <link>/docs/installation-guide/cloud-images/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/installation-guide/cloud-images/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The &lt;a href=&#34;https://bintray.com/vmware/photon/&#34;&gt;Bintray website&lt;/a&gt; contains the following cloud-ready images of Photon OS:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;GCE - Google Compute Engine&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;AMI - Amazon Machine Image&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;OVA&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Because the cloud-ready images of Photon OS are built to be compatible with their corresponding cloud platform or format, you typically do not need to build a cloud image&amp;ndash;just go to Bintray and download the image for the platform that you are working on.&lt;/p&gt;
-&lt;p&gt;If, however, you want to build your own cloud image, perhaps because you seek to customize the code, see the next section on how to build cloud images.&lt;/p&gt;
-&lt;h2 id=&#34;how-to-build-cloud-images&#34;&gt;How to build cloud images&lt;/h2&gt;
-&lt;pre&gt;&lt;code&gt;sudo make cloud-image IMG_NAME=image-name
-
+Stop container OK
+Remove container OK
+Build completed. RPMS are in '&amp;lt;HOME&amp;gt;/photon/tools/examples/build_spec/simple-module/stage' folder
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Running Photon OS on vSphere</title><link>/docs/installation-guide/run-photon-on-vsphere/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-on-vsphere/</guid><description>
+&lt;p>You can use Photon OS as a virtual machine within VMware vSphere. You can download Photon OS, as an OVA or ISO file, and install the Photon OS distribution on vSphere. After you install Photon OS, you can deploy a containerized application in Docker with a single command.&lt;/p>
+&lt;p>&lt;strong>Note&lt;/strong>: If you want to upgrade an existing Photon 1.0 VM, see the Upgrade to Photon OS 4.0 section.&lt;/p></description></item><item><title>Docs: Running Photon OS on Fusion</title><link>/docs/installation-guide/run-photon-on-fusion/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-on-fusion/</guid><description>
+&lt;p>You can use Photon OS as a virtual machine within VMware Fusion. You can download Photon OS, as an OVA or ISO file, and install the Photon OS distribution on Fusion. After you install Photon OS, you can deploy a containerized application in Docker with a single command.&lt;/p>
+&lt;p>&lt;strong>Note&lt;/strong>: If you want to upgrade an existing Photon 1.0 VM, refer to the instructions in the Upgrading to Photon OS 4.0 section.&lt;/p></description></item><item><title>Docs: Running Photon OS on Workstation</title><link>/docs/installation-guide/run-photon-on-workstation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-on-workstation/</guid><description>
+&lt;p>You can use Photon OS as a virtual machine within VMware Workstation. You can download Photon OS, as an OVA or ISO file, and install the Photon OS distribution on vSphere. After you install Photon OS, you can deploy a containerized application in Docker with a single command.&lt;/p>
+&lt;p>&lt;strong>Note&lt;/strong>: If you want to upgrade an existing Photon 1.0 VM, refer to the instructions in the Upgrading to Photon OS 4.0 section.&lt;/p></description></item><item><title>Docs: Running Photon OS on Amazon Elastic Cloud Compute</title><link>/docs/installation-guide/run-photon-aws-ec2/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-aws-ec2/</guid><description>
+&lt;p>You can set up Photon OS on Amazon Web Services Elastic Cloud Compute (EC2), customize it with cloud-init, connect to it with SSH.&lt;/p>
+&lt;p>After you set up Photon OS, you can run a containerized application.&lt;/p></description></item><item><title>Docs: Running Photon OS on Microsoft Azure</title><link>/docs/installation-guide/run-photon-on-azure/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-on-azure/</guid><description>
+&lt;p>You can use Photon OS as a run-time environment for Linux containers on Microsoft Azure. You can set up and run the cloud-ready version of Photon OS as an instance of a virtual machine in the Azure cloud. Once Photon OS is running, you can deploy a containerized application in Docker.&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong> These instructions apply to Photon OS 2.0 and 3.0. There is no Photon OS 1.0 distribution image for Microsoft Azure.&lt;/p></description></item><item><title>Docs: Running Photon OS on Google Compute Engine</title><link>/docs/installation-guide/run-photon-on-gce/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-on-gce/</guid><description>
+&lt;p>You can use Photon OS as a virtual machine on Google Compute Engine (GCE). You can download Photon OS, as an OVA or ISO file, and install the Photon OS distribution on vSphere. After you install Photon OS, you can deploy a containerized application in Docker with a single command.&lt;/p></description></item><item><title>Docs: Running Photon OS on Raspberry Pi</title><link>/docs/installation-guide/run-photon-on-raspberry-pi/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-on-raspberry-pi/</guid><description>
+&lt;p>You can use Photon OS as a virtual machine on Raspberry Pi (RPi). You can download Photon OS and install the Photon OS distribution on vSphere.&lt;/p></description></item><item><title>Docs: Deploying a Containerized Application in Photon OS</title><link>/docs/installation-guide/deploying-a-containerized-application-in-photon-os/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/deploying-a-containerized-application-in-photon-os/</guid><description>
+&lt;p>Now that you have your container runtime environment up and running, you can easily deploy a containerized application. For this example, you will deploy the popular open source Web Server Nginx. The Nginx application has a customized VMware package that is published as a dockerfile and can be downloaded, directly, through the Docker module from the Docker Hub.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Run Docker&lt;/p>
+&lt;p>To run Docker from the command prompt, enter the following command, which initializes the docker engine:&lt;/p>
+&lt;pre>&lt;code> systemctl start docker
+&lt;/code>&lt;/pre>
+&lt;p>To ensure Docker daemon service runs on every subsequent VM reboot, enter the following command:&lt;/p>
+&lt;pre>&lt;code> systemctl enable docker
+&lt;/code>&lt;/pre>
+&lt;/li>
+&lt;li>
+&lt;p>Run the Nginx Web Server&lt;/p>
+&lt;p>Now the Docker daemon service is running, it is a simple task to &amp;ldquo;pull&amp;rdquo; and start the Nginx Web Server container from Docker Hub. To do this, type the following command:&lt;/p>
+&lt;pre>&lt;code> docker run -d -p 80:80 vmwarecna/nginx
+&lt;/code>&lt;/pre>
+&lt;p>This pulls the Nginx Web Server files and appropriate dependent container filesystem layers required for this containerized application to run.&lt;/p>
+&lt;p>&lt;img src="../images/vs-docker-run.png" alt="Docker run">&lt;/p>
+&lt;p>After the &lt;strong>docker run&lt;/strong> process completes, you return to the command prompt. You now have a fully active website up and running in a container!&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Test the Web Server&lt;/p>
+&lt;p>To test that your Web Server is active, run the ifconfig command to get the IP address of the Photon OS Virtual Machine.&lt;/p>
+&lt;p>&lt;img src="../images/vs-docker-ifconfig.png" alt="IP address">&lt;/p>
+&lt;p>The output displays a list of adapters that are connected to the virtual machine. Typically, the web server daemon will be bound on &lt;strong>eth0&lt;/strong>.&lt;/p>
+&lt;p>Start a browser on your host machine and enter the IP address of your Photon OS Virtual Machine. You should see a screen similar to the following example as confirmation that your web server is active.&lt;/p>
+&lt;p>&lt;img src="../images/vs-docker-confirm.png" alt="Docker confirmation">&lt;/p>
+&lt;p>You can now run any other containerized application from Docker Hub or your own containerized application within Photon OS.&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>Docs: Compatible Cloud Images</title><link>/docs/installation-guide/cloud-images/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/cloud-images/</guid><description>
+&lt;p>The &lt;a href="https://bintray.com/vmware/photon/">Bintray website&lt;/a> contains the following cloud-ready images of Photon OS:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>GCE - Google Compute Engine&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>AMI - Amazon Machine Image&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>OVA&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>Because the cloud-ready images of Photon OS are built to be compatible with their corresponding cloud platform or format, you typically do not need to build a cloud image&amp;ndash;just go to Bintray and download the image for the platform that you are working on.&lt;/p>
+&lt;p>If, however, you want to build your own cloud image, perhaps because you seek to customize the code, see the next section on how to build cloud images.&lt;/p>
+&lt;h2 id="how-to-build-cloud-images">How to build cloud images&lt;/h2>
+&lt;pre>&lt;code>sudo make cloud-image IMG_NAME=image-name
 image-name: gce/ami/azure/ova
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The output of the build process produces the following file formats:&lt;/p&gt;
-&lt;p&gt;GCE - A tar file consisting of disk.raw as the raw disk file&lt;/p&gt;
-&lt;p&gt;AMI - A raw disk file&lt;/p&gt;
-&lt;!-- Azure - A vhd file --&gt;
-&lt;p&gt;OVA - An ova file (vmdk + ovf)&lt;/p&gt;
-&lt;p&gt;If you want, you can build all the cloud images by running the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;sudo make cloud-image-all 
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/code>&lt;/pre>
+&lt;p>The output of the build process produces the following file formats:&lt;/p>
+&lt;p>GCE - A tar file consisting of disk.raw as the raw disk file&lt;/p>
+&lt;p>AMI - A raw disk file&lt;/p>
+&lt;!-- Azure - A vhd file -->
+&lt;p>OVA - An ova file (vmdk + ovf)&lt;/p>
+&lt;p>If you want, you can build all the cloud images by running the following command:&lt;/p>
+&lt;pre>&lt;code>sudo make cloud-image-all
+&lt;/code>&lt;/pre>
 &lt;!-- ###How to build Photon bosh-stemcell
-
 Please follow the link to [build](https://github.com/cloudfoundry/bosh/blob/develop/bosh-stemcell/README.md) Photon bosh-stemcell
---&gt;
-&lt;h2 id=&#34;how-to-create-running-instances-in-the-cloud&#34;&gt;How to create running instances in the cloud&lt;/h2&gt;
-&lt;p&gt;The following sections contain some high-level instructions on how to create instances of Photon OS in the Google Compute Engine (GCE) and Amazon Elastic Cloud Compute (EC2). For more information, see the Amazon or Google cloud documentation.&lt;/p&gt;
-&lt;h3 id=&#34;gce&#34;&gt;GCE&lt;/h3&gt;
-&lt;p&gt;The tar file can be uploaded to Google&amp;rsquo;s cloud storage and an instance can be created after creating an image from the tar file. You will need the Google Cloud SDK on your host machine to upload the image and create instances.&lt;/p&gt;
-&lt;p&gt;####Install Google cloud SDK on host machine&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;curl https://sdk.cloud.google.com | bash
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;####Upload the tar file&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;gsutil cp photon-gce.tar.gz gs://bucket-name
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;####Create image&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;gcloud compute --project project-id images create image-name --description description --source-uri https://storage.googleapis.com/bucket-name/photon-gce.tar.gz
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;####Create instance of GCE&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;gcloud compute --project project-id instances create instance-name --zone &amp;quot;us-central1-f&amp;quot; --machine-type &amp;quot;n1-standard-1&amp;quot; other-options
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;(You can also create instances from the Google developer console.)&lt;/p&gt;
-&lt;p&gt;For more information, see &lt;a href=&#34;../run-photon-on-gce/&#34;&gt;Running a Photon OS Machine on GCE&lt;/a&gt;.&lt;/p&gt;
-&lt;h3 id=&#34;aws-ec2&#34;&gt;AWS EC2&lt;/h3&gt;
-&lt;p&gt;Install the &lt;a href=&#34;http://docs.aws.amazon.com/cli/latest/userguide/installing.html#install-bundle-other-os&#34;&gt;AWS CLI&lt;/a&gt; and &lt;a href=&#34;http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/set-up-ec2-cli-linux.html&#34;&gt;EC2 CLI&lt;/a&gt; tools.&lt;/p&gt;
-&lt;p&gt;####Bundle the image&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;ec2-bundle-image -c cert.pem -k private-key.pem -u $AWS_USER_ID --arch x86_64 --image photon-ami.raw --destination directory-name
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;####Upload the bundle&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;ec2-upload-bundle --manifest directory-name/photon-ami.raw.manifest.xml --bucket bucket-name --access-key $AWS_ACCESS_KEY --secret-key $AWS_SECRET_KEY
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;####Register the AMI&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;ec2-register bucket-name/photon-ami.raw.manifest.xml --name name --architecture x86_64 --virtualization-type hvm
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;You can now launch instances using the AWS console.&lt;/p&gt;
-&lt;p&gt;For more information, see &lt;a href=&#34;../run-photon-aws-ec2/&#34;&gt;Customizing a Photon OS Machine on EC2&lt;/a&gt;.&lt;/p&gt;
+-->
+&lt;h2 id="how-to-create-running-instances-in-the-cloud">How to create running instances in the cloud&lt;/h2>
+&lt;p>The following sections contain some high-level instructions on how to create instances of Photon OS in the Google Compute Engine (GCE) and Amazon Elastic Cloud Compute (EC2). For more information, see the Amazon or Google cloud documentation.&lt;/p>
+&lt;h3 id="gce">GCE&lt;/h3>
+&lt;p>The tar file can be uploaded to Google&amp;rsquo;s cloud storage and an instance can be created after creating an image from the tar file. You will need the Google Cloud SDK on your host machine to upload the image and create instances.&lt;/p>
+&lt;p>####Install Google cloud SDK on host machine&lt;/p>
+&lt;pre>&lt;code>curl https://sdk.cloud.google.com | bash
+&lt;/code>&lt;/pre>
+&lt;p>####Upload the tar file&lt;/p>
+&lt;pre>&lt;code>gsutil cp photon-gce.tar.gz gs://bucket-name
+&lt;/code>&lt;/pre>
+&lt;p>####Create image&lt;/p>
+&lt;pre>&lt;code>gcloud compute --project project-id images create image-name --description description --source-uri https://storage.googleapis.com/bucket-name/photon-gce.tar.gz
+&lt;/code>&lt;/pre>
+&lt;p>####Create instance of GCE&lt;/p>
+&lt;pre>&lt;code>gcloud compute --project project-id instances create instance-name --zone &amp;quot;us-central1-f&amp;quot; --machine-type &amp;quot;n1-standard-1&amp;quot; other-options
+&lt;/code>&lt;/pre>
+&lt;p>(You can also create instances from the Google developer console.)&lt;/p>
+&lt;p>For more information, see &lt;a href="../run-photon-on-gce/">Running a Photon OS Machine on GCE&lt;/a>.&lt;/p>
+&lt;h3 id="aws-ec2">AWS EC2&lt;/h3>
+&lt;p>Install the &lt;a href="http://docs.aws.amazon.com/cli/latest/userguide/installing.html#install-bundle-other-os">AWS CLI&lt;/a> and &lt;a href="http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/set-up-ec2-cli-linux.html">EC2 CLI&lt;/a> tools.&lt;/p>
+&lt;p>####Bundle the image&lt;/p>
+&lt;pre>&lt;code>ec2-bundle-image -c cert.pem -k private-key.pem -u $AWS_USER_ID --arch x86_64 --image photon-ami.raw --destination directory-name
+&lt;/code>&lt;/pre>
+&lt;p>####Upload the bundle&lt;/p>
+&lt;pre>&lt;code>ec2-upload-bundle --manifest directory-name/photon-ami.raw.manifest.xml --bucket bucket-name --access-key $AWS_ACCESS_KEY --secret-key $AWS_SECRET_KEY
+&lt;/code>&lt;/pre>
+&lt;p>####Register the AMI&lt;/p>
+&lt;pre>&lt;code>ec2-register bucket-name/photon-ami.raw.manifest.xml --name name --architecture x86_64 --virtualization-type hvm
+&lt;/code>&lt;/pre>
+&lt;p>You can now launch instances using the AWS console.&lt;/p>
+&lt;p>For more information, see &lt;a href="../run-photon-aws-ec2/">Customizing a Photon OS Machine on EC2&lt;/a>.&lt;/p>
 &lt;!--
 ##AZURE
-
 Install the [Azure CLI] (https://www.npmjs.com/package/azure)
-
 Install [QEMU](https://en.wikibooks.org/wiki/QEMU/Installing_QEMU)
-
 ####Create the image
-azure vm image create image_name path_to_vhd -l &#34;West US&#34; -o linux
-
+azure vm image create image_name path_to_vhd -l "West US" -o linux
 Create running VM instances using Azure management portal
---&gt;
-&lt;p&gt;###OVA&lt;/p&gt;
-&lt;p&gt;The OVA image uses an optimized version of the 4.4.8 Linux kernel. Two ova files are generated from the build: photon-ova.ova, which is the full version of Photon OS, and photon-custom.ova, which is the minimal version of Photon OS. The password for photon-ova.ova should be changed using guest customization options when you upload it to VMware vCenter. Photon-custom.ova comes with the default password set to &lt;code&gt;changeme&lt;/code&gt;; you must change it the first time you log in.&lt;/p&gt;
-&lt;h4 id=&#34;ova-prerequisites&#34;&gt;OVA Prerequisites&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&#34;https://developercenter.vmware.com/web/sdk/60/vddk&#34;&gt;VDDK 6.0&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;To utilize the VDDK libraries the following procedure may be used, this extracts the libraries and temporarily exports them to the LD_LIBRARY_PATH for the &lt;em&gt;current session&lt;/em&gt;.  (tested on Ubuntu 1404 &amp;amp; 1604)  If you wish to make this permenant and system-wide then you may want to create a config file in /etc/ld.so.conf.d/.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tar -zxf VMware-vix-disklib-6.0.2-3566099.x86_64.tar.gz
+-->
+&lt;p>###OVA&lt;/p>
+&lt;p>The OVA image uses an optimized version of the 4.4.8 Linux kernel. Two ova files are generated from the build: photon-ova.ova, which is the full version of Photon OS, and photon-custom.ova, which is the minimal version of Photon OS. The password for photon-ova.ova should be changed using guest customization options when you upload it to VMware vCenter. Photon-custom.ova comes with the default password set to &lt;code>changeme&lt;/code>; you must change it the first time you log in.&lt;/p>
+&lt;h4 id="ova-prerequisites">OVA Prerequisites&lt;/h4>
+&lt;p>&lt;a href="https://developercenter.vmware.com/web/sdk/60/vddk">VDDK 6.0&lt;/a>&lt;/p>
+&lt;p>To utilize the VDDK libraries the following procedure may be used, this extracts the libraries and temporarily exports them to the LD_LIBRARY_PATH for the &lt;em>current session&lt;/em>. (tested on Ubuntu 1404 &amp;amp; 1604) If you wish to make this permenant and system-wide then you may want to create a config file in /etc/ld.so.conf.d/.&lt;/p>
+&lt;pre>&lt;code>tar -zxf VMware-vix-disklib-6.0.2-3566099.x86_64.tar.gz
 cp -r vmware-vix-disklib-distrib/include/* /usr/include/
 mkdir /usr/lib/vmware
 cp -a ~/vmware-vix-disklib-distrib/lib64/* /usr/lib/vmware/
 rm /usr/lib/vmware/libstdc++.so.6
 export LD_LIBRARY_PATH=/usr/lib/vmware
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;a href=&#34;https://my.vmware.com/group/vmware/details?downloadGroup=OVFTOOL410&amp;amp;productId=491&#34;&gt;OVFTOOL&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;OVF Tool should be downloaded and installed on the host.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;sh VMware-ovftool-4.1.0-2459827-lin.x86_64.bundle --eulas-agreed --required
-&lt;/code&gt;&lt;/pre&gt;
-&lt;!-- 
+&lt;/code>&lt;/pre>
+&lt;p>&lt;a href="https://my.vmware.com/group/vmware/details?downloadGroup=OVFTOOL410&amp;amp;productId=491">OVFTOOL&lt;/a>&lt;/p>
+&lt;p>OVF Tool should be downloaded and installed on the host.&lt;/p>
+&lt;pre>&lt;code>sh VMware-ovftool-4.1.0-2459827-lin.x86_64.bundle --eulas-agreed --required
+&lt;/code>&lt;/pre>
+&lt;!--
 ##Photon Bosh
-
-Please refer [bosh docs] (http://bosh.io/docs) to deploy BOSH on Photon 
---&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+Please refer [bosh docs] (http://bosh.io/docs) to deploy BOSH on Photon
+--></description></item></channel></rss>

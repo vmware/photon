@@ -1,661 +1,433 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Administration Guide</title>
-    <link>/docs/administration-guide/</link>
-    <description>Recent content in Administration Guide on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs/administration-guide/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs: Photon OS Packages</title>
-      <link>/docs/administration-guide/photon-os-packages/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/photon-os-packages/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The design of Photon OS simplifies life-cycle management and improves the security of packages. Photon reduces the burden and complexity of managing clusters of Linux machines by providing curated package repositories and by securing packages with GPG signatures.&lt;/p&gt;
-&lt;p&gt;Photon OS is available in a variety of pre-built packages in binary formats.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Package Management in Photon OS with &#39;tdnf&#39;</title>
-      <link>/docs/administration-guide/managing-packages-with-tdnf/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/managing-packages-with-tdnf/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS manages packages with an open source, yum-compatible package manager called &lt;code&gt;tdnf&lt;/code&gt;, for &lt;a href=&#34;https://github.com/vmware/tdnf&#34;&gt;Tiny Dandified Yum&lt;/a&gt;. Tdnf keeps the operating system as small as possible while preserving yum&amp;rsquo;s robust package-management capabilities.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Managing Services with &#39;systemd&#39;</title>
-      <link>/docs/administration-guide/managing-services-withsystemd/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/managing-services-withsystemd/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS manages services with &lt;code&gt;systemd&lt;/code&gt;. By using &lt;code&gt;systemd&lt;/code&gt;, Photon OS adopts a contemporary Linux standard to bootstrap the user space and concurrently start services. This is an architecture that differs from traditional Linux systems such as SUSE Linux Enterprise Server.&lt;/p&gt;
-&lt;p&gt;A traditional Linux system contains an initialization system called SysVinit. With SLES 11, for instance, the SysVinit-style init programs control how the system starts up and shuts down. Init implements system runlevels. A SysVinit runlevel defines a state in which a process or service runs.&lt;/p&gt;
-&lt;p&gt;In contrast to a SysVinit system, &lt;code&gt;systemd&lt;/code&gt; defines no such runlevels. Instead, &lt;code&gt;systemd&lt;/code&gt; uses a dependency tree of targets to determine which services to start when. Combined with the declarative nature of &lt;code&gt;systemd&lt;/code&gt; commands, &lt;code&gt;systemd&lt;/code&gt; targets reduce the amount of code needed to run a command, leaving you with code that is easier to maintain and probably faster to execute. For an overview of &lt;code&gt;systemd&lt;/code&gt;, see &lt;a href=&#34;https://www.freedesktop.org/wiki/Software/systemd/&#34;&gt;systemd System and Service Manager&lt;/a&gt; and the &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/systemd.html&#34;&gt;man page for systemd&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;On Photon OS, you must manage services with systemd and &lt;code&gt;systemctl&lt;/code&gt;, its command-line utility for inspecting and controlling the system, and not the deprecated commands of &lt;code&gt;init.d&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;For more information, see the index of all the systemd man pages, including systemctl, at
-&lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/&#34;&gt;https://www.freedesktop.org/software/systemd/man/&lt;/a&gt;&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Configure Wireless Networking</title>
-      <link>/docs/administration-guide/configure-wireless-networking/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/configure-wireless-networking/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can configure wireless networking in Photon OS. Connect to an open network or a WPA2 protected network using &lt;code&gt;wpa_cli&lt;/code&gt; and configure &lt;code&gt;systemd-networkd&lt;/code&gt; to assign an IP address to the network.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;#connect-using-wpa-cli&#34;&gt;Connect using &lt;code&gt;wpa_cli&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#assign-ip-address-to-network&#34;&gt;Assign IP address to network&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;connect-using-wpa_cli&#34;&gt;Connect Using wpa_cli&lt;/h2&gt;
-&lt;p&gt;When you connect using &lt;code&gt;wpa_cli&lt;/code&gt;, you can scan for available networks and associate the network with a network ID.&lt;/p&gt;
-&lt;p&gt;Perform the following steps:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Ensure that the &lt;code&gt;wpa_supplicant service&lt;/code&gt; is running on the WLAN interface:&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;Systemctl status wpa_supplicant@&amp;lt;wlan-interface&amp;gt;.service&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Connect to &lt;code&gt;wpa_cli&lt;/code&gt;:&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;wpa_cli -i wlan0&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Scan for available networks:&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;scan&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;To see the list of networks, use the following command:&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;scan_results&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Add the network:&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;add_network&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;This command returns a network ID.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Associate the network with the network ID.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;set_network  &amp;lt;network ID&amp;gt; ssid “&amp;lt;ssid-name&amp;gt;”&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;For a WPA2 network, set the passphrase:&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;set_network &amp;lt;network ID&amp;gt; psk “&amp;lt;passphrase&amp;gt;”&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Enable the network:&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;enable_network &amp;lt;network ID&amp;gt;&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Save the configuration file:&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;save_config&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;To exit the &lt;code&gt;wpa_cli&lt;/code&gt;, type &amp;lsquo;quit`.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;assign-ip-address-to-network&#34;&gt;Assign IP Address To Network&lt;/h2&gt;
-&lt;p&gt;Configure &lt;code&gt;systemd-networkd&lt;/code&gt; to assign IP address to network. Perform the following steps:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Create a &lt;code&gt;/etc/systemd/network/98-dhcp-wlan.network&lt;/code&gt; file with the following contents:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;[Match]
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Administration Guide</title><link>/docs/administration-guide/</link><description>Recent content in Administration Guide on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/administration-guide/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Photon OS Packages</title><link>/docs/administration-guide/photon-os-packages/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-os-packages/</guid><description>
+&lt;p>The design of Photon OS simplifies life-cycle management and improves the security of packages. Photon reduces the burden and complexity of managing clusters of Linux machines by providing curated package repositories and by securing packages with GPG signatures.&lt;/p>
+&lt;p>Photon OS is available in a variety of pre-built packages in binary formats.&lt;/p></description></item><item><title>Docs: Package Management in Photon OS with 'tdnf'</title><link>/docs/administration-guide/managing-packages-with-tdnf/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-packages-with-tdnf/</guid><description>
+&lt;p>Photon OS manages packages with an open source, yum-compatible package manager called &lt;code>tdnf&lt;/code>, for &lt;a href="https://github.com/vmware/tdnf">Tiny Dandified Yum&lt;/a>. Tdnf keeps the operating system as small as possible while preserving yum&amp;rsquo;s robust package-management capabilities.&lt;/p></description></item><item><title>Docs: Managing Services with 'systemd'</title><link>/docs/administration-guide/managing-services-withsystemd/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-services-withsystemd/</guid><description>
+&lt;p>Photon OS manages services with &lt;code>systemd&lt;/code>. By using &lt;code>systemd&lt;/code>, Photon OS adopts a contemporary Linux standard to bootstrap the user space and concurrently start services. This is an architecture that differs from traditional Linux systems such as SUSE Linux Enterprise Server.&lt;/p>
+&lt;p>A traditional Linux system contains an initialization system called SysVinit. With SLES 11, for instance, the SysVinit-style init programs control how the system starts up and shuts down. Init implements system runlevels. A SysVinit runlevel defines a state in which a process or service runs.&lt;/p>
+&lt;p>In contrast to a SysVinit system, &lt;code>systemd&lt;/code> defines no such runlevels. Instead, &lt;code>systemd&lt;/code> uses a dependency tree of targets to determine which services to start when. Combined with the declarative nature of &lt;code>systemd&lt;/code> commands, &lt;code>systemd&lt;/code> targets reduce the amount of code needed to run a command, leaving you with code that is easier to maintain and probably faster to execute. For an overview of &lt;code>systemd&lt;/code>, see &lt;a href="https://www.freedesktop.org/wiki/Software/systemd/">systemd System and Service Manager&lt;/a> and the &lt;a href="https://www.freedesktop.org/software/systemd/man/systemd.html">man page for systemd&lt;/a>.&lt;/p>
+&lt;p>On Photon OS, you must manage services with systemd and &lt;code>systemctl&lt;/code>, its command-line utility for inspecting and controlling the system, and not the deprecated commands of &lt;code>init.d&lt;/code>.&lt;/p>
+&lt;p>For more information, see the index of all the systemd man pages, including systemctl, at
+&lt;a href="https://www.freedesktop.org/software/systemd/man/">https://www.freedesktop.org/software/systemd/man/&lt;/a>&lt;/p></description></item><item><title>Docs: Configure Wireless Networking</title><link>/docs/administration-guide/configure-wireless-networking/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/configure-wireless-networking/</guid><description>
+&lt;p>You can configure wireless networking in Photon OS. Connect to an open network or a WPA2 protected network using &lt;code>wpa_cli&lt;/code> and configure &lt;code>systemd-networkd&lt;/code> to assign an IP address to the network.&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="#connect-using-wpa-cli">Connect using &lt;code>wpa_cli&lt;/code>&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#assign-ip-address-to-network">Assign IP address to network&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="connect-using-wpa_cli">Connect Using wpa_cli&lt;/h2>
+&lt;p>When you connect using &lt;code>wpa_cli&lt;/code>, you can scan for available networks and associate the network with a network ID.&lt;/p>
+&lt;p>Perform the following steps:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Ensure that the &lt;code>wpa_supplicant service&lt;/code> is running on the WLAN interface:&lt;/p>
+&lt;p>&lt;code>Systemctl status wpa_supplicant@&amp;lt;wlan-interface&amp;gt;.service&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Connect to &lt;code>wpa_cli&lt;/code>:&lt;/p>
+&lt;p>&lt;code>wpa_cli -i wlan0&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Scan for available networks:&lt;/p>
+&lt;p>&lt;code>scan&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>To see the list of networks, use the following command:&lt;/p>
+&lt;p>&lt;code>scan_results&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Add the network:&lt;/p>
+&lt;p>&lt;code>add_network&lt;/code>&lt;/p>
+&lt;p>This command returns a network ID.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Associate the network with the network ID.&lt;/p>
+&lt;p>&lt;code>set_network &amp;lt;network ID&amp;gt; ssid “&amp;lt;ssid-name&amp;gt;”&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>For a WPA2 network, set the passphrase:&lt;/p>
+&lt;p>&lt;code>set_network &amp;lt;network ID&amp;gt; psk “&amp;lt;passphrase&amp;gt;”&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Enable the network:&lt;/p>
+&lt;p>&lt;code>enable_network &amp;lt;network ID&amp;gt;&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Save the configuration file:&lt;/p>
+&lt;p>&lt;code>save_config&lt;/code>&lt;/p>
+&lt;p>To exit the &lt;code>wpa_cli&lt;/code>, type &amp;lsquo;quit`.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="assign-ip-address-to-network">Assign IP Address To Network&lt;/h2>
+&lt;p>Configure &lt;code>systemd-networkd&lt;/code> to assign IP address to network. Perform the following steps:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Create a &lt;code>/etc/systemd/network/98-dhcp-wlan.network&lt;/code> file with the following contents:&lt;/p>
+&lt;pre>&lt;code>[Match]
 Name=wlan*
 [Network]
 DHCP=yes
 IPv6AcceptRA=no
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Restart &lt;code&gt;systemd-networkd&lt;/code&gt; using:&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;Systemctl restart systemd-networkd&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Managing the Network Configuration</title>
-      <link>/docs/administration-guide/managing-network-configuration/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/managing-network-configuration/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The network service, which is enabled by default, starts when the system boots.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Prioritize eth0 Route Over WLAN</title>
-      <link>/docs/administration-guide/prioritize-eth0-route-over-wlan0/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/prioritize-eth0-route-over-wlan0/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can prioritise the eth0 route over the WLAN route. Perform the following steps:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Modify the &lt;code&gt;/etc/systemd/network/99-dhcp-en.network&lt;/code&gt; file and add the following content:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;[DHCP]
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Restart &lt;code>systemd-networkd&lt;/code> using:&lt;/p>
+&lt;p>&lt;code>Systemctl restart systemd-networkd&lt;/code>&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>Docs: Managing the Network Configuration</title><link>/docs/administration-guide/managing-network-configuration/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/</guid><description>
+&lt;p>The network service, which is enabled by default, starts when the system boots.&lt;/p></description></item><item><title>Docs: Prioritize eth0 Route Over WLAN</title><link>/docs/administration-guide/prioritize-eth0-route-over-wlan0/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/prioritize-eth0-route-over-wlan0/</guid><description>
+&lt;p>You can prioritise the eth0 route over the WLAN route. Perform the following steps:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Modify the &lt;code>/etc/systemd/network/99-dhcp-en.network&lt;/code> file and add the following content:&lt;/p>
+&lt;pre>&lt;code>[DHCP]
 RouteMetric=512
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Restart &lt;code&gt;systemd-networkd&lt;/code&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Configuring Photon Real-Time Operating System for Real-Time Applications</title>
-      <link>/docs/administration-guide/photon-real-time-operating-system/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/photon-real-time-operating-system/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon Real-Time (RT) Operating System (OS) (and the Linux kernel &lt;code&gt;PREEMPT_RT&lt;/code&gt; patchset that it is based on) is optimized to support low-latency real-time scheduling and minimize the OS jitter as observed by real-time applications. However, to get the most out of Photon RT OS, it is must to have a proper system configuration. To run low-latency real time applications effectively, the sources of jitter have to be identified and eliminated across all layers of the underlying system, spanning the BIOS / firmware, the hypervisor, and the guest operating system (Photon RT).&lt;/p&gt;
-&lt;h2 id=&#34;biosfirmware&#34;&gt;BIOS/Firmware&lt;/h2&gt;
-&lt;p&gt;Tuning a system for real time operation starts from the lowest layers of the software stack, namely the System BIOS or Platform Firmware. The goal is to configure the settings for the following functions:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Maximize Performance
-Ex: Set CPU, memory and device power management modes to maximum performance, disable CPU idle states&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Minimize Computational Jitter
-Ex: Disable Turbo Boost, disable Hyper-Threading&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Minimize System Management Interrupts
-Ex: Disable options such as Processor Power and Utilization Monitoring, memory Pre-Failure Notification, and so on&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Platform vendors often publish low-latency tuning guides for their BIOS/firmware. Refer documentation to learn about the recommended low-latency settings specific to your platform.&lt;/p&gt;
-&lt;h2 id=&#34;deploying-real-time-applications-on-photon-real-time-operating-system&#34;&gt;Deploying Real-Time Applications on Photon Real-Time Operating System&lt;/h2&gt;
-&lt;p&gt;A general strategy to deploy real-time applications on Photon RT is described as follows:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Partition CPUs between the OS and the RT workload:
-Among the available CPUs in the system, isolate a subset of CPUs, designated to run the RT workload. By default, the Linux scheduler will only run tasks on non-isolated CPUs, leaving the isolated CPUs to those tasks that are explicitly bound to them. Thus, all the housekeeping tasks of the OS will execute on non-isolated CPUs (with a few exceptions, such as per-CPU kernel threads). Then bind the RT workload to the isolated CPUs.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Steer unrelated interrupts away from the CPUs running the RT workload:
-Linux supports the ability to affine most interrupts to specific CPUs in the system. By using this mechanism, interrupts that are not relevant to the real-time workload can be affined to non-isolated CPUs, thus avoiding the jitter caused by interrupt handling latency on the isolated CPUs.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;This strategy provides two important benefits:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;It limits OS interference with the RT workload.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;It protects the OS services from getting starved by the CPU-intensive RT tasks.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;This configuration can be achieved using a combination of kernel command-line options, and user space packages, as discussed in the following sections.&lt;/p&gt;
-&lt;h3 id=&#34;kernel-command-line-parameters&#34;&gt;Kernel Command-Line Parameters&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;CPU isolation&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;isolcpus=X,Y-Z (Ex: isolcpus=2,4-5)&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Interrupt affinity&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;irqaffinity=X,Y-Z (Ex: irqaffinity=0-1,3)&lt;/code&gt;  [ Usually it is the inverse of &lt;code&gt;isolcpus&lt;/code&gt;.]&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;RCU callbacks&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;code&gt;rcu_nocbs=X,Y-Z&lt;/code&gt; [ Usually it is same as &lt;code&gt;isolcpus&lt;/code&gt;. ]
-&lt;code&gt;rcu_nocb_poll=1&lt;/code&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;NOHZ (Eliminating the periodic timer)&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;nohz=on&lt;/code&gt;
-&lt;code&gt;nohz_full=X,Y-Z&lt;/code&gt; [ Usually it is same as &lt;code&gt;isolcpus&lt;/code&gt;. ]&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;CPU idle&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;idle=halt or idle=poll&lt;/code&gt;
-&lt;code&gt;intel_idle.max_cstate=0 cpuidle.off=1&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;CPU frequency&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;intel_pstate=disable&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Lockup detectors&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;nosoftlockup nowatchdog nmi_watchdog=0&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Timer skew detection&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;  skew_tick=1
-  clocksource=tsc
-  tsc=reliable
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;The full list of kernel command-line parameters and their descriptions are available at &lt;a href=&#34;https://www.kernel.org/doc/html/v5.10/admin-guide/kernel-parameters.html&#34;&gt;https://www.kernel.org/doc/html/v5.10/admin-guide/kernel-parameters.html&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;tuned-configuration&#34;&gt;Tuned configuration&lt;/h3&gt;
-&lt;p&gt;Tuned is a system tuning daemon that offers several profiles to tailor the OS to various usecases, including a &amp;lsquo;realtime&amp;rsquo; profile for low-latency workloads.&lt;/p&gt;
-&lt;p&gt;The realtime tuned profile can be applied as shown below:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;	tdnf install tuned&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;systemctl enable tuned&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;systemctl start tuned&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Add &lt;code&gt;isolcpus&lt;/code&gt; to &lt;code&gt;/etc/tuned/realtime-variables.conf&lt;/code&gt; (by uncommenting the isolated_cores= parameter):&lt;/p&gt;
-&lt;p&gt;&lt;code&gt; $ cat /etc/tuned/realtime-variables.conf&lt;/code&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;Examples:
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;code&gt; # isolated_cores=2,4-7&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;Note: The cores configured as isolated in tuned should be consistent with isolcpus in the kernel command-line.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tuned-adm profile realtime
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&#34;stalld-configuration&#34;&gt;Stalld configuration&lt;/h3&gt;
-&lt;p&gt;The stalld daemon monitors the system for starved tasks and revives them by giving them a temporary boost using the &lt;code&gt;SCHED_DEADLINE&lt;/code&gt; policy. &lt;code&gt;stalld&lt;/code&gt; offers fine-grained controls to give starved tasks a user-specified amount of CPU time.&lt;/p&gt;
-&lt;p&gt;The stalld configuration file is &lt;code&gt;/etc/sysconfig/stalld&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;The key parameters are Starving Threshold (THRESH), Boost Period (BP), Boost Runtime (BR), and Boost Duration (BD).&lt;/p&gt;
-&lt;p&gt;The mode of operation is as follows:&lt;/p&gt;
-&lt;p&gt;If a task is starved for at least &lt;code&gt;THRESH&lt;/code&gt; seconds, it is scheduled using &lt;code&gt;SCHED_DEADLINE&lt;/code&gt; scheduling policy, so that it will run at least &lt;code&gt;BR&lt;/code&gt; nanoseconds in every &lt;code&gt;BP&lt;/code&gt; nanoseconds time period, and this repeats up to &lt;code&gt;BD&lt;/code&gt; seconds, after which the task gets back its original scheduler policy/priority settings.&lt;/p&gt;
-&lt;h3 id=&#34;real-time-scheduling-policies&#34;&gt;Real Time Scheduling Policies&lt;/h3&gt;
-&lt;p&gt;The Linux kernel offers several scheduling policies to support various applications, among which the real time policies are highlighted below:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;SCHED_OTHER (default policy), SCHED_BATCH, SCHED_IDLE (non real-time policies)&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;SCHED_FIFO (First-In First-Out Real Time Scheduling)&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Priority Range: 1 to 99 (highest)&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Algorithm: The scheduler runs the highest-priority runnable task in the SCHED_FIFO scheduling class, until it yields (blocks/waits) the CPU voluntarily.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;ul&gt;
-&lt;li&gt;SCHED_RR (Round-Robin Real Time Scheduling)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Priority Range: 1 to 99 (highest)&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Algorithm: The scheduler runs the highest-priority SCHED_RR task, and time-slices between equal-priority SCHED_RR tasks in configurable intervals.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;ul&gt;
-&lt;li&gt;SCHED_DEADLINE ( Earliest Deadline First Real Time Scheduling)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Key parameters: Runtime, Period and Deadline, which can be configured on a per-task basis.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Algorithm: The scheduler gives a SCHED_DEADLINE task at least &lt;code&gt;Runtime&lt;/code&gt; amount of time on the CPU in every &lt;code&gt;Period&lt;/code&gt; time period, before &lt;code&gt;Deadline&lt;/code&gt; time is up.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;real-time-throttling&#34;&gt;Real Time Throttling&lt;/h3&gt;
-&lt;p&gt;The Linux kernel offers proc file system (procfs) controls to influence real-time task scheduling and throttling.&lt;/p&gt;
-&lt;p&gt;The RT throttling algorithm is as follows:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;All real-time tasks are throttled to run up to &lt;code&gt;runtime&lt;/code&gt; microseconds, in every &lt;code&gt;period&lt;/code&gt; microseconds. The remaining time in &lt;code&gt;period&lt;/code&gt; microseconds is used to run non-RT tasks in the system.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;runtime&lt;/code&gt; and &lt;code&gt;period&lt;/code&gt; values can be configured by writing to the files listed as follows:&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;/proc/sys/kernel/sched_rt_runtime_us&lt;/code&gt;
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Restart &lt;code>systemd-networkd&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>Docs: Configuring Photon Real-Time Operating System for Real-Time Applications</title><link>/docs/administration-guide/photon-real-time-operating-system/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-real-time-operating-system/</guid><description>
+&lt;p>Photon Real-Time (RT) Operating System (OS) (and the Linux kernel &lt;code>PREEMPT_RT&lt;/code> patchset that it is based on) is optimized to support low-latency real-time scheduling and minimize the OS jitter as observed by real-time applications. However, to get the most out of Photon RT OS, it is must to have a proper system configuration. To run low-latency real time applications effectively, the sources of jitter have to be identified and eliminated across all layers of the underlying system, spanning the BIOS / firmware, the hypervisor, and the guest operating system (Photon RT).&lt;/p>
+&lt;h2 id="biosfirmware">BIOS/Firmware&lt;/h2>
+&lt;p>Tuning a system for real time operation starts from the lowest layers of the software stack, namely the System BIOS or Platform Firmware. The goal is to configure the settings for the following functions:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Maximize Performance
+Ex: Set CPU, memory and device power management modes to maximum performance, disable CPU idle states&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Minimize Computational Jitter
+Ex: Disable Turbo Boost, disable Hyper-Threading&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Minimize System Management Interrupts
+Ex: Disable options such as Processor Power and Utilization Monitoring, memory Pre-Failure Notification, and so on&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>Platform vendors often publish low-latency tuning guides for their BIOS/firmware. Refer documentation to learn about the recommended low-latency settings specific to your platform.&lt;/p>
+&lt;h2 id="deploying-real-time-applications-on-photon-real-time-operating-system">Deploying Real-Time Applications on Photon Real-Time Operating System&lt;/h2>
+&lt;p>A general strategy to deploy real-time applications on Photon RT is described as follows:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Partition CPUs between the OS and the RT workload:
+Among the available CPUs in the system, isolate a subset of CPUs, designated to run the RT workload. By default, the Linux scheduler will only run tasks on non-isolated CPUs, leaving the isolated CPUs to those tasks that are explicitly bound to them. Thus, all the housekeeping tasks of the OS will execute on non-isolated CPUs (with a few exceptions, such as per-CPU kernel threads). Then bind the RT workload to the isolated CPUs.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Steer unrelated interrupts away from the CPUs running the RT workload:
+Linux supports the ability to affine most interrupts to specific CPUs in the system. By using this mechanism, interrupts that are not relevant to the real-time workload can be affined to non-isolated CPUs, thus avoiding the jitter caused by interrupt handling latency on the isolated CPUs.&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>This strategy provides two important benefits:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>It limits OS interference with the RT workload.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>It protects the OS services from getting starved by the CPU-intensive RT tasks.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>This configuration can be achieved using a combination of kernel command-line options, and user space packages, as discussed in the following sections.&lt;/p>
+&lt;h3 id="kernel-command-line-parameters">Kernel Command-Line Parameters&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>CPU isolation&lt;/p>
+&lt;p>&lt;code>isolcpus=X,Y-Z (Ex: isolcpus=2,4-5)&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Interrupt affinity&lt;/p>
+&lt;p>&lt;code>irqaffinity=X,Y-Z (Ex: irqaffinity=0-1,3)&lt;/code> [ Usually it is the inverse of &lt;code>isolcpus&lt;/code>.]&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>RCU callbacks&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>&lt;code>rcu_nocbs=X,Y-Z&lt;/code> [ Usually it is same as &lt;code>isolcpus&lt;/code>. ]
+&lt;code>rcu_nocb_poll=1&lt;/code>&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>NOHZ (Eliminating the periodic timer)&lt;/p>
+&lt;p>&lt;code>nohz=on&lt;/code>
+&lt;code>nohz_full=X,Y-Z&lt;/code> [ Usually it is same as &lt;code>isolcpus&lt;/code>. ]&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>CPU idle&lt;/p>
+&lt;p>&lt;code>idle=halt or idle=poll&lt;/code>
+&lt;code>intel_idle.max_cstate=0 cpuidle.off=1&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>CPU frequency&lt;/p>
+&lt;p>&lt;code>intel_pstate=disable&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Lockup detectors&lt;/p>
+&lt;p>&lt;code>nosoftlockup nowatchdog nmi_watchdog=0&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Timer skew detection&lt;/p>
+&lt;pre>&lt;code> skew_tick=1
+clocksource=tsc
+tsc=reliable
+&lt;/code>&lt;/pre>
+&lt;/li>
+&lt;/ul>
+&lt;p>The full list of kernel command-line parameters and their descriptions are available at &lt;a href="https://www.kernel.org/doc/html/v5.10/admin-guide/kernel-parameters.html">https://www.kernel.org/doc/html/v5.10/admin-guide/kernel-parameters.html&lt;/a>&lt;/p>
+&lt;h3 id="tuned-configuration">Tuned configuration&lt;/h3>
+&lt;p>Tuned is a system tuning daemon that offers several profiles to tailor the OS to various usecases, including a &amp;lsquo;realtime&amp;rsquo; profile for low-latency workloads.&lt;/p>
+&lt;p>The realtime tuned profile can be applied as shown below:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;code> tdnf install tuned&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>systemctl enable tuned&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>systemctl start tuned&lt;/code>&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>Add &lt;code>isolcpus&lt;/code> to &lt;code>/etc/tuned/realtime-variables.conf&lt;/code> (by uncommenting the isolated_cores= parameter):&lt;/p>
+&lt;p>&lt;code> $ cat /etc/tuned/realtime-variables.conf&lt;/code>&lt;/p>
+&lt;pre>&lt;code>Examples:
+&lt;/code>&lt;/pre>
+&lt;p>&lt;code> # isolated_cores=2,4-7&lt;/code>&lt;/p>
+&lt;p>Note: The cores configured as isolated in tuned should be consistent with isolcpus in the kernel command-line.&lt;/p>
+&lt;pre>&lt;code>tuned-adm profile realtime
+&lt;/code>&lt;/pre>
+&lt;h3 id="stalld-configuration">Stalld configuration&lt;/h3>
+&lt;p>The stalld daemon monitors the system for starved tasks and revives them by giving them a temporary boost using the &lt;code>SCHED_DEADLINE&lt;/code> policy. &lt;code>stalld&lt;/code> offers fine-grained controls to give starved tasks a user-specified amount of CPU time.&lt;/p>
+&lt;p>The stalld configuration file is &lt;code>/etc/sysconfig/stalld&lt;/code>.&lt;/p>
+&lt;p>The key parameters are Starving Threshold (THRESH), Boost Period (BP), Boost Runtime (BR), and Boost Duration (BD).&lt;/p>
+&lt;p>The mode of operation is as follows:&lt;/p>
+&lt;p>If a task is starved for at least &lt;code>THRESH&lt;/code> seconds, it is scheduled using &lt;code>SCHED_DEADLINE&lt;/code> scheduling policy, so that it will run at least &lt;code>BR&lt;/code> nanoseconds in every &lt;code>BP&lt;/code> nanoseconds time period, and this repeats up to &lt;code>BD&lt;/code> seconds, after which the task gets back its original scheduler policy/priority settings.&lt;/p>
+&lt;h3 id="real-time-scheduling-policies">Real Time Scheduling Policies&lt;/h3>
+&lt;p>The Linux kernel offers several scheduling policies to support various applications, among which the real time policies are highlighted below:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>SCHED_OTHER (default policy), SCHED_BATCH, SCHED_IDLE (non real-time policies)&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>SCHED_FIFO (First-In First-Out Real Time Scheduling)&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;ol>
+&lt;li>
+&lt;p>Priority Range: 1 to 99 (highest)&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Algorithm: The scheduler runs the highest-priority runnable task in the SCHED_FIFO scheduling class, until it yields (blocks/waits) the CPU voluntarily.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;ul>
+&lt;li>SCHED_RR (Round-Robin Real Time Scheduling)&lt;/li>
+&lt;/ul>
+&lt;ol>
+&lt;li>
+&lt;p>Priority Range: 1 to 99 (highest)&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Algorithm: The scheduler runs the highest-priority SCHED_RR task, and time-slices between equal-priority SCHED_RR tasks in configurable intervals.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;ul>
+&lt;li>SCHED_DEADLINE ( Earliest Deadline First Real Time Scheduling)&lt;/li>
+&lt;/ul>
+&lt;ol>
+&lt;li>
+&lt;p>Key parameters: Runtime, Period and Deadline, which can be configured on a per-task basis.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Algorithm: The scheduler gives a SCHED_DEADLINE task at least &lt;code>Runtime&lt;/code> amount of time on the CPU in every &lt;code>Period&lt;/code> time period, before &lt;code>Deadline&lt;/code> time is up.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="real-time-throttling">Real Time Throttling&lt;/h3>
+&lt;p>The Linux kernel offers proc file system (procfs) controls to influence real-time task scheduling and throttling.&lt;/p>
+&lt;p>The RT throttling algorithm is as follows:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>All real-time tasks are throttled to run up to &lt;code>runtime&lt;/code> microseconds, in every &lt;code>period&lt;/code> microseconds. The remaining time in &lt;code>period&lt;/code> microseconds is used to run non-RT tasks in the system.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>runtime&lt;/code> and &lt;code>period&lt;/code> values can be configured by writing to the files listed as follows:&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;code>/proc/sys/kernel/sched_rt_runtime_us&lt;/code>
 Default: 95% (950000)
-Range: -1 to (INT_MAX -1)  [ -1 implies no limit, i.e., no throttling ]&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;/proc/sys/kernel/sched_rt_period_us&lt;/code&gt;
+Range: -1 to (INT_MAX -1) [ -1 implies no limit, i.e., no throttling ]&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>/proc/sys/kernel/sched_rt_period_us&lt;/code>
 Default: 1s (1000000)
-Range: 1 to INT_MAX&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Note: See Command Line Reference for the commands for manipulating real-time properties of processes.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Containers</title>
-      <link>/docs/administration-guide/containers/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/containers/</guid>
-      <description>
-        
-        
-        &lt;p&gt;A container is a process that runs on the Photon OS host with its own isolated application, file system, and networking.&lt;/p&gt;
-&lt;p&gt;Photon OS includes the open source version of Docker. With Docker, Photon OS becomes a Linux run-time host for containers, that is, a Linux cloud container.&lt;/p&gt;
-&lt;p&gt;The full version of Photon OS includes Kubernetes so you can manage clusters of containers.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Changing the Locale</title>
-      <link>/docs/administration-guide/changing-the-locale/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/changing-the-locale/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can change the locale if the default locale does not meet your requirements.&lt;/p&gt;
-&lt;p&gt;To find the locale, run the the &lt;code&gt;localectl&lt;/code&gt; command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;localectl
+Range: 1 to INT_MAX&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>Note: See Command Line Reference for the commands for manipulating real-time properties of processes.&lt;/p></description></item><item><title>Docs: Containers</title><link>/docs/administration-guide/containers/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/containers/</guid><description>
+&lt;p>A container is a process that runs on the Photon OS host with its own isolated application, file system, and networking.&lt;/p>
+&lt;p>Photon OS includes the open source version of Docker. With Docker, Photon OS becomes a Linux run-time host for containers, that is, a Linux cloud container.&lt;/p>
+&lt;p>The full version of Photon OS includes Kubernetes so you can manage clusters of containers.&lt;/p></description></item><item><title>Docs: Changing the Locale</title><link>/docs/administration-guide/changing-the-locale/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/changing-the-locale/</guid><description>
+&lt;p>You can change the locale if the default locale does not meet your requirements.&lt;/p>
+&lt;p>To find the locale, run the the &lt;code>localectl&lt;/code> command:&lt;/p>
+&lt;pre>&lt;code>localectl
 System Locale: LANG=en_US.UTF-8
-   VC Keymap: n/a
-  X11 Layout: n/a
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;To change the locale, choose the languages that you want from &lt;code&gt;/usr/share/locale/locale.alias&lt;/code&gt;, add them to &lt;code&gt;/etc/locale-gen.conf&lt;/code&gt;, and then regenerate the locale list by running the following command as root:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;locale-gen.sh
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Finally, run the following command to set the new locale, replacing the example (&lt;code&gt;en_US.UTF-8&lt;/code&gt;) with the locale that you require:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;localectl set-locale LANG=&amp;quot;de_CH.UTF-8&amp;quot; LC_CTYPE=&amp;quot;de_CH.UTF-8&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h1 id=&#34;changing-the-keyboard-layout&#34;&gt;Changing the keyboard layout&lt;/h1&gt;
-&lt;p&gt;See which keymaps are currently available on your system:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;localectl list-keymaps
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;If the response to that command is the all-too-common &lt;code&gt;Couldn&#39;t find any console keymaps&lt;/code&gt;, install the key tables files and utilities:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf install kbd
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;You should now be able to find a keymap matching your keyboard. As an example, here I&amp;rsquo;m searching for the German keyboard layout (so I&amp;rsquo;m expecting something with &lt;code&gt;de&lt;/code&gt; in the name) used in Switzerland:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;localectl list-keymaps | grep de
-&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;    ...
-    de-latin1
-    de-latin1-nodeadkeys
-    de-mobii
-    de_CH-latin1
-    de_alt_UTF-8
-    ...
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;code&gt;de_CH-latin1&lt;/code&gt; seems to be what we&amp;rsquo;re looking for, so change your current layout to that keymap:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;localectl set-keymap de_CH-latin1
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;and confirm that the change has been made:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;localectl
+VC Keymap: n/a
+X11 Layout: n/a
+&lt;/code>&lt;/pre>
+&lt;p>To change the locale, choose the languages that you want from &lt;code>/usr/share/locale/locale.alias&lt;/code>, add them to &lt;code>/etc/locale-gen.conf&lt;/code>, and then regenerate the locale list by running the following command as root:&lt;/p>
+&lt;pre>&lt;code>locale-gen.sh
+&lt;/code>&lt;/pre>
+&lt;p>Finally, run the following command to set the new locale, replacing the example (&lt;code>en_US.UTF-8&lt;/code>) with the locale that you require:&lt;/p>
+&lt;pre>&lt;code>localectl set-locale LANG=&amp;quot;de_CH.UTF-8&amp;quot; LC_CTYPE=&amp;quot;de_CH.UTF-8&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;h1 id="changing-the-keyboard-layout">Changing the keyboard layout&lt;/h1>
+&lt;p>See which keymaps are currently available on your system:&lt;/p>
+&lt;pre>&lt;code>localectl list-keymaps
+&lt;/code>&lt;/pre>
+&lt;p>If the response to that command is the all-too-common &lt;code>Couldn't find any console keymaps&lt;/code>, install the key tables files and utilities:&lt;/p>
+&lt;pre>&lt;code>tdnf install kbd
+&lt;/code>&lt;/pre>
+&lt;p>You should now be able to find a keymap matching your keyboard. As an example, here I&amp;rsquo;m searching for the German keyboard layout (so I&amp;rsquo;m expecting something with &lt;code>de&lt;/code> in the name) used in Switzerland:&lt;/p>
+&lt;pre>&lt;code>localectl list-keymaps | grep de
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code class="language-console" data-lang="console"> ...
+de-latin1
+de-latin1-nodeadkeys
+de-mobii
+de_CH-latin1
+de_alt_UTF-8
+...
+&lt;/code>&lt;/pre>&lt;p>&lt;code>de_CH-latin1&lt;/code> seems to be what we&amp;rsquo;re looking for, so change your current layout to that keymap:&lt;/p>
+&lt;pre>&lt;code>localectl set-keymap de_CH-latin1
+&lt;/code>&lt;/pre>
+&lt;p>and confirm that the change has been made:&lt;/p>
+&lt;pre>&lt;code>localectl
 System Locale: LANG=de_CH.UTF-8
-   VC Keymap: de_CH-latin1
-  X11 Layout: n/a
-&lt;/code&gt;&lt;/pre&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Cloud-Init on Photon OS</title>
-      <link>/docs/administration-guide/cloud-init-on-photon-os/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/cloud-init-on-photon-os/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The minimal and full versions of Photon OS include the cloud-init service as a built-in component. Cloud-init is a set of Python scripts that initialize cloud instances of Linux machines. The cloud-init scripts configure SSH keys and run commands to customize the machine without user interaction. The commands can set the root password, create a hostname, configure networking, write files to disk, upgrade packages, run custom scripts, and restart the system.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Security Policy</title>
-      <link>/docs/administration-guide/security-policy/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/security-policy/</guid>
-      <description>
-        
-        
-        &lt;p&gt;This section describes the security policy of Photon OS.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Support for zstd Compression</title>
-      <link>/docs/administration-guide/support-for-zstd-compression/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/support-for-zstd-compression/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Zstandard (zstd) is a fast compression algorithm that provides high compression ratios. Photon OS offers support for the zstd compression and allows you to define which compression algorithm you want.&lt;/p&gt;
-&lt;p&gt;By using the zstd compression, the following benefits are seen:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Faster installation of RPMs and the overall system&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Faster builds&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Reduction in the size of artifacts created&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Photon RPM OSTree: a simple guide</title>
-      <link>/docs/administration-guide/photon-rpm-ostree/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/photon-rpm-ostree/</guid>
-      <description>
-        
-        
-        
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Support for SELinux</title>
-      <link>/docs/administration-guide/support-for-selinux/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/support-for-selinux/</guid>
-      <description>
-        
-        
-        &lt;p&gt;SELinux is a labelling system to implement MAC(mandatory access control) for subjects(user, process) over objects (files, dirs, sockets) and to protect the confidentiality of objects. It is a policy driven system where rules can be mapped to the labels which have been given to subjects, objects. It is an extra level of security provided on top of Linux normal file ownership/permissions.&lt;/p&gt;
-&lt;p&gt;Photon OS 4.0 offersx support for SELinux. The support covers a minimal set of policies for the container runtime case and it is referred to as the default policy. It is a Multi-Category Security (MCS) policy. So the files on the filesystem can be labeled with multiple categories.The MCS policy is actively used by container runtime as &lt;code&gt;runc/containerd/docker/kubernetes&lt;/code&gt; to assign the &lt;code&gt;per-container&lt;/code&gt; category.&lt;/p&gt;
-&lt;p&gt;The default policy in Photon OS does not use &lt;code&gt;user&lt;/code&gt;, &lt;code&gt;role&lt;/code&gt; (RBAC) and &lt;code&gt;level&lt;/code&gt; (MLS) fields of the file labels.It operates only with the context and category fields. It consists of several modules loaded with priority as &lt;code&gt;100&lt;/code&gt;. The user-defined policy can overwrite default modules by using the higher priority.&lt;/p&gt;
-&lt;h2 id=&#34;enabling-selinux&#34;&gt;Enabling SELinux&lt;/h2&gt;
-&lt;p&gt;To enable SELinux on Photon OS:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Install default policy and its dependencies. Initial filesystem labeling will be done as RPM post action.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;tdnf install -y selinux-policy&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Enable SELinux security model in kernel by adding 2 kernel parameters:&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;security=selinux&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;selinux=1&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Ensure that you reboot after adding the kernel parameters.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;After reboot, the system runs in SELinux permissive mode. To confirm, check the journal:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt; journalctl -b0 | grep -i selinux
-
- Feb 26 21:42:09 photon-machine kernel: SELinux:  Initializing.
- Feb 26 21:42:09 photon-machine kernel: SELinux:  policy capability ...
- Feb 26 21:42:09 photon-machine kernel: audit: type=1403 audit(1589406128.920:2): auid=4294967295 ses=4294967295 lsm=selinux res=1
- Feb 26 21:42:09 photon-machine systemd[1]: Successfully loaded SELinux policy in 322.475ms.
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;switch-selinux-to-enforcing-mode&#34;&gt;Switch SELinux to enforcing mode&lt;/h2&gt;
-&lt;p&gt;The three methods to toggle enforcing mode are as follows:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Run the &lt;code&gt;setenforce 1&lt;/code&gt; command (libselinux-utils rpm), Enforcing mode will be set timmediately, but it is not preserved on reboot.&lt;/li&gt;
-&lt;li&gt;Edit the &lt;code&gt;/etc/selinux/config&lt;/code&gt; file to set &lt;code&gt;SELINUX=enforcing&lt;/code&gt; and reboot.&lt;/li&gt;
-&lt;li&gt;Add the &lt;code&gt;enforcing=1&lt;/code&gt; kernel parameter and reboot.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;developing-customized-policy&#34;&gt;Developing Customized Policy&lt;/h2&gt;
-&lt;p&gt;Photon OS provides an ability to develop customized additional policy on top of existing default policy.
-The following example is for adding the sys_admin capability policy:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Install policy development packages
-tdnf install -y selinux-policy-devel semodule-utils&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Create .te file
+VC Keymap: de_CH-latin1
+X11 Layout: n/a
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Cloud-Init on Photon OS</title><link>/docs/administration-guide/cloud-init-on-photon-os/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/cloud-init-on-photon-os/</guid><description>
+&lt;p>The minimal and full versions of Photon OS include the cloud-init service as a built-in component. Cloud-init is a set of Python scripts that initialize cloud instances of Linux machines. The cloud-init scripts configure SSH keys and run commands to customize the machine without user interaction. The commands can set the root password, create a hostname, configure networking, write files to disk, upgrade packages, run custom scripts, and restart the system.&lt;/p></description></item><item><title>Docs: Security Policy</title><link>/docs/administration-guide/security-policy/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/security-policy/</guid><description>
+&lt;p>This section describes the security policy of Photon OS.&lt;/p></description></item><item><title>Docs: Support for zstd Compression</title><link>/docs/administration-guide/support-for-zstd-compression/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/support-for-zstd-compression/</guid><description>
+&lt;p>Zstandard (zstd) is a fast compression algorithm that provides high compression ratios. Photon OS offers support for the zstd compression and allows you to define which compression algorithm you want.&lt;/p>
+&lt;p>By using the zstd compression, the following benefits are seen:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Faster installation of RPMs and the overall system&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Faster builds&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Reduction in the size of artifacts created&lt;/p>
+&lt;/li>
+&lt;/ul></description></item><item><title>Docs: Photon RPM OSTree: a simple guide</title><link>/docs/administration-guide/photon-rpm-ostree/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-rpm-ostree/</guid><description/></item><item><title>Docs: Support for SELinux</title><link>/docs/administration-guide/support-for-selinux/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/support-for-selinux/</guid><description>
+&lt;p>SELinux is a labelling system to implement MAC(mandatory access control) for subjects(user, process) over objects (files, dirs, sockets) and to protect the confidentiality of objects. It is a policy driven system where rules can be mapped to the labels which have been given to subjects, objects. It is an extra level of security provided on top of Linux normal file ownership/permissions.&lt;/p>
+&lt;p>Photon OS 4.0 offersx support for SELinux. The support covers a minimal set of policies for the container runtime case and it is referred to as the default policy. It is a Multi-Category Security (MCS) policy. So the files on the filesystem can be labeled with multiple categories.The MCS policy is actively used by container runtime as &lt;code>runc/containerd/docker/kubernetes&lt;/code> to assign the &lt;code>per-container&lt;/code> category.&lt;/p>
+&lt;p>The default policy in Photon OS does not use &lt;code>user&lt;/code>, &lt;code>role&lt;/code> (RBAC) and &lt;code>level&lt;/code> (MLS) fields of the file labels.It operates only with the context and category fields. It consists of several modules loaded with priority as &lt;code>100&lt;/code>. The user-defined policy can overwrite default modules by using the higher priority.&lt;/p>
+&lt;h2 id="enabling-selinux">Enabling SELinux&lt;/h2>
+&lt;p>To enable SELinux on Photon OS:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Install default policy and its dependencies. Initial filesystem labeling will be done as RPM post action.&lt;/p>
+&lt;p>&lt;code>tdnf install -y selinux-policy&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Enable SELinux security model in kernel by adding 2 kernel parameters:&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;ul>
+&lt;li>&lt;code>security=selinux&lt;/code>&lt;/li>
+&lt;li>&lt;code>selinux=1&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>Ensure that you reboot after adding the kernel parameters.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>After reboot, the system runs in SELinux permissive mode. To confirm, check the journal:&lt;/p>
+&lt;pre>&lt;code> journalctl -b0 | grep -i selinux
+Feb 26 21:42:09 photon-machine kernel: SELinux: Initializing.
+Feb 26 21:42:09 photon-machine kernel: SELinux: policy capability ...
+Feb 26 21:42:09 photon-machine kernel: audit: type=1403 audit(1589406128.920:2): auid=4294967295 ses=4294967295 lsm=selinux res=1
+Feb 26 21:42:09 photon-machine systemd[1]: Successfully loaded SELinux policy in 322.475ms.
+&lt;/code>&lt;/pre>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="switch-selinux-to-enforcing-mode">Switch SELinux to enforcing mode&lt;/h2>
+&lt;p>The three methods to toggle enforcing mode are as follows:&lt;/p>
+&lt;ol>
+&lt;li>Run the &lt;code>setenforce 1&lt;/code> command (libselinux-utils rpm), Enforcing mode will be set timmediately, but it is not preserved on reboot.&lt;/li>
+&lt;li>Edit the &lt;code>/etc/selinux/config&lt;/code> file to set &lt;code>SELINUX=enforcing&lt;/code> and reboot.&lt;/li>
+&lt;li>Add the &lt;code>enforcing=1&lt;/code> kernel parameter and reboot.&lt;/li>
+&lt;/ol>
+&lt;h2 id="developing-customized-policy">Developing Customized Policy&lt;/h2>
+&lt;p>Photon OS provides an ability to develop customized additional policy on top of existing default policy.
+The following example is for adding the sys_admin capability policy:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Install policy development packages
+tdnf install -y selinux-policy-devel semodule-utils&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Create .te file
 cat getty_local.te
-policy_module(getty_local, 1.0)&lt;/p&gt;
-&lt;p&gt;gen_require(`
+policy_module(getty_local, 1.0)&lt;/p>
+&lt;p>gen_require(`
 type getty_t;
-&amp;lsquo;)&lt;/p&gt;
-&lt;p&gt;allow getty_t self:capability sys_admin;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Compile it into .pp file
-make -f /usr/share/selinux/devel/Makefile getty_local.pp&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Load it with priority 200. It will permanently alter default policy. And this change will survive reboot cycle.
-semodule -i getty_local.pp -X 200&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Check result
+&amp;lsquo;)&lt;/p>
+&lt;p>allow getty_t self:capability sys_admin;&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Compile it into .pp file
+make -f /usr/share/selinux/devel/Makefile getty_local.pp&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Load it with priority 200. It will permanently alter default policy. And this change will survive reboot cycle.
+semodule -i getty_local.pp -X 200&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Check result
 sesearch -A -s getty_t -t getty_t -c capability
-allow getty_t getty_t:capability { chown dac_override dac_read_search fowner fsetid setgid sys_admin sys_resource sys_tty_config };&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;List of loaded modules and their priorities
-semodule -lfull&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;debugging-selinux&#34;&gt;Debugging SELinux&lt;/h2&gt;
-&lt;p&gt;Install the debugging tools as follows:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf install -y setools python3-pip
-
+allow getty_t getty_t:capability { chown dac_override dac_read_search fowner fsetid setgid sys_admin sys_resource sys_tty_config };&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>List of loaded modules and their priorities
+semodule -lfull&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;h2 id="debugging-selinux">Debugging SELinux&lt;/h2>
+&lt;p>Install the debugging tools as follows:&lt;/p>
+&lt;pre>&lt;code>tdnf install -y setools python3-pip
 pip3 install networkx
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;List all actions denied by Selinux using the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;journalctl _TRANSPORT=audit -b 0 | grep denied
-
-Feb 26 21:42:43 photon-machine audit[445]: AVC avc:  denied  { sys_admin } for  pid=445 comm=&amp;quot;agetty&amp;quot; capability=21
+&lt;/code>&lt;/pre>
+&lt;p>List all actions denied by Selinux using the following command:&lt;/p>
+&lt;pre>&lt;code>journalctl _TRANSPORT=audit -b 0 | grep denied
+Feb 26 21:42:43 photon-machine audit[445]: AVC avc: denied { sys_admin } for pid=445 comm=&amp;quot;agetty&amp;quot; capability=21
 scontext=system_u:system_r:getty_t:s0-s0:c0.c1023 tcontext=system_u:system_r:getty_t:s0-s0:c0.c1023 tclass=capability permissive=0
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;You can see that the agetty process running in the getty_t context tries to change the capability of getty_t target to obtain &lt;code&gt;sys_admin&lt;/code&gt;. To view the capability that getty_t can obtain:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;sesearch -A -s getty_t -t getty_t -c capability
-
+&lt;/code>&lt;/pre>
+&lt;p>You can see that the agetty process running in the getty_t context tries to change the capability of getty_t target to obtain &lt;code>sys_admin&lt;/code>. To view the capability that getty_t can obtain:&lt;/p>
+&lt;pre>&lt;code>sesearch -A -s getty_t -t getty_t -c capability
 allow getty_t getty_t:capability { chown dac_override dac_read_search fowner fsetid setgid sys_resource sys_tty_config };
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Note: &lt;code&gt;sys_admind&lt;/code&gt; is not listed there and can be added.&lt;/p&gt;
-&lt;h2 id=&#34;important-selinux-files&#34;&gt;Important SELinux Files&lt;/h2&gt;
-&lt;p&gt;Here are some of the important SELinux files:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;SELinux config
-/etc/selinux/config&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;default policy folder
-/etc/selinux/default/&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Binary policy blob to be loaded to kernel on every boot
-/etc/selinux/default/policy/policy.32&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;List of file labels used by the policy
-/etc/selinux/default/contexts/files/file_contexts&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;troubleshooting-compilation-error&#34;&gt;Troubleshooting Compilation Error&lt;/h2&gt;
-&lt;p&gt;If compilation fails by any reason and it complains on some line number in the &lt;code&gt;.cil&lt;/code&gt; file. You can run the pp compiler to get the plain text cil output.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;/usr/libexec/selinux/hll/pp getty_local.pp
+&lt;/code>&lt;/pre>
+&lt;p>Note: &lt;code>sys_admind&lt;/code> is not listed there and can be added.&lt;/p>
+&lt;h2 id="important-selinux-files">Important SELinux Files&lt;/h2>
+&lt;p>Here are some of the important SELinux files:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>SELinux config
+/etc/selinux/config&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>default policy folder
+/etc/selinux/default/&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Binary policy blob to be loaded to kernel on every boot
+/etc/selinux/default/policy/policy.32&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>List of file labels used by the policy
+/etc/selinux/default/contexts/files/file_contexts&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="troubleshooting-compilation-error">Troubleshooting Compilation Error&lt;/h2>
+&lt;p>If compilation fails by any reason and it complains on some line number in the &lt;code>.cil&lt;/code> file. You can run the pp compiler to get the plain text cil output.&lt;/p>
+&lt;pre>&lt;code>/usr/libexec/selinux/hll/pp getty_local.pp
 (roleattributeset cil_gen_require system_r)
 (typeattributeset cil_gen_require getty_t)
-(allow getty_t self (capability (sys_admin)))&lt;/code&gt;&lt;/pre&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Remotely Upgrading a Photon OS Machine</title>
-      <link>/docs/administration-guide/installing-and-using-lightwave/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/installing-and-using-lightwave/</guid>
-      <description>
-        
-        
-        
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Photon Management Daemon</title>
-      <link>/docs/administration-guide/photon-management-daemon/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/photon-management-daemon/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The Photon Management Daemon (PMD) that ships with Photon OS provides the remote management of a Photon instance via several APIs: a command line client (pmd-cli), a REST API, and a Python API. The PMD provides the ability to manage network interfaces, packages, firewalls, users, and user groups.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+(allow getty_t self (capability (sys_admin)))&lt;/code>&lt;/pre></description></item><item><title>Docs: Remotely Upgrading a Photon OS Machine</title><link>/docs/administration-guide/installing-and-using-lightwave/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/installing-and-using-lightwave/</guid><description/></item><item><title>Docs: Photon Management Daemon</title><link>/docs/administration-guide/photon-management-daemon/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-management-daemon/</guid><description>
+&lt;p>The Photon Management Daemon (PMD) that ships with Photon OS provides the remote management of a Photon instance via several APIs: a command line client (pmd-cli), a REST API, and a Python API. The PMD provides the ability to manage network interfaces, packages, firewalls, users, and user groups.&lt;/p></description></item></channel></rss>

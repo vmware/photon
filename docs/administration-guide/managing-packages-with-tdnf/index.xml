@@ -1,69 +1,33 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Package Management in Photon OS with &#39;tdnf&#39;</title>
-    <link>/docs/administration-guide/managing-packages-with-tdnf/</link>
-    <description>Recent content in Package Management in Photon OS with &#39;tdnf&#39; on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs/administration-guide/managing-packages-with-tdnf/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs: Introduction to &#39;tdnf&#39;</title>
-      <link>/docs/administration-guide/managing-packages-with-tdnf/intro-to-tdnf/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/managing-packages-with-tdnf/intro-to-tdnf/</guid>
-      <description>
-        
-        
-        &lt;p&gt;On Photon OS, &lt;code&gt;tdnf&lt;/code&gt; is the default package manager for installing new packages. It is a C implementation of the DNF package manager without Python dependencies.&lt;/p&gt;
-&lt;p&gt;Tdnf appears in the minimal and full versions of Photon OS.&lt;/p&gt;
-&lt;p&gt;Tdnf implements a subset of the &lt;code&gt;dnf&lt;/code&gt; commands as listed in the &lt;a href=&#34;http://dnf.readthedocs.org/en/latest/&#34;&gt;dnf guide&lt;/a&gt;.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Configuration Files and Repositories</title>
-      <link>/docs/administration-guide/managing-packages-with-tdnf/configuration-files-and-repositories/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/managing-packages-with-tdnf/configuration-files-and-repositories/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The main configuration files reside in /etc/tdnf/tdnf.conf. The configuration file appears as follows:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;cat /etc/tdnf/tdnf.conf
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Package Management in Photon OS with 'tdnf'</title><link>/docs/administration-guide/managing-packages-with-tdnf/</link><description>Recent content in Package Management in Photon OS with 'tdnf' on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/administration-guide/managing-packages-with-tdnf/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Introduction to 'tdnf'</title><link>/docs/administration-guide/managing-packages-with-tdnf/intro-to-tdnf/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-packages-with-tdnf/intro-to-tdnf/</guid><description>
+&lt;p>On Photon OS, &lt;code>tdnf&lt;/code> is the default package manager for installing new packages. It is a C implementation of the DNF package manager without Python dependencies.&lt;/p>
+&lt;p>Tdnf appears in the minimal and full versions of Photon OS.&lt;/p>
+&lt;p>Tdnf implements a subset of the &lt;code>dnf&lt;/code> commands as listed in the &lt;a href="http://dnf.readthedocs.org/en/latest/">dnf guide&lt;/a>.&lt;/p></description></item><item><title>Docs: Configuration Files and Repositories</title><link>/docs/administration-guide/managing-packages-with-tdnf/configuration-files-and-repositories/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-packages-with-tdnf/configuration-files-and-repositories/</guid><description>
+&lt;p>The main configuration files reside in /etc/tdnf/tdnf.conf. The configuration file appears as follows:&lt;/p>
+&lt;pre>&lt;code>cat /etc/tdnf/tdnf.conf
 [main]
 gpgcheck=1
 installonly_limit=3
 clean_requirements_on_remove=true
 repodir=/etc/yum.repos.d
 cachedir=/var/cache/tdnf
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The cache files for data and metadata reside in /var/cache/tdnf.&lt;/p&gt;
-&lt;p&gt;The following repositories appear in /etc/yum.repos.d/ with &lt;code&gt;.repo&lt;/code&gt; file extensions:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;ls /etc/yum.repos.d/
+&lt;/code>&lt;/pre>
+&lt;p>The cache files for data and metadata reside in /var/cache/tdnf.&lt;/p>
+&lt;p>The following repositories appear in /etc/yum.repos.d/ with &lt;code>.repo&lt;/code> file extensions:&lt;/p>
+&lt;pre>&lt;code>ls /etc/yum.repos.d/
 photon-extras.repo
 photon-iso.repo
 photon-updates.repo
-photon.repo 
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;You can list the the repositories by using the &lt;code&gt;tdnf repolist&lt;/code&gt; command. Tdnf filters the results with &lt;code&gt;enabled&lt;/code&gt;, &lt;code&gt;disabled&lt;/code&gt;, and &lt;code&gt;all&lt;/code&gt;. Running the command without specifying an argument returns the enabled repositories:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf repolist
-repo id             repo name                               status
-photon-updates      VMware Photon Linux 2.0(x86_64)Updates  enabled
-photon-extras       VMware Photon Extras 2.0(x86_64)        enabled
-photon              VMware Photon Linux 2.0(x86_64)         enabled
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The &lt;code&gt;photon-iso.repo&lt;/code&gt;, however, does not appear in the list of repositories because it is unavailable on the virtual machine from which these examples are taken. The &lt;code&gt;photon-iso.repo&lt;/code&gt; is the default repository and it points to /media/cdrom. The &lt;code&gt;photon-iso.repo&lt;/code&gt; appears as follows:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;cat /etc/yum.repos.d/photon-iso.repo
+photon.repo
+&lt;/code>&lt;/pre>
+&lt;p>You can list the the repositories by using the &lt;code>tdnf repolist&lt;/code> command. Tdnf filters the results with &lt;code>enabled&lt;/code>, &lt;code>disabled&lt;/code>, and &lt;code>all&lt;/code>. Running the command without specifying an argument returns the enabled repositories:&lt;/p>
+&lt;pre>&lt;code>tdnf repolist
+repo id repo name status
+photon-updates VMware Photon Linux 2.0(x86_64)Updates enabled
+photon-extras VMware Photon Extras 2.0(x86_64) enabled
+photon VMware Photon Linux 2.0(x86_64) enabled
+&lt;/code>&lt;/pre>
+&lt;p>The &lt;code>photon-iso.repo&lt;/code>, however, does not appear in the list of repositories because it is unavailable on the virtual machine from which these examples are taken. The &lt;code>photon-iso.repo&lt;/code> is the default repository and it points to /media/cdrom. The &lt;code>photon-iso.repo&lt;/code> appears as follows:&lt;/p>
+&lt;pre>&lt;code>cat /etc/yum.repos.d/photon-iso.repo
 [photon-iso]
 name=VMWare Photon Linux 2.0(x86_64)
 baseurl=file:///mnt/cdrom/RPMS
@@ -71,407 +35,273 @@ gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=0
 skip_if_unavailable=True
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The local cache is populated with data from the repository:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;ls -l /var/cache/tdnf/photon
+&lt;/code>&lt;/pre>
+&lt;p>The local cache is populated with data from the repository:&lt;/p>
+&lt;pre>&lt;code>ls -l /var/cache/tdnf/photon
 total 8
 drwxr-xr-x 2 root root 4096 May 18 22:52 repodata
-d-wxr----t 3 root root 4096 May  3 22:51 rpms
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;You can clear the cache to help troubleshoot a problem, but doing so might slow the performance of &lt;code&gt;tdnf&lt;/code&gt; until the cache becomes repopulated with data. To clear the cache, use the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf clean all
+d-wxr----t 3 root root 4096 May 3 22:51 rpms
+&lt;/code>&lt;/pre>
+&lt;p>You can clear the cache to help troubleshoot a problem, but doing so might slow the performance of &lt;code>tdnf&lt;/code> until the cache becomes repopulated with data. To clear the cache, use the following command:&lt;/p>
+&lt;pre>&lt;code>tdnf clean all
 Cleaning repos: photon photon-extras photon-updates lightwave
 Cleaning up everything
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The command purges the repository data from the cache:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;ls -l /var/cache/tdnf/photon
+&lt;/code>&lt;/pre>
+&lt;p>The command purges the repository data from the cache:&lt;/p>
+&lt;pre>&lt;code>ls -l /var/cache/tdnf/photon
 total 4
-d-wxr----t 3 root root 4096 May  3 22:51 rpms&lt;/code&gt;&lt;/pre&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Adding a New Repository</title>
-      <link>/docs/administration-guide/managing-packages-with-tdnf/adding-a-new-repository/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/managing-packages-with-tdnf/adding-a-new-repository/</guid>
-      <description>
-        
-        
-        &lt;p&gt;On Photon OS, you can add a new repository from which &lt;code&gt;tdnf&lt;/code&gt; installs packages. To add a new repository, you create a repository configuration file with a &lt;code&gt;.repo&lt;/code&gt; extension and place it in &lt;code&gt;/etc/yum.repos.d&lt;/code&gt;. The repository can be on either the Internet or a local server containing your in-house applications.&lt;/p&gt;
-&lt;p&gt;Be careful if you add a repository  that is on the Internet. Installing packages from untrusted or unverified sources might put the security, stability, or compatibility of your system at risk. It might also make your system harder to maintain.&lt;/p&gt;
-&lt;p&gt;On Photon OS, the existing repositories appear in the &lt;code&gt;/etc/yum.repos.d&lt;/code&gt; directory:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;ls /etc/yum.repos.d/
+d-wxr----t 3 root root 4096 May 3 22:51 rpms&lt;/code>&lt;/pre></description></item><item><title>Docs: Adding a New Repository</title><link>/docs/administration-guide/managing-packages-with-tdnf/adding-a-new-repository/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-packages-with-tdnf/adding-a-new-repository/</guid><description>
+&lt;p>On Photon OS, you can add a new repository from which &lt;code>tdnf&lt;/code> installs packages. To add a new repository, you create a repository configuration file with a &lt;code>.repo&lt;/code> extension and place it in &lt;code>/etc/yum.repos.d&lt;/code>. The repository can be on either the Internet or a local server containing your in-house applications.&lt;/p>
+&lt;p>Be careful if you add a repository that is on the Internet. Installing packages from untrusted or unverified sources might put the security, stability, or compatibility of your system at risk. It might also make your system harder to maintain.&lt;/p>
+&lt;p>On Photon OS, the existing repositories appear in the &lt;code>/etc/yum.repos.d&lt;/code> directory:&lt;/p>
+&lt;pre>&lt;code>ls /etc/yum.repos.d/
 photon-extras.repo
 photon-iso.repo
 photon-updates.repo
-photon.repo 
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;To view the the format and information that a new repository configuration file should contain, see one of the &lt;code&gt;.repo&lt;/code&gt; files. The following is an example:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;baseurl=https://https://packages.vmware.com/photon/
+photon.repo
+&lt;/code>&lt;/pre>
+&lt;p>To view the the format and information that a new repository configuration file should contain, see one of the &lt;code>.repo&lt;/code> files. The following is an example:&lt;/p>
+&lt;pre>&lt;code>baseurl=https://https://packages.vmware.com/photon/
 metalink=http://example.com/*username*/metalink/metalink
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
 skip_if_unavailable=True
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The repository settings details are as follows:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;The minimal information needed to establish a repository is an ID and human-readable name of the repository and its base URL. The ID, which appears in square brackets, must be one word that is unique amoung the system&amp;rsquo;s repositories; `.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;baseurl&lt;/code&gt; is a URL for the repository&amp;rsquo;s repodata directory. For a repository on a local server that can be accessed directly or mounted as a file system, the base URL can be a file referenced by &lt;code&gt;file://&lt;/code&gt;. Example:&lt;/p&gt;
-&lt;p&gt;baseurl=file:///server/repo/&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;By using &lt;code&gt;metalink&lt;/code&gt;, you can point to multiple URLs to download the &lt;code&gt;repomd.xml&lt;/code&gt; file. A sample metalink file is as follows:&lt;/p&gt;
-&lt;p&gt;cat metalink&lt;/p&gt;
-  &lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;
-  &lt;metalink version=&#34;3.0&#34; xmlns=&#34;http://www.metalinker.org/&#34; type=&#34;dynamic&#34; pubdate=&#34;Wed, 05 Feb 2020 08:14:56 GMT&#34; generator=&#34;mirrormanager&#34; xmlns:mm0=&#34;http://fedorahosted.org/mirrormanager&#34;&gt;
-   &lt;files&gt;
-&lt;pre&gt;&lt;code&gt;&amp;lt;file name=&amp;quot;repomd.xml&amp;quot;&amp;gt;
-
- &amp;lt;size&amp;gt;2035&amp;lt;/size&amp;gt;
-
- &amp;lt;verification&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;hash type=&#34;sha1&#34;&gt;478437547dac9f5a73fe905d2ed2a0a5b153ef46&lt;/hash&gt;&lt;/p&gt;
-&lt;p&gt;&lt;hash type=&#34;sha512&#34;&gt;6c6fbfba288ec90905a8d2220a0bfd2a50e835b7faaefedb6978df6ca59c5bce25cc1ddd33023e305b20bcffc702ee2bd61d0855f4f1b2fd7c8f5109e428a764&lt;/hash&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt; &amp;lt;/verification&amp;gt;
-
- &amp;lt;resources maxconnections=&amp;quot;1&amp;quot;&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;url protocol=&#34;http&#34; type=&#34;http&#34; location=&#34;IN&#34; preference=“100”&gt;&lt;a href=&#34;https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml&#34;&gt;https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml&lt;/a&gt;&lt;/url&gt;&lt;/p&gt;
-&lt;p&gt;&lt;url protocol=&#34;http&#34; type=&#34;http&#34; location=&#34;IN&#34; preference=“90”&gt;&lt;a href=&#34;https://dl.bintray.com/vmware/photon_updates_3.0_x86_64/repodata/repomd.xml&#34;&gt;https://dl.bintray.com/vmware/photon_updates_3.0_x86_64/repodata/repomd.xml&lt;/a&gt;&lt;/url&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt; &amp;lt;/resources&amp;gt;
-
+&lt;/code>&lt;/pre>
+&lt;p>The repository settings details are as follows:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>The minimal information needed to establish a repository is an ID and human-readable name of the repository and its base URL. The ID, which appears in square brackets, must be one word that is unique amoung the system&amp;rsquo;s repositories; `.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The &lt;code>baseurl&lt;/code> is a URL for the repository&amp;rsquo;s repodata directory. For a repository on a local server that can be accessed directly or mounted as a file system, the base URL can be a file referenced by &lt;code>file://&lt;/code>. Example:&lt;/p>
+&lt;p>baseurl=file:///server/repo/&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>By using &lt;code>metalink&lt;/code>, you can point to multiple URLs to download the &lt;code>repomd.xml&lt;/code> file. A sample metalink file is as follows:&lt;/p>
+&lt;p>cat metalink&lt;/p>
+&lt;?xml version="1.0" encoding="utf-8"?>
+&lt;metalink version="3.0" xmlns="http://www.metalinker.org/" type="dynamic" pubdate="Wed, 05 Feb 2020 08:14:56 GMT" generator="mirrormanager" xmlns:mm0="http://fedorahosted.org/mirrormanager">
+&lt;files>
+&lt;pre>&lt;code>&amp;lt;file name=&amp;quot;repomd.xml&amp;quot;&amp;gt;
+&amp;lt;size&amp;gt;2035&amp;lt;/size&amp;gt;
+&amp;lt;verification&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>&lt;hash type="sha1">478437547dac9f5a73fe905d2ed2a0a5b153ef46&lt;/hash>&lt;/p>
+&lt;p>&lt;hash type="sha512">6c6fbfba288ec90905a8d2220a0bfd2a50e835b7faaefedb6978df6ca59c5bce25cc1ddd33023e305b20bcffc702ee2bd61d0855f4f1b2fd7c8f5109e428a764&lt;/hash>&lt;/p>
+&lt;pre>&lt;code> &amp;lt;/verification&amp;gt;
+&amp;lt;resources maxconnections=&amp;quot;1&amp;quot;&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>&lt;url protocol="http" type="http" location="IN" preference=“100”>&lt;a href="https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml">https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml&lt;/a>&lt;/url>&lt;/p>
+&lt;p>&lt;url protocol="http" type="http" location="IN" preference=“90”>&lt;a href="https://dl.bintray.com/vmware/photon_updates_3.0_x86_64/repodata/repomd.xml">https://dl.bintray.com/vmware/photon_updates_3.0_x86_64/repodata/repomd.xml&lt;/a>&lt;/url>&lt;/p>
+&lt;pre>&lt;code> &amp;lt;/resources&amp;gt;
 &amp;lt;/file&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-   &lt;/files&gt;
-  &lt;/metalink&gt;
-&lt;p&gt;In the metalink file, provide the preference for each url, so &lt;code&gt;tdnf&lt;/code&gt; first tries to sync the repository data from the mirror which has the highest preference. If it fails due to any reason, &lt;code&gt;tdnf&lt;/code&gt; will sync to the next mirror url with the lower preference than before one.&lt;/p&gt;
-&lt;p&gt;Note: Ensure that the shasum for &lt;code&gt;respomd.xml&lt;/code&gt; in all the mirrors should be same&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;gpgcheck&lt;/code&gt; setting specifies whether to check the GPG signature.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;repo_gpgcheck&lt;/code&gt; setting allows &lt;code&gt;tdnf&lt;/code&gt; to verify the signature of a repository metadata before downloading the repository artifacts. When &lt;code&gt;repo_gpgcheck&lt;/code&gt; is set to &lt;code&gt;1&lt;/code&gt; in the tdnf.conf file, all repositories will be checked for the metadata signatures. The default value is &lt;code&gt;0&lt;/code&gt;.
-If a repository has &lt;code&gt;repo_gpgcheck&lt;/code&gt; enabled,a &lt;code&gt;repomd.xml.asc&lt;/code&gt; file is downloaded and the API equivalent of &lt;code&gt;gpg --verify repomd.xml.asc repomd.xml&lt;/code&gt; is done. If &lt;code&gt;repomd.xml.asc&lt;/code&gt; is missing, repository is disabled. If &lt;code&gt;repomd.xml.asc&lt;/code&gt; fails to verify, the repository is disabled. The public key for verification must be manually installed for the initial implementation.&lt;/p&gt;
-&lt;p&gt;Note: Ensure that you have installed &lt;code&gt;libgcrypt&lt;/code&gt; for this implementation.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;gpgkey&lt;/code&gt; setting furnishes the URL for the repository&amp;rsquo;s ASCII-armored GPG key file. &lt;code&gt;tdnf&lt;/code&gt; uses the GPG key to verify a package if its key has not been imported into the RPM database.&lt;/p&gt;
-&lt;p&gt;The repository configuration also supports public keys that are remote for the &lt;code&gt;gpgkey&lt;/code&gt; option. So, the URLs starting with &lt;code&gt;http&lt;/code&gt;, &lt;code&gt;https&lt;/code&gt;, or &lt;code&gt;ftp&lt;/code&gt; can be used for &lt;code&gt;gpgkey&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;For example:
-gpgkey=http://build-squid.eng.vmware.com/build/mts/release/bora-16633979/publish/packages/keys/vmware.asc&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;enabled&lt;/code&gt; setting tells &lt;code&gt;tdnf&lt;/code&gt; whether to poll the repository. If &lt;code&gt;enabled&lt;/code&gt; is set to &lt;code&gt;1&lt;/code&gt;, &lt;code&gt;tdnf&lt;/code&gt; polls it; if it is set to &lt;code&gt;0&lt;/code&gt;, &lt;code&gt;tdnf&lt;/code&gt; ignores it.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;skip_if_unavailable&lt;/code&gt; setting instructs &lt;code&gt;tdnf&lt;/code&gt; to continue running if the repository goes offline.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;retries&lt;/code&gt; setting in the repository configuration specifies the number of retries when downloading a file throws an error. The default is &lt;code&gt;10&lt;/code&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;timeout&lt;/code&gt; setting specifies the number of seconds that a download is allowed to take or &lt;code&gt;0&lt;/code&gt; for no limit. Note that this is an absolute value and may interrupt large file downloads.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;minrate&lt;/code&gt; setting specifies the limit below which if the download rate falls, &lt;code&gt;tdnf&lt;/code&gt; will abort the download. The default value is &lt;code&gt;0 &lt;/code&gt;(&lt;code&gt;no limit&lt;/code&gt;).&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;maxrate&lt;/code&gt; setting specifies the maximum download rate (throttle). The default value is &lt;code&gt;0 &lt;/code&gt;(&lt;code&gt;no limit&lt;/code&gt;).&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Other options and variables can appear in the repository file. The variables that are used with some of the options can reduce future changes to the repository configuration files. There are variables to replace the value of the version of the package and to replace the base architecture. For more information, see the man page for &lt;code&gt;yum.conf&lt;/code&gt; on the full version of Photon OS: &lt;code&gt;man yum.conf&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;The following is an example of how to add a new repository for a local server that &lt;code&gt;tdnf&lt;/code&gt; polls for packages:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;cat &amp;gt; /etc/yum.repos.d/apps.repo &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;/files>
+&lt;/metalink>
+&lt;p>In the metalink file, provide the preference for each url, so &lt;code>tdnf&lt;/code> first tries to sync the repository data from the mirror which has the highest preference. If it fails due to any reason, &lt;code>tdnf&lt;/code> will sync to the next mirror url with the lower preference than before one.&lt;/p>
+&lt;p>Note: Ensure that the shasum for &lt;code>respomd.xml&lt;/code> in all the mirrors should be same&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The &lt;code>gpgcheck&lt;/code> setting specifies whether to check the GPG signature.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The &lt;code>repo_gpgcheck&lt;/code> setting allows &lt;code>tdnf&lt;/code> to verify the signature of a repository metadata before downloading the repository artifacts. When &lt;code>repo_gpgcheck&lt;/code> is set to &lt;code>1&lt;/code> in the tdnf.conf file, all repositories will be checked for the metadata signatures. The default value is &lt;code>0&lt;/code>.
+If a repository has &lt;code>repo_gpgcheck&lt;/code> enabled,a &lt;code>repomd.xml.asc&lt;/code> file is downloaded and the API equivalent of &lt;code>gpg --verify repomd.xml.asc repomd.xml&lt;/code> is done. If &lt;code>repomd.xml.asc&lt;/code> is missing, repository is disabled. If &lt;code>repomd.xml.asc&lt;/code> fails to verify, the repository is disabled. The public key for verification must be manually installed for the initial implementation.&lt;/p>
+&lt;p>Note: Ensure that you have installed &lt;code>libgcrypt&lt;/code> for this implementation.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The &lt;code>gpgkey&lt;/code> setting furnishes the URL for the repository&amp;rsquo;s ASCII-armored GPG key file. &lt;code>tdnf&lt;/code> uses the GPG key to verify a package if its key has not been imported into the RPM database.&lt;/p>
+&lt;p>The repository configuration also supports public keys that are remote for the &lt;code>gpgkey&lt;/code> option. So, the URLs starting with &lt;code>http&lt;/code>, &lt;code>https&lt;/code>, or &lt;code>ftp&lt;/code> can be used for &lt;code>gpgkey&lt;/code>.&lt;/p>
+&lt;p>For example:
+gpgkey=http://build-squid.eng.vmware.com/build/mts/release/bora-16633979/publish/packages/keys/vmware.asc&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The &lt;code>enabled&lt;/code> setting tells &lt;code>tdnf&lt;/code> whether to poll the repository. If &lt;code>enabled&lt;/code> is set to &lt;code>1&lt;/code>, &lt;code>tdnf&lt;/code> polls it; if it is set to &lt;code>0&lt;/code>, &lt;code>tdnf&lt;/code> ignores it.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The &lt;code>skip_if_unavailable&lt;/code> setting instructs &lt;code>tdnf&lt;/code> to continue running if the repository goes offline.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The &lt;code>retries&lt;/code> setting in the repository configuration specifies the number of retries when downloading a file throws an error. The default is &lt;code>10&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The &lt;code>timeout&lt;/code> setting specifies the number of seconds that a download is allowed to take or &lt;code>0&lt;/code> for no limit. Note that this is an absolute value and may interrupt large file downloads.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The &lt;code>minrate&lt;/code> setting specifies the limit below which if the download rate falls, &lt;code>tdnf&lt;/code> will abort the download. The default value is &lt;code>0 &lt;/code>(&lt;code>no limit&lt;/code>).&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The &lt;code>maxrate&lt;/code> setting specifies the maximum download rate (throttle). The default value is &lt;code>0 &lt;/code>(&lt;code>no limit&lt;/code>).&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Other options and variables can appear in the repository file. The variables that are used with some of the options can reduce future changes to the repository configuration files. There are variables to replace the value of the version of the package and to replace the base architecture. For more information, see the man page for &lt;code>yum.conf&lt;/code> on the full version of Photon OS: &lt;code>man yum.conf&lt;/code>&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>The following is an example of how to add a new repository for a local server that &lt;code>tdnf&lt;/code> polls for packages:&lt;/p>
+&lt;pre>&lt;code>cat &amp;gt; /etc/yum.repos.d/apps.repo &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
 [localapps]
 name=Local In-House Applications(x86_64)
 baseurl=file:///appserver/apps
 enabled=1
 skip_if_unavailable=True
 EOF
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Because this new repository resides on a local server, make sure the Photon OS machine can connect to it by mounting it.&lt;/p&gt;
-&lt;p&gt;After establishing a new repository, you must run the following command to update the cached binary metadata for the repositories that &lt;code&gt;tdnf&lt;/code&gt; polls:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf makecache
-Refreshing metadata for: &#39;VMware Photon Linux 1.0(x86_64)Updates&#39;
-Refreshing metadata for: &#39;VMware Photon Extras 1.0(x86_64)&#39;
-Refreshing metadata for: &#39;Local In-House Applications(x86_64)&#39;
-Refreshing metadata for: &#39;VMware Photon Linux 1.0(x86_64)&#39;
-Metadata cache created.&lt;/code&gt;&lt;/pre&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Mount the Photon ISO Image for the Photon-ISO Repository</title>
-      <link>/docs/administration-guide/managing-packages-with-tdnf/configure-a-repository/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/managing-packages-with-tdnf/configure-a-repository/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS comes with a preconfigured repository called &lt;code&gt;photon-iso&lt;/code&gt; that resides in &lt;code&gt;\etc\yum.repos.d.&lt;/code&gt; If you receive an access error message when working with the &lt;code&gt;photon-iso&lt;/code&gt; repository, it is probably because you do not have the Photon OS ISO mounted. Mount the ISO and the run the following command to update the metadata for all known repositories, including &lt;code&gt;photon-iso&lt;/code&gt;:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;mount /dev/cdrom /media/cdrom
+&lt;/code>&lt;/pre>
+&lt;p>Because this new repository resides on a local server, make sure the Photon OS machine can connect to it by mounting it.&lt;/p>
+&lt;p>After establishing a new repository, you must run the following command to update the cached binary metadata for the repositories that &lt;code>tdnf&lt;/code> polls:&lt;/p>
+&lt;pre>&lt;code>tdnf makecache
+Refreshing metadata for: 'VMware Photon Linux 1.0(x86_64)Updates'
+Refreshing metadata for: 'VMware Photon Extras 1.0(x86_64)'
+Refreshing metadata for: 'Local In-House Applications(x86_64)'
+Refreshing metadata for: 'VMware Photon Linux 1.0(x86_64)'
+Metadata cache created.&lt;/code>&lt;/pre></description></item><item><title>Docs: Mount the Photon ISO Image for the Photon-ISO Repository</title><link>/docs/administration-guide/managing-packages-with-tdnf/configure-a-repository/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-packages-with-tdnf/configure-a-repository/</guid><description>
+&lt;p>Photon OS comes with a preconfigured repository called &lt;code>photon-iso&lt;/code> that resides in &lt;code>\etc\yum.repos.d.&lt;/code> If you receive an access error message when working with the &lt;code>photon-iso&lt;/code> repository, it is probably because you do not have the Photon OS ISO mounted. Mount the ISO and the run the following command to update the metadata for all known repositories, including &lt;code>photon-iso&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>mount /dev/cdrom /media/cdrom
 tdnf makecache
-
-Refreshing metadata for: &#39;VMware Photon Linux 1.0(x86_64)Updates&#39;
-Refreshing metadata for: &#39;VMware Photon Extras 1.0(x86_64)&#39;
-Refreshing metadata for: &#39;VMware Photon Linux 1.0(x86_64)&#39;
+Refreshing metadata for: 'VMware Photon Linux 1.0(x86_64)Updates'
+Refreshing metadata for: 'VMware Photon Extras 1.0(x86_64)'
+Refreshing metadata for: 'VMware Photon Linux 1.0(x86_64)'
 Metadata cache created.
-&lt;/code&gt;&lt;/pre&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Adding the Dev Repository to Get New Packages from the GitHub Dev Branch</title>
-      <link>/docs/administration-guide/managing-packages-with-tdnf/adding-the-dev-repository/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/managing-packages-with-tdnf/adding-the-dev-repository/</guid>
-      <description>
-        
-        
-        &lt;p&gt;To try out new packages or the latest versions of existing packages as they are merged into the dev branch of the Photon OS GitHub site, add the &lt;code&gt;dev&lt;/code&gt; repository to your repository list.&lt;/p&gt;
-&lt;p&gt;Perform th following steps:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;On your Photon OS machine, run the following command as root to create a repository configuration file named &lt;code&gt;photon-dev.repo&lt;/code&gt;, place it in &lt;code&gt;/etc/yum.repos.d&lt;/code&gt;, and concatenate the repository information into the file:&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;cat &amp;gt; /etc/yum.repos.d/photon-dev.repo &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot; 
-    [photon-dev]
-    name=VMware Photon Linux Dev(x86_64)
-    baseurl=https://dl.bintray.com/vmware/photon_dev_$basearch
-    gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
-    gpgcheck=1
-    enabled=1
-    skip_if_unavailable=True
-    EOF
-``` . 
-
-2. After establishing a new repository, run the following command to update the cached binary metadata for the repositories that `tdnf` polls: 
-    
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;tdnf makecache&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;
-&lt;/code&gt;&lt;/pre&gt;
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: tdnf-automatic</title>
-      <link>/docs/administration-guide/managing-packages-with-tdnf/tdnf-automatic/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/managing-packages-with-tdnf/tdnf-automatic/</guid>
-      <description>
-        
-        
-        &lt;p&gt;&lt;code&gt;tdnf-automatic&lt;/code&gt; is an alternative Command Line Interface (CLI) to &lt;code&gt;tdnf upgrade/tdnf update&lt;/code&gt; with specific features so that it is suitable to be executed automatically and regularly from &lt;code&gt;systemd&lt;/code&gt; timers, cron jobs, and so on.&lt;/p&gt;
-&lt;p&gt;The operation of the tool is usually controlled by the configuration file or the function-specific timer units. The command only accepts a single optional argument pointing to the config file, and some control arguments intended for use by the services that back the timer units. If no configuration file is passed from the command line,then  &lt;code&gt;/etc/tdnf/automatic.conf&lt;/code&gt; is used.&lt;/p&gt;
-&lt;p&gt;The tool synchronizes package metadata as needed and then checks for the updates available for the given system and then either exits or shows available updates or downloads and installs the packages.&lt;/p&gt;
-&lt;p&gt;The outcome of the operation is then reported through &lt;code&gt;stdio&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;The &lt;code&gt;systemd&lt;/code&gt; timer unit &lt;code&gt;tdnf-automatic.timer&lt;/code&gt; behaves as the configuration file specifies whether to download and apply updates. Some other timer units are provided which override the configuration file with some standard behaviors:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;* tdnf-automatic-notifyonly
-
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Adding the Dev Repository to Get New Packages from the GitHub Dev Branch</title><link>/docs/administration-guide/managing-packages-with-tdnf/adding-the-dev-repository/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-packages-with-tdnf/adding-the-dev-repository/</guid><description>
+&lt;p>To try out new packages or the latest versions of existing packages as they are merged into the dev branch of the Photon OS GitHub site, add the &lt;code>dev&lt;/code> repository to your repository list.&lt;/p>
+&lt;p>Perform th following steps:&lt;/p>
+&lt;ol>
+&lt;li>On your Photon OS machine, run the following command as root to create a repository configuration file named &lt;code>photon-dev.repo&lt;/code>, place it in &lt;code>/etc/yum.repos.d&lt;/code>, and concatenate the repository information into the file:&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code>cat &amp;gt; /etc/yum.repos.d/photon-dev.repo &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
+[photon-dev]
+name=VMware Photon Linux Dev(x86_64)
+baseurl=https://dl.bintray.com/vmware/photon_dev_$basearch
+gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
+gpgcheck=1
+enabled=1
+skip_if_unavailable=True
+EOF
+``` .
+2. After establishing a new repository, run the following command to update the cached binary metadata for the repositories that `tdnf` polls:
+&lt;/code>&lt;/pre>&lt;p>tdnf makecache&lt;/p>
+&lt;pre>&lt;code>
+&lt;/code>&lt;/pre></description></item><item><title>Docs: tdnf-automatic</title><link>/docs/administration-guide/managing-packages-with-tdnf/tdnf-automatic/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-packages-with-tdnf/tdnf-automatic/</guid><description>
+&lt;p>&lt;code>tdnf-automatic&lt;/code> is an alternative Command Line Interface (CLI) to &lt;code>tdnf upgrade/tdnf update&lt;/code> with specific features so that it is suitable to be executed automatically and regularly from &lt;code>systemd&lt;/code> timers, cron jobs, and so on.&lt;/p>
+&lt;p>The operation of the tool is usually controlled by the configuration file or the function-specific timer units. The command only accepts a single optional argument pointing to the config file, and some control arguments intended for use by the services that back the timer units. If no configuration file is passed from the command line,then &lt;code>/etc/tdnf/automatic.conf&lt;/code> is used.&lt;/p>
+&lt;p>The tool synchronizes package metadata as needed and then checks for the updates available for the given system and then either exits or shows available updates or downloads and installs the packages.&lt;/p>
+&lt;p>The outcome of the operation is then reported through &lt;code>stdio&lt;/code>.&lt;/p>
+&lt;p>The &lt;code>systemd&lt;/code> timer unit &lt;code>tdnf-automatic.timer&lt;/code> behaves as the configuration file specifies whether to download and apply updates. Some other timer units are provided which override the configuration file with some standard behaviors:&lt;/p>
+&lt;pre>&lt;code>* tdnf-automatic-notifyonly
 * tdnf-automatic-install
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Irrespective of the configuration file settings, the first only notifies of available updates. The second one downloads and installs the updates.&lt;/p&gt;
-&lt;h3 id=&#34;run-tdnf-automatic&#34;&gt;Run tdnf-automatic&lt;/h3&gt;
-&lt;p&gt;You can select one that most closely fits your needs, customize /etc/tdnf/automatic.conf for any specific behaviors, and enable the timer unit.&lt;/p&gt;
-&lt;p&gt;For example: systemctl enable &amp;ndash;now tdnf-automatic-notifyonly.timer&lt;/p&gt;
-&lt;h3 id=&#34;configuration-file-format&#34;&gt;Configuration file format&lt;/h3&gt;
-&lt;p&gt;The configuration file is separated into two sections. This basically gives info on what can be put in /etc/tdnf/automatic.conf. &amp;lsquo;automatic.conf&amp;rsquo; is a configuration INI file.&lt;/p&gt;
-&lt;h3 id=&#34;format&#34;&gt;Format&lt;/h3&gt;
-&lt;pre&gt;&lt;code&gt;tdnf-automatic help:
-
+&lt;/code>&lt;/pre>
+&lt;p>Irrespective of the configuration file settings, the first only notifies of available updates. The second one downloads and installs the updates.&lt;/p>
+&lt;h3 id="run-tdnf-automatic">Run tdnf-automatic&lt;/h3>
+&lt;p>You can select one that most closely fits your needs, customize /etc/tdnf/automatic.conf for any specific behaviors, and enable the timer unit.&lt;/p>
+&lt;p>For example: systemctl enable &amp;ndash;now tdnf-automatic-notifyonly.timer&lt;/p>
+&lt;h3 id="configuration-file-format">Configuration file format&lt;/h3>
+&lt;p>The configuration file is separated into two sections. This basically gives info on what can be put in /etc/tdnf/automatic.conf. &amp;lsquo;automatic.conf&amp;rsquo; is a configuration INI file.&lt;/p>
+&lt;h3 id="format">Format&lt;/h3>
+&lt;pre>&lt;code>tdnf-automatic help:
 tdnf-automatic [{-c|--conf config-file}(optional)] [{-i|--install}] [{-n|--notify}] [{-h|--help}] [{-v|--version}]
-
-
-
 -c, --conftdnf-automatic configuration file (Optional argument)
-
 -i, --installOverride automatic.conf apply_updates and install updates
-
 -n, --notifyShow available updates
-
 -h, --helpShow this help message
-
 -v, --versionShow tdnf-automatic version information
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&#34;commands&#34;&gt;Commands&lt;/h3&gt;
-&lt;p&gt;To set the mode of the operation of the program:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;apply_updates (boolean, default: no)&lt;/code&gt;
-Whether packages comprising the available updates should be applied by tdnf-automatic.timer, i.e. installed via RPM. Note that the other timer units override this setting.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;show_updates (boolean, default: yes)&lt;/code&gt;
-To just receive updates use tdnf-automatic-notifyonly.timer&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;network_online_timeout (time in seconds, default: 60)&lt;/code&gt;
-Maximum time tdnf-automatic will wait until the system is online. 0 means that network availability detection will be skipped.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;random_sleep (time in seconds, default: 0)&lt;/code&gt;
-Maximum random delay before downloading. Note that, by default, the systemd timers also apply a random delay of up to 1 hour.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;upgrade_type (either one of all or security. default: &lt;/code&gt;all&lt;code&gt;)&lt;/code&gt;
-Looks at the kind of upgrades. &lt;code&gt;all&lt;/code&gt; signals looking for all available updates. &lt;code&gt;security&lt;/code&gt; indicates only those with an issued security advisory.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;tdnf_conf (string, default: /etc/tdnf/tdnf.conf)&lt;/code&gt;
-Configurations to override default tdnf configuration.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&#34;reports&#34;&gt;Reports&lt;/h3&gt;
-&lt;p&gt;To select how the results should be reported:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;emit_to_stdio (boolean, default: yes)
-Report the results through stdio. If no, no report will be shown.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;system_name (string, default: hostname of the given system)
-How the system is called in the reports.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;emit_to_file  (string, absolute path of file)
-If we want to capture the logs in a file&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Install Packages from CLI</title>
-      <link>/docs/administration-guide/managing-packages-with-tdnf/install-package-cli/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/managing-packages-with-tdnf/install-package-cli/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can install the packages from the command line. The package can be a file or a URL. The dependencies are installed automatically.&lt;/p&gt;
-&lt;p&gt;For example:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Using a URL:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;  tdnf install https://packages.vmware.com/photon/4.0/photon_release_4.0_x86_64/x86_64/open-vm-tools-11.2.5-1.ph4.x86_64.rpm
-
-  open-vm-tools-11.2.5-1.ph4.x86_64.rpm 763014   100%
-    
-  Installing:
-
-  attrx86_642.4.48-1.ph4  photon  88.65k 90778
-
-  nss x86_643.57-2.ph4photon  1.69M 1768005
-
-  ...
-
-  open-vm-tools   x86_6411.2.5-1.ph4  @cmdline2.65M 2779392
-
-
-  Total installed size:  91.57M 96019175
-
-
-  Upgrading:
-
-  nss-libsx86_643.57-2.ph4photon  2.48M 2601790
-
-  util-linux-libs x86_642.36-2.ph4photon752.75k 770816
-
-  pcre-libs   x86_648.44-2.ph4photon275.60k 282216
-
-
-
-  Total installed size:   3.49M 3654822
-
-  Is this ok [y/N]: 
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Using a file:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;  tdnf install ../lsof-4.91-1.ph4.x86_64.rpm 
-
-   
-  Installing:
-
-  libtirpcx86_641.2.6-1.ph4   photon193.56k 198209
-
-  lsofx86_644.91-1.ph4@cmdline  196.10k 200810
-
-  Total installed size: 389.67k 399019&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: SSL Options</title>
-      <link>/docs/administration-guide/managing-packages-with-tdnf/ssl-options/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/managing-packages-with-tdnf/ssl-options/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS offers support for the SSL Options.&lt;/p&gt;
-&lt;p&gt;You can set the following SSL options in the repository configuration file:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;sslverify&lt;/code&gt;
-When downloading using &lt;code&gt;https&lt;/code&gt;, this option helps to verify the SSL certificate of the server. You can set it to &lt;code&gt;0&lt;/code&gt; or &lt;code&gt;1&lt;/code&gt;. The default is &lt;code&gt;1&lt;/code&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;sslcacert&lt;/code&gt;
-You can use this option to set the path to a certificate file to verify the server.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;sslclientcert&lt;/code&gt;
-You can use this option to set the path to a client certificate file.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;sslclientkey&lt;/code&gt;
-You can set this path to the client key file.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Standard Syntax for tdnf Commands</title>
-      <link>/docs/administration-guide/managing-packages-with-tdnf/standard-syntax-for-tndf/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/managing-packages-with-tdnf/standard-syntax-for-tndf/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The standard syntax for &lt;code&gt;tdnf&lt;/code&gt; commands is the same as that for DNF and is as follows:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf [options] &amp;lt;command&amp;gt; [&amp;lt;arguments&amp;gt;...]
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;You can view help information by using the following commands:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf --help
-tdnf -h&lt;/code&gt;&lt;/pre&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+&lt;/code>&lt;/pre>
+&lt;h3 id="commands">Commands&lt;/h3>
+&lt;p>To set the mode of the operation of the program:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;code>apply_updates (boolean, default: no)&lt;/code>
+Whether packages comprising the available updates should be applied by tdnf-automatic.timer, i.e. installed via RPM. Note that the other timer units override this setting.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>show_updates (boolean, default: yes)&lt;/code>
+To just receive updates use tdnf-automatic-notifyonly.timer&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>network_online_timeout (time in seconds, default: 60)&lt;/code>
+Maximum time tdnf-automatic will wait until the system is online. 0 means that network availability detection will be skipped.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>random_sleep (time in seconds, default: 0)&lt;/code>
+Maximum random delay before downloading. Note that, by default, the systemd timers also apply a random delay of up to 1 hour.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>upgrade_type (either one of all or security. default: &lt;/code>all&lt;code>)&lt;/code>
+Looks at the kind of upgrades. &lt;code>all&lt;/code> signals looking for all available updates. &lt;code>security&lt;/code> indicates only those with an issued security advisory.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>tdnf_conf (string, default: /etc/tdnf/tdnf.conf)&lt;/code>
+Configurations to override default tdnf configuration.&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h3 id="reports">Reports&lt;/h3>
+&lt;p>To select how the results should be reported:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>emit_to_stdio (boolean, default: yes)
+Report the results through stdio. If no, no report will be shown.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>system_name (string, default: hostname of the given system)
+How the system is called in the reports.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>emit_to_file (string, absolute path of file)
+If we want to capture the logs in a file&lt;/p>
+&lt;/li>
+&lt;/ul></description></item><item><title>Docs: Install Packages from CLI</title><link>/docs/administration-guide/managing-packages-with-tdnf/install-package-cli/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-packages-with-tdnf/install-package-cli/</guid><description>
+&lt;p>You can install the packages from the command line. The package can be a file or a URL. The dependencies are installed automatically.&lt;/p>
+&lt;p>For example:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Using a URL:&lt;/p>
+&lt;pre>&lt;code> tdnf install https://packages.vmware.com/photon/4.0/photon_release_4.0_x86_64/x86_64/open-vm-tools-11.2.5-1.ph4.x86_64.rpm
+open-vm-tools-11.2.5-1.ph4.x86_64.rpm 763014 100%
+Installing:
+attrx86_642.4.48-1.ph4 photon 88.65k 90778
+nss x86_643.57-2.ph4photon 1.69M 1768005
+...
+open-vm-tools x86_6411.2.5-1.ph4 @cmdline2.65M 2779392
+Total installed size: 91.57M 96019175
+Upgrading:
+nss-libsx86_643.57-2.ph4photon 2.48M 2601790
+util-linux-libs x86_642.36-2.ph4photon752.75k 770816
+pcre-libs x86_648.44-2.ph4photon275.60k 282216
+Total installed size: 3.49M 3654822
+Is this ok [y/N]:
+&lt;/code>&lt;/pre>
+&lt;/li>
+&lt;li>
+&lt;p>Using a file:&lt;/p>
+&lt;pre>&lt;code> tdnf install ../lsof-4.91-1.ph4.x86_64.rpm
+Installing:
+libtirpcx86_641.2.6-1.ph4 photon193.56k 198209
+lsofx86_644.91-1.ph4@cmdline 196.10k 200810
+Total installed size: 389.67k 399019&lt;/code>&lt;/pre>
+&lt;/li>
+&lt;/ul></description></item><item><title>Docs: SSL Options</title><link>/docs/administration-guide/managing-packages-with-tdnf/ssl-options/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-packages-with-tdnf/ssl-options/</guid><description>
+&lt;p>Photon OS offers support for the SSL Options.&lt;/p>
+&lt;p>You can set the following SSL options in the repository configuration file:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;code>sslverify&lt;/code>
+When downloading using &lt;code>https&lt;/code>, this option helps to verify the SSL certificate of the server. You can set it to &lt;code>0&lt;/code> or &lt;code>1&lt;/code>. The default is &lt;code>1&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>sslcacert&lt;/code>
+You can use this option to set the path to a certificate file to verify the server.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>sslclientcert&lt;/code>
+You can use this option to set the path to a client certificate file.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>sslclientkey&lt;/code>
+You can set this path to the client key file.&lt;/p>
+&lt;/li>
+&lt;/ul></description></item><item><title>Docs: Standard Syntax for tdnf Commands</title><link>/docs/administration-guide/managing-packages-with-tdnf/standard-syntax-for-tndf/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-packages-with-tdnf/standard-syntax-for-tndf/</guid><description>
+&lt;p>The standard syntax for &lt;code>tdnf&lt;/code> commands is the same as that for DNF and is as follows:&lt;/p>
+&lt;pre>&lt;code>tdnf [options] &amp;lt;command&amp;gt; [&amp;lt;arguments&amp;gt;...]
+&lt;/code>&lt;/pre>
+&lt;p>You can view help information by using the following commands:&lt;/p>
+&lt;pre>&lt;code>tdnf --help
+tdnf -h&lt;/code>&lt;/pre></description></item></channel></rss>

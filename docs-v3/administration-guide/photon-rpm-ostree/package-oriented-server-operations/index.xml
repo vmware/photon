@@ -1,17 +1,1 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Package Oriented Server Operations</title>
-    <link>/docs-v3/administration-guide/photon-rpm-ostree/package-oriented-server-operations/</link>
-    <description>Recent content in Package Oriented Server Operations on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs-v3/administration-guide/photon-rpm-ostree/package-oriented-server-operations/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-  </channel>
-</rss>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Package Oriented Server Operations</title><link>/docs-v3/administration-guide/photon-rpm-ostree/package-oriented-server-operations/</link><description>Recent content in Package Oriented Server Operations on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs-v3/administration-guide/photon-rpm-ostree/package-oriented-server-operations/index.xml" rel="self" type="application/rss+xml"/></channel></rss>

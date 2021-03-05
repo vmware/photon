@@ -1,318 +1,206 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Photon OS Packages</title>
-    <link>/docs/administration-guide/photon-os-packages/</link>
-    <description>Recent content in Photon OS Packages on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs/administration-guide/photon-os-packages/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs: Examining the Packages in the SPECS Directory on Github</title>
-      <link>/docs/administration-guide/photon-os-packages/examining-packages-spec-dir/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/photon-os-packages/examining-packages-spec-dir/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The SPECS directory of the GitHub website for Photon OS contains all the packages that can appear in Photon OS repositories. The following is the path to the SPECS directory :&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;https://github.com/vmware/photon/tree/master/SPECS&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;To see the version of a package, in the SPECS directory, click the name of the subdirectory of the package that you want to examine, and then click the &lt;code&gt;.spec&lt;/code&gt; filename in the subdirectory.&lt;/p&gt;
-&lt;p&gt;For example, the version of OpenJDK, which contains the openjre package that installs the Java class library and the javac Java compiler appears as follows:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;%define _use_internal_dependency_generator 0
-Summary:	OpenJDK 
-Name:		openjdk
-Version:	1.8.0.72
-Release:	1%{?dist}
-License:	GNU GPL
-URL:		https://openjdk.java.net
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution:   Photon
-AutoReqProv: 	no
-Source0:	http://anduin.linuxfromscratch.org/files/BLFS/OpenJDK-%{version}/OpenJDK-%{version}-x86_64-bin.tar.xz
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Photon OS Packages</title><link>/docs/administration-guide/photon-os-packages/</link><description>Recent content in Photon OS Packages on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/administration-guide/photon-os-packages/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Examining the Packages in the SPECS Directory on Github</title><link>/docs/administration-guide/photon-os-packages/examining-packages-spec-dir/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-os-packages/examining-packages-spec-dir/</guid><description>
+&lt;p>The SPECS directory of the GitHub website for Photon OS contains all the packages that can appear in Photon OS repositories. The following is the path to the SPECS directory :&lt;/p>
+&lt;p>&lt;code>https://github.com/vmware/photon/tree/master/SPECS&lt;/code>&lt;/p>
+&lt;p>To see the version of a package, in the SPECS directory, click the name of the subdirectory of the package that you want to examine, and then click the &lt;code>.spec&lt;/code> filename in the subdirectory.&lt;/p>
+&lt;p>For example, the version of OpenJDK, which contains the openjre package that installs the Java class library and the javac Java compiler appears as follows:&lt;/p>
+&lt;pre>&lt;code>%define _use_internal_dependency_generator 0
+Summary: OpenJDK
+Name: openjdk
+Version: 1.8.0.72
+Release: 1%{?dist}
+License: GNU GPL
+URL: https://openjdk.java.net
+Group: Development/Tools
+Vendor: VMware, Inc.
+Distribution: Photon
+AutoReqProv: no
+Source0: http://anduin.linuxfromscratch.org/files/BLFS/OpenJDK-%{version}/OpenJDK-%{version}-x86_64-bin.tar.xz
 %define sha1 OpenJDK=0c705d7b13f4e22611d2da654209f469a6297f26
 %description
-The OpenJDK package installs java class library and javac java compiler. 
-
-%package	-n openjre
-Summary:	Jave runtime environment
-AutoReqProv: 	no
-%description	-n openjre
+The OpenJDK package installs java class library and javac java compiler.
+%package -n openjre
+Summary: Jave runtime environment
+AutoReqProv: no
+%description -n openjre
 It contains the libraries files for Java runtime environment
 #%global __requires_exclude ^libgif.*$
 #%filter_from_requires ^libgif.*$...
-&lt;/code&gt;&lt;/pre&gt;
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Looking at the Differences Between the Minimal and the Full Version</title>
-      <link>/docs/administration-guide/photon-os-packages/differences-between-minimal-and-full-version/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/photon-os-packages/differences-between-minimal-and-full-version/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The minimal version of Photon OS contains around 50 packages. As it is installed, the number of packages increases to nearly 100 to fulfill dependencies. The full version of Photon OS adds several hundred packages to those in the minimal version to deliver a more fully featured operating system.&lt;/p&gt;
-&lt;p&gt;You can view a list of the packages that appear in the minimal version by examining the following file:&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json&#34;&gt;https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;You can view a list of the packages that appear in the full version by examining the following file:&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/vmware/photon/blob/master/common/data/packages_full.json&#34;&gt;https://github.com/vmware/photon/blob/master/common/data/packages_full.json&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;If the minimal or the full version of Photon OS does not contain a package that you want, you can install it with tdnf, which appears in both the minimal and full versions of Photon OS by default. In the full version of Photon OS, you can also install packages by using yum.&lt;/p&gt;
-&lt;p&gt;One notable difference between the two versions of Photon OS pertains to OpenJDK, the package that contains not only the Java runtime environment (&lt;code&gt;openjre&lt;/code&gt;) but also the Java compiler (&lt;code&gt;javac&lt;/code&gt;). The OpenJDK package appears in the full but not the minimal version of Photon OS.&lt;/p&gt;
-&lt;p&gt;To add support for Java programs to the minimal version of Photon OS, install the Java packages and their dependencies by using the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf install openjdk
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Looking at the Differences Between the Minimal and the Full Version</title><link>/docs/administration-guide/photon-os-packages/differences-between-minimal-and-full-version/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-os-packages/differences-between-minimal-and-full-version/</guid><description>
+&lt;p>The minimal version of Photon OS contains around 50 packages. As it is installed, the number of packages increases to nearly 100 to fulfill dependencies. The full version of Photon OS adds several hundred packages to those in the minimal version to deliver a more fully featured operating system.&lt;/p>
+&lt;p>You can view a list of the packages that appear in the minimal version by examining the following file:&lt;/p>
+&lt;p>&lt;a href="https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json">https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json&lt;/a>&lt;/p>
+&lt;p>You can view a list of the packages that appear in the full version by examining the following file:&lt;/p>
+&lt;p>&lt;a href="https://github.com/vmware/photon/blob/master/common/data/packages_full.json">https://github.com/vmware/photon/blob/master/common/data/packages_full.json&lt;/a>&lt;/p>
+&lt;p>If the minimal or the full version of Photon OS does not contain a package that you want, you can install it with tdnf, which appears in both the minimal and full versions of Photon OS by default. In the full version of Photon OS, you can also install packages by using yum.&lt;/p>
+&lt;p>One notable difference between the two versions of Photon OS pertains to OpenJDK, the package that contains not only the Java runtime environment (&lt;code>openjre&lt;/code>) but also the Java compiler (&lt;code>javac&lt;/code>). The OpenJDK package appears in the full but not the minimal version of Photon OS.&lt;/p>
+&lt;p>To add support for Java programs to the minimal version of Photon OS, install the Java packages and their dependencies by using the following command:&lt;/p>
+&lt;pre>&lt;code>tdnf install openjdk
 Installing:
-openjre 	x86_64    1.8.0.92-1.ph1    95.09 M
-openjdk 	x86_64    1.8.0.92-1.ph1    37.63 M
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;strong&gt;NOTE:&lt;/strong&gt; &lt;code&gt;openjdk&lt;/code&gt; and &lt;code&gt;openjre&lt;/code&gt; are available as openjdk8 and openjre8 in Photon OS 3.0&lt;/p&gt;
-&lt;p&gt;For more information about &lt;code&gt;tdnf&lt;/code&gt;, see &lt;a href=&#34;../../managing-packages-with-tdnf/&#34;&gt;Tiny DNF for Package Management&lt;/a&gt;&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: The Root Account and the `sudo` and `su` Commands</title>
-      <link>/docs/administration-guide/photon-os-packages/root-account-and-sudo-commands/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/photon-os-packages/root-account-and-sudo-commands/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The &lt;em&gt;Photon OS Administration Guide&lt;/em&gt; assumes that you are logged in to Photon OS with the root account and running commands as root. The &lt;code&gt;sudo&lt;/code&gt; program contains the full version of Photon OS.&lt;/p&gt;
-&lt;p&gt;On the minimal version, you must install &lt;code&gt;sudo&lt;/code&gt; with tdnf if you want to use it. As an alternative to installing &lt;code&gt;sudo&lt;/code&gt;, to run commands that require root privileges you can switch users as needed with the &lt;code&gt;su&lt;/code&gt; command.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Examining Signed Packages</title>
-      <link>/docs/administration-guide/photon-os-packages/signed-packages/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/photon-os-packages/signed-packages/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS signs its packages and repositories with GPG signatures to enhance security. The GPG signature uses keyed-hash authentication method codes, typically the SHA1 algorithm and an RSA Data Security, Inc. MD5 Message Digest Algorithm, to simultaneously verify the integrity of a package. A keyed-hash message authentication code combines a cryptographic hash function with a secret cryptographic key.&lt;/p&gt;
-&lt;p&gt;In Photon OS, GPG signature verification automatically takes place when you install or update a package with the default package manager, &lt;code&gt;tdnf&lt;/code&gt;. The default setting in the tdnf configuration file for checking the GPG is set to &lt;code&gt;1&lt;/code&gt; for true:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;cat /etc/tdnf/tdnf.conf
+openjre x86_64 1.8.0.92-1.ph1 95.09 M
+openjdk x86_64 1.8.0.92-1.ph1 37.63 M
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>NOTE:&lt;/strong> &lt;code>openjdk&lt;/code> and &lt;code>openjre&lt;/code> are available as openjdk8 and openjre8 in Photon OS 3.0&lt;/p>
+&lt;p>For more information about &lt;code>tdnf&lt;/code>, see &lt;a href="../../managing-packages-with-tdnf/">Tiny DNF for Package Management&lt;/a>&lt;/p></description></item><item><title>Docs: The Root Account and the `sudo` and `su` Commands</title><link>/docs/administration-guide/photon-os-packages/root-account-and-sudo-commands/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-os-packages/root-account-and-sudo-commands/</guid><description>
+&lt;p>The &lt;em>Photon OS Administration Guide&lt;/em> assumes that you are logged in to Photon OS with the root account and running commands as root. The &lt;code>sudo&lt;/code> program contains the full version of Photon OS.&lt;/p>
+&lt;p>On the minimal version, you must install &lt;code>sudo&lt;/code> with tdnf if you want to use it. As an alternative to installing &lt;code>sudo&lt;/code>, to run commands that require root privileges you can switch users as needed with the &lt;code>su&lt;/code> command.&lt;/p></description></item><item><title>Docs: Examining Signed Packages</title><link>/docs/administration-guide/photon-os-packages/signed-packages/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-os-packages/signed-packages/</guid><description>
+&lt;p>Photon OS signs its packages and repositories with GPG signatures to enhance security. The GPG signature uses keyed-hash authentication method codes, typically the SHA1 algorithm and an RSA Data Security, Inc. MD5 Message Digest Algorithm, to simultaneously verify the integrity of a package. A keyed-hash message authentication code combines a cryptographic hash function with a secret cryptographic key.&lt;/p>
+&lt;p>In Photon OS, GPG signature verification automatically takes place when you install or update a package with the default package manager, &lt;code>tdnf&lt;/code>. The default setting in the tdnf configuration file for checking the GPG is set to &lt;code>1&lt;/code> for true:&lt;/p>
+&lt;pre>&lt;code>cat /etc/tdnf/tdnf.conf
 [main]
 gpgcheck=1
 installonly_limit=3
 clean_requirements_on_remove=true
 repodir=/etc/yum.repos.d
 cachedir=/var/cache/tdnf
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;On Photon OS, you can view the key with which VMware signs packages by running the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;rpm -qa gpg-pubkey*
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The command returns the GPG public key:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;gpg-pubkey-66fd4949-4803fe57
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Once you have the name of the key, you can view information about the key with the &lt;code&gt;rpm -qi&lt;/code&gt; command, as the following abridged output demonstrates:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;rpm -qi gpg-pubkey-66fd4949-4803fe57
-Name        : gpg-pubkey
-Version     : 66fd4949
-Release     : 4803fe57
+&lt;/code>&lt;/pre>
+&lt;p>On Photon OS, you can view the key with which VMware signs packages by running the following command:&lt;/p>
+&lt;pre>&lt;code>rpm -qa gpg-pubkey*
+&lt;/code>&lt;/pre>
+&lt;p>The command returns the GPG public key:&lt;/p>
+&lt;pre>&lt;code>gpg-pubkey-66fd4949-4803fe57
+&lt;/code>&lt;/pre>
+&lt;p>Once you have the name of the key, you can view information about the key with the &lt;code>rpm -qi&lt;/code> command, as the following abridged output demonstrates:&lt;/p>
+&lt;pre>&lt;code>rpm -qi gpg-pubkey-66fd4949-4803fe57
+Name : gpg-pubkey
+Version : 66fd4949
+Release : 4803fe57
 Architecture: (none)
 Install Date: Thu Jun 16 11:51:39 2016
-Group       : Public Keys
-Size        : 0
-License     : pubkey
-Signature   : (none)
-Source RPM  : (none)
-Build Date  : Tue Apr 15 01:01:11 2008
-Build Host  : localhost
+Group : Public Keys
+Size : 0
+License : pubkey
+Signature : (none)
+Source RPM : (none)
+Build Date : Tue Apr 15 01:01:11 2008
+Build Host : localhost
 Relocations : (not relocatable)
-Packager    : VMware, Inc. -- Linux Packaging Key -- &amp;lt;linux-packages@vmware.com&amp;gt;
-Summary     : gpg(VMware, Inc. -- Linux Packaging Key -- &amp;lt;linux-packages@vmware.                        com&amp;gt;)
+Packager : VMware, Inc. -- Linux Packaging Key -- &amp;lt;linux-packages@vmware.com&amp;gt;
+Summary : gpg(VMware, Inc. -- Linux Packaging Key -- &amp;lt;linux-packages@vmware. com&amp;gt;)
 Description :
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 Version: rpm-4.11.2 (NSS-3)
 mI0ESAP+VwEEAMZylR8dOijUPNn3He3GdgM/kOXEhn3uQl+sRMNJUDm1qebi2D5b ...
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;If you have one of the RPMs from Photon OS on another Linux system, such as Ubuntu, you can use SHA and the RSA Data Security, Inc. MD5 Message Digest Algorithm for the package to verify that it has not been tampered with:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;rpm -K /home/steve/workspace/photon/stage/SRPMS/kubernetes-1.1.8-4.ph1.src.rpm
+&lt;/code>&lt;/pre>
+&lt;p>If you have one of the RPMs from Photon OS on another Linux system, such as Ubuntu, you can use SHA and the RSA Data Security, Inc. MD5 Message Digest Algorithm for the package to verify that it has not been tampered with:&lt;/p>
+&lt;pre>&lt;code>rpm -K /home/steve/workspace/photon/stage/SRPMS/kubernetes-1.1.8-4.ph1.src.rpm
 /home/steve/workspace/photon/stage/SRPMS/kubernetes-1.1.8-4.ph1.src.rpm: sha1 md5 OK
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;You can view the SHA1 digest and the RSA Data Security, Inc. MD5 Message Digest Algorithm by running the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;rpm -Kv /home/steve/workspace/photon/stage/SRPMS/kubernetes-1.1.8-4.ph1.src.rpm
+&lt;/code>&lt;/pre>
+&lt;p>You can view the SHA1 digest and the RSA Data Security, Inc. MD5 Message Digest Algorithm by running the following command:&lt;/p>
+&lt;pre>&lt;code>rpm -Kv /home/steve/workspace/photon/stage/SRPMS/kubernetes-1.1.8-4.ph1.src.rpm
 /home/steve/workspace/photon/stage/SRPMS/kubernetes-1.1.8-4.ph1.src.rpm:
 Header SHA1 digest: OK (89b55443d4c9f67a61ae0c1ec9bf4ece2d6aa32b)
-        MD5 digest: OK (51eee659a8730e25fd2a52aff9a6c2c2)
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The above examples show that the Kubernetes package has not been tampered with.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Photon OS Package Repositories</title>
-      <link>/docs/administration-guide/photon-os-packages/photon-os-package-repositories/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/photon-os-packages/photon-os-package-repositories/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The default installation of Photon OS includes four yum-compatible repositories plus the repository on the Photon OS ISO when it is available in a CD-ROM drive:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;ls /etc/yum.repos.d/
+MD5 digest: OK (51eee659a8730e25fd2a52aff9a6c2c2)
+&lt;/code>&lt;/pre>
+&lt;p>The above examples show that the Kubernetes package has not been tampered with.&lt;/p></description></item><item><title>Docs: Photon OS Package Repositories</title><link>/docs/administration-guide/photon-os-packages/photon-os-package-repositories/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-os-packages/photon-os-package-repositories/</guid><description>
+&lt;p>The default installation of Photon OS includes four yum-compatible repositories plus the repository on the Photon OS ISO when it is available in a CD-ROM drive:&lt;/p>
+&lt;pre>&lt;code>ls /etc/yum.repos.d/
 photon-extras.repo
 photon-iso.repo
 photon-updates.repo
-photon.repo 
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The Photon ISO repository (&lt;code&gt;photon-iso.repo&lt;/code&gt;) contains the installation packages for Photon OS. All the packages that Photon builds and publishes reside in the RPMs directory of the ISO when it is mounted. The RPMs directory contains metadata that lets it act as a yum repository. Mounting the ISO gives you all the packages corresponding to a Photon OS build. If, however, you built Photon OS yourself from the source code, the packages correspond only to your build, though they will typically be the latest. In contrast, the ISO that you obtain from the Bintray web site contains only the packages that are in the ISO at the point of publication. As a result, the packages may no longer match those on Bintray, which are updated regularly.&lt;/p&gt;
-&lt;p&gt;The main Photon OS repository (&lt;code&gt;photon.repo&lt;/code&gt;) contains all the packages that are built from the ISO or from another source. This repository points to a static batch of packages and spec files at the point of a release.&lt;/p&gt;
-&lt;p&gt;The updates repository (&lt;code&gt;photon-updates.repo&lt;/code&gt;) is irrelevant to a major release until after the release is installed. Thereafter, the updates repository holds the updated packages for that release. The repository points to updates for the installed version, such as a version of Kubernetes that supersedes the version installed during the major release.&lt;/p&gt;
-&lt;p&gt;The Photon extras repository (&lt;code&gt;photon-extras.repo&lt;/code&gt;) holds Likewise Open, an open source authentication engine, and other VMware software that you can add to Photon OS for free. Photon OS supports but does not build the packages in the extras repository.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Building a Package from a Source RPM</title>
-      <link>/docs/administration-guide/photon-os-packages/building-a-package-from-a-source-rpm/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/photon-os-packages/building-a-package-from-a-source-rpm/</guid>
-      <description>
-        
-        
-        &lt;p&gt;This section describes how to install and build a package on the full version of Photon OS from the package&amp;rsquo;s source RPM. Obtain the source RPMs that Photon OS uses from the  Bintray location, &lt;a href=&#34;https://bintray.com/vmware/photon&#34;&gt;https://bintray.com/vmware/photon&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;To build a package from its source RPM, or SRPM, Photon OS requires the following packages:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;rpmbuild&lt;/code&gt;. This package is installed by default on the full version of Photon OS, so you should not have to install it.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;gcc&lt;/code&gt;. This package is also installed by default on the full version of Photon OS, so you should not have to install it.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;make&lt;/code&gt;, &lt;code&gt;Cmake&lt;/code&gt;, &lt;code&gt;automake&lt;/code&gt;, or another &lt;code&gt;make&lt;/code&gt; package, depending on the package you are trying to install and build from its source RPM. Cmake is installed by default on Photon OS.&lt;/p&gt;
-&lt;p&gt;You can install other make packages by using tdnf or yum.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;A local unprivileged user account other than the root account. You should build RPMs as an unprivileged user. Do not build a package as &lt;code&gt;root&lt;/code&gt; becau&amp;ndash;building an RPM with the root account might damage your system.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Take a snapshot of your virtual machine before building the package if you are building a package on a virtual machine running Photon OS in VMware vSphere, VMware Workstation, or VMware Fusion.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;procedure&#34;&gt;Procedure&lt;/h2&gt;
-&lt;p&gt;VMware recommends that you install and build packages from their source RPMs on the full version of Photon OS. Do not use the minimal version to work with source RPMs.&lt;/p&gt;
-&lt;p&gt;Perfrom the following steps to install and build an example package- &lt;code&gt;sed&lt;/code&gt; from its source RPM on Photon OS with an unprivileged account.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;check whether rpmbuild is installed by running the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;rpmbuild --version
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;    If it is not installed, install it by running the following command as root: 
-	
-    ```
-    tdnf install rpm-build
-&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Create the directories for building RPMs under your local user account home directory and not under root:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;
-1. Create a `.rpmmacros` file under your home directory and override the default location of the RPM building tree with the new one. This command overwrites an existing `.rpmmacros` file. Before running the following command, make sure you do not already have a `.rpmmacros file`. If a `.rpmmacros` file exists, back it up under a new name in case you want to restore it later.    
-
-    ```
-echo &#39;%_topdir %(echo $HOME)/rpmbuild&#39; &amp;gt; ~/.rpmmacros
-&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Place the source RPM file that you want to install and build in the &lt;code&gt;/tmp&lt;/code&gt; directory.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Install the source file, run the following command with your unprivileged user account, replacing the sed example source RPM with the name of the one that you want to install:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;rpm -i /tmp/sed-4.2.2-2.ph1.src.rpm
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The above command unpacks the source RPM and places its &lt;code&gt;.spec&lt;/code&gt; file in your &lt;code&gt;~/rpmbuild/SPECS&lt;/code&gt; directory. In the next step, the &lt;code&gt;rpmbuild&lt;/code&gt; tool uses the &lt;code&gt;.spec&lt;/code&gt; file to build the RPM.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Build the RPM, run the following commands with your unprivileged user account. Replace the &lt;code&gt;sed.spec&lt;/code&gt; example file with the name of the &lt;code&gt;.spec&lt;/code&gt; file that you want to build.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;cd ~/rpmbuild/SPECS
+photon.repo
+&lt;/code>&lt;/pre>
+&lt;p>The Photon ISO repository (&lt;code>photon-iso.repo&lt;/code>) contains the installation packages for Photon OS. All the packages that Photon builds and publishes reside in the RPMs directory of the ISO when it is mounted. The RPMs directory contains metadata that lets it act as a yum repository. Mounting the ISO gives you all the packages corresponding to a Photon OS build. If, however, you built Photon OS yourself from the source code, the packages correspond only to your build, though they will typically be the latest. In contrast, the ISO that you obtain from the Bintray web site contains only the packages that are in the ISO at the point of publication. As a result, the packages may no longer match those on Bintray, which are updated regularly.&lt;/p>
+&lt;p>The main Photon OS repository (&lt;code>photon.repo&lt;/code>) contains all the packages that are built from the ISO or from another source. This repository points to a static batch of packages and spec files at the point of a release.&lt;/p>
+&lt;p>The updates repository (&lt;code>photon-updates.repo&lt;/code>) is irrelevant to a major release until after the release is installed. Thereafter, the updates repository holds the updated packages for that release. The repository points to updates for the installed version, such as a version of Kubernetes that supersedes the version installed during the major release.&lt;/p>
+&lt;p>The Photon extras repository (&lt;code>photon-extras.repo&lt;/code>) holds Likewise Open, an open source authentication engine, and other VMware software that you can add to Photon OS for free. Photon OS supports but does not build the packages in the extras repository.&lt;/p></description></item><item><title>Docs: Building a Package from a Source RPM</title><link>/docs/administration-guide/photon-os-packages/building-a-package-from-a-source-rpm/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-os-packages/building-a-package-from-a-source-rpm/</guid><description>
+&lt;p>This section describes how to install and build a package on the full version of Photon OS from the package&amp;rsquo;s source RPM. Obtain the source RPMs that Photon OS uses from the Bintray location, &lt;a href="https://bintray.com/vmware/photon">https://bintray.com/vmware/photon&lt;/a>&lt;/p>
+&lt;h2 id="prerequisites">Prerequisites&lt;/h2>
+&lt;ul>
+&lt;li>
+&lt;p>To build a package from its source RPM, or SRPM, Photon OS requires the following packages:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;code>rpmbuild&lt;/code>. This package is installed by default on the full version of Photon OS, so you should not have to install it.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>gcc&lt;/code>. This package is also installed by default on the full version of Photon OS, so you should not have to install it.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>make&lt;/code>, &lt;code>Cmake&lt;/code>, &lt;code>automake&lt;/code>, or another &lt;code>make&lt;/code> package, depending on the package you are trying to install and build from its source RPM. Cmake is installed by default on Photon OS.&lt;/p>
+&lt;p>You can install other make packages by using tdnf or yum.&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>
+&lt;p>A local unprivileged user account other than the root account. You should build RPMs as an unprivileged user. Do not build a package as &lt;code>root&lt;/code> becau&amp;ndash;building an RPM with the root account might damage your system.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Take a snapshot of your virtual machine before building the package if you are building a package on a virtual machine running Photon OS in VMware vSphere, VMware Workstation, or VMware Fusion.&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;h2 id="procedure">Procedure&lt;/h2>
+&lt;p>VMware recommends that you install and build packages from their source RPMs on the full version of Photon OS. Do not use the minimal version to work with source RPMs.&lt;/p>
+&lt;p>Perfrom the following steps to install and build an example package- &lt;code>sed&lt;/code> from its source RPM on Photon OS with an unprivileged account.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>check whether rpmbuild is installed by running the following command:&lt;/p>
+&lt;pre>&lt;code>rpmbuild --version
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code> If it is not installed, install it by running the following command as root:
+```
+tdnf install rpm-build
+&lt;/code>&lt;/pre>&lt;ol>
+&lt;li>
+&lt;p>Create the directories for building RPMs under your local user account home directory and not under root:&lt;/p>
+&lt;pre>&lt;code>mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code>
+1. Create a `.rpmmacros` file under your home directory and override the default location of the RPM building tree with the new one. This command overwrites an existing `.rpmmacros` file. Before running the following command, make sure you do not already have a `.rpmmacros file`. If a `.rpmmacros` file exists, back it up under a new name in case you want to restore it later.
+```
+echo '%_topdir %(echo $HOME)/rpmbuild' &amp;gt; ~/.rpmmacros
+&lt;/code>&lt;/pre>&lt;ol>
+&lt;li>
+&lt;p>Place the source RPM file that you want to install and build in the &lt;code>/tmp&lt;/code> directory.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Install the source file, run the following command with your unprivileged user account, replacing the sed example source RPM with the name of the one that you want to install:&lt;/p>
+&lt;pre>&lt;code>rpm -i /tmp/sed-4.2.2-2.ph1.src.rpm
+&lt;/code>&lt;/pre>&lt;p>The above command unpacks the source RPM and places its &lt;code>.spec&lt;/code> file in your &lt;code>~/rpmbuild/SPECS&lt;/code> directory. In the next step, the &lt;code>rpmbuild&lt;/code> tool uses the &lt;code>.spec&lt;/code> file to build the RPM.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Build the RPM, run the following commands with your unprivileged user account. Replace the &lt;code>sed.spec&lt;/code> example file with the name of the &lt;code>.spec&lt;/code> file that you want to build.&lt;/p>
+&lt;pre>&lt;code>cd ~/rpmbuild/SPECS
 rpmbuild -ba sed.spec
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;
-    If successful, the rpmbuild -ba command builds the RPM and generates an RPM package file in your ~/rpmbuild/RPMS/x86_64 directory. For example:
-	
-    ```
-    ls RPMS/x86_64/
-	sed-4.2.2-2.x86_64.rpm  sed-debuginfo-4.2.2-2.x86_64.rpm  sed-lang-4.2.2-2.x86_64.rpm
-&lt;/code&gt;&lt;/pre&gt;&lt;pre&gt;&lt;code&gt;The rpmbuild command also generates a new SRPM file and saves it in your ~/rpmbuild/SRPMS directory. For example:  
-
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code>
+If successful, the rpmbuild -ba command builds the RPM and generates an RPM package file in your ~/rpmbuild/RPMS/x86_64 directory. For example:
+```
+ls RPMS/x86_64/
+sed-4.2.2-2.x86_64.rpm sed-debuginfo-4.2.2-2.x86_64.rpm sed-lang-4.2.2-2.x86_64.rpm
+&lt;/code>&lt;/pre>&lt;pre>&lt;code>The rpmbuild command also generates a new SRPM file and saves it in your ~/rpmbuild/SRPMS directory. For example:
 ```
 ls SRPMS/
 sed-4.2.2-2.src.rpm
-&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;
-    If the rpmbuild command is unsuccessful with an error that it cannot find a library, you must install the RPMs for the library that your source RPM depends on before you can successfully build your source RPM. Iterate through installing the libraries that your source RPM relies on until you can successfully build it. 
-
-1. To install the RPM, run the following command with your unprivileged user account:  
-	
-    ```
+&lt;/code>&lt;/pre>
+&lt;pre>&lt;code>
+If the rpmbuild command is unsuccessful with an error that it cannot find a library, you must install the RPMs for the library that your source RPM depends on before you can successfully build your source RPM. Iterate through installing the libraries that your source RPM relies on until you can successfully build it.
+1. To install the RPM, run the following command with your unprivileged user account:
+```
 rpm -i RPMS/x86_64/sed-4.2.2-2.x86_64.rpm
-&lt;/code&gt;&lt;/pre&gt;
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Compiling C&#43;&#43; Code on the Minimal Version of Photon OS</title>
-      <link>/docs/administration-guide/photon-os-packages/compiling-c-code-on-the-minimal-version-of-photon-os/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/photon-os-packages/compiling-c-code-on-the-minimal-version-of-photon-os/</guid>
-      <description>
-        
-        
-        &lt;p&gt;As a minimalist Linux run-time environment, the minimal version of Photon OS lacks the packages that you need to compile the code for a C++ program. For example, without the requisite packages, trying to compile the file containing the following code with the &lt;code&gt;gcc&lt;/code&gt; command will generate errors:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;#include &amp;lt;stdio.h&amp;gt;
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Compiling C++ Code on the Minimal Version of Photon OS</title><link>/docs/administration-guide/photon-os-packages/compiling-c-code-on-the-minimal-version-of-photon-os/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-os-packages/compiling-c-code-on-the-minimal-version-of-photon-os/</guid><description>
+&lt;p>As a minimalist Linux run-time environment, the minimal version of Photon OS lacks the packages that you need to compile the code for a C++ program. For example, without the requisite packages, trying to compile the file containing the following code with the &lt;code>gcc&lt;/code> command will generate errors:&lt;/p>
+&lt;pre>&lt;code>#include &amp;lt;stdio.h&amp;gt;
 int main()
 {
 return 0;
 }
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The errors appear as follows:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;gcc test.c
+&lt;/code>&lt;/pre>
+&lt;p>The errors appear as follows:&lt;/p>
+&lt;pre>&lt;code>gcc test.c
 -bash: gcc: command not found
 tdnf install gcc -y
 gcc test.c
 test.c:1:19: fatal error: stdio.h: No such file or directory
 compilation terminated.
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;To enable the minimal version of Photon OS to preprocess, compile, assemble, and link C++ code, you must install the following packages as root with tdnf:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;gcc&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;glibc-devel&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;binutils&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;To install the packages, use the following the &lt;code&gt;tdnf&lt;/code&gt; command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf install gcc glibc-devel binutils&lt;/code&gt;&lt;/pre&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+&lt;/code>&lt;/pre>
+&lt;p>To enable the minimal version of Photon OS to preprocess, compile, assemble, and link C++ code, you must install the following packages as root with tdnf:&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>gcc&lt;/code>&lt;/li>
+&lt;li>&lt;code>glibc-devel&lt;/code>&lt;/li>
+&lt;li>&lt;code>binutils&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;p>To install the packages, use the following the &lt;code>tdnf&lt;/code> command:&lt;/p>
+&lt;pre>&lt;code>tdnf install gcc glibc-devel binutils&lt;/code>&lt;/pre></description></item></channel></rss>

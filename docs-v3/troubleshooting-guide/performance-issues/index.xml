@@ -1,74 +1,32 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Performance Issues</title>
-    <link>/docs-v3/troubleshooting-guide/performance-issues/</link>
-    <description>Recent content in Performance Issues on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs-v3/troubleshooting-guide/performance-issues/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs-V3: General Performance Guidelines</title>
-      <link>/docs-v3/troubleshooting-guide/performance-issues/general_performance_guidelines/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/troubleshooting-guide/performance-issues/general_performance_guidelines/</guid>
-      <description>
-        
-        
-        &lt;p&gt;If you have no indication what the cause of a performance degradation might be, start by getting a high-level picture of the system&amp;rsquo;s state. Then look for signs in the data that might point to a cause.&lt;/p&gt;
-&lt;p&gt;Use the following guidelines to gain insight into performance data:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Start with the &lt;code&gt;systemd journal&lt;/code&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;top&lt;/code&gt; tool can unmask problems caused by processes or applications overconsuming CPUs, time, or RAM. If the percent of CPU utilization is consistently high with little idle time, for example, there might be a runaway process. Restart it.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;netstat --statistics&lt;/code&gt; command can identify bottlenecks causing performance issues. It lists interface statistics for different protocols.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;If &lt;code&gt;top&lt;/code&gt; and &lt;code&gt;netstat&lt;/code&gt; reveal no errors, run the &lt;code&gt;strace ls -al&lt;/code&gt; to view every system call.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;watch&lt;/code&gt; command can help dynamically monitor a command to help troubleshoot performance issues:&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;watch -n0 --differences &amp;lt;command&amp;gt;&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;You can also combine &lt;code&gt;watch&lt;/code&gt; with the &lt;code&gt;vmstat&lt;/code&gt; command to dig deeper into statistics about virtual memory, processes, block input-output, disks, and CPU activity. Are there any bottlenecks?&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;You can use the &lt;code&gt;dstat&lt;/code&gt; utility to see the live, running list of statistics about system resources.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;systemd-analyze&lt;/code&gt; reveals performance statistics for boot time and can help troubleshoot slow system boots and incorrect unit files.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;The additional tools that you select depend on the clues that your initial investigation reveals. The following tools can also help troubleshoot performance: &lt;code&gt;sysstat&lt;/code&gt;, &lt;code&gt;sar&lt;/code&gt;, &lt;code&gt;systemtap&lt;/code&gt;, and &lt;code&gt;crash&lt;/code&gt;.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Throughput Performance</title>
-      <link>/docs-v3/troubleshooting-guide/performance-issues/throughput_performance/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/troubleshooting-guide/performance-issues/throughput_performance/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Throughtput performance over TCP might be reduced.&lt;/p&gt;
-&lt;p&gt;This might occur because timestamps are enabled by default and the parameter &lt;code&gt;net.ipv4.tcp_timestamps&lt;/code&gt; has a value of 1.&lt;/p&gt;
-&lt;p&gt;Setting a value of 1 or 2 for this parameter may impact performance. Setting a value of 0 or 2 for this parameter might cause a security vulnerability.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Performance Issues</title><link>/docs-v3/troubleshooting-guide/performance-issues/</link><description>Recent content in Performance Issues on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs-v3/troubleshooting-guide/performance-issues/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs-V3: General Performance Guidelines</title><link>/docs-v3/troubleshooting-guide/performance-issues/general_performance_guidelines/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/performance-issues/general_performance_guidelines/</guid><description>
+&lt;p>If you have no indication what the cause of a performance degradation might be, start by getting a high-level picture of the system&amp;rsquo;s state. Then look for signs in the data that might point to a cause.&lt;/p>
+&lt;p>Use the following guidelines to gain insight into performance data:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Start with the &lt;code>systemd journal&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The &lt;code>top&lt;/code> tool can unmask problems caused by processes or applications overconsuming CPUs, time, or RAM. If the percent of CPU utilization is consistently high with little idle time, for example, there might be a runaway process. Restart it.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The &lt;code>netstat --statistics&lt;/code> command can identify bottlenecks causing performance issues. It lists interface statistics for different protocols.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>If &lt;code>top&lt;/code> and &lt;code>netstat&lt;/code> reveal no errors, run the &lt;code>strace ls -al&lt;/code> to view every system call.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The &lt;code>watch&lt;/code> command can help dynamically monitor a command to help troubleshoot performance issues:&lt;/p>
+&lt;p>&lt;code>watch -n0 --differences &amp;lt;command&amp;gt;&lt;/code>&lt;/p>
+&lt;p>You can also combine &lt;code>watch&lt;/code> with the &lt;code>vmstat&lt;/code> command to dig deeper into statistics about virtual memory, processes, block input-output, disks, and CPU activity. Are there any bottlenecks?&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>You can use the &lt;code>dstat&lt;/code> utility to see the live, running list of statistics about system resources.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The &lt;code>systemd-analyze&lt;/code> reveals performance statistics for boot time and can help troubleshoot slow system boots and incorrect unit files.&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>The additional tools that you select depend on the clues that your initial investigation reveals. The following tools can also help troubleshoot performance: &lt;code>sysstat&lt;/code>, &lt;code>sar&lt;/code>, &lt;code>systemtap&lt;/code>, and &lt;code>crash&lt;/code>.&lt;/p></description></item><item><title>Docs-V3: Throughput Performance</title><link>/docs-v3/troubleshooting-guide/performance-issues/throughput_performance/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/performance-issues/throughput_performance/</guid><description>
+&lt;p>Throughtput performance over TCP might be reduced.&lt;/p>
+&lt;p>This might occur because timestamps are enabled by default and the parameter &lt;code>net.ipv4.tcp_timestamps&lt;/code> has a value of 1.&lt;/p>
+&lt;p>Setting a value of 1 or 2 for this parameter may impact performance. Setting a value of 0 or 2 for this parameter might cause a security vulnerability.&lt;/p></description></item></channel></rss>

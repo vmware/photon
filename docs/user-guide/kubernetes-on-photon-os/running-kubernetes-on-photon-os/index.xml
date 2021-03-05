@@ -1,201 +1,124 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Running Kubernetes on Photon OS</title>
-    <link>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/</link>
-    <description>Recent content in Running Kubernetes on Photon OS on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs: System Information</title>
-      <link>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/system-information/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/system-information/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Hosts:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;photon-master = 192.168.121.9
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Running Kubernetes on Photon OS</title><link>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/</link><description>Recent content in Running Kubernetes on Photon OS on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: System Information</title><link>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/system-information/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/system-information/</guid><description>
+&lt;p>Hosts:&lt;/p>
+&lt;pre>&lt;code>photon-master = 192.168.121.9
 photon-node = 192.168.121.65
-&lt;/code&gt;&lt;/pre&gt;
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Prepare the Hosts</title>
-      <link>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/prepare-the-hosts/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/prepare-the-hosts/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The following packages should already be installed on the full version of Photon OS, but you might have to install them on the minimal version of Photon OS. If the &lt;code&gt;tdnf&lt;/code&gt; command returns &amp;ldquo;Nothing to do,&amp;rdquo; the package is already installed.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Install Kubernetes on all hosts&amp;ndash;both &lt;code&gt;photon-master&lt;/code&gt; and &lt;code&gt;photon-node&lt;/code&gt;.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;tdnf install kubernetes
-&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
-&lt;li&gt;Install iptables on photon-master and photon-node:&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;tdnf install iptables
-&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
-&lt;li&gt;Open the tcp port 8080 (api service) on the photon-master in the firewall&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
-&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
-&lt;li&gt;Open the tcp port 10250 (api service) on the photon-node in the firewall&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;iptables -A INPUT -p tcp --dport 10250 -j ACCEPT
-&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
-&lt;li&gt;Install Docker on photon-node:&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;tdnf install docker
-&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
-&lt;li&gt;Add master and node to /etc/hosts on all machines (not needed if the hostnames are already in DNS). Make sure that communication works between photon-master and photon-node by using a utility such as ping.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#204a87&#34;&gt;echo&lt;/span&gt; &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;192.168.121.9	photon-master
-&lt;/span&gt;&lt;span style=&#34;color:#4e9a06&#34;&gt;192.168.121.65	photon-node&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; /etc/hosts
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ul&gt;
-&lt;li&gt;Edit /etc/kubernetes/config, which will be the same on all the hosts (master and node), so that it contains the following lines:&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;# Comma separated list of nodes in the etcd cluster
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Prepare the Hosts</title><link>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/prepare-the-hosts/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/prepare-the-hosts/</guid><description>
+&lt;p>The following packages should already be installed on the full version of Photon OS, but you might have to install them on the minimal version of Photon OS. If the &lt;code>tdnf&lt;/code> command returns &amp;ldquo;Nothing to do,&amp;rdquo; the package is already installed.&lt;/p>
+&lt;ul>
+&lt;li>Install Kubernetes on all hosts&amp;ndash;both &lt;code>photon-master&lt;/code> and &lt;code>photon-node&lt;/code>.&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code>tdnf install kubernetes
+&lt;/code>&lt;/pre>&lt;ul>
+&lt;li>Install iptables on photon-master and photon-node:&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code>tdnf install iptables
+&lt;/code>&lt;/pre>&lt;ul>
+&lt;li>Open the tcp port 8080 (api service) on the photon-master in the firewall&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code>iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+&lt;/code>&lt;/pre>&lt;ul>
+&lt;li>Open the tcp port 10250 (api service) on the photon-node in the firewall&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code>iptables -A INPUT -p tcp --dport 10250 -j ACCEPT
+&lt;/code>&lt;/pre>&lt;ul>
+&lt;li>Install Docker on photon-node:&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code>tdnf install docker
+&lt;/code>&lt;/pre>&lt;ul>
+&lt;li>Add master and node to /etc/hosts on all machines (not needed if the hostnames are already in DNS). Make sure that communication works between photon-master and photon-node by using a utility such as ping.&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">&lt;span style="color:#204a87">echo&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;192.168.121.9 photon-master
+&lt;/span>&lt;span style="color:#4e9a06">192.168.121.65 photon-node&amp;#34;&lt;/span> &amp;gt;&amp;gt; /etc/hosts
+&lt;/code>&lt;/pre>&lt;/div>&lt;ul>
+&lt;li>Edit /etc/kubernetes/config, which will be the same on all the hosts (master and node), so that it contains the following lines:&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code># Comma separated list of nodes in the etcd cluster
 KUBE_MASTER=&amp;quot;--master=http://photon-master:8080&amp;quot;
-
 # logging to stderr routes it to the systemd journal
 KUBE_LOGTOSTDERR=&amp;quot;--logtostderr=true&amp;quot;
-
 # journal message level, 0 is debug
 KUBE_LOG_LEVEL=&amp;quot;--v=0&amp;quot;
-
 # Should this cluster be allowed to run privileged docker containers
 KUBE_ALLOW_PRIV=&amp;quot;--allow_privileged=false&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Configure Kubernetes Services on the Master</title>
-      <link>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/configure-kubernetes-on-master/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/configure-kubernetes-on-master/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Perform the following steps to configure Kubernetes services on the master:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Edit &lt;code&gt;/etc/kubernetes/apiserver&lt;/code&gt; to appear as such.  The &lt;code&gt;service_cluster_ip_range&lt;/code&gt; IP addresses must be an unused block of addresses, not used anywhere else.  They do not need to be routed or assigned to anything.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# The address on the local server to listen to.
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Configure Kubernetes Services on the Master</title><link>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/configure-kubernetes-on-master/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/configure-kubernetes-on-master/</guid><description>
+&lt;p>Perform the following steps to configure Kubernetes services on the master:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Edit &lt;code>/etc/kubernetes/apiserver&lt;/code> to appear as such. The &lt;code>service_cluster_ip_range&lt;/code> IP addresses must be an unused block of addresses, not used anywhere else. They do not need to be routed or assigned to anything.&lt;/p>
+&lt;pre>&lt;code># The address on the local server to listen to.
 KUBE_API_ADDRESS=&amp;quot;--address=0.0.0.0&amp;quot;
-   
 # Comma separated list of nodes in the etcd cluster
 KUBE_ETCD_SERVERS=&amp;quot;--etcd_servers=http://127.0.0.1:4001&amp;quot;
-   
 # Address range to use for services
 KUBE_SERVICE_ADDRESSES=&amp;quot;--service-cluster-ip-range=10.254.0.0/16&amp;quot;
-   
 # Add your own
 KUBE_API_ARGS=&amp;quot;&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Start the appropriate services on master:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;for SERVICES in etcd kube-apiserver kube-controller-manager kube-scheduler; do
-    systemctl restart $SERVICES
-    systemctl enable $SERVICES
-    systemctl status $SERVICES
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Start the appropriate services on master:&lt;/p>
+&lt;pre>&lt;code>for SERVICES in etcd kube-apiserver kube-controller-manager kube-scheduler; do
+systemctl restart $SERVICES
+systemctl enable $SERVICES
+systemctl status $SERVICES
 done
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;To add the other node, create the following &lt;code&gt;node.json&lt;/code&gt; file on the Kubernetes master node:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-json&#34; data-lang=&#34;json&#34;&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;{&lt;/span&gt;
-    &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;&amp;#34;apiVersion&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;v1&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;,&lt;/span&gt;
-    &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;&amp;#34;kind&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;Node&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;,&lt;/span&gt;
-    &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;&amp;#34;metadata&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;{&lt;/span&gt;
-        &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;photon-node&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;,&lt;/span&gt;
-        &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;&amp;#34;labels&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;:{&lt;/span&gt; &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;&amp;#34;name&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;photon-node-label&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;}&lt;/span&gt;
-    &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;},&lt;/span&gt;
-    &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;&amp;#34;spec&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;{&lt;/span&gt;
-        &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;&amp;#34;externalID&amp;#34;&lt;/span&gt;&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color:#4e9a06&#34;&gt;&amp;#34;photon-node&amp;#34;&lt;/span&gt;
-    &lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;}&lt;/span&gt;
-&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Create a node object internally in your Kubernetes cluster by running the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;$ kubectl create -f ./node.json
-   
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>To add the other node, create the following &lt;code>node.json&lt;/code> file on the Kubernetes master node:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;apiVersion&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;v1&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;kind&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;Node&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;metadata&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;photon-node&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;labels&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:{&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;photon-node-label&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;spec&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;externalID&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;photon-node&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Create a node object internally in your Kubernetes cluster by running the following command:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">$ kubectl create -f ./node.json
 $ kubectl get nodes
-NAME                LABELS              STATUS
-photon-node         name=photon-node-label     Unknown
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: The above example only creates a representation for the node &lt;code&gt;photon-node&lt;/code&gt; internally. It does not provision the actual &lt;code&gt;photon-node&lt;/code&gt;. Also, it is assumed that &lt;code&gt;photon-node&lt;/code&gt; (as specified in &lt;code&gt;name&lt;/code&gt;) can be resolved and is reachable from the Kubernetes master node.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Configure the Kubernetes services on Node</title>
-      <link>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/configure-kubernetes-on-node/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/configure-kubernetes-on-node/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Perform the following steps to configure the kubelet on the node:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Edit /etc/kubernetes/kubelet to appear like this:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;###
+NAME LABELS STATUS
+photon-node name=photon-node-label Unknown
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;/ol>
+&lt;p>&lt;strong>Note&lt;/strong>: The above example only creates a representation for the node &lt;code>photon-node&lt;/code> internally. It does not provision the actual &lt;code>photon-node&lt;/code>. Also, it is assumed that &lt;code>photon-node&lt;/code> (as specified in &lt;code>name&lt;/code>) can be resolved and is reachable from the Kubernetes master node.&lt;/p></description></item><item><title>Docs: Configure the Kubernetes services on Node</title><link>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/configure-kubernetes-on-node/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/configure-kubernetes-on-node/</guid><description>
+&lt;p>Perform the following steps to configure the kubelet on the node:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Edit /etc/kubernetes/kubelet to appear like this:&lt;/p>
+&lt;pre>&lt;code>###
 # Kubernetes kubelet (node) config
-   
 # The address for the info server to serve on (set to 0.0.0.0 or &amp;quot;&amp;quot; for all interfaces)
 KUBELET_ADDRESS=&amp;quot;--address=0.0.0.0&amp;quot;
-   
 # You may leave this blank to use the actual hostname
 KUBELET_HOSTNAME=&amp;quot;--hostname_override=photon-node&amp;quot;
-   
 # location of the api-server
 KUBELET_API_SERVER=&amp;quot;--api_servers=http://photon-master:8080&amp;quot;
-   
 # Add your own
 #KUBELET_ARGS=&amp;quot;&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Start the appropriate services on the node (photon-node):&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;for&lt;/span&gt; SERVICES in kube-proxy kubelet docker&lt;span style=&#34;color:#000;font-weight:bold&#34;&gt;;&lt;/span&gt; &lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;do&lt;/span&gt; 
-    systemctl restart &lt;span style=&#34;color:#000&#34;&gt;$SERVICES&lt;/span&gt;
-    systemctl &lt;span style=&#34;color:#204a87&#34;&gt;enable&lt;/span&gt; &lt;span style=&#34;color:#000&#34;&gt;$SERVICES&lt;/span&gt;
-    systemctl status &lt;span style=&#34;color:#000&#34;&gt;$SERVICES&lt;/span&gt; 
-&lt;span style=&#34;color:#204a87;font-weight:bold&#34;&gt;done&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Check to make sure that the cluster can now see the photon-node on photon-master and that its status changes to &lt;em&gt;Ready&lt;/em&gt;.&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-console&#34; data-lang=&#34;console&#34;&gt;kubectl get nodes
-NAME                LABELS              STATUS
-photon-node          name=photon-node-label     Ready
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If the node status is &lt;code&gt;NotReady&lt;/code&gt;, verify that the firewall rules are permissive for Kubernetes.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Deletion of nodes: To delete &lt;em&gt;photon-node&lt;/em&gt; from your Kubernetes cluster, one should run the following on photon-master (please do not do it, it is just for information):&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;kubectl delete -f ./node.json
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;result&#34;&gt;Result&lt;/h2&gt;
-&lt;p&gt;You should have a functional cluster. You can now launch a test pod. For an introduction to working with Kubernetes, see &lt;a href=&#34;http://kubernetes.io/docs/home/&#34;&gt;Kubernetes documentation&lt;/a&gt;.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Start the appropriate services on the node (photon-node):&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">&lt;span style="color:#204a87;font-weight:bold">for&lt;/span> SERVICES in kube-proxy kubelet docker&lt;span style="color:#000;font-weight:bold">;&lt;/span> &lt;span style="color:#204a87;font-weight:bold">do&lt;/span>
+systemctl restart &lt;span style="color:#000">$SERVICES&lt;/span>
+systemctl &lt;span style="color:#204a87">enable&lt;/span> &lt;span style="color:#000">$SERVICES&lt;/span>
+systemctl status &lt;span style="color:#000">$SERVICES&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">done&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;li>
+&lt;p>Check to make sure that the cluster can now see the photon-node on photon-master and that its status changes to &lt;em>Ready&lt;/em>.&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">kubectl get nodes
+NAME LABELS STATUS
+photon-node name=photon-node-label Ready
+&lt;/code>&lt;/pre>&lt;p>If the node status is &lt;code>NotReady&lt;/code>, verify that the firewall rules are permissive for Kubernetes.&lt;/p>
+&lt;ul>
+&lt;li>Deletion of nodes: To delete &lt;em>photon-node&lt;/em> from your Kubernetes cluster, one should run the following on photon-master (please do not do it, it is just for information):&lt;/li>
+&lt;/ul>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">kubectl delete -f ./node.json
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
+&lt;/ol>
+&lt;h2 id="result">Result&lt;/h2>
+&lt;p>You should have a functional cluster. You can now launch a test pod. For an introduction to working with Kubernetes, see &lt;a href="http://kubernetes.io/docs/home/">Kubernetes documentation&lt;/a>.&lt;/p></description></item></channel></rss>

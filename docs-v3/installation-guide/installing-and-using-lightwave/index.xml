@@ -1,303 +1,222 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Installing and Using Lightwave on Photon OS</title>
-    <link>/docs-v3/installation-guide/installing-and-using-lightwave/</link>
-    <description>Recent content in Installing and Using Lightwave on Photon OS on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs-v3/installation-guide/installing-and-using-lightwave/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs-V3: Installing the Lightwave Server and Configuring It as a Domain Controller on a Photon Image</title>
-      <link>/docs-v3/installation-guide/installing-and-using-lightwave/installing-lightwave-server-and-setting-up-a-domain/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/installation-guide/installing-and-using-lightwave/installing-lightwave-server-and-setting-up-a-domain/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can configure Lightwave server as domain controller on a Photon client. You install the Lightwave server first. After the server is installed, you configure a new domain.&lt;/p&gt;
-&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;Prepare a Photon OS client for the Lightwave server installation.&lt;/li&gt;
-&lt;li&gt;Verify that the hostname of the client can be resolved.&lt;/li&gt;
-&lt;li&gt;Verify that you have 500 MB free for the Lightwave server installation.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;procedure&#34;&gt;Procedure&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Log in to your Photon OS client over SSH as an administrator.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Install the Lightwave server by running the following command.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# tdnf install lightwave -y&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Configure the Lightwave server as domain controller by selecting a domain name and password for the &lt;code&gt;administrator&lt;/code&gt; user.&lt;/p&gt;
-&lt;p&gt;The minimum required password complexity is 8 characters, one symbol, one upper case letter, and one lower case letter.
-Optionally, if you want to access the domain controller over IP, configure the ip under the &lt;code&gt;--ssl-subject-alt-name&lt;/code&gt; parameter.
-&lt;code&gt;# configure-lightwave-server --domain &amp;lt;your-domain&amp;gt; --password &#39;&amp;lt;administrator-user-password&amp;gt;&#39; --ssl-subject-alt-name &amp;lt;machine-ip-address&amp;gt;&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Edit &lt;code&gt;iptables&lt;/code&gt; rules to allow connections to and from the client.&lt;/p&gt;
-&lt;p&gt;The default Photon OS 3.0 firewall settings block all incoming, outgoing, and forwards so that you must reconfigure them.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# iptables -P INPUT ACCEPT&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# iptables -P OUTPUT ACCEPT&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# iptables -P FORWARD ACCEPT&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;In a browser, go to https://&lt;em&gt;lightwave-server-FQDN&lt;/em&gt; to verify that you can log in to the newly created domain controller.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;On the Cascade Identity Services page, enter the domain that you configured and click &lt;strong&gt;Take me to Lightwave Admin&lt;/strong&gt;.&lt;/li&gt;
-&lt;li&gt;On the Welcome page, enter administrator@your-domain as user name and the password that you set during the domain controller configuration and click &lt;strong&gt;LOGIN&lt;/strong&gt;.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Installing the Lightwave Client on a Photon Image and Joining the Client to a Domain</title>
-      <link>/docs-v3/installation-guide/installing-and-using-lightwave/installing-lightwave-client-and-joining-a-domain/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/installation-guide/installing-and-using-lightwave/installing-lightwave-client-and-joining-a-domain/</guid>
-      <description>
-        
-        
-        &lt;p&gt;After you have set up a Lightwave domain controller, you can join Photon clients to that domain. You install the Lightwave client first. After the client is installed, you join the client to the domain.&lt;/p&gt;
-&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;Prepare a Photon OS client for the Lightwave client installation.&lt;/li&gt;
-&lt;li&gt;Verify that the hostname of the client can be resolved.&lt;/li&gt;
-&lt;li&gt;Verify that you have 184 MB free for the Lightwave client installation.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;procedure&#34;&gt;Procedure&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Log in to your Photon OS client over SSH.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Install the Lightwave client by running the following command.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# tdnf install lightwave-client -y&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Edit the &lt;code&gt;iptables&lt;/code&gt; firewall rules configuration file to allow connections on port &lt;code&gt;2020&lt;/code&gt; as a default setting.&lt;/p&gt;
-&lt;p&gt;The default Photon OS 3.0 firewall settings block all incoming, outgoing, and forwards so that you must configure the rules.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Open the  iptables settings file.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;code&gt;# vi /etc/systemd/scripts/iptables&lt;/code&gt;&lt;/p&gt;
-&lt;ol start=&#34;2&#34;&gt;
-&lt;li&gt;Add allow information over tcp for port 2020 in the end of the file, save, and close the file.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;code&gt;iptables -A INPUT -p tcp -m tcp --dport 2020 -j ACCEPT&lt;/code&gt;&lt;/p&gt;
-&lt;ol start=&#34;3&#34;&gt;
-&lt;li&gt;Run the following command to allow the required connections without restarting the client.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;code&gt;# iptables -A INPUT -p tcp -m tcp --dport 2020 -j ACCEPT&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Join the client to the domain by running the &lt;code&gt;domainjoin.sh&lt;/code&gt; script and configuring the domain controller FQDN, domain, and the password for the &lt;code&gt;administrator&lt;/code&gt; user.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# domainjoin.sh --domain-controller &amp;lt;lightwave-server-FQDN&amp;gt; --domain &amp;lt;your-domain&amp;gt; --password &#39;&amp;lt;administrator-user-password&amp;gt;&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;In a browser, go to https://&lt;em&gt;Lightwave-Server-FQDN&lt;/em&gt; to verify that the client appears under the tenants list for the domain.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Installing the Photon Management Daemon on a Lightwave Client</title>
-      <link>/docs-v3/installation-guide/installing-and-using-lightwave/installing-the-photon-management-daemon-on-a-lightwave-client/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/installation-guide/installing-and-using-lightwave/installing-the-photon-management-daemon-on-a-lightwave-client/</guid>
-      <description>
-        
-        
-        &lt;p&gt;After you have installed and configured a domain on Lightwave, and joined a client to the domain, you can install the Photon Management Daemon on that client so that you can remotely manage it.&lt;/p&gt;
-&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;Have an installed Lightwave server with configured domain controller on it.&lt;/li&gt;
-&lt;li&gt;Have an installed Lightwave client that is joined to the domain.&lt;/li&gt;
-&lt;li&gt;Verify that you have 100 MB free for the daemon installation on the client.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;procedure&#34;&gt;Procedure&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Log in to a machine with installed Lightwave client over SSH as an administrator.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Install the Photon Management Daemon.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# tdnf install pmd -y&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Start the Photon Management Daemon.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# systemctl start pmd&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Verify that the daemon is in an &lt;code&gt;active&lt;/code&gt; state.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# systemctl status pmd&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;(Optional) In a new console, use &lt;code&gt;curl&lt;/code&gt; to verify that the Photon Management Daemon returns information.&lt;/p&gt;
-&lt;p&gt;Use the root credentials for the local client to authenticate against the daemon service.
-&lt;code&gt;# curl https://&amp;lt;lightwave-client-FQDN&amp;gt;:2081/v1/info -u root&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;(Optional) Create an administrative user for the Photon Management Daemon for your domain and assign it the domain administrator role.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;In a browser, go to https://&lt;em&gt;lightwave-server-FQDN&lt;/em&gt;.&lt;/li&gt;
-&lt;li&gt;On the Cascade Identity Services page, enter your domain name and click &lt;strong&gt;Take me to Lightwave Admin&lt;/strong&gt;.&lt;/li&gt;
-&lt;li&gt;On the Welcome page, enter administrative credentials for your domain and click &lt;strong&gt;Login&lt;/strong&gt;.&lt;/li&gt;
-&lt;li&gt;Click &lt;strong&gt;Users &amp;amp; Groups&lt;/strong&gt; and click &lt;strong&gt;Add&lt;/strong&gt; to create a new user.&lt;/li&gt;
-&lt;li&gt;On the Add New User page, enter user name, at least one name, password, and click &lt;strong&gt;Save&lt;/strong&gt;.&lt;/li&gt;
-&lt;li&gt;Click the &lt;strong&gt;Groups&lt;/strong&gt; tab, select the Administrators group, and click  &lt;strong&gt;Membership&lt;/strong&gt;  to add the new user to the group.&lt;/li&gt;
-&lt;li&gt;On the View Members page, select the user that you created, click &lt;strong&gt;Add Member&lt;/strong&gt;, click &lt;strong&gt;Save&lt;/strong&gt;, and click &lt;strong&gt;Cancel&lt;/strong&gt; to return to the previous page.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Remotely Upgrade a Single Photon OS Machine With Lightwave Client and Photon Management Daemon Installed</title>
-      <link>/docs-v3/installation-guide/installing-and-using-lightwave/remotely-upgrade-a-photon-os-machine-with-lightwave-client-and-photon-management-daemon-installed/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/installation-guide/installing-and-using-lightwave/remotely-upgrade-a-photon-os-machine-with-lightwave-client-and-photon-management-daemon-installed/</guid>
-      <description>
-        
-        
-        &lt;p&gt;After you have a configured the Photon Management Daemon on a machine, you can remotely upgrade any installed package on that machine. You can use the &lt;code&gt;root&lt;/code&gt; user credentials.&lt;/p&gt;
-&lt;p&gt;Upgrade process uses &lt;code&gt;pmd-cli&lt;/code&gt; that is supported from both Lightwave and Photon Management Daemon. You can initiate the upgrade process from any machine that has Photon Management Daemon CLI installed.&lt;/p&gt;
-&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;Have an installed Lightwave server with configured domain controller on it.&lt;/li&gt;
-&lt;li&gt;Have an installed Lightwave client that is joined to the domain.&lt;/li&gt;
-&lt;li&gt;Have an installed Photon Management Daemon on the client.&lt;/li&gt;
-&lt;li&gt;Have in installed Photon Management Daemon CLI (pmd-cli) on a machine from which you perform the updates.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;procedure&#34;&gt;Procedure&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;To initiate remote upgrade, log in to a machine that has Photon Management Daemon CLI installed over SSH.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Identify packages that can be upgraded on the client machine.
-2. List the available updates for the machine.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt; `# pmd-cli --server-name &amp;lt;machine-IP-address&amp;gt; --user root pkg list updates`
-&lt;/code&gt;&lt;/pre&gt;
-&lt;ol start=&#34;3&#34;&gt;
-&lt;li&gt;
-&lt;p&gt;Verify the currently installed version of a package, for example &lt;code&gt;sed&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# &lt;/code&gt;# pmd-cli &amp;ndash;server-name &lt;machine-IP-address&gt; &amp;ndash;user root pkg installed sed`
-The installed version number shows as earlier than the one listed under the available updates.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Initiate the upgrade, in this example of the &lt;code&gt;sed&lt;/code&gt; package, enter password, and wait for the command to complete.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# pmd-cli --server-name &amp;lt;machine-IP-address&amp;gt; --user root pkg update sed&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;(Optional) Verify that the client machine package was upgraded successfully.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Log in to the machine that was upgraded over SSH.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;List the installed version of the &lt;code&gt;sed&lt;/code&gt; package.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# pmd-cli --server-name &amp;lt;machine-IP-address&amp;gt; --user root pkg installed sed&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Remotely Upgrade Multiple Photon OS Machines With Lightwave Client and Photon Management Daemon Installed</title>
-      <link>/docs-v3/installation-guide/installing-and-using-lightwave/remotely-upgrade-multiple-photon-os-machines-with-lightwave-client-and-photon-management-daemon-installed/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/installation-guide/installing-and-using-lightwave/remotely-upgrade-multiple-photon-os-machines-with-lightwave-client-and-photon-management-daemon-installed/</guid>
-      <description>
-        
-        
-        &lt;p&gt;After you have a configured the Photon Management Daemon (PMD) on multiple machines, you can remotely upgrade any installed package on these machines.&lt;/p&gt;
-&lt;p&gt;Upgrade process uses &lt;code&gt;copenapi_cli&lt;/code&gt; that is supported from both Lightwave and Photon Management Daemon. You can initiate the upgrade process from any machine that has Photon Management Daemon installed.&lt;/p&gt;
-&lt;h2 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;Have an installed Lightwave server with configured domain controller on it.&lt;/li&gt;
-&lt;li&gt;Have installed Lightwave clients that are joined to the domain.&lt;/li&gt;
-&lt;li&gt;Have installed Photon Management Daemon on the clients.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;procedure&#34;&gt;Procedure&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;To initiate remote upgrade, log in to a Photon OS machine over SSH to install the Photon Management Daemon CLI.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# tdnf install pmd-cli&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Edit the &lt;code&gt;copenapi_cli&lt;/code&gt; spec files so that you can specify the machines you want to upgrade and credentials to be used.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Edit the &lt;code&gt;.netrc&lt;/code&gt; file to specify machines to be upgraded and credentials for the PMD service.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# vi ~/.netrc&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;In the file, enter the IP addresses for the machines and administrative credentials, save and close the file.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# machine &amp;lt;IP-address&amp;gt; login &amp;lt;pmd-administrative-user&amp;gt; password &amp;lt;pmd-administrative user-password&amp;gt;&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;(Optional) Get the location of the &lt;code&gt;restapispec.json&lt;/code&gt; file.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# cat ~/.copenapi&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;This command returns &lt;code&gt;apispec=/root/restapispec.json&lt;/code&gt; as path for the spec file.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Edit the &lt;code&gt;restapispec.json&lt;/code&gt; file to enter the IP address of the machine to be upgraded.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# vi /root/restapispec.json&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Change the &lt;code&gt;host&lt;/code&gt; value to the IP address or the hostname of the machine, leave the port number, and save and close the file.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;&amp;quot;host&amp;quot;:&amp;quot;&amp;lt;ip-address&amp;gt;:2081&amp;quot;&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Initiate the upgrade, in this example of the &lt;code&gt;sed&lt;/code&gt; package and wait for the command to complete.&lt;/p&gt;
-&lt;p&gt;Specify &lt;code&gt;-k&lt;/code&gt; to force blind trust of certificates and &lt;code&gt;-n&lt;/code&gt; to use the credentials from the &lt;code&gt;.netrc&lt;/code&gt; file.
-&lt;code&gt;# copenapi_cli pkg update --packages sed -kn&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;(Optional) Verify that the package was upgraded successfully.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Log in to the machine that was upgraded over SSH.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;List the installed version of the &lt;code&gt;sed&lt;/code&gt; package.&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;# tdnf list installed sed&lt;/code&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Installing and Using Lightwave on Photon OS</title><link>/docs-v3/installation-guide/installing-and-using-lightwave/</link><description>Recent content in Installing and Using Lightwave on Photon OS on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs-v3/installation-guide/installing-and-using-lightwave/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs-V3: Installing the Lightwave Server and Configuring It as a Domain Controller on a Photon Image</title><link>/docs-v3/installation-guide/installing-and-using-lightwave/installing-lightwave-server-and-setting-up-a-domain/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/installing-and-using-lightwave/installing-lightwave-server-and-setting-up-a-domain/</guid><description>
+&lt;p>You can configure Lightwave server as domain controller on a Photon client. You install the Lightwave server first. After the server is installed, you configure a new domain.&lt;/p>
+&lt;h2 id="prerequisites">Prerequisites&lt;/h2>
+&lt;ul>
+&lt;li>Prepare a Photon OS client for the Lightwave server installation.&lt;/li>
+&lt;li>Verify that the hostname of the client can be resolved.&lt;/li>
+&lt;li>Verify that you have 500 MB free for the Lightwave server installation.&lt;/li>
+&lt;/ul>
+&lt;h2 id="procedure">Procedure&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>Log in to your Photon OS client over SSH as an administrator.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Install the Lightwave server by running the following command.&lt;/p>
+&lt;p>&lt;code># tdnf install lightwave -y&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Configure the Lightwave server as domain controller by selecting a domain name and password for the &lt;code>administrator&lt;/code> user.&lt;/p>
+&lt;p>The minimum required password complexity is 8 characters, one symbol, one upper case letter, and one lower case letter.
+Optionally, if you want to access the domain controller over IP, configure the ip under the &lt;code>--ssl-subject-alt-name&lt;/code> parameter.
+&lt;code># configure-lightwave-server --domain &amp;lt;your-domain&amp;gt; --password '&amp;lt;administrator-user-password&amp;gt;' --ssl-subject-alt-name &amp;lt;machine-ip-address&amp;gt;&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Edit &lt;code>iptables&lt;/code> rules to allow connections to and from the client.&lt;/p>
+&lt;p>The default Photon OS 3.0 firewall settings block all incoming, outgoing, and forwards so that you must reconfigure them.&lt;/p>
+&lt;p>&lt;code># iptables -P INPUT ACCEPT&lt;/code>&lt;/p>
+&lt;p>&lt;code># iptables -P OUTPUT ACCEPT&lt;/code>&lt;/p>
+&lt;p>&lt;code># iptables -P FORWARD ACCEPT&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>In a browser, go to https://&lt;em>lightwave-server-FQDN&lt;/em> to verify that you can log in to the newly created domain controller.&lt;/p>
+&lt;ol>
+&lt;li>On the Cascade Identity Services page, enter the domain that you configured and click &lt;strong>Take me to Lightwave Admin&lt;/strong>.&lt;/li>
+&lt;li>On the Welcome page, enter administrator@your-domain as user name and the password that you set during the domain controller configuration and click &lt;strong>LOGIN&lt;/strong>.&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;/ol></description></item><item><title>Docs-V3: Installing the Lightwave Client on a Photon Image and Joining the Client to a Domain</title><link>/docs-v3/installation-guide/installing-and-using-lightwave/installing-lightwave-client-and-joining-a-domain/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/installing-and-using-lightwave/installing-lightwave-client-and-joining-a-domain/</guid><description>
+&lt;p>After you have set up a Lightwave domain controller, you can join Photon clients to that domain. You install the Lightwave client first. After the client is installed, you join the client to the domain.&lt;/p>
+&lt;h2 id="prerequisites">Prerequisites&lt;/h2>
+&lt;ul>
+&lt;li>Prepare a Photon OS client for the Lightwave client installation.&lt;/li>
+&lt;li>Verify that the hostname of the client can be resolved.&lt;/li>
+&lt;li>Verify that you have 184 MB free for the Lightwave client installation.&lt;/li>
+&lt;/ul>
+&lt;h2 id="procedure">Procedure&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>Log in to your Photon OS client over SSH.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Install the Lightwave client by running the following command.&lt;/p>
+&lt;p>&lt;code># tdnf install lightwave-client -y&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Edit the &lt;code>iptables&lt;/code> firewall rules configuration file to allow connections on port &lt;code>2020&lt;/code> as a default setting.&lt;/p>
+&lt;p>The default Photon OS 3.0 firewall settings block all incoming, outgoing, and forwards so that you must configure the rules.&lt;/p>
+&lt;ol>
+&lt;li>Open the iptables settings file.&lt;/li>
+&lt;/ol>
+&lt;p>&lt;code># vi /etc/systemd/scripts/iptables&lt;/code>&lt;/p>
+&lt;ol start="2">
+&lt;li>Add allow information over tcp for port 2020 in the end of the file, save, and close the file.&lt;/li>
+&lt;/ol>
+&lt;p>&lt;code>iptables -A INPUT -p tcp -m tcp --dport 2020 -j ACCEPT&lt;/code>&lt;/p>
+&lt;ol start="3">
+&lt;li>Run the following command to allow the required connections without restarting the client.&lt;/li>
+&lt;/ol>
+&lt;p>&lt;code># iptables -A INPUT -p tcp -m tcp --dport 2020 -j ACCEPT&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Join the client to the domain by running the &lt;code>domainjoin.sh&lt;/code> script and configuring the domain controller FQDN, domain, and the password for the &lt;code>administrator&lt;/code> user.&lt;/p>
+&lt;p>&lt;code># domainjoin.sh --domain-controller &amp;lt;lightwave-server-FQDN&amp;gt; --domain &amp;lt;your-domain&amp;gt; --password '&amp;lt;administrator-user-password&amp;gt;&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>In a browser, go to https://&lt;em>Lightwave-Server-FQDN&lt;/em> to verify that the client appears under the tenants list for the domain.&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>Docs-V3: Installing the Photon Management Daemon on a Lightwave Client</title><link>/docs-v3/installation-guide/installing-and-using-lightwave/installing-the-photon-management-daemon-on-a-lightwave-client/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/installing-and-using-lightwave/installing-the-photon-management-daemon-on-a-lightwave-client/</guid><description>
+&lt;p>After you have installed and configured a domain on Lightwave, and joined a client to the domain, you can install the Photon Management Daemon on that client so that you can remotely manage it.&lt;/p>
+&lt;h2 id="prerequisites">Prerequisites&lt;/h2>
+&lt;ul>
+&lt;li>Have an installed Lightwave server with configured domain controller on it.&lt;/li>
+&lt;li>Have an installed Lightwave client that is joined to the domain.&lt;/li>
+&lt;li>Verify that you have 100 MB free for the daemon installation on the client.&lt;/li>
+&lt;/ul>
+&lt;h2 id="procedure">Procedure&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>Log in to a machine with installed Lightwave client over SSH as an administrator.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Install the Photon Management Daemon.&lt;/p>
+&lt;p>&lt;code># tdnf install pmd -y&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Start the Photon Management Daemon.&lt;/p>
+&lt;p>&lt;code># systemctl start pmd&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Verify that the daemon is in an &lt;code>active&lt;/code> state.&lt;/p>
+&lt;p>&lt;code># systemctl status pmd&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>(Optional) In a new console, use &lt;code>curl&lt;/code> to verify that the Photon Management Daemon returns information.&lt;/p>
+&lt;p>Use the root credentials for the local client to authenticate against the daemon service.
+&lt;code># curl https://&amp;lt;lightwave-client-FQDN&amp;gt;:2081/v1/info -u root&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>(Optional) Create an administrative user for the Photon Management Daemon for your domain and assign it the domain administrator role.&lt;/p>
+&lt;ol>
+&lt;li>In a browser, go to https://&lt;em>lightwave-server-FQDN&lt;/em>.&lt;/li>
+&lt;li>On the Cascade Identity Services page, enter your domain name and click &lt;strong>Take me to Lightwave Admin&lt;/strong>.&lt;/li>
+&lt;li>On the Welcome page, enter administrative credentials for your domain and click &lt;strong>Login&lt;/strong>.&lt;/li>
+&lt;li>Click &lt;strong>Users &amp;amp; Groups&lt;/strong> and click &lt;strong>Add&lt;/strong> to create a new user.&lt;/li>
+&lt;li>On the Add New User page, enter user name, at least one name, password, and click &lt;strong>Save&lt;/strong>.&lt;/li>
+&lt;li>Click the &lt;strong>Groups&lt;/strong> tab, select the Administrators group, and click &lt;strong>Membership&lt;/strong> to add the new user to the group.&lt;/li>
+&lt;li>On the View Members page, select the user that you created, click &lt;strong>Add Member&lt;/strong>, click &lt;strong>Save&lt;/strong>, and click &lt;strong>Cancel&lt;/strong> to return to the previous page.&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;/ol></description></item><item><title>Docs-V3: Remotely Upgrade a Single Photon OS Machine With Lightwave Client and Photon Management Daemon Installed</title><link>/docs-v3/installation-guide/installing-and-using-lightwave/remotely-upgrade-a-photon-os-machine-with-lightwave-client-and-photon-management-daemon-installed/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/installing-and-using-lightwave/remotely-upgrade-a-photon-os-machine-with-lightwave-client-and-photon-management-daemon-installed/</guid><description>
+&lt;p>After you have a configured the Photon Management Daemon on a machine, you can remotely upgrade any installed package on that machine. You can use the &lt;code>root&lt;/code> user credentials.&lt;/p>
+&lt;p>Upgrade process uses &lt;code>pmd-cli&lt;/code> that is supported from both Lightwave and Photon Management Daemon. You can initiate the upgrade process from any machine that has Photon Management Daemon CLI installed.&lt;/p>
+&lt;h2 id="prerequisites">Prerequisites&lt;/h2>
+&lt;ul>
+&lt;li>Have an installed Lightwave server with configured domain controller on it.&lt;/li>
+&lt;li>Have an installed Lightwave client that is joined to the domain.&lt;/li>
+&lt;li>Have an installed Photon Management Daemon on the client.&lt;/li>
+&lt;li>Have in installed Photon Management Daemon CLI (pmd-cli) on a machine from which you perform the updates.&lt;/li>
+&lt;/ul>
+&lt;h2 id="procedure">Procedure&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>To initiate remote upgrade, log in to a machine that has Photon Management Daemon CLI installed over SSH.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Identify packages that can be upgraded on the client machine.
+2. List the available updates for the machine.&lt;/p>
+&lt;pre>&lt;code> `# pmd-cli --server-name &amp;lt;machine-IP-address&amp;gt; --user root pkg list updates`
+&lt;/code>&lt;/pre>
+&lt;ol start="3">
+&lt;li>
+&lt;p>Verify the currently installed version of a package, for example &lt;code>sed&lt;/code>.&lt;/p>
+&lt;p>&lt;code># &lt;/code># pmd-cli &amp;ndash;server-name &lt;machine-IP-address> &amp;ndash;user root pkg installed sed`
+The installed version number shows as earlier than the one listed under the available updates.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;li>
+&lt;p>Initiate the upgrade, in this example of the &lt;code>sed&lt;/code> package, enter password, and wait for the command to complete.&lt;/p>
+&lt;p>&lt;code># pmd-cli --server-name &amp;lt;machine-IP-address&amp;gt; --user root pkg update sed&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>(Optional) Verify that the client machine package was upgraded successfully.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Log in to the machine that was upgraded over SSH.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>List the installed version of the &lt;code>sed&lt;/code> package.&lt;/p>
+&lt;p>&lt;code># pmd-cli --server-name &amp;lt;machine-IP-address&amp;gt; --user root pkg installed sed&lt;/code>&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;/ol></description></item><item><title>Docs-V3: Remotely Upgrade Multiple Photon OS Machines With Lightwave Client and Photon Management Daemon Installed</title><link>/docs-v3/installation-guide/installing-and-using-lightwave/remotely-upgrade-multiple-photon-os-machines-with-lightwave-client-and-photon-management-daemon-installed/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/installing-and-using-lightwave/remotely-upgrade-multiple-photon-os-machines-with-lightwave-client-and-photon-management-daemon-installed/</guid><description>
+&lt;p>After you have a configured the Photon Management Daemon (PMD) on multiple machines, you can remotely upgrade any installed package on these machines.&lt;/p>
+&lt;p>Upgrade process uses &lt;code>copenapi_cli&lt;/code> that is supported from both Lightwave and Photon Management Daemon. You can initiate the upgrade process from any machine that has Photon Management Daemon installed.&lt;/p>
+&lt;h2 id="prerequisites">Prerequisites&lt;/h2>
+&lt;ul>
+&lt;li>Have an installed Lightwave server with configured domain controller on it.&lt;/li>
+&lt;li>Have installed Lightwave clients that are joined to the domain.&lt;/li>
+&lt;li>Have installed Photon Management Daemon on the clients.&lt;/li>
+&lt;/ul>
+&lt;h2 id="procedure">Procedure&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>To initiate remote upgrade, log in to a Photon OS machine over SSH to install the Photon Management Daemon CLI.&lt;/p>
+&lt;p>&lt;code># tdnf install pmd-cli&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Edit the &lt;code>copenapi_cli&lt;/code> spec files so that you can specify the machines you want to upgrade and credentials to be used.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Edit the &lt;code>.netrc&lt;/code> file to specify machines to be upgraded and credentials for the PMD service.&lt;/p>
+&lt;p>&lt;code># vi ~/.netrc&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>In the file, enter the IP addresses for the machines and administrative credentials, save and close the file.&lt;/p>
+&lt;p>&lt;code># machine &amp;lt;IP-address&amp;gt; login &amp;lt;pmd-administrative-user&amp;gt; password &amp;lt;pmd-administrative user-password&amp;gt;&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>(Optional) Get the location of the &lt;code>restapispec.json&lt;/code> file.&lt;/p>
+&lt;p>&lt;code># cat ~/.copenapi&lt;/code>&lt;/p>
+&lt;p>This command returns &lt;code>apispec=/root/restapispec.json&lt;/code> as path for the spec file.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Edit the &lt;code>restapispec.json&lt;/code> file to enter the IP address of the machine to be upgraded.&lt;/p>
+&lt;p>&lt;code># vi /root/restapispec.json&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Change the &lt;code>host&lt;/code> value to the IP address or the hostname of the machine, leave the port number, and save and close the file.&lt;/p>
+&lt;p>&lt;code>&amp;quot;host&amp;quot;:&amp;quot;&amp;lt;ip-address&amp;gt;:2081&amp;quot;&lt;/code>&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;li>
+&lt;p>Initiate the upgrade, in this example of the &lt;code>sed&lt;/code> package and wait for the command to complete.&lt;/p>
+&lt;p>Specify &lt;code>-k&lt;/code> to force blind trust of certificates and &lt;code>-n&lt;/code> to use the credentials from the &lt;code>.netrc&lt;/code> file.
+&lt;code># copenapi_cli pkg update --packages sed -kn&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>(Optional) Verify that the package was upgraded successfully.&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Log in to the machine that was upgraded over SSH.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>List the installed version of the &lt;code>sed&lt;/code> package.&lt;/p>
+&lt;p>&lt;code># tdnf list installed sed&lt;/code>&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;/li>
+&lt;/ol></description></item></channel></rss>

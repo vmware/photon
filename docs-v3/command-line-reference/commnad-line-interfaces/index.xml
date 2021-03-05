@@ -1,440 +1,400 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Command-line Interfaces</title>
-    <link>/docs-v3/command-line-reference/commnad-line-interfaces/</link>
-    <description>Recent content in Command-line Interfaces on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs-v3/command-line-reference/commnad-line-interfaces/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs-V3: Photon Management Daemon Command-line Interface (pmd-cli)</title>
-      <link>/docs-v3/command-line-reference/commnad-line-interfaces/photon-management-daemon-cli/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/command-line-reference/commnad-line-interfaces/photon-management-daemon-cli/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS provides the Photon Management Daemon command line interface (pmd-cli).&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;#setup-steps&#34;&gt;Setup Steps&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#syntax&#34;&gt;Syntax&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#firewall-management&#34;&gt;Firewall Management&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#network-management&#34;&gt;Network Management&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#package-management&#34;&gt;Package Management&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#user-management&#34;&gt;User Management&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;setup-steps&#34;&gt;Setup Steps&lt;/h1&gt;
-&lt;p&gt;The pmd-cli utility is included with your Photon OS distribution. To make sure that you have the latest version, you can run:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf install pmd-cli
-&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;syntax&#34;&gt;Syntax&lt;/h1&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli [connection_auth_options] &amp;lt;component&amp;gt; &amp;lt;command&amp;gt; [command_options]
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Passed-in parameter values can be enclosed in single (&#39;) or double-quotes (&amp;quot;) as long as you use matching characters to denote the beginning and end of the value. Unless a parameter value contains special characters or spaces, you can also omit quotes altogether.&lt;/p&gt;
-&lt;h2 id=&#34;connection--authorization-options&#34;&gt;Connection / Authorization Options&lt;/h2&gt;
-&lt;h3 id=&#34;local-connections&#34;&gt;Local Connections&lt;/h3&gt;
-&lt;p&gt;For local connections, you omit the connection and authorization options:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli &amp;lt;component&amp;gt; &amp;lt;cmd&amp;gt; &amp;lt;options&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Permissions for the currently logged-in user apply when executing commands. This is the same as specifying &amp;ndash;servername localhost.&lt;/p&gt;
-&lt;h3 id=&#34;remote-connections&#34;&gt;Remote Connections&lt;/h3&gt;
-&lt;p&gt;For connecting to a remote server (a server other than the local server), you specify two connection / authorization options:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;--servername&lt;/code&gt;: name of the server&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;--user&lt;/code&gt;: username of a user account on the server&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;  For authentication, you can specify the username (–user &amp;lt;username&amp;gt;) on the command line, but never the password. For security reasons, the system must prompt you for the password.&lt;/p&gt;
-&lt;p&gt;What follows are three options for remote connections.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;System User&lt;/strong&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli --servername &amp;lt;server&amp;gt; --user &amp;lt;username&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Lightwave User&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;Before using this method, the pmd server must be joined or should be part of embedded Lightwave.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli --servername &amp;lt;server&amp;gt; --user &amp;lt;username&amp;gt; --domain &amp;lt;lightwave_domain&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Kerberos spn&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;Before using this method, the client must run kinit successfully.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli --servername &amp;lt;server&amp;gt; --spn &amp;lt;service_principal_name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;component&#34;&gt;Component&lt;/h2&gt;
-&lt;p&gt;&lt;code&gt;&amp;lt;component&amp;gt;&lt;/code&gt; is one of the following values:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;firewall&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;net&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;pkg&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;usr&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;firewall-management&#34;&gt;Firewall Management&lt;/h1&gt;
-&lt;p&gt;The Photon Management Daemon provides CLI commands to help you get information about the firewall.&lt;/p&gt;
-&lt;h2 id=&#34;syntax-1&#34;&gt;Syntax&lt;/h2&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli [connection_auth_options] firewall &amp;lt;command&amp;gt; [command_options]
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;firewall-help&#34;&gt;firewall help&lt;/h2&gt;
-&lt;p&gt;Get help for firewall CLI commands.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli firewall help
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;firewall-rules&#34;&gt;firewall rules&lt;/h2&gt;
-&lt;p&gt;Get a list of the current persistent firewall rules.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli firewall rules [command-options]
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This command returns information about each firewall rule, such as the chain to which it belongs, the policy to enforce, the table to manipulate, and so on.&lt;/p&gt;
-&lt;p&gt;Add a new firewall rule.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli firewall rules --chain &amp;lt;chain_name&amp;gt; --add &amp;lt;rule_specification&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Example:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli firewall rules --chain INPUT --add &amp;quot;-p tcp -m tcp --dport 21 -j ACCEPT&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; To confirm that the firewall rule was added, run iptables -S. Running pmd-cli firewall rules lists only persistent rules.&lt;/p&gt;
-&lt;p&gt;Delete a new firewall rule.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli firewall rules --chain &amp;lt;chain_name&amp;gt; --delete &amp;lt;rule_specification&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt;  To confirm that the firewall rule was removed, run iptables -S. Running pmd-cli firewall rules lists only persistent rules.&lt;/p&gt;
-&lt;p&gt;Make firewall rule changes peristent (add &amp;ndash;persist flag)&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli firewall rules --chain &amp;lt;chain_name&amp;gt; --add &amp;lt;rule_specification&amp;gt; --persist
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;firewall-version&#34;&gt;firewall version&lt;/h2&gt;
-&lt;p&gt;Get the version number of the fwmgmt component on the server.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli firewall version
-&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;network-management&#34;&gt;Network Management&lt;/h1&gt;
-&lt;p&gt;The Photon Management Daemon provides CLI commands to help you manage network interfaces.&lt;/p&gt;
-&lt;h2 id=&#34;syntax-2&#34;&gt;Syntax&lt;/h2&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli [connection_auth_options] net &amp;lt;command&amp;gt; [command_options]
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Many of these commands require the interface name (–interface &amp;lt;ifname&amp;gt;). Command options are described below.&lt;/p&gt;
-&lt;h2 id=&#34;net-link_info&#34;&gt;net link_info&lt;/h2&gt;
-&lt;p&gt;Get the mac address, mtu, link state, and link mode for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net link_info --get --interface &amp;lt;ifname&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the MAC address, mode (manual or auto), link state (up or down), link mode (manual or auto), and MTU for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net link_info --set --interface &amp;lt;ifname&amp;gt; --macaddr &amp;lt;mac_address&amp;gt; --mode &amp;lt;manual|auto&amp;gt; --state &amp;lt;up|down&amp;gt; --mtu &amp;lt;mtu&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;net-ip4_address&#34;&gt;net ip4_address&lt;/h2&gt;
-&lt;p&gt;Get the IPv4 address for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net ip4_address --get --interface &amp;lt;ifname&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the IPv4 address (dot-decimal/prefix notation), mode (dhcp, static, or none), and (optionally) the default gateway for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net ip4_address --set --interface &amp;lt;ifname&amp;gt; --mode &amp;lt;dhcp|static|none&amp;gt; --addr &amp;lt;IPv4Address/prefix&amp;gt; --gateway &amp;lt;gateway_address&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;net-ip6_address&#34;&gt;net ip6_address&lt;/h2&gt;
-&lt;p&gt;Get IPv6 address(es) for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net ip6_address --get --interface &amp;lt;ifname&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Add one or more IPv6 addresses (comma-separated list in colon-separated/prefix notation) to the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net ip6_address --add --interface &amp;lt;ifname&amp;gt; --addrlist &amp;lt;IPv6Addr1/prefix,IPv6Addr2/prefix,...&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Delete one or more IPv6 addresses (comma-separated list in colon-separated/prefix notation) from the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net ip6_address --del --interface &amp;lt;ifname&amp;gt; --addrlist &amp;lt;IPv6Addr1/prefix,IPv6Addr2/prefix,...&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the DHCP mode (1=enable, 0=disable) and autoconfigure settings (1=enable, 0=disable) for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net ip6_address --set --interface &amp;lt;ifname&amp;gt; --dhcp &amp;lt;1|0&amp;gt; --autoconf &amp;lt;1|0&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;net-ip_route&#34;&gt;net ip_route&lt;/h2&gt;
-&lt;p&gt;Get the static IP route for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net ip_route --get --interface &amp;lt;ifname&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Add the static IP route (gateway IP, destination network, and metric) to the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net ip_route --add --interface &amp;lt;ifname&amp;gt; --gateway &amp;lt;GatewayIP&amp;gt; --destination &amp;lt;DestinationNetwork/prefix&amp;gt; --metric &amp;lt;N&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Delete the specified static IP route from the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net ip_route --del --interface &amp;lt;ifname&amp;gt; --destination &amp;lt;DestinationNetwork/prefix&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;net-dns_servers&#34;&gt;net dns_servers&lt;/h2&gt;
-&lt;p&gt;Get the list of DNS servers.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net dns_servers --get
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the DNS mode (dhcp or static) for one or more DNS servers (comma-separated list).&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net dns_servers --set --mode &amp;lt;dhcp|static&amp;gt; --servers &amp;lt;server1,server2,...&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Add a DNS server to the list of DNS servers.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net dns_servers --add --servers &amp;lt;server&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Remove the specified DNS server from the list of DNS servers.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net dns_servers --del --servers &amp;lt;server&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;net-dns_domains&#34;&gt;net dns_domains&lt;/h2&gt;
-&lt;p&gt;Get the list of DNS domains.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net dns_domains --get
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the list of DNS domains (one or more DNS domains in a comma-separated list).&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net dns_domains --set --domains &amp;lt;domain1,domain2,...&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Add a DNS domain to the list of DNS domains.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net dns_domains --add --domains &amp;lt;domain1&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Delete a DNS domain from the list of DNS domains.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net dns_domains --del --domains &amp;lt;domain1&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;net-dhcp_duid&#34;&gt;net dhcp_duid&lt;/h2&gt;
-&lt;p&gt;Get the DHCP DUID (optionally interface-specific DUID) for the system.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net dhcp_duid --get
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the DHCP DUID for the system, optionally per-interface if the interface is specified.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net dhcp_duid --set --duid &amp;lt;duid&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;net-if_iaid&#34;&gt;net if_iaid&lt;/h2&gt;
-&lt;p&gt;Get the IAID for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net if_iaid --get --interface &amp;lt;ifname&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the IAID for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net if_iaid --set --interface &amp;lt;ifname&amp;gt; --iaid &amp;lt;iaid&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;net-ntp_servers&#34;&gt;net ntp_servers&lt;/h2&gt;
-&lt;p&gt;Get the NTP servers list.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net ntp_servers --get
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the NTP servers list.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net ntp_servers --set --servers &amp;lt;server1,server2,...&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Add the specified server to the NTP servers list.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net ntp_servers --add --servers &amp;lt;server&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Delete the specified server from the NTP servers list.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net ntp_servers --del --servers &amp;lt;server&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;net-hostname&#34;&gt;net hostname&lt;/h2&gt;
-&lt;p&gt;Get the system hostname.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net hostname --get
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the system hostname.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net hostname --set --name &amp;lt;hostname&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;net-wait_for_link&#34;&gt;net wait_for_link&lt;/h2&gt;
-&lt;p&gt;Wait for the specified network interface to be up and usable (it can send and receive packets).&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net wait_for_link --interface &amp;lt;ifname&amp;gt; --timeout &amp;lt;timeout&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The timeout (in seconds) specifies the maximum time to wait. Specify 0 for no timeout (wait indefinitely).&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; You might need to use net wait_for_ip to wait until you can send and receive IP packets.&lt;/p&gt;
-&lt;h2 id=&#34;net-wait_for_ip&#34;&gt;net wait_for_ip&lt;/h2&gt;
-&lt;p&gt;Wait for the specified interface to acquire a valid IP address for the specified address type.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net wait_for_ip --interface &amp;lt;ifname&amp;gt; --timeout &amp;lt;timeout&amp;gt; --addrtype &amp;lt;ipv4,ipv6,static_ipv4,static_ipv6,dhcp_ipv4,dhcp_ipv6,auto_ipv6,link_local_ipv6&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The timeout (in seconds) specifies the maximum time to wait. Specify 0 for no timeout (wait indefinitely).&lt;/p&gt;
-&lt;h2 id=&#34;net-error_info&#34;&gt;net error_info&lt;/h2&gt;
-&lt;p&gt;Get error information about the specified error code.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net error_info --errcode &amp;lt;error_code&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Here is a list of error codes:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;4097 - invalid parameter&lt;/li&gt;
-&lt;li&gt;4098 - not supported&lt;/li&gt;
-&lt;li&gt;4099 - out of memory&lt;/li&gt;
-&lt;li&gt;4100 - value not found&lt;/li&gt;
-&lt;li&gt;4101 - value exists&lt;/li&gt;
-&lt;li&gt;4102 - invalid interface&lt;/li&gt;
-&lt;li&gt;4103 - invalid mode&lt;/li&gt;
-&lt;li&gt;4104 - bad configuration file&lt;/li&gt;
-&lt;li&gt;4105 - write failed&lt;/li&gt;
-&lt;li&gt;4106 - timout&lt;/li&gt;
-&lt;li&gt;4107 - DCHP timeout&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;net-net_info&#34;&gt;net net_info&lt;/h2&gt;
-&lt;p&gt;Get the specified network configuration parameter for the specified object.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net net_info --get --object &amp;lt;ifname or filename&amp;gt; --paramname &amp;lt;param_name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; The object can be an interface name (for example, &amp;quot;eth0&amp;quot;) or a file name (for example, /etc/systemd/resolved.conf).&lt;/p&gt;
-&lt;p&gt;Set the value of the specified network configuration parameter for the specified object (interface or file).&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli net net_info --set --object &amp;lt;ifname or filename&amp;gt; --paramname &amp;lt;param_name&amp;gt; --paramvalue &amp;lt;param_value&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt; : You can add (+) or remove (-) a parameter by prepending the parameter name with + or -.&lt;/p&gt;
-&lt;h1 id=&#34;package-management&#34;&gt;Package Management&lt;/h1&gt;
-&lt;p&gt;The Photon Management Daemon provides CLI commands to help you manage packages and repositories.&lt;/p&gt;
-&lt;h2 id=&#34;syntax-3&#34;&gt;Syntax&lt;/h2&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli [connection options] pkg &amp;lt;command&amp;gt; [command options]
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If a command allows for multiple package names, simply specify on the command line, separated by spaces.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli pkg info &amp;lt;package_name_1&amp;gt; &amp;lt;package_name_2&amp;gt; &amp;lt;package_name_3&amp;gt; ...
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;pkg-help&#34;&gt;pkg help&lt;/h2&gt;
-&lt;p&gt;Get help text for pkg CLI commands.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli pkg help
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;pkg-count&#34;&gt;pkg count&lt;/h2&gt;
-&lt;p&gt;Get the total number of packages in all repos (including installed).&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli pkg count
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;pkg-distro-sync&#34;&gt;pkg distro-sync&lt;/h2&gt;
-&lt;p&gt;Synchronize installed packages to the latest available versions. If no packages are specified, then all available packages are synchronized.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli pkg distro-sync
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;pkg-downgrade&#34;&gt;pkg downgrade&lt;/h2&gt;
-&lt;p&gt;Downgrade the specified package(s). If no packages are specified, then all available packages are downgraded.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli pkg downgrade &amp;lt;package_name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;pkg-erase&#34;&gt;pkg erase&lt;/h2&gt;
-&lt;p&gt;Remove the specified package(s).&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli pkg erase &amp;lt;package_name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;pkg-info&#34;&gt;pkg info&lt;/h2&gt;
-&lt;p&gt;Get general information about the specified package(s),  such as name, version, release, repository, install size, and so on.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli pkg info &amp;lt;package_name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If no packages are specified, then this command returns information about all packages.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;## pkg install
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Install the specified package(s). Update the package if an update is available.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli pkg install &amp;lt;package_name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;pkg-list&#34;&gt;pkg list&lt;/h2&gt;
-&lt;p&gt;Get a list of packages or groups of packages.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli pkg list
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can filter by group: all, available, installed, extras, obsoletes, recent, and upgrades.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli pkg list upgrades
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can also filter by wildcards.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli pkg list ph\*
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;pkg-reinstall&#34;&gt;pkg reinstall&lt;/h2&gt;
-&lt;p&gt;Reinstall the specified package(s).&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli pkg reinstall &amp;lt;package_name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;pkg-repolist&#34;&gt;pkg repolist&lt;/h2&gt;
-&lt;p&gt;Get a list of the configured software repositories.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli pkg repolist
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;This command returns a list of the configured software repositories, including the repository ID, repitory name, and status.&lt;/p&gt;
-&lt;h2 id=&#34;pkg-update&#34;&gt;pkg update&lt;/h2&gt;
-&lt;p&gt;Update the specified package(s).&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli pkg update &amp;lt;package_name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If no parameters are specified, then all available packages are updated.&lt;/p&gt;
-&lt;h2 id=&#34;pkg-updateinfo&#34;&gt;pkg updateinfo&lt;/h2&gt;
-&lt;p&gt;Get the update information on all enabled repositories (status = enabled). If this command returns nothing, then the update information may not exist on the server.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli pkg updateinfo
-&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;user-management&#34;&gt;User Management&lt;/h1&gt;
-&lt;p&gt;The Photon Management Daemon provides CLI commands to help you manage users and user groups.&lt;/p&gt;
-&lt;h2 id=&#34;syntax-4&#34;&gt;Syntax&lt;/h2&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli [connection options] usr &amp;lt;command&amp;gt; [command options]
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;usr-help&#34;&gt;usr help&lt;/h2&gt;
-&lt;p&gt;Display help text for user commands.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli usr users
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;usr-users&#34;&gt;usr users&lt;/h2&gt;
-&lt;p&gt;Get a list of users. This command returns information about each user, including their user name, user ID, user group (if applicable), home directory, and default shell.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli usr users
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;usr-useradd&#34;&gt;usr useradd&lt;/h2&gt;
-&lt;p&gt;Add a new user. Specify the username.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli usr useradd &amp;lt;username&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The system assigns a user ID, home directory, and default shell to the new user. The user group is unspecified.&lt;/p&gt;
-&lt;h2 id=&#34;usr-userdel&#34;&gt;usr userdel&lt;/h2&gt;
-&lt;p&gt;Delete the specified user.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli usr userdel &amp;lt;username&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;usr-userid&#34;&gt;usr userid&lt;/h2&gt;
-&lt;p&gt;Get the user ID of the specified user (by name). Used to determine whether the specified user exists.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli usr userid &amp;lt;username&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;usr-groups&#34;&gt;usr groups&lt;/h2&gt;
-&lt;p&gt;Get a list of user groups. This command returns the following information about each user group: user group name and user group ID.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli usr groups
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;usr-groupadd&#34;&gt;usr groupadd&lt;/h2&gt;
-&lt;p&gt;Add a new user group.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli usr groupadd &amp;lt;user_group_name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The system assigns a group ID to the new user group.&lt;/p&gt;
-&lt;h2 id=&#34;usr-groupdel&#34;&gt;usr groupdel&lt;/h2&gt;
-&lt;p&gt;Delete the specified user group.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli usr groupdel &amp;lt;user_group_name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;usr-groupid&#34;&gt;usr groupid&lt;/h2&gt;
-&lt;p&gt;Get the group ID for the specified user group (by name). Used to determine whether the specified user group exists.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli usr groupid &amp;lt;user_group_name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;usr-version&#34;&gt;usr version&lt;/h2&gt;
-&lt;p&gt;Get the version of the usermgmt component at the server.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;pmd-cli usr version
-&lt;/code&gt;&lt;/pre&gt;
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Photon Network Manager Command-line Interface (netmgr)</title>
-      <link>/docs-v3/command-line-reference/commnad-line-interfaces/photon-network-manager-cli/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/command-line-reference/commnad-line-interfaces/photon-network-manager-cli/</guid>
-      <description>
-        
-        
-        &lt;p&gt;For locally logged-on users, Photon OS provides a command line interface to manage network configuration of the system.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;#setup-steps&#34;&gt;Setup Steps&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#syntax&#34;&gt;Syntax&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#network-manager-cli&#34;&gt;Network Manager CLI&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;setup-steps&#34;&gt;Setup Steps&lt;/h1&gt;
-&lt;p&gt;The netmgr tool is included with your Photon OS distribution. To make sure that you have the latest version, you can run:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf install netmgmt
-&lt;/code&gt;&lt;/pre&gt;&lt;h1 id=&#34;syntax&#34;&gt;Syntax&lt;/h1&gt;
-&lt;p&gt;The CLI is built on set, get, add, delete command model and uses the option-name - option-value model of specifying command parameters.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr &amp;lt;network object&amp;gt; &amp;lt;--get | --set | --add | --del&amp;gt; &amp;lt;command options&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Passed-in parameter values can be enclosed in single (&#39;) or double-quotes (&amp;quot;) as long as you use matching characters to denote the beginning and end of the value. Unless a parameter value contains special characters or spaces, you can also omit quotes altogether.&lt;/p&gt;
-&lt;h2 id=&#34;network-object&#34;&gt;network object&lt;/h2&gt;
-&lt;p&gt;&lt;code&gt;&amp;lt;network object&amp;gt;&lt;/code&gt; is one of the following values:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;link_info&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;ip4_address&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;ip6_address&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;ip_route&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;dns_servers&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;dns_domains&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;dhcp_duid&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;if_iaid&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;ntp_servers&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;hostname&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;wait_for_link&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;wait_for_ip&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;error_info&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;net_info&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;network-manager-cli&#34;&gt;Network Manager CLI&lt;/h1&gt;
-&lt;h2 id=&#34;link_info&#34;&gt;link_info&lt;/h2&gt;
-&lt;p&gt;Get the mac address, MTU, link state, and link mode for the (optionally) specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr link_info --get --interface &amp;lt;ifname&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the MAC address, link state (up or down), link mode (manual or auto), or MTU for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr link_info --set --interface &amp;lt;ifname&amp;gt; --macaddr &amp;lt;mac_address&amp;gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Command-line Interfaces</title><link>/docs-v3/command-line-reference/commnad-line-interfaces/</link><description>Recent content in Command-line Interfaces on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs-v3/command-line-reference/commnad-line-interfaces/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs-V3: Photon Management Daemon Command-line Interface (pmd-cli)</title><link>/docs-v3/command-line-reference/commnad-line-interfaces/photon-management-daemon-cli/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/command-line-reference/commnad-line-interfaces/photon-management-daemon-cli/</guid><description>
+&lt;p>Photon OS provides the Photon Management Daemon command line interface (pmd-cli).&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="#setup-steps">Setup Steps&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#syntax">Syntax&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#firewall-management">Firewall Management&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#network-management">Network Management&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#package-management">Package Management&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#user-management">User Management&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h1 id="setup-steps">Setup Steps&lt;/h1>
+&lt;p>The pmd-cli utility is included with your Photon OS distribution. To make sure that you have the latest version, you can run:&lt;/p>
+&lt;pre>&lt;code>tdnf install pmd-cli
+&lt;/code>&lt;/pre>&lt;h1 id="syntax">Syntax&lt;/h1>
+&lt;pre>&lt;code>pmd-cli [connection_auth_options] &amp;lt;component&amp;gt; &amp;lt;command&amp;gt; [command_options]
+&lt;/code>&lt;/pre>&lt;p>Passed-in parameter values can be enclosed in single (') or double-quotes (&amp;quot;) as long as you use matching characters to denote the beginning and end of the value. Unless a parameter value contains special characters or spaces, you can also omit quotes altogether.&lt;/p>
+&lt;h2 id="connection--authorization-options">Connection / Authorization Options&lt;/h2>
+&lt;h3 id="local-connections">Local Connections&lt;/h3>
+&lt;p>For local connections, you omit the connection and authorization options:&lt;/p>
+&lt;pre>&lt;code>pmd-cli &amp;lt;component&amp;gt; &amp;lt;cmd&amp;gt; &amp;lt;options&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Permissions for the currently logged-in user apply when executing commands. This is the same as specifying &amp;ndash;servername localhost.&lt;/p>
+&lt;h3 id="remote-connections">Remote Connections&lt;/h3>
+&lt;p>For connecting to a remote server (a server other than the local server), you specify two connection / authorization options:&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>--servername&lt;/code>: name of the server&lt;/li>
+&lt;li>&lt;code>--user&lt;/code>: username of a user account on the server&lt;/li>
+&lt;/ul>
+&lt;p>&lt;strong>Note:&lt;/strong> For authentication, you can specify the username (–user &amp;lt;username&amp;gt;) on the command line, but never the password. For security reasons, the system must prompt you for the password.&lt;/p>
+&lt;p>What follows are three options for remote connections.&lt;/p>
+&lt;p>&lt;strong>System User&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>pmd-cli --servername &amp;lt;server&amp;gt; --user &amp;lt;username&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>&lt;strong>Lightwave User&lt;/strong>&lt;/p>
+&lt;p>Before using this method, the pmd server must be joined or should be part of embedded Lightwave.&lt;/p>
+&lt;pre>&lt;code>pmd-cli --servername &amp;lt;server&amp;gt; --user &amp;lt;username&amp;gt; --domain &amp;lt;lightwave_domain&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>&lt;strong>Kerberos spn&lt;/strong>&lt;/p>
+&lt;p>Before using this method, the client must run kinit successfully.&lt;/p>
+&lt;pre>&lt;code>pmd-cli --servername &amp;lt;server&amp;gt; --spn &amp;lt;service_principal_name&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="component">Component&lt;/h2>
+&lt;p>&lt;code>&amp;lt;component&amp;gt;&lt;/code> is one of the following values:&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>firewall&lt;/code>&lt;/li>
+&lt;li>&lt;code>net&lt;/code>&lt;/li>
+&lt;li>&lt;code>pkg&lt;/code>&lt;/li>
+&lt;li>&lt;code>usr&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;h1 id="firewall-management">Firewall Management&lt;/h1>
+&lt;p>The Photon Management Daemon provides CLI commands to help you get information about the firewall.&lt;/p>
+&lt;h2 id="syntax-1">Syntax&lt;/h2>
+&lt;pre>&lt;code>pmd-cli [connection_auth_options] firewall &amp;lt;command&amp;gt; [command_options]
+&lt;/code>&lt;/pre>&lt;h2 id="firewall-help">firewall help&lt;/h2>
+&lt;p>Get help for firewall CLI commands.&lt;/p>
+&lt;pre>&lt;code>pmd-cli firewall help
+&lt;/code>&lt;/pre>&lt;h2 id="firewall-rules">firewall rules&lt;/h2>
+&lt;p>Get a list of the current persistent firewall rules.&lt;/p>
+&lt;pre>&lt;code>pmd-cli firewall rules [command-options]
+&lt;/code>&lt;/pre>&lt;p>This command returns information about each firewall rule, such as the chain to which it belongs, the policy to enforce, the table to manipulate, and so on.&lt;/p>
+&lt;p>Add a new firewall rule.&lt;/p>
+&lt;pre>&lt;code>pmd-cli firewall rules --chain &amp;lt;chain_name&amp;gt; --add &amp;lt;rule_specification&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>pmd-cli firewall rules --chain INPUT --add &amp;quot;-p tcp -m tcp --dport 21 -j ACCEPT&amp;quot;
+&lt;/code>&lt;/pre>&lt;p>&lt;strong>Note:&lt;/strong> To confirm that the firewall rule was added, run iptables -S. Running pmd-cli firewall rules lists only persistent rules.&lt;/p>
+&lt;p>Delete a new firewall rule.&lt;/p>
+&lt;pre>&lt;code>pmd-cli firewall rules --chain &amp;lt;chain_name&amp;gt; --delete &amp;lt;rule_specification&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>&lt;strong>Note:&lt;/strong> To confirm that the firewall rule was removed, run iptables -S. Running pmd-cli firewall rules lists only persistent rules.&lt;/p>
+&lt;p>Make firewall rule changes peristent (add &amp;ndash;persist flag)&lt;/p>
+&lt;pre>&lt;code>pmd-cli firewall rules --chain &amp;lt;chain_name&amp;gt; --add &amp;lt;rule_specification&amp;gt; --persist
+&lt;/code>&lt;/pre>&lt;h2 id="firewall-version">firewall version&lt;/h2>
+&lt;p>Get the version number of the fwmgmt component on the server.&lt;/p>
+&lt;pre>&lt;code>pmd-cli firewall version
+&lt;/code>&lt;/pre>&lt;h1 id="network-management">Network Management&lt;/h1>
+&lt;p>The Photon Management Daemon provides CLI commands to help you manage network interfaces.&lt;/p>
+&lt;h2 id="syntax-2">Syntax&lt;/h2>
+&lt;pre>&lt;code>pmd-cli [connection_auth_options] net &amp;lt;command&amp;gt; [command_options]
+&lt;/code>&lt;/pre>&lt;p>Many of these commands require the interface name (–interface &amp;lt;ifname&amp;gt;). Command options are described below.&lt;/p>
+&lt;h2 id="net-link_info">net link_info&lt;/h2>
+&lt;p>Get the mac address, mtu, link state, and link mode for the specified interface.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net link_info --get --interface &amp;lt;ifname&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Set the MAC address, mode (manual or auto), link state (up or down), link mode (manual or auto), and MTU for the specified interface.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net link_info --set --interface &amp;lt;ifname&amp;gt; --macaddr &amp;lt;mac_address&amp;gt; --mode &amp;lt;manual|auto&amp;gt; --state &amp;lt;up|down&amp;gt; --mtu &amp;lt;mtu&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="net-ip4_address">net ip4_address&lt;/h2>
+&lt;p>Get the IPv4 address for the specified interface.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net ip4_address --get --interface &amp;lt;ifname&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Set the IPv4 address (dot-decimal/prefix notation), mode (dhcp, static, or none), and (optionally) the default gateway for the specified interface.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net ip4_address --set --interface &amp;lt;ifname&amp;gt; --mode &amp;lt;dhcp|static|none&amp;gt; --addr &amp;lt;IPv4Address/prefix&amp;gt; --gateway &amp;lt;gateway_address&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="net-ip6_address">net ip6_address&lt;/h2>
+&lt;p>Get IPv6 address(es) for the specified interface.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net ip6_address --get --interface &amp;lt;ifname&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Add one or more IPv6 addresses (comma-separated list in colon-separated/prefix notation) to the specified interface.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net ip6_address --add --interface &amp;lt;ifname&amp;gt; --addrlist &amp;lt;IPv6Addr1/prefix,IPv6Addr2/prefix,...&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Delete one or more IPv6 addresses (comma-separated list in colon-separated/prefix notation) from the specified interface.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net ip6_address --del --interface &amp;lt;ifname&amp;gt; --addrlist &amp;lt;IPv6Addr1/prefix,IPv6Addr2/prefix,...&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Set the DHCP mode (1=enable, 0=disable) and autoconfigure settings (1=enable, 0=disable) for the specified interface.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net ip6_address --set --interface &amp;lt;ifname&amp;gt; --dhcp &amp;lt;1|0&amp;gt; --autoconf &amp;lt;1|0&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="net-ip_route">net ip_route&lt;/h2>
+&lt;p>Get the static IP route for the specified interface.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net ip_route --get --interface &amp;lt;ifname&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Add the static IP route (gateway IP, destination network, and metric) to the specified interface.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net ip_route --add --interface &amp;lt;ifname&amp;gt; --gateway &amp;lt;GatewayIP&amp;gt; --destination &amp;lt;DestinationNetwork/prefix&amp;gt; --metric &amp;lt;N&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Delete the specified static IP route from the specified interface.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net ip_route --del --interface &amp;lt;ifname&amp;gt; --destination &amp;lt;DestinationNetwork/prefix&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="net-dns_servers">net dns_servers&lt;/h2>
+&lt;p>Get the list of DNS servers.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net dns_servers --get
+&lt;/code>&lt;/pre>&lt;p>Set the DNS mode (dhcp or static) for one or more DNS servers (comma-separated list).&lt;/p>
+&lt;pre>&lt;code>pmd-cli net dns_servers --set --mode &amp;lt;dhcp|static&amp;gt; --servers &amp;lt;server1,server2,...&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Add a DNS server to the list of DNS servers.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net dns_servers --add --servers &amp;lt;server&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Remove the specified DNS server from the list of DNS servers.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net dns_servers --del --servers &amp;lt;server&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="net-dns_domains">net dns_domains&lt;/h2>
+&lt;p>Get the list of DNS domains.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net dns_domains --get
+&lt;/code>&lt;/pre>&lt;p>Set the list of DNS domains (one or more DNS domains in a comma-separated list).&lt;/p>
+&lt;pre>&lt;code>pmd-cli net dns_domains --set --domains &amp;lt;domain1,domain2,...&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Add a DNS domain to the list of DNS domains.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net dns_domains --add --domains &amp;lt;domain1&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Delete a DNS domain from the list of DNS domains.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net dns_domains --del --domains &amp;lt;domain1&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="net-dhcp_duid">net dhcp_duid&lt;/h2>
+&lt;p>Get the DHCP DUID (optionally interface-specific DUID) for the system.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net dhcp_duid --get
+&lt;/code>&lt;/pre>&lt;p>Set the DHCP DUID for the system, optionally per-interface if the interface is specified.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net dhcp_duid --set --duid &amp;lt;duid&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="net-if_iaid">net if_iaid&lt;/h2>
+&lt;p>Get the IAID for the specified interface.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net if_iaid --get --interface &amp;lt;ifname&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Set the IAID for the specified interface.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net if_iaid --set --interface &amp;lt;ifname&amp;gt; --iaid &amp;lt;iaid&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="net-ntp_servers">net ntp_servers&lt;/h2>
+&lt;p>Get the NTP servers list.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net ntp_servers --get
+&lt;/code>&lt;/pre>&lt;p>Set the NTP servers list.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net ntp_servers --set --servers &amp;lt;server1,server2,...&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Add the specified server to the NTP servers list.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net ntp_servers --add --servers &amp;lt;server&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Delete the specified server from the NTP servers list.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net ntp_servers --del --servers &amp;lt;server&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="net-hostname">net hostname&lt;/h2>
+&lt;p>Get the system hostname.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net hostname --get
+&lt;/code>&lt;/pre>&lt;p>Set the system hostname.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net hostname --set --name &amp;lt;hostname&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="net-wait_for_link">net wait_for_link&lt;/h2>
+&lt;p>Wait for the specified network interface to be up and usable (it can send and receive packets).&lt;/p>
+&lt;pre>&lt;code>pmd-cli net wait_for_link --interface &amp;lt;ifname&amp;gt; --timeout &amp;lt;timeout&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>The timeout (in seconds) specifies the maximum time to wait. Specify 0 for no timeout (wait indefinitely).&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong> You might need to use net wait_for_ip to wait until you can send and receive IP packets.&lt;/p>
+&lt;h2 id="net-wait_for_ip">net wait_for_ip&lt;/h2>
+&lt;p>Wait for the specified interface to acquire a valid IP address for the specified address type.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net wait_for_ip --interface &amp;lt;ifname&amp;gt; --timeout &amp;lt;timeout&amp;gt; --addrtype &amp;lt;ipv4,ipv6,static_ipv4,static_ipv6,dhcp_ipv4,dhcp_ipv6,auto_ipv6,link_local_ipv6&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>The timeout (in seconds) specifies the maximum time to wait. Specify 0 for no timeout (wait indefinitely).&lt;/p>
+&lt;h2 id="net-error_info">net error_info&lt;/h2>
+&lt;p>Get error information about the specified error code.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net error_info --errcode &amp;lt;error_code&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Here is a list of error codes:&lt;/p>
+&lt;ul>
+&lt;li>4097 - invalid parameter&lt;/li>
+&lt;li>4098 - not supported&lt;/li>
+&lt;li>4099 - out of memory&lt;/li>
+&lt;li>4100 - value not found&lt;/li>
+&lt;li>4101 - value exists&lt;/li>
+&lt;li>4102 - invalid interface&lt;/li>
+&lt;li>4103 - invalid mode&lt;/li>
+&lt;li>4104 - bad configuration file&lt;/li>
+&lt;li>4105 - write failed&lt;/li>
+&lt;li>4106 - timout&lt;/li>
+&lt;li>4107 - DCHP timeout&lt;/li>
+&lt;/ul>
+&lt;h2 id="net-net_info">net net_info&lt;/h2>
+&lt;p>Get the specified network configuration parameter for the specified object.&lt;/p>
+&lt;pre>&lt;code>pmd-cli net net_info --get --object &amp;lt;ifname or filename&amp;gt; --paramname &amp;lt;param_name&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>&lt;strong>Note:&lt;/strong> The object can be an interface name (for example, &amp;quot;eth0&amp;quot;) or a file name (for example, /etc/systemd/resolved.conf).&lt;/p>
+&lt;p>Set the value of the specified network configuration parameter for the specified object (interface or file).&lt;/p>
+&lt;pre>&lt;code>pmd-cli net net_info --set --object &amp;lt;ifname or filename&amp;gt; --paramname &amp;lt;param_name&amp;gt; --paramvalue &amp;lt;param_value&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>&lt;strong>Note&lt;/strong> : You can add (+) or remove (-) a parameter by prepending the parameter name with + or -.&lt;/p>
+&lt;h1 id="package-management">Package Management&lt;/h1>
+&lt;p>The Photon Management Daemon provides CLI commands to help you manage packages and repositories.&lt;/p>
+&lt;h2 id="syntax-3">Syntax&lt;/h2>
+&lt;pre>&lt;code>pmd-cli [connection options] pkg &amp;lt;command&amp;gt; [command options]
+&lt;/code>&lt;/pre>&lt;p>If a command allows for multiple package names, simply specify on the command line, separated by spaces.&lt;/p>
+&lt;pre>&lt;code>pmd-cli pkg info &amp;lt;package_name_1&amp;gt; &amp;lt;package_name_2&amp;gt; &amp;lt;package_name_3&amp;gt; ...
+&lt;/code>&lt;/pre>&lt;h2 id="pkg-help">pkg help&lt;/h2>
+&lt;p>Get help text for pkg CLI commands.&lt;/p>
+&lt;pre>&lt;code>pmd-cli pkg help
+&lt;/code>&lt;/pre>&lt;h2 id="pkg-count">pkg count&lt;/h2>
+&lt;p>Get the total number of packages in all repos (including installed).&lt;/p>
+&lt;pre>&lt;code>pmd-cli pkg count
+&lt;/code>&lt;/pre>&lt;h2 id="pkg-distro-sync">pkg distro-sync&lt;/h2>
+&lt;p>Synchronize installed packages to the latest available versions. If no packages are specified, then all available packages are synchronized.&lt;/p>
+&lt;pre>&lt;code>pmd-cli pkg distro-sync
+&lt;/code>&lt;/pre>&lt;h2 id="pkg-downgrade">pkg downgrade&lt;/h2>
+&lt;p>Downgrade the specified package(s). If no packages are specified, then all available packages are downgraded.&lt;/p>
+&lt;pre>&lt;code>pmd-cli pkg downgrade &amp;lt;package_name&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="pkg-erase">pkg erase&lt;/h2>
+&lt;p>Remove the specified package(s).&lt;/p>
+&lt;pre>&lt;code>pmd-cli pkg erase &amp;lt;package_name&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="pkg-info">pkg info&lt;/h2>
+&lt;p>Get general information about the specified package(s), such as name, version, release, repository, install size, and so on.&lt;/p>
+&lt;pre>&lt;code>pmd-cli pkg info &amp;lt;package_name&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>If no packages are specified, then this command returns information about all packages.&lt;/p>
+&lt;pre>&lt;code>## pkg install
+&lt;/code>&lt;/pre>&lt;p>Install the specified package(s). Update the package if an update is available.&lt;/p>
+&lt;pre>&lt;code>pmd-cli pkg install &amp;lt;package_name&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="pkg-list">pkg list&lt;/h2>
+&lt;p>Get a list of packages or groups of packages.&lt;/p>
+&lt;pre>&lt;code>pmd-cli pkg list
+&lt;/code>&lt;/pre>&lt;p>You can filter by group: all, available, installed, extras, obsoletes, recent, and upgrades.&lt;/p>
+&lt;pre>&lt;code>pmd-cli pkg list upgrades
+&lt;/code>&lt;/pre>&lt;p>You can also filter by wildcards.&lt;/p>
+&lt;pre>&lt;code>pmd-cli pkg list ph\*
+&lt;/code>&lt;/pre>&lt;h2 id="pkg-reinstall">pkg reinstall&lt;/h2>
+&lt;p>Reinstall the specified package(s).&lt;/p>
+&lt;pre>&lt;code>pmd-cli pkg reinstall &amp;lt;package_name&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="pkg-repolist">pkg repolist&lt;/h2>
+&lt;p>Get a list of the configured software repositories.&lt;/p>
+&lt;pre>&lt;code>pmd-cli pkg repolist
+&lt;/code>&lt;/pre>&lt;p>This command returns a list of the configured software repositories, including the repository ID, repitory name, and status.&lt;/p>
+&lt;h2 id="pkg-update">pkg update&lt;/h2>
+&lt;p>Update the specified package(s).&lt;/p>
+&lt;pre>&lt;code>pmd-cli pkg update &amp;lt;package_name&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>If no parameters are specified, then all available packages are updated.&lt;/p>
+&lt;h2 id="pkg-updateinfo">pkg updateinfo&lt;/h2>
+&lt;p>Get the update information on all enabled repositories (status = enabled). If this command returns nothing, then the update information may not exist on the server.&lt;/p>
+&lt;pre>&lt;code>pmd-cli pkg updateinfo
+&lt;/code>&lt;/pre>&lt;h1 id="user-management">User Management&lt;/h1>
+&lt;p>The Photon Management Daemon provides CLI commands to help you manage users and user groups.&lt;/p>
+&lt;h2 id="syntax-4">Syntax&lt;/h2>
+&lt;pre>&lt;code>pmd-cli [connection options] usr &amp;lt;command&amp;gt; [command options]
+&lt;/code>&lt;/pre>&lt;h2 id="usr-help">usr help&lt;/h2>
+&lt;p>Display help text for user commands.&lt;/p>
+&lt;pre>&lt;code>pmd-cli usr users
+&lt;/code>&lt;/pre>&lt;h2 id="usr-users">usr users&lt;/h2>
+&lt;p>Get a list of users. This command returns information about each user, including their user name, user ID, user group (if applicable), home directory, and default shell.&lt;/p>
+&lt;pre>&lt;code>pmd-cli usr users
+&lt;/code>&lt;/pre>&lt;h2 id="usr-useradd">usr useradd&lt;/h2>
+&lt;p>Add a new user. Specify the username.&lt;/p>
+&lt;pre>&lt;code>pmd-cli usr useradd &amp;lt;username&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>The system assigns a user ID, home directory, and default shell to the new user. The user group is unspecified.&lt;/p>
+&lt;h2 id="usr-userdel">usr userdel&lt;/h2>
+&lt;p>Delete the specified user.&lt;/p>
+&lt;pre>&lt;code>pmd-cli usr userdel &amp;lt;username&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="usr-userid">usr userid&lt;/h2>
+&lt;p>Get the user ID of the specified user (by name). Used to determine whether the specified user exists.&lt;/p>
+&lt;pre>&lt;code>pmd-cli usr userid &amp;lt;username&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="usr-groups">usr groups&lt;/h2>
+&lt;p>Get a list of user groups. This command returns the following information about each user group: user group name and user group ID.&lt;/p>
+&lt;pre>&lt;code>pmd-cli usr groups
+&lt;/code>&lt;/pre>&lt;h2 id="usr-groupadd">usr groupadd&lt;/h2>
+&lt;p>Add a new user group.&lt;/p>
+&lt;pre>&lt;code>pmd-cli usr groupadd &amp;lt;user_group_name&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>The system assigns a group ID to the new user group.&lt;/p>
+&lt;h2 id="usr-groupdel">usr groupdel&lt;/h2>
+&lt;p>Delete the specified user group.&lt;/p>
+&lt;pre>&lt;code>pmd-cli usr groupdel &amp;lt;user_group_name&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="usr-groupid">usr groupid&lt;/h2>
+&lt;p>Get the group ID for the specified user group (by name). Used to determine whether the specified user group exists.&lt;/p>
+&lt;pre>&lt;code>pmd-cli usr groupid &amp;lt;user_group_name&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="usr-version">usr version&lt;/h2>
+&lt;p>Get the version of the usermgmt component at the server.&lt;/p>
+&lt;pre>&lt;code>pmd-cli usr version
+&lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Photon Network Manager Command-line Interface (netmgr)</title><link>/docs-v3/command-line-reference/commnad-line-interfaces/photon-network-manager-cli/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/command-line-reference/commnad-line-interfaces/photon-network-manager-cli/</guid><description>
+&lt;p>For locally logged-on users, Photon OS provides a command line interface to manage network configuration of the system.&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="#setup-steps">Setup Steps&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#syntax">Syntax&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#network-manager-cli">Network Manager CLI&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h1 id="setup-steps">Setup Steps&lt;/h1>
+&lt;p>The netmgr tool is included with your Photon OS distribution. To make sure that you have the latest version, you can run:&lt;/p>
+&lt;pre>&lt;code>tdnf install netmgmt
+&lt;/code>&lt;/pre>&lt;h1 id="syntax">Syntax&lt;/h1>
+&lt;p>The CLI is built on set, get, add, delete command model and uses the option-name - option-value model of specifying command parameters.&lt;/p>
+&lt;pre>&lt;code>netmgr &amp;lt;network object&amp;gt; &amp;lt;--get | --set | --add | --del&amp;gt; &amp;lt;command options&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Passed-in parameter values can be enclosed in single (') or double-quotes (&amp;quot;) as long as you use matching characters to denote the beginning and end of the value. Unless a parameter value contains special characters or spaces, you can also omit quotes altogether.&lt;/p>
+&lt;h2 id="network-object">network object&lt;/h2>
+&lt;p>&lt;code>&amp;lt;network object&amp;gt;&lt;/code> is one of the following values:&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>link_info&lt;/code>&lt;/li>
+&lt;li>&lt;code>ip4_address&lt;/code>&lt;/li>
+&lt;li>&lt;code>ip6_address&lt;/code>&lt;/li>
+&lt;li>&lt;code>ip_route&lt;/code>&lt;/li>
+&lt;li>&lt;code>dns_servers&lt;/code>&lt;/li>
+&lt;li>&lt;code>dns_domains&lt;/code>&lt;/li>
+&lt;li>&lt;code>dhcp_duid&lt;/code>&lt;/li>
+&lt;li>&lt;code>if_iaid&lt;/code>&lt;/li>
+&lt;li>&lt;code>ntp_servers&lt;/code>&lt;/li>
+&lt;li>&lt;code>hostname&lt;/code>&lt;/li>
+&lt;li>&lt;code>wait_for_link&lt;/code>&lt;/li>
+&lt;li>&lt;code>wait_for_ip&lt;/code>&lt;/li>
+&lt;li>&lt;code>error_info&lt;/code>&lt;/li>
+&lt;li>&lt;code>net_info&lt;/code>&lt;/li>
+&lt;/ul>
+&lt;h1 id="network-manager-cli">Network Manager CLI&lt;/h1>
+&lt;h2 id="link_info">link_info&lt;/h2>
+&lt;p>Get the mac address, MTU, link state, and link mode for the (optionally) specified interface.&lt;/p>
+&lt;pre>&lt;code>netmgr link_info --get --interface &amp;lt;ifname&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Set the MAC address, link state (up or down), link mode (manual or auto), or MTU for the specified interface.&lt;/p>
+&lt;pre>&lt;code>netmgr link_info --set --interface &amp;lt;ifname&amp;gt; --macaddr &amp;lt;mac_address&amp;gt;
 netmgr link_info --set --interface &amp;lt;ifname&amp;gt; --mode &amp;lt;manual|auto&amp;gt;
 netmgr link_info --set --interface &amp;lt;ifname&amp;gt; --state &amp;lt;up|down&amp;gt;
 netmgr link_info --set --interface &amp;lt;ifname&amp;gt; --mtu &amp;lt;mtu&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;ip4_address&#34;&gt;ip4_address&lt;/h2&gt;
-&lt;p&gt;Get the IPv4 address for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr ip4_address --get --interface &amp;lt;ifname&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the IPv4 address (dot-decimal/prefix notation), mode (dhcp, static, or none), and (optionally) the default gateway for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr ip4_address --set --interface &amp;lt;ifname&amp;gt; --mode &amp;lt;dhcp|static|none&amp;gt; --addr &amp;lt;ipv4_address/prefix&amp;gt; --gateway &amp;lt;gateway_address&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;ip6_address&#34;&gt;ip6_address&lt;/h2&gt;
-&lt;p&gt;Get IPv6 addresses for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr ip6_address --get --interface &amp;lt;ifname&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Add one or more IPv6 addresses (comma-separated list in colon-separated/prefix notation) to the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr ip6_address --add --interface &amp;lt;ifname&amp;gt; --addrlist &amp;lt;ipv6_addr1/prefix,ipv6_addr2/prefix,...&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Delete one or more IPv6 addresses (comma-separated list in colon-separated/prefix notation) from the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr ip6_address --del --interface &amp;lt;ifname&amp;gt; --addrlist &amp;lt;ipv6_addr1/prefix,ipv6_addr2/prefix,...&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the IPv6 DHCP mode (1=enable, 0=disable) and IPv6 auto-configuration settings (1=enable, 0=disable) for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr ip6_address --set --interface &amp;lt;ifname&amp;gt; --dhcp &amp;lt;1|0&amp;gt; --autoconf &amp;lt;1|0&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;ip_route&#34;&gt;ip_route&lt;/h2&gt;
-&lt;p&gt;Get the static IP route for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr ip_route --get --interface &amp;lt;ifname&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Add the static IP route (gateway IP, destination network, and metric) to the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr ip_route --add --interface &amp;lt;ifname&amp;gt; --gateway &amp;lt;gateway_address&amp;gt; --destination &amp;lt;destination_network/prefix&amp;gt; --metric &amp;lt;N&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Delete the specified static IP route from the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr ip_route --del --interface &amp;lt;ifname&amp;gt; --destination &amp;lt;destination_network/prefix&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;dns_servers&#34;&gt;dns_servers&lt;/h2&gt;
-&lt;p&gt;Get the list of DNS servers.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr dns_servers --get
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the DNS mode (DHCP or static) for one or more DNS servers (comma-separated list).&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr dns_servers --set --mode &amp;lt;dhcp|static&amp;gt; --servers &amp;lt;server1,server2,...&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Add a DNS server to the list of DNS servers.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr dns_servers --add --servers &amp;lt;server&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Remove the specified DNS server from the list of DNS servers.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr dns_servers --del --servers &amp;lt;server&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;dns_domains&#34;&gt;dns_domains&lt;/h2&gt;
-&lt;p&gt;Get the list of DNS domains.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr dns_domains --get
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the list of DNS domains (one or more DNS domains in a comma-separated list).&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr dns_domains --set --domains &amp;lt;domain1,domain2,...&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Add a DNS domain to the list of DNS domains.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr dns_domains --add --domains &amp;lt;domain&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Delete a DNS domain from the list of DNS domains.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr dns_domains --del --domains &amp;lt;domain&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;dhcp_duid&#34;&gt;dhcp_duid&lt;/h2&gt;
-&lt;p&gt;Get the DHCP DUID (optionally interface-specific DUID) for the system.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr dhcp_duid --get
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the DHCP DUID for the system, optionally per-interface if the interface is specified.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr dhcp_duid --set --duid &amp;lt;duid&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;if_iaid&#34;&gt;if_iaid&lt;/h2&gt;
-&lt;p&gt;Get the IAID for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr if_iaid --get --interface &amp;lt;ifname&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the IAID for the specified interface.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr if_iaid --set --interface &amp;lt;ifname&amp;gt; --iaid &amp;lt;iaid&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;ntp_servers&#34;&gt;ntp_servers&lt;/h2&gt;
-&lt;p&gt;Get the NTP servers list.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr ntp_servers --get
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the NTP servers list.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr ntp_servers --set --servers &amp;lt;server1,server2,...&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Add the specified server to the NTP servers list.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr ntp_servers --add --servers &amp;lt;server&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Delete the specified server from the NTP servers list.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr ntp_servers --del --servers &amp;lt;server&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;hostname&#34;&gt;hostname&lt;/h2&gt;
-&lt;p&gt;Get the system hostname.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr hostname --get
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Set the system hostname.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr hostname --set --name &amp;lt;hostname&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;wait_for_link&#34;&gt;wait_for_link&lt;/h2&gt;
-&lt;p&gt;Wait for the specified network interface to be up and usable (it can send and receive packets).&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr wait_for_link --interface &amp;lt;ifname&amp;gt; --timeout &amp;lt;timeout&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The timeout (in seconds) specifies the maximum time to wait. Specify 0 for no timeout (wait indefinitely).&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; You might need to use wait_for_ip to wait until you can send and receive IP packets.&lt;/p&gt;
-&lt;h2 id=&#34;wait_for_ip&#34;&gt;wait_for_ip&lt;/h2&gt;
-&lt;p&gt;Wait for the specified interface to acquire a valid IP address for the specified address type.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr wait_for_ip --interface &amp;lt;ifname&amp;gt; --timeout &amp;lt;timeout&amp;gt; --addrtype &amp;lt;ipv4,ipv6,static_ipv4,static_ipv6,dhcp_ipv4,dhcp_ipv6,auto_ipv6,link_local_ipv6&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The timeout (in seconds) specifies the maximum time to wait. Specify 0 for no timeout (wait indefinitely).&lt;/p&gt;
-&lt;h2 id=&#34;error_info&#34;&gt;error_info&lt;/h2&gt;
-&lt;p&gt;Get error information about the specified error code.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr error_info --errcode &amp;lt;error_code&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Here is a list of error codes:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;4097 - invalid parameter&lt;/li&gt;
-&lt;li&gt;4098 - not supported&lt;/li&gt;
-&lt;li&gt;4099 - out of memory&lt;/li&gt;
-&lt;li&gt;4100 - value not found&lt;/li&gt;
-&lt;li&gt;4101 - value exists&lt;/li&gt;
-&lt;li&gt;4102 - invalid interface&lt;/li&gt;
-&lt;li&gt;4103 - invalid mode&lt;/li&gt;
-&lt;li&gt;4104 - bad configuration file&lt;/li&gt;
-&lt;li&gt;4105 - write failed&lt;/li&gt;
-&lt;li&gt;4106 - timeout&lt;/li&gt;
-&lt;li&gt;4107 - DCHP timeout&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;net_info&#34;&gt;net_info&lt;/h2&gt;
-&lt;p&gt;Get the specified network configuration parameter for the specified object.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr net_info --get --object &amp;lt;ifname or filename&amp;gt; --paramname &amp;lt;param_name&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; The object can be an interface name (for example, &amp;quot;eth0&amp;quot;) or a file name (for example, /etc/systemd/resolved.conf).&lt;/p&gt;
-&lt;p&gt;Set the value of the specified network configuration parameter for the specified object (interface or file).&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr net_info --set --object &amp;lt;ifname or filename&amp;gt; --paramname &amp;lt;param_name&amp;gt; --paramvalue &amp;lt;param_value&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt; : You can add (+) or remove (-) a parameter by prepending the parameter name with + or -.&lt;/p&gt;
-&lt;p&gt;For example, in order to add static IPv4 address &amp;ldquo;10.10.10.1/24&amp;rdquo; to eth0 interface, the following command adds this &lt;strong&gt;Address&lt;/strong&gt; to the &lt;strong&gt;Network&lt;/strong&gt; section of the &lt;strong&gt;eth0&lt;/strong&gt; network configuration file.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;netmgr net_info --set --object eth0 --paramname +Network_Address --paramvalue &amp;quot;10.10.10.1/24&amp;quot;
-&lt;/code&gt;&lt;/pre&gt;
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+&lt;/code>&lt;/pre>&lt;h2 id="ip4_address">ip4_address&lt;/h2>
+&lt;p>Get the IPv4 address for the specified interface.&lt;/p>
+&lt;pre>&lt;code>netmgr ip4_address --get --interface &amp;lt;ifname&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Set the IPv4 address (dot-decimal/prefix notation), mode (dhcp, static, or none), and (optionally) the default gateway for the specified interface.&lt;/p>
+&lt;pre>&lt;code>netmgr ip4_address --set --interface &amp;lt;ifname&amp;gt; --mode &amp;lt;dhcp|static|none&amp;gt; --addr &amp;lt;ipv4_address/prefix&amp;gt; --gateway &amp;lt;gateway_address&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="ip6_address">ip6_address&lt;/h2>
+&lt;p>Get IPv6 addresses for the specified interface.&lt;/p>
+&lt;pre>&lt;code>netmgr ip6_address --get --interface &amp;lt;ifname&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Add one or more IPv6 addresses (comma-separated list in colon-separated/prefix notation) to the specified interface.&lt;/p>
+&lt;pre>&lt;code>netmgr ip6_address --add --interface &amp;lt;ifname&amp;gt; --addrlist &amp;lt;ipv6_addr1/prefix,ipv6_addr2/prefix,...&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Delete one or more IPv6 addresses (comma-separated list in colon-separated/prefix notation) from the specified interface.&lt;/p>
+&lt;pre>&lt;code>netmgr ip6_address --del --interface &amp;lt;ifname&amp;gt; --addrlist &amp;lt;ipv6_addr1/prefix,ipv6_addr2/prefix,...&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Set the IPv6 DHCP mode (1=enable, 0=disable) and IPv6 auto-configuration settings (1=enable, 0=disable) for the specified interface.&lt;/p>
+&lt;pre>&lt;code>netmgr ip6_address --set --interface &amp;lt;ifname&amp;gt; --dhcp &amp;lt;1|0&amp;gt; --autoconf &amp;lt;1|0&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="ip_route">ip_route&lt;/h2>
+&lt;p>Get the static IP route for the specified interface.&lt;/p>
+&lt;pre>&lt;code>netmgr ip_route --get --interface &amp;lt;ifname&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Add the static IP route (gateway IP, destination network, and metric) to the specified interface.&lt;/p>
+&lt;pre>&lt;code>netmgr ip_route --add --interface &amp;lt;ifname&amp;gt; --gateway &amp;lt;gateway_address&amp;gt; --destination &amp;lt;destination_network/prefix&amp;gt; --metric &amp;lt;N&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Delete the specified static IP route from the specified interface.&lt;/p>
+&lt;pre>&lt;code>netmgr ip_route --del --interface &amp;lt;ifname&amp;gt; --destination &amp;lt;destination_network/prefix&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="dns_servers">dns_servers&lt;/h2>
+&lt;p>Get the list of DNS servers.&lt;/p>
+&lt;pre>&lt;code>netmgr dns_servers --get
+&lt;/code>&lt;/pre>&lt;p>Set the DNS mode (DHCP or static) for one or more DNS servers (comma-separated list).&lt;/p>
+&lt;pre>&lt;code>netmgr dns_servers --set --mode &amp;lt;dhcp|static&amp;gt; --servers &amp;lt;server1,server2,...&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Add a DNS server to the list of DNS servers.&lt;/p>
+&lt;pre>&lt;code>netmgr dns_servers --add --servers &amp;lt;server&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Remove the specified DNS server from the list of DNS servers.&lt;/p>
+&lt;pre>&lt;code>netmgr dns_servers --del --servers &amp;lt;server&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="dns_domains">dns_domains&lt;/h2>
+&lt;p>Get the list of DNS domains.&lt;/p>
+&lt;pre>&lt;code>netmgr dns_domains --get
+&lt;/code>&lt;/pre>&lt;p>Set the list of DNS domains (one or more DNS domains in a comma-separated list).&lt;/p>
+&lt;pre>&lt;code>netmgr dns_domains --set --domains &amp;lt;domain1,domain2,...&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Add a DNS domain to the list of DNS domains.&lt;/p>
+&lt;pre>&lt;code>netmgr dns_domains --add --domains &amp;lt;domain&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Delete a DNS domain from the list of DNS domains.&lt;/p>
+&lt;pre>&lt;code>netmgr dns_domains --del --domains &amp;lt;domain&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="dhcp_duid">dhcp_duid&lt;/h2>
+&lt;p>Get the DHCP DUID (optionally interface-specific DUID) for the system.&lt;/p>
+&lt;pre>&lt;code>netmgr dhcp_duid --get
+&lt;/code>&lt;/pre>&lt;p>Set the DHCP DUID for the system, optionally per-interface if the interface is specified.&lt;/p>
+&lt;pre>&lt;code>netmgr dhcp_duid --set --duid &amp;lt;duid&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="if_iaid">if_iaid&lt;/h2>
+&lt;p>Get the IAID for the specified interface.&lt;/p>
+&lt;pre>&lt;code>netmgr if_iaid --get --interface &amp;lt;ifname&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Set the IAID for the specified interface.&lt;/p>
+&lt;pre>&lt;code>netmgr if_iaid --set --interface &amp;lt;ifname&amp;gt; --iaid &amp;lt;iaid&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="ntp_servers">ntp_servers&lt;/h2>
+&lt;p>Get the NTP servers list.&lt;/p>
+&lt;pre>&lt;code>netmgr ntp_servers --get
+&lt;/code>&lt;/pre>&lt;p>Set the NTP servers list.&lt;/p>
+&lt;pre>&lt;code>netmgr ntp_servers --set --servers &amp;lt;server1,server2,...&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Add the specified server to the NTP servers list.&lt;/p>
+&lt;pre>&lt;code>netmgr ntp_servers --add --servers &amp;lt;server&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Delete the specified server from the NTP servers list.&lt;/p>
+&lt;pre>&lt;code>netmgr ntp_servers --del --servers &amp;lt;server&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="hostname">hostname&lt;/h2>
+&lt;p>Get the system hostname.&lt;/p>
+&lt;pre>&lt;code>netmgr hostname --get
+&lt;/code>&lt;/pre>&lt;p>Set the system hostname.&lt;/p>
+&lt;pre>&lt;code>netmgr hostname --set --name &amp;lt;hostname&amp;gt;
+&lt;/code>&lt;/pre>&lt;h2 id="wait_for_link">wait_for_link&lt;/h2>
+&lt;p>Wait for the specified network interface to be up and usable (it can send and receive packets).&lt;/p>
+&lt;pre>&lt;code>netmgr wait_for_link --interface &amp;lt;ifname&amp;gt; --timeout &amp;lt;timeout&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>The timeout (in seconds) specifies the maximum time to wait. Specify 0 for no timeout (wait indefinitely).&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong> You might need to use wait_for_ip to wait until you can send and receive IP packets.&lt;/p>
+&lt;h2 id="wait_for_ip">wait_for_ip&lt;/h2>
+&lt;p>Wait for the specified interface to acquire a valid IP address for the specified address type.&lt;/p>
+&lt;pre>&lt;code>netmgr wait_for_ip --interface &amp;lt;ifname&amp;gt; --timeout &amp;lt;timeout&amp;gt; --addrtype &amp;lt;ipv4,ipv6,static_ipv4,static_ipv6,dhcp_ipv4,dhcp_ipv6,auto_ipv6,link_local_ipv6&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>The timeout (in seconds) specifies the maximum time to wait. Specify 0 for no timeout (wait indefinitely).&lt;/p>
+&lt;h2 id="error_info">error_info&lt;/h2>
+&lt;p>Get error information about the specified error code.&lt;/p>
+&lt;pre>&lt;code>netmgr error_info --errcode &amp;lt;error_code&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Here is a list of error codes:&lt;/p>
+&lt;ul>
+&lt;li>4097 - invalid parameter&lt;/li>
+&lt;li>4098 - not supported&lt;/li>
+&lt;li>4099 - out of memory&lt;/li>
+&lt;li>4100 - value not found&lt;/li>
+&lt;li>4101 - value exists&lt;/li>
+&lt;li>4102 - invalid interface&lt;/li>
+&lt;li>4103 - invalid mode&lt;/li>
+&lt;li>4104 - bad configuration file&lt;/li>
+&lt;li>4105 - write failed&lt;/li>
+&lt;li>4106 - timeout&lt;/li>
+&lt;li>4107 - DCHP timeout&lt;/li>
+&lt;/ul>
+&lt;h2 id="net_info">net_info&lt;/h2>
+&lt;p>Get the specified network configuration parameter for the specified object.&lt;/p>
+&lt;pre>&lt;code>netmgr net_info --get --object &amp;lt;ifname or filename&amp;gt; --paramname &amp;lt;param_name&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>&lt;strong>Note:&lt;/strong> The object can be an interface name (for example, &amp;quot;eth0&amp;quot;) or a file name (for example, /etc/systemd/resolved.conf).&lt;/p>
+&lt;p>Set the value of the specified network configuration parameter for the specified object (interface or file).&lt;/p>
+&lt;pre>&lt;code>netmgr net_info --set --object &amp;lt;ifname or filename&amp;gt; --paramname &amp;lt;param_name&amp;gt; --paramvalue &amp;lt;param_value&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>&lt;strong>Note&lt;/strong> : You can add (+) or remove (-) a parameter by prepending the parameter name with + or -.&lt;/p>
+&lt;p>For example, in order to add static IPv4 address &amp;ldquo;10.10.10.1/24&amp;rdquo; to eth0 interface, the following command adds this &lt;strong>Address&lt;/strong> to the &lt;strong>Network&lt;/strong> section of the &lt;strong>eth0&lt;/strong> network configuration file.&lt;/p>
+&lt;pre>&lt;code>netmgr net_info --set --object eth0 --paramname +Network_Address --paramvalue &amp;quot;10.10.10.1/24&amp;quot;
+&lt;/code>&lt;/pre></description></item></channel></rss>

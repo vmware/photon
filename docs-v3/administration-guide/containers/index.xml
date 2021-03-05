@@ -1,60 +1,18 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Containers</title>
-    <link>/docs-v3/administration-guide/containers/</link>
-    <description>Recent content in Containers on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs-v3/administration-guide/containers/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs-V3: Docker Containers</title>
-      <link>/docs-v3/administration-guide/containers/docker-containers/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/administration-guide/containers/docker-containers/</guid>
-      <description>
-        
-        
-        &lt;p&gt;On Photon OS, the Docker daemon is enabled by default. To view the status of the daemon, run the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemctl status docker
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Docker is loaded and running by default on the full version of Photon OS. On the minimal version, it is loaded but not running by default. To start it, run the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemctl start docker
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;To obtain information about Docker, run the following command as root:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;docker info
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;After Docker is enabled and started, you can create a container. For example, run the following docker command as root to create a container running Ubuntu 14.04 with an interactive terminal shell:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;docker run -i -t ubuntu:14.04 /bin/bash
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Photon OS also enables you to run a docker container that runs Photon OS:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;docker run -i -t photon /bin/bash
-&lt;/code&gt;&lt;/pre&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Kubernetes</title>
-      <link>/docs-v3/administration-guide/containers/kubernetes/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/administration-guide/containers/kubernetes/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The Kubernetes package provides several services: kube-apiserver, kube-scheduler, kube-controller-manager, kubelet, kube-proxy. These services are managed by &lt;code&gt;systemd&lt;/code&gt;. Their configuration resides in a central location: &lt;code&gt;/etc/kubernetes&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;For more information, see &lt;a href=&#34;../../../user-guide/kubernetes-on-photon-os/&#34;&gt;Running Kubernetes on Photon OS&lt;/a&gt;.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Containers</title><link>/docs-v3/administration-guide/containers/</link><description>Recent content in Containers on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs-v3/administration-guide/containers/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs-V3: Docker Containers</title><link>/docs-v3/administration-guide/containers/docker-containers/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/administration-guide/containers/docker-containers/</guid><description>
+&lt;p>On Photon OS, the Docker daemon is enabled by default. To view the status of the daemon, run the following command:&lt;/p>
+&lt;pre>&lt;code>systemctl status docker
+&lt;/code>&lt;/pre>
+&lt;p>Docker is loaded and running by default on the full version of Photon OS. On the minimal version, it is loaded but not running by default. To start it, run the following command:&lt;/p>
+&lt;pre>&lt;code>systemctl start docker
+&lt;/code>&lt;/pre>
+&lt;p>To obtain information about Docker, run the following command as root:&lt;/p>
+&lt;pre>&lt;code>docker info
+&lt;/code>&lt;/pre>
+&lt;p>After Docker is enabled and started, you can create a container. For example, run the following docker command as root to create a container running Ubuntu 14.04 with an interactive terminal shell:&lt;/p>
+&lt;pre>&lt;code>docker run -i -t ubuntu:14.04 /bin/bash
+&lt;/code>&lt;/pre>
+&lt;p>Photon OS also enables you to run a docker container that runs Photon OS:&lt;/p>
+&lt;pre>&lt;code>docker run -i -t photon /bin/bash
+&lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Kubernetes</title><link>/docs-v3/administration-guide/containers/kubernetes/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/administration-guide/containers/kubernetes/</guid><description>
+&lt;p>The Kubernetes package provides several services: kube-apiserver, kube-scheduler, kube-controller-manager, kubelet, kube-proxy. These services are managed by &lt;code>systemd&lt;/code>. Their configuration resides in a central location: &lt;code>/etc/kubernetes&lt;/code>.&lt;/p>
+&lt;p>For more information, see &lt;a href="../../../user-guide/kubernetes-on-photon-os/">Running Kubernetes on Photon OS&lt;/a>.&lt;/p></description></item></channel></rss>

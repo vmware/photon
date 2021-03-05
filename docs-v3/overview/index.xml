@@ -1,97 +1,42 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Overview</title>
-    <link>/docs-v3/overview/</link>
-    <description>Recent content in Overview on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs-v3/overview/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs-V3: Introduction to Photon OS</title>
-      <link>/docs-v3/overview/introduction/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/overview/introduction/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS, is an open-source minimalist Linux operating system from VMware that is optimized for cloud computing platforms, VMware vSphere deployments, and applications native to the cloud.&lt;/p&gt;
-&lt;p&gt;Photon OS is a Linux container host optimized for vSphere and cloud-computing platforms such as Amazon Elastic Compute and Google Compute Engine. As a lightweight and extensible operating system, Photon OS works with the most common container formats, including Docker, Rocket, and Garden. Photon OS includes a yum-compatible, package-based lifecycle management system called tdnf.&lt;/p&gt;
-&lt;p&gt;When used with development tools and environments such as VMware Fusion, VMware Workstation, and production runtime environments (vSphere, vCloud Air), Photon OS lets you seamlessly migrate container-based applications from development to production. With a small footprint and fast boot and run times, Photon OS is optimized for cloud computing and cloud  applications.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Flavours</title>
-      <link>/docs-v3/overview/flavours/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/overview/flavours/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS consists of a minimal version and a full version.&lt;/p&gt;
-&lt;p&gt;The minimal version of Photon OS is lightweight container host runtime environment that is suited to managing and hosting containers. The minimal version contains just enough packaging and functionality to manage and modify containers while remaining a fast runtime environment. The minimal version is ready to work with appliances.&lt;/p&gt;
-&lt;p&gt;The Developer version of Photon OS includes additional packages to help you customize the system and create containerized applications. For running containers, the developer version is excessive. The devloper version helps you create, develop, test, and package an application that runs a container.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: What is New in Photon OS 3.0</title>
-      <link>/docs-v3/overview/whats-new/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/overview/whats-new/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS 3.0 Rev2 introduces RPM Ostree Install, Trusted Platform Module Support (TPM), installer improvements, PMD role management Improvements and critical updates to OSS packages including linux kernel, systemd and glibc. This topic summarizes what&amp;rsquo;s new and different in Photon OS 3.0 Rev2.&lt;/p&gt;
-&lt;h2 id=&#34;features&#34;&gt;Features&lt;/h2&gt;
-&lt;h3 id=&#34;installer-updates&#34;&gt;Installer Updates&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;Deployment using RPM OStree.&lt;/li&gt;
-&lt;li&gt;Network configuration support using the installer.&lt;/li&gt;
-&lt;li&gt;LVM support for root partition.&lt;/li&gt;
-&lt;li&gt;Trusted Platform Module Support (TPM).&lt;/li&gt;
-&lt;li&gt;Ability to run installer from multiple media such as USB, CDROM, kickstart etc. on to a wider range of storage devices.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&#34;package-and-binary-maintenance&#34;&gt;Package and Binary Maintenance&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;Cloud-ready images for rapid deployment on Microsoft Azure (new), Google Compute Engine (GCE), Amazon Elastic Compute Cloud (EC2), and VMware products (vSphere, Fusion, and Workstation)&lt;/li&gt;
-&lt;li&gt;Critical updates to the following base OS packages:
-&lt;ul&gt;
-&lt;li&gt;Linux kernel 4.19&lt;/li&gt;
-&lt;li&gt;Glibc 2.28&lt;/li&gt;
-&lt;li&gt;systemd 239&lt;/li&gt;
-&lt;li&gt;Python3 3.7&lt;/li&gt;
-&lt;li&gt;Openjdk : 1.8.0.232, 1.11.0.28 and 1.10.0.23&lt;/li&gt;
-&lt;li&gt;Openssl : 1.0.2t and 1.1.1d&lt;/li&gt;
-&lt;li&gt;Cloud-init: 19.1&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;Up-to-date versions for most packages available in the repository.&lt;/li&gt;
-&lt;li&gt;Ability to support multiple versions of the same package (For example, go-1.9, go-1.10, go-1.11 and go-1.13).&lt;/li&gt;
-&lt;li&gt;Support for new packages including Ostree, tpm2-tss, tpm2-tools, tpm2-abrmd and so on.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;##Notes
-Openjdk 1.10 is end of life and is being shipped to serve the sole purpose of build dependency. There will no future updates - Updates to security or otherwise will be done to the openjdk10 package.&lt;/p&gt;
-&lt;h2 id=&#34;known-issues&#34;&gt;Known Issues&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;The OVA does not deploy on Workstation 14 but works on later and earlier versions.&lt;/li&gt;
-&lt;li&gt;Not all packages in the x86-64 repo are available for ARM64. Notable ones include mysql, mariadb and dotnet libraries.&lt;/li&gt;
-&lt;/ul&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Overview</title><link>/docs-v3/overview/</link><description>Recent content in Overview on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs-v3/overview/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs-V3: Introduction to Photon OS</title><link>/docs-v3/overview/introduction/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/overview/introduction/</guid><description>
+&lt;p>Photon OS, is an open-source minimalist Linux operating system from VMware that is optimized for cloud computing platforms, VMware vSphere deployments, and applications native to the cloud.&lt;/p>
+&lt;p>Photon OS is a Linux container host optimized for vSphere and cloud-computing platforms such as Amazon Elastic Compute and Google Compute Engine. As a lightweight and extensible operating system, Photon OS works with the most common container formats, including Docker, Rocket, and Garden. Photon OS includes a yum-compatible, package-based lifecycle management system called tdnf.&lt;/p>
+&lt;p>When used with development tools and environments such as VMware Fusion, VMware Workstation, and production runtime environments (vSphere, vCloud Air), Photon OS lets you seamlessly migrate container-based applications from development to production. With a small footprint and fast boot and run times, Photon OS is optimized for cloud computing and cloud applications.&lt;/p></description></item><item><title>Docs-V3: Flavours</title><link>/docs-v3/overview/flavours/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/overview/flavours/</guid><description>
+&lt;p>Photon OS consists of a minimal version and a full version.&lt;/p>
+&lt;p>The minimal version of Photon OS is lightweight container host runtime environment that is suited to managing and hosting containers. The minimal version contains just enough packaging and functionality to manage and modify containers while remaining a fast runtime environment. The minimal version is ready to work with appliances.&lt;/p>
+&lt;p>The Developer version of Photon OS includes additional packages to help you customize the system and create containerized applications. For running containers, the developer version is excessive. The devloper version helps you create, develop, test, and package an application that runs a container.&lt;/p></description></item><item><title>Docs-V3: What is New in Photon OS 3.0</title><link>/docs-v3/overview/whats-new/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/overview/whats-new/</guid><description>
+&lt;p>Photon OS 3.0 Rev2 introduces RPM Ostree Install, Trusted Platform Module Support (TPM), installer improvements, PMD role management Improvements and critical updates to OSS packages including linux kernel, systemd and glibc. This topic summarizes what&amp;rsquo;s new and different in Photon OS 3.0 Rev2.&lt;/p>
+&lt;h2 id="features">Features&lt;/h2>
+&lt;h3 id="installer-updates">Installer Updates&lt;/h3>
+&lt;ul>
+&lt;li>Deployment using RPM OStree.&lt;/li>
+&lt;li>Network configuration support using the installer.&lt;/li>
+&lt;li>LVM support for root partition.&lt;/li>
+&lt;li>Trusted Platform Module Support (TPM).&lt;/li>
+&lt;li>Ability to run installer from multiple media such as USB, CDROM, kickstart etc. on to a wider range of storage devices.&lt;/li>
+&lt;/ul>
+&lt;h3 id="package-and-binary-maintenance">Package and Binary Maintenance&lt;/h3>
+&lt;ul>
+&lt;li>Cloud-ready images for rapid deployment on Microsoft Azure (new), Google Compute Engine (GCE), Amazon Elastic Compute Cloud (EC2), and VMware products (vSphere, Fusion, and Workstation)&lt;/li>
+&lt;li>Critical updates to the following base OS packages:
+&lt;ul>
+&lt;li>Linux kernel 4.19&lt;/li>
+&lt;li>Glibc 2.28&lt;/li>
+&lt;li>systemd 239&lt;/li>
+&lt;li>Python3 3.7&lt;/li>
+&lt;li>Openjdk : 1.8.0.232, 1.11.0.28 and 1.10.0.23&lt;/li>
+&lt;li>Openssl : 1.0.2t and 1.1.1d&lt;/li>
+&lt;li>Cloud-init: 19.1&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>Up-to-date versions for most packages available in the repository.&lt;/li>
+&lt;li>Ability to support multiple versions of the same package (For example, go-1.9, go-1.10, go-1.11 and go-1.13).&lt;/li>
+&lt;li>Support for new packages including Ostree, tpm2-tss, tpm2-tools, tpm2-abrmd and so on.&lt;/li>
+&lt;/ul>
+&lt;p>##Notes
+Openjdk 1.10 is end of life and is being shipped to serve the sole purpose of build dependency. There will no future updates - Updates to security or otherwise will be done to the openjdk10 package.&lt;/p>
+&lt;h2 id="known-issues">Known Issues&lt;/h2>
+&lt;ul>
+&lt;li>The OVA does not deploy on Workstation 14 but works on later and earlier versions.&lt;/li>
+&lt;li>Not all packages in the x86-64 repo are available for ARM64. Notable ones include mysql, mariadb and dotnet libraries.&lt;/li>
+&lt;/ul></description></item></channel></rss>

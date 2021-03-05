@@ -1,76 +1,35 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Photon Management Daemon</title>
-    <link>/docs/administration-guide/photon-management-daemon/</link>
-    <description>Recent content in Photon Management Daemon on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs/administration-guide/photon-management-daemon/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs: Installing the pmd Package</title>
-      <link>/docs/administration-guide/photon-management-daemon/installing-pmd-package/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/photon-management-daemon/installing-pmd-package/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The pmd package is included with your Photon OS 4.0 distribution. To make sure that you have the latest version, you can run:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# tdnf install pmd
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Photon Management Daemon</title><link>/docs/administration-guide/photon-management-daemon/</link><description>Recent content in Photon Management Daemon on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/administration-guide/photon-management-daemon/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Installing the pmd Package</title><link>/docs/administration-guide/photon-management-daemon/installing-pmd-package/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-management-daemon/installing-pmd-package/</guid><description>
+&lt;p>The pmd package is included with your Photon OS 4.0 distribution. To make sure that you have the latest version, you can run:&lt;/p>
+&lt;pre>&lt;code># tdnf install pmd
 # systemctl start pmd
-&lt;/code&gt;&lt;/pre&gt;
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Available APIs</title>
-      <link>/docs/administration-guide/photon-management-daemon/available-apis/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/photon-management-daemon/available-apis/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS includes the following APIs:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;PMD Rest API&lt;/li&gt;
-&lt;li&gt;PMD Python API&lt;/li&gt;
-&lt;li&gt;PMD C API&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;pmd-rest-api&#34;&gt;PMD REST API&lt;/h2&gt;
-&lt;p&gt;The PMD REST API is an openapi 2.0 specification. Once the pmd package is installed, you can use a Swagger UI tool to browse the REST API specifications (/etc/pmd/restapispec.json).
-You can also browse it using the copenapi_cli tool that comes with the pmd package:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# copenapi_cli --apispec /etc/pmd/restapispec.json
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For more information about the copenapi_cli tool, refer to &lt;a href=&#34;https://github.com/vmware/copenapi&#34;&gt;github.com/vmware/copenapi&lt;/a&gt;.&lt;/p&gt;
-&lt;h2 id=&#34;pmd-python-api&#34;&gt;PMD Python API&lt;/h2&gt;
-&lt;p&gt;Python3 is included with your Photon OS 3.0 distribution. PMD Python interfaces are available for python3 (pmd-python3) and python2 (pmd-python2). You can use tdnf to ensure that the latest version is installed:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# tdnf install pmd-python3
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Available APIs</title><link>/docs/administration-guide/photon-management-daemon/available-apis/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-management-daemon/available-apis/</guid><description>
+&lt;p>Photon OS includes the following APIs:&lt;/p>
+&lt;ul>
+&lt;li>PMD Rest API&lt;/li>
+&lt;li>PMD Python API&lt;/li>
+&lt;li>PMD C API&lt;/li>
+&lt;/ul>
+&lt;h2 id="pmd-rest-api">PMD REST API&lt;/h2>
+&lt;p>The PMD REST API is an openapi 2.0 specification. Once the pmd package is installed, you can use a Swagger UI tool to browse the REST API specifications (/etc/pmd/restapispec.json).
+You can also browse it using the copenapi_cli tool that comes with the pmd package:&lt;/p>
+&lt;pre>&lt;code># copenapi_cli --apispec /etc/pmd/restapispec.json
+&lt;/code>&lt;/pre>&lt;p>For more information about the copenapi_cli tool, refer to &lt;a href="https://github.com/vmware/copenapi">github.com/vmware/copenapi&lt;/a>.&lt;/p>
+&lt;h2 id="pmd-python-api">PMD Python API&lt;/h2>
+&lt;p>Python3 is included with your Photon OS 3.0 distribution. PMD Python interfaces are available for python3 (pmd-python3) and python2 (pmd-python2). You can use tdnf to ensure that the latest version is installed:&lt;/p>
+&lt;pre>&lt;code># tdnf install pmd-python3
 # systemctl start pmd
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;To navigate the help documentation for the pmd Python packages:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;# python3
+&lt;/code>&lt;/pre>&lt;p>To navigate the help documentation for the pmd Python packages:&lt;/p>
+&lt;pre>&lt;code># python3
 &amp;gt;&amp;gt;&amp;gt; import pmd
 &amp;gt;&amp;gt;&amp;gt; net = pmd.server().net
 &amp;gt;&amp;gt;&amp;gt; help(pmd)
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;To show help text for individual interfaces:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;&amp;gt;&amp;gt;&amp;gt; help(pmd.server().net)
+&lt;/code>&lt;/pre>&lt;p>To show help text for individual interfaces:&lt;/p>
+&lt;pre>&lt;code>&amp;gt;&amp;gt;&amp;gt; help(pmd.server().net)
 &amp;gt;&amp;gt;&amp;gt; help(pmd.server().pkg)
 &amp;gt;&amp;gt;&amp;gt; help(pmd.server().firewall)
 &amp;gt;&amp;gt;&amp;gt; help(pmd.server().user)
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For details about the network commands, see also the &lt;a href=&#34;../../../administration-guide/netmgr.python/&#34;&gt;Network Configuration Manager - Python API&lt;/a&gt;.&lt;/p&gt;
-&lt;h2 id=&#34;pmd-c-api&#34;&gt;PMD C API&lt;/h2&gt;
-&lt;p&gt;PMD C APIs are defined in the header files (pmd_fwmgmt.h, pmd_netmgr.h, pmd_pkgmgmt.h, pmd_usermgmt.h) that are stored in the following location:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;[https://github.com/vmware/pmd/tree/master/include](https://github.com/vmware/pmd/tree/master/include)
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For details about the network commands, see also the &lt;a href=&#34;../../../administration-guide/managing-network-configuration//netmgr.c/&#34;&gt;Network Configuration Manager - C API&lt;/a&gt;.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+&lt;/code>&lt;/pre>&lt;p>For details about the network commands, see also the &lt;a href="../../../administration-guide/netmgr.python/">Network Configuration Manager - Python API&lt;/a>.&lt;/p>
+&lt;h2 id="pmd-c-api">PMD C API&lt;/h2>
+&lt;p>PMD C APIs are defined in the header files (pmd_fwmgmt.h, pmd_netmgr.h, pmd_pkgmgmt.h, pmd_usermgmt.h) that are stored in the following location:&lt;/p>
+&lt;pre>&lt;code>[https://github.com/vmware/pmd/tree/master/include](https://github.com/vmware/pmd/tree/master/include)
+&lt;/code>&lt;/pre>&lt;p>For details about the network commands, see also the &lt;a href="../../../administration-guide/managing-network-configuration//netmgr.c/">Network Configuration Manager - C API&lt;/a>.&lt;/p></description></item></channel></rss>

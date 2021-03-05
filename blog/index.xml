@@ -1,98 +1,42 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Blog</title>
-    <link>/blog/</link>
-    <description>Recent content in Blog on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    <lastBuildDate>Wed, 24 Feb 2021 00:00:00 +0000</lastBuildDate>
-    
-	  <atom:link href="/blog/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Blog: Photon OS 4.0 Now Available</title>
-      <link>/blog/2021/02/24/photon-os-4.0-now-available/</link>
-      <pubDate>Wed, 24 Feb 2021 08:46:03 -0800</pubDate>
-      
-      <guid>/blog/2021/02/24/photon-os-4.0-now-available/</guid>
-      <description>
-        
-        
-        &lt;h2 id=&#34;photon-40-release-announcement&#34;&gt;Photon 4.0 Release Announcement&lt;/h2&gt;
-&lt;p&gt;Photon OS team is pleased to announce the release of Photon 4.0 months after the Beta release in November 2020. The release can be downloaded from the Downloads page in the pre-packaged binary formats including bootable ISO, pre-installed minimal OVA customized for a VMware hypervisor environment, Amazon AMI image, Google GCE image, Azure VHD, as well as a Raspberry Pi Image that has been pre-packed and tested on ARM64 architecture. &lt;/p&gt;
-&lt;p&gt;Check out our What&amp;rsquo;s New document &lt;a href=&#34;../docs/overview/whats-new/&#34;&gt;here&lt;/a&gt;&lt;/p&gt;
-&lt;h3 id=&#34;highlights-of-the-release-40&#34;&gt;Highlights of the Release 4.0&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;Kernel upgrade to the latest 5.10&lt;/li&gt;
-&lt;li&gt;Photon Real Time Kernel for Powering the Telco vRAN Applications&lt;/li&gt;
-&lt;li&gt;Security capabilities like SELinux, Security Encrypted Virtualization- Encrypted status and support for Intel® Software Guard Extensions.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;The release also includes improvements to Photon OS Core components and performance improvements to the container runtime environment of vSphere with Tanzu, including faster launch times for containers and applications.&lt;/p&gt;
-&lt;h3 id=&#34;a-huge-shout-out-to-the-photon-os-team&#34;&gt;A huge shout out to the Photon OS Team&lt;/h3&gt;
-&lt;p&gt;Like many projects this past year, most of the major work to deliver Photon OS 4.0 was done during the course of the pandemic. A big thank you and kudos to the Photon OS team for their passion, commitment and sheer resilience they demonstrated. Amidst it all they ensured that the release was delivered on time! It truly takes an entire community, and the team should feel proud of this release.&lt;/p&gt;
-&lt;h3 id=&#34;contribute-to-photon-os&#34;&gt;Contribute to Photon OS&lt;/h3&gt;
-&lt;p&gt;The Photon OS project team welcomes contributions from the community. Your comments, suggestions and bug reports would really help us to improve the future releases of Photon OS. You can find the resources in the following link to start contributing – https://github.com/vmware/photon#contributing&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Blog: Photon OS 4.0 Beta</title>
-      <link>/blog/2020/11/06/photon-os-4.0-beta/</link>
-      <pubDate>Fri, 06 Nov 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/blog/2020/11/06/photon-os-4.0-beta/</guid>
-      <description>
-        
-        
-        &lt;p&gt;&lt;img class=&#34;float-right&#34; src=&#34;../blog/images/photon-768x205.png&#34; alt=&#34;&#34; width=&#34;368&#34; height=&#34;99&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;The Photon OS team at VMware is pleased to announce the Beta release of the Photon 4.0. Photon 4.0 builds upon the innovation of our enterprise class, Open Source virtual appliance OS, which can be found powering thousands of deployments the field. With exciting improvements to the 3.0 rev 2 release, Photon 4.0 comes with new features and capabilities, and important updates including upgrades to kernel 5.9, glibc 2.32, system 245, etc.&lt;/p&gt;
-&lt;p&gt;This release, like its predecessors is available in pre-packaged binary formats including: bootable ISO, pre-installed minimal OVA customized for a VMware hypervisor environment, Amazon AMI image, Google GCE image, Azure VHD, as well as a Raspberry Pi Image that has been pre-packed and tested on ARM64 architecture. The Photon OS 4.0 Beta images can be downloaded from here &lt;a href=&#34;https://github.com/vmware/photon/wiki/Downloading-Photon-OS&#34;&gt;https://github.com/vmware/photon/wiki/Downloading-Photon-OS&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;whats-new-in-photon-40&#34;&gt;What’s New in Photon 4.0&lt;/h2&gt;
-&lt;h3 id=&#34;photon-real-time-kernel-for-powering-the-telco-vran-applications&#34;&gt;Photon Real Time Kernel for Powering the Telco vRAN Applications&lt;/h3&gt;
-&lt;p&gt;Telco 5G is fuelling the growth of the Edge infrastructure as operators are increasingly adopting Virtual Radio Network applications. vRAN applications are expected to handle varying capacity demands, bring significant reduction in costs &amp;amp; enhance customer experience. This requires Edge Infrastructure to play vital role in providing a scalable &amp;amp; flexible platform to support the vRAN workloads&lt;/p&gt;
-&lt;p&gt;We are excited to announce the introduction of the Photon Real Time kernel in Photon 4.0, optimized to run vRAN applications that demand the lowest of latencies. While Photon RT will provide a performant stack to satisfy the needs of thousands of Telco Far Edge sites running critical real time applications, VMware ESXi will help the operators seamlessly manage the infrastructure.&lt;/p&gt;
-&lt;h3 id=&#34;security&#34;&gt;Security&lt;/h3&gt;
-&lt;p&gt;Photon 4.0 brings in several Security capabilities like SELinux, Security Encrypted Virtualization – Encrypted Status, and support for Intel® Software Guard Extensions. With Mandatory Access Control system built directly into the Linux kernel, SELinux equips administrators with more granular access and increased flexibility. Photon OS ships with a default policy that can be customised at build time to support the needs of applications. Photon also supports SELinux for containers which has been tested against docker, containerd, and runc.&lt;/p&gt;
-&lt;p&gt;With support for Intel ® SGX drivers, applications can now leverage CPU hardware capabilities to create hardened ‘enclaves’ or trusted execution modules and secure these memory locations from other processes.&lt;/p&gt;
-&lt;h3 id=&#34;performance-optimization-for-vsphere-with-tanzu&#34;&gt;Performance Optimization for vSphere with Tanzu&lt;/h3&gt;
-&lt;p&gt;Photon historically has had linux-esx, a special kernel flavour, specially optimized for performance and capabilities when it is expected to run on VMware ESXi. Building on this, Photon 4.0 offers a variety of capabilities and performance improvements to the container runtime environment of vSphere with Tanzu, including faster launch times for containers and applications.&lt;/p&gt;
-&lt;h3 id=&#34;photon-os-components-improvements&#34;&gt;Photon OS Components Improvements&lt;/h3&gt;
-&lt;p&gt;Along with this, Photon 4.0 includes upgrades of more than 700 packages, and delivers improvements in core OS components like tdnf, pmd, network config manager etc.&lt;/p&gt;
-&lt;p&gt;This beta release also provides a preview of the features slated to ship in Photon 4.0Of course this is beta software, and while great effort have been made to ensure the build is free from any build or installer bugs, it is intended to be used to test and prepare applications for deployment on this new version. It is not intended for production workloads or use cases.&lt;/p&gt;
-&lt;h3 id=&#34;contribute-to-photon-os&#34;&gt;Contribute to Photon OS&lt;/h3&gt;
-&lt;p&gt;The Photon OS project team welcomes contributions from the community. Your comments, suggestions and bug reports would really help us to improve the future releases of Photon OS. You can find the resources in the following link to start contributing – &lt;a href=&#34;https://github.com/vmware/photon#contributing&#34;&gt;https://github.com/vmware/photon#contributing&lt;/a&gt;&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Blog: New Photon Package Repo</title>
-      <link>/blog/2020/10/20/new-photon-package-repo/</link>
-      <pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate>
-      
-      <guid>/blog/2020/10/20/new-photon-package-repo/</guid>
-      <description>
-        
-        
-        &lt;h2 id=&#34;important-package-repo-information&#34;&gt;Important Package Repo Information&lt;/h2&gt;
-&lt;p&gt;Photon OS currently hosts the required packages and other artifacts using public servers on Bintray. As such, when a user issues any tdnf commands, Photon OS looks for the package updates in the Bintray repository.  Going forward, we will be transitioning away from this service to one that is hosted at &lt;a href=&#34;https://packages.vmware.com/photon&#34;&gt;packages.vmware.com/photon&lt;/a&gt;. &lt;/p&gt;
-&lt;p&gt;Over the last few weeks the team has been busy getting things ready, and the new repository is already populated with all the packages and artifacts and is ready to take over to continue serving packages and updates. Many VMware appliances have already migrated to the new package repository.&lt;/p&gt;
-&lt;p&gt;The existing Bintray repository is scheduled to be retired on 25-Nov-2020. Photon OS consumers who have not already transitioned to the new package repository are required to migrate before as soon as possible.  &lt;/p&gt;
-&lt;p&gt;Customers of Virtual Appliances provided by VMware do not need to take any action as this option should be managed by the Appliance itself.&lt;/p&gt;
-&lt;p&gt;If you are consuming Photon, i.e. users who have downloaded Photon OS from GitHub to run your applications, you just need to make a simple update to the configuration to ensure your instance is pointed to the new repository.  &lt;/p&gt;
-&lt;p&gt;This KB article has a detailed instruction on how to update the package repository configuration.  - &lt;a href=&#34;https://kb.vmware.com/s/article/81304?lang=en_US&#34;&gt;Photon OS Migration to New Package Repository (81304)&lt;/a&gt; &lt;/p&gt;
-&lt;h3 id=&#34;about-photon-os&#34;&gt;About Photon OS &lt;/h3&gt;
-&lt;p&gt;Photon OS™ is an open source Linux operating system from VMware. It is optimised to run cloud-native applications, cloud platforms and virtual infrastructure efficiently. Photon OS provides secure, up-to-date kernel and other packages with timely security vulnerability fixes. Designed for efficient lifecycle management, consumers would find it easy to manage, patch and update using the tdnf package manager and the Photon Management Daemon (PMD). Photon OS binaries are available in several formats, including ISO, OVA and cloud images such as Amazon AMI, Google Cloud GCE image and Azure VHD for consumers to use.  &lt;/p&gt;
-&lt;p&gt;Photon OS is specially optimized for vSphere and host of other VMware virtual appliances running on VMware virtual infrastructure.  Photon OS is also a minimalistic, light weight Linux container host providing secure run-time environment for efficiently running containers.  &lt;/p&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Blog</title><link>/blog/</link><description>Recent content in Blog on</description><generator>Hugo -- gohugo.io</generator><lastBuildDate>Wed, 24 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="/blog/index.xml" rel="self" type="application/rss+xml"/><item><title>Blog: Photon OS 4.0 Now Available</title><link>/blog/2021/02/24/photon-os-4.0-now-available/</link><pubDate>Wed, 24 Feb 2021 08:46:03 -0800</pubDate><guid>/blog/2021/02/24/photon-os-4.0-now-available/</guid><description>
+&lt;h2 id="photon-40-release-announcement">Photon 4.0 Release Announcement&lt;/h2>
+&lt;p>Photon OS team is pleased to announce the release of Photon 4.0 months after the Beta release in November 2020. The release can be downloaded from the Downloads page in the pre-packaged binary formats including bootable ISO, pre-installed minimal OVA customized for a VMware hypervisor environment, Amazon AMI image, Google GCE image, Azure VHD, as well as a Raspberry Pi Image that has been pre-packed and tested on ARM64 architecture. &lt;/p>
+&lt;p>Check out our What&amp;rsquo;s New document &lt;a href="../docs/overview/whats-new/">here&lt;/a>&lt;/p>
+&lt;h3 id="highlights-of-the-release-40">Highlights of the Release 4.0&lt;/h3>
+&lt;ul>
+&lt;li>Kernel upgrade to the latest 5.10&lt;/li>
+&lt;li>Photon Real Time Kernel for Powering the Telco vRAN Applications&lt;/li>
+&lt;li>Security capabilities like SELinux, Security Encrypted Virtualization- Encrypted status and support for Intel® Software Guard Extensions.&lt;/li>
+&lt;/ul>
+&lt;p>The release also includes improvements to Photon OS Core components and performance improvements to the container runtime environment of vSphere with Tanzu, including faster launch times for containers and applications.&lt;/p>
+&lt;h3 id="a-huge-shout-out-to-the-photon-os-team">A huge shout out to the Photon OS Team&lt;/h3>
+&lt;p>Like many projects this past year, most of the major work to deliver Photon OS 4.0 was done during the course of the pandemic. A big thank you and kudos to the Photon OS team for their passion, commitment and sheer resilience they demonstrated. Amidst it all they ensured that the release was delivered on time! It truly takes an entire community, and the team should feel proud of this release.&lt;/p>
+&lt;h3 id="contribute-to-photon-os">Contribute to Photon OS&lt;/h3>
+&lt;p>The Photon OS project team welcomes contributions from the community. Your comments, suggestions and bug reports would really help us to improve the future releases of Photon OS. You can find the resources in the following link to start contributing – https://github.com/vmware/photon#contributing&lt;/p></description></item><item><title>Blog: Photon OS 4.0 Beta</title><link>/blog/2020/11/06/photon-os-4.0-beta/</link><pubDate>Fri, 06 Nov 2020 00:00:00 +0000</pubDate><guid>/blog/2020/11/06/photon-os-4.0-beta/</guid><description>
+&lt;p>&lt;img class="float-right" src="../blog/images/photon-768x205.png" alt="" width="368" height="99" />&lt;/p>
+&lt;p>The Photon OS team at VMware is pleased to announce the Beta release of the Photon 4.0. Photon 4.0 builds upon the innovation of our enterprise class, Open Source virtual appliance OS, which can be found powering thousands of deployments the field. With exciting improvements to the 3.0 rev 2 release, Photon 4.0 comes with new features and capabilities, and important updates including upgrades to kernel 5.9, glibc 2.32, system 245, etc.&lt;/p>
+&lt;p>This release, like its predecessors is available in pre-packaged binary formats including: bootable ISO, pre-installed minimal OVA customized for a VMware hypervisor environment, Amazon AMI image, Google GCE image, Azure VHD, as well as a Raspberry Pi Image that has been pre-packed and tested on ARM64 architecture. The Photon OS 4.0 Beta images can be downloaded from here &lt;a href="https://github.com/vmware/photon/wiki/Downloading-Photon-OS">https://github.com/vmware/photon/wiki/Downloading-Photon-OS&lt;/a>&lt;/p>
+&lt;h2 id="whats-new-in-photon-40">What’s New in Photon 4.0&lt;/h2>
+&lt;h3 id="photon-real-time-kernel-for-powering-the-telco-vran-applications">Photon Real Time Kernel for Powering the Telco vRAN Applications&lt;/h3>
+&lt;p>Telco 5G is fuelling the growth of the Edge infrastructure as operators are increasingly adopting Virtual Radio Network applications. vRAN applications are expected to handle varying capacity demands, bring significant reduction in costs &amp;amp; enhance customer experience. This requires Edge Infrastructure to play vital role in providing a scalable &amp;amp; flexible platform to support the vRAN workloads&lt;/p>
+&lt;p>We are excited to announce the introduction of the Photon Real Time kernel in Photon 4.0, optimized to run vRAN applications that demand the lowest of latencies. While Photon RT will provide a performant stack to satisfy the needs of thousands of Telco Far Edge sites running critical real time applications, VMware ESXi will help the operators seamlessly manage the infrastructure.&lt;/p>
+&lt;h3 id="security">Security&lt;/h3>
+&lt;p>Photon 4.0 brings in several Security capabilities like SELinux, Security Encrypted Virtualization – Encrypted Status, and support for Intel® Software Guard Extensions. With Mandatory Access Control system built directly into the Linux kernel, SELinux equips administrators with more granular access and increased flexibility. Photon OS ships with a default policy that can be customised at build time to support the needs of applications. Photon also supports SELinux for containers which has been tested against docker, containerd, and runc.&lt;/p>
+&lt;p>With support for Intel ® SGX drivers, applications can now leverage CPU hardware capabilities to create hardened ‘enclaves’ or trusted execution modules and secure these memory locations from other processes.&lt;/p>
+&lt;h3 id="performance-optimization-for-vsphere-with-tanzu">Performance Optimization for vSphere with Tanzu&lt;/h3>
+&lt;p>Photon historically has had linux-esx, a special kernel flavour, specially optimized for performance and capabilities when it is expected to run on VMware ESXi. Building on this, Photon 4.0 offers a variety of capabilities and performance improvements to the container runtime environment of vSphere with Tanzu, including faster launch times for containers and applications.&lt;/p>
+&lt;h3 id="photon-os-components-improvements">Photon OS Components Improvements&lt;/h3>
+&lt;p>Along with this, Photon 4.0 includes upgrades of more than 700 packages, and delivers improvements in core OS components like tdnf, pmd, network config manager etc.&lt;/p>
+&lt;p>This beta release also provides a preview of the features slated to ship in Photon 4.0Of course this is beta software, and while great effort have been made to ensure the build is free from any build or installer bugs, it is intended to be used to test and prepare applications for deployment on this new version. It is not intended for production workloads or use cases.&lt;/p>
+&lt;h3 id="contribute-to-photon-os">Contribute to Photon OS&lt;/h3>
+&lt;p>The Photon OS project team welcomes contributions from the community. Your comments, suggestions and bug reports would really help us to improve the future releases of Photon OS. You can find the resources in the following link to start contributing – &lt;a href="https://github.com/vmware/photon#contributing">https://github.com/vmware/photon#contributing&lt;/a>&lt;/p></description></item><item><title>Blog: New Photon Package Repo</title><link>/blog/2020/10/20/new-photon-package-repo/</link><pubDate>Tue, 20 Oct 2020 00:00:00 +0000</pubDate><guid>/blog/2020/10/20/new-photon-package-repo/</guid><description>
+&lt;h2 id="important-package-repo-information">Important Package Repo Information&lt;/h2>
+&lt;p>Photon OS currently hosts the required packages and other artifacts using public servers on Bintray. As such, when a user issues any tdnf commands, Photon OS looks for the package updates in the Bintray repository.  Going forward, we will be transitioning away from this service to one that is hosted at &lt;a href="https://packages.vmware.com/photon">packages.vmware.com/photon&lt;/a>. &lt;/p>
+&lt;p>Over the last few weeks the team has been busy getting things ready, and the new repository is already populated with all the packages and artifacts and is ready to take over to continue serving packages and updates. Many VMware appliances have already migrated to the new package repository.&lt;/p>
+&lt;p>The existing Bintray repository is scheduled to be retired on 25-Nov-2020. Photon OS consumers who have not already transitioned to the new package repository are required to migrate before as soon as possible.  &lt;/p>
+&lt;p>Customers of Virtual Appliances provided by VMware do not need to take any action as this option should be managed by the Appliance itself.&lt;/p>
+&lt;p>If you are consuming Photon, i.e. users who have downloaded Photon OS from GitHub to run your applications, you just need to make a simple update to the configuration to ensure your instance is pointed to the new repository.  &lt;/p>
+&lt;p>This KB article has a detailed instruction on how to update the package repository configuration.  - &lt;a href="https://kb.vmware.com/s/article/81304?lang=en_US">Photon OS Migration to New Package Repository (81304)&lt;/a> &lt;/p>
+&lt;h3 id="about-photon-os">About Photon OS &lt;/h3>
+&lt;p>Photon OS™ is an open source Linux operating system from VMware. It is optimised to run cloud-native applications, cloud platforms and virtual infrastructure efficiently. Photon OS provides secure, up-to-date kernel and other packages with timely security vulnerability fixes. Designed for efficient lifecycle management, consumers would find it easy to manage, patch and update using the tdnf package manager and the Photon Management Daemon (PMD). Photon OS binaries are available in several formats, including ISO, OVA and cloud images such as Amazon AMI, Google Cloud GCE image and Azure VHD for consumers to use.  &lt;/p>
+&lt;p>Photon OS is specially optimized for vSphere and host of other VMware virtual appliances running on VMware virtual infrastructure.  Photon OS is also a minimalistic, light weight Linux container host providing secure run-time environment for efficiently running containers.  &lt;/p></description></item></channel></rss>

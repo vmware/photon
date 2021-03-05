@@ -1,139 +1,90 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Systemd</title>
-    <link>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/</link>
-    <description>Recent content in Systemd on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs-V3: Enabling `systemd` Debug Shell During Boot</title>
-      <link>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/enabling-systemd-debug/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/enabling-systemd-debug/</guid>
-      <description>
-        
-        
-        &lt;p&gt;To diagnose &lt;code&gt;systemd&lt;/code&gt; related boot issues, you can enable early shell access during boot.&lt;/p&gt;
-&lt;p&gt;Perform the following steps to enable early shell access:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Restart the Photon OS machine or the virtual machine running Photon OS.&lt;/p&gt;
-&lt;p&gt;When the Photon OS splash screen appears, as it restarts, type the letter &lt;code&gt;e&lt;/code&gt; quickly.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Append &lt;code&gt;systemd.debug-shell=1&lt;/code&gt; to the kernel command line.&lt;/p&gt;
-&lt;p&gt;Optionally, to change logging level to debug, you can append &lt;code&gt;systemd.log_level=debug&lt;/code&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Press &lt;code&gt;F10&lt;/code&gt; to proceed with the boot.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Press &lt;code&gt;Alt+Ctrl+F9&lt;/code&gt; to switch to &lt;code&gt;tty9&lt;/code&gt; to access the debug shell.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Troubleshooting Services With &#39;systemctl`</title>
-      <link>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/troubleshooting-services/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/troubleshooting-services/</guid>
-      <description>
-        
-        
-        &lt;p&gt;To view a description of all the active, loaded units, execute the systemctl command without any options or arguments:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemctl
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;To see all the loaded, active, and inactive units and their description, run this command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemctl --all
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;To see all the unit files and their current status but no description, run this command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemctl list-unit-files
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The &lt;code&gt;grep&lt;/code&gt; command filters the services by a search term, a helpful tactic to recall the exact name of a unit file without looking through a long list of names. Example:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemctl list-unit-files | grep network
-org.freedesktop.network1.busname           static
-dbus-org.freedesktop.network1.service      enabled
-systemd-networkd-wait-online.service       enabled
-systemd-networkd.service                   enabled
-systemd-networkd.socket                    enabled
-network-online.target                      static
-network-pre.target                         static
-network.target  
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;For example, to list all the services that you can manage on Photon OS, you run the following command instead of &lt;code&gt;ls /etc/rc.d/init.d/&lt;/code&gt;:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemctl list-unit-files --type=service
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Similarly, to check whether the &lt;code&gt;sshd&lt;/code&gt; service is enabled, on Photon OS you run the following command instead of &lt;code&gt;chkconfig sshd&lt;/code&gt;:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemctl is-enabled sshd
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The &lt;code&gt;chkconfig --list&lt;/code&gt; command that shows which services are enabled for which runlevel on a SysVinit computer becomes substantially different on Photon OS because there are no runlevels, only targets:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;ls /etc/systemd/system/*.wants
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;You can also display similar information with the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemctl list-unit-files --type=service
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The following is list of some of the systemd commands that take the place of &lt;code&gt;SysVinit&lt;/code&gt; commands on Photon OS:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;USE THIS SYSTEMD COMMAND 	INSTEAD OF THIS SYSVINIT COMMAND
-systemctl start sshd 		service sshd start
-systemctl stop sshd 		service sshd stop
-systemctl restart sshd 		service sshd restart
-systemctl reload sshd 		service sshd reload
-systemctl condrestart sshd 	service sshd condrestart
-systemctl status sshd 		service sshd status
-systemctl enable sshd 		chkconfig sshd on
-systemctl disable sshd 		chkconfig sshd off
-systemctl daemon-reload		chkconfig sshd --add
-&lt;/code&gt;&lt;/pre&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Analyzing System Logs with `journalctl`</title>
-      <link>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/analyzing-system-logs-with-journalctl/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/analyzing-system-logs-with-journalctl/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The journalctl tool queries the contents of the systemd journal. On Photon OS, all the system logs except the installation log and the cloud-init log are written into the systemd journal.&lt;/p&gt;
-&lt;p&gt;When you run the &lt;code&gt;journalctl&lt;/code&gt; command without any parameters, it displays all the contents of the journal, beginning with the oldest entry.&lt;/p&gt;
-&lt;p&gt;To display the output in reverse order with new entries first, include the &lt;code&gt;-r&lt;/code&gt; option in the command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;journalctl -r
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The &lt;code&gt;journalctl&lt;/code&gt; command includes many options to filter its output. For help troubleshooting systemd, two journalctl queries are particularly useful:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Showing the log entries for the last boot.&lt;/p&gt;
-&lt;p&gt;The following command displays the messages that systemd generated during the last time the machine started:&lt;/p&gt;
-&lt;p&gt;journalctl -b&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Showing the log entries for a systemd service unit.Item&lt;/p&gt;
-&lt;p&gt;The following command reveals the messages for only the systemd service unit specified by the &lt;code&gt;-u&lt;/code&gt; option, which in the following example is the auditing service:&lt;/p&gt;
-&lt;p&gt;journalctl -u auditd&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;You can look at the messages for systemd itself or for the network service:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;journalctl -u systemd
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Systemd</title><link>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/</link><description>Recent content in Systemd on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs-V3: Enabling `systemd` Debug Shell During Boot</title><link>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/enabling-systemd-debug/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/enabling-systemd-debug/</guid><description>
+&lt;p>To diagnose &lt;code>systemd&lt;/code> related boot issues, you can enable early shell access during boot.&lt;/p>
+&lt;p>Perform the following steps to enable early shell access:&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Restart the Photon OS machine or the virtual machine running Photon OS.&lt;/p>
+&lt;p>When the Photon OS splash screen appears, as it restarts, type the letter &lt;code>e&lt;/code> quickly.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Append &lt;code>systemd.debug-shell=1&lt;/code> to the kernel command line.&lt;/p>
+&lt;p>Optionally, to change logging level to debug, you can append &lt;code>systemd.log_level=debug&lt;/code>.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Press &lt;code>F10&lt;/code> to proceed with the boot.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Press &lt;code>Alt+Ctrl+F9&lt;/code> to switch to &lt;code>tty9&lt;/code> to access the debug shell.&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>Docs-V3: Troubleshooting Services With 'systemctl`</title><link>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/troubleshooting-services/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/troubleshooting-services/</guid><description>
+&lt;p>To view a description of all the active, loaded units, execute the systemctl command without any options or arguments:&lt;/p>
+&lt;pre>&lt;code>systemctl
+&lt;/code>&lt;/pre>
+&lt;p>To see all the loaded, active, and inactive units and their description, run this command:&lt;/p>
+&lt;pre>&lt;code>systemctl --all
+&lt;/code>&lt;/pre>
+&lt;p>To see all the unit files and their current status but no description, run this command:&lt;/p>
+&lt;pre>&lt;code>systemctl list-unit-files
+&lt;/code>&lt;/pre>
+&lt;p>The &lt;code>grep&lt;/code> command filters the services by a search term, a helpful tactic to recall the exact name of a unit file without looking through a long list of names. Example:&lt;/p>
+&lt;pre>&lt;code>systemctl list-unit-files | grep network
+org.freedesktop.network1.busname static
+dbus-org.freedesktop.network1.service enabled
+systemd-networkd-wait-online.service enabled
+systemd-networkd.service enabled
+systemd-networkd.socket enabled
+network-online.target static
+network-pre.target static
+network.target
+&lt;/code>&lt;/pre>
+&lt;p>For example, to list all the services that you can manage on Photon OS, you run the following command instead of &lt;code>ls /etc/rc.d/init.d/&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>systemctl list-unit-files --type=service
+&lt;/code>&lt;/pre>
+&lt;p>Similarly, to check whether the &lt;code>sshd&lt;/code> service is enabled, on Photon OS you run the following command instead of &lt;code>chkconfig sshd&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>systemctl is-enabled sshd
+&lt;/code>&lt;/pre>
+&lt;p>The &lt;code>chkconfig --list&lt;/code> command that shows which services are enabled for which runlevel on a SysVinit computer becomes substantially different on Photon OS because there are no runlevels, only targets:&lt;/p>
+&lt;pre>&lt;code>ls /etc/systemd/system/*.wants
+&lt;/code>&lt;/pre>
+&lt;p>You can also display similar information with the following command:&lt;/p>
+&lt;pre>&lt;code>systemctl list-unit-files --type=service
+&lt;/code>&lt;/pre>
+&lt;p>The following is list of some of the systemd commands that take the place of &lt;code>SysVinit&lt;/code> commands on Photon OS:&lt;/p>
+&lt;pre>&lt;code>USE THIS SYSTEMD COMMAND INSTEAD OF THIS SYSVINIT COMMAND
+systemctl start sshd service sshd start
+systemctl stop sshd service sshd stop
+systemctl restart sshd service sshd restart
+systemctl reload sshd service sshd reload
+systemctl condrestart sshd service sshd condrestart
+systemctl status sshd service sshd status
+systemctl enable sshd chkconfig sshd on
+systemctl disable sshd chkconfig sshd off
+systemctl daemon-reload chkconfig sshd --add
+&lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Analyzing System Logs with `journalctl`</title><link>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/analyzing-system-logs-with-journalctl/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/analyzing-system-logs-with-journalctl/</guid><description>
+&lt;p>The journalctl tool queries the contents of the systemd journal. On Photon OS, all the system logs except the installation log and the cloud-init log are written into the systemd journal.&lt;/p>
+&lt;p>When you run the &lt;code>journalctl&lt;/code> command without any parameters, it displays all the contents of the journal, beginning with the oldest entry.&lt;/p>
+&lt;p>To display the output in reverse order with new entries first, include the &lt;code>-r&lt;/code> option in the command:&lt;/p>
+&lt;pre>&lt;code>journalctl -r
+&lt;/code>&lt;/pre>
+&lt;p>The &lt;code>journalctl&lt;/code> command includes many options to filter its output. For help troubleshooting systemd, two journalctl queries are particularly useful:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>Showing the log entries for the last boot.&lt;/p>
+&lt;p>The following command displays the messages that systemd generated during the last time the machine started:&lt;/p>
+&lt;p>journalctl -b&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Showing the log entries for a systemd service unit.Item&lt;/p>
+&lt;p>The following command reveals the messages for only the systemd service unit specified by the &lt;code>-u&lt;/code> option, which in the following example is the auditing service:&lt;/p>
+&lt;p>journalctl -u auditd&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>You can look at the messages for systemd itself or for the network service:&lt;/p>
+&lt;pre>&lt;code>journalctl -u systemd
 journalctl -u systemd-networkd
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Example:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;root@photon-1a0375a0392e [ ~ ]# journalctl -u systemd-networkd
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>root@photon-1a0375a0392e [ ~ ]# journalctl -u systemd-networkd
 -- Logs begin at Tue 2016-08-23 14:35:50 UTC, end at Tue 2016-08-23 23:45:44 UTC. --
 Aug 23 14:35:52 photon-1a0375a0392e systemd[1]: Starting Network Service...
 Aug 23 14:35:52 photon-1a0375a0392e systemd-networkd[458]: Enumeration completed
@@ -142,64 +93,32 @@ Aug 23 14:35:52 photon-1a0375a0392e systemd-networkd[458]: eth0: Gained carrier
 Aug 23 14:35:53 photon-1a0375a0392e systemd-networkd[458]: eth0: DHCPv4 address 198.51.100.1
 Aug 23 14:35:54 photon-1a0375a0392e systemd-networkd[458]: eth0: Gained IPv6LL
 Aug 23 14:35:54 photon-1a0375a0392e systemd-networkd[458]: eth0: Configured
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;For more information, see &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/journalctl.html&#34;&gt;journalctl&lt;/a&gt; or the journalctl man page by running this command: &lt;code&gt;man journalctl&lt;/code&gt;&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Inspecting Services with `systemd-analyze`</title>
-      <link>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/inspecting-services-with-systemd-analyze/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/inspecting-services-with-systemd-analyze/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The &lt;code&gt;systemd-analyze&lt;/code&gt; command reveals performance statistics for boot times, traces system services, and verifies unit files. It can help troubleshoot slow system boots and incorrect unit files. See the man page for a list of options.&lt;/p&gt;
-&lt;p&gt;Examples:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemd-analyze blame
-
-systemd-analyze dump&lt;/code&gt;&lt;/pre&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs-V3: Inspecting Services with `systemd-analyze`systemd</title>
-      <link>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/troubleshooting_systemd/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/troubleshooting_systemd/</guid>
-      <description>
-        
-        
-        &lt;p&gt;systemd is a suite of basic building blocks for a Linux system. It provides a system and service manager that runs as Process ID 1 and starts the rest of the system.&lt;/p&gt;
-&lt;p&gt;To manage the services run the following commands:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;systemctl&lt;/code&gt; or &lt;code&gt;systemctl list-units&lt;/code&gt; : This command lists the running units.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;systemctl --failed&lt;/code&gt; : This command lists failed units.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;systemctl list-unit-files&lt;/code&gt; : This command lists all the installed unit files. The unit files are usually present in &lt;strong&gt;/usr/lib/systemd/system/&lt;/strong&gt; and &lt;strong&gt;/etc/systemd/system/&lt;/strong&gt;.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;systemctl status pid&lt;/code&gt; : This command displays the cgroup slice, memory and parent for a PID.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;systemctl start unit&lt;/code&gt; : This command starts a unit immediately.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;systemctl stop unit&lt;/code&gt; : This command stops a unit.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;systemctl restart unit&lt;/code&gt; : This command restarts a unit.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;systemctl reload unit&lt;/code&gt; : This command asks a unit to reload its configuration.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;systemctl status unit&lt;/code&gt; : This command displays the status of a unit.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;systemctl enable unit&lt;/code&gt; : This command enables a unit to run on startup.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;systemctl enable --now unit&lt;/code&gt; : This command enables a unit to run on startup and start immediately.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;systemctl disable unit&lt;/code&gt; : This command disables a unit and removes it from the startup program.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;systemctl mask unit&lt;/code&gt; : This command masks a unit to make it impossible to start.&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;systemctl unmask unit&lt;/code&gt; : This command unmasks a unit.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;To get an overview of the system boot-up time, run the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemd-analyze
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;To view a list of all running units, sorted by the time they took to initialize (highest time on top), run the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemd-analyze blame
-&lt;/code&gt;&lt;/pre&gt;
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+&lt;/code>&lt;/pre>
+&lt;p>For more information, see &lt;a href="https://www.freedesktop.org/software/systemd/man/journalctl.html">journalctl&lt;/a> or the journalctl man page by running this command: &lt;code>man journalctl&lt;/code>&lt;/p></description></item><item><title>Docs-V3: Inspecting Services with `systemd-analyze`</title><link>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/inspecting-services-with-systemd-analyze/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/inspecting-services-with-systemd-analyze/</guid><description>
+&lt;p>The &lt;code>systemd-analyze&lt;/code> command reveals performance statistics for boot times, traces system services, and verifies unit files. It can help troubleshoot slow system boots and incorrect unit files. See the man page for a list of options.&lt;/p>
+&lt;p>Examples:&lt;/p>
+&lt;pre>&lt;code>systemd-analyze blame
+systemd-analyze dump&lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Inspecting Services with `systemd-analyze`systemd</title><link>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/troubleshooting_systemd/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/troubleshooting-with-systemd/troubleshooting_systemd/</guid><description>
+&lt;p>systemd is a suite of basic building blocks for a Linux system. It provides a system and service manager that runs as Process ID 1 and starts the rest of the system.&lt;/p>
+&lt;p>To manage the services run the following commands:&lt;/p>
+&lt;ul>
+&lt;li>&lt;code>systemctl&lt;/code> or &lt;code>systemctl list-units&lt;/code> : This command lists the running units.&lt;/li>
+&lt;li>&lt;code>systemctl --failed&lt;/code> : This command lists failed units.&lt;/li>
+&lt;li>&lt;code>systemctl list-unit-files&lt;/code> : This command lists all the installed unit files. The unit files are usually present in &lt;strong>/usr/lib/systemd/system/&lt;/strong> and &lt;strong>/etc/systemd/system/&lt;/strong>.&lt;/li>
+&lt;li>&lt;code>systemctl status pid&lt;/code> : This command displays the cgroup slice, memory and parent for a PID.&lt;/li>
+&lt;li>&lt;code>systemctl start unit&lt;/code> : This command starts a unit immediately.&lt;/li>
+&lt;li>&lt;code>systemctl stop unit&lt;/code> : This command stops a unit.&lt;/li>
+&lt;li>&lt;code>systemctl restart unit&lt;/code> : This command restarts a unit.&lt;/li>
+&lt;li>&lt;code>systemctl reload unit&lt;/code> : This command asks a unit to reload its configuration.&lt;/li>
+&lt;li>&lt;code>systemctl status unit&lt;/code> : This command displays the status of a unit.&lt;/li>
+&lt;li>&lt;code>systemctl enable unit&lt;/code> : This command enables a unit to run on startup.&lt;/li>
+&lt;li>&lt;code>systemctl enable --now unit&lt;/code> : This command enables a unit to run on startup and start immediately.&lt;/li>
+&lt;li>&lt;code>systemctl disable unit&lt;/code> : This command disables a unit and removes it from the startup program.&lt;/li>
+&lt;li>&lt;code>systemctl mask unit&lt;/code> : This command masks a unit to make it impossible to start.&lt;/li>
+&lt;li>&lt;code>systemctl unmask unit&lt;/code> : This command unmasks a unit.&lt;/li>
+&lt;/ul>
+&lt;p>To get an overview of the system boot-up time, run the following command:&lt;/p>
+&lt;pre>&lt;code>systemd-analyze
+&lt;/code>&lt;/pre>&lt;p>To view a list of all running units, sorted by the time they took to initialize (highest time on top), run the following command:&lt;/p>
+&lt;pre>&lt;code>systemd-analyze blame
+&lt;/code>&lt;/pre></description></item></channel></rss>

@@ -1,380 +1,283 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Cloud-Init on Photon OS</title>
-    <link>/docs/administration-guide/cloud-init-on-photon-os/</link>
-    <description>Recent content in Cloud-Init on Photon OS on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs/administration-guide/cloud-init-on-photon-os/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs: Cloud-Init Overview</title>
-      <link>/docs/administration-guide/cloud-init-on-photon-os/cloud-init-overview/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/cloud-init-on-photon-os/cloud-init-overview/</guid>
-      <description>
-        
-        
-        &lt;p&gt;&lt;code&gt;cloud-init&lt;/code&gt; is a multi-distribution package that handles early initialization of a cloud instance.&lt;/p&gt;
-&lt;p&gt;In-depth documentation for cloud-init is available here:&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://cloudinit.readthedocs.org/en/latest/&#34;&gt;https://cloudinit.readthedocs.org/en/latest/&lt;/a&gt;&lt;/p&gt;
-&lt;h1 id=&#34;supported-installations&#34;&gt;Supported installations&lt;/h1&gt;
-&lt;p&gt;Both the full version of and the minimal version of Photon OS support cloud-init.&lt;/p&gt;
-&lt;h1 id=&#34;supported-capabilities&#34;&gt;Supported capabilities&lt;/h1&gt;
-&lt;p&gt;Photon OS supports the following cloud-init capabilities:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;run commands: execute a list of commands with output to console.&lt;/li&gt;
-&lt;li&gt;configure ssh keys: add an entry to ~/.ssh/authorized_keys for the configured user.&lt;/li&gt;
-&lt;li&gt;install package: install additional packages on first boot.&lt;/li&gt;
-&lt;li&gt;configure networking: update /etc/hosts, hostname, etc.&lt;/li&gt;
-&lt;li&gt;write files: write arbitrary files to disk.&lt;/li&gt;
-&lt;li&gt;add yum repository: add a yum repository to /etc/yum.repos.d.&lt;/li&gt;
-&lt;li&gt;create groups and users: add groups and users to the system and set properties for them.&lt;/li&gt;
-&lt;li&gt;run yum upgrade: upgrade all packages.&lt;/li&gt;
-&lt;li&gt;reboot: reboot or power off when done with cloud-init.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h1 id=&#34;getting-started&#34;&gt;Getting Started&lt;/h1&gt;
-&lt;p&gt;The Amazon Machine Image of Photon OS has an &lt;code&gt;ec2 datasource&lt;/code&gt; turned on by default so an &lt;code&gt;ec2&lt;/code&gt; configuration is accepted.
-However, for testing, the following methods provide ways to do &lt;code&gt;cloud-init&lt;/code&gt; with a standalone instance of Photon OS.&lt;/p&gt;
-&lt;h2 id=&#34;using-a-seed-iso&#34;&gt;Using a Seed ISO&lt;/h2&gt;
-&lt;p&gt;This will be using the &lt;code&gt;nocloud&lt;/code&gt; data source. In order to initialize the system in this way, an ISO file needs to be created with a meta-data file and an user-data file as shown below:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;$ { echo instance-id: iid-local01; echo local-hostname: cloudimg; } &amp;gt; meta-data
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Cloud-Init on Photon OS</title><link>/docs/administration-guide/cloud-init-on-photon-os/</link><description>Recent content in Cloud-Init on Photon OS on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/administration-guide/cloud-init-on-photon-os/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Cloud-Init Overview</title><link>/docs/administration-guide/cloud-init-on-photon-os/cloud-init-overview/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/cloud-init-on-photon-os/cloud-init-overview/</guid><description>
+&lt;p>&lt;code>cloud-init&lt;/code> is a multi-distribution package that handles early initialization of a cloud instance.&lt;/p>
+&lt;p>In-depth documentation for cloud-init is available here:&lt;/p>
+&lt;p>&lt;a href="https://cloudinit.readthedocs.org/en/latest/">https://cloudinit.readthedocs.org/en/latest/&lt;/a>&lt;/p>
+&lt;h1 id="supported-installations">Supported installations&lt;/h1>
+&lt;p>Both the full version of and the minimal version of Photon OS support cloud-init.&lt;/p>
+&lt;h1 id="supported-capabilities">Supported capabilities&lt;/h1>
+&lt;p>Photon OS supports the following cloud-init capabilities:&lt;/p>
+&lt;ul>
+&lt;li>run commands: execute a list of commands with output to console.&lt;/li>
+&lt;li>configure ssh keys: add an entry to ~/.ssh/authorized_keys for the configured user.&lt;/li>
+&lt;li>install package: install additional packages on first boot.&lt;/li>
+&lt;li>configure networking: update /etc/hosts, hostname, etc.&lt;/li>
+&lt;li>write files: write arbitrary files to disk.&lt;/li>
+&lt;li>add yum repository: add a yum repository to /etc/yum.repos.d.&lt;/li>
+&lt;li>create groups and users: add groups and users to the system and set properties for them.&lt;/li>
+&lt;li>run yum upgrade: upgrade all packages.&lt;/li>
+&lt;li>reboot: reboot or power off when done with cloud-init.&lt;/li>
+&lt;/ul>
+&lt;h1 id="getting-started">Getting Started&lt;/h1>
+&lt;p>The Amazon Machine Image of Photon OS has an &lt;code>ec2 datasource&lt;/code> turned on by default so an &lt;code>ec2&lt;/code> configuration is accepted.
+However, for testing, the following methods provide ways to do &lt;code>cloud-init&lt;/code> with a standalone instance of Photon OS.&lt;/p>
+&lt;h2 id="using-a-seed-iso">Using a Seed ISO&lt;/h2>
+&lt;p>This will be using the &lt;code>nocloud&lt;/code> data source. In order to initialize the system in this way, an ISO file needs to be created with a meta-data file and an user-data file as shown below:&lt;/p>
+&lt;pre>&lt;code>$ { echo instance-id: iid-local01; echo local-hostname: cloudimg; } &amp;gt; meta-data
 $ printf &amp;quot;#cloud-config\nhostname: testhost\n&amp;quot; &amp;gt; user-data
-$ genisoimage  -output seed.iso -volid cidata -joliet -rock user-data meta-data
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Attach the &lt;code&gt;seed.iso&lt;/code&gt; generated above to your machine and reboot for the init to take effect.
-In this case, the hostname is set to &lt;code&gt;testhost&lt;/code&gt;.&lt;/p&gt;
-&lt;h2 id=&#34;using-a-seed-disk-file&#34;&gt;Using a Seed Disk File&lt;/h2&gt;
-&lt;p&gt;To init using local disk files, do the following:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;mkdir /var/lib/cloud/seed/nocloud
+$ genisoimage -output seed.iso -volid cidata -joliet -rock user-data meta-data
+&lt;/code>&lt;/pre>&lt;p>Attach the &lt;code>seed.iso&lt;/code> generated above to your machine and reboot for the init to take effect.
+In this case, the hostname is set to &lt;code>testhost&lt;/code>.&lt;/p>
+&lt;h2 id="using-a-seed-disk-file">Using a Seed Disk File&lt;/h2>
+&lt;p>To init using local disk files, do the following:&lt;/p>
+&lt;pre>&lt;code>mkdir /var/lib/cloud/seed/nocloud
 cd /var/lib/cloud/seed/nocloud
 $ { echo instance-id: iid-local01; echo local-hostname: cloudimg; } &amp;gt; meta-data
 $ printf &amp;quot;#cloud-config\nhostname: testhost\n&amp;quot; &amp;gt; user-data
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Reboot the machine and the hostname will be set to &lt;code&gt;testhost&lt;/code&gt;.&lt;/p&gt;
-&lt;h2 id=&#34;frequencies&#34;&gt;Frequencies&lt;/h2&gt;
-&lt;p&gt;Cloud-init modules have predetermined frequencies. Based on the frequency setting, multiple runs will yield different results. For the scripts to always run, remove the &lt;code&gt;instances&lt;/code&gt; directory before rebooting.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;rm -rf /var/lib/cloud/instances
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;module-frequency-info&#34;&gt;Module Frequency Info&lt;/h2&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th&gt;Name&lt;/th&gt;
-&lt;th&gt;Frequency&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td&gt;disable_ec2_metadata&lt;/td&gt;
-&lt;td&gt;Always&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;users_groups&lt;/td&gt;
-&lt;td&gt;Instance&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;write_files&lt;/td&gt;
-&lt;td&gt;Instance&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;update_hostname&lt;/td&gt;
-&lt;td&gt;Always&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;final_message&lt;/td&gt;
-&lt;td&gt;Always&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;resolv_conf&lt;/td&gt;
-&lt;td&gt;Instance&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;growpart&lt;/td&gt;
-&lt;td&gt;Always&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;update_etc_hosts&lt;/td&gt;
-&lt;td&gt;Always&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;power_state_change&lt;/td&gt;
-&lt;td&gt;Instance&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td&gt;phone_home&lt;/td&gt;
-&lt;td&gt;Instance&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Deploy Photon OS With `cloud-init`</title>
-      <link>/docs/administration-guide/cloud-init-on-photon-os/deploy-photon-os-with-cloud-init/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/cloud-init-on-photon-os/deploy-photon-os-with-cloud-init/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can deploy Photon OS with &lt;code&gt;cloud-init&lt;/code&gt; in the following ways:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;As a stand-alone Photon machine&lt;/li&gt;
-&lt;li&gt;In Amazon Elastic Compute Cloud, called EC2&lt;/li&gt;
-&lt;li&gt;In the Google cloud through the Google Compute Engine, or GCE&lt;/li&gt;
-&lt;li&gt;In a VMware Vsphere private cloud&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;When a cloud instance of Photon OS starts, &lt;code&gt;cloud-init&lt;/code&gt; requires a data source. The data source can be an EC2 file for Amazon&amp;rsquo;s cloud platform, a &lt;code&gt;seed.iso&lt;/code&gt; file for a stand-alone instance of Photon OS, or the internal capabilities of a system for managing virtual machines, such as VMware vSphere or vCenter. Cloud-init also includes data sources for OpenStack, Apache CloudStack, and OVF. The data source comprises two parts:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Metadata&lt;/li&gt;
-&lt;li&gt;User data&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;The metadata gives the cloud service provider instructions on how to implement the Photon OS machine in the cloud infrastructure. Metadata typically includes the instance ID and the local host name.&lt;/p&gt;
-&lt;p&gt;The user data contains the commands and scripts that Photon OS executes when it starts in the cloud. The user data commonly takes the form of a shell script or a YAML file containing a cloud configuration. The &lt;a href=&#34;https://launchpad.net/cloud-init&#34;&gt;cloud-init overview&lt;/a&gt; and &lt;a href=&#34;https://cloudinit.readthedocs.org/en/latest/&#34;&gt;cloud-init documentation&lt;/a&gt; contains information about the types of data sources and the formats for metadata and user data.&lt;/p&gt;
-&lt;p&gt;On Photon OS, &lt;code&gt;cloud-init&lt;/code&gt; is enabled and running by default. You can use the following command to check the status:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemctl status cloud-init 
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The Photon OS directory that contains the local data and other resources for cloud-init is &lt;code&gt;/var/lib/cloud&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;Photon OS stores the logs for cloud-init in the &lt;code&gt;/var/log/cloud-init.log&lt;/code&gt; file.&lt;/p&gt;
-&lt;p&gt;The following sections demonstrate how to use cloud-init to customize a stand-alone Photon OS machine, instantiate a Photon OS machine in the Amazon EC2 cloud, and deploy a virtual machine running Photon OS in vSphere. Each section uses a different combination of the available options for the metadata and the user data that make up the data source. Specifications, additional options, and examples appear in the cloud-init documentation.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Customizing Guest OS using Cloud-Init</title>
-      <link>/docs/administration-guide/cloud-init-on-photon-os/customizing-gos-cloud-init/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/cloud-init-on-photon-os/customizing-gos-cloud-init/</guid>
-      <description>
-        
-        
-        &lt;p&gt;A guest operating system is an operating system that runs inside a virtual machine. You can install a guest operating system in a virtual machine and control guest operating system customization for virtual machines created from vApp templates.&lt;/p&gt;
-&lt;p&gt;When you customize your guest OS you can set up a virtual machine with the operating system that you want.&lt;/p&gt;
-&lt;h3 id=&#34;procedure&#34;&gt;Procedure&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;Perform the following steps before cloning or customizing the guest operating system:&lt;/li&gt;
-&lt;li&gt;Ensure that &lt;code&gt;disable_vmware_customization&lt;/code&gt; is set to false in the &lt;code&gt;/etc/cloud/cloud.cfg&lt;/code&gt; file.&lt;/li&gt;
-&lt;li&gt;Set &lt;code&gt;manage_etc_hosts: true&lt;/code&gt; in the &lt;code&gt;/etc/cloud/cloud.cfg&lt;/code&gt; file.&lt;/li&gt;
-&lt;li&gt;Make a backup of the &lt;code&gt;99-disable-networking-config.cfg&lt;/code&gt; file and delete the file from &lt;code&gt;/etc/cloud/cloud.cfg.d&lt;/code&gt; folder after backup.&lt;/li&gt;
-&lt;li&gt;Clone the VM or customize the guest operating system.&lt;/li&gt;
-&lt;li&gt;After you clone your VM or customize the guest operating system, perform the following steps:&lt;/li&gt;
-&lt;li&gt;Ensure that &lt;code&gt;disable_vmware_customization&lt;/code&gt; is set to true in the &lt;code&gt;/etc/cloud/cloud.cfg&lt;/code&gt; file in the newly created VM and the VM from where cloning was initiated.&lt;/li&gt;
-&lt;li&gt;Remove &lt;code&gt;manage_etc_hosts: true&lt;/code&gt; from the &lt;code&gt;/etc/cloud/cloud.cfg&lt;/code&gt; file in the newly created VM and the VM from where cloning was initiated.&lt;/li&gt;
-&lt;li&gt;Add a copy of the backed up file &lt;code&gt;99-disable-networking-config.cfg&lt;/code&gt; to its original folder &lt;code&gt;/etc/cloud/cloud.cfg.d&lt;/code&gt; in the newly created VM and the VM from where cloning was initiated.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;The &lt;code&gt;disable_vmware_customization&lt;/code&gt; flag in &lt;code&gt;/etc/cloud/cloud.cfg.d&lt;/code&gt; file decides which customization workflow to be initiated.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;ul&gt;
-&lt;li&gt;Setting this to &lt;strong&gt;false&lt;/strong&gt; invokes the Cloud-Init GOS customization workflow.&lt;/li&gt;
-&lt;li&gt;Setting this to &lt;strong&gt;true&lt;/strong&gt; invokes the traditional GOSC script based customization workflow.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;When the &lt;code&gt;manage_etc_hosts&lt;/code&gt; flag is set to &lt;strong&gt;true&lt;/strong&gt;, Cloud-Init can edit the &lt;code&gt;/etc/hosts&lt;/code&gt; file with the updated values.&lt;/p&gt;
-&lt;p&gt;When the flag is set to &lt;strong&gt;true&lt;/strong&gt; Cloud-Init edits the &lt;code&gt;/etc/hosts&lt;/code&gt; file, even when there is no cloud config metadata available. Remove this entry once the Cloud-Init GOS customization is done, to stop Cloud-Init from editing &lt;code&gt;/etc/hosts&lt;/code&gt; file and set a fallback configuration.&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;The &lt;code&gt;99-disable-networking-config.cfg&lt;/code&gt; file is packaged as part of Cloud-Init RPM in photon and it prevents Cloud-Init from configuring the network. Delete this file before starting the Cloud-Init customization and then paste the backup of the file in the &lt;code&gt;/etc/cloud/cloud.cfg.d/&lt;/code&gt; folder once the cloud-init workflow is complete. It is important to replace this file after Cloud-Init customization to avoid removal of network configuration in the Cloud-Init instance.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h3 id=&#34;result&#34;&gt;Result&lt;/h3&gt;
-&lt;p&gt;Cloud-Init guest OS customization is now enabled.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Creating a Stand-Alone Photon Machine With cloud-init</title>
-      <link>/docs/administration-guide/cloud-init-on-photon-os/creating-a-stand-alone-photon-machine-with-cloud-init/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/cloud-init-on-photon-os/creating-a-stand-alone-photon-machine-with-cloud-init/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Cloud-init can customize a Photon OS virtual machine by using the &lt;code&gt;nocloud&lt;/code&gt; data source. The &lt;code&gt;nocloud&lt;/code&gt; data source bundles the &lt;code&gt;cloud-init&lt;/code&gt; metadata and user data into an ISO that acts as a seed when you boot the machine. The &lt;code&gt;seed.iso&lt;/code&gt; delivers the metadata and the user data without requiring a network connection.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Procedure&lt;/strong&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;Create the metadata file with the following lines in the &lt;a href=&#34;http://www.yaml.org/start.html&#34;&gt;YAML&lt;/a&gt; format and name it &lt;code&gt;meta-data&lt;/code&gt;:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt; instance-id: iid-local01
-        local-hostname: cloudimg
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Create the user data file with the following lines in YAML and name it user-data:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;  #cloud-config
-  hostname: testhost
-  packages:
-   - vim
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Generate the ISO that will serve as the seed. The ISO must have the volume ID set to &lt;code&gt;cidata&lt;/code&gt;. In the following example, the ISO is generated on an Ubuntu 14.04 computer containing the files named &lt;code&gt;meta-data&lt;/code&gt; and &lt;code&gt;user-data&lt;/code&gt; in the local directory:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;genisoimage -output seed.iso -volid cidata -joliet -rock user-data meta-data
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The ISO now appears in the current directory:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt; ```
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;steve@ubuntu:~$ ls
-meta-data seed.iso user-data&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Optionally, check the ISO that you generated on Ubuntu by transferring the ISO to the root directory of your Photon OS machine and then running the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;cloud-init --file seed.iso --debug init
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;After running the &lt;code&gt;cloud-init&lt;/code&gt; command above, check the &lt;code&gt;cloud-init&lt;/code&gt; log file:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;more /var/log/cloud-init.log
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Attach the ISO to the Photon OS virtual machine as a CD-ROM and reboot it so that the changes specified by seed.iso take effect. In this case, &lt;code&gt;cloud-init&lt;/code&gt; sets the &lt;code&gt;hostname&lt;/code&gt; and adds the &lt;code&gt;vim&lt;/code&gt; package.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Customizing a Photon OS Machine on EC2</title>
-      <link>/docs/administration-guide/cloud-init-on-photon-os/customizing-a-photon-os-machine-on-ec2/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/cloud-init-on-photon-os/customizing-a-photon-os-machine-on-ec2/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can upload an &lt;code&gt;ami&lt;/code&gt; image of Photon OS to Amazon Elastic Compute Cloud (EC2) and customize the Photon OS machine by using &lt;code&gt;cloud-init&lt;/code&gt; with an EC2 data source. The Amazon machine image version of Photon OS is available as a free download on Bintray at the location &lt;code&gt;https://bintray.com/vmware/photon/&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;The &lt;code&gt;cloud-init&lt;/code&gt; service is commonly used on EC2 to configure the cloud instance of a Linux image. On EC2, &lt;code&gt;cloud-init&lt;/code&gt; sets the &lt;code&gt;.ssh/authorized_keys&lt;/code&gt; file to let you log in with a private key from another computer, that is, a computer besides the workstation that you are already using to connect with the Amazon cloud.&lt;/p&gt;
-&lt;h2 id=&#34;example&#34;&gt;Example&lt;/h2&gt;
-&lt;p&gt;The cloud-config user-data file that appears in the following example contains abridged SSH authorized keys to show you how to set them.&lt;/p&gt;
-&lt;h3 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;To work with EC2, obtain Amazon accounts for both AWS and EC2 with valid payment information. If you execute the below examples, you will be charged by Amazon. You must replace the &lt;code&gt;&amp;lt;placeholders&amp;gt;&lt;/code&gt; for access keys and other account information in the examples with your account information.&lt;/li&gt;
-&lt;li&gt;Install and set up the Amazon AWS CLI and the EC2 CLI tools, including &lt;code&gt;ec2-ami-tools&lt;/code&gt;.
-For more information, see &lt;a href=&#34;http://docs.aws.amazon.com/cli/latest/userguide/installing.html&#34;&gt;Installing the AWS Command Line Interface&lt;/a&gt;, &lt;a href=&#34;http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/set-up-ec2-cli-linux.html&#34;&gt;Setting Up the Amazon EC2 Command Line Interface Tools on Linux&lt;/a&gt; and &lt;a href=&#34;http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html&#34;&gt;Setting Up the AMI Tools&lt;/a&gt;.&lt;/li&gt;
-&lt;li&gt;Create  SSH keys and an RSA user signing certificate and its corresponding private RSA key file.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&#34;procedure&#34;&gt;Procedure&lt;/h3&gt;
-&lt;ol&gt;
-&lt;li&gt;Upload the Photon OS &lt;code&gt;.ami&lt;/code&gt; image to the Amazon cloud and configure it with cloud-init. The correct virtualization type for Photon OS is &lt;code&gt;hvm&lt;/code&gt;.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;$ mkdir bundled
-	$ tar -zxvf ./photon-ami.tar.gz 
-	$ ec2-bundle-image -c ec2-certificate.pem -k ec2-privatekey.pem -u &amp;lt;EC2 account id&amp;gt;  --arch x86_64 --image photon-ami.raw --destination ./bundled/
-	$ aws s3 mb s3://&amp;lt;bucket-name&amp;gt;
-	$ ec2-upload-bundle --manifest ./bundled/photon-ami.manifest.xml --bucket &amp;lt;bucket-name&amp;gt; --access-key &amp;lt;Account Access Key&amp;gt; --secret-key &amp;lt;Account Secret key&amp;gt;
-	$ ec2-register &amp;lt;bucket-name&amp;gt;/photon-ami.manifest.xml --name photon-ami --architecture x86_64 --virtualization-type hvm
-&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;
-&lt;li&gt;Import the cloud-config data. In the following command, the &lt;code&gt;--user-data-file&lt;/code&gt; option instructs cloud-init to import the cloud-config data in &lt;code&gt;user-data.txt&lt;/code&gt;. The command assumes you have uploaded the &lt;code&gt;user-data.txt file&lt;/code&gt; and created the keypair &lt;code&gt;mykeypair&lt;/code&gt; and the security group &lt;code&gt;photon-sg&lt;/code&gt;.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt; $ ec2-run-instances &amp;lt;ami-ID&amp;gt; --instance-type m3.medium -g photon-sg --key mykeypair --user-data-file user-data.txt
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Describe the instance to see its ID:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;$ ec2-describe-instances
-&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;
-&lt;li&gt;Run the following command to obtain its public IP address, which you can use to connect to the instance with SSH:&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;$ aws ec2 describe-instances --instance-ids &amp;lt;instance-id&amp;gt; --query &#39;Reservations[*].Instances[*].PublicIpAddress&#39; --output=text
+&lt;/code>&lt;/pre>&lt;p>Reboot the machine and the hostname will be set to &lt;code>testhost&lt;/code>.&lt;/p>
+&lt;h2 id="frequencies">Frequencies&lt;/h2>
+&lt;p>Cloud-init modules have predetermined frequencies. Based on the frequency setting, multiple runs will yield different results. For the scripts to always run, remove the &lt;code>instances&lt;/code> directory before rebooting.&lt;/p>
+&lt;pre>&lt;code>rm -rf /var/lib/cloud/instances
+&lt;/code>&lt;/pre>&lt;h2 id="module-frequency-info">Module Frequency Info&lt;/h2>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Name&lt;/th>
+&lt;th>Frequency&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>disable_ec2_metadata&lt;/td>
+&lt;td>Always&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>users_groups&lt;/td>
+&lt;td>Instance&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>write_files&lt;/td>
+&lt;td>Instance&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>update_hostname&lt;/td>
+&lt;td>Always&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>final_message&lt;/td>
+&lt;td>Always&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>resolv_conf&lt;/td>
+&lt;td>Instance&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>growpart&lt;/td>
+&lt;td>Always&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>update_etc_hosts&lt;/td>
+&lt;td>Always&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>power_state_change&lt;/td>
+&lt;td>Instance&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>phone_home&lt;/td>
+&lt;td>Instance&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table></description></item><item><title>Docs: Deploy Photon OS With `cloud-init`</title><link>/docs/administration-guide/cloud-init-on-photon-os/deploy-photon-os-with-cloud-init/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/cloud-init-on-photon-os/deploy-photon-os-with-cloud-init/</guid><description>
+&lt;p>You can deploy Photon OS with &lt;code>cloud-init&lt;/code> in the following ways:&lt;/p>
+&lt;ul>
+&lt;li>As a stand-alone Photon machine&lt;/li>
+&lt;li>In Amazon Elastic Compute Cloud, called EC2&lt;/li>
+&lt;li>In the Google cloud through the Google Compute Engine, or GCE&lt;/li>
+&lt;li>In a VMware Vsphere private cloud&lt;/li>
+&lt;/ul>
+&lt;p>When a cloud instance of Photon OS starts, &lt;code>cloud-init&lt;/code> requires a data source. The data source can be an EC2 file for Amazon&amp;rsquo;s cloud platform, a &lt;code>seed.iso&lt;/code> file for a stand-alone instance of Photon OS, or the internal capabilities of a system for managing virtual machines, such as VMware vSphere or vCenter. Cloud-init also includes data sources for OpenStack, Apache CloudStack, and OVF. The data source comprises two parts:&lt;/p>
+&lt;ol>
+&lt;li>Metadata&lt;/li>
+&lt;li>User data&lt;/li>
+&lt;/ol>
+&lt;p>The metadata gives the cloud service provider instructions on how to implement the Photon OS machine in the cloud infrastructure. Metadata typically includes the instance ID and the local host name.&lt;/p>
+&lt;p>The user data contains the commands and scripts that Photon OS executes when it starts in the cloud. The user data commonly takes the form of a shell script or a YAML file containing a cloud configuration. The &lt;a href="https://launchpad.net/cloud-init">cloud-init overview&lt;/a> and &lt;a href="https://cloudinit.readthedocs.org/en/latest/">cloud-init documentation&lt;/a> contains information about the types of data sources and the formats for metadata and user data.&lt;/p>
+&lt;p>On Photon OS, &lt;code>cloud-init&lt;/code> is enabled and running by default. You can use the following command to check the status:&lt;/p>
+&lt;pre>&lt;code>systemctl status cloud-init
+&lt;/code>&lt;/pre>&lt;p>The Photon OS directory that contains the local data and other resources for cloud-init is &lt;code>/var/lib/cloud&lt;/code>.&lt;/p>
+&lt;p>Photon OS stores the logs for cloud-init in the &lt;code>/var/log/cloud-init.log&lt;/code> file.&lt;/p>
+&lt;p>The following sections demonstrate how to use cloud-init to customize a stand-alone Photon OS machine, instantiate a Photon OS machine in the Amazon EC2 cloud, and deploy a virtual machine running Photon OS in vSphere. Each section uses a different combination of the available options for the metadata and the user data that make up the data source. Specifications, additional options, and examples appear in the cloud-init documentation.&lt;/p></description></item><item><title>Docs: Customizing Guest OS using Cloud-Init</title><link>/docs/administration-guide/cloud-init-on-photon-os/customizing-gos-cloud-init/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/cloud-init-on-photon-os/customizing-gos-cloud-init/</guid><description>
+&lt;p>A guest operating system is an operating system that runs inside a virtual machine. You can install a guest operating system in a virtual machine and control guest operating system customization for virtual machines created from vApp templates.&lt;/p>
+&lt;p>When you customize your guest OS you can set up a virtual machine with the operating system that you want.&lt;/p>
+&lt;h3 id="procedure">Procedure&lt;/h3>
+&lt;ol>
+&lt;li>Perform the following steps before cloning or customizing the guest operating system:&lt;/li>
+&lt;li>Ensure that &lt;code>disable_vmware_customization&lt;/code> is set to false in the &lt;code>/etc/cloud/cloud.cfg&lt;/code> file.&lt;/li>
+&lt;li>Set &lt;code>manage_etc_hosts: true&lt;/code> in the &lt;code>/etc/cloud/cloud.cfg&lt;/code> file.&lt;/li>
+&lt;li>Make a backup of the &lt;code>99-disable-networking-config.cfg&lt;/code> file and delete the file from &lt;code>/etc/cloud/cloud.cfg.d&lt;/code> folder after backup.&lt;/li>
+&lt;li>Clone the VM or customize the guest operating system.&lt;/li>
+&lt;li>After you clone your VM or customize the guest operating system, perform the following steps:&lt;/li>
+&lt;li>Ensure that &lt;code>disable_vmware_customization&lt;/code> is set to true in the &lt;code>/etc/cloud/cloud.cfg&lt;/code> file in the newly created VM and the VM from where cloning was initiated.&lt;/li>
+&lt;li>Remove &lt;code>manage_etc_hosts: true&lt;/code> from the &lt;code>/etc/cloud/cloud.cfg&lt;/code> file in the newly created VM and the VM from where cloning was initiated.&lt;/li>
+&lt;li>Add a copy of the backed up file &lt;code>99-disable-networking-config.cfg&lt;/code> to its original folder &lt;code>/etc/cloud/cloud.cfg.d&lt;/code> in the newly created VM and the VM from where cloning was initiated.&lt;/li>
+&lt;/ol>
+&lt;p>&lt;strong>Note&lt;/strong>:&lt;/p>
+&lt;ol>
+&lt;li>The &lt;code>disable_vmware_customization&lt;/code> flag in &lt;code>/etc/cloud/cloud.cfg.d&lt;/code> file decides which customization workflow to be initiated.&lt;/li>
+&lt;/ol>
+&lt;ul>
+&lt;li>Setting this to &lt;strong>false&lt;/strong> invokes the Cloud-Init GOS customization workflow.&lt;/li>
+&lt;li>Setting this to &lt;strong>true&lt;/strong> invokes the traditional GOSC script based customization workflow.&lt;/li>
+&lt;/ul>
+&lt;ol>
+&lt;li>
+&lt;p>When the &lt;code>manage_etc_hosts&lt;/code> flag is set to &lt;strong>true&lt;/strong>, Cloud-Init can edit the &lt;code>/etc/hosts&lt;/code> file with the updated values.&lt;/p>
+&lt;p>When the flag is set to &lt;strong>true&lt;/strong> Cloud-Init edits the &lt;code>/etc/hosts&lt;/code> file, even when there is no cloud config metadata available. Remove this entry once the Cloud-Init GOS customization is done, to stop Cloud-Init from editing &lt;code>/etc/hosts&lt;/code> file and set a fallback configuration.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>The &lt;code>99-disable-networking-config.cfg&lt;/code> file is packaged as part of Cloud-Init RPM in photon and it prevents Cloud-Init from configuring the network. Delete this file before starting the Cloud-Init customization and then paste the backup of the file in the &lt;code>/etc/cloud/cloud.cfg.d/&lt;/code> folder once the cloud-init workflow is complete. It is important to replace this file after Cloud-Init customization to avoid removal of network configuration in the Cloud-Init instance.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;h3 id="result">Result&lt;/h3>
+&lt;p>Cloud-Init guest OS customization is now enabled.&lt;/p></description></item><item><title>Docs: Creating a Stand-Alone Photon Machine With cloud-init</title><link>/docs/administration-guide/cloud-init-on-photon-os/creating-a-stand-alone-photon-machine-with-cloud-init/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/cloud-init-on-photon-os/creating-a-stand-alone-photon-machine-with-cloud-init/</guid><description>
+&lt;p>Cloud-init can customize a Photon OS virtual machine by using the &lt;code>nocloud&lt;/code> data source. The &lt;code>nocloud&lt;/code> data source bundles the &lt;code>cloud-init&lt;/code> metadata and user data into an ISO that acts as a seed when you boot the machine. The &lt;code>seed.iso&lt;/code> delivers the metadata and the user data without requiring a network connection.&lt;/p>
+&lt;p>&lt;strong>Procedure&lt;/strong>&lt;/p>
+&lt;ol>
+&lt;li>
+&lt;p>Create the metadata file with the following lines in the &lt;a href="http://www.yaml.org/start.html">YAML&lt;/a> format and name it &lt;code>meta-data&lt;/code>:&lt;/p>
+&lt;pre>&lt;code> instance-id: iid-local01
+local-hostname: cloudimg
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Create the user data file with the following lines in YAML and name it user-data:&lt;/p>
+&lt;pre>&lt;code> #cloud-config
+hostname: testhost
+packages:
+- vim
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Generate the ISO that will serve as the seed. The ISO must have the volume ID set to &lt;code>cidata&lt;/code>. In the following example, the ISO is generated on an Ubuntu 14.04 computer containing the files named &lt;code>meta-data&lt;/code> and &lt;code>user-data&lt;/code> in the local directory:&lt;/p>
+&lt;pre>&lt;code>genisoimage -output seed.iso -volid cidata -joliet -rock user-data meta-data
+&lt;/code>&lt;/pre>&lt;p>The ISO now appears in the current directory:&lt;/p>
+&lt;pre>&lt;code> ```
+&lt;/code>&lt;/pre>
+&lt;p>steve@ubuntu:~$ ls
+meta-data seed.iso user-data&lt;/p>
+&lt;pre>&lt;code>
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Optionally, check the ISO that you generated on Ubuntu by transferring the ISO to the root directory of your Photon OS machine and then running the following command:&lt;/p>
+&lt;pre>&lt;code>cloud-init --file seed.iso --debug init
+&lt;/code>&lt;/pre>&lt;p>After running the &lt;code>cloud-init&lt;/code> command above, check the &lt;code>cloud-init&lt;/code> log file:&lt;/p>
+&lt;pre>&lt;code>more /var/log/cloud-init.log
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Attach the ISO to the Photon OS virtual machine as a CD-ROM and reboot it so that the changes specified by seed.iso take effect. In this case, &lt;code>cloud-init&lt;/code> sets the &lt;code>hostname&lt;/code> and adds the &lt;code>vim&lt;/code> package.&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>Docs: Customizing a Photon OS Machine on EC2</title><link>/docs/administration-guide/cloud-init-on-photon-os/customizing-a-photon-os-machine-on-ec2/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/cloud-init-on-photon-os/customizing-a-photon-os-machine-on-ec2/</guid><description>
+&lt;p>You can upload an &lt;code>ami&lt;/code> image of Photon OS to Amazon Elastic Compute Cloud (EC2) and customize the Photon OS machine by using &lt;code>cloud-init&lt;/code> with an EC2 data source. The Amazon machine image version of Photon OS is available as a free download on Bintray at the location &lt;code>https://bintray.com/vmware/photon/&lt;/code>.&lt;/p>
+&lt;p>The &lt;code>cloud-init&lt;/code> service is commonly used on EC2 to configure the cloud instance of a Linux image. On EC2, &lt;code>cloud-init&lt;/code> sets the &lt;code>.ssh/authorized_keys&lt;/code> file to let you log in with a private key from another computer, that is, a computer besides the workstation that you are already using to connect with the Amazon cloud.&lt;/p>
+&lt;h2 id="example">Example&lt;/h2>
+&lt;p>The cloud-config user-data file that appears in the following example contains abridged SSH authorized keys to show you how to set them.&lt;/p>
+&lt;h3 id="prerequisites">Prerequisites&lt;/h3>
+&lt;ul>
+&lt;li>To work with EC2, obtain Amazon accounts for both AWS and EC2 with valid payment information. If you execute the below examples, you will be charged by Amazon. You must replace the &lt;code>&amp;lt;placeholders&amp;gt;&lt;/code> for access keys and other account information in the examples with your account information.&lt;/li>
+&lt;li>Install and set up the Amazon AWS CLI and the EC2 CLI tools, including &lt;code>ec2-ami-tools&lt;/code>.
+For more information, see &lt;a href="http://docs.aws.amazon.com/cli/latest/userguide/installing.html">Installing the AWS Command Line Interface&lt;/a>, &lt;a href="http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/set-up-ec2-cli-linux.html">Setting Up the Amazon EC2 Command Line Interface Tools on Linux&lt;/a> and &lt;a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html">Setting Up the AMI Tools&lt;/a>.&lt;/li>
+&lt;li>Create SSH keys and an RSA user signing certificate and its corresponding private RSA key file.&lt;/li>
+&lt;/ul>
+&lt;h3 id="procedure">Procedure&lt;/h3>
+&lt;ol>
+&lt;li>Upload the Photon OS &lt;code>.ami&lt;/code> image to the Amazon cloud and configure it with cloud-init. The correct virtualization type for Photon OS is &lt;code>hvm&lt;/code>.&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code>$ mkdir bundled
+$ tar -zxvf ./photon-ami.tar.gz
+$ ec2-bundle-image -c ec2-certificate.pem -k ec2-privatekey.pem -u &amp;lt;EC2 account id&amp;gt; --arch x86_64 --image photon-ami.raw --destination ./bundled/
+$ aws s3 mb s3://&amp;lt;bucket-name&amp;gt;
+$ ec2-upload-bundle --manifest ./bundled/photon-ami.manifest.xml --bucket &amp;lt;bucket-name&amp;gt; --access-key &amp;lt;Account Access Key&amp;gt; --secret-key &amp;lt;Account Secret key&amp;gt;
+$ ec2-register &amp;lt;bucket-name&amp;gt;/photon-ami.manifest.xml --name photon-ami --architecture x86_64 --virtualization-type hvm
+&lt;/code>&lt;/pre>&lt;ol>
+&lt;li>Import the cloud-config data. In the following command, the &lt;code>--user-data-file&lt;/code> option instructs cloud-init to import the cloud-config data in &lt;code>user-data.txt&lt;/code>. The command assumes you have uploaded the &lt;code>user-data.txt file&lt;/code> and created the keypair &lt;code>mykeypair&lt;/code> and the security group &lt;code>photon-sg&lt;/code>.&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code> $ ec2-run-instances &amp;lt;ami-ID&amp;gt; --instance-type m3.medium -g photon-sg --key mykeypair --user-data-file user-data.txt
+&lt;/code>&lt;/pre>&lt;p>Describe the instance to see its ID:&lt;/p>
+&lt;pre>&lt;code>$ ec2-describe-instances
+&lt;/code>&lt;/pre>&lt;ol>
+&lt;li>Run the following command to obtain its public IP address, which you can use to connect to the instance with SSH:&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code>$ aws ec2 describe-instances --instance-ids &amp;lt;instance-id&amp;gt; --query 'Reservations[*].Instances[*].PublicIpAddress' --output=text
 $ ec2-describe-images
-&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;
-&lt;li&gt;Run the following commands to terminate the machine. It is important to shut down the machine because Amazon charges you while the host is running down.&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;$ ec2-deregister &amp;lt;ami-image-identifier&amp;gt;
+&lt;/code>&lt;/pre>&lt;ol>
+&lt;li>Run the following commands to terminate the machine. It is important to shut down the machine because Amazon charges you while the host is running down.&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code>$ ec2-deregister &amp;lt;ami-image-identifier&amp;gt;
 $ ec2-terminate-instances &amp;lt;instance-id&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;result&#34;&gt;Result&lt;/h3&gt;
-&lt;p&gt;The following are the contents of the &lt;code&gt;user-data.txt&lt;/code&gt; file that &lt;code&gt;cloud-init&lt;/code&gt; applies to the machine the first time that it boots up in the cloud:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;#cloud-config
-    hostname: photon-on-01
-    groups:
-    - cloud-admins
-    - cloud-users
-    users:
-    - default
-    - name: photonadmin
-       gecos: photon test admin user
-       primary-group: cloud-admins
-       groups: cloud-users
-       lock-passwd: false
-       passwd: vmware
-    - name: photonuser
-       gecos: photon test user
-       primary-group: cloud-users
-       groups: users
-       passwd: vmware
-    packages:
-    - vim
-	ssh_authorized_keys:
-	 - ssh-rsa MIIEogIBAAKCAQEAuvHKAjBhpwuomcUTpIzJWRJAe71JyBgAWrwqyN1Mk5N+c9X5
-	Ru2fazFA7WxQSD1KyTEvcuf8JzdBfrEJ0v3/nT2x63pvJ8fCl6HRkZtHo8zRu8vY
-	KYTZS/sdvM/ruubHfq1ldRpgtYSqbkykoe6PCQIDAQABAoIBAEgveQtjVzHDhLTr
-	rmwJmO316ERfkQ/chLaElhi9qwYJG/jqlNIISWFyztqD1b3fxU6m5MOBIujh7Xpg
-	... ec3test@example.com 
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can view the cloud-init output log file on EC2 at &lt;code&gt;/var/log/cloud-init-output.log&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;For more information on using cloud-init user data on EC2, see &lt;a href=&#34;http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html&#34;&gt;Running Commands on Your Linux Instance at Launch&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;For more information on how to get Photon OS up and running on EC2 and run a containerized application in the Docker engine, see &lt;a href=&#34;../../../installation-guide/run-photon-aws-ec2/&#34;&gt;Running Photon OS on Amazon Elastic Cloud Compute&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;With Photon OS, you can also build cloud images on Google Compute Engine and other cloud providers. For more information, see &lt;a href=&#34;../../../installation-guide/cloud-images/&#34;&gt;Compatible Cloud Images&lt;/a&gt;.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Running a Photon OS Machine on GCE</title>
-      <link>/docs/administration-guide/cloud-init-on-photon-os/running-a-photon-os-machine-on-gce/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/administration-guide/cloud-init-on-photon-os/running-a-photon-os-machine-on-gce/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS comes in a preconfigured image ready for Google Cloud Engine.&lt;/p&gt;
-&lt;h2 id=&#34;example&#34;&gt;Example&lt;/h2&gt;
-&lt;p&gt;The example in this section shows how to create a Photon OS instance on Google Cloud Engine with and without cloud-init user data.&lt;/p&gt;
-&lt;h3 id=&#34;prerequisites&#34;&gt;Prerequisites&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;You must have set up a GCE account and are ready to pay Google for its cloud services. The GCE-ready version of Photon OS is a free image and is free. You can download it without registration from the following Bintray location: &lt;code&gt;https://bintray.com/vmware/photon/gce/view&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;The GCE-ready image of Photon OS contains packages and scripts that prepare it for the Google cloud to save you time as you implement a compute cluster or develop cloud applications. The GCE-ready version of Photon OS adds the following packages to the &lt;a href=&#34;https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json&#34;&gt;packages installed with the minimal version&lt;/a&gt;:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;sudo, tar, which, google-daemon, google-startup-scripts, 
+&lt;/code>&lt;/pre>&lt;h3 id="result">Result&lt;/h3>
+&lt;p>The following are the contents of the &lt;code>user-data.txt&lt;/code> file that &lt;code>cloud-init&lt;/code> applies to the machine the first time that it boots up in the cloud:&lt;/p>
+&lt;pre>&lt;code>#cloud-config
+hostname: photon-on-01
+groups:
+- cloud-admins
+- cloud-users
+users:
+- default
+- name: photonadmin
+gecos: photon test admin user
+primary-group: cloud-admins
+groups: cloud-users
+lock-passwd: false
+passwd: vmware
+- name: photonuser
+gecos: photon test user
+primary-group: cloud-users
+groups: users
+passwd: vmware
+packages:
+- vim
+ssh_authorized_keys:
+- ssh-rsa MIIEogIBAAKCAQEAuvHKAjBhpwuomcUTpIzJWRJAe71JyBgAWrwqyN1Mk5N+c9X5
+Ru2fazFA7WxQSD1KyTEvcuf8JzdBfrEJ0v3/nT2x63pvJ8fCl6HRkZtHo8zRu8vY
+KYTZS/sdvM/ruubHfq1ldRpgtYSqbkykoe6PCQIDAQABAoIBAEgveQtjVzHDhLTr
+rmwJmO316ERfkQ/chLaElhi9qwYJG/jqlNIISWFyztqD1b3fxU6m5MOBIujh7Xpg
+... ec3test@example.com
+&lt;/code>&lt;/pre>&lt;p>You can view the cloud-init output log file on EC2 at &lt;code>/var/log/cloud-init-output.log&lt;/code>.&lt;/p>
+&lt;p>For more information on using cloud-init user data on EC2, see &lt;a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html">Running Commands on Your Linux Instance at Launch&lt;/a>.&lt;/p>
+&lt;p>For more information on how to get Photon OS up and running on EC2 and run a containerized application in the Docker engine, see &lt;a href="../../../installation-guide/run-photon-aws-ec2/">Running Photon OS on Amazon Elastic Cloud Compute&lt;/a>.&lt;/p>
+&lt;p>With Photon OS, you can also build cloud images on Google Compute Engine and other cloud providers. For more information, see &lt;a href="../../../installation-guide/cloud-images/">Compatible Cloud Images&lt;/a>.&lt;/p></description></item><item><title>Docs: Running a Photon OS Machine on GCE</title><link>/docs/administration-guide/cloud-init-on-photon-os/running-a-photon-os-machine-on-gce/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/cloud-init-on-photon-os/running-a-photon-os-machine-on-gce/</guid><description>
+&lt;p>Photon OS comes in a preconfigured image ready for Google Cloud Engine.&lt;/p>
+&lt;h2 id="example">Example&lt;/h2>
+&lt;p>The example in this section shows how to create a Photon OS instance on Google Cloud Engine with and without cloud-init user data.&lt;/p>
+&lt;h3 id="prerequisites">Prerequisites&lt;/h3>
+&lt;ul>
+&lt;li>
+&lt;p>You must have set up a GCE account and are ready to pay Google for its cloud services. The GCE-ready version of Photon OS is a free image and is free. You can download it without registration from the following Bintray location: &lt;code>https://bintray.com/vmware/photon/gce/view&lt;/code>&lt;/p>
+&lt;p>The GCE-ready image of Photon OS contains packages and scripts that prepare it for the Google cloud to save you time as you implement a compute cluster or develop cloud applications. The GCE-ready version of Photon OS adds the following packages to the &lt;a href="https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json">packages installed with the minimal version&lt;/a>:&lt;/p>
+&lt;pre>&lt;code>sudo, tar, which, google-daemon, google-startup-scripts,
 kubernetes, perl-DBD-SQLite, perl-DBIx-Simple, perl, ntp
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;
-- Verify that you have the `gcloud command-line tool`. 
-    For more information see,  [https://cloud.google.com/compute/docs/gcloud-compute](https://cloud.google.com/compute/docs/gcloud-compute).
-
-### Procedure 
-
-1. Use the following commands to create an instance of Photon OS from the Photon GCE image without using cloud-init. In the commands, you must replace `&amp;lt;bucket-name&amp;gt;` with the name of your bucket and the path to the Photon GCE tar file. 
-	
-    ```
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code>
+- Verify that you have the `gcloud command-line tool`.
+For more information see, [https://cloud.google.com/compute/docs/gcloud-compute](https://cloud.google.com/compute/docs/gcloud-compute).
+### Procedure
+1. Use the following commands to create an instance of Photon OS from the Photon GCE image without using cloud-init. In the commands, you must replace `&amp;lt;bucket-name&amp;gt;` with the name of your bucket and the path to the Photon GCE tar file.
+```
 $ gcloud compute instances list
-	$ gcloud compute images list
-	$ gcloud config list
-	$ gsutil mb gs://&amp;lt;bucket-name&amp;gt;
-	$ gsutil cp &amp;lt;path-to-photon-gce-image.tar.gz&amp;gt; gs://&amp;lt;bucket-name&amp;gt;/photon-gce.tar.gz
-	$ gcloud compute images create photon-gce-image --source-uri gs://&amp;lt;bucket-name&amp;gt;/photon-gce.tar.gz 
-	$ gcloud compute instances create photon-gce-vm --machine-type &amp;quot;n1-standard-1&amp;quot; --image photon-gce-image
-	$ gcloud compute instances describe photon-gce-vm
-&lt;/code&gt;&lt;/pre&gt;&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;To create a new instance of a Photon OS machine and configure it with a cloud-init user data file, replace the &lt;code&gt;gcloud compute instances create&lt;/code&gt; command in the example above with the following command. Before running this command, you must upload your user-data file to Google&amp;rsquo;s cloud infrastructure and replace &lt;code&gt;&amp;lt;path-to-userdata-file&amp;gt;&lt;/code&gt; with its path and file name.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;gcloud compute instances create photon-gce-vm --machine-type &amp;quot;n1-standard-1&amp;quot; --image photon-gce-vm --metadata-from-file=user-data=&amp;lt;path-to-userdata-file&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;pre&gt;&lt;code&gt;     
-    You can also add a cloud-init user-data file to an existing instance of a Photon OS machine on GCE: 
-	
-    ```
+$ gcloud compute images list
+$ gcloud config list
+$ gsutil mb gs://&amp;lt;bucket-name&amp;gt;
+$ gsutil cp &amp;lt;path-to-photon-gce-image.tar.gz&amp;gt; gs://&amp;lt;bucket-name&amp;gt;/photon-gce.tar.gz
+$ gcloud compute images create photon-gce-image --source-uri gs://&amp;lt;bucket-name&amp;gt;/photon-gce.tar.gz
+$ gcloud compute instances create photon-gce-vm --machine-type &amp;quot;n1-standard-1&amp;quot; --image photon-gce-image
+$ gcloud compute instances describe photon-gce-vm
+&lt;/code>&lt;/pre>&lt;ol>
+&lt;li>
+&lt;p>To create a new instance of a Photon OS machine and configure it with a cloud-init user data file, replace the &lt;code>gcloud compute instances create&lt;/code> command in the example above with the following command. Before running this command, you must upload your user-data file to Google&amp;rsquo;s cloud infrastructure and replace &lt;code>&amp;lt;path-to-userdata-file&amp;gt;&lt;/code> with its path and file name.&lt;/p>
+&lt;pre>&lt;code>gcloud compute instances create photon-gce-vm --machine-type &amp;quot;n1-standard-1&amp;quot; --image photon-gce-vm --metadata-from-file=user-data=&amp;lt;path-to-userdata-file&amp;gt;
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code>
+You can also add a cloud-init user-data file to an existing instance of a Photon OS machine on GCE:
+```
 gcloud compute instances add-metadata photon-gce-vm --metadata-from-file=user-data=&amp;lt;path-to-userdata-file&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+&lt;/code>&lt;/pre></description></item></channel></rss>

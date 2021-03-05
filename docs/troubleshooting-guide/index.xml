@@ -1,254 +1,107 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – Troubleshooting Guide</title>
-    <link>/docs/troubleshooting-guide/</link>
-    <description>Recent content in Troubleshooting Guide on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs/troubleshooting-guide/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs: Introduction</title>
-      <link>/docs/troubleshooting-guide/introduction/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/troubleshooting-guide/introduction/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The &lt;em&gt;Troubleshooting Guide&lt;/em&gt; covers the basics of troubleshooting systemd, packages, network interfaces, services such as SSH and Sendmail, the file system, and the Linux kernel. The guide also includes information about the tools that you can use for troubleshooting with examples, how to access the logs, and best practices.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Solutions to Common Problems</title>
-      <link>/docs/troubleshooting-guide/solutions-to-common-problems/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/troubleshooting-guide/solutions-to-common-problems/</guid>
-      <description>
-        
-        
-        &lt;p&gt;This section describes solutions to problems that you might encounter:&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Photon OS General Troubleshooting</title>
-      <link>/docs/troubleshooting-guide/photon-os-general-troubleshooting/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/troubleshooting-guide/photon-os-general-troubleshooting/</guid>
-      <description>
-        
-        
-        &lt;p&gt;The section includes general troubleshooting instruction for Photon OS.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Troubleshooting Tools</title>
-      <link>/docs/troubleshooting-guide/troubleshooting-tools/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/troubleshooting-guide/troubleshooting-tools/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS includes tools that help troubleshoot problems. These tools are installed by default on the full version of Photon OS. On the minimal version of Photon OS, you might have to install a tool before you can use it.&lt;/p&gt;
-&lt;p&gt;There is a man page on Photon OS for all the tools covered in this section. The man pages provide more information about each tool&amp;rsquo;s commands, options, and output. To view a tool&amp;rsquo;s man page, on the Photon OS command line, type &lt;code&gt;man&lt;/code&gt; and then the name of the tool. Example:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;man strace&lt;/code&gt;&lt;/pre&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Systemd</title>
-      <link>/docs/troubleshooting-guide/troubleshooting-with-systemd/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/troubleshooting-guide/troubleshooting-with-systemd/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS manages services with &lt;code&gt;systemd&lt;/code&gt; and &lt;code&gt;systemctl&lt;/code&gt;, its command-line utility for inspecting and controlling the system. It does not use the deprecated commands of &lt;code&gt;init.d&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;Basic system administration commands on Photon OS differ from those on operating systems that use SysVinit. Since Photon OS uses systemd instead of SysVinit, you must use systemd commands to manage services.&lt;/p&gt;
-&lt;p&gt;For example, instead of running the /etc/init.d/ssh script to stop and start the OpenSSH server on a init.d-based Linux system, you control the service by running the following systemctl commands on Photon OS:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;systemctl stop sshd
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Troubleshooting Guide</title><link>/docs/troubleshooting-guide/</link><description>Recent content in Troubleshooting Guide on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/troubleshooting-guide/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Introduction</title><link>/docs/troubleshooting-guide/introduction/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/introduction/</guid><description>
+&lt;p>The &lt;em>Troubleshooting Guide&lt;/em> covers the basics of troubleshooting systemd, packages, network interfaces, services such as SSH and Sendmail, the file system, and the Linux kernel. The guide also includes information about the tools that you can use for troubleshooting with examples, how to access the logs, and best practices.&lt;/p></description></item><item><title>Docs: Solutions to Common Problems</title><link>/docs/troubleshooting-guide/solutions-to-common-problems/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/solutions-to-common-problems/</guid><description>
+&lt;p>This section describes solutions to problems that you might encounter:&lt;/p></description></item><item><title>Docs: Photon OS General Troubleshooting</title><link>/docs/troubleshooting-guide/photon-os-general-troubleshooting/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/photon-os-general-troubleshooting/</guid><description>
+&lt;p>The section includes general troubleshooting instruction for Photon OS.&lt;/p></description></item><item><title>Docs: Troubleshooting Tools</title><link>/docs/troubleshooting-guide/troubleshooting-tools/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/troubleshooting-tools/</guid><description>
+&lt;p>Photon OS includes tools that help troubleshoot problems. These tools are installed by default on the full version of Photon OS. On the minimal version of Photon OS, you might have to install a tool before you can use it.&lt;/p>
+&lt;p>There is a man page on Photon OS for all the tools covered in this section. The man pages provide more information about each tool&amp;rsquo;s commands, options, and output. To view a tool&amp;rsquo;s man page, on the Photon OS command line, type &lt;code>man&lt;/code> and then the name of the tool. Example:&lt;/p>
+&lt;pre>&lt;code>man strace&lt;/code>&lt;/pre></description></item><item><title>Docs: Systemd</title><link>/docs/troubleshooting-guide/troubleshooting-with-systemd/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/troubleshooting-with-systemd/</guid><description>
+&lt;p>Photon OS manages services with &lt;code>systemd&lt;/code> and &lt;code>systemctl&lt;/code>, its command-line utility for inspecting and controlling the system. It does not use the deprecated commands of &lt;code>init.d&lt;/code>.&lt;/p>
+&lt;p>Basic system administration commands on Photon OS differ from those on operating systems that use SysVinit. Since Photon OS uses systemd instead of SysVinit, you must use systemd commands to manage services.&lt;/p>
+&lt;p>For example, instead of running the /etc/init.d/ssh script to stop and start the OpenSSH server on a init.d-based Linux system, you control the service by running the following systemctl commands on Photon OS:&lt;/p>
+&lt;pre>&lt;code>systemctl stop sshd
 systemctl start sshd
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;For an overview of systemd, see &lt;a href=&#34;https://www.freedesktop.org/wiki/Software/systemd/&#34;&gt;systemd System and Service Manager&lt;/a&gt; and the &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/systemd.html&#34;&gt;man page for systemd&lt;/a&gt;. The systemd man pages are listed at &lt;a href=&#34;https://www.freedesktop.org/software/systemd/man/&#34;&gt;https://www.freedesktop.org/software/systemd/man/&lt;/a&gt;.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Network Troubleshooting</title>
-      <link>/docs/troubleshooting-guide/network-troubleshooting/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/troubleshooting-guide/network-troubleshooting/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Use the &lt;code&gt;systemd&lt;/code&gt; suite of commands and not deprecated &lt;code&gt;init.d&lt;/code&gt; commands or other deprecated commands, to manage networking.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;managing-the-network-configuration.md&#34;&gt;Managing the Network Configuration&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;inspecting-ip-addresses.md&#34;&gt;Inspecting IP Addresses&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;inspecting-network-links-with-networkctl.md&#34;&gt;Inspecting the Status of Network Links with &lt;code&gt;networkctl&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;network-debugging.md&#34;&gt;Network Debugging&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;checking-firewall-rules.md&#34;&gt;Checking Firewall Rules&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;netmgr.md&#34;&gt;Inspect Network Settings with &lt;code&gt;netmgr&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;For information about tcpdump and netcat, see &lt;a href=&#34;../photon_admin/installing-the-packages-for-tcpdump-and-netcat-with-tdnf.md&#34;&gt;Installing the Packages for tcpdump and netcat with tdnf&lt;/a&gt;&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: File System Troubleshooting</title>
-      <link>/docs/troubleshooting-guide/file-system-troubleshooting/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/troubleshooting-guide/file-system-troubleshooting/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS includes commands to check and troubleshoot file systems.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Troubleshooting Packages</title>
-      <link>/docs/troubleshooting-guide/troubleshooting-packages/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/troubleshooting-guide/troubleshooting-packages/</guid>
-      <description>
-        
-        
-        &lt;p&gt;On Photon OS, &lt;code&gt;tdnf&lt;/code&gt; is the default package manager. The standard syntax for &lt;code&gt;tdnf&lt;/code&gt; commands is the same as that for DNF and Yum:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf [options] &amp;lt;command&amp;gt; [&amp;lt;arguments&amp;gt;...]
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;The main configuration files reside in &lt;code&gt;/etc/tdnf/tdnf.conf&lt;/code&gt;. The repositories appear in &lt;code&gt;/etc/yum.repos.d/&lt;/code&gt; with &lt;code&gt;.repo&lt;/code&gt; file extensions. For more information, see the &lt;a href=&#34;../../administration-guide/&#34;&gt;Photon OS Administration Guide&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;The cache files for data and metadata reside in &lt;code&gt;/var/cache/tdnf&lt;/code&gt;. The local cache is populated with data from the repository:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;ls -l /var/cache/tdnf/photon
-	total 8
-	drwxr-xr-x 2 root root 4096 May 18 22:52 repodata
-	d-wxr----t 3 root root 4096 May  3 22:51 rpms
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;You can clear the cache to help troubleshoot a problem, but doing so might slow the performance of &lt;code&gt;tdnf&lt;/code&gt; until the cache becomes repopulated with data. Cleaning the cache can remove stale information. Clear the cache as follows:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf clean all
-	Cleaning repos: photon photon-extras photon-updates 
-	Cleaning up everything
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Some tdnf commands can help you troubleshoot problems with packages:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;makecache&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;This command updates the cached binary metadata for all known repositories. You can run it after you clean the cache to make sure you are working with the latest repository data as you troubleshoot.&lt;/p&gt;
-&lt;p&gt;Example:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf makecache
-         
-        Refreshing metadata for: &#39;VMware Photon Linux 1.0(x86_64)Updates&#39;
-        Refreshing metadata for: &#39;VMware Photon Extras 1.0(x86_64)&#39;
-        Refreshing metadata for: &#39;VMware Photon Linux 1.0(x86_64)&#39;
-        Metadata cache created.
-&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;tdnf check-local&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;This command resolves dependencies by using the local RPMs to help check RPMs for quality assurance before publishing them. To check RPMs with this command, you must create a local directory and place your RPMs in it. The command, which includes no options, takes the path to the local directory containing the RPMs as its argument. The command does not, however, recursively parse directories; it checks the RPMs only in the directory that you specify.&lt;/p&gt;
-&lt;p&gt;For example, after creating a directory named &lt;code&gt;/tmp/myrpms&lt;/code&gt; and placing your RPMs in it, you can run the following command to check them:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;  tdnf check-local /tmp/myrpms
-  Checking all packages from: /tmp/myrpms
-  Found 10 packages
-  Check completed without issues
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;tdnf provides&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;This command finds the packages that provide the package that you supply as an argument. If you are used to a package name for another system, you can use &lt;code&gt;tdnf provides&lt;/code&gt; to find the corresponding name of the package on Photon OS.&lt;/p&gt;
-&lt;p&gt;Example:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;  tdnf provides docker
-  docker-1.11.0-1.ph1.x86_64 : Docker
-  Repo     : photon
-  docker-1.11.0-1.ph1.x86_64 : Docker
-  Repo     : @System
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;For a file, you must provide the full path. Example:&lt;/p&gt;
-&lt;p&gt;tdnf provides /usr/include/stdio.h
+&lt;/code>&lt;/pre>
+&lt;p>For an overview of systemd, see &lt;a href="https://www.freedesktop.org/wiki/Software/systemd/">systemd System and Service Manager&lt;/a> and the &lt;a href="https://www.freedesktop.org/software/systemd/man/systemd.html">man page for systemd&lt;/a>. The systemd man pages are listed at &lt;a href="https://www.freedesktop.org/software/systemd/man/">https://www.freedesktop.org/software/systemd/man/&lt;/a>.&lt;/p></description></item><item><title>Docs: Network Troubleshooting</title><link>/docs/troubleshooting-guide/network-troubleshooting/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/network-troubleshooting/</guid><description>
+&lt;p>Use the &lt;code>systemd&lt;/code> suite of commands and not deprecated &lt;code>init.d&lt;/code> commands or other deprecated commands, to manage networking.&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="managing-the-network-configuration.md">Managing the Network Configuration&lt;/a>&lt;/li>
+&lt;li>&lt;a href="inspecting-ip-addresses.md">Inspecting IP Addresses&lt;/a>&lt;/li>
+&lt;li>&lt;a href="inspecting-network-links-with-networkctl.md">Inspecting the Status of Network Links with &lt;code>networkctl&lt;/code>&lt;/a>&lt;/li>
+&lt;li>&lt;a href="network-debugging.md">Network Debugging&lt;/a>&lt;/li>
+&lt;li>&lt;a href="checking-firewall-rules.md">Checking Firewall Rules&lt;/a>&lt;/li>
+&lt;li>&lt;a href="netmgr.md">Inspect Network Settings with &lt;code>netmgr&lt;/code>&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>For information about tcpdump and netcat, see &lt;a href="../photon_admin/installing-the-packages-for-tcpdump-and-netcat-with-tdnf.md">Installing the Packages for tcpdump and netcat with tdnf&lt;/a>&lt;/p></description></item><item><title>Docs: File System Troubleshooting</title><link>/docs/troubleshooting-guide/file-system-troubleshooting/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/file-system-troubleshooting/</guid><description>
+&lt;p>Photon OS includes commands to check and troubleshoot file systems.&lt;/p></description></item><item><title>Docs: Troubleshooting Packages</title><link>/docs/troubleshooting-guide/troubleshooting-packages/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/troubleshooting-packages/</guid><description>
+&lt;p>On Photon OS, &lt;code>tdnf&lt;/code> is the default package manager. The standard syntax for &lt;code>tdnf&lt;/code> commands is the same as that for DNF and Yum:&lt;/p>
+&lt;pre>&lt;code>tdnf [options] &amp;lt;command&amp;gt; [&amp;lt;arguments&amp;gt;...]
+&lt;/code>&lt;/pre>&lt;p>The main configuration files reside in &lt;code>/etc/tdnf/tdnf.conf&lt;/code>. The repositories appear in &lt;code>/etc/yum.repos.d/&lt;/code> with &lt;code>.repo&lt;/code> file extensions. For more information, see the &lt;a href="../../administration-guide/">Photon OS Administration Guide&lt;/a>.&lt;/p>
+&lt;p>The cache files for data and metadata reside in &lt;code>/var/cache/tdnf&lt;/code>. The local cache is populated with data from the repository:&lt;/p>
+&lt;pre>&lt;code>ls -l /var/cache/tdnf/photon
+total 8
+drwxr-xr-x 2 root root 4096 May 18 22:52 repodata
+d-wxr----t 3 root root 4096 May 3 22:51 rpms
+&lt;/code>&lt;/pre>&lt;p>You can clear the cache to help troubleshoot a problem, but doing so might slow the performance of &lt;code>tdnf&lt;/code> until the cache becomes repopulated with data. Cleaning the cache can remove stale information. Clear the cache as follows:&lt;/p>
+&lt;pre>&lt;code>tdnf clean all
+Cleaning repos: photon photon-extras photon-updates
+Cleaning up everything
+&lt;/code>&lt;/pre>&lt;p>Some tdnf commands can help you troubleshoot problems with packages:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;code>makecache&lt;/code>&lt;/p>
+&lt;p>This command updates the cached binary metadata for all known repositories. You can run it after you clean the cache to make sure you are working with the latest repository data as you troubleshoot.&lt;/p>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>tdnf makecache
+Refreshing metadata for: 'VMware Photon Linux 1.0(x86_64)Updates'
+Refreshing metadata for: 'VMware Photon Extras 1.0(x86_64)'
+Refreshing metadata for: 'VMware Photon Linux 1.0(x86_64)'
+Metadata cache created.
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>&lt;code>tdnf check-local&lt;/code>&lt;/p>
+&lt;p>This command resolves dependencies by using the local RPMs to help check RPMs for quality assurance before publishing them. To check RPMs with this command, you must create a local directory and place your RPMs in it. The command, which includes no options, takes the path to the local directory containing the RPMs as its argument. The command does not, however, recursively parse directories; it checks the RPMs only in the directory that you specify.&lt;/p>
+&lt;p>For example, after creating a directory named &lt;code>/tmp/myrpms&lt;/code> and placing your RPMs in it, you can run the following command to check them:&lt;/p>
+&lt;pre>&lt;code> tdnf check-local /tmp/myrpms
+Checking all packages from: /tmp/myrpms
+Found 10 packages
+Check completed without issues
+&lt;/code>&lt;/pre>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>tdnf provides&lt;/code>&lt;/p>
+&lt;p>This command finds the packages that provide the package that you supply as an argument. If you are used to a package name for another system, you can use &lt;code>tdnf provides&lt;/code> to find the corresponding name of the package on Photon OS.&lt;/p>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code> tdnf provides docker
+docker-1.11.0-1.ph1.x86_64 : Docker
+Repo : photon
+docker-1.11.0-1.ph1.x86_64 : Docker
+Repo : @System
+&lt;/code>&lt;/pre>
+&lt;p>For a file, you must provide the full path. Example:&lt;/p>
+&lt;p>tdnf provides /usr/include/stdio.h
 glibc-devel-2.22-8.ph1.x86_64 : Header files for glibc
-Repo     : photon
+Repo : photon
 glibc-devel-2.22-8.ph1.x86_64 : Header files for glibc
-Repo     : @System&lt;/p&gt;
-&lt;p&gt;The following example shows you how to find the package that provides a pluggable authentication module, which you might need to find if the system is mishandling passwords.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf provides /etc/pam.d/system-account
-    shadow-4.2.1-7.ph1.x86_64 : Programs for handling passwords in a secure way
-    Repo     : photon
-    shadow-4.2.1-8.ph1.x86_64 : Programs for handling passwords in a secure way
-    Repo     : photon-updates
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;For more commands see the &lt;a href=&#34;../../administration-guide/&#34;&gt;Photon OS Administration Guide&lt;/a&gt;.&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;If a package that is installed is not working, try re-installing it.
-Example:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;```
+Repo : @System&lt;/p>
+&lt;p>The following example shows you how to find the package that provides a pluggable authentication module, which you might need to find if the system is mishandling passwords.&lt;/p>
+&lt;pre>&lt;code>tdnf provides /etc/pam.d/system-account
+shadow-4.2.1-7.ph1.x86_64 : Programs for handling passwords in a secure way
+Repo : photon
+shadow-4.2.1-8.ph1.x86_64 : Programs for handling passwords in a secure way
+Repo : photon-updates
+&lt;/code>&lt;/pre>&lt;p>For more commands see the &lt;a href="../../administration-guide/">Photon OS Administration Guide&lt;/a>.&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;p>If a package that is installed is not working, try re-installing it.
+Example:&lt;/p>
+&lt;pre>&lt;code>```
 tdnf reinstall shadow
-    Reinstalling:
-    shadow 	x86_64 	4.2.1-7.ph1   3.85 M
+Reinstalling:
+shadow x86_64 4.2.1-7.ph1 3.85 M
 ```
-&lt;/code&gt;&lt;/pre&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Kernel Problems and Boot and Login Errors</title>
-      <link>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS includes commands to troubleshoot kernel problems and boot and login errors.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;kernel-overview.md&#34;&gt;Kernel Overview&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;boot-process-overview.md&#34;&gt;Boot Process Overview&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;blank-screen-on-reboot.md&#34;&gt;Blank Screen on Reboot&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;investigating-strange-behavior.md&#34;&gt;Investigating Unexpected Behavior&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;investigating-the-guest-kernel.md&#34;&gt;Investigating the Guest Kernel&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;kernel-log-replication-with-vprobes.md&#34;&gt;Kernel Log Replication with VProbes&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;Troubleshooting-linuxkernel.md&#34;&gt;Troubleshooting Linux Kernel&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Performance Issues</title>
-      <link>/docs/troubleshooting-guide/performance-issues/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/troubleshooting-guide/performance-issues/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Performance issues can be difficult to troubleshoot because so many variables play a role in overall system performance. Interpreting performance data often depends on the context and the situation. To better identify and isolate variables and to gain insight into performance data, you can use the troubleshooting tools on Photon OS to diagnose the system.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;general_performance_guidelines.md&#34;&gt;General Guidelines&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;throughput_performance.md&#34;&gt;Throughput Performance&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Kernel Problems and Boot and Login Errors</title><link>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/</guid><description>
+&lt;p>Photon OS includes commands to troubleshoot kernel problems and boot and login errors.&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="kernel-overview.md">Kernel Overview&lt;/a>&lt;/li>
+&lt;li>&lt;a href="boot-process-overview.md">Boot Process Overview&lt;/a>&lt;/li>
+&lt;li>&lt;a href="blank-screen-on-reboot.md">Blank Screen on Reboot&lt;/a>&lt;/li>
+&lt;li>&lt;a href="investigating-strange-behavior.md">Investigating Unexpected Behavior&lt;/a>&lt;/li>
+&lt;li>&lt;a href="investigating-the-guest-kernel.md">Investigating the Guest Kernel&lt;/a>&lt;/li>
+&lt;li>&lt;a href="kernel-log-replication-with-vprobes.md">Kernel Log Replication with VProbes&lt;/a>&lt;/li>
+&lt;li>&lt;a href="Troubleshooting-linuxkernel.md">Troubleshooting Linux Kernel&lt;/a>&lt;/li>
+&lt;/ul></description></item><item><title>Docs: Performance Issues</title><link>/docs/troubleshooting-guide/performance-issues/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/performance-issues/</guid><description>
+&lt;p>Performance issues can be difficult to troubleshoot because so many variables play a role in overall system performance. Interpreting performance data often depends on the context and the situation. To better identify and isolate variables and to gain insight into performance data, you can use the troubleshooting tools on Photon OS to diagnose the system.&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="general_performance_guidelines.md">General Guidelines&lt;/a>&lt;/li>
+&lt;li>&lt;a href="throughput_performance.md">Throughput Performance&lt;/a>&lt;/li>
+&lt;/ul></description></item></channel></rss>

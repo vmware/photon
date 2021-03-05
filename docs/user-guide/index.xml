@@ -1,92 +1,68 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title> – User Guide</title>
-    <link>/docs/user-guide/</link>
-    <description>Recent content in User Guide on </description>
-    <generator>Hugo -- gohugo.io</generator>
-    
-	  <atom:link href="/docs/user-guide/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-      
-        
-      
-    
-    
-    <item>
-      <title>Docs: Setting Up Network PXE Boot</title>
-      <link>/docs/user-guide/setting-up-network-pxe-boot/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/user-guide/setting-up-network-pxe-boot/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS supports the Preboot Execution Environment, or PXE, over a network connection. This document describes how to set up a PXE boot server to install Photon OS.&lt;/p&gt;
-&lt;h1 id=&#34;server-setup&#34;&gt;Server Setup&lt;/h1&gt;
-&lt;p&gt;To set up a PXE server, you will need to have the following:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;A DHCP server to allow hosts to get an IP address.&lt;/li&gt;
-&lt;li&gt;A TFTP server, which is a file transfer protocol similar to FTP with no authentication.&lt;/li&gt;
-&lt;li&gt;Optionally, an HTTP server. The HTTP server will serve the RPMs yum repo, or you can use the official Photon OS repo on Bintray. Also, this HTTP server can be used if you want to provide a kickstart config for unattended installation.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;The instructions to set up the servers assume you have an Ubuntu 14.04 machine with a static IP address of &lt;code&gt;172.16.78.134&lt;/code&gt;.&lt;/p&gt;
-&lt;h2 id=&#34;dhcp-setup&#34;&gt;DHCP Setup&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;Install the DHCP server:&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;  sudo apt-get install isc-dhcp-server
-&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
-&lt;li&gt;Edit the Ethernet interface in &lt;code&gt;/etc/default/isc-dhcp-server&lt;/code&gt; to &lt;code&gt;INTERFACES=&amp;quot;eth0&amp;quot;&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Edit the DHCP configuration in &lt;code&gt;/etc/dhcp/dhcpd.conf&lt;/code&gt; to allow machines to boot and get an IP address via DHCP in the range &lt;code&gt;172.16.78.230 - 172.16.78.250&lt;/code&gt;, for example:&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;  subnet 172.16.78.0 netmask 255.255.255.0 {
-    range 172.16.78.230 172.16.78.250;
-    option subnet-mask 255.255.255.0;
-    option routers 172.16.78.134;
-    option broadcast-address 172.16.78.255;
-    filename &amp;quot;pxelinux.0&amp;quot;;
-    next-server 172.16.78.134;
-  }
-
-&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
-&lt;li&gt;Restart the DHCP server:&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;  sudo service isc-dhcp-server restart
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;tftp-setup&#34;&gt;TFTP Setup&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;Install the TFTP server:&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;  sudo apt-get install tftpd-hpa
-&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
-&lt;li&gt;Enable the boot service and restart the service:&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;  sudo update-inetd --enable BOOT
-  sudo service tftpd-hpa restart
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;optional-http-server-setup&#34;&gt;Optional: HTTP server setup&lt;/h2&gt;
-&lt;p&gt;This step is only needed if you are planning to serve the ks (kickstart) config file through this server; refer to &lt;a href=&#34;../working-with-kickstart/&#34;&gt;Kickstart support&lt;/a&gt; for details.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Serving your local yum repo.
-You can install apache http web server&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;sudo apt-get install apache2
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Mount the Photon iso to get the RPMS repo and sample ks config file.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;mkdir /mnt/photon-iso
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– User Guide</title><link>/docs/user-guide/</link><description>Recent content in User Guide on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/user-guide/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Setting Up Network PXE Boot</title><link>/docs/user-guide/setting-up-network-pxe-boot/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/user-guide/setting-up-network-pxe-boot/</guid><description>
+&lt;p>Photon OS supports the Preboot Execution Environment, or PXE, over a network connection. This document describes how to set up a PXE boot server to install Photon OS.&lt;/p>
+&lt;h1 id="server-setup">Server Setup&lt;/h1>
+&lt;p>To set up a PXE server, you will need to have the following:&lt;/p>
+&lt;ul>
+&lt;li>A DHCP server to allow hosts to get an IP address.&lt;/li>
+&lt;li>A TFTP server, which is a file transfer protocol similar to FTP with no authentication.&lt;/li>
+&lt;li>Optionally, an HTTP server. The HTTP server will serve the RPMs yum repo, or you can use the official Photon OS repo on Bintray. Also, this HTTP server can be used if you want to provide a kickstart config for unattended installation.&lt;/li>
+&lt;/ul>
+&lt;p>The instructions to set up the servers assume you have an Ubuntu 14.04 machine with a static IP address of &lt;code>172.16.78.134&lt;/code>.&lt;/p>
+&lt;h2 id="dhcp-setup">DHCP Setup&lt;/h2>
+&lt;ul>
+&lt;li>Install the DHCP server:&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code> sudo apt-get install isc-dhcp-server
+&lt;/code>&lt;/pre>&lt;ul>
+&lt;li>Edit the Ethernet interface in &lt;code>/etc/default/isc-dhcp-server&lt;/code> to &lt;code>INTERFACES=&amp;quot;eth0&amp;quot;&lt;/code>&lt;/li>
+&lt;li>Edit the DHCP configuration in &lt;code>/etc/dhcp/dhcpd.conf&lt;/code> to allow machines to boot and get an IP address via DHCP in the range &lt;code>172.16.78.230 - 172.16.78.250&lt;/code>, for example:&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code> subnet 172.16.78.0 netmask 255.255.255.0 {
+range 172.16.78.230 172.16.78.250;
+option subnet-mask 255.255.255.0;
+option routers 172.16.78.134;
+option broadcast-address 172.16.78.255;
+filename &amp;quot;pxelinux.0&amp;quot;;
+next-server 172.16.78.134;
+}
+&lt;/code>&lt;/pre>&lt;ul>
+&lt;li>Restart the DHCP server:&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code> sudo service isc-dhcp-server restart
+&lt;/code>&lt;/pre>&lt;h2 id="tftp-setup">TFTP Setup&lt;/h2>
+&lt;ul>
+&lt;li>Install the TFTP server:&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code> sudo apt-get install tftpd-hpa
+&lt;/code>&lt;/pre>&lt;ul>
+&lt;li>Enable the boot service and restart the service:&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code> sudo update-inetd --enable BOOT
+sudo service tftpd-hpa restart
+&lt;/code>&lt;/pre>&lt;h2 id="optional-http-server-setup">Optional: HTTP server setup&lt;/h2>
+&lt;p>This step is only needed if you are planning to serve the ks (kickstart) config file through this server; refer to &lt;a href="../working-with-kickstart/">Kickstart support&lt;/a> for details.&lt;/p>
+&lt;ul>
+&lt;li>Serving your local yum repo.
+You can install apache http web server&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code>sudo apt-get install apache2
+&lt;/code>&lt;/pre>&lt;p>Mount the Photon iso to get the RPMS repo and sample ks config file.&lt;/p>
+&lt;pre>&lt;code>mkdir /mnt/photon-iso
 sudo mount &amp;lt;photon_iso&amp;gt; /mnt/photon-iso/
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Copy the RPMS repo.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;cp -r /mnt/photon-iso/RPMS /var/www/html/
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;To support ks, you can copy the sample config file from the iso and edit it; refer to &lt;a href=&#34;../working-with-kickstart/&#34;&gt;Kickstart support&lt;/a&gt; for details.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;cp /mnt/photon-iso/isolinux/sample_ks.cfg /var/www/html/my_ks.cfg
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;pxe-boot-files-setup&#34;&gt;PXE boot files setup&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;Mount photon.iso to get Linux and initrd images:&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;mkdir /mnt/photon-iso
+&lt;/code>&lt;/pre>&lt;p>Copy the RPMS repo.&lt;/p>
+&lt;pre>&lt;code>cp -r /mnt/photon-iso/RPMS /var/www/html/
+&lt;/code>&lt;/pre>&lt;p>To support ks, you can copy the sample config file from the iso and edit it; refer to &lt;a href="../working-with-kickstart/">Kickstart support&lt;/a> for details.&lt;/p>
+&lt;pre>&lt;code>cp /mnt/photon-iso/isolinux/sample_ks.cfg /var/www/html/my_ks.cfg
+&lt;/code>&lt;/pre>&lt;h2 id="pxe-boot-files-setup">PXE boot files setup&lt;/h2>
+&lt;ul>
+&lt;li>Mount photon.iso to get Linux and initrd images:&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code>mkdir /mnt/photon-iso
 sudo mount &amp;lt;photon_iso&amp;gt; /mnt/photon-iso/
-&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
-&lt;li&gt;Setting the PXE boot files:&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;wget https://www.kernel.org/pub/linux/utils/boot/syslinux/syslinux-6.03.tar.gz
+&lt;/code>&lt;/pre>&lt;ul>
+&lt;li>Setting the PXE boot files:&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code>wget https://www.kernel.org/pub/linux/utils/boot/syslinux/syslinux-6.03.tar.gz
 tar -xvf syslinux-6.03.tar.gz
 pushd /var/lib/tftpboot
 cp -r /mnt/photon-iso/isolinux/* .
@@ -97,445 +73,381 @@ cp ~/syslinux-6.03/bios/com32/menu/vesamenu.c32 .
 cp ~/syslinux-6.03/bios/core/pxelinux.0 .
 mkdir pxelinux.cfg
 mv isolinux.cfg pxelinux.cfg/default
-&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
-&lt;li&gt;Update repo param to point to http yum repo; you may pass official photon bintray repo.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;pre&gt;&lt;code&gt;sed -i &amp;quot;s/append/append repo=http:\/\/172.16.78.134\/RPMS/g&amp;quot; menu.cfg
+&lt;/code>&lt;/pre>&lt;ul>
+&lt;li>Update repo param to point to http yum repo; you may pass official photon bintray repo.&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code>sed -i &amp;quot;s/append/append repo=http:\/\/172.16.78.134\/RPMS/g&amp;quot; menu.cfg
 popd
-&lt;/code&gt;&lt;/pre&gt;&lt;ul&gt;
-&lt;li&gt;Optionally, you can add your ks config file; see &lt;a href=&#34;../working-with-kickstart/&#34;&gt;Kickstart support&lt;/a&gt; for details.&lt;/li&gt;
-&lt;/ul&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Kickstart Support in Photon OS</title>
-      <link>/docs/user-guide/working-with-kickstart/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/user-guide/working-with-kickstart/</guid>
-      <description>
-        
-        
-        &lt;p&gt;Photon OS works with kickstart for unattended, automated installations. The kickstart configuration file can either reside in the CD-ROM attached to the host or be served through an HTTP server.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;#kickstart-capabilities&#34;&gt;Kickstart Capabilities&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#permitted-json-fields&#34;&gt;Permitted JSON Fields&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#sample-configuration-file&#34;&gt;Sample Configuration File&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;#unattended-installation-through-kickstart&#34;&gt;Unattended Installation Through Kickstart&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;kickstart-capabilities&#34;&gt;Kickstart Capabilities&lt;/h2&gt;
-&lt;p&gt;Photon OS supports the following configurations with kickstart:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Setting the hostname&lt;/li&gt;
-&lt;li&gt;Setting the password&lt;/li&gt;
-&lt;li&gt;Setting the disk to install&lt;/li&gt;
-&lt;li&gt;Selecting whether to install the full or the minimal version of Photon OS&lt;/li&gt;
-&lt;li&gt;Applying a post-installation script&lt;/li&gt;
-&lt;li&gt;Adding public keys to allow the root account to log in through SSH&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;permitted-json-fields&#34;&gt;Permitted JSON Fields&lt;/h2&gt;
-&lt;p&gt;The following is a list of allowed JSON fields and their descriptions:&lt;/p&gt;
-&lt;table style=&#34;height: 170px;&#34; border=&#34;1&#34; width=&#34;250&#34; cellspacing=&#34;0&#34; cellpadding=&#34;10&#34;&gt;
-	&lt;tbody&gt;
-	&lt;tr&gt;
-	&lt;td&gt;&lt;b&gt;Field&lt;/b&gt;&lt;/td&gt;
-	&lt;td&gt;&lt;b&gt;Description&lt;/b&gt;&lt;/td&gt;
-	&lt;/tr&gt;
-	&lt;tr&gt;
-	&lt;td&gt;hostname&lt;/td&gt;
-	&lt;td&gt;The host name as string. You can also specify the name in printf format. 
-&lt;p&gt; The hostname must not start with a number or &#34;-&#34; and must be less than 64 characters.  
-&lt;p&gt; Example: &#34;photon-$((RANDOM%4096))&#34;
-&lt;/p&gt;&lt;/td&gt;
-	&lt;/tr&gt;
-	&lt;tr&gt;
-	&lt;td&gt;password:
-  &lt;p&gt;crypted: true/false
-  &lt;p&gt;text: password text &lt;/td&gt;
-	&lt;td&gt; &lt;b&gt;crypted: true&lt;/b&gt;: 
-This indicates that the &#34;text&#34; field is already encrypted. In this case, the specified password is used as is for the root user.
-&lt;p&gt; &lt;b&gt;crypted: false:&lt;/b&gt;
-This indicates that the &#34;text&#34; field is plain text. It is then encrypted and used to create the root user&#39;s password.
-&lt;p&gt; &lt;b&gt;text&lt;/b&gt;: Plain text or encrypted password.
-&lt;/td&gt;
-	&lt;/tr&gt;
-	&lt;tr&gt;
-	&lt;td&gt;disk&lt;/td&gt;
-	&lt;td&gt;Indicates the install disk.
-&lt;p&gt; Example: /dev/sda &lt;/td&gt;
-	&lt;/tr&gt;
-	&lt;tr&gt;
-	&lt;td&gt;partitions&lt;/td&gt;
-	&lt;td&gt;An array of partition definitions.
-	&lt;p&gt;&lt;b&gt;To create GPT partitions&lt;/b&gt;
-&lt;p&gt; Example:
-&lt;p&gt;[
- &lt;p&gt;                       {&#34;mountpoint&#34;: &#34;/&#34;, &#34;size&#34;: 0, &#34;filesystem&#34;: &#34;ext4&#34;},
- &lt;p&gt;                       {&#34;mountpoint&#34;: &#34;/boot&#34;, &#34;size&#34;: 128, &#34;filesystem&#34;: &#34;ext4&#34;},
- &lt;p&gt;                      {&#34;mountpoint&#34;: &#34;/root&#34;, &#34;size&#34;: 128, &#34;filesystem&#34;: &#34;ext4&#34;},
- &lt;p&gt;                       {&#34;size&#34;: 128, &#34;filesystem&#34;: &#34;swap&#34;}
-&lt;p&gt;]
-&lt;p&gt;&lt;b&gt;To create LVM partitions&lt;/b&gt;
-&lt;p&gt; Example:&lt;p&gt;[
-                &lt;p&gt;{&#34;mountpoint&#34;: &#34;/&#34;, &#34;size&#34;: 0, &#34;filesystem&#34;: &#34;ext4&#34;, &#34;lvm&#34;:{&#34;vg_name&#34;:&#34;vg1&#34;, &#34;lv_name&#34;:&#34;rootfs&#34;}},
-               &lt;p&gt; {&#34;mountpoint&#34;: &#34;/boot&#34;, &#34;size&#34;: 128, &#34;filesystem&#34;: &#34;ext4&#34;},
-&lt;pre&gt;&lt;code&gt;            &amp;lt;p&amp;gt;{&amp;quot;mountpoint&amp;quot;: &amp;quot;/root&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;root&amp;quot;}},
-
-            &amp;lt;p&amp;gt;{&amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;swap&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg2&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;swap&amp;quot;}}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;]&lt;/p&gt;
-&lt;p&gt;&lt;b&gt;Note&lt;/b&gt;: Mounting &#39;/boot&#39; partition as lvm is not supported.
-&lt;/td&gt;
-	&lt;/tr&gt;&lt;/tr&gt;
-	&lt;tr&gt;
-	&lt;td&gt;packagelist_file&lt;/td&gt;
-	&lt;td&gt;Indicates the name of the file that contains the list of packages to install.
-	&lt;p&gt;Example: { &#34;packagelist_file&#34;: &#34;packages_minimal.json&#34; }
-&lt;/td&gt;
-	&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;additional_packages&lt;/td&gt;
-	&lt;td&gt;Specify an array of additional packages.
-&lt;/td&gt;
-	&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;install_linux_esx&lt;/td&gt;
-	&lt;td&gt;Specify a boolean value to use linux esx instead of generic linux.
-&lt;/td&gt;
-	&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;postinstall&lt;/td&gt;
-	&lt;td&gt;Specify an array of bash commands to execute after install. &lt;p&gt; See the example for partitions.
-	&lt;p&gt;Example:
-	{ &#34;postinstall&#34;: [
-			&#34;#!/bin/sh&#34;,
-			&#34;echo \&#34;Hello World\&#34; &gt; /etc/postinstall&#34; ] }
-&lt;/td&gt;
-	&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;public_key&lt;/td&gt;
-	&lt;td&gt;Optional. &lt;p&gt;The public key that you require to install for password-less logins. &lt;p&gt; This key is created in authorized_keys in the .ssh directory.
-&lt;/td&gt;
-&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;additional_files&lt;/td&gt;
-	&lt;td&gt;Optional. &lt;p&gt;Contains a list of pairs {source file (or directory), destination file
-	(or directory)} to copy to the target system. Source file
-	(directory) will be looked up in &#34;search_path&#34; list.
-	&lt;p&gt;Example: { &#34;additional_files&#34;: [
-		{&#34;resizefs.sh&#34;: &#34;/usr/local/bin/resizefs.sh&#34;},
-		{&#34;resizefs.service&#34;: &#34;/lib/systemd/system/resizefs.service&#34;}]}
-&lt;/td&gt;
-&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;additional_rpms_path&lt;/td&gt;
-	&lt;td&gt;Optional. &lt;p&gt;Provide a path containing additional RPMS that are to be bundled into
-	the image.
-&lt;/td&gt;
-&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;arch&lt;/td&gt;
-	&lt;td&gt;Optional. &lt;p&gt;Target system architecture. Should be set if target architecture is
-	different from the host, for instance x86_64 machine building RPi
-	image.
-	Acceptable values are: &#34;x86_64&#34;, &#34;aarch64&#34;
-	Default value: autodetected host architecture
-	&lt;p&gt;Example: { &#34;arch&#34;: &#34;aarch64&#34; }
-&lt;/td&gt;
-&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;bootmode&lt;/td&gt;
-	&lt;td&gt;Optional. &lt;p&gt;Sets the boot type to support: EFI, BIOS or both.
-	&lt;p&gt;Acceptable values are: bios, efi, dualboot
-	&lt;p&gt;&lt;b&gt;bios&lt;/b&gt;
-	&lt;p&gt;Adds special partition (very first) for first stage grub.
-	&lt;p&gt;&lt;b&gt;efi&lt;/b&gt;
-	&lt;p&gt;Adds ESP (Efi Special Partition), format is as FAT and copy there EFI binaries including grub.efi
-	&lt;p&gt;&lt;b&gt;dualboot&lt;/b&gt;
-	&lt;p&gt;Adds two extra partitions for &#34;bios&#34; and &#34;efi&#34; modes. This target will support both modes that can be switched in bios settings without extra actions in the OS.
-	&lt;p&gt;Default value: &#34;dualboot&#34; for x86_64 and &#34;efi&#34; for aarch64
-	&lt;p&gt;Example: { &#34;bootmode&#34;: &#34;bios&#34; }
-&lt;/td&gt;
-&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;eject_cdrom&lt;/td&gt;
-	&lt;td&gt;Optional. &lt;p&gt;Ejects cdrom after installation completed if set to true.
-	&lt;p&gt;Boolean: true or false
-	&lt;p&gt;Default value: true
-	&lt;p&gt;Example: { &#34;eject_cdrom&#34;: false }
-&lt;/td&gt;
-&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;live&lt;/td&gt;
-	&lt;td&gt;Optional. &lt;p&gt;Should be set to flase if target system is not being run on
-	host machine. When it set to false, installer will not add EFI boot
-	entries, and will not generate unique machine-id.
-	&lt;p&gt;Default value: false if &#34;disk&#34; is /dev/loop and true otherwise.
-	&lt;p&gt;Example: { &#34;live&#34;: false }
-&lt;/td&gt;
-&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;log_level&lt;/td&gt;
-	&lt;td&gt;Optional. &lt;p&gt;Set installer logging level.
-	&lt;p&gt;Acceptable values are: &lt;b&gt;error&lt;/b&gt;, &lt;b&gt;warning&lt;/b&gt;, &lt;b&gt;info&lt;/b&gt;, &lt;b&gt;debug&lt;/b&gt;
-	&lt;p&gt;Default value: &lt;/b&gt;info&lt;/b&gt;
-	&lt;p&gt;Example: { &#34;log_level&#34;: &#34;debug&#34; }
-&lt;/td&gt;
-&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;ostree&lt;/td&gt;
-	&lt;td&gt;Optional. &lt;p&gt;Atomic flavour of Photon OS.
-        &lt;p&gt;&lt;b&gt;default_repo&lt;/b&gt;
-        &lt;p&gt;(required)
-                 &lt;p&gt;Define the type of repo data used for installing the OS
-                 There are two type: &lt;p&gt;1. Default Repo(comes with ISO) &lt;p&gt;2. Custom Repo (Remote server)
-                 &lt;p&gt;Boolean: true or false
-                   &lt;p&gt;where true : Default Repo is selected
-                         &lt;p&gt;false: Custom Repo is selected
-                 &lt;p&gt;Default value: true
-        Example: { &#34;ostree&#34;: {&#34;default_repo&#34;: true}}
-        &lt;p&gt;&lt;b&gt;repo_url&lt;/b&gt; 
-        &lt;p&gt;(Required, Only If Custom Repo is selected)
-                 Supported Value: Valid &#34;repo&#34; URL of remote server where repo data exists
-        &lt;p&gt;&lt;b&gt;repo_ref&lt;/b&gt;
-        &lt;p&gt;(Required, Only If Custom Repo is selected)
-                 Supported Value: Valid &#34;ref&#34; path which was mentioned for
-                                  creation of Base Tree on remote server
-        &lt;p&gt;Example: { &#34;ostree&#34;: {
-                              &#34;default_repo&#34;: false,
-                              &#34;repo_url&#34;: &#34;http://&lt;ip&gt;:&lt;port&gt;/repo&#34;,
-                              &#34;repo_ref&#34;: &#34;photon/3.0/x86_64/minimal&#34;
-                             }
-                 }
-&lt;/td&gt;
-&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;packages&lt;/td&gt;
-	&lt;td&gt;Optional if packagelist_file set. &lt;p&gt;Contains list of packages to install.
-	&lt;p&gt;Example: { &#34;packages&#34;: [&#34;minimal&#34;, &#34;linux&#34;, &#34;initramfs&#34;] }
-&lt;/td&gt;
-&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;partition_type&lt;/td&gt;
-	&lt;td&gt;Optional. &lt;p&gt;Set partition table type. Supported values are: gpt, msdos.
-	&lt;p&gt;Default value: gpt
-	&lt;p&gt;Example: { &#34;partition_type&#34;: &#34;msdos&#34; }
-&lt;/td&gt;
-&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;network&lt;/td&gt;
-	&lt;td&gt;Optional. &lt;p&gt;Used to configure network on a live/installed system.
-	&lt;p&gt;&lt;b&gt;type&lt;/b&gt;
-	&lt;p&gt;required
-	&lt;p&gt;String; must be one of dhcp/static/vlan. Indicates how the network is being configured.
-	&lt;p&gt;&lt;b&gt;hostname&lt;/b&gt;
-	&lt;p&gt;optional; when type == dhcp
-	&lt;p&gt;String; DHCP client hostname
-	&lt;p&gt;&lt;b&gt;ip_addr&lt;/b&gt;
-	&lt;p&gt;required; when type == static
-	&lt;p&gt;IP String; IP address to be configured
-	&lt;p&gt;&lt;b&gt;netmask&lt;/b&gt;
-	&lt;p&gt;required; when type == static
-	&lt;p&gt;IP String; Netmask to be configured
-	&lt;p&gt;&lt;b&gt;gateway&lt;/b&gt;
-	&lt;p&gt;required; when type == static
-	&lt;p&gt;IP String; Gateway IP address to be configured
-	&lt;p&gt;&lt;b&gt;nameserver&lt;/b&gt;
-	&lt;p&gt;required; when type == static
-	&lt;p&gt;IP String; Name server IP address to be configured
-	&lt;p&gt;&lt;b&gt;vlan_id&lt;/b&gt;
-	&lt;p&gt;required; when type == vlan
-	&lt;p&gt;ID String. (1-4094); VLAN ID number expressed as string
-&lt;/td&gt;
-&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;postinstallscripts&lt;/td&gt;
-	&lt;td&gt;Optional. &lt;p&gt;Contains list of scripts to run on the target after installation.
-	Scripts will be looked up in &#34;search_path&#34; list.
-	&lt;p&gt;Example: { &#34;postinstallscripts&#34;: [&#34;rpi3-custom-patch.sh&#34;] }
-&lt;/td&gt;
-&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;search_path&lt;/td&gt;
-	&lt;td&gt;Optional. &lt;p&gt;List of directories to search for additional files and scripts.
-	&lt;p&gt;Example: { &#34;search_path&#34;: [&#34;/home/user&#34;, &#34;/tmp&#34;] }
-&lt;/td&gt;
-&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;shadow_password&lt;/td&gt;
-	&lt;td&gt;Optional. &lt;p&gt;Contains encrypted root password.
-	Short form of: { &#34;password&#34;: {
-				&#34;crypted&#34;: true,
-				&#34;text&#34;: &#34;encrypted password here&#34;} }
-&lt;/td&gt;
-&lt;/tr&gt;&lt;tr&gt;
-	&lt;td&gt;ui&lt;/td&gt;
-	&lt;td&gt;Optional. &lt;p&gt;Installer will show progress status in the UI, if it set to true.
-	Or logging output will be printed to console - default behavior.
-	&lt;p&gt;Boolean: true or false
-	&lt;p&gt;Default value: false
-	&lt;p&gt;Example: { &#34;ui&#34;: true }
-&lt;/td&gt;
-	&lt;/tr&gt;
-	&lt;/tbody&gt;
-	&lt;/table&gt;
-&lt;h2 id=&#34;sample-configuration-file&#34;&gt;Sample Configuration File&lt;/h2&gt;
-&lt;p&gt;Here is a sample kickstart configuration file:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;{
-    &amp;quot;hostname&amp;quot;: &amp;quot;photon-machine&amp;quot;,
-    &amp;quot;password&amp;quot;:
-        {
-            &amp;quot;crypted&amp;quot;: false,
-            &amp;quot;text&amp;quot;: &amp;quot;changeme&amp;quot;
-        },
-    &amp;quot;disk&amp;quot;: &amp;quot;/dev/sda&amp;quot;,
-    &amp;quot;partitions&amp;quot;: [
-                        {&amp;quot;mountpoint&amp;quot;: &amp;quot;/&amp;quot;, &amp;quot;size&amp;quot;: 0, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;},
-                        {&amp;quot;mountpoint&amp;quot;: &amp;quot;/boot&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;},
-                        {&amp;quot;mountpoint&amp;quot;: &amp;quot;/root&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;},
-                        {&amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;swap&amp;quot;}
-                    ],
-    &amp;quot;packagelist_file&amp;quot;: &amp;quot;packages_minimal.json&amp;quot;,
-    &amp;quot;additional_packages&amp;quot;: [&amp;quot;vim&amp;quot;],
-    &amp;quot;postinstall&amp;quot;: [
-                		&amp;quot;#!/bin/sh&amp;quot;,
-                    	&amp;quot;echo \&amp;quot;Hello World\&amp;quot; &amp;gt; /etc/postinstall&amp;quot;
-                   ],
-    &amp;quot;public_key&amp;quot;: &amp;quot;&amp;lt;ssh-key-here&amp;gt;&amp;quot;,
-    &amp;quot;install_linux_esx&amp;quot;: false,
-    &amp;quot;network&amp;quot;: {
-        &amp;quot;type&amp;quot;: &amp;quot;dhcp&amp;quot;
-    }    
+&lt;/code>&lt;/pre>&lt;ul>
+&lt;li>Optionally, you can add your ks config file; see &lt;a href="../working-with-kickstart/">Kickstart support&lt;/a> for details.&lt;/li>
+&lt;/ul></description></item><item><title>Docs: Kickstart Support in Photon OS</title><link>/docs/user-guide/working-with-kickstart/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/user-guide/working-with-kickstart/</guid><description>
+&lt;p>Photon OS works with kickstart for unattended, automated installations. The kickstart configuration file can either reside in the CD-ROM attached to the host or be served through an HTTP server.&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="#kickstart-capabilities">Kickstart Capabilities&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#permitted-json-fields">Permitted JSON Fields&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#sample-configuration-file">Sample Configuration File&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#unattended-installation-through-kickstart">Unattended Installation Through Kickstart&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;h2 id="kickstart-capabilities">Kickstart Capabilities&lt;/h2>
+&lt;p>Photon OS supports the following configurations with kickstart:&lt;/p>
+&lt;ul>
+&lt;li>Setting the hostname&lt;/li>
+&lt;li>Setting the password&lt;/li>
+&lt;li>Setting the disk to install&lt;/li>
+&lt;li>Selecting whether to install the full or the minimal version of Photon OS&lt;/li>
+&lt;li>Applying a post-installation script&lt;/li>
+&lt;li>Adding public keys to allow the root account to log in through SSH&lt;/li>
+&lt;/ul>
+&lt;h2 id="permitted-json-fields">Permitted JSON Fields&lt;/h2>
+&lt;p>The following is a list of allowed JSON fields and their descriptions:&lt;/p>
+&lt;table style="height: 170px;" border="1" width="250" cellspacing="0" cellpadding="10">
+&lt;tbody>
+&lt;tr>
+&lt;td>&lt;b>Field&lt;/b>&lt;/td>
+&lt;td>&lt;b>Description&lt;/b>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>hostname&lt;/td>
+&lt;td>The host name as string. You can also specify the name in printf format.
+&lt;p> The hostname must not start with a number or "-" and must be less than 64 characters.
+&lt;p> Example: "photon-$((RANDOM%4096))"
+&lt;/p>&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>password:
+&lt;p>crypted: true/false
+&lt;p>text: password text &lt;/td>
+&lt;td> &lt;b>crypted: true&lt;/b>:
+This indicates that the "text" field is already encrypted. In this case, the specified password is used as is for the root user.
+&lt;p> &lt;b>crypted: false:&lt;/b>
+This indicates that the "text" field is plain text. It is then encrypted and used to create the root user's password.
+&lt;p> &lt;b>text&lt;/b>: Plain text or encrypted password.
+&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>disk&lt;/td>
+&lt;td>Indicates the install disk.
+&lt;p> Example: /dev/sda &lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>partitions&lt;/td>
+&lt;td>An array of partition definitions.
+&lt;p>&lt;b>To create GPT partitions&lt;/b>
+&lt;p> Example:
+&lt;p>[
+&lt;p> {"mountpoint": "/", "size": 0, "filesystem": "ext4"},
+&lt;p> {"mountpoint": "/boot", "size": 128, "filesystem": "ext4"},
+&lt;p> {"mountpoint": "/root", "size": 128, "filesystem": "ext4"},
+&lt;p> {"size": 128, "filesystem": "swap"}
+&lt;p>]
+&lt;p>&lt;b>To create LVM partitions&lt;/b>
+&lt;p> Example:&lt;p>[
+&lt;p>{"mountpoint": "/", "size": 0, "filesystem": "ext4", "lvm":{"vg_name":"vg1", "lv_name":"rootfs"}},
+&lt;p> {"mountpoint": "/boot", "size": 128, "filesystem": "ext4"},
+&lt;pre>&lt;code> &amp;lt;p&amp;gt;{&amp;quot;mountpoint&amp;quot;: &amp;quot;/root&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;root&amp;quot;}},
+&amp;lt;p&amp;gt;{&amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;swap&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg2&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;swap&amp;quot;}}
+&lt;/code>&lt;/pre>
+&lt;p>]&lt;/p>
+&lt;p>&lt;b>Note&lt;/b>: Mounting '/boot' partition as lvm is not supported.
+&lt;/td>
+&lt;/tr>&lt;/tr>
+&lt;tr>
+&lt;td>packagelist_file&lt;/td>
+&lt;td>Indicates the name of the file that contains the list of packages to install.
+&lt;p>Example: { "packagelist_file": "packages_minimal.json" }
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>additional_packages&lt;/td>
+&lt;td>Specify an array of additional packages.
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>install_linux_esx&lt;/td>
+&lt;td>Specify a boolean value to use linux esx instead of generic linux.
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>postinstall&lt;/td>
+&lt;td>Specify an array of bash commands to execute after install. &lt;p> See the example for partitions.
+&lt;p>Example:
+{ "postinstall": [
+"#!/bin/sh",
+"echo \"Hello World\" > /etc/postinstall" ] }
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>public_key&lt;/td>
+&lt;td>Optional. &lt;p>The public key that you require to install for password-less logins. &lt;p> This key is created in authorized_keys in the .ssh directory.
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>additional_files&lt;/td>
+&lt;td>Optional. &lt;p>Contains a list of pairs {source file (or directory), destination file
+(or directory)} to copy to the target system. Source file
+(directory) will be looked up in "search_path" list.
+&lt;p>Example: { "additional_files": [
+{"resizefs.sh": "/usr/local/bin/resizefs.sh"},
+{"resizefs.service": "/lib/systemd/system/resizefs.service"}]}
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>additional_rpms_path&lt;/td>
+&lt;td>Optional. &lt;p>Provide a path containing additional RPMS that are to be bundled into
+the image.
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>arch&lt;/td>
+&lt;td>Optional. &lt;p>Target system architecture. Should be set if target architecture is
+different from the host, for instance x86_64 machine building RPi
+image.
+Acceptable values are: "x86_64", "aarch64"
+Default value: autodetected host architecture
+&lt;p>Example: { "arch": "aarch64" }
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>bootmode&lt;/td>
+&lt;td>Optional. &lt;p>Sets the boot type to support: EFI, BIOS or both.
+&lt;p>Acceptable values are: bios, efi, dualboot
+&lt;p>&lt;b>bios&lt;/b>
+&lt;p>Adds special partition (very first) for first stage grub.
+&lt;p>&lt;b>efi&lt;/b>
+&lt;p>Adds ESP (Efi Special Partition), format is as FAT and copy there EFI binaries including grub.efi
+&lt;p>&lt;b>dualboot&lt;/b>
+&lt;p>Adds two extra partitions for "bios" and "efi" modes. This target will support both modes that can be switched in bios settings without extra actions in the OS.
+&lt;p>Default value: "dualboot" for x86_64 and "efi" for aarch64
+&lt;p>Example: { "bootmode": "bios" }
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>eject_cdrom&lt;/td>
+&lt;td>Optional. &lt;p>Ejects cdrom after installation completed if set to true.
+&lt;p>Boolean: true or false
+&lt;p>Default value: true
+&lt;p>Example: { "eject_cdrom": false }
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>live&lt;/td>
+&lt;td>Optional. &lt;p>Should be set to flase if target system is not being run on
+host machine. When it set to false, installer will not add EFI boot
+entries, and will not generate unique machine-id.
+&lt;p>Default value: false if "disk" is /dev/loop and true otherwise.
+&lt;p>Example: { "live": false }
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>log_level&lt;/td>
+&lt;td>Optional. &lt;p>Set installer logging level.
+&lt;p>Acceptable values are: &lt;b>error&lt;/b>, &lt;b>warning&lt;/b>, &lt;b>info&lt;/b>, &lt;b>debug&lt;/b>
+&lt;p>Default value: &lt;/b>info&lt;/b>
+&lt;p>Example: { "log_level": "debug" }
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>ostree&lt;/td>
+&lt;td>Optional. &lt;p>Atomic flavour of Photon OS.
+&lt;p>&lt;b>default_repo&lt;/b>
+&lt;p>(required)
+&lt;p>Define the type of repo data used for installing the OS
+There are two type: &lt;p>1. Default Repo(comes with ISO) &lt;p>2. Custom Repo (Remote server)
+&lt;p>Boolean: true or false
+&lt;p>where true : Default Repo is selected
+&lt;p>false: Custom Repo is selected
+&lt;p>Default value: true
+Example: { "ostree": {"default_repo": true}}
+&lt;p>&lt;b>repo_url&lt;/b>
+&lt;p>(Required, Only If Custom Repo is selected)
+Supported Value: Valid "repo" URL of remote server where repo data exists
+&lt;p>&lt;b>repo_ref&lt;/b>
+&lt;p>(Required, Only If Custom Repo is selected)
+Supported Value: Valid "ref" path which was mentioned for
+creation of Base Tree on remote server
+&lt;p>Example: { "ostree": {
+"default_repo": false,
+"repo_url": "http://&lt;ip>:&lt;port>/repo",
+"repo_ref": "photon/3.0/x86_64/minimal"
 }
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;##Installing Root Partition as LVM&lt;/p&gt;
-&lt;p&gt;In the kickstart file modify the &lt;strong&gt;partitions&lt;/strong&gt; field to mount root partition as LVM.&lt;/p&gt;
-&lt;p&gt;For example:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;&amp;quot;disk&amp;quot;: &amp;quot;/dev/sda&amp;quot;
+}
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>packages&lt;/td>
+&lt;td>Optional if packagelist_file set. &lt;p>Contains list of packages to install.
+&lt;p>Example: { "packages": ["minimal", "linux", "initramfs"] }
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>partition_type&lt;/td>
+&lt;td>Optional. &lt;p>Set partition table type. Supported values are: gpt, msdos.
+&lt;p>Default value: gpt
+&lt;p>Example: { "partition_type": "msdos" }
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>network&lt;/td>
+&lt;td>Optional. &lt;p>Used to configure network on a live/installed system.
+&lt;p>&lt;b>type&lt;/b>
+&lt;p>required
+&lt;p>String; must be one of dhcp/static/vlan. Indicates how the network is being configured.
+&lt;p>&lt;b>hostname&lt;/b>
+&lt;p>optional; when type == dhcp
+&lt;p>String; DHCP client hostname
+&lt;p>&lt;b>ip_addr&lt;/b>
+&lt;p>required; when type == static
+&lt;p>IP String; IP address to be configured
+&lt;p>&lt;b>netmask&lt;/b>
+&lt;p>required; when type == static
+&lt;p>IP String; Netmask to be configured
+&lt;p>&lt;b>gateway&lt;/b>
+&lt;p>required; when type == static
+&lt;p>IP String; Gateway IP address to be configured
+&lt;p>&lt;b>nameserver&lt;/b>
+&lt;p>required; when type == static
+&lt;p>IP String; Name server IP address to be configured
+&lt;p>&lt;b>vlan_id&lt;/b>
+&lt;p>required; when type == vlan
+&lt;p>ID String. (1-4094); VLAN ID number expressed as string
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>postinstallscripts&lt;/td>
+&lt;td>Optional. &lt;p>Contains list of scripts to run on the target after installation.
+Scripts will be looked up in "search_path" list.
+&lt;p>Example: { "postinstallscripts": ["rpi3-custom-patch.sh"] }
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>search_path&lt;/td>
+&lt;td>Optional. &lt;p>List of directories to search for additional files and scripts.
+&lt;p>Example: { "search_path": ["/home/user", "/tmp"] }
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>shadow_password&lt;/td>
+&lt;td>Optional. &lt;p>Contains encrypted root password.
+Short form of: { "password": {
+"crypted": true,
+"text": "encrypted password here"} }
+&lt;/td>
+&lt;/tr>&lt;tr>
+&lt;td>ui&lt;/td>
+&lt;td>Optional. &lt;p>Installer will show progress status in the UI, if it set to true.
+Or logging output will be printed to console - default behavior.
+&lt;p>Boolean: true or false
+&lt;p>Default value: false
+&lt;p>Example: { "ui": true }
+&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="sample-configuration-file">Sample Configuration File&lt;/h2>
+&lt;p>Here is a sample kickstart configuration file:&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;hostname&amp;quot;: &amp;quot;photon-machine&amp;quot;,
+&amp;quot;password&amp;quot;:
+{
+&amp;quot;crypted&amp;quot;: false,
+&amp;quot;text&amp;quot;: &amp;quot;changeme&amp;quot;
+},
+&amp;quot;disk&amp;quot;: &amp;quot;/dev/sda&amp;quot;,
+&amp;quot;partitions&amp;quot;: [
+{&amp;quot;mountpoint&amp;quot;: &amp;quot;/&amp;quot;, &amp;quot;size&amp;quot;: 0, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;},
+{&amp;quot;mountpoint&amp;quot;: &amp;quot;/boot&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;},
+{&amp;quot;mountpoint&amp;quot;: &amp;quot;/root&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;},
+{&amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;swap&amp;quot;}
+],
+&amp;quot;packagelist_file&amp;quot;: &amp;quot;packages_minimal.json&amp;quot;,
+&amp;quot;additional_packages&amp;quot;: [&amp;quot;vim&amp;quot;],
+&amp;quot;postinstall&amp;quot;: [
+&amp;quot;#!/bin/sh&amp;quot;,
+&amp;quot;echo \&amp;quot;Hello World\&amp;quot; &amp;gt; /etc/postinstall&amp;quot;
+],
+&amp;quot;public_key&amp;quot;: &amp;quot;&amp;lt;ssh-key-here&amp;gt;&amp;quot;,
+&amp;quot;install_linux_esx&amp;quot;: false,
+&amp;quot;network&amp;quot;: {
+&amp;quot;type&amp;quot;: &amp;quot;dhcp&amp;quot;
+}
+}
+&lt;/code>&lt;/pre>&lt;p>##Installing Root Partition as LVM&lt;/p>
+&lt;p>In the kickstart file modify the &lt;strong>partitions&lt;/strong> field to mount root partition as LVM.&lt;/p>
+&lt;p>For example:&lt;/p>
+&lt;pre>&lt;code>&amp;quot;disk&amp;quot;: &amp;quot;/dev/sda&amp;quot;
 &amp;quot;partitions&amp;quot;:[
-                {&amp;quot;mountpoint&amp;quot;: &amp;quot;/&amp;quot;, &amp;quot;size&amp;quot;: 0, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;, &amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;rootfs&amp;quot;}},
-                {&amp;quot;mountpoint&amp;quot;: &amp;quot;/boot&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;},
-
-                {&amp;quot;mountpoint&amp;quot;: &amp;quot;/root&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;root&amp;quot;}},
-
-                {&amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;swap&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg2&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;swap&amp;quot;}}
+{&amp;quot;mountpoint&amp;quot;: &amp;quot;/&amp;quot;, &amp;quot;size&amp;quot;: 0, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;, &amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;rootfs&amp;quot;}},
+{&amp;quot;mountpoint&amp;quot;: &amp;quot;/boot&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;},
+{&amp;quot;mountpoint&amp;quot;: &amp;quot;/root&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;root&amp;quot;}},
+{&amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;swap&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg2&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;swap&amp;quot;}}
 ]
-
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;vg_name : Volume Group Name&lt;/li&gt;
-&lt;li&gt;lv_name : Logical Volume Name&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;In above example &lt;strong&gt;rootfs&lt;/strong&gt;, &lt;strong&gt;root&lt;/strong&gt; are logical volumes in the volume group &lt;strong&gt;vg1&lt;/strong&gt; and &lt;strong&gt;swap&lt;/strong&gt; is logical volume in volume group &lt;strong&gt;vg2&lt;/strong&gt;, physical volumes are part of disk &lt;strong&gt;/dev/sda&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;Multiple disks are also supported. For example:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;&amp;quot;disk&amp;quot;: &amp;quot;/dev/sda&amp;quot;
+&lt;/code>&lt;/pre>&lt;p>&lt;strong>Note&lt;/strong>:&lt;/p>
+&lt;ul>
+&lt;li>vg_name : Volume Group Name&lt;/li>
+&lt;li>lv_name : Logical Volume Name&lt;/li>
+&lt;/ul>
+&lt;p>In above example &lt;strong>rootfs&lt;/strong>, &lt;strong>root&lt;/strong> are logical volumes in the volume group &lt;strong>vg1&lt;/strong> and &lt;strong>swap&lt;/strong> is logical volume in volume group &lt;strong>vg2&lt;/strong>, physical volumes are part of disk &lt;strong>/dev/sda&lt;/strong>.&lt;/p>
+&lt;p>Multiple disks are also supported. For example:&lt;/p>
+&lt;pre>&lt;code>&amp;quot;disk&amp;quot;: &amp;quot;/dev/sda&amp;quot;
 &amp;quot;partitions&amp;quot;:[
-                {&amp;quot;mountpoint&amp;quot;: &amp;quot;/&amp;quot;, &amp;quot;size&amp;quot;: 0, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;, &amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;rootfs&amp;quot;}},
-                {&amp;quot;mountpoint&amp;quot;: &amp;quot;/boot&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;},
-
-                {&amp;quot;disk&amp;quot;: &amp;quot;/dev/sdb&amp;quot;, &amp;quot;mountpoint&amp;quot;: &amp;quot;/root&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;root&amp;quot;}},
-
-                {&amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;swap&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;swap&amp;quot;}}
+{&amp;quot;mountpoint&amp;quot;: &amp;quot;/&amp;quot;, &amp;quot;size&amp;quot;: 0, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;, &amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;rootfs&amp;quot;}},
+{&amp;quot;mountpoint&amp;quot;: &amp;quot;/boot&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;},
+{&amp;quot;disk&amp;quot;: &amp;quot;/dev/sdb&amp;quot;, &amp;quot;mountpoint&amp;quot;: &amp;quot;/root&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;root&amp;quot;}},
+{&amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;swap&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;swap&amp;quot;}}
 ]
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;If disk name is not specified, the physical volumes will be part of the default disk: &lt;strong&gt;dev/sda&lt;/strong&gt;.
-In above example &lt;strong&gt;rootfs&lt;/strong&gt;,&lt;strong&gt;root&lt;/strong&gt; and &lt;strong&gt;swap&lt;/strong&gt; are logical volumes in volume group &lt;strong&gt;vg1&lt;/strong&gt;, physical volumes are in the disk &lt;strong&gt;/dev/sdb&lt;/strong&gt; and partitions are present in &lt;strong&gt;/dev/sda&lt;/strong&gt;.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Note&lt;/strong&gt;: Mounting &lt;strong&gt;/boot&lt;/strong&gt; partition as LVM is not supported.&lt;/p&gt;
-&lt;h2 id=&#34;unattended-installation-through-kickstart&#34;&gt;Unattended Installation Through Kickstart&lt;/h2&gt;
-&lt;p&gt;For an unattended installation, you pass the &lt;code&gt;ks=&amp;lt;config_file&amp;gt;&lt;/code&gt; parameter to the kernel command. To pass the config file, there are two options: by providing it on the ISO or by serving it from an HTTP server.&lt;/p&gt;
-&lt;p&gt;The syntax to pass the config-file to the kernel through the ISO takes the following form:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;ks=cdrom:/&amp;lt;config_file_path&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Here is an example:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;ks=cdrom:/isolinux/my_ks.cfg
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The syntax to serve the config-file to the kernel from a HTTPS server takes the following form:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;ks=https://&amp;lt;server&amp;gt;/&amp;lt;config_file_path&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;To use HTTP path or self-signed HTTPS path, you have to enable &lt;code&gt;insecure_installation&lt;/code&gt; by using insecure_installation=1 along with defining the ks path. The kernel command line argument, &lt;code&gt;insecure_installation&lt;/code&gt;, acts as a flag that user can set to 1 to allow some operations that are not normally allowed due to security concerns. This is disabled by default and it is up to the user to the ensure security when this options is enabled.&lt;/p&gt;
-&lt;p&gt;For HTTP:  &lt;code&gt;ks=http://&amp;lt;server&amp;gt;/&amp;lt;config_file_path&amp;gt; insecure_installation=1&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;For HTTPS (self-signed): &lt;code&gt; ks=https://&amp;lt;server&amp;gt;/&amp;lt;config_file_path&amp;gt; insecure_installation=1&lt;/code&gt;&lt;/p&gt;
-&lt;h2 id=&#34;building-an-iso-with-a-kickstart-config-file&#34;&gt;Building an ISO with a Kickstart Config File&lt;/h2&gt;
-&lt;p&gt;Here&amp;rsquo;s an example of how to add a kickstart config file to the Photon OS ISO by mounting the ISO on an Ubuntu machine and then rebuilding the ISO. The following example assumes you can adapt the sample kickstart configuration file that comes with the Photon OS ISO to your needs. You can obtain the Photon OS ISO for free from Bintray at the following URL:&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://bintray.com/vmware/photon&#34;&gt;https://bintray.com/vmware/photon&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Once you have the ISO, mount it.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;mkdir /tmp/photon-iso
+&lt;/code>&lt;/pre>&lt;p>If disk name is not specified, the physical volumes will be part of the default disk: &lt;strong>dev/sda&lt;/strong>.
+In above example &lt;strong>rootfs&lt;/strong>,&lt;strong>root&lt;/strong> and &lt;strong>swap&lt;/strong> are logical volumes in volume group &lt;strong>vg1&lt;/strong>, physical volumes are in the disk &lt;strong>/dev/sdb&lt;/strong> and partitions are present in &lt;strong>/dev/sda&lt;/strong>.&lt;/p>
+&lt;p>&lt;strong>Note&lt;/strong>: Mounting &lt;strong>/boot&lt;/strong> partition as LVM is not supported.&lt;/p>
+&lt;h2 id="unattended-installation-through-kickstart">Unattended Installation Through Kickstart&lt;/h2>
+&lt;p>For an unattended installation, you pass the &lt;code>ks=&amp;lt;config_file&amp;gt;&lt;/code> parameter to the kernel command. To pass the config file, there are two options: by providing it on the ISO or by serving it from an HTTP server.&lt;/p>
+&lt;p>The syntax to pass the config-file to the kernel through the ISO takes the following form:&lt;/p>
+&lt;pre>&lt;code>ks=cdrom:/&amp;lt;config_file_path&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>Here is an example:&lt;/p>
+&lt;pre>&lt;code>ks=cdrom:/isolinux/my_ks.cfg
+&lt;/code>&lt;/pre>
+&lt;p>The syntax to serve the config-file to the kernel from a HTTPS server takes the following form:&lt;/p>
+&lt;pre>&lt;code>ks=https://&amp;lt;server&amp;gt;/&amp;lt;config_file_path&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;p>To use HTTP path or self-signed HTTPS path, you have to enable &lt;code>insecure_installation&lt;/code> by using insecure_installation=1 along with defining the ks path. The kernel command line argument, &lt;code>insecure_installation&lt;/code>, acts as a flag that user can set to 1 to allow some operations that are not normally allowed due to security concerns. This is disabled by default and it is up to the user to the ensure security when this options is enabled.&lt;/p>
+&lt;p>For HTTP: &lt;code>ks=http://&amp;lt;server&amp;gt;/&amp;lt;config_file_path&amp;gt; insecure_installation=1&lt;/code>&lt;/p>
+&lt;p>For HTTPS (self-signed): &lt;code> ks=https://&amp;lt;server&amp;gt;/&amp;lt;config_file_path&amp;gt; insecure_installation=1&lt;/code>&lt;/p>
+&lt;h2 id="building-an-iso-with-a-kickstart-config-file">Building an ISO with a Kickstart Config File&lt;/h2>
+&lt;p>Here&amp;rsquo;s an example of how to add a kickstart config file to the Photon OS ISO by mounting the ISO on an Ubuntu machine and then rebuilding the ISO. The following example assumes you can adapt the sample kickstart configuration file that comes with the Photon OS ISO to your needs. You can obtain the Photon OS ISO for free from Bintray at the following URL:&lt;/p>
+&lt;p>&lt;a href="https://bintray.com/vmware/photon">https://bintray.com/vmware/photon&lt;/a>&lt;/p>
+&lt;p>Once you have the ISO, mount it.&lt;/p>
+&lt;pre>&lt;code>mkdir /tmp/photon-iso
 sudo mount photon.iso /tmp/photon-iso
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Then copy the content of the ISO to a writable directory and push it into the directory stack:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;mkdir /tmp/photon-ks-iso
+&lt;/code>&lt;/pre>
+&lt;p>Then copy the content of the ISO to a writable directory and push it into the directory stack:&lt;/p>
+&lt;pre>&lt;code>mkdir /tmp/photon-ks-iso
 cp -r /tmp/photon-iso/* /tmp/photon-ks-iso/
 pushd /tmp/photon-ks-iso/
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Next, copy the sample kickstart configuration file that comes with the Photon OS ISO and modify it to suit your needs. In the ISO, the sample kickstart config file appears in the &lt;code&gt;isolinux&lt;/code&gt; directory and is named &lt;code&gt;sample_ks.cfg.&lt;/code&gt; The name of the directory and the name of the file might be in all uppercase letters.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;cp isolinux/sample_ks.cfg isolinux/my_ks.cfg
+&lt;/code>&lt;/pre>
+&lt;p>Next, copy the sample kickstart configuration file that comes with the Photon OS ISO and modify it to suit your needs. In the ISO, the sample kickstart config file appears in the &lt;code>isolinux&lt;/code> directory and is named &lt;code>sample_ks.cfg.&lt;/code> The name of the directory and the name of the file might be in all uppercase letters.&lt;/p>
+&lt;pre>&lt;code>cp isolinux/sample_ks.cfg isolinux/my_ks.cfg
 nano isolinux/my_ks.cfg
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;With a copy of the sample kickstart config file open in nano, make the changes that you want.&lt;/p&gt;
-&lt;p&gt;Now add a new item to the installation menu by modifying &lt;code&gt;isolinux/menu.cfg&lt;/code&gt;:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;cat &amp;gt;&amp;gt; isolinux/menu.cfg &amp;lt;&amp;lt; EOF
+&lt;/code>&lt;/pre>
+&lt;p>With a copy of the sample kickstart config file open in nano, make the changes that you want.&lt;/p>
+&lt;p>Now add a new item to the installation menu by modifying &lt;code>isolinux/menu.cfg&lt;/code>:&lt;/p>
+&lt;pre>&lt;code>cat &amp;gt;&amp;gt; isolinux/menu.cfg &amp;lt;&amp;lt; EOF
 label my_unattended
-    menu label ^My Unattended Install
-    menu default
-    kernel vmlinuz
-    append initrd=initrd.img root=/dev/ram0 loglevel=3 photon.media=cdrom
+menu label ^My Unattended Install
+menu default
+kernel vmlinuz
+append initrd=initrd.img root=/dev/ram0 loglevel=3 photon.media=cdrom
 EOF
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Finally, rebuild the ISO so that it includes your kickstart config file:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
-        -no-emul-boot -boot-load-size 4 -boot-info-table -V &amp;quot;PHOTON_$(date +%Y%m%d)&amp;quot; \
-        . &amp;gt; &amp;lt;new_iso_path&amp;gt;.iso
-
+&lt;/code>&lt;/pre>
+&lt;p>Finally, rebuild the ISO so that it includes your kickstart config file:&lt;/p>
+&lt;pre>&lt;code>mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
+-no-emul-boot -boot-load-size 4 -boot-info-table -V &amp;quot;PHOTON_$(date +%Y%m%d)&amp;quot; \
+. &amp;gt; &amp;lt;new_iso_path&amp;gt;.iso
 popd
-&lt;/code&gt;&lt;/pre&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Kickstart Through HTTP</title>
-      <link>/docs/user-guide/kickstart-through-http/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/user-guide/kickstart-through-http/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can serve the kickstart configuration file through an HTTP server. You can use a Packer template to set variables through command line or a JSON file.&lt;/p&gt;
-&lt;p&gt;The steps in this section describe how you can use the preset to kick start a full build or build a VMware Workstation or Fusion vagrant box.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Kubernetes on Photon OS</title>
-      <link>/docs/user-guide/kubernetes-on-photon-os/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/user-guide/kubernetes-on-photon-os/</guid>
-      <description>
-        
-        
-        &lt;p&gt;You can use Kubernetes with Photon OS. The instructions in this section present a manual configuration that gets one worker node running to help you understand the underlying packages, services, ports, and so forth.&lt;/p&gt;
-&lt;p&gt;The Kubernetes package provides several services: kube-apiserver, kube-scheduler, kube-controller-manager, kubelet, kube-proxy.  These services are managed by systemd. Their configuration resides in a central location: /etc/kubernetes.&lt;/p&gt;
-
-      </description>
-    </item>
-    
-    <item>
-      <title>Docs: Photon NFS Utilities for Mounting Remote File Systems</title>
-      <link>/docs/user-guide/mounting-remote-file-systems/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/docs/user-guide/mounting-remote-file-systems/</guid>
-      <description>
-        
-        
-        &lt;p&gt;This document describes how to mount a remote file system on Photon OS by using nfs-utils, a commonly used package that contains tools to work with the Network File System protocol (NFS).&lt;/p&gt;
-&lt;h2 id=&#34;check-a-remote-server&#34;&gt;Check a Remote Server&lt;/h2&gt;
-&lt;pre&gt;&lt;code&gt;showmount  -e nfs-servername or ip
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Example:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;showmount -e eastern-filer.eng.vmware.com
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Kickstart Through HTTP</title><link>/docs/user-guide/kickstart-through-http/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/user-guide/kickstart-through-http/</guid><description>
+&lt;p>You can serve the kickstart configuration file through an HTTP server. You can use a Packer template to set variables through command line or a JSON file.&lt;/p>
+&lt;p>The steps in this section describe how you can use the preset to kick start a full build or build a VMware Workstation or Fusion vagrant box.&lt;/p></description></item><item><title>Docs: Kubernetes on Photon OS</title><link>/docs/user-guide/kubernetes-on-photon-os/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/user-guide/kubernetes-on-photon-os/</guid><description>
+&lt;p>You can use Kubernetes with Photon OS. The instructions in this section present a manual configuration that gets one worker node running to help you understand the underlying packages, services, ports, and so forth.&lt;/p>
+&lt;p>The Kubernetes package provides several services: kube-apiserver, kube-scheduler, kube-controller-manager, kubelet, kube-proxy. These services are managed by systemd. Their configuration resides in a central location: /etc/kubernetes.&lt;/p></description></item><item><title>Docs: Photon NFS Utilities for Mounting Remote File Systems</title><link>/docs/user-guide/mounting-remote-file-systems/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/user-guide/mounting-remote-file-systems/</guid><description>
+&lt;p>This document describes how to mount a remote file system on Photon OS by using nfs-utils, a commonly used package that contains tools to work with the Network File System protocol (NFS).&lt;/p>
+&lt;h2 id="check-a-remote-server">Check a Remote Server&lt;/h2>
+&lt;pre>&lt;code>showmount -e nfs-servername or ip
+&lt;/code>&lt;/pre>&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>showmount -e eastern-filer.eng.vmware.com
 showmount -e 10.109.87.129
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;mount-a-remote-file-system-in-photon-full&#34;&gt;Mount a Remote File System in Photon Full&lt;/h2&gt;
-&lt;p&gt;The nfs-utils package is installed by default in the full version of Photon OS. Here is how to mount a directory through NFS on Photon OS:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;mount -t nfs nfs-ServernameOrIp:/exportfolder /mnt/folder
-&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Example:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;mount -t nfs eastern-filer.eng.vmware.com:/export/filer /mnt/filer
+&lt;/code>&lt;/pre>&lt;h2 id="mount-a-remote-file-system-in-photon-full">Mount a Remote File System in Photon Full&lt;/h2>
+&lt;p>The nfs-utils package is installed by default in the full version of Photon OS. Here is how to mount a directory through NFS on Photon OS:&lt;/p>
+&lt;pre>&lt;code>mount -t nfs nfs-ServernameOrIp:/exportfolder /mnt/folder
+&lt;/code>&lt;/pre>&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>mount -t nfs eastern-filer.eng.vmware.com:/export/filer /mnt/filer
 mount -t nfs 10.109.87.129:/export /mnt/export
-&lt;/code&gt;&lt;/pre&gt;&lt;h2 id=&#34;mount-a-remote-file-system-in-photon-minimal&#34;&gt;Mount a Remote File System in Photon Minimal&lt;/h2&gt;
-&lt;p&gt;The nfs-utils package is not installed in the minimal version of Photon OS. You install it by running the following command:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;tdnf install nfs-utils
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;For more information on installing packages with the tdnf command, see the &lt;a href=&#34;../../administration-guide/&#34;&gt;Photon OS Administration Guide&lt;/a&gt;.&lt;/p&gt;
-&lt;p&gt;Once nfs-utils is installed, you can mount a file system by running the following commands, replacing the placeholders with the path of the directory that you want to mount:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;mount nfs
+&lt;/code>&lt;/pre>&lt;h2 id="mount-a-remote-file-system-in-photon-minimal">Mount a Remote File System in Photon Minimal&lt;/h2>
+&lt;p>The nfs-utils package is not installed in the minimal version of Photon OS. You install it by running the following command:&lt;/p>
+&lt;pre>&lt;code>tdnf install nfs-utils
+&lt;/code>&lt;/pre>
+&lt;p>For more information on installing packages with the tdnf command, see the &lt;a href="../../administration-guide/">Photon OS Administration Guide&lt;/a>.&lt;/p>
+&lt;p>Once nfs-utils is installed, you can mount a file system by running the following commands, replacing the placeholders with the path of the directory that you want to mount:&lt;/p>
+&lt;pre>&lt;code>mount nfs
 mount -t nfs nfs-ServernameOrIp:/exportfolder /mnt/folder
-&lt;/code&gt;&lt;/pre&gt;
-      </description>
-    </item>
-    
-  </channel>
-</rss>
+&lt;/code>&lt;/pre></description></item></channel></rss>
