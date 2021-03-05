@@ -1,0 +1,30 @@
+// Buttons
+
+// @if $enable-rounded {
+//     .btn {
+//         border-radius: 1rem;
+
+//         &-lg {
+//             border-radius: 2rem;
+//         }
+
+//         &-sm {
+//             border-radius: 1rem;
+//         }
+//     }
+// }
+
+@if $enable-rounded {
+    .btn {
+        border-radius: 0.2rem;
+
+        &-lg {
+            border-radius:0.2rem;
+            // border-color: $border-color;
+        }
+
+        &-sm {
+            border-radius: 0.15rem;
+        }
+    }
+}

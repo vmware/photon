@@ -1,0 +1,3104 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Network Configuration Manager - C API · VMware Photon OS 1.0 and 2.0 Documentation</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-insert-logo/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-chapter-fold/chapter-fold.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-noembed/style.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="netmgr-cli.html" />
+    
+    
+    <link rel="prev" href="pmd-cli.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        <li class="header">Photon OS 1.0 and 2.0</li>
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="getting-started-guides.html">
+            
+                <a href="getting-started-guides.html">
+            
+                    
+                    Getting Started Guides
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="Downloading-Photon-OS.html">
+            
+                <a href="Downloading-Photon-OS.html">
+            
+                    
+                    Downloading Photon OS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="photon-admin-guide.html">
+            
+                <a href="photon-admin-guide.html#getting-started-with-photon-os-20">
+            
+                    
+                    Quick Start
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="Upgrading-to-Photon-OS-2.0.html">
+            
+                <a href="Upgrading-to-Photon-OS-2.0.html">
+            
+                    
+                    Upgrading to Photon OS 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="What-is-New-in-Photon-OS-2.0.html">
+            
+                <a href="What-is-New-in-Photon-OS-2.0.html">
+            
+                    
+                    What is New in Photon OS 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.5" data-path="Running-Photon-OS-on-vSphere.html">
+            
+                <a href="Running-Photon-OS-on-vSphere.html">
+            
+                    
+                    Running Photon OS on vSphere
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.6" data-path="Running-Project-Photon-on-Fusion.html">
+            
+                <a href="Running-Project-Photon-on-Fusion.html">
+            
+                    
+                    Running Photon OS on Fusion
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.7" data-path="Running-Photon-OS-on-Workstation.html">
+            
+                <a href="Running-Photon-OS-on-Workstation.html">
+            
+                    
+                    Running Photon OS on Workstation
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.8" data-path="Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.html">
+            
+                <a href="Running-Photon-OS-on-Amazon-Elastic-Cloud-Compute.html">
+            
+                    
+                    Running Photon OS on AWS EC2
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.9" data-path="Running-Photon-OS-on-Microsoft-Azure.html">
+            
+                <a href="Running-Photon-OS-on-Microsoft-Azure.html">
+            
+                    
+                    Running Photon OS on Microsoft Azure
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.10" data-path="Running-Photon-OS-on-Google-Compute-Engine.html">
+            
+                <a href="Running-Photon-OS-on-Google-Compute-Engine.html">
+            
+                    
+                    Running Photon OS on Google Compute Engine
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.10.1" data-path="gce.html">
+            
+                <a href="gce.html">
+            
+                    
+                    Photon OS on GCE
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.11" data-path="Running-Project-Photon-on-vCloud-Air.html">
+            
+                <a href="Running-Project-Photon-on-vCloud-Air.html">
+            
+                    
+                    Running Project Photon on vCloud Air
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="admin-guides.html">
+            
+                <a href="admin-guides.html">
+            
+                    
+                    Administration Guides
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="photon-admin-guide.html">
+            
+                <a href="photon-admin-guide.html">
+            
+                    
+                    Photon OS Administration Guide
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1.1" data-path="pmd-cli.html">
+            
+                <a href="pmd-cli.html">
+            
+                    
+                    Photon Management Daemon Command-line Interface (pmd-cli)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.3.1.2" data-path="netmgr.c.html">
+            
+                <a href="netmgr.c.html">
+            
+                    
+                    Network Configuration Manager - C API
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.3" data-path="netmgr-cli.html">
+            
+                <a href="netmgr-cli.html">
+            
+                    
+                    Photon Network Manager Command-line Interface (netmgr)
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.4" data-path="netmgr.python.html">
+            
+                <a href="netmgr.python.html">
+            
+                    
+                    Network Configuration Manager - Python API
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.5" data-path="pmd-cli.html">
+            
+                <a href="pmd-cli.html">
+            
+                    
+                    How to use Photon Management Daemon
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.1.6" data-path="tdnf.html">
+            
+                <a href="tdnf.html">
+            
+                    
+                    Managing Packages in Photon OS with tdnf
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2" data-path="Photon-RPM-OSTree-a-simple-guide.html">
+            
+                <a href="Photon-RPM-OSTree-a-simple-guide.html">
+            
+                    
+                    Photon RPM OSTree
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.1" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.1.1" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#11-what-is-ostree-how-about-rpm-ostree">
+            
+                    
+                    What is OSTree? How about   RPM-OSTree?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.2" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#12-why-use-rpm-ostree-in-photon">
+            
+                    
+                    Why use RPM-OSTree in Photon?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.3" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#13-photon-with-rpm-ostree-installation-profiles">
+            
+                    
+                    Photon with RPM-OSTree installation profiles
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.4" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#14-terminology">
+            
+                    
+                    Terminology
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.5" data-path="Photon-RPM-OSTree-1-Introduction.html">
+            
+                <a href="Photon-RPM-OSTree-1-Introduction.html#15-sample-code">
+            
+                    
+                    Sample code
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.6" >
+            
+                <a target="_blank" href="Photon-RPM-OSTree:-1-Introduction#16-how-to-read-this-book">
+            
+                    
+                    How to read this book
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.1.7" >
+            
+                <a target="_blank" href="Photon-RPM-OSTree:-1-Introduction#17-rpm-ostree-in-photon-os-20">
+            
+                    
+                    RPM-OSTree in Photon OS 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.2" data-path="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                    
+                    Installing a Photon RPM-OSTree host against default server repository
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.2.1" data-path="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html#21-who-is-this-for">
+            
+                    
+                    Who is this for?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.2.2" data-path="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-2-Installing-a-host-against-default-server-repository.html#22-installing-the-iso-step-by-step">
+            
+                    
+                    Installing the ISO, step by step
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                    
+                    Concepts in action
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.3.1" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#31-querying-the-deployed-filetrees">
+            
+                    
+                    Querying the deployed   filetrees
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.2" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#32-bootable-filetree-version">
+            
+                    
+                    Bootable filetree version
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.3" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#33-commit-id">
+            
+                    
+                    Commit ID
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.4" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#34-osname">
+            
+                    
+                    OSname
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.5" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#35-refspec">
+            
+                    
+                    Refspec
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.3.6" data-path="Photon-RPM-OStree-3-Concepts-in-action.html">
+            
+                <a href="Photon-RPM-OStree-3-Concepts-in-action.html#36-deployments">
+            
+                    
+                    Deployments
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                    
+                    Querying for commit, file and package metadata
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.4.1" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#41-commit-history">
+            
+                    
+                    Commit history
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.2" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#42-listing-file-mappings">
+            
+                    
+                    Listing file mappings
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.3" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#43-listing-configuration-changes">
+            
+                    
+                    Listing configuration changes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.4" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#44-listing-packages">
+            
+                    
+                    Listing packages
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.5" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#45-querying-for-package-details">
+            
+                    
+                    Querying for package details
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.4.6" data-path="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html">
+            
+                <a href="Photon-RPM-OSTree-4-Querying-for-commit-file-and-package-metadata.html#46-why-am-i-unable-to-install-update-or-delete-packages">
+            
+                    
+                    Why am I unable to install, update or delete packages?
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                    
+                    Host updating operations
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.5.1" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#51-is-it-an-update-or-an-upgrade">
+            
+                    
+                    Is it an update or an upgrade?
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.2" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#52-incremental-upgrade">
+            
+                    
+                    Incremental upgrade
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.3" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#52-listing-file-differences">
+            
+                    
+                    Listing file differences
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.4" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#52-listing-package-differences">
+            
+                    
+                    Listing package differences
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.5" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#55-rollback">
+            
+                    
+                    Rollback
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.6" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#56-deleting-a-deployed-filetree">
+            
+                    
+                    Deleting a deployed filetree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.7" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#57-version-skipping-upgrade">
+            
+                    
+                    Version skipping upgrade
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.8" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#58-tracking-parent-commits">
+            
+                    
+                    Tracking parent commits
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.5.9" data-path="Photon-RPM-OSTree-5-Host-updating-operations.html">
+            
+                <a href="Photon-RPM-OSTree-5-Host-updating-operations.html#59-resetting-a-branch-to-a-previous-commit">
+            
+                    
+                    Resetting a branch to a previous commit
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.6" data-path="Photon-RPM-OSTree-6-Installing-a-server.html">
+            
+                <a href="Photon-RPM-OSTree-6-Installing-a-server.html">
+            
+                    
+                    Installing a Photon RPM-OSTree server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.7" data-path="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                    
+                    Installing a Photon RPM-OStree host against a custom server repository
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.7.1" data-path="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html#71-manual-install-of-a-custom-host">
+            
+                    
+                    Manual install of a custom host
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.7.2" data-path="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html">
+            
+                <a href="Photon-RPM-OSTree-7-Installing-a-host-against-a-custom-server-repository.html#72-automated-install-of-a-custom-host-via-kickstart">
+            
+                    
+                    Automated install of a custom host via kickstart
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                    
+                    File oriented server operations
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.8.1" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#81-starting-a-fresh-ostree-repo">
+            
+                    
+                    Starting a fresh OSTree repo
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8.2" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#82-checking-out-a-filetree">
+            
+                    
+                    Checking out a filetree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8.3" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#83-committing-changes-to-a-filetree">
+            
+                    
+                    Committing changes to a filetree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8.4" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#84-downloading-the-changes-at-the-host">
+            
+                    
+                    Downloading the changes at the host
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.8.5" data-path="Photon-RPM-OStree-8-File-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OStree-8-File-oriented-server-operations.html#85-creating-summary-metadata">
+            
+                    
+                    Creating summary metadata
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                    
+                    Package oriented server operations
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.9.1" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#91-json-configuration-file">
+            
+                    
+                    JSON configuration file
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.2" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#92-package-addition-removal-upgrade">
+            
+                    
+                    Package addition, removal, upgrade
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.3" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#93-rpms-repository">
+            
+                    
+                    RPMS repository
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.4" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#94-composing-a-tree">
+            
+                    
+                    Composing a tree
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.5" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#95-automatic-version-prefix">
+            
+                    
+                    Automatic version prefix
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.6" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#96-installing-package-updates">
+            
+                    
+                    Installing package updates
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.7" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#97-creating-server-metadata">
+            
+                    
+                    Creating server metadata
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.9.8" data-path="Photon-RPM-OSTree-9-Package-oriented-server-operations.html">
+            
+                <a href="Photon-RPM-OSTree-9-Package-oriented-server-operations.html#98-starting-a-fresh-ostree-repo">
+            
+                    
+                    Starting a fresh OSTree repo
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html">
+            
+                    
+                    Remotes
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.10.1" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#101-listing-remotes">
+            
+                    
+                    Listing remotes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10.2" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#102-gpg-signature-verification">
+            
+                    
+                    GPG signature verification
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10.3" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#103-switching-repositories">
+            
+                    
+                    Switching repositories
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10.4" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#104-adding-and-removing-remotes">
+            
+                    
+                    Adding and removing remotes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.10.5" data-path="Photon-RPM-OSTree-10-Remotes.html">
+            
+                <a href="Photon-RPM-OSTree-10-Remotes.html#105-list-available-branches">
+            
+                    
+                    List available branches
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.11" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                    
+                    Running container applications between bootable images
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.11.1" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html#111-downloading-a-docker-container-appliance">
+            
+                    
+                    Downloading a docker container appliance
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.11.2" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html#112-rebooting-into-an-existing-image">
+            
+                    
+                    Rebooting into an existing image
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.11.3" data-path="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html">
+            
+                <a href="Photon-RPM-OSTree-11-Running-container-applications-between-bootable-images.html#113-reboot-into-a-newly-created-image">
+            
+                    
+                    Reboot into a newly created image
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.12" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                    
+                    Install or rebase to Photon OS 2.0
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.2.12.1" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#121-installing-an-rpm-ostree-server">
+            
+                    
+                    Installing an RPM-OSTree server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.12.2" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#122-installing-an-rpm-ostree-host">
+            
+                    
+                    Installing an RPM-OSTree host
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.12.3" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#123-rebasing-a-host-from-photon-10-to-20">
+            
+                    
+                    Rebasing a host from Photon 1.0 to 2.0
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3.2.12.4" data-path="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html">
+            
+                <a href="Photon-RPM-OSTree-Install-or-rebase-to-Photon-OS-2.0.html#124-creating-a-host-raw-image">
+            
+                    
+                    Creating a host raw image
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="how-to-guides.html">
+            
+                <a href="how-to-guides.html">
+            
+                    
+                    How-To Guides
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="Install-and-Configure-a-Swarm-Cluster-with-DNS-Service-on-PhotonOS.html">
+            
+                <a href="Install-and-Configure-a-Swarm-Cluster-with-DNS-Service-on-PhotonOS.html">
+            
+                    
+                    Setting Up a Swarm Cluster with DNS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="Install-and-Configure-a-Production-Ready-Mesos-Cluster-on-Photon-OS.html">
+            
+                <a href="Install-and-Configure-a-Production-Ready-Mesos-Cluster-on-Photon-OS.html">
+            
+                    
+                    Setting Up a Mesos Cluster
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="Install-and-Configure-Marathon-for-Mesos-Cluster-on-PhotonOS.html">
+            
+                <a href="Install-and-Configure-Marathon-for-Mesos-Cluster-on-PhotonOS.html">
+            
+                    
+                    Setting Up Marathon for a Mesos Cluster
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="Install-and-Configure-DCOS-CLI-for-Mesos.html">
+            
+                <a href="Install-and-Configure-DCOS-CLI-for-Mesos.html">
+            
+                    
+                    Setting Up DCOS CLI for Mesos
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="Install-and-Configure-Mesos-DNS-on-a-Mesos-Cluster.html">
+            
+                <a href="Install-and-Configure-Mesos-DNS-on-a-Mesos-Cluster.html">
+            
+                    
+                    Setting Up Mesos DNS on a Mesos Cluster
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6" data-path="PXE-boot.html">
+            
+                <a href="PXE-boot.html">
+            
+                    
+                    Setting Up a Network PXE Boot Server
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7" data-path="kickstart.html">
+            
+                <a href="kickstart.html">
+            
+                    
+                    Working with Kickstart
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8" data-path="kubernetes.html">
+            
+                <a href="kubernetes.html">
+            
+                    
+                    Running Kubernetes
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.9" data-path="nfs-utils.html">
+            
+                <a href="nfs-utils.html">
+            
+                    
+                    Mounting Remote File Systems
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.10" data-path="build-photon.html">
+            
+                <a href="build-photon.html">
+            
+                    
+                    Building Photon OS from the Source Code
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11" data-path="Installing-and-Using-Lightwave-on-Photon-OS.html">
+            
+                <a href="Installing-and-Using-Lightwave-on-Photon-OS.html">
+            
+                    
+                    Installing and Using Lightwave on Photon OS
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.11.1" data-path="Installing-Lightwave-Server-and-Setting-Up-a-Domain.html">
+            
+                <a href="Installing-Lightwave-Server-and-Setting-Up-a-Domain.html">
+            
+                    
+                    Installing the Lightwave Server and Configuring It as a Domain Controller on a Photon Image
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.2" data-path="Installing-Lightwave-Client-and-Joining-a-Domain.html">
+            
+                <a href="Installing-Lightwave-Client-and-Joining-a-Domain.html">
+            
+                    
+                    Installing the Lightwave Client on a Photon Image and Joining the Client to a Domain
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.3" data-path="Installing-the-Photon-Management-Daemon-on-a-Lightwave-Client.html">
+            
+                <a href="Installing-the-Photon-Management-Daemon-on-a-Lightwave-Client.html">
+            
+                    
+                    Installing the Photon Management Daemon on a Lightwave Client
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.4" data-path="Remotely-Upgrade-a-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                <a href="Remotely-Upgrade-a-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                    
+                    Remotely Upgrade a Single Photon OS Machine With Lightwave Client and Photon Management Daemon Installed
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11.5" data-path="Remotely-Upgrade-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                <a href="Remotely-Upgrade-Photon-OS-Machine-With-Lightwave-Client-and-Photon-Management-Daemon-Installed.html">
+            
+                    
+                    Remotely Upgrade Multiple Photon OS Machines With Lightwave Client and Photon Management Daemon Installed
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.5" data-path="photon-os-troubleshooting-guide.html">
+            
+                <a href="photon-os-troubleshooting-guide.html">
+            
+                    
+                    Troubleshooting
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.6" data-path="Frequently-Asked-Questions.html">
+            
+                <a href="Frequently-Asked-Questions.html">
+            
+                    
+                    Frequently Asked Questions
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.7" >
+            
+                <a target="_blank" href="https://github.com/vmware/photon/wiki/Security-Advisories">
+            
+                    
+                    Security Advisories
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="." >Network Configuration Manager - C API</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="network-configuration-manager---c-api">Network Configuration Manager - C API</h1>
+<p>Photon OS 2.0 provides a C API for the Network Configuration Manager.</p>
+<ul>
+<li><a href="#about-the-network-configuration-manager-c-api">About the Network Configuration Manager C API</a></li>
+<li><a href="#interface-configuration-apis">Interface Configuration APIs</a></li>
+<li><a href="#ip-address-configuration-apis">IP Address Configuration APIs</a></li>
+<li><a href="#route-configuration-apis">Route Configuration APIs</a></li>
+<li><a href="#dns-configuration-apis">DNS Configuration APIs</a></li>
+<li><a href="#dhcp-options-duid-and-iaid-configuration-apis">DHCP Options DUID and IAID Configuration APIs</a></li>
+<li><a href="#ntp-configuration-apis">NTP Configuration APIs</a></li>
+<li><a href="#service-management-apis">Service Management APIs</a></li>
+</ul>
+<h1 id="about-the-network-configuration-manager-c-api">About the Network Configuration Manager C API</h1>
+<p>Use the Network Configuration Manager C API to simplify common network configuration tasks for:</p>
+<ul>
+<li>interfaces</li>
+<li>IP addresses (IPv4 and IPv6 addresses)</li>
+<li>routes</li>
+<li>DNS server and domain settings</li>
+<li>DHCP DUID and IAID settings</li>
+<li>NTP server settings</li>
+<li>service management</li>
+<li>object parameters (interfaces and files)</li>
+</ul>
+<h2 id="header-file">Header File</h2>
+<p>Header files for all the C APIs are defined in the following location:</p>
+<p><a href="https://github.com/vmware/pmd/tree/master/include" target="_blank">https://github.com/</a> <a href="https://github.com/vmware/pmd/tree/master/include" target="_blank">vmware</a> <a href="https://github.com/vmware/pmd/tree/master/include" target="_blank">/pmd/tree/master/include</a></p>
+<p>To install the Network Configuration Manager header file, run the following command:</p>
+<p><code>tdnf install netmgmt-devel</code>
+n
+Once installed, you can reference the header file in the following location:</p>
+<p><code>/usr/include/netmgmt/netmgr.h</code></p>
+<h2 id="freeing-memory">Freeing Memory</h2>
+<p>For all get APIs that take a pointer-to-pointer parameter, the caller has the responsibility to free the memory upon successful response from API by calling free().</p>
+<h2 id="error-codes">Error Codes</h2>
+<p>All C API calls return 0 for success, or one of the following error codes for failure.</p>
+<ul>
+<li>4097 - NM_ERR_INVALID_PARAMETER</li>
+<li>4098 - NM_ERR_NOT_SUPPORTED</li>
+<li>4099 - NM_ERR_OUT_OF_MEMORY</li>
+<li>4100 - NM_ERR_VALUE_NOT_FOUND</li>
+<li>4101 - NM_ERR_VALUE_EXISTS</li>
+<li>4102 - NM_ERR_INVALID_INTERFACE</li>
+<li>4103 - NM_ERR_INVALID_ADDRESS</li>
+<li>4104 - NM_ERR_INVALID_MODE</li>
+<li>4105 - NM_ERR_BAD_CONFIG_FILE</li>
+<li>4106 - NM_ERR_WRITE_FAILED</li>
+<li>4107 - NM_ERR_TIME_OUT</li>
+<li>4108 - NM_ERR_DHCP_TIME_OUT</li>
+</ul>
+<p>Use nm_get_error_info to retrieve information about an error code.</p>
+<pre><code> const char \*
+ nm_get_error_info(
+     uint32_t nmErrCode
+ );``
+</code></pre><h1 id="interface-configuration-apis">Interface Configuration APIs</h1>
+<p>The Photon OS 2.0 network manager C API enables you to manage network interfaces.</p>
+<h2 id="structure-declarations">Structure Declarations</h2>
+<h3 id="link-mode">Link Mode</h3>
+<p><strong>Description</strong></p>
+<p>Link mode. Available settings:</p>
+<ul>
+<li><code>LINK_AUTO</code> - the specified interface is managed and configured by systemd network manager</li>
+<li><code>LINK_MANUAL</code> - systemd will not bring up or configure the specified interface</li>
+<li><code>LINK_MODE_UNKNOWN</code> - the link mode is unknown</li>
+</ul>
+<p><strong>Declaration</strong></p>
+<pre><code> typedef enum _NET_LINK_MODE
+ {
+     LINK_AUTO = 0,
+     LINK_MANUAL,
+     LINK_MODE_UNKNOWN
+ } NET_LINK_MODE;``
+</code></pre><h3 id="link-state">Link State</h3>
+<p><strong>Description</strong></p>
+<p>Link state. Available settings:</p>
+<ul>
+<li><code>LINK_DOWN</code> - the link is being administratively down or has no carrier signal</li>
+<li><code>LINK_UP</code> - the link is configured up and has carrier signal</li>
+<li><code>LINK_STATE_UNKNOWN</code> - link state is unknown</li>
+</ul>
+<p><strong>Declaration</strong></p>
+<pre><code> typedef enum _NET_LINK_STATE
+ {
+     LINK_DOWN = 0,
+     LINK_UP,
+     LINK_STATE_UNKNOWN,
+ } NET_LINK_STATE;
+</code></pre><h3 id="link-information">Link Information</h3>
+<p><strong>Description</strong></p>
+<p>Link information. Includes the following information:</p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>pszMacAddress</code> - interface hardware address specified in a colon-separated format (for example: &quot;00:0c:29:99:a5:7b&quot;)</li>
+<li><code>mtu</code> - maximum transmission unit (MTU)</li>
+<li><code>mode</code> - link mode (see above)</li>
+<li><code>state</code> - link state (see above)</li>
+</ul>
+<p><strong>Declaration</strong></p>
+<pre><code> typedef struct _NET_LINK_INFO
+ {
+     struct _NET_LINK_INFO \*pNext;
+     char \*pszInterfaceName;
+     char \*pszMacAddress;
+     uint32_t mtu;
+     NET_LINK_MODE mode;
+     NET_LINK_STATE state;
+ } NET_LINK_INFO, \*PNET_LINK_INFO;
+</code></pre><h2 id="nmsetlinkmacaddr">nm_set_link_mac_addr</h2>
+<p><strong>Description</strong></p>
+<p>Set the MAC address of the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+
+nm_set_link_mac_addr(
+
+     const char \*pszInterfaceName,
+     const char \*pszMacAddress
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>pszMacAddress</code> - interface hardware address specified in a colon-separated format (for example: &quot;00:0c:29:99:a5:7b&quot;)</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgetlinkmacaddr">nm_get_link_mac_addr</h2>
+<p><strong>Description</strong></p>
+<p>Get the MAC address of the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_get_link_mac_addr(
+     const char \*pszInterfaceName,
+     char \*\*ppszMacAddress
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>ppszMacAddress</code> - interface hardware address specified in a colon-separated format (for example: &quot;00:0c:29:99:a5:7b&quot;)</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmsetlinkmode">nm_set_link_mode</h2>
+<p><strong>Description</strong></p>
+<p>Set the mode of the interface (auto or manual).</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_set_link_mode(
+     const char \*pszInterfaceName,
+     NET_LINK_MODE mode
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>mode</code> - link mode. One of the following values:<ul>
+<li><code>LINK_AUTO</code> - the specified interface is managed and configured by systemd network manager</li>
+<li><code>LINK_MANUAL</code> - systemd will not bring up or configure the specified interface</li>
+<li><code>LINK_MODE_UNKNOWN</code> - the link mode is unknown</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgetlinkmode">nm_get_link_mode</h2>
+<p><strong>Description</strong></p>
+<p>Get the mode of the interface (auto or manual).</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_get_link_mode(
+     const char \*pszInterfaceName,
+     NET_LINK_MODE \*pLinkMode
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>pLinkMode</code> - link mode. One of the following values:<ul>
+<li><code>LINK_AUTO</code> - the specified interface is managed and configured by systemd network manager</li>
+<li><code>LINK_MANUAL</code> - systemd will not bring up or configure the specified interface</li>
+<li><code>LINK_MODE_UNKNOWN</code> - the link mode is unknown</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmsetlinkmtu">nm_set_link_mtu</h2>
+<p><strong>Description</strong></p>
+<p>Set the maximum transmission unit (MTU) of the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_set_link_mtu(
+     const char \*pszInterfaceName,
+     uint32_t mtu
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>mtu</code> - maximum transmission unit (MTU)</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgetlinkmtu">nm_get_link_mtu</h2>
+<p><strong>Description</strong></p>
+<p>Get the maximum transmission unit (MTU) of the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>nm_get_link_mtu
+ uint32_t
+ nm_get_link_mtu(
+     const char \*pszInterfaceName,
+     uint32_t \*pMtu
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>pMtu</code> - maximum transmission unit (MTU)</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmsetlinkstate">nm_set_link_state</h2>
+<p><strong>Description</strong></p>
+<p>Set the link state of the interface (up or down).</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_set_link_state(
+     const char \*pszInterfaceName,
+     NET_LINK_STATE state
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>state</code> - link state. One of the following values:<ul>
+<li><code>LINK_DOWN</code> - the link is being administratively down or has no carrier signal.</li>
+<li><code>LINK_UP</code> - the link is configured up and has carrier signal.</li>
+<li><code>LINK_STATE_UNKNOWN</code> - the link state is unknown</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgetlinkstate">nm_get_link_state</h2>
+<p><strong>Description</strong></p>
+<p>Get the link state of the interface (up or down).</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_get_link_state(
+     const char \*pszInterfaceName,
+     NET_LINK_STATE \*pLinkState
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>pLinkState</code> - link state. One of the following values:<ul>
+<li><code>LINK_DOWN</code> - the link is being administratively down or has no carrier signal</li>
+<li><code>LINK_UP</code> - the link is configured up and has carrier signal</li>
+<li><code>LINK_STATE_UNKNOWN</code> - the link state is unknown</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmifup">nm_ifup</h2>
+<p><strong>Description</strong></p>
+<p>Set the specified interface state to UP. Additionally, if the interface is configured to have an IP address, it waits for the interface to acquire the IP address, and then updates neighbors of its IP address via the address resolution protocol (ARP) messages.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_ifup(
+     const char \*pszInterfaceName
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmifdown">nm_ifdown</h2>
+<p><strong>Description</strong></p>
+<p>Set the specified interface state to DOWN.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_ifdown(
+     const char \*pszInterfaceName
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgetlinkinfo">nm_get_link_info</h2>
+<p><strong>Description</strong></p>
+<p>Get link information for the interface. The caller is responsible for freeing ppLinkInfo by calling nm_free_link_info.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_get_link_info(
+     const char \*pszInterfaceName,
+     NET_LINK_INFO \*\*ppLinkInfo
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>ppLinkInfo</code>, which includes the following information:<ul>
+<li>*<code>pszInterfaceName</code> - interface name</li>
+<li>*<code>pszMacAddress</code> - interface hardware address specified in a colon-separated format (for example: &quot;00:0c:29:99:a5:7b&quot;)</li>
+<li><code>mtu</code> - maximum transmission unit (MTU)</li>
+<li><code>mode</code> - One of the following values:<ul>
+<li><code>LINK_AUTO</code> - the specified interface is managed and configured by systemd network manager</li>
+<li><code>LINK_MANUAL</code> - systemd will not bring up or configure the specified interface</li>
+<li><code>LINK_MODE_UNKNOWN</code> - the link mode is unknown</li>
+</ul>
+</li>
+<li><code>state</code> - One of the following values:<ul>
+<li><code>LINK_DOWN</code> - the link is being administratively down or has no carrier signal</li>
+<li><code>LINK_UP</code> - the link is configured up and has carrier signal</li>
+<li><code>LINK_STATE_UNKNOWN</code> - the link state is unknown</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmfreelinkinfo">nm_free_link_info</h2>
+<p><strong>Description</strong></p>
+<p>Frees the NET_LINK_INFO structure returned by a successful nm_get_link_info call.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>void
+ nm_free_link_info(
+     NET_LINK_INFO \*pNetLinkInfo
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pNetLinkInfo</code>, which includes the following information:<ul>
+<li>*<code>pszInterfaceName</code> - interface name</li>
+<li>*<code>pszMacAddress</code> - interface hardware address specified in a colon-separated format (for example: &quot;00:0c:29:99:a5:7b&quot;)</li>
+<li><code>mtu</code> - maximum transmission unit (MTU)</li>
+<li><code>mode</code> - One of the following values:<ul>
+<li><code>LINK_AUTO</code> - the specified interface is managed and configured by systemd network manager</li>
+<li><code>LINK_MANUAL</code> - systemd will not bring up or configure the specified interface</li>
+<li><code>LINK_MODE_UNKNOWN</code> - the link mode is unknown</li>
+</ul>
+</li>
+<li><code>state</code> - One of the following values:<ul>
+<li><code>LINK_DOWN</code> - the link is being administratively down or has no carrier signal</li>
+<li><code>LINK_UP</code> - the link is configured up and has carrier signal</li>
+<li><code>LINK_STATE_UNKNOWN</code> - the link state is unknown</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h1 id="ip-address-configuration-apis">IP Address Configuration APIs</h1>
+<p>The Photon OS 2.0 network manager C API enables you to manage IP addresses for interfaces that are managed by systemd network manager.</p>
+<h2 id="structure-declarations">Structure Declarations</h2>
+<h3 id="ip-address-mode">IP Address Mode</h3>
+<p><strong>Description</strong></p>
+<p>Defines the IP address mode. One of the following values:</p>
+<ul>
+<li><code>IPV4_ADDR_MODE_NONE</code> - no IPv4 address configured on the interface</li>
+<li><code>IPV4_ADDR_MODE_STATIC</code> - the interface is configured with a static IPv4 address</li>
+<li><code>IPV4_ADDR_MODE_DHCP</code> -  the interface is configured with a DHCP IPv4 address</li>
+</ul>
+<p><strong>Declaration</strong></p>
+<pre><code> typedef enum _NET_IPV4_ADDR_MODE
+ {
+     IPV4_ADDR_MODE_NONE = 0,
+     IPV4_ADDR_MODE_STATIC,
+     IPV4_ADDR_MODE_DHCP,
+     IPV4_ADDR_MODE_MAX
+ } NET_IPV4_ADDR_MODE;
+</code></pre><h3 id="address-type">Address Type</h3>
+<p><strong>Description</strong></p>
+<p>Defines the type of IP address. One of the following options:</p>
+<ul>
+<li><code>STATIC_IPV4</code> - static IPv4 address</li>
+<li><code>STATIC_IPV6</code> - static IPv6 address</li>
+<li><code>DHCP_IPV4</code> - DHCP IPv4 address</li>
+<li><code>DHCP_IPV6</code> - DHCP IPv6 address</li>
+<li><code>AUTO_IPV6</code> - stateless dynamic IPv6 address</li>
+<li><code>LINK_LOCAL_IPV6</code> - link local IPv6 address</li>
+</ul>
+<p><strong>Declaration</strong></p>
+<pre><code> typedef enum _NET_ADDR_TYPE
+ {
+     STATIC_IPV4        =  0x00000001,
+     STATIC_IPV6        =  0x00000002,
+     DHCP_IPV4          =  0x00000010,
+     DHCP_IPV6          =  0x00000020,
+     AUTO_IPV6          =  0x00000040,
+     LINK_LOCAL_IPV6    =  0x00000080,
+ } NET_ADDR_TYPE;
+</code></pre><h3 id="ip-addresses">IP Addresses</h3>
+<p><strong>Description</strong></p>
+<p>Defines IP addresses.</p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>type</code> - address type</li>
+<li><code>pszIPAddrPrefix</code> - IP address</li>
+</ul>
+<p><strong>Declarations</strong></p>
+<pre><code> typedef struct _NET_IP_ADDR
+ {
+     char \*pszInterfaceName;
+     NET_ADDR_TYPE type;
+     char \*pszIPAddrPrefix;
+ } NET_IP_ADDR, \*PNET_IP_ADDR;
+</code></pre><h2 id="nmsetipv4addrgateway">nm_set_ipv4_addr_gateway</h2>
+<p><strong>Description</strong></p>
+<p>Set the IPv4 address and (optionally) the default gateway address for the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+
+ nm_set_ipv4_addr_gateway(
+
+     const char \*pszInterfaceName,
+     NET_IPV4_ADDR_MODE mode,
+     const char \*pszIPv4AddrPrefix,
+     const char \*pszIPv4Gateway
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>mode</code> - IP address mode; one of the following values:<ul>
+<li><code>IPV4_ADDR_MODE_NONE</code></li>
+<li><code>IPV4_ADDR_MODE_STATIC</code></li>
+<li><code>IPV4_ADDR_MODE_DHCP</code></li>
+</ul>
+</li>
+<li><code>pszIPv4AddrPrefix</code> - IPv4 address specified in dot-decimal / prefix notation (for example, 10.10.10.101/23). If the prefix is not specified, then a /32 prefix is assumed.</li>
+<li><code>pszIPv4Gateway</code> - IPv4 gateway (optional) specified in the dot-decimal format (for example,10.10.20.30).</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgetipv4addrgateway">nm_get_ipv4_addr_gateway</h2>
+<p><strong>Description</strong></p>
+<p>Get the IPv4 address and the default gateway address for the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_get_ipv4_addr_gateway(
+     const char \*pszInterfaceName,
+     NET_IPV4_ADDR_MODE \*pMode,
+     char \*\*ppszIPv4AddrPrefix,
+     char \*\*ppszIPv4Gateway
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>pmode</code> - IP mode; one of the following values:<ul>
+<li><code>IPV4_ADDR_MODE_NONE</code></li>
+<li><code>IPV4_ADDR_MODE_STATIC</code></li>
+<li><code>IPV4_ADDR_MODE_DHCP</code></li>
+</ul>
+</li>
+<li><code>ppszIPv4AddrPrefix</code> - IPv4 address returned in dot-decimal / prefix notation (for example, 10.10.10.101/23). If the prefix is not specified, then a /32 prefix is assumed.</li>
+<li><code>ppszIPv4Gateway</code> - IPv4 gateway (optional) returned in the dot-decimal format (for example,10.10.10.250).</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmaddstaticipv6addr">nm_add_static_ipv6_addr</h2>
+<p><strong>Description</strong></p>
+<p>Add an IPv6 address to the specified interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_add_static_ipv6_addr(
+     const char \*pszInterfaceName,
+     const char \*pszIPv6AddrPrefix
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>pszIPv6AddrPrefix</code> - IPv6 address specified in the standard colon-separated IPv6 address format followed by the prefix (for example, 2010:a1:b2::25/64). If the not prefix is specified, then a /128 prefix is assumed.</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmdeletestaticipv6addr">nm_delete_static_ipv6_addr</h2>
+<p><strong>Description</strong></p>
+<p>Delete a static IPv6 address from the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_delete_static_ipv6_addr(
+     const char \*pszInterfaceName,
+     const char \*pszIPv6AddrPrefix
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>pszIPv6AddrPrefix</code> - IPv6 address specified in the standard colon-separated IPv6 address format followed by the prefix (for example, 2010:a1:b2::25/64). If the not prefix is specified, then a /128 prefix is assumed.</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmsetipv6addrmode">nm_set_ipv6_addr_mode</h2>
+<p><strong>Description</strong></p>
+<p>Set the mode for the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_set_ipv6_addr_mode(
+     const char \*pszInterfaceName,
+     uint32_t enableDhcp,
+     uint32_t enableAutoconf
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>enableDhcp</code> - enable (1) or disable (0) DHCP; enabling configures the interface to acquire a DHCP IPv6 address.</li>
+<li><code>enableAutoconf</code> - enable (1) or disable (0) autoconf; enabling configures the interface to acquire a stateless autoconfiguration IPv6 address.</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgetipv6addrmode">nm_get_ipv6_addr_mode</h2>
+<p><strong>Description</strong></p>
+<p>Get the mode for the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_get_ipv6_addr_mode(
+     const char \*pszInterfaceName,
+     uint32_t \*pDhcpEnabled,
+     uint32_t \*pAutoconfEnabled
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>pDhcpEnabled</code> - returns whether IPv6 DHCP is enabled (1) or disabled (0).</li>
+<li><code>pAutoconfEnabled</code> - returns whether IPv6 stateless autoconfiguration is enabled (1) or disabled (0).</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgetipaddr">nm_get_ip_addr</h2>
+<p><strong>Description</strong></p>
+<p>Get the IP address for the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_get_ip_addr(
+     const char \*pszInterfaceName,
+     uint32_t addrTypes,
+     size_t \*pCount,
+     NET_IP_ADDR \*\*\*pppIpAddrList
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>addrTypes</code> - type of IP address; one of the following values:<ul>
+<li><code>STATIC_IPV4</code></li>
+<li><code>STATIC_IPV6</code></li>
+<li><code>DHCP_IPV4</code></li>
+<li><code>DHCP_IPV6</code></li>
+<li><code>AUTO_IPV6</code></li>
+<li><code>LINK_LOCAL_IPV6</code></li>
+</ul>
+</li>
+<li><code>pCount</code> - number of IP address structures in the pppIpAddrList array returned by the API call.</li>
+<li><code>pppIpAddrList</code> - array of NET_IP_ADDR elements that includes the following:<ul>
+<li><code>pszInterfaceName</code></li>
+<li><code>type</code></li>
+<li><code>pszIPAddrPrefix</code></li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmsetipv6gateway">nm_set_ipv6_gateway</h2>
+<p><strong>Description</strong></p>
+<p>Set the default IPv6 gateway for the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_set_ipv6_gateway(
+     const char \*pszInterfaceName,
+     const char \*pszIPv6Gateway
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>pszIPv6Gateway</code> - IPv6 gateway specified in the standard colon-separated IPv6 address format (for example, 2010:125::100)</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgetipv6gateway">nm_get_ipv6_gateway</h2>
+<p><strong>Description</strong></p>
+<p>Get the default IPv6 gateway for the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_get_ipv6_gateway(
+     const char \*pszInterfaceName,
+     char \*\*ppszIPv6Gateway
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>ppszIPv6Gateway</code> - IPv6 gateway specified in the standard colon-separated IPv6 address format (for example, 2010:125::100)</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h1 id="route-configuration-apis">Route Configuration APIs</h1>
+<p>The Photon OS 2.0 network manager C API enables you to manage static IP routes configuration.</p>
+<h2 id="structure-declarations">Structure Declarations</h2>
+<h3 id="route-scope">Route Scope</h3>
+<p><strong>Description</strong></p>
+<p>Defines the scope of a route. One of the following options.</p>
+<ul>
+<li><code>GLOBAL_ROUTE</code> - route to a destination one or more hops away</li>
+<li><code>LINK_ROUTE</code> - route to a destination on the local network</li>
+<li><code>HOST_ROUTE</code> - route to a destination address on the local host</li>
+</ul>
+<p><strong>Declaration</strong></p>
+<pre><code> typedef enum _NET_ROUTE_SCOPE
+ {
+     GLOBAL_ROUTE = 0,
+     LINK_ROUTE,
+     HOST_ROUTE,
+     NET_ROUTE_SCOPE_MAX
+ } NET_ROUTE_SCOPE;
+</code></pre><h3 id="ip-route">IP Route</h3>
+<p><strong>Description</strong></p>
+<p>Defines an IP route. Includes the following information:</p>
+<ul>
+<li><code>pszInterfaceName</code> - interface through which the specified destination network can be reached</li>
+<li><code>pszDestNetwork</code> - destination IP network reached by the specified route</li>
+<li><code>pszSourceNetwork</code> - source network for the specified route</li>
+<li><code>pszGateway</code> - IP gateway through which the specified destination network can be reached</li>
+<li><code>scope</code> - scope of this route entry; one of the following values: GLOBAL_ROUTE, LINK_ROUTE, or HOST_ROUTE as defined above</li>
+<li><code>metric</code> - metric of this route, an unsigned integer</li>
+<li><code>table</code> - identifier for the route table to which this route belongs.</li>
+</ul>
+<p><strong>Declaration</strong></p>
+<pre><code> typedef struct _NET_IP_ROUTE
+ {
+     char \*pszInterfaceName;
+     char \*pszDestNetwork;
+     char \*pszSourceNetwork;
+     char \*pszGateway;
+     NET_ROUTE_SCOPE scope;
+     uint32_t metric;
+     uint32_t table;
+ } NET_IP_ROUTE, \*PNET_IP_ROUTE;
+</code></pre><h2 id="nmaddstaticiproute">nm_add_static_ip_route</h2>
+<p><strong>Description</strong></p>
+<p>Add a static IP route.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_add_static_ip_route(
+     NET_IP_ROUTE \*pRoute
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pRoute</code> - static IP route</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmdeletestaticiproute">nm_delete_static_ip_route</h2>
+<p><strong>Description</strong></p>
+<p>Delete a static IP route.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_delete_static_ip_route(
+     NET_IP_ROUTE \*pRoute
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pRoute</code> - static IP route</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgetstaticiproutes">nm_get_static_ip_routes</h2>
+<p><strong>Description</strong></p>
+<p>Get the static IP routes for an interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_get_static_ip_routes(
+     const char \*pszInterfaceName,
+     size_t \*pCount,
+     NET_IP_ROUTE \*\*\*pppRouteList
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>pCount</code> - number of NET_IP_ROUTE elements returned in the pppRouteList array by the API call upon success</li>
+<li><code>pppRouteList</code> - array of static IP routes</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h1 id="dns-configuration-apis">DNS Configuration APIs</h1>
+<p>The Photon OS 2.0 network manager C API enables you to manage the DNS and Domains configuration.</p>
+<h2 id="structure-declarations">Structure Declarations</h2>
+<h3 id="dns-mode">DNS Mode</h3>
+<p><strong>Description</strong></p>
+<p>DNS mode. Any of the following values:</p>
+<ul>
+<li><code>DNS_MODE_INVALID</code> - DNS mode is unknown</li>
+<li><code>STATIC_DNS</code> - DNS servers are statically configured</li>
+<li><code>DHCP_DNS</code> - DNS servers configuration is acquired from DHCP protocol.</li>
+</ul>
+<p><strong>Declaration</strong></p>
+<pre><code> typedef enum _NET_DNS_MODE
+ {
+     DNS_MODE_INVALID = 0,
+     STATIC_DNS,
+     DHCP_DNS,
+     DNS_MODE_MAX,
+ } NET_DNS_MODE;
+</code></pre><h2 id="nmsetdnsservers">nm_set_dns_servers</h2>
+<p><strong>Description</strong></p>
+<p>Set the DNS servers list for the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_set_dns_servers(
+     const char \*pszInterfaceName,
+     NET_DNS_MODE mode,
+     size_t count,
+     const char \*\*ppszDnsServers
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name (optional, can be NULL)</li>
+<li><code>mode</code> - DNS mode. One of the following values:<ul>
+<li><code>DNS_MODE_INVALID</code> = 0</li>
+<li><code>DNS_MODE_MA</code></li>
+<li><code>DHCP_DNS</code></li>
+<li><code>STATIC_DNS</code></li>
+</ul>
+</li>
+<li><code>count</code> - number of NUL terminated DNS server entries passed in the ppszDnsServers array to the API call (for example, 10.10.10.200 or 2020::40)</li>
+<li><code>ppszDnsServers</code> - array of DNS servers</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmadddnsserver">nm_add_dns_server</h2>
+<p><strong>Description</strong></p>
+<p>Add a server to the DNS servers list associated with an interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_add_dns_server(
+     const char \*pszInterfaceName,
+     const char \*pszDnsServer
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name (optional, can be NULL)</li>
+<li><code>ppszDnsServer</code> - server to add to the DNS server list</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmdeletednsserver">nm_delete_dns_server</h2>
+<p><strong>Description</strong></p>
+<p>Delete a server from the DNS servers list associated with an interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_delete_dns_server(
+     const char \*pszInterfaceName,
+     const char \*pszDnsServer
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name (optional, can be NULL)</li>
+<li><code>ppszDnsServer</code> - server to remove from the DNS server list</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgetdnsservers">nm_get_dns_servers</h2>
+<p><strong>Description</strong></p>
+<p>Get the the DNS servers list for the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_get_dns_servers(
+     const char \*pszInterfaceName,
+     NET_DNS_MODE \*pMode,
+     size_t \*pCount,
+     char \*\*\*pppszDnsServers
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name (optional, can be NULL)</li>
+<li><code>pMode</code> - DNS mode. One of the following values:<ul>
+<li><code>DNS_MODE_INVALID</code></li>
+<li><code>DHCP_DNS</code></li>
+<li><code>STATIC_DNS</code></li>
+</ul>
+</li>
+<li><code>pCount</code> - number of NUL terminated DNS server entries in the pppszDnsServers array returned by the API call (for example, 10.10.10.200 or 2020::40)</li>
+<li><code>pppszDnsServers</code> - array of DNS servers</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmsetdnsdomains">nm_set_dns_domains</h2>
+<p><strong>Description</strong></p>
+<p>Set the DNS domain list.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_set_dns_domains(
+     const char \*pszInterfaceName,
+     size_t count,
+     const char \*\*ppszDnsDomains
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name (optional, can be NULL)</li>
+<li><code>count</code> - number of DNS domains specified in the ppszDnsDomains array to the API call (for example, if count = 2, then there are two elements: ppszDnsDomains[0] and ppszDnsDomains[1])</li>
+<li><code>ppszDnsDomains</code> - array of DNS domains</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmadddnsdomain">nm_add_dns_domain</h2>
+<p><strong>Description</strong></p>
+<p>Add a DNS domain to the DNS domain list.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_add_dns_domain(
+     const char \*pszInterfaceName,
+     const char \*pszDnsDomain
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name (optional, can be NULL)</li>
+<li><code>pszDnsDomain</code> - DNS domain to add to the list</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmdeletednsdomain">nm_delete_dns_domain</h2>
+<p><strong>Description</strong></p>
+<p>Delete a DNS domain from the DNS domain list.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_delete_dns_domain(
+     const char \*pszInterfaceName,
+     const char \*pszDnsDomain
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name (optional, can be NULL)</li>
+<li><code>pszDnsDomain</code> - DNS domain to remove from the list</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgetdnsdomains">nm_get_dns_domains</h2>
+<p><strong>Description</strong></p>
+<p>Get the list of DNS domains.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_get_dns_domains(
+     const char \*pszInterfaceName,
+     size_t \*pCount,
+     char \*\*\*pppszDnsDomains
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name (optional, can be NULL)</li>
+<li><code>pCount</code> - number of DNS domains returned in the pppszDnsDomains from the API call (for example, if count = 2, then there are two elements: ppszDnsDomains[0] and ppszDnsDomains[1])</li>
+<li><code>pppszDnsDomains</code> - array of DNS domains</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h1 id="dhcp-options-duid-and-iaid-configuration-apis">DHCP Options DUID and IAID Configuration APIs</h1>
+<p>The Photon OS 2.0 network manager C API enables you to manage DHCP DUID and Interface IAID.</p>
+<h2 id="nmsetiaid">nm_set_iaid</h2>
+<p><strong>Description</strong></p>
+<p>Set the IAID for the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_set_iaid(
+     const char \*pszInterfaceName,
+     uint32_t iaid
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>iaid</code> - interface association identifier (IAID)</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgetiaid">nm_get_iaid</h2>
+<p><strong>Description</strong></p>
+<p>Get the IAID for the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_get_iaid(
+     const char \*pszInterfaceName,
+     uint32_t \*pIaid
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>pIaid</code> - interface association identifier (IAID)</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmsetduid">nm_set_duid</h2>
+<p><strong>Description</strong></p>
+<p>Set the DUID for the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_set_duid(
+     const char \*pszInterfaceName,
+     const char \*pszDuid
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name (optional, specify NULL to set system global DUID configuration)</li>
+<li><code>pszDuid</code> - DHCP unique identifier (DUID)</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgetduid">nm_get_duid</h2>
+<p><strong>Description</strong></p>
+<p>Get the DUID for the interface.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_get_duid(
+     const char \*pszInterfaceName,
+     char \*\*ppszDuid
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name (optional, specify NULL to query system global DUID configuration)</li>
+<li><code>ppszDuid</code> - DHCP unique identifier (DUID)</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h1 id="ntp-configuration-apis">NTP Configuration APIs</h1>
+<p>The Photon OS 2.0 network manager C API enables you to manage NTP servers configured for the system.</p>
+<h2 id="nmsetntpservers">nm_set_ntp_servers</h2>
+<p><strong>Description</strong></p>
+<p>Set the list of NTP servers.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_set_ntp_servers(
+     size_t count,
+     const char \*\*ppszNtpServers
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>count</code> - number of NTP servers in the ppszNtpServers array passed to the API call.</li>
+<li><code>ppszNtpServers</code> - array of NTP servers</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmaddntpservers">nm_add_ntp_servers</h2>
+<p><strong>Description</strong></p>
+<p>Add a server to the NTP servers list.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_add_ntp_servers(
+     size_t count,
+     const char \*\*ppszNtpServers
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>count</code> - number of NTP servers to add (specified in the ppszNtpServers array) passed to the API call.</li>
+<li><code>ppszNtpServers</code> - array of NTP servers to add</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmdeletentpservers">nm_delete_ntp_servers</h2>
+<p><strong>Description</strong></p>
+<p>Delete a server from the NTP servers list.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_delete_ntp_servers(
+     size_t count,
+     const char \*\*ppszNtpServers
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>count</code> - number of NTP servers to delete (specified in the ppszNtpServers array) passed to the API call</li>
+<li><code>ppszNtpServers</code> - array of NTP servers to delete</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgetntpservers">nm_get_ntp_servers</h2>
+<p><strong>Description</strong></p>
+<p>Get the NTP servers list.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_get_ntp_servers(
+     size_t \*pCount,
+     char \*\*\*pppszNtpServers
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pCount</code> - number of NTP servers in the pppszNtpServers array returned from the API call</li>
+<li><code>pppszNtpServers</code> - array of NTP servers</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<p>Other APIs</p>
+<h2 id="nmsethostname">nm_set_hostname</h2>
+<p><strong>Description</strong></p>
+<p>Set the host name for the system.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_set_hostname(
+     const char \*pszHostname
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszHostname</code> - host name</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgethostname">nm_get_hostname</h2>
+<p><strong>Description</strong></p>
+<p>Get the host name for the system.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_get_hostname(
+     char \*\*ppszHostname
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>ppszHostname</code> - host name</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmwaitforlinkup">nm_wait_for_link_up</h2>
+<p><strong>Description</strong></p>
+<p>Wait for the specified interface to come up.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_wait_for_link_up(
+     const char \*pszInterfaceName,
+     uint32_t timeout
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>timeout</code> - maximum time (in seconds) to wait (until the link is up) before timing out of the request; specify 0 for no timeout (wait indefinitely)</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmwaitforip">nm_wait_for_ip</h2>
+<p><strong>Description</strong></p>
+<p>Wait for the interface to acquire an IP address of the specified IP address type.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_wait_for_ip(
+     const char \*pszInterfaceName,
+     uint32_t timeout,
+     NET_ADDR_TYPE addrTypes
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszInterfaceName</code> - interface name</li>
+<li><code>timeout</code> - maximum time (in seconds) to wait (until the link has an IP address of the specified address type) before timing out of the request; specify 0 for no timeout (wait indefinitely)</li>
+<li><code>addrTypes</code> - type of IP address; one of the following values:<ul>
+<li><code>STATIC_IPV4</code></li>
+<li><code>STATIC_IPV6</code></li>
+<li><code>DHCP_IPV4</code></li>
+<li><code>DHCP_IPV6</code></li>
+<li><code>AUTO_IPV6</code></li>
+<li><code>LINK_LOCAL_IPV6</code></li>
+</ul>
+</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmsetnetworkparam">nm_set_network_param</h2>
+<p><strong>Description</strong></p>
+<p>Set the value of a network parameter for an object.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_set_network_param(
+     const char \*pszObjectName,
+     const char \*pszParamName,
+     const char \*pszParamValue
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszObjectName</code> - an interface name (for example, &quot;eth0&quot;) or a file name (for example, /etc/systemd/resolved.conf)</li>
+<li><code>pszParamName</code> - name of a parameter associated with the object; specified in the format SectionName_KeyName (for example, Link_MTUBytes represents the MtuBytes key in [Link] section in <a href="https://www.freedesktop.org/software/systemd/man/systemd.network.html" target="_blank">https://www.freedesktop.org/software/systemd/man/systemd.network.html</a>)</li>
+<li><code>pszParamValue</code> - points to the parameter value to set; you can add (+) or remove (-) a parameter by prepending the parameter name with + or -. For example:</li>
+</ul>
+<p>netmgr net_info --set --object eth1 --paramname +Network_Address --paramvalue &quot;10.10.10.1/24&quot;</p>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmgetnetworkparam">nm_get_network_param</h2>
+<p><strong>Description</strong></p>
+<p>Get the value of a network parameter associated with an object.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_get_network_param(
+     const char \*pszObjectName,
+     const char \*pszParamName,
+     char \*\*ppszParamValue
+ );
+</code></pre><p><strong>Arguments</strong></p>
+<ul>
+<li><code>pszObjectName</code> - an interface name (for example, &quot;eth0&quot;) or a file name (for example, /etc/systemd/resolved.conf)</li>
+<li><code>pszParamName</code> - name of a parameter associated with the object; returned in the format SectionName_KeyName (for example, Link_MTUBytes represents the MtuBytes key in [Link] section in  <a href="https://www.freedesktop.org/software/systemd/man/systemd.network.html" target="_blank">https://www.freedesktop.org/software/systemd/man/systemd.network.html</a>)</li>
+<li><code>ppszParamValue</code> - parameter value</li>
+</ul>
+<p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h1 id="service-management-apis">Service Management APIs</h1>
+<h2 id="nmstopnetworkservice">nm_stop_network_service</h2>
+<p><strong>Description</strong></p>
+<p>Stop the network service.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_stop_network_service();
+</code></pre><p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmrestartnetworkservice">nm_restart_network_service</h2>
+<p><strong>Description</strong></p>
+<p>Restart the network service.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_restart_network_service();
+</code></pre><p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<p>nm_stop_dns_service</p>
+<p><strong>Description</strong></p>
+<p>Stop the DNS service.</p>
+<p><strong>Declaration</strong></p>
+<pre><code>uint32_t
+ nm_stop_dns_service();
+</code></pre><p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmrestartdnsservice">nm_restart_dns_service</h2>
+<p><strong>Description</strong></p>
+<p>Restart the DNS service.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_restart_dns_service();
+</code></pre><p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmstopntpservice">nm_stop_ntp_service</h2>
+<p><strong>Description</strong></p>
+<p>Stop the NTP service.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_stop_ntp_service();
+</code></pre><p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+<h2 id="nmrestartntpservice">nm_restart_ntp_service</h2>
+<p><strong>Description</strong></p>
+<p>Restart the NTP service.</p>
+<p><strong>Declaration</strong></p>
+<pre><code> uint32_t
+ nm_restart_ntp_service();
+</code></pre><p><strong>Returns</strong></p>
+<ul>
+<li>success: 0</li>
+<li>failure: error code</li>
+</ul>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="pmd-cli.html" class="navigation navigation-prev " aria-label="Previous page: Photon Management Daemon Command-line Interface (pmd-cli)">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="netmgr-cli.html" class="navigation navigation-next " aria-label="Next page: Photon Network Manager Command-line Interface (netmgr)">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Network Configuration Manager - C API","level":"1.3.1.2","depth":3,"next":{"title":"Photon Network Manager Command-line Interface (netmgr)","level":"1.3.1.3","depth":3,"path":"netmgr-cli.md","ref":"netmgr-cli.md","articles":[]},"previous":{"title":"Photon Management Daemon Command-line Interface (pmd-cli)","level":"1.3.1.1","depth":3,"path":"pmd-cli.md","ref":"pmd-cli.md","articles":[]},"dir":"ltr"},"config":{"plugins":["insert-logo","chapter-fold","edit-link","noembed"],"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"chapter-fold":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"noembed":{},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit this Page","base":"https://github.com/vmware/photon/tree/master/docs"},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"insert-logo":{"style":"background: none","url":"images/photonos-logo-sm.png"}},"theme":"default","pdf":{"pageBreaksBefore":"/","headerTemplate":"_TITLE_","paperSize":"letter","margin":{"right":62,"left":62,"top":56,"bottom":56},"fontSize":12,"fontFamily":"Arial","footerTemplate":"_PAGENUM_","chapterMark":"pagebreak","pageNumbers":true},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"VMware Photon OS 1.0 and 2.0 Documentation","gitbook":"3.x.x"},"file":{"path":"netmgr.c.md","mtime":"2018-10-12T07:02:53.883Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-10-16T08:29:51.824Z"},"basePath":".","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="gitbook/gitbook.js"></script>
+    <script src="gitbook/theme.js"></script>
+    
+        
+        <script src="gitbook/gitbook-plugin-insert-logo/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-chapter-fold/chapter-fold.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-edit-link/plugin.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-noembed/scripts.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

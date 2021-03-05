@@ -1,0 +1,37 @@
+{{ $col_id := .Get "color" | default .Ordinal }}
+{{ $height := .Get "height" | default "auto"  }}
+{{/* Height can be one of: auto, min, med, max, full. */}}
+
+{{ $gridImg1 := .Get "gridImg1" | default "simple.svg" }}
+{{ $gridImg2 := .Get "gridImg2" | default "frictionless.svg" }}
+{{ $gridImg3 := .Get "gridImg3" | default "seamless.svg" }}
+
+{{ $textLead1 := .Get "textLead1" | default "First Value!" }}
+{{ $textLead2 := .Get "textLead2" | default "Second Value" }}
+{{ $textLead3 := .Get "textLead3" | default "Third Value" }}
+
+{{ $textSub1 := .Get "textSub1" | default "Why Is This  First Value Valuable?" }}
+{{ $textSub2 := .Get "textSub2" | default "Why Is This Second Value Valuable?" }}
+{{ $textSub3 := .Get "textSub3" | default "Why Is This Third Value Valuable?" }}
+
+<div class="container-fluid p-0 mb-4 pb-4">
+	<div class="container homepage-grid">
+		<div class="grid three mt-n5 text-center">
+			<div class="card home-grid-cards shadow-sm">
+				<img class="card-image-top " height="66px" src="/img/{{ $gridImg1 }}" />
+				<h3 class="card-text py-3 m-0"> {{ $textLead1 | html }}</h3>
+				<p class="card-text-p"> {{ $textSub1 | html }} </p>
+			</div>
+			<div class="card home-grid-cards shadow-sm">
+				<img class="card-image-top" height="66px" src="/img/{{ $gridImg2 }}" />
+				<h3 class="card-text py-3 m-0">{{ $textLead2 | html }}</h3>
+				<p class="card-text-p">{{ $textSub2 | html }}</p>
+			</div>
+			<div class="card home-grid-cards shadow-sm">
+				<img class="card-image-top" height="66px" src="/img/{{ $gridImg3 }}" />
+				<h3 class="card-text py-3 m-0">{{ $textLead3 | html }}</h3>
+				<p class="card-text-p">{{ $textSub3 | html }}</p>
+			</div>
+		</div>
+	</div>
+</div>

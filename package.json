@@ -1,0 +1,24 @@
+{
+  "name": "vmware-photon-docs",
+  "version": "4.0",
+  "description": "Documentation site for VMware Photon OS",
+  "main": "none.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vmware/photon.git"
+  },
+  "author": "The Photon OS Team",
+  "license": "Apache2+MIT",
+  "bugs": {
+    "url": "https://github.com/vmware/photon/issues"
+  },
+  "homepage": "https://vmware.github.io/photon",
+  "devDependencies": {
+    "autoprefixer": "^9.8.6",
+    "postcss": "^6.0.23",
+    "postcss-cli": "^5.0.1"
+  }
+}

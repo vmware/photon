@@ -1,0 +1,19 @@
+
+{{ $textLead1 := .Get "textLead1" | default "First Value!" }}
+{{ $textSub1 := .Get "textSub1" | default "Why Is This  First Value Valuable?" }}
+{{ $buttonTxt1 := .Get "buttonTxt1" | default "Use Case 1"}}
+{{ $buttonURL := .Get "buttonURL" | default "/"}}
+
+<div id="get-started" class="container-fluid bg-secondary">
+	<div class="container">
+		<div class="d-flex flex-row py-4 m-auto align-items-center justify-content-end">
+			<div class="pr-4 text-right">
+				<h2>{{ $textLead1 | html }}</h2>
+				<p>{{ $textSub1 | html }}</p>
+			</div>
+			<div>
+				<a href="{{ $buttonURL }}" class="btn btn-white px-sm-2 px-md-3 px-lg-5 w-100">{{ $buttonTxt1 }}</a>
+			</div>
+		</div>
+	</div>
+</div>

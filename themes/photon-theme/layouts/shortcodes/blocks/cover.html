@@ -1,0 +1,57 @@
+{{ $blockID := printf "td-cover-block-%d" .Ordinal }}
+{{ $promo_image := (.Page.Resources.ByType "image").GetMatch "**background*" }}
+{{ $logo_image := (.Page.Resources.ByType "image").GetMatch "**logo*" }}
+{{ $col_id := .Get "color" | default "dark" }}
+{{ $image_anchor := .Get "image_anchor" | default "smart" }}
+{{ $logo_anchor := .Get "logo_anchor" | default "smart" }}
+{{/* Height can be one of: auto, min, med, max, full. */}}
+{{ $height := .Get "height" | default "max" }}
+{{ $byline := .Get "byline" | default "" }}
+
+{{/* mroy: set this as a var to be passed in */}}
+{{ $font_col_id := .Get "font_color" | default "secondary" }}
+
+
+{{ with $promo_image }}
+{{ $promo_image_big := (.Fill (printf "1920x1080 %s" $image_anchor)) }}
+{{ $promo_image_small := (.Fill (printf "960x540 %s" $image_anchor)) }}
+
+
+
+<link rel="preload" as="image" href="{{ $promo_image_small }}" media="(max-width: 1200px)">
+<link rel="preload" as="image" href="{{ $promo_image_big }}" media="(min-width: 1200px)">
+<style>
+#{{ $blockID }} {
+    background-image: url({{ $promo_image_small }}); 
+}
+@media only screen and (min-width: 1200px) {
+    #{{ $blockID }} {
+        background-image: url({{ $promo_image_big }}); 
+    }
+}
+</style>
+{{ end }}
+<section id="{{ $blockID }}" class="d-flex flex-row td-cover-block td-cover-block--height-{{ $height }} z td-overlay -bg-{{ $col_id }} pb-7 pt-5">
+  <div class="container td-overlay__inner ">
+     
+      <div class="col-xl-8 pl-lg-0 pl-xl-0 pl-md-0 pl-sm-0">
+        <div class="text-left mb-3">
+          {{ with .Get "title" }}<h1 class="py-3">{{ $title := . }}{{ with $logo_image }}{{ $logo_image_resized := (.Fit (printf "70x70 %s" $logo_anchor)) }}<img class="td-cover-logo" src="{{ $logo_image_resized.RelPermalink }}" alt="{{ $title | html }} Logo">{{ end }}{{ $title | html }}</h1>{{ end }}
+          {{ with .Get "subtitle" }}<p class="lead pb-3 text-{{ $font_col_id }} ">{{ . | html }}</p>{{ end }}
+          <div>
+            {{ if eq .Page.File.Ext "md" }}
+                {{ .Inner | markdownify }}
+            {{ else }}
+                {{ .Inner | htmlUnescape | safeHTML }}
+            {{ end }}
+          </div>
+        </div>
+      </div>
+
+  </div>
+  {{ if $byline }}
+  <div class="byline">
+    <small>{{ $byline }}</small>
+  </div>
+  {{ end }}
+</section>

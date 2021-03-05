@@ -1,0 +1,69 @@
+{{ $cover := .HasShortcode "blocks/cover" }}
+{{/* added quick _if eq_ to use a different nav for the /docs/ pages */}}
+{{ if eq .Type "docs" }}
+	<div class="container-fluid pl-3 pr-3" id="navbarish">
+
+{{ else if eq .Type "blog" }}
+	<div class="container-fluid pl-3 pr-3" id="navbarish">
+	{{ else }}	
+	
+<div class="container pl-0 pr-3" id="navbarish">
+	{{ end }}
+	
+  <nav class="navbar navbar-default navbar-dark navbar-expand-md d-flex justify-content-between {{ if $cover}} td-navbar-cover {{ end }}" role="navigation" data-toggle="collapse" data-target="#menu_items" aria-expanded="false" aria-controls="navbar">
+	<div class="navbar-header d-flex align-items-center justify-content-between">   
+		<a class="navbar-brand" href="{{ .Site.Home.RelPermalink }}">
+		<span class="navbar-logo">{{ if .Site.Params.ui.navbar_logo }}{{ with resources.Get "icons/logo.svg" }}{{ ( . | minify).Content | safeHTML }}{{ end }}{{ end }}</span><span class="text-uppercase font-weight-bold">{{ .Site.Title }}</span>
+		</a>
+	</div>
+	<div class="ml-auto">
+		<button type="button" class="navbar-toggler third-button collapsed" data-toggle="collapse" data-target="#menu_items" aria-expanded="false" aria-controls="navbar">
+			<div class="animated-icon">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+		</button>
+	</div>
+	<div id="menu_items" class="navbar-collapse collapse ml-md-auto justify-content-end text-center">
+		<ul class="nav navbar-nav">
+		{{ $p := . }}
+		{{ range .Site.Menus.main }}
+		<li class="nav-item p-0">
+			{{ $active := or ($p.IsMenuCurrent "main" .) ($p.HasMenuCurrent "main" .) }}
+			{{ with .Page }}
+			{{ $active = or $active ( $.IsDescendant .)  }}
+			{{ end }}
+			{{ $url := urls.Parse .URL }}
+			{{ $baseurl := urls.Parse $.Site.Params.Baseurl }}
+			<a {{ if .Identifier }}id="{{ .Identifier }}"{{ end }} class="nav-link{{if $active }} active{{end}}" href="{{ with .Page }}{{ .RelPermalink }}{{ else }}{{ .URL | relLangURL }}{{ end }}" {{ if ne $url.Host $baseurl.Host }}target="_blank" {{ end }}><span{{if $active }} class="active"{{end}}>{{ .Name }}</span></a>
+		</li>
+		{{ end }}
+		
+		<!-- dark mode toolbar -->
+		{{ if  .Site.Params.darkmode }}
+		<li class="nav-item toggle d-lg-block">
+			{{ partial "toggle.html" . }}
+		</li>
+		{{ end }}
+		<!-- End of dark mode toggle in navbar -->
+		
+		{{ if and (eq .Type "docs") .Site.Params.versions }}
+		<div class="navbar-nav dropdown border-0">
+			<li class="nav-item">
+				{{ partial "navbar-version-selector.html" . }}
+			</li>
+		</div>
+		{{ end }}
+		{{ if  (gt (len .Site.Home.Translations) 0) }}
+		<div class="navbar-nav dropdown border-0">
+			<li class="nav-item">
+				{{ partial "navbar-lang-selector.html" . }}
+			</li>
+		</div>
+		{{ end }}
+
+		</ul>
+	</div>
+  </nav>
+</div>

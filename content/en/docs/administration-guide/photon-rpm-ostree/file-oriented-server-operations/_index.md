@@ -1,0 +1,36 @@
+---
+title:  File Oriented Server Operations
+weight: 9
+---
+
+In this section, we will checkout a filetree into a writable directory structure on disk, make several file changes and commit the changes back into the repository. Then we will download this commit and apply at the host. As you may have guessed, this chapter is mostly about OSTree - the base technology. I've not mentioned anything about packages, although it is quite possible to install packages (afler all, packages are made of files, right?) and commit without the help of rpm-ostree, but it's too much of a headache and not worth the effort, since rpm-ostree does it simpler and better.  
+
+When would you want to do that? When you want for all your hosts to get an application or configuration customization that is not encapsulated as part of a package upgrade.
+
+## Starting a fresh OSTree repo
+
+If you want to start fresh with your own branch and/or versioning scheme, you can delete the OSTree repo created during the Photon 3.0 RPM-OSTree server install and re-create it empty. 
+
+```
+root [ /srv/rpm-ostree ]# rm -rf repo/*
+
+root [ /srv/rpm-ostree ]# ostree --repo=repo init --mode=archive-z2
+
+root [ /srv/rpm-ostree ]# ls repo
+config  objects  refs  state  tmp  uncompressed-objects-cache
+
+root [ /srv/rpm-ostree ]# cat repo/config
+[core]
+repo_version=1
+mode=archive-z2
+```
+
+## Creating summary metadata
+A newer ostree feature, available in Photon OS 2.0 and higher, allows the OSTree server admin to create server summary metadata, that includes among other things the list of available branches and the list of static deltas, so they could be discovered by hosts. To create a summary, run this command after you committed for your branches:
+
+```
+root [ /srv/rpm-ostree ]# ostree summary -u "This is BigData's OSTree server, it has three branches"
+```
+
+We will find out later how the [hosts query for branches list](../remotes/#list-available-branches). 
+

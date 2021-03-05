@@ -1,0 +1,12 @@
+name = "Photon Theme"
+license = "Apache 2.0"
+licenselink = "https://github.com/vmware/photon/LICENSE.md"
+description = "A Hugo home/landing page theme for VMware Open Source projects. Based on Google Docsy: https://docsy.dev"
+homepage = "https://github.com/vmware/photon"
+tags = ["documentation", "multilingual", "customizable", "responsive", "docs"]
+features = []
+min_version = 0.53
+
+[author]
+  name = "Michael Roy"
+  homepage = "mroy@vmware.com"

@@ -1,0 +1,53 @@
+{{ $links := .Site.Params.links }}
+<div class="container">
+<footer class="container-fluid p-0 m-0 py-5 row d-print-none">
+  <div class="container-fluid p-0">
+    <div class="row d-flex justify-content-between align-items-center mx-0">
+      <div class="order-sm-1 left-links">
+        {{ with $links }}
+        {{ with index . "user" }}
+        {{ template "footer-links-block"  . }}
+        {{ end }}
+        {{ end }}
+      
+      </div>
+      <div class="order-sm-3 justify-items-end footer-logo"> 
+        {{ if .Site.Params.ui.navbar_logo }}{{ with resources.Get "icons/logo.svg" }}{{ ( . | minify).Content | safeHTML }}{{ end }}{{ end }}
+      </div>
+     
+
+
+    <!-- </div>  -->
+  </div>
+ 
+  <div class="row d-flex m-0 my-4 justify-content-end align-items-end">
+    {{ with .Site.Params.copyright }}<small class="text-dark align-content-center mx-3">&copy; {{ now.Year}} {{ . }} <a href="https://vmware.github.io"> {{ T "footer_vmw_project" }}</a></small>{{ end }}
+ 
+
+{{ if not .Site.Params.ui.footer_about_disable }}
+{{ with .Site.GetPage "about" }}<p class="mt-2"><a href="{{ .RelPermalink }}">{{ .Title }}</a></p>{{ end }}
+{{ end }}
+<div class="text-right">
+  <a href="/"> <img class=" vmw-footer-logo" src="/img/vmware-logo.svg" /></a>
+</div>
+
+</div>
+  
+    
+</footer>
+</div>
+</div>
+{{ define "footer-links-block" }}
+<ul class="list-inline mb-0">
+  {{ range . }}
+  <li class="list-inline-item h1 px-3 m-0" data-toggle="tooltip" data-placement="top" title="{{ .name }}" aria-label="{{ .name }}">
+    <a class="text-dark ml-4" target="_blank" rel="noopener noreferrer" href="{{ .url }}">
+      <i class="{{ .icon }}">&nbsp; </i>
+  
+       {{ .name }}
+    
+    </a>
+  </li>
+  {{ end }}
+</ul>
+{{ end }}

@@ -1,0 +1,292 @@
+/*
+
+Nothing defined here. The Hugo project that uses this theme can override Bootstrap by adding a file to:
+
+assets/scss/_styles_project.scss
+
+*/
+ 
+
+@import 'variables';
+// @import 'support/mixins';
+// @import 'components';
+
+
+// tweaks... mroy
+$container-max-widths: (
+  sm: 640px,
+  md: 800px,
+  lg: 960px,
+  xl: 1100px
+) !default;
+
+.container-full {
+  width: 100%;
+  padding-right: 0px; 
+  padding-left: 0px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.container-narrow {
+  padding: 10px 20px;
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+// fix container layout for smaller screens maybe?
+
+// .container-fluid {
+//     @include breakpoint(small) {
+//       padding: 0px 0px;
+//     }
+//   }
+
+
+//     max-width: 980px;
+//     margin: 0px auto;
+//     padding: 20px;
+//     @include breakpoint(small) {
+//         max-width: 100%;
+//     }
+//     @include breakpoint(medium) {
+//     }
+// }
+
+.vmw-footer-logo {
+  font-size: 12pt;
+  width: 50%;
+  height: 50%;
+}
+
+
+.bg-darkblue {
+  background-color: $bg-darkblue !important;
+  color: #fff;
+}
+
+
+.txt-sm {
+  font-size: 75%;
+}
+
+.btn-white {
+  color: $primary !important;
+  background-color: #fff !important;
+  border-color: $primary !important;
+}
+
+.btn-white:hover {
+  color: $secondary !important; 
+  background-color: $primary !important;
+  border-color: $secondary !important;
+}
+
+.btn-white:focus, .btn-white.focus {
+  color: #0091DA;
+  background-color: #fff;
+  border-color: #0091DA;
+  box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.5);
+}
+
+.btn-white.disabled, .btn-white:disabled {
+  color: #0091DA;
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.btn-white:not(:disabled):not(.disabled):active, .btn-white:not(:disabled):not(.disabled).active,
+.show > .btn-white.dropdown-toggle {
+  color: #0091DA;
+  background-color: #fff;
+  border-color: #0091DA;
+}
+
+.btn-white:not(:disabled):not(.disabled):active:focus, .btn-white:not(:disabled):not(.disabled).active:focus,
+.show > .btn-white.dropdown-toggle:focus {
+  box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.5);
+}
+
+// 
+
+.btn-green {
+  color: $white !important;
+  background-color: #78be20 !important;
+  border-color: $white !important;
+}
+
+.btn-green:hover {
+  color: $white !important; 
+  background-color: $primary !important;
+  border-color: $secondary !important;
+}
+
+.btn-green:focus, .btn-white.focus {
+  color: #0091DA;
+  background-color: #fff;
+  border-color: #0091DA;
+  box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.5);
+}
+
+.btn-green.disabled, .btn-white:disabled {
+  color: #0091DA;
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+.btn-green:not(:disabled):not(.disabled):active, .btn-white:not(:disabled):not(.disabled).active,
+.show > .btn-white.dropdown-toggle {
+  color: #0091DA;
+  background-color: #fff;
+  border-color: #0091DA;
+}
+
+.btn-green:not(:disabled):not(.disabled):active:focus, .btn-white:not(:disabled):not(.disabled).active:focus,
+.show > .btn-white.dropdown-toggle:focus {
+  box-shadow: 0 0 0 0.2rem rgba(130, 138, 145, 0.5);
+}
+
+
+
+ 
+.navbar {
+	border-radius: 0;
+	border: none;
+	margin-bottom: 0;
+
+}
+
+// .navbar-header {
+//   min-height: 72px;
+//   // padding-bottom: 1rem;
+// }
+
+
+.navbar-default .navbar-toggler:focus,
+.navbar-default .navbar-toggler:hover {
+    background-color: transparent;
+}
+
+.navbar-default .navbar-toggler {
+    border: none;
+}
+
+.navbar-toggler span.navbar-toggler-icon {
+    transition: all 0.15s;
+
+  }
+
+  
+.animated-icon {
+  width: 30px;
+  height: 20px;
+  position: relative;
+  margin: 0px;
+  -webkit-transform: rotate(0deg);
+  -moz-transform: rotate(0deg);
+  -o-transform: rotate(0deg);
+  transform: rotate(0deg);
+  -webkit-transition: .5s ease-in-out;
+  -moz-transition: .5s ease-in-out;
+  -o-transition: .5s ease-in-out;
+  transition: .5s ease-in-out;
+  cursor: pointer;
+  }
+  
+.animated-icon span {
+  display: block;
+  position: absolute;
+  height: 3px;
+  width: 100%;
+  border-radius: 9px;
+  opacity: 1;
+  left: 0;
+  -webkit-transform: rotate(0deg);
+  -moz-transform: rotate(0deg);
+  -o-transform: rotate(0deg);
+  transform: rotate(0deg);
+  -webkit-transition: .25s ease-in-out;
+  -moz-transition: .25s ease-in-out;
+  -o-transition: .25s ease-in-out;
+  transition: .25s ease-in-out;
+}
+
+.animated-icon span {
+  background: $gray-600;
+}
+
+.animated-icon span:nth-child(1) {
+  top: 0px;
+  -webkit-transform-origin: left center;
+  -moz-transform-origin: left center;
+  -o-transform-origin: left center;
+  transform-origin: left center;
+}
+  
+.animated-icon span:nth-child(2) {
+  top: 10px;
+  -webkit-transform-origin: left center;
+  -moz-transform-origin: left center;
+  -o-transform-origin: left center;
+  transform-origin: left center;
+}
+
+.animated-icon span:nth-child(3) {
+  top: 20px;
+  -webkit-transform-origin: left center;
+  -moz-transform-origin: left center;
+  -o-transform-origin: left center;
+  transform-origin: left center;
+}
+
+.animated-icon.open span:nth-child(1) {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+  top: 0px;
+  left: 8px;
+}
+
+.animated-icon.open span:nth-child(2) {
+  width: 0%;
+  opacity: 0;
+}
+
+.animated-icon.open span:nth-child(3) {
+  -webkit-transform: rotate(-45deg);
+  -moz-transform: rotate(-45deg);
+  -o-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  top: 21px;
+  left: 8px;
+}
+  //end of fancy try
+
+
+.footer-logo {
+    svg {
+      display: inline-block;
+      margin: 0 10px;
+      max-height: 80px;
+      max-width: 225px;
+  }
+}
+
+// zoomy zoom
+
+.zoom {
+  transition: transform .2s;
+}
+
+.circle-overlay {
+  display:block;
+  background-color: #000;
+  border-radius: 50%;
+}
+
+.zoom:hover {
+  transform: scale(1.1); /* (125% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+}

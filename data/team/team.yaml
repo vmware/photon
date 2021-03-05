@@ -1,0 +1,180 @@
+team:
+- ghURL: https://github.com/sharathjg
+  ghUser: sharathjg
+  image: https://avatars.githubusercontent.com/u/11167586?v=4
+  membername: Sharath George
+  position: Contributor
+
+- ghURL: https://github.com/suezzelur
+  ghUser: suezzelur
+  image: https://avatars.githubusercontent.com/u/12656953?v=4
+  membername: Anish Swaminathan
+  position: Contributor
+
+- ghURL: https://github.com/Vasavisirnapalli
+  ghUser: Vasavisirnapalli
+  image: https://avatars.githubusercontent.com/u/44343732?v=4
+  membername: Vasavi Sirnapalli
+  position: Contributor
+
+- ghURL: https://github.com/YustasSwamp
+  ghUser: YustasSwamp
+  image: https://avatars.githubusercontent.com/u/1555190?v=4
+  membername: Alexey Makhalov
+  position: Contributor
+
+# - ghURL: https://github.com/ganboing
+#   ghUser: ganboing
+#   image: https://avatars.githubusercontent.com/u/3746900?v=4
+#   membername: Bo Gan
+#   position: Contributor
+
+- ghURL: https://github.com/srivatsabhat
+  ghUser: srivatsabhat
+  image: https://avatars.githubusercontent.com/u/3593234?v=4
+  membername: Srivatsa Bhat
+  position: Contributor
+
+# - ghURL: https://github.com/bordoloih
+#   ghUser: bordoloih
+#   image: https://avatars.githubusercontent.com/u/36681406?v=4
+#   membername: Him Kalyan Bordoloi
+#   position: Contributor
+
+- ghURL: https://github.com/oliverkurth
+  ghUser: oliverkurth
+  image: https://avatars.githubusercontent.com/u/6658518?v=4
+  membername: Oliver Kurth
+  position: Contributor
+
+- ghURL: https://github.com/smaliakkal
+  ghUser: smaliakkal
+  image: https://avatars.githubusercontent.com/u/11180986?v=4
+  membername: Siju Maliakkal
+  position: Contributor
+
+- ghURL: https://github.com/ssahani
+  ghUser: ssahani
+  image: https://avatars.githubusercontent.com/u/145210?v=4
+  membername: Susant Sahani
+  position: Contributor
+
+# - ghURL: https://github.com/shatur93
+#   ghUser: shatur93
+#   image: https://avatars.githubusercontent.com/u/46876975?s=460&v=4
+#   membername: Sharan Turlapati
+#   position: Contributor
+
+- ghURL: https://github.com/michellew-vmware
+  ghUser: michellew-vmware
+  image: https://avatars.githubusercontent.com/u/40809082?v=4
+  membername: Michelle Wang
+  position: Contributor
+
+# - ghURL: https://github.com/satya-rajesh
+#   ghUser: satya-rajesh
+#   image: https://avatars.githubusercontent.com/u/53730092?v=4
+#   membername: Satya Naga Rajesh Vasamsetty
+#   position: Contributor
+
+# - ghURL: https://github.com/prashant1221
+#   ghUser: prashant1221
+#   image: https://avatars.githubusercontent.com/u/53729499?v=4
+#   membername: Prashant Singh Chauhan
+#   position: Contributor
+
+# - ghURL: https://github.com/sshedi
+#   ghUser: sshedi
+#   image: https://avatars.githubusercontent.com/u/53473811?v=4
+#   membername: Shreenidhi Shedi
+#   position: Contributor
+
+# - ghURL: https://github.com/srinidhira0
+#   ghUser: srinidhira0
+#   image: https://avatars.githubusercontent.com/u/40390700?v=4
+#   membername: Srinidhi Rao
+#   position: Staff Engineer
+
+- ghURL: https://github.com/tapakund
+  ghUser: tapakund
+  image: https://avatars.githubusercontent.com/u/39723251?v=4
+  membername: Tapas Kundu
+  position: Contributor
+
+# - ghURL: https://github.com/dweepadvani
+#   ghUser: dweepadvani
+#   image: https://avatars.githubusercontent.com/u/11885873?v=4
+#   membername: Dweep Advani
+#   position: Staff Engineer
+
+# - ghURL: https://github.com/shreyasbe
+#   ghUser: shreyasbe
+#   image: https://avatars.githubusercontent.com/u/52690686?v=4
+#   membername: Shreyas B.
+#   position: Contributor
+
+# - ghURL: https://github.com/banvikas
+#   ghUser: banvikas
+#   image: https://avatars.githubusercontent.com/u/50351972?v=4
+#   membername: Vikash Bansal
+#   position: Contributor
+
+# - ghURL: https://github.com/mahabaleshwm
+#   ghUser: mahabaleshwm
+#   image: https://avatars.githubusercontent.com/u/75600071?s=460&v=4
+#   membername: Madhubala Mahabaleshwar
+#   position: Docs
+
+- ghURL: https://github.com/HarinadhD
+  ghUser: HarinadhD
+  image: https://avatars.githubusercontent.com/u/50107368?v=4
+  membername: Harinadh Dommaraju
+  position: Contributor
+
+# - ghURL: https://github.com/gsujayvmw
+#   ghUser: gsujayvmw
+#   image: https://avatars.githubusercontent.com/u/43164036?v=4
+#   membername: Sujay G
+#   position: Contributor
+
+# - ghURL: https://github.com/gpiyush-dev
+#   ghUser: gpiyush-dev
+#   image: https://avatars.githubusercontent.com/u/68802643?v=4
+#   membername: Piyush Gupta
+#   position: Contributor
+
+# - ghURL: https://github.com/jaankit
+#   ghUser: jaankit
+#   image: https://avatars.githubusercontent.com/u/40201404?v=4
+#   membername: Ankit Jain
+#   position: Contributor
+
+- ghURL: https://github.com/akaher
+  ghUser: akaher
+  image: https://avatars.githubusercontent.com/u/40574269?v=4
+  membername: Ajay Kaher
+  position: Contributor
+
+# - ghURL: https://github.com/keerthanakalyan
+#   ghUser: keerthanakalyan
+#   image: https://avatars.githubusercontent.com/u/39941610?v=4
+#   membername: Keerthana Kalyanasundaram
+#   position: Contributor
+
+- ghURL: https://github.com/mikeroysoft
+  ghUser: mikeroySoft
+  image: https://avatars.githubusercontent.com/u/1791194?s=460&v=4
+  membername: Michael Roy
+  position: Website + Docs
+
+- ghURL: https://github.com/zoncho
+  ghUser: zoncho
+  image: https://avatars.githubusercontent.com/u/79228893?s=460&v=4
+  membername: Carlos Murillo
+  position: Website Graphics
+
+- ghURL: https://github.com/malurk
+  ghUser: malurk
+  image: https://avatars.githubusercontent.com/u/39960854?s=460&u=7a7f402dc3ac145aaef054cad6202c9811623f7c&v=4
+  membername: Kishan Malur
+  position: Product Manager

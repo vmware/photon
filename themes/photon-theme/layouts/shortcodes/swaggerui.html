@@ -1,0 +1,23 @@
+{{ $original := .Get "src" }}
+<div id="ohpen_swagger_ui"></div>
+<script>
+  var resolveUrl = function () {
+    var passedUrl = '{{ $original }}';
+    var baseUrl = '{{  site.BaseURL  }}'.replace(/\/$/, '');
+    if (passedUrl.startsWith('/')) {
+      return baseUrl + passedUrl;
+    }
+    return passedUrl;
+  };
+  window.onload = function () {
+    const ui = SwaggerUIBundle({
+      url: resolveUrl(),
+      dom_id: '#ohpen_swagger_ui',
+      presets: [
+        SwaggerUIBundle.presets.apis,
+        SwaggerUIStandalonePreset
+      ]
+    });
+    window.ui = ui;
+  };
+</script>

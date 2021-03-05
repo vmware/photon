@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="{{ .Site.Language.Lang }}" class="no-js">
+  <head>
+    {{ partial "head.html" . }}
+  </head>
+  <body class="td-{{ .Kind }} td-blog">
+    <header>
+      {{ partial "navbar.html" . }}
+    </header>
+    <div class="container-fluid td-outer">
+      <div class="td-main">
+        <div class="row flex-xl-nowrap">
+          <div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none">
+            {{ partial "sidebar.html" . }}
+          </div>
+          <div class="d-none d-xl-block col-xl-2 td-toc pl-0 d-print-none">
+            {{ partial "toc.html" . }}
+          </div>
+          <main class="col-12 col-md-9 col-xl-8 pl-md-5 pr-md-4" role="main">
+            {{ block "main" . }}{{ end }}
+            <div class="container row mt-3">
+              Blogs are also mirrored at&nbsp;<a href="https://blogs.vmware.com/vsphere/tag/photon">blogs.vmware.com</a>
+            </div>
+          </main>
+        </div>
+      </div>
+      {{ partial "footer.html" . }}
+    </div>
+    {{ partial "scripts.html" . }}
+  </body>
+</html>

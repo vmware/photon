@@ -1,0 +1,38 @@
+{{ $textHead := .Get "textHead" | default "Download" }}
+{{ $textBigSub := .Get "textBigSub" | default "All kinds of extra info about your download" }}
+
+{{ $textLead1 := .Get "textLead1" | default "Download" }}
+{{ $textSub1 := .Get "textSub1" | default "Why Is This  First Value Valuable?" }}
+
+{{ $textLead2 := .Get "textLead2" | default "Download" }}
+{{ $textSub2 := .Get "textSub2" | default "Why Is This  First Value Valuable?" }}
+
+
+{{ $buttonTxt := .Get "buttonTxt" | default "Download Now"}}
+{{ $buttonURL := .Get "buttonURL" | default "/"}}
+
+<div class="container-fluid bg-secondary">
+	<div class="container ">
+		<div class="d-flex flex-row pt-5 pb-3 m-auto align-items-center justify-content-between ">
+			<div class="col-md-7 col-xs-12 px-0">
+				<h2>{{ $textHead | markdownify }}</h2>
+				<p>{{ $textBigSub | markdownify }}</p>
+			</div>
+		</div>
+		<div class="container row m-auto downloads-grid">
+			<div class="col mb-3 pb-3">
+				<h5>{{ $textLead1 }}</h5>
+				<p class="m-0 text-dark">{{ $textSub1 | markdownify }}</p>
+			</div>
+			<div class="col">
+				<h5>{{ $textLead2 }}</h5>
+				<p class="m-0 text-dark">{{ $textSub2 | markdownify }}</p>
+			</div>
+		</div>
+		<div class="d-flex flex-row py-4 m-auto align-items-center justify-content-end">
+			<div>
+				<a href="{{ $buttonURL }}" class="btn btn-white px-sm-2 px-md-3 px-lg-5 w-100">{{ $buttonTxt }}</a>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,77 @@
+@import "support/functions";
+@import "variables_project";
+@import "variables";
+@import "support/mixins";
+
+// mroy our imports
+@import 'header';
+@import 'footer';
+@import 'base';
+@import 'components';
+
+
+@import "../vendor/bootstrap/scss/bootstrap";
+
+@import "../vendor/Font-Awesome/scss/fontawesome.scss";
+@import "../vendor/Font-Awesome/scss/solid.scss";
+@import "../vendor/Font-Awesome/scss/brands.scss";
+
+@import "support/utilities";
+@import "colors";
+@import "boxes";
+@import "blog";
+@import "code";
+@import "nav";
+@import "sidebar-tree";
+@import "sidebar-toc";
+@import "buttons";
+@import "breadcrumb";
+@import "alerts";
+@import "content";
+@import "search";
+@import "main-container";
+@import "blocks/blocks";
+@import "section-index";
+@import "pageinfo";
+
+@if $td-enable-google-fonts {
+    @import url($web-font-path);
+}
+
+// Import our fonts if we enable the option in settings (which we should since we're using it...)
+// currently the variables are not set and there isn't an option in config.toml
+// @if $vh-enable-vmw-fonts {
+//     @import url($vmw-font-path);
+// }
+
+footer {
+    min-height: 150px;
+
+    @include media-breakpoint-down(md) {
+        min-height: 200px;
+    }
+}
+
+// Adjust anchors vs the fixed menu.
+@include media-breakpoint-up(md) {
+    .td-offset-anchor:target {
+        display: block;
+        position: relative;
+        top: -4rem;
+        visibility: hidden;
+    }
+
+    h2[id]:before,
+    h3[id]:before,
+    h4[id]:before,
+    h5[id]:before {
+        display: block;
+        content: " ";
+        margin-top: -5rem;
+        height: 5rem;
+        visibility: hidden;
+    }
+}
+
+@import "rtl/main";
+@import "styles_project";

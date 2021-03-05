@@ -1,0 +1,70 @@
+{{/*    TODO:  Should also see about having the images pull from GH directly during build vua URL predefined in a config   */}}
+{{ $textHead := .Get "textHead" | default "Team" }}
+{{ $textSub := .Get "textSub" | default `Take a look at this <a href="#">amazing team</a> and all the great work they have done!.` }}
+
+<div class="container-fluid bg-darkblue py-5 text-secondary">
+    <div class="team container">
+        <h3 class="pb-3">{{ $textHead }}</h3>
+        <p>{{ $textSub | markdownify }}</p>
+        <div class="row">
+            <div class="grid three w-100">
+                {{ if (fileExists "data/team/team.yaml") }}
+                {{ range .Site.Data.team.team.team }}
+                <div class="bio">
+                    <div class="float-left image zoom">
+                        <img class="circle-overlay" src="{{ .image }}" height=120px width="120px" /> 
+                    </div>
+                    <div class="float-right info">
+                        <p class="name">{{ .membername }}</p>
+                        <p class="position">{{ .position }}</p>
+                    </div>
+                </div>
+                {{ end }}
+                {{ else }}
+                <div class="bio">
+                    <div class="float-left zoom image"><img src="/img/team-placeholder.png" height=120px width="120px" /></div>
+                    <div class="float-right info">
+                        <p class="name">Engineering Person</p>
+                        <p class="position">Engineer</p>
+                    </div>
+                </div>
+                <div class="bio">
+                    <div class="float-left zoom image"><img src="/img/team-placeholder.png" height=120px width="120px" /></div>
+                    <div class="float-right info">
+                        <p class="name">Engineering Person</p>
+                        <p class="position">Engineer</p>
+                    </div>
+                </div>
+                <div class="bio">
+                    <div class="float-left zoom image"><img src="/img/team-placeholder.png" height=120px width="120px" /></div>
+                    <div class="float-right info">
+                        <p class="name">Engineering Person</p>
+                        <p class="position">Engineer</p>
+                    </div>
+                </div>                                
+                <div class="bio">
+                    <div class="float-left zoom image"><img src="/img/team-placeholder.png" height=120px width="120px"/></div>
+                    <div class="float-right info">
+                        <p class="name">Release Person</p>
+                        <p class="position">Release Manager</p>
+                    </div>
+                </div>
+                <div class="bio">
+                    <div class="float-left zoom image"><img src="/img/team-placeholder.png" height=120px width="120px"/></div>
+                    <div class="float-right info">
+                        <p class="name">Design Person</p>
+                        <p class="position">Designer</p>
+                    </div>
+                </div>
+                <div class="bio">
+                    <div class="float-left zoom image"><img src="/img/team-placeholder.png" height=120px width="120px"/></div>
+                    <div class="float-right info">
+                        <p class="name">Engineering Lead</p>
+                        <p class="position">Manager</p>
+                    </div>
+                </div>
+            {{ end }}
+            </div>
+        </div>
+    </div>
+</div>
