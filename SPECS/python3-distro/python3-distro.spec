@@ -3,15 +3,15 @@
 
 Summary:        Distro - an OS platform information API
 Name:           python3-distro
-Version:        1.4.0
-Release:        3%{?dist}
+Version:        1.5.0
+Release:        1%{?dist}
 License:        ASL
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/distro
 Source0:        https://files.pythonhosted.org/packages/ca/e3/78443d739d7efeea86cbbe0216511d29b2f5ca8dbf51a6f2898432738987/distro-%{version}.tar.gz
-%define sha1    distro=d72ac60844b2b472fc815441afe60fc1da728926
+%define sha1    distro=cb0e7d550a3c66c960a1914718e4f4dfe1228a19
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -49,6 +49,8 @@ tox
 /usr/bin/*
 
 %changelog
+*   Sat Mar 06 2021 Tapas Kundu <tkundu@vmware.com> 1.5.0-1
+-   Update to 1.5.0
 *   Wed Jul 24 2019 Tapas Kundu <tkundu@vmware.com> 1.4.0-3
 -   Obsolete python-distro
 *   Thu Jul 11 2019 Tapas Kundu <tkundu@vmware.com> 1.4.0-2

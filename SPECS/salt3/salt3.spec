@@ -9,7 +9,7 @@
 
 Name: salt3
 Version: 3002.5
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A parallel remote execution system with python3
 Group:   System Environment/Daemons
 License: ASL 2.0
@@ -49,6 +49,7 @@ Requires: python3-zmq
 Requires: python3-tornado
 Requires: python3-setuptools
 Requires: python3-xml
+Requires: python3-distro
 
 %description
 Salt is a distributed remote execution system used to execute commands and
@@ -301,6 +302,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Sat Mar 06 2021 Tapas Kundu <tkundu@vmware.com> 3002.5-2
+- Requires python3-distro
 * Mon Mar 01 2021 Keerthana K <keerthanak@vmware.com> 3002.5-1
 - Update to version 3002.5
 * Fri Feb 19 2021 Keerthana K <keerthanak@vmware.com> 2019.2.8-3
