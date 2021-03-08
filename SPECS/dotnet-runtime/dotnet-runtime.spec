@@ -1,6 +1,8 @@
+%global debug_package %{nil}
+
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        3.1.6
+Version:        5.0.3
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,7 +11,7 @@ Url:            https://github.com/dotnet/core
 Group:          Development/Tools
 BuildArch:      x86_64
 Source0:        %{name}-%{version}-linux-x64.tar.gz
-%define sha1    dotnet-runtime=ab933285e746f705827f3878de9a50840f722dc8
+%define sha1    dotnet-runtime=b995c64c9477b493c9f018404278ca4543e6a0ec
 Requires:       curl libunwind krb5 lttng-ust
 
 %description
@@ -66,6 +68,8 @@ ln -sf %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
     %{_libdir}/*
 
 %changelog
+*   Mon Jan 18 2021 Shreyas B. <shreyasb@vmware.com> 5.0.3-1
+-   Upgrade to v5.0.3
 *   Fri Aug 07 2020 Shreyas B. <shreyasb@vmware.com> 3.1.6-1
 -   Upgrade to latest v3.1.6 to address CVE-2020-1147, CVE-2020-1108, CVE-2020-1066
 *   Sat Apr 11 2020 Shreyas B. <shreyasb@vmware.com> 3.1.3-1
