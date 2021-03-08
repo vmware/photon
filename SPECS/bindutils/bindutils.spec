@@ -1,11 +1,12 @@
 Summary:        Domain Name System software
 Name:           bindutils
 Version:        9.16.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
 %define sha1    bind=f8a4c1bd074cc0305a4c50971e71da5a3b810d78
+Patch0:         bindutils-CVE-2020-8625.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -14,12 +15,16 @@ Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 BuildRequires:  openssl-devel
 BuildRequires:  libuv-devel
+
 %description
 BIND is open source software that implements the Domain Name System (DNS) protocols
 for the Internet. It is a reference implementation of those protocols, but it is
 also production-grade software, suitable for use in high-volume and high-reliability applications.
+
 %prep
 %setup -qn bind-%{version}
+%patch0 -p1
+
 %build
 ./configure \
     --prefix=%{_prefix} \
@@ -31,6 +36,7 @@ make -C lib/bind9 %{?_smp_mflags}
 make -C lib/isccfg %{?_smp_mflags}
 make -C lib/irs %{?_smp_mflags}
 make -C bin/dig %{?_smp_mflags}
+
 %install
 make -C bin/dig DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
@@ -52,6 +58,7 @@ if ! getent passwd named >/dev/null; then
     useradd -g named -d /var/lib/bind\
         -s /bin/false -M -r named
 fi
+
 %post -p /sbin/ldconfig
 
 %postun
@@ -70,6 +77,8 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Fri Mar 05 2021 Dweep Advani <dadvani@vmware.com> 9.16.6-2
+-   Patched for CVE-2020-8625
 *   Thu Aug 27 2020 Sujay G <gsujay@vmware.com> 9.16.6-1
 -   Bump version to 9.16.6
 *   Fri Jul 10 2020 Sujay G <gsujay@vmware.com> 9.16.4-1
