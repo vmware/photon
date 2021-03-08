@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        13.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -24,6 +24,7 @@ BuildRequires:  libxml2-devel
 BuildRequires:  linux-api-headers
 BuildRequires:  openldap
 BuildRequires:  perl
+BuildRequires:  perl-IPC-Run
 BuildRequires:  python3-devel
 BuildRequires:  readline-devel
 BuildRequires:  openssl-devel
@@ -103,6 +104,7 @@ included in the PostgreSQL distribution.
 Summary:	PostgreSQL development header files and libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	%{name}-libs = %{version}-%{release}
+Requires:  perl-IPC-Run
 
 %description devel
 The postgresql-devel package contains the header files and libraries
@@ -151,6 +153,7 @@ sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_man
 %configure \
     --enable-thread-safety \
     --enable-nls \
+    --enable-tap-tests \
     --with-ldap \
     --with-libxml \
     --with-openssl \
@@ -208,8 +211,24 @@ cat initdb-%{pgmajorversion}.lang pg_ctl-%{pgmajorversion}.lang psql-%{pgmajorve
 cat postgres-%{pgmajorversion}.lang pg_resetwal-%{pgmajorversion}.lang pg_checksums-%{pgmajorversion}.lang pg_verifybackup-%{pgmajorversion}.lang pg_controldata-%{pgmajorversion}.lang plpgsql-%{pgmajorversion}.lang pg_test_timing-%{pgmajorversion}.lang pg_test_fsync-%{pgmajorversion}.lang pg_archivecleanup-%{pgmajorversion}.lang pg_waldump-%{pgmajorversion}.lang pg_rewind-%{pgmajorversion}.lang pg_upgrade-%{pgmajorversion}.lang >> pg_i18n.lst
 
 %check
-chown -Rv nobody .
-sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
+# Run the main regression test suites in the source tree.
+run_test_path()
+{
+	make_path="$1"
+	chown -Rv nobody .
+	sudo -u nobody -s /bin/bash -c "PATH=$PATH make -C $make_path -k check"
+}
+# SQL test suites, mostly.
+run_test_path "src/test/regress"
+run_test_path "src/test/isolation"
+run_test_path "src/test/modules"
+run_test_path "src/pl"
+run_test_path "contrib"
+# TAP tests
+run_test_path "src/test/authentication"
+run_test_path "src/test/recovery"
+run_test_path "src/test/ssl"
+run_test_path "src/test/subscription"
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -469,6 +488,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/plpython3.so
 
 %changelog
+*   Mon Mar 08 2021 Michael Paquier <mpaquier@vmware.com> 13.2-6
+-   Add tests for more modules in the %check phase, with TAP tests
 *   Thu Mar 04 2021 Michael Paquier <mpaquier@vmware.com> 13.2-5
 -   Add support for internationalization support
 *   Tue Mar 02 2021 Michael Paquier <mpaquier@vmware.com> 13.2-4
