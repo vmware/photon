@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.60
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -14,6 +14,8 @@ Source0:        https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/
 Source1:        base-for-%{name}-%{version}.tar.gz
 %define sha1    base=912491fe407c6052f4d0b1526f8f310523eecb09
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
+Patch1:         apache-tomcat-CVE-2021-25122.patch
+Patch2:         apache-tomcat-CVE-2021-25329.patch
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
 BuildRequires:  apache-ant
@@ -38,6 +40,8 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
 %setup -D -b 1 -n %{name}-%{version}-src
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
 ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
@@ -101,6 +105,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Mon Mar 08 2021 Dweep Advani <dadvani@vmware.com> 8.5.60-2
+-   Patched for CVE-2021-25122 and CVE-2021-25329
 *   Wed Dec 16 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.60-1
 -   Update to version 8.5.60
 *   Thu Nov 05 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.51-5
