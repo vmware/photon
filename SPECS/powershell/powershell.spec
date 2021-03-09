@@ -1,25 +1,25 @@
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.0.3
-Release:        2%{?dist}
+Version:        7.1.2
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
 Url:            https://microsoft.com/powershell
 Group:          shells
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    powershell=00003c2e21524406ad35d33468e9f5571cb255e7
-Source1:        %{name}-native-7.0.0.tar.gz
-%define sha1    powershell-native=7606e94dc5691d6d9297b5c4452a08728c93d526
+%define sha1    powershell=43c08c3f92585c83008867d6b13eae4bdcb194c6
+Source1:        %{name}-native-7.1.0.tar.gz
+%define sha1    powershell-native=3282480036e54fb12a6c1e1d5c5e1ee9ebf300dc
 Source2:        %{name}-linux-%{version}-1-x64.tar.gz
-%define sha1    powershell-linux=f6aff516b0e0f77744040841a500dbaa01bdebab
+%define sha1    powershell-linux=17fa3d5b618aa4ce4d9e4da01d669ec8891d9403
 Source3:        build.sh
 Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
-Patch0:         Powershell-Fix-Build.patch
+
 BuildArch:      x86_64
-BuildRequires:  dotnet-sdk = 3.1.201
-BuildRequires:  dotnet-runtime = 3.1.5
+BuildRequires:  dotnet-sdk = 5.0.103
+BuildRequires:  dotnet-runtime = 5.0.3
 BuildRequires:  psmisc
 BuildRequires:  cmake
 BuildRequires:  clang
@@ -36,9 +36,6 @@ It consists of a cross-platform command-line shell and associated scripting lang
 
 %prep
 %setup -qn PowerShell-%{version}
-cd %{_builddir}/PowerShell-%{version}
-%patch0 -p1
-cd -
 %setup -qcTDa 1 -n PowerShell-Native
 %setup -qcTDa 2 -n %{name}-linux-%{version}-1-x64
 
@@ -48,7 +45,7 @@ cp %{SOURCE3} .
 cp %{SOURCE4} src
 chmod +x ./build.sh
 ./build.sh
-cd %{_builddir}/PowerShell-Native/powershell-native-7.0.0
+cd %{_builddir}/PowerShell-Native/powershell-native-7.1.0
 pushd src/libpsl-native
 cmake -DCMAKE_BUILD_TYPE=Debug .
 make -j
@@ -62,21 +59,21 @@ mv bin/ThirdPartyNotices.txt %{buildroot}%{_docdir}/powershell
 mv bin/LICENSE.txt %{buildroot}%{_docdir}/powershell
 cp -r bin/* %{buildroot}/%{_libdir}/powershell
 rm -f %{buildroot}/%{_libdir}/powershell/libpsl-native.so
-cp -rf %{_builddir}/PowerShell-Native/powershell-native-7.0.0/src/powershell-unix/libpsl-native.so %{buildroot}/%{_libdir}/powershell
+cp -rf %{_builddir}/PowerShell-Native/powershell-native-7.1.0/src/powershell-unix/libpsl-native.so %{buildroot}/%{_libdir}/powershell
 mkdir -p %{buildroot}%{_bindir}
 chmod 0755 %{buildroot}/%{_libdir}/powershell/pwsh
 ln -sf %{_libdir}/powershell/pwsh %{buildroot}%{_bindir}/pwsh
 mkdir -p %{buildroot}%{_libdir}/powershell/ref
-cp %{_builddir}/powershell-linux-%{version}-1-x64/ref/* %{buildroot}%{_libdir}/powershell/ref
-cp %{_builddir}/powershell-linux-%{version}-1-x64/libmi.so %{buildroot}%{_libdir}/powershell/
-cp -r %{_builddir}/powershell-linux-%{version}-1-x64/Modules/{PSReadLine,PowerShellGet,PackageManagement} \
+cp %{_builddir}/powershell-linux-%{version}-1-x64/powershell-linux-%{version}-1-x64/ref/* %{buildroot}%{_libdir}/powershell/ref
+cp %{_builddir}/powershell-linux-%{version}-1-x64/powershell-linux-%{version}-1-x64/libmi.so %{buildroot}%{_libdir}/powershell/
+cp -r %{_builddir}/powershell-linux-%{version}-1-x64/powershell-linux-%{version}-1-x64/Modules/{PSReadLine,PowerShellGet,PackageManagement} \
 %{buildroot}%{_libdir}/powershell/Modules
 
 %check
 cd %{_builddir}/PowerShell-%{version}/test/xUnit
 dotnet test
 export LANG=en_US.UTF-8
-cd %{_builddir}/PowerShell-Native/powershell-native-7.0.0/src/libpsl-native
+cd %{_builddir}/PowerShell-Native/powershell-native-7.1.0/src/libpsl-native
 make test
 
 %post
@@ -102,6 +99,8 @@ fi
     %{_docdir}/*
 
 %changelog
+*   Tue Mar 9 2021 Shreyas B <shreyasb@vmware.com> 7.1.2-1
+-   Upgrade powershell to 7.1.2
 *   Wed Jan 13 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.0.3-2
 -   Fix Powershell build issue
 *   Mon Dec 07 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.0.3-1
