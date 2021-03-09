@@ -2,15 +2,15 @@
 %global __os_install_post %{nil}
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
-Version:        3.11.8
-Release:        2%{?dist}
+Version:        3.11.10
+Release:        1%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
-%define sha1    apache-cassandra=50c9f5ce5ebe2bd2cc92ca28994448b1c691ba52
+Source0:        http://archive.apache.org/dist/cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
+%define sha1    apache-cassandra=6ec404a09bea1fd012aad5f87d5358eeb2db9bcc
 # https://search.maven.org/maven2/ch/qos/logback/logback-classic/1.2.0/logback-classic-1.2.0.jar
 # https://search.maven.org/maven2/ch/qos/logback/logback-core/1.2.0/logback-core-1.2.0.jar
 # https://search.maven.org/maven2/org/apache/thrift/libthrift/0.9.3/libthrift-0.9.3.jar
@@ -146,6 +146,8 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Tue Mar 09 2021 Ankit Jain <ankitja@vmware.com> 3.11.10-1
+-   Update to 3.11.10 to fix CVE-2020-17516
 *   Thu Oct 29 2020 Ankit Jain <ankitja@vmware.com> 3.11.8-2
 -   Added cqlsh and cqlsh.py.
 -   Since, python-cqlsh is deprecated.
