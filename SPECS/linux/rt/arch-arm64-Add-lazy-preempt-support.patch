@@ -138,7 +138,7 @@ Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
  	mov	x0, sp
 --- a/arch/arm64/kernel/signal.c
 +++ b/arch/arm64/kernel/signal.c
-@@ -925,7 +925,7 @@ asmlinkage void do_notify_resume(struct
+@@ -918,7 +918,7 @@ asmlinkage void do_notify_resume(struct
  		/* Check valid user FS if needed */
  		addr_limit_user_check();
  

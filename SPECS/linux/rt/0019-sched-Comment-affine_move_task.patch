@@ -12,7 +12,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -2080,7 +2080,75 @@ void do_set_cpus_allowed(struct task_str
+@@ -2078,7 +2078,75 @@ void do_set_cpus_allowed(struct task_str
  }
  
  /*
@@ -89,7 +89,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
   */
  static int affine_move_task(struct rq *rq, struct task_struct *p, struct rq_flags *rf,
  			    int dest_cpu, unsigned int flags)
-@@ -2124,6 +2192,7 @@ static int affine_move_task(struct rq *r
+@@ -2122,6 +2190,7 @@ static int affine_move_task(struct rq *r
  	if (!(flags & SCA_MIGRATE_ENABLE)) {
  		/* serialized by p->pi_lock */
  		if (!p->migration_pending) {
@@ -97,7 +97,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  			refcount_set(&my_pending.refs, 1);
  			init_completion(&my_pending.done);
  			p->migration_pending = &my_pending;
-@@ -2167,7 +2236,11 @@ static int affine_move_task(struct rq *r
+@@ -2165,7 +2234,11 @@ static int affine_move_task(struct rq *r
  	}
  
  	if (task_running(rq, p) || p->state == TASK_WAKING) {
@@ -110,7 +110,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		task_rq_unlock(rq, p, rf);
  		stop_one_cpu(cpu_of(rq), migration_cpu_stop, &arg);
  
-@@ -2192,6 +2265,10 @@ static int affine_move_task(struct rq *r
+@@ -2190,6 +2263,10 @@ static int affine_move_task(struct rq *r
  	if (refcount_dec_and_test(&pending->refs))
  		wake_up_var(&pending->refs);
  

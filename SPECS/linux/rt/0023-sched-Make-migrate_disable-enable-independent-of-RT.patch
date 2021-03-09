@@ -155,7 +155,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	unsigned short			migration_flags;
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -1696,8 +1696,6 @@ void check_preempt_curr(struct rq *rq, s
+@@ -1694,8 +1694,6 @@ void check_preempt_curr(struct rq *rq, s
  
  #ifdef CONFIG_SMP
  
@@ -164,7 +164,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  static void
  __do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask, u32 flags);
  
-@@ -1772,8 +1770,6 @@ static inline bool rq_has_pinned_tasks(s
+@@ -1770,8 +1768,6 @@ static inline bool rq_has_pinned_tasks(s
  	return rq->nr_pinned;
  }
  
@@ -173,7 +173,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  /*
   * Per-CPU kthreads are allowed to run on !active && online CPUs, see
   * __set_cpus_allowed_ptr() and select_fallback_rq().
-@@ -2854,7 +2850,7 @@ void sched_set_stop_task(int cpu, struct
+@@ -2852,7 +2848,7 @@ void sched_set_stop_task(int cpu, struct
  	}
  }
  
@@ -182,7 +182,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  static inline int __set_cpus_allowed_ptr(struct task_struct *p,
  					 const struct cpumask *new_mask,
-@@ -2863,10 +2859,6 @@ static inline int __set_cpus_allowed_ptr
+@@ -2861,10 +2857,6 @@ static inline int __set_cpus_allowed_ptr
  	return set_cpus_allowed_ptr(p, new_mask);
  }
  
@@ -193,7 +193,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  static inline void migrate_disable_switch(struct rq *rq, struct task_struct *p) { }
  
  static inline bool rq_has_pinned_tasks(struct rq *rq)
-@@ -2874,7 +2866,7 @@ static inline bool rq_has_pinned_tasks(s
+@@ -2872,7 +2864,7 @@ static inline bool rq_has_pinned_tasks(s
  	return false;
  }
  
@@ -202,7 +202,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  static void
  ttwu_stat(struct task_struct *p, int cpu, int wake_flags)
-@@ -7901,6 +7893,39 @@ void __cant_sleep(const char *file, int
+@@ -7898,6 +7890,39 @@ void __cant_sleep(const char *file, int
  	add_taint(TAINT_WARN, LOCKDEP_STILL_OK);
  }
  EXPORT_SYMBOL_GPL(__cant_sleep);
@@ -244,7 +244,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #ifdef CONFIG_MAGIC_SYSRQ
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
-@@ -1048,7 +1048,7 @@ struct rq {
+@@ -1049,7 +1049,7 @@ struct rq {
  	struct cpuidle_state	*idle_state;
  #endif
  
@@ -253,7 +253,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	unsigned int		nr_pinned;
  #endif
  	unsigned int		push_busy;
-@@ -1084,7 +1084,7 @@ static inline int cpu_of(struct rq *rq)
+@@ -1085,7 +1085,7 @@ static inline int cpu_of(struct rq *rq)
  
  static inline bool is_migration_disabled(struct task_struct *p)
  {

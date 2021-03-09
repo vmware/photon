@@ -42,15 +42,15 @@ the approach.
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 ---
- include/linux/rwsem-rt.h  |   69 ++++++++++
- kernel/locking/rwsem-rt.c |  307 ++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 376 insertions(+)
+ include/linux/rwsem-rt.h  |   70 ++++++++++
+ kernel/locking/rwsem-rt.c |  318 ++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 388 insertions(+)
  create mode 100644 include/linux/rwsem-rt.h
  create mode 100644 kernel/locking/rwsem-rt.c
 
 --- /dev/null
 +++ b/include/linux/rwsem-rt.h
-@@ -0,0 +1,69 @@
+@@ -0,0 +1,70 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +#ifndef _LINUX_RWSEM_RT_H
 +#define _LINUX_RWSEM_RT_H
@@ -110,6 +110,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 +}
 +
 +extern void __down_read(struct rw_semaphore *sem);
++extern int __down_read_interruptible(struct rw_semaphore *sem);
 +extern int __down_read_killable(struct rw_semaphore *sem);
 +extern int __down_read_trylock(struct rw_semaphore *sem);
 +extern void __down_write(struct rw_semaphore *sem);
@@ -122,7 +123,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 +#endif
 --- /dev/null
 +++ b/kernel/locking/rwsem-rt.c
-@@ -0,0 +1,307 @@
+@@ -0,0 +1,318 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +#include <linux/rwsem.h>
 +#include <linux/sched/debug.h>
@@ -287,6 +288,17 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 +
 +	ret = __down_read_common(sem, TASK_UNINTERRUPTIBLE);
 +	WARN_ON_ONCE(ret);
++}
++
++int __down_read_interruptible(struct rw_semaphore *sem)
++{
++	int ret;
++
++	ret = __down_read_common(sem, TASK_INTERRUPTIBLE);
++	if (likely(!ret))
++		return ret;
++	WARN_ONCE(ret != -EINTR, "Unexpected state: %d\n", ret);
++	return -EINTR;
 +}
 +
 +int __down_read_killable(struct rw_semaphore *sem)

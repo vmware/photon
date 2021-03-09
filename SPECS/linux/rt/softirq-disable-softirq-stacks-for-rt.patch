@@ -19,7 +19,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 
 --- a/arch/powerpc/kernel/irq.c
 +++ b/arch/powerpc/kernel/irq.c
-@@ -769,10 +769,12 @@ void *mcheckirq_ctx[NR_CPUS] __read_most
+@@ -753,10 +753,12 @@ void *mcheckirq_ctx[NR_CPUS] __read_most
  void *softirq_ctx[NR_CPUS] __read_mostly;
  void *hardirq_ctx[NR_CPUS] __read_mostly;
  

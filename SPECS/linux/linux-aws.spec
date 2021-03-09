@@ -7,8 +7,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.4
-Release:        4%{?dist}
+Version:        5.10.21
+Release:        1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -19,7 +19,7 @@ Distribution: 	Photon
 
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=62605305a3cbae68780612d35e0585cfc4983afd
+%define sha1 linux=ef37b9c6bf722809cf035a55df29cac90150ed88
 Source1:	config-aws
 Source2:	initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -385,6 +385,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Mar 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.21-1
+-   Update to version 5.10.21
 *   Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-4
 -   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Tue Feb 02 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-3

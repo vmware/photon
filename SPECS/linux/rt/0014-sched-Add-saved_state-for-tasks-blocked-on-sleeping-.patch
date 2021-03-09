@@ -37,7 +37,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  #ifdef CONFIG_SMP
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -3284,7 +3284,7 @@ try_to_wake_up(struct task_struct *p, un
+@@ -3282,7 +3282,7 @@ try_to_wake_up(struct task_struct *p, un
  	int cpu, success = 0;
  
  	preempt_disable();
@@ -46,7 +46,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  		/*
  		 * We're waking current, this means 'p->on_rq' and 'task_cpu(p)
  		 * == smp_processor_id()'. Together this means we can special
-@@ -3314,8 +3314,26 @@ try_to_wake_up(struct task_struct *p, un
+@@ -3312,8 +3312,26 @@ try_to_wake_up(struct task_struct *p, un
  	 */
  	raw_spin_lock_irqsave(&p->pi_lock, flags);
  	smp_mb__after_spinlock();
@@ -74,7 +74,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  
  	trace_sched_waking(p);
  
-@@ -3505,6 +3523,18 @@ int wake_up_process(struct task_struct *
+@@ -3502,6 +3520,18 @@ int wake_up_process(struct task_struct *
  }
  EXPORT_SYMBOL(wake_up_process);
  
@@ -95,7 +95,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	return try_to_wake_up(p, state, 0);
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
-@@ -1743,6 +1743,7 @@ static inline int task_on_rq_migrating(s
+@@ -1744,6 +1744,7 @@ static inline int task_on_rq_migrating(s
  #define WF_FORK			0x02		/* Child wakeup after fork */
  #define WF_MIGRATED		0x04		/* Internal use, task got migrated */
  #define WF_ON_CPU		0x08		/* Wakee is on_cpu */

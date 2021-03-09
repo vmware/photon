@@ -11,8 +11,8 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  arch/powerpc/kernel/asm-offsets.c      |    1 +
  arch/powerpc/kernel/entry_32.S         |   23 ++++++++++++++++-------
  arch/powerpc/kernel/exceptions-64e.S   |   16 ++++++++++++----
- arch/powerpc/kernel/syscall_64.c       |    9 ++++++---
- 6 files changed, 49 insertions(+), 18 deletions(-)
+ arch/powerpc/kernel/syscall_64.c       |   10 +++++++---
+ 6 files changed, 50 insertions(+), 18 deletions(-)
 
 --- a/arch/powerpc/Kconfig
 +++ b/arch/powerpc/Kconfig
@@ -93,7 +93,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	OFFSET(DCACHEL1BLOCKSIZE, ppc64_caches, l1d.block_size);
 --- a/arch/powerpc/kernel/entry_32.S
 +++ b/arch/powerpc/kernel/entry_32.S
-@@ -411,7 +411,9 @@
+@@ -414,7 +414,9 @@
  	mtmsr	r10
  	lwz	r9,TI_FLAGS(r2)
  	li	r8,-MAX_ERRNO
@@ -104,7 +104,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	bne-	syscall_exit_work
  	cmplw	0,r3,r8
  	blt+	syscall_exit_cont
-@@ -527,13 +529,13 @@ END_FTR_SECTION_IFSET(CPU_FTR_NEED_PAIRE
+@@ -530,13 +532,13 @@ END_FTR_SECTION_IFSET(CPU_FTR_NEED_PAIRE
  	b	syscall_dotrace_cont
  
  syscall_exit_work:
@@ -120,7 +120,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	bne-	1f
  	lwz	r11,_CCR(r1)			/* Load CR */
  	neg	r3,r3
-@@ -542,12 +544,12 @@ END_FTR_SECTION_IFSET(CPU_FTR_NEED_PAIRE
+@@ -545,12 +547,12 @@ END_FTR_SECTION_IFSET(CPU_FTR_NEED_PAIRE
  
  1:	stw	r6,RESULT(r1)	/* Save result */
  	stw	r3,GPR3(r1)	/* Update return value */
@@ -135,7 +135,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	addi	r12,r2,TI_FLAGS
  3:	lwarx	r8,0,r12
  	andc	r8,r8,r11
-@@ -924,7 +926,14 @@ user_exc_return:		/* r10 contains MSR_KE
+@@ -927,7 +929,14 @@ user_exc_return:		/* r10 contains MSR_KE
  	cmpwi	0,r0,0		/* if non-zero, just restore regs and return */
  	bne	restore_kuap
  	andi.	r8,r8,_TIF_NEED_RESCHED
@@ -150,7 +150,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	lwz	r3,_MSR(r1)
  	andi.	r0,r3,MSR_EE	/* interrupts off? */
  	beq	restore_kuap	/* don't schedule if so */
-@@ -1245,7 +1254,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_NEED_PAIRE
+@@ -1248,7 +1257,7 @@ END_FTR_SECTION_IFSET(CPU_FTR_NEED_PAIRE
  #endif /* !(CONFIG_4xx || CONFIG_BOOKE) */
  
  do_work:			/* r10 contains MSR_KERNEL here */
@@ -159,7 +159,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	beq	do_user_signal
  
  do_resched:			/* r10 contains MSR_KERNEL here */
-@@ -1264,7 +1273,7 @@ do_resched:			/* r10 contains MSR_KERNEL
+@@ -1267,7 +1276,7 @@ do_resched:			/* r10 contains MSR_KERNEL
  	LOAD_REG_IMMEDIATE(r10,MSR_KERNEL)
  	mtmsr	r10		/* disable interrupts */
  	lwz	r9,TI_FLAGS(r2)
@@ -231,7 +231,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  			schedule();
  		} else {
  			if (ti_flags & _TIF_SIGPENDING)
-@@ -361,11 +361,14 @@ notrace unsigned long interrupt_exit_ker
+@@ -361,11 +361,15 @@ notrace unsigned long interrupt_exit_ker
  		/* Returning to a kernel context with local irqs enabled. */
  		WARN_ON_ONCE(!(regs->msr & MSR_EE));
  again:
@@ -242,7 +242,8 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  				if (preempt_count() == 0)
  					preempt_schedule_irq();
 +			} else if (unlikely(*ti_flagsp & _TIF_NEED_RESCHED_LAZY)) {
-+				if (current_thread_info()->preempt_lazy_count == 0)
++				if ((preempt_count() == 0) &&
++				    (current_thread_info()->preempt_lazy_count == 0))
 +					preempt_schedule_irq();
  			}
  		}

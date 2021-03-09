@@ -13,7 +13,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/block/blk-mq.c
 +++ b/block/blk-mq.c
-@@ -1575,14 +1575,14 @@ static void __blk_mq_delay_run_hw_queue(
+@@ -1585,14 +1585,14 @@ static void __blk_mq_delay_run_hw_queue(
  		return;
  
  	if (!async && !(hctx->flags & BLK_MQ_F_BLOCKING)) {

@@ -14,7 +14,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -2656,6 +2656,7 @@ int select_task_rq(struct task_struct *p
+@@ -2654,6 +2654,7 @@ int select_task_rq(struct task_struct *p
  
  void sched_set_stop_task(int cpu, struct task_struct *stop)
  {
@@ -22,7 +22,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	struct sched_param param = { .sched_priority = MAX_RT_PRIO - 1 };
  	struct task_struct *old_stop = cpu_rq(cpu)->stop;
  
-@@ -2671,6 +2672,20 @@ void sched_set_stop_task(int cpu, struct
+@@ -2669,6 +2670,20 @@ void sched_set_stop_task(int cpu, struct
  		sched_setscheduler_nocheck(stop, SCHED_FIFO, &param);
  
  		stop->sched_class = &stop_sched_class;

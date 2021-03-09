@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.4
-Release:        17%{?kat_build:.kat}%{?dist}
+Version:        5.10.21
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -32,7 +32,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=62605305a3cbae68780612d35e0585cfc4983afd
+%define sha1 linux=ef37b9c6bf722809cf035a55df29cac90150ed88
 Source1:	config_%{_arch}
 Source2:	initramfs.trigger
 %define ena_version 2.4.0
@@ -56,9 +56,9 @@ Source12:       ena-Use-new-API-interface-after-napi_hash_del-.patch
 Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
 %define sha1 ice=19507794824da33827756389ac8018aa84e9c427
 %if 0%{?fips}
-%define fips_canister_version 4.0.1-5.10.4-7-secure
+%define fips_canister_version 4.0.1-5.10.4-8-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=4dc8578d3ff267ae378c947239fa0136a4bc26c3
+%define sha1 fips-canister=7b38a00e20db544ca8665cf8bd24fcb46971d6d9
 %endif
 
 # common
@@ -127,7 +127,6 @@ Patch602:       0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 Patch603:       x86-sev-es-load-idt-before-entering-long-mode-to-han-510.patch
 Patch604:       x86-swiotlb-Adjust-SWIOTLB-bounce-buffer-size-for-SE.patch
 Patch605:       x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
-Patch606:       x86-sev-es-Handle-string-port-IO-to-kernel-memory-properly.patch
 
 #Patches for i40e driver
 Patch1500:      i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
@@ -308,7 +307,6 @@ Python programming language to use the interface to manipulate perf events.
 %patch603 -p1
 %patch604 -p1
 %patch605 -p1
-%patch606 -p1
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -648,6 +646,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Mar 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.21-1
+-   Update to version 5.10.21
 *   Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-17
 -   FIPS canister update
 *   Fri Feb 19 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-16

@@ -85,7 +85,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		.name			= "smpboot/threads:online",
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -6742,120 +6742,6 @@ void idle_task_exit(void)
+@@ -6739,120 +6739,6 @@ void idle_task_exit(void)
  	/* finish_cpu(), as ran on the BP, will clean up the active_mm state */
  }
  
@@ -206,7 +206,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  static int __balance_push_cpu_stop(void *arg)
  {
  	struct task_struct *p = arg;
-@@ -7124,10 +7010,6 @@ int sched_cpu_deactivate(unsigned int cp
+@@ -7121,10 +7007,6 @@ int sched_cpu_deactivate(unsigned int cp
  		return ret;
  	}
  	sched_domains_numa_masks_clear(cpu);
@@ -217,7 +217,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	return 0;
  }
  
-@@ -7147,6 +7029,41 @@ int sched_cpu_starting(unsigned int cpu)
+@@ -7144,6 +7026,41 @@ int sched_cpu_starting(unsigned int cpu)
  }
  
  #ifdef CONFIG_HOTPLUG_CPU
@@ -259,7 +259,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  int sched_cpu_dying(unsigned int cpu)
  {
  	struct rq *rq = cpu_rq(cpu);
-@@ -7160,7 +7077,6 @@ int sched_cpu_dying(unsigned int cpu)
+@@ -7157,7 +7074,6 @@ int sched_cpu_dying(unsigned int cpu)
  		BUG_ON(!cpumask_test_cpu(cpu, rq->rd->span));
  		set_rq_offline(rq);
  	}

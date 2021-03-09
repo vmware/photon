@@ -52,7 +52,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #endif
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -1732,15 +1732,26 @@ void migrate_enable(void)
+@@ -1730,15 +1730,26 @@ void migrate_enable(void)
  {
  	struct task_struct *p = current;
  
@@ -85,7 +85,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  }
  EXPORT_SYMBOL_GPL(migrate_enable);
  
-@@ -1805,8 +1816,16 @@ static struct rq *move_queued_task(struc
+@@ -1803,8 +1814,16 @@ static struct rq *move_queued_task(struc
  }
  
  struct migration_arg {
@@ -104,7 +104,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  };
  
  /*
-@@ -1838,16 +1857,19 @@ static struct rq *__migrate_task(struct
+@@ -1836,16 +1855,19 @@ static struct rq *__migrate_task(struct
   */
  static int migration_cpu_stop(void *data)
  {
@@ -125,7 +125,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	/*
  	 * We need to explicitly wake pending tasks before running
  	 * __migrate_task() such that we will not miss enforcing cpus_ptr
-@@ -1857,21 +1879,83 @@ static int migration_cpu_stop(void *data
+@@ -1855,21 +1877,83 @@ static int migration_cpu_stop(void *data
  
  	raw_spin_lock(&p->pi_lock);
  	rq_lock(rq, &rf);
@@ -214,7 +214,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	return 0;
  }
  
-@@ -1941,6 +2025,110 @@ void do_set_cpus_allowed(struct task_str
+@@ -1939,6 +2023,110 @@ void do_set_cpus_allowed(struct task_str
  }
  
  /*
@@ -325,7 +325,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
   * Change a given task's CPU affinity. Migrate the thread to a
   * proper CPU and schedule it away if the CPU it's executing on
   * is removed from the allowed bitmask.
-@@ -2009,23 +2197,8 @@ static int __set_cpus_allowed_ptr(struct
+@@ -2007,23 +2195,8 @@ static int __set_cpus_allowed_ptr(struct
  			p->nr_cpus_allowed != 1);
  	}
  
@@ -350,7 +350,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  out:
  	task_rq_unlock(rq, p, &rf);
  
-@@ -3210,6 +3383,7 @@ static void __sched_fork(unsigned long c
+@@ -3207,6 +3380,7 @@ static void __sched_fork(unsigned long c
  	init_numa_balancing(clone_flags, p);
  #ifdef CONFIG_SMP
  	p->wake_entry.u_flags = CSD_TYPE_TTWU;

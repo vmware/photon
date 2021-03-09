@@ -33,7 +33,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/kernel/printk/printk.c
 +++ b/kernel/printk/printk.c
-@@ -1126,7 +1126,7 @@ void __init setup_log_buf(int early)
+@@ -1127,7 +1127,7 @@ void __init setup_log_buf(int early)
  		 new_descs, ilog2(new_descs_count),
  		 new_infos);
  
@@ -42,7 +42,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	log_buf_len = new_log_buf_len;
  	log_buf = new_log_buf;
-@@ -1143,7 +1143,7 @@ void __init setup_log_buf(int early)
+@@ -1144,7 +1144,7 @@ void __init setup_log_buf(int early)
  	 */
  	prb = &printk_rb_dynamic;
  
@@ -51,7 +51,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	if (seq != prb_next_seq(&printk_rb_static)) {
  		pr_err("dropped %llu messages\n",
-@@ -1861,18 +1861,90 @@ static inline u32 printk_caller_id(void)
+@@ -1885,18 +1885,90 @@ static inline u32 printk_caller_id(void)
  		0x80000000 + raw_smp_processor_id();
  }
  
@@ -145,7 +145,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	u16 text_len;
  	u64 ts_nsec;
  
-@@ -1885,35 +1957,21 @@ int vprintk_store(int facility, int leve
+@@ -1909,35 +1981,21 @@ int vprintk_store(int facility, int leve
  	ts_nsec = local_clock();
  
  	/*
@@ -196,7 +196,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	if (level == LOGLEVEL_DEFAULT)
  		level = default_message_loglevel;
-@@ -1922,9 +1980,10 @@ int vprintk_store(int facility, int leve
+@@ -1946,9 +2004,10 @@ int vprintk_store(int facility, int leve
  		lflags |= LOG_NEWLINE;
  
  	if (lflags & LOG_CONT) {
@@ -209,7 +209,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  			r.info->text_len += text_len;
  
  			if (lflags & LOG_NEWLINE) {
-@@ -1943,18 +2002,18 @@ int vprintk_store(int facility, int leve
+@@ -1967,18 +2026,18 @@ int vprintk_store(int facility, int leve
  	 * prb_reserve_in_last() and prb_reserve() purposely invalidate the
  	 * structure when they fail.
  	 */
@@ -232,7 +232,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	if (trunc_msg_len)
  		memcpy(&r.text_buf[text_len], trunc_msg, trunc_msg_len);
  	r.info->text_len = text_len + trunc_msg_len;
-@@ -1995,10 +2054,9 @@ asmlinkage int vprintk_emit(int facility
+@@ -2019,10 +2078,9 @@ asmlinkage int vprintk_emit(int facility
  	boot_delay_msec(level);
  	printk_delay();
  

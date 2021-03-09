@@ -43,7 +43,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  /* This part must be outside protection */
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -1728,6 +1728,8 @@ void migrate_disable(void)
+@@ -1726,6 +1726,8 @@ void migrate_disable(void)
  		return;
  	}
  
@@ -52,7 +52,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	preempt_disable();
  	this_rq()->nr_pinned++;
  	p->migration_disabled = 1;
-@@ -1760,6 +1762,8 @@ void migrate_enable(void)
+@@ -1758,6 +1760,8 @@ void migrate_enable(void)
  	p->migration_disabled = 0;
  	this_rq()->nr_pinned--;
  	preempt_enable();

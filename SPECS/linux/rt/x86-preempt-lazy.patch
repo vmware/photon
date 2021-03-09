@@ -15,7 +15,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -211,6 +211,7 @@ config X86
+@@ -212,6 +212,7 @@ config X86
  	select HAVE_PCI
  	select HAVE_PERF_REGS
  	select HAVE_PERF_USER_STACK_DUMP

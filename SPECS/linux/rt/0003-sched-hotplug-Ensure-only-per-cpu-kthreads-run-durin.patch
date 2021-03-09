@@ -27,7 +27,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -3514,8 +3514,10 @@ static inline struct callback_head *spli
+@@ -3511,8 +3511,10 @@ static inline struct callback_head *spli
  	struct callback_head *head = rq->balance_callback;
  
  	lockdep_assert_held(&rq->lock);
@@ -39,7 +39,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	return head;
  }
-@@ -3536,6 +3538,21 @@ static inline void balance_callbacks(str
+@@ -3533,6 +3535,21 @@ static inline void balance_callbacks(str
  	}
  }
  
@@ -61,7 +61,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #else
  
  static inline void __balance_callbacks(struct rq *rq)
-@@ -3551,6 +3568,10 @@ static inline void balance_callbacks(str
+@@ -3548,6 +3565,10 @@ static inline void balance_callbacks(str
  {
  }
  
@@ -72,7 +72,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #endif
  
  static inline void
-@@ -3578,7 +3599,7 @@ static inline void finish_lock_switch(st
+@@ -3575,7 +3596,7 @@ static inline void finish_lock_switch(st
  	 * prev into current:
  	 */
  	spin_acquire(&rq->lock.dep_map, 0, 0, _THIS_IP_);
@@ -81,7 +81,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	raw_spin_unlock_irq(&rq->lock);
  }
  
-@@ -6834,6 +6855,90 @@ static void migrate_tasks(struct rq *dea
+@@ -6831,6 +6852,90 @@ static void migrate_tasks(struct rq *dea
  
  	rq->stop = stop;
  }
@@ -172,7 +172,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #endif /* CONFIG_HOTPLUG_CPU */
  
  void set_rq_online(struct rq *rq)
-@@ -6919,6 +7024,8 @@ int sched_cpu_activate(unsigned int cpu)
+@@ -6916,6 +7021,8 @@ int sched_cpu_activate(unsigned int cpu)
  	struct rq *rq = cpu_rq(cpu);
  	struct rq_flags rf;
  
@@ -181,7 +181,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #ifdef CONFIG_SCHED_SMT
  	/*
  	 * When going up, increment the number of cores with SMT present.
-@@ -6966,6 +7073,8 @@ int sched_cpu_deactivate(unsigned int cp
+@@ -6963,6 +7070,8 @@ int sched_cpu_deactivate(unsigned int cp
  	 */
  	synchronize_rcu();
  
@@ -190,7 +190,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #ifdef CONFIG_SCHED_SMT
  	/*
  	 * When going down, decrement the number of cores with SMT present.
-@@ -6979,6 +7088,7 @@ int sched_cpu_deactivate(unsigned int cp
+@@ -6976,6 +7085,7 @@ int sched_cpu_deactivate(unsigned int cp
  
  	ret = cpuset_cpu_inactive(cpu);
  	if (ret) {
@@ -208,7 +208,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	unsigned char		nohz_idle_balance;
  	unsigned char		idle_balance;
-@@ -1379,6 +1380,9 @@ init_numa_balancing(unsigned long clone_
+@@ -1380,6 +1381,9 @@ init_numa_balancing(unsigned long clone_
  
  #ifdef CONFIG_SMP
  
@@ -218,7 +218,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  static inline void
  queue_balance_callback(struct rq *rq,
  		       struct callback_head *head,
-@@ -1386,12 +1390,13 @@ queue_balance_callback(struct rq *rq,
+@@ -1387,12 +1391,13 @@ queue_balance_callback(struct rq *rq,
  {
  	lockdep_assert_held(&rq->lock);
  

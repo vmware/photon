@@ -32,22 +32,21 @@ Signed-off-by: Keerthana K <keerthanak@vmware.com>
  drivers/gpu/drm/nouveau/Kbuild          | 2 ++
  drivers/gpu/drm/nouveau/dispnv50/wndw.h | 4 ++--
  fs/ext4/sysfs.c                         | 2 +-
- include/linux/filter.h                  | 2 +-
  include/net/bond_alb.h                  | 4 ++--
- 5 files changed, 8 insertions(+), 6 deletions(-)
+ 4 files changed, 7 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/gpu/drm/nouveau/Kbuild b/drivers/gpu/drm/nouveau/Kbuild
-index b17843d..d9a83ac 100644
+index 60586fb82..1dd1be224 100644
 --- a/drivers/gpu/drm/nouveau/Kbuild
 +++ b/drivers/gpu/drm/nouveau/Kbuild
-@@ -62,3 +62,5 @@ nouveau-y += nv84_fence.o
+@@ -74,3 +74,5 @@ nouveau-y += nv84_fence.o
  nouveau-y += nvc0_fence.o
  
  obj-$(CONFIG_DRM_NOUVEAU) += nouveau.o
 +
 +OBJECT_FILES_NON_STANDARD := y
 diff --git a/drivers/gpu/drm/nouveau/dispnv50/wndw.h b/drivers/gpu/drm/nouveau/dispnv50/wndw.h
-index b0b6428..0770683 100644
+index 3278e2880..839fcc830 100644
 --- a/drivers/gpu/drm/nouveau/dispnv50/wndw.h
 +++ b/drivers/gpu/drm/nouveau/dispnv50/wndw.h
 @@ -38,8 +38,8 @@ struct nv50_wndw {
@@ -62,10 +61,10 @@ index b0b6428..0770683 100644
  void nv50_wndw_fini(struct nv50_wndw *);
  void nv50_wndw_flush_set(struct nv50_wndw *, u32 *interlock,
 diff --git a/fs/ext4/sysfs.c b/fs/ext4/sysfs.c
-index bfabb79..2085ffb 100644
+index 4e27fe6ed..7e3dd6d8d 100644
 --- a/fs/ext4/sysfs.c
 +++ b/fs/ext4/sysfs.c
-@@ -492,7 +492,7 @@ static struct kobj_type ext4_sb_ktype = {
+@@ -494,7 +494,7 @@ static struct kobj_type ext4_sb_ktype = {
  static struct kobj_type ext4_feat_ktype = {
  	.default_groups = ext4_feat_groups,
  	.sysfs_ops	= &ext4_attr_ops,
@@ -74,21 +73,8 @@ index bfabb79..2085ffb 100644
  };
  
  static struct kobject *ext4_root;
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index c73dd73..4a4a7ff 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -748,7 +748,7 @@ void sk_filter_uncharge(struct sock *sk, struct sk_filter *fp);
- u64 __bpf_call_base(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5);
- #define __bpf_call_base_args \
- 	((u64 (*)(u64, u64, u64, u64, u64, const struct bpf_insn *)) \
--	 __bpf_call_base)
-+	((void *) __bpf_call_base))
- 
- struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog);
- void bpf_jit_compile(struct bpf_prog *prog);
 diff --git a/include/net/bond_alb.h b/include/net/bond_alb.h
-index f6af76c..67d6876 100644
+index f6af76c87..67d687608 100644
 --- a/include/net/bond_alb.h
 +++ b/include/net/bond_alb.h
 @@ -156,8 +156,8 @@ int bond_alb_init_slave(struct bonding *bond, struct slave *slave);
@@ -103,5 +89,5 @@ index f6af76c..67d6876 100644
  				      struct sk_buff *skb);
  struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
 -- 
-2.7.4
+2.17.1
 

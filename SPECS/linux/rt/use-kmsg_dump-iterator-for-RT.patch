@@ -1,0 +1,47 @@
+From 581602261ba46f01ce0f7678fbba9cca9d4789f1 Mon Sep 17 00:00:00 2001
+From: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Date: Thu, 18 Mar 2021 10:28:56 -0700
+Subject: [PATCH] Use kmsg_dump iterator for RT
+
+RT patch 0010-printk-introduce-a-kmsg_dump-iterator.patch introduces the 
+kmsg_dump_iter structure. We need to use this for RT flavor
+---
+ arch/x86/kernel/cpu/vmware.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/arch/x86/kernel/cpu/vmware.c b/arch/x86/kernel/cpu/vmware.c
+index 788aa3d0a363..b3a85f0ca54f 100644
+--- a/arch/x86/kernel/cpu/vmware.c
++++ b/arch/x86/kernel/cpu/vmware.c
+@@ -122,7 +122,8 @@ static unsigned long vmware_get_tsc_khz(void)
+ }
+ 
+ static void kmsg_dumper_vmware_log(struct kmsg_dumper *dumper,
+-				enum kmsg_dump_reason reason);
++				enum kmsg_dump_reason reason,
++				struct kmsg_dumper_iter *iter);
+ 
+ static struct kmsg_dumper kmsg_dumper = {
+ 	.dump = kmsg_dumper_vmware_log
+@@ -640,7 +641,8 @@ vmware_log_send(vmw_msg *msg, const char *string)
+ STACK_FRAME_NON_STANDARD(vmware_log_send);
+ 
+ static void kmsg_dumper_vmware_log(struct kmsg_dumper *dumper,
+-				enum kmsg_dump_reason reason)
++				enum kmsg_dump_reason reason,
++				struct kmsg_dumper_iter *iter)
+ {
+ 	vmw_msg msg;
+ 	static char line[1024];
+@@ -652,7 +654,7 @@ static void kmsg_dumper_vmware_log(struct kmsg_dumper *dumper,
+ 	line[2] = 'g';
+ 	line[3] = ' ';
+ 
+-	while (!fail && kmsg_dump_get_line(dumper, true,
++	while (!fail && kmsg_dump_get_line(iter, true,
+ 		line + 4, sizeof(line) - 4, &len)) {
+ 		line[len + 4] = '\0';
+ 		if (vmware_log_open(&msg))
+-- 
+2.17.1
+

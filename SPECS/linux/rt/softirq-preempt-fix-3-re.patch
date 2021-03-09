@@ -100,7 +100,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  }
  EXPORT_SYMBOL(__dev_kfree_skb_irq);
  
-@@ -4559,6 +4561,7 @@ static int enqueue_to_backlog(struct sk_
+@@ -4560,6 +4562,7 @@ static int enqueue_to_backlog(struct sk_
  	rps_unlock(sd);
  
  	local_irq_restore(flags);
@@ -108,7 +108,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  
  	atomic_long_inc(&skb->dev->rx_dropped);
  	kfree_skb(skb);
-@@ -6275,12 +6278,14 @@ static void net_rps_action_and_irq_enabl
+@@ -6278,12 +6281,14 @@ static void net_rps_action_and_irq_enabl
  		sd->rps_ipi_list = NULL;
  
  		local_irq_enable();
@@ -123,7 +123,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  }
  
  static bool sd_has_rps_ipi_waiting(struct softnet_data *sd)
-@@ -6358,6 +6363,7 @@ void __napi_schedule(struct napi_struct
+@@ -6361,6 +6366,7 @@ void __napi_schedule(struct napi_struct
  	local_irq_save(flags);
  	____napi_schedule(this_cpu_ptr(&softnet_data), n);
  	local_irq_restore(flags);
@@ -131,7 +131,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  }
  EXPORT_SYMBOL(__napi_schedule);
  
-@@ -10842,6 +10848,7 @@ static int dev_cpu_dead(unsigned int old
+@@ -10892,6 +10898,7 @@ static int dev_cpu_dead(unsigned int old
  
  	raise_softirq_irqoff(NET_TX_SOFTIRQ);
  	local_irq_enable();

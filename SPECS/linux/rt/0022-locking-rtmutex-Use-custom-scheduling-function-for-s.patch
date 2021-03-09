@@ -120,7 +120,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -4981,7 +4981,7 @@ pick_next_task(struct rq *rq, struct tas
+@@ -4978,7 +4978,7 @@ pick_next_task(struct rq *rq, struct tas
   *
   * WARNING: must be called with preemption disabled!
   */
@@ -129,7 +129,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  {
  	struct task_struct *prev, *next;
  	unsigned long *switch_count;
-@@ -5034,7 +5034,7 @@ static void __sched notrace __schedule(b
+@@ -5031,7 +5031,7 @@ static void __sched notrace __schedule(b
  	 *  - ptrace_{,un}freeze_traced() can change ->state underneath us.
  	 */
  	prev_state = prev->state;
@@ -138,7 +138,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		if (signal_pending_state(prev_state, prev)) {
  			prev->state = TASK_RUNNING;
  		} else {
-@@ -5118,7 +5118,7 @@ void __noreturn do_task_dead(void)
+@@ -5115,7 +5115,7 @@ void __noreturn do_task_dead(void)
  	/* Tell freezer to ignore us: */
  	current->flags |= PF_NOFREEZE;
  
@@ -147,7 +147,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	BUG();
  
  	/* Avoid "noreturn function does return" - but don't continue if BUG() is a NOP: */
-@@ -5151,9 +5151,6 @@ static inline void sched_submit_work(str
+@@ -5148,9 +5148,6 @@ static inline void sched_submit_work(str
  		preempt_enable_no_resched();
  	}
  
@@ -157,7 +157,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	/*
  	 * If we are going to sleep and we have plugged IO queued,
  	 * make sure to submit it to avoid deadlocks.
-@@ -5179,7 +5176,7 @@ asmlinkage __visible void __sched schedu
+@@ -5176,7 +5173,7 @@ asmlinkage __visible void __sched schedu
  	sched_submit_work(tsk);
  	do {
  		preempt_disable();
@@ -166,7 +166,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		sched_preempt_enable_no_resched();
  	} while (need_resched());
  	sched_update_worker(tsk);
-@@ -5207,7 +5204,7 @@ void __sched schedule_idle(void)
+@@ -5204,7 +5201,7 @@ void __sched schedule_idle(void)
  	 */
  	WARN_ON_ONCE(current->state);
  	do {
@@ -175,7 +175,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	} while (need_resched());
  }
  
-@@ -5260,7 +5257,7 @@ static void __sched notrace preempt_sche
+@@ -5257,7 +5254,7 @@ static void __sched notrace preempt_sche
  		 */
  		preempt_disable_notrace();
  		preempt_latency_start(1);
@@ -184,7 +184,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		preempt_latency_stop(1);
  		preempt_enable_no_resched_notrace();
  
-@@ -5290,6 +5287,19 @@ asmlinkage __visible void __sched notrac
+@@ -5287,6 +5284,19 @@ asmlinkage __visible void __sched notrac
  NOKPROBE_SYMBOL(preempt_schedule);
  EXPORT_SYMBOL(preempt_schedule);
  
@@ -204,7 +204,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  /**
   * preempt_schedule_notrace - preempt_schedule called by tracing
   *
-@@ -5333,7 +5343,7 @@ asmlinkage __visible void __sched notrac
+@@ -5330,7 +5340,7 @@ asmlinkage __visible void __sched notrac
  		 * an infinite recursion.
  		 */
  		prev_ctx = exception_enter();
@@ -213,7 +213,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		exception_exit(prev_ctx);
  
  		preempt_latency_stop(1);
-@@ -5362,7 +5372,7 @@ asmlinkage __visible void __sched preemp
+@@ -5359,7 +5369,7 @@ asmlinkage __visible void __sched preemp
  	do {
  		preempt_disable();
  		local_irq_enable();

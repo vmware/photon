@@ -19,7 +19,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -10860,7 +10860,7 @@ static int dev_cpu_dead(unsigned int old
+@@ -10910,7 +10910,7 @@ static int dev_cpu_dead(unsigned int old
  		netif_rx_ni(skb);
  		input_queue_head_incr(oldsd);
  	}

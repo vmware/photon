@@ -109,7 +109,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
   *
 --- a/kernel/locking/rtmutex_common.h
 +++ b/kernel/locking/rtmutex_common.h
-@@ -157,6 +157,9 @@ extern bool __rt_mutex_futex_unlock(stru
+@@ -156,6 +156,9 @@ extern bool __rt_mutex_futex_unlock(stru
  extern void rt_mutex_postunlock(struct wake_q_head *wake_q);
  /* RW semaphore special interface */
  

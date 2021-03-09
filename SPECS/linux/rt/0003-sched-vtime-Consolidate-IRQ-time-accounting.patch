@@ -62,7 +62,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  static irqreturn_t
 --- a/arch/powerpc/kernel/time.c
 +++ b/arch/powerpc/kernel/time.c
-@@ -311,12 +311,11 @@ static unsigned long vtime_delta_scaled(
+@@ -312,12 +312,11 @@ static unsigned long vtime_delta_scaled(
  	return stime_scaled;
  }
  
@@ -76,7 +76,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	WARN_ON_ONCE(!irqs_disabled());
  
-@@ -331,29 +330,30 @@ static unsigned long vtime_delta(struct
+@@ -332,29 +331,30 @@ static unsigned long vtime_delta(struct
  	return stime;
  }
  
@@ -120,7 +120,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #ifdef CONFIG_ARCH_HAS_SCALED_CPUTIME
  		acct->stime_scaled += stime_scaled;
  #endif
-@@ -366,10 +366,34 @@ void vtime_account_idle(struct task_stru
+@@ -367,10 +367,34 @@ void vtime_account_idle(struct task_stru
  	unsigned long stime, stime_scaled, steal_time;
  	struct cpu_accounting_data *acct = get_accounting(tsk);
  
@@ -158,7 +158,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  {
 --- a/arch/s390/kernel/vtime.c
 +++ b/arch/s390/kernel/vtime.c
-@@ -222,31 +222,50 @@ void vtime_flush(struct task_struct *tsk
+@@ -223,31 +223,50 @@ void vtime_flush(struct task_struct *tsk
  	S390_lowcore.avg_steal_timer = avg_steal;
  }
  

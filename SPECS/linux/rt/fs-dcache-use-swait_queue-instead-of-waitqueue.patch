@@ -112,7 +112,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	/* Don't go there if it's already dead */
  	if (unlikely(IS_DEADDIR(inode)))
-@@ -3019,7 +3019,7 @@ static struct dentry *lookup_open(struct
+@@ -3014,7 +3014,7 @@ static struct dentry *lookup_open(struct
  	struct dentry *dentry;
  	int error, create_error = 0;
  	umode_t mode = op->mode;

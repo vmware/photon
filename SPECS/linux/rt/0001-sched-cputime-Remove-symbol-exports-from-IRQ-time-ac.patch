@@ -18,7 +18,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/arch/s390/kernel/vtime.c
 +++ b/arch/s390/kernel/vtime.c
-@@ -226,7 +226,7 @@ void vtime_flush(struct task_struct *tsk
+@@ -227,7 +227,7 @@ void vtime_flush(struct task_struct *tsk
   * Update process times based on virtual cpu times stored by entry.S
   * to the lowcore fields user_timer, system_timer & steal_clock.
   */
@@ -27,7 +27,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  {
  	u64 timer;
  
-@@ -245,12 +245,12 @@ void vtime_account_irq_enter(struct task
+@@ -246,12 +246,12 @@ void vtime_account_irq_enter(struct task
  
  	virt_timer_forward(timer);
  }

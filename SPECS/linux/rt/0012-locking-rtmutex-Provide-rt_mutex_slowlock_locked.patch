@@ -121,7 +121,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  /*
   * This is the control structure for tasks blocked on a rt_mutex,
-@@ -154,6 +155,12 @@ extern bool __rt_mutex_futex_unlock(stru
+@@ -153,6 +154,12 @@ extern bool __rt_mutex_futex_unlock(stru
  				 struct wake_q_head *wqh);
  
  extern void rt_mutex_postunlock(struct wake_q_head *wake_q);

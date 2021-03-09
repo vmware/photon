@@ -34,17 +34,17 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/arch/x86/include/asm/fpu/api.h
 +++ b/arch/x86/include/asm/fpu/api.h
-@@ -23,6 +23,7 @@ extern void kernel_fpu_begin(void);
+@@ -28,6 +28,7 @@ extern void kernel_fpu_begin_mask(unsign
  extern void kernel_fpu_end(void);
  extern bool irq_fpu_usable(void);
  extern void fpregs_mark_activate(void);
 +extern void kernel_fpu_resched(void);
  
- /*
-  * Use fpregs_lock() while editing CPU's FPU registers or fpu->state.
+ /* Code that is unaware of kernel_fpu_begin_mask() can use this */
+ static inline void kernel_fpu_begin(void)
 --- a/arch/x86/kernel/fpu/core.c
 +++ b/arch/x86/kernel/fpu/core.c
-@@ -158,6 +158,18 @@ void kernel_fpu_end(void)
+@@ -159,6 +159,18 @@ void kernel_fpu_end(void)
  }
  EXPORT_SYMBOL_GPL(kernel_fpu_end);
  

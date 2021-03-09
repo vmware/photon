@@ -64,7 +64,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  #endif /* __ASM_ARM_THREAD_INFO_H */
 --- a/arch/arm/kernel/asm-offsets.c
 +++ b/arch/arm/kernel/asm-offsets.c
-@@ -41,6 +41,7 @@ int main(void)
+@@ -42,6 +42,7 @@ int main(void)
    BLANK();
    DEFINE(TI_FLAGS,		offsetof(struct thread_info, flags));
    DEFINE(TI_PREEMPT,		offsetof(struct thread_info, preempt_count));
