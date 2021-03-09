@@ -23,7 +23,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -6897,8 +6897,21 @@ static void balance_push(struct rq *rq)
+@@ -6894,8 +6894,21 @@ static void balance_push(struct rq *rq)
  	 * Both the cpu-hotplug and stop task are in this case and are
  	 * required to complete the hotplug process.
  	 */
@@ -46,7 +46,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	get_task_struct(push_task);
  	/*
-@@ -6929,6 +6942,20 @@ static void balance_push_set(int cpu, bo
+@@ -6926,6 +6939,20 @@ static void balance_push_set(int cpu, bo
  	rq_unlock_irqrestore(rq, &rf);
  }
  
@@ -67,7 +67,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #else
  
  static inline void balance_push(struct rq *rq)
-@@ -6939,6 +6966,10 @@ static inline void balance_push_set(int
+@@ -6936,6 +6963,10 @@ static inline void balance_push_set(int
  {
  }
  
@@ -78,7 +78,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #endif /* CONFIG_HOTPLUG_CPU */
  
  void set_rq_online(struct rq *rq)
-@@ -7093,6 +7124,10 @@ int sched_cpu_deactivate(unsigned int cp
+@@ -7090,6 +7121,10 @@ int sched_cpu_deactivate(unsigned int cp
  		return ret;
  	}
  	sched_domains_numa_masks_clear(cpu);
@@ -89,7 +89,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	return 0;
  }
  
-@@ -7333,6 +7368,9 @@ void __init sched_init(void)
+@@ -7330,6 +7365,9 @@ void __init sched_init(void)
  
  		rq_csd_init(rq, &rq->nohz_csd, nohz_csd_func);
  #endif

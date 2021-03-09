@@ -18,7 +18,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -4833,11 +4833,9 @@ int netif_rx_ni(struct sk_buff *skb)
+@@ -4834,11 +4834,9 @@ int netif_rx_ni(struct sk_buff *skb)
  
  	trace_netif_rx_ni_entry(skb);
  

@@ -20,7 +20,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -1915,7 +1915,7 @@ static int migration_cpu_stop(void *data
+@@ -1913,7 +1913,7 @@ static int migration_cpu_stop(void *data
  			 * and we should be valid again. Nothing to do.
  			 */
  			if (!pending) {
@@ -29,7 +29,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  				goto out;
  			}
  
-@@ -1943,7 +1943,7 @@ static int migration_cpu_stop(void *data
+@@ -1941,7 +1941,7 @@ static int migration_cpu_stop(void *data
  		 * valid again. Nothing to do.
  		 */
  		if (!pending) {

@@ -34,7 +34,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
-@@ -4781,7 +4781,7 @@ static int netif_rx_internal(struct sk_b
+@@ -4782,7 +4782,7 @@ static int netif_rx_internal(struct sk_b
  		struct rps_dev_flow voidflow, *rflow = &voidflow;
  		int cpu;
  
@@ -43,7 +43,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		rcu_read_lock();
  
  		cpu = get_rps_cpu(skb->dev, skb, &rflow);
-@@ -4791,14 +4791,14 @@ static int netif_rx_internal(struct sk_b
+@@ -4792,14 +4792,14 @@ static int netif_rx_internal(struct sk_b
  		ret = enqueue_to_backlog(skb, cpu, &rflow->last_qtail);
  
  		rcu_read_unlock();

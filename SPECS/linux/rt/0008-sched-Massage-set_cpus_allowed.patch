@@ -15,7 +15,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -1824,13 +1824,14 @@ static int migration_cpu_stop(void *data
+@@ -1822,13 +1822,14 @@ static int migration_cpu_stop(void *data
   * sched_class::set_cpus_allowed must do the below, but is not required to
   * actually call this function.
   */
@@ -32,7 +32,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  {
  	struct rq *rq = task_rq(p);
  	bool queued, running;
-@@ -1851,7 +1852,7 @@ void do_set_cpus_allowed(struct task_str
+@@ -1849,7 +1850,7 @@ void do_set_cpus_allowed(struct task_str
  	if (running)
  		put_prev_task(rq, p);
  
@@ -41,7 +41,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	if (queued)
  		enqueue_task(rq, p, ENQUEUE_RESTORE | ENQUEUE_NOCLOCK);
-@@ -1859,6 +1860,11 @@ void do_set_cpus_allowed(struct task_str
+@@ -1857,6 +1858,11 @@ void do_set_cpus_allowed(struct task_str
  		set_next_task(rq, p);
  }
  
@@ -53,7 +53,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  /*
   * Change a given task's CPU affinity. Migrate the thread to a
   * proper CPU and schedule it away if the CPU it's executing on
-@@ -1869,7 +1875,8 @@ void do_set_cpus_allowed(struct task_str
+@@ -1867,7 +1873,8 @@ void do_set_cpus_allowed(struct task_str
   * call is not atomic; no spinlocks may be held.
   */
  static int __set_cpus_allowed_ptr(struct task_struct *p,
@@ -63,7 +63,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  {
  	const struct cpumask *cpu_valid_mask = cpu_active_mask;
  	unsigned int dest_cpu;
-@@ -1891,7 +1898,7 @@ static int __set_cpus_allowed_ptr(struct
+@@ -1889,7 +1896,7 @@ static int __set_cpus_allowed_ptr(struct
  	 * Must re-check here, to close a race against __kthread_bind(),
  	 * sched_setaffinity() is not guaranteed to observe the flag.
  	 */
@@ -72,7 +72,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		ret = -EINVAL;
  		goto out;
  	}
-@@ -1910,7 +1917,7 @@ static int __set_cpus_allowed_ptr(struct
+@@ -1908,7 +1915,7 @@ static int __set_cpus_allowed_ptr(struct
  		goto out;
  	}
  
@@ -81,7 +81,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	if (p->flags & PF_KTHREAD) {
  		/*
-@@ -1947,7 +1954,7 @@ static int __set_cpus_allowed_ptr(struct
+@@ -1945,7 +1952,7 @@ static int __set_cpus_allowed_ptr(struct
  
  int set_cpus_allowed_ptr(struct task_struct *p, const struct cpumask *new_mask)
  {
@@ -90,7 +90,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  }
  EXPORT_SYMBOL_GPL(set_cpus_allowed_ptr);
  
-@@ -2406,7 +2413,8 @@ void sched_set_stop_task(int cpu, struct
+@@ -2404,7 +2411,8 @@ void sched_set_stop_task(int cpu, struct
  #else
  
  static inline int __set_cpus_allowed_ptr(struct task_struct *p,
@@ -100,7 +100,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  {
  	return set_cpus_allowed_ptr(p, new_mask);
  }
-@@ -6012,7 +6020,7 @@ long sched_setaffinity(pid_t pid, const
+@@ -6009,7 +6017,7 @@ long sched_setaffinity(pid_t pid, const
  	}
  #endif
  again:
@@ -109,7 +109,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	if (!retval) {
  		cpuset_cpus_allowed(p, cpus_allowed);
-@@ -6591,7 +6599,7 @@ void init_idle(struct task_struct *idle,
+@@ -6588,7 +6596,7 @@ void init_idle(struct task_struct *idle,
  	 *
  	 * And since this is boot we can forgo the serialization.
  	 */
@@ -141,7 +141,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  /* Assumes rq->lock is held */
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
-@@ -1808,7 +1808,8 @@ struct sched_class {
+@@ -1809,7 +1809,8 @@ struct sched_class {
  	void (*task_woken)(struct rq *this_rq, struct task_struct *task);
  
  	void (*set_cpus_allowed)(struct task_struct *p,
@@ -151,7 +151,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	void (*rq_online)(struct rq *rq);
  	void (*rq_offline)(struct rq *rq);
-@@ -1901,7 +1902,9 @@ extern void update_group_capacity(struct
+@@ -1902,7 +1903,9 @@ extern void update_group_capacity(struct
  
  extern void trigger_load_balance(struct rq *rq);
  

@@ -36,7 +36,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  /* Whether legacy memory+swap accounting is active */
  static bool do_memsw_account(void)
  {
-@@ -5735,12 +5743,12 @@ static int mem_cgroup_move_account(struc
+@@ -5727,12 +5735,12 @@ static int mem_cgroup_move_account(struc
  
  	ret = 0;
  
@@ -51,7 +51,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  out_unlock:
  	unlock_page(page);
  out:
-@@ -6811,10 +6819,10 @@ int mem_cgroup_charge(struct page *page,
+@@ -6802,10 +6810,10 @@ int mem_cgroup_charge(struct page *page,
  	css_get(&memcg->css);
  	commit_charge(page, memcg);
  
@@ -62,9 +62,9 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 -	local_irq_enable();
 +	local_unlock_irq(&event_lock.l);
  
- 	if (PageSwapCache(page)) {
- 		swp_entry_t entry = { .val = page_private(page) };
-@@ -6858,11 +6866,11 @@ static void uncharge_batch(const struct
+ 	/*
+ 	 * Cgroup1's unified memory+swap counter has been charged with the
+@@ -6861,11 +6869,11 @@ static void uncharge_batch(const struct
  		memcg_oom_recover(ug->memcg);
  	}
  
@@ -78,7 +78,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	/* drop reference from uncharge_page */
  	css_put(&ug->memcg->css);
-@@ -7016,10 +7024,10 @@ void mem_cgroup_migrate(struct page *old
+@@ -7019,10 +7027,10 @@ void mem_cgroup_migrate(struct page *old
  	css_get(&memcg->css);
  	commit_charge(newpage, memcg);
  
@@ -91,7 +91,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  }
  
  DEFINE_STATIC_KEY_FALSE(memcg_sockets_enabled_key);
-@@ -7194,6 +7202,7 @@ void mem_cgroup_swapout(struct page *pag
+@@ -7197,6 +7205,7 @@ void mem_cgroup_swapout(struct page *pag
  	struct mem_cgroup *memcg, *swap_memcg;
  	unsigned int nr_entries;
  	unsigned short oldid;
@@ -99,7 +99,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	VM_BUG_ON_PAGE(PageLRU(page), page);
  	VM_BUG_ON_PAGE(page_count(page), page);
-@@ -7239,9 +7248,13 @@ void mem_cgroup_swapout(struct page *pag
+@@ -7242,9 +7251,13 @@ void mem_cgroup_swapout(struct page *pag
  	 * important here to have the interrupts disabled because it is the
  	 * only synchronisation we have for updating the per-CPU variables.
  	 */

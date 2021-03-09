@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.4
-Release:        14%{?kat_build:.kat}%{?dist}
+Version:        5.10.21
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -21,16 +21,16 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=62605305a3cbae68780612d35e0585cfc4983afd
+%define sha1 linux=ef37b9c6bf722809cf035a55df29cac90150ed88
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 Source5:        modify_kernel_configs.inc
 %if 0%{?fips}
-%define fips_canister_version 4.0.1-5.10.4-7-secure
+%define fips_canister_version 4.0.1-5.10.4-8-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=4dc8578d3ff267ae378c947239fa0136a4bc26c3
+%define sha1 fips-canister=7b38a00e20db544ca8665cf8bd24fcb46971d6d9
 %endif
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
@@ -104,7 +104,6 @@ Patch602:       0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 Patch603:       x86-sev-es-load-idt-before-entering-long-mode-to-han-510.patch
 Patch604:       x86-swiotlb-Adjust-SWIOTLB-bounce-buffer-size-for-SE.patch
 Patch605:       x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
-Patch606:       x86-sev-es-Handle-string-port-IO-to-kernel-memory-properly.patch
 
 BuildArch:     x86_64
 BuildRequires: bc
@@ -214,7 +213,6 @@ The Linux package contains the Linux kernel doc files
 %patch603 -p1
 %patch604 -p1
 %patch605 -p1
-%patch606 -p1
 
 %build
 make mrproper
@@ -322,6 +320,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Mar 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.21-1
+-   Update to version 5.10.21
 *   Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-14
 -   Enable FIPS canister
 *   Fri Feb 19 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-13

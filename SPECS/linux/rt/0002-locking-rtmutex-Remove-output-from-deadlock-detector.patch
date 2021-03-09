@@ -252,7 +252,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	while (1) {
  		set_current_state(TASK_INTERRUPTIBLE);
  		schedule();
-@@ -1764,8 +1757,6 @@ int __rt_mutex_start_proxy_lock(struct r
+@@ -1763,8 +1756,6 @@ int __rt_mutex_start_proxy_lock(struct r
  		ret = 0;
  	}
  

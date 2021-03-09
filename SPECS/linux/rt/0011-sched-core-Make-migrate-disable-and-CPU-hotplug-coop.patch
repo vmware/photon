@@ -19,7 +19,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -1721,10 +1721,17 @@ static void migrate_disable_switch(struc
+@@ -1719,10 +1719,17 @@ static void migrate_disable_switch(struc
  
  void migrate_disable(void)
  {
@@ -39,7 +39,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  }
  EXPORT_SYMBOL_GPL(migrate_disable);
  
-@@ -1751,6 +1758,7 @@ void migrate_enable(void)
+@@ -1749,6 +1756,7 @@ void migrate_enable(void)
  	 */
  	barrier();
  	p->migration_disabled = 0;
@@ -47,7 +47,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	preempt_enable();
  }
  EXPORT_SYMBOL_GPL(migrate_enable);
-@@ -1760,6 +1768,11 @@ static inline bool is_migration_disabled
+@@ -1758,6 +1766,11 @@ static inline bool is_migration_disabled
  	return p->migration_disabled;
  }
  
@@ -59,7 +59,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #endif
  
  /*
-@@ -2691,6 +2704,11 @@ static inline bool is_migration_disabled
+@@ -2689,6 +2702,11 @@ static inline bool is_migration_disabled
  	return false;
  }
  
@@ -71,7 +71,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #endif
  
  static void
-@@ -7065,15 +7083,20 @@ static void balance_push(struct rq *rq)
+@@ -7062,15 +7080,20 @@ static void balance_push(struct rq *rq)
  	 * Both the cpu-hotplug and stop task are in this case and are
  	 * required to complete the hotplug process.
  	 */
@@ -94,7 +94,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  			raw_spin_unlock(&rq->lock);
  			rcuwait_wake_up(&rq->hotplug_wait);
  			raw_spin_lock(&rq->lock);
-@@ -7120,7 +7143,8 @@ static void balance_hotplug_wait(void)
+@@ -7117,7 +7140,8 @@ static void balance_hotplug_wait(void)
  {
  	struct rq *rq = this_rq();
  
@@ -104,7 +104,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  			   TASK_UNINTERRUPTIBLE);
  }
  
-@@ -7365,7 +7389,7 @@ int sched_cpu_dying(unsigned int cpu)
+@@ -7362,7 +7386,7 @@ int sched_cpu_dying(unsigned int cpu)
  	sched_tick_stop(cpu);
  
  	rq_lock_irqsave(rq, &rf);
@@ -115,7 +115,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	calc_load_migrate(rq);
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
-@@ -1047,6 +1047,10 @@ struct rq {
+@@ -1048,6 +1048,10 @@ struct rq {
  	/* Must be inspected within a rcu lock section */
  	struct cpuidle_state	*idle_state;
  #endif

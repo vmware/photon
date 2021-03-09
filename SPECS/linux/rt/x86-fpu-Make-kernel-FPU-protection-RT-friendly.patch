@@ -23,7 +23,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
 --- a/arch/x86/include/asm/fpu/api.h
 +++ b/arch/x86/include/asm/fpu/api.h
-@@ -32,15 +32,29 @@ extern void fpregs_mark_activate(void);
+@@ -43,15 +43,29 @@ static inline void kernel_fpu_begin(void
   *
   * local_bh_disable() protects against both preemption and soft interrupts
   * on !RT kernels.

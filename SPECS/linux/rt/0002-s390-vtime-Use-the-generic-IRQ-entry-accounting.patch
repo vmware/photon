@@ -70,7 +70,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #endif /* _S390_VTIME_H */
 --- a/arch/s390/kernel/vtime.c
 +++ b/arch/s390/kernel/vtime.c
-@@ -247,10 +247,6 @@ void vtime_account_kernel(struct task_st
+@@ -248,10 +248,6 @@ void vtime_account_kernel(struct task_st
  }
  EXPORT_SYMBOL_GPL(vtime_account_kernel);
  

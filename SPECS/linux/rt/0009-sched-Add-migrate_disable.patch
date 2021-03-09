@@ -114,7 +114,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	int				rcu_read_lock_nesting;
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -1696,6 +1696,61 @@ void check_preempt_curr(struct rq *rq, s
+@@ -1694,6 +1694,61 @@ void check_preempt_curr(struct rq *rq, s
  
  #ifdef CONFIG_SMP
  
@@ -176,7 +176,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  /*
   * Per-CPU kthreads are allowed to run on !active && online CPUs, see
   * __set_cpus_allowed_ptr() and select_fallback_rq().
-@@ -1705,7 +1760,7 @@ static inline bool is_cpu_allowed(struct
+@@ -1703,7 +1758,7 @@ static inline bool is_cpu_allowed(struct
  	if (!cpumask_test_cpu(cpu, p->cpus_ptr))
  		return false;
  
@@ -185,7 +185,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		return cpu_online(cpu);
  
  	return cpu_active(cpu);
-@@ -1826,6 +1881,11 @@ static int migration_cpu_stop(void *data
+@@ -1824,6 +1879,11 @@ static int migration_cpu_stop(void *data
   */
  void set_cpus_allowed_common(struct task_struct *p, const struct cpumask *new_mask, u32 flags)
  {
@@ -197,7 +197,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	cpumask_copy(&p->cpus_mask, new_mask);
  	p->nr_cpus_allowed = cpumask_weight(new_mask);
  }
-@@ -1836,7 +1896,22 @@ static void
+@@ -1834,7 +1894,22 @@ static void
  	struct rq *rq = task_rq(p);
  	bool queued, running;
  
@@ -221,7 +221,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  	queued = task_on_rq_queued(p);
  	running = task_current(rq, p);
-@@ -1887,9 +1962,14 @@ static int __set_cpus_allowed_ptr(struct
+@@ -1885,9 +1960,14 @@ static int __set_cpus_allowed_ptr(struct
  	rq = task_rq_lock(p, &rf);
  	update_rq_clock(rq);
  
@@ -238,7 +238,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		 */
  		cpu_valid_mask = cpu_online_mask;
  	}
-@@ -1903,7 +1983,7 @@ static int __set_cpus_allowed_ptr(struct
+@@ -1901,7 +1981,7 @@ static int __set_cpus_allowed_ptr(struct
  		goto out;
  	}
  
@@ -247,7 +247,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		goto out;
  
  	/*
-@@ -1995,6 +2075,8 @@ void set_task_cpu(struct task_struct *p,
+@@ -1993,6 +2073,8 @@ void set_task_cpu(struct task_struct *p,
  	 * Clearly, migrating tasks to offline CPUs is a fairly daft thing.
  	 */
  	WARN_ON_ONCE(!cpu_online(new_cpu));
@@ -256,7 +256,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  #endif
  
  	trace_sched_migrate_task(p, new_cpu);
-@@ -2325,6 +2407,12 @@ static int select_fallback_rq(int cpu, s
+@@ -2323,6 +2405,12 @@ static int select_fallback_rq(int cpu, s
  			}
  			fallthrough;
  		case possible:
@@ -269,7 +269,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  			do_set_cpus_allowed(p, cpu_possible_mask);
  			state = fail;
  			break;
-@@ -2359,7 +2447,7 @@ int select_task_rq(struct task_struct *p
+@@ -2357,7 +2445,7 @@ int select_task_rq(struct task_struct *p
  {
  	lockdep_assert_held(&p->pi_lock);
  
@@ -278,7 +278,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		cpu = p->sched_class->select_task_rq(p, cpu, sd_flags, wake_flags);
  	else
  		cpu = cpumask_any(p->cpus_ptr);
-@@ -2421,6 +2509,17 @@ static inline int __set_cpus_allowed_ptr
+@@ -2419,6 +2507,17 @@ static inline int __set_cpus_allowed_ptr
  
  #endif /* CONFIG_SMP */
  
@@ -296,7 +296,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  static void
  ttwu_stat(struct task_struct *p, int cpu, int wake_flags)
  {
-@@ -4575,6 +4674,7 @@ static void __sched notrace __schedule(b
+@@ -4572,6 +4671,7 @@ static void __sched notrace __schedule(b
  		 */
  		++*switch_count;
  
@@ -306,7 +306,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		trace_sched_switch(preempt, prev, next);
 --- a/kernel/sched/sched.h
 +++ b/kernel/sched/sched.h
-@@ -1896,14 +1896,16 @@ static inline bool sched_fair_runnable(s
+@@ -1897,14 +1897,16 @@ static inline bool sched_fair_runnable(s
  extern struct task_struct *pick_next_task_fair(struct rq *rq, struct task_struct *prev, struct rq_flags *rf);
  extern struct task_struct *pick_next_task_idle(struct rq *rq);
  

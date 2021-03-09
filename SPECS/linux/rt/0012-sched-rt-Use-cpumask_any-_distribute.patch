@@ -84,7 +84,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
 --- a/lib/cpumask.c
 +++ b/lib/cpumask.c
-@@ -267,3 +267,21 @@ int cpumask_any_and_distribute(const str
+@@ -261,3 +261,21 @@ int cpumask_any_and_distribute(const str
  	return next;
  }
  EXPORT_SYMBOL(cpumask_any_and_distribute);

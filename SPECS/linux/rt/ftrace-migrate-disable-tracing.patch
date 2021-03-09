@@ -20,12 +20,12 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  };
  
  #define TRACE_EVENT_TYPE_MAX						\
-@@ -155,6 +156,7 @@ static inline void tracing_generic_entry
- 	struct task_struct *tsk = current;
- 
+@@ -153,6 +154,7 @@ static inline void tracing_generic_entry
+ 						unsigned int trace_ctx)
+ {
  	entry->preempt_count		= trace_ctx & 0xff;
 +	entry->migrate_disable		= (trace_ctx >> 8) & 0xff;
- 	entry->pid			= (tsk) ? tsk->pid : 0;
+ 	entry->pid			= current->pid;
  	entry->type			= type;
  	entry->flags =			trace_ctx >> 16;
 --- a/kernel/trace/trace.c
@@ -43,10 +43,10 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 +#endif
 +}
 +
- static unsigned int __tracing_gen_ctx_flags(unsigned long irqflags)
+ unsigned int tracing_gen_ctx_irq_test(unsigned int irqs_status)
  {
- 	unsigned int trace_flags = 0;
-@@ -2608,7 +2617,8 @@ static unsigned int __tracing_gen_ctx_fl
+ 	unsigned int trace_flags = irqs_status;
+@@ -2596,7 +2605,8 @@ unsigned int tracing_gen_ctx_irq_test(un
  		trace_flags |= TRACE_FLAG_NEED_RESCHED;
  	if (test_preempt_need_resched())
  		trace_flags |= TRACE_FLAG_PREEMPT_RESCHED;
@@ -55,8 +55,8 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 +		(migration_disable_value() & 0xff) << 8;
  }
  
- unsigned int _tracing_gen_ctx_flags(unsigned long irqflags)
-@@ -3850,9 +3860,10 @@ static void print_lat_help_header(struct
+ struct ring_buffer_event *
+@@ -3802,9 +3812,10 @@ static void print_lat_help_header(struct
  		    "#                  | / _----=> need-resched    \n"
  		    "#                  || / _---=> hardirq/softirq \n"
  		    "#                  ||| / _--=> preempt-depth   \n"
@@ -70,7 +70,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  }
  
  static void print_event_info(struct array_buffer *buf, struct seq_file *m)
-@@ -3890,9 +3901,10 @@ static void print_func_help_header_irq(s
+@@ -3842,9 +3853,10 @@ static void print_func_help_header_irq(s
  	seq_printf(m, "#                            %.*s / _----=> need-resched\n", prec, space);
  	seq_printf(m, "#                            %.*s| / _---=> hardirq/softirq\n", prec, space);
  	seq_printf(m, "#                            %.*s|| / _--=> preempt-depth\n", prec, space);

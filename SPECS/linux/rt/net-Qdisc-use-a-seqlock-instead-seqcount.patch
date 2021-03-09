@@ -179,7 +179,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  		      struct nlattr *opt)
  {
  	struct gnet_estimator *parm = nla_data(opt);
-@@ -223,7 +223,7 @@ int gen_replace_estimator(struct gnet_st
+@@ -226,7 +226,7 @@ int gen_replace_estimator(struct gnet_st
  			  struct gnet_stats_basic_cpu __percpu *cpu_bstats,
  			  struct net_rate_estimator __rcu **rate_est,
  			  spinlock_t *lock,
@@ -238,7 +238,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  			 struct gnet_stats_basic_packed *b)
 --- a/net/sched/sch_api.c
 +++ b/net/sched/sch_api.c
-@@ -1257,7 +1257,7 @@ static struct Qdisc *qdisc_create(struct
+@@ -1258,7 +1258,7 @@ static struct Qdisc *qdisc_create(struct
  		rcu_assign_pointer(sch->stab, stab);
  	}
  	if (tca[TCA_RATE]) {

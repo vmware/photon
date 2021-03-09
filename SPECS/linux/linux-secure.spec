@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.4
-Release:        8%{?kat_build:.kat}%{?dist}
+Version:        5.10.21
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -21,15 +21,15 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=62605305a3cbae68780612d35e0585cfc4983afd
+%define sha1 linux=ef37b9c6bf722809cf035a55df29cac90150ed88
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 %if 0%{?fips}
-%define fips_canister_version 4.0.1-5.10.4-7-secure
+%define fips_canister_version 4.0.1-5.10.4-8-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=4dc8578d3ff267ae378c947239fa0136a4bc26c3
+%define sha1 fips-canister=7b38a00e20db544ca8665cf8bd24fcb46971d6d9
 %endif
 
 # common
@@ -281,6 +281,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Mar 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.21-1
+-   Update to version 5.10.21
 *   Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-8
 -   FIPS canister update
 *   Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-7

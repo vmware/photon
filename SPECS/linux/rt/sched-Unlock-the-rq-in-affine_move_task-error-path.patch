@@ -13,7 +13,7 @@ Link: https://lkml.kernel.org/r/20201106203921.GA48461@zipoli.concurrent-rt.com
 
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -2214,8 +2214,10 @@ static int affine_move_task(struct rq *r
+@@ -2212,8 +2212,10 @@ static int affine_move_task(struct rq *r
  	 *
  	 * Either way, we really should have a @pending here.
  	 */

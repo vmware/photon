@@ -77,7 +77,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	struct mm_struct *mm;
 --- a/kernel/sched/core.c
 +++ b/kernel/sched/core.c
-@@ -4248,9 +4248,13 @@ static struct rq *finish_task_switch(str
+@@ -4245,9 +4245,13 @@ static struct rq *finish_task_switch(str
  	 *   provided by mmdrop(),
  	 * - a sync_core for SYNC_CORE.
  	 */
@@ -92,7 +92,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  	}
  	if (unlikely(prev_state == TASK_DEAD)) {
  		if (prev->sched_class->task_dead)
-@@ -7265,6 +7269,7 @@ void sched_setnuma(struct task_struct *p
+@@ -7262,6 +7266,7 @@ void sched_setnuma(struct task_struct *p
  #endif /* CONFIG_NUMA_BALANCING */
  
  #ifdef CONFIG_HOTPLUG_CPU

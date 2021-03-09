@@ -303,7 +303,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  }
  
  /**
-@@ -2246,7 +2392,7 @@ int rt_mutex_wait_proxy_lock(struct rt_m
+@@ -2245,7 +2391,7 @@ int rt_mutex_wait_proxy_lock(struct rt_m
  	raw_spin_lock_irq(&lock->wait_lock);
  	/* sleep on the mutex */
  	set_current_state(TASK_INTERRUPTIBLE);
@@ -312,7 +312,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  	/*
  	 * try_to_take_rt_mutex() sets the waiter bit unconditionally. We might
  	 * have to fix that up.
-@@ -2316,3 +2462,97 @@ bool rt_mutex_cleanup_proxy_lock(struct
+@@ -2315,3 +2461,97 @@ bool rt_mutex_cleanup_proxy_lock(struct
  
  	return cleanup;
  }
@@ -412,7 +412,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 +#endif
 --- a/kernel/locking/rtmutex_common.h
 +++ b/kernel/locking/rtmutex_common.h
-@@ -160,6 +160,7 @@ extern void rt_mutex_postunlock(struct w
+@@ -159,6 +159,7 @@ extern void rt_mutex_postunlock(struct w
  				struct wake_q_head *wake_sleeper_q);
  
  /* RW semaphore special interface */
@@ -420,7 +420,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  
  extern int __rt_mutex_lock_state(struct rt_mutex *lock, int state);
  extern int __rt_mutex_trylock(struct rt_mutex *lock);
-@@ -167,6 +168,7 @@ extern void __rt_mutex_unlock(struct rt_
+@@ -166,6 +167,7 @@ extern void __rt_mutex_unlock(struct rt_
  int __sched rt_mutex_slowlock_locked(struct rt_mutex *lock, int state,
  				     struct hrtimer_sleeper *timeout,
  				     enum rtmutex_chainwalk chwalk,
