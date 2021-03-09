@@ -3,8 +3,8 @@
 
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
-Version:        11.2.0
-Release:        2%{?dist}
+Version:        11.2.5
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha1 open-vm-tools=dbb8c914b4a586b5e70bbc44833625021ff5f4c1
+%define sha1 open-vm-tools=fae156a049b39b79fcf4795f998dd7fc01894ae7
 Source1:        https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/%{gosc_ver}/gosc-scripts-%{gosc_ver}.tar.gz
 %define sha1 gosc-scripts-%{gosc_ver}=d29400a32bc4c0dad41f7e2183b9870fdf640f03
 Source2:        vmtoolsd.service
@@ -159,6 +159,8 @@ fi
 %{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-perf-metrics.sh
 
 %changelog
+*   Tue Mar 09 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.2.5-1
+-   Upgrade to version 11.2.5
 *   Sat Jan 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.2.0-2
 -   Added sdmp plugin support
 *   Sun Nov 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 11.2.0-1
