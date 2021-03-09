@@ -1,7 +1,7 @@
 Summary:          WPA client
 Name:             wpa_supplicant
 Version:          2.7
-Release:          5%{?dist}
+Release:          6%{?dist}
 License:          BSD
 URL:              https://w1.fi
 Group:            Applications/Communications
@@ -25,7 +25,7 @@ Patch12:          wpa_supplicant-CVE-2019-9494-0009-SAE-Use-constant-time-operat
 Patch13:          wpa_supplicant-CVE-2019-11555-0001-EAP-pwd-server-Fix-reassembly-buffer-handling.patch
 Patch14:          wpa_supplicant-CVE-2019-11555-0003-EAP-pwd-peer-Fix-reassembly-buffer-handling.patch
 Patch15:          CVE-2019-16275_AP_Silently_ignore_management_frame_from_unexpected_source_address.patch
-
+Patch16:          wpa_supplicant-CVE-2021-27803-0001-P2P-Fix-a-corner-case-in-peer-addition-based-on-PD-R.patch
 BuildRequires:    libnl-devel openssl-devel
 Requires:         libnl
 Requires:         openssl
@@ -51,6 +51,7 @@ WPA Supplicant is a Wi-Fi Protected Access (WPA) client and IEEE 802.1X supplica
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
 
 %build
 cat > wpa_supplicant/.config << "EOF"
@@ -127,6 +128,8 @@ EOF
 %{_sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf
 
 %changelog
+*   Tue Mar 9 2021 Michelle Wang <michellew@vmware.com> 2.7-6
+-   Patch for CVE-2021-27803
 *   Wed Oct 23 2019 Shreyas B. <shreyasb@vmware.com> 2.7-5
 -   Fixes for CVE-2019-16275.
 *   Mon Jun 24 2019 Michelle Wang <michellew@vmware.com> 2.7-4
