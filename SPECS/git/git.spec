@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.23.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
@@ -9,6 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
 %define sha1    git=5085682cd06b1fd035e313e50d31b7a7f62e04aa
+Patch0:         CVE-2021-21300-1.patch
+Patch1:         CVE-2021-21300-2.patch
+Patch2:         CVE-2021-21300-3.patch
 BuildRequires:  curl
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -40,6 +43,9 @@ These are the additional language files of git.
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
 %build
 ./configure \
         CFLAGS="%{optflags}" \
@@ -87,6 +93,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Tue Mar 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.23.3-2
+-   Fix CVE-2021-21300
 *   Tue May 12 2020 Prashant S Chauhan <psinghchauhan@vmware.com> 2.23.3-1
 -   Updated to version 2.23.3, fix CVE-2020-11008, CVE-2020-5260
 *   Mon Apr 27 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.23.1-2
