@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        13.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -19,25 +19,32 @@ BuildRequires:  diffutils
 BuildRequires:  gcc
 BuildRequires:  gettext
 BuildRequires:  krb5-devel
+BuildRequires:  icu-devel
 BuildRequires:  libedit-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  linux-api-headers
+BuildRequires:  Linux-PAM-devel
 BuildRequires:  openldap
 BuildRequires:  perl
 BuildRequires:  perl-IPC-Run
 BuildRequires:  python3-devel
 BuildRequires:  readline-devel
 BuildRequires:  openssl-devel
+BuildRequires:  systemtap-sdt-devel
+BuildRequires:  systemd-devel
 BuildRequires:  tar
 BuildRequires:  tcl-devel
 BuildRequires:  tzdata
+BuildRequires:  util-linux-libs
 BuildRequires:  zlib-devel
 Requires:       krb5
+Requires:       icu
 Requires:       libedit
 Requires:       libxml2
 Requires:       openldap
 Requires:       openssl
 Requires:       readline
+Requires:       systemd
 Requires:       tzdata
 Requires:       zlib
 
@@ -151,19 +158,24 @@ for the backend.
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h
 
 %configure \
+    --enable-dtrace \
     --enable-thread-safety \
     --enable-nls \
     --enable-tap-tests \
+    --with-icu \
     --with-ldap \
     --with-libxml \
     --with-openssl \
     --with-gssapi \
     --with-libedit-preferred \
+    --with-pam \
     --with-perl \
     --with-python \
     --with-readline \
+    --with-systemd \
     --with-system-tzdata=%{_datadir}/zoneinfo \
     --with-tcl \
+    --with-uuid=e2fs \
     --docdir=%{_docdir}/postgresql
 make world %{?_smp_mflags}
 
@@ -389,6 +401,7 @@ rm -rf %{buildroot}/*
 %{_datadir}/postgresql/extension/tsm_system_rows*
 %{_datadir}/postgresql/extension/tsm_system_time*
 %{_datadir}/postgresql/extension/unaccent*
+%{_datadir}/postgresql/extension/uuid-ossp*
 %{_datadir}/postgresql/extension/xml2*
 %{_docdir}/postgresql/extension/*.example
 %{_libdir}/postgresql/_int.so
@@ -434,6 +447,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/tsm_system_rows.so
 %{_libdir}/postgresql/tsm_system_time.so
 %{_libdir}/postgresql/unaccent.so
+%{_libdir}/postgresql/uuid-ossp.so
 %{_mandir}/man1/oid2name.*
 %{_mandir}/man1/pg_recvlogical.*
 %{_mandir}/man1/pg_standby.*
@@ -488,6 +502,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/plpython3.so
 
 %changelog
+*   Wed Mar 10 2021 Michael Paquier <mpaquier@vmware.com> 13.2-7
+-   Add support for ICU, systemd, PAM, libuuid and dtrace
 *   Mon Mar 08 2021 Michael Paquier <mpaquier@vmware.com> 13.2-6
 -   Add tests for more modules in the %check phase, with TAP tests
 *   Thu Mar 04 2021 Michael Paquier <mpaquier@vmware.com> 13.2-5
