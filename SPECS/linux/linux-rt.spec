@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.21
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt34
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -47,9 +47,9 @@ Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf
 Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
 %define sha1 ice=19507794824da33827756389ac8018aa84e9c427
 %if 0%{?fips}
-%define fips_canister_version 4.0.1-5.10.4-8-secure
+%define fips_canister_version 4.0.1-5.10.21-3-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=7b38a00e20db544ca8665cf8bd24fcb46971d6d9
+%define sha1 fips-canister=55c0ec3f19f09a8ecaae5f4b31789138026830d4
 %endif
 Source17:        modify_kernel_configs.inc
 
@@ -382,14 +382,21 @@ Patch600:       0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
 Patch601:       0001-RT-PATCH-sched-rt-RT_RUNTIME_GREED-sched-feature.patch
 Patch602:       use-kmsg_dump-iterator-for-RT.patch
 
+# Crypto:
+# Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
+Patch1000:       crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
+# Patch to call drbg and dh crypto tests from tcrypt
+Patch1001:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+Patch1002:       0001-Initialize-jitterentropy-before-ecdh.patch
+Patch1003:       0002-FIPS-crypto-self-tests.patch
+# Patch to remove urandom usage in rng module
+Patch1004:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch1010:       0001-FIPS-canister-binary-usage.patch
+Patch1008:       0001-FIPS-canister-binary-usage.patch
 %else
 %if 0%{?kat_build:1}
-Patch1011:       0001-Initialize-jitterentropy-before-ecdh.patch
-Patch1012:       0002-FIPS-crypto-self-tests.patch
-Patch1013:       0003-FIPS-broken-kattest.patch
+Patch1010:       0003-FIPS-broken-kattest.patch
 %endif
 %endif
 
@@ -776,13 +783,16 @@ The Linux package contains the Linux kernel doc files
 %patch601 -p1
 %patch602 -p1
 
+%patch1000 -p1
+%patch1001 -p1
+%patch1002 -p1
+%patch1003 -p1
+%patch1004 -p1
 %if 0%{?fips}
-%patch1010 -p1
+%patch1008 -p1
 %else
 %if 0%{?kat_build:1}
-%patch1011 -p1
-%patch1012 -p1
-%patch1013 -p1
+%patch1010 -p1
 %endif
 %endif
 
@@ -821,7 +831,7 @@ sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .conf
 
 %include %{SOURCE5}
 
-make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
+make V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
 
 %ifarch x86_64
 # build XR module
@@ -990,6 +1000,13 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Sun Mar 21 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.21-3
+-   Do not execute some tests twice
+-   Support future disablement of des3
+-   Do verbose build
+-   Canister update.
+*   Wed Mar 17 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.21-2
+-   Use jitterentropy rng instead of urandom in rng module.
 *   Tue Mar 16 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.21-1
 -   Update to version 5.10.21
 *   Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-10

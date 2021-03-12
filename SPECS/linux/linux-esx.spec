@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.21
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -28,9 +28,9 @@ Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 Source5:        modify_kernel_configs.inc
 %if 0%{?fips}
-%define fips_canister_version 4.0.1-5.10.4-8-secure
+%define fips_canister_version 4.0.1-5.10.21-3-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=7b38a00e20db544ca8665cf8bd24fcb46971d6d9
+%define sha1 fips-canister=55c0ec3f19f09a8ecaae5f4b31789138026830d4
 %endif
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
@@ -86,13 +86,15 @@ Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 Patch500:       crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+Patch502:       0001-Initialize-jitterentropy-before-ecdh.patch
+Patch503:       0002-FIPS-crypto-self-tests.patch
+# Patch to remove urandom usage in rng module
+Patch504:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch502:       0001-FIPS-canister-binary-usage.patch
+Patch508:       0001-FIPS-canister-binary-usage.patch
 %else
 %if 0%{?kat_build:1}
-Patch508:       0001-Initialize-jitterentropy-before-ecdh.patch
-Patch509:       0002-FIPS-crypto-self-tests.patch
 Patch510:       0003-FIPS-broken-kattest.patch
 %endif
 %endif
@@ -196,12 +198,13 @@ The Linux package contains the Linux kernel doc files
 # crypto
 %patch500 -p1
 %patch501 -p1
-%if 0%{?fips}
 %patch502 -p1
+%patch503 -p1
+%patch504 -p1
+%if 0%{?fips}
+%patch508 -p1
 %else
 %if 0%{?kat_build:1}
-%patch508 -p1
-%patch509 -p1
 %patch510 -p1
 %endif
 %endif
@@ -232,7 +235,7 @@ sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .co
 
 %include %{SOURCE4}
 
-make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
+make V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 
 # Do not compress modules which will be loaded at boot time
 # to speed up boot process
@@ -320,6 +323,13 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Sun Mar 21 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.21-3
+-   Do not execute some tests twice
+-   Support future disablement of des3
+-   Do verbose build
+-   Canister update.
+*   Mon Mar 15 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.21-2
+-   Use jitterentropy rng instead of urandom in rng module.
 *   Mon Mar 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.21-1
 -   Update to version 5.10.21
 *   Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-14
