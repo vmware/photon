@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        13.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -22,6 +22,7 @@ BuildRequires:  krb5-devel
 BuildRequires:  icu-devel
 BuildRequires:  libedit-devel
 BuildRequires:  libxml2-devel
+BuildRequires:  libxslt-devel
 BuildRequires:  linux-api-headers
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openldap
@@ -111,6 +112,8 @@ included in the PostgreSQL distribution.
 Summary:	PostgreSQL development header files and libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	%{name}-libs = %{version}-%{release}
+Requires:  libxslt
+Requires:  libxslt-devel
 Requires:  perl-IPC-Run
 
 %description devel
@@ -165,6 +168,7 @@ sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_man
     --with-icu \
     --with-ldap \
     --with-libxml \
+    --with-libxslt \
     --with-openssl \
     --with-gssapi \
     --with-libedit-preferred \
@@ -502,6 +506,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/plpython3.so
 
 %changelog
+*   Thu Mar 11 2021 Michael Paquier <mpaquier@vmware.com> 13.2-8
+-   Add support for libxslt
 *   Wed Mar 10 2021 Michael Paquier <mpaquier@vmware.com> 13.2-7
 -   Add support for ICU, systemd, PAM, libuuid and dtrace
 *   Mon Mar 08 2021 Michael Paquier <mpaquier@vmware.com> 13.2-6
