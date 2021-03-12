@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -17,6 +17,9 @@ Source2:        locale-gen.conf
 Patch0:         http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.31-fhs-1.patch
 Patch1:         0002-malloc-arena-fix.patch
 Patch2:         Fix_FMA4_detection_in_ifunc.patch
+Patch3:         CVE-2019-25013.patch
+Patch4:         CVE-2021-3326.patch
+Patch5:         CVE-2020-29562.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %define ExtraBuildRequires python3, python3-libs
@@ -74,6 +77,9 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -307,6 +313,8 @@ fi
 
 
 %changelog
+*   Thu Mar 11 2021 Ajay Kaher <akaher@vmware.com> 2.32-4
+-   Fix CVE-2019-25013, CVE-2021-3326, CVE-2020-29562
 *   Wed Mar 03 2021 Tapas Kundu <tkundu@vmware.com> 2.32-3
 -   Fix FMA4 detection in ifunc
 *   Mon Nov 30 2020 Ajay Kaher <akaher@vmware.com> 2.32-2
