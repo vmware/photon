@@ -1,4 +1,4 @@
-From 68dba37070bf969af2d2cdb99e649b0308a91356 Mon Sep 17 00:00:00 2001
+From 6210be8ad27fcc388eeb4f38526e517ff17e42a0 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Mon, 11 Jan 2021 16:46:43 +0000
 Subject: [PATCH 1/2] FIPS canister binary usage
@@ -13,11 +13,11 @@ This patch can be used at two stages:
 Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
 ---
  arch/x86/crypto/Makefile |  4 ---
- crypto/Makefile          | 90 +++++++++++++++++++++++++++++++++++++++---------
+ crypto/Makefile          | 91 +++++++++++++++++++++++++++++++++++++++---------
  init/main.c              |  3 ++
  lib/Makefile             |  2 +-
  lib/crypto/Makefile      |  9 -----
- 5 files changed, 78 insertions(+), 30 deletions(-)
+ 5 files changed, 78 insertions(+), 31 deletions(-)
 
 diff --git a/arch/x86/crypto/Makefile b/arch/x86/crypto/Makefile
 index a31de0c6ccde..610a027493fa 100644
@@ -35,7 +35,7 @@ index a31de0c6ccde..610a027493fa 100644
  sha1-ssse3-y := sha1_avx2_x86_64_asm.o sha1_ssse3_asm.o sha1_ssse3_glue.o
  sha1-ssse3-$(CONFIG_AS_SHA1_NI) += sha1_ni_asm.o
 diff --git a/crypto/Makefile b/crypto/Makefile
-index b279483fba50..cafd7696c984 100644
+index b7861fc22d33..af4cdacf7506 100644
 --- a/crypto/Makefile
 +++ b/crypto/Makefile
 @@ -40,7 +40,6 @@ rsa_generic-y += rsaprivkey.asn1.o
@@ -46,7 +46,15 @@ index b279483fba50..cafd7696c984 100644
  
  $(obj)/sm2signature.asn1.o: $(obj)/sm2signature.asn1.c $(obj)/sm2signature.asn1.h
  $(obj)/sm2.o: $(obj)/sm2signature.asn1.h
-@@ -56,12 +55,10 @@ obj-$(CONFIG_CRYPTO_ACOMP2) += crypto_acompress.o
+@@ -49,7 +48,6 @@ sm2_generic-y += sm2signature.asn1.o
+ sm2_generic-y += sm2.o
+ 
+ obj-$(CONFIG_CRYPTO_SM2) += sm2_generic.o
+-obj-y += crypto_self_test.o
+ 
+ crypto_acompress-y := acompress.o
+ crypto_acompress-y += scompress.o
+@@ -57,12 +55,10 @@ obj-$(CONFIG_CRYPTO_ACOMP2) += crypto_acompress.o
  
  cryptomgr-y := algboss.o testmgr.o
  
@@ -59,7 +67,7 @@ index b279483fba50..cafd7696c984 100644
  obj-$(CONFIG_CRYPTO_VMAC) += vmac.o
  obj-$(CONFIG_CRYPTO_XCBC) += xcbc.o
  obj-$(CONFIG_CRYPTO_NULL2) += crypto_null.o
-@@ -71,9 +68,6 @@ obj-$(CONFIG_CRYPTO_RMD128) += rmd128.o
+@@ -72,9 +68,6 @@ obj-$(CONFIG_CRYPTO_RMD128) += rmd128.o
  obj-$(CONFIG_CRYPTO_RMD160) += rmd160.o
  obj-$(CONFIG_CRYPTO_RMD256) += rmd256.o
  obj-$(CONFIG_CRYPTO_RMD320) += rmd320.o
@@ -69,7 +77,7 @@ index b279483fba50..cafd7696c984 100644
  obj-$(CONFIG_CRYPTO_SHA3) += sha3_generic.o
  obj-$(CONFIG_CRYPTO_SM3) += sm3_generic.o
  obj-$(CONFIG_CRYPTO_STREEBOG) += streebog_generic.o
-@@ -83,14 +77,10 @@ obj-$(CONFIG_CRYPTO_TGR192) += tgr192.o
+@@ -84,14 +77,10 @@ obj-$(CONFIG_CRYPTO_TGR192) += tgr192.o
  obj-$(CONFIG_CRYPTO_BLAKE2B) += blake2b_generic.o
  obj-$(CONFIG_CRYPTO_BLAKE2S) += blake2s_generic.o
  obj-$(CONFIG_CRYPTO_GF128MUL) += gf128mul.o
@@ -84,7 +92,7 @@ index b279483fba50..cafd7696c984 100644
  obj-$(CONFIG_CRYPTO_KEYWRAP) += keywrap.o
  obj-$(CONFIG_CRYPTO_ADIANTUM) += adiantum.o
  obj-$(CONFIG_CRYPTO_NHPOLY1305) += nhpoly1305.o
-@@ -120,7 +110,6 @@ endif
+@@ -121,7 +110,6 @@ endif
  
  obj-$(CONFIG_CRYPTO_PCRYPT) += pcrypt.o
  obj-$(CONFIG_CRYPTO_CRYPTD) += cryptd.o
@@ -92,7 +100,7 @@ index b279483fba50..cafd7696c984 100644
  obj-$(CONFIG_CRYPTO_FCRYPT) += fcrypt.o
  obj-$(CONFIG_CRYPTO_BLOWFISH) += blowfish_generic.o
  obj-$(CONFIG_CRYPTO_BLOWFISH_COMMON) += blowfish_common.o
-@@ -128,7 +117,6 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
+@@ -129,7 +117,6 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
  obj-$(CONFIG_CRYPTO_TWOFISH_COMMON) += twofish_common.o
  obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
  CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
@@ -100,7 +108,7 @@ index b279483fba50..cafd7696c984 100644
  CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
  obj-$(CONFIG_CRYPTO_SM4) += sm4_generic.o
  obj-$(CONFIG_CRYPTO_AES_TI) += aes_ti.o
-@@ -157,8 +145,6 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
+@@ -158,8 +145,6 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
  obj-$(CONFIG_CRYPTO_842) += 842.o
  obj-$(CONFIG_CRYPTO_RNG2) += rng.o
  obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
@@ -109,7 +117,7 @@ index b279483fba50..cafd7696c984 100644
  CFLAGS_jitterentropy.o = -O0
  KASAN_SANITIZE_jitterentropy.o = n
  UBSAN_SANITIZE_jitterentropy.o = n
-@@ -172,13 +158,11 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+@@ -173,13 +158,11 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
  obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
  obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
  obj-$(CONFIG_CRYPTO_OFB) += ofb.o
@@ -123,12 +131,12 @@ index b279483fba50..cafd7696c984 100644
  
  $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
  $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
-@@ -197,3 +181,77 @@ obj-$(CONFIG_ASYMMETRIC_KEY_TYPE) += asymmetric_keys/
+@@ -198,3 +181,77 @@ obj-$(CONFIG_ASYMMETRIC_KEY_TYPE) += asymmetric_keys/
  obj-$(CONFIG_CRYPTO_HASH_INFO) += hash_info.o
  crypto_simd-y := simd.o
  obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
 +
-+obj-$(CONFIG_CRYPTO_FIPS) += fips_canister.o fips_canister_wrapper.o
++obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper.o fips_canister.o
 +
 +ifdef CONFIG_CRYPTO_FIPS
 +ifneq ($(CONFIG_CRYPTO_FIPS),y)
@@ -202,7 +210,7 @@ index b279483fba50..cafd7696c984 100644
 +endif
 +endif
 diff --git a/init/main.c b/init/main.c
-index 9d964511fe0c..bcc6d5bb766d 100644
+index d9d914111251..1b906b43567b 100644
 --- a/init/main.c
 +++ b/init/main.c
 @@ -840,6 +840,8 @@ static void __init mm_init(void)

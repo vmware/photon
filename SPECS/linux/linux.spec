@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.21
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -56,9 +56,9 @@ Source12:       ena-Use-new-API-interface-after-napi_hash_del-.patch
 Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
 %define sha1 ice=19507794824da33827756389ac8018aa84e9c427
 %if 0%{?fips}
-%define fips_canister_version 4.0.1-5.10.4-8-secure
+%define fips_canister_version 4.0.1-5.10.21-3-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=7b38a00e20db544ca8665cf8bd24fcb46971d6d9
+%define sha1 fips-canister=55c0ec3f19f09a8ecaae5f4b31789138026830d4
 %endif
 
 # common
@@ -108,17 +108,18 @@ Patch203:        0003-of-overlay-Correct-symbol-path-fixups.patch
 Patch500:       crypto-testmgr-Add-drbg_pr_ctr_aes256-test-vectors.patch
 # Patch to call drbg and dh crypto tests from tcrypt
 Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+Patch502:       0001-Initialize-jitterentropy-before-ecdh.patch
+Patch503:       0002-FIPS-crypto-self-tests.patch
+# Patch to remove urandom usage in rng module
+Patch504:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 %if 0%{?fips}
 # FIPS canister usage patch
-Patch502:       0001-FIPS-canister-binary-usage.patch
+Patch508:       0001-FIPS-canister-binary-usage.patch
 %else
 %if 0%{?kat_build:1}
-Patch508:       0001-Initialize-jitterentropy-before-ecdh.patch
-Patch509:       0002-FIPS-crypto-self-tests.patch
 Patch510:       0003-FIPS-broken-kattest.patch
 %endif
 %endif
-
 
 # SEV on VMware:
 Patch600:       0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
@@ -289,12 +290,13 @@ Python programming language to use the interface to manipulate perf events.
 # crypto
 %patch500 -p1
 %patch501 -p1
-%if 0%{?fips}
 %patch502 -p1
+%patch503 -p1
+%patch504 -p1
+%if 0%{?fips}
+%patch508 -p1
 %else
 %if 0%{?kat_build:1}
-%patch508 -p1
-%patch509 -p1
 %patch510 -p1
 %endif
 %endif
@@ -340,7 +342,7 @@ grep -q CONFIG_CROSS_COMPILE= .config && sed -i '/^CONFIG_CROSS_COMPILE=/c\CONFI
 	echo 'CONFIG_CROSS_COMPILE="%{_host}-"' >> .config
 fi
 
-make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
+make V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
 
 %ifarch aarch64
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
@@ -355,7 +357,7 @@ make ARCH=%{arch} -C tools turbostat cpupower PYTHON=python3
 bldroot=`pwd`
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 patch -p4 < %{SOURCE12}
-make -C $bldroot M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
+make -C $bldroot M=`pwd` V=1 modules %{?_smp_mflags}
 popd
 
 # build XR module
@@ -646,6 +648,13 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Mar 21 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.21-3
+-   Do not execute some tests twice
+-   Support future disablement of des3
+-   Do verbose build
+-   Canister update.
+*   Mon Mar 15 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.21-2
+-   Use jitterentropy rng instead of urandom in rng module.
 *   Mon Mar 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.21-1
 -   Update to version 5.10.21
 *   Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.4-17
