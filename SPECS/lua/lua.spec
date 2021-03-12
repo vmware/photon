@@ -1,6 +1,6 @@
 Summary:	Programming language
 Name:		lua
-Version:	5.3.5
+Version:	5.3.6
 Release:	1%{?dist}
 License:	MIT
 URL:		http://www.lua.org
@@ -8,8 +8,8 @@ Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://www.lua.org/ftp/%{name}-%{version}.tar.gz
-%define sha1 lua=112eb10ff04d1b4c9898e121d6bdf54a81482447
-Patch0:		lua-5.3.4-shared_library-1.patch
+%define sha1 lua=f27d20d6c81292149bc4308525a9d6733c224fa5
+Patch0:		lua-5.3.6-shared_library-1.patch
 BuildRequires:	readline-devel
 Requires:	readline
 %description
@@ -34,14 +34,14 @@ make VERBOSE=1 %{?_smp_mflags} linux
 %install
 make %{?_smp_mflags} \
 	INSTALL_TOP=%{buildroot}/usr TO_LIB="liblua.so \
-	liblua.so.5.3 liblua.so.5.3.4" \
+	liblua.so.5.3 liblua.so.5.3.6" \
 	INSTALL_DATA="cp -d" \
 	INSTALL_MAN=%{buildroot}/usr/share/man/man1 \
 	install
 install -vdm 755 %{buildroot}%{_libdir}/pkgconfig
 cat > %{buildroot}%{_libdir}/pkgconfig/lua.pc <<- "EOF"
 	V=5.3
-	R=5.3.4
+	R=5.3.6
 
 	prefix=/usr
 	INSTALL_BIN=${prefix}/bin
@@ -55,7 +55,7 @@ cat > %{buildroot}%{_libdir}/pkgconfig/lua.pc <<- "EOF"
 	Name: Lua
 	Description: An Extensible Extension Language
 	Version: ${R}
-	Requires: 
+	Requires:
 	Libs: -L${libdir} -llua -lm
 	Cflags: -I${includedir}
 EOF
@@ -81,6 +81,8 @@ rm -rf %{buildroot}
 %{_libdir}/liblua.so
 
 %changelog
+*   Tue Mar 23 2021 Piyush Gupta <gpiyush@vmware.com> 5.3.6-1
+-   Update to 5.3.6
 *   Wed Sep 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 5.3.5-1
 -   Update to version 5.3.5
 *   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 5.3.4-1

@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.46
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -191,6 +191,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Tue Mar 23 2021 Piyush Gupta <gpiyush@vmware.com> 2.4.46-6
+-   Internal version bump up in order to compile with new lua.
 *   Wed Jan 20 2021 Tapas Kundu <tkundu@vmware.com> 2.4.46-5
 -   Fix pid path
 *   Fri Oct 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.4.46-4

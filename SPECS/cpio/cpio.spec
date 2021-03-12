@@ -1,7 +1,7 @@
 Summary:	cpio archive utility
 Name:		cpio
 Version:	2.13
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3+
 URL:        http://www.gnu.org/software/cpio/
 Group:      System Environment/System utilities
@@ -59,6 +59,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Tue Mar 23 2021 Piyush Gupta <gpiyush@vmware.com> 2.13-4
+- Internal version bump up in order to compile with new lua.
 * Mon Feb 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.13-3
 - Fix build with new rpm
 * Tue Jan 12 2021 Alexey Makhalov <amakhalov@vmware.com> 2.13-2

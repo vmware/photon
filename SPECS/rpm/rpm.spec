@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -249,6 +249,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Mar 23 2021 Piyush Gupta <gpiyush@vmware.com> 4.16.1.2-2
+-   Internal version bump up in order to compile with new lua.
 *   Thu Feb 04 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.2-1
 -   Version upgrade to 4.16.1.2
 *   Tue Oct 13 2020 Anisha Kumari <kanisha@vmware.com> 4.14.2-11
