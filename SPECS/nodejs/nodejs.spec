@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        14.13.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -10,6 +10,7 @@ URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
 %define         sha1 node=5d3a61a5136e341844ef44b648bab36bde7a6c24
 Patch0:         fix_build_with_python3.9.patch
+Patch1:         fix_dos_through_dns_request.patch
 BuildRequires:  coreutils >= 8.22, zlib
 BuildRequires:  python3
 BuildRequires:  which
@@ -31,6 +32,7 @@ for developing applications that use nodejs.
 %prep
 %setup -q -n node-v%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
 sh configure --prefix=%{_prefix}
@@ -70,6 +72,8 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Sun Mar 14 2021 Prashant S Chauhan <psinghchauha@vmware.com> 14.13.1-2
+-   Fix CVE-2020-8277,Denial of Service through DNS request
 *   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 14.13.1-1
 -   Update to 14.13.1 to build with python3.9
 *   Mon Jul 06 2020 Tapas Kundu <tkundu@vmware.com> 14.5.0-1
