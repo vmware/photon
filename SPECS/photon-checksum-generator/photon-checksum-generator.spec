@@ -1,13 +1,13 @@
 Name:            photon-checksum-generator
 Summary:         Userspace program to generate hmac sha256 / hmac sha512 sum of a file
-Version:         1.1
+Version:         1.2
 Release:         1%{?dist}
 License:         GPLv2+
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           Utilities
 Source0:         https://github.com/vmware/photon-checksum-generator/%{name}-%{version}.tar.gz
-%define sha1     %{name}=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
+%define sha1     %{name}=20658a922c0beca840942bf27d743955711c043a
 BuildRequires:   gcc
 Requires:        (linux-hmacgen or linux-secure-hmacgen or linux-aws-hmacgen or linux-esx-hmacgen)
 
@@ -32,6 +32,8 @@ cp user/hmacgen %{buildroot}%{_bindir}
 %{_bindir}/hmacgen
 
 %changelog
+*   Mon Mar 15 2021 Keerthana K <keerthanak@vmware.com> 1.2-1
+-   Update to version 1.2
 *   Wed Apr 29 2020 Keerthana K <keerthanak@vmware.com> 1.1-1
 -   Update to version 1.1.
 *   Tue Feb 11 2020 Keerthana K <keerthanak@vmware.com> 1.0-1

@@ -1,9 +1,9 @@
 %global security_hardening none
-%global photon_checksum_generator_version 1.1
+%global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.182
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -20,7 +20,7 @@ Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
 Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
-%define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
+%define sha1 photon-checksum-generator=20658a922c0beca840942bf27d743955711c043a
 Source6:        genhmac.inc
 
 # common
@@ -128,8 +128,6 @@ Patch152: 0056-Amazon-ENA-driver-Update-to-version-1.6.0.patch
 %if 0%{?kat_build:1}
 Patch1000:	fips-kat-tests.patch
 %endif
-
-Patch2000:	0001-add-path_put.patch
 
 BuildArch:      x86_64
 BuildRequires:  bc
@@ -281,10 +279,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
-
-pushd ../photon-checksum-generator-%{photon_checksum_generator_version}
-%patch2000 -p1
-popd
 
 %build
 make mrproper
@@ -471,6 +465,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Apr 15 2021 Keerthana K <keerthanak@vmware.com> 4.19.182-3
+-   photon-checksum-generator update to v1.2
 *   Tue Apr 06 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.182-2
 -   Disable kernel accounting for memory cgroups
 -   Enable cgroup v1 stats

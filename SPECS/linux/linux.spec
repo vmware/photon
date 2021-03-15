@@ -1,10 +1,10 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %global security_hardening none
-%global photon_checksum_generator_version 1.1
+%global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux
 Version:        4.19.182
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -27,7 +27,7 @@ Source6:        pre-preun-postun-tasks.inc
 Source7:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
 Source8:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
-%define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
+%define sha1 photon-checksum-generator=20658a922c0beca840942bf27d743955711c043a
 Source9:        genhmac.inc
 Source10:	https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCAP_1.6.tar.gz
 %define sha1 DCAP=84df31e729c4594f25f4fcb335940e06a2408ffc
@@ -404,8 +404,6 @@ Patch1510:      0001-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 %if 0%{?kat_build:1}
 Patch1000:       fips-kat-tests.patch
 %endif
-
-Patch2000:       0001-add-path_put.patch
 
 BuildRequires:  bc
 BuildRequires:  kbd
@@ -858,10 +856,6 @@ popd
 %patch1000 -p1
 %endif
 
-pushd ../photon-checksum-generator-%{photon_checksum_generator_version}
-%patch2000 -p1
-popd
-
 %build
 make mrproper
 
@@ -1227,6 +1221,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Thu Apr 15 2021 Keerthana K <keerthanak@vmware.com> 4.19.182-3
+-   photon-checksum-generator update to v1.2
 *   Tue Apr 06 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.182-2
 -   Disable kernel accounting for memory cgroups
 -   Enable cgroup v1 stats

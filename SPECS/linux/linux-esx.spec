@@ -1,9 +1,9 @@
 %global security_hardening none
-%global photon_checksum_generator_version 1.1
+%global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.182
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -20,7 +20,7 @@ Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
 Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
-%define sha1 photon-checksum-generator=1d5c2e1855a9d1368cf87ea9a8a5838841752dc3
+%define sha1 photon-checksum-generator=20658a922c0beca840942bf27d743955711c043a
 Source6:        genhmac.inc
 
 # common
@@ -347,8 +347,6 @@ Patch514:        initramfs-Introduce-kernel-panic-on-initramfs-unpack.patch
 Patch1000:      fips-kat-tests.patch
 %endif
 
-Patch2000:      0001-add-path_put.patch
-
 BuildArch:     x86_64
 BuildRequires: bc
 BuildRequires: kbd
@@ -665,10 +663,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch1000 -p1
 %endif
 
-pushd ../photon-checksum-generator-%{photon_checksum_generator_version}
-%patch2000 -p1
-popd
-
 %build
 # patch vmw_balloon driver
 sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
@@ -798,6 +792,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Apr 15 2021 Keerthana K <keerthanak@vmware.com> 4.19.182-3
+-   photon-checksum-generator update to v1.2
 *   Tue Apr 06 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.182-2
 -   .config: disable kernel accounting for memory cgroups
 -   .config: enable PERCPU_STATS
