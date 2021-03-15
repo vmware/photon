@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        13.2
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -15,6 +15,8 @@ Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{versi
 %global pgmajorversion 13
 
 # Common libraries needed
+# clang-devel is needed for LLVM.
+BuildRequires:  clang-devel
 BuildRequires:  diffutils
 BuildRequires:  gcc
 BuildRequires:  gettext
@@ -25,6 +27,7 @@ BuildRequires:  libxml2-devel
 BuildRequires:  libxslt-devel
 BuildRequires:  linux-api-headers
 BuildRequires:  Linux-PAM-devel
+BuildRequires:  llvm-devel
 BuildRequires:  openldap
 BuildRequires:  perl
 BuildRequires:  perl-IPC-Run
@@ -112,8 +115,10 @@ included in the PostgreSQL distribution.
 Summary:	PostgreSQL development header files and libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	%{name}-libs = %{version}-%{release}
+Requires:  clang-devel
 Requires:  libxslt
 Requires:  libxslt-devel
+Requires:  llvm-devel
 Requires:  perl-IPC-Run
 
 %description devel
@@ -122,6 +127,15 @@ needed to compile C or C++ applications which will directly interact
 with a PostgreSQL database management server. It also contains the ecpg
 Embedded C Postgres preprocessor. You need to install this package if you
 want to develop applications which will interact with a PostgreSQL server.
+
+%package llvmjit
+Summary:    Just-in-time compilation support for PostgreSQL
+Requires:   %{name}-server = %{version}-%{release}
+Requires:   llvm
+
+%description llvmjit
+The postgresql-llvmjit package contains support for just-in-time
+compilation with PostgreSQL queries.
 
 %package plperl
 Summary:	The Perl procedural language for PostgreSQL
@@ -169,6 +183,7 @@ sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_man
     --with-ldap \
     --with-libxml \
     --with-libxslt \
+    --with-llvm \
     --with-openssl \
     --with-gssapi \
     --with-libedit-preferred \
@@ -457,6 +472,12 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/pg_standby.*
 %{_mandir}/man1/vacuumlo.*
 
+%files llvmjit
+%defattr(-,root,root)
+%{_libdir}/postgresql/bitcode/*
+%{_libdir}/postgresql/llvmjit.so
+%{_libdir}/postgresql/llvmjit_types.bc
+
 %files devel
 %defattr(-,root,root)
 %{_bindir}/ecpg
@@ -506,6 +527,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/plpython3.so
 
 %changelog
+*   Tue Mar 16 2021 Michael Paquier <mpaquier@vmware.com> 13.2-9
+-   Add support for JIT and LLVM
 *   Thu Mar 11 2021 Michael Paquier <mpaquier@vmware.com> 13.2-8
 -   Add support for libxslt
 *   Wed Mar 10 2021 Michael Paquier <mpaquier@vmware.com> 13.2-7

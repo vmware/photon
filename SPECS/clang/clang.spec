@@ -1,7 +1,7 @@
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
 Version:        11.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NCSA
 URL:            http://clang.llvm.org
 Group:          Development/Tools
@@ -29,6 +29,7 @@ C, C++, Objective C/C++, OpenCL C and others for the LLVM compiler. You can get 
 %package        devel
 Summary:        Development headers for clang
 Requires:       %{name} = %{version}-%{release}
+Requires:       ncurses-devel
 %description    devel
 The clang-devel package contains libraries, header files and documentation for developing applications that use clang.
 
@@ -75,6 +76,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Tue Mar 16 2021 Michael Paquier <mpaquier@vmware.com> 11.0.1-2
+-   Addition of required dependency to ncurses-devel for devel package.
 *   Thu Feb 04 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.0.1-1
 -   Upgrade to v11.0.1
 *   Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 10.0.1-1
