@@ -1,6 +1,6 @@
 Name:             systemd
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
-Version:          247.3
+Version:          247.4
 Release:          1%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 Summary:          System and Service Manager
@@ -9,8 +9,8 @@ Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
 
-Source0:          %{name}-stable-%{version}.tar.gz
-%define sha1      systemd=9bad8622d0198406e6570ca7c54de0eac47e468e
+Source0:          https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
+%define sha1      systemd=6c2df8dfa6a69db1e4e324222f7f635b4a8a381b
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          systemd.cfg
@@ -330,7 +330,6 @@ systemctl daemon-reexec &>/dev/null || {
 journalctl --update-catalog &>/dev/null || :
 systemd-tmpfiles --create &>/dev/null || :
 
-# See https://github.com/systemd/systemd/blob/master/NEWS#L1273
 if [ $1 -eq 1 ] ; then
         systemctl preset-all &>/dev/null || :
         systemctl --global preset-all &>/dev/null || :
@@ -339,11 +338,15 @@ fi
 %clean
 rm -rf %{buildroot}/*
 
+%global udev_services systemd-udevd.service systemd-udev-settle.service systemd-udev-trigger.service systemd-udevd-control.socket systemd-udevd-kernel.socket systemd-timesyncd.service
+
 %post udev
 udevadm hwdb --update &>/dev/null || :
 
+%systemd_post %udev_services
+
 %preun udev
-%systemd_preun systemd-udev{d,-settle,-trigger}.service systemd-udevd-{control,kernel}.socket systemd-timesyncd.service
+%systemd_preun %udev_services
 
 %postun udev
 %systemd_postun_with_restart systemd-udevd.service
@@ -652,6 +655,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+*    Tue Mar 16 2021 Susant Sahani <ssahani@vmware.com>  247.4-1
+-    Version bump and fix udev preun macro
 *    Wed Feb 03 2021 Susant Sahani <ssahani@vmware.com>  247.3-1
 -    Version bump
 *    Mon Jan 04 2021 Susant Sahani <ssahani@vmware.com>  247.2-2
