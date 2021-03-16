@@ -1,0 +1,41 @@
+From 8ea115f7bfa8ee32f38d764911b91dc43edc4600 Mon Sep 17 00:00:00 2001
+From: Piyush Gupta <gpiyush@vmware.com>
+Date: Tue, 16 Mar 2021 10:53:05 +0000
+Subject: [PATCH] Upgrade node version to 10.24.0
+
+---
+ .node-version | 2 +-
+ .nvmrc        | 2 +-
+ package.json  | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/.node-version b/.node-version
+index c2f64213..32521e62 100644
+--- a/.node-version
++++ b/.node-version
+@@ -1 +1 @@
+-10.22.1
++10.24.0
+diff --git a/.nvmrc b/.nvmrc
+index c2f64213..32521e62 100644
+--- a/.nvmrc
++++ b/.nvmrc
+@@ -1 +1 @@
+-10.22.1
++10.24.0
+diff --git a/package.json b/package.json
+index cb5cb4d6..6b0786b4 100644
+--- a/package.json
++++ b/package.json
+@@ -440,7 +440,7 @@
+     "zlib": "^1.0.5"
+   },
+   "engines": {
+-    "node": "10.22.1",
++    "node": "10.24.0",
+     "yarn": "^1.21.1"
+   }
+ }
+-- 
+2.23.0
+

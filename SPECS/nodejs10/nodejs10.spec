@@ -1,15 +1,14 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs10
-Version:        10.22.1
-Release:        2%{?dist}
+Version:        10.24.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.xz
-%define         sha1 node=7a684e402412ab8f9b40f936ca5665bdc9c21978
-Patch0:         0001-src-use-unique_ptr-for-WriteWrap.patch
+%define         sha1 node=01f110a36a890ed5a527646a2bb85b7fe8eb9847
 BuildArch:      x86_64
 BuildRequires:  coreutils >= 8.22, openssl-devel >= 1.0.1
 BuildRequires:  python2
@@ -35,7 +34,6 @@ for developing applications that use nodejs.
 
 %prep
 %setup -q -n node-v%{version}
-%patch0 -p1
 
 %build
 ./configure --prefix=%{_prefix}
@@ -77,6 +75,8 @@ make  %{?_smp_mflags} test
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Tue Mar 16 2021 Piyush Gupta <gpiyush@vmware.com> 10.24.0-1
+-   Update to 10.24.0, Fixes CVE-2021-22883, CVE-2021-22884
 *   Fri Jan 15 2021 Ankit Jain <ankitja@vmware.com> 10.22.1-2
 -   Fix for CVE-2020-8265
 *   Wed Oct 07 2020 Piyush Gupta <gpiyush@vmware.com> 10.22.1-1
