@@ -249,13 +249,14 @@ rmwJmO316ERfkQ/chLaElhi9qwYJG/jqlNIISWFyztqD1b3fxU6m5MOBIujh7Xpg
 &lt;p>The example in this section shows how to create a Photon OS instance on Google Cloud Engine with and without cloud-init user data.&lt;/p>
 &lt;h3 id="prerequisites">Prerequisites&lt;/h3>
 &lt;ul>
-&lt;li>
-&lt;p>You must have set up a GCE account and are ready to pay Google for its cloud services. The GCE-ready version of Photon OS is a free image and is free. You can download it without registration from the following Bintray location: &lt;code>https://bintray.com/vmware/photon/gce/view&lt;/code>&lt;/p>
-&lt;p>The GCE-ready image of Photon OS contains packages and scripts that prepare it for the Google cloud to save you time as you implement a compute cluster or develop cloud applications. The GCE-ready version of Photon OS adds the following packages to the &lt;a href="https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json">packages installed with the minimal version&lt;/a>:&lt;/p>
-&lt;pre>&lt;code>sudo, tar, which, google-daemon, google-startup-scripts,
-kubernetes, perl-DBD-SQLite, perl-DBIx-Simple, perl, ntp
-&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>You must have set up a GCE account and are ready to pay Google for its cloud services. The GCE-ready version of Photon OS is licensed as described in the Photon OS &lt;a href="https://github.com/vmware/photon/blob/master/LICENSE.md">LICENSE guide&lt;/a>. GCE and other environment-specific Packages are stored in the open using the following URL pattern: &lt;code>https://packages.vmware.com/photon/&amp;lt;release&amp;gt;/&amp;lt;revision&amp;gt;/gce&lt;/code>&lt;/li>
 &lt;/ul>
+&lt;p>For example, the current GA revision of the 4.0 release would be located at the following URL: &lt;a href="https://packages.vmware.com/photon/4.0/GA/gce/">https://packages.vmware.com/photon/4.0/GA/gce/&lt;/a>, and the 3.0 GA version would be located at: &lt;a href="https://packages.vmware.com/photon/3.0/GA/gce/">https://packages.vmware.com/photon/3.0/GA/gce/&lt;/a>.&lt;/p>
+&lt;pre>&lt;code>The GCE-ready image of Photon OS contains packages and scripts that prepare it for the Google cloud to save you time as you implement a compute cluster or develop cloud applications. The GCE-ready version of Photon OS adds the following packages to the [packages installed with the minimal version](https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json):
+```
+sudo, tar, which, google-daemon, google-startup-scripts,
+kubernetes, perl-DBD-SQLite, perl-DBIx-Simple, perl, ntp
+&lt;/code>&lt;/pre>
 &lt;pre>&lt;code>
 - Verify that you have the `gcloud command-line tool`.
 For more information see, [https://cloud.google.com/compute/docs/gcloud-compute](https://cloud.google.com/compute/docs/gcloud-compute).
