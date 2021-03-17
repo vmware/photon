@@ -24,7 +24,7 @@
 &lt;/tr>
 &lt;tr>
 &lt;td>Distribution File&lt;/td>
-&lt;td>Photon OS ISO or OVA file downloaded from bintray (&lt;a href="https://bintray.com/vmware/photon/">https://bintray.com/vmware/photon/&lt;/a>).&lt;/td>
+&lt;td>Photon OS ISO or OVA file downloaded from Packages URL (&lt;a href="https://packages.vmware.com/photon/">https://packages.vmware.com/photon/&lt;/a>).&lt;/td>
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
@@ -41,7 +41,7 @@
 &lt;/li>
 &lt;li>
 &lt;p>Download Photon OS. Go to the following Bintray URL and download the latest release of Photon OS:&lt;/p>
-&lt;p>&lt;a href="https://bintray.com/vmware/photon/">https://bintray.com/vmware/photon/&lt;/a>&lt;/p>
+&lt;p>&lt;a href="https://packages.vmware.com/photon/">https://packages.vmware.com/photon/&lt;/a>&lt;/p>
 &lt;p>For instructions, see &lt;a href="../../downloading-photon/">Downloading Photon OS&lt;/a>.&lt;/p>
 &lt;/li>
 &lt;/ol></description></item><item><title>Docs-V3: Importing the OVA for Photon OS 3.0</title><link>/docs-v3/installation-guide/run-photon-on-fusion/importing-photon-os-from-ova-on-fusion/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/run-photon-on-fusion/importing-photon-os-from-ova-on-fusion/</guid><description>
