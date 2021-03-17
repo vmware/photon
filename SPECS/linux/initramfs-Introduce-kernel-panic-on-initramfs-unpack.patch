@@ -1,0 +1,74 @@
+From d4449b8821247cd4ab4079ffda7b1ddae8779840 Mon Sep 17 00:00:00 2001
+From: Sharan Turlapati <sturlapati@vmware.com>
+Date: Tue, 16 Mar 2021 23:36:20 +0000
+Subject: [PATCH] initramfs: Introduce kernel panic on initramfs unpack failure
+ for CRX
+
+During the init sequence, when there is an error
+in unpacking initramfs, the kernel was
+only adding a log to dmesg and continued in the init
+sequence. This eventually resulted in a panic being
+thrown in the userspace init code(CRX) without any
+indication of the reason why the error was
+encountered.
+
+Instead of allowing the kernel to continue with
+init, add a panic upon encountering this error
+to prevent any problems in userspace.
+
+This change also consolidates all panics that are
+specific to CRX under one kernel parameter -
+panic_on_initramfs_error
+---
+ init/initramfs.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/init/initramfs.c b/init/initramfs.c
+index 4dcfb6bd35fa..045e3e5f48da 100644
+--- a/init/initramfs.c
++++ b/init/initramfs.c
+@@ -16,14 +16,14 @@ static __initdata bool page_aligned_fmt = false;
+ 
+ static int __initdata do_retain_initrd;
+ 
+-static __initdata bool initrd_no_file_overwrite = false;
++static __initdata bool panic_on_initramfs_error = false;
+ 
+-static int __init initrd_no_file_overwrite_setup(char *__unused)
++static int __init panic_on_initramfs_error_setup(char *__unused)
+ {
+-	initrd_no_file_overwrite = true;
++	panic_on_initramfs_error = true;
+ 	return 1;
+ }
+-__setup("initrd_no_file_overwrite", initrd_no_file_overwrite_setup);
++__setup("panic_on_initramfs_error", panic_on_initramfs_error_setup);
+ 
+ static ssize_t __init xadd_pages(int fd, const char *p, size_t count)
+ {
+@@ -409,7 +409,7 @@ static int __init do_name(void)
+ 		if (ml >= 0) {
+ 			int openflags = O_WRONLY|O_CREAT;
+ 			if (ml != 1) {
+-				if (initrd_no_file_overwrite && is_overwrite(collected))
++				if (panic_on_initramfs_error && is_overwrite(collected))
+ 					panic("initramfs: file already exists %s", collected);
+ 				openflags |= O_TRUNC;
+ 			}
+@@ -721,8 +721,12 @@ static int __init populate_rootfs(void)
+ 		printk(KERN_INFO "Unpacking initramfs...\n");
+ 		err = unpack_to_rootfs((char *)initrd_start,
+ 			initrd_end - initrd_start);
+-		if (err)
++		if (err) {
++			if (panic_on_initramfs_error)
++				panic("Initramfs unpacking failed: %s", err);
+ 			printk(KERN_EMERG "Initramfs unpacking failed: %s\n", err);
++		}
++
+ #endif
+ 	}
+ 	free_initrd();
+-- 
+2.28.0
+
