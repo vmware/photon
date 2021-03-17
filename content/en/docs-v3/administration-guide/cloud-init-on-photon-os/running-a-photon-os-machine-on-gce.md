@@ -13,7 +13,7 @@ The example in this section shows how to create a Photon OS instance on Google C
 
 - You must have set up a GCE account and are ready to pay Google for its cloud services. The GCE-ready version of Photon OS is licensed as described in the Photon OS [LICENSE guide](https://github.com/vmware/photon/blob/master/LICENSE.md). GCE and other environment-specific Packages are stored in the open using the following URL pattern: `https://packages.vmware.com/photon/<release>/<revision>/gce`
 
-For example, the current GA revision of the 4.0 release would be located at the following URL: [https://packages.vmware.com/photon/4.0/GA/gce/](https://packages.vmware.com/photon/4.0/GA/gce/)
+For example, the current GA revision of the 4.0 release would be located at the following URL: [https://packages.vmware.com/photon/4.0/GA/gce/](https://packages.vmware.com/photon/4.0/GA/gce/), and the 3.0 GA version would be located at: [https://packages.vmware.com/photon/3.0/GA/gce/](https://packages.vmware.com/photon/3.0/GA/gce/).
 
     The GCE-ready image of Photon OS contains packages and scripts that prepare it for the Google cloud to save you time as you implement a compute cluster or develop cloud applications. The GCE-ready version of Photon OS adds the following packages to the [packages installed with the minimal version](https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json): 
 	
