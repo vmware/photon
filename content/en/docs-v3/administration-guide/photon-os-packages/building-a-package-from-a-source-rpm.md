@@ -3,7 +3,7 @@ title:  Building a Package from a Source RPM
 weight: 5
 ---
 
-This section describes how to install and build a package on the full version of Photon OS from the package's source RPM. Obtain the source RPMs that Photon OS uses from the  Bintray location, [https://bintray.com/vmware/photon](https://bintray.com/vmware/photon)
+This section describes how to install and build a package on the full version of Photon OS from the package's source RPM. Obtain the source RPMs that Photon OS uses from the  Packages location, [https://packages.vmware.com/photon](https://packages.vmware.com/photon)
 
 
 ## Prerequisites
