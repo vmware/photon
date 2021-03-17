@@ -177,7 +177,7 @@ Build completed. RPMS are in '&amp;lt;HOME&amp;gt;/photon/tools/examples/build_s
 &lt;p>You can now run any other containerized application from Docker Hub or your own containerized application within Photon OS.&lt;/p>
 &lt;/li>
 &lt;/ol></description></item><item><title>Docs-V3: Compatible Cloud Images</title><link>/docs-v3/installation-guide/cloud-images/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/cloud-images/</guid><description>
-&lt;p>The &lt;a href="https://bintray.com/vmware/photon/">Bintray website&lt;/a> contains the following cloud-ready images of Photon OS:&lt;/p>
+&lt;p>The &lt;a href="https://packages.vmware.com/photon/">Packages URL&lt;/a> contains the following cloud-ready images of Photon OS:&lt;/p>
 &lt;ol>
 &lt;li>
 &lt;p>GCE - Google Compute Engine&lt;/p>
@@ -189,7 +189,7 @@ Build completed. RPMS are in '&amp;lt;HOME&amp;gt;/photon/tools/examples/build_s
 &lt;p>OVA&lt;/p>
 &lt;/li>
 &lt;/ol>
-&lt;p>Because the cloud-ready images of Photon OS are built to be compatible with their corresponding cloud platform or format, you typically do not need to build a cloud image&amp;ndash;just go to Bintray and download the image for the platform that you are working on.&lt;/p>
+&lt;p>Because the cloud-ready images of Photon OS are built to be compatible with their corresponding cloud platform or format, you typically do not need to build a cloud image&amp;ndash;just go to Packages URL and download the image for the platform that you are working on.&lt;/p>
 &lt;p>If, however, you want to build your own cloud image, perhaps because you seek to customize the code, see the next section on how to build cloud images.&lt;/p>
 &lt;h2 id="how-to-build-cloud-images">How to build cloud images&lt;/h2>
 &lt;pre>&lt;code>sudo make cloud-image IMG_NAME=image-name
