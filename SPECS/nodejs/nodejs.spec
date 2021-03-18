@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        14.13.1
+Version:        14.16.0
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,8 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define         sha1 node=5d3a61a5136e341844ef44b648bab36bde7a6c24
-Patch0:         fix_build_with_python3.9.patch
+%define         sha1 node=d5d92abc160dc4ca4a27a6d43bcf78c42b7aff06
 BuildRequires:  coreutils >= 8.22, zlib
 BuildRequires:  python3
 BuildRequires:  which
@@ -30,7 +29,6 @@ for developing applications that use nodejs.
 
 %prep
 %setup -q -n node-v%{version}
-%patch0 -p1
 
 %build
 sh configure --prefix=%{_prefix}
@@ -70,6 +68,8 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Thu Mar 18 2021 Piyush Gupta <gpiyush@vmware.com> 14.16.0-1
+-   Upgrade to 14.16.0
 *   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 14.13.1-1
 -   Update to 14.13.1 to build with python3.9
 *   Mon Jul 06 2020 Tapas Kundu <tkundu@vmware.com> 14.5.0-1
