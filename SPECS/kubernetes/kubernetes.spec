@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.17.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -9,7 +9,8 @@ Source0:        kubernetes-%{version}.tar.gz
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Patch0:         CVE-2020-8564.patch
-Patch1:         CVE-2020-8566.patch
+Patch1:         CVE-2020-8565.patch
+Patch2:         CVE-2020-8566.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -63,6 +64,7 @@ sed -i 's|.*KUBELET_ADDRESS.*|KUBELET_CONFIG="--config=/var/lib/kubelet/config.y
 cd %{name}-%{version}
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 make
@@ -220,6 +222,8 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Thu Mar 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-3
+-   Fix CVE-2020-8565
 *   Mon Mar 02 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-2
 -   Fix CVE-2020-8564, CVE-2020-8566
 *   Wed Sep 16 2020 Ashwin H <ashwinh@vmware.com> 1.17.11-1
