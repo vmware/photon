@@ -1,19 +1,16 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
-Version:        3.6.1
-Release:        5%{?dist}
+Version:        3.12.3
+Release:        1%{?dist}
 License:        Apache-2.0
-URL:            https://github.com/projectcalico/calico
+URL:            https://github.com/projectcalico/node
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 calico=43310c3ae20b7806ae030d11ae99c135a35badac
-Source1:         go-27704.patch
-Source2:         go-27842.patch
+%define sha1 calico=dda88fd083669067280e7c6b616dcea40d75967f
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  git
-BuildRequires:  glide
-BuildRequires:  go >= 1.11
+BuildRequires:  go
 BuildRequires:  make
 
 %description
@@ -23,27 +20,15 @@ Calico node is a container that bundles together various components reqiured for
 %setup -n node-%{version}
 
 %build
-mkdir -p /root/.glide
-mkdir -p ${GOPATH}/src/github.com/projectcalico/node
-cp -r * ${GOPATH}/src/github.com/projectcalico/node
-pushd ${GOPATH}/src/github.com/projectcalico/node
-glide install --strip-vendor
-pushd vendor/golang.org/x/net
-patch -p1 < %{SOURCE1}
-patch -p1 < %{SOURCE2}
-popd
 mkdir -p dist
-mkdir -p .go-pkg-cache
-GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -v -i -o dist/calico-node cmd/calico-node/main.go
-popd
+go build -v -i -o dist/calico-node cmd/calico-node/main.go
 
 %install
-pushd ${GOPATH}/src/github.com/projectcalico
 install -vdm 755 %{buildroot}%{_bindir}
-install node/dist/calico-node %{buildroot}%{_bindir}/
+install dist/calico-node %{buildroot}%{_bindir}/
 install -vdm 0755 %{buildroot}/usr/share/calico/docker/fs
-cp -r node/filesystem/etc %{buildroot}/usr/share/calico/docker/fs/
-cp -r node/filesystem/sbin %{buildroot}/usr/share/calico/docker/fs/
+cp -r filesystem/etc %{buildroot}/usr/share/calico/docker/fs/
+cp -r filesystem/sbin %{buildroot}/usr/share/calico/docker/fs/
 sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/docker/fs/etc/rc.local
 sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/docker/fs/sbin/start_runit
 
@@ -53,6 +38,8 @@ sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/do
 /usr/share/calico/docker/fs/*
 
 %changelog
+*   Tue May 25 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.12.3-1
+-   Update to 3.12.3
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 3.6.1-5
 -   Bump up version to compile with go 1.13.5-2
 *   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 3.6.1-4

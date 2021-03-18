@@ -1,7 +1,7 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.4.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
@@ -45,7 +45,7 @@ install -vdm755 %{buildroot}/lib/systemd/system-preset
 echo "disable etcd.service" > %{buildroot}/lib/systemd/system-preset/50-etcd.preset
 
 cp %{SOURCE1} %{buildroot}/lib/systemd/system
-install -vdm755 %{buildroot}/var/lib/etcd
+install -vdm700 %{buildroot}/var/lib/etcd
 
 %post   -p /sbin/ldconfig
 
@@ -64,6 +64,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
 
 %changelog
+*   Tue Jun 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.4.10-2
+-   Package /var/lib/etcd with 700 permission
 *   Fri Sep 11 2020 Ashwin H <ashwinh@vmware.com> 3.4.10-1
 -   Update to 3.4.x
 *   Thu Sep 03 2020 Ashwin H <ashwinh@vmware.com> 3.3.23-3
