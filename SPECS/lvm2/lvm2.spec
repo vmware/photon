@@ -3,7 +3,7 @@
 Summary:        Userland logical volume management tools
 Name:           lvm2
 Version:        2.02.187
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2, BSD 2-Clause and LGPLv2.1
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
@@ -229,8 +229,8 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable lvm2-activate.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
 echo "disable lvm2-monitor.service" >> %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
-echo "disable lvm2-lvmeatd.socket" >> %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
-echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
+echo "disable lvm2-lvmetad.socket" >> %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
+echo "disable lvm2-lvmetad.service" >> %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
 
 %preun
 %systemd_preun lvm2-lvmetad.service lvm2-lvmetad.socket lvm2-monitor.service lvm2-activate.service
@@ -346,6 +346,8 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 
 
 %changelog
+*   Thu Mar 18 2021 Ankit Jain <ankitja@vmware.com> 2.02.187-2
+-   Corrected the lvmetad service name in preset
 *   Tue Sep 15 2020 Ankit Jain <ankitja@vmware.com> 2.02.187-1
 -   Update to version 2.02.187
 *   Mon Oct 28 2019 Piyush Gupta <guptapi@vmware.com> 2.02.181-3
