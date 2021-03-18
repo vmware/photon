@@ -142,7 +142,7 @@ github_project_repo = "https://github.com/vmware/photon"
 # github_subdir = "example-lander-site"
 
 # for Prod we use gh-pages
-github_branch = "gh-pages"
+github_branch = "photon-hugo"
 
 time_format_blog = "Monday, January 02, 2006"
 time_format_default = "January 2, 2006"
