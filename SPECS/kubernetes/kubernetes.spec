@@ -9,16 +9,16 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.17.11
-Release:        4%{?dist}
+Version:        1.18.19
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=f5634a00f087ea6c7d15848de837d6cd0a1b3e3f
+%define sha1    kubernetes-%{version}.tar.gz=8f736a5f51788b022862d7a2ca268a93a4420d10
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
-Patch0:         CVE-2020-8564.patch
-Patch1:         CVE-2020-8566.patch
+Source2:        kubelet.service
+Source3:        10-kubeadm.conf
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -36,6 +36,7 @@ Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 Requires:       socat
 Requires:       util-linux
 Requires:       cri-tools
+Requires:       conntrack-tools
 
 %description
 Kubernetes is an open source implementation of container cluster management.
@@ -67,11 +68,7 @@ cd ..
 tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 sed -i '/KUBE_ALLOW_PRIV/d' contrib-0.7.0/init/systemd/kubelet.service
-sed -i 's|KUBELET_ADDRESS|KUBELET_CONFIG|g' contrib-0.7.0/init/systemd/kubelet.service
-sed -i 's|.*KUBELET_ADDRESS.*|KUBELET_CONFIG="--config=/var/lib/kubelet/config.yaml"|g' contrib-0.7.0/init/systemd/environ/kubelet
 cd %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
 
 %build
 make
@@ -112,8 +109,8 @@ install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/windows/%{archname}/ _ou
 # kubeadm install
 install -vdm644 %{buildroot}/etc/systemd/system/kubelet.service.d
 install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/%{archname}/kubeadm
-install -p -m 755 -t %{buildroot}/etc/systemd/system build/rpms/kubelet.service
-install -p -m 755 -t %{buildroot}/etc/systemd/system/kubelet.service.d build/rpms/10-kubeadm.conf
+install -p -m 755 -t %{buildroot}/etc/systemd/system %{SOURCE2}
+install -p -m 755 -t %{buildroot}/etc/systemd/system/kubelet.service.d %{SOURCE3}
 sed -i '/KUBELET_CGROUP_ARGS=--cgroup-driver=systemd/d' %{buildroot}/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 cd ..
@@ -237,6 +234,8 @@ fi
 %endif
 
 %changelog
+*   Thu Mar 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-1
+-   Update to version 1.18.19, Fix CVE-2020-8565, CVE-2021-25737, CVE-2021-3121
 *   Thu Feb 18 2021 Harinadh D <hdommaraju@vmware.com> 1.17.11-4
 -   Bump up version to compile with new go
 *   Wed Feb 03 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-3

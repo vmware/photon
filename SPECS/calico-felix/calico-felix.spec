@@ -1,63 +1,40 @@
 Summary:       A per-host daemon for Calico
 Name:          calico-felix
-Version:       2.6.0
-Release:       8%{?dist}
+Version:       3.16.0
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
 URL:           https://github.com/projectcalico/felix
 Source0:       %{name}-%{version}.tar.gz
-%define sha1 calico-felix=24f20292c2132e1b912e99a8b6977e2af6cd7b39
-Source1:       gogo-protobuf-0.4.tar.gz
-%define sha1 gogo-protobuf-0.4=4fc5dda432ad929ce203486c861b7d3e48681150
-Source2:       go-27704.patch
-Source3:       go-27842.patch
+%define sha1 calico-felix=028cf9ca32ebb1b8d2f6e18515236cc0e9ed67e8
 Distribution:  Photon
 BuildRequires: git
-BuildRequires: glide
-BuildRequires: go >= 1.7
-BuildRequires: protobuf
+BuildRequires: go
 
 %description
 A per-host daemon for Calico.
 
 %prep
 %setup -q -n felix-%{version}
-mkdir -p ${GOPATH}/src/github.com/gogo/protobuf
-tar xf %{SOURCE1} --no-same-owner --strip-components 1 -C ${GOPATH}/src/github.com/gogo/protobuf/
 
 %build
-pushd ${GOPATH}/src/github.com/gogo/protobuf
-make install
-popd
-mkdir -p /root/.glide
-mkdir -p ${GOPATH}/src/github.com/projectcalico/felix
-cp -r * ${GOPATH}/src/github.com/projectcalico/felix/.
-pushd ${GOPATH}/src/github.com/projectcalico/felix
-glide install --strip-vendor
-pushd vendor/golang.org/x/net
-patch -p1 < %{SOURCE2}
-patch -p1 < %{SOURCE3}
-popd
 mkdir -p bin
-cd proto
-protoc --plugin=/usr/share/gocode/bin/protoc-gen-gogofaster \
-       --gogofaster_out=. felixbackend.proto
-cd ..
-CGO_ENABLED=0 GOOS=linux go build -v -i -o bin/calico-felix -v \
-     -ldflags " -X github.com/projectcalico/felix/buildinfo.GitVersion=<unknown> \
-                -X github.com/projectcalico/felix/buildinfo.GitRevision=<unknown>" \
-              "github.com/projectcalico/felix"
+go build -v -i -o bin/calico-felix -v \
+     -ldflags " -X github.com/projectcalico/felix/buildinfo.GitVersion=<unknown>" \
+               ./cmd/calico-felix
 
 %install
 install -vdm 755 %{buildroot}%{_bindir}
-install ${GOPATH}/src/github.com/projectcalico/felix/bin/calico-felix %{buildroot}%{_bindir}/
+install bin/calico-felix %{buildroot}%{_bindir}/
 
 %files
 %defattr(-,root,root)
 %{_bindir}/calico-felix
 
 %changelog
+*   Tue May 25 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.16.0-1
+-   Update to version 3.16.0
 *   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 2.6.0-8
 -   Bump up version to compile with new go
 *   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 2.6.0-7
