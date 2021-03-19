@@ -25,8 +25,8 @@ Before you use Photon OS within RPi3, perform the following prerequisite tasks:
 	</tr>
 	<tr>
 	<td>Distribution File</td>
-	<td>Photon OS RPi3 image downloaded from <a href="https://bintray.com/vmware/photon/3.0#files/3.0%2FBeta%2Frpi3">bintray</a> <br> 
-<p><b>Note</b>: Photon OS RPi3 image is available only from Photon 3.0 onwards.</td>
+	<td>Photon OS RPi3 image downloaded from <a href="https://packages.vmware.com/photon/3.0/GA/rpi3">Packages URL</a> <br> 
+<p><b>Note</b>: Photon OS RPi image is available only from Photon 3.0 onwards.</td>
 	</tr>
 	</tbody>
 	</table>
@@ -37,6 +37,6 @@ Before you use Photon OS within RPi3, perform the following prerequisite tasks:
     
     **Note**: You cannot use the Photon ISO to install on RPi3. 
     
-    Go to the following bintray URL and download the latest release of Photon OS image for RPi3: [https://bintray.com/vmware/photon/3.0#files/3.0%2FBeta%2Frpi3](https://bintray.com/vmware/photon/3.0#files/3.0%2FBeta%2Frpi3). 
+    Go to the following bintray URL and download the latest release of Photon OS image for RPi3: [https://packages.vmware.com/photon/3.0/GA/rpi3](https://packages.vmware.com/photon/3.0/GA/rpi3). 
     
-    For instructions, see [Downloading Photon OS](../../downloading-photon/).
+    For instructions, see [Downloading Photon OS](../../installation-guide/downloading-photon.md).
