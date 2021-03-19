@@ -3,7 +3,7 @@ title:  Building a Package from a Source RPM
 weight: 5
 ---
 
-This section describes how to install and build a package on the full version of Photon OS from the package's source RPM. Obtain the source RPMs that Photon OS uses from the  Bintray location, [https://bintray.com/vmware/photon](https://bintray.com/vmware/photon)
+This section describes how to install and build a package on the full version of Photon OS from the package's source RPM. Obtain the source RPMs that Photon OS uses from the VMWare Packages repository: [https://packages.vmware.com/photon](https://packages.vmware.com/photon)
 
 
 ## Prerequisites
@@ -29,24 +29,25 @@ Perfrom the following steps to install and build an example package- `sed` from 
 	
     ```
     rpmbuild --version
-```
+    ```
+    
     If it is not installed, install it by running the following command as root: 
 	
     ```
     tdnf install rpm-build
-```
+    ```
 
 1. Create the directories for building RPMs under your local user account home directory and not under root:
 	
     ```
     mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
-```
+    ```
 
 1. Create a `.rpmmacros` file under your home directory and override the default location of the RPM building tree with the new one. This command overwrites an existing `.rpmmacros` file. Before running the following command, make sure you do not already have a `.rpmmacros file`. If a `.rpmmacros` file exists, back it up under a new name in case you want to restore it later.    
 
     ```
-echo '%_topdir %(echo $HOME)/rpmbuild' > ~/.rpmmacros
-```
+    echo '%_topdir %(echo $HOME)/rpmbuild' > ~/.rpmmacros
+    ```
 
 1. Place the source RPM file that you want to install and build in the `/tmp` directory. 
 1. Install the source file, run the following command with your unprivileged user account, replacing the sed example source RPM with the name of the one that you want to install: 
@@ -62,26 +63,26 @@ echo '%_topdir %(echo $HOME)/rpmbuild' > ~/.rpmmacros
     ```
     cd ~/rpmbuild/SPECS
 	rpmbuild -ba sed.spec
-```
+    ```
 
     If successful, the rpmbuild -ba command builds the RPM and generates an RPM package file in your ~/rpmbuild/RPMS/x86_64 directory. For example:
 	
     ```
     ls RPMS/x86_64/
 	sed-4.2.2-2.x86_64.rpm  sed-debuginfo-4.2.2-2.x86_64.rpm  sed-lang-4.2.2-2.x86_64.rpm
-```
+    ```
 
     The rpmbuild command also generates a new SRPM file and saves it in your ~/rpmbuild/SRPMS directory. For example:  
 
     ```
     ls SRPMS/
-	sed-4.2.2-2.src.rpm
-```
+   	sed-4.2.2-2.src.rpm
+    ```
 
     If the rpmbuild command is unsuccessful with an error that it cannot find a library, you must install the RPMs for the library that your source RPM depends on before you can successfully build your source RPM. Iterate through installing the libraries that your source RPM relies on until you can successfully build it. 
 
 1. To install the RPM, run the following command with your unprivileged user account:  
 	
     ```
-rpm -i RPMS/x86_64/sed-4.2.2-2.x86_64.rpm
-```
+    rpm -i RPMS/x86_64/sed-4.2.2-2.x86_64.rpm
+    ```
