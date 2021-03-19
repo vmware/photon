@@ -3,7 +3,7 @@
 &lt;ol>
 &lt;li>
 &lt;p>Verify that you have the following resources:&lt;/p>
-&lt;table style="height: 170px;" border="1" width="157" cellspacing="0" cellpadding="10">
+&lt;table style="height: 170px;" border="1" width="auto" cellspacing="0" cellpadding="10">
 &lt;tbody>
 &lt;tr>
 &lt;td>&lt;b>Resource&lt;/b>&lt;/td>
@@ -23,8 +23,8 @@
 &lt;/tr>
 &lt;tr>
 &lt;td>Distribution File&lt;/td>
-&lt;td>Photon OS RPi3 image downloaded from &lt;a href="https://bintray.com/vmware/photon/3.0#files/3.0%2FBeta%2Frpi3">bintray&lt;/a> &lt;br>
-&lt;p>&lt;b>Note&lt;/b>: Photon OS RPi3 image is available only from Photon 3.0 onwards.&lt;/td>
+&lt;td>Photon OS RPi3 image downloaded from &lt;a href="https://packages.vmware.com/photon/3.0/GA/rpi3">Packages URL&lt;/a> &lt;br>
+&lt;p>&lt;b>Note&lt;/b>: Photon OS RPi image is available only from Photon 3.0 onwards.&lt;/td>
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
@@ -33,8 +33,8 @@
 &lt;p>Download Photon OS.&lt;/p>
 &lt;p>To install Photon OS on a Raspberry Pi 3, you must download the Photon OS RPi3 image, which is distributed as a compressed raw disk image with the file extension &lt;code>.raw.xz&lt;/code>.&lt;/p>
 &lt;p>&lt;strong>Note&lt;/strong>: You cannot use the Photon ISO to install on RPi3.&lt;/p>
-&lt;p>Go to the following bintray URL and download the latest release of Photon OS image for RPi3: &lt;a href="https://bintray.com/vmware/photon/3.0#files/3.0%2FBeta%2Frpi3">https://bintray.com/vmware/photon/3.0#files/3.0%2FBeta%2Frpi3&lt;/a>.&lt;/p>
-&lt;p>For instructions, see &lt;a href="../../downloading-photon/">Downloading Photon OS&lt;/a>.&lt;/p>
+&lt;p>Go to the following bintray URL and download the latest release of Photon OS image for RPi3: &lt;a href="https://packages.vmware.com/photon/3.0/GA/rpi3">https://packages.vmware.com/photon/3.0/GA/rpi3&lt;/a>.&lt;/p>
+&lt;p>For instructions, see &lt;a href="../../downloading-photon.md">Downloading Photon OS&lt;/a>.&lt;/p>
 &lt;/li>
 &lt;/ol></description></item><item><title>Docs-V3: Installing Photon OS on Raspberry Pi 3</title><link>/docs-v3/installation-guide/run-photon-on-raspberry-pi/installing-the-iso-image-for-photon-os-rpi/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/run-photon-on-raspberry-pi/installing-the-iso-image-for-photon-os-rpi/</guid><description>
 &lt;p>You can get Photon OS up and running on an RPi3 board, by flashing the Photon RPi3 image onto the board&amp;rsquo;s SD card.&lt;/p>
