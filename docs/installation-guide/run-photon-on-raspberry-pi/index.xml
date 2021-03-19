@@ -3,7 +3,7 @@
 &lt;ol>
 &lt;li>
 &lt;p>Verify that you have the following resources:&lt;/p>
-&lt;table style="height: 170px;" border="1" width="157" cellspacing="0" cellpadding="10">
+&lt;table style="height: 170px;" border="1" width="auto" cellspacing="0" cellpadding="10">
 &lt;tbody>
 &lt;tr>
 &lt;td>&lt;b>Resource&lt;/b>&lt;/td>
@@ -27,7 +27,7 @@
 &lt;/tr>
 &lt;tr>
 &lt;td>Distribution File&lt;/td>
-&lt;td>Photon OS RPi3 image downloaded from &lt;a href="https://packages.vmware.com/photon/">URL&lt;/a> &lt;br>
+&lt;td>Photon OS RPi image downloaded from &lt;a href="https://packages.vmware.com/photon/">URL&lt;/a> &lt;br>
 &lt;p>&lt;b>Note&lt;/b>: Photon OS RPi image is available only from Photon 3.0 onwards.&lt;/td>
 &lt;/tr>
 &lt;/tbody>
@@ -37,7 +37,7 @@
 &lt;p>Download Photon OS.&lt;/p>
 &lt;p>To install Photon OS on a Raspberry Pi, you must download the Photon OS RPi image, which is distributed as a compressed raw disk image with the file extension &lt;code>.raw.xz&lt;/code>.&lt;/p>
 &lt;p>&lt;strong>Note&lt;/strong>: You cannot use the Photon ISO to install on RPi.&lt;/p>
-&lt;p>Go to the following URL and download the latest release of Photon OS image for RPi: &lt;a href="https://packages.vmware.com/photon/4.0/Beta/rpi/rpi-4.0-d98e681.tar.xz">https://packages.vmware.com/photon/4.0/Beta/rpi/rpi-4.0-d98e681.tar.xz&lt;/a>.&lt;/p>
+&lt;p>Go to the following URL and download the latest release of Photon OS image for RPi: &lt;a href="https://packages.vmware.com/photon/4.0/GA/rpi/rpi.tar.xz">https://packages.vmware.com/photon/4.0/GA/rpi/rpi.tar.xz&lt;/a>.&lt;/p>
 &lt;p>For instructions, see &lt;a href="../../downloading-photon/">Downloading Photon OS&lt;/a>.&lt;/p>
 &lt;/li>
 &lt;/ol></description></item><item><title>Docs: Installing Photon OS on Raspberry Pi</title><link>/docs/installation-guide/run-photon-on-raspberry-pi/installing-the-iso-image-for-photon-os-rpi/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-on-raspberry-pi/installing-the-iso-image-for-photon-os-rpi/</guid><description>
