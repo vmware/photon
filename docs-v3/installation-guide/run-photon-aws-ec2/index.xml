@@ -12,8 +12,8 @@
 &lt;/li>
 &lt;li>
 &lt;p>Download the Photon OS image for Amazon.&lt;/p>
-&lt;p>VMware packages Photon OS as a cloud-ready Amazon machine image (AMI) that you can download for free from &lt;a href="https://bintray.com/vmware/photon">Bintray&lt;/a>.&lt;/p>
-&lt;p>Download the Photon OS AMI and save it on your workstation. For more infromation, see &lt;a href="../../downloading-photon/">Downloading Photon OS&lt;/a>.&lt;/p>
+&lt;p>VMware packages Photon OS as a cloud-ready Amazon machine image (AMI) that you can download for free. For more information, see &lt;a href="../../downloading-photon/">Downloading Photon OS&lt;/a>.&lt;/p>
+&lt;p>Download the Photon OS AMI and save it on your workstation.&lt;/p>
 &lt;p>&lt;strong>Note&lt;/strong>: The AMI version of Photon is a virtual appliance with the information and packages that Amazon needs to launch an instance of Photon in the cloud. To build the AMI version, VMware starts with the minimal version of Photon OS and adds the sudo and tar packages to it.&lt;/p>
 &lt;/li>
 &lt;/ol></description></item><item><title>Docs-V3: Set Up Photon OS on EC2</title><link>/docs-v3/installation-guide/run-photon-aws-ec2/set-up-photon-on-ec2/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/run-photon-aws-ec2/set-up-photon-on-ec2/</guid><description>
