@@ -7,7 +7,7 @@ Before you use Photon OS within RPi3, perform the following prerequisite tasks:
 
 1. Verify that you have the following resources:
 
-	<table style="height: 170px;" border="1" width="157" cellspacing="0" cellpadding="10">
+	<table style="height: 170px;" border="1" width="auto" cellspacing="0" cellpadding="10">
 	<tbody>
 	<tr>
 	<td><b>Resource</b></td>
@@ -39,4 +39,4 @@ Before you use Photon OS within RPi3, perform the following prerequisite tasks:
     
     Go to the following bintray URL and download the latest release of Photon OS image for RPi3: [https://packages.vmware.com/photon/3.0/GA/rpi3](https://packages.vmware.com/photon/3.0/GA/rpi3). 
     
-    For instructions, see [Downloading Photon OS](../../installation-guide/downloading-photon.md).
+    For instructions, see [Downloading Photon OS](../../downloading-photon.md).
