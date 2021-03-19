@@ -1,5 +1,5 @@
 ---
-title:  Inspecting the Status of Network Links with `networkctl`
+title:  Inspecting the Status of Network Links with 'networkctl'
 weight: 11
 ---
 
@@ -7,7 +7,7 @@ You can inspect information about network connections by using the `networkctl` 
 
 You can progressively add options and arguments to the `networkctl` command to move from general information about network connections to specific information about a network connection. 
 
-# `networkctl` Command Without Options
+# networkctl Command Without Options
 
 Run the `networkctl` command without options to default to the list command:  
 
@@ -19,7 +19,7 @@ Run the `networkctl` command without options to default to the list command:
 	 11 vethb0aa7a6      ether              degraded    unmanaged
 	 4 links listed.
 
-## `networkctl status` Command
+## 'networkctl status' Command
 
 Run `networkctl` with the status command to display the following information:  
 
@@ -38,10 +38,13 @@ root@photon-rc [ ~ ]# > networkctl status
            10.188.26.119
            10.84.55.42
 
+```
 
 You can see that there are active network links with IP addresses for not only the Ethernet connection but also a Docker container.
 
-### `networkctl status` Command With Network Link Option
+
+### 'networkctl status' Command With Network Link Option
+
 
 You can add a network link, such as the Ethernet connection, as the argument of the `status` command to show specific information about the link: 
 
@@ -78,7 +81,7 @@ Feb 26 10:19:45 fedora systemd-networkd[650]: ens33: DHCPv4 address 172.16.85.22
 Feb 26 10:19:46 fedora systemd-networkd[650]: ens33: Gained IPv6LL
 ```
 
-### `networkctl status` Command With Docker Option
+### 'networkctl status' Command With Docker Option
 
 You can add a Docker container as the argument of the `status` command to show specific information about the container: 
 	
