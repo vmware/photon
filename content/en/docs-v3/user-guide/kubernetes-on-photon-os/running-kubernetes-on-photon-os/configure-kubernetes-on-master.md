@@ -12,7 +12,7 @@ Perform the following steps to configure Kubernetes services on the master:
     KUBE_API_ADDRESS="--address=0.0.0.0"
     
     # Comma separated list of nodes in the etcd cluster
-    KUBE_ETCD_SERVERS="--etcd_servers=http://127.0.0.1:4001"
+    KUBE_ETCD_SERVERS="--etcd-servers=http://127.0.0.1:4001"
     
     # Address range to use for services
     KUBE_SERVICE_ADDRESSES="--service-cluster-ip-range=10.254.0.0/16"
