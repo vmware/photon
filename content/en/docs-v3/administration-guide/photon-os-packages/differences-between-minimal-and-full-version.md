@@ -9,9 +9,9 @@ You can view a list of the packages that appear in the minimal version by examin
 
 [https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json](https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json)
 
-You can view a list of the packages that appear in the full version by examining the following file: 
+For example, in 3.0 you can view a list of the packages that appear in the full aka developer version by examining the following file: 
 
-[https://github.com/vmware/photon/blob/master/common/data/packages_full.json](https://github.com/vmware/photon/blob/master/common/data/packages_full.json)
+[https://github.com/vmware/photon/blob/master/common/data/packages_developer.json](https://github.com/vmware/photon/blob/master/common/data/packages_developer.json)
 
 If the minimal or the full version of Photon OS does not contain a package that you want, you can install it with tdnf, which appears in both the minimal and full versions of Photon OS by default. In the full version of Photon OS, you can also install packages by using yum. 
 
@@ -26,4 +26,4 @@ To add support for Java programs to the minimal version of Photon OS, install th
 
 **NOTE:** `openjdk` and `openjre` are available as openjdk8 and openjre8 in Photon OS 3.0
 
-For more information about `tdnf`, see [Tiny DNF for Package Management](../../managing-packages-with-tdnf/)
+For more information about `tdnf`, see [Tiny DNF for Package Management](../../administration-guide/managing-packages-with-tdnf/)
