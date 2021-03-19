@@ -26,7 +26,7 @@ You may verify - just like in [Chapter 3.1](../concepts-in-action/#querying-the-
 
 Photon 3.0 supports automated install that will not interact with the user, in other words installer will display its progress, but will not prompt for any keys to be clicked, and will boot at the end of installation.  
 
-If not familiar with the way kickstart works, visit [Kickstart Support in Photon OS](../../../user-guide/working-with-kickstart/). The kickstart json config for OSTree is similar to minimal or full, except for these settings that should sound familiar: 
+If not familiar with the way kickstart works, visit [Kickstart Support in Photon OS](../../../user-guide/working-with-kickstart.md). The kickstart json config for OSTree is similar to minimal or full, except for these settings that should sound familiar: 
 
 ```
     ...
