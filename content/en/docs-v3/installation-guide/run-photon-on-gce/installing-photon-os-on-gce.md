@@ -11,7 +11,7 @@ Perform the following steps:
 
     Create a new bucket to store your Photon OS image for GCE.
     
-    ![gce1](../../images/gce1.jpg)
+    ![gce1](../../installation-guide/images/gce1.jpg)
 
 1. Upload the Photon OS Image
 
@@ -19,7 +19,7 @@ Perform the following steps:
     
     When the upload finishes, you can see the Photon OS compressed image in the file list for the bucket that you created.
     
-    ![gce2](../../images/gce2.jpg)
+    ![gce2](../../installation-guide/images/gce2.jpg)
 
 1. Create a New Image
 
@@ -41,8 +41,8 @@ Perform the following steps:
     
     **Note**: The firewall rules in this example are optional. You can configure the ports according to your requirements. 
     
-    ![gce4](../../images/gce4.jpg)
+    ![gce4](../../installation-guide/images/gce4.jpg)
     
     When the instance is created you will be returned to your list of VM instances. If you click on the instance, the status page for the instance will allow you to SSH into your Photon OS environment using the SSH button at the top of the panel. 
     
-    At this point, your instance is running and you are ready to start the Docker engine and run a container workload. For more information, see [Deploying a Containerized Application in Photon OS](../../deploying-a-containerized-application-in-photon-os/).
+    At this point, your instance is running and you are ready to start the Docker engine and run a container workload. For more information, see [Deploying a Containerized Application in Photon OS](../../installation-guide/deploying-a-containerized-application-in-photon-os.md).
