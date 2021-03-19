@@ -48,7 +48,7 @@ KUBE_ALLOW_PRIV=&amp;quot;--allow_privileged=false&amp;quot;
 &lt;pre>&lt;code># The address on the local server to listen to.
 KUBE_API_ADDRESS=&amp;quot;--address=0.0.0.0&amp;quot;
 # Comma separated list of nodes in the etcd cluster
-KUBE_ETCD_SERVERS=&amp;quot;--etcd_servers=http://127.0.0.1:4001&amp;quot;
+KUBE_ETCD_SERVERS=&amp;quot;--etcd-servers=http://127.0.0.1:4001&amp;quot;
 # Address range to use for services
 KUBE_SERVICE_ADDRESSES=&amp;quot;--service-cluster-ip-range=10.254.0.0/16&amp;quot;
 # Add your own

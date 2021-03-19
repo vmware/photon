@@ -43,7 +43,7 @@ Access: (0750/drwxr-x---) Uid: ( 0/ root) Gid: ( 0/ root)
 &lt;p>Photon OS includes GnuTLS to help secure the transport layer. &lt;a href="http://www.gnutls.org/">GnuTLS&lt;/a> is a library that implements the SSL and TLS protocols to secure communications.&lt;/p>
 &lt;p>On Photon OS, SSL 3.0, which contains a known vulnerability, is disabled by default.&lt;/p>
 &lt;p>However, TLS 1.0, which also contains known vulnerabilities, is enabled by default.&lt;/p>
-&lt;p>To turn off TLS 1.0, perform the follwoing steps:&lt;/p>
+&lt;p>To turn off TLS 1.0, perform the following steps:&lt;/p>
 &lt;ol>
 &lt;li>Create a directory named &lt;code>/etc/gnutls&lt;/code>.&lt;/li>
 &lt;li>In &lt;code>/etc/gnutls&lt;/code> create a file named &lt;code>default-priorities&lt;/code>.&lt;/li>
