@@ -43,7 +43,7 @@ Finally, *Photon RPM-OSTree* is the application or implementation of the RPM-OSt
 
 ## Sample code
 
-Codes samples used throughout the book are small commands that can be typed at shell command prompt and do not require downloading additional files. As an alternative, one can remote connect via ssh, so cut & paste sample code from outside sources or copy files via scp will work. See the Photon Administration guide to learn [how to enable ssh](../../../troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/). 
+Codes samples used throughout the book are small commands that can be typed at shell command prompt and do not require downloading additional files. As an alternative, one can remote connect via ssh, so cut & paste sample code from outside sources or copy files via scp will work. See the Photon Administration guide to learn [how to enable ssh](../../../troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh.md). 
 The samples assume that the following VMs have been installed - see the steps in the next chapters:
 * A default host VM named **photon-host-def**.
 * Two server VMs named **photon-srv1** and **photon-srv2**.
