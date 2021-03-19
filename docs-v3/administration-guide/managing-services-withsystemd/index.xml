@@ -52,7 +52,7 @@ ln -s ../eth0.service eth0.service
 systemctl disable httpd.service
 &lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Auditing System Events with auditd</title><link>/docs-v3/administration-guide/managing-services-withsystemd/auditing-system-events-with-auditd/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/administration-guide/managing-services-withsystemd/auditing-system-events-with-auditd/</guid><description>
 &lt;p>To manage security on Photon OS, the Linux auditing service &lt;code>auditd&lt;/code> is enabled and active by default on the full version of Photon OS.&lt;/p>
-&lt;p>The folloiwng command shows the security status:&lt;/p>
+&lt;p>The following command shows the security status:&lt;/p>
 &lt;pre>&lt;code>systemctl status auditd
 * auditd.service - Security Auditing Service
 Loaded: loaded (/usr/lib/systemd/system/auditd.service; enabled; vendor preset: enabled)
@@ -75,7 +75,8 @@ CGroup: /system.slice/auditd.service
 &lt;pre>&lt;code>man auditctl
 &lt;/code>&lt;/pre>
 &lt;p>For more information on viewing reports on audited events, see the &lt;code>aureport&lt;/code> man page:&lt;/p>
-&lt;pre>&lt;code>man aureport&lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Analyzing systemd Logs with journalctl</title><link>/docs-v3/administration-guide/managing-services-withsystemd/analyzing-systemd-logs-with-journalctl/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/administration-guide/managing-services-withsystemd/analyzing-systemd-logs-with-journalctl/</guid><description>
+&lt;pre>&lt;code>man aureport
+&lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Analyzing systemd Logs with journalctl</title><link>/docs-v3/administration-guide/managing-services-withsystemd/analyzing-systemd-logs-with-journalctl/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/administration-guide/managing-services-withsystemd/analyzing-systemd-logs-with-journalctl/</guid><description>
 &lt;p>The &lt;code>journalctl&lt;/code> tool queries the contents of the &lt;code>systemd&lt;/code> journal.&lt;/p>
 &lt;p>The following command displays the messages that &lt;code>systemd&lt;/code> generated the last time the machine started:&lt;/p>
 &lt;pre>&lt;code>journalctl -b
