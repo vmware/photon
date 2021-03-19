@@ -158,7 +158,7 @@ photon.repo
 </code></pre><p>To view the the format and information that a new repository configuration file should contain, see one of the <code>.repo</code> files. The following is an example:</p><pre><code>cat /etc/yum.repos.d/lightwave.repo
 [lightwave]
 name=VMware Lightwave 1.0(x86_64)
-baseurl=https://dl.bintray.com/vmware/lightwave
+baseurl=https://packages.vmware.com/photon/1.0/lightwave
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
@@ -177,7 +177,8 @@ Refreshing metadata for: 'VMware Photon Linux 1.0(x86_64)Updates'
 Refreshing metadata for: 'VMware Photon Extras 1.0(x86_64)'
 Refreshing metadata for: 'Local In-House Applications(x86_64)'
 Refreshing metadata for: 'VMware Photon Linux 1.0(x86_64)'
-Metadata cache created.</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-7ba787a4fbf0d12a06a9cf6c8ee0fb8c>2.4 - Configure a Repository</h1><p>Photon OS comes with a preconfigured repository called <code>photon-iso</code> that resides in <code>\etc\yum.repos.d.</code> If you receive an access error message when working with the <code>photon-iso</code> repository, it is probably because you do not have the Photon OS ISO mounted. Mount the ISO and the run the following command to update the metadata for all known repositories, including <code>photon-iso</code>:</p><pre><code>mount /dev/cdrom /media/cdrom
+Metadata cache created.
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-7ba787a4fbf0d12a06a9cf6c8ee0fb8c>2.4 - Configure a Repository</h1><p>Photon OS comes with a preconfigured repository called <code>photon-iso</code> that resides in <code>\etc\yum.repos.d.</code> If you receive an access error message when working with the <code>photon-iso</code> repository, it is probably because you do not have the Photon OS ISO mounted. Mount the ISO and the run the following command to update the metadata for all known repositories, including <code>photon-iso</code>:</p><pre><code>mount /dev/cdrom /media/cdrom
 tdnf makecache
 
 Refreshing metadata for: 'VMware Lightwave 1.0(x86_64)'
