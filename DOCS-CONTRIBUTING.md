@@ -3,7 +3,7 @@ The Photon OS project team welcomes documentation contributions from the communi
 
 To help you get started making contributions to Photon OS Documentation, we are providing this document to outline how the site is structured, how it gets updates, and how to contribute changes.
 
-Documentation changes can be as large as adding a whoe set of new documents, or as small as fixing a single typo or a bad link.
+Documentation changes can be as large as adding a whole set of new documents, or as small as fixing a single typo or a bad link.
 
 ## Scope and Structure
 
@@ -128,7 +128,7 @@ You can simply make changes to the Markdown content without needing to build the
 
 However, if you want to review the changes locally in what it's final form should look like, you would run the `hugo server` command from the root of the repo.
 
-`hugo server` will build the site in real-time and present it to you at //localhost:1313.  Any changes that happen to markdown or design content will automatically be rebuild and loaded into the site when it detects that files have changed.
+`hugo server` will build the site in real-time and present it to you at http://localhost:1313.  Any changes that happen to markdown or design content will automatically be rebuild and loaded into the site when it detects that files have changed.
 
 ```
 > hugo server
