@@ -7,7 +7,7 @@ You can use either the Azure Portal or the Azure CLI to set up your Azure storag
 
 ## Setting Up Using the Azure Portal
 
-You can use the Azure portal to set up Photon OS 3.0 in the Azure cloud. The following instructions are brief. Refer to the Azure documentation for details.
+You can use the Azure portal to set up Photon OS in the Azure cloud. The following instructions are brief. Refer to the Azure documentation for details.
 
 1. Log in to the Azure portal at  [http://portal.azure.com](http://portal.azure.com/).
 2. Create a resource group. In the toolbar, choose Resource Groups, click **+Add** , fill in the resource group fields, and choose **Create**.
@@ -20,7 +20,7 @@ You can use the Azure portal to set up Photon OS 3.0 in the Azure cloud. The fol
 
 ## Setting Up Using the Azure CLI
 
-You can use the Azure CLI 2.0 to set up Photon OS. 
+You can use the Azure CLI 2.x to set up Photon OS. 
 
 **Note:**  Except where overridden with parameter values, these commands create objects with default settings.
 
