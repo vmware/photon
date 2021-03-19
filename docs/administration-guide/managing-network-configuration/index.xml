@@ -359,10 +359,10 @@ MACAddressPolicy=persistent
 NamePolicy=slot mac kernel database
 MACAddressPolicy=persistent
 &lt;/code>&lt;/pre>&lt;p>With the name policy specified in the above example, you might still have an Ethernet-style interface name if the two previous policies, &lt;code>slot&lt;/code> and &lt;code>mac&lt;/code>, fail.&lt;/p>
-&lt;p>For information on setting name policies, see &lt;a href="https://www.freedesktop.org/software/systemd/man/systemd.link.html">systemd.link&amp;ndash;network device configuration&lt;/a>.&lt;/p></description></item><item><title>Docs: Inspecting the Status of Network Links with `networkctl`</title><link>/docs/administration-guide/managing-network-configuration/inspecting-the-status-of-network-links-with-networkctl/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/inspecting-the-status-of-network-links-with-networkctl/</guid><description>
+&lt;p>For information on setting name policies, see &lt;a href="https://www.freedesktop.org/software/systemd/man/systemd.link.html">systemd.link&amp;ndash;network device configuration&lt;/a>.&lt;/p></description></item><item><title>Docs: Inspecting the Status of Network Links with 'networkctl'</title><link>/docs/administration-guide/managing-network-configuration/inspecting-the-status-of-network-links-with-networkctl/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/inspecting-the-status-of-network-links-with-networkctl/</guid><description>
 &lt;p>You can inspect information about network connections by using the &lt;code>networkctl&lt;/code> command. This can help you configure networking services and troubleshoot networking problems.&lt;/p>
 &lt;p>You can progressively add options and arguments to the &lt;code>networkctl&lt;/code> command to move from general information about network connections to specific information about a network connection.&lt;/p>
-&lt;h1 id="networkctl-command-without-options">&lt;code>networkctl&lt;/code> Command Without Options&lt;/h1>
+&lt;h1 id="networkctl-command-without-options">networkctl Command Without Options&lt;/h1>
 &lt;p>Run the &lt;code>networkctl&lt;/code> command without options to default to the list command:&lt;/p>
 &lt;pre>&lt;code>networkctl
 IDX LINK TYPE OPERATIONAL SETUP
@@ -372,7 +372,7 @@ IDX LINK TYPE OPERATIONAL SETUP
 11 vethb0aa7a6 ether degraded unmanaged
 4 links listed.
 &lt;/code>&lt;/pre>
-&lt;h2 id="networkctl-status-command">&lt;code>networkctl status&lt;/code> Command&lt;/h2>
+&lt;h2 id="networkctl-status-command">&amp;lsquo;networkctl status&amp;rsquo; Command&lt;/h2>
 &lt;p>Run &lt;code>networkctl&lt;/code> with the status command to display the following information:&lt;/p>
 &lt;pre>&lt;code>root@photon-rc [ ~ ]# &amp;gt; networkctl status
 State: routable
@@ -387,10 +387,10 @@ NTP: 10.128.152.81
 10.166.1.120
 10.188.26.119
 10.84.55.42
-You can see that there are active network links with IP addresses for not only the Ethernet connection but also a Docker container.
-### `networkctl status` Command With Network Link Option
-You can add a network link, such as the Ethernet connection, as the argument of the `status` command to show specific information about the link:
-&lt;/code>&lt;/pre>&lt;pre>&lt;code>root@photon-rc [ ~ ]# networkctl status ens33
+&lt;/code>&lt;/pre>&lt;p>You can see that there are active network links with IP addresses for not only the Ethernet connection but also a Docker container.&lt;/p>
+&lt;h3 id="networkctl-status-command-with-network-link-option">&amp;lsquo;networkctl status&amp;rsquo; Command With Network Link Option&lt;/h3>
+&lt;p>You can add a network link, such as the Ethernet connection, as the argument of the &lt;code>status&lt;/code> command to show specific information about the link:&lt;/p>
+&lt;pre>&lt;code> root@photon-rc [ ~ ]# networkctl status ens33
 * 2: ens33
 Link File: /usr/lib/systemd/network/99-default.link
 Network File: /usr/lib/systemd/network/10-eth.network
@@ -404,27 +404,25 @@ Model: 82545EM Gigabit Ethernet Controller (Copper) (PRO/1000 MT Single Port Ada
 HW Address: 00:0c:29:5f:d1:39 (VMware, Inc.)
 MTU: 1500 (min: 46, max: 16110)
 QDisc: fq_codel
-&lt;/code>&lt;/pre>
-&lt;p>IPv6 Address Generation Mode: eui64 &lt;br>
-Queue Length (Tx/Rx): 1/1 &lt;br>
-Auto negotiation: yes &lt;br>
-Speed: 1Gbps &lt;br>
-Duplex: full &lt;br>
-Port: tp &lt;br>
-Address: 172.16.85.225 (DHCP4 via 172.16.85.254) &lt;br>
-fe80::20c:29ff:fe5f:d139 &lt;br>
-Gateway: 172.16.85.2 (VMware, Inc.) &lt;br>
-DNS: 172.16.85.2 &lt;br>
-DHCP4 Client ID: IAID:0x2b9434c1/DUID &lt;br>
-DHCP6 Client DUID: DUID-EN/Vendor:0000ab11d258482fc7eee6510000 &lt;br>
+IPv6 Address Generation Mode: eui64
+Queue Length (Tx/Rx): 1/1
+Auto negotiation: yes
+Speed: 1Gbps
+Duplex: full
+Port: tp
+Address: 172.16.85.225 (DHCP4 via 172.16.85.254)
+fe80::20c:29ff:fe5f:d139
+Gateway: 172.16.85.2 (VMware, Inc.)
+DNS: 172.16.85.2
+DHCP4 Client ID: IAID:0x2b9434c1/DUID
+DHCP6 Client DUID: DUID-EN/Vendor:0000ab11d258482fc7eee6510000
 Feb 26 10:19:44 fedora systemd-networkd[650]: ens33: Link UP
 Feb 26 10:19:44 fedora systemd-networkd[650]: ens33: Gained carrier
 Feb 26 10:19:45 fedora systemd-networkd[650]: ens33: DHCPv4 address 172.16.85.225/24 via 172.16.85.2
-Feb 26 10:19:46 fedora systemd-networkd[650]: ens33: Gained IPv6LL&lt;/p>
-&lt;pre>&lt;code>
-### `networkctl status` Command With Docker Option
-You can add a Docker container as the argument of the `status` command to show specific information about the container:
-&lt;/code>&lt;/pre>&lt;p>networkctl status docker0
+Feb 26 10:19:46 fedora systemd-networkd[650]: ens33: Gained IPv6LL
+&lt;/code>&lt;/pre>&lt;h3 id="networkctl-status-command-with-docker-option">&amp;lsquo;networkctl status&amp;rsquo; Command With Docker Option&lt;/h3>
+&lt;p>You can add a Docker container as the argument of the &lt;code>status&lt;/code> command to show specific information about the container:&lt;/p>
+&lt;pre>&lt;code>networkctl status docker0
 * 3: docker0
 Link File: /usr/lib/systemd/network/99-default.link
 Network File: n/a
@@ -434,10 +432,9 @@ Driver: bridge
 HW Address: 02:42:f0:f7:bd:81
 MTU: 1500
 Address: 172.17.0.1
-fe80::42:f0ff:fef7:bd81&lt;/p>
-&lt;pre>&lt;code>
-In the example above, the state of the Docker container is unmanaged because Docker handles managing the networking for the containers without using systemd-resolved or systemd-networkd. Docker manages the container connection by using its bridge drive.
-For more information about `networkctl` commands and options, see [https://www.freedesktop.org/software/systemd/man/networkctl.html](https://www.freedesktop.org/software/systemd/man/networkctl.html).&lt;/code>&lt;/pre></description></item><item><title>Docs: Turning On Network Debugging</title><link>/docs/administration-guide/managing-network-configuration/turning-on-network-debugging/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/turning-on-network-debugging/</guid><description>
+fe80::42:f0ff:fef7:bd81
+&lt;/code>&lt;/pre>&lt;p>In the example above, the state of the Docker container is unmanaged because Docker handles managing the networking for the containers without using systemd-resolved or systemd-networkd. Docker manages the container connection by using its bridge drive.&lt;/p>
+&lt;p>For more information about &lt;code>networkctl&lt;/code> commands and options, see &lt;a href="https://www.freedesktop.org/software/systemd/man/networkctl.html">https://www.freedesktop.org/software/systemd/man/networkctl.html&lt;/a>.&lt;/p></description></item><item><title>Docs: Turning On Network Debugging</title><link>/docs/administration-guide/managing-network-configuration/turning-on-network-debugging/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/turning-on-network-debugging/</guid><description>
 &lt;p>You can set &lt;code>systemd-networkd&lt;/code> to work in debug mode so that you can analyze log files with debugging information to help troubleshoot networking problems.&lt;/p>
 &lt;p>You can turn on network debugging by adding a drop-in file in &lt;code>/etc/systemd&lt;/code> to customize the default systemd configuration in &lt;code>/usr/lib/systemd&lt;/code>.&lt;/p>
 &lt;p>&lt;strong>Procedure&lt;/strong>&lt;/p>
