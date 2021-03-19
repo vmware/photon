@@ -45,7 +45,7 @@ For information about upgrading the Photon OS Linux kernel see [Upgrading the Ke
 VMware recommends that administrators use the Photon OS image for Google Compute Engine (GCE) to create Photon OS instances on GCE. Photon OS bundles the Google startup scripts, daemon, and cloud SDK into a GCE-ready image that has been modified to meet the configuration requirements of GCE. You can download the Photon OS image for GCE from the following URL: 
 [https://packages.vmware.com/photon](https://packages.vmware.com/photon)
 
-For instructions, see [Downloading Photon OS](Downloading-Photon-OS.md).
+For instructions, see [Downloading Photon OS](../downloading-photon.md).
 
 Optionally you can customize Photon OS to work with GCE. 
 
