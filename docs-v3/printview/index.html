@@ -2190,7 +2190,7 @@ Deployments:
                    Version: 3.0_minimal.1 (2019-09-16T09:51:33Z)
                 BaseCommit: 28dc49ecb4604c0bc349e4445adc659491a1874c01198e6253a261f4d59708b7
            LayeredPackages: createrepo_c rpm wget
-</code></pre><p>Now let&rsquo;s type &lsquo;reboot&rsquo;. Grub will list the new filetree as the first image, marked with a star, as the default bootable image. If the keyboard is not touched and order is not changed, grub will timeout and will boot into that image.</p><p><img src=../images/rpmostree-grub.png alt=Grub-dual-boot-1-0></p><p>Let&rsquo;s look again at the status. It&rsquo;s identical, just that the star is next to the newer image, to show it&rsquo;s the current image it has booted from.</p><pre><code>root@photon-host [ ~ ]# rpm-ostree status
+</code></pre><p>Now let&rsquo;s type &lsquo;reboot&rsquo;. Grub will list the new filetree as the first image, marked with a star, as the default bootable image. If the keyboard is not touched and order is not changed, grub will timeout and will boot into that image.</p><p><img src=../../../images/rpmostree-grub.png alt=Grub-dual-boot-1-0></p><p>Let&rsquo;s look again at the status. It&rsquo;s identical, just that the star is next to the newer image, to show it&rsquo;s the current image it has booted from.</p><pre><code>root@photon-host [ ~ ]# rpm-ostree status
 State: idle
 AutomaticUpdates: disabled
 Deployments:
