@@ -69,7 +69,7 @@ photon.repo
 &lt;pre>&lt;code>cat /etc/yum.repos.d/lightwave.repo
 [lightwave]
 name=VMware Lightwave 1.0(x86_64)
-baseurl=https://packages.vmware.com/photon/1.0/lightwave
+baseurl=https://dl.bintray.com/vmware/lightwave
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
@@ -100,8 +100,7 @@ Refreshing metadata for: 'VMware Photon Linux 1.0(x86_64)Updates'
 Refreshing metadata for: 'VMware Photon Extras 1.0(x86_64)'
 Refreshing metadata for: 'Local In-House Applications(x86_64)'
 Refreshing metadata for: 'VMware Photon Linux 1.0(x86_64)'
-Metadata cache created.
-&lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Configure a Repository</title><link>/docs-v3/administration-guide/managing-packages-with-tdnf/configure-a-repository/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/administration-guide/managing-packages-with-tdnf/configure-a-repository/</guid><description>
+Metadata cache created.&lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Configure a Repository</title><link>/docs-v3/administration-guide/managing-packages-with-tdnf/configure-a-repository/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/administration-guide/managing-packages-with-tdnf/configure-a-repository/</guid><description>
 &lt;p>Photon OS comes with a preconfigured repository called &lt;code>photon-iso&lt;/code> that resides in &lt;code>\etc\yum.repos.d.&lt;/code> If you receive an access error message when working with the &lt;code>photon-iso&lt;/code> repository, it is probably because you do not have the Photon OS ISO mounted. Mount the ISO and the run the following command to update the metadata for all known repositories, including &lt;code>photon-iso&lt;/code>:&lt;/p>
 &lt;pre>&lt;code>mount /dev/cdrom /media/cdrom
 tdnf makecache
