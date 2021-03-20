@@ -3,7 +3,7 @@ title:  Creating a Startup Service
 weight: 3
 ---
 
-Use `systemd` to create a sratup service. 
+Use `systemd` to create a startup service. 
 
 The following example shows you how to create a systemd startup service that changes the maximum transmission unit (MTU) of the default Ethernet connection, `eth0`.
 

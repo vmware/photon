@@ -3,8 +3,7 @@ title:  Building a Package from a Source RPM
 weight: 5
 ---
 
-This section describes how to install and build a package on the full version of Photon OS from the package's source RPM. Obtain the source RPMs that Photon OS uses from the VMware Packages repository: [packages.vmware.com/photon/](https://packages.vmware.com/photon)
-
+This section describes how to install and build a package on the full version of Photon OS from the package's source RPM. Obtain the source RPMs that Photon OS uses from the VMWare Packages repository: [packages.vmware.com/photon](https://packages.vmware.com/photon)
 
 ## Prerequisites
 
@@ -31,6 +30,7 @@ Perfrom the following steps to install and build an example package- `sed` from 
     ```
     rpmbuild --version
     ```
+
     If it is not installed, install it by running the following command as root: 
 	
     ```
@@ -48,6 +48,7 @@ Perfrom the following steps to install and build an example package- `sed` from 
     ```bash
     echo '%_topdir %(echo $HOME)/rpmbuild' > ~/.rpmmacros
     ```
+
 
 1. Place the source RPM file that you want to install and build in the `/tmp` directory. 
 1. Install the source file, run the following command with your unprivileged user account, replacing the sed example source RPM with the name of the one that you want to install: 
@@ -76,7 +77,7 @@ Perfrom the following steps to install and build an example package- `sed` from 
 
     ```bash
     ls SRPMS/
-	sed-4.2.2-2.src.rpm
+   	sed-4.2.2-2.src.rpm
     ```
 
     If the rpmbuild command is unsuccessful with an error that it cannot find a library, you must install the RPMs for the library that your source RPM depends on before you can successfully build your source RPM. Iterate through installing the libraries that your source RPM relies on until you can successfully build it. 
@@ -86,3 +87,4 @@ Perfrom the following steps to install and build an example package- `sed` from 
     ```bash
     rpm -i RPMS/x86_64/sed-4.2.2-2.x86_64.rpm
     ```
+
