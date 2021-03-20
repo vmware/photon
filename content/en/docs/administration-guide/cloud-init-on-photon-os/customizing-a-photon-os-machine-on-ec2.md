@@ -3,7 +3,7 @@ title:  Customizing a Photon OS Machine on EC2
 weight: 5
 ---
 
-You can upload an `ami` image of Photon OS to Amazon Elastic Compute Cloud (EC2) and customize the Photon OS machine by using `cloud-init` with an EC2 data source. The Amazon machine image version of Photon OS is available as a free download on Bintray at the location `https://bintray.com/vmware/photon/`.
+You can upload an `ami` image of Photon OS to Amazon Elastic Compute Cloud (EC2) and customize the Photon OS machine by using `cloud-init` with an EC2 data source. The Amazon machine image version of Photon OS is available as a free download at the location [packages.vmware.com/photon](https://packages.vmware.com/photon).
 
 The `cloud-init` service is commonly used on EC2 to configure the cloud instance of a Linux image. On EC2, `cloud-init` sets the `.ssh/authorized_keys` file to let you log in with a private key from another computer, that is, a computer besides the workstation that you are already using to connect with the Amazon cloud. 
 
@@ -60,7 +60,7 @@ $ ec2-terminate-instances <instance-id>
 
 The following are the contents of the `user-data.txt` file that `cloud-init` applies to the machine the first time that it boots up in the cloud: 
     
-```
+```yaml
 #cloud-config
     hostname: photon-on-01
     groups:

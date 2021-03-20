@@ -45,7 +45,7 @@ There is a whole chapter about signing, importing keys and so on that I will not
 ## Switching repositories
 
 Since mapping name/url is stored in the repo's config file, in principle you can re-assign a different URL, connecting the host to a different server. The next upgrade will get the latest commit chain from the new server.   
-If we edit photon-host-def's repo config and replace the bintray URL by photon-srv1's IP address, all original packages in the original 3.0_minimal version will be preserved, but any new package change (addition, removal, upgrade) added after that (in 3.0_minimal.1, 3.0_minimal.2) will be reverted and all new commits from photon-srv1 (that may have same version) will be applied. This is because the two repos are identical copies, so they have the same original commit ID as a common ancestor, but they diverge from there.  
+If we edit photon-host-def's repo config and replace the VMware Photon Packages URL by photon-srv1's IP address, all original packages in the original 4.0_minimal version will be preserved, but any new package change (addition, removal, upgrade) added after that (in 4.0_minimal.1, 4.0_minimal.2) will be reverted and all new commits from photon-srv1 (that may have same version) will be applied. This is because the two repos are identical copies, so they have the same original commit ID as a common ancestor, but they diverge from there.  
   
 If the old and new repo have nothing in common (no common ancestor commit), this will undo even the original commit, so all commits from the new tree will be applied.  
 A better solution would be to add a new remote that will identify where the commits come from.

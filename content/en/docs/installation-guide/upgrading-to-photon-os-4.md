@@ -1,5 +1,6 @@
 ---
 title: Upgrading to Photon OS 4.0
+linkTitle: Upgrading to Photon 4
 weight: 2
 ---
 

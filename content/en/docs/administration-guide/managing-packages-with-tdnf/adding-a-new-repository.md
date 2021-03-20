@@ -41,8 +41,9 @@ The repository settings details are as follows:
 
 - By using `metalink`, you can point to multiple URLs to download the `repomd.xml` file. A sample metalink file is as follows:
 
-    cat metalink
-    
+    `cat metalink`
+
+    ```xml    
     <?xml version="1.0" encoding="utf-8"?>
     
     <metalink version="3.0" xmlns="http://www.metalinker.org/" type="dynamic" pubdate="Wed, 05 Feb 2020 08:14:56 GMT" generator="mirrormanager" xmlns:mm0="http://fedorahosted.org/mirrormanager">
@@ -64,9 +65,7 @@ The repository settings details are as follows:
        <resources maxconnections="1">
     
     <url protocol="http" type="http" location="IN" preference=“100”>https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml</url>
-    
-    <url protocol="http" type="http" location="IN" preference=“90”>https://dl.bintray.com/vmware/photon_updates_3.0_x86_64/repodata/repomd.xml</url>
-    
+     
        </resources>
     
       </file>
@@ -74,6 +73,8 @@ The repository settings details are as follows:
      </files>
     
     </metalink>
+    ```
+
     
   In the metalink file, provide the preference for each url, so `tdnf` first tries to sync the repository data from the mirror which has the highest preference. If it fails due to any reason, `tdnf` will sync to the next mirror url with the lower preference than before one.
 
