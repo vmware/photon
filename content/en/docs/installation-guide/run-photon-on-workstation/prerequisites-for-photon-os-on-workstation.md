@@ -1,5 +1,6 @@
 ---
 title:  Prerequisites for Running Photon OS on Workstation
+linkTitle: Prerequisites for Photon on Workstation
 weight: 1
 ---
 
@@ -7,7 +8,7 @@ Before you use Photon OS within Workstation, perform the following prerequisite 
 
 1. Verify that you have the following resources:
 
-	<table style="height: 170px;" border="1" width="157" cellspacing="0" cellpadding="10">
+	<table style="height: 170px;" border="1" width="auto" cellspacing="0" cellpadding="10">
 	<tbody>
 	<tr>
 	<td><b>Resource</b></td>
@@ -27,10 +28,12 @@ Before you use Photon OS within Workstation, perform the following prerequisite 
 	</tr>
 	<tr>
 	<td>Distribution File</td>
-	<td>Photon OS ISO or OVA file downloaded from bintray (<a href="https://bintray.com/vmware/photon/">https://bintray.com/vmware/photon/</a>).</td>
+	<td>Photon OS ISO or OVA file downloaded from VMware (<a href="https://packages.vmware.com/photon/4.0/GA/">https://packages.vmware.com/photon/4.0/GA/</a>).</td>
 	</tr>
 	</tbody>
 	</table>
+	</br>
+
 
 	Resource requirements and recommendations vary depending on several factors, including the host environment (for example, VMware Workstation and VMware vSphere), the distribution file used (ISO or OVA), and the selected installation settings (for example, full or basic installation).
 
@@ -40,13 +43,14 @@ Before you use Photon OS within Workstation, perform the following prerequisite 
 
 1. Decide whether to use the OVA or ISO distribution to set up Photon OS.
 
-    - **OVA import** : Because of the nature of an OVA, you're getting a pre-installed version of Photon OS. You can choose the hardware version you want (OVA with hardware version 13 or 11). The OVA benefits from a simple import process and some kernel tuning for VMware environments. However, because it's a pre-installed version, the set of packages that are installed are predetermined. Any additional packages that you need can be installed using tdnf.
-    - **ISO install** : The ISO, on the other hand, allows for a more complete installation or automated installation via kickstart.
+  - **OVA import** : Because of the nature of an OVA, you're getting a pre-installed version of Photon OS. You can choose the hardware version you want (OVA with hardware version 13 or 11). The OVA benefits from a simple import process and some kernel tuning for VMware environments. However, because it's a pre-installed version, the set of packages that are installed are predetermined. Any additional packages that you need can be installed using tdnf.
 
-    To get Photon OS up and running quickly, use the OVA.
+  - **ISO install** : The ISO, on the other hand, allows for a more complete installation or automated installation via kickstart.
+
+To get Photon OS up and running quickly, use the OVA.
     
-1. Download Photon OS. Go to the following Bintray URL and download the latest release of Photon OS:
+1. Download Photon OS. Go to the following URL and download the latest release of Photon OS:
 
-    [https://bintray.com/vmware/photon/](https://bintray.com/vmware/photon/)
+    [https://packages.vmware.com/photon/4.0/GA/](https://packages.vmware.com/photon/4.0/GA/)
     
     For instructions, see [Downloading Photon OS](../../downloading-photon/).

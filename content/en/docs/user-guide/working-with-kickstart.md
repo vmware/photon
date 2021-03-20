@@ -360,43 +360,52 @@ To use HTTP path or self-signed HTTPS path, you have to enable `insecure_install
 
 ## Building an ISO with a Kickstart Config File
 
-Here's an example of how to add a kickstart config file to the Photon OS ISO by mounting the ISO on an Ubuntu machine and then rebuilding the ISO. The following example assumes you can adapt the sample kickstart configuration file that comes with the Photon OS ISO to your needs. You can obtain the Photon OS ISO for free from Bintray at the following URL: 
+Here's an example of how to add a kickstart config file to the Photon OS ISO by mounting the ISO on an Ubuntu machine and then rebuilding the ISO. The following example assumes you can adapt the sample kickstart configuration file that comes with the Photon OS ISO to your needs. You can obtain the Photon OS ISO for free from VMware at the following URL: 
 
-[https://bintray.com/vmware/photon](https://bintray.com/vmware/photon)
+[https://packages.vmware.com/photon](https://packages.vmware.com/photon)
 
 Once you have the ISO, mount it. 
 
-    mkdir /tmp/photon-iso
-    sudo mount photon.iso /tmp/photon-iso
+```
+mkdir /tmp/photon-iso
+sudo mount photon.iso /tmp/photon-iso
+```
 
 Then copy the content of the ISO to a writable directory and push it into the directory stack: 
 
-    mkdir /tmp/photon-ks-iso
-    cp -r /tmp/photon-iso/* /tmp/photon-ks-iso/
-    pushd /tmp/photon-ks-iso/
+```
+mkdir /tmp/photon-ks-iso
+cp -r /tmp/photon-iso/* /tmp/photon-ks-iso/
+pushd /tmp/photon-ks-iso/
+```
 
 Next, copy the sample kickstart configuration file that comes with the Photon OS ISO and modify it to suit your needs. In the ISO, the sample kickstart config file appears in the `isolinux` directory and is named `sample_ks.cfg.` The name of the directory and the name of the file might be in all uppercase letters. 
 
-    cp isolinux/sample_ks.cfg isolinux/my_ks.cfg
-    nano isolinux/my_ks.cfg
+```
+cp isolinux/sample_ks.cfg isolinux/my_ks.cfg
+nano isolinux/my_ks.cfg
+```
 
 With a copy of the sample kickstart config file open in nano, make the changes that you want. 
 
 Now add a new item to the installation menu by modifying `isolinux/menu.cfg`:
 
-    cat >> isolinux/menu.cfg << EOF
-    label my_unattended
-    	menu label ^My Unattended Install
-    	menu default
-    	kernel vmlinuz
-    	append initrd=initrd.img root=/dev/ram0 loglevel=3 photon.media=cdrom
-    EOF
+```
+cat >> isolinux/menu.cfg << EOF
+label my_unattended
+	menu label ^My Unattended Install
+	menu default
+	kernel vmlinuz
+	append initrd=initrd.img root=/dev/ram0 loglevel=3 photon.media=cdrom
+EOF
+```
 
 Finally, rebuild the ISO so that it includes your kickstart config file: 
 
-    mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
-    		-no-emul-boot -boot-load-size 4 -boot-info-table -V "PHOTON_$(date +%Y%m%d)" \
-    		. > <new_iso_path>.iso
+```
+mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
+		-no-emul-boot -boot-load-size 4 -boot-info-table -V "PHOTON_$(date +%Y%m%d)" \
+		. > <new_iso_path>.iso
 
-    popd
-
+popd
+```

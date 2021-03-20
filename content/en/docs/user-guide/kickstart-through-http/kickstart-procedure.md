@@ -33,9 +33,9 @@ To build Photon OS manually, run the following:
 
 ```
 packer build \
-        -var 'iso_file=http://dl.bintray.com/vmware/photon/3.0/GA/iso/photon-3.0-26156e2.iso' \
-        -var 'iso_sha1sum=1c38dd6d00e11d3cbf7768ce93fc3eb8913a9673' \
-        -var 'product_version=3.0GA' \
+        -var 'iso_file=https://packages.vmware.com/photon/4.0/GA/iso/photon-4.0-1526e30ba.iso' \
+        -var 'iso_sha1sum=2221ab214b517a15c60bd5e2aacdb9388581bcd9' \
+        -var 'product_version=4.0GA' \
         packer-photon.json
 ```
 
@@ -44,7 +44,7 @@ packer build \
 To build only a VMware Workstation or Fusion vagrant box, run:
 
 ```
-packer build -only=vagrant-vmware_desktop -var-file=vars/iso-3.0GA.json packer-photon.json
+packer build -only=vagrant-vmware_desktop -var-file=vars/iso-4.0GA.json packer-photon.json
 ```
 
 or:
@@ -52,9 +52,9 @@ or:
 ```
 packer build \
        -only=vagrant-vmware_desktop \
-       -var 'iso_file= http://dl.bintray.com/vmware/photon/3.0/GA/iso/photon-3.0-26156e2.iso ' \
-       -var 'iso_sha1sum= 1c38dd6d00e11d3cbf7768ce93fc3eb8913a9673' \
-       -var 'product_version=3.0GA' \
+       -var 'iso_file= https://packages.vmware.com/photon/4.0/GA/iso/photon-4.0-1526e30ba.iso ' \
+       -var 'iso_sha1sum= 2221ab214b517a15c60bd5e2aacdb9388581bcd9' \
+       -var 'product_version=4.0GA' \
        packer-photon.json
 ```
 
