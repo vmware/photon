@@ -98,12 +98,11 @@ photon-extras.repo
 photon-iso.repo
 photon-updates.repo
 photon.repo
-&lt;/code>&lt;/pre>
-&lt;p>The Photon ISO repository (&lt;code>photon-iso.repo&lt;/code>) contains the installation packages for Photon OS. All the packages that Photon builds and publishes reside in the RPMs directory of the ISO when it is mounted. The RPMs directory contains metadata that lets it act as a yum repository. Mounting the ISO gives you all the packages corresponding to a Photon OS build. If, however, you built Photon OS yourself from the source code, the packages correspond only to your build, though they will typically be the latest. In contrast, the ISO that you obtain from the Bintray web site contains only the packages that are in the ISO at the point of publication. As a result, the packages may no longer match those on Bintray, which are updated regularly.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>The Photon ISO repository (&lt;code>photon-iso.repo&lt;/code>) contains the installation packages for Photon OS. All the packages that Photon builds and publishes reside in the RPMs directory of the ISO when it is mounted. The RPMs directory contains metadata that lets it act as a yum repository. Mounting the ISO gives you all the packages corresponding to a Photon OS build. If, however, you built Photon OS yourself from the source code, the packages correspond only to your build, though they will typically be the latest. In contrast, the ISO that you obtain from the &lt;a href="https://packages.vmware.com/photon">VMware Photon Packages&lt;/a> web site contains only the packages that are in the ISO at the point of publication. As a result, the packages may no longer match those on in the ISO, because they are updated more frequently.&lt;/p>
 &lt;p>The main Photon OS repository (&lt;code>photon.repo&lt;/code>) contains all the packages that are built from the ISO or from another source. This repository points to a static batch of packages and spec files at the point of a release.&lt;/p>
 &lt;p>The updates repository (&lt;code>photon-updates.repo&lt;/code>) is irrelevant to a major release until after the release is installed. Thereafter, the updates repository holds the updated packages for that release. The repository points to updates for the installed version, such as a version of Kubernetes that supersedes the version installed during the major release.&lt;/p>
 &lt;p>The Photon extras repository (&lt;code>photon-extras.repo&lt;/code>) holds Likewise Open, an open source authentication engine, and other VMware software that you can add to Photon OS for free. Photon OS supports but does not build the packages in the extras repository.&lt;/p></description></item><item><title>Docs: Building a Package from a Source RPM</title><link>/docs/administration-guide/photon-os-packages/building-a-package-from-a-source-rpm/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-os-packages/building-a-package-from-a-source-rpm/</guid><description>
-&lt;p>This section describes how to install and build a package on the full version of Photon OS from the package&amp;rsquo;s source RPM. Obtain the source RPMs that Photon OS uses from the VMWare Packages repository: &lt;a href="https://packages.vmware.com/photon">https://packages.vmware.com/photon&lt;/a>&lt;/p>
+&lt;p>This section describes how to install and build a package on the full version of Photon OS from the package&amp;rsquo;s source RPM. Obtain the source RPMs that Photon OS uses from the VMWare Packages repository: &lt;a href="https://packages.vmware.com/photon">packages.vmware.com/photon&lt;/a>&lt;/p>
 &lt;h2 id="prerequisites">Prerequisites&lt;/h2>
 &lt;ul>
 &lt;li>
@@ -140,36 +139,36 @@ photon.repo
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Create the directories for building RPMs under your local user account home directory and not under root:&lt;/p>
-&lt;pre>&lt;code>mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
-&lt;/code>&lt;/pre>&lt;/li>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">mkdir -p ~/rpmbuild/&lt;span style="color:#ce5c00;font-weight:bold">{&lt;/span>BUILD,RPMS,SOURCES,SPECS,SRPMS&lt;span style="color:#ce5c00;font-weight:bold">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
 &lt;li>
 &lt;p>Create a &lt;code>.rpmmacros&lt;/code> file under your home directory and override the default location of the RPM building tree with the new one. This command overwrites an existing &lt;code>.rpmmacros&lt;/code> file. Before running the following command, make sure you do not already have a &lt;code>.rpmmacros file&lt;/code>. If a &lt;code>.rpmmacros&lt;/code> file exists, back it up under a new name in case you want to restore it later.&lt;/p>
-&lt;pre>&lt;code>echo '%_topdir %(echo $HOME)/rpmbuild' &amp;gt; ~/.rpmmacros
-&lt;/code>&lt;/pre>&lt;/li>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#204a87">echo&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;%_topdir %(echo $HOME)/rpmbuild&amp;#39;&lt;/span> &amp;gt; ~/.rpmmacros
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
 &lt;li>
 &lt;p>Place the source RPM file that you want to install and build in the &lt;code>/tmp&lt;/code> directory.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Install the source file, run the following command with your unprivileged user account, replacing the sed example source RPM with the name of the one that you want to install:&lt;/p>
-&lt;pre>&lt;code>rpm -i /tmp/sed-4.2.2-2.ph1.src.rpm
-&lt;/code>&lt;/pre>&lt;p>The above command unpacks the source RPM and places its &lt;code>.spec&lt;/code> file in your &lt;code>~/rpmbuild/SPECS&lt;/code> directory. In the next step, the &lt;code>rpmbuild&lt;/code> tool uses the &lt;code>.spec&lt;/code> file to build the RPM.&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rpm -i /tmp/sed-4.2.2-2.ph1.src.rpm
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The above command unpacks the source RPM and places its &lt;code>.spec&lt;/code> file in your &lt;code>~/rpmbuild/SPECS&lt;/code> directory. In the next step, the &lt;code>rpmbuild&lt;/code> tool uses the &lt;code>.spec&lt;/code> file to build the RPM.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Build the RPM, run the following commands with your unprivileged user account. Replace the &lt;code>sed.spec&lt;/code> example file with the name of the &lt;code>.spec&lt;/code> file that you want to build.&lt;/p>
-&lt;pre>&lt;code>cd ~/rpmbuild/SPECS
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#204a87">cd&lt;/span> ~/rpmbuild/SPECS
 rpmbuild -ba sed.spec
-&lt;/code>&lt;/pre>&lt;p>If successful, the rpmbuild -ba command builds the RPM and generates an RPM package file in your ~/rpmbuild/RPMS/x86_64 directory. For example:&lt;/p>
-&lt;pre>&lt;code>ls RPMS/x86_64/
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If successful, the rpmbuild -ba command builds the RPM and generates an RPM package file in your ~/rpmbuild/RPMS/x86_64 directory. For example:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ls RPMS/x86_64/
 sed-4.2.2-2.x86_64.rpm sed-debuginfo-4.2.2-2.x86_64.rpm sed-lang-4.2.2-2.x86_64.rpm
-&lt;/code>&lt;/pre>&lt;p>The rpmbuild command also generates a new SRPM file and saves it in your ~/rpmbuild/SRPMS directory. For example:&lt;/p>
-&lt;pre>&lt;code>ls SRPMS/
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The rpmbuild command also generates a new SRPM file and saves it in your ~/rpmbuild/SRPMS directory. For example:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">ls SRPMS/
 sed-4.2.2-2.src.rpm
-&lt;/code>&lt;/pre>&lt;p>If the rpmbuild command is unsuccessful with an error that it cannot find a library, you must install the RPMs for the library that your source RPM depends on before you can successfully build your source RPM. Iterate through installing the libraries that your source RPM relies on until you can successfully build it.&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If the rpmbuild command is unsuccessful with an error that it cannot find a library, you must install the RPMs for the library that your source RPM depends on before you can successfully build your source RPM. Iterate through installing the libraries that your source RPM relies on until you can successfully build it.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>To install the RPM, run the following command with your unprivileged user account:&lt;/p>
-&lt;pre>&lt;code>rpm -i RPMS/x86_64/sed-4.2.2-2.x86_64.rpm
-&lt;/code>&lt;/pre>&lt;/li>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">rpm -i RPMS/x86_64/sed-4.2.2-2.x86_64.rpm
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
 &lt;/ol></description></item><item><title>Docs: Compiling C++ Code on the Minimal Version of Photon OS</title><link>/docs/administration-guide/photon-os-packages/compiling-c-code-on-the-minimal-version-of-photon-os/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-os-packages/compiling-c-code-on-the-minimal-version-of-photon-os/</guid><description>
 &lt;p>As a minimalist Linux run-time environment, the minimal version of Photon OS lacks the packages that you need to compile the code for a C++ program. For example, without the requisite packages, trying to compile the file containing the following code with the &lt;code>gcc&lt;/code> command will generate errors:&lt;/p>
 &lt;pre>&lt;code>#include &amp;lt;stdio.h&amp;gt;

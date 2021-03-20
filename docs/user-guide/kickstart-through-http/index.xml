@@ -32,19 +32,19 @@
 &lt;pre>&lt;code>packer build -var-file=vars/iso-3.0GA.json packer-photon.json
 &lt;/code>&lt;/pre>&lt;p>To build Photon OS manually, run the following:&lt;/p>
 &lt;pre>&lt;code>packer build \
--var 'iso_file=http://dl.bintray.com/vmware/photon/3.0/GA/iso/photon-3.0-26156e2.iso' \
--var 'iso_sha1sum=1c38dd6d00e11d3cbf7768ce93fc3eb8913a9673' \
--var 'product_version=3.0GA' \
+-var 'iso_file=https://packages.vmware.com/photon/4.0/GA/iso/photon-4.0-1526e30ba.iso' \
+-var 'iso_sha1sum=2221ab214b517a15c60bd5e2aacdb9388581bcd9' \
+-var 'product_version=4.0GA' \
 packer-photon.json
 &lt;/code>&lt;/pre>&lt;h2 id="build-vmware-workstation-or-fusion-vagrant-box">Build VMware Workstation or Fusion Vagrant Box&lt;/h2>
 &lt;p>To build only a VMware Workstation or Fusion vagrant box, run:&lt;/p>
-&lt;pre>&lt;code>packer build -only=vagrant-vmware_desktop -var-file=vars/iso-3.0GA.json packer-photon.json
+&lt;pre>&lt;code>packer build -only=vagrant-vmware_desktop -var-file=vars/iso-4.0GA.json packer-photon.json
 &lt;/code>&lt;/pre>&lt;p>or:&lt;/p>
 &lt;pre>&lt;code>packer build \
 -only=vagrant-vmware_desktop \
--var 'iso_file= http://dl.bintray.com/vmware/photon/3.0/GA/iso/photon-3.0-26156e2.iso ' \
--var 'iso_sha1sum= 1c38dd6d00e11d3cbf7768ce93fc3eb8913a9673' \
--var 'product_version=3.0GA' \
+-var 'iso_file= https://packages.vmware.com/photon/4.0/GA/iso/photon-4.0-1526e30ba.iso ' \
+-var 'iso_sha1sum= 2221ab214b517a15c60bd5e2aacdb9388581bcd9' \
+-var 'product_version=4.0GA' \
 packer-photon.json
 &lt;/code>&lt;/pre>&lt;p>You can build to one of the following targets:&lt;/p>
 &lt;ul>
@@ -205,9 +205,9 @@ packer-photon.json
 &lt;/code>&lt;/pre>&lt;h2 id="iso-30gajson">iso-3.0GA.json&lt;/h2>
 &lt;p>The following are the contents of the &lt;code>photon-packer-templates/vars/iso-3.0GA.json&lt;/code> file:&lt;/p>
 &lt;pre>&lt;code>{
-&amp;quot;product_version&amp;quot; : &amp;quot;3.0GA&amp;quot;,
-&amp;quot;iso_sha1sum&amp;quot; : &amp;quot;1c38dd6d00e11d3cbf7768ce93fc3eb8913a9673&amp;quot;,
-&amp;quot;iso_file&amp;quot; : &amp;quot;http://dl.bintray.com/vmware/photon/3.0/GA/iso/photon-3.0-26156e2.iso&amp;quot;
+&amp;quot;product_version&amp;quot; : &amp;quot;4.0GA&amp;quot;,
+&amp;quot;iso_sha1sum&amp;quot; : &amp;quot;2221ab214b517a15c60bd5e2aacdb9388581bcd9&amp;quot;,
+&amp;quot;iso_file&amp;quot; : &amp;quot;https://packages.vmware.com/photon/4.0/GA/iso/photon-4.0-1526e30ba.iso&amp;quot;
 }
 &lt;/code>&lt;/pre>&lt;p>For more information about the template, see &lt;a href="https://github.com/vmware/photon-packer-templates">Photon Packer Template&lt;/a>&lt;/p></description></item><item><title>Docs: packages_minimal.json File</title><link>/docs/user-guide/kickstart-through-http/packages-minimal-json-file/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/user-guide/kickstart-through-http/packages-minimal-json-file/</guid><description>
 &lt;p>The &lt;code>packages_minimal.json&lt;/code> file contains the install profile that you require.&lt;/p>

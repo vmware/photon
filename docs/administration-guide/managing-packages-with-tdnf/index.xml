@@ -79,27 +79,23 @@ skip_if_unavailable=True
 &lt;/li>
 &lt;li>
 &lt;p>By using &lt;code>metalink&lt;/code>, you can point to multiple URLs to download the &lt;code>repomd.xml&lt;/code> file. A sample metalink file is as follows:&lt;/p>
-&lt;p>cat metalink&lt;/p>
-&lt;?xml version="1.0" encoding="utf-8"?>
-&lt;metalink version="3.0" xmlns="http://www.metalinker.org/" type="dynamic" pubdate="Wed, 05 Feb 2020 08:14:56 GMT" generator="mirrormanager" xmlns:mm0="http://fedorahosted.org/mirrormanager">
-&lt;files>
-&lt;pre>&lt;code>&amp;lt;file name=&amp;quot;repomd.xml&amp;quot;&amp;gt;
-&amp;lt;size&amp;gt;2035&amp;lt;/size&amp;gt;
-&amp;lt;verification&amp;gt;
-&lt;/code>&lt;/pre>
-&lt;p>&lt;hash type="sha1">478437547dac9f5a73fe905d2ed2a0a5b153ef46&lt;/hash>&lt;/p>
-&lt;p>&lt;hash type="sha512">6c6fbfba288ec90905a8d2220a0bfd2a50e835b7faaefedb6978df6ca59c5bce25cc1ddd33023e305b20bcffc702ee2bd61d0855f4f1b2fd7c8f5109e428a764&lt;/hash>&lt;/p>
-&lt;pre>&lt;code> &amp;lt;/verification&amp;gt;
-&amp;lt;resources maxconnections=&amp;quot;1&amp;quot;&amp;gt;
-&lt;/code>&lt;/pre>
-&lt;p>&lt;url protocol="http" type="http" location="IN" preference=“100”>&lt;a href="https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml">https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml&lt;/a>&lt;/url>&lt;/p>
-&lt;p>&lt;url protocol="http" type="http" location="IN" preference=“90”>&lt;a href="https://dl.bintray.com/vmware/photon_updates_3.0_x86_64/repodata/repomd.xml">https://dl.bintray.com/vmware/photon_updates_3.0_x86_64/repodata/repomd.xml&lt;/a>&lt;/url>&lt;/p>
-&lt;pre>&lt;code> &amp;lt;/resources&amp;gt;
-&amp;lt;/file&amp;gt;
-&lt;/code>&lt;/pre>
-&lt;/files>
-&lt;/metalink>
-&lt;p>In the metalink file, provide the preference for each url, so &lt;code>tdnf&lt;/code> first tries to sync the repository data from the mirror which has the highest preference. If it fails due to any reason, &lt;code>tdnf&lt;/code> will sync to the next mirror url with the lower preference than before one.&lt;/p>
+&lt;p>&lt;code>cat metalink&lt;/code>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-xml" data-lang="xml">&lt;span style="color:#8f5902;font-style:italic">&amp;lt;?xml version=&amp;#34;1.0&amp;#34; encoding=&amp;#34;utf-8&amp;#34;?&amp;gt;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;lt;metalink&lt;/span> &lt;span style="color:#c4a000">version=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;3.0&amp;#34;&lt;/span> &lt;span style="color:#c4a000">xmlns=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;http://www.metalinker.org/&amp;#34;&lt;/span> &lt;span style="color:#c4a000">type=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;dynamic&amp;#34;&lt;/span> &lt;span style="color:#c4a000">pubdate=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;Wed, 05 Feb 2020 08:14:56 GMT&amp;#34;&lt;/span> &lt;span style="color:#c4a000">generator=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;mirrormanager&amp;#34;&lt;/span> &lt;span style="color:#c4a000">xmlns:mm0=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;http://fedorahosted.org/mirrormanager&amp;#34;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;gt;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;lt;files&amp;gt;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;lt;file&lt;/span> &lt;span style="color:#c4a000">name=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;repomd.xml&amp;#34;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;gt;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;lt;size&amp;gt;&lt;/span>2035&lt;span style="color:#204a87;font-weight:bold">&amp;lt;/size&amp;gt;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;lt;verification&amp;gt;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;lt;hash&lt;/span> &lt;span style="color:#c4a000">type=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;sha1&amp;#34;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;gt;&lt;/span>478437547dac9f5a73fe905d2ed2a0a5b153ef46&lt;span style="color:#204a87;font-weight:bold">&amp;lt;/hash&amp;gt;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;lt;hash&lt;/span> &lt;span style="color:#c4a000">type=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;sha512&amp;#34;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;gt;&lt;/span>6c6fbfba288ec90905a8d2220a0bfd2a50e835b7faaefedb6978df6ca59c5bce25cc1ddd33023e305b20bcffc702ee2bd61d0855f4f1b2fd7c8f5109e428a764&lt;span style="color:#204a87;font-weight:bold">&amp;lt;/hash&amp;gt;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;lt;/verification&amp;gt;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;lt;resources&lt;/span> &lt;span style="color:#c4a000">maxconnections=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;1&amp;#34;&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;gt;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;lt;url&lt;/span> &lt;span style="color:#c4a000">protocol=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;http&amp;#34;&lt;/span> &lt;span style="color:#c4a000">type=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;http&amp;#34;&lt;/span> &lt;span style="color:#c4a000">location=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;IN&amp;#34;&lt;/span> &lt;span style="color:#c4a000">preference=&lt;/span>&lt;span style="color:#4e9a06">“100”&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;gt;&lt;/span>https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml&lt;span style="color:#204a87;font-weight:bold">&amp;lt;/url&amp;gt;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;lt;/resources&amp;gt;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;lt;/file&amp;gt;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;lt;/files&amp;gt;&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;lt;/metalink&amp;gt;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>In the metalink file, provide the preference for each url, so &lt;code>tdnf&lt;/code> first tries to sync the repository data from the mirror which has the highest preference. If it fails due to any reason, &lt;code>tdnf&lt;/code> will sync to the next mirror url with the lower preference than before one.&lt;/p>
 &lt;p>Note: Ensure that the shasum for &lt;code>respomd.xml&lt;/code> in all the mirrors should be same&lt;/p>
 &lt;/li>
 &lt;li>
@@ -171,16 +167,17 @@ Metadata cache created.
 &lt;pre>&lt;code>cat &amp;gt; /etc/yum.repos.d/photon-dev.repo &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
 [photon-dev]
 name=VMware Photon Linux Dev(x86_64)
-baseurl=https://dl.bintray.com/vmware/photon_dev_$basearch
+baseurl=https://packages.vmware.com/photon/dev/photon_dev_$basearch
 gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
 skip_if_unavailable=True
 EOF
-``` .
-2. After establishing a new repository, run the following command to update the cached binary metadata for the repositories that `tdnf` polls:
-&lt;/code>&lt;/pre>&lt;p>tdnf makecache&lt;/p>
-&lt;pre>&lt;code>
+.
+&lt;/code>&lt;/pre>&lt;ol start="2">
+&lt;li>After establishing a new repository, run the following command to update the cached binary metadata for the repositories that &lt;code>tdnf&lt;/code> polls:&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code>tdnf makecache
 &lt;/code>&lt;/pre></description></item><item><title>Docs: tdnf-automatic</title><link>/docs/administration-guide/managing-packages-with-tdnf/tdnf-automatic/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-packages-with-tdnf/tdnf-automatic/</guid><description>
 &lt;p>&lt;code>tdnf-automatic&lt;/code> is an alternative Command Line Interface (CLI) to &lt;code>tdnf upgrade/tdnf update&lt;/code> with specific features so that it is suitable to be executed automatically and regularly from &lt;code>systemd&lt;/code> timers, cron jobs, and so on.&lt;/p>
 &lt;p>The operation of the tool is usually controlled by the configuration file or the function-specific timer units. The command only accepts a single optional argument pointing to the config file, and some control arguments intended for use by the services that back the timer units. If no configuration file is passed from the command line,then &lt;code>/etc/tdnf/automatic.conf&lt;/code> is used.&lt;/p>

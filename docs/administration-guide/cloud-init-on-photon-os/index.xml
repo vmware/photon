@@ -175,7 +175,7 @@ meta-data seed.iso user-data&lt;/p>
 &lt;p>Attach the ISO to the Photon OS virtual machine as a CD-ROM and reboot it so that the changes specified by seed.iso take effect. In this case, &lt;code>cloud-init&lt;/code> sets the &lt;code>hostname&lt;/code> and adds the &lt;code>vim&lt;/code> package.&lt;/p>
 &lt;/li>
 &lt;/ol></description></item><item><title>Docs: Customizing a Photon OS Machine on EC2</title><link>/docs/administration-guide/cloud-init-on-photon-os/customizing-a-photon-os-machine-on-ec2/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/cloud-init-on-photon-os/customizing-a-photon-os-machine-on-ec2/</guid><description>
-&lt;p>You can upload an &lt;code>ami&lt;/code> image of Photon OS to Amazon Elastic Compute Cloud (EC2) and customize the Photon OS machine by using &lt;code>cloud-init&lt;/code> with an EC2 data source. The Amazon machine image version of Photon OS is available as a free download on Bintray at the location &lt;code>https://bintray.com/vmware/photon/&lt;/code>.&lt;/p>
+&lt;p>You can upload an &lt;code>ami&lt;/code> image of Photon OS to Amazon Elastic Compute Cloud (EC2) and customize the Photon OS machine by using &lt;code>cloud-init&lt;/code> with an EC2 data source. The Amazon machine image version of Photon OS is available as a free download at the location &lt;a href="https://packages.vmware.com/photon">packages.vmware.com/photon&lt;/a>.&lt;/p>
 &lt;p>The &lt;code>cloud-init&lt;/code> service is commonly used on EC2 to configure the cloud instance of a Linux image. On EC2, &lt;code>cloud-init&lt;/code> sets the &lt;code>.ssh/authorized_keys&lt;/code> file to let you log in with a private key from another computer, that is, a computer besides the workstation that you are already using to connect with the Amazon cloud.&lt;/p>
 &lt;h2 id="example">Example&lt;/h2>
 &lt;p>The cloud-config user-data file that appears in the following example contains abridged SSH authorized keys to show you how to set them.&lt;/p>
@@ -214,33 +214,33 @@ $ ec2-describe-images
 $ ec2-terminate-instances &amp;lt;instance-id&amp;gt;
 &lt;/code>&lt;/pre>&lt;h3 id="result">Result&lt;/h3>
 &lt;p>The following are the contents of the &lt;code>user-data.txt&lt;/code> file that &lt;code>cloud-init&lt;/code> applies to the machine the first time that it boots up in the cloud:&lt;/p>
-&lt;pre>&lt;code>#cloud-config
-hostname: photon-on-01
-groups:
-- cloud-admins
-- cloud-users
-users:
-- default
-- name: photonadmin
-gecos: photon test admin user
-primary-group: cloud-admins
-groups: cloud-users
-lock-passwd: false
-passwd: vmware
-- name: photonuser
-gecos: photon test user
-primary-group: cloud-users
-groups: users
-passwd: vmware
-packages:
-- vim
-ssh_authorized_keys:
-- ssh-rsa MIIEogIBAAKCAQEAuvHKAjBhpwuomcUTpIzJWRJAe71JyBgAWrwqyN1Mk5N+c9X5
-Ru2fazFA7WxQSD1KyTEvcuf8JzdBfrEJ0v3/nT2x63pvJ8fCl6HRkZtHo8zRu8vY
-KYTZS/sdvM/ruubHfq1ldRpgtYSqbkykoe6PCQIDAQABAoIBAEgveQtjVzHDhLTr
-rmwJmO316ERfkQ/chLaElhi9qwYJG/jqlNIISWFyztqD1b3fxU6m5MOBIujh7Xpg
-... ec3test@example.com
-&lt;/code>&lt;/pre>&lt;p>You can view the cloud-init output log file on EC2 at &lt;code>/var/log/cloud-init-output.log&lt;/code>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#8f5902;font-style:italic">#cloud-config&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">hostname&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">photon-on-01&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">groups&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>- &lt;span style="color:#000">cloud-admins&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>- &lt;span style="color:#000">cloud-users&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">users&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>- &lt;span style="color:#000">default&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>- &lt;span style="color:#204a87;font-weight:bold">name&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">photonadmin&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">gecos&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">photon test admin user&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">primary-group&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">cloud-admins&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">groups&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">cloud-users&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">lock-passwd&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">false&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">passwd&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">vmware&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>- &lt;span style="color:#204a87;font-weight:bold">name&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">photonuser&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">gecos&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">photon test user&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">primary-group&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">cloud-users&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">groups&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">users&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">passwd&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">vmware&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">packages&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>- &lt;span style="color:#000">vim&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">ssh_authorized_keys&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>- &lt;span style="color:#000">ssh-rsa MIIEogIBAAKCAQEAuvHKAjBhpwuomcUTpIzJWRJAe71JyBgAWrwqyN1Mk5N+c9X5&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">Ru2fazFA7WxQSD1KyTEvcuf8JzdBfrEJ0v3/nT2x63pvJ8fCl6HRkZtHo8zRu8vY&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">KYTZS/sdvM/ruubHfq1ldRpgtYSqbkykoe6PCQIDAQABAoIBAEgveQtjVzHDhLTr&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">rmwJmO316ERfkQ/chLaElhi9qwYJG/jqlNIISWFyztqD1b3fxU6m5MOBIujh7Xpg&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">... ec3test@example.com &lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;p>You can view the cloud-init output log file on EC2 at &lt;code>/var/log/cloud-init-output.log&lt;/code>.&lt;/p>
 &lt;p>For more information on using cloud-init user data on EC2, see &lt;a href="http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html">Running Commands on Your Linux Instance at Launch&lt;/a>.&lt;/p>
 &lt;p>For more information on how to get Photon OS up and running on EC2 and run a containerized application in the Docker engine, see &lt;a href="../../../installation-guide/run-photon-aws-ec2/">Running Photon OS on Amazon Elastic Cloud Compute&lt;/a>.&lt;/p>
 &lt;p>With Photon OS, you can also build cloud images on Google Compute Engine and other cloud providers. For more information, see &lt;a href="../../../installation-guide/cloud-images/">Compatible Cloud Images&lt;/a>.&lt;/p></description></item><item><title>Docs: Running a Photon OS Machine on GCE</title><link>/docs/administration-guide/cloud-init-on-photon-os/running-a-photon-os-machine-on-gce/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/cloud-init-on-photon-os/running-a-photon-os-machine-on-gce/</guid><description>
@@ -250,34 +250,36 @@ rmwJmO316ERfkQ/chLaElhi9qwYJG/jqlNIISWFyztqD1b3fxU6m5MOBIujh7Xpg
 &lt;h3 id="prerequisites">Prerequisites&lt;/h3>
 &lt;ul>
 &lt;li>
-&lt;p>You must have set up a GCE account and are ready to pay Google for its cloud services. The GCE-ready version of Photon OS is a free image and is free. You can download it without registration from the following Bintray location: &lt;code>https://bintray.com/vmware/photon/gce/view&lt;/code>&lt;/p>
+&lt;p>You must have set up a GCE account and are ready to pay Google for its cloud services. The GCE-ready version of Photon OS is a free image and is free. You can download Photon OS for GCE from &lt;a href="https://packages.vmware.com/photon/4.0/GA/gce/">https://packages.vmware.com/photon/4.0/GA/gce/&lt;/a>.&lt;/p>
 &lt;p>The GCE-ready image of Photon OS contains packages and scripts that prepare it for the Google cloud to save you time as you implement a compute cluster or develop cloud applications. The GCE-ready version of Photon OS adds the following packages to the &lt;a href="https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json">packages installed with the minimal version&lt;/a>:&lt;/p>
 &lt;pre>&lt;code>sudo, tar, which, google-daemon, google-startup-scripts,
 kubernetes, perl-DBD-SQLite, perl-DBIx-Simple, perl, ntp
 &lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Verify that you have the &lt;code>gcloud command-line tool&lt;/code>.
+For more information see, &lt;a href="https://cloud.google.com/compute/docs/gcloud-compute">https://cloud.google.com/compute/docs/gcloud-compute&lt;/a>.&lt;/p>
+&lt;/li>
 &lt;/ul>
-&lt;pre>&lt;code>
-- Verify that you have the `gcloud command-line tool`.
-For more information see, [https://cloud.google.com/compute/docs/gcloud-compute](https://cloud.google.com/compute/docs/gcloud-compute).
-### Procedure
-1. Use the following commands to create an instance of Photon OS from the Photon GCE image without using cloud-init. In the commands, you must replace `&amp;lt;bucket-name&amp;gt;` with the name of your bucket and the path to the Photon GCE tar file.
-```
-$ gcloud compute instances list
+&lt;h3 id="procedure">Procedure&lt;/h3>
+&lt;ol>
+&lt;li>
+&lt;p>Use the following commands to create an instance of Photon OS from the Photon GCE image without using cloud-init. In the commands, you must replace &lt;code>&amp;lt;bucket-name&amp;gt;&lt;/code> with the name of your bucket and the path to the Photon GCE tar file.&lt;/p>
+&lt;pre>&lt;code>&lt;/code>&lt;/pre>&lt;/li>
+&lt;/ol>
+&lt;p>$ gcloud compute instances list
 $ gcloud compute images list
 $ gcloud config list
-$ gsutil mb gs://&amp;lt;bucket-name&amp;gt;
-$ gsutil cp &amp;lt;path-to-photon-gce-image.tar.gz&amp;gt; gs://&amp;lt;bucket-name&amp;gt;/photon-gce.tar.gz
-$ gcloud compute images create photon-gce-image --source-uri gs://&amp;lt;bucket-name&amp;gt;/photon-gce.tar.gz
-$ gcloud compute instances create photon-gce-vm --machine-type &amp;quot;n1-standard-1&amp;quot; --image photon-gce-image
+$ gsutil mb gs://&lt;bucket-name>
+$ gsutil cp &amp;lt;path-to-photon-gce-image.tar.gz&amp;gt; gs://&lt;bucket-name>/photon-gce.tar.gz
+$ gcloud compute images create photon-gce-image &amp;ndash;source-uri gs://&lt;bucket-name>/photon-gce.tar.gz
+$ gcloud compute instances create photon-gce-vm &amp;ndash;machine-type &amp;ldquo;n1-standard-1&amp;rdquo; &amp;ndash;image photon-gce-image
 $ gcloud compute instances describe photon-gce-vm
-&lt;/code>&lt;/pre>&lt;ol>
+```&lt;/p>
+&lt;ol>
 &lt;li>
 &lt;p>To create a new instance of a Photon OS machine and configure it with a cloud-init user data file, replace the &lt;code>gcloud compute instances create&lt;/code> command in the example above with the following command. Before running this command, you must upload your user-data file to Google&amp;rsquo;s cloud infrastructure and replace &lt;code>&amp;lt;path-to-userdata-file&amp;gt;&lt;/code> with its path and file name.&lt;/p>
 &lt;pre>&lt;code>gcloud compute instances create photon-gce-vm --machine-type &amp;quot;n1-standard-1&amp;quot; --image photon-gce-vm --metadata-from-file=user-data=&amp;lt;path-to-userdata-file&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>You can also add a cloud-init user-data file to an existing instance of a Photon OS machine on GCE:&lt;/p>
+&lt;pre>&lt;code>gcloud compute instances add-metadata photon-gce-vm --metadata-from-file=user-data=&amp;lt;path-to-userdata-file&amp;gt;
 &lt;/code>&lt;/pre>&lt;/li>
-&lt;/ol>
-&lt;pre>&lt;code>
-You can also add a cloud-init user-data file to an existing instance of a Photon OS machine on GCE:
-```
-gcloud compute instances add-metadata photon-gce-vm --metadata-from-file=user-data=&amp;lt;path-to-userdata-file&amp;gt;
-&lt;/code>&lt;/pre></description></item></channel></rss>
+&lt;/ol></description></item></channel></rss>

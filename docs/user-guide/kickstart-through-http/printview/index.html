@@ -7,16 +7,16 @@
 - `product_version` - The Photon OS release version that you want to build. This version is added to the image filename. 
 </code></pre><p>Preset JSON files with the required parameters are located in the <code>photon-packer-templates/vars</code> folder.</p><h2 id=kick-start-build>Kick Start Build</h2><p>To kick start a build using the JSON file, run the following command:</p><pre><code>packer build -var-file=vars/iso-3.0GA.json packer-photon.json
 </code></pre><p>To build Photon OS manually, run the following:</p><pre><code>packer build \
-        -var 'iso_file=http://dl.bintray.com/vmware/photon/3.0/GA/iso/photon-3.0-26156e2.iso' \
-        -var 'iso_sha1sum=1c38dd6d00e11d3cbf7768ce93fc3eb8913a9673' \
-        -var 'product_version=3.0GA' \
+        -var 'iso_file=https://packages.vmware.com/photon/4.0/GA/iso/photon-4.0-1526e30ba.iso' \
+        -var 'iso_sha1sum=2221ab214b517a15c60bd5e2aacdb9388581bcd9' \
+        -var 'product_version=4.0GA' \
         packer-photon.json
-</code></pre><h2 id=build-vmware-workstation-or-fusion-vagrant-box>Build VMware Workstation or Fusion Vagrant Box</h2><p>To build only a VMware Workstation or Fusion vagrant box, run:</p><pre><code>packer build -only=vagrant-vmware_desktop -var-file=vars/iso-3.0GA.json packer-photon.json
+</code></pre><h2 id=build-vmware-workstation-or-fusion-vagrant-box>Build VMware Workstation or Fusion Vagrant Box</h2><p>To build only a VMware Workstation or Fusion vagrant box, run:</p><pre><code>packer build -only=vagrant-vmware_desktop -var-file=vars/iso-4.0GA.json packer-photon.json
 </code></pre><p>or:</p><pre><code>packer build \
        -only=vagrant-vmware_desktop \
-       -var 'iso_file= http://dl.bintray.com/vmware/photon/3.0/GA/iso/photon-3.0-26156e2.iso ' \
-       -var 'iso_sha1sum= 1c38dd6d00e11d3cbf7768ce93fc3eb8913a9673' \
-       -var 'product_version=3.0GA' \
+       -var 'iso_file= https://packages.vmware.com/photon/4.0/GA/iso/photon-4.0-1526e30ba.iso ' \
+       -var 'iso_sha1sum= 2221ab214b517a15c60bd5e2aacdb9388581bcd9' \
+       -var 'product_version=4.0GA' \
        packer-photon.json
 </code></pre><p>You can build to one of the following targets:</p><ul><li><code>vagrant-vmware_desktop</code> - Generates the <code>vmware_desktop</code> compatible box found on Atlas as <code>vmware/photon</code>.</li><li><code>vagrant-virtualbox</code> - Generates the <code>virtualbox</code> compatible box found on Atlas as <code>vmware/photon</code>.</li></ul></div><div class=td-content style=page-break-before:always><h1 id=pg-7721e9f0e5e555bb6640c7092e191a79>3 - Photon Packer Template</h1><p>The Photon Packer template folder has the following structure:</p><pre><code>photon-packer-templates/
 ├── packer-photon.json
@@ -165,9 +165,9 @@
                    ]
 }
 </code></pre><h2 id=iso-30gajson>iso-3.0GA.json</h2><p>The following are the contents of the <code>photon-packer-templates/vars/iso-3.0GA.json</code> file:</p><pre><code>{
-   &quot;product_version&quot; : &quot;3.0GA&quot;,
-   &quot;iso_sha1sum&quot; : &quot;1c38dd6d00e11d3cbf7768ce93fc3eb8913a9673&quot;,
-   &quot;iso_file&quot; : &quot;http://dl.bintray.com/vmware/photon/3.0/GA/iso/photon-3.0-26156e2.iso&quot;
+   &quot;product_version&quot; : &quot;4.0GA&quot;,
+   &quot;iso_sha1sum&quot; : &quot;2221ab214b517a15c60bd5e2aacdb9388581bcd9&quot;,
+   &quot;iso_file&quot; : &quot;https://packages.vmware.com/photon/4.0/GA/iso/photon-4.0-1526e30ba.iso&quot;
 }
 </code></pre><p>For more information about the template, see <a href=https://github.com/vmware/photon-packer-templates>Photon Packer Template</a></p></div><div class=td-content style=page-break-before:always><h1 id=pg-b3fb62a9ed54be9848715232ab3fd71e>4 - packages_minimal.json File</h1><p>The <code>packages_minimal.json</code> file contains the install profile that you require.</p><p>The contents of the file are as follows:</p><pre><code>{
     &quot;packages&quot;: [

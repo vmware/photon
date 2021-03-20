@@ -1,7 +1,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Installation Guide</title><link>/docs/installation-guide/</link><description>Recent content in Installation Guide on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/installation-guide/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Downloading Photon OS</title><link>/docs/installation-guide/downloading-photon/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/downloading-photon/</guid><description>
-&lt;p>Photon OS can be downloaded from &lt;a href="https://github.com/vmware/photon/wiki/Downloading-Photon-OS">https://github.com/vmware/photon/wiki/Downloading-Photon-OS&lt;/a>&lt;/p>
-&lt;p>Photon OS is available in the following pre-packaged, binary formats.&lt;/p>
+&lt;p>Detailed instructions for obtaining Photon OS 4.0 are located at: &lt;a href="https://github.com/vmware/photon/wiki/Downloading-Photon-OS">https://github.com/vmware/photon/wiki/Downloading-Photon-OS&lt;/a>&lt;/p>
 &lt;h2 id="download-formats">Download Formats&lt;/h2>
+&lt;p>Photon OS is available in the following pre-packaged, binary formats:&lt;/p>
 &lt;table>
 &lt;thead>
 &lt;tr>
@@ -19,31 +19,31 @@
 &lt;td>&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>ISO Image&lt;/td>
+&lt;td>&lt;a href="https://packages.vmware.com/photon/4.0/GA/iso/">ISO Image&lt;/a>&lt;/td>
 &lt;td>Contains everything needed to install the minimal or full installation of Photon OS or the Real-Time flavor of Photon OS. The bootable ISO has a manual installer or can be used with PXE/kickstart environments for automated installations.&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>OVA&lt;/td>
+&lt;td>&lt;a href="https://packages.vmware.com/photon/4.0/GA/ova/">OVA&lt;/a>&lt;/td>
 &lt;td>Pre-installed minimal environment, customized for VMware hypervisor environments. These customizations include a highly sanitized and optimized kernel to give improved boot and runtime performance for containers and Linux applications. Since an OVA is a complete virtual machine definition, we&amp;rsquo;ve made available a Photon OS OVA that has virtual hardware version 13 arm64, version 13, and version 11; this will allow for compatibility with several versions of VMware platforms or allow for the latest and greatest virtual hardware enhancements.&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>Amazon AMI&lt;/td>
+&lt;td>&lt;a href="https://packages.vmware.com/photon/4.0/GA/ami/">Amazon AMI&lt;/a>&lt;/td>
 &lt;td>Pre-packaged and tested version of Photon OS with Amazon AMI and Amazon AMI arm64 packages made ready to deploy in your Amazon EC2 cloud environment. Previously, we&amp;rsquo;d published documentation on how to create an Amazon compatible instance, but, now we&amp;rsquo;ve done the work for you.&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>Google GCE Image&lt;/td>
+&lt;td>&lt;a href="https://packages.vmware.com/photon/4.0/GA/gce/">Google GCE Image&lt;/a>&lt;/td>
 &lt;td>Pre-packaged and tested Google GCE image that is ready to deploy in your Google Compute Engine Environment, with all modifications and package requirements for running Photon OS in GCE.&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>Azure VHD&lt;/td>
+&lt;td>&lt;a href="https://packages.vmware.com/photon/4.0/GA/azure/">Azure VHD&lt;/a>&lt;/td>
 &lt;td>Pre-packaged and tested Azure HD image that is ready to deploy in your Microsoft Azure Cloud, with all modifications and package requirements for running Photon OS in Azure.&lt;/td>
 &lt;/tr>
 &lt;tr>
-&lt;td>Raspberry Pi Image&lt;/td>
+&lt;td>&lt;a href="https://packages.vmware.com/photon/4.0/GA/rpi/">Raspberry Pi Image&lt;/a>&lt;/td>
 &lt;td>Pre-packaged and tested Raspberry Pi Image on ARM64 architecture.&lt;/td>
 &lt;/tr>
 &lt;/tbody>
-&lt;/table></description></item><item><title>Docs: Upgrading to Photon OS 4.0</title><link>/docs/installation-guide/upgrading-to-photon-os-3/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/upgrading-to-photon-os-3/</guid><description>
+&lt;/table></description></item><item><title>Docs: Upgrading to Photon OS 4.0</title><link>/docs/installation-guide/upgrading-to-photon-os-4/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/upgrading-to-photon-os-4/</guid><description>
 &lt;p>You can upgrade your existing Photon OS 3.0 VMs to take advantage of the functionality enhancements in Photon OS 4.0. For details, see &lt;a href="../../overview/whats-new/">What&amp;rsquo;s New in Photon OS 4.0&lt;/a>.&lt;/p>
 &lt;p>Photon OS 4.0 provides a seamless upgrade for Photon OS 3.0 implementations. You simply download an upgrade package, run a script, and reboot the VM. The upgrade script will update your packages and retain your 3.0 customizations in your new OS 4.0 VM.&lt;/p>
 &lt;p>&lt;strong>Note&lt;/strong>: If your 3.0 VM is a full install, then you will have a 4.0 VM that represents a full install (all packages and dependencies). Upgrading a minimal installation takes less time due to fewer packages.&lt;/p>
@@ -185,7 +185,7 @@ Build completed. RPMS are in '&amp;lt;HOME&amp;gt;/photon/tools/examples/build_s
 &lt;p>You can now run any other containerized application from Docker Hub or your own containerized application within Photon OS.&lt;/p>
 &lt;/li>
 &lt;/ol></description></item><item><title>Docs: Compatible Cloud Images</title><link>/docs/installation-guide/cloud-images/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/cloud-images/</guid><description>
-&lt;p>The &lt;a href="https://bintray.com/vmware/photon/">Bintray website&lt;/a> contains the following cloud-ready images of Photon OS:&lt;/p>
+&lt;p>The &lt;a href="https://packages.vmware.com/photon/">Vmware Photon Packages website&lt;/a> contains the following cloud-ready images of Photon OS:&lt;/p>
 &lt;ol>
 &lt;li>
 &lt;p>GCE - Google Compute Engine&lt;/p>
@@ -197,8 +197,8 @@ Build completed. RPMS are in '&amp;lt;HOME&amp;gt;/photon/tools/examples/build_s
 &lt;p>OVA&lt;/p>
 &lt;/li>
 &lt;/ol>
-&lt;p>Because the cloud-ready images of Photon OS are built to be compatible with their corresponding cloud platform or format, you typically do not need to build a cloud image&amp;ndash;just go to Bintray and download the image for the platform that you are working on.&lt;/p>
-&lt;p>If, however, you want to build your own cloud image, perhaps because you seek to customize the code, see the next section on how to build cloud images.&lt;/p>
+&lt;p>Because the cloud-ready images of Photon OS are built to be compatible with their corresponding cloud platform or format, you typically do not need to build a cloud image, you can just go to the &lt;a href="https://packages.vmware.com/photon/">VMware Packages&lt;/a> repo and download the image for the platform that you are working on.&lt;/p>
+&lt;p>If, however, you want to build your &lt;em>own&lt;/em> cloud image, perhaps because you seek to customize the code, see the next section on how to build cloud images.&lt;/p>
 &lt;h2 id="how-to-build-cloud-images">How to build cloud images&lt;/h2>
 &lt;pre>&lt;code>sudo make cloud-image IMG_NAME=image-name
 image-name: gce/ami/azure/ova

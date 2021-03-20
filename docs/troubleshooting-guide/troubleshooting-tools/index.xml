@@ -108,7 +108,7 @@ locate traceroute
 &lt;/code>&lt;/pre>
 &lt;h2 id="md5sum">md5sum&lt;/h2>
 &lt;p>The &lt;code>md5sum&lt;/code> tool calculates 128-bit RSA Data Security, Inc. MD5 Message Digest Algorithm hashes (a message digest, or digital signature, of a file) to uniquely identify a file and verify its integrity after file transfers, downloads, or disk errors when the security of the file is not in question.&lt;/p>
-&lt;p>&lt;code>md5sum&lt;/code> can help troubleshooting installation issues by verifying that the version of Photon OS being installed matches the version on the Bintray download page. If, for instance, bytes were dropped during the download, the checksums will not match. Try downloading it again.&lt;/p>
+&lt;p>&lt;code>md5sum&lt;/code> can help troubleshooting installation issues by verifying that the version of Photon OS being installed matches the version on the public VMware Photon Packages download page. If, for instance, bytes were dropped during the download, the checksums will not match. Try downloading it again.&lt;/p>
 &lt;h2 id="sha256sum">sha256sum&lt;/h2>
 &lt;p>The &lt;code>sha256sum&lt;/code> tool calculates the authenticity of a file to prevent tampering when security is a concern. Photon OS also includes &lt;code>shasum&lt;/code>, &lt;code>sha1sum&lt;/code>, &lt;code>sha384sum&lt;/code>, and &lt;code>sha512sum&lt;/code>. See the man pages for &lt;code>md3sum&lt;/code>, &lt;code>sha256sum&lt;/code>, and the other SHA utilities.&lt;/p>
 &lt;h2 id="strace">strace&lt;/h2>

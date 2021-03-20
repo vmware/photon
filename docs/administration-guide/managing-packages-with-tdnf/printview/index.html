@@ -47,18 +47,36 @@ gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
 skip_if_unavailable=True
-</code></pre><p>The repository settings details are as follows:</p><ul><li><p>The minimal information needed to establish a repository is an ID and human-readable name of the repository and its base URL. The ID, which appears in square brackets, must be one word that is unique amoung the system&rsquo;s repositories; `.</p></li><li><p>The <code>baseurl</code> is a URL for the repository&rsquo;s repodata directory. For a repository on a local server that can be accessed directly or mounted as a file system, the base URL can be a file referenced by <code>file://</code>. Example:</p><p>baseurl=file:///server/repo/</p></li><li><p>By using <code>metalink</code>, you can point to multiple URLs to download the <code>repomd.xml</code> file. A sample metalink file is as follows:</p><p>cat metalink</p><metalink version=3.0 xmlns=http://www.metalinker.org/ type=dynamic pubdate="Wed, 05 Feb 2020 08:14:56 GMT" generator=mirrormanager xmlns:mm0=http://fedorahosted.org/mirrormanager><files><pre><code>&lt;file name=&quot;repomd.xml&quot;&gt;
-
- &lt;size&gt;2035&lt;/size&gt;
-
- &lt;verification&gt;
-</code></pre><p><hash type=sha1>478437547dac9f5a73fe905d2ed2a0a5b153ef46</hash></p><p><hash type=sha512>6c6fbfba288ec90905a8d2220a0bfd2a50e835b7faaefedb6978df6ca59c5bce25cc1ddd33023e305b20bcffc702ee2bd61d0855f4f1b2fd7c8f5109e428a764</hash></p><pre><code> &lt;/verification&gt;
-
- &lt;resources maxconnections=&quot;1&quot;&gt;
-</code></pre><p><url protocol=http type=http location=IN preference=“100”><a href=https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml>https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml</a></url></p><p><url protocol=http type=http location=IN preference=“90”><a href=https://dl.bintray.com/vmware/photon_updates_3.0_x86_64/repodata/repomd.xml>https://dl.bintray.com/vmware/photon_updates_3.0_x86_64/repodata/repomd.xml</a></url></p><pre><code> &lt;/resources&gt;
-
-&lt;/file&gt;
-</code></pre></files></metalink><p>In the metalink file, provide the preference for each url, so <code>tdnf</code> first tries to sync the repository data from the mirror which has the highest preference. If it fails due to any reason, <code>tdnf</code> will sync to the next mirror url with the lower preference than before one.</p><p>Note: Ensure that the shasum for <code>respomd.xml</code> in all the mirrors should be same</p></li><li><p>The <code>gpgcheck</code> setting specifies whether to check the GPG signature.</p></li><li><p>The <code>repo_gpgcheck</code> setting allows <code>tdnf</code> to verify the signature of a repository metadata before downloading the repository artifacts. When <code>repo_gpgcheck</code> is set to <code>1</code> in the tdnf.conf file, all repositories will be checked for the metadata signatures. The default value is <code>0</code>.
+</code></pre><p>The repository settings details are as follows:</p><ul><li><p>The minimal information needed to establish a repository is an ID and human-readable name of the repository and its base URL. The ID, which appears in square brackets, must be one word that is unique amoung the system&rsquo;s repositories; `.</p></li><li><p>The <code>baseurl</code> is a URL for the repository&rsquo;s repodata directory. For a repository on a local server that can be accessed directly or mounted as a file system, the base URL can be a file referenced by <code>file://</code>. Example:</p><p>baseurl=file:///server/repo/</p></li><li><p>By using <code>metalink</code>, you can point to multiple URLs to download the <code>repomd.xml</code> file. A sample metalink file is as follows:</p><p><code>cat metalink</code></p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-xml data-lang=xml><span style=color:#8f5902;font-style:italic>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;</span>
+  
+<span style=color:#204a87;font-weight:700>&lt;metalink</span> <span style=color:#c4a000>version=</span><span style=color:#4e9a06>&#34;3.0&#34;</span> <span style=color:#c4a000>xmlns=</span><span style=color:#4e9a06>&#34;http://www.metalinker.org/&#34;</span> <span style=color:#c4a000>type=</span><span style=color:#4e9a06>&#34;dynamic&#34;</span> <span style=color:#c4a000>pubdate=</span><span style=color:#4e9a06>&#34;Wed, 05 Feb 2020 08:14:56 GMT&#34;</span> <span style=color:#c4a000>generator=</span><span style=color:#4e9a06>&#34;mirrormanager&#34;</span> <span style=color:#c4a000>xmlns:mm0=</span><span style=color:#4e9a06>&#34;http://fedorahosted.org/mirrormanager&#34;</span><span style=color:#204a87;font-weight:700>&gt;</span>
+  
+ <span style=color:#204a87;font-weight:700>&lt;files&gt;</span>
+  
+  <span style=color:#204a87;font-weight:700>&lt;file</span> <span style=color:#c4a000>name=</span><span style=color:#4e9a06>&#34;repomd.xml&#34;</span><span style=color:#204a87;font-weight:700>&gt;</span>
+  
+   <span style=color:#204a87;font-weight:700>&lt;size&gt;</span>2035<span style=color:#204a87;font-weight:700>&lt;/size&gt;</span>
+  
+   <span style=color:#204a87;font-weight:700>&lt;verification&gt;</span>
+  
+<span style=color:#204a87;font-weight:700>&lt;hash</span> <span style=color:#c4a000>type=</span><span style=color:#4e9a06>&#34;sha1&#34;</span><span style=color:#204a87;font-weight:700>&gt;</span>478437547dac9f5a73fe905d2ed2a0a5b153ef46<span style=color:#204a87;font-weight:700>&lt;/hash&gt;</span>
+  
+<span style=color:#204a87;font-weight:700>&lt;hash</span> <span style=color:#c4a000>type=</span><span style=color:#4e9a06>&#34;sha512&#34;</span><span style=color:#204a87;font-weight:700>&gt;</span>6c6fbfba288ec90905a8d2220a0bfd2a50e835b7faaefedb6978df6ca59c5bce25cc1ddd33023e305b20bcffc702ee2bd61d0855f4f1b2fd7c8f5109e428a764<span style=color:#204a87;font-weight:700>&lt;/hash&gt;</span>
+  
+   <span style=color:#204a87;font-weight:700>&lt;/verification&gt;</span>
+  
+   <span style=color:#204a87;font-weight:700>&lt;resources</span> <span style=color:#c4a000>maxconnections=</span><span style=color:#4e9a06>&#34;1&#34;</span><span style=color:#204a87;font-weight:700>&gt;</span>
+  
+<span style=color:#204a87;font-weight:700>&lt;url</span> <span style=color:#c4a000>protocol=</span><span style=color:#4e9a06>&#34;http&#34;</span> <span style=color:#c4a000>type=</span><span style=color:#4e9a06>&#34;http&#34;</span> <span style=color:#c4a000>location=</span><span style=color:#4e9a06>&#34;IN&#34;</span> <span style=color:#c4a000>preference=</span><span style=color:#4e9a06>“100”</span><span style=color:#204a87;font-weight:700>&gt;</span>https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64/repodata/repomd.xml<span style=color:#204a87;font-weight:700>&lt;/url&gt;</span>
+   
+   <span style=color:#204a87;font-weight:700>&lt;/resources&gt;</span>
+  
+  <span style=color:#204a87;font-weight:700>&lt;/file&gt;</span>
+  
+ <span style=color:#204a87;font-weight:700>&lt;/files&gt;</span>
+  
+<span style=color:#204a87;font-weight:700>&lt;/metalink&gt;</span>
+</code></pre></div><p>In the metalink file, provide the preference for each url, so <code>tdnf</code> first tries to sync the repository data from the mirror which has the highest preference. If it fails due to any reason, <code>tdnf</code> will sync to the next mirror url with the lower preference than before one.</p><p>Note: Ensure that the shasum for <code>respomd.xml</code> in all the mirrors should be same</p></li><li><p>The <code>gpgcheck</code> setting specifies whether to check the GPG signature.</p></li><li><p>The <code>repo_gpgcheck</code> setting allows <code>tdnf</code> to verify the signature of a repository metadata before downloading the repository artifacts. When <code>repo_gpgcheck</code> is set to <code>1</code> in the tdnf.conf file, all repositories will be checked for the metadata signatures. The default value is <code>0</code>.
 If a repository has <code>repo_gpgcheck</code> enabled,a <code>repomd.xml.asc</code> file is downloaded and the API equivalent of <code>gpg --verify repomd.xml.asc repomd.xml</code> is done. If <code>repomd.xml.asc</code> is missing, repository is disabled. If <code>repomd.xml.asc</code> fails to verify, the repository is disabled. The public key for verification must be manually installed for the initial implementation.</p><p>Note: Ensure that you have installed <code>libgcrypt</code> for this implementation.</p></li><li><p>The <code>gpgkey</code> setting furnishes the URL for the repository&rsquo;s ASCII-armored GPG key file. <code>tdnf</code> uses the GPG key to verify a package if its key has not been imported into the RPM database.</p><p>The repository configuration also supports public keys that are remote for the <code>gpgkey</code> option. So, the URLs starting with <code>http</code>, <code>https</code>, or <code>ftp</code> can be used for <code>gpgkey</code>.</p><p>For example:
 gpgkey=http://build-squid.eng.vmware.com/build/mts/release/bora-16633979/publish/packages/keys/vmware.asc</p></li><li><p>The <code>enabled</code> setting tells <code>tdnf</code> whether to poll the repository. If <code>enabled</code> is set to <code>1</code>, <code>tdnf</code> polls it; if it is set to <code>0</code>, <code>tdnf</code> ignores it.</p></li><li><p>The <code>skip_if_unavailable</code> setting instructs <code>tdnf</code> to continue running if the repository goes offline.</p></li><li><p>The <code>retries</code> setting in the repository configuration specifies the number of retries when downloading a file throws an error. The default is <code>10</code>.</p></li><li><p>The <code>timeout</code> setting specifies the number of seconds that a download is allowed to take or <code>0</code> for no limit. Note that this is an absolute value and may interrupt large file downloads.</p></li><li><p>The <code>minrate</code> setting specifies the limit below which if the download rate falls, <code>tdnf</code> will abort the download. The default value is <code>0 </code>(<code>no limit</code>).</p></li><li><p>The <code>maxrate</code> setting specifies the maximum download rate (throttle). The default value is <code>0 </code>(<code>no limit</code>).</p></li><li><p>Other options and variables can appear in the repository file. The variables that are used with some of the options can reduce future changes to the repository configuration files. There are variables to replace the value of the version of the package and to replace the base architecture. For more information, see the man page for <code>yum.conf</code> on the full version of Photon OS: <code>man yum.conf</code></p></li></ul><p>The following is an example of how to add a new repository for a local server that <code>tdnf</code> polls for packages:</p><pre><code>cat &gt; /etc/yum.repos.d/apps.repo &lt;&lt; &quot;EOF&quot;
 [localapps]
@@ -82,17 +100,14 @@ Metadata cache created.
 </code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-2bc8840342a170e58fd10f1e939e9fa4>5 - Adding the Dev Repository to Get New Packages from the GitHub Dev Branch</h1><p>To try out new packages or the latest versions of existing packages as they are merged into the dev branch of the Photon OS GitHub site, add the <code>dev</code> repository to your repository list.</p><p>Perform th following steps:</p><ol><li>On your Photon OS machine, run the following command as root to create a repository configuration file named <code>photon-dev.repo</code>, place it in <code>/etc/yum.repos.d</code>, and concatenate the repository information into the file:</li></ol><pre><code>cat &gt; /etc/yum.repos.d/photon-dev.repo &lt;&lt; &quot;EOF&quot; 
     [photon-dev]
     name=VMware Photon Linux Dev(x86_64)
-    baseurl=https://dl.bintray.com/vmware/photon_dev_$basearch
+    baseurl=https://packages.vmware.com/photon/dev/photon_dev_$basearch
     gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
     gpgcheck=1
     enabled=1
     skip_if_unavailable=True
     EOF
-``` . 
-
-2. After establishing a new repository, run the following command to update the cached binary metadata for the repositories that `tdnf` polls: 
-    
-</code></pre><p>tdnf makecache</p><pre><code>
+    .
+</code></pre><ol start=2><li>After establishing a new repository, run the following command to update the cached binary metadata for the repositories that <code>tdnf</code> polls:</li></ol><pre><code>tdnf makecache
 </code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-444ec768f07dc7d65abd846e1d83ed06>6 - tdnf-automatic</h1><p><code>tdnf-automatic</code> is an alternative Command Line Interface (CLI) to <code>tdnf upgrade/tdnf update</code> with specific features so that it is suitable to be executed automatically and regularly from <code>systemd</code> timers, cron jobs, and so on.</p><p>The operation of the tool is usually controlled by the configuration file or the function-specific timer units. The command only accepts a single optional argument pointing to the config file, and some control arguments intended for use by the services that back the timer units. If no configuration file is passed from the command line,then <code>/etc/tdnf/automatic.conf</code> is used.</p><p>The tool synchronizes package metadata as needed and then checks for the updates available for the given system and then either exits or shows available updates or downloads and installs the packages.</p><p>The outcome of the operation is then reported through <code>stdio</code>.</p><p>The <code>systemd</code> timer unit <code>tdnf-automatic.timer</code> behaves as the configuration file specifies whether to download and apply updates. Some other timer units are provided which override the configuration file with some standard behaviors:</p><pre><code>* tdnf-automatic-notifyonly
 
 * tdnf-automatic-install

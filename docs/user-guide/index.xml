@@ -5,19 +5,21 @@
 &lt;ul>
 &lt;li>A DHCP server to allow hosts to get an IP address.&lt;/li>
 &lt;li>A TFTP server, which is a file transfer protocol similar to FTP with no authentication.&lt;/li>
-&lt;li>Optionally, an HTTP server. The HTTP server will serve the RPMs yum repo, or you can use the official Photon OS repo on Bintray. Also, this HTTP server can be used if you want to provide a kickstart config for unattended installation.&lt;/li>
+&lt;li>Optionally, an HTTP server. The HTTP server will serve the RPMs yum repo, or you can use the official &lt;a href="https://packages.vmware.com/photon/">VMware Photon Packages&lt;/a> repo. Also, this HTTP server can be used if you want to provide a kickstart config for unattended installation.&lt;/li>
 &lt;/ul>
 &lt;p>The instructions to set up the servers assume you have an Ubuntu 14.04 machine with a static IP address of &lt;code>172.16.78.134&lt;/code>.&lt;/p>
 &lt;h2 id="dhcp-setup">DHCP Setup&lt;/h2>
 &lt;ul>
-&lt;li>Install the DHCP server:&lt;/li>
-&lt;/ul>
-&lt;pre>&lt;code> sudo apt-get install isc-dhcp-server
-&lt;/code>&lt;/pre>&lt;ul>
-&lt;li>Edit the Ethernet interface in &lt;code>/etc/default/isc-dhcp-server&lt;/code> to &lt;code>INTERFACES=&amp;quot;eth0&amp;quot;&lt;/code>&lt;/li>
-&lt;li>Edit the DHCP configuration in &lt;code>/etc/dhcp/dhcpd.conf&lt;/code> to allow machines to boot and get an IP address via DHCP in the range &lt;code>172.16.78.230 - 172.16.78.250&lt;/code>, for example:&lt;/li>
-&lt;/ul>
-&lt;pre>&lt;code> subnet 172.16.78.0 netmask 255.255.255.0 {
+&lt;li>
+&lt;p>Install the DHCP server:&lt;/p>
+&lt;pre>&lt;code>sudo apt-get install isc-dhcp-server
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Edit the Ethernet interface in &lt;code>/etc/default/isc-dhcp-server&lt;/code> to &lt;code>INTERFACES=&amp;quot;eth0&amp;quot;&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Edit the DHCP configuration in &lt;code>/etc/dhcp/dhcpd.conf&lt;/code> to allow machines to boot and get an IP address via DHCP in the range &lt;code>172.16.78.230 - 172.16.78.250&lt;/code>, for example:&lt;/p>
+&lt;pre>&lt;code>subnet 172.16.78.0 netmask 255.255.255.0 {
 range 172.16.78.230 172.16.78.250;
 option subnet-mask 255.255.255.0;
 option routers 172.16.78.134;
@@ -25,31 +27,35 @@ option broadcast-address 172.16.78.255;
 filename &amp;quot;pxelinux.0&amp;quot;;
 next-server 172.16.78.134;
 }
-&lt;/code>&lt;/pre>&lt;ul>
-&lt;li>Restart the DHCP server:&lt;/li>
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Restart the DHCP server:&lt;/p>
+&lt;pre>&lt;code>sudo service isc-dhcp-server restart
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;/ul>
-&lt;pre>&lt;code> sudo service isc-dhcp-server restart
-&lt;/code>&lt;/pre>&lt;h2 id="tftp-setup">TFTP Setup&lt;/h2>
+&lt;h2 id="tftp-setup">TFTP Setup&lt;/h2>
 &lt;ul>
-&lt;li>Install the TFTP server:&lt;/li>
-&lt;/ul>
-&lt;pre>&lt;code> sudo apt-get install tftpd-hpa
-&lt;/code>&lt;/pre>&lt;ul>
-&lt;li>Enable the boot service and restart the service:&lt;/li>
-&lt;/ul>
-&lt;pre>&lt;code> sudo update-inetd --enable BOOT
+&lt;li>
+&lt;p>Install the TFTP server:&lt;/p>
+&lt;pre>&lt;code>sudo apt-get install tftpd-hpa
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Enable the boot service and restart the service:&lt;/p>
+&lt;pre>&lt;code>sudo update-inetd --enable BOOT
 sudo service tftpd-hpa restart
-&lt;/code>&lt;/pre>&lt;h2 id="optional-http-server-setup">Optional: HTTP server setup&lt;/h2>
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;/ul>
+&lt;h2 id="optional-http-server-setup">Optional: HTTP server setup&lt;/h2>
 &lt;p>This step is only needed if you are planning to serve the ks (kickstart) config file through this server; refer to &lt;a href="../working-with-kickstart/">Kickstart support&lt;/a> for details.&lt;/p>
 &lt;ul>
-&lt;li>Serving your local yum repo.
-You can install apache http web server&lt;/li>
+&lt;li>Serving your local yum repo.&lt;/li>
 &lt;/ul>
+&lt;p>You can install apache http web server:&lt;/p>
 &lt;pre>&lt;code>sudo apt-get install apache2
-&lt;/code>&lt;/pre>&lt;p>Mount the Photon iso to get the RPMS repo and sample ks config file.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>Mount the Photon iso to get the RPMS repo and sample ks config file:&lt;/p>
 &lt;pre>&lt;code>mkdir /mnt/photon-iso
 sudo mount &amp;lt;photon_iso&amp;gt; /mnt/photon-iso/
-&lt;/code>&lt;/pre>&lt;p>Copy the RPMS repo.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>Copy the RPMS repo:&lt;/p>
 &lt;pre>&lt;code>cp -r /mnt/photon-iso/RPMS /var/www/html/
 &lt;/code>&lt;/pre>&lt;p>To support ks, you can copy the sample config file from the iso and edit it; refer to &lt;a href="../working-with-kickstart/">Kickstart support&lt;/a> for details.&lt;/p>
 &lt;pre>&lt;code>cp /mnt/photon-iso/isolinux/sample_ks.cfg /var/www/html/my_ks.cfg
@@ -74,7 +80,7 @@ cp ~/syslinux-6.03/bios/core/pxelinux.0 .
 mkdir pxelinux.cfg
 mv isolinux.cfg pxelinux.cfg/default
 &lt;/code>&lt;/pre>&lt;ul>
-&lt;li>Update repo param to point to http yum repo; you may pass official photon bintray repo.&lt;/li>
+&lt;li>Update repo param to point to http yum repo; you may pass official photon packages repo.&lt;/li>
 &lt;/ul>
 &lt;pre>&lt;code>sed -i &amp;quot;s/append/append repo=http:\/\/172.16.78.134\/RPMS/g&amp;quot; menu.cfg
 popd
@@ -395,22 +401,19 @@ In above example &lt;strong>rootfs&lt;/strong>,&lt;strong>root&lt;/strong> and &
 &lt;p>For HTTP: &lt;code>ks=http://&amp;lt;server&amp;gt;/&amp;lt;config_file_path&amp;gt; insecure_installation=1&lt;/code>&lt;/p>
 &lt;p>For HTTPS (self-signed): &lt;code> ks=https://&amp;lt;server&amp;gt;/&amp;lt;config_file_path&amp;gt; insecure_installation=1&lt;/code>&lt;/p>
 &lt;h2 id="building-an-iso-with-a-kickstart-config-file">Building an ISO with a Kickstart Config File&lt;/h2>
-&lt;p>Here&amp;rsquo;s an example of how to add a kickstart config file to the Photon OS ISO by mounting the ISO on an Ubuntu machine and then rebuilding the ISO. The following example assumes you can adapt the sample kickstart configuration file that comes with the Photon OS ISO to your needs. You can obtain the Photon OS ISO for free from Bintray at the following URL:&lt;/p>
-&lt;p>&lt;a href="https://bintray.com/vmware/photon">https://bintray.com/vmware/photon&lt;/a>&lt;/p>
+&lt;p>Here&amp;rsquo;s an example of how to add a kickstart config file to the Photon OS ISO by mounting the ISO on an Ubuntu machine and then rebuilding the ISO. The following example assumes you can adapt the sample kickstart configuration file that comes with the Photon OS ISO to your needs. You can obtain the Photon OS ISO for free from VMware at the following URL:&lt;/p>
+&lt;p>&lt;a href="https://packages.vmware.com/photon">https://packages.vmware.com/photon&lt;/a>&lt;/p>
 &lt;p>Once you have the ISO, mount it.&lt;/p>
 &lt;pre>&lt;code>mkdir /tmp/photon-iso
 sudo mount photon.iso /tmp/photon-iso
-&lt;/code>&lt;/pre>
-&lt;p>Then copy the content of the ISO to a writable directory and push it into the directory stack:&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>Then copy the content of the ISO to a writable directory and push it into the directory stack:&lt;/p>
 &lt;pre>&lt;code>mkdir /tmp/photon-ks-iso
 cp -r /tmp/photon-iso/* /tmp/photon-ks-iso/
 pushd /tmp/photon-ks-iso/
-&lt;/code>&lt;/pre>
-&lt;p>Next, copy the sample kickstart configuration file that comes with the Photon OS ISO and modify it to suit your needs. In the ISO, the sample kickstart config file appears in the &lt;code>isolinux&lt;/code> directory and is named &lt;code>sample_ks.cfg.&lt;/code> The name of the directory and the name of the file might be in all uppercase letters.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>Next, copy the sample kickstart configuration file that comes with the Photon OS ISO and modify it to suit your needs. In the ISO, the sample kickstart config file appears in the &lt;code>isolinux&lt;/code> directory and is named &lt;code>sample_ks.cfg.&lt;/code> The name of the directory and the name of the file might be in all uppercase letters.&lt;/p>
 &lt;pre>&lt;code>cp isolinux/sample_ks.cfg isolinux/my_ks.cfg
 nano isolinux/my_ks.cfg
-&lt;/code>&lt;/pre>
-&lt;p>With a copy of the sample kickstart config file open in nano, make the changes that you want.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>With a copy of the sample kickstart config file open in nano, make the changes that you want.&lt;/p>
 &lt;p>Now add a new item to the installation menu by modifying &lt;code>isolinux/menu.cfg&lt;/code>:&lt;/p>
 &lt;pre>&lt;code>cat &amp;gt;&amp;gt; isolinux/menu.cfg &amp;lt;&amp;lt; EOF
 label my_unattended
@@ -419,8 +422,7 @@ menu default
 kernel vmlinuz
 append initrd=initrd.img root=/dev/ram0 loglevel=3 photon.media=cdrom
 EOF
-&lt;/code>&lt;/pre>
-&lt;p>Finally, rebuild the ISO so that it includes your kickstart config file:&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>Finally, rebuild the ISO so that it includes your kickstart config file:&lt;/p>
 &lt;pre>&lt;code>mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
 -no-emul-boot -boot-load-size 4 -boot-info-table -V &amp;quot;PHOTON_$(date +%Y%m%d)&amp;quot; \
 . &amp;gt; &amp;lt;new_iso_path&amp;gt;.iso
