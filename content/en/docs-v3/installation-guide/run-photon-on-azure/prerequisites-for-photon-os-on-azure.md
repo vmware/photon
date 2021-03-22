@@ -7,7 +7,7 @@ Before you use Photon OS with Microsoft Azure, perform the following prerequisit
 
 1. Verify that you have a Microsoft Azure account. To create an account, see [https://azure.microsoft.com](https://azure.microsoft.com)
 
-1. Install the latest version of Azure CLI. See [Install Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) and [Get started with Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest).
+1. Install the latest version of Azure CLI. See [Install Azure CLI 2.x](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) and [Get started with Azure CLI 2.x](https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest).
 
 1. Verify that that you have a pair of SSH public and private keys. 
 
