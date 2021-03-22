@@ -1801,7 +1801,7 @@ Total installed size: 58.28M 61114889
 &lt;p>Verify that you have a Microsoft Azure account. To create an account, see &lt;a href="https://azure.microsoft.com">https://azure.microsoft.com&lt;/a>&lt;/p>
 &lt;/li>
 &lt;li>
-&lt;p>Install the latest version of Azure CLI. See &lt;a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest">Install Azure CLI 2.0&lt;/a> and &lt;a href="https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest">Get started with Azure CLI 2.0&lt;/a>.&lt;/p>
+&lt;p>Install the latest version of Azure CLI. See &lt;a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest">Install Azure CLI 2.x&lt;/a> and &lt;a href="https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest">Get started with Azure CLI 2.x&lt;/a>.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Verify that that you have a pair of SSH public and private keys.&lt;/p>
