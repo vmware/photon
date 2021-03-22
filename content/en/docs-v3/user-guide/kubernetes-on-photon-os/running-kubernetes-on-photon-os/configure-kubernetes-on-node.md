@@ -18,11 +18,20 @@ Perform the following steps to configure the kubelet on the node:
     KUBELET_HOSTNAME="--hostname_override=photon-node"
     
     # location of the api-server
-    KUBELET_API_SERVER="--api_servers=http://photon-master:8080"
+    KUBELET_API_SERVER="--api_servers=http://kubeconfig=/etc/kubernetes/kubeconfig"
     
     # Add your own
     #KUBELET_ARGS=""
     ```
+
+1. Edit /etc/kubernetes/kubeconfig to appear like this:
+
+     ```apiVersion: v1
+     clusters:
+     - cluster:
+         server: http://photon-master:8080
+     ```
+
 
 1. Start the appropriate services on the node (photon-node):
 
