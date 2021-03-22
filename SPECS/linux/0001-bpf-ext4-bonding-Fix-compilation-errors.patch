@@ -31,7 +31,6 @@ Signed-off-by: Srivatsa S. Bhat <srivatsa@csail.mit.edu>
  drivers/gpu/drm/nouveau/Kbuild          | 2 ++
  drivers/gpu/drm/nouveau/dispnv50/wndw.h | 4 ++--
  fs/ext4/sysfs.c                         | 2 +-
- include/linux/filter.h                  | 2 +-
  include/net/bond_alb.h                  | 4 ++--
  5 files changed, 8 insertions(+), 6 deletions(-)
 
@@ -73,19 +72,6 @@ index b970a20..6255fe4 100644
  };
  
  static struct kobject *ext4_root;
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index c73dd73..4a4a7ff 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -748,7 +748,7 @@ void sk_filter_uncharge(struct sock *sk, struct sk_filter *fp);
- u64 __bpf_call_base(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5);
- #define __bpf_call_base_args \
- 	((u64 (*)(u64, u64, u64, u64, u64, const struct bpf_insn *)) \
--	 __bpf_call_base)
-+	((void *) __bpf_call_base))
- 
- struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog);
- void bpf_jit_compile(struct bpf_prog *prog);
 diff --git a/include/net/bond_alb.h b/include/net/bond_alb.h
 index 313a8d3..092e434 100644
 --- a/include/net/bond_alb.h

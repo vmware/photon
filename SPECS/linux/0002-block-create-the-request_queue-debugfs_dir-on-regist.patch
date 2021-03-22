@@ -1,4 +1,4 @@
-From 85e0cbbb8a79537dbc465e9deb449a08b2b092a6 Mon Sep 17 00:00:00 2001
+From 843bc1c186eebc935e496b73bcf85e49311542e7 Mon Sep 17 00:00:00 2001
 From: Luis Chamberlain <mcgrof@kernel.org>
 Date: Fri, 19 Jun 2020 20:47:30 +0000
 Subject: [PATCH] block: create the request_queue debugfs_dir on registration
@@ -37,7 +37,7 @@ Signed-off-by: srinidhira0 <srinidhir@vmware.com>
  6 files changed, 37 insertions(+), 43 deletions(-)
 
 diff --git a/block/blk-core.c b/block/blk-core.c
-index 93aeb9bb2e93..0451d38092de 100644
+index 80f3e729fdd4..f93b6a4d3746 100644
 --- a/block/blk-core.c
 +++ b/block/blk-core.c
 @@ -44,9 +44,7 @@
@@ -50,7 +50,7 @@ index 93aeb9bb2e93..0451d38092de 100644
  
  EXPORT_TRACEPOINT_SYMBOL_GPL(block_bio_remap);
  EXPORT_TRACEPOINT_SYMBOL_GPL(block_rq_remap);
-@@ -1060,9 +1058,7 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id,
+@@ -1055,9 +1053,7 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id,
  
  	kobject_init(&q->kobj, &blk_queue_ktype);
  
@@ -59,9 +59,9 @@ index 93aeb9bb2e93..0451d38092de 100644
 -#endif
 +	mutex_init(&q->debugfs_mutex);
  	mutex_init(&q->sysfs_lock);
+ 	mutex_init(&q->sysfs_dir_lock);
  	spin_lock_init(&q->__queue_lock);
- 
-@@ -3973,9 +3969,7 @@ int __init blk_dev_init(void)
+@@ -3970,9 +3966,7 @@ int __init blk_dev_init(void)
  	blk_requestq_cachep = kmem_cache_create("request_queue",
  			sizeof(struct request_queue), 0, SLAB_PANIC, NULL);
  
@@ -95,7 +95,7 @@ index a5ea86835fcb..6102a4f009c4 100644
  
  static int blk_mq_debugfs_register_ctx(struct blk_mq_hw_ctx *hctx,
 diff --git a/block/blk-sysfs.c b/block/blk-sysfs.c
-index da69dc02e2ce..9b55eb44fe59 100644
+index 07494deb1a26..9dcfe7eb0209 100644
 --- a/block/blk-sysfs.c
 +++ b/block/blk-sysfs.c
 @@ -11,6 +11,7 @@
@@ -106,7 +106,7 @@ index da69dc02e2ce..9b55eb44fe59 100644
  
  #include "blk.h"
  #include "blk-mq.h"
-@@ -860,6 +861,9 @@ static void blk_release_queue(struct kobject *kobj)
+@@ -853,6 +854,9 @@ static void __blk_release_queue(struct work_struct *work)
  	}
  
  	blk_trace_shutdown(q);
@@ -116,7 +116,7 @@ index da69dc02e2ce..9b55eb44fe59 100644
  
  	if (q->mq_ops)
  		blk_mq_debugfs_unregister(q);
-@@ -927,6 +931,11 @@ int blk_register_queue(struct gendisk *disk)
+@@ -928,6 +932,11 @@ int blk_register_queue(struct gendisk *disk)
  		goto unlock;
  	}
  
@@ -129,7 +129,7 @@ index da69dc02e2ce..9b55eb44fe59 100644
  		__blk_mq_register_dev(dev, q);
  		blk_mq_debugfs_register(q);
 diff --git a/block/blk.h b/block/blk.h
-index 1a5b67b57e6b..f1c2e265bd1a 100644
+index ae87e2a5f2bd..4c41edb71d86 100644
 --- a/block/blk.h
 +++ b/block/blk.h
 @@ -15,9 +15,7 @@
@@ -143,7 +143,7 @@ index 1a5b67b57e6b..f1c2e265bd1a 100644
  struct blk_flush_queue {
  	unsigned int		flush_queue_delayed:1;
 diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index 3af29b5f54b2..d5f88a717f6b 100644
+index 209ba8e7bd31..8c5f886cbfd7 100644
 --- a/include/linux/blkdev.h
 +++ b/include/linux/blkdev.h
 @@ -623,9 +623,9 @@ struct request_queue {
@@ -157,7 +157,7 @@ index 3af29b5f54b2..d5f88a717f6b 100644
  #endif
  	/*
  	 * for flush operations
-@@ -659,8 +659,9 @@ struct request_queue {
+@@ -660,8 +660,9 @@ struct request_queue {
  	struct list_head	tag_set_list;
  	struct bio_set		bio_split;
  
@@ -169,7 +169,7 @@ index 3af29b5f54b2..d5f88a717f6b 100644
  #endif
  
 diff --git a/kernel/trace/blktrace.c b/kernel/trace/blktrace.c
-index a26d1def0f09..4dd93fb5fb4f 100644
+index 645048bb1e86..4dd93fb5fb4f 100644
 --- a/kernel/trace/blktrace.c
 +++ b/kernel/trace/blktrace.c
 @@ -362,9 +362,9 @@ int blk_trace_remove(struct request_queue *q)
@@ -344,5 +344,5 @@ index a26d1def0f09..4dd93fb5fb4f 100644
  	bdput(bdev);
  out:
 -- 
-2.19.0
+2.23.3
 

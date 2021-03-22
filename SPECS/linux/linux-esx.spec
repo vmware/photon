@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.1
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.177
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        4.19.182
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=e158683b3c4f387e2781da415f8bf9be6dfc2f2a
+%define sha1 linux=0c311511252693a29e86840539fe38dca56aeb3d
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -794,6 +794,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Mar 25 2021 srinidhira0 <srinidhir@vmware.com> 4.19.182-1
+-   Update to version 4.19.182
 *   Thu Mar 25 2021 Mounesh Badiger <badigerm@vmware.com> 4.19.177-5
 -   9p: VDFS: Integrate shared memory with recovery logic
 -   9p: VDFS: Add support claim tags in shared memory
