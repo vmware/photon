@@ -2,17 +2,17 @@
 %define __os_install_post %{nil}
 Summary:        Containerd
 Name:           containerd
-Version:        1.3.9
-Release:        3%{?dist}
+Version:        1.3.10
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha1 containerd=887aa6c644ce80754e09791cc5795d205e5b4e28
+%define sha1 containerd=a1173daed7f546a0f1fba18c3dc5ce59989c8f53
 # Must be in sync with package version
-%define CONTAINERD_GITCOMMIT ea765aba0d05254012b0b9e595e995c09186427f
+%define CONTAINERD_GITCOMMIT 1c5970efbdd8bc864a34baa60c0b382434d4d7c2
 
 Source1:        containerd.service
 Source2:        containerd-config.toml
@@ -109,6 +109,8 @@ make integration
 %{_mandir}/man8/*
 
 %changelog
+*   Mon Mar 22 2021 Ankit Jain <ankitja@vmware.com> 1.3.10-1
+-   Update to 1.3.10 to fix CVE-2021-21334
 *   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.3.9-3
 -   Bump up version to compile with new go
 *   Tue Dec 1 2020 HarinadhD <hdommaraju@vmware.com> 1.3.9-2
