@@ -2,36 +2,24 @@
 %define __os_install_post %{nil}
 Summary:    GRand Unified Bootloader
 Name:       grub2
-Version:    2.04
-Release:    3%{?dist}
+Version:    2.06~rc1
+Release:    1%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    ftp://ftp.gnu.org/gnu/grub/grub-%{version}.tar.xz
-%define sha1 grub=3ed21de7be5970d7638b9f526bca3292af78e0fc
+%define sha1 grub=7cb2eb385c222e798b279174c9f717ddbe7d4608
+Source1:    gnulib-d271f868a.tar.xz
+%define sha1 gnulib=bfaa70d4657b653e01716e917576f6c4a4aa2126
 %ifarch x86_64
-Source1:    grub2-2.02-grubx64.efi.gz
+Source2:    grub2-2.02-grubx64.efi.gz
 %define sha1 grub2-2.02-grubx64=32d5ee61df1256152ba13b7d629eac67e0f3a911
 %endif
-# Includes fixes for
-# CVE-2020-10713 (BootHole) and co:
-# CVE-2020-14308, CVE-2020-14309, CVE-2020-14310, CVE-2020-14311,
-# CVE-2020-15706, CVE-2020-15707.
-# ACPI Hole and co:
-# CVE-2020-14372, CVE-2020-25632, CVE-2020-25647, CVE-2020-27749,
-# CVE-2020-27779, CVE-2021-3418, CVE-2021-20225, CVE-2021-20233.
-Patch0:     release-to-master.patch
-# New commits in release-to-master (such as luks2) require
-# re-bootstraping of gnulib. As it figured out only missing
-# piece in grub's gnulib version is base64 support.
-# Instead of providing external gnulib tarbal, just patch
-# current one.
-Patch1:     gnulib-add-base64.patch
 
-# Other security enhancement
-Patch307:   0067-Fix-security-issue-when-reading-username-and-passwor.patch
+# security enhancement
+Patch301:   0067-Fix-security-issue-when-reading-username-and-passwor.patch
 
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
@@ -75,9 +63,8 @@ GRUB UEFI image signed by vendor key
 
 %prep
 %setup -qn grub-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch307 -p1
+%patch301 -p1
+tar -xf %{SOURCE1}
 
 %build
 ./autogen.sh
@@ -143,7 +130,7 @@ rm -rf %{buildroot}%{_infodir}
 install -d %{buildroot}/boot/efi/EFI/BOOT
 %ifarch x86_64
 # Use presigned image from tarball as of now.
-gunzip -c %{SOURCE1} > %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi
+gunzip -c %{SOURCE2} > %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi
 # ./install-for-efi/usr/bin/grub2-mkimage -d ./install-for-efi/usr/lib/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/grub2 -O x86_64-efi fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
 
 %endif
@@ -198,6 +185,8 @@ EOF
 %{_datarootdir}/locale/*
 
 %changelog
+*   Mon Mar 15 2021 Ajay Kaher <akaher@vmware.com> 2.06~rc1-1
+-   upgrade to 2.06.rc1-1
 *   Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 2.04-3
 -   Fixes for CVE-2020-14372, CVE-2020-25632, CVE-2020-25647,
     CVE-2020-27749, CVE-2020-27779, CVE-2021-3418, CVE-2021-20225,
