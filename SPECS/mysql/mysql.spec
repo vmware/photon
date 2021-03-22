@@ -1,14 +1,14 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.21
-Release:        2%{?dist}
+Version:        8.0.23
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 Source0:        https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=fe39b69fa3ae21801efe8e94749696df01f55ddc
+%define         sha1 mysql-boost=78350bb4c12dfc869f2c23f0272affa90417538f
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -35,7 +35,7 @@ Development headers for developing applications linking to maridb
 %build
 cmake . \
       -DCMAKE_INSTALL_PREFIX=/usr   \
-      -DWITH_BOOST=boost/boost_1_72_0 \
+      -DWITH_BOOST=boost/boost_1_73_0 \
       -DINSTALL_MANDIR=share/man \
       -DINSTALL_DOCDIR=share/doc \
       -DINSTALL_DOCREADMEDIR=share/doc \
@@ -70,6 +70,7 @@ make test
 %exclude /usr/docs
 %exclude /usr/share
 %exclude /usr/*.router
+%exclude /usr/mysqlrouter-log-rotate
 
 %files devel
 %{_libdir}/*.so
@@ -78,6 +79,8 @@ make test
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Sat Mar 20 2021 Shreyas B <shreyasb@vmware.com> 8.0.23-1
+-   Update to 8.0.23
 *   Fri Feb 19 2021 Harinadh D <hdommaraju@vmware.com> 8.0.21-2
 -   Version bump up to build with latest protobuf
 *   Mon Oct 05 2020 Tapas Kundu <tkundu@vmware.com> 8.0.21-1
