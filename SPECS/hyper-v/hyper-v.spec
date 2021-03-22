@@ -30,9 +30,9 @@ install -vdm 755 %{buildroot}/%{_sbindir}
 install -m 755  %{SOURCE5}  %{buildroot}/%{_sbindir}/lsvmbus
 install -vdm 755 %{buildroot}/%{_bindir}
 install -m 755  %{SOURCE1}  %{buildroot}/%{_bindir}/bondvf.sh
-install -m 755  %{SOURCE2}  %{buildroot}/%{_bindir}/hv_get_dns_info.sh
-install -m 755  %{SOURCE3}  %{buildroot}/%{_bindir}/hv_get_dhcp_info.sh
-install -m 755  %{SOURCE4}  %{buildroot}/%{_bindir}/hv_set_ifconfig.sh
+install -m 755  %{SOURCE2}  %{buildroot}/%{_bindir}/hv_get_dns_info
+install -m 755  %{SOURCE3}  %{buildroot}/%{_bindir}/hv_get_dhcp_info
+install -m 755  %{SOURCE4}  %{buildroot}/%{_bindir}/hv_set_ifconfig
 install -m 755  hv_fcopy_daemon  %{buildroot}/%{_bindir}/hv_fcopy_daemon
 install -m 755  hv_kvp_daemon    %{buildroot}/%{_bindir}/hv_kvp_daemon
 install -m 755  hv_vss_daemon    %{buildroot}/%{_bindir}/hv_vss_daemon
@@ -99,9 +99,9 @@ EOF
 %defattr(-,root,root)
 %{_sbindir}/lsvmbus
 %{_bindir}/bondvf.sh
-%{_bindir}/hv_get_dns_info.sh
-%{_bindir}/hv_get_dhcp_info.sh
-%{_bindir}/hv_set_ifconfig.sh
+%{_bindir}/hv_get_dns_info
+%{_bindir}/hv_get_dhcp_info
+%{_bindir}/hv_set_ifconfig
 %{_bindir}/hv_fcopy_daemon
 %{_bindir}/hv_kvp_daemon
 %{_bindir}/hv_vss_daemon
