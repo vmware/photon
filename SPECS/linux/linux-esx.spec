@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.42
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -28,6 +28,7 @@ Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 Source5:        modify_kernel_configs.inc
 %if 0%{?fips}
+Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.21-3-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha1 fips-canister=e793f09579cf7b17608095ed80c973000f5f8407
@@ -125,6 +126,9 @@ BuildRequires: Linux-PAM-devel
 BuildRequires: openssl-devel
 BuildRequires: procps-ng-devel
 BuildRequires: lz4
+%if 0%{?fips}
+BuildRequires: gdb
+%endif
 Requires:      filesystem kmod
 Requires(pre): (coreutils or toybox)
 Requires(preun): (coreutils or toybox)
@@ -246,6 +250,10 @@ sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .co
 
 make V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 
+%if 0%{?fips}
+%include %{SOURCE9}
+%endif
+
 # Do not compress modules which will be loaded at boot time
 # to speed up boot process
 %define __modules_install_post \
@@ -332,6 +340,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jun 10 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-2
+-   Added script to check structure compatibility between fips_canister.o and vmlinux.
 *   Thu Jun 03 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-1
 -   Update to version 5.10.42
 -   .config: Enable CONFIG_FANOTIFY_ACCESS_PERMISSIONS
