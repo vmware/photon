@@ -96,7 +96,7 @@ KUBELET_ADDRESS=&amp;quot;--address=0.0.0.0&amp;quot;
 # You may leave this blank to use the actual hostname
 KUBELET_HOSTNAME=&amp;quot;--hostname_override=photon-node&amp;quot;
 # location of the api-server
-KUBELET_API_SERVER=&amp;quot;--api_servers=http://kubeconfig=/etc/kubernetes/kubeconfig&amp;quot;
+KUBELET_API_SERVER=&amp;quot;--kubeconfig=/etc/kubernetes/kubeconfig&amp;quot;
 # Add your own
 #KUBELET_ARGS=&amp;quot;&amp;quot;
 &lt;/code>&lt;/pre>&lt;/li>
