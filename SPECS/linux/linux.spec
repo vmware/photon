@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.42
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -54,6 +54,7 @@ Source12:       ena-Use-new-API-interface-after-napi_hash_del-.patch
 Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
 %define sha1 ice=19507794824da33827756389ac8018aa84e9c427
 %if 0%{?fips}
+Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.21-3-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha1 fips-canister=e793f09579cf7b17608095ed80c973000f5f8407
@@ -165,6 +166,9 @@ BuildRequires:  python3-devel
 %ifarch x86_64
 BuildRequires:  pciutils-devel
 BuildRequires:  libcap-devel
+%endif
+%if 0%{?fips}
+BuildRequires:  gdb
 %endif
 Requires:       filesystem kmod
 Requires(pre): (coreutils or toybox)
@@ -361,6 +365,10 @@ grep -q CONFIG_CROSS_COMPILE= .config && sed -i '/^CONFIG_CROSS_COMPILE=/c\CONFI
 fi
 
 make V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
+
+%if 0%{?fips}
+%include %{SOURCE9}
+%endif
 
 %ifarch aarch64
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
@@ -654,6 +662,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jun 10 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-2
+-   Added script to check structure compatibility between fips_canister.o and vmlinux.
 *   Thu Jun 03 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-1
 -   Update to version 5.10.42
 -   Remove XR usb driver support
