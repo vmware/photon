@@ -3,15 +3,15 @@
 %define gopath_comp github.com/containerd/containerd
 Summary:        Containerd
 Name:           containerd
-Version:        1.4.1
-Release:        4%{?dist}
+Version:        1.4.4
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha1    containerd=f56c62018ceba96b38d4c3b86e61eefc12ab516f
+%define sha1    containerd=0e49f2b0593adc635b89bbcf2d3f40e0fe217933
 Source1:        containerd.service
 Source2:        containerd-config.toml
 Source3:        disable-containerd-by-default.preset
@@ -105,6 +105,8 @@ make integration
 %{_mandir}/man8/*
 
 %changelog
+*   Mon Mar 22 2021 Ankit Jain <ankitja@vmware.com> 1.4.4-1
+-   Update to 1.4.4
 *   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.4.1-4
 -   Bump up version to compile with new go
 *   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.4.1-3
