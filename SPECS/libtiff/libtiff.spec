@@ -1,6 +1,6 @@
 Summary:        TIFF libraries and associated utilities.
 Name:           libtiff
-Version:        4.1.0
+Version:        4.2.0
 Release:        1%{?dist}
 License:        libtiff
 URL:            https://gitlab.com/libtiff/libtiff
@@ -8,7 +8,7 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://gitlab.com/libtiff/libtiff/-/archive/v%{version}/libtiff-v%{version}.tar.gz
-%define sha1    libtiff-v=8fc266cdb1ecbf6d5d13c7f0ce73161f59ac0996
+%define sha1    libtiff-v=7bca8ec2aaf6fc8d4d93d3dadc8175f4374e25cb
 Patch0:         CVE-2018-12900.patch
 BuildRequires:  libjpeg-turbo-devel
 Requires:       libjpeg-turbo
@@ -59,6 +59,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/man3/*
 
 %changelog
+*   Tue Mar 23 2021 Harinadh D <hdommaraju@vmware.com> 4.2.0-1
+-   Fix CVE-2020-35523,CVE-2020-35524
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 4.1.0-1
 -   Automatic Version Bump
 *   Fri Mar 13 2020 Keerthana K <keerthanak@vmware.com> 4.0.10-5
