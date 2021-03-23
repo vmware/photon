@@ -8,11 +8,11 @@ Subject: [PATCH 10/23] usb-acm-exclude-exar-usb-serial-ports
  1 file changed, 14 insertions(+)
 
 diff --git a/drivers/usb/class/cdc-acm.c b/drivers/usb/class/cdc-acm.c
-index 62f4fb9..3459843 100644
+index 2f4e5174e78c..72c239f65f13 100644
 --- a/drivers/usb/class/cdc-acm.c
 +++ b/drivers/usb/class/cdc-acm.c
-@@ -1873,6 +1873,20 @@ static const struct usb_device_id acm_ids[] = {
- 	.driver_info = SEND_ZERO_PACKET,
+@@ -1934,6 +1934,20 @@ static const struct usb_device_id acm_ids[] = {
+ 	.driver_info = IGNORE_DEVICE,
  	},
  
 +	/* Exclude Exar USB serial ports */
@@ -33,5 +33,5 @@ index 62f4fb9..3459843 100644
  	{ USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_ACM,
  		USB_CDC_PROTO_NONE) },
 -- 
-2.7.4
+2.17.1
 
