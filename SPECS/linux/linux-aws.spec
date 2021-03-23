@@ -7,7 +7,7 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.21
+Version:        5.10.25
 Release:        1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -19,7 +19,7 @@ Distribution: 	Photon
 
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=ef37b9c6bf722809cf035a55df29cac90150ed88
+%define sha1 linux=ed5006699bea2e1e10f453463f71fce5448d3b6b
 Source1:	config-aws
 Source2:	initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -385,6 +385,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Mar 22 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.25-1
+-   Update to version 5.10.25
 *   Mon Mar 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.21-1
 -   Update to version 5.10.21
 *   Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-4
