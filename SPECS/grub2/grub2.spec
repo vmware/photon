@@ -2,29 +2,17 @@
 %define __os_install_post %{nil}
 Summary:    GRand Unified Bootloader
 Name:       grub2
-Version:    2.04
-Release:    2%{?dist}
+Version:    2.06~rc1
+Release:    1%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    ftp://ftp.gnu.org/gnu/grub/grub-%{version}.tar.xz
-%define sha1 grub=3ed21de7be5970d7638b9f526bca3292af78e0fc
-# Includes fixes for
-# CVE-2020-10713 (BootHole) and co:
-# CVE-2020-14308, CVE-2020-14309, CVE-2020-14310, CVE-2020-14311,
-# CVE-2020-15706, CVE-2020-15707.
-# ACPI Hole and co:
-# CVE-2020-14372, CVE-2020-25632, CVE-2020-25647, CVE-2020-27749,
-# CVE-2020-27779, CVE-2021-3418, CVE-2021-20225, CVE-2021-20233.
-Patch0:     release-to-master.patch
-# New commits in release-to-master (such as luks2) require
-# re-bootstraping of gnulib. As it figured out only missing
-# piece in grub's gnulib version is base64 support.
-# Instead of providing external gnulib tarbal, just patch
-# current one.
-Patch1:     gnulib-add-base64.patch
+%define sha1 grub=7cb2eb385c222e798b279174c9f717ddbe7d4608
+Source1:    gnulib-d271f868a.tar.xz
+%define sha1 gnulib=bfaa70d4657b653e01716e917576f6c4a4aa2126
 
 # Other security enhancement
 Patch307:   0067-Fix-security-issue-when-reading-username-and-passwor.patch
@@ -62,8 +50,6 @@ Additional library files for grub
 
 %prep
 %setup -qn grub-%{version}
-%patch0 -p1
-%patch1 -p1
 %patch307 -p1
 
 %build
@@ -166,6 +152,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_datarootdir}/locale/*
 
 %changelog
+*   Mon Mar 15 2021 Ajay Kaher <akaher@vmware.com> 2.06~rc1-1
+-   upgrade to 2.06.rc1-1
 *   Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 2.04-2
 -   Fixes for CVE-2020-14372, CVE-2020-25632, CVE-2020-25647,
     CVE-2020-27749, CVE-2020-27779, CVE-2021-3418, CVE-2021-20225,
