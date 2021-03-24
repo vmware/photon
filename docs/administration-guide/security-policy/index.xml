@@ -1,7 +1,7 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Security Policy</title><link>/docs/administration-guide/security-policy/</link><description>Recent content in Security Policy on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/administration-guide/security-policy/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Default Firewall Settings</title><link>/docs/administration-guide/security-policy/default-firewall-settings/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/security-policy/default-firewall-settings/</guid><description>
 &lt;p>The design of Photon OS emphasizes security. On the minimal and full versions of Photon OS, the default security policy turns on the firewall and drops packets from external interfaces and applications. As a result, you might need to add rules to iptables to permit forwarding, allow protocols like HTTP, and open ports. You must configure the firewall for your applications and requirements.&lt;/p>
 &lt;p>The default iptables on the full version have the following settings:&lt;/p>
-&lt;pre>&lt;code>iptables --list
+&lt;pre>&lt;code class="language-console" data-lang="console">iptables --list
 Chain INPUT (policy DROP)
 target prot opt source destination
 ACCEPT all -- anywhere anywhere
@@ -12,11 +12,11 @@ target prot opt source destination
 Chain OUTPUT (policy DROP)
 target prot opt source destination
 ACCEPT all -- anywhere anywhere
-&lt;/code>&lt;/pre>
-&lt;p>For more information on how to change the settings, see the man page for iptables.&lt;/p>
-&lt;p>Although the default iptables policy accepts SSH connections, the &lt;code>sshd&lt;/code> configuration file on the full version of Photon OS is set to reject SSH connections. See &lt;a href="../../../troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/">Permitting Root Login with SSH&lt;/a>.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>For more information on how to change the settings, see the man page for iptables.&lt;/p>
+&lt;p>Although the default iptables policy accepts SSH connections, the &lt;code>sshd&lt;/code> configuration file on the full version of Photon OS is set to reject SSH connections. See &lt;a href="../../../docs/troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/">Permitting Root Login with SSH&lt;/a>.&lt;/p>
 &lt;p>If you are unable to ping a Photon OS machine, check the firewall rules. To verify if the rules allow connectivity for the port and protocol, change the &lt;code>iptables&lt;/code> commands by using &lt;code>lsof&lt;/code> commands to see the processes listening on ports:&lt;/p>
-&lt;pre>&lt;code>lsof -i -P -n&lt;/code>&lt;/pre></description></item><item><title>Docs: Default Permissions and umask</title><link>/docs/administration-guide/security-policy/default-permissions-and-umask/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/security-policy/default-permissions-and-umask/</guid><description>
+&lt;pre>&lt;code class="language-console" data-lang="console"> lsof -i -P -n
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Default Permissions and umask</title><link>/docs/administration-guide/security-policy/default-permissions-and-umask/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/security-policy/default-permissions-and-umask/</guid><description>
 &lt;p>The &lt;code>umask&lt;/code> on Photon OS is set to &lt;code>0027&lt;/code>.&lt;/p>
 &lt;p>When you create a new file with the &lt;code>touch&lt;/code> command as root, the default on Photon OS is to set the permissions to &lt;code>0640&lt;/code>&amp;ndash;which translates to &lt;code>read-write&lt;/code> for user, &lt;code>read&lt;/code> for group, and no access for others. Here&amp;rsquo;s an example:&lt;/p>
 &lt;pre>&lt;code>touch newfile.md
@@ -50,23 +50,19 @@ Access: (0750/drwxr-x---) Uid: ( 0/ root) Gid: ( 0/ root)
 &lt;li>In the &lt;code>default-priorities&lt;/code> file, specify GnuTLS priority strings that remove TLS 1.0 and SSL 3.0 but retain TLS 1.1 and TLS 1.2.&lt;/li>
 &lt;li>After adding a new &lt;code>default-priorities&lt;/code> file or after modifying it, you must restart all applications, including SSH, with an open TLS session for the changes to take effect.&lt;/li>
 &lt;/ol>
-&lt;p>The following is an example of a &lt;code>default-priorities&lt;/code> file that contains GnuTLS priorities to disable TLS 1.0 and SSL 3.0:&lt;/p>
-&lt;pre>&lt;code>cat /etc/gnutls/default-priorities
-SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL
-&lt;/code>&lt;/pre>
+&lt;p>The following is an example of a &lt;code>default-priorities&lt;/code> file that contains GnuTLS priorities to disable TLS 1.0 and SSL 3.0:&lt;br>
+&lt;code>console cat /etc/gnutls/default-priorities SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL&lt;/code>&lt;/p>
 &lt;p>In this example, the priority string imposes system-specific policies. The &lt;code>NONE&lt;/code> keyword means that no algorithms, protocols, or compression methods are enabled, so that you can enable specific versions individually later in the string. The priority string then specifies that SSL version 3.0 and TLS version 1.0 be removed, as marked by the exclamation point. The priority string then enables, as marked by the plus sign, versions 1.1 and 1.2 of TLS. The cypher is AES-128-CBC. The key exchange is RSA. The MAC is SHA1. And the compression algorithm is COMP-NULL.&lt;/p>
 &lt;p>On Photon OS, you can verify the system-specific policies in the &lt;code>default-priorities&lt;/code> file as follows:&lt;/p>
 &lt;ol>
-&lt;li>
-&lt;p>Concatenate the &lt;code>default-priorities&lt;/code> file to check its contents:&lt;/p>
-&lt;pre>&lt;code>&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>Concatenate the &lt;code>default-priorities&lt;/code> file to check its contents:&lt;/li>
 &lt;/ol>
-&lt;p>root@photon-rc [ ~ ]# cat /etc/gnutls/default-priorities
-SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL&lt;/p>
-&lt;pre>&lt;code>
-1. Run the following command to check the protocols that are enabled for the system:
-```
-root@photon-rc [ /etc/gnutls ]# gnutls-cli --priority @SYSTEM -l
+&lt;pre>&lt;code class="language-console" data-lang="console">root@photon-rc [ ~ ]# cat /etc/gnutls/default-priorities
+SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL
+&lt;/code>&lt;/pre>&lt;ol>
+&lt;li>Run the following command to check the protocols that are enabled for the system:&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-console" data-lang="console">root@photon-rc [ /etc/gnutls ]# gnutls-cli --priority @SYSTEM -l
 Cipher suites for @SYSTEM
 TLS_RSA_AES_128_CBC_SHA1 0x00, 0x2f SSL3.0
 Certificate types: none

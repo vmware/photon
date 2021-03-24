@@ -4,7 +4,7 @@
 &lt;ol>
 &lt;li>
 &lt;p>Verify that you have the following resources:&lt;/p>
-&lt;table style="height: 170px;" border="1" width="157" cellspacing="0" cellpadding="10">
+&lt;table style="height: 170px;" border="1" width="auto" cellspacing="0" cellpadding="10">
 &lt;tbody>
 &lt;tr>
 &lt;td>&lt;b>Resource&lt;/b>&lt;/td>
@@ -52,42 +52,42 @@
 &lt;p>Start the Import Process&lt;/p>
 &lt;p>From the Actions pull-down menu, choose &lt;strong>Create/Register VM&lt;/strong>.&lt;/p>
 &lt;p>In the Select creation type window, choose &lt;strong>Deploy a virtual machine from an OVF or OVA file&lt;/strong>.&lt;/p>
-&lt;p>&lt;img src="../../images/vs-iso-new.png" alt="Create new virtual machine">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/vs-iso-new.png" alt="Create new virtual machine">&lt;/p>
 &lt;p>Choose &lt;strong>Next&lt;/strong>.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Select the OVA File&lt;/p>
 &lt;p>Enter a name for the virtual machine, and select the OVA file.&lt;/p>
-&lt;p>&lt;img src="../../images/vs-ova-name-selected.png" alt="OVA file">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/vs-ova-name-selected.png" alt="OVA file">&lt;/p>
 &lt;p>Choose &lt;strong>Next&lt;/strong>.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Specify the Target Datastore&lt;/p>
 &lt;p>From the Select storage screen, select the target datastore for your VM.&lt;/p>
-&lt;p>&lt;img src="../../images/vs-ova-storage.png" alt="Target datastore">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/vs-ova-storage.png" alt="Target datastore">&lt;/p>
 &lt;p>Choose &lt;strong>Next&lt;/strong>.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Accept the License Agreement&lt;/p>
 &lt;p>Read through the Photon OS License Agreement, and then choose &lt;strong>I Agree&lt;/strong>.&lt;/p>
-&lt;p>&lt;img src="../../images/vs-ova-license.png" alt="License">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/vs-ova-license.png" alt="License">&lt;/p>
 &lt;p>Choose &lt;strong>Next&lt;/strong>.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Select Deployment Options&lt;/p>
 &lt;p>Photon OS is provisioned with a maximum disk size. By default, Photon OS uses only the portion of disk space that it needs, usually much less that the entire disk size ( &lt;strong>Thin&lt;/strong> client). If you want to pre-allocate the entire disk size (reserving it entirely for Photon OS instead), select &lt;strong>Thick&lt;/strong> instead.&lt;/p>
-&lt;p>&lt;img src="../../images/vs-ova-deployment-options.png" alt="Deployment Options">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/vs-ova-deployment-options.png" alt="Deployment Options">&lt;/p>
 &lt;p>Choose &lt;strong>Next&lt;/strong>.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Verify Deployment Settings&lt;/p>
-&lt;p>&lt;img src="../../images/vs-ova-settings.png" alt="Deployment settings">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/vs-ova-settings.png" alt="Deployment settings">&lt;/p>
 &lt;p>Click &lt;strong>Finish&lt;/strong>. vSphere uploads and validates your OVA. Depending on bandwidth, this operation might take a while.&lt;/p>
 &lt;p>When finished, vShield powers up a new VM based on your selections.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Change Login Settings&lt;/p>
-&lt;p>&lt;img src="../../images/splashscreen23.png" alt="Login prompt">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/splashscreen23.png" alt="Login prompt">&lt;/p>
 &lt;p>After the VM is booted, open the command window. vSphere prompts you to log in.&lt;/p>
 &lt;p>&lt;strong>Note&lt;/strong>: Because of limitations within OVA support on vSphere, it was necessary to specify a default password for the OVA option. However, all Photon OS instances that are created by importing the OVA require an immediate password change upon login. The default account credentials are:&lt;/p>
 &lt;pre>&lt;code> - Username: ``root``
@@ -96,8 +96,8 @@
 &lt;p>After you provide these credentials, vSphere prompts you to create a new password and type it a second time to verify it.&lt;/p>
 &lt;p>&lt;strong>Note:&lt;/strong> For security, Photon OS forbids common dictionary words for the root password.  &lt;/p>
 &lt;p>Once logged in, you will see the shell prompt.&lt;/p>
-&lt;p>&lt;img src="../../images/vs-ova-login.png" alt="Shell prompt">&lt;/p>
-&lt;p>Once complete, proceed to &lt;a href="../../deploying-a-containerized-application-in-photon-os/">Deploying a Containerized Application in Photon OS&lt;/a>.&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/vs-ova-login.png" alt="Shell prompt">&lt;/p>
+&lt;p>Once complete, proceed to &lt;a href="../../../docs/installation-guide/deploying-a-containerized-application-in-photon-os/">Deploying a Containerized Application in Photon OS&lt;/a>.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Export the VM as a Template (Optional)&lt;/p>
@@ -114,32 +114,32 @@
 &lt;p>Create a new VM&lt;/p>
 &lt;p>Log in to your vSphere environment. In the Virtual Machines window, choose &lt;strong>Create/Register VM&lt;/strong>.&lt;/p>
 &lt;p>On the Select creation type screen, select &lt;strong>Create a new virtual machine&lt;/strong>.&lt;/p>
-&lt;p>&lt;img src="../../images/vs-iso-new.png" alt="Create new virtual machine">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/vs-iso-new.png" alt="Create new virtual machine">&lt;/p>
 &lt;p>Choose &lt;strong>Next&lt;/strong>.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Configure VM Settings&lt;/p>
 &lt;p>Specify a VM name.&lt;/p>
-&lt;p>&lt;img src="../../images/vs-iso-name.png" alt="VM name">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/vs-iso-name.png" alt="VM name">&lt;/p>
 &lt;p>Specify a guest operating system.&lt;/p>
 &lt;ul>
 &lt;li>For Compatibility, select &lt;strong>ESXi 6.7&lt;/strong>.&lt;/li>
 &lt;li>For Guest OS family, select &lt;strong>Linux&lt;/strong>.&lt;/li>
 &lt;li>For Guest OS version, select &lt;strong>VMware Photon OS (64-bit)&lt;/strong>.&lt;/li>
 &lt;/ul>
-&lt;p>&lt;img src="../../images/guestossettings3.png" alt="Guest operating system">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/guestossettings3.png" alt="Guest operating system">&lt;/p>
 &lt;p>Choose &lt;strong>Next&lt;/strong>.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Select the Target Datastore&lt;/p>
 &lt;p>Select the datastore where you want to store the VM.&lt;/p>
-&lt;p>&lt;img src="../../images/storage4.png" alt="Target datastore">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/storage4.png" alt="Target datastore">&lt;/p>
 &lt;p>Click &lt;strong>Next&lt;/strong>.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Customize VM Settings&lt;/p>
 &lt;p>Customize the virtual machine settings.&lt;/p>
-&lt;p>&lt;img src="../../images/settings5.png" alt="Settings">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/settings5.png" alt="Settings">&lt;/p>
 &lt;p>For CD/DVD Drive 1, click the drop-down and select &lt;strong>Datastore ISO file&lt;/strong>.&lt;/p>
 &lt;p>In the Datastore browser, select the ISO that you want to import.&lt;/p>
 &lt;p>Change other settings as applicable.&lt;/p>
@@ -152,28 +152,28 @@
 &lt;li>
 &lt;p>Verify VM Settings&lt;/p>
 &lt;p>The installer displays a summary of your selected settings.&lt;/p>
-&lt;p>&lt;img src="../../images/overview6.png" alt="Summary">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/overview6.png" alt="Summary">&lt;/p>
 &lt;p>Click &lt;strong>Finish&lt;/strong>. vSphere creates the VM.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Power on the VM&lt;/p>
 &lt;p>Select the VM and power it on.&lt;/p>
-&lt;p>&lt;img src="../../images/bootscreen7.png" alt="Power on VM">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/bootscreen7.png" alt="Power on VM">&lt;/p>
 &lt;p>When you see the Photon Installer boot menu, press Enter on your keyboard to start installing.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Accept the License Agreement&lt;/p>
 &lt;p>Read the License Agreement and press the Enter key to accept.&lt;/p>
-&lt;p>&lt;img src="../../images/license8.png" alt="License Agreement">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/license8.png" alt="License Agreement">&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Configure the Partition&lt;/p>
 &lt;p>The installer detects one disk, which should be the 16GB volume configured as part of the virtual machine creation. Choose &lt;strong>Auto&lt;/strong> to have the installer automatically allocate the partition, or choose &lt;strong>Custom&lt;/strong> if you want to configure individual partitions, and then press the Enter key.&lt;/p>
-&lt;p>&lt;img src="../../images/diskselection9.png" alt="Partition">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/diskselection9.png" alt="Partition">&lt;/p>
 &lt;p>&lt;strong>Note:&lt;/strong> If you choose Custom, the installer displays the following screen.&lt;/p>
-&lt;p>&lt;img src="../../images/manualpartition10.png" alt="Custom Partition">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/manualpartition10.png" alt="Custom Partition">&lt;/p>
 &lt;p>For each custom partition, choose &lt;strong>Create New&lt;/strong> and specify the following information:&lt;/p>
-&lt;p>&lt;img src="../../images/custompartitionsetting11.png" alt="New Partition">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/custompartitionsetting11.png" alt="New Partition">&lt;/p>
 &lt;p>&lt;strong>Size&lt;/strong> - Preallocated size of this partition, in MB.&lt;/p>
 &lt;p>&lt;strong>Type&lt;/strong> - One of the following options:&lt;/p>
 &lt;ul>
@@ -184,13 +184,13 @@
 &lt;p>&lt;strong>Mountpoint&lt;/strong> - Mount point for this partition.&lt;/p>
 &lt;p>Choose &lt;strong>OK&lt;/strong> and press the Enter key. When you are done defining custom partitions, choose &lt;strong>Next&lt;/strong> and press the Enter key.&lt;/p>
 &lt;p>The installer prompts you to confirm that you want to erase the entire disk.&lt;/p>
-&lt;p>&lt;img src="../../images/erasedisk21.png" alt="Erase disk">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/erasedisk21.png" alt="Erase disk">&lt;/p>
 &lt;p>Choose &lt;strong>Yes&lt;/strong> and press the Enter key.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Select an Installation Option&lt;/p>
 &lt;p>After partitioning the disk, the installer prompts you to select an installation option.&lt;/p>
-&lt;p>&lt;img src="../../images/flavorselection12.png" alt="Installation Option">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/flavorselection12.png" alt="Installation Option">&lt;/p>
 &lt;p>Each install option provides a different run-time environment, depending on your requirements.&lt;/p>
 &lt;table style="height: 170px;" border="1" cellspacing="0" cellpadding="10">
 &lt;tbody>
@@ -221,29 +221,29 @@
 &lt;/li>
 &lt;li>
 &lt;p>The &lt;strong>Network Configuration&lt;/strong> screen appears, select one of the four options to configure your network.&lt;/p>
-&lt;p>&lt;img src="../../../images/networkconfig13.png" alt="Network Configuration">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/../images/networkconfig13.png" alt="Network Configuration">&lt;/p>
 &lt;ol>
 &lt;li>
 &lt;p>Choose &lt;strong>Configure network automatically&lt;/strong> and select &lt;strong>Next&lt;/strong> to configure the network automatically.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>To configure network automatically with the DHCP hostname, select &lt;strong>Configure network automatically with a DHCP hostname&lt;/strong> and select &lt;strong>Next&lt;/strong>. Enter the DHCP Hostname and select &lt;strong>Next&lt;/strong>.
-&lt;img src="../../../images/dhcphostname14.png" alt="../images/DHCP_hostname_for_your_system.png">&lt;/p>
+&lt;img src="../../../docs/installation-guide/../images/dhcphostname14.png" alt="../images/DHCP_hostname_for_your_system.png">&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>To configure the network manually, select &lt;strong>Configure Network manually&lt;/strong>. In the window that appears, enter the IP Address, Netmask, Gateway and Nameserver and select &lt;strong>OK&lt;/strong>.
-&lt;img src="../../../images/Configure_Network_Manually.png" alt="../images/Configure_Network_Manually.png">&lt;/p>
+&lt;img src="../../../docs/installation-guide/../images/Configure_Network_Manually.png" alt="../images/Configure_Network_Manually.png">&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>If your network interface is directly connected to the VLAN trunk port, choose &lt;strong>YES&lt;/strong> on the Configure the network screen. Enter the VLAN ID and select &lt;strong>Next&lt;/strong>.
-&lt;img src="../../../images/Configure_the_network.png" alt="Configure the network">.&lt;/p>
+&lt;img src="../../../docs/installation-guide/../images/Configure_the_network.png" alt="Configure the network">.&lt;/p>
 &lt;/li>
 &lt;/ol>
 &lt;/li>
 &lt;li>
 &lt;p>Select the Linux Kernel&lt;/p>
 &lt;p>Select a Linux kernel to install.&lt;/p>
-&lt;p>&lt;img src="../../images/linuxflavor17.png" alt="Linux Kernel">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/linuxflavor17.png" alt="Linux Kernel">&lt;/p>
 &lt;ul>
 &lt;li>&lt;strong>Hypervisor&lt;/strong> optimized means that any components that are not needed for running under a VMware hypervisor have been removed for faster boot times.&lt;/li>
 &lt;li>&lt;strong>Generic&lt;/strong> means that all components are included.&lt;/li>
@@ -253,28 +253,28 @@
 &lt;li>
 &lt;p>Specify the Hostname&lt;/p>
 &lt;p>The installer prompts you for a hostname and suggest a randomly generated, unique hostname that you can change if you want.&lt;/p>
-&lt;p>&lt;img src="../../images/hostname18.png" alt="Hostname">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/hostname18.png" alt="Hostname">&lt;/p>
 &lt;p>Press the Enter key.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Specify the System root Password&lt;/p>
 &lt;p>The installer prompts you to enter the system root password.&lt;/p>
 &lt;p>&lt;em>Note: Photon OS will not permit commonly used dictionary words to be set as a root password.&lt;/em>&lt;/p>
-&lt;p>&lt;img src="../../images/rootpassword19.png" alt="Root password">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/rootpassword19.png" alt="Root password">&lt;/p>
 &lt;p>Type a password and press the Enter key.&lt;/p>
 &lt;p>The installer prompts you to confirm your root password by typing it a second time.&lt;/p>
-&lt;p>&lt;img src="../../images/confirmrootpassword20.png" alt="Password confirmation">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/confirmrootpassword20.png" alt="Password confirmation">&lt;/p>
 &lt;p>&lt;strong>Note:&lt;/strong> If you have trouble with unintentional repeated characters in the Remote Console, follow VMware KB 196 ( &lt;a href="http://kb.vmware.com/kb/196">http://kb.vmware.com/kb/196&lt;/a>) for a setting to apply to the virtual machine.&lt;/p>
 &lt;p>Press the &lt;code>Enter&lt;/code> key. The installer proceeds to install the software. Installation times will vary based on the system hardware and installation options you selected. Most installations complete in less than one minute.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Reboot the VM and Log In&lt;/p>
 &lt;p>Once finished, the installer displays a confirmation message (which includes how long it took to install Photon OS) and prompts you to press a key on your keyboard to boot the new VM.&lt;/p>
-&lt;p>&lt;img src="../../images/installationcomplete22.png" alt="Boot VM">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/installationcomplete22.png" alt="Boot VM">&lt;/p>
 &lt;p>As the initial boot process begins, the installer displays the Photon splash screen, and then a login prompt.&lt;/p>
-&lt;p>&lt;img src="../../images/splashscreen23.png" alt="Login prompt">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/splashscreen23.png" alt="Login prompt">&lt;/p>
 &lt;p>At the login prompt, type &lt;strong>root&lt;/strong> as the username and provide the password chosen during the installation.&lt;/p>
-&lt;p>&lt;img src="../../images/loginprompt24.png" alt="Password">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/loginprompt24.png" alt="Password">&lt;/p>
 &lt;/li>
 &lt;/ol>
 &lt;p>You can now use your container runtime environment and deploy a containerized application.&lt;/p></description></item></channel></rss>

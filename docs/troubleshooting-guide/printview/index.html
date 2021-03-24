@@ -2,7 +2,7 @@
 <a class=dropdown-item href=../../../docs-v3/>v3</a>
 <a class=dropdown-item href=../../../assets/files/html/3.0/>v3 (old)</a>
 <a class=dropdown-item href=../../../assets/files/html/1.0-2.0/>v2 and v1</a></div></li></div></ul></div></nav></div></header><div class="container-fluid td-outer"><div class=td-main><div class="row flex-xl-nowrap"><div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none"></div><div class="d-none d-xl-block col-xl-2 td-toc d-print-none"></div><main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main><div class=td-content><div class="pageinfo pageinfo-primary d-print-none"><p>This the multi-page printable view of this section.
-<a href=# onclick="return print(),!1">Click here to print</a>.</p><p><a href=../../../docs/troubleshooting-guide/>Return to the regular view of this page</a>.</p></div><h1 class=title>Troubleshooting Guide</h1><ul><li>1: <a href=#pg-d1a2c64570ea618afcac34853d3591b8>Introduction</a></li><ul><li>1.1: <a href=#pg-0c24d695daaa503ab5b136189f98b352>Systemd and TDNF</a></li><li>1.2: <a href=#pg-c51d8fa43bbff78136c63ead3844946b>The Root Account and the `sudo` and `su` Commands</a></li><li>1.3: <a href=#pg-5160821fa4b3d287aa428b4db0b0377e>Checking the Version and Build Number</a></li><li>1.4: <a href=#pg-24401492a50648e7339365977f2b076b>General Best Practices</a></li><li>1.5: <a href=#pg-c4fee82bb026acdb479d18f12f8cadfd>Photon OS Logs</a></li><li>1.6: <a href=#pg-dd1666053f4fa67749224c02b1c8be5a>Troubleshooting Progression</a></li></ul><li>2: <a href=#pg-f1d4a7ec328436687337c431d2f92fe7>Solutions to Common Problems</a></li><ul><li>2.1: <a href=#pg-1f1ad9ca2f9874120dd824aae9b7fb29>Boot in Emergency Mode</a></li><li>2.2: <a href=#pg-3b774a1d8adcb06d7ddc820bab2163c4>Resetting a Lost Root Password</a></li><li>2.3: <a href=#pg-ac6ea7a2ae283997a41310a5017afebf>Fixing Permissions on Network Config Files</a></li><li>2.4: <a href=#pg-dcc310ada5d14b412cd7a0a3b235f5a9>Permitting Root Login with SSH</a></li><li>2.5: <a href=#pg-70929a5c761504aaa356aca81dcf5de7>Fixing Sendmail</a></li></ul><li>3: <a href=#pg-12ed3b235a2c62adb1a16a7644accee1>Photon OS General Troubleshooting</a></li><ul><li>3.1: <a href=#pg-664cc9cec9a044cfca15b926a17dd983>Photon Code</a></li><li>3.2: <a href=#pg-5404bf48493f97cd2de8f602f761fc79>Package Management</a></li><li>3.3: <a href=#pg-ff9fc3434cbe8db979342d9736dbfeb6>Network Configuration</a></li><li>3.4: <a href=#pg-51e16a96644c046ffe6a824b4489b09d>Cloud-init</a></li><li>3.5: <a href=#pg-bc1ceb0533f29196c7d5f82d8eea575e>Open-vm-tools/Vmtoolsd</a></li></ul><li>4: <a href=#pg-d65d5ffc0a2bedf288766d2b9faf15ce>Troubleshooting Tools</a></li><ul><li>4.1: <a href=#pg-04a89d7f32cd8174c5a820a6ee655974>Common Tools</a></li><li>4.2: <a href=#pg-f13d060552ebaf87170062c96f0cb71b>Troubleshooting Tools Installed by Default</a></li><li>4.3: <a href=#pg-8541e2426271c83233d26031263d756e>Installing Tools from Repositories</a></li><li>4.4: <a href=#pg-3dc35a0dd7f3bbf95344f20fea8d9dc4>Linux Troubleshooting Tools</a></li></ul><li>5: <a href=#pg-e6dc8e85bd84cbb48db5ca550e3adf9c>Systemd</a></li><ul><li>5.1: <a href=#pg-45a60780101b99e8a21a9620bfe7ca73>Enabling 'systemd' Debug Shell During Boot</a></li><li>5.2: <a href=#pg-2222dbb3d5c5a8cb432250b8b95f41ff>Troubleshooting Services With 'systemctl'</a></li><li>5.3: <a href=#pg-37ee182b89ad2f34aa7aafa527b6186b>Analyzing System Logs with 'journalctl'</a></li><li>5.4: <a href=#pg-a3e35c7adc2aa5828f3d0a03d03c0bf3>Inspecting Services with 'systemd-analyze'</a></li><li>5.5: <a href=#pg-21502ba89b3fba5480b548821dfd1e69>Inspecting Services with 'systemd-analyze'</a></li></ul><li>6: <a href=#pg-641b474d7b8d4100941d5a2750526038>Network Troubleshooting</a></li><ul><li>6.1: <a href=#pg-7443880a71f96c7150bcd520d1ab0dd2>Managing the Network Configuration</a></li><li>6.2: <a href=#pg-86f4c5c53619c0832267e20fef9c5119>Inspecting IP Addresses</a></li><li>6.3: <a href=#pg-7bdf729c29d245264a8c0847b910259e>Inspecting the Status of Network Links with 'networkctl'</a></li><li>6.4: <a href=#pg-ead329f4a50d05b1e092b3096d4f90b4>Network Debugging</a></li><li>6.5: <a href=#pg-6c30537e08221469979d45c47f7dc8c4>Checking Firewall Rules</a></li><li>6.6: <a href=#pg-46e6e1e0a8903d55cdd88d1f424ce291>Inspect Network Settings with 'netmgr'</a></li></ul><li>7: <a href=#pg-9bc167ac28d85c2f0972b58d26097676>File System Troubleshooting</a></li><ul><li>7.1: <a href=#pg-47439fb3c02145fdc25f8c11bf0b5e3f>Checking Disk Space</a></li><li>7.2: <a href=#pg-abc971fcad72a9dad157e05c66304fb6>Adding a Disk and Partitioning It</a></li><li>7.3: <a href=#pg-4a539020bc72ef2270f43ba0b05f0192>Expanding Disk Partition</a></li><li>7.4: <a href=#pg-3affa41adcd49c9555f8960c2615e3aa>List Disk Partitions with `fdisk`</a></li><li>7.5: <a href=#pg-497391c40467e0c63cef258c129588cd>File System Consistency Check Tool</a></li><li>7.6: <a href=#pg-0d8a66f1aaaa1d930b395e737a470b71>Fixing File System Errors When fsck Fails</a></li></ul><li>8: <a href=#pg-45fccef9bd97bc1ac84237b20daca982>Troubleshooting Packages</a></li><li>9: <a href=#pg-249cb7133f08d5ee19182ae009f48b92>Kernel Problems and Boot and Login Errors</a></li><ul><li>9.1: <a href=#pg-fb6a01033307d1364f3304460e9609eb>Kernel Overview</a></li><li>9.2: <a href=#pg-1bc1d49db5f317bcf9d37ee4fbc9e850>Boot Process Overview</a></li><li>9.3: <a href=#pg-d493e733f13166e75be33c14d5041e24>Blank Screen on Reboot</a></li><li>9.4: <a href=#pg-acbad8eeeb152ca4b47202019d5e6fbc>Investigating Unexpected Behavior</a></li><li>9.5: <a href=#pg-0e252e3664ed9f5e850a0bbbc6d40b21>Investigating the Guest Kernel</a></li><li>9.6: <a href=#pg-daeaab5c036a9bfeb7dc2da74aa8256a>Kernel Log Replication with VProbes</a></li><li>9.7: <a href=#pg-f8bffb3e220b96d1c691fab6b2f4b171>Linux Kernel</a></li></ul><li>10: <a href=#pg-db6c8d892731b711d7d08232c88d660e>Performance Issues</a></li><ul><li>10.1: <a href=#pg-d7dfe1c13df4b2c19bc5a19455b7c5c6>General Performance Guidelines</a></li><li>10.2: <a href=#pg-0be0e0ec49fb47fcbab6983167f5f866>Throughput Performance</a></li></ul></ul><div class=content><p>The Photon OS <em>Troubleshooting Guide</em> provides solutions for common problems that you might encounter while using Photon OS.</p><p><strong>Product version: 4.0</strong></p><p>This documentation applies to all 4.0.x releases.</p><h2 id=intended-audiences>Intended Audiences</h2><p>This information is intended for Photon OS administrators who install and set up Photon OS.</p></div></div><div class=td-content><h1 id=pg-d1a2c64570ea618afcac34853d3591b8>1 - Introduction</h1><p>The <em>Troubleshooting Guide</em> covers the basics of troubleshooting systemd, packages, network interfaces, services such as SSH and Sendmail, the file system, and the Linux kernel. The guide also includes information about the tools that you can use for troubleshooting with examples, how to access the logs, and best practices.</p></div><div class=td-content><h1 id=pg-0c24d695daaa503ab5b136189f98b352>1.1 - Systemd and TDNF</h1><p>By using systemd, Photon OS adopts a contemporary Linux standard to bootstrap the user space and concurrently start services, an architecture that differs from traditional Linux systems such as SUSE Linux Enterprise Server 11.</p><p>A traditional Linux system contains an initialization system called SysVinit. With SLES 11, for instance, SysVinit-style init programs control how the system starts up and shuts down. Init implements system runlevels. A SysVinit runlevel defines a state in which a process or service runs. In contrast to a SysVinit system, systemd defines no such runlevels. Instead, systemd uses a dependency tree of <em>targets</em> to determine which services to start when.</p><p>Because the systemd commands differ from those of an init.d-based Linux system, a section later in this guide illustrates how to troubleshoot by using systemctl commands instead of init.d-style commands.</p><p>Tdnf keeps the operating system as small as possible while preserving yum&rsquo;s robust package-management capabilities. On Photon OS, tdnf is the default package manager for installing new packages. Since troubleshooting with tdnf differs from using yum, a later section of this guide describes how to solve problems with packages and repositories by using tdnf commands.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-c51d8fa43bbff78136c63ead3844946b>1.2 - The Root Account and the `sudo` and `su` Commands</h1><p>The <em>Troubleshooting Guide</em> assumes that you are logged in to Photon OS with the root account and running commands as root. The <code>sudo</code> program comes with the full version of Photon OS. On the minimal version, you must install <code>sudo</code> with tdnf if you want to use it. As an alternative to installing <code>sudo</code> on the minimal version, you can switch users as needed with the <code>su</code> command to run commands that require root privileges.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-5160821fa4b3d287aa428b4db0b0377e>1.3 - Checking the Version and Build Number</h1><p>To check the version and build number of Photon OS, concatenate <code>/etc/photon-release</code>.</p><p>Example:</p><pre><code>cat /etc/photon-release
+<a href=# onclick="return print(),!1">Click here to print</a>.</p><p><a href=../../../docs/troubleshooting-guide/>Return to the regular view of this page</a>.</p></div><h1 class=title>Troubleshooting Guide</h1><ul><li>1: <a href=#pg-d1a2c64570ea618afcac34853d3591b8>Introduction</a></li><ul><li>1.1: <a href=#pg-0c24d695daaa503ab5b136189f98b352>Systemd and TDNF</a></li><li>1.2: <a href=#pg-c51d8fa43bbff78136c63ead3844946b>The Root Account and the `sudo` and `su` Commands</a></li><li>1.3: <a href=#pg-5160821fa4b3d287aa428b4db0b0377e>Checking the Version and Build Number</a></li><li>1.4: <a href=#pg-24401492a50648e7339365977f2b076b>General Best Practices</a></li><li>1.5: <a href=#pg-c4fee82bb026acdb479d18f12f8cadfd>Photon OS Logs</a></li><li>1.6: <a href=#pg-dd1666053f4fa67749224c02b1c8be5a>Troubleshooting Progression</a></li></ul><li>2: <a href=#pg-f1d4a7ec328436687337c431d2f92fe7>Solutions to Common Problems</a></li><ul><li>2.1: <a href=#pg-1f1ad9ca2f9874120dd824aae9b7fb29>Boot in Emergency Mode</a></li><li>2.2: <a href=#pg-3b774a1d8adcb06d7ddc820bab2163c4>Resetting a Lost Root Password</a></li><li>2.3: <a href=#pg-ac6ea7a2ae283997a41310a5017afebf>Fixing Permissions on Network Config Files</a></li><li>2.4: <a href=#pg-dcc310ada5d14b412cd7a0a3b235f5a9>Permitting Root Login with SSH</a></li><li>2.5: <a href=#pg-70929a5c761504aaa356aca81dcf5de7>Fixing Sendmail</a></li></ul><li>3: <a href=#pg-12ed3b235a2c62adb1a16a7644accee1>Photon OS General Troubleshooting</a></li><ul><li>3.1: <a href=#pg-664cc9cec9a044cfca15b926a17dd983>Photon Code</a></li><li>3.2: <a href=#pg-5404bf48493f97cd2de8f602f761fc79>Package Management</a></li><li>3.3: <a href=#pg-ff9fc3434cbe8db979342d9736dbfeb6>Network Configuration</a></li><li>3.4: <a href=#pg-51e16a96644c046ffe6a824b4489b09d>Cloud-init</a></li><li>3.5: <a href=#pg-bc1ceb0533f29196c7d5f82d8eea575e>Open-vm-tools/Vmtoolsd</a></li></ul><li>4: <a href=#pg-d65d5ffc0a2bedf288766d2b9faf15ce>Troubleshooting Tools</a></li><ul><li>4.1: <a href=#pg-04a89d7f32cd8174c5a820a6ee655974>Common Tools</a></li><li>4.2: <a href=#pg-f13d060552ebaf87170062c96f0cb71b>Troubleshooting Tools Installed by Default</a></li><li>4.3: <a href=#pg-8541e2426271c83233d26031263d756e>Installing Tools from Repositories</a></li><li>4.4: <a href=#pg-3dc35a0dd7f3bbf95344f20fea8d9dc4>Linux Troubleshooting Tools</a></li></ul><li>5: <a href=#pg-e6dc8e85bd84cbb48db5ca550e3adf9c>Systemd</a></li><ul><li>5.1: <a href=#pg-45a60780101b99e8a21a9620bfe7ca73>Enabling 'systemd' Debug Shell During Boot</a></li><li>5.2: <a href=#pg-2222dbb3d5c5a8cb432250b8b95f41ff>Troubleshooting Services With 'systemctl'</a></li><li>5.3: <a href=#pg-37ee182b89ad2f34aa7aafa527b6186b>Analyzing System Logs with 'journalctl'</a></li><li>5.4: <a href=#pg-a3e35c7adc2aa5828f3d0a03d03c0bf3>Inspecting Services with 'systemd-analyze'</a></li><li>5.5: <a href=#pg-21502ba89b3fba5480b548821dfd1e69>Inspecting Services with 'systemd-analyze'</a></li></ul><li>6: <a href=#pg-641b474d7b8d4100941d5a2750526038>Network Troubleshooting</a></li><ul><li>6.1: <a href=#pg-7443880a71f96c7150bcd520d1ab0dd2>Managing the Network Configuration</a></li><li>6.2: <a href=#pg-86f4c5c53619c0832267e20fef9c5119>Inspecting IP Addresses</a></li><li>6.3: <a href=#pg-7bdf729c29d245264a8c0847b910259e>Inspecting the Status of Network Links with 'networkctl'</a></li><li>6.4: <a href=#pg-ead329f4a50d05b1e092b3096d4f90b4>Network Debugging</a></li><li>6.5: <a href=#pg-6c30537e08221469979d45c47f7dc8c4>Checking Firewall Rules</a></li><li>6.6: <a href=#pg-46e6e1e0a8903d55cdd88d1f424ce291>Inspect Network Settings with 'netmgr'</a></li></ul><li>7: <a href=#pg-9bc167ac28d85c2f0972b58d26097676>File System Troubleshooting</a></li><ul><li>7.1: <a href=#pg-47439fb3c02145fdc25f8c11bf0b5e3f>Checking Disk Space</a></li><li>7.2: <a href=#pg-abc971fcad72a9dad157e05c66304fb6>Adding a Disk and Partitioning It</a></li><li>7.3: <a href=#pg-4a539020bc72ef2270f43ba0b05f0192>Expanding Disk Partition</a></li><li>7.4: <a href=#pg-3affa41adcd49c9555f8960c2615e3aa>List Disk Partitions with 'fdisk'</a></li><li>7.5: <a href=#pg-497391c40467e0c63cef258c129588cd>File System Consistency Check Tool</a></li><li>7.6: <a href=#pg-0d8a66f1aaaa1d930b395e737a470b71>Fixing File System Errors When fsck Fails</a></li></ul><li>8: <a href=#pg-45fccef9bd97bc1ac84237b20daca982>Troubleshooting Packages</a></li><li>9: <a href=#pg-249cb7133f08d5ee19182ae009f48b92>Kernel Problems and Boot and Login Errors</a></li><ul><li>9.1: <a href=#pg-fb6a01033307d1364f3304460e9609eb>Kernel Overview</a></li><li>9.2: <a href=#pg-1bc1d49db5f317bcf9d37ee4fbc9e850>Boot Process Overview</a></li><li>9.3: <a href=#pg-d493e733f13166e75be33c14d5041e24>Blank Screen on Reboot</a></li><li>9.4: <a href=#pg-acbad8eeeb152ca4b47202019d5e6fbc>Investigating Unexpected Behavior</a></li><li>9.5: <a href=#pg-0e252e3664ed9f5e850a0bbbc6d40b21>Investigating the Guest Kernel</a></li><li>9.6: <a href=#pg-daeaab5c036a9bfeb7dc2da74aa8256a>Kernel Log Replication with VProbes</a></li><li>9.7: <a href=#pg-f8bffb3e220b96d1c691fab6b2f4b171>Linux Kernel</a></li></ul><li>10: <a href=#pg-db6c8d892731b711d7d08232c88d660e>Performance Issues</a></li><ul><li>10.1: <a href=#pg-d7dfe1c13df4b2c19bc5a19455b7c5c6>General Performance Guidelines</a></li><li>10.2: <a href=#pg-0be0e0ec49fb47fcbab6983167f5f866>Throughput Performance</a></li></ul></ul><div class=content><p>The Photon OS <em>Troubleshooting Guide</em> provides solutions for common problems that you might encounter while using Photon OS.</p><p><strong>Product version: 4.0</strong></p><p>This documentation applies to all 4.0.x releases.</p><h2 id=intended-audiences>Intended Audiences</h2><p>This information is intended for Photon OS administrators who install and set up Photon OS.</p></div></div><div class=td-content><h1 id=pg-d1a2c64570ea618afcac34853d3591b8>1 - Introduction</h1><p>The <em>Troubleshooting Guide</em> covers the basics of troubleshooting systemd, packages, network interfaces, services such as SSH and Sendmail, the file system, and the Linux kernel. The guide also includes information about the tools that you can use for troubleshooting with examples, how to access the logs, and best practices.</p></div><div class=td-content><h1 id=pg-0c24d695daaa503ab5b136189f98b352>1.1 - Systemd and TDNF</h1><p>By using systemd, Photon OS adopts a contemporary Linux standard to bootstrap the user space and concurrently start services, an architecture that differs from traditional Linux systems such as SUSE Linux Enterprise Server 11.</p><p>A traditional Linux system contains an initialization system called SysVinit. With SLES 11, for instance, SysVinit-style init programs control how the system starts up and shuts down. Init implements system runlevels. A SysVinit runlevel defines a state in which a process or service runs. In contrast to a SysVinit system, systemd defines no such runlevels. Instead, systemd uses a dependency tree of <em>targets</em> to determine which services to start when.</p><p>Because the systemd commands differ from those of an init.d-based Linux system, a section later in this guide illustrates how to troubleshoot by using systemctl commands instead of init.d-style commands.</p><p>Tdnf keeps the operating system as small as possible while preserving yum&rsquo;s robust package-management capabilities. On Photon OS, tdnf is the default package manager for installing new packages. Since troubleshooting with tdnf differs from using yum, a later section of this guide describes how to solve problems with packages and repositories by using tdnf commands.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-c51d8fa43bbff78136c63ead3844946b>1.2 - The Root Account and the `sudo` and `su` Commands</h1><p>The <em>Troubleshooting Guide</em> assumes that you are logged in to Photon OS with the root account and running commands as root. The <code>sudo</code> program comes with the full version of Photon OS. On the minimal version, you must install <code>sudo</code> with tdnf if you want to use it. As an alternative to installing <code>sudo</code> on the minimal version, you can switch users as needed with the <code>su</code> command to run commands that require root privileges.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-5160821fa4b3d287aa428b4db0b0377e>1.3 - Checking the Version and Build Number</h1><p>To check the version and build number of Photon OS, concatenate <code>/etc/photon-release</code>.</p><p>Example:</p><pre><code>cat /etc/photon-release
 VMware Photon Linux 1.0
 PHOTON_BUILD_NUMBER=a6f0f63
 </code></pre><p>The build number in the results maps to the commit number on the VMware Photon OS GitHub <a href=https://github.com/vmware/photon/commits/master>commits page</a>.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-24401492a50648e7339365977f2b076b>1.4 - General Best Practices</h1><p>When troubleshooting, it is recommended that you follow some general best practices:</p><ul><li><p><strong>Take a snapshot.</strong> Before you do anything to a virtual machine running Photon OS, take a snapshot of the VM so that you can restore it if need be.</p></li><li><p><strong>Make a backup copy.</strong> Before you change a configuration file, make a copy of the original file. For example: <code>cp /etc/tdnf/tdnf.conf /etc/tdnf/tdnf.conf.orig</code></p></li><li><p><strong>Collect logs.</strong> Save the log files associated with a Photon OS problem. Include not only the log files on the guest but also the <code>vmware.log</code> file on the host. The <code>vmware.log</code> file is in the host&rsquo;s directory that contains the VM.</p></li><li><p><strong>Know what is in your toolbox.</strong> View the man page for a tool before you use it so that you know what your options are. The options can help focus the command&rsquo;s output on the problem you&rsquo;re trying to solve.</p></li><li><p><strong>Understand the system.</strong> The more you know about the operating system and how it works, the better you can troubleshoot.</p></li></ul></div><div class=td-content style=page-break-before:always><h1 id=pg-c4fee82bb026acdb479d18f12f8cadfd>1.5 - Photon OS Logs</h1><p>On Photon OS, all the system logs except the installation logs and the cloud-init logs are written into the systemd journal. The <code>journalctl</code> command queries the contents of the systemd journal.</p><p>The installation log files and the cloud-init log files reside in <code>/var/log</code>. If Photon OS is running on a virtual machine in a VMware hypervisor, the log file for the VMware tools, <code>vmware-vmsvc.log</code>, also resides in <code>/var/log</code>.</p><p>##Journalctl
@@ -28,76 +28,69 @@ Apr 07 14:33:41 photon-4a0e7f2307d4 systemd-journald[943]: System journal (/var/
 root@photon-4a0e7f2307d4 [ ~ ]#
 </code></pre><p>The following command are related to <code>journalctl</code>:</p><ul><li><code>journalctl</code> : This command displays all the logs after the system has booted up. <code>journalctl</code> splits the results into pages, similar to the <code>less</code> command in Linux. You can navigate using the arrow keys, the Page Up, Page Down keys or the Space bar. To quit navigation, press the <strong>q</strong> key.</li><li><code>journalctl -b</code> : This command displays the logs for the current boot.</li></ul><p>The following commands pull logs based on a time range:</p><ul><li><code>journalctl --since "1 hour ago"</code> : This command displays the journal logs from the past 1 hour.</li><li><code>journalctl --since "2 days ago"</code> : This command displays the logs generated in the past 2 days.</li><li><code>journalctl --since "2020-03-25 00:00:00" --until "2020-04-09 00:00:00"</code> : This command displays the logs generated between the mentioned time frame.</li></ul><p>To traverse for logs in the reverse order, run the following command:</p><ul><li><code>journalctl -r</code> : This command displays the logs in reverse order.</li></ul><p><strong>Note</strong>: If you add <code>-r</code> at the end of a command, the logs are displayed in the reverse order. For example: <code>journalctl -u unit.service -r</code></p><p>To pull logs related to a particular daemon, run the following command:</p><ul><li><code>journalctl -u unit.service</code> : This command displays logs for a specific service. mention the name of the service instead of <code>unit</code>. This command helps when a service is not behaving properly or when there are crash/core dumps.</li></ul><p>To see Journal logs by their priority, run the following command:</p><ul><li><code>journalctl -p "emerg".."crit</code> : This command displays logs <strong>emerg</strong> to <strong>critical</strong>. For example: core dumps.</li></ul><p>Journalctl can print log messages to the console as they are added, like the Linux <code>tail</code> command. Add the <code>-f</code> switch to follow a specific service or daemon.</p><pre><code>journalctl -u unit.service -f
 </code></pre><p>To list the boots of the system, run the following command:</p><pre><code>journalctl --list-boots
-</code></pre><p>You can maintain the journalctl logs manually, by running the following <code>vacuum</code> commands:</p><ul><li><code>journalctl --vacuum-time=2d</code> : This command retains the logs from the last 2 days.</li><li><code>journalctl --vacuum-size=500M</code> : This command helps retain logs with a maximum size of 500 MB.</li></ul><p>You can configure Journald using the conf file located at <strong>/etc/systemd/journald.conf</strong>. Run the following command to configure the file:</p><pre><code># cat /etc/systemd/journald.conf
-# This file is part of systemd.
-#
-# systemd is free software; you can redistribute it and/or modify it
-# under the terms of the GNU Lesser General Public License as published by
-# the Free Software Foundation; either version 2.1 of the License, or
-# (at your option) any later version.
-#
-# Entries in this file show the compile time defaults.
-# You can change settings by editing this file.
-# Defaults can be restored by simply deleting this file.
-#
-# See journald.conf(5) for details.
+</code></pre><p>You can maintain the journalctl logs manually, by running the following <code>vacuum</code> commands:</p><ul><li><code>journalctl --vacuum-time=2d</code> : This command retains the logs from the last 2 days.</li><li><code>journalctl --vacuum-size=500M</code> : This command helps retain logs with a maximum size of 500 MB.</li></ul><p>You can configure Journald using the conf file located at <strong>/etc/systemd/journald.conf</strong>. Run the following command to configure the file:</p><pre><code class=language-console data-lang=console># cat /etc/systemd/journald.conf
+</code></pre><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:#8f5902;font-style:italic># This file is part of systemd.</span>
+<span style=color:#8f5902;font-style:italic>#</span>
+<span style=color:#8f5902;font-style:italic># systemd is free software; you can redistribute it and/or modify it</span>
+<span style=color:#8f5902;font-style:italic># under the terms of the GNU Lesser General Public License as published by</span>
+<span style=color:#8f5902;font-style:italic># the Free Software Foundation; either version 2.1 of the License, or</span>
+<span style=color:#8f5902;font-style:italic># (at your option) any later version.</span>
+<span style=color:#8f5902;font-style:italic>#</span>
+<span style=color:#8f5902;font-style:italic># Entries in this file show the compile time defaults.</span>
+<span style=color:#8f5902;font-style:italic># You can change settings by editing this file.</span>
+<span style=color:#8f5902;font-style:italic># Defaults can be restored by simply deleting this file.</span>
+<span style=color:#8f5902;font-style:italic>#</span>
+<span style=color:#8f5902;font-style:italic># See journald.conf(5) for details.</span>
 
-[Journal]
-#Storage=auto
-#Compress=yes
-#Seal=yes
-#SplitMode=uid
-#SyncIntervalSec=5m
-#RateLimitIntervalSec=30s
-#RateLimitBurst=10000
-#SystemMaxUse=
-#SystemKeepFree=
-#SystemMaxFileSize=
-#SystemMaxFiles=100
-#RuntimeMaxUse=
-#RuntimeKeepFree=
-#RuntimeMaxFileSize=
-#RuntimeMaxFiles=100
-#MaxRetentionSec=
-#MaxFileSec=1month
-#ForwardToSyslog=no
-#ForwardToKMsg=no
-#ForwardToConsole=no
-#ForwardToWall=yes
-#TTYPath=/dev/console
-#MaxLevelStore=debug
-#MaxLevelSyslog=debug
-#MaxLevelKMsg=notice
-#MaxLevelConsole=info
-#MaxLevelWall=emerg
-#LineMax=48K
-root@photon-4a0e7f2307d4 [ ~ ]#
-</code></pre><p>By default <code>rotate</code> is disable in Photon. Once the changes are made to the conf file, for the changes to take effect you must restart the systemd-journald by running the <code>systemctl restart systemd-journald</code> command.</p><p>##Cloud-init Logs
-Cloud-init is the industry standard multi-distribution method for cross-platform cloud instance initialisation.</p><p>If there are with the Cloud-init behaviour, we can debug them by looking at the logs. Run the following command to look at Cloud-init logs:</p><pre><code>journalctl -u cloud-init
-</code></pre><p>For better understanding/debugging, You can also look at logs from the following locations:</p><ul><li><strong>/var/log/cloud-init.log</strong> : This log contains information from each stage of Cloud-init.</li><li><strong>/var/log/cloud-init-output.log</strong> : This log contains errors, warnings, etc..</li></ul><p>##Syslog
-Syslog is the general standard for logging system and program messages in the Linux environment.</p><p>Photon provides the following two packages to support syslog:</p><ul><li><strong>syslog-ng</strong> : syslog-ng is syslog with some advanced next gen features. It supports TLS encryption, TCP for transport with other existing features. Configurations can be added to the <strong>/etc/syslog-ng/syslog-ng.conf</strong> file.</li><li><strong>rsyslog</strong> : The official RSYSLOG website defines the utility as &ldquo;the rocket-fast system for log processing&rdquo;. rsyslog supports some advanced features like relp, imfile, omfile, gnutls protocols. Configurations can be added to the <strong>/etc/rsyslog.conf</strong> file. You can configure the required TLS certificates by editing the conf file.</li></ul><p>##Logs for RPMS on Photon
-Logs for a particular RPM can be checked in the following ways:</p><ul><li>If the RPM provides a daemon, we can see the status of daemon by running <code>systemctl</code> command and check logs using <code>journactl -u &lt;service name></code> command.</li><li>For additional logs, check if a conf file is provided by the RPM by running the <code>rpm -ql &lt;rpm name> | grep conf</code> command and find the file path of the log file. You can also check the <strong>/var/log</strong> folder.</li></ul></div><div class=td-content style=page-break-before:always><h1 id=pg-dd1666053f4fa67749224c02b1c8be5a>1.6 - Troubleshooting Progression</h1><p>If you encounter a problem running an application or appliance on Photon OS and you suspect it involves the operating system, you can troubleshoot by proceeding as follows.</p><ol><li><p>Check the services running on Photon OS:</p><p><code>systemctl status</code></p></li><li><p>Check your application log files for errors. For VMware applications, see <a href="https://kb.vmware.com/selfservice/microsites/search.do?language=en_US&cmd=displayKC&externalId=1021806">Location of Log Files for VMware Products</a>.)</p></li><li><p>Check the service controller or service monitor for your application or appliance.</p></li><li><p>Check the network interfaces and other aspects of the network service with <code>systemd-network</code> commands.</p></li><li><p>Check the operating system log files:</p><p><code>journalctl</code></p><p>Next, run the following commands to view all services according to the order in which they were started:</p><p><code>systemd-analyze critical-chain</code></p></li><li><p>Use the troubleshooting tool that you think is most likely to help with the issue at hand. For example, use <code>strace</code> to identify the location of the failure.</p></li></ol></div><div class=td-content style=page-break-before:always><h1 id=pg-f1d4a7ec328436687337c431d2f92fe7>2 - Solutions to Common Problems</h1><p>This section describes solutions to problems that you might encounter:</p></div><div class=td-content><h1 id=pg-1f1ad9ca2f9874120dd824aae9b7fb29>2.1 - Boot in Emergency Mode</h1><p>If you encounter problems during normal boot, you can boot in Emergency Mode.</p><p>Perform the following steps to boot in Emergency Mode:</p><ol><li><p>Restart the Photon OS machine or the virtual machine running Photon OS.</p><p>When the Photon OS splash screen appears, as it restarts, type the letter <code>e</code> quickly.</p></li><li><p>Append <code>emergency</code> to the kernel command line.</p></li><li><p>Press <code>F10</code> to proceed with the boot.</p></li><li><p>At the command prompt, provide the root password to log in to Emergency Mode.</p><p>By default, <code>/</code> is mounted as read-only.</p><p>To make modifications, run the following command to remount with write access:</p><p><code>mount -o remount,rw /</code></p></li></ol></div><div class=td-content style=page-break-before:always><h1 id=pg-3b774a1d8adcb06d7ddc820bab2163c4>2.2 - Resetting a Lost Root Password</h1><p>Perform the following steps to rest a lost password:</p><ol><li><p>Restart the Photon OS machine or the virtual machine running Photon OS.</p><p>When the Photon OS splash screen appears as it restarts, type the letter <code>e</code> to go to the GNU GRUB edit menu quickly. Because Photon OS reboots so quickly, you won&rsquo;t have much time to type <code>e</code>. Remember that in vSphere and Workstation, you might have to give the console focus by clicking in its window before it will register input from the keyboard.</p></li></ol><p>Second, in the GNU GRUB edit menu, go to the end of the line that starts with <code>linux</code>, add a space, and then add the following code exactly as it appears below:</p><pre><code>rw init=/bin/bash
-</code></pre><p>After you add this code, the GNU GRUB edit menu should look exactly like this:</p><p><img src=images/grub-edit-menu-changepw.png alt="The modified GNU GRUB edit menu"></p><p>Now type <code>F10</code>.</p><p>At the command prompt, type <code>passwd</code> and then type (and re-enter) a new root password that conforms to the password complexity rules of Photon OS. Remember the password.</p><p>Next, type the following command:</p><pre><code>umount /
+<span style=color:#204a87;font-weight:700>[Journal]</span>
+<span style=color:#8f5902;font-style:italic>#Storage=auto</span>
+<span style=color:#8f5902;font-style:italic>#Compress=yes</span>
+<span style=color:#8f5902;font-style:italic>#Seal=yes</span>
+<span style=color:#8f5902;font-style:italic>#SplitMode=uid</span>
+<span style=color:#8f5902;font-style:italic>#SyncIntervalSec=5m</span>
+<span style=color:#8f5902;font-style:italic>#RateLimitIntervalSec=30s</span>
+<span style=color:#8f5902;font-style:italic>#RateLimitBurst=10000</span>
+<span style=color:#8f5902;font-style:italic>#SystemMaxUse=</span>
+<span style=color:#8f5902;font-style:italic>#SystemKeepFree=</span>
+<span style=color:#8f5902;font-style:italic>#SystemMaxFileSize=</span>
+<span style=color:#8f5902;font-style:italic>#SystemMaxFiles=100</span>
+<span style=color:#8f5902;font-style:italic>#RuntimeMaxUse=</span>
+<span style=color:#8f5902;font-style:italic>#RuntimeKeepFree=</span>
+<span style=color:#8f5902;font-style:italic>#RuntimeMaxFileSize=</span>
+<span style=color:#8f5902;font-style:italic>#RuntimeMaxFiles=100</span>
+<span style=color:#8f5902;font-style:italic>#MaxRetentionSec=</span>
+<span style=color:#8f5902;font-style:italic>#MaxFileSec=1month</span>
+<span style=color:#8f5902;font-style:italic>#ForwardToSyslog=no</span>
+<span style=color:#8f5902;font-style:italic>#ForwardToKMsg=no</span>
+<span style=color:#8f5902;font-style:italic>#ForwardToConsole=no</span>
+<span style=color:#8f5902;font-style:italic>#ForwardToWall=yes</span>
+<span style=color:#8f5902;font-style:italic>#TTYPath=/dev/console</span>
+<span style=color:#8f5902;font-style:italic>#MaxLevelStore=debug</span>
+<span style=color:#8f5902;font-style:italic>#MaxLevelSyslog=debug</span>
+<span style=color:#8f5902;font-style:italic>#MaxLevelKMsg=notice</span>
+<span style=color:#8f5902;font-style:italic>#MaxLevelConsole=info</span>
+<span style=color:#8f5902;font-style:italic>#MaxLevelWall=emerg</span>
+<span style=color:#8f5902;font-style:italic>#LineMax=48K</span>
+<span style=color:#c4a000>root@photon-4a0e7f2307d4 [ ~ ]#</span>
+</code></pre></div><p>By default <code>rotate</code> is disabled in Photon. Once the changes are made to the conf file, for the changes to take effect you must restart the systemd-journald by running the <code>systemctl restart systemd-journald</code> command.</p><h2 id=cloud-init-logs>Cloud-init Logs</h2><p>Cloud-init is the industry standard multi-distribution method for cross-platform cloud instance initialisation.</p><p>If there are with the Cloud-init behaviour, we can debug them by looking at the logs. Run the following command to look at Cloud-init logs:</p><pre><code class=language-console data-lang=console>journalctl -u cloud-init
+</code></pre><p>For better understanding/debugging, You can also look at logs from the following locations:</p><ul><li><strong>/var/log/cloud-init.log</strong> : This log contains information from each stage of Cloud-init.</li><li><strong>/var/log/cloud-init-output.log</strong> : This log contains errors, warnings, etc..</li></ul><h2 id=syslog>Syslog</h2><p>Syslog is the general standard for logging system and program messages in the Linux environment.</p><p>Photon provides the following two packages to support syslog:</p><ul><li><strong>syslog-ng</strong> : syslog-ng is syslog with some advanced next gen features. It supports TLS encryption, TCP for transport with other existing features. Configurations can be added to the <code>/etc/syslog-ng/syslog-ng.conf</code> file.</li><li><strong>rsyslog</strong> : The official RSYSLOG website defines the utility as &ldquo;the rocket-fast system for log processing&rdquo;. rsyslog supports some advanced features like relp, imfile, omfile, gnutls protocols. Configurations can be added to the <code>/etc/rsyslog.conf</code> file. You can configure the required TLS certificates by editing the conf file.</li></ul><h2 id=logs-for-rpms-on-photon>Logs for RPMS on Photon</h2><p>Logs for a particular RPM can be checked in the following ways:</p><ul><li>If the RPM provides a daemon, we can see the status of daemon by running <code>systemctl</code> command and check logs using <code>journactl -u &lt;service name></code> command.</li><li>For additional logs, check if a conf file is provided by the RPM by running the <code>rpm -ql &lt;rpm name> | grep conf</code> command and find the file path of the log file. You can also check the <strong>/var/log</strong> folder.</li></ul></div><div class=td-content style=page-break-before:always><h1 id=pg-dd1666053f4fa67749224c02b1c8be5a>1.6 - Troubleshooting Progression</h1><p>If you encounter a problem running an application or appliance on Photon OS and you suspect it involves the operating system, you can troubleshoot by proceeding as follows.</p><ol><li><p>Check the services running on Photon OS:</p><p><code>systemctl status</code></p></li><li><p>Check your application log files for errors. For VMware applications, see <a href="https://kb.vmware.com/selfservice/microsites/search.do?language=en_US&cmd=displayKC&externalId=1021806">Location of Log Files for VMware Products</a>.)</p></li><li><p>Check the service controller or service monitor for your application or appliance.</p></li><li><p>Check the network interfaces and other aspects of the network service with <code>systemd-network</code> commands.</p></li><li><p>Check the operating system log files:</p><p><code>journalctl</code></p><p>Next, run the following commands to view all services according to the order in which they were started:</p><p><code>systemd-analyze critical-chain</code></p></li><li><p>Use the troubleshooting tool that you think is most likely to help with the issue at hand. For example, use <code>strace</code> to identify the location of the failure.</p></li></ol></div><div class=td-content style=page-break-before:always><h1 id=pg-f1d4a7ec328436687337c431d2f92fe7>2 - Solutions to Common Problems</h1><p>This section describes solutions to problems that you might encounter when using or managing Photon OS.</p></div><div class=td-content><h1 id=pg-1f1ad9ca2f9874120dd824aae9b7fb29>2.1 - Boot in Emergency Mode</h1><p>If you encounter problems during normal boot, you can boot in Emergency Mode.</p><p>Perform the following steps to boot in Emergency Mode:</p><ol><li><p>Restart the Photon OS machine or the virtual machine running Photon OS.</p><p>When the Photon OS splash screen appears, as it restarts, type the letter <code>e</code> quickly.</p></li><li><p>Append <code>emergency</code> to the kernel command line.</p></li><li><p>Press <code>F10</code> to proceed with the boot.</p></li><li><p>At the command prompt, provide the root password to log in to Emergency Mode.</p><p>By default, <code>/</code> is mounted as read-only.</p><p>To make modifications, run the following command to remount with write access:</p><p><code>mount -o remount,rw /</code></p></li></ol></div><div class=td-content style=page-break-before:always><h1 id=pg-3b774a1d8adcb06d7ddc820bab2163c4>2.2 - Resetting a Lost Root Password</h1><p>Perform the following steps to rest a lost password:</p><ol><li><p>Restart the Photon OS machine or the virtual machine running Photon OS.</p><p>When the Photon OS splash screen appears as it restarts, type the letter <code>e</code> to go to the GNU GRUB edit menu quickly. Because Photon OS reboots so quickly, you won&rsquo;t have much time to type <code>e</code>. Remember that in vSphere and Workstation, you might have to give the console focus by clicking in its window before it will register input from the keyboard.</p></li></ol><p>Second, in the GNU GRUB edit menu, go to the end of the line that starts with <code>linux</code>, add a space, and then add the following code exactly as it appears below:</p><pre><code>rw init=/bin/bash
+</code></pre><p>After you add this code, the GNU GRUB edit menu should look exactly like this:</p><p><img src=../../../docs/images/grub-edit-menu-changepw.png alt="The modified GNU GRUB edit menu"></p><p>Now type <code>F10</code>.</p><p>At the command prompt, type <code>passwd</code> and then type (and re-enter) a new root password that conforms to the password complexity rules of Photon OS. Remember the password.</p><p>Next, type the following command:</p><pre><code>umount /
 </code></pre><p>Finally, type the following command. You must include the <code>-f</code> option to force a reboot; otherwise, the kernel enters a state of panic.</p><pre><code>reboot -f
-</code></pre><p>This sequence of commands should look like this:</p><p><img src=images/resetpw.png alt="The series of commands to reset the root password"></p><p>After the Photon OS machine reboots, log in with the new root password.</p><h2 id=resetting-the-failed-logon-count>Resetting the failed logon count</h2><p>Resetting the root password will not reset the failed logon count, if you&rsquo;ve had to many failed attempts, you may not be able to logon after resetting the password.</p><p>You will know if this is the case, if you see <code>Account locked due to X failed logins</code> at the photon console.</p><p>To reset the count, before you unmount the filesystem, run the following&mldr;</p><pre><code>/sbin/pam_tally2 --reset --user root
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-ac6ea7a2ae283997a41310a5017afebf>2.3 - Fixing Permissions on Network Config Files</h1><p>When you create a new network configuration file as root user, the network service might be unable to process it until you set the file mode bits to <code>644</code>.</p><p>If you query the journal with <code>journalctl -u systemd-networkd</code>, you might see the following error message along with an indication that the network service did not start:</p><pre><code>`could not load configuration files. permission denied`
-</code></pre><p>The permissions on the network files might cause this problem. Without the correct permissions, <code>networkd-systemd</code> cannot parse and apply the settings, and the network configuration that you created will not be loaded.</p><p>After you create a network configuration file with a <code>.network</code> extension, you must run the <code>chmod</code> command to set the new file&rsquo;s mode bits to <code>644</code>. Example:</p><pre><code>`chmod 644 10-static-en.network`
-</code></pre><p>For Photon OS to apply the new configuration, you must restart the <code>systemd-networkd</code> service by running the following command:</p><pre><code>`systemctl restart systemd-networkd`
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-dcc310ada5d14b412cd7a0a3b235f5a9>2.4 - Permitting Root Login with SSH</h1><p>The full version of Photon OS prevents root login with SSH by default. To permit root login over SSH, open <code>/etc/ssh/sshd_config</code> with the vim text editor and set <code>PermitRootLogin</code> to <code>yes</code>.</p><p>Vim is the default text editor available in both the full and minimal versions of Photon OS. The full version also contains Nano. After you modify the SSH daemon&rsquo;s configuration file, you must restart the sshd daemon for the changes to take effect. Example:</p><pre><code>vim /etc/ssh/sshd_config
+</code></pre><p>This sequence of commands should look like this:</p><p><img src=../../../docs/images/resetpw.png alt="The series of commands to reset the root password"></p><p>After the Photon OS machine reboots, log in with the new root password.</p><h2 id=resetting-the-failed-logon-count>Resetting the failed logon count</h2><p>Resetting the root password will not reset the failed logon count, if you&rsquo;ve had to many failed attempts, you may not be able to logon after resetting the password.</p><p>You will know if this is the case, if you see <code>Account locked due to X failed logins</code> at the photon console.</p><p>To reset the count, before you unmount the filesystem, run the following&mldr;</p><pre><code>/sbin/pam_tally2 --reset --user root
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-ac6ea7a2ae283997a41310a5017afebf>2.3 - Fixing Permissions on Network Config Files</h1><p>When you create a new network configuration file as root user, the network service might be unable to process it until you set the file mode bits (i.e. <code>chmod</code>) to <code>644</code>.</p><p>If you query the journal with <code>journalctl -u systemd-networkd</code>, you might see the following error message along with an indication that the network service did not start:</p><p><code>could not load configuration files. permission denied</code></p><p>The permissions on the network files might cause this problem. Without the correct permissions, <code>networkd-systemd</code> cannot parse and apply the settings, and the network configuration that you created will not be loaded.</p><p>After you create a network configuration file with a <code>.network</code> extension, you must run the <code>chmod</code> command to set the new file&rsquo;s mode bits to <code>644</code>. Example:</p><p><code>chmod 644 10-static-en.network</code></p><p>For Photon OS to apply the new configuration, you must restart the <code>systemd-networkd</code> service by running the following command:</p><p><code>systemctl restart systemd-networkd</code></p></div><div class=td-content style=page-break-before:always><h1 id=pg-dcc310ada5d14b412cd7a0a3b235f5a9>2.4 - Permitting Root Login with SSH</h1><p>The full version of Photon OS prevents root login with SSH by default. To permit root login over SSH, open <code>/etc/ssh/sshd_config</code> with the vim text editor and set <code>PermitRootLogin</code> to <code>yes</code>.</p><p>Vim is the default text editor available in Photon OS. The developer version also contains Nano. After you modify the SSH daemon&rsquo;s configuration file, you must restart the sshd daemon for the changes to take effect.</p><p>Example:</p><pre><code class=language-console data-lang=console>vim /etc/ssh/sshd_config
+</code></pre><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:#8f5902;font-style:italic># override default of no subsystems</span>
+<span style=color:#c4a000>Subsystem       sftp    /usr/libexec/sftp-server</span>
 
-# override default of no subsystems
-Subsystem       sftp    /usr/libexec/sftp-server
-
-# Example of overriding settings on a per-user basis
-#Match User anoncvs
-#       X11Forwarding no
-#       AllowTcpForwarding no
-#       PermitTTY no
-#       ForceCommand cvs server
-PermitRootLogin yes
-UsePAM yes
-</code></pre><p>Save your changes in vim and then restart the sshd daemon:</p><pre><code>systemctl restart sshd
-</code></pre><p>You can then connect to the Photon OS machine with the root account over SSH:</p><pre><code>steve@ubuntu:~$ ssh root@198.51.100.131
+<span style=color:#8f5902;font-style:italic># Example of overriding settings on a per-user basis</span>
+<span style=color:#8f5902;font-style:italic>#Match User anoncvs</span>
+<span style=color:#8f5902;font-style:italic>#       X11Forwarding no</span>
+<span style=color:#8f5902;font-style:italic>#       AllowTcpForwarding no</span>
+<span style=color:#8f5902;font-style:italic>#       PermitTTY no</span>
+<span style=color:#8f5902;font-style:italic>#       ForceCommand cvs server</span>
+<span style=color:#c4a000>PermitRootLogin yes</span>
+<span style=color:#c4a000>UsePAM yes</span>
+</code></pre></div><p>Save your changes in vim and then restart the sshd daemon:</p><pre><code class=language-console data-lang=console>systemctl restart sshd
+</code></pre><p>You can then connect to the Photon OS machine with the root account over SSH:</p><pre><code class=language-console data-lang=console>user@ubuntu:~$ ssh root@10.0.0.131
 </code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-70929a5c761504aaa356aca81dcf5de7>2.5 - Fixing Sendmail</h1><p>If Sendmail is not behaving as expected or hangs during installation, it might be because FQDN is not set.</p><p>Perform the following steps:</p><ol><li><p>Set an FQDN for your Photon OS machine.</p></li><li><p>Run the following commands in the order below:</p><pre><code>echo $(hostname -f) &gt; /etc/mail/local-host-names
        
     cat &gt; /etc/mail/aliases &lt;&lt; &quot;EOF&quot;
@@ -122,65 +115,56 @@ The &ldquo;Recipe&rdquo; for creating an RPM package is a spec file. The Photon 
                 patch1
                 patch2
                 linux.spec
-</code></pre><p>##To Check if a Package is Signed
-Run the following commands to check if the package is signed:</p><pre><code>#check if a package is signed
-rpm -q linux --qf '%{NAME}-%{VERSION}-%{RELEASE} %{SIGPGP:pgpsig} %{SIGGPG:pgpsig}\n'
-linux-4.19.79-2.ph3 RSA/SHA1, Thu 31 Oct 2019 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949 (none)
+</code></pre><h2 id=check-if-a-package-is-signed>Check if a package is signed</h2><p>Run the following commands to check if the package is signed:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#8f5902;font-style:italic>#check if a package is signed</span>
+rpm -q linux --qf <span style=color:#4e9a06>&#39;%{NAME}-%{VERSION}-%{RELEASE} %{SIGPGP:pgpsig} %{SIGGPG:pgpsig}\n&#39;</span>
+linux-4.19.79-2.ph3 RSA/SHA1, Thu <span style=color:#0000cf;font-weight:700>31</span> Oct <span style=color:#0000cf;font-weight:700>2019</span> 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949 <span style=color:#ce5c00;font-weight:700>(</span>none<span style=color:#ce5c00;font-weight:700>)</span>
  
-#or
-rpm -qi linux | grep &quot;Signature&quot;
-Signature   : RSA/SHA1, Thu 31 Oct 2019 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949
+<span style=color:#8f5902;font-style:italic>#or</span>
+rpm -qi linux <span style=color:#000;font-weight:700>|</span> grep <span style=color:#4e9a06>&#34;Signature&#34;</span>
+Signature   : RSA/SHA1, Thu <span style=color:#0000cf;font-weight:700>31</span> Oct <span style=color:#0000cf;font-weight:700>2019</span> 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949
  
-#Last 8 chars of Key ID: 66fd4949
-#See if it matches the version of any of the gpg keys installed.
-rpm -qa | grep gpg-pubkey | xargs -n1 rpm -q --queryformat &quot;%{NAME} %{VERSION} %{PACKAGER}\n&quot;
+<span style=color:#8f5902;font-style:italic>#Last 8 chars of Key ID: 66fd4949</span>
+<span style=color:#8f5902;font-style:italic>#See if it matches the version of any of the gpg keys installed.</span>
+rpm -qa <span style=color:#000;font-weight:700>|</span> grep gpg-pubkey <span style=color:#000;font-weight:700>|</span> xargs -n1 rpm -q --queryformat <span style=color:#4e9a06>&#34;%{NAME} %{VERSION} %{PACKAGER}\n&#34;</span>
 gpg-pubkey 66fd4949 VMware, Inc. -- Linux Packaging Key -- linux-packages@vmware.com
 gpg-pubkey 3e1ba8d5 Google Cloud Packages RPM Signing Key gc-team@google.com
-</code></pre><p>##To Check if Your Image Has Vulnerabilities
-Use the security scanners to find security issues. Alternatively The <code>tdnf updateinfo info</code> command displays all the applicable security updates the host needs.</p><p>##To Check if a CVE is Fixed
-The Photon team fix the vulnerabilities and then publish the advisories to (<a href=https://github.com/vmware/photon/wiki/Security-Advisories)>https://github.com/vmware/photon/wiki/Security-Advisories)</a>.</p><p>##To Check if Security Updates are Available
-Use the <code>tdnf updateinfo info</code>, <code>tdnf update --security</code> or <code>tdnf update ---sec-severity &lt;level></code> commands to check if security updates are available. For example:</p><pre><code>#check if there are any security updates
-root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo
+</code></pre></div><h2 id=check-if-an-image-has-vulnerabilities>Check if an image has vulnerabilities</h2><p>Use the security scanners to find security issues. Alternatively The <code>tdnf updateinfo info</code> command displays all the applicable security updates the host needs.</p><h2 id=check-if-a-cve-is-fixed>Check if a CVE is Fixed</h2><p>The Photon team fixes vulnerabilities and publishes advisories to <a href=https://github.com/vmware/photon/wiki/Security-Advisories>https://github.com/vmware/photon/wiki/Security-Advisories</a>.</p><h2 id=to-check-if-security-updates-are-available>To Check if Security Updates are Available</h2><p>Use the <code>tdnf updateinfo info</code>, <code>tdnf update --security</code> or <code>tdnf update ---sec-severity &lt;level></code> commands to check if security updates are available. For example:</p><p>Check if there are any security updates</p><pre><code class=language-console data-lang=console>root@photon [ ~ ]# tdnf updateinfo
 70 Security notice(s)
- 
-#check if there are security updates for libssh2. note this is relative to what is installed in local
-root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo list libssh2
+</code></pre><p>Check if there are security updates for libssh2. note this is relative to what is installed in local</p><pre><code class=language-console data-lang=console>root@photon[ ~ ]# tdnf updateinfo list libssh2
 patch:PHSA-2020-3.0-0047 Security libssh2-1.9.0-2.ph3.x86_64.rpm
 patch:PHSA-2019-3.0-0025 Security libssh2-1.9.0-1.ph3.x86_64.rpm
 patch:PHSA-2019-3.0-0009 Security libssh2-1.8.2-1.ph3.x86_64.rpm
 patch:PHSA-2019-3.0-0008 Security libssh2-1.8.0-2.ph3.x86_64.rpm
- 
-#show details of all the libssh2 updates
-root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo info libssh2
-       Name : libssh2-1.9.0-2.ph3.x86_64.rpm
-  Update ID : patch:PHSA-2020-3.0-0047
-       Type : Security
-    Updated : Wed Jan 15 10:48:25 2020
+</code></pre><p>Show details of all the libssh2 updates
+root@photon [ ~ ]# tdnf updateinfo info libssh2
+Name : libssh2-1.9.0-2.ph3.x86_64.rpm
+Update ID : patch:PHSA-2020-3.0-0047
+Type : Security
+Updated : Wed Jan 15 10:48:25 2020
 Needs Reboot: 0
-Description : Security fixes for {'CVE-2019-17498'}
-       Name : libssh2-1.9.0-1.ph3.x86_64.rpm
-  Update ID : patch:PHSA-2019-3.0-0025
-       Type : Security
-    Updated : Sat Aug 17 16:14:35 2019
+Description : Security fixes for {&lsquo;CVE-2019-17498&rsquo;}
+Name : libssh2-1.9.0-1.ph3.x86_64.rpm
+Update ID : patch:PHSA-2019-3.0-0025
+Type : Security
+Updated : Sat Aug 17 16:14:35 2019
 Needs Reboot: 0
-Description : Security fixes for {'CVE-2019-13115'}
-       Name : libssh2-1.8.2-1.ph3.x86_64.rpm
-  Update ID : patch:PHSA-2019-3.0-0009
-       Type : Security
-    Updated : Sat Apr 13 03:34:22 2019
+Description : Security fixes for {&lsquo;CVE-2019-13115&rsquo;}
+Name : libssh2-1.8.2-1.ph3.x86_64.rpm
+Update ID : patch:PHSA-2019-3.0-0009
+Type : Security
+Updated : Sat Apr 13 03:34:22 2019
 Needs Reboot: 0
-Description : Security fixes for {'CVE-2019-3859', 'CVE-2019-3862', 'CVE-2019-3861', 'CVE-2019-3857', 'CVE-2019-3858', 'CVE-2019-3863', 'CVE-2019-3860', 'CVE-2019-3856'}
-       Name : libssh2-1.8.0-2.ph3.x86_64.rpm
-  Update ID : patch:PHSA-2019-3.0-0008
-       Type : Security
-    Updated : Fri Mar 29 16:04:18 2019
+Description : Security fixes for {&lsquo;CVE-2019-3859&rsquo;, &lsquo;CVE-2019-3862&rsquo;, &lsquo;CVE-2019-3861&rsquo;, &lsquo;CVE-2019-3857&rsquo;, &lsquo;CVE-2019-3858&rsquo;, &lsquo;CVE-2019-3863&rsquo;, &lsquo;CVE-2019-3860&rsquo;, &lsquo;CVE-2019-3856&rsquo;}
+Name : libssh2-1.8.0-2.ph3.x86_64.rpm
+Update ID : patch:PHSA-2019-3.0-0008
+Type : Security
+Updated : Fri Mar 29 16:04:18 2019
 Needs Reboot: 0
-Description : Security fixes for {'CVE-2019-3855'}
- 
- 
- 
-#install all security updates &gt;= score 9.0 (CVSS_v3.0_Severity)
-root@photon-9a8c05dd97e9 [ ~ ]# tdnf update --sec-severity 9.0
+Description : Security fixes for {&lsquo;CVE-2019-3855&rsquo;}</p><pre><code> 
+install all security updates &gt;= score 9.0 (CVSS_v3.0_Severity)
+
+```console
+root@photon [ ~ ]# tdnf update --sec-severity 9.0
 Upgrading:
 apache-tomcat                  noarch          8.5.50-1.ph3         photon-updates    9.00M 9440211
 bash                           x86_64          4.4.18-2.ph3         photon-updates    3.16M 3315720
@@ -374,18 +358,20 @@ vmware-rpctool &quot;info-set guestinfo.metadata ${metadata file contents}&quot;
 
 vmware-rpctool &quot;info-set guestinfo.userdata ${userdata file contents}&quot;
 </code></pre><p><strong>Note</strong>:Include the cloud-init log tarball and the vmtoolsd logs when you raise an issue.</p><ol><li>Collect cloud-init log tarball by running the <code>cloud-init collect-logs</code> command.</li><li>Collect the vmtoolsd logs from <strong>/var/log/vmware-imc/toolsDeployPkg.log</strong> file.</li><li>Attach the logs collected to the issue ticket.</li></ol></div><div class=td-content style=page-break-before:always><h1 id=pg-d65d5ffc0a2bedf288766d2b9faf15ce>4 - Troubleshooting Tools</h1><p>Photon OS includes tools that help troubleshoot problems. These tools are installed by default on the full version of Photon OS. On the minimal version of Photon OS, you might have to install a tool before you can use it.</p><p>There is a man page on Photon OS for all the tools covered in this section. The man pages provide more information about each tool&rsquo;s commands, options, and output. To view a tool&rsquo;s man page, on the Photon OS command line, type <code>man</code> and then the name of the tool. Example:</p><pre><code>man strace</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-04a89d7f32cd8174c5a820a6ee655974>4.1 - Common Tools</h1><p>The following are some tools that you can use to troubleshoot:</p><ul><li><a href=#top>top</a></li><li><a href=#ps>ps</a></li><li><a href=#netstat>netstat</a></li><li><a href=#find>find</a></li><li><a href=#locate>locate</a></li><li><a href=#df>df</a></li><li><a href=#md5sum>md5sum</a></li><li><a href=#sha256sum>sha256sum</a></li><li><a href=#strace>strace</a></li><li><a href=#file>file</a></li><li><a href=#stat>stat</a></li><li><a href=#watch>watch</a></li><li><a href=#vmstat-and-fdisk>vmstat and fdisk</a></li><li><a href=#lsof>lsof</a></li><li><a href=#fuser>fuser</a></li><li><a href=#ldd>ldd</a></li><li><a href=#gdb>gdb</a></li></ul><p><strong>Note</strong>: Some of the examples in this section are marked as abridged with ellipsis (<code>...</code>).</p><h2 id=top>top</h2><p>The <code>top</code> tool monitors system resources, workloads, and performance. It can unmask problems caused by processes or applications overconsuming CPUs, time, or RAM.</p><p>To view a textual display of resource consumption, run the <code>top</code> command:</p><pre><code>top
-</code></pre><p>Use can use &lsquo;top&rsquo; to kill a runaway or stalled process by typing <code>k</code> followed by its process ID (PID).</p><p><img src=images/top-in-photon-os.png alt="Top on Photon OS"></p><p>If the percent of CPU utilization is consistently high with little idle time, there might be a runaway process overconsuming CPUs. Restarting the service might solve the problem.</p><p>To troubleshoot an unknown issue, run Top in the background in batch mode to write its output to a file and collect data about performance:</p><pre><code>top d 120 b &gt;&gt; top120second.output
-</code></pre><p>For a list of options that filter top output and other information, see the man page for <code>top</code>.</p><h2 id=ps>ps</h2><p>The <code>ps</code> tool shows the processes running on the machine. The <code>ps</code> tool derives flexibility and power from its options, all of which are covered in the tool&rsquo;s Photon OS man page:</p><pre><code>man ps
-</code></pre><p>You can use the following options of <code>ps</code> for troubleshooting:</p><ul><li><p>Show processes by user:</p><p><code>ps aux</code></p></li><li><p>Show processes and child processes by user:</p><p><code>ps auxf</code></p></li><li><p>Show processes containing the string <code>ssh</code>:
+</code></pre><p>Use can use &lsquo;top&rsquo; to kill a runaway or stalled process by typing <code>k</code> followed by its process ID (PID).</p><p><img src=../../../docs/images/top-in-photon-os.png alt="Top on Photon OS"></p><p>If the percent of CPU utilization is consistently high with little idle time, there might be a runaway process overconsuming CPUs. Restarting the service might solve the problem.</p><p>To troubleshoot an unknown issue, run Top in the background in batch mode to write its output to a file and collect data about performance:</p><pre><code class=language-console data-lang=console>top d 120 b &gt;&gt; top120second.output
+</code></pre><p>For a list of options that filter top output and other information, see the man page for <code>top</code>.</p><h2 id=ps>ps</h2><p>The <code>ps</code> tool shows the processes running on the machine. The <code>ps</code> tool derives flexibility and power from its options, all of which are covered in the tool&rsquo;s Photon OS man page:</p><pre><code class=language-console data-lang=console>man ps
+</code></pre><p>You can use the following options of <code>ps</code> for troubleshooting:</p><ul><li><p>Show processes by user:
+<code>ps aux</code></p></li><li><p>Show processes and child processes by user:
+<code>ps auxf</code></p></li><li><p>Show processes containing the string <code>ssh</code>:
 <code>ps aux | grep ssh</code></p></li><li><p>Show processes and the command and options with which they were started:
-<code>ps auxww</code></p></li></ul><p>Example abridged output:</p><pre><code>ps auxww
+<code>ps auxww</code></p></li></ul><p>Example abridged output:</p><pre><code class=language-console data-lang=console>ps auxww
 USER        PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
 root          1  0.0  0.9  32724  3300 ?        Ss   07:51   0:32 /lib/systemd/systemd --switched-root --system --deserialize 22
-</code></pre><h2 id=netstat>netstat</h2><p>The <code>netstat</code> command can identify bottlenecks causing performance issues. It lists network connections, listening sockets, port information, and interface statistics for different protocols. Examples:</p><pre><code>netstat --statistics
+</code></pre><h2 id=netstat>netstat</h2><p>The <code>netstat</code> command can identify bottlenecks causing performance issues. It lists network connections, listening sockets, port information, and interface statistics for different protocols. Examples:</p><pre><code class=language-console data-lang=console>netstat --statistics
 netstat --listening
-</code></pre><h2 id=find>find</h2><p>Use the <code>find</code> command to troubleshoot a Photon OS machine that has stopped working. The following command lists the files in the root directory that have changed in the past day:</p><pre><code>    find / -mtime -1 
-</code></pre><p>See the <code>find</code> <a href=https://www.gnu.org/software/findutils/manual/find.html>manual</a>. Take note of the security considerations listed in the <code>find</code> manual if you are using <code>find</code> to troubleshoot an appliance running on Photon OS.</p><h2 id=locate>locate</h2><p>The <code>locate</code> command is a fast way to find files and directories you onlay have a keyword. This command is similar to <code>find</code> and part of the same <code>findutils</code> package preinstalled on the full version of Photon OS by default. It finds file names in the file names database.</p><p>Before you can use <code>locate</code> accurately, update its database:</p><pre><code>updatedb
-</code></pre><p>Then run <code>locate</code> to quickly find a file, such as any file name containing <code>.network</code>, which can be helpful to see all the system&rsquo;s <code>.network</code> configuration files. The following is an abridged example:</p><pre><code>locate .network
+</code></pre><h2 id=find>find</h2><p>Use the <code>find</code> command to troubleshoot a Photon OS machine that has stopped working. The following command lists the files in the root directory that have changed in the past day:</p><pre><code class=language-console data-lang=console>find / -mtime -1 
+</code></pre><p>See the <code>find</code> <a href=https://www.gnu.org/software/findutils/manual/find.html>manual</a>. Take note of the security considerations listed in the <code>find</code> manual if you are using <code>find</code> to troubleshoot an appliance running on Photon OS.</p><h2 id=locate>locate</h2><p>The <code>locate</code> command is a fast way to find files and directories you onlay have a keyword. This command is similar to <code>find</code> and part of the same <code>findutils</code> package preinstalled on the full version of Photon OS by default. It finds file names in the file names database.</p><p>Before you can use <code>locate</code> accurately, update its database:</p><pre><code class=language-console data-lang=console>updatedb
+</code></pre><p>Then run <code>locate</code> to quickly find a file, such as any file name containing <code>.network</code>, which can be helpful to see all the system&rsquo;s <code>.network</code> configuration files. The following is an abridged example:</p><pre><code class=language-console data-lang=console>locate .network
 /etc/dbus-1/system.d/org.freedesktop.network1.conf
 /etc/systemd/network/10-dhcp-en.network
 /usr/lib/systemd/network/80-container-host0.network
@@ -394,7 +380,7 @@ netstat --listening
 /usr/lib/systemd/system/dbus-org.freedesktop.network1.service
 /usr/lib/systemd/system/org.freedesktop.network1.busnname
 /usr/share/dbus-1/system-services/org.freedesktop.network1.service
-</code></pre><p>The <code>locate</code> command is also a quick way to see whether a troubleshooting tool is installed on Photon OS. Examples:</p><pre><code>locate strace
+</code></pre><p>The <code>locate</code> command is also a quick way to see whether a troubleshooting tool is installed on Photon OS. Examples:</p><pre><code class=language-console data-lang=console>locate strace
 /usr/bin/strace
 /usr/bin/strace-graph
 /usr/bin/strace-log-merge
@@ -402,24 +388,25 @@ netstat --listening
 /usr/share/vim/vim74/syntax/strace.vim
 
 locate traceroute
-</code></pre><p>In this example, the <code>strace</code> tool is installed but <code>traceroute</code> is not.</p><p>You can install <code>traceroute</code> from the Photon OS repository:</p><pre><code>tdnf install traceroute
-</code></pre><h2 id=df>df</h2><p>The <code>df</code> command reports the disk space available on the file system. Running out of disk space can lead an application to fail and a quick check of the available space makes sense as an early troubleshooting step:</p><pre><code>df -h
-</code></pre><p>The <code>-h</code> option prints out the available and used space in human-readable sizes. After checking the space, you should also check the number of available inodes. Too few available inodes can lead to difficult-to-diagnose problems:</p><pre><code>df -i
-</code></pre><h2 id=md5sum>md5sum</h2><p>The <code>md5sum</code> tool calculates 128-bit RSA Data Security, Inc. MD5 Message Digest Algorithm hashes (a message digest, or digital signature, of a file) to uniquely identify a file and verify its integrity after file transfers, downloads, or disk errors when the security of the file is not in question.</p><p><code>md5sum</code> can help troubleshooting installation issues by verifying that the version of Photon OS being installed matches the version on the public VMware Photon Packages download page. If, for instance, bytes were dropped during the download, the checksums will not match. Try downloading it again.</p><h2 id=sha256sum>sha256sum</h2><p>The <code>sha256sum</code> tool calculates the authenticity of a file to prevent tampering when security is a concern. Photon OS also includes <code>shasum</code>, <code>sha1sum</code>, <code>sha384sum</code>, and <code>sha512sum</code>. See the man pages for <code>md3sum</code>, <code>sha256sum</code>, and the other SHA utilities.</p><h2 id=strace>strace</h2><p>The <code>strace</code> utility follows system calls and signals as they are executed so that you can see what an application, command, or process is doing. <code>strace</code> can trace failed commands, identify where a process obtains its configuration, monitor file activity, and find the location of a crash.</p><p>By tracing system calls, <code>strace</code> can help troubleshoot a broad range of problems, including issues with input-output, memory, interprocess communication, network usage, and application performance.</p><p>For troubleshooting a problem that gives off few or no clues, the following command displays every system call:</p><pre><code>strace ls -al
-</code></pre><p>With strace commands, you can route the output to a file to make it easier to analyze:</p><pre><code>strace -o output.txt ls -al
-</code></pre><p><code>strace</code> can reveal the files that an application tries to open with the <code>-eopen</code> option. This combination can help troubleshoot an application that is failing because it is missing files or being denied access to a file it needs. If, for example, you see &ldquo;No such file or directory&rdquo; in the results of <code>strace -eopen</code>, something might be wrong:</p><pre><code>strace -eopen sshd
+
+</code></pre><p>In this example, the <code>strace</code> tool is installed but <code>traceroute</code> is not.</p><p>You can install <code>traceroute</code> from the Photon OS repository:</p><pre><code class=language-console data-lang=console>tdnf install traceroute
+</code></pre><h2 id=df>df</h2><p>The <code>df</code> command reports the disk space available on the file system. Running out of disk space can lead an application to fail and a quick check of the available space makes sense as an early troubleshooting step:</p><pre><code class=language-console data-lang=console>df -h
+</code></pre><p>The <code>-h</code> option prints out the available and used space in human-readable sizes. After checking the space, you should also check the number of available inodes. Too few available inodes can lead to difficult-to-diagnose problems:</p><pre><code class=language-console data-lang=console>df -i
+</code></pre><h2 id=md5sum>md5sum</h2><p>The <code>md5sum</code> tool calculates 128-bit RSA Data Security, Inc. MD5 Message Digest Algorithm hashes (a message digest, or digital signature, of a file) to uniquely identify a file and verify its integrity after file transfers, downloads, or disk errors when the security of the file is not in question.</p><p><code>md5sum</code> can help troubleshooting installation issues by verifying that the version of Photon OS being installed matches the version on the public VMware Photon Packages download page. If, for instance, bytes were dropped during the download, the checksums will not match. Try downloading it again.</p><h2 id=sha256sum>sha256sum</h2><p>The <code>sha256sum</code> tool calculates the authenticity of a file to prevent tampering when security is a concern. Photon OS also includes <code>shasum</code>, <code>sha1sum</code>, <code>sha384sum</code>, and <code>sha512sum</code>. See the man pages for <code>md3sum</code>, <code>sha256sum</code>, and the other SHA utilities.</p><h2 id=strace>strace</h2><p>The <code>strace</code> utility follows system calls and signals as they are executed so that you can see what an application, command, or process is doing. <code>strace</code> can trace failed commands, identify where a process obtains its configuration, monitor file activity, and find the location of a crash.</p><p>By tracing system calls, <code>strace</code> can help troubleshoot a broad range of problems, including issues with input-output, memory, interprocess communication, network usage, and application performance.</p><p>For troubleshooting a problem that gives off few or no clues, the following command displays every system call:</p><pre><code class=language-console data-lang=console>strace ls -al
+</code></pre><p>With strace commands, you can route the output to a file to make it easier to analyze:</p><pre><code class=language-console data-lang=console>strace -o output.txt ls -al
+</code></pre><p><code>strace</code> can reveal the files that an application tries to open with the <code>-eopen</code> option. This combination can help troubleshoot an application that is failing because it is missing files or being denied access to a file it needs. If, for example, you see &ldquo;No such file or directory&rdquo; in the results of <code>strace -eopen</code>, something might be wrong:</p><pre><code class=language-console data-lang=console>strace -eopen sshd
 open(&quot;/usr/lib/x86_64/libpam.so.0&quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
 open(&quot;/usr/lib/libpam.so.0&quot;, O_RDONLY|O_CLOEXEC) = 3
-</code></pre><p>The results above indicate that the first file is missing because it is found in the next line. In other cases, the application might be unable to open one of its configuration files or it might be reading the wrong one. If the results say &ldquo;permission denied&rdquo; for one of the files, check the permissions of the file with <code>ls -l</code> or <code>stat</code>.</p><p>When troubleshooting with <code>strace</code>, you can include the process ID in its commands. Here&rsquo;s an example of how to find a process ID:</p><pre><code>ps -ef | grep apache
-</code></pre><p>You can then use <code>strace</code> to examine the file a process is working with:</p><pre><code>strace -e trace=file -p 1719
-</code></pre><p>A similar command can trace network traffic:</p><pre><code>strace -p 812 -e trace=network
-</code></pre><p>If an application is crashing, use <code>strace</code> to trace the application and then analyze what happens right before the application crashes.</p><p>You can also trace the child processes that an application spawns with the fork system call, and you can do so with <code>systemctl</code> commands that start a process to identify why an application crashes immediately or fails to start:</p><pre><code>strace -f -o output.txt systemctl start httpd
-</code></pre><p>Example: If <code>journalctl</code> is showing that networkd is failing, you can run strace to troubleshoot:</p><pre><code>strace -o output.txt systemctl restart systemd-networkd
-</code></pre><p>Then <code>grep</code> inside the results for something, such as <em>exit</em> or <em>error</em>:</p><pre><code>grep exit output.txt
-</code></pre><p>If the results indicate <code>systemd-resolved</code> is going wrong, you can then strace it:</p><pre><code>strace -f -o output.txt systemctl restart systemd-resolved
-</code></pre><h2 id=file>file</h2><p>The <code>file</code> command determines the file type, which can help troubleshoot problems when an application mistakes one type of file for another, leading it to errors. Example:</p><pre><code>file /usr/sbin/sshd
+</code></pre><p>The results above indicate that the first file is missing because it is found in the next line. In other cases, the application might be unable to open one of its configuration files or it might be reading the wrong one. If the results say &ldquo;permission denied&rdquo; for one of the files, check the permissions of the file with <code>ls -l</code> or <code>stat</code>.</p><p>When troubleshooting with <code>strace</code>, you can include the process ID in its commands. Here&rsquo;s an example of how to find a process ID:</p><pre><code class=language-console data-lang=console>ps -ef | grep apache
+</code></pre><p>You can then use <code>strace</code> to examine the file a process is working with:</p><pre><code class=language-console data-lang=console>strace -e trace=file -p 1719
+</code></pre><p>A similar command can trace network traffic:</p><pre><code class=language-console data-lang=console>strace -p 812 -e trace=network
+</code></pre><p>If an application is crashing, use <code>strace</code> to trace the application and then analyze what happens right before the application crashes.</p><p>You can also trace the child processes that an application spawns with the fork system call, and you can do so with <code>systemctl</code> commands that start a process to identify why an application crashes immediately or fails to start:</p><pre><code class=language-console data-lang=console>strace -f -o output.txt systemctl start httpd
+</code></pre><p>Example: If <code>journalctl</code> is showing that networkd is failing, you can run strace to troubleshoot:</p><pre><code class=language-console data-lang=console>strace -o output.txt systemctl restart systemd-networkd
+</code></pre><p>Then <code>grep</code> inside the results for something, such as <em>exit</em> or <em>error</em>:</p><pre><code class=language-console data-lang=console>grep exit output.txt
+</code></pre><p>If the results indicate <code>systemd-resolved</code> is going wrong, you can then strace it:</p><pre><code class=language-console data-lang=console>strace -f -o output.txt systemctl restart systemd-resolved
+</code></pre><h2 id=file>file</h2><p>The <code>file</code> command determines the file type, which can help troubleshoot problems when an application mistakes one type of file for another, leading it to errors. Example:</p><pre><code class=language-console data-lang=console>file /usr/sbin/sshd
 /usr/sbin/sshd: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, stripped
-</code></pre><h2 id=stat>stat</h2><p>The <code>stat</code> command can help troubleshoot problems with files or the file system by showing the last date it was modified and other information. Example:</p><pre><code>stat /dev/sda1
+</code></pre><h2 id=stat>stat</h2><p>The <code>stat</code> command can help troubleshoot problems with files or the file system by showing the last date it was modified and other information. Example:</p><pre><code class=language-console data-lang=console>stat /dev/sda1
 File: '/dev/sda1'
 Size: 0               Blocks: 0          IO Block: 4096   block special file
 Device: 6h/6d   Inode: 6614        Links: 1     Device type: 8,1
@@ -428,45 +415,42 @@ Access: 2016-09-02 12:23:56.135999936 +0000
 Modify: 2016-09-02 12:23:52.879999981 +0000
 Change: 2016-09-02 12:23:52.879999981 +0000
 Birth: -
-</code></pre><p>On Photon OS, <code>stat</code> is handy to show permissions for a file or directory in both their absolute octal notation and their read-write-execute abbreviation; truncated example:</p><pre><code>chmod 777 tester.md
+</code></pre><p>On Photon OS, <code>stat</code> is handy to show permissions for a file or directory in both their absolute octal notation and their read-write-execute abbreviation; truncated example:</p><pre><code class=language-console data-lang=console>chmod 777 tester.md
 stat tester.md
-  File: 'tester.md'
-  Size: 0               Blocks: 0          IO Block: 4096   regular empty file
-Device: 801h/2049d      Inode: 316385      Links: 1
-Access: (0777/-rwxrwxrwx)  Uid: (    0/    root)   Gid: (    0/    root)
-</code></pre><h2 id=watch>watch</h2><p>The <code>watch</code> utility runs a command at regular intervals so you can observe how its output changes over time. <code>watch</code> can help dynamically monitor network links, routes, and other information when you are troubleshooting networking or performance issues. Examples:</p><pre><code>watch -n0 --differences ss
+	File: 'tester.md'
+	Size: 0               Blocks: 0          IO Block: 4096   regular empty file
+	Device: 801h/2049d      Inode: 316385      Links: 1
+	Access: (0777/-rwxrwxrwx)  Uid: (    0/    root)   Gid: (    0/    root)
+</code></pre><h2 id=watch>watch</h2><p>The <code>watch</code> utility runs a command at regular intervals so you can observe how its output changes over time. <code>watch</code> can help dynamically monitor network links, routes, and other information when you are troubleshooting networking or performance issues. Examples:</p><pre><code class=language-console data-lang=console>watch -n0 --differences ss
 watch -n1 --differences ip route
-</code></pre><p>The following is an example with a screenshot of the output. This command monitors the traffic on your network links. The highlighted numbers are updated every second so you can see the traffic fluctuating:</p><pre><code>watch -n1 --differences ip -s link show up
-</code></pre><p><img src=images/watchcmd.png alt="The dynamic output of the watch utility"></p><h2 id=vmstat-and-fdisk>vmstat and fdisk</h2><p>The <code>vmstat</code> tool displays statistics about virtual memory, processes, block input-output, disks, and CPU activity. This tool can help diagnose performance problems, especially system bottlenecks.</p><p>Its output on a Photon OS virtual machine running in VMware Workstation 12 Pro without a heavy load looks like this:</p><pre><code>vmstat
+</code></pre><p>The following is an example with a screenshot of the output. This command monitors the traffic on your network links. The highlighted numbers are updated every second so you can see the traffic fluctuating:</p><pre><code class=language-console data-lang=console>watch -n1 --differences ip -s link show up
+</code></pre><p><img src=../../../docs/images/watchcmd.png alt="The dynamic output of the watch utility"></p><h2 id=vmstat-and-fdisk>vmstat and fdisk</h2><p>The <code>vmstat</code> tool displays statistics about virtual memory, processes, block input-output, disks, and CPU activity. This tool can help diagnose performance problems, especially system bottlenecks.</p><p>Its output on a Photon OS virtual machine running in VMware Workstation 12 Pro without a heavy load looks like this:</p><pre><code class=language-console data-lang=console>vmstat
 procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
- r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
- 0  0      0   5980  72084 172488    0    0    27    44  106  294  1  0 98  1  0
-</code></pre><p>These codes are explained in the <code>vmstat</code> man page.</p><pre><code>- If `r`, the number of runnable processes, is higher than 10, the machine is under stress; consider intervening to reduce the number of processes or to distribute some of the processes to other machines. In other words, the machine has a bottleneck in executing processes.
-- If `cs`, the number of context switches per second, is really high, there may be too many jobs running on the machine.
-- If `in`, the number of interrupts per second, is relatively high, there might be a bottleneck for network or disk IO.
-</code></pre><p>You can investigate disk IO further by using vmstat&rsquo;s <code>-d</code> option to report disk statistics. The following is an abridged example on a machine with little load:</p><pre><code>vmstat -d
+	r  b   swpd   free   buff  cache   si   so    bi    bo   in   cs us sy id wa st
+	0  0      0   5980  72084 172488    0    0    27    44  106  294  1  0 98  1  0
+</code></pre><p>These codes are explained in the <code>vmstat</code> man page.</p><ul><li>If <code>r</code>, the number of runnable processes, is higher than 10, the machine is under stress; consider intervening to reduce the number of processes or to distribute some of the processes to other machines. In other words, the machine has a bottleneck in executing processes.</li><li>If <code>cs</code>, the number of context switches per second, is really high, there may be too many jobs running on the machine.</li><li>If <code>in</code>, the number of interrupts per second, is relatively high, there might be a bottleneck for network or disk IO.</li></ul><p>You can investigate disk IO further by using vmstat&rsquo;s <code>-d</code> option to report disk statistics. The following is an abridged example on a machine with little load:</p><pre><code class=language-console data-lang=console>vmstat -d
 disk- ------------reads------------ ------------writes----------- -----IO------
-       total merged sectors      ms  total merged sectors      ms    cur    sec
+		total merged sectors      ms  total merged sectors      ms    cur    sec
 ram0       0      0       0       0      0      0       0       0      0      0
 ram1       0      0       0       0      0      0       0       0      0      0
 loop0      0      0       0       0      0      0       0       0      0      0
 loop1      0      0       0       0      0      0       0       0      0      0
 sr0        0      0       0       0      0      0       0       0      0      0
 sda    22744    676  470604   12908  72888  24949  805224  127692      0    130
-</code></pre><p>The <code>-D</code> option summarizes disk statistics:</p><pre><code>vmstat -D
-           26 disks
-            2 partitions
-        22744 total reads
-          676 merged reads
-       470604 read sectors
-        12908 milli reading
-        73040 writes
-        25001 merged writes
-       806872 written sectors
-       127808 milli writing
-            0 inprogress IO
-          130 milli spent IO
-</code></pre><p>You can also get statistics about a partition. First, run the <code>fdisk -l</code> command to list the machine&rsquo;s devices. Then run <code>vmstat -p</code> with the name of a device to view its stats:</p><pre><code>fdisk -l
+</code></pre><p>The <code>-D</code> option summarizes disk statistics:</p><pre><code class=language-console data-lang=console>vmstat -D
+    26 	disks
+     2	partitions
+ 22744 	total reads
+   676 	merged reads
+470604  read sectors
+ 12908 	milli reading
+ 73040 	writes
+ 25001 	merged writes
+806872  written sectors
+127808  milli writing
+     0	inprogress IO
+   130 	milli spent IO
+</code></pre><p>You can also get statistics about a partition. First, run the <code>fdisk -l</code> command to list the machine&rsquo;s devices. Then run <code>vmstat -p</code> with the name of a device to view its stats:</p><pre><code class=language-console data-lang=console>fdisk -l
 Disk /dev/ram0: 4 MiB, 4194304 bytes, 8192 sectors
 Units: sectors of 1 * 512 = 512 bytes
 Sector size (logical/physical): 512 bytes / 4096 bytes
@@ -478,8 +462,8 @@ Device        Start      End  Sectors Size Type
 
 vmstat -p /dev/sda1
 sda1          reads   read sectors  writes    requested writes
-               22579     473306      78510     866088
-</code></pre><p>See the <code>vmstat</code> man page for more options.</p><h2 id=lsof>lsof</h2><p>The <code>lsof</code> command lists open files. The tool&rsquo;s definition of an open file includes directories, libraries, streams, domain sockets, and Internet sockets. THis enables it to identify the files a process is using. Because a Linux system like Photon OS uses files to do its work, you can run <code>lsof</code> as root to see how the system is using them and to see how an application works.</p><p>If you cannot unmount a disk because it is in use, you can run <code>lsof</code> to identify the files on the disk that are being used.</p><p>The following is an example that shows the processes that are using the root directory:</p><pre><code>lsof /root
+				22579     473306      78510     866088
+</code></pre><p>See the <code>vmstat</code> man page for more options.</p><h2 id=lsof>lsof</h2><p>The <code>lsof</code> command lists open files. The tool&rsquo;s definition of an open file includes directories, libraries, streams, domain sockets, and Internet sockets. THis enables it to identify the files a process is using. Because a Linux system like Photon OS uses files to do its work, you can run <code>lsof</code> as root to see how the system is using them and to see how an application works.</p><p>If you cannot unmount a disk because it is in use, you can run <code>lsof</code> to identify the files on the disk that are being used.</p><p>The following is an example that shows the processes that are using the root directory:</p><pre><code class=language-console data-lang=console>lsof /root
 COMMAND    PID USER   FD   TYPE DEVICE SIZE/OFF   NODE NAME
 bash       879 root  cwd    DIR    8,1     4096 262159 /root
 bash      1265 root  cwd    DIR    8,1     4096 262159 /root
@@ -487,10 +471,10 @@ sftp-serv 1326 root  cwd    DIR    8,1     4096 262159 /root
 gdb       1351 root  cwd    DIR    8,1     4096 262159 /root
 bash      1395 root  cwd    DIR    8,1     4096 262159 /root
 lsof      1730 root  cwd    DIR    8,1     4096 262159 /root
-</code></pre><p>You can do the same with an application or virtual appliance by running <code>lsof</code> with the user name or process ID of the app. The following example lists the open files used by the Apache HTTP Server:</p><pre><code>lsof -u apache
-</code></pre><p>Running the command with the <code>-i</code> option lists all the open network and Internet files, which can help troubleshoot network problems:</p><pre><code>lsof -i
-</code></pre><p>See the Unix socket addresses of a user like <em>zookeeper</em>:</p><pre><code>lsof -u zookeeper -U
-</code></pre><p>The following example shows the processes running on Ports 1 through 80:</p><pre><code>lsof -i TCP:1-80
+</code></pre><p>You can do the same with an application or virtual appliance by running <code>lsof</code> with the user name or process ID of the app. The following example lists the open files used by the Apache HTTP Server:</p><pre><code class=language-console data-lang=console>lsof -u apache
+</code></pre><p>Running the command with the <code>-i</code> option lists all the open network and Internet files, which can help troubleshoot network problems:</p><pre><code class=language-console data-lang=console>lsof -i
+</code></pre><p>See the Unix socket addresses of a user like <em>zookeeper</em>:</p><pre><code class=language-console data-lang=console>lsof -u zookeeper -U
+</code></pre><p>The following example shows the processes running on Ports 1 through 80:</p><pre><code class=language-console data-lang=console>lsof -i TCP:1-80
 COMMAND  PID   USER   FD   TYPE DEVICE SIZE/OFF NODE NAME
 httpd    403   root    3u  IPv6  10733      0t0  TCP *:http (LISTEN)
 httpd    407 apache    3u  IPv6  10733      0t0  TCP *:http (LISTEN)
@@ -501,7 +485,7 @@ sshd     820   root    4u  IPv6  11343      0t0  TCP *:ssh (LISTEN)
 sshd    1258   root    3u  IPv4  48040      0t0  TCP 198.51.100.143:ssh-&gt;198.51.100.1:49759 (ESTABLISHED)
 sshd    1319   root    3u  IPv4  50866      0t0  TCP 198.51.100.143:ssh-&gt;198.51.100.1:51054 (ESTABLISHED)
 sshd    1388   root    3u  IPv4  56438      0t0  TCP 198.51.100.143:ssh-&gt;198.51.100.1:60335 (ESTABLISHED)
-</code></pre><p>You can also inspect the files opened by a process ID. The following example queries the files open by the systemd network service:</p><pre><code>lsof -p 1917
+</code></pre><p>You can also inspect the files opened by a process ID. The following example queries the files open by the systemd network service:</p><pre><code class=language-console data-lang=console>lsof -p 1917
 COMMAND    PID            USER   FD      TYPE             DEVICE SIZE/OFF   NODE NAME
 systemd-n 1917 systemd-network  cwd       DIR                8,1     4096      2 /
 systemd-n 1917 systemd-network  txt       REG                8,1   887896 272389 /usr/lib/systemd/systemd-networkd
@@ -513,17 +497,17 @@ systemd-n 1917 systemd-network    4u     unix 0x0000000000000000      0t0  45744
 systemd-n 1917 systemd-network    9u  netlink                         0t0  45754 KOBJECT_UEVENT
 systemd-n 1917 systemd-network   12u  a_inode               0,11        0   5955 [timerfd]
 systemd-n 1917 systemd-network   13u     IPv4             104292      0t0    UDP 198.51.100.143:bootpc
-</code></pre><h2 id=fuser>fuser</h2><p>The <code>fuser</code> command identifies the process IDs of processes using files or sockets. The term <em>process</em> is, in this case, synonymous with <em>user</em>. To identify the process ID of a process using a socket, run <code>fuser</code> with its namespace option and specify <code>tcp</code> or <code>udp</code> and the name of the process or port. Examples:</p><pre><code>fuser -n tcp ssh
+</code></pre><h2 id=fuser>fuser</h2><p>The <code>fuser</code> command identifies the process IDs of processes using files or sockets. The term <em>process</em> is, in this case, synonymous with <em>user</em>. To identify the process ID of a process using a socket, run <code>fuser</code> with its namespace option and specify <code>tcp</code> or <code>udp</code> and the name of the process or port. Examples:</p><pre><code class=language-console data-lang=console>fuser -n tcp ssh
 ssh/tcp:               940  1308
 fuser -n tcp http
 http/tcp:              592   594   595   596
 fuser -n tcp 80
 80/tcp:                592   594   595   596
-</code></pre><h2 id=ldd>ldd</h2><p>By revealing the shared libraries that a program depends on, <code>ldd</code> can help troubleshoot an application that is missing a library or finding the wrong one.</p><p>For example, if you get a &ldquo;file not found&rdquo; output, check the path to the library.</p><pre><code>ldd /usr/sbin/sshd
+</code></pre><h2 id=ldd>ldd</h2><p>By revealing the shared libraries that a program depends on, <code>ldd</code> can help troubleshoot an application that is missing a library or finding the wrong one.</p><p>For example, if you get a &ldquo;file not found&rdquo; output, check the path to the library.</p><pre><code class=language-console data-lang=console>ldd /usr/sbin/sshd
 linux-vdso.so.1 (0x00007ffc0e3e3000)
 libpam.so.0 =&gt; (file not found)
 libcrypto.so.1.0.0 =&gt; /usr/lib/libcrypto.so.1.0.0 (0x00007f624e570000)
-</code></pre><p>You can also use the <code>objdump</code> command to show dependencies for a program&rsquo;s object files; example:</p><pre><code>objdump -p /usr/sbin/sshd | grep NEEDED
+</code></pre><p>You can also use the <code>objdump</code> command to show dependencies for a program&rsquo;s object files; example:</p><pre><code class=language-console data-lang=console>objdump -p /usr/sbin/sshd | grep NEEDED
 </code></pre><h2 id=gdb>gdb</h2><p>The <code>gdb</code> tool is the GNU debugger. It lets you see inside a program while it executes or when it crashes so that you can catch errors as they occur. The <code>gdb</code> tool is typically used to debug programs written in C and C++. On Photon OS, <code>gdb</code> can help you determine why an application crashed. See the man page for <code>gdb</code> for instructions on how to run it.</p><p>For an extensive example on how to use <code>gdb</code> to troubleshoot Photon OS running on a VM when you cannot login to Photon OS, see the section on troubleshooting boot and logon problems.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-f13d060552ebaf87170062c96f0cb71b>4.2 - Troubleshooting Tools Installed by Default</h1><p>The following troubleshooting tools are included in the full version of Photon OS:</p><ul><li><code>grep</code>. Searches files for patterns.</li><li><code>ping</code>. Tests network connectivity.</li><li><code>strings</code>. Displays the characters in a file to identify its contents.</li><li><code>lsmod</code>. Lists loaded modules.</li><li><code>ipcs</code>. Shows data about the inter-process communication (IPC) resources to which a process has read access. This data includes shared memory segments, message queues, and semaphore arrays.</li><li><code>nm</code>. Lists symbols from object files.</li><li><code>diff</code>. Compares files side by side. This tool is useful to compare configuration files of two versions when one version works and the other does not.</li></ul></div><div class=td-content style=page-break-before:always><h1 id=pg-8541e2426271c83233d26031263d756e>4.3 - Installing Tools from Repositories</h1><p>You can install several troubleshooting tools from the Photon OS repositories by using the default package management system, <code>tdnf</code>.</p><p>If a tool you require is not installed, search the repositories to see if it is available.</p><p>For example, the traceroute tool is not installed by default. You can search for it in the repositories as follows:</p><pre><code>tdnf search traceroute
 traceroute : Traces the route taken by packets over an IPv4/IPv6 network
 </code></pre><p>The results of the above command show that traceroute exists in the repository. You install it with <code>tdnf</code>:</p><pre><code>tdnf install traceroute
@@ -562,10 +546,12 @@ systemctl status sshd 		service sshd status
 systemctl enable sshd 		chkconfig sshd on
 systemctl disable sshd 		chkconfig sshd off
 systemctl daemon-reload		chkconfig sshd --add
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-37ee182b89ad2f34aa7aafa527b6186b>5.3 - Analyzing System Logs with 'journalctl'</h1><p>The journalctl tool queries the contents of the systemd journal. On Photon OS, all the system logs except the installation log and the cloud-init log are written into the systemd journal.</p><p>When you run the <code>journalctl</code> command without any parameters, it displays all the contents of the journal, beginning with the oldest entry.</p><p>To display the output in reverse order with new entries first, include the <code>-r</code> option in the command:</p><pre><code>journalctl -r
-</code></pre><p>The <code>journalctl</code> command includes many options to filter its output. For help troubleshooting systemd, two journalctl queries are particularly useful:</p><ul><li><p>Showing the log entries for the last boot.</p><p>The following command displays the messages that systemd generated during the last time the machine started:</p><p>journalctl -b</p></li><li><p>Showing the log entries for a systemd service unit.Item</p><p>The following command reveals the messages for only the systemd service unit specified by the <code>-u</code> option, which in the following example is the auditing service:</p><p>journalctl -u auditd</p></li></ul><p>You can look at the messages for systemd itself or for the network service:</p><pre><code>journalctl -u systemd
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-37ee182b89ad2f34aa7aafa527b6186b>5.3 - Analyzing System Logs with 'journalctl'</h1><p>The journalctl tool queries the contents of the systemd journal. On Photon OS, all the system logs except the installation log and the cloud-init log are written into the systemd journal.</p><p>When you run the <code>journalctl</code> command without any parameters, it displays all the contents of the journal, beginning with the oldest entry.</p><p>To display the output in reverse order with new entries first, include the <code>-r</code> option in the command:</p><pre><code class=language-console data-lang=console>journalctl -r
+</code></pre><p>The <code>journalctl</code> command includes many options to filter its output. For help troubleshooting systemd, two journalctl queries are particularly useful:</p><ul><li><p>Showing the log entries for the last boot.</p><p>The following command displays the messages that systemd generated during the last time the machine started:</p></li></ul><pre><code class=language-console data-lang=console>journalctl -b
+</code></pre><ul><li><p>Showing the log entries for a systemd service unit.Item</p><p>The following command reveals the messages for only the systemd service unit specified by the <code>-u</code> option, which in the following example is the auditing service:</p></li></ul><pre><code class=language-console data-lang=console>journalctl -u auditd
+</code></pre><p>You can look at the messages for systemd itself or for the network service:</p><pre><code class=language-console data-lang=console>journalctl -u systemd
 journalctl -u systemd-networkd
-</code></pre><p>Example:</p><pre><code>root@photon-1a0375a0392e [ ~ ]# journalctl -u systemd-networkd
+</code></pre><p>Example:</p><pre><code class=language-console data-lang=console>root@photon-1a0375a0392e [ ~ ]# journalctl -u systemd-networkd
 -- Logs begin at Tue 2016-08-23 14:35:50 UTC, end at Tue 2016-08-23 23:45:44 UTC. --
 Aug 23 14:35:52 photon-1a0375a0392e systemd[1]: Starting Network Service...
 Aug 23 14:35:52 photon-1a0375a0392e systemd-networkd[458]: Enumeration completed
@@ -578,7 +564,7 @@ Aug 23 14:35:54 photon-1a0375a0392e systemd-networkd[458]: eth0: Configured
 
 systemd-analyze dump</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-21502ba89b3fba5480b548821dfd1e69>5.5 - Inspecting Services with 'systemd-analyze'</h1><p>systemd is a suite of basic building blocks for a Linux system. It provides a system and service manager that runs as Process ID 1 and starts the rest of the system.</p><p>To manage the services run the following commands:</p><ul><li><code>systemctl</code> or <code>systemctl list-units</code> : This command lists the running units.</li><li><code>systemctl --failed</code> : This command lists failed units.</li><li><code>systemctl list-unit-files</code> : This command lists all the installed unit files. The unit files are usually present in <strong>/usr/lib/systemd/system/</strong> and <strong>/etc/systemd/system/</strong>.</li><li><code>systemctl status pid</code> : This command displays the cgroup slice, memory and parent for a PID.</li><li><code>systemctl start unit</code> : This command starts a unit immediately.</li><li><code>systemctl stop unit</code> : This command stops a unit.</li><li><code>systemctl restart unit</code> : This command restarts a unit.</li><li><code>systemctl reload unit</code> : This command asks a unit to reload its configuration.</li><li><code>systemctl status unit</code> : This command displays the status of a unit.</li><li><code>systemctl enable unit</code> : This command enables a unit to run on startup.</li><li><code>systemctl enable --now unit</code> : This command enables a unit to run on startup and start immediately.</li><li><code>systemctl disable unit</code> : This command disables a unit and removes it from the startup program.</li><li><code>systemctl mask unit</code> : This command masks a unit to make it impossible to start.</li><li><code>systemctl unmask unit</code> : This command unmasks a unit.</li></ul><p>To get an overview of the system boot-up time, run the following command:</p><pre><code>systemd-analyze
 </code></pre><p>To view a list of all running units, sorted by the time they took to initialize (highest time on top), run the following command:</p><pre><code>systemd-analyze blame
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-641b474d7b8d4100941d5a2750526038>6 - Network Troubleshooting</h1><p>Use the <code>systemd</code> suite of commands and not deprecated <code>init.d</code> commands or other deprecated commands, to manage networking.</p><ul><li><a href=managing-the-network-configuration.md>Managing the Network Configuration</a></li><li><a href=inspecting-ip-addresses.md>Inspecting IP Addresses</a></li><li><a href=inspecting-network-links-with-networkctl.md>Inspecting the Status of Network Links with <code>networkctl</code></a></li><li><a href=network-debugging.md>Network Debugging</a></li><li><a href=checking-firewall-rules.md>Checking Firewall Rules</a></li><li><a href=netmgr.md>Inspect Network Settings with <code>netmgr</code></a></li></ul><p>For information about tcpdump and netcat, see <a href=../photon_admin/installing-the-packages-for-tcpdump-and-netcat-with-tdnf.md>Installing the Packages for tcpdump and netcat with tdnf</a></p></div><div class=td-content style=page-break-before:always><h1 id=pg-7443880a71f96c7150bcd520d1ab0dd2>6.1 - Managing the Network Configuration</h1><p>The network service, which is enabled by default, starts when the system boots. You manage the network service by using systemd commands, such as <code>systemd-networkd</code>, <code>systemd-resolvd</code>, and <code>networkctl</code>.</p><p>You can check the status of the network service by running the following command:</p><pre><code>systemctl status systemd-networkd
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-641b474d7b8d4100941d5a2750526038>6 - Network Troubleshooting</h1><p>Use the <code>systemd</code> suite of commands and not deprecated <code>init.d</code> commands or other deprecated commands, to manage networking.</p><ul><li><a href=../../../docs/troubleshooting-guide/network-troubleshooting/managing-the-network-configuration/>Managing the Network Configuration</a></li><li><a href=../../../docs/troubleshooting-guide/network-troubleshooting/inspecting-ip-addresses/>Inspecting IP Addresses</a></li><li><a href=../../../docs/troubleshooting-guide/network-troubleshooting/inspecting-network-links-with-networkctl/>Inspecting the Status of Network Links with <code>networkctl</code></a></li><li><a href=../../../docs/troubleshooting-guide/network-troubleshooting/network-debugging/>Network Debugging</a></li><li><a href=../../../docs/troubleshooting-guide/network-troubleshooting/checking-firewall-rules/>Checking Firewall Rules</a></li><li><a href=../../../docs/troubleshooting-guide/network-troubleshooting/inspect-network-settings-with-netmgr/>Inspect Network Settings with <code>netmgr</code></a></li></ul><p>For information about tcpdump and netcat, see <a href=../../../docs/administration-guide/managing-network-configuration/installing-the-packages-for-tcpdump-and-netcat-with-tdnf/>Installing the Packages for tcpdump and netcat with tdnf</a></p></div><div class=td-content style=page-break-before:always><h1 id=pg-7443880a71f96c7150bcd520d1ab0dd2>6.1 - Managing the Network Configuration</h1><p>The network service, which is enabled by default, starts when the system boots. You manage the network service by using systemd commands, such as <code>systemd-networkd</code>, <code>systemd-resolvd</code>, and <code>networkctl</code>.</p><p>You can check the status of the network service by running the following command:</p><pre><code>systemctl status systemd-networkd
 </code></pre><p>The following is a result of the command:</p><pre><code>* systemd-networkd.service - Network Service
    Loaded: loaded (/usr/lib/systemd/system/systemd-networkd.service; enabled; vendor preset: enabled)
    Active: active (running) since Fri 2016-04-29 15:08:51 UTC; 6 days ago
@@ -647,15 +633,17 @@ IDX LINK             TYPE               OPERATIONAL SETUP
              MTU: 1500
          Address: 172.17.0.1
                   fe80::42:f0ff:fef7:bd81
-</code></pre><p>In the example above, the output indicates that state of the Docker container is unmanaged. Docker uses the bridge drive to handle managing the networking for the containers and not <code>systemd-resolved</code> or <code>systemd-networkd</code>.</p><p>For more information about <code>networkctl</code> commands and options, see <a href=https://www.freedesktop.org/software/systemd/man/networkctl.html>https://www.freedesktop.org/software/systemd/man/networkctl.html</a>.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-ead329f4a50d05b1e092b3096d4f90b4>6.4 - Network Debugging</h1><p>You can set <code>systemd-networkd</code> to work in debug mode so that you can analyze log files with debugging information to help troubleshoot networking problems.</p><p>The following procedure turns on network debugging by adding a drop-in file in <code>/etc/systemd</code> to customize the default systemd configuration in <code>/usr/lib/systemd</code>.</p><ol><li><p>Run the following command as root to create a directory with this exact name, including the <code>.d</code> extension:</p><p><code>mkdir -p /etc/systemd/system/systemd-networkd.service.d/</code></p></li><li><p>Run the following command as root to establish a systemd drop-in unit with a debugging configuration for the network service:</p><pre><code>cat &gt; /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf &lt;&lt; &quot;EOF&quot;
+</code></pre><p>In the example above, the output indicates that state of the Docker container is unmanaged. Docker uses the bridge drive to handle managing the networking for the containers and not <code>systemd-resolved</code> or <code>systemd-networkd</code>.</p><p>For more information about <code>networkctl</code> commands and options, see <a href=https://www.freedesktop.org/software/systemd/man/networkctl.html>https://www.freedesktop.org/software/systemd/man/networkctl.html</a>.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-ead329f4a50d05b1e092b3096d4f90b4>6.4 - Network Debugging</h1><p>You can set <code>systemd-networkd</code> to work in debug mode so that you can analyze log files with debugging information to help troubleshoot networking problems.</p><p>The following procedure turns on network debugging by adding a drop-in file in <code>/etc/systemd</code> to customize the default systemd configuration in <code>/usr/lib/systemd</code>.</p><ol><li><p>Run the following command as root to create a directory with this exact name, including the <code>.d</code> extension:</p><pre><code class=language-console data-lang=console>mkdir -p /etc/systemd/system/systemd-networkd.service.d/
+</code></pre><p>``</p></li><li><p>Run the following command as root to establish a systemd drop-in unit with a debugging configuration for the network service:</p><pre><code class=language-console data-lang=console>cat &gt; /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf &lt;&lt; &quot;EOF&quot;
     [Service]
     Environment=SYSTEMD_LOG_LEVEL=debug
     EOF
-</code></pre></li><li><p>Reload the <code>systemctl</code> daemon and restart the <code>systemd-networkd</code> service for the changes to take effect:</p><pre><code>systemctl daemon-reload
-    systemctl restart systemd-networkd
-</code></pre></li><li><p>Verify that your changes took effect:</p><pre><code>`systemd-delta --type=extended`
-</code></pre></li><li><p>View the log files by running this command:</p><pre><code>`journalctl -u systemd-networkd`
-</code></pre></li><li><p>After debugging the network connections, turn debugging off by deleting the drop-in file:</p><p><code>rm /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf</code></p></li></ol></div><div class=td-content style=page-break-before:always><h1 id=pg-6c30537e08221469979d45c47f7dc8c4>6.5 - Checking Firewall Rules</h1><p>The design of Photon OS emphasizes security. On the minimal and full versions of Photon OS, the default security policy turns on the firewall and drops packets from external interfaces and applications. As a result, you might need to add rules to iptables to permit forwarding, allow protocols like HTTP, and open ports. In other words, you must configure the firewall for your applications and requirements.</p><p>The default iptables settings on the full version look like this:</p><pre><code>iptables --list
+</code></pre></li><li><p>Reload the <code>systemctl</code> daemon and restart the <code>systemd-networkd</code> service for the changes to take effect:</p><pre><code class=language-console data-lang=console>systemctl daemon-reload
+systemctl restart systemd-networkd
+</code></pre></li><li><p>Verify that your changes took effect:</p><pre><code class=language-console data-lang=console>systemd-delta --type=extended`
+</code></pre><p>``</p></li><li><p>View the log files by running this command:</p><pre><code class=language-console data-lang=console>journalctl -u systemd-networkd`
+</code></pre><p>``</p></li><li><p>After debugging the network connections, turn debugging off by deleting the drop-in file:</p><pre><code class=language-console data-lang=console>rm /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf
+</code></pre><p>``</p></li></ol></div><div class=td-content style=page-break-before:always><h1 id=pg-6c30537e08221469979d45c47f7dc8c4>6.5 - Checking Firewall Rules</h1><p>The design of Photon OS emphasizes security. On the minimal and full versions of Photon OS, the default security policy turns on the firewall and drops packets from external interfaces and applications. As a result, you might need to add rules to iptables to permit forwarding, allow protocols like HTTP, and open ports. In other words, you must configure the firewall for your applications and requirements.</p><p>The default iptables settings on the full version look like this:</p><pre><code class=language-console data-lang=console>iptables --list
 Chain INPUT (policy DROP)
 target     prot opt source               destination
 ACCEPT     all  --  anywhere             anywhere
@@ -668,110 +656,100 @@ target     prot opt source               destination
 Chain OUTPUT (policy DROP)
 target     prot opt source               destination
 ACCEPT     all  --  anywhere             anywhere
-</code></pre><p>To find out how to adjust the settings, see the man page for iptables.</p><p>Although the default iptables policy accepts SSH connections, the <code>sshd</code> configuration file on the full version of Photon OS is set to reject SSH connections. See <a href=../../solutions-to-common-problems/permitting-root-login-with-ssh/>Permitting Root Login with SSH</a>.</p><p>If you are unable to ping a Photon OS machine, check the firewall rules. Verify if the rules allow connectivity for the port and protocol.</p><p>You can supplement the <code>iptables</code> commands by using <code>lsof</code> to, for instance, see the processes listening on ports:</p><pre><code>lsof -i -P -n
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-46e6e1e0a8903d55cdd88d1f424ce291>6.6 - Inspect Network Settings with 'netmgr'</h1><p>If you are running a VMware appliance on Photon OS and the VAMI module has problems or if there are networking issues, you can use the Photon OS <code>netmgr</code> utility to inspect the networking settings. Make sure that the IP addresses for the DNS server and other infrastructure are correct. Use <code>tcpdump</code> to analyze the issues.</p><p>The error code that you get from netmgr is a standard Unix error code. Enter it into a search engine to obtain more information on the error.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-9bc167ac28d85c2f0972b58d26097676>7 - File System Troubleshooting</h1><p>Photon OS includes commands to check and troubleshoot file systems.</p></div><div class=td-content><h1 id=pg-47439fb3c02145fdc25f8c11bf0b5e3f>7.1 - Checking Disk Space</h1><p>One of the first simple steps to take while troubleshooting is to check how much disk space is available by running the <code>df</code> command:</p><pre><code>df -h</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-abc971fcad72a9dad157e05c66304fb6>7.2 - Adding a Disk and Partitioning It</h1><p>If the <code>df</code> command shows that the file system is indeed nearing capacity, you can add a new disk on the fly and partition it to increase capacity.</p><ol><li><p>Add a new disk.</p><p>For example, you can add a new disk to a virtual machine by using the VMware vSphere Client. After adding a new disk, check for the new disk by using <code>fdisk</code>. In the following example, the new disk is named <code>/dev/sdb</code>:</p><pre><code> fdisk -l
- Device        Start      End  Sectors Size Type
- /dev/sda1      2048 16771071 16769024   8G Linux filesystem
- /dev/sda2  16771072 16777182     6111   3M BIOS boot
-	
- Disk /dev/sdb: 1 GiB, 1073741824 bytes, 2097152 sectors
- Units: sectors of 1 * 512 = 512 bytes
- Sector size (logical/physical): 512 bytes / 512 bytes
- I/O size (minimum/optimal): 512 bytes / 512 bytes
-</code></pre></li><li><p>Partition it with the <code>parted</code> wizard.</p><p>The command to partition the disk on Photon OS is as follows:</p><p>parted /dev/sdb</p><p>Use the <code>parted</code> wizard to create it as follows:</p><p>mklabel gpt
-mkpart ext3 1 1024</p></li><li><p>Create a file system on the partition:</p><pre><code>mkfs -t ext3 /dev/sdb1
-</code></pre></li><li><p>Make a directory where you will mount the new file system:</p><pre><code>mkdir /newdata
-</code></pre></li><li><p>Open <code>/etc/fstab</code> and add the new file system with the options that you require:</p><pre><code>    #system mnt-pt  type    options dump    fsck
-    /dev/sda1       /       ext4    defaults,barrier,noatime,noacl,data=ord$
-    /dev/cdrom      /mnt/cdrom      iso9660 ro,noauto       0       0
-    /dev/sdb1       /newdata        ext3    defaults        0		0
-</code></pre></li><li><p>Mount it using the following command:</p><pre><code>`mount /newdata`
-</code></pre><p>Verify the results:</p><pre><code></code></pre></li></ol><p>df -h
-Filesystem Size Used Avail Use% Mounted on
-/dev/root 7.8G 4.4G 3.1G 59% /
-devtmpfs 172M 0 172M 0% /dev
-tmpfs 173M 0 173M 0% /dev/shm
-tmpfs 173M 664K 172M 1% /run
-tmpfs 173M 0 173M 0% /sys/fs/cgroup
-tmpfs 173M 36K 173M 1% /tmp
-tmpfs 35M 0 35M 0% /run/user/0
-/dev/sdb1 945M 1.3M 895M 1% /newdata</p><pre><code>
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-4a539020bc72ef2270f43ba0b05f0192>7.3 - Expanding Disk Partition</h1><p>If you require more space, you can expand the last partition of your disk after resizing the disk.</p><p>The commands in this section assume <code>sda</code> as disk device.</p><ol><li><p>After the disk is resized in the virtual machine, use the following command to enable the system to recognize the new disk ending boundary without rebooting:</p><pre><code>echo 1 &gt; /sys/class/block/sda/device/rescan
-</code></pre></li><li><p>Install the <code>parted</code> package to resize the disk partition by running the following command to install it:</p><pre><code> `tdnf install parted`.
-   
-	# parted /dev/sda
-	GNU Parted 3.2
-	Using /dev/sda
-	Welcome to GNU Parted! Type 'help' to view a list of commands.
-</code></pre></li><li><p>List all partitions available to fix the GPT and check the last partition number:</p><pre><code>  
-(parted) print
-  
+</code></pre><p>To find out how to adjust the settings, see the <code>man</code> page for <code>iptables</code>.</p><p>Although the default iptables policy accepts SSH connections, the <code>sshd</code> configuration file on the full version of Photon OS is set to reject SSH connections. See <a href=../../../docs/troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/>Permitting Root Login with SSH</a>.</p><p>If you are unable to ping a Photon OS machine, check the firewall rules. Verify if the rules allow connectivity for the port and protocol.</p><p>You can supplement the <code>iptables</code> commands by using <code>lsof</code> to, for instance, see the processes listening on ports:</p><pre><code class=language-console data-lang=console>	lsof -i -P -n
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-46e6e1e0a8903d55cdd88d1f424ce291>6.6 - Inspect Network Settings with 'netmgr'</h1><p>If you are running a VMware appliance on Photon OS and the VAMI module has problems or if there are networking issues, you can use the Photon OS <code>netmgr</code> utility to inspect the networking settings. Make sure that the IP addresses for the DNS server and other infrastructure are correct. Use <code>tcpdump</code> to analyze the issues.</p><p>The error code that you get from netmgr is a standard Unix error code. Enter it into a search engine to obtain more information on the error.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-9bc167ac28d85c2f0972b58d26097676>7 - File System Troubleshooting</h1><p>Photon OS includes commands to check and troubleshoot file systems.</p></div><div class=td-content><h1 id=pg-47439fb3c02145fdc25f8c11bf0b5e3f>7.1 - Checking Disk Space</h1><p>One of the first simple steps to take while troubleshooting is to check how much disk space is available by running the <code>df</code> command:</p><pre><code>df -h</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-abc971fcad72a9dad157e05c66304fb6>7.2 - Adding a Disk and Partitioning It</h1><p>If the <code>df</code> command shows that the file system is indeed nearing capacity, you can add a new disk on the fly and partition it to increase capacity.</p><ol><li><p>Add a new disk.</p><p>For example, you can add a new disk to a virtual machine by using the VMware vSphere Client. After adding a new disk, check for the new disk by using <code>fdisk</code>. In the following example, the new disk is named <code>/dev/sdb</code>:</p></li></ol><pre><code class=language-console data-lang=console>fdisk -l
+Device        Start      End  Sectors Size Type
+/dev/sda1      2048 16771071 16769024   8G Linux filesystem
+/dev/sda2  16771072 16777182     6111   3M BIOS boot
+
+Disk /dev/sdb: 1 GiB, 1073741824 bytes, 2097152 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+</code></pre><ol><li><p>Partition it with the <code>parted</code> wizard.</p><p>The command to partition the disk on Photon OS is as follows:</p></li></ol><pre><code class=language-console data-lang=console>parted /dev/sdb
+</code></pre><p>Use the <code>parted</code> wizard to create it as follows:</p><pre><code class=language-console data-lang=console>mklabel gpt
+mkpart ext3 1 1024
+</code></pre><ol><li>Create a file system on the partition:</li></ol><pre><code class=language-console data-lang=console>mkfs -t ext3 /dev/sdb1
+</code></pre><ol><li>Make a directory where you will mount the new file system:</li></ol><pre><code class=language-console data-lang=console>mkdir /newdata
+</code></pre><ol><li>Open <code>/etc/fstab</code> and add the new file system with the options that you require:</li></ol><pre><code class=language-console data-lang=console>	#system mnt-pt  type    options dump    fsck
+	/dev/sda1       /       ext4    defaults,barrier,noatime,noacl,data=ord$
+	/dev/cdrom      /mnt/cdrom      iso9660 ro,noauto       0       0
+	/dev/sdb1       /newdata        ext3    defaults        0		0
+</code></pre><ol><li>Mount it using the following command:</li></ol><pre><code class=language-console data-lang=console>mount /newdata
+</code></pre><p>Verify the results:</p><pre><code class=language-console data-lang=console>df -h
+	Filesystem      Size  Used Avail Use% Mounted on
+	/dev/root       7.8G  4.4G  3.1G  59% /
+	devtmpfs        172M     0  172M   0% /dev
+	tmpfs           173M     0  173M   0% /dev/shm
+	tmpfs           173M  664K  172M   1% /run
+	tmpfs           173M     0  173M   0% /sys/fs/cgroup
+	tmpfs           173M   36K  173M   1% /tmp
+	tmpfs            35M     0   35M   0% /run/user/0
+	/dev/sdb1       945M  1.3M  895M   1% /newdata
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-4a539020bc72ef2270f43ba0b05f0192>7.3 - Expanding Disk Partition</h1><p>If you require more space, you can expand the last partition of your disk after resizing the disk.</p><p>The commands in this section assume <code>sda</code> as disk device.</p><ol><li>After the disk is resized in the virtual machine, use the following command to enable the system to recognize the new disk ending boundary without rebooting:</li></ol><pre><code class=language-console data-lang=console>echo 1 &gt; /sys/class/block/sda/device/rescan
+</code></pre><ol start=2><li>Install the <code>parted</code> package to resize the disk partition by running the following command to install it:</li></ol><pre><code class=language-console data-lang=console>tdnf install parted.
+parted /dev/sda
+
+GNU Parted 3.2
+Using /dev/sda
+Welcome to GNU Parted! Type 'help' to view a list of commands.
+</code></pre><ol start=3><li>List all partitions available to fix the GPT and check the last partition number:</li></ol><pre><code>(parted) print
+
 Warning: Not all of the space available to /dev/sda appears to be used, you can
 fix the GPT to use all of the space (an extra 4194304 blocks) or continue with
 the current setting? 
 Fix/Ignore?
-  
+
 Press `f` to fix the GPT layout.
-  
+
 Model: VMware Virtual disk (scsi)
 Disk /dev/sda: 34.4GB
 Sector size (logical/physical): 512B/512B
 Partition Table: gpt
 Disk Flags: 
-  
+
 Number  Start   End     Size    File system  Name  Flags
 1      1049kB  3146kB  2097kB                     bios_grub
 2      3146kB  8590MB  8587MB  ext4
-  
-</code></pre></li></ol><pre><code>
-    In this case we have the partition `2` as last, then we extend the partition to 100% of the remaining size:
-    
-    	(parted) resizepart 2 100%
 
-1. Expand the filesystem to the new size:
+</code></pre><p>In this case we have the partition <code>2</code> as last, then we extend the partition to 100% of the remaining size:</p><pre><code class=language-console data-lang=console>(parted) resizepart 2 100%
+</code></pre><ol start=4><li>Expand the filesystem to the new size:</li></ol><pre><code class=language-console data-lang=console>resize2fs /dev/sda2
+	resize2fs 1.42.13 (17-May-2015)
+	Filesystem at /dev/sda2 is mounted on /; on-line resizing required
+	old_desc_blocks = 1, new_desc_blocks = 2
+	The filesystem on /dev/sda2 is now 8387835 (4k) blocks long.
+</code></pre><p>The new space is already available in the system:</p><pre><code class=language-console data-lang=console>df -h
+	Filesystem      Size  Used Avail Use% Mounted on
+	/dev/root        32G  412M   30G   2% /
+	devtmpfs       1001M     0 1001M   0% /dev
+	tmpfs          1003M     0 1003M   0% /dev/shm
+	tmpfs          1003M  252K 1003M   1% /run
+	tmpfs          1003M     0 1003M   0% /sys/fs/cgroup
+	tmpfs          1003M     0 1003M   0% /tmp
+	tmpfs           201M     0  201M   0% /run/user/0
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-3affa41adcd49c9555f8960c2615e3aa>7.4 - List Disk Partitions with 'fdisk'</h1><p>The <code>fdisk</code> command manipulates the disk partition table. You can, for example, use <code>fdisk</code> to list the disk partitions so that you can identify the root Linux file system.</p><p>The following example shows <code>/dev/sda1</code> to be the root Linux partition:</p><pre><code class=language-console data-lang=console>fdisk -l
+	Disk /dev/ram0: 4 MiB, 4194304 bytes, 8192 sectors
+	Units: sectors of 1 * 512 = 512 bytes
+	Sector size (logical/physical): 512 bytes / 4096 bytes
+	I/O size (minimum/optimal): 4096 bytes / 4096 bytes
+
+	...
 	
-    ```
-    resize2fs /dev/sda2
-    	resize2fs 1.42.13 (17-May-2015)
-    	Filesystem at /dev/sda2 is mounted on /; on-line resizing required
-    	old_desc_blocks = 1, new_desc_blocks = 2
-    	The filesystem on /dev/sda2 is now 8387835 (4k) blocks long.
-    ```
+	Disk /dev/sda: 8 GiB, 8589934592 bytes, 16777216 sectors
+	Units: sectors of 1 * 512 = 512 bytes
+	Sector size (logical/physical): 512 bytes / 512 bytes
+	I/O size (minimum/optimal): 512 bytes / 512 bytes
+	Disklabel type: gpt
+	Disk identifier: 3CFA568B-2C89-4290-8B52-548732A3972D
 
-    The new space is already available in the system:
-    
-    	df -h
-    	Filesystem      Size  Used Avail Use% Mounted on
-    	/dev/root        32G  412M   30G   2% /
-    	devtmpfs       1001M     0 1001M   0% /dev
-    	tmpfs          1003M     0 1003M   0% /dev/shm
-    	tmpfs          1003M  252K 1003M   1% /run
-    	tmpfs          1003M     0 1003M   0% /sys/fs/cgroup
-    	tmpfs          1003M     0 1003M   0% /tmp
-    	tmpfs           201M     0  201M   0% /run/user/0</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-3affa41adcd49c9555f8960c2615e3aa>7.4 - List Disk Partitions with `fdisk`</h1><p>The <code>fdisk</code> command manipulates the disk partition table. You can, for example, use <code>fdisk</code> to list the disk partitions so that you can identify the root Linux file system.</p><p>The following example shows <code>/dev/sda1</code> to be the root Linux partition:</p><pre><code>fdisk -l
-Disk /dev/ram0: 4 MiB, 4194304 bytes, 8192 sectors
-Units: sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 4096 bytes
-I/O size (minimum/optimal): 4096 bytes / 4096 bytes
-...
-Disk /dev/sda: 8 GiB, 8589934592 bytes, 16777216 sectors
-Units: sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disklabel type: gpt
-Disk identifier: 3CFA568B-2C89-4290-8B52-548732A3972D
-
-Device        Start      End  Sectors Size Type
-/dev/sda1      2048 16771071 16769024   8G Linux filesystem
-/dev/sda2  16771072 16777182     6111   3M BIOS boot
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-497391c40467e0c63cef258c129588cd>7.5 - File System Consistency Check Tool</h1><p>You can manually check the file system by using the file system consistency check tool, <code>fsck</code>, after you unmount the file system.</p><p>The Photon OS file system includes btrfs and ext4. The default root file system is ext4, which you can see by looking at the file system configuration file, <code>/etc/fstab</code>:</p><pre><code>```
-cat /etc/fstab
+	Device        Start      End  Sectors Size Type
+	/dev/sda1      2048 16771071 16769024   8G Linux filesystem
+	/dev/sda2  16771072 16777182     6111   3M BIOS boot
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-497391c40467e0c63cef258c129588cd>7.5 - File System Consistency Check Tool</h1><p>You can manually check the file system by using the file system consistency check tool, <code>fsck</code>, after you unmount the file system.</p><p>The Photon OS file system includes btrfs and ext4. The default root file system is ext4, which you can see by looking at the file system configuration file, <code>/etc/fstab</code>:</p><pre><code class=language-console data-lang=console>cat /etc/fstab
 	#system mnt-pt  type    options dump    fsck
 	/dev/sda1       /       ext4    defaults,barrier,noatime,noacl,data=ordered     1       1
 	/dev/cdrom      /mnt/cdrom      iso9660 ro,noauto       0       0
-```
-</code></pre><p>The <code>1</code> in the fifth column, under <code>fsck</code>, indicates that fsck checks the file system when the system boots.</p><p>You can also perform a read-only check without unmounting it:</p><pre><code>```
-fsck -nf /dev/sda1
+</code></pre><p>The <code>1</code> in the fifth column, under <code>fsck</code>, indicates that fsck checks the file system when the system boots.</p><p>You can also perform a read-only check without unmounting it:</p><pre><code class=language-console data-lang=console>fsck -nf /dev/sda1
 	fsck from util-linux 2.27.1
 	e2fsck 1.42.13 (17-May-2015)
 	Warning!  /dev/sda1 is mounted.
@@ -786,56 +764,60 @@ fsck -nf /dev/sda1
 	Free inodes count wrong (428404, counted=428397).
 	Fix? no
 	/dev/sda1: 95884/524288 files (0.3% non-contiguous), 656477/2096128 blocks
-```
-</code></pre><p>The inodes count might be wrong because the file system is mounted and in use.</p><p>To fix errors, you must first unmount the file system and then run fsck again:</p><pre><code>```
-umount /dev/sda1
+</code></pre><p>The inodes count might be wrong because the file system is mounted and in use.</p><p>To fix errors, you must first unmount the file system and then run fsck again:</p><pre><code class=language-console data-lang=console>umount /dev/sda1
 umount: /: target is busy
-```
-</code></pre><p>You can find information about processes that use the device by using <code>lsof</code> or <code>fuser</code>.</p><pre><code>```
-lsof | grep ^jbd2/sd
+</code></pre><p>You can find information about processes that use the device by using <code>lsof</code> or <code>fuser</code>.</p><pre><code class=language-console data-lang=console>lsof | grep ^jbd2/sd
 	jbd2/sda1   99                root  cwd       DIR                8,1     4096          2 /
 	jbd2/sda1   99                root  rtd       DIR                8,1     4096          2 /
 	jbd2/sda1   99                root  txt   unknown                                        /proc/99/exe
-```
-</code></pre><p>The above example indicates that file system is in use.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-0d8a66f1aaaa1d930b395e737a470b71>7.6 - Fixing File System Errors When fsck Fails</h1><p>Sometimes when <code>fsck</code> runs during startup, it encounters an error that prevents the system from fully booting until you fix the issue by running <code>fsck</code> manually. This error might occur when Photon OS is the operating system for a VM running an appliance.</p><p>If <code>fsck</code> fails when the computer boots and an error message says to run fsck manually, you can troubleshoot by restarting the VM, altering the GRUB edit menu to enter emergency mode before Photon OS fully boots, and running <code>fsck</code>.</p><p>Perform the following steps:</p><ol><li><p>Take a snapshot of the virtual machine.</p></li><li><p>Restart the virtual machine running Photon OS.</p><p>When the Photon OS splash screen appears as it restarts, type the letter <code>e</code> quickly to go to the <code>GNU GRUB</code> edit menu.</p><p><strong>Note</strong>: You must type <code>e</code> quickly as Photon OS reboots quickly. Also, in VMware vSphere or VMware Workstation Pro, you might have to give the console focus by clicking in its window before it will register input from the keyboard.</p></li><li><p>In the <code>GNU GRUB</code> edit menu, go to the end of the line that starts with <code>linux</code>, add a space, and then add the following code exactly as it appears below:</p><p><code>systemd.unit=emergency.target</code></p></li><li><p>Type <code>F10</code>.</p></li><li><p>In the bash shell, run one of the following commands to fix the file system errors, depending on whether <code>sda1</code> or <code>sda2</code> represents the root file system:</p><p><code>e2fsck -y /dev/sda1</code></p><p>or</p><p><code>e2fsck -y /dev/sda2</code></p></li><li><p>Restart the virtual machine.</p></li></ol></div><div class=td-content style=page-break-before:always><h1 id=pg-45fccef9bd97bc1ac84237b20daca982>8 - Troubleshooting Packages</h1><p>On Photon OS, <code>tdnf</code> is the default package manager. The standard syntax for <code>tdnf</code> commands is the same as that for DNF and Yum:</p><pre><code>tdnf [options] &lt;command&gt; [&lt;arguments&gt;...]
-</code></pre><p>The main configuration files reside in <code>/etc/tdnf/tdnf.conf</code>. The repositories appear in <code>/etc/yum.repos.d/</code> with <code>.repo</code> file extensions. For more information, see the <a href=../../administration-guide/>Photon OS Administration Guide</a>.</p><p>The cache files for data and metadata reside in <code>/var/cache/tdnf</code>. The local cache is populated with data from the repository:</p><pre><code>ls -l /var/cache/tdnf/photon
+</code></pre><p>The above example indicates that file system is in use.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-0d8a66f1aaaa1d930b395e737a470b71>7.6 - Fixing File System Errors When fsck Fails</h1><p>Sometimes when <code>fsck</code> runs during startup, it encounters an error that prevents the system from fully booting until you fix the issue by running <code>fsck</code> manually. This error might occur when Photon OS is the operating system for a VM running an appliance.</p><p>If <code>fsck</code> fails when the computer boots and an error message says to run fsck manually, you can troubleshoot by restarting the VM, altering the GRUB edit menu to enter emergency mode before Photon OS fully boots, and running <code>fsck</code>.</p><p>Perform the following steps:</p><ol><li><p>Take a snapshot of the virtual machine.</p></li><li><p>Restart the virtual machine running Photon OS.</p><p>When the Photon OS splash screen appears as it restarts, type the letter <code>e</code> quickly to go to the <code>GNU GRUB</code> edit menu.</p><p><strong>Note</strong>: You must type <code>e</code> quickly as Photon OS reboots quickly. Also, in VMware vSphere or VMware Workstation Pro, you might have to give the console focus by clicking in its window before it will register input from the keyboard.</p></li><li><p>In the <code>GNU GRUB</code> edit menu, go to the end of the line that starts with <code>linux</code>, add a space, and then add the following code exactly as it appears below:</p><p><code>systemd.unit=emergency.target</code></p></li><li><p>Type <code>F10</code>.</p></li><li><p>In the bash shell, run one of the following commands to fix the file system errors, depending on whether <code>sda1</code> or <code>sda2</code> represents the root file system:</p><p><code>e2fsck -y /dev/sda1</code></p><p>or</p><p><code>e2fsck -y /dev/sda2</code></p></li><li><p>Restart the virtual machine.</p></li></ol></div><div class=td-content style=page-break-before:always><h1 id=pg-45fccef9bd97bc1ac84237b20daca982>8 - Troubleshooting Packages</h1><p>On Photon OS, <code>tdnf</code> is the default package manager. The standard syntax for <code>tdnf</code> commands is the same as that for DNF and Yum:</p><pre><code class=language-console data-lang=console>tdnf [options] &lt;command&gt; [&lt;arguments&gt;...]
+</code></pre><p>The main configuration files reside in <code>/etc/tdnf/tdnf.conf</code>. The repositories appear in <code>/etc/yum.repos.d/</code> with <code>.repo</code> file extensions. For more information, see the <a href=../../../docs/administration-guide/>Photon OS Administration Guide</a>.</p><p>The cache files for data and metadata reside in <code>/var/cache/tdnf</code>. The local cache is populated with data from the repository:</p><pre><code class=language-console data-lang=console>ls -l /var/cache/tdnf/photon
 	total 8
 	drwxr-xr-x 2 root root 4096 May 18 22:52 repodata
 	d-wxr----t 3 root root 4096 May  3 22:51 rpms
-</code></pre><p>You can clear the cache to help troubleshoot a problem, but doing so might slow the performance of <code>tdnf</code> until the cache becomes repopulated with data. Cleaning the cache can remove stale information. Clear the cache as follows:</p><pre><code>tdnf clean all
+</code></pre><p>You can clear the cache to help troubleshoot a problem, but doing so might slow the performance of <code>tdnf</code> until the cache becomes repopulated with data. Cleaning the cache can remove stale information. Clear the cache as follows:</p><pre><code class=language-console data-lang=console>tdnf clean all
 	Cleaning repos: photon photon-extras photon-updates 
 	Cleaning up everything
 </code></pre><p>Some tdnf commands can help you troubleshoot problems with packages:</p><ul><li><p><code>makecache</code></p><p>This command updates the cached binary metadata for all known repositories. You can run it after you clean the cache to make sure you are working with the latest repository data as you troubleshoot.</p><p>Example:</p><pre><code>tdnf makecache
-         
         Refreshing metadata for: 'VMware Photon Linux 1.0(x86_64)Updates'
         Refreshing metadata for: 'VMware Photon Extras 1.0(x86_64)'
         Refreshing metadata for: 'VMware Photon Linux 1.0(x86_64)'
         Metadata cache created.
-</code></pre></li><li><p><code>tdnf check-local</code></p><p>This command resolves dependencies by using the local RPMs to help check RPMs for quality assurance before publishing them. To check RPMs with this command, you must create a local directory and place your RPMs in it. The command, which includes no options, takes the path to the local directory containing the RPMs as its argument. The command does not, however, recursively parse directories; it checks the RPMs only in the directory that you specify.</p><p>For example, after creating a directory named <code>/tmp/myrpms</code> and placing your RPMs in it, you can run the following command to check them:</p><pre><code>  tdnf check-local /tmp/myrpms
-  Checking all packages from: /tmp/myrpms
-  Found 10 packages
-  Check completed without issues
-</code></pre></li><li><p><code>tdnf provides</code></p><p>This command finds the packages that provide the package that you supply as an argument. If you are used to a package name for another system, you can use <code>tdnf provides</code> to find the corresponding name of the package on Photon OS.</p><p>Example:</p><pre><code>  tdnf provides docker
-  docker-1.11.0-1.ph1.x86_64 : Docker
-  Repo     : photon
-  docker-1.11.0-1.ph1.x86_64 : Docker
-  Repo     : @System
-</code></pre><p>For a file, you must provide the full path. Example:</p><p>tdnf provides /usr/include/stdio.h
-glibc-devel-2.22-8.ph1.x86_64 : Header files for glibc
-Repo : photon
-glibc-devel-2.22-8.ph1.x86_64 : Header files for glibc
-Repo : @System</p><p>The following example shows you how to find the package that provides a pluggable authentication module, which you might need to find if the system is mishandling passwords.</p><pre><code>tdnf provides /etc/pam.d/system-account
-    shadow-4.2.1-7.ph1.x86_64 : Programs for handling passwords in a secure way
+</code></pre></li><li><p><code>tdnf check-local</code></p><p>This command resolves dependencies by using the local RPMs to help check RPMs for quality assurance before publishing them. To check RPMs with this command, you must create a local directory and place your RPMs in it. The command, which includes no options, takes the path to the local directory containing the RPMs as its argument. The command does not, however, recursively parse directories; it checks the RPMs only in the directory that you specify.</p><p>For example, after creating a directory named <code>/tmp/myrpms</code> and placing your RPMs in it, you can run the following command to check them:</p><pre><code>tdnf check-local /tmp/myrpms
+    Checking all packages from: /tmp/myrpms
+    Found 10 packages
+    Check completed without issues
+</code></pre><pre><code>
+</code></pre></li><li><p><code>tdnf provides</code></p><p>This command finds the packages that provide the package that you supply as an argument. If you are used to a package name for another system, you can use <code>tdnf provides</code> to find the corresponding name of the package on Photon OS.</p><p>Example:</p><pre><code>tdnf provides docker
+    docker-1.11.0-1.ph1.x86_64 : Docker
     Repo     : photon
-    shadow-4.2.1-8.ph1.x86_64 : Programs for handling passwords in a secure way
-    Repo     : photon-updates
-</code></pre><p>For more commands see the <a href=../../administration-guide/>Photon OS Administration Guide</a>.</p></li></ul><p>If a package that is installed is not working, try re-installing it.
+    docker-1.11.0-1.ph1.x86_64 : Docker
+    Repo     : @System
+</code></pre><pre><code>
+ For a file, you must provide the full path. Example: 
+   
+</code></pre><pre><code> tdnf provides /usr/include/stdio.h
+     glibc-devel-2.22-8.ph1.x86_64 : Header files for glibc
+     Repo     : photon
+     glibc-devel-2.22-8.ph1.x86_64 : Header files for glibc
+     Repo     : @System
+</code></pre><pre><code>
+ The following example shows you how to find the package that provides a pluggable authentication module, which you might need to find if the system is mishandling passwords. 
+
+</code></pre><p>tdnf provides /etc/pam.d/system-account
+shadow-4.2.1-7.ph1.x86_64 : Programs for handling passwords in a secure way
+Repo : photon
+shadow-4.2.1-8.ph1.x86_64 : Programs for handling passwords in a secure way
+Repo : photon-updates</p><pre><code>
+For more commands see the [Photon OS Administration Guide](../../administration-guide/).
+
+</code></pre></li></ul><p>If a package that is installed is not working, try re-installing it.
 Example:</p><pre><code>```
 tdnf reinstall shadow
 	Reinstalling:
 	shadow 	x86_64 	4.2.1-7.ph1   3.85 M
 ```
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-249cb7133f08d5ee19182ae009f48b92>9 - Kernel Problems and Boot and Login Errors</h1><p>Photon OS includes commands to troubleshoot kernel problems and boot and login errors.</p><ul><li><a href=kernel-overview.md>Kernel Overview</a></li><li><a href=boot-process-overview.md>Boot Process Overview</a></li><li><a href=blank-screen-on-reboot.md>Blank Screen on Reboot</a></li><li><a href=investigating-strange-behavior.md>Investigating Unexpected Behavior</a></li><li><a href=investigating-the-guest-kernel.md>Investigating the Guest Kernel</a></li><li><a href=kernel-log-replication-with-vprobes.md>Kernel Log Replication with VProbes</a></li><li><a href=Troubleshooting-linuxkernel.md>Troubleshooting Linux Kernel</a></li></ul></div><div class=td-content><h1 id=pg-fb6a01033307d1364f3304460e9609eb>9.1 - Kernel Overview</h1><p>You can use <code>dmesg</code> command to troubleshooting kernel errors. The <code>dmesg</code> command prints messages from the kernel ring buffer.</p><p>The following command, for example, presents kernel messages in a human-readable format:</p><pre><code>dmesg --human --kernel
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-249cb7133f08d5ee19182ae009f48b92>9 - Kernel Problems and Boot and Login Errors</h1><p>Photon OS includes commands to troubleshoot kernel problems and boot and login errors.</p><ul><li><a href=../../../docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/kernel-overview/>Kernel Overview</a></li><li><a href=../../../docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/boot-process-overview/>Boot Process Overview</a></li><li><a href=../../../docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/blank-screen-on-reboot/>Blank Screen on Reboot</a></li><li><a href=../../../docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/investigating-strange-behavior/>Investigating Unexpected Behavior</a></li><li><a href=../../../docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/investigating-the-guest-kernel/>Investigating the Guest Kernel</a></li><li><a href=../../../docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/kernel-log-replication-with-vprobes/>Kernel Log Replication with VProbes</a></li><li><a href=../../../docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/troubleshooting-linux-kernel/>Troubleshooting Linux Kernel</a></li></ul></div><div class=td-content><h1 id=pg-fb6a01033307d1364f3304460e9609eb>9.1 - Kernel Overview</h1><p>You can use <code>dmesg</code> command to troubleshooting kernel errors. The <code>dmesg</code> command prints messages from the kernel ring buffer.</p><p>The following command, for example, presents kernel messages in a human-readable format:</p><pre><code>dmesg --human --kernel
 </code></pre><p>To examine kernel messages as you perform actions, such as reproducing a problem, in another terminal, you can run the command with the <code>--follow</code> option, which waits for new messages and prints them as they occur:</p><pre><code>dmesg --human --kernel --follow
 </code></pre><p>The kernel buffer is limited in memory size. As a result, the kernel cyclically overwrites the end of the information in the buffer from which <code>dmesg</code> pulls information. The systemd journal, however, saves the information from the buffer to a log file so that you can access older information.</p><p>To view it, run the following command:</p><pre><code>journalctl -k
 </code></pre><p>If required, you can check the modules that are loaded on your Photon OS machine by running the <code>lsmod</code> command. For example:</p><pre><code>lsmod
@@ -856,12 +838,10 @@ nf_nat_ipv4            16384  1 iptable_nat
 nf_nat                 24576  1 nf_nat_ipv4
 iptable_filter         16384  1
 ip_tables              24576  2 iptable_filter,iptable_nat
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-1bc1d49db5f317bcf9d37ee4fbc9e850>9.2 - Boot Process Overview</h1><p>When a Photon OS machine boots, the BIOS initializes the hardware and uses a boot loader to start the kernel. After the kernel starts, <code>systemd</code> takes over and boots the rest of the operating system.</p><p>The BIOS checks the memory and initializes the keyboard, the screen, and other peripherals. When the BIOS finds the first hard disk, the boot loader&ndash;GNU GRUB 2.02&ndash;takes over. From the hard disk, GNU GRUB loads the master boot record (MBR) and initializes the root partition of the random-access memory by using initrd. The device manager, udev, provides initrd with the drivers it needs to access the device containing the root file system. Here&rsquo;s what the GNU GRUB edit menu looks like in Photon OS with its default commands to load the boot record and initialize the RAM disk:</p><p><img src=images/grub-edit-menu-orig.png alt="The GNU GRUB edit menu in the full and minimal versions of Photon OS"></p><p>At this point, the Linux kernel in Photon OS, which is kernel version 4.4.8, takes control. Systemd kicks in, initializes services in parallel, mounts the rest of the file system, and checks the file system for errors.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-d493e733f13166e75be33c14d5041e24>9.3 - Blank Screen on Reboot</h1><p>If the Photon OS kernel enters a state of panic during a reboot and all you see is a blank screen, note the name of the virtual machine running Photon OS and then power off the VM.</p><p>In the host, open the <code>vmware.log</code> file for the VM. When a kernel panics, the guest VM prints the entire kernel log in <code>vmware.log</code> in the host directory containing the VM. This log file contains the output of the <code>dmesg</code> command from the guest, and you can analyze it to help identify the cause of the boot problem.</p><p><strong>Example</strong></p><p>After searching for <code>Guest:</code> in the following abridged <code>vmware.log</code>, this line appears, identifying the root cause of the reboot problem:</p><pre><code>```
-2016-08-30T16:02:43.220-07:00| vcpu-0| I125: Guest: 
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-1bc1d49db5f317bcf9d37ee4fbc9e850>9.2 - Boot Process Overview</h1><p>When a Photon OS machine boots, the BIOS initializes the hardware and uses a boot loader to start the kernel. After the kernel starts, <code>systemd</code> takes over and boots the rest of the operating system.</p><p>The BIOS checks the memory and initializes the keyboard, the screen, and other peripherals. When the BIOS finds the first hard disk, the boot loader&ndash;GNU GRUB 2.02&ndash;takes over. From the hard disk, GNU GRUB loads the master boot record (MBR) and initializes the root partition of the random-access memory by using initrd. The device manager, udev, provides initrd with the drivers it needs to access the device containing the root file system. Here&rsquo;s what the GNU GRUB edit menu looks like in Photon OS with its default commands to load the boot record and initialize the RAM disk:</p><p><img src=../../../docs/images/grub-edit-menu-orig.png alt="The GNU GRUB edit menu in Photon OS"></p><p>At this point, the Linux kernel in Photon OS, which is kernel version 4.4.8, takes control. Systemd kicks in, initializes services in parallel, mounts the rest of the file system, and checks the file system for errors.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-d493e733f13166e75be33c14d5041e24>9.3 - Blank Screen on Reboot</h1><p>If the Photon OS kernel enters a state of panic during a reboot and all you see is a blank screen, note the name of the virtual machine running Photon OS and then power off the VM.</p><p>In the host, open the <code>vmware.log</code> file for the VM. When a kernel panics, the guest VM prints the entire kernel log in <code>vmware.log</code> in the host directory containing the VM. This log file contains the output of the <code>dmesg</code> command from the guest, and you can analyze it to help identify the cause of the boot problem.</p><p><strong>Example</strong></p><p>After searching for <code>Guest:</code> in the following abridged <code>vmware.log</code>, this line appears, identifying the root cause of the reboot problem:</p><pre><code class=language-log data-lang=log>2016-08-30T16:02:43.220-07:00| vcpu-0| I125: Guest: 
 	&lt;0&gt;[1.125804] Kernel panic - not syncing: 
 	VFS: Unable to mount root fs on unknown-block(0,0)
-```
-</code></pre><p>Further inspection finds the following lines:</p><pre><code>2016-08-30T16:02:43.217-07:00| vcpu-0| I125: Guest: 
+</code></pre><p>Further inspection finds the following lines:</p><pre><code class=language-log data-lang=log>2016-08-30T16:02:43.217-07:00| vcpu-0| I125: Guest: 
 &lt;4&gt;[    1.125782] VFS: Cannot open root device &quot;sdc1&quot; or unknown-block(0,0): error -6
 2016-08-30T16:02:43.217-07:00| vcpu-0| I125: Guest: 
 &lt;4&gt;[    1.125783] Please append a correct &quot;root=&quot; boot option; 

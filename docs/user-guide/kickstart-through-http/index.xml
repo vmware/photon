@@ -22,10 +22,11 @@
 &lt;h2 id="set-variables">Set Variables&lt;/h2>
 &lt;p>To use the Packer template, you must set the variables that the template uses. You can set the variables through command line or a JSON file.&lt;/p>
 &lt;p>Set the following variables:&lt;/p>
-&lt;pre>&lt;code>- `iso_file` - The photon ISO for the build. This file can be local or remote.
-- `iso_sha1sum` – The SHA1 sum of the ISO you want to build.
-- `product_version` - The Photon OS release version that you want to build. This version is added to the image filename.
-&lt;/code>&lt;/pre>
+&lt;ul>
+&lt;li>&lt;code>iso_file&lt;/code> - The photon ISO for the build. This file can be local or remote.&lt;/li>
+&lt;li>&lt;code>iso_sha1sum&lt;/code> – The SHA1 sum of the ISO you want to build.&lt;/li>
+&lt;li>&lt;code>product_version&lt;/code> - The Photon OS release version that you want to build. This version is added to the image filename.&lt;/li>
+&lt;/ul>
 &lt;p>Preset JSON files with the required parameters are located in the &lt;code>photon-packer-templates/vars&lt;/code> folder.&lt;/p>
 &lt;h2 id="kick-start-build">Kick Start Build&lt;/h2>
 &lt;p>To kick start a build using the JSON file, run the following command:&lt;/p>
@@ -53,171 +54,174 @@ packer-photon.json
 &lt;/ul></description></item><item><title>Docs: Photon Packer Template</title><link>/docs/user-guide/kickstart-through-http/packer-template/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/user-guide/kickstart-through-http/packer-template/</guid><description>
 &lt;p>The Photon Packer template folder has the following structure:&lt;/p>
 &lt;pre>&lt;code>photon-packer-templates/
+.
+├── README.md
 ├── packer-photon.json
 ├── scripts
-├── photon-kickstart.json
-├── photon-package_provisioning.sh
-├── photon-security_check.sh
-├── photon-sharedfolders_prep.sh
-├── photon-vagrant-user_provisioning.sh
-├── photon-vagrant-vbox_additions.sh
-├── photon-vagrantfile.rb
-├── photon-virtualbox-load-module.conf
-├── vars
-├── iso-3.0GA.json
+│ ├── photon-kickstart.json
+│ ├── photon-package_provisioning.sh
+│ ├── photon-security_check.sh
+│ ├── photon-sharedfolders_prep.sh
+│ ├── photon-vagrant-user_provisioning.sh
+│ ├── photon-vagrant-vbox_additions.sh
+│ ├── photon-vagrantfile.rb
+│ └── photon-virtualbox-load-module.conf
+└── vars
+└── iso-4.0GA.json
+2 directories, 11 files
 &lt;/code>&lt;/pre>&lt;h2 id="packer-photonjson">packer-photon.json&lt;/h2>
 &lt;p>The following are the contents of the &lt;code>photon-packer-templates/packer-photon.json&lt;/code> file:&lt;/p>
-&lt;pre>&lt;code>{
-&amp;quot;variables&amp;quot;: {
-&amp;quot;iso_file&amp;quot;: &amp;quot;&amp;quot;,
-&amp;quot;iso_sha1sum&amp;quot;: &amp;quot;&amp;quot;,
-&amp;quot;product_version&amp;quot;: &amp;quot;&amp;quot;,
-&amp;quot;root_password&amp;quot;: &amp;quot;2RQrZ83i79N6szpvZNX6&amp;quot;
-},
-&amp;quot;builders&amp;quot;: [
-{
-&amp;quot;name&amp;quot;: &amp;quot;vagrant-vmware_desktop&amp;quot;,
-&amp;quot;vm_name&amp;quot;: &amp;quot;photon&amp;quot;,
-&amp;quot;vmdk_name&amp;quot;: &amp;quot;photon-disk1&amp;quot;,
-&amp;quot;type&amp;quot;: &amp;quot;vmware-iso&amp;quot;,
-&amp;quot;headless&amp;quot;: false,
-&amp;quot;disk_size&amp;quot;: 20480,
-&amp;quot;disk_type_id&amp;quot;: 0,
-&amp;quot;guest_os_type&amp;quot;: &amp;quot;other3xlinux-64&amp;quot;,
-&amp;quot;iso_url&amp;quot;: &amp;quot;{{user `iso_file`}}&amp;quot;,
-&amp;quot;iso_checksum&amp;quot;: &amp;quot;{{user `iso_sha1sum`}}&amp;quot;,
-&amp;quot;iso_checksum_type&amp;quot;: &amp;quot;sha1&amp;quot;,
-&amp;quot;ssh_username&amp;quot;: &amp;quot;root&amp;quot;,
-&amp;quot;ssh_password&amp;quot;: &amp;quot;{{user `root_password`}}&amp;quot;,
-&amp;quot;ssh_wait_timeout&amp;quot;: &amp;quot;60m&amp;quot;,
-&amp;quot;boot_wait&amp;quot;: &amp;quot;5s&amp;quot;,
-&amp;quot;shutdown_command&amp;quot;: &amp;quot;shutdown -h now&amp;quot;,
-&amp;quot;http_directory&amp;quot;: &amp;quot;scripts&amp;quot;,
-&amp;quot;version&amp;quot;: 11,
-&amp;quot;vmx_data&amp;quot;: {
-&amp;quot;scsi0.virtualDev&amp;quot;: &amp;quot;pvscsi&amp;quot;,
-&amp;quot;ethernet0.virtualDev&amp;quot;: &amp;quot;vmxnet3&amp;quot;
-},
-&amp;quot;vmx_data_post&amp;quot;: {
-&amp;quot;displayname&amp;quot;: &amp;quot;VMware Photon&amp;quot;,
-&amp;quot;usb.present&amp;quot;: &amp;quot;false&amp;quot;
-},
-&amp;quot;boot_command&amp;quot;: [
-&amp;quot;&amp;lt;esc&amp;gt;&amp;lt;wait&amp;gt;&amp;quot;,
-&amp;quot;vmlinuz initrd=initrd.img root=/dev/ram0 loglevel=3 ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/photon-kickstart.json photon.media=cdrom&amp;quot;,
-&amp;quot;&amp;lt;enter&amp;gt;&amp;quot;
-]
-},
-{
-&amp;quot;name&amp;quot;: &amp;quot;vagrant-virtualbox&amp;quot;,
-&amp;quot;vm_name&amp;quot;: &amp;quot;photon&amp;quot;,
-&amp;quot;type&amp;quot;: &amp;quot;virtualbox-iso&amp;quot;,
-&amp;quot;headless&amp;quot;: false,
-&amp;quot;hard_drive_interface&amp;quot;: &amp;quot;scsi&amp;quot;,
-&amp;quot;disk_size&amp;quot;: 20480,
-&amp;quot;guest_os_type&amp;quot;: &amp;quot;Linux_64&amp;quot;,
-&amp;quot;iso_url&amp;quot;: &amp;quot;{{user `iso_file`}}&amp;quot;,
-&amp;quot;iso_checksum&amp;quot;: &amp;quot;{{user `iso_sha1sum`}}&amp;quot;,
-&amp;quot;iso_checksum_type&amp;quot;: &amp;quot;sha1&amp;quot;,
-&amp;quot;ssh_username&amp;quot;: &amp;quot;root&amp;quot;,
-&amp;quot;ssh_password&amp;quot;: &amp;quot;{{user `root_password`}}&amp;quot;,
-&amp;quot;ssh_wait_timeout&amp;quot;: &amp;quot;60m&amp;quot;,
-&amp;quot;boot_wait&amp;quot;: &amp;quot;5s&amp;quot;,
-&amp;quot;http_directory&amp;quot;: &amp;quot;scripts&amp;quot;,
-&amp;quot;shutdown_command&amp;quot;: &amp;quot;shutdown -h now&amp;quot;,
-&amp;quot;boot_command&amp;quot;: [
-&amp;quot;&amp;lt;esc&amp;gt;&amp;lt;wait&amp;gt;&amp;quot;,
-&amp;quot;vmlinuz initrd=initrd.img root=/dev/ram0 loglevel=3 ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/photon-kickstart.json&amp;quot;,
-&amp;quot;&amp;lt;enter&amp;gt;&amp;quot;
-]
-}
-],
-&amp;quot;provisioners&amp;quot;: [
-{
-&amp;quot;type&amp;quot;: &amp;quot;shell&amp;quot;,
-&amp;quot;script&amp;quot;: &amp;quot;scripts/photon-package_provisioning.sh&amp;quot;
-},
-{
-&amp;quot;type&amp;quot;: &amp;quot;shell&amp;quot;,
-&amp;quot;only&amp;quot;: [&amp;quot;vagrant-vmware_desktop&amp;quot;, &amp;quot;vagrant-virtualbox&amp;quot;],
-&amp;quot;script&amp;quot;: &amp;quot;scripts/photon-vagrant-user_provisioning.sh&amp;quot;
-},
-{
-&amp;quot;type&amp;quot;: &amp;quot;shell&amp;quot;,
-&amp;quot;only&amp;quot;: [&amp;quot;vagrant-vmware_desktop&amp;quot;],
-&amp;quot;script&amp;quot;: &amp;quot;scripts/photon-sharedfolders_prep.sh&amp;quot;
-},
-{
-&amp;quot;type&amp;quot;: &amp;quot;shell&amp;quot;,
-&amp;quot;only&amp;quot;: [&amp;quot;vagrant-virtualbox&amp;quot;],
-&amp;quot;script&amp;quot;: &amp;quot;scripts/photon-vagrant-vbox_additions.sh&amp;quot;
-},
-{
-&amp;quot;type&amp;quot;: &amp;quot;file&amp;quot;,
-&amp;quot;only&amp;quot;: [&amp;quot;vagrant-virtualbox&amp;quot;],
-&amp;quot;source&amp;quot;: &amp;quot;scripts/photon-virtualbox-load-module.conf&amp;quot;,
-&amp;quot;destination&amp;quot;: &amp;quot;/etc/modules-load.d/virtualbox.conf&amp;quot;
-},
-{
-&amp;quot;type&amp;quot;: &amp;quot;shell&amp;quot;,
-&amp;quot;inline&amp;quot;: [&amp;quot;sed -i '/linux/ s/$/ net.ifnames=0/' /boot/grub2/grub.cfg&amp;quot;]
-},
-{
-&amp;quot;type&amp;quot;: &amp;quot;shell&amp;quot;,
-&amp;quot;inline&amp;quot;: [&amp;quot;echo 'GRUB_CMDLINE_LINUX=\&amp;quot;net.ifnames=0\&amp;quot;' &amp;gt;&amp;gt; /etc/default/grub&amp;quot;]
-},
-{
-&amp;quot;type&amp;quot;: &amp;quot;shell&amp;quot;,
-&amp;quot;script&amp;quot;: &amp;quot;scripts/photon-security_check.sh&amp;quot;
-},
-{
-&amp;quot;type&amp;quot;: &amp;quot;shell&amp;quot;,
-&amp;quot;inline&amp;quot;: [&amp;quot;sed -i 's/OS/Linux/' /etc/photon-release&amp;quot;]
-}
-],
-&amp;quot;post-processors&amp;quot;: [
-{
-&amp;quot;type&amp;quot;: &amp;quot;vagrant&amp;quot;,
-&amp;quot;only&amp;quot;: [&amp;quot;vagrant-vmware_desktop&amp;quot;, &amp;quot;vagrant-virtualbox&amp;quot;],
-&amp;quot;compression_level&amp;quot;: 9,
-&amp;quot;vagrantfile_template&amp;quot;: &amp;quot;scripts/photon-vagrantfile.rb&amp;quot;,
-&amp;quot;output&amp;quot;: &amp;quot;photon-{{user `product_version`}}-{{.BuildName}}.box&amp;quot;
-}
-]
-}
-&lt;/code>&lt;/pre>&lt;h2 id="photon-kickstartjson">photon-kickstart.json&lt;/h2>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;variables&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;iso_file&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;iso_sha1sum&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;product_version&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;root_password&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;changeme&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;builders&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;vagrant-vmware_desktop&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;vm_name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;photon&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;vmdk_name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;photon-disk1&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;vmware-iso&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;headless&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#204a87;font-weight:bold">false&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;disk_size&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">20480&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;disk_type_id&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;guest_os_type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;other3xlinux-64&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;iso_url&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;{{user `iso_file`}}&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;iso_checksum&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;{{user `iso_sha1sum`}}&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;iso_checksum_type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;sha1&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;ssh_username&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;root&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;ssh_password&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;{{user `root_password`}}&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;ssh_wait_timeout&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;60m&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;boot_wait&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;5s&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;shutdown_command&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;shutdown -h now&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;http_directory&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;scripts&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;version&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">11&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;vmx_data&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;scsi0.virtualDev&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;pvscsi&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;ethernet0.virtualDev&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;vmxnet3&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;vmx_data_post&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;displayname&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;VMware Photon&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;usb.present&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;false&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;boot_command&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;&amp;lt;esc&amp;gt;&amp;lt;wait&amp;gt;&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;vmlinuz initrd=initrd.img root=/dev/ram0 loglevel=3 ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/photon-kickstart.json photon.media=cdrom&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;&amp;lt;enter&amp;gt;&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;vagrant-virtualbox&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;vm_name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;photon&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;virtualbox-iso&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;headless&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#204a87;font-weight:bold">false&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;hard_drive_interface&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;scsi&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;disk_size&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">20480&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;guest_os_type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;Linux_64&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;iso_url&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;{{user `iso_file`}}&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;iso_checksum&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;{{user `iso_sha1sum`}}&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;iso_checksum_type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;sha1&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;ssh_username&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;root&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;ssh_password&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;{{user `root_password`}}&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;ssh_wait_timeout&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;60m&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;boot_wait&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;5s&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;http_directory&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;scripts&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;shutdown_command&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;shutdown -h now&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;boot_command&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;&amp;lt;esc&amp;gt;&amp;lt;wait&amp;gt;&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;vmlinuz initrd=initrd.img root=/dev/ram0 loglevel=3 ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/photon-kickstart.json&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;&amp;lt;enter&amp;gt;&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;span style="color:#000;font-weight:bold">],&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;provisioners&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;shell&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;script&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;scripts/photon-package_provisioning.sh&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;shell&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;only&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;vagrant-vmware_desktop&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;vagrant-virtualbox&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">],&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;script&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;scripts/photon-vagrant-user_provisioning.sh&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;shell&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;only&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;vagrant-vmware_desktop&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">],&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;script&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;scripts/photon-sharedfolders_prep.sh&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;shell&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;only&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;vagrant-virtualbox&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">],&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;script&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;scripts/photon-vagrant-vbox_additions.sh&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;file&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;only&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;vagrant-virtualbox&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">],&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;source&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;scripts/photon-virtualbox-load-module.conf&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;destination&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;/etc/modules-load.d/virtualbox.conf&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;shell&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;inline&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;sed -i &amp;#39;/linux/ s/$/ net.ifnames=0/&amp;#39; /boot/grub2/grub.cfg&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;shell&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;inline&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;echo &amp;#39;GRUB_CMDLINE_LINUX=\&amp;#34;net.ifnames=0\&amp;#34;&amp;#39; &amp;gt;&amp;gt; /etc/default/grub&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;shell&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;script&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;scripts/photon-security_check.sh&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;shell&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;inline&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;sed -i &amp;#39;s/OS/Linux/&amp;#39; /etc/photon-release&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;span style="color:#000;font-weight:bold">],&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;post-processors&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;vagrant&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;only&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;vagrant-vmware_desktop&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;vagrant-virtualbox&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">],&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;compression_level&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">9&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;vagrantfile_template&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;scripts/photon-vagrantfile.rb&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;output&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;photon-{{user `product_version`}}-{{.BuildName}}.box&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="photon-kickstartjson">photon-kickstart.json&lt;/h2>
 &lt;p>The following are the contents of the &lt;code>photon-packer-templates/scripts/photon-kickstart.json&lt;/code> file:&lt;/p>
-&lt;pre>&lt;code>{
-&amp;quot;hostname&amp;quot;: &amp;quot;photon&amp;quot;,
-&amp;quot;password&amp;quot;:
-{
-&amp;quot;crypted&amp;quot;: false,
-&amp;quot;text&amp;quot;: &amp;quot;2RQrZ83i79N6szpvZNX6&amp;quot;
-},
-&amp;quot;disk&amp;quot;: &amp;quot;/dev/sda&amp;quot;,
-&amp;quot;packagelist_file&amp;quot;: &amp;quot;packages_minimal.json&amp;quot;,
-&amp;quot;postinstall&amp;quot;: [
-&amp;quot;#!/bin/sh&amp;quot;,
-&amp;quot;sed -i 's/PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config&amp;quot;,
-&amp;quot;systemctl restart sshd.service&amp;quot;
-]
-}
-&lt;/code>&lt;/pre>&lt;h2 id="iso-30gajson">iso-3.0GA.json&lt;/h2>
-&lt;p>The following are the contents of the &lt;code>photon-packer-templates/vars/iso-3.0GA.json&lt;/code> file:&lt;/p>
-&lt;pre>&lt;code>{
-&amp;quot;product_version&amp;quot; : &amp;quot;4.0GA&amp;quot;,
-&amp;quot;iso_sha1sum&amp;quot; : &amp;quot;2221ab214b517a15c60bd5e2aacdb9388581bcd9&amp;quot;,
-&amp;quot;iso_file&amp;quot; : &amp;quot;https://packages.vmware.com/photon/4.0/GA/iso/photon-4.0-1526e30ba.iso&amp;quot;
-}
-&lt;/code>&lt;/pre>&lt;p>For more information about the template, see &lt;a href="https://github.com/vmware/photon-packer-templates">Photon Packer Template&lt;/a>&lt;/p></description></item><item><title>Docs: packages_minimal.json File</title><link>/docs/user-guide/kickstart-through-http/packages-minimal-json-file/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/user-guide/kickstart-through-http/packages-minimal-json-file/</guid><description>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;hostname&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;photon&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;password&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;crypted&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#204a87;font-weight:bold">false&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;text&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;2RQrZ83i79N6szpvZNX6&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;disk&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;/dev/sda&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;packagelist_file&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;packages_minimal.json&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;postinstall&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;#!/bin/sh&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;sed -i &amp;#39;s/PermitRootLogin no/PermitRootLogin yes/g&amp;#39; /etc/ssh/sshd_config&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;systemctl restart sshd.service&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="iso-40gajson">iso-4.0GA.json&lt;/h2>
+&lt;p>The following are the contents of the &lt;code>photon-packer-templates/vars/iso-4.0GA.json&lt;/code> file:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;product_version&amp;#34;&lt;/span> &lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;4.0GA&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;iso_sha1sum&amp;#34;&lt;/span> &lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;2221ab214b517a15c60bd5e2aacdb9388581bcd9&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;iso_file&amp;#34;&lt;/span> &lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;https://packages.vmware.com/photon/4.0/GA/iso/photon-4.0-1526e30ba.iso&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>For more information about the template, see &lt;a href="https://github.com/vmware/photon-packer-templates">Photon Packer Template&lt;/a>&lt;/p></description></item><item><title>Docs: packages_minimal.json File</title><link>/docs/user-guide/kickstart-through-http/packages-minimal-json-file/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/user-guide/kickstart-through-http/packages-minimal-json-file/</guid><description>
 &lt;p>The &lt;code>packages_minimal.json&lt;/code> file contains the install profile that you require.&lt;/p>
 &lt;p>The contents of the file are as follows:&lt;/p>
-&lt;pre>&lt;code>{
-&amp;quot;packages&amp;quot;: [
-&amp;quot;minimal&amp;quot;,
-&amp;quot;linux&amp;quot;,
-&amp;quot;initramfs&amp;quot;
-]
-}
-&lt;/code>&lt;/pre>&lt;p>&amp;lsquo;minimal` is a meta package contains a number of default packages.&lt;/p>
-&lt;p>For more imformation, see &lt;a href="https://github.com/vmware/photon/blob/3.0/SPECS/minimal/minimal.spec">minimal.spec&lt;/a>&lt;/p></description></item></channel></rss>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;packages&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;minimal&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;linux&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;initramfs&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&amp;lsquo;minimal` is a meta package contains a number of default packages.&lt;/p>
+&lt;p>For more imformation, see &lt;a href="https://github.com/vmware/photon/blob/4.0/SPECS/minimal/minimal.spec">4.0 minimal.spec&lt;/a>&lt;/p></description></item></channel></rss>

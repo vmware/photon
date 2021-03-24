@@ -42,19 +42,15 @@
 &lt;li>
 &lt;p>Prepare Photon Disk&lt;/p>
 &lt;ol>
-&lt;li>
-&lt;p>Install Photon Minimal on Fusion/Workstation and install some required packages.&lt;/p>
-&lt;pre>&lt;code>mount /dev/cdrom /media/cdrom
+&lt;li>Install Photon Minimal on Fusion/Workstation and install some required packages.&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-console" data-lang="console">mount /dev/cdrom /media/cdrom
 tdnf install python2-libs ntp sudo wget tar which gptfdisk sed findutils grep gzip -y
 &lt;/code>&lt;/pre>&lt;/li>
-&lt;/ol>
-&lt;pre>&lt;code>
-&lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
-&lt;p>Convert GPT to MBR and update the grub&lt;/p>
-&lt;pre>&lt;code> Photon installer installs GPT partition table by default but GCE only accepts an MBR (msdos) type partition table. So, you must convert GPT to MBR and update the grub. Use the following commands to update the grub:
-```
-# Change partition table to MBR from GPT
+&lt;p>Convert GPT to MBR and update Grub&lt;/p>
+&lt;p>Photon installer installs GPT partition table by default but GCE only accepts an MBR (msdos) type partition table. So, you must convert GPT to MBR and update grub. Use the following commands to update the grub:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console"># Change partition table to MBR from GPT
 sgdisk -m 1:2 /dev/sda
 grub2-install /dev/sda
 # Enable serial console on grub for GCE.
@@ -65,12 +61,10 @@ GRUB_SERIAL_COMMAND=&amp;quot;serial --speed=38400 --unit=0 --word=8 --parity=no
 EOF
 # Create new grub.cfg based on the settings in /etc/default/grub
 grub2-mkconfig -o /boot/grub2/grub.cfg
-```
-&lt;/code>&lt;/pre>
-&lt;/li>
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Install Google Cloud SDK and GCE Packages&lt;/p>
-&lt;pre>&lt;code> tdnf install -y google-compute-engine google-compute-engine-services
+&lt;pre>&lt;code class="language-console" data-lang="console">tdnf install -y google-compute-engine google-compute-engine-services
 cp /usr/lib/systemd/system/google* /lib/systemd/system/
 cd /lib/systemd/system/multi-user.target.wants/
 # Create links in multi-user.target to auto-start these scripts and services.
@@ -82,11 +76,11 @@ cd google-cloud-sdk
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Update /etc/hosts file with GCE values as follows:&lt;/p>
-&lt;pre>&lt;code> echo &amp;quot;169.254.169.254 metadata.google.internal metadata&amp;quot; &amp;gt;&amp;gt; /etc/hosts
+&lt;pre>&lt;code class="language-console" data-lang="console">echo &amp;quot;169.254.169.254 metadata.google.internal metadata&amp;quot; &amp;gt;&amp;gt; /etc/hosts
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Remove all servers from ntp.conf and add Google&amp;rsquo;s ntp server.&lt;/p>
-&lt;pre>&lt;code> sed -i -e &amp;quot;/server/d&amp;quot; /etc/ntp.conf
+&lt;pre>&lt;code class="language-console" data-lang="console">sed -i -e &amp;quot;/server/d&amp;quot; /etc/ntp.conf
 cat /etc/ntp.conf
 echo &amp;quot;server 169.254.169.254&amp;quot; &amp;gt;&amp;gt; /etc/ntp.conf
 # Create ntpd.service to auto starting ntp server.
@@ -108,15 +102,15 @@ ln -s ../ntpd.service ntpd.service
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Set UTC timezone&lt;/p>
-&lt;pre>&lt;code> ln -sf /usr/share/zoneinfo/UTC /etc/localtime
+&lt;pre>&lt;code class="language-console" data-lang="console">ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Update /etc/resolv.conf&lt;/p>
-&lt;pre>&lt;code> echo &amp;quot;nameserver 8.8.8.8&amp;quot; &amp;gt;&amp;gt; /etc/resolv.conf
+&lt;pre>&lt;code class="language-console" data-lang="console">echo &amp;quot;nameserver 8.8.8.8&amp;quot; &amp;gt;&amp;gt; /etc/resolv.conf
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Remove ssh host keys and add script to regenerate them at boot time.&lt;/p>
-&lt;pre>&lt;code> rm /etc/ssh/ssh_host_*
+&lt;pre>&lt;code class="language-console" data-lang="console">rm /etc/ssh/ssh_host_*
 # Depending on the installation, you may need to purge the following keys
 rm /etc/ssh/ssh_host_rsa_key*
 rm /etc/ssh/ssh_host_dsa_key*
@@ -129,27 +123,26 @@ printf &amp;quot;GOOGLE\n&amp;quot; &amp;gt; /etc/ssh/sshd_not_to_be_run
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Change MTU to 1460 for network interface.&lt;/p>
-&lt;pre>&lt;code> # Create a startup service in systemd that will change MTU and exits
-cat &amp;lt;&amp;lt; EOF &amp;gt;&amp;gt; /lib/systemd/system/eth0.service
-[Unit]
-Description=Network interface initialization
-After=local-fs.target network-online.target network.target
-Wants=local-fs.target network-online.target network.target
-[Service]
-ExecStart=/bin/ifconfig eth0 mtu 1460 up
-Type=oneshot
-[Install]
-WantedBy=multi-user.target
-EOF
-# Make this service auto-start at boot.
-cd /lib/systemd/system/multi-user.target.wants/
-ln -s ../eth0.service eth0.service
-&lt;/code>&lt;/pre>&lt;/li>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ini" data-lang="ini"> &lt;span style="color:#8f5902;font-style:italic"># Create a startup service in systemd that will change MTU and then exit&lt;/span>
+&lt;span style="color:#c4a000">cat &amp;lt;&amp;lt; EOF &amp;gt;&amp;gt; /lib/systemd/system/eth0.service&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">[Unit]&lt;/span>
+&lt;span style="color:#c4a000">Description&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">Network interface initialization&lt;/span>
+&lt;span style="color:#c4a000">After&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">local-fs.target network-online.target network.target&lt;/span>
+&lt;span style="color:#c4a000">Wants&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">local-fs.target network-online.target network.target&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">[Service]&lt;/span>
+&lt;span style="color:#c4a000">ExecStart&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">/bin/ifconfig eth0 mtu 1460 up&lt;/span>
+&lt;span style="color:#c4a000">Type&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">oneshot&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">[Install]&lt;/span>
+&lt;span style="color:#c4a000">WantedBy&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">multi-user.target&lt;/span>
+&lt;span style="color:#c4a000">EOF&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Make this service auto-start at boot.&lt;/span>
+&lt;span style="color:#c4a000">cd /lib/systemd/system/multi-user.target.wants/&lt;/span>
+&lt;span style="color:#c4a000">ln -s ../eth0.service eth0.service&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
 &lt;li>
 &lt;p>Pack and upload to GCE.&lt;/p>
 &lt;p>Shut down the Photon VM and copy its disk to THE &lt;code>tmp&lt;/code> folder.&lt;/p>
-&lt;pre>&lt;code>```
-# You will need to install Google Cloud SDK on host machine to upload the image and play with GCE.
+&lt;pre>&lt;code class="language-console" data-lang="console"># You will need to install Google Cloud SDK on host machine to upload the image and play with GCE.
 cp Virtual\ Machines.localized/photon.vmwarevm/Virtual\ Disk.vmdk /tmp/disk.vmdk
 cd /tmp
 # GCE needs disk to be named as disk.raw with raw format.
@@ -163,9 +156,7 @@ gsutil cp photon.tar.gz gs://photon-bucket
 gcloud compute --project &amp;quot;&amp;lt;project name&amp;gt;&amp;quot; images create &amp;quot;photon-beta-vYYYYMMDD&amp;quot; --description &amp;quot;Photon Beta&amp;quot; --source-uri https://storage.googleapis.com/photon-bucket/photon032315.tar.gz
 # Create instance on GCE of photon image
 gcloud compute --project &amp;quot;photon&amp;quot; instances create &amp;quot;photon&amp;quot; --zone &amp;quot;us-central1-f&amp;quot; --machine-type &amp;quot;n1-standard-1&amp;quot; --network &amp;quot;default&amp;quot; --maintenance-policy &amp;quot;MIGRATE&amp;quot; --scopes &amp;quot;https://www.googleapis.com/auth/devstorage.read_only&amp;quot; &amp;quot;https://www.googleapis.com/auth/logging.write&amp;quot; --image &amp;quot;https://www.googleapis.com/compute/v1/projects/photon/global/images/photon&amp;quot; --boot-disk-type &amp;quot;pd-standard&amp;quot; --boot-disk-device-name &amp;quot;photon&amp;quot;
-```
-&lt;/code>&lt;/pre>
-&lt;/li>
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;/ol></description></item><item><title>Docs: Installing Photon OS on Google Compute Engine</title><link>/docs/installation-guide/run-photon-on-gce/installing-photon-os-on-gce/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-on-gce/installing-photon-os-on-gce/</guid><description>
 &lt;p>After you download the Photon OS image for GCE, log into GCE and install Photon OS.&lt;/p>
 &lt;p>Perform the following steps:&lt;/p>
@@ -173,13 +164,13 @@ gcloud compute --project &amp;quot;photon&amp;quot; instances create &amp;quot;p
 &lt;li>
 &lt;p>Create a New Bucket&lt;/p>
 &lt;p>Create a new bucket to store your Photon OS image for GCE.&lt;/p>
-&lt;p>&lt;img src="../../images/gce1.jpg" alt="gce1">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/gce1.jpg" alt="gce1">&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Upload the Photon OS Image&lt;/p>
 &lt;p>While viewing the bucket that created, click the &lt;code>Upload files&lt;/code> button, navigate to your Photon OS image and click the &lt;code>Choose&lt;/code> button.&lt;/p>
 &lt;p>When the upload finishes, you can see the Photon OS compressed image in the file list for the bucket that you created.&lt;/p>
-&lt;p>&lt;img src="../../images/gce2.jpg" alt="gce2">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/gce2.jpg" alt="gce2">&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Create a New Image&lt;/p>
@@ -195,8 +186,8 @@ gcloud compute --project &amp;quot;photon&amp;quot; instances create &amp;quot;p
 &lt;p>To create an instance, check the box next to the Photon OS image and click the &lt;code>Create Instance&lt;/code> button.&lt;/p>
 &lt;p>On the &lt;code>Create a new instance&lt;/code> form, provide a name for this instance, confirm the zone into which this instance is to be deployed and, before clicking &lt;code>Create,&lt;/code> check the &lt;code>Allow HTTP traffic&lt;/code> and &lt;code>Allow HTTPS traffic&lt;/code> options.&lt;/p>
 &lt;p>&lt;strong>Note&lt;/strong>: The firewall rules in this example are optional. You can configure the ports according to your requirements.&lt;/p>
-&lt;p>&lt;img src="../../images/gce4.jpg" alt="gce4">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/gce4.jpg" alt="gce4">&lt;/p>
 &lt;p>When the instance is created you will be returned to your list of VM instances. If you click on the instance, the status page for the instance will allow you to SSH into your Photon OS environment using the SSH button at the top of the panel.&lt;/p>
-&lt;p>At this point, your instance is running and you are ready to start the Docker engine and run a container workload. For more information, see &lt;a href="../../deploying-a-containerized-application-in-photon-os/">Deploying a Containerized Application in Photon OS&lt;/a>.&lt;/p>
+&lt;p>At this point, your instance is running and you are ready to start the Docker engine and run a container workload. For more information, see &lt;a href="../../../docs/installation-guide/deploying-a-containerized-application-in-photon-os/">Deploying a Containerized Application in Photon OS&lt;/a>.&lt;/p>
 &lt;/li>
 &lt;/ol></description></item></channel></rss>

@@ -85,68 +85,68 @@ root@photon-4a0e7f2307d4 [ ~ ]#
 &lt;li>&lt;code>journalctl --vacuum-size=500M&lt;/code> : This command helps retain logs with a maximum size of 500 MB.&lt;/li>
 &lt;/ul>
 &lt;p>You can configure Journald using the conf file located at &lt;strong>/etc/systemd/journald.conf&lt;/strong>. Run the following command to configure the file:&lt;/p>
-&lt;pre>&lt;code># cat /etc/systemd/journald.conf
-# This file is part of systemd.
-#
-# systemd is free software; you can redistribute it and/or modify it
-# under the terms of the GNU Lesser General Public License as published by
-# the Free Software Foundation; either version 2.1 of the License, or
-# (at your option) any later version.
-#
-# Entries in this file show the compile time defaults.
-# You can change settings by editing this file.
-# Defaults can be restored by simply deleting this file.
-#
-# See journald.conf(5) for details.
-[Journal]
-#Storage=auto
-#Compress=yes
-#Seal=yes
-#SplitMode=uid
-#SyncIntervalSec=5m
-#RateLimitIntervalSec=30s
-#RateLimitBurst=10000
-#SystemMaxUse=
-#SystemKeepFree=
-#SystemMaxFileSize=
-#SystemMaxFiles=100
-#RuntimeMaxUse=
-#RuntimeKeepFree=
-#RuntimeMaxFileSize=
-#RuntimeMaxFiles=100
-#MaxRetentionSec=
-#MaxFileSec=1month
-#ForwardToSyslog=no
-#ForwardToKMsg=no
-#ForwardToConsole=no
-#ForwardToWall=yes
-#TTYPath=/dev/console
-#MaxLevelStore=debug
-#MaxLevelSyslog=debug
-#MaxLevelKMsg=notice
-#MaxLevelConsole=info
-#MaxLevelWall=emerg
-#LineMax=48K
-root@photon-4a0e7f2307d4 [ ~ ]#
-&lt;/code>&lt;/pre>&lt;p>By default &lt;code>rotate&lt;/code> is disable in Photon. Once the changes are made to the conf file, for the changes to take effect you must restart the systemd-journald by running the &lt;code>systemctl restart systemd-journald&lt;/code> command.&lt;/p>
-&lt;p>##Cloud-init Logs
-Cloud-init is the industry standard multi-distribution method for cross-platform cloud instance initialisation.&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console"># cat /etc/systemd/journald.conf
+&lt;/code>&lt;/pre>&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ini" data-lang="ini">&lt;span style="color:#8f5902;font-style:italic"># This file is part of systemd.&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># systemd is free software; you can redistribute it and/or modify it&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># under the terms of the GNU Lesser General Public License as published by&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># the Free Software Foundation; either version 2.1 of the License, or&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># (at your option) any later version.&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Entries in this file show the compile time defaults.&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># You can change settings by editing this file.&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Defaults can be restored by simply deleting this file.&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># See journald.conf(5) for details.&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">[Journal]&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#Storage=auto&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#Compress=yes&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#Seal=yes&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#SplitMode=uid&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#SyncIntervalSec=5m&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#RateLimitIntervalSec=30s&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#RateLimitBurst=10000&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#SystemMaxUse=&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#SystemKeepFree=&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#SystemMaxFileSize=&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#SystemMaxFiles=100&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#RuntimeMaxUse=&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#RuntimeKeepFree=&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#RuntimeMaxFileSize=&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#RuntimeMaxFiles=100&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#MaxRetentionSec=&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#MaxFileSec=1month&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#ForwardToSyslog=no&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#ForwardToKMsg=no&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#ForwardToConsole=no&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#ForwardToWall=yes&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#TTYPath=/dev/console&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#MaxLevelStore=debug&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#MaxLevelSyslog=debug&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#MaxLevelKMsg=notice&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#MaxLevelConsole=info&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#MaxLevelWall=emerg&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#LineMax=48K&lt;/span>
+&lt;span style="color:#c4a000">root@photon-4a0e7f2307d4 [ ~ ]#&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>By default &lt;code>rotate&lt;/code> is disabled in Photon. Once the changes are made to the conf file, for the changes to take effect you must restart the systemd-journald by running the &lt;code>systemctl restart systemd-journald&lt;/code> command.&lt;/p>
+&lt;h2 id="cloud-init-logs">Cloud-init Logs&lt;/h2>
+&lt;p>Cloud-init is the industry standard multi-distribution method for cross-platform cloud instance initialisation.&lt;/p>
 &lt;p>If there are with the Cloud-init behaviour, we can debug them by looking at the logs. Run the following command to look at Cloud-init logs:&lt;/p>
-&lt;pre>&lt;code>journalctl -u cloud-init
+&lt;pre>&lt;code class="language-console" data-lang="console">journalctl -u cloud-init
 &lt;/code>&lt;/pre>&lt;p>For better understanding/debugging, You can also look at logs from the following locations:&lt;/p>
 &lt;ul>
 &lt;li>&lt;strong>/var/log/cloud-init.log&lt;/strong> : This log contains information from each stage of Cloud-init.&lt;/li>
 &lt;li>&lt;strong>/var/log/cloud-init-output.log&lt;/strong> : This log contains errors, warnings, etc..&lt;/li>
 &lt;/ul>
-&lt;p>##Syslog
-Syslog is the general standard for logging system and program messages in the Linux environment.&lt;/p>
+&lt;h2 id="syslog">Syslog&lt;/h2>
+&lt;p>Syslog is the general standard for logging system and program messages in the Linux environment.&lt;/p>
 &lt;p>Photon provides the following two packages to support syslog:&lt;/p>
 &lt;ul>
-&lt;li>&lt;strong>syslog-ng&lt;/strong> : syslog-ng is syslog with some advanced next gen features. It supports TLS encryption, TCP for transport with other existing features. Configurations can be added to the &lt;strong>/etc/syslog-ng/syslog-ng.conf&lt;/strong> file.&lt;/li>
-&lt;li>&lt;strong>rsyslog&lt;/strong> : The official RSYSLOG website defines the utility as &amp;ldquo;the rocket-fast system for log processing&amp;rdquo;. rsyslog supports some advanced features like relp, imfile, omfile, gnutls protocols. Configurations can be added to the &lt;strong>/etc/rsyslog.conf&lt;/strong> file. You can configure the required TLS certificates by editing the conf file.&lt;/li>
+&lt;li>&lt;strong>syslog-ng&lt;/strong> : syslog-ng is syslog with some advanced next gen features. It supports TLS encryption, TCP for transport with other existing features. Configurations can be added to the &lt;code>/etc/syslog-ng/syslog-ng.conf&lt;/code> file.&lt;/li>
+&lt;li>&lt;strong>rsyslog&lt;/strong> : The official RSYSLOG website defines the utility as &amp;ldquo;the rocket-fast system for log processing&amp;rdquo;. rsyslog supports some advanced features like relp, imfile, omfile, gnutls protocols. Configurations can be added to the &lt;code>/etc/rsyslog.conf&lt;/code> file. You can configure the required TLS certificates by editing the conf file.&lt;/li>
 &lt;/ul>
-&lt;p>##Logs for RPMS on Photon
-Logs for a particular RPM can be checked in the following ways:&lt;/p>
+&lt;h2 id="logs-for-rpms-on-photon">Logs for RPMS on Photon&lt;/h2>
+&lt;p>Logs for a particular RPM can be checked in the following ways:&lt;/p>
 &lt;ul>
 &lt;li>If the RPM provides a daemon, we can see the status of daemon by running &lt;code>systemctl&lt;/code> command and check logs using &lt;code>journactl -u &amp;lt;service name&amp;gt;&lt;/code> command.&lt;/li>
 &lt;li>For additional logs, check if a conf file is provided by the RPM by running the &lt;code>rpm -ql &amp;lt;rpm name&amp;gt; | grep conf&lt;/code> command and find the file path of the log file. You can also check the &lt;strong>/var/log&lt;/strong> folder.&lt;/li>

@@ -97,38 +97,40 @@ fe80::42:f0ff:fef7:bd81
 &lt;ol>
 &lt;li>
 &lt;p>Run the following command as root to create a directory with this exact name, including the &lt;code>.d&lt;/code> extension:&lt;/p>
-&lt;p>&lt;code>mkdir -p /etc/systemd/system/systemd-networkd.service.d/&lt;/code>&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">mkdir -p /etc/systemd/system/systemd-networkd.service.d/
+&lt;/code>&lt;/pre>&lt;p>``&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Run the following command as root to establish a systemd drop-in unit with a debugging configuration for the network service:&lt;/p>
-&lt;pre>&lt;code>cat &amp;gt; /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
+&lt;pre>&lt;code class="language-console" data-lang="console">cat &amp;gt; /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
 [Service]
 Environment=SYSTEMD_LOG_LEVEL=debug
 EOF
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Reload the &lt;code>systemctl&lt;/code> daemon and restart the &lt;code>systemd-networkd&lt;/code> service for the changes to take effect:&lt;/p>
-&lt;pre>&lt;code>systemctl daemon-reload
+&lt;pre>&lt;code class="language-console" data-lang="console">systemctl daemon-reload
 systemctl restart systemd-networkd
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Verify that your changes took effect:&lt;/p>
-&lt;pre>&lt;code>`systemd-delta --type=extended`
-&lt;/code>&lt;/pre>
+&lt;pre>&lt;code class="language-console" data-lang="console">systemd-delta --type=extended`
+&lt;/code>&lt;/pre>&lt;p>``&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>View the log files by running this command:&lt;/p>
-&lt;pre>&lt;code>`journalctl -u systemd-networkd`
-&lt;/code>&lt;/pre>
+&lt;pre>&lt;code class="language-console" data-lang="console">journalctl -u systemd-networkd`
+&lt;/code>&lt;/pre>&lt;p>``&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>After debugging the network connections, turn debugging off by deleting the drop-in file:&lt;/p>
-&lt;p>&lt;code>rm /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf&lt;/code>&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">rm /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf
+&lt;/code>&lt;/pre>&lt;p>``&lt;/p>
 &lt;/li>
 &lt;/ol></description></item><item><title>Docs: Checking Firewall Rules</title><link>/docs/troubleshooting-guide/network-troubleshooting/checking-firewall-rules/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/network-troubleshooting/checking-firewall-rules/</guid><description>
 &lt;p>The design of Photon OS emphasizes security. On the minimal and full versions of Photon OS, the default security policy turns on the firewall and drops packets from external interfaces and applications. As a result, you might need to add rules to iptables to permit forwarding, allow protocols like HTTP, and open ports. In other words, you must configure the firewall for your applications and requirements.&lt;/p>
 &lt;p>The default iptables settings on the full version look like this:&lt;/p>
-&lt;pre>&lt;code>iptables --list
+&lt;pre>&lt;code class="language-console" data-lang="console">iptables --list
 Chain INPUT (policy DROP)
 target prot opt source destination
 ACCEPT all -- anywhere anywhere
@@ -139,12 +141,11 @@ target prot opt source destination
 Chain OUTPUT (policy DROP)
 target prot opt source destination
 ACCEPT all -- anywhere anywhere
-&lt;/code>&lt;/pre>
-&lt;p>To find out how to adjust the settings, see the man page for iptables.&lt;/p>
-&lt;p>Although the default iptables policy accepts SSH connections, the &lt;code>sshd&lt;/code> configuration file on the full version of Photon OS is set to reject SSH connections. See &lt;a href="../../solutions-to-common-problems/permitting-root-login-with-ssh/">Permitting Root Login with SSH&lt;/a>.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>To find out how to adjust the settings, see the &lt;code>man&lt;/code> page for &lt;code>iptables&lt;/code>.&lt;/p>
+&lt;p>Although the default iptables policy accepts SSH connections, the &lt;code>sshd&lt;/code> configuration file on the full version of Photon OS is set to reject SSH connections. See &lt;a href="../../../docs/troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/">Permitting Root Login with SSH&lt;/a>.&lt;/p>
 &lt;p>If you are unable to ping a Photon OS machine, check the firewall rules. Verify if the rules allow connectivity for the port and protocol.&lt;/p>
 &lt;p>You can supplement the &lt;code>iptables&lt;/code> commands by using &lt;code>lsof&lt;/code> to, for instance, see the processes listening on ports:&lt;/p>
-&lt;pre>&lt;code>lsof -i -P -n
+&lt;pre>&lt;code class="language-console" data-lang="console"> lsof -i -P -n
 &lt;/code>&lt;/pre></description></item><item><title>Docs: Inspect Network Settings with 'netmgr'</title><link>/docs/troubleshooting-guide/network-troubleshooting/inspect-network-settings-with-netmgr/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/network-troubleshooting/inspect-network-settings-with-netmgr/</guid><description>
 &lt;p>If you are running a VMware appliance on Photon OS and the VAMI module has problems or if there are networking issues, you can use the Photon OS &lt;code>netmgr&lt;/code> utility to inspect the networking settings. Make sure that the IP addresses for the DNS server and other infrastructure are correct. Use &lt;code>tcpdump&lt;/code> to analyze the issues.&lt;/p>
 &lt;p>The error code that you get from netmgr is a standard Unix error code. Enter it into a search engine to obtain more information on the error.&lt;/p></description></item></channel></rss>

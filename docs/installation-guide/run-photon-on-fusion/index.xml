@@ -4,7 +4,7 @@
 &lt;ol>
 &lt;li>
 &lt;p>Verify that you have the following resources:&lt;/p>
-&lt;table style="height: 170px;" border="1" width="157" cellspacing="0" cellpadding="10">
+&lt;table style="height: 170px;" border="1" width="auto" cellspacing="0" cellpadding="10">
 &lt;tbody>
 &lt;tr>
 &lt;td>&lt;b>Resource&lt;/b>&lt;/td>
@@ -12,7 +12,7 @@
 &lt;/tr>
 &lt;tr>
 &lt;td>VMware Fusion&lt;/td>
-&lt;td>VMware Fusion (v7.0 or higher) must be installed. The latest version is recommended.&lt;/td>
+&lt;td>VMware Fusion (v7.0 or higher) must be installed. The latest version (v12) is recommended.&lt;/td>
 &lt;/tr>
 &lt;tr>
 &lt;td>Memory&lt;/td>
@@ -28,8 +28,9 @@
 &lt;/tr>
 &lt;/tbody>
 &lt;/table>
+&lt;/br >
 &lt;p>&lt;strong>Note:&lt;/strong> The setup instructions in this guide use VMware Fusion Professional version 8.5.8, as per the following screenshot.&lt;/p>
-&lt;p>&lt;img src="../../images/fs-version.png" alt="Fusion version">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-version.png" alt="Fusion version">&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Decide whether to use the OVA or ISO distribution to set up Photon OS.&lt;/p>
@@ -51,39 +52,39 @@
 &lt;li>
 &lt;p>Start the Import Process&lt;/p>
 &lt;p>From the File menu, choose &lt;strong>Import …&lt;/strong>. Fusion prompts you to choose an existing virtual machine.&lt;/p>
-&lt;p>&lt;img src="../../images/fs-ova-import.png" alt="Import process">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-ova-import.png" alt="Import process">&lt;/p>
 &lt;p>Choose the &lt;strong>Choose File …&lt;/strong> button to locate and select the Photon OS OVA, then choose &lt;strong>Continue&lt;/strong>.&lt;/p>
-&lt;p>&lt;img src="../../images/fs-ova-selected.png" alt="Select OVA ">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-ova-selected.png" alt="Select OVA ">&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Specify the Name and Storage Location&lt;/p>
 &lt;p>Provide the name and storage location for your Photon OS VM, then choose &lt;strong>Save&lt;/strong>.&lt;/p>
-&lt;p>&lt;img src="../../images/fs-ova-name.png" alt="Name and storage location">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-ova-name.png" alt="Name and storage location">&lt;/p>
 &lt;p>Review the Photon OS License Agreement, then choose &lt;strong>Accept&lt;/strong> to start the import process.&lt;/p>
-&lt;p>&lt;img src="../../images/fs-ova-license.png" alt="License">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-ova-license.png" alt="License">&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Configure VM Settings&lt;/p>
 &lt;p>After the OVA is imported, Fusion displays a confirmation that the import has completed and a summary of the settings for your Photon OS VM. The following screen shot is an example (your settings may vary).&lt;/p>
-&lt;p>&lt;img src="../../images/fs-ova-finish.png" alt="VM settings">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-ova-finish.png" alt="VM settings">&lt;/p>
 &lt;p>&lt;strong>Important:&lt;/strong> Choose &lt;strong>Customize Settings&lt;/strong> to change the operating system (as recognized by the hypervisor) for the newly imported VM.&lt;/p>
-&lt;p>&lt;img src="../../images/fs-ova-settings.png" alt="Custom settings">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-ova-settings.png" alt="Custom settings">&lt;/p>
 &lt;p>Choose &lt;strong>General&lt;/strong>.&lt;/p>
 &lt;p>Click the selection box next to &lt;strong>OS&lt;/strong>, select &lt;strong>Linux&lt;/strong> , and then select &lt;strong>VMware Photon 64-bit&lt;/strong>.&lt;/p>
-&lt;p>&lt;img src="../../images/fs-ova-os.png" alt="Operating system">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-ova-os.png" alt="Operating system">&lt;/p>
 &lt;p>Close the settings window. Fusion prompts you to verify that you want to change the operating system.&lt;/p>
-&lt;p>&lt;img src="../../images/fs-ova-os-confirm.png" alt="Confirm settings">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-ova-os-confirm.png" alt="Confirm settings">&lt;/p>
 &lt;p>Click &lt;strong>Change&lt;/strong>. Your Photon OS VM is ready to power on.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Power on the VM&lt;/p>
 &lt;p>Power on the Photon OS VM. Fusion may ask you whether you want to upgrade this VM.&lt;/p>
-&lt;p>&lt;img src="../../images/fs-ova-upgrade.png" alt="Upgrade VM">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-ova-upgrade.png" alt="Upgrade VM">&lt;/p>
 &lt;p>How you respond depends on which hardware version (13 or 11) that you want to use. Upgrade if you need to use devices supported only in hardware version 13. Don&amp;rsquo;t upgrade if you want to be compatible with older tools that are supported in hardware version 11.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Update Login Credentials&lt;/p>
-&lt;p>&lt;img src="../../images/splashscreen23.png" alt="Login prompt">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/splashscreen23.png" alt="Login prompt">&lt;/p>
 &lt;p>After the VM is booted, Fusion prompts you to log in.&lt;/p>
 &lt;p>&lt;strong>Note&lt;/strong> : Because of limitations within OVA support on Fusion, it was necessary to specify a default password for the OVA option. However, all Photon OS instances that are created by importing the OVA will require an immediate password change upon login. The default account credentials are:&lt;/p>
 &lt;ul>
@@ -99,37 +100,37 @@
 &lt;li>
 &lt;p>Start the Installation Process&lt;/p>
 &lt;p>From the File menu, choose &lt;strong>New&lt;/strong>.&lt;/p>
-&lt;p>&lt;img src="../../images/fs-iso-new.png" alt="Installation">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-iso-new.png" alt="Installation">&lt;/p>
 &lt;p>From the Select the Installation Method dialog, select &lt;strong>Install from disc or image&lt;/strong>, and then choose &lt;strong>Continue&lt;/strong>.&lt;/p>
-&lt;p>&lt;img src="../../images/fs-iso-new-prompt.png" alt="Installation method">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-iso-new-prompt.png" alt="Installation method">&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Select the ISO Image&lt;/p>
 &lt;p>Drag a disc image onto the window or choose &lt;strong>Use another disc or disc image&amp;hellip;&lt;/strong>, choose the ISO file you want, and then choose &lt;strong>Continue&lt;/strong>.&lt;/p>
-&lt;p>&lt;img src="../../images/fs-iso-new-selected.png" alt="ISO image">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-iso-new-selected.png" alt="ISO image">&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Select the Operating System&lt;/p>
 &lt;p>On the Choose Operating System dialog, select &lt;strong>Linux&lt;/strong> in the left-hand column and &lt;strong>VMware Photon 64-bit&lt;/strong> in the right-hand column.&lt;/p>
-&lt;p>&lt;img src="../../images/fs-iso-os.png" alt="Operating system">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-iso-os.png" alt="Operating system">&lt;/p>
 &lt;p>Choose &lt;strong>Continue&lt;/strong>.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Select the Virtual Disk (Optional)&lt;/p>
 &lt;p>If you are using a Fusion version that is older than Fusion 8, you might see the following dialog.&lt;/p>
-&lt;p>&lt;img src="../../images/fs-iso-virtual-disk.png" alt="Virtual disk">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-iso-virtual-disk.png" alt="Virtual disk">&lt;/p>
 &lt;p>If you see this dialog, unless you&amp;rsquo;re installing into an existing machine, choose &lt;strong>Create a new virtual disk&lt;/strong> from the Choose a Virtual Disk dialog, and then choose &lt;strong>Continue&lt;/strong>.&lt;/p>
 &lt;p>&lt;strong>Note:&lt;/strong> Fusion v8 and later automatically defaults to creating a new 8GB disk and formats it automatically. If you want to use an existing disk, or if you want to pre-allocate all 8GB, go into VM Settings, choose &lt;strong>Add Device&lt;/strong>, and choose either &lt;strong>New Hard Disk&lt;/strong> or &lt;strong>Existing Hard Disk&lt;/strong>. Expand &lt;strong>Advanced options&lt;/strong> and configure whether you want to pre-allocate disk space (disabled by default) or split into multiple files (enabled by default).&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Configure VM Settings&lt;/p>
 &lt;p>&lt;strong>Important:&lt;/strong> Before you finish creating the Photon OS Virtual Machine, we strongly recommend that you customize the virtual machine and remove any unwanted devices that are not needed for a container run-time environment.&lt;/p>
-&lt;p>&lt;img src="../../images/fs-iso-finish.png" alt="VM settings">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-iso-finish.png" alt="VM settings">&lt;/p>
 &lt;p>To remove unnecessary devices, choose &lt;strong>Customize Settings&lt;/strong>.&lt;/p>
 &lt;p>First, choose a name for your Virtual Machine, along with the folder into which you create the Virtual Machine (or accept the default folder).&lt;/p>
-&lt;p>&lt;img src="../../images/fs-iso-name.png" alt="Custom settings">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-iso-name.png" alt="Custom settings">&lt;/p>
 &lt;p>Choose &lt;strong>Save&lt;/strong>. The virtual machine will be created. The Settings screen allows you to customize virtual hardware for the new virtual machine. If it does not automatically appear, open &lt;strong>Settings&lt;/strong> from the Virtual Machine menu bar.&lt;/p>
-&lt;p>&lt;img src="../../images/fs-iso-settings.png" alt="Settings">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/fs-iso-settings.png" alt="Settings">&lt;/p>
 &lt;p>You can remove (recommended) the following components that are not used by Photon OS:&lt;/p>
 &lt;ul>
 &lt;li>Select &lt;strong>Display&lt;/strong> and ensure that the &lt;strong>Accelerate 3D Graphics&lt;/strong> option is unchecked (it should be unchecked, by default). Select &lt;strong>Show All&lt;/strong> to return to the VM Settings.&lt;/li>
@@ -153,20 +154,20 @@
 &lt;p>Power On the VM&lt;/p>
 &lt;p>Return to the Fusion main menu, select the Photon OS Virtual Machine, and click &lt;strong>Start Up&lt;/strong> (you can also choose &lt;strong>Start Up&lt;/strong> from the Virtual Machine menu).&lt;/p>
 &lt;p>Fusion powers on the host and starts the installation. Within a few seconds, Fusion displays the Photon OS installer boot menu.&lt;/p>
-&lt;p>&lt;img src="../../images/bootscreen7.png" alt="Photon OS installer">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/bootscreen7.png" alt="Photon OS installer">&lt;/p>
 &lt;p>Press the Enter key on your keyboard to start installing.&lt;/p>
-&lt;p>&lt;img src="../../images/license8.png" alt="License">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/license8.png" alt="License">&lt;/p>
 &lt;p>Read the License Agreement and press the Enter key to accept.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Configure the Partition&lt;/p>
 &lt;p>The Installer will detect one disk, which should be the 8GB volume configured as part of the virtual machine creation.&lt;/p>
-&lt;p>&lt;img src="../../images/diskselection9.png" alt="Partition">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/diskselection9.png" alt="Partition">&lt;/p>
 &lt;p>Choose &lt;strong>Auto&lt;/strong> to have the installer automatically allocate the partition, or choose &lt;strong>Custom&lt;/strong> if you want to configure individual partitions, and then press the Enter key.&lt;/p>
 &lt;p>&lt;strong>Note:&lt;/strong> If you choose &lt;strong>Custom&lt;/strong>, the installer displays the following screen.&lt;/p>
-&lt;p>&lt;img src="../../images/manualpartition10.png" alt="Custom partition">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/manualpartition10.png" alt="Custom partition">&lt;/p>
 &lt;p>For each custom partition, choose &lt;strong>Create New&lt;/strong> and specify the following information:&lt;/p>
-&lt;p>&lt;img src="../../images/custompartitionsetting11.png" alt="New partition">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/custompartitionsetting11.png" alt="New partition">&lt;/p>
 &lt;p>&lt;strong>Size&lt;/strong> - Preallocated size of this partition, in MB.&lt;/p>
 &lt;p>&lt;strong>Type&lt;/strong> - One of the following options:&lt;/p>
 &lt;ul>
@@ -177,18 +178,18 @@
 &lt;p>&lt;strong>Mountpoint&lt;/strong> - Mount point for this partition.&lt;/p>
 &lt;p>Choose &lt;strong>OK&lt;/strong> and press the Enter key. When you are done defining custom partitions, choose &lt;strong>Next&lt;/strong> and press the Enter key.&lt;/p>
 &lt;p>The installer prompts you to confirm that you want to erase the entire disk.&lt;/p>
-&lt;p>&lt;img src="../../images/erasedisk21.png" alt="Disk erase">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/erasedisk21.png" alt="Disk erase">&lt;/p>
 &lt;p>Choose &lt;strong>Yes&lt;/strong> and press the Enter key to accept and proceed with the installation.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Select an Installation Option&lt;/p>
 &lt;p>After partitioning, the installer prompts you to select one of three installation options:&lt;/p>
-&lt;p>&lt;img src="../../images/flavorselection12.png" alt="Installation options">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/flavorselection12.png" alt="Installation options">&lt;/p>
 &lt;p>Each install option provides a different run-time environment. Select the option that best meets your requirements.&lt;/p>
-&lt;table style="height: 170px;" border="1" cellspacing="0" cellpadding="10">
+&lt;table style="height: 170px;" border="1" cellspacing="0" cellpadding="10" width="auto">
 &lt;tbody>
 &lt;tr>
-&lt;td>&lt;b>Option&lt;/b>&lt;/td>
+&lt;td>&lt;img width="350px">&lt;b>Option&lt;/b>&lt;/td>
 &lt;td>&lt;b>Description&lt;/b>&lt;/td>
 &lt;/tr>
 &lt;tr>
@@ -210,29 +211,29 @@
 &lt;/li>
 &lt;li>
 &lt;p>The &lt;strong>Network Configuration&lt;/strong> screen appears, select one of the four options to configure your network.
-&lt;img src="../../../images/networkconfig13.png" alt="Network Sonfiguration">&lt;/p>
+&lt;img src="../../../docs/installation-guide/images/networkconfig13.png" alt="Network Sonfiguration">&lt;/p>
 &lt;ol>
 &lt;li>
 &lt;p>Choose &lt;strong>Configure network automatically&lt;/strong> and select &lt;strong>Next&lt;/strong> to configure the network automatically.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>To configure network automatically with the DHCP hostname, select &lt;strong>Configure network automatically with a DHCP hostname&lt;/strong> and select &lt;strong>Next&lt;/strong>. Enter the DHCP Hostname and select &lt;strong>Next&lt;/strong>.
-&lt;img src="../../../images/dhcphostname14.png" alt="../images/DHCP_hostname_for_your_system.png">&lt;/p>
+&lt;img src="../../../docs/installation-guide/images/dhcphostname14.png" alt="../images/DHCP_hostname_for_your_system.png">&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>To configure the network manually, select &lt;strong>Configure Network manually&lt;/strong>. In the window that appears, enter the IP Address, Netmask, Gateway and Nameserver and select &lt;strong>OK&lt;/strong>.
-&lt;img src="../../../images/Configure_Network_Manually.png" alt="../images/Configure_Network_Manually.png">&lt;/p>
+&lt;img src="../../../docs/images/Configure_Network_Manually.png" alt="../images/Configure_Network_Manually.png">&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>If your network interface is directly connected to the VLAN trunk port, choose &lt;strong>YES&lt;/strong> on the Configure the network screen. Enter the VLAN ID and select &lt;strong>Next&lt;/strong>.
-&lt;img src="../images/Configure_the_network.png" alt="Configure the network">.&lt;/p>
+&lt;img src="../../../docs/images/Configure_the_network.png" alt="Configure the network">.&lt;/p>
 &lt;/li>
 &lt;/ol>
 &lt;/li>
 &lt;li>
 &lt;p>Select the Linux Kernel&lt;/p>
 &lt;p>The installer prompts you to select the Linux kernel to install:&lt;/p>
-&lt;p>&lt;img src="../../images/linuxflavor17.png" alt="Linux kernel">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/linuxflavor17.png" alt="Linux kernel">&lt;/p>
 &lt;ul>
 &lt;li>&lt;strong>Hypervisor optimized&lt;/strong> means that any components that are not needed for running under a VMware hypervisor have been removed for faster boot times.&lt;/li>
 &lt;li>&lt;strong>Generic&lt;/strong> means that all components are included.&lt;/li>
@@ -241,27 +242,27 @@
 &lt;li>
 &lt;p>Specify the Hostname&lt;/p>
 &lt;p>The installer prompts you for a hostname and suggest a randomly generated, unique hostname that you can change if you want.&lt;/p>
-&lt;p>&lt;img src="../../images/hostname18.png" alt="Hostname">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/hostname18.png" alt="Hostname">&lt;/p>
 &lt;p>Press the Enter key.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Specify the System root Password&lt;/p>
 &lt;p>&lt;em>Note: Photon OS will not permit commonly used dictionary words to be set as a root password.&lt;/em>&lt;/p>
 &lt;p>The installer prompts you to enter the system root password. Type the password, and then press the Enter key.&lt;/p>
-&lt;p>&lt;img src="../../images/rootpassword19.png" alt="Password">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/rootpassword19.png" alt="Password">&lt;/p>
 &lt;p>Confirm the root password by typing it a second time.&lt;/p>
-&lt;p>&lt;img src="../../images/confirmrootpassword20.png" alt="Password confirmation">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/confirmrootpassword20.png" alt="Password confirmation">&lt;/p>
 &lt;p>Press the Enter key. The installer proceeds to install the software. Installation times will vary based on the system hardware and installation options you selected. Most installations complete in less than one minute.&lt;/p>
 &lt;p>Once finished, the installer displays a confirmation message (which includes how long it took to install Photon OS) and prompts you to press a key on your keyboard to boot the new VM.&lt;/p>
-&lt;p>&lt;img src="../../images/installationcomplete22.png" alt="Confirmation">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/installationcomplete22.png" alt="Confirmation">&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Reboot the VM and Log In&lt;/p>
 &lt;p>Press any key on the keyboard and the virtual machine will reboot into Photon OS.&lt;/p>
-&lt;p>&lt;img src="../../images/splashscreen23.png" alt="Reboot">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/splashscreen23.png" alt="Reboot">&lt;/p>
 &lt;p>As the initial boot process begins, the installer displays the Photon splash screen, and then a login prompt.&lt;/p>
 &lt;p>At the login prompt, enter &lt;strong>root&lt;/strong> as the username and provide the password chosen during the installation.&lt;/p>
-&lt;p>&lt;img src="../../images/loginprompt24.png" alt="Password">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/loginprompt24.png" alt="Password">&lt;/p>
 &lt;/li>
 &lt;/ol>
 &lt;p>You can now use your container runtime environment and deploy a containerized application.&lt;/p></description></item></channel></rss>

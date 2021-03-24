@@ -35,14 +35,14 @@
 &lt;li>
 &lt;p>Create a resource group.&lt;/p>
 &lt;p>From the Azure CLI, create a resource group.&lt;/p>
-&lt;pre>&lt;code>az group create \
+&lt;pre>&lt;code class="language-console" data-lang="console">az group create \
 --name &amp;amp;lt;your_resource_group&amp;amp;gt; \
 --location westus
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Create a storage account&lt;/p>
 &lt;p>Create a storage account associated with this resource group.&lt;/p>
-&lt;pre>&lt;code>az storage account create \
+&lt;pre>&lt;code class="language-console" data-lang="console">az storage account create \
 --resource-group &amp;amp;lt;your_resource_group&amp;amp;gt; \
 --location westus \
 --name &amp;amp;lt;your_account_name&amp;amp;gt; \
@@ -52,7 +52,7 @@
 &lt;li>
 &lt;p>List the Keys for the Storage Account&lt;/p>
 &lt;p>Retrieve the keys associated with your newly created storage account.&lt;/p>
-&lt;pre>&lt;code>az storage account keys list \
+&lt;pre>&lt;code class="language-console" data-lang="console">az storage account keys list \
 --resource-group &amp;amp;lt;your_resource_group&amp;amp;gt; \
 --account-name &amp;amp;lt;your_account_name&amp;amp;gt;
 &lt;/code>&lt;/pre>&lt;/li>
@@ -60,7 +60,7 @@
 &lt;p>Create the Storage Container&lt;/p>
 &lt;p>Create a storage container associated with your newly created storage account.&lt;/p>
 &lt;p>&lt;strong>Note:&lt;/strong> The sample create.sh script, described below, does this for you programmatically.&lt;/p>
-&lt;pre>&lt;code>az storage container create \
+&lt;pre>&lt;code class="language-console" data-lang="console">az storage container create \
 --account-name &amp;amp;lt;your_account_name&amp;amp;gt; \
 --name &amp;amp;lt;your_container_name&amp;amp;gt;
 &lt;/code>&lt;/pre>&lt;/li>
@@ -76,7 +76,7 @@
 &lt;li>
 &lt;p>Upload the Photon OS Distribution to Your Storage Container&lt;/p>
 &lt;p>The Photon OS distribution for Azure is 16GB. You can download it locally or to a mounted, shared location.&lt;/p>
-&lt;pre>&lt;code>az storage blob upload \
+&lt;pre>&lt;code class="language-console" data-lang="console">az storage blob upload \
 --account-name &amp;amp;lt;your_account_name&amp;amp;gt; \
 --account-key &amp;amp;lt;your_account_key&amp;amp;gt; \
 --container-name &amp;amp;lt;your_container_name&amp;amp;gt; \
@@ -96,36 +96,36 @@
 &lt;li>vhd_path and and vm_name of the Photon OS VHD distribution file&lt;/li>
 &lt;/ul>
 &lt;p>The following script returns the complete IP address of the newly created VM.&lt;/p>
-&lt;pre>&lt;code>#!/bin/bash
-vhd_path=$1
-vm_name=$2
-export PATH=$PATH:/root/azure_new/bin/az
-echo PATH=$PATH
-resource_group=&amp;amp;quot;&amp;amp;quot;
-account_name=&amp;amp;quot;&amp;amp;quot;
-account_key=&amp;amp;quot;&amp;amp;quot;
-container_name=&amp;amp;quot;mydisks&amp;amp;quot;
-url=&amp;amp;quot;https://${account_name}.blob.core.windows.net/${container_name}/${vm_name}.vhd&amp;amp;quot;
-public_key_file=&amp;amp;quot;/root/azure_new/jenkins.pub&amp;amp;quot;
-echo &amp;amp;quot;########################&amp;amp;quot;
-echo &amp;amp;quot;# Create container #&amp;amp;quot;
-echo &amp;amp;quot;########################&amp;amp;quot;
-/root/azure_new/bin/az storage container create --account-name ${account_name} --name ${container_name}
-echo &amp;amp;quot;##################&amp;amp;quot;
-echo &amp;amp;quot;# Upload vhd #&amp;amp;quot;
-echo &amp;amp;quot;##################&amp;amp;quot;
-/root/azure_new/bin/az storage blob upload --account-name ${account_name} \
---account-key ${account_key} \
---container-name ${container_name} \
---type page \
---file ${vhd_path} \
---name ${vm_name}.vhd
-echo &amp;amp;quot;##################&amp;amp;quot;
-echo &amp;amp;quot;# Create vm #&amp;amp;quot;
-echo &amp;amp;quot;##################&amp;amp;quot;
-echo &amp;amp;quot;az vm create --resource-group ${resource_group} --location westus --name ${vm_name} --storage-account ${account_name} --os-type linux --admin-username michellew --ssh-key-value ${public_key_file} --image ${url} --use-unmanaged-disk ... ...&amp;amp;quot;
-/root/azure_new/bin/az vm create --resource-group ${resource_group} --location westus --name ${vm_name} --storage-account ${account_name} --os-type linux --admin-username michellew --ssh-key-value ${public_key_file} --image ${url} --use-unmanaged-disk
-&lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Remove Photon OS From Azure</title><link>/docs-v3/installation-guide/run-photon-on-azure/remove-photon-from-azure/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/run-photon-on-azure/remove-photon-from-azure/</guid><description>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-bash" data-lang="bash">&lt;span style="color:#8f5902;font-style:italic">#!/bin/bash
+&lt;/span>&lt;span style="color:#8f5902;font-style:italic">&lt;/span>&lt;span style="color:#000">vhd_path&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">$1&lt;/span>
+&lt;span style="color:#000">vm_name&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">$2&lt;/span>
+&lt;span style="color:#204a87">export&lt;/span> &lt;span style="color:#000">PATH&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">$PATH&lt;/span>:/root/azure_new/bin/az
+&lt;span style="color:#204a87">echo&lt;/span> &lt;span style="color:#000">PATH&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000">$PATH&lt;/span>
+&lt;span style="color:#000">resource_group&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#000">account_name&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#000">account_key&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#000">container_name&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>mydisks&lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#000">url&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>https://&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">account_name&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>.blob.core.windows.net/&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">container_name&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>/&lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">vm_name&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>.vhd&lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#000">public_key_file&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>/root/azure_new/jenkins.pub&lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+&lt;span style="color:#204a87">echo&lt;/span> &lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>&lt;span style="color:#8f5902;font-style:italic">########################&amp;amp;quot;&lt;/span>
+&lt;span style="color:#204a87">echo&lt;/span> &lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>&lt;span style="color:#8f5902;font-style:italic"># Create container #&amp;amp;quot;&lt;/span>
+&lt;span style="color:#204a87">echo&lt;/span> &lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>&lt;span style="color:#8f5902;font-style:italic">########################&amp;amp;quot;&lt;/span>
+/root/azure_new/bin/az storage container create --account-name &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">account_name&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> --name &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">container_name&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>
+&lt;span style="color:#204a87">echo&lt;/span> &lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>&lt;span style="color:#8f5902;font-style:italic">##################&amp;amp;quot;&lt;/span>
+&lt;span style="color:#204a87">echo&lt;/span> &lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>&lt;span style="color:#8f5902;font-style:italic"># Upload vhd #&amp;amp;quot;&lt;/span>
+&lt;span style="color:#204a87">echo&lt;/span> &lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>&lt;span style="color:#8f5902;font-style:italic">##################&amp;amp;quot;&lt;/span>
+/root/azure_new/bin/az storage blob upload --account-name &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">account_name&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --account-key &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">account_key&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --container-name &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">container_name&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --type page &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --file &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">vhd_path&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> &lt;span style="color:#4e9a06">\
+&lt;/span>&lt;span style="color:#4e9a06">&lt;/span> --name &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">vm_name&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span>.vhd
+&lt;span style="color:#204a87">echo&lt;/span> &lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>&lt;span style="color:#8f5902;font-style:italic">##################&amp;amp;quot;&lt;/span>
+&lt;span style="color:#204a87">echo&lt;/span> &lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>&lt;span style="color:#8f5902;font-style:italic"># Create vm #&amp;amp;quot;&lt;/span>
+&lt;span style="color:#204a87">echo&lt;/span> &lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>&lt;span style="color:#8f5902;font-style:italic">##################&amp;amp;quot;&lt;/span>
+&lt;span style="color:#204a87">echo&lt;/span> &lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>az vm create --resource-group &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">resource_group&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> --location westus --name &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">vm_name&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> --storage-account &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">account_name&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> --os-type linux --admin-username michellew --ssh-key-value &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">public_key_file&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> --image &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">url&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> --use-unmanaged-disk ... ...&lt;span style="color:#000;font-weight:bold">&amp;amp;&lt;/span>quot&lt;span style="color:#000;font-weight:bold">;&lt;/span>
+/root/azure_new/bin/az vm create --resource-group &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">resource_group&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> --location westus --name &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">vm_name&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> --storage-account &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">account_name&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> --os-type linux --admin-username michellew --ssh-key-value &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">public_key_file&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> --image &lt;span style="color:#4e9a06">${&lt;/span>&lt;span style="color:#000">url&lt;/span>&lt;span style="color:#4e9a06">}&lt;/span> --use-unmanaged-disk
+&lt;/code>&lt;/pre>&lt;/div></description></item><item><title>Docs-V3: Remove Photon OS From Azure</title><link>/docs-v3/installation-guide/run-photon-on-azure/remove-photon-from-azure/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/run-photon-on-azure/remove-photon-from-azure/</guid><description>
 &lt;p>You can use the following delete.sh script to programmatically and silently remove the VM instance, VHD file, and container.&lt;/p>
 &lt;p>Consider deleting idle VMs so that you are not charged when not in use.&lt;/p>
 &lt;p>Before you run it, specify the following settings:&lt;/p>

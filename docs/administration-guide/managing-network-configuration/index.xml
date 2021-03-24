@@ -1,10 +1,9 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Managing the Network Configuration</title><link>/docs/administration-guide/managing-network-configuration/</link><description>Recent content in Managing the Network Configuration on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/administration-guide/managing-network-configuration/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Commands to Manage Network Service</title><link>/docs/administration-guide/managing-network-configuration/network-management-commands/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/network-management-commands/</guid><description>
 &lt;p>You manage the network service by using systemd commands, such as &lt;code>systemd-networkd&lt;/code>, &lt;code>systemd-resolvd&lt;/code>, and &lt;code>networkctl&lt;/code>.&lt;/p>
 &lt;p>To check the status of the network service, run the following command:&lt;/p>
-&lt;pre>&lt;code>systemctl status systemd-networkd
-&lt;/code>&lt;/pre>
-&lt;p>&lt;strong>Output&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>* systemd-networkd.service - Network Service
+&lt;pre>&lt;code class="language-console" data-lang="console"> systemctl status systemd-networkd
+&lt;/code>&lt;/pre>&lt;p>&lt;strong>Output&lt;/strong>&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console"> * systemd-networkd.service - Network Service
 Loaded: loaded (/usr/lib/systemd/system/systemd-networkd.service; enabled; vendor preset: enabled)
 Active: active (running) since Fri 2016-04-29 15:08:51 UTC; 6 days ago
 Docs: man:systemd-networkd.service(8)
@@ -12,50 +11,37 @@ Main PID: 291 (systemd-network)
 Status: &amp;quot;Processing requests...&amp;quot;
 CGroup: /system.slice/systemd-networkd.service
 `-291 /lib/systemd/systemd-networkd
-&lt;/code>&lt;/pre>
-&lt;p>Because Photon OS relies on systemd to manage services, you must use the &lt;code>systemd&lt;/code> suite of commands and not the deprecated &lt;code>init.d&lt;/code> commands or other deprecated commands to manage networking.&lt;/p></description></item><item><title>Docs: Using the Network Configuration Manager</title><link>/docs/administration-guide/managing-network-configuration/using-the-network-configuration-manager/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/using-the-network-configuration-manager/</guid><description>
-&lt;p>The network-config-manager &lt;code>nmctl&lt;/code> allows to configure and introspect the state of the network links as seen by s&lt;code>ystemd-networkd&lt;/code>. &lt;code>nmctl&lt;/code> can be used to query and configure links for Address, Routes, Gateways and also hostname, DNS, NTP or Domain. &lt;code>nmctl&lt;/code> uses &lt;code>sd-bus&lt;/code>, libudev APIs to interact with &lt;code>systemd&lt;/code>, &lt;code>systemd-networkd&lt;/code>, &lt;code>systemd-resolved&lt;/code>, &lt;code>systemd-hostnamed&lt;/code>, and &lt;code>systemd-timesyncd&lt;/code> via dbus. &lt;code>nmctl&lt;/code> uses networkd verbs to explain output. &lt;code>nmctl&lt;/code> can generate configurations for required network links from YAML description. It also understands kernel command line specified in dracut network configuration format and can generate &lt;code>systemd-networkd&lt;/code> configuration while the system boots and will persist between reboots.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>Because Photon OS relies on systemd to manage services, you must use the &lt;code>systemd&lt;/code> suite of commands and not the deprecated &lt;code>init.d&lt;/code> commands or other deprecated commands to manage networking.&lt;/p></description></item><item><title>Docs: Using the Network Configuration Manager</title><link>/docs/administration-guide/managing-network-configuration/using-the-network-configuration-manager/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/using-the-network-configuration-manager/</guid><description>
+&lt;p>The network-config-manager &lt;code>nmctl&lt;/code> allows to configure and introspect the state of the network links as seen by &lt;code>systemd-networkd&lt;/code>. &lt;code>nmctl&lt;/code> can be used to query and configure links for Address, Routes, Gateways and also hostname, DNS, NTP or Domain. &lt;code>nmctl&lt;/code> uses &lt;code>sd-bus&lt;/code>, libudev APIs to interact with &lt;code>systemd&lt;/code>, &lt;code>systemd-networkd&lt;/code>, &lt;code>systemd-resolved&lt;/code>, &lt;code>systemd-hostnamed&lt;/code>, and &lt;code>systemd-timesyncd&lt;/code> via dbus. &lt;code>nmctl&lt;/code> uses networkd verbs to explain output. &lt;code>nmctl&lt;/code> can generate configurations for required network links from YAML description. It also understands kernel command line specified in dracut network configuration format and can generate &lt;code>systemd-networkd&lt;/code> configuration while the system boots and will persist between reboots.&lt;/p>
 &lt;p>Note: See &lt;code>systemd.network&lt;/code> for more information.&lt;/p>
 &lt;p>&lt;code>nmctl&lt;/code> is used to configure:&lt;/p>
 &lt;ul>
-&lt;li>
-&lt;p>Static IPv4 and IPv6 Address, Routes, Gateway&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>DHCP type (IPv4/IPv6), DHCP4 Client Identifier, UseMTU/UseDNS/UseDomains/UseNTP/UseRoutes.
-LLDP, Link Local Addressing, IPv4LLRoute, LLMNR&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>DNS, Domains and NTP&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Link MAC, MTU&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Create netdevs, vlan, vxlan, bridge, bond, veth, macvlan/macvtap, ipvlap/ipvtap, veth, tunnels(ipip, sit, gre, sit, vti), wireguard&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Hostname&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Add delete and view nftables table, chains and rules.&lt;/p>
-&lt;/li>
+&lt;li>Static IPv4 and IPv6 Address, Routes, Gateway&lt;/li>
+&lt;li>DHCP type (IPv4/IPv6), DHCP4 Client Identifier, UseMTU/UseDNS/UseDomains/UseNTP/UseRoutes.
+LLDP, Link Local Addressing, IPv4LLRoute, LLMNR&lt;/li>
+&lt;li>DNS, Domains and NTP&lt;/li>
+&lt;li>Link MAC, MTU&lt;/li>
+&lt;li>Create netdevs, vlan, vxlan, bridge, bond, veth, macvlan/macvtap, ipvlap/ipvtap, veth, tunnels(ipip, sit, gre, sit, vti), wireguard&lt;/li>
+&lt;li>Hostname&lt;/li>
+&lt;li>Can delete and view nftables table, chains and rules.&lt;/li>
 &lt;/ul>
 &lt;p>You can use &lt;code>nmctl&lt;/code> to generate network configurations from the following:&lt;/p>
 &lt;ul>
-&lt;li>YAML file: &lt;code>nmctl&lt;/code> can generate configurations for required network links from YAML description. Configuration written to disk under &lt;code>/etc/systemd/network&lt;/code> will persist between reboots. When &lt;code>netmgr-yaml-generator.service&lt;/code> is enabled it reads YAML files from &lt;code>/etc/network-config-manager/yaml&lt;/code> and generates &lt;code>systemd-networkd&lt;/code> configuration files.&lt;/li>
-&lt;/ul>
+&lt;li>
+&lt;p>YAML file: &lt;code>nmctl&lt;/code> can generate configurations for required network links from YAML description. Configuration written to disk under &lt;code>/etc/systemd/network&lt;/code> will persist between reboots. When &lt;code>netmgr-yaml-generator.service&lt;/code> is enabled it reads YAML files from &lt;code>/etc/network-config-manager/yaml&lt;/code> and generates &lt;code>systemd-networkd&lt;/code> configuration files.&lt;/p>
 &lt;p>&lt;code>nmctl&lt;/code> uses similar format as defined by different YAML format.&lt;/p>
 &lt;p>&lt;code>nmctl&lt;/code> can generate WPA Supplicant configuration from YAML file. When a YAML file with wifi configuration is found, it generates a configuration file found in &lt;code>/etc/network-config-manager/wpa_supplicant_photon_os.conf&lt;/code> which is understood by &lt;code>wpa_supplicant&lt;/code>.&lt;/p>
-&lt;ul>
-&lt;li>Dracut kernel command line network configuration: nmctl understands kernel command line specified in dracut&amp;rsquo;s network configuration format and can generate systemd-networkd&amp;rsquo;s configuration while the system boots and will persist between reboots.&lt;/li>
+&lt;/li>
+&lt;li>
+&lt;p>Dracut kernel command line network configuration: nmctl understands kernel command line specified in dracut&amp;rsquo;s network configuration format and can generate systemd-networkd&amp;rsquo;s configuration while the system boots and will persist between reboots.&lt;/p>
+&lt;/li>
 &lt;/ul>
-&lt;p>Network
+&lt;pre>&lt;code class="language-console" data-lang="console">Network
 ip={dhcp|on|any|dhcp6|auto6}
 dhcp|on|any: get ip from dhcp server from all links. If root=dhcp, loop
-sequentially through all links (eth0, eth1, &amp;hellip;) and use the first with a valid
-DHCP root-path.&lt;/p>
-&lt;pre>&lt;code> auto6: IPv6 autoconfiguration
+sequentially through all links (eth0, eth1, ...) and use the first with a valid
+DHCP root-path.
+auto6: IPv6 autoconfiguration
 dhcp6: IPv6 DHCP
 ip=&amp;lt;link&amp;gt;:{dhcp|on|any|dhcp6|auto6}
 dhcp|on|any|dhcp6: get ip from dhcp server on a specific link
@@ -75,22 +61,20 @@ BOOT_IMAGE=/boot/vmlinuz-4.19.52-2.ph3-esx root=PARTUUID=ebf01b6d-7e9c-4345-93f4
 init=/lib/systemd/systemd rcupdate.rcu_expedited=1 rw systemd.show_status=0 quiet noreplace-smp
 cpu_init_udelay=0 net.ifnames=0 plymouth.enable=0 systemd.legacy_systemd_cgroup_controller=yes
 ip=dhcp
-&lt;/code>&lt;/pre>
-&lt;p>&lt;code>network-config-manager-generator.service&lt;/code> is a oneshot type systemd service unit which runs while the system boots. It parses the kernel command line and generates networkd config in &lt;code>/etc/systemd/network&lt;/code>.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>&lt;code>network-config-manager-generator.service&lt;/code> is a oneshot type systemd service unit which runs while the system boots. It parses the kernel command line and generates networkd config in &lt;code>/etc/systemd/network&lt;/code>:&lt;/p>
 &lt;pre>&lt;code>systemctl enable network-config-manager-generator.service
-&lt;/code>&lt;/pre>
-&lt;p>It creates symlink &lt;code>/etc/systemd/system/network.target.wants/network-config-manager-generator.service → /usr/lib/systemd/system/network-config-manager-generator.service&lt;/code>.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>It creates symlink &lt;code>/etc/systemd/system/network.target.wants/network-config-manager-generator.service → /usr/lib/systemd/system/network-config-manager-generator.service&lt;/code>.&lt;/p>
 &lt;p>For more information, see:&lt;/p>
 &lt;ul>
-&lt;li>&lt;strong>CLI&lt;/strong> - see the &lt;code>-net&lt;/code> commands in the &lt;a href="../../../command-line-reference/commnad-line-interfaces/photon-management-daemon-cli/">Photon Management Daemon Command-line Interface (pmd-cli)&lt;/a>&lt;/li>
-&lt;li>&lt;strong>C APIs&lt;/strong> - &lt;a href="../netmgr.c/">Network Configuration Manager - C API&lt;/a>&lt;/li>
-&lt;li>&lt;strong>Python APIs&lt;/strong> - &lt;a href="../netmgr.python/">Network Configuration Manager - Python API&lt;/a>&lt;/li>
-&lt;/ul></description></item><item><title>Docs: Use `ip` and `ss` Commands</title><link>/docs/administration-guide/managing-network-configuration/use-ip-and-ss-commands/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/use-ip-and-ss-commands/</guid><description>
+&lt;li>&lt;strong>CLI&lt;/strong> - see the &lt;code>-net&lt;/code> commands in the &lt;a href="../../../docs/command-line-reference/command-line-interfaces/photon-management-daemon-cli/">Photon Management Daemon Command-line Interface (pmd-cli)&lt;/a>&lt;/li>
+&lt;li>&lt;strong>C APIs&lt;/strong> - &lt;a href="../../../docs/administration-guide/managing-network-configuration/netmgr.c/">Network Configuration Manager - C API&lt;/a>&lt;/li>
+&lt;li>&lt;strong>Python APIs&lt;/strong> - &lt;a href="../../../docs/administration-guide/managing-network-configuration/netmgr.python/">Network Configuration Manager - Python API&lt;/a>&lt;/li>
+&lt;/ul></description></item><item><title>Docs: Use 'ip' and 'ss' Commands</title><link>/docs/administration-guide/managing-network-configuration/use-ip-and-ss-commands/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/use-ip-and-ss-commands/</guid><description>
 &lt;p>Use the &lt;code>ip&lt;/code> and &lt;code>ss&lt;/code> commands to view a list of network interfaces and information for IP addresses.&lt;/p>
 &lt;p>Although the &lt;code>ifconfig&lt;/code> command and the &lt;code>netstat&lt;/code> command work on Photon OS, VMware recommends that you use the &lt;code>ip&lt;/code> or &lt;code>ss&lt;/code> commands. The &lt;code>ipconfig&lt;/code> and &lt;code>netstat&lt;/code> commands are deprecated.&lt;/p>
 &lt;p>For example, to display a list of network interfaces, run the &lt;code>ss&lt;/code> command instead of &lt;code>netstat&lt;/code>. To display information for IP addresses, run the &lt;code>ip addr&lt;/code> command instead of &lt;code>ifconfig -a&lt;/code>.&lt;/p>
 &lt;p>Examples are as follows:&lt;/p>
-&lt;pre>&lt;code>USE THIS IPROUTE COMMAND INSTEAD OF THIS NET-TOOL COMMAND
+&lt;pre>&lt;code class="language-console" data-lang="console">USE THIS IPROUTE COMMAND INSTEAD OF THIS NET-TOOL COMMAND
 ip addr ifconfig -a
 ss netstat
 ip route route
@@ -98,9 +82,8 @@ ip maddr netstat -g
 ip link set eth0 up ifconfig eth0 up
 ip -s neigh arp -v
 ip link set eth0 mtu 9000 ifconfig eth0 mtu 9000
-&lt;/code>&lt;/pre>
-&lt;p>Using the &lt;code>ip route&lt;/code> version of a command instead of the net-tools version often provides more complete and accurate information on Photon OS. Examples are as follows:&lt;/p>
-&lt;pre>&lt;code>ip neigh
+&lt;/code>&lt;/pre>&lt;p>Using the &lt;code>ip route&lt;/code> version of a command instead of the net-tools version often provides more complete and accurate information on Photon OS. Examples are as follows:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">ip neigh
 198.51.100.2 dev eth0 lladdr 00:50:56:e2:02:0f STALE
 198.51.100.254 dev eth0 lladdr 00:50:56:e7:13:d9 STALE
 198.51.100.1 dev eth0 lladdr 00:50:56:c0:00:08 DELAY
@@ -110,18 +93,16 @@ arp -a
 ? (198.51.100.1) at 00:50:56:c0:00:08 [ether] on eth0
 &lt;/code>&lt;/pre></description></item><item><title>Docs: Configuring Network Interfaces</title><link>/docs/administration-guide/managing-network-configuration/configuring-network-interfaces/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/configuring-network-interfaces/</guid><description>
 &lt;p>Network configuration files for systemd-networkd reside in &lt;code>/etc/systemd/network&lt;/code> and &lt;code>/usr/lib/systemd/network&lt;/code>. Example:&lt;/p>
-&lt;pre>&lt;code>root@photon-rc [ ~ ]# ls /etc/systemd/network/
+&lt;pre>&lt;code class="language-console" data-lang="console">root@photon-rc [ ~ ]# ls /etc/systemd/network/
 99-dhcp-en.network
-&lt;/code>&lt;/pre>
-&lt;p>By default, when Photon OS starts, it creates a DHCP network configuration file, or rule, which appears in /etc/systemd/network, the highest priority directory for network configuration files with the lowest priority filename:&lt;/p>
-&lt;pre>&lt;code>cat /etc/systemd/network/99-dhcp-en.network
+&lt;/code>&lt;/pre>&lt;p>By default, when Photon OS starts, it creates a DHCP network configuration file, or rule, which appears in /etc/systemd/network, the highest priority directory for network configuration files with the lowest priority filename:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">cat /etc/systemd/network/99-dhcp-en.network
 [Match]
 Name=e*
 [Network]
 DHCP=yes
-&lt;/code>&lt;/pre>
-&lt;p>Network configuration files can also appear in the system network directory, &lt;code>/usr/lib/systemd/network&lt;/code>, as the results of the following search illustrate:&lt;/p>
-&lt;pre>&lt;code>root@photon-rc [ ~ ]# updatedb
+&lt;/code>&lt;/pre>&lt;p>Network configuration files can also appear in the system network directory, &lt;code>/usr/lib/systemd/network&lt;/code>, as the results of the following search illustrate:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">root@photon-rc [ ~ ]# updatedb
 root@photon-rc [ ~ ]# locate systemd/network
 /etc/systemd/network
 /etc/systemd/network/99-dhcp-en.network
@@ -130,38 +111,33 @@ root@photon-rc [ ~ ]# locate systemd/network
 /usr/lib/systemd/network/80-container-ve.network
 /usr/lib/systemd/network/99-default.link
 root@photon-rc [ ~ ]#
-&lt;/code>&lt;/pre>
-&lt;p>In the above search, the &lt;code>/usr/lib/systemd/network&lt;/code> directory contains several network configuration files. Photon OS applies the configuration files in &lt;a href="https://en.wikipedia.org/wiki/Lexicographical_order">lexicographical order&lt;/a> specified by the file names without regard for the network configuration directory in which the file resides unless the file name is the same. Photon OS processes files with identical names by giving precedence to files in the &lt;code>/etc&lt;/code> directory over the other directory. Thus, the settings in &lt;code>/etc/systemd/network&lt;/code> override those in &lt;code>/usr/lib/systemd/network&lt;/code>. Once Photon OS matches an interface in a file, Photon OS ignores the interface if it appears in files processed later in the lexicographical order.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>In the above search, the &lt;code>/usr/lib/systemd/network&lt;/code> directory contains several network configuration files. Photon OS applies the configuration files in &lt;a href="https://en.wikipedia.org/wiki/Lexicographical_order">lexicographical order&lt;/a> specified by the file names without regard for the network configuration directory in which the file resides unless the file name is the same. Photon OS processes files with identical names by giving precedence to files in the &lt;code>/etc&lt;/code> directory over the other directory. Thus, the settings in &lt;code>/etc/systemd/network&lt;/code> override those in &lt;code>/usr/lib/systemd/network&lt;/code>. Once Photon OS matches an interface in a file, Photon OS ignores the interface if it appears in files processed later in the lexicographical order.&lt;/p>
 &lt;p>Each .network file contains a matching rule and a configuration that Photon OS applies when a device matches the rule. Set the matching rule and the configuration as sections containing vertical sets of key-value pairs according to the information in &lt;a href="https://www.freedesktop.org/software/systemd/man/systemd.network.html">systemd network configuration&lt;/a>.&lt;/p>
 &lt;p>To configure Photon OS to handle a networking use case, such as setting a static IP address or adding a name server, create a configuration file with a &lt;code>.network&lt;/code> extension and place it in the &lt;code>/etc/systemd/network directory&lt;/code>.&lt;/p>
-&lt;p>After you create a network configuration file with a &lt;code>.network&lt;/code> extension, you must run the &lt;code>chmod&lt;/code> command to set the new file&amp;rsquo;s mode bits to &lt;code>644&lt;/code>. Example:&lt;/p>
-&lt;pre>&lt;code>chown systemd-network:systemd-network 10-static-en.network
-&lt;/code>&lt;/pre>
-&lt;p>For Photon OS to apply the new configuration, you must restart the &lt;code>systemd-networkd&lt;/code> service by running the following command:&lt;/p>
-&lt;pre>&lt;code>systemctl restart systemd-networkd
-&lt;/code>&lt;/pre>
-&lt;p>For information about network configuration files, their processing order, and their matching rules, sections, and keys, see &lt;a href="https://www.freedesktop.org/software/systemd/man/systemd.network.html">https://www.freedesktop.org/software/systemd/man/systemd.network.html&lt;/a>.&lt;/p>
+&lt;p>After you create a network configuration file with a &lt;code>.network&lt;/code> extension, you must run the &lt;code>chmod&lt;/code> command to set the new file&amp;rsquo;s mode bits to &lt;code>644&lt;/code>.&lt;/p>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">chown systemd-network:systemd-network 10-static-en.network
+&lt;/code>&lt;/pre>&lt;p>For Photon OS to apply the new configuration, you must restart the &lt;code>systemd-networkd&lt;/code> service by running the following command:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">systemctl restart systemd-networkd
+&lt;/code>&lt;/pre>&lt;p>For information about network configuration files, their processing order, and their matching rules, sections, and keys, see &lt;a href="https://www.freedesktop.org/software/systemd/man/systemd.network.html">https://www.freedesktop.org/software/systemd/man/systemd.network.html&lt;/a>.&lt;/p>
 &lt;p>For information about creating virtual network device files (&lt;code>.netdev&lt;/code>), see &lt;a href="https://www.freedesktop.org/software/systemd/man/systemd.netdev.html">https://www.freedesktop.org/software/systemd/man/systemd.netdev.html&lt;/a>.&lt;/p></description></item><item><title>Docs: Setting a Static IP Address</title><link>/docs/administration-guide/managing-network-configuration/setting-a-static-ip-address/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/setting-a-static-ip-address/</guid><description>
 &lt;p>Before you set a static IP address, obtain the name of your Ethernet link by running the following command:&lt;/p>
-&lt;pre>&lt;code>networkctl
+&lt;pre>&lt;code class="language-console" data-lang="console">networkctl
 IDX LINK TYPE OPERATIONAL SETUP
 1 lo loopback carrier unmanaged
 2 eth0 ether routable configured
-&lt;/code>&lt;/pre>
-&lt;p>In the results of the command, you can see the name of an Ethernet link, &lt;code>eth0&lt;/code>.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>In the results of the command, you can see the name of an Ethernet link, &lt;code>eth0&lt;/code>.&lt;/p>
 &lt;p>To create a network configuration file that systemd-networkd uses to establish a static IP address for the eth0 network interface, execute the following command as root:&lt;/p>
-&lt;pre>&lt;code>cat &amp;gt; /etc/systemd/network/10-static-en.network &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
+&lt;pre>&lt;code class="language-console" data-lang="console">cat &amp;gt; /etc/systemd/network/10-static-en.network &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
 [Match]
 Name=eth0
 [Network]
 Address=198.51.0.2/24
 Gateway=198.51.0.1
 EOF
-&lt;/code>&lt;/pre>
-&lt;p>Change the new file&amp;rsquo;s mode bits by running the &lt;code>chmod&lt;/code> command:&lt;/p>
-&lt;pre>&lt;code>chmod 644 10-static-en.network
-&lt;/code>&lt;/pre>
-&lt;p>Apply the configuration by running either the first or the second step:&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>Change the new file&amp;rsquo;s mode bits by running the &lt;code>chmod&lt;/code> command:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">chmod 644 10-static-en.network
+&lt;/code>&lt;/pre>&lt;p>Apply the configuration by running either the first or the second step:&lt;/p>
 &lt;ol>
 &lt;li>
 &lt;p>&lt;code>systemctl restart systemd-networkd &lt;/code>&lt;/p>
@@ -174,24 +150,28 @@ EOF
 &lt;p>Note: The advantage of using reload and reconfigure is that the settings of other interfaces are not disturbed and only the settings of the specific interface are reloaded and reconfigured.&lt;/p>
 &lt;p>For more information, see the man page for systemd-networkd: &lt;code>man systemd.network&lt;/code>&lt;/p></description></item><item><title>Docs: Turning Off DHCP</title><link>/docs/administration-guide/managing-network-configuration/turning-off-dhcp/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/turning-off-dhcp/</guid><description>
 &lt;p>By default, when Photon OS first starts, it creates a DHCP network configuration file or rule, which appears in &lt;code>/etc/systemd/network&lt;/code>, the highest priority directory for network configuration files with the lowest priority filename:&lt;/p>
-&lt;pre>&lt;code>cat /etc/systemd/network/99-dhcp-en.network
+&lt;pre>&lt;code class="language-console" data-lang="console">cat /etc/systemd/network/99-dhcp-en.network
 [Match]
 Name=e*
 [Network]
 DHCP=yes
+&lt;/code>&lt;/pre>&lt;p>To turn off DHCP for all Ethernet interfaces, change the value of &lt;code>DHCP&lt;/code> from &lt;code>yes&lt;/code> to &lt;code>no&lt;/code>, save the changes, and then restart the &lt;code>systemd-networkd&lt;/code> service:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console"> systemctl restart systemd-networkd
+&lt;/code>&lt;/pre>&lt;p>Or you can reload and reconfigure the settings:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">networkctl reload
+networkctl reconfigure &amp;lt;interface_name&amp;gt;/&amp;lt;index_number&amp;gt;`
 &lt;/code>&lt;/pre>
-&lt;p>To turn off DHCP for all Ethernet interfaces, change the value of &lt;code>DHCP&lt;/code> from &lt;code>yes&lt;/code> to &lt;code>no&lt;/code>, save the changes, and then restart the &lt;code>systemd-networkd&lt;/code> service:&lt;/p>
-&lt;pre>&lt;code>systemctl restart systemd-networkd
-&lt;/code>&lt;/pre>
-&lt;p>Or you can reload and reconfigure the settings:&lt;/p>
-&lt;p>&lt;code>networkctl reload&lt;/code>
-&lt;code>networkctl reconfigure &lt;/code> &lt;em>interface_name/index_number&lt;/em>``&lt;/p>
-&lt;p>Note: The advantage of using reload and reconfigure is that the settings of other interfaces are not disturbed and only the settings of the specific interface are reloaded and reconfigured.&lt;/p>
+&lt;div class="alert alert-primary" role="alert">
+&lt;h4 class="alert-heading">Note:&lt;/h4>
+&lt;blockquote>
+&lt;p>The advantage of using reload and reconfigure is that the settings of other interfaces are not disturbed and only the settings of the specific interface are reloaded and reconfigured.&lt;/p>
+&lt;/blockquote>
+&lt;/div>
 &lt;p>If you create a configuration file with a higher priority filename (e.g. &lt;code>10-static-en.network&lt;/code>), it is not necessary but still recommended to turn off DHCP.&lt;/p>
 &lt;p>You can also check the status of a specific interface:&lt;/p>
-&lt;p>&lt;code>networkctl status&lt;/code> &lt;em>interface_name/index_number&lt;/em>&lt;/p>
-&lt;p>(&lt;code>ens33 &lt;/code>is an example)&lt;/p>
-&lt;pre>&lt;code>2: ens33
+&lt;pre>&lt;code class="language-console" data-lang="console">networkctl status &amp;lt;interface_name&amp;gt;/&amp;lt;index_number&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>(&lt;code>ens33 &lt;/code>is an example)&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console"> 2: ens33
 Link File: /usr/lib/systemd/network/99-default.link
 Network File: /usr/lib/systemd/network/10-eth.network
 Type: ether
@@ -308,12 +288,10 @@ To=192.168.60.70/24
 Table=10
 From=192.168.60.70/24&lt;/code>&lt;/pre></description></item><item><title>Docs: Clearing the Machine ID of a Cloned Instance for DHCP</title><link>/docs/administration-guide/managing-network-configuration/clearing-the-machine-id-of-a-cloned-instance-for-dhcp/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/clearing-the-machine-id-of-a-cloned-instance-for-dhcp/</guid><description>
 &lt;p>Photon OS uses the contents of &lt;code>/etc/machine-id&lt;/code> to determine the DHCP unique identifier (duid) that is used for DHCP requests. If you use a Photon OS instance as the base system for cloning, to create additional Photon OS instances, you must clear the &lt;code>machine-id&lt;/code> with this command:&lt;/p>
-&lt;pre>&lt;code>echo -n &amp;gt; /etc/machine-id
-&lt;/code>&lt;/pre>
-&lt;p>When the value is cleared, &lt;code>machine-id&lt;/code> can be regenerated by calling &lt;code>systemd-machine-id-setup&lt;/code>.&lt;/p>
-&lt;pre>&lt;code>systemd-machine-id-setup
-&lt;/code>&lt;/pre>
-&lt;p>This command initializes the machine ID stored in &lt;code>/etc/machine-id&lt;/code> during installation. For more information on this command, see &lt;a href="https://www.freedesktop.org/software/systemd/man/systemd-machine-id-setup.html">https://www.freedesktop.org/software/systemd/man/systemd-machine-id-setup.html&lt;/a>.&lt;/p></description></item><item><title>Docs: Using Predictable Network Interface Names</title><link>/docs/administration-guide/managing-network-configuration/using-predictable-network-interface-names/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/using-predictable-network-interface-names/</guid><description>
+&lt;pre>&lt;code class="language-console" data-lang="console">echo -n &amp;gt; /etc/machine-id
+&lt;/code>&lt;/pre>&lt;p>When the value is cleared, &lt;code>machine-id&lt;/code> can be regenerated by calling &lt;code>systemd-machine-id-setup&lt;/code>.&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">systemd-machine-id-setup
+&lt;/code>&lt;/pre>&lt;p>This command initializes the machine ID stored in &lt;code>/etc/machine-id&lt;/code> during installation. For more information on this command, see &lt;a href="https://www.freedesktop.org/software/systemd/man/systemd-machine-id-setup.html">https://www.freedesktop.org/software/systemd/man/systemd-machine-id-setup.html&lt;/a>.&lt;/p></description></item><item><title>Docs: Using Predictable Network Interface Names</title><link>/docs/administration-guide/managing-network-configuration/using-predictable-network-interface-names/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/using-predictable-network-interface-names/</guid><description>
 &lt;p>When you run Photon OS on a virtual machine or a bare-metal machine, the Ethernet network interface name might shift from one device to another if you add or remove a card and reboot the machine. For example, a device named &lt;code>eth2&lt;/code> might become &lt;code>eth1&lt;/code> after you remove a NIC and restart the machine.&lt;/p>
 &lt;p>You can prevent interface names from reordering by turning on &lt;a href="https://www.freedesktop.org/wiki/Software/systemd/PredictableNetworkInterfaceNames/">predictable network interface names&lt;/a>. The naming schemes that Photon OS uses can then assign fixed, predictable names to network interfaces even after you add or remove cards or other firmware and the restart the system.&lt;/p>
 &lt;p>When you enable predictable network interface names, you can use one of the following options to assign persistent names to network interfaces:&lt;/p>
@@ -327,34 +305,32 @@ From=192.168.60.70/24&lt;/code>&lt;/pre></description></item><item><title>Docs: 
 &lt;p>Alternatively, if the cloning function supports &lt;code>enx&lt;/code>, you can use it to set a MAC address which persists after reboots.&lt;/p>
 &lt;p>Perform the following steps to turn on predictable network interface names:&lt;/p>
 &lt;ol>
-&lt;li>
-&lt;p>Make a backup copy of the following file in case you need to restore it later:&lt;/p>
-&lt;pre>&lt;code>cp /boot/grub/grub.cfg /boot/grub/grub.cfg.original
-&lt;/code>&lt;/pre>&lt;/li>
-&lt;li>
-&lt;p>To turn on predictable network interface names, edit &lt;code>/boot/grub/grub.cfg&lt;/code> to remove the following string:&lt;/p>
-&lt;pre>&lt;code>net.ifnames=0Item
-&lt;/code>&lt;/pre>&lt;p>The string appears near the bottom of the file in the &lt;code>menuentry&lt;/code> section:&lt;/p>
-&lt;pre>&lt;code>menuentry &amp;quot;Photon&amp;quot; {
-linux &amp;quot;/boot/&amp;quot;$photon_linux root=$rootpartition net.ifnames=0 $photon_cmdline
-if [ &amp;quot;$photon_initrd&amp;quot; ]; then
-initrd &amp;quot;/boot/&amp;quot;$photon_initrd
-fi
-}
-# End /boot/grub2/grub.cfg
-&lt;/code>&lt;/pre>&lt;p>Edit out &lt;code>net.ifnames=0&lt;/code>, but make no other changes to the file, and then save it.&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>Specify the types of policies that you want to use for predictable interface names by modifying the &lt;code>NamePolicy&lt;/code> option in &lt;code>/lib/systemd/network/99-default.link&lt;/code>. The file contents are as follows:&lt;/p>
-&lt;pre>&lt;code>cat /lib/systemd/network/99-default.link
+&lt;li>Make a backup copy of the following file in case you need to restore it later:&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-console" data-lang="console">cp /boot/grub/grub.cfg /boot/grub/grub.cfg.original
+&lt;/code>&lt;/pre>&lt;ol start="2">
+&lt;li>To turn on predictable network interface names, edit &lt;code>/boot/grub/grub.cfg&lt;/code> to remove the following string:&lt;/li>
+&lt;/ol>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ini" data-lang="ini">&lt;span style="color:#c4a000">net.ifnames&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">0Item&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>The string appears near the bottom of the file in the &lt;code>menuentry&lt;/code> section:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ini" data-lang="ini">&lt;span style="color:#c4a000">menuentry &amp;#34;Photon&amp;#34; {&lt;/span>
+&lt;span style="color:#c4a000">linux &amp;#34;/boot/&amp;#34;$photon_linux root&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">$rootpartition net.ifnames=0 $photon_cmdline
+&lt;/span>&lt;span style="color:#4e9a06"> if [ &amp;#34;$photon_initrd&amp;#34; ]; then
+&lt;/span>&lt;span style="color:#4e9a06"> initrd &amp;#34;/boot/&amp;#34;$photon_initrd
+&lt;/span>&lt;span style="color:#4e9a06"> fi&lt;/span>
+&lt;span style="color:#c4a000">}&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># End /boot/grub2/grub.cfg&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Edit out &lt;code>net.ifnames=0&lt;/code>, but make no other changes to the file, and then save it.&lt;/p>
+&lt;ol>
+&lt;li>Specify the types of policies that you want to use for predictable interface names by modifying the &lt;code>NamePolicy&lt;/code> option in &lt;code>/lib/systemd/network/99-default.link&lt;/code>. The file contents are as follows:&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-console" data-lang="console">cat /lib/systemd/network/99-default.link
 [Link]
 NamePolicy=kernel database
 MACAddressPolicy=persistent
-&lt;/code>&lt;/pre>&lt;/li>
-&lt;/ol>
-&lt;p>To use the &lt;code>ens&lt;/code> or &lt;code>enx&lt;/code> option, the &lt;code>slot&lt;/code> policy or the &lt;code>mac&lt;/code> policy can be added to the space-separated list of policies that follow the &lt;code>NamePolicy&lt;/code> option in the default link file, &lt;code>/lib/systemd/network/99-default.link&lt;/code>. The order of the policies matters. Photon OS applies the policy listed first before proceeding to the next policy if the first one fails.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>To use the &lt;code>ens&lt;/code> or &lt;code>enx&lt;/code> option, the &lt;code>slot&lt;/code> policy or the &lt;code>mac&lt;/code> policy can be added to the space-separated list of policies that follow the &lt;code>NamePolicy&lt;/code> option in the default link file, &lt;code>/lib/systemd/network/99-default.link&lt;/code>. The order of the policies matters. Photon OS applies the policy listed first before proceeding to the next policy if the first one fails.&lt;/p>
 &lt;p>For example:&lt;/p>
-&lt;pre>&lt;code>/lib/systemd/network/99-default.link
+&lt;pre>&lt;code class="language-console" data-lang="console">/lib/systemd/network/99-default.link
 [Link]
 NamePolicy=slot mac kernel database
 MACAddressPolicy=persistent
@@ -364,17 +340,16 @@ MACAddressPolicy=persistent
 &lt;p>You can progressively add options and arguments to the &lt;code>networkctl&lt;/code> command to move from general information about network connections to specific information about a network connection.&lt;/p>
 &lt;h1 id="networkctl-command-without-options">networkctl Command Without Options&lt;/h1>
 &lt;p>Run the &lt;code>networkctl&lt;/code> command without options to default to the list command:&lt;/p>
-&lt;pre>&lt;code>networkctl
+&lt;pre>&lt;code class="language-console" data-lang="console">networkctl
 IDX LINK TYPE OPERATIONAL SETUP
 1 lo loopback carrier unmanaged
 2 eth0 ether routable configured
 3 docker0 ether routable unmanaged
 11 vethb0aa7a6 ether degraded unmanaged
 4 links listed.
-&lt;/code>&lt;/pre>
-&lt;h2 id="networkctl-status-command">&amp;lsquo;networkctl status&amp;rsquo; Command&lt;/h2>
+&lt;/code>&lt;/pre>&lt;h2 id="networkctl-status-command">&amp;lsquo;networkctl status&amp;rsquo; Command&lt;/h2>
 &lt;p>Run &lt;code>networkctl&lt;/code> with the status command to display the following information:&lt;/p>
-&lt;pre>&lt;code>root@photon-rc [ ~ ]# &amp;gt; networkctl status
+&lt;pre>&lt;code class="language-console" data-lang="console">root@photon-rc [ ~ ]# &amp;gt; networkctl status
 State: routable
 Address: 10.197.103.56 on eno1
 172.17.0.1 on docker0
@@ -390,7 +365,7 @@ NTP: 10.128.152.81
 &lt;/code>&lt;/pre>&lt;p>You can see that there are active network links with IP addresses for not only the Ethernet connection but also a Docker container.&lt;/p>
 &lt;h3 id="networkctl-status-command-with-network-link-option">&amp;lsquo;networkctl status&amp;rsquo; Command With Network Link Option&lt;/h3>
 &lt;p>You can add a network link, such as the Ethernet connection, as the argument of the &lt;code>status&lt;/code> command to show specific information about the link:&lt;/p>
-&lt;pre>&lt;code> root@photon-rc [ ~ ]# networkctl status ens33
+&lt;pre>&lt;code class="language-console" data-lang="console"> root@photon-rc [ ~ ]# networkctl status ens33
 * 2: ens33
 Link File: /usr/lib/systemd/network/99-default.link
 Network File: /usr/lib/systemd/network/10-eth.network
@@ -422,7 +397,7 @@ Feb 26 10:19:45 fedora systemd-networkd[650]: ens33: DHCPv4 address 172.16.85.22
 Feb 26 10:19:46 fedora systemd-networkd[650]: ens33: Gained IPv6LL
 &lt;/code>&lt;/pre>&lt;h3 id="networkctl-status-command-with-docker-option">&amp;lsquo;networkctl status&amp;rsquo; Command With Docker Option&lt;/h3>
 &lt;p>You can add a Docker container as the argument of the &lt;code>status&lt;/code> command to show specific information about the container:&lt;/p>
-&lt;pre>&lt;code>networkctl status docker0
+&lt;pre>&lt;code class="language-console" data-lang="console">networkctl status docker0
 * 3: docker0
 Link File: /usr/lib/systemd/network/99-default.link
 Network File: n/a
@@ -441,37 +416,51 @@ fe80::42:f0ff:fef7:bd81
 &lt;ol>
 &lt;li>
 &lt;p>Run the following command as root to create a directory with the name &lt;code>systemd-networkd.service.d&lt;/code>, including the &lt;code>.d&lt;/code> extension:&lt;/p>
-&lt;pre>&lt;code>&lt;/code>&lt;/pre>&lt;/li>
-&lt;/ol>
-&lt;p>mkdir -p /etc/systemd/system/systemd-networkd.service.d/&lt;/p>
-&lt;pre>&lt;code>
-1. Run the following command as root to establish a `systemd` drop-in unit with a debugging configuration for the network service:
-```
-cat &amp;gt; /etc/systemd/system/systemd-networkd.service.d/override.conf
+&lt;pre>&lt;code class="language-console" data-lang="console">mkdir -p /etc/systemd/system/systemd-networkd.service.d/
+&lt;/code>&lt;/pre>&lt;p>``&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Run the following command as root to establish a &lt;code>systemd&lt;/code> drop-in unit with a debugging configuration for the network service:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">cat &amp;gt; /etc/systemd/system/systemd-networkd.service.d/override.conf
 [Service]
 Environment=SYSTEMD_LOG_LEVEL=debug
 EOF
-&lt;/code>&lt;/pre>&lt;ol>
+&lt;/code>&lt;/pre>&lt;p>``&lt;/p>
+&lt;/li>
 &lt;li>
 &lt;p>Reload the &lt;code>systemctl&lt;/code> daemon and restart the &lt;code>systemd-networkd&lt;/code> service for the changes to take effect:&lt;/p>
-&lt;pre>&lt;code>&lt;/code>&lt;/pre>&lt;/li>
-&lt;/ol>
-&lt;p>systemctl daemon-reload
-systemctl restart systemd-networkd&lt;/p>
-&lt;pre>&lt;code>
-1. Verify your changes:
-```
-systemd-delta --type=extended
-&lt;/code>&lt;/pre>&lt;ol>
+&lt;pre>&lt;code class="language-console" data-lang="console">systemctl daemon-reload
+systemctl restart systemd-networkd
+&lt;/code>&lt;/pre>&lt;p>``&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Verify your changes:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">systemd-delta --type=extended
+&lt;/code>&lt;/pre>&lt;p>``&lt;/p>
+&lt;/li>
 &lt;li>
 &lt;p>View the log files by running this command:&lt;/p>
-&lt;pre>&lt;code>&lt;/code>&lt;/pre>&lt;/li>
-&lt;/ol>
-&lt;p>journalctl -u systemd-networkd&lt;/p>
-&lt;pre>&lt;code>
-1. After debugging the network connections, turn debugging off by deleting the drop-in file:
-```
-rm /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf
+&lt;pre>&lt;code class="language-console" data-lang="console">journalctl -u systemd-networkd
+&lt;/code>&lt;/pre>&lt;p>``&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>After debugging the network connections, turn debugging off by deleting the drop-in file:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">rm /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf
+&lt;/code>&lt;/pre>&lt;p>``&lt;/p>
+&lt;/li>
+&lt;/ol></description></item><item><title>Docs: Installing packgages for 'tcpdump' and 'netcat'</title><link>/docs/administration-guide/managing-network-configuration/installing-the-packages-for-tcpdump-and-netcat-with-tdnf/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/installing-the-packages-for-tcpdump-and-netcat-with-tdnf/</guid><description>
+&lt;p>Photon OS includes the following networking tools:&lt;/p>
+&lt;ul>
+&lt;li>
+&lt;p>&lt;strong>tcpdump&lt;/strong>. A networking tool that captures and analyzes packets on a network interface. &lt;code>tcpdump&lt;/code> is not available with the minimal version of Photon OS but available in the repository. The minimal version includes the &lt;code>iproute2&lt;/code> tools by default.&lt;/p>
+&lt;p>You can install &lt;code>tcpdump&lt;/code> and its accompanying package &lt;code>libpcap&lt;/code>, a C/C++ library for capturing network traffic, by using &lt;code>tdnf&lt;/code>:&lt;/p>
+&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code class="language-console" data-lang="console">tdnf install tcpdump
+&lt;/code>&lt;/pre>&lt;ul>
+&lt;li>&lt;strong>netcat&lt;/strong>. A tool to send data over network connections with TCP or UDP. This tool is not included in either the minimal or the full version of Photon OS. But since &lt;code>netcat&lt;/code> furnishes powerful options for analyzing, troubleshooting, and debugging network connections, you might want to install it. To install `netcat', run the following command:&lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code class="language-console" data-lang="console">tdnf install netcat
 &lt;/code>&lt;/pre></description></item><item><title>Docs: Mounting a Network File System</title><link>/docs/administration-guide/managing-network-configuration/mounting-a-network-file-system/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/mounting-a-network-file-system/</guid><description>
 &lt;p>To mount a network file system, Photon OS requires &lt;code>nfs-utils&lt;/code>. The &lt;code>nfs-utils&lt;/code> package contains the daemon, userspace server, and client tools for the kernel Network File System (NFS). The tools include &lt;code>mount.nfs&lt;/code>, &lt;code>umount.nfs&lt;/code>, and &lt;code>showmount&lt;/code>.&lt;/p>
 &lt;p>The &lt;code>nfs-utils&lt;/code> package is installed by default in the full version of Photon OS but not in the minimal version. To install &lt;code>nfs-utils&lt;/code> in the minimal version, run the following command as root:&lt;/p>
@@ -1783,7 +1772,7 @@ nm_restart_ntp_service();
 &lt;li>success: 0&lt;/li>
 &lt;li>failure: error code&lt;/li>
 &lt;/ul></description></item><item><title>Docs: Network Configuration Manager - Python API</title><link>/docs/administration-guide/managing-network-configuration/netmgr.python/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/netmgr.python/</guid><description>
-&lt;p>Photon OS 2.0 provides a Python API for the Network Configuration Manager.&lt;/p>
+&lt;p>Photon OS provides a Python API for the Network Configuration Manager.&lt;/p>
 &lt;ul>
 &lt;li>&lt;a href="#setup-instructions">Setup Instructions&lt;/a>&lt;/li>
 &lt;li>&lt;a href="#initialization-steps">Initialization Steps&lt;/a>&lt;/li>
@@ -1797,40 +1786,40 @@ nm_restart_ntp_service();
 &lt;/ul>
 &lt;h2 id="setup-instructions">Setup Instructions&lt;/h2>
 &lt;p>To set up and run the latest version of the Network Manager API for Python:&lt;/p>
-&lt;pre>&lt;code># tdnf install pmd pmd-python3
+&lt;pre>&lt;code class="language-console" data-lang="console"># tdnf install pmd pmd-python3
 # systemctl start pmd
 &lt;/code>&lt;/pre>&lt;h2 id="initialization-steps">Initialization Steps&lt;/h2>
-&lt;pre>&lt;code># python3
-&amp;gt;&amp;gt;&amp;gt; import pmd
-&amp;gt;&amp;gt;&amp;gt; net = pmd.server().net
-&lt;/code>&lt;/pre>&lt;h2 id="get-online-help">Get Online Help&lt;/h2>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#8f5902;font-style:italic"># python3&lt;/span>
+&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#204a87;font-weight:bold">import&lt;/span> &lt;span style="color:#000">pmd&lt;/span>
+&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#000">net&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">pmd&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">server&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">net&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="get-online-help">Get Online Help&lt;/h2>
 &lt;p>Get help for all commands.&lt;/p>
-&lt;pre>&lt;code>&amp;gt;&amp;gt;&amp;gt; help(net)
-&lt;/code>&lt;/pre>&lt;p>Get help for a specific command.&lt;/p>
-&lt;pre>&lt;code>&amp;gt;&amp;gt;&amp;gt; help(net.add_ntp_servers)
--in function add_ntp_servers:
-add_ntp_servers(...) method of [server.net](http://server.net/) instance
-net.add_ntp_servers(ntpservers = [&amp;quot;20.20.20.20&amp;quot;, &amp;quot;25.30.40.70&amp;quot;])
-adds ntp servers. returns success: 0, failure: exception.
-(END)
-&lt;/code>&lt;/pre>&lt;h2 id="basic-information">Basic Information&lt;/h2>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#000">help&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Get help for a specific command.&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#000">help&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">add_ntp_servers&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#ce5c00;font-weight:bold">-&lt;/span>&lt;span style="color:#204a87;font-weight:bold">in&lt;/span> &lt;span style="color:#000">function&lt;/span> &lt;span style="color:#000">add_ntp_servers&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>
+&lt;span style="color:#000">add_ntp_servers&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">...&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span> &lt;span style="color:#000">method&lt;/span> &lt;span style="color:#000">of&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#000">server&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#000;font-weight:bold">](&lt;/span>&lt;span style="color:#000">http&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">//&lt;/span>&lt;span style="color:#000">server&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">/&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span> &lt;span style="color:#000">instance&lt;/span>
+&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">add_ntp_servers&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ntpservers&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;20.20.20.20&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;25.30.40.70&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">])&lt;/span>
+&lt;span style="color:#000">adds&lt;/span> &lt;span style="color:#000">ntp&lt;/span> &lt;span style="color:#000">servers&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span> &lt;span style="color:#000">returns&lt;/span> &lt;span style="color:#000">success&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">failure&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000">exception&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>
+&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">END&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="basic-information">Basic Information&lt;/h2>
 &lt;h3 id="get_system_network_info">get_system_network_info&lt;/h3>
 &lt;p>Get network information details that are common to the entire system.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_system_network_info()
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Returns&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_system_network_info&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Returns&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>details about the system network (DUID, DNS mode, DNS server list, DNS domain list, NTP server list)&lt;/li>
 &lt;/ul>
 &lt;p>&lt;strong>Example&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>&amp;gt;&amp;gt;&amp;gt; system_network_info = netmgmt.get_system_network_info()
-&amp;gt;&amp;gt;&amp;gt; print ( system_network_info)
-[{DUID: 00:02:11:22:33:44:55:66:77:20, DNS Mode: (null), DNS ServerList: ['10.10.100.100', '20.20.200.10'], DNS domain list: [' [abcd.com](http://abcd.com)'], NTP ServerList: (null)}]
-&lt;/code>&lt;/pre>&lt;h3 id="get_err_info">get_err_info&lt;/h3>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#000">system_network_info&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">netmgmt&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_system_network_info&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>
+&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#204a87;font-weight:bold">print&lt;/span> &lt;span style="color:#000;font-weight:bold">(&lt;/span> &lt;span style="color:#000">system_network_info&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#000;font-weight:bold">[{&lt;/span>&lt;span style="color:#000">DUID&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">00&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">02&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">11&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">22&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">33&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">44&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">55&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">66&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">77&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#0000cf;font-weight:bold">20&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">DNS&lt;/span> &lt;span style="color:#000">Mode&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">null&lt;/span>&lt;span style="color:#000;font-weight:bold">),&lt;/span> &lt;span style="color:#000">DNS&lt;/span> &lt;span style="color:#000">ServerList&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#39;10.10.100.100&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#39;20.20.200.10&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">],&lt;/span> &lt;span style="color:#000">DNS&lt;/span> &lt;span style="color:#000">domain&lt;/span> &lt;span style="color:#204a87">list&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#39; [abcd.com](http://abcd.com)&amp;#39;&lt;/span>&lt;span style="color:#000;font-weight:bold">],&lt;/span> &lt;span style="color:#000">NTP&lt;/span> &lt;span style="color:#000">ServerList&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">null&lt;/span>&lt;span style="color:#000;font-weight:bold">)}]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h3 id="get_err_info">get_err_info&lt;/h3>
 &lt;p>Get information about the specified error number.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_err_info(error = &amp;lt;error_number&amp;gt;)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_err_info&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">error&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#000">error_number&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>error - error number&lt;/li>
 &lt;/ul>
@@ -1854,15 +1843,15 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;li>failure: exception&lt;/li>
 &lt;/ul>
 &lt;p>Example&lt;/p>
-&lt;pre>&lt;code>&amp;gt;&amp;gt; net.get_err_info(error = 4097)
-'invalid parameter'
-&lt;/code>&lt;/pre>&lt;h2 id="interface-configuration">Interface Configuration&lt;/h2>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_err_info&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">error&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">4097&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#39;invalid parameter&amp;#39;&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="interface-configuration">Interface Configuration&lt;/h2>
 &lt;p>Use these commands to manage the configuration for a network interface.&lt;/p>
 &lt;h3 id="get_link_info">get_link_info&lt;/h3>
 &lt;p>Get the link info for the specified interface or for all interfaces (if no interface is specified).&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_link_info(ifname = interface_name)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_link_info&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name (optional)&lt;/li>
 &lt;/ul>
@@ -1874,8 +1863,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="get_link_macaddr">get_link_macaddr&lt;/h3>
 &lt;p>Get the MAC address for the specified interface or for all interfaces (if no interface is specified).&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_link_macaddr(ifname = interface_name)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_link_macaddr&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name (optional)&lt;/li>
 &lt;/ul>
@@ -1887,8 +1876,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="get_link_mode">get_link_mode&lt;/h3>
 &lt;p>Get the link mode for the specified interface (auto or manual), or for all interfaces (if no interface is specified).&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_link_mode(ifname = interface_name)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_link_mode&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name (optional)&lt;/li>
 &lt;/ul>
@@ -1900,8 +1889,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="get_link_mtu">get_link_mtu&lt;/h3>
 &lt;p>Get the MTU of the specified interface or for all interfaces (if no interface is specified).&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_link_mtu(ifname = interface_name)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_link_mtu&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name (optional)&lt;/li>
 &lt;/ul>
@@ -1913,8 +1902,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="get_link_state">get_link_state&lt;/h3>
 &lt;p>Get the link state of the specified interface or for all interfaces (if no interface is specified).&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_link_state(ifname = interface_name)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_link_state&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name (optional)&lt;/li>
 &lt;/ul>
@@ -1926,8 +1915,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="set_link_down">set_link_down&lt;/h3>
 &lt;p>Bring down the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.set_link_down(ifname = interface_name)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">set_link_down&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;/ul>
@@ -1939,8 +1928,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="set_link_macaddr">set_link_macaddr&lt;/h3>
 &lt;p>Set the MAC address of the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.set_link_macaddr(ifname = interface_name, macaddr = mac_address)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">set_link_macaddr&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">macaddr&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">mac_address&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;li>&lt;code>macaddr&lt;/code> = MAC address&lt;/li>
@@ -1953,8 +1942,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="set_link_mode">set_link_mode&lt;/h3>
 &lt;p>Set the mode (auto or manual) of the specifed interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.set_link_mode(ifname = interface_name, link_mode = [auto, manual])
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">set_link_mode&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">link_mode&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#000">auto&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">manual&lt;/span>&lt;span style="color:#000;font-weight:bold">])&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;li>&lt;code>link_mode&lt;/code> - auto or manual&lt;/li>
@@ -1967,8 +1956,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="set_link_mtu">set_link_mtu&lt;/h3>
 &lt;p>Set the MTU for the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.set_link_mtu(ifname = interface_name, mtu = mtu)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">set_link_mtu&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">mtu&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">mtu&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;li>&lt;code>mtu&lt;/code> - &lt;code>mtu&lt;/code>&lt;/li>
@@ -1981,8 +1970,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="set_link_state">set_link_state&lt;/h3>
 &lt;p>Set the state (up or down) of the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.set_link_state(ifname = interface_name, link_state = [down, up])
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">set_link_state&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">link_state&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#000">down&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">up&lt;/span>&lt;span style="color:#000;font-weight:bold">])&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;li>&lt;code>link_state&lt;/code> - down or up&lt;/li>
@@ -1995,8 +1984,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="set_link_up">set_link_up&lt;/h3>
 &lt;p>Brings up the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.set_link_up(ifname = interface_name)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">set_link_up&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;li>&lt;code>link_state&lt;/code> - down or up&lt;/li>
@@ -2011,8 +2000,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="add_static_ipv6_addr">add_static_ipv6_addr&lt;/h3>
 &lt;p>Add a static IPv6 address to the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.add_static_ipv6_addr(ifname = interface_name, addr_prefix = ipv6address_prefix)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">add_static_ipv6_addr&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">addr_prefix&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">ipv6address_prefix&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;li>&lt;code>addr_prefix&lt;/code> - IPv6 address prefix&lt;/li>
@@ -2025,8 +2014,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="del_static_ipv6_addr">del_static_ipv6_addr&lt;/h3>
 &lt;p>Delete a static IPv6 address from the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.del_static_ipv6_addr(ifname = interface_name, addr_prefix = ipv6address_prefix)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">del_static_ipv6_addr&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">addr_prefix&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">ipv6address_prefix&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;li>&lt;code>addr_prefix&lt;/code> - IPv6 address prefix&lt;/li>
@@ -2039,8 +2028,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="get_ipv4_addr_gateway">get_ipv4_addr_gateway&lt;/h3>
 &lt;p>Get the IPv4 address with the prefix and gateway for the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_ipv4_addr_gateway(ifname = interface_name)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_ipv4_addr_gateway&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;/ul>
@@ -2052,8 +2041,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="get_ipv6_addr">get_ipv6_addr&lt;/h3>
 &lt;p>Get the list of IPv6 addresses for the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_ipv6_addr(ifname = interface_name)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_ipv6_addr&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;/ul>
@@ -2065,8 +2054,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="get_ipv6_addr_mode">get_ipv6_addr_mode&lt;/h3>
 &lt;p>Get the address mode for the specified interface to determine whether DHCPv6, autoconf are enabled or disabled.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_ipv6_addr_mode(ifname = interface_name)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_ipv6_addr_mode&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;/ul>
@@ -2078,8 +2067,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="get_ipv6_gateway">get_ipv6_gateway&lt;/h3>
 &lt;p>Get the IPv6 gateway for the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_ipv6_gateway(ifname = interface_name)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_ipv6_gateway&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;/ul>
@@ -2091,8 +2080,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="set_ipv4_addr_gateway">set_ipv4_addr_gateway&lt;/h3>
 &lt;p>Set the IPv4 address with the prefix and gateway for the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_ipv4_addr_gateway(ifname = interface_name, addr_mode = [dhcp, static, none], addr_prefix = ipv4addressprefix, gateway = ipv4gateway)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_ipv4_addr_gateway&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">addr_mode&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#000">dhcp&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">static&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">none&lt;/span>&lt;span style="color:#000;font-weight:bold">],&lt;/span> &lt;span style="color:#000">addr_prefix&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">ipv4addressprefix&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">gateway&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">ipv4gateway&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;li>&lt;code>addr_mode&lt;/code> - address mode - dhcp, static, or none&lt;/li>
@@ -2107,8 +2096,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="set_ipv6_addr_mode">set_ipv6_addr_mode&lt;/h3>
 &lt;p>Set the address mode for the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.set_ipv6_addr_mode(ifname = interface_name, enable_dhcp = [True, False], enable_autoconf = [True, False])
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">set_ipv6_addr_mode&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">enable_dhcp&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#3465a4">True&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#3465a4">False&lt;/span>&lt;span style="color:#000;font-weight:bold">],&lt;/span> &lt;span style="color:#000">enable_autoconf&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#3465a4">True&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#3465a4">False&lt;/span>&lt;span style="color:#000;font-weight:bold">])&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;li>&lt;code>enable_dhcp&lt;/code> - True to enable, False to disable&lt;/li>
@@ -2122,8 +2111,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="set_ipv6_gateway">set_ipv6_gateway&lt;/h3>
 &lt;p>Set the IPv6 gateway for the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.set_ipv6_gateway(ifname = interface_name, gateway = ipv6gateway)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">set_ipv6_gateway&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">gateway&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">ipv6gateway&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;li>&lt;code>gateway&lt;/code> - IPv6 gateway&lt;/li>
@@ -2138,8 +2127,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="get_dns_domains">get_dns_domains&lt;/h3>
 &lt;p>Get the list of DNS domains for the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_dns_domains(ifname = interface_name)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_dns_domains&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;/ul>
@@ -2151,8 +2140,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="get_dns_servers">get_dns_servers&lt;/h3>
 &lt;p>Get the list of DNS servers and the mode for the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_dns_servers(ifname = interface_name)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_dns_servers&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;/ul>
@@ -2164,8 +2153,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="set_dns_domains">set_dns_domains&lt;/h3>
 &lt;p>Set the list of DNS domains for the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.set_dns_domains(domains = [&amp;quot;domain1&amp;quot;,&amp;quot;domain2&amp;quot;,...], ifname = interface_name)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">set_dns_domains&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">domains&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;domain1&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;domain2&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">...&lt;/span>&lt;span style="color:#000;font-weight:bold">],&lt;/span> &lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>domains&lt;/code> - comma-separated list of one or more domains&lt;/li>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
@@ -2178,8 +2167,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="set_dns_servers">set_dns_servers&lt;/h3>
 &lt;p>Set the list of DNS servers for the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.set_dns_servers(dns_mode = [dhcp, static], servers = [&amp;quot;server1&amp;quot;,&amp;quot;server2&amp;quot;, ...], ifname = interface_name)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">set_dns_servers&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">dns_mode&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#000">dhcp&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">static&lt;/span>&lt;span style="color:#000;font-weight:bold">],&lt;/span> &lt;span style="color:#000">servers&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;server1&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;server2&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">...&lt;/span>&lt;span style="color:#000;font-weight:bold">],&lt;/span> &lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>dns_mode&lt;/code> - dhcp or static&lt;/li>
 &lt;li>&lt;code>servers&lt;/code> - comma-separate list of one or more servers&lt;/li>
@@ -2194,8 +2183,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="get_link_iaid">get_link_iaid&lt;/h3>
 &lt;p>Get the IAID for the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_link_iaid(ifname = interface)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_link_iaid&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;/ul>
@@ -2207,8 +2196,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="set_link_iaid">set_link_iaid&lt;/h3>
 &lt;p>Set the IAID for the specified interface.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.set_link_iaid(ifname = interface_name, iaid = &amp;lt;iaid&amp;gt;)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">set_link_iaid&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">iaid&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">&amp;lt;&lt;/span>&lt;span style="color:#000">iaid&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;li>iaid - IAID&lt;/li>
@@ -2221,8 +2210,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="get_dhcp_duid">get_dhcp_duid&lt;/h3>
 &lt;p>Get the DCHP DUID.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_dhcp_duid(ifname = interface_name)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_dhcp_duid&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name (optional)&lt;/li>
 &lt;/ul>
@@ -2234,8 +2223,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="set_dhcp_duid">set_dhcp_duid&lt;/h3>
 &lt;p>Set the DCHP DUID.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.set_dhcp_duid(ifname = interface_name duid = duid)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">set_dhcp_duid&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span> &lt;span style="color:#000">duid&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">duid&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name (optional)&lt;/li>
 &lt;li>&lt;code>duid&lt;/code> - DUID to set&lt;/li>
@@ -2250,8 +2239,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="add_ntp_servers">add_ntp_servers&lt;/h3>
 &lt;p>Add one or more NTP servers to the NTP servers list.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.add_ntp_servers(ntpservers = [&amp;quot;server1&amp;quot;, &amp;quot;server2&amp;quot;, ...])
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">add_ntp_servers&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ntpservers&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;server1&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;server2&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">...&lt;/span>&lt;span style="color:#000;font-weight:bold">])&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ntpservers&lt;/code> - Comma-separated list of NTP servers to add to the list.&lt;/li>
 &lt;/ul>
@@ -2263,8 +2252,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="del_ntp_servers">del_ntp_servers&lt;/h3>
 &lt;p>Remove one or more NTP servers from the NTP servers list.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.del_ntp_servers(ntpservers = [&amp;quot;server1&amp;quot;, &amp;quot;server2&amp;quot;, ...])
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">del_ntp_servers&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ntpservers&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;server1&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;server2&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">...&lt;/span>&lt;span style="color:#000;font-weight:bold">])&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ntpservers&lt;/code> - Comma-separated list of NTP servers to remove from the list.&lt;/li>
 &lt;/ul>
@@ -2276,8 +2265,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="get_ntp_servers">get_ntp_servers&lt;/h3>
 &lt;p>Get the NTP servers list.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_ntp_servers()
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Returns&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_ntp_servers&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Returns&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>success: NTP servers list&lt;/li>
 &lt;li>failure: exception&lt;/li>
@@ -2285,8 +2274,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="set_ntp_servers">set_ntp_servers&lt;/h3>
 &lt;p>Set the NTP servers list.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.set_ntp_servers(ntpservers = [&amp;quot;server1&amp;quot;, &amp;quot;server2&amp;quot;, ...])
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">set_ntp_servers&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ntpservers&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;server1&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;server2&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">...&lt;/span>&lt;span style="color:#000;font-weight:bold">])&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ntpservers&lt;/code> - Comma-separated list of NTP servers to set in the list.&lt;/li>
 &lt;/ul>
@@ -2298,8 +2287,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="get_hostname">get_hostname&lt;/h3>
 &lt;p>Get the host name.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;p>net.get_hostname()&lt;/p>
-&lt;p>&lt;strong>Returns&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_hostname&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Returns&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>success: host name&lt;/li>
 &lt;li>failure: exception&lt;/li>
@@ -2307,8 +2296,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="set_hostname">set_hostname&lt;/h3>
 &lt;p>Set the host name.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.set_hostname(hostname)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">set_hostname&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">hostname&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>hostname&lt;/code> - name to assign to the host&lt;/li>
 &lt;/ul>
@@ -2320,8 +2309,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="wait_for_ip">wait_for_ip&lt;/h3>
 &lt;p>Wait for the specified interface to acquire a valid IP address of the specified IP address type.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.wait_for_ip(ifname = interface_name, timeout = timeout, addrtypes = [ipv4, ipv6, static_ipv4, static_ipv6, dhcp_ipv4, dhcp_ipv6, auto_ipv6, link_local_ipv6])
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">wait_for_ip&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">timeout&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">timeout&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">addrtypes&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#000">ipv4&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">ipv6&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">static_ipv4&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">static_ipv6&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">dhcp_ipv4&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">dhcp_ipv6&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">auto_ipv6&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">link_local_ipv6&lt;/span>&lt;span style="color:#000;font-weight:bold">])&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;li>&lt;code>timeout&lt;/code> - maximum time (in seconds) to wait (until the link is up) before timing out of the request; specify 0 for no timeout (wait indefinitely)&lt;/li>
@@ -2335,8 +2324,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="wait_for_link_up">wait_for_link_up&lt;/h3>
 &lt;p>Wait for the specified interface to come up.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.wait_for_link_up(ifname = interface_name, timeout = timeout)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">wait_for_link_up&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">ifname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">timeout&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">timeout&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>ifname&lt;/code> - interface name&lt;/li>
 &lt;li>&lt;code>timeout&lt;/code> - maximum time (in seconds) to wait (until the link is up) before timing out of the request; specify 0 for no timeout (wait indefinitely)&lt;/li>
@@ -2349,8 +2338,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="get_network_param">get_network_param&lt;/h3>
 &lt;p>Get the specified network configuration parameter for the specified interface or filename.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.get_network_param(object = IfName or Filename, paramname = SectionName_KeyName)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">get_network_param&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#204a87">object&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">IfName&lt;/span> &lt;span style="color:#204a87;font-weight:bold">or&lt;/span> &lt;span style="color:#000">Filename&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">paramname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">SectionName_KeyName&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>object&lt;/code> - an interface name (for example, &amp;quot;eth0&amp;quot;) or a file name (for example, /etc/systemd/resolved.conf)&lt;/li>
 &lt;li>&lt;code>paramname&lt;/code> - name of a parameter associated with the object; specified in the format SectionName_KeyName (for example, Link_MTUBytes represents the MtuBytes key in [Link] section in &lt;a href="https://www.freedesktop.org/software/systemd/man/systemd.network.html">https://www.freedesktop.org/software/systemd/man/systemd.network.html&lt;/a>)&lt;/li>
@@ -2363,8 +2352,8 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;h3 id="set_network_param">set_network_param&lt;/h3>
 &lt;p>Set the value of a network configuration parameter for the specified interface or filename.&lt;/p>
 &lt;p>&lt;strong>Syntax&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>net.set_network_param(object = interface_name or filename, paramname = SectionName_KeyName, paramvalue = key_value)
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">set_network_param&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#204a87">object&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">interface_name&lt;/span> &lt;span style="color:#204a87;font-weight:bold">or&lt;/span> &lt;span style="color:#000">filename&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">paramname&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">SectionName_KeyName&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#000">paramvalue&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">key_value&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Parameters&lt;/strong>&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>object&lt;/code> - an interface name (for example, &amp;quot;eth0&amp;quot;) or a file name (for example, /etc/systemd/resolved.conf)&lt;/li>
 &lt;li>&lt;code>paramname&lt;/code> - name of a parameter associated with the object; specified in the format SectionName_KeyName (for example, Link_MTUBytes represents the MtuBytes key in [Link] section in &lt;a href="https://www.freedesktop.org/software/systemd/man/systemd.network.html">https://www.freedesktop.org/software/systemd/man/systemd.network.html&lt;/a>)&lt;/li>
@@ -2373,17 +2362,4 @@ adds ntp servers. returns success: 0, failure: exception.
 &lt;ul>
 &lt;li>success: 0&lt;/li>
 &lt;li>failure: exception&lt;/li>
-&lt;/ul></description></item><item><title>Docs:</title><link>/docs/administration-guide/managing-network-configuration/installing-the-packages-for-tcpdump-and-netcat-with-tdnf/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/installing-the-packages-for-tcpdump-and-netcat-with-tdnf/</guid><description>
-&lt;p>Photon OS includes the following networking tools:&lt;/p>
-&lt;ul>
-&lt;li>
-&lt;p>&lt;strong>tcpdump&lt;/strong>. A networking tool that captures and analyzes packets on a network interface. &lt;code>tcpdump&lt;/code> is not available with the minimal version of Photon OS but available in the repository. The minimal version includes the &lt;code>iproute2&lt;/code> tools by default.&lt;/p>
-&lt;p>You can install &lt;code>tcpdump&lt;/code> and its accompanying package &lt;code>libpcap&lt;/code>, a C/C++ library for capturing network traffic, by using &lt;code>tdnf&lt;/code>:&lt;/p>
-&lt;pre>&lt;code>&lt;/code>&lt;/pre>&lt;/li>
-&lt;/ul>
-&lt;p>tdnf install tcpdump&lt;/p>
-&lt;pre>&lt;code>
-- **netcat**. A tool to send data over network connections with TCP or UDP. This tool is not included in either the minimal or the full version of Photon OS. But since `netcat` furnishes powerful options for analyzing, troubleshooting, and debugging network connections, you might want to install it. To install `netcat', run the following command:
-```
-tdnf install netcat
-&lt;/code>&lt;/pre></description></item></channel></rss>
+&lt;/ul></description></item></channel></rss>

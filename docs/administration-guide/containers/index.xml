@@ -15,7 +15,7 @@
 &lt;pre>&lt;code>docker run -i -t photon /bin/bash
 &lt;/code>&lt;/pre></description></item><item><title>Docs: Kubernetes</title><link>/docs/administration-guide/containers/kubernetes/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/containers/kubernetes/</guid><description>
 &lt;p>The Kubernetes package provides several services: kube-apiserver, kube-scheduler, kube-controller-manager, kubelet, kube-proxy. These services are managed by &lt;code>systemd&lt;/code>. Their configuration resides in a central location: &lt;code>/etc/kubernetes&lt;/code>.&lt;/p>
-&lt;p>For more information, see &lt;a href="../../../user-guide/kubernetes-on-photon-os/">Running Kubernetes on Photon OS&lt;/a>.&lt;/p></description></item><item><title>Docs: Support for distributed builds using Kubernetes</title><link>/docs/administration-guide/containers/support_distributed_builds/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/containers/support_distributed_builds/</guid><description>
+&lt;p>For more information, see &lt;a href="../../../docs/user-guide/kubernetes-on-photon-os/">Running Kubernetes on Photon OS&lt;/a>.&lt;/p></description></item><item><title>Docs: Support for distributed builds using Kubernetes</title><link>/docs/administration-guide/containers/support_distributed_builds/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/containers/support_distributed_builds/</guid><description>
 &lt;p>The distributed system using Kubernetes allows the build system to utilize the maximum CPU power across a kubernetes cluster (pods) for faster build process.&lt;/p>
 &lt;p>Prerequisites&lt;/p>
 &lt;ul>
@@ -47,10 +47,12 @@ Note: Keep the &lt;code>command&lt;/code> with flag &lt;code>'SCHEDULER_SERVER=e
 &lt;li>Run &lt;code>make distributed-build&lt;/code>.&lt;/li>
 &lt;/ol>
 &lt;p>Note:&lt;/p>
-&lt;p>i)This process will make use of the &lt;code>kubeconfig&lt;/code> file present under the home directory and start building packages over the specified cluster.&lt;/p>
-&lt;p>ii)It creates one Master pod and multiple worker pods (numbers defined in config.json).&lt;/p>
-&lt;p>iii)The master pod runs the scheduler while the worker or the builder pods build the packages.&lt;/p>
-&lt;p>iv)Distributed Builder monitors the build mob and deletes everything when build has either completed successfully or failed.&lt;/p>
+&lt;ul>
+&lt;li>This process will make use of the &lt;code>kubeconfig&lt;/code> file present under the home directory and start building packages over the specified cluster.&lt;/li>
+&lt;li>It creates one Master pod and multiple worker pods (numbers defined in config.json).&lt;/li>
+&lt;li>The master pod runs the scheduler while the worker or the builder pods build the packages.&lt;/li>
+&lt;li>Distributed Builder monitors the build mob and deletes everything when build has either completed successfully or failed.&lt;/li>
+&lt;/ul>
 &lt;p>The master starts the scheduler server to schedule the packages that have to be built.
 The worker makes REST calls to scheduler server.get package and notify after the build.&lt;/p>
 &lt;p>The distributed build also builds cloud images.&lt;/p></description></item></channel></rss>

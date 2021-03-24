@@ -64,27 +64,27 @@ systemctl daemon-reload chkconfig sshd --add
 &lt;p>The journalctl tool queries the contents of the systemd journal. On Photon OS, all the system logs except the installation log and the cloud-init log are written into the systemd journal.&lt;/p>
 &lt;p>When you run the &lt;code>journalctl&lt;/code> command without any parameters, it displays all the contents of the journal, beginning with the oldest entry.&lt;/p>
 &lt;p>To display the output in reverse order with new entries first, include the &lt;code>-r&lt;/code> option in the command:&lt;/p>
-&lt;pre>&lt;code>journalctl -r
-&lt;/code>&lt;/pre>
-&lt;p>The &lt;code>journalctl&lt;/code> command includes many options to filter its output. For help troubleshooting systemd, two journalctl queries are particularly useful:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">journalctl -r
+&lt;/code>&lt;/pre>&lt;p>The &lt;code>journalctl&lt;/code> command includes many options to filter its output. For help troubleshooting systemd, two journalctl queries are particularly useful:&lt;/p>
 &lt;ul>
 &lt;li>
 &lt;p>Showing the log entries for the last boot.&lt;/p>
 &lt;p>The following command displays the messages that systemd generated during the last time the machine started:&lt;/p>
-&lt;p>journalctl -b&lt;/p>
 &lt;/li>
+&lt;/ul>
+&lt;pre>&lt;code class="language-console" data-lang="console">journalctl -b
+&lt;/code>&lt;/pre>&lt;ul>
 &lt;li>
 &lt;p>Showing the log entries for a systemd service unit.Item&lt;/p>
 &lt;p>The following command reveals the messages for only the systemd service unit specified by the &lt;code>-u&lt;/code> option, which in the following example is the auditing service:&lt;/p>
-&lt;p>journalctl -u auditd&lt;/p>
 &lt;/li>
 &lt;/ul>
-&lt;p>You can look at the messages for systemd itself or for the network service:&lt;/p>
-&lt;pre>&lt;code>journalctl -u systemd
+&lt;pre>&lt;code class="language-console" data-lang="console">journalctl -u auditd
+&lt;/code>&lt;/pre>&lt;p>You can look at the messages for systemd itself or for the network service:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">journalctl -u systemd
 journalctl -u systemd-networkd
-&lt;/code>&lt;/pre>
-&lt;p>Example:&lt;/p>
-&lt;pre>&lt;code>root@photon-1a0375a0392e [ ~ ]# journalctl -u systemd-networkd
+&lt;/code>&lt;/pre>&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">root@photon-1a0375a0392e [ ~ ]# journalctl -u systemd-networkd
 -- Logs begin at Tue 2016-08-23 14:35:50 UTC, end at Tue 2016-08-23 23:45:44 UTC. --
 Aug 23 14:35:52 photon-1a0375a0392e systemd[1]: Starting Network Service...
 Aug 23 14:35:52 photon-1a0375a0392e systemd-networkd[458]: Enumeration completed
@@ -93,8 +93,7 @@ Aug 23 14:35:52 photon-1a0375a0392e systemd-networkd[458]: eth0: Gained carrier
 Aug 23 14:35:53 photon-1a0375a0392e systemd-networkd[458]: eth0: DHCPv4 address 198.51.100.1
 Aug 23 14:35:54 photon-1a0375a0392e systemd-networkd[458]: eth0: Gained IPv6LL
 Aug 23 14:35:54 photon-1a0375a0392e systemd-networkd[458]: eth0: Configured
-&lt;/code>&lt;/pre>
-&lt;p>For more information, see &lt;a href="https://www.freedesktop.org/software/systemd/man/journalctl.html">journalctl&lt;/a> or the journalctl man page by running this command: &lt;code>man journalctl&lt;/code>&lt;/p></description></item><item><title>Docs: Inspecting Services with 'systemd-analyze'</title><link>/docs/troubleshooting-guide/troubleshooting-with-systemd/inspecting-services-with-systemd-analyze/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/troubleshooting-with-systemd/inspecting-services-with-systemd-analyze/</guid><description>
+&lt;/code>&lt;/pre>&lt;p>For more information, see &lt;a href="https://www.freedesktop.org/software/systemd/man/journalctl.html">journalctl&lt;/a> or the journalctl man page by running this command: &lt;code>man journalctl&lt;/code>&lt;/p></description></item><item><title>Docs: Inspecting Services with 'systemd-analyze'</title><link>/docs/troubleshooting-guide/troubleshooting-with-systemd/inspecting-services-with-systemd-analyze/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/troubleshooting-with-systemd/inspecting-services-with-systemd-analyze/</guid><description>
 &lt;p>The &lt;code>systemd-analyze&lt;/code> command reveals performance statistics for boot times, traces system services, and verifies unit files. It can help troubleshoot slow system boots and incorrect unit files. See the man page for a list of options.&lt;/p>
 &lt;p>Examples:&lt;/p>
 &lt;pre>&lt;code>systemd-analyze blame

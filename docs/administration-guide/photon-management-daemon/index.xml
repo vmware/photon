@@ -10,26 +10,28 @@
 &lt;li>PMD C API&lt;/li>
 &lt;/ul>
 &lt;h2 id="pmd-rest-api">PMD REST API&lt;/h2>
-&lt;p>The PMD REST API is an openapi 2.0 specification. Once the pmd package is installed, you can use a Swagger UI tool to browse the REST API specifications (/etc/pmd/restapispec.json).
+&lt;p>The PMD REST API is an openapi 2.0 specification. Once the pmd package is installed, you can use a Swagger UI tool to browse the REST API specifications (&lt;code>/etc/pmd/restapispec.json&lt;/code>).
 You can also browse it using the copenapi_cli tool that comes with the pmd package:&lt;/p>
-&lt;pre>&lt;code># copenapi_cli --apispec /etc/pmd/restapispec.json
+&lt;pre>&lt;code class="language-console" data-lang="console">copenapi_cli --apispec /etc/pmd/restapispec.json
 &lt;/code>&lt;/pre>&lt;p>For more information about the copenapi_cli tool, refer to &lt;a href="https://github.com/vmware/copenapi">github.com/vmware/copenapi&lt;/a>.&lt;/p>
 &lt;h2 id="pmd-python-api">PMD Python API&lt;/h2>
 &lt;p>Python3 is included with your Photon OS 3.0 distribution. PMD Python interfaces are available for python3 (pmd-python3) and python2 (pmd-python2). You can use tdnf to ensure that the latest version is installed:&lt;/p>
-&lt;pre>&lt;code># tdnf install pmd-python3
+&lt;pre>&lt;code class="language-console" data-lang="console"># tdnf install pmd-python3
 # systemctl start pmd
 &lt;/code>&lt;/pre>&lt;p>To navigate the help documentation for the pmd Python packages:&lt;/p>
-&lt;pre>&lt;code># python3
-&amp;gt;&amp;gt;&amp;gt; import pmd
-&amp;gt;&amp;gt;&amp;gt; net = pmd.server().net
-&amp;gt;&amp;gt;&amp;gt; help(pmd)
-&lt;/code>&lt;/pre>&lt;p>To show help text for individual interfaces:&lt;/p>
-&lt;pre>&lt;code>&amp;gt;&amp;gt;&amp;gt; help(pmd.server().net)
-&amp;gt;&amp;gt;&amp;gt; help(pmd.server().pkg)
-&amp;gt;&amp;gt;&amp;gt; help(pmd.server().firewall)
-&amp;gt;&amp;gt;&amp;gt; help(pmd.server().user)
-&lt;/code>&lt;/pre>&lt;p>For details about the network commands, see also the &lt;a href="../../../administration-guide/netmgr.python/">Network Configuration Manager - Python API&lt;/a>.&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#8f5902;font-style:italic"># python3&lt;/span>
+&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#204a87;font-weight:bold">import&lt;/span> &lt;span style="color:#000">pmd&lt;/span>
+&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#000">net&lt;/span> &lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span> &lt;span style="color:#000">pmd&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">server&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">net&lt;/span>
+&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#000">help&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">pmd&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>To show help text for individual interfaces:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-python" data-lang="python">&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#000">help&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">pmd&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">server&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">net&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#000">help&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">pmd&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">server&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">pkg&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#000">help&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">pmd&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">server&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">firewall&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;span style="color:#ce5c00;font-weight:bold">&amp;gt;&amp;gt;&amp;gt;&lt;/span> &lt;span style="color:#000">help&lt;/span>&lt;span style="color:#000;font-weight:bold">(&lt;/span>&lt;span style="color:#000">pmd&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">server&lt;/span>&lt;span style="color:#000;font-weight:bold">()&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">.&lt;/span>&lt;span style="color:#000">user&lt;/span>&lt;span style="color:#000;font-weight:bold">)&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>For details about the network commands, see also the &lt;a href="../../../docs/administration-guide/netmgr.python/">Network Configuration Manager - Python API&lt;/a>.&lt;/p>
 &lt;h2 id="pmd-c-api">PMD C API&lt;/h2>
-&lt;p>PMD C APIs are defined in the header files (pmd_fwmgmt.h, pmd_netmgr.h, pmd_pkgmgmt.h, pmd_usermgmt.h) that are stored in the following location:&lt;/p>
-&lt;pre>&lt;code>[https://github.com/vmware/pmd/tree/master/include](https://github.com/vmware/pmd/tree/master/include)
-&lt;/code>&lt;/pre>&lt;p>For details about the network commands, see also the &lt;a href="../../../administration-guide/managing-network-configuration//netmgr.c/">Network Configuration Manager - C API&lt;/a>.&lt;/p></description></item></channel></rss>
+&lt;p>PMD C APIs are defined in the header files (&lt;code>pmd_fwmgmt.h&lt;/code>, &lt;code>pmd_netmgr.h&lt;/code>, &lt;code>pmd_pkgmgmt.h&lt;/code>, &lt;code>pmd_usermgmt.h&lt;/code>) that are stored in the following location:&lt;/p>
+&lt;ul>
+&lt;li>&lt;a href="https://github.com/vmware/pmd/tree/master/include">https://github.com/vmware/pmd/tree/master/include&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>For details about the network commands, see also the &lt;a href="../../../docs/administration-guide/managing-network-configuration/netmgr.c/">Network Configuration Manager - C API&lt;/a>.&lt;/p></description></item></channel></rss>

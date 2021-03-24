@@ -50,7 +50,59 @@ ln -s ../eth0.service eth0.service
 &lt;p>To stop it and disable it, run the following commands as root:&lt;/p>
 &lt;pre>&lt;code>systemctl stop httpd.service
 systemctl disable httpd.service
-&lt;/code>&lt;/pre></description></item><item><title>Docs: Auditing System Events with auditd</title><link>/docs/administration-guide/managing-services-withsystemd/auditing-system-events-with-auditd/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-services-withsystemd/auditing-system-events-with-auditd/</guid><description>
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Installing Sendmail</title><link>/docs/administration-guide/managing-services-withsystemd/installing-sendmail/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-services-withsystemd/installing-sendmail/</guid><description>
+&lt;p>Before you install Sendmail, you should set the fully qualified domain name (FQDN) of your Photon OS machine.&lt;/p>
+&lt;p>By default, Sendmail is not installed with either the minimal or full version of Photon OS. When you install Sendmail, it provides Photon OS with a &lt;code>systemd&lt;/code> service file that typically enables Sendmail. If the service is not enabled after installation, you must enable it.&lt;/p>
+&lt;p>Sendmail resides in the Photon extras repository. You can install it with &lt;code>tdnf&lt;/code> after setting the machine&amp;rsquo;s FQDN.&lt;/p>
+&lt;h2 id="procedure">Procedure&lt;/h2>
+&lt;ol>
+&lt;li>Check whether the FQDN of the machine is set by running the &lt;code>hostnamectl status&lt;/code> command:&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-console" data-lang="console">hostnamectl status
+Static hostname: photon-d9ee400e194e
+Icon name: computer-vm
+Chassis: vm
+Machine ID: a53b414142f944319bd0c8df6d811f36
+Boot ID: 1f75baca8cc249f79c3794978bd82977
+Virtualization: vmware
+Operating System: VMware Photon/Linux
+Kernel: Linux 4.4.8
+Architecture: x86-64
+&lt;/code>&lt;/pre>
+&lt;div class="alert alert-primary" role="alert">
+&lt;h4 class="alert-heading">Note&lt;/h4>
+In the results above, the FQDN is not set. The Photon OS machine only has a short name. If the FQDN were set, the hostname would be in its full form, typically with a domain name.
+&lt;/div>
+&lt;ol start="2">
+&lt;li>
+&lt;p>If the machine does not have an FQDN, set one by running &lt;code>hostnamectl set-hostname new-name&lt;/code>, replacing &lt;code>new-name&lt;/code> with the FQDN that you want. For example:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">hostnamectl set-hostname photon-d9ee400e194e.corp.example.com
+&lt;/code>&lt;/pre>&lt;p>The &lt;code>hostnamectl status&lt;/code> command now shows that the machine has an FQDN:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">root@photon-d9ee400e194e [ ~ ]# hostnamectl status
+Static hostname: photon-d9ee400e194e.corp.example.com
+Icon name: computer-vm
+Chassis: vm
+Machine ID: a53b414142f944319bd0c8df6d811f36
+Boot ID: 1f75baca8cc249f79c3794978bd82977
+Virtualization: vmware
+Operating System: VMware Photon/Linux
+Kernel: Linux 4.4.8
+Architecture: x86-64
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Install Sendmail:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">tdnf install sendmail
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Verify if Sendmail is enabled:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">systemctl status sendmail
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>
+&lt;p>Enable Sendmail if it is disabled and then start it:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">systemctl enable sendmail
+systemctl start sendmail
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;/ol></description></item><item><title>Docs: Auditing System Events with auditd</title><link>/docs/administration-guide/managing-services-withsystemd/auditing-system-events-with-auditd/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-services-withsystemd/auditing-system-events-with-auditd/</guid><description>
 &lt;p>To manage security on Photon OS, the Linux auditing service &lt;code>auditd&lt;/code> is enabled and active by default on the full version of Photon OS.&lt;/p>
 &lt;p>The folloiwng command shows the security status:&lt;/p>
 &lt;pre>&lt;code>systemctl status auditd
@@ -78,68 +130,12 @@ CGroup: /system.slice/auditd.service
 &lt;pre>&lt;code>man aureport&lt;/code>&lt;/pre></description></item><item><title>Docs: Analyzing systemd Logs with journalctl</title><link>/docs/administration-guide/managing-services-withsystemd/analyzing-systemd-logs-with-journalctl/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-services-withsystemd/analyzing-systemd-logs-with-journalctl/</guid><description>
 &lt;p>The &lt;code>journalctl&lt;/code> tool queries the contents of the &lt;code>systemd&lt;/code> journal.&lt;/p>
 &lt;p>The following command displays the messages that &lt;code>systemd&lt;/code> generated the last time the machine started:&lt;/p>
-&lt;pre>&lt;code>journalctl -b
-&lt;/code>&lt;/pre>
-&lt;p>The following command reveals the messages for the systemd service unit specified by the &lt;code>-u&lt;/code> option:&lt;/p>
-&lt;pre>&lt;code>journalctl -u auditd
-&lt;/code>&lt;/pre>
-&lt;p>In the above example, &lt;code>auditd&lt;/code> is the system service unit.&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">journalctl -b
+&lt;/code>&lt;/pre>&lt;p>The following command reveals the messages for the systemd service unit specified by the &lt;code>-u&lt;/code> option:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">journalctl -u auditd
+&lt;/code>&lt;/pre>&lt;p>In the above example, &lt;code>auditd&lt;/code> is the system service unit.&lt;/p>
 &lt;p>For more information, see the &lt;code>journalctl&lt;/code> man page by running the following command on Photon OS:&lt;/p>
-&lt;pre>&lt;code>man journalctl
+&lt;pre>&lt;code class="language-console" data-lang="console">man journalctl
 &lt;/code>&lt;/pre></description></item><item><title>Docs: Migrating Scripts to systemd</title><link>/docs/administration-guide/managing-services-withsystemd/migrating-scripts-to-systemd/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-services-withsystemd/migrating-scripts-to-systemd/</guid><description>
 &lt;p>Although &lt;code>systemd&lt;/code> maintains compatibility with &lt;code>init.d&lt;/code> scripts, as a best practice, you must adapt the scripts that you want to run on Photon OS to &lt;code>systemd&lt;/code> to avoid potential problems.&lt;/p>
-&lt;p>Such a conversion standardizes the scripts, reduces the footprint of your code, makes the scripts easier to read and maintain, and improves their robustness on a &lt;code>systemd&lt;/code> system.&lt;/p></description></item><item><title>Docs:</title><link>/docs/administration-guide/managing-services-withsystemd/installing-sendmail/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-services-withsystemd/installing-sendmail/</guid><description>
-&lt;h1 id="installing-sendmail">Installing Sendmail&lt;/h1>
-&lt;p>Before you install Sendmail, you should set the fully qualified domain name (FQDN) of your Photon OS machine.&lt;/p>
-&lt;p>By default, Sendmail is not installed with either the minimal or full version of Photon OS. When you install Sendmail, it provides Photon OS with a &lt;code>systemd&lt;/code> service file that typically enables Sendmail. If the service is not enabled after installation, you must enable it.&lt;/p>
-&lt;p>Sendmail resides in the Photon extras repository. You can install it with &lt;code>tdnf&lt;/code> after setting the machine&amp;rsquo;s FQDN.&lt;/p>
-&lt;h2 id="procedure">Procedure&lt;/h2>
-&lt;ol>
-&lt;li>
-&lt;p>Check whether the FQDN of the machine is set by running the &lt;code>hostnamectl status&lt;/code> command:&lt;/p>
-&lt;pre>&lt;code>&lt;/code>&lt;/pre>&lt;/li>
-&lt;/ol>
-&lt;p>hostnamectl status
-Static hostname: photon-d9ee400e194e
-Icon name: computer-vm
-Chassis: vm
-Machine ID: a53b414142f944319bd0c8df6d811f36
-Boot ID: 1f75baca8cc249f79c3794978bd82977
-Virtualization: vmware
-Operating System: VMware Photon/Linux
-Kernel: Linux 4.4.8
-Architecture: x86-64&lt;/p>
-&lt;pre>&lt;code>
-In the results above, the FQDN is not set. The Photon OS machine only has a short name. If the FQDN were set, the hostname would be in its full form, typically with a domain name.
-1. If the machine does not have an FQDN, set one by running `hostnamectl set-hostname new-name`, replacing `new-name` with the FQDN that you want. For example:
-```
-hostnamectl set-hostname photon-d9ee400e194e.corp.example.com
-&lt;/code>&lt;/pre>&lt;pre>&lt;code>The `hostnamectl status` command now shows that the machine has an FQDN:
-```
-&lt;/code>&lt;/pre>
-&lt;p>root@photon-d9ee400e194e [ ~ ]# hostnamectl status
-Static hostname: photon-d9ee400e194e.corp.example.com
-Icon name: computer-vm
-Chassis: vm
-Machine ID: a53b414142f944319bd0c8df6d811f36
-Boot ID: 1f75baca8cc249f79c3794978bd82977
-Virtualization: vmware
-Operating System: VMware Photon/Linux
-Kernel: Linux 4.4.8
-Architecture: x86-64&lt;/p>
-&lt;pre>&lt;code>
-1. Install Sendmail:
-```
-tdnf install sendmail
-&lt;/code>&lt;/pre>&lt;ol>
-&lt;li>
-&lt;p>Verify if Sendmail is enabled:&lt;/p>
-&lt;pre>&lt;code>&lt;/code>&lt;/pre>&lt;/li>
-&lt;/ol>
-&lt;p>systemctl status sendmail&lt;/p>
-&lt;pre>&lt;code>
-1. Enable Sendmail if it is disabled and then start it:
-```
-systemctl enable sendmail
-systemctl start sendmail
-&lt;/code>&lt;/pre></description></item></channel></rss>
+&lt;p>Such a conversion standardizes the scripts, reduces the footprint of your code, makes the scripts easier to read and maintain, and improves their robustness on a &lt;code>systemd&lt;/code> system.&lt;/p></description></item></channel></rss>

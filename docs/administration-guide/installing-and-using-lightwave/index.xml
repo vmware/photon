@@ -1,46 +1,43 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Remotely Upgrading a Photon OS Machine</title><link>/docs/administration-guide/installing-and-using-lightwave/</link><description>Recent content in Remotely Upgrading a Photon OS Machine on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/administration-guide/installing-and-using-lightwave/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Remotely Upgrade a Single Photon OS Machine With Photon Management Daemon</title><link>/docs/administration-guide/installing-and-using-lightwave/remotely-upgrade-a-photon-os-machine-with-lightwave-client-and-photon-management-daemon-installed/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/installing-and-using-lightwave/remotely-upgrade-a-photon-os-machine-with-lightwave-client-and-photon-management-daemon-installed/</guid><description>
-&lt;p>After you have a configured the Photon Management Daemon on a machine, you can remotely upgrade any installed package on that machine. You can use the &lt;code>root&lt;/code> user credentials.&lt;/p>
-&lt;p>Upgrade process uses &lt;code>pmd-cli&lt;/code> that is supported from Photon Management Daemon. You can initiate the upgrade process from any machine that has Photon Management Daemon CLI installed.&lt;/p>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– Remotely Upgrading a Photon OS Machine</title><link>/docs/administration-guide/installing-and-using-lightwave/</link><description>Recent content in Remotely Upgrading a Photon OS Machine on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/administration-guide/installing-and-using-lightwave/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Remotely Update a Single Photon OS Machine With Photon Management Daemon</title><link>/docs/administration-guide/installing-and-using-lightwave/remotely-upgrade-a-photon-os-machine-with-lightwave-client-and-photon-management-daemon-installed/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/installing-and-using-lightwave/remotely-upgrade-a-photon-os-machine-with-lightwave-client-and-photon-management-daemon-installed/</guid><description>
+&lt;p>After you have a configured the Photon Management Daemon on a machine, you can remotely update any installed package on that machine. You can use the &lt;code>root&lt;/code> user credentials.&lt;/p>
+&lt;p>The update process uses &lt;code>pmd-cli&lt;/code> which is supported from Photon Management Daemon. You can initiate the update process from any machine that has Photon Management Daemon CLI installed.&lt;/p>
 &lt;h2 id="prerequisites">Prerequisites&lt;/h2>
 &lt;ul>
 &lt;li>Have an installed Photon Management Daemon on the client.&lt;/li>
-&lt;li>Have in installed Photon Management Daemon CLI (pmd-cli) on a machine from which you perform the updates.&lt;/li>
+&lt;li>Have in installed Photon Management Daemon CLI (&lt;code>pmd-cli&lt;/code>) on a machine from which you perform the updates.&lt;/li>
 &lt;/ul>
 &lt;h2 id="procedure">Procedure&lt;/h2>
 &lt;ol>
 &lt;li>
-&lt;p>To initiate remote upgrade, log in to a machine that has Photon Management Daemon CLI installed over SSH.&lt;/p>
+&lt;p>To initiate remote update, log in to a machine that has Photon Management Daemon CLI installed over SSH.&lt;/p>
 &lt;/li>
 &lt;li>
-&lt;p>Identify packages that can be upgraded on the client machine.
-2. List the available updates for the machine.&lt;/p>
-&lt;pre>&lt;code> `# pmd-cli --server-name &amp;lt;machine-IP-address&amp;gt; --user root pkg list updates`
-&lt;/code>&lt;/pre>
-&lt;ol start="3">
-&lt;li>
-&lt;p>Verify the currently installed version of a package, for example &lt;code>sed&lt;/code>.&lt;/p>
-&lt;p>&lt;code># &lt;/code># pmd-cli &amp;ndash;server-name &lt;machine-IP-address> &amp;ndash;user root pkg installed sed`
-The installed version number shows as earlier than the one listed under the available updates.&lt;/p>
+&lt;p>Identify packages that can be updated on the client machine.&lt;/p>
+&lt;ul>
+&lt;li>List the available updates for the machine.&lt;/li>
+&lt;/ul>
 &lt;/li>
 &lt;/ol>
-&lt;/li>
-&lt;li>
-&lt;p>Initiate the upgrade, in this example of the &lt;code>sed&lt;/code> package, enter password, and wait for the command to complete.&lt;/p>
-&lt;p>&lt;code># pmd-cli --server-name &amp;lt;machine-IP-address&amp;gt; --user root pkg update sed&lt;/code>&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>(Optional) Verify that the client machine package was upgraded successfully.&lt;/p>
-&lt;ol>
-&lt;li>
-&lt;p>Log in to the machine that was upgraded over SSH.&lt;/p>
-&lt;/li>
-&lt;li>
-&lt;p>List the installed version of the &lt;code>sed&lt;/code> package.&lt;/p>
-&lt;p>&lt;code># pmd-cli --server-name &amp;lt;machine-IP-address&amp;gt; --user root pkg installed sed&lt;/code>&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">pmd-cli --server-name &amp;lt;machine-IP-address&amp;gt; --user root pkg list updates
+&lt;/code>&lt;/pre>&lt;ol start="3">
+&lt;li>Verify the currently installed version of a package, for example &lt;code>sed&lt;/code>.&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-console" data-lang="console">pmd-cli --server-name &amp;lt;machine-IP-address&amp;gt; --user root pkg installed sed
+&lt;/code>&lt;/pre>&lt;p>The installed version number shows as earlier than the one listed under the available updates.&lt;/p>
+&lt;ol start="4">
+&lt;li>Initiate the update, in this example of the &lt;code>sed&lt;/code> package, enter password, and wait for the command to complete.&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code class="language-console" data-lang="console">pmd-cli --server-name &amp;lt;machine-IP-address&amp;gt; --user root pkg update sed
+&lt;/code>&lt;/pre>&lt;ol start="5">
+&lt;li>(Optional) Verify that the client machine package was updated successfully.
+&lt;ul>
+&lt;li>Log in to the machine that was updated over SSH.&lt;/li>
+&lt;li>List the installed version of the &lt;code>sed&lt;/code> package.&lt;/li>
+&lt;/ul>
 &lt;/li>
 &lt;/ol>
-&lt;/li>
-&lt;/ol></description></item><item><title>Docs: Remotely Upgrade Multiple Photon OS Machines With Photon Management Daemon</title><link>/docs/administration-guide/installing-and-using-lightwave/remotely-upgrade-multiple-photon-os-machines-with-lightwave-client-and-photon-management-daemon-installed/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/installing-and-using-lightwave/remotely-upgrade-multiple-photon-os-machines-with-lightwave-client-and-photon-management-daemon-installed/</guid><description>
+&lt;pre>&lt;code class="language-console" data-lang="console">pmd-cli --server-name &amp;lt;machine-IP-address&amp;gt; --user root pkg installed sed
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Remotely Upgrade Multiple Photon OS Machines With Photon Management Daemon</title><link>/docs/administration-guide/installing-and-using-lightwave/remotely-upgrade-multiple-photon-os-machines-with-lightwave-client-and-photon-management-daemon-installed/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/installing-and-using-lightwave/remotely-upgrade-multiple-photon-os-machines-with-lightwave-client-and-photon-management-daemon-installed/</guid><description>
 &lt;p>After you have a configured the Photon Management Daemon (PMD) on multiple machines, you can remotely upgrade any installed package on these machines.&lt;/p>
 &lt;p>Upgrade process uses &lt;code>copenapi_cli&lt;/code> that is supported from Photon Management Daemon. You can initiate the upgrade process from any machine that has Photon Management Daemon installed.&lt;/p>
 &lt;h2 id="prerequisites">Prerequisites&lt;/h2>

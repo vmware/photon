@@ -2,359 +2,274 @@
 <a class=dropdown-item href=../../../docs-v3/>v3</a>
 <a class=dropdown-item href=../../../assets/files/html/3.0/>v3 (old)</a>
 <a class=dropdown-item href=../../../assets/files/html/1.0-2.0/>v2 and v1</a></div></li></div></ul></div></nav></div></header><div class="container-fluid td-outer"><div class=td-main><div class="row flex-xl-nowrap"><div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none"></div><div class="d-none d-xl-block col-xl-2 td-toc d-print-none"></div><main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main><div class=td-content><div class="pageinfo pageinfo-primary d-print-none"><p>This the multi-page printable view of this section.
-<a href=# onclick="return print(),!1">Click here to print</a>.</p><p><a href=../../../docs/command-line-reference/>Return to the regular view of this page</a>.</p></div><h1 class=title>Command-Line Reference</h1><ul><li>1: <a href=#pg-108c8be60349f80ed2fa1d40951c15a7>Command-line Interfaces</a></li><ul><li>1.1: <a href=#pg-f05528a6ba8fdbf06e535912d97d5811>Photon Management Daemon Command-line Interface (pmd-cli)</a></li><li>1.2: <a href=#pg-0451f1b066f757da7d2004f4800d8c68>Photon Network Config Manager Command-line Interface (nmctl)</a></li><li>1.3: <a href=#pg-11a388c580ecc399f748da69eeed2d7d>Photon Real-Time Operating System Command-line Interface</a></li></ul></ul><div class=content><p>The Photon OS <em>Command-Line Reference</em> provides information about the command-line interfaces available in Photon OS.</p><p><strong>Product version: 4.0</strong></p><p>This documentation applies to all 4.0.x releases.</p><h2 id=intended-audiences>Intended Audiences</h2><p>This information is intended for Photon OS administrators and users.</p></div></div><div class=td-content><h1 id=pg-108c8be60349f80ed2fa1d40951c15a7>1 - Command-line Interfaces</h1><p>Photon OS includes the following command-line utilities:</p></div><div class=td-content><h1 id=pg-f05528a6ba8fdbf06e535912d97d5811>1.1 - Photon Management Daemon Command-line Interface (pmd-cli)</h1><p>Photon OS provides the Photon Management Daemon command line interface (pmd-cli).</p><ul><li><a href=#setup-steps>Setup Steps</a></li><li><a href=#syntax>Syntax</a></li><li><a href=#firewall-management>Firewall Management</a></li><li><a href=#network-management>Network Management</a></li><li><a href=#package-management>Package Management</a></li><li><a href=#user-management>User Management</a></li></ul><h1 id=setup-steps>Setup Steps</h1><p>The pmd-cli utility is included with your Photon OS distribution. To make sure that you have the latest version, you can run:</p><pre><code>tdnf install pmd-cli
-</code></pre><h1 id=syntax>Syntax</h1><pre><code>pmd-cli [connection_auth_options] &lt;component&gt; &lt;command&gt; [command_options]
-</code></pre><p>Passed-in parameter values can be enclosed in single (') or double-quotes (") as long as you use matching characters to denote the beginning and end of the value. Unless a parameter value contains special characters or spaces, you can also omit quotes altogether.</p><h2 id=connection--authorization-options>Connection / Authorization Options</h2><h3 id=local-connections>Local Connections</h3><p>For local connections, you omit the connection and authorization options:</p><pre><code>pmd-cli &lt;component&gt; &lt;cmd&gt; &lt;options&gt;
-</code></pre><p>Permissions for the currently logged-in user apply when executing commands. This is the same as specifying &ndash;servername localhost.</p><h3 id=remote-connections>Remote Connections</h3><p>For connecting to a remote server (a server other than the local server), you specify two connection / authorization options:</p><ul><li><code>--servername</code>: name of the server</li><li><code>--user</code>: username of a user account on the server</li></ul><p><strong>Note:</strong> For authentication, you can specify the username (–user &lt;username>) on the command line, but never the password. For security reasons, the system must prompt you for the password.</p><p>The option for remote connection is as follows:</p><p><strong>System User</strong></p><pre><code>pmd-cli --servername &lt;server&gt; --user &lt;username&gt;
-</code></pre><h2 id=component>Component</h2><p><code>&lt;component></code> is one of the following values:</p><ul><li><code>firewall</code></li><li><code>net</code></li><li><code>pkg</code></li><li><code>usr</code></li></ul><h1 id=firewall-management>Firewall Management</h1><p>The Photon Management Daemon provides CLI commands to help you get information about the firewall.</p><h2 id=syntax-1>Syntax</h2><pre><code>pmd-cli [connection_auth_options] firewall &lt;command&gt; [command_options]
-</code></pre><h2 id=firewall-help>firewall help</h2><p>Get help for firewall CLI commands.</p><pre><code>pmd-cli firewall help
-</code></pre><h2 id=firewall-rules>firewall rules</h2><p>Get a list of the current persistent firewall rules.</p><pre><code>pmd-cli firewall rules [command-options]
-</code></pre><p>This command returns information about each firewall rule, such as the chain to which it belongs, the policy to enforce, the table to manipulate, and so on.</p><p>Add a new firewall rule.</p><pre><code>pmd-cli firewall rules --chain &lt;chain_name&gt; --add &lt;rule_specification&gt;
-</code></pre><p>Example:</p><pre><code>pmd-cli firewall rules --chain INPUT --add &quot;-p tcp -m tcp --dport 21 -j ACCEPT&quot;
-</code></pre><p><strong>Note:</strong> To confirm that the firewall rule was added, run iptables -S. Running pmd-cli firewall rules lists only persistent rules.</p><p>Delete a new firewall rule.</p><pre><code>pmd-cli firewall rules --chain &lt;chain_name&gt; --delete &lt;rule_specification&gt;
-</code></pre><p><strong>Note:</strong> To confirm that the firewall rule was removed, run iptables -S. Running pmd-cli firewall rules lists only persistent rules.</p><p>Make firewall rule changes peristent (add &ndash;persist flag)</p><pre><code>pmd-cli firewall rules --chain &lt;chain_name&gt; --add &lt;rule_specification&gt; --persist
-</code></pre><h2 id=firewall-version>firewall version</h2><p>Get the version number of the fwmgmt component on the server.</p><pre><code>pmd-cli firewall version
-</code></pre><h1 id=network-management>Network Management</h1><p>The Photon Management Daemon provides CLI commands to help you manage network interfaces.</p><h2 id=syntax-2>Syntax</h2><pre><code>pmd-cli [connection_auth_options] net &lt;command&gt; [command_options]
+<a href=# onclick="return print(),!1">Click here to print</a>.</p><p><a href=../../../docs/command-line-reference/>Return to the regular view of this page</a>.</p></div><h1 class=title>Command-Line Reference</h1><ul><li>1: <a href=#pg-108c8be60349f80ed2fa1d40951c15a7>Command-line Interfaces</a></li><ul><li>1.1: <a href=#pg-f05528a6ba8fdbf06e535912d97d5811>Photon Management Daemon Command-line Interface (pmd-cli)</a></li><li>1.2: <a href=#pg-0451f1b066f757da7d2004f4800d8c68>Photon Network Config Manager Command-line Interface (nmctl)</a></li><li>1.3: <a href=#pg-11a388c580ecc399f748da69eeed2d7d>Photon Real-Time Operating System Command-line Interface</a></li></ul></ul><div class=content><p>The Photon OS <em>Command-Line Reference</em> provides information about the command-line interfaces available in Photon OS.</p><p><strong>Product version: 4.0</strong></p><p>This documentation applies to all 4.0.x releases.</p><h2 id=intended-audiences>Intended Audiences</h2><p>This information is intended for Photon OS administrators and users.</p></div></div><div class=td-content><h1 id=pg-108c8be60349f80ed2fa1d40951c15a7>1 - Command-line Interfaces</h1><p>Photon OS includes the following command-line utilities:</p></div><div class=td-content><h1 id=pg-f05528a6ba8fdbf06e535912d97d5811>1.1 - Photon Management Daemon Command-line Interface (pmd-cli)</h1><p>Photon OS provides the Photon Management Daemon command line interface (pmd-cli).</p><ul><li><a href=#setup-steps>Setup Steps</a></li><li><a href=#syntax>Syntax</a></li><li><a href=#firewall-management>Firewall Management</a></li><li><a href=#network-management>Network Management</a></li><li><a href=#package-management>Package Management</a></li><li><a href=#user-management>User Management</a></li></ul><h1 id=setup-steps>Setup Steps</h1><p>The pmd-cli utility is included with your Photon OS distribution. To make sure that you have the latest version, you can run:</p><pre><code class=language-console data-lang=console>tdnf install pmd-cli
+</code></pre><h1 id=syntax>Syntax</h1><pre><code class=language-console data-lang=console>pmd-cli [connection_auth_options] &lt;component&gt; &lt;command&gt; [command_options]
+</code></pre><p>Passed-in parameter values can be enclosed in single (') or double-quotes (") as long as you use matching characters to denote the beginning and end of the value. Unless a parameter value contains special characters or spaces, you can also omit quotes altogether.</p><h2 id=connection--authorization-options>Connection / Authorization Options</h2><h3 id=local-connections>Local Connections</h3><p>For local connections, you omit the connection and authorization options:</p><pre><code class=language-console data-lang=console>pmd-cli &lt;component&gt; &lt;cmd&gt; &lt;options&gt;
+</code></pre><p>Permissions for the currently logged-in user apply when executing commands. This is the same as specifying &ndash;servername localhost.</p><h3 id=remote-connections>Remote Connections</h3><p>For connecting to a remote server (a server other than the local server), you specify two connection / authorization options:</p><ul><li><code>--servername</code>: name of the server</li><li><code>--user</code>: username of a user account on the server</li></ul><p><strong>Note:</strong> For authentication, you can specify the username (–user &lt;username>) on the command line, but never the password. For security reasons, the system must prompt you for the password.</p><p>The option for remote connection is as follows:</p><p><strong>System User</strong></p><pre><code class=language-console data-lang=console>pmd-cli --servername &lt;server&gt; --user &lt;username&gt;
+</code></pre><h2 id=component>Component</h2><p><code>&lt;component></code> is one of the following values:</p><ul><li><code>firewall</code></li><li><code>net</code></li><li><code>pkg</code></li><li><code>usr</code></li></ul><h1 id=firewall-management>Firewall Management</h1><p>The Photon Management Daemon provides CLI commands to help you get information about the firewall.</p><h2 id=syntax-1>Syntax</h2><pre><code class=language-console data-lang=console>pmd-cli [connection_auth_options] firewall &lt;command&gt; [command_options]
+</code></pre><h2 id=firewall-help>firewall help</h2><p>Get help for firewall CLI commands.</p><pre><code class=language-console data-lang=console>pmd-cli firewall help
+</code></pre><h2 id=firewall-rules>firewall rules</h2><p>Get a list of the current persistent firewall rules.</p><pre><code class=language-console data-lang=console>pmd-cli firewall rules [command-options]
+</code></pre><p>This command returns information about each firewall rule, such as the chain to which it belongs, the policy to enforce, the table to manipulate, and so on.</p><p>Add a new firewall rule.</p><pre><code class=language-console data-lang=console>pmd-cli firewall rules --chain &lt;chain_name&gt; --add &lt;rule_specification&gt;
+</code></pre><p>Example:</p><pre><code class=language-console data-lang=console>pmd-cli firewall rules --chain INPUT --add &quot;-p tcp -m tcp --dport 21 -j ACCEPT&quot;
+</code></pre><p><strong>Note:</strong> To confirm that the firewall rule was added, run iptables -S. Running pmd-cli firewall rules lists only persistent rules.</p><p>Delete a new firewall rule.</p><pre><code class=language-console data-lang=console>pmd-cli firewall rules --chain &lt;chain_name&gt; --delete &lt;rule_specification&gt;
+</code></pre><p><strong>Note:</strong> To confirm that the firewall rule was removed, run iptables -S. Running pmd-cli firewall rules lists only persistent rules.</p><p>Make firewall rule changes peristent (add &ndash;persist flag)</p><pre><code class=language-console data-lang=console>pmd-cli firewall rules --chain &lt;chain_name&gt; --add &lt;rule_specification&gt; --persist
+</code></pre><h2 id=firewall-version>firewall version</h2><p>Get the version number of the fwmgmt component on the server.</p><pre><code class=language-console data-lang=console>pmd-cli firewall version
+</code></pre><h1 id=network-management>Network Management</h1><p>The Photon Management Daemon provides CLI commands to help you manage network interfaces.</p><h2 id=syntax-2>Syntax</h2><pre><code class=language-console data-lang=console>pmd-cli [connection_auth_options] net &lt;command&gt; [command_options]
 
 Query and control the netmanager subsystem.
   -h --help                    Show this help message and exit
   -v --version                 Show package version
+</code></pre><p>Many of these commands require the interface name (–interface &lt;ifname>). Command options are described below.</p><pre><code class=language-console data-lang=console>    Command                      Command Option                                     Description
 
-</code></pre><p>Many of these commands require the interface name (–interface &lt;ifname>). Command options are described below.</p><pre><code>**Command                      Command Option                                    Description**
-</code></pre><hr><pre><code>  set-mtu                      [LINK] [MTU]                                      Set Link MTU
+----------------------------------------------------------------------------------------------------
 
+ 
+    set-mtu                      [LINK] [MTU]                                          Set Link MTU
 
+    set-mac                      [LINK] [MAC]                                          Set Link MAC
 
-  set-mac                      [LINK] [MAC]                                      Set Link MAC
+    set-link-mode                [LINK] [MODE { yes | no | on | off | 1 | 0} ]         Set Link managed by networkd
 
+    set-dhcp-mode                [LINK] [DHCP-MODE { yes | no | ipv4 | ipv6 } ]        Set Link DHCP setting
 
+    set-dhcp4-client-identifier  [LINK] [IDENTIFIER { mac | duid | duid-only}
 
-  set-link-mode                [LINK] [MODE { yes | no | on | off | 1 | 0} ]     Set Link managed by networkd
+    set-dhcp-iaid                [LINK] [IAID]                                         Sets the DHCP Identity Association
+                                                                                       Identifier (IAID) for the
+                                                                                       interface, a 32-bit unsigned
+                                                                                       integer.
 
+    set-dhcp-duid                [LINK | system] [DUID { link-layer-time |             Sets the DHCP Client DUID type which
+                                 vendor | link-layer | uuid } ] [RAWDATA]              specifies how the DUID should be 
+                                                                                       generated and [RAWDATA] to overides the
+                                                                                       global DUIDRawData.
 
+    set-link-state               [LINK] [STATE { up | down } ]                         Set Link State
 
-  set-dhcp-mode                [LINK] [DHCP-MODE { yes | no | ipv4 | ipv6 } ]    Set Link DHCP setting
+    add-link-address             [LINK] [ADDRESS] [PEER] ]                             Add Link Address
 
+    delete-link-address          [LINK]                                                Removes Address from Link
 
-  set-dhcp4-client-identifier  [LINK] [IDENTIFIER { mac | duid | duid-only}
+    add-default-gateway          [LINK] [GW address] onlink [ONLINK                    Add Link Default Gateway
+                                 { yes | no | on | off | 1 | 0}] 
 
+    delete-gateway               [LINK]                                                Removes Gateway from Link
 
-  set-dhcp-iaid                [LINK] [IAID]                                     Sets the DHCP Identity Association
-                                                                                 Identifier (IAID) for the
-                                                                                 interface, a 32-bit unsigned
-                                                                                 integer.
+    add-route                    [LINK] [GW address] metric [METRIC { number }]        Set Link route
 
-  set-dhcp-duid                [LINK | system] [DUID { link-layer-time |         Sets the DHCP Client DUID type which
-                                vendor | link-layer | uuid } ] [RAWDATA]         specifies how the DUID should be 
-                                                                                 generated and [RAWDATA] to overides the
-                                                                                 global DUIDRawData.
+    delete-route                 [LINK]                                                Removes route from Link
 
-  set-link-state               [LINK] [STATE { up | down } ]                     Set Link State
+    add-additional-gw            [LINK] [ADDRESS] [ROUTE address] [GW address]         Configures additional gateway for   
+                                 [ROUTING POLICY TABLE number]                         another NIC with routing policy rules
 
-  add-link-address              [LINK] [ADDRESS] [PEER] ]                         Add Link Address
+    set-hostname                 [HOSTNAME]                                            Sets hostname
 
-  delete-link-address           [LINK]                                            Removes Address from Link
+    add-dns                      [LINK | system] [ADDRESS]                             Set Link DNS servers
 
-  add-default-gateway          [LINK] [GW address] onlink [ONLINK                 Add Link Default Gateway
-                                { yes | no | on | off | 1 | 0}] 
+    add-domain                   [LINK | system] [DOMAIN]                              Set Link DOMAIN 
 
-  delete-gateway               [LINK]                                             Removes Gateway from Link
+    revert-resolve-link          [LINK]                                                Flushes all DNS server and Domain 
+                                                                                       settings of the link
 
-  add-route                    [LINK] [GW address] metric [METRIC { number }]     Set Link route
+    set-link-local-address       [LINK] [LinkLocalAddressing                           Set Link link-local
+                                 { yes | no | on | off | 1 | 0}]                        address autoconfiguration
 
-  delete-route                 [LINK]                                             Removes route from Link
 
-  add-additional-gw            [LINK] [ADDRESS] [ROUTE address] [GW address]      Configures additional gateway for   
-                               [ROUTING POLICY TABLE number]                      another NIC with routing policy rules
+    set-ipv4ll-route             [LINK] [IPv4LLRoute                                   Set the route needed                              
+                                 { yes | no | on | off | 1 | 0}]                       for non-IPv4LL hosts to communicate
+                                                                                       with IPv4LL-only hosts
 
-  set-hostname                 [HOSTNAME]                                         Sets hostname
+    set-llmnr                    [LINK] [LLMNR { yes | no | on | off | 1 | 0}]         Set Link Link-Local Multicast Name
+                                                                                       Resolution
 
-  add-dns                      [LINK | system] [ADDRESS]                          Set Link DNS servers
+    set-multicast-dns            [LINK] [MulticastDNS { yes | no | on | off | 1 | 0}]  Set Link Multicast DNS
 
-  add-domain                   [LINK | system] [DOMAIN]                           Set Link DOMAIN 
+    set-lldp                     [LINK] [LLDP { yes | no | on | off | 1 | 0}]          Set Link Ethernet LLDP packet reception
 
-  revert-resolve-link          [LINK]                                             Flushes all DNS server and Domain 
-                                                                                  settings of the link
+    set-emit-lldp                [LINK] [EmitLLDP { yes | no | on | off | 1 | 0}]      Set Link Ethernet LLDP packet emission
 
- set-link-local-address       [LINK] [LinkLocalAddressing                         Set Link link-local
-                              { yes | no | on | off | 1 | 0}]                     address autoconfiguration
+    set-ipforward                [LINK] [IPForward { yes | no | on | off | 1 | 0}]     Set Link IP packet forwarding for the system
 
+    set-ipv6acceptra             [LINK] [IPv6AcceptRA { yes | no | on | off | 1 | 0}]  Set Link IPv6 Router Advertisement (RA) reception
+                                                                                       support for the interface
 
-set-ipv4ll-route             [LINK] [IPv4LLRoute                                  Set the route needed                              
-                             { yes | no | on | off | 1 | 0}]                      for non-IPv4LL hosts to communicate
-                                                                                   with IPv4LL-only hosts
+    set-ipmasquerade             [LINK] [IPMasquerade { yes | no | on | off | 1 | 0}]  Set IP masquerading for the network interface
 
-set-llmnr                    [LINK] [LLMNR { yes | no | on | off | 1 | 0}]        Set Link Link-Local Multicast Name
-                                                                                  Resolution
+    set-dhcp4-use-dns            [LINK] [UseDNS { yes | no | on | off | 1 | 0}]        Set Link DHCP4 Use DNS
 
-set-multicast-dns            [LINK] [MulticastDNS { yes | no | on | off | 1 | 0}]  Set Link Multicast DNS
+    set-dhcp4-use-domains        [LINK] [UseDomains { yes | no | on | off | 1 | 0}]    Set Link DHCP4 Use DOMAINS
 
-set-lldp                     [LINK] [LLDP { yes | no | on | off | 1 | 0}]          Set Link Ethernet LLDP packet reception
+    set-dhcp4-use-mtu            [LINK] [UseMTU { yes | no | on | off | 1 | 0}]        Set Link DHCP4 Use MTU
 
-set-emit-lldp                [LINK] [EmitLLDP { yes | no | on | off | 1 | 0}]      Set Link Ethernet LLDP packet emission
+    set-dhcp4-use-ntp            [LINK] [UseNTP { yes | no | on | off | 1 | 0}]        Set Link DHCP4 Use NTP
 
-set-ipforward                [LINK] [IPForward { yes | no | on | off | 1 | 0}]     Set Link IP packet forwarding for the system
+    set-dhcp4-use-dns            [LINK] [UseDNS { yes | no | on | off | 1 | 0}]        Set Link DHCP4 Use DNS
 
-set-ipv6acceptra             [LINK] [IPv6AcceptRA { yes | no | on | off | 1 | 0}]  Set Link IPv6 Router Advertisement (RA) reception
-                                                                                   support for the interface
+    set-dhcp6-use-dns            [LINK] [UseDNS { yes | no | on | off | 1 | 0}]        Set Link DHCP6 Use DNS
 
-set-ipmasquerade             [LINK] [IPMasquerade { yes | no | on | off | 1 | 0}]  Set IP masquerading for the network interface
+    set-dhcp6-use-ntp            [LINK] [UseNTP { yes | no | on | off | 1 | 0}]        Set Link DHCP6 Use NTP
 
-set-dhcp4-use-dns            [LINK] [UseDNS { yes | no | on | off | 1 | 0}]        Set Link DHCP4 Use DNS
+    add-ntp                      [LINK] [NTP]                                          Add Link NTP server address. This option may be
+                                                                                       specified more than once.
+                                                                                       This setting is read by systemd-timesyncd.service(8)
 
-set-dhcp4-use-domains        [LINK] [UseDomains { yes | no | on | off | 1 | 0}]    Set Link DHCP4 Use DOMAINS
+    set-ntp                      [LINK] [NTP]                                          Set Link NTP server address. This option may be 
+                                                                                       specified more than once.
+                                                                                       This setting is read by systemd-timesyncd.service(8)
 
-set-dhcp4-use-mtu            [LINK] [UseMTU { yes | no | on | off | 1 | 0}]        Set Link DHCP4 Use MTU
+    delete-ntp                   [LINK] [NTP]                                          Delete Link NTP server address. This option may be
+                                                                                       specified more than once.
+                                                                                       This setting is read by systemd-timesyncd.service(8)
 
-set-dhcp4-use-ntp            [LINK] [UseNTP { yes | no | on | off | 1 | 0}]        Set Link DHCP4 Use NTP
+    disable-ipv6                 [LINK]                                                Disables IPv6 on the interface.
 
-set-dhcp4-use-dns            [LINK] [UseDNS { yes | no | on | off | 1 | 0}]        Set Link DHCP4 Use DNS
+    enable-ipv6                  [LINK]                                                Enables IPv6 on the interface.
 
-set-dhcp6-use-dns            [LINK] [UseDNS { yes | no | on | off | 1 | 0}]        Set Link DHCP6 Use DNS
+    create-vlan                  [VLAN name] dev [LINK master] id [ID INTEGER]         Creates vlan netdev and sets master to device
 
-set-dhcp6-use-ntp            [LINK] [UseNTP { yes | no | on | off | 1 | 0}]        Set Link DHCP6 Use NTP
+    create-bridge                [BRIDGE name] [LINK] [LINK] ...                       Creates bridge netdev and sets master to device
 
-add-ntp                      [LINK] [NTP]                                          Add Link NTP server address. This option may be
-                                                                                    specified more than once.
-                                                                                This setting is read by systemd-timesyncd.service(8)
+    create-bond                  [BOND name] mode [MODE {balance-rr                    Creates bond netdev and sets master to device
+                                 | active-backup | balance-xor | broadcast
+                                 | 802.3ad | balance-tlb | balance-alb}]
+                                 [LINK] [LINK] ...
 
-set-ntp                      [LINK] [NTP]                                           Set Link NTP server address. This option may be 
-                                                                                    specified more than once.
-                                                                                This setting is read by systemd-timesyncd.service(8)
+    create-vxlan                 [VXLAN name] [dev LINK] vni [INTEGER]                 Creates vxlan VXLAN
+                                 [local ADDRESS] [remote ADDRESS]                      (Virtual eXtensible Local Area Network) tunneling.                
+                                 [port PORT] 
+                                 [independent { yes | no | on | off | 1 | 0}].
 
-delete-ntp                      [LINK] [NTP]                                      Delete Link NTP server address. This option may be                                                                           
-                                                                                    specified more than once.
-                                                                                This setting is read by systemd-timesyncd.service(8)
+    create-macvlan               [MACVLAN name] dev [LINK] mode                        Creates macvlan virtualized bridged networking.
+                                 [MODE {private | vepa | bridge | passthru | source}]
+                                  
 
-disable-ipv6                 [LINK]                                             Disables IPv6 on the interface.
+    create-macvtap               [MACVTAP name] dev [LINK] mode [MODE                  Creates macvtap virtualized bridged networking.
+                                 {private | vepa | bridge | passthru | source}] 
 
-enable-ipv6                  [LINK]                                             Enables IPv6 on the interface.
+    create-ipvlan                [IPVLAN name] dev [LINK] mode                         Creates ipvlan, virtual LAN, separates    
+                                 [MODE {l2 | l3 | l3s}]                                broadcast domains by adding tags to network packet.
 
-create-vlan                  [VLAN name] dev [LINK master] id [ID INTEGER]      Creates vlan netdev and sets master to device
+    create-ipvtap                [IPVTAP name] dev [LINK]                              Create ipvtap.
+                                 mode [MODE {l2 | l3 | l3s}]
 
-create-bridge                [BRIDGE name] [LINK] [LINK] ...                    Creates bridge netdev and sets master to device
+    create-vrf                   [VRF name] table [INTEGER}]                           Creates Virtual routing and forwarding (VRF).
 
-create-bond                  [BOND name] mode [MODE {balance-rr                 Creates bond netdev and sets master to device
-                             | active-backup | balance-xor | broadcast
-                             | 802.3ad | balance-tlb | balance-alb}]
-                             [LINK] [LINK] ...
+    create-veth                  [VETH name] peer [PEER name}]                         Creates virtual Ethernet devices.
 
-create-vxlan                 [VXLAN name] [dev LINK] vni [INTEGER]               Creates vxlan VXLAN
-                             [local ADDRESS] [remote ADDRESS]                  (Virtual eXtensible Local Area Network) tunneling.                
-                             [port PORT] 
-                             [independent { yes | no | on | off | 1 | 0}].
+    create-ipip                  [IPIP name] [dev LINK] local [ADDRESS]                Creates ipip tunnel.
+                                 remote [ADDRESS] [independent
+                                 { yes | no | on | off | 1 | 0}]
 
-create-macvlan               [MACVLAN name] dev [LINK] mode                     Creates macvlan virtualized bridged networking.
-                             [MODE {private | vepa | bridge | 
-                              passthru | source}] 
+    create-sit                   [SIT name] [dev LINK] local [ADDRESS]                 Creates sit tunnel.
+                                 remote [ADDRESS] [independent 
+                                 { yes | no | on | off | 1 | 0}]
 
-create-macvtap               [MACVTAP name] dev [LINK] mode [MODE               Creates macvtap virtualized bridged networking.
-                           {private | vepa | bridge | passthru | source}] 
+    create-vti                    [VTI name] [dev LINK] local [ADDRESS]                Creates vti tunnel.
+                                  remote [ADDRESS] [independent
+                                  { yes | no | on | off | 1 | 0}]
 
-create-ipvlan                [IPVLAN name] dev [LINK] mode                      Creates ipvlan, virtual LAN, separates    
-                             [MODE {l2 | l3 | l3s}]                           broadcast domains by adding tags to network packet.
+    create-gre                   [GRE name] [dev LINK] local [ADDRESS]                 Creates gre tunnel.
+                                 remote [ADDRESS] [independent 
+                                 { yes | no | on | off | 1 | 0}]
 
-create-ipvtap                [IPVTAP name] dev [LINK]                          Create ipvtap.
-                             mode [MODE {l2 | l3 | l3s}]
+    create-wg                    [WIREGUARD name] private-key [PRIVATEKEY]             Creates a wireguard tunnel.
+                                 listen-port [PORT INTEGER] public-key
+                                 [PUBLICKEY] preshared-key [PRESHAREDKEY]
+                                 allowed-ips [IP,IP ...] endpoint [IP:PORT]
 
-create-vrf                   [VRF name] table [INTEGER}]                       Creates Virtual routing and forwarding (VRF).
+    reload                                                                             Reload .network and .netdev files.
 
-create-veth                  [VETH name] peer [PEER name}]                      Creates virtual Ethernet devices.
+    reconfigure                  [LINK]                                                Reconfigure Link.
 
-create-ipip                  [IPIP name] [dev LINK] local [ADDRESS]             Creates ipip tunnel.
-                             remote [ADDRESS] [independent
-                              { yes | no | on | off | 1 | 0}]
+    add-nft-table                [FAMILY {ipv4 | ipv6 | ip}] [TABLE]                   Adds a new table.
 
-create-sit                    [SIT name] [dev LINK] local [ADDRESS]             Creates sit tunnel.
-                              remote [ADDRESS] [independent 
-                              { yes | no | on | off | 1 | 0}]
+    get-nft-tables               [FAMILY {ipv4 | ipv6 | ip}] [TABLE]                   shows nftable's tables.
 
-create-vti                    [VTI name] [dev LINK] local [ADDRESS]             Creates vti tunnel.
-                              remote [ADDRESS] [independent
-                              { yes | no | on | off | 1 | 0}]
+    delete-nft-table             [FAMILY {ipv4 | ipv6 | ip}] [TABLE]                   deletes a existing nftable's table.
 
-create-gre                   [GRE name] [dev LINK] local [ADDRESS]              Creates gre tunnel.
-                             remote [ADDRESS] [independent 
-                             { yes | no | on | off | 1 | 0}]
+    add-nft-chain                [FAMILY {ipv4 | ip}] [TABLE] [CHAIN]                  adds a new nftable's chain.
 
-create-wg                    [WIREGUARD name] private-key [PRIVATEKEY]          Creates a wireguard tunnel.
-                             listen-port [PORT INTEGER] public-key
-                             [PUBLICKEY] preshared-key [PRESHAREDKEY]
-                             allowed-ips [IP,IP ...] endpoint [IP:PORT]
+    get-nft-chains               [FAMILY {ipv4 | ipv6 | ip}] [TABLE] [CHAIN]           shows nftable's chains.
 
- reload                                                                         Reload .network and .netdev files.
+    delete-nft-chain             [FAMILY {ipv4 | ipv6 | ip}] [TABLE] [CHAIN]           deletes a nftable's chain from table
 
-reconfigure                  [LINK]                                             Reconfigure Link.
+    add-nft-rule                 [FAMILY {ipv4 | ipv6 | ip}] [TABLE] [CHAIN]           configures a nft rule for a port.     
+                                 [PROTOCOL { tcp | udp}] 
+                                 [SOURCE PORT / DESTINATION PORT {sport|dport}]
+                                 [PORT] [ACTION {accept | drop}]
 
-add-nft-table                [FAMILY {ipv4 | ipv6 | ip}] [TABLE]                Adds a new table.
+    get-nft-rules                [TABLE]                                               shows nftable's rules.
 
-get-nft-tables               [FAMILY {ipv4 | ipv6 | ip}] [TABLE]                shows nftable's tables.
+    delete-nft-rule              [FAMILY {ipv4 | ipv6 | ip}] [TABLE]                   deletes a nftable's rule from table
+                                 [CHAIN] [HANDLE] 
 
-delete-nft-table             [FAMILY {ipv4 | ipv6 | ip}] [TABLE]                deletes a existing nftable's table.
+    nft-run                                                                            runs a nft command.  See man NFT(8)
 
- add-nft-chain                [FAMILY {ipv4 | ip}] [TABLE] [CHAIN]              adds a new nftable's chain.
+    is-networkd-running                                                                Check if systemd-networkd is running or not. 
 
- get-nft-chains               [FAMILY {ipv4 | ipv6 | ip}] [TABLE] [CHAIN]       shows nftable's chains.
+    get-hostname                                                                       Gets hostname
 
- delete-nft-chain             [FAMILY {ipv4 | ipv6 | ip}] [TABLE] [CHAIN]       deletes a nftable's chain from table
+    get-dns-servers                                                                    Gets DNS Servers
 
-add-nft-rule                 [FAMILY {ipv4 | ipv6 | ip}] [TABLE] [CHAIN]        configures a nft rule for a port.     
-                             [PROTOCOL { tcp | udp}] 
-                           [SOURCE PORT / DESTINATION PORT {sport|dport}]
-                             [PORT] [ACTION {accept | drop}]
+    get-dns-domains                                                                    Gets DNS Server DOMAINS
 
-get-nft-rules                [TABLE]                                             shows nftable's rules.
+    get-ntp                      [LINK]                                                Get Link NTP server address
 
-delete-nft-rule              [FAMILY {ipv4 | ipv6 | ip}] [TABLE]                  deletes a nftable's rule from table
-                              [CHAIN] [HANDLE] 
+    get-link-address             [LINK]                                                Get Link Address
 
- nft-run                                                                          runs a nft command.  See man NFT(8)
+    get-link-route               [LINK]                                                Get Link route
 
-is-networkd-running                                                             Check if systemd-networkd is running or not. 
+    get-dhcp-mode                [LINK]                                                Get Link DHCP setting. 
+                                 [DHCP-MODE { yes | no | ipv4 | ipv6 }]
 
- get-hostname                                                                    Gets hostname
+    get-mac                      [LINK]                                                Get Link MAC
 
-get-dns-servers                                                                  Gets DNS Servers
 
- get-dns-domains                                                                 Gets DNS Server DOMAINS
+    get-mtu                      [LINK]                                                Get Link MTU
 
-get-ntp                         [LINK]                                           Get Link NTP server address
+    get-dhcp-iaid                [LINK]                                                Get the DHCP Identity Association Identifier (IAID)
+                                                                                       for the interface, a 32-bit unsigned integer.
 
-get-link-address                [LINK]                                           Get Link Address
+ 
+    get-dhcp4-client-identifier  [LINK]                                                Get Link DHCP4 Client Identifier.
 
-get-link-route                  [LINK]                                           Get Link route
 
-get-dhcp-mode                   [LINK]                                           Get Link DHCP setting. 
-                                                                                 DHCP-MODE { yes | no | ipv4 | ipv6 }
 
-get-mac                         [LINK]                                           Get Link MAC
-
-
-get-mtu                         [LINK]                                           Get Link MTU
-
-get-dhcp-iaid                   [LINK]                                       Get the DHCP Identity Association Identifier (IAID)
-                                                                              for the interface, a 32-bit unsigned integer.
-
-
-get-dhcp4-client-identifier     [LINK]                                        Get Link DHCP4 Client Identifier.
-
-
-
- net                            -v                                            Get the network-config-manager supported version
-</code></pre><pre><code>**Note** : You can add (+) or remove (-) a parameter by prepending the parameter name with + or -.
-
-# Package Management
-
-The Photon Management Daemon provides CLI commands to help you manage packages and repositories.
-
-## Syntax
-</code></pre><p>pmd-cli [connection options] pkg <command>[command options]</p><pre><code>If a command allows for multiple package names, simply specify on the command line, separated by spaces.
-</code></pre><p>pmd-cli pkg info &lt;package_name_1> &lt;package_name_2> &lt;package_name_3> &mldr;</p><pre><code>
-## pkg check-local 
-
-Checks local rpm folder for problems.
-</code></pre><p>pmd-cli pkg check-local</p><pre><code>
-## pkg check-update
-
-Check for available package upgrades. 
-</code></pre><p>pmd-cli pkg check-update</p><pre><code>
-## pkg clean all
-
-Remove cached data from tdnf.
-</code></pre><p>pmd-cli pkg clean all</p><pre><code>
-
-## pkg help
-
-Get help text for pkg CLI commands.
-</code></pre><p>pmd-cli pkg help</p><pre><code>## pkg count
-
-Get the total number of packages in all repos (including installed).
-</code></pre><p>pmd-cli pkg count</p><pre><code>## pkg distro-sync
-
-Synchronize installed packages to the latest available versions. If no packages are specified, then all available packages are synchronized.
-</code></pre><p>pmd-cli pkg distro-sync</p><pre><code>## pkg downgrade
-
-Downgrade the specified package(s). If no packages are specified, then all available packages are downgraded.
-</code></pre><p>pmd-cli pkg downgrade &lt;package_name></p><pre><code>## pkg erase
-
-Remove the specified package(s).
-</code></pre><p>pmd-cli pkg erase &lt;package_name></p><pre><code>## pkg info
-
-Get general information about the specified package(s),  such as name, version, release, repository, install size, and so on.
-</code></pre><p>pmd-cli pkg info &lt;package_name></p><pre><code>If no packages are specified, then this command returns information about all packages.
-</code></pre><h2 id=pkg-install>pkg install</h2><pre><code>Install the specified package(s). Update the package if an update is available.
-</code></pre><p>pmd-cli pkg install &lt;package_name></p><pre><code>## pkg list
-
-Get a list of packages or groups of packages.
-</code></pre><p>pmd-cli pkg list</p><pre><code>You can filter by group: all, available, installed, extras, obsoletes, recent, and upgrades.
-</code></pre><p>pmd-cli pkg list upgrades</p><pre><code>You can also filter by wildcards.
-</code></pre><p>pmd-cli pkg list ph*</p><pre><code>
-## pkg provides openssh
-
-Find what package provides the given binary.
-</code></pre><p>pmd-cli pkg provides openssh</p><pre><code>
-## pkg reinstall
-
-Reinstall the specified package(s).
-</code></pre><p>pmd-cli pkg reinstall &lt;package_name></p><pre><code>## pkg repolist
-
-Get a list of the configured software repositories.
-</code></pre><p>pmd-cli pkg repolist</p><pre><code>This command returns a list of the configured software repositories, including the repository ID, repitory name, and status.
-
-## pkg search ssh
-
-Search package details for the given string. 
-</code></pre><p>pmd-cli pkg search ssh</p><pre><code>If no parameters are specified, then all available packages are updated.
-
-
-## pkg update
-
-Update the specified package(s).
-</code></pre><p>pmd-cli pkg update <em>package_name</em></p><pre><code>If no parameters are specified, then all available packages are updated.
-
-## pkg updateinfo
-
-Get the update information on all enabled repositories (status = enabled). If this command returns nothing, then the update information may not exist on the server.
-</code></pre><p>pmd-cli pkg updateinfo</p><pre><code># User Management
-
-The Photon Management Daemon provides CLI commands to help you manage users and user groups.
-
-## Syntax
-</code></pre><p>pmd-cli [connection options] usr <command>[command options]</p><pre><code>## usr help
-
-Display help text for user commands.
-</code></pre><p>pmd-cli usr users</p><pre><code>## usr users
-
-Get a list of users. This command returns information about each user, including their user name, user ID, user group (if applicable), home directory, and default shell.
-</code></pre><p>pmd-cli usr users</p><pre><code>## usr useradd
-
-Add a new user. Specify the username.
-</code></pre><p>pmd-cli usr useradd <username></p><pre><code>The system assigns a user ID, home directory, and default shell to the new user. The user group is unspecified.
-
-## usr userdel
-
-Delete the specified user.
-</code></pre><p>pmd-cli usr userdel <username></p><pre><code>## usr userid
-
-Get the user ID of the specified user (by name). Used to determine whether the specified user exists.
-</code></pre><p>pmd-cli usr userid <username></p><pre><code>## usr groups
-
-Get a list of user groups. This command returns the following information about each user group: user group name and user group ID.
-</code></pre><p>pmd-cli usr groups</p><pre><code>## usr groupadd
-
-Add a new user group.
-</code></pre><p>pmd-cli usr groupadd &lt;user_group_name></p><pre><code>The system assigns a group ID to the new user group.
-
-## usr groupdel
-
-Delete the specified user group.
-</code></pre><p>pmd-cli usr groupdel &lt;user_group_name></p><pre><code>## usr groupid
-
-Get the group ID for the specified user group (by name). Used to determine whether the specified user group exists.
-</code></pre><p>pmd-cli usr groupid &lt;user_group_name></p><pre><code>## usr version
-
-Get the version of the usermgmt component at the server.
-</code></pre><p>pmd-cli usr version</p><pre><code></code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-0451f1b066f757da7d2004f4800d8c68>1.2 - Photon Network Config Manager Command-line Interface (nmctl)</h1><p>For locally logged-on users, Photon OS provides a command line interface to manage network configuration of the system.</p><p>The network-config-manager <code>nmctl</code> allows to configure and introspect the state of the network links as seen by <code>systemd-networkd</code>.</p><p>Query and control the netmanager subsystem.</p><pre><code> -h --help                    Show this help message and exit
+    net                          -v                                                    Get the network-config-manager supported version
+</code></pre><div class="alert alert-primary" role=alert><h4 class=alert-heading>Note</h4><blockquote><p>You can add (+) or remove (-) a parameter by prepending the parameter name with <code>+</code> or <code>-</code>.</p></blockquote></div><h1 id=package-management>Package Management</h1><p>The Photon Management Daemon provides CLI commands to help you manage packages and repositories.</p><h2 id=syntax-3>Syntax</h2><pre><code class=language-console data-lang=console>pmd-cli [connection options] pkg &lt;command&gt; [command options]
+</code></pre><p>If a command allows for multiple package names, simply specify on the command line, separated by spaces.</p><pre><code class=language-console data-lang=console>pmd-cli pkg info &lt;package_name_1&gt; &lt;package_name_2&gt; &lt;package_name_3&gt; ...
+</code></pre><h2 id=pkg-check-local>pkg check-local</h2><p>Checks local rpm folder for problems.</p><pre><code class=language-console data-lang=console>pmd-cli pkg check-local 
+</code></pre><h2 id=pkg-check-update>pkg check-update</h2><p>Check for available package upgrades.</p><pre><code class=language-console data-lang=console>pmd-cli pkg check-update
+</code></pre><h2 id=pkg-clean-all>pkg clean all</h2><p>Remove cached data from tdnf.</p><pre><code class=language-console data-lang=console>pmd-cli pkg clean all
+</code></pre><h2 id=pkg-help>pkg help</h2><p>Get help text for pkg CLI commands.</p><pre><code class=language-console data-lang=console>pmd-cli pkg help
+</code></pre><h2 id=pkg-count>pkg count</h2><p>Get the total number of packages in all repos (including installed).</p><pre><code class=language-console data-lang=console>pmd-cli pkg count
+</code></pre><h2 id=pkg-distro-sync>pkg distro-sync</h2><p>Synchronize installed packages to the latest available versions. If no packages are specified, then all available packages are synchronized.</p><pre><code class=language-console data-lang=console>pmd-cli pkg distro-sync
+</code></pre><h2 id=pkg-downgrade>pkg downgrade</h2><p>Downgrade the specified package(s). If no packages are specified, then all available packages are downgraded.</p><pre><code class=language-console data-lang=console>pmd-cli pkg downgrade &lt;package_name&gt;
+</code></pre><h2 id=pkg-erase>pkg erase</h2><p>Remove the specified package(s).</p><pre><code class=language-console data-lang=console>pmd-cli pkg erase &lt;package_name&gt;
+</code></pre><h2 id=pkg-info>pkg info</h2><p>Get general information about the specified package(s), such as name, version, release, repository, install size, and so on.</p><pre><code class=language-console data-lang=console>pmd-cli pkg info &lt;package_name&gt;
+</code></pre><p>If no packages are specified, then this command returns information about all packages.</p><pre><code class=language-console data-lang=console>pmd-cli pkg install
+</code></pre><p>Install the specified package(s). Update the package if an update is available.</p><pre><code class=language-console data-lang=console>pmd-cli pkg install &lt;package_name&gt;
+</code></pre><h2 id=pkg-list>pkg list</h2><p>Get a list of packages or groups of packages.</p><pre><code class=language-console data-lang=console>pmd-cli pkg list
+</code></pre><p>You can filter by group: all, available, installed, extras, obsoletes, recent, and upgrades.</p><pre><code class=language-console data-lang=console>pmd-cli pkg list upgrades
+</code></pre><p>You can also filter by wildcards.</p><pre><code class=language-console data-lang=console>pmd-cli pkg list ph\*
+</code></pre><h2 id=pkg-provides-openssh>pkg provides openssh</h2><p>Find what package provides the given binary.</p><pre><code class=language-console data-lang=console>pmd-cli pkg provides openssh
+</code></pre><h2 id=pkg-reinstall>pkg reinstall</h2><p>Reinstall the specified package(s).</p><pre><code class=language-console data-lang=console>pmd-cli pkg reinstall &lt;package_name&gt;
+</code></pre><h2 id=pkg-repolist>pkg repolist</h2><p>Get a list of the configured software repositories.</p><pre><code class=language-console data-lang=console>pmd-cli pkg repolist
+</code></pre><p>This command returns a list of the configured software repositories, including the repository ID, repitory name, and status.</p><h2 id=pkg-search-ssh>pkg search ssh</h2><p>Search package details for the given string.</p><pre><code class=language-console data-lang=console>pmd-cli pkg search ssh
+</code></pre><p>If no parameters are specified, then all available packages are updated.</p><h2 id=pkg-update>pkg update</h2><p>Update the specified package(s).</p><pre><code class=language-console data-lang=console>pmd-cli pkg update *package_name*
+</code></pre><p>If no parameters are specified, then all available packages are updated.</p><h2 id=pkg-updateinfo>pkg updateinfo</h2><p>Get the update information on all enabled repositories (status = enabled). If this command returns nothing, then the update information may not exist on the server.</p><pre><code class=language-console data-lang=console>pmd-cli pkg updateinfo
+</code></pre><h1 id=user-management>User Management</h1><p>The Photon Management Daemon provides CLI commands to help you manage users and user groups.</p><h2 id=syntax-4>Syntax</h2><pre><code class=language-console data-lang=console>pmd-cli [connection options] usr &lt;command&gt; [command options]
+</code></pre><h2 id=usr-help>usr help</h2><p>Display help text for user commands.</p><pre><code class=language-console data-lang=console>pmd-cli usr users
+</code></pre><h2 id=usr-users>usr users</h2><p>Get a list of users. This command returns information about each user, including their user name, user ID, user group (if applicable), home directory, and default shell.</p><pre><code class=language-console data-lang=console>pmd-cli usr users
+</code></pre><h2 id=usr-useradd>usr useradd</h2><p>Add a new user. Specify the username.</p><pre><code class=language-console data-lang=console>pmd-cli usr useradd &lt;username&gt;
+</code></pre><p>The system assigns a user ID, home directory, and default shell to the new user. The user group is unspecified.</p><h2 id=usr-userdel>usr userdel</h2><p>Delete the specified user.</p><pre><code class=language-console data-lang=console>pmd-cli usr userdel &lt;username&gt;
+</code></pre><h2 id=usr-userid>usr userid</h2><p>Get the user ID of the specified user (by name). Used to determine whether the specified user exists.</p><pre><code class=language-console data-lang=console>pmd-cli usr userid &lt;username&gt;
+</code></pre><h2 id=usr-groups>usr groups</h2><p>Get a list of user groups. This command returns the following information about each user group: user group name and user group ID.</p><pre><code class=language-console data-lang=console>pmd-cli usr groups
+</code></pre><h2 id=usr-groupadd>usr groupadd</h2><p>Add a new user group.</p><pre><code class=language-console data-lang=console>pmd-cli usr groupadd &lt;user_group_name&gt;
+</code></pre><p>The system assigns a group ID to the new user group.</p><h2 id=usr-groupdel>usr groupdel</h2><p>Delete the specified user group.</p><pre><code class=language-console data-lang=console>pmd-cli usr groupdel &lt;user_group_name&gt;
+</code></pre><h2 id=usr-groupid>usr groupid</h2><p>Get the group ID for the specified user group (by name). Used to determine whether the specified user group exists.</p><pre><code class=language-console data-lang=console>pmd-cli usr groupid &lt;user_group_name&gt;
+</code></pre><h2 id=usr-version>usr version</h2><p>Get the version of the usermgmt component at the server.</p><pre><code class=language-console data-lang=console>pmd-cli usr version
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-0451f1b066f757da7d2004f4800d8c68>1.2 - Photon Network Config Manager Command-line Interface (nmctl)</h1><p>For locally logged-on users, Photon OS provides a command line interface to manage network configuration of the system.</p><p>The network-config-manager <code>nmctl</code> allows to configure and introspect the state of the network links as seen by <code>systemd-networkd</code>.</p><p>Query and control the netmanager subsystem.</p><pre><code> -h --help                    Show this help message and exit
 
  -v --version                 Show package version
 

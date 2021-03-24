@@ -4,41 +4,41 @@
 <a class=dropdown-item href=../../../../../assets/files/html/1.0-2.0/>v2 and v1</a></div></li></div></ul></div></nav></div></header><div class="container-fluid td-outer"><div class=td-main><div class="row flex-xl-nowrap"><div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none"></div><div class="d-none d-xl-block col-xl-2 td-toc d-print-none"></div><main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main><div class=td-content><div class="pageinfo pageinfo-primary d-print-none"><p>This the multi-page printable view of this section.
 <a href=# onclick="return print(),!1">Click here to print</a>.</p><p><a href=../../../../../docs/user-guide/kubernetes-on-photon-os/running-kubernetes-on-photon-os/>Return to the regular view of this page</a>.</p></div><h1 class=title>Running Kubernetes on Photon OS</h1><ul><li>1: <a href=#pg-a1d2e42542f91c88d6de82a65837b7e5>System Information</a></li><li>2: <a href=#pg-6a11cf2f4ce782f763245a10cdcfc7b9>Prepare the Hosts</a></li><li>3: <a href=#pg-fe4d3e3b9b42532a4e4db9ae8a685b08>Configure Kubernetes Services on the Master</a></li><li>4: <a href=#pg-8bb2c13b46e9ad89de8e37d2b8c8929b>Configure the Kubernetes services on Node</a></li></ul><div class=content><p>The procedure describes how to break the services up between the hosts.</p><p>The first host, <code>photon-master</code>, is the Kubernetes master. This host runs the <code>kube-apiserver</code>, <code>kube-controller-manager</code>, and <code>kube-scheduler</code>. In addition, the master also runs <code>etcd</code>. Although <code>etcd</code> is not needed on the master if <code>etcd</code> runs on a different host, this guide assumes that <code>etcd</code> and the Kubernetes master run on the same host. The remaining host, <code>photon-node</code>, is the node and runs <code>kubelet</code>, <code>proxy</code>, and <code>docker</code>.</p></div></div><div class=td-content style=page-break-before:always><h1 id=pg-a1d2e42542f91c88d6de82a65837b7e5>1 - System Information</h1><p>Hosts:</p><pre><code>photon-master = 192.168.121.9
 photon-node = 192.168.121.65
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-6a11cf2f4ce782f763245a10cdcfc7b9>2 - Prepare the Hosts</h1><p>The following packages should already be installed on the full version of Photon OS, but you might have to install them on the minimal version of Photon OS. If the <code>tdnf</code> command returns &ldquo;Nothing to do,&rdquo; the package is already installed.</p><ul><li>Install Kubernetes on all hosts&ndash;both <code>photon-master</code> and <code>photon-node</code>.</li></ul><pre><code>tdnf install kubernetes
-</code></pre><ul><li>Install iptables on photon-master and photon-node:</li></ul><pre><code>tdnf install iptables
-</code></pre><ul><li>Open the tcp port 8080 (api service) on the photon-master in the firewall</li></ul><pre><code>iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
-</code></pre><ul><li>Open the tcp port 10250 (api service) on the photon-node in the firewall</li></ul><pre><code>iptables -A INPUT -p tcp --dport 10250 -j ACCEPT
-</code></pre><ul><li>Install Docker on photon-node:</li></ul><pre><code>tdnf install docker
-</code></pre><ul><li>Add master and node to /etc/hosts on all machines (not needed if the hostnames are already in DNS). Make sure that communication works between photon-master and photon-node by using a utility such as ping.</li></ul><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#204a87>echo</span> <span style=color:#4e9a06>&#34;192.168.121.9	photon-master
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-6a11cf2f4ce782f763245a10cdcfc7b9>2 - Prepare the Hosts</h1><p>The following packages have to be installed. If the <code>tdnf</code> command returns &ldquo;Nothing to do,&rdquo; the package is already installed.</p><ul><li><p>Install Kubernetes on all hosts (both <code>photon-master</code> and <code>photon-node</code>).</p><pre><code class=language-console data-lang=console>tdnf install kubernetes
+</code></pre></li><li><p>Install iptables on photon-master and photon-node:</p><pre><code class=language-console data-lang=console>tdnf install iptables
+</code></pre></li><li><p>Open the tcp port 8080 (api service) on the photon-master in the firewall</p><pre><code class=language-console data-lang=console>iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+</code></pre></li><li><p>Open the tcp port 10250 (api service) on the photon-node in the firewall</p><pre><code class=language-console data-lang=console>iptables -A INPUT -p tcp --dport 10250 -j ACCEPT
+</code></pre></li><li><p>Install Docker on photon-node:</p><pre><code class=language-console data-lang=console>tdnf install docker
+</code></pre></li><li><p>Add master and node to /etc/hosts on all machines (not needed if the hostnames are already in DNS). Make sure that communication works between photon-master and photon-node by using a utility such as ping.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#204a87>echo</span> <span style=color:#4e9a06>&#34;192.168.121.9	photon-master
 </span><span style=color:#4e9a06>192.168.121.65	photon-node&#34;</span> &gt;&gt; /etc/hosts
-</code></pre></div><ul><li>Edit /etc/kubernetes/config, which will be the same on all the hosts (master and node), so that it contains the following lines:</li></ul><pre><code># Comma separated list of nodes in the etcd cluster
-KUBE_MASTER=&quot;--master=http://photon-master:8080&quot;
+</code></pre></div></li><li><p>Edit /etc/kubernetes/config, which will be the same on all the hosts (master and node), so that it contains the following lines:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:#8f5902;font-style:italic># Comma separated list of nodes in the etcd cluster</span>
+<span style=color:#c4a000>KUBE_MASTER</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--master=http://photon-master:8080&#34;</span>
 
-# logging to stderr routes it to the systemd journal
-KUBE_LOGTOSTDERR=&quot;--logtostderr=true&quot;
+<span style=color:#8f5902;font-style:italic># logging to stderr routes it to the systemd journal</span>
+<span style=color:#c4a000>KUBE_LOGTOSTDERR</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--logtostderr=true&#34;</span>
 
-# journal message level, 0 is debug
-KUBE_LOG_LEVEL=&quot;--v=0&quot;
+<span style=color:#8f5902;font-style:italic># journal message level, 0 is debug</span>
+<span style=color:#c4a000>KUBE_LOG_LEVEL</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--v=0&#34;</span>
 
-# Should this cluster be allowed to run privileged docker containers
-KUBE_ALLOW_PRIV=&quot;--allow_privileged=false&quot;
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-fe4d3e3b9b42532a4e4db9ae8a685b08>3 - Configure Kubernetes Services on the Master</h1><p>Perform the following steps to configure Kubernetes services on the master:</p><ol><li><p>Edit <code>/etc/kubernetes/apiserver</code> to appear as such. The <code>service_cluster_ip_range</code> IP addresses must be an unused block of addresses, not used anywhere else. They do not need to be routed or assigned to anything.</p><pre><code># The address on the local server to listen to.
-KUBE_API_ADDRESS=&quot;--address=0.0.0.0&quot;
-   
-# Comma separated list of nodes in the etcd cluster
-KUBE_ETCD_SERVERS=&quot;--etcd-servers=http://127.0.0.1:4001&quot;
-   
-# Address range to use for services
-KUBE_SERVICE_ADDRESSES=&quot;--service-cluster-ip-range=10.254.0.0/16&quot;
-   
-# Add your own
-KUBE_API_ARGS=&quot;&quot;
-</code></pre></li><li><p>Start the appropriate services on master:</p><pre><code>for SERVICES in etcd kube-apiserver kube-controller-manager kube-scheduler; do
-    systemctl restart $SERVICES
-    systemctl enable $SERVICES
-    systemctl status $SERVICES
-done
-</code></pre></li><li><p>To add the other node, create the following <code>node.json</code> file on the Kubernetes master node:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=color:#000;font-weight:700>{</span>
+<span style=color:#8f5902;font-style:italic># Should this cluster be allowed to run privileged docker containers</span>
+<span style=color:#c4a000>KUBE_ALLOW_PRIV</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--allow_privileged=false&#34;</span>
+</code></pre></div></li></ul></div><div class=td-content style=page-break-before:always><h1 id=pg-fe4d3e3b9b42532a4e4db9ae8a685b08>3 - Configure Kubernetes Services on the Master</h1><p>Perform the following steps to configure Kubernetes services on the master:</p><ol><li><p>Edit <code>/etc/kubernetes/apiserver</code> to appear as such. The <code>service_cluster_ip_range</code> IP addresses must be an unused block of addresses, not used anywhere else. They do not need to be routed or assigned to anything.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:#8f5902;font-style:italic># The address on the local server to listen to.</span>
+<span style=color:#c4a000>KUBE_API_ADDRESS</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--address=0.0.0.0&#34;
+</span><span style=color:#4e9a06>   </span>
+<span style=color:#8f5902;font-style:italic># Comma separated list of nodes in the etcd cluster</span>
+<span style=color:#c4a000>KUBE_ETCD_SERVERS</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--etcd-servers=http://127.0.0.1:4001&#34;
+</span><span style=color:#4e9a06>   </span>
+<span style=color:#8f5902;font-style:italic># Address range to use for services</span>
+<span style=color:#c4a000>KUBE_SERVICE_ADDRESSES</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--service-cluster-ip-range=10.254.0.0/16&#34;
+</span><span style=color:#4e9a06>   </span>
+<span style=color:#8f5902;font-style:italic># Add your own</span>
+<span style=color:#c4a000>KUBE_API_ARGS</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;&#34;</span>
+</code></pre></div></li><li><p>Start the appropriate services on master:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#204a87;font-weight:700>for</span> SERVICES in etcd kube-apiserver kube-controller-manager kube-scheduler<span style=color:#000;font-weight:700>;</span> <span style=color:#204a87;font-weight:700>do</span>
+    systemctl restart <span style=color:#000>$SERVICES</span>
+    systemctl <span style=color:#204a87>enable</span> <span style=color:#000>$SERVICES</span>
+    systemctl status <span style=color:#000>$SERVICES</span>
+<span style=color:#204a87;font-weight:700>done</span>
+</code></pre></div></li><li><p>To add the other node, create the following <code>node.json</code> file on the Kubernetes master node:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=color:#000;font-weight:700>{</span>
     <span style=color:#204a87;font-weight:700>&#34;apiVersion&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;v1&#34;</span><span style=color:#000;font-weight:700>,</span>
     <span style=color:#204a87;font-weight:700>&#34;kind&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;Node&#34;</span><span style=color:#000;font-weight:700>,</span>
     <span style=color:#204a87;font-weight:700>&#34;metadata&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>{</span>
@@ -54,21 +54,21 @@ done
 $ kubectl get nodes
 NAME                LABELS              STATUS
 photon-node         name=photon-node-label     Unknown
-</code></pre></li></ol><p><strong>Note</strong>: The above example only creates a representation for the node <code>photon-node</code> internally. It does not provision the actual <code>photon-node</code>. Also, it is assumed that <code>photon-node</code> (as specified in <code>name</code>) can be resolved and is reachable from the Kubernetes master node.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-8bb2c13b46e9ad89de8e37d2b8c8929b>4 - Configure the Kubernetes services on Node</h1><p>Perform the following steps to configure the kubelet on the node:</p><ol><li><p>Edit /etc/kubernetes/kubelet to appear like this:</p><pre><code>###
-# Kubernetes kubelet (node) config
+</code></pre></li></ol><p><strong>Note</strong>: The above example only creates a representation for the node <code>photon-node</code> internally. It does not provision the actual <code>photon-node</code>. Also, it is assumed that <code>photon-node</code> (as specified in <code>name</code>) can be resolved and is reachable from the Kubernetes master node.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-8bb2c13b46e9ad89de8e37d2b8c8929b>4 - Configure the Kubernetes services on Node</h1><p>Perform the following steps to configure the kubelet on the node:</p><ol><li><p>Edit /etc/kubernetes/kubelet to appear like this:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:#8f5902;font-style:italic>###</span>
+<span style=color:#8f5902;font-style:italic># Kubernetes kubelet (node) config</span>
    
-# The address for the info server to serve on (set to 0.0.0.0 or &quot;&quot; for all interfaces)
-KUBELET_ADDRESS=&quot;--address=0.0.0.0&quot;
-   
-# You may leave this blank to use the actual hostname
-KUBELET_HOSTNAME=&quot;--hostname_override=photon-node&quot;
-   
-# location of the api-server
-KUBELET_API_SERVER=&quot;--kubeconfig=/etc/kubernetes/kubeconfig&quot;
-   
-# Add your own
-#KUBELET_ARGS=&quot;&quot;
-</code></pre></li><li><p>Start the appropriate services on the node (photon-node):</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#204a87;font-weight:700>for</span> SERVICES in kube-proxy kubelet docker<span style=color:#000;font-weight:700>;</span> <span style=color:#204a87;font-weight:700>do</span> 
+<span style=color:#8f5902;font-style:italic># The address for the info server to serve on (set to 0.0.0.0 or &#34;&#34; for all interfaces)</span>
+<span style=color:#c4a000>KUBELET_ADDRESS</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--address=0.0.0.0&#34;
+</span><span style=color:#4e9a06>   </span>
+<span style=color:#8f5902;font-style:italic># You may leave this blank to use the actual hostname</span>
+<span style=color:#c4a000>KUBELET_HOSTNAME</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--hostname_override=photon-node&#34;
+</span><span style=color:#4e9a06>   </span>
+<span style=color:#8f5902;font-style:italic># location of the api-server</span>
+<span style=color:#c4a000>KUBELET_API_SERVER</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--kubeconfig=/etc/kubernetes/kubeconfig&#34;
+</span><span style=color:#4e9a06>   </span>
+<span style=color:#8f5902;font-style:italic># Add your own</span>
+<span style=color:#8f5902;font-style:italic>#KUBELET_ARGS=&#34;&#34;</span>
+</code></pre></div></li><li><p>Start the appropriate services on the node (photon-node):</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#204a87;font-weight:700>for</span> SERVICES in kube-proxy kubelet docker<span style=color:#000;font-weight:700>;</span> <span style=color:#204a87;font-weight:700>do</span> 
     systemctl restart <span style=color:#000>$SERVICES</span>
     systemctl <span style=color:#204a87>enable</span> <span style=color:#000>$SERVICES</span>
     systemctl status <span style=color:#000>$SERVICES</span> 

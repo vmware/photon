@@ -333,89 +333,92 @@ Or logging output will be printed to console - default behavior.
 &lt;/table>
 &lt;h2 id="sample-configuration-file">Sample Configuration File&lt;/h2>
 &lt;p>Here is a sample kickstart configuration file:&lt;/p>
-&lt;pre>&lt;code>{
-&amp;quot;hostname&amp;quot;: &amp;quot;photon-machine&amp;quot;,
-&amp;quot;password&amp;quot;:
-{
-&amp;quot;crypted&amp;quot;: false,
-&amp;quot;text&amp;quot;: &amp;quot;changeme&amp;quot;
-},
-&amp;quot;disk&amp;quot;: &amp;quot;/dev/sda&amp;quot;,
-&amp;quot;partitions&amp;quot;: [
-{&amp;quot;mountpoint&amp;quot;: &amp;quot;/&amp;quot;, &amp;quot;size&amp;quot;: 0, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;},
-{&amp;quot;mountpoint&amp;quot;: &amp;quot;/boot&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;},
-{&amp;quot;mountpoint&amp;quot;: &amp;quot;/root&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;},
-{&amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;swap&amp;quot;}
-],
-&amp;quot;packagelist_file&amp;quot;: &amp;quot;packages_minimal.json&amp;quot;,
-&amp;quot;additional_packages&amp;quot;: [&amp;quot;vim&amp;quot;],
-&amp;quot;postinstall&amp;quot;: [
-&amp;quot;#!/bin/sh&amp;quot;,
-&amp;quot;echo \&amp;quot;Hello World\&amp;quot; &amp;gt; /etc/postinstall&amp;quot;
-],
-&amp;quot;public_key&amp;quot;: &amp;quot;&amp;lt;ssh-key-here&amp;gt;&amp;quot;,
-&amp;quot;install_linux_esx&amp;quot;: false,
-&amp;quot;network&amp;quot;: {
-&amp;quot;type&amp;quot;: &amp;quot;dhcp&amp;quot;
-}
-}
-&lt;/code>&lt;/pre>&lt;p>##Installing Root Partition as LVM&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;hostname&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;photon-machine&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;password&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;crypted&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#204a87;font-weight:bold">false&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;text&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;changeme&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;disk&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;/dev/sda&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;partitions&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;mountpoint&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;/&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;size&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;filesystem&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;ext4&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;mountpoint&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;/boot&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;size&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">128&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;filesystem&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;ext4&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;mountpoint&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;/root&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;size&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">128&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;filesystem&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;ext4&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;size&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">128&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;filesystem&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;swap&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;span style="color:#000;font-weight:bold">],&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;packagelist_file&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;packages_minimal.json&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;additional_packages&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;vim&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">],&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;postinstall&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">[&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;#!/bin/sh&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;echo \&amp;#34;Hello World\&amp;#34; &amp;gt; /etc/postinstall&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">],&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;public_key&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;&amp;lt;ssh-key-here&amp;gt;&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;install_linux_esx&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#204a87;font-weight:bold">false&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;network&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#000;font-weight:bold">{&lt;/span>
+&lt;span style="color:#204a87;font-weight:bold">&amp;#34;type&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;dhcp&amp;#34;&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;span style="color:#000;font-weight:bold">}&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="installing-root-partition-as-lvm">Installing Root Partition as LVM&lt;/h2>
 &lt;p>In the kickstart file modify the &lt;strong>partitions&lt;/strong> field to mount root partition as LVM.&lt;/p>
 &lt;p>For example:&lt;/p>
-&lt;pre>&lt;code>&amp;quot;disk&amp;quot;: &amp;quot;/dev/sda&amp;quot;
-&amp;quot;partitions&amp;quot;:[
-{&amp;quot;mountpoint&amp;quot;: &amp;quot;/&amp;quot;, &amp;quot;size&amp;quot;: 0, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;, &amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;rootfs&amp;quot;}},
-{&amp;quot;mountpoint&amp;quot;: &amp;quot;/boot&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;},
-{&amp;quot;mountpoint&amp;quot;: &amp;quot;/root&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;root&amp;quot;}},
-{&amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;swap&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg2&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;swap&amp;quot;}}
-]
-&lt;/code>&lt;/pre>&lt;p>&lt;strong>Note&lt;/strong>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#4e9a06">&amp;#34;disk&amp;#34;&lt;/span>&lt;span style="color:#a40000">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;/dev/sda&amp;#34;&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;partitions&amp;#34;&lt;/span>&lt;span style="color:#a40000">:&lt;/span>&lt;span style="color:#000;font-weight:bold">[&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;mountpoint&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;/&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;size&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;filesystem&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;ext4&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;lvm&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;vg_name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;vg1&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;lv_name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;rootfs&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">}},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;mountpoint&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;/boot&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;size&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">128&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;filesystem&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;ext4&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;mountpoint&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;/root&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;size&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">128&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;filesystem&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;ext4&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;lvm&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;vg_name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;vg1&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;lv_name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;root&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">}},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;size&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">128&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;filesystem&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;swap&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;lvm&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;vg_name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;vg2&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;lv_name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;swap&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">}}&lt;/span>
+&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>&lt;strong>Note&lt;/strong>:&lt;/p>
 &lt;ul>
 &lt;li>vg_name : Volume Group Name&lt;/li>
 &lt;li>lv_name : Logical Volume Name&lt;/li>
 &lt;/ul>
 &lt;p>In above example &lt;strong>rootfs&lt;/strong>, &lt;strong>root&lt;/strong> are logical volumes in the volume group &lt;strong>vg1&lt;/strong> and &lt;strong>swap&lt;/strong> is logical volume in volume group &lt;strong>vg2&lt;/strong>, physical volumes are part of disk &lt;strong>/dev/sda&lt;/strong>.&lt;/p>
 &lt;p>Multiple disks are also supported. For example:&lt;/p>
-&lt;pre>&lt;code>&amp;quot;disk&amp;quot;: &amp;quot;/dev/sda&amp;quot;
-&amp;quot;partitions&amp;quot;:[
-{&amp;quot;mountpoint&amp;quot;: &amp;quot;/&amp;quot;, &amp;quot;size&amp;quot;: 0, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;, &amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;rootfs&amp;quot;}},
-{&amp;quot;mountpoint&amp;quot;: &amp;quot;/boot&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;},
-{&amp;quot;disk&amp;quot;: &amp;quot;/dev/sdb&amp;quot;, &amp;quot;mountpoint&amp;quot;: &amp;quot;/root&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;root&amp;quot;}},
-{&amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;swap&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;swap&amp;quot;}}
-]
-&lt;/code>&lt;/pre>&lt;p>If disk name is not specified, the physical volumes will be part of the default disk: &lt;strong>dev/sda&lt;/strong>.
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-json" data-lang="json">&lt;span style="color:#4e9a06">&amp;#34;disk&amp;#34;&lt;/span>&lt;span style="color:#a40000">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;/dev/sda&amp;#34;&lt;/span>
+&lt;span style="color:#4e9a06">&amp;#34;partitions&amp;#34;&lt;/span>&lt;span style="color:#a40000">:&lt;/span>&lt;span style="color:#000;font-weight:bold">[&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;mountpoint&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;/&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;size&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">0&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;filesystem&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;ext4&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;lvm&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;vg_name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;vg1&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;lv_name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;rootfs&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">}},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;mountpoint&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;/boot&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;size&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">128&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;filesystem&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;ext4&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;disk&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;/dev/sdb&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;mountpoint&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;/root&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;size&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">128&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;filesystem&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;ext4&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;lvm&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;vg_name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;vg1&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;lv_name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;root&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">}},&lt;/span>
+&lt;span style="color:#000;font-weight:bold">{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;size&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#0000cf;font-weight:bold">128&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;filesystem&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span> &lt;span style="color:#4e9a06">&amp;#34;swap&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;lvm&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:{&lt;/span>&lt;span style="color:#204a87;font-weight:bold">&amp;#34;vg_name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;vg1&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">,&lt;/span> &lt;span style="color:#204a87;font-weight:bold">&amp;#34;lv_name&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;swap&amp;#34;&lt;/span>&lt;span style="color:#000;font-weight:bold">}}&lt;/span>
+&lt;span style="color:#000;font-weight:bold">]&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>If disk name is not specified, the physical volumes will be part of the default disk: &lt;strong>dev/sda&lt;/strong>.
 In above example &lt;strong>rootfs&lt;/strong>,&lt;strong>root&lt;/strong> and &lt;strong>swap&lt;/strong> are logical volumes in volume group &lt;strong>vg1&lt;/strong>, physical volumes are in the disk &lt;strong>/dev/sdb&lt;/strong> and partitions are present in &lt;strong>/dev/sda&lt;/strong>.&lt;/p>
 &lt;p>&lt;strong>Note&lt;/strong>: Mounting &lt;strong>/boot&lt;/strong> partition as LVM is not supported.&lt;/p>
 &lt;h2 id="unattended-installation-through-kickstart">Unattended Installation Through Kickstart&lt;/h2>
 &lt;p>For an unattended installation, you pass the &lt;code>ks=&amp;lt;config_file&amp;gt;&lt;/code> parameter to the kernel command. To pass the config file, there are two options: by providing it on the ISO or by serving it from an HTTP server.&lt;/p>
 &lt;p>The syntax to pass the config-file to the kernel through the ISO takes the following form:&lt;/p>
-&lt;pre>&lt;code>ks=cdrom:/&amp;lt;config_file_path&amp;gt;
-&lt;/code>&lt;/pre>
-&lt;p>Here is an example:&lt;/p>
-&lt;pre>&lt;code>ks=cdrom:/isolinux/my_ks.cfg
-&lt;/code>&lt;/pre>
-&lt;p>The syntax to serve the config-file to the kernel from a HTTPS server takes the following form:&lt;/p>
-&lt;pre>&lt;code>ks=https://&amp;lt;server&amp;gt;/&amp;lt;config_file_path&amp;gt;
-&lt;/code>&lt;/pre>
-&lt;p>To use HTTP path or self-signed HTTPS path, you have to enable &lt;code>insecure_installation&lt;/code> by using insecure_installation=1 along with defining the ks path. The kernel command line argument, &lt;code>insecure_installation&lt;/code>, acts as a flag that user can set to 1 to allow some operations that are not normally allowed due to security concerns. This is disabled by default and it is up to the user to the ensure security when this options is enabled.&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">ks=cdrom:/&amp;lt;config_file_path&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>Here is an example:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">ks=cdrom:/isolinux/my_ks.cfg
+&lt;/code>&lt;/pre>&lt;p>The syntax to serve the config-file to the kernel from a HTTPS server takes the following form:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">ks=https://&amp;lt;server&amp;gt;/&amp;lt;config_file_path&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>To use HTTP path or self-signed HTTPS path, you have to enable &lt;code>insecure_installation&lt;/code> by using insecure_installation=1 along with defining the ks path. The kernel command line argument, &lt;code>insecure_installation&lt;/code>, acts as a flag that user can set to 1 to allow some operations that are not normally allowed due to security concerns. This is disabled by default and it is up to the user to the ensure security when this options is enabled.&lt;/p>
+&lt;ul>
+&lt;li>
 &lt;p>For HTTP: &lt;code>ks=http://&amp;lt;server&amp;gt;/&amp;lt;config_file_path&amp;gt; insecure_installation=1&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
 &lt;p>For HTTPS (self-signed): &lt;code> ks=https://&amp;lt;server&amp;gt;/&amp;lt;config_file_path&amp;gt; insecure_installation=1&lt;/code>&lt;/p>
+&lt;/li>
+&lt;/ul>
 &lt;h2 id="building-an-iso-with-a-kickstart-config-file">Building an ISO with a Kickstart Config File&lt;/h2>
 &lt;p>Here&amp;rsquo;s an example of how to add a kickstart config file to the Photon OS ISO by mounting the ISO on an Ubuntu machine and then rebuilding the ISO. The following example assumes you can adapt the sample kickstart configuration file that comes with the Photon OS ISO to your needs. You can obtain the Photon OS ISO for free from VMware at the following URL:&lt;/p>
 &lt;p>&lt;a href="https://packages.vmware.com/photon">https://packages.vmware.com/photon&lt;/a>&lt;/p>
 &lt;p>Once you have the ISO, mount it.&lt;/p>
-&lt;pre>&lt;code>mkdir /tmp/photon-iso
+&lt;pre>&lt;code class="language-console" data-lang="console">mkdir /tmp/photon-iso
 sudo mount photon.iso /tmp/photon-iso
 &lt;/code>&lt;/pre>&lt;p>Then copy the content of the ISO to a writable directory and push it into the directory stack:&lt;/p>
-&lt;pre>&lt;code>mkdir /tmp/photon-ks-iso
+&lt;pre>&lt;code class="language-console" data-lang="console">mkdir /tmp/photon-ks-iso
 cp -r /tmp/photon-iso/* /tmp/photon-ks-iso/
 pushd /tmp/photon-ks-iso/
 &lt;/code>&lt;/pre>&lt;p>Next, copy the sample kickstart configuration file that comes with the Photon OS ISO and modify it to suit your needs. In the ISO, the sample kickstart config file appears in the &lt;code>isolinux&lt;/code> directory and is named &lt;code>sample_ks.cfg.&lt;/code> The name of the directory and the name of the file might be in all uppercase letters.&lt;/p>
-&lt;pre>&lt;code>cp isolinux/sample_ks.cfg isolinux/my_ks.cfg
+&lt;pre>&lt;code class="language-console" data-lang="console">cp isolinux/sample_ks.cfg isolinux/my_ks.cfg
 nano isolinux/my_ks.cfg
 &lt;/code>&lt;/pre>&lt;p>With a copy of the sample kickstart config file open in nano, make the changes that you want.&lt;/p>
 &lt;p>Now add a new item to the installation menu by modifying &lt;code>isolinux/menu.cfg&lt;/code>:&lt;/p>
-&lt;pre>&lt;code>cat &amp;gt;&amp;gt; isolinux/menu.cfg &amp;lt;&amp;lt; EOF
+&lt;pre>&lt;code class="language-console" data-lang="console">cat &amp;gt;&amp;gt; isolinux/menu.cfg &amp;lt;&amp;lt; EOF
 label my_unattended
 menu label ^My Unattended Install
 menu default
@@ -423,7 +426,7 @@ kernel vmlinuz
 append initrd=initrd.img root=/dev/ram0 loglevel=3 photon.media=cdrom
 EOF
 &lt;/code>&lt;/pre>&lt;p>Finally, rebuild the ISO so that it includes your kickstart config file:&lt;/p>
-&lt;pre>&lt;code>mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
+&lt;pre>&lt;code class="language-console" data-lang="console">mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
 -no-emul-boot -boot-load-size 4 -boot-info-table -V &amp;quot;PHOTON_$(date +%Y%m%d)&amp;quot; \
 . &amp;gt; &amp;lt;new_iso_path&amp;gt;.iso
 popd

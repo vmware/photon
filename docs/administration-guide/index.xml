@@ -339,13 +339,12 @@ X11 Layout: n/a
 &lt;ol>
 &lt;li>
 &lt;p>After reboot, the system runs in SELinux permissive mode. To confirm, check the journal:&lt;/p>
-&lt;pre>&lt;code> journalctl -b0 | grep -i selinux
+&lt;pre>&lt;code class="language-console" data-lang="console">journalctl -b0 | grep -i selinux
 Feb 26 21:42:09 photon-machine kernel: SELinux: Initializing.
 Feb 26 21:42:09 photon-machine kernel: SELinux: policy capability ...
 Feb 26 21:42:09 photon-machine kernel: audit: type=1403 audit(1589406128.920:2): auid=4294967295 ses=4294967295 lsm=selinux res=1
 Feb 26 21:42:09 photon-machine systemd[1]: Successfully loaded SELinux policy in 322.475ms.
-&lt;/code>&lt;/pre>
-&lt;/li>
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;/ol>
 &lt;h2 id="switch-selinux-to-enforcing-mode">Switch SELinux to enforcing mode&lt;/h2>
 &lt;p>The three methods to toggle enforcing mode are as follows:&lt;/p>
@@ -359,51 +358,54 @@ Feb 26 21:42:09 photon-machine systemd[1]: Successfully loaded SELinux policy in
 The following example is for adding the sys_admin capability policy:&lt;/p>
 &lt;ol>
 &lt;li>
-&lt;p>Install policy development packages
-tdnf install -y selinux-policy-devel semodule-utils&lt;/p>
-&lt;/li>
+&lt;p>Install policy development packages:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">tdnf install -y selinux-policy-devel semodule-utils
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
-&lt;p>Create .te file
-cat getty_local.te
-policy_module(getty_local, 1.0)&lt;/p>
-&lt;p>gen_require(`
+&lt;p>Create .te file&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">cat getty_local.te
+policy_module(getty_local, 1.0)
+gen_require(`
 type getty_t;
-&amp;lsquo;)&lt;/p>
-&lt;p>allow getty_t self:capability sys_admin;&lt;/p>
-&lt;/li>
+')
+allow getty_t self:capability sys_admin;
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
-&lt;p>Compile it into .pp file
-make -f /usr/share/selinux/devel/Makefile getty_local.pp&lt;/p>
-&lt;/li>
+&lt;p>Compile it into .pp file&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">make -f /usr/share/selinux/devel/Makefile getty_local.pp
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
-&lt;p>Load it with priority 200. It will permanently alter default policy. And this change will survive reboot cycle.
-semodule -i getty_local.pp -X 200&lt;/p>
-&lt;/li>
+&lt;p>Load it with priority 200. It will permanently alter default policy. And this change will survive reboot cycle.&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">semodule -i getty_local.pp -X 200
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
-&lt;p>Check result
-sesearch -A -s getty_t -t getty_t -c capability
-allow getty_t getty_t:capability { chown dac_override dac_read_search fowner fsetid setgid sys_admin sys_resource sys_tty_config };&lt;/p>
-&lt;/li>
+&lt;p>Check result&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">sesearch -A -s getty_t -t getty_t -c capability
+allow getty_t getty_t:capability { chown dac_override dac_read_search fowner fsetid setgid sys_admin sys_resource sys_tty_config };
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
-&lt;p>List of loaded modules and their priorities
-semodule -lfull&lt;/p>
-&lt;/li>
+&lt;p>List of loaded modules and their priorities&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">semodule -lfull
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;/ol>
 &lt;h2 id="debugging-selinux">Debugging SELinux&lt;/h2>
 &lt;p>Install the debugging tools as follows:&lt;/p>
-&lt;pre>&lt;code>tdnf install -y setools python3-pip
+&lt;pre>&lt;code class="language-console" data-lang="console">tdnf install -y setools python3-pip
 pip3 install networkx
-&lt;/code>&lt;/pre>
-&lt;p>List all actions denied by Selinux using the following command:&lt;/p>
-&lt;pre>&lt;code>journalctl _TRANSPORT=audit -b 0 | grep denied
+&lt;/code>&lt;/pre>&lt;p>List all actions denied by Selinux using the following command:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">journalctl _TRANSPORT=audit -b 0 | grep denied
 Feb 26 21:42:43 photon-machine audit[445]: AVC avc: denied { sys_admin } for pid=445 comm=&amp;quot;agetty&amp;quot; capability=21
 scontext=system_u:system_r:getty_t:s0-s0:c0.c1023 tcontext=system_u:system_r:getty_t:s0-s0:c0.c1023 tclass=capability permissive=0
-&lt;/code>&lt;/pre>
-&lt;p>You can see that the agetty process running in the getty_t context tries to change the capability of getty_t target to obtain &lt;code>sys_admin&lt;/code>. To view the capability that getty_t can obtain:&lt;/p>
-&lt;pre>&lt;code>sesearch -A -s getty_t -t getty_t -c capability
+&lt;/code>&lt;/pre>&lt;p>You can see that the agetty process running in the getty_t context tries to change the capability of getty_t target to obtain &lt;code>sys_admin&lt;/code>. To view the capability that getty_t can obtain:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">sesearch -A -s getty_t -t getty_t -c capability
 allow getty_t getty_t:capability { chown dac_override dac_read_search fowner fsetid setgid sys_resource sys_tty_config };
 &lt;/code>&lt;/pre>
-&lt;p>Note: &lt;code>sys_admind&lt;/code> is not listed there and can be added.&lt;/p>
+&lt;div class="alert alert-primary" role="alert">
+&lt;h4 class="alert-heading">Note&lt;/h4>
+&lt;blockquote>
+&lt;p>&lt;code>sys_admind&lt;/code> is not listed there but can be added.&lt;/p>
+&lt;/blockquote>
+&lt;/div>
 &lt;h2 id="important-selinux-files">Important SELinux Files&lt;/h2>
 &lt;p>Here are some of the important SELinux files:&lt;/p>
 &lt;ul>
@@ -429,5 +431,7 @@ allow getty_t getty_t:capability { chown dac_override dac_read_search fowner fse
 &lt;pre>&lt;code>/usr/libexec/selinux/hll/pp getty_local.pp
 (roleattributeset cil_gen_require system_r)
 (typeattributeset cil_gen_require getty_t)
-(allow getty_t self (capability (sys_admin)))&lt;/code>&lt;/pre></description></item><item><title>Docs: Remotely Upgrading a Photon OS Machine</title><link>/docs/administration-guide/installing-and-using-lightwave/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/installing-and-using-lightwave/</guid><description/></item><item><title>Docs: Photon Management Daemon</title><link>/docs/administration-guide/photon-management-daemon/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-management-daemon/</guid><description>
+(allow getty_t self (capability (sys_admin)))
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Remotely Upgrading a Photon OS Machine</title><link>/docs/administration-guide/installing-and-using-lightwave/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/installing-and-using-lightwave/</guid><description>
+&lt;p>The following section describes how to remotely upgrade a Photon OS installation.&lt;/p></description></item><item><title>Docs: Photon Management Daemon</title><link>/docs/administration-guide/photon-management-daemon/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-management-daemon/</guid><description>
 &lt;p>The Photon Management Daemon (PMD) that ships with Photon OS provides the remote management of a Photon instance via several APIs: a command line client (pmd-cli), a REST API, and a Python API. The PMD provides the ability to manage network interfaces, packages, firewalls, users, and user groups.&lt;/p></description></item></channel></rss>

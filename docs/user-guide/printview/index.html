@@ -70,78 +70,75 @@ Scripts will be looked up in "search_path" list.<p>Example: { "postinstallscript
 Short form of: { "password": {
 "crypted": true,
 "text": "encrypted password here"} }</td></tr><tr><td>ui</td><td>Optional.<p>Installer will show progress status in the UI, if it set to true.
-Or logging output will be printed to console - default behavior.<p>Boolean: true or false<p>Default value: false<p>Example: { "ui": true }</td></tr></tbody></table><h2 id=sample-configuration-file>Sample Configuration File</h2><p>Here is a sample kickstart configuration file:</p><pre><code>{
-    &quot;hostname&quot;: &quot;photon-machine&quot;,
-    &quot;password&quot;:
-        {
-            &quot;crypted&quot;: false,
-            &quot;text&quot;: &quot;changeme&quot;
-        },
-    &quot;disk&quot;: &quot;/dev/sda&quot;,
-    &quot;partitions&quot;: [
-                        {&quot;mountpoint&quot;: &quot;/&quot;, &quot;size&quot;: 0, &quot;filesystem&quot;: &quot;ext4&quot;},
-                        {&quot;mountpoint&quot;: &quot;/boot&quot;, &quot;size&quot;: 128, &quot;filesystem&quot;: &quot;ext4&quot;},
-                        {&quot;mountpoint&quot;: &quot;/root&quot;, &quot;size&quot;: 128, &quot;filesystem&quot;: &quot;ext4&quot;},
-                        {&quot;size&quot;: 128, &quot;filesystem&quot;: &quot;swap&quot;}
-                    ],
-    &quot;packagelist_file&quot;: &quot;packages_minimal.json&quot;,
-    &quot;additional_packages&quot;: [&quot;vim&quot;],
-    &quot;postinstall&quot;: [
-                		&quot;#!/bin/sh&quot;,
-                    	&quot;echo \&quot;Hello World\&quot; &gt; /etc/postinstall&quot;
-                   ],
-    &quot;public_key&quot;: &quot;&lt;ssh-key-here&gt;&quot;,
-    &quot;install_linux_esx&quot;: false,
-    &quot;network&quot;: {
-        &quot;type&quot;: &quot;dhcp&quot;
-    }    
-}
-</code></pre><p>##Installing Root Partition as LVM</p><p>In the kickstart file modify the <strong>partitions</strong> field to mount root partition as LVM.</p><p>For example:</p><pre><code>&quot;disk&quot;: &quot;/dev/sda&quot;
-&quot;partitions&quot;:[
-                {&quot;mountpoint&quot;: &quot;/&quot;, &quot;size&quot;: 0, &quot;filesystem&quot;: &quot;ext4&quot;, &quot;lvm&quot;:{&quot;vg_name&quot;:&quot;vg1&quot;, &quot;lv_name&quot;:&quot;rootfs&quot;}},
-                {&quot;mountpoint&quot;: &quot;/boot&quot;, &quot;size&quot;: 128, &quot;filesystem&quot;: &quot;ext4&quot;},
+Or logging output will be printed to console - default behavior.<p>Boolean: true or false<p>Default value: false<p>Example: { "ui": true }</td></tr></tbody></table><h2 id=sample-configuration-file>Sample Configuration File</h2><p>Here is a sample kickstart configuration file:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=color:#000;font-weight:700>{</span>
+    <span style=color:#204a87;font-weight:700>&#34;hostname&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;photon-machine&#34;</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#204a87;font-weight:700>&#34;password&#34;</span><span style=color:#000;font-weight:700>:</span>
+        <span style=color:#000;font-weight:700>{</span>
+            <span style=color:#204a87;font-weight:700>&#34;crypted&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>false</span><span style=color:#000;font-weight:700>,</span>
+            <span style=color:#204a87;font-weight:700>&#34;text&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;changeme&#34;</span>
+        <span style=color:#000;font-weight:700>},</span>
+    <span style=color:#204a87;font-weight:700>&#34;disk&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;/dev/sda&#34;</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#204a87;font-weight:700>&#34;partitions&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span>
+                        <span style=color:#000;font-weight:700>{</span><span style=color:#204a87;font-weight:700>&#34;mountpoint&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;/&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;size&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>0</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;filesystem&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;ext4&#34;</span><span style=color:#000;font-weight:700>},</span>
+                        <span style=color:#000;font-weight:700>{</span><span style=color:#204a87;font-weight:700>&#34;mountpoint&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;/boot&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;size&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>128</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;filesystem&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;ext4&#34;</span><span style=color:#000;font-weight:700>},</span>
+                        <span style=color:#000;font-weight:700>{</span><span style=color:#204a87;font-weight:700>&#34;mountpoint&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;/root&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;size&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>128</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;filesystem&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;ext4&#34;</span><span style=color:#000;font-weight:700>},</span>
+                        <span style=color:#000;font-weight:700>{</span><span style=color:#204a87;font-weight:700>&#34;size&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>128</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;filesystem&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;swap&#34;</span><span style=color:#000;font-weight:700>}</span>
+                    <span style=color:#000;font-weight:700>],</span>
+    <span style=color:#204a87;font-weight:700>&#34;packagelist_file&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;packages_minimal.json&#34;</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#204a87;font-weight:700>&#34;additional_packages&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#34;vim&#34;</span><span style=color:#000;font-weight:700>],</span>
+    <span style=color:#204a87;font-weight:700>&#34;postinstall&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span>
+                		<span style=color:#4e9a06>&#34;#!/bin/sh&#34;</span><span style=color:#000;font-weight:700>,</span>
+                    	<span style=color:#4e9a06>&#34;echo \&#34;Hello World\&#34; &gt; /etc/postinstall&#34;</span>
+                   <span style=color:#000;font-weight:700>],</span>
+    <span style=color:#204a87;font-weight:700>&#34;public_key&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;&lt;ssh-key-here&gt;&#34;</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#204a87;font-weight:700>&#34;install_linux_esx&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>false</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#204a87;font-weight:700>&#34;network&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>{</span>
+        <span style=color:#204a87;font-weight:700>&#34;type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;dhcp&#34;</span>
+    <span style=color:#000;font-weight:700>}</span>    
+<span style=color:#000;font-weight:700>}</span>
+</code></pre></div><h2 id=installing-root-partition-as-lvm>Installing Root Partition as LVM</h2><p>In the kickstart file modify the <strong>partitions</strong> field to mount root partition as LVM.</p><p>For example:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=color:#4e9a06>&#34;disk&#34;</span><span style=color:#a40000>:</span> <span style=color:#4e9a06>&#34;/dev/sda&#34;</span>
+<span style=color:#4e9a06>&#34;partitions&#34;</span><span style=color:#a40000>:</span><span style=color:#000;font-weight:700>[</span>
+                <span style=color:#000;font-weight:700>{</span><span style=color:#204a87;font-weight:700>&#34;mountpoint&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;/&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;size&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>0</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;filesystem&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;ext4&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;lvm&#34;</span><span style=color:#000;font-weight:700>:{</span><span style=color:#204a87;font-weight:700>&#34;vg_name&#34;</span><span style=color:#000;font-weight:700>:</span><span style=color:#4e9a06>&#34;vg1&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;lv_name&#34;</span><span style=color:#000;font-weight:700>:</span><span style=color:#4e9a06>&#34;rootfs&#34;</span><span style=color:#000;font-weight:700>}},</span>
+                <span style=color:#000;font-weight:700>{</span><span style=color:#204a87;font-weight:700>&#34;mountpoint&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;/boot&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;size&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>128</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;filesystem&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;ext4&#34;</span><span style=color:#000;font-weight:700>},</span>
 
-                {&quot;mountpoint&quot;: &quot;/root&quot;, &quot;size&quot;: 128, &quot;filesystem&quot;: &quot;ext4&quot;,&quot;lvm&quot;:{&quot;vg_name&quot;:&quot;vg1&quot;, &quot;lv_name&quot;:&quot;root&quot;}},
+                <span style=color:#000;font-weight:700>{</span><span style=color:#204a87;font-weight:700>&#34;mountpoint&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;/root&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;size&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>128</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;filesystem&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;ext4&#34;</span><span style=color:#000;font-weight:700>,</span><span style=color:#204a87;font-weight:700>&#34;lvm&#34;</span><span style=color:#000;font-weight:700>:{</span><span style=color:#204a87;font-weight:700>&#34;vg_name&#34;</span><span style=color:#000;font-weight:700>:</span><span style=color:#4e9a06>&#34;vg1&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;lv_name&#34;</span><span style=color:#000;font-weight:700>:</span><span style=color:#4e9a06>&#34;root&#34;</span><span style=color:#000;font-weight:700>}},</span>
 
-                {&quot;size&quot;: 128, &quot;filesystem&quot;: &quot;swap&quot;,&quot;lvm&quot;:{&quot;vg_name&quot;:&quot;vg2&quot;, &quot;lv_name&quot;:&quot;swap&quot;}}
-]
+                <span style=color:#000;font-weight:700>{</span><span style=color:#204a87;font-weight:700>&#34;size&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>128</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;filesystem&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;swap&#34;</span><span style=color:#000;font-weight:700>,</span><span style=color:#204a87;font-weight:700>&#34;lvm&#34;</span><span style=color:#000;font-weight:700>:{</span><span style=color:#204a87;font-weight:700>&#34;vg_name&#34;</span><span style=color:#000;font-weight:700>:</span><span style=color:#4e9a06>&#34;vg2&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;lv_name&#34;</span><span style=color:#000;font-weight:700>:</span><span style=color:#4e9a06>&#34;swap&#34;</span><span style=color:#000;font-weight:700>}}</span>
+<span style=color:#000;font-weight:700>]</span>
 
-</code></pre><p><strong>Note</strong>:</p><ul><li>vg_name : Volume Group Name</li><li>lv_name : Logical Volume Name</li></ul><p>In above example <strong>rootfs</strong>, <strong>root</strong> are logical volumes in the volume group <strong>vg1</strong> and <strong>swap</strong> is logical volume in volume group <strong>vg2</strong>, physical volumes are part of disk <strong>/dev/sda</strong>.</p><p>Multiple disks are also supported. For example:</p><pre><code>&quot;disk&quot;: &quot;/dev/sda&quot;
-&quot;partitions&quot;:[
-                {&quot;mountpoint&quot;: &quot;/&quot;, &quot;size&quot;: 0, &quot;filesystem&quot;: &quot;ext4&quot;, &quot;lvm&quot;:{&quot;vg_name&quot;:&quot;vg1&quot;, &quot;lv_name&quot;:&quot;rootfs&quot;}},
-                {&quot;mountpoint&quot;: &quot;/boot&quot;, &quot;size&quot;: 128, &quot;filesystem&quot;: &quot;ext4&quot;},
+</code></pre></div><p><strong>Note</strong>:</p><ul><li>vg_name : Volume Group Name</li><li>lv_name : Logical Volume Name</li></ul><p>In above example <strong>rootfs</strong>, <strong>root</strong> are logical volumes in the volume group <strong>vg1</strong> and <strong>swap</strong> is logical volume in volume group <strong>vg2</strong>, physical volumes are part of disk <strong>/dev/sda</strong>.</p><p>Multiple disks are also supported. For example:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=color:#4e9a06>&#34;disk&#34;</span><span style=color:#a40000>:</span> <span style=color:#4e9a06>&#34;/dev/sda&#34;</span>
+<span style=color:#4e9a06>&#34;partitions&#34;</span><span style=color:#a40000>:</span><span style=color:#000;font-weight:700>[</span>
+                <span style=color:#000;font-weight:700>{</span><span style=color:#204a87;font-weight:700>&#34;mountpoint&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;/&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;size&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>0</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;filesystem&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;ext4&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;lvm&#34;</span><span style=color:#000;font-weight:700>:{</span><span style=color:#204a87;font-weight:700>&#34;vg_name&#34;</span><span style=color:#000;font-weight:700>:</span><span style=color:#4e9a06>&#34;vg1&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;lv_name&#34;</span><span style=color:#000;font-weight:700>:</span><span style=color:#4e9a06>&#34;rootfs&#34;</span><span style=color:#000;font-weight:700>}},</span>
+                <span style=color:#000;font-weight:700>{</span><span style=color:#204a87;font-weight:700>&#34;mountpoint&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;/boot&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;size&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>128</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;filesystem&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;ext4&#34;</span><span style=color:#000;font-weight:700>},</span>
 
-                {&quot;disk&quot;: &quot;/dev/sdb&quot;, &quot;mountpoint&quot;: &quot;/root&quot;, &quot;size&quot;: 128, &quot;filesystem&quot;: &quot;ext4&quot;,&quot;lvm&quot;:{&quot;vg_name&quot;:&quot;vg1&quot;, &quot;lv_name&quot;:&quot;root&quot;}},
+                <span style=color:#000;font-weight:700>{</span><span style=color:#204a87;font-weight:700>&#34;disk&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;/dev/sdb&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;mountpoint&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;/root&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;size&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>128</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;filesystem&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;ext4&#34;</span><span style=color:#000;font-weight:700>,</span><span style=color:#204a87;font-weight:700>&#34;lvm&#34;</span><span style=color:#000;font-weight:700>:{</span><span style=color:#204a87;font-weight:700>&#34;vg_name&#34;</span><span style=color:#000;font-weight:700>:</span><span style=color:#4e9a06>&#34;vg1&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;lv_name&#34;</span><span style=color:#000;font-weight:700>:</span><span style=color:#4e9a06>&#34;root&#34;</span><span style=color:#000;font-weight:700>}},</span>
 
-                {&quot;size&quot;: 128, &quot;filesystem&quot;: &quot;swap&quot;,&quot;lvm&quot;:{&quot;vg_name&quot;:&quot;vg1&quot;, &quot;lv_name&quot;:&quot;swap&quot;}}
-]
-</code></pre><p>If disk name is not specified, the physical volumes will be part of the default disk: <strong>dev/sda</strong>.
-In above example <strong>rootfs</strong>,<strong>root</strong> and <strong>swap</strong> are logical volumes in volume group <strong>vg1</strong>, physical volumes are in the disk <strong>/dev/sdb</strong> and partitions are present in <strong>/dev/sda</strong>.</p><p><strong>Note</strong>: Mounting <strong>/boot</strong> partition as LVM is not supported.</p><h2 id=unattended-installation-through-kickstart>Unattended Installation Through Kickstart</h2><p>For an unattended installation, you pass the <code>ks=&lt;config_file></code> parameter to the kernel command. To pass the config file, there are two options: by providing it on the ISO or by serving it from an HTTP server.</p><p>The syntax to pass the config-file to the kernel through the ISO takes the following form:</p><pre><code>ks=cdrom:/&lt;config_file_path&gt;
-</code></pre><p>Here is an example:</p><pre><code>ks=cdrom:/isolinux/my_ks.cfg
-</code></pre><p>The syntax to serve the config-file to the kernel from a HTTPS server takes the following form:</p><pre><code>ks=https://&lt;server&gt;/&lt;config_file_path&gt;
-</code></pre><p>To use HTTP path or self-signed HTTPS path, you have to enable <code>insecure_installation</code> by using insecure_installation=1 along with defining the ks path. The kernel command line argument, <code>insecure_installation</code>, acts as a flag that user can set to 1 to allow some operations that are not normally allowed due to security concerns. This is disabled by default and it is up to the user to the ensure security when this options is enabled.</p><p>For HTTP: <code>ks=http://&lt;server>/&lt;config_file_path> insecure_installation=1</code></p><p>For HTTPS (self-signed): <code>ks=https://&lt;server>/&lt;config_file_path> insecure_installation=1</code></p><h2 id=building-an-iso-with-a-kickstart-config-file>Building an ISO with a Kickstart Config File</h2><p>Here&rsquo;s an example of how to add a kickstart config file to the Photon OS ISO by mounting the ISO on an Ubuntu machine and then rebuilding the ISO. The following example assumes you can adapt the sample kickstart configuration file that comes with the Photon OS ISO to your needs. You can obtain the Photon OS ISO for free from VMware at the following URL:</p><p><a href=https://packages.vmware.com/photon>https://packages.vmware.com/photon</a></p><p>Once you have the ISO, mount it.</p><pre><code>mkdir /tmp/photon-iso
+                <span style=color:#000;font-weight:700>{</span><span style=color:#204a87;font-weight:700>&#34;size&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>128</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;filesystem&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;swap&#34;</span><span style=color:#000;font-weight:700>,</span><span style=color:#204a87;font-weight:700>&#34;lvm&#34;</span><span style=color:#000;font-weight:700>:{</span><span style=color:#204a87;font-weight:700>&#34;vg_name&#34;</span><span style=color:#000;font-weight:700>:</span><span style=color:#4e9a06>&#34;vg1&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#204a87;font-weight:700>&#34;lv_name&#34;</span><span style=color:#000;font-weight:700>:</span><span style=color:#4e9a06>&#34;swap&#34;</span><span style=color:#000;font-weight:700>}}</span>
+<span style=color:#000;font-weight:700>]</span>
+</code></pre></div><p>If disk name is not specified, the physical volumes will be part of the default disk: <strong>dev/sda</strong>.
+In above example <strong>rootfs</strong>,<strong>root</strong> and <strong>swap</strong> are logical volumes in volume group <strong>vg1</strong>, physical volumes are in the disk <strong>/dev/sdb</strong> and partitions are present in <strong>/dev/sda</strong>.</p><p><strong>Note</strong>: Mounting <strong>/boot</strong> partition as LVM is not supported.</p><h2 id=unattended-installation-through-kickstart>Unattended Installation Through Kickstart</h2><p>For an unattended installation, you pass the <code>ks=&lt;config_file></code> parameter to the kernel command. To pass the config file, there are two options: by providing it on the ISO or by serving it from an HTTP server.</p><p>The syntax to pass the config-file to the kernel through the ISO takes the following form:</p><pre><code class=language-console data-lang=console>ks=cdrom:/&lt;config_file_path&gt;
+</code></pre><p>Here is an example:</p><pre><code class=language-console data-lang=console>ks=cdrom:/isolinux/my_ks.cfg
+</code></pre><p>The syntax to serve the config-file to the kernel from a HTTPS server takes the following form:</p><pre><code class=language-console data-lang=console>ks=https://&lt;server&gt;/&lt;config_file_path&gt;
+</code></pre><p>To use HTTP path or self-signed HTTPS path, you have to enable <code>insecure_installation</code> by using insecure_installation=1 along with defining the ks path. The kernel command line argument, <code>insecure_installation</code>, acts as a flag that user can set to 1 to allow some operations that are not normally allowed due to security concerns. This is disabled by default and it is up to the user to the ensure security when this options is enabled.</p><ul><li><p>For HTTP: <code>ks=http://&lt;server>/&lt;config_file_path> insecure_installation=1</code></p></li><li><p>For HTTPS (self-signed): <code>ks=https://&lt;server>/&lt;config_file_path> insecure_installation=1</code></p></li></ul><h2 id=building-an-iso-with-a-kickstart-config-file>Building an ISO with a Kickstart Config File</h2><p>Here&rsquo;s an example of how to add a kickstart config file to the Photon OS ISO by mounting the ISO on an Ubuntu machine and then rebuilding the ISO. The following example assumes you can adapt the sample kickstart configuration file that comes with the Photon OS ISO to your needs. You can obtain the Photon OS ISO for free from VMware at the following URL:</p><p><a href=https://packages.vmware.com/photon>https://packages.vmware.com/photon</a></p><p>Once you have the ISO, mount it.</p><pre><code class=language-console data-lang=console>mkdir /tmp/photon-iso
 sudo mount photon.iso /tmp/photon-iso
-</code></pre><p>Then copy the content of the ISO to a writable directory and push it into the directory stack:</p><pre><code>mkdir /tmp/photon-ks-iso
+</code></pre><p>Then copy the content of the ISO to a writable directory and push it into the directory stack:</p><pre><code class=language-console data-lang=console>mkdir /tmp/photon-ks-iso
 cp -r /tmp/photon-iso/* /tmp/photon-ks-iso/
 pushd /tmp/photon-ks-iso/
-</code></pre><p>Next, copy the sample kickstart configuration file that comes with the Photon OS ISO and modify it to suit your needs. In the ISO, the sample kickstart config file appears in the <code>isolinux</code> directory and is named <code>sample_ks.cfg.</code> The name of the directory and the name of the file might be in all uppercase letters.</p><pre><code>cp isolinux/sample_ks.cfg isolinux/my_ks.cfg
+</code></pre><p>Next, copy the sample kickstart configuration file that comes with the Photon OS ISO and modify it to suit your needs. In the ISO, the sample kickstart config file appears in the <code>isolinux</code> directory and is named <code>sample_ks.cfg.</code> The name of the directory and the name of the file might be in all uppercase letters.</p><pre><code class=language-console data-lang=console>cp isolinux/sample_ks.cfg isolinux/my_ks.cfg
 nano isolinux/my_ks.cfg
-</code></pre><p>With a copy of the sample kickstart config file open in nano, make the changes that you want.</p><p>Now add a new item to the installation menu by modifying <code>isolinux/menu.cfg</code>:</p><pre><code>cat &gt;&gt; isolinux/menu.cfg &lt;&lt; EOF
+</code></pre><p>With a copy of the sample kickstart config file open in nano, make the changes that you want.</p><p>Now add a new item to the installation menu by modifying <code>isolinux/menu.cfg</code>:</p><pre><code class=language-console data-lang=console>cat &gt;&gt; isolinux/menu.cfg &lt;&lt; EOF
 label my_unattended
 	menu label ^My Unattended Install
 	menu default
 	kernel vmlinuz
 	append initrd=initrd.img root=/dev/ram0 loglevel=3 photon.media=cdrom
 EOF
-</code></pre><p>Finally, rebuild the ISO so that it includes your kickstart config file:</p><pre><code>mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
+</code></pre><p>Finally, rebuild the ISO so that it includes your kickstart config file:</p><pre><code class=language-console data-lang=console>mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
 		-no-emul-boot -boot-load-size 4 -boot-info-table -V &quot;PHOTON_$(date +%Y%m%d)&quot; \
 		. &gt; &lt;new_iso_path&gt;.iso
 
 popd
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-79efb1f65c2452f0b90208ebaf1a084a>3 - Kickstart Through HTTP</h1><p>You can serve the kickstart configuration file through an HTTP server. You can use a Packer template to set variables through command line or a JSON file.</p><p>The steps in this section describe how you can use the preset to kick start a full build or build a VMware Workstation or Fusion vagrant box.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-b338b8d42ae84dbcbff83de1753e995c>3.1 - Prerequisites</h1><p>Before you kick start a build, verify that you have the following resources:</p><ul><li>Packer 0.8 or later version.</li><li>VMware Fusion or Workstation</li><li>VirtualBox (optional)</li><li>Photon Packer template. The template contains the following artifacts:<ul><li><code>packer-photon.json</code> file</li><li><code>scripts</code> folder. The folder that contains the scripts you require to kickstart Photon OS.</li><li><code>vars</code> folder. The folder that contains the Photon OS 3.0 ISO URL.</li></ul></li><li><code>packages_minimal.json</code> file. The JSON file that contains the install profile you require.</li></ul></div><div class=td-content style=page-break-before:always><h1 id=pg-c6671d9a6869cb4af2c047b4f76575c9>3.2 - Procedure</h1><p>To build Photon OS using the Packer template, set the variables that the template uses and run the build commands.</p><ul><li><a href=#set-variables>Set Variables</a></li><li><a href=#kick-start-build>Kick Start Build</a></li><li><a href=#build-vmware-workstation-or-fusion-vagrant-box>Build VMware Workstation or Fusion Vagrant Box</a></li></ul><h2 id=set-variables>Set Variables</h2><p>To use the Packer template, you must set the variables that the template uses. You can set the variables through command line or a JSON file.</p><p>Set the following variables:</p><pre><code>- `iso_file` - The photon ISO for the build. This file can be local or remote.
-- `iso_sha1sum` – The SHA1 sum of the ISO you want to build.
-- `product_version` - The Photon OS release version that you want to build. This version is added to the image filename. 
-</code></pre><p>Preset JSON files with the required parameters are located in the <code>photon-packer-templates/vars</code> folder.</p><h2 id=kick-start-build>Kick Start Build</h2><p>To kick start a build using the JSON file, run the following command:</p><pre><code>packer build -var-file=vars/iso-3.0GA.json packer-photon.json
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-79efb1f65c2452f0b90208ebaf1a084a>3 - Kickstart Through HTTP</h1><p>You can serve the kickstart configuration file through an HTTP server. You can use a Packer template to set variables through command line or a JSON file.</p><p>The steps in this section describe how you can use the preset to kick start a full build or build a VMware Workstation or Fusion vagrant box.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-b338b8d42ae84dbcbff83de1753e995c>3.1 - Prerequisites</h1><p>Before you kick start a build, verify that you have the following resources:</p><ul><li>Packer 0.8 or later version.</li><li>VMware Fusion or Workstation</li><li>VirtualBox (optional)</li><li>Photon Packer template. The template contains the following artifacts:<ul><li><code>packer-photon.json</code> file</li><li><code>scripts</code> folder. The folder that contains the scripts you require to kickstart Photon OS.</li><li><code>vars</code> folder. The folder that contains the Photon OS 3.0 ISO URL.</li></ul></li><li><code>packages_minimal.json</code> file. The JSON file that contains the install profile you require.</li></ul></div><div class=td-content style=page-break-before:always><h1 id=pg-c6671d9a6869cb4af2c047b4f76575c9>3.2 - Procedure</h1><p>To build Photon OS using the Packer template, set the variables that the template uses and run the build commands.</p><ul><li><a href=#set-variables>Set Variables</a></li><li><a href=#kick-start-build>Kick Start Build</a></li><li><a href=#build-vmware-workstation-or-fusion-vagrant-box>Build VMware Workstation or Fusion Vagrant Box</a></li></ul><h2 id=set-variables>Set Variables</h2><p>To use the Packer template, you must set the variables that the template uses. You can set the variables through command line or a JSON file.</p><p>Set the following variables:</p><ul><li><code>iso_file</code> - The photon ISO for the build. This file can be local or remote.</li><li><code>iso_sha1sum</code> – The SHA1 sum of the ISO you want to build.</li><li><code>product_version</code> - The Photon OS release version that you want to build. This version is added to the image filename.</li></ul><p>Preset JSON files with the required parameters are located in the <code>photon-packer-templates/vars</code> folder.</p><h2 id=kick-start-build>Kick Start Build</h2><p>To kick start a build using the JSON file, run the following command:</p><pre><code>packer build -var-file=vars/iso-3.0GA.json packer-photon.json
 </code></pre><p>To build Photon OS manually, run the following:</p><pre><code>packer build \
         -var 'iso_file=https://packages.vmware.com/photon/4.0/GA/iso/photon-4.0-1526e30ba.iso' \
         -var 'iso_sha1sum=2221ab214b517a15c60bd5e2aacdb9388581bcd9' \
@@ -155,200 +152,204 @@ popd
        -var 'product_version=4.0GA' \
        packer-photon.json
 </code></pre><p>You can build to one of the following targets:</p><ul><li><code>vagrant-vmware_desktop</code> - Generates the <code>vmware_desktop</code> compatible box found on Atlas as <code>vmware/photon</code>.</li><li><code>vagrant-virtualbox</code> - Generates the <code>virtualbox</code> compatible box found on Atlas as <code>vmware/photon</code>.</li></ul></div><div class=td-content style=page-break-before:always><h1 id=pg-7721e9f0e5e555bb6640c7092e191a79>3.3 - Photon Packer Template</h1><p>The Photon Packer template folder has the following structure:</p><pre><code>photon-packer-templates/
+.
+├── README.md
 ├── packer-photon.json
 ├── scripts
-    ├── photon-kickstart.json
-    ├── photon-package_provisioning.sh
-    ├── photon-security_check.sh
-    ├── photon-sharedfolders_prep.sh
-    ├── photon-vagrant-user_provisioning.sh
-    ├── photon-vagrant-vbox_additions.sh
-    ├── photon-vagrantfile.rb
-    ├── photon-virtualbox-load-module.conf
-├── vars
-    ├── iso-3.0GA.json
-</code></pre><h2 id=packer-photonjson>packer-photon.json</h2><p>The following are the contents of the <code>photon-packer-templates/packer-photon.json</code> file:</p><pre><code>{
-  &quot;variables&quot;: {
-    &quot;iso_file&quot;: &quot;&quot;,
-    &quot;iso_sha1sum&quot;: &quot;&quot;,
-    &quot;product_version&quot;: &quot;&quot;,
-    &quot;root_password&quot;: &quot;2RQrZ83i79N6szpvZNX6&quot;
-  },
-  &quot;builders&quot;: [
-    {
-      &quot;name&quot;: &quot;vagrant-vmware_desktop&quot;,
-      &quot;vm_name&quot;: &quot;photon&quot;,
-      &quot;vmdk_name&quot;: &quot;photon-disk1&quot;,
-      &quot;type&quot;: &quot;vmware-iso&quot;,
-      &quot;headless&quot;: false,
-      &quot;disk_size&quot;: 20480,
-      &quot;disk_type_id&quot;: 0,
-      &quot;guest_os_type&quot;: &quot;other3xlinux-64&quot;,
-      &quot;iso_url&quot;: &quot;{{user `iso_file`}}&quot;,
-      &quot;iso_checksum&quot;: &quot;{{user `iso_sha1sum`}}&quot;,
-      &quot;iso_checksum_type&quot;: &quot;sha1&quot;,
-      &quot;ssh_username&quot;: &quot;root&quot;,
-      &quot;ssh_password&quot;: &quot;{{user `root_password`}}&quot;,
-      &quot;ssh_wait_timeout&quot;: &quot;60m&quot;,
-      &quot;boot_wait&quot;: &quot;5s&quot;,
-      &quot;shutdown_command&quot;: &quot;shutdown -h now&quot;,
-      &quot;http_directory&quot;: &quot;scripts&quot;,
-      &quot;version&quot;: 11,
-      &quot;vmx_data&quot;: {
-        &quot;scsi0.virtualDev&quot;: &quot;pvscsi&quot;,
-        &quot;ethernet0.virtualDev&quot;: &quot;vmxnet3&quot;
-        },
-      &quot;vmx_data_post&quot;: {
-        &quot;displayname&quot;: &quot;VMware Photon&quot;,
-        &quot;usb.present&quot;: &quot;false&quot;
-        },
-        &quot;boot_command&quot;: [
-          &quot;&lt;esc&gt;&lt;wait&gt;&quot;,
-          &quot;vmlinuz initrd=initrd.img root=/dev/ram0 loglevel=3 ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/photon-kickstart.json photon.media=cdrom&quot;,
-          &quot;&lt;enter&gt;&quot;
-        ]
-    },
-    {
-      &quot;name&quot;: &quot;vagrant-virtualbox&quot;,
-      &quot;vm_name&quot;: &quot;photon&quot;,
-      &quot;type&quot;: &quot;virtualbox-iso&quot;,
-      &quot;headless&quot;: false,
-      &quot;hard_drive_interface&quot;: &quot;scsi&quot;,
-      &quot;disk_size&quot;: 20480,
-      &quot;guest_os_type&quot;: &quot;Linux_64&quot;,
-      &quot;iso_url&quot;: &quot;{{user `iso_file`}}&quot;,
-      &quot;iso_checksum&quot;: &quot;{{user `iso_sha1sum`}}&quot;,
-      &quot;iso_checksum_type&quot;: &quot;sha1&quot;,
-      &quot;ssh_username&quot;: &quot;root&quot;,
-      &quot;ssh_password&quot;: &quot;{{user `root_password`}}&quot;,
-      &quot;ssh_wait_timeout&quot;: &quot;60m&quot;,
-      &quot;boot_wait&quot;: &quot;5s&quot;,
-      &quot;http_directory&quot;: &quot;scripts&quot;,
-      &quot;shutdown_command&quot;: &quot;shutdown -h now&quot;,
-      &quot;boot_command&quot;: [
-        &quot;&lt;esc&gt;&lt;wait&gt;&quot;,
-        &quot;vmlinuz initrd=initrd.img root=/dev/ram0 loglevel=3 ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/photon-kickstart.json&quot;,
-        &quot;&lt;enter&gt;&quot;
-      ]
-    }
-  ],
-    &quot;provisioners&quot;: [
-    {
-      &quot;type&quot;: &quot;shell&quot;,
-      &quot;script&quot;: &quot;scripts/photon-package_provisioning.sh&quot;
-    },
-    {
-      &quot;type&quot;: &quot;shell&quot;,
-      &quot;only&quot;: [&quot;vagrant-vmware_desktop&quot;, &quot;vagrant-virtualbox&quot;],
-      &quot;script&quot;: &quot;scripts/photon-vagrant-user_provisioning.sh&quot;
-    },
-    {
-      &quot;type&quot;: &quot;shell&quot;,
-      &quot;only&quot;: [&quot;vagrant-vmware_desktop&quot;],
-      &quot;script&quot;: &quot;scripts/photon-sharedfolders_prep.sh&quot;
-    },
-    {
-      &quot;type&quot;: &quot;shell&quot;,
-      &quot;only&quot;: [&quot;vagrant-virtualbox&quot;],
-      &quot;script&quot;: &quot;scripts/photon-vagrant-vbox_additions.sh&quot;
-    },
-    {
-      &quot;type&quot;: &quot;file&quot;,
-      &quot;only&quot;: [&quot;vagrant-virtualbox&quot;],
-      &quot;source&quot;: &quot;scripts/photon-virtualbox-load-module.conf&quot;,
-      &quot;destination&quot;: &quot;/etc/modules-load.d/virtualbox.conf&quot;
-    },
-    {
-      &quot;type&quot;: &quot;shell&quot;,
-      &quot;inline&quot;: [&quot;sed -i '/linux/ s/$/ net.ifnames=0/' /boot/grub2/grub.cfg&quot;]
-    },
-    {
-      &quot;type&quot;: &quot;shell&quot;,
-      &quot;inline&quot;: [&quot;echo 'GRUB_CMDLINE_LINUX=\&quot;net.ifnames=0\&quot;' &gt;&gt; /etc/default/grub&quot;]
-    },
-    {
-      &quot;type&quot;: &quot;shell&quot;,
-      &quot;script&quot;: &quot;scripts/photon-security_check.sh&quot;
-    },
-    {
-      &quot;type&quot;: &quot;shell&quot;,
-      &quot;inline&quot;: [&quot;sed -i 's/OS/Linux/' /etc/photon-release&quot;]
-    }
-  ],
-  &quot;post-processors&quot;: [
-    {
-      &quot;type&quot;: &quot;vagrant&quot;,
-      &quot;only&quot;: [&quot;vagrant-vmware_desktop&quot;, &quot;vagrant-virtualbox&quot;],
-      &quot;compression_level&quot;: 9,
-      &quot;vagrantfile_template&quot;: &quot;scripts/photon-vagrantfile.rb&quot;,
-      &quot;output&quot;: &quot;photon-{{user `product_version`}}-{{.BuildName}}.box&quot;
-    }
-  ]
-  }
-</code></pre><h2 id=photon-kickstartjson>photon-kickstart.json</h2><p>The following are the contents of the <code>photon-packer-templates/scripts/photon-kickstart.json</code> file:</p><pre><code>{
-    &quot;hostname&quot;: &quot;photon&quot;,
-    &quot;password&quot;:
-        {
-            &quot;crypted&quot;: false,
-            &quot;text&quot;: &quot;2RQrZ83i79N6szpvZNX6&quot;
-        },
-    &quot;disk&quot;: &quot;/dev/sda&quot;,
-    &quot;packagelist_file&quot;: &quot;packages_minimal.json&quot;,
-    &quot;postinstall&quot;: [
-                    &quot;#!/bin/sh&quot;,
-                    &quot;sed -i 's/PermitRootLogin no/PermitRootLogin yes/g' /etc/ssh/sshd_config&quot;,
-                    &quot;systemctl restart sshd.service&quot;
-                   ]
-}
-</code></pre><h2 id=iso-30gajson>iso-3.0GA.json</h2><p>The following are the contents of the <code>photon-packer-templates/vars/iso-3.0GA.json</code> file:</p><pre><code>{
-   &quot;product_version&quot; : &quot;4.0GA&quot;,
-   &quot;iso_sha1sum&quot; : &quot;2221ab214b517a15c60bd5e2aacdb9388581bcd9&quot;,
-   &quot;iso_file&quot; : &quot;https://packages.vmware.com/photon/4.0/GA/iso/photon-4.0-1526e30ba.iso&quot;
-}
-</code></pre><p>For more information about the template, see <a href=https://github.com/vmware/photon-packer-templates>Photon Packer Template</a></p></div><div class=td-content style=page-break-before:always><h1 id=pg-b3fb62a9ed54be9848715232ab3fd71e>3.4 - packages_minimal.json File</h1><p>The <code>packages_minimal.json</code> file contains the install profile that you require.</p><p>The contents of the file are as follows:</p><pre><code>{
-    &quot;packages&quot;: [
-                 &quot;minimal&quot;,
-                 &quot;linux&quot;,
-                 &quot;initramfs&quot;
-                 ]
-}
-</code></pre><p>&lsquo;minimal` is a meta package contains a number of default packages.</p><p>For more imformation, see <a href=https://github.com/vmware/photon/blob/3.0/SPECS/minimal/minimal.spec>minimal.spec</a></p></div><div class=td-content style=page-break-before:always><h1 id=pg-3e27135293bfebb45948275ce7512443>4 - Kubernetes on Photon OS</h1><p>You can use Kubernetes with Photon OS. The instructions in this section present a manual configuration that gets one worker node running to help you understand the underlying packages, services, ports, and so forth.</p><p>The Kubernetes package provides several services: kube-apiserver, kube-scheduler, kube-controller-manager, kubelet, kube-proxy. These services are managed by systemd. Their configuration resides in a central location: /etc/kubernetes.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-8be233206817193d67a60d7415f17ef9>4.1 - Prerequisites</h1><p>You need two or more machines with the 3.0 general availability or later version of Photon OS installed.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-ea490ab437c762e0efed3eb8be4354d4>4.2 - Running Kubernetes on Photon OS</h1><p>The procedure describes how to break the services up between the hosts.</p><p>The first host, <code>photon-master</code>, is the Kubernetes master. This host runs the <code>kube-apiserver</code>, <code>kube-controller-manager</code>, and <code>kube-scheduler</code>. In addition, the master also runs <code>etcd</code>. Although <code>etcd</code> is not needed on the master if <code>etcd</code> runs on a different host, this guide assumes that <code>etcd</code> and the Kubernetes master run on the same host. The remaining host, <code>photon-node</code>, is the node and runs <code>kubelet</code>, <code>proxy</code>, and <code>docker</code>.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-a1d2e42542f91c88d6de82a65837b7e5>4.2.1 - System Information</h1><p>Hosts:</p><pre><code>photon-master = 192.168.121.9
+│   ├── photon-kickstart.json
+│   ├── photon-package_provisioning.sh
+│   ├── photon-security_check.sh
+│   ├── photon-sharedfolders_prep.sh
+│   ├── photon-vagrant-user_provisioning.sh
+│   ├── photon-vagrant-vbox_additions.sh
+│   ├── photon-vagrantfile.rb
+│   └── photon-virtualbox-load-module.conf
+└── vars
+    └── iso-4.0GA.json
+
+2 directories, 11 files
+</code></pre><h2 id=packer-photonjson>packer-photon.json</h2><p>The following are the contents of the <code>photon-packer-templates/packer-photon.json</code> file:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=color:#000;font-weight:700>{</span>
+  <span style=color:#204a87;font-weight:700>&#34;variables&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>{</span>
+    <span style=color:#204a87;font-weight:700>&#34;iso_file&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;&#34;</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#204a87;font-weight:700>&#34;iso_sha1sum&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;&#34;</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#204a87;font-weight:700>&#34;product_version&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;&#34;</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#204a87;font-weight:700>&#34;root_password&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;changeme&#34;</span>
+  <span style=color:#000;font-weight:700>},</span>
+  <span style=color:#204a87;font-weight:700>&#34;builders&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span>
+    <span style=color:#000;font-weight:700>{</span>
+      <span style=color:#204a87;font-weight:700>&#34;name&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;vagrant-vmware_desktop&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;vm_name&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;photon&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;vmdk_name&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;photon-disk1&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;vmware-iso&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;headless&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>false</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;disk_size&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>20480</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;disk_type_id&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>0</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;guest_os_type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;other3xlinux-64&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;iso_url&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;{{user `iso_file`}}&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;iso_checksum&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;{{user `iso_sha1sum`}}&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;iso_checksum_type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;sha1&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;ssh_username&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;root&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;ssh_password&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;{{user `root_password`}}&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;ssh_wait_timeout&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;60m&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;boot_wait&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;5s&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;shutdown_command&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;shutdown -h now&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;http_directory&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;scripts&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;version&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>11</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;vmx_data&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>{</span>
+        <span style=color:#204a87;font-weight:700>&#34;scsi0.virtualDev&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;pvscsi&#34;</span><span style=color:#000;font-weight:700>,</span>
+        <span style=color:#204a87;font-weight:700>&#34;ethernet0.virtualDev&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;vmxnet3&#34;</span>
+        <span style=color:#000;font-weight:700>},</span>
+      <span style=color:#204a87;font-weight:700>&#34;vmx_data_post&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>{</span>
+        <span style=color:#204a87;font-weight:700>&#34;displayname&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;VMware Photon&#34;</span><span style=color:#000;font-weight:700>,</span>
+        <span style=color:#204a87;font-weight:700>&#34;usb.present&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;false&#34;</span>
+        <span style=color:#000;font-weight:700>},</span>
+        <span style=color:#204a87;font-weight:700>&#34;boot_command&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span>
+          <span style=color:#4e9a06>&#34;&lt;esc&gt;&lt;wait&gt;&#34;</span><span style=color:#000;font-weight:700>,</span>
+          <span style=color:#4e9a06>&#34;vmlinuz initrd=initrd.img root=/dev/ram0 loglevel=3 ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/photon-kickstart.json photon.media=cdrom&#34;</span><span style=color:#000;font-weight:700>,</span>
+          <span style=color:#4e9a06>&#34;&lt;enter&gt;&#34;</span>
+        <span style=color:#000;font-weight:700>]</span>
+    <span style=color:#000;font-weight:700>},</span>
+    <span style=color:#000;font-weight:700>{</span>
+      <span style=color:#204a87;font-weight:700>&#34;name&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;vagrant-virtualbox&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;vm_name&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;photon&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;virtualbox-iso&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;headless&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>false</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;hard_drive_interface&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;scsi&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;disk_size&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>20480</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;guest_os_type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;Linux_64&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;iso_url&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;{{user `iso_file`}}&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;iso_checksum&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;{{user `iso_sha1sum`}}&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;iso_checksum_type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;sha1&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;ssh_username&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;root&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;ssh_password&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;{{user `root_password`}}&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;ssh_wait_timeout&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;60m&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;boot_wait&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;5s&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;http_directory&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;scripts&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;shutdown_command&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;shutdown -h now&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;boot_command&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span>
+        <span style=color:#4e9a06>&#34;&lt;esc&gt;&lt;wait&gt;&#34;</span><span style=color:#000;font-weight:700>,</span>
+        <span style=color:#4e9a06>&#34;vmlinuz initrd=initrd.img root=/dev/ram0 loglevel=3 ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/photon-kickstart.json&#34;</span><span style=color:#000;font-weight:700>,</span>
+        <span style=color:#4e9a06>&#34;&lt;enter&gt;&#34;</span>
+      <span style=color:#000;font-weight:700>]</span>
+    <span style=color:#000;font-weight:700>}</span>
+  <span style=color:#000;font-weight:700>],</span>
+    <span style=color:#204a87;font-weight:700>&#34;provisioners&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span>
+    <span style=color:#000;font-weight:700>{</span>
+      <span style=color:#204a87;font-weight:700>&#34;type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;shell&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;script&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;scripts/photon-package_provisioning.sh&#34;</span>
+    <span style=color:#000;font-weight:700>},</span>
+    <span style=color:#000;font-weight:700>{</span>
+      <span style=color:#204a87;font-weight:700>&#34;type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;shell&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;only&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#34;vagrant-vmware_desktop&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#34;vagrant-virtualbox&#34;</span><span style=color:#000;font-weight:700>],</span>
+      <span style=color:#204a87;font-weight:700>&#34;script&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;scripts/photon-vagrant-user_provisioning.sh&#34;</span>
+    <span style=color:#000;font-weight:700>},</span>
+    <span style=color:#000;font-weight:700>{</span>
+      <span style=color:#204a87;font-weight:700>&#34;type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;shell&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;only&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#34;vagrant-vmware_desktop&#34;</span><span style=color:#000;font-weight:700>],</span>
+      <span style=color:#204a87;font-weight:700>&#34;script&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;scripts/photon-sharedfolders_prep.sh&#34;</span>
+    <span style=color:#000;font-weight:700>},</span>
+    <span style=color:#000;font-weight:700>{</span>
+      <span style=color:#204a87;font-weight:700>&#34;type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;shell&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;only&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#34;vagrant-virtualbox&#34;</span><span style=color:#000;font-weight:700>],</span>
+      <span style=color:#204a87;font-weight:700>&#34;script&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;scripts/photon-vagrant-vbox_additions.sh&#34;</span>
+    <span style=color:#000;font-weight:700>},</span>
+    <span style=color:#000;font-weight:700>{</span>
+      <span style=color:#204a87;font-weight:700>&#34;type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;file&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;only&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#34;vagrant-virtualbox&#34;</span><span style=color:#000;font-weight:700>],</span>
+      <span style=color:#204a87;font-weight:700>&#34;source&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;scripts/photon-virtualbox-load-module.conf&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;destination&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;/etc/modules-load.d/virtualbox.conf&#34;</span>
+    <span style=color:#000;font-weight:700>},</span>
+    <span style=color:#000;font-weight:700>{</span>
+      <span style=color:#204a87;font-weight:700>&#34;type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;shell&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;inline&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#34;sed -i &#39;/linux/ s/$/ net.ifnames=0/&#39; /boot/grub2/grub.cfg&#34;</span><span style=color:#000;font-weight:700>]</span>
+    <span style=color:#000;font-weight:700>},</span>
+    <span style=color:#000;font-weight:700>{</span>
+      <span style=color:#204a87;font-weight:700>&#34;type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;shell&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;inline&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#34;echo &#39;GRUB_CMDLINE_LINUX=\&#34;net.ifnames=0\&#34;&#39; &gt;&gt; /etc/default/grub&#34;</span><span style=color:#000;font-weight:700>]</span>
+    <span style=color:#000;font-weight:700>},</span>
+    <span style=color:#000;font-weight:700>{</span>
+      <span style=color:#204a87;font-weight:700>&#34;type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;shell&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;script&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;scripts/photon-security_check.sh&#34;</span>
+    <span style=color:#000;font-weight:700>},</span>
+    <span style=color:#000;font-weight:700>{</span>
+      <span style=color:#204a87;font-weight:700>&#34;type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;shell&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;inline&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#34;sed -i &#39;s/OS/Linux/&#39; /etc/photon-release&#34;</span><span style=color:#000;font-weight:700>]</span>
+    <span style=color:#000;font-weight:700>}</span>
+  <span style=color:#000;font-weight:700>],</span>
+  <span style=color:#204a87;font-weight:700>&#34;post-processors&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span>
+    <span style=color:#000;font-weight:700>{</span>
+      <span style=color:#204a87;font-weight:700>&#34;type&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;vagrant&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;only&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span><span style=color:#4e9a06>&#34;vagrant-vmware_desktop&#34;</span><span style=color:#000;font-weight:700>,</span> <span style=color:#4e9a06>&#34;vagrant-virtualbox&#34;</span><span style=color:#000;font-weight:700>],</span>
+      <span style=color:#204a87;font-weight:700>&#34;compression_level&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#0000cf;font-weight:700>9</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;vagrantfile_template&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;scripts/photon-vagrantfile.rb&#34;</span><span style=color:#000;font-weight:700>,</span>
+      <span style=color:#204a87;font-weight:700>&#34;output&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;photon-{{user `product_version`}}-{{.BuildName}}.box&#34;</span>
+    <span style=color:#000;font-weight:700>}</span>
+  <span style=color:#000;font-weight:700>]</span>
+  <span style=color:#000;font-weight:700>}</span>
+</code></pre></div><h2 id=photon-kickstartjson>photon-kickstart.json</h2><p>The following are the contents of the <code>photon-packer-templates/scripts/photon-kickstart.json</code> file:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=color:#000;font-weight:700>{</span>
+    <span style=color:#204a87;font-weight:700>&#34;hostname&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;photon&#34;</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#204a87;font-weight:700>&#34;password&#34;</span><span style=color:#000;font-weight:700>:</span>
+        <span style=color:#000;font-weight:700>{</span>
+            <span style=color:#204a87;font-weight:700>&#34;crypted&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#204a87;font-weight:700>false</span><span style=color:#000;font-weight:700>,</span>
+            <span style=color:#204a87;font-weight:700>&#34;text&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;2RQrZ83i79N6szpvZNX6&#34;</span>
+        <span style=color:#000;font-weight:700>},</span>
+    <span style=color:#204a87;font-weight:700>&#34;disk&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;/dev/sda&#34;</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#204a87;font-weight:700>&#34;packagelist_file&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;packages_minimal.json&#34;</span><span style=color:#000;font-weight:700>,</span>
+    <span style=color:#204a87;font-weight:700>&#34;postinstall&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span>
+                    <span style=color:#4e9a06>&#34;#!/bin/sh&#34;</span><span style=color:#000;font-weight:700>,</span>
+                    <span style=color:#4e9a06>&#34;sed -i &#39;s/PermitRootLogin no/PermitRootLogin yes/g&#39; /etc/ssh/sshd_config&#34;</span><span style=color:#000;font-weight:700>,</span>
+                    <span style=color:#4e9a06>&#34;systemctl restart sshd.service&#34;</span>
+                   <span style=color:#000;font-weight:700>]</span>
+<span style=color:#000;font-weight:700>}</span>
+</code></pre></div><h2 id=iso-40gajson>iso-4.0GA.json</h2><p>The following are the contents of the <code>photon-packer-templates/vars/iso-4.0GA.json</code> file:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=color:#000;font-weight:700>{</span>
+   <span style=color:#204a87;font-weight:700>&#34;product_version&#34;</span> <span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;4.0GA&#34;</span><span style=color:#000;font-weight:700>,</span>
+   <span style=color:#204a87;font-weight:700>&#34;iso_sha1sum&#34;</span> <span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;2221ab214b517a15c60bd5e2aacdb9388581bcd9&#34;</span><span style=color:#000;font-weight:700>,</span>
+   <span style=color:#204a87;font-weight:700>&#34;iso_file&#34;</span> <span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;https://packages.vmware.com/photon/4.0/GA/iso/photon-4.0-1526e30ba.iso&#34;</span>
+<span style=color:#000;font-weight:700>}</span>
+</code></pre></div><p>For more information about the template, see <a href=https://github.com/vmware/photon-packer-templates>Photon Packer Template</a></p></div><div class=td-content style=page-break-before:always><h1 id=pg-b3fb62a9ed54be9848715232ab3fd71e>3.4 - packages_minimal.json File</h1><p>The <code>packages_minimal.json</code> file contains the install profile that you require.</p><p>The contents of the file are as follows:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=color:#000;font-weight:700>{</span>
+    <span style=color:#204a87;font-weight:700>&#34;packages&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>[</span>
+                 <span style=color:#4e9a06>&#34;minimal&#34;</span><span style=color:#000;font-weight:700>,</span>
+                 <span style=color:#4e9a06>&#34;linux&#34;</span><span style=color:#000;font-weight:700>,</span>
+                 <span style=color:#4e9a06>&#34;initramfs&#34;</span>
+                 <span style=color:#000;font-weight:700>]</span>
+<span style=color:#000;font-weight:700>}</span>
+</code></pre></div><p>&lsquo;minimal` is a meta package contains a number of default packages.</p><p>For more imformation, see <a href=https://github.com/vmware/photon/blob/4.0/SPECS/minimal/minimal.spec>4.0 minimal.spec</a></p></div><div class=td-content style=page-break-before:always><h1 id=pg-3e27135293bfebb45948275ce7512443>4 - Kubernetes on Photon OS</h1><p>You can use Kubernetes with Photon OS. The instructions in this section present a manual configuration that gets one worker node running to help you understand the underlying packages, services, ports, and so forth.</p><p>The Kubernetes package provides several services: kube-apiserver, kube-scheduler, kube-controller-manager, kubelet, kube-proxy. These services are managed by systemd. Their configuration resides in a central location: /etc/kubernetes.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-8be233206817193d67a60d7415f17ef9>4.1 - Prerequisites</h1><p>You need two or more machines with version 3.0 &ldquo;GA&rdquo; or later of Photon OS installed. It is recommended to use the latest 4.0 GA version.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-ea490ab437c762e0efed3eb8be4354d4>4.2 - Running Kubernetes on Photon OS</h1><p>The procedure describes how to break the services up between the hosts.</p><p>The first host, <code>photon-master</code>, is the Kubernetes master. This host runs the <code>kube-apiserver</code>, <code>kube-controller-manager</code>, and <code>kube-scheduler</code>. In addition, the master also runs <code>etcd</code>. Although <code>etcd</code> is not needed on the master if <code>etcd</code> runs on a different host, this guide assumes that <code>etcd</code> and the Kubernetes master run on the same host. The remaining host, <code>photon-node</code>, is the node and runs <code>kubelet</code>, <code>proxy</code>, and <code>docker</code>.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-a1d2e42542f91c88d6de82a65837b7e5>4.2.1 - System Information</h1><p>Hosts:</p><pre><code>photon-master = 192.168.121.9
 photon-node = 192.168.121.65
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-6a11cf2f4ce782f763245a10cdcfc7b9>4.2.2 - Prepare the Hosts</h1><p>The following packages should already be installed on the full version of Photon OS, but you might have to install them on the minimal version of Photon OS. If the <code>tdnf</code> command returns &ldquo;Nothing to do,&rdquo; the package is already installed.</p><ul><li>Install Kubernetes on all hosts&ndash;both <code>photon-master</code> and <code>photon-node</code>.</li></ul><pre><code>tdnf install kubernetes
-</code></pre><ul><li>Install iptables on photon-master and photon-node:</li></ul><pre><code>tdnf install iptables
-</code></pre><ul><li>Open the tcp port 8080 (api service) on the photon-master in the firewall</li></ul><pre><code>iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
-</code></pre><ul><li>Open the tcp port 10250 (api service) on the photon-node in the firewall</li></ul><pre><code>iptables -A INPUT -p tcp --dport 10250 -j ACCEPT
-</code></pre><ul><li>Install Docker on photon-node:</li></ul><pre><code>tdnf install docker
-</code></pre><ul><li>Add master and node to /etc/hosts on all machines (not needed if the hostnames are already in DNS). Make sure that communication works between photon-master and photon-node by using a utility such as ping.</li></ul><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#204a87>echo</span> <span style=color:#4e9a06>&#34;192.168.121.9	photon-master
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-6a11cf2f4ce782f763245a10cdcfc7b9>4.2.2 - Prepare the Hosts</h1><p>The following packages have to be installed. If the <code>tdnf</code> command returns &ldquo;Nothing to do,&rdquo; the package is already installed.</p><ul><li><p>Install Kubernetes on all hosts (both <code>photon-master</code> and <code>photon-node</code>).</p><pre><code class=language-console data-lang=console>tdnf install kubernetes
+</code></pre></li><li><p>Install iptables on photon-master and photon-node:</p><pre><code class=language-console data-lang=console>tdnf install iptables
+</code></pre></li><li><p>Open the tcp port 8080 (api service) on the photon-master in the firewall</p><pre><code class=language-console data-lang=console>iptables -A INPUT -p tcp --dport 8080 -j ACCEPT
+</code></pre></li><li><p>Open the tcp port 10250 (api service) on the photon-node in the firewall</p><pre><code class=language-console data-lang=console>iptables -A INPUT -p tcp --dport 10250 -j ACCEPT
+</code></pre></li><li><p>Install Docker on photon-node:</p><pre><code class=language-console data-lang=console>tdnf install docker
+</code></pre></li><li><p>Add master and node to /etc/hosts on all machines (not needed if the hostnames are already in DNS). Make sure that communication works between photon-master and photon-node by using a utility such as ping.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#204a87>echo</span> <span style=color:#4e9a06>&#34;192.168.121.9	photon-master
 </span><span style=color:#4e9a06>192.168.121.65	photon-node&#34;</span> &gt;&gt; /etc/hosts
-</code></pre></div><ul><li>Edit /etc/kubernetes/config, which will be the same on all the hosts (master and node), so that it contains the following lines:</li></ul><pre><code># Comma separated list of nodes in the etcd cluster
-KUBE_MASTER=&quot;--master=http://photon-master:8080&quot;
+</code></pre></div></li><li><p>Edit /etc/kubernetes/config, which will be the same on all the hosts (master and node), so that it contains the following lines:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:#8f5902;font-style:italic># Comma separated list of nodes in the etcd cluster</span>
+<span style=color:#c4a000>KUBE_MASTER</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--master=http://photon-master:8080&#34;</span>
 
-# logging to stderr routes it to the systemd journal
-KUBE_LOGTOSTDERR=&quot;--logtostderr=true&quot;
+<span style=color:#8f5902;font-style:italic># logging to stderr routes it to the systemd journal</span>
+<span style=color:#c4a000>KUBE_LOGTOSTDERR</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--logtostderr=true&#34;</span>
 
-# journal message level, 0 is debug
-KUBE_LOG_LEVEL=&quot;--v=0&quot;
+<span style=color:#8f5902;font-style:italic># journal message level, 0 is debug</span>
+<span style=color:#c4a000>KUBE_LOG_LEVEL</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--v=0&#34;</span>
 
-# Should this cluster be allowed to run privileged docker containers
-KUBE_ALLOW_PRIV=&quot;--allow_privileged=false&quot;
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-fe4d3e3b9b42532a4e4db9ae8a685b08>4.2.3 - Configure Kubernetes Services on the Master</h1><p>Perform the following steps to configure Kubernetes services on the master:</p><ol><li><p>Edit <code>/etc/kubernetes/apiserver</code> to appear as such. The <code>service_cluster_ip_range</code> IP addresses must be an unused block of addresses, not used anywhere else. They do not need to be routed or assigned to anything.</p><pre><code># The address on the local server to listen to.
-KUBE_API_ADDRESS=&quot;--address=0.0.0.0&quot;
-   
-# Comma separated list of nodes in the etcd cluster
-KUBE_ETCD_SERVERS=&quot;--etcd-servers=http://127.0.0.1:4001&quot;
-   
-# Address range to use for services
-KUBE_SERVICE_ADDRESSES=&quot;--service-cluster-ip-range=10.254.0.0/16&quot;
-   
-# Add your own
-KUBE_API_ARGS=&quot;&quot;
-</code></pre></li><li><p>Start the appropriate services on master:</p><pre><code>for SERVICES in etcd kube-apiserver kube-controller-manager kube-scheduler; do
-    systemctl restart $SERVICES
-    systemctl enable $SERVICES
-    systemctl status $SERVICES
-done
-</code></pre></li><li><p>To add the other node, create the following <code>node.json</code> file on the Kubernetes master node:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=color:#000;font-weight:700>{</span>
+<span style=color:#8f5902;font-style:italic># Should this cluster be allowed to run privileged docker containers</span>
+<span style=color:#c4a000>KUBE_ALLOW_PRIV</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--allow_privileged=false&#34;</span>
+</code></pre></div></li></ul></div><div class=td-content style=page-break-before:always><h1 id=pg-fe4d3e3b9b42532a4e4db9ae8a685b08>4.2.3 - Configure Kubernetes Services on the Master</h1><p>Perform the following steps to configure Kubernetes services on the master:</p><ol><li><p>Edit <code>/etc/kubernetes/apiserver</code> to appear as such. The <code>service_cluster_ip_range</code> IP addresses must be an unused block of addresses, not used anywhere else. They do not need to be routed or assigned to anything.</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:#8f5902;font-style:italic># The address on the local server to listen to.</span>
+<span style=color:#c4a000>KUBE_API_ADDRESS</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--address=0.0.0.0&#34;
+</span><span style=color:#4e9a06>   </span>
+<span style=color:#8f5902;font-style:italic># Comma separated list of nodes in the etcd cluster</span>
+<span style=color:#c4a000>KUBE_ETCD_SERVERS</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--etcd-servers=http://127.0.0.1:4001&#34;
+</span><span style=color:#4e9a06>   </span>
+<span style=color:#8f5902;font-style:italic># Address range to use for services</span>
+<span style=color:#c4a000>KUBE_SERVICE_ADDRESSES</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--service-cluster-ip-range=10.254.0.0/16&#34;
+</span><span style=color:#4e9a06>   </span>
+<span style=color:#8f5902;font-style:italic># Add your own</span>
+<span style=color:#c4a000>KUBE_API_ARGS</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;&#34;</span>
+</code></pre></div></li><li><p>Start the appropriate services on master:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#204a87;font-weight:700>for</span> SERVICES in etcd kube-apiserver kube-controller-manager kube-scheduler<span style=color:#000;font-weight:700>;</span> <span style=color:#204a87;font-weight:700>do</span>
+    systemctl restart <span style=color:#000>$SERVICES</span>
+    systemctl <span style=color:#204a87>enable</span> <span style=color:#000>$SERVICES</span>
+    systemctl status <span style=color:#000>$SERVICES</span>
+<span style=color:#204a87;font-weight:700>done</span>
+</code></pre></div></li><li><p>To add the other node, create the following <code>node.json</code> file on the Kubernetes master node:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-json data-lang=json><span style=color:#000;font-weight:700>{</span>
     <span style=color:#204a87;font-weight:700>&#34;apiVersion&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;v1&#34;</span><span style=color:#000;font-weight:700>,</span>
     <span style=color:#204a87;font-weight:700>&#34;kind&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#4e9a06>&#34;Node&#34;</span><span style=color:#000;font-weight:700>,</span>
     <span style=color:#204a87;font-weight:700>&#34;metadata&#34;</span><span style=color:#000;font-weight:700>:</span> <span style=color:#000;font-weight:700>{</span>
@@ -364,21 +365,21 @@ done
 $ kubectl get nodes
 NAME                LABELS              STATUS
 photon-node         name=photon-node-label     Unknown
-</code></pre></li></ol><p><strong>Note</strong>: The above example only creates a representation for the node <code>photon-node</code> internally. It does not provision the actual <code>photon-node</code>. Also, it is assumed that <code>photon-node</code> (as specified in <code>name</code>) can be resolved and is reachable from the Kubernetes master node.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-8bb2c13b46e9ad89de8e37d2b8c8929b>4.2.4 - Configure the Kubernetes services on Node</h1><p>Perform the following steps to configure the kubelet on the node:</p><ol><li><p>Edit /etc/kubernetes/kubelet to appear like this:</p><pre><code>###
-# Kubernetes kubelet (node) config
+</code></pre></li></ol><p><strong>Note</strong>: The above example only creates a representation for the node <code>photon-node</code> internally. It does not provision the actual <code>photon-node</code>. Also, it is assumed that <code>photon-node</code> (as specified in <code>name</code>) can be resolved and is reachable from the Kubernetes master node.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-8bb2c13b46e9ad89de8e37d2b8c8929b>4.2.4 - Configure the Kubernetes services on Node</h1><p>Perform the following steps to configure the kubelet on the node:</p><ol><li><p>Edit /etc/kubernetes/kubelet to appear like this:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-ini data-lang=ini><span style=color:#8f5902;font-style:italic>###</span>
+<span style=color:#8f5902;font-style:italic># Kubernetes kubelet (node) config</span>
    
-# The address for the info server to serve on (set to 0.0.0.0 or &quot;&quot; for all interfaces)
-KUBELET_ADDRESS=&quot;--address=0.0.0.0&quot;
-   
-# You may leave this blank to use the actual hostname
-KUBELET_HOSTNAME=&quot;--hostname_override=photon-node&quot;
-   
-# location of the api-server
-KUBELET_API_SERVER=&quot;--kubeconfig=/etc/kubernetes/kubeconfig&quot;
-   
-# Add your own
-#KUBELET_ARGS=&quot;&quot;
-</code></pre></li><li><p>Start the appropriate services on the node (photon-node):</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#204a87;font-weight:700>for</span> SERVICES in kube-proxy kubelet docker<span style=color:#000;font-weight:700>;</span> <span style=color:#204a87;font-weight:700>do</span> 
+<span style=color:#8f5902;font-style:italic># The address for the info server to serve on (set to 0.0.0.0 or &#34;&#34; for all interfaces)</span>
+<span style=color:#c4a000>KUBELET_ADDRESS</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--address=0.0.0.0&#34;
+</span><span style=color:#4e9a06>   </span>
+<span style=color:#8f5902;font-style:italic># You may leave this blank to use the actual hostname</span>
+<span style=color:#c4a000>KUBELET_HOSTNAME</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--hostname_override=photon-node&#34;
+</span><span style=color:#4e9a06>   </span>
+<span style=color:#8f5902;font-style:italic># location of the api-server</span>
+<span style=color:#c4a000>KUBELET_API_SERVER</span><span style=color:#ce5c00;font-weight:700>=</span><span style=color:#4e9a06>&#34;--kubeconfig=/etc/kubernetes/kubeconfig&#34;
+</span><span style=color:#4e9a06>   </span>
+<span style=color:#8f5902;font-style:italic># Add your own</span>
+<span style=color:#8f5902;font-style:italic>#KUBELET_ARGS=&#34;&#34;</span>
+</code></pre></div></li><li><p>Start the appropriate services on the node (photon-node):</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#204a87;font-weight:700>for</span> SERVICES in kube-proxy kubelet docker<span style=color:#000;font-weight:700>;</span> <span style=color:#204a87;font-weight:700>do</span> 
     systemctl restart <span style=color:#000>$SERVICES</span>
     systemctl <span style=color:#204a87>enable</span> <span style=color:#000>$SERVICES</span>
     systemctl status <span style=color:#000>$SERVICES</span> 

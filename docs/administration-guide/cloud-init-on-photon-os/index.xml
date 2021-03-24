@@ -87,7 +87,7 @@ $ printf &amp;quot;#cloud-config\nhostname: testhost\n&amp;quot; &amp;gt; user-d
 &lt;td>Instance&lt;/td>
 &lt;/tr>
 &lt;/tbody>
-&lt;/table></description></item><item><title>Docs: Deploy Photon OS With `cloud-init`</title><link>/docs/administration-guide/cloud-init-on-photon-os/deploy-photon-os-with-cloud-init/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/cloud-init-on-photon-os/deploy-photon-os-with-cloud-init/</guid><description>
+&lt;/table></description></item><item><title>Docs: Deploy Photon OS With 'cloud-init'</title><link>/docs/administration-guide/cloud-init-on-photon-os/deploy-photon-os-with-cloud-init/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/cloud-init-on-photon-os/deploy-photon-os-with-cloud-init/</guid><description>
 &lt;p>You can deploy Photon OS with &lt;code>cloud-init&lt;/code> in the following ways:&lt;/p>
 &lt;ul>
 &lt;li>As a stand-alone Photon machine&lt;/li>
@@ -145,31 +145,28 @@ $ printf &amp;quot;#cloud-config\nhostname: testhost\n&amp;quot; &amp;gt; user-d
 &lt;ol>
 &lt;li>
 &lt;p>Create the metadata file with the following lines in the &lt;a href="http://www.yaml.org/start.html">YAML&lt;/a> format and name it &lt;code>meta-data&lt;/code>:&lt;/p>
-&lt;pre>&lt;code> instance-id: iid-local01
-local-hostname: cloudimg
-&lt;/code>&lt;/pre>&lt;/li>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#204a87;font-weight:bold">instance-id&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">iid-local01&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">local-hostname&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">cloudimg&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
 &lt;li>
-&lt;p>Create the user data file with the following lines in YAML and name it user-data:&lt;/p>
-&lt;pre>&lt;code> #cloud-config
-hostname: testhost
-packages:
-- vim
-&lt;/code>&lt;/pre>&lt;/li>
+&lt;p>Create the user data file with the following lines in &lt;a href="http://www.yaml.org/start.html">YAML&lt;/a> and name it &lt;code>user-data&lt;/code>:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-yaml" data-lang="yaml">&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#8f5902;font-style:italic">#cloud-config&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">hostname&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#000">testhost&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>&lt;span style="color:#204a87;font-weight:bold">packages&lt;/span>&lt;span style="color:#000;font-weight:bold">:&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline"> &lt;/span>- &lt;span style="color:#000">vim&lt;/span>&lt;span style="color:#f8f8f8;text-decoration:underline">
+&lt;/span>&lt;/code>&lt;/pre>&lt;/div>&lt;/li>
 &lt;li>
 &lt;p>Generate the ISO that will serve as the seed. The ISO must have the volume ID set to &lt;code>cidata&lt;/code>. In the following example, the ISO is generated on an Ubuntu 14.04 computer containing the files named &lt;code>meta-data&lt;/code> and &lt;code>user-data&lt;/code> in the local directory:&lt;/p>
-&lt;pre>&lt;code>genisoimage -output seed.iso -volid cidata -joliet -rock user-data meta-data
+&lt;pre>&lt;code class="language-console" data-lang="console">genisoimage -output seed.iso -volid cidata -joliet -rock user-data meta-data
 &lt;/code>&lt;/pre>&lt;p>The ISO now appears in the current directory:&lt;/p>
-&lt;pre>&lt;code> ```
-&lt;/code>&lt;/pre>
-&lt;p>steve@ubuntu:~$ ls
-meta-data seed.iso user-data&lt;/p>
-&lt;pre>&lt;code>
+&lt;pre>&lt;code class="language-console" data-lang="console">steve@ubuntu:~$ ls
+meta-data seed.iso user-data
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Optionally, check the ISO that you generated on Ubuntu by transferring the ISO to the root directory of your Photon OS machine and then running the following command:&lt;/p>
-&lt;pre>&lt;code>cloud-init --file seed.iso --debug init
+&lt;pre>&lt;code class="language-console" data-lang="console">cloud-init --file seed.iso --debug init
 &lt;/code>&lt;/pre>&lt;p>After running the &lt;code>cloud-init&lt;/code> command above, check the &lt;code>cloud-init&lt;/code> log file:&lt;/p>
-&lt;pre>&lt;code>more /var/log/cloud-init.log
+&lt;pre>&lt;code class="language-console" data-lang="console">more /var/log/cloud-init.log
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Attach the ISO to the Photon OS virtual machine as a CD-ROM and reboot it so that the changes specified by seed.iso take effect. In this case, &lt;code>cloud-init&lt;/code> sets the &lt;code>hostname&lt;/code> and adds the &lt;code>vim&lt;/code> package.&lt;/p>
@@ -252,8 +249,7 @@ $ ec2-terminate-instances &amp;lt;instance-id&amp;gt;
 &lt;li>
 &lt;p>You must have set up a GCE account and are ready to pay Google for its cloud services. The GCE-ready version of Photon OS is a free image and is free. You can download Photon OS for GCE from &lt;a href="https://packages.vmware.com/photon/4.0/GA/gce/">https://packages.vmware.com/photon/4.0/GA/gce/&lt;/a>.&lt;/p>
 &lt;p>The GCE-ready image of Photon OS contains packages and scripts that prepare it for the Google cloud to save you time as you implement a compute cluster or develop cloud applications. The GCE-ready version of Photon OS adds the following packages to the &lt;a href="https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json">packages installed with the minimal version&lt;/a>:&lt;/p>
-&lt;pre>&lt;code>sudo, tar, which, google-daemon, google-startup-scripts,
-kubernetes, perl-DBD-SQLite, perl-DBIx-Simple, perl, ntp
+&lt;pre>&lt;code>sudo, tar, which, google-daemon, google-startup-scripts, kubernetes, perl-DBD-SQLite, perl-DBIx-Simple, perl, ntp
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Verify that you have the &lt;code>gcloud command-line tool&lt;/code>.
@@ -264,22 +260,19 @@ For more information see, &lt;a href="https://cloud.google.com/compute/docs/gclo
 &lt;ol>
 &lt;li>
 &lt;p>Use the following commands to create an instance of Photon OS from the Photon GCE image without using cloud-init. In the commands, you must replace &lt;code>&amp;lt;bucket-name&amp;gt;&lt;/code> with the name of your bucket and the path to the Photon GCE tar file.&lt;/p>
-&lt;pre>&lt;code>&lt;/code>&lt;/pre>&lt;/li>
-&lt;/ol>
-&lt;p>$ gcloud compute instances list
+&lt;pre>&lt;code class="language-console" data-lang="console">$ gcloud compute instances list
 $ gcloud compute images list
 $ gcloud config list
-$ gsutil mb gs://&lt;bucket-name>
-$ gsutil cp &amp;lt;path-to-photon-gce-image.tar.gz&amp;gt; gs://&lt;bucket-name>/photon-gce.tar.gz
-$ gcloud compute images create photon-gce-image &amp;ndash;source-uri gs://&lt;bucket-name>/photon-gce.tar.gz
-$ gcloud compute instances create photon-gce-vm &amp;ndash;machine-type &amp;ldquo;n1-standard-1&amp;rdquo; &amp;ndash;image photon-gce-image
+$ gsutil mb gs://&amp;lt;bucket-name&amp;gt;
+$ gsutil cp &amp;lt;path-to-photon-gce-image.tar.gz&amp;gt; gs://&amp;lt;bucket-name&amp;gt;/photon-gce.tar.gz
+$ gcloud compute images create photon-gce-image --source-uri gs://&amp;lt;bucket-name&amp;gt;/photon-gce.tar.gz
+$ gcloud compute instances create photon-gce-vm --machine-type &amp;quot;n1-standard-1&amp;quot; --image photon-gce-image
 $ gcloud compute instances describe photon-gce-vm
-```&lt;/p>
-&lt;ol>
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>To create a new instance of a Photon OS machine and configure it with a cloud-init user data file, replace the &lt;code>gcloud compute instances create&lt;/code> command in the example above with the following command. Before running this command, you must upload your user-data file to Google&amp;rsquo;s cloud infrastructure and replace &lt;code>&amp;lt;path-to-userdata-file&amp;gt;&lt;/code> with its path and file name.&lt;/p>
-&lt;pre>&lt;code>gcloud compute instances create photon-gce-vm --machine-type &amp;quot;n1-standard-1&amp;quot; --image photon-gce-vm --metadata-from-file=user-data=&amp;lt;path-to-userdata-file&amp;gt;
+&lt;pre>&lt;code class="language-console" data-lang="console">gcloud compute instances create photon-gce-vm --machine-type &amp;quot;n1-standard-1&amp;quot; --image photon-gce-vm --metadata-from-file=user-data=&amp;lt;path-to-userdata-file&amp;gt;
 &lt;/code>&lt;/pre>&lt;p>You can also add a cloud-init user-data file to an existing instance of a Photon OS machine on GCE:&lt;/p>
-&lt;pre>&lt;code>gcloud compute instances add-metadata photon-gce-vm --metadata-from-file=user-data=&amp;lt;path-to-userdata-file&amp;gt;
+&lt;pre>&lt;code class="language-console" data-lang="console">gcloud compute instances add-metadata photon-gce-vm --metadata-from-file=user-data=&amp;lt;path-to-userdata-file&amp;gt;
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;/ol></description></item></channel></rss>

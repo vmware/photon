@@ -2,7 +2,7 @@
 <a class=dropdown-item href=../../../../../docs-v3/>v3</a>
 <a class=dropdown-item href=../../../../../assets/files/html/3.0/>v3 (old)</a>
 <a class=dropdown-item href=../../../../../assets/files/html/1.0-2.0/>v2 and v1</a></div></li></div></ul></div></nav></div></header><div class="container-fluid td-outer"><div class=td-main><div class="row flex-xl-nowrap"><div class="col-12 col-md-3 col-xl-2 td-sidebar d-print-none"></div><div class="d-none d-xl-block col-xl-2 td-toc d-print-none"></div><main class="col-12 col-md-9 col-xl-8 pl-md-5" role=main><div class=td-content><div class="pageinfo pageinfo-primary d-print-none"><p>This the multi-page printable view of this section.
-<a href=# onclick="return print(),!1">Click here to print</a>.</p><p><a href=../../../../../docs/administration-guide/photon-rpm-ostree/running-container-applications-between-bootable-images/>Return to the regular view of this page</a>.</p></div><h1 class=title>Running container applications between bootable images</h1><ul></ul><div class=content><p>In this chapter, we want to test a docker application and make sure that all the settings and downloads done in one bootable filetree are going to be saved into writable folders and be available in the other image, in other words after reboot from the other image, everything is available exactly the same way.<br>We are going to do this twice: first, to verify an existing bootable image installed in parallel and then create a new one.</p><h2 id=downloading-a-docker-container-appliance>Downloading a docker container appliance</h2><p>Photon OS comes with docker package installed and configured, but we expect that the docker daemon is inactive (not started). Configuration file /usr/lib/systemd/system/docker.service is read-only (remember /usr is bound as read-only).</p><pre><code>root@sample-host-def [ ~ ]# systemctl status docker
+<a href=# onclick="return print(),!1">Click here to print</a>.</p><p><a href=../../../../../docs/administration-guide/photon-rpm-ostree/running-container-applications-between-bootable-images/>Return to the regular view of this page</a>.</p></div><h1 class=title>Running container applications between bootable images</h1><ul></ul><div class=content><p>In this chapter, we want to test a docker application and make sure that all the settings and downloads done in one bootable filetree are going to be saved into writable folders and be available in the other image, in other words after reboot from the other image, everything is available exactly the same way.<br>We are going to do this twice: first, to verify an existing bootable image installed in parallel and then create a new one.</p><h2 id=downloading-a-docker-container-appliance>Downloading a docker container appliance</h2><p>Photon OS comes with docker package installed and configured, but we expect that the docker daemon is inactive (not started). Configuration file /usr/lib/systemd/system/docker.service is read-only (remember /usr is bound as read-only).</p><pre><code class=language-console data-lang=console>root@sample-host-def [ ~ ]# systemctl status docker
 * docker.service - Docker Daemon
    Loaded: loaded (/usr/lib/systemd/system/docker.service; disabled)
    Active: inactive (dead)
@@ -41,7 +41,7 @@ StartLimitInterval=60s
 
 [Install]
 WantedBy=multi-user.target
-</code></pre><p>Now let&rsquo;s enable docker daemon to start at boot time - this will create a symbolic link into writable folder /etc/systemd/system/multi-user.target.wants to its systemd configuration, as with all other systemd controlled services.</p><pre><code>root@sample-host-def [ ~ ]# systemctl enable docker
+</code></pre><p>Now let&rsquo;s enable docker daemon to start at boot time - this will create a symbolic link into writable folder /etc/systemd/system/multi-user.target.wants to its systemd configuration, as with all other systemd controlled services.</p><pre><code class=language-console data-lang=console>root@sample-host-def [ ~ ]# systemctl enable docker
 Created symlink /etc/systemd/system/multi-user.target.wants/docker.service -&gt; /lib/systemd/system/docker.service.
 
 root@sample-host-def [ ~ ]# ls -l /etc/systemd/system/multi-user.target.wants
@@ -54,7 +54,7 @@ lrwxrwxrwx 1 root root 39 Sep  4 04:59 sshd-keygen.service -&gt; /lib/systemd/sy
 lrwxrwxrwx 1 root root 32 Sep  4 04:59 sshd.service -&gt; /lib/systemd/system/sshd.service
 lrwxrwxrwx 1 root root 44 Sep  4 04:59 systemd-networkd.service -&gt; /lib/systemd/system/systemd-networkd.service
 lrwxrwxrwx 1 root root 44 Sep  4 04:59 systemd-resolved.service -&gt; /lib/systemd/system/systemd-resolved.service
-</code></pre><p>To verify that the symbolic link points to a file in a read-only directory, try to make a change in this file using vim and save. you&rsquo;ll get an error: &ldquo;/usr/lib/systemd/system/docker.service&rdquo; E166: Can&rsquo;t open linked file for writing".</p><p>Finally, let&rsquo;s start the daemon, check again that is active.</p><pre><code>root@sample-host-def [ ~ ]# systemctl start docker
+</code></pre><p>To verify that the symbolic link points to a file in a read-only directory, try to make a change in this file using vim and save. you&rsquo;ll get an error: <code>/usr/lib/systemd/system/docker.service" E166: Can't open linked file for writing</code>.</p><p>Finally, let&rsquo;s start the daemon, check again that is active.</p><pre><code class=language-console data-lang=console>root@sample-host-def [ ~ ]# systemctl start docker
 
 root@sample-host-def [ ~ ]# systemctl status -l docker
 * docker.service - Docker Application Container Engine
@@ -80,7 +80,7 @@ Sep 10 10:54:32 photon-76718dd2fa33 dockerd[2553]: time=&quot;2019-09-10T10:54:3
 Sep 10 10:54:32 photon-76718dd2fa33 dockerd[2553]: time=&quot;2019-09-10T10:54:32.684925824Z&quot; level=warning msg=&quot;Could not register builder git source: failed to find git binary: exec: \&quot;git\&quot;: executable file not found in $PATH&quot;
 Sep 10 10:54:32 photon-76718dd2fa33 dockerd[2553]: time=&quot;2019-09-10T10:54:32.691070166Z&quot; level=info msg=&quot;API listen on /var/run/docker.sock&quot;
 Sep 10 10:54:32 photon-76718dd2fa33 systemd[1]: Started Docker Application Container Engine.
-</code></pre><p>We&rsquo;ll ask docker to run Ubuntu Linux in a container. Since it&rsquo;s not present locally, it&rsquo;s going to be downloaded first from the official docker repository <a href=https://hub.docker.com/_/ubuntu/>https://hub.docker.com/_/ubuntu/</a>.</p><pre><code>root@sample-host-def [ ~ ]# docker ps -a
+</code></pre><p>We&rsquo;ll ask docker to run Ubuntu Linux in a container. Since it&rsquo;s not present locally, it&rsquo;s going to be downloaded first from the official docker repository <a href=https://hub.docker.com/_/ubuntu/>https://hub.docker.com/_/ubuntu/</a>.</p><pre><code class=language-console data-lang=console>root@sample-host-def [ ~ ]# docker ps -a
 CONTAINER ID        IMAGE            COMMAND      CREATED           STATUS              PORTS       NAMES
 
 root@sample-host-def [ ~ ]# docker run -it ubuntu
@@ -92,7 +92,7 @@ latest: Pulling from library/ubuntu
 6001e1789921: Pull complete
 Digest: sha256:d1d454df0f579c6be4d8161d227462d69e163a8ff9d20a847533989cf0c94d90
 Status: Downloaded newer image for ubuntu:latest
-</code></pre><p>When downloading is complete, it comes to Ubuntu root prompt with assigned host name 7029a64e7aa3, that is actually the Container ID. Let&rsquo;s verify it&rsquo;s indeed the expected OS.</p><pre><code>root@sample-host-def [ ~ ]# docker run -it ubuntu
+</code></pre><p>When downloading is complete, it comes to Ubuntu root prompt with assigned host name 7029a64e7aa3, that is actually the Container ID. Let&rsquo;s verify it&rsquo;s indeed the expected OS.</p><pre><code class=language-console data-lang=console>root@sample-host-def [ ~ ]# docker run -it ubuntu
 Unable to find image 'ubuntu:latest' locally
 latest: Pulling from library/ubuntu
 d3a1f33e8a5a: Pull complete
@@ -117,10 +117,10 @@ PRIVACY_POLICY_URL=&quot;https://www.ubuntu.com/legal/terms-and-policies/privacy
 VERSION_CODENAME=bionic
 UBUNTU_CODENAME=bionic
 root@7029a64e7aa3:/#
-</code></pre><p>Now let&rsquo;s write a file into Ubuntu home directory</p><pre><code>echo &quot;Ubuntu file&quot; &gt;&gt; /home/myfile
+</code></pre><p>Now let&rsquo;s write a file into Ubuntu home directory</p><pre><code class=language-console data-lang=console>echo &quot;Ubuntu file&quot; &gt;&gt; /home/myfile
 root@7029a64e7aa3:/home# cat /home/myfile
 Ubuntu file
-</code></pre><p>We&rsquo;ll exit back to the Photon prompt and if it&rsquo;s stopped, we will re-start it.</p><pre><code>root@7029a64e7aa3:/# exit
+</code></pre><p>We&rsquo;ll exit back to the Photon prompt and if it&rsquo;s stopped, we will re-start it.</p><pre><code class=language-console data-lang=console>root@7029a64e7aa3:/# exit
 exit
 
 root@sample-host-def [ ~ ]# docker ps -a
@@ -133,7 +133,7 @@ root@photon-host-cus1 [ ~ ]# docker start  7029a64e7aa3
 root@photon-host-cus1 [ ~ ]# docker ps -a
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                       PORTS               NAMES
 7029a64e7aa3        ubuntu              &quot;/bin/bash&quot;         7 minutes ago       Up 21 seconds                                    gifted_dijkstra
-</code></pre><h2 id=rebooting-into-an-existing-image>Rebooting into an existing image</h2><p>Now let&rsquo;s reboot the machine and select the other image. First, we&rsquo;ll verify that the docker daemon is automaically started.</p><pre><code>root@photon-host-cus1 [ ~ ]# systemctl status docker
+</code></pre><h2 id=rebooting-into-an-existing-image>Rebooting into an existing image</h2><p>Now let&rsquo;s reboot the machine and select the other image. First, we&rsquo;ll verify that the docker daemon is automaically started.</p><pre><code class=language-console data-lang=console>root@photon-host-cus1 [ ~ ]# systemctl status docker
 * docker.service - Docker Application Container Engine
    Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: disabled)
    Active: active (running) since Tue 2019-09-10 10:54:32 UTC; 13min ago
@@ -144,16 +144,16 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
    CGroup: /system.slice/docker.service
            |-2553 /usr/bin/dockerd
    ...
-</code></pre><p>Next, is the Ubuntu OS container still there?</p><pre><code>root@photon-host-cus1 [ ~ ]# docker ps -a
+</code></pre><p>Next, is the Ubuntu OS container still there?</p><pre><code class=language-console data-lang=console>root@photon-host-cus1 [ ~ ]# docker ps -a
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                       PORTS               NAMES
 7029a64e7aa3        ubuntu              &quot;/bin/bash&quot;         9 minutes ago       Up 2 minutes                                     gifted_dijkstra
-</code></pre><p>It is, so let&rsquo;s start it, attach and verify that our file is persisted, then add another line to it and save, exit.</p><pre><code>root@photon-host-cus1 [ ~ ]# docker start -i  7029a64e7aa3
+</code></pre><p>It is, so let&rsquo;s start it, attach and verify that our file is persisted, then add another line to it and save, exit.</p><pre><code class=language-console data-lang=console>root@photon-host-cus1 [ ~ ]# docker start -i  7029a64e7aa3
 root@7029a64e7aa3:/# cat /home/myfile
 Ubuntu file
 root@7029a64e7aa3:/# echo &quot;booted into existing image&quot; &gt;&gt; /home/myfile
 root@7029a64e7aa3:/# exit
 exit
-</code></pre><h2 id=reboot-into-a-newly-created-image>Reboot into a newly created image</h2><p>Let&rsquo;s upgrade and replace the .0 image by a .4 build that contains git and also perl_YAML (because it is a dependency of git).</p><pre><code>root@photon-host-cus1 [ ~ ]# rpm-ostree status
+</code></pre><h2 id=reboot-into-a-newly-created-image>Reboot into a newly created image</h2><p>Let&rsquo;s upgrade and replace the .0 image by a .4 build that contains git and also perl_YAML (because it is a dependency of git).</p><pre><code class=language-console data-lang=console>root@photon-host-cus1 [ ~ ]# rpm-ostree status
   TIMESTAMP (UTC)         VERSION               ID             OSNAME     REFSPEC
 * 2015-09-04 00:36:37     4.0_minimal     092e21d292     photon     photon:photon/x86_64/minimal
   2015-08-20 22:27:43     4.0_minimal       2940e10c4d     photon     photon:photon/x86_64/minimal
@@ -174,7 +174,7 @@ root@photon-host-cus1 [ ~ ]# rpm-ostree status
   TIMESTAMP (UTC)         VERSION               ID             OSNAME     REFSPEC
   2015-09-06 18:12:08     4.0_minimal     d16aebd803     photon     photon:photon/x86_64/minimal
 * 2015-09-04 00:36:37     4.0_minimal     092e21d292     photon     photon:photon/x86_64/minimal
-</code></pre><p>After reboot from 4.0_minimal. build, let&rsquo;s check that the 3-way /etc merge succeeded as expected. The docker.service slink is still there, and docker demon restarted at boot.</p><pre><code>root@photon-host-cus1 [ ~ ]# ls -l /etc/systemd/system/multi-user.target.wants/docker.service
+</code></pre><p>After reboot from 4.0_minimal. build, let&rsquo;s check that the 3-way /etc merge succeeded as expected. The docker.service slink is still there, and docker demon restarted at boot.</p><pre><code class=language-console data-lang=console>root@photon-host-cus1 [ ~ ]# ls -l /etc/systemd/system/multi-user.target.wants/docker.service
 lrwxrwxrwx 1 root root 38 Sep  6 12:50 /etc/systemd/system/multi-user.target.wants/docker.service -&gt; /usr/lib/systemd/system/docker.service
 
 root@photon-host-cus1 [ ~ ]# systemctl status docker
@@ -185,7 +185,7 @@ root@photon-host-cus1 [ ~ ]# systemctl status docker
    CGroup: /system.slice/docker.service
            `-292 /bin/docker -d -s overlay
    ...
-</code></pre><p>Let&rsquo;s revisit the Ubuntu container. Is the container still there? is myfile persisted?</p><pre><code>root@photon-host-cus1 [ ~ ]# docker ps -a
+</code></pre><p>Let&rsquo;s revisit the Ubuntu container. Is the container still there? is myfile persisted?</p><pre><code class=language-console data-lang=console>root@photon-host-cus1 [ ~ ]# docker ps -a
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                    PORTS               NAMES
 7029a64e7aa3        ubuntu              &quot;/bin/bash&quot;         5 days ago          Exited (0) 5 days ago                         gifted_dijkstra
 55825c961f95        ubuntu              &quot;/bin/bash&quot;         5 days ago          Exited (127) 5 days ago                       distracted_shannon

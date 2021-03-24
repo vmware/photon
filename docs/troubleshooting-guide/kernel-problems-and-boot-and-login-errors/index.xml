@@ -32,20 +32,17 @@ ip_tables 24576 2 iptable_filter,iptable_nat
 &lt;/code>&lt;/pre></description></item><item><title>Docs: Boot Process Overview</title><link>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/boot-process-overview/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/boot-process-overview/</guid><description>
 &lt;p>When a Photon OS machine boots, the BIOS initializes the hardware and uses a boot loader to start the kernel. After the kernel starts, &lt;code>systemd&lt;/code> takes over and boots the rest of the operating system.&lt;/p>
 &lt;p>The BIOS checks the memory and initializes the keyboard, the screen, and other peripherals. When the BIOS finds the first hard disk, the boot loader&amp;ndash;GNU GRUB 2.02&amp;ndash;takes over. From the hard disk, GNU GRUB loads the master boot record (MBR) and initializes the root partition of the random-access memory by using initrd. The device manager, udev, provides initrd with the drivers it needs to access the device containing the root file system. Here&amp;rsquo;s what the GNU GRUB edit menu looks like in Photon OS with its default commands to load the boot record and initialize the RAM disk:&lt;/p>
-&lt;p>&lt;img src="images/grub-edit-menu-orig.png" alt="The GNU GRUB edit menu in the full and minimal versions of Photon OS">&lt;/p>
+&lt;p>&lt;img src="../../../docs/images/grub-edit-menu-orig.png" alt="The GNU GRUB edit menu in Photon OS">&lt;/p>
 &lt;p>At this point, the Linux kernel in Photon OS, which is kernel version 4.4.8, takes control. Systemd kicks in, initializes services in parallel, mounts the rest of the file system, and checks the file system for errors.&lt;/p></description></item><item><title>Docs: Blank Screen on Reboot</title><link>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/blank-screen-on-reboot/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/blank-screen-on-reboot/</guid><description>
 &lt;p>If the Photon OS kernel enters a state of panic during a reboot and all you see is a blank screen, note the name of the virtual machine running Photon OS and then power off the VM.&lt;/p>
 &lt;p>In the host, open the &lt;code>vmware.log&lt;/code> file for the VM. When a kernel panics, the guest VM prints the entire kernel log in &lt;code>vmware.log&lt;/code> in the host directory containing the VM. This log file contains the output of the &lt;code>dmesg&lt;/code> command from the guest, and you can analyze it to help identify the cause of the boot problem.&lt;/p>
 &lt;p>&lt;strong>Example&lt;/strong>&lt;/p>
 &lt;p>After searching for &lt;code>Guest:&lt;/code> in the following abridged &lt;code>vmware.log&lt;/code>, this line appears, identifying the root cause of the reboot problem:&lt;/p>
-&lt;pre>&lt;code>```
-2016-08-30T16:02:43.220-07:00| vcpu-0| I125: Guest:
+&lt;pre>&lt;code class="language-log" data-lang="log">2016-08-30T16:02:43.220-07:00| vcpu-0| I125: Guest:
 &amp;lt;0&amp;gt;[1.125804] Kernel panic - not syncing:
 VFS: Unable to mount root fs on unknown-block(0,0)
-```
-&lt;/code>&lt;/pre>
-&lt;p>Further inspection finds the following lines:&lt;/p>
-&lt;pre>&lt;code>2016-08-30T16:02:43.217-07:00| vcpu-0| I125: Guest:
+&lt;/code>&lt;/pre>&lt;p>Further inspection finds the following lines:&lt;/p>
+&lt;pre>&lt;code class="language-log" data-lang="log">2016-08-30T16:02:43.217-07:00| vcpu-0| I125: Guest:
 &amp;lt;4&amp;gt;[ 1.125782] VFS: Cannot open root device &amp;quot;sdc1&amp;quot; or unknown-block(0,0): error -6
 2016-08-30T16:02:43.217-07:00| vcpu-0| I125: Guest:
 &amp;lt;4&amp;gt;[ 1.125783] Please append a correct &amp;quot;root=&amp;quot; boot option;
@@ -58,8 +55,7 @@ here are the available partitions:
 &amp;lt;4&amp;gt;[ 1.125802] 0801 8384512 sda1 611e2d9a-a3da-4ac7-9eb9-8d09cb151a93
 2016-08-30T16:02:43.220-07:00| vcpu-0| I125: Guest:
 &amp;lt;4&amp;gt;[ 1.125803] 0802 3055 sda2 8159e59c-b382-40b9-9070-3c5586f3c7d6
-&lt;/code>&lt;/pre>
-&lt;p>In this unlikely case, the GRUB configuration points to a root device named &lt;code>sdc1&lt;/code> instead of the correct root device, &lt;code>sda1&lt;/code>. You can resolve the problem by restoring the GRUB GNU edit screen and the GRUB configuration file (&lt;code>/boot/grub/grub.cfg&lt;/code>) to their original configurations.&lt;/p></description></item><item><title>Docs: Investigating Unexpected Behavior</title><link>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/investigating-unexpected-behavior/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/investigating-unexpected-behavior/</guid><description>
+&lt;/code>&lt;/pre>&lt;p>In this unlikely case, the GRUB configuration points to a root device named &lt;code>sdc1&lt;/code> instead of the correct root device, &lt;code>sda1&lt;/code>. You can resolve the problem by restoring the GRUB GNU edit screen and the GRUB configuration file (&lt;code>/boot/grub/grub.cfg&lt;/code>) to their original configurations.&lt;/p></description></item><item><title>Docs: Investigating Unexpected Behavior</title><link>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/investigating-unexpected-behavior/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/investigating-unexpected-behavior/</guid><description>
 &lt;p>If you rebooted to address unexpected behavior before the reboot or if you encountered unexpected behavior during the reboot but have reached the shell, you must analyze what happened since the previous boot.&lt;/p>
 &lt;ol>
 &lt;li>

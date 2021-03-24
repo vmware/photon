@@ -10,65 +10,56 @@ The &ldquo;Recipe&rdquo; for creating an RPM package is a spec file. The Photon 
                 patch1
                 patch2
                 linux.spec
-</code></pre><p>##To Check if a Package is Signed
-Run the following commands to check if the package is signed:</p><pre><code>#check if a package is signed
-rpm -q linux --qf '%{NAME}-%{VERSION}-%{RELEASE} %{SIGPGP:pgpsig} %{SIGGPG:pgpsig}\n'
-linux-4.19.79-2.ph3 RSA/SHA1, Thu 31 Oct 2019 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949 (none)
+</code></pre><h2 id=check-if-a-package-is-signed>Check if a package is signed</h2><p>Run the following commands to check if the package is signed:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#8f5902;font-style:italic>#check if a package is signed</span>
+rpm -q linux --qf <span style=color:#4e9a06>&#39;%{NAME}-%{VERSION}-%{RELEASE} %{SIGPGP:pgpsig} %{SIGGPG:pgpsig}\n&#39;</span>
+linux-4.19.79-2.ph3 RSA/SHA1, Thu <span style=color:#0000cf;font-weight:700>31</span> Oct <span style=color:#0000cf;font-weight:700>2019</span> 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949 <span style=color:#ce5c00;font-weight:700>(</span>none<span style=color:#ce5c00;font-weight:700>)</span>
  
-#or
-rpm -qi linux | grep &quot;Signature&quot;
-Signature   : RSA/SHA1, Thu 31 Oct 2019 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949
+<span style=color:#8f5902;font-style:italic>#or</span>
+rpm -qi linux <span style=color:#000;font-weight:700>|</span> grep <span style=color:#4e9a06>&#34;Signature&#34;</span>
+Signature   : RSA/SHA1, Thu <span style=color:#0000cf;font-weight:700>31</span> Oct <span style=color:#0000cf;font-weight:700>2019</span> 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949
  
-#Last 8 chars of Key ID: 66fd4949
-#See if it matches the version of any of the gpg keys installed.
-rpm -qa | grep gpg-pubkey | xargs -n1 rpm -q --queryformat &quot;%{NAME} %{VERSION} %{PACKAGER}\n&quot;
+<span style=color:#8f5902;font-style:italic>#Last 8 chars of Key ID: 66fd4949</span>
+<span style=color:#8f5902;font-style:italic>#See if it matches the version of any of the gpg keys installed.</span>
+rpm -qa <span style=color:#000;font-weight:700>|</span> grep gpg-pubkey <span style=color:#000;font-weight:700>|</span> xargs -n1 rpm -q --queryformat <span style=color:#4e9a06>&#34;%{NAME} %{VERSION} %{PACKAGER}\n&#34;</span>
 gpg-pubkey 66fd4949 VMware, Inc. -- Linux Packaging Key -- linux-packages@vmware.com
 gpg-pubkey 3e1ba8d5 Google Cloud Packages RPM Signing Key gc-team@google.com
-</code></pre><p>##To Check if Your Image Has Vulnerabilities
-Use the security scanners to find security issues. Alternatively The <code>tdnf updateinfo info</code> command displays all the applicable security updates the host needs.</p><p>##To Check if a CVE is Fixed
-The Photon team fix the vulnerabilities and then publish the advisories to (<a href=https://github.com/vmware/photon/wiki/Security-Advisories)>https://github.com/vmware/photon/wiki/Security-Advisories)</a>.</p><p>##To Check if Security Updates are Available
-Use the <code>tdnf updateinfo info</code>, <code>tdnf update --security</code> or <code>tdnf update ---sec-severity &lt;level></code> commands to check if security updates are available. For example:</p><pre><code>#check if there are any security updates
-root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo
+</code></pre></div><h2 id=check-if-an-image-has-vulnerabilities>Check if an image has vulnerabilities</h2><p>Use the security scanners to find security issues. Alternatively The <code>tdnf updateinfo info</code> command displays all the applicable security updates the host needs.</p><h2 id=check-if-a-cve-is-fixed>Check if a CVE is Fixed</h2><p>The Photon team fixes vulnerabilities and publishes advisories to <a href=https://github.com/vmware/photon/wiki/Security-Advisories>https://github.com/vmware/photon/wiki/Security-Advisories</a>.</p><h2 id=to-check-if-security-updates-are-available>To Check if Security Updates are Available</h2><p>Use the <code>tdnf updateinfo info</code>, <code>tdnf update --security</code> or <code>tdnf update ---sec-severity &lt;level></code> commands to check if security updates are available. For example:</p><p>Check if there are any security updates</p><pre><code class=language-console data-lang=console>root@photon [ ~ ]# tdnf updateinfo
 70 Security notice(s)
- 
-#check if there are security updates for libssh2. note this is relative to what is installed in local
-root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo list libssh2
+</code></pre><p>Check if there are security updates for libssh2. note this is relative to what is installed in local</p><pre><code class=language-console data-lang=console>root@photon[ ~ ]# tdnf updateinfo list libssh2
 patch:PHSA-2020-3.0-0047 Security libssh2-1.9.0-2.ph3.x86_64.rpm
 patch:PHSA-2019-3.0-0025 Security libssh2-1.9.0-1.ph3.x86_64.rpm
 patch:PHSA-2019-3.0-0009 Security libssh2-1.8.2-1.ph3.x86_64.rpm
 patch:PHSA-2019-3.0-0008 Security libssh2-1.8.0-2.ph3.x86_64.rpm
- 
-#show details of all the libssh2 updates
-root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo info libssh2
-       Name : libssh2-1.9.0-2.ph3.x86_64.rpm
-  Update ID : patch:PHSA-2020-3.0-0047
-       Type : Security
-    Updated : Wed Jan 15 10:48:25 2020
+</code></pre><p>Show details of all the libssh2 updates
+root@photon [ ~ ]# tdnf updateinfo info libssh2
+Name : libssh2-1.9.0-2.ph3.x86_64.rpm
+Update ID : patch:PHSA-2020-3.0-0047
+Type : Security
+Updated : Wed Jan 15 10:48:25 2020
 Needs Reboot: 0
-Description : Security fixes for {'CVE-2019-17498'}
-       Name : libssh2-1.9.0-1.ph3.x86_64.rpm
-  Update ID : patch:PHSA-2019-3.0-0025
-       Type : Security
-    Updated : Sat Aug 17 16:14:35 2019
+Description : Security fixes for {&lsquo;CVE-2019-17498&rsquo;}
+Name : libssh2-1.9.0-1.ph3.x86_64.rpm
+Update ID : patch:PHSA-2019-3.0-0025
+Type : Security
+Updated : Sat Aug 17 16:14:35 2019
 Needs Reboot: 0
-Description : Security fixes for {'CVE-2019-13115'}
-       Name : libssh2-1.8.2-1.ph3.x86_64.rpm
-  Update ID : patch:PHSA-2019-3.0-0009
-       Type : Security
-    Updated : Sat Apr 13 03:34:22 2019
+Description : Security fixes for {&lsquo;CVE-2019-13115&rsquo;}
+Name : libssh2-1.8.2-1.ph3.x86_64.rpm
+Update ID : patch:PHSA-2019-3.0-0009
+Type : Security
+Updated : Sat Apr 13 03:34:22 2019
 Needs Reboot: 0
-Description : Security fixes for {'CVE-2019-3859', 'CVE-2019-3862', 'CVE-2019-3861', 'CVE-2019-3857', 'CVE-2019-3858', 'CVE-2019-3863', 'CVE-2019-3860', 'CVE-2019-3856'}
-       Name : libssh2-1.8.0-2.ph3.x86_64.rpm
-  Update ID : patch:PHSA-2019-3.0-0008
-       Type : Security
-    Updated : Fri Mar 29 16:04:18 2019
+Description : Security fixes for {&lsquo;CVE-2019-3859&rsquo;, &lsquo;CVE-2019-3862&rsquo;, &lsquo;CVE-2019-3861&rsquo;, &lsquo;CVE-2019-3857&rsquo;, &lsquo;CVE-2019-3858&rsquo;, &lsquo;CVE-2019-3863&rsquo;, &lsquo;CVE-2019-3860&rsquo;, &lsquo;CVE-2019-3856&rsquo;}
+Name : libssh2-1.8.0-2.ph3.x86_64.rpm
+Update ID : patch:PHSA-2019-3.0-0008
+Type : Security
+Updated : Fri Mar 29 16:04:18 2019
 Needs Reboot: 0
-Description : Security fixes for {'CVE-2019-3855'}
- 
- 
- 
-#install all security updates &gt;= score 9.0 (CVSS_v3.0_Severity)
-root@photon-9a8c05dd97e9 [ ~ ]# tdnf update --sec-severity 9.0
+Description : Security fixes for {&lsquo;CVE-2019-3855&rsquo;}</p><pre><code> 
+install all security updates &gt;= score 9.0 (CVSS_v3.0_Severity)
+
+```console
+root@photon [ ~ ]# tdnf update --sec-severity 9.0
 Upgrading:
 apache-tomcat                  noarch          8.5.50-1.ph3         photon-updates    9.00M 9440211
 bash                           x86_64          4.4.18-2.ph3         photon-updates    3.16M 3315720

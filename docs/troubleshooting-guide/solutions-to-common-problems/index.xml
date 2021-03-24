@@ -30,7 +30,7 @@
 &lt;pre>&lt;code>rw init=/bin/bash
 &lt;/code>&lt;/pre>
 &lt;p>After you add this code, the GNU GRUB edit menu should look exactly like this:&lt;/p>
-&lt;p>&lt;img src="images/grub-edit-menu-changepw.png" alt="The modified GNU GRUB edit menu">&lt;/p>
+&lt;p>&lt;img src="../../../docs/images/grub-edit-menu-changepw.png" alt="The modified GNU GRUB edit menu">&lt;/p>
 &lt;p>Now type &lt;code>F10&lt;/code>.&lt;/p>
 &lt;p>At the command prompt, type &lt;code>passwd&lt;/code> and then type (and re-enter) a new root password that conforms to the password complexity rules of Photon OS. Remember the password.&lt;/p>
 &lt;p>Next, type the following command:&lt;/p>
@@ -40,7 +40,7 @@
 &lt;pre>&lt;code>reboot -f
 &lt;/code>&lt;/pre>
 &lt;p>This sequence of commands should look like this:&lt;/p>
-&lt;p>&lt;img src="images/resetpw.png" alt="The series of commands to reset the root password">&lt;/p>
+&lt;p>&lt;img src="../../../docs/images/resetpw.png" alt="The series of commands to reset the root password">&lt;/p>
 &lt;p>After the Photon OS machine reboots, log in with the new root password.&lt;/p>
 &lt;h2 id="resetting-the-failed-logon-count">Resetting the failed logon count&lt;/h2>
 &lt;p>Resetting the root password will not reset the failed logon count, if you&amp;rsquo;ve had to many failed attempts, you may not be able to logon after resetting the password.&lt;/p>
@@ -48,36 +48,32 @@
 &lt;p>To reset the count, before you unmount the filesystem, run the following&amp;hellip;&lt;/p>
 &lt;pre>&lt;code>/sbin/pam_tally2 --reset --user root
 &lt;/code>&lt;/pre></description></item><item><title>Docs: Fixing Permissions on Network Config Files</title><link>/docs/troubleshooting-guide/solutions-to-common-problems/fixing-permissions-on-network-config-files/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/solutions-to-common-problems/fixing-permissions-on-network-config-files/</guid><description>
-&lt;p>When you create a new network configuration file as root user, the network service might be unable to process it until you set the file mode bits to &lt;code>644&lt;/code>.&lt;/p>
+&lt;p>When you create a new network configuration file as root user, the network service might be unable to process it until you set the file mode bits (i.e. &lt;code>chmod&lt;/code>) to &lt;code>644&lt;/code>.&lt;/p>
 &lt;p>If you query the journal with &lt;code>journalctl -u systemd-networkd&lt;/code>, you might see the following error message along with an indication that the network service did not start:&lt;/p>
-&lt;pre>&lt;code>`could not load configuration files. permission denied`
-&lt;/code>&lt;/pre>
+&lt;p>&lt;code>could not load configuration files. permission denied&lt;/code>&lt;/p>
 &lt;p>The permissions on the network files might cause this problem. Without the correct permissions, &lt;code>networkd-systemd&lt;/code> cannot parse and apply the settings, and the network configuration that you created will not be loaded.&lt;/p>
 &lt;p>After you create a network configuration file with a &lt;code>.network&lt;/code> extension, you must run the &lt;code>chmod&lt;/code> command to set the new file&amp;rsquo;s mode bits to &lt;code>644&lt;/code>. Example:&lt;/p>
-&lt;pre>&lt;code>`chmod 644 10-static-en.network`
-&lt;/code>&lt;/pre>
+&lt;p>&lt;code>chmod 644 10-static-en.network&lt;/code>&lt;/p>
 &lt;p>For Photon OS to apply the new configuration, you must restart the &lt;code>systemd-networkd&lt;/code> service by running the following command:&lt;/p>
-&lt;pre>&lt;code>`systemctl restart systemd-networkd`
-&lt;/code>&lt;/pre></description></item><item><title>Docs: Permitting Root Login with SSH</title><link>/docs/troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/</guid><description>
+&lt;p>&lt;code>systemctl restart systemd-networkd&lt;/code>&lt;/p></description></item><item><title>Docs: Permitting Root Login with SSH</title><link>/docs/troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/</guid><description>
 &lt;p>The full version of Photon OS prevents root login with SSH by default. To permit root login over SSH, open &lt;code>/etc/ssh/sshd_config&lt;/code> with the vim text editor and set &lt;code>PermitRootLogin&lt;/code> to &lt;code>yes&lt;/code>.&lt;/p>
-&lt;p>Vim is the default text editor available in both the full and minimal versions of Photon OS. The full version also contains Nano. After you modify the SSH daemon&amp;rsquo;s configuration file, you must restart the sshd daemon for the changes to take effect. Example:&lt;/p>
-&lt;pre>&lt;code>vim /etc/ssh/sshd_config
-# override default of no subsystems
-Subsystem sftp /usr/libexec/sftp-server
-# Example of overriding settings on a per-user basis
-#Match User anoncvs
-# X11Forwarding no
-# AllowTcpForwarding no
-# PermitTTY no
-# ForceCommand cvs server
-PermitRootLogin yes
-UsePAM yes
-&lt;/code>&lt;/pre>
-&lt;p>Save your changes in vim and then restart the sshd daemon:&lt;/p>
-&lt;pre>&lt;code>systemctl restart sshd
-&lt;/code>&lt;/pre>
-&lt;p>You can then connect to the Photon OS machine with the root account over SSH:&lt;/p>
-&lt;pre>&lt;code>steve@ubuntu:~$ ssh root@198.51.100.131
+&lt;p>Vim is the default text editor available in Photon OS. The developer version also contains Nano. After you modify the SSH daemon&amp;rsquo;s configuration file, you must restart the sshd daemon for the changes to take effect.&lt;/p>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">vim /etc/ssh/sshd_config
+&lt;/code>&lt;/pre>&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ini" data-lang="ini">&lt;span style="color:#8f5902;font-style:italic"># override default of no subsystems&lt;/span>
+&lt;span style="color:#c4a000">Subsystem sftp /usr/libexec/sftp-server&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># Example of overriding settings on a per-user basis&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#Match User anoncvs&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># X11Forwarding no&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># AllowTcpForwarding no&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># PermitTTY no&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic"># ForceCommand cvs server&lt;/span>
+&lt;span style="color:#c4a000">PermitRootLogin yes&lt;/span>
+&lt;span style="color:#c4a000">UsePAM yes&lt;/span>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>Save your changes in vim and then restart the sshd daemon:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">systemctl restart sshd
+&lt;/code>&lt;/pre>&lt;p>You can then connect to the Photon OS machine with the root account over SSH:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">user@ubuntu:~$ ssh root@10.0.0.131
 &lt;/code>&lt;/pre></description></item><item><title>Docs: Fixing Sendmail</title><link>/docs/troubleshooting-guide/solutions-to-common-problems/fixing-sendmail/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/solutions-to-common-problems/fixing-sendmail/</guid><description>
 &lt;p>If Sendmail is not behaving as expected or hangs during installation, it might be because FQDN is not set.&lt;/p>
 &lt;p>Perform the following steps:&lt;/p>

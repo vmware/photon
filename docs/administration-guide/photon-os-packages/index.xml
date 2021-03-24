@@ -29,17 +29,19 @@ It contains the libraries files for Java runtime environment
 &lt;p>The minimal version of Photon OS contains around 50 packages. As it is installed, the number of packages increases to nearly 100 to fulfill dependencies. The full version of Photon OS adds several hundred packages to those in the minimal version to deliver a more fully featured operating system.&lt;/p>
 &lt;p>You can view a list of the packages that appear in the minimal version by examining the following file:&lt;/p>
 &lt;p>&lt;a href="https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json">https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json&lt;/a>&lt;/p>
-&lt;p>You can view a list of the packages that appear in the full version by examining the following file:&lt;/p>
+&lt;p>You can view a list of the packages that appear in the full (aka &amp;ldquo;developer&amp;rdquo;) version by examining the following file:&lt;/p>
 &lt;p>&lt;a href="https://github.com/vmware/photon/blob/master/common/data/packages_full.json">https://github.com/vmware/photon/blob/master/common/data/packages_full.json&lt;/a>&lt;/p>
-&lt;p>If the minimal or the full version of Photon OS does not contain a package that you want, you can install it with tdnf, which appears in both the minimal and full versions of Photon OS by default. In the full version of Photon OS, you can also install packages by using yum.&lt;/p>
+&lt;p>If the minimal or the developer version of Photon OS does not contain a package that you want, you can install it with tdnf, which appears in both the minimal and full versions of Photon OS by default. In the full version of Photon OS, you can also install packages by using yum.&lt;/p>
 &lt;p>One notable difference between the two versions of Photon OS pertains to OpenJDK, the package that contains not only the Java runtime environment (&lt;code>openjre&lt;/code>) but also the Java compiler (&lt;code>javac&lt;/code>). The OpenJDK package appears in the full but not the minimal version of Photon OS.&lt;/p>
 &lt;p>To add support for Java programs to the minimal version of Photon OS, install the Java packages and their dependencies by using the following command:&lt;/p>
-&lt;pre>&lt;code>tdnf install openjdk
+&lt;pre>&lt;code>```console
+tdnf install openjdk
 Installing:
 openjre x86_64 1.8.0.92-1.ph1 95.09 M
 openjdk x86_64 1.8.0.92-1.ph1 37.63 M
+```
 &lt;/code>&lt;/pre>
-&lt;p>&lt;strong>NOTE:&lt;/strong> &lt;code>openjdk&lt;/code> and &lt;code>openjre&lt;/code> are available as openjdk8 and openjre8 in Photon OS 3.0&lt;/p>
+&lt;p>&lt;strong>NOTE:&lt;/strong> &lt;code>openjdk&lt;/code> and &lt;code>openjre&lt;/code> are available as openjdk8 and openjre8 in Photon OS 3.0 and later.&lt;/p>
 &lt;p>For more information about &lt;code>tdnf&lt;/code>, see &lt;a href="../../managing-packages-with-tdnf/">Tiny DNF for Package Management&lt;/a>&lt;/p></description></item><item><title>Docs: The Root Account and the 'sudo' and 'su' Commands</title><link>/docs/administration-guide/photon-os-packages/root-account-and-sudo-commands/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-os-packages/root-account-and-sudo-commands/</guid><description>
 &lt;p>The &lt;em>Photon OS Administration Guide&lt;/em> assumes that you are logged in to Photon OS with the root account and running commands as root.&lt;/p>
 &lt;p>On the minimal version, you must install &lt;code>sudo&lt;/code> with tdnf if you want to use it. As an alternative to installing &lt;code>sudo&lt;/code>, to run commands that require root privileges you can switch users as needed with the &lt;code>su&lt;/code> command.&lt;/p></description></item><item><title>Docs: Examining Signed Packages</title><link>/docs/administration-guide/photon-os-packages/signed-packages/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-os-packages/signed-packages/</guid><description>

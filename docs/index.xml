@@ -353,10 +353,9 @@ CGroup: /system.slice/systemd-networkd.service
 &lt;p>Because Photon OS relies on systemd to manage services, you must use the &lt;code>systemd&lt;/code> suite of commands and not the deprecated &lt;code>init.d&lt;/code> commands or other deprecated commands to manage networking.&lt;/p></description></item><item><title>Docs: Commands to Manage Network Service</title><link>/docs/administration-guide/managing-network-configuration/network-management-commands/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/network-management-commands/</guid><description>
 &lt;p>You manage the network service by using systemd commands, such as &lt;code>systemd-networkd&lt;/code>, &lt;code>systemd-resolvd&lt;/code>, and &lt;code>networkctl&lt;/code>.&lt;/p>
 &lt;p>To check the status of the network service, run the following command:&lt;/p>
-&lt;pre>&lt;code>systemctl status systemd-networkd
-&lt;/code>&lt;/pre>
-&lt;p>&lt;strong>Output&lt;/strong>&lt;/p>
-&lt;pre>&lt;code>* systemd-networkd.service - Network Service
+&lt;pre>&lt;code class="language-console" data-lang="console"> systemctl status systemd-networkd
+&lt;/code>&lt;/pre>&lt;p>&lt;strong>Output&lt;/strong>&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console"> * systemd-networkd.service - Network Service
 Loaded: loaded (/usr/lib/systemd/system/systemd-networkd.service; enabled; vendor preset: enabled)
 Active: active (running) since Fri 2016-04-29 15:08:51 UTC; 6 days ago
 Docs: man:systemd-networkd.service(8)
@@ -364,8 +363,7 @@ Main PID: 291 (systemd-network)
 Status: &amp;quot;Processing requests...&amp;quot;
 CGroup: /system.slice/systemd-networkd.service
 `-291 /lib/systemd/systemd-networkd
-&lt;/code>&lt;/pre>
-&lt;p>Because Photon OS relies on systemd to manage services, you must use the &lt;code>systemd&lt;/code> suite of commands and not the deprecated &lt;code>init.d&lt;/code> commands or other deprecated commands to manage networking.&lt;/p></description></item><item><title>Docs-V3: Common Tools</title><link>/docs-v3/troubleshooting-guide/troubleshooting-tools/common-tools/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/troubleshooting-tools/common-tools/</guid><description>
+&lt;/code>&lt;/pre>&lt;p>Because Photon OS relies on systemd to manage services, you must use the &lt;code>systemd&lt;/code> suite of commands and not the deprecated &lt;code>init.d&lt;/code> commands or other deprecated commands to manage networking.&lt;/p></description></item><item><title>Docs-V3: Common Tools</title><link>/docs-v3/troubleshooting-guide/troubleshooting-tools/common-tools/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/troubleshooting-tools/common-tools/</guid><description>
 &lt;p>The following are some tools that you can use to troubleshoot:&lt;/p>
 &lt;ul>
 &lt;li>&lt;a href="#top">top&lt;/a>&lt;/li>
@@ -702,25 +700,23 @@ libcrypto.so.1.0.0 =&amp;gt; /usr/lib/libcrypto.so.1.0.0 (0x00007f624e570000)
 &lt;pre>&lt;code>top
 &lt;/code>&lt;/pre>
 &lt;p>Use can use &amp;lsquo;top&amp;rsquo; to kill a runaway or stalled process by typing &lt;code>k&lt;/code> followed by its process ID (PID).&lt;/p>
-&lt;p>&lt;img src="images/top-in-photon-os.png" alt="Top on Photon OS">&lt;/p>
+&lt;p>&lt;img src="../docs/images/top-in-photon-os.png" alt="Top on Photon OS">&lt;/p>
 &lt;p>If the percent of CPU utilization is consistently high with little idle time, there might be a runaway process overconsuming CPUs. Restarting the service might solve the problem.&lt;/p>
 &lt;p>To troubleshoot an unknown issue, run Top in the background in batch mode to write its output to a file and collect data about performance:&lt;/p>
-&lt;pre>&lt;code>top d 120 b &amp;gt;&amp;gt; top120second.output
-&lt;/code>&lt;/pre>
-&lt;p>For a list of options that filter top output and other information, see the man page for &lt;code>top&lt;/code>.&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">top d 120 b &amp;gt;&amp;gt; top120second.output
+&lt;/code>&lt;/pre>&lt;p>For a list of options that filter top output and other information, see the man page for &lt;code>top&lt;/code>.&lt;/p>
 &lt;h2 id="ps">ps&lt;/h2>
 &lt;p>The &lt;code>ps&lt;/code> tool shows the processes running on the machine. The &lt;code>ps&lt;/code> tool derives flexibility and power from its options, all of which are covered in the tool&amp;rsquo;s Photon OS man page:&lt;/p>
-&lt;pre>&lt;code>man ps
-&lt;/code>&lt;/pre>
-&lt;p>You can use the following options of &lt;code>ps&lt;/code> for troubleshooting:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">man ps
+&lt;/code>&lt;/pre>&lt;p>You can use the following options of &lt;code>ps&lt;/code> for troubleshooting:&lt;/p>
 &lt;ul>
 &lt;li>
-&lt;p>Show processes by user:&lt;/p>
-&lt;p>&lt;code>ps aux&lt;/code>&lt;/p>
+&lt;p>Show processes by user:
+&lt;code>ps aux&lt;/code>&lt;/p>
 &lt;/li>
 &lt;li>
-&lt;p>Show processes and child processes by user:&lt;/p>
-&lt;p>&lt;code>ps auxf&lt;/code>&lt;/p>
+&lt;p>Show processes and child processes by user:
+&lt;code>ps auxf&lt;/code>&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Show processes containing the string &lt;code>ssh&lt;/code>:
@@ -732,27 +728,23 @@ libcrypto.so.1.0.0 =&amp;gt; /usr/lib/libcrypto.so.1.0.0 (0x00007f624e570000)
 &lt;/li>
 &lt;/ul>
 &lt;p>Example abridged output:&lt;/p>
-&lt;pre>&lt;code>ps auxww
+&lt;pre>&lt;code class="language-console" data-lang="console">ps auxww
 USER PID %CPU %MEM VSZ RSS TTY STAT START TIME COMMAND
 root 1 0.0 0.9 32724 3300 ? Ss 07:51 0:32 /lib/systemd/systemd --switched-root --system --deserialize 22
-&lt;/code>&lt;/pre>
-&lt;h2 id="netstat">netstat&lt;/h2>
+&lt;/code>&lt;/pre>&lt;h2 id="netstat">netstat&lt;/h2>
 &lt;p>The &lt;code>netstat&lt;/code> command can identify bottlenecks causing performance issues. It lists network connections, listening sockets, port information, and interface statistics for different protocols. Examples:&lt;/p>
-&lt;pre>&lt;code>netstat --statistics
+&lt;pre>&lt;code class="language-console" data-lang="console">netstat --statistics
 netstat --listening
-&lt;/code>&lt;/pre>
-&lt;h2 id="find">find&lt;/h2>
+&lt;/code>&lt;/pre>&lt;h2 id="find">find&lt;/h2>
 &lt;p>Use the &lt;code>find&lt;/code> command to troubleshoot a Photon OS machine that has stopped working. The following command lists the files in the root directory that have changed in the past day:&lt;/p>
-&lt;pre>&lt;code> find / -mtime -1
-&lt;/code>&lt;/pre>
-&lt;p>See the &lt;code>find&lt;/code> &lt;a href="https://www.gnu.org/software/findutils/manual/find.html">manual&lt;/a>. Take note of the security considerations listed in the &lt;code>find&lt;/code> manual if you are using &lt;code>find&lt;/code> to troubleshoot an appliance running on Photon OS.&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">find / -mtime -1
+&lt;/code>&lt;/pre>&lt;p>See the &lt;code>find&lt;/code> &lt;a href="https://www.gnu.org/software/findutils/manual/find.html">manual&lt;/a>. Take note of the security considerations listed in the &lt;code>find&lt;/code> manual if you are using &lt;code>find&lt;/code> to troubleshoot an appliance running on Photon OS.&lt;/p>
 &lt;h2 id="locate">locate&lt;/h2>
 &lt;p>The &lt;code>locate&lt;/code> command is a fast way to find files and directories you onlay have a keyword. This command is similar to &lt;code>find&lt;/code> and part of the same &lt;code>findutils&lt;/code> package preinstalled on the full version of Photon OS by default. It finds file names in the file names database.&lt;/p>
 &lt;p>Before you can use &lt;code>locate&lt;/code> accurately, update its database:&lt;/p>
-&lt;pre>&lt;code>updatedb
-&lt;/code>&lt;/pre>
-&lt;p>Then run &lt;code>locate&lt;/code> to quickly find a file, such as any file name containing &lt;code>.network&lt;/code>, which can be helpful to see all the system&amp;rsquo;s &lt;code>.network&lt;/code> configuration files. The following is an abridged example:&lt;/p>
-&lt;pre>&lt;code>locate .network
+&lt;pre>&lt;code class="language-console" data-lang="console">updatedb
+&lt;/code>&lt;/pre>&lt;p>Then run &lt;code>locate&lt;/code> to quickly find a file, such as any file name containing &lt;code>.network&lt;/code>, which can be helpful to see all the system&amp;rsquo;s &lt;code>.network&lt;/code> configuration files. The following is an abridged example:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">locate .network
 /etc/dbus-1/system.d/org.freedesktop.network1.conf
 /etc/systemd/network/10-dhcp-en.network
 /usr/lib/systemd/network/80-container-host0.network
@@ -761,28 +753,23 @@ netstat --listening
 /usr/lib/systemd/system/dbus-org.freedesktop.network1.service
 /usr/lib/systemd/system/org.freedesktop.network1.busnname
 /usr/share/dbus-1/system-services/org.freedesktop.network1.service
-&lt;/code>&lt;/pre>
-&lt;p>The &lt;code>locate&lt;/code> command is also a quick way to see whether a troubleshooting tool is installed on Photon OS. Examples:&lt;/p>
-&lt;pre>&lt;code>locate strace
+&lt;/code>&lt;/pre>&lt;p>The &lt;code>locate&lt;/code> command is also a quick way to see whether a troubleshooting tool is installed on Photon OS. Examples:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">locate strace
 /usr/bin/strace
 /usr/bin/strace-graph
 /usr/bin/strace-log-merge
 /usr/share/man/man1/strace.1.gz
 /usr/share/vim/vim74/syntax/strace.vim
 locate traceroute
-&lt;/code>&lt;/pre>
-&lt;p>In this example, the &lt;code>strace&lt;/code> tool is installed but &lt;code>traceroute&lt;/code> is not.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>In this example, the &lt;code>strace&lt;/code> tool is installed but &lt;code>traceroute&lt;/code> is not.&lt;/p>
 &lt;p>You can install &lt;code>traceroute&lt;/code> from the Photon OS repository:&lt;/p>
-&lt;pre>&lt;code>tdnf install traceroute
-&lt;/code>&lt;/pre>
-&lt;h2 id="df">df&lt;/h2>
+&lt;pre>&lt;code class="language-console" data-lang="console">tdnf install traceroute
+&lt;/code>&lt;/pre>&lt;h2 id="df">df&lt;/h2>
 &lt;p>The &lt;code>df&lt;/code> command reports the disk space available on the file system. Running out of disk space can lead an application to fail and a quick check of the available space makes sense as an early troubleshooting step:&lt;/p>
-&lt;pre>&lt;code>df -h
-&lt;/code>&lt;/pre>
-&lt;p>The &lt;code>-h&lt;/code> option prints out the available and used space in human-readable sizes. After checking the space, you should also check the number of available inodes. Too few available inodes can lead to difficult-to-diagnose problems:&lt;/p>
-&lt;pre>&lt;code>df -i
-&lt;/code>&lt;/pre>
-&lt;h2 id="md5sum">md5sum&lt;/h2>
+&lt;pre>&lt;code class="language-console" data-lang="console">df -h
+&lt;/code>&lt;/pre>&lt;p>The &lt;code>-h&lt;/code> option prints out the available and used space in human-readable sizes. After checking the space, you should also check the number of available inodes. Too few available inodes can lead to difficult-to-diagnose problems:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">df -i
+&lt;/code>&lt;/pre>&lt;h2 id="md5sum">md5sum&lt;/h2>
 &lt;p>The &lt;code>md5sum&lt;/code> tool calculates 128-bit RSA Data Security, Inc. MD5 Message Digest Algorithm hashes (a message digest, or digital signature, of a file) to uniquely identify a file and verify its integrity after file transfers, downloads, or disk errors when the security of the file is not in question.&lt;/p>
 &lt;p>&lt;code>md5sum&lt;/code> can help troubleshooting installation issues by verifying that the version of Photon OS being installed matches the version on the public VMware Photon Packages download page. If, for instance, bytes were dropped during the download, the checksums will not match. Try downloading it again.&lt;/p>
 &lt;h2 id="sha256sum">sha256sum&lt;/h2>
@@ -791,47 +778,36 @@ locate traceroute
 &lt;p>The &lt;code>strace&lt;/code> utility follows system calls and signals as they are executed so that you can see what an application, command, or process is doing. &lt;code>strace&lt;/code> can trace failed commands, identify where a process obtains its configuration, monitor file activity, and find the location of a crash.&lt;/p>
 &lt;p>By tracing system calls, &lt;code>strace&lt;/code> can help troubleshoot a broad range of problems, including issues with input-output, memory, interprocess communication, network usage, and application performance.&lt;/p>
 &lt;p>For troubleshooting a problem that gives off few or no clues, the following command displays every system call:&lt;/p>
-&lt;pre>&lt;code>strace ls -al
-&lt;/code>&lt;/pre>
-&lt;p>With strace commands, you can route the output to a file to make it easier to analyze:&lt;/p>
-&lt;pre>&lt;code>strace -o output.txt ls -al
-&lt;/code>&lt;/pre>
-&lt;p>&lt;code>strace&lt;/code> can reveal the files that an application tries to open with the &lt;code>-eopen&lt;/code> option. This combination can help troubleshoot an application that is failing because it is missing files or being denied access to a file it needs. If, for example, you see &amp;ldquo;No such file or directory&amp;rdquo; in the results of &lt;code>strace -eopen&lt;/code>, something might be wrong:&lt;/p>
-&lt;pre>&lt;code>strace -eopen sshd
+&lt;pre>&lt;code class="language-console" data-lang="console">strace ls -al
+&lt;/code>&lt;/pre>&lt;p>With strace commands, you can route the output to a file to make it easier to analyze:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">strace -o output.txt ls -al
+&lt;/code>&lt;/pre>&lt;p>&lt;code>strace&lt;/code> can reveal the files that an application tries to open with the &lt;code>-eopen&lt;/code> option. This combination can help troubleshoot an application that is failing because it is missing files or being denied access to a file it needs. If, for example, you see &amp;ldquo;No such file or directory&amp;rdquo; in the results of &lt;code>strace -eopen&lt;/code>, something might be wrong:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">strace -eopen sshd
 open(&amp;quot;/usr/lib/x86_64/libpam.so.0&amp;quot;, O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory)
 open(&amp;quot;/usr/lib/libpam.so.0&amp;quot;, O_RDONLY|O_CLOEXEC) = 3
-&lt;/code>&lt;/pre>
-&lt;p>The results above indicate that the first file is missing because it is found in the next line. In other cases, the application might be unable to open one of its configuration files or it might be reading the wrong one. If the results say &amp;ldquo;permission denied&amp;rdquo; for one of the files, check the permissions of the file with &lt;code>ls -l&lt;/code> or &lt;code>stat&lt;/code>.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>The results above indicate that the first file is missing because it is found in the next line. In other cases, the application might be unable to open one of its configuration files or it might be reading the wrong one. If the results say &amp;ldquo;permission denied&amp;rdquo; for one of the files, check the permissions of the file with &lt;code>ls -l&lt;/code> or &lt;code>stat&lt;/code>.&lt;/p>
 &lt;p>When troubleshooting with &lt;code>strace&lt;/code>, you can include the process ID in its commands. Here&amp;rsquo;s an example of how to find a process ID:&lt;/p>
-&lt;pre>&lt;code>ps -ef | grep apache
-&lt;/code>&lt;/pre>
-&lt;p>You can then use &lt;code>strace&lt;/code> to examine the file a process is working with:&lt;/p>
-&lt;pre>&lt;code>strace -e trace=file -p 1719
-&lt;/code>&lt;/pre>
-&lt;p>A similar command can trace network traffic:&lt;/p>
-&lt;pre>&lt;code>strace -p 812 -e trace=network
-&lt;/code>&lt;/pre>
-&lt;p>If an application is crashing, use &lt;code>strace&lt;/code> to trace the application and then analyze what happens right before the application crashes.&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">ps -ef | grep apache
+&lt;/code>&lt;/pre>&lt;p>You can then use &lt;code>strace&lt;/code> to examine the file a process is working with:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">strace -e trace=file -p 1719
+&lt;/code>&lt;/pre>&lt;p>A similar command can trace network traffic:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">strace -p 812 -e trace=network
+&lt;/code>&lt;/pre>&lt;p>If an application is crashing, use &lt;code>strace&lt;/code> to trace the application and then analyze what happens right before the application crashes.&lt;/p>
 &lt;p>You can also trace the child processes that an application spawns with the fork system call, and you can do so with &lt;code>systemctl&lt;/code> commands that start a process to identify why an application crashes immediately or fails to start:&lt;/p>
-&lt;pre>&lt;code>strace -f -o output.txt systemctl start httpd
-&lt;/code>&lt;/pre>
-&lt;p>Example: If &lt;code>journalctl&lt;/code> is showing that networkd is failing, you can run strace to troubleshoot:&lt;/p>
-&lt;pre>&lt;code>strace -o output.txt systemctl restart systemd-networkd
-&lt;/code>&lt;/pre>
-&lt;p>Then &lt;code>grep&lt;/code> inside the results for something, such as &lt;em>exit&lt;/em> or &lt;em>error&lt;/em>:&lt;/p>
-&lt;pre>&lt;code>grep exit output.txt
-&lt;/code>&lt;/pre>
-&lt;p>If the results indicate &lt;code>systemd-resolved&lt;/code> is going wrong, you can then strace it:&lt;/p>
-&lt;pre>&lt;code>strace -f -o output.txt systemctl restart systemd-resolved
-&lt;/code>&lt;/pre>
-&lt;h2 id="file">file&lt;/h2>
+&lt;pre>&lt;code class="language-console" data-lang="console">strace -f -o output.txt systemctl start httpd
+&lt;/code>&lt;/pre>&lt;p>Example: If &lt;code>journalctl&lt;/code> is showing that networkd is failing, you can run strace to troubleshoot:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">strace -o output.txt systemctl restart systemd-networkd
+&lt;/code>&lt;/pre>&lt;p>Then &lt;code>grep&lt;/code> inside the results for something, such as &lt;em>exit&lt;/em> or &lt;em>error&lt;/em>:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">grep exit output.txt
+&lt;/code>&lt;/pre>&lt;p>If the results indicate &lt;code>systemd-resolved&lt;/code> is going wrong, you can then strace it:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">strace -f -o output.txt systemctl restart systemd-resolved
+&lt;/code>&lt;/pre>&lt;h2 id="file">file&lt;/h2>
 &lt;p>The &lt;code>file&lt;/code> command determines the file type, which can help troubleshoot problems when an application mistakes one type of file for another, leading it to errors. Example:&lt;/p>
-&lt;pre>&lt;code>file /usr/sbin/sshd
+&lt;pre>&lt;code class="language-console" data-lang="console">file /usr/sbin/sshd
 /usr/sbin/sshd: ELF 64-bit LSB shared object, x86-64, version 1 (SYSV), dynamically linked, interpreter /lib64/ld-linux-x86-64.so.2, for GNU/Linux 2.6.32, stripped
-&lt;/code>&lt;/pre>
-&lt;h2 id="stat">stat&lt;/h2>
+&lt;/code>&lt;/pre>&lt;h2 id="stat">stat&lt;/h2>
 &lt;p>The &lt;code>stat&lt;/code> command can help troubleshoot problems with files or the file system by showing the last date it was modified and other information. Example:&lt;/p>
-&lt;pre>&lt;code>stat /dev/sda1
+&lt;pre>&lt;code class="language-console" data-lang="console">stat /dev/sda1
 File: '/dev/sda1'
 Size: 0 Blocks: 0 IO Block: 4096 block special file
 Device: 6h/6d Inode: 6614 Links: 1 Device type: 8,1
@@ -840,39 +816,35 @@ Access: 2016-09-02 12:23:56.135999936 +0000
 Modify: 2016-09-02 12:23:52.879999981 +0000
 Change: 2016-09-02 12:23:52.879999981 +0000
 Birth: -
-&lt;/code>&lt;/pre>
-&lt;p>On Photon OS, &lt;code>stat&lt;/code> is handy to show permissions for a file or directory in both their absolute octal notation and their read-write-execute abbreviation; truncated example:&lt;/p>
-&lt;pre>&lt;code>chmod 777 tester.md
+&lt;/code>&lt;/pre>&lt;p>On Photon OS, &lt;code>stat&lt;/code> is handy to show permissions for a file or directory in both their absolute octal notation and their read-write-execute abbreviation; truncated example:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">chmod 777 tester.md
 stat tester.md
 File: 'tester.md'
 Size: 0 Blocks: 0 IO Block: 4096 regular empty file
 Device: 801h/2049d Inode: 316385 Links: 1
 Access: (0777/-rwxrwxrwx) Uid: ( 0/ root) Gid: ( 0/ root)
-&lt;/code>&lt;/pre>
-&lt;h2 id="watch">watch&lt;/h2>
+&lt;/code>&lt;/pre>&lt;h2 id="watch">watch&lt;/h2>
 &lt;p>The &lt;code>watch&lt;/code> utility runs a command at regular intervals so you can observe how its output changes over time. &lt;code>watch&lt;/code> can help dynamically monitor network links, routes, and other information when you are troubleshooting networking or performance issues. Examples:&lt;/p>
-&lt;pre>&lt;code>watch -n0 --differences ss
+&lt;pre>&lt;code class="language-console" data-lang="console">watch -n0 --differences ss
 watch -n1 --differences ip route
-&lt;/code>&lt;/pre>
-&lt;p>The following is an example with a screenshot of the output. This command monitors the traffic on your network links. The highlighted numbers are updated every second so you can see the traffic fluctuating:&lt;/p>
-&lt;pre>&lt;code>watch -n1 --differences ip -s link show up
-&lt;/code>&lt;/pre>
-&lt;p>&lt;img src="images/watchcmd.png" alt="The dynamic output of the watch utility">&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>The following is an example with a screenshot of the output. This command monitors the traffic on your network links. The highlighted numbers are updated every second so you can see the traffic fluctuating:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">watch -n1 --differences ip -s link show up
+&lt;/code>&lt;/pre>&lt;p>&lt;img src="../docs/images/watchcmd.png" alt="The dynamic output of the watch utility">&lt;/p>
 &lt;h2 id="vmstat-and-fdisk">vmstat and fdisk&lt;/h2>
 &lt;p>The &lt;code>vmstat&lt;/code> tool displays statistics about virtual memory, processes, block input-output, disks, and CPU activity. This tool can help diagnose performance problems, especially system bottlenecks.&lt;/p>
 &lt;p>Its output on a Photon OS virtual machine running in VMware Workstation 12 Pro without a heavy load looks like this:&lt;/p>
-&lt;pre>&lt;code>vmstat
+&lt;pre>&lt;code class="language-console" data-lang="console">vmstat
 procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
 r b swpd free buff cache si so bi bo in cs us sy id wa st
 0 0 0 5980 72084 172488 0 0 27 44 106 294 1 0 98 1 0
-&lt;/code>&lt;/pre>
-&lt;p>These codes are explained in the &lt;code>vmstat&lt;/code> man page.&lt;/p>
-&lt;pre>&lt;code>- If `r`, the number of runnable processes, is higher than 10, the machine is under stress; consider intervening to reduce the number of processes or to distribute some of the processes to other machines. In other words, the machine has a bottleneck in executing processes.
-- If `cs`, the number of context switches per second, is really high, there may be too many jobs running on the machine.
-- If `in`, the number of interrupts per second, is relatively high, there might be a bottleneck for network or disk IO.
-&lt;/code>&lt;/pre>
+&lt;/code>&lt;/pre>&lt;p>These codes are explained in the &lt;code>vmstat&lt;/code> man page.&lt;/p>
+&lt;ul>
+&lt;li>If &lt;code>r&lt;/code>, the number of runnable processes, is higher than 10, the machine is under stress; consider intervening to reduce the number of processes or to distribute some of the processes to other machines. In other words, the machine has a bottleneck in executing processes.&lt;/li>
+&lt;li>If &lt;code>cs&lt;/code>, the number of context switches per second, is really high, there may be too many jobs running on the machine.&lt;/li>
+&lt;li>If &lt;code>in&lt;/code>, the number of interrupts per second, is relatively high, there might be a bottleneck for network or disk IO.&lt;/li>
+&lt;/ul>
 &lt;p>You can investigate disk IO further by using vmstat&amp;rsquo;s &lt;code>-d&lt;/code> option to report disk statistics. The following is an abridged example on a machine with little load:&lt;/p>
-&lt;pre>&lt;code>vmstat -d
+&lt;pre>&lt;code class="language-console" data-lang="console">vmstat -d
 disk- ------------reads------------ ------------writes----------- -----IO------
 total merged sectors ms total merged sectors ms cur sec
 ram0 0 0 0 0 0 0 0 0 0 0
@@ -881,9 +853,8 @@ loop0 0 0 0 0 0 0 0 0 0 0
 loop1 0 0 0 0 0 0 0 0 0 0
 sr0 0 0 0 0 0 0 0 0 0 0
 sda 22744 676 470604 12908 72888 24949 805224 127692 0 130
-&lt;/code>&lt;/pre>
-&lt;p>The &lt;code>-D&lt;/code> option summarizes disk statistics:&lt;/p>
-&lt;pre>&lt;code>vmstat -D
+&lt;/code>&lt;/pre>&lt;p>The &lt;code>-D&lt;/code> option summarizes disk statistics:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">vmstat -D
 26 disks
 2 partitions
 22744 total reads
@@ -896,9 +867,8 @@ sda 22744 676 470604 12908 72888 24949 805224 127692 0 130
 127808 milli writing
 0 inprogress IO
 130 milli spent IO
-&lt;/code>&lt;/pre>
-&lt;p>You can also get statistics about a partition. First, run the &lt;code>fdisk -l&lt;/code> command to list the machine&amp;rsquo;s devices. Then run &lt;code>vmstat -p&lt;/code> with the name of a device to view its stats:&lt;/p>
-&lt;pre>&lt;code>fdisk -l
+&lt;/code>&lt;/pre>&lt;p>You can also get statistics about a partition. First, run the &lt;code>fdisk -l&lt;/code> command to list the machine&amp;rsquo;s devices. Then run &lt;code>vmstat -p&lt;/code> with the name of a device to view its stats:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">fdisk -l
 Disk /dev/ram0: 4 MiB, 4194304 bytes, 8192 sectors
 Units: sectors of 1 * 512 = 512 bytes
 Sector size (logical/physical): 512 bytes / 4096 bytes
@@ -910,13 +880,12 @@ Device Start End Sectors Size Type
 vmstat -p /dev/sda1
 sda1 reads read sectors writes requested writes
 22579 473306 78510 866088
-&lt;/code>&lt;/pre>
-&lt;p>See the &lt;code>vmstat&lt;/code> man page for more options.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>See the &lt;code>vmstat&lt;/code> man page for more options.&lt;/p>
 &lt;h2 id="lsof">lsof&lt;/h2>
 &lt;p>The &lt;code>lsof&lt;/code> command lists open files. The tool&amp;rsquo;s definition of an open file includes directories, libraries, streams, domain sockets, and Internet sockets. THis enables it to identify the files a process is using. Because a Linux system like Photon OS uses files to do its work, you can run &lt;code>lsof&lt;/code> as root to see how the system is using them and to see how an application works.&lt;/p>
 &lt;p>If you cannot unmount a disk because it is in use, you can run &lt;code>lsof&lt;/code> to identify the files on the disk that are being used.&lt;/p>
 &lt;p>The following is an example that shows the processes that are using the root directory:&lt;/p>
-&lt;pre>&lt;code>lsof /root
+&lt;pre>&lt;code class="language-console" data-lang="console">lsof /root
 COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME
 bash 879 root cwd DIR 8,1 4096 262159 /root
 bash 1265 root cwd DIR 8,1 4096 262159 /root
@@ -924,18 +893,14 @@ sftp-serv 1326 root cwd DIR 8,1 4096 262159 /root
 gdb 1351 root cwd DIR 8,1 4096 262159 /root
 bash 1395 root cwd DIR 8,1 4096 262159 /root
 lsof 1730 root cwd DIR 8,1 4096 262159 /root
-&lt;/code>&lt;/pre>
-&lt;p>You can do the same with an application or virtual appliance by running &lt;code>lsof&lt;/code> with the user name or process ID of the app. The following example lists the open files used by the Apache HTTP Server:&lt;/p>
-&lt;pre>&lt;code>lsof -u apache
-&lt;/code>&lt;/pre>
-&lt;p>Running the command with the &lt;code>-i&lt;/code> option lists all the open network and Internet files, which can help troubleshoot network problems:&lt;/p>
-&lt;pre>&lt;code>lsof -i
-&lt;/code>&lt;/pre>
-&lt;p>See the Unix socket addresses of a user like &lt;em>zookeeper&lt;/em>:&lt;/p>
-&lt;pre>&lt;code>lsof -u zookeeper -U
-&lt;/code>&lt;/pre>
-&lt;p>The following example shows the processes running on Ports 1 through 80:&lt;/p>
-&lt;pre>&lt;code>lsof -i TCP:1-80
+&lt;/code>&lt;/pre>&lt;p>You can do the same with an application or virtual appliance by running &lt;code>lsof&lt;/code> with the user name or process ID of the app. The following example lists the open files used by the Apache HTTP Server:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">lsof -u apache
+&lt;/code>&lt;/pre>&lt;p>Running the command with the &lt;code>-i&lt;/code> option lists all the open network and Internet files, which can help troubleshoot network problems:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">lsof -i
+&lt;/code>&lt;/pre>&lt;p>See the Unix socket addresses of a user like &lt;em>zookeeper&lt;/em>:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">lsof -u zookeeper -U
+&lt;/code>&lt;/pre>&lt;p>The following example shows the processes running on Ports 1 through 80:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">lsof -i TCP:1-80
 COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME
 httpd 403 root 3u IPv6 10733 0t0 TCP *:http (LISTEN)
 httpd 407 apache 3u IPv6 10733 0t0 TCP *:http (LISTEN)
@@ -946,9 +911,8 @@ sshd 820 root 4u IPv6 11343 0t0 TCP *:ssh (LISTEN)
 sshd 1258 root 3u IPv4 48040 0t0 TCP 198.51.100.143:ssh-&amp;gt;198.51.100.1:49759 (ESTABLISHED)
 sshd 1319 root 3u IPv4 50866 0t0 TCP 198.51.100.143:ssh-&amp;gt;198.51.100.1:51054 (ESTABLISHED)
 sshd 1388 root 3u IPv4 56438 0t0 TCP 198.51.100.143:ssh-&amp;gt;198.51.100.1:60335 (ESTABLISHED)
-&lt;/code>&lt;/pre>
-&lt;p>You can also inspect the files opened by a process ID. The following example queries the files open by the systemd network service:&lt;/p>
-&lt;pre>&lt;code>lsof -p 1917
+&lt;/code>&lt;/pre>&lt;p>You can also inspect the files opened by a process ID. The following example queries the files open by the systemd network service:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">lsof -p 1917
 COMMAND PID USER FD TYPE DEVICE SIZE/OFF NODE NAME
 systemd-n 1917 systemd-network cwd DIR 8,1 4096 2 /
 systemd-n 1917 systemd-network txt REG 8,1 887896 272389 /usr/lib/systemd/systemd-networkd
@@ -960,28 +924,24 @@ systemd-n 1917 systemd-network 4u unix 0x0000000000000000 0t0 45744 type=DGRAM
 systemd-n 1917 systemd-network 9u netlink 0t0 45754 KOBJECT_UEVENT
 systemd-n 1917 systemd-network 12u a_inode 0,11 0 5955 [timerfd]
 systemd-n 1917 systemd-network 13u IPv4 104292 0t0 UDP 198.51.100.143:bootpc
-&lt;/code>&lt;/pre>
-&lt;h2 id="fuser">fuser&lt;/h2>
+&lt;/code>&lt;/pre>&lt;h2 id="fuser">fuser&lt;/h2>
 &lt;p>The &lt;code>fuser&lt;/code> command identifies the process IDs of processes using files or sockets. The term &lt;em>process&lt;/em> is, in this case, synonymous with &lt;em>user&lt;/em>. To identify the process ID of a process using a socket, run &lt;code>fuser&lt;/code> with its namespace option and specify &lt;code>tcp&lt;/code> or &lt;code>udp&lt;/code> and the name of the process or port. Examples:&lt;/p>
-&lt;pre>&lt;code>fuser -n tcp ssh
+&lt;pre>&lt;code class="language-console" data-lang="console">fuser -n tcp ssh
 ssh/tcp: 940 1308
 fuser -n tcp http
 http/tcp: 592 594 595 596
 fuser -n tcp 80
 80/tcp: 592 594 595 596
-&lt;/code>&lt;/pre>
-&lt;h2 id="ldd">ldd&lt;/h2>
+&lt;/code>&lt;/pre>&lt;h2 id="ldd">ldd&lt;/h2>
 &lt;p>By revealing the shared libraries that a program depends on, &lt;code>ldd&lt;/code> can help troubleshoot an application that is missing a library or finding the wrong one.&lt;/p>
 &lt;p>For example, if you get a &amp;ldquo;file not found&amp;rdquo; output, check the path to the library.&lt;/p>
-&lt;pre>&lt;code>ldd /usr/sbin/sshd
+&lt;pre>&lt;code class="language-console" data-lang="console">ldd /usr/sbin/sshd
 linux-vdso.so.1 (0x00007ffc0e3e3000)
 libpam.so.0 =&amp;gt; (file not found)
 libcrypto.so.1.0.0 =&amp;gt; /usr/lib/libcrypto.so.1.0.0 (0x00007f624e570000)
-&lt;/code>&lt;/pre>
-&lt;p>You can also use the &lt;code>objdump&lt;/code> command to show dependencies for a program&amp;rsquo;s object files; example:&lt;/p>
-&lt;pre>&lt;code>objdump -p /usr/sbin/sshd | grep NEEDED
-&lt;/code>&lt;/pre>
-&lt;h2 id="gdb">gdb&lt;/h2>
+&lt;/code>&lt;/pre>&lt;p>You can also use the &lt;code>objdump&lt;/code> command to show dependencies for a program&amp;rsquo;s object files; example:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">objdump -p /usr/sbin/sshd | grep NEEDED
+&lt;/code>&lt;/pre>&lt;h2 id="gdb">gdb&lt;/h2>
 &lt;p>The &lt;code>gdb&lt;/code> tool is the GNU debugger. It lets you see inside a program while it executes or when it crashes so that you can catch errors as they occur. The &lt;code>gdb&lt;/code> tool is typically used to debug programs written in C and C++. On Photon OS, &lt;code>gdb&lt;/code> can help you determine why an application crashed. See the man page for &lt;code>gdb&lt;/code> for instructions on how to run it.&lt;/p>
 &lt;p>For an extensive example on how to use &lt;code>gdb&lt;/code> to troubleshoot Photon OS running on a VM when you cannot login to Photon OS, see the section on troubleshooting boot and logon problems.&lt;/p></description></item><item><title>Docs-V3: Default Firewall Settings</title><link>/docs-v3/administration-guide/security-policy/default-firewall-settings/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/administration-guide/security-policy/default-firewall-settings/</guid><description>
 &lt;p>The design of Photon OS emphasizes security. On the minimal and full versions of Photon OS, the default security policy turns on the firewall and drops packets from external interfaces and applications. As a result, you might need to add rules to iptables to permit forwarding, allow protocols like HTTP, and open ports. You must configure the firewall for your applications and requirements.&lt;/p>
@@ -1004,7 +964,7 @@ ACCEPT all -- anywhere anywhere
 &lt;pre>&lt;code>lsof -i -P -n&lt;/code>&lt;/pre></description></item><item><title>Docs: Default Firewall Settings</title><link>/docs/administration-guide/security-policy/default-firewall-settings/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/security-policy/default-firewall-settings/</guid><description>
 &lt;p>The design of Photon OS emphasizes security. On the minimal and full versions of Photon OS, the default security policy turns on the firewall and drops packets from external interfaces and applications. As a result, you might need to add rules to iptables to permit forwarding, allow protocols like HTTP, and open ports. You must configure the firewall for your applications and requirements.&lt;/p>
 &lt;p>The default iptables on the full version have the following settings:&lt;/p>
-&lt;pre>&lt;code>iptables --list
+&lt;pre>&lt;code class="language-console" data-lang="console">iptables --list
 Chain INPUT (policy DROP)
 target prot opt source destination
 ACCEPT all -- anywhere anywhere
@@ -1015,11 +975,11 @@ target prot opt source destination
 Chain OUTPUT (policy DROP)
 target prot opt source destination
 ACCEPT all -- anywhere anywhere
-&lt;/code>&lt;/pre>
-&lt;p>For more information on how to change the settings, see the man page for iptables.&lt;/p>
-&lt;p>Although the default iptables policy accepts SSH connections, the &lt;code>sshd&lt;/code> configuration file on the full version of Photon OS is set to reject SSH connections. See &lt;a href="../../../troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/">Permitting Root Login with SSH&lt;/a>.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>For more information on how to change the settings, see the man page for iptables.&lt;/p>
+&lt;p>Although the default iptables policy accepts SSH connections, the &lt;code>sshd&lt;/code> configuration file on the full version of Photon OS is set to reject SSH connections. See &lt;a href="../docs/troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/">Permitting Root Login with SSH&lt;/a>.&lt;/p>
 &lt;p>If you are unable to ping a Photon OS machine, check the firewall rules. To verify if the rules allow connectivity for the port and protocol, change the &lt;code>iptables&lt;/code> commands by using &lt;code>lsof&lt;/code> commands to see the processes listening on ports:&lt;/p>
-&lt;pre>&lt;code>lsof -i -P -n&lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Docker Containers</title><link>/docs-v3/administration-guide/containers/docker-containers/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/administration-guide/containers/docker-containers/</guid><description>
+&lt;pre>&lt;code class="language-console" data-lang="console"> lsof -i -P -n
+&lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Docker Containers</title><link>/docs-v3/administration-guide/containers/docker-containers/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/administration-guide/containers/docker-containers/</guid><description>
 &lt;p>On Photon OS, the Docker daemon is enabled by default. To view the status of the daemon, run the following command:&lt;/p>
 &lt;pre>&lt;code>systemctl status docker
 &lt;/code>&lt;/pre>
@@ -1606,62 +1566,64 @@ linux
 patch1
 patch2
 linux.spec
-&lt;/code>&lt;/pre>&lt;p>##To Check if a Package is Signed
-Run the following commands to check if the package is signed:&lt;/p>
-&lt;pre>&lt;code>#check if a package is signed
-rpm -q linux --qf '%{NAME}-%{VERSION}-%{RELEASE} %{SIGPGP:pgpsig} %{SIGGPG:pgpsig}\n'
-linux-4.19.79-2.ph3 RSA/SHA1, Thu 31 Oct 2019 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949 (none)
-#or
-rpm -qi linux | grep &amp;quot;Signature&amp;quot;
-Signature : RSA/SHA1, Thu 31 Oct 2019 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949
-#Last 8 chars of Key ID: 66fd4949
-#See if it matches the version of any of the gpg keys installed.
-rpm -qa | grep gpg-pubkey | xargs -n1 rpm -q --queryformat &amp;quot;%{NAME} %{VERSION} %{PACKAGER}\n&amp;quot;
+&lt;/code>&lt;/pre>&lt;h2 id="check-if-a-package-is-signed">Check if a package is signed&lt;/h2>
+&lt;p>Run the following commands to check if the package is signed:&lt;/p>
+&lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">&lt;span style="color:#8f5902;font-style:italic">#check if a package is signed&lt;/span>
+rpm -q linux --qf &lt;span style="color:#4e9a06">&amp;#39;%{NAME}-%{VERSION}-%{RELEASE} %{SIGPGP:pgpsig} %{SIGGPG:pgpsig}\n&amp;#39;&lt;/span>
+linux-4.19.79-2.ph3 RSA/SHA1, Thu &lt;span style="color:#0000cf;font-weight:bold">31&lt;/span> Oct &lt;span style="color:#0000cf;font-weight:bold">2019&lt;/span> 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949 &lt;span style="color:#ce5c00;font-weight:bold">(&lt;/span>none&lt;span style="color:#ce5c00;font-weight:bold">)&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#or&lt;/span>
+rpm -qi linux &lt;span style="color:#000;font-weight:bold">|&lt;/span> grep &lt;span style="color:#4e9a06">&amp;#34;Signature&amp;#34;&lt;/span>
+Signature : RSA/SHA1, Thu &lt;span style="color:#0000cf;font-weight:bold">31&lt;/span> Oct &lt;span style="color:#0000cf;font-weight:bold">2019&lt;/span> 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949
+&lt;span style="color:#8f5902;font-style:italic">#Last 8 chars of Key ID: 66fd4949&lt;/span>
+&lt;span style="color:#8f5902;font-style:italic">#See if it matches the version of any of the gpg keys installed.&lt;/span>
+rpm -qa &lt;span style="color:#000;font-weight:bold">|&lt;/span> grep gpg-pubkey &lt;span style="color:#000;font-weight:bold">|&lt;/span> xargs -n1 rpm -q --queryformat &lt;span style="color:#4e9a06">&amp;#34;%{NAME} %{VERSION} %{PACKAGER}\n&amp;#34;&lt;/span>
 gpg-pubkey 66fd4949 VMware, Inc. -- Linux Packaging Key -- linux-packages@vmware.com
 gpg-pubkey 3e1ba8d5 Google Cloud Packages RPM Signing Key gc-team@google.com
-&lt;/code>&lt;/pre>&lt;p>##To Check if Your Image Has Vulnerabilities
-Use the security scanners to find security issues. Alternatively The &lt;code>tdnf updateinfo info&lt;/code> command displays all the applicable security updates the host needs.&lt;/p>
-&lt;p>##To Check if a CVE is Fixed
-The Photon team fix the vulnerabilities and then publish the advisories to (&lt;a href="https://github.com/vmware/photon/wiki/Security-Advisories)">https://github.com/vmware/photon/wiki/Security-Advisories)&lt;/a>.&lt;/p>
-&lt;p>##To Check if Security Updates are Available
-Use the &lt;code>tdnf updateinfo info&lt;/code>, &lt;code>tdnf update --security&lt;/code> or &lt;code>tdnf update ---sec-severity &amp;lt;level&amp;gt;&lt;/code> commands to check if security updates are available. For example:&lt;/p>
-&lt;pre>&lt;code>#check if there are any security updates
-root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo
+&lt;/code>&lt;/pre>&lt;/div>&lt;h2 id="check-if-an-image-has-vulnerabilities">Check if an image has vulnerabilities&lt;/h2>
+&lt;p>Use the security scanners to find security issues. Alternatively The &lt;code>tdnf updateinfo info&lt;/code> command displays all the applicable security updates the host needs.&lt;/p>
+&lt;h2 id="check-if-a-cve-is-fixed">Check if a CVE is Fixed&lt;/h2>
+&lt;p>The Photon team fixes vulnerabilities and publishes advisories to &lt;a href="https://github.com/vmware/photon/wiki/Security-Advisories">https://github.com/vmware/photon/wiki/Security-Advisories&lt;/a>.&lt;/p>
+&lt;h2 id="to-check-if-security-updates-are-available">To Check if Security Updates are Available&lt;/h2>
+&lt;p>Use the &lt;code>tdnf updateinfo info&lt;/code>, &lt;code>tdnf update --security&lt;/code> or &lt;code>tdnf update ---sec-severity &amp;lt;level&amp;gt;&lt;/code> commands to check if security updates are available. For example:&lt;/p>
+&lt;p>Check if there are any security updates&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">root@photon [ ~ ]# tdnf updateinfo
 70 Security notice(s)
-#check if there are security updates for libssh2. note this is relative to what is installed in local
-root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo list libssh2
+&lt;/code>&lt;/pre>&lt;p>Check if there are security updates for libssh2. note this is relative to what is installed in local&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">root@photon[ ~ ]# tdnf updateinfo list libssh2
 patch:PHSA-2020-3.0-0047 Security libssh2-1.9.0-2.ph3.x86_64.rpm
 patch:PHSA-2019-3.0-0025 Security libssh2-1.9.0-1.ph3.x86_64.rpm
 patch:PHSA-2019-3.0-0009 Security libssh2-1.8.2-1.ph3.x86_64.rpm
 patch:PHSA-2019-3.0-0008 Security libssh2-1.8.0-2.ph3.x86_64.rpm
-#show details of all the libssh2 updates
-root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo info libssh2
+&lt;/code>&lt;/pre>&lt;p>Show details of all the libssh2 updates
+root@photon [ ~ ]# tdnf updateinfo info libssh2
 Name : libssh2-1.9.0-2.ph3.x86_64.rpm
 Update ID : patch:PHSA-2020-3.0-0047
 Type : Security
 Updated : Wed Jan 15 10:48:25 2020
 Needs Reboot: 0
-Description : Security fixes for {'CVE-2019-17498'}
+Description : Security fixes for {&amp;lsquo;CVE-2019-17498&amp;rsquo;}
 Name : libssh2-1.9.0-1.ph3.x86_64.rpm
 Update ID : patch:PHSA-2019-3.0-0025
 Type : Security
 Updated : Sat Aug 17 16:14:35 2019
 Needs Reboot: 0
-Description : Security fixes for {'CVE-2019-13115'}
+Description : Security fixes for {&amp;lsquo;CVE-2019-13115&amp;rsquo;}
 Name : libssh2-1.8.2-1.ph3.x86_64.rpm
 Update ID : patch:PHSA-2019-3.0-0009
 Type : Security
 Updated : Sat Apr 13 03:34:22 2019
 Needs Reboot: 0
-Description : Security fixes for {'CVE-2019-3859', 'CVE-2019-3862', 'CVE-2019-3861', 'CVE-2019-3857', 'CVE-2019-3858', 'CVE-2019-3863', 'CVE-2019-3860', 'CVE-2019-3856'}
+Description : Security fixes for {&amp;lsquo;CVE-2019-3859&amp;rsquo;, &amp;lsquo;CVE-2019-3862&amp;rsquo;, &amp;lsquo;CVE-2019-3861&amp;rsquo;, &amp;lsquo;CVE-2019-3857&amp;rsquo;, &amp;lsquo;CVE-2019-3858&amp;rsquo;, &amp;lsquo;CVE-2019-3863&amp;rsquo;, &amp;lsquo;CVE-2019-3860&amp;rsquo;, &amp;lsquo;CVE-2019-3856&amp;rsquo;}
 Name : libssh2-1.8.0-2.ph3.x86_64.rpm
 Update ID : patch:PHSA-2019-3.0-0008
 Type : Security
 Updated : Fri Mar 29 16:04:18 2019
 Needs Reboot: 0
-Description : Security fixes for {'CVE-2019-3855'}
-#install all security updates &amp;gt;= score 9.0 (CVSS_v3.0_Severity)
-root@photon-9a8c05dd97e9 [ ~ ]# tdnf update --sec-severity 9.0
+Description : Security fixes for {&amp;lsquo;CVE-2019-3855&amp;rsquo;}&lt;/p>
+&lt;pre>&lt;code>
+install all security updates &amp;gt;= score 9.0 (CVSS_v3.0_Severity)
+```console
+root@photon [ ~ ]# tdnf update --sec-severity 9.0
 Upgrading:
 apache-tomcat noarch 8.5.50-1.ph3 photon-updates 9.00M 9440211
 bash x86_64 4.4.18-2.ph3 photon-updates 3.16M 3315720
@@ -1705,7 +1667,7 @@ Total installed size: 58.28M 61114889
 &lt;/li>
 &lt;li>&lt;code>packages_minimal.json&lt;/code> file. The JSON file that contains the install profile you require.&lt;/li>
 &lt;/ul></description></item><item><title>Docs: Prerequisites</title><link>/docs/user-guide/kubernetes-on-photon-os/kubernetes-prerequisites/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/user-guide/kubernetes-on-photon-os/kubernetes-prerequisites/</guid><description>
-&lt;p>You need two or more machines with the 3.0 general availability or later version of Photon OS installed.&lt;/p></description></item><item><title>Docs: Prerequisites for Running Photon OS on Workstation</title><link>/docs/installation-guide/run-photon-on-workstation/prerequisites-for-photon-os-on-workstation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-on-workstation/prerequisites-for-photon-os-on-workstation/</guid><description>
+&lt;p>You need two or more machines with version 3.0 &amp;ldquo;GA&amp;rdquo; or later of Photon OS installed. It is recommended to use the latest 4.0 GA version.&lt;/p></description></item><item><title>Docs: Prerequisites for Running Photon OS on Workstation</title><link>/docs/installation-guide/run-photon-on-workstation/prerequisites-for-photon-os-on-workstation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-on-workstation/prerequisites-for-photon-os-on-workstation/</guid><description>
 &lt;p>Before you use Photon OS within Workstation, perform the following prerequisite tasks:&lt;/p>
 &lt;ol>
 &lt;li>
@@ -1737,7 +1699,7 @@ Total installed size: 58.28M 61114889
 &lt;/br>
 &lt;p>Resource requirements and recommendations vary depending on several factors, including the host environment (for example, VMware Workstation and VMware vSphere), the distribution file used (ISO or OVA), and the selected installation settings (for example, full or basic installation).&lt;/p>
 &lt;p>&lt;strong>Note:&lt;/strong> The setup instructions in this guide use VMware Workstation Professional version 12.5.7.&lt;/p>
-&lt;p>&lt;img src="../../images/ws_version.png" alt="Workstation version">&lt;/p>
+&lt;p>&lt;img src="../docs/installation-guide/images/ws_version.png" alt="Workstation version">&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Decide whether to use the OVA or ISO distribution to set up Photon OS.&lt;/p>
@@ -1756,7 +1718,7 @@ Total installed size: 58.28M 61114889
 &lt;li>
 &lt;p>Download Photon OS. Go to the following URL and download the latest release of Photon OS:&lt;/p>
 &lt;p>&lt;a href="https://packages.vmware.com/photon/4.0/GA/">https://packages.vmware.com/photon/4.0/GA/&lt;/a>&lt;/p>
-&lt;p>For instructions, see &lt;a href="../../downloading-photon/">Downloading Photon OS&lt;/a>.&lt;/p>
+&lt;p>For instructions, see &lt;a href="../docs/installation-guide/downloading-photon/">Downloading Photon OS&lt;/a>.&lt;/p>
 &lt;/li>
 &lt;/ol></description></item><item><title>Docs-V3: Prerequisites for Running Photon OS on AWS EC2</title><link>/docs-v3/installation-guide/run-photon-aws-ec2/prerequisites-for-photon-os-on-aws-ec2/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/installation-guide/run-photon-aws-ec2/prerequisites-for-photon-os-on-aws-ec2/</guid><description>
 &lt;p>Before you use Photon OS with Amazon Elastic Cloud Compute(AWS EC2), perform the following prerequisite tasks:&lt;/p>
@@ -1817,7 +1779,7 @@ Total installed size: 58.28M 61114889
 &lt;p>Verify that you have a Microsoft Azure account. To create an account, see &lt;a href="https://azure.microsoft.com">https://azure.microsoft.com&lt;/a>&lt;/p>
 &lt;/li>
 &lt;li>
-&lt;p>Install the latest version of Azure CLI. See &lt;a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest">Install Azure CLI 2.0&lt;/a> and &lt;a href="https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest">Get started with Azure CLI 2.0&lt;/a>.&lt;/p>
+&lt;p>Install the latest version of Azure CLI. See &lt;a href="https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest">Install Azure CLI&lt;/a> and &lt;a href="https://docs.microsoft.com/en-us/cli/azure/get-started-with-azure-cli?view=azure-cli-latest">Get started with Azure CLI &lt;/a>.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Verify that that you have a pair of SSH public and private keys.&lt;/p>
