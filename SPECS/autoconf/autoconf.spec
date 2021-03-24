@@ -1,7 +1,7 @@
 Summary:	The package automatically configure source code
 Name:		autoconf
 Version:	2.69
-Release:	9%{?dist}
+Release:	10%{?dist}
 License:	GPLv2
 URL:		http://www.gnu.org/software/autoconf
 Group:		System Environment/Base
@@ -10,7 +10,7 @@ Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/autoconf/%{name}-%{version}.tar.xz
 %define sha1 autoconf=e891c3193029775e83e0534ac0ee0c4c711f6d23
 Patch0:		autoconf-make-check.patch
-%if %{with_check}
+%if 0%{?with_check}
 Patch1:         make-check-failure.patch
 Patch2:         make-check-failure1.patch
 %endif
@@ -25,7 +25,7 @@ automatically configure source code.
 %prep
 %setup -q
 %patch0 -p1
-%if %{with_check}
+%if 0%{?with_check}
 %patch1 -p1
 %patch2 -p1
 %endif
@@ -46,6 +46,8 @@ make -k check %{?_smp_mflags}  TESTSUITEFLAGS="1-500"
 %{_mandir}/*/*
 %{_datarootdir}/autoconf/*
 %changelog
+*   Wed Mar 24 2021 Anish Swaminathan <anishs@vmware.com> 2.69-10
+-   Fix check macro invocation
 *   Sun Nov 15 2020 Prashant Singh Chauhan <psinghchauha@vmware.com> 2.69-9
 -   Fix for make check failure port test to bash 5.0
 *   Wed Sep 11 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 2.69-8
