@@ -5,33 +5,42 @@ weight: 6
 
 By default, when Photon OS first starts, it creates a DHCP network configuration file or rule, which appears in `/etc/systemd/network`, the highest priority directory for network configuration files with the lowest priority filename:
 
-	cat /etc/systemd/network/99-dhcp-en.network
-	[Match]
-	Name=e*
+```console
+cat /etc/systemd/network/99-dhcp-en.network
+[Match]
+Name=e*
 
-	[Network]
-	DHCP=yes
+[Network]
+DHCP=yes
+```
 
 To turn off DHCP for all Ethernet interfaces, change the value of `DHCP` from `yes` to `no`, save the changes, and then restart the `systemd-networkd` service: 
 
+```console
 	systemctl restart systemd-networkd
+```
 
 Or you can reload and reconfigure the settings:
 
- `networkctl reload` 
-  `networkctl reconfigure ` *interface_name/index_number*``
+```console
+networkctl reload
+networkctl reconfigure <interface_name>/<index_number>`
+```
 
-Note: The advantage of using reload and reconfigure is that the settings of other interfaces are not disturbed and only the settings of the specific interface are reloaded and reconfigured.
-
+{{% alert title="Note:" %}} 
+>The advantage of using reload and reconfigure is that the settings of other interfaces are not disturbed and only the settings of the specific interface are reloaded and reconfigured.{{% /alert %}}
 
 If you create a configuration file with a higher priority filename (e.g. `10-static-en.network`), it is not necessary but still recommended to turn off DHCP.
 
 You can also check the status of a specific interface:
 
-`networkctl status` *interface_name/index_number*
+```console
+networkctl status <interface_name>/<index_number>
+```
 
 (`ens33 `is an example)
 
+```console
     2: ens33
      Link File: /usr/lib/systemd/network/99-default.link  
       Network File: /usr/lib/systemd/network/10-eth.network   
@@ -61,4 +70,4 @@ You can also check the status of a specific interface:
     Feb 26 10:19:44 fedora systemd-networkd[650]: ens33: Gained carrier
     Feb 26 10:19:45 fedora systemd-networkd[650]: ens33: DHCPv4 address 172.16.85.225/24 via 172.16.85.2
     Feb 26 10:19:46 fedora systemd-networkd[650]: ens33: Gained IPv6LL
-    
+```    

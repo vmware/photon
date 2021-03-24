@@ -20,24 +20,24 @@ User will first download [Photon OS ISO file](https://github.com/vmware/photon/w
 There are some steps common to all Photon installation profiles, starting with adding a VM in VMware Fusion, Workstation or ESXi, selecting the OS family, then customizing for disk size, CPU, memory size, network interface etc. (or leaving the defaults) and selecting the ISO image as cdrom. The installer will launch, that will go through disk partitioning and accepting the license agreement screens, followed by selecting an installation profile.
 These steps are described at the page linked below, so I won't repeat them, just that instead of setting up a Photon Minimal profile, we will install a Photon OSTree host:   
 
-[Running Project Photon on Fusion](../../../installation-guide/run-photon-on-fusion/).
+[Running Project Photon on Fusion](/docs/installation-guide/run-photon-on-fusion/).
 
 Select the **Photon OSTree Host** option.
 
-![PhotonChooseHost](../../../images/rpmostree-install-options.png)
+![PhotonChooseHost](/docs/images/rpmostree-install-options.png)
 
 Continue with setting up a host name like **photon1-def** and a root password, re-confirm.
 Then, select "Default OSTree Server" and continue.
 
-![PhotonChooseHostDefault](../../../images/rpmostree-default.png)
+![PhotonChooseHostDefault](/docs/images/rpmostree-default.png)
 
-![PhotonHostDefaultFinish](../../../images/photon-os-finish.png)
+![PhotonHostDefaultFinish](/docs/images/photon-os-finish.png)
 
 When installation is over, the VM will reboot and will show in grub VMWare Photon/Linux 4.0_minimal (ostree), which will reassure that it's booting from an OSTree image!  
 
-![PhotonHostFirstRebootGrub](../../../images/rpmostree-grub.png)  
+![PhotonHostFirstRebootGrub](/docs/images/rpmostree-grub.png)  
 
 Boot, login and you are ready to use it.
 
-To upgrade your host, see [Host updating operations](../host-updating-operations/).
+To upgrade your host, see [Host updating operations](/docs/administration-guide/photon-rpm-ostree/host-updating-operations/).
 

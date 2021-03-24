@@ -10,42 +10,42 @@ Cloud-init can customize a Photon OS virtual machine by using the `nocloud` data
 
 1. Create the metadata file with the following lines in the [YAML](http://www.yaml.org/start.html) format and name it `meta-data`:
           
-    ```
-     instance-id: iid-local01
-        	local-hostname: cloudimg
+    ```yaml
+    instance-id: iid-local01
+       local-hostname: cloudimg
     ```
 
-1. Create the user data file with the following lines in YAML and name it user-data: 
+1. Create the user data file with the following lines in [YAML](http://www.yaml.org/start.html) and name it `user-data`: 
 
-      ```
+      ```yaml
         #cloud-config
     	hostname: testhost
     	packages:
     	 - vim
       ```	 
 
-3. Generate the ISO that will serve as the seed. The ISO must have the volume ID set to `cidata`. In the following example, the ISO is generated on an Ubuntu 14.04 computer containing the files named `meta-data` and `user-data` in the local directory: 
-	
-    ```
+1. Generate the ISO that will serve as the seed. The ISO must have the volume ID set to `cidata`. In the following example, the ISO is generated on an Ubuntu 14.04 computer containing the files named `meta-data` and `user-data` in the local directory: 
+
+    ```console
     genisoimage -output seed.iso -volid cidata -joliet -rock user-data meta-data
     ```
 
     The ISO now appears in the current directory: 
 
-        ```
+    ```console
     steve@ubuntu:~$ ls
-	meta-data seed.iso user-data
+    meta-data seed.iso user-data
     ```
 
 1. Optionally, check the ISO that you generated on Ubuntu by transferring the ISO to the root directory of your Photon OS machine and then running the following command: 
 	
-    ```
+    ```console
     cloud-init --file seed.iso --debug init
     ```
 
     After running the `cloud-init` command above, check the `cloud-init` log file: 
 
-    ```
+    ```console
     more /var/log/cloud-init.log
     ```
 

@@ -75,8 +75,11 @@ You can maintain the journalctl logs manually, by running the following `vacuum`
 - `journalctl --vacuum-size=500M` : This command helps retain logs with a maximum size of 500 MB.
 
 You can configure Journald using the conf file located at **/etc/systemd/journald.conf**. Run the following command to configure the file:
-```
+
+```console
 # cat /etc/systemd/journald.conf
+```
+```ini
 # This file is part of systemd.
 #
 # systemd is free software; you can redistribute it and/or modify it
@@ -121,13 +124,15 @@ You can configure Journald using the conf file located at **/etc/systemd/journal
 #LineMax=48K
 root@photon-4a0e7f2307d4 [ ~ ]#
 ```
-By default `rotate` is disable in Photon. Once the changes are made to the conf file, for the changes to take effect you must restart the systemd-journald by running the `systemctl restart systemd-journald` command.
 
-##Cloud-init Logs
+By default `rotate` is disabled in Photon. Once the changes are made to the conf file, for the changes to take effect you must restart the systemd-journald by running the `systemctl restart systemd-journald` command.
+
+## Cloud-init Logs
 Cloud-init is the industry standard multi-distribution method for cross-platform cloud instance initialisation. 
 
 If there are with the Cloud-init behaviour, we can debug them by looking at the logs. Run the following command to look at Cloud-init logs:
-```
+
+```console
 journalctl -u cloud-init
 ```
 
@@ -137,17 +142,16 @@ For better understanding/debugging, You can also look at logs from the following
 - **/var/log/cloud-init-output.log** : This log contains errors, warnings, etc..
 
 
-##Syslog
+## Syslog
 Syslog is the general standard for logging system and program messages in the Linux environment.
 
 Photon provides the following two packages to support syslog:
 
-- **syslog-ng** : syslog-ng is syslog with some advanced next gen features. It supports TLS encryption, TCP for transport with other existing features. Configurations can be added to the **/etc/syslog-ng/syslog-ng.conf** file.
-- **rsyslog** : The official RSYSLOG website defines the utility as "the rocket-fast system for log processing". rsyslog supports some advanced features like relp, imfile, omfile, gnutls protocols. Configurations can be added to the **/etc/rsyslog.conf** file. You can configure the required TLS certificates by editing the conf file.
+- **syslog-ng** : syslog-ng is syslog with some advanced next gen features. It supports TLS encryption, TCP for transport with other existing features. Configurations can be added to the `/etc/syslog-ng/syslog-ng.conf` file.
+- **rsyslog** : The official RSYSLOG website defines the utility as "the rocket-fast system for log processing". rsyslog supports some advanced features like relp, imfile, omfile, gnutls protocols. Configurations can be added to the `/etc/rsyslog.conf` file. You can configure the required TLS certificates by editing the conf file.
 
-##Logs for RPMS on Photon
+## Logs for RPMS on Photon
 Logs for a particular RPM can be checked in the following ways:
 
 - If the RPM provides a daemon, we can see the status of daemon by running `systemctl` command and check logs using `journactl -u <service name>` command.
 - For additional logs, check if a conf file is provided by the RPM by running the `rpm -ql <rpm name> | grep conf` command and find the file path of the log file. You can also check the **/var/log** folder.
-

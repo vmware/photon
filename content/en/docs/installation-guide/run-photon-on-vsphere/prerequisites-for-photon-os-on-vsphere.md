@@ -9,7 +9,7 @@ Before you use Photon OS within VMware vSphere, perform the following prerequisi
 
 1. Verify that you have the following resources:
 
-	<table style="height: 170px;" border="1" width="157" cellspacing="0" cellpadding="10">
+	<table style="height: 170px;" border="1" width="auto" cellspacing="0" cellpadding="10">
 	<tbody>
 	<tr>
 	<td><b>Resource</b></td>

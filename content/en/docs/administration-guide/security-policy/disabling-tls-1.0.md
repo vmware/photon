@@ -18,9 +18,10 @@ To turn off TLS 1.0, perform the following steps:
 1. After adding a new `default-priorities` file or after modifying it, you must restart all applications, including SSH, with an open TLS session for the changes to take effect.  
 
 The following is an example of a `default-priorities` file that contains GnuTLS priorities to disable TLS 1.0 and SSL 3.0:  
-
+	```console
 	cat /etc/gnutls/default-priorities
 	SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL
+	```
 
 In this example, the priority string imposes system-specific policies. The `NONE` keyword means that no algorithms, protocols, or compression methods are enabled, so that you can enable specific versions individually later in the string. The priority string then specifies that SSL version 3.0 and TLS version 1.0 be removed, as marked by the exclamation point. The priority string then enables, as marked by the plus sign, versions 1.1 and 1.2 of TLS. The cypher is AES-128-CBC. The key exchange is RSA. The MAC is SHA1. And the compression algorithm is COMP-NULL.
 
@@ -28,25 +29,23 @@ On Photon OS, you can verify the system-specific policies in the `default-priori
 
 1. Concatenate the `default-priorities` file to check its contents: 
 	
-    ```
+```console
 root@photon-rc [ ~ ]# cat /etc/gnutls/default-priorities
-	SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL
+SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL
 ```
-
 1. Run the following command to check the protocols that are enabled for the system: 	
 
-    ```
-    root@photon-rc [ /etc/gnutls ]# gnutls-cli --priority @SYSTEM -l
-	Cipher suites for @SYSTEM
-	TLS_RSA_AES_128_CBC_SHA1                                0x00, 0x2f      SSL3.0
+```console
+root@photon-rc [ /etc/gnutls ]# gnutls-cli --priority @SYSTEM -l
+Cipher suites for @SYSTEM
+TLS_RSA_AES_128_CBC_SHA1                                0x00, 0x2f      SSL3.0
 
-	Certificate types: none
-	Protocols: VERS-TLS1.1, VERS-TLS1.2
-	Compression: COMP-NULL
-	Elliptic curves: none
-	PK-signatures: none
+Certificate types: none
+Protocols: VERS-TLS1.1, VERS-TLS1.2
+Compression: COMP-NULL
+Elliptic curves: none
+PK-signatures: none
 ```
-
 
 For information about the GnuTLS priority strings, see [https://gnutls.org/manual/html_node/Priority-Strings.html](https://gnutls.org/manual/html_node/Priority-Strings.html).
 

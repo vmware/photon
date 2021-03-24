@@ -27,7 +27,9 @@ Connect to the Photon instance by using SSH and to launch a web server by runnin
     
     To pull Nginx from its Docker Hub and start it, run the following command: 
     
-    	docker run -p 80:80 vmwarecna/nginx
+    ```console
+    docker run -p 80:80 vmwarecna/nginx
+    ```
     
     The Nginx web server should be bound to the public DNS value for the instance of Photon OS, that is, the same address with which you connected over SSH. 
 
@@ -35,7 +37,7 @@ Connect to the Photon instance by using SSH and to launch a web server by runnin
 
     On your local workstation, open a web browser and go to the the public address of the Photon OS instance running Docker. The following screen should appear, showing that the web server is active:
     
-    ![Nginx](../../images/Nginx.jpg)
+    ![Nginx](/docs/installation-guide/images/Nginx.jpg)
     
     Stop the Docker container by typing `Ctrl+c` in the SSH console through which you are connected to EC2. 
     

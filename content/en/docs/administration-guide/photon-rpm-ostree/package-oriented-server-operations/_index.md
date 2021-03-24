@@ -6,7 +6,7 @@ weight: 10
 Now that we have a Photon RPM-OSTree server up and running (if not, see how to [install](../creating-a-rpm-ostree-server/)), we will learn how to provide the desired set of packages as input and instruct rpm-ostree to compose a filetree, that will result in creation (or update) of an OSTree repo.   
 The simplest way to explain is to take a look at the files installed by the Photon RPM-OSTree server during setup.
 
-```
+```console
 root [ ~ ]# cd /srv/rpm-ostree/
 root [ /srv/rpm-ostree ]# ls -l
 total 16
@@ -23,9 +23,10 @@ drwxr-xr-x 7 root root 4096 Aug 20 22:27 repo
 
 How can we tell rpm-ostree what packages we want to include, where to get them from and how to compose the filetree? There is JSON file for that. Let's take a look at photon-base.json used by the Photon OS team.  
 
-```
+```console
 root [ /srv/rpm-ostree ]# cat photon-base.json
 ```
+
 ```json
 {
     "comment": "Photon Minimal OSTree",
@@ -78,14 +79,14 @@ Let's add to the list three new packages: gawk, sudo and wget using `vim photon-
 
 But where are these packages located? RPM-OStree uses the same standard RPMS repositories, that yum installs from.
 
-```
+```console
 root [ /srv/rpm-ostree ]# ls /etc/yum.repos.d/
 photon-debuginfo.repo  photon-extras.repo  photon-iso.repo  photon-updates.repo  photon.repo
 ```
 
-Going back to our JSON file, **repos** is a multi-value setting that tells RPM-OSTree in what RPMS repositories to look for packages. In this case, it looks in the current directory for a "photon" repo configuration file, that is a .repo file starting with a [photon] section. There is such a file: **photon-ostree.repo**, that is in fact a link to **photon.repo** in /etc/yum.repos.d directory.
+Going back to our JSON file, **repos** is a multi-value setting that tells RPM-OSTree in what RPMS repositories to look for packages. In this case, it looks in the current directory for a "photon" repo configuration file, that is a .repo file starting with a `[photon]` section. There is such a file: **photon-ostree.repo**, that is in fact a link to **photon.repo** in /etc/yum.repos.d directory.
 
-``` 
+```ini 
 root [ /srv/rpm-ostree ]# cat /etc/yum.repos.d/photon.repo 
 [photon]
 name=VMware Photon Linux 4.0(x86_64)
@@ -105,7 +106,7 @@ So what's in an RPMS repository? If we point the browser to [packages.vmware.com
 
 Fortunately, in order to compose a tree, you don't need to download the packages from the online repository (which is time consuming - in the order of minutes), unless there are some new ones or updated versions of them, added by the Photon team after shipping 1.0 version or the 1.0 Refresh. A copy of the starter RPMS repository (as of 1.0 shipping date) has been included on the CD-ROM and you can access it.
 
-```
+```console
 root [ /srv/rpm-ostree ]# mount /dev/cdrom
 root [ /srv/rpm-ostree ]# ls /mnt/cdrom/RPMS
 noarch  repodata  x86_64
@@ -114,7 +115,7 @@ noarch  repodata  x86_64
 All you have to do now is to replace the `"repos": ["photon"]` entry by `"repos": ["photon-iso"]`, which will point to the RPMS repo on CD-ROM, rather than the online repo. This way, composing saves time, bandwidth and reduces to zero the risk of failure because of a networking issue. 
 
 
-```
+```ini
 root [ /srv/rpm-ostree ]# cat /etc/yum.repos.d/photon-iso.repo
 [photon-iso]
 name=VMWare Photon Linux ISO 4.0(x86_64)
@@ -131,7 +132,7 @@ There are already in current directory links created to all repositories in /etc
 
 After so much preparation, we can execute a tree compose. We have only added 3 new packages and changed the RPMS repo source. Assuming that the  JSON file is editted, run the following:
 
-```
+```console
 root [ /srv/rpm-ostree ]# rpm-ostree compose tree --repo=repo photon-base.json
 Previous commit: 2940e10c4d90ce6da572cbaeeff7b511cab4a64c280bd5969333dd2fca57cfa8
 
@@ -225,11 +226,11 @@ Committing '/var/tmp/rpm-ostree.TVO089/rootfs.tmp' ...
 photon/1.0/x86_64/minimal => c505f4bddb4381e8b5213682465f1e5bb150a18228aa207d763cea45c6a81bbe
 ```
 
-I've cut a big part of logging, but as you can see, the new filetree adds to the top of the previous (initial) commit 2940e10c4d and produces a new commit c505f4bddb. Our packages gawk-4.1.0-2.ph3.x86_64, sudo-1.8.11p1-4.ph3.x86_64 and wget-1.15-1.ph3.x86_64 have been added.  
+We've omitted a large portion of the logging output, however you can see that the new filetree adds to the top of the previous (initial) commit **2940e10c4d** and produces a new commit **c505f4bddb**. Our packages `gawk-4.1.0-2.ph3.x86_64`, `sudo-1.8.11p1-4.ph3.x86_64` and `wget-1.15-1.ph3.x86_64` have been added.  
 
 During compose, `rpm-ostree` checks out the file tree into its uncompressed form, applies the package changes, places the updated RPM repo into /usr/share/rpm  and calls `ostree` to commit its changes back into the OSTree repo. If we were to look at the temp directory during this time:
 
-```
+```console
 root [ /srv/rpm-ostree ]# ls /var/tmp/rpm-ostree.TVO089/rootfs.tmp
 bin   dev   lib    media  opt     proc  run   srv  sysroot  usr
 boot  home  lib64  mnt    ostree  root  sbin  sys  tmp      var
@@ -237,7 +238,7 @@ boot  home  lib64  mnt    ostree  root  sbin  sys  tmp      var
 
 If we repeat the command, and there is no change in the JSON file settings and no change in metadata, rpm-ostree will figure out that nothing has changed and stop. You can force however to redo the whole composition.
 
-```
+```console
 root [ /srv/rpm-ostree ]# rpm-ostree compose tree --repo=repo photon-base.json
 Previous commit: c505f4bddb4381e8b5213682465f1e5bb150a18228aa207d763cea45c6a81bbe
 
@@ -254,19 +255,19 @@ This takes several minutes. Then why is the RPM-OSTree server installing so fast
 
 If you recall the filetree version explained earlier, this is where it comes into play. When a tree is composed from scratch, the first version (0) associated to the initial commit is going to get that human readable value. Any subsequent compose operation will auto-increment to .1, .2, .3 and so on.  
 It's a good idea to start a versionning scheme of your own, so that your customized Photon builds that may get different packages of your choice don't get the same version numbers as the official Photon team builds coming from VMware's OSTree Packages repository. There is no conflict, it's just confusing to have same name for different commits coming from different repos.  
-So if you work for a company named Big Data Inc., you may want to switch to a new versioning scheme `"automatic_version_prefix": "1.0_bigdata"`.
+So if you work for a company named Big Data Inc., you may want to switch to a new versioning scheme **"automatic_version_prefix": "1.0_bigdata"**.
 
 ## Installing package updates
 
 If you want to provide hosts with the package updates that VMware periodically releases, all that you need to do is to add the photon-updates.repo to the list of repos in photon-base.json and then re-compose the usual way. 
 
-```
+```ini
 "repos": ["photon", "photon-updates"],
 ```
 
 Even though you may have not modified the "packages" section in the json file, the newer versions of existing packages will be included in the new image and then downloaded by the host the usual way. Note that upgrading a package shows differently than adding (+) or removing (-). You may still see packages added (or removed) though because they are new dependencies (or no longer dependencies) for the newer versions of other packages, as libssh2 in the example below.
 
-```
+```console
 root [ ~ ]# rpm-ostree upgrade --check-diff
 Updating from: photon:photon/4.0/x86_64/minimal
 
@@ -302,7 +303,7 @@ Upgrade prepared for next boot; run "systemctl reboot" to start a reboot
 
 Now if we want to see what packages have been updated and what issues have been fixed, just run at the host the command that we learned about in chapter 5.4.
 
-```
+```console
 root [ ~ ]# rpm-ostree db diff 56ef 396e
 ostree diff commit old: 56e (56ef687f1319604b7900a232715718d26ca407de7e1dc89251b206f8e255dcb4)
 ostree diff commit new: 396 (396e1116ad94692b8c105edaee4fa12447ec3d8f73c7b3ade4e955163d517497)
@@ -349,4 +350,4 @@ Added:
 
 RPM-OSTree makes it very easy to create and update new branches, by composing using json config files that include the Refspec as the new branch name, the list of packages and the other settings we are now familiar with.  Photon OS RPM-OSTRee Server installer adds two extra files photon-minimal.json and photon-full.json in addition to photon-base.json, that correspond almost identically to the minimal and full profiles installed via tdnf. It also makes 'photon-base' a smaller set of starter branch.  
 
-Of course, you can create your own config files for your branches with desired lists of packages. You may compose on top of the existing tree, or you can [start fresh your own OSTRee repo](../file-oriented-server-operations/#starting-a-fresh-ostree-repo), using your own customized versioning.
+Of course, you can create your own config files for your branches with desired lists of packages. You may compose on top of the existing tree, or you can [start fresh your own OSTRee repo](/docs/administration-guide/photon-rpm-ostree/file-oriented-server-operations/#starting-a-fresh-ostree-repo), using your own customized versioning.

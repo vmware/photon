@@ -9,7 +9,7 @@ Before you use Photon OS within Fusion, perform the following prerequisite tasks
 
 1. Verify that you have the following resources:
 
-	<table style="height: 170px;" border="1" width="157" cellspacing="0" cellpadding="10">
+	<table style="height: 170px;" border="1" width="auto" cellspacing="0" cellpadding="10">
 	<tbody>
 	<tr>
 	<td><b>Resource</b></td>
@@ -17,7 +17,7 @@ Before you use Photon OS within Fusion, perform the following prerequisite tasks
 	</tr>
 	<tr>
 	<td>VMware Fusion</td>
-	<td>VMware Fusion (v7.0 or higher) must be installed. The latest version is recommended.</td>
+	<td>VMware Fusion (v7.0 or higher) must be installed. The latest version (v12) is recommended.</td>
 	</tr>
 	<tr>
 	<td>Memory</td>
@@ -33,10 +33,14 @@ Before you use Photon OS within Fusion, perform the following prerequisite tasks
 	</tr>
 	</tbody>
 	</table>
+	</br >
 
+	
 	**Note:** The setup instructions in this guide use VMware Fusion Professional version 8.5.8, as per the following screenshot.
 
-	![Fusion version](../../images/fs-version.png)
+
+	![Fusion version](/docs/installation-guide/images/fs-version.png)
+
 
 2. Decide whether to use the OVA or ISO distribution to set up Photon OS.
 

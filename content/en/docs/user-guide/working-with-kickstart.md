@@ -258,7 +258,7 @@ This indicates that the "text" field is plain text. It is then encrypted and use
 
 Here is a sample kickstart configuration file:
 
-```
+```json
 {
     "hostname": "photon-machine",
     "password":
@@ -286,14 +286,15 @@ Here is a sample kickstart configuration file:
     }    
 }
 ```
-##Installing Root Partition as LVM
+
+## Installing Root Partition as LVM
 
 In the kickstart file modify the **partitions** field to mount root partition as LVM.
 
 For example:
 
 
-```
+```json
 "disk": "/dev/sda"
 "partitions":[
                 {"mountpoint": "/", "size": 0, "filesystem": "ext4", "lvm":{"vg_name":"vg1", "lv_name":"rootfs"}},
@@ -316,7 +317,7 @@ In above example **rootfs**, **root** are logical volumes in the volume group **
 Multiple disks are also supported. For example:
 
 
-```
+```json
 "disk": "/dev/sda"
 "partitions":[
                 {"mountpoint": "/", "size": 0, "filesystem": "ext4", "lvm":{"vg_name":"vg1", "lv_name":"rootfs"}},
@@ -339,21 +340,27 @@ For an unattended installation, you pass the `ks=<config_file>` parameter to the
 
 The syntax to pass the config-file to the kernel through the ISO takes the following form: 
 
-    ks=cdrom:/<config_file_path>
+```console
+ks=cdrom:/<config_file_path>
+```
 
 Here is an example: 
 
-    ks=cdrom:/isolinux/my_ks.cfg
+```console
+ks=cdrom:/isolinux/my_ks.cfg
+```
 
 The syntax to serve the config-file to the kernel from a HTTPS server takes the following form: 
 
-    ks=https://<server>/<config_file_path>
+```console
+ks=https://<server>/<config_file_path>
+```
 
 To use HTTP path or self-signed HTTPS path, you have to enable `insecure_installation` by using insecure_installation=1 along with defining the ks path. The kernel command line argument, `insecure_installation`, acts as a flag that user can set to 1 to allow some operations that are not normally allowed due to security concerns. This is disabled by default and it is up to the user to the ensure security when this options is enabled.
   
-   For HTTP:  `ks=http://<server>/<config_file_path> insecure_installation=1`
+- For HTTP:  `ks=http://<server>/<config_file_path> insecure_installation=1`
     
-   For HTTPS (self-signed): ` ks=https://<server>/<config_file_path> insecure_installation=1`
+- For HTTPS (self-signed): ` ks=https://<server>/<config_file_path> insecure_installation=1`
 
 
  
@@ -366,14 +373,14 @@ Here's an example of how to add a kickstart config file to the Photon OS ISO by 
 
 Once you have the ISO, mount it. 
 
-```
+```console
 mkdir /tmp/photon-iso
 sudo mount photon.iso /tmp/photon-iso
 ```
 
 Then copy the content of the ISO to a writable directory and push it into the directory stack: 
 
-```
+```console
 mkdir /tmp/photon-ks-iso
 cp -r /tmp/photon-iso/* /tmp/photon-ks-iso/
 pushd /tmp/photon-ks-iso/
@@ -381,7 +388,7 @@ pushd /tmp/photon-ks-iso/
 
 Next, copy the sample kickstart configuration file that comes with the Photon OS ISO and modify it to suit your needs. In the ISO, the sample kickstart config file appears in the `isolinux` directory and is named `sample_ks.cfg.` The name of the directory and the name of the file might be in all uppercase letters. 
 
-```
+```console
 cp isolinux/sample_ks.cfg isolinux/my_ks.cfg
 nano isolinux/my_ks.cfg
 ```
@@ -390,7 +397,7 @@ With a copy of the sample kickstart config file open in nano, make the changes t
 
 Now add a new item to the installation menu by modifying `isolinux/menu.cfg`:
 
-```
+```console
 cat >> isolinux/menu.cfg << EOF
 label my_unattended
 	menu label ^My Unattended Install
@@ -402,7 +409,7 @@ EOF
 
 Finally, rebuild the ISO so that it includes your kickstart config file: 
 
-```
+```console
 mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
 		-no-emul-boot -boot-load-size 4 -boot-info-table -V "PHOTON_$(date +%Y%m%d)" \
 		. > <new_iso_path>.iso

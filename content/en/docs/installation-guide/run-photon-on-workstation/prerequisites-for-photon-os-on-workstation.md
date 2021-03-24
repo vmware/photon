@@ -39,7 +39,7 @@ Before you use Photon OS within Workstation, perform the following prerequisite 
 
 	**Note:**  The setup instructions in this guide use VMware Workstation Professional version 12.5.7.
 
-	![Workstation version](../../images/ws_version.png)
+	![Workstation version](/docs/installation-guide/images/ws_version.png)
 
 1. Decide whether to use the OVA or ISO distribution to set up Photon OS.
 
@@ -53,4 +53,4 @@ To get Photon OS up and running quickly, use the OVA.
 
     [https://packages.vmware.com/photon/4.0/GA/](https://packages.vmware.com/photon/4.0/GA/)
     
-    For instructions, see [Downloading Photon OS](../../downloading-photon/).
+    For instructions, see [Downloading Photon OS](/docs/installation-guide/downloading-photon/).

@@ -27,7 +27,8 @@ You can use the Azure CLI 2.x to set up Photon OS.
 1. Create a resource group.
 
     From the Azure CLI, create a resource group.
-    ````
+
+    ````console
     az group create \
      --name &lt;your_resource_group&gt; \
      --location westus
@@ -36,7 +37,8 @@ You can use the Azure CLI 2.x to set up Photon OS.
 1. Create a storage account
 
     Create a storage account associated with this resource group.
-    ````
+
+    ````console
     az storage account create \
         --resource-group &lt;your_resource_group&gt; \
         --location westus \
@@ -48,7 +50,8 @@ You can use the Azure CLI 2.x to set up Photon OS.
 1. List the Keys for the Storage Account
 
     Retrieve the keys associated with your newly created storage account.
-    ````
+
+    ````console
     az storage account keys list \
         --resource-group &lt;your_resource_group&gt; \
         --account-name &lt;your_account_name&gt;
@@ -59,11 +62,13 @@ You can use the Azure CLI 2.x to set up Photon OS.
     Create a storage container associated with your newly created storage account.
     
     **Note:** The sample create.sh script, described below, does this for you programmatically.
-    ````
+
+    ````console
     az storage container create \
         --account-name &lt;your_account_name&gt; \
         --name &lt;your_container_name&gt;
     ````
+
 1. Verify Your Setup in the Azure Portal
 
     1. Log into the Azure portal using your account credentials.
@@ -74,7 +79,8 @@ You can use the Azure CLI 2.x to set up Photon OS.
 1. Upload the Photon OS Distribution to Your Storage Container
 
     The Photon OS distribution for Azure is 16GB. You can download it locally or to a mounted, shared location.
-    ````
+
+    ````console
     az storage blob upload \
         --account-name &lt;your_account_name&gt; \
         --account-key &lt;your_account_key&gt; \
@@ -96,7 +102,8 @@ You can use the following script (create.sh) to upload your VHD file programmati
 - vhd_path and and vm_name of the Photon OS VHD distribution file
 
 The following script returns the complete IP address of the newly created VM.
-````
+
+````bash
 #!/bin/bash
 vhd_path=$1
 vm_name=$2

@@ -11,19 +11,21 @@ You can progressively add options and arguments to the `networkctl` command to m
 
 Run the `networkctl` command without options to default to the list command:  
 
-	networkctl
-	IDX LINK             TYPE               OPERATIONAL SETUP
-	  1 lo               loopback           carrier     unmanaged
-	  2 eth0             ether              routable    configured
-	  3 docker0          ether              routable    unmanaged
-	 11 vethb0aa7a6      ether              degraded    unmanaged
-	 4 links listed.
+```console
+networkctl
+IDX LINK             TYPE               OPERATIONAL SETUP
+  1 lo               loopback           carrier     unmanaged
+  2 eth0             ether              routable    configured
+  3 docker0          ether              routable    unmanaged
+  11 vethb0aa7a6      ether              degraded    unmanaged
+  4 links listed.
+```
 
 ## 'networkctl status' Command
 
 Run `networkctl` with the status command to display the following information:  
 
-```
+```console
 root@photon-rc [ ~ ]# > networkctl status
    State: routable
   Address: 10.197.103.56 on eno1
@@ -48,7 +50,7 @@ You can see that there are active network links with IP addresses for not only t
 
 You can add a network link, such as the Ethernet connection, as the argument of the `status` command to show specific information about the link: 
 
-```
+```console
 	root@photon-rc [ ~ ]# networkctl status ens33
 	* 2: ens33
 	         Link File: /usr/lib/systemd/network/99-default.link                                      
@@ -85,7 +87,7 @@ Feb 26 10:19:46 fedora systemd-networkd[650]: ens33: Gained IPv6LL
 
 You can add a Docker container as the argument of the `status` command to show specific information about the container: 
 	
-```
+```console
 networkctl status docker0
 	* 3: docker0
 	       Link File: /usr/lib/systemd/network/99-default.link

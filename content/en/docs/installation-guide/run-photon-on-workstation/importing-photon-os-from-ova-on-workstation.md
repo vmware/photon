@@ -12,17 +12,17 @@ After you have downloaded the the OVA file (OVA with Hardware Version 11), perfo
     - Double-click it to start the import process, or
     - Start VMware Workstation and, from the File menu, choose **Open**.
 
-    ![OVA file](../../images/ws-ova-import.png)
+    ![OVA file](/docs/installation-guide/images/ws-ova-import.png)
 
 1. Specify the Name and Storage Location
 
     Change the name and storage location, if you want.
     
-    ![Name and Storage Location](../../images/ws-ova-path.png)
+    ![Name and Storage Location](/docs/installation-guide/images/ws-ova-path.png)
     
     Choose **Import**.
     
-    ![License](../../images/ws-ova-license.png)
+    ![License](/docs/installation-guide/images/ws-ova-license.png)
     
     Review the License Agreement and choose **Accept**.
 
@@ -30,25 +30,25 @@ After you have downloaded the the OVA file (OVA with Hardware Version 11), perfo
 
     Once the OVA is imported, Workstation displays a summary of the settings for your Photon OS VM.
     
-    ![Settings](../../images/ws-ova-settings.png)
+    ![Settings](/docs/installation-guide/images/ws-ova-settings.png)
     
     Choose **Edit virtual machine settings**. Workstation displays the Virtual Machine settings. You can either accept the defaults or change settings as needed.
     
-    ![OVA settings](../../images/ws-ova-settings-edit.png)
+    ![OVA settings](/docs/installation-guide/images/ws-ova-settings-edit.png)
     
     Select the Options tab.
     
-    ![Options](../../images/ws-ova-settings-options.png)
+    ![Options](/docs/installation-guide/images/ws-ova-settings-options.png)
 
     Under Guest operating system, select **Linux**.
     
     For Version, click the list and select **VMWare Photon 64-bit**.
     
-    ![Version](../../images/ws-ova-os.png)
+    ![Version](/docs/installation-guide/images/ws-ova-os.png)
     
     **Note:**  If you want to configure a secure boot for the Photon OS VM, select **Advanced**  and select (check) **Boot with EFI instead of BIOS**. The EFI boot ensures that the ISO content is signed by VMware and that the entire stack is secure.
     
-    ![EFI boot](../../images/ws-ova-settings-efi.png)
+    ![EFI boot](/docs/installation-guide/images/ws-ova-settings-efi.png)
     
     Choose **OK**.
 
@@ -56,7 +56,7 @@ After you have downloaded the the OVA file (OVA with Hardware Version 11), perfo
 
     From the tab, choose  **Power on this virtual machine**.
     
-     ![Login prompt](../../images/splashscreen23.png)
+     ![Login prompt](/docs/installation-guide/images/splashscreen23.png)
     
     After the splash screen, Workstation will prompt you to log in.
 
@@ -71,4 +71,4 @@ After you have downloaded the the OVA file (OVA with Hardware Version 11), perfo
     
    
     
-    Once complete, proceed to [Deploying a Containerized Application in Photon OS](../../deploying-a-containerized-application-in-photon-os/).
+    Once complete, proceed to [Deploying a Containerized Application in Photon OS](/docs/installation-guide/deploying-a-containerized-application-in-photon-os/).
