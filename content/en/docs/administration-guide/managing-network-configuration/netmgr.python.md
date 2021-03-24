@@ -3,7 +3,7 @@ title:  Network Configuration Manager - Python API
 weight: 16
 ---
 
-Photon OS 2.0 provides a Python API for the Network Configuration Manager.
+Photon OS provides a Python API for the Network Configuration Manager.
 
 - [Setup Instructions](#setup-instructions)
 - [Initialization Steps](#initialization-steps)
@@ -19,33 +19,36 @@ Photon OS 2.0 provides a Python API for the Network Configuration Manager.
 
 To set up and run the latest version of the Network Manager API for Python:
 
-````
+```console
 # tdnf install pmd pmd-python3
 # systemctl start pmd
-````
+```
 
 ## Initialization Steps
 
-````
+```python
 # python3
 >>> import pmd
 >>> net = pmd.server().net
-````
+```
+
 ## Get Online Help
 
 Get help for all commands.
-````
+
+```python
 >>> help(net)
-````
+```
 Get help for a specific command.
-````
+
+```python
 >>> help(net.add_ntp_servers)
 -in function add_ntp_servers:
 add_ntp_servers(...) method of  [server.net](http://server.net/) instance
     net.add_ntp_servers(ntpservers = ["20.20.20.20", "25.30.40.70"])
     adds ntp servers. returns success: 0, failure: exception.
 (END)
-````
+```
 
 ## Basic Information
 
@@ -55,30 +58,32 @@ Get network information details that are common to the entire system.
 
 **Syntax**
 
-````
+```python
 net.get_system_network_info()
-````
+```
 **Returns**
 
 - details about the system network (DUID, DNS mode, DNS server list, DNS domain list, NTP server list)
 
 **Example**
-````
+
+```python
 >>> system_network_info = netmgmt.get_system_network_info()
 
 >>> print ( system_network_info)
 
 [{DUID: 00:02:11:22:33:44:55:66:77:20, DNS Mode: (null), DNS ServerList: ['10.10.100.100', '20.20.200.10'], DNS domain list: [' [abcd.com](http://abcd.com)'], NTP ServerList: (null)}]
-````
+```
 
 ### get_err_info
 
 Get information about the specified error number.
 
 **Syntax**
-````
+
+```python
 net.get_err_info(error = <error_number>)
-````
+```
 **Parameters**
 
 - error - error number
@@ -103,11 +108,13 @@ Here is the list of error numbers:
 - failure: exception
 
 Example
-````
+
+```python
 >> net.get_err_info(error = 4097)
 
 'invalid parameter'
-````
+```
+
 ## Interface Configuration
 
 Use these commands to manage the configuration for a network interface.
@@ -117,9 +124,10 @@ Use these commands to manage the configuration for a network interface.
 Get the link info for the specified interface or for all interfaces (if no interface is specified).
 
 **Syntax**
-````
+
+```python
 net.get_link_info(ifname = interface_name)
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name (optional)
@@ -134,9 +142,11 @@ net.get_link_info(ifname = interface_name)
 Get the MAC address for the specified interface or for all interfaces (if no interface is specified).
 
 **Syntax**
-````
+
+```python
 net.get_link_macaddr(ifname = interface_name)
-````
+```
+
 **Parameters**
 
 - ``ifname`` - interface name (optional)
@@ -151,9 +161,11 @@ net.get_link_macaddr(ifname = interface_name)
 Get the link mode for the specified interface (auto or manual), or for all interfaces (if no interface is specified).
 
 **Syntax**
-````
+
+```python
 net.get_link_mode(ifname = interface_name)
-````
+```
+
 **Parameters**
 
 - ``ifname`` - interface name (optional)
@@ -168,9 +180,11 @@ net.get_link_mode(ifname = interface_name)
 Get the MTU of the specified interface or for all interfaces (if no interface is specified).
 
 **Syntax**
-````
+
+```python
 net.get_link_mtu(ifname = interface_name)
-````
+```
+
 **Parameters**
 
 - ``ifname`` - interface name (optional)
@@ -185,9 +199,11 @@ net.get_link_mtu(ifname = interface_name)
 Get the link state of the specified interface or for all interfaces (if no interface is specified).
 
 **Syntax**
-````
+
+```python
 net.get_link_state(ifname = interface_name)
-````
+```
+
 **Parameters**
 
 - ``ifname`` - interface name (optional)
@@ -203,9 +219,10 @@ Bring down the specified interface.
 
 **Syntax**
 
-````
+```python
 net.set_link_down(ifname = interface_name)
-````
+```
+
 **Parameters**
 
 - ``ifname`` - interface name
@@ -220,9 +237,11 @@ net.set_link_down(ifname = interface_name)
 Set the MAC address of the specified interface.
 
 **Syntax**
-````
+
+```python
 net.set_link_macaddr(ifname = interface_name, macaddr = mac_address)
-````
+```
+
 **Parameters**
 
 - ``ifname`` - interface name
@@ -238,9 +257,11 @@ net.set_link_macaddr(ifname = interface_name, macaddr = mac_address)
 Set the mode (auto or manual) of the specifed interface.
 
 **Syntax**
-````
+
+```python
 net.set_link_mode(ifname = interface_name, link_mode = [auto, manual])
-````
+```
+
 **Parameters**
 
 - ``ifname`` - interface name
@@ -256,9 +277,11 @@ net.set_link_mode(ifname = interface_name, link_mode = [auto, manual])
 Set the MTU for the specified interface.
 
 **Syntax**
-````
+
+```python
 net.set_link_mtu(ifname = interface_name, mtu = mtu)
-````
+```
+
 **Parameters**
 
 - ``ifname`` - interface name
@@ -274,9 +297,11 @@ net.set_link_mtu(ifname = interface_name, mtu = mtu)
 Set the state (up or down) of the specified interface.
 
 **Syntax**
-````
+
+```python
 net.set_link_state(ifname = interface_name, link_state = [down, up])
-````
+```
+
 **Parameters**
 
 - ``ifname`` - interface name
@@ -292,9 +317,10 @@ net.set_link_state(ifname = interface_name, link_state = [down, up])
 Brings up the specified interface.
 
 **Syntax**
-````
+
+```python
 net.set_link_up(ifname = interface_name)
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name
@@ -314,9 +340,10 @@ Use these commands to manage IP address configuration for a network interface.
 Add a static IPv6 address to the specified interface.
 
 **Syntax**
-````
+
+```python
 net.add_static_ipv6_addr(ifname = interface_name, addr_prefix = ipv6address_prefix)
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name
@@ -332,9 +359,10 @@ net.add_static_ipv6_addr(ifname = interface_name, addr_prefix = ipv6address_pref
 Delete a static IPv6 address from the specified interface.
 
 **Syntax**
-````
+```python
 net.del_static_ipv6_addr(ifname = interface_name, addr_prefix = ipv6address_prefix)
-````
+```
+
 **Parameters**
 
 - ``ifname`` - interface name
@@ -350,9 +378,9 @@ net.del_static_ipv6_addr(ifname = interface_name, addr_prefix = ipv6address_pref
 Get the IPv4 address with the prefix and gateway for the specified interface.
 
 **Syntax**
-````
+```python
 net.get_ipv4_addr_gateway(ifname = interface_name)
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name
@@ -367,9 +395,9 @@ net.get_ipv4_addr_gateway(ifname = interface_name)
 Get the list of IPv6 addresses for the specified interface.
 
 **Syntax**
-````
+```python
 net.get_ipv6_addr(ifname = interface_name)
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name
@@ -384,9 +412,9 @@ net.get_ipv6_addr(ifname = interface_name)
 Get the address mode for the specified interface to determine whether DHCPv6, autoconf are enabled or disabled.
 
 **Syntax**
-````
+```python
 net.get_ipv6_addr_mode(ifname = interface_name)
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name
@@ -401,9 +429,9 @@ net.get_ipv6_addr_mode(ifname = interface_name)
 Get the IPv6 gateway for the specified interface.
 
 **Syntax**
-````
+```python
 net.get_ipv6_gateway(ifname = interface_name)
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name
@@ -418,9 +446,9 @@ net.get_ipv6_gateway(ifname = interface_name)
 Set the IPv4 address with the prefix and gateway for the specified interface.
 
 **Syntax**
-````
+```python
 net.get_ipv4_addr_gateway(ifname = interface_name, addr_mode = [dhcp, static, none], addr_prefix = ipv4addressprefix, gateway = ipv4gateway)
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name
@@ -438,9 +466,9 @@ net.get_ipv4_addr_gateway(ifname = interface_name, addr_mode = [dhcp, static, no
 Set the address mode for the specified interface.
 
 **Syntax**
-````
+```python
 net.set_ipv6_addr_mode(ifname = interface_name, enable_dhcp = [True, False], enable_autoconf = [True, False])
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name
@@ -457,9 +485,9 @@ net.set_ipv6_addr_mode(ifname = interface_name, enable_dhcp = [True, False], ena
 Set the IPv6 gateway for the specified interface.
 
 **Syntax**
-````
+```python
 net.set_ipv6_gateway(ifname = interface_name, gateway = ipv6gateway)
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name
@@ -479,9 +507,9 @@ Use these commands to manage DNS domains and servers for a network interface.
 Get the list of DNS domains for the specified interface.
 
 **Syntax**
-````
+```python
 net.get_dns_domains(ifname = interface_name)
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name
@@ -496,9 +524,9 @@ net.get_dns_domains(ifname = interface_name)
 Get the list of DNS servers and the mode for the specified interface.
 
 **Syntax**
-````
+```python
 net.get_dns_servers(ifname = interface_name)
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name
@@ -513,9 +541,9 @@ net.get_dns_servers(ifname = interface_name)
 Set the list of DNS domains for the specified interface.
 
 **Syntax**
-````
+```python
 net.set_dns_domains(domains = ["domain1","domain2",...], ifname = interface_name)
-````
+```
 **Parameters**
 
 - ``domains`` - comma-separated list of one or more domains
@@ -531,9 +559,9 @@ net.set_dns_domains(domains = ["domain1","domain2",...], ifname = interface_name
 Set the list of DNS servers for the specified interface.
 
 **Syntax**
-````
+```python
 net.set_dns_servers(dns_mode = [dhcp, static], servers = ["server1","server2", ...], ifname = interface_name)
-````
+```
 **Parameters**
 
 - ``dns_mode`` - dhcp or static
@@ -552,9 +580,9 @@ net.set_dns_servers(dns_mode = [dhcp, static], servers = ["server1","server2", .
 Get the IAID for the specified interface.
 
 **Syntax**
-````
+```python
 net.get_link_iaid(ifname = interface)
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name
@@ -569,9 +597,9 @@ net.get_link_iaid(ifname = interface)
 Set the IAID for the specified interface.
 
 **Syntax**
-````
+```python
 net.set_link_iaid(ifname = interface_name, iaid = <iaid>)
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name
@@ -587,9 +615,9 @@ net.set_link_iaid(ifname = interface_name, iaid = <iaid>)
 Get the DCHP DUID.
 
 **Syntax**
-````
+```python
 net.get_dhcp_duid(ifname = interface_name)
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name (optional)
@@ -604,9 +632,9 @@ net.get_dhcp_duid(ifname = interface_name)
 Set the DCHP DUID.
 
 **Syntax**
-````
+```python
 net.set_dhcp_duid(ifname = interface_name duid = duid)
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name (optional)
@@ -626,9 +654,9 @@ Use these commands to manage the NTP servers list.
 Add one or more NTP servers to the NTP servers list.
 
 **Syntax**
-````
+```python
 net.add_ntp_servers(ntpservers = ["server1", "server2", ...])
-````
+```
 **Parameters**
 
 - ``ntpservers`` - Comma-separated list of NTP servers to add to the list.
@@ -643,9 +671,9 @@ net.add_ntp_servers(ntpservers = ["server1", "server2", ...])
 Remove one or more NTP servers from the NTP servers list.
 
 **Syntax**
-````
+```python
 net.del_ntp_servers(ntpservers = ["server1", "server2", ...])
-````
+```
 **Parameters**
 
 - ``ntpservers`` - Comma-separated list of NTP servers to remove from the list.
@@ -660,9 +688,9 @@ net.del_ntp_servers(ntpservers = ["server1", "server2", ...])
 Get the NTP servers list.
 
 **Syntax**
-````
+```python
 net.get_ntp_servers()
-````
+```
 **Returns**
 
 - success: NTP servers list
@@ -673,9 +701,9 @@ net.get_ntp_servers()
 Set the NTP servers list.
 
 **Syntax**
-````
+```python
 net.set_ntp_servers(ntpservers = ["server1", "server2", ...])
-````
+```
 **Parameters**
 
 - ``ntpservers`` - Comma-separated list of NTP servers to set in the list.
@@ -691,8 +719,9 @@ Get the host name.
 
 **Syntax**
 
+```python
 net.get_hostname()
-
+```
 **Returns**
 
 - success: host name
@@ -703,9 +732,9 @@ net.get_hostname()
 Set the host name.
 
 **Syntax**
-````
+```python
 net.set_hostname(hostname)
-````
+```
 **Parameters**
 
 - ``hostname`` - name to assign to the host
@@ -720,9 +749,9 @@ net.set_hostname(hostname)
 Wait for the specified interface to acquire a valid IP address of the specified IP address type.
 
 **Syntax**
-````
+```python
 net.wait_for_ip(ifname = interface_name, timeout = timeout, addrtypes = [ipv4, ipv6, static_ipv4, static_ipv6, dhcp_ipv4, dhcp_ipv6, auto_ipv6, link_local_ipv6])
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name
@@ -739,9 +768,9 @@ net.wait_for_ip(ifname = interface_name, timeout = timeout, addrtypes = [ipv4, i
 Wait for the specified interface to come up.
 
 **Syntax**
-````
+```python
 net.wait_for_link_up(ifname = interface_name, timeout = timeout)
-````
+```
 **Parameters**
 
 - ``ifname`` - interface name
@@ -757,9 +786,9 @@ net.wait_for_link_up(ifname = interface_name, timeout = timeout)
 Get the specified network configuration parameter for the specified interface or filename.
 
 **Syntax**
-````
+```python
 net.get_network_param(object = IfName or Filename, paramname = SectionName_KeyName)
-````
+```
 **Parameters**
 
 - ``object`` - an interface name (for example, &quot;eth0&quot;) or a file name (for example, /etc/systemd/resolved.conf)
@@ -775,9 +804,9 @@ net.get_network_param(object = IfName or Filename, paramname = SectionName_KeyNa
 Set the value of a network configuration parameter for the specified interface or filename.
 
 **Syntax**
-````
+```python
 net.set_network_param(object = interface_name or filename, paramname = SectionName_KeyName, paramvalue = key_value)
-````
+```
 **Parameters**
 
 - ``object`` - an interface name (for example, &quot;eth0&quot;) or a file name (for example, /etc/systemd/resolved.conf)

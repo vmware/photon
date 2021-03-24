@@ -7,31 +7,35 @@ The Photon Packer template folder has the following structure:
 
 ```
 photon-packer-templates/
+.
+├── README.md
 ├── packer-photon.json
 ├── scripts
-    ├── photon-kickstart.json
-    ├── photon-package_provisioning.sh
-    ├── photon-security_check.sh
-    ├── photon-sharedfolders_prep.sh
-    ├── photon-vagrant-user_provisioning.sh
-    ├── photon-vagrant-vbox_additions.sh
-    ├── photon-vagrantfile.rb
-    ├── photon-virtualbox-load-module.conf
-├── vars
-    ├── iso-3.0GA.json
+│   ├── photon-kickstart.json
+│   ├── photon-package_provisioning.sh
+│   ├── photon-security_check.sh
+│   ├── photon-sharedfolders_prep.sh
+│   ├── photon-vagrant-user_provisioning.sh
+│   ├── photon-vagrant-vbox_additions.sh
+│   ├── photon-vagrantfile.rb
+│   └── photon-virtualbox-load-module.conf
+└── vars
+    └── iso-4.0GA.json
+
+2 directories, 11 files
 ```
 
 ## packer-photon.json
 
 The following are the contents of the `photon-packer-templates/packer-photon.json` file:
 
-```
+```json
 {
   "variables": {
     "iso_file": "",
     "iso_sha1sum": "",
     "product_version": "",
-    "root_password": "2RQrZ83i79N6szpvZNX6"
+    "root_password": "changeme"
   },
   "builders": [
     {
@@ -150,7 +154,7 @@ The following are the contents of the `photon-packer-templates/packer-photon.jso
 
 The following are the contents of the `photon-packer-templates/scripts/photon-kickstart.json` file:
 
-```
+```json
 {
     "hostname": "photon",
     "password":
@@ -168,11 +172,11 @@ The following are the contents of the `photon-packer-templates/scripts/photon-ki
 }
 ```
 
-## iso-3.0GA.json
+## iso-4.0GA.json
 
-The following are the contents of the `photon-packer-templates/vars/iso-3.0GA.json` file:
+The following are the contents of the `photon-packer-templates/vars/iso-4.0GA.json` file:
 
-```
+```json
 {
    "product_version" : "4.0GA",
    "iso_sha1sum" : "2221ab214b517a15c60bd5e2aacdb9388581bcd9",

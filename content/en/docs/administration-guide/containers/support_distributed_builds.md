@@ -31,14 +31,10 @@ Perform the following steps in the Photon OS repository:
 2. Run `make distributed-build`.
 
 Note:
-
-i)This process will make use of the `kubeconfig` file present under the home directory and start building packages over the specified cluster.
-
-ii)It creates one Master pod and multiple worker pods (numbers defined in config.json).
-
-iii)The master pod runs the scheduler while the worker or the builder pods build the packages.
-
-iv)Distributed Builder monitors the build mob and deletes everything when build has either completed successfully or failed.
+  - This process will make use of the `kubeconfig` file present under the home directory and start building packages over the specified cluster.
+  - It creates one Master pod and multiple worker pods (numbers defined in config.json).
+  - The master pod runs the scheduler while the worker or the builder pods build the packages.
+  - Distributed Builder monitors the build mob and deletes everything when build has either completed successfully or failed.
 
 The master starts the scheduler server to schedule the packages that have to be built.
 The worker makes REST calls to scheduler server.get package and notify after the build.

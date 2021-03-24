@@ -9,23 +9,23 @@ After you have downloaded the latest Photon OS ISO image into a folder of your c
 
     From the File menu, choose  **New**.
     
-    ![Installation](../../images/fs-iso-new.png)
+    ![Installation](/docs/installation-guide/images/fs-iso-new.png)
     
     From the Select the Installation Method dialog, select **Install from disc or image**, and then choose **Continue**.
     
-    ![Installation method](../../images/fs-iso-new-prompt.png)
+    ![Installation method](/docs/installation-guide/images/fs-iso-new-prompt.png)
 
 1. Select the ISO Image
 
     Drag a disc image onto the window or choose **Use another disc or disc image...**, choose the ISO file you want, and then choose **Continue**.
     
-    ![ISO image](../../images/fs-iso-new-selected.png)
+    ![ISO image](/docs/installation-guide/images/fs-iso-new-selected.png)
 
 1. Select the Operating System
 
     On the Choose Operating System dialog, select **Linux**  in the left-hand column and **VMware Photon 64-bit**  in the right-hand column.
     
-    ![Operating system](../../images/fs-iso-os.png)
+    ![Operating system](/docs/installation-guide/images/fs-iso-os.png)
 
     Choose **Continue**.
 
@@ -33,7 +33,7 @@ After you have downloaded the latest Photon OS ISO image into a folder of your c
 
     If you are using a Fusion version that is older than Fusion 8, you might see the following dialog.
     
-    ![Virtual disk](../../images/fs-iso-virtual-disk.png)
+    ![Virtual disk](/docs/installation-guide/images/fs-iso-virtual-disk.png)
     
     If you see this dialog, unless you're installing into an existing machine, choose **Create a new virtual disk**  from the Choose a Virtual Disk dialog, and then choose **Continue**.
     
@@ -43,17 +43,17 @@ After you have downloaded the latest Photon OS ISO image into a folder of your c
 
     **Important:** Before you finish creating the Photon OS Virtual Machine, we strongly recommend that you customize the virtual machine and remove any unwanted devices that are not needed for a container run-time environment.
     
-    ![VM settings](../../images/fs-iso-finish.png)
+    ![VM settings](/docs/installation-guide/images/fs-iso-finish.png)
     
     To remove unnecessary devices, choose **Customize Settings**.
     
     First, choose a name for your Virtual Machine, along with the folder into which you create the Virtual Machine (or accept the default folder).
     
-    ![Custom settings](../../images/fs-iso-name.png)
+    ![Custom settings](/docs/installation-guide/images/fs-iso-name.png)
     
     Choose **Save**. The virtual machine will be created. The Settings screen allows you to customize virtual hardware for the new virtual machine. If it does not automatically appear, open **Settings** from the Virtual Machine menu bar.
     
-    ![Settings](../../images/fs-iso-settings.png)
+    ![Settings](/docs/installation-guide/images/fs-iso-settings.png)
     
     You can remove (recommended) the following components that are not used by Photon OS:
     
@@ -83,11 +83,11 @@ After you have downloaded the latest Photon OS ISO image into a folder of your c
     
     Fusion powers on the host and starts the installation. Within a few seconds, Fusion displays the Photon OS installer boot menu.
     
-    ![Photon OS installer](../../images/bootscreen7.png)
+    ![Photon OS installer](/docs/installation-guide/images/bootscreen7.png)
     
     Press the Enter key on your keyboard to start installing.
     
-    ![License](../../images/license8.png)
+    ![License](/docs/installation-guide/images/license8.png)
     
     Read the License Agreement and press the Enter key to accept.
 
@@ -95,17 +95,17 @@ After you have downloaded the latest Photon OS ISO image into a folder of your c
 
     The Installer will detect one disk, which should be the 8GB volume configured as part of the virtual machine creation.
     
-    ![Partition](../../images/diskselection9.png)
+    ![Partition](/docs/installation-guide/images/diskselection9.png)
     
     Choose **Auto**  to have the installer automatically allocate the partition, or choose **Custom** if you want to configure individual partitions, and then press the Enter key.
     
     **Note:** If you choose **Custom**, the installer displays the following screen.
     
-    ![Custom partition](../../images/manualpartition10.png)
+    ![Custom partition](/docs/installation-guide/images/manualpartition10.png)
     
     For each custom partition, choose **Create New**  and specify the following information:
     
-    ![New partition](../../images/custompartitionsetting11.png)
+    ![New partition](/docs/installation-guide/images/custompartitionsetting11.png)
     
     **Size** - Preallocated size of this partition, in MB.
     
@@ -121,7 +121,7 @@ After you have downloaded the latest Photon OS ISO image into a folder of your c
     
     The installer prompts you to confirm that you want to erase the entire disk.
     
-    ![Disk erase](../../images/erasedisk21.png)
+    ![Disk erase](/docs/installation-guide/images/erasedisk21.png)
     
     Choose **Yes** and press the Enter key to accept and proceed with the installation.
 
@@ -129,14 +129,14 @@ After you have downloaded the latest Photon OS ISO image into a folder of your c
 
     After partitioning, the installer prompts you to select one of three installation options:
     
-    ![Installation options](../../images/flavorselection12.png)
+    ![Installation options](/docs/installation-guide/images/flavorselection12.png)
     
     Each install option provides a different run-time environment. Select the option that best meets your requirements.
     
-    <table style="height: 170px;" border="1" cellspacing="0" cellpadding="10">
+    <table style="height: 170px;" border="1" cellspacing="0" cellpadding="10" width="auto">
 	<tbody>
 	<tr>
-	<td><b>Option</b></td>
+	<td><img width="350px"><b>Option</b></td>
 	<td><b>Description</b></td>
 	</tr>
 	<tr>
@@ -159,20 +159,20 @@ After you have downloaded the latest Photon OS ISO image into a folder of your c
     Select the option you want and press the Enter key.
 
 1. The **Network Configuration** screen appears, select one of the four options to configure your network.
-    ![Network Sonfiguration](../../../images/networkconfig13.png)
+    ![Network Sonfiguration](/docs/installation-guide/images/networkconfig13.png)
     1. Choose **Configure network automatically** and select **Next** to configure the network automatically.
     1. To configure network automatically with the DHCP hostname, select **Configure network automatically with a DHCP hostname** and select **Next**. Enter the DHCP Hostname and select **Next**.
-     ![../images/DHCP_hostname_for_your_system.png](../../../images/dhcphostname14.png)
+     ![../images/DHCP_hostname_for_your_system.png](/docs/installation-guide/images/dhcphostname14.png)
     1. To configure the network manually, select **Configure Network manually**. In the window that appears, enter the IP Address, Netmask, Gateway and Nameserver and select **OK**.
-    ![../images/Configure_Network_Manually.png](../../../images/Configure_Network_Manually.png)
+    ![../images/Configure_Network_Manually.png](/docs/images/Configure_Network_Manually.png)
 
     1. If your network interface is directly connected to the VLAN trunk port, choose **YES** on the Configure the network screen. Enter the VLAN ID and select **Next**.
-    ![Configure the network](../images/Configure_the_network.png).
+    ![Configure the network](/docs/images/Configure_the_network.png).
 1. Select the Linux Kernel
 
     The installer prompts you to select the Linux kernel to install:
     
-    ![Linux kernel](../../images/linuxflavor17.png)
+    ![Linux kernel](/docs/installation-guide/images/linuxflavor17.png)
     
     - **Hypervisor optimized** means that any components that are not needed for running under a VMware hypervisor have been removed for faster boot times.
     - **Generic** means that all components are included.
@@ -181,7 +181,7 @@ After you have downloaded the latest Photon OS ISO image into a folder of your c
 
     The installer prompts you for a hostname and suggest a randomly generated, unique hostname that you can change if you want.
     
-    ![Hostname](../../images/hostname18.png)
+    ![Hostname](/docs/installation-guide/images/hostname18.png)
     
     Press the Enter key.
 
@@ -191,29 +191,29 @@ After you have downloaded the latest Photon OS ISO image into a folder of your c
     
     The installer prompts you to enter the system root password. Type the password, and then press the Enter key.
     
-    ![Password](../../images/rootpassword19.png)
+    ![Password](/docs/installation-guide/images/rootpassword19.png)
     
     Confirm the root password by typing it a second time.
     
-    ![Password confirmation](../../images/confirmrootpassword20.png)
+    ![Password confirmation](/docs/installation-guide/images/confirmrootpassword20.png)
     
     Press the Enter key. The installer proceeds to install the software. Installation times will vary based on the system hardware and installation options you selected. Most installations complete in less than one minute.
     
     Once finished, the installer displays a confirmation message (which includes how long it took to install Photon OS) and prompts you to press a key on your keyboard to boot the new VM.
     
-    ![Confirmation](../../images/installationcomplete22.png)
+    ![Confirmation](/docs/installation-guide/images/installationcomplete22.png)
 
 1. Reboot the VM and Log In
 
     Press any key on the keyboard and the virtual machine will reboot into Photon OS.
     
-    ![Reboot](../../images/splashscreen23.png)
+    ![Reboot](/docs/installation-guide/images/splashscreen23.png)
     
     As the initial boot process begins, the installer displays the Photon splash screen, and then a login prompt.
     
     At the login prompt, enter **root**  as the username and provide the password chosen during the installation.
     
-    ![Password](../../images/loginprompt24.png)
+    ![Password](/docs/installation-guide/images/loginprompt24.png)
     
 You can now use your container runtime environment and deploy a containerized application.
     

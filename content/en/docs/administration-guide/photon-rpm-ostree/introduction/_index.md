@@ -43,20 +43,18 @@ Finally, *Photon RPM-OSTree* is the application or implementation of the RPM-OSt
 
 ## Sample code
 
-Codes samples used throughout the book are small commands that can be typed at shell command prompt and do not require downloading additional files. As an alternative, one can remote connect via ssh, so cut & paste sample code from outside sources or copy files via scp will work. See the Photon Administration guide to learn [how to enable ssh](../../../troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/). 
+Codes samples used throughout the book are small commands that can be typed at shell command prompt and do not require downloading additional files. As an alternative, one can remote connect via ssh, so cut & paste sample code from outside sources or copy files via scp will work. See the Photon Administration guide to learn [how to enable ssh](/docs/troubleshooting-guide/solutions-to-common-problems/permitting-root-login-with-ssh/). 
 The samples assume that the following VMs have been installed - see the steps in the next chapters:
 * A default host VM named **photon-host-def**.
 * Two server VMs named **photon-srv1** and **photon-srv2**.
 * Two custom host VMs named **photon-host-cus1** and **photon-host-cus2**, connected each to the corresponding server during install.
 
-## How to read this book
+## How to read this document
 
 The RPM OSTree guide is structured to be used both as a sequential read and as a reference documentation.   
-If you are just interested in deploying a host system and keeping it up to date, then read [Installing a Photon RPM-OSTree host against default server repository](../installing-a-host-against-default-server-repository/) and [Host updating operations](../host-updating-operations/).
+If you are just interested in deploying a host system and keeping it up to date, then read [Installing a Photon RPM-OSTree host against default server repository](/docs/administration-guide/installing-a-host-against-default-server-repository/) and [Host updating operations](/docs/administration-guide/photon-rpm-ostree/host-updating-operations/).
 
-If you want to install your own server and experiment with customizing packages for your Photon hosts, then read [Installing a Photon RPM-OSTree server](../creating-a-rpm-ostree-
-server/) onwards. There are references to the concepts discussed throughout the book, if you need to understand them better.  
-However, if you want to read page by page, information is presented from simple to complex, although as with any technical book, we occasionally run into the chicken and egg problem - forward references to concepts that have yet to be explained later. In other cases, concepts are introduced and presented in great detail that may be seem hard to follow at first, but I promise they will make sense in the later pages when you get to use them.
+If you want to install your own server and experiment with customizing packages for your Photon hosts, then read [Installing a Photon RPM-OSTree server](docs/administration-guide/photon-rpm-ostree/creating-a-rpm-ostree-server/) onwards. There are references to the concepts discussed throughout the book, if you need to understand them better.  
 
 ## RPM OSTree in Photon OS 4.0
 

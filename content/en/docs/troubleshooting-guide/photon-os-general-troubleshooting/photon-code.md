@@ -7,6 +7,7 @@ Photon is an RPM based Linux distribution similar to variants like CentOS and Fe
 
 ##SPEC File
 The "Recipe" for creating an RPM package is a spec file. The Photon code base's **SPECS** folder hast the following directory structure:
+
 ```
 SourceRoot
 
@@ -17,9 +18,10 @@ SourceRoot
                 linux.spec
 ```
 
-##To Check if a Package is Signed
+## Check if a package is signed
 Run the following commands to check if the package is signed:
-```
+
+```sh
 #check if a package is signed
 rpm -q linux --qf '%{NAME}-%{VERSION}-%{RELEASE} %{SIGPGP:pgpsig} %{SIGGPG:pgpsig}\n'
 linux-4.19.79-2.ph3 RSA/SHA1, Thu 31 Oct 2019 10:05:05 AM UTC, Key ID c0b5e0ab66fd4949 (none)
@@ -35,28 +37,35 @@ gpg-pubkey 66fd4949 VMware, Inc. -- Linux Packaging Key -- linux-packages@vmware
 gpg-pubkey 3e1ba8d5 Google Cloud Packages RPM Signing Key gc-team@google.com
 ```
 
-##To Check if Your Image Has Vulnerabilities
+## Check if an image has vulnerabilities
 Use the security scanners to find security issues. Alternatively The `tdnf updateinfo info` command displays all the applicable security updates the host needs.
 
-##To Check if a CVE is Fixed
-The Photon team fix the vulnerabilities and then publish the advisories to (https://github.com/vmware/photon/wiki/Security-Advisories).
+## Check if a CVE is Fixed
+The Photon team fixes vulnerabilities and publishes advisories to [https://github.com/vmware/photon/wiki/Security-Advisories](https://github.com/vmware/photon/wiki/Security-Advisories).
 
-##To Check if Security Updates are Available
+## To Check if Security Updates are Available
 Use the `tdnf updateinfo info`, `tdnf update --security` or `tdnf update ---sec-severity <level>` commands to check if security updates are available. For example:
-```
-#check if there are any security updates
-root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo
+
+
+Check if there are any security updates
+
+```console
+root@photon [ ~ ]# tdnf updateinfo
 70 Security notice(s)
- 
-#check if there are security updates for libssh2. note this is relative to what is installed in local
-root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo list libssh2
+```
+
+Check if there are security updates for libssh2. note this is relative to what is installed in local
+
+```console
+root@photon[ ~ ]# tdnf updateinfo list libssh2
 patch:PHSA-2020-3.0-0047 Security libssh2-1.9.0-2.ph3.x86_64.rpm
 patch:PHSA-2019-3.0-0025 Security libssh2-1.9.0-1.ph3.x86_64.rpm
 patch:PHSA-2019-3.0-0009 Security libssh2-1.8.2-1.ph3.x86_64.rpm
 patch:PHSA-2019-3.0-0008 Security libssh2-1.8.0-2.ph3.x86_64.rpm
- 
-#show details of all the libssh2 updates
-root@photon-9a8c05dd97e9 [ ~ ]# tdnf updateinfo info libssh2
+```
+
+Show details of all the libssh2 updates
+root@photon [ ~ ]# tdnf updateinfo info libssh2
        Name : libssh2-1.9.0-2.ph3.x86_64.rpm
   Update ID : patch:PHSA-2020-3.0-0047
        Type : Security
@@ -81,11 +90,12 @@ Description : Security fixes for {'CVE-2019-3859', 'CVE-2019-3862', 'CVE-2019-38
     Updated : Fri Mar 29 16:04:18 2019
 Needs Reboot: 0
 Description : Security fixes for {'CVE-2019-3855'}
+``` 
  
- 
- 
-#install all security updates >= score 9.0 (CVSS_v3.0_Severity)
-root@photon-9a8c05dd97e9 [ ~ ]# tdnf update --sec-severity 9.0
+install all security updates >= score 9.0 (CVSS_v3.0_Severity)
+
+```console
+root@photon [ ~ ]# tdnf update --sec-severity 9.0
 Upgrading:
 apache-tomcat                  noarch          8.5.50-1.ph3         photon-updates    9.00M 9440211
 bash                           x86_64          4.4.18-2.ph3         photon-updates    3.16M 3315720

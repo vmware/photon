@@ -1,5 +1,5 @@
 ---
-title:  List Disk Partitions with `fdisk`
+title:  List Disk Partitions with 'fdisk'
 weight: 4
 ---
 
@@ -7,12 +7,15 @@ The `fdisk` command manipulates the disk partition table. You can, for example, 
 
 The following example shows `/dev/sda1` to be the root Linux partition: 
 
-	fdisk -l
+```console
+fdisk -l
 	Disk /dev/ram0: 4 MiB, 4194304 bytes, 8192 sectors
 	Units: sectors of 1 * 512 = 512 bytes
 	Sector size (logical/physical): 512 bytes / 4096 bytes
 	I/O size (minimum/optimal): 4096 bytes / 4096 bytes
+
 	...
+	
 	Disk /dev/sda: 8 GiB, 8589934592 bytes, 16777216 sectors
 	Units: sectors of 1 * 512 = 512 bytes
 	Sector size (logical/physical): 512 bytes / 512 bytes
@@ -23,7 +26,4 @@ The following example shows `/dev/sda1` to be the root Linux partition:
 	Device        Start      End  Sectors Size Type
 	/dev/sda1      2048 16771071 16769024   8G Linux filesystem
 	/dev/sda2  16771072 16777182     6111   3M BIOS boot
-
-
-
-
+```

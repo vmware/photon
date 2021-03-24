@@ -7,7 +7,7 @@ Perform the following steps to configure the kubelet on the node:
 
 1. Edit /etc/kubernetes/kubelet to appear like this:
 
-    ```
+    ```ini
     ###
     # Kubernetes kubelet (node) config
     

@@ -18,7 +18,7 @@ After you have downloaded the OVA, log in to your vSphere environment and perfor
 
     
     
-     ![Create new virtual machine](../../images/vs-iso-new.png)
+     ![Create new virtual machine](/docs/installation-guide/images/vs-iso-new.png)
     
     Choose **Next**.
 
@@ -26,7 +26,7 @@ After you have downloaded the OVA, log in to your vSphere environment and perfor
 
     Enter a name for the virtual machine, and select the OVA file.
     
-    ![OVA file](../../images/vs-ova-name-selected.png)
+    ![OVA file](/docs/installation-guide/images/vs-ova-name-selected.png)
     
     Choose **Next**.
 
@@ -34,7 +34,7 @@ After you have downloaded the OVA, log in to your vSphere environment and perfor
 
     From the Select storage screen, select the target datastore for your VM.
     
-    ![Target datastore](../../images/vs-ova-storage.png)
+    ![Target datastore](/docs/installation-guide/images/vs-ova-storage.png)
     
     Choose  **Next**.
 
@@ -42,7 +42,7 @@ After you have downloaded the OVA, log in to your vSphere environment and perfor
 
     Read through the Photon OS License Agreement, and then choose **I Agree**.
     
-    ![License](../../images/vs-ova-license.png)
+    ![License](/docs/installation-guide/images/vs-ova-license.png)
     
     Choose **Next**.
 
@@ -50,14 +50,14 @@ After you have downloaded the OVA, log in to your vSphere environment and perfor
 
     Photon OS is provisioned with a maximum disk size. By default, Photon OS uses only the portion of disk space that it needs, usually much less that the entire disk size ( **Thin** client). If you want to pre-allocate the entire disk size (reserving it entirely for Photon OS instead), select **Thick**  instead.
        
-    ![Deployment Options](../../images/vs-ova-deployment-options.png)
+    ![Deployment Options](/docs/installation-guide/images/vs-ova-deployment-options.png)
         
     Choose **Next**.
 
 1. Verify Deployment Settings
 
         
-	![Deployment settings](../../images/vs-ova-settings.png)
+	![Deployment settings](/docs/installation-guide/images/vs-ova-settings.png)
         
 	Click **Finish**. vSphere uploads and validates your OVA. Depending on bandwidth, this operation might take a while.
         
@@ -65,7 +65,7 @@ After you have downloaded the OVA, log in to your vSphere environment and perfor
 
 7. Change Login Settings
 
-	 ![Login prompt](../../images/splashscreen23.png)
+	 ![Login prompt](/docs/installation-guide/images/splashscreen23.png)
         
 	After the VM is booted, open the command window. vSphere prompts you to log in.
         
@@ -80,9 +80,9 @@ After you have downloaded the OVA, log in to your vSphere environment and perfor
         
 	Once logged in, you will see the shell prompt.
         
-	![Shell prompt](../../images/vs-ova-login.png)
+	![Shell prompt](/docs/installation-guide/images/vs-ova-login.png)
         
-	Once complete, proceed to [Deploying a Containerized Application in Photon OS](../../deploying-a-containerized-application-in-photon-os/).
+	Once complete, proceed to [Deploying a Containerized Application in Photon OS](/docs/installation-guide/deploying-a-containerized-application-in-photon-os/).
 
 8. Export the VM as a Template (Optional)
 

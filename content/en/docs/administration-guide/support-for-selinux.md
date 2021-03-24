@@ -26,12 +26,14 @@ To enable SELinux on Photon OS:
 
 1. After reboot, the system runs in SELinux permissive mode. To confirm, check the journal:
 
-        journalctl -b0 | grep -i selinux
+    ```console
+    journalctl -b0 | grep -i selinux
 
-        Feb 26 21:42:09 photon-machine kernel: SELinux:  Initializing.
-        Feb 26 21:42:09 photon-machine kernel: SELinux:  policy capability ...
-        Feb 26 21:42:09 photon-machine kernel: audit: type=1403 audit(1589406128.920:2): auid=4294967295 ses=4294967295 lsm=selinux res=1
-        Feb 26 21:42:09 photon-machine systemd[1]: Successfully loaded SELinux policy in 322.475ms.
+    Feb 26 21:42:09 photon-machine kernel: SELinux:  Initializing.
+    Feb 26 21:42:09 photon-machine kernel: SELinux:  policy capability ...
+    Feb 26 21:42:09 photon-machine kernel: audit: type=1403 audit(1589406128.920:2): auid=4294967295 ses=4294967295 lsm=selinux res=1
+    Feb 26 21:42:09 photon-machine systemd[1]: Successfully loaded SELinux policy in 322.475ms.
+    ```
 
 ## Switch SELinux to enforcing mode ##
 
@@ -46,54 +48,80 @@ The three methods to toggle enforcing mode are as follows:
 Photon OS provides an ability to develop customized additional policy on top of existing default policy.
 The following example is for adding the sys_admin capability policy:
 
-1. Install policy development packages
+1. Install policy development packages:
+    
+    ```console
     tdnf install -y selinux-policy-devel semodule-utils
+    ```
 
 2. Create .te file
+    
+    ```console
     cat getty_local.te
     policy_module(getty_local, 1.0)
 
     gen_require(`
         type getty_t;
           ')
-
+    
     allow getty_t self:capability sys_admin;
+    ```
 
 3. Compile it into .pp file
+
+    ```console
     make -f /usr/share/selinux/devel/Makefile getty_local.pp
+    ```
 
 4. Load it with priority 200. It will permanently alter default policy. And this change will survive reboot cycle.
+    
+    ```console
     semodule -i getty_local.pp -X 200
+    ```
 
 5. Check result
+    
+    ```console
     sesearch -A -s getty_t -t getty_t -c capability
     allow getty_t getty_t:capability { chown dac_override dac_read_search fowner fsetid setgid sys_admin sys_resource sys_tty_config };
+    ```
 
 6. List of loaded modules and their priorities
+    
+    ```console
     semodule -lfull
+    ```
 
 ## Debugging SELinux ##
 
 Install the debugging tools as follows:
 
-    tdnf install -y setools python3-pip
+```console
+tdnf install -y setools python3-pip
 
-    pip3 install networkx
+pip3 install networkx
+```
 
 List all actions denied by Selinux using the following command:
 
-    journalctl _TRANSPORT=audit -b 0 | grep denied
+```console
+journalctl _TRANSPORT=audit -b 0 | grep denied
 
-    Feb 26 21:42:43 photon-machine audit[445]: AVC avc:  denied  { sys_admin } for  pid=445 comm="agetty" capability=21
-    scontext=system_u:system_r:getty_t:s0-s0:c0.c1023 tcontext=system_u:system_r:getty_t:s0-s0:c0.c1023 tclass=capability permissive=0
+Feb 26 21:42:43 photon-machine audit[445]: AVC avc:  denied  { sys_admin } for  pid=445 comm="agetty" capability=21
+scontext=system_u:system_r:getty_t:s0-s0:c0.c1023 tcontext=system_u:system_r:getty_t:s0-s0:c0.c1023 tclass=capability permissive=0
+```
 
 You can see that the agetty process running in the getty_t context tries to change the capability of getty_t target to obtain `sys_admin`. To view the capability that getty_t can obtain:
 
-    sesearch -A -s getty_t -t getty_t -c capability
+```console
+sesearch -A -s getty_t -t getty_t -c capability
 
-    allow getty_t getty_t:capability { chown dac_override dac_read_search fowner fsetid setgid sys_resource sys_tty_config };
+allow getty_t getty_t:capability { chown dac_override dac_read_search fowner fsetid setgid sys_resource sys_tty_config };
+```
 
-Note: `sys_admind` is not listed there and can be added. 
+{{% alert title="Note" %}}
+> `sys_admind` is not listed there but can be added. 
+{{% /alert %}}
 
 
 ## Important SELinux Files ##
@@ -120,7 +148,9 @@ Here are some of the important SELinux files:
 
 If compilation fails by any reason and it complains on some line number in the `.cil` file. You can run the pp compiler to get the plain text cil output.
 
-    /usr/libexec/selinux/hll/pp getty_local.pp
-    (roleattributeset cil_gen_require system_r)
-    (typeattributeset cil_gen_require getty_t)
-    (allow getty_t self (capability (sys_admin)))
+```
+/usr/libexec/selinux/hll/pp getty_local.pp
+(roleattributeset cil_gen_require system_r)
+(typeattributeset cil_gen_require getty_t)
+(allow getty_t self (capability (sys_admin)))
+```

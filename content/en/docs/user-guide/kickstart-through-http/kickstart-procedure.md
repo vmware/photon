@@ -15,9 +15,9 @@ To use the Packer template, you must set the variables that the template uses. Y
 
 Set the following variables:
 
-    - `iso_file` - The photon ISO for the build. This file can be local or remote.
-    - `iso_sha1sum` – The SHA1 sum of the ISO you want to build.
-    - `product_version` - The Photon OS release version that you want to build. This version is added to the image filename. 
+- `iso_file` - The photon ISO for the build. This file can be local or remote.
+- `iso_sha1sum` – The SHA1 sum of the ISO you want to build.
+- `product_version` - The Photon OS release version that you want to build. This version is added to the image filename. 
 
 Preset JSON files with the required parameters are located in the `photon-packer-templates/vars` folder.
 

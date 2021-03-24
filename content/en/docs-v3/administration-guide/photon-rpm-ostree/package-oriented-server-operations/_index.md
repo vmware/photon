@@ -6,7 +6,7 @@ weight: 10
 Now that we have a Photon RPM-OSTree server up and running (if not, see how to [install](../creating-a-rpm-ostree-server/)), we will learn how to provide the desired set of packages as input and instruct rpm-ostree to compose a filetree, that will result in creation (or update) of an OSTree repo.   
 The simplest way to explain is to take a look at the files installed by the Photon RPM-OSTree server during setup.
 
-```
+```console
 root [ ~ ]# cd /srv/rpm-ostree/
 root [ /srv/rpm-ostree ]# ls -l
 total 16
@@ -19,12 +19,16 @@ lrwxrwxrwx 1 root root   28 Aug 28 19:06 photon-ostree.repo -> /etc/yum.repos.d/
 lrwxrwxrwx 1 root root   36 Aug 28 19:06 photon-updates-ostree.repo -> /etc/yum.repos.d/photon-updates.repo
 drwxr-xr-x 7 root root 4096 Aug 20 22:27 repo
 ```
+
 ## JSON configuration file
 
 How can we tell rpm-ostree what packages we want to include, where to get them from and how to compose the filetree? There is JSON file for that. Let's take a look at photon-base.json used by the Photon OS team.  
 
-```
+```console
 root [ /srv/rpm-ostree ]# cat photon-base.json
+```
+
+```json
 {
     "comment": "Photon Minimal OSTree",
 

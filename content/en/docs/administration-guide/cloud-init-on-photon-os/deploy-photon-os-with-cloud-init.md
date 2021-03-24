@@ -1,5 +1,5 @@
 ---
-title:  Deploy Photon OS With `cloud-init`
+title:  Deploy Photon OS With 'cloud-init'
 weight: 2
 ---
 

@@ -3,4 +3,4 @@ title:  Prerequisites
 weight: 1
 ---
 
-You need two or more machines with the 3.0 general availability or later version of Photon OS installed.
+You need two or more machines with version 3.0 "GA" or later of Photon OS installed. It is recommended to use the latest 4.0 GA version.
