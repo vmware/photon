@@ -3,9 +3,43 @@ The Photon OS project team welcomes documentation contributions from the communi
 
 To help you get started making contributions to Photon OS Documentation, we are providing this document to outline how the site is structured, how it gets updates, and how to contribute changes.
 
-Documentation changes can be as large as adding a whole set of new documents, or as small as fixing a single typo or a bad link.
+Doc changes can be as tiny as 1 line, or bigger with new files added. You could fix a spelling mistake, or create a whole new section with a walkthrough for a specific use case, becuase that's what open source and community are all about.
 
-## Scope and Structure
+## Submitting Changes
+
+At a high level, changes go through the following workflow:
+
+- Contributor Forks and Pulls vmware/photon 
+- Contributor Makes changes
+- Contributor Commits changes
+- Contributor Pushes changes to fork
+- Contributor Submits a Pull Request from their fork to vmware/photon with the change
+  - Contributor is asked by CLAbot to Sign the VMware CLA if it hasn't already been signed
+- Maintainers Review the Pull Request
+- Maintainers Aprove and Publish, suggest changes, or close the PR with an explaination
+  - Subsequent commits can be made to the same PR to address any changes needed without having to close the PR and then open a new one.
+- GitHub Actions Respond after changes are checked in
+  - On each 'Push' to the `photon-hugo` branch, the Action will execute a build workflow to convert the Hugo source into the final presentation HTML
+  -  After Building it Deploys the contents of /public/ (i.e. the html output of the build) to the `gh-pages` branch, which in turn feeds [vmware.github.io/photon](https://vmware.github.io/photon).
+
+
+### Making Changes The Super Simple Way
+
+The Photon docs have the a feature to make changes to the source content of the repo directly from GitHub.
+
+In the upper right corner of every [doc page](https://vmware.github.io/photon/docs/), there is an ***Edit this page*** link. When clicked, it will open an editor to make changes and allow you to quickly submit a pull request. No manually cloning, forking or otherwise dealing with git necessary.  If your changes are approved and merged into the branch, the site automation will kick in to rebuild and redeploy the site without any other intervention, and you can automatically delete your fork and/or branch.
+
+## Contributing Classic Way
+
+For those familiar with using git and contributing to open source projects, this section should explain what you'll need to know about how the docs site is built so that you can make a meaningful contribution.
+
+### How Publishing Works
+
+The site itself is a 'static site', meaning there is no database, just HTML, CSS and Javascript, hosted via [GitHub Pages.](https://pages.github.com/). We chose to use [Hugo](https://gohugo.io) to deliver this (because it's fantastic, really!), with a modified version of the [Docsy](https://docsy.dev) 'theme'. Docsy is used to manage documentation for many open source projects including [Kubernetes](https://kubernetes.io/docs/home/), and is built with the help of [Bootstrap 4.5](https://getbootstrap.com). Changes are listed in the /themes/photon-theme/CHANGES.md file.
+
+The [Docsy Documentation](https://www.docsy.dev/docs/) has a varity of examples on the [various things](https://www.docsy.dev/docs/adding-content/) that can be done with content beyond simple text changes. For example, [Shortcodes](https://gohugo.io/templates/shortcode-templates/) can be quite useful for content writers.
+
+### Branch Scope and Structure
 
 This branch ([photon-hugo](https://github.com/vmware/photon/tree/photon-hugo)) contains all content that is represented in [vmware.github.io/photon](https://vmware.github.io/photon). 
 
@@ -57,37 +91,28 @@ photon/content/en/
 
 ```
 
-## How Publishing Works
+### 'docs' vs. 'docs-v3' vs. the older?
 
-The site itself is a 'static site', meaning there is no database, just HTML, CSS and Javascript, hosted via [GitHub Pages.](https://pages.github.com/). We chose to use [Hugo](https://gohugo.io) to deliver this (because it's fantastic, really!), with a modified version of the [Docsy](https://docsy.dev) 'theme'. Docsy is used for many open source projects including [Kubernetes](https://kubernetes.io/docs/home/), and is built with the help of [Bootstrap 4.5](https://getbootstrap.com).Changes to Docsy are listed in the /themes/photon-theme/CHANGES.md file.
+All of the 4.0 content exists in /docs/ and is being updated regularly by the team.
+The docs-v3 folder contains the first iteration of the site (which 3.0 was current at the time) when we converted it from the old Gitbook process. Becasue things move quickly sometimes, it's likely some changes were made to /docs/ that didn't make their way to /docs-v3/. If you spot an error in the v3 docs, check to see if it's fixed in the new version. 
 
-The [Docsy Documentation](https://www.docsy.dev/docs/) has a varity of examples on the [various things](https://www.docsy.dev/docs/adding-content/) that can be done with content beyond simple text changes. 
+We accept changes to docs-v3 currently, but with the goal of addressing errors, missing images or bad links.
 
 
-### Making Changes The Super Simple Way
-
-The Photon docs have the a feature to make changes to the source content of the repo directly from GitHub.
-
-In the upper right corner of every [doc page](https://vmware.github.io/photon/docs/), there is an ***Edit this page*** link. When clicked, it will open an editor to make changes and allow you to quickly submit a pull request. No cloning, forking or otherwise dealing with git necessary.  If your changes are approved and merged into the branch, the site automation will kick in to rebuild and redeploy the site without any other intervention.
-
-### Contributing Classic Way
-
-For those familiar with using git and contributing to open source projects, this section should explain what you'll need to know about how the docs site is built so that you can make a meaningful contribution.
-
-#### Important Thinngs to know: 
+## Important Thinngs to know: 
 As mentioned, the `photon-hugo` branch contains all the necessary content and design to fully build the static html that lives at vmware.github.io/photon/. 
 
 All content is written in Markdown, located in `/content/en/`, so changes should be made to these files and not to HTML directly, unless you're making changes to the template itself.
 
 The markdown content gets converted into HTML via Hugo [by running the 'hugo' command](https://gohugo.io/getting-started/usage/). The GitHub Action essentially automates this for publishing.
 
-There are 3 SCSS Pre-processors from Node.js which are required for local building. (autoprefixer, postcss-cli, postcss)
+There are 3 SCSS Pre-processors from Node.js which are required for building. (autoprefixer, postcss-cli, postcss) (install with `npm install -D autoprefixer postcss postcss-cli`)
 
-To make changes to existing content, you can simply modify your local copy with a text editor, save, do your `git commit` and `git push`, and finally submit a PR with your changes via your clone or through your fork.
+To make changes to existing content, modify your local copy with a text editor, save, do your `git commit` and `git push` workflows, and finally submit a PR with your changes via your clone or through your fork.
 
 If you want to create new content, there are some considerations to make regarding [Front Matter](https://gohugo.io/content-management/front-matter/) metadata, particularly around the `weight` attribute, which determines the order that the content gets displayed relative to the folder it's in within the left sidebar menu.
 
-If you want to create a new file, you could either simply create the .md file, give it a name and the appropriate front matter, or use the [hugo cli](https://gohugo.io/commands/):
+If you want to create a new file, you could either simply create the .md file, give it a name and the appropriate front matter, or use the [hugo cli](https://gohugo.io/commands/) if you hvae [Hugo installed](https://gohugo.io/getting-started/installing/):
 
 `hugo new docs/path/to/yourfile.md`
 
@@ -97,22 +122,29 @@ For reference, just have a look at any of the other markdown content within /doc
 
 
 
-#### Local Site Build Prerequisites
+## Local Site Build Prerequisites
 
-If you want to build and test the site locally, you'll need the following:
+Building and running the site locally is _fun_ becuase you get to see your changes exactly how they'll be on the web after the build process finishes and the site is live. You can even see changes in real-time (_with some caveats_) without having to rebuild the site every time you change and save a markdown file. 
 
-- Hugo installed locally (min version 0.75, but always try to use the latest version)
+To build and test the site locally, you'll need the following:
+
+- `hugo` installed locally (min version 0.75, but always try to use the latest version... current version of the site builds with version v0.80.0)
 - Node.js and the following node modules:
   - autoprefixer
   - postcss-cli
   - postcss
 - A clone or fork of this repo with `photon-hugo` as the active branch.
 
-Hugo and this site can be built on x86 or ARM64 CPUs thanks to Hugo having being compiled to run on ARM64. (i.e. it can be built on an M1 Mac or Raspberry Pi without emulation. yay!)
+Hugo and this site can be built on x86 or ARM64 CPUs thanks to Hugo and Golang having being compiled to run on ARM64. (i.e. it can be built on an M1 Mac or Raspberry Pi without emulation. yay!)
 
-#### Installing Dependencies
+### Installing Dependencies
 
-- Firstly, you'll need to have Hugo installed. [Here is a link to Hugo's documentation](https://gohugo.io/getting-started/installing/) for more information on how to do that for your operating system.
+- Install Hugo for your platform and OS. [Here is a link to Hugo's documentation](https://gohugo.io/getting-started/installing/) for more information on how to do that for your operating system.
+
+If you have a Mac with [Homebrew](https://brew.sh), you can just do:
+```
+brew install hugo
+```
 
 - Install [Node.JS](https://nodejs.org/en/download/package-manager/) for your platform so you can use `npm`
 
@@ -122,11 +154,11 @@ Hugo and this site can be built on x86 or ARM64 CPUs thanks to Hugo having being
 
 Once those are installed, you should be able to run `hugo` to build the site locally or `hugo server` to run the site in a live-reload local environment.
 
-#### Building and Reviewing your Changes Locally
+### Building and Reviewing your Changes Locally
 
-You can simply make changes to the Markdown content without needing to build the entire site locally. 
+To submit changes, you don't need to build the site locally. 
 
-However, if you want to review the changes locally in what it's final form should look like, you would run the `hugo server` command from the root of the repo.
+However, if you want to review the changes in what it's final form should look like, you would run the `hugo server` command from the root of the repo.
 
 `hugo server` will build the site in real-time and present it to you at http://localhost:1313.  Any changes that happen to markdown or design content will automatically be rebuild and loaded into the site when it detects that files have changed.
 
@@ -155,23 +187,18 @@ Web Server is available at //localhost:1313/ (bind address 127.0.0.1)
 Press Ctrl+C to stop
 ```
 
-If you want to simulate a full site generation, you can just run the `hugo` command. It will then render the entire site into the /public/ folder so you can go browse and open the local .html content directly. This folder is ignored by the repo through the .gitignore file.
+If you want to simulate a full site generation, you can just run the `hugo` command. It will then render the entire site into the `/public/` folder so you can go browse and open the local .html content directly. This folder is ignored by the repo through the .gitignore file.
 
-## Submitting Changes
-
-At a high level, contributions go through the following workflow:
-
-- Clone or Fork and Pull vmware/photon 
-- Make changes
-- Commit changes
-- Push changes to fork or origin
-- Pull Request the change
-  - Sign CLA if not already done
-- Request gets reviewed
-- Publish or suggest changes
-  - Subsequent commits can be made to the same PR to address any changes needed without having to close the PR and then open a new one.
-
-
-### CLA Bot
+## CLA Bot
 
 If you wish to contribute and you have not signed our Contributor License Agreement (CLA), our CLA-bot will take you through that process and then update the issue when you open a [Pull Request](https://help.github.com/articles/creating-a-pull-request). If you have questions about the CLA process, see our CLA [FAQ](https://cla.vmware.com/faq) or contact us through the GitHub issue tracker.
+
+## Wrapping up
+
+Using Hugo has helped us make our Docs a part of our CI process, which in turn enables us to make changes quickly while making the website itself almost disaster proof. 
+
+## Help us make Contributing better!
+
+We're open to discussion on ways we can to make this process easier! Because we're only human, surely we've missed some detail in the workflow that the keen eyes of a new contributor would catch... so we encourage folks to [file issues](https://github.com/vmware/photon/issues/new?title=[DOCS-CONTRIBUTING]: ) if theres something missing in the documentation that would help you get started more easily.
+
+And if you made it all the way to the bottom here... you have my sincere thanks for wanting to help!
