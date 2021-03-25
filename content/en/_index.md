@@ -72,7 +72,7 @@ linkTitle = "VMware Photon OS Home"
 
 	featuredImg3="realtime-clock.svg"
 	textLead3="Real Time Kernel Support"
-	textSub3="Photon OS provides a performant stack for deployments like Virtual Radio Access Network application that demand real time capabilities and ultra-low latency response"
+	textSub3="Photon OS provides a performant stack for deployments like Virtual Radio Access Network applications that demand real time capabilities and ultra-low latency response"
 	buttonTxt3="Read The Docs"
 	buttonURL3="/docs/"
 	>}}
