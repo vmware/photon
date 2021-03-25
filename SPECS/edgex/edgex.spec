@@ -4,7 +4,7 @@
 Summary:        EdgeX Foundry Go Services
 Name:           edgex
 Version:        1.2.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/edgexfoundry/edgex-go
 Group:          Applications/System
@@ -40,6 +40,9 @@ mv %{_builddir}/src/github.com/edgexfoundry/edgex-go-%{version} %{_builddir}/src
 
 %build
 cd %{_builddir}/src/github.com/edgexfoundry/edgex-go
+
+go mod tidy
+export GO111MODULE=auto
 
 # Disable consul [Registry] section for all services
 find cmd -name configuration.toml | xargs sed -i "/^\[Registry\]/,+3 s/^/#/"
@@ -79,6 +82,8 @@ sed -i "s/SIGINT/SIGKILL/" %{buildroot}%{_libdir}/systemd/system/edgex-core-data
 %{_var}/log/*
 
 %changelog
+*   Thu Mar 25 2021 Piyush Gupta<gpiyush@vmware.com> 1.2.1-4
+-   Bump up version to compile with new go
 *   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.2.1-3
 -   Bump up version to compile with new go
 *   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.2.1-2

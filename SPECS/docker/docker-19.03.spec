@@ -3,7 +3,7 @@
 Summary:        Docker
 Name:           docker
 Version:        19.03.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -100,6 +100,7 @@ mv components/packaging ../
 
 %build
 export GOPATH="$(pwd)"
+export GO111MODULE=auto
 
 CONTAINERD_MIN_VER="1.2.0-beta.1"
 BUILDTIME="$(date -u --rfc-3339 ns | sed -e 's/ /T/')"
@@ -286,6 +287,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Thu Mar 25 2021 Piyush Gupta<gpiyush@vmware.com> 19.03.15-2
+-   Bump up version to compile with new go
 *   Fri Mar 19 2021 Ankit Jain <ankitja@vmware.com> 19.03.15-1
 -   Update to 19.03.15
 *   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 19.03.10-3
