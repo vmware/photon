@@ -1,6 +1,6 @@
 ---
 title: Overview
-weight: 2
+weight: 20
 ---
 
 *Overview of Photon OS* provides an introduction to Photon OS, its versions, and distinguishing features.

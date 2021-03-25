@@ -1,6 +1,6 @@
 ---
 title: Installation Guide
-weight: 3
+weight: 30
 ---
 
 The Photon OS *Installation Guide* provides information about how administrators can install Photon OS.
