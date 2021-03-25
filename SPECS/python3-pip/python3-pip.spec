@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           python3-pip
 Version:        21.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/pip
 Summary:        The PyPA recommended tool for installing Python packages.
 License:        MIT
@@ -13,7 +13,8 @@ Source0:        https://pypi.python.org/packages/11/b6/abcb525026a4be042b486df43
 # To get tests:
 # git clone https://github.com/pypa/pip && cd pip
 # git checkout 9.0.1 && tar -czvf ../pip-tests-9.0.1.tar.gz tests/
-%define sha1 pip-tests=f469fa967798bbae82039151e93d696bc2abfd87
+Source1:        pip-tests-%{version}.tar.gz
+%define sha1 pip-tests=7a2a0eb406a8c27fd4961164ace46dc28e0cb216
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -48,5 +49,7 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 #also previous python3-pip was providing pip3 and not pip
 
 %changelog
+*   Fri Mar 26 2021 Piyush Gupta <gpiyush@vmware.com> 21.0.1-2
+-   Added source name for pip-tests
 *   Tue Feb 16 2021 Tapas Kundu <tkundu@vmware.com> 21.0.1-1
 -   Updating pip3 to 21.0.1
