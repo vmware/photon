@@ -1,13 +1,13 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           tuned
-Version:        2.13.0
-Release:        4%{?dist}
+Version:        2.15.0
+Release:        1%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
 Url:            https://github.com/redhat-performance/tuned
 Source:         tuned-%{version}.tar.gz
-%define         sha1 tuned=d3087cc836c493fb6da69326c36ed5ee25ca67bd
+%define         sha1 tuned=bfb3def0b687bbdae2b3e191d2fda46b3ffca1c0
 Patch0:         remove_desktop_utils_dependency.patch
 Patch1:         0001-bootloader-plugin-support-for-photon.patch
 Patch2:         0001-tuned-fix-bug-in-sysctl-verify.patch
@@ -144,6 +144,8 @@ make test
 %{_mandir}/man8/scomes.*
 
 %changelog
+*   Thu Mar 25 2021 Ankit Jain <ankitja@vmware.com> 2.15.0-1
+-   Update to latest version 2.15.0
 *   Thu Jan 14 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.13.0-4
 -   Add /var/lib/tuned folder to rpm
 *   Mon Sep 14 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.13.0-3
