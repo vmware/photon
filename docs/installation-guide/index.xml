@@ -172,16 +172,16 @@ Build completed. RPMS are in '&amp;lt;HOME&amp;gt;/photon/tools/examples/build_s
 &lt;pre>&lt;code> docker run -d -p 80:80 vmwarecna/nginx
 &lt;/code>&lt;/pre>
 &lt;p>This pulls the Nginx Web Server files and appropriate dependent container filesystem layers required for this containerized application to run.&lt;/p>
-&lt;p>&lt;img src="../images/vs-docker-run.png" alt="Docker run">&lt;/p>
+&lt;p>&lt;img src="../../docs/installation-guide/images/vs-docker-run.png" alt="Docker run">&lt;/p>
 &lt;p>After the &lt;strong>docker run&lt;/strong> process completes, you return to the command prompt. You now have a fully active website up and running in a container!&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Test the Web Server&lt;/p>
 &lt;p>To test that your Web Server is active, run the ifconfig command to get the IP address of the Photon OS Virtual Machine.&lt;/p>
-&lt;p>&lt;img src="../images/vs-docker-ifconfig.png" alt="IP address">&lt;/p>
+&lt;p>&lt;img src="../../docs/installation-guide/images/vs-docker-ifconfig.png" alt="IP address">&lt;/p>
 &lt;p>The output displays a list of adapters that are connected to the virtual machine. Typically, the web server daemon will be bound on &lt;strong>eth0&lt;/strong>.&lt;/p>
 &lt;p>Start a browser on your host machine and enter the IP address of your Photon OS Virtual Machine. You should see a screen similar to the following example as confirmation that your web server is active.&lt;/p>
-&lt;p>&lt;img src="../images/vs-docker-confirm.png" alt="Docker confirmation">&lt;/p>
+&lt;p>&lt;img src="../../docs/installation-guide/images/vs-docker-confirm.png" alt="Docker confirmation">&lt;/p>
 &lt;p>You can now run any other containerized application from Docker Hub or your own containerized application within Photon OS.&lt;/p>
 &lt;/li>
 &lt;/ol></description></item><item><title>Docs: Compatible Cloud Images</title><link>/docs/installation-guide/cloud-images/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/cloud-images/</guid><description>

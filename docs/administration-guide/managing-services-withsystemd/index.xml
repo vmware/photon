@@ -24,7 +24,7 @@ network.target static&lt;/code>&lt;/pre></description></item><item><title>Docs: 
 systemctl start sshd
 &lt;/code>&lt;/pre>
 &lt;p>The systemctl tool includes a range of commands and options for inspecting and controlling the state of systemd and the service manager. For more information, see the &lt;a href="https://www.freedesktop.org/software/systemd/man/systemctl.html">systemctl man page&lt;/a>.&lt;/p></description></item><item><title>Docs: Creating a Startup Service</title><link>/docs/administration-guide/managing-services-withsystemd/creating-a-startup-service/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-services-withsystemd/creating-a-startup-service/</guid><description>
-&lt;p>Use &lt;code>systemd&lt;/code> to create a sratup service.&lt;/p>
+&lt;p>Use &lt;code>systemd&lt;/code> to create a startup service.&lt;/p>
 &lt;p>The following example shows you how to create a systemd startup service that changes the maximum transmission unit (MTU) of the default Ethernet connection, &lt;code>eth0&lt;/code>.&lt;/p>
 &lt;ol>
 &lt;li>Concatenate the following block of code into a file:&lt;/li>

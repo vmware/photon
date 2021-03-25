@@ -221,22 +221,22 @@
 &lt;/li>
 &lt;li>
 &lt;p>The &lt;strong>Network Configuration&lt;/strong> screen appears, select one of the four options to configure your network.&lt;/p>
-&lt;p>&lt;img src="../../../docs/installation-guide/../images/networkconfig13.png" alt="Network Configuration">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide//images/networkconfig13.png" alt="Network Configuration">&lt;/p>
 &lt;ol>
 &lt;li>
 &lt;p>Choose &lt;strong>Configure network automatically&lt;/strong> and select &lt;strong>Next&lt;/strong> to configure the network automatically.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>To configure network automatically with the DHCP hostname, select &lt;strong>Configure network automatically with a DHCP hostname&lt;/strong> and select &lt;strong>Next&lt;/strong>. Enter the DHCP Hostname and select &lt;strong>Next&lt;/strong>.
-&lt;img src="../../../docs/installation-guide/../images/dhcphostname14.png" alt="../images/DHCP_hostname_for_your_system.png">&lt;/p>
+&lt;img src="../../../docs/installation-guide/images/dhcphostname14.png" alt="../images/DHCP_hostname_for_your_system.png">&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>To configure the network manually, select &lt;strong>Configure Network manually&lt;/strong>. In the window that appears, enter the IP Address, Netmask, Gateway and Nameserver and select &lt;strong>OK&lt;/strong>.
-&lt;img src="../../../docs/installation-guide/../images/Configure_Network_Manually.png" alt="../images/Configure_Network_Manually.png">&lt;/p>
+&lt;img src="../../../docs/images/Configure_Network_Manually.png" alt="../images/Configure_Network_Manually.png">&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>If your network interface is directly connected to the VLAN trunk port, choose &lt;strong>YES&lt;/strong> on the Configure the network screen. Enter the VLAN ID and select &lt;strong>Next&lt;/strong>.
-&lt;img src="../../../docs/installation-guide/../images/Configure_the_network.png" alt="Configure the network">.&lt;/p>
+&lt;img src="../../../docs/images/Configure_the_network.png" alt="Configure the network">.&lt;/p>
 &lt;/li>
 &lt;/ol>
 &lt;/li>
