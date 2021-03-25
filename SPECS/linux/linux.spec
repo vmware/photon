@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.258
+Version:    	4.4.263
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=a6550246626aa22cf47d51a03e429fd7c5d5b45b
+%define sha1 linux=e006aedf7c52e17d1c5d7d206b34c4f40c726acc
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -125,9 +125,6 @@ Patch82:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 #Fix for CVE-2019-19338
 Patch83:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch84:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
-
-#Part of the fix for CVE-2021-3347
-Patch85:        0001-futex-Ensure-the-correct-return-value-from-futex_loc.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -277,7 +274,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch82 -p1
 %patch83 -p1
 %patch84 -p1
-%patch85 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -436,6 +432,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Wed Mar 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.263-1
+-   Update to version 4.4.263
 *   Fri Feb 26 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.258-1
 -   Update to version 4.4.258
 *   Tue Feb 23 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.257-2

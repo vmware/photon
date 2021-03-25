@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.258
+Version:       4.4.263
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
@@ -12,7 +12,7 @@ Distribution:  Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=a6550246626aa22cf47d51a03e429fd7c5d5b45b
+%define sha1 linux=e006aedf7c52e17d1c5d7d206b34c4f40c726acc
 Source1:       config-esx
 Source2:       pre-preun-postun-tasks.inc
 
@@ -124,9 +124,6 @@ Patch85:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 #Fix for CVE-2019-19338
 Patch86:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch87:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
-
-#Part of the fix for CVE-2021-3347
-Patch88:        0001-futex-Ensure-the-correct-return-value-from-futex_loc.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -246,7 +243,6 @@ The Linux package contains the Linux kernel doc files
 %patch85 -p1
 %patch86 -p1
 %patch87 -p1
-%patch88 -p1
 
 %build
 # patch vmw_balloon driver
@@ -337,6 +333,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Mar 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.263-1
+-   Update to version 4.4.263
 *   Fri Feb 26 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.258-1
 -   Update to version 4.4.258
 *   Tue Feb 23 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.257-2
