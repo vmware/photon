@@ -1,11 +1,11 @@
 Summary:	Logrotate
 Name:		logrotate
-Version:	3.9.1
-Release:	4%{?dist}
+Version:	3.11.0
+Release:	1%{?dist}
 License:	GPL+
 URL:		https://github.com/logrotate/logrotate/
 Source0:	https://github.com/logrotate/logrotate/archive/%{name}-%{version}.tar.gz
-%define sha1 logrotate=7ba734cd1ffa7198b66edc4bca17a28ea8999386
+%define sha1 logrotate=baeb2676edbfffb04a567e5b1a61e4e19cfc50f4
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -43,6 +43,8 @@ touch %{buildroot}%{_localstatedir}/lib/logrotate/logrotate.status
 %{_mandir}/man8/logrotate.8.gz
 /var/lib/logrotate/logrotate.status
 %changelog
+*       Wed Mar 25 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.11.0-1
+-       Updating logrotate to 3.11.0
 *       Mon Jul 31 2017 Kumar Kaushik <kaushikk@vmware.com> 3.9.1-4
 -       Creating /etc/logrotate.d folder as part of package installation, Bug#1878180.
 *       Wed Jun 14 2017 Anish Swaminathan <anishs@vmware.com> 3.9.1-3
