@@ -7,7 +7,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.2.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/coredns/coredns/releases/v%{version}.tar.gz
 Source0:        coredns-%{version}.tar.gz
@@ -37,6 +37,7 @@ export GOROOT=/usr/lib/golang
 export GOPATH=/usr/share/gocode
 export GOBIN=/usr/share/gocode/bin
 export PATH=$PATH:$GOBIN
+export GO111MODULE=auto
 mkdir -p ${GOPATH}/src/${PKG}
 cp -rf . ${GOPATH}/src/${PKG}
 pushd ${GOPATH}/src/${PKG}
@@ -60,6 +61,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/coredns
 
 %changelog
+*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.2.0-10
+-   Bump up version to compile with new go
 *   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.2.0-9
 -   Bump up version to compile with new go
 *   Thu Dec 17 2020 Ankit Jain <ankitja@vmware.com> 1.2.0-8

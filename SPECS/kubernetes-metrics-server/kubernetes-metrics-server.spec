@@ -1,7 +1,7 @@
 Summary:        Kubernetes Metrics Server
 Name:           kubernetes-metrics-server
 Version:        0.2.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/kubernetes-incubator/metrics-server/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
@@ -36,6 +36,7 @@ export GOOS=linux
 export GOHOSTOS=linux
 export GOROOT=/usr/lib/golang
 export GOPATH=/usr/share/gocode
+export GO111MODULE=auto
 export CGO_ENABLED=0
 mkdir -p ${GOPATH}/src/github.com/kubernetes-incubator/metrics-server
 cp -r * ${GOPATH}/src/github.com/kubernetes-incubator/metrics-server/
@@ -55,6 +56,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/metrics-server
 
 %changelog
+*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 0.2.1-8
+-   Bump up version to compile with new go
 *   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 0.2.1-7
 -   Bump up version to compile with new go
 *   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 0.2.1-6

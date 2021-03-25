@@ -3,7 +3,7 @@
 Summary:        CLI tool for spawning and running containers per OCI spec.
 Name:           runc
 Version:        1.0.0.rc93
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://runc.io/
 Source0:        https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
@@ -55,6 +55,7 @@ cd src/%{gopath_comp}
 
 %build
 export GOPATH="$(pwd)"
+export GO111MODULE=auto
 cd src/%{gopath_comp}
 make %{?_smp_mflags} GIT_BRANCH=%{RUNC_BRANCH} COMMIT_NO=%{RUNC_COMMIT} COMMIT=%{RUNC_COMMIT} BUILDTAGS='seccomp apparmor' EXTRA_LDFLAGS=-w runc man
 
@@ -74,6 +75,8 @@ make DESTDIR=%{buildroot} PREFIX=%{_prefix} BINDIR=%{_bindir} install install-ba
 %{_mandir}/man8/*
 
 %changelog
+*   Tue May 18 2021 Piyush Gupta<gpiyush@vmware.com> 1.0.0.rc93-3
+-   Bump up version to compile with new go
 *   Fri May 14 2021 Bo Gan <ganb@vmware.com> 1.0.0.rc93-2
 -   Fix for CVE-2021-30465
 *   Wed May 05 2021 Bo Gan <ganb@vmware.com> 1.0.0.rc93-1

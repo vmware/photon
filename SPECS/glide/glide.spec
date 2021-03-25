@@ -1,7 +1,7 @@
 Summary:        Vendor Package Management for Goland
 Name:           glide
 Version:        0.13.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        MIT
 URL:            https://github.com/Masterminds/glide
 Source0:        %{name}-%{version}.tar.gz
@@ -20,6 +20,7 @@ Glide is a tool for managing the vendor directory within a Go package.
 %setup
 
 %build
+go env -w GO111MODULE=auto
 mkdir -p ${GOPATH}/src/github.com/Masterminds/glide
 cp -r * ${GOPATH}/src/github.com/Masterminds/glide/.
 pushd ${GOPATH}/src/github.com/Masterminds/glide
@@ -43,6 +44,8 @@ popd
 %{_bindir}/glide
 
 %changelog
+*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 0.13.3-6
+-   Bump up version to compile with new go
 *   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 0.13.3-5
 -   Bump up version to compile with new go
 *   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 0.13.3-4

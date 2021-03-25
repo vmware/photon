@@ -1,7 +1,7 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.4.10
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd/
 Group:          System Environment/Security
@@ -23,6 +23,7 @@ A highly-available key value store for shared configuration and service discover
 %setup -q
 
 %build
+go mod vendor
 ./build
 
 %install
@@ -72,6 +73,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 3.4.10-6
+-   Bump up version to compile with new go
 *   Wed Apr 14 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.4.10-5
 -   Package /var/lib/etcd with 700 permission
 *   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 3.4.10-4

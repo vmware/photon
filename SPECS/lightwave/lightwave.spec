@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       10%{?dist}
+Release:       11%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -161,7 +161,7 @@ sed -i 's|http://central.maven.org|https://search.maven.org|' vmca/jdepends/buil
 sed -i 's|http://central.maven.org|https://search.maven.org|' config/jdepends/build.xml
 
 %build
-
+export GO111MODULE=auto
 cd build
 autoreconf -mif .. &&
 ../configure \
@@ -1395,6 +1395,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.3.1.34-11
+-   Bump up version to compile with new go
 *   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.3.1.34-10
 -   Bump up version to compile with new go
 *   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.3.1.34-9

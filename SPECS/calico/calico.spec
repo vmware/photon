@@ -1,7 +1,7 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        3.15.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/node
 Source0:        %{name}-%{version}.tar.gz
@@ -20,6 +20,7 @@ Calico node is a container that bundles together various components reqiured for
 %setup -n node-%{version}
 
 %build
+export GO111MODULE=auto
 mkdir -p dist
 go build -v -i -o dist/calico-node cmd/calico-node/main.go
 
@@ -38,6 +39,8 @@ sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/do
 /usr/share/calico/docker/fs/*
 
 %changelog
+*   Wed Jun 02 2021 Piyush Gupta<gpiyush@vmware.com> 3.15.2-2
+-   Bump up version to compile with new go
 *   Tue May 25 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.15.2-1
 -   Update to 3.15.2
 *   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 3.6.1-7

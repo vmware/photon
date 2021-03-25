@@ -4,7 +4,7 @@
 Summary:        EdgeX Foundry Go Services
 Name:           edgex
 Version:        0.7.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/edgexfoundry/edgex-go
 Group:          Applications/System
@@ -45,6 +45,7 @@ mv %{_builddir}/src/github.com/edgexfoundry/edgex-go-%{version} %{_builddir}/src
 %setup -D -c -T -a 1 -n src/github.com/edgexfoundry/edgex-go
 
 %build
+export GO111MODULE=auto
 cd %{_builddir}/src/github.com/edgexfoundry/edgex-go
 # patch influxdb go get path
 sed -i 's#influxdata/influxdb/client/v2#influxdata/influxdb1-client/v2#' internal/export/distro/influxdb.go
@@ -111,6 +112,8 @@ cp -a cmd/config-seed/res/properties %{buildroot}%{_datadir}/%{name}/config-seed
 %{_var}/log/*
 
 %changelog
+*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 0.7.1-8
+-   Bump up version to compile with new go
 *   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 0.7.1-7
 -   Bump up version to compile with new go
 *   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 0.7.1-6

@@ -3,7 +3,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -101,7 +101,7 @@ mv components/packaging ../
 
 %build
 export GOPATH="$(pwd)"
-
+export GO111MODULE=auto
 CONTAINERD_MIN_VER="1.2.0-beta.1"
 BUILDTIME="$(date -u --rfc-3339 ns | sed -e 's/ /T/')"
 PLATFORM="Docker Engine - Community"
@@ -287,6 +287,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Tue May 18 2021 Piyush Gupta<gpiyush@vmware.com> 18.09.9-8
+-   Bump up version to compile with new go
 *   Mon May 10 2021 Bo Gan <ganb@vmware.com> 18.09.9-7
 -   Relax containerd dependency
 *   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 18.09.9-6
