@@ -123,30 +123,30 @@ After you download the Photon OS ISO image into a folder of your choice, complet
     
     Each install option provides a different run-time environment, depending on your requirements.
     
-	  <table style="height: 170px;" border="1" cellspacing="0" cellpadding="10">
-		<tbody>
-		<tr>
-		<td><b>Option</b></td>
-		<td><b>Description</b></td>
-		</tr>
-		<tr>
-		<td><b>Photon Minimal</b></td>
-		<td>Photon Minimum is a very lightweight version of the container host runtime that is best suited for  for devices that have limited compute and memory capabilities. There is sufficient packaging and functionality to allow most common operations around modifying existing containers, as well as being a highly performant and full-featured runtime.</p></td>
-		</tr>
-		<tr>
-		<td><b>Photon Developer</b></td>
-		<td>Photon Developer includes several additional packages to enhance the authoring and packaging of containerized applications and/or system customization. Use Photon Developer for developing and packaging the application that will be run as a container, as well as authoring the container, itself. For testing and validation purposes, Photon Developer includes all components necessary to run containers.</td>
-		</tr>
-		<tr>
-		<td><b>Photon OSTree Host<b></td>
-		<td>This installation profile creates a Photon OS instance that will source its packages from a central rpm-ostree server and continue to have the library and state of packages managed by the definition that is maintained on the central rpm-ostree server.</td>
-		</tr>
-        <tr>
-		<td><b>Photon Real Time<b></td>
-		<td>This profile is available only for the x86_64 architecture. </td>
-		</tr>
-		</tbody>
-		</table>
+    <table style="height: 170px;" border="1" cellspacing="0" cellpadding="10">
+    <tbody>
+    <tr>
+    <td><b>Option</b></td>
+    <td><b>Description</b></td>
+    </tr>
+    <tr>
+    <td><b>Photon Minimal</b></td>
+    <td>Photon Minimum is a very lightweight version of the container host runtime that is best suited for  for devices that have limited compute and memory capabilities. There is sufficient packaging and functionality to allow most common operations around modifying existing containers, as well as being a highly performant and full-featured runtime.</p></td>
+    </tr>
+    <tr>
+    <td><b>Photon Developer</b></td>
+    <td>Photon Developer includes several additional packages to enhance the authoring and packaging of containerized applications and/or system customization. Use Photon Developer for developing and packaging the application that will be run as a container, as well as authoring the container, itself. For testing and validation purposes, Photon Developer includes all components necessary to run containers.</td>
+    </tr>
+    <tr>
+    <td><b>Photon OSTree Host<b></td>
+    <td>This installation profile creates a Photon OS instance that will source its packages from a central rpm-ostree server and continue to have the library and state of packages managed by the definition that is maintained on the central rpm-ostree server.</td>
+    </tr>
+    <tr>
+    <td><b>Photon Real Time<b></td>
+    <td>This profile is available only for the x86_64 architecture. </td>
+    </tr>
+    </tbody>
+    </table>
     
     **Note:**  The option you choose determines the disk and memory resources required for your installation.
     
@@ -154,15 +154,15 @@ After you download the Photon OS ISO image into a folder of your choice, complet
 
 1. The **Network Configuration** screen appears, select one of the four options to configure your network.
 
-    ![Network Configuration](/docs/installation-guide/../images/networkconfig13.png)
+    ![Network Configuration](/docs/installation-guide//images/networkconfig13.png)
     1. Choose **Configure network automatically** and select **Next** to configure the network automatically.
     1. To configure network automatically with the DHCP hostname, select **Configure network automatically with a DHCP hostname** and select **Next**. Enter the DHCP Hostname and select **Next**.
-     ![../images/DHCP_hostname_for_your_system.png](/docs/installation-guide/../images/dhcphostname14.png)
+     ![../images/DHCP_hostname_for_your_system.png](/docs/installation-guide/images/dhcphostname14.png)
     1. To configure the network manually, select **Configure Network manually**. In the window that appears, enter the IP Address, Netmask, Gateway and Nameserver and select **OK**.
-    ![../images/Configure_Network_Manually.png](/docs/installation-guide/../images/Configure_Network_Manually.png)
+    ![../images/Configure_Network_Manually.png](/docs/images/Configure_Network_Manually.png)
 
     1. If your network interface is directly connected to the VLAN trunk port, choose **YES** on the Configure the network screen. Enter the VLAN ID and select **Next**.
-    ![Configure the network](/docs/installation-guide/../images/Configure_the_network.png).
+    ![Configure the network](/docs/images/Configure_the_network.png).
 1. Select the Linux Kernel
 
     Select a Linux kernel to install.

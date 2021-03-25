@@ -23,7 +23,7 @@ Now that you have your container runtime environment up and running, you can eas
     
     This pulls the Nginx Web Server files and appropriate dependent container filesystem layers required for this containerized application to run.
     
-    ![Docker run](../images/vs-docker-run.png)
+    ![Docker run](/docs/installation-guide/images/vs-docker-run.png)
     
     After the **docker run**  process completes, you return to the command prompt. You now have a fully active website up and running in a container!
 
@@ -31,13 +31,13 @@ Now that you have your container runtime environment up and running, you can eas
 
     To test that your Web Server is active, run the ifconfig command to get the IP address of the Photon OS Virtual Machine.
     
-    ![IP address](../images/vs-docker-ifconfig.png)
+    ![IP address](/docs/installation-guide/images/vs-docker-ifconfig.png)
     
     The output displays a list of adapters that are connected to the virtual machine. Typically, the web server daemon will be bound on **eth0**.
     
     Start a browser on your host machine and enter the IP address of your Photon OS Virtual Machine. You should see a screen similar to the following example as confirmation that your web server is active.
     
-    ![Docker confirmation](../images/vs-docker-confirm.png)
+    ![Docker confirmation](/docs/installation-guide/images/vs-docker-confirm.png)
     
     You can now run any other containerized application from Docker Hub or your own containerized application within Photon OS.
 
