@@ -1,6 +1,6 @@
 ---
 title:  User Guide
-weight: 5
+weight: 50
 ---
 
 The Photon OS *User Guide* provides information about how to use Photon OS as a developer. 

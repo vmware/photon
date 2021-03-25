@@ -1,6 +1,6 @@
 ---
 title:  Administration Guide
-weight: 4
+weight: 40
 ---
 
 The Photon OS *Administration Guide* describes the fundamentals of administering Photon OS. 

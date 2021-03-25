@@ -1,6 +1,6 @@
 ---
 title:  Command-Line Reference
-weight: 6
+weight: 60
 ---
 
 The Photon OS *Command-Line Reference* provides information about the command-line interfaces available in Photon OS.

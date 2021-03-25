@@ -1,6 +1,7 @@
 ---
-title: What is New in Photon OS 4.0
-weight: 3
+title: What is New in Photon OS 4
+linkTitle: Whats New in Photon 4
+weight: 15
 ---
 
 Photon OS 4.0  provides support for the Real Time flavor of kernel linux-rt, SELinux , installer improvements, PMD role management improvements and critical updates to OSS packages including linux kernel, systemd, and glibc. This topic summarizes what's new and different in Photon OS 4.0. 

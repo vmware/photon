@@ -1,6 +1,6 @@
 ---
 title:  Troubleshooting Guide
-weight: 7
+weight: 70
 ---
 
 The Photon OS *Troubleshooting Guide* provides solutions for common problems that you might encounter while using Photon OS.
