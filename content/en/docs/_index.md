@@ -6,7 +6,7 @@ lastmod: "2021-02-10"
 
 The Photon OS Documentation provides information about how to install, configure, and use VMware Photon OS&trade;.
 
- ![PhotonOS Logo](images/Photon-4-bootsplash.png)
+ ![PhotonOS Logo](/docs/images/Photon-4-bootsplash.png)
 
 **Product version: 4.0**
 
