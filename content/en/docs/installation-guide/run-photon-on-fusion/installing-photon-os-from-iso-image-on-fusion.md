@@ -159,7 +159,7 @@ After you have downloaded the latest Photon OS ISO image into a folder of your c
     Select the option you want and press the Enter key.
 
 1. The **Network Configuration** screen appears, select one of the four options to configure your network.
-    ![Network Sonfiguration](/docs/installation-guide/images/networkconfig13.png)
+    ![Network Sonfiguration](/docs/images/networkconfig13.png)
     1. Choose **Configure network automatically** and select **Next** to configure the network automatically.
     1. To configure network automatically with the DHCP hostname, select **Configure network automatically with a DHCP hostname** and select **Next**. Enter the DHCP Hostname and select **Next**.
      ![../images/DHCP_hostname_for_your_system.png](/docs/installation-guide/images/dhcphostname14.png)
