@@ -1,7 +1,7 @@
 Summary:        Kubernetes DNS
 Name:           kubernetes-dns
 Version:        1.15.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/dns/archive/%{version}.tar.gz
 Source0:        kubernetes-dns-%{version}.tar.gz
@@ -35,9 +35,11 @@ export GOHOSTOS=linux
 export GOROOT=/usr/lib/golang
 export GOPATH=/usr/share/gocode
 export CGO_ENABLED=0
+export GO111MODULE=auto
 mkdir -p ${GOPATH}/src/${PKG}
 cp -r * ${GOPATH}/src/${PKG}/
 pushd ${GOPATH}/src/${PKG}
+go mod init
 ARCH=${ARCH} VERSION=${VERSION} PKG=${PKG} go install \
     -installsuffix "static" \
     -ldflags "-X ${PKG}/pkg/version.VERSION=${VERSION}" \
@@ -71,6 +73,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/sidecar-e2e
 
 %changelog
+*   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.15.6-4
+-   Bump up version to compile with new go
 *   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.15.6-3
 -   Bump up version to compile with new go
 *   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.15.6-2

@@ -10,7 +10,7 @@
 
 Summary:        Go
 Name:           go
-Version:        1.15.8
+Version:        1.16.5
 Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
@@ -18,7 +18,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
-%define sha1    go=ce48c79a8df32543cf58cef6925eba712d2611b8
+%define sha1    go=b3d00525ea5af180149fafca8da730c6f988f29f
 Requires:       glibc
 %define ExtraBuildRequires go
 
@@ -111,6 +111,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.5-1
+-   Update to 1.16.5
 *   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.15.8-1
 -   Update to 1.15.8
 *   Fri Jan 15 2021 Piyush Gupta <gpiyush@vmware.com> 1.15.6-1

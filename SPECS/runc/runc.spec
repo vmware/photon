@@ -7,7 +7,7 @@
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
 Version:             1.0.0.rc92
-Release:             3%{?dist}
+Release:             4%{?dist}
 License:             ASL 2.0
 URL:                 https://runc.io/
 Source0:             https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
@@ -61,6 +61,8 @@ make DESTDIR=%{buildroot} PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot}%{_bi
 %{_mandir}/man8/*
 
 %changelog
+*   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.0.0.rc92-4
+-   Bump up version to compile with new go
 *   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.0.0.rc92-3
 -   Bump up version to compile with new go
 *   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.0.0.rc92-2
