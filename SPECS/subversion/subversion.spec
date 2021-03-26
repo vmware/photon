@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.10.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
@@ -11,6 +11,7 @@ Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz
 %define sha1    subversion=a9052724d94fe5d3ee886473eb7cdc4297af4cdd
 Patch0:         subversion-CVE-2018-11782.patch
 Patch1:         subversion-CVE-2019-0203.patch
+Patch2:         subversion-CVE-2020-17525.patch
 Requires:       apr
 Requires:       apr-util
 Requires:       serf
@@ -37,6 +38,7 @@ Requires:   %{name} = %{version}
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 ./configure --prefix=%{_prefix}         \
@@ -72,6 +74,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/debug/
 
 %changelog
+*   Fri Mar 26 2021 Ankit Jain <ankitja@vmware.com> 1.10.4-2
+-   Added patches for CVE-2020-17525
 *   Mon Nov 11 2019 Prashant S Chauhan <psinghchauha@vmware.com> 1.10.4-1
 -   Fix for CVE-2018-11803, update to version 1.10.4
 *   Fri Oct 11 2019 Ankit Jain <ankitja@vmware.com> 1.9.7-3
