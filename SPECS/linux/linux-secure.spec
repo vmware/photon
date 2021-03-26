@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.4
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -290,6 +290,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jun 24 2021 Loïc <4661917+HacKurx@users.noreply.github.com> 5.10.4-10
+-   EMUTRAMP: use the prefix X86_ for error codes
 *   Tue Apr 06 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-9
 -   Remove buf_info from device accessible structures in vmxnet3
 *   Mon Mar 01 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.4-8
