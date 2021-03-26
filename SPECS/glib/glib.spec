@@ -1,7 +1,7 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.58.3
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	LGPLv2+
 URL:		https://developer.gnome.org/glib/
 Group:		Applications/System
@@ -27,6 +27,7 @@ Patch12:        0009-gsocket-Use-gsize-to-track-native-sockaddr-s-size.patch
 Patch13:        0010-gtlspassword-Forbid-very-long-TLS-passwords.patch
 Patch14:        0011-giochannel-Forbid-very-long-line-terminator-strings.patch
 Patch15:        0012-glib-Enable-g_memdup2-for-all-glib-version.patch
+Patch16:        glib-CVE-2021-28153.patch
 
 BuildRequires:	pcre-devel
 BuildRequires:	libffi-devel
@@ -87,6 +88,7 @@ Gsettings schemas compiling tool
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
 
 %build
 ./autogen.sh
@@ -127,6 +129,8 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+*   Fri Mar 26 2021 Ankit Jain <ankitja@vmware.com> 2.58.3-4
+-   Fix for CVE-2021-28153
 *   Fri Feb 26 2021 Ankit Jain <ankitja@vmware.com> 2.58.3-3
 -   Fix for CVE-2021-27218 and CVE-2021-27219
 *   Mon Dec 21 2020 Ankit Jain <ankitja@vmware.com> 2.58.3-2
