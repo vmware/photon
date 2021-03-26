@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.10.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
@@ -12,6 +12,7 @@ Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz
 Patch0:         subversion-CVE-2018-11782.patch
 Patch1:         subversion-CVE-2019-0203.patch
 Patch2:         subversion-CVE-2018-11803.patch
+Patch3:         subversion-CVE-2020-17525.patch
 Requires:       apr
 Requires:       apr-util
 Requires:       serf
@@ -49,6 +50,7 @@ Provides Perl (SWIG) support for Subversion version control system.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 sh configure --prefix=%{_prefix}         \
@@ -100,6 +102,8 @@ sudo -u test make check && userdel test -r -f
 
 
 %changelog
+*   Fri Mar 26 2021 Ankit Jain <ankitja@vmware.com> 1.10.2-6
+-   Added patches for CVE-2020-17525
 *   Fri Oct 11 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-5
 -   Added patches for CVE-2019-0203 and CVE-2018-11782
 *   Tue Mar 05 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.10.2-4
