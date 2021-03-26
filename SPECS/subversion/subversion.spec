@@ -1,14 +1,14 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
-Version:        1.14.0
-Release:        3%{?dist}
+Version:        1.14.1
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org/
 Group:          Utilities/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    %{name}=6b22e4115d140c0367a64c3f963ea908af481015
+%define sha1    %{name}=ee4283c21b5925ee499f8cb9cb0ff546ac7b4b9a
 Requires:       apr
 Requires:       apr-util
 Requires:       serf
@@ -94,6 +94,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+*   Fri Mar 26 2021 Ankit Jain <ankitja@vmware.com> 1.14.1-1
+-   Update to 1.14.1 to fix CVE-2020-17525
 *   Tue Jan 05 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.14.0-3
 -   Fix build with new rpm
 *   Wed Aug 26 2020 Piyush Gupta <gpiyush@vmware.com> 1.14.0-2
