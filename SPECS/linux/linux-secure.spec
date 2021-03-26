@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.42
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -304,6 +304,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jun 24 2021 Loïc <4661917+HacKurx@users.noreply.github.com> 5.10.42-4
+-   EMUTRAMP: use the prefix X86_ for error codes
 *   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.42-3
 -   Fix for CVE-2021-3609
 *   Thu Jun 10 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-2
