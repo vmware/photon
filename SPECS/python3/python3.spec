@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.6.9
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -274,6 +274,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.6/site-packages/pip/*
 %{_libdir}/python3.6/site-packages/pip-18.1.dist-info/*
 %{_bindir}/pip*
+%exclude %{_libdir}/python3.6/site-packages/pip/_vendor/distlib/*.exe
 
 %files setuptools
 %defattr(-,root,root,755)
@@ -281,11 +282,14 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.6/site-packages/setuptools/*
 %{_libdir}/python3.6/site-packages/setuptools-40.6.2.dist-info/*
 %{_bindir}/easy_install-3.6
+%exclude %{_libdir}/python3.6/site-packages/setuptools/*.exe
 
 %files test
 %{_libdir}/python3.6/test/*
 
 %changelog
+*   Sat Mar 27 2021 Tapas Kundu <tkundu@vmware.com> 3.6.9-8
+-   Remove packaging exe files in python3-pip and setuptools
 *   Tue Mar 02 2021 Piyush Gupta <gpiyush@vmware.com> 3.6.9-7
 -   Fix CVE-2021-23336
 *   Mon Feb 01 2021 Shreyas B. <shreyasb@vmware.com> 3.6.9-6
