@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           python3-pip
 Version:        21.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/pip
 Summary:        The PyPA recommended tool for installing Python packages.
 License:        MIT
@@ -45,10 +45,13 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 %{_bindir}/*
 %exclude %{_bindir}/pip
+%exclude %{python3_sitelib}/pip/_vendor/distlib/*.exe
 #excluded packaging pip as its conflicting with python2 pip.
 #also previous python3-pip was providing pip3 and not pip
 
 %changelog
+*   Sat Mar 27 2021 Tapas Kundu <tkundu@vmware.com> 21.0.1-3
+-   Do not package exe file
 *   Fri Mar 26 2021 Piyush Gupta <gpiyush@vmware.com> 21.0.1-2
 -   Added source name for pip-tests
 *   Tue Feb 16 2021 Tapas Kundu <tkundu@vmware.com> 21.0.1-1
