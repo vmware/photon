@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.9.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -283,6 +283,7 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root,755)
 %{_libdir}/python3.9/site-packages/pip/*
 %{_bindir}/pip*
+%exclude %{_libdir}/python3.9/site-packages/pip/_vendor/distlib/*.exe
 
 %files setuptools
 %defattr(-,root,root,755)
@@ -290,6 +291,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.9/site-packages/setuptools/*
 %{_libdir}/python3.9/site-packages/setuptools-49.2.1.dist-info/*
 %{_bindir}/easy_install-3.9
+%exclude %{_libdir}/python3.9/site-packages/setuptools/*.exe
 
 %files test
 %{_libdir}/python3.9/test/*
@@ -298,6 +300,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/rpm/macros.d/macros.python
 
 %changelog
+*   Sat Mar 27 2021 Tapas Kundu <tkundu@vmware.com> 3.9.1-3
+-   Remove packaging exe files in python3-pip
 *   Sat Jan 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.9.1-2
 -   Fix build with new rpm
 *   Fri Jan 08 2021 Tapas Kundu <tkundu@vmware.com> 3.9.1-1
