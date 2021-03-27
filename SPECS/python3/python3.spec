@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.5
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -263,11 +263,14 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.7/site-packages/setuptools/*
 %{_libdir}/python3.7/site-packages/setuptools-41.2.0.dist-info/*
 %{_bindir}/easy_install-3.7
+%exclude %{_libdir}/python3.9/site-packages/setuptools/*.exe
 
 %files test
 %{_libdir}/python3.7/test/*
 
 %changelog
+*   Sat Mar 27 2021 Tapas Kundu <tkundu@vmware.com> 3.7.5-12
+-   Remove packaging exe files in python3-setuptools
 *   Tue Mar 02 2021 Piyush Gupta <gpiyush@vmware.com> 3.7.5-11
 -   Fix CVE-2021-23336
 *   Tue Feb 16 2021 Tapas Kundu <tkundu@vmware.com> 3.7.5-10
