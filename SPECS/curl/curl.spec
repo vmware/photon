@@ -1,28 +1,16 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.61.1
-Release:        9%{?dist}
+Version:        7.75.0
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha1    curl=1f0732185e13d71d35a700f8314c3d5790968bb3
-Patch0:         CVE-2018-16839.patch
-Patch1:         CVE-2018-16840.patch
-Patch2:         CVE-2018-16842.patch
-Patch3:         curl-CVE-2018-16890.patch
-Patch4:         curl-CVE-2019-3822.patch
-Patch5:         curl-CVE-2019-3823.patch
-Patch6:         curl-CVE-2019-5436.patch
-Patch7:         curl-CVE-2019-5481.patch
-Patch8:         curl-CVE-2019-5482.patch
-Patch9:         curl-CVE-2020-8177.patch
-Patch10:        curl-CVE-2020-8231.patch
-Patch11:        curl-CVE-2020-8284.patch
-Patch12:        curl-CVE-2020-8285.patch
-Patch13:        curl-CVE-2020-8286.patch
+%define sha1    curl=fbd1e354a5e4e9a4ac07db3d1222d19f84a5e751
+Patch0:         curl-CVE-2021-22876.patch
+Patch1:         curl-CVE-2021-22890.patch
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
@@ -59,18 +47,6 @@ This package contains minimal set of shared curl libraries.
 %setup -q
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
 
 %build
 %configure \
@@ -120,6 +96,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Mon Mar 29 2021 Harinadh D <hdommaraju@vmware.com> 7.75.0-1
+-   Fix CVE-2021-22876,CVE-2021-22890
 *   Mon Dec 07 2020 Dweep Advani <dadvani@vmware.com> 7.61.1-9
 -   Patched for  CVE-2020-8284, CVE-2020-8285 and CVE-2020-8286
 *   Wed Aug 12 2020 Harinadh D <hdommaraju@vmware.com> 7.61.1-8
