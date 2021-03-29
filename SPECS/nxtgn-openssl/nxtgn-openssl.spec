@@ -1,18 +1,16 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           nxtgn-openssl
-Version:        1.1.1j
-Release:        2%{?dist}
+Version:        1.1.1k
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.openssl.org/source/openssl-%{version}.tar.gz
-%define sha1    openssl=04c340b086828eecff9df06dceff196790bb9268
+%define sha1    openssl=bad9dc4ae6dcc1855085463099b5dacb0ec6130b
 Source1:        nxtgn-rehash_ca_certificates.sh
 Patch0:         nxtgn-c_rehash.patch
-Patch1:         nxtgn-openssl-CVE-2021-3449.patch
-Patch2:         nxtgn-openssl-CVE-2021-3450.patch
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -54,8 +52,6 @@ Perl scripts that convert certificates and keys to various formats.
 %prep
 %setup -q -n openssl-%{version}
 %patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
 export CFLAGS="%{optflags}"
@@ -121,6 +117,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/nxtgn-rehash_ca_certificates.sh
 
 %changelog
+*   Mon Mar 29 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1k-1
+-   update to openssl 1.1.1k
 *   Tue Mar 23 2021 Tapas Kundu <tkundu@vmware.com> 1.1.1j-2
 -   Fix CVE-2021-3449 and CVE-2021-3450
 *   Thu Feb 25 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1j-1
