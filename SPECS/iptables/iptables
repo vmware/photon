@@ -40,40 +40,42 @@ echo 2 > /proc/sys/net/ipv4/ip_dynaddr
 # too many routers are still ignorant
 echo 0 > /proc/sys/net/ipv4/tcp_ecn
 
-# Set a known state
-iptables -P INPUT   DROP
-iptables -P FORWARD DROP
-iptables -P OUTPUT  DROP
+WAIT_OPTIONS="--wait 1 --wait-interval 20000"
 
-ip6tables -P INPUT   DROP
-ip6tables -P FORWARD DROP
-ip6tables -P OUTPUT  DROP
+# Set a known state
+iptables $WAIT_OPTIONS -P INPUT   DROP
+iptables $WAIT_OPTIONS -P FORWARD DROP
+iptables $WAIT_OPTIONS -P OUTPUT  DROP
+
+ip6tables $WAIT_OPTIONS -P INPUT   DROP
+ip6tables $WAIT_OPTIONS -P FORWARD DROP
+ip6tables $WAIT_OPTIONS -P OUTPUT  DROP
 
 # These lines are here in case rules are already in place and the
 # script is ever rerun on the fly. We want to remove all rules and
 # pre-existing user defined chains before we implement new rules.
-iptables -F
-iptables -X
-iptables -Z
+iptables $WAIT_OPTIONS -F
+iptables $WAIT_OPTIONS -X
+iptables $WAIT_OPTIONS -Z
 
-iptables -t nat -F
-iptables -t nat -X
-iptables -t mangle -F
-iptables -t mangle -X
+iptables $WAIT_OPTIONS -t nat -F
+iptables $WAIT_OPTIONS -t nat -X
+iptables $WAIT_OPTIONS -t mangle -F
+iptables $WAIT_OPTIONS -t mangle -X
 
-ip6tables -F
-ip6tables -X
-ip6tables -Z
+ip6tables $WAIT_OPTIONS -F
+ip6tables $WAIT_OPTIONS -X
+ip6tables $WAIT_OPTIONS -Z
 
-ip6tables -t nat -F
-ip6tables -t nat -X
-ip6tables -t mangle -F
-ip6tables -t mangle -X
+ip6tables $WAIT_OPTIONS -t nat -F
+ip6tables $WAIT_OPTIONS -t nat -X
+ip6tables $WAIT_OPTIONS -t mangle -F
+ip6tables $WAIT_OPTIONS -t mangle -X
 
 #restore ipv4 rules
-iptables-restore < /etc/systemd/scripts/ip4save
+iptables-restore $WAIT_OPTIONS < /etc/systemd/scripts/ip4save
 
 #restore ipv6 rules
-ip6tables-restore < /etc/systemd/scripts/ip6save
+ip6tables-restore $WAIT_OPTIONS < /etc/systemd/scripts/ip6save
 
 # End /etc/systemd/scripts/iptables

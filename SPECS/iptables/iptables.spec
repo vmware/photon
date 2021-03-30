@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.8.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -105,6 +105,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   The Mar 30 2021 Susant Sahani <ssahani@vmware.com> 1.8.7-2
+-   Set wait option for iptables calls
 *   Thu Feb 11 2021 Susant Sahani <ssahani@vmware.com> 1.8.7-1
 -   Updated to version
 *   Mon Apr 06 2020 Susant Sahani <ssahani@vmware.com> 1.8.4-1
