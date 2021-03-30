@@ -2,6 +2,7 @@ noarch/autoconf-2.69-9.ph4.noarch.rpm
 noarch/automake-1.16.1-2.ph4.noarch.rpm
 noarch/linux-api-headers-5.9.0-1.ph4.noarch.rpm
 noarch/man-pages-5.08-3.ph4.noarch.rpm
+noarch/systemd-rpm-macros-247.3-1.ph4.noarch.rpm
 x86_64/apache-maven-3.6.3-2.ph4.x86_64.rpm
 x86_64/bash-5.0-1.ph4.x86_64.rpm
 x86_64/binutils-2.35-1.ph4.x86_64.rpm
