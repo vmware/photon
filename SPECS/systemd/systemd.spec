@@ -1,6 +1,6 @@
 Name:             systemd
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
-Version:          247.4
+Version:          247.6
 Release:          1%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 Summary:          System and Service Manager
@@ -10,7 +10,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0:          https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha1      systemd=6c2df8dfa6a69db1e4e324222f7f635b4a8a381b
+%define sha1      systemd=30af650e8cf2109cb2cf1a4ae2025e5ac939cceb
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          systemd.cfg
@@ -77,6 +77,11 @@ BuildRequires:   XML-Parser
 BuildRequires:   xz
 BuildRequires:   xz-devel
 BuildRequires:   zlib-devel
+# rpmbuild needs /lib/rpm/macros.d/macros.systemd in order to expand %systemd_* actions.
+# systemd-rpm-macros is not build yet, so consume it from publishrpms, similarly to as
+# openjdk does it for Vivace rpms.
+# Other packages using %system_* pre/post actions must use "BuildRequires: systemd-rpm-macros"
+%define ExtraBuildRequires systemd-rpm-macros
 
 %description
 systemd is a system and service manager that runs as PID 1 and starts
@@ -655,6 +660,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+*    Tue Mar 30 2021 Susant Sahani <ssahani@vmware.com>  247.6-1
+-    Add systemd-rpm-macros to extra build requires and update version
 *    Tue Mar 16 2021 Susant Sahani <ssahani@vmware.com>  247.4-1
 -    Version bump and fix udev preun macro
 *    Wed Feb 03 2021 Susant Sahani <ssahani@vmware.com>  247.3-1
