@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.8.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -100,6 +100,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Mar 31 2021 Susant Sahani <ssahani@vmware.com> 1.8.3-3
+-   Allow IPv6 RA and DHCP6
 *   Mon Feb 08 2021 Susant Sahani <ssahani@vmware.com> 1.8.3-2
 -   Set wait option for iptables-restore calls
 *   Tue Jul 30 2019 Shreyas B. <shreyasb@vmware.com> 1.8.3-1
