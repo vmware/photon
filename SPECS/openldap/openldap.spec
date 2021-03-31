@@ -1,20 +1,20 @@
 %global _default_patch_fuzz 2
 %global debug_package %{nil}
 
-Summary:        OpenLdap-2.4.43
+Summary:        OpenLdap
 Name:           openldap
-Version:        2.4.53
-Release:        3%{?dist}
+Version:        2.4.57
+Release:        1%{?dist}
 License:        OpenLDAP
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
-%define sha1 openldap=9a03db5cc02fd8b0afc5bf11fb10f7cd5260bcf0
+%define sha1 openldap=1cffa70a3ea8545948041fd113f8f53bc24d6d87
 
 Patch0:         openldap-2.4.51-consolidated-2.patch
-Patch1:         openldap-CVE-2020-25692.patch
+Patch1:         openldap-CVE-2021-27212.patch
 
 Requires:       openssl >= 1.0.1, cyrus-sasl >= 2.1
 
@@ -115,6 +115,9 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*   Wed Mar 31 2021 Vamsi Krishna Brahmajosyula<vbrahmajosyula@vmware.com> 2.4.57-1
+-   Upgrade to 2.4.57 to fix several critical CVEs
+-   Fix CVE-2021-27212
 *   Mon Dec 14 2020 Dweep Advani <dadvani@vmware.com> 2.4.53-3
 -   Patched for CVE-2020-25692
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.53-2
