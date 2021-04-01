@@ -1,7 +1,7 @@
 Summary:        A 2D graphics library.
 Name:           cairo
 Version:        1.16.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2 or MPLv1.1
 URL:            http://cairographics.org
 Group:          System Environment/Libraries
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://cairographics.org/releases/%{name}-%{version}.tar.xz
 %define sha1    cairo=00e81842ae5e81bb0343108884eb5205be0eac14
+Patch0:         CVE-2020-35492.patch
 BuildRequires:  pkg-config
 BuildRequires:  libpng-devel
 BuildRequires:  libxml2-devel
@@ -31,11 +32,18 @@ Requires:   freetype2-devel
 Requires:   pixman-devel
 
 %description    devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications.
 
 %prep
 %setup -q
+%patch0 -p1
+
 %build
+# add this since build failed in not find automake-1.15 in making test for cairo
+# Before running ./configure try running autoreconf -f -i.
+# The autoreconf program automatically runs autoheader, aclocal, automake, autopoint and libtoolize as required.
+autoreconf -f -i
+
 %configure \
     --prefix=%{_prefix}     \
     --enable-xlib=no        \
@@ -73,6 +81,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Thu Apr 1 2021 Michelle Wang <michellew@vmware.com> 1.16.0-2
+-   Add patch for CVE-2020-35492
 *   Thu Mar 14 2019 Michelle Wang <michellew@vmware.com> 1.16.0-1
 -   Upgrade cairo to 1.16.0 for CVE-2018-18064
 -   CVE-2018-18064 is for version up to (including) 1.15.14
