@@ -1,6 +1,6 @@
 Name:             systemd
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
-Version:          247.4
+Version:          248
 Release:          1%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 Summary:          System and Service Manager
@@ -10,7 +10,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0:          https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha1      systemd=6c2df8dfa6a69db1e4e324222f7f635b4a8a381b
+%define sha1      systemd=ee3ed03d8a2f7216b5695cb46c5825a9e505ad7c
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          systemd.cfg
@@ -18,9 +18,8 @@ Source4:          99-dhcp-en.network
 Source5:          10-rdrand-rng.conf
 Source6:          10-defaults.preset
 
-Patch0:           systemd-247-enoX-uses-instance-number-for-vmware-hv.patch
-Patch1:           systemd-247-default-dns-from-env.patch
-Patch2:           timesync-Make-delaying-attempts-to-contact-servers-c.patch
+Patch0:           systemd-248-enoX-uses-instance-number-for-vmware-hv.patch
+Patch1:           systemd-248-default-dns-from-env.patch
 
 Requires:         Linux-PAM
 Requires:         bzip2
@@ -428,6 +427,7 @@ udevadm hwdb --update &>/dev/null || :
 %{_bindir}/userdbctl
 %{_bindir}/systemd-repart
 %{_bindir}/systemd-dissect
+%{_bindir}/systemd-sysext
 
 %{_libdir}/tmpfiles.d/etc.conf
 %{_libdir}/tmpfiles.d/home.conf
@@ -441,6 +441,7 @@ udevadm hwdb --update &>/dev/null || :
 %{_libdir}/tmpfiles.d/tmp.conf
 %{_libdir}/tmpfiles.d/var.conf
 %{_libdir}/tmpfiles.d/x11.conf
+%{_libdir}/tmpfiles.d/README
 
 %{_libdir}/environment.d/99-environment.conf
 %exclude %{_datadir}/locale
@@ -504,6 +505,7 @@ udevadm hwdb --update &>/dev/null || :
 %{_bindir}/udevadm
 
 %{_libdir}/udev/v4l_id
+%{_libdir}/udev/dmi_memory_id
 %{_libdir}/kernel
 %{_libdir}/modprobe.d
 %{_libdir}/modules-load.d
@@ -603,10 +605,9 @@ udevadm hwdb --update &>/dev/null || :
 %{_libdir}/libnss_mymachines.so.2
 %{_libdir}/libnss_resolve.so.2
 %{_libdir}/libnss_systemd.so.2
-%{_libdir}/libsystemd.so.0
-%{_libdir}/libsystemd.so.0.30.0
-%{_libdir}/libudev.so.1.7.0
+%{_libdir}/libsystemd.so.*
 %{_libdir}/libudev.so.1
+%{_libdir}/libudev.so.1.7.1
 
 %files pam
 %defattr(-,root,root)
@@ -655,6 +656,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+*    Mon Apr 5 2021 Susant Sahani <ssahani@vmware.com>  248-1
+-    Version bump
 *    Tue Mar 16 2021 Susant Sahani <ssahani@vmware.com>  247.4-1
 -    Version bump and fix udev preun macro
 *    Wed Feb 03 2021 Susant Sahani <ssahani@vmware.com>  247.3-1
