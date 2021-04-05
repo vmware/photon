@@ -52,13 +52,13 @@ The samples assume that the following VMs have been installed - see the steps in
 ## How to read this document
 
 The RPM OSTree guide is structured to be used both as a sequential read and as a reference documentation.   
-If you are just interested in deploying a host system and keeping it up to date, then read [Installing a Photon RPM-OSTree host against default server repository](/docs/administration-guide/installing-a-host-against-default-server-repository/) and [Host updating operations](/docs/administration-guide/photon-rpm-ostree/host-updating-operations/).
+If you are just interested in deploying a host system and keeping it up to date, then read [Installing a Photon RPM-OSTree host against default server repository](/docs/administration-guide/photon-rpm-ostree/installing-a-host-against-default-server-repository/) and [Host updating operations](/docs/administration-guide/photon-rpm-ostree/host-updating-operations/).
 
-If you want to install your own server and experiment with customizing packages for your Photon hosts, then read [Installing a Photon RPM-OSTree server](docs/administration-guide/photon-rpm-ostree/creating-a-rpm-ostree-server/) onwards. There are references to the concepts discussed throughout the book, if you need to understand them better.  
+If you want to install your own server and experiment with customizing packages for your Photon hosts, then read [Installing a Photon RPM-OSTree server](/docs/administration-guide/photon-rpm-ostree/creating-a-rpm-ostree-server/) onwards. There are references to the concepts discussed throughout the book, if you need to understand them better.  
 
 ## RPM OSTree in Photon OS 4.0
 
-This book is relevant to RPM OSTree in Photon OS 4.0.
+This section is relevant to RPM OSTree in Photon OS 4.0.
 
 Version 4.0 supports the following features:
 

@@ -78,7 +78,7 @@ linkTitle = "VMware Photon OS Home"
 	>}}
 <!-- blocks/use-cases end -->
 
-<!-- blocks/getting-started begin -->
+<!-- blocks/contributing -->
 {{% blocks/contributing
 	
 	textLead1="Contributing"
@@ -88,7 +88,7 @@ linkTitle = "VMware Photon OS Home"
 	buttonURL="https://github.com/vmware/photon"
 
 	%}}
-<!-- blocks/getting-started end -->
+<!-- blocks/contributing end -->
 
 
 <!-- blocks/team begin -->
