@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -43,6 +43,9 @@ Patch7:        fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 # Out-of-tree patches from AppArmor:
 Patch8:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch9:        apparmor-af_unix-mediation.patch
+
+#vmxnet3
+Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 
 # VMW:
 Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
@@ -174,6 +177,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch7 -p1
 %patch8 -p1
 %patch9 -p1
+
+#vmxnet3
+%patch20 -p1
 
 # VMW
 %patch55 -p1
@@ -385,6 +391,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Apr 06 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-5
+-   Remove buf_info from device accessible structures in vmxnet3
 *   Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-4
 -   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Tue Feb 02 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-3

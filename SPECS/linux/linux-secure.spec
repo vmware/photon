@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.4
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -50,6 +50,9 @@ Patch12:        fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 # Out-of-tree patches from AppArmor:
 Patch13:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch14:        apparmor-af_unix-mediation.patch
+
+#vmxnet3
+Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 
 # VMW:
 Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -146,6 +149,9 @@ The Linux package contains the Linux kernel doc files
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
+
+#vmxnet3
+%patch20 -p1
 
 %ifarch x86_64
 # VMW x86
@@ -284,6 +290,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Apr 06 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-9
+-   Remove buf_info from device accessible structures in vmxnet3
 *   Mon Mar 01 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.4-8
 -   Use jitterentropy rng instead of urandom in rng module.
 *   Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-7

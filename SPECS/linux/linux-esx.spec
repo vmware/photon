@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.4
-Release:        14%{?kat_build:.kat}%{?dist}
+Release:        15%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -50,6 +50,9 @@ Patch11:        apparmor-af_unix-mediation.patch
 
 # floppy:
 Patch17:        0001-floppy-lower-printk-message-priority.patch
+
+#vmxnet3
+Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 
 # VMW:
 Patch30:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -168,6 +171,9 @@ The Linux package contains the Linux kernel doc files
 %patch10 -p1
 %patch11 -p1
 %patch17 -p1
+
+#vmxnet3
+%patch20 -p1
 
 # VMW
 %patch30 -p1
@@ -325,6 +331,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Apr 06 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-15
+-   Remove buf_info from device accessible structures in vmxnet3
 *   Mon Mar 01 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.4-14
 -   Use jitterentropy rng instead of urandom in rng module.
 *   Fri Feb 19 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-13
