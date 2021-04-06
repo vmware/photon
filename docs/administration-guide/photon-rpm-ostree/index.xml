@@ -40,10 +40,10 @@ The samples assume that the following VMs have been installed - see the steps in
 &lt;/ul>
 &lt;h2 id="how-to-read-this-document">How to read this document&lt;/h2>
 &lt;p>The RPM OSTree guide is structured to be used both as a sequential read and as a reference documentation.&lt;br>
-If you are just interested in deploying a host system and keeping it up to date, then read &lt;a href="../../../docs/administration-guide/installing-a-host-against-default-server-repository/">Installing a Photon RPM-OSTree host against default server repository&lt;/a> and &lt;a href="../../../docs/administration-guide/photon-rpm-ostree/host-updating-operations/">Host updating operations&lt;/a>.&lt;/p>
-&lt;p>If you want to install your own server and experiment with customizing packages for your Photon hosts, then read &lt;a href="docs/administration-guide/photon-rpm-ostree/creating-a-rpm-ostree-server/">Installing a Photon RPM-OSTree server&lt;/a> onwards. There are references to the concepts discussed throughout the book, if you need to understand them better.&lt;/p>
+If you are just interested in deploying a host system and keeping it up to date, then read &lt;a href="../../../docs/administration-guide/photon-rpm-ostree/installing-a-host-against-default-server-repository/">Installing a Photon RPM-OSTree host against default server repository&lt;/a> and &lt;a href="../../../docs/administration-guide/photon-rpm-ostree/host-updating-operations/">Host updating operations&lt;/a>.&lt;/p>
+&lt;p>If you want to install your own server and experiment with customizing packages for your Photon hosts, then read &lt;a href="../../../docs/administration-guide/photon-rpm-ostree/creating-a-rpm-ostree-server/">Installing a Photon RPM-OSTree server&lt;/a> onwards. There are references to the concepts discussed throughout the book, if you need to understand them better.&lt;/p>
 &lt;h2 id="rpm-ostree-in-photon-os-40">RPM OSTree in Photon OS 4.0&lt;/h2>
-&lt;p>This book is relevant to RPM OSTree in Photon OS 4.0.&lt;/p>
+&lt;p>This section is relevant to RPM OSTree in Photon OS 4.0.&lt;/p>
 &lt;p>Version 4.0 supports the following features:&lt;/p>
 &lt;ul>
 &lt;li>Upgrade&lt;/li>
