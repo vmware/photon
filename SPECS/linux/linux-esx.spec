@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.182
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -44,6 +44,8 @@ Patch12:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
 # floppy:
 Patch17:        0001-floppy-lower-printk-message-priority.patch
 
+Patch28:        0001-Control-MEMCG_KMEM-config.patch
+Patch29:        0001-cgroup-v1-cgroup_stat-support.patch
 Patch30:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 
 # Fix CVE-2017-1000252
@@ -407,6 +409,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch11 -p1
 %patch12 -p1
 %patch17 -p1
+%patch28 -p1
+%patch29 -p1
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
@@ -794,6 +798,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Apr 06 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.182-2
+-   .config: disable kernel accounting for memory cgroups
+-   .config: enable PERCPU_STATS
+-   Enable cgroup v1 stats
 *   Thu Mar 25 2021 srinidhira0 <srinidhir@vmware.com> 4.19.182-1
 -   Update to version 4.19.182
 *   Thu Mar 25 2021 Mounesh Badiger <badigerm@vmware.com> 4.19.177-5

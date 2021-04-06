@@ -1,0 +1,70 @@
+From 6a3debf8cf5e5ea64b1ab2b56e0af805528d51be Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Tue, 6 Apr 2021 15:55:37 -0700
+Subject: [PATCH] Control MEMCG_KMEM config
+
+Allow to disable (compile out) CONFIG_MEMCG_KMEM.
+---
+ init/Kconfig     | 9 ++++++++-
+ mm/memcontrol.c  | 2 ++
+ mm/slab_common.c | 2 +-
+ 3 files changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/init/Kconfig b/init/Kconfig
+index 5eb91dde4018..63194057e093 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -718,9 +718,16 @@ config MEMCG_SWAP_ENABLED
+ 	  then swapaccount=0 does the trick).
+ 
+ config MEMCG_KMEM
+-	bool
++	bool "Memory Resource Controller Kernel Memory accounting"
+ 	depends on MEMCG && !SLOB
+ 	default y
++	help
++	  The Kernel Memory extension for Memory Resource Controller can limit
++	  the amount of memory used by kernel objects in the system. Those are
++	  fundamentally different from the entities handled by the standard
++	  Memory Controller, which are page-based, and can be swapped. Users of
++	  the kmem extension can use it to guarantee that no group of processes
++	  will ever exhaust kernel resources alone.
+ 
+ config BLK_CGROUP
+ 	bool "IO controller"
+diff --git a/mm/memcontrol.c b/mm/memcontrol.c
+index 87cd5bf1b487..b7ba6d13f1ec 100644
+--- a/mm/memcontrol.c
++++ b/mm/memcontrol.c
+@@ -4314,6 +4314,7 @@ static struct cftype mem_cgroup_legacy_files[] = {
+ 		.seq_show = memcg_numa_stat_show,
+ 	},
+ #endif
++#ifdef CONFIG_MEMCG_KMEM
+ 	{
+ 		.name = "kmem.limit_in_bytes",
+ 		.private = MEMFILE_PRIVATE(_KMEM, RES_LIMIT),
+@@ -4369,6 +4370,7 @@ static struct cftype mem_cgroup_legacy_files[] = {
+ 		.write = mem_cgroup_reset,
+ 		.read_u64 = mem_cgroup_read_u64,
+ 	},
++#endif
+ 	{ },	/* terminate */
+ };
+ 
+diff --git a/mm/slab_common.c b/mm/slab_common.c
+index a94b9981eb17..a3105880e86d 100644
+--- a/mm/slab_common.c
++++ b/mm/slab_common.c
+@@ -1406,7 +1406,7 @@ void dump_unreclaimable_slab(void)
+ 	mutex_unlock(&slab_mutex);
+ }
+ 
+-#if defined(CONFIG_MEMCG)
++#if defined(CONFIG_MEMCG_KMEM)
+ void *memcg_slab_start(struct seq_file *m, loff_t *pos)
+ {
+ 	struct mem_cgroup *memcg = mem_cgroup_from_css(seq_css(m));
+-- 
+2.11.0
+

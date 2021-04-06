@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.182
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -33,6 +33,7 @@ Patch4:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch5:         vsock-transport-for-9p.patch
 Patch6:         4.18-x86-vmware-STA-support.patch
 Patch7:         vsock-delay-detach-of-QP-with-outgoing-data.patch
+Patch10:        0001-cgroup-v1-cgroup_stat-support.patch
 #HyperV patches
 Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 
@@ -209,6 +210,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch10 -p1
 %patch13 -p1
 %patch26 -p1
 %patch28 -p1
@@ -366,7 +368,7 @@ ln -s vmlinux-%{uname_r} %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlin
 
 cat > %{buildroot}/boot/%{name}-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta nvme_core.io_timeout=4294967295
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta nvme_core.io_timeout=4294967295 cgroup.memory=nokmem
 photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
@@ -469,6 +471,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Apr 06 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.182-2
+-   Disable kernel accounting for memory cgroups
+-   Enable cgroup v1 stats
+-   .config: enable PERCPU_STATS
 *   Mon Mar 22 2021 srinidhira0 <srinidhir@vmware.com> 4.19.182-1
 -   Update to version 4.19.182
 *   Fri Feb 26 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.177-1
