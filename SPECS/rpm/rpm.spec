@@ -5,7 +5,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -17,6 +17,7 @@ Source1:        macros
 Source2:        brp-strip-debug-symbols
 Source3:        brp-strip-unneeded
 Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
+Patch1:         CVE-2021-20271.patch
 Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
@@ -94,6 +95,7 @@ Python3 rpm.
 %prep
 %setup -n rpm-%{name}-%{version}-release
 %patch0 -p1
+%patch1 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -258,6 +260,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Apr 07 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-10
+-   Fix for CVE-2021-20271
 *   Wed Sep 09 2020 Anisha Kumari <kanisha@vmware.com> 4.14.2-9
 -   Add build conditional and enable zstd support
 *   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 4.14.2-8
