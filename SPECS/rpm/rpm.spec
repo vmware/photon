@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.13.0.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -17,6 +17,7 @@ Source2:        brp-strip-debug-symbols
 Source3:        brp-strip-unneeded
 Patch0:         find-debuginfo-do-not-generate-non-existing-build-id.patch
 Patch1:         find-debuginfo-do-not-generate-dir-entries.patch
+Patch2:         CVE-2021-20271.patch
 Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
@@ -91,6 +92,7 @@ Python3 rpm.
 %setup -n rpm-%{name}-%{version}-release
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -261,6 +263,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Apr 07 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.13.0.2-4
+-   Fix for CVE-2021-20271
 *   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 4.13.0.2-3
 -   Use latest sqlite
 *   Mon Aug 19 2019 Kuladeep Rayalla <krayalla@vmware.com> 4.13.0.2-2
@@ -310,7 +314,7 @@ rm -rf %{buildroot}
 -   Modified %check
 *   Fri Aug 26 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-11
 -   find-debuginfo...patch: exclude non existing .build-id from packaging
--   Move all files from rpm-system-configuring-scripts tarball to here 
+-   Move all files from rpm-system-configuring-scripts tarball to here
 *   Wed May 25 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-10
 -   Exclude .build-id/.1 and .build-id/.1.debug from debuginfo pkg
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-9
