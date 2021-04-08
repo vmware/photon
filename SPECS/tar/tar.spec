@@ -1,6 +1,6 @@
 Summary:	Archiving program
 Name:		tar
-Version:	1.32
+Version:	1.34
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/tar
@@ -8,7 +8,7 @@ Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	tar/%{name}-%{version}.tar.xz
-%define sha1 tar=162e00af4702565119c05465e8b6f21c75092794
+%define sha1 tar=bb9d853e10d0753fe9063914401a7e164d51a0f0
 %description
 Contains GNU archiving program
 %prep
@@ -36,6 +36,8 @@ make  %{?_smp_mflags} check
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*       Thu Apr 08 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.34-1
+*       Update to version 1.34
 *       Mon Jul 13 2020 Gerrit Photon <photon-checkins@vmware.com> 1.32-1
 -       Automatic Version Bump
 *       Thu Mar 05 2020 Keerthana K <keerthanak@vmware.com> 1.30-3
