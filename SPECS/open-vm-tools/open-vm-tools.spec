@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
 Version:        11.2.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -27,7 +27,6 @@ BuildRequires:  glib-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  xmlsec1-devel
 BuildRequires:  libltdl-devel
-BuildRequires:  libdnet-devel
 BuildRequires:  libmspack-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
@@ -36,10 +35,8 @@ BuildRequires:  fuse-devel
 BuildRequires:  systemd
 BuildRequires:  rpcsvc-proto-devel
 BuildRequires:  libtirpc-devel
-BuildRequires:  xmlsec1-devel
 
 Requires:       fuse
-Requires:       libdnet
 Requires:       libmspack
 Requires:       glib
 Requires:       openssl
@@ -159,6 +156,8 @@ fi
 %{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-perf-metrics.sh
 
 %changelog
+*   Thu Apr 08 2021 Oliver Kurth <okurth@vmware.com> 11.2.5-2
+-   no need for libdnet
 *   Tue Mar 09 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.2.5-1
 -   Upgrade to version 11.2.5
 *   Sat Jan 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.2.0-2
