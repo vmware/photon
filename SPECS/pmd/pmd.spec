@@ -2,16 +2,15 @@
 # pmd spec file
 #
 
-
 %define _mech_file /etc/gss/mech
 %define _mech_id 1.3.6.1.4.1.6876.11711.2.1.2
 %define _python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
-%define gssapi_unix_ver 1.0
+%define gssapi_unix_ver 1.0.0
 
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.7
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -47,11 +46,9 @@ Source0:        %{name}-%{version}.tar.gz
 %define sha1    pmd=97694042554dd10d99e5e4f15913a27dc22299b1
 
 # gssapi_unix Source Code tarball
+# GSSAPI-Unix URL: https://github.com/vmware/gssapi-unix
 Source1:        gssapi-unix-%{gssapi_unix_ver}.tar.gz
-%define sha1    gssapi-unix-%{gssapi_unix_ver}=1b4e9f5f47e4591ec19ac4f84bd43d106835aa48
-
-# Apply gssapi_unix Patches
-Patch0:        gssapi-unix-openssl-1.1.1.patch
+%define sha1    gssapi-unix-%{gssapi_unix_ver}=5736db248f460f97203ac0c079dcc7862479e754
 
 %description
 Photon Management Daemon
@@ -106,7 +103,6 @@ gssapi-unix for unix authentication
 # extract gssapi_unix code
 cd ../
 tar -xf %{SOURCE1} --no-same-owner
-%patch0 -p1
 
 %build
 sed -i 's,-lcrypto,-lcrypto -lgssapi_krb5 @top_builddir@/client/libpmdclient.la,' server/Makefile.am
@@ -121,7 +117,7 @@ python3 setup.py build
 popd
 
 # Build gssapi_unix
-cd ../gssapi-unix
+cd ../gssapi-unix-%{gssapi_unix_ver}
 export CFLAGS="-Wno-error=unused-but-set-variable -Wno-error=implicit-function-declaration -Wno-error=sizeof-pointer-memaccess -Wno-error=unused-local-typedefs -Wno-error=pointer-sign -Wno-error=address -Wno-unused-but-set-variable -Wno-unused-const-variable -Wno-misleading-indentation"
 autoreconf -mif &&
 aclocal && libtoolize && automake --add-missing && autoreconf &&
@@ -156,7 +152,7 @@ install -d -m 0755 %{buildroot}/etc/pmd.roles.d/
 install -d -m 0755 %{buildroot}/etc/pmd.roles.plugins.d/
 
 # gssapi_unix
-cd ../gssapi-unix
+cd ../gssapi-unix-%{gssapi_unix_ver}
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 # copy binaries for GSSAPI
@@ -360,6 +356,9 @@ rm -rf %{buildroot}/*
     %exclude %{_libdir}/gssapi_unix/*.la
 
 %changelog
+*   Mon Apr 12 2021 Shreyas B <shreyasb@vmware.com> 0.0.7-4
+-   Use GSSAPI-Unix Code from github
+-   Support for openssl v1.1.1 added to GSSAPI-Unix Code
 *   Sat Feb 20 2021 Tapas Kundu <tkundu@vmware.com> 0.0.7-3
 -   Update to 0.0.7-GA
 *   Fri Feb 19 2021 Tapas Kundu <tkundu@vmware.com> 0.0.7-2
