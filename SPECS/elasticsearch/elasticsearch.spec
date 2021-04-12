@@ -2,16 +2,16 @@
 
 Summary:          Elastic Search
 Name:             elasticsearch
-Version:          6.8.13
+Version:          6.8.15
 Release:          1%{?dist}
 License:          Apache License Version 2.0
 URL:              https://github.com/elastic/elasticsearch/archive/v%{version}.tar.gz
 Source0:          %{name}-%{version}.tar.gz
-%define sha1      %{name}-%{version}.tar.gz=a6123f7a54abdfe3c6af1d483d8dae5978f4f628
+%define sha1      %{name}-%{version}.tar.gz=ee52aa5943b094e7b8fc2ad4eff0713b7aee7172
 Source1:          cacerts
 %define sha1      cacerts=f584c7c1f48c552f39acfb5560a300a657d9f3bb
 Source2:          distribution-for-%{name}-%{version}.tar.gz
-%define sha1      distribution-for-%{name}=af63a63fc053d7097786c9eb19aece9467f2333e
+%define sha1      distribution-for-%{name}=df93a6aca9c01b66f44ce1867de933739e2af65c
 Group:            Development/Daemons
 Vendor:           VMware, Inc.
 Distribution:     Photon
@@ -124,6 +124,8 @@ rm -rf %{buildroot}/*
 %attr(755,elasticsearch,elasticsearch) /usr/lib/tmpfiles.d/elasticsearch.conf
 
 %changelog
+*    Wed Apr 07 2021 Piyush Gupta <gpiyush@vmware.com> 6.8.15-1
+-    Update to 6.8.15
 *    Wed Nov 18 2020 Piyush Gupta <gpiyush@vmware.com> 6.8.13-1
 -    Update to 6.8.13, Fix for CVE-2020-7020
 *    Mon Aug 31 2020 Piyush Gupta <gpiyush@vmware.com> 6.8.12-1
