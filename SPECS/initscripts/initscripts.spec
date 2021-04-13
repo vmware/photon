@@ -1,53 +1,50 @@
-Summary:	Scripts to bring up network interfaces and legacy utilities
-Name:		initscripts
-Version:	10.04
-License:	GPLv2
-Group:		System Environment/Base
-Release:	1%{?dist}
-URL:		https://github.com/fedora-sysv/initscripts
-Source0:	https://github.com/fedora-sysv/initscripts/archive/%{name}-%{version}.tar.gz
-%define sha1 initscripts=b9e707441d4be947cd1c75c3733671900cfa11df
+Summary:        Scripts to bring up network interfaces and legacy utilities
+Name:           initscripts
+Version:        10.09
+License:        GPLv2
+Group:          System Environment/Base
+Release:        1%{?dist}
+URL:            https://github.com/fedora-sysv/initscripts
+Source0:        https://github.com/fedora-sysv/initscripts/archive/%{name}-%{version}.tar.gz
+%define sha1    initscripts=776d665ab82272bfb9564aba1531ce88126aa742
 Source1:        adjtime
-Patch0:         service.patch
-Vendor:     	VMware, Inc.
+Vendor:         VMware, Inc.
 Distribution:   Photon
-Requires:	systemd
-Requires:	iproute2
+Requires:       systemd
+Requires:       iproute2
 Requires:       util-linux
 Requires:       findutils
-BuildRequires:	glib-devel
-BuildRequires:	python3
-BuildRequires:	python3-libs
-BuildRequires:	popt-devel
-BuildRequires:	gettext
-BuildRequires:	pkg-config
-BuildRequires:	systemd
-Provides:	/sbin/service
+BuildRequires:  glib-devel
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  popt-devel
+BuildRequires:  gettext
+BuildRequires:  pkg-config
+BuildRequires:  systemd
+Provides:       /sbin/service
 
 %description
 This package contains the script that activates and deactivates most
 network interfaces, some utilities, and other legacy files.
 
-%package -n netconsole-service
-Summary:          Service for initializing of network console logging
-Requires:         %{name} = %{version}-%{release}
-BuildArch:        noarch
-
-Requires:         iputils
-Requires:         kmod
-Requires:         sed
+%package -n     netconsole-service
+Summary:        Service for initializing of network console logging
+Requires:       %{name} = %{version}-%{release}
+BuildArch:      noarch
+Requires:       iputils
+Requires:       kmod
+Requires:       sed
 
 %description -n netconsole-service
 This packages provides a 'netconsole' service for loading of netconsole kernel
 module with the configured parameters. The netconsole kernel module itself then
 allows logging of kernel messages over the network.
 
-%package -n readonly-root
-Summary:          Service for configuring read-only root support
-Requires:         %{name} = %{version}-%{release}
-BuildArch:        noarch
-
-Requires:         cpio
+%package -n     readonly-root
+Summary:        Service for configuring read-only root support
+Requires:       %{name} = %{version}-%{release}
+BuildArch:      noarch
+Requires:       cpio
 
 %description -n readonly-root
 This package provides script & configuration file for setting up read-only root
@@ -55,7 +52,6 @@ support. Additional configuration is required after installation.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 make PYTHON=/usr/bin/python3
@@ -203,6 +199,8 @@ EOF
 %{_prefix}/lib/systemd/system/readonly-root.service
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 10.09-1
+-   Automatic Version Bump
 *   Wed Jul 22 2020 Ankit Jain <ankitja@vmware.com> 10.04-1
 -   Updated to 10.04
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 9.70-4
