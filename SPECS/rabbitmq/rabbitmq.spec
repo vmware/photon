@@ -1,6 +1,6 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
-Version:       3.8.9
+Version:       3.8.14
 Release:       1%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
@@ -8,7 +8,7 @@ Distribution:  Photon
 License:       MPLv1.1
 URL:           https://github.com/rabbitmq/rabbitmq-server
 source0:       https://github.com/rabbitmq/rabbitmq-server/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha1 rabbitmq=dc945062816536124f0c2d6ac32d15c61d0b2f2a
+%define sha1   rabbitmq=239a8274b5af7c75eccec0df22b3fc915302c6f1
 Source1:       rabbitmq.config
 Requires:      erlang
 Requires:      erlang-sd_notify
@@ -107,6 +107,8 @@ rm -rf $RPM_BUILD_ROOT
 /var/lib/*
 
 %changelog
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.8.14-1
+- Automatic Version Bump
 * Thu Sep 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.8.9-1
 - Automatic Version Bump
 * Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 3.8.8-1
