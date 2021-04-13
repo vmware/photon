@@ -1,11 +1,11 @@
 Summary:	command line utility to set and view hardware parameters
 Name:		hdparm
-Version:	9.58
+Version:	9.60
 Release:	1%{?dist}
 License:	BSD
 URL:		http://sourceforge.net/projects/%{name}/
 Source0:	http://downloads.sourceforge.net/hdparm/%{name}-%{version}.tar.gz
-%define sha1 hdparm=b3425a141f1c0fe9f53b18631437129c2155ee45
+%define sha1 hdparm=f15378cf533f79dbbc040cd77183137d24292ecc
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
@@ -31,6 +31,8 @@ make DESTDIR=%{buildroot} binprefix=%{_prefix} install
 %{_sbindir}/hdparm
 %{_mandir}/man8/hdparm.8*
 %changelog
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 9.60-1
+- Automatic Version Bump
 * Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 9.58-1
 - Automatic Version Bump
 * Mon Sep 10 2018 Alexey Makhalov <amakhalov@vmware.com> 9.56-1
