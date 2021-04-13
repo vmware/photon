@@ -1,6 +1,6 @@
 Summary:         Math libraries
 Name:            gmp
-Version:         6.2.0
+Version:         6.2.1
 Release:         1%{?dist}
 License:         LGPLv3+
 URL:             http://www.gnu.org/software/gmp
@@ -8,7 +8,7 @@ Group:           Applications/System
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Source0:         http://ftp.gnu.org/gnu/gmp/%{name}-%{version}.tar.xz
-%define sha1 gmp=052a5411dc74054240eec58132d2cf41211d0ff6
+%define sha1 gmp=0578d48607ec0e272177d175fd1807c30b00fdf2
 
 %description
 The GMP package contains math libraries. These have useful functions
@@ -68,6 +68,8 @@ make %{?_smp_mflags} check
 %{_docdir}/%{name}-%{version}/isa_abi_headache
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 6.2.1-1
+-   Automatic Version Bump
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 6.2.0-1
 -   Automatic Version Bump
 *   Wed Sep 04 2019 Alexey Makhalov <amakhalov@vmware.com> 6.1.2-3
