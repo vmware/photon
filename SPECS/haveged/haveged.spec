@@ -2,7 +2,7 @@
 
 Summary:        A Linux entropy source using the HAVEGE algorithm
 Name:           haveged
-Version:        1.9.13
+Version:        1.9.14
 Release:        1%{?dist}
 License:        GPLv3+
 Vendor:         VMware, Inc.
@@ -10,7 +10,7 @@ Distribution:   Discus
 Group:          System Environment/Daemons
 URL:            http://www.irisa.fr/caps/projects/hipsor/
 Source0:        http://www.issihosts.com/haveged/%{name}-%{version}.tar.gz
-%define sha1 haveged=add39b7665f2251fe087817397552893c70f11ab
+%define sha1 haveged=66571ee9273dbb6152e829790753a0bbfdb95e71
 Source1:        haveged.service
 Requires:       systemd
 
@@ -106,6 +106,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.9.14-1
+- Automatic Version Bump
 * Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.9.13-1
 - Automatic Version Bump
 * Thu May 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.9.1-4
