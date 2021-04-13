@@ -1,17 +1,14 @@
 Summary:        Fast distributed version control system
 Name:           git
-Version:        2.30.0
-Release:        3%{?dist}
+Version:        2.31.1
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha1    git=6be02a878d08227d85f0cf4d5646b19c60a242e4
-Patch0:         CVE-2021-21300-1.patch
-Patch1:         CVE-2021-21300-2.patch
-Patch2:         CVE-2021-21300-3.patch
+%define sha1    git=a66f98f88bf7734f8463446ac0735cee190da1dc
 BuildRequires:  curl-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -47,9 +44,7 @@ These are the additional language files of git.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+
 %build
 %configure \
     CFLAGS="%{optflags}" \
@@ -57,6 +52,7 @@ These are the additional language files of git.
     --libexec=%{_libexecdir} \
     --with-gitconfig=/etc/gitconfig
 make %{?_smp_mflags} CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
@@ -80,6 +76,7 @@ fi
 
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
@@ -100,6 +97,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.31.1-1
+-   Automatic Version Bump
 *   Tue Mar 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.30.0-3
 -   Fix CVE-2021-21300
 *   Mon Feb 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.30.0-2
