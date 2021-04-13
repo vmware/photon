@@ -1,14 +1,14 @@
 Summary:	Man pages
 Name:		man-pages
-Version:	5.08
-Release:	3%{?dist}
+Version:	5.11
+Release:	1%{?dist}
 License:	GPLv2+ and BSD
 URL:		http://www.kernel.org/doc/man-pages
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://www.kernel.org/pub/linux/docs/man-pages/%{name}-%{version}.tar.gz
-%define sha1    man-pages=53c534e132c680d47120e04ae6c5724538b1c7b1
+%define sha1    man-pages=3547c3fd8f2dedefd9fbf6021eae8ec990bb351a
 BuildArch:	noarch
 
 %description
@@ -38,6 +38,8 @@ rm -vf %{buildroot}%{_mandir}/man2/move_pages.2
 %{_mandir}/man8/*
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 5.11-1
+-   Automatic Version Bump
 *   Wed Oct 21 2020 Sharan Turlapati <sturlapati@vmware.com> 5.08-3
 -   Remove conflict with libnuma-devel
 *   Fri Sep 25 2020 Michelle Wang <michellew@vmware.com> 5.08-2
