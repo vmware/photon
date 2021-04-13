@@ -2,7 +2,7 @@
 
 Summary:        A free, distributed source control management tool.
 Name:           mercurial
-Version:        5.5.1
+Version:        5.7.1
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://www.mercurial-scm.org
@@ -10,7 +10,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.mercurial-scm.org/release/%{name}-%{version}.tar.gz
-%define sha1    mercurial=c74cbb8446f8279d59104a7212188e8f3021c0d8
+%define sha1    mercurial=44f2d2dbdbebeb86358d9e6bac0867f43ae06178
 Patch0:         mercurial-disable-zstd.patch
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -59,6 +59,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 5.7.1-1
+-   Automatic Version Bump
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 5.5.1-1
 -   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 5.5-1
