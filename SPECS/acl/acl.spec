@@ -1,9 +1,9 @@
 Summary:	Access control list utilities
 Name:		acl
-Version:	2.2.53
+Version:	2.3.1
 Release:	1%{?dist}
 Source0:	http://download.savannah.gnu.org/releases/acl/%{name}-%{version}.tar.gz
-%define sha1 %{name}=6c9e46602adece1c2dae91ed065899d7f810bf01
+%define sha1 %{name}=a5343e9f75326ffe5aa8d5d042e52227a3fd66cb
 License:	GPLv2+
 Group:		System Environment/Base
 URL:		http://acl.bestbits.at/
@@ -63,10 +63,10 @@ else
     echo '*** The chroot file system does not support all ACL options ***'
 fi
 
-%post -n libacl 
+%post -n libacl
 /sbin/ldconfig
 
-%postun -n libacl 
+%postun -n libacl
 /sbin/ldconfig
 
 %files -f %{name}.lang
@@ -84,13 +84,15 @@ fi
 %{_includedir}/sys/acl.h
 %{_mandir}/man3/acl_*
 %{_libdir}/libacl.a
-%{_datadir}/doc/acl/*   
+%{_datadir}/doc/acl/*
 %{_libdir}/pkgconfig/libacl.pc
-   
+
 %files -n libacl
 %{_libdir}/libacl.so.*
 
 %changelog
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 2.3.1-1
+- Automatic Version Bump
 * Mon Sep 17 2018 Ankit Jain <ankitja@vmware.com> 2.2.53-1
 - Updated to version 2.2.53
 * Fri Jul 28 2017 Chang Lee <changlee@vmware.com> 2.2.52-5
