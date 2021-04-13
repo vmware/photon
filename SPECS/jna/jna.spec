@@ -3,39 +3,37 @@
 
 Summary:        Java Native Access
 Name:           jna
-Version:        5.6.0
-Release:        2%{?dist}
+Version:        5.8.0
+Release:        1%{?dist}
 License:        Apache
 URL:            https://github.com/java-native-access/jna
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/java-native-access/jna/archive/%{version}/%{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}=6c0e5fb9f03994bc8fe9373e1ec6395df0303213
+%define sha1    %{name}-%{version}=c009cf8c6a31c86f6713083e54cce4cc2be5e156
 Patch0:         jna_remove_clover_jar.patch
-Patch1:         jna-gcc-10.patch
-BuildRequires: openjre8
-BuildRequires: openjdk8
-BuildRequires: apache-ant
-Requires:      openjre8
+BuildRequires:  openjre8
+BuildRequires:  openjdk8
+BuildRequires:  apache-ant
+Requires:       openjre8
 
 %define _prefix /var/opt/%{name}-%{version}
 
 %description
 The JNA package contains libraries for interop from Java to native libraries.
 
-%package devel
-Summary:    Sources for JNA
-Group:      Development/Libraries
-Requires:   %{name} = %{version}-%{release}
+%package        devel
+Summary:        Sources for JNA
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
 
-%description devel
+%description    devel
 Sources for JNA
 
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
 
 %clean
 rm -rf %{buildroot}
@@ -72,7 +70,6 @@ ant
 %{_prefix}/*.jar
 %exclude %{_prefix}/*javadoc.jar
 %exclude %{_prefix}/*sources.jar
-
 %exclude %{_prefix}/jnacontrib/*
 
 %files devel
@@ -85,6 +82,8 @@ ant
 %{_prefix}/*.aar
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 5.8.0-1
+-   Automatic Version Bump
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 5.6.0-2
 -   GCC-10 support.
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 5.6.0-1
