@@ -1,20 +1,14 @@
 Summary:        Provide tools to manage multipath devices
 Name:           device-mapper-multipath
-Version:        0.8.4
+Version:        0.8.6
 Release:        1%{?dist}
 License:        GPL+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/bmarzins/rh-multipath-tools
-
-Source0:        rh-multipath-tools-0.8.4.tar.gz
-%define         sha1 rh-multipath-tools=15e4c2f78b401a15784969878b1a3cc3ac8e9e90
-
-Patch0:    0001-fix-boolean-value-with-json-c-0.14.patch
-Patch1:    0002-make.patch
-Patch2:    fix-uninit-warning.patch
-
+Source0:        rh-multipath-tools-%{version}.tar.gz
+%define         sha1 rh-multipath-tools=74e30abcd1cc33acaf1a3c699c621dffe75a6209
 BuildRequires:  userspace-rcu-devel
 BuildRequires:  libaio-devel
 BuildRequires:  device-mapper-devel
@@ -22,7 +16,6 @@ BuildRequires:  readline-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  systemd-devel
 BuildRequires:  json-c-devel
-
 Requires:       userspace-rcu
 Requires:       libaio
 Requires:       device-mapper
@@ -49,7 +42,7 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications
 
 %prep
-%autosetup -n rh-multipath-tools-%{version} -p1
+%autosetup -n rh-multipath-tools-%{version}
 
 %build
 make %{?_smp_mflags}
@@ -82,7 +75,6 @@ rm -rf %{buildroot}
 %{_libdir}/multipath/*.so
 /lib/systemd/system/multipathd.service
 /lib/systemd/system/multipathd.socket
-
 %{_mandir}/man5/*
 %{_mandir}/man8/mpathpersist.8.gz
 %{_mandir}/man8/multipath.8.gz
@@ -101,6 +93,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
+*   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 0.8.6-1
+-   Automatic Version Bump
 *   Wed Oct 07 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.8.4-1
 -   Upgrade to version 0.8.4
 *   Tue Aug 18 2020 Michelle Wang <michellew@vmware.com> 0.8.3-2

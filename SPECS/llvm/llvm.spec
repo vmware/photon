@@ -1,6 +1,6 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
-Version:        11.0.1
+Version:        12.0.0
 Release:        1%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
@@ -8,7 +8,7 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
-%define sha1    llvm=1a911295260d4e41116b72788eb602702b4bb252
+%define sha1    llvm=dbc1cf6aa2dbdeccd7ad26c9215b56963a5686d3
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
 BuildRequires:  libffi-devel
@@ -90,6 +90,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 12.0.0-1
+-   Automatic Version Bump
 *   Thu Feb 04 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.0.1-1
 -   Upgrade to v11.0.1
 *   Tue Sep 22 2020 Harinadh D <hdommaraju@vmware.com> 10.0.1-1

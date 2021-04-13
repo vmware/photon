@@ -1,14 +1,14 @@
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
-Version:        11.0.1
-Release:        2%{?dist}
+Version:        12.0.0
+Release:        1%{?dist}
 License:        NCSA
 URL:            http://clang.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/llvm/llvm-project/releases/download/llvmorg-%{version}/%{name}-%{version}.src.tar.xz
-%define sha1    clang=10516c6d177dc3d893e640c75d891ee3d6c1edcf
+%define sha1    clang=51250856f368acef5ab335a16f994bf29ad3d115
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
 BuildRequires:  ncurses-devel
@@ -76,6 +76,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 12.0.0-1
+-   Automatic Version Bump
 *   Tue Mar 16 2021 Michael Paquier <mpaquier@vmware.com> 11.0.1-2
 -   Addition of required dependency to ncurses-devel for devel package.
 *   Thu Feb 04 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.0.1-1

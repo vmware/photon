@@ -5,7 +5,7 @@
 
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
-Version:         0.16.0
+Version:         0.19.0
 Release:         1%{?dist}
 License:         ASL 2.0
 Vendor:          VMware, Inc.
@@ -13,9 +13,10 @@ Distribution:    Photon
 Group:           Development/Languages
 URL:             https://github.com/iovisor/bcc
 Source0:         https://github.com/iovisor/bcc/archive/%{name}-%{version}.tar.gz
-%define sha1     bcc=26406a9a562756a8fcd2442e543486a77f2949c3
-Source1:         https://github.com/iovisor/bcc/releases/download/v%{version}/bcc-src-with-submodule.tar.gz
-%define sha1     bcc-src-with-submodule=ae5102ef4109f8af03c7282c1f9f2c3201c3a400
+%define sha1     bcc=96882747089d093b8933456d9c7905407bde7fd9
+#https://github.com/iovisor/bcc/releases/download/v%{version}/bcc-src-with-submodule.tar.gz
+Source1:         bcc-src-with-submodule-%{version}.tar.gz
+%define sha1     bcc-src-with-submodule=14adea5e3cffc1b5ceda96d4ad6f1044c81f6838
 BuildRequires:   bison
 BuildRequires:   cmake >= 2.8.7
 BuildRequires:   flex
@@ -118,6 +119,8 @@ find %{buildroot}/usr/share/bcc/{tools,examples} -type f -exec \
 %{_datadir}/%{name}/man/*
 
 %changelog
+*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 0.19.0-1
+-   Automatic Version Bump
 *   Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.16.0-1
 -   Automatic Version Bump
 *   Wed Jun 26 2019  Keerthana K <keerthanak@vmware.com> 0.10.0-1

@@ -2,7 +2,7 @@
 
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
-Version:        11.0.1
+Version:        12.0.0
 Release:        1%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
@@ -10,7 +10,7 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
-%define sha1    lldb=49f5d91e20672b9e9756a776fc800c8c7da8eba2
+%define sha1    lldb=00ca5a5e20b228df1022669a08d40ac3b5eef6c3
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
 BuildRequires:  clang-devel = %{version}
@@ -93,6 +93,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 12.0.0-1
+-   Automatic Version Bump
 *   Thu Feb 04 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.0.1-1
 -   Upgrade to v11.0.1
 *   Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 10.0.1-1
