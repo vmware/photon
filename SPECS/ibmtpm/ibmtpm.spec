@@ -1,14 +1,14 @@
 Summary:        This project is an implementation of the TCG TPM 2.0 specification.
 Name:           ibmtpm
-Version:        1637
-Release:        3%{?dist}
+Version:        1661
+Release:        1%{?dist}
 License:        BSD 2-Clause
 URL:            https://sourceforge.net/projects/ibmswtpm2/files
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}%{version}.tar.gz
-%define sha1 ibmtpm=ab4b94079e57a86996991e8a2b749ce063e4ad3e
+%define sha1 ibmtpm=4a520d518dafe79422dfb1bafe8ddf463c942205
 BuildRequires:  openssl-devel curl-devel
 Requires:       openssl curl
 %description
@@ -44,6 +44,8 @@ EOF
 /lib/systemd/system/ibmtpm_server.service
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1661-1
+-   Automatic Version Bump
 *   Thu Oct 08 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1637-3
 -   Fix GCC path issue
 *   Thu Sep 10 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1637-2

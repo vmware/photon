@@ -1,7 +1,7 @@
 Summary:        The source repository for the TPM (Trusted Platform Module) 2 tools
 Name:           tpm2-tools
-Version:        4.3.0
-Release:        4%{?dist}
+Version:        5.0
+Release:        1%{?dist}
 License:        BSD 2-Clause
 URL:            https://github.com/tpm2-software/tpm2-tools
 Group:          System Environment/Security
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    tpm2=bdf84d825119e4022ac2aa5f860b199cd7af2990
+%define sha1    tpm2=cdfe4e12e679e547528a2d908862762b63921e63
 
 BuildRequires:  openssl-devel curl-devel tpm2-tss-devel
 
@@ -49,6 +49,8 @@ make %{?_smp_mflags} check
 /usr/share/bash-completion/*
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 5.0-1
+-   Automatic Version Bump
 *   Tue Feb 09 2021 Alexey Makhalov <amakhalov@vmware.com> 4.3.0-4
 -   Fix compilation issue with BN_bn2binpad
 *   Tue Jan 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.3.0-3
