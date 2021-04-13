@@ -1,11 +1,11 @@
 Summary:	Program to generate documenation
 Name:		gtk-doc
-Version:	1.33.0
+Version:	1.33.2
 Release:	1%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.acc.umu.se/pub/gnome/sources/gtk-doc/1.33/gtk-doc-%{version}.tar.xz
-%define sha1    gtk-doc=b9cb7b9b5ec1650b018ca49c2d984cb56de97135
+%define sha1    gtk-doc=d48fc5e2ca19eef9420732625cfd53e40b331baf
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -51,6 +51,8 @@ cd tests && make check-TESTS
 /usr/share/*
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.33.2-1
+-   Automatic Version Bump
 *   Mon Oct 5 2020 Michelle Wang <michellew@vmware.com> 1.33.0-1
 -   Update to version 1.33.0
 *   Wed Aug 26 2020 Keerthana K <keerthanak@vmware.com> 1.32-1
