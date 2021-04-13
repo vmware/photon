@@ -1,11 +1,11 @@
 Summary:        SELinux policy module utils
 Name:           semodule-utils
-Version:        3.1
+Version:        3.2
 Release:        1%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
-Source0:        https://github.com/SELinuxProject/selinux/releases/download/20200710/%{name}-%{version}.tar.gz
-%define sha1    semodule-utils=98d8f781ba466bdbb83c7d87f8bae94479a80190
+Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
+%define sha1    semodule-utils=2e0d3bdc83d2b7bf2426fdf8f71d55f93a4495e3
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -39,6 +39,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_mandir}/man8/semodule_unpackage.8.gz
 
 %changelog
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.2-1
+- Automatic Version Bump
 * Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1
 - Automatic Version Bump
 * Sun Jul 05 2020 Vikash Bansal <bvikas@vmware.com> 3.0-2

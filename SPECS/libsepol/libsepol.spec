@@ -1,11 +1,11 @@
 Summary:        SELinux binary policy manipulation library
 Name:           libsepol
-Version:        3.1
-Release:        2%{?dist}
+Version:        3.2
+Release:        1%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/20200710/%{name}-%{version}.tar.gz
-%define sha1    libsepol=7f209aae19fdb2da3721a1fe0758c5dc9fc0a866
+%define sha1    libsepol=9ce0e7c9772a17e5bad6479d80e6bf3b24db5f0c
 URL:            http://www.selinuxproject.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -64,7 +64,6 @@ rm -rf %{buildroot}%{_mandir}/ru
 rm %{buildroot}%{_mandir}/man8/genpolbools.8
 rm %{buildroot}%{_mandir}/man8/genpolusers.8
 
-
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
@@ -88,9 +87,11 @@ rm %{buildroot}%{_mandir}/man8/genpolusers.8
 
 %files
 %defattr(-,root,root)
-%{_lib}/libsepol.so.1
+%{_libdir}/libsepol.so.*
 
 %changelog
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.2-1
+- Automatic Version Bump
 * Tue Jan 12 2021 Alexey Makhalov <amakhalov@vmware.com> 3.1-2
 - GCC-10 support
 * Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1

@@ -1,12 +1,12 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        SELinux library and simple utilities
 Name:           libselinux
-Version:        3.1
+Version:        3.2
 Release:        1%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/20200710/%{name}-%{version}.tar.gz
-%define sha1    libselinux=f687894176f0b69a4e0e14b936685c72cb41a084
+%define sha1    libselinux=59d7e9a2db64ba994e2da976b4374871535cd196
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -116,6 +116,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.2-1
+-   Automatic Version Bump
 *   Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1
 -   Automatic Version Bump
 *   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 3.0-3

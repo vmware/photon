@@ -1,11 +1,11 @@
 Summary:        SELinux policy compiler
 Name:           checkpolicy
-Version:        3.1
+Version:        3.2
 Release:        1%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
-Source0:        https://github.com/SELinuxProject/selinux/releases/download/20200710/%{name}-%{version}.tar.gz
-%define sha1    checkpolicy=502a865ea91eedbe40f6304937c89b0c3b7475dd
+Source0:        https://github.com/SELinuxProject/selinux/releases/download/%{version}/%{name}-%{version}.tar.gz
+%define sha1    checkpolicy=71262b34fd4147bbe34ba00433cfd74850c645b0
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -34,7 +34,10 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_mandir}/man8/checkmodule.8.gz
 
 %changelog
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 3.2-1
+- Automatic Version Bump
 * Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1
 - Automatic Version Bump
 * Thu Apr 30 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-1
 - Initial build.
+
