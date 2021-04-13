@@ -1,13 +1,13 @@
 Summary:       Lightning memory-mapped database
 Name:          lmdb
-Version:       0.9.24
-Release:       2%{?dist}
+Version:       0.9.28
+Release:       1%{?dist}
 Group:         System/Libraries
 Vendor:        VMware, Inc.
 License:       OpenLDAP
 URL:           https://symas.com/lmdb
 Source0:       https://github.com/LMDB/lmdb/archive/LMDB_%{version}.tar.gz
-%define sha1 LMDB=76f4bc1827474403a78e5f8eb225233d67144286
+%define sha1 LMDB=2f111a96a70c02fe102e07837042549727ace9d8
 Source1:       %{name}.pc
 Distribution:  Photon
 Requires:      lmdb-libs = %{version}-%{release}
@@ -77,6 +77,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.so
 
 %changelog
+*  Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 0.9.28-1
+-  Automatic Version Bump
 *  Fri Jan 22 2021 Dweep Advani <dadvani@vmware.com> 0.9.24-2
 -  Resolve /usr/bin/mdb_stat conflict by renaming to mdb_stat_lmdb
 *  Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 0.9.24-1
