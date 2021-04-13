@@ -1,6 +1,6 @@
 Summary:        Shell script to auto detect free size on disk and grow partition.
 Name:           cloud-utils
-Version:        0.31
+Version:        0.32
 Release:        1%{?dist}
 License:        GPLv3
 Group:          System Environment
@@ -13,7 +13,7 @@ Requires:       gawk
 Requires:       (util-linux or toybox)
 BuildArch:      noarch
 
-%define sha1 cloud-utils=44ef173f0753bb28be970fdfc5a5a5a352c25ce0
+%define sha1 cloud-utils=c12359142f806e2d901c7f1b67fa651cd50c7d29
 
 %description
 Cloud-utils brings in growpart script. This script is very useful for
@@ -35,6 +35,8 @@ cp man/growpart.* $RPM_BUILD_ROOT/%{_mandir}/man1/
 %doc %{_mandir}/man1/growpart.*
 
 %changelog
+*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 0.32-1
+-   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.31-1
 -   Automatic Version Bump
 *   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 0.30-3
