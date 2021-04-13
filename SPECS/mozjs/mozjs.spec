@@ -3,14 +3,14 @@
 %global	major 78
 Summary:       Mozilla's JavaScript engine.
 Name:          mozjs
-Version:       78.3.1
-Release:       2%{?dist}
+Version:       78.10.0
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
 URL:           https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey
 Source0:       https://ftp.mozilla.org/pub/firefox/releases/%{version}esr/source/firefox-%{version}esr.source.tar.xz
-%define sha1   firefox-%{version}=b60bcb10184a682380832c0f558c89cfa25d3dbf
+%define sha1   firefox-%{version}=547bac33732774993bd8223de9acfeedcc69a10d
 Patch0:        emitter.patch
 Patch1:        emitter_test.patch
 # Build fixes
@@ -36,11 +36,12 @@ Obsoletes:     js
 Mozilla's JavaScript engine includes a just-in-time compiler (JIT) that compiles
 JavaScript to machine code, for a significant speed increase.
 
-%package devel
-Summary:        mozjs devel
-Group:          Development/Tools
-Requires:       %{name} = %{version}-%{release}
-%description devel
+%package       devel
+Summary:       mozjs devel
+Group:         Development/Tools
+Requires:      %{name} = %{version}-%{release}
+
+%description   devel
 This contains development tools and libraries for SpiderMonkey.
 
 %prep
@@ -89,6 +90,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/mozjs-%{major}.pc
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 78.10.0-1
+-   Automatic Version Bump
 *   Fri Feb 19 2021 Alexey Makhalov <amakhalov@vmware.com> 78.3.1-2
 -   Remove python2 requirements
 *   Mon Oct 05 2020 Ankit Jain <ankitja@vmware.com> 78.3.1-1

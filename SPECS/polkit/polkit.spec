@@ -1,28 +1,28 @@
-Summary:       A toolkit for defining and handling authorizations.
-Name:          polkit
-Version:       0.118
-Release:       1%{?dist}
-Group:         Applications/System
-Vendor:        VMware, Inc.
-License:       LGPLv2+
-URL:           https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
-Source0:       https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
-%define sha1 polkit=1c53d0ccacc6e6afd49ba14cb39d2514b943933d
-Distribution:  Photon
-BuildRequires: autoconf
-BuildRequires: expat-devel
-BuildRequires: glib-devel
-BuildRequires: gobject-introspection
-BuildRequires: intltool >= 0.40.0
-BuildRequires: mozjs-devel = 78.3.1
-BuildRequires: Linux-PAM-devel
-BuildRequires: systemd-devel
-Requires:      mozjs
-Requires:      expat
-Requires:      glib
-Requires:      Linux-PAM
-Requires:      systemd
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Summary:           A toolkit for defining and handling authorizations.
+Name:              polkit
+Version:           0.118
+Release:           2%{?dist}
+Group:             Applications/System
+Vendor:            VMware, Inc.
+License:           LGPLv2+
+URL:               https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
+Source0:           https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
+%define sha1       polkit=1c53d0ccacc6e6afd49ba14cb39d2514b943933d
+Distribution:      Photon
+BuildRequires:     autoconf
+BuildRequires:     expat-devel
+BuildRequires:     glib-devel
+BuildRequires:     gobject-introspection
+BuildRequires:     intltool >= 0.40.0
+BuildRequires:     mozjs-devel >= 78.3.1
+BuildRequires:     Linux-PAM-devel
+BuildRequires:     systemd-devel
+Requires:          mozjs
+Requires:          expat
+Requires:          glib
+Requires:          Linux-PAM
+Requires:          systemd
+Requires(pre):     /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):  /usr/sbin/userdel /usr/sbin/groupdel
 
 %description
@@ -30,12 +30,12 @@ polkit provides an authorization API intended to be used by privileged programs
 (“MECHANISMS”) offering service to unprivileged programs (“SUBJECTS”) often
 through some form of inter-process communication mechanism
 
-%package devel
-Summary: polkit development headers and libraries
-Group: Development/Libraries
-Requires: polkit = %{version}-%{release}
+%package           devel
+Summary:           polkit development headers and libraries
+Group:             Development/Libraries
+Requires:          polkit = %{version}-%{release}
 
-%description devel
+%description       devel
 header files and libraries for polkit
 
 %prep
@@ -110,6 +110,8 @@ fi
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Wed Apr 28 2021 Gerrit Photon <photon-checkins@vmware.com> 0.118-2
+-   Bump up release version since mozjs is update to 78.10.0
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.118-1
 -   Automatic Version Bump
 *   Tue Aug 25 2020 Ankit Jain <ankitja@vmware.com> 0.117-2
