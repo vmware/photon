@@ -1,14 +1,14 @@
 Summary:        Mobile broadband modem manager
 Name:           ModemManager
-Version:        1.14.2
-Release:        3%{?dist}
+Version:        1.16.2
+Release:        1%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.freedesktop.org/software/ModemManager/ModemManager-%{version}.tar.xz
-%define sha1    ModemManager=07e36664c9effa548b6d58cd7d7dce5da10a16ca
+%define sha1    ModemManager=c90ce11ab18964a69f59359459f834db80466fa9
 BuildRequires:  libqmi-devel
 BuildRequires:  gobject-introspection-devel
 BuildRequires:  libgudev-devel
@@ -43,7 +43,10 @@ It contains the libraries and header files for ModemManager
 %setup -q
 
 %build
-%configure --disable-static --enable-more-warnings=no
+%configure \
+    --disable-static \
+    --enable-more-warnings=no \
+    --without-qmi
 make %{?_smp_mflags}
 
 %install
@@ -83,6 +86,8 @@ make %{?_smp_mflags} check
 %{_libdir}/libmm-glib.la
 
 %changelog
+*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.16.2-1
+-   Automatic Version Bump
 *   Mon Dec 14 2020 Susant Sahani <ssahani@vmware.com> 1.14.2-3
 -   Add build requires
 *   Wed Nov 18 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.2-2
