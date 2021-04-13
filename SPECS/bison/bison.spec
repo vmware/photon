@@ -1,14 +1,14 @@
 Summary:	Contains a parser generator
 Name:		bison
-Version:	3.7.1
-Release:	3%{?dist}
+Version:	3.7.6
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/bison
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/bison/%{name}-%{version}.tar.xz
-%define sha1 bison=534c7ee46331ff1f1fc96a378fd6a9f6b322a242
+%define sha1 bison=bbd6362383a7276cd85ed3f19cb5416aeb98e5db
 %if %{with_check}
 Patch0:         make-check.patch
 %endif
@@ -50,6 +50,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 %{_docdir}/bison/*
 %changelog
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 3.7.6-1
+- Automatic Version Bump
 * Tue Jan 26 2021 Anish Swaminathan <anishs@vmware.com> 3.7.1-3
 - Add missing dependency for gettext
 * Tue Jan 19 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.1-2
