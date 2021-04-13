@@ -1,6 +1,6 @@
 Summary:        Ed - A line-oriented text editor
 Name:           ed
-Version:        1.16
+Version:        1.4
 Release:        1%{?dist}
 URL:            https://www.gnu.org/software/ed/
 License:        GPLv3
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://fossies.org/linux/privat/%{name}-%{version}.tar.gz
-%define sha1    ed=0b3848694d96e399dd5234e16fb69e8cf95bf781
+%define sha1    ed=367bb9cd20b584ba550f7eda727a90862d014fe3
 %description
 Ed - A line-oriented text editor
 
@@ -45,6 +45,8 @@ make  %{?_smp_mflags} check
 %{_mandir}/man1/*
 
 %changelog
+*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.4-1
+-   Automatic Version Bump
 *   Wed Jul 15 2020 Gerrit Photon <photon-checkins@vmware.com> 1.16-1
 -   Automatic Version Bump
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.14.2-2
