@@ -2,7 +2,7 @@
 
 Summary:        It provides common functions for password quality checking
 Name:           libpwquality
-Version:        1.4.2
+Version:        1.4.4
 Release:        1%{?dist}
 License:        BSD or GPLv2+
 URL:            https://github.com/libpwquality/libpwquality
@@ -10,7 +10,7 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/libpwquality/libpwquality/releases/download/libpwquality-%{version}/libpwquality-%{version}.tar.bz2
-%define sha1    libpwquality=d70c24327aa898a1d3dc84b9e14303f0ac852fb1
+%define sha1    libpwquality=94e3f2eb67ccff1823e727d6770c3f39acbd954d
 
 BuildRequires:  cracklib-devel
 BuildRequires:  Linux-PAM-devel
@@ -87,6 +87,8 @@ make DESTDIR=%{buildroot} install
 %{python3_sitearch}/*.egg-info
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.4.4-1
+-   Automatic Version Bump
 *   Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 1.4.2-1
 -   Initial version
 
