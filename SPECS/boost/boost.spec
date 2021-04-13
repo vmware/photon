@@ -1,15 +1,15 @@
-%define main_version 1_74_0
+%define main_version 1_76_0
 Summary:        Boost
 Name:           boost
-Version:        1.74.0
+Version:        1.76.0
 Release:        1%{?dist}
 License:        Boost Software License V1
 URL:            http://www.boost.org/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://sourceforge.net/projects/boost/files/boost/%{version}/boost_1_74_0.tar.bz2
-%define sha1    boost=f82c0d8685b4d0e3971e8e2a8f9ef1551412c125
+Source0:        https://sourceforge.net/projects/boost/files/boost/%{version}/boost_%{main_version}.tar.bz2
+%define sha1    boost=8064156508312dde1d834fec3dca9b11006555b6
 BuildRequires:	bzip2-devel
 
 %description
@@ -23,8 +23,7 @@ Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
 
 %description    devel
-The boost-devel package contains libraries, header files and documentation
-for developing applications that use boost.
+The boost-devel package contains libraries, header files and documentation for developing applications that use boost.
 
 %package        static
 Summary:        boost static libraries
@@ -66,6 +65,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libboost_*.a
 
 %changelog
+*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.76.0-1
+-   Automatic Version Bump
 *   Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 1.74.0-1
 -   Automatic Version Bump
 *   Tue Sep 11 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.66.0-1

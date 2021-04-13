@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       14%{?dist}
+Release:       15%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -14,7 +14,7 @@ Patch1:        lightwave-openssl-1.1.1.patch
 Patch2:        lightwave-openssl-1.1.1-fixV2.patch
 Patch3:        lightwave-openssl-1.1.1-fixV3.patch
 Requires:      apache-tomcat >= 8.5.8
-Requires:      boost = 1.74.0
+Requires:      boost >= 1.74.0
 Requires:      commons-daemon >= 1.0.15
 Requires:      (coreutils >= 8.22 or toybox)
 Requires:      cyrus-sasl >= 2.1
@@ -28,7 +28,7 @@ Requires:      lightwave-client = %{version}-%{release}
 Requires:      lightwave-server = %{version}-%{release}
 BuildRequires: ant-contrib >= 1.0
 BuildRequires: apache-maven >= 3.3.9
-BuildRequires: boost-devel = 1.74.0
+BuildRequires: boost-devel >= 1.74.0
 BuildRequires: c-rest-engine-devel >= 1.1
 BuildRequires: commons-daemon >= 1.0.15
 BuildRequires: copenapi-devel
@@ -119,7 +119,7 @@ Requires:      jansson
 Requires:      krb5 >= 1.14
 Requires:      likewise-open >= 6.2.9
 Requires:      openjre8
-Requires:      boost = 1.74.0
+Requires:      boost >= 1.74.0
 Requires:      lightwave-client-libs = %{version}-%{release}
 
 %description   client
@@ -1401,6 +1401,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.3.1.34-15
+-   Bump up release version since boost upgrade to 1.76.0
 *   Mon Feb 08 2021 Alexey Makhalov <amakhalov@vmware.com> 1.3.1.34-14
 -   GCC-10 support.
 *   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.3.1.34-13
