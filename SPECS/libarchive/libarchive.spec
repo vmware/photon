@@ -1,14 +1,14 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
-Version:    3.4.3
-Release:    3%{?dist}
+Version:    3.5.1
+Release:    1%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
-%define sha1 libarchive=6528f38fa03a44bfcf58435ec8512ffea2851c99
+%define sha1 libarchive=8783fd595f1405400e624ac2c0977d9dc3f9ca30
 BuildRequires:  xz-libs
 BuildRequires:  xz-devel
 BuildRequires:  zstd-devel
@@ -58,6 +58,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.5.1-1
+-   Automatic Version Bump
 *   Tue Sep 22 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.4.3-3
 -   Make libarchive compatible for openssl-1.1.1
 *   Tue Sep 08 2020 Ankit Jain <ankitja@vmware.com> 3.4.3-2
