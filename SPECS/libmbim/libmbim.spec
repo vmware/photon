@@ -1,14 +1,14 @@
 Summary:        Library for talking to WWAN modems and devices
 Name:           libmbim
-Version:        1.24.2
-Release:        2%{?dist}
+Version:        1.24.6
+Release:        1%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.freedesktop.org/software/libmbim/libmbim-%{version}.tar.xz
-%define sha1    libmbim=1162a4302be250ca3334f3bfd1e7d04770e4b4ff
+%define sha1    libmbim=ab0c9a1f84c48f6f2284245c5e36da75efb790f2
 BuildRequires:  libgudev-devel
 BuildRequires:  libgudev
 BuildRequires:  systemd-devel
@@ -65,6 +65,8 @@ make  %{?_smp_mflags} check
 %{_datadir}/gtk-doc/*
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.24.6-1
+-   Automatic Version Bump
 *   Mon Dec 14 2020 Susant Sahani<ssahani@vmware.com> 1.24.2-2
 -   Add build requires
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.24.2-1
