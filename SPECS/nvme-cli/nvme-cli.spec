@@ -1,6 +1,6 @@
 Name:          nvme-cli
 Summary:       NVM-Express user space tooling for Linux
-Version:       1.12
+Version:       1.13
 Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -8,7 +8,7 @@ Distribution:  Photon
 License:       GPLv2
 URL:           https://github.com/linux-nvme/nvme-cli
 Source0:       %{name}-%{version}.tar.gz
-%define sha1   nvme-cli=ec24fdc3944cff338170f8a98e95e9ebe90463f2
+%define sha1   nvme-cli=c1d42bd18ac5918e08650a3fa7584b32b40f261c
 
 %description
 NVM-Express user space tooling for Linux
@@ -39,6 +39,8 @@ make install PREFIX=%{_prefix} DESTDIR=%{buildroot}
 %{_libdir}/systemd/system/nvmf-connect@.service
 
 %changelog
+*  Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.13-1
+-  Automatic Version Bump
 *  Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.12-1
 -  Automatic Version Bump
 *  Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.6-1
