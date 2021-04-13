@@ -1,6 +1,6 @@
 Summary:        ALSA Utilities
 Name:           alsa-utils
-Version:        1.2.3
+Version:        1.2.4
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://alsa-project.org
@@ -8,7 +8,7 @@ Group:          Applications/Internet
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.alsa-project.org/pub/utils/%{name}-%{version}.tar.bz2
-%define sha1    alsa-utils=4114e54169de9550e69c00575573ddf75c5a54ba
+%define sha1    alsa-utils=84b2c5e8f0c345844e03e8e4ae73b761c3ae8829
 Patch0:         ens1371.patch
 BuildRequires:  alsa-lib-devel ncurses-devel
 Requires:       linux-drivers-sound alsa-lib ncurses
@@ -42,6 +42,8 @@ alsactl -L store
 %{_localstatedir}/*
 
 %changelog
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.4-1
+- Automatic Version Bump
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.3-1
 - Automatic Version Bump
 * Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.7-1
