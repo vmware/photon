@@ -1,14 +1,14 @@
 Summary:        Database servers made by the original developers of MySQL.
 Name:           mariadb
-Version:        10.5.5
-Release:        3%{?dist}
+Version:        10.5.9
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://mariadb.org/
 Source0:        https://downloads.mariadb.org/f/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define         sha1 mariadb=a341232e8f047a4af5969ba2fbee9d9e4b9310a2
+%define         sha1 mariadb=73767fac3d1c504298259708272fb6a58e644967
 BuildRequires:  cmake
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
@@ -142,6 +142,8 @@ rm -rf %{buildroot}
 %{_libdir}/libmariadbd.so.*
 %{_bindir}/aria_s3_copy
 %{_bindir}/mariadb
+%{_bindir}/mariadb-config
+%{_bindir}/mariadb_config
 %{_bindir}/mariadb-access
 %{_bindir}/mariadb-admin
 %{_bindir}/mariadb-binlog
@@ -179,7 +181,6 @@ rm -rf %{buildroot}
 %{_bindir}/mysqlimport
 %{_bindir}/mysqlshow
 %{_bindir}/mysqlslap
-%{_bindir}/mariadb_config
 %{_bindir}/test-connect-t
 %{_bindir}/mysql_client_test
 %{_bindir}/mysql_client_test_embedded
@@ -433,6 +434,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 10.5.9-1
+-   Automatic Version Bump
 *   Wed Dec 02 2020 Tapas Kundu <tkundu@vmware.com> 10.5.5-3
 -   mariadb-server packages files symlinks to the binary files in mariadb.
 -   repackaged the files.
