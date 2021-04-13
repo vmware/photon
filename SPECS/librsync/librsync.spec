@@ -1,6 +1,6 @@
 Summary:        Rsync libraries
 Name:           librsync
-Version:        2.3.1
+Version:        2.3.2
 Release:        1%{?dist}
 URL:            http://librsync.sourcefrog.net/
 License:        LGPLv2+
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 #https://github.com/librsync/librsync/archive/v2.0.0.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    librsync=5127c8fa462b741f4943ece679bf83615cc47c17
+%define sha1    librsync=02d513f7781e172cddf79a984f50284327b3ff4a
 
 BuildRequires:  cmake
 
@@ -81,6 +81,8 @@ make test
 %{_libdir}/*.so
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.3.2-1
+-   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.1-1
 -   Automatic Version Bump
 *   Sun Sep 30 2018 Bo Gan <ganb@vmware.com> 2.0.2-1
