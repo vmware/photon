@@ -1,14 +1,14 @@
 Summary:	Contains a parser generator
 Name:		bison
-Version:	3.7.1
-Release:	3%{?dist}
+Version:	3.7.6
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/bison
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/bison/%{name}-%{version}.tar.xz
-%define sha1 bison=534c7ee46331ff1f1fc96a378fd6a9f6b322a242
+%define sha512 bison=6c1c9b825fbd2c94b8903f03a7e68e6832599f7bbd8d3c49864537c11b038c45a15de02fd36128d662af314334c83515bbc132df84e9acc6c651e98649c65bad
 %if %{with_check}
 Patch0:         make-check.patch
 %endif
@@ -17,13 +17,13 @@ BuildRequires:	gettext
 Requires:	m4
 Requires:	gettext
 BuildRequires:	flex
+
 %description
 This package contains a parser generator
+
 %prep
-%setup -q
-%if %{with_check}
-%patch0 -p1
-%endif
+%autosetup -p1 -n %{name}-%{version}
+
 %build
 #make some fixes required by glibc-2.28:
 sed -i 's/IO_ftrylockfile/IO_EOF_SEEN/' lib/*.c
@@ -32,9 +32,10 @@ echo "#define _IO_IN_BACKUP 0x100" >> lib/stdio-impl.h
 autoreconf -fiv
 %configure \
 	--disable-silent-rules
-make %{?_smp_mflags}
+%make_build
+
 %install
-make DESTDIR=%{buildroot} install
+%make_install
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name} --all-name
 
@@ -49,7 +50,10 @@ make %{?_smp_mflags} check
 %{_datarootdir}/aclocal/*
 %{_mandir}/*/*
 %{_docdir}/bison/*
+
 %changelog
+* Mon Aug 01 2022 Oliver Kurth <okurth@vmware.com> 3.7.6-1
+- bump version
 * Tue Jan 26 2021 Anish Swaminathan <anishs@vmware.com> 3.7.1-3
 - Add missing dependency for gettext
 * Tue Jan 19 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.1-2
