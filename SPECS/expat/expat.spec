@@ -1,35 +1,35 @@
-Summary:	An XML parser library
-Name:		expat
-Version:	2.2.9
-Release:	3%{?dist}
-License:	MIT
-URL:		http://expat.sourceforge.net/
-Group:		System Environment/GeneralLibraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:        An XML parser library
+Name:           expat
+Version:        2.3.0
+Release:        1%{?dist}
+License:        MIT
+URL:            http://expat.sourceforge.net/
+Group:          System Environment/GeneralLibraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.xz
-%define sha1 expat=90a361e4c97f8c469479ffadc0de0b121a911fb5
+%define sha1    expat=596a37d048b357a58990a538a8d83e2e38325122
 Requires:       expat-libs = %{version}-%{release}
 %description
 The Expat package contains a stream oriented C library for parsing XML.
 
-%package    devel
-Summary:    Header and development files for expat
-Requires:   %{name} = %{version}-%{release}
+%package        devel
+Summary:        Header and development files for expat
+Requires:       %{name} = %{version}-%{release}
 %description    devel
 It contains the libraries and header files to create applications
 
-%package libs
-Summary: Libraries for expat
-Group:      System Environment/Libraries
-%description libs
+%package        libs
+Summary:        Libraries for expat
+Group:          System Environment/Libraries
+%description    libs
 This package contains minimal set of shared expat libraries.
 
-%package docs
-Summary: expat docs
-Group: Documentation
-Requires: expat = %{version}-%{release}
-%description docs
+%package        docs
+Summary:        expat docs
+Group:          Documentation
+Requires:       expat = %{version}-%{release}
+%description    docs
 The package contains expat doc files.
 
 %prep
@@ -83,6 +83,7 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 %{_libdir}/pkgconfig/*
 %{_libdir}/libexpat.so
+%{_libdir}/cmake/expat-%{version}/*.cmake
 
 %files libs
 %{_libdir}/libexpat.so.*
@@ -92,6 +93,8 @@ rm -rf %{buildroot}/*
 %doc AUTHORS Changes
 
 %changelog
+*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1
+-   Automatic Version Bump
 *   Fri Feb 19 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.2.9-3
 -   Move documents to docs sub-package
 *   Mon Oct 05 2020 Tapas Kundu <tkundu@vmware.com> 2.2.9-2
