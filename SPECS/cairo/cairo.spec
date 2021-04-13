@@ -1,6 +1,6 @@
 Summary:        A 2D graphics library.
 Name:           cairo
-Version:        1.17.2
+Version:        1.17.4
 Release:        1%{?dist}
 License:        LGPLv2 or MPLv1.1
 URL:            http://www.linuxfromscratch.org/blfs/view/svn/x/cairo.html
@@ -8,7 +8,7 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://cairographics.org/releases/%{name}-%{version}.tar.xz
-%define sha1    cairo=ce1234bd120bb0c1679a75a5c3c76d0b2edcc88f
+%define sha1    cairo=68712ae1039b114347be3b7200bc1c901d47a636
 BuildRequires:  pkg-config
 BuildRequires:  libpng-devel
 BuildRequires:  libxml2-devel
@@ -65,8 +65,11 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}/*
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
+%{_datadir}/gtk-doc/html/%{name}/*
 
 %changelog
+*       Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.17.4-1
+-       Automatic Version Bump
 *       Tue Jul 14 2020 Gerrit Photon <photon-checkins@vmware.com> 1.17.2-1
 -       Automatic Version Bump
 *       Thu Mar 14 2019 Michelle Wang <michellew@vmware.com> 1.16.0-1
