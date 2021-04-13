@@ -1,13 +1,13 @@
-Name:       btrfs-progs
-Version:    5.7
-Release:    2%{?dist}
-Summary:    Userspace programs for btrfs
-Group:      System Environment/Base
-License:    GPLv2+
-URL:        http://btrfs.wiki.kernel.org/index.php/Main_Page
-Source0:    https://www.kernel.org/pub/linux/kernel/people/kdave/btrfs-progs/%{name}-v%{version}.tar.xz
-%define sha1 btrfs-progs=ba1608e1d5b17692ed0b149f5aa82935b44b7d3e
-Vendor:     VMware, Inc.
+Name:           btrfs-progs
+Version:        5.11.1
+Release:        1%{?dist}
+Summary:        Userspace programs for btrfs
+Group:          System Environment/Base
+License:        GPLv2+
+URL:            http://btrfs.wiki.kernel.org/index.php/Main_Page
+Source0:        https://www.kernel.org/pub/linux/kernel/people/kdave/btrfs-progs/%{name}-v%{version}.tar.xz
+%define sha1    btrfs-progs=a794b3ffa52398bc85c073b7d99643d7a422f7bf
+Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  lzo-devel
 BuildRequires:  e2fsprogs-devel,libacl-devel
@@ -16,18 +16,18 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  xmlto
 BuildRequires:  asciidoc3
-Requires:   e2fsprogs, lzo
+Requires:       e2fsprogs, lzo
 
 %description
 The btrfs-progs package provides all the userspace programs needed to create,
 check, modify and correct any inconsistencies in the btrfs filesystem.
 
-%package devel
-Summary:    btrfs filesystem-specific libraries and headers
-Group:      Development/Libraries
-Requires:   btrfs-progs = %{version}-%{release}
+%package        devel
+Summary:        btrfs filesystem-specific libraries and headers
+Group:          Development/Libraries
+Requires:       btrfs-progs = %{version}-%{release}
 
-%description devel
+%description    devel
 btrfs-progs-devel contains the libraries and header files needed to
 develop btrfs filesystem-specific programs.
 
@@ -75,8 +75,11 @@ rm -rf %{buildroot}
 %exclude %{_libdir}/libbtrfsutil.a
 %{_libdir}/libbtrfs.so
 %{_libdir}/libbtrfsutil.so
+%{_libdir}/pkgconfig/libbtrfsutil.pc
 
 %changelog
+*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 5.11.1-1
+-   Automatic Version Bump
 *   Fri Jul 17 2020 Tapas Kundu <tkundu@vmware.com> 5.7-2
 -   Use asciidoc3
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 5.7-1
@@ -95,3 +98,4 @@ rm -rf %{buildroot}
 -   Upgrade to 4.4
 *   Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 3.18.2-1
 -   Initial version
+
