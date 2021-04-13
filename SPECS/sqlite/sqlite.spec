@@ -1,7 +1,7 @@
-%define sourcever 3330000
+%define sourcever 3350500
 Summary:        A portable, high level programming interface to various calling conventions
 Name:           sqlite
-Version:        3.33.0
+Version:        3.35.5
 Release:        1%{?dist}
 License:        Public Domain
 URL:            http://www.sqlite.org
@@ -9,7 +9,7 @@ Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://sqlite.org/2020/%{name}-autoconf-%{sourcever}.tar.gz
-%define sha1    sqlite=d63f3ce52cb295d62d09fc2ad8f2d29c35e1645f
+%define sha1    sqlite=f6875472fc86c679400ede139d1dfc6937003abc
 Obsoletes:      sqlite-autoconf
 Obsoletes:      sqlite-devel <= 3.27.2-5
 Requires:       sqlite-libs = %{version}-%{release}
@@ -89,6 +89,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libsqlite3.so.0
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.35.5-1
+-   Automatic Version Bump
 *   Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 3.33.0-1
 -   Automatic Version Bump
 *   Fri Jul 03 2020 Shreyas B <shreyasb@vmware.com> 3.32.1-1
