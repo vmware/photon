@@ -1,15 +1,14 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.6.15
-Release:        3%{?dist}
+Version:        3.7.1
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
-Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
-%define sha1    gnutls=00ef7d93347df586c3d1a00f13c326706c0c59ba
+Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
+%define sha1    gnutls=5de5d25534ee5910ea9ee6aaeeb6af1af4350c1e
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Patch0:         gnutls-3.6.9-default-priority.patch
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
 BuildRequires:  libtasn1-devel
@@ -27,7 +26,9 @@ Requires:       guile
 Requires:       gc
 
 %description
-GnuTLS is a secure communications library implementing the SSL, TLS and DTLS protocols and technologies around them. It provides a simple C language application programming interface (API) to access the secure communications protocols as well as APIs to parse and write X.509, PKCS #12, OpenPGP and other required structures. It is aimed to be portable and efficient with focus on security and interoperability.
+GnuTLS is a secure communications library implementing the SSL, TLS and DTLS protocols and technologies around them.
+It provides a simple C language application programming interface (API) to access the secure communications protocols as well as APIs to parse and write X.509,
+PKCS #12, OpenPGP and other required structures. It is aimed to be portable and efficient with focus on security and interoperability.
 
 %package devel
 Summary:    Development libraries and header files for gnutls
@@ -41,18 +42,16 @@ developing applications that use gnutls.
 
 %prep
 %setup -q
-%patch0 -p1
+
 %build
 # check for trust store file presence
 [ -f %{_sysconfdir}/pki/tls/certs/ca-bundle.crt ] || exit 1
-
 %configure \
     --without-p11-kit \
     --disable-openssl-compatibility \
     --with-included-unistring \
     --with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities \
     --with-default-trust-store-file=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
-
 make %{?_smp_mflags}
 
 %install
@@ -95,6 +94,8 @@ make check
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.7.1-1
+-   Automatic Version Bump
 *   Tue Oct 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 3.6.15-3
 -   Fix make check
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.6.15-2
@@ -142,4 +143,3 @@ make check
 -   Removing la files from packages.
 *   Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 3.4.2-1
 -   Initial build. First version
-
