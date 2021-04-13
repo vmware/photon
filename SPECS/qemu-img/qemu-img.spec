@@ -2,7 +2,7 @@
 %global debug_package %{nil}
 Summary:        QEMU disk image utility
 Name:           qemu-img
-Version:        5.1.0
+Version:        6.0.0
 Release:        1%{?dist}
 License:        GNU GPLv2
 URL:            https://www.qemu.org
@@ -10,10 +10,11 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://download.qemu.org/qemu-%{version}.tar.xz
-%define sha1    qemu=8c70ce2b65349e9b42bd20c9dec2c90f8e7b960a
+%define sha1    qemu=131854b10d8c1614ae137c647aa31b756782ba2e
 BuildRequires:  python3-devel
 BuildRequires:  glib-devel
 BuildRequires:  pixman-devel
+BuildRequires:  ninja-build
 
 %description
 Qemu-img is the tool used to create, manage, convert shrink etc. the disk images of virtual machines.
@@ -146,9 +147,13 @@ make %{?_smp_mflags} check
 /usr/local/bin/qemu-io
 /usr/local/bin/qemu-nbd
 /usr/local/bin/qemu-storage-daemon
+/usr/local/bin/qemu-pr-helper
 /usr/local/share/qemu
+/usr/local/libexec/qemu-bridge-helper
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 6.0.0-1
+-   Automatic Version Bump
 *   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 5.1.0-1
 -   Automatic Version Bump
 *   Mon Mar 09 2020 Ankit Jain <ankitja@vmware.com> 4.2.0-1
