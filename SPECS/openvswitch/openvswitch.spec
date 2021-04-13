@@ -1,17 +1,15 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
-Version:        2.14.0
-Release:        4%{?dist}
+Version:        2.15.0
+Release:        1%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
 Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
-%define sha1 openvswitch=1372162fa94c55a541c01ac95d0015fb4ee62509
-Patch0:         openvswitch-CVE-2020-35498.patch
+%define sha1    openvswitch=f0f4d5201805c66bbfacd6be746e16f29a46d936
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
 BuildRequires:  libcap-ng-devel
@@ -35,8 +33,7 @@ Requires:       gawk
 
 %description
 Open vSwitch provides standard network bridging functions and
-support for the OpenFlow protocol for remote per-flow control of
-traffic.
+support for the OpenFlow protocol for remote per-flow control of traffic.
 
 %package -n     python3-openvswitch
 Summary:        python3-openvswitch
@@ -66,12 +63,11 @@ It contains the documentation and manpages for openvswitch.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 export PYTHON2=no
-%configure --enable-ssl --enable-shared
 
+%configure --enable-ssl --enable-shared
 make %{_smp_mflags}
 
 %install
@@ -147,6 +143,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man7/ovs-actions.7.gz
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.15.0-1
+-   Automatic Version Bump
 *   Mon Mar 01 2021 Dweep Advani <dadvani@vmware.com> 2.14.0-4
 -   Patched for CVE-2020-35498
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.14.0-3
