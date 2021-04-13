@@ -1,11 +1,11 @@
 Summary:        Library providing serialization and deserialization support for the JSON format
 Name:           json-glib
-Version:        1.6.0
+Version:        1.6.2
 Release:        1%{?dist}
 License:        LGPLv2+
 Group:          Development/Libraries
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.4/%{name}-%{version}.tar.xz
-%define sha1    %{name}=7f0d55cc5b9644b2aaeb9995e85427ce545b15c2
+%define sha1    %{name}=d08c06ee28fe15980bd6474be789f2ef5ec555ee
 URL:            http://live.gnome.org/JsonGlib
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -84,6 +84,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/gtk-doc/html/json-glib/*
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.6.2-1
+-   Automatic Version Bump
 *   Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6.0-1
 -   Automatic Version Bump
 *   Sun Aug 16 2020 Susant Sahani <ssahani@vmware.com> 1.4.4-3
