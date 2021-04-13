@@ -1,14 +1,14 @@
 Summary:    Talloc is a hierarchical, reference counted memory pool system
 Name:       libtalloc
-Version:    2.3.1
-Release:    4%{?dist}
+Version:    2.3.2
+Release:    1%{?dist}
 License:    LGPLv3+
 URL:        https://talloc.samba.org
 Group:      System Environment/Libraries
 Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    https://www.samba.org/ftp/talloc/talloc-%{version}.tar.gz
-%define sha1 talloc=1ff430a62264b29efac39a3fa26290586c019800
+%define sha1 talloc=3f2ce471d68d0806dd0910cbe97d9fea2f967288
 BuildRequires: libxslt
 BuildRequires: docbook-xsl
 BuildRequires: python3-devel
@@ -76,11 +76,11 @@ make check
 %{_libdir}/python3.9/site-packages/*
 %ifarch x86_64
 %{_libdir}/libpytalloc-util.cpython-39-x86-64-linux-gnu.so.2
-%{_libdir}/libpytalloc-util.cpython-39-x86-64-linux-gnu.so.2.3.1
+%{_libdir}/libpytalloc-util.cpython-39-x86-64-linux-gnu.so.%{version}
 %endif
 %ifarch aarch64
 %{_libdir}/libpytalloc-util.cpython-39-aarch64-linux-gnu.so.2
-%{_libdir}/libpytalloc-util.cpython-39-aarch64-linux-gnu.so.2.3.1
+%{_libdir}/libpytalloc-util.cpython-39-aarch64-linux-gnu.so.%{version}
 %endif
 
 %files -n python3-talloc-devel
@@ -96,6 +96,8 @@ make check
 %endif
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.3.2-1
+-   Automatic Version Bump
 *   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-4
 -   Build with python 3.9
 *   Wed Jul 29 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-3
