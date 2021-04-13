@@ -1,6 +1,6 @@
 Summary:	This package contains programs to find files
 Name:		findutils
-Version:	4.7.0
+Version:	4.8.0
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/findutils
@@ -8,7 +8,7 @@ Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/gnu/findutils/%{name}-%{version}.tar.xz
-%define sha1 findutils=bd2fae4add80334173e03272aeed5635d4a0fa03
+%define sha1 findutils=b702a37d3a33038102659777ba1fe99835bb19fe
 Conflicts:      toybox < 0.8.2-2
 %description
 These programs are provided to recursively search through a
@@ -60,19 +60,21 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 4.8.0-1
+- Automatic Version Bump
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 4.7.0-1
 - Automatic Version Bump
-* Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 4.6.0-6
+* Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-6
 - Do not conflict with toybox >= 0.8.2-2
-* Sun Sep 09 2018 Alexey Makhalov <amakhalov@vmware.com> 4.6.0-5
+* Sun Sep 09 2018 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-5
 - Fix compilation issue against glibc-2.28
-* Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 4.6.0-4
+* Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-4
 - Added conflicts toybox
-* Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 4.6.0-3
+* Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 4.8.0-3
 - Add lang package.
-* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.6.0-2
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.8.0-2
 - GA - Bump release of all rpms
-* Tue Apr 26 2016 Anish Swaminathan <anishs@vmware.com> 4.6.0-1
-- Updated to version 4.6.0
+* Tue Apr 26 2016 Anish Swaminathan <anishs@vmware.com> 4.8.0-1
+- Updated to version 4.8.0
 * Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 4.4.2-1
 - Initial build. First version
