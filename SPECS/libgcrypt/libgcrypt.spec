@@ -1,33 +1,31 @@
-Summary:	Crypto Libraries
-Name:		libgcrypt
-Version:	1.8.6
-Release:	2%{?dist}
+Summary:        Crypto Libraries
+Name:           libgcrypt
+Version:        1.9.3
+Release:        1%{?dist}
 License:        GPLv2+ and LGPLv2+
 URL:            http://www.gnu.org/software/libgcrypt/
 Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
-%define sha1 libgcrypt=406b02873833427898d16bcc8483bc5c91c73d4a
-Patch0:     libgcrypt-00-ac_cv_sys_symbol_underscore.patch
-Group:		System Environment/Libraries
-Vendor:		VMware, Inc.
-BuildRequires:	libgpg-error-devel
-Requires:	libgpg-error
-Distribution:	Photon
+%define sha1    libgcrypt=6b18f453fee677078586279d96fb88e5df7b3f35
+Group:          System Environment/Libraries
+Vendor:         VMware, Inc.
+BuildRequires:  libgpg-error-devel
+Requires:       libgpg-error
+Distribution:   Photon
+
 %description
-The libgcrypt package contains a general purpose crypto library based on the code used in GnuPG. The library provides a high level interface to cryptographic building blocks using an extendable and flexible API.
+The libgcrypt package contains a general purpose crypto library based on the code used in GnuPG.
+The library provides a high level interface to cryptographic building blocks using an extendable and flexible API.
 
-%package devel
-Summary:	Development libraries and header files for libgcrypt
-Requires:	%{name} = %{version}-%{release}
-Requires:	libgpg-error-devel
+%package        devel
+Summary:        Development libraries and header files for libgcrypt
+Requires:       %{name} = %{version}-%{release}
+Requires:       libgpg-error-devel
 
-%description devel
-The package contains libraries and header files for
-developing applications that use libgcrypt.
+%description    devel
+The package contains libraries and header files for developing applications that use libgcrypt.
 
 %prep
 %setup -q
-
-%patch0 -p1
 
 %build
 if [ %{_host} != %{_build} ] ; then
@@ -64,6 +62,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/libgcrypt.pc
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.9.3-1
+-   Automatic Version Bump
 *   Tue Jul 28 2020 Ankit Jain <ankitja@vmware.com> 1.8.6-2
 -   Release Bump up to fix libgpg-error build issue
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.6-1
