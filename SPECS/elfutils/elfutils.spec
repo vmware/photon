@@ -3,13 +3,13 @@
 %define _programprefix eu-
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
-Version:	0.181
-Release:	2%{?dist}
+Version:	0.183
+Release:	1%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 URL:    	https://sourceware.org/elfutils
 Source0:	https://sourceware.org/elfutils/ftp/%{version}/%{name}-%{version}.tar.bz2
-%define sha1 elfutils=b8c75d48be1e9c107e8e4d6cacd3781311b1a8b7
+%define sha1 elfutils=20227ae4cc7474de505ddf0f1f0b1b24ce5198e7
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Obsoletes:	libelf libelf-devel
@@ -160,6 +160,7 @@ rm -rf ${RPM_BUILD_ROOT}
 %{_libdir}/libdebuginfod.so.*
 %{_mandir}/man1/eu-*.1*
 %{_mandir}/man1/debuginfod*.1*
+%{_sysconfdir}/profile.d/debuginfod.*
 
 %files devel
 %defattr(-,root,root)
@@ -201,6 +202,8 @@ rm -rf ${RPM_BUILD_ROOT}
 %defattr(-,root,root)
 
 %changelog
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 0.183-1
+- Automatic Version Bump
 * Wed Oct 28 2020 Piyush Gupta <gpiyush@vmware.com> 0.181-2
 - Moved libdebuginfod-%{version}.so from devel to elfutils
 * Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.181-1
