@@ -1,14 +1,14 @@
 Summary:        ALSA library
 Name:           alsa-lib
-Version:        1.2.3.2
-Release:        2%{?dist}
+Version:        1.2.4
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            http://alsa-project.org
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.alsa-project.org/pub/lib/%{name}-%{version}.tar.bz2
-%define sha1    alsa-lib=2dfe24ae4872c0a390791a515d50de4047eff02b
+%define sha1    alsa-lib=5404393a44906f92ba87189b6fd7fa0c031a037e
 BuildRequires:	python3-devel python3-libs
 Requires:       python3
 %description
@@ -43,6 +43,8 @@ make DESTDIR=%{buildroot} install
 %{_includedir}/*
 
 %changelog
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.4-1
+- Automatic Version Bump
 * Mon Jul 20 2020 Tapas Kundu <tkundu@vmware.com> 1.2.3.2-2
 - Build with python3
 - Mass removal python2
