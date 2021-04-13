@@ -1,14 +1,14 @@
 Summary:        GNU Parted manipulates partition tables
 Name:           parted
-Version:        3.3
-Release:        2%{?dist}
+Version:        3.4
+Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://ftp.gnu.org/gnu/parted/parted-3.2.tar.xz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://ftp.gnu.org/gnu/parted/%{name}-%{version}.tar.xz
-%define sha1 parted=e639500f9587cf6fa9b0dbc08e5e760244614595
+%define sha1 parted=903c58fab429d3b62aa324033a3e41b0b96ad810
 Patch0:         parted-freelocale.patch
 Conflicts:      toybox < 0.8.2-2
 
@@ -50,6 +50,8 @@ make DESTDIR=%{buildroot} install
 %exclude %{_infodir}/dir
 
 %changelog
+*  Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.4-1
+-  Automatic Version Bump
 *  Tue Jan 22 2021 Dweep Advani <dadvani@vmware.com> 3.3-2
 -  Remove conflict causing /usr/share/info/dir from packaging
 *  Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 3.3-1
