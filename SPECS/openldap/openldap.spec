@@ -3,21 +3,17 @@
 
 Summary:        OpenLdap-2.4.43
 Name:           openldap
-Version:        2.4.53
-Release:        3%{?dist}
+Version:        2.4.58
+Release:        1%{?dist}
 License:        OpenLDAP
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
-%define sha1 openldap=9a03db5cc02fd8b0afc5bf11fb10f7cd5260bcf0
-
+%define sha1    openldap=875416827be3ad63f20004510a354db0aaceb2ed
 Patch0:         openldap-2.4.51-consolidated-2.patch
-Patch1:         openldap-CVE-2020-25692.patch
-
 Requires:       openssl >= 1.0.1, cyrus-sasl >= 2.1
-
 BuildRequires:  cyrus-sasl >= 2.1
 BuildRequires:  openssl-devel >= 1.0.1
 BuildRequires:  groff
@@ -37,15 +33,11 @@ libraries, and documentation for OpenLDAP.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
 
 %build
 autoconf
-
 sed -i '/6.0.20/ a\\t__db_version_compat' configure
-
 export CPPFLAGS="-D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D_AVL_H"
-
 %configure \
          $(test %{_host} != %{_build} && echo "CC=%{_host}-gcc --with-yielding-select=yes --with-sysroot=/target-%{_arch}") \
         --disable-static     \
@@ -64,8 +56,7 @@ export CPPFLAGS="-D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D_AVL_H"
         --disable-ndb --enable-overlays=mod \
         --with-cyrus-sasl    \
         --with-threads
-
-  sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
+sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
 
 
 if [ %{_host} != %{_build} ]; then
@@ -115,6 +106,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.4.58-1
+-   Automatic Version Bump
 *   Mon Dec 14 2020 Dweep Advani <dadvani@vmware.com> 2.4.53-3
 -   Patched for CVE-2020-25692
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.53-2
