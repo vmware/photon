@@ -1,7 +1,7 @@
 Summary:	Library for the arithmetic of complex numbers
 Name:		mpc
-Version:	1.1.0
-Release:	2%{?dist}
+Version:	1.2.1
+Release:	1%{?dist}
 License:	LGPLv3+
 URL:		http://www.multiprecision.org
 Group:		Applications/System
@@ -9,7 +9,7 @@ Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.multiprecision.org/mpc/download/%{name}-%{version}.tar.gz
 Requires:	gmp
-%define sha1 mpc=b019d9e1d27ec5fb99497159d43a3164995de2d0
+%define sha1 mpc=2a4919abf445c6eda4e120cd669b8733ce337227
 
 %description
 The MPC package contains a library for the arithmetic of complex
@@ -43,6 +43,8 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so.*
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.1-1
+-   Automatic Version Bump
 *   Wed Sep 04 2019 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
 -   Bump up release number to get generic mtune option from gmp.h
 *   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.1.0-1
