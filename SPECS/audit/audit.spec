@@ -3,11 +3,10 @@
 
 Summary:        Kernel Audit Tool
 Name:           audit
-Version:        2.8.5
-Release:        6%{?dist}
+Version:        3.0.1
+Release:        1%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-%define sha1    audit=62fcac8cbd20c796b909b91f8f615f8556b22a24
-Patch0:         audit-2.8.5-gcc-10.patch
+%define sha1    audit=f69d52acc303bd3b38020a1bc9a1f792ebe79edb
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit/
@@ -46,7 +45,6 @@ Requires:       %{name} = %{version}-%{release}
 %description    devel
 The libraries and header files needed for audit development.
 
-
 %package  -n    python3-audit
 Summary:        Python3 bindings for libaudit
 License:        LGPLv2+
@@ -59,7 +57,6 @@ and libauparse.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 %configure \
@@ -120,19 +117,18 @@ make %{?_smp_mflags} check
 %{_var}/spool/audit
 %attr(750,root,root) %dir %{_sysconfdir}/audit
 %attr(750,root,root) %dir %{_sysconfdir}/audit/rules.d
-%attr(750,root,root) %dir %{_sysconfdir}/audisp
-%attr(750,root,root) %dir %{_sysconfdir}/audisp/plugins.d
+
+%attr(750,root,root) %dir %{_sysconfdir}/audispd
+%attr(750,root,root) %dir %{_sysconfdir}/audispd/plugins.d
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/auditd.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/audisp-remote.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/zos-remote.conf
+%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/plugins.d/*.conf
 %ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/rules.d/audit.rules
 %ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/audit.rules
 %ghost %config(noreplace) %attr(640,root,root) %{_sysconfdir}/audit/audit-stop.rules
-%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/audispd.conf
-%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/plugins.d/af_unix.conf
-%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/plugins.d/syslog.conf
-%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/plugins.d/audispd-zos-remote.conf
-%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/zos-remote.conf
-%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/audisp-remote.conf
-%config(noreplace) %attr(640,root,root) %{_sysconfdir}/audisp/plugins.d/au-remote.conf
+%ghost %config(noreplace) %attr(640,root,root) %{_datadir}/audit/sample-rules/*.rules
+%ghost %config(noreplace) %attr(640,root,root) %{_datadir}/audit/sample-rules/README-rules
 %config(noreplace) %attr(640,root,root) %{_sysconfdir}/libaudit.conf
 
 %files devel
@@ -147,12 +143,13 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 /usr/share/aclocal/audit.m4
 
-
 %files -n python3-audit
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 3.0.1-1
+-   Automatic Version Bump
 *   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 2.8.5-6
 -   Bump up version to compile with new go
 *   Thu Jan 21 2021 Alexey Makhalov <amakhalov@vmware.com> 2.8.5-5
