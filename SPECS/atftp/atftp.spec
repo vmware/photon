@@ -1,22 +1,20 @@
-Summary:        Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
-Name:           atftp
-Version:        0.7.2
-Release:        2%{?dist}
-URL:            http://sourceforge.net/projects/atftp
-License:        GPLv2+ and GPLv3+ and LGPLv2+
-Group:          System Environment/Daemons
-Vendor:         VMware, Inc.
-Distribution:   Photon
-Source0:        http://sourceforge.net/projects/atftp/files/latest/download/%{name}-%{version}.tar.gz
-
-%define sha1 atftp=a05ff68dfcdbe5368b57a955647450b798a07adc
-Patch0:         CVE-2020-6097.patch
-BuildRequires:  systemd
-Requires:       systemd
-Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
-Provides: tftp-server
-Obsoletes: tftp-server
+Summary:          Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
+Name:             atftp
+Version:          0.7.4
+Release:          1%{?dist}
+URL:              http://sourceforge.net/projects/atftp
+License:          GPLv2+ and GPLv3+ and LGPLv2+
+Group:            System Environment/Daemons
+Vendor:           VMware, Inc.
+Distribution:     Photon
+Source0:          http://sourceforge.net/projects/atftp/files/latest/download/%{name}-%{version}.tar.gz
+%define sha1      atftp=03f70e64c5195fade430b20c5f47d2c58b249d59
+BuildRequires:    systemd
+Requires:         systemd
+Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
+Provides:         tftp-server
+Obsoletes:        tftp-server
 
 %description
 Multithreaded TFTP server implementing all options (option extension and
@@ -24,22 +22,19 @@ multicast) as specified in RFC1350, RFC2090, RFC2347, RFC2348 and RFC2349.
 Atftpd also support multicast protocol knowed as mtftp, defined in the PXE
 specification. The server supports being started from inetd(8) as well as
 a deamon using init scripts.
-Provides: tftp
-Obsoletes: tftp
+Provides:         tftp
+Obsoletes:        tftp
 
-%package client
+%package          client
 Summary: Advanced Trivial File Transfer Protocol (ATFTP) - TFTP client
 Group: Applications/Internet
 
-
-%description client
+%description      client
 Advanced Trivial File Transfer Protocol client program for requesting
 files using the TFTP protocol.
 
-
 %prep
 %setup
-%patch0 -p1
 sed -i "s/-g -Wall -D_REENTRANT/-g -Wall -D_REENTRANT -std=gnu89/" configure.ac
 
 %build
@@ -131,6 +126,8 @@ fi
 
 
 %changelog
+*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 0.7.4-1
+-   Automatic Version Bump
 *   Wed Jan 20 2021 Tapas Kundu <tkundu@vmware.com> 0.7.2-2
 -   Fix CVE-2020-6097
 *   Tue Jun 25 2019 Tapas Kundu <tkundu@vmware.com> 0.7.2-1
@@ -152,4 +149,3 @@ fi
 -   Chang tftpd from xinetd service to systemd service.
 *   Thu Nov 12 2015 Kumar Kaushik <kaushikk@vmware.com> 0.7.1-1
 -   Initial build.  First version
-
