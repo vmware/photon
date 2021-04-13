@@ -3,16 +3,15 @@
 
 Summary:        Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:           bazel
-Version:        3.5.0
-Release:        2%{?dist}
+Version:        4.0.0
+Release:        1%{?dist}
 License:        Apache License 2.0
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            http://bazel.build/
 Source:         https://github.com/bazelbuild/bazel/releases/download/%{version}/%{name}-%{version}-dist.zip
-%define sha1    bazel=e6e54df26a327255749e5425d5ebc8555bc14290
-Patch0:         bazel-gcc-10.patch
+%define sha1    bazel=11d47715d15e29636cb5acd77519e2d06068d14d
 BuildRequires:  openjdk8 zlib-devel which findutils tar gzip zip unzip
 BuildRequires:  gcc
 BuildRequires:  python3
@@ -26,7 +25,6 @@ framework that you can use to develop your own build rules.
 
 %prep
 %setup  -c -n %{name}-%{version}
-%patch0 -p1
 
 %build
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
@@ -47,6 +45,8 @@ cp output/bazel %{buildroot}%{_bindir}
 %attr(755,root,root) %{_bindir}/bazel
 
 %changelog
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 4.0.0-1
+- Automatic Version Bump
 * Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 3.5.0-2
 - GCC-10 support.
 * Mon Sep 21 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 3.5.0-1
