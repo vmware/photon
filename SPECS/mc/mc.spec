@@ -1,26 +1,27 @@
-Summary:	File manager
-Name:		mc
-Version:	4.8.25
-Release:	1%{?dist}
-License:	GPLv3+
-URL:		https://www.midnight-commander.org
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://ftp.midnight-commander.orgtar/%{name}-%{version}.tar.xz
-%define sha1 mc=4082ae830f09e919112aa3fc1d7e5333921a6a33
-Patch0:		disable-extfs-test.patch
-Requires:	glib pcre slang
-BuildRequires:	glib-devel pcre-devel slang-devel
+Summary:        File manager
+Name:           mc
+Version:        4.8.26
+Release:        1%{?dist}
+License:        GPLv3+
+URL:            https://www.midnight-commander.org
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://ftp.midnight-commander.orgtar/%{name}-%{version}.tar.xz
+%define sha1    mc=68118a78ef1c49d3d583df2a056e2d6523a9000b
+Patch0:         disable-extfs-test.patch
+Requires:       glib pcre slang
+BuildRequires:  glib-devel pcre-devel slang-devel
 
 %description
-MC (Midnight Commander) is a text-mode full-screen file manager and visual shell
+MC (Midnight Commander) is a text-mode full-screen file manager and visual shell.
 
 %prep
 %setup -q
 %patch0 -p1
+
 %build
-./configure \
+%configure \
 	--prefix=%{_prefix} \
 	--sysconfdir=/etc
 make %{?_smp_mflags}
@@ -41,6 +42,8 @@ make %{?_smp_mflags} -k check
 %exclude /usr/src
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 4.8.26-1
+-   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 4.8.25-1
 -   Automatic Version Bump
 *   Thu Sep 06 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 4.8.21-1
