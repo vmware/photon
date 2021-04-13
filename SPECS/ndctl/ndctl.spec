@@ -1,7 +1,7 @@
 %{!?_udevdir: %define _udevdir /usr/lib/udev/}
 Summary:        Manage "libnvdimm" subsystem devices (Non-volatile Memory)
 Name:           ndctl
-Version:        69
+Version:        71
 Release:        1%{?dist}
 License:        GPLv2
 Group:          System Environment/Base
@@ -9,7 +9,7 @@ Url:            https://github.com/pmem/ndctl
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/pmem/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1    ndctl=d036af4e2fdc134a19404260af449dc9ba707e79
+%define sha1    ndctl=97e9ee6a5fd8b432b6c87dd5e7dfe28f9bb9e8bf
 BuildRequires:  asciidoc3
 BuildRequires:  which
 BuildRequires:  xmlto
@@ -82,7 +82,6 @@ make check
 
 %files
 %defattr(-,root,root)
-%license util/COPYING licenses/BSD-MIT licenses/CC0
 %{_bindir}/ndctl
 %{_libdir}/libndctl.so.*
 %{_sysconfdir}/ndctl/monitor.conf
@@ -100,7 +99,6 @@ make check
 
 %files -n daxctl
 %defattr(-,root,root)
-%license util/COPYING licenses/BSD-MIT licenses/CC0
 %{_bindir}/daxctl
 %{_libdir}/libdaxctl.so.*
 
@@ -112,6 +110,8 @@ make check
 %{_libdir}/pkgconfig/libdaxctl.pc
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 71-1
+-   Automatic Version Bump
 *   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 69-1
 -   Automatic Version Bump
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 62-2
@@ -124,3 +124,4 @@ make check
 -   Removing the Requires section
 *   Thu Apr 06 2017 Dheeraj Shetty <dheerajs@vmware.com> 56-1
 -   Initial build.  First version
+
