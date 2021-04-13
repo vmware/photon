@@ -1,38 +1,31 @@
-Summary:	The package automatically configure source code
-Name:		autoconf
-Version:	2.69
-Release:	9%{?dist}
-License:	GPLv2
-URL:		http://www.gnu.org/software/autoconf
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
+Summary:        The package automatically configure source code
+Name:           autoconf
+Version:        2.71
+Release:        1%{?dist}
+License:        GPLv2
+URL:            http://www.gnu.org/software/autoconf
+Group:          System Environment/Base
+Vendor:         VMware, Inc.
 Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/autoconf/%{name}-%{version}.tar.xz
-%define sha1 autoconf=e891c3193029775e83e0534ac0ee0c4c711f6d23
-Patch0:		autoconf-make-check.patch
-%if %{with_check}
-Patch1:         make-check-failure.patch
-Patch2:         make-check-failure1.patch
-%endif
-Requires:	perl
-BuildRequires:	m4
-Requires:	m4
+Source0:        http://ftp.gnu.org/gnu/autoconf/%{name}-%{version}.tar.xz
+%define sha1    autoconf=1b5b1dbed849c6653be47c56d28d26fcf3f7238a
+Requires:       perl
+BuildRequires:  m4
+Requires:       m4
 BuildArch:      noarch
 
 %description
 The package contains programs for producing shell scripts that can
 automatically configure source code.
+
 %prep
 %setup -q
-%patch0 -p1
-%if %{with_check}
-%patch1 -p1
-%patch2 -p1
-%endif
+
 %build
 %configure \
 	--disable-silent-rules
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 rm -rf %{buildroot}%{_infodir}
@@ -45,7 +38,10 @@ make -k check %{?_smp_mflags}  TESTSUITEFLAGS="1-500"
 %{_bindir}/*
 %{_mandir}/*/*
 %{_datarootdir}/autoconf/*
+
 %changelog
+*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 2.71-1
+-   Automatic Version Bump
 *   Sun Nov 15 2020 Prashant Singh Chauhan <psinghchauha@vmware.com> 2.69-9
 -   Fix for make check failure port test to bash 5.0
 *   Wed Sep 11 2019 Prashant Singh Chauhan <psinghchauha@vmware.com> 2.69-8

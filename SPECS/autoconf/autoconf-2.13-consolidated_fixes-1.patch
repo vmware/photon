@@ -502,3 +502,4 @@ diff -Naur a/testsuite/autoconf.s/syntax.exp b/testsuite/autoconf.s/syntax.exp
  
  foreach mac $macros {
      send_user "$mac\n"
+
