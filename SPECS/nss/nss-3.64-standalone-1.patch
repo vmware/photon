@@ -253,8 +253,8 @@ diff --color -uNar nss-3.55.orig/nss/Makefile nss-3.55/nss/Makefile
  
  NSPR_CONFIG_STATUS = $(CORE_DEPTH)/../nspr/$(OBJDIR_NAME)/config.status
 diff --color -uNar nss-3.55.orig/nss/manifest.mn nss-3.55/nss/manifest.mn
---- nss-3.55.orig/nss/manifest.mn	2020-07-24 23:10:32.000000000 +0800
-+++ nss-3.55/nss/manifest.mn	2020-07-25 19:32:37.240032237 +0800
+--- a/nss/manifest.mn	2021-04-28 16:45:12.873136261 +0000
++++ b/nss/manifest.mn	2021-04-28 16:45:40.541134770 +0000
 @@ -10,7 +10,7 @@
  
  RELEASE = nss
