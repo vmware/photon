@@ -1,6 +1,6 @@
 Summary:	Programs for searching through files
 Name:		grep
-Version:	3.4
+Version:	3.6
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/grep
@@ -8,7 +8,7 @@ Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution: Photon
 Source0:	http://ftp.gnu.org/gnu/grep/%{name}-%{version}.tar.xz
-%define sha1 grep=1a519e783ea0b46a632a0901bda3beaa1a0b267b
+%define sha1 grep=f7e03879b0348e7a00c28f2f50194792a8aace23
 Conflicts:      toybox < 0.8.2-2
 %description
 The Grep package contains programs for searching through files.
@@ -46,6 +46,8 @@ make  %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.6-1
+- Automatic Version Bump
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 3.4-1
 - Automatic Version Bump
 * Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 3.1-3
