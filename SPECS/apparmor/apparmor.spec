@@ -1,12 +1,12 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           apparmor
-Version:        3.0.0
-Release:        3%{?dist}
+Version:        3.0.1
+Release:        1%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
-Source0:        https://launchpad.net/apparmor/3.0/3.0/+download/%{name}-%{version}.tar.gz
-%define sha1    apparmor=4e8c7f289fca33d905d204d66b8d37fa464a7c13
+Source0:        https://launchpad.net/apparmor/3.0/3.0.1/+download/%{name}-%{version}.tar.gz
+%define sha1    apparmor=eded344440a1b3bd9fc5b6ac44f41b2294a57b8a
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Productivity/Security
@@ -40,80 +40,78 @@ BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  python3-setuptools, python3-xml
 
-Patch0:         fix-build-failure-in-apparmor.patch
-
 %description
 AppArmor is a file and network mandatory access control
 mechanism. AppArmor confines processes to the resources allowed by the
 systems administrator and can constrain the scope of potential security
 vulnerabilities.
 
-%package -n libapparmor
-Summary:    Utility library for AppArmor
-License:    GNU LGPL v2.1
-Group:      Development/Libraries/C and C++
+%package -n     libapparmor
+Summary:        Utility library for AppArmor
+License:        GNU LGPL v2.1
+Group:          Development/Libraries/C and C++
 
 %description -n libapparmor
 This package contains the AppArmor library.
 
-%package -n libapparmor-devel
-Summary:    Development headers and libraries for libapparmor
-License:    GNU LGPL v2.1
-Group:      Development/Libraries/C and C++
-Requires:   libapparmor = %{version}-%{release}
+%package -n     libapparmor-devel
+Summary:        Development headers and libraries for libapparmor
+License:        GNU LGPL v2.1
+Group:          Development/Libraries/C and C++
+Requires:       libapparmor = %{version}-%{release}
 
 %description -n libapparmor-devel
 This package contains development files for libapparmor.
 
-%package -n apache2-mod_apparmor
-Summary:    AppArmor module for apache2
-License:    GNU LGPL v2.1
-Group:      Productivity/Security
+%package -n     apache2-mod_apparmor
+Summary:        AppArmor module for apache2
+License:        GNU LGPL v2.1
+Group:          Productivity/Security
 
 %description -n apache2-mod_apparmor
 This provides the Apache module needed to declare various differing
 confinement policies when running virtual hosts in the webserver
 by using the changehat abilities exposed through libapparmor.
 
-%package profiles
-Summary:    AppArmor profiles that are loaded into the apparmor kernel module
-License:    GNU LGPL v2.1
-Group:      Productivity/Security
-Requires:   apparmor-parser = %{version}-%{release}
-Requires:   apparmor-abstractions = %{version}-%{release}
+%package        profiles
+Summary:        AppArmor profiles that are loaded into the apparmor kernel module
+License:        GNU LGPL v2.1
+Group:          Productivity/Security
+Requires:       apparmor-parser = %{version}-%{release}
+Requires:       apparmor-abstractions = %{version}-%{release}
 
-%description profiles
+%description    profiles
 This package contains the basic AppArmor profiles.
 
-%package parser
-Summary:    AppArmor userlevel parser utility
-License:    GNU LGPL v2.1
-Group:      Productivity/Security
-Requires:   libapparmor = %{version}-%{release}
-Requires:   systemd
+%package        parser
+Summary:        AppArmor userlevel parser utility
+License:        GNU LGPL v2.1
+Group:          Productivity/Security
+Requires:       libapparmor = %{version}-%{release}
+Requires:       systemd
 
-%description parser
+%description    parser
 The AppArmor Parser is a userlevel program that is used to load in
 program profiles to the AppArmor Security kernel module.
 This package is part of a suite of tools that used to be named
 SubDomain.
 
-%package abstractions
-Summary:    AppArmor abstractions and directory structure
-License:    GNU LGPL v2.1
-Group:      Productivity/Security
-Requires:   apparmor-parser = %{version}-%{release}
+%package        abstractions
+Summary:        AppArmor abstractions and directory structure
+License:        GNU LGPL v2.1
+Group:          Productivity/Security
+Requires:       apparmor-parser = %{version}-%{release}
 
-%description abstractions
+%description    abstractions
 AppArmor abstractions (common parts used in various profiles) and
 the /etc/apparmor.d/ directory structure.
 
-%package -n pam_apparmor
-Summary:    PAM module for AppArmor change_hat
-License:    GNU LGPL v2.1
-Group:      Productivity/Security
-Requires:   Linux-PAM
-Requires:   Linux-PAM-devel
+%package -n     pam_apparmor
+Summary:        PAM module for AppArmor change_hat
+License:        GNU LGPL v2.1
+Group:          Productivity/Security
+Requires:       Linux-PAM
+Requires:       Linux-PAM-devel
 
 %description -n pam_apparmor
 The pam_apparmor module provides the means for any PAM applications
@@ -121,42 +119,40 @@ that call pam_open_session() to automatically perform an AppArmor
 change_hat operation in order to switch to a user-specific security
 policy.
 
-%package utils
-Summary:    AppArmor User-Level Utilities Useful for Creating AppArmor Profiles
-License:    GNU LGPL v2.1
-Group:      Productivity/Security
-Requires:   libapparmor = %{version}-%{release}
-Requires:   audit
-Requires:   apparmor-abstractions = %{version}-%{release}
+%package        utils
+Summary:        AppArmor User-Level Utilities Useful for Creating AppArmor Profiles
+License:        GNU LGPL v2.1
+Group:          Productivity/Security
+Requires:       libapparmor = %{version}-%{release}
+Requires:       audit
+Requires:       apparmor-abstractions = %{version}-%{release}
 
-%description utils
+%description    utils
 This package contains programs to help create and manage AppArmor
 profiles.
 
-%package -n python3-apparmor
-Summary:    Python 3 interface for libapparmor functions
-License:    GNU LGPL v2.1
-Group:      Development/Libraries/Python
-Requires:   libapparmor = %{version}-%{release}
-Requires:   python3
+%package -n     python3-apparmor
+Summary:        Python 3 interface for libapparmor functions
+License:        GNU LGPL v2.1
+Group:          Development/Libraries/Python
+Requires:       libapparmor = %{version}-%{release}
+Requires:       python3
 
 %description -n python3-apparmor
 This package provides the python3 interface to AppArmor. It is used for python
 applications interfacing with AppArmor.
 
-%package -n perl-apparmor
-Summary:    AppArmor module for perl.
-License:    GNU LGPL v2.1
-Group:      Development/Libraries/Perl
-Requires:   libapparmor = %{version}-%{release}
+%package -n     perl-apparmor
+Summary:        AppArmor module for perl.
+License:        GNU LGPL v2.1
+Group:          Development/Libraries/Perl
+Requires:       libapparmor = %{version}-%{release}
 
 %description -n perl-apparmor
 This package contains the AppArmor module for perl.
 
 %prep
 %setup -q -n %{name}-%{version}
-
-%patch0 -p1
 
 %build
 #Building libapparmor
@@ -352,6 +348,8 @@ make DESTDIR=%{buildroot} install
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 3.0.1-1
+-   Automatic Version Bump
 *   Fri Nov 06 2020 Tapas Kundu <tkundu@vmware.com> 3.0.0-3
 -   Build with python 3.9
 *   Fri Oct 23 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.0.0-2
