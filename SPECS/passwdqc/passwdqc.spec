@@ -1,6 +1,6 @@
 Summary:        Simple Password Strength Checking Module
 Name:           passwdqc
-Version:        1.4.0
+Version:        2.0.2
 License:        BSD-compatible
 Release:        1%{?dist}
 Url:            http://www.openwall.com/passwdqc/
@@ -8,7 +8,7 @@ Group:          System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.openwall.com/passwdqc/%{name}-%{version}.tar.gz
-%define sha1    passwdqc=59e52be4cc073efc376c41b8f0838e1d4250948f
+%define sha1    passwdqc=70d439a470bff19b3c29ce402daede989657c983
 BuildRequires:  Linux-PAM-devel
 
 %description
@@ -73,5 +73,7 @@ done
 %_libdir/lib*.so
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.0.2-1
+-   Automatic Version Bump
 *   Thu Apr 02 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 1.4.0-1
 -   Add package passwdqc at version 1.4.0
