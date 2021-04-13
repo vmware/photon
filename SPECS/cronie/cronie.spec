@@ -1,11 +1,11 @@
 Summary:        Cron Daemon
 Name:           cronie
-Version:        1.5.5
+Version:        1.5.7
 Release:        1%{?dist}
 License:        GPLv2+ and MIT and BSD and ISC
 URL:            https://github.com/cronie-crond/cronie
 Source0:        https://github.com/cronie-crond/cronie/releases/download/cronie-%{version}/cronie-%{version}.tar.gz
-%define sha1    cronie=1e616d6d119b3b313f05edb381436e45f98477be
+%define sha1    cronie=c5d99991a3f396971ca06f123ec7ac397365025d
 Source1:        run-parts.sh
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -21,12 +21,15 @@ Cronie contains the standard UNIX daemon crond that runs specified programs at
 scheduled times and related tools. It is based on the original cron and
 has security and configuration enhancements like the ability to use pam and
 SELinux.
+
 %prep
-%setup -q
+%setup -q -n cronie-cronie-%{version}
 sed -i 's/^\s*auth\s*include\s*password-auth$/auth       include    system-auth/g;
      s/^\s*account\s*include\s*password-auth$/account    include    system-account/g;
      s/^\s*session\s*include\s*password-auth$/session    include    system-session/g;' pam/crond
+
 %build
+sh autogen.sh
 %configure \
     --sysconfdir=/etc   \
     --localstatedir=/var\
@@ -35,6 +38,7 @@ sed -i 's/^\s*auth\s*include\s*password-auth$/auth       include    system-auth/
     --enable-pie        \
     --enable-relro
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 install -vdm700 %{buildroot}%{_localstatedir}/spool/cron
@@ -119,6 +123,8 @@ make %{?_smp_mflags} check
 %ghost %attr(0600,root,root) %{_localstatedir}/spool/anacron/cron.weekly
 
 %changelog
+*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.5.7-1
+-   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.5-1
 -   Automatic Version Bump
 *   Mon Apr 24 2017 Bo Gan <ganb@vmware.com> 1.5.1-1
