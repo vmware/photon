@@ -1,14 +1,14 @@
 Summary:        Userland logical volume management tools
 Name:           lvm2
-Version:        2.03.10
-Release:        2%{?dist}
+Version:        2.03.11
+Release:        1%{?dist}
 License:        GPLv2, BSD 2-Clause and LGPLv2.1
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.sourceware.org/pub/lvm2/releases/LVM2.%{version}.tgz
-%define sha1    LVM2=1482faa9c0e93330cd6de134c9a661a888d02f55
+%define sha1    LVM2=9484fd277914a85f330b4067aa222ee13f061189
 Patch0:         lvm2-set-default-preferred_names.patch
 BuildRequires:  libselinux-devel, libsepol-devel
 BuildRequires:  ncurses-devel
@@ -300,6 +300,8 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 %ghost %{_sysconfdir}/lvm/cache/.cache
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.03.11-1
+-   Automatic Version Bump
 *   Tue Sep 15 2020 Gerrit Photon <photon-checkins@vmware.com> 2.03.10-2
 -   Add boost as build requires
 *   Fri Aug 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.03.10-1
