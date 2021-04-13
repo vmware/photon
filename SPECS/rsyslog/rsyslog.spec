@@ -1,11 +1,11 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
-Version:        8.2008.0
-Release:        2%{?dist}
+Version:        8.2104.0
+Release:        1%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
-%define sha1    rsyslog=4c7364dbcd6683fe238fbac54a3293960a700ebd
+%define sha1    rsyslog=c4e026e399b14830991daf09f56f69c2b2166352
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 Source3:        rsyslog.conf
@@ -28,14 +28,18 @@ Requires:       libfastjson
 Requires:       libgcrypt
 Requires:       liblogging
 Requires:       librelp
+
 %description
 RSYSLOG is the rocket-fast system for log processing.
-It offers high-performance, great security features and a modular design. While it started as a regular syslogd, rsyslog has evolved into a kind of swiss army knife of logging, being able to accept inputs from a wide variety of sources, transform them, and output to the results to diverse destinations.
+It offers high-performance, great security features and a modular design.
+While it started as a regular syslogd, rsyslog has evolved into a kind of swiss army knife of logging,
+being able to accept inputs from a wide variety of sources, transform them,
+and output to the results to diverse destinations.
+
 %prep
 %setup -q
-
-
 autoreconf -fvi
+
 %build
 sed -i 's/libsystemd-journal/libsystemd/' configure
 %configure \
@@ -85,7 +89,10 @@ make %{?_smp_mflags} check
 %dir %{_sysconfdir}/rsyslog.d
 %{_sysconfdir}/systemd/journald.conf.d/*
 %config(noreplace) %{_sysconfdir}/rsyslog.conf
+
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 8.2104.0-1
+-   Automatic Version Bump
 *   Mon Oct 05 2020 Keerthana K <keerthanak@vmware.com> 8.2008.0-2
 -   Adding rsyslog.d directory
 *   Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 8.2008.0-1
@@ -135,4 +142,3 @@ make %{?_smp_mflags} check
 -   Update rsyslog to 8.15.0
 *   Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 8.10.0-1
 -   Initial build. First version
-
