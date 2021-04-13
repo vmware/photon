@@ -2,7 +2,7 @@
 
 Summary:        POSIX capability Library
 Name:           libcap-ng
-Version:        0.8
+Version:        0.8.2
 Release:        1%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
@@ -10,13 +10,15 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 URL:            http://people.redhat.com/sgrubb/libcap-ng
 Source0:        http://people.redhat.com/sgrubb/libcap-ng/%{name}-%{version}.tar.gz
-%define sha1    libcap-ng=01d92dddd60f52928dc1b5c649054025a7d97eab
+%define sha1    libcap-ng=8273804b128e7753ed94e782d36fc9178f0d454b
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  swig
 
 %description
-The libcap-ng library is intended to make programming with posix capabilities much easier than the traditional libcap library. It includes utilities that can analyse all currently running applications and print out any capabilities and whether or not it has an open ended bounding set. An open bounding set without the securebits "NOROOT" flag will allow full capabilities escalation for apps retaining uid 0 simply by calling execve.
+The libcap-ng library is intended to make programming with posix capabilities much easier than the traditional libcap library.
+It includes utilities that can analyse all currently running applications and print out any capabilities and whether or not it has an open ended bounding set.
+An open bounding set without the securebits "NOROOT" flag will allow full capabilities escalation for apps retaining uid 0 simply by calling execve.
 
 %package  -n    python3-libcap-ng
 Summary:        Python3 bindings for libaudit
@@ -27,11 +29,11 @@ Requires:       python3
 %description -n python3-libcap-ng
 The python3-libcap-ng package contains the python3 bindings for libcap-ng.
 
-%package devel
-Summary:    The libraries and header files needed for libcap-ng development.
-Requires:   %{name} = %{version}-%{release}
+%package        devel
+Summary:        The libraries and header files needed for libcap-ng development.
+Requires:       %{name} = %{version}-%{release}
 
-%description devel
+%description    devel
 The libraries and header files needed for libcap_ng development.
 
 %prep
@@ -42,6 +44,7 @@ The libraries and header files needed for libcap_ng development.
     --with-python3
 
 make %{?_smp_mflags}
+
 %install
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
@@ -68,10 +71,13 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_libdir}/pkgconfig/*.pc
 %{_includedir}/*.h
 %{_mandir}/man3/*
+%{_mandir}/man7/*
 %{_datadir}/aclocal/*.m4
 %{_libdir}/*.a
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 0.8.2-1
+-   Automatic Version Bump
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.8-1
 -   Automatic Version Bump
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 0.7.11-1
@@ -94,4 +100,3 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 -   GA - Bump release of all rpms
 *   Fri Aug 28 2015 Divya Thaluru <dthaluru@vmware.com> 0.7.7-1
 -   Initial version
-
