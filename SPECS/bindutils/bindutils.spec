@@ -1,11 +1,11 @@
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.16.6
+Version:        9.16.13
 Release:        1%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha1    bind=f8a4c1bd074cc0305a4c50971e71da5a3b810d78
+%define sha1    bind=5120b0e7fcc8b7d3e1c9d1414c5c3888640c3b40
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -14,13 +14,16 @@ Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 BuildRequires:  openssl-devel
 BuildRequires:  libuv-devel
+BuildRequires:  nghttp2-devel
 
 %description
 BIND is open source software that implements the Domain Name System (DNS) protocols
 for the Internet. It is a reference implementation of those protocols, but it is
 also production-grade software, suitable for use in high-volume and high-reliability applications.
+
 %prep
 %setup -qn bind-%{version}
+
 %build
 %configure \
     --without-python \
@@ -31,6 +34,7 @@ make -C lib/bind9 %{?_smp_mflags}
 make -C lib/isccfg %{?_smp_mflags}
 make -C lib/irs %{?_smp_mflags}
 make -C bin/dig %{?_smp_mflags}
+
 %install
 make -C bin/dig DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
@@ -70,6 +74,8 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 9.16.13-1
+-   Automatic Version Bump
 *   Wed Oct 01 2020 Sujay G <gsujay@vmware.com> 9.16.6-1
 -   Bumper version to 9.16.6
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 9.16.4-2
