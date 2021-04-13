@@ -2,16 +2,17 @@
 
 Summary:        CRI tools
 Name:           cri-tools
-Version:        1.19.0
-Release:        3%{?dist}
+Version:        1.21.0
+Release:        1%{?dist}
 License:        Apache License Version 2.0
 URL:            https://github.com/kubernetes-incubator/cri-tools/archive/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}.tar.gz=56812d54d32d54d21ac75ccf234ce3c186c4f82f
+%define sha1    %{name}-%{version}.tar.gz=ebc09c9effed6534ff2a48054f35fd16b7e3a526
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  go
+BuildRequires:  git
 
 %description
 cri-tools aims to provide a series of debugging and validation tools for Kubelet CRI, which includes:
@@ -24,7 +25,6 @@ critest: validation test suites for kubelet CRI.
 %build
 make %{?_smp_mflags}
 
-
 %install
 rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_datadir}/%{name}
@@ -35,8 +35,8 @@ mkdir -p %{buildroot}/usr/share/licenses/cri-tools
 mkdir -p %{buildroot}/man/man1
 
 make install DESTDIR=%{buildroot}
-cp /usr/local/bin/crictl %{buildroot}/usr/bin
-cp /usr/local/bin/critest %{buildroot}/usr/bin
+cp build/bin/crictl %{buildroot}/usr/bin
+cp build/bin/critest %{buildroot}/usr/bin
 cp CHANGELOG.md %{buildroot}/usr/share/doc/cri-tools
 cp LICENSE %{buildroot}/usr/share/licenses/cri-tools
 cp CHANGELOG.md %{buildroot}/usr/share/doc/cri-tools
@@ -46,19 +46,24 @@ cp README.md %{buildroot}/usr/share/doc/cri-tools
 cp code-of-conduct.md %{buildroot}/usr/share/doc/cri-tools
 cp docs/validation.md %{buildroot}/usr/share/doc/cri-tools
 cp docs/roadmap.md %{buildroot}/usr/share/doc/cri-tools
+rm %{buildroot}/usr/local/bin/crictl
+rm %{buildroot}/usr/local/bin/critest
 
 %files
 %defattr(-,root,root)
 %{_datadir}/%{name}
-/usr/bin
-/usr/share/doc/*
-/usr/share/licenses/*
+%{_bindir}/crictl
+%{_bindir}/critest
+%{_datadir}/doc/*
+%{_datadir}/licenses/*
 /man/man1/
 
 %clean
 rm -rf %{buildroot}/*
 
 %changelog
+*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.21.0-1
+-   Automatic Version Bump
 *   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.19.0-3
 -   Bump up version to compile with new go
 *   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.19.0-2
