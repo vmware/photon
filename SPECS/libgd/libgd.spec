@@ -1,6 +1,6 @@
 Summary:        GD is an open source code library for the dynamic creation of images by programmers.
 Name:           libgd
-Version:        2.3.0
+Version:        2.3.2
 Release:        1%{?dist}
 License:        MIT
 URL:            https://libgd.github.io/
@@ -8,7 +8,7 @@ Group:          System/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/libgd/libgd/releases/download/gd-%{version}/%{name}-%{version}.tar.gz
-%define sha1    libgd=77bf57a17107da22612ed606fc2f941fe7c067f0
+%define sha1    libgd=be6da7d9d58ff09d5d28f4fc2763aef4f0c3c75f
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  libpng-devel
 BuildRequires:  libwebp-devel
@@ -19,26 +19,30 @@ Requires:       libwebp
 Requires:       libtiff
 Requires:       libjpeg-turbo
 Provides:       pkgconfig(libgd)
+
 %description
 GD is an open source code library for the dynamic creation of images by programmers.
+GD is written in C, and "wrappers" are available for Perl, PHP and other languages.
+GD can read and write many different image formats.
+GD is commonly used to generate charts, graphics, thumbnails, and most anything else, on the fly.
 
-GD is written in C, and "wrappers" are available for Perl, PHP and other languages. GD can read and write many different image formats. GD is commonly used to generate charts, graphics, thumbnails, and most anything else, on the fly.
-%package    devel
-Summary:    Header and development files
-Requires:   %{name} = %{version}-%{release}
+%package        devel
+Summary:        Header and development files
+Requires:       %{name} = %{version}-%{release}
+
 %description    devel
 Header & Development files
+
 %prep
-%setup -c -n %{name}
+%setup -qn %{name}-%{version}
 
 %build
-cd %{name}-gd-%{version}
 # To use the system installed automake latest version instead of given version in source
 ./bootstrap.sh
 %configure --with-webp --with-tiff --with-jpeg --with-png --disable-werror --disable-static
 make %{?_smp_mflags}
+
 %install
-cd %{name}-gd-%{version}
 make DESTDIR=%{buildroot} install
 
 %check
@@ -48,6 +52,7 @@ make %{?_smp_mflags} -k check
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/libgd.so.*
+
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
@@ -56,6 +61,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.3.2-1
+-   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1
 -   Automatic Version Bump
 *   Thu Mar 05 2020 Ankit Jain <ankitja@vmware.com>  2.2.5-4
