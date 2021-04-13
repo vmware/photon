@@ -1,21 +1,21 @@
-Summary:	gptfdisk-1.0.4
-Name:		gptfdisk
-Version:	1.0.5
-Release:	1%{?dist}
-License:	GPLv2+
-URL:		http://sourceforge.net/projects/gptfdisk/
-Group:		System Environment/Filesystem and Disk management
-Vendor:		VMware, Inc.
-Distribution: Photon
-Source0:	http://downloads.sourceforge.net/project/gptfdisk/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1 gptfdisk=b642aa628cbc9fa63e9a73dad5acc588042527ac
-Patch0:	    gptfdisk-1.0.4-convenience-1.patch
-Patch1:     gptfdisk-fix-compilation-1.0.5.patch
-Requires: 	popt >= 1.16
-BuildRequires:	popt-devel
-BuildRequires:	ncurses-devel
-Requires:	ncurses
-Requires:	libstdc++
+Summary:        gptfdisk-1.0.4
+Name:           gptfdisk
+Version:        1.0.7
+Release:        1%{?dist}
+License:        GPLv2+
+URL:            http://sourceforge.net/projects/gptfdisk/
+Group:          System Environment/Filesystem and Disk management
+Vendor:	        VMware, Inc.
+Distribution:   Photon
+Source0:        http://downloads.sourceforge.net/project/gptfdisk/%{name}/%{version}/%{name}-%{version}.tar.gz
+%define sha1    gptfdisk=406ab2596e1911c916dce677ce7e903076d94c6d
+Patch0:         gptfdisk-1.0.7-convenience-1.patch
+Requires:       popt >= 1.16
+BuildRequires:  popt-devel
+BuildRequires:  ncurses-devel
+Requires:       ncurses
+Requires:       ncurses-devel
+Requires:       libstdc++
 %description
 The gptfdisk package is a set of programs for creation and maintenance of GUID Partition
 Table (GPT) disk drives. A GPT partitioned disk is required for drives greater than 2 TB
@@ -26,9 +26,9 @@ classic fdisk program.
 %prep
 %setup -q
 %patch0 -p1
-%patch1 -p1
 
 %build
+sed -i 's|ncursesw/||' gptcurses.cc
 make %{?_smp_mflags} POPT=1
 
 %install
@@ -37,7 +37,6 @@ make DESTDIR=%{buildroot} install POPT=1
 %{_fixperms} %{buildroot}/*
 
 %post	-p /sbin/ldconfig
-
 %postun	-p /sbin/ldconfig
 
 %clean
@@ -49,6 +48,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.0.7-1
+-   Automatic Version Bump
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.5-1
 -   Automatic Version Bump
 *   Tue Sep 11 2018 Anish Swaminathan <anishs@vmware.com> 1.0.4-1
