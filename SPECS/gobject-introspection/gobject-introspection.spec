@@ -2,13 +2,13 @@
 
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
-Version:        1.66.0
-Release:        3%{?dist}
+Version:        1.68.0
+Release:        1%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
-Source0:        http://ftp.gnome.org/pub/GNOME/sources/gobject-introspection/1.52/%{name}-%{version}.tar.xz
-%define sha1 gobject-introspection=dc806ee27935d86e55e8e5d3313684fd01b7ecf8
+Source0:        https://gitlab.gnome.org/GNOME/gobject-introspection/-/archive/%{version}/%{name}-%{version}.tar.gz
+%define sha1    gobject-introspection=4b129d1b4f978000e25c436de729de0c07d6464a
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  gettext
@@ -43,7 +43,7 @@ Requires:       python3
 This package contains a Python package for handling the introspection
 data from Python.
 
-%package devel
+%package        devel
 Summary:        Libraries and headers for gobject-introspection
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
@@ -61,7 +61,6 @@ Libraries and headers for gobject-introspection.
 meson --prefix=/usr --libdir=lib -Dpython=%{__python3} build
 ninja -C build
 
-
 %install
 rm -rf %{buildroot}/*
 
@@ -72,14 +71,12 @@ mv %{buildroot}%{_libdir}/gobject-introspection/giscanner %{buildroot}/%{python3
 rm -rf $RPM_BUILD_ROOT/%{_datarootdir}/gtk-doc/html
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
-
 %check
 meson test
 
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
-
 
 %files
 %defattr(-,root,root,-)
@@ -104,6 +101,8 @@ meson test
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.68.0-1
+-   Automatic Version Bump
 *   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.66.0-3
 -   Bump up version to compile with new go
 *   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.66.0-2
