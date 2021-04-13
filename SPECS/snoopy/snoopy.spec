@@ -1,11 +1,11 @@
 Summary:        snoopy is a tiny library that logs all executed commands
 Name:           snoopy
-Version:        2.4.10
+Version:        2.4.13
 Release:        1%{?dist}
 License:        GNU GPLv2
 URL:            https://github.com/a2o/snoopy/archive/snoopy-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 snoopy=a3333484903f2600efd553b80df30866cb490ef7
+%define sha1 snoopy=c4028dc94fd9c83f8f8198b82e33bf72be2b4d3b
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -54,6 +54,8 @@ fi
 %config(noreplace) %{_sysconfdir}/snoopy.ini
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.4.13-1
+-   Automatic Version Bump
 *   Thu Jan 19 2021 Vikash Bansal <bvikas@vmware.com> 2.4.10-1
 -   Update to version 2.4.10
 *   Fri Apr 03 2020 Alexey Makhalov <amakhalov@vmware.com> 2.4.6-2
