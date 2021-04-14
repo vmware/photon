@@ -1,7 +1,7 @@
 Summary:    Irqbalance daemon
 Name:       irqbalance
-Version:    1.7.0
-Release:    2%{?dist}
+Version:    1.8.0
+Release:    1%{?dist}
 License:    GPLv2
 URL:        https://github.com/Irqbalance/irqbalance
 Group:      System Environment/Services
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 # https://github.com/Irqbalance/%{name}/archive/v%{version}.tar.gz
 Source0:    %{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}=21a330214be3c578748dced6173fd545ca75d2c9
+%define sha1 %{name}-%{version}=b4446192904bafcaf32dd8d389d2b7502fa9fd09
 BuildRequires:  systemd-devel
 BuildRequires:  glib-devel
 BuildRequires:  libnuma-devel
@@ -54,6 +54,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_datadir}/*
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.8.0-1
+-   Automatic Version Bump
 *   Thu Oct 29 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.7.0-2
 -   Add dependency on libnuma
 *   Wed Aug 12 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1
