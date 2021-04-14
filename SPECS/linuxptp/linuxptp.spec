@@ -1,7 +1,7 @@
 Summary:        The Linux PTP Project
 Name:           linuxptp
 Version:        3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL v2
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
@@ -40,6 +40,8 @@ install -Dm 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/
 install -Dm 0644 %{SOURCE2} %{buildroot}/usr/lib/systemd/system/
 install -Dm 0644 %{SOURCE3}  %{buildroot}/etc/sysconfig/
 install -Dm 0644 %{SOURCE4}  %{buildroot}/etc/sysconfig/
+install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
+echo "disable ptp4l.service" > %{buildroot}/usr/lib/systemd/system-preset/50-ptp4l.preset
 
 %clean
 rm -rf %{buildroot}
@@ -65,6 +67,7 @@ rm -rf %{buildroot}
 %{_sysconfdir}/sysconfig/ptp4l
 %{_libdir}/systemd/system/phc2sys.service
 %{_libdir}/systemd/system/ptp4l.service
+%{_libdir}/systemd/system-preset/50-ptp4l.preset
 %{_sbindir}/hwstamp_ctl
 %{_sbindir}/nsm
 %{_sbindir}/phc2sys
@@ -84,6 +87,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+*   Wed Apr 14 2021 Vikash Bansal <bvikas@vmware.com> 3.1-2
+-   Disable ptp4l service by default
 *   Mon Nov 09 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.1-1
 -   Update to version 3.1
 *   Tue May 19 2020 Tapas Kundu <tkundu@vmware.com> 2.0-1
