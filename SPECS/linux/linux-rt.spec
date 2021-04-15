@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.25
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt34
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -79,6 +79,9 @@ Patch56:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix for CVE-2019-12379
 Patch101:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+# Fix for CVE-2021-29154
+Patch102:       bpf-x86_64-Validate-computation-of-branch-displacements.patch
+Patch103:       bpf-x86_32-Validate-computation-of-branch-displacements.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 Patch301:       0003-z3fold-remove-preempt-disabled-sections-for-RT.patch
@@ -482,6 +485,8 @@ The Linux package contains the Linux kernel doc files
 # CVE
 %patch100 -p1
 %patch101 -p1
+%patch102 -p1
+%patch103 -p1
 
 # RT
 %patch301 -p1
@@ -1000,6 +1005,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Apr 15 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.25-2
+-   Fix for CVE-2021-29154
 *   Mon Mar 22 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.25-1
 -   Update to version 5.10.25
 *   Sun Mar 21 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.21-3

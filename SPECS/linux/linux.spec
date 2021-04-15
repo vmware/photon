@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.25
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -95,6 +95,9 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+# Fix for CVE-2021-29154
+Patch103:       bpf-x86_64-Validate-computation-of-branch-displacements.patch
+Patch104:       bpf-x86_32-Validate-computation-of-branch-displacements.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -279,6 +282,8 @@ Python programming language to use the interface to manipulate perf events.
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
+%patch103 -p1
+%patch104 -p1
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -648,6 +653,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Apr 15 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.25-2
+-   Fix for CVE-2021-29154
 *   Mon Mar 22 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.25-1
 -   Update to version 5.10.25
 *   Sun Mar 21 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.21-3

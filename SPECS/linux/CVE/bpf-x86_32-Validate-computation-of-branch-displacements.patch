@@ -1,0 +1,64 @@
+From faa30969f66e74910e9424214a4a426c2dc249d8 Mon Sep 17 00:00:00 2001
+From: Piotr Krysiuk <piotras@gmail.com>
+Date: Tue, 6 Apr 2021 21:59:39 +0100
+Subject: [PATCH] bpf, x86: Validate computation of branch displacements for
+ x86-32
+
+commit 26f55a59dc65ff77cd1c4b37991e26497fc68049 upstream.
+
+The branch displacement logic in the BPF JIT compilers for x86 assumes
+that, for any generated branch instruction, the distance cannot
+increase between optimization passes.
+
+But this assumption can be violated due to how the distances are
+computed. Specifically, whenever a backward branch is processed in
+do_jit(), the distance is computed by subtracting the positions in the
+machine code from different optimization passes. This is because part
+of addrs[] is already updated for the current optimization pass, before
+the branch instruction is visited.
+
+And so the optimizer can expand blocks of machine code in some cases.
+
+This can confuse the optimizer logic, where it assumes that a fixed
+point has been reached for all machine code blocks once the total
+program size stops changing. And then the JIT compiler can output
+abnormal machine code containing incorrect branch displacements.
+
+To mitigate this issue, we assert that a fixed point is reached while
+populating the output image. This rejects any problematic programs.
+The issue affects both x86-32 and x86-64. We mitigate separately to
+ease backporting.
+
+Signed-off-by: Piotr Krysiuk <piotras@gmail.com>
+Reviewed-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/x86/net/bpf_jit_comp32.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
+
+diff --git a/arch/x86/net/bpf_jit_comp32.c b/arch/x86/net/bpf_jit_comp32.c
+index 96fde03aa987..2cf4d217840d 100644
+--- a/arch/x86/net/bpf_jit_comp32.c
++++ b/arch/x86/net/bpf_jit_comp32.c
+@@ -2278,7 +2278,16 @@ emit_cond_jmp:		jmp_cond = get_cond_jmp_opcode(BPF_OP(code), false);
+ 		}
+ 
+ 		if (image) {
+-			if (unlikely(proglen + ilen > oldproglen)) {
++			/*
++			 * When populating the image, assert that:
++			 *
++			 *  i) We do not write beyond the allocated space, and
++			 * ii) addrs[i] did not change from the prior run, in order
++			 *     to validate assumptions made for computing branch
++			 *     displacements.
++			 */
++			if (unlikely(proglen + ilen > oldproglen ||
++				     proglen + ilen != addrs[i])) {
+ 				pr_err("bpf_jit: fatal error\n");
+ 				return -EFAULT;
+ 			}
+-- 
+2.23.3
+
