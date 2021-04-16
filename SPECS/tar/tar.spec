@@ -1,7 +1,7 @@
 Summary:	Archiving program
 Name:		tar
 Version:	1.30
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/tar
 Group:		Applications/System
@@ -14,6 +14,7 @@ Patch1:         tar-CVE-2018-20482.patch
 %if %{with_check}
 Patch2:         make-check-failure.patch
 %endif
+Patch3:         tar-CVE-2021-20193.patch
 %description
 Contains GNU archiving program
 %prep
@@ -23,6 +24,7 @@ Contains GNU archiving program
 %if %{with_check}
 %patch2 -p1
 %endif
+%patch3 -p1
 
 %build
 autoreconf -i --force
@@ -47,6 +49,8 @@ make  %{?_smp_mflags} check
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
 %changelog
+*       Fri Apr 16 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.30-5
+-       Fix CVE-2021-20193
 *       Tue Oct 22 2019 Prashant S Chauhan <psinghchauha@vmware.com> 1.30-4
 -       Fix make check, Added a patch.
 *       Fri May 24 2019 Keerthana K <keerthanak@vmware.com> 1.30-3
