@@ -1,26 +1,26 @@
-From 309e2d2e584941688dadd74ae72507aebe3bf798 Mon Sep 17 00:00:00 2001
+From 25189d08e5168c098c307a0eaae5b30c13a331ef Mon Sep 17 00:00:00 2001
 From: Tom Lendacky <thomas.lendacky@amd.com>
-Date: Wed, 10 Jun 2020 18:21:47 +0530
-Subject: [PATCH 25/75] x86-sev-es-Add-support-for-handling-IOIO-exceptions
-
-x86/sev-es: Add support for handling IOIO exceptions
+Date: Mon, 7 Sep 2020 15:15:26 +0200
+Subject: x86/sev-es: Add support for handling IOIO exceptions
 
 Add support for decoding and handling #VC exceptions for IOIO events.
 
-Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
 [ jroedel@suse.de: Adapted code to #VC handling framework ]
 Co-developed-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lkml.kernel.org/r/20200907131613.12703-26-joro@8bytes.org
 ---
  arch/x86/boot/compressed/sev-es.c |  32 ++++++
- arch/x86/kernel/sev-es-shared.c   | 202 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 234 insertions(+)
+ arch/x86/kernel/sev-es-shared.c   | 214 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 246 insertions(+)
 
 diff --git a/arch/x86/boot/compressed/sev-es.c b/arch/x86/boot/compressed/sev-es.c
-index 1241697..17765e4 100644
+index 1e1fab583302d..61504eb1ab46f 100644
 --- a/arch/x86/boot/compressed/sev-es.c
 +++ b/arch/x86/boot/compressed/sev-es.c
-@@ -23,6 +23,35 @@
+@@ -24,6 +24,35 @@
  struct ghcb boot_ghcb_page __aligned(PAGE_SIZE);
  struct ghcb *boot_ghcb;
  
@@ -56,7 +56,7 @@ index 1241697..17765e4 100644
  static inline u64 sev_es_rd_ghcb_msr(void)
  {
  	unsigned long low, high;
-@@ -150,6 +179,9 @@ void do_boot_stage2_vc(struct pt_regs *regs, unsigned long exit_code)
+@@ -151,6 +180,9 @@ void do_boot_stage2_vc(struct pt_regs *regs, unsigned long exit_code)
  		goto finish;
  
  	switch (exit_code) {
@@ -67,10 +67,10 @@ index 1241697..17765e4 100644
  		result = ES_UNSUPPORTED;
  		break;
 diff --git a/arch/x86/kernel/sev-es-shared.c b/arch/x86/kernel/sev-es-shared.c
-index 22eb3ed..5d4d0e2 100644
+index 7ac6e6b0ae571..bae7cf28455b7 100644
 --- a/arch/x86/kernel/sev-es-shared.c
 +++ b/arch/x86/kernel/sev-es-shared.c
-@@ -217,3 +217,205 @@ static enum es_result vc_insn_string_write(struct es_em_ctxt *ctxt,
+@@ -218,3 +218,217 @@ static enum es_result vc_insn_string_write(struct es_em_ctxt *ctxt,
  
  	return ret;
  }
@@ -120,14 +120,14 @@ index 22eb3ed..5d4d0e2 100644
 +	case 0xe4:
 +	case 0xe5:
 +		*exitinfo |= IOIO_TYPE_IN;
-+		*exitinfo |= insn->immediate.value << 16;
++		*exitinfo |= (u64)insn->immediate.value << 16;
 +		break;
 +
 +	/* OUT immediate opcodes */
 +	case 0xe6:
 +	case 0xe7:
 +		*exitinfo |= IOIO_TYPE_OUT;
-+		*exitinfo |= insn->immediate.value << 16;
++		*exitinfo |= (u64)insn->immediate.value << 16;
 +		break;
 +
 +	/* IN register opcodes */
@@ -192,7 +192,10 @@ index 22eb3ed..5d4d0e2 100644
 +		return ret;
 +
 +	if (exit_info_1 & IOIO_TYPE_STR) {
-+		int df = (regs->flags & X86_EFLAGS_DF) ? -1 : 1;
++
++		/* (REP) INS/OUTS */
++
++		bool df = ((regs->flags & X86_EFLAGS_DF) == X86_EFLAGS_DF);
 +		unsigned int io_bytes, exit_bytes;
 +		unsigned int ghcb_count, op_count;
 +		unsigned long es_base;
@@ -201,7 +204,7 @@ index 22eb3ed..5d4d0e2 100644
 +		/*
 +		 * For the string variants with rep prefix the amount of in/out
 +		 * operations per #VC exception is limited so that the kernel
-+		 * has a chance to take interrupts an re-schedule while the
++		 * has a chance to take interrupts and re-schedule while the
 +		 * instruction is emulated.
 +		 */
 +		io_bytes   = (exit_info_1 >> 4) & 0x7;
@@ -213,6 +216,7 @@ index 22eb3ed..5d4d0e2 100644
 +
 +		es_base = insn_get_seg_base(ctxt->regs, INAT_SEG_REG_ES);
 +
++		/* Read bytes of OUTS into the shared buffer */
 +		if (!(exit_info_1 & IOIO_TYPE_IN)) {
 +			ret = vc_insn_string_read(ctxt,
 +					       (void *)(es_base + regs->si),
@@ -222,19 +226,24 @@ index 22eb3ed..5d4d0e2 100644
 +				return ret;
 +		}
 +
++		/*
++		 * Issue an VMGEXIT to the HV to consume the bytes from the
++		 * shared buffer or to have it write them into the shared buffer
++		 * depending on the instruction: OUTS or INS.
++		 */
 +		sw_scratch = __pa(ghcb) + offsetof(struct ghcb, shared_buffer);
 +		ghcb_set_sw_scratch(ghcb, sw_scratch);
 +		ret = sev_es_ghcb_hv_call(ghcb, ctxt, SVM_EXIT_IOIO,
-+				   exit_info_1, exit_info_2);
++					  exit_info_1, exit_info_2);
 +		if (ret != ES_OK)
 +			return ret;
 +
-+		/* Everything went well, write back results */
++		/* Read bytes from shared buffer into the guest's destination. */
 +		if (exit_info_1 & IOIO_TYPE_IN) {
 +			ret = vc_insn_string_write(ctxt,
-+						(void *)(es_base + regs->di),
-+						ghcb->shared_buffer, io_bytes,
-+						exit_info_2, df);
++						   (void *)(es_base + regs->di),
++						   ghcb->shared_buffer, io_bytes,
++						   exit_info_2, df);
 +			if (ret)
 +				return ret;
 +
@@ -255,6 +264,9 @@ index 22eb3ed..5d4d0e2 100644
 +		ret = regs->cx ? ES_RETRY : ES_OK;
 +
 +	} else {
++
++		/* IN/OUT into/from rAX */
++
 +		int bits = (exit_info_1 & 0x70) >> 1;
 +		u64 rax = 0;
 +
@@ -277,5 +289,5 @@ index 22eb3ed..5d4d0e2 100644
 +	return ret;
 +}
 -- 
-2.7.4
+cgit 1.2.3-1.el7
 

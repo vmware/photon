@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.186
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -394,6 +394,8 @@ Patch492:        0002-x86-boot-compressed-64-Sanity-check-CPUID-results-in.patch
 Patch493:        0003-x86-boot-compressed-64-Check-SEV-encryption-in-64-bi.patch
 Patch494:        0004-x86-head-64-Check-SEV-encryption-before-switching-to.patch
 Patch495:        0005-x86-sev-es-Do-not-support-MMIO-to-from-encrypted-mem.patch
+Patch496:        x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
+Patch497:        x86-sev-es-Handle-string-port-IO-to-kernel-memory-properly.patch
 
 #Patches for i40e driver
 Patch1500:      0001-Add-support-for-gettimex64-interface.patch
@@ -844,6 +846,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch493 -p1
 %patch494 -p1
 %patch495 -p1
+%patch496 -p1
+%patch497 -p1
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -1225,6 +1229,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Mon Apr 19 2021 Ajay Kaher <akaher@vmware.com> 4.19.186-3
+-   Fixes for SEV-ES
 *   Mon Apr 19 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.186-2
 -   Fix for CVE-2021-23133
 *   Mon Apr 19 2021 srinidhira0 <srinidhir@vmware.com> 4.19.186-1
