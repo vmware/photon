@@ -1,7 +1,7 @@
 Summary:        library for fast, message-based applications
 Name:           zeromq
 Version:        4.2.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://www.zeromq.org
 License:        LGPLv3+
 Group:          System Environment/Libraries
@@ -13,6 +13,7 @@ Source0:        https://archive.org/download/zeromq_4.1.4/%{name}-%{version}.tar
 Patch0:         zeromq-CVE-2019-13132.patch
 Patch1:         zeromq-CVE-2019-6250.patch
 Patch2:         zeromq-CVE-2020-15166.patch
+Patch3:         zeromq-CVE-2021-20235.patch
 
 Requires:       libstdc++
 
@@ -63,6 +64,8 @@ make check
 %{_mandir}/*
 
 %changelog
+*   Fri Apr 16 2021 Satya Naga Vasamsetty<svasamsetty@vmware.com> 4.2.3-5
+-   Fix CVE-2021-20235
 *   Thu Sep 03 2020 Shreenidhi Shedi <sshedi@vmware.com> 4.2.3-4
 -   Fix CVE-2020-15166
 *   Wed Aug 07 2019 Siju Maliakkal <smaliakkal@vmwre.com> 4.2.3-3
