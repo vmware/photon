@@ -1,37 +1,35 @@
 %global __requires_exclude perl\\(.*\\)
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
-Version:        5.8
-Release:        6%{?dist}
+Version:        5.9
+Release:        1%{?dist}
 License:        BSD (like)
 URL:            http://net-snmp.sourceforge.net/
 Group:          Productivity/Networking/Other
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1 net-snmp=78f70731df9dcdb13fe8f60eb7d80d7583da4d2c
+%define sha1    net-snmp=a06260b01e1abf254624dc3e5fd3ffa237a4c9c7
 Source1:        snmpd.service
 Source2:        snmptrapd.service
-Patch0:         net-snmp-CVE-2019-20892.patch
 BuildRequires:  openssl-devel
 BuildRequires:  perl
 BuildRequires:  systemd
 Requires:       perl
 Requires:       systemd
 %description
- Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
+Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 
-%package devel
-Group: Development/Libraries
-Summary: The includes and static libraries from the Net-SNMP package.
-Requires: net-snmp = %{version}-%{release}
+%package        devel
+Group:          Development/Libraries
+Summary:        The includes and static libraries from the Net-SNMP package.
+Requires:       net-snmp = %{version}-%{release}
 
-%description devel
+%description    devel
 The net-snmp-devel package contains headers and libraries for building SNMP applications.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 %configure \
@@ -97,12 +95,15 @@ rm -rf %{buildroot}/*
 %{_libdir}/*.la
 %{_libdir}/perl5
 %{_libdir}/*.so
+%{_libdir}/pkgconfig/*.pc
 %{_datadir}/snmp/mibs
 %{_datadir}/snmp/mib2c*
 %{_mandir}/man3/*
 %exclude /usr/lib/perl5/*/*/perllocal.pod
 
 %changelog
+*   Fri Apr 16 2021 Gerrit Photon <photon-checkins@vmware.com> 5.9-1
+-   Automatic Version Bump
 *   Wed Feb 10 2021 Alexey Makhalov <amakhalov@vmware.com> 5.8-6
 -   Enable parallel build
 *   Tue Oct 06 2020 Ankit Jain <ankitja@vmware.com> 5.8-5
