@@ -1,7 +1,7 @@
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
 Version:        2.82
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            http://www.thekelleys.org.uk/dnsmasq/
@@ -104,8 +104,9 @@ rm -rf %{buildroot}
 %{_bindir}/*
 %{_mandir}/man1/*
 
-
 %changelog
+*   Sat Apr 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.82-2
+-   Bump version as a part of nettle upgrade
 *   Sat Jan 09 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.82-1
 -   Fix CVE-2020-25681,CVE-2020-25682,CVE-2020-25683,CVE-2020-25684
 -   CVE-2020-25685,CVE-2020-25686,CVE-2020-25687
