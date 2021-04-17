@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.6.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        http://ftp.heanet.ie/mirrors/ftp.gnupg.org/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
@@ -99,6 +99,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man3/*
 
 %changelog
+*   Sat Apr 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.6.15-2
+-   Bump version as a part of nettle upgrade
 *   Mon Sep 28 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.6.15-1
 -   Upgrade to version 3.6.15, fixes CVE-2020-24659
 *   Fri Sep 11 2020 Shreenidhi Shedi < sshedi@vmware.com> 3.5.15-5
@@ -129,4 +131,3 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 -   Removing la files from packages.
 *   Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 3.4.2-1
 -   Initial build. First version
-
