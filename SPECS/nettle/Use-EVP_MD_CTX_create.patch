@@ -1,0 +1,27 @@
+From f52c9ecc01c4b6b1726f00f14dd8f24f72b977a5 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Sat, 17 Apr 2021 18:33:14 +0530
+Subject: [PATCH] Use EVP_MD_CTX_create to make it work with older openssl
+ version
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ examples/nettle-openssl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/examples/nettle-openssl.c b/examples/nettle-openssl.c
+index d1aaf64b..800bc4b5 100644
+--- a/examples/nettle-openssl.c
++++ b/examples/nettle-openssl.c
+@@ -379,7 +379,7 @@ static void								\
+ openssl_##name##_init(void *p)						\
+ {									\
+   struct openssl_hash_ctx *ctx = p;					\
+-  if ((ctx->evp = EVP_MD_CTX_new()) == NULL)			\
++  if ((ctx->evp = EVP_MD_CTX_create()) == NULL)			\
+     return;								\
+ 									\
+   EVP_DigestInit(ctx->evp, EVP_##name());				\
+-- 
+2.17.1
+

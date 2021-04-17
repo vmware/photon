@@ -1,19 +1,20 @@
-Summary:	    Low level cryptographic libraries
-Name:		    nettle
-Version:	    3.4.1
-Release:	    1%{?dist}
-License:	    LGPLv3+ or GPLv2+
-URL:            http://www.lysator.liu.se/~nisse/nettle/
-Source0: 	    https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
-%define sha1 nettle=56a81ed4a8d35489d8bddd99d5262fe3958a52b4
-Group: 		    Development/Libraries
-Vendor:		    VMware, Inc.
+Summary:	Low level cryptographic libraries
+Name:		nettle
+Version:	3.7.2
+Release:	1%{?dist}
+License:	LGPLv3+ or GPLv2+
+URL:        http://www.lysator.liu.se/~nisse/nettle/
+Source0: 	https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
+%define sha1 nettle=d617fbcf8d301dfd887129c3883629d4d097c579
+Patch0:     Use-EVP_MD_CTX_create.patch
+Group: 		Development/Libraries
+Vendor:		VMware, Inc.
 Distribution:	Photon
-Provides:	    libhogweed.so.4()(64bit)
-Provides:	    libhogweed.so.4(HOGWEED_4)(64bit)
-Provides:	    libnettle.so.6()(64bit)
-Provides:	    libnettle.so.6(NETTLE_6)(64bit)
-Requires:	    gmp
+Provides:   libhogweed.so.6()(64bit)
+Provides:	libhogweed.so.6(HOGWEED_6)(64bit)
+Provides:   libnettle.so.8()(64bit)
+Provides:   libnettle.so.8(NETTLE_8)(64bit)
+Requires:   gmp
 
 %description
 GNettle is a cryptographic library that is designed to fit easily in more
@@ -32,13 +33,13 @@ The package contains libraries and header files for
 developing applications that use nettle.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 ./configure \
-	--prefix=%{_prefix} \
-	--enable-shared \
-        --disable-static
+    --prefix=%{_prefix} \
+    --enable-shared \
+    --disable-static
 
 make %{?_smp_mflags}
 
@@ -64,6 +65,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*  Sat Apr 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.7.2-1
+-  Bump version to 3.7.2 to fix CVE-2021-20305
 *  Mon Apr 13 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.4.1-1
 -  Upgrade to version 3.4.1
 *  Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3-1
