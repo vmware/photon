@@ -1,18 +1,17 @@
-Summary:    libpsl - C library to handle the Public Suffix List
-Name:       libpsl
-Version:    0.21.1
-Release:    1%{?dist}
-License:    MIT
-URL:        https://github.com/rockdaboot/libpsl
-Group:      System Environment/Development
-Vendor:     VMware, Inc.
+Summary:        libpsl - C library to handle the Public Suffix List
+Name:           libpsl
+Version:        0.21.1
+Release:        2%{?dist}
+License:        MIT
+URL:            https://github.com/rockdaboot/libpsl
+Group:          System Environment/Development
+Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:    https://github.com/rockdaboot/libpsl/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
-%define sha1 libpsl=dc5fd26d060b3445386b5a82628df900567654f4
-
-BuildRequires: icu-devel
-BuildRequires: python3
-Requires:      icu
+Source0:        https://github.com/rockdaboot/libpsl/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
+%define sha1    libpsl=dc5fd26d060b3445386b5a82628df900567654f4
+BuildRequires:  icu-devel
+BuildRequires:  python3
+Requires:       icu
 
 %description
 libpsl is a C library to handle the Public Suffix List. A "public suffix" is a
@@ -94,6 +93,8 @@ make check
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Mon Apr 19 2021 Gerrit Photon <photon-checkins@vmware.com> 0.21.1-2
+-   Rebuild since icu is upgraded to 69
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 0.21.1-1
 -   Automatic Version Bump
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 0.21.0-1
