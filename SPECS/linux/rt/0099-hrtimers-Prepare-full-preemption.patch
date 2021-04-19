@@ -1,7 +1,4 @@
-From db30992688e3041c4fc0f99fe695e04666b1c3b6 Mon Sep 17 00:00:00 2001
-Message-Id: <db30992688e3041c4fc0f99fe695e04666b1c3b6.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 785ee43231b7774bed9177076640855a496dc6f9 Mon Sep 17 00:00:00 2001
 From: Ingo Molnar <mingo@elte.hu>
 Date: Fri, 3 Jul 2009 08:29:34 -0500
 Subject: [PATCH 099/335] hrtimers: Prepare full preemption
@@ -97,7 +94,7 @@ index ee7e987ea1b4..0571b498db73 100644
  
  void run_posix_cpu_timers(struct task_struct *task);
 diff --git a/kernel/time/alarmtimer.c b/kernel/time/alarmtimer.c
-index 9eece67f29f3..a465564367ec 100644
+index 6a2ba39889bd..f4c8cfde00b0 100644
 --- a/kernel/time/alarmtimer.c
 +++ b/kernel/time/alarmtimer.c
 @@ -438,7 +438,7 @@ int alarm_cancel(struct alarm *alarm)
@@ -110,10 +107,10 @@ index 9eece67f29f3..a465564367ec 100644
  }
  EXPORT_SYMBOL_GPL(alarm_cancel);
 diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
-index c6f755495a63..e135cb27db39 100644
+index 0f27e2db4e9b..ae29464d18c4 100644
 --- a/kernel/time/hrtimer.c
 +++ b/kernel/time/hrtimer.c
-@@ -939,6 +939,33 @@ u64 hrtimer_forward(struct hrtimer *timer, ktime_t now, ktime_t interval)
+@@ -957,6 +957,33 @@ u64 hrtimer_forward(struct hrtimer *timer, ktime_t now, ktime_t interval)
  }
  EXPORT_SYMBOL_GPL(hrtimer_forward);
  
@@ -147,7 +144,7 @@ index c6f755495a63..e135cb27db39 100644
  /*
   * enqueue_hrtimer - internal function to (re)start a timer
   *
-@@ -1174,7 +1201,7 @@ int hrtimer_cancel(struct hrtimer *timer)
+@@ -1192,7 +1219,7 @@ int hrtimer_cancel(struct hrtimer *timer)
  
  		if (ret >= 0)
  			return ret;
@@ -156,7 +153,7 @@ index c6f755495a63..e135cb27db39 100644
  	}
  }
  EXPORT_SYMBOL_GPL(hrtimer_cancel);
-@@ -1480,6 +1507,7 @@ static __latent_entropy void hrtimer_run_softirq(struct softirq_action *h)
+@@ -1498,6 +1525,7 @@ static __latent_entropy void hrtimer_run_softirq(struct softirq_action *h)
  	hrtimer_update_softirq_timer(cpu_base, true);
  
  	raw_spin_unlock_irqrestore(&cpu_base->lock, flags);
@@ -164,7 +161,7 @@ index c6f755495a63..e135cb27db39 100644
  }
  
  #ifdef CONFIG_HIGH_RES_TIMERS
-@@ -1849,6 +1877,9 @@ int hrtimers_prepare_cpu(unsigned int cpu)
+@@ -1867,6 +1895,9 @@ int hrtimers_prepare_cpu(unsigned int cpu)
  	cpu_base->softirq_next_timer = NULL;
  	cpu_base->expires_next = KTIME_MAX;
  	cpu_base->softirq_expires_next = KTIME_MAX;
@@ -288,5 +285,5 @@ index 5a01c4fdbfef..a5ec421e3437 100644
  	}
  	list_del(&timer->list);
 -- 
-2.17.1
+2.30.2
 

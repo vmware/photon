@@ -1,7 +1,4 @@
-From 784e92c40a83adfad7b43aed7dc1b5a95cf0421c Mon Sep 17 00:00:00 2001
-Message-Id: <784e92c40a83adfad7b43aed7dc1b5a95cf0421c.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From c5f3673dec701ad11dc9c1921e24187724cb88cd Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 17 Jul 2011 22:51:33 +0200
 Subject: [PATCH 111/335] sched: Use the proper LOCK_OFFSET for cond_resched()
@@ -31,5 +28,5 @@ index f7a17fcc3fec..b7fe717eb1f4 100644
  /*
   * The preempt_count offset needed for things like:
 -- 
-2.17.1
+2.30.2
 

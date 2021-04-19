@@ -1,7 +1,4 @@
-From a1d5697ea0fbefad32d54c30dec1035686050ce7 Mon Sep 17 00:00:00 2001
-Message-Id: <a1d5697ea0fbefad32d54c30dec1035686050ce7.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 9287ee86ec2bc664d429b1b0ba181eb8a9f5146a Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 29 Jun 2011 19:34:01 +0200
 Subject: [PATCH 137/335] spinlock: Split the lock types header
@@ -219,5 +216,5 @@ index 000000000000..822bf64a61d3
 +
 +#endif
 -- 
-2.17.1
+2.30.2
 

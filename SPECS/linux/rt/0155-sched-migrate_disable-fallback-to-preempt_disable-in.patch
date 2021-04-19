@@ -1,7 +1,4 @@
-From 3bd745b294a64982dda4bb401dad9dda0f5498f6 Mon Sep 17 00:00:00 2001
-Message-Id: <3bd745b294a64982dda4bb401dad9dda0f5498f6.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 4f6038082223073b625b93c9708eab8701b4d1b0 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 5 Jul 2018 14:44:51 +0200
 Subject: [PATCH 155/335] sched/migrate_disable: fallback to preempt_disable()
@@ -202,5 +199,5 @@ index 5027158d3908..dd6c364d6f01 100644
  #endif
  	P(nr_cpus_allowed);
 -- 
-2.17.1
+2.30.2
 

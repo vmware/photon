@@ -1,7 +1,4 @@
-From 7ec6f3061f3b81c77cf29c949b31d39976442b67 Mon Sep 17 00:00:00 2001
-Message-Id: <7ec6f3061f3b81c77cf29c949b31d39976442b67.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 3f22f5f1b40fc8e116a7e0bc201ba86828b76589 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 17 Jul 2011 21:56:42 +0200
 Subject: [PATCH 116/335] trace: Add migrate-disabled counter to tracing output
@@ -28,7 +25,7 @@ index 0643c083ed86..1cc4d2da954c 100644
  
  #define TRACE_EVENT_TYPE_MAX						\
 diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index d6f1e305bb3d..e323fde236e4 100644
+index bca0b6df53ca..9e864741fac6 100644
 --- a/kernel/trace/trace.c
 +++ b/kernel/trace/trace.c
 @@ -2151,6 +2151,8 @@ tracing_generic_entry_update(struct trace_entry *entry, unsigned long flags,
@@ -40,7 +37,7 @@ index d6f1e305bb3d..e323fde236e4 100644
  }
  EXPORT_SYMBOL_GPL(tracing_generic_entry_update);
  
-@@ -3358,9 +3360,10 @@ static void print_lat_help_header(struct seq_file *m)
+@@ -3359,9 +3361,10 @@ static void print_lat_help_header(struct seq_file *m)
  		    "#                | / _----=> need-resched    \n"
  		    "#                || / _---=> hardirq/softirq \n"
  		    "#                ||| / _--=> preempt-depth   \n"
@@ -55,7 +52,7 @@ index d6f1e305bb3d..e323fde236e4 100644
  
  static void print_event_info(struct trace_buffer *buf, struct seq_file *m)
 diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
-index 0fc06a7da87f..b1c1170d2236 100644
+index ea43be6b9cc3..0fcf80ac8050 100644
 --- a/kernel/trace/trace_events.c
 +++ b/kernel/trace/trace_events.c
 @@ -188,6 +188,8 @@ static int trace_define_common_fields(void)
@@ -84,5 +81,5 @@ index 6e6cc64faa38..46c96744f09d 100644
  }
  
 -- 
-2.17.1
+2.30.2
 

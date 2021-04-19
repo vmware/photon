@@ -1,7 +1,4 @@
-From 49f45c366e0e2273466bb9856c8749c12af4d47f Mon Sep 17 00:00:00 2001
-Message-Id: <49f45c366e0e2273466bb9856c8749c12af4d47f.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 52d77db3fd61583b97d6208763a6e2984adc93a8 Mon Sep 17 00:00:00 2001
 From: Marc Zyngier <marc.zyngier@arm.com>
 Date: Fri, 27 Jul 2018 13:38:54 +0100
 Subject: [PATCH 008/335] irqchip/gic-v3-its: Move pending table allocation to
@@ -169,5 +166,5 @@ index 1d21e98d6854..fdddead7e307 100644
  	struct page		*prop_page;
  	u64			flags;
 -- 
-2.17.1
+2.30.2
 

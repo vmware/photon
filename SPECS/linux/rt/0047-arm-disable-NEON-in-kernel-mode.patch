@@ -1,7 +1,4 @@
-From b14be8dc53555032ce4ea93e1fc164e2127bade0 Mon Sep 17 00:00:00 2001
-Message-Id: <b14be8dc53555032ce4ea93e1fc164e2127bade0.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From d01b1a79adb3ca1441f0376b4f105bad28f30e18 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 1 Dec 2017 10:42:03 +0100
 Subject: [PATCH 047/335] arm*: disable NEON in kernel mode
@@ -164,5 +161,5 @@ index 34b4e3d46aab..ae055cdad8cf 100644
  		crc32_pmull_algs[1].update = crc32c_pmull_update;
  
 -- 
-2.17.1
+2.30.2
 

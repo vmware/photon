@@ -1,7 +1,4 @@
-From 66080f20a92e5c140d5d0a6028c9b8d0cfa7451d Mon Sep 17 00:00:00 2001
-Message-Id: <66080f20a92e5c140d5d0a6028c9b8d0cfa7451d.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 10fd4e0fda3cb54ca014e92bd1367ef4701bf75c Mon Sep 17 00:00:00 2001
 From: Zhang Xiao <xiao.zhang@windriver.com>
 Date: Tue, 17 Mar 2020 12:47:43 +0100
 Subject: [PATCH 324/335] tasklet: Address a race resulting in double-enqueue
@@ -118,5 +115,5 @@ index 25bcf2f2714b..73dae64bfc9c 100644
  			 * If it got disabled meanwhile, bail out:
  			 */
 -- 
-2.17.1
+2.30.2
 

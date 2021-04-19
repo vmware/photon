@@ -1,7 +1,4 @@
-From 6469757c66d50bb8ed94b6f9362502deccc57151 Mon Sep 17 00:00:00 2001
-Message-Id: <6469757c66d50bb8ed94b6f9362502deccc57151.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 1772b858d7e77c789737ddcf1162461e02507600 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 14 Jul 2015 14:26:34 +0200
 Subject: [PATCH 179/335] block/mq: do not invoke preempt_disable()
@@ -16,7 +13,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/block/blk-mq.c b/block/blk-mq.c
-index dcf2a4cc2dbd..cbd2d46e906c 100644
+index 339d5b64856c..8e3452889da5 100644
 --- a/block/blk-mq.c
 +++ b/block/blk-mq.c
 @@ -570,7 +570,7 @@ static void __blk_mq_complete_request(struct request *rq)
@@ -56,5 +53,5 @@ index dcf2a4cc2dbd..cbd2d46e906c 100644
  
  	kblockd_mod_delayed_work_on(blk_mq_hctx_next_cpu(hctx), &hctx->run_work,
 -- 
-2.17.1
+2.30.2
 

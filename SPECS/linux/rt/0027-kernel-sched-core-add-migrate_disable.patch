@@ -1,7 +1,4 @@
-From e5a7a5ae2db39ecaac8885ff2f3494bd2e2f807d Mon Sep 17 00:00:00 2001
-Message-Id: <e5a7a5ae2db39ecaac8885ff2f3494bd2e2f807d.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From de5790d28e98b2e1fd13225b2b2587168184e2dd Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Sat, 27 May 2017 19:02:06 +0200
 Subject: [PATCH 027/335] kernel/sched/core: add migrate_disable()
@@ -264,5 +261,5 @@ index 78fadf0438ea..5027158d3908 100644
  #undef PN
  #undef __PN
 -- 
-2.17.1
+2.30.2
 

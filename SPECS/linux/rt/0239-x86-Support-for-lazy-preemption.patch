@@ -1,7 +1,4 @@
-From ec3f8170464e2146e481b30096d54e73e346f55e Mon Sep 17 00:00:00 2001
-Message-Id: <ec3f8170464e2146e481b30096d54e73e346f55e.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From f25e20912b5edddafe645c42bcb943d0c30002e8 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 1 Nov 2012 11:03:47 +0100
 Subject: [PATCH 239/335] x86: Support for lazy preemption
@@ -87,7 +84,7 @@ diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
 index f53d995b1370..94fccaa04bfa 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -733,7 +733,23 @@ retint_kernel:
+@@ -733,7 +733,23 @@ GLOBAL(swapgs_restore_regs_and_return_to_usermode)
  	btl	$9, EFLAGS(%rsp)		/* were interrupts off? */
  	jnc	1f
  0:	cmpl	$0, PER_CPU_VAR(__preempt_count)
@@ -164,7 +161,7 @@ index 7f2dbd91fc74..22992c837795 100644
  
  #ifdef CONFIG_PREEMPT
 diff --git a/arch/x86/include/asm/thread_info.h b/arch/x86/include/asm/thread_info.h
-index 82b73b75d67c..dc267291f131 100644
+index b5e4c357523e..d311dc042ddd 100644
 --- a/arch/x86/include/asm/thread_info.h
 +++ b/arch/x86/include/asm/thread_info.h
 @@ -56,17 +56,24 @@ struct task_struct;
@@ -238,5 +235,5 @@ index 01de31db300d..ce1c5b9fbd8c 100644
  	/* TLB state for the entry code */
  	OFFSET(TLB_STATE_user_pcid_flush_mask, tlb_state, user_pcid_flush_mask);
 -- 
-2.17.1
+2.30.2
 

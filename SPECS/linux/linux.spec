@@ -3,8 +3,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux
-Version:        4.19.182
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.186
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=0c311511252693a29e86840539fe38dca56aeb3d
+%define sha1 linux=2641441b25454db5cf9d4aa7b73de83671e264e5
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -1221,6 +1221,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Mon Apr 19 2021 srinidhira0 <srinidhir@vmware.com> 4.19.186-1
+-   Update to version 4.19.186
 *   Thu Apr 15 2021 Keerthana K <keerthanak@vmware.com> 4.19.182-3
 -   photon-checksum-generator update to v1.2
 *   Tue Apr 06 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.182-2

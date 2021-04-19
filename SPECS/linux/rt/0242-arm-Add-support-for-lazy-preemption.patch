@@ -1,7 +1,4 @@
-From 843887e65baee85e3dd1a4fb4a005be4854416e3 Mon Sep 17 00:00:00 2001
-Message-Id: <843887e65baee85e3dd1a4fb4a005be4854416e3.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From c3f5dccfacaf1a03c0651aa632c4a0a5461532eb Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 31 Oct 2012 12:04:11 +0100
 Subject: [PATCH 242/335] arm: Add support for lazy preemption
@@ -71,10 +68,10 @@ index 8f55dc520a3e..4f834bfca470 100644
  #endif /* __KERNEL__ */
  #endif /* __ASM_ARM_THREAD_INFO_H */
 diff --git a/arch/arm/kernel/asm-offsets.c b/arch/arm/kernel/asm-offsets.c
-index 3968d6c22455..b35d373fc982 100644
+index ae85f67a6352..0522e557b819 100644
 --- a/arch/arm/kernel/asm-offsets.c
 +++ b/arch/arm/kernel/asm-offsets.c
-@@ -56,6 +56,7 @@ int main(void)
+@@ -57,6 +57,7 @@ int main(void)
    BLANK();
    DEFINE(TI_FLAGS,		offsetof(struct thread_info, flags));
    DEFINE(TI_PREEMPT,		offsetof(struct thread_info, preempt_count));
@@ -86,7 +83,7 @@ diff --git a/arch/arm/kernel/entry-armv.S b/arch/arm/kernel/entry-armv.S
 index 89e551eebff1..4fba92bcebfe 100644
 --- a/arch/arm/kernel/entry-armv.S
 +++ b/arch/arm/kernel/entry-armv.S
-@@ -209,11 +209,18 @@ __irq_svc:
+@@ -209,11 +209,18 @@ ENDPROC(__dabt_svc)
  
  #ifdef CONFIG_PREEMPT
  	ldr	r8, [tsk, #TI_PREEMPT]		@ get preempt count
@@ -107,7 +104,7 @@ index 89e551eebff1..4fba92bcebfe 100644
  #endif
  
  	svc_exit r5, irq = 1			@ return from exception
-@@ -228,8 +235,14 @@ svc_preempt:
+@@ -228,8 +235,14 @@ ENDPROC(__irq_svc)
  1:	bl	preempt_schedule_irq		@ irq en/disable is done inside
  	ldr	r0, [tsk, #TI_FLAGS]		@ get new tasks TI_FLAGS
  	tst	r0, #_TIF_NEED_RESCHED
@@ -127,7 +124,7 @@ diff --git a/arch/arm/kernel/entry-common.S b/arch/arm/kernel/entry-common.S
 index 0465d65d23de..47675830ed30 100644
 --- a/arch/arm/kernel/entry-common.S
 +++ b/arch/arm/kernel/entry-common.S
-@@ -56,7 +56,9 @@ __ret_fast_syscall:
+@@ -56,7 +56,9 @@ saved_pc	.req	lr
  	cmp	r2, #TASK_SIZE
  	blne	addr_limit_check_failed
  	ldr	r1, [tsk, #TI_FLAGS]		@ re-check for syscall tracing
@@ -138,7 +135,7 @@ index 0465d65d23de..47675830ed30 100644
  	bne	fast_work_pending
  
  
-@@ -93,8 +95,11 @@ __ret_fast_syscall:
+@@ -93,8 +95,11 @@ ENDPROC(ret_fast_syscall)
  	cmp	r2, #TASK_SIZE
  	blne	addr_limit_check_failed
  	ldr	r1, [tsk, #TI_FLAGS]		@ re-check for syscall tracing
@@ -152,7 +149,7 @@ index 0465d65d23de..47675830ed30 100644
  ENDPROC(ret_fast_syscall)
  
 diff --git a/arch/arm/kernel/signal.c b/arch/arm/kernel/signal.c
-index b908382b69ff..339fbc281cf1 100644
+index 1c01358b9b6d..263b0321dc50 100644
 --- a/arch/arm/kernel/signal.c
 +++ b/arch/arm/kernel/signal.c
 @@ -652,7 +652,8 @@ do_work_pending(struct pt_regs *regs, unsigned int thread_flags, int syscall)
@@ -166,5 +163,5 @@ index b908382b69ff..339fbc281cf1 100644
  		} else {
  			if (unlikely(!user_mode(regs)))
 -- 
-2.17.1
+2.30.2
 

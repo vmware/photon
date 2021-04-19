@@ -1,7 +1,4 @@
-From eb589e52b7608f08b45ebff8c6effcb0bdc7752f Mon Sep 17 00:00:00 2001
-Message-Id: <eb589e52b7608f08b45ebff8c6effcb0bdc7752f.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From dcc68952f4e68149c3604c92913d8279e2ed1698 Mon Sep 17 00:00:00 2001
 From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
 Date: Fri, 20 Sep 2019 17:50:54 -0400
 Subject: [PATCH 283/335] revert-block
@@ -17,7 +14,7 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  2 files changed, 1 insertion(+), 15 deletions(-)
 
 diff --git a/block/blk-core.c b/block/blk-core.c
-index 964da7e39870..8926b5d998fa 100644
+index 02835970ef1e..461a93c08c14 100644
 --- a/block/blk-core.c
 +++ b/block/blk-core.c
 @@ -973,21 +973,12 @@ void blk_queue_exit(struct request_queue *q)
@@ -43,7 +40,7 @@ index 964da7e39870..8926b5d998fa 100644
  }
  
  static void blk_rq_timed_out_timer(struct timer_list *t)
-@@ -1086,7 +1077,6 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id,
+@@ -1087,7 +1078,6 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id,
  	queue_flag_set_unlocked(QUEUE_FLAG_BYPASS, q);
  
  	init_waitqueue_head(&q->mq_freeze_wq);
@@ -51,7 +48,7 @@ index 964da7e39870..8926b5d998fa 100644
  
  	/*
  	 * Init percpu_ref in atomic mode so that it's faster to shutdown.
-@@ -3976,8 +3966,6 @@ int __init blk_dev_init(void)
+@@ -3977,8 +3967,6 @@ int __init blk_dev_init(void)
  	if (!kblockd_workqueue)
  		panic("Failed to create kblockd\n");
  
@@ -61,7 +58,7 @@ index 964da7e39870..8926b5d998fa 100644
  			sizeof(struct request), 0, SLAB_PANIC, NULL);
  
 diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index cc446661e51e..7cd627f2a016 100644
+index fc7b951d310e..8c38c1428c76 100644
 --- a/include/linux/blkdev.h
 +++ b/include/linux/blkdev.h
 @@ -27,7 +27,6 @@
@@ -72,7 +69,7 @@ index cc446661e51e..7cd627f2a016 100644
  
  struct module;
  struct scsi_ioctl_command;
-@@ -656,7 +655,6 @@ struct request_queue {
+@@ -657,7 +656,6 @@ struct request_queue {
  #endif
  	struct rcu_head		rcu_head;
  	wait_queue_head_t	mq_freeze_wq;
@@ -81,5 +78,5 @@ index cc446661e51e..7cd627f2a016 100644
  	struct list_head	all_q_node;
  
 -- 
-2.17.1
+2.30.2
 

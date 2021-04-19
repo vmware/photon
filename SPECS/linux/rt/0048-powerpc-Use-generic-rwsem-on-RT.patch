@@ -1,7 +1,4 @@
-From 02c6c867cc8e682da1e9a592be1daceaca702187 Mon Sep 17 00:00:00 2001
-Message-Id: <02c6c867cc8e682da1e9a592be1daceaca702187.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 3ab00c1e5a832104b6d6036184d70f07f269c613 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 14 Jul 2015 14:26:34 +0200
 Subject: [PATCH 048/335] powerpc: Use generic rwsem on RT
@@ -14,7 +11,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
-index d18ea3c1f4fa..db3390c26387 100644
+index 6dd2a14e1ebc..5e2032bc8154 100644
 --- a/arch/powerpc/Kconfig
 +++ b/arch/powerpc/Kconfig
 @@ -105,10 +105,11 @@ config LOCKDEP_SUPPORT
@@ -31,5 +28,5 @@ index d18ea3c1f4fa..db3390c26387 100644
  config GENERIC_LOCKBREAK
  	bool
 -- 
-2.17.1
+2.30.2
 

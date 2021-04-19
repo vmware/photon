@@ -1,7 +1,4 @@
-From 9d97f63902a5dcb51e5d65f9bf4da2fce1b76542 Mon Sep 17 00:00:00 2001
-Message-Id: <9d97f63902a5dcb51e5d65f9bf4da2fce1b76542.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From d1241f2b1f8fa4067bcacca1193f62771e0b4bd9 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 21 Feb 2020 18:57:11 +0100
 Subject: [PATCH 320/335] drm/vmwgfx: Drop preempt_disable() in
@@ -43,5 +40,5 @@ index d0fd147ef75f..fb5a3461bb8c 100644
  
  void vmw_fifo_release(struct vmw_private *dev_priv, struct vmw_fifo_state *fifo)
 -- 
-2.17.1
+2.30.2
 

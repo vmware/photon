@@ -1,7 +1,4 @@
-From c4f2959b1a1bb4b8925b5e9be7987c272c84012d Mon Sep 17 00:00:00 2001
-Message-Id: <c4f2959b1a1bb4b8925b5e9be7987c272c84012d.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From caa1f3712d8d135e717113efb55a408f316d1d9a Mon Sep 17 00:00:00 2001
 From: "Paul E. McKenney" <paulmck@linux.ibm.com>
 Date: Mon, 29 Oct 2018 11:53:01 +0100
 Subject: [PATCH 023/335] EXP rcu: Revert expedited GP parallelization
@@ -49,5 +46,5 @@ index 0b2c2ad69629..a0486414edb4 100644
  	}
  
 -- 
-2.17.1
+2.30.2
 

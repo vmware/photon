@@ -1,7 +1,4 @@
-From b7dd65331bcbefce2492fd25462268207f36d593 Mon Sep 17 00:00:00 2001
-Message-Id: <b7dd65331bcbefce2492fd25462268207f36d593.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 70b4188cdf6eed63b8b4ee026423557a7c5ab2b4 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 3 Jul 2018 18:19:48 +0200
 Subject: [PATCH 014/335] cgroup: use irqsave in cgroup_rstat_flush_locked()
@@ -48,5 +45,5 @@ index d0ed410b4127..3c949c46c6b3 100644
  		/* if @may_sleep, play nice and yield if necessary */
  		if (may_sleep && (need_resched() ||
 -- 
-2.17.1
+2.30.2
 

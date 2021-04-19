@@ -1,7 +1,4 @@
-From 85fe435e4e1965cbf0241f990d8dd1af07699afe Mon Sep 17 00:00:00 2001
-Message-Id: <85fe435e4e1965cbf0241f990d8dd1af07699afe.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 77fcac04a46a908708b4cd113362a2ba94826fe8 Mon Sep 17 00:00:00 2001
 From: Scott Wood <swood@redhat.com>
 Date: Sat, 27 Jul 2019 00:56:34 -0500
 Subject: [PATCH 301/335] sched: migrate disable: Protect cpus_ptr with lock
@@ -45,5 +42,5 @@ index b5c5d419cf34..96497f8b20dd 100644
  	update_nr_migratory(p, 1);
  	task_rq_unlock(rq, p, &rf);
 -- 
-2.17.1
+2.30.2
 

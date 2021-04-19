@@ -1,7 +1,4 @@
-From 33d294cd9a4a6f1d6d7f0f69b3620ae393b1ce39 Mon Sep 17 00:00:00 2001
-Message-Id: <33d294cd9a4a6f1d6d7f0f69b3620ae393b1ce39.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 4682e060c06394e4b6f668d8f5d1055a540215f5 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 9 Jun 2011 11:43:52 +0200
 Subject: [PATCH 135/335] rtmutex: Add rtmutex_lock_killable()
@@ -58,5 +55,5 @@ index 069f025180b8..81bae2e3d82e 100644
   * rt_mutex_timed_lock - lock a rt_mutex interruptible
   *			the timeout structure is provided
 -- 
-2.17.1
+2.30.2
 

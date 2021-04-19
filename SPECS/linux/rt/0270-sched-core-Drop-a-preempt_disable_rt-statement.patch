@@ -1,7 +1,4 @@
-From 9d3b3bf4a0b1133fef807cdac4203ad44b5e2b53 Mon Sep 17 00:00:00 2001
-Message-Id: <9d3b3bf4a0b1133fef807cdac4203ad44b5e2b53.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 0671050f8ff3e39c5502b7a8ae894c53030cdc4a Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 24 Jun 2019 19:33:16 +0200
 Subject: [PATCH 270/335] sched/core: Drop a preempt_disable_rt() statement
@@ -48,5 +45,5 @@ index 01006c93bc7f..c9cdc12b3225 100644
  }
  
 -- 
-2.17.1
+2.30.2
 

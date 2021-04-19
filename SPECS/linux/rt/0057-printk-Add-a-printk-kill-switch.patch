@@ -1,7 +1,4 @@
-From a8b4bf045b7d9ab0f95b4cefd395be5eee758569 Mon Sep 17 00:00:00 2001
-Message-Id: <a8b4bf045b7d9ab0f95b4cefd395be5eee758569.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 24d46c5db939cccb4cf319f2041d7b8ae58fc728 Mon Sep 17 00:00:00 2001
 From: Ingo Molnar <mingo@elte.hu>
 Date: Fri, 22 Jul 2011 17:58:40 +0200
 Subject: [PATCH 057/335] printk: Add a printk kill switch
@@ -172,5 +169,5 @@ index 71381168dede..685443375dc0 100644
  			nmi_panic(regs, "Hard LOCKUP");
  
 -- 
-2.17.1
+2.30.2
 

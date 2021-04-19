@@ -1,7 +1,4 @@
-From d7295e578b77fb9221b7daa8b07f0e9a1142359c Mon Sep 17 00:00:00 2001
-Message-Id: <d7295e578b77fb9221b7daa8b07f0e9a1142359c.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From cbbe98d7e2a894ac15bd75d1c605aa41528168fe Mon Sep 17 00:00:00 2001
 From: Waiman Long <longman@redhat.com>
 Date: Thu, 3 Oct 2019 16:36:08 -0400
 Subject: [PATCH 302/335] lib/smp_processor_id: Don't use cpumask_equal()
@@ -43,5 +40,5 @@ index fb35c45b9421..b8a8a8db2d75 100644
  
  	/*
 -- 
-2.17.1
+2.30.2
 

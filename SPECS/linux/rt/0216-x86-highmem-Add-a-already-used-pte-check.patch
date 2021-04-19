@@ -1,7 +1,4 @@
-From 75781fa538b460620d8d0607b5b7bcb9f8f5819b Mon Sep 17 00:00:00 2001
-Message-Id: <75781fa538b460620d8d0607b5b7bcb9f8f5819b.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From a80f7cb144d749758cf0474601a78a8250ed2089 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 11 Mar 2013 17:09:55 +0100
 Subject: [PATCH 216/335] x86/highmem: Add a "already used pte" check
@@ -27,5 +24,5 @@ index d5a48210d0f6..c0ec8d430c02 100644
  	current->kmap_pte[type] = pte;
  #endif
 -- 
-2.17.1
+2.30.2
 

@@ -1,7 +1,4 @@
-From 71953c68986ede9033266528a0df0e9bc7bb8300 Mon Sep 17 00:00:00 2001
-Message-Id: <71953c68986ede9033266528a0df0e9bc7bb8300.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From b3b9ef662f5d772b8a0931b0c1e5d8d5dd5d4ab4 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 11 Mar 2013 21:37:27 +0100
 Subject: [PATCH 217/335] arm/highmem: Flush tlb on unmap
@@ -32,5 +29,5 @@ index d02f8187b1cc..eb4b225d28c9 100644
  	} else if (vaddr >= PKMAP_ADDR(0) && vaddr < PKMAP_ADDR(LAST_PKMAP)) {
  		/* this address was obtained through kmap_high_get() */
 -- 
-2.17.1
+2.30.2
 

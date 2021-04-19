@@ -1,7 +1,4 @@
-From 0734ae67e589ce1ad9ca1638899c02a349747f30 Mon Sep 17 00:00:00 2001
-Message-Id: <0734ae67e589ce1ad9ca1638899c02a349747f30.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 88fd616afccf67a9a9202df20c63df234467cd15 Mon Sep 17 00:00:00 2001
 From: Julia Cartwright <julia@ni.com>
 Date: Mon, 7 May 2018 08:58:57 -0500
 Subject: [PATCH 173/335] squashfs: make use of local lock in multi_cpu
@@ -70,5 +67,5 @@ index 23a9c28ad8ea..6a73c4fa88e7 100644
  	if (res < 0)
  		ERROR("%s decompression failed, data probably corrupt\n",
 -- 
-2.17.1
+2.30.2
 

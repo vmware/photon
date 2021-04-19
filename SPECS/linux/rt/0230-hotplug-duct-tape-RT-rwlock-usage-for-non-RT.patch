@@ -1,7 +1,4 @@
-From 1d279650918c8836b023210e2ecf3c375d5803f3 Mon Sep 17 00:00:00 2001
-Message-Id: <1d279650918c8836b023210e2ecf3c375d5803f3.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 597bff4f26b438bbb85166d7e6a37897e4f528f6 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 4 Aug 2017 18:31:00 +0200
 Subject: [PATCH 230/335] hotplug: duct-tape RT-rwlock usage for non-RT
@@ -100,5 +97,5 @@ index 67b1e5aa5476..7ec8d1de5a1e 100644
  	irq_unlock_sparse();
  
 -- 
-2.17.1
+2.30.2
 

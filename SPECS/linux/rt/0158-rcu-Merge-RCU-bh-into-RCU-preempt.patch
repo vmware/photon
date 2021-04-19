@@ -1,7 +1,4 @@
-From e390888a0d7f6314e36daf8a6bc83bc0068b813d Mon Sep 17 00:00:00 2001
-Message-Id: <e390888a0d7f6314e36daf8a6bc83bc0068b813d.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From d932f97f10fef3287d19a86a615a5f383ca37be6 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 5 Oct 2011 11:59:38 -0700
 Subject: [PATCH 158/335] rcu: Merge RCU-bh into RCU-preempt
@@ -349,5 +346,5 @@ index 81688a133552..6ffafb1b1584 100644
  #endif /* #ifdef CONFIG_DEBUG_LOCK_ALLOC */
  
 -- 
-2.17.1
+2.30.2
 

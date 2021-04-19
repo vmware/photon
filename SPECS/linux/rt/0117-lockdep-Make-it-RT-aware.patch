@@ -1,7 +1,4 @@
-From 5c0f2f186231c2a989f5b887c2a2fcf7da9cf0a6 Mon Sep 17 00:00:00 2001
-Message-Id: <5c0f2f186231c2a989f5b887c2a2fcf7da9cf0a6.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 88f1bdf82e8f7d555f09512f9f4c527f194b9c2f Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 17 Jul 2011 18:51:23 +0200
 Subject: [PATCH 117/335] lockdep: Make it RT aware
@@ -76,5 +73,5 @@ index 8a1758b094b7..376b1ef4396a 100644
  	if (!debug_locks)
  		print_irqtrace_events(current);
 -- 
-2.17.1
+2.30.2
 

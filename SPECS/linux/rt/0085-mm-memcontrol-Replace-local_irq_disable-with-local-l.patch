@@ -1,7 +1,4 @@
-From af2632ffc727904c161483ac90c3988367a8b140 Mon Sep 17 00:00:00 2001
-Message-Id: <af2632ffc727904c161483ac90c3988367a8b140.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 2ab01a5ef5526278c9112094258453cfebdd3f87 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 28 Jan 2015 17:14:16 +0100
 Subject: [PATCH 085/335] mm/memcontrol: Replace local_irq_disable with local
@@ -122,5 +119,5 @@ index 309145525cc1..6bcebbee593e 100644
  
  /**
 -- 
-2.17.1
+2.30.2
 

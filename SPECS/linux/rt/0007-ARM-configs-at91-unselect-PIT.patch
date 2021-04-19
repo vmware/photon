@@ -1,7 +1,4 @@
-From de1f3b3e2773ebe7bba3407d4bf1fa71c9021c07 Mon Sep 17 00:00:00 2001
-Message-Id: <de1f3b3e2773ebe7bba3407d4bf1fa71c9021c07.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 10de110b02d5585a61d56c81ad4358c9ff2d52a0 Mon Sep 17 00:00:00 2001
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Date: Thu, 13 Sep 2018 13:30:24 +0200
 Subject: [PATCH 007/335] ARM: configs: at91: unselect PIT
@@ -42,5 +39,5 @@ index f2bbc6339ca6..be92871ab155 100644
  CONFIG_UACCESS_WITH_MEMCPY=y
  CONFIG_ZBOOT_ROM_TEXT=0x0
 -- 
-2.17.1
+2.30.2
 

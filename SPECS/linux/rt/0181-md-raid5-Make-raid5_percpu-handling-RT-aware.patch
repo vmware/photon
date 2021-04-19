@@ -1,7 +1,4 @@
-From 718162529c563a930082f58b6466596e766b496d Mon Sep 17 00:00:00 2001
-Message-Id: <718162529c563a930082f58b6466596e766b496d.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 609a8a73a83c1ec0b72c969091e64fa48173eb2b Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 6 Apr 2010 16:51:31 +0200
 Subject: [PATCH 181/335] md: raid5: Make raid5_percpu handling RT aware
@@ -75,5 +72,5 @@ index 8474c224127b..a3bf907ab2af 100644
  		struct flex_array *scribble;   /* space for constructing buffer
  					      * lists and performing address
 -- 
-2.17.1
+2.30.2
 

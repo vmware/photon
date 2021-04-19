@@ -1,7 +1,4 @@
-From a18025017c101794a25c74776b070e198d955dd1 Mon Sep 17 00:00:00 2001
-Message-Id: <a18025017c101794a25c74776b070e198d955dd1.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 7f15524e951e3f5eefad4decfa50d3075e106bf8 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 21 Sep 2017 14:25:13 +0200
 Subject: [PATCH 154/335] rtmutex: annotate sleeping lock context
@@ -306,5 +303,5 @@ index 482c1dbb2415..6ca2f8087a2e 100644
 +EXPORT_SYMBOL(migrate_enable);
  #endif
 -- 
-2.17.1
+2.30.2
 

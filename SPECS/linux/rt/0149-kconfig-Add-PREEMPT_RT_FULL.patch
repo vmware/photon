@@ -1,7 +1,4 @@
-From f61967c929b6d83369e4646c0dc1770513a345c8 Mon Sep 17 00:00:00 2001
-Message-Id: <f61967c929b6d83369e4646c0dc1770513a345c8.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From be4701ab09b858d239c336bf3d37e4b3d0d91482 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 29 Jun 2011 14:58:57 +0200
 Subject: [PATCH 149/335] kconfig: Add PREEMPT_RT_FULL
@@ -19,7 +16,7 @@ diff --git a/init/Makefile b/init/Makefile
 index a3e5ce2bcf08..7779232563ae 100644
 --- a/init/Makefile
 +++ b/init/Makefile
-@@ -34,4 +34,4 @@ silent_chk_compile.h = :
+@@ -34,4 +34,4 @@ $(obj)/version.o: include/generated/compile.h
  include/generated/compile.h: FORCE
  	@$($(quiet)chk_compile.h)
  	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/mkcompile_h $@ \
@@ -67,5 +64,5 @@ index 87f1fc9801d7..f67b15236936 100755
  
  # Truncate to maximum length
 -- 
-2.17.1
+2.30.2
 

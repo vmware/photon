@@ -1,7 +1,4 @@
-From cc57da112c0db2d528c0b3b9f1af25438a534b88 Mon Sep 17 00:00:00 2001
-Message-Id: <cc57da112c0db2d528c0b3b9f1af25438a534b88.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 07fc91c9c27b5a9d479c8e2acf44d5e162443b81 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 26 Jul 2018 15:03:16 +0200
 Subject: [PATCH 056/335] efi: Disable runtime services on RT
@@ -44,5 +41,5 @@ index 263459bc4d14..e03e37a053f2 100644
  {
  	disable_runtime = true;
 -- 
-2.17.1
+2.30.2
 

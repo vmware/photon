@@ -1,7 +1,4 @@
-From 74a9128f0c96b3e87bcbd505bbec195ba49c50c2 Mon Sep 17 00:00:00 2001
-Message-Id: <74a9128f0c96b3e87bcbd505bbec195ba49c50c2.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From e1f50ded894a1e6f0fce5d4b741bdfe67cb93790 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 4 Apr 2017 12:50:16 +0200
 Subject: [PATCH 026/335] kernel: sched: Provide a pointer to the valid CPU
@@ -296,7 +293,7 @@ index 5524cd5c6abe..92ede00e5c81 100644
  #define PF_MUTEX_TESTER		0x20000000	/* Thread belongs to the rt mutex tester */
  #define PF_FREEZER_SKIP		0x40000000	/* Freezer should not count it as freezable */
 diff --git a/init/init_task.c b/init/init_task.c
-index 5aebe3be4d7c..0b49b9cf5571 100644
+index 994ffe018120..d71054b95528 100644
 --- a/init/init_task.c
 +++ b/init/init_task.c
 @@ -71,7 +71,8 @@ struct task_struct init_task
@@ -783,5 +780,5 @@ index 5522692100ba..8b4be8e1802a 100644
  	trace_foo_with_template_simple("HELLO", cnt);
  
 -- 
-2.17.1
+2.30.2
 

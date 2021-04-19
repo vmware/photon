@@ -1,7 +1,4 @@
-From 1522de6fe941a219524ad0ab20766a26d0dfc1a3 Mon Sep 17 00:00:00 2001
-Message-Id: <1522de6fe941a219524ad0ab20766a26d0dfc1a3.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 259a04f1b6b0c0e47fdd83f55283a03a08e0877e Mon Sep 17 00:00:00 2001
 From: Scott Wood <swood@redhat.com>
 Date: Sat, 12 Oct 2019 01:52:12 -0500
 Subject: [PATCH 307/335] sched: migrate_enable: Use select_fallback_rq()
@@ -64,5 +61,5 @@ index 96497f8b20dd..031690288325 100644
  			unpin_current_cpu();
  			preempt_lazy_enable();
 -- 
-2.17.1
+2.30.2
 

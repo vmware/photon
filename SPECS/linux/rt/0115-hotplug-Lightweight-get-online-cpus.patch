@@ -1,7 +1,4 @@
-From 7fbdc5417081fcd37ca1f4cbbef44655a529eebe Mon Sep 17 00:00:00 2001
-Message-Id: <7fbdc5417081fcd37ca1f4cbbef44655a529eebe.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 05f2ffff9ef5ff5f2a305e83e60618fb24c9e0ca Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 15 Jun 2011 12:36:06 +0200
 Subject: [PATCH 115/335] hotplug: Lightweight get online cpus
@@ -99,5 +96,5 @@ index d9e80ccb4dbf..66f99dc4dac3 100644
  }
  EXPORT_SYMBOL(migrate_enable);
 -- 
-2.17.1
+2.30.2
 

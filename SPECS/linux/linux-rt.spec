@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.182
+Version:        4.19.186
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt72
-Release:        2%{?kat_build:.%kat}%{?dist}
+%define rt_version rt76
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=0c311511252693a29e86840539fe38dca56aeb3d
+%define sha1 linux=2641441b25454db5cf9d4aa7b73de83671e264e5
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
@@ -440,7 +440,7 @@ Patch532:       0332-net-xfrm-fix-compress-vs-decompress-serialization.patch
 Patch533:       0333-mm-memcontrol-Disable-preemption-in-__mod_memcg_lruv.patch
 Patch534:       0334-ptrace-fix-ptrace_unfreeze_traced-race-with-rt-lock.patch
 # Keep rt_version matched up with this patch.
-Patch535:       0335-Linux-4.19.173-rt72-REBASE.patch
+Patch535:       0335-Linux-4.19.185-rt76-REBASE.patch
 
 
 #Photon Specific Changes
@@ -1093,6 +1093,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Apr 13 2021 srinidhira0 <srinidhir@vmware.com> 4.19.186-1
+-   Update to version 4.19.186
 *   Tue Apr 06 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.182-2
 -   Disable kernel accounting for memory cgroups
 -   Enable cgroup v1 stats

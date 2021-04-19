@@ -1,7 +1,4 @@
-From e744c8a30faa30bee8adba899ebed5c5b4fd113f Mon Sep 17 00:00:00 2001
-Message-Id: <e744c8a30faa30bee8adba899ebed5c5b4fd113f.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From a81d5cc3b8123124723e8ec035046c8f54caf0b1 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 26 Jun 2019 17:44:18 +0200
 Subject: [PATCH 273/335] Revert "futex: Fix bug on when a requeued RT task
@@ -81,5 +78,5 @@ index 8e0c592273e6..627340e7427e 100644
  extern struct task_struct *rt_mutex_next_owner(struct rt_mutex *lock);
  extern void rt_mutex_init_proxy_locked(struct rt_mutex *lock,
 -- 
-2.17.1
+2.30.2
 

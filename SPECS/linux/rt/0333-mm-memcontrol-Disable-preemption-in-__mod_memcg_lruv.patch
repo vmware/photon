@@ -1,7 +1,4 @@
-From fd94175236ff74c6f7357c65e03b75c523d75aed Mon Sep 17 00:00:00 2001
-Message-Id: <fd94175236ff74c6f7357c65e03b75c523d75aed.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From ee1ee3c71f66bce83e79835bf6dce4869b6b150e Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 28 Oct 2020 18:15:32 +0100
 Subject: [PATCH 333/335] mm/memcontrol: Disable preemption in
@@ -48,5 +45,5 @@ index cc6b6532eb56..dbb2c4e27277 100644
  
  static inline void mod_lruvec_state(struct lruvec *lruvec,
 -- 
-2.17.1
+2.30.2
 

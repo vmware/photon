@@ -1,7 +1,4 @@
-From b344423d8714e1d1c4bb8f8072d8b8d42c5a9a3e Mon Sep 17 00:00:00 2001
-Message-Id: <b344423d8714e1d1c4bb8f8072d8b8d42c5a9a3e.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 9ea1d6f719f5ebb9fa4f871c3912be6fddd20112 Mon Sep 17 00:00:00 2001
 From: Scott Wood <swood@redhat.com>
 Date: Fri, 24 Jan 2020 06:11:47 -0500
 Subject: [PATCH 317/335] sched: migrate_enable: Remove __schedule() call
@@ -39,5 +36,5 @@ index 9c8d4610a7e1..fab87a1965dd 100644
  
  out:
 -- 
-2.17.1
+2.30.2
 

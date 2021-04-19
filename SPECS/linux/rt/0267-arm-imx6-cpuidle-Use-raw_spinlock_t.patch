@@ -1,7 +1,4 @@
-From 5d063b919508f60cd07861428a013835208c0c2f Mon Sep 17 00:00:00 2001
-Message-Id: <5d063b919508f60cd07861428a013835208c0c2f.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 387fe3f12c4cc39d8fe09505ae05cb054e45a346 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 14 May 2019 17:07:44 +0200
 Subject: [PATCH 267/335] arm: imx6: cpuidle: Use raw_spinlock_t
@@ -50,5 +47,5 @@ index 326e870d7123..d9ac80aa1eb0 100644
  	return index;
  }
 -- 
-2.17.1
+2.30.2
 

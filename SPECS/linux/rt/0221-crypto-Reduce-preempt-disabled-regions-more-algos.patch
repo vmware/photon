@@ -1,7 +1,4 @@
-From c77f7c7a2498fd66d1d49cf635ba88b3c2fc6671 Mon Sep 17 00:00:00 2001
-Message-Id: <c77f7c7a2498fd66d1d49cf635ba88b3c2fc6671.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 9ef0e4d3d14bb60c81afd3265ba960f2943d8249 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 21 Feb 2014 17:24:04 +0100
 Subject: [PATCH 221/335] crypto: Reduce preempt disabled regions, more algos
@@ -261,5 +258,5 @@ index a78ef99a9981..dac489a1c4da 100644
  }
  EXPORT_SYMBOL_GPL(glue_xts_req_128bit);
 -- 
-2.17.1
+2.30.2
 

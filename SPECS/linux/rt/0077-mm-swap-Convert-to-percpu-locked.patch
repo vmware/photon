@@ -1,7 +1,4 @@
-From ca7be47af7a3a2c67579dcd2097e58ecf0a3032c Mon Sep 17 00:00:00 2001
-Message-Id: <ca7be47af7a3a2c67579dcd2097e58ecf0a3032c.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 4da94d0f24e31d514eecefe76ed1f1eafef8a2db Mon Sep 17 00:00:00 2001
 From: Ingo Molnar <mingo@elte.hu>
 Date: Fri, 3 Jul 2009 08:29:51 -0500
 Subject: [PATCH 077/335] mm/swap: Convert to percpu locked
@@ -209,5 +206,5 @@ index 45fdbfb6b2a6..92f994b962f0 100644
  
  #ifdef CONFIG_SMP
 -- 
-2.17.1
+2.30.2
 

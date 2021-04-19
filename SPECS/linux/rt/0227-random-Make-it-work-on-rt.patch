@@ -1,7 +1,4 @@
-From b041fe6166e767408efa01528e98ff67321a1f2f Mon Sep 17 00:00:00 2001
-Message-Id: <b041fe6166e767408efa01528e98ff67321a1f2f.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 697da05d52e7c3b70ce331be85b3e385a2d4f545 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 21 Aug 2012 20:38:50 +0200
 Subject: [PATCH 227/335] random: Make it work on rt
@@ -23,7 +20,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  7 files changed, 26 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 98925d49c96b..908a05cc576b 100644
+index 297a716f5a56..0f1593607e3c 100644
 --- a/drivers/char/random.c
 +++ b/drivers/char/random.c
 @@ -1232,28 +1232,27 @@ static __u32 get_reg(struct fast_pool *f, struct pt_regs *regs)
@@ -148,10 +145,10 @@ index 38554bc35375..06a80bbf78af 100644
  	if (!noirqdebug)
  		note_interrupt(desc, retval);
 diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index a68fec893dbf..4051708339a3 100644
+index 5909bcad9023..c21bd00f0cc3 100644
 --- a/kernel/irq/manage.c
 +++ b/kernel/irq/manage.c
-@@ -1100,6 +1100,12 @@ static int irq_thread(void *data)
+@@ -1096,6 +1096,12 @@ static int irq_thread(void *data)
  		if (action_ret == IRQ_WAKE_THREAD)
  			irq_wake_secondary(desc, action);
  
@@ -165,5 +162,5 @@ index a68fec893dbf..4051708339a3 100644
  	}
  
 -- 
-2.17.1
+2.30.2
 

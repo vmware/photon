@@ -1,7 +1,4 @@
-From d9ffb8d446e0d6f07171b48bb611e7f379180248 Mon Sep 17 00:00:00 2001
-Message-Id: <d9ffb8d446e0d6f07171b48bb611e7f379180248.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 5ea7067bdb175622cee904db68dd1a1c7ceea1d3 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 26 Oct 2012 18:50:54 +0100
 Subject: [PATCH 237/335] sched: Add support for lazy preemption
@@ -195,10 +192,10 @@ index 4030629af031..395dec128ca9 100644
  {
  	if (task->state & (__TASK_STOPPED | __TASK_TRACED))
 diff --git a/include/linux/thread_info.h b/include/linux/thread_info.h
-index 8d8821b3689a..d3fcab20d2a3 100644
+index 62dbecfe9132..57a3d99dc067 100644
 --- a/include/linux/thread_info.h
 +++ b/include/linux/thread_info.h
-@@ -97,7 +97,17 @@ static inline int test_ti_thread_flag(struct thread_info *ti, int flag)
+@@ -110,7 +110,17 @@ static inline int test_ti_thread_flag(struct thread_info *ti, int flag)
  #define test_thread_flag(flag) \
  	test_ti_thread_flag(current_thread_info(), flag)
  
@@ -532,7 +529,7 @@ index 494d21b04b1d..ccb08446c9bc 100644
  extern void init_rt_bandwidth(struct rt_bandwidth *rt_b, u64 period, u64 runtime);
  
 diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index e323fde236e4..8651c1ac8644 100644
+index 9e864741fac6..d99b928598e9 100644
 --- a/kernel/trace/trace.c
 +++ b/kernel/trace/trace.c
 @@ -2139,6 +2139,7 @@ tracing_generic_entry_update(struct trace_entry *entry, unsigned long flags,
@@ -553,7 +550,7 @@ index e323fde236e4..8651c1ac8644 100644
  		(test_preempt_need_resched() ? TRACE_FLAG_PREEMPT_RESCHED : 0);
  
  	entry->migrate_disable = (tsk) ? __migrate_disabled(tsk) & 0xFF : 0;
-@@ -3355,15 +3357,17 @@ get_total_entries(struct trace_buffer *buf,
+@@ -3356,15 +3358,17 @@ get_total_entries(struct trace_buffer *buf,
  
  static void print_lat_help_header(struct seq_file *m)
  {
@@ -580,7 +577,7 @@ index e323fde236e4..8651c1ac8644 100644
  }
  
  static void print_event_info(struct trace_buffer *buf, struct seq_file *m)
-@@ -3401,15 +3405,17 @@ static void print_func_help_header_irq(struct trace_buffer *buf, struct seq_file
+@@ -3402,15 +3406,17 @@ static void print_func_help_header_irq(struct trace_buffer *buf, struct seq_file
  		   tgid ? tgid_space : space);
  	seq_printf(m, "#                          %s / _----=> need-resched\n",
  		   tgid ? tgid_space : space);
@@ -669,5 +666,5 @@ index 46c96744f09d..3f78b0afb729 100644
  		trace_seq_printf(s, "%x", entry->migrate_disable);
  	else
 -- 
-2.17.1
+2.30.2
 

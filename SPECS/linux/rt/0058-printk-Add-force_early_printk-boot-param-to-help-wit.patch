@@ -1,7 +1,4 @@
-From e1a796d90894922aca7ee6975981563e82bf74bc Mon Sep 17 00:00:00 2001
-Message-Id: <e1a796d90894922aca7ee6975981563e82bf74bc.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 775e31f7fa4d41f4a0e2a335434c81cea647acea Mon Sep 17 00:00:00 2001
 From: Peter Zijlstra <peterz@infradead.org>
 Date: Fri, 2 Sep 2011 14:41:29 +0200
 Subject: [PATCH 058/335] printk: Add "force_early_printk" boot param to help
@@ -37,5 +34,5 @@ index f1eddc8279f2..cf6bda1fffd1 100644
  {
  	printk_killswitch = true;
 -- 
-2.17.1
+2.30.2
 

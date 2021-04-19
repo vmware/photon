@@ -1,7 +1,4 @@
-From 9d1d815549ddeb232b896dde224587363a1a3751 Mon Sep 17 00:00:00 2001
-Message-Id: <9d1d815549ddeb232b896dde224587363a1a3751.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 6ae5dbb9c06c275b65426ddb23f2a97a1526ee33 Mon Sep 17 00:00:00 2001
 From: Julien Grall <julien.grall@arm.com>
 Date: Wed, 21 Aug 2019 10:24:08 +0100
 Subject: [PATCH 294/335] hrtimer: Don't grab the expiry lock for non-soft
@@ -26,10 +23,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
-index d6026c170c2d..49d20fe8570f 100644
+index 53f2185b9531..8ac6eec31771 100644
 --- a/kernel/time/hrtimer.c
 +++ b/kernel/time/hrtimer.c
-@@ -943,7 +943,7 @@ void hrtimer_grab_expiry_lock(const struct hrtimer *timer)
+@@ -961,7 +961,7 @@ void hrtimer_grab_expiry_lock(const struct hrtimer *timer)
  {
  	struct hrtimer_clock_base *base = READ_ONCE(timer->base);
  
@@ -39,5 +36,5 @@ index d6026c170c2d..49d20fe8570f 100644
  		spin_unlock(&base->cpu_base->softirq_expiry_lock);
  	}
 -- 
-2.17.1
+2.30.2
 

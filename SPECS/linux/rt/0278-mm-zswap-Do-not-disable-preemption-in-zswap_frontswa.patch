@@ -1,7 +1,4 @@
-From 56121c86e5c319b2c884ec2fc14fb3210b5ad90b Mon Sep 17 00:00:00 2001
-Message-Id: <56121c86e5c319b2c884ec2fc14fb3210b5ad90b.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From c5c937b83b4b5e5d2a50aacbc24bb04b8d434839 Mon Sep 17 00:00:00 2001
 From: "Luis Claudio R. Goncalves" <lclaudio@uudg.org>
 Date: Tue, 25 Jun 2019 11:28:04 -0300
 Subject: [PATCH 278/335] mm/zswap: Do not disable preemption in
@@ -125,5 +122,5 @@ index cd91fd9d96b8..420225d3ff0b 100644
  freepage:
  	zswap_entry_cache_free(entry);
 -- 
-2.17.1
+2.30.2
 

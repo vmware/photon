@@ -1,7 +1,4 @@
-From b4d3f1b47304380759bf4c2e557fced6506e6d25 Mon Sep 17 00:00:00 2001
-Message-Id: <b4d3f1b47304380759bf4c2e557fced6506e6d25.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 36adedf47df247ac322c0a54f2cf0c2c140ca846 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 18 Dec 2019 12:25:09 +0100
 Subject: [PATCH 315/335] userfaultfd: Use a seqlock instead of seqcount
@@ -78,5 +75,5 @@ index d269d1139f7f..ff6be687f68e 100644
  
  SYSCALL_DEFINE1(userfaultfd, int, flags)
 -- 
-2.17.1
+2.30.2
 

@@ -1,7 +1,4 @@
-From 6a69a80511fc952abbaa6395dfd914572ce023b7 Mon Sep 17 00:00:00 2001
-Message-Id: <6a69a80511fc952abbaa6395dfd914572ce023b7.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 888a088083eee181e5efbeef7c725b738b8f789a Mon Sep 17 00:00:00 2001
 From: Frank Rowand <frank.rowand@am.sony.com>
 Date: Sat, 1 Oct 2011 18:58:13 -0700
 Subject: [PATCH 080/335] ARM: Initialize split page table locks for vector
@@ -74,5 +71,5 @@ index 82ab015bf42b..8d3c7ce34c24 100644
  /*
   * The vectors page is always readable from user space for the
 -- 
-2.17.1
+2.30.2
 

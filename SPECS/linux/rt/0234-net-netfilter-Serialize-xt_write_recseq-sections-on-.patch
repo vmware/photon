@@ -1,7 +1,4 @@
-From c4c24db3c8407f84e407846713a6fea8a8908c7f Mon Sep 17 00:00:00 2001
-Message-Id: <c4c24db3c8407f84e407846713a6fea8a8908c7f.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 93b579f7ea6bee83c5a98945bfa18f9c14cb01f4 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 28 Oct 2012 11:18:08 +0100
 Subject: [PATCH 234/335] net: netfilter: Serialize xt_write_recseq sections on
@@ -19,7 +16,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  2 files changed, 13 insertions(+)
 
 diff --git a/include/linux/netfilter/x_tables.h b/include/linux/netfilter/x_tables.h
-index 728d7716bf4f..bca98d8546c9 100644
+index 0ade4d1e4dd9..3e21ce64ce54 100644
 --- a/include/linux/netfilter/x_tables.h
 +++ b/include/linux/netfilter/x_tables.h
 @@ -6,6 +6,7 @@
@@ -82,5 +79,5 @@ index 93aaec3a54ec..b364cf8e5776 100644
  EXPORT_SYMBOL_GPL(nf_ipv6_ops);
  
 -- 
-2.17.1
+2.30.2
 

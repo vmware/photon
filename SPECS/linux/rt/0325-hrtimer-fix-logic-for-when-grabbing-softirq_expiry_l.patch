@@ -1,7 +1,4 @@
-From fcc7e0499102335f44a8f24692ef829ad753918d Mon Sep 17 00:00:00 2001
-Message-Id: <fcc7e0499102335f44a8f24692ef829ad753918d.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From cf15608b652633bfbfb7b234ab3ebcb2bb8ba5a6 Mon Sep 17 00:00:00 2001
 From: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 Date: Tue, 28 Apr 2020 16:40:26 +0200
 Subject: [PATCH 325/335] hrtimer: fix logic for when grabbing
@@ -35,10 +32,10 @@ Signed-off-by: Tom Zanussi <zanussi@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
-index e54a95de8b79..c3966c090246 100644
+index cd76cd3444e7..1d99556158a3 100644
 --- a/kernel/time/hrtimer.c
 +++ b/kernel/time/hrtimer.c
-@@ -953,7 +953,7 @@ void hrtimer_grab_expiry_lock(const struct hrtimer *timer)
+@@ -971,7 +971,7 @@ void hrtimer_grab_expiry_lock(const struct hrtimer *timer)
  {
  	struct hrtimer_clock_base *base = READ_ONCE(timer->base);
  
@@ -48,5 +45,5 @@ index e54a95de8b79..c3966c090246 100644
  		spin_unlock(&base->cpu_base->softirq_expiry_lock);
  	}
 -- 
-2.17.1
+2.30.2
 

@@ -1,7 +1,4 @@
-From 6e3ef7889a44b788f9b47a274a771a9c08989900 Mon Sep 17 00:00:00 2001
-Message-Id: <6e3ef7889a44b788f9b47a274a771a9c08989900.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 2a79df1058db062ea5e843722abda49278f98b3a Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 24 Jul 2009 12:38:56 +0200
 Subject: [PATCH 059/335] preempt: Provide preempt_*_(no)rt variants
@@ -51,5 +48,5 @@ index 3196d0e76719..f7a17fcc3fec 100644
  
  struct preempt_notifier;
 -- 
-2.17.1
+2.30.2
 

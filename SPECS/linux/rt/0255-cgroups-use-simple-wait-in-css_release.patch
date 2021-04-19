@@ -1,7 +1,4 @@
-From a50a795cdebbc348966c72cfcfa8da42e7122688 Mon Sep 17 00:00:00 2001
-Message-Id: <a50a795cdebbc348966c72cfcfa8da42e7122688.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From b3879f166882720194722b1bb7f7b3e7662ed7f1 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 13 Feb 2015 15:52:24 +0100
 Subject: [PATCH 255/335] cgroups: use simple wait in css_release()
@@ -93,5 +90,5 @@ index 2a879d34bbe5..35a4efda98f7 100644
  }
  core_initcall(cgroup_wq_init);
 -- 
-2.17.1
+2.30.2
 

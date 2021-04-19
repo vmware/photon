@@ -1,7 +1,4 @@
-From f5f620231cff765049da41cc79da87e07493fe1e Mon Sep 17 00:00:00 2001
-Message-Id: <f5f620231cff765049da41cc79da87e07493fe1e.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From b5dedab5a10b8668c13a6d1a68efa9a5cbb69f22 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 24 Jul 2018 14:48:55 +0200
 Subject: [PATCH 019/335] x86/efi: drop task_lock() from efi_switch_mm()
@@ -53,5 +50,5 @@ index 77d05b56089a..cd7e4bfb43cf 100644
  
  #ifdef CONFIG_EFI_MIXED
 -- 
-2.17.1
+2.30.2
 

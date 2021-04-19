@@ -1,7 +1,4 @@
-From a8f2f9881658daf9518b7c0628b3431cf85e6698 Mon Sep 17 00:00:00 2001
-Message-Id: <a8f2f9881658daf9518b7c0628b3431cf85e6698.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 57bb2369bf76acb80f0e7f71eee3b3498972dba3 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 12 Oct 2017 17:31:14 +0200
 Subject: [PATCH 147/335] rtmutex: wire up RT's locking
@@ -20,7 +17,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  8 files changed, 66 insertions(+), 13 deletions(-)
 
 diff --git a/include/linux/mutex.h b/include/linux/mutex.h
-index 3093dd162424..cad906f54d0a 100644
+index 8f7cdf83f359..6aa217c6e3ca 100644
 --- a/include/linux/mutex.h
 +++ b/include/linux/mutex.h
 @@ -22,6 +22,17 @@
@@ -269,5 +266,5 @@ index 03595c29c566..d63df281b495 100644
 +
 +#endif
 -- 
-2.17.1
+2.30.2
 

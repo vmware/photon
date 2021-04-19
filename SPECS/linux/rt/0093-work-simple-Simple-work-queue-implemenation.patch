@@ -1,7 +1,4 @@
-From ccec6e2f6e94e60b5fa86f13a46b4b5b443c667e Mon Sep 17 00:00:00 2001
-Message-Id: <ccec6e2f6e94e60b5fa86f13a46b4b5b443c667e.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From d23efa564f830e251abe7ab4111ae12067adc823 Mon Sep 17 00:00:00 2001
 From: Daniel Wagner <daniel.wagner@bmw-carit.de>
 Date: Fri, 11 Jul 2014 15:26:11 +0200
 Subject: [PATCH 093/335] work-simple: Simple work queue implemenation
@@ -244,5 +241,5 @@ index 000000000000..a5b89fdacf19
 +}
 +EXPORT_SYMBOL_GPL(swork_put);
 -- 
-2.17.1
+2.30.2
 

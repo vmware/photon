@@ -1,7 +1,4 @@
-From 1ad70b4e7a87161aaca0969e5e1491bc47677183 Mon Sep 17 00:00:00 2001
-Message-Id: <1ad70b4e7a87161aaca0969e5e1491bc47677183.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 080bf0309eb8c716d3308e81c29ff5ba1160c3e7 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 28 Oct 2012 13:26:09 +0000
 Subject: [PATCH 043/335] rcu: Disable RCU_FAST_NO_HZ on RT
@@ -28,5 +25,5 @@ index 9210379c0353..644264be90f0 100644
  	help
  	  This option permits CPUs to enter dynticks-idle state even if
 -- 
-2.17.1
+2.30.2
 

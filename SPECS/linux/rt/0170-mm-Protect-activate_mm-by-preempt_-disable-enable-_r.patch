@@ -1,7 +1,4 @@
-From ab7d9994556f694897ed04bb301917d076bdba8e Mon Sep 17 00:00:00 2001
-Message-Id: <ab7d9994556f694897ed04bb301917d076bdba8e.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From ad1df12b15f8682d9b824f9f7667816bf720c114 Mon Sep 17 00:00:00 2001
 From: Yong Zhang <yong.zhang0@gmail.com>
 Date: Tue, 15 May 2012 13:53:56 +0800
 Subject: [PATCH 170/335] mm: Protect activate_mm() by
@@ -80,5 +77,5 @@ index 3e612ae748e9..d0ccc070979f 100644
  #ifdef finish_arch_post_lock_switch
  	finish_arch_post_lock_switch();
 -- 
-2.17.1
+2.30.2
 

@@ -1,7 +1,4 @@
-From 956a9daf77097add0c1709f7f7573b4370d7b529 Mon Sep 17 00:00:00 2001
-Message-Id: <956a9daf77097add0c1709f7f7573b4370d7b529.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From c6d09152f5b8424392fcb3115369bcb68b32a50c Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 31 Aug 2016 17:21:56 +0200
 Subject: [PATCH 202/335] net: add back the missing serialization in
@@ -45,7 +42,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 6 insertions(+)
 
 diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 7536f4c0bbf4..a33756f9b73e 100644
+index ac6135555e24..30ef8987c59e 100644
 --- a/net/ipv4/tcp_ipv4.c
 +++ b/net/ipv4/tcp_ipv4.c
 @@ -62,6 +62,7 @@
@@ -56,7 +53,7 @@ index 7536f4c0bbf4..a33756f9b73e 100644
  
  #include <net/net_namespace.h>
  #include <net/icmp.h>
-@@ -634,6 +635,7 @@ void tcp_v4_send_check(struct sock *sk, struct sk_buff *skb)
+@@ -637,6 +638,7 @@ void tcp_v4_send_check(struct sock *sk, struct sk_buff *skb)
  }
  EXPORT_SYMBOL(tcp_v4_send_check);
  
@@ -64,7 +61,7 @@ index 7536f4c0bbf4..a33756f9b73e 100644
  /*
   *	This routine will send an RST to the other tcp.
   *
-@@ -768,6 +770,7 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
+@@ -771,6 +773,7 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
  	arg.tos = ip_hdr(skb)->tos;
  	arg.uid = sock_net_uid(net, sk && sk_fullsock(sk) ? sk : NULL);
  	local_bh_disable();
@@ -72,7 +69,7 @@ index 7536f4c0bbf4..a33756f9b73e 100644
  	ctl_sk = *this_cpu_ptr(net->ipv4.tcp_sk);
  	if (sk)
  		ctl_sk->sk_mark = (sk->sk_state == TCP_TIME_WAIT) ?
-@@ -780,6 +783,7 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
+@@ -783,6 +786,7 @@ static void tcp_v4_send_reset(const struct sock *sk, struct sk_buff *skb)
  	ctl_sk->sk_mark = 0;
  	__TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
  	__TCP_INC_STATS(net, TCP_MIB_OUTRSTS);
@@ -80,7 +77,7 @@ index 7536f4c0bbf4..a33756f9b73e 100644
  	local_bh_enable();
  
  #ifdef CONFIG_TCP_MD5SIG
-@@ -860,6 +864,7 @@ static void tcp_v4_send_ack(const struct sock *sk,
+@@ -863,6 +867,7 @@ static void tcp_v4_send_ack(const struct sock *sk,
  	arg.tos = tos;
  	arg.uid = sock_net_uid(net, sk_fullsock(sk) ? sk : NULL);
  	local_bh_disable();
@@ -88,7 +85,7 @@ index 7536f4c0bbf4..a33756f9b73e 100644
  	ctl_sk = *this_cpu_ptr(net->ipv4.tcp_sk);
  	if (sk)
  		ctl_sk->sk_mark = (sk->sk_state == TCP_TIME_WAIT) ?
-@@ -871,6 +876,7 @@ static void tcp_v4_send_ack(const struct sock *sk,
+@@ -874,6 +879,7 @@ static void tcp_v4_send_ack(const struct sock *sk,
  
  	ctl_sk->sk_mark = 0;
  	__TCP_INC_STATS(net, TCP_MIB_OUTSEGS);
@@ -97,5 +94,5 @@ index 7536f4c0bbf4..a33756f9b73e 100644
  }
  
 -- 
-2.17.1
+2.30.2
 

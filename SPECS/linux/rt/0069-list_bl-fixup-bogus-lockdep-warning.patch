@@ -1,7 +1,4 @@
-From 3160930aabbdebefa3b9cf5f0487e16f398979b1 Mon Sep 17 00:00:00 2001
-Message-Id: <3160930aabbdebefa3b9cf5f0487e16f398979b1.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From c6291b7a5465b21973c0b56cbf0026aed003d129 Mon Sep 17 00:00:00 2001
 From: Josh Cartwright <joshc@ni.com>
 Date: Thu, 31 Mar 2016 00:04:25 -0500
 Subject: [PATCH 069/335] list_bl: fixup bogus lockdep warning
@@ -102,5 +99,5 @@ index 69b659259bac..0b5de7d9ffcf 100644
  static inline void INIT_HLIST_BL_NODE(struct hlist_bl_node *h)
  {
 -- 
-2.17.1
+2.30.2
 

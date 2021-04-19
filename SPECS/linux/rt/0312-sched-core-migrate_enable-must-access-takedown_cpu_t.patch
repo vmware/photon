@@ -1,7 +1,4 @@
-From 824e024f1483e67e75b36339990bbb8e35d8e4ba Mon Sep 17 00:00:00 2001
-Message-Id: <824e024f1483e67e75b36339990bbb8e35d8e4ba.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 869c1ad774bc731e826b40ae2039d6f6e0679564 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 29 Nov 2019 17:24:55 +0100
 Subject: [PATCH 312/335] sched/core: migrate_enable() must access
@@ -53,5 +50,5 @@ index e678fab33a3a..5cb45221bf38 100644
  	if (!p->migrate_disable_scheduled)
  		goto out;
 -- 
-2.17.1
+2.30.2
 

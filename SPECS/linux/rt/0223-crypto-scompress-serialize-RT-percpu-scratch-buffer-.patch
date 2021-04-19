@@ -1,7 +1,4 @@
-From 281b96391252ab3fa193b42c0755be06cd8494c0 Mon Sep 17 00:00:00 2001
-Message-Id: <281b96391252ab3fa193b42c0755be06cd8494c0.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From b224f315e2efebc25a5fd8937ee344f65652453b Mon Sep 17 00:00:00 2001
 From: Mike Galbraith <efault@gmx.de>
 Date: Wed, 11 Jul 2018 17:14:47 +0200
 Subject: [PATCH 223/335] crypto: scompress - serialize RT percpu scratch
@@ -81,5 +78,5 @@ index 968bbcf65c94..c2f0077e0801 100644
  }
  
 -- 
-2.17.1
+2.30.2
 

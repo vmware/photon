@@ -1,7 +1,4 @@
-From e6d5514a0a1da815d3ef82eb4408bb85311d7f0c Mon Sep 17 00:00:00 2001
-Message-Id: <e6d5514a0a1da815d3ef82eb4408bb85311d7f0c.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From a0713c521afcbc3892ec8d1c80b92334a28f90ca Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 24 Jun 2019 18:29:13 +0200
 Subject: [PATCH 268/335] rcu: Don't allow to change rcu_normal_after_boot on
@@ -34,5 +31,5 @@ index 16d8dba23329..ed75addd3ccd 100644
  
  #ifdef CONFIG_DEBUG_LOCK_ALLOC
 -- 
-2.17.1
+2.30.2
 

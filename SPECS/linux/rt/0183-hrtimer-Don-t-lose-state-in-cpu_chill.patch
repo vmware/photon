@@ -1,7 +1,4 @@
-From 4704a58f5bf3424b0369650cbef1d428faf7d0eb Mon Sep 17 00:00:00 2001
-Message-Id: <4704a58f5bf3424b0369650cbef1d428faf7d0eb.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 9f40ab07c1c7e1cdcee586b06e35800b151b3ca3 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 19 Feb 2019 16:59:15 +0100
 Subject: [PATCH 183/335] hrtimer: Don't lose state in cpu_chill()
@@ -22,10 +19,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
-index 98a771065818..21a454557c8a 100644
+index dfd6f93142ca..cec137102ecf 100644
 --- a/kernel/time/hrtimer.c
 +++ b/kernel/time/hrtimer.c
-@@ -1905,15 +1905,18 @@ void cpu_chill(void)
+@@ -1923,15 +1923,18 @@ void cpu_chill(void)
  {
  	ktime_t chill_time;
  	unsigned int freeze_flag = current->flags & PF_NOFREEZE;
@@ -46,5 +43,5 @@ index 98a771065818..21a454557c8a 100644
  EXPORT_SYMBOL(cpu_chill);
  #endif
 -- 
-2.17.1
+2.30.2
 

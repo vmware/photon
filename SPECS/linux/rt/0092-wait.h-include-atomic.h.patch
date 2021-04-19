@@ -1,7 +1,4 @@
-From 8414e293c27f8fb39f5f3c63270be14a323b9751 Mon Sep 17 00:00:00 2001
-Message-Id: <8414e293c27f8fb39f5f3c63270be14a323b9751.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 4e9caa2e015bc6e54f2e57aa664b0f0e627bbde9 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 28 Oct 2013 12:19:57 +0100
 Subject: [PATCH 092/335] wait.h: include atomic.h
@@ -40,5 +37,5 @@ index ed7c122cb31f..2b5ef8e94d19 100644
  typedef struct wait_queue_entry wait_queue_entry_t;
  
 -- 
-2.17.1
+2.30.2
 

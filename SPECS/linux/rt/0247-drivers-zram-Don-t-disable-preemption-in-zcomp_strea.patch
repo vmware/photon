@@ -1,7 +1,4 @@
-From 680d2e95093f8929e88e6838ed993cc81734fe37 Mon Sep 17 00:00:00 2001
-Message-Id: <680d2e95093f8929e88e6838ed993cc81734fe37.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 71a190ece59b1e4bf8e74b0cb804e0d6e0544e92 Mon Sep 17 00:00:00 2001
 From: Mike Galbraith <umgwanakikbuti@gmail.com>
 Date: Thu, 20 Oct 2016 11:15:22 +0200
 Subject: [PATCH 247/335] drivers/zram: Don't disable preemption in
@@ -69,7 +66,7 @@ index 41c1002a7d7d..d424eafcbf8e 100644
  
  /* dynamic per-device compression frontend */
 diff --git a/drivers/block/zram/zram_drv.c b/drivers/block/zram/zram_drv.c
-index 95b28f842533..98bf78861e52 100644
+index bf11553b161e..6a39ec45f09e 100644
 --- a/drivers/block/zram/zram_drv.c
 +++ b/drivers/block/zram/zram_drv.c
 @@ -1028,6 +1028,7 @@ static int __zram_bvec_read(struct zram *zram, struct page *page, u32 index,
@@ -105,5 +102,5 @@ index 95b28f842533..98bf78861e52 100644
  
  	/* Should NEVER happen. Return bio error if it does. */
 -- 
-2.17.1
+2.30.2
 

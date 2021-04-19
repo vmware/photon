@@ -1,7 +1,4 @@
-From a34113246501eb14a7a0b12d28bebd699a2bae65 Mon Sep 17 00:00:00 2001
-Message-Id: <a34113246501eb14a7a0b12d28bebd699a2bae65.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 4c230f1cfc9ce1af8977e7c9235d296ec382456a Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 29 Aug 2013 18:21:04 +0200
 Subject: [PATCH 153/335] ptrace: fix ptrace vs tasklist_lock race
@@ -164,5 +161,5 @@ index 140228327b8c..482c1dbb2415 100644
  		task_rq_unlock(rq, p, &rf);
  
 -- 
-2.17.1
+2.30.2
 

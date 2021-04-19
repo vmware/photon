@@ -1,7 +1,4 @@
-From be35c81d04acd0568d5aabb237ac81f5194d86a4 Mon Sep 17 00:00:00 2001
-Message-Id: <be35c81d04acd0568d5aabb237ac81f5194d86a4.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 66225197afdb2d105a0456619bf5508027f77246 Mon Sep 17 00:00:00 2001
 From: Scott Wood <swood@redhat.com>
 Date: Sat, 12 Oct 2019 01:52:14 -0500
 Subject: [PATCH 309/335] sched: migrate_enable: Use stop_one_cpu_nowait()
@@ -24,7 +21,7 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  3 files changed, 20 insertions(+), 12 deletions(-)
 
 diff --git a/include/linux/stop_machine.h b/include/linux/stop_machine.h
-index 6d3635c86dbe..82fc686ddd9e 100644
+index ccdaa8fd5657..150e886ed83d 100644
 --- a/include/linux/stop_machine.h
 +++ b/include/linux/stop_machine.h
 @@ -26,6 +26,8 @@ struct cpu_stop_work {
@@ -119,5 +116,5 @@ index 067cb83f37ea..2d15c0d50625 100644
  
  	wake_up_q(&wakeq);
 -- 
-2.17.1
+2.30.2
 

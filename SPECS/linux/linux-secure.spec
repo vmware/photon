@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.182
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.186
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=0c311511252693a29e86840539fe38dca56aeb3d
+%define sha1 linux=2641441b25454db5cf9d4aa7b73de83671e264e5
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -455,6 +455,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Apr 19 2021 srinidhira0 <srinidhir@vmware.com> 4.19.186-1
+-   Update to version 4.19.186
 *   Thu Apr 15 2021 Keerthana K <keerthanak@vmware.com> 4.19.182-3
 -   photon-checksum-generator update to v1.2
 -   Enable KPP and ECDH configs for FIPS.

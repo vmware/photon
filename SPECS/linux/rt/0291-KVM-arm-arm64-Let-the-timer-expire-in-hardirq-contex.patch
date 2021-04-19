@@ -1,7 +1,4 @@
-From 33edbb661beb0d8bc1aa99cee2c31028f81ee708 Mon Sep 17 00:00:00 2001
-Message-Id: <33edbb661beb0d8bc1aa99cee2c31028f81ee708.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From cc469ecd9d25c88008a73725aaf6d3d9a8aba46a Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 13 Aug 2019 14:29:41 +0200
 Subject: [PATCH 291/335] KVM: arm/arm64: Let the timer expire in hardirq
@@ -52,5 +49,5 @@ index 17cecc96f735..217d39f40393 100644
  
  	vtimer->irq.irq = default_vtimer_irq.irq;
 -- 
-2.17.1
+2.30.2
 

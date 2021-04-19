@@ -1,7 +1,4 @@
-From 0d71cbaa5b70d790e4fd3193a87339c5bdda63f3 Mon Sep 17 00:00:00 2001
-Message-Id: <0d71cbaa5b70d790e4fd3193a87339c5bdda63f3.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From e02d011867de514f1ab050a3ee8ad9593892b034 Mon Sep 17 00:00:00 2001
 From: Mike Galbraith <umgwanakikbuti@gmail.com>
 Date: Wed, 18 Feb 2015 16:05:28 +0100
 Subject: [PATCH 196/335] sunrpc: Make svc_xprt_do_enqueue() use
@@ -37,7 +34,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/net/sunrpc/svc_xprt.c b/net/sunrpc/svc_xprt.c
-index 709c082dc905..2629e0eb7d82 100644
+index 4b56b949a463..83a4a0a13a1c 100644
 --- a/net/sunrpc/svc_xprt.c
 +++ b/net/sunrpc/svc_xprt.c
 @@ -402,7 +402,7 @@ void svc_xprt_do_enqueue(struct svc_xprt *xprt)
@@ -59,5 +56,5 @@ index 709c082dc905..2629e0eb7d82 100644
  }
  EXPORT_SYMBOL_GPL(svc_xprt_do_enqueue);
 -- 
-2.17.1
+2.30.2
 

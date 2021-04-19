@@ -1,7 +1,4 @@
-From b811ef9da5c86f46c182c82392bb7fd7de3c534f Mon Sep 17 00:00:00 2001
-Message-Id: <b811ef9da5c86f46c182c82392bb7fd7de3c534f.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From e0960db3a08c515611bd3611cee8d2f641e4b4fd Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Mon, 6 Jun 2011 12:20:33 +0200
 Subject: [PATCH 107/335] sched: Move mmdrop to RCU on RT
@@ -40,7 +37,7 @@ index 3a9a996af229..202b736ccbfa 100644
  		atomic_long_t hugetlb_usage;
  #endif
 diff --git a/include/linux/sched/mm.h b/include/linux/sched/mm.h
-index 8d3b7e731b74..e8aa1fe3d2e8 100644
+index ef54f4b3f1e4..88e1a563f762 100644
 --- a/include/linux/sched/mm.h
 +++ b/include/linux/sched/mm.h
 @@ -49,6 +49,17 @@ static inline void mmdrop(struct mm_struct *mm)
@@ -113,5 +110,5 @@ index 74f718d17e67..c4a289b5fa5b 100644
   * Ensure that the idle task is using init_mm right before its CPU goes
   * offline.
 -- 
-2.17.1
+2.30.2
 

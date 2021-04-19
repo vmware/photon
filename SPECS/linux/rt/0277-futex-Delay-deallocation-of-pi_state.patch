@@ -1,7 +1,4 @@
-From 94a4fb3d1cb7f9c0caeaccac19ae82138562b5e0 Mon Sep 17 00:00:00 2001
-Message-Id: <94a4fb3d1cb7f9c0caeaccac19ae82138562b5e0.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 81717c3a6e6e1d80242c7c547be45e39859f42d4 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 26 Jun 2019 13:35:36 +0200
 Subject: [PATCH 277/335] futex: Delay deallocation of pi_state
@@ -20,7 +17,7 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  1 file changed, 44 insertions(+), 11 deletions(-)
 
 diff --git a/kernel/futex.c b/kernel/futex.c
-index 9035bc29a0f7..105f245add9b 100644
+index 9b42e41b263b..7936969224d7 100644
 --- a/kernel/futex.c
 +++ b/kernel/futex.c
 @@ -871,13 +871,13 @@ static void get_pi_state(struct futex_pi_state *pi_state)
@@ -160,7 +157,7 @@ index 9035bc29a0f7..105f245add9b 100644
  }
  
  static int __fixup_pi_state_owner(u32 __user *uaddr, struct futex_q *q,
-@@ -3395,14 +3425,17 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+@@ -3394,14 +3424,17 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
  		 * did a lock-steal - fix up the PI-state in that case.
  		 */
  		if (q.pi_state && (q.pi_state->owner != current)) {
@@ -180,5 +177,5 @@ index 9035bc29a0f7..105f245add9b 100644
  			 * Adjust the return value. It's either -EFAULT or
  			 * success (1) but the caller expects 0 for success.
 -- 
-2.17.1
+2.30.2
 

@@ -1,7 +1,4 @@
-From 3d24b49461d5249c5f0af170e065fe2742259264 Mon Sep 17 00:00:00 2001
-Message-Id: <3d24b49461d5249c5f0af170e065fe2742259264.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From ee2344fe7ead935fc241e6d8e1ad6eedfa3bc7a8 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Mon, 6 Jun 2011 12:12:51 +0200
 Subject: [PATCH 106/335] sched: Limit the number of task migrations per batch
@@ -31,5 +28,5 @@ index e4333cfeed08..74f718d17e67 100644
  /*
   * period over which we measure -rt task CPU usage in us.
 -- 
-2.17.1
+2.30.2
 

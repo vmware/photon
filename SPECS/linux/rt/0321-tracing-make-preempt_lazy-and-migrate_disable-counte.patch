@@ -1,7 +1,4 @@
-From eff09d43b10f44992f8244ad43ed6ca96f60fbe6 Mon Sep 17 00:00:00 2001
-Message-Id: <eff09d43b10f44992f8244ad43ed6ca96f60fbe6.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From ff72abae0da8406b4a632050cfb97f22ebf229b1 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 21 Feb 2020 18:15:15 +0100
 Subject: [PATCH 321/335] tracing: make preempt_lazy and migrate_disable
@@ -39,7 +36,7 @@ index 72864a11cec0..e26a85c1b7ba 100644
  };
  
 diff --git a/kernel/trace/trace_events.c b/kernel/trace/trace_events.c
-index b1c1170d2236..e72f08c9cab2 100644
+index 0fcf80ac8050..9c80620fa975 100644
 --- a/kernel/trace/trace_events.c
 +++ b/kernel/trace/trace_events.c
 @@ -188,8 +188,8 @@ static int trace_define_common_fields(void)
@@ -54,5 +51,5 @@ index b1c1170d2236..e72f08c9cab2 100644
  	return ret;
  }
 -- 
-2.17.1
+2.30.2
 

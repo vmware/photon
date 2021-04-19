@@ -1,7 +1,4 @@
-From 7608187ee6d3ef035590faef64d6d5f92dd4fa6c Mon Sep 17 00:00:00 2001
-Message-Id: <7608187ee6d3ef035590faef64d6d5f92dd4fa6c.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 59c2256b8bbd9f5a0b6ff41c4c060c86527f572a Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 15 Sep 2016 10:51:27 +0200
 Subject: [PATCH 128/335] fs/nfs: turn rmdir_sem into a semaphore
@@ -149,5 +146,5 @@ index a0831e9d19c9..94b6fefd90b0 100644
  
  #if IS_ENABLED(CONFIG_NFS_V4)
 -- 
-2.17.1
+2.30.2
 

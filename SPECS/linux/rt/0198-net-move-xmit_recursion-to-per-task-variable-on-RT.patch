@@ -1,7 +1,4 @@
-From ae1a471d67da9c2f09a07fbc48a64e1a9342d781 Mon Sep 17 00:00:00 2001
-Message-Id: <ae1a471d67da9c2f09a07fbc48a64e1a9342d781.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 6e50d0fac1931915f42832d8d92a67092e7532cb Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 13 Jan 2016 15:55:02 +0100
 Subject: [PATCH 198/335] net: move xmit_recursion to per-task variable on -RT
@@ -26,10 +23,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  3 files changed, 82 insertions(+), 8 deletions(-)
 
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 8fff010fff6e..7bf58533f955 100644
+index bb6d72ac9ba4..d37d6fac5b87 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -587,7 +587,11 @@ struct netdev_queue {
+@@ -588,7 +588,11 @@ struct netdev_queue {
   * write-mostly part
   */
  	spinlock_t		_xmit_lock ____cacheline_aligned_in_smp;
@@ -41,7 +38,7 @@ index 8fff010fff6e..7bf58533f955 100644
  	/*
  	 * Time (in jiffies) of last Tx
  	 */
-@@ -2998,14 +3002,38 @@ static inline void input_queue_tail_incr_save(struct softnet_data *sd,
+@@ -3008,14 +3012,38 @@ static inline void input_queue_tail_incr_save(struct softnet_data *sd,
  #endif
  }
  
@@ -81,7 +78,7 @@ index 8fff010fff6e..7bf58533f955 100644
  static inline bool dev_xmit_recursion(void)
  {
  	return unlikely(__this_cpu_read(softnet_data.xmit.recursion) >
-@@ -3021,6 +3049,7 @@ static inline void dev_xmit_recursion_dec(void)
+@@ -3031,6 +3059,7 @@ static inline void dev_xmit_recursion_dec(void)
  {
  	__this_cpu_dec(softnet_data.xmit.recursion);
  }
@@ -89,7 +86,7 @@ index 8fff010fff6e..7bf58533f955 100644
  
  void __netif_schedule(struct Qdisc *q);
  void netif_schedule_queue(struct netdev_queue *txq);
-@@ -3824,10 +3853,48 @@ static inline u32 netif_msg_init(int debug_value, int default_msg_enable_bits)
+@@ -3834,10 +3863,48 @@ static inline u32 netif_msg_init(int debug_value, int default_msg_enable_bits)
  	return (1U << debug_value) - 1;
  }
  
@@ -139,7 +136,7 @@ index 8fff010fff6e..7bf58533f955 100644
  }
  
  static inline bool __netif_tx_acquire(struct netdev_queue *txq)
-@@ -3844,32 +3911,32 @@ static inline void __netif_tx_release(struct netdev_queue *txq)
+@@ -3854,32 +3921,32 @@ static inline void __netif_tx_release(struct netdev_queue *txq)
  static inline void __netif_tx_lock_bh(struct netdev_queue *txq)
  {
  	spin_lock_bh(&txq->_xmit_lock);
@@ -192,7 +189,7 @@ index 3a49782e50e1..d3a16fd28663 100644
  	int				pagefault_disabled;
  #ifdef CONFIG_MMU
 diff --git a/net/core/dev.c b/net/core/dev.c
-index c71db0a668d3..002147710000 100644
+index c124e08827c4..513a5af25ffd 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
 @@ -3825,7 +3825,11 @@ static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
@@ -217,5 +214,5 @@ index c71db0a668d3..002147710000 100644
  	queue->dev = dev;
  #ifdef CONFIG_BQL
 -- 
-2.17.1
+2.30.2
 

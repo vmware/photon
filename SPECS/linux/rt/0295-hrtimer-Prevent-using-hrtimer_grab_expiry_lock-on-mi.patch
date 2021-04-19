@@ -1,7 +1,4 @@
-From e978ba56dbb2914a4170b373fd3dbbff0a39c5ae Mon Sep 17 00:00:00 2001
-Message-Id: <e978ba56dbb2914a4170b373fd3dbbff0a39c5ae.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 63b720ac3c74687e7a7a7e7f17f1383d75931747 Mon Sep 17 00:00:00 2001
 From: Julien Grall <julien.grall@arm.com>
 Date: Wed, 21 Aug 2019 10:24:09 +0100
 Subject: [PATCH 295/335] hrtimer: Prevent using hrtimer_grab_expiry_lock() on
@@ -28,10 +25,10 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
-index 49d20fe8570f..1a5167c68310 100644
+index 8ac6eec31771..eac98cfec814 100644
 --- a/kernel/time/hrtimer.c
 +++ b/kernel/time/hrtimer.c
-@@ -943,7 +943,7 @@ void hrtimer_grab_expiry_lock(const struct hrtimer *timer)
+@@ -961,7 +961,7 @@ void hrtimer_grab_expiry_lock(const struct hrtimer *timer)
  {
  	struct hrtimer_clock_base *base = READ_ONCE(timer->base);
  
@@ -41,5 +38,5 @@ index 49d20fe8570f..1a5167c68310 100644
  		spin_unlock(&base->cpu_base->softirq_expiry_lock);
  	}
 -- 
-2.17.1
+2.30.2
 

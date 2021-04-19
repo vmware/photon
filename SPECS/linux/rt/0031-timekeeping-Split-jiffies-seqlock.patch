@@ -1,7 +1,4 @@
-From 7be16eec0979fe30a7c28243a34f02b3ca0afddd Mon Sep 17 00:00:00 2001
-Message-Id: <7be16eec0979fe30a7c28243a34f02b3ca0afddd.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 29ead88bbfb3e96b4343e9ca224d0bdde1278193 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 14 Feb 2013 22:36:59 +0100
 Subject: [PATCH 031/335] timekeeping: Split jiffies seqlock
@@ -169,5 +166,5 @@ index 141ab3ab0354..099737f6f10c 100644
  #define CS_NAME_LEN	32
  
 -- 
-2.17.1
+2.30.2
 

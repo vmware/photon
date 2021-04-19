@@ -1,7 +1,4 @@
-From 17da54bcbbcca6e123683805e5dbc3ccb01651f9 Mon Sep 17 00:00:00 2001
-Message-Id: <17da54bcbbcca6e123683805e5dbc3ccb01651f9.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 70c0a41786036bce2bcc74829a61a57d821aa93a Mon Sep 17 00:00:00 2001
 From: Kurt Kanzenbach <kurt@linutronix.de>
 Date: Mon, 24 Sep 2018 10:29:01 +0200
 Subject: [PATCH 166/335] tty: serial: pl011: explicitly initialize the flags
@@ -43,5 +40,5 @@ index f9103eb566d0..f9066c5c1a92 100644
  
  	clk_enable(uap->clk);
 -- 
-2.17.1
+2.30.2
 

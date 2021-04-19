@@ -1,7 +1,4 @@
-From f19db413a1c38908471a825166fa245fa4f043ae Mon Sep 17 00:00:00 2001
-Message-Id: <f19db413a1c38908471a825166fa245fa4f043ae.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 6ed9f65ce50ef98bc22affc749c7553fbcc8fa92 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 31 Aug 2018 14:16:30 +0200
 Subject: [PATCH 021/335] of: allocate / free phandle cache outside of the
@@ -101,5 +98,5 @@ index f0dbb7ad88cf..c59b30bab0e0 100644
  
  void __init of_core_init(void)
 -- 
-2.17.1
+2.30.2
 

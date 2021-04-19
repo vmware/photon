@@ -1,7 +1,4 @@
-From 4d9b74cd7de2f648e6d851455152b7766c886af3 Mon Sep 17 00:00:00 2001
-Message-Id: <4d9b74cd7de2f648e6d851455152b7766c886af3.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From c7db6d80b1823eee2358cb8f1e214c0daa25f212 Mon Sep 17 00:00:00 2001
 From: Peter Zijlstra <peterz@infradead.org>
 Date: Mon, 7 Jan 2019 13:52:31 +0100
 Subject: [PATCH 011/335] sched/fair: Robustify CFS-bandwidth timer locking
@@ -146,5 +143,5 @@ index 696d08a4593e..63a630f8dd1e 100644
  	return idle ? HRTIMER_NORESTART : HRTIMER_RESTART;
  }
 -- 
-2.17.1
+2.30.2
 

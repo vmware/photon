@@ -1,7 +1,4 @@
-From e6d58ff3f6caef4c2566269163ece17deaa91079 Mon Sep 17 00:00:00 2001
-Message-Id: <e6d58ff3f6caef4c2566269163ece17deaa91079.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From d28a1303bf142cbaaa2fe3497f576d4ca78a25a9 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 12 Oct 2017 16:36:39 +0200
 Subject: [PATCH 141/335] rtmutex: export lockdep-less version of rt_mutex's
@@ -151,5 +148,5 @@ index 66deb94765fb..53a8c5d03d28 100644
  				     struct hrtimer_sleeper *timeout,
  				     enum rtmutex_chainwalk chwalk,
 -- 
-2.17.1
+2.30.2
 

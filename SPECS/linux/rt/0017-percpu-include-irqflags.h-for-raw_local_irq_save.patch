@@ -1,7 +1,4 @@
-From dd63fbceeddd1311216978b52a4f1257c3c198d5 Mon Sep 17 00:00:00 2001
-Message-Id: <dd63fbceeddd1311216978b52a4f1257c3c198d5.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 41ec28a23ac4422872ad52e554c452fd6984ca01 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 11 Oct 2018 16:39:59 +0200
 Subject: [PATCH 017/335] percpu: include irqflags.h for raw_local_irq_save()
@@ -31,5 +28,5 @@ index 1817a8415a5e..942d64c0476e 100644
  #ifdef CONFIG_SMP
  
 -- 
-2.17.1
+2.30.2
 

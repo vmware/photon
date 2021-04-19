@@ -1,7 +1,4 @@
-From de2a21f940478b5b678809d8058ff223c83fb562 Mon Sep 17 00:00:00 2001
-Message-Id: <de2a21f940478b5b678809d8058ff223c83fb562.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 021cced66cb298eb004a07eba8d814ca72d11d71 Mon Sep 17 00:00:00 2001
 From: Julien Grall <julien.grall@arm.com>
 Date: Wed, 21 Aug 2019 10:24:07 +0100
 Subject: [PATCH 293/335] hrtimer: Use READ_ONCE to access timer->base in
@@ -27,10 +24,10 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
-index 94d97eae0a46..d6026c170c2d 100644
+index fbf915c2b0c5..53f2185b9531 100644
 --- a/kernel/time/hrtimer.c
 +++ b/kernel/time/hrtimer.c
-@@ -941,7 +941,7 @@ EXPORT_SYMBOL_GPL(hrtimer_forward);
+@@ -959,7 +959,7 @@ EXPORT_SYMBOL_GPL(hrtimer_forward);
  
  void hrtimer_grab_expiry_lock(const struct hrtimer *timer)
  {
@@ -40,5 +37,5 @@ index 94d97eae0a46..d6026c170c2d 100644
  	if (base && base->cpu_base) {
  		spin_lock(&base->cpu_base->softirq_expiry_lock);
 -- 
-2.17.1
+2.30.2
 

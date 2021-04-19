@@ -1,7 +1,4 @@
-From c42e91aaf5b0f1ac8aa7653cd35547cb20f6a706 Mon Sep 17 00:00:00 2001
-Message-Id: <c42e91aaf5b0f1ac8aa7653cd35547cb20f6a706.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 96f0276ad5ce85c660ee71d9a6b62cb75cd10079 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 8 Nov 2013 17:34:54 +0100
 Subject: [PATCH 035/335] usb: do no disable interrupts in giveback
@@ -44,5 +41,5 @@ index b82a7d787add..2f3015356124 100644
  	usb_anchor_resume_wakeups(anchor);
  	atomic_dec(&urb->use_count);
 -- 
-2.17.1
+2.30.2
 

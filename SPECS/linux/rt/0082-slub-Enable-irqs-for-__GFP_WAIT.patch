@@ -1,7 +1,4 @@
-From 110b915fe84df057f02bc66c45263ee5d27f2e8d Mon Sep 17 00:00:00 2001
-Message-Id: <110b915fe84df057f02bc66c45263ee5d27f2e8d.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 219ed629443cba89ffdd37e43a60ab4ead6508ef Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 9 Jan 2013 12:08:15 +0100
 Subject: [PATCH 082/335] slub: Enable irqs for __GFP_WAIT
@@ -15,7 +12,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  1 file changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/mm/slub.c b/mm/slub.c
-index 970fbceff021..6884dec4119a 100644
+index c64d0bcff39f..5699ce8f22cc 100644
 --- a/mm/slub.c
 +++ b/mm/slub.c
 @@ -1589,10 +1589,17 @@ static struct page *allocate_slab(struct kmem_cache *s, gfp_t flags, int node)
@@ -46,5 +43,5 @@ index 970fbceff021..6884dec4119a 100644
  	if (!page)
  		return NULL;
 -- 
-2.17.1
+2.30.2
 

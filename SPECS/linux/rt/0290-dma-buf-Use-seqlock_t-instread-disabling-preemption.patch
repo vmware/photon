@@ -1,7 +1,4 @@
-From 374675604eace9e4020ff8fc33309251b1f9bbbf Mon Sep 17 00:00:00 2001
-Message-Id: <374675604eace9e4020ff8fc33309251b1f9bbbf.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 24316d3a6c030863ef44db3b1d1b19a95fb066d1 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 14 Aug 2019 16:38:43 +0200
 Subject: [PATCH 290/335] dma-buf: Use seqlock_t instread disabling preemption
@@ -294,5 +291,5 @@ index 02166e815afb..0b31df1af698 100644
  	RCU_INIT_POINTER(obj->fence_excl, NULL);
  	obj->staged = NULL;
 -- 
-2.17.1
+2.30.2
 

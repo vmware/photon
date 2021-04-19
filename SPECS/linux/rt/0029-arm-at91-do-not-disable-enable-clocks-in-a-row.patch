@@ -1,7 +1,4 @@
-From 61eb04503ee12f6a618e2cc41b74c03eb1e67b8e Mon Sep 17 00:00:00 2001
-Message-Id: <61eb04503ee12f6a618e2cc41b74c03eb1e67b8e.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 2c77ff4c70ed6fa990549166563528e6e52fd4c9 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 9 Mar 2016 10:51:06 +0100
 Subject: [PATCH 029/335] arm: at91: do not disable/enable clocks in a row
@@ -96,5 +93,5 @@ index 43f4d5c4d6fa..de6baf564dfe 100644
  		.set_state_oneshot	= tc_set_oneshot,
  	},
 -- 
-2.17.1
+2.30.2
 

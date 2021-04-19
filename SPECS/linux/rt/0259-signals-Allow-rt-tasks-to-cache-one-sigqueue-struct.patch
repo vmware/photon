@@ -1,7 +1,4 @@
-From b4808fd7a7ffda1d2e4fbdae330a94acf05e586c Mon Sep 17 00:00:00 2001
-Message-Id: <b4808fd7a7ffda1d2e4fbdae330a94acf05e586c.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From ba0822cd2e5b42e6110321eecfba72d9a1fafc39 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 3 Jul 2009 08:44:56 -0500
 Subject: [PATCH 259/335] signals: Allow rt tasks to cache one sigqueue struct
@@ -211,5 +208,5 @@ index 2801e2ba4d84..947731042b7c 100644
  	if (q)
  		q->flags |= SIGQUEUE_PREALLOC;
 -- 
-2.17.1
+2.30.2
 

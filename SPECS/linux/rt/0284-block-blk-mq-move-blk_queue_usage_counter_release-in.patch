@@ -1,7 +1,4 @@
-From 4d493bf29f2f8f00150f6c0113588c7bfbb4b0e0 Mon Sep 17 00:00:00 2001
-Message-Id: <4d493bf29f2f8f00150f6c0113588c7bfbb4b0e0.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From e3d9aced4179c6156d84ec29a85daecfc6c85b37 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 13 Mar 2018 13:49:16 +0100
 Subject: [PATCH 284/335] block: blk-mq: move blk_queue_usage_counter_release()
@@ -57,7 +54,7 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  2 files changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/block/blk-core.c b/block/blk-core.c
-index 8926b5d998fa..1a2ec9f3323a 100644
+index 461a93c08c14..a67a50dd714a 100644
 --- a/block/blk-core.c
 +++ b/block/blk-core.c
 @@ -973,12 +973,21 @@ void blk_queue_exit(struct request_queue *q)
@@ -83,7 +80,7 @@ index 8926b5d998fa..1a2ec9f3323a 100644
  }
  
  static void blk_rq_timed_out_timer(struct timer_list *t)
-@@ -1077,6 +1086,7 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id,
+@@ -1078,6 +1087,7 @@ struct request_queue *blk_alloc_queue_node(gfp_t gfp_mask, int node_id,
  	queue_flag_set_unlocked(QUEUE_FLAG_BYPASS, q);
  
  	init_waitqueue_head(&q->mq_freeze_wq);
@@ -92,7 +89,7 @@ index 8926b5d998fa..1a2ec9f3323a 100644
  	/*
  	 * Init percpu_ref in atomic mode so that it's faster to shutdown.
 diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index 7cd627f2a016..066b59dc380f 100644
+index 8c38c1428c76..dcc599a125e3 100644
 --- a/include/linux/blkdev.h
 +++ b/include/linux/blkdev.h
 @@ -13,6 +13,7 @@
@@ -103,7 +100,7 @@ index 7cd627f2a016..066b59dc380f 100644
  #include <linux/pagemap.h>
  #include <linux/backing-dev-defs.h>
  #include <linux/wait.h>
-@@ -655,6 +656,7 @@ struct request_queue {
+@@ -656,6 +657,7 @@ struct request_queue {
  #endif
  	struct rcu_head		rcu_head;
  	wait_queue_head_t	mq_freeze_wq;
@@ -112,5 +109,5 @@ index 7cd627f2a016..066b59dc380f 100644
  	struct list_head	all_q_node;
  
 -- 
-2.17.1
+2.30.2
 

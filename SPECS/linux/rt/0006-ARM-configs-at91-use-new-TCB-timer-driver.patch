@@ -1,7 +1,4 @@
-From 0c04e407d5db70997e9e482e94461544cdd8d9a6 Mon Sep 17 00:00:00 2001
-Message-Id: <0c04e407d5db70997e9e482e94461544cdd8d9a6.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From e445c0a978c798e1f639c733f22b8a0136ff0b2b Mon Sep 17 00:00:00 2001
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Date: Thu, 13 Sep 2018 13:30:23 +0200
 Subject: [PATCH 006/335] ARM: configs: at91: use new TCB timer driver
@@ -41,5 +38,5 @@ index 2080025556b5..f2bbc6339ca6 100644
  CONFIG_EEPROM_AT24=y
  CONFIG_SCSI=y
 -- 
-2.17.1
+2.30.2
 

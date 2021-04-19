@@ -1,7 +1,4 @@
-From 7522495c621a74d711c939aa6a9a04613a02c47e Mon Sep 17 00:00:00 2001
-Message-Id: <7522495c621a74d711c939aa6a9a04613a02c47e.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 60448233b0cad6addca1459a1d36c5ff629657d7 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 20 Jan 2016 15:39:05 +0100
 Subject: [PATCH 199/335] net: provide a way to delegate processing a softirq
@@ -74,7 +71,7 @@ index 27a4bb2303d0..25bcf2f2714b 100644
   * This function must run with irqs disabled!
   */
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 002147710000..48d90066c684 100644
+index 513a5af25ffd..dd84ff730475 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
 @@ -6372,7 +6372,7 @@ static __latent_entropy void net_rx_action(struct softirq_action *h)
@@ -87,5 +84,5 @@ index 002147710000..48d90066c684 100644
  	net_rps_action_and_irq_enable(sd);
  out:
 -- 
-2.17.1
+2.30.2
 

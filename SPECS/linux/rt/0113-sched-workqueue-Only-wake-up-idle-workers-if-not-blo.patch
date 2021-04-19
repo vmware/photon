@@ -1,7 +1,4 @@
-From 38ac3b180e772be000be96434238cc0af077906b Mon Sep 17 00:00:00 2001
-Message-Id: <38ac3b180e772be000be96434238cc0af077906b.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 8b717597fc0e17e201083794cd87c9cb8153f514 Mon Sep 17 00:00:00 2001
 From: Steven Rostedt <rostedt@goodmis.org>
 Date: Mon, 18 Mar 2013 15:12:49 -0400
 Subject: [PATCH 113/335] sched/workqueue: Only wake up idle workers if not
@@ -43,5 +40,5 @@ index d90e666c991a..0915e400eff8 100644
  
  				to_wakeup = wq_worker_sleeping(prev);
 -- 
-2.17.1
+2.30.2
 

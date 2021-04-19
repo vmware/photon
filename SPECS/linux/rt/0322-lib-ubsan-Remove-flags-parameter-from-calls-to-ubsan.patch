@@ -1,7 +1,4 @@
-From b59613ad1fde3b5967d414f5e341c885783875aa Mon Sep 17 00:00:00 2001
-Message-Id: <b59613ad1fde3b5967d414f5e341c885783875aa.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From d6588ab786a357ef999529f6674b5a33b3d8b0d5 Mon Sep 17 00:00:00 2001
 From: Tiejun Chen <tiejunc@vmware.com>
 Date: Mon, 30 Mar 2020 18:45:23 -0400
 Subject: [PATCH 322/335] lib/ubsan: Remove flags parameter from calls to
@@ -55,5 +52,5 @@ index 5830cc9a2164..199c75e03469 100644
  EXPORT_SYMBOL(__ubsan_handle_vla_bound_not_positive);
  
 -- 
-2.17.1
+2.30.2
 

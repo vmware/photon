@@ -1,7 +1,4 @@
-From 00295a14640aae0560d8666b06aa2727eda9d564 Mon Sep 17 00:00:00 2001
-Message-Id: <00295a14640aae0560d8666b06aa2727eda9d564.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From d447e7724eb700723463a5c9cdeff861559899e4 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 18 Mar 2011 10:11:25 +0100
 Subject: [PATCH 067/335] fs: jbd/jbd2: Make state lock and journal head lock
@@ -108,5 +105,5 @@ index 268f3000d1b3..8f5d6ecb802e 100644
  
  #define J_ASSERT(assert)	BUG_ON(!(assert))
 -- 
-2.17.1
+2.30.2
 

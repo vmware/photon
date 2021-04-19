@@ -1,7 +1,4 @@
-From b82966fdb6236f10ff5846aefcf709a86a9fd718 Mon Sep 17 00:00:00 2001
-Message-Id: <b82966fdb6236f10ff5846aefcf709a86a9fd718.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 9170f503b4848de3520bf9df5b28f6712612883c Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 29 Aug 2018 21:59:04 +0200
 Subject: [PATCH 016/335] Drivers: hv: vmbus: include header for get_irq_regs()
@@ -38,5 +35,5 @@ index 87d3d7da78f8..1d2d8a4b837d 100644
  #include "hv_trace.h"
  
 -- 
-2.17.1
+2.30.2
 

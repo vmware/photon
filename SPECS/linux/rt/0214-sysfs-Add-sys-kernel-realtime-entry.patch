@@ -1,7 +1,4 @@
-From de4db3e4ec57504bd95d51829b132bdf0ae0baec Mon Sep 17 00:00:00 2001
-Message-Id: <de4db3e4ec57504bd95d51829b132bdf0ae0baec.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 960558bfbd652b4bb3761fb4aca0cbbc2161b45b Mon Sep 17 00:00:00 2001
 From: Clark Williams <williams@redhat.com>
 Date: Sat, 30 Jul 2011 21:55:53 -0500
 Subject: [PATCH 214/335] sysfs: Add /sys/kernel/realtime entry
@@ -52,5 +49,5 @@ index 46ba853656f6..9a23632b6294 100644
  	NULL
  };
 -- 
-2.17.1
+2.30.2
 

@@ -1,7 +1,4 @@
-From a6504d6a9b124375a7af23fd0bc67fc1ae50ee5c Mon Sep 17 00:00:00 2001
-Message-Id: <a6504d6a9b124375a7af23fd0bc67fc1ae50ee5c.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 53d88b59d808f047af5f18387f916738c2a365e1 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 8 Jan 2019 12:31:06 +0100
 Subject: [PATCH 101/335] sched/fair: Make the hrtimers non-hard again
@@ -32,5 +29,5 @@ index 22b8ce4bb107..2443f921b19f 100644
  	cfs_b->distribute_running = 0;
  }
 -- 
-2.17.1
+2.30.2
 

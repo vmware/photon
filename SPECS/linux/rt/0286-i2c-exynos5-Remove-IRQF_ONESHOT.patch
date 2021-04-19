@@ -1,7 +1,4 @@
-From 64a73ee3cb7934e6d625b0d5ba4ee860d29795f4 Mon Sep 17 00:00:00 2001
-Message-Id: <64a73ee3cb7934e6d625b0d5ba4ee860d29795f4.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 355abda8ec6d4e30a5836d8867896c53e902b696 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 13 Aug 2019 12:30:12 +0200
 Subject: [PATCH 286/335] i2c: exynos5: Remove IRQF_ONESHOT
@@ -46,5 +43,5 @@ index c1ce2299a76e..5c57ecf4b79e 100644
  		dev_err(&pdev->dev, "cannot request HS-I2C IRQ %d\n", i2c->irq);
  		goto err_clk;
 -- 
-2.17.1
+2.30.2
 

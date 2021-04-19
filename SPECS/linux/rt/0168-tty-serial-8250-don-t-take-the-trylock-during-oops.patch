@@ -1,7 +1,4 @@
-From c522082a0c4bc2b86e8429706ea9739fc8948ab4 Mon Sep 17 00:00:00 2001
-Message-Id: <c522082a0c4bc2b86e8429706ea9739fc8948ab4.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 5eb51370c158974d6d2ca73d7726b5f875cf90b4 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 11 Apr 2016 16:55:02 +0200
 Subject: [PATCH 168/335] tty: serial: 8250: don't take the trylock during oops
@@ -33,5 +30,5 @@ index 60ca19eca1f6..632d3af69dba 100644
  		spin_lock_irqsave(&port->lock, flags);
  
 -- 
-2.17.1
+2.30.2
 

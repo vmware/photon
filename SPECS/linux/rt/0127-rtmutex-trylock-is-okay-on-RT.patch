@@ -1,7 +1,4 @@
-From c89db69c9e92d670bfbbde5adcdeb0707a3cd375 Mon Sep 17 00:00:00 2001
-Message-Id: <c89db69c9e92d670bfbbde5adcdeb0707a3cd375.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From af9c4cd6a05899c76e315bfc68a5c2ceaff337a8 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 2 Dec 2015 11:34:07 +0100
 Subject: [PATCH 127/335] rtmutex: trylock is okay on -RT
@@ -32,5 +29,5 @@ index a5ec4f68527e..4bec24dfafc6 100644
  
  	ret = rt_mutex_fasttrylock(lock, rt_mutex_slowtrylock);
 -- 
-2.17.1
+2.30.2
 

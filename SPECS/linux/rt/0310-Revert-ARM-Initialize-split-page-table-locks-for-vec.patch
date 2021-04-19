@@ -1,7 +1,4 @@
-From c763a467085bedefb8742655afae5f1f1c983a78 Mon Sep 17 00:00:00 2001
-Message-Id: <c763a467085bedefb8742655afae5f1f1c983a78.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 680a0e5b5de484c57f9fba7d541a04c17b0aee39 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 18 Oct 2019 13:04:15 +0200
 Subject: [PATCH 310/335] Revert "ARM: Initialize split page table locks for
@@ -85,5 +82,5 @@ index 8d3c7ce34c24..82ab015bf42b 100644
  /*
   * The vectors page is always readable from user space for the
 -- 
-2.17.1
+2.30.2
 

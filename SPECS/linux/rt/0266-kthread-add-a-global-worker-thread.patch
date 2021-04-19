@@ -1,7 +1,4 @@
-From 41471d167044223642f6ecc1dbfdfba2b3f4e91c Mon Sep 17 00:00:00 2001
-Message-Id: <41471d167044223642f6ecc1dbfdfba2b3f4e91c.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From cee33fa92d8874c9f12ef9aa0949b08a1e738770 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 12 Feb 2019 15:09:38 +0100
 Subject: [PATCH 266/335] kthread: add a global worker thread.
@@ -92,7 +89,7 @@ index 000000000000..53d34bca9d72
 +#endif
 +#endif
 diff --git a/include/linux/kthread.h b/include/linux/kthread.h
-index ad292898f7f2..7cf56eb54103 100644
+index e0498e46d642..31140f0a6c2c 100644
 --- a/include/linux/kthread.h
 +++ b/include/linux/kthread.h
 @@ -4,7 +4,6 @@
@@ -103,7 +100,7 @@ index ad292898f7f2..7cf56eb54103 100644
  
  __printf(4, 5)
  struct task_struct *kthread_create_on_node(int (*threadfn)(void *data),
-@@ -106,7 +105,7 @@ struct kthread_delayed_work {
+@@ -109,7 +108,7 @@ struct kthread_delayed_work {
  };
  
  #define KTHREAD_WORKER_INIT(worker)	{				\
@@ -112,7 +109,7 @@ index ad292898f7f2..7cf56eb54103 100644
  	.work_list = LIST_HEAD_INIT((worker).work_list),		\
  	.delayed_work_list = LIST_HEAD_INIT((worker).delayed_work_list),\
  	}
-@@ -198,14 +197,12 @@ bool kthread_cancel_delayed_work_sync(struct kthread_delayed_work *work);
+@@ -201,14 +200,12 @@ bool kthread_cancel_delayed_work_sync(struct kthread_delayed_work *work);
  
  void kthread_destroy_worker(struct kthread_worker *worker);
  
@@ -146,7 +143,7 @@ index 2180c6388eb9..7b173ca08e22 100644
  	init_mm_internals();
  
 diff --git a/kernel/kthread.c b/kernel/kthread.c
-index c903176d8325..43cbd0d6ca71 100644
+index 0042352c41bb..36927b573d5c 100644
 --- a/kernel/kthread.c
 +++ b/kernel/kthread.c
 @@ -20,6 +20,7 @@
@@ -157,7 +154,7 @@ index c903176d8325..43cbd0d6ca71 100644
  #include <trace/events/sched.h>
  
  static DEFINE_SPINLOCK(kthread_create_lock);
-@@ -1194,6 +1195,19 @@ void kthread_destroy_worker(struct kthread_worker *worker)
+@@ -1219,6 +1220,19 @@ void kthread_destroy_worker(struct kthread_worker *worker)
  }
  EXPORT_SYMBOL(kthread_destroy_worker);
  
@@ -178,5 +175,5 @@ index c903176d8325..43cbd0d6ca71 100644
  /**
   * kthread_associate_blkcg - associate blkcg to current kthread
 -- 
-2.17.1
+2.30.2
 

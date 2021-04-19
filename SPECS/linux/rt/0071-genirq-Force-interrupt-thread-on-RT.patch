@@ -1,7 +1,4 @@
-From 3b36dd727a90577c56ad25c8baf2fcd4c02bc7bb Mon Sep 17 00:00:00 2001
-Message-Id: <3b36dd727a90577c56ad25c8baf2fcd4c02bc7bb.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From ddccbcde4b92f6fdfa3eeff18b8ba7523f031e76 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 3 Apr 2011 11:57:29 +0200
 Subject: [PATCH 071/335] genirq: Force interrupt thread on RT
@@ -32,7 +29,7 @@ index eeceac3376fc..315f852b4981 100644
  #define force_irqthreads	(0)
  #endif
 diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index 3b66c77670d9..98f9bb27ce37 100644
+index c377dbb869f8..540c8bb063f5 100644
 --- a/kernel/irq/manage.c
 +++ b/kernel/irq/manage.c
 @@ -24,6 +24,7 @@
@@ -52,5 +49,5 @@ index 3b66c77670d9..98f9bb27ce37 100644
  
  static void __synchronize_hardirq(struct irq_desc *desc, bool sync_chip)
 -- 
-2.17.1
+2.30.2
 

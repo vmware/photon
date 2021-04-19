@@ -1,7 +1,4 @@
-From a428613e1fcd74962c10d3ad7b5e5d553daedc43 Mon Sep 17 00:00:00 2001
-Message-Id: <a428613e1fcd74962c10d3ad7b5e5d553daedc43.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 3ca12c911de9be653d25e93846918ad48ef2822d Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 16 Apr 2020 12:42:15 +0200
 Subject: [PATCH 326/335] fs/dcache: Include swait.h header
@@ -34,5 +31,5 @@ index 6cc3d66589a4..a866d11fb6a8 100644
  #include "fd.h"
  
 -- 
-2.17.1
+2.30.2
 

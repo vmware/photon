@@ -1,7 +1,4 @@
-From d8eea16e37ad46ac12fedfc3ccd37eb580fa1363 Mon Sep 17 00:00:00 2001
-Message-Id: <d8eea16e37ad46ac12fedfc3ccd37eb580fa1363.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 6ccbdf6b35944b4228a216347af08a984f481d19 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 16 Feb 2015 18:49:10 +0100
 Subject: [PATCH 280/335] fs/aio: simple simple work
@@ -74,5 +71,5 @@ index 413ec289bfa1..5b3462fb3433 100644
  {
  	unsigned i, new_nr;
 -- 
-2.17.1
+2.30.2
 

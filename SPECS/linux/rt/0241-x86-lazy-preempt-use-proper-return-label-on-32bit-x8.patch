@@ -1,7 +1,4 @@
-From b98b78b579f57b97f1a2bab42323ba3fa0662450 Mon Sep 17 00:00:00 2001
-Message-Id: <b98b78b579f57b97f1a2bab42323ba3fa0662450.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From ced4b5451ff50a94923440e5ace0c890a26acab5 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 26 Feb 2019 14:53:49 +0100
 Subject: [PATCH 241/335] x86: lazy-preempt: use proper return label on
@@ -43,5 +40,5 @@ index 324b7539eaab..d8b40085c2b8 100644
  	testl	$X86_EFLAGS_IF, PT_EFLAGS(%esp)	# interrupts off (exception path) ?
  	jz	restore_all_kernel
 -- 
-2.17.1
+2.30.2
 

@@ -1,7 +1,4 @@
-From c48b88775ab283c26277d00a9cdde574abaa740b Mon Sep 17 00:00:00 2001
-Message-Id: <c48b88775ab283c26277d00a9cdde574abaa740b.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 44fa715f933e0a856ec05957d65ba94b2cc49f49 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 26 Sep 2012 16:21:08 +0200
 Subject: [PATCH 232/335] net: Another local_irq_disable/kmalloc headache
@@ -14,7 +11,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  1 file changed, 6 insertions(+), 4 deletions(-)
 
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 4a9ab2596e78..fc8356d7d581 100644
+index ea9684bcc2e8..247626436755 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
 @@ -63,6 +63,7 @@
@@ -63,5 +60,5 @@ index 4a9ab2596e78..fc8356d7d581 100644
  	if (unlikely(!data))
  		return NULL;
 -- 
-2.17.1
+2.30.2
 

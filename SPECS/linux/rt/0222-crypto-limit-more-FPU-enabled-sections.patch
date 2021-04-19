@@ -1,7 +1,4 @@
-From 3ba9122917ecffba24afc964b80818e247b0c9ce Mon Sep 17 00:00:00 2001
-Message-Id: <3ba9122917ecffba24afc964b80818e247b0c9ce.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 97f8863af41bf1be833e2d861b38e60fbc1f50d0 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 30 Nov 2017 13:40:10 +0100
 Subject: [PATCH 222/335] crypto: limit more FPU-enabled sections
@@ -106,5 +103,5 @@ index 2e5003fef51a..768c53767bb2 100644
   * Save the FPU state (mark it for reload if necessary):
   *
 -- 
-2.17.1
+2.30.2
 

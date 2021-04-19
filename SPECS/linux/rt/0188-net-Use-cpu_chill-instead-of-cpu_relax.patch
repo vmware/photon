@@ -1,7 +1,4 @@
-From e56a0f73b8d8d82cc933f73cf9e2c2d2161b5912 Mon Sep 17 00:00:00 2001
-Message-Id: <e56a0f73b8d8d82cc933f73cf9e2c2d2161b5912.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 0572fd5b0d7ceb015383c78862c7e14b1d342614 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 7 Mar 2012 21:10:04 +0100
 Subject: [PATCH 188/335] net: Use cpu_chill() instead of cpu_relax()
@@ -68,5 +65,5 @@ index 0b347f46b2f4..f395f06031bc 100644
  }
  
 -- 
-2.17.1
+2.30.2
 

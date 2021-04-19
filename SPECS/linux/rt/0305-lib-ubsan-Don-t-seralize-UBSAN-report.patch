@@ -1,7 +1,4 @@
-From d793e14b20ddd85abf47692d7d3c69c198e52c61 Mon Sep 17 00:00:00 2001
-Message-Id: <d793e14b20ddd85abf47692d7d3c69c198e52c61.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 004003b4d12521e4515abf737be10fe836039300 Mon Sep 17 00:00:00 2001
 From: Julien Grall <julien.grall@arm.com>
 Date: Fri, 20 Sep 2019 11:08:35 +0100
 Subject: [PATCH 305/335] lib/ubsan: Don't seralize UBSAN report
@@ -306,5 +303,5 @@ index 1e9e2ab25539..5830cc9a2164 100644
  }
  EXPORT_SYMBOL(__ubsan_handle_load_invalid_value);
 -- 
-2.17.1
+2.30.2
 

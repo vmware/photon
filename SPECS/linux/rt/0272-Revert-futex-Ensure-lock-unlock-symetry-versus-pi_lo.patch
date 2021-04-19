@@ -1,7 +1,4 @@
-From 9950ceb69991e8b09f383de8707ff73580cb71a8 Mon Sep 17 00:00:00 2001
-Message-Id: <9950ceb69991e8b09f383de8707ff73580cb71a8.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 981d51ffc2970fd9e2eeb99a9d8b35c553c0e383 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 26 Jun 2019 17:44:13 +0200
 Subject: [PATCH 272/335] Revert "futex: Ensure lock/unlock symetry versus
@@ -19,7 +16,7 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  1 file changed, 2 deletions(-)
 
 diff --git a/kernel/futex.c b/kernel/futex.c
-index 5b58dbd04cc4..8571cfcdc22c 100644
+index 5360785b87c6..6b3d47799573 100644
 --- a/kernel/futex.c
 +++ b/kernel/futex.c
 @@ -962,9 +962,7 @@ static void exit_pi_state_list(struct task_struct *curr)
@@ -33,5 +30,5 @@ index 5b58dbd04cc4..8571cfcdc22c 100644
  			continue;
  		}
 -- 
-2.17.1
+2.30.2
 

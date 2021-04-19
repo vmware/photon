@@ -1,7 +1,4 @@
-From 7ec4824231dae3e2bd350f9b44d164c2d8b1715f Mon Sep 17 00:00:00 2001
-Message-Id: <7ec4824231dae3e2bd350f9b44d164c2d8b1715f.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 160ae664a89b76c9e9ac4a39b8d67e90e825e760 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 26 Jun 2019 11:59:44 +0200
 Subject: [PATCH 276/335] futex: Make the futex_hash_bucket lock raw
@@ -25,7 +22,7 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  1 file changed, 43 insertions(+), 43 deletions(-)
 
 diff --git a/kernel/futex.c b/kernel/futex.c
-index 43ad938df8c6..9035bc29a0f7 100644
+index ae37fd35f09d..9b42e41b263b 100644
 --- a/kernel/futex.c
 +++ b/kernel/futex.c
 @@ -243,7 +243,7 @@ struct futex_q {
@@ -244,7 +241,7 @@ index 43ad938df8c6..9035bc29a0f7 100644
  	 * access to the hash list and forcing another memory barrier.
  	 */
  	set_current_state(TASK_INTERRUPTIBLE);
-@@ -2999,7 +2999,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
+@@ -2998,7 +2998,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
  	 * before __rt_mutex_start_proxy_lock() is done.
  	 */
  	raw_spin_lock_irq(&q.pi_state->pi_mutex.wait_lock);
@@ -253,7 +250,7 @@ index 43ad938df8c6..9035bc29a0f7 100644
  	/*
  	 * __rt_mutex_start_proxy_lock() unconditionally enqueues the @rt_waiter
  	 * such that futex_unlock_pi() is guaranteed to observe the waiter when
-@@ -3020,7 +3020,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
+@@ -3019,7 +3019,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
  	ret = rt_mutex_wait_proxy_lock(&q.pi_state->pi_mutex, to, &rt_waiter);
  
  cleanup:
@@ -262,7 +259,7 @@ index 43ad938df8c6..9035bc29a0f7 100644
  	/*
  	 * If we failed to acquire the lock (deadlock/signal/timeout), we must
  	 * first acquire the hb->lock before removing the lock from the
-@@ -3107,7 +3107,7 @@ static int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
+@@ -3106,7 +3106,7 @@ static int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
  		return ret;
  
  	hb = hash_futex(&key);
@@ -271,7 +268,7 @@ index 43ad938df8c6..9035bc29a0f7 100644
  
  	/*
  	 * Check waiters first. We do not trust user space values at
-@@ -3141,7 +3141,7 @@ static int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
+@@ -3140,7 +3140,7 @@ static int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
  		 * rt_waiter. Also see the WARN in wake_futex_pi().
  		 */
  		raw_spin_lock_irq(&pi_state->pi_mutex.wait_lock);
@@ -280,7 +277,7 @@ index 43ad938df8c6..9035bc29a0f7 100644
  
  		/* drops pi_state->pi_mutex.wait_lock */
  		ret = wake_futex_pi(uaddr, uval, pi_state);
-@@ -3180,7 +3180,7 @@ static int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
+@@ -3179,7 +3179,7 @@ static int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
  	 * owner.
  	 */
  	if ((ret = cmpxchg_futex_value_locked(&curval, uaddr, uval, 0))) {
@@ -289,7 +286,7 @@ index 43ad938df8c6..9035bc29a0f7 100644
  		switch (ret) {
  		case -EFAULT:
  			goto pi_faulted;
-@@ -3200,7 +3200,7 @@ static int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
+@@ -3199,7 +3199,7 @@ static int futex_unlock_pi(u32 __user *uaddr, unsigned int flags)
  	ret = (curval == uval) ? 0 : -EAGAIN;
  
  out_unlock:
@@ -298,7 +295,7 @@ index 43ad938df8c6..9035bc29a0f7 100644
  out_putkey:
  	put_futex_key(&key);
  	return ret;
-@@ -3373,9 +3373,9 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+@@ -3372,9 +3372,9 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
  	/* Queue the futex_q, drop the hb lock, wait for wakeup. */
  	futex_wait_queue_me(hb, &q, to);
  
@@ -310,7 +307,7 @@ index 43ad938df8c6..9035bc29a0f7 100644
  	if (ret)
  		goto out_put_keys;
  
-@@ -3395,7 +3395,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+@@ -3394,7 +3394,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
  		 * did a lock-steal - fix up the PI-state in that case.
  		 */
  		if (q.pi_state && (q.pi_state->owner != current)) {
@@ -319,7 +316,7 @@ index 43ad938df8c6..9035bc29a0f7 100644
  			ret = fixup_pi_state_owner(uaddr2, &q, current);
  			/*
  			 * Drop the reference to the pi state which
-@@ -3421,7 +3421,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+@@ -3420,7 +3420,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
  		pi_mutex = &q.pi_state->pi_mutex;
  		ret = rt_mutex_wait_proxy_lock(pi_mutex, to, &rt_waiter);
  
@@ -328,7 +325,7 @@ index 43ad938df8c6..9035bc29a0f7 100644
  		if (ret && !rt_mutex_cleanup_proxy_lock(pi_mutex, &rt_waiter))
  			ret = 0;
  
-@@ -4181,7 +4181,7 @@ static int __init futex_init(void)
+@@ -4180,7 +4180,7 @@ static int __init futex_init(void)
  	for (i = 0; i < futex_hashsize; i++) {
  		atomic_set(&futex_queues[i].waiters, 0);
  		plist_head_init(&futex_queues[i].chain);
@@ -338,5 +335,5 @@ index 43ad938df8c6..9035bc29a0f7 100644
  
  	return 0;
 -- 
-2.17.1
+2.30.2
 

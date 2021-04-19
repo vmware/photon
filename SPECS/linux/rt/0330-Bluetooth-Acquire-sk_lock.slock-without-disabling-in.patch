@@ -1,7 +1,4 @@
-From 27267bc27e14e11d26a791210c8eb2fe52d8f701 Mon Sep 17 00:00:00 2001
-Message-Id: <27267bc27e14e11d26a791210c8eb2fe52d8f701.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 4e105f72a1035321e03c56ef85d88c77f08cb09b Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 28 May 2020 14:35:12 +0200
 Subject: [PATCH 330/335] Bluetooth: Acquire sk_lock.slock without disabling
@@ -63,5 +60,5 @@ index c044ff2f73e6..75bc8102cdd7 100644
  	if (parent && sock_flag(sk, SOCK_ZAPPED)) {
  		/* We have to drop DLC lock here, otherwise
 -- 
-2.17.1
+2.30.2
 

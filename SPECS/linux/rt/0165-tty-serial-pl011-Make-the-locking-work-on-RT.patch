@@ -1,7 +1,4 @@
-From 9af9201fd171f1daff8c2bbf093da3415020e132 Mon Sep 17 00:00:00 2001
-Message-Id: <9af9201fd171f1daff8c2bbf093da3415020e132.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From a5cdacede82580c4051a987fa84229d28b43cbe7 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 8 Jan 2013 21:36:51 +0100
 Subject: [PATCH 165/335] tty/serial/pl011: Make the locking work on RT
@@ -52,5 +49,5 @@ index 1306ce5c5d9b..f9103eb566d0 100644
  	clk_disable(uap->clk);
  }
 -- 
-2.17.1
+2.30.2
 

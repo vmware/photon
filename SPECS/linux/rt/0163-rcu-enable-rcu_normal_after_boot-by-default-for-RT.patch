@@ -1,7 +1,4 @@
-From a8212518bd95a76689d64d6dce6ded22ec66ba1a Mon Sep 17 00:00:00 2001
-Message-Id: <a8212518bd95a76689d64d6dce6ded22ec66ba1a.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From a1940c9b4431508b6258732eaec07ee017dbc2ca Mon Sep 17 00:00:00 2001
 From: Julia Cartwright <julia@ni.com>
 Date: Wed, 12 Oct 2016 11:21:14 -0500
 Subject: [PATCH 163/335] rcu: enable rcu_normal_after_boot by default for RT
@@ -35,5 +32,5 @@ index 6ffafb1b1584..16d8dba23329 100644
  #endif /* #ifndef CONFIG_TINY_RCU */
  
 -- 
-2.17.1
+2.30.2
 

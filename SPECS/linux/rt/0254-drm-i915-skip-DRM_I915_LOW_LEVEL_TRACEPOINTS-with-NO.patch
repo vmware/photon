@@ -1,7 +1,4 @@
-From 29a8e407f101aa3ccba1725313489a70d03e09e2 Mon Sep 17 00:00:00 2001
-Message-Id: <29a8e407f101aa3ccba1725313489a70d03e09e2.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From a0e9356efe3455a25f2694e1b227c6d1027b6994 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 19 Dec 2018 10:47:02 +0100
 Subject: [PATCH 254/335] drm/i915: skip DRM_I915_LOW_LEVEL_TRACEPOINTS with
@@ -31,5 +28,5 @@ index cc54ec0ef75c..33028d8f470e 100644
  	     TP_PROTO(struct i915_request *rq),
  	     TP_ARGS(rq)
 -- 
-2.17.1
+2.30.2
 

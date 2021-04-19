@@ -1,7 +1,4 @@
-From 762c2b813b2f37dcc3dd8955849d19d0516f24dc Mon Sep 17 00:00:00 2001
-Message-Id: <762c2b813b2f37dcc3dd8955849d19d0516f24dc.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 7b50df0392b664b544de7499ffc150c02e1052fe Mon Sep 17 00:00:00 2001
 From: Mike Galbraith <umgwanakikbuti@gmail.com>
 Date: Sat, 27 Feb 2016 08:09:11 +0100
 Subject: [PATCH 251/335] drm,radeon,i915: Use preempt_disable/enable_rt()
@@ -59,5 +56,5 @@ index 3f0f3a578ddf..7aab36714b28 100644
  	/* Decode into vertical and horizontal scanout position. */
  	*vpos = position & 0x1fff;
 -- 
-2.17.1
+2.30.2
 

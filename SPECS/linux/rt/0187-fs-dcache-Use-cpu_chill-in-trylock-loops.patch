@@ -1,7 +1,4 @@
-From 60a14c069a242d4d117dbbb5e528878afd4acd58 Mon Sep 17 00:00:00 2001
-Message-Id: <60a14c069a242d4d117dbbb5e528878afd4acd58.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 4892b6e6d9c9d57af0841fe66c8ccd2a24375a0b Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 7 Mar 2012 21:00:34 +0100
 Subject: [PATCH 187/335] fs: dcache: Use cpu_chill() in trylock loops
@@ -64,5 +61,5 @@ index 741f40cd955e..df83b6e3146f 100644
  	 * After the slowpath clears MNT_WRITE_HOLD, mnt_is_readonly will
  	 * be set to match its requirements. So we must not load that until
 -- 
-2.17.1
+2.30.2
 

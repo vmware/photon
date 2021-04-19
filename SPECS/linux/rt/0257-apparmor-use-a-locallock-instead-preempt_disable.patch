@@ -1,7 +1,4 @@
-From 5e27ea65d49b0dea885e4deee32c94593c95fbf7 Mon Sep 17 00:00:00 2001
-Message-Id: <5e27ea65d49b0dea885e4deee32c94593c95fbf7.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From b441bd1e069f30b6e35ccf67fe21e8f4e87bdcfd Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 11 Oct 2017 17:43:49 +0200
 Subject: [PATCH 257/335] apparmor: use a locallock instead preempt_disable()
@@ -83,5 +80,5 @@ index 898752b818dc..690c8fccd0a0 100644
  /*
   * LSM hook functions
 -- 
-2.17.1
+2.30.2
 

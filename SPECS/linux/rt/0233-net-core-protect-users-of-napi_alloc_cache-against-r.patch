@@ -1,7 +1,4 @@
-From 6bce6dbf41795f476df46fbdf9af3726415d45fc Mon Sep 17 00:00:00 2001
-Message-Id: <6bce6dbf41795f476df46fbdf9af3726415d45fc.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 4b8cedf0985f4efd1dd27a84de5ffc673a043d23 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 15 Jan 2016 16:33:34 +0100
 Subject: [PATCH 233/335] net/core: protect users of napi_alloc_cache against
@@ -20,7 +17,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 18 insertions(+), 5 deletions(-)
 
 diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index fc8356d7d581..2bdea77299ca 100644
+index 247626436755..8010a79e4f7e 100644
 --- a/net/core/skbuff.c
 +++ b/net/core/skbuff.c
 @@ -332,6 +332,7 @@ struct napi_alloc_cache {
@@ -113,5 +110,5 @@ index fc8356d7d581..2bdea77299ca 100644
  void __kfree_skb_defer(struct sk_buff *skb)
  {
 -- 
-2.17.1
+2.30.2
 

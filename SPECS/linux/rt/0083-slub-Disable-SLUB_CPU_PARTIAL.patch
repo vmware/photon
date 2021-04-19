@@ -1,7 +1,4 @@
-From ca8a5df324f72b31bfa6cc1407bdb513b014bd0d Mon Sep 17 00:00:00 2001
-Message-Id: <ca8a5df324f72b31bfa6cc1407bdb513b014bd0d.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 82a2bed348238ec907897b332b5c87eeffcf0267 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 15 Apr 2015 19:00:47 +0200
 Subject: [PATCH 083/335] slub: Disable SLUB_CPU_PARTIAL
@@ -52,5 +49,5 @@ index 7e929580e8c4..78590f5d4ab7 100644
  	help
  	  Per cpu partial caches accellerate objects allocation and freeing
 -- 
-2.17.1
+2.30.2
 

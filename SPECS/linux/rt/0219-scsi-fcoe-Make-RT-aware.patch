@@ -1,7 +1,4 @@
-From 2666e579b3b2195a3cfea1933bde702bafcf7741 Mon Sep 17 00:00:00 2001
-Message-Id: <2666e579b3b2195a3cfea1933bde702bafcf7741.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 04b9443a99eebb35d9b3b20640a16c27d369861b Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sat, 12 Nov 2011 14:00:48 +0100
 Subject: [PATCH 219/335] scsi/fcoe: Make RT aware.
@@ -97,7 +94,7 @@ index 658c0726581f..bceab74eecf7 100644
  	list_for_each_entry_safe(fcf, next, &del_list, list) {
  		/* Removes fcf from current list */
 diff --git a/drivers/scsi/libfc/fc_exch.c b/drivers/scsi/libfc/fc_exch.c
-index 6ba257cbc6d9..d2398a19f84c 100644
+index 384458d1f73c..0271115f41d5 100644
 --- a/drivers/scsi/libfc/fc_exch.c
 +++ b/drivers/scsi/libfc/fc_exch.c
 @@ -833,10 +833,10 @@ static struct fc_exch *fc_exch_em_alloc(struct fc_lport *lport,
@@ -114,5 +111,5 @@ index 6ba257cbc6d9..d2398a19f84c 100644
  	/* peek cache of free slot */
  	if (pool->left != FC_XID_UNKNOWN) {
 -- 
-2.17.1
+2.30.2
 

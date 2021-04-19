@@ -1,7 +1,4 @@
-From 58921f908673a65e05f1036da3a883f3e5d317a5 Mon Sep 17 00:00:00 2001
-Message-Id: <58921f908673a65e05f1036da3a883f3e5d317a5.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From c160d9c2d90269656002a03bac8a99a0c05304e6 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 12 Oct 2017 17:11:19 +0200
 Subject: [PATCH 142/335] rtmutex: add sleeping lock implementation
@@ -410,7 +407,7 @@ index ca586216cb24..4562bbb218a6 100644
  	account_kernel_stack(tsk, 1);
  
 diff --git a/kernel/futex.c b/kernel/futex.c
-index 198edf499f03..5b58dbd04cc4 100644
+index 3da1d8f3d37c..5360785b87c6 100644
 --- a/kernel/futex.c
 +++ b/kernel/futex.c
 @@ -1575,6 +1575,7 @@ static int wake_futex_pi(u32 __user *uaddr, u32 uval, struct futex_pi_state *pi_
@@ -439,7 +436,7 @@ index 198edf499f03..5b58dbd04cc4 100644
  
  	return ret;
  }
-@@ -2993,7 +2995,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
+@@ -2992,7 +2994,7 @@ static int futex_lock_pi(u32 __user *uaddr, unsigned int flags,
  		goto no_block;
  	}
  
@@ -448,7 +445,7 @@ index 198edf499f03..5b58dbd04cc4 100644
  
  	/*
  	 * On PREEMPT_RT_FULL, when hb->lock becomes an rt_mutex, we must not
-@@ -3371,7 +3373,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
+@@ -3370,7 +3372,7 @@ static int futex_wait_requeue_pi(u32 __user *uaddr, unsigned int flags,
  	 * The waiter is allocated on our stack, manipulated by the requeue
  	 * code while we sleep on uaddr.
  	 */
@@ -1207,5 +1204,5 @@ index 66f99dc4dac3..140228327b8c 100644
  	}
  }
 -- 
-2.17.1
+2.30.2
 

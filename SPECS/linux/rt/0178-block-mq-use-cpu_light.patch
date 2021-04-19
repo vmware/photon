@@ -1,7 +1,4 @@
-From 591104126c9dc5f7c068cf9507692f7e7a2c8c79 Mon Sep 17 00:00:00 2001
-Message-Id: <591104126c9dc5f7c068cf9507692f7e7a2c8c79.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 8818a895ac23412da673b9bebe294c605bc18f76 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 9 Apr 2014 10:37:23 +0200
 Subject: [PATCH 178/335] block: mq: use cpu_light()
@@ -34,5 +31,5 @@ index 5ad9251627f8..5a96c97991b6 100644
  
  struct blk_mq_alloc_data {
 -- 
-2.17.1
+2.30.2
 

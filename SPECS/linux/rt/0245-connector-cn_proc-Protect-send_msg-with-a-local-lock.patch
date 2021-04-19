@@ -1,7 +1,4 @@
-From db493d59946c7e464afed4e37027f164d8fbecc7 Mon Sep 17 00:00:00 2001
-Message-Id: <db493d59946c7e464afed4e37027f164d8fbecc7.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 5d6461374d0d5dbfdab80f97dfd42bd461dd895b Mon Sep 17 00:00:00 2001
 From: Mike Galbraith <umgwanakikbuti@gmail.com>
 Date: Sun, 16 Oct 2016 05:11:54 +0200
 Subject: [PATCH 245/335] connector/cn_proc: Protect send_msg() with a local
@@ -72,5 +69,5 @@ index ad48fd52cb53..c5264b3ee0b0 100644
  
  void proc_fork_connector(struct task_struct *task)
 -- 
-2.17.1
+2.30.2
 

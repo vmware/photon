@@ -1,7 +1,4 @@
-From eb73d273557f6541c53bd8e47476252af22550f4 Mon Sep 17 00:00:00 2001
-Message-Id: <eb73d273557f6541c53bd8e47476252af22550f4.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 61cb54cf6c3954d39418b4e93f69cc9aba7f32b1 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 29 Aug 2013 11:48:57 +0200
 Subject: [PATCH 055/335] md: disable bcache
@@ -39,5 +36,5 @@ index f6e0a8b3a61e..18c03d79a442 100644
  	help
  	Allows a block device to be used as cache for other devices; uses
 -- 
-2.17.1
+2.30.2
 

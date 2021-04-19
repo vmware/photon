@@ -1,7 +1,4 @@
-From b0609fce5ed037b24be5433e94698727c556d611 Mon Sep 17 00:00:00 2001
-Message-Id: <b0609fce5ed037b24be5433e94698727c556d611.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 13cf458a757be230b2f1127b6f72bba7882edfe1 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Mon, 18 Jul 2011 13:59:17 +0200
 Subject: [PATCH 120/335] softirq: Disable softirq stacks for RT
@@ -125,7 +122,7 @@ diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
 index dfe26f3cfffc..f53d995b1370 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
-@@ -1084,6 +1084,7 @@ bad_gs:
+@@ -1084,6 +1084,7 @@ EXPORT_SYMBOL(native_load_gs_index)
  	jmp	2b
  	.previous
  
@@ -175,5 +172,5 @@ index 35fa335c475b..eec4bec454b5 100644
  #else
  static inline void do_softirq_own_stack(void)
 -- 
-2.17.1
+2.30.2
 

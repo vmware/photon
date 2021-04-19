@@ -1,7 +1,4 @@
-From c1c06ff36b528ea4edd965e78faa875ed6983082 Mon Sep 17 00:00:00 2001
-Message-Id: <c1c06ff36b528ea4edd965e78faa875ed6983082.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 023d9d5da6f90972a36ce02a1b09089786393c79 Mon Sep 17 00:00:00 2001
 From: Oleg Nesterov <oleg@redhat.com>
 Date: Tue, 14 Jul 2015 14:26:34 +0200
 Subject: [PATCH 064/335] signal/x86: Delay calling signals in atomic
@@ -152,5 +149,5 @@ index fc63ceba81ce..2801e2ba4d84 100644
   * Nuke all other threads in the group.
   */
 -- 
-2.17.1
+2.30.2
 

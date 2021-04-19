@@ -1,7 +1,4 @@
-From 08b7f2761f31c18034ea18bf5a6746c7a97dacab Mon Sep 17 00:00:00 2001
-Message-Id: <08b7f2761f31c18034ea18bf5a6746c7a97dacab.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 4ceb5544c9a5c8da66586375ae3c74d614c2f52a Mon Sep 17 00:00:00 2001
 From: Matt Fleming <matt@codeblueprint.co.uk>
 Date: Tue, 7 Apr 2020 10:54:13 +0100
 Subject: [PATCH 329/335] signal: Prevent double-free of user struct
@@ -53,5 +50,5 @@ index 947731042b7c..0275c582421b 100644
  		  __sigqueue_free(q);
  }
 -- 
-2.17.1
+2.30.2
 

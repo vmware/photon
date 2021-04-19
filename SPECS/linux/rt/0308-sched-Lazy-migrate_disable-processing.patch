@@ -1,7 +1,4 @@
-From 0c370ff0748baa7755abb070b2039d90fa34ad62 Mon Sep 17 00:00:00 2001
-Message-Id: <0c370ff0748baa7755abb070b2039d90fa34ad62.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From b08548604c2c07de467c1dfb232773fd68c6f5da Mon Sep 17 00:00:00 2001
 From: Scott Wood <swood@redhat.com>
 Date: Sat, 12 Oct 2019 01:52:13 -0500
 Subject: [PATCH 308/335] sched: Lazy migrate_disable processing
@@ -108,7 +105,7 @@ index 765cd23de594..5e4f99c5a707 100644
 +
  #endif
 diff --git a/init/init_task.c b/init/init_task.c
-index 9e3362748214..4e5af4616dbd 100644
+index 634becebd713..45b84137c4b3 100644
 --- a/init/init_task.c
 +++ b/init/init_task.c
 @@ -80,6 +80,10 @@ struct task_struct init_task
@@ -614,5 +611,5 @@ index b8a8a8db2d75..0c80992aa337 100644
  		goto out;
  
 -- 
-2.17.1
+2.30.2
 

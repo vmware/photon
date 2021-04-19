@@ -1,7 +1,4 @@
-From 91086ee612f5735fffa3eefe9ad81a5e9b31b2e4 Mon Sep 17 00:00:00 2001
-Message-Id: <91086ee612f5735fffa3eefe9ad81a5e9b31b2e4.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 9c91ba43c23a7d7efc04ae41d626ad743b47ac17 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 27 Mar 2018 16:24:15 +0200
 Subject: [PATCH 034/335] dm rq: remove BUG_ON(!irqs_disabled) check
@@ -35,5 +32,5 @@ index 9fde174ce396..e6bffe4b9439 100644
  }
  
 -- 
-2.17.1
+2.30.2
 

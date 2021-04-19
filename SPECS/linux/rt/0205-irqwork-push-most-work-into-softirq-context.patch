@@ -1,7 +1,4 @@
-From b68200be710b889a53ad3ae26ee91aba4cb27485 Mon Sep 17 00:00:00 2001
-Message-Id: <b68200be710b889a53ad3ae26ee91aba4cb27485.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 945d9e1445d8f0c2b1ce17f46f66ab9ea5465ef7 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 23 Jun 2015 15:32:51 +0200
 Subject: [PATCH 205/335] irqwork: push most work into softirq context
@@ -262,5 +259,5 @@ index 3cb79167852f..c7bd68db6f63 100644
  	if (IS_ENABLED(CONFIG_NO_HZ_COMMON))
  		__run_timers(this_cpu_ptr(&timer_bases[BASE_DEF]));
 -- 
-2.17.1
+2.30.2
 

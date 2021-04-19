@@ -1,7 +1,4 @@
-From cbf079549e1d550b95d4c7628df94344f1889958 Mon Sep 17 00:00:00 2001
-Message-Id: <cbf079549e1d550b95d4c7628df94344f1889958.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 099b08fc2a4685988718355d0d15f61e090d73e6 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 12 Dec 2019 10:53:59 +0100
 Subject: [PATCH 314/335] sched: migrate_enable: Busy loop until the migration
@@ -55,5 +52,5 @@ index 5cb45221bf38..43125b51332d 100644
  
  out:
 -- 
-2.17.1
+2.30.2
 

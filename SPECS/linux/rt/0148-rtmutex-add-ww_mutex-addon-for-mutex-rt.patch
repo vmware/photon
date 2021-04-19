@@ -1,7 +1,4 @@
-From aab2d8435aa5e103e21489a341683aec1fd7d076 Mon Sep 17 00:00:00 2001
-Message-Id: <aab2d8435aa5e103e21489a341683aec1fd7d076.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From dea2f725df23ccb7a91081f4ca24f24f7888a58c Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 12 Oct 2017 17:34:38 +0200
 Subject: [PATCH 148/335] rtmutex: add ww_mutex addon for mutex-rt
@@ -443,5 +440,5 @@ index 7d3c5cf3d23d..660e22caf709 100644
  	 * The slowlock() above is guaranteed to return with the rtmutex (for
  	 * ret = 0) is now held, so there can't be a writer active. Increment
 -- 
-2.17.1
+2.30.2
 

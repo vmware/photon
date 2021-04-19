@@ -1,7 +1,4 @@
-From 2e1525a8a54cc3cae60acea07b3a5c817592c1e2 Mon Sep 17 00:00:00 2001
-Message-Id: <2e1525a8a54cc3cae60acea07b3a5c817592c1e2.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From f2295698c0a0488cac90ac67b10e8c82ba566eb5 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 31 Aug 2016 17:54:09 +0200
 Subject: [PATCH 203/335] net: add a lock around icmp_sk()
@@ -17,7 +14,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 8 insertions(+)
 
 diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
-index 59c0b1a86e51..e5031baa189d 100644
+index b048125ea099..503a3ad72974 100644
 --- a/net/ipv4/icmp.c
 +++ b/net/ipv4/icmp.c
 @@ -77,6 +77,7 @@
@@ -63,5 +60,5 @@ index 59c0b1a86e51..e5031baa189d 100644
  
  int sysctl_icmp_msgs_per_sec __read_mostly = 1000;
 -- 
-2.17.1
+2.30.2
 

@@ -1,7 +1,4 @@
-From d8cf187da70c2fa64dce26e77c45da8e101a5526 Mon Sep 17 00:00:00 2001
-Message-Id: <d8cf187da70c2fa64dce26e77c45da8e101a5526.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From cf6e9e1cc26ba3e9e17c817ab41447546c937244 Mon Sep 17 00:00:00 2001
 From: Tom Zanussi <zanussi@kernel.org>
 Date: Tue, 9 Jun 2020 11:04:08 -0500
 Subject: [PATCH 328/335] tasklet: Fix UP case for tasklet CHAINED state
@@ -54,5 +51,5 @@ index 73dae64bfc9c..9bad7a16dc61 100644
  			 * If it got disabled meanwhile, bail out:
  			 */
 -- 
-2.17.1
+2.30.2
 

@@ -1,7 +1,4 @@
-From 54ede1193758058b691491cb664c3dfd30a34364 Mon Sep 17 00:00:00 2001
-Message-Id: <54ede1193758058b691491cb664c3dfd30a34364.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 6c1d813bc39969d260346d65139b400d82be4e6e Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 3 Jul 2009 08:44:31 -0500
 Subject: [PATCH 100/335] hrtimer: by timers by default into the softirq
@@ -147,10 +144,10 @@ index b6ca4a630050..aeb99395c03b 100644
  }
  
 diff --git a/kernel/time/hrtimer.c b/kernel/time/hrtimer.c
-index e135cb27db39..1fd5ec39e7f4 100644
+index ae29464d18c4..d92c6db46348 100644
 --- a/kernel/time/hrtimer.c
 +++ b/kernel/time/hrtimer.c
-@@ -1138,7 +1138,9 @@ void hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim,
+@@ -1156,7 +1156,9 @@ void hrtimer_start_range_ns(struct hrtimer *timer, ktime_t tim,
  	 * Check whether the HRTIMER_MODE_SOFT bit and hrtimer.is_soft
  	 * match.
  	 */
@@ -160,7 +157,7 @@ index e135cb27db39..1fd5ec39e7f4 100644
  
  	base = lock_hrtimer_base(timer, &flags);
  
-@@ -1298,10 +1300,17 @@ static inline int hrtimer_clockid_to_base(clockid_t clock_id)
+@@ -1316,10 +1318,17 @@ static inline int hrtimer_clockid_to_base(clockid_t clock_id)
  static void __hrtimer_init(struct hrtimer *timer, clockid_t clock_id,
  			   enum hrtimer_mode mode)
  {
@@ -180,7 +177,7 @@ index e135cb27db39..1fd5ec39e7f4 100644
  	memset(timer, 0, sizeof(struct hrtimer));
  
  	cpu_base = raw_cpu_ptr(&hrtimer_bases);
-@@ -1684,6 +1693,14 @@ static void __hrtimer_init_sleeper(struct hrtimer_sleeper *sl,
+@@ -1702,6 +1711,14 @@ static void __hrtimer_init_sleeper(struct hrtimer_sleeper *sl,
  				   enum hrtimer_mode mode,
  				   struct task_struct *task)
  {
@@ -235,5 +232,5 @@ index 6d60701dc636..328620fe85f6 100644
  	hrtimer_start(hrtimer, ns_to_ktime(sample_period),
  		      HRTIMER_MODE_REL_PINNED);
 -- 
-2.17.1
+2.30.2
 

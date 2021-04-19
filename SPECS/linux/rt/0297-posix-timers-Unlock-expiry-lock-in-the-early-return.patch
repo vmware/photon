@@ -1,7 +1,4 @@
-From 6f6170c24b8ae0674e66fc625dcd111ecb6a974d Mon Sep 17 00:00:00 2001
-Message-Id: <6f6170c24b8ae0674e66fc625dcd111ecb6a974d.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 2f7b1f5ed71647411bf57b9054c6d336d888f389 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 16 Sep 2019 12:33:59 +0200
 Subject: [PATCH 297/335] posix-timers: Unlock expiry lock in the early return
@@ -23,7 +20,7 @@ Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
  1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/time/posix-cpu-timers.c b/kernel/time/posix-cpu-timers.c
-index 765e700962ab..c9964dc3276b 100644
+index 54632ed51c65..b9e4ccbb60f3 100644
 --- a/kernel/time/posix-cpu-timers.c
 +++ b/kernel/time/posix-cpu-timers.c
 @@ -1175,8 +1175,10 @@ static void __run_posix_cpu_timers(struct task_struct *tsk)
@@ -39,5 +36,5 @@ index 765e700962ab..c9964dc3276b 100644
  	 * Here we take off tsk->signal->cpu_timers[N] and
  	 * tsk->cpu_timers[N] all the timers that are firing, and
 -- 
-2.17.1
+2.30.2
 

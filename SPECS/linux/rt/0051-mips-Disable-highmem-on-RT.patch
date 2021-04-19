@@ -1,7 +1,4 @@
-From 70aa1c57306d33d3aa16a0b0afa85cc1c7b48d71 Mon Sep 17 00:00:00 2001
-Message-Id: <70aa1c57306d33d3aa16a0b0afa85cc1c7b48d71.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 791fbcdbee4c2646ebd58695ed9c580068bdc426 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Mon, 18 Jul 2011 17:10:12 +0200
 Subject: [PATCH 051/335] mips: Disable highmem on RT
@@ -27,5 +24,5 @@ index cc8c8d22afaf..9f9e8fae334d 100644
  config CPU_SUPPORTS_HIGHMEM
  	bool
 -- 
-2.17.1
+2.30.2
 

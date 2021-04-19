@@ -1,7 +1,4 @@
-From fbc2e8d9133d56a821d3f397d94c80e056967681 Mon Sep 17 00:00:00 2001
-Message-Id: <fbc2e8d9133d56a821d3f397d94c80e056967681.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 778ebcce4e5d2eb71105a1850243e1429fd848b9 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 29 Jan 2015 15:10:08 +0100
 Subject: [PATCH 180/335] block/mq: don't complete requests via IPI
@@ -18,7 +15,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  4 files changed, 30 insertions(+), 1 deletion(-)
 
 diff --git a/block/blk-core.c b/block/blk-core.c
-index ce3710404544..8926b5d998fa 100644
+index 80f3e729fdd4..461a93c08c14 100644
 --- a/block/blk-core.c
 +++ b/block/blk-core.c
 @@ -189,6 +189,9 @@ void blk_rq_init(struct request_queue *q, struct request *rq)
@@ -32,7 +29,7 @@ index ce3710404544..8926b5d998fa 100644
  	rq->q = q;
  	rq->__sector = (sector_t) -1;
 diff --git a/block/blk-mq.c b/block/blk-mq.c
-index cbd2d46e906c..7f067c5e2df9 100644
+index 8e3452889da5..bec3a62480c0 100644
 --- a/block/blk-mq.c
 +++ b/block/blk-mq.c
 @@ -320,6 +320,9 @@ static struct request *blk_mq_rq_ctx_init(struct blk_mq_alloc_data *data,
@@ -103,7 +100,7 @@ index 2885dce1ad49..8dbb9ecf9993 100644
  void blk_mq_start_request(struct request *rq);
  void blk_mq_end_request(struct request *rq, blk_status_t error);
 diff --git a/include/linux/blkdev.h b/include/linux/blkdev.h
-index 745b2d0dcf78..7cd627f2a016 100644
+index 209ba8e7bd31..8c38c1428c76 100644
 --- a/include/linux/blkdev.h
 +++ b/include/linux/blkdev.h
 @@ -149,6 +149,9 @@ enum mq_rq_state {
@@ -117,5 +114,5 @@ index 745b2d0dcf78..7cd627f2a016 100644
  
  	int cpu;
 -- 
-2.17.1
+2.30.2
 

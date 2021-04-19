@@ -1,7 +1,4 @@
-From c7d70e0bc2f8935635cc2f866a27bf634751392f Mon Sep 17 00:00:00 2001
-Message-Id: <c7d70e0bc2f8935635cc2f866a27bf634751392f.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 3044ef5347d84c5dc2615d6ae0f98e3288c455d7 Mon Sep 17 00:00:00 2001
 From: Peter Zijlstra <peterz@infradead.org>
 Date: Thu, 28 Jul 2011 10:43:51 +0200
 Subject: [PATCH 215/335] mm, rt: kmap_atomic scheduling
@@ -323,5 +320,5 @@ index 59db3223a5d6..22aa3ddbd87b 100644
  unsigned int nr_free_highpages (void)
  {
 -- 
-2.17.1
+2.30.2
 

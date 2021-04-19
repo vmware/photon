@@ -1,7 +1,4 @@
-From fb42566505281e1e94cdf561418dc389705286a3 Mon Sep 17 00:00:00 2001
-Message-Id: <fb42566505281e1e94cdf561418dc389705286a3.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From ecd41770cabf09cc2dd3f9737c2de272b826fca0 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 31 Jan 2012 13:01:27 +0100
 Subject: [PATCH 123/335] genirq: Allow disabling of softirq processing in irq
@@ -17,10 +14,10 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---
  include/linux/interrupt.h |  2 ++
  include/linux/irq.h       |  4 +++-
- kernel/irq/manage.c       | 13 ++++++++++++-
+ kernel/irq/manage.c       |  3 +++
  kernel/irq/settings.h     | 12 ++++++++++++
  kernel/softirq.c          |  9 +++++++++
- 5 files changed, 38 insertions(+), 2 deletions(-)
+ 5 files changed, 29 insertions(+), 1 deletion(-)
 
 diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
 index cf9860d49d57..e1438fe66467 100644
@@ -71,27 +68,10 @@ index a042faefb9b7..e3ed5e02605f 100644
  #define IRQ_NO_BALANCING_MASK	(IRQ_PER_CPU | IRQ_NO_BALANCING)
  
 diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-index 98f9bb27ce37..bb2825ed4bf0 100644
+index 540c8bb063f5..93e8590b7574 100644
 --- a/kernel/irq/manage.c
 +++ b/kernel/irq/manage.c
-@@ -994,7 +994,15 @@ irq_forced_thread_fn(struct irq_desc *desc, struct irqaction *action)
- 		atomic_inc(&desc->threads_handled);
- 
- 	irq_finalize_oneshot(desc, action);
--	local_bh_enable();
-+	/*
-+	 * Interrupts which have real time requirements can be set up
-+	 * to avoid softirq processing in the thread handler. This is
-+	 * safe as these interrupts do not raise soft interrupts.
-+	 */
-+	if (irq_settings_no_softirq_call(desc))
-+		_local_bh_enable();
-+	else
-+		local_bh_enable();
- 	return ret;
- }
- 
-@@ -1504,6 +1512,9 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
+@@ -1508,6 +1508,9 @@ __setup_irq(unsigned int irq, struct irq_desc *desc, struct irqaction *new)
  			irqd_set(&desc->irq_data, IRQD_NO_BALANCING);
  		}
  
@@ -159,5 +139,5 @@ index fd89f8ab85ac..3e9333d148ad 100644
  {
  	return current->flags & PF_IN_SOFTIRQ;
 -- 
-2.17.1
+2.30.2
 

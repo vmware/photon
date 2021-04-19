@@ -1,7 +1,4 @@
-From 22d139eb684f695a225ba440ba4d12e1964fa7a1 Mon Sep 17 00:00:00 2001
-Message-Id: <22d139eb684f695a225ba440ba4d12e1964fa7a1.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 5e77d899501fddc9f49838be856f4e6f53c27480 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Mon, 1 Jul 2013 11:02:42 +0200
 Subject: [PATCH 192/335] workqueue: Prevent workqueue versus ata-piix livelock
@@ -116,7 +113,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index cba820bfacfa..d663b779f77a 100644
+index 0e67fd635c6b..00889d1bcee1 100644
 --- a/kernel/workqueue.c
 +++ b/kernel/workqueue.c
 @@ -50,6 +50,7 @@
@@ -137,5 +134,5 @@ index cba820bfacfa..d663b779f77a 100644
  }
  
 -- 
-2.17.1
+2.30.2
 

@@ -1,7 +1,4 @@
-From 8a4ab836a20742c38dcdcac7fb67d3d82ca8fad3 Mon Sep 17 00:00:00 2001
-Message-Id: <8a4ab836a20742c38dcdcac7fb67d3d82ca8fad3.1612799233.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From aad5a57e6b5c1384ca1599a92ff5055c745f49c5 Mon Sep 17 00:00:00 2001
 From: Clark Williams <williams@redhat.com>
 Date: Mon, 15 Jul 2019 15:25:00 -0500
 Subject: [PATCH 289/335] thermal/x86_pkg_temp: make pkg_temp_lock a raw
@@ -118,5 +115,5 @@ index 1ef937d799e4..540becb78a0f 100644
  	/* Final cleanup if this is the last cpu */
  	if (lastcpu)
 -- 
-2.17.1
+2.30.2
 

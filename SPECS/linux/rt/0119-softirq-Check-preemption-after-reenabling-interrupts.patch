@@ -1,7 +1,4 @@
-From b285377351c358b13ca508fdf048dadb34effc03 Mon Sep 17 00:00:00 2001
-Message-Id: <b285377351c358b13ca508fdf048dadb34effc03.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 0997dd5394e71c07c681814e77aefd86b3118e48 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 13 Nov 2011 17:17:09 +0100
 Subject: [PATCH 119/335] softirq: Check preemption after reenabling interrupts
@@ -119,7 +116,7 @@ index 86a709954f5a..9c069ef83d6d 100644
  	return 0;
  }
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 5d9800804d4a..b891e698a257 100644
+index 7803bd9628dc..3a6a769a1fc3 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
 @@ -2723,6 +2723,7 @@ static void __netif_reschedule(struct Qdisc *q)
@@ -178,5 +175,5 @@ index 5d9800804d4a..b891e698a257 100644
  #ifdef CONFIG_RPS
  	remsd = oldsd->rps_ipi_list;
 -- 
-2.17.1
+2.30.2
 

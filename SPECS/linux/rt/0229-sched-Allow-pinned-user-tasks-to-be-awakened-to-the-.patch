@@ -1,7 +1,4 @@
-From 8a542316300c9fd18d6e7976e2d7b51d74d1cbce Mon Sep 17 00:00:00 2001
-Message-Id: <8a542316300c9fd18d6e7976e2d7b51d74d1cbce.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 9383d25a1dfc6aaf2b1ca8ebefb1203239aee94b Mon Sep 17 00:00:00 2001
 From: Mike Galbraith <efault@gmx.de>
 Date: Sun, 19 Aug 2018 08:28:35 +0200
 Subject: [PATCH 229/335] sched: Allow pinned user tasks to be awakened to the
@@ -37,5 +34,5 @@ index 8c89bcdb2724..da1176ee324e 100644
  
  	return cpu_active(cpu);
 -- 
-2.17.1
+2.30.2
 

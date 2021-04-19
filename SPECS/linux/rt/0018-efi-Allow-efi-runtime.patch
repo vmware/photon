@@ -1,7 +1,4 @@
-From b6e7d6a560e4d5191ff1a58d95634274d44ff204 Mon Sep 17 00:00:00 2001
-Message-Id: <b6e7d6a560e4d5191ff1a58d95634274d44ff204.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 3e11a384ab43a73a3ac4d028c8dfba38ee0f78b5 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 26 Jul 2018 15:06:10 +0200
 Subject: [PATCH 018/335] efi: Allow efi=runtime
@@ -30,5 +27,5 @@ index a8180f9090fa..263459bc4d14 100644
  }
  early_param("efi", parse_efi_cmdline);
 -- 
-2.17.1
+2.30.2
 

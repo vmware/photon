@@ -1,7 +1,4 @@
-From a36f47121235b10ee13ba217899d6eb29ac5117a Mon Sep 17 00:00:00 2001
-Message-Id: <a36f47121235b10ee13ba217899d6eb29ac5117a.1612799231.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 2621bb8d1df3c57fb433e42e52b5755d2d65a373 Mon Sep 17 00:00:00 2001
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Date: Thu, 13 Sep 2018 13:30:21 +0200
 Subject: [PATCH 004/335] clocksource/drivers: atmel-pit: make option silent
@@ -34,5 +31,5 @@ index 0ab22e7037f4..34b07047b91f 100644
  config ATMEL_ST
  	bool "Atmel ST timer support" if COMPILE_TEST
 -- 
-2.17.1
+2.30.2
 

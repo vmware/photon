@@ -1,7 +1,4 @@
-From 69dd096bb7f612e541070ef17b9c147577b5f74e Mon Sep 17 00:00:00 2001
-Message-Id: <69dd096bb7f612e541070ef17b9c147577b5f74e.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From 95244029ee35cb1339af809f894cb302eebeb4fa Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 12 Jul 2011 15:38:34 +0200
 Subject: [PATCH 197/335] net: Use skbufhead with raw lock
@@ -18,10 +15,10 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  3 files changed, 28 insertions(+), 6 deletions(-)
 
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 4e14926433ed..8fff010fff6e 100644
+index ca5f053c6b66..bb6d72ac9ba4 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -2979,6 +2979,7 @@ struct softnet_data {
+@@ -2989,6 +2989,7 @@ struct softnet_data {
  	unsigned int		dropped;
  	struct sk_buff_head	input_pkt_queue;
  	struct napi_struct	backlog;
@@ -55,7 +52,7 @@ index 06176ef2a842..8af2e56e0fe3 100644
  		struct lock_class_key *class)
  {
 diff --git a/net/core/dev.c b/net/core/dev.c
-index 6437ea1e5edc..c71db0a668d3 100644
+index 402a4f3bbd8e..c124e08827c4 100644
 --- a/net/core/dev.c
 +++ b/net/core/dev.c
 @@ -219,14 +219,14 @@ static inline struct hlist_head *dev_index_hash(struct net *net, int ifindex)
@@ -146,5 +143,5 @@ index 6437ea1e5edc..c71db0a668d3 100644
  		skb_queue_head_init(&sd->xfrm_backlog);
  #endif
 -- 
-2.17.1
+2.30.2
 

@@ -1,7 +1,4 @@
-From ae971b1ccb47e9a09c25f7352866704fe0b421f2 Mon Sep 17 00:00:00 2001
-Message-Id: <ae971b1ccb47e9a09c25f7352866704fe0b421f2.1612799232.git.zanussi@kernel.org>
-In-Reply-To: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
-References: <9b97d36a7373516ef554024657209dac176a1ab8.1612799231.git.zanussi@kernel.org>
+From cd4888d07066c8c9aafd78525bb1b2f60a7ae405 Mon Sep 17 00:00:00 2001
 From: Ingo Molnar <mingo@elte.hu>
 Date: Tue, 29 Nov 2011 20:18:22 -0500
 Subject: [PATCH 118/335] tasklet: Prevent tasklets from going into infinite
@@ -301,5 +298,5 @@ index 6f584861d329..1d3a482246cc 100644
  {
  	return local_softirq_pending();
 -- 
-2.17.1
+2.30.2
 
