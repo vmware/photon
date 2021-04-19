@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.25
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -57,6 +57,8 @@ Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-29154
 Patch103:       bpf-x86_64-Validate-computation-of-branch-displacements.patch
 Patch104:       bpf-x86_32-Validate-computation-of-branch-displacements.patch
+# Fix for CVE-2021-23133
+Patch105:       0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
 
 #Amazon AWS
 Patch201:       0002-bump-the-default-TTL-to-255.patch
@@ -188,6 +190,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch102 -p1
 %patch103 -p1
 %patch104 -p1
+%patch105 -p1
 
 #Amazon AWS
 %patch201 -p1
@@ -390,6 +393,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Apr 19 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-3
+-   Fix for CVE-2021-23133
 *   Thu Apr 15 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.25-2
 -   Fix for CVE-2021-29154
 *   Mon Mar 22 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.25-1
