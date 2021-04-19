@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.186
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -78,6 +78,9 @@ Patch45:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 # Fix for CVE-2019-19770
 Patch46:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch47:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
+
+#Fix for CVE-2021-23133
+Patch48:        0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
 
 # 9p patches
 Patch54:        0001-fs-9p-Add-opt_metaonly-option.patch
@@ -427,6 +430,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch45 -p1
 %patch46 -p1
 %patch47 -p1
+%patch48 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -792,6 +796,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Apr 19 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.186-2
+-   Fix for CVE-2021-23133
 *   Mon Apr 19 2021 srinidhira0 <srinidhir@vmware.com> 4.19.186-1
 -   Update to version 4.19.186
 *   Thu Apr 15 2021 Keerthana K <keerthanak@vmware.com> 4.19.182-3

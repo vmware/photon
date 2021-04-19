@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.186
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -81,6 +81,9 @@ Patch63:        0005-ovl-check-permission-to-open-real-file.patch
 # Fix for CVE-2019-19770
 Patch64:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch65:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
+
+#Fix for CVE-2021-23133
+Patch66:        0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -244,6 +247,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch63 -p1
 %patch64 -p1
 %patch65 -p1
+%patch66 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -455,6 +459,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Apr 19 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.186-2
+-   Fix for CVE-2021-23133
 *   Mon Apr 19 2021 srinidhira0 <srinidhir@vmware.com> 4.19.186-1
 -   Update to version 4.19.186
 *   Thu Apr 15 2021 Keerthana K <keerthanak@vmware.com> 4.19.182-3

@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.186
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -113,6 +113,9 @@ Patch65:        0005-ovl-check-permission-to-open-real-file.patch
 # Fix for CVE-2019-19770
 Patch66:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch67:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
+
+#Fix for CVE-2021-23133
+Patch68:        0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
 
 #Fix for 9p
 Patch70:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
@@ -586,6 +589,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
+%patch68 -p1
 
 %patch70 -p1
 %patch71 -p1
@@ -1221,6 +1225,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Mon Apr 19 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.186-2
+-   Fix for CVE-2021-23133
 *   Mon Apr 19 2021 srinidhira0 <srinidhir@vmware.com> 4.19.186-1
 -   Update to version 4.19.186
 *   Thu Apr 15 2021 Keerthana K <keerthanak@vmware.com> 4.19.182-3
