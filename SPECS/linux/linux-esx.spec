@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.25
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -83,6 +83,8 @@ Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-29154
 Patch103:       bpf-x86_64-Validate-computation-of-branch-displacements.patch
 Patch104:       bpf-x86_32-Validate-computation-of-branch-displacements.patch
+# Fix for CVE-2021-23133
+Patch105:       0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -199,6 +201,7 @@ The Linux package contains the Linux kernel doc files
 %patch102 -p1
 %patch103 -p1
 %patch104 -p1
+%patch105 -p1
 
 # crypto
 %patch500 -p1
@@ -328,6 +331,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Apr 15 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-3
+-   Fix for CVE-2021-23133
 *   Thu Apr 15 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.25-2
 -   Fix for CVE-2021-29154
 *   Mon Mar 22 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.25-1
