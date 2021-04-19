@@ -1,6 +1,6 @@
 Summary:	Text file viewer
 Name:		less
-Version:	563
+Version:	581
 Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.greenwoodsoftware.com/less
@@ -8,7 +8,7 @@ Group:		Applications/File
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.greenwoodsoftware.com/less/%{name}-%{version}.tar.gz
-%define sha1 %{name}=5c19e0eb4e25f4d675af1fe65088d12e74355370
+%define sha1 %{name}=06931a8c058963197fcc2b3a63daf32452dc6cba
 BuildRequires:	ncurses-devel
 Requires:	ncurses
 %description
@@ -25,6 +25,8 @@ make DESTDIR=%{buildroot} install
 %{_bindir}/*
 %{_mandir}/*/*
 %changelog
+*   Sun Apr 18 2021 Gerrit Photon <photon-checkins@vmware.com> 581-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 563-1
 -   Automatic Version Bump
 *   Fri Jul 17 2020 Sharan Turlapati <sturlapati@vmware.com> 551-2
