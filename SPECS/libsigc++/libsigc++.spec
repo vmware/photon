@@ -1,7 +1,7 @@
 Summary:	Library that Implements a typesafe callback system for standard C++.
 Name:		libsigc++
 Version:	3.0.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		http://libsigc.sourceforge.net
 Group:		Applications/System
@@ -23,11 +23,8 @@ and has an ease of use unmatched by other C++ callback libraries.
 %setup -q
 
 %build
-./autogen.sh
-%configure \
-	--prefix=%{_prefix} \
-	--bindir=%{_bindir} \
-        --disable-doxygen-doc
+./autogen.sh --prefix=%{_prefix}
+%configure --disable-documentation
 make %{?_smp_mflags}
 
 %install
@@ -37,7 +34,6 @@ make DESTDIR=%{buildroot} install
 make %{?_smp_mflags} check
 
 %post	-p /sbin/ldconfig
-
 %postun	-p /sbin/ldconfig
 
 %files
@@ -48,9 +44,10 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 %{_libdir}/sigc++-3.0/include/*.h
 %{_includedir}/*
-%{_datadir}/*
 
 %changelog
+*   Tue Apr 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.0.4-2
+-   Fix build errors
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.4-1
 -   Automatic Version Bump
 *   Thu May 25 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.10.0-1
