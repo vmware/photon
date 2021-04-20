@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.186
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -81,6 +81,11 @@ Patch47:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 
 #Fix for CVE-2021-23133
 Patch48:        0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
+
+# Fix for CVE-2021-3444
+Patch49:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
+Patch50:        0002-bpf-Fix-32-bit-src-register-truncation-on-div-mod.patch
+Patch51:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
 
 # 9p patches
 Patch54:        0001-fs-9p-Add-opt_metaonly-option.patch
@@ -433,6 +438,9 @@ This Linux package contains hmac sha generator kernel module.
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
+%patch49 -p1
+%patch50 -p1
+%patch51 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -800,6 +808,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Apr 26 2021 Ankit Jain <ankitja@vmware.com> 4.19.186-5
+-   Fix for CVE-2021-3444
 *   Fri Apr 23 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.186-4
 -   .config: enable vfio modules
 *   Mon Apr 19 2021 Ajay Kaher <akaher@vmware.com> 4.19.186-3

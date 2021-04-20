@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.186
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -98,6 +98,11 @@ Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.
 #Fix for CVE-2019-19338
 Patch47:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch48:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
+
+# Fix for CVE-2021-3444
+Patch49:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
+Patch50:        0002-bpf-Fix-32-bit-src-register-truncation-on-div-mod.patch
+Patch51:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
 
 # Fix for CVE-2020-16119
 Patch59:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
@@ -582,6 +587,9 @@ This Linux package contains hmac sha generator kernel module.
 %patch45 -p1
 %patch47 -p1
 %patch48 -p1
+%patch49 -p1
+%patch50 -p1
+%patch51 -p1
 %patch59 -p1
 %patch60 -p1
 %patch61 -p1
@@ -1229,6 +1237,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Tue Apr 20 2021 Ankit Jain <ankitja@vmware.com> 4.19.186-4
+-   Fix for CVE-2021-3444
 *   Mon Apr 19 2021 Ajay Kaher <akaher@vmware.com> 4.19.186-3
 -   Fixes for SEV-ES
 *   Mon Apr 19 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.186-2

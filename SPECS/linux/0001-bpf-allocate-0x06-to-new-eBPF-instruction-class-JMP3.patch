@@ -1,0 +1,95 @@
+From ac56f62e06c2bc1f523bb13eb0e0b01f22143941 Mon Sep 17 00:00:00 2001
+From: Jiong Wang <jiong.wang@netronome.com>
+Date: Sat, 26 Jan 2019 12:25:59 -0500
+Subject: [PATCH 1/3] bpf: allocate 0x06 to new eBPF instruction class JMP32
+
+commit d405c7407a5468d4fc11724d76063e0647d80106 upstream
+
+The new eBPF instruction class JMP32 uses the reserved class number 0x6.
+Kernel BPF ISA documentation updated accordingly.
+
+Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ Documentation/networking/filter.txt | 15 ++++++++-------
+ include/uapi/linux/bpf.h            |  1 +
+ tools/include/uapi/linux/bpf.h      |  1 +
+ 3 files changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/Documentation/networking/filter.txt b/Documentation/networking/filter.txt
+index e6b4ebb2b243..a6caadf24372 100644
+--- a/Documentation/networking/filter.txt
++++ b/Documentation/networking/filter.txt
+@@ -863,7 +863,7 @@ Three LSB bits store instruction class which is one of:
+   BPF_STX   0x03          BPF_STX   0x03
+   BPF_ALU   0x04          BPF_ALU   0x04
+   BPF_JMP   0x05          BPF_JMP   0x05
+-  BPF_RET   0x06          [ class 6 unused, for future if needed ]
++  BPF_RET   0x06          BPF_JMP32 0x06
+   BPF_MISC  0x07          BPF_ALU64 0x07
+ 
+ When BPF_CLASS(code) == BPF_ALU or BPF_JMP, 4th bit encodes source operand ...
+@@ -900,9 +900,9 @@ If BPF_CLASS(code) == BPF_ALU or BPF_ALU64 [ in eBPF ], BPF_OP(code) is one of:
+   BPF_ARSH  0xc0  /* eBPF only: sign extending shift right */
+   BPF_END   0xd0  /* eBPF only: endianness conversion */
+ 
+-If BPF_CLASS(code) == BPF_JMP, BPF_OP(code) is one of:
++If BPF_CLASS(code) == BPF_JMP or BPF_JMP32 [ in eBPF ], BPF_OP(code) is one of:
+ 
+-  BPF_JA    0x00
++  BPF_JA    0x00  /* BPF_JMP only */
+   BPF_JEQ   0x10
+   BPF_JGT   0x20
+   BPF_JGE   0x30
+@@ -910,8 +910,8 @@ If BPF_CLASS(code) == BPF_JMP, BPF_OP(code) is one of:
+   BPF_JNE   0x50  /* eBPF only: jump != */
+   BPF_JSGT  0x60  /* eBPF only: signed '>' */
+   BPF_JSGE  0x70  /* eBPF only: signed '>=' */
+-  BPF_CALL  0x80  /* eBPF only: function call */
+-  BPF_EXIT  0x90  /* eBPF only: function return */
++  BPF_CALL  0x80  /* eBPF BPF_JMP only: function call */
++  BPF_EXIT  0x90  /* eBPF BPF_JMP only: function return */
+   BPF_JLT   0xa0  /* eBPF only: unsigned '<' */
+   BPF_JLE   0xb0  /* eBPF only: unsigned '<=' */
+   BPF_JSLT  0xc0  /* eBPF only: signed '<' */
+@@ -934,8 +934,9 @@ Classic BPF wastes the whole BPF_RET class to represent a single 'ret'
+ operation. Classic BPF_RET | BPF_K means copy imm32 into return register
+ and perform function exit. eBPF is modeled to match CPU, so BPF_JMP | BPF_EXIT
+ in eBPF means function exit only. The eBPF program needs to store return
+-value into register R0 before doing a BPF_EXIT. Class 6 in eBPF is currently
+-unused and reserved for future use.
++value into register R0 before doing a BPF_EXIT. Class 6 in eBPF is used as
++BPF_JMP32 to mean exactly the same operations as BPF_JMP, but with 32-bit wide
++operands for the comparisons instead.
+ 
+ For load and store instructions the 8-bit 'code' field is divided as:
+ 
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 71ca8c4dc290..3ee9f68bafea 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -14,6 +14,7 @@
+ /* Extended instruction set based on top of classic BPF */
+ 
+ /* instruction classes */
++#define BPF_JMP32	0x06	/* jmp mode in word width */
+ #define BPF_ALU64	0x07	/* alu mode in double word width */
+ 
+ /* ld/ldx fields */
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 13944978ada5..c6e0d69a47e4 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -14,6 +14,7 @@
+ /* Extended instruction set based on top of classic BPF */
+ 
+ /* instruction classes */
++#define BPF_JMP32	0x06	/* jmp mode in word width */
+ #define BPF_ALU64	0x07	/* alu mode in double word width */
+ 
+ /* ld/ldx fields */
+-- 
+2.23.1
+

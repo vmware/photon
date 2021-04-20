@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.186
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -81,6 +81,11 @@ Patch63:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 
 #Fix for CVE-2021-23133
 Patch64:        0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
+
+# Fix for CVE-2021-3444
+Patch65:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
+Patch66:        0002-bpf-Fix-32-bit-src-register-truncation-on-div-mod.patch
+Patch67:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -238,6 +243,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch62 -p1
 %patch63 -p1
 %patch64 -p1
+%patch65 -p1
+%patch66 -p1
+%patch67 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -469,6 +477,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Apr 20 2021 Ankit Jain <ankitja@vmware.com> 4.19.186-3
+-   Fix for CVE-2021-3444
 *   Mon Apr 19 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.186-2
 -   Fix for CVE-2021-23133
 *   Mon Apr 19 2021 srinidhira0 <srinidhir@vmware.com> 4.19.186-1
