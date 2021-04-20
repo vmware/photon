@@ -4,7 +4,7 @@
 Summary:       Mozilla's JavaScript engine.
 Name:          mozjs
 Version:       78.3.1
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
@@ -16,6 +16,7 @@ Patch1:        emitter_test.patch
 # Build fixes
 Patch2:        init_patch.patch
 Patch3:        spidermonkey_checks_disable.patch
+Patch4:        rust-nix-fix.patch
 Distribution:  Photon
 BuildRequires: which
 BuildRequires: python3-xml
@@ -49,6 +50,7 @@ This contains development tools and libraries for SpiderMonkey.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 rm -rf modules/zlib
 
 %build
@@ -89,6 +91,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/mozjs-%{major}.pc
 
 %changelog
+*   Tue Apr 20 2021 Ankit Jain <ankitja@vmware.com> 78.3.1-3
+-   Fix build failure with rust-1.51.0
 *   Fri Feb 19 2021 Alexey Makhalov <amakhalov@vmware.com> 78.3.1-2
 -   Remove python2 requirements
 *   Mon Oct 05 2020 Ankit Jain <ankitja@vmware.com> 78.3.1-1

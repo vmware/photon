@@ -1,6 +1,6 @@
 Summary:        Rust Programming Language
 Name:           rust
-Version:        1.46.0
+Version:        1.51.0
 Release:        1%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
@@ -10,19 +10,22 @@ Distribution:   Photon
 # Manually created Source tar which is equal to
 # Source0 + .git as it requires git hooks at build time
 Source0:        https://github.com/rust-lang/rust/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=4378c15c999ef5cc86882693426add57474e2d5d
+%define sha1    %{name}-%{version}=4f3ff7080e3adcbbb336b8569c7a36096ad7e12e
+Patch0:         CVE-2021-31162.patch
 BuildRequires:  git
 BuildRequires:  cmake
 BuildRequires:  glibc
 BuildRequires:  binutils
 BuildRequires:  python3
 BuildRequires:  curl-devel
+BuildRequires:  ninja-build
 
 %description
 Rust Programming Language
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 sh ./configure --prefix=%{_prefix} --enable-extended --tools="cargo"
@@ -45,6 +48,7 @@ rm %{buildroot}%{_docdir}/%{name}/*.old
 %{_mandir}/man1/*
 %{_libdir}/lib*.so
 %{_libdir}/rustlib/*
+%{_libexecdir}/cargo-credential-1password
 %{_bindir}/rust-gdb
 %{_bindir}/rust-gdbgui
 %doc %{_docdir}/%{name}/html/*
@@ -61,6 +65,8 @@ rm %{buildroot}%{_docdir}/%{name}/*.old
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+*   Mon Apr 19 2021 Ankit Jain <ankitja@vmware.com> 1.51.0-1
+-   Update to latest version to fix CVE-2021-31162
 *   Wed Sep 02 2020 Gerrit Photon <photon-checkins@vmware.com> 1.46.0-1
 -   Automatic Version Bump
 *   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 1.45.2-1
