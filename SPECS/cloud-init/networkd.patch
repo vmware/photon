@@ -1,4 +1,4 @@
-From d25513b816f92b05ea566ba02f00e7a4bc3b009f Mon Sep 17 00:00:00 2001
+From 64267639b14a56cb7e6509606fceb0f5e8f33fb3 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Thu, 4 Mar 2021 00:33:59 +0530
 Subject: [PATCH] Network config V1 & V2 support
@@ -7,14 +7,14 @@ Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
  cloudinit/net/networkd.py  | 165 +++++++++++++++++++++++++++++++++++++
  cloudinit/net/renderers.py |   4 +-
- cloudinit/net/v1tov2.py    | 114 +++++++++++++++++++++++++
- 3 files changed, 282 insertions(+), 1 deletion(-)
+ cloudinit/net/v1tov2.py    | 116 ++++++++++++++++++++++++++
+ 3 files changed, 284 insertions(+), 1 deletion(-)
  create mode 100644 cloudinit/net/networkd.py
  create mode 100755 cloudinit/net/v1tov2.py
 
 diff --git a/cloudinit/net/networkd.py b/cloudinit/net/networkd.py
 new file mode 100644
-index 00000000..8505921f
+index 00000000..1ded8b32
 --- /dev/null
 +++ b/cloudinit/net/networkd.py
 @@ -0,0 +1,165 @@
@@ -171,7 +171,7 @@ index 00000000..8505921f
 +        if network_state.version == 2:
 +            LOG.debug('V2 to V2 passthrough')
 +            return network_state.config
-+        elif network_state.version == 1:
++        if network_state.version == 1:
 +            LOG.debug('Converting from V1 to V2')
 +            return v1tov2.v1tov2(network_state.config)
 +
@@ -212,10 +212,10 @@ index e2de4d55..c3931a98 100644
  def search(priority=None, target=None, first=False):
 diff --git a/cloudinit/net/v1tov2.py b/cloudinit/net/v1tov2.py
 new file mode 100755
-index 00000000..58abf23b
+index 00000000..ffd802d5
 --- /dev/null
 +++ b/cloudinit/net/v1tov2.py
-@@ -0,0 +1,114 @@
+@@ -0,0 +1,116 @@
 +#!/usr/bin/env python3
 +
 +# Copyright (C) 2021 VMware Inc.
@@ -240,12 +240,12 @@ index 00000000..58abf23b
 +        for k, v in i.items():
 +            if k == 'type':
 +                if v == 'dhcp' or v == 'dhcp4':
-+                    cfg['id0']['dhcp4'] = 'true'
++                    cfg['id0']['dhcp4'] = True
 +                if v == 'dhcp6':
-+                    cfg['id0']['dhcp6'] = 'true'
++                    cfg['id0']['dhcp6'] = True
 +                if v == 'static' or v == 'static6':
-+                    cfg['id0']['dhcp4'] = 'false'
-+                    cfg['id0']['dhcp6'] = 'false'
++                    cfg['id0']['dhcp4'] = False
++                    cfg['id0']['dhcp6'] = False
 +            elif k == 'address':
 +                cfg['id0']['addresses'] = [v]
 +            elif k == 'netmask':
@@ -304,8 +304,10 @@ index 00000000..58abf23b
 +def parse_nameserver(v2cfg, conf):
 +    cfg = {}
 +    for k, v in conf.items():
-+        if k == 'search' or k == 'addresses':
++        if k == 'search':
 +            cfg[k] = v
++        elif k == 'address':
++            cfg['addresses'] = v
 +
 +    try:
 +        v2cfg['ethernets']['id0']['nameservers'].update(cfg)
@@ -331,5 +333,5 @@ index 00000000..58abf23b
 +
 +    return v2cfg
 -- 
-2.30.1
+2.31.1
 
