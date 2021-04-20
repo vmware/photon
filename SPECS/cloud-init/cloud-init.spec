@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        20.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -88,17 +88,17 @@ find systemd -name "cloud*.service*" | xargs sed -i s/StandardOutput=journal+con
 python3 setup.py build
 
 %install
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 python3 setup.py install -O1 --skip-build --root=%{buildroot} --init-system systemd
 
-python3 tools/render-cloudcfg --variant photon > $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg
+python3 tools/render-cloudcfg --variant photon > %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
 
 mkdir -p %{buildroot}/var/lib/cloud
-mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg.d/
+mkdir -p %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg.d/
 
 # Disable networking config by cloud-init
-cp -p %{SOURCE1} $RPM_BUILD_ROOT/%{_sysconfdir}/cloud/cloud.cfg.d/
-install -m 755 %{SOURCE2} $RPM_BUILD_ROOT/%{_bindir}/
+cp -p %{SOURCE1} %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg.d/
+install -m 755 %{SOURCE2} %{buildroot}/%{_bindir}/
 
 %check
 touch vd ud
@@ -114,7 +114,7 @@ pip3 install --upgrade pytest-metadata unittest2 mock httpretty attrs iniconfig
 make check
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %post
 %systemd_post cloud-init-local.service
@@ -157,6 +157,8 @@ rm -rf $RPM_BUILD_ROOT
 %dir /var/lib/cloud
 
 %changelog
+*   Tue Apr 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 20.4.1-2
+-   Further fixes to network config handler
 *   Wed Jan 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 20.4.1-1
 -   Upgrade to version 20.4.1
 *   Thu Dec 10 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.4-1

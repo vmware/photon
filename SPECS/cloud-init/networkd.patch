@@ -1,156 +1,40 @@
+From 64267639b14a56cb7e6509606fceb0f5e8f33fb3 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Thu, 4 Mar 2021 00:33:59 +0530
+Subject: [PATCH] Network config V1 & V2 support
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ cloudinit/net/networkd.py  | 165 +++++++++++++++++++++++++++++++++++++
+ cloudinit/net/renderers.py |   4 +-
+ cloudinit/net/v1tov2.py    | 116 ++++++++++++++++++++++++++
+ 3 files changed, 284 insertions(+), 1 deletion(-)
+ create mode 100644 cloudinit/net/networkd.py
+ create mode 100755 cloudinit/net/v1tov2.py
+
 diff --git a/cloudinit/net/networkd.py b/cloudinit/net/networkd.py
 new file mode 100644
-index 00000000..ee3dffc3
+index 00000000..1ded8b32
 --- /dev/null
 +++ b/cloudinit/net/networkd.py
-@@ -0,0 +1,428 @@
+@@ -0,0 +1,165 @@
 +# vi: ts=4 expandtab
 +#
-+# Copyright (C) 2020 VMware Inc.
++# Copyright (C) 2021 VMware Inc.
 +#
 +
 +import os
-+import copy
 +
++from . import v1tov2
 +from . import renderer
 +from pwd import getpwnam
 +from grp import getgrnam
 +from cloudinit import util
 +from cloudinit import subp
 +from cloudinit import log as logging
-+from .network_state import subnet_is_ipv6, NET_CONFIG_TO_V2, IPV6_DYNAMIC_TYPES
 +
 +
 +LOG = logging.getLogger(__name__)
-+
-+
-+def _get_params_dict_by_match(config, match):
-+    return dict((key, value) for (key, value) in config.items()
-+                if key.startswith(match))
-+
-+
-+def _extract_addresses(config, entry, ifname, features=None):
-+    '''
-+    This method parse a cloudinit.net.network_state dictionary (config)
-+
-+    An example config dictionary might look like:
-+
-+    {'mac_address': '52:54:00:12:34:00',
-+     'name': 'interface0',
-+     'subnets': [
-+        {'address': '192.168.1.2/24',
-+         'mtu': 1501,
-+         'type': 'static'},
-+        {'address': '2001:4800:78ff:1b:be76:4eff:fe06:1000',
-+         'mtu': 1480,
-+         'netmask': 64,
-+         'type': 'static'}],
-+      'type: physical',
-+      'accept-ra': 'true'
-+    }
-+
-+    An entry dictionary looks like:
-+
-+    {'set-name': 'interface0',
-+     'match': {'macaddress': '52:54:00:12:34:00'},
-+     'mtu': 1501}
-+
-+    After modification returns
-+
-+    {'set-name': 'interface0',
-+     'match': {'macaddress': '52:54:00:12:34:00'},
-+     'mtu': 1501,
-+     'address': ['192.168.1.2/24', '2001:4800:78ff:1b:be76:4eff:fe06:1000'],
-+     'ipv6-mtu': 1480}
-+    '''
-+
-+    def _listify(obj, token=' '):
-+        'Helper to convert strings to list of strings, handle single string'
-+        if not obj or type(obj) not in [str]:
-+            return obj
-+        if token in obj:
-+            return obj.split(token)
-+        else:
-+            return [obj, ]
-+
-+    if features is None:
-+        features = []
-+    addresses = []
-+    routes = []
-+    nameservers = []
-+    searchdomains = []
-+    subnets = config.get('subnets', [])
-+    if subnets is None:
-+        subnets = []
-+    for subnet in subnets:
-+        sn_type = subnet.get('type')
-+        if sn_type.startswith('dhcp'):
-+            if sn_type == 'dhcp':
-+                sn_type += '4'
-+            entry.update({sn_type: True})
-+        elif sn_type in IPV6_DYNAMIC_TYPES:
-+            entry.update({'dhcp6': True})
-+        elif sn_type in ['static']:
-+            addr = '%s' % subnet.get('address')
-+            if 'prefix' in subnet:
-+                addr += '/%d' % subnet.get('prefix')
-+            if 'gateway' in subnet and subnet.get('gateway'):
-+                gateway = subnet.get('gateway')
-+                if ':' in gateway:
-+                    entry.update({'gateway6': gateway})
-+                else:
-+                    entry.update({'gateway4': gateway})
-+            if 'dns_nameservers' in subnet:
-+                nameservers += _listify(subnet.get('dns_nameservers', []))
-+            if 'dns_search' in subnet:
-+                searchdomains += _listify(subnet.get('dns_search', []))
-+            if 'mtu' in subnet:
-+                mtukey = 'mtu'
-+                if subnet_is_ipv6(subnet) and 'ipv6-mtu' in features:
-+                    mtukey = 'ipv6-mtu'
-+                entry.update({mtukey: subnet.get('mtu')})
-+            for route in subnet.get('routes', []):
-+                to_net = '%s/%s' % (route.get('network'),
-+                                    route.get('prefix'))
-+                new_route = {
-+                    'via': route.get('gateway'),
-+                    'to': to_net,
-+                }
-+                if 'metric' in route:
-+                    new_route.update({'metric': route.get('metric', 100)})
-+                routes.append(new_route)
-+
-+            addresses.append(addr)
-+
-+    if 'mtu' in config:
-+        entry_mtu = entry.get('mtu')
-+        if entry_mtu and config['mtu'] != entry_mtu:
-+            LOG.warning(
-+                'Network config: ignoring %s device-level mtu:%s because'
-+                ' ipv4 subnet-level mtu:%s provided.',
-+                ifname, config['mtu'], entry_mtu)
-+        else:
-+            entry['mtu'] = config['mtu']
-+    if len(addresses) > 0:
-+        entry.update({'addresses': addresses})
-+    if len(routes) > 0:
-+        entry.update({'routes': routes})
-+    if len(nameservers) > 0:
-+        ns = {'addresses': nameservers}
-+        entry.update({'nameservers': ns})
-+    if len(searchdomains) > 0:
-+        ns = entry.get('nameservers', {})
-+        ns.update({'search': searchdomains})
-+        entry.update({'nameservers': ns})
-+    if 'accept-ra' in config and config['accept-ra'] is not None:
-+        entry.update({'accept-ra': util.is_true(config.get('accept-ra'))})
-+
-+
-+def _extract_bond_slaves_by_name(interfaces, entry, bond_master):
-+    bond_slave_names = sorted([name for (name, cfg) in interfaces.items()
-+                               if cfg.get('bond-master', None) == bond_master])
-+    if len(bond_slave_names) > 0:
-+        entry.update({'interfaces': bond_slave_names})
 +
 +
 +class Renderer(renderer.Renderer):
@@ -219,9 +103,8 @@ index 00000000..ee3dffc3
 +                    nameservers = val['nameservers']
 +
 +                    if ('search' in nameservers):
-+                        search = nameservers['search']
-+                        s = ' '.join(search)
-+                        conf += 'Domains=%s\n' % s
++                        s = nameservers['search']
++                        conf += 'Domains=%s\n' % ' '.join(s)
 +                    if ('addresses' in nameservers):
 +                        s = nameservers['addresses']
 +                        conf += 'DNS=%s\n' % ' '.join(s)
@@ -277,152 +160,20 @@ index 00000000..ee3dffc3
 +
 +
 +    def render_network_state(self, network_state, templates=None, target=None):
-+        # check network state for version
-+        # if v2, then extract network_state.config
-+        # else render_v2_from_state
 +        fpnplan = os.path.join(subp.target_path(target), self.network_conf_dir)
 +        util.ensure_dir(os.path.dirname(fpnplan))
 +
-+        # render from state
 +        content = self._render_content(network_state)
 +        self.create_network_file(content)
 +
-+    def _render_content(self, network_state):
 +
-+        # if content already in netplan format, pass it back
++    def _render_content(self, network_state):
 +        if network_state.version == 2:
 +            LOG.debug('V2 to V2 passthrough')
 +            return network_state.config
-+
-+        ethernets = {}
-+        wifis = {}
-+        bridges = {}
-+        bonds = {}
-+        vlans = {}
-+        content = {}
-+
-+        interfaces = network_state._network_state.get('interfaces', [])
-+
-+        nameservers = network_state.dns_nameservers
-+        searchdomains = network_state.dns_searchdomains
-+
-+        for config in network_state.iter_interfaces():
-+            ifname = config.get('name')
-+            # filter None (but not False) entries up front
-+            ifcfg = dict((key, value) for (key, value) in config.items()
-+                         if value is not None)
-+
-+            if_type = ifcfg.get('type')
-+            if if_type == 'physical':
-+                # required_keys = ['name', 'mac_address']
-+                eth = {
-+                    'set-name': ifname,
-+                    'match': ifcfg.get('match', None),
-+                }
-+                if eth['match'] is None:
-+                    macaddr = ifcfg.get('mac_address', None)
-+                    if macaddr is not None:
-+                        eth['match'] = {'macaddress': macaddr.lower()}
-+                    else:
-+                        del eth['match']
-+                        del eth['set-name']
-+                _extract_addresses(ifcfg, eth, ifname)
-+                ethernets.update({ifname: eth})
-+
-+            elif if_type == 'bond':
-+                # required_keys = ['name', 'bond_interfaces']
-+                bond = {}
-+                bond_config = {}
-+                # extract bond params and drop the bond_ prefix as it's
-+                # redundent in v2 yaml format
-+                v2_bond_map = NET_CONFIG_TO_V2.get('bond')
-+                for match in ['bond_', 'bond-']:
-+                    bond_params = _get_params_dict_by_match(ifcfg, match)
-+                    for (param, value) in bond_params.items():
-+                        newname = v2_bond_map.get(param.replace('_', '-'))
-+                        if newname is None:
-+                            continue
-+                        bond_config.update({newname: value})
-+
-+                if len(bond_config) > 0:
-+                    bond.update({'parameters': bond_config})
-+                if ifcfg.get('mac_address'):
-+                    bond['macaddress'] = ifcfg.get('mac_address').lower()
-+                slave_interfaces = ifcfg.get('bond-slaves')
-+                if slave_interfaces == 'none':
-+                    _extract_bond_slaves_by_name(interfaces, bond, ifname)
-+                _extract_addresses(ifcfg, bond, ifname)
-+                bonds.update({ifname: bond})
-+
-+            elif if_type == 'bridge':
-+                # required_keys = ['name', 'bridge_ports']
-+                ports = sorted(copy.copy(ifcfg.get('bridge_ports')))
-+                bridge = {
-+                    'interfaces': ports,
-+                }
-+                # extract bridge params and drop the bridge prefix as it's
-+                # redundent in v2 yaml format
-+                match_prefix = 'bridge_'
-+                params = _get_params_dict_by_match(ifcfg, match_prefix)
-+                br_config = {}
-+
-+                # v2 yaml uses different names for the keys
-+                # and at least one value format change
-+                v2_bridge_map = NET_CONFIG_TO_V2.get('bridge')
-+                for (param, value) in params.items():
-+                    newname = v2_bridge_map.get(param)
-+                    if newname is None:
-+                        continue
-+                    br_config.update({newname: value})
-+                    if newname in ['path-cost', 'port-priority']:
-+                        # <interface> <value> -> <interface>: int(<value>)
-+                        newvalue = {}
-+                        for val in value:
-+                            (port, portval) = val.split()
-+                            newvalue[port] = int(portval)
-+                        br_config.update({newname: newvalue})
-+
-+                if len(br_config) > 0:
-+                    bridge.update({'parameters': br_config})
-+                if ifcfg.get('mac_address'):
-+                    bridge['macaddress'] = ifcfg.get('mac_address').lower()
-+                _extract_addresses(ifcfg, bridge, ifname)
-+                bridges.update({ifname: bridge})
-+
-+            elif if_type == 'vlan':
-+                # required_keys = ['name', 'vlan_id', 'vlan-raw-device']
-+                vlan = {
-+                    'id': ifcfg.get('vlan_id'),
-+                    'link': ifcfg.get('vlan-raw-device')
-+                }
-+                macaddr = ifcfg.get('mac_address', None)
-+                if macaddr is not None:
-+                    vlan['macaddress'] = macaddr.lower()
-+                _extract_addresses(ifcfg, vlan, ifname)
-+                vlans.update({ifname: vlan})
-+
-+        # inject global nameserver values under each all interface which
-+        # has addresses and do not already have a DNS configuration
-+        if nameservers or searchdomains:
-+            nscfg = {'addresses': nameservers, 'search': searchdomains}
-+            for section in [ethernets, wifis, bonds, bridges, vlans]:
-+                for _name, cfg in section.items():
-+                    if 'nameservers' in cfg or 'addresses' not in cfg:
-+                        continue
-+                    cfg.update({'nameservers': nscfg})
-+
-+        if ethernets:
-+            content.update({'ethernets': ethernets})
-+        if wifis:
-+            content.update({'wifis': wifis})
-+        if bonds:
-+            content.update({'bonds': bonds})
-+        if bridges:
-+            content.update({'bridges': bridges})
-+        if vlans:
-+            content.update({'vlans': vlans})
-+
-+        return content
++        if network_state.version == 1:
++            LOG.debug('Converting from V1 to V2')
++            return v1tov2.v1tov2(network_state.config)
 +
 +
 +def available(target=None):
@@ -459,3 +210,128 @@ index e2de4d55..c3931a98 100644
  
  
  def search(priority=None, target=None, first=False):
+diff --git a/cloudinit/net/v1tov2.py b/cloudinit/net/v1tov2.py
+new file mode 100755
+index 00000000..ffd802d5
+--- /dev/null
++++ b/cloudinit/net/v1tov2.py
+@@ -0,0 +1,116 @@
++#!/usr/bin/env python3
++
++# Copyright (C) 2021 VMware Inc.
++
++# Simple module to convert cloud-init network config V1 to V2
++# This satisfies most of our use cases at the moment
++# Need to add support to handle all other configs as needed
++
++
++import yaml
++import ipaddress
++
++
++def parse_subnet_routes(cfg, conf):
++    # place holder for routes inside subnets
++    pass
++
++
++def parse_subnets(v2cfg, cfg, conf):
++    ip4prefixlen = None
++    for i in conf:
++        for k, v in i.items():
++            if k == 'type':
++                if v == 'dhcp' or v == 'dhcp4':
++                    cfg['id0']['dhcp4'] = True
++                if v == 'dhcp6':
++                    cfg['id0']['dhcp6'] = True
++                if v == 'static' or v == 'static6':
++                    cfg['id0']['dhcp4'] = False
++                    cfg['id0']['dhcp6'] = False
++            elif k == 'address':
++                cfg['id0']['addresses'] = [v]
++            elif k == 'netmask':
++                ip4 = ipaddress.IPv4Network((0, v))
++                # TODO: need to make use of this
++                ip4prefixlen = ip4.prefixlen
++            elif k == 'gateway':
++                cfg['id0']['gateway4'] = v
++            elif k == 'dns_nameservers':
++                try:
++                    cfg['id0']['nameservers'].update({'addresses' : v})
++                except KeyError:
++                    cfg['id0']['nameservers'] = {'addresses' : v}
++            elif k == 'dns_search':
++                try:
++                    cfg['id0']['nameservers'].update({'search' : v})
++                except KeyError:
++                    cfg['id0']['nameservers'] = {'search' : v}
++            elif k == 'routes':
++                parse_subnet_routes(cfg, v)
++
++    v2cfg['ethernets'].update(cfg)
++
++
++def parse_phy(v2cfg, conf):
++    cfg = dict(id0 = dict())
++    for k, v in conf.items():
++        if k == 'name':
++            cfg['id0']['set-name'] = v
++        elif k == 'mac_address':
++            cfg['id0']['match'] = {'macaddress' : v}
++        elif k == 'subnets':
++            parse_subnets(v2cfg, cfg, v)
++        elif k == 'mtu':
++            cfg['id0']['mtu'] = v
++
++    v2cfg['ethernets'].update(cfg)
++
++
++def parse_routes(v2cfg, conf):
++    cfg = {}
++    for k, v in conf.items():
++        if k == 'destination':
++            cfg['to'] = v
++        elif k == 'gateway':
++            cfg['via'] = v
++        elif k == 'metric':
++            cfg[k] = v
++
++    try:
++        v2cfg['ethernets']['id0']['routes'].append(cfg)
++    except KeyError:
++        v2cfg['ethernets']['id0']['routes'] = [cfg]
++
++
++def parse_nameserver(v2cfg, conf):
++    cfg = {}
++    for k, v in conf.items():
++        if k == 'search':
++            cfg[k] = v
++        elif k == 'address':
++            cfg['addresses'] = v
++
++    try:
++        v2cfg['ethernets']['id0']['nameservers'].update(cfg)
++    except KeyError:
++        v2cfg['ethernets']['id0']['nameservers'] = cfg
++
++
++def v1tov2(cfg):
++    v2cfg = dict(
++        ethernets =  dict()
++    )
++
++    for i in cfg:
++        for k, v in i.items():
++            if k != 'type':
++                continue
++            if v == 'physical':
++                parse_phy(v2cfg, i)
++            elif v == 'route':
++                parse_routes(v2cfg, i)
++            elif v == 'nameserver':
++                parse_nameserver(v2cfg, i)
++
++    return v2cfg
+-- 
+2.31.1
+
