@@ -1,7 +1,7 @@
 Summary:          WPA client
 Name:             wpa_supplicant
 Version:          2.9
-Release:          3%{?dist}
+Release:          4%{?dist}
 License:          BSD
 URL:              https://w1.fi
 Group:            Applications/Communications
@@ -11,6 +11,7 @@ Source0:          https://w1.fi/releases/%{name}-%{version}.tar.gz
 %define sha1      wpa=b784c0e5e56889c81d027757a4623659bf15f9a8
 Patch0:           CVE-2019-16275_AP_Silently_ignore_management_frame_from_unexpected_source_address.patch
 Patch1:           wpa_supplicant-CVE-2021-27803-0001-P2P-Fix-a-corner-case-in-peer-addition-based-on-PD-R.patch
+Patch2:           wpa_supplicant-CVE-2021-30004.patch
 BuildRequires:    libnl-devel openssl-devel
 Requires:         libnl
 Requires:         openssl
@@ -22,6 +23,7 @@ WPA Supplicant is a Wi-Fi Protected Access (WPA) client and IEEE 802.1X supplica
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 cat > wpa_supplicant/.config << "EOF"
@@ -98,6 +100,8 @@ EOF
 %{_sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf
 
 %changelog
+*   Wed Apr 21 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.9-4
+-   Fix CVE-2021-30004
 *   Tue Mar 9 2021 Michelle Wang <michellew@vmware.com> 2.9-3
 -   Patch for CVE-2021-27803
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.9-2
