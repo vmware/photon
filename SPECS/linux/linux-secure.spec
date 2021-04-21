@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.25
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -292,6 +292,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Apr 22 2021 Keerthana K <keerthanak@vmware.com> 5.10.25-4
+-   Update 0001-Skip-rap-plugin-for-aesni-intel-modules.patch for 5.10.25 kernel.
+-   Remove hmac(sha224) from broken kat test.
 *   Mon Apr 19 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-3
 -   Fix for CVE-2021-23133
 *   Thu Apr 15 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.25-2

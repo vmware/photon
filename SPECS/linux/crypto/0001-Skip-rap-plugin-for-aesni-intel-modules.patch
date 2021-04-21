@@ -179,7 +179,7 @@ index ad8a7188a..81fe0c9b6 100644
  #endif
  
  
-@@ -536,15 +537,164 @@ static int xts_aesni_setkey(struct crypto_skcipher *tfm, const u8 *key,
+@@ -540,15 +540,164 @@ static int xts_aesni_setkey(struct crypto_skcipher *tfm, const u8 *key,
  				  key + keylen, keylen);
  }
  
@@ -345,7 +345,7 @@ index ad8a7188a..81fe0c9b6 100644
 +	x86_aesni_glue_xts_crypt_128bit_one(ctx, dst, src, iv, aesni_dec);
  }
  
- static void aesni_xts_enc8(const void *ctx, u8 *dst, const u8 *src, le128 *iv)
+ static void aesni_xts_enc32(const void *ctx, u8 *dst, const u8 *src, le128 *iv)
 @@ -588,7 +738,7 @@ static int xts_encrypt(struct skcipher_request *req)
  	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
  	struct aesni_xts_ctx *ctx = crypto_skcipher_ctx(tfm);
