@@ -1,14 +1,15 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
-Version:        1.3.4
-Release:        2%{?dist}
+Version:        1.3.5
+Release:        1%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
-%define sha1    openscap=3e303f06aa00e5c2616db606b980389ee0b73883
+%define sha1    openscap=77494383980082f8bc625a6e196a6760d30a5107
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+BuildRequires:  xmlsec1-devel
 BuildRequires:  swig libxml2-devel libxslt-devel XML-Parser
 BuildRequires:  rpm-devel
 BuildRequires:  libgcrypt-devel
@@ -23,35 +24,40 @@ BuildRequires:  python3-devel
 BuildRequires:  cmake
 Requires:       curl
 Requires:       popt
+
 %description
-SCAP is a multi-purpose framework of specifications that supports automated configuration, vulnerability and patch checking, technical control compliance activities, and security measurement.
+SCAP is a multi-purpose framework of specifications that supports automated configuration,
+vulnerability and patch checking, technical control compliance activities, and security measurement.
 OpenSCAP has received a NIST certification for its support of SCAP 1.2.
 
-%package devel
-Summary: Development Libraries for openscap
-Group: Development/Libraries
-Requires: openscap = %{version}-%{release}
-Requires: libxml2-devel
-%description devel
+%package        devel
+Summary:        Development Libraries for openscap
+Group:          Development/Libraries
+Requires:       openscap = %{version}-%{release}
+Requires:       libxml2-devel
+
+%description    devel
 Header files for doing development with openscap.
 
-%package perl
-Summary: openscap perl scripts
-Requires: perl
-Requires: openscap = %{version}-%{release}
-%description perl
+%package        perl
+Summary:        openscap perl scripts
+Requires:       perl
+Requires:       openscap = %{version}-%{release}
+
+%description    perl
 Perl scripts.
 
-%package python3
-Summary: openscap python
-Group: Development/Libraries
-Requires: openscap = %{version}-%{release}
-%description python3
-Python bindings.
+%package        python3
+Summary:        openscap python
+Group:          Development/Libraries
+Requires:       openscap = %{version}-%{release}
 
+%description    python3
+Python bindings.
 
 %prep
 %setup -q
+
 %build
 mkdir build && cd build
 cmake \
@@ -61,7 +67,6 @@ cmake \
 --enable-sce \
 --enable-perl \
 ..
-
 make
 
 %install
@@ -82,7 +87,6 @@ find %{buildroot} -name '*.la' -delete
 %{_bindir}/*
 %{_mandir}/man8/*
 /usr/share/openscap/*
-/usr/share/perl5/*
 %{_libdir}/libopenscap_sce.so.*
 %{_libdir}/libopenscap.so.*
 
@@ -102,6 +106,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/python3.9/*
 
 %changelog
+*   Fri Apr 23 2021 Gerrit Photon <photon-checkins@vmware.com> 1.3.5-1
+-   Automatic Version Bump
 *   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 1.3.4-2
 -   Build with python3
 *   Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.3.4-1
