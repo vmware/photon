@@ -1,0 +1,65 @@
+From c7a03289e1b676cfcc962b4b207fcdaf661e3364 Mon Sep 17 00:00:00 2001
+From: Benjamin Poirier <bpoirier@suse.com>
+Date: Mon, 3 Oct 2016 10:47:50 +0800
+Subject: [PATCH 1/8] vmxnet3: Wake queue from reset work
+
+commit 277964e19e1416ca31301e113edb2580c81a8b66 upstream.
+
+vmxnet3_reset_work() expects tx queues to be stopped (via
+vmxnet3_quiesce_dev -> netif_tx_disable). However, this races with the
+netif_wake_queue() call in netif_tx_timeout() such that the driver's
+start_xmit routine may be called unexpectedly, triggering one of the BUG_ON
+in vmxnet3_map_pkt with a stack trace like this:
+
+RIP: 0010:[<ffffffffa00cf4bc>] vmxnet3_map_pkt+0x3ac/0x4c0 [vmxnet3]
+ [<ffffffffa00cf7e0>] vmxnet3_tq_xmit+0x210/0x4e0 [vmxnet3]
+ [<ffffffff813ab144>] dev_hard_start_xmit+0x2e4/0x4c0
+ [<ffffffff813c956e>] sch_direct_xmit+0x17e/0x1e0
+ [<ffffffff813c96a7>] __qdisc_run+0xd7/0x130
+ [<ffffffff813a6a7a>] net_tx_action+0x10a/0x200
+ [<ffffffff810691df>] __do_softirq+0x11f/0x260
+ [<ffffffff81472fdc>] call_softirq+0x1c/0x30
+ [<ffffffff81004695>] do_softirq+0x65/0xa0
+ [<ffffffff81069b89>] local_bh_enable_ip+0x99/0xa0
+ [<ffffffffa031ff36>] destroy_conntrack+0x96/0x110 [nf_conntrack]
+ [<ffffffff813d65e2>] nf_conntrack_destroy+0x12/0x20
+ [<ffffffff8139c6d5>] skb_release_head_state+0xb5/0xf0
+ [<ffffffff8139d299>] skb_release_all+0x9/0x20
+ [<ffffffff8139cfe9>] __kfree_skb+0x9/0x90
+ [<ffffffffa00d0069>] vmxnet3_quiesce_dev+0x209/0x340 [vmxnet3]
+ [<ffffffffa00d020a>] vmxnet3_reset_work+0x6a/0xa0 [vmxnet3]
+ [<ffffffff8107d7cc>] process_one_work+0x16c/0x350
+ [<ffffffff810804fa>] worker_thread+0x17a/0x410
+ [<ffffffff810848c6>] kthread+0x96/0xa0
+ [<ffffffff81472ee4>] kernel_thread_helper+0x4/0x10
+
+Signed-off-by: Benjamin Poirier <bpoirier@suse.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 52ac3766cb10..a1d433fc4084 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -3044,7 +3044,6 @@ vmxnet3_tx_timeout(struct net_device *netdev)
+ 
+ 	netdev_err(adapter->netdev, "tx hang\n");
+ 	schedule_work(&adapter->work);
+-	netif_wake_queue(adapter->netdev);
+ }
+ 
+ 
+@@ -3071,6 +3070,7 @@ vmxnet3_reset_work(struct work_struct *data)
+ 	}
+ 	rtnl_unlock();
+ 
++	netif_wake_queue(adapter->netdev);
+ 	clear_bit(VMXNET3_STATE_BIT_RESETTING, &adapter->state);
+ }
+ 
+-- 
+2.25.1
+

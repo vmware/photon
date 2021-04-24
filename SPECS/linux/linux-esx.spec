@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.266
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -125,6 +125,16 @@ Patch85:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch86:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch87:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 
+# Various vmxnet3 driver fixes:
+Patch91:        0001-vmxnet3-Wake-queue-from-reset-work.patch
+Patch92:        0002-vmxnet3-avoid-assumption-about-invalid-dma_pa-in-vmx.patch
+Patch93:        0003-vmxnet3-avoid-xmit-reset-due-to-a-race-in-vmxnet3.patch
+Patch94:        0004-vmxnet3-use-correct-flag-to-indicate-LRO-feature.patch
+Patch95:        0005-vmxnet3-fix-incorrect-dereference-when-rxvlan-is-dis.patch
+Patch96:        0006-vmxnet3-set-the-DMA-mask-before-the-first-DMA-map-op.patch
+Patch97:        0007-vmxnet3-use-DMA-memory-barriers-where-required.patch
+Patch98:        0008-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
+
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -243,6 +253,14 @@ The Linux package contains the Linux kernel doc files
 %patch85 -p1
 %patch86 -p1
 %patch87 -p1
+%patch91 -p1
+%patch92 -p1
+%patch93 -p1
+%patch94 -p1
+%patch95 -p1
+%patch96 -p1
+%patch97 -p1
+%patch98 -p1
 
 %build
 # patch vmw_balloon driver
@@ -333,6 +351,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Sat Apr 24 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.266-2
+-   Backport various fixes to the vmxnet3 driver from mainline.
 *   Thu Apr 15 2021 srinidhira0 <srinidhir@vmware.com> 4.4.266-1
 -   Update to version 4.4.266
 *   Wed Mar 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.263-1

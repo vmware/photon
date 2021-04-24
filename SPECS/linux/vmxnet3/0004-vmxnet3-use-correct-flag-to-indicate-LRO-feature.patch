@@ -1,0 +1,62 @@
+From f4ceea140888f9778be43bd3345dc0fb363ddcc3 Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <doshir@vmware.com>
+Date: Fri, 16 Mar 2018 14:49:19 -0700
+Subject: [PATCH 4/8] vmxnet3: use correct flag to indicate LRO feature
+
+commit 034f405793897a3c8f642935f5494b86c340cde7 upstream.
+
+'Commit 45dac1d6ea04 ("vmxnet3: Changes for vmxnet3 adapter version 2
+(fwd)")' introduced a flag "lro" in structure vmxnet3_adapter which is
+used to indicate whether LRO is enabled or not. However, the patch
+did not set the flag and hence it was never exercised.
+
+So, when LRO is enabled, it resulted in poor TCP performance due to
+delayed acks. This issue is seen with packets which are larger than
+the mss getting a delayed ack rather than an immediate ack, thus
+resulting in high latency.
+
+This patch removes the lro flag and directly uses device features
+against NETIF_F_LRO to check if lro is enabled.
+
+Fixes: 45dac1d6ea04 ("vmxnet3: Changes for vmxnet3 adapter version 2 (fwd)")
+Reported-by: Rachel Lunnon <rachel_lunnon@stormagic.com>
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Shrikrishna Khare <skhare@vmware.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[ Srivatsa: Dropped the vmxnet3 driver version update since this fix
+was applied without the changes leading up to it. ]
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 3 ++-
+ drivers/net/vmxnet3/vmxnet3_int.h | 1 -
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 630c7041c169..9e5d0aa1229d 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1443,7 +1443,8 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 			vmxnet3_rx_csum(adapter, skb,
+ 					(union Vmxnet3_GenericDesc *)rcd);
+ 			skb->protocol = eth_type_trans(skb, adapter->netdev);
+-			if (!rcd->tcp || !adapter->lro)
++			if (!rcd->tcp ||
++			    !(adapter->netdev->features & NETIF_F_LRO))
+ 				goto not_lro;
+ 
+ 			if (segCnt != 0 && mss != 0) {
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index 3d2b64e63408..ccef9921cf01 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -331,7 +331,6 @@ struct vmxnet3_adapter {
+ 	u8                              version;
+ 
+ 	bool				rxcsum;
+-	bool				lro;
+ 
+ #ifdef VMXNET3_RSS
+ 	struct UPT1_RSSConf		*rss_conf;
+-- 
+2.25.1
+

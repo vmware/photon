@@ -1,0 +1,78 @@
+From 2019ab1cb165677e05f5bdecf987de0983b7480c Mon Sep 17 00:00:00 2001
+From: "hpreg@vmware.com" <hpreg@vmware.com>
+Date: Mon, 14 May 2018 08:14:49 -0400
+Subject: [PATCH 7/8] vmxnet3: use DMA memory barriers where required
+
+commit f3002c1374fb2367c9d8dbb28852791ef90d2bac upstream.
+
+The gen bits must be read first from (resp. written last to) DMA memory.
+The proper way to enforce this on Linux is to call dma_rmb() (resp.
+dma_wmb()).
+
+Signed-off-by: Regis Duchesne <hpreg@vmware.com>
+Acked-by: Ronak Doshi <doshir@vmware.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[ Srivatsa: Dropped the vmxnet3 driver version update since this fix
+was applied without the changes leading up to it. ]
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index bce930f19d87..93136c85a994 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -369,6 +369,11 @@ vmxnet3_tq_tx_complete(struct vmxnet3_tx_queue *tq,
+ 
+ 	gdesc = tq->comp_ring.base + tq->comp_ring.next2proc;
+ 	while (VMXNET3_TCD_GET_GEN(&gdesc->tcd) == tq->comp_ring.gen) {
++		/* Prevent any &gdesc->tcd field from being (speculatively)
++		 * read before (&gdesc->tcd)->gen is read.
++		 */
++		dma_rmb();
++
+ 		completed += vmxnet3_unmap_pkt(VMXNET3_TCD_GET_TXIDX(
+ 					       &gdesc->tcd), tq, adapter->pdev,
+ 					       adapter);
+@@ -1100,6 +1105,11 @@ vmxnet3_tq_xmit(struct sk_buff *skb, struct vmxnet3_tx_queue *tq,
+ 		gdesc->txd.tci = skb_vlan_tag_get(skb);
+ 	}
+ 
++	/* Ensure that the write to (&gdesc->txd)->gen will be observed after
++	 * all other writes to &gdesc->txd.
++	 */
++	dma_wmb();
++
+ 	/* finally flips the GEN bit of the SOP desc. */
+ 	gdesc->dword[2] = cpu_to_le32(le32_to_cpu(gdesc->dword[2]) ^
+ 						  VMXNET3_TXD_GEN);
+@@ -1295,6 +1305,12 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 			 */
+ 			break;
+ 		}
++
++		/* Prevent any rcd field from being (speculatively) read before
++		 * rcd->gen is read.
++		 */
++		dma_rmb();
++
+ 		BUG_ON(rcd->rqID != rq->qid && rcd->rqID != rq->qid2);
+ 		idx = rcd->rxdIdx;
+ 		ring_idx = rcd->rqID < adapter->num_rx_queues ? 0 : 1;
+@@ -1498,6 +1514,12 @@ rcd_done:
+ 		ring->next2comp = idx;
+ 		num_to_alloc = vmxnet3_cmd_ring_desc_avail(ring);
+ 		ring = rq->rx_ring + ring_idx;
++
++		/* Ensure that the writes to rxd->gen bits will be observed
++		 * after all other writes to rxd objects.
++		 */
++		dma_wmb();
++
+ 		while (num_to_alloc) {
+ 			vmxnet3_getRxDesc(rxd, &ring->base[ring->next2fill].rxd,
+ 					  &rxCmdDesc);
+-- 
+2.25.1
+

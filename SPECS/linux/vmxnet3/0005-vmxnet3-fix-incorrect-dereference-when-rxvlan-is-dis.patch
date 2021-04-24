@@ -1,0 +1,71 @@
+From 88f85eeca2e876cb8f26a8688f93ee6a93f3d40b Mon Sep 17 00:00:00 2001
+From: Ronak Doshi <doshir@vmware.com>
+Date: Wed, 18 Apr 2018 12:48:04 -0700
+Subject: [PATCH 5/8] vmxnet3: fix incorrect dereference when rxvlan is
+ disabled
+
+commit 65ec0bd1c7c14522670a5294de35710fb577a7fd upstream.
+
+vmxnet3_get_hdr_len() is used to calculate the header length which in
+turn is used to calculate the gso_size for skb. When rxvlan offload is
+disabled, vlan tag is present in the header and the function references
+ip header from sizeof(ethhdr) and leads to incorrect pointer reference.
+
+This patch fixes this issue by taking sizeof(vlan_ethhdr) into account
+if vlan tag is present and correctly references the ip hdr.
+
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Acked-by: Guolin Yang <gyang@vmware.com>
+Acked-by: Louis Luo <llouis@vmware.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[ Srivatsa: Dropped the vmxnet3 driver version update since this fix
+was applied without the changes leading up to it. ]
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 9e5d0aa1229d..66e3a27aa6e6 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -1215,6 +1215,7 @@ vmxnet3_get_hdr_len(struct vmxnet3_adapter *adapter, struct sk_buff *skb,
+ 	union {
+ 		void *ptr;
+ 		struct ethhdr *eth;
++		struct vlan_ethhdr *veth;
+ 		struct iphdr *ipv4;
+ 		struct ipv6hdr *ipv6;
+ 		struct tcphdr *tcp;
+@@ -1225,16 +1226,24 @@ vmxnet3_get_hdr_len(struct vmxnet3_adapter *adapter, struct sk_buff *skb,
+ 	if (unlikely(sizeof(struct iphdr) + sizeof(struct tcphdr) > maplen))
+ 		return 0;
+ 
++	if (skb->protocol == cpu_to_be16(ETH_P_8021Q) ||
++	    skb->protocol == cpu_to_be16(ETH_P_8021AD))
++		hlen = sizeof(struct vlan_ethhdr);
++	else
++		hlen = sizeof(struct ethhdr);
++
+ 	hdr.eth = eth_hdr(skb);
+ 	if (gdesc->rcd.v4) {
+-		BUG_ON(hdr.eth->h_proto != htons(ETH_P_IP));
+-		hdr.ptr += sizeof(struct ethhdr);
++		BUG_ON(hdr.eth->h_proto != htons(ETH_P_IP) &&
++		       hdr.veth->h_vlan_encapsulated_proto != htons(ETH_P_IP));
++		hdr.ptr += hlen;
+ 		BUG_ON(hdr.ipv4->protocol != IPPROTO_TCP);
+ 		hlen = hdr.ipv4->ihl << 2;
+ 		hdr.ptr += hdr.ipv4->ihl << 2;
+ 	} else if (gdesc->rcd.v6) {
+-		BUG_ON(hdr.eth->h_proto != htons(ETH_P_IPV6));
+-		hdr.ptr += sizeof(struct ethhdr);
++		BUG_ON(hdr.eth->h_proto != htons(ETH_P_IPV6) &&
++		       hdr.veth->h_vlan_encapsulated_proto != htons(ETH_P_IPV6));
++		hdr.ptr += hlen;
+ 		/* Use an estimated value, since we also need to handle
+ 		 * TSO case.
+ 		 */
+-- 
+2.25.1
+

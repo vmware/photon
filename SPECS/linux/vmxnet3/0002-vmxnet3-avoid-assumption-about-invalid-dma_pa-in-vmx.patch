@@ -1,0 +1,70 @@
+From e9b0898345eb2a9eeaad68611dcfb25362059e53 Mon Sep 17 00:00:00 2001
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Date: Sat, 15 Oct 2016 00:01:20 +0300
+Subject: [PATCH 2/8] vmxnet3: avoid assumption about invalid dma_pa in
+ vmxnet3_set_mc()
+
+commit fb5c6cfaec126d9a96b9dd471d4711bf4c737a6f upstream.
+
+vmxnet3_set_mc() checks new_table_pa returned by dma_map_single()
+with dma_mapping_error(), but even there it assumes zero is invalid pa
+(it assumes dma_mapping_error(...,0) returns true if new_table is NULL).
+
+The patch adds an explicit variable to track status of new_table_pa.
+
+Found by Linux Driver Verification project (linuxtesting.org).
+
+v2: use "bool" and "true"/"false" for boolean variables.
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index a1d433fc4084..e98e32eb3167 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -2202,6 +2202,7 @@ vmxnet3_set_mc(struct net_device *netdev)
+ 					&adapter->shared->devRead.rxFilterConf;
+ 	u8 *new_table = NULL;
+ 	dma_addr_t new_table_pa = 0;
++	bool new_table_pa_valid = false;
+ 	u32 new_mode = VMXNET3_RXM_UCAST;
+ 
+ 	if (netdev->flags & IFF_PROMISC) {
+@@ -2230,13 +2231,15 @@ vmxnet3_set_mc(struct net_device *netdev)
+ 							new_table,
+ 							sz,
+ 							PCI_DMA_TODEVICE);
++				if (!dma_mapping_error(&adapter->pdev->dev,
++						       new_table_pa)) {
++					new_mode |= VMXNET3_RXM_MCAST;
++					new_table_pa_valid = true;
++					rxConf->mfTablePA = cpu_to_le64(
++								new_table_pa);
++				}
+ 			}
+-
+-			if (!dma_mapping_error(&adapter->pdev->dev,
+-					       new_table_pa)) {
+-				new_mode |= VMXNET3_RXM_MCAST;
+-				rxConf->mfTablePA = cpu_to_le64(new_table_pa);
+-			} else {
++			if (!new_table_pa_valid) {
+ 				netdev_info(netdev,
+ 					    "failed to copy mcast list, setting ALL_MULTI\n");
+ 				new_mode |= VMXNET3_RXM_ALL_MULTI;
+@@ -2261,7 +2264,7 @@ vmxnet3_set_mc(struct net_device *netdev)
+ 			       VMXNET3_CMD_UPDATE_MAC_FILTERS);
+ 	spin_unlock_irqrestore(&adapter->cmd_lock, flags);
+ 
+-	if (new_table_pa)
++	if (new_table_pa_valid)
+ 		dma_unmap_single(&adapter->pdev->dev, new_table_pa,
+ 				 rxConf->mfTableLen, PCI_DMA_TODEVICE);
+ 	kfree(new_table);
+-- 
+2.25.1
+

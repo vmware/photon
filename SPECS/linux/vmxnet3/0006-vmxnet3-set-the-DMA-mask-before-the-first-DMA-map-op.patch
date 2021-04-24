@@ -1,0 +1,140 @@
+From 0c102a639ded0a2b89a3517bd7696da15735d7fe Mon Sep 17 00:00:00 2001
+From: "hpreg@vmware.com" <hpreg@vmware.com>
+Date: Mon, 14 May 2018 08:14:34 -0400
+Subject: [PATCH 6/8] vmxnet3: set the DMA mask before the first DMA map
+ operation
+
+commit 61aeecea40afb2b89933e27cd4adb10fc2e75cfd upstream.
+
+The DMA mask must be set before, not after, the first DMA map operation, or
+the first DMA map operation could in theory fail on some systems.
+
+Fixes: b0eb57cb97e78 ("VMXNET3: Add support for virtual IOMMU")
+Signed-off-by: Regis Duchesne <hpreg@vmware.com>
+Acked-by: Ronak Doshi <doshir@vmware.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+[ Srivatsa: Dropped the vmxnet3 driver version update since this fix
+was applied without the changes leading up to it. ]
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 50 +++++++++++++++----------------
+ 1 file changed, 25 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 66e3a27aa6e6..bce930f19d87 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -2576,7 +2576,7 @@ vmxnet3_set_mac_addr(struct net_device *netdev, void *p)
+ /* ==================== initialization and cleanup routines ============ */
+ 
+ static int
+-vmxnet3_alloc_pci_resources(struct vmxnet3_adapter *adapter, bool *dma64)
++vmxnet3_alloc_pci_resources(struct vmxnet3_adapter *adapter)
+ {
+ 	int err;
+ 	unsigned long mmio_start, mmio_len;
+@@ -2588,30 +2588,12 @@ vmxnet3_alloc_pci_resources(struct vmxnet3_adapter *adapter, bool *dma64)
+ 		return err;
+ 	}
+ 
+-	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(64)) == 0) {
+-		if (pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64)) != 0) {
+-			dev_err(&pdev->dev,
+-				"pci_set_consistent_dma_mask failed\n");
+-			err = -EIO;
+-			goto err_set_mask;
+-		}
+-		*dma64 = true;
+-	} else {
+-		if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32)) != 0) {
+-			dev_err(&pdev->dev,
+-				"pci_set_dma_mask failed\n");
+-			err = -EIO;
+-			goto err_set_mask;
+-		}
+-		*dma64 = false;
+-	}
+-
+ 	err = pci_request_selected_regions(pdev, (1 << 2) - 1,
+ 					   vmxnet3_driver_name);
+ 	if (err) {
+ 		dev_err(&pdev->dev,
+ 			"Failed to request region for adapter: error %d\n", err);
+-		goto err_set_mask;
++		goto err_enable_device;
+ 	}
+ 
+ 	pci_set_master(pdev);
+@@ -2639,7 +2621,7 @@ err_bar1:
+ 	iounmap(adapter->hw_addr0);
+ err_ioremap:
+ 	pci_release_selected_regions(pdev, (1 << 2) - 1);
+-err_set_mask:
++err_enable_device:
+ 	pci_disable_device(pdev);
+ 	return err;
+ }
+@@ -3112,7 +3094,7 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ #endif
+ 	};
+ 	int err;
+-	bool dma64 = false; /* stupid gcc */
++	bool dma64;
+ 	u32 ver;
+ 	struct net_device *netdev;
+ 	struct vmxnet3_adapter *adapter;
+@@ -3158,6 +3140,24 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 	adapter->rx_ring_size = VMXNET3_DEF_RX_RING_SIZE;
+ 	adapter->rx_ring2_size = VMXNET3_DEF_RX_RING2_SIZE;
+ 
++	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(64)) == 0) {
++		if (pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64)) != 0) {
++			dev_err(&pdev->dev,
++				"pci_set_consistent_dma_mask failed\n");
++			err = -EIO;
++			goto err_set_mask;
++		}
++		dma64 = true;
++	} else {
++		if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32)) != 0) {
++			dev_err(&pdev->dev,
++				"pci_set_dma_mask failed\n");
++			err = -EIO;
++			goto err_set_mask;
++		}
++		dma64 = false;
++	}
++
+ 	spin_lock_init(&adapter->cmd_lock);
+ 	adapter->adapter_pa = dma_map_single(&adapter->pdev->dev, adapter,
+ 					     sizeof(struct vmxnet3_adapter),
+@@ -3165,7 +3165,7 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 	if (dma_mapping_error(&adapter->pdev->dev, adapter->adapter_pa)) {
+ 		dev_err(&pdev->dev, "Failed to map dma\n");
+ 		err = -EFAULT;
+-		goto err_dma_map;
++		goto err_set_mask;
+ 	}
+ 	adapter->shared = dma_alloc_coherent(
+ 				&adapter->pdev->dev,
+@@ -3216,7 +3216,7 @@ vmxnet3_probe_device(struct pci_dev *pdev,
+ 	}
+ #endif /* VMXNET3_RSS */
+ 
+-	err = vmxnet3_alloc_pci_resources(adapter, &dma64);
++	err = vmxnet3_alloc_pci_resources(adapter);
+ 	if (err < 0)
+ 		goto err_alloc_pci;
+ 
+@@ -3325,7 +3325,7 @@ err_alloc_queue_desc:
+ err_alloc_shared:
+ 	dma_unmap_single(&adapter->pdev->dev, adapter->adapter_pa,
+ 			 sizeof(struct vmxnet3_adapter), PCI_DMA_TODEVICE);
+-err_dma_map:
++err_set_mask:
+ 	free_netdev(netdev);
+ 	return err;
+ }
+-- 
+2.25.1
+
