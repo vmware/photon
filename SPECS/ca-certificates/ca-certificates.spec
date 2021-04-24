@@ -1,6 +1,6 @@
 Summary:             Certificate Authority certificates
 Name:                ca-certificates
-Version:             20210419
+Version:             20210422
 Release:             1%{?dist}
 License:             Custom
 URL:                 http://anduin.linuxfromscratch.org/BLFS/other/
@@ -251,6 +251,8 @@ exit 0
 /etc/pki/tls/certs/ca-bundle.crt
 
 %changelog
+* Fri Apr 23 2021 Gerrit Photon <photon-checkins@vmware.com> 20210422-1
+- Automatic Version Bump
 * Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 20210419-1
 - Automatic Version Bump
 * Fri Oct 02 2020 Gerrit Photon <photon-checkins@vmware.com> 20201001-1
