@@ -1,6 +1,6 @@
 Summary:       ODBC driver manager
 Name:          freetds
-Version:       1.2.20
+Version:       1.2.21
 Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.unixodbc.org/
@@ -8,7 +8,7 @@ Group:         System Environment/Libraries
 Vendor:        VMware, Inc.
 Distribution:  Photon
 Source0:       ftp://ftp.%{name}.org/pub/%{name}/stable/%{name}-%{version}.tar.gz
-%define sha1   freetds=4ed3e031c7047bbf0b5bde7ab0576c1e79ebfba2
+%define sha1   freetds=64757e8120fb1ba9492bf66753c816c73f66c085
 BuildRequires: unixODBC-devel
 BuildRequires: gnutls-devel
 Requires:      gnutls
@@ -103,6 +103,8 @@ odbcinst -u -d -n 'SQL Server' > /dev/null 2>&1 || true
 %{_docdir}/%{name}/*
 
 %changelog
+*   Sat Apr 24 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.21-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.20-1
 -   Automatic Version Bump
 *   Thu Oct 01 2020 Dweep Advani <dadvani@vmware.com> 1.2.5-1
