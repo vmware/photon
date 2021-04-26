@@ -1,7 +1,7 @@
-From 3e11a384ab43a73a3ac4d028c8dfba38ee0f78b5 Mon Sep 17 00:00:00 2001
+From 57fbc4a6df7e9ca4bac3a378fb7d341c51ac1ae8 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 26 Jul 2018 15:06:10 +0200
-Subject: [PATCH 018/335] efi: Allow efi=runtime
+Subject: [PATCH 018/338] efi: Allow efi=runtime
 
 In case the option "efi=noruntime" is default at built-time, the user
 could overwrite its sate by `efi=runtime' and allow it again.

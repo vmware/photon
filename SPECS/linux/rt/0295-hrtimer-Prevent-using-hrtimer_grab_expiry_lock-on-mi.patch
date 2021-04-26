@@ -1,7 +1,7 @@
-From 63b720ac3c74687e7a7a7e7f17f1383d75931747 Mon Sep 17 00:00:00 2001
+From 596c75dbd4e36b7b8657fabb79a8541524343643 Mon Sep 17 00:00:00 2001
 From: Julien Grall <julien.grall@arm.com>
 Date: Wed, 21 Aug 2019 10:24:09 +0100
-Subject: [PATCH 295/335] hrtimer: Prevent using hrtimer_grab_expiry_lock() on
+Subject: [PATCH 295/338] hrtimer: Prevent using hrtimer_grab_expiry_lock() on
  migration_base
 
 [ Upstream commit cef1b87f98823af923a386f3f69149acb212d4a1 ]

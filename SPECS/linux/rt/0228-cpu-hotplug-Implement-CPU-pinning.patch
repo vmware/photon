@@ -1,7 +1,7 @@
-From fc0d4e2f96160799c217c5c3a6988096e6589770 Mon Sep 17 00:00:00 2001
+From 7ecc383fdd816ac96fca7b23efeb790fa3912959 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 19 Jul 2017 17:31:20 +0200
-Subject: [PATCH 228/335] cpu/hotplug: Implement CPU pinning
+Subject: [PATCH 228/338] cpu/hotplug: Implement CPU pinning
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---

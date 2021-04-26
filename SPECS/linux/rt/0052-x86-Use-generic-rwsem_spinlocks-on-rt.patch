@@ -1,7 +1,7 @@
-From 7e4caa4f55db46b69c0cf70cd58064f3af149796 Mon Sep 17 00:00:00 2001
+From cdd2be853dc0200712316f1a6fb5e76aff02f9c4 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 26 Jul 2009 02:21:32 +0200
-Subject: [PATCH 052/335] x86: Use generic rwsem_spinlocks on -rt
+Subject: [PATCH 052/338] x86: Use generic rwsem_spinlocks on -rt
 
 Simplifies the separation of anon_rw_semaphores and rw_semaphores for
 -rt.

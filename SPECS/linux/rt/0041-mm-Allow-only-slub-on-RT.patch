@@ -1,7 +1,7 @@
-From 9959e426ed777e5ea5e5a6bd5e2e9f1b62baac91 Mon Sep 17 00:00:00 2001
+From e5d8104a54a6764ff617fd8b42f892e94f84294b Mon Sep 17 00:00:00 2001
 From: Ingo Molnar <mingo@elte.hu>
 Date: Fri, 3 Jul 2009 08:44:03 -0500
-Subject: [PATCH 041/335] mm: Allow only slub on RT
+Subject: [PATCH 041/338] mm: Allow only slub on RT
 
 Disable SLAB and SLOB on -RT. Only SLUB is adopted to -RT needs.
 
@@ -12,10 +12,10 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  1 file changed, 2 insertions(+)
 
 diff --git a/init/Kconfig b/init/Kconfig
-index 5eb91dde4018..f29bf2f8537e 100644
+index b56a125b5a76..3eb06482866d 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1638,6 +1638,7 @@ choice
+@@ -1637,6 +1637,7 @@ choice
  
  config SLAB
  	bool "SLAB"
@@ -23,7 +23,7 @@ index 5eb91dde4018..f29bf2f8537e 100644
  	select HAVE_HARDENED_USERCOPY_ALLOCATOR
  	help
  	  The regular slab allocator that is established and known to work
-@@ -1658,6 +1659,7 @@ config SLUB
+@@ -1657,6 +1658,7 @@ config SLUB
  config SLOB
  	depends on EXPERT
  	bool "SLOB (Simple Allocator)"

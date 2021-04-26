@@ -1,7 +1,7 @@
-From c487cae9dbce702027ad152360f3ca41dcca9e4d Mon Sep 17 00:00:00 2001
+From 6f5259d937115d17f9b10af9f58e35560ec5f72d Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 20 Dec 2012 18:28:26 +0100
-Subject: [PATCH 186/335] block: Use cpu_chill() for retry loops
+Subject: [PATCH 186/338] block: Use cpu_chill() for retry loops
 
 Retry loops on RT might loop forever when the modifying side was
 preempted. Steven also observed a live lock when there was a

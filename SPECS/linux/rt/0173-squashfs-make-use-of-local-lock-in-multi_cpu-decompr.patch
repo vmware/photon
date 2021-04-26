@@ -1,7 +1,7 @@
-From 88fd616afccf67a9a9202df20c63df234467cd15 Mon Sep 17 00:00:00 2001
+From fd09fc9cd4eeb7ef22446be90b41b1b66d3ec610 Mon Sep 17 00:00:00 2001
 From: Julia Cartwright <julia@ni.com>
 Date: Mon, 7 May 2018 08:58:57 -0500
-Subject: [PATCH 173/335] squashfs: make use of local lock in multi_cpu
+Subject: [PATCH 173/338] squashfs: make use of local lock in multi_cpu
  decompressor
 
 Currently, the squashfs multi_cpu decompressor makes use of

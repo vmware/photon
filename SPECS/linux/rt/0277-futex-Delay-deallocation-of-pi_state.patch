@@ -1,7 +1,7 @@
-From 81717c3a6e6e1d80242c7c547be45e39859f42d4 Mon Sep 17 00:00:00 2001
+From 3c8cf19be54de94e53db8f5423ade786c85e1cf4 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 26 Jun 2019 13:35:36 +0200
-Subject: [PATCH 277/335] futex: Delay deallocation of pi_state
+Subject: [PATCH 277/338] futex: Delay deallocation of pi_state
 
 [ Upstream commit d7c7cf8cb68b7df17e6e50be1f25f35d83e686c7 ]
 

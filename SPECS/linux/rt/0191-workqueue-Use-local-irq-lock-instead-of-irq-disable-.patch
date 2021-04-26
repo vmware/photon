@@ -1,7 +1,7 @@
-From 8214e08cbfd1e6693db111fd00e6f64e053bd2c6 Mon Sep 17 00:00:00 2001
+From 04dc0138dd720f3cc631fabc422795235bd077e3 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 17 Jul 2011 21:42:26 +0200
-Subject: [PATCH 191/335] workqueue: Use local irq lock instead of irq disable
+Subject: [PATCH 191/338] workqueue: Use local irq lock instead of irq disable
  regions
 
 Use a local_irq_lock as a replacement for irq off regions. We keep the
@@ -13,7 +13,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  1 file changed, 30 insertions(+), 15 deletions(-)
 
 diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index c7052c629aa8..0e67fd635c6b 100644
+index f8b68a24c094..73a7496ab4c4 100644
 --- a/kernel/workqueue.c
 +++ b/kernel/workqueue.c
 @@ -49,6 +49,7 @@
@@ -77,8 +77,8 @@ index c7052c629aa8..0e67fd635c6b 100644
  	lockdep_assert_irqs_disabled();
 +#endif
  
- 	debug_work_activate(work);
  
+ 	/* if draining, only works from the same workqueue are allowed */
 @@ -1486,14 +1497,14 @@ bool queue_work_on(int cpu, struct workqueue_struct *wq,
  	bool ret = false;
  	unsigned long flags;

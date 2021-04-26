@@ -1,7 +1,7 @@
-From 869c1ad774bc731e826b40ae2039d6f6e0679564 Mon Sep 17 00:00:00 2001
+From fb773e6a4adf0fc8fcee70da4f4d52e243ea2b66 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 29 Nov 2019 17:24:55 +0100
-Subject: [PATCH 312/335] sched/core: migrate_enable() must access
+Subject: [PATCH 312/338] sched/core: migrate_enable() must access
  takedown_cpu_task on !HOTPLUG_CPU
 
 [ Upstream commit a61d1977f692e46bad99a100f264981ba08cb4bd ]

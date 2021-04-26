@@ -1,7 +1,7 @@
-From b3b9ef662f5d772b8a0931b0c1e5d8d5dd5d4ab4 Mon Sep 17 00:00:00 2001
+From c8b4106abb8cf974cfecd57c165733bec2e0238c Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 11 Mar 2013 21:37:27 +0100
-Subject: [PATCH 217/335] arm/highmem: Flush tlb on unmap
+Subject: [PATCH 217/338] arm/highmem: Flush tlb on unmap
 
 The tlb should be flushed on unmap and thus make the mapping entry
 invalid. This is only done in the non-debug case which does not look

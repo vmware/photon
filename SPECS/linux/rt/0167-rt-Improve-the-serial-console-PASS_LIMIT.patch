@@ -1,7 +1,7 @@
-From d449f13fb0738d86181a7cf8776bfd9d39dd0f7f Mon Sep 17 00:00:00 2001
+From 2ab8c5716f7d38f0bb15cee1805df1cf21f1a66a Mon Sep 17 00:00:00 2001
 From: Ingo Molnar <mingo@elte.hu>
 Date: Wed, 14 Dec 2011 13:05:54 +0100
-Subject: [PATCH 167/335] rt: Improve the serial console PASS_LIMIT
+Subject: [PATCH 167/338] rt: Improve the serial console PASS_LIMIT
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit

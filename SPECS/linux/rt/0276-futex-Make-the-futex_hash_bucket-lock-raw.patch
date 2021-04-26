@@ -1,7 +1,7 @@
-From 160ae664a89b76c9e9ac4a39b8d67e90e825e760 Mon Sep 17 00:00:00 2001
+From 6592694ef4293f9ec53199acb92efb183af7fd0d Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 26 Jun 2019 11:59:44 +0200
-Subject: [PATCH 276/335] futex: Make the futex_hash_bucket lock raw
+Subject: [PATCH 276/338] futex: Make the futex_hash_bucket lock raw
 
 [ Upstream commit f646521aadedab78801c9befe193e2e8a0c99298 ]
 

@@ -1,7 +1,7 @@
-From 6ccbdf6b35944b4228a216347af08a984f481d19 Mon Sep 17 00:00:00 2001
+From c6b2438d3d06a34a3ee63614905642fd752fc6a6 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 16 Feb 2015 18:49:10 +0100
-Subject: [PATCH 280/335] fs/aio: simple simple work
+Subject: [PATCH 280/338] fs/aio: simple simple work
 
 [ Upstream commit 1a142116f6435ef070ecebb66d2d599507c10601 ]
 

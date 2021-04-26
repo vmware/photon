@@ -1,7 +1,7 @@
-From 3d23df4724b077b828736b1139c0a26f07c87946 Mon Sep 17 00:00:00 2001
+From 89777eb1fea350c193f882a8e68398c91db053c3 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 13 Aug 2019 12:30:37 +0200
-Subject: [PATCH 287/335] i2c: hix5hd2: Remove IRQF_ONESHOT
+Subject: [PATCH 287/338] i2c: hix5hd2: Remove IRQF_ONESHOT
 
 [ Upstream commit e88b481f3f86f11e3243e0808a830e5ca5782a9d ]
 

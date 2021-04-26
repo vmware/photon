@@ -1,7 +1,7 @@
-From ed5e98e62920716b5deedc746dd0f7a447f35707 Mon Sep 17 00:00:00 2001
+From e2fe6f2a3e39eeff9720e0fb595fb15c6a0a1cd3 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 24 Jun 2019 19:39:06 +0200
-Subject: [PATCH 271/335] timers: Redo the notification of canceling timers on
+Subject: [PATCH 271/338] timers: Redo the notification of canceling timers on
  -RT
 
 [ Upstream commit c71273154c2ad12e13333aada340ff30e826a11b ]

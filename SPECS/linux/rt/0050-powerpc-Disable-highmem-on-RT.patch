@@ -1,7 +1,7 @@
-From 301cf312554a9020583e7f7efe199e2adb09edbe Mon Sep 17 00:00:00 2001
+From 84cf5528eafed7c8fbb7b06096a5673dfd04b2fa Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Mon, 18 Jul 2011 17:08:34 +0200
-Subject: [PATCH 050/335] powerpc: Disable highmem on RT
+Subject: [PATCH 050/338] powerpc: Disable highmem on RT
 
 The current highmem handling on -RT is not compatible and needs fixups.
 

@@ -1,7 +1,7 @@
-From 2689507b0c9064129113809e0bc72021126560fc Mon Sep 17 00:00:00 2001
+From be04e3226ca34530f116990df12cb3835124653e Mon Sep 17 00:00:00 2001
 From: Scott Wood <swood@redhat.com>
 Date: Fri, 4 Jan 2019 15:33:21 -0500
-Subject: [PATCH 151/335] locking/rt-mutex: Flush block plug on __down_read()
+Subject: [PATCH 151/338] locking/rt-mutex: Flush block plug on __down_read()
 
 __down_read() bypasses the rtmutex frontend to call
 rt_mutex_slowlock_locked() directly, and thus it needs to call

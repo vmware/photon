@@ -3,8 +3,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux
-Version:        4.19.186
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.189
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=2641441b25454db5cf9d4aa7b73de83671e264e5
+%define sha1 linux=cae611c9e5526a1d2f0a0994f82f13a748996ad1
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -118,9 +118,6 @@ Patch65:        0005-ovl-check-permission-to-open-real-file.patch
 # Fix for CVE-2019-19770
 Patch66:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch67:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
-
-#Fix for CVE-2021-23133
-Patch68:        0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
 
 #Fix for 9p
 Patch70:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
@@ -599,7 +596,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
-%patch68 -p1
 
 %patch70 -p1
 %patch71 -p1
@@ -1237,6 +1233,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.19.189-1
+-   Update to version 4.19.189
 *   Tue Apr 20 2021 Ankit Jain <ankitja@vmware.com> 4.19.186-4
 -   Fix for CVE-2021-3444
 *   Mon Apr 19 2021 Ajay Kaher <akaher@vmware.com> 4.19.186-3

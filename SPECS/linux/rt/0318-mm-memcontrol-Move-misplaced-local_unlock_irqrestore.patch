@@ -1,7 +1,7 @@
-From 33d5d86f61ab805a98e2b435ff9fda784b09bc7e Mon Sep 17 00:00:00 2001
+From 845bf36447d1df9872f06036f9639240dfe42593 Mon Sep 17 00:00:00 2001
 From: Matt Fleming <matt@codeblueprint.co.uk>
 Date: Sun, 26 Jan 2020 21:19:45 +0000
-Subject: [PATCH 318/335] mm/memcontrol: Move misplaced
+Subject: [PATCH 318/338] mm/memcontrol: Move misplaced
  local_unlock_irqrestore()
 
 [ Upstream commit 071a1d6a6e14d0dec240a8c67b425140d7f92f6a ]

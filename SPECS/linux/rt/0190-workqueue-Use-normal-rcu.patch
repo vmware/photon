@@ -1,7 +1,7 @@
-From 489bfb0e093797442df8ac4a69b004df1dc61c69 Mon Sep 17 00:00:00 2001
+From 352a487724f347b71681a74e05c3962953b70a36 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 24 Jul 2013 15:26:54 +0200
-Subject: [PATCH 190/335] workqueue: Use normal rcu
+Subject: [PATCH 190/338] workqueue: Use normal rcu
 
 There is no need for sched_rcu. The undocumented reason why sched_rcu
 is used is to avoid a few explicit rcu_read_lock()/unlock() pairs by
@@ -14,7 +14,7 @@ Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
  1 file changed, 52 insertions(+), 43 deletions(-)
 
 diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index 78600f97ffa7..c7052c629aa8 100644
+index 1cc49340b68a..f8b68a24c094 100644
 --- a/kernel/workqueue.c
 +++ b/kernel/workqueue.c
 @@ -127,7 +127,7 @@ enum {
@@ -148,7 +148,7 @@ index 78600f97ffa7..c7052c629aa8 100644
  	local_irq_restore(*flags);
  	if (work_is_canceling(work))
  		return -ENOENT;
-@@ -1383,6 +1386,7 @@ static void __queue_work(int cpu, struct workqueue_struct *wq,
+@@ -1382,6 +1385,7 @@ static void __queue_work(int cpu, struct workqueue_struct *wq,
  	if (unlikely(wq->flags & __WQ_DRAINING) &&
  	    WARN_ON_ONCE(!is_chained_work(wq)))
  		return;
@@ -156,7 +156,7 @@ index 78600f97ffa7..c7052c629aa8 100644
  retry:
  	/* pwq which will be used unless @work is executing elsewhere */
  	if (wq->flags & WQ_UNBOUND) {
-@@ -1441,10 +1445,8 @@ static void __queue_work(int cpu, struct workqueue_struct *wq,
+@@ -1440,10 +1444,8 @@ static void __queue_work(int cpu, struct workqueue_struct *wq,
  	/* pwq determined, queue */
  	trace_workqueue_queue_work(req_cpu, pwq, work);
  
@@ -170,7 +170,7 @@ index 78600f97ffa7..c7052c629aa8 100644
  	pwq->nr_in_flight[pwq->work_color]++;
  	work_flags = work_color_to_flags(pwq->work_color);
 @@ -1462,7 +1464,9 @@ static void __queue_work(int cpu, struct workqueue_struct *wq,
- 
+ 	debug_work_activate(work);
  	insert_work(pwq, work, worklist, work_flags);
  
 +out:

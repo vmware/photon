@@ -1,7 +1,7 @@
-From cbbe98d7e2a894ac15bd75d1c605aa41528168fe Mon Sep 17 00:00:00 2001
+From aab67c63d5127205bc2b3bc9f2d41408227ef94e Mon Sep 17 00:00:00 2001
 From: Waiman Long <longman@redhat.com>
 Date: Thu, 3 Oct 2019 16:36:08 -0400
-Subject: [PATCH 302/335] lib/smp_processor_id: Don't use cpumask_equal()
+Subject: [PATCH 302/338] lib/smp_processor_id: Don't use cpumask_equal()
 
 [ Upstream commit 659252061477862f45b79e1de169e6030f5c8918 ]
 

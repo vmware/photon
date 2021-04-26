@@ -1,7 +1,7 @@
-From c5fd708b052e601c28643156caf3611759681823 Mon Sep 17 00:00:00 2001
+From 8510427b7c8a723e9d1e50b632ee5ba8bedab9e4 Mon Sep 17 00:00:00 2001
 From: Yang Shi <yang.shi@windriver.com>
 Date: Mon, 16 Sep 2013 14:09:19 -0700
-Subject: [PATCH 102/335] hrtimer: Move schedule_work call to helper thread
+Subject: [PATCH 102/338] hrtimer: Move schedule_work call to helper thread
 
 When run ltp leapsec_timer test, the following call trace is caught:
 

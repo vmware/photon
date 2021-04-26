@@ -1,7 +1,7 @@
-From c7db6d80b1823eee2358cb8f1e214c0daa25f212 Mon Sep 17 00:00:00 2001
+From 697cc268da2d471ba2332a54b6d64d5800112f02 Mon Sep 17 00:00:00 2001
 From: Peter Zijlstra <peterz@infradead.org>
 Date: Mon, 7 Jan 2019 13:52:31 +0100
-Subject: [PATCH 011/335] sched/fair: Robustify CFS-bandwidth timer locking
+Subject: [PATCH 011/338] sched/fair: Robustify CFS-bandwidth timer locking
 
 Traditionally hrtimer callbacks were run with IRQs disabled, but with
 the introduction of HRTIMER_MODE_SOFT it is possible they run from

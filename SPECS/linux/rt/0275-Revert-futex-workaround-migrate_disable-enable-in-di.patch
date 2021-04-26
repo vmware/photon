@@ -1,7 +1,7 @@
-From 070f9a4249fbb50d1335bfcefdfce3914b9f9ea8 Mon Sep 17 00:00:00 2001
+From 39c17d0bef99653096c369840b556e622e766e71 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 26 Jun 2019 17:44:27 +0200
-Subject: [PATCH 275/335] Revert "futex: workaround migrate_disable/enable in
+Subject: [PATCH 275/338] Revert "futex: workaround migrate_disable/enable in
  different context"
 
 [ Upstream commit a71221d81cc4873891ae44f3aa02df596079b786 ]

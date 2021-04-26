@@ -1,7 +1,7 @@
-From 4f753cfb28424bfcb78573898a64b6157a8e7af4 Mon Sep 17 00:00:00 2001
+From 41748de1ee6aa73141534e1b88ffe35789d1520e Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 21 Mar 2013 19:01:05 +0100
-Subject: [PATCH 208/335] printk: Drop the logbuf_lock more often
+Subject: [PATCH 208/338] printk: Drop the logbuf_lock more often
 
 The lock is hold with irgs off. The latency drops 500us+ on my arm bugs
 with a "full" buffer after executing "dmesg" on the shell.

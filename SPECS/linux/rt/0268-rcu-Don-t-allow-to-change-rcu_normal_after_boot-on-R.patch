@@ -1,7 +1,7 @@
-From a0713c521afcbc3892ec8d1c80b92334a28f90ca Mon Sep 17 00:00:00 2001
+From 0287ced30e4b28bd0450bbe58839ba664c0ee75d Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 24 Jun 2019 18:29:13 +0200
-Subject: [PATCH 268/335] rcu: Don't allow to change rcu_normal_after_boot on
+Subject: [PATCH 268/338] rcu: Don't allow to change rcu_normal_after_boot on
  RT
 
 [ Upstream commit c6c058c10577815a2491ce661876cff00a4c3b15 ]

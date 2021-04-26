@@ -1,7 +1,7 @@
-From 0997dd5394e71c07c681814e77aefd86b3118e48 Mon Sep 17 00:00:00 2001
+From f5851dd1c2e87ac0bc742303f823530e059c1a44 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 13 Nov 2011 17:17:09 +0100
-Subject: [PATCH 119/335] softirq: Check preemption after reenabling interrupts
+Subject: [PATCH 119/338] softirq: Check preemption after reenabling interrupts
 
 raise_softirq_irqoff() disables interrupts and wakes the softirq
 daemon, but after reenabling interrupts there is no preemption check,

@@ -1,7 +1,7 @@
-From 66225197afdb2d105a0456619bf5508027f77246 Mon Sep 17 00:00:00 2001
+From 9d2c0630668c8c52dbb477df202e85042bf6bbbb Mon Sep 17 00:00:00 2001
 From: Scott Wood <swood@redhat.com>
 Date: Sat, 12 Oct 2019 01:52:14 -0500
-Subject: [PATCH 309/335] sched: migrate_enable: Use stop_one_cpu_nowait()
+Subject: [PATCH 309/338] sched: migrate_enable: Use stop_one_cpu_nowait()
 
 [ Upstream commit 6b39a1fa8c53cae08dc03afdae193b7d3a78a173 ]
 

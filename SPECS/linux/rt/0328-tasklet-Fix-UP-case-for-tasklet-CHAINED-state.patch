@@ -1,7 +1,7 @@
-From cf6e9e1cc26ba3e9e17c817ab41447546c937244 Mon Sep 17 00:00:00 2001
+From 305718efb0d3df0df1b50aa32c81c09007e4d1a8 Mon Sep 17 00:00:00 2001
 From: Tom Zanussi <zanussi@kernel.org>
 Date: Tue, 9 Jun 2020 11:04:08 -0500
-Subject: [PATCH 328/335] tasklet: Fix UP case for tasklet CHAINED state
+Subject: [PATCH 328/338] tasklet: Fix UP case for tasklet CHAINED state
 
 commit 62d0a2a30cd0 (tasklet: Address a race resulting in
 double-enqueue) addresses a problem that can result in a tasklet being

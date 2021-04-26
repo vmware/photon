@@ -1,7 +1,7 @@
-From 9383d25a1dfc6aaf2b1ca8ebefb1203239aee94b Mon Sep 17 00:00:00 2001
+From 05161542ff27add8c24f6064731b7a2a3efa85fa Mon Sep 17 00:00:00 2001
 From: Mike Galbraith <efault@gmx.de>
 Date: Sun, 19 Aug 2018 08:28:35 +0200
-Subject: [PATCH 229/335] sched: Allow pinned user tasks to be awakened to the
+Subject: [PATCH 229/338] sched: Allow pinned user tasks to be awakened to the
  CPU they pinned
 
 Since commit 7af443ee16976 ("sched/core: Require cpu_active() in

@@ -1,7 +1,7 @@
-From 355abda8ec6d4e30a5836d8867896c53e902b696 Mon Sep 17 00:00:00 2001
+From d3e71a33834e01e36303ab67460302374d05ee6e Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 13 Aug 2019 12:30:12 +0200
-Subject: [PATCH 286/335] i2c: exynos5: Remove IRQF_ONESHOT
+Subject: [PATCH 286/338] i2c: exynos5: Remove IRQF_ONESHOT
 
 [ Upstream commit 4b217df0ab3f7910c96e42091cc7d9f221d05f01 ]
 

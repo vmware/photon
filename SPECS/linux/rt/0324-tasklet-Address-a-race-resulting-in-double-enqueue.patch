@@ -1,7 +1,7 @@
-From 10fd4e0fda3cb54ca014e92bd1367ef4701bf75c Mon Sep 17 00:00:00 2001
+From e66b9e1447666744f37e51725b08e6fa4e6b358e Mon Sep 17 00:00:00 2001
 From: Zhang Xiao <xiao.zhang@windriver.com>
 Date: Tue, 17 Mar 2020 12:47:43 +0100
-Subject: [PATCH 324/335] tasklet: Address a race resulting in double-enqueue
+Subject: [PATCH 324/338] tasklet: Address a race resulting in double-enqueue
 
 The kernel bugzilla has the following race condition reported:
 

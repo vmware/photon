@@ -1,7 +1,7 @@
-From dfe90a4aee88b0393b3c25b436d2f558ac074ebf Mon Sep 17 00:00:00 2001
+From 6fe95eedae2e7df92eb1c927145f806fd55395af Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 19 Nov 2019 09:25:04 +0100
-Subject: [PATCH 311/335] locking: Make spinlock_t and rwlock_t a RCU section
+Subject: [PATCH 311/338] locking: Make spinlock_t and rwlock_t a RCU section
  on RT
 
 [ Upstream commit 84440022a0e1c8c936d61f8f97593674a295d409 ]

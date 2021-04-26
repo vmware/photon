@@ -1,7 +1,7 @@
-From 597bff4f26b438bbb85166d7e6a37897e4f528f6 Mon Sep 17 00:00:00 2001
+From 799152a153c933eb8c256ae90eaaeb8447565d7f Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 4 Aug 2017 18:31:00 +0200
-Subject: [PATCH 230/335] hotplug: duct-tape RT-rwlock usage for non-RT
+Subject: [PATCH 230/338] hotplug: duct-tape RT-rwlock usage for non-RT
 
 This type is only available on -RT. We need to craft something for
 non-RT. Since the only migrate_disable() user is -RT only, there is no

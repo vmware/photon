@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.186
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        4.19.189
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=2641441b25454db5cf9d4aa7b73de83671e264e5
+%define sha1 linux=cae611c9e5526a1d2f0a0994f82f13a748996ad1
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -78,9 +78,6 @@ Patch45:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 # Fix for CVE-2019-19770
 Patch46:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch47:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
-
-#Fix for CVE-2021-23133
-Patch48:        0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
 
 # Fix for CVE-2021-3444
 Patch49:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
@@ -437,7 +434,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch45 -p1
 %patch46 -p1
 %patch47 -p1
-%patch48 -p1
 %patch49 -p1
 %patch50 -p1
 %patch51 -p1
@@ -808,6 +804,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.19.189-1
+-   Update to version 4.19.189
 *   Mon Apr 26 2021 Ankit Jain <ankitja@vmware.com> 4.19.186-5
 -   Fix for CVE-2021-3444
 *   Fri Apr 23 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.186-4

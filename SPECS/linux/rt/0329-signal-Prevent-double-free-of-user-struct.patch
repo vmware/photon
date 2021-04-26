@@ -1,7 +1,7 @@
-From 4ceb5544c9a5c8da66586375ae3c74d614c2f52a Mon Sep 17 00:00:00 2001
+From a66e36cc050c6543815e276f8de64c21149b826c Mon Sep 17 00:00:00 2001
 From: Matt Fleming <matt@codeblueprint.co.uk>
 Date: Tue, 7 Apr 2020 10:54:13 +0100
-Subject: [PATCH 329/335] signal: Prevent double-free of user struct
+Subject: [PATCH 329/338] signal: Prevent double-free of user struct
 
 [ Upsteam commit 9567db2ebe566a93485e1a27d8759969d0002d7a ]
 

@@ -1,7 +1,7 @@
-From a746f446670fe8a892c8097ef273edc2cd6e2052 Mon Sep 17 00:00:00 2001
+From 9e44c3743478aa50204d932a4577bdf42aa8b398 Mon Sep 17 00:00:00 2001
 From: Scott Wood <swood@redhat.com>
 Date: Sat, 27 Jul 2019 00:56:33 -0500
-Subject: [PATCH 300/335] sched: Remove dead __migrate_disabled() check
+Subject: [PATCH 300/338] sched: Remove dead __migrate_disabled() check
 
 [ Upstream commit 14d9272d534ea91262e15db99443fc5995c7c016 ]
 

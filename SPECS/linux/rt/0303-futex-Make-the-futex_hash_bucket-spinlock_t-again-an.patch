@@ -1,7 +1,7 @@
-From 40b2f1d5c46373ba337231766b1ba05d5e201616 Mon Sep 17 00:00:00 2001
+From 5fb0c6d26d9d611bf3f62913a1cba51d238c88dd Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 7 Oct 2019 16:45:18 +0200
-Subject: [PATCH 303/335] futex: Make the futex_hash_bucket spinlock_t again
+Subject: [PATCH 303/338] futex: Make the futex_hash_bucket spinlock_t again
  and bring back its old state
 
 [ Upstream commit 954ad80c23edfe71f4e8ce70b961eac884320c3a ]

@@ -1,7 +1,7 @@
-From e1f50ded894a1e6f0fce5d4b741bdfe67cb93790 Mon Sep 17 00:00:00 2001
+From 0ae8568267dd259c31ebadb01b04886cdde8ceaf Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 4 Apr 2017 12:50:16 +0200
-Subject: [PATCH 026/335] kernel: sched: Provide a pointer to the valid CPU
+Subject: [PATCH 026/338] kernel: sched: Provide a pointer to the valid CPU
  mask
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -84,7 +84,7 @@ Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
  23 files changed, 74 insertions(+), 72 deletions(-)
 
 diff --git a/arch/ia64/kernel/mca.c b/arch/ia64/kernel/mca.c
-index 6115464d5f03..f09e34c8409c 100644
+index d7400b2844f1..40abc24b3b02 100644
 --- a/arch/ia64/kernel/mca.c
 +++ b/arch/ia64/kernel/mca.c
 @@ -1824,7 +1824,7 @@ format_mca_init_stack(void *mca_data, unsigned long offset,

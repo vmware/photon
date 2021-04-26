@@ -1,7 +1,7 @@
-From b224f315e2efebc25a5fd8937ee344f65652453b Mon Sep 17 00:00:00 2001
+From 99eab34ade150898f8220c789a97ed5c409a1d8a Mon Sep 17 00:00:00 2001
 From: Mike Galbraith <efault@gmx.de>
 Date: Wed, 11 Jul 2018 17:14:47 +0200
-Subject: [PATCH 223/335] crypto: scompress - serialize RT percpu scratch
+Subject: [PATCH 223/338] crypto: scompress - serialize RT percpu scratch
  buffer access with a local lock
 
 | BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:974

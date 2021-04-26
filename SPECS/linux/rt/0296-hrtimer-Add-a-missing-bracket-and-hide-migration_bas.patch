@@ -1,7 +1,7 @@
-From 931075912c9b0465b17f93bced60576f70f64b1b Mon Sep 17 00:00:00 2001
+From 3af2fcd789381420d3861f664ec947c61f229356 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 4 Sep 2019 16:55:27 +0200
-Subject: [PATCH 296/335] hrtimer: Add a missing bracket and hide
+Subject: [PATCH 296/338] hrtimer: Add a missing bracket and hide
  `migration_base' on !SMP
 
 [ Upstream commit 47b6de0b7f22c28b40275aeede3993d807668c3b ]

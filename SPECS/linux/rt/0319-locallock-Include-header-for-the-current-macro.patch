@@ -1,7 +1,7 @@
-From ee0b146fee9be8272c7c02065c48c3faebff14b1 Mon Sep 17 00:00:00 2001
+From 765ac3211b5b535d52f57daa31ccc6b29f6f440d Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 4 Feb 2020 13:29:50 +0100
-Subject: [PATCH 319/335] locallock: Include header for the `current' macro
+Subject: [PATCH 319/338] locallock: Include header for the `current' macro
 
 [ Upstream commit e693075a5fd852043fa8d2b0467e078d9e5cb782 ]
 

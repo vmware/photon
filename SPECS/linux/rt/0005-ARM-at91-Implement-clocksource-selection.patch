@@ -1,7 +1,7 @@
-From ea6f9b5aec54ce42d30295221e0307d3eabc5518 Mon Sep 17 00:00:00 2001
+From 96eef5c247c1c85e155f2e852bcf35f96a22320a Mon Sep 17 00:00:00 2001
 From: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Date: Thu, 13 Sep 2018 13:30:22 +0200
-Subject: [PATCH 005/335] ARM: at91: Implement clocksource selection
+Subject: [PATCH 005/338] ARM: at91: Implement clocksource selection
 
 Allow selecting and unselecting the PIT clocksource driver so it doesn't
 have to be compile when unused.

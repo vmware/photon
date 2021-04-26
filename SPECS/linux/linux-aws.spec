@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.186
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.189
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=2641441b25454db5cf9d4aa7b73de83671e264e5
+%define sha1 linux=cae611c9e5526a1d2f0a0994f82f13a748996ad1
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -78,9 +78,6 @@ Patch61:        0005-ovl-check-permission-to-open-real-file.patch
 # Fix for CVE-2019-19770
 Patch62:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch63:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
-
-#Fix for CVE-2021-23133
-Patch64:        0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
 
 # Fix for CVE-2021-3444
 Patch65:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
@@ -242,7 +239,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch61 -p1
 %patch62 -p1
 %patch63 -p1
-%patch64 -p1
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
@@ -477,6 +473,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.19.189-1
+-   Update to version 4.19.189
 *   Tue Apr 20 2021 Ankit Jain <ankitja@vmware.com> 4.19.186-3
 -   Fix for CVE-2021-3444
 *   Mon Apr 19 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.186-2

@@ -1,7 +1,7 @@
-From 9f40ab07c1c7e1cdcee586b06e35800b151b3ca3 Mon Sep 17 00:00:00 2001
+From de890a13d19b61fefab793b267c3ed49631afa52 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 19 Feb 2019 16:59:15 +0100
-Subject: [PATCH 183/335] hrtimer: Don't lose state in cpu_chill()
+Subject: [PATCH 183/338] hrtimer: Don't lose state in cpu_chill()
 
 In cpu_chill() the state is set to TASK_UNINTERRUPTIBLE and a timer is
 programmed. On return the state is always TASK_RUNNING which means we

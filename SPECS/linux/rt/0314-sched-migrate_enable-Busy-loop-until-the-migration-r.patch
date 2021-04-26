@@ -1,7 +1,7 @@
-From 099b08fc2a4685988718355d0d15f61e090d73e6 Mon Sep 17 00:00:00 2001
+From ea853f313b452350ff2c8842c9b0336db35e3338 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 12 Dec 2019 10:53:59 +0100
-Subject: [PATCH 314/335] sched: migrate_enable: Busy loop until the migration
+Subject: [PATCH 314/338] sched: migrate_enable: Busy loop until the migration
  request is completed
 
 [ Upstream commit 140d7f54a5fff02898d2ca9802b39548bf7455f1 ]

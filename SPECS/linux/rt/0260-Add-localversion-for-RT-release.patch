@@ -1,7 +1,7 @@
-From 91593b3e56b8b248579fd72cb487a8ba3ae16002 Mon Sep 17 00:00:00 2001
+From 01a37bc7026ff03b2d21d3d5b64cc6408ab0d8f0 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 8 Jul 2011 20:25:16 +0200
-Subject: [PATCH 260/335] Add localversion for -RT release
+Subject: [PATCH 260/338] Add localversion for -RT release
 
 Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
 ---

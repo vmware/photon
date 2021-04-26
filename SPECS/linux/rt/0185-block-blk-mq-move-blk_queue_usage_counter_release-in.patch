@@ -1,7 +1,7 @@
-From 1ad19ecef1897da0a85b7036d9abda458e2f4007 Mon Sep 17 00:00:00 2001
+From 9e2f490089263b98533a1968a711c85c3607a249 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 13 Mar 2018 13:49:16 +0100
-Subject: [PATCH 185/335] block: blk-mq: move blk_queue_usage_counter_release()
+Subject: [PATCH 185/338] block: blk-mq: move blk_queue_usage_counter_release()
  into process context
 
 | BUG: sleeping function called from invalid context at kernel/locking/rtmutex.c:914

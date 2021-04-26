@@ -1,7 +1,7 @@
-From 6c1d813bc39969d260346d65139b400d82be4e6e Mon Sep 17 00:00:00 2001
+From a62a37e6a91afafc0877d377fa1c84b2a7f7a505 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 3 Jul 2009 08:44:31 -0500
-Subject: [PATCH 100/335] hrtimer: by timers by default into the softirq
+Subject: [PATCH 100/338] hrtimer: by timers by default into the softirq
  context
 
 We can't have hrtimers callbacks running in hardirq context on RT. Therefore

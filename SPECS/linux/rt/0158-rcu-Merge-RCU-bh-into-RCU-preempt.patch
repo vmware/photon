@@ -1,7 +1,7 @@
-From d932f97f10fef3287d19a86a615a5f383ca37be6 Mon Sep 17 00:00:00 2001
+From fabe100662e976a1974b43e1aa5a2c94c5eb221d Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 5 Oct 2011 11:59:38 -0700
-Subject: [PATCH 158/335] rcu: Merge RCU-bh into RCU-preempt
+Subject: [PATCH 158/338] rcu: Merge RCU-bh into RCU-preempt
 
 The Linux kernel has long RCU-bh read-side critical sections that
 intolerably increase scheduling latency under mainline's RCU-bh rules,

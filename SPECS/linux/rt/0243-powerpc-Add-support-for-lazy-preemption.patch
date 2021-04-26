@@ -1,7 +1,7 @@
-From 861da78f29c0544e172d0ff09a423c0bc914cadc Mon Sep 17 00:00:00 2001
+From 3be79f0370dd5f59fd2773213748bc8ffcd81409 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 1 Nov 2012 10:14:11 +0100
-Subject: [PATCH 243/335] powerpc: Add support for lazy preemption
+Subject: [PATCH 243/338] powerpc: Add support for lazy preemption
 
 Implement the powerpc pieces for lazy preempt.
 

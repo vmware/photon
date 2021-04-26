@@ -1,7 +1,7 @@
-From 5692f0cb619064e7db5572b8f6e5cf723ab9ac83 Mon Sep 17 00:00:00 2001
+From 7288d45b23547b6e7a32dd4bff940c3a792fdb36 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 26 Jun 2019 17:44:21 +0200
-Subject: [PATCH 274/335] Revert "rtmutex: Handle the various new futex race
+Subject: [PATCH 274/338] Revert "rtmutex: Handle the various new futex race
  conditions"
 
 [ Upstream commit 9e0265c21af4d6388d47dcd5ce20f76ec3a2e468 ]

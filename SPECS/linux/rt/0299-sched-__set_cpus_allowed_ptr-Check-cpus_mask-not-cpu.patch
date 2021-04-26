@@ -1,7 +1,7 @@
-From 5f1d8d61e12e9e0cca71830f2f1c365f4992efbe Mon Sep 17 00:00:00 2001
+From ef3ec0223de25a36f021e5d3e8fb0a0eccd60159 Mon Sep 17 00:00:00 2001
 From: Scott Wood <swood@redhat.com>
 Date: Sat, 27 Jul 2019 00:56:32 -0500
-Subject: [PATCH 299/335] sched: __set_cpus_allowed_ptr: Check cpus_mask, not
+Subject: [PATCH 299/338] sched: __set_cpus_allowed_ptr: Check cpus_mask, not
  cpus_ptr
 
 [ Upstream commit e5606fb7b042db634ed62b4dd733d62e050e468f ]

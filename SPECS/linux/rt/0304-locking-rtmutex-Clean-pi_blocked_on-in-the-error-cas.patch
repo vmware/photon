@@ -1,7 +1,7 @@
-From 83969ea5672b50f1bd27cca0071c0e4a5588962e Mon Sep 17 00:00:00 2001
+From 97267c1e92788dd938492a565e4b4cc4371b304d Mon Sep 17 00:00:00 2001
 From: Peter Zijlstra <peterz@infradead.org>
 Date: Mon, 30 Sep 2019 18:15:44 +0200
-Subject: [PATCH 304/335] locking/rtmutex: Clean ->pi_blocked_on in the error
+Subject: [PATCH 304/338] locking/rtmutex: Clean ->pi_blocked_on in the error
  case
 
 [ Upstream commit 0be4ea6e3ce693101be0fbd55a0cc7ce238ab2eb ]

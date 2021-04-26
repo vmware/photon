@@ -1,7 +1,7 @@
-From d1241f2b1f8fa4067bcacca1193f62771e0b4bd9 Mon Sep 17 00:00:00 2001
+From 95c7ca51072013a9c98f2e3707a49295ed31daf6 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 21 Feb 2020 18:57:11 +0100
-Subject: [PATCH 320/335] drm/vmwgfx: Drop preempt_disable() in
+Subject: [PATCH 320/338] drm/vmwgfx: Drop preempt_disable() in
  vmw_fifo_ping_host()
 
 [ Upstream commit b901491e7b9b7a676818d84e482b69be72fc142f ]

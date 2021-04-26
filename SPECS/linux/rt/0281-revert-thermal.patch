@@ -1,7 +1,7 @@
-From 7a130d886b0f5e0fcc12526c47857aef128c1e62 Mon Sep 17 00:00:00 2001
+From 02b8ca13b6cc5f25daa2d846953a20f395491573 Mon Sep 17 00:00:00 2001
 From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
 Date: Fri, 20 Sep 2019 17:50:53 -0400
-Subject: [PATCH 281/335] revert-thermal
+Subject: [PATCH 281/338] revert-thermal
 
 Revert: thermal: Defer thermal wakups to threads
 

@@ -1,7 +1,7 @@
-From 4a50053edba5db5c912bc330522d5330d055728c Mon Sep 17 00:00:00 2001
+From 4bb11c0ef364cbea5d63501d26f378d5ca487bf9 Mon Sep 17 00:00:00 2001
 From: Juri Lelli <juri.lelli@redhat.com>
 Date: Wed, 31 Jul 2019 12:37:15 +0200
-Subject: [PATCH 288/335] sched/deadline: Ensure inactive_timer runs in hardirq
+Subject: [PATCH 288/338] sched/deadline: Ensure inactive_timer runs in hardirq
  context
 
 [ Upstream commit ba94e7aed7405c58251b1380e6e7d73aa8284b41 ]

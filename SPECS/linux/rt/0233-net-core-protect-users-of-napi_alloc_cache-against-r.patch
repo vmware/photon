@@ -1,7 +1,7 @@
-From 4b8cedf0985f4efd1dd27a84de5ffc673a043d23 Mon Sep 17 00:00:00 2001
+From 2a7e6738bea7a20cffe775fa1962c74d8b88c2e3 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 15 Jan 2016 16:33:34 +0100
-Subject: [PATCH 233/335] net/core: protect users of napi_alloc_cache against
+Subject: [PATCH 233/338] net/core: protect users of napi_alloc_cache against
  reentrance
 
 On -RT the code running in BH can not be moved to another CPU so CPU

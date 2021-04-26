@@ -1,7 +1,7 @@
-From d6588ab786a357ef999529f6674b5a33b3d8b0d5 Mon Sep 17 00:00:00 2001
+From 92ae2e3509a3ebfcaeba44ec213c9c98f8db9e49 Mon Sep 17 00:00:00 2001
 From: Tiejun Chen <tiejunc@vmware.com>
 Date: Mon, 30 Mar 2020 18:45:23 -0400
-Subject: [PATCH 322/335] lib/ubsan: Remove flags parameter from calls to
+Subject: [PATCH 322/338] lib/ubsan: Remove flags parameter from calls to
  ubsan_prologue() and ubsan_epilogue()
 
 Fails to build with CONFIG_UBSAN=y

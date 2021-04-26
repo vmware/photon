@@ -1,7 +1,7 @@
-From 021cced66cb298eb004a07eba8d814ca72d11d71 Mon Sep 17 00:00:00 2001
+From b1f96c384515cd52463c7bce1d5bc63f0ab74f83 Mon Sep 17 00:00:00 2001
 From: Julien Grall <julien.grall@arm.com>
 Date: Wed, 21 Aug 2019 10:24:07 +0100
-Subject: [PATCH 293/335] hrtimer: Use READ_ONCE to access timer->base in
+Subject: [PATCH 293/338] hrtimer: Use READ_ONCE to access timer->base in
  hrimer_grab_expiry_lock()
 
 [ Upstream commit 2c8fdbe7ef0ad06c1a326886c5954e117b5657d6 ]

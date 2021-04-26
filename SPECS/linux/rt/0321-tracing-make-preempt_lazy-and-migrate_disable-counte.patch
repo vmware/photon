@@ -1,7 +1,7 @@
-From ff72abae0da8406b4a632050cfb97f22ebf229b1 Mon Sep 17 00:00:00 2001
+From 5810a613845f2df86f85195aad12c6ced8c31c65 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 21 Feb 2020 18:15:15 +0100
-Subject: [PATCH 321/335] tracing: make preempt_lazy and migrate_disable
+Subject: [PATCH 321/338] tracing: make preempt_lazy and migrate_disable
  counter smaller
 
 [ Upstream commit dd430bf5ecb40f9a89679c85868826475d71de54 ]

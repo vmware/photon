@@ -1,7 +1,7 @@
-From d447e7724eb700723463a5c9cdeff861559899e4 Mon Sep 17 00:00:00 2001
+From 709498449968511e100b915253108d0fef643336 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Fri, 18 Mar 2011 10:11:25 +0100
-Subject: [PATCH 067/335] fs: jbd/jbd2: Make state lock and journal head lock
+Subject: [PATCH 067/338] fs: jbd/jbd2: Make state lock and journal head lock
  rt safe
 
 bit_spin_locks break under RT.

@@ -1,7 +1,7 @@
-From 57a3ad7613c363a1f89f7a4f68037394d643a6ab Mon Sep 17 00:00:00 2001
+From 8efde115d78b77a817f58991022e9b736995bbfe Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Thu, 4 Oct 2012 14:20:47 +0100
-Subject: [PATCH 121/335] softirq: Split softirq locks
+Subject: [PATCH 121/338] softirq: Split softirq locks
 
 The 3.x RT series removed the split softirq implementation in favour
 of pushing softirq processing into the context of the thread which

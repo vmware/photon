@@ -1,7 +1,7 @@
-From 0671050f8ff3e39c5502b7a8ae894c53030cdc4a Mon Sep 17 00:00:00 2001
+From e1635ca3970cba4ed71cb269e1c3e9625cf836cc Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 24 Jun 2019 19:33:16 +0200
-Subject: [PATCH 270/335] sched/core: Drop a preempt_disable_rt() statement
+Subject: [PATCH 270/338] sched/core: Drop a preempt_disable_rt() statement
 
 [ Upstream commit 761126efdcbe3fa3e99c9079fa0ad6eca2f251f2 ]
 

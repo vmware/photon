@@ -1,7 +1,7 @@
-From 53d88b59d808f047af5f18387f916738c2a365e1 Mon Sep 17 00:00:00 2001
+From d83ed129267f68ba2b12ff422d2d1cbed8d274bf Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 8 Jan 2019 12:31:06 +0100
-Subject: [PATCH 101/335] sched/fair: Make the hrtimers non-hard again
+Subject: [PATCH 101/338] sched/fair: Make the hrtimers non-hard again
 
 Since commit "sched/fair: Robustify CFS-bandwidth timer locking" both
 hrtimer can run in softirq context because now interrupts are disabled

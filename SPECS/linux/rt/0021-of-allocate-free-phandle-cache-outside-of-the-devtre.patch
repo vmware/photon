@@ -1,7 +1,7 @@
-From 6ed9f65ce50ef98bc22affc749c7553fbcc8fa92 Mon Sep 17 00:00:00 2001
+From 023f55094120062650d44c9d6d42cdba7b7c7137 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 31 Aug 2018 14:16:30 +0200
-Subject: [PATCH 021/335] of: allocate / free phandle cache outside of the
+Subject: [PATCH 021/338] of: allocate / free phandle cache outside of the
  devtree_lock
 
 The phandle cache code allocates memory while holding devtree_lock which

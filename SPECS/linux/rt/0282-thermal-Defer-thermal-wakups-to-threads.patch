@@ -1,7 +1,7 @@
-From 4c62c229da72d643bbd7573040b1bf25861f9157 Mon Sep 17 00:00:00 2001
+From 16c59d1ae6aa48383d99ecbd0a176a0d4ac4db9a Mon Sep 17 00:00:00 2001
 From: Daniel Wagner <wagi@monom.org>
 Date: Tue, 17 Feb 2015 09:37:44 +0100
-Subject: [PATCH 282/335] thermal: Defer thermal wakups to threads
+Subject: [PATCH 282/338] thermal: Defer thermal wakups to threads
 
 [ Upstream commit ad2408dc248fe58536eef5b2b5734d8f9d3a280b ]
 

@@ -1,7 +1,7 @@
-From e3d9aced4179c6156d84ec29a85daecfc6c85b37 Mon Sep 17 00:00:00 2001
+From e8ef0e17d396678201e1830e711a97e98497842f Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 13 Mar 2018 13:49:16 +0100
-Subject: [PATCH 284/335] block: blk-mq: move blk_queue_usage_counter_release()
+Subject: [PATCH 284/338] block: blk-mq: move blk_queue_usage_counter_release()
  into process context
 
 [ Upstream commit 61c928ecf4fe200bda9b49a0813b5ba0f43995b5 ]

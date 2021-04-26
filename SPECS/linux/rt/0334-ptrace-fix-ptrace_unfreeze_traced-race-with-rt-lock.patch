@@ -1,7 +1,7 @@
-From 6f884d6e9d573f95c182ce2fe85068a1f5f79c2f Mon Sep 17 00:00:00 2001
+From f86e31c9609052e4a1bddcb696b576eb6d201273 Mon Sep 17 00:00:00 2001
 From: Oleg Nesterov <oleg@redhat.com>
 Date: Tue, 3 Nov 2020 12:39:01 +0100
-Subject: [PATCH 334/335] ptrace: fix ptrace_unfreeze_traced() race with
+Subject: [PATCH 334/338] ptrace: fix ptrace_unfreeze_traced() race with
  rt-lock
 
 [ Upstream commit 0fdc91971b34cf6857b4cfd8c322ae936cfc189b ]

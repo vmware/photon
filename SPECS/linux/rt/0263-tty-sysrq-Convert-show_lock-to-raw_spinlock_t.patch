@@ -1,7 +1,7 @@
-From 37289b290643488c83144128e00bacb5c8219dc4 Mon Sep 17 00:00:00 2001
+From 389cc01eaa6e0de94275c71d5b1c6feb17df61f1 Mon Sep 17 00:00:00 2001
 From: Julien Grall <julien.grall@arm.com>
 Date: Wed, 13 Mar 2019 11:40:34 +0000
-Subject: [PATCH 263/335] tty/sysrq: Convert show_lock to raw_spinlock_t
+Subject: [PATCH 263/338] tty/sysrq: Convert show_lock to raw_spinlock_t
 
 Systems which don't provide arch_trigger_cpumask_backtrace() will
 invoke showacpu() from a smp_call_function() function which is invoked

@@ -1,7 +1,7 @@
-From 8818a895ac23412da673b9bebe294c605bc18f76 Mon Sep 17 00:00:00 2001
+From 569e20964d64ef91417f80c9703bb13f899528dd Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 9 Apr 2014 10:37:23 +0200
-Subject: [PATCH 178/335] block: mq: use cpu_light()
+Subject: [PATCH 178/338] block: mq: use cpu_light()
 
 there is a might sleep splat because get_cpu() disables preemption and
 later we grab a lock. As a workaround for this we use get_cpu_light().

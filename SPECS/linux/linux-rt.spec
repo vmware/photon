@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.186
+Version:        4.19.189
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt76
-Release:        3%{?kat_build:.%kat}%{?dist}
+%define rt_version rt78
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=2641441b25454db5cf9d4aa7b73de83671e264e5
+%define sha1 linux=cae611c9e5526a1d2f0a0994f82f13a748996ad1
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
@@ -85,9 +85,6 @@ Patch64:        0005-ovl-check-permission-to-open-real-file.patch
 # Fix for CVE-2019-19770
 Patch65:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch66:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
-
-#Fix for CVE-2021-23133
-Patch67:        0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
 
 # Fix for CVE-2021-3444
 Patch68:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
@@ -447,8 +444,11 @@ Patch531:       0331-net-phy-fixed_phy-Remove-unused-seqcount.patch
 Patch532:       0332-net-xfrm-fix-compress-vs-decompress-serialization.patch
 Patch533:       0333-mm-memcontrol-Disable-preemption-in-__mod_memcg_lruv.patch
 Patch534:       0334-ptrace-fix-ptrace_unfreeze_traced-race-with-rt-lock.patch
-# Keep rt_version matched up with this patch.
 Patch535:       0335-Linux-4.19.185-rt76-REBASE.patch
+Patch536:       0336-mm-slub-Don-t-resize-the-location-tracking-cache-on-.patch
+Patch537:       0337-locking-rwsem_rt-Add-__down_read_interruptible.patch
+# Keep rt_version matched up with this patch.
+Patch538:       0338-Linux-4.19.189-rt78-REBASE.patch
 
 
 #Photon Specific Changes
@@ -548,7 +548,6 @@ The Linux package contains the Linux kernel doc files
 %patch64 -p1
 %patch65 -p1
 %patch66 -p1
-%patch67 -p1
 %patch68 -p1
 %patch69 -p1
 %patch70 -p1
@@ -903,6 +902,9 @@ The Linux package contains the Linux kernel doc files
 %patch533 -p1
 %patch534 -p1
 %patch535 -p1
+%patch536 -p1
+%patch537 -p1
+%patch538 -p1
 %patch600 -p1
 %patch601 -p1
 %patch602 -p1
@@ -1105,6 +1107,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.19.189-1
+-   Update to version 4.19.189
 *   Tue Apr 20 2021 Ankit Jain <ankitja@vmware.com> 4.19.186-3
 -   Fix for CVE-2021-3444
 *   Mon Apr 19 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.186-2

@@ -1,7 +1,7 @@
-From 36adedf47df247ac322c0a54f2cf0c2c140ca846 Mon Sep 17 00:00:00 2001
+From 33d0cac8c67d1ed8962e20801ea6a632c166f613 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 18 Dec 2019 12:25:09 +0100
-Subject: [PATCH 315/335] userfaultfd: Use a seqlock instead of seqcount
+Subject: [PATCH 315/338] userfaultfd: Use a seqlock instead of seqcount
 
 [ Upstream commit dc952a564d02997330654be9628bbe97ba2a05d3 ]
 

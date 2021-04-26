@@ -1,7 +1,7 @@
-From 2f7b1f5ed71647411bf57b9054c6d336d888f389 Mon Sep 17 00:00:00 2001
+From ca39b5fd07a79b06bac308e2ffa30d6ff3bc3692 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Mon, 16 Sep 2019 12:33:59 +0200
-Subject: [PATCH 297/335] posix-timers: Unlock expiry lock in the early return
+Subject: [PATCH 297/338] posix-timers: Unlock expiry lock in the early return
 
 [ Upstream commit 356a2781375ec58521a9bc3f500488745990c242 ]
 

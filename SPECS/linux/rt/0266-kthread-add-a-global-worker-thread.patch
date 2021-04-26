@@ -1,7 +1,7 @@
-From cee33fa92d8874c9f12ef9aa0949b08a1e738770 Mon Sep 17 00:00:00 2001
+From d470ab8edb05c1d6702195d1da7829227966f9f8 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 12 Feb 2019 15:09:38 +0100
-Subject: [PATCH 266/335] kthread: add a global worker thread.
+Subject: [PATCH 266/338] kthread: add a global worker thread.
 
 [ Upstream commit 0532e87d9d44795221aa921ba7024bde689cc894 ]
 

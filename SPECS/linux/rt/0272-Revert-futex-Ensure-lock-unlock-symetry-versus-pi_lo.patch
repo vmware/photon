@@ -1,7 +1,7 @@
-From 981d51ffc2970fd9e2eeb99a9d8b35c553c0e383 Mon Sep 17 00:00:00 2001
+From e26ff7a2aea4a8c3aff42fd2e93a218be62d708f Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 26 Jun 2019 17:44:13 +0200
-Subject: [PATCH 272/335] Revert "futex: Ensure lock/unlock symetry versus
+Subject: [PATCH 272/338] Revert "futex: Ensure lock/unlock symetry versus
  pi_lock and hash bucket lock"
 
 [ Upstream commit 6a773b70cf105b46298ed3b44e77c102ce31d9ec ]

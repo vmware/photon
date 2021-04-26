@@ -1,7 +1,7 @@
-From ced4b5451ff50a94923440e5ace0c890a26acab5 Mon Sep 17 00:00:00 2001
+From 8a424ed83e5b9bfbc4f17e36aeae8a3759bc5db7 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Tue, 26 Feb 2019 14:53:49 +0100
-Subject: [PATCH 241/335] x86: lazy-preempt: use proper return label on
+Subject: [PATCH 241/338] x86: lazy-preempt: use proper return label on
  32bit-x86
 
 The lazy-preempt uses the wrong return label in case preemption isn't

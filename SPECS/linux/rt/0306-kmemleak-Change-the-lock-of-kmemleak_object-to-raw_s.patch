@@ -1,7 +1,7 @@
-From 63a7cd7197667655c9c83ad8eb889bab6f95d472 Mon Sep 17 00:00:00 2001
+From 10869aa7116e351a687ab14dc6b25cbc80de64e9 Mon Sep 17 00:00:00 2001
 From: Liu Haitao <haitao.liu@windriver.com>
 Date: Fri, 27 Sep 2019 16:22:30 +0800
-Subject: [PATCH 306/335] kmemleak: Change the lock of kmemleak_object to
+Subject: [PATCH 306/338] kmemleak: Change the lock of kmemleak_object to
  raw_spinlock_t
 
 [ Upstream commit 217847f57119b5fdd377bfa3d344613ddb98d9fc ]

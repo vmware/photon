@@ -1,7 +1,7 @@
-From 18e3b6d4c23cee7a6a0dfc24dde92e199e730e4a Mon Sep 17 00:00:00 2001
+From baad7d651d7b6ef2a4edde12e669cac2d3dccfe5 Mon Sep 17 00:00:00 2001
 From: kbuild test robot <lkp@intel.com>
 Date: Sat, 13 Apr 2019 11:22:51 +0800
-Subject: [PATCH 269/335] pci/switchtec: fix stream_open.cocci warnings
+Subject: [PATCH 269/338] pci/switchtec: fix stream_open.cocci warnings
 
 [ Upstream commit 9462c69e29307adc95c289f50839d5d683973891 ]
 

@@ -1,7 +1,7 @@
-From 791443ac8bfdba56d010fd6afcca6866cb0f0a89 Mon Sep 17 00:00:00 2001
+From c671508fb9c590f0275dcecbb2679b9c882ec3c9 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 14 Aug 2019 17:08:58 +0200
-Subject: [PATCH 292/335] x86: preempt: Check preemption level before looking
+Subject: [PATCH 292/338] x86: preempt: Check preemption level before looking
  at lazy-preempt
 
 [ Upstream commit 19fc8557f2323c52b26561651ed4d51fc688a740 ]

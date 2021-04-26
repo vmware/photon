@@ -1,7 +1,7 @@
-From 004003b4d12521e4515abf737be10fe836039300 Mon Sep 17 00:00:00 2001
+From 16556f42757299364ad5540cb0075129268d29e4 Mon Sep 17 00:00:00 2001
 From: Julien Grall <julien.grall@arm.com>
 Date: Fri, 20 Sep 2019 11:08:35 +0100
-Subject: [PATCH 305/335] lib/ubsan: Don't seralize UBSAN report
+Subject: [PATCH 305/338] lib/ubsan: Don't seralize UBSAN report
 
 [ Upstream commit 4702c28ac777b27acb499cbd5e8e787ce1a7d82d ]
 

@@ -1,7 +1,7 @@
-From a81d5cc3b8123124723e8ec035046c8f54caf0b1 Mon Sep 17 00:00:00 2001
+From e3d3d337f3a2372efe02c474b8d4defd6621f8d3 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 26 Jun 2019 17:44:18 +0200
-Subject: [PATCH 273/335] Revert "futex: Fix bug on when a requeued RT task
+Subject: [PATCH 273/338] Revert "futex: Fix bug on when a requeued RT task
  times out"
 
 [ Upstream commit f1a170cb3289a48df26cae3c60d77608f7a988bb ]

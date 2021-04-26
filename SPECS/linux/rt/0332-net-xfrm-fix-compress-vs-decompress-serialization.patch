@@ -1,7 +1,7 @@
-From aee1257804f0c2bfead4920118df094223d48a33 Mon Sep 17 00:00:00 2001
+From 66f674a7b0e7653c386c2fdfe0691251c60ab424 Mon Sep 17 00:00:00 2001
 From: Davidlohr Bueso <dave@stgolabs.net>
 Date: Tue, 18 Aug 2020 09:20:53 -0700
-Subject: [PATCH 332/335] net: xfrm: fix compress vs decompress serialization
+Subject: [PATCH 332/338] net: xfrm: fix compress vs decompress serialization
 
 A crash was seen in xfrm when running ltp's 'tcp4_ipsec06' stresser on v4.x
 based RT kernels.

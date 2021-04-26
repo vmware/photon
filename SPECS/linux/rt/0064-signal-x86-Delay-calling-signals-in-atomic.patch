@@ -1,7 +1,7 @@
-From 023d9d5da6f90972a36ce02a1b09089786393c79 Mon Sep 17 00:00:00 2001
+From 6c7b254bdfe4fb1d8552626b1c13bf95631e0e23 Mon Sep 17 00:00:00 2001
 From: Oleg Nesterov <oleg@redhat.com>
 Date: Tue, 14 Jul 2015 14:26:34 +0200
-Subject: [PATCH 064/335] signal/x86: Delay calling signals in atomic
+Subject: [PATCH 064/338] signal/x86: Delay calling signals in atomic
 
 On x86_64 we must disable preemption before we enable interrupts
 for stack faults, int3 and debugging, because the current task is using

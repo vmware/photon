@@ -1,7 +1,7 @@
-From 65f512a4a093c31b44b84fb8b2b3d90e35defebb Mon Sep 17 00:00:00 2001
+From 58ccf7d30060a2e4c3ad0d22d7c81e9258c08844 Mon Sep 17 00:00:00 2001
 From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
 Date: Sun, 22 Mar 2020 00:00:28 +0100
-Subject: [PATCH 323/335] irq_work: Fix checking of IRQ_WORK_LAZY flag set on
+Subject: [PATCH 323/338] irq_work: Fix checking of IRQ_WORK_LAZY flag set on
  non PREEMPT_RT
 
 When CONFIG_PREEMPT_RT_FULL is not set, some of the checks for using

@@ -1,7 +1,7 @@
-From 93b579f7ea6bee83c5a98945bfa18f9c14cb01f4 Mon Sep 17 00:00:00 2001
+From c9140393c7e0b30745670e32eb4e377c4985b612 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Sun, 28 Oct 2012 11:18:08 +0100
-Subject: [PATCH 234/335] net: netfilter: Serialize xt_write_recseq sections on
+Subject: [PATCH 234/338] net: netfilter: Serialize xt_write_recseq sections on
  RT
 
 The netfilter code relies only on the implicit semantics of

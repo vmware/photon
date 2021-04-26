@@ -1,7 +1,7 @@
-From 3df5d642705ecc060605159ecdaff7dcada77c68 Mon Sep 17 00:00:00 2001
+From 8517d7e883600f39a7cff2d2aa2f5995a37869d8 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 11 Jan 2019 21:16:31 +0100
-Subject: [PATCH 146/335] rtmutex/rwlock: preserve state like a sleeping lock
+Subject: [PATCH 146/338] rtmutex/rwlock: preserve state like a sleeping lock
 
 The rwlock is spinning while acquiring a lock. Therefore it must become
 a sleeping lock on RT and preserve its task state while sleeping and

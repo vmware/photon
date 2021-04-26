@@ -1,7 +1,7 @@
-From 3ca12c911de9be653d25e93846918ad48ef2822d Mon Sep 17 00:00:00 2001
+From 7ee7268204f0a809f485dd72227d5e55402beb34 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Thu, 16 Apr 2020 12:42:15 +0200
-Subject: [PATCH 326/335] fs/dcache: Include swait.h header
+Subject: [PATCH 326/338] fs/dcache: Include swait.h header
 
 [ Upstream commit 279f90ddf53cd6bd3c203fbbf488d642ea2603de ]
 

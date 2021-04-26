@@ -1,7 +1,7 @@
-From 38907cafc2ba5aa0fdaacf93a2448e25f3b36983 Mon Sep 17 00:00:00 2001
+From dd72d055407ded1be75e6975323bdaf5462445f3 Mon Sep 17 00:00:00 2001
 From: Daniel Wagner <dwagner@suse.de>
 Date: Mon, 16 Dec 2019 16:15:57 +0100
-Subject: [PATCH 313/335] lib/smp_processor_id: Adjust
+Subject: [PATCH 313/338] lib/smp_processor_id: Adjust
  check_preemption_disabled()
 
 [ Upstream commit af3c1c5fdf177870fb5e6e16b24e374696ab28f5 ]

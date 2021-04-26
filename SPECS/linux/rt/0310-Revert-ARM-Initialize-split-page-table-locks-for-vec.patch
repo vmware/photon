@@ -1,7 +1,7 @@
-From 680a0e5b5de484c57f9fba7d541a04c17b0aee39 Mon Sep 17 00:00:00 2001
+From 1e1f40865758dba108f5baddaa8385e7a0f4bc66 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 18 Oct 2019 13:04:15 +0200
-Subject: [PATCH 310/335] Revert "ARM: Initialize split page table locks for
+Subject: [PATCH 310/338] Revert "ARM: Initialize split page table locks for
  vector page"
 
 [ Upstream commit 247074c44d8c3e619dfde6404a52295d8d671d38 ]

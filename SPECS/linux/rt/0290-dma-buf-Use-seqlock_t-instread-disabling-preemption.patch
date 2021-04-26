@@ -1,7 +1,7 @@
-From 24316d3a6c030863ef44db3b1d1b19a95fb066d1 Mon Sep 17 00:00:00 2001
+From e5cb22f2a17e79c6b3476f0193c96fafbebcbdb9 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 14 Aug 2019 16:38:43 +0200
-Subject: [PATCH 290/335] dma-buf: Use seqlock_t instread disabling preemption
+Subject: [PATCH 290/338] dma-buf: Use seqlock_t instread disabling preemption
 
 [ Upstream commit 240610aa31094f51f299f06eb8dae8d4cd8d4500 ]
 

@@ -1,7 +1,7 @@
-From 697da05d52e7c3b70ce331be85b3e385a2d4f545 Mon Sep 17 00:00:00 2001
+From 7c7d7897fe6840e6d567a1d6b807e222b3d5e2d8 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Tue, 21 Aug 2012 20:38:50 +0200
-Subject: [PATCH 227/335] random: Make it work on rt
+Subject: [PATCH 227/338] random: Make it work on rt
 
 Delegate the random insertion to the forced threaded interrupt
 handler. Store the return IP of the hard interrupt handler in the irq

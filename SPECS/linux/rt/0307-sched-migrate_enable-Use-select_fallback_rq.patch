@@ -1,7 +1,7 @@
-From 259a04f1b6b0c0e47fdd83f55283a03a08e0877e Mon Sep 17 00:00:00 2001
+From a3e1a02e3881ae0d23981b45a20bb0e974177745 Mon Sep 17 00:00:00 2001
 From: Scott Wood <swood@redhat.com>
 Date: Sat, 12 Oct 2019 01:52:12 -0500
-Subject: [PATCH 307/335] sched: migrate_enable: Use select_fallback_rq()
+Subject: [PATCH 307/338] sched: migrate_enable: Use select_fallback_rq()
 
 [ Upstream commit adfa969d4cfcc995a9d866020124e50f1827d2d1 ]
 

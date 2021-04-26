@@ -1,7 +1,7 @@
-From 9a0112d032ffd32e1369fd27112ada35acd37063 Mon Sep 17 00:00:00 2001
+From 91116157ceada9aa975f45356dbdf630fa5cd698 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Wed, 29 May 2019 18:52:27 +0200
-Subject: [PATCH 285/335] workqueue: rework
+Subject: [PATCH 285/338] workqueue: rework
 
 [ Upstream commit d15a862f24df983458533aebd6fa207ecdd1095a ]
 
@@ -406,7 +406,7 @@ index 0d88298bfbee..fbf915c2b0c5 100644
  #else
  
 diff --git a/kernel/workqueue.c b/kernel/workqueue.c
-index 60dda8dfd4cc..122d651e5c7e 100644
+index 68afe35333ca..e2b2bb655df6 100644
 --- a/kernel/workqueue.c
 +++ b/kernel/workqueue.c
 @@ -49,8 +49,6 @@
@@ -673,9 +673,9 @@ index 60dda8dfd4cc..122d651e5c7e 100644
  	lockdep_assert_irqs_disabled();
 -#endif
  
- 	debug_work_activate(work);
  
-@@ -1442,7 +1402,7 @@ static void __queue_work(int cpu, struct workqueue_struct *wq,
+ 	/* if draining, only works from the same workqueue are allowed */
+@@ -1441,7 +1401,7 @@ static void __queue_work(int cpu, struct workqueue_struct *wq,
  	if (last_pool && last_pool != pwq->pool) {
  		struct worker *worker;
  
@@ -684,7 +684,7 @@ index 60dda8dfd4cc..122d651e5c7e 100644
  
  		worker = find_worker_executing_work(last_pool, work);
  
-@@ -1450,11 +1410,11 @@ static void __queue_work(int cpu, struct workqueue_struct *wq,
+@@ -1449,11 +1409,11 @@ static void __queue_work(int cpu, struct workqueue_struct *wq,
  			pwq = worker->current_pwq;
  		} else {
  			/* meh... not running there, queue here */
@@ -699,7 +699,7 @@ index 60dda8dfd4cc..122d651e5c7e 100644
  	}
  
  	/*
-@@ -1467,7 +1427,7 @@ static void __queue_work(int cpu, struct workqueue_struct *wq,
+@@ -1466,7 +1426,7 @@ static void __queue_work(int cpu, struct workqueue_struct *wq,
  	 */
  	if (unlikely(!pwq->refcnt)) {
  		if (wq->flags & WQ_UNBOUND) {

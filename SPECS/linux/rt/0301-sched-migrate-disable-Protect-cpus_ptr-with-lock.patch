@@ -1,7 +1,7 @@
-From 77fcac04a46a908708b4cd113362a2ba94826fe8 Mon Sep 17 00:00:00 2001
+From 00d436f5fd9d44370370b526a07e24c0a2f0f85e Mon Sep 17 00:00:00 2001
 From: Scott Wood <swood@redhat.com>
 Date: Sat, 27 Jul 2019 00:56:34 -0500
-Subject: [PATCH 301/335] sched: migrate disable: Protect cpus_ptr with lock
+Subject: [PATCH 301/338] sched: migrate disable: Protect cpus_ptr with lock
 
 [ Upstream commit 27ee52a891ed2c7e2e2c8332ccae0de7c2674b09 ]
 

@@ -1,7 +1,7 @@
-From b08548604c2c07de467c1dfb232773fd68c6f5da Mon Sep 17 00:00:00 2001
+From 031dc3e346890f1856a40c377c7b6045f064c269 Mon Sep 17 00:00:00 2001
 From: Scott Wood <swood@redhat.com>
 Date: Sat, 12 Oct 2019 01:52:13 -0500
-Subject: [PATCH 308/335] sched: Lazy migrate_disable processing
+Subject: [PATCH 308/338] sched: Lazy migrate_disable processing
 
 [ Upstream commit 425c5b38779a860062aa62219dc920d374b13c17 ]
 

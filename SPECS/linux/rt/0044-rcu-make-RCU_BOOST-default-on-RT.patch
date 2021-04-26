@@ -1,7 +1,7 @@
-From f55627a8c89e7f9bdfbf1d0b24ecde3c040e8381 Mon Sep 17 00:00:00 2001
+From 8626c844de1deca2ba26bfb694960829469f1f44 Mon Sep 17 00:00:00 2001
 From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 Date: Fri, 21 Mar 2014 20:19:05 +0100
-Subject: [PATCH 044/335] rcu: make RCU_BOOST default on RT
+Subject: [PATCH 044/338] rcu: make RCU_BOOST default on RT
 
 Since it is no longer invoked from the softirq people run into OOM more
 often if the priority of the RCU thread is too low. Making boosting

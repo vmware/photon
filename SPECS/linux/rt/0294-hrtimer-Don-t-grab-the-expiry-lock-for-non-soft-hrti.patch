@@ -1,7 +1,7 @@
-From 6ae5dbb9c06c275b65426ddb23f2a97a1526ee33 Mon Sep 17 00:00:00 2001
+From 9f631b305c3014b817c906f03eb1a6198707846a Mon Sep 17 00:00:00 2001
 From: Julien Grall <julien.grall@arm.com>
 Date: Wed, 21 Aug 2019 10:24:08 +0100
-Subject: [PATCH 294/335] hrtimer: Don't grab the expiry lock for non-soft
+Subject: [PATCH 294/338] hrtimer: Don't grab the expiry lock for non-soft
  hrtimer
 
 [ Upstream commit fd420354bea2f57c11f3de191dffdeea76531e76 ]
