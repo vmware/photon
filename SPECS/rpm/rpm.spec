@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -19,6 +19,8 @@ Source5:        macros.perl
 Source6:        macros.vpath
 Source7:        macros.php
 Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
+Patch1:         Fix-OpenPGP-parsing-bugs.patch
+Patch2:         Header-signatures-alone-are-not-sufficient.patch
 Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
@@ -39,6 +41,7 @@ BuildRequires:  file-devel
 BuildRequires:  python3-devel
 BuildRequires:  openssl >= 1.1.1
 BuildRequires:  zstd-devel
+
 %description
 RPM package manager
 
@@ -92,6 +95,8 @@ Python3 rpm.
 %prep
 %setup -n rpm-%{name}-%{version}-release
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -249,6 +254,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Apr 27 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.2-3
+-   Fix PGP parsing & signature validation issues
 *   Tue Mar 23 2021 Piyush Gupta <gpiyush@vmware.com> 4.16.1.2-2
 -   Internal version bump up in order to compile with new lua.
 *   Thu Feb 04 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.2-1
