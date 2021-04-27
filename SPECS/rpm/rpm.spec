@@ -5,7 +5,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -18,6 +18,8 @@ Source2:        brp-strip-debug-symbols
 Source3:        brp-strip-unneeded
 Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
 Patch1:         CVE-2021-20271.patch
+Patch2:         Fix-OpenPGP-parsing-bugs.patch
+Patch3:         Header-signatures-alone-are-not-sufficient.patch
 Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
@@ -96,6 +98,8 @@ Python3 rpm.
 %setup -n rpm-%{name}-%{version}-release
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -260,6 +264,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Apr 27 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-11
+-   Fix PGP parsing & signature validation issues
 *   Wed Apr 07 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-10
 -   Fix for CVE-2021-20271
 *   Wed Sep 09 2020 Anisha Kumari <kanisha@vmware.com> 4.14.2-9
