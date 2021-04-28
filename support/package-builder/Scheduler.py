@@ -35,7 +35,8 @@ class DependencyGraphNode(object):
         # auxBuildRequiredPkgNodes), and is later unused.
         self.accumInstallRequiresPkgNodes = set()
 
-        self.childPkgNodes = set() # Packages that I depend on.
+        self.childPkgNodes = set() # Package nodes that I directly depend on.
+        self.allRequiredPackages = [] # Full packages list that I depend on to build myself.
         self.parentPkgNodes = set() # Packages that depend on me.
 
         self.selfWeight = pkgWeight # Own package weight.
@@ -448,6 +449,16 @@ class Scheduler(object):
                 pkgNode.childPkgNodes.add(newChildPkgNode)
                 newChildPkgNode.parentPkgNodes.add(pkgNode)
 
+    def _calculateAllRequiredPackagesPerNode():
+        # pkgNode contains information about spec package without deeping into subpackages.
+        # getRequiresTreeOfBasePkgsForPkg() creates full build time dependency list base on
+        # subpackages dependencies by walking the tree of:
+        #     BuildRequires and their Requires tree + Requires and their Requires tree
+        # Let's keep graph simple by caching this preprocessed information per each pkgNode.
+        # It shouldn't add much memory overhead.
+        for package in Scheduler.sortedList:
+            pkgNode = Scheduler.mapPackagesToGraphNodes[package]
+            pkgNode.allRequiredPackages.extend(SPECS.getData().getRequiresTreeOfBasePkgsForPkg(package))
 
     def _calculateCriticalChainWeights():
 
@@ -561,6 +572,7 @@ class Scheduler(object):
         else:
             Scheduler._createGraphNodes()
             Scheduler._optimizeGraph()
+            Scheduler._calculateAllRequiredPackagesPerNode()
         Scheduler._calculateCriticalChainWeights()
 
 
@@ -628,10 +640,9 @@ class Scheduler(object):
                 if childPkgNode.built == 0:
                     return False
         else:
-            # For the rest of the packages with parallel build we have to conside entire tree of dependencies:
-            # BuildRequires and their Requires tree + Requires and their Requires tree
-            allRequires = SPECS.getData().getRequiresTreeOfBasePkgsForPkg(package)
-            for p in allRequires:
+            # For the rest of the packages with parallel build we have to consider entire
+            # tree of dependencies cached in allRequiredPackages set.
+            for p in pkgNode.allRequiredPackages:
                 if Scheduler.mapPackagesToGraphNodes[p].built == 0:
                     return False
 
