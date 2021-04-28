@@ -44,7 +44,7 @@
 &lt;/tr>
 &lt;/tbody>
 &lt;/table></description></item><item><title>Docs: Upgrading to Photon OS 4.0</title><link>/docs/installation-guide/upgrading-to-photon-os-4/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/upgrading-to-photon-os-4/</guid><description>
-&lt;p>You can upgrade your existing Photon OS 3.0 VMs to take advantage of the functionality enhancements in Photon OS 4.0. For details, see &lt;a href="../../overview/whats-new/">What&amp;rsquo;s New in Photon OS 4.0&lt;/a>.&lt;/p>
+&lt;p>You can upgrade your existing Photon OS 3.0 VMs to take advantage of the functionality enhancements in Photon OS 4.0. For details, see &lt;a href="../../docs/whats-new/">What&amp;rsquo;s New in Photon OS 4.0&lt;/a>.&lt;/p>
 &lt;p>Photon OS 4.0 provides a seamless upgrade for Photon OS 3.0 implementations. You simply download an upgrade package, run a script, and reboot the VM. The upgrade script will update your packages and retain your 3.0 customizations in your new OS 4.0 VM.&lt;/p>
 &lt;p>&lt;strong>Note&lt;/strong>: If your 3.0 VM is a full install, then you will have a 4.0 VM that represents a full install (all packages and dependencies). Upgrading a minimal installation takes less time due to fewer packages.&lt;/p>
 &lt;p>For each Photon OS 3.0 VM that you want to upgrade, complete the following steps:&lt;/p>
