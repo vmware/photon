@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.51.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -12,6 +12,10 @@ Distribution:   Photon
 Source0:        https://github.com/rust-lang/rust/archive/%{name}-%{version}.tar.gz
 %define sha1    %{name}-%{version}=4f3ff7080e3adcbbb336b8569c7a36096ad7e12e
 Patch0:         CVE-2021-31162.patch
+Patch1:         CVE-2021-28876.patch
+Patch2:         0001-Turn-may_have_side_effect-into-an-associated-constan.patch
+Patch3:         CVE-2021-28879.patch
+Patch4:         CVE-2021-28878.patch
 BuildRequires:  git
 BuildRequires:  cmake
 BuildRequires:  glibc
@@ -26,6 +30,10 @@ Rust Programming Language
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 sh ./configure --prefix=%{_prefix} --enable-extended --tools="cargo"
@@ -65,6 +73,8 @@ rm %{buildroot}%{_docdir}/%{name}/*.old
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+*   Wed Apr 28 2021 Ankit Jain <ankitja@vmware.com> 1.51.0-2
+-   Fixes CVE-2021-28876,CVE-2021-28878,CVE-2021-28879
 *   Mon Apr 19 2021 Ankit Jain <ankitja@vmware.com> 1.51.0-1
 -   Update to latest version to fix CVE-2021-31162
 *   Wed Sep 02 2020 Gerrit Photon <photon-checkins@vmware.com> 1.46.0-1
