@@ -4,8 +4,8 @@
 
 Summary:        iPXE open source boot firmware
 Name:           ipxe
-Version:        1.20.1
-Release:        2%{?dist}
+Version:        1.21.1
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://ipxe.org
 Group:          System Environment/Daemons
@@ -13,9 +13,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 #Download URL:  https://github.com/ipxe/ipxe/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    ipxe=7d55f469cd12142f79d8730a0a80c954cd9d50ec
-Patch0:         ipxe-gcc-10.patch
-Patch1:         ipxe-gcc-10-fcommon.patch
+%define sha1    ipxe=b8ad3343e78461aaa897c1404d16c26f035f87ee
 BuildArch:      x86_64
 BuildRequires:  binutils
 BuildRequires:  binutils-devel
@@ -36,8 +34,6 @@ PXE implementation enhanced with additional features.
 
 %prep
 %setup -q -n %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
 
 %build
 cd src
@@ -67,6 +63,8 @@ install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}/usr/share/ipxe/
 /usr/share/ipxe/rtl8139.rom
 
 %changelog
+*   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.21.1-1
+-   Automatic Version Bump
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 1.20.1-2
 -   GCC-10 support.
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 1.20.1-1
