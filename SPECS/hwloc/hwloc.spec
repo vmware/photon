@@ -1,6 +1,6 @@
 Summary:        Portable Hardware Locality
 Name:           hwloc
-Version:        2.3.0
+Version:        2.4.1
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -8,7 +8,7 @@ License:        BSD
 Url:            http://www.open-mpi.org/projects/hwloc
 Group:          Applications/Utilities
 Source0:        https://github.com/open-mpi/hwloc/archive/%{name}-%{version}.tar.gz
-%define sha1    hwloc=a194d13f272f49230b71a66595f742436925ab01
+%define sha1    hwloc=93f2bd51c35b6c8bd8f98f62656d22f5a3bb781d
 
 %description
 The Portable Hardware Locality (hwloc) software package provides a portable abstraction (across OS, versions, architectures, ...)
@@ -94,6 +94,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/bash-completion/completions/hwloc
 
 %changelog
+* Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.4.1-1
+- Automatic Version Bump
 * Tue Sep 29 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1
 - Automatic Version Bump
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.2.0-1
