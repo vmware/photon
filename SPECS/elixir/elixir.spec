@@ -1,15 +1,15 @@
 %global debug_package %{nil}
 Name:            elixir
 Summary:         A modern approach to programming for the Erlang VM
-Version:         1.10.4
-Release:         3%{?dist}
+Version:         1.11.4
+Release:         1%{?dist}
 License:         ASL 2.0
 URL:             http://elixir-lang.org/
 Source0:         https://github.com/elixir-lang/%{name}/archive/v%{version}/%{name}-%{version}.tar.gz
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           Development/Languages
-%define sha1 elixir=d8634700f61c72c0e97f1a212919803a86016d2a
+%define sha1 elixir=751d81a636e9dda05476c10c42bff220cd8d5895
 BuildRequires:   git
 BuildRequires:   sed
 BuildRequires:   erlang
@@ -49,6 +49,8 @@ ln -s %{_datadir}/%{name}/%{version}/bin/{elixir,elixirc,iex,mix} %{buildroot}/%
 %{_datadir}/%{name}
 
 %changelog
+*   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.11.4-1
+-   Automatic Version Bump
 *   Mon Dec 21 2020 Sujay G <gsujay@vmware.com> 1.10.4-3
 -   Fix %check
 *   Fri Aug 14 2020 Sujay G <gsujay@vmware.com> 1.10.4-2
