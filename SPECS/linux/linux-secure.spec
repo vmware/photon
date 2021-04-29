@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.25
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -29,7 +29,7 @@ Source4:        check_for_config_applicability.inc
 %if 0%{?fips}
 %define fips_canister_version 4.0.1-5.10.21-3-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
-%define sha1 fips-canister=55c0ec3f19f09a8ecaae5f4b31789138026830d4
+%define sha1 fips-canister=e793f09579cf7b17608095ed80c973000f5f8407
 %endif
 
 # common
@@ -83,6 +83,8 @@ Patch502:       0001-Initialize-jitterentropy-before-ecdh.patch
 Patch503:       0002-FIPS-crypto-self-tests.patch
 # Patch to remove urandom usage in rng module
 Patch504:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
+# Patch to remove urandom usage in drbg and ecc modules
+Patch505:       0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch508:       0001-FIPS-canister-binary-usage.patch
@@ -179,6 +181,7 @@ The Linux package contains the Linux kernel doc files
 %patch502 -p1
 %patch503 -p1
 %patch504 -p1
+%patch505 -p1
 %if 0%{?fips}
 %patch508 -p1
 %else
@@ -292,6 +295,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Apr 29 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.25-5
+-   Update canister binary.
+-   use jent by drbg and ecc.
+-   Enable hmac(sha224) self test and broket KAT test.
 *   Thu Apr 22 2021 Keerthana K <keerthanak@vmware.com> 5.10.25-4
 -   Update 0001-Skip-rap-plugin-for-aesni-intel-modules.patch for 5.10.25 kernel.
 -   Remove hmac(sha224) from broken kat test.
