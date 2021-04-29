@@ -32,7 +32,7 @@ new file mode 100644
 index 000000000000..50de82ad76cf
 --- /dev/null
 +++ b/crypto/crypto_self_test.c
-@@ -0,0 +1,96 @@
+@@ -0,0 +1,100 @@
 +/*
 + * Self test for Crypto Algorithms
 + *
@@ -76,6 +76,10 @@ index 000000000000..50de82ad76cf
 +	{
 +		.driver_name = "ecb(des3_ede)",
 +		.alg_name = "ecb(des3_ede)",
++	},
++	{
++		.driver_name = "hmac(sha224)",
++		.alg_name = "hmac(sha224)",
 +	},
 +	{
 +		.driver_name = "pkcs1pad(rsa,sha224)",

@@ -29,7 +29,7 @@ new file mode 100644
 index 000000000..50903abbc
 --- /dev/null
 +++ b/crypto/kattest.c
-@@ -0,0 +1,73 @@
+@@ -0,0 +1,74 @@
 +/*
 + * kattest module
 + *
@@ -64,6 +64,7 @@ index 000000000..50903abbc
 +	"cbc(des3_ede)",
 +	"ecb(des3_ede)",
 +	"hmac(sha1)",
++	"hmac(sha224)",
 +	"hmac(sha256)",
 +	"hmac(sha384)",
 +	"hmac(sha512)",
@@ -82,7 +83,7 @@ index 000000000..50903abbc
 +	char *test = "\x23\x32\x23\x32\x23\x32\x23\x32";
 +
 +	switch (kat_testbuild) {
-+		case 1 ... 17:
++		case 1 ... 18:
 +			if (strcmp(alg, alg_list[idx]) && strcmp(driver, alg_list[idx]))
 +				break;
 +
@@ -107,7 +108,7 @@ diff --git a/crypto/testmgr.c b/crypto/testmgr.c
 index b2ba16632..d6c712a53 100644
 --- a/crypto/testmgr.c
 +++ b/crypto/testmgr.c
-@@ -35,6 +35,28 @@
+@@ -35,6 +35,29 @@
  #include <crypto/internal/simd.h>
  
  #include "internal.h"
@@ -122,6 +123,7 @@ index b2ba16632..d6c712a53 100644
 +   (const char **)&des3_ede_cbc_tv_template[0].ctext,
 +   (const char **)&des3_ede_tv_template[0].ctext,
 +   (const char **)&hmac_sha1_tv_template[0].digest,
++   (const char **)&hmac_sha224_tv_template[2].digest,
 +   (const char **)&hmac_sha256_tv_template[0].digest,
 +   (const char **)&hmac_sha384_tv_template[1].digest,
 +   (const char **)&hmac_sha512_tv_template[0].digest,
@@ -149,7 +151,7 @@ index b2ba16632..d6c712a53 100644
  			     (j >= 0 && !alg_test_descs[j].fips_allowed)))
  		goto non_fips_alg;
  
-+	if (fips_enabled && kat_testbuild > 0 && kat_testbuild < 18) {
++	if (fips_enabled && kat_testbuild > 0 && kat_testbuild < 19) {
 +		tamper_input_vector(alg, driver, *poison_alg_strs[kat_testbuild-1]);
 +	}
 +
