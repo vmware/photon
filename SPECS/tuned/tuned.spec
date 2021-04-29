@@ -1,16 +1,15 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           tuned
-Version:        2.14.0
-Release:        3%{?dist}
+Version:        2.15.0
+Release:        1%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
 Url:            https://github.com/redhat-performance/tuned
 Source:         tuned-%{version}.tar.gz
-%define         sha1 tuned=53140aba44d956fac19c37c2c0052835c1fdd7e9
+%define         sha1 tuned=bfb3def0b687bbdae2b3e191d2fda46b3ffca1c0
 Patch0:         remove_desktop_utils_dependency.patch
-Patch1:         bootloader-plugin-support-for-photon.patch
-Patch2:         tuned-fix-bug-in-sysctl-verify.patch
+Patch1:         tuned-fix-bug-in-sysctl-verify.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3-devel
@@ -48,13 +47,13 @@ Based on that information components will then be put into lower or higher
 power saving modes to adapt to the current usage. Currently only ethernet
 network and ATA harddisk devices are implemented.
 
-%package utils-systemtap
+%package        utils-systemtap
 Summary:        Disk and net statistic monitoring systemtap scripts
 Group:          System/Base
 Requires:       %{name} = %{version}
 Requires:       systemtap
 
-%description utils-systemtap
+%description    utils-systemtap
 This package contains several systemtap scripts to allow detailed
 manual monitoring of the system. Instead of the typical IO/sec it collects
 minimal, maximal and average time between operations to be able to
@@ -65,14 +64,12 @@ instead of fewer large ones).
 %setup -q
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
+
 %build
 #The tuned daemon is written in pure Python. Nothing requires to be built.
 
 %install
 make install DESTDIR=%{buildroot}
-
-
 # conditional support for grub2, grub2 is not available on all architectures
 # and tuned is noarch package, thus the following hack is needed
 mkdir -p %{buildroot}%{_datadir}/tuned/grub2
@@ -98,7 +95,6 @@ make test
 %postun
 %systemd_postun_with_restart tuned.service
 
-
 %files
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING README
@@ -111,7 +107,6 @@ make test
 %config(noreplace) %{_sysconfdir}/tuned/tuned-main.conf
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/com.redhat.tuned.conf
 %config(noreplace) %{_sysconfdir}/modprobe.d/tuned.conf
-%config(noreplace) /boot/tuned.cfg
 %{_libdir}/tmpfiles.d
 %{_unitdir}/tuned.service
 %dir %{_localstatedir}/log/tuned
@@ -143,6 +138,8 @@ make test
 %{_mandir}/man8/scomes.*
 
 %changelog
+*   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.15.0-1
+-   Automatic Version Bump
 *   Fri Oct 09 2020 svasamsetty <svasamsetty@vmware.com> 2.14.0-3
 -   Re-enable tuned as it was disabled due to openssl 1.1.1
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.14.0-2
