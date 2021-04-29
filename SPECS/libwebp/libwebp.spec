@@ -1,6 +1,6 @@
 Summary:	Library to encode and decode webP format images
 Name:		libwebp
-Version:	1.1.0
+Version:	1.2.0
 Release:	1%{?dist}
 License:	BSD
 URL:		http://webmproject.org/
@@ -8,7 +8,7 @@ Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        https://github.com/webmproject/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1 libwebp=5e8d637a039a1688c04fdfeae308b2d285cb5aa3
+%define sha1 libwebp=54383895bd18783c7af8517620252a712258b22c
 BuildRequires:	libjpeg-turbo-devel
 BuildRequires:	libtiff-devel
 BuildRequires:	libpng-devel
@@ -61,6 +61,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*       Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.0-1
+-       Automatic Version Bump
 *       Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.0-1
 -       Automatic Version Bump
 *       Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 1.0.0-1
