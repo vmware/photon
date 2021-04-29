@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.266
+Version:        4.9.268
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=70c07faef87581049f838d713540f371512153e8
+%define sha1 linux=fdbe28d98b910c65e821d106dac32aef9c97da47
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -525,6 +525,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.9.268-1
+-   Update to version 4.9.268
 *   Thu Apr 15 2021 srinidhira0 <srinidhir@vmware.com> 4.9.266-1
 -   Update to version 4.9.266
 *   Wed Mar 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.263-1
