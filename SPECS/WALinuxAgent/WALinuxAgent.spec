@@ -1,13 +1,13 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
-Version:        2.2.51
+Version:        2.2.53.1
 Release:        1%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
 Source0:        %{name}-%{version}.tar.gz
 Patch0:         photondistroadd.patch
-%define sha1    WALinuxAgent=5534c15cd00d003504d8e9059c4e57b0a1c70f51
+%define sha1    WALinuxAgent=fd2b8aa8f15f7411b181f5fa0e8d585336db52c8
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3
@@ -79,6 +79,8 @@ python3 setup.py check && python3 setup.py test
 /usr/lib/python3.9/site-packages/*
 
 %changelog
+* Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.2.53.1-1
+- Automatic Version Bump
 * Mon Jan 11 2021 Tapas Kundu <tkundu@vmware.com> 2.2.51-1
 - Version Bump
 * Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 2.2.49.2-3
