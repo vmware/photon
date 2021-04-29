@@ -1,6 +1,6 @@
 Summary:          Highly reliable distributed coordination
 Name:             zookeeper
-Version:          3.5.8
+Version:          3.7.0
 Release:          1%{?dist}
 URL:              http://zookeeper.apache.org/
 License:          Apache License, Version 2.0
@@ -8,7 +8,7 @@ Group:            Applications/System
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source:           %{name}-%{version}.tar.gz
-%define sha1      zookeeper=1953bdd512bafc69740b474ae41a07c550c408bb
+%define sha1      zookeeper=21a0e591bb57d2e9b4964b820f799b2e3a67ed5e
 Source1:          zookeeper.service
 Source2:          zkEnv.sh
 Patch0:           zkSever_remove_cygwin_cypath.patch
@@ -17,6 +17,7 @@ Requires:         systemd
 Requires:         openjre8
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
+
 %description
 ZooKeeper is a centralized service for maintaining configuration information, naming,
 providing distributed synchronization, and providing group services.
@@ -87,6 +88,8 @@ fi
 %{_prefix}
 
 %changelog
+*   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 3.7.0-1
+-   Automatic Version Bump
 *   Wed Jun 10 2020 Gerrit Photon <photon-checkins@vmware.com> 3.5.8-1
 -   Automatic Version Bump
 *   Fri May 31 2019 Tapas Kundu <tkundu@vmware.com> 3.4.14-1
@@ -133,4 +136,4 @@ fi
 *   Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 3.4.6-2
 -   Adding ldconfig in post section.
 *   Thu Jun 11 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.6-1
--   Initial build. First version	Initial build. First version
+-   Initial build. First version. Initial build. First version
