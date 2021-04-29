@@ -2,7 +2,7 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        8.2.1361
+Version:        8.2.2831
 Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
@@ -10,7 +10,7 @@ Group:          Applications/Editors
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    vim=ef4a27f267515b0c7a85a07c3b0d26ca09321c23
+%define sha1    vim=f85f0fb001bba21f89ed7c952ffc0caab18d2e6c
 BuildRequires:  ncurses-devel
 
 %description
@@ -187,6 +187,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+*   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 8.2.2831-1
+-   Automatic Version Bump
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 8.2.1361-1
 -   Automatic Version Bump
 *   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 8.2.0190-1
