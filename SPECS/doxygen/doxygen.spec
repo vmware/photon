@@ -1,12 +1,12 @@
 Summary:        C++ tool
 Name:           doxygen
-Version:        1.8.20
+Version:        1.9.1
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            https://www.doxygen.nl/download.html
 Group:          Build/Tool
 Source0:        http://doxygen.nl/files/doxygen-%{version}.src.tar.gz
-%define sha1    doxygen=606a7bb525a55a01fc7399bc50ad7589ad1d2283
+%define sha1    doxygen=aa2dc24cdcc715e1a025a79620082e9961780203
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  cmake
@@ -19,7 +19,7 @@ but it also supports other popular programming languages such as C, Objective-C,
 (Corba, Microsoft, and UNO/OpenOffice flavors), Fortran, VHDL, and to some extent D.
 
 %prep
-%setup -q
+%setup -q -n %{name}-Release_1_9_1
 
 %build
 mkdir build
@@ -45,5 +45,7 @@ make %{?_smp_mflags} check
 %{_prefix}/local/bin/doxygen
 
 %changelog
+*   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.9.1-1
+-   Automatic Version Bump
 *   Mon Oct 5 2020 Michelle Wang <michellew@vmware.com> 1.8.20-1
 -   Initial build and add this for libsigc++ build requires
