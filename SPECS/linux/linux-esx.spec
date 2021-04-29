@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.266
-Release:       2%{?dist}
+Version:       4.4.268
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:  Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=58d0b8fc0adbce02c976621966cf6db750032bb4
+%define sha1 linux=9f9fc5d1ef1edf878f7647ed25eb0af53c2bb87c
 Source1:       config-esx
 Source2:       pre-preun-postun-tasks.inc
 
@@ -351,6 +351,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.4.268-1
+-   Update to version 4.4.268
 *   Sat Apr 24 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.266-2
 -   Backport various fixes to the vmxnet3 driver from mainline.
 *   Thu Apr 15 2021 srinidhira0 <srinidhir@vmware.com> 4.4.266-1

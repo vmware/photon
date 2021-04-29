@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.266
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.268
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=58d0b8fc0adbce02c976621966cf6db750032bb4
+%define sha1 linux=9f9fc5d1ef1edf878f7647ed25eb0af53c2bb87c
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -450,6 +450,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.4.268-1
+-   Update to version 4.4.268
 *   Sat Apr 24 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.266-2
 -   Backport various fixes to the vmxnet3 driver from mainline.
 *   Thu Apr 15 2021 srinidhira0 <srinidhir@vmware.com> 4.4.266-1
