@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.13.0.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -18,11 +18,12 @@ Source3:        brp-strip-unneeded
 Patch0:         find-debuginfo-do-not-generate-non-existing-build-id.patch
 Patch1:         find-debuginfo-do-not-generate-dir-entries.patch
 Patch2:         CVE-2021-20271.patch
+Patch3:         Fix-OpenPGP-parsing-bugs.patch
 Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
 Requires:       libarchive
-Requires:	lua
+Requires:       lua
 BuildRequires:	lua-devel
 BuildRequires:  libarchive-devel
 BuildRequires:  libdb-devel
@@ -93,6 +94,7 @@ Python3 rpm.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -263,6 +265,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Apr 29 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.13.0.2-5
+-   Fix PGP parsing issue
 *   Wed Apr 07 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.13.0.2-4
 -   Fix for CVE-2021-20271
 *   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 4.13.0.2-3
