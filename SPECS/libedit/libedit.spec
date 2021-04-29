@@ -1,14 +1,14 @@
 %define libedit_version 3.1
-%define libedit_release 20191231
+%define libedit_release 20210419
 
 Summary:        The NetBSD Editline library
 Name:           libedit
-Version:        3.1.20191231
-Release:        2%{?dist}
+Version:        3.1.20210419
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        libedit-%{libedit_release}-%{libedit_version}.tar.gz
-%define sha1    libedit=44891b6ceb0429fec0a118a1245c605410571d7d
+%define sha1    libedit=325c7655d0ede2f9a139b5ed07b65b70c97794b0
 License:        BSD
 Url:            http://www.thrysoee.dk/editline/
 Group:          Applications/Libraries
@@ -77,6 +77,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Wed Apr 14 2021 Gerrit Photon <photon-checkins@vmware.com> 3.1.20210419-1
+-   Automatic Version Bump
 *   Wed Sep 02 2020 Dweep Advani <dadvani@vmware.com> 3.1.20191231-2
 -   Fix conflict of /usr/share/man/man3/history.3 with readline-devel
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1.20191231-1
