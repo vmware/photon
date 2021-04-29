@@ -2,13 +2,13 @@
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 Summary:     Git extension for versioning large files
 Name:        git-lfs
-Version:     2.12.0
-Release:     3%{?dist}
+Version:     2.13.3
+Release:     1%{?dist}
 URL:         https://github.com/git-lfs/git-lfs/archive/v%{version}.tar.gz
 Source0:     %{name}-%{version}.tar.gz
 License:     MIT
 Group:       System Environment/Programming
-%define sha1 %{name}=fa48d4e536f7d931efb78c5cb3c094746ad83d4a
+%define sha1 %{name}=6f1dec9f66fe3acab25aedb2b2628cbe88ed53fd
 Vendor:      VMware, Inc.
 Distribution:  Photon
 BuildRequires: go
@@ -54,6 +54,8 @@ rm -rf %{buildroot}
 %{_mandir}/man5/*
 
 %changelog
+*   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.13.3-1
+-   Automatic Version Bump
 *   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 2.12.0-3
 -   Bump up version to compile with new go
 *   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 2.12.0-2
