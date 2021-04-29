@@ -3,7 +3,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06~rc1
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -14,8 +14,8 @@ Source0:    ftp://ftp.gnu.org/gnu/grub/grub-%{version}.tar.xz
 Source1:    gnulib-d271f868a.tar.xz
 %define sha1 gnulib=bfaa70d4657b653e01716e917576f6c4a4aa2126
 %ifarch x86_64
-Source2:    grub2-2.02-grubx64.efi.gz
-%define sha1 grub2-2.02-grubx64=32d5ee61df1256152ba13b7d629eac67e0f3a911
+Source2:    grub2-2.06~rc1-grubx64.efi.gz
+%define sha1 grub2-2.06~rc1-grubx64=cb55998ccd0792f32ba13da1b64496f13f51ec74
 %endif
 
 # security enhancement
@@ -56,7 +56,7 @@ Additional library files for grub
 Summary: GRUB UEFI image
 Group: System Environment/Base
 %ifarch x86_64
-Requires: shim-signed
+Requires: shim-signed >= 15.4
 %endif
 %description efi-image
 GRUB UEFI image signed by vendor key
@@ -131,7 +131,18 @@ install -d %{buildroot}/boot/efi/EFI/BOOT
 %ifarch x86_64
 # Use presigned image from tarball as of now.
 gunzip -c %{SOURCE2} > %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi
-# ./install-for-efi/usr/bin/grub2-mkimage -d ./install-for-efi/usr/lib/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/grub2 -O x86_64-efi fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
+# The image was created by following commands:
+
+#cat << EOF > grub-sbat.csv
+#sbat,1,SBAT Version,sbat,1,https://github.com/rhboot/shim/blob/main/SBAT.md
+#grub,1,Free Software Foundation,grub,2.06~rc1,https//www.gnu.org/software/grub/
+#grub.photon,1,VMware Photon OS,grub2,2.06~rc1-1.ph4,https://github.com/vmware/photon/tree/4.0/SPECS/grub2/
+#EOF
+#
+#grub2-mkimage -d /usr/lib/grub/x86_64-efi/ -o grubx64.efi -p /boot/grub2 -O x86_64-efi --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
+
+# Local alternative:
+# ./install-for-efi/usr/bin/grub2-mkimage -d ./install-for-efi/usr/lib/grub/x86_64-efi/ -o %{buildroot}/boot/efi/EFI/BOOT/grubx64.efi -p /boot/grub2 -O x86_64-efi --sbat=grub-sbat.csv fat iso9660 part_gpt part_msdos normal boot linux configfile loopback chain efifwsetup efi_gop efi_uga ls search search_label search_fs_uuid search_fs_file gfxterm gfxterm_background gfxterm_menu test all_video loadenv exfat ext2 udf halt gfxmenu png tga lsefi help probe echo lvm
 
 %endif
 %ifarch aarch64
@@ -185,6 +196,8 @@ EOF
 %{_datarootdir}/locale/*
 
 %changelog
+*   Wed Apr 28 2021 Alexey Makhalov <amakhalov@vmware.com> 2.06~rc1-2
+-   Update signed grubx64.efi with recent fixes and SBAT support.
 *   Mon Mar 15 2021 Ajay Kaher <akaher@vmware.com> 2.06~rc1-1
 -   upgrade to 2.06.rc1-1
 *   Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 2.04-3
