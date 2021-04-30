@@ -1,0 +1,67 @@
+From 4733c313a82a968739ab35da160d60f0fe0c079a Mon Sep 17 00:00:00 2001
+From: Demi Marie Obenour <demi@invisiblethingslab.com>
+Date: Wed, 28 Apr 2021 15:51:17 +0530
+Subject: [PATCH] Header signatures alone are not sufficient
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This fixes how RPM handles packages that contain a header signature, but
+neither header+payload signature nor payload digests.  Such packages are
+obviously not properly signed, but RPM previously accepted them.
+
+This could be used to confuse both ‘rpmkeys -K’ and DNF.
+Both would report that the package has been properly signed even when it has not.
+
+[sshedi: Regression test changes from original patch are dropped]
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ lib/rpmvs.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/lib/rpmvs.c b/lib/rpmvs.c
+index 7255069fc..d2f4f3170 100644
+--- a/lib/rpmvs.c
++++ b/lib/rpmvs.c
+@@ -451,7 +451,7 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
+ {
+     int failed = 0;
+     int cont = 1;
+-    int range = 0;
++    int range = 0, vfylevel = sis->vfylevel;
+     int verified[3] = { 0, 0, 0 };
+ 
+     /* sort for consistency and rough "better comes first" semantics*/
+@@ -478,6 +478,14 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
+ 	}
+     }
+ 
++    /* Unconditionally reject partially signed packages */
++    if (verified[RPMSIG_SIGNATURE_TYPE])
++	vfylevel |= RPMSIG_SIGNATURE_TYPE;
++
++    /* Cannot verify payload if RPMVSF_NEEDPAYLOAD is set */
++    if (sis->vsflags & RPMVSF_NEEDPAYLOAD)
++	range &= ~RPMSIG_PAYLOAD;
++
+     for (int i = 0; i < sis->nsigs && cont; i++) {
+ 	struct rpmsinfo_s *sinfo = &sis->sigs[i];
+ 	int strength = (sinfo->type | sinfo->strength);
+@@ -490,11 +498,11 @@ int rpmvsVerify(struct rpmvs_s *sis, int type,
+ 		sinfo->rc = RPMRC_NOTFOUND;
+ 	}
+ 
+-	if (sis->vfylevel & strength & RPMSIG_DIGEST_TYPE) {
++	if (vfylevel & strength & RPMSIG_DIGEST_TYPE) {
+ 	    int missing = (range & ~verified[RPMSIG_DIGEST_TYPE]);
+ 	    required |= (missing & sinfo->range);
+ 	}
+-	if (sis->vfylevel & strength & RPMSIG_SIGNATURE_TYPE) {
++	if (vfylevel & strength & RPMSIG_SIGNATURE_TYPE) {
+ 	    int missing = (range & ~verified[RPMSIG_SIGNATURE_TYPE]);
+ 	    required |= (missing & sinfo->range);
+ 	}
+-- 
+2.17.1
+
