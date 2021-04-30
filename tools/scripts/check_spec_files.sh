@@ -57,7 +57,6 @@ function check-for-bogus-dates()
   local y=''
   local epoch_seconds=''
   
-  sed -e '1,/%changelog/d' "$1" | grep '^\*' | awk '{printf "%s %s %02d %04d\n", $2, $3, $4, $5}' | \
   while read D m d y
   do
     day=$(date --date="$m $d $y" '+%a')
@@ -72,7 +71,7 @@ function check-for-bogus-dates()
       exit 1
     fi
     prev_epoch_seconds=$epoch_seconds
-  done
+  done <<< "$(sed -e '1,/%changelog/d' "$1" | grep '^\*' | awk '{printf "%s %s %02d %04d\n", $2, $3, $4, $5}')"
 }
 
 # No trailing spaces
