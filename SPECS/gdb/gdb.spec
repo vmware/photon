@@ -1,11 +1,11 @@
 Summary:        C debugger
 Name:           gdb
-Version:        10.1
+Version:        10.2
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
-%define sha1    gdb=c625efd87116525fb3bbeca7eaa1028ee62c0e7d
+%define sha1    gdb=1056e2743a825ecce46ec9eec37f0b357831012b
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -87,6 +87,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %{_mandir}/*/*
 
 %changelog
+*   Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 10.2-1
+-   Automatic Version Bump
 *   Thu Jan 07 2021 Tapas Kundu <tkundu@vmware.com> 10.1-1
 -   Update to version 10.1
 *   Tue Jan 05 2021 Tapas Kundu <tkundu@vmware.com> 9.2-3
