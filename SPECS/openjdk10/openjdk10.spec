@@ -5,7 +5,7 @@
 Summary:	OpenJDK
 Name:		openjdk10
 Version:	1.10.0.23
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -13,6 +13,9 @@ Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk10/jdk10/openjdk-%{version}.tar.gz
 %define sha1 openjdk-1.10.0=d0b6193fd1687b23fb7553b62d32f0e7e0527ea8
+
+Patch0:         fix_build_with_make4.3.patch
+
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -52,6 +55,7 @@ This package provides the runtime library class sources.
 
 %prep -p exit
 %setup -qn openjdk-%{version}
+%patch0 -p1
 
 %build
 chmod a+x ./configure
@@ -217,6 +221,8 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+*   Fri May 14 2021 Tapas Kundu <tkundu@vmware.com> 1.10.0.23-5
+-   Fix build with make 4.3
 *   Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 1.10.0.23-4
 -   Replaced %post to %posttrans to avoid alternatives --remove
 -   after new version is installed.
