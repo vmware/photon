@@ -3,7 +3,7 @@
 
 Summary:        The NetBSD Editline library
 Name:           libedit
-Version:        3.1.20210419
+Version:        20210419
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -77,6 +77,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 20210419-1
+-   Automatic Version Bump
 *   Wed Apr 14 2021 Gerrit Photon <photon-checkins@vmware.com> 3.1.20210419-1
 -   Automatic Version Bump
 *   Wed Sep 02 2020 Dweep Advani <dadvani@vmware.com> 3.1.20191231-2
