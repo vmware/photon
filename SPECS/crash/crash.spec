@@ -1,5 +1,5 @@
 Name:          crash
-Version:       7.2.9
+Version:       7.3.0
 Release:       1%{?dist}
 Summary:       kernel crash analysis utility for live systems, netdump, diskdump, kdump, LKCD or mcore dumpfiles
 Group:         Development/Tools
@@ -7,7 +7,7 @@ Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://people.redhat.com/anderson/
 Source0:       http://people.redhat.com/anderson/crash-%{version}.tar.gz
-%define sha1 crash=20865107a4a2ffcb31d9b2f390f72e1dcc3a5dbc
+%define sha1 crash=35a06244e58606ebf2b5612fbfcb51301bd5877a
 %define GCORE_VERSION	1.6.0
 Source1:       http://people.redhat.com/anderson/extensions/crash-gcore-command-%{GCORE_VERSION}.tar.gz
 %define sha1 crash-gcore=ccea791bec2229bdf1d164bc6773d8ce5597024c
@@ -80,6 +80,8 @@ install -pm 755 crash-gcore-command-%{GCORE_VERSION}/gcore.so %{buildroot}%{_lib
 %{_includedir}/crash/*.h
 
 %changelog
+*   Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 7.3.0-1
+-   Automatic Version Bump
 *   Mon Nov 30 2020 Alexey Makhalov <amakhalov@vmware.com> 7.2.9-1
 -   Version update
 *   Mon May 04 2020 Alexey Makhalov <amakhalov@vmware.com> 7.2.8-1
