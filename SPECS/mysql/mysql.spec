@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        5.7.33
+Version:        5.7.34
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 Source0:        https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=33420d9d8618c8ae3075d5ea84da76f4021153bf
+%define         sha1 mysql-boost=172dc4750e106e6433892cdebb74a11d9eaffebf
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -67,6 +67,8 @@ make check
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Mon May 03 2021 Shreyas B <shreyasb@vmware.com> 5.7.34-1
+-   Upgrade to version 5.7.34
 *   Tue Feb 02 2021 Shreyas B <shreyasb@vmware.com> 5.7.33-1
 -   Upgrade to version 5.7.33
 *   Mon Nov 02 2020 Shreyas B <shreyasb@vmware.com> 5.7.32-1
