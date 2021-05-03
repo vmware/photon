@@ -6,7 +6,7 @@
 Summary:	OpenJDK
 Name:		openjdk9
 Version:	%{jdk_major_version}.%{subversion}
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GNU GPL
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -14,6 +14,7 @@ Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://www.java.net/download/openjdk/jdk9/b182/openjdk-%{version}.tar.gz
 %define sha1 openjdk-1.9.0=0761abc2aabb0aa24f63ce96853ab3bb57ccce67
+Patch0:         fix_jdk9_build_with_make4.3.patch
 BuildRequires:  pcre-devel
 BuildRequires:	which
 BuildRequires:	zip
@@ -61,6 +62,7 @@ This package provides the runtime library class sources.
 
 %prep -p exit
 %setup -qn openjdk-%{version}
+%patch0 -p1
 
 %build
 chmod a+x ./configure
@@ -230,6 +232,8 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+*   Mon May 24 2021 Tapas Kundu <tkundu@vmware.com> 1.9.0.181-4
+-   Fix build with make 4.3
 *   Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 1.9.0.181-3
 -   Replaced %post to %posttrans to avoid alternatives --remove
 -   after new version is installed.
