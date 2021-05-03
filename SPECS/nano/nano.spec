@@ -1,12 +1,12 @@
 Summary:        Text editor
 Name:           nano
-Version:        5.6.1
+Version:        5.7
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            http://www.nano-editor.org/
 Group:          Applications/Editors
 Source0:        http://www.nano-editor.org/dist/v3/%{name}-%{version}.tar.xz
-%define sha1    nano=463aca6df6976d6f21fbec734ae7cf6024dc35c0
+%define sha1    nano=ae19875914a31859ccd52cceaac344d275df2e49
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  ncurses-devel
@@ -53,6 +53,8 @@ make %{?_smp_mflags} check
 %exclude %{_infodir}/dir
 
 %changelog
+*   Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 5.7-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 5.6.1-1
 -   Automatic Version Bump
 *   Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 5.2-2
