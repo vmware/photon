@@ -1,65 +1,68 @@
-%global commit 7c3e7c52a3816c82fc8a0ef4bed9cebedc9dd02d
-Summary:	Dynamic Kernel Module Support
-Name:		dkms
-Version:	2.8.2
-Release:	2%{?dist}
-License:	GPLv2+
-URL:		http://linux.dell.com/dkms/
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
-Distribution: Photon
-Source0:	https://github.com/dell/dkms/archive/%{name}-%{version}.tar.gz
-%define sha1 dkms=dc2efb96f52cba1b123846a472f3078b88b42788
-BuildArch:	noarch
-BuildRequires:	systemd
-Requires:	systemd
-Requires:	gcc
-Requires:	make
-Requires:	binutils
+Summary:        Dynamic Kernel Module Support
+Name:           dkms
+Version:        2.8.4
+Release:        1%{?dist}
+License:        GPLv2+
+URL:            http://linux.dell.com/dkms
+Group:          System Environment/Base
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
+Source0: https://github.com/dell/dkms/archive/%{name}-%{version}.tar.gz
+%define sha512 %{name}=1b8b987b239db8cf00f367ee4f5faf13dc41b450f09fb046dc719e51d6a762d6b700bf41156d8011c3ea7e139064119d6717b60c1bf7fa0a75ea1fc63887baa5
+
+Patch0:         0001-dkms-for-photon-os.patch
+
+BuildArch:      noarch
+
+BuildRequires:  systemd-devel
+
+Requires:       systemd
+Requires:       build-essential
+
 %description
-Dynamic Kernel Module Support (DKMS) is a program/framework that enables generating Linux kernel modules whose sources generally reside outside the kernel source tree. The concept is to have DKMS modules automatically rebuilt when a new kernel is installed.
+Dynamic Kernel Module Support (DKMS) is a program/framework that enables generating Linux kernel modules whose sources generally reside outside the kernel source tree.
+The concept is to have DKMS modules automatically rebuilt when a new kernel is installed.
 
 %prep
-%setup -q -n %{name}-%{version}
-%build
-%install
-make install-redhat-systemd DESTDIR=%{buildroot} \
-    SBIN=%{buildroot}%{_sbindir} \
-    VAR=%{buildroot}%{_localstatedir}/lib/%{name} \
-    MAN=%{buildroot}%{_mandir}/man8 \
-    ETC=%{buildroot}%{_sysconfdir}/%{name} \
-    BASHDIR=%{buildroot}%{_sysconfdir}/bash_completion.d \
-    LIBDIR=%{buildroot}%{_prefix}/lib/%{name} \
-    SYSTEMD=%{buildroot}%{_unitdir}
+%autosetup -p1
 
-install -vdm755 %{buildroot}/usr/lib/systemd/system-preset
-echo "disable dkms.service" > %{buildroot}/usr/lib/systemd/system-preset/50-dkms.preset
+%build
+
+%install
+%make_install %{?_smp_mflags} install-redhat-systemd
+install -vdm755 %{buildroot}%{_presetdir}
+echo "disable %{name}.service" > %{buildroot}%{_presetdir}/50-%{name}.preset
 
 %post
-%systemd_post dkms.service
+%systemd_post %{name}.service
 
 %preun
-%systemd_preun dkms.service
+%systemd_preun %{name}.service
 
 %postun
-%systemd_postun_with_restart dkms.service
+%systemd_postun_with_restart %{name}.service
 
 %files
 %defattr(-,root,root)
-%{_sysconfdir}/bash_completion.d/dkms
-%{_sysconfdir}/%{name}/framework.conf
-%{_sysconfdir}/%{name}/template-dkms-mkrpm.spec
-%{_sysconfdir}/%{name}/template-dkms-redhat-kmod.spec
-%{_sysconfdir}/kernel/postinst.d/dkms
-%{_sysconfdir}/kernel/prerm.d/dkms
-%{_libdir}/systemd/system/dkms.service
-%{_libdir}/systemd/system-preset/50-dkms.preset
+%{_datadir}/bash-completion/completions/%{name}
+%config(noreplace) %{_sysconfdir}/%{name}/framework.conf
+%{_sysconfdir}/%{name}/template-%{name}-mkrpm.spec
+%{_sysconfdir}/%{name}/template-%{name}-redhat-kmod.spec
+%{_sysconfdir}/%{name}/kernel_install.d_dkms
+%{_sysconfdir}/kernel/postinst.d/%{name}
+%{_sysconfdir}/%{name}/sign_helper.sh
+%{_sysconfdir}/kernel/prerm.d/%{name}
+%{_unitdir}/%{name}.service
+%{_presetdir}/50-%{name}.preset
 %{_libdir}/%{name}/*
-%{_sbindir}/dkms
-%{_mandir}/man8/dkms.8.gz
-%{_localstatedir}/lib/dkms/dkms_dbversion
+%{_sbindir}/%{name}
+%{_mandir}/man8/%{name}.8.gz
+%{_sharedstatedir}/%{name}/dkms_dbversion
 
 %changelog
+*   Thu Sep 07 2023 Alexey Makhalov <amakhalov@vmware.com> 2.8.4-1
+-   Version Bump
 *   Mon Jan 18 2021 Ajay Kaher <akaher@vmware.com> 2.8.2-2
 -   Modified Requires list.
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.8.2-1
@@ -75,4 +78,3 @@ echo "disable dkms.service" > %{buildroot}/usr/lib/systemd/system-preset/50-dkms
 -   Set BuildArch to noarch.
 *   Thu Aug 6 2015 Divya Thaluru <dthaluru@vmware.com> 2.2.0.3-1
 -   Initial version
-

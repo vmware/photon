@@ -1,0 +1,25 @@
+From 496ff3df7201067fdaf181258182a8fbb7fdb065 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Thu, 7 Sep 2023 14:49:17 -0700
+Subject: [PATCH] dkms for photon os
+
+/bin/bash is a correct bash path in Photon OS.
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+---
+ kernel_install.d_dkms | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel_install.d_dkms b/kernel_install.d_dkms
+index c1d6df1..f1b3b38 100755
+--- a/kernel_install.d_dkms
++++ b/kernel_install.d_dkms
+@@ -1,4 +1,4 @@
+-#!/usr/bin/bash
++#!/bin/bash
+ 
+ if [[ "$1" == "add" ]]; then
+ 	/etc/kernel/postinst.d/dkms $2
+-- 
+2.39.0
+
