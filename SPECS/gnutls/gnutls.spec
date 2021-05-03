@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.7.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
@@ -81,9 +81,9 @@ make check
 %{_mandir}/man1/*
 %{_datadir}/locale/*
 %{_docdir}/gnutls/*.png
-%{_libdir}/guile/2.0/extensions/*.so*
-%{_libdir}/guile/2.0/site-ccache/gnutls*
-%{_datadir}/guile/site/2.0/gnutls*
+%{_libdir}/guile/2.2/extensions/*.so*
+%{_libdir}/guile/2.2/site-ccache/gnutls*
+%{_datadir}/guile/site/2.2/gnutls*
 %config(noreplace) %{_sysconfdir}/gnutls/default-priorities
 
 %files devel
@@ -94,6 +94,8 @@ make check
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.7.1-2
+-   Update gnutls with guile 2.2.7
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.7.1-1
 -   Automatic Version Bump
 *   Tue Oct 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 3.6.15-3
