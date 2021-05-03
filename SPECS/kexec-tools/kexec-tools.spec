@@ -1,12 +1,12 @@
 Name:           kexec-tools
 Summary:        The kexec kdump tools
-Version:        2.0.21
+Version:        2.0.22
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/System
 Url:            https://www.kernel.org/doc/Documentation/kdump/kdump.txt
 Source0:        https://www.kernel.org/pub/linux/utils/kernel/kexec/%{name}-%{version}.tar.xz
-%define sha1    kexec-tools=c22dc9eafcb2c4d889cb2dd3029fb5dab5699684
+%define sha1    kexec-tools=d23d055fb98f7fa68a2888b52f11530ba3b3a206
 Patch0:         kexec-tools-disable-test.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -37,6 +37,8 @@ make install DESTDIR=%{buildroot}
 %doc TODO
 
 %changelog
+*   Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 2.0.22-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.0.21-1
 -   Automatic Version Bump
 *   Fri Jan 15 2021 Alexey Makhalov <amakhalov@vmware.com> 2.0.20-2
