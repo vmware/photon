@@ -1,12 +1,12 @@
 Summary:     Linux Containers File System
 Name:        lxcfs
-Version:     4.0.7
+Version:     4.0.8
 Release:     1%{?dist}
 URL:         https://linuxcontainers.org/lxcfs/downloads/
 Source0:     %{name}-%{version}.tar.gz
 License:     LGPL 2.1+
 Group:       System Environment/Libraries
-%define sha1 %{name}=149d831bb7839cab22626ed6928c5143b53abf79
+%define sha1 %{name}=a3d56725f8f9997ba6663840a5802fad99a737d5
 Vendor:		 VMware, Inc.
 Distribution:  Photon
 BuildRequires: gcc
@@ -55,6 +55,8 @@ rm -rf %{buildroot}
 %{_libdir}/%{name}/liblxcfs.so
 
 %changelog
+* Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 4.0.8-1
+- Automatic Version Bump
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 4.0.7-1
 - Automatic Version Bump
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0.5-1
