@@ -1,11 +1,11 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
-Version:        7.2.0
+Version:        7.3.0
 Release:        1%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
-%define sha1    libvirt=2644a7c6306a7a7e5cb39a8a5a06e320b362e780
+%define sha1    libvirt=13e14fde2e5477c9e771b3e06571bc652886fa12
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -168,6 +168,8 @@ ninja -C build test
 %{_datadir}/libvirt/test-screenshot.png
 
 %changelog
+*   Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 7.3.0-1
+-   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 7.2.0-1
 -   Automatic Version Bump
 *   Fri Mar 19 2021 Susat Sahani <ssahani@vmware.com> 7.1.0-1
