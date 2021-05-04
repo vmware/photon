@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.189
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -162,6 +162,9 @@ Patch266:        0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
 Patch267:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
 Patch268:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
 Patch269:        0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
+
+Patch270:        0009-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
+
 # VMW:
 Patch281:        0001-x86-vmware-Update-platform-detection-code-for-VMCALL.patch
 Patch282:        0001-x86-vmware-Add-a-header-file-for-hypercall-definitio.patch
@@ -493,6 +496,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch268 -p1
 %patch269 -p1
 
+%patch270 -p1
+
 %patch281 -p1
 %patch282 -p1
 %patch283 -p1
@@ -804,6 +809,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue May 04 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-2
+-   Remove buf_info from device accessible structures in vmxnet3
 *   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.19.189-1
 -   Update to version 4.19.189
 *   Mon Apr 26 2021 Ankit Jain <ankitja@vmware.com> 4.19.186-5

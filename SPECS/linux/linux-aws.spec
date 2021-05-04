@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.189
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -94,6 +94,8 @@ Patch85:        0005-vmxnet3-use-correct-hdr-reference-when-packet-is-enc.patch
 Patch86:        0006-vmxnet3-allow-rx-flow-hash-ops-only-when-rss-is-enab.patch
 Patch87:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
 Patch88:        0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
+
+Patch89:        0009-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
 Patch98:        0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
@@ -252,6 +254,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch86 -p1
 %patch87 -p1
 %patch88 -p1
+
+%patch89 -p1
 
 %patch98 -p1
 %patch99 -p1
@@ -473,6 +477,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue May 04 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-2
+-   Remove buf_info from device accessible structures in vmxnet3
 *   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.19.189-1
 -   Update to version 4.19.189
 *   Tue Apr 20 2021 Ankit Jain <ankitja@vmware.com> 4.19.186-3
