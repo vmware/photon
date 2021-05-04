@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.25
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt34
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -70,6 +70,9 @@ Patch12:        fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 # Out-of-tree patches from AppArmor:
 Patch13:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch14:        apparmor-af_unix-mediation.patch
+
+#vmxnet3
+Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 
 # VMW:
 Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
@@ -481,6 +484,9 @@ The Linux package contains the Linux kernel doc files
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
+
+#vmxnet3
+%patch20 -p1
 
 #VMW
 %patch55 -p1
@@ -1011,6 +1017,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue May 04 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-6
+-   Remove buf_info from device accessible structures in vmxnet3
 *   Thu Apr 29 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.25-5
 -   Update canister binary.
 -   use jent by drbg and ecc.
