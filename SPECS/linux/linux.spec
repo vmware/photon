@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.25
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -84,6 +84,10 @@ Patch13:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch14:        apparmor-af_unix-mediation.patch
 # floppy:
 Patch17:        0001-floppy-lower-printk-message-priority.patch
+
+#vmxnet3
+Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
+
 # VMW:
 Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
 Patch56:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
@@ -274,6 +278,9 @@ Python programming language to use the interface to manipulate perf events.
 %patch13 -p1
 %patch14 -p1
 %patch17 -p1
+
+#vmxnet3
+%patch20 -p1
 
 %ifarch x86_64
 # VMW x86
@@ -659,6 +666,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Tue May 04 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-6
+-   Remove buf_info from device accessible structures in vmxnet3
 *   Thu Apr 29 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.25-5
 -   Update canister binary.
 -   use jent by drbg and ecc.
