@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -18,9 +18,11 @@ Source4:        macros.ldconfig
 Source5:        macros.perl
 Source6:        macros.vpath
 Source7:        macros.php
+
 Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
 Patch1:         Fix-OpenPGP-parsing-bugs.patch
 Patch2:         Header-signatures-alone-are-not-sufficient.patch
+
 Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
@@ -28,6 +30,7 @@ Requires:       libarchive
 Requires:       lua
 Requires:       openssl >= 1.1.1
 Requires:       libgcrypt
+
 BuildRequires:  libgcrypt-devel
 BuildRequires:  lua-devel
 BuildRequires:  libarchive-devel
@@ -92,10 +95,7 @@ Requires:       python3
 Python3 rpm.
 
 %prep
-%setup -n rpm-%{name}-%{version}-release
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1 -n rpm-%{name}-%{version}-release
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -135,9 +135,9 @@ install -dm 755 %{buildroot}%{_sysconfdir}/rpm
 install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm
 install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm
 install -vm755 %{SOURCE3} %{buildroot}%{_libdir}/rpm
-install -vm644 %{SOURCE4} %{buildroot}%{_libdir}/rpm
+install -vm644 %{SOURCE4} %{buildroot}%{_libdir}/rpm/macros.d
 install -vm644 %{SOURCE5} %{buildroot}%{_libdir}/rpm
-install -vm644 %{SOURCE6} %{buildroot}%{_libdir}/rpm
+install -vm644 %{SOURCE6} %{buildroot}%{_libdir}/rpm/macros.d
 install -vm644 %{SOURCE7} %{buildroot}%{_libdir}/rpm
 
 pushd python
@@ -205,7 +205,9 @@ rm -rf %{buildroot}
 %{_bindir}/rpmspec
 %{_libdir}/librpmbuild.so
 %{_libdir}/librpmbuild.so.*
-%{_libdir}/rpm/macros.*
+%{_libdir}/rpm/macros.perl
+%{_libdir}/rpm/macros.php
+%{_libdir}/rpm/macros.d/*
 %{_libdir}/rpm/perl.req
 %{_libdir}/rpm/find-debuginfo.sh
 %{_libdir}/rpm/find-lang.sh
@@ -253,6 +255,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed May 05 2021 Susant Sahani <ssahani@vmware.com> 4.16.1.2-3
+-   Add vpath and python3 macros and move macros to macro.d
 *   Fri Apr 30 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.2-2
 -   Fix PGP parsing & signature validation issues
 *   Thu Feb 04 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.2-1
