@@ -1,6 +1,6 @@
 Summary:        multi-platform support library with a focus on asynchronous I/O
 Name:           libuv
-Version:        1.34.2
+Version:        1.41.0
 Release:        1%{?dist}
 URL:            https://codeload.github.com/libuv/libuv
 License:        MIT, BSD and ISC
@@ -8,7 +8,7 @@ Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/libuv/libuv/archive/%{name}-%{version}.tar.gz
-%define sha1    libuv=f59b25c0f1a855eef66298d65bd4fb288e0132b9
+%define sha1    libuv=5dc9e2e2b6714f2b97bb5993963563dcd0e89f28
 
 %description
 libuv is a multi-platform support library with a focus on asynchronous I/O. It was primarily developed for use by Node.js, but it's also used by Luvit, Julia, pyuv, and others.
@@ -49,5 +49,7 @@ make  %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 1.41.0-1
+-   Automatic Version Bump
 *   Wed Jun 03 2020 Sujay G <gsujay@vmware.com> 1.34.2-1
 -   Initial build. First version
