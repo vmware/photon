@@ -1,0 +1,146 @@
+From e4801ab23843a1353b958a668391aa170772d6a6 Mon Sep 17 00:00:00 2001
+From: Vivek Thampi <vithampi@vmware.com>
+Date: Thu, 6 May 2021 09:30:56 -0700
+Subject: [PATCH 2/3] ptp/ptp_vmw: Implement PTP clock adjustments ops
+
+Implement PTP clock ops that set time and frequency of the underlying
+clock. On supported versions of VMware precision clock virtual device
+(hardware version 19 onwards), new commands can adjust its time and
+frequency, allowing time transfer from a virtual machine to the
+underlying hypervisor.
+
+Reviewed-by: Deep Shah <sdeep@vmware.com>
+Signed-off-by: Vivek Thampi <vithampi@vmware.com>
+---
+ drivers/ptp/ptp_vmw.c | 75 ++++++++++++++++++++++++++++++++++-----------------
+ 1 file changed, 51 insertions(+), 24 deletions(-)
+
+diff --git a/drivers/ptp/ptp_vmw.c b/drivers/ptp/ptp_vmw.c
+index 5dca26e..d5458dd 100644
+--- a/drivers/ptp/ptp_vmw.c
++++ b/drivers/ptp/ptp_vmw.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
+ /*
+- * Copyright (C) 2020 VMware, Inc., Palo Alto, CA., USA
++ * Copyright (C) 2020-2021 VMware, Inc., Palo Alto, CA., USA
+  *
+  * PTP clock driver for VMware precision clock virtual device.
+  */
+@@ -17,55 +17,82 @@
+ #define VMWARE_MAGIC 0x564D5868
+ #define VMWARE_CMD_PCLK(nr) ((nr << 16) | 97)
+ #define VMWARE_CMD_PCLK_GETTIME VMWARE_CMD_PCLK(0)
++#define VMWARE_CMD_PCLK_SETTIME VMWARE_CMD_PCLK(1)
++#define VMWARE_CMD_PCLK_ADJTIME VMWARE_CMD_PCLK(2)
++#define VMWARE_CMD_PCLK_ADJFREQ VMWARE_CMD_PCLK(3)
+ 
+ static struct acpi_device *ptp_vmw_acpi_device;
+ static struct ptp_clock *ptp_vmw_clock;
+ 
++/*
++ * Helpers for reading and writing to precision clock device.
++ */
+ 
+-static int ptp_vmw_pclk_read(u64 *ns)
++static int ptp_vmw_pclk_read(int cmd, u32 *out0, u32 *out1)
+ {
+-	u32 ret, nsec_hi, nsec_lo, unused1, unused2, unused3;
++	u32 ret, unused;
+ 
+ 	asm volatile (VMWARE_HYPERCALL :
+-		"=a"(ret), "=b"(nsec_hi), "=c"(nsec_lo), "=d"(unused1),
+-		"=S"(unused2), "=D"(unused3) :
+-		"a"(VMWARE_MAGIC), "b"(0),
+-		"c"(VMWARE_CMD_PCLK_GETTIME), "d"(0) :
++		"=a"(ret), "=b"(*out0), "=c"(*out1), "=d"(unused) :
++		"a"(VMWARE_MAGIC), "b"(0), "c"(cmd), "d"(0) :
+ 		"memory");
+ 
+-	if (ret == 0)
+-		*ns = ((u64)nsec_hi << 32) | nsec_lo;
+-	return ret;
++	return ret != 0 ? -EIO : 0;
++}
++
++static int ptp_vmw_pclk_write(int cmd, u32 in0, u32 in1)
++{
++	u32 ret;
++
++	asm volatile (VMWARE_HYPERCALL :
++		"=a"(ret) :
++		"a"(VMWARE_MAGIC), "b"(0), "c"(cmd), "d"(0),
++		"S"(in0), "D"(in1) :
++		"memory");
++
++	return ret != 0 ? -EIO : 0;
+ }
+ 
+ /*
+  * PTP clock ops.
+  */
+ 
+-static int ptp_vmw_adjtime(struct ptp_clock_info *info, s64 delta)
++static int ptp_vmw_gettime(struct ptp_clock_info *info, struct timespec64 *ts)
+ {
+-	return -EOPNOTSUPP;
++	int ret;
++	u32 ns_hi, ns_lo;
++
++	ret = ptp_vmw_pclk_read(VMWARE_CMD_PCLK_GETTIME, &ns_hi, &ns_lo);
++	if (ret == 0)
++		*ts = ns_to_timespec64(((u64)ns_hi << 32) | ns_lo);
++	return ret;
+ }
+ 
+-static int ptp_vmw_adjfreq(struct ptp_clock_info *info, s32 delta)
++static int ptp_vmw_adjtime(struct ptp_clock_info *info, s64 delta)
+ {
+-	return -EOPNOTSUPP;
++	return ptp_vmw_pclk_write(VMWARE_CMD_PCLK_ADJTIME, (u64)delta >> 32,
++				  (u64)delta & 0xffffffff);
+ }
+ 
+-static int ptp_vmw_gettime(struct ptp_clock_info *info, struct timespec64 *ts)
++static int ptp_vmw_adjfreq(struct ptp_clock_info *info, s32 delta)
+ {
+-	u64 ns;
+-
+-	if (ptp_vmw_pclk_read(&ns) != 0)
+-		return -EIO;
+-	*ts = ns_to_timespec64(ns);
+-	return 0;
++	s64 sppm;
++
++	/*
++	 * Convert delta in parts-per-billion to scaled parts-per-million
++	 * with 16-bit binary fractional bits.
++	 */
++	sppm = div_s64((s64)delta * 65536, 1000);
++	return ptp_vmw_pclk_write(VMWARE_CMD_PCLK_ADJFREQ, (u64)sppm >> 32,
++				  (u64)sppm & 0xffffffff);
+ }
+ 
+ static int ptp_vmw_settime(struct ptp_clock_info *info,
+-			  const struct timespec64 *ts)
++ 			   const struct timespec64 *ts)
+ {
+-	return -EOPNOTSUPP;
++	u64 ns = timespec64_to_ns(ts);
++	return ptp_vmw_pclk_write(VMWARE_CMD_PCLK_SETTIME, ns >> 32,
++				  ns & 0xffffffff);
+ }
+ 
+ static int ptp_vmw_enable(struct ptp_clock_info *info,
+@@ -77,7 +104,7 @@ static int ptp_vmw_enable(struct ptp_clock_info *info,
+ static struct ptp_clock_info ptp_vmw_clock_info = {
+ 	.owner		= THIS_MODULE,
+ 	.name		= "ptp_vmw",
+-	.max_adj	= 0,
++	.max_adj	= 500000,
+ 	.adjtime	= ptp_vmw_adjtime,
+ 	.adjfreq	= ptp_vmw_adjfreq,
+ 	.gettime64	= ptp_vmw_gettime,
+-- 
+1.8.3.1
+

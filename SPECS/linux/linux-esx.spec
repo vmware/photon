@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.189
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -370,6 +370,11 @@ Patch801:        0001-Add-support-for-gettimex64-interface.patch
 # Patches for ice driver
 Patch802:        0001-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 
+# ptp_vmw
+Patch811:        0001-ptp-add-VMware-virtual-PTP-clock-driver.patch
+Patch812:        0002-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
+Patch813:        0003-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
+
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
@@ -712,6 +717,11 @@ pushd ../ice-%{ice_version}
 %patch802 -p1
 popd
 
+# Patches for ptp_vmw driver
+%patch811 -p1
+%patch812 -p1
+%patch813 -p1
+
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
@@ -875,6 +885,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue May 11 2021 Vivek Thampi <vithampi@vmware.com> 4.19.189-5
+-   Add ptp_vmw driver for virtual precision clock.
 *   Mon May 10 2021 Ajay Kaher <akaher@vmware.com> 4.19.189-4
 -   SEV-ES: update SWIOTLB bounce buffer patch
 *   Mon May 10 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.189-3

@@ -2224,6 +2224,7 @@ CONFIG_PTP_1588_CLOCK=m
 #
 # Enable PHYLIB and NETWORK_PHY_TIMESTAMPING to see the additional clocks.
 #
+CONFIG_PTP_1588_CLOCK_VMW=m
 # CONFIG_PINCTRL is not set
 # CONFIG_GPIOLIB is not set
 # CONFIG_W1 is not set
