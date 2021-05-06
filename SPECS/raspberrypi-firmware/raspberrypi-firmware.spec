@@ -4,15 +4,15 @@
 
 Name:		raspberrypi-firmware
 Summary:	Raspberry Pi firmware
-Version:	1.2020.09.02
-Release:	2%{?dist}
+Version:	1.20210303
+Release:	1%{?dist}
 License:	Broadcom Corporation and Raspberry Pi (Trading) Ltd
 URL:		https://github.com/raspberrypi/firmware
 Group:		System Environment/Boot
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	%{name}-%{version}.tar.gz
-%define sha1 raspberrypi-firmware=d0d28eac967aefdb2963fd2dc8b8cd1bbf8883e7
+%define sha1 raspberrypi-firmware=91cd8fbc3515991644c9b8f0ae4dbdd07c3cf3a8
 Source1:	rpi-config-txt.txt
 BuildArch:	noarch
 
@@ -60,7 +60,7 @@ Requires(post): (coreutils or toybox)
 Extra Firmware files for Raspberry Pi 4
 
 %prep
-%setup -q
+%setup -q -n firmware-%{version}
 
 %build
 
@@ -111,6 +111,8 @@ install -vm 644 %{SOURCE1} %{buildroot}/boot/efi/config.txt
 /boot/efi/fixup4x.dat
 
 %changelog
+*   Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 1.20210303-1
+-   Automatic Version Bump
 *   Mon Nov 02 2020 Bo Gan <ganb@vmware.com> 1.2020.09.02-2
 -   Use miniuart-bt and fixed core_freq to accommodate for rpi3 uart
 *   Mon Sep 21 2020 Bo Gan <ganb@vmware.com> 1.2020.09.02-1
