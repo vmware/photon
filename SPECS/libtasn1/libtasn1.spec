@@ -1,11 +1,11 @@
 Summary:        ASN.1 library
 Name:           libtasn1
-Version:        4.14
+Version:        4.16.0
 Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnu.org/software/libtasn1/
 Source0:        http://ftp.gnu.org/gnu/libtasn1/%{name}-%{version}.tar.gz
-%define sha1    libtasn1=4ce6a70a40f50a2c29a62bbf1c0c5b6e306ca4e3
+%define sha1    libtasn1=f4f1fc301c0835389d9db7754815e48f4f57937a
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -57,6 +57,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 4.16.0-1
+-   Automatic Version Bump
 *   Mon Apr 13 2020 Siddharth Chandrasekran <csiddhath@vmware.com> 4.14-1
 -   Update to version 4.14 to fix CVE-2018-1000654
 *   Mon Feb 12 2018 Xiaolin Li <xiaolinl@vmware.com> 4.13-1
