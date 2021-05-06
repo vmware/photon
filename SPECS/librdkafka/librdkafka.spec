@@ -1,14 +1,14 @@
-Summary:    C library implementation of the Apache Kafka protocol
-Name:       librdkafka
-Version:    1.5.0
-Release:    1%{?dist}
-License:    BSD
-URL:        https://github.com/edenhill/librdkafka
-Group:      System Environment/Development
-Vendor:     VMware, Inc.
+Summary:        C library implementation of the Apache Kafka protocol
+Name:           librdkafka
+Version:        1.6.1
+Release:        1%{?dist}
+License:        BSD
+URL:            https://github.com/edenhill/librdkafka
+Group:          System Environment/Development
+Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:    %{name}-%{version}.tar.gz
-%define sha1 %{name}=56d2c58e95551928d68a08ff88b5a139f4d12772
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    %{name}=ed93d236670e1ec1fa47d6fa8c2b3806b0d93930
 
 %description
 librdkafka is a C library implementation of the Apache Kafka protocol, providing Producer, Consumer and Admin clients.
@@ -16,6 +16,7 @@ librdkafka is a C library implementation of the Apache Kafka protocol, providing
 %package	devel
 Summary:	Header and development files
 Requires:	%{name} = %{version}-%{release}
+
 %description	devel
 It contains the libraries and header files
 
@@ -40,6 +41,7 @@ make %{?_smp_mflags} check
 
 %files
 %defattr(-,root,root)
+%doc %{_docdir}/librdkafka/CHANGELOG.md
 %doc %{_docdir}/librdkafka/README.md
 %doc %{_docdir}/librdkafka/LICENSE
 %doc %{_docdir}/librdkafka/CONFIGURATION.md
@@ -55,6 +57,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 1.6.1-1
+-   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.0-1
 -   Automatic Version Bump
 *   Mon Mar 09 2020 Ankit Jain <ankitja@vmware.com> 1.3.0-1
