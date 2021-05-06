@@ -3,7 +3,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -57,7 +57,7 @@ Requires:       libseccomp >= 2.4.0
 Requires:       libltdl
 Requires:       device-mapper-libs
 Requires:       systemd
-Requires:       containerd >= 1.2.10, containerd < 1.4.0
+Requires:       containerd >= 1.2.10, containerd < 1.5.0
 Requires:       shadow
 
 %description    engine
@@ -285,6 +285,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon May 10 2021 Bo Gan <ganb@vmware.com> 18.09.9-5
+-   Relax containerd dependency
 *   Wed Apr 29 2020 Harinadh D <hdommaraju@vmware.com> 18.09.9-4
 -   Bump up version to compile with go 1.13.5-2
 *   Mon Apr 27 2020 Ankit Jain <ankitja@vmware.com> 18.09.9-3

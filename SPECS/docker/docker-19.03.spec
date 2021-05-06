@@ -3,7 +3,7 @@
 Summary:        Docker
 Name:           docker
 Version:        19.03.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -57,7 +57,7 @@ Requires:       libseccomp
 Requires:       libltdl
 Requires:       device-mapper-libs
 Requires:       systemd
-Requires:       containerd >= 1.2.10, containerd < 1.4.0
+Requires:       containerd >= 1.2.10, containerd < 1.5.0
 
 %description    engine
 Docker is an open source project to build, ship and run any application as a lightweight container.
@@ -284,5 +284,7 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon May 10 2021 Bo Gan <ganb@vmware.com> 19.03.10-2
+-   Relax containerd dependency
 *   Fri May 29 2020 Ashwin H <ashwinh@vmware.com> 19.03.10-1
 -   Initial version 

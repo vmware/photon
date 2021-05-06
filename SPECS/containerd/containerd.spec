@@ -2,7 +2,7 @@
 %define __os_install_post %{nil}
 Summary:        Containerd
 Name:           containerd
-Version:        1.3.10
+Version:        1.4.4
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
@@ -10,11 +10,11 @@ Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha1 containerd=a1173daed7f546a0f1fba18c3dc5ce59989c8f53
+%define sha1 containerd=0e49f2b0593adc635b89bbcf2d3f40e0fe217933
 # Must be in sync with package version
-%define CONTAINERD_GITCOMMIT 1c5970efbdd8bc864a34baa60c0b382434d4d7c2
+%define CONTAINERD_GITCOMMIT 05f951a3781f4f2c1911b05e61c160e9c30eaa8e
 
-Source1:        containerd.service
+Patch1:         containerd-service-file-binpath.patch
 Source2:        containerd-config.toml
 Source3:        disable-containerd-by-default.preset
 %define gopath_comp github.com/containerd/containerd
@@ -23,14 +23,15 @@ BuildRequires:  btrfs-progs
 BuildRequires:  btrfs-progs-devel
 BuildRequires:  libseccomp
 BuildRequires:  libseccomp-devel
-BuildRequires:  go >= 1.10.7
+# Upstream is unhappy with 1.14. 1.13 or 1.15+ is OK
+BuildRequires:  go >= 1.13, go < 1.14
 BuildRequires:  go-md2man
 BuildRequires:  systemd-devel
 Requires:       libseccomp
 Requires:       systemd
 # containerd works only with a specific runc version
 # Refer to containerd/RUNC.md
-Requires:       runc = 1.0.0.rc10
+Requires:       runc = 1.0.0.rc93
 
 %description
 Containerd is an open source project. It is available as a daemon for Linux,
@@ -54,6 +55,7 @@ Documentation for containerd.
 %prep
 %setup -q -c
 mkdir -p "$(dirname "src/%{gopath_comp}")"
+%patch1 -p1 -d %{name}-%{version}
 mv %{name}-%{version} src/%{gopath_comp}
 
 %build
@@ -64,7 +66,7 @@ make %{?_smp_mflags} VERSION=%{version} REVISION=%{CONTAINERD_GITCOMMIT} binarie
 %install
 cd src/%{gopath_comp}
 install -v -m644 -D -t %{buildroot}%{_datadir}/licenses/%{name} LICENSE
-install -v -m644 -D -t %{buildroot}%{_unitdir} %{SOURCE1}
+install -v -m644 -D -t %{buildroot}%{_unitdir} containerd.service
 install -v -m644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/containerd/config.toml
 install -v -m644 -D %{SOURCE3} %{buildroot}%{_presetdir}/50-containerd.preset
 make DESTDIR=%{buildroot}%{_prefix} install
@@ -109,6 +111,8 @@ make integration
 %{_mandir}/man8/*
 
 %changelog
+*   Wed May 05 2021 Bo Gan <ganb@vmware.com> 1.4.4-1
+-   Update to 1.4.4
 *   Mon Mar 22 2021 Ankit Jain <ankitja@vmware.com> 1.3.10-1
 -   Update to 1.3.10 to fix CVE-2021-21334
 *   Mon Nov 30 2020 Bo Gan <ganb@vmware.com> 1.3.9-1
