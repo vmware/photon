@@ -1,14 +1,14 @@
 Summary:      simple interface for defining and acessing commandline arguments
 Name:         tclap
-Version:      1.2.2
-Release:      3%{?dist}
+Version:      1.2.4
+Release:      1%{?dist}
 License:      MIT
 URL:          http://tclap.sourceforge.net
 Group:        Development/Libraries
 Vendor:       VMware, Inc.
 Distribution: Photon
 Source0:      http://downloads.sourceforge.net/%{name}/%{name}-%{version}.tar.gz
-%define sha1  tclap=e07cb13a6849b21189865f74e447d373b325d577
+%define sha1  tclap=87fb7726eba37cf7ce1dffb1ee25d9e0ef158b1c
 BuildArch:    noarch
 
 %description
@@ -48,6 +48,8 @@ make check
 %{_docdir}/*
 
 %changelog
+*   Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.4-1
+-   Automatic Version Bump
 *   Wed Sep 23 2020 Michelle Wang <michellew@vmware.com> 1.2.2-3
 -   Fix spec configuration
 *   Tue Jan 08 2019 Michelle Wang <michellew@vmware.com> 1.2.2-2
