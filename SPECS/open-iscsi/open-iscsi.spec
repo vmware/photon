@@ -1,6 +1,6 @@
 Summary:        iSCSI tools for Linux
 Name:           open-iscsi
-Version:        2.1.3
+Version:        2.1.4
 Release:        1%{?dist}
 License:        GPLv2
 URL:            https://github.com/open-iscsi/open-iscsi
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    open=19aa834f5a6033fd0e53d4e32a8f28c4a3d5ec58
+%define sha1    open=0e0d50142ee0d903f7c73ab7276e04e00c8a436d
 
 BuildRequires:  open-isns-devel
 BuildRequires:  openssl-devel
@@ -89,5 +89,7 @@ install -pm 644 etc/systemd/iscsiuio.socket %{buildroot}%{_unitdir}
 %{_libdir}/pkgconfig/libopeniscsiusr.pc
 
 %changelog
+* Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 2.1.4-1
+- Automatic Version Bump
 * Tue Feb 16 2021 Susant Sahani <ssahani@vmware.com> 2.1.3-1
 - Initial version.
