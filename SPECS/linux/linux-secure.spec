@@ -301,7 +301,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
-*   Tue Apr 06 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-6
+*   Thu Apr 29 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-6
 -   Remove buf_info from device accessible structures in vmxnet3
 *   Thu Apr 29 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.25-5
 -   Update canister binary.
