@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.189
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1237,6 +1237,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Fri May 07 2021 Ankit Jain <ankitja@vmware.com> 4.19.189-3
+-   .config: Enable MLX5_INFINIBAND
 *   Tue May 04 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-2
 -   Remove buf_info from device accessible structures in vmxnet3
 *   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.19.189-1

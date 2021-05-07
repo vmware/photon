@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.189
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt78
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1111,6 +1111,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Fri May 07 2021 Ankit Jain <ankitja@vmware.com> 4.19.189-3
+-   .config: Enable INFINIBAND, MLX5_INFINIBAND
 *   Tue May 04 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-2
 -   Remove buf_info from device accessible structures in vmxnet3
 *   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.19.189-1
