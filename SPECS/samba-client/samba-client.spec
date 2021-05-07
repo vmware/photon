@@ -1,7 +1,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.13.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
@@ -78,6 +78,24 @@ Requires: samba-client = %{samba_ver}
 %description -n samba-client-devel
 The samba-client-devel package contains the header files and libraries needed
 to develop programs.
+
+# Winbind Client
+%package -n libwbclient
+Summary:        Samba libwbclient Library
+Group:          System/Libraries
+Provides:       pkgconfig(wbclient)
+
+%description -n libwbclient
+This package includes the wbclient library.
+
+%package -n libwbclient-devel
+Summary:        Libraries and Header Files to Develop Programs with wbclient Support
+Group:          Development/Libraries/C and C++
+Requires:       libwbclient = %{version}
+
+%description -n libwbclient-devel
+This package contains the static libraries and header files needed to
+develop programs which make use of the wbclient programming interface.
 
 %prep
 %setup -n samba-%{version}
@@ -178,7 +196,6 @@ for file_dir in \
    %{_libdir}/pkgconfig/samba-policy.cpython-37m-*-linux-gnu.pc \
    %{_libdir}/pkgconfig/samba-util.pc \
    %{_libdir}/pkgconfig/samdb.pc \
-   %{_libdir}/pkgconfig/wbclient.pc \
    %{_libdir}/samba/auth/unix.so \
    %{_sbindir}/eventlogadm \
    %{_sbindir}/nmbd \
@@ -226,7 +243,6 @@ for file_dir in \
    %{_bindir}/vlp \
    %{_bindir}/wbinfo \
    %{_includedir}/samba-4.0/util/* \
-   %{_includedir}/samba-4.0/wbclient.h \
    %{_includedir}/samba-4.0/core/* \
    %{_includedir}/samba-4.0/charset.h \
    %{_includedir}/samba-4.0/credentials.h \
@@ -409,7 +425,6 @@ done
 %{_libdir}/libtevent-util.so.*
 %{_libdir}/libsmbdcerpc.so.*
 %{_libdir}/libsmbclient.so.*
-%{_libdir}/libwbclient.so.*
 %dir %{_libdir}/samba
 %{_libdir}/samba/libCHARSET3-samba4.so
 %{_libdir}/samba/libMESSAGING-SEND-samba4.so
@@ -533,11 +548,25 @@ done
 %{_libdir}/libsmbconf.so
 %{_libdir}/libsmbldap.so
 %{_libdir}/libtevent-util.so
-%{_libdir}/libwbclient.so
 %{_libdir}/pkgconfig/smbclient.pc
 %{_mandir}/man7/libsmbclient.7*
 
+# Winbind Client
+%files -n libwbclient
+%defattr(-,root,root,-)
+%{_libdir}/libwbclient.so.*
+
+%files -n libwbclient-devel
+%defattr(-,root,root,-)
+%dir %_includedir/samba-4.0/
+%{_includedir}/samba-4.0/wbclient.h
+%{_libdir}/libwbclient.so
+%{_libdir}/pkgconfig/wbclient.pc
+
+
 %changelog
+*   Fri May 07 2021 Shreyas B. <shreyasb@vmware.com> 4.13.4-2
+-   Split libwclient from samba-client and create separate package.
 *   Fri Feb 19 2021 Shreyas B. <shreyasb@vmware.com> 4.13.4-1
 -   Upgrade to version 4.13.4
 *   Fri May 29 2020 Shreyas B. <shreyasb@vmware.com> 4.12.0-1
