@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.189
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -875,6 +875,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon May 10 2021 Ajay Kaher <akaher@vmware.com> 4.19.189-4
+-   SEV-ES: update SWIOTLB bounce buffer patch
 *   Mon May 10 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.189-3
 -   Add out-of-tree i40e and ice drivers.
 -   Add support for PTP_SYS_OFFSET_EXTENDED ioctl.
