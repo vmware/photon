@@ -9,16 +9,18 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.19.7
-Release:        2%{?dist}
+Version:        1.19.10
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=f6ed22f7287f900fa6e6376643e001ca639fd384
+%define sha1    kubernetes-%{version}.tar.gz=71fd14ebe65f4afce6a7d9ea00e87e33675a25e9
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
+Patch0:         CVE-2021-3121.patch
+Patch1:         CVE-2021-25737.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -67,6 +69,8 @@ tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 sed -i '/KUBE_ALLOW_PRIV/d' contrib-0.7.0/init/systemd/kubelet.service
 cd %{name}-%{version}
+%patch0 -p1
+%patch1 -p1
 
 %build
 make
@@ -227,6 +231,8 @@ fi
 %endif
 
 %changelog
+*   Tue May 11 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.10-1
+-   Update to v1.19.10, fixes CVE-2021-3121. Added patch to fix CVE-2021-25737
 *   Thu Mar 25 2021 Piyush Gupta<gpiyush@vmware.com> 1.19.7-2
 -   Bump up version to compile with new go
 *   Tue Feb 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.7-1
