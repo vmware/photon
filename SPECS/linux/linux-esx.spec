@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.190
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -367,6 +367,7 @@ Patch511:        halt-on-panic.patch
 Patch512:        x86-setup-remove-redundant-mem-size-check.patch
 Patch513:        0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
 Patch514:        initramfs-Introduce-kernel-panic-on-initramfs-unpack.patch
+Patch515:        support-selective-freeing-of-initramfs-images.patch
 
 # Patches for i40e driver
 Patch801:        0001-Add-support-for-gettimex64-interface.patch
@@ -712,6 +713,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch512 -p1
 %patch513 -p1
 %patch514 -p1
+%patch515 -p1
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -891,6 +893,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu May 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.190-2
+-   Add feature to support selective freeing of initrds
 *   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 4.19.190-1
 -   Update to version 4.19.190
 *   Wed May 12 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-6
