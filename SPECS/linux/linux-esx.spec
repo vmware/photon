@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.189
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -22,6 +22,12 @@ Source4:        check_for_config_applicability.inc
 Source5:        https://github.com/vmware/photon-checksum-generator/releases/photon-checksum-generator-%{photon_checksum_generator_version}.tar.gz
 %define sha1 photon-checksum-generator=20658a922c0beca840942bf27d743955711c043a
 Source6:        genhmac.inc
+%define i40e_version 2.13.10
+Source7:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
+%define sha1 i40e=126bfdabd708033b38840e49762d7ec3e64bbc96
+%define ice_version 1.3.2
+Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
+%define sha1 ice=19507794824da33827756389ac8018aa84e9c427
 
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
@@ -164,6 +170,12 @@ Patch268:        0007-vmxnet3-use-correct-tcp-hdr-length-when-packet-is-en.patch
 Patch269:        0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
 
 Patch270:        0009-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
+
+# Support for PTP_SYS_OFFSET_EXTENDED ioctl
+Patch276:        0001-ptp-reorder-declarations-in-ptp_ioctl.patch
+Patch277:        0002-ptp-add-PTP_SYS_OFFSET_EXTENDED-ioctl.patch
+Patch278:        0003-ptp-deprecate-gettime64-in-favor-of-gettimex64.patch
+Patch279:        0004-ptp-uapi-change-_IOW-to-IOWR-in-PTP_SYS_OFFSET_EXTEN.patch
 
 # VMW:
 Patch281:        0001-x86-vmware-Update-platform-detection-code-for-VMCALL.patch
@@ -352,6 +364,12 @@ Patch512:        x86-setup-remove-redundant-mem-size-check.patch
 Patch513:        0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
 Patch514:        initramfs-Introduce-kernel-panic-on-initramfs-unpack.patch
 
+# Patches for i40e driver
+Patch801:        0001-Add-support-for-gettimex64-interface.patch
+
+# Patches for ice driver
+Patch802:        0001-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
@@ -406,6 +424,9 @@ This Linux package contains hmac sha generator kernel module.
 %prep
 %setup -q -n linux-%{version}
 %setup -D -b 5 -n linux-%{version}
+%setup -D -b 7 -n linux-%{version}
+%setup -D -b 8 -n linux-%{version}
+
 %patch1 -p1
 %patch3 -p1
 %patch4 -p1
@@ -497,6 +518,11 @@ This Linux package contains hmac sha generator kernel module.
 %patch269 -p1
 
 %patch270 -p1
+
+%patch276 -p1
+%patch277 -p1
+%patch278 -p1
+%patch279 -p1
 
 %patch281 -p1
 %patch282 -p1
@@ -676,6 +702,16 @@ This Linux package contains hmac sha generator kernel module.
 %patch513 -p1
 %patch514 -p1
 
+# Patches for i40e driver
+pushd ../i40e-%{i40e_version}
+%patch801 -p1
+popd
+
+# Patches for ice driver
+pushd ../ice-%{ice_version}
+%patch802 -p1
+popd
+
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
@@ -691,6 +727,20 @@ sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .co
 %include %{SOURCE4}
 
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
+
+# build i40e module
+bldroot=`pwd`
+pushd ../i40e-%{i40e_version}
+make -C src KSRC=$bldroot clean
+make -C src KSRC=$bldroot %{?_smp_mflags}
+popd
+
+# build ice module
+bldroot=`pwd`
+pushd ../ice-%{ice_version}
+make -C src KSRC=$bldroot clean
+make -C src KSRC=$bldroot %{?_smp_mflags}
+popd
 
 #build photon-checksum-generator module
 bldroot=`pwd`
@@ -733,6 +783,18 @@ cp -v .config            %{buildroot}/boot/config-%{uname_r}
 cp -r Documentation/*        %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 cp -v vmlinux %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlinux-%{uname_r}
+
+# install i40e module
+bldroot=`pwd`
+pushd ../i40e-%{i40e_version}
+make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+popd
+
+# install ice module
+bldroot=`pwd`
+pushd ../ice-%{ice_version}
+make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+popd
 
 #install photon-checksum-generator module
 bldroot=`pwd`
@@ -793,10 +855,14 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %exclude /usr/src
 %exclude /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
 %exclude /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
+# ICE driver firmware files are packaged in linux-firmware
+%exclude /lib/firmware/updates/intel/ice
 
 %files docs
 %defattr(-,root,root)
 %{_defaultdocdir}/linux-%{uname_r}/*
+# For out-of-tree Intel i40e driver.
+%{_mandir}/*
 
 %files devel
 %defattr(-,root,root)
@@ -809,6 +875,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon May 10 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.189-3
+-   Add out-of-tree i40e and ice drivers.
+-   Add support for PTP_SYS_OFFSET_EXTENDED ioctl.
 *   Tue May 04 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-2
 -   Remove buf_info from device accessible structures in vmxnet3
 *   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.19.189-1
