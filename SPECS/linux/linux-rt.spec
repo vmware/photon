@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.25
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt34
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -94,6 +94,23 @@ Patch106:       0002-bpf-prevent-writable-memory-mapping-of-read-only-rin.patch
 Patch107:       0001-bpf-verifier-fix-ALU32-bounds-tracking-with-bitwise-.patch
 # Fix for CVE-2021-3491
 Patch108:       0001-io_uring-truncate-lengths-larger-than-MAX_RW_COUNT-o.patch
+# Fixes for CVEs in mac80211 and ath10k:
+Patch111:       0001-mac80211-assure-all-fragments-are-encrypted.patch
+Patch112:       0002-mac80211-prevent-mixed-key-and-fragment-cache-attack.patch
+Patch113:       0003-mac80211-properly-handle-A-MSDUs-that-start-with-an-.patch
+Patch114:       0004-cfg80211-mitigate-A-MSDU-aggregation-attacks.patch
+Patch115:       0005-mac80211-drop-A-MSDUs-on-old-ciphers.patch
+Patch116:       0006-mac80211-add-fragment-cache-to-sta_info.patch
+Patch117:       0007-mac80211-check-defrag-PN-against-current-frame.patch
+Patch118:       0008-mac80211-prevent-attacks-on-TKIP-WEP-as-well.patch
+Patch119:       0009-mac80211-do-not-accept-forward-invalid-EAPOL-frames.patch
+Patch120:       0010-mac80211-extend-protection-against-mixed-key-and-fra.patch
+Patch121:       0011-ath10k-add-CCMP-PN-replay-protection-for-fragmented-.patch
+Patch122:       0012-ath10k-drop-fragments-with-multicast-DA-for-PCIe.patch
+Patch123:       0013-ath10k-drop-fragments-with-multicast-DA-for-SDIO.patch
+Patch124:       0014-ath10k-drop-MPDU-which-has-discard-flag-set-by-firmw.patch
+Patch125:       0015-ath10k-Fix-TKIP-Michael-MIC-verification-for-PCIe.patch
+Patch126:       0016-ath10k-Validate-first-subframe-of-A-MSDU-before-proc.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 Patch301:       0003-z3fold-remove-preempt-disabled-sections-for-RT.patch
@@ -509,6 +526,22 @@ The Linux package contains the Linux kernel doc files
 %patch106 -p1
 %patch107 -p1
 %patch108 -p1
+%patch111 -p1
+%patch112 -p1
+%patch113 -p1
+%patch114 -p1
+%patch115 -p1
+%patch116 -p1
+%patch117 -p1
+%patch118 -p1
+%patch119 -p1
+%patch120 -p1
+%patch121 -p1
+%patch122 -p1
+%patch123 -p1
+%patch124 -p1
+%patch125 -p1
+%patch126 -p1
 
 # RT
 %patch301 -p1
@@ -1028,6 +1061,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue May 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.25-8
+-   Fix CVE-2020-26147, CVE-2020-24587, CVE-2020-24586, CVE-2020-24588,
+-   CVE-2020-26145, CVE-2020-26141
 *   Tue May 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.25-7
 -   Fix CVE-2021-3489, CVE-2021-3490, CVE-2021-3491
 *   Tue May 04 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-6

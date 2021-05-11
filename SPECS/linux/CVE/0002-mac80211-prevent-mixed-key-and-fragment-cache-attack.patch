@@ -1,0 +1,106 @@
+From f37bc8918a0a9f9fe7c0206d5eef688ca5ef6626 Mon Sep 17 00:00:00 2001
+From: Mathy Vanhoef <Mathy.Vanhoef@kuleuven.be>
+Date: Fri, 30 Oct 2020 11:50:41 +0400
+Subject: [PATCH 02/16] mac80211: prevent mixed key and fragment cache attacks
+
+Simultaneously prevent mixed key attacks (CVE-2020-24587) and fragment
+cache attacks (CVE-2020-24586). This is accomplished by assigning a
+unique color to every key (per interface) and using this to track which
+key was used to decrypt a fragment. When reassembling frames, it is
+now checked whether all fragments were decrypted using the same key.
+
+To assure that fragment cache attacks are also prevented, the ID that is
+assigned to keys is unique even over (re)associations and (re)connects.
+This means fragments separated by a (re)association or (re)connect will
+not be reassembled. Because mac80211 now also prevents the reassembly of
+mixed encrypted and plaintext fragments, all cache attacks are prevented.
+
+Cc: stable@vger.kernel.org
+Change-Id: I622a67769ed39257327a362cfc09c812320eb979
+Signed-off-by: Mathy Vanhoef <Mathy.Vanhoef@kuleuven.be>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ net/mac80211/ieee80211_i.h | 1 +
+ net/mac80211/key.c         | 7 +++++++
+ net/mac80211/key.h         | 2 ++
+ net/mac80211/rx.c          | 6 ++++++
+ 4 files changed, 16 insertions(+)
+
+diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
+index d6913784be2b..13d990cf2f39 100644
+--- a/net/mac80211/ieee80211_i.h
++++ b/net/mac80211/ieee80211_i.h
+@@ -97,6 +97,7 @@ struct ieee80211_fragment_entry {
+ 	u8 rx_queue;
+ 	bool check_sequential_pn; /* needed for CCMP/GCMP */
+ 	u8 last_pn[6]; /* PN of the last fragment if CCMP was used */
++	unsigned int key_color;
+ };
+ 
+ 
+diff --git a/net/mac80211/key.c b/net/mac80211/key.c
+index 8c5f829ff6d7..6a72c33679ba 100644
+--- a/net/mac80211/key.c
++++ b/net/mac80211/key.c
+@@ -799,6 +799,7 @@ int ieee80211_key_link(struct ieee80211_key *key,
+ 		       struct ieee80211_sub_if_data *sdata,
+ 		       struct sta_info *sta)
+ {
++	static atomic_t key_color = ATOMIC_INIT(0);
+ 	struct ieee80211_key *old_key;
+ 	int idx = key->conf.keyidx;
+ 	bool pairwise = key->conf.flags & IEEE80211_KEY_FLAG_PAIRWISE;
+@@ -850,6 +851,12 @@ int ieee80211_key_link(struct ieee80211_key *key,
+ 	key->sdata = sdata;
+ 	key->sta = sta;
+ 
++	/*
++	 * Assign a unique ID to every key so we can easily prevent mixed
++	 * key and fragment cache attacks.
++	 */
++	key->color = atomic_inc_return(&key_color);
++
+ 	increment_tailroom_need_count(sdata);
+ 
+ 	ret = ieee80211_key_replace(sdata, sta, pairwise, old_key, key);
+diff --git a/net/mac80211/key.h b/net/mac80211/key.h
+index 7ad72e9b4991..1e326c89d721 100644
+--- a/net/mac80211/key.h
++++ b/net/mac80211/key.h
+@@ -128,6 +128,8 @@ struct ieee80211_key {
+ 	} debugfs;
+ #endif
+ 
++	unsigned int color;
++
+ 	/*
+ 	 * key config, must be last because it contains key
+ 	 * material as variable length member
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index abe5a03a229d..c17a0abf4bfa 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -2265,6 +2265,7 @@ ieee80211_rx_h_defragment(struct ieee80211_rx_data *rx)
+ 			 * next fragment has a sequential PN value.
+ 			 */
+ 			entry->check_sequential_pn = true;
++			entry->key_color = rx->key->color;
+ 			memcpy(entry->last_pn,
+ 			       rx->key->u.ccmp.rx_pn[queue],
+ 			       IEEE80211_CCMP_PN_LEN);
+@@ -2302,6 +2303,11 @@ ieee80211_rx_h_defragment(struct ieee80211_rx_data *rx)
+ 
+ 		if (!requires_sequential_pn(rx, fc))
+ 			return RX_DROP_UNUSABLE;
++
++		/* Prevent mixed key and fragment cache attacks */
++		if (entry->key_color != rx->key->color)
++			return RX_DROP_UNUSABLE;
++
+ 		memcpy(pn, entry->last_pn, IEEE80211_CCMP_PN_LEN);
+ 		for (i = IEEE80211_CCMP_PN_LEN - 1; i >= 0; i--) {
+ 			pn[i]++;
+-- 
+2.25.1
+
