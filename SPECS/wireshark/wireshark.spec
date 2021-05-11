@@ -1,11 +1,11 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        3.4.4
+Version:        3.4.5
 Release:        1%{?dist}
 License:        GPL+
 URL:            http://www.wireshark.org/
 Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
-%define sha1 wireshark=fa5c553596dcc6a59735f96a9a0845e3c40abab2
+%define sha1 wireshark=d01a9b5f58206fb458fe9fc2dac88ad0ea7152ce
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -30,6 +30,11 @@ BuildRequires:  git
 Requires:       libpcap
 Requires:       libnl
 Requires:       pcre
+Requires:       c-ares
+Requires:       libcap
+Requires:       libnl
+Requires:       gnutls
+Requires:       glib
 
 %description
 Wireshark is a network protocol analyzer. It allows examining data
@@ -91,6 +96,8 @@ rm -rf %{buildroot}%{_docdir}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+*   Tue May 11 2021 Susant Sahani <ssahani@vmware.com> 3.4.5-1
+-   Update version and fix CVE-2021-22207
 *   Tue Mar 16 2021 Susant Sahani <ssahani@vmware.com> 3.4.4-1
 -   Update version and fix CVE-2021-22174
 *   Mon Jan 25 2021 Susant Sahani <ssahani@vmware.com> 3.4.2-1
