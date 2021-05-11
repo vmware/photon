@@ -1,0 +1,108 @@
+From 3a61c3d9a971693aca7537d9d29c654973745d23 Mon Sep 17 00:00:00 2001
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Date: Wed, 28 Apr 2021 13:38:32 -0300
+Subject: [PATCH] bpf: verifier: fix ALU32 bounds tracking with bitwise ops
+
+When scalar32_min_max_* functions are called for AND, OR and XOR
+operations, they assume the 64-bit function will handle the case where
+the operands are known.
+
+However, those functions only test for the lower 32 bits to be known
+whereas scalar_min_max_* checks for the 64 bits.
+
+In the cases where only the lower 32 bits are known, the ALU32 bounds
+will not be properly updated, potentially leading to inconsistent
+states.
+
+Do not ignore the case where the lower 32 bits of the operands are
+known. Update the ALU32 bounds even in those cases.
+
+That has been tested both with cases where only the lower 32 bits are
+known and when all bits are known. In the first case, bounds are
+correctly tracked, and the latter case has no changes at all.
+
+Before the fix:
+	17: R0=map_value(id=0,off=0,ks=4,vs=1024,imm=0) R1=invP(id=0,smin_value=-9223372036854775807,smax_value=9223372032559808513,umin_value=1,umax_value=18446744069414584321,var_off=(0x1; 0xffffffff00000000),s32_min_value=1,s32_max_value=1,u32_max_value=1) R2=invP(id=0,smin_value=-9223372036854775806,smax_value=9223372032559808514,umin_value=2,umax_value=18446744069414584322,var_off=(0x2; 0xffffffff00000000),s32_min_value=2,s32_max_value=2,u32_max_value=2) R10=fp0 fp-8=mmmmmmmm
+	17: (5f) r2 &= r1
+	18: R0=map_value(id=0,off=0,ks=4,vs=1024,imm=0) R1=invP(id=0,smin_value=-9223372036854775807,smax_value=9223372032559808513,umin_value=1,umax_value=18446744069414584321,var_off=(0x1; 0xffffffff00000000),s32_min_value=1,s32_max_value=1,u32_max_value=1) R2_w=invP(id=0,smax_value=9223372032559808512,umax_value=18446744069414584320,var_off=(0x0; 0xffffffff00000000),s32_min_value=2,s32_max_value=0,u32_min_value=2,u32_max_value=0) R10=fp0 fp-8=mmmmmmmm
+
+After the fix:
+	17: R0=map_value(id=0,off=0,ks=4,vs=1024,imm=0) R1=invP(id=0,smin_value=-9223372036854775807,smax_value=9223372032559808513,umin_value=1,umax_value=18446744069414584321,var_off=(0x1; 0xffffffff00000000),s32_min_value=1,s32_max_value=1,u32_max_value=1) R2=invP(id=0,smin_value=-9223372036854775806,smax_value=9223372032559808514,umin_value=2,umax_value=18446744069414584322,var_off=(0x2; 0xffffffff00000000),s32_min_value=2,s32_max_value=2,u32_max_value=2) R10=fp0 fp-8=mmmmmmmm
+	17: (5f) r2 &= r1
+	18: R0=map_value(id=0,off=0,ks=4,vs=1024,imm=0) R1=invP(id=0,smin_value=-9223372036854775807,smax_value=9223372032559808513,umin_value=1,umax_value=18446744069414584321,var_off=(0x1; 0xffffffff00000000),s32_min_value=1,s32_max_value=1,u32_max_value=1) R2_w=invP(id=0,smax_value=9223372032559808512,umax_value=18446744069414584320,var_off=(0x0; 0xffffffff00000000),s32_min_value=0,s32_max_value=0,u32_max_value=0) R10=fp0 fp-8=mmmmmmmm
+
+This fixes CVE-2021-3490, also known as ZDI-CAN-13590.
+
+Reported-by: Manfred Paul (@_manfp)
+Fixes: 3f50f132d840 ("bpf: Verifier, do explicit ALU32 bounds tracking")
+Fixes: 2921c90d4718 ("bpf: Fix a verifier failure with xor")
+Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Reviewed-by: Seth Arnold <seth.arnold@canonical.com>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ kernel/bpf/verifier.c | 24 ------------------------
+ 1 file changed, 24 deletions(-)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 9a1aba2d0073..1b1fb11d7acc 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -5883,18 +5883,10 @@ static void scalar_min_max_mul(struct bpf_reg_state *dst_reg,
+ static void scalar32_min_max_and(struct bpf_reg_state *dst_reg,
+ 				 struct bpf_reg_state *src_reg)
+ {
+-	bool src_known = tnum_subreg_is_const(src_reg->var_off);
+-	bool dst_known = tnum_subreg_is_const(dst_reg->var_off);
+ 	struct tnum var32_off = tnum_subreg(dst_reg->var_off);
+ 	s32 smin_val = src_reg->s32_min_value;
+ 	u32 umax_val = src_reg->u32_max_value;
+ 
+-	/* Assuming scalar64_min_max_and will be called so its safe
+-	 * to skip updating register for known 32-bit case.
+-	 */
+-	if (src_known && dst_known)
+-		return;
+-
+ 	/* We get our minimum from the var_off, since that's inherently
+ 	 * bitwise.  Our maximum is the minimum of the operands' maxima.
+ 	 */
+@@ -5954,18 +5946,10 @@ static void scalar_min_max_and(struct bpf_reg_state *dst_reg,
+ static void scalar32_min_max_or(struct bpf_reg_state *dst_reg,
+ 				struct bpf_reg_state *src_reg)
+ {
+-	bool src_known = tnum_subreg_is_const(src_reg->var_off);
+-	bool dst_known = tnum_subreg_is_const(dst_reg->var_off);
+ 	struct tnum var32_off = tnum_subreg(dst_reg->var_off);
+ 	s32 smin_val = src_reg->s32_min_value;
+ 	u32 umin_val = src_reg->u32_min_value;
+ 
+-	/* Assuming scalar64_min_max_or will be called so it is safe
+-	 * to skip updating register for known case.
+-	 */
+-	if (src_known && dst_known)
+-		return;
+-
+ 	/* We get our maximum from the var_off, and our minimum is the
+ 	 * maximum of the operands' minima
+ 	 */
+@@ -6024,17 +6008,9 @@ static void scalar_min_max_or(struct bpf_reg_state *dst_reg,
+ static void scalar32_min_max_xor(struct bpf_reg_state *dst_reg,
+ 				 struct bpf_reg_state *src_reg)
+ {
+-	bool src_known = tnum_subreg_is_const(src_reg->var_off);
+-	bool dst_known = tnum_subreg_is_const(dst_reg->var_off);
+ 	struct tnum var32_off = tnum_subreg(dst_reg->var_off);
+ 	s32 smin_val = src_reg->s32_min_value;
+ 
+-	/* Assuming scalar64_min_max_xor will be called so it is safe
+-	 * to skip updating register for known case.
+-	 */
+-	if (src_known && dst_known)
+-		return;
+-
+ 	/* We get both minimum and maximum from the var32_off. */
+ 	dst_reg->u32_min_value = var32_off.value;
+ 	dst_reg->u32_max_value = var32_off.value | var32_off.mask;
+-- 
+2.25.1
+
