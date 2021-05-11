@@ -1,0 +1,305 @@
+From c396a5bf457fb60159dcedbd4f48d53a62be030a Mon Sep 17 00:00:00 2001
+From: Kees Cook <keescook@chromium.org>
+Date: Mon, 26 Feb 2018 16:04:20 -0800
+Subject: console: Expand dummy functions for CFI
+
+commit c396a5bf457fb60159dcedbd4f48d53a62be030a upstream
+
+This expands the no-op dummy functions into full prototypes to avoid
+indirect call mismatches when running under Control Flow Integrity
+checking, like with Clang's -fsanitize=cfi.
+
+Co-Developed-by: Sami Tolvanen <samitolvanen@google.com>
+Signed-off-by: Sami Tolvanen <samitolvanen@google.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[Keerthana K: Fix sisusbdummycon_scroll() and dummycon_scroll() definitions
+w.r.t v4.9.y kernels, added sisusbdummycon_font_get() and file path fbcon.c is changed]
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ drivers/usb/misc/sisusbvga/sisusb_con.c | 74 +++++++++++++++++++------
+ drivers/video/console/dummycon.c        | 69 +++++++++++++++++------
+ drivers/video/console/fbcon.c           |  2 +-
+ drivers/video/console/newport_con.c     |  8 +--
+ drivers/video/console/vgacon.c          | 20 +++----
+ 5 files changed, 125 insertions(+), 48 deletions(-)
+
+diff --git a/drivers/usb/misc/sisusbvga/sisusb_con.c b/drivers/usb/misc/sisusbvga/sisusb_con.c
+index 460cebf322e3..f5f347afbb35 100644
+--- a/drivers/usb/misc/sisusbvga/sisusb_con.c
++++ b/drivers/usb/misc/sisusbvga/sisusb_con.c
+@@ -1247,7 +1247,7 @@ sisusbcon_do_font_op(struct sisusb_usb_data *sisusb, int set, int slot,
+ /* Interface routine */
+ static int
+ sisusbcon_font_set(struct vc_data *c, struct console_font *font,
+-							unsigned flags)
++							unsigned int flags)
+ {
+ 	struct sisusb_usb_data *sisusb;
+ 	unsigned charcount = font->charcount;
+@@ -1368,29 +1368,71 @@ static void sisusbdummycon_init(struct vc_data *vc, int init)
+ 	vc_resize(vc, 80, 25);
+ }
+ 
+-static int sisusbdummycon_dummy(void)
++static void sisusbdummycon_deinit(struct vc_data *vc) { }
++static void sisusbdummycon_clear(struct vc_data *vc, int sy, int sx,
++				int height, int width) { }
++static void sisusbdummycon_putc(struct vc_data *vc, int c, int ypos,
++				int xpos) { }
++static void sisusbdummycon_putcs(struct vc_data *vc, const unsigned short *s,
++				int count, int ypos, int xpos) { }
++static void sisusbdummycon_cursor(struct vc_data *vc, int mode) { }
++
++static int sisusbdummycon_scroll(struct vc_data *vc, int top,
++				int bottom, int dir,
++				int lines)
+ {
+-    return 0;
++	return 0;
++}
++
++static int sisusbdummycon_switch(struct vc_data *vc)
++{
++	return 0;
++}
++
++static int sisusbdummycon_blank(struct vc_data *vc, int blank, int mode_switch)
++{
++	return 0;
++}
++
++static int sisusbdummycon_font_set(struct vc_data *vc,
++				struct console_font *font,
++				unsigned int flags)
++{
++	return 0;
++}
++
++static int sisusbdummycon_font_get(struct vc_data *vc, struct console_font *font)
++{
++	return 0;
++}
++
++static int sisusbdummycon_font_default(struct vc_data *vc,
++				struct console_font *font, char *name)
++{
++	return 0;
+ }
+ 
+-#define SISUSBCONDUMMY	(void *)sisusbdummycon_dummy
++static int sisusbdummycon_font_copy(struct vc_data *vc, int con)
++{
++	return 0;
++}
+ 
+ static const struct consw sisusb_dummy_con = {
+ 	.owner =		THIS_MODULE,
+ 	.con_startup =		sisusbdummycon_startup,
+ 	.con_init =		sisusbdummycon_init,
+-	.con_deinit =		SISUSBCONDUMMY,
+-	.con_clear =		SISUSBCONDUMMY,
+-	.con_putc =		SISUSBCONDUMMY,
+-	.con_putcs =		SISUSBCONDUMMY,
+-	.con_cursor =		SISUSBCONDUMMY,
+-	.con_scroll =		SISUSBCONDUMMY,
+-	.con_switch =		SISUSBCONDUMMY,
+-	.con_blank =		SISUSBCONDUMMY,
+-	.con_font_set =		SISUSBCONDUMMY,
+-	.con_font_get =		SISUSBCONDUMMY,
+-	.con_font_default =	SISUSBCONDUMMY,
+-	.con_font_copy =	SISUSBCONDUMMY,
++	.con_deinit =	sisusbdummycon_deinit,
++	.con_clear =	sisusbdummycon_clear,
++	.con_putc =		sisusbdummycon_putc,
++	.con_putcs =	sisusbdummycon_putcs,
++	.con_cursor =	sisusbdummycon_cursor,
++	.con_scroll =	sisusbdummycon_scroll,
++	.con_switch =	sisusbdummycon_switch,
++	.con_blank =	sisusbdummycon_blank,
++	.con_font_set =	sisusbdummycon_font_set,
++	.con_font_get =	sisusbdummycon_font_get,
++	.con_font_default =	sisusbdummycon_font_default,
++	.con_font_copy =	sisusbdummycon_font_copy,
+ };
+ 
+ int
+diff --git a/drivers/video/console/dummycon.c b/drivers/video/console/dummycon.c
+index b90ef96e43d6..0d07fb1f3885 100644
+--- a/drivers/video/console/dummycon.c
++++ b/drivers/video/console/dummycon.c
+@@ -41,12 +41,47 @@ static void dummycon_init(struct vc_data *vc, int init)
+ 	vc_resize(vc, DUMMY_COLUMNS, DUMMY_ROWS);
+ }
+ 
+-static int dummycon_dummy(void)
++static void dummycon_deinit(struct vc_data *vc) { }
++static void dummycon_clear(struct vc_data *vc, int sy, int sx, int height,
++			   int width) { }
++static void dummycon_putc(struct vc_data *vc, int c, int ypos, int xpos) { }
++static void dummycon_putcs(struct vc_data *vc, const unsigned short *s,
++			   int count, int ypos, int xpos) { }
++static void dummycon_cursor(struct vc_data *vc, int mode) { }
++
++static int dummycon_scroll(struct vc_data *vc, int top,
++			    int bottom, int dir,
++			    int lines)
++{
++	return 0;
++}
++
++static int dummycon_switch(struct vc_data *vc)
+ {
+-    return 0;
++	return 0;
+ }
+ 
+-#define DUMMY	(void *)dummycon_dummy
++static int dummycon_blank(struct vc_data *vc, int blank, int mode_switch)
++{
++	return 0;
++}
++
++static int dummycon_font_set(struct vc_data *vc, struct console_font *font,
++			     unsigned int flags)
++{
++	return 0;
++}
++
++static int dummycon_font_default(struct vc_data *vc,
++				 struct console_font *font, char *name)
++{
++	return 0;
++}
++
++static int dummycon_font_copy(struct vc_data *vc, int con)
++{
++	return 0;
++}
+ 
+ /*
+  *  The console `switch' structure for the dummy console
+@@ -55,19 +90,19 @@ static int dummycon_dummy(void)
+  */
+ 
+ const struct consw dummy_con = {
+-    .owner =		THIS_MODULE,
+-    .con_startup =	dummycon_startup,
+-    .con_init =		dummycon_init,
+-    .con_deinit =	DUMMY,
+-    .con_clear =	DUMMY,
+-    .con_putc =		DUMMY,
+-    .con_putcs =	DUMMY,
+-    .con_cursor =	DUMMY,
+-    .con_scroll =	DUMMY,
+-    .con_switch =	DUMMY,
+-    .con_blank =	DUMMY,
+-    .con_font_set =	DUMMY,
+-    .con_font_default =	DUMMY,
+-    .con_font_copy =	DUMMY,
++	.owner =		THIS_MODULE,
++	.con_startup =	dummycon_startup,
++	.con_init =		dummycon_init,
++	.con_deinit =	dummycon_deinit,
++	.con_clear =	dummycon_clear,
++	.con_putc =		dummycon_putc,
++	.con_putcs =	dummycon_putcs,
++	.con_cursor =	dummycon_cursor,
++	.con_scroll =	dummycon_scroll,
++	.con_switch =	dummycon_switch,
++	.con_blank =	dummycon_blank,
++	.con_font_set =	dummycon_font_set,
++	.con_font_default =	dummycon_font_default,
++	.con_font_copy =	dummycon_font_copy,
+ };
+ EXPORT_SYMBOL_GPL(dummy_con);
+diff --git a/drivers/video/console/fbcon.c b/drivers/video/console/fbcon.c
+index 44df6f6fd063..5040c3d8009d 100644
+--- a/drivers/video/console/fbcon.c
++++ b/drivers/video/console/fbcon.c
+@@ -2412,7 +2412,7 @@ static int fbcon_copy_font(struct vc_data *vc, int con)
+  *  is ever implemented.
+  */
+ 
+-static int fbcon_set_font(struct vc_data *vc, struct console_font *font, unsigned flags)
++static int fbcon_set_font(struct vc_data *vc, struct console_font *font, unsigned int flags)
+ {
+ 	struct fb_info *info = registered_fb[con2fb_map[vc->vc_num]];
+ 	unsigned charcount = font->charcount;
+diff --git a/drivers/video/console/newport_con.c b/drivers/video/console/newport_con.c
+index 1a3a2f1d9817..4e679d7dabe1 100644
+--- a/drivers/video/console/newport_con.c
++++ b/drivers/video/console/newport_con.c
+@@ -671,12 +671,12 @@ static int newport_scroll(struct vc_data *vc, int t, int b, int dir,
+ 	return 1;
+ }
+ 
+-static int newport_dummy(struct vc_data *c)
++static int newport_set_origin(struct vc_data *vc)
+ {
+ 	return 0;
+ }
+ 
+-#define DUMMY (void *) newport_dummy
++static void newport_save_screen(struct vc_data *vc) { }
+ 
+ const struct consw newport_con = {
+ 	.owner		  = THIS_MODULE,
+@@ -692,8 +692,8 @@ const struct consw newport_con = {
+ 	.con_blank	  = newport_blank,
+ 	.con_font_set	  = newport_font_set,
+ 	.con_font_default = newport_font_default,
+-	.con_set_origin	  = DUMMY,
+-	.con_save_screen  = DUMMY
++	.con_set_origin	  = newport_set_origin,
++	.con_save_screen  = newport_save_screen
+ };
+ 
+ static int newport_probe(struct gio_device *dev,
+diff --git a/drivers/video/console/vgacon.c b/drivers/video/console/vgacon.c
+index b38ee2354cbf..c96f69b538c1 100644
+--- a/drivers/video/console/vgacon.c
++++ b/drivers/video/console/vgacon.c
+@@ -1127,7 +1127,8 @@ static int vgacon_adjust_height(struct vc_data *vc, unsigned fontheight)
+ 	return 0;
+ }
+ 
+-static int vgacon_font_set(struct vc_data *c, struct console_font *font, unsigned flags)
++static int vgacon_font_set(struct vc_data *c, struct console_font *font,
++			   unsigned int flags)
+ {
+ 	unsigned charcount = font->charcount;
+ 	int rc;
+@@ -1272,21 +1273,20 @@ static int vgacon_scroll(struct vc_data *c, int t, int b, int dir,
+  *  The console `switch' structure for the VGA based console
+  */
+ 
+-static int vgacon_dummy(struct vc_data *c)
+-{
+-	return 0;
+-}
+-
+-#define DUMMY (void *) vgacon_dummy
++static void vgacon_clear(struct vc_data *vc, int sy, int sx, int height,
++			 int width) { }
++static void vgacon_putc(struct vc_data *vc, int c, int ypos, int xpos) { }
++static void vgacon_putcs(struct vc_data *vc, const unsigned short *s,
++			 int count, int ypos, int xpos) { }
+ 
+ const struct consw vga_con = {
+ 	.owner = THIS_MODULE,
+ 	.con_startup = vgacon_startup,
+ 	.con_init = vgacon_init,
+ 	.con_deinit = vgacon_deinit,
+-	.con_clear = DUMMY,
+-	.con_putc = DUMMY,
+-	.con_putcs = DUMMY,
++	.con_clear = vgacon_clear,
++	.con_putc = vgacon_putc,
++	.con_putcs = vgacon_putcs,
+ 	.con_cursor = vgacon_cursor,
+ 	.con_scroll = vgacon_scroll,
+ 	.con_switch = vgacon_switch,
+-- 
+2.28.0
+

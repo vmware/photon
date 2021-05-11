@@ -108,7 +108,6 @@ Functions signature fixing is still required.
  drivers/scsi/pmcraid.c                             |  26 +-
  drivers/scsi/qla2xxx/qla_target.c                  |   6 +-
  drivers/tty/serial/kgdboc.c                        |   2 +-
- drivers/video/console/dummycon.c                   |  76 ++-
  fs/9p/vfs_addr.c                                   |   3 +-
  fs/afs/file.c                                      |   8 +-
  fs/afs/internal.h                                  |   2 +-
@@ -4517,96 +4516,6 @@ index a260cde..1b99d3b 100644
  {
  	size_t len = strlen(kmessage);
  
-diff --git a/drivers/video/console/dummycon.c b/drivers/video/console/dummycon.c
-index b90ef96..12f6ec5 100644
---- a/drivers/video/console/dummycon.c
-+++ b/drivers/video/console/dummycon.c
-@@ -41,12 +41,55 @@ static void dummycon_init(struct vc_data *vc, int init)
- 	vc_resize(vc, DUMMY_COLUMNS, DUMMY_ROWS);
- }
- 
--static int dummycon_dummy(void)
-+static void dummycon_deinit(struct vc_data *a)
-+{
-+}
-+
-+static void dummycon_clear(struct vc_data *a, int b, int c, int d, int e)
-+{
-+}
-+
-+static void dummycon_putc(struct vc_data *a, int b, int c, int d)
-+{
-+}
-+
-+static void dummycon_putcs(struct vc_data *a, const unsigned short *b, int c, int d, int e)
-+{
-+}
-+
-+static void dummycon_cursor(struct vc_data *a, int b)
-+{
-+}
-+
-+static int dummycon_scroll(struct vc_data *a, int b, int c, int d, int e)
-+{
-+    return 0;
-+}
-+
-+static int dummycon_switch(struct vc_data *a)
- {
-     return 0;
- }
- 
--#define DUMMY	(void *)dummycon_dummy
-+static int dummycon_blank(struct vc_data *a, int b, int c)
-+{
-+    return 0;
-+}
-+
-+static int dummycon_font_set(struct vc_data *a, struct console_font *b, unsigned c)
-+{
-+    return 0;
-+}
-+
-+static int dummycon_font_default(struct vc_data *a, struct console_font *b , char *c)
-+{
-+    return 0;
-+}
-+
-+static int dummycon_font_copy(struct vc_data *a, int b)
-+{
-+    return 0;
-+}
- 
- /*
-  *  The console `switch' structure for the dummy console
-@@ -58,16 +101,16 @@ const struct consw dummy_con = {
-     .owner =		THIS_MODULE,
-     .con_startup =	dummycon_startup,
-     .con_init =		dummycon_init,
--    .con_deinit =	DUMMY,
--    .con_clear =	DUMMY,
--    .con_putc =		DUMMY,
--    .con_putcs =	DUMMY,
--    .con_cursor =	DUMMY,
--    .con_scroll =	DUMMY,
--    .con_switch =	DUMMY,
--    .con_blank =	DUMMY,
--    .con_font_set =	DUMMY,
--    .con_font_default =	DUMMY,
--    .con_font_copy =	DUMMY,
-+    .con_deinit =	dummycon_deinit,
-+    .con_clear =	dummycon_clear,
-+    .con_putc =		dummycon_putc,
-+    .con_putcs =	dummycon_putcs,
-+    .con_cursor =	dummycon_cursor,
-+    .con_scroll =	dummycon_scroll,
-+    .con_switch =	dummycon_switch,
-+    .con_blank =	dummycon_blank,
-+    .con_font_set =	dummycon_font_set,
-+    .con_font_default =	dummycon_font_default,
-+    .con_font_copy =	dummycon_font_copy,
- };
- EXPORT_SYMBOL_GPL(dummy_con);
 diff --git a/fs/9p/vfs_addr.c b/fs/9p/vfs_addr.c
 index 197069303510..793772d114db 100644
 --- a/fs/9p/vfs_addr.c

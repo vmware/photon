@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.268
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -122,6 +122,8 @@ Patch90:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
 Patch91:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch92:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 
+# Fix dummy console function definitions
+Patch112:       0001-console-Expand-dummy-functions-for-CFI.patch
 
 BuildRequires: bc
 BuildRequires: kbd
@@ -241,6 +243,7 @@ The Linux package contains the Linux kernel doc files
 %patch91 -p1
 %patch92 -p1
 
+%patch112 -p1
 %build
 
 make mrproper
@@ -335,6 +338,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 11 2021 Keerthana K <keerthanak@vmware.com> 4.9.268-2
+-   Fix dummy console function definitions.
 *   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.9.268-1
 -   Update to version 4.9.268
 *   Thu Apr 15 2021 srinidhira0 <srinidhir@vmware.com> 4.9.266-1

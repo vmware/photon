@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.268
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -138,6 +138,8 @@ Patch94: 0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch95: 0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch96: 0007-btrfs-tree-checker-Verify-inode-item.patch
 
+# Fix dummy console function definitions
+Patch97: 0001-console-Expand-dummy-functions-for-CFI.patch
 
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
@@ -310,6 +312,7 @@ EOF
 %patch94 -p1
 %patch95 -p1
 %patch96 -p1
+%patch97 -p1
 
 # secure
 %patch13 -p1
@@ -443,6 +446,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 11 2021 Keerthana K <keerthanak@vmware.com> 4.9.268-2
+-   Fix dummy console function definitions.
 *   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.9.268-1
 -   Update to version 4.9.268
 *   Thu Apr 15 2021 srinidhira0 <srinidhir@vmware.com> 4.9.266-1

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.268
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -179,6 +179,9 @@ Patch143: 0051-xen-netfront-add-longer-default-freeze-timeout-as-a-.patch
 Patch144: 0052-drivers-amazon-ena-update-to-1.4.0.patch
 Patch145: 0053-PM-hibernate-update-the-resume-offset-on-SNAPSHOT_SE.patch
 Patch146: 0054-Not-for-upstream-PM-hibernate-Speed-up-hibernation-b.patch
+
+# Fix dummy console function definitions
+Patch150: 0001-console-Expand-dummy-functions-for-CFI.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -378,6 +381,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch145 -p1
 %patch146 -p1
 
+%patch150 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -525,6 +529,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Tue May 11 2021 Keerthana K <keerthanak@vmware.com> 4.9.268-2
+-   Fix dummy console function definitions.
 *   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.9.268-1
 -   Update to version 4.9.268
 *   Thu Apr 15 2021 srinidhira0 <srinidhir@vmware.com> 4.9.266-1

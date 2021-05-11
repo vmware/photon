@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.268
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -146,6 +146,8 @@ Patch105:       0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch106:       0003-ovl-verify-permissions-in-ovl_path_open.patch
 
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
+# Fix dummy console function definitions
+Patch112:       0001-console-Expand-dummy-functions-for-CFI.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -314,6 +316,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch106 -p1
 
 %patch111 -p1
+%patch112 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -485,6 +488,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue May 11 2021 Keerthana K <keerthanak@vmware.com> 4.9.268-2
+-   Fix dummy console function definitions.
 *   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.9.268-1
 -   Update to version 4.9.268
 *   Thu Apr 15 2021 srinidhira0 <srinidhir@vmware.com> 4.9.266-1
