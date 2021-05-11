@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.25
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -88,6 +88,13 @@ Patch103:       bpf-x86_64-Validate-computation-of-branch-displacements.patch
 Patch104:       bpf-x86_32-Validate-computation-of-branch-displacements.patch
 # Fix for CVE-2021-23133
 Patch105:       0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
+# Fix for CVE-2021-3489
+Patch106:       0001-bpf-ringbuf-deny-reserve-of-buffers-larger-than-ring.patch
+Patch107:       0002-bpf-prevent-writable-memory-mapping-of-read-only-rin.patch
+# Fix for CVE-2021-3490
+Patch108:       0001-bpf-verifier-fix-ALU32-bounds-tracking-with-bitwise-.patch
+# Fix for CVE-2021-3491
+Patch109:       0001-io_uring-truncate-lengths-larger-than-MAX_RW_COUNT-o.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -210,6 +217,10 @@ The Linux package contains the Linux kernel doc files
 %patch103 -p1
 %patch104 -p1
 %patch105 -p1
+%patch106 -p1
+%patch107 -p1
+%patch108 -p1
+%patch109 -p1
 
 # crypto
 %patch500 -p1
@@ -340,6 +351,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Tue May 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.25-7
+-   Fix CVE-2021-3489, CVE-2021-3490, CVE-2021-3491
 *   Tue May 04 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-6
 -   Remove buf_info from device accessible structures in vmxnet3
 *   Thu Apr 29 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.25-5

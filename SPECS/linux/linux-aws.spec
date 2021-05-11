@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.25
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -62,6 +62,13 @@ Patch103:       bpf-x86_64-Validate-computation-of-branch-displacements.patch
 Patch104:       bpf-x86_32-Validate-computation-of-branch-displacements.patch
 # Fix for CVE-2021-23133
 Patch105:       0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
+# Fix for CVE-2021-3489
+Patch106:       0001-bpf-ringbuf-deny-reserve-of-buffers-larger-than-ring.patch
+Patch107:       0002-bpf-prevent-writable-memory-mapping-of-read-only-rin.patch
+# Fix for CVE-2021-3490
+Patch108:       0001-bpf-verifier-fix-ALU32-bounds-tracking-with-bitwise-.patch
+# Fix for CVE-2021-3491
+Patch109:       0001-io_uring-truncate-lengths-larger-than-MAX_RW_COUNT-o.patch
 
 #Amazon AWS
 Patch201:       0002-bump-the-default-TTL-to-255.patch
@@ -197,6 +204,10 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch103 -p1
 %patch104 -p1
 %patch105 -p1
+%patch106 -p1
+%patch107 -p1
+%patch108 -p1
+%patch109 -p1
 
 #Amazon AWS
 %patch201 -p1
@@ -399,6 +410,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue May 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.25-5
+-   Fix CVE-2021-3489, CVE-2021-3490, CVE-2021-3491
 *   Tue May 04 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-4
 -   Remove buf_info from device accessible structures in vmxnet3
 *   Mon Apr 19 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-3

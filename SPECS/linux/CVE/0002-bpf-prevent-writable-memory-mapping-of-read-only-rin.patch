@@ -1,0 +1,66 @@
+From 5aeeb08ad07f44106a6d41b3e77365bb3621d36e Mon Sep 17 00:00:00 2001
+From: Andrii Nakryiko <andrii@kernel.org>
+Date: Tue, 4 May 2021 16:38:00 -0700
+Subject: [PATCH 2/2] bpf: prevent writable memory-mapping of read-only ringbuf
+ pages
+
+Only the very first page of BPF ringbuf that contains consumer position
+counter is supposed to be mapped as writeable by user-space. Producer
+position is read-only and can be modified only by the kernel code. BPF ringbuf
+data pages are read-only as well and are not meant to be modified by
+user-code to maintain integrity of per-record headers.
+
+This patch allows to map only consumer position page as writeable and
+everything else is restricted to be read-only. remap_vmalloc_range()
+internally adds VM_DONTEXPAND, so all the established memory mappings can't be
+extended, which prevents any future violations through mremap()'ing.
+
+Fixes: 457f44363a88 ("bpf: Implement BPF ring buffer and verifier support for it")
+Reported-by: Ryota Shiga (Flatt Security)
+Reported-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ kernel/bpf/ringbuf.c | 19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
+
+diff --git a/kernel/bpf/ringbuf.c b/kernel/bpf/ringbuf.c
+index 51d0eb881ed3..f22d27438ab8 100644
+--- a/kernel/bpf/ringbuf.c
++++ b/kernel/bpf/ringbuf.c
+@@ -240,25 +240,20 @@ static int ringbuf_map_get_next_key(struct bpf_map *map, void *key,
+ 	return -ENOTSUPP;
+ }
+ 
+-static size_t bpf_ringbuf_mmap_page_cnt(const struct bpf_ringbuf *rb)
+-{
+-	size_t data_pages = (rb->mask + 1) >> PAGE_SHIFT;
+-
+-	/* consumer page + producer page + 2 x data pages */
+-	return RINGBUF_POS_PAGES + 2 * data_pages;
+-}
+-
+ static int ringbuf_map_mmap(struct bpf_map *map, struct vm_area_struct *vma)
+ {
+ 	struct bpf_ringbuf_map *rb_map;
+-	size_t mmap_sz;
+ 
+ 	rb_map = container_of(map, struct bpf_ringbuf_map, map);
+-	mmap_sz = bpf_ringbuf_mmap_page_cnt(rb_map->rb) << PAGE_SHIFT;
+ 
+-	if (vma->vm_pgoff * PAGE_SIZE + (vma->vm_end - vma->vm_start) > mmap_sz)
+-		return -EINVAL;
++	if (vma->vm_flags & VM_WRITE)
++		/* allow writable mapping for the consumer_pos only */
++		if (vma->vm_pgoff != 0 || vma->vm_end - vma->vm_start != PAGE_SIZE)
++			return -EPERM;
++	else
++		vma->vm_flags &= ~VM_MAYWRITE;
+ 
++		/* remap_vmalloc_range() checks size and offset constraints */
+ 	return remap_vmalloc_range(vma, rb_map->rb,
+ 				   vma->vm_pgoff + RINGBUF_PGOFF);
+ }
+-- 
+2.25.1
+
