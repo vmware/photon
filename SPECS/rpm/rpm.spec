@@ -1,11 +1,10 @@
 %{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
-
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -19,10 +18,11 @@ Source2:        brp-strip-debug-symbols
 Source3:        brp-strip-unneeded
 
 Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
-#Patch1:         CVE-2021-20271.patch
-#Patch2:         Fix-OpenPGP-parsing-bugs.patch
-#Patch3:         Header-signatures-alone-are-not-sufficient.patch
-Patch1:         CVE-2021-20266.patch
+Patch1:         CVE-2021-20271.patch
+Patch2:         Fix-OpenPGP-parsing-bugs.patch
+Patch3:         Header-signatures-alone-are-not-sufficient.patch
+Patch4:         CVE-2021-20266.patch
+Patch5:         Fix-regression-reading-rpm-v3.patch
 
 Requires:       bash
 Requires:       libdb
@@ -100,9 +100,13 @@ Requires:       python3
 Python3 rpm.
 
 %prep
-%setup -n rpm-%{name}-%{version}-release
+%setup -q -n rpm-%{name}-%{version}-release
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -111,7 +115,7 @@ sed -i 's/-Wl,-L//g' python/setup.py.in
 sed -i '/library_dirs/d' python/setup.py.in
 sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
 
-./autogen.sh --noconfigure
+sh ./autogen.sh --noconfigure
 %configure \
     CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
         --program-prefix= \
@@ -123,7 +127,7 @@ sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
         --with-vendor=vmware \
         --disable-silent-rules \
         --with-external-db \
-	--enable-zstd
+        --enable-zstd
 make %{?_smp_mflags}
 
 pushd python
@@ -267,6 +271,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jun 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-13
+-   Invalid signature tag Archivesize (1046) issue fix
 *   Tue May 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-12
 -   Fix CVE-2021-20266
 -   Temporarily disabling few fixes as a workaround to regression
