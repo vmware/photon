@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.35
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -17,6 +17,7 @@ Source0:        http://ftp.gnu.org/gnu/binutils/%{name}-%{version}.tar.xz
 Patch1:         binutils-sync-libiberty-add-no-recurse-limit-make-check-fix.patch
 Patch2:         binutils-CVE-2019-1010204.patch
 Patch3:         binutils-CVE-2021-3487.patch
+Patch4:         binutils-CVE-2021-20294.patch
 
 %description
 The Binutils package contains a linker, an assembler,
@@ -43,6 +44,7 @@ for handling compiled objects.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 sed -i '/@\tincremental_copy/d' gold/testsuite/Makefile.in
@@ -140,6 +142,8 @@ make %{?_smp_mflags} -k check > tests.sum 2>&1
 %{_lib64dir}/libiberty.a
 
 %changelog
+*   Wed May 12 2021 Vikash Bansal <vikash@vmware.com> 2.35-3
+-   Fix CVE-2021-20294
 *   Wed Apr 28 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.35-2
 -   Fix CVE-2021-3487
 *   Tue Sep 08 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.35-1
