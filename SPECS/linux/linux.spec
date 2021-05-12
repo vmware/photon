@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.189
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -118,6 +118,10 @@ Patch65:        0005-ovl-check-permission-to-open-real-file.patch
 # Fix for CVE-2019-19770
 Patch66:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch67:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
+
+# Fix for CVE-2021-23133
+Patch68:	0001-Revert-net-sctp-fix-race-condition-in-sctp_destroy_s.patch
+Patch69:	0001-net-sctp-delay-auto_asconf-init-until-binding-the-fi.patch
 
 #Fix for 9p
 Patch70:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
@@ -598,6 +602,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
+%patch68 -p1
+%patch69 -p1
 
 %patch70 -p1
 %patch71 -p1
@@ -1237,6 +1243,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Wed May 12 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-5
+-   Fix for CVE-2021-23133
 *   Mon May 10 2021 Ajay Kaher <akaher@vmware.com> 4.19.189-4
 -   SEV-ES: update SWIOTLB bounce buffer patch
 *   Fri May 07 2021 Ankit Jain <ankitja@vmware.com> 4.19.189-3

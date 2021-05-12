@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.189
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -86,6 +86,10 @@ Patch65:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 Patch67:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
 Patch68:        0002-bpf-Fix-32-bit-src-register-truncation-on-div-mod.patch
 Patch69:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
+
+# Fix for CVE-2021-23133
+Patch70:	0001-Revert-net-sctp-fix-race-condition-in-sctp_destroy_s.patch
+Patch71:	0001-net-sctp-delay-auto_asconf-init-until-binding-the-fi.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -254,6 +258,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch67 -p1
 %patch68 -p1
 %patch69 -p1
+%patch70 -p1
+%patch71 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -467,6 +473,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed May 12 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-3
+-   Fix for CVE-2021-23133
 *   Tue May 04 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-2
 -   Remove buf_info from device accessible structures in vmxnet3
 *   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.19.189-1

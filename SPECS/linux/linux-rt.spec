@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.189
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt78
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -90,6 +90,10 @@ Patch66:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 Patch68:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
 Patch69:        0002-bpf-Fix-32-bit-src-register-truncation-on-div-mod.patch
 Patch70:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
+
+# Fix for CVE-2021-23133
+Patch71:	0001-Revert-net-sctp-fix-race-condition-in-sctp_destroy_s.patch
+Patch72:	0001-net-sctp-delay-auto_asconf-init-until-binding-the-fi.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -553,6 +557,8 @@ The Linux package contains the Linux kernel doc files
 %patch68 -p1
 %patch69 -p1
 %patch70 -p1
+%patch71 -p1
+%patch72 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -1111,6 +1117,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed May 12 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-4
+-   Fix for CVE-2021-23133
 *   Fri May 07 2021 Ankit Jain <ankitja@vmware.com> 4.19.189-3
 -   .config: Enable INFINIBAND, MLX5_INFINIBAND
 *   Tue May 04 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-2

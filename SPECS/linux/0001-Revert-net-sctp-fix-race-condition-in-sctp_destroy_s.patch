@@ -1,0 +1,83 @@
+From c1f9e21f8157ae026fcbd96d0b14dba836265dd6 Mon Sep 17 00:00:00 2001
+From: Xin Long <lucien.xin@gmail.com>
+Date: Mon, 3 May 2021 05:11:41 +0800
+Subject: [PATCH] Revert "net/sctp: fix race condition in sctp_destroy_sock"
+
+commit 01bfe5e8e428b475982a98a46cca5755726f3f7f upstream
+
+This reverts commit b166a20b07382b8bc1dcee2a448715c9c2c81b5b.
+
+This one has to be reverted as it introduced a dead lock, as
+syzbot reported:
+
+       CPU0                    CPU1
+       ----                    ----
+  lock(&net->sctp.addr_wq_lock);
+                               lock(slock-AF_INET6);
+                               lock(&net->sctp.addr_wq_lock);
+  lock(slock-AF_INET6);
+
+CPU0 is the thread of sctp_addr_wq_timeout_handler(), and CPU1
+is that of sctp_close().
+
+The original issue this commit fixed will be fixed in the next
+patch.
+
+Reported-by: syzbot+959223586843e69a2674@syzkaller.appspotmail.com
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
+---
+ net/sctp/socket.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
+
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index 656bd1532883..4a2873f70b37 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -1569,9 +1569,11 @@ static void sctp_close(struct sock *sk, long timeout)
+ 
+ 	/* Supposedly, no process has access to the socket, but
+ 	 * the net layers still may.
++	 * Also, sctp_destroy_sock() needs to be called with addr_wq_lock
++	 * held and that should be grabbed before socket lock.
+ 	 */
+-	local_bh_disable();
+-	bh_lock_sock(sk);
++	spin_lock_bh(&net->sctp.addr_wq_lock);
++	bh_lock_sock_nested(sk);
+ 
+ 	/* Hold the sock, since sk_common_release() will put sock_put()
+ 	 * and we have just a little more cleanup.
+@@ -1580,7 +1582,7 @@ static void sctp_close(struct sock *sk, long timeout)
+ 	sk_common_release(sk);
+ 
+ 	bh_unlock_sock(sk);
+-	local_bh_enable();
++	spin_unlock_bh(&net->sctp.addr_wq_lock);
+ 
+ 	sock_put(sk);
+ 
+@@ -4774,6 +4776,9 @@ static int sctp_init_sock(struct sock *sk)
+ 	sk_sockets_allocated_inc(sk);
+ 	sock_prot_inuse_add(net, sk->sk_prot, 1);
+ 
++	/* Nothing can fail after this block, otherwise
++	 * sctp_destroy_sock() will be called without addr_wq_lock held
++	 */
+ 	if (net->sctp.default_auto_asconf) {
+ 		spin_lock(&sock_net(sk)->sctp.addr_wq_lock);
+ 		list_add_tail(&sp->auto_asconf_list,
+@@ -4808,9 +4813,7 @@ static void sctp_destroy_sock(struct sock *sk)
+ 
+ 	if (sp->do_auto_asconf) {
+ 		sp->do_auto_asconf = 0;
+-		spin_lock_bh(&sock_net(sk)->sctp.addr_wq_lock);
+ 		list_del(&sp->auto_asconf_list);
+-		spin_unlock_bh(&sock_net(sk)->sctp.addr_wq_lock);
+ 	}
+ 	sctp_endpoint_free(sp->ep);
+ 	local_bh_disable();
+-- 
+2.28.0
+

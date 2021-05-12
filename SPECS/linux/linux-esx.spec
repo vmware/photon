@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.189
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -118,6 +118,10 @@ Patch76:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch77:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch78:        0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
 Patch79:        0005-ovl-check-permission-to-open-real-file.patch
+
+# Fix for CVE-2021-23133
+Patch80:        0001-Revert-net-sctp-fix-race-condition-in-sctp_destroy_s.patch
+Patch81:        0001-net-sctp-delay-auto_asconf-init-until-binding-the-fi.patch
 
 # inherit tcp_limit_output_bytes
 Patch90:	tcp-inherit-TSQ-limit-from-root-namespace.patch
@@ -484,6 +488,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch77 -p1
 %patch78 -p1
 %patch79 -p1
+%patch80 -p1
+%patch81 -p1
 
 %patch90 -p1
 %patch98 -p1
@@ -885,6 +891,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed May 12 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-6
+-   Fix for CVE-2021-23133
 *   Tue May 11 2021 Vivek Thampi <vithampi@vmware.com> 4.19.189-5
 -   Add ptp_vmw driver for virtual precision clock.
 *   Mon May 10 2021 Ajay Kaher <akaher@vmware.com> 4.19.189-4
