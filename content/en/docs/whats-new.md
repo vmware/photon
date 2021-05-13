@@ -50,6 +50,6 @@ Photon OS 4.0  provides support for the Real Time flavor of kernel linux-rt, SEL
 - Up-to-date versions for most packages available in the repository.
 
 
-##Notes
+## Notes
 Openjdk 1.10 is end of life and is being shipped to serve the sole purpose of build dependency. There will no future updates - Updates to security or otherwise will be done to the openjdk10 package.
 
