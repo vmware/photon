@@ -1,12 +1,11 @@
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.16.6
-Release:        2%{?dist}
+Version:        9.16.15
+Release:        1%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha1    bind=f8a4c1bd074cc0305a4c50971e71da5a3b810d78
-Patch0:         bindutils-CVE-2020-8625.patch
+%define sha1    bind=5d68bbd1ff452708d45f2d4ef832faa3a1690fc7
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -21,7 +20,6 @@ also production-grade software, suitable for use in high-volume and high-reliabi
 
 %prep
 %setup -qn bind-%{version}
-%patch0 -p1
 
 %build
 %configure \
@@ -50,6 +48,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/*
 
 %changelog
+*   Wed May 12 2021 Sujay G <gsujay@vmware.com> 9.16.15-1
+-   Bump version to 9.16.15 to fix CVE-2021-25214, CVE-2021-25215, CVE-2021-25216
 *   Fri Mar 05 2021 Dweep Advani <dadvani@vmware.com> 9.16.6-2
 -   Patch for CVE-2020-8625
 *   Fri Aug 28 2020 Sujay G <gsujay@vmware.com> 9.16.6-1
