@@ -1,0 +1,97 @@
+From 1f8a4212dc83f8353843fabf6465fd918372fbbf Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Fri, 17 Jul 2020 16:05:48 +0200
+Subject: [PATCH 08/11] timers: Expand clk forward logic beyond nohz
+
+commit 1f8a4212dc83f8353843fabf6465fd918372fbbf upstream
+
+As for next_expiry, the base->clk catch up logic will be expanded beyond
+NOHZ in order to avoid triggering useless softirqs.
+
+If softirqs should only fire to expire pending timers, periodic base->clk
+increments must be skippable for random amounts of time.  Therefore prepare
+to catch-up with missing updates whenever an up-to-date base clock is
+needed.
+
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Juri Lelli <juri.lelli@redhat.com>
+Link: https://lkml.kernel.org/r/20200717140551.29076-10-frederic@kernel.org
+---
+ kernel/time/timer.c | 26 ++++----------------------
+ 1 file changed, 4 insertions(+), 22 deletions(-)
+
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index 0ce57decae4d..6a8f03d44f6a 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -902,19 +902,12 @@ get_target_base(struct timer_base *base, unsigned tflags)
+
+ static inline void forward_timer_base(struct timer_base *base)
+ {
+-#ifdef CONFIG_NO_HZ_COMMON
+ 	unsigned long jnow;
+
+-	/*
+-	 * We only forward the base when we are idle or have just come out of
+-	 * idle (must_forward_clk logic), and have a delta between base clock
+-	 * and jiffies. In the common case, run_timers will take care of it.
+-	 */
+-	if (likely(!base->must_forward_clk))
++	if (!base->must_forward_clk)
+ 		return;
+
+ 	jnow = READ_ONCE(jiffies);
+-	base->must_forward_clk = base->is_idle;
+ 	if ((long)(jnow - base->clk) < 2)
+ 		return;
+
+@@ -929,7 +922,6 @@ static inline void forward_timer_base(struct timer_base *base)
+ 			return;
+ 		base->clk = base->next_expiry;
+ 	}
+-#endif
+ }
+
+
+@@ -1620,10 +1612,8 @@ u64 get_next_timer_interrupt(unsigned long basej, u64 basem)
+ 		 * logic is only maintained for the BASE_STD base, deferrable
+ 		 * timers may still see large granularity skew (by design).
+ 		 */
+-		if ((expires - basem) > TICK_NSEC) {
+-			base->must_forward_clk = true;
++		if ((expires - basem) > TICK_NSEC)
+ 			base->is_idle = true;
+-		}
+ 	}
+ 	raw_spin_unlock(&base->lock);
+
+@@ -1722,16 +1712,7 @@ static inline void __run_timers(struct timer_base *base)
+ 	/*
+ 	 * timer_base::must_forward_clk must be cleared before running
+ 	 * timers so that any timer functions that call mod_timer() will
+-	 * not try to forward the base. Idle tracking / clock forwarding
+-	 * logic is only used with BASE_STD timers.
+-	 *
+-	 * The must_forward_clk flag is cleared unconditionally also for
+-	 * the deferrable base. The deferrable base is not affected by idle
+-	 * tracking and never forwarded, so clearing the flag is a NOOP.
+-	 *
+-	 * The fact that the deferrable base is never forwarded can cause
+-	 * large variations in granularity for deferrable timers, but they
+-	 * can be deferred for long periods due to idle anyway.
++	 * not try to forward the base.
+ 	 */
+ 	base->must_forward_clk = false;
+
+@@ -1744,6 +1725,7 @@ static inline void __run_timers(struct timer_base *base)
+ 		while (levels--)
+ 			expire_timers(base, heads + levels);
+ 	}
++	base->must_forward_clk = true;
+ 	raw_spin_unlock_irq(&base->lock);
+ 	spin_unlock(&base->expiry_lock);
+ }
+--
+2.17.1
+

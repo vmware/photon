@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.190
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt79
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -464,6 +464,21 @@ Patch600:        0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
 #RT Runtine Greed changes
 Patch601:       0001-sched-rt-Disable-RT_RUNTIME_SHARE-by-default.patch
 Patch602:       0002-RT-PATCH-sched-rt-RT_RUNTIME_GREED-sched-feature.patch
+#Patchset to reduce timer softirqs
+#https://lore.kernel.org/lkml/20200717140551.29076-1-frederic@kernel.org/
+Patch603:       0001-timers-Preserve-higher-bits-of-expiration-on-index-c.patch
+Patch604:       0002-timers-Use-only-bucket-expiry-for-base-next_expiry-v.patch
+Patch605:       0003-timers-Move-trigger_dyntick_cpu-to-enqueue_timer.patch
+Patch606:       0004-timers-Add-comments-about-calc_index-ceiling-work.patch
+Patch607:       0005-timers-Optimize-_next_timer_interrupt-level-iteratio.patch
+Patch608:       0006-timers-Always-keep-track-of-next-expiry.patch
+Patch609:       0007-timers-Reuse-next-expiry-cache-after-nohz-exit.patch
+Patch610:       0008-timers-Expand-clk-forward-logic-beyond-nohz.patch
+Patch611:       0009-timers-Spare-timer-softirq-until-next-expiry.patch
+Patch612:       0010-timers-Remove-must_forward_clk.patch
+Patch613:       0011-timers-Lower-base-clock-forwarding-threshold.patch
+Patch614:       0001-timers-Recalculate-next-timer-interrupt-only-when-ne.patch
+
 
 %if 0%{?kat_build:1}
 Patch1000:       fips-kat-tests.patch
@@ -921,6 +936,18 @@ The Linux package contains the Linux kernel doc files
 %patch600 -p1
 %patch601 -p1
 %patch602 -p1
+%patch603 -p1
+%patch604 -p1
+%patch605 -p1
+%patch606 -p1
+%patch607 -p1
+%patch608 -p1
+%patch609 -p1
+%patch610 -p1
+%patch611 -p1
+%patch612 -p1
+%patch613 -p1
+%patch614 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -1120,6 +1147,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed May 26 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.190-3
+-   Backport patchset to to reduce timer softirqs
 *   Thu May 20 2021 Ajay Kaher <akaher@vmware.com> 4.19.190-2
 -   Fix for CVE-2021-3564
 *   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 4.19.190-1

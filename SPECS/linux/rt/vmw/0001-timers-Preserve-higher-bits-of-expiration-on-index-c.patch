@@ -1,0 +1,41 @@
+From 3d2e83a2a6a0657c1cf145fa6ba23620715d6c36 Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Fri, 17 Jul 2020 16:05:41 +0200
+Subject: [PATCH 01/11] timers: Preserve higher bits of expiration on index
+ calculation
+
+commit 3d2e83a2a6a0657c1cf145fa6ba23620715d6c36 upstream
+
+The higher bits of the timer expiration are cropped while calling
+calc_index() due to the implicit cast from unsigned long to unsigned int.
+
+This loss shouldn't have consequences on the current code since all the
+computation to calculate the index is done on the lower 32 bits.
+
+However to prepare for returning the actual bucket expiration from
+calc_index() in order to properly fix base->next_expiry updates, the higher
+bits need to be preserved.
+
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lkml.kernel.org/r/20200717140551.29076-3-frederic@kernel.org
+---
+ kernel/time/timer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index a2be2277506d..939943513703 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -494,7 +494,7 @@ static inline void timer_set_idx(struct timer_list *timer, unsigned int idx)
+  * Helper function to calculate the array index for a given expiry
+  * time.
+  */
+-static inline unsigned calc_index(unsigned expires, unsigned lvl)
++static inline unsigned calc_index(unsigned long expires, unsigned lvl)
+ {
+ 	expires = (expires + LVL_GRAN(lvl)) >> LVL_SHIFT(lvl);
+ 	return LVL_OFFS(lvl) + (expires & LVL_MASK);
+--
+2.17.1
+

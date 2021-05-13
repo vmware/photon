@@ -1,0 +1,83 @@
+From 0975fb565b8b8f9e0c96d0de39fcb954833ea5e0 Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Fri, 17 Jul 2020 16:05:50 +0200
+Subject: [PATCH 10/11] timers: Remove must_forward_clk
+
+commit 0975fb565b8b8f9e0c96d0de39fcb954833ea5e0 upstream
+
+There is no reason to keep this guard around. The code makes sure that
+base->clk remains sane and won't be forwarded beyond jiffies nor set
+backward.
+
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Juri Lelli <juri.lelli@redhat.com>
+Link: https://lkml.kernel.org/r/20200717140551.29076-12-frederic@kernel.org
+---
+ kernel/time/timer.c | 21 ++++++---------------
+ 1 file changed, 6 insertions(+), 15 deletions(-)
+
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index a6436a04fc62..f5876a8b6f34 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -204,7 +204,6 @@ struct timer_base {
+ 	unsigned long		next_expiry;
+ 	unsigned int		cpu;
+ 	bool			is_idle;
+-	bool			must_forward_clk;
+ 	DECLARE_BITMAP(pending_map, WHEEL_SIZE);
+ 	struct hlist_head	vectors[WHEEL_SIZE];
+ } ____cacheline_aligned;
+@@ -902,12 +901,13 @@ get_target_base(struct timer_base *base, unsigned tflags)
+
+ static inline void forward_timer_base(struct timer_base *base)
+ {
+-	unsigned long jnow;
++	unsigned long jnow = READ_ONCE(jiffies);
+
+-	if (!base->must_forward_clk)
+-		return;
+-
+-	jnow = READ_ONCE(jiffies);
++	/*
++	 * No need to forward if we are close enough below jiffies.
++	 * Also while executing timers, base->clk is 1 offset ahead
++	 * of jiffies to avoid endless requeuing to current jffies.
++	 */
+ 	if ((long)(jnow - base->clk) < 2)
+ 		return;
+
+@@ -1675,13 +1675,6 @@ static inline void __run_timers(struct timer_base *base)
+ 	spin_lock(&base->expiry_lock);
+ 	raw_spin_lock_irq(&base->lock);
+
+-	/*
+-	 * timer_base::must_forward_clk must be cleared before running
+-	 * timers so that any timer functions that call mod_timer() will
+-	 * not try to forward the base.
+-	 */
+-	base->must_forward_clk = false;
+-
+ 	while (time_after_eq(jiffies, base->clk) &&
+ 	       time_after_eq(jiffies, base->next_expiry)) {
+
+@@ -1692,7 +1685,6 @@ static inline void __run_timers(struct timer_base *base)
+ 		while (levels--)
+ 			expire_timers(base, heads + levels);
+ 	}
+-	base->must_forward_clk = true;
+ 	raw_spin_unlock_irq(&base->lock);
+ 	spin_unlock(&base->expiry_lock);
+ }
+@@ -1888,7 +1880,6 @@ int timers_prepare_cpu(unsigned int cpu)
+ 		base->clk = jiffies;
+ 		base->next_expiry = base->clk + NEXT_TIMER_MAX_DELTA;
+ 		base->is_idle = false;
+-		base->must_forward_clk = true;
+ 	}
+ 	return 0;
+ }
+--
+2.17.1
+

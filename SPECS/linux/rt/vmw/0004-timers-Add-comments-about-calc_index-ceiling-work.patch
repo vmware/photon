@@ -1,0 +1,53 @@
+From 4468897211628865ee2392acb5ad281f74176f63 Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Fri, 17 Jul 2020 16:05:44 +0200
+Subject: [PATCH 04/11] timers: Add comments about calc_index() ceiling work
+
+commit 4468897211628865ee2392acb5ad281f74176f63 upstream
+
+calc_index() adds 1 unit of the level granularity to the expiry passed
+in parameter to ensure that the timer doesn't expire too early. Add a
+comment to explain that and the resulting layout in the wheel.
+
+Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Juri Lelli <juri.lelli@redhat.com>
+Link: https://lkml.kernel.org/r/20200717140551.29076-6-frederic@kernel.org
+---
+ kernel/time/timer.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index 7f439dc84311..3b0004c8db50 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -158,7 +158,8 @@ EXPORT_SYMBOL(jiffies_64);
+
+ /*
+  * The time start value for each level to select the bucket at enqueue
+- * time.
++ * time. We start from the last possible delta of the previous level
++ * so that we can later add an extra LVL_GRAN(n) to n (see calc_index()).
+  */
+ #define LVL_START(n)	((LVL_SIZE - 1) << (((n) - 1) * LVL_CLK_SHIFT))
+
+@@ -497,6 +498,15 @@ static inline void timer_set_idx(struct timer_list *timer, unsigned int idx)
+ static inline unsigned calc_index(unsigned long expires, unsigned lvl,
+ 				  unsigned long *bucket_expiry)
+ {
++
++	/*
++	 * The timer wheel has to guarantee that a timer does not fire
++	 * early. Early expiry can happen due to:
++	 * - Timer is armed at the edge of a tick
++	 * - Truncation of the expiry time in the outer wheel levels
++	 *
++	 * Round up with level granularity to prevent this.
++	 */
+ 	expires = (expires + LVL_GRAN(lvl)) >> LVL_SHIFT(lvl);
+ 	*bucket_expiry = expires << LVL_SHIFT(lvl);
+ 	return LVL_OFFS(lvl) + (expires & LVL_MASK);
+--
+2.17.1
+

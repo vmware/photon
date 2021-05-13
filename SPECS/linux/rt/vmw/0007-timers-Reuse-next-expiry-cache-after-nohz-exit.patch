@@ -1,0 +1,49 @@
+From 90d52f65f303091be17b5f4ffab7090b2064b4a1 Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Fri, 17 Jul 2020 16:05:47 +0200
+Subject: [PATCH 07/11] timers: Reuse next expiry cache after nohz exit
+
+commit 90d52f65f303091be17b5f4ffab7090b2064b4a1 upstream
+
+Now that the next expiry it tracked unconditionally when a timer is added,
+this information can be reused on a tick firing after exiting nohz.
+
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Juri Lelli <juri.lelli@redhat.com>
+Link: https://lkml.kernel.org/r/20200717140551.29076-9-frederic@kernel.org
+---
+ kernel/time/timer.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index 126deb824f24..0ce57decae4d 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -1659,13 +1659,11 @@ static int collect_expired_timers(struct timer_base *base,
+ 	 * the next expiring timer.
+ 	 */
+ 	if ((long)(now - base->clk) > 2) {
+-		unsigned long next = __next_timer_interrupt(base);
+-
+ 		/*
+ 		 * If the next timer is ahead of time forward to current
+ 		 * jiffies, otherwise forward to the next expiry time:
+ 		 */
+-		if (time_after(next, now)) {
++		if (time_after(base->next_expiry, now)) {
+ 			/*
+ 			 * The call site will increment base->clk and then
+ 			 * terminate the expiry loop immediately.
+@@ -1673,7 +1671,7 @@ static int collect_expired_timers(struct timer_base *base,
+ 			base->clk = now;
+ 			return 0;
+ 		}
+-		base->clk = next;
++		base->clk = base->next_expiry;
+ 	}
+ 	return __collect_expired_timers(base, heads);
+ }
+--
+2.17.1
+

@@ -1,0 +1,119 @@
+From d4f7dae87096dfe722bf32aa82076ece1063746c Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Fri, 17 Jul 2020 16:05:49 +0200
+Subject: [PATCH 9/11] timers: Spare timer softirq until next expiry
+
+commit d4f7dae87096dfe722bf32aa82076ece1063746c upstream
+
+Now that the core timer infrastructure doesn't depend anymore on
+periodic base->clk increments, even when the CPU is not in NO_HZ mode,
+timer softirqs can be skipped until there are timers to expire.
+
+Some spurious softirqs can still remain since base->next_expiry doesn't
+keep track of canceled timers but this still reduces the number of softirqs
+significantly: ~15 times less for HZ=1000 and ~5 times less for HZ=100.
+
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Juri Lelli <juri.lelli@redhat.com>
+Link: https://lkml.kernel.org/r/20200717140551.29076-11-frederic@kernel.org
+---
+ kernel/time/timer.c | 49 ++++++++-------------------------------------
+ 1 file changed, 8 insertions(+), 41 deletions(-)
+
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index 6a8f03d44f6a..a6436a04fc62 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -1411,10 +1411,10 @@ static void expire_timers(struct timer_base *base, struct hlist_head *head)
+ 	}
+ }
+
+-static int __collect_expired_timers(struct timer_base *base,
+-				    struct hlist_head *heads)
++static int collect_expired_timers(struct timer_base *base,
++				  struct hlist_head *heads)
+ {
+-	unsigned long clk = base->clk;
++	unsigned long clk = base->clk = base->next_expiry;
+ 	struct hlist_head *vec;
+ 	int i, levels = 0;
+ 	unsigned int idx;
+@@ -1637,40 +1637,6 @@ void timer_clear_idle(void)
+ 	 */
+ 	base->is_idle = false;
+ }
+-
+-static int collect_expired_timers(struct timer_base *base,
+-				  struct hlist_head *heads)
+-{
+-	unsigned long now = READ_ONCE(jiffies);
+-
+-	/*
+-	 * NOHZ optimization. After a long idle sleep we need to forward the
+-	 * base to current jiffies. Avoid a loop by searching the bitfield for
+-	 * the next expiring timer.
+-	 */
+-	if ((long)(now - base->clk) > 2) {
+-		/*
+-		 * If the next timer is ahead of time forward to current
+-		 * jiffies, otherwise forward to the next expiry time:
+-		 */
+-		if (time_after(base->next_expiry, now)) {
+-			/*
+-			 * The call site will increment base->clk and then
+-			 * terminate the expiry loop immediately.
+-			 */
+-			base->clk = now;
+-			return 0;
+-		}
+-		base->clk = base->next_expiry;
+-	}
+-	return __collect_expired_timers(base, heads);
+-}
+-#else
+-static inline int collect_expired_timers(struct timer_base *base,
+-					 struct hlist_head *heads)
+-{
+-	return __collect_expired_timers(base, heads);
+-}
+ #endif
+
+ /*
+@@ -1703,7 +1669,7 @@ static inline void __run_timers(struct timer_base *base)
+ 	struct hlist_head heads[LVL_DEPTH];
+ 	int levels;
+
+-	if (!time_after_eq(jiffies, base->clk))
++	if (time_before(jiffies, base->next_expiry))
+ 		return;
+
+ 	spin_lock(&base->expiry_lock);
+@@ -1716,7 +1682,8 @@ static inline void __run_timers(struct timer_base *base)
+ 	 */
+ 	base->must_forward_clk = false;
+
+-	while (time_after_eq(jiffies, base->clk)) {
++	while (time_after_eq(jiffies, base->clk) &&
++	       time_after_eq(jiffies, base->next_expiry)) {
+
+ 		levels = collect_expired_timers(base, heads);
+ 		base->clk++;
+@@ -1753,12 +1720,12 @@ void run_local_timers(void)
+
+ 	hrtimer_run_queues();
+ 	/* Raise the softirq only if required. */
+-	if (time_before(jiffies, base->clk)) {
++	if (time_before(jiffies, base->next_expiry)) {
+ 		if (!IS_ENABLED(CONFIG_NO_HZ_COMMON))
+ 			return;
+ 		/* CPU is awake, so check the deferrable base. */
+ 		base++;
+-		if (time_before(jiffies, base->clk))
++		if (time_before(jiffies, base->next_expiry))
+ 			return;
+ 	}
+ 	raise_softirq(TIMER_SOFTIRQ);
+--
+2.17.1
+

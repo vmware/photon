@@ -1,0 +1,99 @@
+From 31cd0e119d50cf27ebe214d1a8f7ca36692f13a5 Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Thu, 23 Jul 2020 17:16:41 +0200
+Subject: [PATCH] timers: Recalculate next timer interrupt only when necessary
+
+commit 31cd0e119d50cf27ebe214d1a8f7ca36692f13a5 upstream
+
+The nohz tick code recalculates the timer wheel's next expiry on each idle
+loop iteration.
+
+On the other hand, the base next expiry is now always cached and updated
+upon timer enqueue and execution. Only timer dequeue may leave
+base->next_expiry out of date (but then its stale value won't ever go past
+the actual next expiry to be recalculated).
+
+Since recalculating the next_expiry isn't a free operation, especially when
+the last wheel level is reached to find out that no timer has been enqueued
+at all, reuse the next expiry cache when it is known to be reliable, which
+it is most of the time.
+
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lkml.kernel.org/r/20200723151641.12236-1-frederic@kernel.org
+---
+ kernel/time/timer.c | 21 ++++++++++++++++++---
+ 1 file changed, 18 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index e2cb4d553ac5..2aae477b6c9d 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -203,6 +203,7 @@ struct timer_base {
+ 	unsigned long		clk;
+ 	unsigned long		next_expiry;
+ 	unsigned int		cpu;
++	bool			next_expiry_recalc;
+ 	bool			is_idle;
+ 	DECLARE_BITMAP(pending_map, WHEEL_SIZE);
+ 	struct hlist_head	vectors[WHEEL_SIZE];
+@@ -600,6 +601,7 @@ static void enqueue_timer(struct timer_base *base, struct timer_list *timer,
+ 		 * can reevaluate the wheel:
+ 		 */
+ 		base->next_expiry = bucket_expiry;
++		base->next_expiry_recalc = false;
+ 		trigger_dyntick_cpu(base, timer);
+ 	}
+ }
+@@ -850,8 +852,10 @@ static int detach_if_pending(struct timer_list *timer, struct timer_base *base,
+ 	if (!timer_pending(timer))
+ 		return 0;
+
+-	if (hlist_is_singular_node(&timer->entry, base->vectors + idx))
++	if (hlist_is_singular_node(&timer->entry, base->vectors + idx)) {
+ 		__clear_bit(idx, base->pending_map);
++		base->next_expiry_recalc = true;
++	}
+
+ 	detach_timer(timer, clear_pending);
+ 	return 1;
+@@ -1524,6 +1528,9 @@ static unsigned long __next_timer_interrupt(struct timer_base *base)
+ 		clk >>= LVL_CLK_SHIFT;
+ 		clk += adj;
+ 	}
++
++	base->next_expiry_recalc = false;
++
+ 	return next;
+ }
+
+@@ -1584,9 +1591,11 @@ u64 get_next_timer_interrupt(unsigned long basej, u64 basem)
+ 		return expires;
+
+ 	raw_spin_lock(&base->lock);
+-	nextevt = __next_timer_interrupt(base);
++	if (base->next_expiry_recalc)
++		base->next_expiry = __next_timer_interrupt(base);
++	nextevt = base->next_expiry;
+ 	is_max_delta = (nextevt == base->clk + NEXT_TIMER_MAX_DELTA);
+-	base->next_expiry = nextevt;
++
+ 	/*
+ 	 * We have a fresh next event. Check whether we can forward the
+ 	 * base. We can only do that when @basej is past base->clk
+@@ -1679,6 +1688,12 @@ static inline void __run_timers(struct timer_base *base)
+ 	       time_after_eq(jiffies, base->next_expiry)) {
+
+ 		levels = collect_expired_timers(base, heads);
++		/*
++		 * The only possible reason for not finding any expired
++		 * timer at this clk is that all matching timers have been
++		 * dequeued.
++		 */
++		WARN_ON_ONCE(!levels && !base->next_expiry_recalc);
+ 		base->clk++;
+ 		base->next_expiry = __next_timer_interrupt(base);
+
+--
+2.17.1
+

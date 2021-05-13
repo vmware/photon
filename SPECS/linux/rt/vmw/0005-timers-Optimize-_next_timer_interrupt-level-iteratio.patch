@@ -1,0 +1,61 @@
+From 001ec1b3925da0d51847c23fc0aa4129282db526 Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Fri, 17 Jul 2020 16:05:45 +0200
+Subject: [PATCH 05/11] timers: Optimize _next_timer_interrupt() level
+ iteration
+
+commit 001ec1b3925da0d51847c23fc0aa4129282db526 upstream
+
+If a level has a timer that expires before reaching the next level, there
+is no need to iterate further.
+
+The next level is reached when the 3 lower bits of the current level are
+cleared. If the next event happens before/during that, the next levels
+won't provide an earlier expiration.
+
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Juri Lelli <juri.lelli@redhat.com>
+Link: https://lkml.kernel.org/r/20200717140551.29076-7-frederic@kernel.org
+---
+ kernel/time/timer.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index 3b0004c8db50..fc385d8c96e5 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -1479,6 +1479,7 @@ static unsigned long __next_timer_interrupt(struct timer_base *base)
+ 	clk = base->clk;
+ 	for (lvl = 0; lvl < LVL_DEPTH; lvl++, offset += LVL_SIZE) {
+ 		int pos = next_pending_bucket(base, offset, clk & LVL_MASK);
++		unsigned long lvl_clk = clk & LVL_CLK_MASK;
+
+ 		if (pos >= 0) {
+ 			unsigned long tmp = clk + (unsigned long) pos;
+@@ -1486,6 +1487,13 @@ static unsigned long __next_timer_interrupt(struct timer_base *base)
+ 			tmp <<= LVL_SHIFT(lvl);
+ 			if (time_before(tmp, next))
+ 				next = tmp;
++
++			/*
++			 * If the next expiration happens before we reach
++			 * the next level, no need to check further.
++			 */
++			if (pos <= ((LVL_CLK_DIV - lvl_clk) & LVL_CLK_MASK))
++				break;
+ 		}
+ 		/*
+ 		 * Clock for the next level. If the current level clock lower
+@@ -1523,7 +1531,7 @@ static unsigned long __next_timer_interrupt(struct timer_base *base)
+ 		 * So the simple check whether the lower bits of the current
+ 		 * level are 0 or not is sufficient for all cases.
+ 		 */
+-		adj = clk & LVL_CLK_MASK ? 1 : 0;
++		adj = lvl_clk ? 1 : 0;
+ 		clk >>= LVL_CLK_SHIFT;
+ 		clk += adj;
+ 	}
+--
+2.17.1
+
