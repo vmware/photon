@@ -3,7 +3,7 @@ title:  Concepts in Action
 weight: 3
 ---
 
-Now that we have a fresh installed host (either as [default](/docs/administration-guide/photon-rpm-ostree/Installing-a-host-against-default-server-repository) or [custom](/docs/administration-guide/photon-rpm-ostree/Photon-RPM-OSTree:-7-Installing-a-host-against-a-custom-server-repository), we can better explain the OStree concepts and see them in action.  
+Now that we have a fresh installed host (either as [default](/docs/administration-guide/photon-rpm-ostree/installing-a-host-against-default-server-repository) or [custom](/docs/administration-guide/photon-rpm-ostree/installing-a-host-against-custom-server-repository)), we can better explain the OStree concepts and see them in action.  
 
 ## Querying the deployed filetrees
 
