@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        9.6.21
+Version:        9.6.22
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=e24333824d361968958613f546ae06011d9d1dfc
+%define sha1    postgresql=e56f90d8c25443d61c09226c011ae53eaff58bd8
 # Common libraries needed
 BuildRequires:  krb5-devel
 BuildRequires:  libxml2-devel
@@ -152,6 +152,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Fri May 14 2021 Michael Paquier <mpaquier@vmware.com> 9.6.22-1
+-   Updated to version 9.6.22
 *   Thu Feb 18 2021 Michael Paquier <mpaquier@vmware.com> 9.6.21-1
 -   Updated to version 9.6.21
 *   Fri Nov 20 2020 Dweep Advani <dadvani@vmware.com> 9.6.20-1
