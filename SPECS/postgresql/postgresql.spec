@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        13.2
+Version:        13.3
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=fc40c06ee7f2fd5f4ee5af88c8502f06a44c8698
+%define sha1    postgresql=7a775f95367613ed5f7e4cd632586f9628475a92
 
 # Common libraries needed
 BuildRequires:  diffutils
@@ -169,6 +169,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Fri May 14 2021 Michael Paquier <mpaquier@vmware.com> 13.3-1
+-   Upgraded to version 13.3
 *   Fri Feb 19 2021 Michael Paquier <mpaquier@vmware.com> 13.2-1
 -   Upgraded to version 13.2
 *   Fri Feb 5 2021 Michael Paquier <mpaquier@vmware.com> 13.1-1
