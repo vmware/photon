@@ -7,13 +7,22 @@
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
 Version:             1.0.0.rc93
-Release:             1%{?dist}
+Release:             2%{?dist}
 License:             ASL 2.0
 URL:                 https://runc.io/
 Source0:             https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
 %define sha1         runc=e8693109441696536710e5751e0fee6e6fa32590
 # Must be in sync with package version
-%define RUNC_COMMIT  12644e614e25b05da6fd08a38ffa0cfe1903fdec
+# Current commit-ID is ahead of git tag for CVE-2021-30465 fix. Remove it after version-bump.
+%define RUNC_COMMIT  14faf1c20948688a48edb9b41367ab07ac11ca91
+
+# CVE-2021-30465 patches on top of rc93
+Patch0:              runc-rc93-0001-libct-newInitConfig-nit.patch
+Patch1:              runc-rc93-0002-libct-rootfs-introduce-and-use-mountConfig.patch
+Patch2:              runc-rc93-0003-libct-rootfs-mountCgroupV2-minor-refactor.patch
+Patch3:              runc-rc93-0004-Fix-cgroup2-mount-for-rootless-case.patch
+Patch4:              runc-rc93-0005-rootfs-add-mount-destination-validation.patch
+
 Group:               Virtualization/Libraries
 Vendor:              VMware, Inc.
 Distribution:        Photon
@@ -39,6 +48,12 @@ Documentation for runc
 %setup -q -c
 mkdir -p "$(dirname "src/%{gopath_comp}")"
 mv %{name}-%{RUNC_VERSION} src/%{gopath_comp}
+cd src/%{gopath_comp}
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
 
 %build
 export GOPATH="$(pwd)"
@@ -61,6 +76,8 @@ make DESTDIR=%{buildroot} PREFIX=%{_prefix} BINDIR=%{_bindir} install install-ba
 %{_mandir}/man8/*
 
 %changelog
+*   Fri May 14 2021 Bo Gan <ganb@vmware.com> 1.0.0.rc93-2
+-   Fix for CVE-2021-30465
 *   Wed May 05 2021 Bo Gan <ganb@vmware.com> 1.0.0.rc93-1
 -   Bump up version to 1.0.0-rc93
 *   Thu Mar 25 2021 Piyush Gupta<gpiyush@vmware.com> 1.0.0.rc92-4
