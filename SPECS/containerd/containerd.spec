@@ -26,7 +26,7 @@ Requires:       libseccomp
 Requires:       systemd
 # containerd works only with a specific runc version
 # Refer to containerd/RUNC.md
-Requires:       runc = 1.0.0.rc92
+Requires:       runc = 1.0.0.rc93
 
 %description
 Containerd is an open source project. It is available as a daemon for Linux,
