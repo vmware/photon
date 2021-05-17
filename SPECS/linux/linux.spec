@@ -3,8 +3,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux
-Version:        4.19.189
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        4.19.190
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=cae611c9e5526a1d2f0a0994f82f13a748996ad1
+%define sha1 linux=ce0796f609b4d6696ddc42a8969b3884f75e73bd
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -1243,6 +1243,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 4.19.190-1
+-   Update to version 4.19.190
 *   Wed May 12 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-5
 -   Fix for CVE-2021-23133
 *   Mon May 10 2021 Ajay Kaher <akaher@vmware.com> 4.19.189-4

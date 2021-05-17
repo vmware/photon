@@ -1,0 +1,64 @@
+From 38eea246f4dfb86d41f8c905e774d22d2c093781 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Thu, 28 May 2020 14:35:12 +0200
+Subject: [PATCH 330/338] Bluetooth: Acquire sk_lock.slock without disabling
+ interrupts
+
+[ Upstream commit e6da0edc24eecef2f6964d92fa9044e1821deace ]
+
+There was a lockdep which led to commit
+   fad003b6c8e3d ("Bluetooth: Fix inconsistent lock state with RFCOMM")
+
+Lockdep noticed that `sk->sk_lock.slock' was acquired without disabling
+the softirq while the lock was also used in softirq context.
+Unfortunately the solution back then was to disable interrupts before
+acquiring the lock which however made lockdep happy.
+It would have been enough to simply disable the softirq. Disabling
+interrupts before acquiring a spinlock_t is not allowed on PREEMPT_RT
+because these locks are converted to 'sleeping' spinlocks.
+
+Use spin_lock_bh() in order to acquire the `sk_lock.slock'.
+
+Reported-by: Luis Claudio R. Goncalves <lclaudio@uudg.org>
+Reported-by: kbuild test robot <lkp@intel.com> [missing unlock]
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Tom Zanussi <zanussi@kernel.org>
+---
+ net/bluetooth/rfcomm/sock.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/net/bluetooth/rfcomm/sock.c b/net/bluetooth/rfcomm/sock.c
+index c044ff2f73e6..75bc8102cdd7 100644
+--- a/net/bluetooth/rfcomm/sock.c
++++ b/net/bluetooth/rfcomm/sock.c
+@@ -64,15 +64,13 @@ static void rfcomm_sk_data_ready(struct rfcomm_dlc *d, struct sk_buff *skb)
+ static void rfcomm_sk_state_change(struct rfcomm_dlc *d, int err)
+ {
+ 	struct sock *sk = d->owner, *parent;
+-	unsigned long flags;
+ 
+ 	if (!sk)
+ 		return;
+ 
+ 	BT_DBG("dlc %p state %ld err %d", d, d->state, err);
+ 
+-	local_irq_save(flags);
+-	bh_lock_sock(sk);
++	spin_lock_bh(&sk->sk_lock.slock);
+ 
+ 	if (err)
+ 		sk->sk_err = err;
+@@ -93,8 +91,7 @@ static void rfcomm_sk_state_change(struct rfcomm_dlc *d, int err)
+ 		sk->sk_state_change(sk);
+ 	}
+ 
+-	bh_unlock_sock(sk);
+-	local_irq_restore(flags);
++	spin_unlock_bh(&sk->sk_lock.slock);
+ 
+ 	if (parent && sock_flag(sk, SOCK_ZAPPED)) {
+ 		/* We have to drop DLC lock here, otherwise
+-- 
+2.31.1
+

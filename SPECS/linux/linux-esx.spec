@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.189
-Release:        6%{?kat_build:.kat}%{?dist}
+Version:        4.19.190
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=cae611c9e5526a1d2f0a0994f82f13a748996ad1
+%define sha1 linux=ce0796f609b4d6696ddc42a8969b3884f75e73bd
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -891,6 +891,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 4.19.190-1
+-   Update to version 4.19.190
 *   Wed May 12 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-6
 -   Fix for CVE-2021-23133
 *   Tue May 11 2021 Vivek Thampi <vithampi@vmware.com> 4.19.189-5

@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.189
+Version:        4.19.190
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt78
-Release:        4%{?kat_build:.%kat}%{?dist}
+%define rt_version rt79
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=cae611c9e5526a1d2f0a0994f82f13a748996ad1
+%define sha1 linux=ce0796f609b4d6696ddc42a8969b3884f75e73bd
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
@@ -454,7 +454,7 @@ Patch535:       0335-Linux-4.19.185-rt76-REBASE.patch
 Patch536:       0336-mm-slub-Don-t-resize-the-location-tracking-cache-on-.patch
 Patch537:       0337-locking-rwsem_rt-Add-__down_read_interruptible.patch
 # Keep rt_version matched up with this patch.
-Patch538:       0338-Linux-4.19.189-rt78-REBASE.patch
+Patch538:       0338-Linux-4.19.190-rt79-REBASE.patch
 
 
 #Photon Specific Changes
@@ -1117,6 +1117,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 4.19.190-1
+-   Update to version 4.19.190
 *   Wed May 12 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-4
 -   Fix for CVE-2021-23133
 *   Fri May 07 2021 Ankit Jain <ankitja@vmware.com> 4.19.189-3
