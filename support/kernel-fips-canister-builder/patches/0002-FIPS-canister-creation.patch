@@ -1,0 +1,1518 @@
+From f39f08830588a6fc9beb9f14217aed41dbbc888d Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Mon, 25 Jan 2021 19:34:10 -0800
+Subject: [PATCH 2/2] FIPS canister creation
+
+Canister creation patch.
+ - Makefile changes to generate canister binary (fips_canister.o)
+ - Move mutex API out of canister to the wrapper as it expands differently
+   depending on .config options. The difference is huge in -rt kernel.
+ - Use mutex instead of spinlock in canister. There is no difference to the
+   code that use it, but improvement for -rt kernel and simplification for
+   the wrapper.
+ - Move kernel memory alloc functions out of canister as their implementations
+   vary depending on .config options.
+ - Move cond_resched function to the wrapper.
+ - Add internal static functions to eliminate glue helpers calls.
+ - Redo DO_ONCE as it is not supported by integrity code.
+ - Initialize jitterentropy earlier.
+ - Do not use latent entropy GCC plugin for canister objects
+ - Do not check indirect call destination signatures from canister
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+---
+ arch/x86/crypto/aesni-intel_glue.c | 230 +++++++++++++++++++++++++++++++++----
+ crypto/Makefile                    |  99 ++++++++++++++++
+ crypto/algboss.c                   |   5 +-
+ crypto/ctr.c                       |   3 +-
+ crypto/drbg.c                      |  56 +++++----
+ crypto/ecc.c                       |   5 +-
+ crypto/ecdh.c                      |   5 +-
+ crypto/hmac.c                      |   3 +-
+ crypto/jitterentropy-kcapi.c       |  18 +--
+ crypto/rsa-pkcs1pad.c              |  13 ++-
+ crypto/testmgr.c                   | 108 +++++++++--------
+ crypto/xts.c                       |   3 +-
+ include/crypto/drbg.h              |   3 +-
+ 13 files changed, 433 insertions(+), 118 deletions(-)
+
+diff --git a/arch/x86/crypto/aesni-intel_glue.c b/arch/x86/crypto/aesni-intel_glue.c
+index f9a1d98e7534..28a9ebbe7f20 100644
+--- a/arch/x86/crypto/aesni-intel_glue.c
++++ b/arch/x86/crypto/aesni-intel_glue.c
+@@ -35,8 +35,11 @@
+ #include <linux/spinlock.h>
+ #ifdef CONFIG_X86_64
+ #include <asm/crypto/glue_helper.h>
++#include <crypto/gf128mul.h>
+ #endif
+ 
++void fcw_kernel_fpu_begin(void);
++void fcw_kernel_fpu_end(void);
+ 
+ #define AESNI_ALIGN	16
+ #define AESNI_ALIGN_ATTR __attribute__ ((__aligned__(AESNI_ALIGN)))
+@@ -319,9 +322,9 @@ static int aes_set_key_common(struct crypto_tfm *tfm, void *raw_ctx,
+ 	if (!crypto_simd_usable())
+ 		err = aes_expandkey(ctx, in_key, key_len);
+ 	else {
+-		kernel_fpu_begin();
++		fcw_kernel_fpu_begin();
+ 		err = aesni_set_key(ctx, in_key, key_len);
+-		kernel_fpu_end();
++		fcw_kernel_fpu_end();
+ 	}
+ 
+ 	return err;
+@@ -340,9 +343,9 @@ static void aesni_encrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
+ 	if (!crypto_simd_usable()) {
+ 		aes_encrypt(ctx, dst, src);
+ 	} else {
+-		kernel_fpu_begin();
++		fcw_kernel_fpu_begin();
+ 		aesni_enc(ctx, dst, src);
+-		kernel_fpu_end();
++		fcw_kernel_fpu_end();
+ 	}
+ }
+ 
+@@ -353,9 +356,9 @@ static void aesni_decrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
+ 	if (!crypto_simd_usable()) {
+ 		aes_decrypt(ctx, dst, src);
+ 	} else {
+-		kernel_fpu_begin();
++		fcw_kernel_fpu_begin();
+ 		aesni_dec(ctx, dst, src);
+-		kernel_fpu_end();
++		fcw_kernel_fpu_end();
+ 	}
+ }
+ 
+@@ -376,14 +379,14 @@ static int ecb_encrypt(struct skcipher_request *req)
+ 
+ 	err = skcipher_walk_virt(&walk, req, true);
+ 
+-	kernel_fpu_begin();
++	fcw_kernel_fpu_begin();
+ 	while ((nbytes = walk.nbytes)) {
+ 		aesni_ecb_enc(ctx, walk.dst.virt.addr, walk.src.virt.addr,
+ 			      nbytes & AES_BLOCK_MASK);
+ 		nbytes &= AES_BLOCK_SIZE - 1;
+ 		err = skcipher_walk_done(&walk, nbytes);
+ 	}
+-	kernel_fpu_end();
++	fcw_kernel_fpu_end();
+ 
+ 	return err;
+ }
+@@ -398,14 +401,14 @@ static int ecb_decrypt(struct skcipher_request *req)
+ 
+ 	err = skcipher_walk_virt(&walk, req, true);
+ 
+-	kernel_fpu_begin();
++	fcw_kernel_fpu_begin();
+ 	while ((nbytes = walk.nbytes)) {
+ 		aesni_ecb_dec(ctx, walk.dst.virt.addr, walk.src.virt.addr,
+ 			      nbytes & AES_BLOCK_MASK);
+ 		nbytes &= AES_BLOCK_SIZE - 1;
+ 		err = skcipher_walk_done(&walk, nbytes);
+ 	}
+-	kernel_fpu_end();
++	fcw_kernel_fpu_end();
+ 
+ 	return err;
+ }
+@@ -420,14 +423,14 @@ static int cbc_encrypt(struct skcipher_request *req)
+ 
+ 	err = skcipher_walk_virt(&walk, req, true);
+ 
+-	kernel_fpu_begin();
++	fcw_kernel_fpu_begin();
+ 	while ((nbytes = walk.nbytes)) {
+ 		aesni_cbc_enc(ctx, walk.dst.virt.addr, walk.src.virt.addr,
+ 			      nbytes & AES_BLOCK_MASK, walk.iv);
+ 		nbytes &= AES_BLOCK_SIZE - 1;
+ 		err = skcipher_walk_done(&walk, nbytes);
+ 	}
+-	kernel_fpu_end();
++	fcw_kernel_fpu_end();
+ 
+ 	return err;
+ }
+@@ -442,14 +445,14 @@ static int cbc_decrypt(struct skcipher_request *req)
+ 
+ 	err = skcipher_walk_virt(&walk, req, true);
+ 
+-	kernel_fpu_begin();
++	fcw_kernel_fpu_begin();
+ 	while ((nbytes = walk.nbytes)) {
+ 		aesni_cbc_dec(ctx, walk.dst.virt.addr, walk.src.virt.addr,
+ 			      nbytes & AES_BLOCK_MASK, walk.iv);
+ 		nbytes &= AES_BLOCK_SIZE - 1;
+ 		err = skcipher_walk_done(&walk, nbytes);
+ 	}
+-	kernel_fpu_end();
++	fcw_kernel_fpu_end();
+ 
+ 	return err;
+ }
+@@ -497,7 +500,7 @@ static int ctr_crypt(struct skcipher_request *req)
+ 
+ 	err = skcipher_walk_virt(&walk, req, true);
+ 
+-	kernel_fpu_begin();
++	fcw_kernel_fpu_begin();
+ 	while ((nbytes = walk.nbytes) >= AES_BLOCK_SIZE) {
+ 		aesni_ctr_enc_tfm(ctx, walk.dst.virt.addr, walk.src.virt.addr,
+ 			              nbytes & AES_BLOCK_MASK, walk.iv);
+@@ -508,7 +511,7 @@ static int ctr_crypt(struct skcipher_request *req)
+ 		ctr_crypt_final(ctx, &walk);
+ 		err = skcipher_walk_done(&walk, 0);
+ 	}
+-	kernel_fpu_end();
++	fcw_kernel_fpu_end();
+ 
+ 	return err;
+ }
+@@ -536,15 +539,194 @@ static int xts_aesni_setkey(struct crypto_skcipher *tfm, const u8 *key,
+ 				  key + keylen, keylen);
+ }
+ 
++static void x86_aesni_glue_xts_crypt_128bit_one(const void *ctx, u8 *dst, const u8 *src,
++			       le128 *iv, common_glue_func_t fn)
++{
++	le128 ivblk = *iv;
++
++	/* generate next IV */
++	gf128mul_x_ble(iv, &ivblk);
++
++	/* CC <- T xor C */
++	u128_xor((u128 *)dst, (const u128 *)src, (u128 *)&ivblk);
++
++	/* PP <- D(Key2,CC) */
++	fn(ctx, dst, dst);
++
++	/* P <- T xor PP */
++	u128_xor((u128 *)dst, (u128 *)dst, (u128 *)&ivblk);
++}
++
++static unsigned int __x86_aesni_glue_xts_req_128bit(const struct common_glue_ctx *gctx,
++					  void *ctx,
++					  struct skcipher_walk *walk)
++{
++	const unsigned int bsize = 128 / 8;
++	unsigned int nbytes = walk->nbytes;
++	u128 *src = walk->src.virt.addr;
++	u128 *dst = walk->dst.virt.addr;
++	unsigned int num_blocks, func_bytes;
++	unsigned int i;
++
++	/* Process multi-block batch */
++	for (i = 0; i < gctx->num_funcs; i++) {
++		num_blocks = gctx->funcs[i].num_blocks;
++		func_bytes = bsize * num_blocks;
++
++		if (nbytes >= func_bytes) {
++			do {
++				gctx->funcs[i].fn_u.xts(ctx, (u8 *)dst,
++							(const u8 *)src,
++							walk->iv);
++
++				src += num_blocks;
++				dst += num_blocks;
++				nbytes -= func_bytes;
++			} while (nbytes >= func_bytes);
++
++			if (nbytes < bsize)
++				goto done;
++		}
++	}
++
++done:
++	return nbytes;
++}
++
++static bool __glue_fpu_begin(unsigned int bsize, int fpu_blocks_limit,
++				  struct skcipher_walk *walk,
++				  bool fpu_enabled, unsigned int nbytes)
++{
++	if (likely(fpu_blocks_limit < 0))
++		return false;
++
++	if (fpu_enabled)
++		return true;
++
++	/*
++	 * Vector-registers are only used when chunk to be processed is large
++	 * enough, so do not enable FPU until it is necessary.
++	 */
++	if (nbytes < bsize * (unsigned int)fpu_blocks_limit)
++		return false;
++
++	/* prevent sleeping if FPU is in use */
++	skcipher_walk_atomise(walk);
++
++	fcw_kernel_fpu_begin();
++	return true;
++}
++
++static void __glue_fpu_end(bool fpu_enabled)
++{
++	if (fpu_enabled)
++		fcw_kernel_fpu_end();
++}
++
++static int x86_aesni_glue_xts_req_128bit(const struct common_glue_ctx *gctx,
++			struct skcipher_request *req,
++			common_glue_func_t tweak_fn, void *tweak_ctx,
++			void *crypt_ctx, bool decrypt)
++{
++	const bool cts = (req->cryptlen % XTS_BLOCK_SIZE);
++	const unsigned int bsize = 128 / 8;
++	struct skcipher_request subreq;
++	struct skcipher_walk walk;
++	bool fpu_enabled = false;
++	unsigned int nbytes, tail;
++	int err;
++
++	if (req->cryptlen < XTS_BLOCK_SIZE)
++		return -EINVAL;
++
++	if (unlikely(cts)) {
++		struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
++
++		tail = req->cryptlen % XTS_BLOCK_SIZE + XTS_BLOCK_SIZE;
++
++		skcipher_request_set_tfm(&subreq, tfm);
++		skcipher_request_set_callback(&subreq,
++					      crypto_skcipher_get_flags(tfm),
++					      NULL, NULL);
++		skcipher_request_set_crypt(&subreq, req->src, req->dst,
++					   req->cryptlen - tail, req->iv);
++		req = &subreq;
++	}
++
++	err = skcipher_walk_virt(&walk, req, false);
++	nbytes = walk.nbytes;
++	if (err)
++		return err;
++
++	/* set minimum length to bsize, for tweak_fn */
++	fpu_enabled = __glue_fpu_begin(bsize, gctx->fpu_blocks_limit,
++				     &walk, fpu_enabled,
++				     nbytes < bsize ? bsize : nbytes);
++
++	/* calculate first value of T */
++	tweak_fn(tweak_ctx, walk.iv, walk.iv);
++
++	while (nbytes) {
++		nbytes = __x86_aesni_glue_xts_req_128bit(gctx, crypt_ctx, &walk);
++
++		err = skcipher_walk_done(&walk, nbytes);
++		nbytes = walk.nbytes;
++	}
++
++	if (unlikely(cts)) {
++		u8 *next_tweak, *final_tweak = req->iv;
++		struct scatterlist *src, *dst;
++		struct scatterlist s[2], d[2];
++		le128 b[2];
++
++		dst = src = scatterwalk_ffwd(s, req->src, req->cryptlen);
++		if (req->dst != req->src)
++			dst = scatterwalk_ffwd(d, req->dst, req->cryptlen);
++
++		if (decrypt) {
++			next_tweak = memcpy(b, req->iv, XTS_BLOCK_SIZE);
++			gf128mul_x_ble(b, b);
++		} else {
++			next_tweak = req->iv;
++		}
++
++		skcipher_request_set_crypt(&subreq, src, dst, XTS_BLOCK_SIZE,
++					   next_tweak);
++
++		err = skcipher_walk_virt(&walk, req, false) ?:
++		      skcipher_walk_done(&walk,
++				__x86_aesni_glue_xts_req_128bit(gctx, crypt_ctx, &walk));
++		if (err)
++			goto out;
++
++		scatterwalk_map_and_copy(b, dst, 0, XTS_BLOCK_SIZE, 0);
++		memcpy(b + 1, b, tail - XTS_BLOCK_SIZE);
++		scatterwalk_map_and_copy(b, src, XTS_BLOCK_SIZE,
++					 tail - XTS_BLOCK_SIZE, 0);
++		scatterwalk_map_and_copy(b, dst, 0, tail, 1);
++
++		skcipher_request_set_crypt(&subreq, dst, dst, XTS_BLOCK_SIZE,
++					   final_tweak);
++
++		err = skcipher_walk_virt(&walk, req, false) ?:
++		      skcipher_walk_done(&walk,
++				__x86_aesni_glue_xts_req_128bit(gctx, crypt_ctx, &walk));
++	}
++
++out:
++	__glue_fpu_end(fpu_enabled);
++
++	return err;
++}
+ 
+ static void aesni_xts_enc(const void *ctx, u8 *dst, const u8 *src, le128 *iv)
+ {
+-	glue_xts_crypt_128bit_one(ctx, dst, src, iv, aesni_enc);
++	x86_aesni_glue_xts_crypt_128bit_one(ctx, dst, src, iv, aesni_enc);
+ }
+ 
+ static void aesni_xts_dec(const void *ctx, u8 *dst, const u8 *src, le128 *iv)
+ {
+-	glue_xts_crypt_128bit_one(ctx, dst, src, iv, aesni_dec);
++	x86_aesni_glue_xts_crypt_128bit_one(ctx, dst, src, iv, aesni_dec);
+ }
+ 
+ static void aesni_xts_enc8(const void *ctx, u8 *dst, const u8 *src, le128 *iv)
+@@ -588,7 +770,7 @@ static int xts_encrypt(struct skcipher_request *req)
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct aesni_xts_ctx *ctx = crypto_skcipher_ctx(tfm);
+ 
+-	return glue_xts_req_128bit(&aesni_enc_xts, req, aesni_enc,
++	return x86_aesni_glue_xts_req_128bit(&aesni_enc_xts, req, aesni_enc,
+ 				   aes_ctx(ctx->raw_tweak_ctx),
+ 				   aes_ctx(ctx->raw_crypt_ctx),
+ 				   false);
+@@ -599,7 +781,7 @@ static int xts_decrypt(struct skcipher_request *req)
+ 	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+ 	struct aesni_xts_ctx *ctx = crypto_skcipher_ctx(tfm);
+ 
+-	return glue_xts_req_128bit(&aesni_dec_xts, req, aesni_enc,
++	return x86_aesni_glue_xts_req_128bit(&aesni_dec_xts, req, aesni_enc,
+ 				   aes_ctx(ctx->raw_tweak_ctx),
+ 				   aes_ctx(ctx->raw_crypt_ctx),
+ 				   true);
+@@ -679,6 +861,8 @@ static int generic_gcmaes_set_authsize(struct crypto_aead *tfm,
+ 	return 0;
+ }
+ 
++extern void *fcw_kmalloc(size_t size, gfp_t flags);
++
+ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
+ 			      unsigned int assoclen, u8 *hash_subkey,
+ 			      u8 *iv, void *aes_ctx)
+@@ -717,7 +901,7 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
+ 		assoc = scatterwalk_map(&assoc_sg_walk);
+ 	} else {
+ 		/* assoc can be any length, so must be on heap */
+-		assocmem = kmalloc(assoclen, GFP_ATOMIC);
++		assocmem = fcw_kmalloc(assoclen, GFP_ATOMIC);
+ 		if (unlikely(!assocmem))
+ 			return -ENOMEM;
+ 		assoc = assocmem;
+@@ -735,7 +919,7 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
+ 		}
+ 	}
+ 
+-	kernel_fpu_begin();
++	fcw_kernel_fpu_begin();
+ 	gcm_tfm->init(aes_ctx, data, iv, hash_subkey, assoc, assoclen);
+ 	if (req->src != req->dst) {
+ 		while (left) {
+@@ -780,7 +964,7 @@ static int gcmaes_crypt_by_sg(bool enc, struct aead_request *req,
+ 		}
+ 	}
+ 	gcm_tfm->finalize(aes_ctx, data, authTag, auth_tag_len);
+-	kernel_fpu_end();
++	fcw_kernel_fpu_end();
+ 
+ 	if (!assocmem)
+ 		scatterwalk_unmap(assoc);
+diff --git a/crypto/Makefile b/crypto/Makefile
+index af4cdacf7506..8780a1acc2b2 100644
+--- a/crypto/Makefile
++++ b/crypto/Makefile
+@@ -40,6 +40,13 @@ rsa_generic-y += rsaprivkey.asn1.o
+ rsa_generic-y += rsa.o
+ rsa_generic-y += rsa_helper.o
+ rsa_generic-y += rsa-pkcs1pad.o
++canister := $(rsa_generic-y)
++# Disable latent entropy plugin and rap plugin for all canister objects.
++CFLAGS_REMOVE_rsapubkey.asn1.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++CFLAGS_REMOVE_rsaprivkey.asn1.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++CFLAGS_REMOVE_rsa.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++CFLAGS_REMOVE_rsa_helper.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++CFLAGS_REMOVE_rsa-pkcs1pad.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+ 
+ $(obj)/sm2signature.asn1.o: $(obj)/sm2signature.asn1.c $(obj)/sm2signature.asn1.h
+ $(obj)/sm2.o: $(obj)/sm2signature.asn1.h
+@@ -54,11 +61,16 @@ crypto_acompress-y += scompress.o
+ obj-$(CONFIG_CRYPTO_ACOMP2) += crypto_acompress.o
+ 
+ cryptomgr-y := algboss.o testmgr.o
++canister += $(cryptomgr-y)
++CFLAGS_REMOVE_algboss.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++CFLAGS_REMOVE_testmgr.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+ 
+ obj-$(CONFIG_CRYPTO_USER) += crypto_user.o
+ crypto_user-y := crypto_user_base.o
+ crypto_user-$(CONFIG_CRYPTO_STATS) += crypto_user_stat.o
+ obj-$(CONFIG_CRYPTO_CMAC) += cmac.o
++canister += hmac.o
++CFLAGS_REMOVE_hmac.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+ obj-$(CONFIG_CRYPTO_VMAC) += vmac.o
+ obj-$(CONFIG_CRYPTO_XCBC) += xcbc.o
+ obj-$(CONFIG_CRYPTO_NULL2) += crypto_null.o
+@@ -68,6 +80,12 @@ obj-$(CONFIG_CRYPTO_RMD128) += rmd128.o
+ obj-$(CONFIG_CRYPTO_RMD160) += rmd160.o
+ obj-$(CONFIG_CRYPTO_RMD256) += rmd256.o
+ obj-$(CONFIG_CRYPTO_RMD320) += rmd320.o
++canister += sha1_generic.o
++canister += sha256_generic.o
++canister += sha512_generic.o
++CFLAGS_REMOVE_sha1_generic.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++CFLAGS_REMOVE_sha256_generic.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++CFLAGS_REMOVE_sha512_generic.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+ obj-$(CONFIG_CRYPTO_SHA3) += sha3_generic.o
+ obj-$(CONFIG_CRYPTO_SM3) += sm3_generic.o
+ obj-$(CONFIG_CRYPTO_STREEBOG) += streebog_generic.o
+@@ -77,10 +95,18 @@ obj-$(CONFIG_CRYPTO_TGR192) += tgr192.o
+ obj-$(CONFIG_CRYPTO_BLAKE2B) += blake2b_generic.o
+ obj-$(CONFIG_CRYPTO_BLAKE2S) += blake2s_generic.o
+ obj-$(CONFIG_CRYPTO_GF128MUL) += gf128mul.o
++canister += ecb.o
++canister += cbc.o
++CFLAGS_REMOVE_ecb.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++CFLAGS_REMOVE_cbc.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+ obj-$(CONFIG_CRYPTO_CFB) += cfb.o
+ obj-$(CONFIG_CRYPTO_PCBC) += pcbc.o
+ obj-$(CONFIG_CRYPTO_CTS) += cts.o
+ obj-$(CONFIG_CRYPTO_LRW) += lrw.o
++canister += xts.o
++canister += ctr.o
++CFLAGS_REMOVE_xts.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++CFLAGS_REMOVE_ctr.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+ obj-$(CONFIG_CRYPTO_KEYWRAP) += keywrap.o
+ obj-$(CONFIG_CRYPTO_ADIANTUM) += adiantum.o
+ obj-$(CONFIG_CRYPTO_NHPOLY1305) += nhpoly1305.o
+@@ -110,6 +136,8 @@ endif
+ 
+ obj-$(CONFIG_CRYPTO_PCRYPT) += pcrypt.o
+ obj-$(CONFIG_CRYPTO_CRYPTD) += cryptd.o
++canister += des_generic.o
++CFLAGS_REMOVE_des_generic.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+ obj-$(CONFIG_CRYPTO_FCRYPT) += fcrypt.o
+ obj-$(CONFIG_CRYPTO_BLOWFISH) += blowfish_generic.o
+ obj-$(CONFIG_CRYPTO_BLOWFISH_COMMON) += blowfish_common.o
+@@ -117,7 +145,9 @@ obj-$(CONFIG_CRYPTO_TWOFISH) += twofish_generic.o
+ obj-$(CONFIG_CRYPTO_TWOFISH_COMMON) += twofish_common.o
+ obj-$(CONFIG_CRYPTO_SERPENT) += serpent_generic.o
+ CFLAGS_serpent_generic.o := $(call cc-option,-fsched-pressure)  # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=79149
++canister += aes_generic.o
+ CFLAGS_aes_generic.o := $(call cc-option,-fno-code-hoisting) # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83356
++CFLAGS_REMOVE_aes_generic.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+ obj-$(CONFIG_CRYPTO_SM4) += sm4_generic.o
+ obj-$(CONFIG_CRYPTO_AES_TI) += aes_ti.o
+ obj-$(CONFIG_CRYPTO_CAMELLIA) += camellia_generic.o
+@@ -145,10 +175,15 @@ obj-$(CONFIG_CRYPTO_XXHASH) += xxhash_generic.o
+ obj-$(CONFIG_CRYPTO_842) += 842.o
+ obj-$(CONFIG_CRYPTO_RNG2) += rng.o
+ obj-$(CONFIG_CRYPTO_ANSI_CPRNG) += ansi_cprng.o
++canister += drbg.o
++CFLAGS_REMOVE_drbg.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+ CFLAGS_jitterentropy.o = -O0
+ KASAN_SANITIZE_jitterentropy.o = n
+ UBSAN_SANITIZE_jitterentropy.o = n
+ jitterentropy_rng-y := jitterentropy.o jitterentropy-kcapi.o
++canister += $(jitterentropy_rng-y)
++CFLAGS_REMOVE_jitterentropy.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++CFLAGS_REMOVE_jitterentropy-kcapi.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+ obj-$(CONFIG_CRYPTO_TEST) += tcrypt.o
+ obj-$(CONFIG_CRYPTO_GHASH) += ghash-generic.o
+ obj-$(CONFIG_CRYPTO_USER_API) += af_alg.o
+@@ -158,11 +193,16 @@ obj-$(CONFIG_CRYPTO_USER_API_RNG) += algif_rng.o
+ obj-$(CONFIG_CRYPTO_USER_API_AEAD) += algif_aead.o
+ obj-$(CONFIG_CRYPTO_ZSTD) += zstd.o
+ obj-$(CONFIG_CRYPTO_OFB) += ofb.o
++canister += ecc.o
++CFLAGS_REMOVE_ecc.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+ obj-$(CONFIG_CRYPTO_ESSIV) += essiv.o
+ obj-$(CONFIG_CRYPTO_CURVE25519) += curve25519-generic.o
+ 
+ ecdh_generic-y += ecdh.o
+ ecdh_generic-y += ecdh_helper.o
++canister += $(ecdh_generic-y)
++CFLAGS_REMOVE_ecdh.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++CFLAGS_REMOVE_ecdh_helper.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
+ 
+ $(obj)/ecrdsa_params.asn1.o: $(obj)/ecrdsa_params.asn1.c $(obj)/ecrdsa_params.asn1.h
+ $(obj)/ecrdsa_pub_key.asn1.o: $(obj)/ecrdsa_pub_key.asn1.c $(obj)/ecrdsa_pub_key.asn1.h
+@@ -182,6 +222,65 @@ obj-$(CONFIG_CRYPTO_HASH_INFO) += hash_info.o
+ crypto_simd-y := simd.o
+ obj-$(CONFIG_CRYPTO_SIMD) += crypto_simd.o
+ 
++
++aesni-intel-y := aesni-intel_asm.o aesni-intel_glue.o
++aesni-intel-$(CONFIG_64BIT) += aesni-intel_avx-x86_64.o aes_ctrby8_avx-x86_64.o
++OBJECT_FILES_NON_STANDARD_x86-aesni-intel_avx-x86_64.o := y
++CFLAGS_REMOVE_x86-aesni-intel_glue.o = -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++
++crypto/x86-%.o: arch/x86/crypto/%.c $(recordmcount_source) $(objtool_dep)
++	$(call cmd,force_checksrc)
++	$(call if_changed_rule,cc_o_c)
++
++crypto/x86-%.o: arch/x86/crypto/%.S $(objtool_dep)
++	$(call if_changed_rule,as_o_S)
++
++lib-crypto-y := aes.o des.o sha256.o
++CFLAGS_REMOVE_lib-crypto-aes.o = -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++CFLAGS_REMOVE_lib-crypto-des.o = -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++CFLAGS_REMOVE_lib-crypto-sha256.o = -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++crypto/lib-crypto-%.o: lib/crypto/%.c $(recordmcount_source) $(objtool_dep)
++	$(call cmd,force_checksrc)
++	$(call if_changed_rule,cc_o_c)
++
++lib-generic-y := sha1.o
++CFLAGS_REMOVE_lib-generic-sha1.o = -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++crypto/lib-generic-%.o: lib/%.c $(recordmcount_source) $(objtool_dep)
++	$(call cmd,force_checksrc)
++	$(call if_changed_rule,cc_o_c)
++
++canister += crypto_self_test.o
++CFLAGS_crypto_self_test.o += -DFIPS_NOT_ALLOWED=fcw_fips_not_allowed_alg
++CFLAGS_REMOVE_crypto_self_test.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++
++canister += fips_integrity.o
++CFLAGS_REMOVE_fips_integrity.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++
++extra-y += $(canister)
++$(obj)/canister.o: $(addprefix crypto/x86-,$(aesni-intel-y)) $(addprefix crypto/lib-crypto-,$(lib-crypto-y)) $(addprefix crypto/lib-generic-,$(lib-generic-y)) $(addprefix $(obj)/,$(canister))
++	$(LD) -T $(obj)/canister_combine.lds -r $^ -o $@
++
++hostprogs := gen_canister_relocs
++HOSTLDLIBS_gen_canister_relocs = -lelf
++HOSTCFLAGS_gen_canister_relocs = -g
++
++quiet_cmd_gencr = GENCR   $@
++cmd_gencr = $(obj)/gen_canister_relocs $< $@ $(obj)/canister_markers.lds
++$(src)/canister_relocs.c: $(obj)/canister.o $(obj)/gen_canister_relocs FORCE
++	$(call if_changed,gencr)
++clean-files += $(src)/canister_relocs.c
++targets += canister_relocs.o
++CFLAGS_REMOVE_canister_relocs.o += -DLATENT_ENTROPY_PLUGIN -fplugin=./scripts/gcc-plugins/latent_entropy_plugin.so -fplugin-arg-rap_plugin-check=call
++$(obj)/canister_markers.lds: $(src)/canister_relocs.c
++
++clean-files += $(obj)/canister_markers.lds
++
++quiet_cmd_update_hmac = HMAC    $@
++cmd_update_hmac = $(obj)/update_canister_hmac.sh $@ $(obj)/canister_markers.lds
++$(obj)/fips_canister.o: $(obj)/canister.o $(obj)/canister_relocs.o $(obj)/canister_markers.lds
++	$(LD) -T $(obj)/canister_markers.lds -r $(obj)/canister.o $(obj)/canister_relocs.o -o $@
++	$(call if_changed,update_hmac)
++
+ obj-$(CONFIG_CRYPTO_FIPS) += fips_canister_wrapper.o fips_canister.o
+ 
+ ifdef CONFIG_CRYPTO_FIPS
+diff --git a/crypto/algboss.c b/crypto/algboss.c
+index 5ebccbd6b74e..a21da00405da 100644
+--- a/crypto/algboss.c
++++ b/crypto/algboss.c
+@@ -19,6 +19,7 @@
+ #include <linux/string.h>
+ 
+ #include "internal.h"
++#include "fips_canister_wrapper.h"
+ 
+ struct cryptomgr_param {
+ 	struct rtattr *tb[CRYPTO_MAX_ATTRS + 2];
+@@ -89,7 +90,7 @@ static int cryptomgr_schedule_probe(struct crypto_larval *larval)
+ 	if (!try_module_get(THIS_MODULE))
+ 		goto err;
+ 
+-	param = kzalloc(sizeof(*param), GFP_KERNEL);
++	param = fcw_kzalloc(sizeof(*param), GFP_KERNEL);
+ 	if (!param)
+ 		goto err_put_module;
+ 
+@@ -221,7 +222,7 @@ static int cryptomgr_schedule_test(struct crypto_alg *alg)
+ 	if (!try_module_get(THIS_MODULE))
+ 		goto err;
+ 
+-	param = kzalloc(sizeof(*param), GFP_KERNEL);
++	param = fcw_kzalloc(sizeof(*param), GFP_KERNEL);
+ 	if (!param)
+ 		goto err_put_module;
+ 
+diff --git a/crypto/ctr.c b/crypto/ctr.c
+index c39fcffba27f..e9a4d109e1e7 100644
+--- a/crypto/ctr.c
++++ b/crypto/ctr.c
+@@ -13,6 +13,7 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/slab.h>
++#include "fips_canister_wrapper.h"
+ 
+ struct crypto_rfc3686_ctx {
+ 	struct crypto_skcipher *child;
+@@ -266,7 +267,7 @@ static int crypto_rfc3686_create(struct crypto_template *tmpl,
+ 	if (err)
+ 		return err;
+ 
+-	inst = kzalloc(sizeof(*inst) + sizeof(*spawn), GFP_KERNEL);
++	inst = fcw_kzalloc(sizeof(*inst) + sizeof(*spawn), GFP_KERNEL);
+ 	if (!inst)
+ 		return -ENOMEM;
+ 
+diff --git a/crypto/drbg.c b/crypto/drbg.c
+index 3132967a1749..3e8e3f87eddb 100644
+--- a/crypto/drbg.c
++++ b/crypto/drbg.c
+@@ -99,6 +99,7 @@
+ 
+ #include <crypto/drbg.h>
+ #include <linux/kernel.h>
++#include "fips_canister_wrapper.h"
+ 
+ /***************************************************************
+  * Backend cipher definitions available to DRBG
+@@ -1081,7 +1082,7 @@ static void drbg_async_seed(struct work_struct *work)
+ 	drbg_string_fill(&data, entropy, entropylen);
+ 	list_add_tail(&data.list, &seedlist);
+ 
+-	mutex_lock(&drbg->drbg_mutex);
++	fcw_mutex_lock(drbg->drbg_mutex);
+ 
+ 	ret = drbg_get_random_bytes(drbg, entropy, entropylen);
+ 	if (ret)
+@@ -1098,7 +1099,7 @@ static void drbg_async_seed(struct work_struct *work)
+ 		drbg->reseed_threshold = drbg_max_requests(drbg);
+ 
+ unlock:
+-	mutex_unlock(&drbg->drbg_mutex);
++	fcw_mutex_unlock(drbg->drbg_mutex);
+ 
+ 	memzero_explicit(entropy, entropylen);
+ }
+@@ -1270,13 +1271,13 @@ static inline int drbg_alloc_state(struct drbg_state *drbg)
+ 	if (ret < 0)
+ 		goto err;
+ 
+-	drbg->Vbuf = kmalloc(drbg_statelen(drbg) + ret, GFP_KERNEL);
++	drbg->Vbuf = fcw_kmalloc(drbg_statelen(drbg) + ret, GFP_KERNEL);
+ 	if (!drbg->Vbuf) {
+ 		ret = -ENOMEM;
+ 		goto fini;
+ 	}
+ 	drbg->V = PTR_ALIGN(drbg->Vbuf, ret + 1);
+-	drbg->Cbuf = kmalloc(drbg_statelen(drbg) + ret, GFP_KERNEL);
++	drbg->Cbuf = fcw_kmalloc(drbg_statelen(drbg) + ret, GFP_KERNEL);
+ 	if (!drbg->Cbuf) {
+ 		ret = -ENOMEM;
+ 		goto fini;
+@@ -1295,7 +1296,7 @@ static inline int drbg_alloc_state(struct drbg_state *drbg)
+ 		sb_size = drbg_statelen(drbg) + drbg_blocklen(drbg);
+ 
+ 	if (0 < sb_size) {
+-		drbg->scratchpadbuf = kzalloc(sb_size + ret, GFP_KERNEL);
++		drbg->scratchpadbuf = fcw_kzalloc(sb_size + ret, GFP_KERNEL);
+ 		if (!drbg->scratchpadbuf) {
+ 			ret = -ENOMEM;
+ 			goto fini;
+@@ -1304,7 +1305,7 @@ static inline int drbg_alloc_state(struct drbg_state *drbg)
+ 	}
+ 
+ 	if (IS_ENABLED(CONFIG_CRYPTO_FIPS)) {
+-		drbg->prev = kzalloc(drbg_sec_strength(drbg->core->flags),
++		drbg->prev = fcw_kzalloc(drbg_sec_strength(drbg->core->flags),
+ 				     GFP_KERNEL);
+ 		if (!drbg->prev) {
+ 			ret = -ENOMEM;
+@@ -1480,9 +1481,9 @@ static int drbg_generate_long(struct drbg_state *drbg,
+ 		unsigned int chunk = 0;
+ 		slice = ((buflen - len) / drbg_max_request_bytes(drbg));
+ 		chunk = slice ? drbg_max_request_bytes(drbg) : (buflen - len);
+-		mutex_lock(&drbg->drbg_mutex);
++		fcw_mutex_lock(drbg->drbg_mutex);
+ 		err = drbg_generate(drbg, buf + len, chunk, addtl);
+-		mutex_unlock(&drbg->drbg_mutex);
++		fcw_mutex_unlock(drbg->drbg_mutex);
+ 		if (0 > err)
+ 			return err;
+ 		len += chunk;
+@@ -1495,7 +1496,7 @@ static void drbg_schedule_async_seed(struct random_ready_callback *rdy)
+ 	struct drbg_state *drbg = container_of(rdy, struct drbg_state,
+ 					       random_ready);
+ 
+-	schedule_work(&drbg->seed_work);
++	fcw_schedule_work(&drbg->seed_work);
+ }
+ 
+ static int drbg_prepare_hrng(struct drbg_state *drbg)
+@@ -1562,7 +1563,7 @@ static int drbg_instantiate(struct drbg_state *drbg, struct drbg_string *pers,
+ 
+ 	pr_devel("DRBG: Initializing DRBG core %d with prediction resistance "
+ 		 "%s\n", coreref, pr ? "enabled" : "disabled");
+-	mutex_lock(&drbg->drbg_mutex);
++	fcw_mutex_lock(drbg->drbg_mutex);
+ 
+ 	/* 9.1 step 1 is implicit with the selected DRBG type */
+ 
+@@ -1604,15 +1605,15 @@ static int drbg_instantiate(struct drbg_state *drbg, struct drbg_string *pers,
+ 	if (ret && !reseed)
+ 		goto free_everything;
+ 
+-	mutex_unlock(&drbg->drbg_mutex);
++	fcw_mutex_unlock(drbg->drbg_mutex);
+ 	return ret;
+ 
+ unlock:
+-	mutex_unlock(&drbg->drbg_mutex);
++	fcw_mutex_unlock(drbg->drbg_mutex);
+ 	return ret;
+ 
+ free_everything:
+-	mutex_unlock(&drbg->drbg_mutex);
++	fcw_mutex_unlock(drbg->drbg_mutex);
+ 	drbg_uninstantiate(drbg);
+ 	return ret;
+ }
+@@ -1656,9 +1657,9 @@ static void drbg_kcapi_set_entropy(struct crypto_rng *tfm,
+ {
+ 	struct drbg_state *drbg = crypto_rng_ctx(tfm);
+ 
+-	mutex_lock(&drbg->drbg_mutex);
++	fcw_mutex_lock(drbg->drbg_mutex);
+ 	drbg_string_fill(&drbg->test_data, data, len);
+-	mutex_unlock(&drbg->drbg_mutex);
++	fcw_mutex_unlock(drbg->drbg_mutex);
+ }
+ 
+ /***************************************************************
+@@ -1683,7 +1684,7 @@ static int drbg_init_hash_kernel(struct drbg_state *drbg)
+ 		return PTR_ERR(tfm);
+ 	}
+ 	BUG_ON(drbg_blocklen(drbg) != crypto_shash_digestsize(tfm));
+-	sdesc = kzalloc(sizeof(struct shash_desc) + crypto_shash_descsize(tfm),
++	sdesc = fcw_kzalloc(sizeof(struct shash_desc) + crypto_shash_descsize(tfm),
+ 			GFP_KERNEL);
+ 	if (!sdesc) {
+ 		crypto_free_shash(tfm);
+@@ -1783,7 +1784,7 @@ static int drbg_init_sym_kernel(struct drbg_state *drbg)
+ 	drbg->ctr_handle = sk_tfm;
+ 	crypto_init_wait(&drbg->ctr_wait);
+ 
+-	req = skcipher_request_alloc(sk_tfm, GFP_KERNEL);
++	req = fcw_skcipher_request_alloc(sk_tfm, GFP_KERNEL);
+ 	if (!req) {
+ 		pr_info("DRBG: could not allocate request queue\n");
+ 		drbg_fini_sym_kernel(drbg);
+@@ -1795,7 +1796,7 @@ static int drbg_init_sym_kernel(struct drbg_state *drbg)
+ 					crypto_req_done, &drbg->ctr_wait);
+ 
+ 	alignmask = crypto_skcipher_alignmask(sk_tfm);
+-	drbg->outscratchpadbuf = kmalloc(DRBG_OUTSCRATCHLEN + alignmask,
++	drbg->outscratchpadbuf = fcw_kmalloc(DRBG_OUTSCRATCHLEN + alignmask,
+ 					 GFP_KERNEL);
+ 	if (!drbg->outscratchpadbuf) {
+ 		drbg_fini_sym_kernel(drbg);
+@@ -1923,14 +1924,19 @@ static int drbg_kcapi_init(struct crypto_tfm *tfm)
+ {
+ 	struct drbg_state *drbg = crypto_tfm_ctx(tfm);
+ 
+-	mutex_init(&drbg->drbg_mutex);
++	drbg->drbg_mutex = fcw_mutex_init();
++	if (!drbg->drbg_mutex)
++		return -ENOMEM;
+ 
+ 	return 0;
+ }
+ 
+ static void drbg_kcapi_cleanup(struct crypto_tfm *tfm)
+ {
+-	drbg_uninstantiate(crypto_tfm_ctx(tfm));
++	struct drbg_state *drbg = crypto_tfm_ctx(tfm);
++
++	drbg_uninstantiate(drbg);
++	kfree(drbg->drbg_mutex);
+ }
+ 
+ /*
+@@ -2021,11 +2027,16 @@ static inline int __init drbg_healthcheck_sanity(void)
+ 	drbg_convert_tfm_core("drbg_nopr_hmac_sha256", &coreref, &pr);
+ #endif
+ 
+-	drbg = kzalloc(sizeof(struct drbg_state), GFP_KERNEL);
++	drbg = fcw_kzalloc(sizeof(struct drbg_state), GFP_KERNEL);
+ 	if (!drbg)
+ 		return -ENOMEM;
+ 
+-	mutex_init(&drbg->drbg_mutex);
++	drbg->drbg_mutex = fcw_mutex_init();
++	if (!drbg->drbg_mutex) {
++		kfree(drbg);
++		return -ENOMEM;
++	}
++
+ 	drbg->core = &drbg_cores[coreref];
+ 	drbg->reseed_threshold = drbg_max_requests(drbg);
+ 
+@@ -2056,6 +2067,7 @@ static inline int __init drbg_healthcheck_sanity(void)
+ 	pr_devel("DRBG: Sanity tests for failure code paths successfully "
+ 		 "completed\n");
+ 
++	kfree(drbg->drbg_mutex);
+ 	kfree(drbg);
+ 	return rc;
+ }
+diff --git a/crypto/ecc.c b/crypto/ecc.c
+index c80aa25994a0..5edbea1ca384 100644
+--- a/crypto/ecc.c
++++ b/crypto/ecc.c
+@@ -36,6 +36,7 @@
+ 
+ #include "ecc.h"
+ #include "ecc_curve_defs.h"
++#include "fips_canister_wrapper.h"
+ 
+ typedef struct {
+ 	u64 m_low;
+@@ -62,7 +63,7 @@ static u64 *ecc_alloc_digits_space(unsigned int ndigits)
+ 	if (!len)
+ 		return NULL;
+ 
+-	return kmalloc(len, GFP_KERNEL);
++	return fcw_kmalloc(len, GFP_KERNEL);
+ }
+ 
+ static void ecc_free_digits_space(u64 *space)
+@@ -72,7 +73,7 @@ static void ecc_free_digits_space(u64 *space)
+ 
+ static struct ecc_point *ecc_alloc_point(unsigned int ndigits)
+ {
+-	struct ecc_point *p = kmalloc(sizeof(*p), GFP_KERNEL);
++	struct ecc_point *p = fcw_kmalloc(sizeof(*p), GFP_KERNEL);
+ 
+ 	if (!p)
+ 		return NULL;
+diff --git a/crypto/ecdh.c b/crypto/ecdh.c
+index 96f80c8f8e30..1c02b457b8ac 100644
+--- a/crypto/ecdh.c
++++ b/crypto/ecdh.c
+@@ -11,6 +11,7 @@
+ #include <crypto/ecdh.h>
+ #include <linux/scatterlist.h>
+ #include "ecc.h"
++#include "fips_canister_wrapper.h"
+ 
+ struct ecdh_ctx {
+ 	unsigned int curve_id;
+@@ -78,12 +79,12 @@ static int ecdh_compute_value(struct kpp_request *req)
+ 	/* Public part is a point thus it has both coordinates */
+ 	public_key_sz = 2 * nbytes;
+ 
+-	public_key = kmalloc(public_key_sz, GFP_KERNEL);
++	public_key = fcw_kmalloc(public_key_sz, GFP_KERNEL);
+ 	if (!public_key)
+ 		return -ENOMEM;
+ 
+ 	if (req->src) {
+-		shared_secret = kmalloc(nbytes, GFP_KERNEL);
++		shared_secret = fcw_kmalloc(nbytes, GFP_KERNEL);
+ 		if (!shared_secret)
+ 			goto free_pubkey;
+ 
+diff --git a/crypto/hmac.c b/crypto/hmac.c
+index 25856aa7ccbf..3e70fdc33ea9 100644
+--- a/crypto/hmac.c
++++ b/crypto/hmac.c
+@@ -20,6 +20,7 @@
+ #include <linux/module.h>
+ #include <linux/scatterlist.h>
+ #include <linux/string.h>
++#include "fips_canister_wrapper.h"
+ 
+ struct hmac_ctx {
+ 	struct crypto_shash *hash;
+@@ -177,7 +178,7 @@ static int hmac_create(struct crypto_template *tmpl, struct rtattr **tb)
+ 	if (err)
+ 		return err;
+ 
+-	inst = kzalloc(sizeof(*inst) + sizeof(*spawn), GFP_KERNEL);
++	inst = fcw_kzalloc(sizeof(*inst) + sizeof(*spawn), GFP_KERNEL);
+ 	if (!inst)
+ 		return -ENOMEM;
+ 	spawn = shash_instance_ctx(inst);
+diff --git a/crypto/jitterentropy-kcapi.c b/crypto/jitterentropy-kcapi.c
+index b1d7b5a6e61c..126795745941 100644
+--- a/crypto/jitterentropy-kcapi.c
++++ b/crypto/jitterentropy-kcapi.c
+@@ -45,6 +45,7 @@
+ #include <crypto/internal/rng.h>
+ 
+ #include "jitterentropy.h"
++#include "fips_canister_wrapper.h"
+ 
+ /***************************************************************************
+  * Helper function
+@@ -52,7 +53,7 @@
+ 
+ void *jent_zalloc(unsigned int len)
+ {
+-	return kzalloc(len, GFP_KERNEL);
++	return fcw_kzalloc(len, GFP_KERNEL);
+ }
+ 
+ void jent_zfree(void *ptr)
+@@ -106,7 +107,7 @@ void jent_get_nstime(__u64 *out)
+  ***************************************************************************/
+ 
+ struct jitterentropy {
+-	spinlock_t jent_lock;
++	void *jent_lock;
+ 	struct rand_data *entropy_collector;
+ 	unsigned int reset_cnt;
+ };
+@@ -120,7 +121,9 @@ static int jent_kcapi_init(struct crypto_tfm *tfm)
+ 	if (!rng->entropy_collector)
+ 		ret = -ENOMEM;
+ 
+-	spin_lock_init(&rng->jent_lock);
++	rng->jent_lock = fcw_mutex_init();
++	if (!rng->jent_lock)
++		return -ENOMEM;
+ 	return ret;
+ }
+ 
+@@ -128,11 +131,12 @@ static void jent_kcapi_cleanup(struct crypto_tfm *tfm)
+ {
+ 	struct jitterentropy *rng = crypto_tfm_ctx(tfm);
+ 
+-	spin_lock(&rng->jent_lock);
++	fcw_mutex_lock(rng->jent_lock);
+ 	if (rng->entropy_collector)
+ 		jent_entropy_collector_free(rng->entropy_collector);
+ 	rng->entropy_collector = NULL;
+-	spin_unlock(&rng->jent_lock);
++	fcw_mutex_unlock(rng->jent_lock);
++	kfree(rng->jent_lock);
+ }
+ 
+ static int jent_kcapi_random(struct crypto_rng *tfm,
+@@ -142,7 +146,7 @@ static int jent_kcapi_random(struct crypto_rng *tfm,
+ 	struct jitterentropy *rng = crypto_rng_ctx(tfm);
+ 	int ret = 0;
+ 
+-	spin_lock(&rng->jent_lock);
++	fcw_mutex_lock(rng->jent_lock);
+ 
+ 	/* Return a permanent error in case we had too many resets in a row. */
+ 	if (rng->reset_cnt > (1<<10)) {
+@@ -170,7 +174,7 @@ static int jent_kcapi_random(struct crypto_rng *tfm,
+ 	}
+ 
+ out:
+-	spin_unlock(&rng->jent_lock);
++	fcw_mutex_unlock(rng->jent_lock);
+ 
+ 	return ret;
+ }
+diff --git a/crypto/rsa-pkcs1pad.c b/crypto/rsa-pkcs1pad.c
+index 8ac3e73e8ea6..9bbfb92e9656 100644
+--- a/crypto/rsa-pkcs1pad.c
++++ b/crypto/rsa-pkcs1pad.c
+@@ -15,6 +15,7 @@
+ #include <linux/module.h>
+ #include <linux/random.h>
+ #include <linux/scatterlist.h>
++#include "fips_canister_wrapper.h"
+ 
+ /*
+  * Hash algorithm OIDs plus ASN.1 DER wrappings [RFC4880 sec 5.2.2].
+@@ -190,7 +191,7 @@ static int pkcs1pad_encrypt_sign_complete(struct akcipher_request *req, int err)
+ 	if (likely(!pad_len))
+ 		goto out;
+ 
+-	out_buf = kzalloc(ctx->key_size, GFP_KERNEL);
++	out_buf = fcw_kzalloc(ctx->key_size, GFP_KERNEL);
+ 	err = -ENOMEM;
+ 	if (!out_buf)
+ 		goto out;
+@@ -245,7 +246,7 @@ static int pkcs1pad_encrypt(struct akcipher_request *req)
+ 		return -EOVERFLOW;
+ 	}
+ 
+-	req_ctx->in_buf = kmalloc(ctx->key_size - 1 - req->src_len,
++	req_ctx->in_buf = fcw_kmalloc(ctx->key_size - 1 - req->src_len,
+ 				  GFP_KERNEL);
+ 	if (!req_ctx->in_buf)
+ 		return -ENOMEM;
+@@ -353,7 +354,7 @@ static int pkcs1pad_decrypt(struct akcipher_request *req)
+ 	if (!ctx->key_size || req->src_len != ctx->key_size)
+ 		return -EINVAL;
+ 
+-	req_ctx->out_buf = kmalloc(ctx->key_size, GFP_KERNEL);
++	req_ctx->out_buf = fcw_kmalloc(ctx->key_size, GFP_KERNEL);
+ 	if (!req_ctx->out_buf)
+ 		return -ENOMEM;
+ 
+@@ -401,7 +402,7 @@ static int pkcs1pad_sign(struct akcipher_request *req)
+ 		return -EOVERFLOW;
+ 	}
+ 
+-	req_ctx->in_buf = kmalloc(ctx->key_size - 1 - req->src_len,
++	req_ctx->in_buf = fcw_kmalloc(ctx->key_size - 1 - req->src_len,
+ 				  GFP_KERNEL);
+ 	if (!req_ctx->in_buf)
+ 		return -ENOMEM;
+@@ -541,7 +542,7 @@ static int pkcs1pad_verify(struct akcipher_request *req)
+ 	    !ctx->key_size || req->src_len < ctx->key_size)
+ 		return -EINVAL;
+ 
+-	req_ctx->out_buf = kmalloc(ctx->key_size + req->dst_len, GFP_KERNEL);
++	req_ctx->out_buf = fcw_kmalloc(ctx->key_size + req->dst_len, GFP_KERNEL);
+ 	if (!req_ctx->out_buf)
+ 		return -ENOMEM;
+ 
+@@ -608,7 +609,7 @@ static int pkcs1pad_create(struct crypto_template *tmpl, struct rtattr **tb)
+ 	if (err)
+ 		return err;
+ 
+-	inst = kzalloc(sizeof(*inst) + sizeof(*ctx), GFP_KERNEL);
++	inst = fcw_kzalloc(sizeof(*inst) + sizeof(*ctx), GFP_KERNEL);
+ 	if (!inst)
+ 		return -ENOMEM;
+ 
+diff --git a/crypto/testmgr.c b/crypto/testmgr.c
+index b505d0286df7..8c36123172fe 100644
+--- a/crypto/testmgr.c
++++ b/crypto/testmgr.c
+@@ -36,6 +36,7 @@
+ #include <crypto/internal/simd.h>
+ 
+ #include "internal.h"
++#include "fips_canister_wrapper.h"
+ 
+ static bool notests;
+ module_param(notests, bool, 0644);
+@@ -708,7 +709,7 @@ static struct cipher_test_sglists *alloc_cipher_test_sglists(void)
+ {
+ 	struct cipher_test_sglists *tsgls;
+ 
+-	tsgls = kmalloc(sizeof(*tsgls), GFP_KERNEL);
++	tsgls = fcw_kmalloc(sizeof(*tsgls), GFP_KERNEL);
+ 	if (!tsgls)
+ 		return NULL;
+ 
+@@ -784,7 +785,7 @@ static int prepare_keybuf(const u8 *key, unsigned int ksize,
+ 	if (key_offset != 0) {
+ 		if (cfg->key_offset_relative_to_alignmask)
+ 			key_offset += alignmask;
+-		keybuf = kmalloc(key_offset + ksize, GFP_KERNEL);
++		keybuf = fcw_kmalloc(key_offset + ksize, GFP_KERNEL);
+ 		if (!keybuf)
+ 			return -ENOMEM;
+ 		keyptr = keybuf + key_offset;
+@@ -1580,7 +1581,7 @@ static int test_hash_vec(const char *driver, const struct hash_testvec *vec,
+ 						req, desc, tsgl, hashstate);
+ 			if (err)
+ 				return err;
+-			cond_resched();
++			fcw_cond_resched();
+ 		}
+ 	}
+ #endif
+@@ -1682,13 +1683,13 @@ static int test_hash_vs_generic_impl(const char *driver,
+ 		return err;
+ 	}
+ 
+-	cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
++	cfg = fcw_kzalloc(sizeof(*cfg), GFP_KERNEL);
+ 	if (!cfg) {
+ 		err = -ENOMEM;
+ 		goto out;
+ 	}
+ 
+-	generic_desc = kzalloc(sizeof(*desc) +
++	generic_desc = fcw_kzalloc(sizeof(*desc) +
+ 			       crypto_shash_descsize(generic_tfm), GFP_KERNEL);
+ 	if (!generic_desc) {
+ 		err = -ENOMEM;
+@@ -1718,9 +1719,9 @@ static int test_hash_vs_generic_impl(const char *driver,
+ 	 * the other implementation against them.
+ 	 */
+ 
+-	vec.key = kmalloc(maxkeysize, GFP_KERNEL);
+-	vec.plaintext = kmalloc(maxdatasize, GFP_KERNEL);
+-	vec.digest = kmalloc(digestsize, GFP_KERNEL);
++	vec.key = fcw_kmalloc(maxkeysize, GFP_KERNEL);
++	vec.plaintext = fcw_kmalloc(maxdatasize, GFP_KERNEL);
++	vec.digest = fcw_kmalloc(digestsize, GFP_KERNEL);
+ 	if (!vec.key || !vec.plaintext || !vec.digest) {
+ 		err = -ENOMEM;
+ 		goto out;
+@@ -1736,7 +1737,7 @@ static int test_hash_vs_generic_impl(const char *driver,
+ 					req, desc, tsgl, hashstate);
+ 		if (err)
+ 			goto out;
+-		cond_resched();
++		fcw_cond_resched();
+ 	}
+ 	err = 0;
+ out:
+@@ -1782,7 +1783,7 @@ static int alloc_shash(const char *driver, u32 type, u32 mask,
+ 		return PTR_ERR(tfm);
+ 	}
+ 
+-	desc = kmalloc(sizeof(*desc) + crypto_shash_descsize(tfm), GFP_KERNEL);
++	desc = fcw_kmalloc(sizeof(*desc) + crypto_shash_descsize(tfm), GFP_KERNEL);
+ 	if (!desc) {
+ 		crypto_free_shash(tfm);
+ 		return -ENOMEM;
+@@ -1821,7 +1822,7 @@ static int __alg_test_hash(const struct hash_testvec *vecs,
+ 		return PTR_ERR(atfm);
+ 	}
+ 
+-	req = ahash_request_alloc(atfm, GFP_KERNEL);
++	req = fcw_ahash_request_alloc(atfm, GFP_KERNEL);
+ 	if (!req) {
+ 		pr_err("alg: hash: failed to allocate request for %s\n",
+ 		       driver);
+@@ -1837,7 +1838,7 @@ static int __alg_test_hash(const struct hash_testvec *vecs,
+ 	if (err)
+ 		goto out;
+ 
+-	tsgl = kmalloc(sizeof(*tsgl), GFP_KERNEL);
++	tsgl = fcw_kmalloc(sizeof(*tsgl), GFP_KERNEL);
+ 	if (!tsgl || init_test_sglist(tsgl) != 0) {
+ 		pr_err("alg: hash: failed to allocate test buffers for %s\n",
+ 		       driver);
+@@ -1850,7 +1851,7 @@ static int __alg_test_hash(const struct hash_testvec *vecs,
+ 	statesize = crypto_ahash_statesize(atfm);
+ 	if (stfm)
+ 		statesize = max(statesize, crypto_shash_statesize(stfm));
+-	hashstate = kmalloc(statesize + TESTMGR_POISON_LEN, GFP_KERNEL);
++	hashstate = fcw_kmalloc(statesize + TESTMGR_POISON_LEN, GFP_KERNEL);
+ 	if (!hashstate) {
+ 		pr_err("alg: hash: failed to allocate hash state buffer for %s\n",
+ 		       driver);
+@@ -1863,7 +1864,7 @@ static int __alg_test_hash(const struct hash_testvec *vecs,
+ 				    hashstate);
+ 		if (err)
+ 			goto out;
+-		cond_resched();
++		fcw_cond_resched();
+ 	}
+ 	err = test_hash_vs_generic_impl(driver, generic_driver, maxkeysize, req,
+ 					desc, tsgl, hashstate);
+@@ -2140,7 +2141,7 @@ static int test_aead_vec(const char *driver, int enc,
+ 						&cfg, req, tsgls);
+ 			if (err)
+ 				return err;
+-			cond_resched();
++			fcw_cond_resched();
+ 		}
+ 	}
+ #endif
+@@ -2364,7 +2365,7 @@ static int test_aead_inauthentic_inputs(struct aead_extra_tests_ctx *ctx)
+ 			if (err)
+ 				return err;
+ 		}
+-		cond_resched();
++		fcw_cond_resched();
+ 	}
+ 	return 0;
+ }
+@@ -2408,7 +2409,7 @@ static int test_aead_vs_generic_impl(struct aead_extra_tests_ctx *ctx)
+ 		return err;
+ 	}
+ 
+-	generic_req = aead_request_alloc(generic_tfm, GFP_KERNEL);
++	generic_req = fcw_aead_request_alloc(generic_tfm, GFP_KERNEL);
+ 	if (!generic_req) {
+ 		err = -ENOMEM;
+ 		goto out;
+@@ -2467,7 +2468,7 @@ static int test_aead_vs_generic_impl(struct aead_extra_tests_ctx *ctx)
+ 			if (err)
+ 				goto out;
+ 		}
+-		cond_resched();
++		fcw_cond_resched();
+ 	}
+ 	err = 0;
+ out:
+@@ -2488,7 +2489,7 @@ static int test_aead_extra(const char *driver,
+ 	if (noextratests)
+ 		return 0;
+ 
+-	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
++	ctx = fcw_kzalloc(sizeof(*ctx), GFP_KERNEL);
+ 	if (!ctx)
+ 		return -ENOMEM;
+ 	ctx->req = req;
+@@ -2502,11 +2503,11 @@ static int test_aead_extra(const char *driver,
+ 		ctx->maxkeysize = max_t(unsigned int, ctx->maxkeysize,
+ 					test_desc->suite.aead.vecs[i].klen);
+ 
+-	ctx->vec.key = kmalloc(ctx->maxkeysize, GFP_KERNEL);
+-	ctx->vec.iv = kmalloc(crypto_aead_ivsize(ctx->tfm), GFP_KERNEL);
+-	ctx->vec.assoc = kmalloc(ctx->maxdatasize, GFP_KERNEL);
+-	ctx->vec.ptext = kmalloc(ctx->maxdatasize, GFP_KERNEL);
+-	ctx->vec.ctext = kmalloc(ctx->maxdatasize, GFP_KERNEL);
++	ctx->vec.key = fcw_kmalloc(ctx->maxkeysize, GFP_KERNEL);
++	ctx->vec.iv = fcw_kmalloc(crypto_aead_ivsize(ctx->tfm), GFP_KERNEL);
++	ctx->vec.assoc = fcw_kmalloc(ctx->maxdatasize, GFP_KERNEL);
++	ctx->vec.ptext = fcw_kmalloc(ctx->maxdatasize, GFP_KERNEL);
++	ctx->vec.ctext = fcw_kmalloc(ctx->maxdatasize, GFP_KERNEL);
+ 	if (!ctx->vec.key || !ctx->vec.iv || !ctx->vec.assoc ||
+ 	    !ctx->vec.ptext || !ctx->vec.ctext) {
+ 		err = -ENOMEM;
+@@ -2550,7 +2551,7 @@ static int test_aead(const char *driver, int enc,
+ 				    tsgls);
+ 		if (err)
+ 			return err;
+-		cond_resched();
++		fcw_cond_resched();
+ 	}
+ 	return 0;
+ }
+@@ -2576,7 +2577,7 @@ static int alg_test_aead(const struct alg_test_desc *desc, const char *driver,
+ 		return PTR_ERR(tfm);
+ 	}
+ 
+-	req = aead_request_alloc(tfm, GFP_KERNEL);
++	req = fcw_aead_request_alloc(tfm, GFP_KERNEL);
+ 	if (!req) {
+ 		pr_err("alg: aead: failed to allocate request for %s\n",
+ 		       driver);
+@@ -2894,7 +2895,7 @@ static int test_skcipher_vec(const char *driver, int enc,
+ 						    &cfg, req, tsgls);
+ 			if (err)
+ 				return err;
+-			cond_resched();
++			fcw_cond_resched();
+ 		}
+ 	}
+ #endif
+@@ -3012,13 +3013,13 @@ static int test_skcipher_vs_generic_impl(const char *driver,
+ 		return err;
+ 	}
+ 
+-	cfg = kzalloc(sizeof(*cfg), GFP_KERNEL);
++	cfg = fcw_kzalloc(sizeof(*cfg), GFP_KERNEL);
+ 	if (!cfg) {
+ 		err = -ENOMEM;
+ 		goto out;
+ 	}
+ 
+-	generic_req = skcipher_request_alloc(generic_tfm, GFP_KERNEL);
++	generic_req = fcw_skcipher_request_alloc(generic_tfm, GFP_KERNEL);
+ 	if (!generic_req) {
+ 		err = -ENOMEM;
+ 		goto out;
+@@ -3063,10 +3064,10 @@ static int test_skcipher_vs_generic_impl(const char *driver,
+ 	 * the other implementation against them.
+ 	 */
+ 
+-	vec.key = kmalloc(maxkeysize, GFP_KERNEL);
+-	vec.iv = kmalloc(ivsize, GFP_KERNEL);
+-	vec.ptext = kmalloc(maxdatasize, GFP_KERNEL);
+-	vec.ctext = kmalloc(maxdatasize, GFP_KERNEL);
++	vec.key = fcw_kmalloc(maxkeysize, GFP_KERNEL);
++	vec.iv = fcw_kmalloc(ivsize, GFP_KERNEL);
++	vec.ptext = fcw_kmalloc(maxdatasize, GFP_KERNEL);
++	vec.ctext = fcw_kmalloc(maxdatasize, GFP_KERNEL);
+ 	if (!vec.key || !vec.iv || !vec.ptext || !vec.ctext) {
+ 		err = -ENOMEM;
+ 		goto out;
+@@ -3085,7 +3086,7 @@ static int test_skcipher_vs_generic_impl(const char *driver,
+ 					    cfg, req, tsgls);
+ 		if (err)
+ 			goto out;
+-		cond_resched();
++		fcw_cond_resched();
+ 	}
+ 	err = 0;
+ out:
+@@ -3121,7 +3122,7 @@ static int test_skcipher(const char *driver, int enc,
+ 					tsgls);
+ 		if (err)
+ 			return err;
+-		cond_resched();
++		fcw_cond_resched();
+ 	}
+ 	return 0;
+ }
+@@ -3147,7 +3148,7 @@ static int alg_test_skcipher(const struct alg_test_desc *desc,
+ 		return PTR_ERR(tfm);
+ 	}
+ 
+-	req = skcipher_request_alloc(tfm, GFP_KERNEL);
++	req = fcw_skcipher_request_alloc(tfm, GFP_KERNEL);
+ 	if (!req) {
+ 		pr_err("alg: skcipher: failed to allocate request for %s\n",
+ 		       driver);
+@@ -3190,11 +3191,11 @@ static int test_comp(struct crypto_comp *tfm,
+ 	unsigned int i;
+ 	int ret;
+ 
+-	output = kmalloc(COMP_BUF_SIZE, GFP_KERNEL);
++	output = fcw_kmalloc(COMP_BUF_SIZE, GFP_KERNEL);
+ 	if (!output)
+ 		return -ENOMEM;
+ 
+-	decomp_output = kmalloc(COMP_BUF_SIZE, GFP_KERNEL);
++	decomp_output = fcw_kmalloc(COMP_BUF_SIZE, GFP_KERNEL);
+ 	if (!decomp_output) {
+ 		kfree(output);
+ 		return -ENOMEM;
+@@ -3299,11 +3300,11 @@ static int test_acomp(struct crypto_acomp *tfm,
+ 	struct acomp_req *req;
+ 	struct crypto_wait wait;
+ 
+-	output = kmalloc(COMP_BUF_SIZE, GFP_KERNEL);
++	output = fcw_kmalloc(COMP_BUF_SIZE, GFP_KERNEL);
+ 	if (!output)
+ 		return -ENOMEM;
+ 
+-	decomp_out = kmalloc(COMP_BUF_SIZE, GFP_KERNEL);
++	decomp_out = fcw_kmalloc(COMP_BUF_SIZE, GFP_KERNEL);
+ 	if (!decomp_out) {
+ 		kfree(output);
+ 		return -ENOMEM;
+@@ -3466,7 +3467,7 @@ static int test_cprng(struct crypto_rng *tfm,
+ 
+ 	seedsize = crypto_rng_seedsize(tfm);
+ 
+-	seed = kmalloc(seedsize, GFP_KERNEL);
++	seed = fcw_kmalloc(seedsize, GFP_KERNEL);
+ 	if (!seed) {
+ 		printk(KERN_ERR "alg: cprng: Failed to allocate seed space "
+ 		       "for %s\n", algo);
+@@ -3657,7 +3658,7 @@ static int drbg_cavs_test(const struct drbg_testvec *test, int pr,
+ 	struct crypto_rng *drng;
+ 	struct drbg_test_data test_data;
+ 	struct drbg_string addtl, pers, testentropy;
+-	unsigned char *buf = kzalloc(test->expectedlen, GFP_KERNEL);
++	unsigned char *buf = fcw_kzalloc(test->expectedlen, GFP_KERNEL);
+ 
+ 	if (!buf)
+ 		return -ENOMEM;
+@@ -3757,7 +3758,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+ 	int err = -ENOMEM;
+ 	struct scatterlist src, dst;
+ 
+-	req = kpp_request_alloc(tfm, GFP_KERNEL);
++	req = fcw_kpp_request_alloc(tfm, GFP_KERNEL);
+ 	if (!req)
+ 		return err;
+ 
+@@ -3768,7 +3769,7 @@ static int do_test_kpp(struct crypto_kpp *tfm, const struct kpp_testvec *vec,
+ 		goto free_req;
+ 
+ 	out_len_max = crypto_kpp_maxsize(tfm);
+-	output_buf = kzalloc(out_len_max, GFP_KERNEL);
++	output_buf = fcw_kzalloc(out_len_max, GFP_KERNEL);
+ 	if (!output_buf) {
+ 		err = -ENOMEM;
+ 		goto free_req;
+@@ -3946,13 +3947,13 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+ 	if (testmgr_alloc_buf(xbuf))
+ 		return err;
+ 
+-	req = akcipher_request_alloc(tfm, GFP_KERNEL);
++	req = fcw_akcipher_request_alloc(tfm, GFP_KERNEL);
+ 	if (!req)
+ 		goto free_xbuf;
+ 
+ 	crypto_init_wait(&wait);
+ 
+-	key = kmalloc(vecs->key_len + sizeof(u32) * 2 + vecs->param_len,
++	key = fcw_kmalloc(vecs->key_len + sizeof(u32) * 2 + vecs->param_len,
+ 		      GFP_KERNEL);
+ 	if (!key)
+ 		goto free_req;
+@@ -3975,7 +3976,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+ 	 */
+ 	err = -ENOMEM;
+ 	out_len_max = crypto_akcipher_maxsize(tfm);
+-	outbuf_enc = kzalloc(out_len_max, GFP_KERNEL);
++	outbuf_enc = fcw_kzalloc(out_len_max, GFP_KERNEL);
+ 	if (!outbuf_enc)
+ 		goto free_key;
+ 
+@@ -4052,7 +4053,7 @@ static int test_akcipher_one(struct crypto_akcipher *tfm,
+ 		err = 0;
+ 		goto free_all;
+ 	}
+-	outbuf_dec = kzalloc(out_len_max, GFP_KERNEL);
++	outbuf_dec = fcw_kzalloc(out_len_max, GFP_KERNEL);
+ 	if (!outbuf_dec) {
+ 		err = -ENOMEM;
+ 		goto free_all;
+@@ -5678,13 +5679,22 @@ int alg_test(const char *driver, const char *alg, u32 type, u32 mask)
+ 	int i;
+ 	int j;
+ 	int rc;
++	static bool done = false;
+ 
+ 	if (!fips_enabled && notests) {
+ 		printk_once(KERN_INFO "alg: self-tests disabled\n");
+ 		return 0;
+ 	}
+ 
+-	DO_ONCE(testmgr_onetime_init);
++	/* Replace DO_ONCE by this. As DO_ONCE generates jump labels entry
++	 * and its data (__once_key) get changed at early boot time at
++	 * jump_label_init() from setup_arch(). We cannot run
++	 * fips_integrity_init() before that time. So, replace it to
++	 * avoid jump table entry creation. */
++	if (unlikely(!done)) {
++		testmgr_onetime_init();
++		done = true;
++	}
+ 
+ 	if ((type & CRYPTO_ALG_TYPE_MASK) == CRYPTO_ALG_TYPE_CIPHER) {
+ 		char nalg[CRYPTO_MAX_ALG_NAME];
+diff --git a/crypto/xts.c b/crypto/xts.c
+index ad45b009774b..592cc7de67cc 100644
+--- a/crypto/xts.c
++++ b/crypto/xts.c
+@@ -19,6 +19,7 @@
+ #include <crypto/xts.h>
+ #include <crypto/b128ops.h>
+ #include <crypto/gf128mul.h>
++#include "fips_canister_wrapper.h"
+ 
+ struct xts_tfm_ctx {
+ 	struct crypto_skcipher *child;
+@@ -352,7 +353,7 @@ static int xts_create(struct crypto_template *tmpl, struct rtattr **tb)
+ 	if (IS_ERR(cipher_name))
+ 		return PTR_ERR(cipher_name);
+ 
+-	inst = kzalloc(sizeof(*inst) + sizeof(*ctx), GFP_KERNEL);
++	inst = fcw_kzalloc(sizeof(*inst) + sizeof(*ctx), GFP_KERNEL);
+ 	if (!inst)
+ 		return -ENOMEM;
+ 
+diff --git a/include/crypto/drbg.h b/include/crypto/drbg.h
+index c4165126937e..06d203edeebc 100644
+--- a/include/crypto/drbg.h
++++ b/include/crypto/drbg.h
+@@ -50,7 +50,6 @@
+ #include <crypto/internal/rng.h>
+ #include <crypto/rng.h>
+ #include <linux/fips.h>
+-#include <linux/mutex.h>
+ #include <linux/list.h>
+ #include <linux/workqueue.h>
+ 
+@@ -106,7 +105,7 @@ struct drbg_test_data {
+ };
+ 
+ struct drbg_state {
+-	struct mutex drbg_mutex;	/* lock around DRBG */
++	void *drbg_mutex;	/* lock around DRBG */
+ 	unsigned char *V;	/* internal state 10.1.1.1 1a) */
+ 	unsigned char *Vbuf;
+ 	/* hash: static value 10.1.1.1 1b) hmac / ctr: key */
+-- 
+2.11.0
+
