@@ -6,13 +6,15 @@ License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
 URL: 	       https://github.com/vmware/lightwave
-Source0:       lightwave-%{version}.tar.gz
-%define        sha1 lightwave=93cc2c0518753a7ec7efd250bb0988de727067ff
+Source0:       %{name}-%{version}.tar.gz
+%define        sha1 %{name}=93cc2c0518753a7ec7efd250bb0988de727067ff
 Distribution:  Photon
+
 Patch0:        lightwave_build_with_python3.patch
 Patch1:        lightwave-openssl-1.1.1.patch
 Patch2:        lightwave-openssl-1.1.1-fixV2.patch
 Patch3:        lightwave-openssl-1.1.1-fixV3.patch
+
 Requires:      apache-tomcat >= 8.5.8
 Requires:      boost = 1.74.0
 Requires:      commons-daemon >= 1.0.15
@@ -26,6 +28,7 @@ Requires:      openjre8
 Requires:      openssl >= 1.1.1
 Requires:      lightwave-client = %{version}-%{release}
 Requires:      lightwave-server = %{version}-%{release}
+
 BuildRequires: ant-contrib >= 1.0
 BuildRequires: apache-maven >= 3.3.9
 BuildRequires: boost-devel = 1.74.0
@@ -152,7 +155,7 @@ Requires:      lightwave-client >= %{version}-%{release}
 Lightwave Samples
 
 %prep
-%setup -qn lightwave-%{version}
+%autosetup -p1 -n lightwave-%{version}
 sed -i 's|/opt/vmware/bin/certool|/usr/bin/certool|' vmidentity/install/src/main/java/com/vmware/identity/configure/LinuxInstallerHelper.java
 sed -i 's|/opt/vmware/sbin/vmware-stsd.sh|/usr/sbin/vmware-stsd.sh|' vmidentity/install/src/main/java/com/vmware/identity/configure/LinuxInstallerHelper.java
 sed -i 's/VMIDENTITY_LIB_DIR=\/opt\/vmware\/lib64/VMIDENTITY_LIB_DIR=\/usr\/jars/' vmidentity/websso/src/main/resources/sso-config.sh
@@ -161,28 +164,22 @@ sed -i 's#$COMMONS_DAEMON_HOME#usr#g' configure.ac
 sed -i 's|http://central.maven.org|https://search.maven.org|' vmafd/jdepends/build.xml
 sed -i 's|http://central.maven.org|https://search.maven.org|' vmca/jdepends/build.xml
 sed -i 's|http://central.maven.org|https://search.maven.org|' config/jdepends/build.xml
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
 
 %build
-
 export GO111MODULE=auto
 cd build
 autoreconf -mif .. &&
-../configure \
+sh ../configure \
     CFLAGS="-Wall -Werror -Wno-unused-but-set-variable -Wno-pointer-sign -Wno-implicit-function-declaration -Wno-address -Wno-enum-compare -Wno-error=format-overflow -Wno-error=stringop-overflow -fcommon -Wno-error=address-of-packed-member" \
     LDFLAGS=-ldl \
     --prefix=%{_prefix} \
     --libdir=%{_lib64dir} \
     --localstatedir=/var/lib/vmware
-make
+make %{?_smp_mflags}
 
 %install
-
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-cd build && make install DESTDIR=%{buildroot}
+cd build && make install DESTDIR=%{buildroot} %{?_smp_mflags}
 mkdir -p %{buildroot}/opt/vmware/share/config
 #find %{buildroot} -name '*.a' -delete
 #find %{buildroot} -name '*.la' -delete

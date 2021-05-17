@@ -3,27 +3,29 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
-%define sha1    rpm=0775036a64ca03cbea6403c9e9bf98ad547a1219
+%define sha1    %{name}=0775036a64ca03cbea6403c9e9bf98ad547a1219
 
-Source1:        macros
-Source2:        brp-strip-debug-symbols
-Source3:        brp-strip-unneeded
-Source4:        macros.ldconfig
+Source1:        brp-strip-debug-symbols
+Source2:        brp-strip-unneeded
+Source3:        macros
+Source4:        macros.php
 Source5:        macros.perl
 Source6:        macros.vpath
-Source7:        macros.php
+Source7:        macros.ldconfig
 
 Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
-#Patch1:         Fix-OpenPGP-parsing-bugs.patch
-#Patch2:         Header-signatures-alone-are-not-sufficient.patch
-Patch1:         CVE-2021-20266.patch
+Patch1:         Fix-OpenPGP-parsing-bugs.patch
+Patch2:         Header-signatures-alone-are-not-sufficient.patch
+Patch3:         CVE-2021-20271.patch
+Patch4:         CVE-2021-20266.patch
+Patch5:         Fix-regression-reading-rpm-v3.patch
 
 Requires:       bash
 Requires:       libdb
@@ -59,48 +61,46 @@ Requires:       zstd-devel
 Static libraries and header files for the support library for rpm
 
 %package libs
-Summary:        Libraries for rpm
-Requires:       nss-libs
-Requires:       popt
-Requires:       libgcc
-Requires:       libcap
-Requires:       zlib
-Requires:       bzip2-libs
-Requires:       elfutils-libelf
-Requires:       xz-libs
-Requires:       zstd-libs
+Summary:    Libraries for rpm
+Requires:   nss-libs
+Requires:   popt
+Requires:   libgcc
+Requires:   libcap
+Requires:   zlib
+Requires:   bzip2-libs
+Requires:   elfutils-libelf
+Requires:   xz-libs
+Requires:   zstd-libs
 %description    libs
 Shared libraries librpm and librpmio
 
 %package build
-Requires:       perl
-Requires:       lua
-Requires:       %{name}-devel = %{version}-%{release}
-Requires:       elfutils-libelf
-Requires:       cpio
-Summary: Binaries, scripts and libraries needed to build rpms.
+Requires:   perl
+Requires:   lua
+Requires:   %{name}-devel = %{version}-%{release}
+Requires:   elfutils-libelf
+Requires:   cpio
+Summary:    Binaries, scripts and libraries needed to build rpms.
 %description build
 Binaries, libraries and scripts to build rpms.
 
 %package lang
-Summary:        Additional language files for rpm
-Group:          Applications/System
-Requires:       %{name} = %{version}-%{release}
+Summary:    Additional language files for rpm
+Group:      Applications/System
+Requires:   %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of rpm.
 
-%package -n     python3-rpm
-Summary:        Python 3 bindings for rpm.
-Group:          Development/Libraries
-Requires:       python3
+%package -n python3-rpm
+Summary:    Python 3 bindings for rpm.
+Group:      Development/Libraries
+Requires:   python3
 
 %description -n python3-rpm
 Python3 rpm.
 
 %prep
-%setup -n rpm-%{name}-%{version}-release
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1 -n rpm-%{name}-%{version}-release
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -109,7 +109,7 @@ sed -i 's/-Wl,-L//g' python/setup.py.in
 sed -i '/library_dirs/d' python/setup.py.in
 sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
 
-./autogen.sh --noconfigure
+sh ./autogen.sh --noconfigure
 %configure \
     CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
         --program-prefix= \
@@ -129,21 +129,21 @@ python3 setup.py build
 popd
 
 %check
-make check
+make check %{_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
 # System macros and prefix
-install -dm 755 %{buildroot}%{_sysconfdir}/rpm
-install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm
+install -dm644 %{buildroot}%{_sysconfdir}/rpm
+install -vm755 %{SOURCE1} %{buildroot}%{_libdir}/rpm
 install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm
-install -vm755 %{SOURCE3} %{buildroot}%{_libdir}/rpm
-install -vm644 %{SOURCE4} %{buildroot}%{_libdir}/rpm
-install -vm644 %{SOURCE5} %{buildroot}%{_libdir}/rpm
-install -vm644 %{SOURCE6} %{buildroot}%{_libdir}/rpm
-install -vm644 %{SOURCE7} %{buildroot}%{_libdir}/rpm
+install -vm644 %{SOURCE3} %{buildroot}%{_sysconfdir}/rpm
+install -vm644 %{SOURCE4} %{buildroot}%{_libdir}/rpm/macros.d
+install -vm644 %{SOURCE5} %{buildroot}%{_libdir}/rpm/macros.d
+install -vm644 %{SOURCE6} %{buildroot}%{_libdir}/rpm/macros.d
+install -vm644 %{SOURCE7} %{buildroot}%{_libdir}/rpm/macros.d
 
 pushd python
 python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
@@ -210,7 +210,7 @@ rm -rf %{buildroot}
 %{_bindir}/rpmspec
 %{_libdir}/librpmbuild.so
 %{_libdir}/librpmbuild.so.*
-%{_libdir}/rpm/macros.*
+%{_libdir}/rpm/macros.d/*
 %{_libdir}/rpm/perl.req
 %{_libdir}/rpm/find-debuginfo.sh
 %{_libdir}/rpm/find-lang.sh
@@ -258,6 +258,10 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed May 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.2-5
+-   Fix CVE-2021-20271, CVE-2021-20266
+-   Fix regression introduced in CVE-2021-20271 fix
+-   Keep all macros in /usr/lib/rpm/macros.d
 *   Tue May 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.2-4
 -   Fix CVE-2021-20266
 -   Temporarily disabling few fixes as a workaround to regression

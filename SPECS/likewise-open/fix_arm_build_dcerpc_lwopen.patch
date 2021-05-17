@@ -1,0 +1,25 @@
+--- a/dcerpc/include/dce/aarch64/Makefile.am	2021-06-01 09:57:08.984952976 +0000
++++ b/dcerpc/include/dce/aarch64/Makefile.am	2021-06-01 09:57:29.389336981 +0000
+@@ -1,3 +1,3 @@
+ ## Process this file with automake to produce Makefile.in
+-dceincludedir = $(includedir)/dce/x86_64
++dceincludedir = $(includedir)/dce/aarch64
+ dceinclude_HEADERS = marshall.h ndr_rep.h ndrtypes.h
+--- a/dcerpc/include/dce/Makefile.am	2021-06-01 09:55:49.891464498 +0000
++++ b/dcerpc/include/dce/Makefile.am	2021-06-01 09:56:20.100032993 +0000
+@@ -37,4 +37,4 @@ dceinclude_HEADERS=$(threadheaders) $(ID
+ BUILT_SOURCES=$(IDLHEADERS)
+ 
+ # The dist target needs to know to include these files too
+-EXTRA_DIST=i386/* alpha/* AT386/* linux-gnu/* HP800/* sparc/* powerpc/* s390/* s390x/* solaris2.8/* solaris2.10/* darwin6.0/* aix5.2.0.0/* x86_64/*
++EXTRA_DIST=aarch64/* i386/* alpha/* AT386/* linux-gnu/* HP800/* sparc/* powerpc/* s390/* s390x/* solaris2.8/* solaris2.10/* darwin6.0/* aix5.2.0.0/* x86_64/*
+--- a/dcerpc/configure.in	2021-06-01 09:54:43.282211016 +0000
++++ b/dcerpc/configure.in	2021-06-01 09:55:13.034770906 +0000
+@@ -540,6 +540,7 @@ include/dce/powerpc64/Makefile
+ include/dce/s390/Makefile
+ include/dce/s390x/Makefile
+ include/dce/sparc/Makefile
++include/dce/aarch64/Makefile
+ include/dce/x86_64/Makefile
+ include/dce/ia64/Makefile
+ include/lwrpcrt/Makefile

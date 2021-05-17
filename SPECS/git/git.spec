@@ -1,21 +1,24 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.30.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
-URL:            http://git-scm.com/
+URL:            http://git-scm.com
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha1    git=6be02a878d08227d85f0cf4d5646b19c60a242e4
+%define sha1    %{name}=6be02a878d08227d85f0cf4d5646b19c60a242e4
+
 Patch0:         CVE-2021-21300-1.patch
 Patch1:         CVE-2021-21300-2.patch
 Patch2:         CVE-2021-21300-3.patch
+
 BuildRequires:  curl-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  openssl-devel >= 1.1.1
+
 Requires:       openssl >= 1.1.1
 Requires:       curl
 Requires:       expat
@@ -25,8 +28,6 @@ Requires:       perl-DBI
 Requires:       perl-CGI
 Requires:       subversion-perl
 Requires:       python3
-
-%include %{_rpmconfigdir}/macros.perl
 
 %description
 Git is a free and open source, distributed version control system
@@ -39,27 +40,27 @@ files, much like tools such as Mercurial, Bazaar,
 Subversion-1.7.8, CVS-1.11.23, Perforce, and Team Foundation Server.
 
 %package lang
-Summary: Additional language files for git
-Group: System Environment/Programming
-Requires: git >= 2.1.2
+Summary:    Additional language files for git
+Group:      System Environment/Programming
+Requires:   git >= 2.1.2
 %description lang
 These are the additional language files of git.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1
+
 %build
 %configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --libexec=%{_libexecdir} \
     --with-gitconfig=/etc/gitconfig
+
 make %{?_smp_mflags} CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
+
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}/usr/share/bash-completion/completions
 install -m 0644 contrib/completion/git-completion.bash %{buildroot}/usr/share/bash-completion/completions/git
 %find_lang %{name}
@@ -100,6 +101,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Wed May 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.30.0-4
+-   Bump version as a part of rpm upgrade
 *   Tue Mar 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.30.0-3
 -   Fix CVE-2021-21300
 *   Mon Feb 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.30.0-2

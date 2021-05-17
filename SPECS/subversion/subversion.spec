@@ -1,17 +1,21 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.14.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
-URL:            http://subversion.apache.org/
+URL:            http://subversion.apache.org
 Group:          Utilities/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.bz2
 %define sha1    %{name}=ee4283c21b5925ee499f8cb9cb0ff546ac7b4b9a
+
 Requires:       apr
 Requires:       apr-util
 Requires:       serf
+Requires:       cyrus-sasl
+Requires:       utf8proc
+
 BuildRequires:  apr-devel
 BuildRequires:  apr-util
 BuildRequires:  apr-util-devel
@@ -22,10 +26,6 @@ BuildRequires:  serf-devel
 BuildRequires:  lz4
 BuildRequires:  utf8proc-devel
 BuildRequires:  swig
-Requires:       cyrus-sasl
-Requires:       utf8proc
-
-%include %{_rpmconfigdir}/macros.perl
 
 %description
 The Apache version control system.
@@ -44,25 +44,27 @@ Requires:       %{name} = %{version}
 Provides Perl (SWIG) support for Subversion version control system.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-sh configure --prefix=%{_prefix}         \
-        --disable-static                \
-        --with-apache-libexecdir        \
-        --with-serf=%{_prefix}		\
+sh configure --prefix=%{_prefix} \
+        --disable-static \
+        --with-apache-libexecdir \
+        --with-serf=%{_prefix} \
         --with-lz4=internal
 make %{?_smp_mflags}
 
 # For Perl bindings
-make  %{?_smp_mflags} swig-pl
+make %{?_smp_mflags} swig-pl
 
 %install
-make -j1 DESTDIR=%{buildroot} install
+# doesn't support _smp_mflags
+make DESTDIR=%{buildroot} install
 %find_lang %{name}
 
 # For Perl bindings
-make -j1 DESTDIR=%{buildroot} install-swig-pl
+# doesn't support _smp_mflags
+make DESTDIR=%{buildroot} install-swig-pl
 
 %check
 # subversion expect nonroot user to run tests
@@ -94,6 +96,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+*   Fri May 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.14.1-2
+-   Bump version as a part of rpm upgrade
 *   Fri Mar 26 2021 Ankit Jain <ankitja@vmware.com> 1.14.1-1
 -   Update to 1.14.1 to fix CVE-2020-17525
 *   Tue Jan 05 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.14.0-3
