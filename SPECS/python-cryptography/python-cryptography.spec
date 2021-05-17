@@ -4,7 +4,7 @@
 Summary:        Python cryptography library
 Name:           python-cryptography
 Version:        2.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -12,18 +12,26 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.tar.gz
 %define sha1    cryptography=94ef5dc1261a4388572ce3ad9af1515691276d2c
+Patch0:         cryptography-CVE-2020-36242.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-cffi
 BuildRequires:  openssl-devel
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-cffi
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 %if %{with_check}
 BuildRequires:  python3-pip
 BuildRequires:  python-pip
 BuildRequires:  curl-devel
 %endif
+
 Requires:       python-cffi
 Requires:       openssl
 Requires:       python2
@@ -42,13 +50,6 @@ Cryptography is a Python library which exposes cryptographic recipes and primiti
 
 %package -n     python3-cryptography
 Summary:        python-cryptography
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-cffi
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-cffi
@@ -64,6 +65,7 @@ Python 3 version.
 
 %prep
 %setup -q -n cryptography-%{version}
+%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -105,6 +107,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon May 17 2021 Siju Maliakkal <smaliakkal@vmware.com> 2.8-2
+-   Patch for CVE-2020-36242
 *   Tue Mar 03 2020 Tapas Kundu <tkundu@vmware.com> 2.8-1
 -   Update to version 2.8
 -   Fix make check
