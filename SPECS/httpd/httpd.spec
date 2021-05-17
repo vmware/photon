@@ -1,17 +1,20 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.46
-Release:        5%{?dist}
+Version:        2.4.47
+Release:        1%{?dist}
 License:        Apache License 2.0
-URL:            http://httpd.apache.org/
+URL:            http://httpd.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://apache.mirrors.hoobly.com/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    httpd=1b7cd10ff3a2a07a576d77e34f0204d95fa4aceb
-#Patch0:        http://www.linuxfromscratch.org/patches/blfs/svn/%{name}-%{version}-blfs_layout-1.patch
-Patch0:         httpd-2.4.46-blfs_layout-1.patch
+%define sha1    %{name}=0a1311a65d3ba19cd6999841ad5b041e0335fb34
+
+# Patch0 is taken from:
+# https://www.linuxfromscratch.org/patches/blfs/svn/httpd-2.4.47-blfs_layout-1.patch
+Patch0:         httpd-%{version}-blfs-layout.patch
 Patch1:         httpd-uncomment-ServerName.patch
+
 BuildRequires:  openssl >= 1.1.1
 BuildRequires:  openssl-devel >= 1.1.1
 BuildRequires:  pcre-devel
@@ -21,6 +24,7 @@ BuildRequires:  apr-util-devel
 BuildRequires:  openldap
 BuildRequires:  expat-devel
 BuildRequires:  lua-devel
+
 Requires:       pcre
 Requires:       apr-util
 Requires:       openssl >= 1.1.1
@@ -28,6 +32,7 @@ Requires:       openldap
 Requires:       lua
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
+
 Provides:       apache2
 
 %define _confdir %{_sysconfdir}
@@ -36,30 +41,30 @@ Provides:       apache2
 The Apache HTTP Server.
 
 %package devel
-Summary: Header files for httpd
-Group: Applications/System
-Requires: httpd
+Summary:    Header files for httpd
+Group:      Applications/System
+Requires:   httpd
+
 %description devel
 These are the header files of httpd.
 
 %package docs
-Summary: Help files for httpd
-Group: Applications/System
-Requires: httpd
+Summary:    Help files for httpd
+Group:      Applications/System
+Requires:   httpd
+
 %description docs
 These are the help files of httpd.
 
 %package tools
-Group: System Environment/Daemons
-Summary: Tools for httpd
+Group:      System Environment/Daemons
+Summary:    Tools for httpd
 
 %description tools
 The httpd-tools of httpd.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
 
 %build
 %configure \
@@ -80,7 +85,7 @@ $(dirname $(gcc -print-prog-name=cc1))/install-tools/mkheaders
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm755 %{buildroot}/usr/lib/systemd/system
 install -vdm755 %{buildroot}/etc/httpd/logs
 
@@ -191,6 +196,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Fri May 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.47-1
+-   Upgrade to version 2.4.47
 *   Wed Jan 20 2021 Tapas Kundu <tkundu@vmware.com> 2.4.46-5
 -   Fix pid path
 *   Fri Oct 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.4.46-4

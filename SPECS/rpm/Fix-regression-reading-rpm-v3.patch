@@ -1,0 +1,88 @@
+From 0ebfd7295ea7ad26a5cfbfa399803848be03d9a2 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 1 Jun 2021 16:50:38 +0530
+Subject: [PATCH] Fix regression reading rpm v3 and other rare packages (#1635)
+
+Commit d6a86b5 introduced far stricter
+checks on what tags are allowed in signature and main headers than rpm
+had previously seen, and unsurprisingly this introduced some regressions
+on less common cases:
+
+- On rpm v3 packages and some newer 3rd party created packages (such as
+  install4j < 9.0.2), RPMTAG_ARCHIVESIZE resides in the main header
+  to begin with
+- In rpm 4.13 - 4.14, file IMA signatures were incorrectly placed in
+  the main header.
+
+As a quirk, permit the existence of RPMTAG_ARCHIVESIZE,
+RPMTAG_FILESIGNATURES and RPMTAG_FILESIGNATURELENGTH in the main header
+too provided that the corresponding signature tag is not there (so
+they can reside in either but not both headers).
+
+Initial workaround patch by Demi Marie Obenour.
+
+Fixes: #1635
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ lib/package.c | 35 ++++++++++++++++++++---------------
+ 1 file changed, 20 insertions(+), 15 deletions(-)
+
+diff --git a/lib/package.c b/lib/package.c
+index 276e3e554..da0df7779 100644
+--- a/lib/package.c
++++ b/lib/package.c
+@@ -35,21 +35,22 @@ struct taglate_s {
+     rpmTagVal stag;
+     rpmTagVal xtag;
+     rpm_count_t count;
++    int quirk;
+ } const xlateTags[] = {
+-    { RPMSIGTAG_SIZE, RPMTAG_SIGSIZE, 1 },
+-    { RPMSIGTAG_PGP, RPMTAG_SIGPGP, 0 },
+-    { RPMSIGTAG_MD5, RPMTAG_SIGMD5, 16 },
+-    { RPMSIGTAG_GPG, RPMTAG_SIGGPG, 0 },
+-    /* { RPMSIGTAG_PGP5, RPMTAG_SIGPGP5, 0 }, */ /* long obsolete, dont use */
+-    { RPMSIGTAG_PAYLOADSIZE, RPMTAG_ARCHIVESIZE, 1 },
+-    { RPMSIGTAG_FILESIGNATURES, RPMTAG_FILESIGNATURES, 0 },
+-    { RPMSIGTAG_FILESIGNATURELENGTH, RPMTAG_FILESIGNATURELENGTH, 1 },
+-    { RPMSIGTAG_SHA1, RPMTAG_SHA1HEADER, 1 },
+-    { RPMSIGTAG_SHA256, RPMTAG_SHA256HEADER, 1 },
+-    { RPMSIGTAG_DSA, RPMTAG_DSAHEADER, 0 },
+-    { RPMSIGTAG_RSA, RPMTAG_RSAHEADER, 0 },
+-    { RPMSIGTAG_LONGSIZE, RPMTAG_LONGSIGSIZE, 1 },
+-    { RPMSIGTAG_LONGARCHIVESIZE, RPMTAG_LONGARCHIVESIZE, 1 },
++    { RPMSIGTAG_SIZE, RPMTAG_SIGSIZE, 1, 0 },
++    { RPMSIGTAG_PGP, RPMTAG_SIGPGP, 0, 0 },
++    { RPMSIGTAG_MD5, RPMTAG_SIGMD5, 16, 0 },
++    { RPMSIGTAG_GPG, RPMTAG_SIGGPG, 0, 0 },
++    /* { RPMSIGTAG_PGP5, RPMTAG_SIGPGP5, 0, 0 }, */ /* long obsolete, dont use */
++    { RPMSIGTAG_PAYLOADSIZE, RPMTAG_ARCHIVESIZE, 1, 1 },
++    { RPMSIGTAG_FILESIGNATURES, RPMTAG_FILESIGNATURES, 0, 1 },
++    { RPMSIGTAG_FILESIGNATURELENGTH, RPMTAG_FILESIGNATURELENGTH, 1, 1 },
++    { RPMSIGTAG_SHA1, RPMTAG_SHA1HEADER, 1, 0 },
++    { RPMSIGTAG_SHA256, RPMTAG_SHA256HEADER, 1, 0 },
++    { RPMSIGTAG_DSA, RPMTAG_DSAHEADER, 0, 0 },
++    { RPMSIGTAG_RSA, RPMTAG_RSAHEADER, 0, 0 },
++    { RPMSIGTAG_LONGSIZE, RPMTAG_LONGSIGSIZE, 1, 0 },
++    { RPMSIGTAG_LONGARCHIVESIZE, RPMTAG_LONGARCHIVESIZE, 1, 0 },
+     { 0 }
+ };
+ 
+@@ -67,8 +68,12 @@ rpmTagVal headerMergeLegacySigs(Header h, Header sigh, char **msg)
+ 
+     for (xl = xlateTags; xl->stag; xl++) {
+ 	/* There mustn't be one in the main header */
+-	if (headerIsEntry(h, xl->xtag))
++	if (headerIsEntry(h, xl->xtag)) {
++	    /* Some tags may exist in either header, but never both */
++	    if (xl->quirk && !headerIsEntry(sigh, xl->stag))
++		continue;
+ 	    goto exit;
++	}
+     }
+ 
+     rpmtdReset(&td);
+-- 
+2.17.1
+

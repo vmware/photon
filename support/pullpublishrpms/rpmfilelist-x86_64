@@ -55,8 +55,8 @@ x86_64/libpipeline-1.5.3-1.ph4.x86_64.rpm
 x86_64/libstdc++-10.2.0-1.ph4.x86_64.rpm
 x86_64/libstdc++-devel-10.2.0-1.ph4.x86_64.rpm
 x86_64/libtool-2.4.6-3.ph4.x86_64.rpm
-x86_64/lua-5.3.5-1.ph4.x86_64.rpm
-x86_64/lua-devel-5.3.5-1.ph4.x86_64.rpm
+x86_64/lua-5.4.3-1.ph4.x86_64.rpm
+x86_64/lua-devel-5.4.3-1.ph4.x86_64.rpm
 x86_64/m4-1.4.18-3.ph4.x86_64.rpm
 x86_64/make-4.3-1.ph4.x86_64.rpm
 x86_64/man-db-2.9.3-1.ph4.x86_64.rpm
@@ -83,10 +83,10 @@ x86_64/python3-3.9.1-2.ph4.x86_64.rpm
 x86_64/python3-libs-3.9.1-2.ph4.x86_64.rpm
 x86_64/readline-7.0-3.ph4.x86_64.rpm
 x86_64/readline-devel-7.0-3.ph4.x86_64.rpm
-x86_64/rpm-4.14.2-9.ph3.x86_64.rpm
-x86_64/rpm-build-4.14.2-9.ph3.x86_64.rpm
-x86_64/rpm-devel-4.14.2-9.ph3.x86_64.rpm
-x86_64/rpm-libs-4.14.2-9.ph3.x86_64.rpm
+x86_64/rpm-4.16.1.2-4.ph4.x86_64.rpm
+x86_64/rpm-build-4.16.1.2-4.ph4.x86_64.rpm
+x86_64/rpm-devel-4.16.1.2-4.ph4.x86_64.rpm
+x86_64/rpm-libs-4.16.1.2-4.ph4.x86_64.rpm
 x86_64/sed-4.8-1.ph4.x86_64.rpm
 x86_64/sqlite-3.33.0-1.ph4.x86_64.rpm
 x86_64/sqlite-libs-3.33.0-1.ph4.x86_64.rpm

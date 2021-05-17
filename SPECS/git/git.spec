@@ -1,18 +1,20 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.31.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
-URL:            http://git-scm.com/
+URL:            http://git-scm.com
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
-%define sha1    git=a66f98f88bf7734f8463446ac0735cee190da1dc
+%define sha1    %{name}=a66f98f88bf7734f8463446ac0735cee190da1dc
+
 BuildRequires:  curl-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  openssl-devel >= 1.1.1
+
 Requires:       openssl >= 1.1.1
 Requires:       curl
 Requires:       expat
@@ -22,8 +24,6 @@ Requires:       perl-DBI
 Requires:       perl-CGI
 Requires:       subversion-perl
 Requires:       python3
-
-%include %{_rpmconfigdir}/macros.perl
 
 %description
 Git is a free and open source, distributed version control system
@@ -36,14 +36,14 @@ files, much like tools such as Mercurial, Bazaar,
 Subversion-1.7.8, CVS-1.11.23, Perforce, and Team Foundation Server.
 
 %package lang
-Summary: Additional language files for git
-Group: System Environment/Programming
-Requires: git >= 2.1.2
+Summary:    Additional language files for git
+Group:      System Environment/Programming
+Requires:   git >= 2.1.2
 %description lang
 These are the additional language files of git.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
@@ -55,7 +55,7 @@ make %{?_smp_mflags} CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}/usr/share/bash-completion/completions
 install -m 0644 contrib/completion/git-completion.bash %{buildroot}/usr/share/bash-completion/completions/git
 %find_lang %{name}
@@ -97,6 +97,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Fri May 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.31.1-2
+-   Bump version as a part of rpm upgrade
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.31.1-1
 -   Automatic Version Bump
 *   Tue Mar 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.30.0-3

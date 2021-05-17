@@ -1,16 +1,19 @@
 Name: 		likewise-open
 Summary: 	Likewise Open
 Version: 	6.2.11.13
-Release: 	5%{?dist}
+Release: 	6%{?dist}
 Group:   	Development/Libraries
 Vendor: 	VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
 URL: 		https://github.com/vmware/likewise-open
+Distribution:   Photon
 Source0: 	%{name}-%{version}.tar.gz
-%define sha1 likewise-open=7012d73820c8cbdb8f0fa3b38f7478bce74f59a6
+%define sha1 %{name}=7012d73820c8cbdb8f0fa3b38f7478bce74f59a6
+
 Patch0:         likewise-open-openssl-1.1.1.patch
 Patch1:         likewise-open-openssl-1.1.1-FixV2.patch
-Distribution:   Photon
+Patch2:         fix_arm_build_dcerpc_lwopen.patch
+
 Requires:       Linux-PAM
 Requires:       (coreutils >= 8.22 or toybox)
 Requires:       /bin/grep
@@ -22,6 +25,7 @@ Requires:       openssl >= 1.1.1
 Requires:       (procps-ng or toybox)
 Requires:       /bin/sed
 Requires:       sqlite-libs
+
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  krb5-devel >= 1.12
@@ -46,37 +50,40 @@ Likewise Open 6.1 LWIS
 This package provides files for developing against the Likewise APIs
 
 %prep
-%setup -q
-%patch0 -p0
-%patch1 -p1
+%autosetup -p1
 
 %build
 # hack against glibc-2.26 to avoid getopt declaration mismatch
 sed -i '/stdio.h/a#define _GETOPT_CORE_H 1' dcerpc/demos/echo_server/echo_server.c
+pushd dcerpc
+autoreconf -fi
+popd
 cd release
-export CWD=`pwd`
+export CWD=$(pwd)
 
 export LW_BUILD_PHOTON=1
 export LW_FEATURE_LEVEL="auth"
 export LSA_RPC_SERVERS="yes"
 export LW_DEVICE_PROFILE="photon"
 
-export CFLAGS="-Wno-error=unused-but-set-variable -Wno-error=implicit-function-declaration -Wno-error=sizeof-pointer-memaccess -Wno-error=unused-local-typedefs -Wno-error=pointer-sign -Wno-error=address -Wno-unused-but-set-variable -Wno-unused-const-variable -Wno-misleading-indentation -Wno-error=format-overflow -Wno-error=format-truncation -Wno-error=address-of-packed-member -Wno-error=nonnull"
-../configure  --prefix=/opt/likewise \
+export CFLAGS="-Wno-error=unused-but-set-variable -Wno-error=implicit-function-declaration -Wno-error=sizeof-pointer-memaccess -Wno-error=unused-local-typedefs -Wno-error=pointer-sign -Wno-error=address -Wno-unused-but-set-variable -Wno-unused-const-variable -Wno-misleading-indentation -Wno-error=format-overflow -Wno-error=format-truncation -Wno-error=address-of-packed-member -Wno-error=nonnull -Wformat-overflow"
+sh ../configure  --prefix=/opt/likewise \
              --libdir=/opt/likewise/lib64 \
              --datadir=/opt/likewise/share \
              --datarootdir=/opt/likewise/share \
              --build-isas=%{_arch} \
              --lw-bundled-libs='libedit' \
              --enable-vmdir-provider=yes \
-             --disable-static
+             --disable-static \
+             --at-build-string='%{_arch}-unknown-linux-gnu'
+# fails with ${_smp_mflags}
 make
 
 %install
 mkdir -p %{buildroot}
 mv release/stage/* %{buildroot}
-install -d $RPM_BUILD_ROOT/var/lib/likewise/db
-install -d $RPM_BUILD_ROOT/var/lib/likewise/rpc
+install -d %{buildroot}/var/lib/likewise/db
+install -d %{buildroot}/var/lib/likewise/rpc
 find %{buildroot} -name '*.in' -delete
 find %{buildroot} -name '*.la' -delete
 find %{buildroot} -name '*.a' -delete
@@ -303,6 +310,8 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+*   Mon May 24 2021 Shreenidhi Shedi <sshedi@vmware.com> 6.2.11.13-6
+-   Fix aarch64 build errors
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.13-5
 -   GCC-10 support.
 *   Tue Nov 03 2020 Shreyas B. <shreyasb@vmware.com> 6.2.11.13-4
