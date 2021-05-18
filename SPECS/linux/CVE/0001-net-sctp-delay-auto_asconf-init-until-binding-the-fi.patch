@@ -1,6 +1,6 @@
-From 1c15840c0fb0be27813b1b2fca0f52a0ebd9ed14 Mon Sep 17 00:00:00 2001
+From 909bd0e01ac4f894e2eca09ea21fce936b763e64 Mon Sep 17 00:00:00 2001
 From: Xin Long <lucien.xin@gmail.com>
-Date: Mon, 3 May 2021 05:11:42 +0800
+Date: Sat, 22 May 2021 23:24:28 +0530
 Subject: [PATCH] net/sctp: delay auto_asconf init until binding the first addr
 
 commit 34e5b01186858b36c4d7c87e1a025071e8e2401f upstream
@@ -34,11 +34,11 @@ Signed-off-by: Xin Long <lucien.xin@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
 ---
- net/sctp/socket.c | 31 +++++++++++++++++--------------
- 1 file changed, 17 insertions(+), 14 deletions(-)
+ net/sctp/socket.c | 28 +++++++++++++++++-----------
+ 1 file changed, 17 insertions(+), 11 deletions(-)
 
 diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 53d0a4161df3..3ac6b21ecf2c 100644
+index 9463c54..ec0dc85 100644
 --- a/net/sctp/socket.c
 +++ b/net/sctp/socket.c
 @@ -357,6 +357,18 @@ static struct sctp_af *sctp_sockaddr_af(struct sctp_sock *opt,
@@ -72,13 +72,10 @@ index 53d0a4161df3..3ac6b21ecf2c 100644
  
  	/* Add the address to the bind address list.
  	 * Use GFP_ATOMIC since BHs will be disabled.
-@@ -4939,19 +4953,6 @@ static int sctp_init_sock(struct sock *sk)
+@@ -4937,16 +4951,6 @@ static int sctp_init_sock(struct sock *sk)
  	sk_sockets_allocated_inc(sk);
  	sock_prot_inuse_add(net, sk->sk_prot, 1);
  
--	/* Nothing can fail after this block, otherwise
--	 * sctp_destroy_sock() will be called without addr_wq_lock held
--	 */
 -	if (net->sctp.default_auto_asconf) {
 -		spin_lock(&sock_net(sk)->sctp.addr_wq_lock);
 -		list_add_tail(&sp->auto_asconf_list,
@@ -92,7 +89,7 @@ index 53d0a4161df3..3ac6b21ecf2c 100644
  	local_bh_enable();
  
  	return 0;
-@@ -9285,6 +9286,8 @@ static int sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
+@@ -9282,6 +9286,8 @@ static int sctp_sock_migrate(struct sock *oldsk, struct sock *newsk,
  			return err;
  	}
  
@@ -102,5 +99,5 @@ index 53d0a4161df3..3ac6b21ecf2c 100644
  	 * peeled off association to the new socket's receive queue.
  	 */
 -- 
-2.28.0
+2.7.4
 
