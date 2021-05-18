@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.25
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -60,8 +60,6 @@ Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-29154
 Patch103:       bpf-x86_64-Validate-computation-of-branch-displacements.patch
 Patch104:       bpf-x86_32-Validate-computation-of-branch-displacements.patch
-# Fix for CVE-2021-23133
-Patch105:       0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
 # Fix for CVE-2021-3489
 Patch106:       0001-bpf-ringbuf-deny-reserve-of-buffers-larger-than-ring.patch
 Patch107:       0002-bpf-prevent-writable-memory-mapping-of-read-only-rin.patch
@@ -86,6 +84,9 @@ Patch123:       0013-ath10k-drop-fragments-with-multicast-DA-for-SDIO.patch
 Patch124:       0014-ath10k-drop-MPDU-which-has-discard-flag-set-by-firmw.patch
 Patch125:       0015-ath10k-Fix-TKIP-Michael-MIC-verification-for-PCIe.patch
 Patch126:       0016-ath10k-Validate-first-subframe-of-A-MSDU-before-proc.patch
+# Fix for CVE-2021-23133
+Patch127:	0001-net-sctp-delay-auto_asconf-init-until-binding-the-fi.patch
+
 
 #Amazon AWS
 Patch201:       0002-bump-the-default-TTL-to-255.patch
@@ -220,7 +221,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch102 -p1
 %patch103 -p1
 %patch104 -p1
-%patch105 -p1
 %patch106 -p1
 %patch107 -p1
 %patch108 -p1
@@ -241,6 +241,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch124 -p1
 %patch125 -p1
 %patch126 -p1
+%patch127 -p1
 
 #Amazon AWS
 %patch201 -p1
@@ -443,6 +444,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu May 13 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-7
+-   Fix for CVE-2021-23133
 *   Tue May 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.25-6
 -   Fix CVE-2020-26147, CVE-2020-24587, CVE-2020-24586, CVE-2020-24588,
 -   CVE-2020-26145, CVE-2020-26141
