@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.25
-Release:        10%{?kat_build:.kat}%{?dist}
+Version:        5.10.35
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -21,7 +21,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=ed5006699bea2e1e10f453463f71fce5448d3b6b
+%define sha1 linux=991caa73705dee26b9c7a42f1ccc6a8d20de5774
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -83,9 +83,6 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2021-29154
-Patch103:       bpf-x86_64-Validate-computation-of-branch-displacements.patch
-Patch104:       bpf-x86_32-Validate-computation-of-branch-displacements.patch
 # Fix for CVE-2021-3489
 Patch106:       0001-bpf-ringbuf-deny-reserve-of-buffers-larger-than-ring.patch
 Patch107:       0002-bpf-prevent-writable-memory-mapping-of-read-only-rin.patch
@@ -231,8 +228,6 @@ The Linux package contains the Linux kernel doc files
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
-%patch103 -p1
-%patch104 -p1
 %patch106 -p1
 %patch107 -p1
 %patch108 -p1
@@ -384,6 +379,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 5.10.35-1
+-   Update to version 5.10.35
 *   Thu May 13 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-10
 -   Fix for CVE-2021-23133
 *   Wed May 12 2021 Ankit Jain <ankitja@vmware.com> 5.10.25-9
