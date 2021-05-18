@@ -4,7 +4,7 @@
 Summary:        Python cryptography library
 Name:           python-cryptography
 Version:        2.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -12,6 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.tar.gz
 %define sha1    cryptography=c550f9ba5a46ad33a0568edc2b9d0f4af3e4adab
+Patch0:	 	cryptography-CVE-2020-36242.patch	
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -59,6 +60,7 @@ Python 3 version.
 
 %prep
 %setup -q -n cryptography-%{version}
+%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -98,6 +100,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon May 17 2021 Siju Maliakkal <smaliakkal@vmware.com> 2.3.1-2
+-   Fix for CVE-2020-36242
 *   Thu Dec 19 2019 Tapas Kundu <tkundu@vmware.com> 2.3.1-1
 -   Update to version 2.3.1
 *   Mon Aug 14 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.3-1
