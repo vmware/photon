@@ -2,7 +2,7 @@
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.8
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        BSD (like)
 URL:            http://net-snmp.sourceforge.net/
 Group:          Productivity/Networking/Other
@@ -32,6 +32,16 @@ Requires: net-snmp = %{version}-%{release}
 %description devel
 The net-snmp-devel package contains headers and libraries for building SNMP applications.
 
+%package perl
+Group: System Environment/Libraries
+Summary: The Perl modules provided with Net-SNMP
+Requires: net-snmp, perl
+Provides: perl(Net::SNMP)
+
+%description perl
+Net-SNMP provides a number of Perl modules useful when using the SNMP
+protocol.  Both client and agent support modules are provided.
+
 %prep
 %setup -q
 %patch0 -p1
@@ -60,6 +70,14 @@ make install DESTDIR=%{buildroot}
 mkdir -p %{buildroot}/lib/systemd/system
 install -m 0644 %{SOURCE1} %{buildroot}/lib/systemd/system/snmpd.service
 install -m 0644 %{SOURCE2} %{buildroot}/lib/systemd/system/snmptrapd.service
+
+#Delete unnecessary stuff
+find %{buildroot}/%{_libdir}/perl5/ -name Bundle -type d | xargs rm -rf
+find %{buildroot}/%{_libdir}/perl5/ -name perllocal.pod | xargs rm -f
+
+# store a copy of installed Perl stuff.
+# This is based off the netsnmp github repo - https://github.com/net-snmp/net-snmp/blob/master/dist/net-snmp.spec
+(xxdir=`pwd` && cd %{buildroot} && find usr/lib*/perl5 -type f | sed 's/^/\//' > $xxdir/net-snmp-perl-files)
 
 %check
 make %{?_smp_mflags} test
@@ -105,9 +123,14 @@ rm -rf %{buildroot}/*
 %{_datadir}/snmp/mibs
 %{_datadir}/snmp/mib2c*
 %{_mandir}/man3/*
+
+%files perl -f net-snmp-perl-files
+
 %exclude /usr/lib/perl5/*/*/perllocal.pod
 
 %changelog
+*   Tue May 18 2021 Sharan Turlapati <sturlapati@vmware.com> 5.8-7
+-   Include net-snmp-perl sub-package
 *   Fri Aug 28 2020 Shreyas B. <shreyasb@vmware.com> 5.8-6
 -   fix for CVE-2020-15861 & CVE-2020-15862
 *   Tue Jul 07 2020 Shreyas B. <shreyasb@vmware.com> 5.8-5
