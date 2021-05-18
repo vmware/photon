@@ -1,7 +1,7 @@
 Summary:        A library that provides compression and decompression of file formats used by Microsoft
 Name:           libmspack
 Version:        0.7.1alpha
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            http://www.cabextract.org.uk/libmspack/libmspack-0.7alpha.tar.gz
 Group:          Applications/System
@@ -9,6 +9,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.cabextract.org.uk/libmspack/%{name}-%{version}.tar.gz
 %define sha1    libmspack=073348180586d7b0f61fd7f971162ffb5c1f6621
+Patch0:         CVE-2018-18584.patch
+
 %description
 A library that provides compression and decompression of file formats used by Microsoft
 
@@ -20,6 +22,7 @@ It contains the libraries and header files to create applications.
 
 %prep
 %setup -q
+%patch0 -p2
 
 %build
 %configure
@@ -51,6 +54,8 @@ cd test
 %{_libdir}/*.so
 
 %changelog
+*   Tue May 18 2021 Sujay G <gsujay@vmware.com> 0.7.1alpha-2
+-   Added patch for CVE-2018-18584
 *   Tue Oct 29 2019 Sujay G <gsujay@vmware.com> 0.7.1alpha-1
 -   Upgrade to version 0.7.1alpha, to fix CVE's CVE-2018-14681, CVE-2018-14682
 *   Fri Nov 16 2018 Sujay G <gsujay@vmware.com> 0.5alpha-6
