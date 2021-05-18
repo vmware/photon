@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.25
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -102,8 +102,6 @@ Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-29154
 Patch103:       bpf-x86_64-Validate-computation-of-branch-displacements.patch
 Patch104:       bpf-x86_32-Validate-computation-of-branch-displacements.patch
-# Fix for CVE-2021-23133
-Patch105:       0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
 # Fix for CVE-2021-3489
 Patch106:       0001-bpf-ringbuf-deny-reserve-of-buffers-larger-than-ring.patch
 Patch107:       0002-bpf-prevent-writable-memory-mapping-of-read-only-rin.patch
@@ -128,6 +126,8 @@ Patch123:       0013-ath10k-drop-fragments-with-multicast-DA-for-SDIO.patch
 Patch124:       0014-ath10k-drop-MPDU-which-has-discard-flag-set-by-firmw.patch
 Patch125:       0015-ath10k-Fix-TKIP-Michael-MIC-verification-for-PCIe.patch
 Patch126:       0016-ath10k-Validate-first-subframe-of-A-MSDU-before-proc.patch
+# Fix for CVE-2021-23133
+Patch127:	0001-net-sctp-delay-auto_asconf-init-until-binding-the-fi.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -319,7 +319,6 @@ Python programming language to use the interface to manipulate perf events.
 %patch102 -p1
 %patch103 -p1
 %patch104 -p1
-%patch105 -p1
 %patch106 -p1
 %patch107 -p1
 %patch108 -p1
@@ -340,6 +339,7 @@ Python programming language to use the interface to manipulate perf events.
 %patch124 -p1
 %patch125 -p1
 %patch126 -p1
+%patch127 -p1
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -710,6 +710,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Thu May 13 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-10
+-   Fix for CVE-2021-23133
 *   Tue May 11 2021 Ankit Jain <ankitja@vmware.com> 5.10.25-9
 -   .config: Enable MLX5_INFINIBAND
 *   Tue May 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.25-8

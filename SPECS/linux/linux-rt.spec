@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.25
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt34
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -85,8 +85,6 @@ Patch101:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-29154
 Patch102:       bpf-x86_64-Validate-computation-of-branch-displacements.patch
 Patch103:       bpf-x86_32-Validate-computation-of-branch-displacements.patch
-# Fix for CVE-2021-23133
-Patch104:       0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
 # Fix for CVE-2021-3489
 Patch105:       0001-bpf-ringbuf-deny-reserve-of-buffers-larger-than-ring.patch
 Patch106:       0002-bpf-prevent-writable-memory-mapping-of-read-only-rin.patch
@@ -111,6 +109,8 @@ Patch123:       0013-ath10k-drop-fragments-with-multicast-DA-for-SDIO.patch
 Patch124:       0014-ath10k-drop-MPDU-which-has-discard-flag-set-by-firmw.patch
 Patch125:       0015-ath10k-Fix-TKIP-Michael-MIC-verification-for-PCIe.patch
 Patch126:       0016-ath10k-Validate-first-subframe-of-A-MSDU-before-proc.patch
+# Fix for CVE-2021-23133
+Patch127:	0001-net-sctp-delay-auto_asconf-init-until-binding-the-fi.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 Patch301:       0003-z3fold-remove-preempt-disabled-sections-for-RT.patch
@@ -521,7 +521,6 @@ The Linux package contains the Linux kernel doc files
 %patch101 -p1
 %patch102 -p1
 %patch103 -p1
-%patch104 -p1
 %patch105 -p1
 %patch106 -p1
 %patch107 -p1
@@ -542,6 +541,7 @@ The Linux package contains the Linux kernel doc files
 %patch124 -p1
 %patch125 -p1
 %patch126 -p1
+%patch127 -p1
 
 # RT
 %patch301 -p1
@@ -1061,6 +1061,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu May 13 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-10
+-   Fix for CVE-2021-23133
 *   Tue May 11 2021 Ankit Jain <ankitja@vmware.com> 5.10.25-9
 -   .config: Enable INFINIBAND, MLX5_INFINIBAND
 *   Tue May 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.25-8

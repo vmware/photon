@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.25
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -86,8 +86,6 @@ Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-29154
 Patch103:       bpf-x86_64-Validate-computation-of-branch-displacements.patch
 Patch104:       bpf-x86_32-Validate-computation-of-branch-displacements.patch
-# Fix for CVE-2021-23133
-Patch105:       0001-net-sctp-fix-race-condition-in-sctp_destroy_sock.patch
 # Fix for CVE-2021-3489
 Patch106:       0001-bpf-ringbuf-deny-reserve-of-buffers-larger-than-ring.patch
 Patch107:       0002-bpf-prevent-writable-memory-mapping-of-read-only-rin.patch
@@ -112,6 +110,8 @@ Patch123:       0013-ath10k-drop-fragments-with-multicast-DA-for-SDIO.patch
 Patch124:       0014-ath10k-drop-MPDU-which-has-discard-flag-set-by-firmw.patch
 Patch125:       0015-ath10k-Fix-TKIP-Michael-MIC-verification-for-PCIe.patch
 Patch126:       0016-ath10k-Validate-first-subframe-of-A-MSDU-before-proc.patch
+# Fix for CVE-2021-23133
+Patch127:	0001-net-sctp-delay-auto_asconf-init-until-binding-the-fi.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -233,7 +233,6 @@ The Linux package contains the Linux kernel doc files
 %patch102 -p1
 %patch103 -p1
 %patch104 -p1
-%patch105 -p1
 %patch106 -p1
 %patch107 -p1
 %patch108 -p1
@@ -254,6 +253,7 @@ The Linux package contains the Linux kernel doc files
 %patch124 -p1
 %patch125 -p1
 %patch126 -p1
+%patch127 -p1
 
 # crypto
 %patch500 -p1
@@ -384,6 +384,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Thu May 13 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-10
+-   Fix for CVE-2021-23133
 *   Wed May 12 2021 Ankit Jain <ankitja@vmware.com> 5.10.25-9
 -   .config: Enable Netfilter modules required for NFT support
 -   .config: Enable Bonding driver support, NET_TEAM, NET_VRF
