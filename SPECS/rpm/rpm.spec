@@ -5,7 +5,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -13,18 +13,23 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
 %define sha1    rpm=8cd4fb1df88c3c73ac506f8ac92be8c39fa610eb
+
 Source1:        macros
 Source2:        brp-strip-debug-symbols
 Source3:        brp-strip-unneeded
+
 Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
-Patch1:         CVE-2021-20271.patch
-Patch2:         Fix-OpenPGP-parsing-bugs.patch
-Patch3:         Header-signatures-alone-are-not-sufficient.patch
+#Patch1:         CVE-2021-20271.patch
+#Patch2:         Fix-OpenPGP-parsing-bugs.patch
+#Patch3:         Header-signatures-alone-are-not-sufficient.patch
+Patch1:         CVE-2021-20266.patch
+
 Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
 Requires:       libarchive
 Requires:       lua
+
 BuildRequires:  lua-devel
 BuildRequires:  libarchive-devel
 BuildRequires:  libdb-devel
@@ -98,8 +103,6 @@ Python3 rpm.
 %setup -n rpm-%{name}-%{version}-release
 %patch0 -p1
 %patch1 -p1
-%patch2 -p1
-%patch3 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -264,6 +267,9 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue May 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-12
+-   Fix CVE-2021-20266
+-   Temporarily disabling few fixes as a workaround to regression
 *   Tue Apr 27 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-11
 -   Fix PGP parsing & signature validation issues
 *   Wed Apr 07 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-10
