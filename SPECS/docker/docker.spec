@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -15,7 +15,7 @@ Source0:        https://github.com/docker/docker-ce/archive/%{name}-%{version}.t
 %define DOCKER_GITCOMMIT 039a7df9ba8097dd987370782fcdd6ea79b26016
 Source99:       default-disable.preset
 Patch98:        remove-firewalld.patch
-Patch99:        update-container-binary-CVE-2019-16884.patch
+Patch99:        update-container-binary.patch
 
 BuildRequires:  systemd
 BuildRequires:  device-mapper-devel
@@ -38,7 +38,7 @@ Requires:       libseccomp >= 2.4.0
 Requires:       systemd
 Requires:       device-mapper-libs
 Requires:       shadow
-Requires:       runc >= 1.0.0.rc9
+Requires:       runc = 1.0.0.rc93
 
 %description
 Docker is an open source project to build, ship and run any application as a lightweight container.
@@ -195,6 +195,9 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Fri May 14 2021 Bo Gan <ganb@vmware.com> 18.09.9-4
+-   Update bundled containerd to 1.4.4
+-   Require v1.0.0-rc93 version of runc (requested by containerd)
 *   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 18.09.9-3
 -   Add docker to group during install and upgrade if not exists
 *   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 18.09.9-2
