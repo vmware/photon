@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.9.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -13,6 +13,7 @@ Source1:        macros.python
 Patch0:         cgi3.patch
 Patch1:         CVE-2021-23336.patch
 Patch2:         CVE-2021-3177.patch
+Patch3:         CVE-2021-29921.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel
@@ -159,6 +160,7 @@ python-devel packages require it. So install a python-devel package instead.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 export OPT="${CFLAGS}"
@@ -304,6 +306,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/rpm/macros.d/macros.python
 
 %changelog
+*   Tue May 18 2021 Piyush Gupta <gpiyush@vmware.com> 3.9.1-5
+-   Fix for CVE-2021-29921.
 *   Sat Mar 27 2021 Tapas Kundu <tkundu@vmware.com> 3.9.1-4
 -   Remove packaging exe files in python3-pip
 *   Tue Mar 09 2021 Piyush Gupta <gpiyush@vmware.com> 3.9.1-3
