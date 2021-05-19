@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          31%{?dist}
+Release:          32%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -60,6 +60,8 @@ Patch40:          sd-bus-use-queue-message-references-for-managing-r-w.patch
 Patch41:          network-make-Route.Type-support-local-broadcast-anyc.patch
 Patch42:          ignore-classless-route-gateway.patch
 Patch43:          increase-watchdog-tmo.patch
+Patch44:          timedate-increment-reference-count-of-sd_bus_message.patch
+Patch45:          timedate-defer-the-property-changed-signal-until-job.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -313,6 +315,9 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Wed May 19 2021 Susant Sahani <ssahani@vmware.com> 239-32
+-    timedate: defer the property changed signal until job of
+-    starting/stopping NTP service is finished
 *    Tue Dec 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 239-31
 -    Bump version as a part of autospec library upgrade
 *    Sat Nov 14 2020 Susant Sahani <ssahani@vmware.com> 239-30
