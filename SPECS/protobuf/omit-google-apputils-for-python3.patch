@@ -1,0 +1,41 @@
+
+From 0fd260eae7a53483a4be5b265effba3daacd84c7 Mon Sep 17 00:00:00 2001
+From: Dwayne Litzenberger <dlitz@dlitz.net>
+Date: Tue, 14 Oct 2014 13:47:06 -0700
+Subject: [PATCH 1/2] Use 2to3 when building under Python 3.
+
+From b460610b69b8ab9096e3da9423379200fefad3a5 Mon Sep 17 00:00:00 2001
+From: Dwayne Litzenberger <dlitz@dlitz.net>
+Date: Tue, 14 Oct 2014 13:50:00 -0700
+Subject: [PATCH 2/2] Omit google-apputils dependency under Python 3
+
+Temporary change until a py3k-compatible google-apputils is released.
+---
+
+--- a/python/setup.py	2021-05-21 00:42:47.023438796 +0530
++++ b/python/setup.py	2021-05-21 00:44:20.215443270 +0530
+@@ -20,7 +20,12 @@ except ImportError:
+         "ez_setup installed.\n")
+     raise
+ from distutils.command.clean import clean as _clean
+-from distutils.command.build_py import build_py as _build_py
++if sys.version_info[0] >= 3:
++    # Python 3
++    from distutils.command.build_py import build_py_2to3 as _build_py
++else:
++    # Python 2
++    from distutils.command.build_py import build_py as _build_py
+ from distutils.spawn import find_executable
+ 
+ maintainer_email = "protobuf@googlegroups.com"
+@@ -189,7 +194,9 @@ if __name__ == '__main__':
+           'google.protobuf.text_format'],
+         cmdclass = { 'clean': clean, 'build_py': build_py },
+         install_requires = ['setuptools'],
+-        setup_requires = ['google-apputils'],
++        setup_requires = (['google-apputils']
++                          if sys.version_info[0] < 3 else
++                          []),
+         ext_modules = ext_module_list,
+         url = 'https://developers.google.com/protocol-buffers/',
+         maintainer = maintainer_email,

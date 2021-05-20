@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        2.6.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -9,6 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/google/protobuf/
 Source0:        protobuf-%{version}.tar.gz
 %define         sha1 protobuf=a8f11eced7352edfefa814996ebf086ab3cfbaa0
+Patch0:         omit-google-apputils-for-python3.patch
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -19,6 +20,7 @@ BuildRequires:  make
 BuildRequires:  unzip
 BuildRequires:  python-dateutil
 BuildRequires:  python3-dateutil
+BuildRequires:  python-pip
 
 %description
 Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neutral, extensible mechanism for serializing structured data. You can find protobuf's documentation on the Google Developers site.
@@ -81,12 +83,13 @@ This contains protobuf java package.
 
 %prep
 %setup
+%patch0 -p1
 autoreconf -iv
 
 %build
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 %configure --disable-silent-rules
-
+pip install google-apputils
 make %{?_smp_mflags}
 pushd python
 python setup.py build
@@ -148,6 +151,9 @@ make check
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Thu May 20 2021 Tapas Kundu <tkundu@vmware.com> 2.6.1-7
+-   Removed google-apputils from python3 build.
+-   Installed google-apputils in python2 build
 *   Fri Nov 08 2019 Tapas Kundu <tkundu@vmware.com> 2.6.1-6
 -   Added python-dateutils in BR.
 *   Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 2.6.1-5
