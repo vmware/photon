@@ -1,14 +1,14 @@
 Summary:        Highly reliable distributed coordination
 Name:           zookeeper
-Version:        3.4.14
+Version:        3.6.3
 Release:        1%{?dist}
 URL:            http://zookeeper.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source:         http://mirrors.ocf.berkeley.edu/apache/zookeeper/zookeeper-3.4.9/%{name}-%{version}.tar.gz
-%define sha1 zookeeper=285a0c85112d9f99d42cbbf8fb750c9aa5474716
+Source:         http://apache.claz.org/zookeeper/zookeeper/zookeeper-%{version}/%{name}-%{version}.tar.gz
+%define sha1 zookeeper=c8dea35165f276cb8e23372b74c3f3149809202f
 Source1:        zookeeper.service
 Source2:        zkEnv.sh
 Patch0:	        zookeeper-3.4.8-server.patch
@@ -21,7 +21,7 @@ Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 ZooKeeper is a centralized service for maintaining configuration information, naming, providing distributed synchronization, and providing group services. All of these kinds of services are used in some form or another by distributed applications. Each time they are implemented there is a lot of work that goes into fixing the bugs and race conditions that are inevitable. Because of the difficulty of implementing these kinds of services, applications initially usually skimp on them ,which make them brittle in the presence of change and difficult to manage. Even when done correctly, different implementations of these services lead to management complexity when the applications are deployed.
 
 %prep
-%setup -q
+%setup -q -n apache-zookeeper-%{version}-bin
 %patch0 -p1
 
 %install
@@ -35,11 +35,8 @@ mkdir -p %{buildroot}/sbin
 mkdir -p %{buildroot}%{_prefix}/share/zookeeper/templates/conf
 mkdir -p %{buildroot}%{_var}/zookeeper
 
-cp zookeeper-%{version}.jar %{buildroot}%{_libdir}/java/zookeeper
-cp src/packages/update-zookeeper-env.sh %{buildroot}/sbin/update-zookeeper-env.sh
-cp src/packages/templates/conf/zookeeper-env.sh %{buildroot}%{_prefix}/share/zookeeper/templates/conf
+cp lib/zookeeper-%{version}.jar %{buildroot}%{_libdir}/java/zookeeper
 cp conf/zoo_sample.cfg %{buildroot}%{_prefix}/share/zookeeper/templates/conf/zoo.cfg
-chmod 0755 %{buildroot}/sbin/*
 
 mv bin/* %{buildroot}%{_bindir}
 mv lib/*.jar %{buildroot}%{_libdir}/java/zookeeper
@@ -79,13 +76,14 @@ fi
 %files
 %defattr(-,root,root)
 %attr(0755,zookeeper,hadoop) %{_var}/log/zookeeper
-%attr(0775,zookeeper,hadoop) /sbin/update-zookeeper-env.sh
 %config(noreplace) %{_sysconfdir}/zookeeper/*
 /lib/systemd/system/zookeeper.service
 /lib/systemd/system-preset/50-zookeeper.preset
 %{_prefix}
 
 %changelog
+*   Thu May 20 2021 Piyush Gupta <gpiyush@vmware.com> 3.6.3-1
+-   Update to 3.6.3.
 *   Fri May 31 2019 Tapas Kundu <tkundu@vmware.com> 3.4.14-1
 -   Updated to release 3.4.14
 -   Fix for CVE-2019-0201
