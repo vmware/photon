@@ -1,0 +1,92 @@
+From 9b2ec5b1a3dbb7f5d4ddc5769ba98e852ed424d7 Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Thu, 13 May 2021 01:29:15 +0200
+Subject: [PATCH 01/10] tick/nohz: Evaluate the CPU expression after the static
+ key
+
+When tick_nohz_full_cpu() is called with smp_processor_id(), the latter
+is unconditionally evaluated whether the static key is on or off. It is
+not necessary in the off-case though, so make sure the cpu expression
+is executed at the last moment.
+
+Illustrate with the following test function:
+
+	int tick_nohz_test(void)
+	{
+		return tick_nohz_full_cpu(smp_processor_id());
+	}
+
+The resulting code before was:
+
+	mov    %gs:0x7eea92d1(%rip),%eax   # smp_processor_id() fetch
+	nopl   0x0(%rax,%rax,1)
+	xor    %eax,%eax
+	retq
+	cmpb   $0x0,0x29d393a(%rip)        # <tick_nohz_full_running>
+	je     tick_nohz_test+0x29         # jump to below eax clear
+	mov    %eax,%eax
+	bt     %rax,0x29d3936(%rip)        # <tick_nohz_full_mask>
+	setb   %al
+	movzbl %al,%eax
+	retq
+	xor    %eax,%eax
+	retq
+
+Now it becomes:
+
+	nopl   0x0(%rax,%rax,1)
+	xor    %eax,%eax
+	retq
+	cmpb   $0x0,0x29d3871(%rip)        # <tick_nohz_full_running>
+	je     tick_nohz_test+0x29         # jump to below eax clear
+	mov    %gs:0x7eea91f0(%rip),%eax   # smp_processor_id() fetch, after static key
+	mov    %eax,%eax
+	bt     %rax,0x29d3866(%rip)        # <tick_nohz_full_mask>
+	setb   %al
+	movzbl %al,%eax
+	retq
+	xor    %eax,%eax
+	retq
+
+Signed-off-by: Peter Zijlstra <peterz@infradead.org>
+Cc: Yunfeng Ye <yeyunfeng@huawei.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ include/linux/tick.h | 18 +++++++++++-------
+ 1 file changed, 11 insertions(+), 7 deletions(-)
+
+diff --git a/include/linux/tick.h b/include/linux/tick.h
+index 55388ab45fd4..b0eacf597fcd 100644
+--- a/include/linux/tick.h
++++ b/include/linux/tick.h
+@@ -169,13 +169,17 @@ static inline bool tick_nohz_full_enabled(void)
+ 	return tick_nohz_full_running;
+ }
+ 
+-static inline bool tick_nohz_full_cpu(int cpu)
+-{
+-	if (!tick_nohz_full_enabled())
+-		return false;
+-
+-	return cpumask_test_cpu(cpu, tick_nohz_full_mask);
+-}
++/*
++ * Check if a CPU is part of the nohz_full subset. Arrange for evaluating
++ * the cpu expression (typically smp_processor_id()) _after_ the static
++ * key.
++ */
++#define tick_nohz_full_cpu(_cpu) ({					\
++	bool __ret = false;						\
++	if (tick_nohz_full_enabled())					\
++		__ret = cpumask_test_cpu((_cpu), tick_nohz_full_mask);	\
++	__ret;								\
++})
+ 
+ static inline void tick_nohz_full_add_cpus_to(struct cpumask *mask)
+ {
+-- 
+2.23.1
+

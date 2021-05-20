@@ -1,0 +1,84 @@
+From aa6a3df0ac249296ad7bd04e608fffddae5b54d2 Mon Sep 17 00:00:00 2001
+From: Yunfeng Ye <yeyunfeng@huawei.com>
+Date: Thu, 13 May 2021 01:29:18 +0200
+Subject: [PATCH 04/10] tick/nohz: Update idle_exittime on actual idle exit
+
+The idle_exittime field of tick_sched is used to record the time when
+the idle state was left. but currently the idle_exittime is updated in
+the function tick_nohz_restart_sched_tick(), which is not always in idle
+state when nohz_full is configured:
+
+  tick_irq_exit
+    tick_nohz_irq_exit
+      tick_nohz_full_update_tick
+        tick_nohz_restart_sched_tick
+          ts->idle_exittime = now;
+
+It's thus overwritten by mistake on nohz_full tick restart. Move the
+update to the appropriate idle exit path instead.
+
+Acked-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Yunfeng Ye <yeyunfeng@huawei.com>
+Cc: Yunfeng Ye <yeyunfeng@huawei.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+[Reformatted the upsteam patch]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ kernel/time/tick-sched.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
+index b55dd881b002..b528f74d1931 100644
+--- a/kernel/time/tick-sched.c
++++ b/kernel/time/tick-sched.c
+@@ -840,8 +840,6 @@ static void tick_nohz_restart_sched_tick(struct tick_sched *ts, ktime_t now)
+ 	 * Cancel the scheduled timer and restore the tick
+ 	 */
+ 	ts->tick_stopped  = 0;
+-	ts->idle_exittime = now;
+-
+ 	tick_nohz_restart(ts, now);
+ }
+ 
+@@ -1099,10 +1097,13 @@ unsigned long tick_nohz_get_idle_calls(void)
+ 	return ts->idle_calls;
+ }
+ 
+-static void tick_nohz_account_idle_ticks(struct tick_sched *ts)
++static void tick_nohz_account_idle_time(struct tick_sched *ts,
++					ktime_t now)
+ {
+ 	unsigned long ticks;
+ 
++	ts->idle_exittime = now;
++
+ 	if (vtime_accounting_cpu_enabled())
+ 		return;
+ 	/*
+@@ -1123,8 +1124,9 @@ void tick_nohz_idle_restart_tick(void)
+ 	struct tick_sched *ts = this_cpu_ptr(&tick_cpu_sched);
+ 
+ 	if (ts->tick_stopped) {
+-		tick_nohz_restart_sched_tick(ts, ktime_get());
+-		tick_nohz_account_idle_ticks(ts);
++		ktime_t now = ktime_get();
++		tick_nohz_restart_sched_tick(ts, now);
++		tick_nohz_account_idle_time(ts, now);
+ 	}
+ }
+ 
+@@ -1135,7 +1137,7 @@ static void tick_nohz_idle_update_tick(struct tick_sched *ts, ktime_t now)
+ 	else
+ 		tick_nohz_restart_sched_tick(ts, now);
+ 
+-	tick_nohz_account_idle_ticks(ts);
++	tick_nohz_account_idle_time(ts, now);
+ }
+ 
+ /**
+-- 
+2.23.1
+

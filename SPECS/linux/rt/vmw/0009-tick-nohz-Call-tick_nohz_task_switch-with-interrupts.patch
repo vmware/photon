@@ -1,0 +1,74 @@
+From 61b4cae6575006c74063ba51d5305d77f2e6b005 Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Tue, 11 May 2021 14:41:00 +0200
+Subject: [PATCH 09/10] tick/nohz: Call tick_nohz_task_switch() with interrupts
+ disabled
+
+Call tick_nohz_task_switch() slightly earlier after the context switch
+to benefit from disabled IRQs. This way the function doesn't need to
+disable them once more.
+
+Signed-off-by: Peter Zijlstra <peterz@infradead.org>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: Yunfeng Ye <yeyunfeng@huawei.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+[Reformatted the upstream patch]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ kernel/sched/core.c      | 2 +-
+ kernel/time/tick-sched.c | 7 +------
+ 2 files changed, 2 insertions(+), 7 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index f9307cf7819b..f5c5abcb2208 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -2680,6 +2680,7 @@ static struct rq *finish_task_switch(struct task_struct *prev)
+ 	vtime_task_switch(prev);
+ 	perf_event_task_sched_in(prev, current);
+ 	finish_task(prev);
++	tick_nohz_task_switch();
+ 	finish_lock_switch(rq);
+ 	finish_arch_post_lock_switch();
+ 	kcov_finish_switch(current);
+@@ -2717,7 +2718,6 @@ static struct rq *finish_task_switch(struct task_struct *prev)
+ 		put_task_struct(prev);
+ 	}
+ 
+-	tick_nohz_task_switch();
+ 	return rq;
+ }
+ 
+diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
+index b48a3f8a71f8..fc7824758245 100644
+--- a/kernel/time/tick-sched.c
++++ b/kernel/time/tick-sched.c
+@@ -420,13 +420,10 @@ void tick_nohz_dep_clear_signal(struct signal_struct *sig, enum tick_dep_bits bi
+  */
+ void __tick_nohz_task_switch(void)
+ {
+-	unsigned long flags;
+ 	struct tick_sched *ts;
+ 
+-	local_irq_save(flags);
+-
+ 	if (!tick_nohz_full_cpu(smp_processor_id()))
+-		goto out;
++		return;
+ 
+ 	ts = this_cpu_ptr(&tick_cpu_sched);
+ 
+@@ -435,8 +432,6 @@ void __tick_nohz_task_switch(void)
+ 		    atomic_read(&current->signal->tick_dep_mask))
+ 			tick_nohz_full_kick();
+ 	}
+-out:
+-	local_irq_restore(flags);
+ }
+ 
+ /* Get the boot-time nohz CPU list from the kernel parameters. */
+-- 
+2.23.1
+

@@ -1,0 +1,45 @@
+From 295f720604ec7bc8fce439073930b80f9d063bae Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Thu, 13 May 2021 01:29:17 +0200
+Subject: [PATCH 03/10] tick/nohz: Remove superflous check for
+ CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
+
+The vtime_accounting_enabled_this_cpu() early check already makes what
+follows as dead code in the case of CONFIG_VIRT_CPU_ACCOUNTING_NATIVE.
+No need to keep the ifdeferry around.
+
+Acked-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Cc: Yunfeng Ye <yeyunfeng@huawei.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+[Reformatted the upstream patch]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ kernel/time/tick-sched.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/kernel/time/tick-sched.c b/kernel/time/tick-sched.c
+index 18f5bfccb960..b55dd881b002 100644
+--- a/kernel/time/tick-sched.c
++++ b/kernel/time/tick-sched.c
+@@ -1101,7 +1101,6 @@ unsigned long tick_nohz_get_idle_calls(void)
+ 
+ static void tick_nohz_account_idle_ticks(struct tick_sched *ts)
+ {
+-#ifndef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
+ 	unsigned long ticks;
+ 
+ 	if (vtime_accounting_cpu_enabled())
+@@ -1117,7 +1116,6 @@ static void tick_nohz_account_idle_ticks(struct tick_sched *ts)
+ 	 */
+ 	if (ticks && ticks < LONG_MAX)
+ 		account_idle_ticks(ticks);
+-#endif
+ }
+ 
+ void tick_nohz_idle_restart_tick(void)
+-- 
+2.23.1
+

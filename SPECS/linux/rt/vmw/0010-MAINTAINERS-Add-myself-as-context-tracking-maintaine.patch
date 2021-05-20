@@ -1,0 +1,41 @@
+From 6f950f026a881e1542d9636ff96fae54658a0046 Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Wed, 21 Apr 2021 12:37:39 +0200
+Subject: [PATCH 10/10] MAINTAINERS: Add myself as context tracking maintainer
+
+I've been missing a lot of patches touching context tracking for which
+I wasn't Cc'ed these last months. The code looks like a simple single
+file but has a lot of subtle tentacles.
+
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: Yunfeng Ye <yeyunfeng@huawei.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+[Reformatted the upstream patch]
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ MAINTAINERS | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1061db6fbc32..93bfceb13c8b 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3764,6 +3764,12 @@ L:	netdev@vger.kernel.org
+ S:	Maintained
+ F:	drivers/connector/
+ 
++CONTEXT TRACKING
++M:     Frederic Weisbecker <frederic@kernel.org>
++S:     Maintained
++F:     kernel/context_tracking.c
++F:     include/linux/context_tracking*
++
+ CONTROL GROUP (CGROUP)
+ M:	Tejun Heo <tj@kernel.org>
+ M:	Li Zefan <lizefan@huawei.com>
+-- 
+2.23.1
+

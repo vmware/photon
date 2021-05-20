@@ -1,0 +1,46 @@
+From a836a519b06788fab4b972c357dc68e06d856644 Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Tue, 16 Feb 2021 14:14:25 +0100
+Subject: [PATCH 05/10] tick/nohz: Update nohz_full Kconfig help
+
+CONFIG_NO_HZ_FULL behaves just like CONFIG_NO_HZ_IDLE by default.
+Reassure distros about it.
+
+Acked-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Cc: Yunfeng Ye <yeyunfeng@huawei.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Marcelo Tosatti <mtosatti@redhat.com>
+Cc: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ kernel/time/Kconfig | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
+
+diff --git a/kernel/time/Kconfig b/kernel/time/Kconfig
+index 78eabc41eaa6..7c6993e72371 100644
+--- a/kernel/time/Kconfig
++++ b/kernel/time/Kconfig
+@@ -103,13 +103,14 @@ config NO_HZ_FULL
+ 	 the task mostly runs in userspace and has few kernel activity.
+ 
+ 	 You need to fill up the nohz_full boot parameter with the
+-	 desired range of dynticks CPUs.
++	 desired range of dynticks CPUs to use it. This is implemented at
++	 the expense of some overhead in user <-> kernel transitions:
++	 syscalls, exceptions and interrupts.
+ 
+-	 This is implemented at the expense of some overhead in user <-> kernel
+-	 transitions: syscalls, exceptions and interrupts. Even when it's
+-	 dynamically off.
++	 By default, without passing nohz_full parameter, this behaves just
++	 like NO_HZ_IDLE.
+ 
+-	 Say N.
++	 If you're a distro say Y.
+ 
+ endchoice
+ 
+-- 
+2.23.1
+

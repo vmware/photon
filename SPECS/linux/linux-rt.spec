@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.190
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt79
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -479,6 +479,18 @@ Patch612:       0010-timers-Remove-must_forward_clk.patch
 Patch613:       0011-timers-Lower-base-clock-forwarding-threshold.patch
 Patch614:       0001-timers-Recalculate-next-timer-interrupt-only-when-ne.patch
 
+# Patchset to conditional restart_tick upon idle_exit
+# https://lore.kernel.org/lkml/162091184942.29796.4815200413212139734.tip-bot2@tip-bot2/
+Patch615:       0001-tick-nohz-Evaluate-the-CPU-expression-after-the-stat.patch
+Patch616:       0002-tick-nohz-Conditionally-restart-tick-on-idle-exit.patch
+Patch617:       0003-tick-nohz-Remove-superflous-check-for-CONFIG_VIRT_CP.patch
+Patch618:       0004-tick-nohz-Update-idle_exittime-on-actual-idle-exit.patch
+Patch619:       0005-tick-nohz-Update-nohz_full-Kconfig-help.patch
+Patch620:       0006-tick-nohz-Only-wakeup-a-single-target-cpu-when-kicki.patch
+Patch621:       0007-tick-nohz-Change-signal-tick-dependency-to-wakeup-CP.patch
+Patch622:       0008-tick-nohz-Kick-only-_queued_-task-whose-tick-depende.patch
+Patch623:       0009-tick-nohz-Call-tick_nohz_task_switch-with-interrupts.patch
+Patch624:       0010-MAINTAINERS-Add-myself-as-context-tracking-maintaine.patch
 
 %if 0%{?kat_build:1}
 Patch1000:       fips-kat-tests.patch
@@ -948,6 +960,16 @@ The Linux package contains the Linux kernel doc files
 %patch612 -p1
 %patch613 -p1
 %patch614 -p1
+%patch615 -p1
+%patch616 -p1
+%patch617 -p1
+%patch618 -p1
+%patch619 -p1
+%patch620 -p1
+%patch621 -p1
+%patch622 -p1
+%patch623 -p1
+%patch624 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -1147,6 +1169,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed May 26 2021 Ankit Jain <ankitja@vmware.com> 4.19.190-4
+-   Conditional tick_restart upon idle_exit
 *   Wed May 26 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.190-3
 -   Backport patchset to to reduce timer softirqs
 *   Thu May 20 2021 Ajay Kaher <akaher@vmware.com> 4.19.190-2
