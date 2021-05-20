@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.6.15
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
@@ -9,9 +9,8 @@ Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/%{name}-%{version}.
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
 Patch0:         default-priority.patch
-
+Patch1:         CVE-2021-20232.patch
 BuildRequires:  nettle-devel >= 3.4.1
 BuildRequires:  autogen-libopts-devel
 BuildRequires:  libtasn1-devel
@@ -98,6 +97,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
+*   Thu May 20 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.6.15-3
+-   Fix CVE-2021-20232
 *   Sat Apr 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.6.15-2
 -   Bump version as a part of nettle upgrade
 *   Thu Sep 24 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.6.15-1
