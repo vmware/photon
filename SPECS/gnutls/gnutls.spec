@@ -1,11 +1,11 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
-Version:        3.6.15
-Release:        4%{?dist}
+Version:        3.7.1
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
-Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
-%define sha1    gnutls=00ef7d93347df586c3d1a00f13c326706c0c59ba
+Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
+%define sha1    gnutls=5de5d25534ee5910ea9ee6aaeeb6af1af4350c1e
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -27,11 +27,13 @@ Requires:       guile
 Requires:       gc
 
 %description
-GnuTLS is a secure communications library implementing the SSL, TLS and DTLS protocols and technologies around them. It provides a simple C language application programming interface (API) to access the secure communications protocols as well as APIs to parse and write X.509, PKCS #12, OpenPGP and other required structures. It is aimed to be portable and efficient with focus on security and interoperability.
+GnuTLS is a secure communications library implementing the SSL, TLS and DTLS protocols and technologies around them.
+It provides a simple C language application programming interface (API) to access the secure communications protocols as well as APIs to parse and write X.509,
+PKCS #12, OpenPGP and other required structures. It is aimed to be portable and efficient with focus on security and interoperability.
 
 %package devel
 Summary:    Development libraries and header files for gnutls
-Requires:   gnutls
+Requires:   gnutls = %{version}-%{release}
 Requires:   libtasn1-devel
 Requires:   nettle-devel
 
@@ -95,6 +97,8 @@ make check
 %{_mandir}/man3/*
 
 %changelog
+*   Thu May 20 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.1-1
+-   Update to v3.7.1, Fix CVE-2021-20232
 *   Mon Apr 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.6.15-4
 -   Bump version as a part of nettle upgrade
 *   Tue Oct 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 3.6.15-3
