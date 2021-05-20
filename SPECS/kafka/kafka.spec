@@ -5,7 +5,7 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name: 	       kafka
 Version:       2.5.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache License, Version 2.0
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
@@ -106,5 +106,7 @@ fi
 %doc LICENSE
 
 %changelog
+* Tue Jun 08 2021 Piyush Gupta <gpiyush@vmware.com> 2.5.0-2
+- Bump up internal version to build with zookeeper update.
 * Fri Jul 31 2020 Anisha Kumari <kanisha@vmware.com> 2.5.0-1
 - initial package
