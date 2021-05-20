@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.35
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -134,6 +134,9 @@ Patch128:       0001-Bluetooth-fix-the-erroneous-flush_work-order.patch
 Patch201:        0001-OF-DT-Overlay-configfs-interface.patch
 Patch202:        0002-of-configfs-Use-of_overlay_fdt_apply-API-call.patch
 Patch203:        0003-of-overlay-Correct-symbol-path-fixups.patch
+
+# Rpi fan driver
+Patch204:        0001-Add-rpi-poe-fan-driver.patch
 %endif
 
 # Crypto:
@@ -345,6 +348,8 @@ Python programming language to use the interface to manipulate perf events.
 %patch201 -p1
 %patch202 -p1
 %patch203 -p1
+#Rpi fan driver
+%patch204 -p1
 %endif
 
 # crypto
@@ -709,6 +714,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Thu May 20 2021 Ajay Kaher <akaher@vmware.com> 5.10.35-3
+-   Add Rpi fan driver
 *   Thu May 20 2021 Ajay Kaher <akaher@vmware.com> 5.10.35-2
 -   Fix for CVE-2021-3564
 *   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 5.10.35-1
