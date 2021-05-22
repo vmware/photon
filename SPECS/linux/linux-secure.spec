@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.268
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.269
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=fdbe28d98b910c65e821d106dac32aef9c97da47
+%define sha1 linux=5b3c8969707513a7dd2f4999cdb0abd4253605df
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -446,6 +446,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Sat May 22 2021 Ajay Kaher <akaher@vmware.com> 4.9.269-1
+-   Update to version 4.9.269
 *   Tue May 11 2021 Keerthana K <keerthanak@vmware.com> 4.9.268-2
 -   Fix dummy console function definitions.
 *   Thu Apr 29 2021 Ankit Jain <ankitja@vmware.com> 4.9.268-1
