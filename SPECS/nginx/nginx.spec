@@ -1,7 +1,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.20.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
@@ -12,6 +12,7 @@ Source0:        %{name}-%{version}.tar.gz
 Source1:        nginx.service
 Source2:        nginx-njs-0.4.2.tar.gz
 %define sha1    nginx-njs=1927a613d0e5f3ef6fe3c0a6c8dbb06b39bb9c3c
+Patch0:         0001-nginx-DNS-Resolver-Off-by-One-Heap-Write-in-ngx_reso.patch
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  which
@@ -20,6 +21,7 @@ NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as
 
 %prep
 %setup -q
+%patch0 -p1
 pushd ../
 mkdir nginx-njs
 tar -C nginx-njs -xf %{SOURCE2}
@@ -77,6 +79,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 %{_var}/log/nginx
 
 %changelog
+*   Mon May 24 2021 Keerthana K <keerthanak@vmware.com> 1.20.0-2
+-   Fix for CVE-2021-23017
 *   Tue Apr 20 2021 Gerrit Photon <photon-checkins@vmware.com> 1.20.0-1
 -   Automatic Version Bump
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.19.10-1

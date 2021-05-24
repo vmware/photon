@@ -1,0 +1,49 @@
+From aafc6a90cec91c7c5392d90e893f7a57643824de Mon Sep 17 00:00:00 2001
+From: Luis Merino <luis.merino@x41-dsec.de>
+Date: Wed, 19 May 2021 07:05:53 +0000
+Subject: [PATCH] nginx DNS Resolver Off-by-One Heap Write in
+ ngx_resolver_copy()
+
+An off-by-one error in ngx_resolver_copy() while processing DNS
+responses allows a network attacker to write a dot character ('.',
+0x2E) out of bounds in a heap allocated buffer. The vulnerability can
+be triggered by a DNS response in reply to a DNS request from nginx
+when the resolver primitive is configured. A specially crafted packet
+allows overwriting the least significant byte of next heap chunk
+metadata with 0x2E. A network attacker capable of providing DNS
+responses to a nginx server can likely achieve remote code execution.
+
+The lack of spoofing mitigations in the nginx DNS resolver might render
+this issue widely reachable.
+
+Allocating en extra byte for the spurious dot character written at the
+end of poisoned domain names mitigates the issue.
+
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ src/core/ngx_resolver.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/core/ngx_resolver.c b/src/core/ngx_resolver.c
+--- a/src/core/ngx_resolver.c
++++ b/src/core/ngx_resolver.c
+@@ -4008,15 +4008,15 @@ done:
+             n = *src++;
+ 
+         } else {
++            if (dst != name->data) {
++                *dst++ = '.';
++            }
++
+             ngx_strlow(dst, src, n);
+             dst += n;
+             src += n;
+ 
+             n = *src++;
+-
+-            if (n != 0) {
+-                *dst++ = '.';
+-            }
+         }
+ 
+         if (n == 0) {
