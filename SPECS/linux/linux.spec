@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.190
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -67,6 +67,9 @@ Patch17:        0001-floppy-lower-printk-message-priority.patch
 
 Patch25:        0001-tools-perf-fix-compilation-error.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
+
+# Fix for CVE-2021-3564
+Patch27:       0001-Bluetooth-fix-the-erroneous-flush_work-order.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
@@ -571,6 +574,7 @@ This Linux package contains hmac sha generator kernel module.
 
 %patch25 -p1
 %patch26 -p1
+%patch27 -p1
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
@@ -1243,6 +1247,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Thu May 20 2021 Ajay Kaher <akaher@vmware.com> 4.19.190-2
+-   Fix for CVE-2021-3564
 *   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 4.19.190-1
 -   Update to version 4.19.190
 *   Wed May 12 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-5

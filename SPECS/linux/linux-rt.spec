@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.190
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt79
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -71,6 +71,8 @@ Patch40:        efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.pat
 #Fix for CVE-2019-19338
 Patch41:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch42:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
+# Fix for CVE-2021-3564
+Patch43:        0001-Bluetooth-fix-the-erroneous-flush_work-order.patch
 # Fix for CVE-2020-16119
 Patch58:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
 Patch59:        0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
@@ -545,6 +547,7 @@ The Linux package contains the Linux kernel doc files
 %patch40 -p1
 %patch41 -p1
 %patch42 -p1
+%patch43 -p1
 %patch58 -p1
 %patch59 -p1
 %patch60 -p1
@@ -1117,6 +1120,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu May 20 2021 Ajay Kaher <akaher@vmware.com> 4.19.190-2
+-   Fix for CVE-2021-3564
 *   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 4.19.190-1
 -   Update to version 4.19.190
 *   Wed May 12 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.189-4
