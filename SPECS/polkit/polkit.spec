@@ -1,12 +1,13 @@
 Summary:       A toolkit for defining and handling authorizations.
 Name:          polkit
 Version:       0.116
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       LGPLv2+
 URL:           https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
 Source0:       https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
+Patch0:	       CVE-2021-3560.patch
 Distribution:  Photon
 BuildRequires: autoconf
 BuildRequires: expat-devel
@@ -41,6 +42,7 @@ header files and libraries for polkit
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 %configure \
@@ -111,6 +113,8 @@ fi
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Wed May 26 2021 Siju Maliakkal <smaliakkal@vmware.com> 0.116-2
+-   Fix for CVE-2021-3560
 *   Sat Oct 26 2019 Ankit Jain <ankitja@vmware.com> 0.116-1
 -   Upgraded to 0.116
 *   Fri Oct 11 2019 Siju Maliakkal <smaliakkal@vmware.com> 0.113-6
