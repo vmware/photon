@@ -1,6 +1,6 @@
 Summary:	Library to encode and decode webP format images
 Name:		libwebp
-Version:	1.0.0
+Version:	1.0.3
 Release:	1%{?dist}
 License:	BSD
 URL:		http://webmproject.org/
@@ -8,7 +8,7 @@ Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        https://github.com/webmproject/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1 libwebp=919ee17845b3563a47bc5154ffa0b16f96e48bc7
+%define sha1 libwebp=7b78c45ec1a20c83613e287fac71f7ac3203de69
 BuildRequires:	libjpeg-turbo-devel
 BuildRequires:	libtiff-devel
 BuildRequires:	libpng-devel
@@ -22,15 +22,15 @@ The libwebp package contains a library and support programs to encode and decode
 Summary:	Header and development files
 Requires:	%{name} = %{version}-%{release}
 %description	devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
-%setup -q 
+%setup -q
+
 %build
 ./autogen.sh
 
-./configure \
-	--prefix=%{_prefix} \
+%configure \
 	--enable-libwebpmux \
 	--enable-libwebpdemux \
 	--enable-libwebpdecoder \
@@ -62,9 +62,14 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*       Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 1.0.0-1
--       Update to version 1.0.0
-*       Thu Apr 06 2017 Kumar Kaushik <kaushikk@vmware.com> 0.6.0-1
--       Upgrading version to 0.6.0
-*       Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 0.5.1-1
--       Initial version
+* Wed May 26 2021 Sujay G <gsujay@vmware.com> 1.0.3-1
+- Bump version to 1.0.3 to fix following CVE's:
+- CVE-2018-25009, CVE-2018-25010, CVE-2018-25011, CVE-2018-25012,
+- CVE-2018-25013, CVE-2018-25014, CVE-2020-36328, CVE-2020-36329,
+- CVE-2020-36330, CVE-2020-36331, CVE-2020-36332
+* Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 1.0.0-1
+- Update to version 1.0.0
+* Thu Apr 06 2017 Kumar Kaushik <kaushikk@vmware.com> 0.6.0-1
+- Upgrading version to 0.6.0
+* Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 0.5.1-1
+- Initial version
