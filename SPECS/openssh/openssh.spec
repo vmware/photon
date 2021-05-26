@@ -1,14 +1,14 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        8.4p1
-Release:        2%{?dist}
+Version:        8.5p1
+Release:        1%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha1    openssh=69305059e10a60693ebe6f17731f962c9577535c
+%define sha1    openssh=72eadcbe313b07b1dd3b693e41d3cd56d354e24e
 Source1:        http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha1    blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
 Source2:        sshd.service
@@ -173,6 +173,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+*   Wed May 26 2021 Sujay G <gsujay@vmware.com> 8.5p1-1
+-   Bump version to 8.5p1 to fix CVE-2021-28041
 *   Wed Oct 07 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.4p1-2
 -   Fix ssh issue
 *   Mon Oct 05 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.4p1-1
