@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.191
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt80
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -487,6 +487,9 @@ Patch622:       0008-tick-nohz-Kick-only-_queued_-task-whose-tick-depende.patch
 Patch623:       0009-tick-nohz-Call-tick_nohz_task_switch-with-interrupts.patch
 Patch624:       0010-MAINTAINERS-Add-myself-as-context-tracking-maintaine.patch
 
+#Patch to enable nohz with idle=poll
+Patch625:       0001-Allow-tick-sched-timer-to-be-turned-off-in-idle-poll.patch
+
 %if 0%{?kat_build:1}
 Patch1000:       fips-kat-tests.patch
 %endif
@@ -962,6 +965,7 @@ The Linux package contains the Linux kernel doc files
 %patch622 -p1
 %patch623 -p1
 %patch624 -p1
+%patch625 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -1150,6 +1154,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Jun 09 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.191-2
+-   Enable nohz for idle=poll
 *   Thu Jun 03 2021 Keerthana K <keerthanak@vmware.com> 4.19.191-1
 -   Update to version 4.19.191
 -   Remove XR usb driver support
