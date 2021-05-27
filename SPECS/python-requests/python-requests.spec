@@ -3,17 +3,16 @@
 
 Summary:        Awesome Python HTTP Library That's Actually Usable
 Name:           python-requests
-Version:        2.19.1
-Release:        4%{?dist}
+Version:        2.24.0
+Release:        1%{?dist}
 License:        Apache2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://python-requests.org
 Source0:        http://pypi.python.org/packages/source/r/requests/requests-%{version}.tar.gz
-Patch0:         make_check_add_pipfile.patch
-Patch1:         CVE-2018-18074.patch
-%define sha1    requests=b6e6ed992c86835aa1a7d7a81fec2aee0d385416
+%define sha1    requests=9144742bf54db5f2a74a3e724cec3c19431b3539
+Patch0:         fix_makecheck.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -92,7 +91,6 @@ Python 3 version.
 %prep
 %setup -q -n requests-%{version}
 %patch0 -p1
-%patch1 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -118,20 +116,21 @@ py.test2
 easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
 $easy_install_3 pathlib2 funcsigs pluggy more_itertools pysocks
 $easy_install_3 pytest-mock pytest-httpbin
-LANG=en_US.UTF-8  PYTHONPATH=%{buildroot}%{python3_sitelib} \
-py.test3
+pytest3 -v -k "not test_https_warnings"
 
 %files
 %defattr(-,root,root)
-%doc README.rst HISTORY.rst LICENSE
+%doc LICENSE
 %{python2_sitelib}/*
 
 %files -n python3-requests
 %defattr(-,root,root)
-%doc README.rst HISTORY.rst LICENSE
+%doc LICENSE
 %{python3_sitelib}/*
 
 %changelog
+*   Fri May 28 2021 Piyush Gupta <gpiyush@vmware.com> 2.24.0-1
+-   Upgrade to 2.24.0
 *   Thu Mar 28 2019 Tapas Kundu <tkundu@vmware.com> 2.19.1-4
 -   Fix for CVE-2018-18074
 *   Thu Dec 06 2018 Ashwin H <ashwinh@vmware.com> 2.19.1-3
