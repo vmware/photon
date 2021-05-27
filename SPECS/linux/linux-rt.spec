@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.78
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt54
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -412,6 +412,9 @@ Patch709:       0007-tick-nohz-Change-signal-tick-dependency-to-wakeup-CP.patch
 Patch710:       0008-tick-nohz-Kick-only-_queued_-task-whose-tick-depende.patch
 Patch711:       0009-tick-nohz-Call-tick_nohz_task_switch-with-interrupts.patch
 Patch712:       0010-MAINTAINERS-Add-myself-as-context-tracking-maintaine.patch
+
+#Patch to enable nohz with idle=poll
+Patch713:       0001-Allow-tick-sched-timer-to-be-turned-off-in-idle-poll.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -851,6 +854,7 @@ The Linux package contains the Linux kernel doc files
 %patch710 -p1
 %patch711 -p1
 %patch712 -p1
+%patch713 -p1
 
 %patch1000 -p1
 %patch1001 -p1
@@ -1068,6 +1072,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Nov 17 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.78-4
+-   Enable nohz for idle=poll
 *   Wed Nov 17 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.78-3
 -   Allow PCI resets disablement from vfio_pci
 *   Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.10.78-2
