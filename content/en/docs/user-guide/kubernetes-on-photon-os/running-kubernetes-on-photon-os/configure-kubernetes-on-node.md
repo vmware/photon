@@ -24,6 +24,15 @@ Perform the following steps to configure the kubelet on the node:
     #KUBELET_ARGS=""
     ```
 
+1. make sure that the api-server end-point located in /etc/kubernetes/kubeconfig, targets the api-server in the master node and does not fall into the loopback interface:
+
+    ```sh
+    apiVersion: v1
+    clusters:
+    - cluster:
+        server: <ip_master_node>:8080
+    ```
+
 1. Start the appropriate services on the node (photon-node):
 
     ```sh
