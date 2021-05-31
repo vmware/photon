@@ -1,7 +1,7 @@
 Summary:          systemd-233
 Name:             systemd
 Version:          233
-Release:          28%{?dist}
+Release:          29%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -52,6 +52,7 @@ Patch33:          systemd-233-ipv6ll.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
+Requires:         libgcrypt
 Requires:         xz
 Requires:         kmod
 Requires:         glib
@@ -60,6 +61,7 @@ Requires:         filesystem >= 1.1
 BuildRequires:    intltool
 BuildRequires:    gperf
 BuildRequires:    libcap-devel
+BuildRequires:    libgcrypt-devel
 BuildRequires:    xz-devel
 BuildRequires:    Linux-PAM-devel
 BuildRequires:    XML-Parser
@@ -300,6 +302,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Mon May 31 2021 Sujay G <gsujay@vmware.com> 233-29
+-    Add libgcrypt to build requires, to fix build dependencies
 *    Sun Jun 21 2020 Susant Sahani <ssahani@vmware.com> 233-28
 -    Do not start ndisc when IPv6LL not available.
 *    Sat Jun 06 2020 Susant Sahani <ssahani@vmware.com> 233-27
