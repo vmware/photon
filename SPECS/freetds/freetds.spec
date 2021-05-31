@@ -1,7 +1,7 @@
 Summary:       ODBC driver manager
 Name:          freetds
 Version:       1.2.5
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.unixodbc.org/
 Group:         System Environment/Libraries
@@ -11,8 +11,10 @@ Source0:       ftp://ftp.%{name}.org/pub/%{name}/stable/%{name}-%{version}.tar.g
 %define sha1   freetds=94d5e5ae0d671cbf6c1dfc4ab0a86a76f1fb67fa
 BuildRequires: unixODBC-devel
 BuildRequires: gnutls-devel
+BuildRequires: nettle-devel
 Requires:      gnutls
 Requires:      unixODBC
+Requires:      nettle
 
 %description
 FreeTDS is a project to document and implement the TDS (Tabular DataStream)
@@ -103,5 +105,7 @@ odbcinst -u -d -n 'SQL Server' > /dev/null 2>&1 || true
 %{_docdir}/%{name}/*
 
 %changelog
+*   Mon May 31 2021 Shreenidhi Shedi<sshedi@vmware.com> 1.2.5-2
+-   Bump version to fix nettle dependancy issue.
 *   Thu Oct 01 2020 Dweep Advani <dadvani@vmware.com> 1.2.5-1
 -   Adding package freetds
