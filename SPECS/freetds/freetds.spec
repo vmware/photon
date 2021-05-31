@@ -1,7 +1,7 @@
 Summary:    ODBC driver manager
 Name:       freetds
 Version:    1.1.36
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        http://www.unixodbc.org/
 Group:      System Environment/Libraries
@@ -12,8 +12,10 @@ Source0:    ftp://ftp.%{name}.org/pub/%{name}/stable/%{name}-%{version}.tar.gz
 
 BuildRequires: unixODBC-devel
 BuildRequires: gnutls-devel
+BuildRequires: nettle-devel
 
 Requires:      gnutls
+Requires:      nettle
 Requires:      unixODBC
 
 %description
@@ -49,7 +51,7 @@ and can be installed even if FreeTDS main package is not installed
 
 %prep
 
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
@@ -82,9 +84,9 @@ Setup = %{_libdir}/libtdsodbc.so.0" | odbcinst -i -d -r > /dev/null 2>&1 || true
 odbcinst -u -d -n 'FreeTDS' > /dev/null 2>&1 || true
 odbcinst -u -d -n 'SQL Server' > /dev/null 2>&1 || true
 
-%files 
-%defattr(-,root,root) 
-%doc AUTHORS BUGS COPYING* ChangeLog INSTALL NEWS README TODO 
+%files
+%defattr(-,root,root)
+%doc AUTHORS BUGS COPYING* ChangeLog INSTALL NEWS README TODO
 %{_bindir}/*
 %{_mandir}/man?/*
 %{_libdir}/libct.so.*
@@ -93,8 +95,8 @@ odbcinst -u -d -n 'SQL Server' > /dev/null 2>&1 || true
 %config(noreplace) %{_sysconfdir}/pool.conf
 %config(noreplace) %{_sysconfdir}/freetds.conf
 
-%files devel 
-%defattr (-,root,root) 
+%files devel
+%defattr (-,root,root)
 %{_libdir}/*.so
 %{_includedir}/*
 
@@ -107,5 +109,7 @@ odbcinst -u -d -n 'SQL Server' > /dev/null 2>&1 || true
 %{_docdir}/%{name}/*
 
 %changelog
+*   Mon May 31 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.1.36-2
+-   Bump version to fix nettle dependancy issue.
 *   Fri May 15 2020 Dweep Advani <dadvani@vmware.com> 1.1.36-1
 -   Adding package freetds.
