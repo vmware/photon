@@ -1,23 +1,19 @@
 Summary:        Libxslt is a  XSLT C library
 Name:           libxslt
-Version:        1.1.29
-Release:        8%{?dist}
+Version:        1.1.34
+Release:        1%{?dist}
 License:        MIT
 URL:            http:/http://xmlsoft.org/libxslt/
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
-%define sha1    libxslt=edcaeabb3555ae44853bdc406ee9521fb65c620d
-Patch0:         libxslt-CVE-2017-5029.patch
-Patch1:         libxslt-CVE-2015-9019.patch
-Patch2:         libxslt-CVE-2019-11068.patch
-Patch3:         libxslt-CVE-2019-13117.patch
-Patch4:         libxslt-CVE-2019-13118.patch
-Patch5:         CVE-2019-18197.patch
-Patch6:         libxslt-CVE-2019-5815.patch
+%define sha1    libxslt=5b42a1166a1688207028e4a5e72090828dd2a61e
 Requires:       libxml2-devel
+Requires:       libgcrypt
 BuildRequires:  libxml2-devel
+BuildRequires:  libgcrypt-devel
+
 %description
 The libxslt package contains XSLT libraries used for extending libxml2 libraries to support XSLT files.
 
@@ -25,24 +21,17 @@ The libxslt package contains XSLT libraries used for extending libxml2 libraries
 Summary: Development Libraries for libxslt
 Group: Development/Libraries
 Requires: libxslt = %{version}-%{release}
+
 %description devel
 Header files for doing development with libxslt.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
+sed -i 's/int xsltMaxDepth = 3000/int xsltMaxDepth = 5000/g' libxslt/transform.c
 
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
+%configure \
+    $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
     --disable-static \
     --without-python
 make %{?_smp_mflags}
@@ -52,6 +41,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
+
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
@@ -80,6 +70,9 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+*   Mon May 31 2021 Sujay G <gsujay@vmware.com> 1.1.34-1
+-   Bump version to 1.1.34 to fix build issue with libxml2 upgrade.
+-   Removed not applicable patches from the version upgrade.
 *   Tue Dec 17 2019 Shreyas B. <shreyasb@vmware.com> 1.1.29-8
 -   Apply patch for CVE-2019-5815: READ heap-buffer-overflow in libxslt.
 *   Wed Oct 30 2019 Siju Maliakkal <smaliakkal@vmware.com> 1.1.29-7

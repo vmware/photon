@@ -3,18 +3,15 @@
 
 Summary:        Libxml2
 Name:           libxml2
-Version:        2.9.10
-Release:        3%{?dist}
+Version:        2.9.11
+Release:        1%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
-%define sha1    libxml2=db6592ec9ca9708c4e71bf6bfd907bbb5cd40644
-Patch0:         CVE-2020-7595.patch
-Patch1:         CVE-2019-20388.patch
-Patch2:         CVE-2020-24977.patch
+%define sha1    libxml2=7902b9cc7a549c09f8fb227fc4aa1d0275d4282c
 Provides:       pkgconfig(libxml-2.0)
 
 %description
@@ -52,9 +49,6 @@ Static libraries and header files for the support library for libxml
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 sed \
   -e /xmlInitializeCatalog/d \
   -e 's/((ent->checked =.*&&/(((ent->checked == 0) ||\
@@ -118,6 +112,9 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Mon May 31 2021 Sujay G <gsujay@vmware.com> 2.9.11-1
+-   Bump version to 2.9.11 to fix CVE-2021-3517, CVE-2021-3518, CVE-2021-3537.
+-   Remove other unnecessary patches.
 *   Tue Sep 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.10-3
 -   Fix for CVE-2020-24977(Fix Buffer Overflow vulnerability)
 *   Wed Feb 05 2020 Shreyas B <shreyasb@vmware.com> 2.9.10-2
