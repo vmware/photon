@@ -270,6 +270,9 @@ net -v Get the network-config-manager supported version
 &lt;h2 id="pkg-updateinfo">pkg updateinfo&lt;/h2>
 &lt;p>Get the update information on all enabled repositories (status = enabled). If this command returns nothing, then the update information may not exist on the server.&lt;/p>
 &lt;pre>&lt;code class="language-console" data-lang="console">pmd-cli pkg updateinfo
+&lt;/code>&lt;/pre>&lt;h2 id="pkg-version">pkg version&lt;/h2>
+&lt;p>Get the version number of the package management component on the server.&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">pmd-cli pkg version
 &lt;/code>&lt;/pre>&lt;h1 id="user-management">User Management&lt;/h1>
 &lt;p>The Photon Management Daemon provides CLI commands to help you manage users and user groups.&lt;/p>
 &lt;h2 id="syntax-4">Syntax&lt;/h2>
