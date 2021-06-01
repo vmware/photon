@@ -543,6 +543,14 @@ Get the update information on all enabled repositories (status = enabled). If th
 pmd-cli pkg updateinfo
 ```
 
+## pkg version
+
+Get the version number of the package management component on the server.
+
+```console
+pmd-cli pkg version
+```
+
 # User Management
 
 The Photon Management Daemon provides CLI commands to help you manage users and user groups.
