@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
-Version:	1.10.8
-Release:	3%{?dist}
+Version:	1.10.10
+Release:	1%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -9,7 +9,7 @@ Vendor:		VMware, Inc.
 Distribution: 	Photon
 BuildArch:      noarch
 Source0:	http://apache.mirrors.lucidnetworks.net//ant/source/%{name}-%{version}-src.tar.gz
-%define sha1 apache-ant=74027a785d96715f61619b0a4d9296517bba3aa5
+%define sha1 apache-ant=4cbad480058c6e9061e247731eefef14c0f7c7ed
 Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
 Source2:    https://packages.vmware.com/photon/photon_sources/1.0//maven-ant-tasks-2.1.3.tar.gz
@@ -121,6 +121,8 @@ bootstrap/bin/ant -v run-tests
 %{_bindir}/runant.pl
 
 %changelog
+*   Tue Jun 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.10-1
+-   Bump to version 1.10.10
 *   Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.10.8-3
 -   Fix build with new rpm
 *   Thu Nov 12 2020 Michelle Wang <michellew@vmware.com> 1.10.8-2
