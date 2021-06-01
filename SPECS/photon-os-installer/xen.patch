@@ -1,0 +1,31 @@
+From ca4e718002fb503f5af0a40f0d9d469a7e68d3c1 Mon Sep 17 00:00:00 2001
+From: andrewheberle <andrewheberle@users.noreply.github.com>
+Date: Tue, 25 May 2021 08:56:32 +0800
+Subject: [PATCH] Add Xen/XCP block device
+
+---
+ photon_installer/device.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/photon_installer/device.py b/photon_installer/device.py
+index bea21ce..80a569e 100755
+--- a/photon_installer/device.py
++++ b/photon_installer/device.py
+@@ -17,7 +17,7 @@ def __init__(self, model, path, size):
+ 
+     @staticmethod
+     def refresh_devices():
+-        devices_list = subprocess.check_output(['lsblk', '-d', '-I', '7,8,179,254,259', '-n',
++        devices_list = subprocess.check_output(['lsblk', '-d', '-I', '7,8,179,202,254,259', '-n',
+                                                 '--output', 'NAME,SIZE,MODEL'],
+                                                stderr=open(os.devnull, 'w'))
+         return Device.wrap_devices_from_list(devices_list)
+@@ -25,7 +25,7 @@ def refresh_devices():
+     @staticmethod
+     def refresh_devices_bytes():
+         devices_list = subprocess.check_output(['lsblk', '-d', '--bytes', '-I',
+-                                                '7,8,179,254,259', '-n', '--output', 'NAME,SIZE,MODEL'],
++                                                '7,8,179,202,254,259', '-n', '--output', 'NAME,SIZE,MODEL'],
+                                                stderr=open(os.devnull, 'w'))
+         return Device.wrap_devices_from_list(devices_list)
+ 
