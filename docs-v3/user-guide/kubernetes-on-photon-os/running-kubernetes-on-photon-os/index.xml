@@ -57,9 +57,9 @@ KUBE_API_ARGS=&amp;quot;&amp;quot;
 &lt;li>
 &lt;p>Start the appropriate services on master:&lt;/p>
 &lt;pre>&lt;code>for SERVICES in etcd kube-apiserver kube-controller-manager kube-scheduler; do
-systemctl restart $SERVICES
-systemctl enable $SERVICES
-systemctl status $SERVICES
+emctl restart $SERVICES
+emctl enable $SERVICES
+emctl status $SERVICES
 done
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>

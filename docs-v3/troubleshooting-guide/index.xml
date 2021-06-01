@@ -76,10 +76,10 @@ glibc-devel-2.22-8.ph1.x86_64 : Header files for glibc
 Repo : @System&lt;/p>
 &lt;p>The following example shows you how to find the package that provides a pluggable authentication module, which you might need to find if the system is mishandling passwords.&lt;/p>
 &lt;pre>&lt;code>tdnf provides /etc/pam.d/system-account
-shadow-4.2.1-7.ph1.x86_64 : Programs for handling passwords in a secure way
-Repo : photon
-shadow-4.2.1-8.ph1.x86_64 : Programs for handling passwords in a secure way
-Repo : photon-updates
+w-4.2.1-7.ph1.x86_64 : Programs for handling passwords in a secure way
+: photon
+w-4.2.1-8.ph1.x86_64 : Programs for handling passwords in a secure way
+: photon-updates
 &lt;/code>&lt;/pre>&lt;p>For more commands see the &lt;a href="../../administration-guide/">Photon OS Administration Guide&lt;/a>.&lt;/p>
 &lt;/li>
 &lt;/ul>

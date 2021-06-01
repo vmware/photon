@@ -52,9 +52,9 @@ Metadata cache created.
 &lt;p>This command resolves dependencies by using the local RPMs to help check RPMs for quality assurance before publishing them. To check RPMs with this command, you must create a local directory and place your RPMs in it. The command, which includes no options, takes the path to the local directory containing the RPMs as its argument. The command does not, however, recursively parse directories; it checks the RPMs only in the directory that you specify.&lt;/p>
 &lt;p>For example, after creating a directory named &lt;code>/tmp/myrpms&lt;/code> and placing your RPMs in it, you can run the following command to check them:&lt;/p>
 &lt;pre>&lt;code>tdnf check-local /tmp/myrpms
-Checking all packages from: /tmp/myrpms
-Found 10 packages
-Check completed without issues
+ing all packages from: /tmp/myrpms
+10 packages
+completed without issues
 &lt;/code>&lt;/pre>&lt;pre>&lt;code>
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
@@ -62,10 +62,10 @@ Check completed without issues
 &lt;p>This command finds the packages that provide the package that you supply as an argument. If you are used to a package name for another system, you can use &lt;code>tdnf provides&lt;/code> to find the corresponding name of the package on Photon OS.&lt;/p>
 &lt;p>Example:&lt;/p>
 &lt;pre>&lt;code>tdnf provides docker
-docker-1.11.0-1.ph1.x86_64 : Docker
-Repo : photon
-docker-1.11.0-1.ph1.x86_64 : Docker
-Repo : @System
+r-1.11.0-1.ph1.x86_64 : Docker
+: photon
+r-1.11.0-1.ph1.x86_64 : Docker
+: @System
 &lt;/code>&lt;/pre>&lt;pre>&lt;code>
 For a file, you must provide the full path. Example:
 &lt;/code>&lt;/pre>&lt;pre>&lt;code> tdnf provides /usr/include/stdio.h

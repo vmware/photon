@@ -102,14 +102,13 @@ fe80::42:f0ff:fef7:bd81
 &lt;li>
 &lt;p>Run the following command as root to establish a systemd drop-in unit with a debugging configuration for the network service:&lt;/p>
 &lt;pre>&lt;code>cat &amp;gt; /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
-[Service]
-Environment=SYSTEMD_LOG_LEVEL=debug
-EOF
+vice]
+ronment=SYSTEMD_LOG_LEVEL=debug
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Reload the &lt;code>systemctl&lt;/code> daemon and restart the &lt;code>systemd-networkd&lt;/code> service for the changes to take effect:&lt;/p>
 &lt;pre>&lt;code>systemctl daemon-reload
-systemctl restart systemd-networkd
+emctl restart systemd-networkd
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Verify that your changes took effect:&lt;/p>

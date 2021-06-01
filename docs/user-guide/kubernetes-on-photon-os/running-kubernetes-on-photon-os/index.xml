@@ -47,23 +47,20 @@ photon-node = 192.168.121.65
 &lt;li>
 &lt;p>Edit &lt;code>/etc/kubernetes/apiserver&lt;/code> to appear as such. The &lt;code>service_cluster_ip_range&lt;/code> IP addresses must be an unused block of addresses, not used anywhere else. They do not need to be routed or assigned to anything.&lt;/p>
 &lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ini" data-lang="ini">&lt;span style="color:#8f5902;font-style:italic"># The address on the local server to listen to.&lt;/span>
-&lt;span style="color:#c4a000">KUBE_API_ADDRESS&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;--address=0.0.0.0&amp;#34;
-&lt;/span>&lt;span style="color:#4e9a06"> &lt;/span>
+&lt;span style="color:#c4a000">KUBE_API_ADDRESS&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;--address=0.0.0.0&amp;#34;&lt;/span>
 &lt;span style="color:#8f5902;font-style:italic"># Comma separated list of nodes in the etcd cluster&lt;/span>
-&lt;span style="color:#c4a000">KUBE_ETCD_SERVERS&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;--etcd-servers=http://127.0.0.1:4001&amp;#34;
-&lt;/span>&lt;span style="color:#4e9a06"> &lt;/span>
+&lt;span style="color:#c4a000">KUBE_ETCD_SERVERS&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;--etcd-servers=http://127.0.0.1:4001&amp;#34;&lt;/span>
 &lt;span style="color:#8f5902;font-style:italic"># Address range to use for services&lt;/span>
-&lt;span style="color:#c4a000">KUBE_SERVICE_ADDRESSES&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;--service-cluster-ip-range=10.254.0.0/16&amp;#34;
-&lt;/span>&lt;span style="color:#4e9a06"> &lt;/span>
+&lt;span style="color:#c4a000">KUBE_SERVICE_ADDRESSES&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;--service-cluster-ip-range=10.254.0.0/16&amp;#34;&lt;/span>
 &lt;span style="color:#8f5902;font-style:italic"># Add your own&lt;/span>
 &lt;span style="color:#c4a000">KUBE_API_ARGS&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;&amp;#34;&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;/li>
 &lt;li>
 &lt;p>Start the appropriate services on master:&lt;/p>
 &lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-sh" data-lang="sh">&lt;span style="color:#204a87;font-weight:bold">for&lt;/span> SERVICES in etcd kube-apiserver kube-controller-manager kube-scheduler&lt;span style="color:#000;font-weight:bold">;&lt;/span> &lt;span style="color:#204a87;font-weight:bold">do&lt;/span>
-systemctl restart &lt;span style="color:#000">$SERVICES&lt;/span>
-systemctl &lt;span style="color:#204a87">enable&lt;/span> &lt;span style="color:#000">$SERVICES&lt;/span>
-systemctl status &lt;span style="color:#000">$SERVICES&lt;/span>
+emctl restart &lt;span style="color:#000">$SERVICES&lt;/span>
+emctl &lt;span style="color:#204a87">enable&lt;/span> &lt;span style="color:#000">$SERVICES&lt;/span>
+emctl status &lt;span style="color:#000">$SERVICES&lt;/span>
 &lt;span style="color:#204a87;font-weight:bold">done&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;/li>
 &lt;li>
@@ -96,14 +93,11 @@ photon-node name=photon-node-label Unknown
 &lt;div class="highlight">&lt;pre style="background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4">&lt;code class="language-ini" data-lang="ini">&lt;span style="color:#8f5902;font-style:italic">###&lt;/span>
 &lt;span style="color:#8f5902;font-style:italic"># Kubernetes kubelet (node) config&lt;/span>
 &lt;span style="color:#8f5902;font-style:italic"># The address for the info server to serve on (set to 0.0.0.0 or &amp;#34;&amp;#34; for all interfaces)&lt;/span>
-&lt;span style="color:#c4a000">KUBELET_ADDRESS&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;--address=0.0.0.0&amp;#34;
-&lt;/span>&lt;span style="color:#4e9a06"> &lt;/span>
+&lt;span style="color:#c4a000">KUBELET_ADDRESS&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;--address=0.0.0.0&amp;#34;&lt;/span>
 &lt;span style="color:#8f5902;font-style:italic"># You may leave this blank to use the actual hostname&lt;/span>
-&lt;span style="color:#c4a000">KUBELET_HOSTNAME&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;--hostname_override=photon-node&amp;#34;
-&lt;/span>&lt;span style="color:#4e9a06"> &lt;/span>
+&lt;span style="color:#c4a000">KUBELET_HOSTNAME&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;--hostname_override=photon-node&amp;#34;&lt;/span>
 &lt;span style="color:#8f5902;font-style:italic"># location of the api-server&lt;/span>
-&lt;span style="color:#c4a000">KUBELET_API_SERVER&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;--kubeconfig=/etc/kubernetes/kubeconfig&amp;#34;
-&lt;/span>&lt;span style="color:#4e9a06"> &lt;/span>
+&lt;span style="color:#c4a000">KUBELET_API_SERVER&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">&amp;#34;--kubeconfig=/etc/kubernetes/kubeconfig&amp;#34;&lt;/span>
 &lt;span style="color:#8f5902;font-style:italic"># Add your own&lt;/span>
 &lt;span style="color:#8f5902;font-style:italic">#KUBELET_ARGS=&amp;#34;&amp;#34;&lt;/span>
 &lt;/code>&lt;/pre>&lt;/div>&lt;/li>

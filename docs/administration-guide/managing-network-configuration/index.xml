@@ -422,9 +422,8 @@ fe80::42:f0ff:fef7:bd81
 &lt;li>
 &lt;p>Run the following command as root to establish a &lt;code>systemd&lt;/code> drop-in unit with a debugging configuration for the network service:&lt;/p>
 &lt;pre>&lt;code class="language-console" data-lang="console">cat &amp;gt; /etc/systemd/system/systemd-networkd.service.d/override.conf
-[Service]
-Environment=SYSTEMD_LOG_LEVEL=debug
-EOF
+vice]
+ronment=SYSTEMD_LOG_LEVEL=debug
 &lt;/code>&lt;/pre>&lt;p>``&lt;/p>
 &lt;/li>
 &lt;li>

@@ -92,8 +92,8 @@ here are the available partitions:
 &lt;li>
 &lt;p>If looking at the journal and checking the status of services does not resolve your error, run the following &lt;code>systemd-analyze&lt;/code> commands to examine the boot time and the speed with which services start.&lt;/p>
 &lt;pre>&lt;code>systemd-analyze time
-systemd-analyze blame
-systemd-analyze critical-chain
+emd-analyze blame
+emd-analyze critical-chain
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;/ol>
 &lt;p>&lt;strong>Note&lt;/strong>: The output of these commands might be misleading because one service might just be waiting for another service to finish initializing.&lt;/p></description></item><item><title>Docs: Investigating the Guest Kernel</title><link>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/investigating-the-guest-kernel/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/investigating-the-guest-kernel/</guid><description>
@@ -157,23 +157,21 @@ wget https://github.com/vmware/photon/blob/master/tools/scripts/gdbmacros-for-li
 Volume in drive C is Windows
 Directory of C:\Users\tester\Documents\Virtual Machines\VMware Photon 64-bit
 (7)
-09/20/2016 12:22 PM &amp;lt;DIR&amp;gt; .
-09/20/2016 12:22 PM &amp;lt;DIR&amp;gt; ..
-09/19/2016 03:39 PM 402,653,184 VMware Photon 64-bit (7)-f6b070cd.vmem
-09/20/2016 12:11 PM 5,586,907 VMware Photon 64-bit (7)-f6b070cd.vmss
-09/20/2016 12:11 PM 1,561,001,984 VMware Photon 64-bit (7)-s001.vmdk
-...
-09/20/2016 12:11 PM 300,430 vmware.log
-...
+0/2016 12:22 PM &amp;lt;DIR&amp;gt; .
+0/2016 12:22 PM &amp;lt;DIR&amp;gt; ..
+9/2016 03:39 PM 402,653,184 VMware Photon 64-bit (7)-f6b070cd.vmem
+0/2016 12:11 PM 5,586,907 VMware Photon 64-bit (7)-f6b070cd.vmss
+0/2016 12:11 PM 1,561,001,984 VMware Photon 64-bit (7)-s001.vmdk
+0/2016 12:11 PM 300,430 vmware.log
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Now that you have located the &lt;code>.vmss&lt;/code> and &lt;code>.vmem&lt;/code> files, convert them to one or more core dump files by using the vmss2core tool that comes with Workstation. Here is an example of how to run the command. Be careful with your pathing, escaping, file names, and so forth&amp;ndash;all of which might be different from this example on your Windows machine.&lt;/p>
 &lt;pre>&lt;code>
-C:\Users\shoenisch\Documents\Virtual Machines\VMware Photon 64-bit (7)&amp;gt;C:\&amp;quot;Program Files (x86)\VMware\VMware Workstation&amp;quot;\vmss2core.exe &amp;quot;VMware Photon 64-bit (7)-f6b070cd.vmss&amp;quot; &amp;quot;VMware Photon 64-bit (7)-f6b070cd.vmem&amp;quot;
+sers\shoenisch\Documents\Virtual Machines\VMware Photon 64-bit (7)&amp;gt;C:\&amp;quot;Program Files (x86)\VMware\VMware Workstation&amp;quot;\vmss2core.exe &amp;quot;VMware Photon 64-bit (7)-f6b070cd.vmss&amp;quot; &amp;quot;VMware Photon 64-bit (7)-f6b070cd.vmem&amp;quot;
 The result of this command is one or more files with a `.core` extension plus a digit. Truncated example:
-C:\Users\tester\Documents\Virtual Machines\VMware Photon 64-bit (7)&amp;gt;dir
+sers\tester\Documents\Virtual Machines\VMware Photon 64-bit (7)&amp;gt;dir
 Directory of C:\Users\tester\Documents\Virtual Machines\VMware Photon 64-bit(7)
-09/20/2016 12:22 PM 729,706,496 vmss.core0
+0/2016 12:22 PM 729,706,496 vmss.core0
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Copy the &lt;code>.core&lt;/code> file or files to the your current directory on the Linux machine where you so that you can analyze it with gdb.&lt;/p>
@@ -206,7 +204,7 @@ at arch/x86/include/asm/io.h:316
 &lt;p>Replicating the Photon OS kernel logs on the VMware ESXi host is an advanced but powerful method of troubleshooting a kernel problem.&lt;/p>
 &lt;ul>
 &lt;li>&lt;a href="#replication-method">Replication Method&lt;/a>&lt;/li>
-&lt;li>[Using VProbes Script with a Hard-Coded Address](#using-vprobes-script- with-a-hard-coded-address)&lt;/li>
+&lt;li>&lt;a href="#using-vprobes-script-with-a-hard-coded-address">Using VProbes Script with a Hard-Coded Address&lt;/a>&lt;/li>
 &lt;li>&lt;a href="#a-reusable-vprobe-script-using-the-kallsyms-file">A Reusable VProbe Script Using the kallsyms File&lt;/a>&lt;/li>
 &lt;/ul>
 &lt;h2 id="replication-method">Replication Method&lt;/h2>
@@ -264,8 +262,7 @@ grep log_store /proc/kallsyms
 &lt;li>
 &lt;p>Save your VProbes script as &lt;code>console.emt&lt;/code> in the &lt;code>/tmp&lt;/code> directory. (The file extension for VProbe scripts is &lt;code>.emt&lt;/code>.)&lt;/p>
 &lt;p>While still connected to the ESXi host with SSH, run the following command to obtain the ID of the virtual machine that you want to troubleshoot:&lt;/p>
-&lt;pre>&lt;code> vim-cmd vmsvc/getallvms
-&lt;/code>&lt;/pre>
+&lt;p>&lt;code>vim-cmd vmsvc/getallvms&lt;/code>&lt;/p>
 &lt;p>This command lists all the VMs running on the ESXi host. Find the VM you want to troubleshoot in the list and make a note of its ID.&lt;/p>
 &lt;/li>
 &lt;li>
@@ -309,22 +306,7 @@ grep log_store /proc/kallsyms
 &lt;p>&lt;code>vprobe -m &amp;lt;VM ID&amp;gt; -k /tmp/kallysyms /tmp/console.emt&lt;/code>&lt;/p>
 &lt;p>You can use a directory other than &lt;code>tmp&lt;/code> if you want.&lt;/p>
 &lt;/li>
-&lt;/ol>
-&lt;!--
-### Deep Kernel Analysis with the Crash Utility
--->
-&lt;!--
-### Go to the Debug Shell
-‘ panic=1 init=/bin/bash’
-mount –o rw,remount /
-cd /lib/systemd/system/multi-user.target.wants
-ln –s ../debug-shell.service
-umount /
-sync
-exit
-After reboot debug-shell will be available on tty9. No password required.
--->&lt;blockquote>
-&lt;/blockquote></description></item><item><title>Docs: Linux Kernel</title><link>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/troubleshooting-linux-kernel/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/troubleshooting-linux-kernel/</guid><description>
+&lt;/ol></description></item><item><title>Docs: Linux Kernel</title><link>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/troubleshooting-linux-kernel/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/troubleshooting-linux-kernel/</guid><description>
 &lt;p>The Linux kernel is the main component of Photon OS and is the core interface between a computer’s hardware and its processes. It communicates between the two, managing resources as efficiently as possible.&lt;/p>
 &lt;p>##Kernel Flavours and Versions
 The following list contains the different Linux kernel flavours available:&lt;/p>
