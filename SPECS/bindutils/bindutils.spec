@@ -1,11 +1,11 @@
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.16.6
+Version:        9.16.15
 Release:        1%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha1    bind=f8a4c1bd074cc0305a4c50971e71da5a3b810d78
+%define sha1    bind=5d68bbd1ff452708d45f2d4ef832faa3a1690fc7
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,8 +19,10 @@ BuildRequires:  libuv-devel
 BIND is open source software that implements the Domain Name System (DNS) protocols
 for the Internet. It is a reference implementation of those protocols, but it is
 also production-grade software, suitable for use in high-volume and high-reliability applications.
+
 %prep
 %setup -qn bind-%{version}
+
 %build
 %configure \
     --without-python \
@@ -31,6 +33,7 @@ make -C lib/bind9 %{?_smp_mflags}
 make -C lib/isccfg %{?_smp_mflags}
 make -C lib/irs %{?_smp_mflags}
 make -C bin/dig %{?_smp_mflags}
+
 %install
 make -C bin/dig DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
@@ -70,8 +73,10 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
-*   Wed Oct 01 2020 Sujay G <gsujay@vmware.com> 9.16.6-1
--   Bumper version to 9.16.6
+*   Tue Jun 01 2021 Sujay G <gsujay@vmware.com> 9.16.15-1
+-   Bump version to 9.16.15 to fix CVE-2021-25214, CVE-2021-25215, CVE-2021-25216, CVE-2020-8625
+*   Thu Oct 01 2020 Sujay G <gsujay@vmware.com> 9.16.6-1
+-   Bump version to 9.16.6
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 9.16.4-2
 -   openssl 1.1.1
 *   Fri Jul 10 2020 Sujay G <gsujay@vmware.com> 9.16.4-1
