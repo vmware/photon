@@ -7,7 +7,7 @@ Replicating the Photon OS kernel logs on the VMware ESXi host is an advanced but
 
 
 - [Replication Method](#replication-method)
-- [Using VProbes Script with a Hard-Coded Address](#using-vprobes-script- with-a-hard-coded-address)
+- [Using VProbes Script with a Hard-Coded Address](#using-vprobes-script-with-a-hard-coded-address)
 - [A Reusable VProbe Script Using the kallsyms File](#a-reusable-vprobe-script-using-the-kallsyms-file)
 
 ## Replication Method
@@ -55,10 +55,10 @@ Perform the following steps to set a VProbe for an individual VM:
     	
     ```
     GUEST:ENTER:log_store {
-        	   string dst;
-        	   getgueststr(dst, getguest(RSP+16) & 0xff, getguest(RSP+8));
-        	   printf("%s\n", dst);
-        	}
+               string dst;
+               getgueststr(dst, getguest(RSP+16) & 0xff, getguest(RSP+8));
+               printf("%s\n", dst);
+            }
     ```
 
     On the ESXi host, create a new file, add the template to it, and then change `log_store` to the function address that was the output from the grep command on the VM. 
@@ -67,17 +67,17 @@ Perform the following steps to set a VProbe for an individual VM:
 	
     ```
     GUEST:ENTER:0xffffffff810bb680 {
-    	   string dst;
-    	   getgueststr(dst, getguest(RSP+16) & 0xff, getguest(RSP+8));
-    	   printf("%s\n", dst);
-    	}
+           string dst;
+           getgueststr(dst, getguest(RSP+16) & 0xff, getguest(RSP+8));
+           printf("%s\n", dst);
+        }
     ```
 
 1. Save your VProbes script as `console.emt` in the `/tmp` directory. (The file extension for VProbe scripts is `.emt`.)
 
     While still connected to the ESXi host with SSH, run the following command to obtain the ID of the virtual machine that you want to troubleshoot: 
     
-    	vim-cmd vmsvc/getallvms
+    `vim-cmd vmsvc/getallvms`
     
     This command lists all the VMs running on the ESXi host. Find the VM you want to troubleshoot in the list and make a note of its ID. 
 
@@ -100,13 +100,13 @@ Perform the following steps to create one VProbe script and use for all the VMs 
 	   `echo 0 > /proc/sys/kernel/kptr_restrict`
 
 1. Connect to the ESXi host with SSH to create the following VProbes script and save it as `/tmp/console.emt`:
-	
+
     ```
     GUEST:ENTER:log_store {
-    	   string dst;
-    	   getgueststr(dst, getguest(RSP+16) & 0xff, getguest(RSP+8));
-    	   printf("%s\n", dst);
-    	}
+           string dst;
+           getgueststr(dst, getguest(RSP+16) & 0xff, getguest(RSP+8));
+           printf("%s\n", dst);
+        }
     ```
 
 1. From the ESXi host, run the following command to copy the VM's `kallysms` file to the `tmp` directory on the ESXi host:
@@ -126,24 +126,3 @@ Perform the following steps to create one VProbe script and use for all the VMs 
 	`vprobe -m <VM ID> -k /tmp/kallysyms /tmp/console.emt`
 
     You can use a directory other than `tmp` if you want.
-
-<!--
-### Deep Kernel Analysis with the Crash Utility
-
--->
-
-<!-- 
-
-### Go to the Debug Shell
-
-‘ panic=1 init=/bin/bash’
-mount –o rw,remount /
-cd /lib/systemd/system/multi-user.target.wants
-ln –s ../debug-shell.service
-umount /
-sync
-exit
-
-After reboot debug-shell will be available on tty9. No password required.
-
--->
