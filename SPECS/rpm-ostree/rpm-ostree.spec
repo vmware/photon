@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2017.4
-Release:        7%{?dist}
+Release:        8%{?dist}
 Source0:        rpm-ostree-%{version}.tar.gz
 %define sha1    rpm-ostree=d34882a455afbf0b57617c0962725276967e838a
 Source1:        libglnx-0c52d85.tar.gz
@@ -53,6 +53,7 @@ BuildRequires:  photon-repos
 BuildRequires:  bubblewrap
 BuildRequires:  dbus
 
+Requires:       rpm-libs >= 4.14.2
 Requires:       libcap
 Requires:       librepo
 Requires:       openssl
@@ -128,6 +129,8 @@ make check
 %{_bindir}/rpm-ostree-host/function.inc
 
 %changelog
+*   Mon Jul 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 2017.4-8
+-   Bump version as a part of rpm upgrade
 *   Tue Oct 03 2017 Dheeraj Shetty <dheerajs@vmware.com> 2017.4-7
 -   Remove hardcoded /dev/loop0
 *   Tue Sep 26 2017 Dheeraj Shetty <dheerajs@vmware.com> 2017.4-6

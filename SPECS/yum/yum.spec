@@ -1,7 +1,7 @@
 Summary:        RPM installer/updater
 Name:           yum
 Version:        3.4.3
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Source0:        %{name}-%{version}.tar.gz
@@ -43,121 +43,29 @@ BuildArchitectures: noarch
 
 %description
 Yum is a utility that can check for and automatically download and
-install updated RPM packages. Dependencies are obtained and downloaded 
+install updated RPM packages. Dependencies are obtained and downloaded
 automatically, prompting the user for permission as necessary.
 
-# %package updatesd
-# Summary: Update notification daemon
-# Group: Applications/System
-# Requires: yum = %{version}-%{release}
-# Requires: dbus-python
-# Requires(preun): /sbin/chkconfig 
-# Requires(preun): /sbin/service
-# Requires(postun): /sbin/chkconfig 
-# Requires(postun): /sbin/service
-
-
-# %description updatesd
-# yum-updatesd provides a daemon which checks for available updates and 
-# can notify you when they are available via email, syslog or dbus. 
-
-
-# %package cron
-# Summary: Files needed to run yum updates as a cron job
-# Group: System Environment/Base
-# # Requires: yum >= 3.0 vixie-cron crontabs yum-plugin-downloadonly findutils
-# Requires(post): /sbin/chkconfig
-# Requires(post): /sbin/service
-# Requires(preun): /sbin/chkconfig
-# Requires(preun): /sbin/service
-# Requires(postun): /sbin/service
-
-# %description cron
-# These are the files needed to run yum updates as a cron job.
-# Install this package if you want auto yum updates nightly via cron.
-
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%autosetup -p1
 
 %build
-make
-
+make %{?_smp_mflags}
 
 %install
-[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
-make DESTDIR=$RPM_BUILD_ROOT install
-# install -m 644 %{SOURCE1} $RPM_BUILD_ROOT/etc/yum/yum.conf
-# install -m 755 %{SOURCE2} $RPM_BUILD_ROOT/etc/cron.daily/yum.cron
+[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 # Ghost files:
-mkdir -p $RPM_BUILD_ROOT/var/lib/yum/history
-mkdir -p $RPM_BUILD_ROOT/var/lib/yum/plugins
-mkdir -p $RPM_BUILD_ROOT/var/lib/yum/yumdb
-touch $RPM_BUILD_ROOT/var/lib/yum/uuid
+mkdir -p %{buildroot}/var/lib/yum/history
+mkdir -p %{buildroot}/var/lib/yum/plugins
+mkdir -p %{buildroot}/var/lib/yum/yumdb
+touch %{buildroot}/var/lib/yum/uuid
 
 %find_lang %name
 
 %clean
-[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
-
-
-# %post updatesd
-# /sbin/chkconfig --add yum-updatesd
-# /sbin/service yum-updatesd condrestart >/dev/null 2>&1
-# exit 0
-
-# %preun updatesd
-# if [ $1 = 0 ]; then
-#  /sbin/chkconfig --del yum-updatesd
-#  /sbin/service yum-updatesd stop >/dev/null 2>&1
-# fi
-# exit 0
-
-
-# %post cron
-# # Make sure chkconfig knows about the service
-# /sbin/chkconfig --add yum-cron
-# # if an upgrade:
-# if [ "$1" -ge "1" ]; then
-# # if there's a /etc/rc.d/init.d/yum file left, assume that there was an
-# # older instance of yum-cron which used this naming convention.  Clean 
-# # it up, do a conditional restart
-#  if [ -f /etc/init.d/yum ]; then 
-# # was it on?
-#   /sbin/chkconfig yum
-#   RETVAL=$?
-#   if [ $RETVAL = 0 ]; then
-# # if it was, stop it, then turn on new yum-cron
-#    /sbin/service yum stop 1> /dev/null 2>&1
-#    /sbin/service yum-cron start 1> /dev/null 2>&1
-#    /sbin/chkconfig yum-cron on
-#   fi
-# # remove it from the service list
-#   /sbin/chkconfig --del yum
-#  fi
-# fi 
-# exit 0
-
-# %preun cron
-# # if this will be a complete removeal of yum-cron rather than an upgrade,
-# # remove the service from chkconfig control
-# if [ $1 = 0 ]; then
-#  /sbin/chkconfig --del yum-cron
-#  /sbin/service yum-cron stop 1> /dev/null 2>&1
-# fi
-# exit 0
-# 
-# %postun cron
-# # If there's a yum-cron package left after uninstalling one, do a
-# # conditional restart of the service
-# if [ "$1" -ge "1" ]; then
-#  /sbin/service yum-cron condrestart 1> /dev/null 2>&1
-# fi
-# exit 0
+[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
 
 %files -f %{name}.lang
 %defattr(-, root, root)
@@ -184,18 +92,12 @@ touch $RPM_BUILD_ROOT/var/lib/yum/uuid
 %{_mandir}/man*/yum.*
 %{_mandir}/man*/yum-shell*
 
-#excluding cron and updatesd for now.
-
-#%files cron
-#%defattr(-,root,root)
 %exclude %{_sysconfdir}/cron.daily/0yum.cron
 %exclude %config(noreplace) %{_sysconfdir}/yum/yum-daily.yum
 %exclude %config(noreplace) %{_sysconfdir}/yum/yum-weekly.yum
 %exclude %{_sysconfdir}/rc.d/init.d/yum-cron
 %exclude %config(noreplace) %{_sysconfdir}/sysconfig/yum-cron
 
-#%files updatesd
-#%defattr(-, root, root)
 %exclude %config(noreplace) %{_sysconfdir}/yum/yum-updatesd.conf
 %exclude %config %{_sysconfdir}/rc.d/init.d/yum-updatesd
 %exclude %config %{_sysconfdir}/dbus-1/system.d/yum-updatesd.conf
@@ -204,6 +106,8 @@ touch $RPM_BUILD_ROOT/var/lib/yum/uuid
 %exclude %{_mandir}/man*/yum-updatesd*
 
 %changelog
+*   Tue Jun 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.4.3-10
+-   Bump version as a part of rpm upgrade
 *   Tue Nov 12 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.4.3-9
 -   Fix CVE-2013-1910
 *   Wed Aug 23 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.3-8

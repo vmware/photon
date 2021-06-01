@@ -4,7 +4,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        1.2.3
-Release:        11%{?dist}
+Release:        14%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -164,6 +164,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/libtdnfcli.so.*
 
 %changelog
+*   Tue Jun 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.2.3-12
+-   Bump version as a part of rpm upgrade
 *   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 1.2.3-11
 -   Use latest sqlite
 *   Fri Jul 19 2019 Ankit Jain <ankitja@vmware.com> 1.2.3-10

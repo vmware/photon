@@ -4,7 +4,7 @@
 Summary:        Create deltas between rpms
 Name:           deltarpm
 Version:        3.6.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -88,6 +88,8 @@ The python3-deltarpm package contains the python3 bindings for deltarpm.
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jul 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.6.1-4
+-   Bump version as a part of rpm upgrade
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.6.1-3
 -   Use python2_sitelib
 *   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 3.6.1-2
@@ -98,9 +100,7 @@ The python3-deltarpm package contains the python3 bindings for deltarpm.
 -   GA - Bump release of all rpms
 *   Tue Apr 28 2015 Fabio Rapposelli <fabio@vmware.com> - 3.6-2
 -   Fixed Python install.
-
 *   Fri Mar 09 2007 Dag Wieers <dag@wieers.com> - 3.3-2
 -   Fixed group.
-
 *   Sat Dec 03 2005 Dries Verachtert <dries@ulyssis.org> - 3.3-1
 -   Initial package.

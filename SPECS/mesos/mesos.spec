@@ -58,15 +58,12 @@ sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/Makefil
 sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/libprocess/3rdparty/Makefile.am
 sed -i "/xlocale.h/d" 3rdparty/stout/include/stout/jsonify.hpp
 
-./configure \
+%configure \
     CFLAGS="%{optflags} -Wno-deprecated-declarations"  \
     CXXFLAGS="%{optflags} -Wno-deprecated-declarations -Wno-strict-aliasing" \
-    --disable-silent-rules \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=%{_sysconfdir}
-make
+    --disable-silent-rules
+
+make %{?_smp_mflags}
 
 #%check
 #make
@@ -150,7 +147,7 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 *   Fri Sep 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.24.0-1
 -   Upgrade to mesos 0.24.0
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar.com> 0.23.0-3
--   Updated the dependencies after repackaging the openjdk. 
+-   Updated the dependencies after repackaging the openjdk.
 *   Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-2
 -   Move headers, pc, dev libs into devel pkg.
 *   Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-1

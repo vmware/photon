@@ -1,7 +1,7 @@
 Summary:        Simple package manager built on top of hawkey and librepo
 Name:           libhif
 Version:        0.2.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/hughsie/libhif
 Source0:        http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
@@ -83,6 +83,8 @@ make check
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
+*   Tue Jun 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.2.3-2
+-   Bump version as a part of rpm upgrade
 *   Sat Aug 19 2017 Chang Lee <changlee@vmware.com> 0.2.3-1
 -   Updated to 0.2.3
 -   Disabled GLib-GObject-CRITICAL tests due to Segmentation fault in all tests

@@ -3,29 +3,34 @@
 
 Summary:        Package manager
 Name:           rpm
-Version:        4.13.0.2
-Release:        5%{?dist}
+Version:        4.14.2
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
-%define sha1    rpm=ea4fa30075519d37e04d6f54e89917042f5c55e0
+%define sha1    rpm=8cd4fb1df88c3c73ac506f8ac92be8c39fa610eb
+
 Source1:        macros
 Source2:        brp-strip-debug-symbols
 Source3:        brp-strip-unneeded
-Patch0:         find-debuginfo-do-not-generate-non-existing-build-id.patch
-Patch1:         find-debuginfo-do-not-generate-dir-entries.patch
-Patch2:         CVE-2021-20271.patch
-Patch3:         Fix-OpenPGP-parsing-bugs.patch
+
+Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
+Patch1:         CVE-2021-20271.patch
+Patch2:         Fix-OpenPGP-parsing-bugs.patch
+Patch3:         Header-signatures-alone-are-not-sufficient.patch
+Patch4:         CVE-2021-20266.patch
+Patch5:         Fix-regression-reading-rpm-v3.patch
+
 Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
-Requires:       libarchive
 Requires:       lua
-BuildRequires:	lua-devel
-BuildRequires:  libarchive-devel
+Requires:       file
+
+BuildRequires:  lua-devel
 BuildRequires:  libdb-devel
 BuildRequires:  popt-devel
 BuildRequires:  nss-devel
@@ -33,6 +38,8 @@ BuildRequires:  elfutils-devel
 BuildRequires:  libcap-devel
 BuildRequires:  xz-devel
 BuildRequires:  file-devel
+BuildRequires:  python2-devel
+BuildRequires:  python3-devel
 
 %description
 RPM package manager
@@ -59,7 +66,7 @@ Shared libraries librpm and librpmio
 
 %package build
 Requires:       perl
-Requires:	lua
+Requires:       lua
 Requires:       %{name}-devel = %{version}-%{release}
 Requires:       elfutils-libelf
 Summary: Binaries, scripts and libraries needed to build rpms.
@@ -76,14 +83,12 @@ These are the additional language files of rpm.
 %package -n     python-rpm
 Summary:        Python 2 bindings for rpm.
 Group:          Development/Libraries
-BuildRequires:  python2-devel
 Requires:       python2
 %description -n python-rpm
 
 %package -n     python3-rpm
 Summary:        Python 3 bindings for rpm.
 Group:          Development/Libraries
-BuildRequires:  python3-devel
 Requires:       python3
 
 %description -n python3-rpm
@@ -95,37 +100,30 @@ Python3 rpm.
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
+%patch5 -p1
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
 # pass -L opts to gcc as well to prioritize it over standard libs
 sed -i 's/-Wl,-L//g' python/setup.py.in
+sed -i '/library_dirs/d' python/setup.py.in
 sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
 
-./autogen.sh --noconfigure
-./configure \
+sh ./autogen.sh --noconfigure
+%configure \
     CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
         --program-prefix= \
-        --prefix=%{_prefix} \
-        --exec-prefix=%{_prefix} \
-        --bindir=%{_bindir} \
-        --sbindir=%{_sbindir} \
-        --sysconfdir=%{_sysconfdir} \
-        --datadir=%{_datadir} \
-        --includedir=%{_includedir} \
-        --libdir=%{_libdir} \
-        --libexecdir=%{_libexecdir} \
-        --localstatedir=%{_var} \
-        --sharedstatedir=%{_sharedstatedir} \
-        --mandir=%{_mandir} \
-        --infodir=%{_infodir} \
         --disable-dependency-tracking \
         --disable-static \
         --enable-python \
         --with-cap \
-	--with-lua \
+        --with-lua \
+        --with-vendor=vmware \
         --disable-silent-rules \
-        --with-external-db
+        --with-external-db \
+        --without-archive
+
 make %{?_smp_mflags}
 
 pushd python
@@ -159,9 +157,8 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-/bin/rpm
+%{_bindir}/rpm
 %{_bindir}/gendiff
-%{_bindir}/rpm2archive
 %{_bindir}/rpm2cpio
 %{_bindir}/rpmdb
 %{_bindir}/rpmgraph
@@ -183,6 +180,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpmdb.8.gz
 %{_mandir}/man8/rpmgraph.8.gz
 %{_mandir}/man8/rpmkeys.8.gz
+%{_mandir}/man8/rpm-misc.8.gz
+%{_mandir}/man8/rpm-plugin-systemd-inhibit.8.gz
 %exclude %{_mandir}/fr/man8/*.gz
 %exclude %{_mandir}/ja/man8/*.gz
 %exclude %{_mandir}/ko/man8/*.gz
@@ -193,7 +192,7 @@ rm -rf %{buildroot}
 
 %files libs
 %defattr(-,root,root)
-%{_sysconfdir}/rpm/macros
+%config(noreplace) %{_sysconfdir}/rpm/macros
 %{_libdir}/librpmio.so.*
 %{_libdir}/librpm.so.*
 %{_libdir}/rpm/macros
@@ -234,9 +233,11 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/*.prov
 %{_libdir}/rpm/sepdebugcrcfix
 
-
 %{_libdir}/rpm/pythondeps.sh
 %{_libdir}/rpm/rpmdeps
+
+%{_libdir}/rpm/python-macro-helper
+%{_libdir}/rpm/pythondistdeps.py
 
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*
@@ -265,6 +266,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jun 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-1
+-   Bump to version 4.14.2
 *   Thu Apr 29 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.13.0.2-5
 -   Fix PGP parsing issue
 *   Wed Apr 07 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.13.0.2-4

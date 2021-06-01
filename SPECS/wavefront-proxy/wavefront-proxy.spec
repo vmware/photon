@@ -4,7 +4,7 @@ Version:        4.39
 Release:        2%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
-Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz 
+Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
 %define sha1    wavefront=de9bd09c3311176cac2183ec031fd39b52a44c56
 Patch0:         openhft-chronicle-map-ver-upgrade.patch
 Group:          Development/Tools
@@ -47,7 +47,7 @@ sed -i 's/\/etc\/init.d\/$APP_BASE-proxy restart/ systemctl restart $APP_BASE-pr
 sed -i 's/-jar \/opt\/wavefront\/wavefront-proxy\/bin\/wavefront-push-agent.jar/-jar \/opt\/wavefront-push-agent.jar/' proxy/docker/run.sh
 
 %build
-mvn install
+mvn install -DskipTests
 
 %install
 install -m 755 -D pkg/opt/wavefront/wavefront-proxy/bin/autoconf-wavefront-proxy.sh %{buildroot}/opt/wavefront/%{name}/bin/autoconf-wavefront-proxy.sh

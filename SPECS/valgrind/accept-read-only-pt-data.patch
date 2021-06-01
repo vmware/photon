@@ -1,0 +1,103 @@
+From 8dcbec34666cf2d9677b140878a9f267fcd31fe3 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 13 Jul 2021 17:10:10 +0530
+Subject: [PATCH] Accept read-only PT_LOAD segments and .rodata.
+
+The new binutils ld -z separate-code option creates multiple read-only
+PT_LOAD segments and might place .rodata in a non-executable segment.
+
+Allow and keep track of separate read-only segments and allow a readonly
+page with .rodata section.
+
+Based on patches from Tom Hughes <tom@compton.nu> and
+H.J. Lu <hjl.tools@gmail.com>.
+
+https://bugs.kde.org/show_bug.cgi?id=395682
+
+[sshedi: ported back to 3.12.0 version]
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ coregrind/m_debuginfo/debuginfo.c |  2 --
+ coregrind/m_debuginfo/readelf.c   | 34 +++++++++++++++++++++++--------
+ 2 files changed, 26 insertions(+), 10 deletions(-)
+
+diff --git a/coregrind/m_debuginfo/debuginfo.c b/coregrind/m_debuginfo/debuginfo.c
+index b9c74a7..b01459d 100644
+--- a/coregrind/m_debuginfo/debuginfo.c
++++ b/coregrind/m_debuginfo/debuginfo.c
+@@ -961,9 +961,7 @@ ULong VG_(di_notify_mmap)( Addr a, Bool allow_SkFileV, Int use_fd )
+ #    error "Unknown platform"
+ #  endif
+ 
+-#  if defined(VGP_x86_darwin) && DARWIN_VERS >= DARWIN_10_7
+    is_ro_map = seg->hasR && !seg->hasW && !seg->hasX;
+-#  endif
+ 
+ #  if defined(VGO_solaris)
+    is_rx_map = seg->hasR && seg->hasX && !seg->hasW;
+diff --git a/coregrind/m_debuginfo/readelf.c b/coregrind/m_debuginfo/readelf.c
+index 81f94ee..dfebf01 100644
+--- a/coregrind/m_debuginfo/readelf.c
++++ b/coregrind/m_debuginfo/readelf.c
+@@ -1785,7 +1785,7 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
+                Bool loaded = False;
+                for (j = 0; j < VG_(sizeXA)(di->fsm.maps); j++) {
+                   const DebugInfoMapping* map = VG_(indexXA)(di->fsm.maps, j);
+-                  if (   (map->rx || map->rw)
++                  if (   (map->rx || map->rw || map->ro)
+                       && map->size > 0 /* stay sane */
+                       && a_phdr.p_offset >= map->foff
+                       && a_phdr.p_offset <  map->foff + map->size
+@@ -1816,6 +1816,16 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
+                            i, (UWord)item.bias);
+                         loaded = True;
+                      }
++                     if (map->ro
++                         && (a_phdr.p_flags & (PF_R | PF_W | PF_X))
++                            == PF_R) {
++                        item.exec = False;
++                        VG_(addToXA)(svma_ranges, &item);
++                        TRACE_SYMTAB(
++                           "PT_LOAD[%ld]:   acquired as ro, bias 0x%lx\n",
++                           i, (UWord)item.bias);
++                        loaded = True;
++                     }
+                   }
+                }
+                if (!loaded) {
+@@ -2083,17 +2093,25 @@ Bool ML_(read_elf_debug_info) ( struct _DebugInfo* di )
+          }
+       }
+ 
+-      /* Accept .rodata where mapped as rx (data), even if zero-sized */
++      /* Accept .rodata where mapped as rx or rw (data), even if zero-sized */
+       if (0 == VG_(strcmp)(name, ".rodata")) {
+-         if (inrx && !di->rodata_present) {
+-            di->rodata_present = True;
++         if (!di->rodata_present) {
+             di->rodata_svma = svma;
+-            di->rodata_avma = svma + inrx->bias;
++            di->rodata_avma = svma;
+             di->rodata_size = size;
+-            di->rodata_bias = inrx->bias;
+             di->rodata_debug_svma = svma;
+-            di->rodata_debug_bias = inrx->bias;
+-                                    /* NB was 'inrw' prior to r11794 */
++            if (inrx) {
++               di->rodata_avma += inrx->bias;
++               di->rodata_bias = inrx->bias;
++               di->rodata_debug_bias = inrx->bias;
++            } else if (inrw) {
++               di->rodata_avma += inrw->bias;
++               di->rodata_bias = inrw->bias;
++               di->rodata_debug_bias = inrw->bias;
++            } else {
++               BAD(".rodata");
++            }
++            di->rodata_present = True;
+             TRACE_SYMTAB("acquiring .rodata svma = %#lx .. %#lx\n",
+                          di->rodata_svma,
+                          di->rodata_svma + di->rodata_size - 1);
+-- 
+2.17.1
+

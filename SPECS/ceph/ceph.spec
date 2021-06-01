@@ -9,9 +9,6 @@
 %define _libexecdir %{_exec_prefix}/lib
 %define _unitdir /usr/lib/systemd/system
 
-#################################################################################
-# common
-#################################################################################
 Name:       ceph
 Version:    12.2.13
 Release:    2%{?dist}
@@ -25,9 +22,7 @@ Source0:    http://ceph.com/download/%{name}-%{version}.tar.gz
 Patch0:     CVE-2020-12059.patch
 Vendor:     VMware, Inc.
 Distribution:   Photon
-#################################################################################
-# dependencies that apply across all distro families
-#################################################################################
+
 Requires:       ceph-osd = %{epoch}:%{version}-%{release}
 Requires:       ceph-mds = %{epoch}:%{version}-%{release}
 Requires:       ceph-mgr = %{epoch}:%{version}-%{release}
@@ -65,9 +60,6 @@ BuildRequires:  xfsprogs
 BuildRequires:  xfsprogs-devel
 BuildRequires:  nasm
 
-#################################################################################
-# distro-conditional dependencies
-#################################################################################
 Requires:   systemd
 BuildRequires:  boost
 BuildRequires:  btrfs-progs
@@ -81,15 +73,10 @@ BuildRequires:  python-setuptools
 BuildRequires:  fcgi-devel
 BuildRequires:  gperf
 
-
 %description
 Ceph is a massively scalable, open-source, distributed storage system that runs
 on commodity hardware and delivers object, block and file system storage.
 
-
-#################################################################################
-# packages
-#################################################################################
 %package base
 Summary:       Ceph Base Package
 Group:         System Environment/Base
@@ -454,9 +441,6 @@ python-rados, python-rbd, python-rgw and python-cephfs. Packages still
 depending on python-ceph should be fixed to depend on python-rados,
 python-rbd, python-rgw or python-cephfs instead.
 
-#################################################################################
-# common
-#################################################################################
 %prep
 %setup -n ceph-%{version}
 %patch0 -p1
@@ -494,7 +478,8 @@ cmake .. \
     $CEPH_EXTRA_CMAKE_ARGS \
     -DWITH_OCF=OFF
 
-make %{?_smp_mflags}
+# -j64 results in c++ compiler OOM error sometimes
+make -j8
 
 %install
 pushd build
@@ -536,9 +521,6 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/ceph/bootstrap-rgw
 %clean
 rm -rf %{buildroot}
 
-#################################################################################
-# files and systemd scriptlets
-#################################################################################
 %files
 
 %files base
@@ -654,7 +636,6 @@ fi
 
 %files mds
 %{_bindir}/ceph-mds
-#%{_mandir}/man8/ceph-mds.8*
 %{_unitdir}/ceph-mds@.service
 %{_unitdir}/ceph-mds.target
 %attr(750,ceph,ceph) %dir %{_localstatedir}/lib/ceph/mds
@@ -1019,9 +1000,9 @@ ln -sf %{_libdir}/librbd.so.1 /usr/lib64/qemu/librbd.so.1
 %{_libdir}/python3.6/site-packages/ceph_daemon.py
 
 
-%files -n python-ceph-compat
-# We need an empty %%files list for python-ceph-compat, to tell rpmbuild to
+# We need an empty files section for python-ceph-compat, to tell rpmbuild to
 # actually build this meta package.
+%files -n python-ceph-compat
 
 %changelog
 *   Mon May 04 2020 Sujay G <gsujay@vmware.com> 12.2.13-2
