@@ -3,8 +3,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux
-Version:        4.19.190
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.191
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,15 +14,13 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=ce0796f609b4d6696ddc42a8969b3884f75e73bd
+%define sha1 linux=c4a7c181cb1344be1c353e3e8bc1d8b0367ae01a
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
 Source3:	https://github.com/amzn/amzn-drivers/archive/ena_linux_%{ena_version}.tar.gz
 %define sha1 ena_linux=c8ec9094f9db8d324d68a13b0b3dcd2c5271cbc0
 Source4:	config_aarch64
-Source5:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
-%define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
 Source6:        pre-preun-postun-tasks.inc
 Source7:        check_for_config_applicability.inc
 # Photon-checksum-generator kernel module
@@ -52,8 +50,6 @@ Patch7:         9p-trans_fd-extend-port-variable-to-u32.patch
 Patch8:         perf-scripts-python-Convert-python2-scripts-to-python3.patch
 Patch9:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 Patch10:        0001-cgroup-v1-cgroup_stat-support.patch
-# ttyXRUSB support
-Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
 #HyperV patches
 Patch13:        0004-vmbus-Don-t-spam-the-logs-with-unknown-GUIDs.patch
 
@@ -121,10 +117,6 @@ Patch65:        0005-ovl-check-permission-to-open-real-file.patch
 # Fix for CVE-2019-19770
 Patch66:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch67:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
-
-# Fix for CVE-2021-23133
-Patch68:	0001-Revert-net-sctp-fix-race-condition-in-sctp_destroy_s.patch
-Patch69:	0001-net-sctp-delay-auto_asconf-init-until-binding-the-fi.patch
 
 #Fix for 9p
 Patch70:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
@@ -552,7 +544,6 @@ This Linux package contains hmac sha generator kernel module.
 %setup -q -n linux-%{version}
 %ifarch x86_64
 %setup -D -b 3 -n linux-%{version}
-%setup -D -b 5 -n linux-%{version}
 %setup -D -b 10 -n linux-%{version}
 %setup -D -b 11 -n linux-%{version}
 %setup -D -b 13 -n linux-%{version}
@@ -568,7 +559,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
-%patch11 -p1
 %patch13 -p1
 
 %ifarch x86_64
@@ -609,8 +599,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
-%patch68 -p1
-%patch69 -p1
 
 %patch70 -p1
 %patch71 -p1
@@ -914,12 +902,6 @@ pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 make -C $bldroot M=`pwd` VERBOSE=1 modules %{?_smp_mflags}
 popd
 
-# build XR module
-bldroot=`pwd`
-pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
-make KERNELDIR=$bldroot %{?_smp_mflags} all
-popd
-
 # build Intel SGX module
 bldroot=`pwd`
 pushd ../SGXDataCenterAttestationPrimitives-DCAP_1.6/driver/linux
@@ -995,12 +977,6 @@ make INSTALL_MOD_PATH=%{buildroot} modules_install
 bldroot=`pwd`
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
-popd
-
-# install XR module
-bldroot=`pwd`
-pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
-make KERNELDIR=$bldroot INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
 # install Intel SGX module
@@ -1251,6 +1227,10 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Thu Jun 03 2021 Keerthana K <keerthanak@vmware.com> 4.19.191-1
+-   Update to version 4.19.191
+-   Remove XR usb driver support
+-   .config: Enable CONFIG_FANOTIFY_ACCESS_PERMISSIONS
 *   Wed Jun 02 2021 Keerthana K <keerthanak@vmware.com> 4.19.190-3
 -   Fix for CVE-2021-3573
 *   Thu May 20 2021 Ajay Kaher <akaher@vmware.com> 4.19.190-2

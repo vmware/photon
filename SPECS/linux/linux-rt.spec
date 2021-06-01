@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.190
+Version:        4.19.191
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt79
-Release:        5%{?kat_build:.%kat}%{?dist}
+%define rt_version rt80
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,11 +15,9 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=ce0796f609b4d6696ddc42a8969b3884f75e73bd
+%define sha1 linux=c4a7c181cb1344be1c353e3e8bc1d8b0367ae01a
 Source1:	config-rt
 Source2:	initramfs.trigger
-Source3:	xr_usb_serial_common_lnx-3.6-and-newer-pak.tar.xz
-%define sha1 xr=74df7143a86dd1519fa0ccf5276ed2225665a9db
 Source4:        pre-preun-postun-tasks.inc
 Source5:        check_for_config_applicability.inc
 %define i40e_version 2.13.10
@@ -44,8 +42,6 @@ Patch6:         4.18-x86-vmware-STA-support.patch
 Patch7:         9p-trans_fd-extend-port-variable-to-u32.patch
 Patch9:         vsock-delay-detach-of-QP-with-outgoing-data.patch
 Patch10:        0001-cgroup-v1-cgroup_stat-support.patch
-# ttyXRUSB support
-Patch11:	usb-acm-exclude-exar-usb-serial-ports.patch
 
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 # Out-of-tree patches from AppArmor:
@@ -92,10 +88,6 @@ Patch66:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 Patch68:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
 Patch69:        0002-bpf-Fix-32-bit-src-register-truncation-on-div-mod.patch
 Patch70:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
-
-# Fix for CVE-2021-23133
-Patch71:	0001-Revert-net-sctp-fix-race-condition-in-sctp_destroy_s.patch
-Patch72:	0001-net-sctp-delay-auto_asconf-init-until-binding-the-fi.patch
 
 # Fix for CVE-2021-3573
 Patch73:        0001-bluetooth-use-correct-lock-to-prevent-UAF-of-hdev-ob.patch
@@ -459,7 +451,7 @@ Patch535:       0335-Linux-4.19.185-rt76-REBASE.patch
 Patch536:       0336-mm-slub-Don-t-resize-the-location-tracking-cache-on-.patch
 Patch537:       0337-locking-rwsem_rt-Add-__down_read_interruptible.patch
 # Keep rt_version matched up with this patch.
-Patch538:       0338-Linux-4.19.190-rt79-REBASE.patch
+Patch538:       0338-Linux-4.19.191-rt80-REBASE.patch
 
 
 #Photon Specific Changes
@@ -547,7 +539,6 @@ The Linux package contains the Linux kernel doc files
 %prep
 %setup -q -n linux-%{version}
 %ifarch x86_64
-%setup -D -b 3 -n linux-%{version}
 %setup -D -b 6 -n linux-%{version}
 %setup -D -b 8 -n linux-%{version}
 %setup -D -b 9 -n linux-%{version}
@@ -562,7 +553,6 @@ The Linux package contains the Linux kernel doc files
 %patch7 -p1
 %patch9 -p1
 %patch10 -p1
-%patch11 -p1
 %patch26 -p1
 %patch29 -p1
 %patch30 -p1
@@ -590,8 +580,6 @@ The Linux package contains the Linux kernel doc files
 %patch68 -p1
 %patch69 -p1
 %patch70 -p1
-%patch71 -p1
-%patch72 -p1
 %patch73 -p1
 
 %patch80 -p1
@@ -1004,11 +992,6 @@ sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .conf
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
 
 %ifarch x86_64
-# build XR module
-bldroot=`pwd`
-pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
-make KERNELDIR=$bldroot %{?_smp_mflags} all
-popd
 
 # build i40e module
 bldroot=`pwd`
@@ -1062,12 +1045,6 @@ install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
 make INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
-
-# install XR module
-bldroot=`pwd`
-pushd ../xr_usb_serial_common_lnx-3.6-and-newer-pak
-make KERNELDIR=$bldroot INSTALL_MOD_PATH=%{buildroot} modules_install
-popd
 
 # install i40e module
 bldroot=`pwd`
@@ -1173,6 +1150,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Jun 03 2021 Keerthana K <keerthanak@vmware.com> 4.19.191-1
+-   Update to version 4.19.191
+-   Remove XR usb driver support
+-   .config: Enable CONFIG_FANOTIFY_ACCESS_PERMISSIONS
 *   Wed Jun 02 2021 Keerthana K <keerthanak@vmware.com> 4.19.190-5
 -   Fix for CVE-2021-3573
 *   Wed May 26 2021 Ankit Jain <ankitja@vmware.com> 4.19.190-4

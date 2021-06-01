@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.190
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.191
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=ce0796f609b4d6696ddc42a8969b3884f75e73bd
+%define sha1 linux=c4a7c181cb1344be1c353e3e8bc1d8b0367ae01a
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -118,10 +118,6 @@ Patch76:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch77:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch78:        0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
 Patch79:        0005-ovl-check-permission-to-open-real-file.patch
-
-# Fix for CVE-2021-23133
-Patch80:        0001-Revert-net-sctp-fix-race-condition-in-sctp_destroy_s.patch
-Patch81:        0001-net-sctp-delay-auto_asconf-init-until-binding-the-fi.patch
 
 # inherit tcp_limit_output_bytes
 Patch90:	tcp-inherit-TSQ-limit-from-root-namespace.patch
@@ -489,8 +485,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch77 -p1
 %patch78 -p1
 %patch79 -p1
-%patch80 -p1
-%patch81 -p1
 
 %patch90 -p1
 %patch98 -p1
@@ -893,6 +887,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Jun 01 2021 Keerthana K <keerthanak@vmware.com> 4.19.191-1
+-   Update to version 4.19.191
+-   .config: Enable CONFIG_FANOTIFY_ACCESS_PERMISSIONS
 *   Thu May 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.190-2
 -   Add feature to support selective freeing of initrds
 *   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 4.19.190-1

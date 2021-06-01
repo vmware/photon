@@ -1,0 +1,46 @@
+From d242ebbba9b43529fd68a5ed5bcee90dcef9631c Mon Sep 17 00:00:00 2001
+From: Scott Wood <swood@redhat.com>
+Date: Sat, 27 Jul 2019 00:56:34 -0500
+Subject: [PATCH 301/338] sched: migrate disable: Protect cpus_ptr with lock
+
+[ Upstream commit 27ee52a891ed2c7e2e2c8332ccae0de7c2674b09 ]
+
+Various places assume that cpus_ptr is protected by rq/pi locks,
+so don't change it before grabbing those locks.
+
+Signed-off-by: Scott Wood <swood@redhat.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ kernel/sched/core.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index b5c5d419cf34..96497f8b20dd 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -7241,9 +7241,8 @@ migrate_disable_update_cpus_allowed(struct task_struct *p)
+ 	struct rq *rq;
+ 	struct rq_flags rf;
+ 
+-	p->cpus_ptr = cpumask_of(smp_processor_id());
+-
+ 	rq = task_rq_lock(p, &rf);
++	p->cpus_ptr = cpumask_of(smp_processor_id());
+ 	update_nr_migratory(p, -1);
+ 	p->nr_cpus_allowed = 1;
+ 	task_rq_unlock(rq, p, &rf);
+@@ -7255,9 +7254,8 @@ migrate_enable_update_cpus_allowed(struct task_struct *p)
+ 	struct rq *rq;
+ 	struct rq_flags rf;
+ 
+-	p->cpus_ptr = &p->cpus_mask;
+-
+ 	rq = task_rq_lock(p, &rf);
++	p->cpus_ptr = &p->cpus_mask;
+ 	p->nr_cpus_allowed = cpumask_weight(&p->cpus_mask);
+ 	update_nr_migratory(p, 1);
+ 	task_rq_unlock(rq, p, &rf);
+-- 
+2.31.1
+

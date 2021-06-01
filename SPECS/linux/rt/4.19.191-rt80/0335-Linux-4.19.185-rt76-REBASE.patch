@@ -1,0 +1,20 @@
+From e0ea62fe0a2675664f94c79afd04ee5b58b11359 Mon Sep 17 00:00:00 2001
+From: Clark Williams <williams@redhat.com>
+Date: Mon, 12 Apr 2021 15:03:55 -0500
+Subject: [PATCH 335/338] Linux 4.19.185-rt76 REBASE
+
+Signed-off-by: Clark Williams <williams@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 1199ebade17b..c1f2720eaf25 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt16
++-rt76
+-- 
+2.31.1
+

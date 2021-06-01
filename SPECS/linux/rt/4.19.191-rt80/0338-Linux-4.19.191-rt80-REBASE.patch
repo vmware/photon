@@ -1,0 +1,20 @@
+From f52e1580d126a4c597cf76d172665c43ce0968ad Mon Sep 17 00:00:00 2001
+From: Clark Williams <williams@redhat.com>
+Date: Fri, 28 May 2021 12:13:05 -0500
+Subject: [PATCH 338/338] Linux 4.19.191-rt80 REBASE
+
+Signed-off-by: Clark Williams <williams@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index c1f2720eaf25..5ba2c2091cf9 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt76
++-rt80
+-- 
+2.31.1
+
