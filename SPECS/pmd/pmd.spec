@@ -10,7 +10,7 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -356,6 +356,8 @@ rm -rf %{buildroot}/*
     %exclude %{_libdir}/gssapi_unix/*.la
 
 %changelog
+*   Tue Jun 01 2021 <okurth@vmware.com> 0.0.7-5
+-   Bump to consume latest tdnf
 *   Mon Apr 12 2021 Shreyas B <shreyasb@vmware.com> 0.0.7-4
 -   Use GSSAPI-Unix Code from github
 -   Support for openssl v1.1.1 added to GSSAPI-Unix Code

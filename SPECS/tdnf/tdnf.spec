@@ -4,7 +4,7 @@
 #
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.0.2
+Version:        3.1.0
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -35,7 +35,7 @@ BuildRequires:  libxml2
 Obsoletes:      yum
 Provides:       yum
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    tdnf=fe9a710b15f04e0654494219e262034d66817aab
+%define sha1    tdnf=46a52792eeeffe3f7e353fa963ab108b09856e8d
 
 %description
 tdnf is a yum/dnf equivalent which uses libsolv and libcurl
@@ -245,6 +245,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
 
 %changelog
+*   Tue Jun 1 2021 Oliver Kurth <okurth@vmware.com> 3.1.0-1
+-   update to 3.1.0
 *   Tue Apr 6 2021 Oliver Kurth <okurth@vmware.com> 3.0.2-1
 -   update to 3.0.2
 *   Thu Feb 18 2021 Oliver Kurth <okurth@vmware.com> 3.0.0-5
