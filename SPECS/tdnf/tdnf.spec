@@ -4,7 +4,7 @@
 Summary:	dnf/yum equivalent using C libs
 Name:		tdnf
 Version:	1.1.0
-Release:	4%{?dist}
+Release:	5%{?dist}
 Vendor:		VMware, Inc.
 Distribution:	Photon
 License:	VMware
@@ -93,16 +93,18 @@ ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
     %{_libdir}/pkgconfig/tdnf.pc
 
 %changelog
+*       Tue Jun 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.1.0-5
+-       Bump version as a part of rpm upgrade
 *       Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 1.1.0-4
--	use latest sqlite-autoconf
+-       use latest sqlite-autoconf
 *       Wed Oct 11 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.0-3
 -       Patch to report curl error for repo sync or download
 *       Fri Sep 29 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-2
 -       rpm version update
 *       Thu Dec 08 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.0-1
 -       update to v1.1.0
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.9-2
--	GA - Bump release of all rpms
+*	    Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.9-2
+-	    GA - Bump release of all rpms
 *       Fri May 20 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.9-1
 -       Update to 1.0.9. Contains fixes for updateinfo.
 *       Wed May 4 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.8-3
@@ -133,5 +135,4 @@ ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
 *       Tue Jun 30 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1
 -       Proxy support, keepcache fix, valgrind leaks fix
 *       Fri Jan 23 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0
--       Initial build.  First version
-
+-       Initial build. First version

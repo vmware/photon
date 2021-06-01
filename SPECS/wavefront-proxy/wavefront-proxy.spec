@@ -48,11 +48,7 @@ sed -i 's/-jar \/opt\/wavefront\/wavefront-proxy\/bin\/wavefront-push-agent.jar/
 
 %build
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
-%if "%{_arch}" == "aarch64"
 mvn install -DskipTests
-%else
-mvn install
-%endif
 
 %install
 install -m 755 -D pkg/opt/wavefront/wavefront-proxy/bin/autoconf-wavefront-proxy.sh %{buildroot}/opt/wavefront/%{name}/bin/autoconf-wavefront-proxy.sh

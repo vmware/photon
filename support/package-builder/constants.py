@@ -74,6 +74,7 @@ class constants(object):
         "openssl",
         "python2",
         "rpm",
+        "libdb",
         "groff",
         "man-pages",
         "cpio"]
@@ -220,6 +221,8 @@ class constants(object):
         "rpm",
         "rpm-build",
         "rpm-devel",
+        "libdb",
+        "libdb-devel",
         "autoconf",
         "automake",
         "groff",
@@ -315,6 +318,8 @@ class constants(object):
         "rpm",
         "rpm-build",
         "rpm-devel",
+        "libdb",
+        "libdb-devel",
         "groff",
         "man-pages",
         "cpio"]
@@ -343,7 +348,7 @@ class constants(object):
         constants.updateRPMMacros(options)
         # Perform full parsing now
         constants.specData.readSpecsAndConvertToSerializableObjects(constants.specPath)
-        
+
     @staticmethod
     def updateRPMMacros(options):
         if options.katBuild != None:
@@ -375,7 +380,7 @@ class constants(object):
         spec = Specutils(constants.specPath + "/openjdk10/openjdk10.spec")
         javaversion10 = spec.getVersion()
         constants.specData.addMacro("JAVA_VERSION_10",javaversion10)
-        
+
         #adding kernelversion rpm macro
         spec = Specutils(constants.specPath + "/linux/linux.spec")
         kernelversion = spec.getVersion()
@@ -384,7 +389,7 @@ class constants(object):
         #adding kernelrelease rpm macro
         kernelrelease = spec.getRelease()
         constants.specData.addMacro("KERNEL_RELEASE",kernelrelease)
-       
+
         #adding kernelsubrelease rpm macro
         kernelversion = kernelversion.replace(".","")
         if kernelversion.isdigit():
@@ -392,5 +397,5 @@ class constants(object):
         kernelsubrelease = str(kernelversion)+kernelrelease.split('.')[0]
         if kernelsubrelease:
             kernelsubrelease = "."+kernelsubrelease
-            constants.specData.addMacro("kernelsubrelease",kernelsubrelease) 
+            constants.specData.addMacro("kernelsubrelease",kernelsubrelease)
 

@@ -2,7 +2,7 @@
 Summary:	Contains the GNU compiler collection
 Name:		gcc
 Version:	5.3.0
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GPLv2+
 URL:		http://gcc.gnu.org
 Group:		Development/Tools
@@ -92,18 +92,22 @@ SED=sed \
 	--with-system-zlib
 #	--disable-silent-rules
 #sed -i '/-D_FORTIFY_SOURCE=2 for preprocessor/,+2d' `dirname $(gcc --print-libgcc-file-name)`/../specs
-make
+
+make %{?_smp_mflags}
+
 %install
 pushd ../gcc-build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}/%_lib
 ln -sv %{_bindir}/cpp %{buildroot}/%{_lib}
 ln -sv gcc %{buildroot}%{_bindir}/cc
 install -vdm 755 %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
 %ifarch x86_64
-	mv -v %{buildroot}%{_lib64dir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
+    mv -v %{buildroot}%{_lib64dir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
+    chmod 755 %{buildroot}/%{_lib64dir}/libgcc_s.so.1
 %else
-	mv -v %{buildroot}%{_libdir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
+    mv -v %{buildroot}%{_libdir}/*gdb.py %{buildroot}%{_datarootdir}/gdb/auto-load%{_lib}
+    chmod 755 %{buildroot}/%{_lib}/libgcc_s.so.1
 %endif
 rm -rf %{buildroot}%{_infodir}
 popd
@@ -215,6 +219,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %endif
 
 %changelog
+*   Tue Jun 29 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.3.0-7
+-   Enable elfdeps for libgcc_s to generate libgcc_s.so.1(*)(64bit) provides
 *   Mon Jun 03 2019 Harinadh Donmaraju <hdommaraju@vmware.com> 5.3.0-6
 -   Updated for packaging with static files
 *   Thu Jun 14 2018 Keerthana K <keerthanak@vmware.com> 5.3.0-5

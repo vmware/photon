@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.5.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
@@ -26,10 +26,11 @@ This is useful for object-oriented scripting.
 %patch0 -p1
 
 %build
-./configure \
-        --prefix=%{_prefix}   \
+%configure \
         --enable-shared \
-        --docdir=%{_docdir}/%{name}-%{version}
+        --docdir=%{_docdir}/%{name}-%{version} \
+        --with-compress-debug-sections=no
+
 make %{?_smp_mflags}
 
 %install
@@ -57,6 +58,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+*   Tue Jun 29 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.5.8-3
+-   Added --with-compress-debug-sections=no without it debugedit fails
 *   Mon Nov 02 2020 Sujay G <gsujay@vmware.com> 2.5.8-2
 -   Fix CVE-2020-25613
 *   Mon May 11 2020 Sujay G <gsujay@vmware.com> 2.5.8-1

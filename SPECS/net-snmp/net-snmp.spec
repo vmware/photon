@@ -1,58 +1,59 @@
 %global __requires_exclude perl\\(.*\\)
-Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6. 
-Name:           net-snmp   
-Version:        5.7.3
-Release:        11%{?dist}
-License:        BSD (like)  
+Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
+Name:           net-snmp
+Version:        5.8
+Release:        1%{?dist}
+License:        BSD (like)
 URL:            http://net-snmp.sourceforge.net/
 Group:          Productivity/Networking/Other
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1 net-snmp=97dc25077257680815de44e34128d365c76bd839
-Patch1:         net-snmp-5.7.2-systemd.patch
-Patch2:         net-snmp-CVE-2018-1000116.patch
-Patch3:         net-snmp-remove-u64-typedef.patch
-Patch4:         net-snmp-fix-perl-module-compilation.patch
-Patch5:         net-snmp-CVE-2018-18065.patch
-Patch6:         net-snmp-5.7.3-CVE-2019-20892.patch
-Patch7:         net-snmp-5.7.3-CVE-2020-15861.patch
-Patch8:         net-snmp-5.7.3-CVE-2020-15862.patch
+%define sha1 net-snmp=78f70731df9dcdb13fe8f60eb7d80d7583da4d2c
+Source1:        snmpd.service
+Source2:        snmptrapd.service
+Patch0:         net-snmp-CVE-2019-20892.patch
+Patch1:         net-snmp-5.8-CVE-2020-15861.patch
+Patch2:         net-snmp-5.8-CVE-2020-15862.patch
 
-BuildRequires:  openssl-devel perl systemd
-Requires:       perl systemd
-Requires:       perl = 5.24.1
-Obsoletes:      net-snmp-devel < 5.7.3-9
-
+BuildRequires:  openssl-devel
+BuildRequires:  perl
+BuildRequires:  systemd
+Requires:       perl
+Requires:       systemd
 %description
  Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 
 %package devel
 Group: Development/Libraries
 Summary: The includes and static libraries from the Net-SNMP package.
-Requires: net-snmp = %{version}
+Requires: net-snmp = %{version}-%{release}
 
 %description devel
 The net-snmp-devel package contains headers and libraries for building SNMP applications.
 
+%package perl
+Group: System Environment/Libraries
+Summary: The Perl modules provided with Net-SNMP
+Requires: net-snmp, perl
+Provides: perl(Net::SNMP)
+
+%description perl
+Net-SNMP provides a number of Perl modules useful when using the SNMP
+protocol.  Both client and agent support modules are provided.
+
 %prep
 %setup -q
+%patch0 -p1
 %patch1 -p1
 %patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
 
 %build
-./configure --prefix=%{_prefix} \
+%configure \
                 --host=ia64-linux \
                 --build=i686 \
                 --target=ia64-linux \
                 --sbindir=/sbin \
-                --sysconfdir=%{_sysconfdir} \
                 --with-sys-location="unknown" \
                 --with-logfile=/var/log/net-snmpd.log \
                 --with-persistent-directory=/var/lib/net-snmp \
@@ -67,41 +68,21 @@ make
 %install
 make install DESTDIR=%{buildroot}
 mkdir -p %{buildroot}/lib/systemd/system
-cat << EOF >> %{buildroot}/lib/systemd/system/snmpd.service
-[Unit]
-Description=Simple Network Management Protocol (SNMP) Daemon.
-After=syslog.target network.target
+install -m 0644 %{SOURCE1} %{buildroot}/lib/systemd/system/snmpd.service
+install -m 0644 %{SOURCE2} %{buildroot}/lib/systemd/system/snmptrapd.service
 
-[Service]
-Type=notify
-ExecStart=/usr/sbin/snmpd -LS0-6d -f
-ExecReload=/bin/kill -HUP $MAINPID
+#Delete unnecessary stuff
+find %{buildroot}/%{_libdir}/perl5/ -name Bundle -type d | xargs rm -rf
+find %{buildroot}/%{_libdir}/perl5/ -name perllocal.pod | xargs rm -f
 
-[Install]
-WantedBy=multi-user.target
-EOF
+# store a copy of installed Perl stuff.
+# This is based off the netsnmp github repo - https://github.com/net-snmp/net-snmp/blob/master/dist/net-snmp.spec
+(xxdir=`pwd` && cd %{buildroot} && find usr/lib*/perl5 -type f | sed 's/^/\//' > $xxdir/net-snmp-perl-files)
 
-cat << EOF >> %{buildroot}/lib/systemd/system/snmptrapd.service
-[Unit]
-Description=Simple Network Management Protocol (SNMP) Trap Daemon.
-After=syslog.target network.target
-
-[Service]
-Type=notify
-ExecStart=/usr/sbin/snmptrapd -Lsd -f
-ExecReload=/bin/kill -HUP $MAINPID
-
-[Install]
-WantedBy=multi-user.target
-EOF
+%check
+make %{?_smp_mflags} test
 
 %post
-if [ $1 == 2 ]; then
-  # Upgrading net-snmp, preserve the existing config in /usr/etc/snmp
-  if [ -d /usr/etc/snmp -a ! -e %{_sysconfdir}/snmp ]; then
-    ln -sf /usr/etc/snmp %{_sysconfdir}/snmp
-  fi
-fi
 /sbin/ldconfig
 %systemd_post snmpd.service
 %systemd_post snmptrapd.service
@@ -117,7 +98,7 @@ fi
 
 %clean
 rm -rf %{buildroot}/*
- 
+
 %files
 %doc COPYING NEWS README ChangeLog
 %defattr(-,root,root)
@@ -125,8 +106,7 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/snmptrapd.service
 %{_bindir}
 %{_libdir}/*.so.*
-/sbin/*  
-%ghost %config(noreplace) %{_sysconfdir}/snmp
+/sbin/*
 %{_datadir}/snmp/snmpconf-data/
 %{_datadir}/snmp/snmp_perl.pl
 %{_datadir}/snmp/snmp_perl_trapd.pl
@@ -143,9 +123,14 @@ rm -rf %{buildroot}/*
 %{_datadir}/snmp/mibs
 %{_datadir}/snmp/mib2c*
 %{_mandir}/man3/*
-%exclude /usr/lib/perl5/5.22.1/x86_64-linux-thread-multi/perllocal.pod
+
+%files perl -f net-snmp-perl-files
+
+%exclude /usr/lib/perl5/*/*/perllocal.pod
 
 %changelog
+*   Tue Jun 29 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.8-1
+-   Bumpt to 5.8 as a part of RPM upgrade
 *   Thu Aug 27 2020 Shreyas B. <shreyasb@vmware.com> 5.7.3-11
 -   Fix for CVE-2020-15861 & CVE-2020-15862
 *   Tue Jul 07 2020 Shreyas B. <shreyasb@vmware.com> 5.7.3-10

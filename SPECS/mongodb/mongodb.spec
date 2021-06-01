@@ -21,7 +21,8 @@ MongoDB (from "humongous") is a scalable, high-performance, open source, documen
 %setup -qn mongo-r%{version}
 
 %build
-scons %{?_smp_mflags} MONGO_VERSION=%{version} \
+# fails with OOM error if we use -j64
+scons -j8 MONGO_VERSION=%{version} \
     --disable-warnings-as-errors \
     --use-system-pcre \
     --use-system-zlib
