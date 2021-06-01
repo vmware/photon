@@ -1,14 +1,14 @@
 Summary:        Database servers made by the original developers of MySQL.
 Name:           mariadb
-Version:        10.2.14
-Release:        2%{?dist}
+Version:        10.2.38
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://mariadb.org/
 Source0:        http://mirrors.nodesdirect.com/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define         sha1 mariadb=e809ea91405ddb4b3239ca67f1bba6414172b283
+%define         sha1 mariadb=51f23e93c6998ee7bff8ef92ea6462413d21b56b
 
 BuildRequires:  cmake
 BuildRequires:  Linux-PAM-devel
@@ -176,8 +176,10 @@ rm -rf %{buildroot}
 %{_mandir}/man1/mysql_convert_table_format.1.gz
 %{_mandir}/man1/mysqldump.1.gz
 %{_mandir}/man1/mysqldumpslow.1.gz
+%{_mandir}/man1/mysql_embedded.1.gz
 %{_mandir}/man1/mysql_find_rows.1.gz
 %{_mandir}/man1/mysql_fix_extensions.1.gz
+%{_mandir}/man1/mysql_ldb.1.gz
 %{_mandir}/man1/mysql_plugin.1.gz
 %{_mandir}/man1/mysql_secure_installation.1.gz
 %{_mandir}/man1/mysql_setpermission.1.gz
@@ -193,6 +195,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/perror.1.gz
 %{_datadir}/mysql/charsets/*
 %{_datadir}/magic
+%{_datadir}/pam_user_map.so
+%{_datadir}/user_map.conf
 %doc COPYING CREDITS
 
 %exclude /usr/share/mysql/bench
@@ -241,6 +245,7 @@ rm -rf %{buildroot}
 %{_bindir}/wsrep_sst_mariabackup
 %{_bindir}/wsrep_sst_mysqldump
 %{_bindir}/wsrep_sst_rsync
+%{_bindir}/wsrep_sst_rsync_wan
 %{_bindir}/wsrep_sst_xtrabackup
 %{_bindir}/wsrep_sst_xtrabackup-v2
 %{_sbindir}/*
@@ -271,7 +276,9 @@ rm -rf %{buildroot}
 %{_mandir}/man1/aria_pack.1.gz
 %{_mandir}/man1/aria_read_log.1.gz
 %{_mandir}/man1/innochecksum.1.gz
+%{_mandir}/man1/mariabackup.1.gz
 %{_mandir}/man1/mariadb-service-convert.1.gz
+%{_mandir}/man1/mbstream.1.gz
 %{_mandir}/man1/myisamchk.1.gz
 %{_mandir}/man1/myisam_ftdump.1.gz
 %{_mandir}/man1/myisamlog.1.gz
@@ -288,11 +295,11 @@ rm -rf %{buildroot}
 %{_mandir}/man1/replace.1.gz
 %{_mandir}/man1/resolveip.1.gz
 %{_mandir}/man1/resolve_stack_dump.1.gz
-%{_mandir}/man1/tokuftdump.1.gz
-%{_mandir}/man1/tokuft_logdump.1.gz
 %{_mandir}/man1/wsrep_sst_common.1.gz
+%{_mandir}/man1/wsrep_sst_mariabackup.1.gz
 %{_mandir}/man1/wsrep_sst_mysqldump.1.gz
 %{_mandir}/man1/wsrep_sst_rsync.1.gz
+%{_mandir}/man1/wsrep_sst_rsync_wan.1.gz
 %{_mandir}/man1/wsrep_sst_xtrabackup.1.gz
 %{_mandir}/man1/wsrep_sst_xtrabackup-v2.1.gz
 %{_mandir}/man8/*
@@ -305,8 +312,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/mysql_performance_tables.sql
 %{_datadir}/mysql/mysql_system_tables.sql
 %{_datadir}/mysql/mysql_system_tables_data.sql
+%{_datadir}/mysql/mysql_test_db.sql
 %{_datadir}/mysql/mysql_test_data_timezone.sql
-%{_datadir}/mysql/mysql_to_mariadb.sql
 %{_datadir}/mysql/mroonga/AUTHORS
 %{_datadir}/mysql/mroonga/COPYING
 %{_datadir}/groonga-normalizer-mysql/README.md
@@ -326,7 +333,8 @@ rm -rf %{buildroot}
 %{_datadir}/aclocal/mysql.m4
 %{_libdir}/libmariadb.so
 %{_libdir}/libmysqld.so
-%{_datadir}/pkgconfig/mariadb.pc
+%{_libdir}/pkgconfig/mariadb.pc
+%{_libdir}/pkgconfig/libmariadb.pc
 
 %files errmsg
 %{_datadir}/mysql/czech/errmsg.sys
@@ -356,6 +364,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Mon May 31 2021 Dweep Advani <dadvani@vmware.com> 10.2.38-1
+-   Upgrade to 10.2.38 to address CVE-2021-27928
 *   Wed Jan 23 2019 Ajay Kaher <akaher@vmware.com> 10.2.14-2
 -   Remove PerconaFT from mariadb pkg because of AGPL licence
 *   Fri Apr 20 2018 Xiaolin Li <xiaolinl@vmware.com> 10.2.14-1
