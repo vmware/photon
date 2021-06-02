@@ -2,7 +2,7 @@
 
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.9.10
+Version:        2.9.22
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha1 %{name}=7b37caa080cf922a21f9a087eca10e01b6395195
+%define sha1 %{name}=8962979e71795c331c276fb0ebcde2933ece04e8
 
 Patch0:         ansible-tdnf.patch
 
@@ -60,6 +60,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 02 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.9.22-1
+-   Bumpt version to 2.9.22 to fix CVE-2021-20178
 *   Fri Jul 03 2020 Shreendihi Shedi <sshedi@vmware.com> 2.9.10-1
 -   Upgrade to version 2.9.10
 -   Removed python2 dependancy
