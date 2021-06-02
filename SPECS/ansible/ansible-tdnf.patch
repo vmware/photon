@@ -1,11 +1,23 @@
-diff -rupN ansible-2.7.6/lib/ansible/modules/packaging/os/tdnf.py ansible-2.7.6-tdnf/lib/ansible/modules/packaging/os/tdnf.py
---- ansible-2.7.6/lib/ansible/modules/packaging/os/tdnf.py	1969-12-31 16:00:00.000000000 -0800
-+++ ansible-2.7.6-tdnf/lib/ansible/modules/packaging/os/tdnf.py	2019-07-29 12:48:13.791094555 -0700
+From 48a3d3ebc39cb763226dee46f8eb67d45530a94f Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Thu, 3 Jun 2021 22:53:23 +0530
+Subject: [PATCH] ansible-tdnf
+
+---
+ lib/ansible/modules/packaging/os/tdnf.py | 297 +++++++++++++++++++++++
+ 1 file changed, 297 insertions(+)
+ create mode 100644 lib/ansible/modules/packaging/os/tdnf.py
+
+diff --git a/lib/ansible/modules/packaging/os/tdnf.py b/lib/ansible/modules/packaging/os/tdnf.py
+new file mode 100644
+index 0000000000..3d4c5cf51e
+--- /dev/null
++++ b/lib/ansible/modules/packaging/os/tdnf.py
 @@ -0,0 +1,297 @@
 +#!/usr/bin/python
 +# -*- coding: utf-8 -*-
 +
-+# (c) 2019, Anish Swaminathan <https://github.com/suezzelur>
++# (c) 2021, Anish Swaminathan <https://github.com/suezzelur>
 +#
 +# GNU General Public License v3.0+ (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 +
@@ -299,3 +311,6 @@ diff -rupN ansible-2.7.6/lib/ansible/modules/packaging/os/tdnf.py ansible-2.7.6-
 +
 +if __name__ == '__main__':
 +    main()
+-- 
+2.17.1
+

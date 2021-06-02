@@ -2,7 +2,7 @@
 
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.9.20
+Version:        2.11.1
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha1 %{name}=c45a4e6f48d0404861d526d8612012e5806bf844
+%define sha1 %{name}=a8e1a8da5146f1f7826ea70d90b3bb7c54508d43
 
 Patch0:         ansible-tdnf.patch
 
@@ -20,6 +20,7 @@ BuildArch:      noarch
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-resolvelib
 
 Requires:       python3
 Requires:       python3-libs
@@ -27,6 +28,7 @@ Requires:       python3-jinja2
 Requires:       python3-PyYAML
 Requires:       python3-xml
 Requires:       python3-paramiko
+Requires:       python3-resolvelib
 
 %if %{with_check}
 BuildRequires:  python3-devel
@@ -40,9 +42,7 @@ BuildRequires:  python3-jinja2
 Ansible is a radically simple IT automation system. It handles configuration-management, application deployment, cloud provisioning, ad-hoc task-execution, and multinode orchestration - including trivializing things like zero downtime rolling updates with load balancers.
 
 %prep
-%setup -q
-
-%patch0 -p2
+%autosetup -p1
 
 %build
 python3 setup.py build
@@ -60,6 +60,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jun 02 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.11.1-1
+-   Bump version to 2.11.1
 *   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 2.9.20-1
 -   Automatic Version Bump
 *   Fri Jul 03 2020 Shreendihi Shedi <sshedi@vmware.com> 2.9.10-1
