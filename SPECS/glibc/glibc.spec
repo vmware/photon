@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -21,6 +21,8 @@ Patch3:         CVE-2019-25013.patch
 Patch4:         CVE-2021-3326.patch
 Patch5:         CVE-2020-29562.patch
 Patch6:         CVE-2020-27618.patch
+Patch7:         0001-CVE-2021-33574.patch
+Patch8:         0002-CVE-2021-33574.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %define ExtraBuildRequires python3, python3-libs
@@ -82,6 +84,8 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
+%patch8 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -315,6 +319,8 @@ fi
 
 
 %changelog
+*   Wed Jun 02 2021 Ajay Kaher <akaher@vmware.com> 2.32-6
+-   Fix CVE-2021-33574
 *   Thu Apr 01 2021 Ajay Kaher <akaher@vmware.com> 2.32-5
 -   Fix CVE-2020-27618
 *   Thu Mar 11 2021 Ajay Kaher <akaher@vmware.com> 2.32-4
