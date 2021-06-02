@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.190
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -129,6 +129,9 @@ Patch69:	0001-net-sctp-delay-auto_asconf-init-until-binding-the-fi.patch
 #Fix for 9p
 Patch70:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
 Patch71:        0001-9p-VDFS-Initialize-fid-iounit-during-creation-of-p9_.patch
+
+# Fix for CVE-2021-3573
+Patch72:        0001-bluetooth-use-correct-lock-to-prevent-UAF-of-hdev-ob.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -611,6 +614,7 @@ This Linux package contains hmac sha generator kernel module.
 
 %patch70 -p1
 %patch71 -p1
+%patch72 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -1247,6 +1251,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Wed Jun 02 2021 Keerthana K <keerthanak@vmware.com> 4.19.190-3
+-   Fix for CVE-2021-3573
 *   Thu May 20 2021 Ajay Kaher <akaher@vmware.com> 4.19.190-2
 -   Fix for CVE-2021-3564
 *   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 4.19.190-1
