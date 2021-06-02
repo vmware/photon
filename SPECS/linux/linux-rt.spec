@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.35
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt39
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -110,6 +110,8 @@ Patch126:       0016-ath10k-Validate-first-subframe-of-A-MSDU-before-proc.patch
 Patch127:	0001-net-sctp-delay-auto_asconf-init-until-binding-the-fi.patch
 # Fix for CVE-2021-3564
 Patch128:       0001-Bluetooth-fix-the-erroneous-flush_work-order.patch
+# Fix for CVE-2021-3573
+Patch129:       0001-bluetooth-use-correct-lock-to-prevent-UAF-of-hdev-ob.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/5.10/
@@ -546,6 +548,7 @@ The Linux package contains the Linux kernel doc files
 %patch126 -p1
 %patch127 -p1
 %patch128 -p1
+%patch129 -p1
 
 # RT
 %patch301 -p1
@@ -1067,6 +1070,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Jun 02 2021 Keerthana K <keerthanak@vmware.com> 5.10.35-3
+-   Fix for CVE-2021-3573
 *   Thu May 20 2021 Ajay Kaher <akaher@vmware.com> 5.10.35-2
 -   Fix for CVE-2021-3564
 *   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 5.10.35-1
