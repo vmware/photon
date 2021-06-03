@@ -1,14 +1,14 @@
 Summary:        Database servers made by the original developers of MySQL.
 Name:           mariadb
-Version:        10.3.11
-Release:        2%{?dist}
+Version:        10.3.29
+Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://mariadb.org/
 Source0:        https://downloads.mariadb.org/f/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define         sha1 mariadb=7b75d7ec06642f26ce197e07f5ba16283061cc87
+%define         sha1 mariadb=86bbee7bceba4290894f54d1c29e1533821a55f3
 BuildRequires:  cmake
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
@@ -197,6 +197,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/perror.1.gz
 %{_datadir}/mysql/charsets/*
 %{_datadir}/magic
+%{_datadir}/pam_user_map.so
+%{_datadir}/user_map.conf
 %doc COPYING CREDITS
 
 %exclude /usr/share/mysql/bench
@@ -244,8 +246,6 @@ rm -rf %{buildroot}
 %{_bindir}/wsrep_sst_mysqldump
 %{_bindir}/wsrep_sst_rsync
 %{_bindir}/wsrep_sst_rsync_wan
-%{_bindir}/wsrep_sst_xtrabackup
-%{_bindir}/wsrep_sst_xtrabackup-v2
 %{_sbindir}/*
 %{_libdir}/systemd/system/mariadb.service
 %{_libdir}/systemd/system/mariadb@.service
@@ -286,13 +286,9 @@ rm -rf %{buildroot}
 %{_mandir}/man1/replace.1.gz
 %{_mandir}/man1/resolveip.1.gz
 %{_mandir}/man1/resolve_stack_dump.1.gz
-%{_mandir}/man1/tokuftdump.1.gz
-%{_mandir}/man1/tokuft_logprint.1.gz
 %{_mandir}/man1/wsrep_sst_common.1.gz
 %{_mandir}/man1/wsrep_sst_mysqldump.1.gz
 %{_mandir}/man1/wsrep_sst_rsync.1.gz
-%{_mandir}/man1/wsrep_sst_xtrabackup.1.gz
-%{_mandir}/man1/wsrep_sst_xtrabackup-v2.1.gz
 %{_mandir}/man1/mariabackup.1.gz
 %{_mandir}/man1/mbstream.1.gz
 %{_mandir}/man1/mysql_embedded.1.gz
@@ -310,7 +306,6 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/mysql_system_tables.sql
 %{_datadir}/mysql/mysql_system_tables_data.sql
 %{_datadir}/mysql/mysql_test_data_timezone.sql
-%{_datadir}/mysql/mysql_to_mariadb.sql
 %{_datadir}/mysql/mysql_test_db.sql
 %license %{_datadir}/mysql/mroonga/AUTHORS
 %license %{_datadir}/mysql/mroonga/COPYING
@@ -334,7 +329,7 @@ rm -rf %{buildroot}
 %{_libdir}/libmariadbd.so
 %{_libdir}/libmysqld.so
 %{_libdir}/pkgconfig/libmariadb.pc
-%{_datadir}/pkgconfig/mariadb.pc
+%{_libdir}/pkgconfig/mariadb.pc
 
 %files errmsg
 %{_datadir}/mysql/czech/errmsg.sys
@@ -364,6 +359,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Tue Jun 01 2021 Dweep Advani <dadvani@vmware.com> 10.3.29-1
+-   Upgrade to 10.3.29 for addressing CVE-2021-27928
 *   Wed Jan 23 2019 Ajay Kaher <akaher@vmware.com> 10.3.11-2
 -   Remove PerconaFT from mariadb pkg because of AGPL licence
 *   Wed Jan 02 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.3.11-1
