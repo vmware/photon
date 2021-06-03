@@ -1,0 +1,51 @@
+From 8e6179268701e82886dd7ec1e528aa105d6ba2f3 Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Wed, 2 Jun 2021 12:28:43 -0700
+Subject: [PATCH 1/2] fix segfaulting when gpgcheck is enabled, but no key
+ configured
+
+---
+ client/repo.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/client/repo.c b/client/repo.c
+index 0f1213d..83c6208 100644
+--- a/client/repo.c
++++ b/client/repo.c
+@@ -380,7 +380,8 @@ TDNFGetGPGSignatureCheck(
+             nGPGSigCheck = 1;
+             if (pppszUrlGPGKeys != NULL)
+             {
+-                if (IsNullOrEmptyString(pRepo->ppszUrlGPGKeys[0]))
++                if (pRepo->ppszUrlGPGKeys == NULL ||
++                    IsNullOrEmptyString(pRepo->ppszUrlGPGKeys[0]))
+                 {
+                     dwError = ERROR_TDNF_NO_GPGKEY_CONF_ENTRY;
+                     BAIL_ON_TDNF_ERROR(dwError);
+
+From 9120b5242faa83aadf92f40d8c59aa89bc6c188e Mon Sep 17 00:00:00 2001
+From: Oliver Kurth <okurth@gmail.com>
+Date: Wed, 2 Jun 2021 12:29:46 -0700
+Subject: [PATCH 2/2] add test for no key configured but gpgcheck enabled
+
+---
+ pytests/tests/test_signature.py | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/pytests/tests/test_signature.py b/pytests/tests/test_signature.py
+index 9cce99a..f7a9291 100644
+--- a/pytests/tests/test_signature.py
++++ b/pytests/tests/test_signature.py
+@@ -116,3 +116,12 @@ def test_install_remote_key_no_traversal2(utils):
+     ret = utils.run([ 'tdnf', 'install', '-y', pkgname])
+     assert(ret['retval']  != 0)
+ 
++# test with gpgcheck enabled but no key entry, expect fail
++def test_install_nokey(utils):
++    set_gpgcheck(utils, True)
++    set_repo_key(utils, None)
++    pkgname = utils.config["sglversion_pkgname"]
++    ret = utils.run([ 'tdnf', 'install', '-y', pkgname])
++    assert(ret['retval']  == 1523)
++    assert(not utils.check_package(pkgname))
++
