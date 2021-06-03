@@ -1,7 +1,3 @@
-#
-# pmd spec file
-#
-
 %define _mech_file /etc/gss/mech
 %define _mech_id 1.3.6.1.4.1.6876.11711.2.1.2
 %define _python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
@@ -10,12 +6,22 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
-URL:            https://www.github.com/vmware/pmd
+URL:            https://www.github.com/vmware/%{name}
 Group:          Applications/System
+
+# PMD Source Code tarball
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    %{name}=97694042554dd10d99e5e4f15913a27dc22299b1
+
+# gssapi_unix Source Code tarball
+# GSSAPI-Unix URL: https://github.com/vmware/gssapi-unix
+Source1:        gssapi-unix-%{gssapi_unix_ver}.tar.gz
+%define sha1    gssapi-unix-%{gssapi_unix_ver}=5736db248f460f97203ac0c079dcc7862479e754
+
 Requires:       copenapi
 Requires:       c-rest-engine >= 1.1
 Requires:       jansson
@@ -26,6 +32,7 @@ Requires:       %{name}-libs = %{version}-%{release}
 Requires:       shadow
 Requires:       dcerpc
 Requires:       openldap
+
 BuildRequires:  copenapi-devel
 BuildRequires:  c-rest-engine-devel >= 1.1
 BuildRequires:  curl-devel
@@ -40,15 +47,6 @@ BuildRequires:  dcerpc-devel
 BuildRequires:  openldap
 BuildRequires:  openssl-devel
 BuildRequires:  e2fsprogs-devel
-
-# PMD Source Code tarball
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    pmd=97694042554dd10d99e5e4f15913a27dc22299b1
-
-# gssapi_unix Source Code tarball
-# GSSAPI-Unix URL: https://github.com/vmware/gssapi-unix
-Source1:        gssapi-unix-%{gssapi_unix_ver}.tar.gz
-%define sha1    gssapi-unix-%{gssapi_unix_ver}=5736db248f460f97203ac0c079dcc7862479e754
 
 %description
 Photon Management Daemon
@@ -98,7 +96,7 @@ Requires:       e2fsprogs
 gssapi-unix for unix authentication
 
 %prep
-%setup -qn %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 # extract gssapi_unix code
 cd ../
@@ -356,6 +354,8 @@ rm -rf %{buildroot}/*
     %exclude %{_libdir}/gssapi_unix/*.la
 
 %changelog
+*   Thu Jun 03 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.0.7-5
+-   Bump to consume latest tdnf
 *   Mon Apr 12 2021 Shreyas B <shreyasb@vmware.com> 0.0.7-4
 -   Use GSSAPI-Unix Code from github
 -   Support for openssl v1.1.1 added to GSSAPI-Unix Code

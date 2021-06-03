@@ -1,21 +1,25 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-#
-# tdnf spec file
-#
+
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.0.0
-Release:        5%{?dist}
+Version:        3.1.0
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
-URL:            http://www.vmware.com
+URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    %{name}=46a52792eeeffe3f7e353fa963ab108b09856e8d
+
+Patch0:         fix-segfaulting-when-gpgcheck-is-enabled.patch
+
 Requires:       rpm-libs
 Requires:       curl-libs
 Requires:       tdnf-cli-libs = %{version}-%{release}
 Requires:       libsolv
 Requires:       libmetalink
+
 BuildRequires:  popt-devel
 BuildRequires:  rpm-devel
 BuildRequires:  openssl-devel >= 1.1.1
@@ -27,15 +31,15 @@ BuildRequires:  systemd
 BuildRequires:  gpgme-devel
 BuildRequires:  cmake
 BuildRequires:  python3-devel
+
 %if %{with_check}
 BuildRequires:  createrepo_c
 BuildRequires:  glib
 BuildRequires:  libxml2
 %endif
+
 Obsoletes:      yum
 Provides:       yum
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    tdnf=c04baef5964adcff0ebaa75cfe1cce4e7815a99f
 
 %description
 tdnf is a yum/dnf equivalent which uses libsolv and libcurl
@@ -51,25 +55,25 @@ Requires:   libsolv-devel
 %description devel
 Development files for tdnf
 
-%package	cli-libs
-Summary:	Library providing cli libs for tdnf like clients
-Group:		Development/Libraries
+%package    cli-libs
+Summary:    Library providing cli libs for tdnf like clients
+Group:      Development/Libraries
 
 %description cli-libs
 Library providing cli libs for tdnf like clients.
 
-%package	plugin-repogpgcheck
-Summary:	tdnf plugin providign gpg verification for repository metadata
-Group:		Development/Libraries
-Requires:       gpgme
+%package    plugin-repogpgcheck
+Summary:    tdnf plugin providign gpg verification for repository metadata
+Group:      Development/Libraries
+Requires:   gpgme
 
 %description plugin-repogpgcheck
 tdnf plugin providign gpg verification for repository metadata
 
-%package	python
-Summary:	python bindings for tdnf
-Group:		Development/Libraries
-Requires:       python3
+%package    python
+Summary:    python bindings for tdnf
+Group:      Development/Libraries
+Requires:   python3
 
 %description python
 python bindings for tdnf
@@ -84,7 +88,7 @@ Requires:  %{name} = %{version}-%{release}
 Systemd units that can periodically download package upgrades and apply them.
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 mkdir build && cd build
@@ -245,6 +249,9 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
 
 %changelog
+*   Thu Jun 03 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.1.0-1
+-   Bump version to 3.1.0
+-   fix segfaulting when gpgcheck is enabled & no key configured
 *   Thu Feb 18 2021 Oliver Kurth <okurth@vmware.com> 3.0.0-5
 -   update to v3.0.0 (GA)
 -   depend on curl-libs instead of curl
