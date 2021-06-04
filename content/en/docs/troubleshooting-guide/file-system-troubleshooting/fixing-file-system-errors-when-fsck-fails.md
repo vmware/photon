@@ -40,13 +40,13 @@ Perform the following steps:
 	`journalctl -b 0 | grep -i “failed to start”`
 	
 	Below is output of above command:
-![Output for the journalctl -b 0 | grep -i “failed to start” command](/docs/images/fsck-fails)
+![Output for the journalctl -b 0 | grep -i “failed to start” command](/docs/images/fsck-fails.png)
 
 9. Referring to the `Failed to start the file system check on /dev/log_vg/log` error in the screenshot above, if the partition type is logical volume, then the device mapper modules create a device-special file `/dev/dm-X` to which symbolic links with the original names points to `/dev/mapper/log_vg-log or /dev/log_vg/log`. Here `log_vg` is volume group and `log` is logical volume name.
 
 10. Execute the `lsblk` command to confirm the device type.
 	Below is the output of `lsblk` command. Here `log_vg-log` is associated with the device `sde` and type `lvm`. Also, note that it is not mounted.
-![lsblk command output](/docs/images/lsblk-command)
+![lsblk command output](/docs/images/lsblk-command.png)
 
 11. Execute the following command to fix the file system errors:
 	`e2fsck /dev/log_vg/log`
