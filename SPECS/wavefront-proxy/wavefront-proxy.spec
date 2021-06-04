@@ -1,16 +1,14 @@
 Summary:        lightweight java application to send metrics to.
 Name:           wavefront-proxy
-Version:        4.39
-Release:        3%{?dist}
+Version:        9.7
+Release:        1%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
 Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
-%define sha1    wavefront=de9bd09c3311176cac2183ec031fd39b52a44c56
+%define sha1    wavefront=7abb7ff8090559c0ad63aa4908622da97f85be52
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Patch0:         openhft-chronicle-map-ver-upgrade.patch
-Patch1:         fix-appcheck-scan-vulnerabilities.patch
 BuildRequires:  apache-maven
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
@@ -27,9 +25,7 @@ The Wavefront proxy is a light-weight Java application that you send your metric
 It handles authentication and the transmission of your metrics to your Wavefront instance.
 
 %prep
-%setup -n java-wavefront-%{version}
-%patch0 -p1
-%patch1 -p1
+%setup -n wavefront-proxy-wavefront-%{version}
 
 cat << EOF >>wavefront-proxy.service
 [Unit]
@@ -47,13 +43,10 @@ WantedBy=multi-user.target
 EOF
 sed -i 's/\/etc\/init.d\/$APP_BASE-proxy restart/ systemctl restart $APP_BASE-proxy/' pkg/opt/wavefront/wavefront-proxy/bin/autoconf-wavefront-proxy.sh
 sed -i 's/-jar \/opt\/wavefront\/wavefront-proxy\/bin\/wavefront-push-agent.jar/-jar \/opt\/wavefront-push-agent.jar/' proxy/docker/run.sh
+sed -i 's/InetAddress.getLocalHost().getHostName()/"localhost"/g' proxy/pom.xml
 
 %build
-%if "%{_arch}" == "aarch64"
 mvn install -DskipTests
-%else
-mvn install
-%endif
 
 %install
 install -m 755 -D pkg/opt/wavefront/wavefront-proxy/bin/autoconf-wavefront-proxy.sh %{buildroot}/opt/wavefront/%{name}/bin/autoconf-wavefront-proxy.sh
@@ -112,6 +105,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/wavefront-proxy.service
 
 %changelog
+* Fri Jun 04 2021 Prashant S Chauhan <psinghchauha@vmware.com> 9.7-1
+- Update version to 9.7
 * Wed Aug 26 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.39-3
 - Fix app check scan vulnerabilities
 * Tue Jan 21 2020 Ankit Jain <ankitja@vmware.com> 4.39-2
