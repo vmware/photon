@@ -42,6 +42,9 @@ Perform the following steps:
 	Below is output of above command:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 5126b23e6 (Update fixing-file-system-errors-when-fsck-fails.md)
 	
 ![Output for the journalctl -b 0 | grep -i “failed to start” command](/docs/images/fsck-fails.png)
 =======
@@ -57,6 +60,9 @@ Perform the following steps:
 	Below is the output of `lsblk` command. Here `log_vg-log` is associated with the device `sde` and type `lvm`. Also, note that it is not mounted.
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 5126b23e6 (Update fixing-file-system-errors-when-fsck-fails.md)
 
 ![lsblk command output](/docs/images/lsblk-command.png)
 =======
