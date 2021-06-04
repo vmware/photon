@@ -1,0 +1,123 @@
+From 0de105093447cc3866802a0cab8f07a6df3602f5 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 23 Oct 2020 12:12:02 +0200
+Subject: [PATCH 005/296] sched/core: Wait for tasks being pushed away on
+ hotplug
+
+RT kernels need to ensure that all tasks which are not per CPU kthreads
+have left the outgoing CPU to guarantee that no tasks are force migrated
+within a migrate disabled section.
+
+There is also some desire to (ab)use fine grained CPU hotplug control to
+clear a CPU from active state to force migrate tasks which are not per CPU
+kthreads away for power control purposes.
+
+Add a mechanism which waits until all tasks which should leave the CPU
+after the CPU active flag is cleared have moved to a different online CPU.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/sched/core.c  | 40 +++++++++++++++++++++++++++++++++++++++-
+ kernel/sched/sched.h |  4 ++++
+ 2 files changed, 43 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 2abe17030180..77d6178b8747 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6894,8 +6894,21 @@ static void balance_push(struct rq *rq)
+ 	 * Both the cpu-hotplug and stop task are in this case and are
+ 	 * required to complete the hotplug process.
+ 	 */
+-	if (is_per_cpu_kthread(push_task))
++	if (is_per_cpu_kthread(push_task)) {
++		/*
++		 * If this is the idle task on the outgoing CPU try to wake
++		 * up the hotplug control thread which might wait for the
++		 * last task to vanish. The rcuwait_active() check is
++		 * accurate here because the waiter is pinned on this CPU
++		 * and can't obviously be running in parallel.
++		 */
++		if (!rq->nr_running && rcuwait_active(&rq->hotplug_wait)) {
++			raw_spin_unlock(&rq->lock);
++			rcuwait_wake_up(&rq->hotplug_wait);
++			raw_spin_lock(&rq->lock);
++		}
+ 		return;
++	}
+ 
+ 	get_task_struct(push_task);
+ 	/*
+@@ -6926,6 +6939,20 @@ static void balance_push_set(int cpu, bool on)
+ 	rq_unlock_irqrestore(rq, &rf);
+ }
+ 
++/*
++ * Invoked from a CPUs hotplug control thread after the CPU has been marked
++ * inactive. All tasks which are not per CPU kernel threads are either
++ * pushed off this CPU now via balance_push() or placed on a different CPU
++ * during wakeup. Wait until the CPU is quiescent.
++ */
++static void balance_hotplug_wait(void)
++{
++	struct rq *rq = this_rq();
++
++	rcuwait_wait_event(&rq->hotplug_wait, rq->nr_running == 1,
++			   TASK_UNINTERRUPTIBLE);
++}
++
+ #else
+ 
+ static inline void balance_push(struct rq *rq)
+@@ -6936,6 +6963,10 @@ static inline void balance_push_set(int cpu, bool on)
+ {
+ }
+ 
++static inline void balance_hotplug_wait(void)
++{
++}
++
+ #endif /* CONFIG_HOTPLUG_CPU */
+ 
+ void set_rq_online(struct rq *rq)
+@@ -7090,6 +7121,10 @@ int sched_cpu_deactivate(unsigned int cpu)
+ 		return ret;
+ 	}
+ 	sched_domains_numa_masks_clear(cpu);
++
++	/* Wait for all non per CPU kernel threads to vanish. */
++	balance_hotplug_wait();
++
+ 	return 0;
+ }
+ 
+@@ -7330,6 +7365,9 @@ void __init sched_init(void)
+ 
+ 		rq_csd_init(rq, &rq->nohz_csd, nohz_csd_func);
+ #endif
++#ifdef CONFIG_HOTPLUG_CPU
++		rcuwait_init(&rq->hotplug_wait);
++#endif
+ #endif /* CONFIG_SMP */
+ 		hrtick_rq_init(rq);
+ 		atomic_set(&rq->nr_iowait, 0);
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 85ca78879a08..c8ea64a72e0a 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -1005,6 +1005,10 @@ struct rq {
+ 
+ 	/* This is used to determine avg_idle's max value */
+ 	u64			max_idle_balance_cost;
++
++#ifdef CONFIG_HOTPLUG_CPU
++	struct rcuwait		hotplug_wait;
++#endif
+ #endif /* CONFIG_SMP */
+ 
+ #ifdef CONFIG_IRQ_TIME_ACCOUNTING
+-- 
+2.30.2
+

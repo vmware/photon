@@ -1,0 +1,103 @@
+From 08fd0f2009bae2d4de8f5e3dbbaa0bcd3d3dcfaa Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 3 Nov 2020 10:27:44 +0100
+Subject: [PATCH 055/296] drm/vmgfx: Replace kmap_atomic()
+
+There is no reason to disable pagefaults and preemption as a side effect of
+kmap_atomic_prot().
+
+Use kmap_local_page_prot() instead and document the reasoning for the
+mapping usage with the given pgprot.
+
+Remove the NULL pointer check for the map. These functions return a valid
+address for valid pages and the return was bogus anyway as it would have
+left preemption and pagefaults disabled.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: VMware Graphics <linux-graphics-maintainer@vmware.com>
+Cc: Roland Scheidegger <sroland@vmware.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: dri-devel@lists.freedesktop.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/gpu/drm/vmwgfx/vmwgfx_blit.c | 30 +++++++++++-----------------
+ 1 file changed, 12 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_blit.c b/drivers/gpu/drm/vmwgfx/vmwgfx_blit.c
+index e8d66182cd7b..71dba228f68e 100644
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_blit.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_blit.c
+@@ -375,12 +375,12 @@ static int vmw_bo_cpu_blit_line(struct vmw_bo_blit_line_data *d,
+ 		copy_size = min_t(u32, copy_size, PAGE_SIZE - src_page_offset);
+ 
+ 		if (unmap_src) {
+-			kunmap_atomic(d->src_addr);
++			kunmap_local(d->src_addr);
+ 			d->src_addr = NULL;
+ 		}
+ 
+ 		if (unmap_dst) {
+-			kunmap_atomic(d->dst_addr);
++			kunmap_local(d->dst_addr);
+ 			d->dst_addr = NULL;
+ 		}
+ 
+@@ -388,12 +388,8 @@ static int vmw_bo_cpu_blit_line(struct vmw_bo_blit_line_data *d,
+ 			if (WARN_ON_ONCE(dst_page >= d->dst_num_pages))
+ 				return -EINVAL;
+ 
+-			d->dst_addr =
+-				kmap_atomic_prot(d->dst_pages[dst_page],
+-						 d->dst_prot);
+-			if (!d->dst_addr)
+-				return -ENOMEM;
+-
++			d->dst_addr = kmap_local_page_prot(d->dst_pages[dst_page],
++							   d->dst_prot);
+ 			d->mapped_dst = dst_page;
+ 		}
+ 
+@@ -401,12 +397,8 @@ static int vmw_bo_cpu_blit_line(struct vmw_bo_blit_line_data *d,
+ 			if (WARN_ON_ONCE(src_page >= d->src_num_pages))
+ 				return -EINVAL;
+ 
+-			d->src_addr =
+-				kmap_atomic_prot(d->src_pages[src_page],
+-						 d->src_prot);
+-			if (!d->src_addr)
+-				return -ENOMEM;
+-
++			d->src_addr = kmap_local_page_prot(d->src_pages[src_page],
++							   d->src_prot);
+ 			d->mapped_src = src_page;
+ 		}
+ 		diff->do_cpy(diff, d->dst_addr + dst_page_offset,
+@@ -436,8 +428,10 @@ static int vmw_bo_cpu_blit_line(struct vmw_bo_blit_line_data *d,
+  *
+  * Performs a CPU blit from one buffer object to another avoiding a full
+  * bo vmap which may exhaust- or fragment vmalloc space.
+- * On supported architectures (x86), we're using kmap_atomic which avoids
+- * cross-processor TLB- and cache flushes and may, on non-HIGHMEM systems
++ *
++ * On supported architectures (x86), we're using kmap_local_prot() which
++ * avoids cross-processor TLB- and cache flushes. kmap_local_prot() will
++ * either map a highmem page with the proper pgprot on HIGHMEM=y systems or
+  * reference already set-up mappings.
+  *
+  * Neither of the buffer objects may be placed in PCI memory
+@@ -500,9 +494,9 @@ int vmw_bo_cpu_blit(struct ttm_buffer_object *dst,
+ 	}
+ out:
+ 	if (d.src_addr)
+-		kunmap_atomic(d.src_addr);
++		kunmap_local(d.src_addr);
+ 	if (d.dst_addr)
+-		kunmap_atomic(d.dst_addr);
++		kunmap_local(d.dst_addr);
+ 
+ 	return ret;
+ }
+-- 
+2.30.2
+

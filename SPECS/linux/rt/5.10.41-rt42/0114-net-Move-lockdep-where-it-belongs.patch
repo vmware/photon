@@ -1,0 +1,45 @@
+From 79128dd44c89803efd4100a2195a8584719f3e90 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 8 Sep 2020 07:32:20 +0200
+Subject: [PATCH 114/296] net: Move lockdep where it belongs
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ net/core/sock.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/net/core/sock.c b/net/core/sock.c
+index c75c1e723a84..5dcdc71839e6 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -3031,12 +3031,11 @@ void lock_sock_nested(struct sock *sk, int subclass)
+ 	if (sk->sk_lock.owned)
+ 		__lock_sock(sk);
+ 	sk->sk_lock.owned = 1;
+-	spin_unlock(&sk->sk_lock.slock);
++	spin_unlock_bh(&sk->sk_lock.slock);
+ 	/*
+ 	 * The sk_lock has mutex_lock() semantics here:
+ 	 */
+ 	mutex_acquire(&sk->sk_lock.dep_map, subclass, 0, _RET_IP_);
+-	local_bh_enable();
+ }
+ EXPORT_SYMBOL(lock_sock_nested);
+ 
+@@ -3085,12 +3084,11 @@ bool lock_sock_fast(struct sock *sk)
+ 
+ 	__lock_sock(sk);
+ 	sk->sk_lock.owned = 1;
+-	spin_unlock(&sk->sk_lock.slock);
++	spin_unlock_bh(&sk->sk_lock.slock);
+ 	/*
+ 	 * The sk_lock has mutex_lock() semantics here:
+ 	 */
+ 	mutex_acquire(&sk->sk_lock.dep_map, 0, 0, _RET_IP_);
+-	local_bh_enable();
+ 	return true;
+ }
+ EXPORT_SYMBOL(lock_sock_fast);
+-- 
+2.30.2
+

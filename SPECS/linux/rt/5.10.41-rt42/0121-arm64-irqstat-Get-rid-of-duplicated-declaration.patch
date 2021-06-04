@@ -1,0 +1,39 @@
+From 684ffa89b9c0d0f481f5c5645662a31dbbe61a3c Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 13 Nov 2020 15:02:13 +0100
+Subject: [PATCH 121/296] arm64: irqstat: Get rid of duplicated declaration
+
+irq_cpustat_t is exactly the same as the asm-generic one. Define
+ack_bad_irq so the generic header does not emit the generic version of it.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Frederic Weisbecker <frederic@kernel.org>
+Acked-by: Will Deacon <will@kernel.org>
+Acked-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20201113141733.392015387@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/arm64/include/asm/hardirq.h | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm64/include/asm/hardirq.h b/arch/arm64/include/asm/hardirq.h
+index 5ffa4bacdad3..cbfa7b6f2e09 100644
+--- a/arch/arm64/include/asm/hardirq.h
++++ b/arch/arm64/include/asm/hardirq.h
+@@ -13,11 +13,8 @@
+ #include <asm/kvm_arm.h>
+ #include <asm/sysreg.h>
+ 
+-typedef struct {
+-	unsigned int __softirq_pending;
+-} ____cacheline_aligned irq_cpustat_t;
+-
+-#include <linux/irq_cpustat.h>	/* Standard mappings for irq_cpustat_t above */
++#define ack_bad_irq ack_bad_irq
++#include <asm-generic/hardirq.h>
+ 
+ #define __ARCH_IRQ_EXIT_IRQS_DISABLED	1
+ 
+-- 
+2.30.2
+

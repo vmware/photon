@@ -1,0 +1,49 @@
+From f6613a48a581acc1001ce8fd183ec3319f6be257 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 3 Nov 2020 10:27:15 +0100
+Subject: [PATCH 026/296] fs: Remove asm/kmap_types.h includes
+
+Historical leftovers from the time where kmap() had fixed slots.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Alexander Viro <viro@zeniv.linux.org.uk>
+Cc: Benjamin LaHaise <bcrl@kvack.org>
+Cc: linux-fsdevel@vger.kernel.org
+Cc: linux-aio@kvack.org
+Cc: Chris Mason <clm@fb.com>
+Cc: Josef Bacik <josef@toxicpanda.com>
+Cc: David Sterba <dsterba@suse.com>
+Cc: linux-btrfs@vger.kernel.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ fs/aio.c         | 1 -
+ fs/btrfs/ctree.h | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/fs/aio.c b/fs/aio.c
+index 6a21d8919409..76ce0cc3ee4e 100644
+--- a/fs/aio.c
++++ b/fs/aio.c
+@@ -43,7 +43,6 @@
+ #include <linux/mount.h>
+ #include <linux/pseudo_fs.h>
+ 
+-#include <asm/kmap_types.h>
+ #include <linux/uaccess.h>
+ #include <linux/nospec.h>
+ 
+diff --git a/fs/btrfs/ctree.h b/fs/btrfs/ctree.h
+index bcc6848bb6d6..fabbf6cc45bf 100644
+--- a/fs/btrfs/ctree.h
++++ b/fs/btrfs/ctree.h
+@@ -17,7 +17,6 @@
+ #include <linux/wait.h>
+ #include <linux/slab.h>
+ #include <trace/events/btrfs.h>
+-#include <asm/kmap_types.h>
+ #include <asm/unaligned.h>
+ #include <linux/pagemap.h>
+ #include <linux/btrfs.h>
+-- 
+2.30.2
+

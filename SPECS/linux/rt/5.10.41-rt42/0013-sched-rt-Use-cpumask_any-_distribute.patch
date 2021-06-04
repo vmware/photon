@@ -1,0 +1,120 @@
+From 891d114031026387195413ab81f7cc7b7a790b11 Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Fri, 23 Oct 2020 12:12:10 +0200
+Subject: [PATCH 013/296] sched,rt: Use cpumask_any*_distribute()
+
+Replace a bunch of cpumask_any*() instances with
+cpumask_any*_distribute(), by injecting this little bit of random in
+cpu selection, we reduce the chance two competing balance operations
+working off the same lowest_mask pick the same CPU.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/cpumask.h |  6 ++++++
+ kernel/sched/deadline.c |  6 +++---
+ kernel/sched/rt.c       |  6 +++---
+ lib/cpumask.c           | 18 ++++++++++++++++++
+ 4 files changed, 30 insertions(+), 6 deletions(-)
+
+diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
+index f0d895d6ac39..383684e30f12 100644
+--- a/include/linux/cpumask.h
++++ b/include/linux/cpumask.h
+@@ -199,6 +199,11 @@ static inline int cpumask_any_and_distribute(const struct cpumask *src1p,
+ 	return cpumask_next_and(-1, src1p, src2p);
+ }
+ 
++static inline int cpumask_any_distribute(const struct cpumask *srcp)
++{
++	return cpumask_first(srcp);
++}
++
+ #define for_each_cpu(cpu, mask)			\
+ 	for ((cpu) = 0; (cpu) < 1; (cpu)++, (void)mask)
+ #define for_each_cpu_not(cpu, mask)		\
+@@ -252,6 +257,7 @@ int cpumask_any_but(const struct cpumask *mask, unsigned int cpu);
+ unsigned int cpumask_local_spread(unsigned int i, int node);
+ int cpumask_any_and_distribute(const struct cpumask *src1p,
+ 			       const struct cpumask *src2p);
++int cpumask_any_distribute(const struct cpumask *srcp);
+ 
+ /**
+  * for_each_cpu - iterate over every cpu in a mask
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index 9495a26f7e73..3c6b3d13e1b9 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -2008,8 +2008,8 @@ static int find_later_rq(struct task_struct *task)
+ 				return this_cpu;
+ 			}
+ 
+-			best_cpu = cpumask_first_and(later_mask,
+-							sched_domain_span(sd));
++			best_cpu = cpumask_any_and_distribute(later_mask,
++							      sched_domain_span(sd));
+ 			/*
+ 			 * Last chance: if a CPU being in both later_mask
+ 			 * and current sd span is valid, that becomes our
+@@ -2031,7 +2031,7 @@ static int find_later_rq(struct task_struct *task)
+ 	if (this_cpu != -1)
+ 		return this_cpu;
+ 
+-	cpu = cpumask_any(later_mask);
++	cpu = cpumask_any_distribute(later_mask);
+ 	if (cpu < nr_cpu_ids)
+ 		return cpu;
+ 
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index 40a46639f78a..2525a1beed26 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -1752,8 +1752,8 @@ static int find_lowest_rq(struct task_struct *task)
+ 				return this_cpu;
+ 			}
+ 
+-			best_cpu = cpumask_first_and(lowest_mask,
+-						     sched_domain_span(sd));
++			best_cpu = cpumask_any_and_distribute(lowest_mask,
++							      sched_domain_span(sd));
+ 			if (best_cpu < nr_cpu_ids) {
+ 				rcu_read_unlock();
+ 				return best_cpu;
+@@ -1770,7 +1770,7 @@ static int find_lowest_rq(struct task_struct *task)
+ 	if (this_cpu != -1)
+ 		return this_cpu;
+ 
+-	cpu = cpumask_any(lowest_mask);
++	cpu = cpumask_any_distribute(lowest_mask);
+ 	if (cpu < nr_cpu_ids)
+ 		return cpu;
+ 
+diff --git a/lib/cpumask.c b/lib/cpumask.c
+index fb22fb266f93..c3c76b833384 100644
+--- a/lib/cpumask.c
++++ b/lib/cpumask.c
+@@ -261,3 +261,21 @@ int cpumask_any_and_distribute(const struct cpumask *src1p,
+ 	return next;
+ }
+ EXPORT_SYMBOL(cpumask_any_and_distribute);
++
++int cpumask_any_distribute(const struct cpumask *srcp)
++{
++	int next, prev;
++
++	/* NOTE: our first selection will skip 0. */
++	prev = __this_cpu_read(distribute_cpu_mask_prev);
++
++	next = cpumask_next(prev, srcp);
++	if (next >= nr_cpu_ids)
++		next = cpumask_first(srcp);
++
++	if (next < nr_cpu_ids)
++		__this_cpu_write(distribute_cpu_mask_prev, next);
++
++	return next;
++}
++EXPORT_SYMBOL(cpumask_any_distribute);
+-- 
+2.30.2
+

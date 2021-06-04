@@ -1,0 +1,34 @@
+From 5d78e823d04a0935a9afe1b6c9dff09d79e4a3b7 Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Fri, 23 Oct 2020 12:12:14 +0200
+Subject: [PATCH 017/296] sched/proc: Print accurate cpumask vs
+ migrate_disable()
+
+Ensure /proc/*/status doesn't print 'random' cpumasks due to
+migrate_disable().
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ fs/proc/array.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/fs/proc/array.c b/fs/proc/array.c
+index 18a4588c35be..decaa7768044 100644
+--- a/fs/proc/array.c
++++ b/fs/proc/array.c
+@@ -384,9 +384,9 @@ static inline void task_context_switch_counts(struct seq_file *m,
+ static void task_cpus_allowed(struct seq_file *m, struct task_struct *task)
+ {
+ 	seq_printf(m, "Cpus_allowed:\t%*pb\n",
+-		   cpumask_pr_args(task->cpus_ptr));
++		   cpumask_pr_args(&task->cpus_mask));
+ 	seq_printf(m, "Cpus_allowed_list:\t%*pbl\n",
+-		   cpumask_pr_args(task->cpus_ptr));
++		   cpumask_pr_args(&task->cpus_mask));
+ }
+ 
+ static inline void task_core_dumping(struct seq_file *m, struct mm_struct *mm)
+-- 
+2.30.2
+

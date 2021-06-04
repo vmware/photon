@@ -1,0 +1,46 @@
+From f3bd3f49f7d585640525de1a5b8c5a722be7b7be Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 3 Nov 2020 10:27:42 +0100
+Subject: [PATCH 053/296] highmem: Remove kmap_atomic_pfn()
+
+No more users.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/highmem-internal.h | 12 ------------
+ 1 file changed, 12 deletions(-)
+
+diff --git a/include/linux/highmem-internal.h b/include/linux/highmem-internal.h
+index 1bbe96dc8be6..3590af5aad96 100644
+--- a/include/linux/highmem-internal.h
++++ b/include/linux/highmem-internal.h
+@@ -100,13 +100,6 @@ static inline void *kmap_atomic(struct page *page)
+ 	return kmap_atomic_prot(page, kmap_prot);
+ }
+ 
+-static inline void *kmap_atomic_pfn(unsigned long pfn)
+-{
+-	preempt_disable();
+-	pagefault_disable();
+-	return __kmap_local_pfn_prot(pfn, kmap_prot);
+-}
+-
+ static inline void __kunmap_atomic(void *addr)
+ {
+ 	kunmap_local_indexed(addr);
+@@ -194,11 +187,6 @@ static inline void *kmap_atomic_prot(struct page *page, pgprot_t prot)
+ 	return kmap_atomic(page);
+ }
+ 
+-static inline void *kmap_atomic_pfn(unsigned long pfn)
+-{
+-	return kmap_atomic(pfn_to_page(pfn));
+-}
+-
+ static inline void __kunmap_atomic(void *addr)
+ {
+ #ifdef ARCH_HAS_FLUSH_ON_KUNMAP
+-- 
+2.30.2
+

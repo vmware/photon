@@ -1,0 +1,77 @@
+From 6b891e81c90dedace92b1e7c4fac9676713636ca Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Sun, 17 Jul 2011 18:51:23 +0200
+Subject: [PATCH 253/296] lockdep: Make it RT aware
+
+teach lockdep that we don't really do softirqs on -RT.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ include/linux/irqflags.h | 23 +++++++++++++++--------
+ kernel/locking/lockdep.c |  2 ++
+ 2 files changed, 17 insertions(+), 8 deletions(-)
+
+diff --git a/include/linux/irqflags.h b/include/linux/irqflags.h
+index 3ed4e8771b64..a437b2e70d37 100644
+--- a/include/linux/irqflags.h
++++ b/include/linux/irqflags.h
+@@ -71,14 +71,6 @@ do {						\
+ do {						\
+ 	__this_cpu_dec(hardirq_context);	\
+ } while (0)
+-# define lockdep_softirq_enter()		\
+-do {						\
+-	current->softirq_context++;		\
+-} while (0)
+-# define lockdep_softirq_exit()			\
+-do {						\
+-	current->softirq_context--;		\
+-} while (0)
+ 
+ # define lockdep_hrtimer_enter(__hrtimer)		\
+ ({							\
+@@ -140,6 +132,21 @@ do {						\
+ # define lockdep_irq_work_exit(__work)		do { } while (0)
+ #endif
+ 
++#if defined(CONFIG_TRACE_IRQFLAGS) && !defined(CONFIG_PREEMPT_RT)
++# define lockdep_softirq_enter()		\
++do {						\
++	current->softirq_context++;		\
++} while (0)
++# define lockdep_softirq_exit()			\
++do {						\
++	current->softirq_context--;		\
++} while (0)
++
++#else
++# define lockdep_softirq_enter()		do { } while (0)
++# define lockdep_softirq_exit()			do { } while (0)
++#endif
++
+ #if defined(CONFIG_IRQSOFF_TRACER) || \
+ 	defined(CONFIG_PREEMPT_TRACER)
+  extern void stop_critical_timings(void);
+diff --git a/kernel/locking/lockdep.c b/kernel/locking/lockdep.c
+index 858b96b438ce..6a5bd713ae66 100644
+--- a/kernel/locking/lockdep.c
++++ b/kernel/locking/lockdep.c
+@@ -5292,6 +5292,7 @@ static noinstr void check_flags(unsigned long flags)
+ 		}
+ 	}
+ 
++#ifndef CONFIG_PREEMPT_RT
+ 	/*
+ 	 * We dont accurately track softirq state in e.g.
+ 	 * hardirq contexts (such as on 4KSTACKS), so only
+@@ -5306,6 +5307,7 @@ static noinstr void check_flags(unsigned long flags)
+ 			DEBUG_LOCKS_WARN_ON(!current->softirqs_enabled);
+ 		}
+ 	}
++#endif
+ 
+ 	if (!debug_locks)
+ 		print_irqtrace_events(current);
+-- 
+2.30.2
+

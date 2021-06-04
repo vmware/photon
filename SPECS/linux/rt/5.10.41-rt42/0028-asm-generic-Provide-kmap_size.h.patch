@@ -1,0 +1,69 @@
+From 4115b821df4c41308239c5128a0e468b545b20d8 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 3 Nov 2020 10:27:17 +0100
+Subject: [PATCH 028/296] asm-generic: Provide kmap_size.h
+
+kmap_types.h is a misnomer because the old atomic MAP based array does not
+exist anymore and the whole indirection of architectures including
+kmap_types.h is inconinstent and does not allow to provide guard page
+debugging for this misfeature.
+
+Add a common header file which defines the mapping stack size for all
+architectures. Will be used when converting architectures over to a
+generic kmap_local/atomic implementation.
+
+The array size is chosen with the following constraints in mind:
+
+    - The deepest nest level in one context is 3 according to code
+      inspection.
+
+    - The worst case nesting for the upcoming reemptible version would be:
+
+      2 maps in task context and a fault inside
+      2 maps in the fault handler
+      3 maps in softirq
+      2 maps in interrupt
+
+So a total of 16 is sufficient and probably overestimated.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/asm-generic/Kbuild      |  1 +
+ include/asm-generic/kmap_size.h | 12 ++++++++++++
+ 2 files changed, 13 insertions(+)
+ create mode 100644 include/asm-generic/kmap_size.h
+
+diff --git a/include/asm-generic/Kbuild b/include/asm-generic/Kbuild
+index d1300c6e0a47..3114a6da7e56 100644
+--- a/include/asm-generic/Kbuild
++++ b/include/asm-generic/Kbuild
+@@ -31,6 +31,7 @@ mandatory-y += irq_regs.h
+ mandatory-y += irq_work.h
+ mandatory-y += kdebug.h
+ mandatory-y += kmap_types.h
++mandatory-y += kmap_size.h
+ mandatory-y += kprobes.h
+ mandatory-y += linkage.h
+ mandatory-y += local.h
+diff --git a/include/asm-generic/kmap_size.h b/include/asm-generic/kmap_size.h
+new file mode 100644
+index 000000000000..9d6c7786a645
+--- /dev/null
++++ b/include/asm-generic/kmap_size.h
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#ifndef _ASM_GENERIC_KMAP_SIZE_H
++#define _ASM_GENERIC_KMAP_SIZE_H
++
++/* For debug this provides guard pages between the maps */
++#ifdef CONFIG_DEBUG_HIGHMEM
++# define KM_MAX_IDX	33
++#else
++# define KM_MAX_IDX	16
++#endif
++
++#endif
+-- 
+2.30.2
+

@@ -1,0 +1,33 @@
+From 50be8791e2d18d9eb23fdc772adf6c7e02eb1e77 Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Fri, 23 Oct 2020 12:12:03 +0200
+Subject: [PATCH 006/296] workqueue: Manually break affinity on hotplug
+
+Don't rely on the scheduler to force break affinity for us -- it will
+stop doing that for per-cpu-kthreads.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Acked-by: Tejun Heo <tj@kernel.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/workqueue.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/kernel/workqueue.c b/kernel/workqueue.c
+index 1e2ca744dadb..c9a0c961d6e0 100644
+--- a/kernel/workqueue.c
++++ b/kernel/workqueue.c
+@@ -4912,6 +4912,10 @@ static void unbind_workers(int cpu)
+ 		pool->flags |= POOL_DISASSOCIATED;
+ 
+ 		raw_spin_unlock_irq(&pool->lock);
++
++		for_each_pool_worker(worker, pool)
++			WARN_ON_ONCE(set_cpus_allowed_ptr(worker->task, cpu_active_mask) < 0);
++
+ 		mutex_unlock(&wq_pool_attach_mutex);
+ 
+ 		/*
+-- 
+2.30.2
+

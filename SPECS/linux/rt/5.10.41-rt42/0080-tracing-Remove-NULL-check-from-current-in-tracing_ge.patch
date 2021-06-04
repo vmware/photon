@@ -1,0 +1,42 @@
+From c5f008b9ac8b583942a8dce33174b7f234b573ed Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Wed, 3 Feb 2021 11:05:26 -0500
+Subject: [PATCH 080/296] tracing: Remove NULL check from current in
+ tracing_generic_entry_update().
+
+I can't imagine when or why `current' would return a NULL pointer. This
+check was added in commit
+      72829bc3d63cd ("ftrace: move enums to ftrace.h and make helper function global")
+
+but it doesn't give me hint why it was needed.
+
+Assume `current' never returns a NULL pointer and remove the check.
+
+Link: https://lkml.kernel.org/r/20210125194511.3924915-5-bigeasy@linutronix.de
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/trace_events.h | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/include/linux/trace_events.h b/include/linux/trace_events.h
+index 67ae708de40d..5d1eeac4bfbe 100644
+--- a/include/linux/trace_events.h
++++ b/include/linux/trace_events.h
+@@ -152,10 +152,8 @@ static inline void tracing_generic_entry_update(struct trace_entry *entry,
+ 						unsigned short type,
+ 						unsigned int trace_ctx)
+ {
+-	struct task_struct *tsk = current;
+-
+ 	entry->preempt_count		= trace_ctx & 0xff;
+-	entry->pid			= (tsk) ? tsk->pid : 0;
++	entry->pid			= current->pid;
+ 	entry->type			= type;
+ 	entry->flags =			trace_ctx >> 16;
+ }
+-- 
+2.30.2
+

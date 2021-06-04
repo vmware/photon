@@ -1,0 +1,174 @@
+From 1e5227fa6119c1ec3492ac1716f7161e1cee456d Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Fri, 23 Oct 2020 12:12:06 +0200
+Subject: [PATCH 009/296] sched: Massage set_cpus_allowed()
+
+Thread a u32 flags word through the *set_cpus_allowed*() callchain.
+This will allow adding behavioural tweaks for future users.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/sched/core.c     | 28 ++++++++++++++++++----------
+ kernel/sched/deadline.c |  5 +++--
+ kernel/sched/sched.h    |  7 +++++--
+ 3 files changed, 26 insertions(+), 14 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 5f2ce256bc49..2658df8954fb 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -1822,13 +1822,14 @@ static int migration_cpu_stop(void *data)
+  * sched_class::set_cpus_allowed must do the below, but is not required to
+  * actually call this function.
+  */
+-void set_cpus_allowed_common(struct task_struct *p, const struct cpumask *new_mask)
++void set_cpus_allowed_common(struct task_struct *p, const struct cpumask *new_mask, u32 flags)
+ {
+ 	cpumask_copy(&p->cpus_mask, new_mask);
+ 	p->nr_cpus_allowed = cpumask_weight(new_mask);
+ }
+ 
+-void do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask)
++static void
++__do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask, u32 flags)
+ {
+ 	struct rq *rq = task_rq(p);
+ 	bool queued, running;
+@@ -1849,7 +1850,7 @@ void do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask)
+ 	if (running)
+ 		put_prev_task(rq, p);
+ 
+-	p->sched_class->set_cpus_allowed(p, new_mask);
++	p->sched_class->set_cpus_allowed(p, new_mask, flags);
+ 
+ 	if (queued)
+ 		enqueue_task(rq, p, ENQUEUE_RESTORE | ENQUEUE_NOCLOCK);
+@@ -1857,6 +1858,11 @@ void do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask)
+ 		set_next_task(rq, p);
+ }
+ 
++void do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask)
++{
++	__do_set_cpus_allowed(p, new_mask, 0);
++}
++
+ /*
+  * Change a given task's CPU affinity. Migrate the thread to a
+  * proper CPU and schedule it away if the CPU it's executing on
+@@ -1867,7 +1873,8 @@ void do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask)
+  * call is not atomic; no spinlocks may be held.
+  */
+ static int __set_cpus_allowed_ptr(struct task_struct *p,
+-				  const struct cpumask *new_mask, bool check)
++				  const struct cpumask *new_mask,
++				  u32 flags)
+ {
+ 	const struct cpumask *cpu_valid_mask = cpu_active_mask;
+ 	unsigned int dest_cpu;
+@@ -1889,7 +1896,7 @@ static int __set_cpus_allowed_ptr(struct task_struct *p,
+ 	 * Must re-check here, to close a race against __kthread_bind(),
+ 	 * sched_setaffinity() is not guaranteed to observe the flag.
+ 	 */
+-	if (check && (p->flags & PF_NO_SETAFFINITY)) {
++	if ((flags & SCA_CHECK) && (p->flags & PF_NO_SETAFFINITY)) {
+ 		ret = -EINVAL;
+ 		goto out;
+ 	}
+@@ -1908,7 +1915,7 @@ static int __set_cpus_allowed_ptr(struct task_struct *p,
+ 		goto out;
+ 	}
+ 
+-	do_set_cpus_allowed(p, new_mask);
++	__do_set_cpus_allowed(p, new_mask, flags);
+ 
+ 	if (p->flags & PF_KTHREAD) {
+ 		/*
+@@ -1945,7 +1952,7 @@ static int __set_cpus_allowed_ptr(struct task_struct *p,
+ 
+ int set_cpus_allowed_ptr(struct task_struct *p, const struct cpumask *new_mask)
+ {
+-	return __set_cpus_allowed_ptr(p, new_mask, false);
++	return __set_cpus_allowed_ptr(p, new_mask, 0);
+ }
+ EXPORT_SYMBOL_GPL(set_cpus_allowed_ptr);
+ 
+@@ -2404,7 +2411,8 @@ void sched_set_stop_task(int cpu, struct task_struct *stop)
+ #else
+ 
+ static inline int __set_cpus_allowed_ptr(struct task_struct *p,
+-					 const struct cpumask *new_mask, bool check)
++					 const struct cpumask *new_mask,
++					 u32 flags)
+ {
+ 	return set_cpus_allowed_ptr(p, new_mask);
+ }
+@@ -6009,7 +6017,7 @@ long sched_setaffinity(pid_t pid, const struct cpumask *in_mask)
+ 	}
+ #endif
+ again:
+-	retval = __set_cpus_allowed_ptr(p, new_mask, true);
++	retval = __set_cpus_allowed_ptr(p, new_mask, SCA_CHECK);
+ 
+ 	if (!retval) {
+ 		cpuset_cpus_allowed(p, cpus_allowed);
+@@ -6588,7 +6596,7 @@ void init_idle(struct task_struct *idle, int cpu)
+ 	 *
+ 	 * And since this is boot we can forgo the serialization.
+ 	 */
+-	set_cpus_allowed_common(idle, cpumask_of(cpu));
++	set_cpus_allowed_common(idle, cpumask_of(cpu), 0);
+ #endif
+ 	/*
+ 	 * We're having a chicken and egg problem, even though we are
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index e0564abfece1..9495a26f7e73 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -2307,7 +2307,8 @@ static void task_woken_dl(struct rq *rq, struct task_struct *p)
+ }
+ 
+ static void set_cpus_allowed_dl(struct task_struct *p,
+-				const struct cpumask *new_mask)
++				const struct cpumask *new_mask,
++				u32 flags)
+ {
+ 	struct root_domain *src_rd;
+ 	struct rq *rq;
+@@ -2336,7 +2337,7 @@ static void set_cpus_allowed_dl(struct task_struct *p,
+ 		raw_spin_unlock(&src_dl_b->lock);
+ 	}
+ 
+-	set_cpus_allowed_common(p, new_mask);
++	set_cpus_allowed_common(p, new_mask, flags);
+ }
+ 
+ /* Assumes rq->lock is held */
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index c8ea64a72e0a..b23283a3326a 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -1816,7 +1816,8 @@ struct sched_class {
+ 	void (*task_woken)(struct rq *this_rq, struct task_struct *task);
+ 
+ 	void (*set_cpus_allowed)(struct task_struct *p,
+-				 const struct cpumask *newmask);
++				 const struct cpumask *newmask,
++				 u32 flags);
+ 
+ 	void (*rq_online)(struct rq *rq);
+ 	void (*rq_offline)(struct rq *rq);
+@@ -1909,7 +1910,9 @@ extern void update_group_capacity(struct sched_domain *sd, int cpu);
+ 
+ extern void trigger_load_balance(struct rq *rq);
+ 
+-extern void set_cpus_allowed_common(struct task_struct *p, const struct cpumask *new_mask);
++#define SCA_CHECK		0x01
++
++extern void set_cpus_allowed_common(struct task_struct *p, const struct cpumask *new_mask, u32 flags);
+ 
+ #endif
+ 
+-- 
+2.30.2
+

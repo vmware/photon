@@ -1,0 +1,60 @@
+From 0185d3e1c16a04933f063dc225ff7244a25602f5 Mon Sep 17 00:00:00 2001
+From: Kevin Hao <haokexin@gmail.com>
+Date: Mon, 4 May 2020 11:34:07 +0800
+Subject: [PATCH 203/296] mm: slub: Always flush the delayed empty slubs in
+ flush_all()
+
+After commit f0b231101c94 ("mm/SLUB: delay giving back empty slubs to
+IRQ enabled regions"), when the free_slab() is invoked with the IRQ
+disabled, the empty slubs are moved to a per-CPU list and will be
+freed after IRQ enabled later. But in the current codes, there is
+a check to see if there really has the cpu slub on a specific cpu
+before flushing the delayed empty slubs, this may cause a reference
+of already released kmem_cache in a scenario like below:
+	cpu 0				cpu 1
+  kmem_cache_destroy()
+    flush_all()
+                         --->IPI       flush_cpu_slab()
+                                         flush_slab()
+                                           deactivate_slab()
+                                             discard_slab()
+                                               free_slab()
+                                             c->page = NULL;
+      for_each_online_cpu(cpu)
+        if (!has_cpu_slab(1, s))
+          continue
+        this skip to flush the delayed
+        empty slub released by cpu1
+    kmem_cache_free(kmem_cache, s)
+
+                                       kmalloc()
+                                         __slab_alloc()
+                                            free_delayed()
+                                            __free_slab()
+                                            reference to released kmem_cache
+
+Fixes: f0b231101c94 ("mm/SLUB: delay giving back empty slubs to IRQ enabled regions")
+Signed-off-by: Kevin Hao <haokexin@gmail.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: stable-rt@vger.kernel.org
+---
+ mm/slub.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/mm/slub.c b/mm/slub.c
+index 2cd88321f45a..3b49b6d0d28e 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -2494,9 +2494,6 @@ static void flush_all(struct kmem_cache *s)
+ 	for_each_online_cpu(cpu) {
+ 		struct slub_free_list *f;
+ 
+-		if (!has_cpu_slab(cpu, s))
+-			continue;
+-
+ 		f = &per_cpu(slub_free_list, cpu);
+ 		raw_spin_lock_irq(&f->lock);
+ 		list_splice_init(&f->list, &tofree);
+-- 
+2.30.2
+

@@ -1,0 +1,166 @@
+From 46c31699878bb341e6183db89ee9ae84d9aeede0 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 3 Nov 2020 10:27:26 +0100
+Subject: [PATCH 037/296] nds32/mm/highmem: Switch to generic kmap atomic
+
+The mapping code is odd and looks broken. See FIXME in the comment.
+
+Also fix the harmless off by one in the FIX_KMAP_END define.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Nick Hu <nickhu@andestech.com>
+Cc: Greentime Hu <green.hu@gmail.com>
+Cc: Vincent Chen <deanbo422@gmail.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/nds32/Kconfig.cpu           |  1 +
+ arch/nds32/include/asm/fixmap.h  |  4 +--
+ arch/nds32/include/asm/highmem.h | 22 +++++++++++----
+ arch/nds32/mm/Makefile           |  1 -
+ arch/nds32/mm/highmem.c          | 48 --------------------------------
+ 5 files changed, 19 insertions(+), 57 deletions(-)
+ delete mode 100644 arch/nds32/mm/highmem.c
+
+diff --git a/arch/nds32/Kconfig.cpu b/arch/nds32/Kconfig.cpu
+index f88a12fdf0f3..c10759952485 100644
+--- a/arch/nds32/Kconfig.cpu
++++ b/arch/nds32/Kconfig.cpu
+@@ -157,6 +157,7 @@ config HW_SUPPORT_UNALIGNMENT_ACCESS
+ config HIGHMEM
+ 	bool "High Memory Support"
+ 	depends on MMU && !CPU_CACHE_ALIASING
++	select KMAP_LOCAL
+ 	help
+ 	  The address space of Andes processors is only 4 Gigabytes large
+ 	  and it has to accommodate user address space, kernel address
+diff --git a/arch/nds32/include/asm/fixmap.h b/arch/nds32/include/asm/fixmap.h
+index 5a4bf11e5800..2fa09a2de428 100644
+--- a/arch/nds32/include/asm/fixmap.h
++++ b/arch/nds32/include/asm/fixmap.h
+@@ -6,7 +6,7 @@
+ 
+ #ifdef CONFIG_HIGHMEM
+ #include <linux/threads.h>
+-#include <asm/kmap_types.h>
++#include <asm/kmap_size.h>
+ #endif
+ 
+ enum fixed_addresses {
+@@ -14,7 +14,7 @@ enum fixed_addresses {
+ 	FIX_KMAP_RESERVED,
+ 	FIX_KMAP_BEGIN,
+ #ifdef CONFIG_HIGHMEM
+-	FIX_KMAP_END = FIX_KMAP_BEGIN + (KM_TYPE_NR * NR_CPUS),
++	FIX_KMAP_END = FIX_KMAP_BEGIN + (KM_MAX_IDX * NR_CPUS) - 1,
+ #endif
+ 	FIX_EARLYCON_MEM_BASE,
+ 	__end_of_fixed_addresses
+diff --git a/arch/nds32/include/asm/highmem.h b/arch/nds32/include/asm/highmem.h
+index fe986d0e6e3f..16159a8716f2 100644
+--- a/arch/nds32/include/asm/highmem.h
++++ b/arch/nds32/include/asm/highmem.h
+@@ -5,7 +5,6 @@
+ #define _ASM_HIGHMEM_H
+ 
+ #include <asm/proc-fns.h>
+-#include <asm/kmap_types.h>
+ #include <asm/fixmap.h>
+ 
+ /*
+@@ -45,11 +44,22 @@ extern pte_t *pkmap_page_table;
+ extern void kmap_init(void);
+ 
+ /*
+- * The following functions are already defined by <linux/highmem.h>
+- * when CONFIG_HIGHMEM is not set.
++ * FIXME: The below looks broken vs. a kmap_atomic() in task context which
++ * is interupted and another kmap_atomic() happens in interrupt context.
++ * But what do I know about nds32. -- tglx
+  */
+-#ifdef CONFIG_HIGHMEM
+-extern void *kmap_atomic_pfn(unsigned long pfn);
+-#endif
++#define arch_kmap_local_post_map(vaddr, pteval)			\
++	do {							\
++		__nds32__tlbop_inv(vaddr);			\
++		__nds32__mtsr_dsb(vaddr, NDS32_SR_TLB_VPN);	\
++		__nds32__tlbop_rwr(pteval);			\
++		__nds32__isb();					\
++	} while (0)
++
++#define arch_kmap_local_pre_unmap(vaddr)			\
++	do {							\
++		__nds32__tlbop_inv(vaddr);			\
++		__nds32__isb();					\
++	} while (0)
+ 
+ #endif
+diff --git a/arch/nds32/mm/Makefile b/arch/nds32/mm/Makefile
+index 897ecaf5cf54..14fb2e8eb036 100644
+--- a/arch/nds32/mm/Makefile
++++ b/arch/nds32/mm/Makefile
+@@ -3,7 +3,6 @@ obj-y				:= extable.o tlb.o fault.o init.o mmap.o \
+                                    mm-nds32.o cacheflush.o proc.o
+ 
+ obj-$(CONFIG_ALIGNMENT_TRAP)	+= alignment.o
+-obj-$(CONFIG_HIGHMEM)           += highmem.o
+ 
+ ifdef CONFIG_FUNCTION_TRACER
+ CFLAGS_REMOVE_proc.o     = $(CC_FLAGS_FTRACE)
+diff --git a/arch/nds32/mm/highmem.c b/arch/nds32/mm/highmem.c
+deleted file mode 100644
+index 4284cd59e21a..000000000000
+--- a/arch/nds32/mm/highmem.c
++++ /dev/null
+@@ -1,48 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-// Copyright (C) 2005-2017 Andes Technology Corporation
+-
+-#include <linux/export.h>
+-#include <linux/highmem.h>
+-#include <linux/sched.h>
+-#include <linux/smp.h>
+-#include <linux/interrupt.h>
+-#include <linux/memblock.h>
+-#include <asm/fixmap.h>
+-#include <asm/tlbflush.h>
+-
+-void *kmap_atomic_high_prot(struct page *page, pgprot_t prot)
+-{
+-	unsigned int idx;
+-	unsigned long vaddr, pte;
+-	int type;
+-	pte_t *ptep;
+-
+-	type = kmap_atomic_idx_push();
+-
+-	idx = type + KM_TYPE_NR * smp_processor_id();
+-	vaddr = __fix_to_virt(FIX_KMAP_BEGIN + idx);
+-	pte = (page_to_pfn(page) << PAGE_SHIFT) | prot;
+-	ptep = pte_offset_kernel(pmd_off_k(vaddr), vaddr);
+-	set_pte(ptep, pte);
+-
+-	__nds32__tlbop_inv(vaddr);
+-	__nds32__mtsr_dsb(vaddr, NDS32_SR_TLB_VPN);
+-	__nds32__tlbop_rwr(pte);
+-	__nds32__isb();
+-	return (void *)vaddr;
+-}
+-EXPORT_SYMBOL(kmap_atomic_high_prot);
+-
+-void kunmap_atomic_high(void *kvaddr)
+-{
+-	if (kvaddr >= (void *)FIXADDR_START) {
+-		unsigned long vaddr = (unsigned long)kvaddr;
+-		pte_t *ptep;
+-		kmap_atomic_idx_pop();
+-		__nds32__tlbop_inv(vaddr);
+-		__nds32__isb();
+-		ptep = pte_offset_kernel(pmd_off_k(vaddr), vaddr);
+-		set_pte(ptep, 0);
+-	}
+-}
+-EXPORT_SYMBOL(kunmap_atomic_high);
+-- 
+2.30.2
+

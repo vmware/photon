@@ -1,0 +1,32 @@
+From 1060eff46d0f66651565315c5fe991b07494fb23 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 3 Nov 2020 10:27:13 +0100
+Subject: [PATCH 024/296] mm/highmem: Un-EXPORT __kmap_atomic_idx()
+
+Nothing in modules can use that.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-mm@kvack.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ mm/highmem.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/mm/highmem.c b/mm/highmem.c
+index 1352a27951e3..6abfd762eee7 100644
+--- a/mm/highmem.c
++++ b/mm/highmem.c
+@@ -108,8 +108,6 @@ static inline wait_queue_head_t *get_pkmap_wait_queue_head(unsigned int color)
+ atomic_long_t _totalhigh_pages __read_mostly;
+ EXPORT_SYMBOL(_totalhigh_pages);
+ 
+-EXPORT_PER_CPU_SYMBOL(__kmap_atomic_idx);
+-
+ unsigned int nr_free_highpages (void)
+ {
+ 	struct zone *zone;
+-- 
+2.30.2
+

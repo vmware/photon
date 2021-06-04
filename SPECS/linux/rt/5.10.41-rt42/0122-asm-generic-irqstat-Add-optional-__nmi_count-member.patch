@@ -1,0 +1,33 @@
+From f49259452c7b0aab88e658b5721570f076ea82e7 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 13 Nov 2020 15:02:14 +0100
+Subject: [PATCH 122/296] asm-generic/irqstat: Add optional __nmi_count member
+
+Add an optional __nmi_count member to irq_cpustat_t so more architectures
+can use the generic version.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Frederic Weisbecker <frederic@kernel.org>
+Link: https://lore.kernel.org/r/20201113141733.501611990@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/asm-generic/hardirq.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/asm-generic/hardirq.h b/include/asm-generic/hardirq.h
+index d14214dfc10b..f5dd99781e3c 100644
+--- a/include/asm-generic/hardirq.h
++++ b/include/asm-generic/hardirq.h
+@@ -7,6 +7,9 @@
+ 
+ typedef struct {
+ 	unsigned int __softirq_pending;
++#ifdef ARCH_WANTS_NMI_IRQSTAT
++	unsigned int __nmi_count;
++#endif
+ } ____cacheline_aligned irq_cpustat_t;
+ 
+ #include <linux/irq_cpustat.h>	/* Standard mappings for irq_cpustat_t above */
+-- 
+2.30.2
+

@@ -1,0 +1,47 @@
+From a2187f09e0fd56cbb0e4a059cc65d1bd37cf8203 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 13 Nov 2020 15:02:11 +0100
+Subject: [PATCH 119/296] um/irqstat: Get rid of the duplicated declarations
+
+irq_cpustat_t and ack_bad_irq() are exactly the same as the asm-generic
+ones.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Frederic Weisbecker <frederic@kernel.org>
+Link: https://lore.kernel.org/r/20201113141733.156361337@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/um/include/asm/hardirq.h | 17 +----------------
+ 1 file changed, 1 insertion(+), 16 deletions(-)
+
+diff --git a/arch/um/include/asm/hardirq.h b/arch/um/include/asm/hardirq.h
+index b426796d26fd..52e2c36267a9 100644
+--- a/arch/um/include/asm/hardirq.h
++++ b/arch/um/include/asm/hardirq.h
+@@ -2,22 +2,7 @@
+ #ifndef __ASM_UM_HARDIRQ_H
+ #define __ASM_UM_HARDIRQ_H
+ 
+-#include <linux/cache.h>
+-#include <linux/threads.h>
+-
+-typedef struct {
+-	unsigned int __softirq_pending;
+-} ____cacheline_aligned irq_cpustat_t;
+-
+-#include <linux/irq_cpustat.h>	/* Standard mappings for irq_cpustat_t above */
+-#include <linux/irq.h>
+-
+-#ifndef ack_bad_irq
+-static inline void ack_bad_irq(unsigned int irq)
+-{
+-	printk(KERN_CRIT "unexpected IRQ trap at vector %02x\n", irq);
+-}
+-#endif
++#include <asm-generic/hardirq.h>
+ 
+ #define __ARCH_IRQ_EXIT_IRQS_DISABLED 1
+ 
+-- 
+2.30.2
+

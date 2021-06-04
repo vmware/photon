@@ -1,0 +1,59 @@
+From 5071a8157ea7ff0145931ffb4aaca56bb9c36258 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Mon, 2 Nov 2020 14:14:24 +0100
+Subject: [PATCH 068/296] timers: Don't block on ->expiry_lock for
+ TIMER_IRQSAFE
+
+PREEMPT_RT does not spin and wait until a running timer completes its
+callback but instead it blocks on a sleeping lock to prevent a deadlock.
+
+This blocking can not be done for workqueue's IRQ_SAFE timer which will
+be canceled in an IRQ-off region. It has to happen to in IRQ-off region
+because changing the PENDING bit and clearing the timer must not be
+interrupted to avoid a busy-loop.
+
+The callback invocation of IRQSAFE timer is not preempted on PREEMPT_RT
+so there is no need to synchronize on timer_base::expiry_lock.
+
+Don't acquire the timer_base::expiry_lock for TIMER_IRQSAFE flagged
+timer.
+Add a lockdep annotation to ensure that this function is always invoked
+in preemptible context on PREEMPT_RT.
+
+Reported-by: Mike Galbraith <efault@gmx.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: stable-rt@vger.kernel.org
+---
+ kernel/time/timer.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/time/timer.c b/kernel/time/timer.c
+index 02a5812dfc45..14d9eb790b31 100644
+--- a/kernel/time/timer.c
++++ b/kernel/time/timer.c
+@@ -1285,7 +1285,7 @@ static void del_timer_wait_running(struct timer_list *timer)
+ 	u32 tf;
+ 
+ 	tf = READ_ONCE(timer->flags);
+-	if (!(tf & TIMER_MIGRATING)) {
++	if (!(tf & (TIMER_MIGRATING | TIMER_IRQSAFE))) {
+ 		struct timer_base *base = get_timer_base(tf);
+ 
+ 		/*
+@@ -1369,6 +1369,13 @@ int del_timer_sync(struct timer_list *timer)
+ 	 */
+ 	WARN_ON(in_irq() && !(timer->flags & TIMER_IRQSAFE));
+ 
++	/*
++	 * Must be able to sleep on PREEMPT_RT because of the slowpath in
++	 * del_timer_wait_running().
++	 */
++	if (IS_ENABLED(CONFIG_PREEMPT_RT) && !(timer->flags & TIMER_IRQSAFE))
++		lockdep_assert_preemption_enabled();
++
+ 	do {
+ 		ret = try_to_del_timer_sync(timer);
+ 
+-- 
+2.30.2
+

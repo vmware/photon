@@ -1,0 +1,172 @@
+From e3fe52e06080068c3a395ce0e6ebc42a5e37838a Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 3 Nov 2020 10:27:48 +0100
+Subject: [PATCH 059/296] drm/i915: Replace io_mapping_map_atomic_wc()
+
+None of these mapping requires the side effect of disabling pagefaults and
+preemption.
+
+Use io_mapping_map_local_wc() instead, and clean up gtt_user_read() and
+gtt_user_write() to use a plain copy_from_user() as the local maps are not
+disabling pagefaults.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Jani Nikula <jani.nikula@linux.intel.com>
+Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: intel-gfx@lists.freedesktop.org
+Cc: dri-devel@lists.freedesktop.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ .../gpu/drm/i915/gem/i915_gem_execbuffer.c    |  7 ++--
+ drivers/gpu/drm/i915/i915_gem.c               | 40 ++++++-------------
+ drivers/gpu/drm/i915/selftests/i915_gem.c     |  4 +-
+ drivers/gpu/drm/i915/selftests/i915_gem_gtt.c |  8 ++--
+ 4 files changed, 22 insertions(+), 37 deletions(-)
+
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c b/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c
+index bd3046e5a934..1850f13e9d19 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_execbuffer.c
+@@ -1081,7 +1081,7 @@ static void reloc_cache_reset(struct reloc_cache *cache, struct i915_execbuffer
+ 		struct i915_ggtt *ggtt = cache_to_ggtt(cache);
+ 
+ 		intel_gt_flush_ggtt_writes(ggtt->vm.gt);
+-		io_mapping_unmap_atomic((void __iomem *)vaddr);
++		io_mapping_unmap_local((void __iomem *)vaddr);
+ 
+ 		if (drm_mm_node_allocated(&cache->node)) {
+ 			ggtt->vm.clear_range(&ggtt->vm,
+@@ -1147,7 +1147,7 @@ static void *reloc_iomap(struct drm_i915_gem_object *obj,
+ 
+ 	if (cache->vaddr) {
+ 		intel_gt_flush_ggtt_writes(ggtt->vm.gt);
+-		io_mapping_unmap_atomic((void __force __iomem *) unmask_page(cache->vaddr));
++		io_mapping_unmap_local((void __force __iomem *) unmask_page(cache->vaddr));
+ 	} else {
+ 		struct i915_vma *vma;
+ 		int err;
+@@ -1195,8 +1195,7 @@ static void *reloc_iomap(struct drm_i915_gem_object *obj,
+ 		offset += page << PAGE_SHIFT;
+ 	}
+ 
+-	vaddr = (void __force *)io_mapping_map_atomic_wc(&ggtt->iomap,
+-							 offset);
++	vaddr = (void __force *)io_mapping_map_local_wc(&ggtt->iomap, offset);
+ 	cache->page = page;
+ 	cache->vaddr = (unsigned long)vaddr;
+ 
+diff --git a/drivers/gpu/drm/i915/i915_gem.c b/drivers/gpu/drm/i915/i915_gem.c
+index 58276694c848..88944c3b1bc8 100644
+--- a/drivers/gpu/drm/i915/i915_gem.c
++++ b/drivers/gpu/drm/i915/i915_gem.c
+@@ -355,22 +355,15 @@ gtt_user_read(struct io_mapping *mapping,
+ 	      char __user *user_data, int length)
+ {
+ 	void __iomem *vaddr;
+-	unsigned long unwritten;
++	bool fail = false;
+ 
+ 	/* We can use the cpu mem copy function because this is X86. */
+-	vaddr = io_mapping_map_atomic_wc(mapping, base);
+-	unwritten = __copy_to_user_inatomic(user_data,
+-					    (void __force *)vaddr + offset,
+-					    length);
+-	io_mapping_unmap_atomic(vaddr);
+-	if (unwritten) {
+-		vaddr = io_mapping_map_wc(mapping, base, PAGE_SIZE);
+-		unwritten = copy_to_user(user_data,
+-					 (void __force *)vaddr + offset,
+-					 length);
+-		io_mapping_unmap(vaddr);
+-	}
+-	return unwritten;
++	vaddr = io_mapping_map_local_wc(mapping, base);
++	if (copy_to_user(user_data, (void __force *)vaddr + offset, length))
++		fail = true;
++	io_mapping_unmap_local(vaddr);
++
++	return fail;
+ }
+ 
+ static int
+@@ -539,21 +532,14 @@ ggtt_write(struct io_mapping *mapping,
+ 	   char __user *user_data, int length)
+ {
+ 	void __iomem *vaddr;
+-	unsigned long unwritten;
++	bool fail = false;
+ 
+ 	/* We can use the cpu mem copy function because this is X86. */
+-	vaddr = io_mapping_map_atomic_wc(mapping, base);
+-	unwritten = __copy_from_user_inatomic_nocache((void __force *)vaddr + offset,
+-						      user_data, length);
+-	io_mapping_unmap_atomic(vaddr);
+-	if (unwritten) {
+-		vaddr = io_mapping_map_wc(mapping, base, PAGE_SIZE);
+-		unwritten = copy_from_user((void __force *)vaddr + offset,
+-					   user_data, length);
+-		io_mapping_unmap(vaddr);
+-	}
+-
+-	return unwritten;
++	vaddr = io_mapping_map_local_wc(mapping, base);
++	if (copy_from_user((void __force *)vaddr + offset, user_data, length))
++		fail = true;
++	io_mapping_unmap_local(vaddr);
++	return fail;
+ }
+ 
+ /**
+diff --git a/drivers/gpu/drm/i915/selftests/i915_gem.c b/drivers/gpu/drm/i915/selftests/i915_gem.c
+index 412e21604a05..432493183d20 100644
+--- a/drivers/gpu/drm/i915/selftests/i915_gem.c
++++ b/drivers/gpu/drm/i915/selftests/i915_gem.c
+@@ -57,12 +57,12 @@ static void trash_stolen(struct drm_i915_private *i915)
+ 
+ 		ggtt->vm.insert_page(&ggtt->vm, dma, slot, I915_CACHE_NONE, 0);
+ 
+-		s = io_mapping_map_atomic_wc(&ggtt->iomap, slot);
++		s = io_mapping_map_local_wc(&ggtt->iomap, slot);
+ 		for (x = 0; x < PAGE_SIZE / sizeof(u32); x++) {
+ 			prng = next_pseudo_random32(prng);
+ 			iowrite32(prng, &s[x]);
+ 		}
+-		io_mapping_unmap_atomic(s);
++		io_mapping_unmap_local(s);
+ 	}
+ 
+ 	ggtt->vm.clear_range(&ggtt->vm, slot, PAGE_SIZE);
+diff --git a/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c b/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
+index 713770fb2b92..a68bed4e6b64 100644
+--- a/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
++++ b/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
+@@ -1200,9 +1200,9 @@ static int igt_ggtt_page(void *arg)
+ 		u64 offset = tmp.start + order[n] * PAGE_SIZE;
+ 		u32 __iomem *vaddr;
+ 
+-		vaddr = io_mapping_map_atomic_wc(&ggtt->iomap, offset);
++		vaddr = io_mapping_map_local_wc(&ggtt->iomap, offset);
+ 		iowrite32(n, vaddr + n);
+-		io_mapping_unmap_atomic(vaddr);
++		io_mapping_unmap_local(vaddr);
+ 	}
+ 	intel_gt_flush_ggtt_writes(ggtt->vm.gt);
+ 
+@@ -1212,9 +1212,9 @@ static int igt_ggtt_page(void *arg)
+ 		u32 __iomem *vaddr;
+ 		u32 val;
+ 
+-		vaddr = io_mapping_map_atomic_wc(&ggtt->iomap, offset);
++		vaddr = io_mapping_map_local_wc(&ggtt->iomap, offset);
+ 		val = ioread32(vaddr + n);
+-		io_mapping_unmap_atomic(vaddr);
++		io_mapping_unmap_local(vaddr);
+ 
+ 		if (val != n) {
+ 			pr_err("insert page failed: found %d, expected %d\n",
+-- 
+2.30.2
+

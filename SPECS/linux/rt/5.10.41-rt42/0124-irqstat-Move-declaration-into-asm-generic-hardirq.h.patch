@@ -1,0 +1,65 @@
+From 8af174c665eb2d853bce2e14d70b62ddc12372a8 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 13 Nov 2020 15:02:16 +0100
+Subject: [PATCH 124/296] irqstat: Move declaration into asm-generic/hardirq.h
+
+Move the declaration of the irq_cpustat per cpu variable to
+asm-generic/hardirq.h and remove the now empty linux/irq_cpustat.h header.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Frederic Weisbecker <frederic@kernel.org>
+Link: https://lore.kernel.org/r/20201113141733.737377332@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/asm-generic/hardirq.h |  3 ++-
+ include/linux/irq_cpustat.h   | 24 ------------------------
+ 2 files changed, 2 insertions(+), 25 deletions(-)
+ delete mode 100644 include/linux/irq_cpustat.h
+
+diff --git a/include/asm-generic/hardirq.h b/include/asm-generic/hardirq.h
+index f5dd99781e3c..7317e8258b48 100644
+--- a/include/asm-generic/hardirq.h
++++ b/include/asm-generic/hardirq.h
+@@ -12,7 +12,8 @@ typedef struct {
+ #endif
+ } ____cacheline_aligned irq_cpustat_t;
+ 
+-#include <linux/irq_cpustat.h>	/* Standard mappings for irq_cpustat_t above */
++DECLARE_PER_CPU_ALIGNED(irq_cpustat_t, irq_stat);
++
+ #include <linux/irq.h>
+ 
+ #ifndef ack_bad_irq
+diff --git a/include/linux/irq_cpustat.h b/include/linux/irq_cpustat.h
+deleted file mode 100644
+index 78fb2de3ea4d..000000000000
+--- a/include/linux/irq_cpustat.h
++++ /dev/null
+@@ -1,24 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef __irq_cpustat_h
+-#define __irq_cpustat_h
+-
+-/*
+- * Contains default mappings for irq_cpustat_t, used by almost every
+- * architecture.  Some arch (like s390) have per cpu hardware pages and
+- * they define their own mappings for irq_stat.
+- *
+- * Keith Owens <kaos@ocs.com.au> July 2000.
+- */
+-
+-
+-/*
+- * Simple wrappers reducing source bloat.  Define all irq_stat fields
+- * here, even ones that are arch dependent.  That way we get common
+- * definitions instead of differing sets for each arch.
+- */
+-
+-#ifndef __ARCH_IRQ_STAT
+-DECLARE_PER_CPU_ALIGNED(irq_cpustat_t, irq_stat);	/* defined in asm/hardirq.h */
+-#endif
+-
+-#endif	/* __irq_cpustat_h */
+-- 
+2.30.2
+

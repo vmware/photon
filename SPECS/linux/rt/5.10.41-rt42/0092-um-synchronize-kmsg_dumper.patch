@@ -1,0 +1,60 @@
+From 58bb39b26ab8f90d91af483f12ca0943e5d0f7b4 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Mon, 21 Dec 2020 11:10:03 +0106
+Subject: [PATCH 092/296] um: synchronize kmsg_dumper
+
+The kmsg_dumper can be called from any context and CPU, possibly
+from multiple CPUs simultaneously. Since a static buffer is used
+to retrieve the kernel logs, this buffer must be protected against
+simultaneous dumping.
+
+Cc: Richard Weinberger <richard@nod.at>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/um/kernel/kmsg_dump.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/arch/um/kernel/kmsg_dump.c b/arch/um/kernel/kmsg_dump.c
+index f38349ad00ea..173999422ed8 100644
+--- a/arch/um/kernel/kmsg_dump.c
++++ b/arch/um/kernel/kmsg_dump.c
+@@ -1,5 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #include <linux/kmsg_dump.h>
++#include <linux/spinlock.h>
+ #include <linux/console.h>
+ #include <shared/init.h>
+ #include <shared/kern.h>
+@@ -9,8 +10,10 @@ static void kmsg_dumper_stdout(struct kmsg_dumper *dumper,
+ 				enum kmsg_dump_reason reason,
+ 				struct kmsg_dumper_iter *iter)
+ {
++	static DEFINE_SPINLOCK(lock);
+ 	static char line[1024];
+ 	struct console *con;
++	unsigned long flags;
+ 	size_t len = 0;
+ 
+ 	/* only dump kmsg when no console is available */
+@@ -25,11 +28,16 @@ static void kmsg_dumper_stdout(struct kmsg_dumper *dumper,
+ 	if (con)
+ 		return;
+ 
++	if (!spin_trylock_irqsave(&lock, flags))
++		return;
++
+ 	printf("kmsg_dump:\n");
+ 	while (kmsg_dump_get_line(iter, true, line, sizeof(line), &len)) {
+ 		line[len] = '\0';
+ 		printf("%s", line);
+ 	}
++
++	spin_unlock_irqrestore(&lock, flags);
+ }
+ 
+ static struct kmsg_dumper kmsg_dumper = {
+-- 
+2.30.2
+

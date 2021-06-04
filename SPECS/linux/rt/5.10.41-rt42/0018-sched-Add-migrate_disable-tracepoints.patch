@@ -1,0 +1,109 @@
+From 642383b37c5c634999497a21db092de2fb05d69b Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Fri, 23 Oct 2020 12:12:15 +0200
+Subject: [PATCH 018/296] sched: Add migrate_disable() tracepoints
+
+XXX write a tracer:
+
+ - 'migirate_disable() -> migrate_enable()' time in task_sched_runtime()
+ - 'migrate_pull -> sched-in' time in task_sched_runtime()
+
+The first will give worst case for the second, which is the actual
+interference experienced by the task to due migration constraints of
+migrate_disable().
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/trace/events/sched.h | 12 ++++++++++++
+ kernel/sched/core.c          |  4 ++++
+ kernel/sched/deadline.c      |  1 +
+ kernel/sched/rt.c            |  8 +++++++-
+ 4 files changed, 24 insertions(+), 1 deletion(-)
+
+diff --git a/include/trace/events/sched.h b/include/trace/events/sched.h
+index c96a4337afe6..e48f584abf5f 100644
+--- a/include/trace/events/sched.h
++++ b/include/trace/events/sched.h
+@@ -650,6 +650,18 @@ DECLARE_TRACE(sched_update_nr_running_tp,
+ 	TP_PROTO(struct rq *rq, int change),
+ 	TP_ARGS(rq, change));
+ 
++DECLARE_TRACE(sched_migrate_disable_tp,
++	      TP_PROTO(struct task_struct *p),
++	      TP_ARGS(p));
++
++DECLARE_TRACE(sched_migrate_enable_tp,
++	      TP_PROTO(struct task_struct *p),
++	      TP_ARGS(p));
++
++DECLARE_TRACE(sched_migrate_pull_tp,
++	      TP_PROTO(struct task_struct *p),
++	      TP_ARGS(p));
++
+ #endif /* _TRACE_SCHED_H */
+ 
+ /* This part must be outside protection */
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index e1df746b441a..33583b08ff7d 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -1726,6 +1726,8 @@ void migrate_disable(void)
+ 		return;
+ 	}
+ 
++	trace_sched_migrate_disable_tp(p);
++
+ 	preempt_disable();
+ 	this_rq()->nr_pinned++;
+ 	p->migration_disabled = 1;
+@@ -1758,6 +1760,8 @@ void migrate_enable(void)
+ 	p->migration_disabled = 0;
+ 	this_rq()->nr_pinned--;
+ 	preempt_enable();
++
++	trace_sched_migrate_enable_tp(p);
+ }
+ EXPORT_SYMBOL_GPL(migrate_enable);
+ 
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index 8d615aacaafc..56faef8c9238 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -2278,6 +2278,7 @@ static void pull_dl_task(struct rq *this_rq)
+ 				goto skip;
+ 
+ 			if (is_migration_disabled(p)) {
++				trace_sched_migrate_pull_tp(p);
+ 				push_task = get_push_task(src_rq);
+ 			} else {
+ 				deactivate_task(src_rq, p, 0);
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index c592e47cafed..1ed7e3dfee9e 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -1877,7 +1877,12 @@ static int push_rt_task(struct rq *rq, bool pull)
+ 		struct task_struct *push_task = NULL;
+ 		int cpu;
+ 
+-		if (!pull || rq->push_busy)
++		if (!pull)
++			return 0;
++
++		trace_sched_migrate_pull_tp(next_task);
++
++		if (rq->push_busy)
+ 			return 0;
+ 
+ 		cpu = find_lowest_rq(rq->curr);
+@@ -2223,6 +2228,7 @@ static void pull_rt_task(struct rq *this_rq)
+ 				goto skip;
+ 
+ 			if (is_migration_disabled(p)) {
++				trace_sched_migrate_pull_tp(p);
+ 				push_task = get_push_task(src_rq);
+ 			} else {
+ 				deactivate_task(src_rq, p, 0);
+-- 
+2.30.2
+

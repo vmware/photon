@@ -1,0 +1,42 @@
+From d2bd06bd88501c23fb1fdfdeaa351ad4171287b6 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 3 Nov 2020 10:27:14 +0100
+Subject: [PATCH 025/296] highmem: Remove unused functions
+
+Nothing uses totalhigh_pages_dec() and totalhigh_pages_set().
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/highmem.h | 10 ----------
+ 1 file changed, 10 deletions(-)
+
+diff --git a/include/linux/highmem.h b/include/linux/highmem.h
+index 14e6202ce47f..f5c31338f0a3 100644
+--- a/include/linux/highmem.h
++++ b/include/linux/highmem.h
+@@ -104,21 +104,11 @@ static inline void totalhigh_pages_inc(void)
+ 	atomic_long_inc(&_totalhigh_pages);
+ }
+ 
+-static inline void totalhigh_pages_dec(void)
+-{
+-	atomic_long_dec(&_totalhigh_pages);
+-}
+-
+ static inline void totalhigh_pages_add(long count)
+ {
+ 	atomic_long_add(count, &_totalhigh_pages);
+ }
+ 
+-static inline void totalhigh_pages_set(long val)
+-{
+-	atomic_long_set(&_totalhigh_pages, val);
+-}
+-
+ void kmap_flush_unused(void);
+ 
+ struct page *kmap_to_page(void *addr);
+-- 
+2.30.2
+

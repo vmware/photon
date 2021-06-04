@@ -10,7 +10,7 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.35
+Version:        5.10.42
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -21,7 +21,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=991caa73705dee26b9c7a42f1ccc6a8d20de5774
+%define sha1 linux=e6346df31e1623af112c154c412f96f59487dbeb
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -71,32 +71,6 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2021-3489
-Patch106:       0001-bpf-ringbuf-deny-reserve-of-buffers-larger-than-ring.patch
-Patch107:       0002-bpf-prevent-writable-memory-mapping-of-read-only-rin.patch
-# Fix for CVE-2021-3490
-Patch108:       0001-bpf-verifier-fix-ALU32-bounds-tracking-with-bitwise-.patch
-# Fix for CVE-2021-3491
-Patch109:       0001-io_uring-truncate-lengths-larger-than-MAX_RW_COUNT-o.patch
-# Fixes for CVEs in mac80211 and ath10k:
-Patch111:       0001-mac80211-assure-all-fragments-are-encrypted.patch
-Patch112:       0002-mac80211-prevent-mixed-key-and-fragment-cache-attack.patch
-Patch113:       0003-mac80211-properly-handle-A-MSDUs-that-start-with-an-.patch
-Patch114:       0004-cfg80211-mitigate-A-MSDU-aggregation-attacks.patch
-Patch115:       0005-mac80211-drop-A-MSDUs-on-old-ciphers.patch
-Patch116:       0006-mac80211-add-fragment-cache-to-sta_info.patch
-Patch117:       0007-mac80211-check-defrag-PN-against-current-frame.patch
-Patch118:       0008-mac80211-prevent-attacks-on-TKIP-WEP-as-well.patch
-Patch119:       0009-mac80211-do-not-accept-forward-invalid-EAPOL-frames.patch
-Patch120:       0010-mac80211-extend-protection-against-mixed-key-and-fra.patch
-Patch121:       0011-ath10k-add-CCMP-PN-replay-protection-for-fragmented-.patch
-Patch122:       0012-ath10k-drop-fragments-with-multicast-DA-for-PCIe.patch
-Patch123:       0013-ath10k-drop-fragments-with-multicast-DA-for-SDIO.patch
-Patch124:       0014-ath10k-drop-MPDU-which-has-discard-flag-set-by-firmw.patch
-Patch125:       0015-ath10k-Fix-TKIP-Michael-MIC-verification-for-PCIe.patch
-Patch126:       0016-ath10k-Validate-first-subframe-of-A-MSDU-before-proc.patch
-# Fix for CVE-2021-23133
-Patch127:	0001-net-sctp-delay-auto_asconf-init-until-binding-the-fi.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -198,27 +172,6 @@ The Linux package contains the Linux kernel doc files
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
-%patch106 -p1
-%patch107 -p1
-%patch108 -p1
-%patch109 -p1
-%patch111 -p1
-%patch112 -p1
-%patch113 -p1
-%patch114 -p1
-%patch115 -p1
-%patch116 -p1
-%patch117 -p1
-%patch118 -p1
-%patch119 -p1
-%patch120 -p1
-%patch121 -p1
-%patch122 -p1
-%patch123 -p1
-%patch124 -p1
-%patch125 -p1
-%patch126 -p1
-%patch127 -p1
 
 # crypto
 %patch500 -p1
@@ -340,6 +293,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jun 03 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-1
+-   Update to version 5.10.42
+-   .config: Enable CONFIG_FANOTIFY_ACCESS_PERMISSIONS
 *   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 5.10.35-1
 -   Update to version 5.10.35
 *   Thu May 13 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.25-9

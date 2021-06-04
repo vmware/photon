@@ -1,0 +1,220 @@
+From 5b192fc0cd0a8bb28705eaeae45c93c151618c77 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 3 Nov 2020 10:27:27 +0100
+Subject: [PATCH 038/296] powerpc/mm/highmem: Switch to generic kmap atomic
+
+No reason having the same code in every architecture
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: linuxppc-dev@lists.ozlabs.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/powerpc/Kconfig                  |  1 +
+ arch/powerpc/include/asm/fixmap.h     |  4 +-
+ arch/powerpc/include/asm/highmem.h    |  7 ++-
+ arch/powerpc/include/asm/kmap_types.h | 13 ------
+ arch/powerpc/mm/Makefile              |  1 -
+ arch/powerpc/mm/highmem.c             | 67 ---------------------------
+ arch/powerpc/mm/mem.c                 |  7 ---
+ 7 files changed, 8 insertions(+), 92 deletions(-)
+ delete mode 100644 arch/powerpc/include/asm/kmap_types.h
+ delete mode 100644 arch/powerpc/mm/highmem.c
+
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index 5afa0ebd78ca..7da69f334fa4 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -410,6 +410,7 @@ menu "Kernel options"
+ config HIGHMEM
+ 	bool "High memory support"
+ 	depends on PPC32
++	select KMAP_LOCAL
+ 
+ source "kernel/Kconfig.hz"
+ 
+diff --git a/arch/powerpc/include/asm/fixmap.h b/arch/powerpc/include/asm/fixmap.h
+index 591b2f4deed5..947b5b9c4424 100644
+--- a/arch/powerpc/include/asm/fixmap.h
++++ b/arch/powerpc/include/asm/fixmap.h
+@@ -20,7 +20,7 @@
+ #include <asm/page.h>
+ #ifdef CONFIG_HIGHMEM
+ #include <linux/threads.h>
+-#include <asm/kmap_types.h>
++#include <asm/kmap_size.h>
+ #endif
+ 
+ #ifdef CONFIG_PPC64
+@@ -61,7 +61,7 @@ enum fixed_addresses {
+ 	FIX_EARLY_DEBUG_BASE = FIX_EARLY_DEBUG_TOP+(ALIGN(SZ_128K, PAGE_SIZE)/PAGE_SIZE)-1,
+ #ifdef CONFIG_HIGHMEM
+ 	FIX_KMAP_BEGIN,	/* reserved pte's for temporary kernel mappings */
+-	FIX_KMAP_END = FIX_KMAP_BEGIN+(KM_TYPE_NR*NR_CPUS)-1,
++	FIX_KMAP_END = FIX_KMAP_BEGIN + (KM_MAX_IDX * NR_CPUS) - 1,
+ #endif
+ #ifdef CONFIG_PPC_8xx
+ 	/* For IMMR we need an aligned 512K area */
+diff --git a/arch/powerpc/include/asm/highmem.h b/arch/powerpc/include/asm/highmem.h
+index 104026f7d6bc..80a5ae771c65 100644
+--- a/arch/powerpc/include/asm/highmem.h
++++ b/arch/powerpc/include/asm/highmem.h
+@@ -24,12 +24,10 @@
+ #ifdef __KERNEL__
+ 
+ #include <linux/interrupt.h>
+-#include <asm/kmap_types.h>
+ #include <asm/cacheflush.h>
+ #include <asm/page.h>
+ #include <asm/fixmap.h>
+ 
+-extern pte_t *kmap_pte;
+ extern pte_t *pkmap_page_table;
+ 
+ /*
+@@ -60,6 +58,11 @@ extern pte_t *pkmap_page_table;
+ 
+ #define flush_cache_kmaps()	flush_cache_all()
+ 
++#define arch_kmap_local_post_map(vaddr, pteval)	\
++	local_flush_tlb_page(NULL, vaddr)
++#define arch_kmap_local_post_unmap(vaddr)	\
++	local_flush_tlb_page(NULL, vaddr)
++
+ #endif /* __KERNEL__ */
+ 
+ #endif /* _ASM_HIGHMEM_H */
+diff --git a/arch/powerpc/include/asm/kmap_types.h b/arch/powerpc/include/asm/kmap_types.h
+deleted file mode 100644
+index c8fa182d48c8..000000000000
+--- a/arch/powerpc/include/asm/kmap_types.h
++++ /dev/null
+@@ -1,13 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0-or-later */
+-#ifndef _ASM_POWERPC_KMAP_TYPES_H
+-#define _ASM_POWERPC_KMAP_TYPES_H
+-
+-#ifdef __KERNEL__
+-
+-/*
+- */
+-
+-#define KM_TYPE_NR 16
+-
+-#endif	/* __KERNEL__ */
+-#endif	/* _ASM_POWERPC_KMAP_TYPES_H */
+diff --git a/arch/powerpc/mm/Makefile b/arch/powerpc/mm/Makefile
+index 55b4a8bd408a..3b4e9e4e25ea 100644
+--- a/arch/powerpc/mm/Makefile
++++ b/arch/powerpc/mm/Makefile
+@@ -16,7 +16,6 @@ obj-$(CONFIG_NEED_MULTIPLE_NODES) += numa.o
+ obj-$(CONFIG_PPC_MM_SLICES)	+= slice.o
+ obj-$(CONFIG_HUGETLB_PAGE)	+= hugetlbpage.o
+ obj-$(CONFIG_NOT_COHERENT_CACHE) += dma-noncoherent.o
+-obj-$(CONFIG_HIGHMEM)		+= highmem.o
+ obj-$(CONFIG_PPC_COPRO_BASE)	+= copro_fault.o
+ obj-$(CONFIG_PPC_PTDUMP)	+= ptdump/
+ obj-$(CONFIG_KASAN)		+= kasan/
+diff --git a/arch/powerpc/mm/highmem.c b/arch/powerpc/mm/highmem.c
+deleted file mode 100644
+index 624b4438aff9..000000000000
+--- a/arch/powerpc/mm/highmem.c
++++ /dev/null
+@@ -1,67 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/*
+- * highmem.c: virtual kernel memory mappings for high memory
+- *
+- * PowerPC version, stolen from the i386 version.
+- *
+- * Used in CONFIG_HIGHMEM systems for memory pages which
+- * are not addressable by direct kernel virtual addresses.
+- *
+- * Copyright (C) 1999 Gerhard Wichert, Siemens AG
+- *		      Gerhard.Wichert@pdb.siemens.de
+- *
+- *
+- * Redesigned the x86 32-bit VM architecture to deal with
+- * up to 16 Terrabyte physical memory. With current x86 CPUs
+- * we now support up to 64 Gigabytes physical RAM.
+- *
+- * Copyright (C) 1999 Ingo Molnar <mingo@redhat.com>
+- *
+- * Reworked for PowerPC by various contributors. Moved from
+- * highmem.h by Benjamin Herrenschmidt (c) 2009 IBM Corp.
+- */
+-
+-#include <linux/highmem.h>
+-#include <linux/module.h>
+-
+-void *kmap_atomic_high_prot(struct page *page, pgprot_t prot)
+-{
+-	unsigned long vaddr;
+-	int idx, type;
+-
+-	type = kmap_atomic_idx_push();
+-	idx = type + KM_TYPE_NR*smp_processor_id();
+-	vaddr = __fix_to_virt(FIX_KMAP_BEGIN + idx);
+-	WARN_ON(IS_ENABLED(CONFIG_DEBUG_HIGHMEM) && !pte_none(*(kmap_pte - idx)));
+-	__set_pte_at(&init_mm, vaddr, kmap_pte-idx, mk_pte(page, prot), 1);
+-	local_flush_tlb_page(NULL, vaddr);
+-
+-	return (void*) vaddr;
+-}
+-EXPORT_SYMBOL(kmap_atomic_high_prot);
+-
+-void kunmap_atomic_high(void *kvaddr)
+-{
+-	unsigned long vaddr = (unsigned long) kvaddr & PAGE_MASK;
+-
+-	if (vaddr < __fix_to_virt(FIX_KMAP_END))
+-		return;
+-
+-	if (IS_ENABLED(CONFIG_DEBUG_HIGHMEM)) {
+-		int type = kmap_atomic_idx();
+-		unsigned int idx;
+-
+-		idx = type + KM_TYPE_NR * smp_processor_id();
+-		WARN_ON(vaddr != __fix_to_virt(FIX_KMAP_BEGIN + idx));
+-
+-		/*
+-		 * force other mappings to Oops if they'll try to access
+-		 * this pte without first remap it
+-		 */
+-		pte_clear(&init_mm, vaddr, kmap_pte-idx);
+-		local_flush_tlb_page(NULL, vaddr);
+-	}
+-
+-	kmap_atomic_idx_pop();
+-}
+-EXPORT_SYMBOL(kunmap_atomic_high);
+diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
+index 22eb1c718e62..1b74565b3e16 100644
+--- a/arch/powerpc/mm/mem.c
++++ b/arch/powerpc/mm/mem.c
+@@ -62,11 +62,6 @@
+ unsigned long long memory_limit;
+ bool init_mem_is_free;
+ 
+-#ifdef CONFIG_HIGHMEM
+-pte_t *kmap_pte;
+-EXPORT_SYMBOL(kmap_pte);
+-#endif
+-
+ pgprot_t phys_mem_access_prot(struct file *file, unsigned long pfn,
+ 			      unsigned long size, pgprot_t vma_prot)
+ {
+@@ -236,8 +231,6 @@ void __init paging_init(void)
+ 
+ 	map_kernel_page(PKMAP_BASE, 0, __pgprot(0));	/* XXX gross */
+ 	pkmap_page_table = virt_to_kpte(PKMAP_BASE);
+-
+-	kmap_pte = virt_to_kpte(__fix_to_virt(FIX_KMAP_BEGIN));
+ #endif /* CONFIG_HIGHMEM */
+ 
+ 	printk(KERN_DEBUG "Top of RAM: 0x%llx, Total RAM: 0x%llx\n",
+-- 
+2.30.2
+

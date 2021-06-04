@@ -1,0 +1,143 @@
+From 1f040adbeb56384adbada1598f4815e050af17ea Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Fri, 23 Oct 2020 12:11:59 +0200
+Subject: [PATCH 002/296] stop_machine: Add function and caller debug info
+
+Crashes in stop-machine are hard to connect to the calling code, add a
+little something to help with that.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/stop_machine.h |  5 +++++
+ kernel/stop_machine.c        | 23 ++++++++++++++++++++---
+ lib/dump_stack.c             |  2 ++
+ 3 files changed, 27 insertions(+), 3 deletions(-)
+
+diff --git a/include/linux/stop_machine.h b/include/linux/stop_machine.h
+index 63ea9aff368f..46fb3ebdd16e 100644
+--- a/include/linux/stop_machine.h
++++ b/include/linux/stop_machine.h
+@@ -24,6 +24,7 @@ typedef int (*cpu_stop_fn_t)(void *arg);
+ struct cpu_stop_work {
+ 	struct list_head	list;		/* cpu_stopper->works */
+ 	cpu_stop_fn_t		fn;
++	unsigned long		caller;
+ 	void			*arg;
+ 	struct cpu_stop_done	*done;
+ };
+@@ -36,6 +37,8 @@ void stop_machine_park(int cpu);
+ void stop_machine_unpark(int cpu);
+ void stop_machine_yield(const struct cpumask *cpumask);
+ 
++extern void print_stop_info(const char *log_lvl, struct task_struct *task);
++
+ #else	/* CONFIG_SMP */
+ 
+ #include <linux/workqueue.h>
+@@ -80,6 +83,8 @@ static inline bool stop_one_cpu_nowait(unsigned int cpu,
+ 	return false;
+ }
+ 
++static inline void print_stop_info(const char *log_lvl, struct task_struct *task) { }
++
+ #endif	/* CONFIG_SMP */
+ 
+ /*
+diff --git a/kernel/stop_machine.c b/kernel/stop_machine.c
+index 890b79cf0e7c..dbf585cf4b9f 100644
+--- a/kernel/stop_machine.c
++++ b/kernel/stop_machine.c
+@@ -42,11 +42,23 @@ struct cpu_stopper {
+ 	struct list_head	works;		/* list of pending works */
+ 
+ 	struct cpu_stop_work	stop_work;	/* for stop_cpus */
++	unsigned long		caller;
++	cpu_stop_fn_t		fn;
+ };
+ 
+ static DEFINE_PER_CPU(struct cpu_stopper, cpu_stopper);
+ static bool stop_machine_initialized = false;
+ 
++void print_stop_info(const char *log_lvl, struct task_struct *task)
++{
++	struct cpu_stopper *stopper = this_cpu_ptr(&cpu_stopper);
++
++	if (task != stopper->thread)
++		return;
++
++	printk("%sStopper: %pS <- %pS\n", log_lvl, stopper->fn, (void *)stopper->caller);
++}
++
+ /* static data for stop_cpus */
+ static DEFINE_MUTEX(stop_cpus_mutex);
+ static bool stop_cpus_in_progress;
+@@ -123,7 +135,7 @@ static bool cpu_stop_queue_work(unsigned int cpu, struct cpu_stop_work *work)
+ int stop_one_cpu(unsigned int cpu, cpu_stop_fn_t fn, void *arg)
+ {
+ 	struct cpu_stop_done done;
+-	struct cpu_stop_work work = { .fn = fn, .arg = arg, .done = &done };
++	struct cpu_stop_work work = { .fn = fn, .arg = arg, .done = &done, .caller = _RET_IP_ };
+ 
+ 	cpu_stop_init_done(&done, 1);
+ 	if (!cpu_stop_queue_work(cpu, &work))
+@@ -331,7 +343,8 @@ int stop_two_cpus(unsigned int cpu1, unsigned int cpu2, cpu_stop_fn_t fn, void *
+ 	work1 = work2 = (struct cpu_stop_work){
+ 		.fn = multi_cpu_stop,
+ 		.arg = &msdata,
+-		.done = &done
++		.done = &done,
++		.caller = _RET_IP_,
+ 	};
+ 
+ 	cpu_stop_init_done(&done, 2);
+@@ -367,7 +380,7 @@ int stop_two_cpus(unsigned int cpu1, unsigned int cpu2, cpu_stop_fn_t fn, void *
+ bool stop_one_cpu_nowait(unsigned int cpu, cpu_stop_fn_t fn, void *arg,
+ 			struct cpu_stop_work *work_buf)
+ {
+-	*work_buf = (struct cpu_stop_work){ .fn = fn, .arg = arg, };
++	*work_buf = (struct cpu_stop_work){ .fn = fn, .arg = arg, .caller = _RET_IP_, };
+ 	return cpu_stop_queue_work(cpu, work_buf);
+ }
+ 
+@@ -487,6 +500,8 @@ static void cpu_stopper_thread(unsigned int cpu)
+ 		int ret;
+ 
+ 		/* cpu stop callbacks must not sleep, make in_atomic() == T */
++		stopper->caller = work->caller;
++		stopper->fn = fn;
+ 		preempt_count_inc();
+ 		ret = fn(arg);
+ 		if (done) {
+@@ -495,6 +510,8 @@ static void cpu_stopper_thread(unsigned int cpu)
+ 			cpu_stop_signal_done(done);
+ 		}
+ 		preempt_count_dec();
++		stopper->fn = NULL;
++		stopper->caller = 0;
+ 		WARN_ONCE(preempt_count(),
+ 			  "cpu_stop: %ps(%p) leaked preempt count\n", fn, arg);
+ 		goto repeat;
+diff --git a/lib/dump_stack.c b/lib/dump_stack.c
+index a00ee6eedc7c..f5a33b6f773f 100644
+--- a/lib/dump_stack.c
++++ b/lib/dump_stack.c
+@@ -12,6 +12,7 @@
+ #include <linux/atomic.h>
+ #include <linux/kexec.h>
+ #include <linux/utsname.h>
++#include <linux/stop_machine.h>
+ 
+ static char dump_stack_arch_desc_str[128];
+ 
+@@ -57,6 +58,7 @@ void dump_stack_print_info(const char *log_lvl)
+ 		       log_lvl, dump_stack_arch_desc_str);
+ 
+ 	print_worker_info(log_lvl, current);
++	print_stop_info(log_lvl, current);
+ }
+ 
+ /**
+-- 
+2.30.2
+

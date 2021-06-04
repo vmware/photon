@@ -1,0 +1,256 @@
+From 70ca290a8b9226e02f5e3b06f5eca0b257e3979c Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 3 Nov 2020 10:27:46 +0100
+Subject: [PATCH 057/296] drm/qxl: Replace io_mapping_map_atomic_wc()
+
+None of these mapping requires the side effect of disabling pagefaults and
+preemption.
+
+Use io_mapping_map_local_wc() instead, rename the related functions
+accordingly and clean up qxl_process_single_command() to use a plain
+copy_from_user() as the local maps are not disabling pagefaults.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Dave Airlie <airlied@redhat.com>
+Cc: Gerd Hoffmann <kraxel@redhat.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: virtualization@lists.linux-foundation.org
+Cc: spice-devel@lists.freedesktop.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/gpu/drm/qxl/qxl_image.c   | 18 +++++++++---------
+ drivers/gpu/drm/qxl/qxl_ioctl.c   | 27 +++++++++++++--------------
+ drivers/gpu/drm/qxl/qxl_object.c  | 12 ++++++------
+ drivers/gpu/drm/qxl/qxl_object.h  |  4 ++--
+ drivers/gpu/drm/qxl/qxl_release.c |  4 ++--
+ 5 files changed, 32 insertions(+), 33 deletions(-)
+
+diff --git a/drivers/gpu/drm/qxl/qxl_image.c b/drivers/gpu/drm/qxl/qxl_image.c
+index 60ab7151b84d..93f92ccd42e5 100644
+--- a/drivers/gpu/drm/qxl/qxl_image.c
++++ b/drivers/gpu/drm/qxl/qxl_image.c
+@@ -124,12 +124,12 @@ qxl_image_init_helper(struct qxl_device *qdev,
+ 				  wrong (check the bitmaps are sent correctly
+ 				  first) */
+ 
+-	ptr = qxl_bo_kmap_atomic_page(qdev, chunk_bo, 0);
++	ptr = qxl_bo_kmap_local_page(qdev, chunk_bo, 0);
+ 	chunk = ptr;
+ 	chunk->data_size = height * chunk_stride;
+ 	chunk->prev_chunk = 0;
+ 	chunk->next_chunk = 0;
+-	qxl_bo_kunmap_atomic_page(qdev, chunk_bo, ptr);
++	qxl_bo_kunmap_local_page(qdev, chunk_bo, ptr);
+ 
+ 	{
+ 		void *k_data, *i_data;
+@@ -143,7 +143,7 @@ qxl_image_init_helper(struct qxl_device *qdev,
+ 			i_data = (void *)data;
+ 
+ 			while (remain > 0) {
+-				ptr = qxl_bo_kmap_atomic_page(qdev, chunk_bo, page << PAGE_SHIFT);
++				ptr = qxl_bo_kmap_local_page(qdev, chunk_bo, page << PAGE_SHIFT);
+ 
+ 				if (page == 0) {
+ 					chunk = ptr;
+@@ -157,7 +157,7 @@ qxl_image_init_helper(struct qxl_device *qdev,
+ 
+ 				memcpy(k_data, i_data, size);
+ 
+-				qxl_bo_kunmap_atomic_page(qdev, chunk_bo, ptr);
++				qxl_bo_kunmap_local_page(qdev, chunk_bo, ptr);
+ 				i_data += size;
+ 				remain -= size;
+ 				page++;
+@@ -175,10 +175,10 @@ qxl_image_init_helper(struct qxl_device *qdev,
+ 					page_offset = offset_in_page(out_offset);
+ 					size = min((int)(PAGE_SIZE - page_offset), remain);
+ 
+-					ptr = qxl_bo_kmap_atomic_page(qdev, chunk_bo, page_base);
++					ptr = qxl_bo_kmap_local_page(qdev, chunk_bo, page_base);
+ 					k_data = ptr + page_offset;
+ 					memcpy(k_data, i_data, size);
+-					qxl_bo_kunmap_atomic_page(qdev, chunk_bo, ptr);
++					qxl_bo_kunmap_local_page(qdev, chunk_bo, ptr);
+ 					remain -= size;
+ 					i_data += size;
+ 					out_offset += size;
+@@ -189,7 +189,7 @@ qxl_image_init_helper(struct qxl_device *qdev,
+ 	qxl_bo_kunmap(chunk_bo);
+ 
+ 	image_bo = dimage->bo;
+-	ptr = qxl_bo_kmap_atomic_page(qdev, image_bo, 0);
++	ptr = qxl_bo_kmap_local_page(qdev, image_bo, 0);
+ 	image = ptr;
+ 
+ 	image->descriptor.id = 0;
+@@ -212,7 +212,7 @@ qxl_image_init_helper(struct qxl_device *qdev,
+ 		break;
+ 	default:
+ 		DRM_ERROR("unsupported image bit depth\n");
+-		qxl_bo_kunmap_atomic_page(qdev, image_bo, ptr);
++		qxl_bo_kunmap_local_page(qdev, image_bo, ptr);
+ 		return -EINVAL;
+ 	}
+ 	image->u.bitmap.flags = QXL_BITMAP_TOP_DOWN;
+@@ -222,7 +222,7 @@ qxl_image_init_helper(struct qxl_device *qdev,
+ 	image->u.bitmap.palette = 0;
+ 	image->u.bitmap.data = qxl_bo_physical_address(qdev, chunk_bo, 0);
+ 
+-	qxl_bo_kunmap_atomic_page(qdev, image_bo, ptr);
++	qxl_bo_kunmap_local_page(qdev, image_bo, ptr);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/gpu/drm/qxl/qxl_ioctl.c b/drivers/gpu/drm/qxl/qxl_ioctl.c
+index 5cea6eea72ab..785023081b79 100644
+--- a/drivers/gpu/drm/qxl/qxl_ioctl.c
++++ b/drivers/gpu/drm/qxl/qxl_ioctl.c
+@@ -89,11 +89,11 @@ apply_reloc(struct qxl_device *qdev, struct qxl_reloc_info *info)
+ {
+ 	void *reloc_page;
+ 
+-	reloc_page = qxl_bo_kmap_atomic_page(qdev, info->dst_bo, info->dst_offset & PAGE_MASK);
++	reloc_page = qxl_bo_kmap_local_page(qdev, info->dst_bo, info->dst_offset & PAGE_MASK);
+ 	*(uint64_t *)(reloc_page + (info->dst_offset & ~PAGE_MASK)) = qxl_bo_physical_address(qdev,
+ 											      info->src_bo,
+ 											      info->src_offset);
+-	qxl_bo_kunmap_atomic_page(qdev, info->dst_bo, reloc_page);
++	qxl_bo_kunmap_local_page(qdev, info->dst_bo, reloc_page);
+ }
+ 
+ static void
+@@ -105,9 +105,9 @@ apply_surf_reloc(struct qxl_device *qdev, struct qxl_reloc_info *info)
+ 	if (info->src_bo && !info->src_bo->is_primary)
+ 		id = info->src_bo->surface_id;
+ 
+-	reloc_page = qxl_bo_kmap_atomic_page(qdev, info->dst_bo, info->dst_offset & PAGE_MASK);
++	reloc_page = qxl_bo_kmap_local_page(qdev, info->dst_bo, info->dst_offset & PAGE_MASK);
+ 	*(uint32_t *)(reloc_page + (info->dst_offset & ~PAGE_MASK)) = id;
+-	qxl_bo_kunmap_atomic_page(qdev, info->dst_bo, reloc_page);
++	qxl_bo_kunmap_local_page(qdev, info->dst_bo, reloc_page);
+ }
+ 
+ /* return holding the reference to this object */
+@@ -149,7 +149,6 @@ static int qxl_process_single_command(struct qxl_device *qdev,
+ 	struct qxl_bo *cmd_bo;
+ 	void *fb_cmd;
+ 	int i, ret, num_relocs;
+-	int unwritten;
+ 
+ 	switch (cmd->type) {
+ 	case QXL_CMD_DRAW:
+@@ -185,21 +184,21 @@ static int qxl_process_single_command(struct qxl_device *qdev,
+ 		goto out_free_reloc;
+ 
+ 	/* TODO copy slow path code from i915 */
+-	fb_cmd = qxl_bo_kmap_atomic_page(qdev, cmd_bo, (release->release_offset & PAGE_MASK));
+-	unwritten = __copy_from_user_inatomic_nocache
+-		(fb_cmd + sizeof(union qxl_release_info) + (release->release_offset & ~PAGE_MASK),
+-		 u64_to_user_ptr(cmd->command), cmd->command_size);
++	fb_cmd = qxl_bo_kmap_local_page(qdev, cmd_bo, (release->release_offset & PAGE_MASK));
+ 
+-	{
++	if (copy_from_user(fb_cmd + sizeof(union qxl_release_info) +
++			   (release->release_offset & ~PAGE_MASK),
++			   u64_to_user_ptr(cmd->command), cmd->command_size)) {
++		ret = -EFAULT;
++	} else {
+ 		struct qxl_drawable *draw = fb_cmd;
+ 
+ 		draw->mm_time = qdev->rom->mm_clock;
+ 	}
+ 
+-	qxl_bo_kunmap_atomic_page(qdev, cmd_bo, fb_cmd);
+-	if (unwritten) {
+-		DRM_ERROR("got unwritten %d\n", unwritten);
+-		ret = -EFAULT;
++	qxl_bo_kunmap_local_page(qdev, cmd_bo, fb_cmd);
++	if (ret) {
++		DRM_ERROR("copy from user failed %d\n", ret);
+ 		goto out_free_release;
+ 	}
+ 
+diff --git a/drivers/gpu/drm/qxl/qxl_object.c b/drivers/gpu/drm/qxl/qxl_object.c
+index 544a9e4df2a8..5ee5171d46ef 100644
+--- a/drivers/gpu/drm/qxl/qxl_object.c
++++ b/drivers/gpu/drm/qxl/qxl_object.c
+@@ -173,8 +173,8 @@ int qxl_bo_kmap(struct qxl_bo *bo, void **ptr)
+ 	return 0;
+ }
+ 
+-void *qxl_bo_kmap_atomic_page(struct qxl_device *qdev,
+-			      struct qxl_bo *bo, int page_offset)
++void *qxl_bo_kmap_local_page(struct qxl_device *qdev,
++			     struct qxl_bo *bo, int page_offset)
+ {
+ 	unsigned long offset;
+ 	void *rptr;
+@@ -189,7 +189,7 @@ void *qxl_bo_kmap_atomic_page(struct qxl_device *qdev,
+ 		goto fallback;
+ 
+ 	offset = bo->tbo.mem.start << PAGE_SHIFT;
+-	return io_mapping_map_atomic_wc(map, offset + page_offset);
++	return io_mapping_map_local_wc(map, offset + page_offset);
+ fallback:
+ 	if (bo->kptr) {
+ 		rptr = bo->kptr + (page_offset * PAGE_SIZE);
+@@ -215,14 +215,14 @@ void qxl_bo_kunmap(struct qxl_bo *bo)
+ 	ttm_bo_kunmap(&bo->kmap);
+ }
+ 
+-void qxl_bo_kunmap_atomic_page(struct qxl_device *qdev,
+-			       struct qxl_bo *bo, void *pmap)
++void qxl_bo_kunmap_local_page(struct qxl_device *qdev,
++			      struct qxl_bo *bo, void *pmap)
+ {
+ 	if ((bo->tbo.mem.mem_type != TTM_PL_VRAM) &&
+ 	    (bo->tbo.mem.mem_type != TTM_PL_PRIV))
+ 		goto fallback;
+ 
+-	io_mapping_unmap_atomic(pmap);
++	io_mapping_unmap_local(pmap);
+ 	return;
+  fallback:
+ 	qxl_bo_kunmap(bo);
+diff --git a/drivers/gpu/drm/qxl/qxl_object.h b/drivers/gpu/drm/qxl/qxl_object.h
+index 5762ea40d047..6ae89b1b36f4 100644
+--- a/drivers/gpu/drm/qxl/qxl_object.h
++++ b/drivers/gpu/drm/qxl/qxl_object.h
+@@ -89,8 +89,8 @@ extern int qxl_bo_create(struct qxl_device *qdev,
+ 			 struct qxl_bo **bo_ptr);
+ extern int qxl_bo_kmap(struct qxl_bo *bo, void **ptr);
+ extern void qxl_bo_kunmap(struct qxl_bo *bo);
+-void *qxl_bo_kmap_atomic_page(struct qxl_device *qdev, struct qxl_bo *bo, int page_offset);
+-void qxl_bo_kunmap_atomic_page(struct qxl_device *qdev, struct qxl_bo *bo, void *map);
++void *qxl_bo_kmap_local_page(struct qxl_device *qdev, struct qxl_bo *bo, int page_offset);
++void qxl_bo_kunmap_local_page(struct qxl_device *qdev, struct qxl_bo *bo, void *map);
+ extern struct qxl_bo *qxl_bo_ref(struct qxl_bo *bo);
+ extern void qxl_bo_unref(struct qxl_bo **bo);
+ extern int qxl_bo_pin(struct qxl_bo *bo);
+diff --git a/drivers/gpu/drm/qxl/qxl_release.c b/drivers/gpu/drm/qxl/qxl_release.c
+index b2a475a0ca4a..b665a33b449b 100644
+--- a/drivers/gpu/drm/qxl/qxl_release.c
++++ b/drivers/gpu/drm/qxl/qxl_release.c
+@@ -414,7 +414,7 @@ union qxl_release_info *qxl_release_map(struct qxl_device *qdev,
+ 	union qxl_release_info *info;
+ 	struct qxl_bo *bo = release->release_bo;
+ 
+-	ptr = qxl_bo_kmap_atomic_page(qdev, bo, release->release_offset & PAGE_MASK);
++	ptr = qxl_bo_kmap_local_page(qdev, bo, release->release_offset & PAGE_MASK);
+ 	if (!ptr)
+ 		return NULL;
+ 	info = ptr + (release->release_offset & ~PAGE_MASK);
+@@ -429,7 +429,7 @@ void qxl_release_unmap(struct qxl_device *qdev,
+ 	void *ptr;
+ 
+ 	ptr = ((void *)info) - (release->release_offset & ~PAGE_MASK);
+-	qxl_bo_kunmap_atomic_page(qdev, bo, ptr);
++	qxl_bo_kunmap_local_page(qdev, bo, ptr);
+ }
+ 
+ void qxl_release_fence_buffer_objects(struct qxl_release *release)
+-- 
+2.30.2
+

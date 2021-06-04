@@ -1,0 +1,75 @@
+From e8235bfc4174aa872012f8116e6802eb7c90c86b Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Wed, 9 Jan 2013 12:08:15 +0100
+Subject: [PATCH 208/296] slub: Enable irqs for __GFP_WAIT
+
+SYSTEM_RUNNING might be too late for enabling interrupts. Allocations
+with GFP_WAIT can happen before that. So use this as an indicator.
+
+[bigeasy: Add warning on RT for allocations in atomic context.
+  Don't enable interrupts on allocations during SYSTEM_SUSPEND. This is done
+  during suspend by ACPI, noticed by Liwei Song <liwei.song@windriver.com>
+]
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ mm/slub.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
+
+diff --git a/mm/slub.c b/mm/slub.c
+index f6fb9aa3124c..006936fe5d58 100644
+--- a/mm/slub.c
++++ b/mm/slub.c
+@@ -1742,10 +1742,18 @@ static struct page *allocate_slab(struct kmem_cache *s, gfp_t flags, int node)
+ 	void *start, *p, *next;
+ 	int idx;
+ 	bool shuffle;
++	bool enableirqs = false;
+ 
+ 	flags &= gfp_allowed_mask;
+ 
+ 	if (gfpflags_allow_blocking(flags))
++		enableirqs = true;
++
++#ifdef CONFIG_PREEMPT_RT
++	if (system_state > SYSTEM_BOOTING && system_state < SYSTEM_SUSPEND)
++		enableirqs = true;
++#endif
++	if (enableirqs)
+ 		local_irq_enable();
+ 
+ 	flags |= s->allocflags;
+@@ -1804,7 +1812,7 @@ static struct page *allocate_slab(struct kmem_cache *s, gfp_t flags, int node)
+ 	page->frozen = 1;
+ 
+ out:
+-	if (gfpflags_allow_blocking(flags))
++	if (enableirqs)
+ 		local_irq_disable();
+ 	if (!page)
+ 		return NULL;
+@@ -2862,6 +2870,10 @@ static __always_inline void *slab_alloc_node(struct kmem_cache *s,
+ 	unsigned long tid;
+ 	struct obj_cgroup *objcg = NULL;
+ 
++	if (IS_ENABLED(CONFIG_PREEMPT_RT) && IS_ENABLED(CONFIG_DEBUG_ATOMIC_SLEEP))
++		WARN_ON_ONCE(!preemptible() &&
++			     (system_state > SYSTEM_BOOTING && system_state < SYSTEM_SUSPEND));
++
+ 	s = slab_pre_alloc_hook(s, &objcg, 1, gfpflags);
+ 	if (!s)
+ 		return NULL;
+@@ -3328,6 +3340,10 @@ int kmem_cache_alloc_bulk(struct kmem_cache *s, gfp_t flags, size_t size,
+ 	int i;
+ 	struct obj_cgroup *objcg = NULL;
+ 
++	if (IS_ENABLED(CONFIG_PREEMPT_RT) && IS_ENABLED(CONFIG_DEBUG_ATOMIC_SLEEP))
++		WARN_ON_ONCE(!preemptible() &&
++			     (system_state > SYSTEM_BOOTING && system_state < SYSTEM_SUSPEND));
++
+ 	/* memcg and kmem_cache debug support */
+ 	s = slab_pre_alloc_hook(s, &objcg, size, flags);
+ 	if (unlikely(!s))
+-- 
+2.30.2
+
