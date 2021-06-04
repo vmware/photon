@@ -1,0 +1,131 @@
+From 46d1132855d5b60c59fd2301e4ca34870b635a97 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Mon, 30 Nov 2020 01:42:05 +0106
+Subject: [PATCH 104/296] printk: change @console_seq to atomic64_t
+
+In preparation for atomic printing, change @console_seq to atomic
+so that it can be accessed without requiring @console_sem.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk.c | 34 +++++++++++++++++++---------------
+ 1 file changed, 19 insertions(+), 15 deletions(-)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 0333d11966ac..a3763f25cede 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -366,12 +366,13 @@ static u64 syslog_seq;
+ static size_t syslog_partial;
+ static bool syslog_time;
+ 
+-/* All 3 protected by @console_sem. */
+-/* the next printk record to write to the console */
+-static u64 console_seq;
++/* Both protected by @console_sem. */
+ static u64 exclusive_console_stop_seq;
+ static unsigned long console_dropped;
+ 
++/* the next printk record to write to the console */
++static atomic64_t console_seq = ATOMIC64_INIT(0);
++
+ struct latched_seq {
+ 	seqcount_latch_t	latch;
+ 	u64			val[2];
+@@ -2271,7 +2272,7 @@ EXPORT_SYMBOL(printk);
+ #define prb_first_valid_seq(rb)		0
+ 
+ static u64 syslog_seq;
+-static u64 console_seq;
++static atomic64_t console_seq = ATOMIC64_INIT(0);
+ static u64 exclusive_console_stop_seq;
+ static unsigned long console_dropped;
+ 
+@@ -2579,6 +2580,7 @@ void console_unlock(void)
+ 	bool do_cond_resched, retry;
+ 	struct printk_info info;
+ 	struct printk_record r;
++	u64 seq;
+ 
+ 	if (console_suspended) {
+ 		up_console_sem();
+@@ -2621,12 +2623,14 @@ void console_unlock(void)
+ 		size_t len;
+ 
+ skip:
+-		if (!prb_read_valid(prb, console_seq, &r))
++		seq = atomic64_read(&console_seq);
++		if (!prb_read_valid(prb, seq, &r))
+ 			break;
+ 
+-		if (console_seq != r.info->seq) {
+-			console_dropped += r.info->seq - console_seq;
+-			console_seq = r.info->seq;
++		if (seq != r.info->seq) {
++			console_dropped += r.info->seq - seq;
++			atomic64_set(&console_seq, r.info->seq);
++			seq = r.info->seq;
+ 		}
+ 
+ 		if (suppress_message_printing(r.info->level)) {
+@@ -2635,13 +2639,13 @@ void console_unlock(void)
+ 			 * directly to the console when we received it, and
+ 			 * record that has level above the console loglevel.
+ 			 */
+-			console_seq++;
++			atomic64_set(&console_seq, seq + 1);
+ 			goto skip;
+ 		}
+ 
+ 		/* Output to all consoles once old messages replayed. */
+ 		if (unlikely(exclusive_console &&
+-			     console_seq >= exclusive_console_stop_seq)) {
++			     seq >= exclusive_console_stop_seq)) {
+ 			exclusive_console = NULL;
+ 		}
+ 
+@@ -2662,7 +2666,7 @@ void console_unlock(void)
+ 		len = record_print_text(&r,
+ 				console_msg_format & MSG_FORMAT_SYSLOG,
+ 				printk_time);
+-		console_seq++;
++		atomic64_set(&console_seq, seq + 1);
+ 
+ 		/*
+ 		 * While actively printing out messages, if another printk()
+@@ -2693,7 +2697,7 @@ void console_unlock(void)
+ 	 * there's a new owner and the console_unlock() from them will do the
+ 	 * flush, no worries.
+ 	 */
+-	retry = prb_read_valid(prb, console_seq, NULL);
++	retry = prb_read_valid(prb, atomic64_read(&console_seq), NULL);
+ 	if (retry && console_trylock())
+ 		goto again;
+ }
+@@ -2756,7 +2760,7 @@ void console_flush_on_panic(enum con_flush_mode mode)
+ 	console_may_schedule = 0;
+ 
+ 	if (mode == CONSOLE_REPLAY_ALL)
+-		console_seq = prb_first_valid_seq(prb);
++		atomic64_set(&console_seq, prb_first_valid_seq(prb));
+ 	console_unlock();
+ }
+ 
+@@ -2993,11 +2997,11 @@ void register_console(struct console *newcon)
+ 		 * ignores console_lock.
+ 		 */
+ 		exclusive_console = newcon;
+-		exclusive_console_stop_seq = console_seq;
++		exclusive_console_stop_seq = atomic64_read(&console_seq);
+ 
+ 		/* Get a consistent copy of @syslog_seq. */
+ 		spin_lock_irqsave(&syslog_lock, flags);
+-		console_seq = syslog_seq;
++		atomic64_set(&console_seq, syslog_seq);
+ 		spin_unlock_irqrestore(&syslog_lock, flags);
+ 	}
+ 	console_unlock();
+-- 
+2.30.2
+

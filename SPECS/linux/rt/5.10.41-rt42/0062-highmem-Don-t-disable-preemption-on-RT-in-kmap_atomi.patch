@@ -1,0 +1,70 @@
+From f3d4fd3aac97d532ae9b9f8479b3abd53f4abbf4 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 30 Oct 2020 13:59:06 +0100
+Subject: [PATCH 062/296] highmem: Don't disable preemption on RT in
+ kmap_atomic()
+
+Disabling preemption makes it impossible to acquire sleeping locks within
+kmap_atomic() section.
+For PREEMPT_RT it is sufficient to disable migration.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/highmem-internal.h | 20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
+
+diff --git a/include/linux/highmem-internal.h b/include/linux/highmem-internal.h
+index bd15bf9164c2..f9bc6acd3679 100644
+--- a/include/linux/highmem-internal.h
++++ b/include/linux/highmem-internal.h
+@@ -90,7 +90,10 @@ static inline void __kunmap_local(void *vaddr)
+ 
+ static inline void *kmap_atomic(struct page *page)
+ {
+-	preempt_disable();
++	if (IS_ENABLED(CONFIG_PREEMPT_RT))
++		migrate_disable();
++	else
++		preempt_disable();
+ 	pagefault_disable();
+ 	return __kmap_local_page_prot(page, kmap_prot);
+ }
+@@ -99,7 +102,10 @@ static inline void __kunmap_atomic(void *addr)
+ {
+ 	kunmap_local_indexed(addr);
+ 	pagefault_enable();
+-	preempt_enable();
++	if (IS_ENABLED(CONFIG_PREEMPT_RT))
++		migrate_enable();
++	else
++		preempt_enable();
+ }
+ 
+ unsigned int __nr_free_highpages(void);
+@@ -172,7 +178,10 @@ static inline void __kunmap_local(void *addr)
+ 
+ static inline void *kmap_atomic(struct page *page)
+ {
+-	preempt_disable();
++	if (IS_ENABLED(CONFIG_PREEMPT_RT))
++		migrate_disable();
++	else
++		preempt_disable();
+ 	pagefault_disable();
+ 	return page_address(page);
+ }
+@@ -183,7 +192,10 @@ static inline void __kunmap_atomic(void *addr)
+ 	kunmap_flush_on_unmap(addr);
+ #endif
+ 	pagefault_enable();
+-	preempt_enable();
++	if (IS_ENABLED(CONFIG_PREEMPT_RT))
++		migrate_enable();
++	else
++		preempt_enable();
+ }
+ 
+ static inline unsigned int nr_free_highpages(void) { return 0; }
+-- 
+2.30.2
+

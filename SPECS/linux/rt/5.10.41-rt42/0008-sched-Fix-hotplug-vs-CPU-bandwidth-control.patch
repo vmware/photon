@@ -1,0 +1,93 @@
+From 7a09aab37f1454a30a0e6f94ba1c2d2fb6fb3c65 Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Fri, 23 Oct 2020 12:12:05 +0200
+Subject: [PATCH 008/296] sched: Fix hotplug vs CPU bandwidth control
+
+Since we now migrate tasks away before DYING, we should also move
+bandwidth unthrottle, otherwise we can gain tasks from unthrottle
+after we expect all tasks to be gone already.
+
+Also; it looks like the RT balancers don't respect cpu_active() and
+instead rely on rq->online in part, complete this. This too requires
+we do set_rq_offline() earlier to match the cpu_active() semantics.
+(The bigger patch is to convert RT to cpu_active() entirely)
+
+Since set_rq_online() is called from sched_cpu_activate(), place
+set_rq_offline() in sched_cpu_deactivate().
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/sched/core.c     | 14 ++++++++++----
+ kernel/sched/deadline.c |  2 +-
+ kernel/sched/rt.c       |  2 +-
+ 3 files changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 5fd467bb6a1b..5f2ce256bc49 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -6975,6 +6975,8 @@ int sched_cpu_activate(unsigned int cpu)
+ 
+ int sched_cpu_deactivate(unsigned int cpu)
+ {
++	struct rq *rq = cpu_rq(cpu);
++	struct rq_flags rf;
+ 	int ret;
+ 
+ 	set_cpu_active(cpu, false);
+@@ -6989,6 +6991,14 @@ int sched_cpu_deactivate(unsigned int cpu)
+ 
+ 	balance_push_set(cpu, true);
+ 
++	rq_lock_irqsave(rq, &rf);
++	if (rq->rd) {
++		update_rq_clock(rq);
++		BUG_ON(!cpumask_test_cpu(cpu, rq->rd->span));
++		set_rq_offline(rq);
++	}
++	rq_unlock_irqrestore(rq, &rf);
++
+ #ifdef CONFIG_SCHED_SMT
+ 	/*
+ 	 * When going down, decrement the number of cores with SMT present.
+@@ -7070,10 +7080,6 @@ int sched_cpu_dying(unsigned int cpu)
+ 	sched_tick_stop(cpu);
+ 
+ 	rq_lock_irqsave(rq, &rf);
+-	if (rq->rd) {
+-		BUG_ON(!cpumask_test_cpu(cpu, rq->rd->span));
+-		set_rq_offline(rq);
+-	}
+ 	BUG_ON(rq->nr_running != 1);
+ 	rq_unlock_irqrestore(rq, &rf);
+ 
+diff --git a/kernel/sched/deadline.c b/kernel/sched/deadline.c
+index 8d06d1f4e2f7..e0564abfece1 100644
+--- a/kernel/sched/deadline.c
++++ b/kernel/sched/deadline.c
+@@ -565,7 +565,7 @@ static int push_dl_task(struct rq *rq);
+ 
+ static inline bool need_pull_dl_task(struct rq *rq, struct task_struct *prev)
+ {
+-	return dl_task(prev);
++	return rq->online && dl_task(prev);
+ }
+ 
+ static DEFINE_PER_CPU(struct callback_head, dl_push_head);
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index 49ec096a8aa1..40a46639f78a 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -265,7 +265,7 @@ static void pull_rt_task(struct rq *this_rq);
+ static inline bool need_pull_rt_task(struct rq *rq, struct task_struct *prev)
+ {
+ 	/* Try to pull RT tasks here if we lower this rq's prio */
+-	return rq->rt.highest_prio.curr > prev->prio;
++	return rq->online && rq->rt.highest_prio.curr > prev->prio;
+ }
+ 
+ static inline int rt_overloaded(struct rq *rq)
+-- 
+2.30.2
+

@@ -1,0 +1,39 @@
+From ed257668f2ca5978336d6b3da859f3c57307ce21 Mon Sep 17 00:00:00 2001
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+Date: Tue, 24 Nov 2020 14:06:56 +0100
+Subject: [PATCH 127/296] sh/irq: Add missing closing parentheses in
+ arch_show_interrupts()
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+    arch/sh/kernel/irq.c: In function ‘arch_show_interrupts’:
+    arch/sh/kernel/irq.c:47:58: error: expected ‘)’ before ‘;’ token
+       47 |   seq_printf(p, "%10u ", per_cpu(irq_stat.__nmi_count, j);
+	  |                                                          ^
+
+Fixes: fe3f1d5d7cd3062c ("sh: Get rid of nmi_count()")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20201124130656.2741743-1-geert+renesas@glider.be
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/sh/kernel/irq.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/sh/kernel/irq.c b/arch/sh/kernel/irq.c
+index 5addcb2c2da0..ab5f790b0cd2 100644
+--- a/arch/sh/kernel/irq.c
++++ b/arch/sh/kernel/irq.c
+@@ -44,7 +44,7 @@ int arch_show_interrupts(struct seq_file *p, int prec)
+ 
+ 	seq_printf(p, "%*s: ", prec, "NMI");
+ 	for_each_online_cpu(j)
+-		seq_printf(p, "%10u ", per_cpu(irq_stat.__nmi_count, j);
++		seq_printf(p, "%10u ", per_cpu(irq_stat.__nmi_count, j));
+ 	seq_printf(p, "  Non-maskable interrupts\n");
+ 
+ 	seq_printf(p, "%*s: %10u\n", prec, "ERR", atomic_read(&irq_err_count));
+-- 
+2.30.2
+

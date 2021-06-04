@@ -1,0 +1,89 @@
+From de5baac2def861a2123660311043b87129653613 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 3 Nov 2020 10:27:32 +0100
+Subject: [PATCH 043/296] io-mapping: Cleanup atomic iomap
+
+Switch the atomic iomap implementation over to kmap_local and stick the
+preempt/pagefault mechanics into the generic code similar to the
+kmap_atomic variants.
+
+Rename the x86 map function in preparation for a non-atomic variant.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/x86/include/asm/iomap.h | 9 +--------
+ arch/x86/mm/iomap_32.c       | 6 ++----
+ include/linux/io-mapping.h   | 8 ++++++--
+ 3 files changed, 9 insertions(+), 14 deletions(-)
+
+diff --git a/arch/x86/include/asm/iomap.h b/arch/x86/include/asm/iomap.h
+index 0be7a30fd6bc..e2de092fc38c 100644
+--- a/arch/x86/include/asm/iomap.h
++++ b/arch/x86/include/asm/iomap.h
+@@ -13,14 +13,7 @@
+ #include <asm/cacheflush.h>
+ #include <asm/tlbflush.h>
+ 
+-void __iomem *iomap_atomic_pfn_prot(unsigned long pfn, pgprot_t prot);
+-
+-static inline void iounmap_atomic(void __iomem *vaddr)
+-{
+-	kunmap_local_indexed((void __force *)vaddr);
+-	pagefault_enable();
+-	preempt_enable();
+-}
++void __iomem *__iomap_local_pfn_prot(unsigned long pfn, pgprot_t prot);
+ 
+ int iomap_create_wc(resource_size_t base, unsigned long size, pgprot_t *prot);
+ 
+diff --git a/arch/x86/mm/iomap_32.c b/arch/x86/mm/iomap_32.c
+index e0a40d7cc66c..9aaa756ddf21 100644
+--- a/arch/x86/mm/iomap_32.c
++++ b/arch/x86/mm/iomap_32.c
+@@ -44,7 +44,7 @@ void iomap_free(resource_size_t base, unsigned long size)
+ }
+ EXPORT_SYMBOL_GPL(iomap_free);
+ 
+-void __iomem *iomap_atomic_pfn_prot(unsigned long pfn, pgprot_t prot)
++void __iomem *__iomap_local_pfn_prot(unsigned long pfn, pgprot_t prot)
+ {
+ 	/*
+ 	 * For non-PAT systems, translate non-WB request to UC- just in
+@@ -60,8 +60,6 @@ void __iomem *iomap_atomic_pfn_prot(unsigned long pfn, pgprot_t prot)
+ 	/* Filter out unsupported __PAGE_KERNEL* bits: */
+ 	pgprot_val(prot) &= __default_kernel_pte_mask;
+ 
+-	preempt_disable();
+-	pagefault_disable();
+ 	return (void __force __iomem *)__kmap_local_pfn_prot(pfn, prot);
+ }
+-EXPORT_SYMBOL_GPL(iomap_atomic_pfn_prot);
++EXPORT_SYMBOL_GPL(__iomap_local_pfn_prot);
+diff --git a/include/linux/io-mapping.h b/include/linux/io-mapping.h
+index 3b0940be72e9..60e7c83e4904 100644
+--- a/include/linux/io-mapping.h
++++ b/include/linux/io-mapping.h
+@@ -69,13 +69,17 @@ io_mapping_map_atomic_wc(struct io_mapping *mapping,
+ 
+ 	BUG_ON(offset >= mapping->size);
+ 	phys_addr = mapping->base + offset;
+-	return iomap_atomic_pfn_prot(PHYS_PFN(phys_addr), mapping->prot);
++	preempt_disable();
++	pagefault_disable();
++	return __iomap_local_pfn_prot(PHYS_PFN(phys_addr), mapping->prot);
+ }
+ 
+ static inline void
+ io_mapping_unmap_atomic(void __iomem *vaddr)
+ {
+-	iounmap_atomic(vaddr);
++	kunmap_local_indexed((void __force *)vaddr);
++	pagefault_enable();
++	preempt_enable();
+ }
+ 
+ static inline void __iomem *
+-- 
+2.30.2
+

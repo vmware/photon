@@ -1,0 +1,42 @@
+From 8bd1c5890223421b9bc58ec8021784d56cefe7f2 Mon Sep 17 00:00:00 2001
+From: "Ahmed S. Darwish" <a.darwish@linutronix.de>
+Date: Tue, 16 Mar 2021 11:56:30 +0100
+Subject: [PATCH 295/296] net: xfrm: Use sequence counter with associated
+ spinlock
+
+A sequence counter write section must be serialized or its internal
+state can get corrupted. A plain seqcount_t does not contain the
+information of which lock must be held to guaranteee write side
+serialization.
+
+For xfrm_state_hash_generation, use seqcount_spinlock_t instead of plain
+seqcount_t.  This allows to associate the spinlock used for write
+serialization with the sequence counter. It thus enables lockdep to
+verify that the write serialization lock is indeed held before entering
+the sequence counter write section.
+
+If lockdep is disabled, this lock association is compiled out and has
+neither storage size nor runtime overhead.
+
+Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+---
+ include/net/netns/xfrm.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/net/netns/xfrm.h b/include/net/netns/xfrm.h
+index b59d73d529ba..e816b6a3ef2b 100644
+--- a/include/net/netns/xfrm.h
++++ b/include/net/netns/xfrm.h
+@@ -73,7 +73,7 @@ struct netns_xfrm {
+ 	struct dst_ops		xfrm6_dst_ops;
+ #endif
+ 	spinlock_t		xfrm_state_lock;
+-	seqcount_t		xfrm_state_hash_generation;
++	seqcount_spinlock_t	xfrm_state_hash_generation;
+ 
+ 	spinlock_t xfrm_policy_lock;
+ 	struct mutex xfrm_cfg_mutex;
+-- 
+2.30.2
+

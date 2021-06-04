@@ -1,0 +1,292 @@
+From 5bae8a136db8fbfbf39337aa00587edac0dd6bc5 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 3 Nov 2020 10:27:35 +0100
+Subject: [PATCH 046/296] sched: Make migrate_disable/enable() independent of
+ RT
+
+Now that the scheduler can deal with migrate disable properly, there is no
+real compelling reason to make it only available for RT.
+
+There are quite some code pathes which needlessly disable preemption in
+order to prevent migration and some constructs like kmap_atomic() enforce
+it implicitly.
+
+Making it available independent of RT allows to provide a preemptible
+variant of kmap_atomic() and makes the code more consistent in general.
+
+FIXME: Rework the comment in preempt.h
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Juri Lelli <juri.lelli@redhat.com>
+Cc: Vincent Guittot <vincent.guittot@linaro.org>
+Cc: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc: Steven Rostedt <rostedt@goodmis.org>
+Cc: Ben Segall <bsegall@google.com>
+Cc: Mel Gorman <mgorman@suse.de>
+Cc: Daniel Bristot de Oliveira <bristot@redhat.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/kernel.h  | 21 ++++++++++++-------
+ include/linux/preempt.h | 38 +++-------------------------------
+ include/linux/sched.h   |  2 +-
+ kernel/sched/core.c     | 45 ++++++++++++++++++++++++++++++++---------
+ kernel/sched/sched.h    |  4 ++--
+ lib/smp_processor_id.c  |  2 +-
+ 6 files changed, 56 insertions(+), 56 deletions(-)
+
+diff --git a/include/linux/kernel.h b/include/linux/kernel.h
+index 2f05e9128201..665837f9a831 100644
+--- a/include/linux/kernel.h
++++ b/include/linux/kernel.h
+@@ -204,6 +204,7 @@ extern int _cond_resched(void);
+ extern void ___might_sleep(const char *file, int line, int preempt_offset);
+ extern void __might_sleep(const char *file, int line, int preempt_offset);
+ extern void __cant_sleep(const char *file, int line, int preempt_offset);
++extern void __cant_migrate(const char *file, int line);
+ 
+ /**
+  * might_sleep - annotation for functions that can sleep
+@@ -227,6 +228,18 @@ extern void __cant_sleep(const char *file, int line, int preempt_offset);
+ # define cant_sleep() \
+ 	do { __cant_sleep(__FILE__, __LINE__, 0); } while (0)
+ # define sched_annotate_sleep()	(current->task_state_change = 0)
++
++/**
++ * cant_migrate - annotation for functions that cannot migrate
++ *
++ * Will print a stack trace if executed in code which is migratable
++ */
++# define cant_migrate()							\
++	do {								\
++		if (IS_ENABLED(CONFIG_SMP))				\
++			__cant_migrate(__FILE__, __LINE__);		\
++	} while (0)
++
+ /**
+  * non_block_start - annotate the start of section where sleeping is prohibited
+  *
+@@ -251,6 +264,7 @@ extern void __cant_sleep(const char *file, int line, int preempt_offset);
+ 				   int preempt_offset) { }
+ # define might_sleep() do { might_resched(); } while (0)
+ # define cant_sleep() do { } while (0)
++# define cant_migrate()		do { } while (0)
+ # define sched_annotate_sleep() do { } while (0)
+ # define non_block_start() do { } while (0)
+ # define non_block_end() do { } while (0)
+@@ -258,13 +272,6 @@ extern void __cant_sleep(const char *file, int line, int preempt_offset);
+ 
+ #define might_sleep_if(cond) do { if (cond) might_sleep(); } while (0)
+ 
+-#ifndef CONFIG_PREEMPT_RT
+-# define cant_migrate()		cant_sleep()
+-#else
+-  /* Placeholder for now */
+-# define cant_migrate()		do { } while (0)
+-#endif
+-
+ /**
+  * abs - return absolute value of an argument
+  * @x: the value.  If it is unsigned type, it is converted to signed type first.
+diff --git a/include/linux/preempt.h b/include/linux/preempt.h
+index 8b43922e65df..6df63cbe8bb0 100644
+--- a/include/linux/preempt.h
++++ b/include/linux/preempt.h
+@@ -322,7 +322,7 @@ static inline void preempt_notifier_init(struct preempt_notifier *notifier,
+ 
+ #endif
+ 
+-#if defined(CONFIG_SMP) && defined(CONFIG_PREEMPT_RT)
++#ifdef CONFIG_SMP
+ 
+ /*
+  * Migrate-Disable and why it is undesired.
+@@ -382,43 +382,11 @@ static inline void preempt_notifier_init(struct preempt_notifier *notifier,
+ extern void migrate_disable(void);
+ extern void migrate_enable(void);
+ 
+-#elif defined(CONFIG_PREEMPT_RT)
++#else
+ 
+ static inline void migrate_disable(void) { }
+ static inline void migrate_enable(void) { }
+ 
+-#else /* !CONFIG_PREEMPT_RT */
+-
+-/**
+- * migrate_disable - Prevent migration of the current task
+- *
+- * Maps to preempt_disable() which also disables preemption. Use
+- * migrate_disable() to annotate that the intent is to prevent migration,
+- * but not necessarily preemption.
+- *
+- * Can be invoked nested like preempt_disable() and needs the corresponding
+- * number of migrate_enable() invocations.
+- */
+-static __always_inline void migrate_disable(void)
+-{
+-	preempt_disable();
+-}
+-
+-/**
+- * migrate_enable - Allow migration of the current task
+- *
+- * Counterpart to migrate_disable().
+- *
+- * As migrate_disable() can be invoked nested, only the outermost invocation
+- * reenables migration.
+- *
+- * Currently mapped to preempt_enable().
+- */
+-static __always_inline void migrate_enable(void)
+-{
+-	preempt_enable();
+-}
+-
+-#endif /* CONFIG_SMP && CONFIG_PREEMPT_RT */
++#endif /* CONFIG_SMP */
+ 
+ #endif /* __LINUX_PREEMPT_H */
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index b47c446ecf48..942b87f80cc7 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -723,7 +723,7 @@ struct task_struct {
+ 	const cpumask_t			*cpus_ptr;
+ 	cpumask_t			cpus_mask;
+ 	void				*migration_pending;
+-#if defined(CONFIG_SMP) && defined(CONFIG_PREEMPT_RT)
++#ifdef CONFIG_SMP
+ 	unsigned short			migration_disabled;
+ #endif
+ 	unsigned short			migration_flags;
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 53251dc1c29d..db56f4c31a46 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -1694,8 +1694,6 @@ void check_preempt_curr(struct rq *rq, struct task_struct *p, int flags)
+ 
+ #ifdef CONFIG_SMP
+ 
+-#ifdef CONFIG_PREEMPT_RT
+-
+ static void
+ __do_set_cpus_allowed(struct task_struct *p, const struct cpumask *new_mask, u32 flags);
+ 
+@@ -1770,8 +1768,6 @@ static inline bool rq_has_pinned_tasks(struct rq *rq)
+ 	return rq->nr_pinned;
+ }
+ 
+-#endif
+-
+ /*
+  * Per-CPU kthreads are allowed to run on !active && online CPUs, see
+  * __set_cpus_allowed_ptr() and select_fallback_rq().
+@@ -2852,7 +2848,7 @@ void sched_set_stop_task(int cpu, struct task_struct *stop)
+ 	}
+ }
+ 
+-#else
++#else /* CONFIG_SMP */
+ 
+ static inline int __set_cpus_allowed_ptr(struct task_struct *p,
+ 					 const struct cpumask *new_mask,
+@@ -2861,10 +2857,6 @@ static inline int __set_cpus_allowed_ptr(struct task_struct *p,
+ 	return set_cpus_allowed_ptr(p, new_mask);
+ }
+ 
+-#endif /* CONFIG_SMP */
+-
+-#if !defined(CONFIG_SMP) || !defined(CONFIG_PREEMPT_RT)
+-
+ static inline void migrate_disable_switch(struct rq *rq, struct task_struct *p) { }
+ 
+ static inline bool rq_has_pinned_tasks(struct rq *rq)
+@@ -2872,7 +2864,7 @@ static inline bool rq_has_pinned_tasks(struct rq *rq)
+ 	return false;
+ }
+ 
+-#endif
++#endif /* !CONFIG_SMP */
+ 
+ static void
+ ttwu_stat(struct task_struct *p, int cpu, int wake_flags)
+@@ -7898,6 +7890,39 @@ void __cant_sleep(const char *file, int line, int preempt_offset)
+ 	add_taint(TAINT_WARN, LOCKDEP_STILL_OK);
+ }
+ EXPORT_SYMBOL_GPL(__cant_sleep);
++
++#ifdef CONFIG_SMP
++void __cant_migrate(const char *file, int line)
++{
++	static unsigned long prev_jiffy;
++
++	if (irqs_disabled())
++		return;
++
++	if (is_migration_disabled(current))
++		return;
++
++	if (!IS_ENABLED(CONFIG_PREEMPT_COUNT))
++		return;
++
++	if (preempt_count() > 0)
++		return;
++
++	if (time_before(jiffies, prev_jiffy + HZ) && prev_jiffy)
++		return;
++	prev_jiffy = jiffies;
++
++	pr_err("BUG: assuming non migratable context at %s:%d\n", file, line);
++	pr_err("in_atomic(): %d, irqs_disabled(): %d, migration_disabled() %u pid: %d, name: %s\n",
++	       in_atomic(), irqs_disabled(), is_migration_disabled(current),
++	       current->pid, current->comm);
++
++	debug_show_held_locks(current);
++	dump_stack();
++	add_taint(TAINT_WARN, LOCKDEP_STILL_OK);
++}
++EXPORT_SYMBOL_GPL(__cant_migrate);
++#endif
+ #endif
+ 
+ #ifdef CONFIG_MAGIC_SYSRQ
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 9a6163a8ea69..0382721f6139 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -1056,7 +1056,7 @@ struct rq {
+ 	struct cpuidle_state	*idle_state;
+ #endif
+ 
+-#if defined(CONFIG_PREEMPT_RT) && defined(CONFIG_SMP)
++#ifdef CONFIG_SMP
+ 	unsigned int		nr_pinned;
+ #endif
+ 	unsigned int		push_busy;
+@@ -1092,7 +1092,7 @@ static inline int cpu_of(struct rq *rq)
+ 
+ static inline bool is_migration_disabled(struct task_struct *p)
+ {
+-#if defined(CONFIG_SMP) && defined(CONFIG_PREEMPT_RT)
++#ifdef CONFIG_SMP
+ 	return p->migration_disabled;
+ #else
+ 	return false;
+diff --git a/lib/smp_processor_id.c b/lib/smp_processor_id.c
+index faaa927ac2c8..1c1dbd300325 100644
+--- a/lib/smp_processor_id.c
++++ b/lib/smp_processor_id.c
+@@ -26,7 +26,7 @@ unsigned int check_preemption_disabled(const char *what1, const char *what2)
+ 	if (current->nr_cpus_allowed == 1)
+ 		goto out;
+ 
+-#if defined(CONFIG_SMP) && defined(CONFIG_PREEMPT_RT)
++#ifdef CONFIG_SMP
+ 	if (current->migration_disabled)
+ 		goto out;
+ #endif
+-- 
+2.30.2
+

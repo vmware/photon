@@ -1,0 +1,33 @@
+From 13d54d3a6e3aa1adbd7d5d2eff139a0ba707f444 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 13 Nov 2020 15:02:10 +0100
+Subject: [PATCH 118/296] irqstat: Get rid of nmi_count() and __IRQ_STAT()
+
+Nothing uses this anymore.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Frederic Weisbecker <frederic@kernel.org>
+Link: https://lore.kernel.org/r/20201113141733.005212732@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/irq_cpustat.h | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/include/linux/irq_cpustat.h b/include/linux/irq_cpustat.h
+index 6e8895cd4d92..78fb2de3ea4d 100644
+--- a/include/linux/irq_cpustat.h
++++ b/include/linux/irq_cpustat.h
+@@ -19,10 +19,6 @@
+ 
+ #ifndef __ARCH_IRQ_STAT
+ DECLARE_PER_CPU_ALIGNED(irq_cpustat_t, irq_stat);	/* defined in asm/hardirq.h */
+-#define __IRQ_STAT(cpu, member)	(per_cpu(irq_stat.member, cpu))
+ #endif
+ 
+-/* arch dependent irq_stat fields */
+-#define nmi_count(cpu)		__IRQ_STAT((cpu), __nmi_count)	/* i386 */
+-
+ #endif	/* __irq_cpustat_h */
+-- 
+2.30.2
+

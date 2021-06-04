@@ -1,0 +1,34 @@
+From 4970b6f11f8f957fb3b079fd22e37d5c5e93031d Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Mon, 11 Feb 2019 11:33:11 +0100
+Subject: [PATCH 112/296] tpm: remove tpm_dev_wq_lock
+
+Added in commit
+
+  9e1b74a63f776 ("tpm: add support for nonblocking operation")
+
+but never actually used it.
+
+Cc: Philip Tricca <philip.b.tricca@intel.com>
+Cc: Tadeusz Struk <tadeusz.struk@intel.com>
+Cc: Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ drivers/char/tpm/tpm-dev-common.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/drivers/char/tpm/tpm-dev-common.c b/drivers/char/tpm/tpm-dev-common.c
+index 1784530b8387..c08cbb306636 100644
+--- a/drivers/char/tpm/tpm-dev-common.c
++++ b/drivers/char/tpm/tpm-dev-common.c
+@@ -20,7 +20,6 @@
+ #include "tpm-dev.h"
+ 
+ static struct workqueue_struct *tpm_dev_wq;
+-static DEFINE_MUTEX(tpm_dev_wq_lock);
+ 
+ static ssize_t tpm_dev_transmit(struct tpm_chip *chip, struct tpm_space *space,
+ 				u8 *buf, size_t bufsiz)
+-- 
+2.30.2
+

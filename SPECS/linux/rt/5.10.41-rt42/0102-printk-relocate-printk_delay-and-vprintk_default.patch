@@ -1,0 +1,88 @@
+From c74aba5050081b756bf51c0df2e3f4b501cfd74a Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Mon, 30 Nov 2020 01:42:03 +0106
+Subject: [PATCH 102/296] printk: relocate printk_delay() and vprintk_default()
+
+Move printk_delay() and vprintk_default() "as is" further up so that
+they can be used by new functions in an upcoming commit.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk.c | 40 ++++++++++++++++++++--------------------
+ 1 file changed, 20 insertions(+), 20 deletions(-)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 491558ff40d5..157417654b65 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -1726,6 +1726,20 @@ SYSCALL_DEFINE3(syslog, int, type, char __user *, buf, int, len)
+ 	return do_syslog(type, buf, len, SYSLOG_FROM_READER);
+ }
+ 
++int printk_delay_msec __read_mostly;
++
++static inline void printk_delay(void)
++{
++	if (unlikely(printk_delay_msec)) {
++		int m = printk_delay_msec;
++
++		while (m--) {
++			mdelay(1);
++			touch_nmi_watchdog();
++		}
++	}
++}
++
+ /*
+  * Special console_lock variants that help to reduce the risk of soft-lockups.
+  * They allow to pass console_lock to another printk() call using a busy wait.
+@@ -1969,20 +1983,6 @@ static void printk_exit_irqrestore(unsigned long flags)
+ 	local_irq_restore(flags);
+ }
+ 
+-int printk_delay_msec __read_mostly;
+-
+-static inline void printk_delay(void)
+-{
+-	if (unlikely(printk_delay_msec)) {
+-		int m = printk_delay_msec;
+-
+-		while (m--) {
+-			mdelay(1);
+-			touch_nmi_watchdog();
+-		}
+-	}
+-}
+-
+ static inline u32 printk_caller_id(void)
+ {
+ 	return in_task() ? task_pid_nr(current) :
+@@ -2215,18 +2215,18 @@ asmlinkage int vprintk_emit(int facility, int level,
+ }
+ EXPORT_SYMBOL(vprintk_emit);
+ 
+-asmlinkage int vprintk(const char *fmt, va_list args)
+-{
+-	return vprintk_func(fmt, args);
+-}
+-EXPORT_SYMBOL(vprintk);
+-
+ int vprintk_default(const char *fmt, va_list args)
+ {
+ 	return vprintk_emit(0, LOGLEVEL_DEFAULT, NULL, fmt, args);
+ }
+ EXPORT_SYMBOL_GPL(vprintk_default);
+ 
++asmlinkage int vprintk(const char *fmt, va_list args)
++{
++	return vprintk_func(fmt, args);
++}
++EXPORT_SYMBOL(vprintk);
++
+ /**
+  * printk - print a kernel message
+  * @fmt: format string
+-- 
+2.30.2
+

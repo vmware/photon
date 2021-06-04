@@ -1,0 +1,388 @@
+From 541b978c1cc06d85a407b27ce2272d8430ea5f11 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 3 Nov 2020 10:27:20 +0100
+Subject: [PATCH 031/296] x86/mm/highmem: Use generic kmap atomic
+ implementation
+
+Convert X86 to the generic kmap atomic implementation and make the
+iomap_atomic() naming convention consistent while at it.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: x86@kernel.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/x86/Kconfig                      |  1 +
+ arch/x86/include/asm/fixmap.h         |  5 +--
+ arch/x86/include/asm/highmem.h        | 13 ++++--
+ arch/x86/include/asm/iomap.h          | 18 ++++----
+ arch/x86/include/asm/kmap_types.h     | 13 ------
+ arch/x86/include/asm/paravirt_types.h |  1 -
+ arch/x86/mm/highmem_32.c              | 59 ---------------------------
+ arch/x86/mm/init_32.c                 | 15 -------
+ arch/x86/mm/iomap_32.c                | 59 +++------------------------
+ include/linux/highmem.h               |  2 +-
+ include/linux/io-mapping.h            |  2 +-
+ mm/highmem.c                          |  2 +-
+ 12 files changed, 30 insertions(+), 160 deletions(-)
+ delete mode 100644 arch/x86/include/asm/kmap_types.h
+
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index f3c8a8110f60..2ae9cf11b995 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -15,6 +15,7 @@ config X86_32
+ 	select CLKSRC_I8253
+ 	select CLONE_BACKWARDS
+ 	select HAVE_DEBUG_STACKOVERFLOW
++	select KMAP_LOCAL
+ 	select MODULES_USE_ELF_REL
+ 	select OLD_SIGACTION
+ 	select GENERIC_VDSO_32
+diff --git a/arch/x86/include/asm/fixmap.h b/arch/x86/include/asm/fixmap.h
+index 77217bd292bd..8eba66a33e39 100644
+--- a/arch/x86/include/asm/fixmap.h
++++ b/arch/x86/include/asm/fixmap.h
+@@ -31,7 +31,7 @@
+ #include <asm/pgtable_types.h>
+ #ifdef CONFIG_X86_32
+ #include <linux/threads.h>
+-#include <asm/kmap_types.h>
++#include <asm/kmap_size.h>
+ #else
+ #include <uapi/asm/vsyscall.h>
+ #endif
+@@ -94,7 +94,7 @@ enum fixed_addresses {
+ #endif
+ #ifdef CONFIG_X86_32
+ 	FIX_KMAP_BEGIN,	/* reserved pte's for temporary kernel mappings */
+-	FIX_KMAP_END = FIX_KMAP_BEGIN+(KM_TYPE_NR*NR_CPUS)-1,
++	FIX_KMAP_END = FIX_KMAP_BEGIN + (KM_MAX_IDX * NR_CPUS) - 1,
+ #ifdef CONFIG_PCI_MMCONFIG
+ 	FIX_PCIE_MCFG,
+ #endif
+@@ -151,7 +151,6 @@ extern void reserve_top_address(unsigned long reserve);
+ 
+ extern int fixmaps_set;
+ 
+-extern pte_t *kmap_pte;
+ extern pte_t *pkmap_page_table;
+ 
+ void __native_set_fixmap(enum fixed_addresses idx, pte_t pte);
+diff --git a/arch/x86/include/asm/highmem.h b/arch/x86/include/asm/highmem.h
+index 0f420b24e0fc..032e020853aa 100644
+--- a/arch/x86/include/asm/highmem.h
++++ b/arch/x86/include/asm/highmem.h
+@@ -23,7 +23,6 @@
+ 
+ #include <linux/interrupt.h>
+ #include <linux/threads.h>
+-#include <asm/kmap_types.h>
+ #include <asm/tlbflush.h>
+ #include <asm/paravirt.h>
+ #include <asm/fixmap.h>
+@@ -58,11 +57,17 @@ extern unsigned long highstart_pfn, highend_pfn;
+ #define PKMAP_NR(virt)  ((virt-PKMAP_BASE) >> PAGE_SHIFT)
+ #define PKMAP_ADDR(nr)  (PKMAP_BASE + ((nr) << PAGE_SHIFT))
+ 
+-void *kmap_atomic_pfn(unsigned long pfn);
+-void *kmap_atomic_prot_pfn(unsigned long pfn, pgprot_t prot);
+-
+ #define flush_cache_kmaps()	do { } while (0)
+ 
++#define	arch_kmap_local_post_map(vaddr, pteval)		\
++	arch_flush_lazy_mmu_mode()
++
++#define	arch_kmap_local_post_unmap(vaddr)		\
++	do {						\
++		flush_tlb_one_kernel((vaddr));		\
++		arch_flush_lazy_mmu_mode();		\
++	} while (0)
++
+ extern void add_highpages_with_active_regions(int nid, unsigned long start_pfn,
+ 					unsigned long end_pfn);
+ 
+diff --git a/arch/x86/include/asm/iomap.h b/arch/x86/include/asm/iomap.h
+index bacf68c4d70e..0be7a30fd6bc 100644
+--- a/arch/x86/include/asm/iomap.h
++++ b/arch/x86/include/asm/iomap.h
+@@ -9,19 +9,21 @@
+ #include <linux/fs.h>
+ #include <linux/mm.h>
+ #include <linux/uaccess.h>
++#include <linux/highmem.h>
+ #include <asm/cacheflush.h>
+ #include <asm/tlbflush.h>
+ 
+-void __iomem *
+-iomap_atomic_prot_pfn(unsigned long pfn, pgprot_t prot);
++void __iomem *iomap_atomic_pfn_prot(unsigned long pfn, pgprot_t prot);
+ 
+-void
+-iounmap_atomic(void __iomem *kvaddr);
++static inline void iounmap_atomic(void __iomem *vaddr)
++{
++	kunmap_local_indexed((void __force *)vaddr);
++	pagefault_enable();
++	preempt_enable();
++}
+ 
+-int
+-iomap_create_wc(resource_size_t base, unsigned long size, pgprot_t *prot);
++int iomap_create_wc(resource_size_t base, unsigned long size, pgprot_t *prot);
+ 
+-void
+-iomap_free(resource_size_t base, unsigned long size);
++void iomap_free(resource_size_t base, unsigned long size);
+ 
+ #endif /* _ASM_X86_IOMAP_H */
+diff --git a/arch/x86/include/asm/kmap_types.h b/arch/x86/include/asm/kmap_types.h
+deleted file mode 100644
+index 04ab8266e347..000000000000
+--- a/arch/x86/include/asm/kmap_types.h
++++ /dev/null
+@@ -1,13 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef _ASM_X86_KMAP_TYPES_H
+-#define _ASM_X86_KMAP_TYPES_H
+-
+-#if defined(CONFIG_X86_32) && defined(CONFIG_DEBUG_HIGHMEM)
+-#define  __WITH_KM_FENCE
+-#endif
+-
+-#include <asm-generic/kmap_types.h>
+-
+-#undef __WITH_KM_FENCE
+-
+-#endif /* _ASM_X86_KMAP_TYPES_H */
+diff --git a/arch/x86/include/asm/paravirt_types.h b/arch/x86/include/asm/paravirt_types.h
+index 0fad9f61c76a..b6b02b7c19cc 100644
+--- a/arch/x86/include/asm/paravirt_types.h
++++ b/arch/x86/include/asm/paravirt_types.h
+@@ -41,7 +41,6 @@
+ #ifndef __ASSEMBLY__
+ 
+ #include <asm/desc_defs.h>
+-#include <asm/kmap_types.h>
+ #include <asm/pgtable_types.h>
+ #include <asm/nospec-branch.h>
+ 
+diff --git a/arch/x86/mm/highmem_32.c b/arch/x86/mm/highmem_32.c
+index 075fe51317b0..2c54b76d8f84 100644
+--- a/arch/x86/mm/highmem_32.c
++++ b/arch/x86/mm/highmem_32.c
+@@ -4,65 +4,6 @@
+ #include <linux/swap.h> /* for totalram_pages */
+ #include <linux/memblock.h>
+ 
+-void *kmap_atomic_high_prot(struct page *page, pgprot_t prot)
+-{
+-	unsigned long vaddr;
+-	int idx, type;
+-
+-	type = kmap_atomic_idx_push();
+-	idx = type + KM_TYPE_NR*smp_processor_id();
+-	vaddr = __fix_to_virt(FIX_KMAP_BEGIN + idx);
+-	BUG_ON(!pte_none(*(kmap_pte-idx)));
+-	set_pte(kmap_pte-idx, mk_pte(page, prot));
+-	arch_flush_lazy_mmu_mode();
+-
+-	return (void *)vaddr;
+-}
+-EXPORT_SYMBOL(kmap_atomic_high_prot);
+-
+-/*
+- * This is the same as kmap_atomic() but can map memory that doesn't
+- * have a struct page associated with it.
+- */
+-void *kmap_atomic_pfn(unsigned long pfn)
+-{
+-	return kmap_atomic_prot_pfn(pfn, kmap_prot);
+-}
+-EXPORT_SYMBOL_GPL(kmap_atomic_pfn);
+-
+-void kunmap_atomic_high(void *kvaddr)
+-{
+-	unsigned long vaddr = (unsigned long) kvaddr & PAGE_MASK;
+-
+-	if (vaddr >= __fix_to_virt(FIX_KMAP_END) &&
+-	    vaddr <= __fix_to_virt(FIX_KMAP_BEGIN)) {
+-		int idx, type;
+-
+-		type = kmap_atomic_idx();
+-		idx = type + KM_TYPE_NR * smp_processor_id();
+-
+-#ifdef CONFIG_DEBUG_HIGHMEM
+-		WARN_ON_ONCE(vaddr != __fix_to_virt(FIX_KMAP_BEGIN + idx));
+-#endif
+-		/*
+-		 * Force other mappings to Oops if they'll try to access this
+-		 * pte without first remap it.  Keeping stale mappings around
+-		 * is a bad idea also, in case the page changes cacheability
+-		 * attributes or becomes a protected page in a hypervisor.
+-		 */
+-		kpte_clear_flush(kmap_pte-idx, vaddr);
+-		kmap_atomic_idx_pop();
+-		arch_flush_lazy_mmu_mode();
+-	}
+-#ifdef CONFIG_DEBUG_HIGHMEM
+-	else {
+-		BUG_ON(vaddr < PAGE_OFFSET);
+-		BUG_ON(vaddr >= (unsigned long)high_memory);
+-	}
+-#endif
+-}
+-EXPORT_SYMBOL(kunmap_atomic_high);
+-
+ void __init set_highmem_pages_init(void)
+ {
+ 	struct zone *zone;
+diff --git a/arch/x86/mm/init_32.c b/arch/x86/mm/init_32.c
+index 7c055259de3a..da31c2635ee4 100644
+--- a/arch/x86/mm/init_32.c
++++ b/arch/x86/mm/init_32.c
+@@ -394,19 +394,6 @@ kernel_physical_mapping_init(unsigned long start,
+ 	return last_map_addr;
+ }
+ 
+-pte_t *kmap_pte;
+-
+-static void __init kmap_init(void)
+-{
+-	unsigned long kmap_vstart;
+-
+-	/*
+-	 * Cache the first kmap pte:
+-	 */
+-	kmap_vstart = __fix_to_virt(FIX_KMAP_BEGIN);
+-	kmap_pte = virt_to_kpte(kmap_vstart);
+-}
+-
+ #ifdef CONFIG_HIGHMEM
+ static void __init permanent_kmaps_init(pgd_t *pgd_base)
+ {
+@@ -712,8 +699,6 @@ void __init paging_init(void)
+ 
+ 	__flush_tlb_all();
+ 
+-	kmap_init();
+-
+ 	/*
+ 	 * NOTE: at this point the bootmem allocator is fully available.
+ 	 */
+diff --git a/arch/x86/mm/iomap_32.c b/arch/x86/mm/iomap_32.c
+index f60398aeb644..e0a40d7cc66c 100644
+--- a/arch/x86/mm/iomap_32.c
++++ b/arch/x86/mm/iomap_32.c
+@@ -44,28 +44,7 @@ void iomap_free(resource_size_t base, unsigned long size)
+ }
+ EXPORT_SYMBOL_GPL(iomap_free);
+ 
+-void *kmap_atomic_prot_pfn(unsigned long pfn, pgprot_t prot)
+-{
+-	unsigned long vaddr;
+-	int idx, type;
+-
+-	preempt_disable();
+-	pagefault_disable();
+-
+-	type = kmap_atomic_idx_push();
+-	idx = type + KM_TYPE_NR * smp_processor_id();
+-	vaddr = __fix_to_virt(FIX_KMAP_BEGIN + idx);
+-	set_pte(kmap_pte - idx, pfn_pte(pfn, prot));
+-	arch_flush_lazy_mmu_mode();
+-
+-	return (void *)vaddr;
+-}
+-
+-/*
+- * Map 'pfn' using protections 'prot'
+- */
+-void __iomem *
+-iomap_atomic_prot_pfn(unsigned long pfn, pgprot_t prot)
++void __iomem *iomap_atomic_pfn_prot(unsigned long pfn, pgprot_t prot)
+ {
+ 	/*
+ 	 * For non-PAT systems, translate non-WB request to UC- just in
+@@ -81,36 +60,8 @@ iomap_atomic_prot_pfn(unsigned long pfn, pgprot_t prot)
+ 	/* Filter out unsupported __PAGE_KERNEL* bits: */
+ 	pgprot_val(prot) &= __default_kernel_pte_mask;
+ 
+-	return (void __force __iomem *) kmap_atomic_prot_pfn(pfn, prot);
+-}
+-EXPORT_SYMBOL_GPL(iomap_atomic_prot_pfn);
+-
+-void
+-iounmap_atomic(void __iomem *kvaddr)
+-{
+-	unsigned long vaddr = (unsigned long) kvaddr & PAGE_MASK;
+-
+-	if (vaddr >= __fix_to_virt(FIX_KMAP_END) &&
+-	    vaddr <= __fix_to_virt(FIX_KMAP_BEGIN)) {
+-		int idx, type;
+-
+-		type = kmap_atomic_idx();
+-		idx = type + KM_TYPE_NR * smp_processor_id();
+-
+-#ifdef CONFIG_DEBUG_HIGHMEM
+-		WARN_ON_ONCE(vaddr != __fix_to_virt(FIX_KMAP_BEGIN + idx));
+-#endif
+-		/*
+-		 * Force other mappings to Oops if they'll try to access this
+-		 * pte without first remap it.  Keeping stale mappings around
+-		 * is a bad idea also, in case the page changes cacheability
+-		 * attributes or becomes a protected page in a hypervisor.
+-		 */
+-		kpte_clear_flush(kmap_pte-idx, vaddr);
+-		kmap_atomic_idx_pop();
+-	}
+-
+-	pagefault_enable();
+-	preempt_enable();
++	preempt_disable();
++	pagefault_disable();
++	return (void __force __iomem *)__kmap_local_pfn_prot(pfn, prot);
+ }
+-EXPORT_SYMBOL_GPL(iounmap_atomic);
++EXPORT_SYMBOL_GPL(iomap_atomic_pfn_prot);
+diff --git a/include/linux/highmem.h b/include/linux/highmem.h
+index f5ecee9c2576..1222a31be842 100644
+--- a/include/linux/highmem.h
++++ b/include/linux/highmem.h
+@@ -217,7 +217,7 @@ static inline void __kunmap_atomic(void *addr)
+ #endif /* CONFIG_HIGHMEM */
+ 
+ #if !defined(CONFIG_KMAP_LOCAL)
+-#if defined(CONFIG_HIGHMEM) || defined(CONFIG_X86_32)
++#if defined(CONFIG_HIGHMEM)
+ 
+ DECLARE_PER_CPU(int, __kmap_atomic_idx);
+ 
+diff --git a/include/linux/io-mapping.h b/include/linux/io-mapping.h
+index c75e4d3d8833..3b0940be72e9 100644
+--- a/include/linux/io-mapping.h
++++ b/include/linux/io-mapping.h
+@@ -69,7 +69,7 @@ io_mapping_map_atomic_wc(struct io_mapping *mapping,
+ 
+ 	BUG_ON(offset >= mapping->size);
+ 	phys_addr = mapping->base + offset;
+-	return iomap_atomic_prot_pfn(PHYS_PFN(phys_addr), mapping->prot);
++	return iomap_atomic_pfn_prot(PHYS_PFN(phys_addr), mapping->prot);
+ }
+ 
+ static inline void
+diff --git a/mm/highmem.c b/mm/highmem.c
+index 67d2d5983cb0..77677c6844f7 100644
+--- a/mm/highmem.c
++++ b/mm/highmem.c
+@@ -32,7 +32,7 @@
+ #include <linux/vmalloc.h>
+ 
+ #ifndef CONFIG_KMAP_LOCAL
+-#if defined(CONFIG_HIGHMEM) || defined(CONFIG_X86_32)
++#ifdef CONFIG_HIGHMEM
+ DEFINE_PER_CPU(int, __kmap_atomic_idx);
+ #endif
+ #endif
+-- 
+2.30.2
+

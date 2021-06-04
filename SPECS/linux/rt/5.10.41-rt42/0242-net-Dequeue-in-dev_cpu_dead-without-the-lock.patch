@@ -1,0 +1,36 @@
+From 2dcd86d78cfbe959450473a28eb946ef62c0714d Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Wed, 16 Sep 2020 16:15:39 +0200
+Subject: [PATCH 242/296] net: Dequeue in dev_cpu_dead() without the lock
+
+Upstream uses skb_dequeue() to acquire lock of `input_pkt_queue'. The reason is
+to synchronize against a remote CPU which still thinks that the CPU is online
+enqueues packets to this CPU.
+There are no guarantees that the packet is enqueued before the callback is run,
+it just hope.
+RT however complains about an not initialized lock because it uses another lock
+for `input_pkt_queue' due to the IRQ-off nature of the context.
+
+Use the unlocked dequeue version for `input_pkt_queue'.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ net/core/dev.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 1c859e028a23..7b929bf87a9e 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -10923,7 +10923,7 @@ static int dev_cpu_dead(unsigned int oldcpu)
+ 		netif_rx_ni(skb);
+ 		input_queue_head_incr(oldsd);
+ 	}
+-	while ((skb = skb_dequeue(&oldsd->input_pkt_queue))) {
++	while ((skb = __skb_dequeue(&oldsd->input_pkt_queue))) {
+ 		netif_rx_ni(skb);
+ 		input_queue_head_incr(oldsd);
+ 	}
+-- 
+2.30.2
+

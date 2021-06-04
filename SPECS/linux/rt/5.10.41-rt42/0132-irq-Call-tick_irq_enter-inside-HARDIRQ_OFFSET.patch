@@ -1,0 +1,50 @@
+From 783ff93627592a0812608e14f18050e649964d7a Mon Sep 17 00:00:00 2001
+From: Frederic Weisbecker <frederic@kernel.org>
+Date: Wed, 2 Dec 2020 12:57:32 +0100
+Subject: [PATCH 132/296] irq: Call tick_irq_enter() inside HARDIRQ_OFFSET
+
+Now that account_hardirq_enter() is called after HARDIRQ_OFFSET has
+been incremented, there is nothing left that prevents us from also
+moving tick_irq_enter() after HARDIRQ_OFFSET is incremented.
+
+The desired outcome is to remove the nasty hack that prevents softirqs
+from being raised through ksoftirqd instead of the hardirq bottom half.
+Also tick_irq_enter() then becomes appropriately covered by lockdep.
+
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20201202115732.27827-6-frederic@kernel.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/softirq.c | 14 +++++---------
+ 1 file changed, 5 insertions(+), 9 deletions(-)
+
+diff --git a/kernel/softirq.c b/kernel/softirq.c
+index b8f42b3ba8ca..d5bfd5e661fc 100644
+--- a/kernel/softirq.c
++++ b/kernel/softirq.c
+@@ -377,16 +377,12 @@ asmlinkage __visible void __softirq_entry __do_softirq(void)
+  */
+ void irq_enter_rcu(void)
+ {
+-	if (is_idle_task(current) && !in_interrupt()) {
+-		/*
+-		 * Prevent raise_softirq from needlessly waking up ksoftirqd
+-		 * here, as softirq will be serviced on return from interrupt.
+-		 */
+-		local_bh_disable();
++	__irq_enter_raw();
++
++	if (is_idle_task(current) && (irq_count() == HARDIRQ_OFFSET))
+ 		tick_irq_enter();
+-		_local_bh_enable();
+-	}
+-	__irq_enter();
++
++	account_hardirq_enter(current);
+ }
+ 
+ /**
+-- 
+2.30.2
+

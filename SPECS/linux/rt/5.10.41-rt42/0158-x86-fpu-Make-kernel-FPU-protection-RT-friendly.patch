@@ -1,0 +1,63 @@
+From 6ff7f8a4e66f4699281813da9f088ed964e5fad8 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 27 Oct 2020 11:09:51 +0100
+Subject: [PATCH 158/296] x86/fpu: Make kernel FPU protection RT friendly
+
+Non RT kernels need to protect FPU against preemption and bottom half
+processing. This is achieved by disabling bottom halfs via
+local_bh_disable() which implictly disables preemption.
+
+On RT kernels this protection mechanism is not sufficient because
+local_bh_disable() does not disable preemption. It serializes bottom half
+related processing via a CPU local lock.
+
+As bottom halfs are running always in thread context on RT kernels
+disabling preemption is the proper choice as it implicitly prevents bottom
+half processing.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/r/20201027101349.588965083@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/x86/include/asm/fpu/api.h | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/include/asm/fpu/api.h b/arch/x86/include/asm/fpu/api.h
+index 78b2c9cbd94d..67a4f1cb2aac 100644
+--- a/arch/x86/include/asm/fpu/api.h
++++ b/arch/x86/include/asm/fpu/api.h
+@@ -43,15 +43,29 @@ static inline void kernel_fpu_begin(void)
+  *
+  * local_bh_disable() protects against both preemption and soft interrupts
+  * on !RT kernels.
++ *
++ * On RT kernels local_bh_disable() is not sufficient because it only
++ * serializes soft interrupt related sections via a local lock, but stays
++ * preemptible. Disabling preemption is the right choice here as bottom
++ * half processing is always in thread context on RT kernels so it
++ * implicitly prevents bottom half processing as well.
++ *
++ * Disabling preemption also serializes against kernel_fpu_begin().
+  */
+ static inline void fpregs_lock(void)
+ {
+-	local_bh_disable();
++	if (!IS_ENABLED(CONFIG_PREEMPT_RT))
++		local_bh_disable();
++	else
++		preempt_disable();
+ }
+ 
+ static inline void fpregs_unlock(void)
+ {
+-	local_bh_enable();
++	if (!IS_ENABLED(CONFIG_PREEMPT_RT))
++		local_bh_enable();
++	else
++		preempt_enable();
+ }
+ 
+ #ifdef CONFIG_X86_DEBUG_FPU
+-- 
+2.30.2
+

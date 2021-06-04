@@ -1,0 +1,71 @@
+From 060bd4a92f08190c2b403e4d91b794e2173f8977 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Thu, 12 Nov 2020 11:59:32 +0100
+Subject: [PATCH 061/296] mm/highmem: Take kmap_high_get() properly into
+ account
+
+kunmap_local() warns when the virtual address to unmap is below
+PAGE_OFFSET. This is correct except for the case that the mapping was
+obtained via kmap_high_get() because the PKMAP addresses are right below
+PAGE_OFFSET.
+
+Cure it by skipping the WARN_ON() when the unmap was handled by
+kunmap_high().
+
+Fixes: 298fa1ad5571 ("highmem: Provide generic variant of kmap_atomic*")
+Reported-by: vtolkm@googlemail.com
+Reported-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Tested-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Link: https://lore.kernel.org/r/87y2j6n8mj.fsf@nanos.tec.linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ mm/highmem.c | 19 +++++++++++++------
+ 1 file changed, 13 insertions(+), 6 deletions(-)
+
+diff --git a/mm/highmem.c b/mm/highmem.c
+index 8db577e5290c..72b9a2d95c72 100644
+--- a/mm/highmem.c
++++ b/mm/highmem.c
+@@ -422,12 +422,15 @@ static inline void *arch_kmap_local_high_get(struct page *page)
+ #endif
+ 
+ /* Unmap a local mapping which was obtained by kmap_high_get() */
+-static inline void kmap_high_unmap_local(unsigned long vaddr)
++static inline bool kmap_high_unmap_local(unsigned long vaddr)
+ {
+ #ifdef ARCH_NEEDS_KMAP_HIGH_GET
+-	if (vaddr >= PKMAP_ADDR(0) && vaddr < PKMAP_ADDR(LAST_PKMAP))
++	if (vaddr >= PKMAP_ADDR(0) && vaddr < PKMAP_ADDR(LAST_PKMAP)) {
+ 		kunmap_high(pte_page(pkmap_page_table[PKMAP_NR(vaddr)]));
++		return true;
++	}
+ #endif
++	return false;
+ }
+ 
+ static inline int kmap_local_calc_idx(int idx)
+@@ -493,10 +496,14 @@ void kunmap_local_indexed(void *vaddr)
+ 
+ 	if (addr < __fix_to_virt(FIX_KMAP_END) ||
+ 	    addr > __fix_to_virt(FIX_KMAP_BEGIN)) {
+-		WARN_ON_ONCE(addr < PAGE_OFFSET);
+-
+-		/* Handle mappings which were obtained by kmap_high_get() */
+-		kmap_high_unmap_local(addr);
++		/*
++		 * Handle mappings which were obtained by kmap_high_get()
++		 * first as the virtual address of such mappings is below
++		 * PAGE_OFFSET. Warn for all other addresses which are in
++		 * the user space part of the virtual address space.
++		 */
++		if (!kmap_high_unmap_local(addr))
++			WARN_ON_ONCE(addr < PAGE_OFFSET);
+ 		return;
+ 	}
+ 
+-- 
+2.30.2
+

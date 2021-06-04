@@ -1,0 +1,242 @@
+From 0f2f9a62f387fb0d08eb070d6b67b4b97ef0ee50 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Tue, 6 Oct 2020 13:07:17 +0200
+Subject: [PATCH 180/296] locking/rtmutex: Use custom scheduling function for
+ spin-schedule()
+
+PREEMPT_RT builds the rwsem, mutex, spinlock and rwlock typed locks on
+top of a rtmutex lock. While blocked task->pi_blocked_on is set
+(tsk_is_pi_blocked()) and task needs to schedule away while waiting.
+
+The schedule process must distinguish between blocking on a regular
+sleeping lock (rwsem and mutex) and a RT-only sleeping lock (spinlock
+and rwlock):
+- rwsem and mutex must flush block requests (blk_schedule_flush_plug())
+  even if blocked on a lock. This can not deadlock because this also
+  happens for non-RT.
+  There should be a warning if the scheduling point is within a RCU read
+  section.
+
+- spinlock and rwlock must not flush block requests. This will deadlock
+  if the callback attempts to acquire a lock which is already acquired.
+  Similarly to being preempted, there should be no warning if the
+  scheduling point is within a RCU read section.
+
+Add preempt_schedule_lock() which is invoked if scheduling is required
+while blocking on a PREEMPT_RT-only sleeping lock.
+Remove tsk_is_pi_blocked() from the scheduler path which is no longer
+needed with the additional scheduler entry point.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/arm64/include/asm/preempt.h |  3 +++
+ arch/x86/include/asm/preempt.h   |  3 +++
+ include/asm-generic/preempt.h    |  3 +++
+ include/linux/sched/rt.h         |  8 --------
+ kernel/locking/rtmutex.c         |  2 +-
+ kernel/locking/rwlock-rt.c       |  2 +-
+ kernel/sched/core.c              | 32 +++++++++++++++++++++-----------
+ 7 files changed, 32 insertions(+), 21 deletions(-)
+
+diff --git a/arch/arm64/include/asm/preempt.h b/arch/arm64/include/asm/preempt.h
+index 80e946b2abee..f06a23898540 100644
+--- a/arch/arm64/include/asm/preempt.h
++++ b/arch/arm64/include/asm/preempt.h
+@@ -81,6 +81,9 @@ static inline bool should_resched(int preempt_offset)
+ 
+ #ifdef CONFIG_PREEMPTION
+ void preempt_schedule(void);
++#ifdef CONFIG_PREEMPT_RT
++void preempt_schedule_lock(void);
++#endif
+ #define __preempt_schedule() preempt_schedule()
+ void preempt_schedule_notrace(void);
+ #define __preempt_schedule_notrace() preempt_schedule_notrace()
+diff --git a/arch/x86/include/asm/preempt.h b/arch/x86/include/asm/preempt.h
+index 69485ca13665..5ef93c81b274 100644
+--- a/arch/x86/include/asm/preempt.h
++++ b/arch/x86/include/asm/preempt.h
+@@ -103,6 +103,9 @@ static __always_inline bool should_resched(int preempt_offset)
+ }
+ 
+ #ifdef CONFIG_PREEMPTION
++#ifdef CONFIG_PREEMPT_RT
++  extern void preempt_schedule_lock(void);
++#endif
+   extern asmlinkage void preempt_schedule_thunk(void);
+ # define __preempt_schedule() \
+ 	asm volatile ("call preempt_schedule_thunk" : ASM_CALL_CONSTRAINT)
+diff --git a/include/asm-generic/preempt.h b/include/asm-generic/preempt.h
+index d683f5e6d791..71c1535db56a 100644
+--- a/include/asm-generic/preempt.h
++++ b/include/asm-generic/preempt.h
+@@ -79,6 +79,9 @@ static __always_inline bool should_resched(int preempt_offset)
+ }
+ 
+ #ifdef CONFIG_PREEMPTION
++#ifdef CONFIG_PREEMPT_RT
++extern void preempt_schedule_lock(void);
++#endif
+ extern asmlinkage void preempt_schedule(void);
+ #define __preempt_schedule() preempt_schedule()
+ extern asmlinkage void preempt_schedule_notrace(void);
+diff --git a/include/linux/sched/rt.h b/include/linux/sched/rt.h
+index e5af028c08b4..994c25640e15 100644
+--- a/include/linux/sched/rt.h
++++ b/include/linux/sched/rt.h
+@@ -39,20 +39,12 @@ static inline struct task_struct *rt_mutex_get_top_task(struct task_struct *p)
+ }
+ extern void rt_mutex_setprio(struct task_struct *p, struct task_struct *pi_task);
+ extern void rt_mutex_adjust_pi(struct task_struct *p);
+-static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
+-{
+-	return tsk->pi_blocked_on != NULL;
+-}
+ #else
+ static inline struct task_struct *rt_mutex_get_top_task(struct task_struct *task)
+ {
+ 	return NULL;
+ }
+ # define rt_mutex_adjust_pi(p)		do { } while (0)
+-static inline bool tsk_is_pi_blocked(struct task_struct *tsk)
+-{
+-	return false;
+-}
+ #endif
+ 
+ extern void normalize_rt_tasks(void);
+diff --git a/kernel/locking/rtmutex.c b/kernel/locking/rtmutex.c
+index 50a6dd124746..4e8f73d9319d 100644
+--- a/kernel/locking/rtmutex.c
++++ b/kernel/locking/rtmutex.c
+@@ -1067,7 +1067,7 @@ void __sched rt_spin_lock_slowlock_locked(struct rt_mutex *lock,
+ 		raw_spin_unlock_irqrestore(&lock->wait_lock, flags);
+ 
+ 		if (top_waiter != waiter || adaptive_wait(lock, lock_owner))
+-			schedule();
++			preempt_schedule_lock();
+ 
+ 		raw_spin_lock_irqsave(&lock->wait_lock, flags);
+ 
+diff --git a/kernel/locking/rwlock-rt.c b/kernel/locking/rwlock-rt.c
+index 1ee16b8fedd7..16be7111aae7 100644
+--- a/kernel/locking/rwlock-rt.c
++++ b/kernel/locking/rwlock-rt.c
+@@ -211,7 +211,7 @@ static void __write_rt_lock(struct rt_rw_lock *lock)
+ 		raw_spin_unlock_irqrestore(&m->wait_lock, flags);
+ 
+ 		if (atomic_read(&lock->readers) != 0)
+-			schedule();
++			preempt_schedule_lock();
+ 
+ 		raw_spin_lock_irqsave(&m->wait_lock, flags);
+ 
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 673ea268d55b..28c8d93fc8c4 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -4978,7 +4978,7 @@ pick_next_task(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
+  *
+  * WARNING: must be called with preemption disabled!
+  */
+-static void __sched notrace __schedule(bool preempt)
++static void __sched notrace __schedule(bool preempt, bool spinning_lock)
+ {
+ 	struct task_struct *prev, *next;
+ 	unsigned long *switch_count;
+@@ -5031,7 +5031,7 @@ static void __sched notrace __schedule(bool preempt)
+ 	 *  - ptrace_{,un}freeze_traced() can change ->state underneath us.
+ 	 */
+ 	prev_state = prev->state;
+-	if (!preempt && prev_state) {
++	if ((!preempt || spinning_lock) && prev_state) {
+ 		if (signal_pending_state(prev_state, prev)) {
+ 			prev->state = TASK_RUNNING;
+ 		} else {
+@@ -5115,7 +5115,7 @@ void __noreturn do_task_dead(void)
+ 	/* Tell freezer to ignore us: */
+ 	current->flags |= PF_NOFREEZE;
+ 
+-	__schedule(false);
++	__schedule(false, false);
+ 	BUG();
+ 
+ 	/* Avoid "noreturn function does return" - but don't continue if BUG() is a NOP: */
+@@ -5148,9 +5148,6 @@ static inline void sched_submit_work(struct task_struct *tsk)
+ 		preempt_enable_no_resched();
+ 	}
+ 
+-	if (tsk_is_pi_blocked(tsk))
+-		return;
+-
+ 	/*
+ 	 * If we are going to sleep and we have plugged IO queued,
+ 	 * make sure to submit it to avoid deadlocks.
+@@ -5176,7 +5173,7 @@ asmlinkage __visible void __sched schedule(void)
+ 	sched_submit_work(tsk);
+ 	do {
+ 		preempt_disable();
+-		__schedule(false);
++		__schedule(false, false);
+ 		sched_preempt_enable_no_resched();
+ 	} while (need_resched());
+ 	sched_update_worker(tsk);
+@@ -5204,7 +5201,7 @@ void __sched schedule_idle(void)
+ 	 */
+ 	WARN_ON_ONCE(current->state);
+ 	do {
+-		__schedule(false);
++		__schedule(false, false);
+ 	} while (need_resched());
+ }
+ 
+@@ -5257,7 +5254,7 @@ static void __sched notrace preempt_schedule_common(void)
+ 		 */
+ 		preempt_disable_notrace();
+ 		preempt_latency_start(1);
+-		__schedule(true);
++		__schedule(true, false);
+ 		preempt_latency_stop(1);
+ 		preempt_enable_no_resched_notrace();
+ 
+@@ -5287,6 +5284,19 @@ asmlinkage __visible void __sched notrace preempt_schedule(void)
+ NOKPROBE_SYMBOL(preempt_schedule);
+ EXPORT_SYMBOL(preempt_schedule);
+ 
++#ifdef CONFIG_PREEMPT_RT
++void __sched notrace preempt_schedule_lock(void)
++{
++	do {
++		preempt_disable();
++		__schedule(true, true);
++		sched_preempt_enable_no_resched();
++	} while (need_resched());
++}
++NOKPROBE_SYMBOL(preempt_schedule_lock);
++EXPORT_SYMBOL(preempt_schedule_lock);
++#endif
++
+ /**
+  * preempt_schedule_notrace - preempt_schedule called by tracing
+  *
+@@ -5330,7 +5340,7 @@ asmlinkage __visible void __sched notrace preempt_schedule_notrace(void)
+ 		 * an infinite recursion.
+ 		 */
+ 		prev_ctx = exception_enter();
+-		__schedule(true);
++		__schedule(true, false);
+ 		exception_exit(prev_ctx);
+ 
+ 		preempt_latency_stop(1);
+@@ -5359,7 +5369,7 @@ asmlinkage __visible void __sched preempt_schedule_irq(void)
+ 	do {
+ 		preempt_disable();
+ 		local_irq_enable();
+-		__schedule(true);
++		__schedule(true, false);
+ 		local_irq_disable();
+ 		sched_preempt_enable_no_resched();
+ 	} while (need_resched());
+-- 
+2.30.2
+

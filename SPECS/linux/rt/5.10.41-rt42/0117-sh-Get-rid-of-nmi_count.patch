@@ -1,0 +1,46 @@
+From 3039256d81f5beb5a6bfa8904d996e378e036db3 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 13 Nov 2020 15:02:09 +0100
+Subject: [PATCH 117/296] sh: Get rid of nmi_count()
+
+nmi_count() is a historical leftover and SH is the only user. Replace it
+with regular per cpu accessors.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Frederic Weisbecker <frederic@kernel.org>
+Link: https://lore.kernel.org/r/20201113141732.844232404@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/sh/kernel/irq.c   | 2 +-
+ arch/sh/kernel/traps.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/sh/kernel/irq.c b/arch/sh/kernel/irq.c
+index 5717c7cbdd97..5addcb2c2da0 100644
+--- a/arch/sh/kernel/irq.c
++++ b/arch/sh/kernel/irq.c
+@@ -44,7 +44,7 @@ int arch_show_interrupts(struct seq_file *p, int prec)
+ 
+ 	seq_printf(p, "%*s: ", prec, "NMI");
+ 	for_each_online_cpu(j)
+-		seq_printf(p, "%10u ", nmi_count(j));
++		seq_printf(p, "%10u ", per_cpu(irq_stat.__nmi_count, j);
+ 	seq_printf(p, "  Non-maskable interrupts\n");
+ 
+ 	seq_printf(p, "%*s: %10u\n", prec, "ERR", atomic_read(&irq_err_count));
+diff --git a/arch/sh/kernel/traps.c b/arch/sh/kernel/traps.c
+index 9c3d32b80038..f5beecdac693 100644
+--- a/arch/sh/kernel/traps.c
++++ b/arch/sh/kernel/traps.c
+@@ -186,7 +186,7 @@ BUILD_TRAP_HANDLER(nmi)
+ 	arch_ftrace_nmi_enter();
+ 
+ 	nmi_enter();
+-	nmi_count(cpu)++;
++	this_cpu_inc(irq_stat.__nmi_count);
+ 
+ 	switch (notify_die(DIE_NMI, "NMI", regs, 0, vec & 0xff, SIGINT)) {
+ 	case NOTIFY_OK:
+-- 
+2.30.2
+

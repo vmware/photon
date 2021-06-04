@@ -1,0 +1,44 @@
+From 72e0d8cc1aa81975167f59400c5df74a0710cdea Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 13 Nov 2020 15:02:15 +0100
+Subject: [PATCH 123/296] sh: irqstat: Use the generic irq_cpustat_t
+
+SH can now use the generic irq_cpustat_t. Define ack_bad_irq so the generic
+header does not emit the generic version of it.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Frederic Weisbecker <frederic@kernel.org>
+Link: https://lore.kernel.org/r/20201113141733.625146223@linutronix.de
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/sh/include/asm/hardirq.h | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
+
+diff --git a/arch/sh/include/asm/hardirq.h b/arch/sh/include/asm/hardirq.h
+index edaea3559a23..9fe4495a8e90 100644
+--- a/arch/sh/include/asm/hardirq.h
++++ b/arch/sh/include/asm/hardirq.h
+@@ -2,16 +2,10 @@
+ #ifndef __ASM_SH_HARDIRQ_H
+ #define __ASM_SH_HARDIRQ_H
+ 
+-#include <linux/threads.h>
+-#include <linux/irq.h>
+-
+-typedef struct {
+-	unsigned int __softirq_pending;
+-	unsigned int __nmi_count;		/* arch dependent */
+-} ____cacheline_aligned irq_cpustat_t;
+-
+-#include <linux/irq_cpustat.h>	/* Standard mappings for irq_cpustat_t above */
+-
+ extern void ack_bad_irq(unsigned int irq);
++#define ack_bad_irq ack_bad_irq
++#define ARCH_WANTS_NMI_IRQSTAT
++
++#include <asm-generic/hardirq.h>
+ 
+ #endif /* __ASM_SH_HARDIRQ_H */
+-- 
+2.30.2
+

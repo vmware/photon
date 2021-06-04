@@ -1,0 +1,94 @@
+From cbcb90a99839c69ad28e9e8450d6ee257fe096a5 Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 3 Nov 2020 10:27:40 +0100
+Subject: [PATCH 051/296] mips/crashdump: Simplify copy_oldmem_page()
+
+Replace kmap_atomic_pfn() with kmap_local_pfn() which is preemptible and
+can take page faults.
+
+Remove the indirection of the dump page and the related cruft which is not
+longer required.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: linux-mips@vger.kernel.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/mips/kernel/crash_dump.c | 42 ++++++-----------------------------
+ 1 file changed, 7 insertions(+), 35 deletions(-)
+
+diff --git a/arch/mips/kernel/crash_dump.c b/arch/mips/kernel/crash_dump.c
+index 01b2bd95ba1f..9aba83e1eeb4 100644
+--- a/arch/mips/kernel/crash_dump.c
++++ b/arch/mips/kernel/crash_dump.c
+@@ -5,8 +5,6 @@
+ #include <linux/uaccess.h>
+ #include <linux/slab.h>
+ 
+-static void *kdump_buf_page;
+-
+ /**
+  * copy_oldmem_page - copy one page from "oldmem"
+  * @pfn: page frame number to be copied
+@@ -17,51 +15,25 @@ static void *kdump_buf_page;
+  * @userbuf: if set, @buf is in user address space, use copy_to_user(),
+  *	otherwise @buf is in kernel address space, use memcpy().
+  *
+- * Copy a page from "oldmem". For this page, there is no pte mapped
++ * Copy a page from "oldmem". For this page, there might be no pte mapped
+  * in the current kernel.
+- *
+- * Calling copy_to_user() in atomic context is not desirable. Hence first
+- * copying the data to a pre-allocated kernel page and then copying to user
+- * space in non-atomic context.
+  */
+-ssize_t copy_oldmem_page(unsigned long pfn, char *buf,
+-			 size_t csize, unsigned long offset, int userbuf)
++ssize_t copy_oldmem_page(unsigned long pfn, char *buf, size_t csize,
++			 unsigned long offset, int userbuf)
+ {
+ 	void  *vaddr;
+ 
+ 	if (!csize)
+ 		return 0;
+ 
+-	vaddr = kmap_atomic_pfn(pfn);
++	vaddr = kmap_local_pfn(pfn);
+ 
+ 	if (!userbuf) {
+-		memcpy(buf, (vaddr + offset), csize);
+-		kunmap_atomic(vaddr);
++		memcpy(buf, vaddr + offset, csize);
+ 	} else {
+-		if (!kdump_buf_page) {
+-			pr_warn("Kdump: Kdump buffer page not allocated\n");
+-
+-			return -EFAULT;
+-		}
+-		copy_page(kdump_buf_page, vaddr);
+-		kunmap_atomic(vaddr);
+-		if (copy_to_user(buf, (kdump_buf_page + offset), csize))
+-			return -EFAULT;
++		if (copy_to_user(buf, vaddr + offset, csize))
++			csize = -EFAULT;
+ 	}
+ 
+ 	return csize;
+ }
+-
+-static int __init kdump_buf_page_init(void)
+-{
+-	int ret = 0;
+-
+-	kdump_buf_page = kmalloc(PAGE_SIZE, GFP_KERNEL);
+-	if (!kdump_buf_page) {
+-		pr_warn("Kdump: Failed to allocate kdump buffer page\n");
+-		ret = -ENOMEM;
+-	}
+-
+-	return ret;
+-}
+-arch_initcall(kdump_buf_page_init);
+-- 
+2.30.2
+

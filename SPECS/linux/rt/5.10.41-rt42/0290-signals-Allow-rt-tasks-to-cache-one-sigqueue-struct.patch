@@ -1,0 +1,211 @@
+From 50818a05a3bc31de21d702667f64dae6c3b25a4c Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Fri, 3 Jul 2009 08:44:56 -0500
+Subject: [PATCH 290/296] signals: Allow rt tasks to cache one sigqueue struct
+
+To avoid allocation allow rt tasks to cache one sigqueue struct in
+task struct.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+---
+ include/linux/sched.h  |  1 +
+ include/linux/signal.h |  1 +
+ kernel/exit.c          |  2 +-
+ kernel/fork.c          |  1 +
+ kernel/signal.c        | 69 +++++++++++++++++++++++++++++++++++++++---
+ 5 files changed, 69 insertions(+), 5 deletions(-)
+
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index 28509a37eb71..e688e9307a21 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -985,6 +985,7 @@ struct task_struct {
+ 	/* Signal handlers: */
+ 	struct signal_struct		*signal;
+ 	struct sighand_struct __rcu		*sighand;
++	struct sigqueue			*sigqueue_cache;
+ 	sigset_t			blocked;
+ 	sigset_t			real_blocked;
+ 	/* Restored if set_restore_sigmask() was used: */
+diff --git a/include/linux/signal.h b/include/linux/signal.h
+index b256f9c65661..ebf6c515a7b2 100644
+--- a/include/linux/signal.h
++++ b/include/linux/signal.h
+@@ -265,6 +265,7 @@ static inline void init_sigpending(struct sigpending *sig)
+ }
+ 
+ extern void flush_sigqueue(struct sigpending *queue);
++extern void flush_task_sigqueue(struct task_struct *tsk);
+ 
+ /* Test if 'sig' is valid signal. Use this instead of testing _NSIG directly */
+ static inline int valid_signal(unsigned long sig)
+diff --git a/kernel/exit.c b/kernel/exit.c
+index d13d67fc5f4e..f5933bd07932 100644
+--- a/kernel/exit.c
++++ b/kernel/exit.c
+@@ -152,7 +152,7 @@ static void __exit_signal(struct task_struct *tsk)
+ 	 * Do this under ->siglock, we can race with another thread
+ 	 * doing sigqueue_free() if we have SIGQUEUE_PREALLOC signals.
+ 	 */
+-	flush_sigqueue(&tsk->pending);
++	flush_task_sigqueue(tsk);
+ 	tsk->sighand = NULL;
+ 	spin_unlock(&sighand->siglock);
+ 
+diff --git a/kernel/fork.c b/kernel/fork.c
+index eaa47c928f96..1e97f271ac59 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -2025,6 +2025,7 @@ static __latent_entropy struct task_struct *copy_process(
+ 	spin_lock_init(&p->alloc_lock);
+ 
+ 	init_sigpending(&p->pending);
++	p->sigqueue_cache = NULL;
+ 
+ 	p->utime = p->stime = p->gtime = 0;
+ #ifdef CONFIG_ARCH_HAS_SCALED_CPUTIME
+diff --git a/kernel/signal.c b/kernel/signal.c
+index fde69283d03f..bad7873f8949 100644
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -20,6 +20,7 @@
+ #include <linux/sched/task.h>
+ #include <linux/sched/task_stack.h>
+ #include <linux/sched/cputime.h>
++#include <linux/sched/rt.h>
+ #include <linux/file.h>
+ #include <linux/fs.h>
+ #include <linux/proc_fs.h>
+@@ -404,13 +405,30 @@ void task_join_group_stop(struct task_struct *task)
+ 	task_set_jobctl_pending(task, mask | JOBCTL_STOP_PENDING);
+ }
+ 
++static inline struct sigqueue *get_task_cache(struct task_struct *t)
++{
++	struct sigqueue *q = t->sigqueue_cache;
++
++	if (cmpxchg(&t->sigqueue_cache, q, NULL) != q)
++		return NULL;
++	return q;
++}
++
++static inline int put_task_cache(struct task_struct *t, struct sigqueue *q)
++{
++	if (cmpxchg(&t->sigqueue_cache, NULL, q) == NULL)
++		return 0;
++	return 1;
++}
++
+ /*
+  * allocate a new signal queue record
+  * - this may be called without locks if and only if t == current, otherwise an
+  *   appropriate lock must be held to stop the target task from exiting
+  */
+ static struct sigqueue *
+-__sigqueue_alloc(int sig, struct task_struct *t, gfp_t flags, int override_rlimit)
++__sigqueue_do_alloc(int sig, struct task_struct *t, gfp_t flags,
++		    int override_rlimit, int fromslab)
+ {
+ 	struct sigqueue *q = NULL;
+ 	struct user_struct *user;
+@@ -432,7 +450,10 @@ __sigqueue_alloc(int sig, struct task_struct *t, gfp_t flags, int override_rlimi
+ 	rcu_read_unlock();
+ 
+ 	if (override_rlimit || likely(sigpending <= task_rlimit(t, RLIMIT_SIGPENDING))) {
+-		q = kmem_cache_alloc(sigqueue_cachep, flags);
++		if (!fromslab)
++			q = get_task_cache(t);
++		if (!q)
++			q = kmem_cache_alloc(sigqueue_cachep, flags);
+ 	} else {
+ 		print_dropped_signal(sig);
+ 	}
+@@ -449,6 +470,13 @@ __sigqueue_alloc(int sig, struct task_struct *t, gfp_t flags, int override_rlimi
+ 	return q;
+ }
+ 
++static struct sigqueue *
++__sigqueue_alloc(int sig, struct task_struct *t, gfp_t flags,
++		 int override_rlimit)
++{
++	return __sigqueue_do_alloc(sig, t, flags, override_rlimit, 0);
++}
++
+ static void __sigqueue_free(struct sigqueue *q)
+ {
+ 	if (q->flags & SIGQUEUE_PREALLOC)
+@@ -458,6 +486,21 @@ static void __sigqueue_free(struct sigqueue *q)
+ 	kmem_cache_free(sigqueue_cachep, q);
+ }
+ 
++static void sigqueue_free_current(struct sigqueue *q)
++{
++	struct user_struct *up;
++
++	if (q->flags & SIGQUEUE_PREALLOC)
++		return;
++
++	up = q->user;
++	if (rt_prio(current->normal_prio) && !put_task_cache(current, q)) {
++		atomic_dec(&up->sigpending);
++		free_uid(up);
++	} else
++		  __sigqueue_free(q);
++}
++
+ void flush_sigqueue(struct sigpending *queue)
+ {
+ 	struct sigqueue *q;
+@@ -470,6 +513,21 @@ void flush_sigqueue(struct sigpending *queue)
+ 	}
+ }
+ 
++/*
++ * Called from __exit_signal. Flush tsk->pending and
++ * tsk->sigqueue_cache
++ */
++void flush_task_sigqueue(struct task_struct *tsk)
++{
++	struct sigqueue *q;
++
++	flush_sigqueue(&tsk->pending);
++
++	q = get_task_cache(tsk);
++	if (q)
++		kmem_cache_free(sigqueue_cachep, q);
++}
++
+ /*
+  * Flush all pending signals for this kthread.
+  */
+@@ -594,7 +652,7 @@ static void collect_signal(int sig, struct sigpending *list, kernel_siginfo_t *i
+ 			(info->si_code == SI_TIMER) &&
+ 			(info->si_sys_private);
+ 
+-		__sigqueue_free(first);
++		sigqueue_free_current(first);
+ 	} else {
+ 		/*
+ 		 * Ok, it wasn't in the queue.  This must be
+@@ -631,6 +689,8 @@ int dequeue_signal(struct task_struct *tsk, sigset_t *mask, kernel_siginfo_t *in
+ 	bool resched_timer = false;
+ 	int signr;
+ 
++	WARN_ON_ONCE(tsk != current);
++
+ 	/* We only dequeue private signals from ourselves, we don't let
+ 	 * signalfd steal them
+ 	 */
+@@ -1835,7 +1895,8 @@ EXPORT_SYMBOL(kill_pid);
+  */
+ struct sigqueue *sigqueue_alloc(void)
+ {
+-	struct sigqueue *q = __sigqueue_alloc(-1, current, GFP_KERNEL, 0);
++	/* Preallocated sigqueue objects always from the slabcache ! */
++	struct sigqueue *q = __sigqueue_do_alloc(-1, current, GFP_KERNEL, 0, 1);
+ 
+ 	if (q)
+ 		q->flags |= SIGQUEUE_PREALLOC;
+-- 
+2.30.2
+

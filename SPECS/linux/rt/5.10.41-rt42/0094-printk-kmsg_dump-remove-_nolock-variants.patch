@@ -1,0 +1,225 @@
+From acedf7074507022c2262cd8a99b2030b87222312 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Mon, 21 Dec 2020 10:27:58 +0106
+Subject: [PATCH 094/296] printk: kmsg_dump: remove _nolock() variants
+
+kmsg_dump_rewind() and kmsg_dump_get_line() are lockless, so there is
+no need for _nolock() variants. Remove these functions and switch all
+callers of the _nolock() variants.
+
+The functions without _nolock() were chosen because they are already
+exported to kernel modules.
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+---
+ arch/powerpc/xmon/xmon.c    |  4 +--
+ include/linux/kmsg_dump.h   | 18 +----------
+ kernel/debug/kdb/kdb_main.c |  8 ++---
+ kernel/printk/printk.c      | 60 +++++--------------------------------
+ 4 files changed, 15 insertions(+), 75 deletions(-)
+
+diff --git a/arch/powerpc/xmon/xmon.c b/arch/powerpc/xmon/xmon.c
+index b71690e8245b..d62b8e053d4c 100644
+--- a/arch/powerpc/xmon/xmon.c
++++ b/arch/powerpc/xmon/xmon.c
+@@ -3017,9 +3017,9 @@ dump_log_buf(void)
+ 	catch_memory_errors = 1;
+ 	sync();
+ 
+-	kmsg_dump_rewind_nolock(&iter);
++	kmsg_dump_rewind(&iter);
+ 	xmon_start_pagination();
+-	while (kmsg_dump_get_line_nolock(&iter, false, buf, sizeof(buf), &len)) {
++	while (kmsg_dump_get_line(&iter, false, buf, sizeof(buf), &len)) {
+ 		buf[len] = '\0';
+ 		printf("%s", buf);
+ 	}
+diff --git a/include/linux/kmsg_dump.h b/include/linux/kmsg_dump.h
+index 2fdb10ab1799..86673930c8ea 100644
+--- a/include/linux/kmsg_dump.h
++++ b/include/linux/kmsg_dump.h
+@@ -60,18 +60,13 @@ struct kmsg_dumper {
+ #ifdef CONFIG_PRINTK
+ void kmsg_dump(enum kmsg_dump_reason reason);
+ 
+-bool kmsg_dump_get_line_nolock(struct kmsg_dumper_iter *iter, bool syslog,
+-			       char *line, size_t size, size_t *len);
+-
+ bool kmsg_dump_get_line(struct kmsg_dumper_iter *iter, bool syslog,
+ 			char *line, size_t size, size_t *len);
+ 
+ bool kmsg_dump_get_buffer(struct kmsg_dumper_iter *iter, bool syslog,
+ 			  char *buf, size_t size, size_t *len_out);
+ 
+-void kmsg_dump_rewind_nolock(struct kmsg_dumper_iter *iter);
+-
+-void kmsg_dump_rewind(struct kmsg_dumper_iter *dumper_iter);
++void kmsg_dump_rewind(struct kmsg_dumper_iter *iter);
+ 
+ int kmsg_dump_register(struct kmsg_dumper *dumper);
+ 
+@@ -83,13 +78,6 @@ static inline void kmsg_dump(enum kmsg_dump_reason reason)
+ {
+ }
+ 
+-static inline bool kmsg_dump_get_line_nolock(struct kmsg_dumper_iter *iter,
+-					     bool syslog, const char *line,
+-					     size_t size, size_t *len)
+-{
+-	return false;
+-}
+-
+ static inline bool kmsg_dump_get_line(struct kmsg_dumper_iter *iter, bool syslog,
+ 				const char *line, size_t size, size_t *len)
+ {
+@@ -102,10 +90,6 @@ static inline bool kmsg_dump_get_buffer(struct kmsg_dumper_iter *iter, bool sysl
+ 	return false;
+ }
+ 
+-static inline void kmsg_dump_rewind_nolock(struct kmsg_dumper_iter *iter)
+-{
+-}
+-
+ static inline void kmsg_dump_rewind(struct kmsg_dumper_iter *iter)
+ {
+ }
+diff --git a/kernel/debug/kdb/kdb_main.c b/kernel/debug/kdb/kdb_main.c
+index 7ae9da245e4b..dbf1d126ac5e 100644
+--- a/kernel/debug/kdb/kdb_main.c
++++ b/kernel/debug/kdb/kdb_main.c
+@@ -2126,8 +2126,8 @@ static int kdb_dmesg(int argc, const char **argv)
+ 		kdb_set(2, setargs);
+ 	}
+ 
+-	kmsg_dump_rewind_nolock(&iter);
+-	while (kmsg_dump_get_line_nolock(&iter, 1, NULL, 0, NULL))
++	kmsg_dump_rewind(&iter);
++	while (kmsg_dump_get_line(&iter, 1, NULL, 0, NULL))
+ 		n++;
+ 
+ 	if (lines < 0) {
+@@ -2159,8 +2159,8 @@ static int kdb_dmesg(int argc, const char **argv)
+ 	if (skip >= n || skip < 0)
+ 		return 0;
+ 
+-	kmsg_dump_rewind_nolock(&iter);
+-	while (kmsg_dump_get_line_nolock(&iter, 1, buf, sizeof(buf), &len)) {
++	kmsg_dump_rewind(&iter);
++	while (kmsg_dump_get_line(&iter, 1, buf, sizeof(buf), &len)) {
+ 		if (skip) {
+ 			skip--;
+ 			continue;
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index d4e3111e3bc0..d5931e82b73d 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3378,7 +3378,7 @@ void kmsg_dump(enum kmsg_dump_reason reason)
+ }
+ 
+ /**
+- * kmsg_dump_get_line_nolock - retrieve one kmsg log line (unlocked version)
++ * kmsg_dump_get_line - retrieve one kmsg log line
+  * @iter: kmsg dumper iterator
+  * @syslog: include the "<4>" prefixes
+  * @line: buffer to copy the line to
+@@ -3393,18 +3393,18 @@ void kmsg_dump(enum kmsg_dump_reason reason)
+  *
+  * A return value of FALSE indicates that there are no more records to
+  * read.
+- *
+- * The function is similar to kmsg_dump_get_line(), but grabs no locks.
+  */
+-bool kmsg_dump_get_line_nolock(struct kmsg_dumper_iter *iter, bool syslog,
+-			       char *line, size_t size, size_t *len)
++bool kmsg_dump_get_line(struct kmsg_dumper_iter *iter, bool syslog,
++			char *line, size_t size, size_t *len)
+ {
+ 	struct printk_info info;
+ 	unsigned int line_count;
+ 	struct printk_record r;
++	unsigned long flags;
+ 	size_t l = 0;
+ 	bool ret = false;
+ 
++	printk_safe_enter_irqsave(flags);
+ 	prb_rec_init_rd(&r, &info, line, size);
+ 
+ 	if (!iter->active)
+@@ -3428,40 +3428,11 @@ bool kmsg_dump_get_line_nolock(struct kmsg_dumper_iter *iter, bool syslog,
+ 	iter->cur_seq = r.info->seq + 1;
+ 	ret = true;
+ out:
++	printk_safe_exit_irqrestore(flags);
+ 	if (len)
+ 		*len = l;
+ 	return ret;
+ }
+-
+-/**
+- * kmsg_dump_get_line - retrieve one kmsg log line
+- * @iter: kmsg dumper iterator
+- * @syslog: include the "<4>" prefixes
+- * @line: buffer to copy the line to
+- * @size: maximum size of the buffer
+- * @len: length of line placed into buffer
+- *
+- * Start at the beginning of the kmsg buffer, with the oldest kmsg
+- * record, and copy one record into the provided buffer.
+- *
+- * Consecutive calls will return the next available record moving
+- * towards the end of the buffer with the youngest messages.
+- *
+- * A return value of FALSE indicates that there are no more records to
+- * read.
+- */
+-bool kmsg_dump_get_line(struct kmsg_dumper_iter *iter, bool syslog,
+-			char *line, size_t size, size_t *len)
+-{
+-	unsigned long flags;
+-	bool ret;
+-
+-	printk_safe_enter_irqsave(flags);
+-	ret = kmsg_dump_get_line_nolock(iter, syslog, line, size, len);
+-	printk_safe_exit_irqrestore(flags);
+-
+-	return ret;
+-}
+ EXPORT_SYMBOL_GPL(kmsg_dump_get_line);
+ 
+ /**
+@@ -3550,22 +3521,6 @@ bool kmsg_dump_get_buffer(struct kmsg_dumper_iter *iter, bool syslog,
+ }
+ EXPORT_SYMBOL_GPL(kmsg_dump_get_buffer);
+ 
+-/**
+- * kmsg_dump_rewind_nolock - reset the iterator (unlocked version)
+- * @iter: kmsg dumper iterator
+- *
+- * Reset the dumper's iterator so that kmsg_dump_get_line() and
+- * kmsg_dump_get_buffer() can be called again and used multiple
+- * times within the same dumper.dump() callback.
+- *
+- * The function is similar to kmsg_dump_rewind(), but grabs no locks.
+- */
+-void kmsg_dump_rewind_nolock(struct kmsg_dumper_iter *iter)
+-{
+-	iter->cur_seq = latched_seq_read_nolock(&clear_seq);
+-	iter->next_seq = prb_next_seq(prb);
+-}
+-
+ /**
+  * kmsg_dump_rewind - reset the iterator
+  * @iter: kmsg dumper iterator
+@@ -3579,7 +3534,8 @@ void kmsg_dump_rewind(struct kmsg_dumper_iter *iter)
+ 	unsigned long flags;
+ 
+ 	printk_safe_enter_irqsave(flags);
+-	kmsg_dump_rewind_nolock(iter);
++	iter->cur_seq = latched_seq_read_nolock(&clear_seq);
++	iter->next_seq = prb_next_seq(prb);
+ 	printk_safe_exit_irqrestore(flags);
+ }
+ EXPORT_SYMBOL_GPL(kmsg_dump_rewind);
+-- 
+2.30.2
+

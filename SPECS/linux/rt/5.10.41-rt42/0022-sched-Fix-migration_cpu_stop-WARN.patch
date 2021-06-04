@@ -1,0 +1,46 @@
+From 5205b615d350a19ae173dd38cb22582c24de04fa Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Tue, 17 Nov 2020 12:14:51 +0100
+Subject: [PATCH 022/296] sched: Fix migration_cpu_stop() WARN
+
+Oleksandr reported hitting the WARN in the 'task_rq(p) != rq' branch
+of migration_cpu_stop(). Valentin noted that using cpu_of(rq) in that
+case is just plain wrong to begin with, since per the earlier branch
+that isn't the actual CPU of the task.
+
+Replace both instances of is_cpu_allowed() by a direct p->cpus_mask
+test using task_cpu().
+
+Reported-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+Debugged-by: Valentin Schneider <valentin.schneider@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/sched/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index a26fa37e8278..4d9dc87252a6 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -1913,7 +1913,7 @@ static int migration_cpu_stop(void *data)
+ 			 * and we should be valid again. Nothing to do.
+ 			 */
+ 			if (!pending) {
+-				WARN_ON_ONCE(!is_cpu_allowed(p, cpu_of(rq)));
++				WARN_ON_ONCE(!cpumask_test_cpu(task_cpu(p), &p->cpus_mask));
+ 				goto out;
+ 			}
+ 
+@@ -1941,7 +1941,7 @@ static int migration_cpu_stop(void *data)
+ 		 * valid again. Nothing to do.
+ 		 */
+ 		if (!pending) {
+-			WARN_ON_ONCE(!is_cpu_allowed(p, cpu_of(rq)));
++			WARN_ON_ONCE(!cpumask_test_cpu(task_cpu(p), &p->cpus_mask));
+ 			goto out;
+ 		}
+ 
+-- 
+2.30.2
+

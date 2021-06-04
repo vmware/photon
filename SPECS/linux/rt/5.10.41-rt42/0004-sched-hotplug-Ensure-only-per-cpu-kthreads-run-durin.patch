@@ -1,0 +1,243 @@
+From acc73b4b2d679c983829e5531df634caf8228996 Mon Sep 17 00:00:00 2001
+From: Peter Zijlstra <peterz@infradead.org>
+Date: Fri, 23 Oct 2020 12:12:01 +0200
+Subject: [PATCH 004/296] sched/hotplug: Ensure only per-cpu kthreads run
+ during hotplug
+
+In preparation for migrate_disable(), make sure only per-cpu kthreads
+are allowed to run on !active CPUs.
+
+This is ran (as one of the very first steps) from the cpu-hotplug
+task which is a per-cpu kthread and completion of the hotplug
+operation only requires such tasks.
+
+This constraint enables the migrate_disable() implementation to wait
+for completion of all migrate_disable regions on this CPU at hotplug
+time without fear of any new ones starting.
+
+This replaces the unlikely(rq->balance_callbacks) test at the tail of
+context_switch with an unlikely(rq->balance_work), the fast path is
+not affected.
+
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/sched/core.c  | 114 ++++++++++++++++++++++++++++++++++++++++++-
+ kernel/sched/sched.h |   7 ++-
+ 2 files changed, 118 insertions(+), 3 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 08fb157fd042..2abe17030180 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -3511,8 +3511,10 @@ static inline struct callback_head *splice_balance_callbacks(struct rq *rq)
+ 	struct callback_head *head = rq->balance_callback;
+ 
+ 	lockdep_assert_held(&rq->lock);
+-	if (head)
++	if (head) {
+ 		rq->balance_callback = NULL;
++		rq->balance_flags &= ~BALANCE_WORK;
++	}
+ 
+ 	return head;
+ }
+@@ -3533,6 +3535,21 @@ static inline void balance_callbacks(struct rq *rq, struct callback_head *head)
+ 	}
+ }
+ 
++static void balance_push(struct rq *rq);
++
++static inline void balance_switch(struct rq *rq)
++{
++	if (likely(!rq->balance_flags))
++		return;
++
++	if (rq->balance_flags & BALANCE_PUSH) {
++		balance_push(rq);
++		return;
++	}
++
++	__balance_callbacks(rq);
++}
++
+ #else
+ 
+ static inline void __balance_callbacks(struct rq *rq)
+@@ -3548,6 +3565,10 @@ static inline void balance_callbacks(struct rq *rq, struct callback_head *head)
+ {
+ }
+ 
++static inline void balance_switch(struct rq *rq)
++{
++}
++
+ #endif
+ 
+ static inline void
+@@ -3575,7 +3596,7 @@ static inline void finish_lock_switch(struct rq *rq)
+ 	 * prev into current:
+ 	 */
+ 	spin_acquire(&rq->lock.dep_map, 0, 0, _THIS_IP_);
+-	__balance_callbacks(rq);
++	balance_switch(rq);
+ 	raw_spin_unlock_irq(&rq->lock);
+ }
+ 
+@@ -6831,6 +6852,90 @@ static void migrate_tasks(struct rq *dead_rq, struct rq_flags *rf)
+ 
+ 	rq->stop = stop;
+ }
++
++static int __balance_push_cpu_stop(void *arg)
++{
++	struct task_struct *p = arg;
++	struct rq *rq = this_rq();
++	struct rq_flags rf;
++	int cpu;
++
++	raw_spin_lock_irq(&p->pi_lock);
++	rq_lock(rq, &rf);
++
++	update_rq_clock(rq);
++
++	if (task_rq(p) == rq && task_on_rq_queued(p)) {
++		cpu = select_fallback_rq(rq->cpu, p);
++		rq = __migrate_task(rq, &rf, p, cpu);
++	}
++
++	rq_unlock(rq, &rf);
++	raw_spin_unlock_irq(&p->pi_lock);
++
++	put_task_struct(p);
++
++	return 0;
++}
++
++static DEFINE_PER_CPU(struct cpu_stop_work, push_work);
++
++/*
++ * Ensure we only run per-cpu kthreads once the CPU goes !active.
++ */
++static void balance_push(struct rq *rq)
++{
++	struct task_struct *push_task = rq->curr;
++
++	lockdep_assert_held(&rq->lock);
++	SCHED_WARN_ON(rq->cpu != smp_processor_id());
++
++	/*
++	 * Both the cpu-hotplug and stop task are in this case and are
++	 * required to complete the hotplug process.
++	 */
++	if (is_per_cpu_kthread(push_task))
++		return;
++
++	get_task_struct(push_task);
++	/*
++	 * Temporarily drop rq->lock such that we can wake-up the stop task.
++	 * Both preemption and IRQs are still disabled.
++	 */
++	raw_spin_unlock(&rq->lock);
++	stop_one_cpu_nowait(rq->cpu, __balance_push_cpu_stop, push_task,
++			    this_cpu_ptr(&push_work));
++	/*
++	 * At this point need_resched() is true and we'll take the loop in
++	 * schedule(). The next pick is obviously going to be the stop task
++	 * which is_per_cpu_kthread() and will push this task away.
++	 */
++	raw_spin_lock(&rq->lock);
++}
++
++static void balance_push_set(int cpu, bool on)
++{
++	struct rq *rq = cpu_rq(cpu);
++	struct rq_flags rf;
++
++	rq_lock_irqsave(rq, &rf);
++	if (on)
++		rq->balance_flags |= BALANCE_PUSH;
++	else
++		rq->balance_flags &= ~BALANCE_PUSH;
++	rq_unlock_irqrestore(rq, &rf);
++}
++
++#else
++
++static inline void balance_push(struct rq *rq)
++{
++}
++
++static inline void balance_push_set(int cpu, bool on)
++{
++}
++
+ #endif /* CONFIG_HOTPLUG_CPU */
+ 
+ void set_rq_online(struct rq *rq)
+@@ -6916,6 +7021,8 @@ int sched_cpu_activate(unsigned int cpu)
+ 	struct rq *rq = cpu_rq(cpu);
+ 	struct rq_flags rf;
+ 
++	balance_push_set(cpu, false);
++
+ #ifdef CONFIG_SCHED_SMT
+ 	/*
+ 	 * When going up, increment the number of cores with SMT present.
+@@ -6963,6 +7070,8 @@ int sched_cpu_deactivate(unsigned int cpu)
+ 	 */
+ 	synchronize_rcu();
+ 
++	balance_push_set(cpu, true);
++
+ #ifdef CONFIG_SCHED_SMT
+ 	/*
+ 	 * When going down, decrement the number of cores with SMT present.
+@@ -6976,6 +7085,7 @@ int sched_cpu_deactivate(unsigned int cpu)
+ 
+ 	ret = cpuset_cpu_inactive(cpu);
+ 	if (ret) {
++		balance_push_set(cpu, false);
+ 		set_cpu_active(cpu, true);
+ 		return ret;
+ 	}
+diff --git a/kernel/sched/sched.h b/kernel/sched/sched.h
+index 16f06a63b335..85ca78879a08 100644
+--- a/kernel/sched/sched.h
++++ b/kernel/sched/sched.h
+@@ -974,6 +974,7 @@ struct rq {
+ 	unsigned long		cpu_capacity_orig;
+ 
+ 	struct callback_head	*balance_callback;
++	unsigned char		balance_flags;
+ 
+ 	unsigned char		nohz_idle_balance;
+ 	unsigned char		idle_balance;
+@@ -1387,6 +1388,9 @@ init_numa_balancing(unsigned long clone_flags, struct task_struct *p)
+ 
+ #ifdef CONFIG_SMP
+ 
++#define BALANCE_WORK	0x01
++#define BALANCE_PUSH	0x02
++
+ static inline void
+ queue_balance_callback(struct rq *rq,
+ 		       struct callback_head *head,
+@@ -1394,12 +1398,13 @@ queue_balance_callback(struct rq *rq,
+ {
+ 	lockdep_assert_held(&rq->lock);
+ 
+-	if (unlikely(head->next))
++	if (unlikely(head->next || (rq->balance_flags & BALANCE_PUSH)))
+ 		return;
+ 
+ 	head->func = (void (*)(struct callback_head *))func;
+ 	head->next = rq->balance_callback;
+ 	rq->balance_callback = head;
++	rq->balance_flags |= BALANCE_WORK;
+ }
+ 
+ #define rcu_dereference_check_sched_domain(p) \
+-- 
+2.30.2
+

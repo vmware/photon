@@ -1,0 +1,45 @@
+From c99be44a050f3158a302b4e75fa31c9a602da600 Mon Sep 17 00:00:00 2001
+From: Valentin Schneider <valentin.schneider@arm.com>
+Date: Fri, 23 Oct 2020 12:12:16 +0200
+Subject: [PATCH 019/296] sched: Deny self-issued __set_cpus_allowed_ptr() when
+ migrate_disable()
+
+  migrate_disable();
+  set_cpus_allowed_ptr(current, {something excluding task_cpu(current)});
+  affine_move_task(); <-- never returns
+
+Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20201013140116.26651-1-valentin.schneider@arm.com
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/sched/core.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 33583b08ff7d..6a5ee4346a5a 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -2238,8 +2238,17 @@ static int __set_cpus_allowed_ptr(struct task_struct *p,
+ 		goto out;
+ 	}
+ 
+-	if (!(flags & SCA_MIGRATE_ENABLE) && cpumask_equal(&p->cpus_mask, new_mask))
+-		goto out;
++	if (!(flags & SCA_MIGRATE_ENABLE)) {
++		if (cpumask_equal(&p->cpus_mask, new_mask))
++			goto out;
++
++		if (WARN_ON_ONCE(p == current &&
++				 is_migration_disabled(p) &&
++				 !cpumask_test_cpu(task_cpu(p), new_mask))) {
++			ret = -EBUSY;
++			goto out;
++		}
++	}
+ 
+ 	/*
+ 	 * Picking a ~random cpu helps in cases where we are changing affinity
+-- 
+2.30.2
+

@@ -1,0 +1,47 @@
+From ab384e7cb5dcc69757850a69f21bac991fde4eef Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 4 Dec 2020 20:13:54 +0100
+Subject: [PATCH 064/296] blk-mq: Don't complete on a remote CPU in force
+ threaded mode
+
+With force threaded interrupts enabled, raising softirq from an SMP
+function call will always result in waking the ksoftirqd thread. This is
+not optimal given that the thread runs at SCHED_OTHER priority.
+
+Completing the request in hard IRQ-context on PREEMPT_RT (which enforces
+the force threaded mode) is bad because the completion handler may
+acquire sleeping locks which violate the locking context.
+
+Disable request completing on a remote CPU in force threaded mode.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Daniel Wagner <dwagner@suse.de>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ block/blk-mq.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/block/blk-mq.c b/block/blk-mq.c
+index 4bf9449b4586..7d4a0a1fcf97 100644
+--- a/block/blk-mq.c
++++ b/block/blk-mq.c
+@@ -648,6 +648,14 @@ static inline bool blk_mq_complete_need_ipi(struct request *rq)
+ 	if (!IS_ENABLED(CONFIG_SMP) ||
+ 	    !test_bit(QUEUE_FLAG_SAME_COMP, &rq->q->queue_flags))
+ 		return false;
++	/*
++	 * With force threaded interrupts enabled, raising softirq from an SMP
++	 * function call will always result in waking the ksoftirqd thread.
++	 * This is probably worse than completing the request on a different
++	 * cache domain.
++	 */
++	if (force_irqthreads)
++		return false;
+ 
+ 	/* same CPU or cache domain?  Complete locally */
+ 	if (cpu == rq->mq_ctx->cpu ||
+-- 
+2.30.2
+

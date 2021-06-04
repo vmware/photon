@@ -1,0 +1,80 @@
+From ab48dd543095b3a2a2a0929c7c8d4098bf804a52 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Mon, 21 Nov 2016 19:31:08 +0100
+Subject: [PATCH 219/296] kernel/sched: move stack + kprobe clean up to
+ __put_task_struct()
+
+There is no need to free the stack before the task struct (except for reasons
+mentioned in commit 68f24b08ee89 ("sched/core: Free the stack early if
+CONFIG_THREAD_INFO_IN_TASK")). This also comes handy on -RT because we can't
+free memory in preempt disabled region.
+vfree_atomic() delays the memory cleanup to a worker. Since we move everything
+to the RCU callback, we can also free it immediately.
+
+Cc: stable-rt@vger.kernel.org #for kprobe_flush_task()
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/fork.c       | 12 +++++++++++-
+ kernel/sched/core.c |  9 ---------
+ 2 files changed, 11 insertions(+), 10 deletions(-)
+
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 8624090a7440..eaa47c928f96 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -42,6 +42,7 @@
+ #include <linux/mmu_notifier.h>
+ #include <linux/fs.h>
+ #include <linux/mm.h>
++#include <linux/kprobes.h>
+ #include <linux/vmacache.h>
+ #include <linux/nsproxy.h>
+ #include <linux/capability.h>
+@@ -288,7 +289,7 @@ static inline void free_thread_stack(struct task_struct *tsk)
+ 			return;
+ 		}
+ 
+-		vfree_atomic(tsk->stack);
++		vfree(tsk->stack);
+ 		return;
+ 	}
+ #endif
+@@ -742,6 +743,15 @@ void __put_task_struct(struct task_struct *tsk)
+ 	WARN_ON(refcount_read(&tsk->usage));
+ 	WARN_ON(tsk == current);
+ 
++	/*
++	 * Remove function-return probe instances associated with this
++	 * task and put them back on the free list.
++	 */
++	kprobe_flush_task(tsk);
++
++	/* Task is done with its stack. */
++	put_task_stack(tsk);
++
+ 	io_uring_free(tsk);
+ 	cgroup_free(tsk);
+ 	task_numa_free(tsk, true);
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index b72bf1ba0663..bf7a81a1f81c 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -4257,15 +4257,6 @@ static struct rq *finish_task_switch(struct task_struct *prev)
+ 		if (prev->sched_class->task_dead)
+ 			prev->sched_class->task_dead(prev);
+ 
+-		/*
+-		 * Remove function-return probe instances associated with this
+-		 * task and put them back on the free list.
+-		 */
+-		kprobe_flush_task(prev);
+-
+-		/* Task is done with its stack. */
+-		put_task_stack(prev);
+-
+ 		put_task_struct_rcu_user(prev);
+ 	}
+ 
+-- 
+2.30.2
+

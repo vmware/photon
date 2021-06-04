@@ -1,0 +1,118 @@
+From c9165767f30e182ac0cd85ac6775ae416d2e3823 Mon Sep 17 00:00:00 2001
+From: John Ogness <john.ogness@linutronix.de>
+Date: Thu, 18 Feb 2021 17:37:41 +0100
+Subject: [PATCH 099/296] printk: convert @syslog_lock to spin_lock
+
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/printk/printk.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index 9d487cc4df6e..067aa589b4e8 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -356,7 +356,7 @@ enum log_flags {
+ };
+ 
+ /* syslog_lock protects syslog_* variables and write access to clear_seq. */
+-static DEFINE_RAW_SPINLOCK(syslog_lock);
++static DEFINE_SPINLOCK(syslog_lock);
+ 
+ #ifdef CONFIG_PRINTK
+ DECLARE_WAIT_QUEUE_HEAD(log_wait);
+@@ -1480,9 +1480,9 @@ static int syslog_print(char __user *buf, int size)
+ 		size_t n;
+ 		size_t skip;
+ 
+-		raw_spin_lock_irq(&syslog_lock);
++		spin_lock_irq(&syslog_lock);
+ 		if (!prb_read_valid(prb, syslog_seq, &r)) {
+-			raw_spin_unlock_irq(&syslog_lock);
++			spin_unlock_irq(&syslog_lock);
+ 			break;
+ 		}
+ 		if (r.info->seq != syslog_seq) {
+@@ -1511,7 +1511,7 @@ static int syslog_print(char __user *buf, int size)
+ 			syslog_partial += n;
+ 		} else
+ 			n = 0;
+-		raw_spin_unlock_irq(&syslog_lock);
++		spin_unlock_irq(&syslog_lock);
+ 
+ 		if (!n)
+ 			break;
+@@ -1575,9 +1575,9 @@ static int syslog_print_all(char __user *buf, int size, bool clear)
+ 	}
+ 
+ 	if (clear) {
+-		raw_spin_lock_irq(&syslog_lock);
++		spin_lock_irq(&syslog_lock);
+ 		latched_seq_write(&clear_seq, seq);
+-		raw_spin_unlock_irq(&syslog_lock);
++		spin_unlock_irq(&syslog_lock);
+ 	}
+ 
+ 	kfree(text);
+@@ -1586,9 +1586,9 @@ static int syslog_print_all(char __user *buf, int size, bool clear)
+ 
+ static void syslog_clear(void)
+ {
+-	raw_spin_lock_irq(&syslog_lock);
++	spin_lock_irq(&syslog_lock);
+ 	latched_seq_write(&clear_seq, prb_next_seq(prb));
+-	raw_spin_unlock_irq(&syslog_lock);
++	spin_unlock_irq(&syslog_lock);
+ }
+ 
+ /* Return a consistent copy of @syslog_seq. */
+@@ -1596,9 +1596,9 @@ static u64 read_syslog_seq_irq(void)
+ {
+ 	u64 seq;
+ 
+-	raw_spin_lock_irq(&syslog_lock);
++	spin_lock_irq(&syslog_lock);
+ 	seq = syslog_seq;
+-	raw_spin_unlock_irq(&syslog_lock);
++	spin_unlock_irq(&syslog_lock);
+ 
+ 	return seq;
+ }
+@@ -1676,10 +1676,10 @@ int do_syslog(int type, char __user *buf, int len, int source)
+ 		break;
+ 	/* Number of chars in the log buffer */
+ 	case SYSLOG_ACTION_SIZE_UNREAD:
+-		raw_spin_lock_irq(&syslog_lock);
++		spin_lock_irq(&syslog_lock);
+ 		if (!prb_read_valid_info(prb, syslog_seq, &info, NULL)) {
+ 			/* No unread messages. */
+-			raw_spin_unlock_irq(&syslog_lock);
++			spin_unlock_irq(&syslog_lock);
+ 			return 0;
+ 		}
+ 		if (info.seq != syslog_seq) {
+@@ -1707,7 +1707,7 @@ int do_syslog(int type, char __user *buf, int len, int source)
+ 			}
+ 			error -= syslog_partial;
+ 		}
+-		raw_spin_unlock_irq(&syslog_lock);
++		spin_unlock_irq(&syslog_lock);
+ 		break;
+ 	/* Size of the log buffer */
+ 	case SYSLOG_ACTION_SIZE_BUFFER:
+@@ -2995,9 +2995,9 @@ void register_console(struct console *newcon)
+ 		exclusive_console_stop_seq = console_seq;
+ 
+ 		/* Get a consistent copy of @syslog_seq. */
+-		raw_spin_lock_irqsave(&syslog_lock, flags);
++		spin_lock_irqsave(&syslog_lock, flags);
+ 		console_seq = syslog_seq;
+-		raw_spin_unlock_irqrestore(&syslog_lock, flags);
++		spin_unlock_irqrestore(&syslog_lock, flags);
+ 	}
+ 	console_unlock();
+ 	console_sysfs_notify();
+-- 
+2.30.2
+

@@ -1,0 +1,78 @@
+From 5009bc3d1b64876d60793894009b5148a5d1f1d6 Mon Sep 17 00:00:00 2001
+From: Valentin Schneider <valentin.schneider@arm.com>
+Date: Fri, 13 Nov 2020 11:24:14 +0000
+Subject: [PATCH 023/296] sched/core: Add missing completion for
+ affine_move_task() waiters
+
+Qian reported that some fuzzer issuing sched_setaffinity() ends up stuck on
+a wait_for_completion(). The problematic pattern seems to be:
+
+  affine_move_task()
+      // task_running() case
+      stop_one_cpu();
+      wait_for_completion(&pending->done);
+
+Combined with, on the stopper side:
+
+  migration_cpu_stop()
+    // Task moved between unlocks and scheduling the stopper
+    task_rq(p) != rq &&
+    // task_running() case
+    dest_cpu >= 0
+
+    => no complete_all()
+
+This can happen with both PREEMPT and !PREEMPT, although !PREEMPT should
+be more likely to see this given the targeted task has a much bigger window
+to block and be woken up elsewhere before the stopper runs.
+
+Make migration_cpu_stop() always look at pending affinity requests; signal
+their completion if the stopper hits a rq mismatch but the task is
+still within its allowed mask. When Migrate-Disable isn't involved, this
+matches the previous set_cpus_allowed_ptr() vs migration_cpu_stop()
+behaviour.
+
+Fixes: 6d337eab041d ("sched: Fix migrate_disable() vs set_cpus_allowed_ptr()")
+Reported-by: Qian Cai <cai@redhat.com>
+Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lore.kernel.org/lkml/8b62fd1ad1b18def27f18e2ee2df3ff5b36d0762.camel@redhat.com
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ kernel/sched/core.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index 4d9dc87252a6..53251dc1c29d 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -1925,7 +1925,7 @@ static int migration_cpu_stop(void *data)
+ 		else
+ 			p->wake_cpu = dest_cpu;
+ 
+-	} else if (dest_cpu < 0) {
++	} else if (dest_cpu < 0 || pending) {
+ 		/*
+ 		 * This happens when we get migrated between migrate_enable()'s
+ 		 * preempt_enable() and scheduling the stopper task. At that
+@@ -1935,6 +1935,17 @@ static int migration_cpu_stop(void *data)
+ 		 * more likely.
+ 		 */
+ 
++		/*
++		 * The task moved before the stopper got to run. We're holding
++		 * ->pi_lock, so the allowed mask is stable - if it got
++		 * somewhere allowed, we're done.
++		 */
++		if (pending && cpumask_test_cpu(task_cpu(p), p->cpus_ptr)) {
++			p->migration_pending = NULL;
++			complete = true;
++			goto out;
++		}
++
+ 		/*
+ 		 * When this was migrate_enable() but we no longer have an
+ 		 * @pending, a concurrent SCA 'fixed' things and we should be
+-- 
+2.30.2
+

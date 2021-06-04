@@ -1,0 +1,47 @@
+From c835b019b90e2500878b1684c18f14d71abfdca4 Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Fri, 8 Jan 2021 19:48:21 +0100
+Subject: [PATCH 286/296] powerpc: Avoid recursive header includes
+
+- The include of bug.h leads to an include of printk.h which gets back
+  to spinlock.h and complains then about missing xchg().
+  Remove bug.h and add bits.h which is needed for BITS_PER_BYTE.
+
+- Avoid the "please don't include this file directly" error from
+  rwlock-rt. Allow an include from/with rtmutex.h.
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/powerpc/include/asm/cmpxchg.h               | 2 +-
+ arch/powerpc/include/asm/simple_spinlock_types.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/powerpc/include/asm/cmpxchg.h b/arch/powerpc/include/asm/cmpxchg.h
+index cf091c4c22e5..7371f7e23c35 100644
+--- a/arch/powerpc/include/asm/cmpxchg.h
++++ b/arch/powerpc/include/asm/cmpxchg.h
+@@ -5,7 +5,7 @@
+ #ifdef __KERNEL__
+ #include <linux/compiler.h>
+ #include <asm/synch.h>
+-#include <linux/bug.h>
++#include <linux/bits.h>
+ 
+ #ifdef __BIG_ENDIAN
+ #define BITOFF_CAL(size, off)	((sizeof(u32) - size - off) * BITS_PER_BYTE)
+diff --git a/arch/powerpc/include/asm/simple_spinlock_types.h b/arch/powerpc/include/asm/simple_spinlock_types.h
+index 0f3cdd8faa95..d45561e9e6ba 100644
+--- a/arch/powerpc/include/asm/simple_spinlock_types.h
++++ b/arch/powerpc/include/asm/simple_spinlock_types.h
+@@ -2,7 +2,7 @@
+ #ifndef _ASM_POWERPC_SIMPLE_SPINLOCK_TYPES_H
+ #define _ASM_POWERPC_SIMPLE_SPINLOCK_TYPES_H
+ 
+-#ifndef __LINUX_SPINLOCK_TYPES_H
++#if !defined(__LINUX_SPINLOCK_TYPES_H) && !defined(__LINUX_RT_MUTEX_H)
+ # error "please don't include this file directly"
+ #endif
+ 
+-- 
+2.30.2
+

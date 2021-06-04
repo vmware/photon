@@ -1,0 +1,70 @@
+From 14c1470acff17ab73bb09bed677c129099a9a0bc Mon Sep 17 00:00:00 2001
+From: Thomas Gleixner <tglx@linutronix.de>
+Date: Tue, 3 Nov 2020 10:27:41 +0100
+Subject: [PATCH 052/296] ARM: mm: Replace kmap_atomic_pfn()
+
+There is no requirement to disable pagefaults and preemption for these
+cache management mappings.
+
+Replace kmap_atomic_pfn() with kmap_local_pfn(). This allows to remove
+kmap_atomic_pfn() in the next step.
+
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Russell King <linux@armlinux.org.uk>
+Cc: linux-arm-kernel@lists.infradead.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ arch/arm/mm/cache-feroceon-l2.c | 6 +++---
+ arch/arm/mm/cache-xsc3l2.c      | 4 ++--
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/arch/arm/mm/cache-feroceon-l2.c b/arch/arm/mm/cache-feroceon-l2.c
+index 5c1b7a7b9af6..87328766e910 100644
+--- a/arch/arm/mm/cache-feroceon-l2.c
++++ b/arch/arm/mm/cache-feroceon-l2.c
+@@ -49,9 +49,9 @@ static inline unsigned long l2_get_va(unsigned long paddr)
+ 	 * we simply install a virtual mapping for it only for the
+ 	 * TLB lookup to occur, hence no need to flush the untouched
+ 	 * memory mapping afterwards (note: a cache flush may happen
+-	 * in some circumstances depending on the path taken in kunmap_atomic).
++	 * in some circumstances depending on the path taken in kunmap_local).
+ 	 */
+-	void *vaddr = kmap_atomic_pfn(paddr >> PAGE_SHIFT);
++	void *vaddr = kmap_local_pfn(paddr >> PAGE_SHIFT);
+ 	return (unsigned long)vaddr + (paddr & ~PAGE_MASK);
+ #else
+ 	return __phys_to_virt(paddr);
+@@ -61,7 +61,7 @@ static inline unsigned long l2_get_va(unsigned long paddr)
+ static inline void l2_put_va(unsigned long vaddr)
+ {
+ #ifdef CONFIG_HIGHMEM
+-	kunmap_atomic((void *)vaddr);
++	kunmap_local((void *)vaddr);
+ #endif
+ }
+ 
+diff --git a/arch/arm/mm/cache-xsc3l2.c b/arch/arm/mm/cache-xsc3l2.c
+index d20d7af02d10..0e0a3abd8174 100644
+--- a/arch/arm/mm/cache-xsc3l2.c
++++ b/arch/arm/mm/cache-xsc3l2.c
+@@ -59,7 +59,7 @@ static inline void l2_unmap_va(unsigned long va)
+ {
+ #ifdef CONFIG_HIGHMEM
+ 	if (va != -1)
+-		kunmap_atomic((void *)va);
++		kunmap_local((void *)va);
+ #endif
+ }
+ 
+@@ -75,7 +75,7 @@ static inline unsigned long l2_map_va(unsigned long pa, unsigned long prev_va)
+ 		 * in place for it.
+ 		 */
+ 		l2_unmap_va(prev_va);
+-		va = (unsigned long)kmap_atomic_pfn(pa >> PAGE_SHIFT);
++		va = (unsigned long)kmap_local_pfn(pa >> PAGE_SHIFT);
+ 	}
+ 	return va + (pa_offset >> (32 - PAGE_SHIFT));
+ #else
+-- 
+2.30.2
+
