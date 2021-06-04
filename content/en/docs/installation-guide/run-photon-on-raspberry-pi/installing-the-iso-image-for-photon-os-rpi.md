@@ -1,4 +1,4 @@
----
+	---
 title:  Installing Photon OS on Raspberry Pi 
 weight: 2
 ---
@@ -9,7 +9,7 @@ You can get Photon OS up and running on an RPi board, by flashing the Photon RPi
 
 ## Flash Photon OS on Raspberry Pi 
 
-After you have downloaded the Photon RPi image with the file extension `.raw.xz`, you can choose one of the methods below to flash it onto the RPi SD card.
+After you have downloaded the Photon RPi image with the file extension `*.raw.xz`, decompress the file to `*.raw` and then you can choose one of the methods below to flash it onto the RPi SD card.
 
 
 1. Flash Photon to RPi using Etcher

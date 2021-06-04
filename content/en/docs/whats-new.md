@@ -20,11 +20,17 @@ Photon OS 4.0  provides support for the Real Time flavor of kernel linux-rt, SEL
 
 - In `tdnf`, support is added for the following:
 
-1. Validation of externally configured GPGkeys
-2. `tdnf-automatic` to allow administrators to configure systems to automatically download and perform updates without manual intervention
-3. Metalink in the `tdnf` repositories allows configuration of multiple mirrors to download the repository data
-4. Local and remote URL package installation
-5. SSL Options 
+	1. Validation of externally configured GPGkeys
+	2. `tdnf-automatic` to allow administrators to configure systems to automatically download and perform updates without manual intervention
+	3. Metalink in the `tdnf` repositories allows configuration of multiple mirrors to download the repository data
+	4. Local and remote URL package installation
+	5. SSL Options 
+
+- The performance of the `makecache` command in `tdnf` is improved in Photon OS 4.0. To improve the performance of the `makecache` command, the update RPM repository is split into the following repositories for both the architectures:
+	1. photon_updates_4.0_<architecture>
+	2. photon_4.0_<architecture>
+
+  photon_updates_4.0_<architecture> repository contains all the latest versions of the updated RPMs and is enabled by default. photon_4.0_<architecture> contains all the previous versions of the updated RPMs and is disabled by default. The users can enable this repository by specifying the `enablerepo` option in `tdnf` command if they wish to consume a previous version.
 
 ### Installer and Build System Updates
 
