@@ -43,7 +43,7 @@
 &lt;/ol></description></item><item><title>Docs: Installing Photon OS on Raspberry Pi</title><link>/docs/installation-guide/run-photon-on-raspberry-pi/installing-the-iso-image-for-photon-os-rpi/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/installation-guide/run-photon-on-raspberry-pi/installing-the-iso-image-for-photon-os-rpi/</guid><description>
 &lt;p>You can get Photon OS up and running on an RPi board, by flashing the Photon RPi image onto the board&amp;rsquo;s SD card.&lt;/p>
 &lt;h2 id="flash-photon-os-on-raspberry-pi">Flash Photon OS on Raspberry Pi&lt;/h2>
-&lt;p>After you have downloaded the Photon RPi image with the file extension &lt;code>.raw.xz&lt;/code>, you can choose one of the methods below to flash it onto the RPi SD card.&lt;/p>
+&lt;p>After you have downloaded the Photon RPi image with the file extension &lt;code>*.raw.xz&lt;/code>, decompress the file to &lt;code>*.raw&lt;/code> and then you can choose one of the methods below to flash it onto the RPi SD card.&lt;/p>
 &lt;ol>
 &lt;li>Flash Photon to RPi using Etcher&lt;/li>
 &lt;li>Flash Photon to RPi using Linux CLI&lt;/li>

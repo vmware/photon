@@ -186,6 +186,33 @@ jbd2/sda1 99 root txt unknown /proc/99/exe
 &lt;p>&lt;code>e2fsck -y /dev/sda2&lt;/code>&lt;/p>
 &lt;/li>
 &lt;li>
+&lt;p>Restart the virtual machine.
+If the virtual machine fails to boot and finds any error then follow the steps below to recover.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Log in to the root shell:
+Command&amp;gt;shell
+root@vc701-w4#&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>To know about the error, execute the following command:
+&lt;code>journalctl -b 0 | grep -i “failed to start”&lt;/code>&lt;/p>
+&lt;p>Below is output of above command:
+&lt;img src="../../../docs/images/fsck-fails" alt="Output for the journalctl -b 0 | grep -i “failed to start” command">&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Referring to the &lt;code>Failed to start the file system check on /dev/log_vg/log&lt;/code> error in the screenshot above, if the partition type is logical volume, then the device mapper modules create a device-special file &lt;code>/dev/dm-X&lt;/code> to which symbolic links with the original names points to &lt;code>/dev/mapper/log_vg-log or /dev/log_vg/log&lt;/code>. Here &lt;code>log_vg&lt;/code> is volume group and &lt;code>log&lt;/code> is logical volume name.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Execute the &lt;code>lsblk&lt;/code> command to confirm the device type.
+Below is the output of &lt;code>lsblk&lt;/code> command. Here &lt;code>log_vg-log&lt;/code> is associated with the device &lt;code>sde&lt;/code> and type &lt;code>lvm&lt;/code>. Also, note that it is not mounted.
+&lt;img src="../../../docs/images/lsblk-command" alt="lsblk command output">&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Execute the following command to fix the file system errors:
+&lt;code>e2fsck /dev/log_vg/log&lt;/code>&lt;/p>
+&lt;/li>
+&lt;li>
 &lt;p>Restart the virtual machine.&lt;/p>
 &lt;/li>
 &lt;/ol></description></item></channel></rss>
