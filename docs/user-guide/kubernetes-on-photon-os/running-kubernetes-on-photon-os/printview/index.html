@@ -68,6 +68,10 @@ photon-node         name=photon-node-label     Unknown
 
 <span style=color:#8f5902;font-style:italic># Add your own</span>
 <span style=color:#8f5902;font-style:italic>#KUBELET_ARGS=&#34;&#34;</span>
+</code></pre></div></li><li><p>Make sure that the api-server end-point located in /etc/kubernetes/kubeconfig, targets the api-server in the master node and does not fall into the loopback interface:</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh>apiVersion: v1
+clusters:
+- cluster:
+    server: &lt;ip_master_node&gt;:8080
 </code></pre></div></li><li><p>Start the appropriate services on the node (photon-node):</p><div class=highlight><pre style=background-color:#f8f8f8;-moz-tab-size:4;-o-tab-size:4;tab-size:4><code class=language-sh data-lang=sh><span style=color:#204a87;font-weight:700>for</span> SERVICES in kube-proxy kubelet docker<span style=color:#000;font-weight:700>;</span> <span style=color:#204a87;font-weight:700>do</span> 
     systemctl restart <span style=color:#000>$SERVICES</span>
     systemctl <span style=color:#204a87>enable</span> <span style=color:#000>$SERVICES</span>
