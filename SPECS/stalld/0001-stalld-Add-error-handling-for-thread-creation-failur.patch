@@ -1,0 +1,110 @@
+From ad1e4e0523fee87bb450101d2aa280b7bd1be0aa Mon Sep 17 00:00:00 2001
+From: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Date: Wed, 2 Jun 2021 18:59:31 -0700
+Subject: [PATCH] stalld: Add error handling for thread creation failure
+
+stalld creates a separate monitoring thread for every CPU that needs
+to be monitored for starvation (in aggressive mode) or every CPU that
+is about to have starving tasks (in conservative mode).  However, in
+both cases, the return value of pthread_create() is not checked for
+errors, which means that if thread creation fails (due to temporary
+resource constraints, for instance), then stalld will be unaware of
+the problem and those corresponding CPUs will go unmonitored,
+potentially leading to starvation and system hangs.
+
+Fix this by checking the return value of pthread_create() and retry if
+the error code was EAGAIN, and report the issue otherwise. Thread
+creation failure is catastrophic enough that we need to abort stalld
+in case of a persistent failure, because the threads also handle
+priority-boosting for starved tasks (so, stalld cannot function without
+them).
+
+Signed-off-by: Him Kalyan Bordoloi <bordoloih@vmware.com>
+[ Srivatsa: Added commit message ]
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ src/stalld.c | 32 ++++++++++++++++++++++++++++++--
+ 1 file changed, 30 insertions(+), 2 deletions(-)
+
+diff --git a/src/stalld.c b/src/stalld.c
+index a236706..9e215ec 100644
+--- a/src/stalld.c
++++ b/src/stalld.c
+@@ -1081,6 +1081,9 @@ void *cpu_main(void *data)
+ 	int nothing_to_do = 0;
+ 	int retval;
+ 
++	if (config_verbose)
++		log_msg("Started monitoring thread for CPU %d\n", cpu->id);
++
+ 	while (cpu->thread_running && running) {
+ 
+ 		int old_config_buffer_size;
+@@ -1160,6 +1163,8 @@ void *cpu_main(void *data)
+ 		 */
+ 		if (!config_aggressive && nothing_to_do == 10) {
+ 			cpu->thread_running=0;
++			if (config_verbose)
++				log_msg("Monitoring thread for CPU %d is about to exit due to inactivity\n", cpu->id);
+ 			pthread_exit(NULL);
+ 		}
+ 
+@@ -1181,6 +1186,8 @@ static const char *join_thread(pthread_t *thread)
+ void aggressive_main(struct cpu_info *cpus, int nr_cpus)
+ {
+ 	int i;
++	int retval;
++	int retry, retry_count = 3;
+ 
+ 	for (i = 0; i < nr_cpus; i++) {
+ 		if (!should_monitor(i))
+@@ -1188,7 +1195,17 @@ void aggressive_main(struct cpu_info *cpus, int nr_cpus)
+ 
+ 		cpus[i].id = i;
+ 		cpus[i].thread_running = 1;
+-		pthread_create(&cpus[i].thread, NULL, cpu_main, &cpus[i]);
++
++		for (retry = 0; retry < retry_count; retry++) {
++			retval = pthread_create(&cpus[i].thread, NULL, cpu_main, &cpus[i]);
++			if (!retval)
++				break;
++			if (retval != EAGAIN || retry == retry_count - 1) {
++				cpus[i].thread_running = 0;
++				die("Failed to create thread for CPU %d error = %d\n", i, retval);
++				break;
++			}
++		}
+ 	}
+ 
+ 	for (i = 0; i < nr_cpus; i++) {
+@@ -1205,7 +1222,9 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+ 	struct cpu_info *cpu;
+ 	char *buffer = NULL;
+ 	int buffer_size = 0;
++	int retry_count = 3;
+ 	int retval;
++	int retry;
+ 	int i;
+ 
+ 	buffer = malloc(config_buffer_size);
+@@ -1285,7 +1304,16 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+ 			if (check_might_starve_tasks(cpu)) {
+ 				cpus[i].id = i;
+ 				cpus[i].thread_running = 1;
+-				pthread_create(&cpus[i].thread, &dettached, cpu_main, &cpus[i]);
++				for (retry = 0; retry < retry_count; retry++) {
++					retval = pthread_create(&cpus[i].thread, &dettached, cpu_main, &cpus[i]);
++					if (!retval)
++						break;
++					if (retval != EAGAIN || retry == retry_count - 1) {
++						cpus[i].thread_running = 0;
++						die("Failed to create thread for CPU %d error = %d\n", i, retval);
++						break;
++					}
++				}
+ 			}
+ 		}
+ 
+-- 
+2.25.1
+
