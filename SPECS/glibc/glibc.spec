@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -28,6 +28,9 @@ Patch10:        glibc-fix-CVE-2019-7309.patch
 Patch11:        CVE-2019-25013.patch
 Patch12:        CVE-2021-3326.patch
 Patch13:        CVE-2020-27618.patch
+Patch14:        0001-nptl-Add-__pthread_attr_copy-for-copying-pthread_att.patch
+Patch15:        0001-CVE-2021-33574.patch
+Patch16:        0002-CVE-2021-33574.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -95,6 +98,10 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch11 -p1
 %patch12 -p1
 %patch13 -p1
+%patch14 -p1
+%patch15 -p1
+%patch16 -p1
+
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -298,6 +305,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Thu Jun 03 2021 Ajay Kaher <akaher@vmware.com> 2.28-13
+-   Fix CVE-2021-33574
 *   Thu Mar 11 2021 Keerthana K <keerthanak@vmware.com> 2.28-12
 -   Fix CVE-2020-27618.
 *   Mon Feb 08 2021 Ajay Kaher <akaher@vmware.com> 2.28-11
