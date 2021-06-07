@@ -1,33 +1,38 @@
-Summary:        Database servers made by the original developers of MySQL.
-Name:           mariadb
-Version:        10.2.38
-Release:        1%{?dist}
-License:        GPLv2
-Group:          Applications/Databases
-Vendor:         VMware, Inc.
-Distribution:   Photon
-Url:            https://mariadb.org/
-Source0:        http://mirrors.nodesdirect.com/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define         sha1 mariadb=51f23e93c6998ee7bff8ef92ea6462413d21b56b
+Summary:          Database servers made by the original developers of MySQL.
+Name:             mariadb
+Version:          10.2.38
+Release:          2%{?dist}
+License:          GPLv2
+Group:            Applications/Databases
+Vendor:           VMware, Inc.
+Distribution:     Photon
+Url:              https://mariadb.org/
+Source0:          http://mirrors.nodesdirect.com/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
+%define           sha1 mariadb=51f23e93c6998ee7bff8ef92ea6462413d21b56b
+BuildRequires:    cmake
+BuildRequires:    Linux-PAM-devel
+BuildRequires:    openssl-devel
+BuildRequires:    zlib-devel
+BuildRequires:    krb5-devel
+BuildRequires:    e2fsprogs-devel
+BuildRequires:    systemd-devel
+BuildRequires:    curl-devel
+BuildRequires:    libxml2-devel
+Conflicts:        mysql
 
-BuildRequires:  cmake
-BuildRequires:  Linux-PAM-devel
-BuildRequires:  openssl-devel
-BuildRequires:  zlib-devel
-BuildRequires:  krb5-devel
-BuildRequires:  e2fsprogs-devel
-BuildRequires:  systemd-devel
-BuildRequires:  curl-devel
-BuildRequires:  libxml2-devel
-Conflicts:      mysql
 %description
-MariaDB Server is one of the most popular database servers in the world. It’s made by the original developers of MySQL and guaranteed to stay open source. Notable users include Wikipedia, WordPress.com and Google.
-
-MariaDB turns data into structured information in a wide array of applications, ranging from banking to websites. It is an enhanced, drop-in replacement for MySQL. MariaDB is used because it is fast, scalable and robust, with a rich ecosystem of storage engines, plugins and many other tools make it very versatile for a wide variety of use cases.
+MariaDB Server is one of the most popular database servers in the world.
+It’s made by the original developers of MySQL and guaranteed to stay open source.
+Notable users include Wikipedia, WordPress.com and Google.
+MariaDB turns data into structured information in a wide array of applications, ranging from banking to websites.
+It is an enhanced, drop-in replacement for MySQL.
+MariaDB is used because it is fast, scalable and robust, with a rich ecosystem of storage engines,
+plugins and many other tools make it very versatile for a wide variety of use cases.
 
 %package          server
 Summary:          MariaDB server
 Requires:         %{name}-errmsg = %{version}-%{release}
+Requires:         shadow
 %description      server
 The MariaDB server and related files
 
@@ -43,7 +48,7 @@ MariaDB Galera Cluster is a synchronous multi-master cluster for MariaDB. It is 
 Summary:          Development headers for mariadb
 Requires:         %{name} = %{version}-%{release}
 
-%description devel
+%description      devel
 Development headers for developing applications linking to maridb
 
 %package          errmsg
@@ -59,7 +64,6 @@ rm -rf storage/tokudb/PerconaFT
 
 %build
 mkdir build && cd build
-
 cmake -DCMAKE_BUILD_TYPE=Release                        \
       -DCMAKE_INSTALL_PREFIX=/usr                       \
       -DINSTALL_DOCDIR=share/doc/mariadb-10.2.8         \
@@ -82,11 +86,11 @@ cmake -DCMAKE_BUILD_TYPE=Release                        \
       -DTOKUDB_OK=0                                     \
       ..
 make
+
 %install
 cd build
 make DESTDIR=%{buildroot} install
 mkdir -p %{buildroot}/%{_libdir}/systemd/system
-
 mv  %{buildroot}/usr/share/systemd/mariadb.service %{buildroot}/%{_libdir}/systemd/system/mariadb.service
 mv  %{buildroot}/usr/share/systemd/mariadb@.service %{buildroot}/%{_libdir}/systemd/system/mariadb@.service
 rm %{buildroot}/%{_sbindir}/rcmysql
@@ -107,6 +111,7 @@ if [ $1 -eq 1 ] ; then
     getent group  mysql  >/dev/null || groupadd -r mysql
     getent passwd mysql  >/dev/null || useradd  -c "mysql" -s /bin/false -g mysql -M -r mysql
 fi
+
 %post server
 /sbin/ldconfig
 chown  mysql:mysql %{_var}/lib/mysql || :
@@ -198,7 +203,6 @@ rm -rf %{buildroot}
 %{_datadir}/pam_user_map.so
 %{_datadir}/user_map.conf
 %doc COPYING CREDITS
-
 %exclude /usr/share/mysql/bench
 %exclude /usr/share/mysql/test
 %exclude /usr/data/test/db.opt
@@ -312,8 +316,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/mysql_performance_tables.sql
 %{_datadir}/mysql/mysql_system_tables.sql
 %{_datadir}/mysql/mysql_system_tables_data.sql
-%{_datadir}/mysql/mysql_test_db.sql
 %{_datadir}/mysql/mysql_test_data_timezone.sql
+%{_datadir}/mysql/mysql_test_db.sql
 %{_datadir}/mysql/mroonga/AUTHORS
 %{_datadir}/mysql/mroonga/COPYING
 %{_datadir}/groonga-normalizer-mysql/README.md
@@ -364,6 +368,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Mon Jun 7 2021 Michelle Wang <michellew@vmware.com> 10.2.38-2
+-   Add shadow as requires for mariadb-server.
 *   Mon May 31 2021 Dweep Advani <dadvani@vmware.com> 10.2.38-1
 -   Upgrade to 10.2.38 to address CVE-2021-27928
 *   Wed Jan 23 2019 Ajay Kaher <akaher@vmware.com> 10.2.14-2
