@@ -1,0 +1,157 @@
+From 8bf006ce21f16e182fcf76daab2269feb148b269 Mon Sep 17 00:00:00 2001
+From: Vikash Bansal <bvikas@vmware.com>
+Date: Wed, 26 May 2021 21:22:19 +0000
+Subject: [PATCH] stalld: Detect D state processes and log their stack traces
+
+Detect processes found in D state (uninterruptible sleep) under
+/proc/sched_debug and log their stack traces.
+
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ src/stalld.c | 107 ++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 105 insertions(+), 2 deletions(-)
+
+diff --git a/src/stalld.c b/src/stalld.c
+index 9e215ec..22d1d7a 100644
+--- a/src/stalld.c
++++ b/src/stalld.c
+@@ -378,7 +378,7 @@ int detect_task_format(void)
+  * '-----------------------------------------------------------------------------------------------------------'
+  * ' I         rcu_gp     3        13.973264         2   100         0.000000         0.004469         0.000000 0 0 /
+  */
+-int parse_new_task_format(char *buffer, struct task_info *task_info, int nr_entries)
++int parse_new_task_format(char *buffer, struct task_info *task_info, int nr_entries, int cpu_id)
+ {
+ 	struct task_info *task;
+ 	char *start = buffer;
+@@ -386,6 +386,106 @@ int parse_new_task_format(char *buffer, struct task_info *task_info, int nr_entr
+ 	int comm_size;
+ 	char *end;
+ 
++	while (1) {
++		int pid;
++		char dump_path[30];
++		FILE *fp;
++		char str[100];
++		char comm[COMM_SIZE + 1];
++		char state;
++		struct task_info task;
++
++		/*
++		 * Getting information about tasks in D state
++		 */
++		start = strstr(start, "\n D");
++
++		/*
++		 * if no match then there are no D state tasks
++		 */
++		if (!start) {
++			break;
++		}
++
++		/*
++		 * Save the state
++		 */
++		state = start[2];
++
++		/*
++		 * Skip '\n D'
++		 */
++		start = &start[3];
++
++		/*
++		 * skip the spaces.
++		 */
++		start = skipspaces(start);
++
++		/*
++		 * find the end of the string
++		 */
++		end = skipchars(start);
++
++		comm_size = end - start;
++
++		if (comm_size > COMM_SIZE) {
++			warn("comm_size is too large: %d\n", comm_size);
++			comm_size = COMM_SIZE;
++		}
++
++		strncpy(comm, start, comm_size);
++
++		comm[comm_size] = '\0';
++
++		/*
++		 * go to the end of the task comm
++		 */
++		start=end;
++
++		pid = strtol(start, &end, 10);
++
++		sprintf(dump_path, "/proc/%d/stack",pid);
++		fp = fopen(dump_path, "r");
++		if (fp == NULL){
++			warn("Could not open file %s",dump_path);
++			break;
++		}
++
++		log_msg("Stalld DEBUG: Dumping Stack for %s(PID = %d CPU = %d state = %c)\n", comm, pid, cpu_id, state);
++		while (fgets(str, 100, fp) != NULL) {
++			log_msg("%s",str);
++		}
++		fclose(fp);
++
++		/*
++		 * --go to the end of the pid
++		 */
++		start=end;
++
++		/*
++		 * skip the tree-key
++		 */
++		start = skipspaces(start);
++		start = skipchars(start);
++
++		task.ctxsw = strtol(start, &end, 10);
++
++		start = end;
++
++		task.prio = strtol(start, &end, 10);
++
++		task.since = time(NULL);
++
++		/*
++		 * go to the end and try to find the next occurence.
++		 */
++		start = end;
++
++		tasks++;
++	}
++
++
+ 	/*
+ 	 * if we have less than two tasks on the cpu
+ 	 * there is no possibility of a stall
+@@ -393,6 +493,9 @@ int parse_new_task_format(char *buffer, struct task_info *task_info, int nr_entr
+ 	if (nr_entries < 2)
+ 		return 0;
+ 
++	tasks = 0;
++	start = buffer;
++
+ 	while (tasks < nr_entries) {
+ 		task = &task_info[tasks];
+ 
+@@ -675,7 +778,7 @@ int fill_waiting_task(char *buffer, struct cpu_info *cpu_info, int nr_entries)
+ 			warn("fill_waiting_task: failed to malloc %d task_info structs", cpu_info->nr_running);
+ 			return 0;
+ 		}
+-		nr_waiting = parse_new_task_format(buffer, cpu_info->starving, nr_entries);
++		nr_waiting = parse_new_task_format(buffer, cpu_info->starving, nr_entries, cpu_info->id);
+ 		break;
+ 	case OLD_TASK_FORMAT:
+ 		/* count the number of tasks listed */
+-- 
+2.25.1
+
