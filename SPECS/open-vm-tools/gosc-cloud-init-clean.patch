@@ -1,0 +1,26 @@
+From df12476731b2a94dee994cdb8a9f86409113723c Mon Sep 17 00:00:00 2001
+From: bla <bla>
+Date: Mon, 1 Mar 2021 13:51:52 +0530
+Subject: [PATCH] cloud-init clean not avaialble in v0.7.9, so use rm instead
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ gosc-scripts/PhotonCustomization.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/gosc-scripts/PhotonCustomization.sh b/gosc-scripts/PhotonCustomization.sh
+index 1887db5..b9b81a6 100644
+--- a/gosc-scripts/PhotonCustomization.sh
++++ b/gosc-scripts/PhotonCustomization.sh
+@@ -80,7 +80,7 @@ RunCloudConfig()
+   fi
+
+   sleep 2
+-  cloud-init clean -s
++  rm -rf /var/lib/cloud/instance* /var/lib/cloud/seed
+
+   GenerateCloudInitConfig content "GetInterfaceByMacAddressIPAddrShow" $tmpOvfEnvFile
+   # Once the cloud-config file been generated, remove the existing network config files.
+--
+2.23.3
+

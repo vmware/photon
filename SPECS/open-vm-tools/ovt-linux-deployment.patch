@@ -1,0 +1,50 @@
+diff --git a/open-vm-tools/libDeployPkg/linuxDeployment.c b/open-vm-tools/libDeployPkg/linuxDeployment.c
+index d5652655..65116e0e 100644
+--- a/open-vm-tools/libDeployPkg/linuxDeployment.c
++++ b/open-vm-tools/libDeployPkg/linuxDeployment.c
+@@ -659,13 +659,14 @@ GetPackageInfo(const char* packageName,
+    close(fd);
+ 
+    // Create space and copy the command
+-   *command = malloc(VMWAREDEPLOYPKG_CMD_LENGTH);
++   *command = calloc(VMWAREDEPLOYPKG_CMD_LENGTH + 1, 1);
+    if (*command == NULL) {
+       SetDeployError("Error allocating memory.");
+       return FALSE;
+    }
+ 
+-   memcpy(*command, hdr.command, VMWAREDEPLOYPKG_CMD_LENGTH);
++   strncpy(*command, hdr.command, VMWAREDEPLOYPKG_CMD_LENGTH);
++
+    *archiveType = hdr.payloadType;
+    *flags = hdr.reserved;
+ 
+@@ -1373,6 +1374,28 @@ Deploy(const char* packageName)
+       free(command);
+       deployPkgStatus = CloudInitSetup(imcDirPath);
+    } else {
++       if (strstr(command, "scripts/Customize.pl") ||
++            strstr(command, "scripts/customize.sh")) {
++
++           char photon_gosc[256] = {0};
++
++           free(command);
++           command = NULL;
++
++           snprintf(photon_gosc, sizeof(photon_gosc),
++                   "/bin/bash /usr/share/open-vm-tools/gosc-scripts/customize.sh %s/cust.cfg",
++                   imcDirPath);
++
++           // The command will be parsed alter and can be of arbitrary length
++           command = strdup(photon_gosc);
++           if (!command) {
++               SetDeployError("Error allocating memory in photon_gosc\n");
++               return DEPLOYPKG_STATUS_ERROR;
++           }
++
++           _DeployPkg_SkipReboot(true);
++       }
++
+       sLog(log_info, "Executing traditional GOSC workflow.");
+       deploymentResult = ForkExecAndWaitCommand(command, false);
+       free(command);
