@@ -1,0 +1,166 @@
+From 74cbbfa02d20f1432ce046848ae47eb8078578c9 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Mon, 7 Jun 2021 11:45:50 +0530
+Subject: [PATCH] nptl: Add __pthread_attr_copy for copying pthread_attr_t
+ objects
+
+Also add the private type union pthread_attr_transparent, to reduce
+the amount of casting that is required.
+
+Reviewed-by: Carlos O'Donell <carlos@redhat.com>
+Tested-by: Carlos O'Donell <carlos@redhat.com>
+
+[Ajay: Regenerated the patch for v2.26
+       fix compilation issues]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ nptl/Makefile                |  2 +-
+ nptl/Versions                |  3 +++
+ nptl/forward.c               |  2 --
+ nptl/pthreadP.h              |  6 +++++
+ nptl/pthread_attr_copy.c     | 57 ++++++++++++++++++++++++++++++++++++++++++++
+ sysdeps/nptl/internaltypes.h |  7 ++++++
+ 6 files changed, 74 insertions(+), 3 deletions(-)
+ create mode 100644 nptl/pthread_attr_copy.c
+
+diff --git a/nptl/Makefile b/nptl/Makefile
+index 5cb1bb2..bf53db6 100644
+--- a/nptl/Makefile
++++ b/nptl/Makefile
+@@ -30,7 +30,7 @@ install-lib-ldscripts := libpthread.so
+ 
+ routines = alloca_cutoff forward libc-lowlevellock libc-cancellation \
+ 	   libc-cleanup libc_pthread_init libc_multiple_threads \
+-	   register-atfork unregister-atfork
++	   register-atfork unregister-atfork pthread_attr_destroy pthread_attr_copy pthread_attr_setaffinity
+ shared-only-routines = forward
+ 
+ # We need to provide certain routines for compatibility with existing
+diff --git a/nptl/Versions b/nptl/Versions
+index 0ae5def..3fe1dcb 100644
+--- a/nptl/Versions
++++ b/nptl/Versions
+@@ -36,6 +36,9 @@ libc {
+     __libc_pthread_init;
+     __libc_current_sigrtmin_private; __libc_current_sigrtmax_private;
+     __libc_allocate_rtsig_private;
++    pthread_attr_setaffinity_np;
++    __pthread_attr_destroy;
++    __pthread_attr_copy;
+   }
+ }
+ 
+diff --git a/nptl/forward.c b/nptl/forward.c
+index ac96765..61b98c9 100644
+--- a/nptl/forward.c
++++ b/nptl/forward.c
+@@ -56,8 +56,6 @@ name decl								      \
+   FORWARD2 (name, int, decl, params, return defretval)
+ 
+ 
+-FORWARD (pthread_attr_destroy, (pthread_attr_t *attr), (attr), 0)
+-
+ #if SHLIB_COMPAT(libc, GLIBC_2_0, GLIBC_2_1)
+ FORWARD (__pthread_attr_init_2_0, (pthread_attr_t *attr), (attr), 0)
+ compat_symbol (libc, __pthread_attr_init_2_0, pthread_attr_init, GLIBC_2_0);
+diff --git a/nptl/pthreadP.h b/nptl/pthreadP.h
+index 6e7d6ff..6359735 100644
+--- a/nptl/pthreadP.h
++++ b/nptl/pthreadP.h
+@@ -612,6 +612,12 @@ extern void __wait_lookup_done (void) attribute_hidden;
+ # define PTHREAD_STATIC_FN_REQUIRE(name) __asm (".globl " #name);
+ #endif
+ 
++/* Make a deep copy of the attribute *SOURCE in *TARGET.  *TARGET is
++   not assumed to have been initialized.  Returns 0 on success, or a
++   positive error code otherwise.  */
++int __pthread_attr_copy (pthread_attr_t *target, const pthread_attr_t *source);
++libc_hidden_proto (__pthread_attr_copy)
++
+ /* Returns 0 if POL is a valid scheduling policy.  */
+ static inline int
+ check_sched_policy_attr (int pol)
+diff --git a/nptl/pthread_attr_copy.c b/nptl/pthread_attr_copy.c
+new file mode 100644
+index 0000000..d8e01fa
+--- /dev/null
++++ b/nptl/pthread_attr_copy.c
+@@ -0,0 +1,57 @@
++/* Deep copy of a pthread_attr_t object.
++   Copyright (C) 2020 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <https://www.gnu.org/licenses/>.  */
++
++#include <errno.h>
++#include <pthreadP.h>
++#include <stdlib.h>
++
++int
++__pthread_attr_copy (pthread_attr_t *target, const pthread_attr_t *source)
++{
++  /* Avoid overwriting *TARGET until all allocations have
++     succeeded.  */
++  union pthread_attr_transparent temp;
++  temp.external = *source;
++
++  /* Force new allocation.  This function has full ownership of temp.  */
++  temp.internal.cpuset = NULL;
++  temp.internal.cpusetsize = 0;
++
++  int ret = 0;
++
++  struct pthread_attr *isource = (struct pthread_attr *) source;
++
++  /* Propagate affinity mask information.  */
++  if (isource->cpusetsize > 0)
++    ret = pthread_attr_setaffinity_np (&temp.external,
++                                         isource->cpusetsize,
++                                         isource->cpuset);
++
++  if (ret != 0)
++    {
++      /* Deallocate because we have ownership.  */
++      __pthread_attr_destroy (&temp.external);
++      return ret;
++    }
++
++  /* Transfer ownership.  *target is not assumed to have been
++     initialized.  */
++  *target = temp.external;
++  return 0;
++}
++libc_hidden_def (__pthread_attr_copy)
+diff --git a/sysdeps/nptl/internaltypes.h b/sysdeps/nptl/internaltypes.h
+index 5be9d98..e91bea9 100644
+--- a/sysdeps/nptl/internaltypes.h
++++ b/sysdeps/nptl/internaltypes.h
+@@ -49,6 +49,13 @@ struct pthread_attr
+ #define ATTR_FLAG_SCHED_SET		0x0020
+ #define ATTR_FLAG_POLICY_SET		0x0040
+ 
++/* Used to allocate a pthread_attr_t object which is also accessed
++   internally.  */
++union pthread_attr_transparent
++{
++  pthread_attr_t external;
++  struct pthread_attr internal;
++};
+ 
+ /* Mutex attribute data structure.  */
+ struct pthread_mutexattr
+-- 
+2.7.4
+
