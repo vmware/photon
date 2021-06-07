@@ -1,13 +1,13 @@
 Summary:        VerneMQ is a high-performance, distributed MQTT message broker
 Name:           vernemq
-Version:        1.11.0
+Version:        1.12.0
 Release:        1%{?dist}
 License:        Apache License, Version 2.0
 URL:            https://github.com/vernemq/vernemq
 Source0:        https://github.com/%{name}/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1    vernemq=c046b71b9106cd51ccf0a1f0f82209b459059a30
+%define sha1    vernemq=2983c3f1b92080e49467bb32b46b725df3e59c90
 Source1:        %{name}_vendor-%{version}.tar.gz
-%define sha1    vernemq_vendor=5dc12229fbcc8bc26b18943df4935a2c521428d5
+%define sha1    vernemq_vendor=8b07a79948f99d34f2f58723931745ea7ac839ea
 Source2:        vars.config
 Source3:        vernemq.service
 Patch0:         local_version.patch
@@ -20,11 +20,14 @@ BuildArch:      x86_64
 BuildRequires:  erlang
 BuildRequires:  which
 BuildRequires:  make
+BuildRequires:  libstdc++-devel
 BuildRequires:  snappy-devel
 BuildRequires:  systemd
 Requires:       snappy
 Requires:       libstdc++
 Requires:       systemd
+Requires:       openssl
+Requires:       ncurses
 
 %description
 A high-performance, distributed MQTT message broker.
@@ -38,10 +41,6 @@ A high-performance, distributed MQTT message broker.
 LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 mv ../%{name}_vendor-%{version}/_checkouts _checkouts
 cp %{SOURCE2} ./vars.config
-mkdir -p _build/default/lib
-ln -s ../../../_checkouts/cuttlefish _build/default/lib/cuttlefish
-ln -s ../../../_checkouts/riak_sysmon _build/default/lib/riak_sysmon
-ln -s ../../../_checkouts/eleveldb _build/default/lib/eleveldb
 make rel
 
 %install
@@ -109,5 +108,7 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %changelog
+*   Wed Jun 09 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.12.0-1
+-   Upgrade to 1.12.0 version
 *   Sun Feb 28 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.11.0-1
 -   Initial build. First version
