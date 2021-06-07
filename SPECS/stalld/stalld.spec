@@ -1,7 +1,7 @@
 Summary:        Daemon that finds starving tasks in the system and gives them a temporary boost
 Name:           stalld
 Version:        1.3.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 Group:          System/Tools
 URL:            https://git.kernel.org/pub/scm/utils/stalld/stalld.git
@@ -19,6 +19,7 @@ BuildRequires:  systemd
 Requires:       systemd
 Patch0:         0001-Support-denylisting-of-tasks-in-stalld.patch
 Patch1:         0001-stalld-Fix-for-failed-to-parse-cpu-info-warning.patch
+Patch2:         0001-stalld-Add-error-handling-for-thread-creation-failur.patch
 %description
 The stalld program monitors the set of system threads, looking for
 threads that are ready-to-run but have not been given CPU time for
@@ -30,6 +31,7 @@ such stalled threads is configurable by the user.
 %setup
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 make %{?_smp_mflags}
@@ -64,6 +66,8 @@ rm -rf %{buildroot}
 %license %{_datadir}/licenses/%{name}/gpl-2.0.txt
 
 %changelog
+* Mon Jun 28 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.3.0-4
+- Add error handling for thread creation failure.
 * Wed Mar 03 2021 Vikash Bansal <bvikas@vmware.com> 1.3.0-3
 - Fix for "error parsing CPU info" warning
 * Tue Feb 16 2021 Sharan Turlapati <sturlapati@vmware.com> 1.3.0-2
