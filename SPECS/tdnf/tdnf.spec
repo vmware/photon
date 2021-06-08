@@ -1,47 +1,45 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-#
-# tdnf spec file
-#
+
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        2.1.2
-Release:        3%{?dist}
+Version:        3.1.0
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
-URL:            http://www.vmware.com
+URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    %{name}=46a52792eeeffe3f7e353fa963ab108b09856e8d
+
+Patch0:         fix-segfaulting-when-gpgcheck-is-enabled.patch
+
 Requires:       rpm-libs
-Requires:       curl
+Requires:       curl-libs
 Requires:       tdnf-cli-libs = %{version}-%{release}
 Requires:       libsolv
 Requires:       libmetalink
+
 BuildRequires:  popt-devel
 BuildRequires:  rpm-devel
 BuildRequires:  openssl-devel
 BuildRequires:  libsolv-devel
 BuildRequires:  curl-devel
 BuildRequires:  libmetalink-devel
+BuildRequires:  systemd
 #plugin repogpgcheck
 BuildRequires:  gpgme-devel
 BuildRequires:  cmake
 BuildRequires:  python3-devel
+
 %if %{with_check}
 BuildRequires:  createrepo_c
 BuildRequires:  glib
 BuildRequires:  libxml2
 %endif
+
 Obsoletes:      yum
 Provides:       yum
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    tdnf=81140cee3d979a69273384d9e36086bd6c62a6b9
-Source1:        cache-updateinfo
-Source2:        cache-updateinfo.service
-Source3:        cache-updateinfo.timer
-Source4:        updateinfo.sh
-Source5:        tdnfrepogpgcheck.conf
-
-Patch0:     use-excludes-for-all-alter-commands.patch
 
 %description
 tdnf is a yum/dnf equivalent which uses libsolv and libcurl
@@ -57,31 +55,40 @@ Requires:   libsolv-devel
 %description devel
 Development files for tdnf
 
-%package	cli-libs
-Summary:	Library providing cli libs for tdnf like clients
-Group:		Development/Libraries
+%package    cli-libs
+Summary:    Library providing cli libs for tdnf like clients
+Group:      Development/Libraries
 
 %description cli-libs
 Library providing cli libs for tdnf like clients.
 
-%package	plugin-repogpgcheck
-Summary:	tdnf plugin providign gpg verification for repository metadata
-Group:		Development/Libraries
-Requires:       gpgme
+%package    plugin-repogpgcheck
+Summary:    tdnf plugin providign gpg verification for repository metadata
+Group:      Development/Libraries
+Requires:   gpgme
 
 %description plugin-repogpgcheck
 tdnf plugin providign gpg verification for repository metadata
 
-%package	python
-Summary:	python bindings for tdnf
-Group:		Development/Libraries
-Requires:       python3
+%package    python
+Summary:    python bindings for tdnf
+Group:      Development/Libraries
+Requires:   python3
 
 %description python
 python bindings for tdnf
 
+%package automatic
+Summary:   %{name} - automated upgrades
+Group:     Development/Libraries
+Requires:  %{name} = %{version}-%{release}
+%{?systemd_requires}
+
+%description automatic
+Systemd units that can periodically download package upgrades and apply them.
+
 %prep
-%autosetup -n %{name}-%{version} -p1
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 mkdir build && cd build
@@ -99,16 +106,13 @@ cd build && make %{?_smp_mflags} check
 cd build && make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.a' -delete
 mkdir -p %{buildroot}/var/cache/tdnf
+mkdir -p %{buildroot}/%{_libdir}/systemd/system/
 ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
 ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/yum
-install -v -D -m 0755 %{SOURCE1} %{buildroot}%{_bindir}/tdnf-cache-updateinfo
-install -v -D -m 0644 %{SOURCE2} %{buildroot}%{_libdir}/systemd/system/tdnf-cache-updateinfo.service
-install -v -D -m 0644 %{SOURCE3} %{buildroot}%{_libdir}/systemd/system/tdnf-cache-updateinfo.timer
-install -v -D -m 0755 %{SOURCE4} %{buildroot}%{_sysconfdir}/motdgen.d/02-tdnf-updateinfo.sh
-install -v -D -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/tdnf/pluginconf.d/tdnfrepogpgcheck.conf
 mv %{buildroot}/usr/lib/pkgconfig/tdnfcli.pc %{buildroot}/usr/lib/pkgconfig/tdnf-cli-libs.pc
 mkdir -p %{buildroot}/%{_tdnfpluginsdir}/tdnfrepogpgcheck
 mv %{buildroot}/%{_tdnfpluginsdir}/libtdnfrepogpgcheck.so %{buildroot}/%{_tdnfpluginsdir}/tdnfrepogpgcheck/libtdnfrepogpgcheck.so
+mv %{buildroot}/lib/systemd/system/ %{buildroot}/%{_libdir}/systemd/
 
 pushd python
 python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
@@ -181,6 +185,21 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     # First argument is 0 => Uninstall
     # First argument is 1 => Upgrade
 
+%post automatic
+%systemd_post %{name}-automatic.timer
+%systemd_post %{name}-automatic-notifyonly.timer
+%systemd_post %{name}-automatic-install.timer
+
+%preun automatic
+%systemd_preun %{name}-automatic.timer
+%systemd_preun %{name}-automatic-notifyonly.timer
+%systemd_preun %{name}-automatic-install.timer
+
+%postun automatic
+%systemd_postun_with_restart %{name}-automatic.timer
+%systemd_postun_with_restart %{name}-automatic-notifyonly.timer
+%systemd_postun_with_restart %{name}-automatic-install.timer
+
 %files
     %defattr(-,root,root,0755)
     %{_bindir}/tdnf
@@ -218,7 +237,21 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %defattr(-,root,root)
     %{python3_sitelib}/*
 
+%files automatic
+    %defattr(-,root,root,0755)
+    %{_bindir}/%{name}-automatic
+    %config(noreplace) %{_sysconfdir}/%{name}/automatic.conf
+    %{_libdir}/systemd/system/%{name}-automatic.timer
+    %{_libdir}/systemd/system/%{name}-automatic.service
+    %{_libdir}/systemd/system/%{name}-automatic-install.timer
+    %{_libdir}/systemd/system/%{name}-automatic-install.service
+    %{_libdir}/systemd/system/%{name}-automatic-notifyonly.timer
+    %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
+
 %changelog
+*   Wed Jun 09 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.1.0-1
+-   Bump version to 3.1.0
+-   fix segfaulting when gpgcheck is enabled & no key configured
 *   Tue Dec 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.1.2-3
 -   Add generic exclude patch
 *   Mon Nov 30 2020 Tapas Kundu <tkundu@vmware.com> 2.1.2-2

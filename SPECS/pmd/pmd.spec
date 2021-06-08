@@ -1,7 +1,3 @@
-#
-# pmd spec file
-#
-
 %define _mech_file /etc/gss/mech
 %define _mech_id 1.3.6.1.4.1.6876.11711.2.1.2
 %define _python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
@@ -9,12 +5,20 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
 URL:            https://www.github.com/vmware/pmd
 Group:          Applications/System
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    %{name}=a8a3a920647a80e08094d23437330fb498770700
+
+Patch0:         pmd-rename-DNS_MODE_INVALID-with-DNS_MODE_UNKNOWN.patch
+Patch1:         pmd-fw-bugfix.patch
+Patch2:         pmd-tdnf-updateinfosummary.patch
+Patch3:         fix_pszUrlGPGKey.patch
+
 Requires:       copenapi
 Requires:       c-rest-engine >= 1.1
 Requires:       jansson
@@ -25,6 +29,7 @@ Requires:       tdnf >= 2.1.1
 Requires:       lightwave-client-libs
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       shadow
+
 BuildRequires:  copenapi-devel
 BuildRequires:  c-rest-engine-devel >= 1.1
 BuildRequires:  curl-devel
@@ -37,15 +42,8 @@ BuildRequires:  netmgmt-cli-devel
 BuildRequires:  netmgmt-devel
 BuildRequires:  tdnf-devel >= 2.1.1
 BuildRequires:  lightwave-devel
-BuildRequires: python2-devel >= 2.7
-BuildRequires: python3-devel >= 3.5
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    pmd=a8a3a920647a80e08094d23437330fb498770700
-Patch0:         pmd-rename-DNS_MODE_INVALID-with-DNS_MODE_UNKNOWN.patch
-Patch1:         pmd-fw-bugfix.patch
-Patch2:         pmd-tdnf-updateinfosummary.patch
-Patch3:         fix_pszUrlGPGKey.patch
-
+BuildRequires:  python2-devel >= 2.7
+BuildRequires:  python3-devel >= 3.5
 %description
 Photon Management Daemon
 
@@ -91,11 +89,7 @@ Requires: %{name}-cli = %{version}-%{release}
 Python3 bindings for photon management daemon
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%autosetup -p1
 
 %build
 sed -i 's/pmd, 0.0.1/pmd, 0.0.6/' configure.ac
@@ -317,6 +311,8 @@ rm -rf %{buildroot}/*
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
+*   Wed Jun 09 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.0.6-6
+-   Bump version as a part of tdnf upgrade
 *   Wed Nov 04 2020 Tapas Kundu <tkundu@vmware.com> 0.0.6-5
 -   Added null check for ppszgpgkeys before deferencing it.
 *   Tue Oct 20 2020 Keerthana K <keerthanak@vmware.com> 0.0.6-4
