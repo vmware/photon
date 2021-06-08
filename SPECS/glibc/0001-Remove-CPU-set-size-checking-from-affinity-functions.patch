@@ -1,0 +1,127 @@
+From 2359035ac52db69eb427c3b4b9d9297c98d2b225 Mon Sep 17 00:00:00 2001
+From: Florian Weimer <fweimer@redhat.com>
+Date: Tue, 24 Nov 2015 17:21:01 +0100
+Subject: [PATCH] Remove CPU set size checking from affinity functions [BZ
+ #19143]
+
+With current kernel versions, the check does not reliably detect that
+unavailable CPUs are requested, for these reasons:
+
+(1) The kernel will silently ignore non-allowed CPUs, that is, CPUs
+    which are physically present but disallowed for the thread
+    based on system configuration.
+
+(2) Similarly, CPU bits which lack an online CPU (possible CPUs)
+    are ignored.
+
+(3) The existing probing code assumes that the CPU mask size is a
+    power of two and at least 1024.  Neither has it to be a power
+    of two, nor is the minimum possible value 1024, so the value
+    determined is often too large.  This means that the CPU set
+    size check in glibc accepts CPU bits beyond the actual hard
+    system limit.
+
+(4) Future kernel versions may not even have a fixed CPU set size.
+
+After the removal of the probing code, the kernel still returns
+EINVAL if no CPU in the requested set remains which can run the
+thread after the affinity change.
+
+Applications which care about the exact affinity mask will have
+to query it using sched_getaffinity after setting it.  Due to the
+effects described above, this commit does not change this.
+
+The new tests supersede tst-getcpu, which is removed.  This
+addresses bug 19164 because the new tests allocate CPU sets
+dynamically.
+
+	* nptl/check-cpuset.h: Remove.
+	* nptl/pthread_attr_setaffinity.c (__pthread_attr_setaffinity_new):
+	Remove CPU set size check.
+	* nptl/pthread_setattr_default_np.c (pthread_setattr_default_np):
+	Likewise.
+	* sysdeps/unix/sysv/linux/check-cpuset.h: Remove.
+	* sysdeps/unix/sysv/linux/pthread_setaffinity.c
+	(__kernel_cpumask_size, __determine_cpumask_size): Remove.
+	(__pthread_setaffinity_new): Remove CPU set size check.
+	* sysdeps/unix/sysv/linux/sched_setaffinity.c
+	(__kernel_cpumask_size): Remove.
+	(__sched_setaffinity_new): Remove CPU set size check.
+	* manual/threads.texi (Default Thread Attributes): Remove stale
+	reference to check_cpuset_attr, determine_cpumask_size in comment.
+	* sysdeps/unix/sysv/linux/Makefile [$(subdir) == posix] (tests):
+	Remove tst-getcpu.  Add tst-affinity, tst-affinity-pid.
+	[$(subdir) == nptl] (tests): Add tst-thread-affinity-pthread,
+	tst-thread-affinity-pthread2, tst-thread-affinity-sched.
+	* sysdeps/unix/sysv/linux/tst-affinity.c: New file.
+	* sysdeps/unix/sysv/linux/tst-affinity-pid.c: New file.
+	* sysdeps/unix/sysv/linux/tst-skeleton-affinity.c: New skeleton test file.
+	* sysdeps/unix/sysv/linux/tst-thread-affinity-sched.c: New file.
+	* sysdeps/unix/sysv/linux/tst-thread-affinity-pthread.c: New file.
+	* sysdeps/unix/sysv/linux/tst-thread-affinity-pthread2.c: New file.
+	* sysdeps/unix/sysv/linux/tst-thread-skeleton-affinity.c: New
+	skeleton test file.
+	* sysdeps/unix/sysv/linux/tst-getcpu.c: Remove.  Superseded by
+	tst-affinity-pid.
+
+[Ajay: CPU set size check with-in __pthread_attr_setaffinity_new()
+       not require as already done. Keeping only changes of
+       __pthread_attr_setaffinity_new() with-in this patch and removing 
+       all other changes from this patch]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+
+---
+ ChangeLog                                          |  33 +++
+ NEWS                                               |   8 +
+ manual/threads.texi                                |   2 -
+ nptl/check-cpuset.h                                |  32 ---
+ nptl/pthread_attr_setaffinity.c                    |   6 -
+ nptl/pthread_setattr_default_np.c                  |   5 -
+ sysdeps/unix/sysv/linux/Makefile                   |   6 +-
+ sysdeps/unix/sysv/linux/check-cpuset.h             |  48 ----
+ sysdeps/unix/sysv/linux/pthread_setaffinity.c      |  48 ----
+ sysdeps/unix/sysv/linux/sched_setaffinity.c        |  37 ---
+ sysdeps/unix/sysv/linux/tst-affinity-pid.c         | 201 +++++++++++++++
+ sysdeps/unix/sysv/linux/tst-affinity.c             |  43 ++++
+ sysdeps/unix/sysv/linux/tst-getcpu.c               |  59 -----
+ sysdeps/unix/sysv/linux/tst-skeleton-affinity.c    | 278 ++++++++++++++++++++
+ .../unix/sysv/linux/tst-skeleton-thread-affinity.c | 280 +++++++++++++++++++++
+ .../unix/sysv/linux/tst-thread-affinity-pthread.c  |  49 ++++
+ .../unix/sysv/linux/tst-thread-affinity-pthread2.c |  95 +++++++
+ .../unix/sysv/linux/tst-thread-affinity-sched.c    |  36 +++
+ 18 files changed, 1027 insertions(+), 239 deletions(-)
+ delete mode 100644 nptl/check-cpuset.h
+ delete mode 100644 sysdeps/unix/sysv/linux/check-cpuset.h
+ create mode 100644 sysdeps/unix/sysv/linux/tst-affinity-pid.c
+ create mode 100644 sysdeps/unix/sysv/linux/tst-affinity.c
+ delete mode 100644 sysdeps/unix/sysv/linux/tst-getcpu.c
+ create mode 100644 sysdeps/unix/sysv/linux/tst-skeleton-affinity.c
+ create mode 100644 sysdeps/unix/sysv/linux/tst-skeleton-thread-affinity.c
+ create mode 100644 sysdeps/unix/sysv/linux/tst-thread-affinity-pthread.c
+ create mode 100644 sysdeps/unix/sysv/linux/tst-thread-affinity-pthread2.c
+ create mode 100644 sysdeps/unix/sysv/linux/tst-thread-affinity-sched.c
+
+diff --git a/nptl/pthread_attr_setaffinity.c b/nptl/pthread_attr_setaffinity.c
+index 7a127b8..571835d 100644
+--- a/nptl/pthread_attr_setaffinity.c
++++ b/nptl/pthread_attr_setaffinity.c
+@@ -23,7 +23,6 @@
+ #include <string.h>
+ #include <pthreadP.h>
+ #include <shlib-compat.h>
+-#include <check-cpuset.h>
+
+
+ int
+@@ -43,11 +42,6 @@ __pthread_attr_setaffinity_new (pthread_attr_t *attr, size_t cpusetsize,
+     }
+   else
+     {
+-      int ret = check_cpuset_attr (cpuset, cpusetsize);
+-
+-      if (ret)
+-        return ret;
+-
+       if (iattr->cpusetsize != cpusetsize)
+ 	{
+ 	  void *newp = (cpu_set_t *) realloc (iattr->cpuset, cpusetsize);
