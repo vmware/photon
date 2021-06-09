@@ -1,7 +1,7 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.6.35
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
@@ -15,6 +15,7 @@ Patch4:         libsolv-Add-selection_make-support.patch
 Patch5:         CVE-2018-20532-20533-20534.patch
 Patch6:         extend_choicerule_filtering_check.patch
 Patch7:         Refactor_solver_addchoicerules_function.patch
+Patch8:         CVE-2021-3200.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -50,6 +51,7 @@ for developing applications that use libsolv.
 %patch5 -p1
 %patch6 -p1
 %patch7 -p1
+%patch8 -p1
 
 %build
 cmake \
@@ -83,6 +85,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Jun 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.6.35-8
+-   Fix CVE-2021-3200
 *   Wed Dec 09 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.6.35-7
 -   Add zstd-devel as Build Requires
 *   Thu Dec 03 2020 Tapas Kundu <tkundu@vmware.com> 0.6.35-6
