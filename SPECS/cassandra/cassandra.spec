@@ -3,7 +3,7 @@
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        3.11.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
@@ -23,10 +23,12 @@ BuildRequires:  apache-ant
 BuildRequires:  unzip zip
 BuildRequires:  openjdk8
 BuildRequires:  wget
+BuildRequires:  systemd-rpm-macros
 Requires:       openjre8
 Requires:       gawk
 Requires:       shadow
-Requires:       python3
+Requires(post): /bin/chown
+%{?systemd_requires}
 
 %description
 Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store.
@@ -74,8 +76,6 @@ cp bin/sstablescrub %{buildroot}%{_bindir}/
 cp bin/sstableupgrade %{buildroot}%{_bindir}/
 cp bin/sstableutil %{buildroot}%{_bindir}/
 cp bin/sstableverify %{buildroot}%{_bindir}/
-cp bin/cqlsh %{buildroot}%{_bindir}/
-cp bin/cqlsh.py %{buildroot}%{_bindir}/
 cp conf/cassandra-env.sh %{buildroot}%{_sysconfdir}/cassandra/
 cp conf/cassandra.yaml %{buildroot}%{_sysconfdir}/cassandra/
 cp conf/cassandra-jaas.config %{buildroot}%{_sysconfdir}/cassandra/
@@ -123,13 +123,16 @@ chown -R cassandra: /var/opt/cassandra
 source /etc/profile.d/cassandra.sh
 %systemd_post cassandra.service
 
+%preun
+%systemd_preun cassandra.service
+
 %postun
+%{_sbindir}/ldconfig
 %systemd_postun_with_restart cassandra.service
 if [ $1 -eq 0 ] ; then
     /usr/sbin/userdel cassandra
     /usr/sbin/groupdel cassandra
 fi
-/sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -146,6 +149,10 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Wed Jun 09 2021 Ankit Jain <ankitja@vmware.com> 3.11.10-2
+-   Remove cqlsh and cqlsh.py, since it requires python2 to run
+-   python3-cqlsh is introduced
+-   fix post and postun script failure
 *   Tue Mar 09 2021 Ankit Jain <ankitja@vmware.com> 3.11.10-1
 -   Update to 3.11.10 to fix CVE-2020-17516
 *   Thu Oct 29 2020 Ankit Jain <ankitja@vmware.com> 3.11.8-2

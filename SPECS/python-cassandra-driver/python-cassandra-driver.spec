@@ -4,7 +4,7 @@
 Summary:        A modern, feature-rich and highly-tunable Python client library for Apache Cassandra (2.1+)
 Name:           python3-cassandra-driver
 Version:        3.24.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://github.com/datastax/python-driver#datastax-python-driver-for-apache-cassandra
 License:        Apache 2.0
 Group:          Development/Languages/Python
@@ -30,8 +30,11 @@ BuildRequires:  curl-devel
 BuildRequires:  iana-etc
 %endif
 
+Requires:       libev
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-six
+Requires:       python3-geomet < 0.3
 
 %description
 A modern, feature-rich and highly-tunable Python client library for Apache Cassandra (2.1+)
@@ -70,6 +73,8 @@ python3 setup.py eventlet_nosetests
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jun 11 2021 Ankit Jain <ankitja@vmware.com> 3.24.0-4
+-   Fixed install time dependency
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.24.0-3
 -   Fix build with new rpm
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.24.0-2
