@@ -1,7 +1,7 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
 Version:          5.9.0
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          GPLv2+
 URL:              https://www.strongswan.org/
 Group:            System Environment/Security
@@ -11,7 +11,9 @@ Source0:          https://download.strongswan.org/%{name}-%{version}.tar.bz2
 %define sha1      strongswan=8bb52214f72f2571f55dababfe76ff97fd31ca1f
 BuildRequires:    autoconf
 BuildRequires:    gmp-devel
+BuildRequires:    systemd-devel
 Patch0:           strongswan-fix-make-check.patch
+%{?systemd_requires}
 
 %description
 strongSwan is a complete IPsec implementation for Linux 2.6, 3.x, and 4.x kernels.
@@ -21,7 +23,7 @@ strongSwan is a complete IPsec implementation for Linux 2.6, 3.x, and 4.x kernel
 %patch0 -p1
 
 %build
-%configure
+%configure --enable-systemd
 sed -i '/stdlib.h/a #include <stdint.h>' src/libstrongswan/utils/utils.h &&
 make %{?_smp_mflags}
 
@@ -34,11 +36,19 @@ find %{buildroot} -name '*.a' -delete
 %check
 make check
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
-
 %clean
 rm -rf %{buildroot}/*
+
+%post
+/sbin/ldconfig
+%systemd_post %{name}.service
+
+%preun
+%systemd_preun %{name}.service
+
+%postun
+/sbin/ldconfig
+%systemd_postun_with_restart %{name}.service
 
 %files
 %defattr(-,root,root)
@@ -49,8 +59,12 @@ rm -rf %{buildroot}/*
 %{_libexecdir}/*
 %{_mandir}/man[158]/*
 %{_datadir}/strongswan/*
+%{_unitdir}/strongswan-starter.service
+%{_unitdir}/strongswan.service
 
 %changelog
+*   Wed Jun 09 2021 Tapas Kundu <tkundu@vmware.com> 5.9.0-2
+-   Enable systemd
 *   Mon Aug 10 2020 Gerrit Photon <photon-checkins@vmware.com> 5.9.0-1
 -   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 5.8.4-1
