@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.44
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/mozilla.org/security/nss/
 Group:          Applications/System
@@ -9,7 +9,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    nss=11eab8681754472a9d1eb196e3c604d794ebe7f3
-Patch:          nss-3.44-standalone-1.patch
+Patch0:         nss-3.44-standalone-1.patch
+Patch1:         nss-CVE-2020-12403.patch
 Requires:       nspr
 Requires:       sqlite-autoconf
 BuildRequires:  nspr
@@ -33,7 +34,8 @@ Header files for doing development with Network Security Services.
 
 %prep
 %setup -q
-%patch -p1
+%patch0 -p1
+%patch1 -p1
 %build
 cd nss
 # -j is not supported by nss
@@ -88,6 +90,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Fri Jun 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.44-4
+-   Fix CVE-2020-12403
 *   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 3.44-3
 -   use latest sqlite
 *   Fri Aug 09 2019 Ashwin H <ashwinh@vmware.com> 3.44-2
