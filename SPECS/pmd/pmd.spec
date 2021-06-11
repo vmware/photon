@@ -6,7 +6,7 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.7
-Release:        5%{?dist}
+Release:        6%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -27,7 +27,7 @@ Requires:       c-rest-engine >= 1.1
 Requires:       jansson
 Requires:       network-config-manager
 Requires:       systemd
-Requires:       tdnf >= 2.1.1
+Requires:       tdnf >= 3.1.2
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       shadow
 Requires:       dcerpc
@@ -41,7 +41,7 @@ BuildRequires:  libsolv-devel
 BuildRequires:  jansson-devel
 BuildRequires:  krb5-devel
 BuildRequires:  network-config-manager-devel
-BuildRequires:  tdnf-devel >= 2.1.1
+BuildRequires:  tdnf-devel >= 3.1.2
 BuildRequires:  python3-devel >= 3.5
 BuildRequires:  dcerpc-devel
 BuildRequires:  openldap
@@ -354,6 +354,8 @@ rm -rf %{buildroot}/*
     %exclude %{_libdir}/gssapi_unix/*.la
 
 %changelog
+*   Mon Jul 26 2021 Oliver Kurth <okurth@vmware.com> 0.0.7-6
+-   Bump to consume latest tdnf
 *   Thu Jun 03 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.0.7-5
 -   Bump to consume latest tdnf
 *   Mon Apr 12 2021 Shreyas B <shreyasb@vmware.com> 0.0.7-4

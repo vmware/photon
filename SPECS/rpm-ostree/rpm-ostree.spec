@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2020.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
@@ -16,8 +16,6 @@ Source3:        mk-ostree-host.sh
 Source4:        function.inc
 Source5:        mkostreerepo
 Patch0:         rpm-ostree-libdnf-build.patch
-# This patch is required to build libdnf with old version of libsolv
-Patch1:         libdnf-Remove-POOL_FLAG_WHATPROVIDESWITHDISABLED.patch
 
 BuildRequires:  autoconf
 BuildRequires:  automake
@@ -43,7 +41,7 @@ BuildRequires:  attr-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3
 BuildRequires:  autogen
-BuildRequires:  libsolv-devel
+BuildRequires:  libsolv-devel >= 0.7.19
 BuildRequires:  libsolv
 BuildRequires:  systemd-devel
 BuildRequires:  libarchive-devel
@@ -102,7 +100,6 @@ Includes the scripts for rpm-ostree repo creation to act as server
 tar -xf %{SOURCE1} --no-same-owner
 tar -xf %{SOURCE2} --no-same-owner
 %patch0 -p0
-%patch1 -p0
 
 %build
 env NOCONFIGURE=1 ./autogen.sh
@@ -151,6 +148,8 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+*   Fri Jun 11 2021 Oliver Kurth <okurth@vmware.com> 2020.5-6
+-   build with libsolv 0.7.19
 *   Mon Jan 11 2021 Ankit Jain <ankitja@vmware.com> 2020.5-5
 -   Added systemd-udev in mkostreerepo
 *   Tue Nov 03 2020 Ankit Jain <ankitja@vmware.com> 2020.5-4

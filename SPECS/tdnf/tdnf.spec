@@ -2,7 +2,7 @@
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.1.0
+Version:        3.1.2
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,9 +10,9 @@ License:        LGPLv2.1,GPLv2
 URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=46a52792eeeffe3f7e353fa963ab108b09856e8d
+%define sha1    %{name}=d05bfffbd1891166923021feb457e0b645b4d6eb
 
-Patch0:         fix-segfaulting-when-gpgcheck-is-enabled.patch
+Patch0:         pool_flag_noinstalledobsoletes.patch
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -23,7 +23,7 @@ Requires:       libmetalink
 BuildRequires:  popt-devel
 BuildRequires:  rpm-devel
 BuildRequires:  openssl-devel >= 1.1.1
-BuildRequires:  libsolv-devel
+BuildRequires:  libsolv-devel >= 0.7.19
 BuildRequires:  curl-devel
 BuildRequires:  libmetalink-devel
 BuildRequires:  systemd
@@ -249,6 +249,9 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
 
 %changelog
+*   Tue Jul 27 2021 Oliver Kurth <okurth@vmware.com> 3.1.2-1
+-   update to 3.1.2
+-   rebuild with libsolv 0.7.19
 *   Thu Jun 03 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.1.0-1
 -   Bump version to 3.1.0
 -   fix segfaulting when gpgcheck is enabled & no key configured
