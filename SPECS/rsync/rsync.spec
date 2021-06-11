@@ -1,7 +1,7 @@
 Summary:        Fast incremental file transfer.
 Name:           rsync
 Version:        3.2.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            https://rsync.samba.org/
 Source0:        https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.gz
@@ -9,16 +9,22 @@ Source0:        https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.
 Group:          Appication/Internet
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Patch0:         0001-rsync-ssl-Verify-the-hostname-in-the-certificate-whe.patch
+
 BuildRequires:  zlib-devel
 BuildRequires:  systemd
 BuildRequires:  lz4-devel
 Requires:       lz4
 Requires:       zlib
 Requires:       systemd
+
 %description
 Rsync is a fast and extraordinarily versatile file copying tool. It can copy locally, to/from another host over any remote shell, or to/from a remote rsync daemon. It offers a large number of options that control every aspect of its behavior and permit very flexible specification of the set of files to be copied. It is famous for its delta-transfer algorithm, which reduces the amount of data sent over the network by sending only the differences between the source files and the existing files in the destination. Rsync is widely used for backups and mirroring and as an improved copy command for everyday use.
+
 %prep
-%setup -q
+%autosetup
+
 %build
 %configure --with-included-zlib=no --disable-xxhash --disable-zstd
 make %{?_smp_mflags}
@@ -58,6 +64,8 @@ make %{?_smp_mflags} check
 %{_libdir}/systemd/system/rsyncd.service
 %{_sysconfdir}/rsyncd.conf
 %changelog
+*   Fri Jun 11 2021 Ankit Jain <ankitja@vmware.com> 3.2.3-2
+-   Fix CVE-2020-14387
 *   Fri Aug 14 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.3-1
 -   Automatic Version Bump
 *   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.2-1
