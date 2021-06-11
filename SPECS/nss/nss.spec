@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.44
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_44_1_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
@@ -9,7 +9,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    nss=11eab8681754472a9d1eb196e3c604d794ebe7f3
-Patch:          nss-3.44-standalone-1.patch
+Patch0:         nss-3.44-standalone-1.patch
+Patch1:         nss-CVE-2020-12403.patch
 Requires:       nspr
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
@@ -42,7 +43,8 @@ This package contains minimal set of shared nss libraries.
 
 %prep
 %setup -q
-%patch -p1
+%patch0 -p1
+%patch1 -p1
 %build
 cd nss
 # -j is not supported by nss
@@ -111,6 +113,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+*   Fri Jun 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.44-4
+-   Fix CVE-2020-12403
 *   Wed Nov 18 2020 Tapas Kundu <tkundu@vmware.com> 3.44-4
 -   Package libsoftokn3.chk and libfreeblpriv3.chk in nss-libs
 *   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 3.44-3
