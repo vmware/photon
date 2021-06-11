@@ -1,0 +1,17 @@
+diff --git a/solv/tdnfpool.c b/solv/tdnfpool.c
+index b22de1d..c3180bd 100644
+--- a/solv/tdnfpool.c
++++ b/solv/tdnfpool.c
+@@ -109,6 +109,12 @@ SolvInitSack(
+     pool_setarch(pPool, systemInfo.machine);
+     pool_set_flag(pPool, POOL_FLAG_ADDFILEPROVIDESFILTERED, 1);
+ 
++    /* libsolv 0.6.x allowed this, 0.7.x changed it to 0 -
++       this would disallow installing coreutils since coreutils-selinux
++       obsoletes coreutils */
++    pool_set_flag(pPool, POOL_FLAG_NOINSTALLEDOBSOLETES, 1);
++    pool_set_flag(pPool, POOL_FLAG_IMPLICITOBSOLETEUSESPROVIDES, 1);
++
+     dwError = SolvReadInstalledRpms(pPool, &pRepo, pszCacheDir);
+     BAIL_ON_TDNF_LIBSOLV_ERROR(dwError);
+ 

@@ -1,31 +1,23 @@
 Summary:        A free package dependency solver
 Name:           libsolv
-Version:        0.6.35
-Release:        8%{?dist}
+Version:        0.7.19
+Release:        1%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
-%define sha1    libsolv=4f53d60467ddab4099cfe5eb91a3fe7260666209
-Patch0:         libsolv-xmlparser.patch
-Patch1:         libsolv-rpm4-IndexOoB-fix.patch
-Patch2:         CVE-2019-20387.patch
-# These 2 patches are required to build libdnf latest version in rpm-ostree
-Patch3:         libsolv-Add-support-for-modular.patch
-Patch4:         libsolv-Add-selection_make-support.patch
-Patch5:         CVE-2018-20532-20533-20534.patch
-Patch6:         extend_choicerule_filtering_check.patch
-Patch7:         Refactor_solver_addchoicerules_function.patch
-Patch8:         CVE-2021-3200.patch
+%define sha1    libsolv=b4101632c56b00e0bd8f41d772a7998a3d000a74
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Requires:       rpm-libs
 Requires:       libdb
 Requires:       expat-libs
+Requires:       zlib
 BuildRequires:  libdb-devel
 BuildRequires:  cmake
 BuildRequires:  rpm-devel
 BuildRequires:  expat-devel
-BuildRequires:  zstd-devel
+BuildRequires:  zlib-devel
 
 %description
 Libsolv is a free package management library, using SAT technology to solve requests.
@@ -43,22 +35,16 @@ for developing applications that use libsolv.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
 
 %build
 cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-    -DRPM5=ON \
     -DENABLE_RPMDB=ON \
-    -DENABLE_COMPLEX_DEPS=ON
+    -DENABLE_COMPLEX_DEPS=ON \
+    -DENABLE_RPMDB_BYRPMHEADER=ON \
+    -DENABLE_RPMDB_LIBRPM=ON \
+    -DENABLE_RPMMD=ON
+
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -85,6 +71,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Jun 11 2021 Oliver Kurth <okurth@vmware.com> 0.7.19-1
+-   Bump version
 *   Wed Jun 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.6.35-8
 -   Fix CVE-2021-3200
 *   Wed Dec 09 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.6.35-7
