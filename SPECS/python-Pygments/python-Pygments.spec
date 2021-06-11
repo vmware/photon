@@ -2,15 +2,15 @@
 
 Summary:        Pygments is a syntax highlighting package written in Python.
 Name:           python3-Pygments
-Version:        2.7.2
-Release:        2%{?dist}
+Version:        2.9.0
+Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Pygments
 Source0:        https://files.pythonhosted.org/packages/source/P/Pygments/Pygments-%{version}.tar.gz
-%define sha1    Pygments=2a30bc5d697092e2529963ab1087edf69b730378
+%define sha1    Pygments=e0277b8dd2ebce5121a68bec62173b9e0b057742
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -56,6 +56,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{_bindir}/*
 
 %changelog
+*   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 2.9.0-1
+-   Update to 2.9.0, Fixes CVE-2021-20270, CVE-2021-27291
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.7.2-2
 -   Fix build with new rpm
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 2.7.2-1
