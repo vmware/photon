@@ -1,0 +1,1009 @@
+From 596d9b2a5df93d5d6fa1940193305d928d1fc978 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 11 Jun 2021 09:30:39 +0000
+Subject: [PATCH 10/11] RPS flow balance
+
+---
+ include/linux/netdevice.h  |  25 +++
+ net/core/dev.c             | 408 +++++++++++++++++++++++++++++++++++--
+ net/core/net-procfs.c      |  71 ++++++-
+ net/core/net-sysfs.c       | 187 +++++++++++++++++
+ net/core/sysctl_net_core.c |  42 ++++
+ 5 files changed, 712 insertions(+), 21 deletions(-)
+
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index cea25fb04..0bc05ee8c 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -709,6 +709,18 @@ struct netdev_rx_queue {
+ #ifdef CONFIG_RPS
+ 	struct rps_map __rcu		*rps_map;
+ 	struct rps_dev_flow_table __rcu	*rps_flow_table;
++#define RPS_USER_DEF_MAKE(o,m,s,f)    ((((u64)(f) & 0x1) << 56) | (((u64)(s) & 0xFF) << 48) | (((u64)(o) & 0xFFFF) << 32) | (u64)(m) & 0xFFFFFFFF)
++#define RPS_USER_DEF_MASK(u)    ((u32)(u))
++#define RPS_USER_DEF_OFFSET(u)    ((u16)(((u) >> 32) & 0xFFFF))
++#define RPS_USER_DEF_SHIFT(u)    ((u8)(((u) >> 48) & 0xFF))
++#define RPS_USER_DEF_FILTER_EN(u)	((u8)(((u) >> 56) & 0x1))
++	atomic64_t			rps_user_def;
++	atomic_t			rps_flow_balance;
++	atomic_t			rps_flow_limit;
++	atomic_t			rps_user_def_dst_ip;
++	atomic_t			rps_user_def_dst_ip_mask;
++	atomic_t			rps_user_def_dst_port_low;
++	atomic_t			rps_user_def_dst_port_high;
+ #endif
+ 	struct kobject			kobj;
+ 	struct net_device		*dev;
+@@ -2992,6 +3004,13 @@ struct softnet_data {
+ 	struct softnet_data	*rps_ipi_next;
+ 	unsigned int		cpu;
+ 	unsigned int		input_queue_tail;
++	unsigned int		do_move;
++	unsigned int		first_place;
++	unsigned int		keep_place;
++	unsigned int		try_elephant;
++	unsigned int		try_mouse;
++	unsigned int		user_def_rps_skip;
++	unsigned int		user_def_rps_proc;
+ #endif
+ 	unsigned int		dropped;
+ 	struct sk_buff_head	input_pkt_queue;
+@@ -4343,6 +4362,12 @@ int __init dev_proc_init(void);
+ #else
+ #define dev_proc_init() 0
+ #endif
++extern int		netdev_custom_steer;
++extern int		netdev_elephant_trigger;
++extern int		netdev_mice_trigger;
++extern int		netdev_better_threshold;
++extern int		netdev_flowlim_threshold;
++extern int		netdev_dbg_hash;
+ 
+ static inline netdev_tx_t __netdev_start_xmit(const struct net_device_ops *ops,
+ 					      struct sk_buff *skb, struct net_device *dev,
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 7803bd962..4e1377018 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3926,6 +3926,19 @@ EXPORT_SYMBOL(dev_direct_xmit);
+ int netdev_max_backlog __read_mostly = 1000;
+ EXPORT_SYMBOL(netdev_max_backlog);
+ 
++int netdev_custom_steer __read_mostly = 0;
++EXPORT_SYMBOL(netdev_custom_steer);
++int netdev_elephant_trigger __read_mostly = 2;
++EXPORT_SYMBOL(netdev_elephant_trigger);
++int netdev_mice_trigger __read_mostly = 4;
++EXPORT_SYMBOL(netdev_mice_trigger);
++int netdev_better_threshold __read_mostly = 6;
++EXPORT_SYMBOL(netdev_better_threshold);
++int netdev_flowlim_threshold __read_mostly = 1;
++EXPORT_SYMBOL(netdev_flowlim_threshold);
++int netdev_dbg_hash __read_mostly = 0;
++EXPORT_SYMBOL(netdev_dbg_hash);
++
+ int netdev_tstamp_prequeue __read_mostly = 1;
+ int netdev_budget __read_mostly = 300;
+ /* Must be at least 2 jiffes to guarantee 1 jiffy timeout */
+@@ -4002,21 +4015,195 @@ set_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+ 	return rflow;
+ }
+ 
++ /*
++ * Return the least backlogged CPU from map, provided it
++ * is at least below some threshold.
++ */
++static int rps_least_backlogged_cpu(struct rps_map *map, int current_cpu)
++{
++	int i;
++	int cpu = current_cpu;
++	struct softnet_data *sd;
++	unsigned int qlen;
++	/* must be below this to be considered */
++	unsigned int least = netdev_max_backlog >> netdev_better_threshold;
++
++	for (i=0; i < map->len; i++) {
++		sd = &per_cpu(softnet_data, map->cpus[i]);
++		qlen = skb_queue_len(&sd->input_pkt_queue);
++
++		if (qlen < least) {
++			least = qlen;
++			cpu = map->cpus[i];
++		} else if ((qlen == least) && (map->cpus[i] == current_cpu)) {
++			cpu = current_cpu;
++		}
++	}
++	return cpu;
++}
++
++static int get_user_def_rps_cpu(const struct sk_buff *skb,
++				struct net_device *dev,
++				struct netdev_rx_queue *rxqueue,
++				struct rps_map *map,
++				struct softnet_data *local_sd) {
++	u32 tcpu;
++	u64 rps_user_def;
++	u32 rps_user_def_mask;
++	u16 rps_user_def_offset;
++	u8 rps_user_def_shift;
++	u32 pkt_value;
++
++	if (map->len <= 0) {
++		return -1;
++	}
++
++	// Try using the used-defined queue decider
++	rps_user_def = atomic64_read(&rxqueue->rps_user_def);
++	rps_user_def_mask = RPS_USER_DEF_MASK(rps_user_def);
++	// rps_user_def_mask should be non zero
++	if (!rps_user_def_mask) {
++		return -1;
++	}
++
++	// Apply filter if enabled
++	if (RPS_USER_DEF_FILTER_EN(rps_user_def)) {
++		struct flow_keys flow;
++		u32 rps_user_def_dst_ip_mask;
++		u32 rps_user_def_dst_port_high;
++		__be32 dst;
++
++		// Extract flow details
++		if (!skb_flow_dissect_flow_keys(skb, &flow, 0)) {
++			goto user_def_rps_skip;
++		}
++		dst = flow_get_u32_dst(&flow);
++
++		// check dst-ip if mask set
++		rps_user_def_dst_ip_mask =
++			atomic_read(&rxqueue->rps_user_def_dst_ip_mask);
++		if (rps_user_def_dst_ip_mask) {
++			if ((ntohl(dst) & rps_user_def_dst_ip_mask) !=
++			    (atomic_read(&rxqueue->rps_user_def_dst_ip) &
++			     rps_user_def_dst_ip_mask)) {
++				goto user_def_rps_skip;
++			}
++		}
++
++		// check dst-port if mask set
++		rps_user_def_dst_port_high =
++			atomic_read(&rxqueue->rps_user_def_dst_port_high);
++		if (rps_user_def_dst_port_high) {
++			u32 dport;
++
++			// Hard-coded ip-proto check to match UDP
++			if (flow.basic.ip_proto != IPPROTO_UDP) {
++				goto user_def_rps_skip;
++			}
++
++			dport = ntohs(flow.ports.dst);
++			if ((dport < atomic_read(
++					&rxqueue->rps_user_def_dst_port_low)) ||
++			    (dport > rps_user_def_dst_port_high)) {
++				goto user_def_rps_skip;
++			}
++		}
++	}
++
++	local_sd->user_def_rps_proc++;
++
++	rps_user_def_offset = RPS_USER_DEF_OFFSET(rps_user_def);
++	if (skb_copy_bits(skb, skb_network_offset(skb) + rps_user_def_offset,
++				&pkt_value, sizeof(u32)) < 0) {
++		return -1;
++	}
++
++	rps_user_def_shift = RPS_USER_DEF_SHIFT(rps_user_def);
++	pkt_value = be32_to_cpu(pkt_value);
++	pkt_value = (pkt_value & rps_user_def_mask) >> rps_user_def_shift;
++	pkt_value++;
++	tcpu = map->cpus[pkt_value % map->len];
++	if (cpu_online(tcpu)) {
++		return tcpu;
++	}
++	return -1;
++
++user_def_rps_skip:
++	local_sd->user_def_rps_skip++;
++	return -1;
++}
++
++/*
++ * Determine whether rps flow is backlogged.  Takes into account
++ * potential for input_queue_head to have advanced to the point where
++ * subtraction overflows.
++ *
++ * Details:
++ *
++ * The input queue for a CPU has a head and tail counter.  The tail is
++ * incremented when a packet is put into the input queue.  The head is
++ * incremented after a packet is pulled from the queue and processed.
++ *
++ * When the rps code shifts a packet to another cpu, it records the
++ * tail value for that cpu in the flow's record (rflow->last_qtail).
++ *
++ * When it's deciding whether it is okay to move a flow between CPUs,
++ * it checks that there are no packets for the flow in the backlog.
++ * It has been doing this by this logic:
++ *
++ * (((int)(queue_head - rflow->last_qtail)) >= 0)
++ *
++ * which is olrc below.
++ *
++ * It wants to know whether head has advanced past the last packet
++ * queued, so it does subtraction.  To account for the possibility of
++ * wraparound, it casts that to int and checks for >= 0.  Note that it
++ * could simply do queue_head > last_qtail, except that could be wrong
++ * immediately after queue_head wraps around.  Thus, the cast to int
++ * and >= 0.  This is what it was doing.
++ *
++ * Notice, that when the diff is cast to int, the range of values goes
++ * from INT_MIN up to INT_MAX, and that all values from INT_MIN up to
++ * -1 are considered as 'backlogged'.  However, the actual backlog is
++ * limited to netdev_max_backlog packets.  So the vast majority of
++ * that range is, in fact, not backlogged.
++ *
++ * A better check is to look at the actual backlog, and the backlog
++ * that would be needed for the flow to be backlogged and compare
++ * them.  Because the actual backlog is limited by netdev_max_backlog,
++ * the wraparound case does not affect this.
++ */
++static inline bool rps_flow_is_backlogged(int cpu, struct rps_dev_flow *rflow)
++{
++	unsigned int queue_head = per_cpu(softnet_data, cpu).input_queue_head;
++	unsigned int queue_tail = per_cpu(softnet_data, cpu).input_queue_tail;
++	unsigned int backlog = queue_tail - queue_head;
++	unsigned int flow_backlog = rflow->last_qtail - queue_head;
++	return ((flow_backlog > 0) && (flow_backlog <= backlog));
++}
++
++
+ /*
+  * get_rps_cpu is called from netif_receive_skb and returns the target
+  * CPU from the RPS map of the receiving queue for a given skb.
+  * rcu_read_lock must be held on entry.
+  */
+ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+-		       struct rps_dev_flow **rflowp)
++		       struct rps_dev_flow **rflowp,
++		       int *do_flow_limit,
++		       int *do_flow_balance, struct rps_map **mapp)
+ {
+ 	const struct rps_sock_flow_table *sock_flow_table;
+ 	struct netdev_rx_queue *rxqueue = dev->_rx;
+ 	struct rps_dev_flow_table *flow_table;
+ 	struct rps_map *map;
+ 	int cpu = -1;
++	bool qtail_advanced;
+ 	u32 tcpu;
++	u32 raw_hash = 0;
+ 	u32 hash;
++	int local_cpu = smp_processor_id();
++	struct softnet_data *local_sd = &per_cpu(softnet_data, local_cpu);
+ 
+ 	if (skb_rx_queue_recorded(skb)) {
+ 		u16 index = skb_get_rx_queue(skb);
+@@ -4039,6 +4226,9 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+ 		goto done;
+ 
+ 	skb_reset_network_header(skb);
++	if (netdev_custom_steer && unlikely(netdev_dbg_hash)) {
++		raw_hash = skb->hash;
++	}
+ 	hash = skb_get_hash(skb);
+ 	if (!hash)
+ 		goto done;
+@@ -4049,10 +4239,28 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+ 		u32 next_cpu;
+ 		u32 ident;
+ 
++		if (netdev_custom_steer) {
++			/* in here, so won't do uplinks, as we don't set flow table for them. */
++			if (unlikely(netdev_dbg_hash && net_ratelimit())) {
++				pr_info("dev: %s, skb_hash: %p: raw: %08x, cooked: %08x, queue: %u\n",
++						dev->name, skb, raw_hash, hash, skb_get_rx_queue(skb));
++			}
++
++			if (do_flow_limit) {
++				*do_flow_limit = atomic_read(&rxqueue->rps_flow_limit);
++			}
++			if (do_flow_balance) {
++				*do_flow_balance = atomic_read(&rxqueue->rps_flow_balance);
++			}
++			if (mapp) {
++				*mapp = map;
++			}
++		}
++
+ 		/* First check into global flow table if there is a match */
+ 		ident = sock_flow_table->ents[hash & sock_flow_table->mask];
+ 		if ((ident ^ hash) & ~rps_cpu_mask)
+-			goto try_rps;
++			goto try_just_flows;
+ 
+ 		next_cpu = ident & rps_cpu_mask;
+ 
+@@ -4062,6 +4270,100 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+ 		rflow = &flow_table->flows[hash & flow_table->mask];
+ 		tcpu = rflow->cpu;
+ 
++		/*
++		 * If the desired CPU (where last recvmsg was done) is
++		 * different from current CPU (one in the rx-queue flow
++		 * table entry), switch if one of the following holds:
++		 *   - Current CPU is unset (>= nr_cpu_ids).
++		 *   - Current CPU is offline.
++		 *   - The current CPU's queue tail has advanced beyond the
++		 *     last packet that was enqueued using this table entry.
++		 *     This guarantees that all previous packets for the flow
++		 *     have been dequeued, thus preserving in order delivery.
++		 */
++		qtail_advanced = ((int)(per_cpu(softnet_data, tcpu).input_queue_head -
++					rflow->last_qtail)) >= 0;
++		if (unlikely(tcpu != next_cpu) &&
++		    (tcpu >= nr_cpu_ids || !cpu_online(tcpu) ||
++		     netdev_custom_steer == 1 ?
++			 !rps_flow_is_backlogged(tcpu, rflow) : qtail_advanced)) {
++			if (netdev_custom_steer) {
++				if (tcpu >= nr_cpu_ids || !cpu_online(tcpu)) {
++					local_sd->first_place++;
++				} else {
++					local_sd->do_move++;
++				}
++			}
++			tcpu = next_cpu;
++			rflow = set_rps_cpu(dev, skb, rflow, next_cpu);
++		} else if (netdev_custom_steer && tcpu != next_cpu) {
++			local_sd->keep_place++;
++		}
++
++		if (tcpu < nr_cpu_ids && cpu_online(tcpu)) {
++			*rflowp = rflow;
++			cpu = tcpu;
++			goto done;
++		} else if (netdev_custom_steer) {
++			/* don't want just flows, as above already tried */
++			goto try_rps;
++		}
++	}
++
++try_just_flows:
++	if (!netdev_custom_steer) {
++		goto try_rps;
++	}
++	if (flow_table && map) {
++		/* if we have just per-dev flow table, try to move
++		   flows when backlogged */
++		struct rps_dev_flow *rflow;
++		u32 next_cpu;
++
++		/* OK, we didn't find an elephant flow, match, but use
++		 * per rx queue flow table to deal with mice
++		 */
++		rflow = &flow_table->flows[hash & flow_table->mask];
++		tcpu = rflow->cpu;
++		if (tcpu != RPS_NO_CPU) {
++			struct softnet_data *sd;
++			unsigned int qlen;
++
++			sd = &per_cpu(softnet_data, tcpu);
++			qlen = skb_queue_len(&sd->input_pkt_queue);
++
++			if (qlen > (netdev_max_backlog >> netdev_mice_trigger)) {
++				local_sd->try_mouse++;
++				next_cpu = rps_least_backlogged_cpu(map, tcpu);
++				if (next_cpu == RPS_NO_CPU) {
++					next_cpu = tcpu;
++				}
++			} else {
++				/* stick with current cpu, if still okay */
++				local_sd->keep_place++;
++				next_cpu = tcpu;
++			}
++		} else {
++			struct softnet_data *sd;
++			unsigned int qlen;
++
++			local_sd->first_place++;
++
++			/* start with regular rps */
++			next_cpu = map->cpus[reciprocal_scale(hash, map->len)];
++			sd = &per_cpu(softnet_data, next_cpu);
++			qlen = skb_queue_len(&sd->input_pkt_queue);
++
++			if ((qlen > (netdev_max_backlog >> netdev_mice_trigger)) &&
++			    ((next_cpu = rps_least_backlogged_cpu(map, next_cpu))
++			     != RPS_NO_CPU)) {
++				local_sd->try_mouse++;
++			} else {
++				next_cpu = map->cpus[reciprocal_scale(hash, map->len)];
++				local_sd->keep_place++;
++			}
++		}
++
+ 		/*
+ 		 * If the desired CPU (where last recvmsg was done) is
+ 		 * different from current CPU (one in the rx-queue flow
+@@ -4075,8 +4377,10 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+ 		 */
+ 		if (unlikely(tcpu != next_cpu) &&
+ 		    (tcpu >= nr_cpu_ids || !cpu_online(tcpu) ||
+-		     ((int)(per_cpu(softnet_data, tcpu).input_queue_head -
+-		      rflow->last_qtail)) >= 0)) {
++		     !rps_flow_is_backlogged(tcpu, rflow))) {
++			if (tcpu != RPS_NO_CPU) {
++				local_sd->do_move++;
++			}
+ 			tcpu = next_cpu;
+ 			rflow = set_rps_cpu(dev, skb, rflow, next_cpu);
+ 		}
+@@ -4089,8 +4393,15 @@ static int get_rps_cpu(struct net_device *dev, struct sk_buff *skb,
+ 	}
+ 
+ try_rps:
+-
+ 	if (map) {
++		// Try using the used-defined queue decider
++		if (netdev_custom_steer) {
++			cpu = get_user_def_rps_cpu(skb, dev, rxqueue, map, local_sd);
++			if (cpu != -1) {
++				goto done;
++			}
++		}
++
+ 		tcpu = map->cpus[reciprocal_scale(hash, map->len)];
+ 		if (cpu_online(tcpu)) {
+ 			cpu = tcpu;
+@@ -4185,7 +4496,8 @@ static bool skb_flow_limit(struct sk_buff *skb, unsigned int qlen)
+ 	struct softnet_data *sd;
+ 	unsigned int old_flow, new_flow;
+ 
+-	if (qlen < (netdev_max_backlog >> 1))
++	if (qlen < (netdev_max_backlog >>
++		    netdev_custom_steer == 1 ? netdev_flowlim_threshold : 1))
+ 		return false;
+ 
+ 	sd = this_cpu_ptr(&softnet_data);
+@@ -4214,16 +4526,33 @@ static bool skb_flow_limit(struct sk_buff *skb, unsigned int qlen)
+ 	return false;
+ }
+ 
++static inline void rps_record_sock_flow_w_cpu(
++				struct rps_sock_flow_table *table,
++				u32 hash, u8 cpu_id)
++{
++	if (table && hash) {
++		unsigned int index = hash & table->mask;
++		u32 val = hash & ~rps_cpu_mask;
++
++		val |= cpu_id;
++
++		if (table->ents[index] != val)
++			table->ents[index] = val;
++	}
++}
++
+ /*
+  * enqueue_to_backlog is called to queue an skb to a per CPU backlog
+  * queue (may be a remote CPU queue).
+  */
+ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
+-			      unsigned int *qtail)
++			      unsigned int *qtail, struct rps_map *map,
++			      int do_flow_limit, int do_flow_bal)
+ {
+ 	struct softnet_data *sd;
+ 	unsigned long flags;
+ 	unsigned int qlen;
++	int next_cpu = RPS_NO_CPU;
+ 
+ 	sd = &per_cpu(softnet_data, cpu);
+ 
+@@ -4233,7 +4562,29 @@ static int enqueue_to_backlog(struct sk_buff *skb, int cpu,
+ 	if (!netif_running(skb->dev))
+ 		goto drop;
+ 	qlen = skb_queue_len(&sd->input_pkt_queue);
+-	if (qlen <= netdev_max_backlog && !skb_flow_limit(skb, qlen)) {
++	if (qlen <= netdev_max_backlog) {
++		if (netdev_custom_steer) {
++			int flow_limited = do_flow_limit && skb_flow_limit(skb, qlen);
++			if (do_flow_bal && map) {
++				if (flow_limited &&
++					(qlen >= (netdev_max_backlog >> netdev_elephant_trigger))) {
++					/* try to move elephant flow */
++					sd->try_elephant++;
++					next_cpu = rps_least_backlogged_cpu(map, cpu);
++				}
++			}
++
++			struct rps_sock_flow_table *table;
++
++			if (do_flow_bal && next_cpu != RPS_NO_CPU) {
++				table = rcu_dereference(rps_sock_flow_table);
++				if (table) {
++					rps_record_sock_flow_w_cpu(table, skb_get_hash(skb), next_cpu);
++				}
++			}
++		} else if (skb_flow_limit(skb, qlen)) {
++			goto drop;
++		}
+ 		if (qlen) {
+ enqueue:
+ 			__skb_queue_tail(&sd->input_pkt_queue, skb);
+@@ -4244,12 +4595,12 @@ enqueue:
+ 		}
+ 
+ 		/* Schedule NAPI for backlog device
+-		 * We can use non atomic operation since we own the queue lock
+-		 */
++		* We can use non atomic operation since we own the queue lock
++		*/
+ 		if (!__test_and_set_bit(NAPI_STATE_SCHED, &sd->backlog.state)) {
+ 			if (!rps_ipi_queued(sd))
+ 				____napi_schedule(sd, &sd->backlog);
+-		}
++			}
+ 		goto enqueue;
+ 	}
+ 
+@@ -4471,15 +4822,21 @@ static int netif_rx_internal(struct sk_buff *skb)
+ 	if (static_key_false(&rps_needed)) {
+ 		struct rps_dev_flow voidflow, *rflow = &voidflow;
+ 		int cpu;
++		int do_flow_limit = 0;
++		int do_flow_balance = 0;
++		struct rps_map *map = NULL;
+ 
+ 		preempt_disable();
+ 		rcu_read_lock();
+ 
+-		cpu = get_rps_cpu(skb->dev, skb, &rflow);
++		cpu = get_rps_cpu(skb->dev, skb, &rflow,
++		                  &do_flow_limit, &do_flow_balance, &map);
+ 		if (cpu < 0)
+ 			cpu = smp_processor_id();
+ 
+-		ret = enqueue_to_backlog(skb, cpu, &rflow->last_qtail);
++		ret = enqueue_to_backlog(skb, cpu, &rflow->last_qtail,
++		                         map, do_flow_limit,
++		                         do_flow_balance);
+ 
+ 		rcu_read_unlock();
+ 		preempt_enable();
+@@ -4488,7 +4845,7 @@ static int netif_rx_internal(struct sk_buff *skb)
+ 	{
+ 		unsigned int qtail;
+ 
+-		ret = enqueue_to_backlog(skb, get_cpu(), &qtail);
++		ret = enqueue_to_backlog(skb, get_cpu(), &qtail, NULL, 1, 0);
+ 		put_cpu();
+ 	}
+ 	return ret;
+@@ -5144,10 +5501,18 @@ static int netif_receive_skb_internal(struct sk_buff *skb)
+ #ifdef CONFIG_RPS
+ 	if (static_key_false(&rps_needed)) {
+ 		struct rps_dev_flow voidflow, *rflow = &voidflow;
+-		int cpu = get_rps_cpu(skb->dev, skb, &rflow);
++		int cpu;
++		int do_flow_limit = 0;
++		int do_flow_balance = 0;
++		struct rps_map *map = NULL;
++
++		cpu = get_rps_cpu(skb->dev, skb, &rflow,
++		                  &do_flow_limit, &do_flow_balance, &map);
+ 
+ 		if (cpu >= 0) {
+-			ret = enqueue_to_backlog(skb, cpu, &rflow->last_qtail);
++			ret = enqueue_to_backlog(skb, cpu, &rflow->last_qtail,
++			                         map, do_flow_limit,
++			                         do_flow_balance);
+ 			rcu_read_unlock();
+ 			return ret;
+ 		}
+@@ -5177,12 +5542,19 @@ static void netif_receive_skb_list_internal(struct list_head *head)
+ 	if (static_key_false(&rps_needed)) {
+ 		list_for_each_entry_safe(skb, next, head, list) {
+ 			struct rps_dev_flow voidflow, *rflow = &voidflow;
+-			int cpu = get_rps_cpu(skb->dev, skb, &rflow);
++			int cpu;
++			int do_flow_limit = 0;
++			int do_flow_balance = 0;
++			struct rps_map *map = NULL;
++			cpu = get_rps_cpu(skb->dev, skb, &rflow,
++                                  &do_flow_limit, &do_flow_balance, &map);
+ 
+ 			if (cpu >= 0) {
+ 				/* Will be handled, remove from list */
+ 				skb_list_del_init(skb);
+-				enqueue_to_backlog(skb, cpu, &rflow->last_qtail);
++				enqueue_to_backlog(skb, cpu, &rflow->last_qtail,
++								   map, do_flow_limit,
++								   do_flow_balance);
+ 			}
+ 		}
+ 	}
+diff --git a/net/core/net-procfs.c b/net/core/net-procfs.c
+index 63881f72e..6d3cb36f1 100644
+--- a/net/core/net-procfs.c
++++ b/net/core/net-procfs.c
+@@ -148,6 +148,7 @@ static int softnet_seq_show(struct seq_file *seq, void *v)
+ {
+ 	struct softnet_data *sd = v;
+ 	unsigned int flow_limit_count = 0;
++	unsigned int qlen = 0;
+ 
+ #ifdef CONFIG_NET_FLOW_LIMIT
+ 	struct sd_flow_limit *fl;
+@@ -159,12 +160,53 @@ static int softnet_seq_show(struct seq_file *seq, void *v)
+ 	rcu_read_unlock();
+ #endif
+ 
++#ifdef CONFIG_RPS
++	spin_lock(&sd->input_pkt_queue.lock);
++	qlen = skb_queue_len(&sd->input_pkt_queue);
++	spin_unlock(&sd->input_pkt_queue.lock);
++#endif
++
+ 	seq_printf(seq,
+-		   "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x\n",
++		   "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x %08x\n",
+ 		   sd->processed, sd->dropped, sd->time_squeeze, 0,
+ 		   0, 0, 0, 0, /* was fastroute */
+-		   0,	/* was cpu_collision */
+-		   sd->received_rps, flow_limit_count);
++		   0,   /* was cpu_collision */
++		   sd->received_rps, flow_limit_count,
++		   qlen, sd->do_move,
++		   sd->first_place, sd->keep_place,
++		   sd->try_elephant, sd->try_mouse);
++	return 0;
++}
++
++static int softnet_rps_seq_show(struct seq_file *seq, void *v)
++{
++	struct softnet_data *sd = v;
++	unsigned int flow_limit_count = 0;
++	unsigned int qlen = 0;
++
++#ifdef CONFIG_NET_FLOW_LIMIT
++	struct sd_flow_limit *fl;
++
++	rcu_read_lock();
++	fl = rcu_dereference(sd->flow_limit);
++	if (fl)
++	  flow_limit_count = fl->count;
++	rcu_read_unlock();
++#endif
++
++#ifdef CONFIG_RPS
++	spin_lock(&sd->input_pkt_queue.lock);
++	qlen = skb_queue_len(&sd->input_pkt_queue);
++	spin_unlock(&sd->input_pkt_queue.lock);
++#endif
++
++	seq_printf(seq,
++		   "%08x %08x %08x %08x %08x %08x %08x %08x %08x %08x\n",
++		   sd->received_rps, flow_limit_count,
++		   qlen, sd->do_move,
++		   sd->first_place, sd->keep_place,
++		   sd->try_elephant, sd->try_mouse,
++		   sd->user_def_rps_skip, sd->user_def_rps_proc);
+ 	return 0;
+ }
+ 
+@@ -182,6 +224,26 @@ static const struct seq_operations softnet_seq_ops = {
+ 	.show  = softnet_seq_show,
+ };
+ 
++static const struct seq_operations softnet_rps_seq_ops = {
++	.start = softnet_seq_start,
++	.next  = softnet_seq_next,
++	.stop  = softnet_seq_stop,
++	.show  = softnet_rps_seq_show,
++};
++
++static int softnet_rps_seq_open(struct inode *inode, struct file *file)
++{
++	return seq_open(file, &softnet_rps_seq_ops);
++}
++
++static const struct file_operations softnet_rps_seq_fops = {
++	.owner	 = THIS_MODULE,
++	.open    = softnet_rps_seq_open,
++	.read    = seq_read,
++	.llseek  = seq_lseek,
++	.release = seq_release,
++};
++
+ static void *ptype_get_idx(loff_t pos)
+ {
+ 	struct packet_type *pt = NULL;
+@@ -282,6 +344,9 @@ static int __net_init dev_proc_net_init(struct net *net)
+ 	if (!proc_create_seq("softnet_stat", 0444, net->proc_net,
+ 			 &softnet_seq_ops))
+ 		goto out_dev;
++	if (!proc_create("softnet_rps_stat", S_IRUGO, net->proc_net,
++			 &softnet_rps_seq_fops))
++		goto out_dev;
+ 	if (!proc_create_net("ptype", 0444, net->proc_net, &ptype_seq_ops,
+ 			sizeof(struct seq_net_private)))
+ 		goto out_softnet;
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index fe0d255d6..5600eb1aa 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -30,6 +30,8 @@
+ 
+ #include "net-sysfs.h"
+ 
++#define MAX_USER_DEF_RPS_PORT 65535
++
+ #ifdef CONFIG_SYSFS
+ static const char fmt_hex[] = "%#x\n";
+ static const char fmt_dec[] = "%d\n";
+@@ -854,18 +856,198 @@ static ssize_t store_rps_dev_flow_table_cnt(struct netdev_rx_queue *queue,
+ 	return len;
+ }
+ 
++static ssize_t show_rps_user_def(struct netdev_rx_queue *queue, char *buf)
++{
++	u64 value;
++
++	value = atomic64_read(&queue->rps_user_def);
++
++	return sprintf(buf, "0x%016llx: %u, 0x%08x, %u, %u\n", value,
++		       RPS_USER_DEF_OFFSET(value), RPS_USER_DEF_MASK(value),
++		       RPS_USER_DEF_SHIFT(value), RPS_USER_DEF_FILTER_EN(value));
++}
++
++static ssize_t store_rps_user_def(struct netdev_rx_queue *queue, const char *buf, size_t len)
++{
++	u8 shift;
++	u64 value;
++	int rc;
++
++	if (!capable(CAP_NET_ADMIN))
++		return -EPERM;
++
++	rc = kstrtou64(buf, 0, &value);
++	if (rc < 0) {
++		return -EINVAL;
++	}
++
++	shift = RPS_USER_DEF_SHIFT(value);
++	if (shift > 31) {
++		return -EINVAL;
++	}
++
++	atomic64_set(&queue->rps_user_def, value);
++
++	return len;
++}
++
++static ssize_t show_rps_flow_balance(struct netdev_rx_queue *queue, char *buf)
++{
++	int value;
++	value = atomic_read(&queue->rps_flow_balance);
++	return sprintf(buf, "%d\n", value);
++}
++
++static ssize_t store_rps_flow_balance(struct netdev_rx_queue *queue, const char *buf, size_t len)
++{
++	int value;
++	int rc;
++
++	if (!capable(CAP_NET_ADMIN))
++		return -EPERM;
++
++	rc = kstrtoint(buf, 0, &value);
++	if (rc < 0)
++		return rc;
++
++	atomic_set(&queue->rps_flow_balance, value);
++
++	return len;
++}
++
++static ssize_t show_rps_flow_limit(struct netdev_rx_queue *queue, char *buf)
++{
++	int value;
++	value = atomic_read(&queue->rps_flow_limit);
++	return sprintf(buf, "%d\n", value);
++}
++
++static ssize_t store_rps_flow_limit(struct netdev_rx_queue *queue, const char *buf, size_t len)
++{
++	int value;
++	int rc;
++
++	if (!capable(CAP_NET_ADMIN))
++		return -EPERM;
++
++	rc = kstrtoint(buf, 0, &value);
++	if (rc < 0)
++		return rc;
++
++	atomic_set(&queue->rps_flow_limit, value);
++
++	return len;
++}
++
++static ssize_t show_atomic32_value(const atomic_t *const src, char *buf)
++{
++	return sprintf(buf, "0x%08x\n", atomic_read(src));
++}
++
++static ssize_t store_atomic32_value(atomic_t *dst, const char *buf, size_t len, u32 max_value)
++{
++	u32 value;
++	int rc;
++
++	if (!capable(CAP_NET_ADMIN))
++		return -EPERM;
++
++	rc = kstrtou32(buf, 0, &value);
++	if (rc < 0) {
++		return -EINVAL;
++	}
++
++	if (value > max_value) {
++		return -EINVAL;
++	}
++
++	atomic_set(dst, value);
++
++	return len;
++}
++
++static ssize_t show_rps_user_def_dst_port_high(struct netdev_rx_queue *queue, char *buf)
++{
++	return show_atomic32_value(&queue->rps_user_def_dst_port_high, buf);
++}
++
++static ssize_t store_rps_user_def_dst_port_high(struct netdev_rx_queue *queue, const char *buf, size_t len)
++{
++	return store_atomic32_value(&queue->rps_user_def_dst_port_high, buf,
++				    len, MAX_USER_DEF_RPS_PORT);
++}
++
++static ssize_t show_rps_user_def_dst_port_low(struct netdev_rx_queue *queue, char *buf)
++{
++	return show_atomic32_value(&queue->rps_user_def_dst_port_low, buf);
++}
++
++static ssize_t store_rps_user_def_dst_port_low(struct netdev_rx_queue *queue, const char *buf, size_t len)
++{
++	return store_atomic32_value(&queue->rps_user_def_dst_port_low, buf,
++				    len, MAX_USER_DEF_RPS_PORT);
++}
++
++static ssize_t show_rps_user_def_dst_ip_mask(struct netdev_rx_queue *queue, char *buf)
++{
++	return show_atomic32_value(&queue->rps_user_def_dst_ip_mask, buf);
++}
++
++static ssize_t store_rps_user_def_dst_ip_mask(struct netdev_rx_queue *queue, const char *buf, size_t len)
++{
++	return store_atomic32_value(&queue->rps_user_def_dst_ip_mask, buf, len, UINT_MAX);
++}
++
++static ssize_t show_rps_user_def_dst_ip(struct netdev_rx_queue *queue, char *buf)
++{
++		return show_atomic32_value(&queue->rps_user_def_dst_ip, buf);
++}
++
++static ssize_t store_rps_user_def_dst_ip(struct netdev_rx_queue *queue, const char *buf, size_t len)
++{
++	return store_atomic32_value(&queue->rps_user_def_dst_ip, buf, len, UINT_MAX);
++}
++
+ static struct rx_queue_attribute rps_cpus_attribute __ro_after_init
+ 	= __ATTR(rps_cpus, 0644, show_rps_map, store_rps_map);
+ 
+ static struct rx_queue_attribute rps_dev_flow_table_cnt_attribute __ro_after_init
+ 	= __ATTR(rps_flow_cnt, 0644,
+ 		 show_rps_dev_flow_table_cnt, store_rps_dev_flow_table_cnt);
++
++static struct rx_queue_attribute rps_user_def_attribute =
++	__ATTR(rps_user_def, S_IRUGO | S_IWUSR, show_rps_user_def, store_rps_user_def);
++static struct rx_queue_attribute rps_user_def_dst_ip_attribute =
++	__ATTR(rps_user_def_dst_ip, S_IRUGO | S_IWUSR,
++	       show_rps_user_def_dst_ip, store_rps_user_def_dst_ip);
++static struct rx_queue_attribute rps_user_def_dst_ip_mask_attribute =
++	__ATTR(rps_user_def_dst_ip_mask, S_IRUGO | S_IWUSR,
++	       show_rps_user_def_dst_ip_mask, store_rps_user_def_dst_ip_mask);
++static struct rx_queue_attribute rps_user_def_dst_port_low_attribute =
++	__ATTR(rps_user_def_dst_port_low, S_IRUGO | S_IWUSR,
++	       show_rps_user_def_dst_port_low, store_rps_user_def_dst_port_low);
++static struct rx_queue_attribute rps_user_def_dst_port_high_attribute =
++	__ATTR(rps_user_def_dst_port_high, S_IRUGO | S_IWUSR,
++	       show_rps_user_def_dst_port_high, store_rps_user_def_dst_port_high);
++static struct rx_queue_attribute rps_flow_balance_attribute =
++	__ATTR(rps_flow_balance, S_IRUGO | S_IWUSR,
++	    show_rps_flow_balance, store_rps_flow_balance);
++static struct rx_queue_attribute rps_flow_limit_attribute =
++	__ATTR(rps_flow_limit, S_IRUGO | S_IWUSR,
++	    show_rps_flow_limit, store_rps_flow_limit);
+ #endif /* CONFIG_RPS */
+ 
+ static struct attribute *rx_queue_default_attrs[] __ro_after_init = {
+ #ifdef CONFIG_RPS
+ 	&rps_cpus_attribute.attr,
+ 	&rps_dev_flow_table_cnt_attribute.attr,
++	&rps_user_def_attribute.attr,
++	&rps_user_def_dst_ip_attribute.attr,
++	&rps_user_def_dst_ip_mask_attribute.attr,
++	&rps_user_def_dst_port_low_attribute.attr,
++	&rps_user_def_dst_port_high_attribute.attr,
++	&rps_flow_balance_attribute.attr,
++	&rps_flow_limit_attribute.attr,
+ #endif
+ 	NULL
+ };
+@@ -888,6 +1070,11 @@ static void rx_queue_release(struct kobject *kobj)
+ 		RCU_INIT_POINTER(queue->rps_flow_table, NULL);
+ 		call_rcu(&flow_table->rcu, rps_dev_flow_table_release);
+ 	}
++	atomic64_set(&queue->rps_user_def, 0);
++	atomic_set(&queue->rps_user_def_dst_ip, 0);
++	atomic_set(&queue->rps_user_def_dst_ip_mask, 0);
++	atomic_set(&queue->rps_user_def_dst_port_low, 0);
++	atomic_set(&queue->rps_user_def_dst_port_high, 0);
+ #endif
+ 
+ 	memset(kobj, 0, sizeof(*kobj));
+diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+index 2597449ae..7dedfeb3c 100644
+--- a/net/core/sysctl_net_core.c
++++ b/net/core/sysctl_net_core.c
+@@ -368,6 +368,48 @@ static struct ctl_table net_core_table[] = {
+ 		.mode		= 0644,
+ 		.proc_handler	= proc_dointvec
+ 	},
++	{
++		.procname	= "netdev_custom_steer",
++		.data		= &netdev_custom_steer,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec
++	},
++	{
++		.procname	= "netdev_elephant_trigger",
++		.data		= &netdev_elephant_trigger,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec
++	},
++	{
++		.procname	= "netdev_mice_trigger",
++		.data		= &netdev_mice_trigger,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec
++	},
++	{
++		.procname	= "netdev_better_threshold",
++		.data		= &netdev_better_threshold,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec
++	},
++	{
++		.procname	= "netdev_flowlim_threshold",
++		.data		= &netdev_flowlim_threshold,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec
++	},
++	{
++		.procname	= "netdev_dbg_hash",
++		.data		= &netdev_dbg_hash,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec
++	},
+ 	{
+ 		.procname	= "netdev_rss_key",
+ 		.data		= &netdev_rss_key,
+-- 
+2.28.0
+

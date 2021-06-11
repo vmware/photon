@@ -1,22 +1,23 @@
-From 39af4dd101d8932d793719ec89231c0c9be37a2d Mon Sep 17 00:00:00 2001
+From 6aed10d6e61b0efa80ecbb45ff1688927951cff6 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Fri, 24 Jul 2020 14:23:05 +0530
-Subject: [PATCH 6/7] trunk.patch
+Subject: [PATCH 06/11] Add initial support for vxlan trunk to cgw kernel, with
+ ip tool to program
 
-VMware's vxlan trunk implementation.
+Adds a new linux net device, vxlantrunk, that translates vxlan to vlan
 ---
  include/linux/netdevice.h      |    7 +
  include/uapi/linux/rtnetlink.h |    3 +-
  net/ipv4/Makefile              |    2 +-
- net/ipv4/vxlan_trunk.c         | 1853 ++++++++++++++++++++++++++++++++++++++++
+ net/ipv4/vxlan_trunk.c         | 1853 ++++++++++++++++++++++++++++++++
  4 files changed, 1863 insertions(+), 2 deletions(-)
  create mode 100644 net/ipv4/vxlan_trunk.c
 
 diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 4e14926..9d84a57 100644
+index ca5f053c6..cea25fb04 100644
 --- a/include/linux/netdevice.h
 +++ b/include/linux/netdevice.h
-@@ -1410,6 +1410,13 @@ struct net_device_ops {
+@@ -1411,6 +1411,13 @@ struct net_device_ops {
  						u32 flags);
  	int			(*ndo_xsk_async_xmit)(struct net_device *dev,
  						      u32 queue_id);
@@ -31,7 +32,7 @@ index 4e14926..9d84a57 100644
  
  /**
 diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-index 4639936..a8121bc 100644
+index 463993676..a8121bcc4 100644
 --- a/include/uapi/linux/rtnetlink.h
 +++ b/include/uapi/linux/rtnetlink.h
 @@ -13,7 +13,8 @@
@@ -45,7 +46,7 @@ index 4639936..a8121bc 100644
  /****
   *		Routing/neighbour discovery messages.
 diff --git a/net/ipv4/Makefile b/net/ipv4/Makefile
-index 7446b98..6340974 100644
+index 7446b9866..634097494 100644
 --- a/net/ipv4/Makefile
 +++ b/net/ipv4/Makefile
 @@ -28,7 +28,7 @@ obj-$(CONFIG_NET_IPIP) += ipip.o
@@ -59,7 +60,7 @@ index 7446b98..6340974 100644
  obj-$(CONFIG_SYN_COOKIES) += syncookies.o
 diff --git a/net/ipv4/vxlan_trunk.c b/net/ipv4/vxlan_trunk.c
 new file mode 100644
-index 0000000..d59f032
+index 000000000..d59f032e4
 --- /dev/null
 +++ b/net/ipv4/vxlan_trunk.c
 @@ -0,0 +1,1853 @@
@@ -1917,5 +1918,5 @@ index 0000000..d59f032
 +MODULE_ALIAS_NETDEV("vxlantrunk0");
 +MODULE_ALIAS_NETDEV("vlantrunk0");
 -- 
-2.7.4
+2.28.0
 

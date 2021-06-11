@@ -1,20 +1,29 @@
-From 3d889e69e2abc9468d9332124a54c134a00ae1e4 Mon Sep 17 00:00:00 2001
+From 297afaa3707d9efeb3d3815d0f5e6a87c259640b Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Fri, 24 Jul 2020 14:23:44 +0530
-Subject: [PATCH 7/7] arpfilter.patch
+Subject: [PATCH 07/11] Changes for bridge vlan arp filtering to work right
 
-This patchset adds a new vlan id rule for arp netfilter.
+If a bridge port is marked as untagged for vlans, then
+the skbs sent to that bridge port must have their vlan
+cleared. However, this was being done before running the
+netfilter FORWARD hooks, so if a netfilter/arptables rule
+wanted to look at the vlan, it would not see it.
+
+Fix this by deferring the vlan clear until after the netfilter
+hooks have finished.
+
+Added vlan support for arptables command
 ---
  include/linux/skbuff.h                        |  1 +
  include/uapi/linux/netfilter_arp/arp_tables.h |  6 ++-
- net/bridge/br_forward.c                       |  9 +++++
- net/bridge/br_private.h                       | 11 ++++++
- net/bridge/br_vlan.c                          | 14 ++++++-
- net/ipv4/netfilter/arp_tables.c               | 53 ++++++++++++++++++++++++++-
+ net/bridge/br_forward.c                       |  9 ++++
+ net/bridge/br_private.h                       | 11 ++++
+ net/bridge/br_vlan.c                          | 14 ++++-
+ net/ipv4/netfilter/arp_tables.c               | 53 ++++++++++++++++++-
  6 files changed, 89 insertions(+), 5 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 1f9c1b9..5cdafae 100644
+index 3d8ce0367..b7ee4767f 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
 @@ -786,6 +786,7 @@ struct sk_buff {
@@ -26,7 +35,7 @@ index 1f9c1b9..5cdafae 100644
  	__u8			offload_fwd_mark:1;
  	__u8			offload_mr_fwd_mark:1;
 diff --git a/include/uapi/linux/netfilter_arp/arp_tables.h b/include/uapi/linux/netfilter_arp/arp_tables.h
-index a2a0927..6133ea0 100644
+index a2a0927d9..6133ea0c0 100644
 --- a/include/uapi/linux/netfilter_arp/arp_tables.h
 +++ b/include/uapi/linux/netfilter_arp/arp_tables.h
 @@ -59,6 +59,9 @@ struct arpt_arp {
@@ -50,7 +59,7 @@ index a2a0927..6133ea0 100644
  /* This structure defines each of the firewall rules.  Consists of 3
     parts which are 1) general ARP header stuff 2) match specific
 diff --git a/net/bridge/br_forward.c b/net/bridge/br_forward.c
-index 48ddc60..b74c87f 100644
+index 48ddc60b4..b74c87ffa 100644
 --- a/net/bridge/br_forward.c
 +++ b/net/bridge/br_forward.c
 @@ -21,6 +21,12 @@
@@ -77,7 +86,7 @@ index 48ddc60..b74c87f 100644
  	if (!is_skb_forwardable(skb->dev, skb))
  		goto drop;
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 2d6e875..59fb869 100644
+index 2d6e87533..59fb86993 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
 @@ -922,6 +922,13 @@ static inline u16 br_get_pvid(const struct net_bridge_vlan_group *vg)
@@ -106,7 +115,7 @@ index 2d6e875..59fb869 100644
  					  unsigned long val)
  {
 diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-index 5f3950f..d22c7b9 100644
+index a82d0021d..c15a07cbb 100644
 --- a/net/bridge/br_vlan.c
 +++ b/net/bridge/br_vlan.c
 @@ -7,6 +7,12 @@
@@ -122,7 +131,7 @@ index 5f3950f..d22c7b9 100644
  static inline int br_vlan_cmp(struct rhashtable_compare_arg *arg,
  			      const void *ptr)
  {
-@@ -394,8 +400,12 @@ struct sk_buff *br_handle_vlan(struct net_bridge *br,
+@@ -396,8 +402,12 @@ struct sk_buff *br_handle_vlan(struct net_bridge *br,
  		u64_stats_update_end(&stats->syncp);
  	}
  
@@ -138,7 +147,7 @@ index 5f3950f..d22c7b9 100644
  	if (p && (p->flags & BR_VLAN_TUNNEL) &&
  	    br_handle_egress_vlan_tunnel(skb, v)) {
 diff --git a/net/ipv4/netfilter/arp_tables.c b/net/ipv4/netfilter/arp_tables.c
-index 10d8f95..7e151b0 100644
+index fba56cd95..69d8303b4 100644
 --- a/net/ipv4/netfilter/arp_tables.c
 +++ b/net/ipv4/netfilter/arp_tables.c
 @@ -22,6 +22,7 @@
@@ -231,7 +240,7 @@ index 10d8f95..7e151b0 100644
  			e = arpt_next_entry(e);
  			continue;
  		}
-@@ -1653,6 +1696,9 @@ static int __init arp_tables_init(void)
+@@ -1655,6 +1698,9 @@ static int __init arp_tables_init(void)
  	ret = nf_register_sockopt(&arpt_sockopts);
  	if (ret < 0)
  		goto err4;
@@ -241,7 +250,7 @@ index 10d8f95..7e151b0 100644
  
  	return 0;
  
-@@ -1669,6 +1715,9 @@ static void __exit arp_tables_fini(void)
+@@ -1671,6 +1717,9 @@ static void __exit arp_tables_fini(void)
  	nf_unregister_sockopt(&arpt_sockopts);
  	xt_unregister_targets(arpt_builtin_tg, ARRAY_SIZE(arpt_builtin_tg));
  	unregister_pernet_subsys(&arp_tables_net_ops);
@@ -252,5 +261,5 @@ index 10d8f95..7e151b0 100644
  
  EXPORT_SYMBOL(arpt_register_table);
 -- 
-2.7.4
+2.28.0
 

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.191
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -112,14 +112,17 @@ Patch100:       0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 # Patch to perform continuous testing on RNG from Noise Source
 Patch101:       0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
 #HCX-Patches
-Patch102:       0001-arp_probe_unknown_unicast.patch
-Patch103:       0002-ip_tunnel_ect_warn.patch
-Patch104:       0003-ipip_ipsec.patch
-Patch105:       0004-fou_key.patch
-Patch106:       0005-fou_unknown.patch
-Patch107:       0006-trunk.patch
-Patch108:       0007-arpfilter.patch
-Patch109:       0008-macflap_macflaplong.patch
+Patch102:       0001-Active-probing-of-dst-mac-of-unknown-unicast.patch
+Patch103:       0002-Skip-IP_ECN_decapsulate-for-gretap-devices.patch
+Patch104:       0003-Handle-ipsec-in-ipip-more-correctly.patch
+Patch105:       0004-De-cap-fou-traffic-into-correct-tunnel-device-s.patch
+Patch106:       0005-Add-unknown-fou-tracking-to-kernel.patch
+Patch107:       0006-Add-initial-support-for-vxlan-trunk-to-cgw-kernel-wi.patch
+Patch108:       0007-Changes-for-bridge-vlan-arp-filtering-to-work-right.patch
+Patch109:       0008-Add-support-for-mac-flapping-and-long-mac-flapping-p.patch
+Patch110:       0009-vmxnet3-Avoid-fragmentation-by-giving-each-vmxnet3-d.patch
+Patch111:       0010-RPS-flow-balance.patch
+Patch112:       0011-add-mss-clamp-support-to-gretap-baseimage.patch
 
 # Lockdown support
 Patch150:        lockdown/0001-Add-the-ability-to-lock-down-access-to-the-running-k.patch
@@ -285,6 +288,9 @@ popd
 %patch107 -p1
 %patch108 -p1
 %patch109 -p1
+%patch110 -p1
+%patch111 -p1
+%patch112 -p1
 
 %patch150 -p1
 %patch151 -p1
@@ -471,6 +477,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jul 02 2021 Keerthana K <keerthanak@vmware.com> 4.19.191-4
+-   HCX custom patches
+-   Enable HCX kernel configs
 *   Thu Jun 24 2021 Loïc <4661917+HacKurx@users.noreply.github.com> 4.19.191-3
 -   EMUTRAMP: use the prefix X86_ for error codes
 *   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.191-2

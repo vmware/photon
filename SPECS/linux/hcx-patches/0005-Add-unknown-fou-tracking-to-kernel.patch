@@ -1,15 +1,22 @@
-From 4d7a1518d71c9ff6dbcd72dff47072cc900dd0c6 Mon Sep 17 00:00:00 2001
+From bea9a593b54f50121e5aa2e753d6cb7c1e0e34d8 Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
-Date: Fri, 24 Jul 2020 14:22:16 +0530
-Subject: [PATCH 5/7] fou_unknown.patch
+Date: Tue, 22 Sep 2020 16:23:24 +0530
+Subject: [PATCH 05/11] Add unknown fou tracking to kernel
 
-Improvements to fou key patch for NAT detection.
+Keep unknown fou tuples in a hash table, aging them out, as
+appropriate. Allow user space to query the entries, and also
+receive pkt notifications. Allow user space to muffle entries
+it is not interested in. >imit the rate at which notifications
+will be sent to user space.
+
+This will allow cgw daemon to use this method for detecting and managing
+Fou NAT tunnels, instead of trying to monitor conntrack entries.
 ---
- net/ipv4/ipip.c | 550 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ net/ipv4/ipip.c | 550 ++++++++++++++++++++++++++++++++++++++++++++++++
  1 file changed, 550 insertions(+)
 
 diff --git a/net/ipv4/ipip.c b/net/ipv4/ipip.c
-index 9696d7d..efc41e5 100644
+index 2a15f8883..6c9bcb2e8 100644
 --- a/net/ipv4/ipip.c
 +++ b/net/ipv4/ipip.c
 @@ -106,6 +106,8 @@
@@ -28,16 +35,16 @@ index 9696d7d..efc41e5 100644
 +#include <net/genetlink.h>
  #include <net/dst_metadata.h>
  
- #ifdef CONFIG_SYSCTL
-@@ -134,6 +137,7 @@ MODULE_PARM_DESC(log_ecn_error, "Log packets received with corrupted ECN");
- static unsigned int ipip_net_id __read_mostly;
+ static bool log_ecn_error = true;
+@@ -133,6 +133,7 @@ static unsigned int ipip_net_id __read_mostly;
  
  static int ipip_tunnel_init(struct net_device *dev);
-+static void ipip_handle_unknown_fou(struct net *net, struct sk_buff *skb);
  static struct rtnl_link_ops ipip_link_ops __read_mostly;
++static void ipip_handle_unknown_fou(struct net *net, struct sk_buff *skb);
  
- #ifdef CONFIG_SYSCTL
-@@ -289,6 +293,9 @@ static int ipip_tunnel_rcv(struct sk_buff *skb, u8 ipproto)
+ static int ipip_err(struct sk_buff *skb, u32 info)
+ {
+@@ -296,6 +300,9 @@ static int ipip_tunnel_rcv(struct sk_buff *skb, u8 ipproto)
  		return ip_tunnel_rcv(tunnel, skb, tpi, tun_dst, log_ecn_error);
  	}
  
@@ -47,7 +54,7 @@ index 9696d7d..efc41e5 100644
  	return -1;
  
  drop:
-@@ -296,6 +303,527 @@ static int ipip_tunnel_rcv(struct sk_buff *skb, u8 ipproto)
+@@ -303,6 +310,527 @@ drop:
  	return 0;
  }
  
@@ -575,7 +582,7 @@ index 9696d7d..efc41e5 100644
  static int ipip_rcv(struct sk_buff *skb)
  {
  	return ipip_tunnel_rcv(skb, IPPROTO_IPIP);
-@@ -594,6 +1122,7 @@ static int ipip_newlink(struct net *src_net, struct net_device *dev,
+@@ -601,6 +1129,7 @@ static int ipip_newlink(struct net *src_net, struct net_device *dev,
  	ipip_netlink_parms(data, &p, &t->collect_md, &fwmark);
  	if (fou_key_multi_port) {
  		ipip_fou_fixup_key(&p, &ipencap);
@@ -583,7 +590,7 @@ index 9696d7d..efc41e5 100644
  	}
  	return ip_tunnel_newlink(dev, tb, &p, fwmark);
  }
-@@ -626,6 +1155,10 @@ static int ipip_changelink(struct net_device *dev, struct nlattr *tb[],
+@@ -633,6 +1162,10 @@ static int ipip_changelink(struct net_device *dev, struct nlattr *tb[],
  	    (!(dev->flags & IFF_POINTOPOINT) && p.iph.daddr))
  		return -EINVAL;
  
@@ -594,7 +601,7 @@ index 9696d7d..efc41e5 100644
  	return ip_tunnel_changelink(dev, tb, &p, fwmark);
  }
  
-@@ -786,9 +1319,18 @@ static int __init ipip_init(void)
+@@ -793,9 +1326,18 @@ static int __init ipip_init(void)
  	ipip_sysctl_init();
  #endif
  
@@ -613,7 +620,7 @@ index 9696d7d..efc41e5 100644
  rtnl_link_failed:
  #if IS_ENABLED(CONFIG_MPLS)
  	xfrm4_tunnel_deregister(&mplsip_handler, AF_MPLS);
-@@ -803,6 +1345,10 @@ static int __init ipip_init(void)
+@@ -810,6 +1352,10 @@ xfrm_tunnel_ipip_failed:
  
  static void __exit ipip_fini(void)
  {
@@ -624,7 +631,7 @@ index 9696d7d..efc41e5 100644
  	rtnl_link_unregister(&ipip_link_ops);
  	if (xfrm4_tunnel_deregister(&ipip_handler, AF_INET))
  		pr_info("%s: can't deregister tunnel\n", __func__);
-@@ -811,6 +1357,10 @@ static void __exit ipip_fini(void)
+@@ -818,6 +1364,10 @@ static void __exit ipip_fini(void)
  		pr_info("%s: can't deregister tunnel\n", __func__);
  #endif
  	unregister_pernet_device(&ipip_net_ops);
@@ -632,9 +639,9 @@ index 9696d7d..efc41e5 100644
 +		ipip_fou_unk_purge();
 +		rcu_barrier();
 +	}
- 
  #ifdef CONFIG_SYSCTL
  	unregister_net_sysctl_table(ipip_sysctl_header);
+ #endif
 -- 
-2.7.4
+2.28.0
 

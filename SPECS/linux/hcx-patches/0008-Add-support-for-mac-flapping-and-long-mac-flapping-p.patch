@@ -1,15 +1,38 @@
-From: Harinadh D <hdommaraju@vmware.com>
-Date: Fri, 31 Jul 2020 14:20:01 +0530
-Subject: mac-flap.patch,mac-flap-long.patch
+From 2147d021824e35bbb5da0b5d2cfa9b888093d45c Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 11 Jun 2021 09:23:06 +0000
+Subject: [PATCH 08/11] Add support for mac-flapping and long mac-flapping
+ prevention
 
-Detect if there is a mac address flap happening and add a flap threshold
-mac flap detection for unicast ARP replies with long threshold delay
+Add fields to the bridge so that it can track when macs
+move from one bridge port to another. If that happens
+within a small enough threshold, consider it a flap
+and drop the packet, as well as noting the time.
+
+Continue dropping packets from the new bridge port until
+a second threshold is reached, without having seen any
+packets on the original bridge port.
+
+Log packets dropped and number of flaps when clearing,
+subject to rate-limit.
+
+For some packets, do an additional flap check with a longer
+timeout. This is for handling the case where VDR may send an
+ARP reply (which is seen by the bridge) to a different host,
+without the bridge having seen the real arp request or reply.
 ---
-diff --git linux-4.19.129/net/bridge/br_device.c linux-4.19.129-patched/net/bridge/br_device.c
-index b8396ff..a7cba79 100644
---- linux-4.19.129/net/bridge/br_device.c
-+++ linux-4.19.129-patched/net/bridge/br_device.c
-@@ -463,5 +463,8 @@ void br_dev_setup(struct net_device *dev)
+ net/bridge/br_device.c   |   3 +
+ net/bridge/br_fdb.c      | 141 +++++++++++++++++++++++++++++++++++++--
+ net/bridge/br_input.c    |  22 +++++-
+ net/bridge/br_private.h  |  14 +++-
+ net/bridge/br_sysfs_br.c |  83 +++++++++++++++++++++++
+ 5 files changed, 253 insertions(+), 10 deletions(-)
+
+diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+index 30c19f9f3..9f2efc162 100644
+--- a/net/bridge/br_device.c
++++ b/net/bridge/br_device.c
+@@ -464,5 +464,8 @@ void br_dev_setup(struct net_device *dev)
  	br_netfilter_rtable_init(br);
  	br_stp_timer_init(br);
  	br_multicast_init(br);
@@ -18,10 +41,10 @@ index b8396ff..a7cba79 100644
 +	br->flap_long_threshold = BR_DEFAULT_FLAP_LONG_THRESHOLD;
  	INIT_DELAYED_WORK(&br->gc_work, br_fdb_cleanup);
  }
-diff --git linux-4.19.129/net/bridge/br_fdb.c linux-4.19.129-patched/net/bridge/br_fdb.c
-index 4d4b9b5..87df1c9 100644
---- linux-4.19.129/net/bridge/br_fdb.c
-+++ linux-4.19.129-patched/net/bridge/br_fdb.c
+diff --git a/net/bridge/br_fdb.c b/net/bridge/br_fdb.c
+index 4d4b9b5ea..87df1c91d 100644
+--- a/net/bridge/br_fdb.c
++++ b/net/bridge/br_fdb.c
 @@ -27,6 +27,13 @@
  #include <net/switchdev.h>
  #include <trace/events/bridge.h>
@@ -220,10 +243,10 @@ index 4d4b9b5..87df1c9 100644
  		rcu_read_unlock();
  		local_bh_enable();
  	} else if (ndm->ndm_flags & NTF_EXT_LEARNED) {
-diff --git linux-4.19.129/net/bridge/br_input.c linux-4.19.129-patched/net/bridge/br_input.c
-index 6d2a951..554eba9 100644
---- linux-4.19.129/net/bridge/br_input.c
-+++ linux-4.19.129-patched/net/bridge/br_input.c
+diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+index 6d2a951cd..554eba9be 100644
+--- a/net/bridge/br_input.c
++++ b/net/bridge/br_input.c
 @@ -30,9 +30,11 @@ int br_arp_probe __read_mostly = 1;
  int br_arp_probe_per_packets __read_mostly = 8192;
  u8 br_arp_probe_src_mac[ETH_ALEN+1] = {0};
@@ -277,10 +300,10 @@ index 6d2a951..554eba9 100644
  }
  
  /* note: already called with rcu_read_lock */
-diff --git linux-4.19.129/net/bridge/br_private.h linux-4.19.129-patched/net/bridge/br_private.h
-index 59fb869..fd06e69 100644
---- linux-4.19.129/net/bridge/br_private.h
-+++ linux-4.19.129-patched/net/bridge/br_private.h
+diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+index 59fb86993..fd06e699a 100644
+--- a/net/bridge/br_private.h
++++ b/net/bridge/br_private.h
 @@ -188,6 +188,10 @@ struct net_bridge_fdb_entry {
  	/* write-heavy members should not affect lookups */
  	unsigned long			updated ____cacheline_aligned_in_smp;
@@ -316,10 +339,10 @@ index 59fb869..fd06e69 100644
  
  int br_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
  		  struct net_device *dev, const unsigned char *addr, u16 vid);
-diff --git linux-4.19.129/net/bridge/br_sysfs_br.c linux-4.19.129-patched/net/bridge/br_sysfs_br.c
-index 14bd300..76c3376 100644
---- linux-4.19.129/net/bridge/br_sysfs_br.c
-+++ linux-4.19.129-patched/net/bridge/br_sysfs_br.c
+diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
+index 14bd30081..76c337688 100644
+--- a/net/bridge/br_sysfs_br.c
++++ b/net/bridge/br_sysfs_br.c
 @@ -786,6 +786,86 @@ static ssize_t default_pvid_store(struct device *d,
  }
  static DEVICE_ATTR_RW(default_pvid);
@@ -417,3 +440,6 @@ index 14bd300..76c3376 100644
  	NULL
  };
  
+-- 
+2.28.0
+

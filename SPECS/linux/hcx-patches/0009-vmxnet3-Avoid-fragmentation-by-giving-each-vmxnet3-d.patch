@@ -1,0 +1,253 @@
+From 8c6497f41ebab923e0d476acad72885eb5eb9bac Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 11 Jun 2021 09:25:53 +0000
+Subject: [PATCH 09/11] vmxnet3: Avoid fragmentation by giving each vmxnet3
+ device a per-rx-queue page
+
+Linux network stack uses an allocation page cache for skbs.  The
+purpose is to reduce the number of page allocations that it needs to
+make, and it works by allocating a group of pages, and then
+sub-allocating skb memory from them.  When all skbs referencing the
+shared pages are freed, then the block of pages is finally freed.
+
+When these skbs are all freed close together in time, this works fine.
+However, what can happen is that there are multiple nics (or multiple
+rx-queues in a single nic), and the skbs are allocated to fill the rx
+ring(s). If some nics or queues are far more active than others, the
+entries in the less busy nic/queue may end up referencing a page
+block, while all of the other packets that referenced that block of
+pages are freed.
+
+The result of this is that the memory used by an appliance for its rx
+rings can slowly grow to be much greater than it was originally.
+
+This patch fixes that by giving each vmxnet3 device a per-rx-queue page
+cache.
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 78 +++++++++++++++++++++++++++++--
+ drivers/net/vmxnet3/vmxnet3_int.h |  2 +
+ include/linux/skbuff.h            |  2 +
+ net/core/skbuff.c                 | 18 +++++--
+ 4 files changed, 90 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 167e44bf6..a6291e23c 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -32,6 +32,34 @@
+ char vmxnet3_driver_name[] = "vmxnet3";
+ #define VMXNET3_DRIVER_DESC "VMware vmxnet3 virtual NIC driver"
+ 
++#ifdef CONFIG_SYSCTL
++#include <linux/sysctl.h>
++static struct ctl_table_header *vmxnet3_sysctl_header;
++int vmxnet3_rcvq_avoid_frag __read_mostly = 0;
++static struct ctl_table vmxnet3_sysctl_table[] = {
++	{
++			.procname       = "vmxnet3_rcvq_avoid_frag",
++			.data           = &vmxnet3_rcvq_avoid_frag,
++			.maxlen         = sizeof(int),
++			.mode           = 0644,
++			.proc_handler   = proc_dointvec,
++	},
++	{}
++};
++
++static int vmxnet3_sysctl_init(void)
++{
++	vmxnet3_sysctl_header = register_net_sysctl(&init_net, "net", vmxnet3_sysctl_table);
++	if (vmxnet3_sysctl_header == NULL) {
++		printk(KERN_ERR "vmxnet3: can't register to sysctl");
++		return -ENOMEM;
++	}
++	return 0;
++}
++#else
++#define vmxnet3_rcvq_avoid_frag 0
++#endif
++
+ /*
+  * PCI Device ID Table
+  * Last entry must be all 0s
+@@ -574,9 +602,17 @@ vmxnet3_rq_alloc_rx_buf(struct vmxnet3_rx_queue *rq, u32 ring_idx,
+ 
+ 		if (rbi->buf_type == VMXNET3_RX_BUF_SKB) {
+ 			if (rbi->skb == NULL) {
+-				rbi->skb = __netdev_alloc_skb_ip_align(adapter->netdev,
+-								       rbi->len,
+-								       GFP_KERNEL);
++				if (vmxnet3_rcvq_avoid_frag) {
++					rbi->skb = ___netdev_alloc_skb(adapter->netdev,
++								       rbi->len + NET_IP_ALIGN, GFP_KERNEL,
++								       &adapter->frag_cache[rq->qid]);
++					if (NET_IP_ALIGN && rbi->skb)
++						skb_reserve(rbi->skb, NET_IP_ALIGN);
++				} else {
++					rbi->skb = __netdev_alloc_skb_ip_align(adapter->netdev,
++									       rbi->len,
++									       GFP_KERNEL);
++				}
+ 				if (unlikely(rbi->skb == NULL)) {
+ 					rq->stats.rx_buf_alloc_failure++;
+ 					break;
+@@ -1425,8 +1461,16 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 			rxDataRingUsed =
+ 				VMXNET3_RX_DATA_RING(adapter, rcd->rqID);
+ 			len = rxDataRingUsed ? rcd->len : rbi->len;
+-			new_skb = netdev_alloc_skb_ip_align(adapter->netdev,
+-							    len);
++			if (vmxnet3_rcvq_avoid_frag) {
++				new_skb = ___netdev_alloc_skb(adapter->netdev,
++							      len + NET_IP_ALIGN, GFP_ATOMIC,
++							      &adapter->frag_cache[rq->qid]);
++				if (NET_IP_ALIGN && new_skb)
++					skb_reserve(new_skb, NET_IP_ALIGN);
++			} else {
++				new_skb = netdev_alloc_skb_ip_align(adapter->netdev,
++								    len);
++			}
+ 			if (new_skb == NULL) {
+ 				/* Skb allocation failed, do not handover this
+ 				 * skb to stack. Reuse it. Drop the existing pkt
+@@ -1487,6 +1531,9 @@ vmxnet3_rq_rx_complete(struct vmxnet3_rx_queue *rq,
+ 					     le32_to_cpu(rcd->rssHash),
+ 					     PKT_HASH_TYPE_L3);
+ #endif
++			if (vmxnet3_rcvq_avoid_frag) {
++				skb_record_rx_queue(ctx->skb, rq->qid);
++			}
+ 			skb_put(ctx->skb, rcd->len);
+ 
+ 			if (VMXNET3_VERSION_GE_2(adapter) &&
+@@ -3696,6 +3743,21 @@ vmxnet3_remove_device(struct pci_dev *pdev)
+ 			  adapter->shared, adapter->shared_pa);
+ 	dma_unmap_single(&adapter->pdev->dev, adapter->adapter_pa,
+ 			 sizeof(struct vmxnet3_adapter), PCI_DMA_TODEVICE);
++	if (vmxnet3_rcvq_avoid_frag) {
++		int i;
++		for (i = 0; i < VMXNET3_DEVICE_MAX_RX_QUEUES; i++) {
++			struct page *page;
++			struct page_frag_cache *nc;
++
++			nc = &adapter->frag_cache[i];
++			if (unlikely(!nc->va)) {
++				/* nothing to do */
++				continue;
++			}
++			page = virt_to_page(nc->va);
++			__page_frag_cache_drain(page, nc->pagecnt_bias);
++		}
++	}
+ 	free_netdev(netdev);
+ }
+ 
+@@ -3913,6 +3975,9 @@ vmxnet3_init_module(void)
+ {
+ 	pr_info("%s - version %s\n", VMXNET3_DRIVER_DESC,
+ 		VMXNET3_DRIVER_VERSION_REPORT);
++#ifdef CONFIG_SYSCTL
++	vmxnet3_sysctl_init();
++#endif
+ 	return pci_register_driver(&vmxnet3_driver);
+ }
+ 
+@@ -3922,6 +3987,9 @@ module_init(vmxnet3_init_module);
+ static void
+ vmxnet3_exit_module(void)
+ {
++#ifdef CONFIG_SYSCTL
++	unregister_net_sysctl_table(vmxnet3_sysctl_header);
++#endif
+ 	pci_unregister_driver(&vmxnet3_driver);
+ }
+ 
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index e910596b7..7e8767007 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -42,6 +42,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/workqueue.h>
+ #include <linux/uaccess.h>
++#include <linux/mm.h>
+ #include <asm/dma.h>
+ #include <asm/page.h>
+ 
+@@ -362,6 +363,7 @@ struct vmxnet3_adapter {
+ 	dma_addr_t			shared_pa;
+ 	dma_addr_t queue_desc_pa;
+ 	dma_addr_t coal_conf_pa;
++	struct page_frag_cache          frag_cache[VMXNET3_DEVICE_MAX_RX_QUEUES];
+ 
+ 	/* Wake-on-LAN */
+ 	u32     wol;
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index b7ee4767f..145a5d257 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -2662,6 +2662,8 @@ void *netdev_alloc_frag(unsigned int fragsz);
+ 
+ struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int length,
+ 				   gfp_t gfp_mask);
++struct sk_buff *___netdev_alloc_skb(struct net_device *dev, unsigned int length,
++				    gfp_t gfp_mask, struct page_frag_cache *nc);
+ 
+ /**
+  *	netdev_alloc_skb - allocate an skbuff for rx on a specific device
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index ea9684bcc..e57f970e5 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -375,10 +375,11 @@ void *napi_alloc_frag(unsigned int fragsz)
+ EXPORT_SYMBOL(napi_alloc_frag);
+ 
+ /**
+- *	__netdev_alloc_skb - allocate an skbuff for rx on a specific device
++ *	___netdev_alloc_skb - allocate an skbuff for rx on a specific device
+  *	@dev: network device to receive on
+  *	@len: length to allocate
+  *	@gfp_mask: get_free_pages mask, passed to alloc_skb
++ * @nc: page frag cache
+  *
+  *	Allocate a new &sk_buff and assign it a usage count of one. The
+  *	buffer has NET_SKB_PAD headroom built in. Users should allocate
+@@ -387,10 +388,9 @@ EXPORT_SYMBOL(napi_alloc_frag);
+  *
+  *	%NULL is returned if there is no free memory.
+  */
+-struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int len,
+-				   gfp_t gfp_mask)
++struct sk_buff *___netdev_alloc_skb(struct net_device *dev, unsigned int len,
++				   gfp_t gfp_mask, struct page_frag_cache *nc)
+ {
+-	struct page_frag_cache *nc;
+ 	unsigned long flags;
+ 	struct sk_buff *skb;
+ 	bool pfmemalloc;
+@@ -418,7 +418,8 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int len,
+ 
+ 	local_irq_save(flags);
+ 
+-	nc = this_cpu_ptr(&netdev_alloc_cache);
++	if (!nc)
++		nc = this_cpu_ptr(&netdev_alloc_cache);
+ 	data = page_frag_alloc(nc, len, gfp_mask);
+ 	pfmemalloc = nc->pfmemalloc;
+ 
+@@ -445,6 +446,13 @@ skb_success:
+ skb_fail:
+ 	return skb;
+ }
++EXPORT_SYMBOL(___netdev_alloc_skb);
++
++struct sk_buff *__netdev_alloc_skb(struct net_device *dev, unsigned int len,
++				   gfp_t gfp_mask)
++{
++	return ___netdev_alloc_skb(dev, len, gfp_mask, NULL);
++}
+ EXPORT_SYMBOL(__netdev_alloc_skb);
+ 
+ /**
+-- 
+2.28.0
+

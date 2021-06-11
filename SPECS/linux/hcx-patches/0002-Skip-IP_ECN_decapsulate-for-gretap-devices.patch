@@ -1,0 +1,119 @@
+From d453c2d09f612d70e9d6d1d81de3584c42369b5c Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 18 Jun 2021 09:08:46 +0000
+Subject: [PATCH 02/11] Skip IP_ECN_decapsulate for gretap devices
+
+ip_tunnel decap code includes a call to do nested ECN processing.
+This code doesn't work correctly when the tunnel device
+encaps ethernet. It tries to look at the wrong part of the packet,
+so may generate spurious warnings.
+
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ include/net/ip_tunnels.h |  1 +
+ net/ipv4/ip_tunnel.c | 63 +++++++++++++++++++++++++++++++++++++-------
+ 2 files changed, 55 insertions(+), 9 deletions(-)
+
+diff --git a/include/net/ip_tunnels.h b/include/net/ip_tunnels.h
+index f8873c4eb..e4633aaba 100644
+--- a/include/net/ip_tunnels.h
++++ b/include/net/ip_tunnels.h
+@@ -272,6 +272,7 @@ static inline void ip_tunnel_init_flow(struct flowi4 *fl4,
+ 	fl4->flowi4_mark = mark;
+ }
+ 
++int ipip_sysctl_init(void);
+ int ip_tunnel_init(struct net_device *dev);
+ void ip_tunnel_uninit(struct net_device *dev);
+ void  ip_tunnel_dellink(struct net_device *dev, struct list_head *head);
+diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+index bdd073ea3..13c6009a2 100644
+--- a/net/ipv4/ip_tunnel.c
++++ b/net/ipv4/ip_tunnel.c
+@@ -51,6 +51,9 @@
+ #include <net/dsfield.h>
+ #include <net/inet_ecn.h>
+ #include <net/xfrm.h>
++#ifdef CONFIG_SYSCTL
++#include <linux/sysctl.h>
++#endif
+ #include <net/net_namespace.h>
+ #include <net/netns/generic.h>
+ #include <net/rtnetlink.h>
+@@ -63,6 +66,39 @@
+ #include <net/ip6_route.h>
+ #endif
+ 
++#ifdef CONFIG_SYSCTL
++struct ctl_table_header *ipip_sysctl_header = NULL;
++int ipip_tunnel_skip_encap_decap __read_mostly = 0;
++EXPORT_SYMBOL_GPL(ipip_tunnel_skip_encap_decap);
++EXPORT_SYMBOL_GPL(ipip_sysctl_header);
++
++struct ctl_table ipip_sysctl_table[] = {
++	{
++		.procname       = "ipip_tunnel_skip_encap_decap",
++		.data           = &ipip_tunnel_skip_encap_decap,
++		.maxlen         = sizeof(int),
++		.mode           = 0644,
++		.proc_handler   = proc_dointvec,
++	},
++	{}
++};
++EXPORT_SYMBOL_GPL(ipip_sysctl_table);
++
++int ipip_sysctl_init(void)
++{
++	ipip_sysctl_header = register_net_sysctl(&init_net, "net/ipv4", ipip_sysctl_table);
++	if (ipip_sysctl_header == NULL) {
++		printk(KERN_ERR "ipip: can't register to sysctl");
++		return -ENOMEM;
++	}
++	return 0;
++}
++EXPORT_SYMBOL_GPL(ipip_sysctl_init);
++
++#else
++#define ipip_tunnel_skip_encap_decap 0
++#endif
++
+ static unsigned int ip_tunnel_hash(__be32 key, __be32 remote)
+ {
+ 	return hash_32((__force u32)key ^ (__force u32)remote,
+@@ -403,15 +439,24 @@ int ip_tunnel_rcv(struct ip_tunnel *tunnel, struct sk_buff *skb,
+ 
+ 	skb_reset_network_header(skb);
+ 
+-	err = IP_ECN_decapsulate(iph, skb);
+-	if (unlikely(err)) {
+-		if (log_ecn_error)
+-			net_info_ratelimited("non-ECT from %pI4 with TOS=%#x\n",
+-					&iph->saddr, iph->tos);
+-		if (err > 1) {
+-			++tunnel->dev->stats.rx_frame_errors;
+-			++tunnel->dev->stats.rx_errors;
+-			goto drop;
++	/* If the device is gretap, or similar, the network header is
++	 * pointing to the encapped ether header now, so the
++	 * IP_ECN_decapsulate check doesn't work right.  It could be
++	 * made to work right, but isn't needed for our use case.  So
++	 * just skip it.
++	 */
++	if ((ipip_tunnel_skip_encap_decap && tunnel->dev->type != ARPHRD_ETHER)
++	     || ipip_tunnel_skip_encap_decap == 0) {
++		err = IP_ECN_decapsulate(iph, skb);
++		if (unlikely(err)) {
++			if (log_ecn_error)
++				net_info_ratelimited("non-ECT from %pI4 with TOS=%#x\n",
++						&iph->saddr, iph->tos);
++			if (err > 1) {
++				++tunnel->dev->stats.rx_frame_errors;
++				++tunnel->dev->stats.rx_errors;
++				goto drop;
++			}
+ 		}
+ 	}
+ 
+-- 
+2.28.0
+

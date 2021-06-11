@@ -1,0 +1,302 @@
+From 5a5aea39d55265bc336eb1448a625056b2a6a00f Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Tue, 9 Feb 2021 05:37:43 +0000
+Subject: [PATCH 11/11] add mss clamp support to gretap - baseimage
+
+Add mss_clamp support to gretap devices. This lets the gretap device
+limit the mss value TCP is able to get through to the peer, which
+allows them to use an mss value that gets rid of fragmentation through
+the L2C (for the TCP sessions that use it).
+
+mss clamp value must be configured as opposed to determined by PMTU,
+because of the custom routing used within the appliance. For 1500 mtu
+uplinks, a value of 1348 is recommended.
+
+Will be enabled by config-engine, when told to by mgr, and mgr will
+have a zql (or whatever) to enable/disable the feature.
+---
+ include/uapi/linux/if_tunnel.h |   2 +
+ net/ipv4/ip_gre.c              | 171 +++++++++++++++++++++++++++++++++
+ net/ipv4/ip_tunnel.c           |   1 +
+ 3 files changed, 174 insertions(+)
+
+diff --git a/include/uapi/linux/if_tunnel.h b/include/uapi/linux/if_tunnel.h
+index 1b3d148c4..c41217317 100644
+--- a/include/uapi/linux/if_tunnel.h
++++ b/include/uapi/linux/if_tunnel.h
+@@ -53,6 +53,7 @@ struct ip_tunnel_parm {
+ 	__be32			i_key;
+ 	__be32			o_key;
+ 	struct iphdr		iph;
++    __u16           mss_clamp;
+ };
+ 
+ enum {
+@@ -140,6 +141,7 @@ enum {
+ 	IFLA_GRE_ERSPAN_VER,
+ 	IFLA_GRE_ERSPAN_DIR,
+ 	IFLA_GRE_ERSPAN_HWID,
++	IFLA_GRE_MSS_CLAMP,
+ 	__IFLA_GRE_MAX,
+ };
+ 
+diff --git a/net/ipv4/ip_gre.c b/net/ipv4/ip_gre.c
+index de6f89511..9d14e0083 100644
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -49,6 +49,7 @@
+ #include <net/gre.h>
+ #include <net/dst_metadata.h>
+ #include <net/erspan.h>
++#include <net/tcp.h>  /* for TCPOLEN_MSS */
+ 
+ /*
+    Problems & solutions
+@@ -107,6 +108,35 @@
+    Alexey Kuznetsov.
+  */
+ 
++#ifdef CONFIG_SYSCTL
++#include <linux/sysctl.h>
++static struct ctl_table_header *gre_sysctl_header;
++int gre_mss_clamp __read_mostly = 0;
++EXPORT_SYMBOL(gre_mss_clamp);
++static int gre_tap_mss_clamp(struct sk_buff *skb, int max_mss);
++static struct ctl_table gre_sysctl_table[] = {
++	{
++		.procname       = "gre_mss_clamp",
++		.data           = &gre_mss_clamp,
++		.maxlen         = sizeof(int),
++		.mode           = 0644,
++		.proc_handler   = proc_dointvec,
++	},
++	{}
++};
++static int gre_sysctl_init(void)
++{
++	gre_sysctl_header = register_net_sysctl(&init_net, "net/ipv4", gre_sysctl_table);
++	if (gre_sysctl_header == NULL) {
++		printk(KERN_ERR "gre: can't register to sysctl");
++		return -ENOMEM;
++	}
++	return 0;
++}
++#else
++#define gre_mss_clamp 0
++#endif
++
+ static bool log_ecn_error = true;
+ module_param(log_ecn_error, bool, 0644);
+ MODULE_PARM_DESC(log_ecn_error, "Log packets received with corrupted ECN");
+@@ -700,6 +730,12 @@ static netdev_tx_t ipgre_xmit(struct sk_buff *skb,
+ 	if (gre_handle_offloads(skb, !!(tunnel->parms.o_flags & TUNNEL_CSUM)))
+ 		goto free_skb;
+ 
++	if (gre_mss_clamp) {
++		if ((tunnel->parms.mss_clamp != 0) &&
++		     gre_tap_mss_clamp(skb, tunnel->parms.mss_clamp))
++			goto free_skb;
++	}
++
+ 	__gre_xmit(skb, dev, tnl_params, skb->protocol);
+ 	return NETDEV_TX_OK;
+ 
+@@ -760,6 +796,126 @@ free_skb:
+ 	return NETDEV_TX_OK;
+ }
+ 
++/*
++ * Nasty hack to clamp mss of tcp packets.
++ * Normal way to do this would be via iptables, but
++ * we don't want to do that for a few reasons:
++ * 1.  CPU Overhead of sending bridge packets through iptables
++ * 2.  Memory overhead for maintaining conntrack states
++ * 3.  conntrack states can timeout, causing dropped packets
++ * 4.  conntrack states can collide, unless we create multiple
++ *   namespaces to separate out L2s.
++ *
++ * So, doing the same thing here directly.
++ */
++static int gre_tap_mss_clamp(struct sk_buff *skb,
++                            int max_mss)
++{
++	struct ethhdr *eth;
++	struct iphdr iphdr;
++	struct iphdr *iph;
++	struct tcphdr tcphdr;
++	struct tcphdr *tcph;
++	int ip_hdrlen, tcp_hdrlen;
++	unsigned int i, optlen;
++	u8 _opt[15 * 4 - sizeof(tcphdr)];
++	const u_int8_t *op;
++
++	/* get eth hdr or bail */
++	eth = (struct ethhdr *)skb_mac_header(skb);
++	/* If not ipv4, bail */
++	if (eth->h_proto != __constant_htons(ETH_P_IP)) {
++		return 0;
++	}
++	if (skb->len < (sizeof(*eth) + sizeof(*iph) + sizeof(*tcph))) {
++		return 0;
++	}
++	/* skip ip_hdr */
++	iph = skb_header_pointer(skb, sizeof(*eth), sizeof(*iph), &iphdr);
++	if (!iph) {
++		return 0;
++	}
++	/* If not tcp, bail */
++	if (iph->protocol != IPPROTO_TCP) {
++		return 0;
++	}
++	if ((iph->frag_off & __constant_htons(IP_OFFSET)) != 0) {
++		return 0;
++	}
++	ip_hdrlen = (iph->ihl*4);
++	if (skb->len < (sizeof(*eth) + ip_hdrlen + sizeof(*tcph))) {
++		return 0;
++	}
++	/* get tcp_hdr */
++	tcph = skb_header_pointer(skb, sizeof(*eth) + ip_hdrlen, sizeof(*tcph), &tcphdr);
++	if (!tcph) {
++		return 0;
++	}
++	/* if not syn, bail */
++	if (!tcph->syn) {
++		return 0;
++	}
++
++	tcp_hdrlen = tcph->doff * 4;
++	if (tcp_hdrlen < sizeof(*tcph)) {
++		return 0;
++	}
++	if (skb->len < (sizeof(*eth) + ip_hdrlen + tcp_hdrlen)) {
++		return 0;
++	}
++
++	optlen = tcp_hdrlen - sizeof(*tcph);
++	if (!optlen) {
++		return 0;
++	}
++
++	/* Truncated options. */
++	op = skb_header_pointer(skb, sizeof(*eth) + (iph->ihl*4) + sizeof(*tcph), optlen, _opt);
++	if (op == NULL) {
++		return 0;
++	}
++
++	for (i = 0; i < optlen; ) {
++		if (op[i] == TCPOPT_MSS
++		    && (optlen - i) >= TCPOLEN_MSS
++		    && op[i+1] == TCPOLEN_MSS) {
++			u_int16_t mssval;
++			u_int8_t *opts;
++
++			mssval = (op[i+2] << 8) | op[i+3];
++			if (mssval <= max_mss) {
++				/* no need to adjust */
++				return 0;
++			}
++			/* actual code to do change */
++			if (!skb_make_writable(skb, skb->len)) {
++				return 0;
++			}
++			/* skb_make_writable may have moved skb data.
++			 * re-do tcph and opts to compensate.
++			 */
++			tcph = (struct tcphdr *)(skb_mac_header(skb) + sizeof(*eth) + ip_hdrlen);
++			opts = (u_int8_t *)(tcph+1);
++			/* replace mss */
++			opts[i+2] = (max_mss & 0xff00) >> 8;
++			opts[i+3] = (max_mss & 0x00ff);
++			/* adjust csum */
++			inet_proto_csum_replace2(&tcph->check, skb,
++						 htons(mssval), htons(max_mss),
++						 false);
++			return 0;
++		}
++		/* Be sure to keep making progess.  For NOP and EOL, advance one.
++		 * For everything else, go opt len, but at least one.
++		 */
++		if (op[i] < 2)
++			i++;
++		else
++			i += op[i+1] ? : 1;
++	}
++	return 0;
++}
++
+ static netdev_tx_t gre_tap_xmit(struct sk_buff *skb,
+ 				struct net_device *dev)
+ {
+@@ -1230,6 +1386,9 @@ static int ipgre_netlink_parms(struct net_device *dev,
+ 		t->ignore_df = !!nla_get_u8(data[IFLA_GRE_IGNORE_DF]);
+ 	}
+ 
++	if (data[IFLA_GRE_MSS_CLAMP])
++		parms->mss_clamp = nla_get_u16(data[IFLA_GRE_MSS_CLAMP]);
++
+ 	if (data[IFLA_GRE_FWMARK])
+ 		*fwmark = nla_get_u32(data[IFLA_GRE_FWMARK]);
+ 
+@@ -1533,6 +1692,8 @@ static size_t ipgre_get_size(const struct net_device *dev)
+ 		nla_total_size(1) +
+ 		/* IFLA_GRE_ERSPAN_HWID */
+ 		nla_total_size(2) +
++		/* IFLA_GRE_MSS_CLAMP */
++		nla_total_size(2) +
+ 		0;
+ }
+ 
+@@ -1594,6 +1755,9 @@ static int ipgre_fill_info(struct sk_buff *skb, const struct net_device *dev)
+ 			goto nla_put_failure;
+ 	}
+ 
++	if (nla_put_u16(skb, IFLA_GRE_MSS_CLAMP, p->mss_clamp))
++		goto nla_put_failure;
++
+ 	return 0;
+ 
+ nla_put_failure:
+@@ -1635,6 +1799,7 @@ static const struct nla_policy ipgre_policy[IFLA_GRE_MAX + 1] = {
+ 	[IFLA_GRE_ERSPAN_VER]	= { .type = NLA_U8 },
+ 	[IFLA_GRE_ERSPAN_DIR]	= { .type = NLA_U8 },
+ 	[IFLA_GRE_ERSPAN_HWID]	= { .type = NLA_U16 },
++	[IFLA_GRE_MSS_CLAMP]    = { .type = NLA_U16 },
+ };
+ 
+ static struct rtnl_link_ops ipgre_link_ops __read_mostly = {
+@@ -1797,6 +1962,9 @@ static int __init ipgre_init(void)
+ 	err = rtnl_link_register(&erspan_link_ops);
+ 	if (err < 0)
+ 		goto erspan_link_failed;
++#ifdef CONFIG_SYSCTL
++	gre_sysctl_init();
++#endif
+ 
+ 	return 0;
+ 
+@@ -1824,6 +1992,9 @@ static void __exit ipgre_fini(void)
+ 	unregister_pernet_device(&ipgre_tap_net_ops);
+ 	unregister_pernet_device(&ipgre_net_ops);
+ 	unregister_pernet_device(&erspan_net_ops);
++#ifdef CONFIG_SYSCTL
++	unregister_net_sysctl_table(gre_sysctl_header);
++#endif
+ }
+ 
+ module_init(ipgre_init);
+diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+index 706c89f3c..eb2e6186d 100644
+--- a/net/ipv4/ip_tunnel.c
++++ b/net/ipv4/ip_tunnel.c
+@@ -829,6 +829,7 @@ static void ip_tunnel_update(struct ip_tunnel_net *itn,
+ 	t->parms.iph.ttl = p->iph.ttl;
+ 	t->parms.iph.tos = p->iph.tos;
+ 	t->parms.iph.frag_off = p->iph.frag_off;
++	t->parms.mss_clamp = p->mss_clamp;
+ 
+ 	if (t->parms.link != p->link || t->fwmark != fwmark) {
+ 		int mtu;
+-- 
+2.28.0
+

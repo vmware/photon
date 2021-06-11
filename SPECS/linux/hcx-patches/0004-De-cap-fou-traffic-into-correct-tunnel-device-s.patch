@@ -1,0 +1,180 @@
+From bea71f52f0115440e269b42a802a8d071ce89262 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Fri, 18 Jun 2021 09:31:39 +0000
+Subject: [PATCH 04/11] De-cap fou traffic into correct tunnel device(s)
+
+Default fou device doesn't allow multiple fou tunnels
+between one pair of IPs. Previous patch has been working
+around that by adding additional parameter and extra logic
+in ip_tunnel_find to allow it. Unwanted side effect was
+that inbound traffic for all of the different src port fou
+tunnels would be seen as arriving on a single fou tunnel.
+This worked (still works) but is very confusing.
+
+The change reverts the old patch, and uses a different
+approach. When a fou tunnel is added, if there are both
+src and dst ports specified, it auto-populates the tunnel
+key information to match. This lets multiple fou tunnels
+get added. Then on Rx, the fou layer saves the src/dst ports
+in the skb, and that is used later as the key during tunnel
+lookup.
+
+Result is that traffic for each fou tunnel arrives on the
+correct ipip device. Note that there is still confusion
+as our ping probe traffic may still send requests on one
+tunnel and have the replies arrive on a different tunnel.
+Addressing that requires changing the approach the probes
+use.
+
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
+---
+ include/linux/skbuff.h |  1 +
+ net/ipv4/fou.c         |  5 +++++
+ net/ipv4/ip_tunnel.c   | 10 ++++++++++
+ net/ipv4/ipip.c        | 34 ++++++++++++++++++++++++++++++++++
+ 4 files changed, 50 insertions(+)
+
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 06176ef2a..3d8ce0367 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -845,6 +845,7 @@ struct sk_buff {
+ 	__u16			network_header;
+ 	__u16			mac_header;
+ 
++	__be32			fou_key;
+ 	/* private: */
+ 	__u32			headers_end[0];
+ 	/* public: */
+diff --git a/net/ipv4/fou.c b/net/ipv4/fou.c
+index 854ff1e4c..e26bbb545 100644
+--- a/net/ipv4/fou.c
++++ b/net/ipv4/fou.c
+@@ -51,6 +51,11 @@ static inline struct fou *fou_from_sock(struct sock *sk)
+ 
+ static int fou_recv_pull(struct sk_buff *skb, struct fou *fou, size_t len)
+ {
++	struct udphdr *udph = udp_hdr(skb);
++
++	/* Save udp ports for use as key later.
++	 */
++	skb->fou_key = (((udph->source) << 16) | udph->dest);
+ 	/* Remove 'len' bytes from the packet (UDP header and
+ 	 * FOU header if present).
+ 	 */
+diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+index 13c6009a2..24d4178f4 100644
+--- a/net/ipv4/ip_tunnel.c
++++ b/net/ipv4/ip_tunnel.c
+@@ -69,8 +69,10 @@
+ #ifdef CONFIG_SYSCTL
+ struct ctl_table_header *ipip_sysctl_header = NULL;
+ int ipip_tunnel_skip_encap_decap __read_mostly = 0;
++int fou_key_multi_port __read_mostly = 0;
+ EXPORT_SYMBOL_GPL(ipip_tunnel_skip_encap_decap);
+ EXPORT_SYMBOL_GPL(ipip_sysctl_header);
++EXPORT_SYMBOL_GPL(fou_key_multi_port);
+ 
+ struct ctl_table ipip_sysctl_table[] = {
+ 	{
+@@ -80,6 +82,13 @@ struct ctl_table ipip_sysctl_table[] = {
+ 		.mode           = 0644,
+ 		.proc_handler   = proc_dointvec,
+ 	},
++	{
++		.procname       = "fou_key_multi_port",
++		.data           = &fou_key_multi_port,
++		.maxlen         = sizeof(int),
++		.mode           = 0644,
++		.proc_handler   = proc_dointvec,
++	},
+ 	{}
+ };
+ EXPORT_SYMBOL_GPL(ipip_sysctl_table);
+@@ -97,6 +106,7 @@ EXPORT_SYMBOL_GPL(ipip_sysctl_init);
+ 
+ #else
+ #define ipip_tunnel_skip_encap_decap 0
++#define fou_key_multi_port 0
+ #endif
+ 
+ static unsigned int ip_tunnel_hash(__be32 key, __be32 remote)
+diff --git a/net/ipv4/ipip.c b/net/ipv4/ipip.c
+index 1caaa316e..40b45f5d0 100644
+--- a/net/ipv4/ipip.c
++++ b/net/ipv4/ipip.c
+@@ -124,9 +124,11 @@ MODULE_PARM_DESC(log_ecn_error, "Log packets received with corrupted ECN");
+ #ifdef CONFIG_SYSCTL
+ extern int ipip_tunnel_skip_encap_decap __read_mostly;
+ extern struct ctl_table_header *ipip_sysctl_header __read_mostly;
++extern int fou_key_multi_port __read_mostly;
+ #else
+ #define ipip_tunnel_skip_encap_decap 0
+ #define ipip_sysctl_header NULL
++#define fou_key_multi_port 0
+ #endif
+ 
+ static unsigned int ipip_net_id __read_mostly;
+@@ -232,6 +234,10 @@ static int ipip_tunnel_rcv(struct sk_buff *skb, u8 ipproto)
+ 	iph = ip_hdr(skb);
+ 	tunnel = ip_tunnel_lookup(itn, skb->dev->ifindex, TUNNEL_NO_KEY,
+ 			iph->saddr, iph->daddr, 0);
++	if (fou_key_multi_port && !tunnel) {
++		tunnel = ip_tunnel_lookup(itn, skb->dev->ifindex, TUNNEL_KEY,
++		                          iph->saddr, iph->daddr, skb->fou_key);
++	}
+ 	if (tunnel) {
+ 		const struct tnl_ptk_info *tpi;
+ 
+@@ -521,6 +527,28 @@ static bool ipip_netlink_encap_parms(struct nlattr *data[],
+ 	return ret;
+ }
+ 
++static void ipip_fou_fixup_key(struct ip_tunnel_parm *p,
++			       struct ip_tunnel_encap *ipencap)
++{
++	/* If no key is provided, but encap src/dst ports are,
++	 * set key based on src/dst ports.  Allows for multiple
++	 * fou tunnels using different port pairs.  Requires
++	 * storing ports/key in skb header between fou and ipip
++	 * layer.
++	 */
++	if ((ipencap->type == TUNNEL_ENCAP_FOU) &&
++	    (ipencap->sport != 0) && (ipencap->dport != 0) &&
++	    (p->i_key == 0) && (p->o_key == 0)) {
++		/* For arriving packets, key is (sport << 16 | dport)
++		 * so need to reverse things here for i_key.
++		 * o_key is set to same, but it's never used for fou
++		 */
++		p->i_key = (ipencap->dport << 16) | ipencap->sport;
++		p->o_key = p->i_key;
++		p->i_flags |= TUNNEL_KEY;
++	}
++}
++
+ static int ipip_newlink(struct net *src_net, struct net_device *dev,
+ 			struct nlattr *tb[], struct nlattr *data[],
+ 			struct netlink_ext_ack *extack)
+@@ -538,6 +566,9 @@ static int ipip_newlink(struct net *src_net, struct net_device *dev,
+ 	}
+ 
+ 	ipip_netlink_parms(data, &p, &t->collect_md, &fwmark);
++	if (fou_key_multi_port) {
++		ipip_fou_fixup_key(&p, &ipencap);
++	}
+ 	return ip_tunnel_newlink(dev, tb, &p, fwmark);
+ }
+ 
+@@ -559,6 +590,9 @@ static int ipip_changelink(struct net_device *dev, struct nlattr *tb[],
+ 	}
+ 
+ 	ipip_netlink_parms(data, &p, &collect_md, &fwmark);
++	if (fou_key_multi_port) {
++		ipip_fou_fixup_key(&p, &ipencap);
++	}
+ 	if (collect_md)
+ 		return -EINVAL;
+ 
+-- 
+2.28.0
+

@@ -1,30 +1,39 @@
-From 70838c6ecbcfccca9d65c1e7793f76ac1ff5900f Mon Sep 17 00:00:00 2001
+From bc20cceacf8456360a74ee62eb1647149a57d52e Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Fri, 24 Jul 2020 14:12:30 +0530
-Subject: [PATCH 1/7] arp_probe_unknown_unicast.patch
+Subject: [PATCH 01/11] Active probing of dst mac of unknown unicast
 
-This patchset introduces proactive learning of unknown unicast senders.
-whenever an unicast pkt of unknown sender is received this patch helps
-in sending the ARP_REQUEST with the src mac address received from
-"arp_probe_src_mac" proc entry to learn and update the ARP table.
-This feature is enabled using "arp_probe" proc entry. It adds a
-packet statistics helper utility, which consolidates the unicast packets
-received by all CPUs.
+Actively do arp probe when received an unknown unicast.
+We just send arp probe back the receiving port in stand of
+flooding all the other ports.
+
+Add some stats counters for troubleshooting purpose.
+Add a option arp_probe to enable or disable this function.
+
+Change value of arp_probe_per_packets to change the frequence
+of arp probing. Skip unknown unicast from gretap dev.
+
+Add proc variable arp_probe_src_mac to let user specify the
+source mac of probing packet.
+
+Add port flag "sink_connected", if this flag on means
+this a l2c tapdevice connected. Do not send arp probe for the
+packet coming form port with this flag.
 ---
  include/linux/if_bridge.h    |   1 +
  include/uapi/linux/if_link.h |   1 +
- net/bridge/br.c              |  12 +++
+ net/bridge/br.c              |  12 ++
  net/bridge/br_device.c       |  10 ++
- net/bridge/br_input.c        | 231 +++++++++++++++++++++++++++++++++++++++++++
+ net/bridge/br_input.c        | 231 +++++++++++++++++++++++++++++++++++
  net/bridge/br_netlink.c      |   8 ++
  net/bridge/br_private.h      |   9 ++
- net/bridge/br_sysfs_br.c     |  24 +++++
+ net/bridge/br_sysfs_br.c     |  24 ++++
  net/bridge/br_sysfs_if.c     |   2 +
  net/core/rtnetlink.c         |   2 +
  10 files changed, 300 insertions(+)
 
 diff --git a/include/linux/if_bridge.h b/include/linux/if_bridge.h
-index c20c7e1..ab9db1f 100644
+index c20c7e197..ab9db1f7c 100644
 --- a/include/linux/if_bridge.h
 +++ b/include/linux/if_bridge.h
 @@ -51,6 +51,7 @@ struct br_ip_list {
@@ -36,7 +45,7 @@ index c20c7e1..ab9db1f 100644
  #define BR_DEFAULT_AGEING_TIME	(300 * HZ)
  
 diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 43391e2..b10e99d 100644
+index 43391e2d1..b10e99d6f 100644
 --- a/include/uapi/linux/if_link.h
 +++ b/include/uapi/linux/if_link.h
 @@ -337,6 +337,7 @@ enum {
@@ -48,7 +57,7 @@ index 43391e2..b10e99d 100644
  };
  #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
 diff --git a/net/bridge/br.c b/net/bridge/br.c
-index b0a0b82..e39f162 100644
+index b0a0b82e2..e39f162aa 100644
 --- a/net/bridge/br.c
 +++ b/net/bridge/br.c
 @@ -23,6 +23,11 @@
@@ -85,7 +94,7 @@ index b0a0b82..e39f162 100644
  
  module_init(br_init)
 diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-index 9ce661e..b8396ff 100644
+index a350c05b7..30c19f9f3 100644
 --- a/net/bridge/br_device.c
 +++ b/net/bridge/br_device.c
 @@ -125,15 +125,23 @@ static int br_dev_init(struct net_device *dev)
@@ -129,7 +138,7 @@ index 9ce661e..b8396ff 100644
  
  static int br_dev_open(struct net_device *dev)
 diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index 2532c1a..6d2a951 100644
+index 2532c1a19..6d2a951cd 100644
 --- a/net/bridge/br_input.c
 +++ b/net/bridge/br_input.c
 @@ -23,6 +23,18 @@
@@ -392,7 +401,7 @@ index 2532c1a..6d2a951 100644
  			br_flood(br, skb, pkt_type, local_rcv, false);
  		else
 diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index ec2b58a..d58fc73 100644
+index ec2b58a09..d58fc734a 100644
 --- a/net/bridge/br_netlink.c
 +++ b/net/bridge/br_netlink.c
 @@ -140,6 +140,7 @@ static inline size_t br_port_info_size(void)
@@ -432,7 +441,7 @@ index ec2b58a..d58fc73 100644
  	err = br_set_port_flag(p, tb, IFLA_BRPORT_VLAN_TUNNEL, BR_VLAN_TUNNEL);
  	if (err)
 diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index 43a29b4..2d6e875 100644
+index 43a29b45f..2d6e87533 100644
 --- a/net/bridge/br_private.h
 +++ b/net/bridge/br_private.h
 @@ -303,6 +303,14 @@ static inline struct net_bridge_port *br_port_get_rtnl(const struct net_device *
@@ -459,7 +468,7 @@ index 43a29b4..2d6e875 100644
  
  struct br_input_skb_cb {
 diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
-index 0318a69..14bd300 100644
+index 0318a6988..14bd30081 100644
 --- a/net/bridge/br_sysfs_br.c
 +++ b/net/bridge/br_sysfs_br.c
 @@ -803,6 +803,29 @@ static ssize_t vlan_stats_enabled_store(struct device *d,
@@ -501,10 +510,10 @@ index 0318a69..14bd300 100644
  };
  
 diff --git a/net/bridge/br_sysfs_if.c b/net/bridge/br_sysfs_if.c
-index 7c87a2f..812f309 100644
+index e9e2a3b1f..3ef09e005 100644
 --- a/net/bridge/br_sysfs_if.c
 +++ b/net/bridge/br_sysfs_if.c
-@@ -234,6 +234,7 @@ BRPORT_ATTR_FLAG(multicast_flood, BR_MCAST_FLOOD);
+@@ -237,6 +237,7 @@ BRPORT_ATTR_FLAG(multicast_flood, BR_MCAST_FLOOD);
  BRPORT_ATTR_FLAG(broadcast_flood, BR_BCAST_FLOOD);
  BRPORT_ATTR_FLAG(neigh_suppress, BR_NEIGH_SUPPRESS);
  BRPORT_ATTR_FLAG(isolated, BR_ISOLATED);
@@ -512,7 +521,7 @@ index 7c87a2f..812f309 100644
  
  #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
  static ssize_t show_multicast_router(struct net_bridge_port *p, char *buf)
-@@ -287,6 +288,7 @@ static const struct brport_attribute *brport_attrs[] = {
+@@ -290,6 +291,7 @@ static const struct brport_attribute *brport_attrs[] = {
  	&brport_attr_neigh_suppress,
  	&brport_attr_isolated,
  	&brport_attr_backup_port,
@@ -521,18 +530,18 @@ index 7c87a2f..812f309 100644
  };
  
 diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index f51973f..62db11b 100644
+index 935053ee7..23f23e2ce 100644
 --- a/net/core/rtnetlink.c
 +++ b/net/core/rtnetlink.c
 @@ -3985,6 +3985,8 @@ int ndo_dflt_bridge_getlink(struct sk_buff *skb, u32 pid, u32 seq,
+ 				IFLA_BRPORT_LEARNING_SYNC, BR_LEARNING_SYNC) ||
  	    brport_nla_put_flag(skb, flags, mask,
  				IFLA_BRPORT_UNICAST_FLOOD, BR_FLOOD) ||
- 	    brport_nla_put_flag(skb, flags, mask,
-+				IFLA_BRPORT_SINK_CONNECTED, BR_SINK_CONNECTED) ||
 +	    brport_nla_put_flag(skb, flags, mask,
++				IFLA_BRPORT_SINK_CONNECTED, BR_SINK_CONNECTED) ||
+ 	    brport_nla_put_flag(skb, flags, mask,
  				IFLA_BRPORT_PROXYARP, BR_PROXYARP)) {
  		nla_nest_cancel(skb, protinfo);
- 		goto nla_put_failure;
 -- 
-2.7.4
+2.28.0
 
