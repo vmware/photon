@@ -1,14 +1,14 @@
 Summary:        Security client
 Name:           nss
-Version:        3.64
+Version:        3.66
 Release:        1%{?dist}
 License:        MPLv2.0
-URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_64_RTM/src/%{name}-%{version}.tar.gz
+URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_66_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nss=e8f7dd8ab325a57a46b1d717c86bdae1be66e911
+%define sha1    nss=c0d452f828e16e3345e891fe2bd016250f1b51e1
 Patch0:         nss-%{version}-standalone-1.patch
 Requires:       nspr
 BuildRequires:  nspr-devel
@@ -122,6 +122,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+*   Fri Jun 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.66-1
+-   update nss to version 3.66
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.64-1
 -   Automatic Version Bump
 *   Wed Nov 18 2020 Tapas Kundu <tkundu@vmware.com> 3.57-2
