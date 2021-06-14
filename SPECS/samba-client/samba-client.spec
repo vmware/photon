@@ -1,14 +1,14 @@
 Summary:        Samba Client Programs
 Name:           samba-client
-Version:        4.13.4
-Release:        2%{?dist}
+Version:        4.14.4
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.samba.org
 Source0:        https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
-%define sha1 samba=491057e200b5851a9d7e34ff3653a7f069dab678
+%define sha1 samba=123281ce6b0049648be3bd4fe7094057526d6340
 %define samba_ver %{version}-%{release}
 Source1:        smb.conf.vendor
 
@@ -128,8 +128,7 @@ export LDFLAGS="-ltirpc"
         --with-shared-modules=%{_samba_modules} \
         --disable-python \
         --without-ads \
-        --without-ntvfs-fileserver \
-        --enable-selftest &&
+        --without-ntvfs-fileserver &&
 make bin/smbclient %{?_smp_mflags}
 
 %install
@@ -156,6 +155,7 @@ for file_dir in \
    %{_libdir}/samba/nss_info/* \
    %{_libdir}/samba/idmap/* \
    %{_libdir}/samba/krb5/winbind_krb5_locator.so \
+   %{_libdir}/samba/krb5/async_dns_krb5_locator.so \
    %{_libdir}/samba/ldb/asq.so \
    %{_libdir}/samba/ldb/ildap.so \
    %{_libdir}/samba/ldb/ldb.so \
@@ -565,6 +565,8 @@ done
 
 
 %changelog
+*   Mon Jun 14 2021 Shreyas B. <shreyasb@vmware.com> 4.14.4-1
+-   Upgrade to version 4.14.4
 *   Fri May 07 2021 Shreyas B. <shreyasb@vmware.com> 4.13.4-2
 -   Split libwclient from samba-client and create separate package.
 *   Fri Feb 19 2021 Shreyas B. <shreyasb@vmware.com> 4.13.4-1
