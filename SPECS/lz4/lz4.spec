@@ -1,7 +1,7 @@
 Summary:        Extremely fast compression.
 Name:           lz4
 Version:        1.9.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD 2-Clause and GPLv2
 URL:            http://lz4.github.io/lz4/
 Group:          Applications
@@ -9,19 +9,22 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/lz4/lz4/archive/v%{version}/%{name}-%{version}.tar.gz
 %define sha1    lz4=4dc36f29d7b4e5b45b114be2674068200714abb3
+Patch0:         CVE-2021-3520.patch
 
 %description
 LZ4 is lossless compression algorithm, providing compression speed at 400 MB/s per core, scalable with multi-cores CPU.
 It features an extremely fast decoder, with speed in multiple GB/s per core, typically reaching RAM speed limits on multi-core systems.
 
-%package devel
-Summary:    Libraries and header files for lz4
-Requires:   %{name} = %{version}-%{release}
-%description devel
+%package        devel
+Summary:        Libraries and header files for lz4
+Requires:       %{name} = %{version}-%{release}
+
+%description    devel
 Static libraries and header files for the support library for lz4.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
 make %{?_smp_mflags} all
@@ -49,6 +52,8 @@ make install DESTDIR=%{buildroot} LIBDIR=%{_libdir} PREFIX=%{_prefix}
 
 
 %changelog
+*   Mon Jun 14 2021 Michelle Wang <michellew@vmware.com> 1.9.2-2
+-   Add Patch CVE-2021-3520
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.9.2-1
 -   Automatic Version Bump
 *   Wed Sep 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.8.2-1
