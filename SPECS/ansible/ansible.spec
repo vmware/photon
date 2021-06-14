@@ -2,7 +2,7 @@
 
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
-Version:        2.8.18
+Version:        2.10.10
 Release:        1%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
@@ -10,8 +10,8 @@ Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        http://releases.ansible.com/ansible/%{name}-%{version}.tar.gz
-%define sha1 %{name}=87eca3d8ce07d829d190974d415b53748288879d
+Source0:        https://github.com/ansible/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha1 %{name}=bccf238f073a424f64568c6e280540fb121f459d
 
 Patch0:         ansible-tdnf.patch
 
@@ -54,6 +54,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.10.10-1
+-   Bump version to fix CVE-2021-{20178, 20191}
 *   Thu Dec 17 2020 Gerrit Photon <photon-checkins@vmware.com> 2.8.18-1
 -   Automatic Version Bump
 *   Wed Oct 07 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.10-3
