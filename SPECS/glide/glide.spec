@@ -4,8 +4,8 @@ Version:        0.13.3
 Release:        5%{?dist}
 License:        MIT
 URL:            https://github.com/Masterminds/glide
-Source0:        %{name}-%{version}.tar.gz
-%define sha1 glide=64df138d1150b8194d154ec411404b9d4dfeb848
+Source0:        https://github.com/Masterminds/glide/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha1 %{name}=64df138d1150b8194d154ec411404b9d4dfeb848
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,24 +17,24 @@ BuildRequires:  perl
 Glide is a tool for managing the vendor directory within a Go package.
 
 %prep
-%setup
+%autosetup -p1
 
 %build
 mkdir -p ${GOPATH}/src/github.com/Masterminds/glide
 cp -r * ${GOPATH}/src/github.com/Masterminds/glide/.
 pushd ${GOPATH}/src/github.com/Masterminds/glide
 go env -w GO111MODULE=auto
-make VERSION=%{version} build
+make VERSION=%{version} build %{?_smp_mflags}
 popd
 
 %check
 pushd ${GOPATH}/src/github.com/Masterminds/glide
-make test
+make test %{?_smp_mflags}
 popd
 
 %install
 pushd ${GOPATH}/src/github.com/Masterminds/glide
-make install
+make install %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_bindir}
 install -vpm 0755 -t %{buildroot}%{_bindir}/ ./glide
 popd

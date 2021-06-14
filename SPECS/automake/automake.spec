@@ -3,12 +3,12 @@ Name:		automake
 Version:	1.16.1
 Release:	2%{?dist}
 License:	GPLv2+
-URL:		http://www.gnu.org/software/automake/
+URL:		http://www.gnu.org/software/automake
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: 	Photon
-Source0:	http://ftp.gnu.org/gnu/automake/%{name}-%{version}.tar.xz
-%define sha1 automake=1012bc79956013d53da0890f8493388a6cb20831
+Source0:	http://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.xz
+%define sha1 %{name}=1012bc79956013d53da0890f8493388a6cb20831
 %if %{with_check}
 Patch0:         make-check.patch
 %endif
@@ -17,11 +17,9 @@ BuildArch:      noarch
 
 %description
 Contains programs for generating Makefiles for use with Autoconf.
+
 %prep
-%setup -q
-%if %{with_check}
-%patch0 -p1
-%endif
+%autosetup -p1
 
 %build
 sed -i 's:/\\\${:/\\\$\\{:' bin/automake.in
@@ -31,7 +29,7 @@ sed -i 's:/\\\${:/\\\$\\{:' bin/automake.in
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm -rf %{buildroot}%{_infodir}
 
 %check
@@ -48,6 +46,7 @@ make %{?_smp_mflags} check
 %{_datarootdir}/aclocal-1.16/*
 %{_defaultdocdir}/%{name}-%{version}/*
 %{_mandir}/*/*
+
 %changelog
 *   Sun Nov 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.16.1-2
 -   Added patch,Fix make check failure in python tests

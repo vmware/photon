@@ -2,14 +2,15 @@ Summary:        Intrusion detection environment
 Name:           aide
 Version:        0.16.2
 Release:        2%{?dist}
-URL:            http://sourceforge.net/projects/aide
+URL:            https://github.com/aide/aide
 License:        GPLv2+
-Source0:        https://github.com/aide/aide/releases/download/v0.16.2/%{name}-%{version}.tar.gz
+Source0:        https://github.com/%{name}/%{name}/releases/download/%{version}/%{name}-%{version}.tar.gz
 %define sha1    %{name}=1dbb954bd545addd5c3934ea9b58a785974c8664
 Source1:        aide.conf
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
+Group:          System Environment/Base
+Vendor:         VMware, Inc.
 Distribution:	Photon
+
 BuildRequires:  gcc
 BuildRequires:  make
 BuildRequires:  bison flex
@@ -17,14 +18,16 @@ BuildRequires:  pcre-devel
 BuildRequires:  libgpg-error-devel openssl-devel
 BuildRequires:  zlib-devel
 BuildRequires:  curl-devel
+
 Requires:       openssl
 Requires:       curl-libs
+
 %description
 AIDE (Advanced Intrusion Detection Environment) is a file integrity
 checker and intrusion detection program.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 %configure  \
@@ -34,7 +37,7 @@ checker and intrusion detection program.
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 mkdir -p %{buildroot}%{_sysconfdir}
 mkdir -p %{buildroot}/var/lib/aide
 mkdir -p %{buildroot}/var/log/aide
@@ -51,7 +54,6 @@ chmod 0700 %{buildroot}/var/log/aide
 
 %clean
 rm -rf %{buildroot}/*
-
 
 %files
 %defattr(-,root,root)

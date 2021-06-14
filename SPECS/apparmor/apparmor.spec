@@ -5,8 +5,8 @@ Release:        1%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
-Source0:        https://launchpad.net/apparmor/3.0/3.0.1/+download/%{name}-%{version}.tar.gz
-%define sha1    apparmor=eded344440a1b3bd9fc5b6ac44f41b2294a57b8a
+Source0:        https://launchpad.net/%{name}/3.0/%{version}/+download/%{name}-%{version}.tar.gz
+%define sha1    %{name}=eded344440a1b3bd9fc5b6ac44f41b2294a57b8a
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Productivity/Security
@@ -152,7 +152,7 @@ Requires:       libapparmor = %{version}-%{release}
 This package contains the AppArmor module for perl.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 #Building libapparmor
@@ -196,11 +196,11 @@ export PYTHON_VERSION=3.9
 export PYTHON_VERSIONS=python3
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 cd ./libraries/libapparmor
-make check
+make check %{?_smp_mflags}
 cd ../../binutils/
-make check
+make check %{?_smp_mflags}
 cd ../utils
-make check
+make check %{?_smp_mflags}
 
 %install
 export PYTHONPATH=/usr/lib/python3.9/site-packages
@@ -209,19 +209,19 @@ export PYTHON_VERSION=3.9
 export PYTHON_VERSIONS=python3
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 cd libraries/libapparmor
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../../binutils/
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../parser
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../utils
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../changehat/mod_apparmor
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../pam_apparmor
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../../profiles
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %files -n libapparmor
 %defattr(-,root,root)

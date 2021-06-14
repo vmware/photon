@@ -3,7 +3,7 @@ Name:           bindutils
 Version:        9.16.15
 Release:        1%{?dist}
 License:        ISC
-URL:            http://www.isc.org/downloads/bind/
+URL:            http://www.isc.org/downloads/bind
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
 %define sha1    bind=5d68bbd1ff452708d45f2d4ef832faa3a1690fc7
 Group:          Development/Tools
@@ -22,7 +22,7 @@ for the Internet. It is a reference implementation of those protocols, but it is
 also production-grade software, suitable for use in high-volume and high-reliability applications.
 
 %prep
-%setup -qn bind-%{version}
+%autosetup -p1 -n bind-%{version}
 
 %build
 %configure \
@@ -36,7 +36,7 @@ make -C lib/irs %{?_smp_mflags}
 make -C bin/dig %{?_smp_mflags}
 
 %install
-make -C bin/dig DESTDIR=%{buildroot} install
+make -C bin/dig DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 mkdir -p %{buildroot}/%{_sysconfdir}
 mkdir -p %{buildroot}/%{_prefix}/lib/tmpfiles.d
@@ -53,8 +53,7 @@ if ! getent group named >/dev/null; then
     groupadd -r named
 fi
 if ! getent passwd named >/dev/null; then
-    useradd -g named -d /var/lib/bind\
-        -s /bin/false -M -r named
+    useradd -g named -d /var/lib/bind -s /bin/false -M -r named
 fi
 %post -p /sbin/ldconfig
 

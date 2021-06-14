@@ -1,9 +1,11 @@
+%global aprver  1
+
 Summary:        The Apache Portable Runtime
 Name:           apr
 Version:        1.7.0
 Release:        2%{?dist}
 License:        Apache License 2.0
-URL:            https://apr.apache.org/
+URL:            https://apr.apache.org
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -12,7 +14,6 @@ Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
 %if %{with_check}
 Patch0:         apr-skip-getservbyname-test.patch
 %endif
-%define         aprver  1
 
 %description
 The Apache Portable Runtime.
@@ -24,10 +25,7 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications.
 
 %prep
-%setup -q
-%if %{with_check}
-%patch0 -p1
-%endif
+%autosetup -p1
 
 %build
 %configure --prefix=/usr \
@@ -37,7 +35,7 @@ It contains the libraries and header files to create applications.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check

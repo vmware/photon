@@ -6,9 +6,9 @@ License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
 Distribution:     Photon
-Url:              https://mariadb.org/
+Url:              https://mariadb.org
 Source0:          https://downloads.mariadb.org/f/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define           sha1 mariadb=73767fac3d1c504298259708272fb6a58e644967
+%define           sha1 %{name}=73767fac3d1c504298259708272fb6a58e644967
 BuildRequires:    cmake
 BuildRequires:    Linux-PAM-devel
 BuildRequires:    openssl-devel
@@ -61,7 +61,7 @@ Summary:          errmsg for mariadb
 errmsg for maridb
 
 %prep
-%setup -q %{name}-%{version}
+%autosetup -p1 %{name}-%{version}
 # Remove PerconaFT from here because of AGPL licence
 rm -rf storage/tokudb/PerconaFT
 
@@ -92,12 +92,12 @@ make %{?_smp_mflags}
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 mkdir -p %{buildroot}/%{_libdir}/systemd/system
-mv  %{buildroot}/usr/share/systemd/mariadb.service %{buildroot}/%{_libdir}/systemd/system/mariadb.service
-mv  %{buildroot}/usr/share/systemd/mariadb@.service %{buildroot}/%{_libdir}/systemd/system/mariadb@.service
-mv  %{buildroot}/usr/share/systemd/mysql.service %{buildroot}/%{_libdir}/systemd/system/mysql.service
-mv  %{buildroot}/usr/share/systemd/mysqld.service %{buildroot}/%{_libdir}/systemd/system/mysqld.service
+mv %{buildroot}/usr/share/systemd/mariadb.service %{buildroot}/%{_libdir}/systemd/system/mariadb.service
+mv %{buildroot}/usr/share/systemd/mariadb@.service %{buildroot}/%{_libdir}/systemd/system/mariadb@.service
+mv %{buildroot}/usr/share/systemd/mysql.service %{buildroot}/%{_libdir}/systemd/system/mysql.service
+mv %{buildroot}/usr/share/systemd/mysqld.service %{buildroot}/%{_libdir}/systemd/system/mysqld.service
 rm %{buildroot}/%{_sbindir}/rcmysql
 rm %{buildroot}/%{_libdir}/*.a
 mkdir -p %{buildroot}/%{_var}/lib/mysql
@@ -106,7 +106,7 @@ echo "disable mariadb.service" > %{buildroot}%{_libdir}/systemd/system-preset/50
 
 %check
 cd build
-make test
+make test %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig

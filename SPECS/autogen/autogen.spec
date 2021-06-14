@@ -1,12 +1,12 @@
-Summary:	The Automated Text and Program Generation Tool
-Name:		autogen
-Version:	5.18.16
+Summary:    The Automated Text and Program Generation Tool
+Name:       autogen
+Version:    5.18.16
 # TODO: try to remove CFLAGS on next version update
-Release:	3%{?dist}
-License:        GPLv3+
-URL:            http://www.gnu.org/software/autogen/
-Source0:        ftp://ftp.gnu.org/gnu/autogen/rel%{version}/%{name}-%{version}.tar.xz
-%define sha1 autogen=f854764cb34f6f0b9f620c2d149d09b845c2d1e2
+Release:    3%{?dist}
+License:    GPLv3+
+URL:        http://www.gnu.org/software/autogen
+Source0:    ftp://ftp.gnu.org/gnu/autogen/rel%{version}/%{name}-%{version}.tar.xz
+%define sha1 %{name}=f854764cb34f6f0b9f620c2d149d09b845c2d1e2
 Group:		System Environment/Tools
 Vendor:		VMware, Inc.
 BuildRequires:	guile-devel
@@ -41,16 +41,18 @@ Requires:	%{name}-libopts
 This package contains development files for libopts.
 
 %prep
-%setup -q
+%autosetup -p1
+
 %build
 %configure --disable-dependency-tracking
 # TODO: try to remove CFLAGS on next version update
 make %{?_smp_mflags} CFLAGS="-g -O2 -Wno-format-contains-nul -fno-strict-aliasing -Wno-error=format-overflow"
+
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
-make check
+make check %{?_smp_mflags}
 
 %post	libopts -p /sbin/ldconfig
 %postun	libopts -p /sbin/ldconfig
@@ -63,7 +65,6 @@ make check
 %{_datadir}/autogen/*
 %{_mandir}/man1/*
 %exclude %{_mandir}/man1/autoopts-config.1.gz
-
 
 %files libopts
 %{_libdir}/*.so.*

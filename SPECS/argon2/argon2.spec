@@ -8,8 +8,8 @@ License:        Apache 2.0
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    argon2=4b1de90ec1ccfb6e91001e849f2cbe0222cc8b4c
+Source0:        https://github.com/P-H-C/phc-winner-argon2/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha1    %{name}=4b1de90ec1ccfb6e91001e849f2cbe0222cc8b4c
 URL:            https://github.com/P-H-C/phc-winner-argon2
 BuildRequires:  gcc
 BuildRequires:  make
@@ -36,19 +36,18 @@ Requires:       %{libname} = %{version}-%{release}
 Libraries and Headers for integrating with Argon2
 
 %prep
-%setup -q -n phc-winner-%{name}-%{version}
+%autosetup -n phc-winner-%{name}-%{version}
 
 %build
-# parallel build is not supported
-make -j1 LIBRARY_REL=lib
+make LIBRARY_REL=lib %{?_smp_mflags}
 
 %install
-make install LIBRARY_REL=lib PREFIX=%{buildroot}%{_prefix}
+make install LIBRARY_REL=lib PREFIX=%{buildroot}%{_prefix} %{?_smp_mflags}
 rm %{buildroot}%{_libdir}/%{libname}.a
 install -Dpm 644 %{libname}.pc %{buildroot}%{_libdir}/pkgconfig/%{libname}.pc
 
 %check
-make test
+make test %{?_smp_mflags}
 
 %post -n %{libname}
 /sbin/ldconfig
@@ -71,7 +70,6 @@ make test
 %{_includedir}/%{name}.h
 %{_libdir}/%{libname}.so
 %{_libdir}/pkgconfig/%{libname}.pc
-
 
 %changelog
 *   Thu Apr 8 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 20190702-1

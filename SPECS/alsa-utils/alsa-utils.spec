@@ -7,25 +7,30 @@ URL:            http://alsa-project.org
 Group:          Applications/Internet
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        ftp://ftp.alsa-project.org/pub/utils/%{name}-%{version}.tar.bz2
-%define sha1    alsa-utils=84b2c5e8f0c345844e03e8e4ae73b761c3ae8829
+Source0:        https://www.alsa-project.org/files/pub/utils/%{name}-%{version}.tar.bz2
+%define sha1    %{name}=84b2c5e8f0c345844e03e8e4ae73b761c3ae8829
+
 Patch0:         ens1371.patch
-BuildRequires:  alsa-lib-devel ncurses-devel
-Requires:       linux-drivers-sound alsa-lib ncurses
+
+BuildRequires:  alsa-lib-devel
+BuildRequires:  ncurses-devel
+Requires:       linux-drivers-sound
+Requires:       alsa-lib
+Requires:       ncurses
+
 %description
 The ALSA Utilities package contains various utilities which are useful for controlling your sound card.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 %configure --disable-alsaconf --disable-xmlto
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
-install -d -m 755 $RPM_BUILD_ROOT/var/lib/alsa
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+install -d -m 755 %{buildroot}/var/lib/alsa
 
 %post
 alsactl init

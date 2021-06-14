@@ -3,30 +3,30 @@ Name:		attr
 Version:	2.5.1
 Release:	1%{?dist}
 License:	GPLv2+
-URL:		https://www.gnu.org/software/hurd/community/gsoc/project_ideas/libcap.html
+URL:		https://savannah.nongnu.org/projects/attr/
 Source0:	http://download.savannah.gnu.org/releases/attr/%{name}-%{version}.tar.gz
-%define sha1    %{name}=72fea2dee5f481bfe7c9da84a2a1ace063a6c82d
+%define sha1 %{name}=72fea2dee5f481bfe7c9da84a2a1ace063a6c82d
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution:	Photon
 %description
 The attr package contains utilities to administer the extended attributes on filesystem objects.
 
-%package        devel
+%package    devel
 Summary:	Libraries and header files for attr
 Requires:	%{name} = %{version}-%{release}
 %description    devel
 Static libraries and header files for the support library for attr.
 
-%package        lang
-Summary:        Additional language files for attr
-Group:		System Environment/Security
-Requires:       %{name} = %{version}-%{release}
+%package    lang
+Summary:    Additional language files for attr
+Group:      System Environment/Security
+Requires:   %{name} = %{version}-%{release}
 %description    lang
 These are the additional language files of attr.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
@@ -34,7 +34,7 @@ These are the additional language files of attr.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}/lib
 install -vdm 755 %{buildroot}%{_sysconfdir}
 chmod -v 755 %{buildroot}/usr/lib/libattr.so
@@ -49,7 +49,7 @@ rm -fv %{buildroot}%{_mandir}/man5/attr.5*
 %find_lang %{name}
 
 %check
-make  %{?_smp_mflags} check
+make %{?_smp_mflags} check
 
 %files
 %defattr(-,root,root)

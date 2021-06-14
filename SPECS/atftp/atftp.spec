@@ -7,14 +7,19 @@ License:          GPLv2+ and GPLv3+ and LGPLv2+
 Group:            System Environment/Daemons
 Vendor:           VMware, Inc.
 Distribution:     Photon
-Source0:          http://sourceforge.net/projects/atftp/files/latest/download/%{name}-%{version}.tar.gz
+Source0:          http://sourceforge.net/projects/%{name}/files/latest/download/%{name}-%{version}.tar.gz
 %define sha1      atftp=03f70e64c5195fade430b20c5f47d2c58b249d59
+
 BuildRequires:    systemd
+
 Requires:         systemd
 Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
+
 Provides:         tftp-server
 Obsoletes:        tftp-server
+Provides:         tftp
+Obsoletes:        tftp
 
 %description
 Multithreaded TFTP server implementing all options (option extension and
@@ -22,27 +27,25 @@ multicast) as specified in RFC1350, RFC2090, RFC2347, RFC2348 and RFC2349.
 Atftpd also support multicast protocol knowed as mtftp, defined in the PXE
 specification. The server supports being started from inetd(8) as well as
 a deamon using init scripts.
-Provides:         tftp
-Obsoletes:        tftp
 
-%package          client
+%package    client
 Summary: Advanced Trivial File Transfer Protocol (ATFTP) - TFTP client
 Group: Applications/Internet
 
-%description      client
+%description    client
 Advanced Trivial File Transfer Protocol client program for requesting
 files using the TFTP protocol.
 
 %prep
-%setup
+%autosetup -p1
 sed -i "s/-g -Wall -D_REENTRANT/-g -Wall -D_REENTRANT -std=gnu89/" configure.ac
 
 %build
 %configure
-make
+make %{?_smp_mflags}
 
 %install
-[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != '/' ] && rm -rf $RPM_BUILD_ROOT
+[ -n "%{buildroot}" -a "%{buildroot}" != '/' ] && rm -rf %{buildroot}
 %makeinstall
 
 mkdir -p %{buildroot}/%{_var}/lib/tftpboot
@@ -90,11 +93,14 @@ if [ $1 -eq 1 ] ; then
     getent group  tftp  >/dev/null || groupadd -r tftp
     getent passwd tftp  >/dev/null || useradd  -c "tftp" -s /bin/false -g tftp -M -r tftp
 fi
+
 %preun
 %systemd_preun atftpd.socket
+
 %post
 /sbin/ldconfig
 %systemd_post atftpd.socket
+
 %postun
 /sbin/ldconfig
 if [ $1 -eq 0 ] ; then
@@ -108,7 +114,7 @@ fi
 %systemd_postun_with_restart atftpd.socket
 
 %clean
-[ -n "$RPM_BUILD_ROOT" -a "$RPM_BUILD_ROOT" != '/' ] && rm -rf $RPM_BUILD_ROOT
+[ -n "%{buildroot}" -a "%{buildroot}" != '/' ] && rm -rf %{buildroot}
 
 %files
 %dir %attr(0750,nobody,nobody) %{_var}/lib/tftpboot
@@ -123,7 +129,6 @@ fi
 %files client
 %{_mandir}/man1/atftp.1.gz
 %{_bindir}/atftp
-
 
 %changelog
 *   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 0.7.4-1

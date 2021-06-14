@@ -19,19 +19,18 @@ The package contains programs for producing shell scripts that can
 automatically configure source code.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-%configure \
-	--disable-silent-rules
+%configure --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm -rf %{buildroot}%{_infodir}
 
 %check
-make -k check %{?_smp_mflags}  TESTSUITEFLAGS="1-500"
+make -k check %{?_smp_mflags} TESTSUITEFLAGS="1-500"
 
 %files
 %defattr(-,root,root)

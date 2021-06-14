@@ -1,16 +1,16 @@
-Summary:	Access control list utilities
-Name:		acl
-Version:	2.3.1
-Release:	1%{?dist}
-Source0:	http://download.savannah.gnu.org/releases/acl/%{name}-%{version}.tar.gz
+Summary:        Access control list utilities
+Name:           acl
+Version:        2.3.1
+Release:        1%{?dist}
+Source0:        http://download.savannah.gnu.org/releases/%{name}/%{name}-%{version}.tar.gz
 %define sha1 %{name}=a5343e9f75326ffe5aa8d5d042e52227a3fd66cb
-License:	GPLv2+
-Group:		System Environment/Base
-URL:		http://acl.bestbits.at/
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Requires:	libacl = %{version}-%{release}
-BuildRequires:	attr-devel
+License:        GPLv2+
+Group:          System Environment/Base
+URL:            https://savannah.nongnu.org/projects/%{name}
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Requires:       libacl = %{version}-%{release}
+BuildRequires:  attr-devel
 
 %description
 This package contains the getfacl and setfacl utilities needed for
@@ -33,14 +33,13 @@ License:	LGPLv2+
 Group:		Development/Libraries
 Requires:	libacl = %{version}-%{release}
 
-
 %description -n libacl-devel
 This package contains header files and documentation needed to develop
 programs which make use of the access control list programming interface
 defined in POSIX 1003.1e draft standard 17.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure
@@ -48,7 +47,7 @@ defined in POSIX 1003.1e draft standard 17.
 make %{?_smp_mflags} LIBTOOL="libtool --tag=CC"
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 find %{buildroot} -name '*.la' -exec rm -f {} ';'
 

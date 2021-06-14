@@ -6,10 +6,10 @@ Name:           audit
 Version:        3.0.1
 Release:        2%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-%define sha1    audit=f69d52acc303bd3b38020a1bc9a1f792ebe79edb
+%define sha1    %{name}=f69d52acc303bd3b38020a1bc9a1f792ebe79edb
 License:        GPLv2+
 Group:          System Environment/Security
-URL:            http://people.redhat.com/sgrubb/audit/
+URL:            http://people.redhat.com/sgrubb/audit
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  krb5-devel
@@ -56,7 +56,7 @@ The python3-audit package contains the python2 bindings for libaudit
 and libauparse.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
@@ -82,7 +82,7 @@ mkdir -p %{buildroot}/%{_var}/opt/audit/log
 mkdir -p %{buildroot}/%{_var}/log
 mkdir -p %{buildroot}/%{_var}/spool/audit
 ln -sfv %{_var}/opt/audit/log %{buildroot}/%{_var}/log/audit
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable auditd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-auditd.preset

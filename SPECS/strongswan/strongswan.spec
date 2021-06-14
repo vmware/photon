@@ -3,12 +3,12 @@ Name:             strongswan
 Version:          5.9.0
 Release:          2%{?dist}
 License:          GPLv2+
-URL:              https://www.strongswan.org/
+URL:              https://www.strongswan.org
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          https://download.strongswan.org/%{name}-%{version}.tar.bz2
-%define sha1      strongswan=8bb52214f72f2571f55dababfe76ff97fd31ca1f
+%define sha1      %{name}=8bb52214f72f2571f55dababfe76ff97fd31ca1f
 BuildRequires:    autoconf
 BuildRequires:    gmp-devel
 BuildRequires:    systemd-devel
@@ -19,8 +19,7 @@ Patch0:           strongswan-fix-make-check.patch
 strongSwan is a complete IPsec implementation for Linux 2.6, 3.x, and 4.x kernels.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 %configure --enable-systemd
@@ -29,12 +28,12 @@ make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 find %{buildroot} -name '*.a' -delete
 
 %check
-make check
+make check %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}/*
