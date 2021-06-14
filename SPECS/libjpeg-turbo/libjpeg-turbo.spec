@@ -1,6 +1,6 @@
 Summary:        fork of the original IJG libjpeg which uses SIMD.
 Name:           libjpeg-turbo
-Version:        2.0.5
+Version:        2.1.0
 Release:        1%{?dist}
 License:        IJG
 URL:            http://sourceforge.net/projects/libjpeg-turbo
@@ -8,7 +8,7 @@ Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://downloads.sourceforge.net/libjpeg-turbo/%{name}-%{version}.tar.gz
-%define sha1    libjpeg-turbo=9d4c565d402b2f5661be78d76098073ec7e30f10
+%define sha1    libjpeg-turbo=6bf63c869105d341011cd4915816de888338231a
 %ifarch x86_64
 BuildRequires:  nasm
 %endif
@@ -54,9 +54,12 @@ make DESTDIR=%{buildroot} install
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.so
+%{_libdir}/cmake/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Jun 14 2021 Sujay G <gsujay@vmware.com> 2.1.0-1
+-   Bump version to 2.1.0 to fix CVE-2020-17541
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 2.0.5-1
 -   Automatic Version Bump
 *   Mon Mar 04 2019 Keerthana K <keerthanak@vmware.com> 2.0.0-4
@@ -65,7 +68,7 @@ make DESTDIR=%{buildroot} install
 -   Added patch to fix CVE-2018-19664
 *   Thu Jan 10 2019 Sujay G <gsujay@vmware.com> 2.0.0-2
 -   Added patch to fix CVE-2018-20330
-*   Sun Sep 20 2018 Bo Gan <ganb@vmware.com> 2.0.0-1
+*   Thu Sep 20 2018 Bo Gan <ganb@vmware.com> 2.0.0-1
 -   Update to 2.0.0
 -   cmake build system
 *   Mon Dec 11 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-2
