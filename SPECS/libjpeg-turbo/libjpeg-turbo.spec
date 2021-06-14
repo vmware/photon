@@ -1,17 +1,14 @@
 Summary:        fork of the original IJG libjpeg which uses SIMD.
 Name:           libjpeg-turbo
-Version:        2.0.0
-Release:        3%{?dist}
+Version:        2.1.0
+Release:        1%{?dist}
 License:        IJG
 URL:            http://sourceforge.net/projects/libjpeg-turbo
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://downloads.sourceforge.net/libjpeg-turbo/%{name}-%{version}.tar.gz
-%define sha1    libjpeg-turbo=6d74b609294b6bae5a7cde035f7d6b80d60ebb77
-Patch0:         libjpeg-turbo-CVE-2018-20330.patch
-Patch1:         CVE-2018-19664.patch
-Patch2:         CVE-2020-13790.patch
+%define sha1    libjpeg-turbo=6bf63c869105d341011cd4915816de888338231a
 BuildRequires:  nasm
 BuildRequires:  cmake
 Requires:       nasm
@@ -26,9 +23,6 @@ It contains the libraries and header files to create applications
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
 
 %build
 mkdir -p build
@@ -62,9 +56,12 @@ find %{buildroot} -name '*.la' -delete
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/*.so
+%{_libdir}/cmake/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Jun 14 2021 Sujay G <gsujay@vmware.com> 2.1.0-1
+-   Bump version to 2.1.0 to fix CVE-2020-17541
 *   Mon Jun 08 2020 Sujay G <gsujay@vmware.com> 2.0.0-3
 -   Fix CVE-2020-13790.patch
 *   Sat Feb 02 2019 Sujay G <gsujay@vmware.com> 2.0.0-2
