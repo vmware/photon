@@ -8,8 +8,8 @@
 %define _salttesting_ver 2016.5.11
 
 Name:           salt3
-Version:        3001.1
-Release:        2%{?dist}
+Version:        3003
+Release:        1%{?dist}
 Summary:        A parallel remote execution system with python3
 Group:          System Environment/Daemons
 License:        ASL 2.0
@@ -17,7 +17,7 @@ URL:            http://saltstack.org/
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/saltstack/salt/releases/download/v%{version}/salt/salt-%{version}.tar.gz
-%define sha1    salt=45f6d1a5a493e784b5bcbca17b1faf08c6f93cdc
+%define sha1    salt=c65f660de100f8af9f318ff19dbb9bf632955701
 Source1:        https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-2016.5.11.tar.gz
 %define         sha1 SaltTesting=474dbd7029e3d48cdb468be3c63b2262e47556c8
 Source2:        salt-master.service
@@ -302,6 +302,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Tue Jun 15 2021 Keerthana K <keerthanak@vmware.com> 3003-1
+- Update to version 3003
 * Wed Feb 03 2021 Tapas Kundu <tkundu@vmware.com> 3001.1-2
 - Depends on pycrptodomex instead of pycrypto
 * Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 3001.1-1
