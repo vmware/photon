@@ -1,13 +1,14 @@
 #!/bin/bash
 
+set -ex
+
 if [ "$#" -lt 1 ]; then
-	echo "Script to create new photon base docker image."
-	echo "Usage: $0 <path to workspace>"
-	exit -1
+   echo "Script to create new photon base docker image."
+   echo "Usage: $0 <path to workspace>"
+   exit 1
 fi
 
-set -e
-set -x
+echo PHOTON_RELEASE_VERSION=$PHOTON_RELEASE_VERSION
 
 PROGRAM=$0
 MAIN_PACKAGE=$1
@@ -23,7 +24,7 @@ rm -rf /etc/yum.repos.d/*
 cat > /etc/yum.repos.d/photon-local.repo <<- EOF
 
 [photon-local]
-name=VMware Photon Linux 3.0($DOCK_ARCH)
+name=VMware Photon Linux ${PHOTON_RELEASE_VERSION}($DOCK_ARCH)
 baseurl=file://$(pwd)/stage/RPMS
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY
 gpgcheck=0
@@ -35,11 +36,11 @@ EOF
 rm -rf $TEMP_CHROOT
 mkdir $TEMP_CHROOT
 
-tdnf install -y rpm
+tdnf install -y rpm tar gzip
 
 rpm --root $TEMP_CHROOT/ --initdb
 
-tdnf --installroot $TEMP_CHROOT/ --rpmverbosity 10 install -y filesystem bash toybox tdnf photon-release photon-repos
+tdnf --releasever ${PHOTON_RELEASE_VERSION} --installroot $TEMP_CHROOT/ --rpmverbosity 10 install -y filesystem bash toybox tdnf photon-release photon-repos
 
 rpm --root $TEMP_CHROOT/ --import $TEMP_CHROOT/etc/pki/rpm-gpg/*
 
@@ -53,8 +54,6 @@ rm -rf var/log/*
 echo "export TERM=linux" >> etc/bash.bashrc
 
 #find var/cache/tdnf/photon/rpms -type f -name "*.rpm" -exec rm {} \;
-tdnf install -y tar
-tdnf install -y gzip
 tar cpzf ../$ROOTFS_TAR_FILENAME .
 mkdir -p $STAGE_DIR
 mv ../$ROOTFS_TAR_FILENAME $STAGE_DIR/
