@@ -4,7 +4,7 @@
 Summary:        Software library for fast, message-based applications
 Name:           python3-zmq
 Version:        19.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv3+ and BSD3
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -18,6 +18,7 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  cython3
 Requires:       python3
+Provides:       python3.9dist(pyzmq)
 
 %description
 python bindings for zeromq
@@ -38,6 +39,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/zmq
 
 %changelog
+*   Tue Jun 15 2021 Keerthana K <keerthanak@vmware.com> 19.0.2-2
+-   Added Provides: python3.9dist(pyzmq)
 *   Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 19.0.2-1
 -   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 19.0.1-1
