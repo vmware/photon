@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.4
-Release:        10%{?kat_build:.kat}%{?dist}
+Release:        11%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -27,6 +27,7 @@ Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 %if 0%{?fips}
+Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.4-5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha1 fips-canister=91b5031dc9599c6997931d5cb8982df9a181df7a
@@ -103,6 +104,9 @@ BuildRequires:  libmspack-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
+%if 0%{?fips}
+BuildRequires:  gdb
+%endif
 Requires:       filesystem kmod
 Requires(pre): (coreutils or toybox)
 Requires(preun): (coreutils or toybox)
@@ -200,6 +204,10 @@ sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"
 
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 
+%if 0%{?fips}
+%include %{SOURCE9}
+%endif
+
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
 	./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
@@ -290,6 +298,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jun 30 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-11
+-   Added script to check structure compatibility between fips_canister.o and vmlinux.
 *   Thu Jun 24 2021 Loïc <4661917+HacKurx@users.noreply.github.com> 5.10.4-10
 -   EMUTRAMP: use the prefix X86_ for error codes
 *   Tue Apr 06 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-9
