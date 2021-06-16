@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.191
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -471,6 +471,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jun 24 2021 Loïc <4661917+HacKurx@users.noreply.github.com> 4.19.191-3
+-   EMUTRAMP: use the prefix X86_ for error codes
 *   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.191-2
 -   Fix for CVE-2021-3609
 *   Tue Jun 01 2021 Keerthana K <keerthanak@vmware.com> 4.19.191-1
