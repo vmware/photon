@@ -4,12 +4,13 @@ Name:           boost
 Version:        1.76.0
 Release:        1%{?dist}
 License:        Boost Software License V1
-URL:            http://www.boost.org/
+URL:            http://www.boost.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://sourceforge.net/projects/boost/files/boost/%{version}/boost_%{main_version}.tar.bz2
+Source0:        https://boostorg.jfrog.io/artifactory/main/release/%{version}/source/boost_%{main_version}.tar.bz2
 %define sha1    boost=8064156508312dde1d834fec3dca9b11006555b6
+
 BuildRequires:	bzip2-devel
 
 %description
@@ -34,7 +35,7 @@ Requires:       %{name} = %{version}-%{release}
 The boost-static package contains boost static libraries.
 
 %prep
-%setup -qn boost_%{main_version}
+%autosetup -p1 -n boost_%{main_version}
 
 %build
 ./bootstrap.sh --prefix=%{buildroot}%{_prefix}

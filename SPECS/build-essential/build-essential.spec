@@ -1,10 +1,24 @@
-Name:           build-essential
-Summary:        Metapackage to install all build tools
-Version:        0.1
-Release:        3%{?dist}
-License:        GPLv2
-Requires:       gcc, binutils, make, glibc-devel, linux-api-headers, automake
-Requires:       autoconf, libtool, gawk, diffutils, patch, bison
+Name:       build-essential
+Summary:    Metapackage to install all build tools
+Version:    0.1
+Release:    3%{?dist}
+Group:      Development/Tools
+License:    GPLv2
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
+Requires:   gcc
+Requires:   binutils
+Requires:   make
+Requires:   glibc-devel
+Requires:   linux-api-headers
+Requires:   automake
+Requires:   autoconf
+Requires:   libtool
+Requires:   gawk
+Requires:   diffutils
+Requires:   patch
+Requires:   bison
 
 %description
 Metapackage to install all build tools

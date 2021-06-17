@@ -6,9 +6,10 @@ License:       GPL
 Group:         Applications/Communication
 Vendor:        VMware, Inc.
 Distribution:  Photon
-URL:           https://code.google.com/p/bluez-tools/
+URL:           https://code.google.com/p/bluez-tools
 Source0:       https://github.com/khvzak/bluez-tools.git/master/bluez-tools-%{version}.tar.gz
-%define sha1 bluez-tools=a24245523f4d87d8a11e2dd41babc1aade1e0870
+%define sha1 %{name}=a24245523f4d87d8a11e2dd41babc1aade1e0870
+
 Patch0:        bluez-tools-gcc-10.patch
 
 BuildRequires: dbus-devel
@@ -20,8 +21,7 @@ Requires:      bluez
 A set of tools to manage bluetooth devices for linux.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 ./autogen.sh
@@ -29,7 +29,7 @@ A set of tools to manage bluetooth devices for linux.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)

@@ -6,13 +6,16 @@ License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+URL:            http://www.bluez.org
 Source0:        http://www.kernel.org/pub/linux/bluetooth/bluez-%{version}.tar.xz
-%define sha1    bluez=f5f007eb18599ee2fdca113642e177ebab5a8e21
+%define sha1    %{name}=f5f007eb18599ee2fdca113642e177ebab5a8e21
+
 BuildRequires:  libical-devel
 BuildRequires:  glib-devel
 BuildRequires:  dbus-devel
 BuildRequires:  systemd-devel
 BuildRequires:  libxml2-devel
+
 Requires:       dbus
 Requires:       glib
 Requires:       libical
@@ -32,7 +35,7 @@ bluez-devel contains development libraries and headers for
 use in Bluetooth applications.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
@@ -49,7 +52,7 @@ use in Bluetooth applications.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} -k check

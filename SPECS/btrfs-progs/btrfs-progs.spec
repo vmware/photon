@@ -6,17 +6,21 @@ Group:          System Environment/Base
 License:        GPLv2+
 URL:            http://btrfs.wiki.kernel.org/index.php/Main_Page
 Source0:        https://www.kernel.org/pub/linux/kernel/people/kdave/btrfs-progs/%{name}-v%{version}.tar.xz
-%define sha1    btrfs-progs=a794b3ffa52398bc85c073b7d99643d7a422f7bf
+%define sha1    %{name}=a794b3ffa52398bc85c073b7d99643d7a422f7bf
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 BuildRequires:  lzo-devel
-BuildRequires:  e2fsprogs-devel,libacl-devel
+BuildRequires:  e2fsprogs-devel
+BuildRequires:  libacl-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  xmlto
 BuildRequires:  asciidoc3
-Requires:       e2fsprogs, lzo
+
+Requires:       e2fsprogs
+Requires:       lzo
 
 %description
 The btrfs-progs package provides all the userspace programs needed to create,
@@ -35,18 +39,18 @@ You should install btrfs-progs-devel if you want to develop
 btrfs filesystem-specific programs.
 
 %prep
-%setup -q -n %{name}-v%{version}
+%autosetup -p1 -n %{name}-v%{version}
 
 %build
-./autogen.sh
+sh ./autogen.sh
 %configure \
 	--disable-zstd \
-        --disable-documentation
+    --disable-documentation
 make DISABLE_DOCUMENTATION=1 %{?_smp_mflags}
 
 %install
 #disabled the documentation
-make DISABLE_DOCUMENTATION=1 mandir=%{_mandir} bindir=%{_sbindir} libdir=%{_libdir} incdir=%{_includedir} install DESTDIR=%{buildroot}
+make DISABLE_DOCUMENTATION=1 mandir=%{_mandir} bindir=%{_sbindir} libdir=%{_libdir} incdir=%{_includedir} install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -98,4 +102,3 @@ rm -rf %{buildroot}
 -   Upgrade to 4.4
 *   Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 3.18.2-1
 -   Initial version
-

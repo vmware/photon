@@ -8,7 +8,8 @@ Distribution:   Photon
 Group:          System Environment/Security
 URL:            https://github.com/iovisor/bpftrace
 Source0:        https://github.com/iovisor/bpftrace/archive/%{name}-%{version}.tar.gz
-%define sha1    bpftrace=9cc3a1b5d4efd1649753cdb374102440c6625b57
+%define sha1    %{name}=9cc3a1b5d4efd1649753cdb374102440c6625b57
+
 BuildRequires:  bison
 BuildRequires:  flex
 BuildRequires:  cmake
@@ -19,6 +20,7 @@ BuildRequires:  clang-devel
 BuildRequires:  bcc-devel >= 0.11.0-2
 BuildRequires:  libbpf-devel
 BuildRequires:  binutils-devel
+
 Requires:       bcc
 Requires:       bcc-tools
 Requires:       clang
