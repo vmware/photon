@@ -17,7 +17,7 @@ Photon OS&trade; is an open source Linux container host optimized for cloud-nati
 
 - **Support for containers:** Photon OS includes the Docker daemon and works with container orchestration frameworks, such as Mesos and Kubernetes.
 
-- **Efficient lifecycle management:** Photon OS is easy to manage, patch, and update, using the [tdnf package manager](https://github.com/vmware/photon/blob/master/docs/photon-admin-guide.md#tiny-dnf-for-package-management) and the [Photon Management Daemon (pmd)](https://github.com/vmware/pmd).
+- **Efficient lifecycle management:** Photon OS is easy to manage, patch, and update, using the [tdnf package manager](https://github.com/vmware/photon/blob/master/docs/photon_admin/tdnf.md) and the [Photon Management Daemon (pmd)](https://github.com/vmware/pmd).
 
 - **Security hardened:** Photon OS provides secure and up-to-date kernel and other packages, and its policies are designed to govern the system securely.
 
