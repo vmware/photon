@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.42
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -84,6 +84,8 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+# Fix for CVE-2021-3609
+Patch103:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -206,6 +208,7 @@ The Linux package contains the Linux kernel doc files
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
+%patch103 -p1
 
 # crypto
 %patch500 -p1
@@ -340,6 +343,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.42-3
+-   Fix for CVE-2021-3609
 *   Thu Jun 10 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-2
 -   Added script to check structure compatibility between fips_canister.o and vmlinux.
 *   Thu Jun 03 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-1

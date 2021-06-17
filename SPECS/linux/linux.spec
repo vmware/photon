@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.42
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -102,6 +102,8 @@ Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 Patch128:       0001-Bluetooth-fix-the-erroneous-flush_work-order.patch
 # Fix for CVE-2021-3573
 Patch129:       0001-bluetooth-use-correct-lock-to-prevent-UAF-of-hdev-ob.patch
+# Fix for CVE-2021-3609
+Patch130:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -298,6 +300,7 @@ Python programming language to use the interface to manipulate perf events.
 %patch102 -p1
 %patch128 -p1
 %patch129 -p1
+%patch130 -p1
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -662,6 +665,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.42-3
+-   Fix for CVE-2021-3609
 *   Thu Jun 10 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-2
 -   Added script to check structure compatibility between fips_canister.o and vmlinux.
 *   Thu Jun 03 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-1

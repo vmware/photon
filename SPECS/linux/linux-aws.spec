@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.42
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -57,6 +57,8 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+# Fix for CVE-2021-3609
+Patch103:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
 #Amazon AWS
 Patch201:       0002-bump-the-default-TTL-to-255.patch
@@ -189,6 +191,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
+%patch103 -p1
 
 #Amazon AWS
 %patch201 -p1
@@ -391,6 +394,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.42-2
+-   Fix for CVE-2021-3609
 *   Thu Jun 03 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-1
 -   Update to version 5.10.42
 *   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 5.10.35-1

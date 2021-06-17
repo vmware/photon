@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.42
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt42
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -85,6 +85,8 @@ Patch101:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 Patch128:       0001-Bluetooth-fix-the-erroneous-flush_work-order.patch
 # Fix for CVE-2021-3573
 Patch129:       0001-bluetooth-use-correct-lock-to-prevent-UAF-of-hdev-ob.patch
+# Fix for CVE-2021-3609
+Patch130:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/5.10/
@@ -503,6 +505,7 @@ The Linux package contains the Linux kernel doc files
 %patch101 -p1
 %patch128 -p1
 %patch129 -p1
+%patch130 -p1
 
 # RT
 %patch301 -p1
@@ -1017,6 +1020,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.42-3
+-   Fix for CVE-2021-3609
 *   Thu Jun 10 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-2
 -   Added script to check structure compatibility between fips_canister.o and vmlinux.
 *   Thu Jun 03 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-1
