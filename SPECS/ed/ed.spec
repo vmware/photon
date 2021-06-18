@@ -1,7 +1,7 @@
 Summary:        Ed - A line-oriented text editor
 Name:           ed
 Version:        1.14.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            https://www.gnu.org/software/ed/
 License:        GPLv3
 Group:          Applications/System
@@ -11,12 +11,6 @@ Source0:        https://fossies.org/linux/privat/%{name}-%{version}.tar.gz
 %define sha1    ed=1e29267247d39338aa31f1839b8320b86f4c50ab
 %description
 Ed - A line-oriented text editor
-
-%package    devel
-Summary:    Header and development files for ed
-Requires:   %{name} = %{version}
-%description    devel
-GNU ed is a line-oriented text editor. It is used to create, display, modify and otherwise manipulate text files, both interactively and via shell scripts.
 
 %prep
 %setup -q
@@ -45,6 +39,8 @@ make  %{?_smp_mflags} check
 %exclude %{_infodir}/dir
 
 %changelog
+*   Fri Jun 18 2021 Nitesh Kumar <kunitesh@vmware.com> 1.14.2-3
+-   Removed devel Package
 *   Tue Oct 27 2020 Dweep Advani <dadvani@vmware.com> 1.14.2-2
 -   Removed /usr/share/info/dir from packaging
 *   Thu Sep 27 2018 Sujay G <gsujay@vmware.com> 1.14.2-1
