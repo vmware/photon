@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        1.1.1k
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -37,15 +37,11 @@ Requires: openssl = %{version}-%{release}
 Perl scripts that convert certificates and keys to various formats.
 
 %package c_rehash
-Summary: openssl perl scripts
+Summary: rehash script for ca certificates
 Group: Applications/Internet
-Requires: perl
-Requires: perl-DBI
-Requires: perl-DBIx-Simple
-Requires: perl-DBD-SQLite
 Requires: openssl = %{version}-%{release}
 %description c_rehash
-Perl scripts that convert certificates and keys to various formats.
+Shell scripts that convert certificates and keys to various formats.
 
 %package docs
 Summary: openssl docs
@@ -121,7 +117,7 @@ rm -rf %{buildroot}/*
 /%{_sysconfdir}/ssl/misc/CA.pl
 
 %files c_rehash
-/%{_bindir}/c_rehash
+%exclude /%{_bindir}/c_rehash
 /%{_bindir}/rehash_ca_certificates.sh
 
 %files docs
@@ -132,6 +128,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+*   Fri Jun 18 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1k-2
+-   use openssl rehash functionality and remove unused patches
 *   Mon Mar 29 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1k-1
 -   update to openssl 1.1.1k
 *   Tue Mar 23 2021 Tapas Kundu <tkundu@vmware.com> 1.1.1j-2
