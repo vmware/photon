@@ -4,7 +4,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -12,6 +12,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://xmlsoft.org/sources/%{name}-%{version}.tar.gz
 %define sha1    libxml2=7902b9cc7a549c09f8fb227fc4aa1d0275d4282c
+Patch0:         0001-Work-around-lxml-API.patch
+BuildRequires:  python3-devel
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
 Provides:       pkgconfig(libxml-2.0)
 
 %description
@@ -20,8 +24,6 @@ The libxml2 package contains libraries and utilities used for parsing XML files.
 %package python
 Summary:        The libxml2 python module
 Group:          Development/Languages/Python
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
 Requires:       %{name} = %{version}
 Requires:       python2
 Requires:       python2-libs
@@ -32,7 +34,6 @@ The libxml2 python module
 %package -n     python3-libxml2
 Summary:        Python 3 bindings for libxml2.
 Group:          Development/Libraries
-BuildRequires:  python3-devel
 Requires:       %{name} = %{version}
 Requires:       python3
 
@@ -49,16 +50,14 @@ Static libraries and header files for the support library for libxml
 
 %prep
 %setup -q
+%patch0 -p1
 sed \
   -e /xmlInitializeCatalog/d \
   -e 's/((ent->checked =.*&&/(((ent->checked == 0) ||\
           ((ent->children == NULL) \&\& (ctxt->options \& XML_PARSE_NOENT))) \&\&/' \
   -i parser.c
 %build
-./configure \
-  --prefix=%{_prefix} \
-  --bindir=%{_bindir} \
-  --libdir=%{_libdir} \
+%configure \
   --disable-static \
   --with-history
 make %{?_smp_mflags}
@@ -70,10 +69,7 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 
 #Build and install python3-libxml2
 make clean
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
+%configure \
     --disable-static \
     --with-python=/usr/bin/python3.5
 make %{?_smp_mflags}
@@ -81,8 +77,11 @@ make install DESTDIR=%{buildroot}
 
 %check
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %post -p /sbin/ldconfig
+
 %postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
 %files
@@ -112,6 +111,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Sat Jun 19 2021 Ankit Jain <ankitja@vmware.com> 2.9.11-2
+-   fix for lxml API issue
 *   Mon May 31 2021 Sujay G <gsujay@vmware.com> 2.9.11-1
 -   Bump version to 2.9.11 to fix CVE-2021-3517, CVE-2021-3518, CVE-2021-3537.
 -   Remove other unnecessary patches.
