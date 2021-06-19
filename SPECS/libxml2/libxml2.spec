@@ -4,7 +4,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -13,6 +13,7 @@ Distribution:   Photon
 Source0:        ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
 %define sha1    libxml2=7902b9cc7a549c09f8fb227fc4aa1d0275d4282c
 
+Patch0:         0001-Work-around-lxml-API.patch
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  python3-devel
@@ -48,7 +49,7 @@ Requires:   %{name} = %{version}
 Static libraries and header files for the support library for libxml
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure \
@@ -103,6 +104,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
 
 %changelog
+*   Sat Jun 19 2021 Ankit Jain <ankitja@vmware.com> 2.9.11-2
+-   fix for lxml API issue
 *   Mon May 31 2021 Sujay G <gsujay@vmware.com> 2.9.11-1
 -   Bump version to 2.9.11 to fix CVE-2021-3517, CVE-2021-3518, CVE-2021-3537.
 -   Remove other unnecessary patch files.
@@ -113,7 +116,7 @@ rm -rf %{buildroot}/*
 *   Thu Jan 30 2020 Shreyas B <shreyasb@vmware.com> 2.9.10-1
 -   Updgrade to v2.9.10 to address CVE-2019-19956(memory leak issue).
 -   Fix CVE-2020-7595(end-of-file issue).
-*   Mon Jul 07 2019 Sujay G <gsujay@vmware.com> 2.9.9-1
+*   Sun Jul 07 2019 Sujay G <gsujay@vmware.com> 2.9.9-1
 -   Bump version to 2.9.9
 *   Fri Dec 07 2018 Dweep Advani <dadvani@vmware.com> 2.9.8-2
 -   Fix CVE-2018-14404 and improve build and install sections
