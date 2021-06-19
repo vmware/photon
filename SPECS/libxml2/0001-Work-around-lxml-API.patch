@@ -1,0 +1,211 @@
+From 85b1792e37b131e7a51af98a37f92472e8de5f3f Mon Sep 17 00:00:00 2001
+From: Nick Wellnhofer <wellnhofer@aevum.de>
+Date: Tue, 18 May 2021 20:08:28 +0200
+Subject: [PATCH] Work around lxml API abuse
+
+Make xmlNodeDumpOutput and htmlNodeDumpFormatOutput work with corrupted
+parent pointers. This used to work with the old recursive code but the
+non-recursive rewrite required parent pointers to be set correctly.
+
+Unfortunately, lxml relies on the old behavior and passes subtrees with
+a corrupted structure. Fall back to a recursive function call if an
+invalid parent pointer is detected.
+
+Fixes #255.
+---
+ HTMLtree.c | 46 ++++++++++++++++++++++++++++------------------
+ xmlsave.c  | 31 +++++++++++++++++++++----------
+ 2 files changed, 49 insertions(+), 28 deletions(-)
+
+diff --git a/HTMLtree.c b/HTMLtree.c
+index 24434d45..bdd639c7 100644
+--- a/HTMLtree.c
++++ b/HTMLtree.c
+@@ -744,7 +744,7 @@ void
+ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
+ 	                 xmlNodePtr cur, const char *encoding ATTRIBUTE_UNUSED,
+                          int format) {
+-    xmlNodePtr root;
++    xmlNodePtr root, parent;
+     xmlAttrPtr attr;
+     const htmlElemDesc * info;
+ 
+@@ -755,6 +755,7 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
+     }
+ 
+     root = cur;
++    parent = cur->parent;
+     while (1) {
+         switch (cur->type) {
+         case XML_HTML_DOCUMENT_NODE:
+@@ -762,13 +763,25 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
+             if (((xmlDocPtr) cur)->intSubset != NULL) {
+                 htmlDtdDumpOutput(buf, (xmlDocPtr) cur, NULL);
+             }
+-            if (cur->children != NULL) {
++            /* Always validate cur->parent when descending. */
++            if ((cur->parent == parent) && (cur->children != NULL)) {
++                parent = cur;
+                 cur = cur->children;
+                 continue;
+             }
+             break;
+ 
+         case XML_ELEMENT_NODE:
++            /*
++             * Some users like lxml are known to pass nodes with a corrupted
++             * tree structure. Fall back to a recursive call to handle this
++             * case.
++             */
++            if ((cur->parent != parent) && (cur->children != NULL)) {
++                htmlNodeDumpFormatOutput(buf, doc, cur, encoding, format);
++                break;
++            }
++
+             /*
+              * Get specific HTML info for that node.
+              */
+@@ -817,6 +830,7 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
+                     (cur->name != NULL) &&
+                     (cur->name[0] != 'p')) /* p, pre, param */
+                     xmlOutputBufferWriteString(buf, "\n");
++                parent = cur;
+                 cur = cur->children;
+                 continue;
+             }
+@@ -825,9 +839,9 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
+                 (info != NULL) && (!info->isinline)) {
+                 if ((cur->next->type != HTML_TEXT_NODE) &&
+                     (cur->next->type != HTML_ENTITY_REF_NODE) &&
+-                    (cur->parent != NULL) &&
+-                    (cur->parent->name != NULL) &&
+-                    (cur->parent->name[0] != 'p')) /* p, pre, param */
++                    (parent != NULL) &&
++                    (parent->name != NULL) &&
++                    (parent->name[0] != 'p')) /* p, pre, param */
+                     xmlOutputBufferWriteString(buf, "\n");
+             }
+ 
+@@ -842,9 +856,9 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
+                 break;
+             if (((cur->name == (const xmlChar *)xmlStringText) ||
+                  (cur->name != (const xmlChar *)xmlStringTextNoenc)) &&
+-                ((cur->parent == NULL) ||
+-                 ((xmlStrcasecmp(cur->parent->name, BAD_CAST "script")) &&
+-                  (xmlStrcasecmp(cur->parent->name, BAD_CAST "style"))))) {
++                ((parent == NULL) ||
++                 ((xmlStrcasecmp(parent->name, BAD_CAST "script")) &&
++                  (xmlStrcasecmp(parent->name, BAD_CAST "style"))))) {
+                 xmlChar *buffer;
+ 
+                 buffer = xmlEncodeEntitiesReentrant(doc, cur->content);
+@@ -902,13 +916,9 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
+                 break;
+             }
+ 
+-            /*
+-             * The parent should never be NULL here but we want to handle
+-             * corrupted documents gracefully.
+-             */
+-            if (cur->parent == NULL)
+-                return;
+-            cur = cur->parent;
++            cur = parent;
++            /* cur->parent was validated when descending. */
++            parent = cur->parent;
+ 
+             if ((cur->type == XML_HTML_DOCUMENT_NODE) ||
+                 (cur->type == XML_DOCUMENT_NODE)) {
+@@ -939,9 +949,9 @@ htmlNodeDumpFormatOutput(xmlOutputBufferPtr buf, xmlDocPtr doc,
+                     (cur->next != NULL)) {
+                     if ((cur->next->type != HTML_TEXT_NODE) &&
+                         (cur->next->type != HTML_ENTITY_REF_NODE) &&
+-                        (cur->parent != NULL) &&
+-                        (cur->parent->name != NULL) &&
+-                        (cur->parent->name[0] != 'p')) /* p, pre, param */
++                        (parent != NULL) &&
++                        (parent->name != NULL) &&
++                        (parent->name[0] != 'p')) /* p, pre, param */
+                         xmlOutputBufferWriteString(buf, "\n");
+                 }
+             }
+diff --git a/xmlsave.c b/xmlsave.c
+index 61a40459..aedbd5e7 100644
+--- a/xmlsave.c
++++ b/xmlsave.c
+@@ -847,7 +847,7 @@ htmlNodeDumpOutputInternal(xmlSaveCtxtPtr ctxt, xmlNodePtr cur) {
+ static void
+ xmlNodeDumpOutputInternal(xmlSaveCtxtPtr ctxt, xmlNodePtr cur) {
+     int format = ctxt->format;
+-    xmlNodePtr tmp, root, unformattedNode = NULL;
++    xmlNodePtr tmp, root, unformattedNode = NULL, parent;
+     xmlAttrPtr attr;
+     xmlChar *start, *end;
+     xmlOutputBufferPtr buf;
+@@ -856,6 +856,7 @@ xmlNodeDumpOutputInternal(xmlSaveCtxtPtr ctxt, xmlNodePtr cur) {
+     buf = ctxt->buf;
+ 
+     root = cur;
++    parent = cur->parent;
+     while (1) {
+         switch (cur->type) {
+         case XML_DOCUMENT_NODE:
+@@ -868,7 +869,9 @@ xmlNodeDumpOutputInternal(xmlSaveCtxtPtr ctxt, xmlNodePtr cur) {
+             break;
+ 
+         case XML_DOCUMENT_FRAG_NODE:
+-            if (cur->children != NULL) {
++            /* Always validate cur->parent when descending. */
++            if ((cur->parent == parent) && (cur->children != NULL)) {
++                parent = cur;
+                 cur = cur->children;
+                 continue;
+             }
+@@ -887,7 +890,18 @@ xmlNodeDumpOutputInternal(xmlSaveCtxtPtr ctxt, xmlNodePtr cur) {
+             break;
+ 
+         case XML_ELEMENT_NODE:
+-	    if ((cur != root) && (ctxt->format == 1) && (xmlIndentTreeOutput))
++            /*
++             * Some users like lxml are known to pass nodes with a corrupted
++             * tree structure. Fall back to a recursive call to handle this
++             * case.
++             */
++            if ((cur->parent != parent) && (cur->children != NULL)) {
++                xmlNodeDumpOutputInternal(ctxt, cur);
++                break;
++            }
++
++	    if ((ctxt->level > 0) && (ctxt->format == 1) &&
++                (xmlIndentTreeOutput))
+ 		xmlOutputBufferWrite(buf, ctxt->indent_size *
+ 				     (ctxt->level > ctxt->indent_nr ?
+ 				      ctxt->indent_nr : ctxt->level),
+@@ -942,6 +956,7 @@ xmlNodeDumpOutputInternal(xmlSaveCtxtPtr ctxt, xmlNodePtr cur) {
+                 xmlOutputBufferWrite(buf, 1, ">");
+                 if (ctxt->format == 1) xmlOutputBufferWrite(buf, 1, "\n");
+                 if (ctxt->level >= 0) ctxt->level++;
++                parent = cur;
+                 cur = cur->children;
+                 continue;
+             }
+@@ -1058,13 +1073,9 @@ xmlNodeDumpOutputInternal(xmlSaveCtxtPtr ctxt, xmlNodePtr cur) {
+                 break;
+             }
+ 
+-            /*
+-             * The parent should never be NULL here but we want to handle
+-             * corrupted documents gracefully.
+-             */
+-            if (cur->parent == NULL)
+-                return;
+-            cur = cur->parent;
++            cur = parent;
++            /* cur->parent was validated when descending. */
++            parent = cur->parent;
+ 
+             if (cur->type == XML_ELEMENT_NODE) {
+                 if (ctxt->level > 0) ctxt->level--;
+-- 
+GitLab
+
