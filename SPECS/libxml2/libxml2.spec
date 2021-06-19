@@ -3,7 +3,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -12,6 +12,7 @@ Distribution:   Photon
 Source0:        ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
 %define sha1    libxml2=7902b9cc7a549c09f8fb227fc4aa1d0275d4282c
 
+Patch0:         0001-Work-around-lxml-API.patch
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  zlib
@@ -39,7 +40,7 @@ Requires:   %{name} = %{version}
 Static libraries and header files for the support library for libxml
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure \
@@ -90,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
 
 %changelog
+*   Sat Jun 19 2021 Ankit Jain <ankitja@vmware.com> 2.9.11-2
+-   fix for lxml API issue
 *   Mon May 31 2021 Sujay G <gsujay@vmware.com> 2.9.11-1
 -   Bump version to 2.9.11 to fix CVE-2021-3517, CVE-2021-3518, CVE-2021-3537
 -   Removed previous CVE patches that are un-necessary
