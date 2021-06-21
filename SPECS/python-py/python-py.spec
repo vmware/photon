@@ -2,7 +2,7 @@
 
 Name:           python3-py
 Version:        1.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python development support library
 License:        MIT
 Group:          Development/Languages/Python
@@ -12,6 +12,7 @@ Distribution:   Photon
 Source0:        https://pypi.python.org/packages/53/72/6c6f1e787d9cab2cc733cf042f125abec07209a58308831c9f292504e826/py-%{version}.tar.gz
 %define sha1    py=8cbe522347596ffc292fd9b1ceaa4564a551ac76
 
+Patch0:         python-py-CVE-2020-29651.patch
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -34,6 +35,7 @@ py.code: dynamic code generation and introspection
 
 %prep
 %setup -n py-%{version}
+%patch0 -p1
 
 %build
 python3 setup.py build
@@ -50,6 +52,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 21 2021 Dweep Advani <dadvani@vmware.com> 1.9.0-2
+-   Patched for CVE-2020-29651
 *   Tue Jul 28 2020 Tapas Kundu <tkundu@vmware.com> 1.9.0-1
 -   Updated to version 1.9.0
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 1.6.0-2
