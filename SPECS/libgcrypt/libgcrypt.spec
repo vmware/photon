@@ -1,7 +1,7 @@
 Summary:        Crypto Libraries
 Name:           libgcrypt
 Version:        1.7.6
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+ and LGPLv2+
 URL:            http://www.gnu.org/software/libgcrypt/
 Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
@@ -13,6 +13,7 @@ Patch3:         libgcrypt-CVE-2017-7526.patch
 Patch4:         libgcrypt-CVE-2019-12904-aes-move-tables.patch
 Patch5:         libgcrypt-CVE-2019-12904-prefetch-gcm-table.patch
 Patch6:         libgcrypt-CVE-2019-12904-gcm-move-tables.patch
+Patch7:         0001-cipher-Fix-ElGamal-encryption-for-other-implementati.patch
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 BuildRequires:  libgpg-error
@@ -41,10 +42,10 @@ that use libgcrypt.
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
+%patch7 -p1
 
 %build
-./configure \
-    --prefix=%{_prefix}
+%configure
 make %{?_smp_mflags}
 
 %install
@@ -72,6 +73,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 /usr/share/aclocal/libgcrypt.m4
 
 %changelog
+*   Mon Jun 21 2021 Ankit Jain <ankitja@vmware.com> 1.7.6-7
+-   Fix for CVE-2021-33560
 *   Thu Apr 02 2020 Ankit Jain <ankitja@vmware.com> 1.7.6-6
 -   Fix for CVE-2019-12904
 *   Wed Feb 06 2019 Dweep Advani <dadvani@vmware.com> 1.7.6-5
