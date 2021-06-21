@@ -1,12 +1,12 @@
 Summary:        Monitoring plugins are used to monitor status of hosts and services on the network
 Name:           monitoring-plugins
 Version:        2.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL-3.0
 Group:          Development/Tools
 URL:            https://github.com/%{name}
-Source0:        https://github.com/%{name}/%{name}/archive/refs/tags/%{name}-%{version}
-%define sha1 monitoring-plugins=dbc4c6601c3afe246a13da836d541a315950dde4
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    monitoring-plugins=dbc4c6601c3afe246a13da836d541a315950dde4
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  autoconf
@@ -49,5 +49,7 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Jun 21 2021 Michelle Wang <michellew@vmware.com> 2.3.1-2
+- Fix source for OSSTP ticket filing.
 * Tue May 11 2021 Sharan Turlapati <sturlapati@vmware.com> 2.3.1-1
 - Initial version of monitoring-plugins for Photon
