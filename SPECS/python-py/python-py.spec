@@ -3,7 +3,7 @@
 
 Name:           python-py
 Version:        1.4.33
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python development support library
 License:        MIT
 Group:          Development/Languages/Python
@@ -13,6 +13,7 @@ Distribution:   Photon
 Source0:        https://pypi.python.org/packages/53/72/6c6f1e787d9cab2cc733cf042f125abec07209a58308831c9f292504e826/py-%{version}.tar.gz
 %define sha1    py=4ac8bacefc2583cd7ba488b5cdbfa1e0d469e792
 
+Patch0:         python-py-CVE-2020-29651.patch
 BuildRequires:  python2
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
@@ -46,6 +47,7 @@ Python 3 version.
 
 %prep
 %setup -n py-%{version}
+%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -74,6 +76,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 21 2021 Dweep Advani <dadvani@vmware.com> 1.4.33-4
+-   Patched for CVE-2020-29651
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.4.33-3
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.4.33-2
