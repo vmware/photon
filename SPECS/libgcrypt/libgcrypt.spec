@@ -1,12 +1,13 @@
 Summary:	Crypto Libraries
 Name:		libgcrypt
 Version:	1.8.7
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:    GPLv2+ and LGPLv2+
 URL:        http://www.gnu.org/software/libgcrypt/
 Source0:    ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
 %define sha1 libgcrypt=ea79a279b27bf25cb1564f96693128f8fc9f41d6
 Patch0:     libgcrypt-00-ac_cv_sys_symbol_underscore.patch
+Patch1:     0001-cipher-Fix-ElGamal-encryption-for-other-implementati.patch
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 BuildRequires:	libgpg-error-devel
@@ -61,6 +62,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/libgcrypt.pc
 
 %changelog
+*   Mon Jun 21 2021 Ankit Jain <ankitja@vmware.com> 1.8.7-2
+-   Fix for CVE-2021-33560
 *   Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.7-1
 -   Automatic Version Bump
 *   Thu Oct 17 2019 Ankit Jain <ankitja@vmware.com> 1.8.5-1
