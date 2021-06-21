@@ -3,7 +3,7 @@
 
 Name:           python-py
 Version:        1.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python development support library
 License:        MIT
 Group:          Development/Languages/Python
@@ -13,11 +13,17 @@ Distribution:   Photon
 Source0:        https://pypi.python.org/packages/53/72/6c6f1e787d9cab2cc733cf042f125abec07209a58308831c9f292504e826/py-%{version}.tar.gz
 %define sha1    py=b7196e40ff311d5f44e3bed2e0d3477f4f19559b
 
+Patch0:         python-py-CVE-2020-29651.patch
 BuildRequires:  python2
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-setuptools_scm
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-setuptools_scm
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 
@@ -33,11 +39,6 @@ py.code: dynamic code generation and introspection
 
 %package -n     python3-py
 Summary:        Python development support library
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-setuptools_scm
-BuildRequires:  python3-xml
 
 Requires:       python3
 Requires:       python3-libs
@@ -48,6 +49,7 @@ Python 3 version.
 
 %prep
 %setup -n py-%{version}
+%patch0 -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -76,6 +78,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 21 2021 Dweep Advani <dadvani@vmware.com> 1.6.0-2
+-   Patched for CVE-2020-29651
 *   Thu Sep 13 2018 Tapas Kundu <tkundu@vmware.com> 1.6.0-1
 -   Updated to versiob 1.6.0
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.4.33-3
