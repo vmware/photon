@@ -1,50 +1,97 @@
+From 88e07717947f5e0d3877fc0b0e563f86b335bc4e Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Wed, 23 Jun 2021 16:26:52 +0530
+Subject: [PATCH] Added Photon OS specific customization changes
+
+Photon OS uses it's own method of GOSC with customized set of bash
+scripts. This change facilitates that by introducing a new conditional
+macro which can be enabled on need basis.
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ open-vm-tools/configure.ac                   |  4 ++
+ open-vm-tools/libDeployPkg/linuxDeployment.c | 39 ++++++++++++++++++++
+ 2 files changed, 43 insertions(+)
+
+diff --git a/open-vm-tools/configure.ac b/open-vm-tools/configure.ac
+index 8a7932ec6..390e1eee9 100644
+--- a/open-vm-tools/configure.ac
++++ b/open-vm-tools/configure.ac
+@@ -1493,6 +1493,10 @@ AM_CONDITIONAL(VGAUTH_USE_CXX, test "$with_icu" = "yes" -o "$use_xmlsec1" != "ye
+ AM_CONDITIONAL(ENABLE_LIBAPPMONITOR, test "$enable_libappmonitor" = "yes")
+ AM_CONDITIONAL(ENABLE_SDMP, test "$enable_servicediscovery" = "yes")
+ 
++if test "$enable_photon_gosc" = "yes"; then
++   AC_DEFINE([PHOTON_GOSC])
++fi
++
+ if test "$have_xsm" != "yes"; then
+ AC_DEFINE([NO_XSM], 1, [])
+ fi
 diff --git a/open-vm-tools/libDeployPkg/linuxDeployment.c b/open-vm-tools/libDeployPkg/linuxDeployment.c
-index d5652655..65116e0e 100644
+index 063c0b789..fa23bada9 100644
 --- a/open-vm-tools/libDeployPkg/linuxDeployment.c
 +++ b/open-vm-tools/libDeployPkg/linuxDeployment.c
-@@ -659,13 +659,14 @@ GetPackageInfo(const char* packageName,
+@@ -687,13 +687,22 @@ GetPackageInfo(const char* packageName,
     close(fd);
  
     // Create space and copy the command
--   *command = malloc(VMWAREDEPLOYPKG_CMD_LENGTH);
++#ifndef PHOTON_GOSC
+    *command = malloc(VMWAREDEPLOYPKG_CMD_LENGTH);
++#else
 +   *command = calloc(VMWAREDEPLOYPKG_CMD_LENGTH + 1, 1);
++#endif /* PHOTON_GOSC */
     if (*command == NULL) {
        SetDeployError("Error allocating memory.");
        return FALSE;
     }
  
--   memcpy(*command, hdr.command, VMWAREDEPLOYPKG_CMD_LENGTH);
++#ifndef PHOTON_GOSC
+    memcpy(*command, hdr.command, VMWAREDEPLOYPKG_CMD_LENGTH);
++#else
 +   strncpy(*command, hdr.command, VMWAREDEPLOYPKG_CMD_LENGTH);
++#endif /* PHOTON_GOSC */
 +
     *archiveType = hdr.payloadType;
     *flags = hdr.reserved;
  
-@@ -1373,6 +1374,28 @@ Deploy(const char* packageName)
+@@ -1428,6 +1437,36 @@ Deploy(const char* packageName)
        free(command);
-       deployPkgStatus = CloudInitSetup(imcDirPath);
+       return DEPLOYPKG_STATUS_ERROR;
     } else {
-+       if (strstr(command, "scripts/Customize.pl") ||
++#ifdef PHOTON_GOSC
++      #define BASH_PATH "/bin/bash"
++      #define SCRIPT_PATH "/usr/share/open-vm-tools/gosc-scripts/customize.sh"
++
++      if (strstr(command, "scripts/Customize.pl") ||
 +            strstr(command, "scripts/customize.sh")) {
 +
-+           char photon_gosc[256] = {0};
++         char photon_gosc[256] = {0};
 +
-+           free(command);
-+           command = NULL;
++         sLog(log_info, "Using Photon OS style of GOSC\n");
 +
-+           snprintf(photon_gosc, sizeof(photon_gosc),
-+                   "/bin/bash /usr/share/open-vm-tools/gosc-scripts/customize.sh %s/cust.cfg",
-+                   imcDirPath);
++         free(command);
++         command = NULL;
 +
-+           // The command will be parsed alter and can be of arbitrary length
-+           command = strdup(photon_gosc);
-+           if (!command) {
-+               SetDeployError("Error allocating memory in photon_gosc\n");
-+               return DEPLOYPKG_STATUS_ERROR;
-+           }
++         snprintf(photon_gosc, sizeof(photon_gosc),
++               "%s %s %s/cust.cfg", BASH_PATH, SCRIPT_PATH, imcDirPath);
 +
-+           _DeployPkg_SkipReboot(true);
-+       }
++         sLog(log_debug, "Photon GOSC command: %s\n", photon_gosc);
++
++         // The command will be parsed alter and can be of arbitrary length
++         command = strdup(photon_gosc);
++         if (!command) {
++            SetDeployError("Error allocating memory in photon_gosc\n");
++            return DEPLOYPKG_STATUS_ERROR;
++         }
++
++         _DeployPkg_SkipReboot(true);
++      }
++#endif /* PHOTON_GOSC */
 +
        sLog(log_info, "Executing traditional GOSC workflow.");
-       deploymentResult = ForkExecAndWaitCommand(command, false);
+       deploymentResult = ForkExecAndWaitCommand(command, true, NULL, 0);
        free(command);
+-- 
+2.31.1
+
