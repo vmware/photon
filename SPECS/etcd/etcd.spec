@@ -1,7 +1,7 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.4.13
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd/
 Group:          System Environment/Security
@@ -15,6 +15,8 @@ Source2:        etcd.sysconfig
 %endif
 BuildRequires:  go >= 1.12
 BuildRequires:  git
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 A highly-available key value store for shared configuration and service discovery.
@@ -54,9 +56,18 @@ cp %{SOURCE2} %{buildroot}/etc/sysconfig/etcd
 %endif
 install -vdm755 %{buildroot}/var/lib/etcd
 
+%pre
+getent group %{name} >/dev/null || /usr/sbin/groupadd -r %{name}
+getent passwd %{name} >/dev/null || /usr/sbin/useradd --comment "etcd Daemon User" --shell /bin/bash -M -r --groups %{name} --home /var/lib/%{name} %{name}
+
 %post   -p /sbin/ldconfig
 
-%postun -p /sbin/ldconfig
+%postun
+/sbin/ldconfig
+if [ $1 -eq 0 ] ; then
+    /usr/sbin/userdel %{name}
+    /usr/sbin/groupdel %{name}
+fi
 
 %clean
 rm -rf %{buildroot}/*
@@ -66,13 +77,15 @@ rm -rf %{buildroot}/*
 /%{_docdir}/%{name}-%{version}/*
 /lib/systemd/system/etcd.service
 /lib/systemd/system-preset/50-etcd.preset
-%dir /var/lib/etcd
+%attr(0700,%{name},%{name}) %dir /var/lib/etcd
 %config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
 %ifarch aarch64
 %config(noreplace) %{_sysconfdir}/sysconfig/etcd
 %endif
 
 %changelog
+*   Wed Jun 23 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.4.13-6
+-   Change etcd data directory ownership to etcd:etcd as per CIS benchmark
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 3.4.13-5
 -   Bump up version to compile with new go
 *   Thu Mar 25 2021 Piyush Gupta<gpiyush@vmware.com> 3.4.13-4
