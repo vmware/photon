@@ -4,7 +4,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.18.19
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -98,7 +98,7 @@ install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/windows/amd64/ _output/l
 install -vdm644 %{buildroot}/etc/systemd/system/kubelet.service.d
 install -p -m 755 -t %{buildroot}%{_bindir} _output/local/bin/linux/amd64/kubeadm
 install -p -m 755 -t %{buildroot}/etc/systemd/system %{SOURCE2}
-install -p -m 755 -t %{buildroot}/etc/systemd/system/kubelet.service.d %{SOURCE3}
+install -p -m 644 -t %{buildroot}/etc/systemd/system/kubelet.service.d %{SOURCE3}
 sed -i '/KUBELET_CGROUP_ARGS=--cgroup-driver=systemd/d' %{buildroot}/etc/systemd/system/kubelet.service.d/10-kubeadm.conf
 
 cd ..
@@ -220,6 +220,8 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Tue Jun 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-2
+-   Change 10-kubeadm.conf file permission to 644
 *   Thu Mar 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-1
 -   Update to version 1.18.19, Fix CVE-2020-8565, CVE-2021-25737, CVE-2021-3121
 *   Mon Mar 02 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-2

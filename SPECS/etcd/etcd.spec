@@ -1,7 +1,7 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.4.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License Version 2.0
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
@@ -12,6 +12,8 @@ Source0:        %{name}-%{version}.tar.gz
 Source1:        etcd.service
 BuildRequires:  go >= 1.10
 BuildRequires:  git
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 A highly-available key value store for shared configuration and service discovery.
@@ -47,9 +49,19 @@ echo "disable etcd.service" > %{buildroot}/lib/systemd/system-preset/50-etcd.pre
 cp %{SOURCE1} %{buildroot}/lib/systemd/system
 install -vdm700 %{buildroot}/var/lib/etcd
 
+%pre
+getent group %{name} >/dev/null || /usr/sbin/groupadd -r %{name}
+getent passwd %{name} >/dev/null || /usr/sbin/useradd --comment "etcd Daemon User" --shell /bin/bash -M -r --groups %{name} --home /var/lib/%{name} %{name}
+
 %post   -p /sbin/ldconfig
 
-%postun -p /sbin/ldconfig
+%postun
+/sbin/ldconfig
+if [ $1 -eq 0 ] ; then
+    /usr/sbin/userdel %{name}
+    /usr/sbin/groupdel %{name}
+fi
+
 
 %clean
 rm -rf %{buildroot}/*
@@ -60,10 +72,12 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/etcd.service
 /lib/systemd/system-preset/50-etcd.preset
 /lib/systemd/system-preset/50-etcd.preset
-%dir /var/lib/etcd
+%attr(0700,%{name},%{name}) %dir /var/lib/etcd
 %config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
 
 %changelog
+*   Wed Jun 23 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.4.10-3
+-   Change etcd data directory ownership to etcd:etcd as per CIS benchmark
 *   Tue Jun 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.4.10-2
 -   Package /var/lib/etcd with 700 permission
 *   Fri Sep 11 2020 Ashwin H <ashwinh@vmware.com> 3.4.10-1
