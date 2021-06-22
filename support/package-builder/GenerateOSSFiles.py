@@ -207,9 +207,14 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, dist_tag, logger, singleFile
         ossname = package
         for ossversion in SPECS.getData().getVersions(package):
             ossrelease = SPECS.getData().getRelease(package, ossversion)
-            srpm_file_name = "%s-%s-%s%s.src.rpm" % (ossname, ossversion, ossrelease, dist_tag)
-            if ossrelease.endswith(dist_tag):
-                srpm_file_name = "%s-%s-%s.src.rpm" % (ossname, ossversion, ossrelease)
+
+            # add variable curleasever here for ossrelease in 4.0 branch contains dist_tag
+            # in 4.0, ossrelease is 2.ph4
+            # in 1.0, 2.0, 3.0, ossrelease is 2.
+            curleasever = ossrelease
+            if not ossrelease.endswith(dist_tag):
+                curleasever = "%s%s" % (ossrelease, dist_tag)
+            srpm_file_name = "%s-%s-%s.src.rpm" % (ossname, ossversion, curleasever)
             logger.info("srpm name is %s" % (srpm_file_name))
             listFoundSRPMFiles = cmdUtils.findFile(srpm_file_name, srpmPath)
 
@@ -226,12 +231,12 @@ def buildSRPMList(srpmPath, yamlDir, blackListPkgs, dist_tag, logger, singleFile
 
             if not singleFile:
                 yamlFile = open(yamlSrpmDir + "/" + ossname + "-" + ossversion + "-"
-                                + ossrelease + ".yaml", "w")
+                                + curleasever + ".yaml", "w")
 
-            yamlFile.write("baseos:" + ossname + ":" + ossversion + "-" + ossrelease + dist_tag +  ":\n")
+            yamlFile.write("baseos:" + ossname + ":" + ossversion + "-" + curleasever +  ":\n")
             yamlFile.write("  repository: BaseOS\n")
             yamlFile.write("  name: '" + ossname + "'\n")
-            yamlFile.write("  version: '" + ossversion + "-" + ossrelease + dist_tag +"'\n")
+            yamlFile.write("  version: '" + ossversion + "-" + curleasever +"'\n")
             yamlFile.write("  url: 'http://www.vmware.com'\n")
             yamlFile.write("  baseos-style: rpm\n")
             yamlFile.write("  baseos-source: '" + str(srpmName) + "'\n")
