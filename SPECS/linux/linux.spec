@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.270
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -125,6 +125,9 @@ Patch82:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 #Fix for CVE-2019-19338
 Patch83:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch84:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
+
+# Fix for CVE-2021-3609
+Patch85:        0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
 # Various vmxnet3 driver fixes:
 Patch91:        0001-vmxnet3-Wake-queue-from-reset-work.patch
@@ -284,6 +287,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch82 -p1
 %patch83 -p1
 %patch84 -p1
+%patch85 -p1
 %patch91 -p1
 %patch92 -p1
 %patch93 -p1
@@ -450,6 +454,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.270-2
+-   Fix for CVE-2021-3609
 *   Tue Jun 01 2021 Keerthana K <keerthanak@vmware.com> 4.4.270-1
 -   Update to version 4.4.270
 *   Sat May 22 2021 Ajay Kaher <akaher@vmware.com> 4.4.269-1
