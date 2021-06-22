@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.191
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -86,6 +86,9 @@ Patch65:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 Patch67:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
 Patch68:        0002-bpf-Fix-32-bit-src-register-truncation-on-div-mod.patch
 Patch69:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
+
+#Fix for CVE-2021-3609
+Patch70:        0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -254,6 +257,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch67 -p1
 %patch68 -p1
 %patch69 -p1
+%patch70 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -467,6 +471,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.191-2
+-   Fix for CVE-2021-3609
 *   Tue Jun 01 2021 Keerthana K <keerthanak@vmware.com> 4.19.191-1
 -   Update to version 4.19.191
 -   .config: Enable CONFIG_FANOTIFY_ACCESS_PERMISSIONS

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.191
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -118,6 +118,9 @@ Patch76:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch77:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 Patch78:        0004-ovl-call-secutiry-hook-in-ovl_real_ioctl.patch
 Patch79:        0005-ovl-check-permission-to-open-real-file.patch
+
+#Fix for CVE-2021-3609
+Patch80:        0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
 # inherit tcp_limit_output_bytes
 Patch90:	tcp-inherit-TSQ-limit-from-root-namespace.patch
@@ -485,6 +488,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch77 -p1
 %patch78 -p1
 %patch79 -p1
+%patch80 -p1
 
 %patch90 -p1
 %patch98 -p1
@@ -887,6 +891,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.191-2
+-   Fix for CVE-2021-3609
 *   Tue Jun 01 2021 Keerthana K <keerthanak@vmware.com> 4.19.191-1
 -   Update to version 4.19.191
 -   .config: Enable CONFIG_FANOTIFY_ACCESS_PERMISSIONS

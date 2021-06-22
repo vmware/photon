@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.191
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt80
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -91,6 +91,9 @@ Patch70:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
 
 # Fix for CVE-2021-3573
 Patch73:        0001-bluetooth-use-correct-lock-to-prevent-UAF-of-hdev-ob.patch
+
+# Fix for CVE-2021-3609
+Patch74:        0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -584,6 +587,7 @@ The Linux package contains the Linux kernel doc files
 %patch69 -p1
 %patch70 -p1
 %patch73 -p1
+%patch74 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -1154,6 +1158,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.191-3
+-   Fix for CVE-2021-3609
 *   Wed Jun 09 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.191-2
 -   Enable nohz for idle=poll
 *   Thu Jun 03 2021 Keerthana K <keerthanak@vmware.com> 4.19.191-1

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.191
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -83,6 +83,9 @@ Patch63:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 Patch65:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
 Patch66:        0002-bpf-Fix-32-bit-src-register-truncation-on-div-mod.patch
 Patch67:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
+
+#Fix for CVE-2021-3609
+Patch68:        0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -244,6 +247,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
+%patch68 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -477,6 +481,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.191-2
+-   Fix for CVE-2021-3609
 *   Tue Jun 01 2021 Keerthana K <keerthanak@vmware.com> 4.19.191-1
 -   Update to version 4.19.191
 *   Mon May 17 2021 Ajay Kaher <akaher@vmware.com> 4.19.190-1
