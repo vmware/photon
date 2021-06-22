@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.270
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -144,6 +144,9 @@ Patch103:       0004-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
 Patch104:       0001-ovl-pass-correct-flags-for-opening-real-directory.patch
 Patch105:       0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch106:       0003-ovl-verify-permissions-in-ovl_path_open.patch
+
+# Fix for CVE-2021-3609
+Patch107:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
 # Fix dummy console function definitions
@@ -314,6 +317,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch104 -p1
 %patch105 -p1
 %patch106 -p1
+%patch107 -p1
 
 %patch111 -p1
 %patch112 -p1
@@ -488,6 +492,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.270-2
+-   Fix for CVE-2021-3609
 *   Tue Jun 01 2021 Keerthana K <keerthanak@vmware.com> 4.9.270-1
 -   Update to version 4.9.270
 *   Sat May 22 2021 Ajay Kaher <akaher@vmware.com> 4.9.269-1

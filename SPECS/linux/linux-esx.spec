@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.270
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -121,6 +121,9 @@ Patch89: 0016-netns-restore-ops-before-calling-ops_exit_list.patch
 Patch90:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
 Patch91:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch92:        0003-ovl-verify-permissions-in-ovl_path_open.patch
+
+# Fix for CVE-2021-3609
+Patch93:        0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
 # Fix dummy console function definitions
 Patch112:       0001-console-Expand-dummy-functions-for-CFI.patch
@@ -242,6 +245,7 @@ The Linux package contains the Linux kernel doc files
 %patch90 -p1
 %patch91 -p1
 %patch92 -p1
+%patch93 -p1
 
 %patch112 -p1
 %build
@@ -338,6 +342,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.270-2
+-   Fix for CVE-2021-3609
 *   Tue Jun 01 2021 Keerthana K <keerthanak@vmware.com> 4.9.270-1
 -   Update to version 4.9.270
 *   Sat May 22 2021 Ajay Kaher <akaher@vmware.com> 4.9.269-1

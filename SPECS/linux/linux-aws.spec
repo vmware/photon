@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.270
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -131,6 +131,9 @@ Patch93:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
 Patch94:        0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch95:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch96:        0007-btrfs-tree-checker-Verify-inode-item.patch
+
+# Fix for CVE-2021-3609
+Patch97:        0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
 # Amazon AWS
 Patch101: 0002-lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
@@ -333,6 +336,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch94 -p1
 %patch95 -p1
 %patch96 -p1
+%patch97 -p1
 
 %patch101 -p1
 %patch102 -p1
@@ -529,6 +533,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.270-2
+-   Fix for CVE-2021-3609
 *   Tue Jun 01 2021 Keerthana K <keerthanak@vmware.com> 4.9.270-1
 -   Update to version 4.9.270
 *   Sat May 22 2021 Ajay Kaher <akaher@vmware.com> 4.9.269-1

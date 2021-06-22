@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.270
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -145,6 +145,10 @@ Patch97: 0001-console-Expand-dummy-functions-for-CFI.patch
 Patch99:        LKCM.patch
 
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
+
+#Fix for CVE-2021-3609
+Patch120:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
+
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -325,6 +329,9 @@ popd
 
 %patch111 -p1
 
+#CVE
+%patch120 -p1
+
 %if 0%{?kat_build:1}
 %patch1000 -p1
 %endif
@@ -446,6 +453,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.270-2
+-   Fix for CVE-2021-3609
 *   Tue Jun 01 2021 Keerthana K <keerthanak@vmware.com> 4.9.270-1
 -   Update to version 4.9.270
 *   Sat May 22 2021 Ajay Kaher <akaher@vmware.com> 4.9.269-1
