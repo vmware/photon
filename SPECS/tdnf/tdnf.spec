@@ -2,18 +2,17 @@
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.1.0
-Release:        3%{?dist}
+Version:        3.1.2
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
 URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=46a52792eeeffe3f7e353fa963ab108b09856e8d
+%define sha1    %{name}=d05bfffbd1891166923021feb457e0b645b4d6eb
 
-Patch0:         fix-segfaulting-when-gpgcheck-is-enabled.patch
-Patch1:         pool_flag_noinstalledobsoletes.patch
+Patch0:         pool_flag_noinstalledobsoletes.patch
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -250,6 +249,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
 
 %changelog
+*   Wed Jun 23 2021 Oliver Kurth <okurth@vmware.com> 3.1.2-1
+-   update to 3.1.2
 *   Fri Jun 11 2021 Oliver Kurth <okurth@vmware.com> 3.1.0-3
 -   rebuild with libsolv 0.7.19
 *   Thu Jun 03 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.1.0-2
