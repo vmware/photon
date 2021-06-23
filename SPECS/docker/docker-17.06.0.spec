@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        17.06.0
-Release:        17%{?dist}
+Release:        18%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -30,11 +30,11 @@ Patch0:         remove-firewalld.patch
 Patch1:         CVE-2017-14992.patch
 Patch2:         fix-apparmor-not-being-applied-to-exec-processes.patch
 Patch3:         CVE-2019-5736-v17.06.patch
-
-Patch10:        CVE-2018-15664_1706_1.patch
-Patch11:        CVE-2018-15664_1706_2.patch
-Patch12:        CVE-2018-15664_1706_3.patch
-Patch13:        CVE-2019-14271-1706.patch
+Patch4:         CVE-2018-15664_1706_1.patch
+Patch5:         CVE-2018-15664_1706_2.patch
+Patch6:         CVE-2018-15664_1706_3.patch
+Patch7:         CVE-2019-14271-1706.patch
+Patch8:         whitelist-statx-syscall.patch
 
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
@@ -88,10 +88,11 @@ ln -s docker-ce/components/packaging packaging
 %patch1 -p2
 %patch2 -p2
 %patch3 -p1
-%patch10 -p2
-%patch11 -p2
-%patch12 -p2
-%patch13 -p2
+%patch4 -p2
+%patch5 -p2
+%patch6 -p2
+%patch7 -p2
+%patch8 -p1
 
 mkdir -p /go/src/github.com
 cd /go/src/github.com
@@ -239,6 +240,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Tue Jun 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 17.06.0-18
+-   Added statx to whitelist of allowed syscalls
 *   Sat Aug 22 2020 Ashwin H <ashwinh@vmware.com> 17.06.0-17
 -   Remove hardcoded go dependecy
 *   Wed Apr 29 2020 Harinadh D <hdommaraju@vmware.com> 17.06.0-16

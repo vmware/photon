@@ -1,0 +1,37 @@
+From b2a907c8cab64830c9e424eb1ec71e0429d326ff Mon Sep 17 00:00:00 2001
+From: NobodyOnSE <ich@sektor.selfip.com>
+Date: Mon, 26 Feb 2018 21:25:55 +0100
+Subject: [PATCH] Whitelist statx syscall for libseccomp-2.3.3 onward
+
+Older seccomp versions will ignore this.
+
+Signed-off-by: NobodyOnSE <ich@sektor.selfip.com>
+---
+ profiles/seccomp/default.json       | 1 +
+ profiles/seccomp/seccomp_default.go | 1 +
+ 2 files changed, 2 insertions(+)
+
+diff --git a/docker-ce/components/engine/profiles/seccomp/default.json b/docker-ce/components/engine/profiles/seccomp/default.json
+index 38467c7bedc4..5717c00cdef9 100755
+--- a/docker-ce/components/engine/profiles/seccomp/default.json
++++ b/docker-ce/components/engine/profiles/seccomp/default.json
+@@ -322,6 +322,7 @@
+ 				"stat64",
+ 				"statfs",
+ 				"statfs64",
++				"statx",
+ 				"symlink",
+ 				"symlinkat",
+ 				"sync",
+diff --git a/docker-ce/components/engine/profiles/seccomp/seccomp_default.go b/docker-ce/components/engine/profiles/seccomp/seccomp_default.go
+index 9deab38e1777..be29aa4f70a4 100644
+--- a/docker-ce/components/engine/profiles/seccomp/seccomp_default.go
++++ b/docker-ce/components/engine/profiles/seccomp/seccomp_default.go
+@@ -315,6 +315,7 @@ func DefaultProfile() *types.Seccomp {
+ 				"stat64",
+ 				"statfs",
+ 				"statfs64",
++				"statx",
+ 				"symlink",
+ 				"symlinkat",
+ 				"sync",
