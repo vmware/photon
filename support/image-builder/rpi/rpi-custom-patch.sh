@@ -13,6 +13,8 @@ cat > /etc/modules-load.d/genet.conf << "EOF"
 #        which causes the ethernet "failed to connect PHY" in rpi4
 # Sol:   Load the modules in below order using systemd-modules
 
+bcm_phy_lib
+broadcom
 mdio_bcm_unimac
 genet
 EOF
