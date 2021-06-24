@@ -2,7 +2,7 @@
 Description=System Logging Service
 Requires=syslog.socket
 Documentation=man:rsyslogd(8)
-Documentation=http://www.rsyslog.com/doc/
+Documentation=https://www.rsyslog.com/doc/
 Conflicts=syslog-ng.service
 
 [Service]
@@ -11,6 +11,10 @@ ExecStart=/usr/sbin/rsyslogd -n $RSYSLOGD_PARAMS
 StandardOutput=null
 Environment=RSYSLOGD_PARAMS=
 Restart=on-failure
+
+# Increase the default a bit in order to allow many simultaneous
+# files to be monitored, we might need a lot of fds.
+LimitNOFILE=16384
 
 [Install]
 WantedBy=multi-user.target
