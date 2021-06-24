@@ -40,7 +40,11 @@ tdnf install -y rpm tar gzip
 
 rpm --root $TEMP_CHROOT/ --initdb
 
-tdnf --releasever ${PHOTON_RELEASE_VERSION} --installroot $TEMP_CHROOT/ --rpmverbosity 10 install -y filesystem bash toybox tdnf photon-release photon-repos
+tdnf \
+   --releasever ${PHOTON_RELEASE_VERSION} \
+   --installroot $TEMP_CHROOT/ \
+   --rpmverbosity 10 \
+   install -y filesystem bash toybox tdnf photon-release photon-repos curl
 
 rpm --root $TEMP_CHROOT/ --import $TEMP_CHROOT/etc/pki/rpm-gpg/*
 
