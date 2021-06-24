@@ -1,0 +1,63 @@
+From 501d62492673e59bbd4675f0efca0502282ff0d0 Mon Sep 17 00:00:00 2001
+From: Szabolcs Nagy <szabolcs.nagy@arm.com>
+Date: Wed, 30 Dec 2020 21:52:38 +0000
+Subject: [PATCH 1/3] elf: Refactor _dl_update_slotinfo to avoid use after free
+
+map is not valid to access here because it can be freed by a concurrent
+dlclose: during tls access (via __tls_get_addr) _dl_update_slotinfo is
+called without holding dlopen locks. So don't check the modid of map.
+
+The map == 0 and map != 0 code paths can be shared (avoiding the dtv
+resize in case of map == 0 is just an optimization: larger dtv than
+necessary would be fine too).
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+---
+ elf/dl-tls.c | 21 +++++----------------
+ 1 file changed, 5 insertions(+), 16 deletions(-)
+
+diff --git a/elf/dl-tls.c b/elf/dl-tls.c
+index c87caf13d6..d11bc44bed 100644
+--- a/elf/dl-tls.c
++++ b/elf/dl-tls.c
+@@ -663,6 +663,8 @@ _dl_update_slotinfo (unsigned long int req_modid)
+ 	{
+ 	  for (size_t cnt = total == 0 ? 1 : 0; cnt < listp->len; ++cnt)
+ 	    {
++	      size_t modid = total + cnt;
++
+ 	      size_t gen = listp->slotinfo[cnt].gen;
+ 
+ 	      if (gen > new_gen)
+@@ -678,25 +680,12 @@ _dl_update_slotinfo (unsigned long int req_modid)
+ 
+ 	      /* If there is no map this means the entry is empty.  */
+ 	      struct link_map *map = listp->slotinfo[cnt].map;
+-	      if (map == NULL)
+-		{
+-		  if (dtv[-1].counter >= total + cnt)
+-		    {
+-		      /* If this modid was used at some point the memory
+-			 might still be allocated.  */
+-		      free (dtv[total + cnt].pointer.to_free);
+-		      dtv[total + cnt].pointer.val = TLS_DTV_UNALLOCATED;
+-		      dtv[total + cnt].pointer.to_free = NULL;
+-		    }
+-
+-		  continue;
+-		}
+-
+ 	      /* Check whether the current dtv array is large enough.  */
+-	      size_t modid = map->l_tls_modid;
+-	      assert (total + cnt == modid);
+ 	      if (dtv[-1].counter < modid)
+ 		{
++		  if (map == NULL)
++		    continue;
++
+ 		  /* Resize the dtv.  */
+ 		  dtv = _dl_resize_dtv (dtv);
+ 
+-- 
+2.23.3
+

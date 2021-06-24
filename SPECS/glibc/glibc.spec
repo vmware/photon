@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -31,6 +31,11 @@ Patch13:        CVE-2020-27618.patch
 Patch14:        0001-nptl-Add-__pthread_attr_copy-for-copying-pthread_att.patch
 Patch15:        0001-CVE-2021-33574.patch
 Patch16:        0002-CVE-2021-33574.patch
+# Fix for pthread and dlopen data race condition issue
+Patch17:        0001-elf-Refactor-_dl_update_slotinfo-to-avoid-use-after-.patch
+Patch18:        0002-elf-Fix-data-races-in-pthread_create-and-TLS-access-.patch
+Patch19:        0003-elf-Use-relaxed-atomics-for-racy-accesses-BZ-19329.patch
+Patch20:        0004-elf-Add-test-case-for-BZ-19329.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -101,6 +106,10 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
+%patch18 -p1
+%patch19 -p1
+%patch20 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -305,6 +314,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Thu Jun 24 2021 Srinidhi Rao <srinidhir@vmware.com> 2.28-14
+-   Fix racy access issues in dl-open & dl-tls.
 *   Thu Jun 03 2021 Ajay Kaher <akaher@vmware.com> 2.28-13
 -   Fix CVE-2021-33574
 *   Thu Mar 11 2021 Keerthana K <keerthanak@vmware.com> 2.28-12
