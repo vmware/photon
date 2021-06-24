@@ -129,7 +129,7 @@ def createIso(options):
                                   options.rpm_path, options.package_list_file,
                                   rpm_list, options.stage_path, files_to_copy,
                                   options.generated_data_path, initrd_pkgs,
-                                  options.photon_docker_image])
+                                  options.photon_docker_image, options.photon_release_version])
 
         if retval:
             raise Exception("Unable to create install ISO")
@@ -194,6 +194,8 @@ def createImage(options):
         raise Exception("ovftool is not available")
 
     install_config = config['installer']
+
+    install_config['release_version'] = options.photon_release_version
 
     image_type = config['image_type']
     image_name = config.get('image_name', 'photon-' + image_type)
@@ -276,6 +278,7 @@ if __name__ == '__main__':
     parser.add_argument("-d", "--pkg-to-rpm-map-file", dest="pkg_to_rpm_map_file", default="../../stage/pkg_info.json")
     parser.add_argument("-z", "--pkg-to-be-copied-conf-file", dest="pkg_to_be_copied_conf_file")
     parser.add_argument("-q", "--photon-docker-image", dest="photon_docker_image", default="photon:latest")
+    parser.add_argument("-v", "--photon-release-version", dest="photon_release_version")
 
     options = parser.parse_args()
     if options.config_file and options.config_file != '':

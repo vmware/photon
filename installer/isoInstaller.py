@@ -52,6 +52,10 @@ class IsoInstaller(object):
         if ks_path:
             install_config=self._load_ks_config(ks_path)
 
+        if not install_config:
+            install_config = {}
+        install_config['release_version'] = options.release_version
+
         if options.ui_config_file:
             ui_config = (JsonWrapper(options.ui_config_file)).read()
         else:
@@ -142,6 +146,7 @@ if __name__ == '__main__':
     parser.add_argument("-u", "--ui-config", dest="ui_config_file")
     parser.add_argument("-j", "--json-file", dest="options_file", default="input.json")
     parser.add_argument("-r", "--repo-path", dest="repo_path")
+    parser.add_argument("-p", "--release-version", dest="release_version")
     options = parser.parse_args()
 
     IsoInstaller(options)

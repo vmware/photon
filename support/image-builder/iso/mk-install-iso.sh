@@ -32,6 +32,7 @@ PACKAGE_LIST_FILE_BASE_NAME=$(basename "${PACKAGE_LIST_FILE}")
 INITRD=${WORKINGDIR}/photon-chroot
 PACKAGES=$8
 PHOTON_DOCKER_IMAGE=$9
+PHOTON_RELEASE_VERSION=${10}
 
 rm -rf $WORKINGDIR/*
 mkdir -p $INITRD
@@ -61,7 +62,7 @@ EOF
 
 rpm --root $INITRD --initdb --dbpath /var/lib/rpm
 
-TDNF_CMD="tdnf install -y --installroot $INITRD --rpmverbosity 10 -c ${WORKINGDIR}/tdnf.conf -q $PACKAGES"
+TDNF_CMD="tdnf install -y --releasever ${PHOTON_RELEASE_VERSION} --installroot $INITRD --rpmverbosity 10 -c ${WORKINGDIR}/tdnf.conf -q $PACKAGES"
 
 # run host's tdnf, if fails - try one from photon:latest docker image
 $TDNF_CMD || docker run -v $RPMS_PATH:$RPMS_PATH -v $WORKINGDIR:$WORKINGDIR $PHOTON_DOCKER_IMAGE $TDNF_CMD
@@ -155,7 +156,7 @@ cd /installer
 ACTIVE_CONSOLE="\$(< /sys/devices/virtual/tty/console/active)"
 
 install() {
-  LANG=en_US.UTF-8 ./isoInstaller.py --json-file=$PACKAGE_LIST_FILE_BASE_NAME && shutdown -r now
+  LANG=en_US.UTF-8 ./isoInstaller.py --json-file=$PACKAGE_LIST_FILE_BASE_NAME --release-version ${PHOTON_RELEASE_VERSION} && shutdown -r now
 }
 
 try_run_installer() {

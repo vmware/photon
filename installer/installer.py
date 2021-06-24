@@ -66,6 +66,7 @@ class Installer(object):
         'postinstallscripts',
         'public_key',
         'photon_docker_image',
+        'release_version',
         'search_path',
         'setup_grub_script',
         'shadow_password',
@@ -111,6 +112,10 @@ class Installer(object):
     create, append and validate configuration date - install_config
     """
     def configure(self, install_config, ui_config = None):
+
+        if install_config and 'release_version' in install_config:
+            release_version = install_config.pop('release_version')
+
         # Initialize logger and cmd first
         if not install_config:
             # UI installation
@@ -128,6 +133,9 @@ class Installer(object):
             self.interactive = True
             config = IsoConfig()
             install_config = curses.wrapper(config.configure, ui_config)
+
+        if 'release_version' in locals():
+            install_config['release_version'] = release_version
 
         self._add_defaults(install_config)
 
@@ -628,8 +636,8 @@ class Installer(object):
             self.exit_gracefully()
 
         # Install filesystem rpm
-        tdnf_cmd = "tdnf install filesystem --installroot {0} --assumeyes -c {1}".format(self.photon_root,
-                        self.tdnf_conf_path)
+        tdnf_cmd = "tdnf install filesystem --releasever {0} --installroot {1} --assumeyes -c {2}".format(
+                    self.install_config['release_version'], self.photon_root, self.tdnf_conf_path)
         retval = self.cmd.run(tdnf_cmd)
         if retval != 0:
             retval = self.cmd.run(['docker', 'run',
@@ -883,8 +891,9 @@ class Installer(object):
         packages_to_install = {}
         total_size = 0
         stderr = None
-        tdnf_cmd = "tdnf install --installroot {0} --assumeyes -c {1} {2}".format(self.photon_root,
-                        self.tdnf_conf_path, " ".join(selected_packages))
+        tdnf_cmd = "tdnf install --releasever {0} --installroot {1} --assumeyes -c {2} {3}".format(
+                    self.install_config['release_version'], self.photon_root, self.tdnf_conf_path,
+                    " ".join(selected_packages))
         self.logger.debug(tdnf_cmd)
 
         # run in shell to do not throw exception if tdnf not found

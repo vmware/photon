@@ -375,7 +375,8 @@ iso: check-tools photon-stage $(PHOTON_PACKAGES) ostree-repo
 		--package-list-file $(PHOTON_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
 		--generated-data-path $(PHOTON_STAGE)/common/data \
 		--pkg-to-rpm-map-file $(PHOTON_PKGINFO_FILE) \
-		--photon-docker-image $(PHOTON_DOCKER_IMAGE)
+		--photon-docker-image $(PHOTON_DOCKER_IMAGE) \
+                --photon-release-version $(PHOTON_RELEASE_VERSION)
 
 minimal-iso: check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) packages-minimal packages-initrd
 	@echo "Building Photon Minimal ISO..."
@@ -393,7 +394,8 @@ minimal-iso: check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) packages-minimal p
                 --generated-data-path $(PHOTON_STAGE)/common/data \
                 --pkg-to-rpm-map-file $(PHOTON_PKGINFO_FILE) \
                 --pkg-to-be-copied-conf-file $(PHOTON_GENERATED_DATA_DIR)/$(MINIMAL_PACKAGE_LIST_FILE) \
-		--photon-docker-image $(PHOTON_DOCKER_IMAGE)
+		--photon-docker-image $(PHOTON_DOCKER_IMAGE) \
+                --photon-release-version $(PHOTON_RELEASE_VERSION)
 
 rt-iso: check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) packages-rt packages-initrd
 	@echo "Building Photon Real Time ISO..."
@@ -411,7 +413,8 @@ rt-iso: check-tools photon-stage $(PHOTON_PUBLISH_XRPMS) packages-rt packages-in
                 --generated-data-path $(PHOTON_STAGE)/common/data \
                 --pkg-to-rpm-map-file $(PHOTON_PKGINFO_FILE) \
                 --pkg-to-be-copied-conf-file $(PHOTON_GENERATED_DATA_DIR)/$(RT_PACKAGE_LIST_FILE) \
-		--photon-docker-image $(PHOTON_DOCKER_IMAGE)
+		--photon-docker-image $(PHOTON_DOCKER_IMAGE) \
+                --photon-release-version $(PHOTON_RELEASE_VERSION)
 
 src-iso: check-tools photon-stage $(PHOTON_PACKAGES)
 	@echo "Building Photon Full Source ISO..."
@@ -425,7 +428,8 @@ src-iso: check-tools photon-stage $(PHOTON_PACKAGES)
 		--package-list-file $(PHOTON_GENERATED_DATA_DIR)/$(FULL_PACKAGE_LIST_FILE) \
 		--generated-data-path $(PHOTON_STAGE)/common/data \
 		--pkg-to-rpm-map-file $(PHOTON_PKGINFO_FILE) \
-		--photon-docker-image $(PHOTON_DOCKER_IMAGE) > \
+		--photon-docker-image $(PHOTON_DOCKER_IMAGE) \
+                --photon-release-version $(PHOTON_RELEASE_VERSION) > \
 		$(PHOTON_LOGS_DIR)/sourceiso-installer.log 2>&1
 
 image: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES)
@@ -438,7 +442,8 @@ image: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES)
 		--generated-data-path=$(PHOTON_DATA_DIR) \
 		--stage-path=$(PHOTON_STAGE) \
 		--rpm-path $(PHOTON_STAGE)/RPMS \
-		--photon-docker-image $(PHOTON_DOCKER_IMAGE)
+		--photon-docker-image $(PHOTON_DOCKER_IMAGE) \
+                --photon-release-version $(PHOTON_RELEASE_VERSION)
 
 all-images: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES)
 	@echo "Building all images - gce, ami, azure, ova..."
@@ -449,6 +454,7 @@ all-images: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES)
 		--stage-path=$(PHOTON_STAGE) \
 		--rpm-path $(PHOTON_STAGE)/RPMS \
 		--photon-docker-image $(PHOTON_DOCKER_IMAGE) \
+                --photon-release-version $(PHOTON_RELEASE_VERSION) \
 		--img-name=ami
 	$(PHOTON_IMAGE_BUILDER) \
 		--src-root=$(SRCROOT) \
@@ -456,6 +462,7 @@ all-images: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES)
 		--stage-path=$(PHOTON_STAGE) \
 		--rpm-path $(PHOTON_STAGE)/RPMS \
 		--photon-docker-image $(PHOTON_DOCKER_IMAGE) \
+                --photon-release-version $(PHOTON_RELEASE_VERSION) \
 		--img-name=gce
 	$(PHOTON_IMAGE_BUILDER) \
 		--src-root=$(SRCROOT) \
@@ -463,6 +470,7 @@ all-images: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES)
 		--stage-path=$(PHOTON_STAGE) \
 		--rpm-path $(PHOTON_STAGE)/RPMS \
 		--photon-docker-image $(PHOTON_DOCKER_IMAGE) \
+                --photon-release-version $(PHOTON_RELEASE_VERSION) \
 		--img-name=azure
 	$(PHOTON_IMAGE_BUILDER) \
 		--src-root=$(SRCROOT) \
@@ -470,6 +478,7 @@ all-images: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES)
 		--stage-path=$(PHOTON_STAGE) \
 		--rpm-path $(PHOTON_STAGE)/RPMS \
 		--photon-docker-image $(PHOTON_DOCKER_IMAGE) \
+                --photon-release-version $(PHOTON_RELEASE_VERSION) \
 		--img-name=ova
 	$(PHOTON_IMAGE_BUILDER) \
 		--src-root=$(SRCROOT) \
@@ -477,6 +486,7 @@ all-images: check-kpartx photon-stage $(VIXDISKUTIL) $(PHOTON_PACKAGES)
 		--stage-path=$(PHOTON_STAGE) \
 		--rpm-path $(PHOTON_STAGE)/RPMS \
 		--photon-docker-image $(PHOTON_DOCKER_IMAGE) \
+                --photon-release-version $(PHOTON_RELEASE_VERSION) \
 		--img-name=ova_uefi
 
 photon-docker-image:

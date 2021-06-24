@@ -219,4 +219,8 @@ Kickstart config file is a json format with following possible parameters:
         Default value: "photon:latest"
 	Example: { "photon_docker_image": "photon:3.0" }
 
+"release_version"(Required)
+	Contains the photon release version
+	Acceptable values are: "3.0", "4.0"
+	Example: {"release_version": "3.0"}
 For reference, look at "sample_ks.cfg" file
