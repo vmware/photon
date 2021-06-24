@@ -30,7 +30,7 @@ Photon OS 4.0  provides support for the Real Time flavor of kernel linux-rt, SEL
 	1. photon\_updates\_4.0_<architecture\>
 	2. photon\_4.0\_<architecture\>
 
-  photon_updates_4.0_<architecture> repository contains all the latest versions of the updated RPMs and is enabled by default. photon_4.0_<architecture> contains all the previous versions of the updated RPMs and is disabled by default. The users can enable this repository by specifying the `enablerepo` option in `tdnf` command if they wish to consume a previous version.
+  photon\_updates\_4.0_<architecture\> repository contains all the latest versions of the updated RPMs and is enabled by default. photon\_4.0\_<architecture\> contains all the previous versions of the updated RPMs and is disabled by default. The users can enable this repository by specifying the `enablerepo` option in `tdnf` command if they wish to consume a previous version.
 
 ### Installer and Build System Updates
 
