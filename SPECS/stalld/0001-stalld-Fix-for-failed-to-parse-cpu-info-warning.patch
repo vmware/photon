@@ -1,0 +1,170 @@
+From 29f2920073c9ce5dd353c775df85e001014b48e1 Mon Sep 17 00:00:00 2001
+From: Vikash Bansal <bvikas@vmware.com>
+Date: Wed, 3 Mar 2021 22:56:39 +0530
+Subject: [PATCH] stalld: Fix for "failed to parse cpu info warning"
+
+Root cause:
+This warning is printed in case parse_cpu_info is called
+for a particular cpu with the buffer containing partial
+"/proc/sched_debug" data about that CPU.
+
+Fix for Agressive mode:
+In the thread for a perticualr CPU, make sure that "/proc/sched"
+data for that CPU is complete.
+
+Fix for conservative mode:
+Make sure complete "/proc/sched" data is read in buffer
+
+Signed-off-by: Vikash Bansal <bvikas@vmware.com>
+---
+ src/stalld.c | 86 ++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 83 insertions(+), 3 deletions(-)
+
+diff --git a/src/stalld.c b/src/stalld.c
+index 5d68fec..24201a4 100644
+--- a/src/stalld.c
++++ b/src/stalld.c
+@@ -880,6 +880,35 @@ int check_might_starve_tasks(struct cpu_info *cpu)
+ 	return starving;
+ }
+ 
++#define ONLINE_PATH_SIZE 64
++#define ONLINE_INFO_SIZE 5
++
++int is_cpu_online(int cpu_id)
++{
++	int fd;
++	char online_path[ONLINE_PATH_SIZE];
++	char online_info[ONLINE_INFO_SIZE];
++	int len;
++	int retval = 0;
++	snprintf(online_path, ONLINE_PATH_SIZE,
++		"/sys/devices/system/cpu/cpu%d/online", cpu_id);
++	fd = open(online_path, O_RDONLY);
++	if(fd < 0){
++		/*
++		 * Maybe wrong CPU ID
++		 */
++		return 0;
++	}
++	len = read(fd, online_info, ONLINE_INFO_SIZE);
++	if (len < 0)
++		goto out_is_online;
++	online_info[len-1] = '\0';
++	retval = atoi(online_info);
++out_is_online:
++	close(fd);
++	return retval;
++}
++
+ void *cpu_main(void *data)
+ {
+ 	struct cpu_info *cpu = data;
+@@ -888,6 +917,8 @@ void *cpu_main(void *data)
+ 
+ 	while (cpu->thread_running && running) {
+ 
++		int old_config_buffer_size;
++		int alloc_failed = 0;
+ 		/*
+ 		 * Buffer size should increase. See read_sched_debug().
+ 		 */
+@@ -897,18 +928,49 @@ void *cpu_main(void *data)
+ 			if (!cpu->buffer) {
+ 				warn("fail to increase the buffer... continue");
+ 				cpu->buffer = old_buffer;
++				alloc_failed = 1;
+ 			} else {
+ 				cpu->buffer_size = config_buffer_size;
++				alloc_failed = 0;
+ 			}
+ 		}
+-
++		old_config_buffer_size = config_buffer_size;
+ 		retval = read_sched_debug(cpu->buffer, cpu->buffer_size);
+ 		if(!retval) {
+ 			warn("fail reading sched debug file");
+ 			warn("Dazed and confused, but trying to continue");
+ 			continue;
+ 		}
+-
++		/*
++		 * If new value of config_buf_size is more than old one then
++		 * read_sched_debug function doubled its size,
++		 * this is done in 2 cases
++		 * 1. /proc/sched is not read completely
++		 * 2. buffer is almost full
++		 * (retval + 2 > old_config_buffer_size) condition is added to
++		 * avoid 2nd case
++		 */
++		if((config_buffer_size > old_config_buffer_size) &&
++		   !alloc_failed && (retval + 2 > old_config_buffer_size)) {
++			int online;
++			char *next_cpu;
++			char *cpu_buffer;
++			char *cpu_start;
++			online = is_cpu_online(cpu->id);
++			if(online){
++				cpu_start = get_cpu_info_start(cpu->buffer, cpu->id);
++				/*
++				 * CPU info for current CPU is missing
++				 * need to read more, continue and read
++				 * data in bigger buffer
++				 */
++				if (!cpu_start)
++					continue;
++			        next_cpu = get_next_cpu_info_start(cpu_start);
++				if(!next_cpu)
++					continue;
++			}
++		}
+ 		retval = parse_cpu_info(cpu, cpu->buffer, cpu->buffer_size);
+ 		if (retval) {
+ 			warn("error parsing CPU info");
+@@ -995,6 +1057,8 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+ 	}
+ 
+ 	while (running) {
++		int old_config_buffer_size;
++		int alloc_failed=0;
+ 
+ 		/*
+ 		 * Buffer size should increase. See read_sched_debug().
+@@ -1005,17 +1069,33 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+ 			if (!buffer) {
+ 				warn("fail to increase the buffer... continue");
+ 				buffer = old_buffer;
++				alloc_failed = 1;
+ 			} else {
+ 				buffer_size = config_buffer_size;
++				alloc_failed = 0;
+ 			}
+ 		}
+-
++		old_config_buffer_size = config_buffer_size;
+ 		retval = read_sched_debug(buffer, buffer_size);
+ 		if(!retval) {
+ 			warn("Dazed and confused, but trying to continue");
+ 			continue;
+ 		}
+ 
++		/*
++		 * If new value of config_buf_size is more than old one then
++		 * read_sched_debug function doubled its size,
++		 * this is done in 2 cases
++		 * 1. /proc/sched is not read completely
++		 * 2. buffer is almost full
++		 * (retval + 2 > old_config_buffer_size) condition is added to
++		 * avoid 2nd case
++		 */
++		if((config_buffer_size > old_config_buffer_size) &&
++		   !alloc_failed && (retval + 2 > old_config_buffer_size)) {
++			continue;
++		}
++
+ 		for (i = 0; i < nr_cpus; i++) {
+ 			if (!should_monitor(i))
+ 				continue;
+-- 
+2.17.1
+
