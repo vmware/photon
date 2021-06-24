@@ -4,7 +4,8 @@ Documentation=http://github.com/vmware/open-vm-tools
 ConditionVirtualization=vmware
 Requires=vgauthd.service
 DefaultDependencies=no
-Before=cloud-init-local.service
+# This differs from Ph3 & Ph4
+After=cloud-final.service
 After=dbus.service
 
 [Service]
