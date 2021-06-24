@@ -6,7 +6,7 @@ within the container to start a graceful shut down. For example
 
   inject PID /bin/halt
 
-To immediately kill a container and all its processes, it is sufficient to
+To immediately stop a container and all its processes, it is sufficient to
 send the init process a SIGKILL from the host using
 
   pkill -KILL -P PID
@@ -86,8 +86,8 @@ if binfmt_misc is mounted on /proc/sys/fs/binfmt_misc in the host
 filesystem. This was fixed in Linux 3.13.
 
 Linux 3.19 introduced restrictions on writing a user namespace GID map as an
-unprivileged user unless setgroups() has been permanently disabled, which
+unprivileged user unless setgroups() has been permanently deactivated, which
 broke older versions of contain. Run non-setuid and unprivileged, contain
-and pseudo must now disable setgroups() to create containers, but if they
+and pseudo must now deactivate setgroups() to create containers, but if they
 are installed setuid, they will bypass this kernel restriction and leave
 setgroups() enabled in the resulting containers.

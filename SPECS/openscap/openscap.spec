@@ -76,7 +76,7 @@ find %{buildroot} -name '*.la' -delete
 
 #%check
 #make check need BuildRequires per-XML-XPATH and bzip2
-#no per-XML-XPATH so disable make check
+#no per-XML-XPATH so deactivate make check
 #make %{?_smp_mflags} -k check
 
 %files
@@ -121,7 +121,7 @@ find %{buildroot} -name '*.la' -delete
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.2.17-1
 -   Update to 1.2.17
 *   Thu Aug 10 2017 Rongrong Qiu <rqiu@vmware.com> 1.2.14-3
--   Disable make check which need per-XML-XPATH for bug 1900358
+-   Deactivate make check which need per-XML-XPATH for bug 1900358
 *   Fri May 5 2017 Alexey Makhalov <amakhalov@vmware.com> 1.2.14-2
 -   Remove BuildRequires XML-XPath.
 *   Mon Mar 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.14-1

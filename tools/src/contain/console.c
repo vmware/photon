@@ -18,13 +18,13 @@
 static struct termios saved;
 
 int getconsole(void) {
-  int master;
+  int primary;
 
-  if ((master = posix_openpt(O_RDWR | O_NOCTTY)) < 0)
+  if ((primary = posix_openpt(O_RDWR | O_NOCTTY)) < 0)
     error(1, 0, "Failed to allocate a console pseudo-terminal");
-  grantpt(master);
-  unlockpt(master);
-  return master;
+  grantpt(primary);
+  unlockpt(primary);
+  return primary;
 }
 
 static void rawmode() {

@@ -14,7 +14,7 @@ BuildRequires:  libmnl-devel
 BuildRequires:  linux-api-headers
 
 %description
-libnetfilter_cthelper is the userspace library that provides the programming interface to the user-space helper infrastructure available since Linux kernel 3.6. With this library, you register, configure, enable and disable user-space helpers.
+libnetfilter_cthelper is the userspace library that provides the programming interface to the user-space helper infrastructure available since Linux kernel 3.6. With this library, you register, configure, enable and deactivate user-space helpers.
 
 %package        devel
 Summary:        Development files for %{name}

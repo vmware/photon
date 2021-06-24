@@ -41,7 +41,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 cd %{buildroot}%{gemdir}/gems/backports-%{version}
 # Removal of alias_method_chain method in Rails 5.1 version creates issue
 # since the existing testsuite doesn't reflect the change. To avoid rake
-# to abort and continue the tests following fix is done.
+# to stop and continue the tests following fix is done.
 # ref: https://github.com/marcandre/backports/issues/114
 sed -i "s/^/#/" lib/backports/rails/module.rb
 rake test

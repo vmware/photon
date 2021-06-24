@@ -88,10 +88,10 @@ This package contains development headers and static library for libgomp
 %setup -q
 %patch0 -p1
 
-# disable FORTIFY_SOURCE=2 from hardening
+# deactivate FORTIFY_SOURCE=2 from hardening
 sed -i '/*cpp:/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
 sed -i '/Ofast:-D_FORTIFY_SOURCE=2/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
-# disable no-pie for gcc binaries
+# deactivate no-pie for gcc binaries
 sed -i '/^NO_PIE_CFLAGS = /s/@NO_PIE_CFLAGS@//' gcc/Makefile.in
 
 install -vdm 755 ../gcc-build
@@ -131,9 +131,9 @@ popd
 
 %check
 ulimit -s 32768
-# disable PCH tests is ASLR is on (due to bug in pch)
+# deactivate PCH tests is ASLR is on (due to bug in pch)
 test `cat /proc/sys/kernel/randomize_va_space` -ne 0 && rm gcc/testsuite/gcc.dg/pch/pch.exp
-# disable security hardening for tests
+# deactivate security hardening for tests
 rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
 # run only gcc tests
 cd ../gcc-build/gcc

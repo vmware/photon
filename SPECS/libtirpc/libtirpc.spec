@@ -85,7 +85,7 @@ make install DESTDIR=%{buildroot}
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-3
 -   GA - Bump release of all rpms
 *   Mon Feb 08 2016 Anish Swaminathan <anishs@vmware.com>  1.0.1-2
--   Added patch for bindresvport blacklist
+-   Added patch for bindresvport denylist
 *   Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0.1-1
 -   Updated to version 1.0.1
 *   Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 0.3.2-1

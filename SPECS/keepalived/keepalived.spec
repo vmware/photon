@@ -51,7 +51,7 @@ install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
 rm -rf %{buildroot}%{_sysconfdir}/%{name}/samples/*
 
 %check
-# A build could silently have LVS support disabled if the kernel includes can't
+# A build could silently have LVS support deactivated if the kernel includes can't
 # be properly found, we need to avoid that.
 if ! grep -q "#define _WITH_LVS_ *1" lib/config.h; then
     %{__echo} "ERROR: We do not want keepalived lacking LVS support."

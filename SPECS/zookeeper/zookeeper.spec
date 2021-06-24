@@ -106,7 +106,7 @@ fi
 *   Thu Jun 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-4
 -   Renamed openjdk to openjdk8.
 *   Wed May 31 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-3
--   Provide preset to disable service by default
+-   Provide preset to deactivate service by default
 *   Wed May 24 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-2
 -   Used RuntimeDirectory to create folder /var/run/zookeeper.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-1

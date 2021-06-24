@@ -1461,6 +1461,6 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 *   Tue Jun 06 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-3
 -   fix domainjoin and allow publish of oidc xml
 *   Thu Jun 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.1-2
--   disable java macros and use java alternatives
+-   deactivate java macros and use java alternatives
 *   Mon May 22 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-1
 -   Initial - spec modified for Photon from lightwave git repo.

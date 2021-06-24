@@ -378,7 +378,7 @@ net.get_ipv6_addr(ifname = interface_name)
 
 ### get_ipv6_addr_mode
 
-Get the address mode for the specified interface to determine whether DHCPv6, autoconf are enabled or disabled.
+Get the address mode for the specified interface to determine whether DHCPv6, autoconf are enabled or deactivated.
 
 **Syntax**
 ````
@@ -390,7 +390,7 @@ net.get_ipv6_addr_mode(ifname = interface_name)
 
 **Returns**
 
-- Status for DHCPv6, autoconf (True=enabled, False=disabled)
+- Status for DHCPv6, autoconf (True=enabled, False=deactivated)
 - failure: exception
 
 ### get_ipv6_gateway
@@ -441,8 +441,8 @@ net.set_ipv6_addr_mode(ifname = interface_name, enable_dhcp = [True, False], ena
 **Parameters**
 
 - ``ifname`` - interface name
-- ``enable_dhcp`` - True to enable, False to disable
-- ``enable_autoconf`` - True to enable, False to disable
+- ``enable_dhcp`` - True to enable, False to deactivate
+- ``enable_autoconf`` - True to enable, False to deactivate
 
 **Returns**
 

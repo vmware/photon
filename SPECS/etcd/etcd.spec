@@ -102,7 +102,7 @@ rm -rf %{buildroot}/*
 *   Sun Aug 27 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.1.5-3
 -   File based configuration for etcd service.
 *   Wed May 31 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.1.5-2
--   Provide preset file to disable service by default
+-   Provide preset file to deactivate service by default
 *   Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 3.1.5-1
 -   Upgraded to version 3.1.5, build from sources
 *   Fri Sep 2 2016 Xiaolin Li <xiaolinl@vmware.com> 3.0.9-1

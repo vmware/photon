@@ -133,7 +133,7 @@ fi
 -   Use system installed rpcgen
 *   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 2.3.3-2
 -   Fix compilation issue against glibc-2.28
--   Use internal rpcgen, disable librpcsecgss dependency.
+-   Use internal rpcgen, deactivate librpcsecgss dependency.
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.3.3-1
 -   Update to 2.3.3
 *   Thu Jun 07 2018 Anish Swaminathan <anishs@vmware.com> 2.3.1-2

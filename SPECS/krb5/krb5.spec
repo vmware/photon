@@ -143,7 +143,7 @@ rm -rf %{buildroot}/*
 *   Thu Sep 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.2-1
 -   Update to version 1.15.2
 *   Mon Jul 10 2017 Alexey Makhalov <amakhalov@vmware.com> 1.15.1-2
--   Fix make check: add /etc/hosts entry, disable parallel check
+-   Fix make check: add /etc/hosts entry, deactivate parallel check
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 1.15.1-1
 -   Updated to version 1.51.1
 *   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 1.14-6

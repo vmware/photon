@@ -229,7 +229,7 @@ fi
 *   Mon Jul 24 2017 Anish Swaminathan <anishs@vmware.com>  2.4.27-1
 -   Updated to version 2.4.27 - Fixes CVE-2017-3167
 *   Wed May 31 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.4.25-3
--   Provide preset file to disable service by default.
+-   Provide preset file to deactivate service by default.
 *   Fri Mar 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-2
 -   Fixing httpd.pid file write issue
 *   Fri Mar 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-1

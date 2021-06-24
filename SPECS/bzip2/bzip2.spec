@@ -45,7 +45,7 @@ sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile
 %build
 if [ %{_host} != %{_build} ]; then
   MFLAGS="CC=%{_arch}-unknown-linux-gnu-gcc AR=%{_arch}-unknown-linux-gnu-ar RANLIB=%{_arch}-unknown-linux-gnu-ranlib"
-  # disable buildtime testing
+  # deactivate buildtime testing
   sed -i 's/all: libbz2.a bzip2 bzip2recover test/all: libbz2.a bzip2 bzip2recover/' Makefile
 else
   MFLAGS=

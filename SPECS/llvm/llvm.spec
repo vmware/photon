@@ -59,7 +59,7 @@ make DESTDIR=%{buildroot} install
 %postun -p /sbin/ldconfig
 
 %check
-# disable security hardening for tests
+# deactivate security hardening for tests
 rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
 cd build
 make %{?_smp_mflags} check-llvm

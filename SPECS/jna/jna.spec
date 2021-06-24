@@ -1,4 +1,4 @@
-#need to disable debuginfo till we bring in x11 deps
+#need to deactivate debuginfo till we bring in x11 deps
 %define debug_package %{nil}
 
 Summary:        Java Native Access
@@ -109,7 +109,7 @@ ant
 *   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.0-4
 -   Renamed openjdk to openjdk8
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.0-3
--   disable debuginfo temporarily - wait for x11 deps
+-   deactivate debuginfo temporarily - wait for x11 deps
 *   Tue Apr 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.0-2
 -   use java rpm macros to determine versions
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 4.4.0-1

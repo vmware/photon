@@ -206,7 +206,7 @@ rm -rf %{buildroot}
 -   Updated DataSourceVMwareGuestInfo.patch (till commit 9e69060 from mainline)
 -   Updated dscheck_VMwareGuestInfo and ds-guestinfo-photon.patch
 *   Thu Oct 17 2019 Keerthana K <keerthanak@vmware.com> 19.1-2
--   Fix to disable custom script by default in DatasourceOVF.
+-   Fix to deactivate custom script by default in DatasourceOVF.
 -   add kubeadm module
 *   Thu Sep 19 2019 Keerthana K <keerthanak@vmware.com> 19.1-1
 -   Update to 19.1

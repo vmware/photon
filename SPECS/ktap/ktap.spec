@@ -28,7 +28,7 @@ ktap is a new scripting dynamic tracing tool for Linux, it uses a scripting lang
 
 %build
 make ktap
-# ugly hack: disable security hardening to build kernel module
+# ugly hack: deactivate security hardening to build kernel module
 # we need to remove sec hard specs file for that.
 rm -f `dirname $(gcc --print-libgcc-file-name)`/../specs
 #make KVERSION=%{KERNEL_VERSION}-%{KERNEL_RELEASE} mod
@@ -52,7 +52,7 @@ install -vm 755 ktap %{buildroot}%{_bindir}/
 
 %changelog
 *   Fri Sep 11 2020 Bo Gan <ganb@vmware.com> 0.4-rc1
--   Temporarily disable kernel module build in preparation for kernel update
+-   Temporarily deactivate kernel module build in preparation for kernel update
 *   Tue Dec 26 2017 Alexey Makhalov <amakhalov@vmware.com> 0.4-8
 -   Update to linux-4.14.y. Added support patch
 *   Fri Jun 09 2017 Chang Lee <changlee@vmware.com> 0.4-7

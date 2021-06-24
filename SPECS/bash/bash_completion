@@ -45,7 +45,7 @@ readonly BASH_COMPLETION_COMPAT_DIR
 
 # Blacklisted completions, causing problems with our code.
 #
-_blacklist_glob='@(acroread.sh)'
+_denylist_glob='@(acroread.sh)'
 
 # Turn on extended globbing and programmable completion
 shopt -s extglob progcomp
@@ -1550,7 +1550,7 @@ _known_hosts_real()
             -S "$suffix" -W "$hosts" -- "$cur" ) )
     fi
 
-    # This feature is disabled because it does not scale to
+    # This feature is deactivated because it does not scale to
     #  larger networks. See:
     # https://bugs.launchpad.net/ubuntu/+source/bash-completion/+bug/510591
     # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=574950
@@ -1977,11 +1977,11 @@ if [[ -d $BASH_COMPLETION_COMPAT_DIR && -r $BASH_COMPLETION_COMPAT_DIR && \
     -x $BASH_COMPLETION_COMPAT_DIR ]]; then
     for i in $(LC_ALL=C command ls "$BASH_COMPLETION_COMPAT_DIR"); do
         i=$BASH_COMPLETION_COMPAT_DIR/$i
-        [[ ${i##*/} != @($_backup_glob|Makefile*|$_blacklist_glob) \
+        [[ ${i##*/} != @($_backup_glob|Makefile*|$_denylist_glob) \
             && -f $i && -r $i ]] && . "$i"
     done
 fi
-unset i _blacklist_glob
+unset i _denylist_glob
 
 # source user completion file
 [[ ${BASH_SOURCE[0]} != ~/.bash_completion && -r ~/.bash_completion ]] \

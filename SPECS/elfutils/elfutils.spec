@@ -745,7 +745,7 @@ tsrc_file
 - reenable checks on s390x
 
 * Sat Jan 11 2003 Karsten Hopp <karsten@redhat.de> 0.72-3
-- temporarily disable checks on s390x, until someone has
+- temporarily deactivate checks on s390x, until someone has
   time to look at it
 
 * Thu Dec 12 2002 Jakub Jelinek <jakub@redhat.com> 0.72-2

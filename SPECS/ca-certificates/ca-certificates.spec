@@ -147,7 +147,7 @@ for tempfile in ${TEMPDIR}/certs/*.tmp; do
   rm -f tempfile.cer "${tempfile}"
   echo "Created ${keyhash}.pem"
 done
-# Remove blacklisted files
+# Remove denylisted files
 # MD5 Collision Proof of Concept CA
 if test -f certs/8f111d69.pem; then
   echo "Certificate 8f111d69 is not trusted!  Removing..."

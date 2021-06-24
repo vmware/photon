@@ -78,7 +78,7 @@ install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}/usr/share/ipxe/
 *   Wed Aug 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> d2063b7-1
 -   Update version to get it to build with gcc 7.3
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  553f485-2
--   disable debuginfo gen
+-   deactivate debuginfo gen
 *   Mon Mar 13 2017 Alexey Makhalov <amakhalov@vmware.com> 553f485-1
 -   Version update to build with gcc-6.3
 -   Removed linux/linux-devel build-time dependency

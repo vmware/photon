@@ -141,7 +141,7 @@ make test
 *   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.15.0-1
 -   Automatic Version Bump
 *   Fri Oct 09 2020 svasamsetty <svasamsetty@vmware.com> 2.14.0-3
--   Re-enable tuned as it was disabled due to openssl 1.1.1
+-   Re-enable tuned as it was deactivated due to openssl 1.1.1
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.14.0-2
 -   Bootloader plugin support for Photon
 -   sysctl plugin verify bug fix

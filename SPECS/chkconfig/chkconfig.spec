@@ -1,8 +1,10 @@
 Summary: A system tool for maintaining the /etc/rc*.d hierarchy
 Name: chkconfig
 Version: 1.9
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2
+Vendor:  VMware, Inc.
+Distribution:   Photon
 Group: System Environment/Base
 URL: https://git.fedorahosted.org/git/chkconfig.git
 Source: http://fedorahosted.org/releases/c/h/chkconfig/%{name}-%{version}.tar.gz
@@ -16,16 +18,16 @@ Requires: libsepol
 Requires: newt
 Requires: popt
 Requires: slang
-BuildRequires: newt-devel 
-BuildRequires: gettext 
-BuildRequires: popt-devel 
+BuildRequires: newt-devel
+BuildRequires: gettext
+BuildRequires: popt-devel
 BuildRequires: libselinux-devel
 Conflicts: initscripts <= 5.30-1
 
 %description
 Chkconfig is a basic system utility.  It updates and queries runlevel
 information for system services.  Chkconfig manipulates the numerous
-symbolic links in /etc/rc.d, to relieve system administrators of some 
+symbolic links in /etc/rc.d, to relieve system administrators of some
 of the drudgery of manually editing the symbolic links.
 
 %package -n ntsysv
@@ -93,6 +95,8 @@ rm -rf %{buildroot}
 %{_mandir}/*/ntsysv.8*
 
 %changelog
+* Thu Jun 24 2021 Nitesh Kumar <kunitesh@vmware.com> 1.9-2
+- Added Vendor, Distribution and fixed bogus date
 * Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com> 1.9-1
 - Upgrade to 1.9
 * Mon Oct 31 2016 Anish Swaminathan <anishs@vmware.com> 1.5-7
@@ -162,7 +166,7 @@ rm -rf %{buildroot}
 
 * Wed Jan 04 2012 Bill Nottingham <notting@redhat.com> 1.3.57-1
 - assorted cleanups to LSB dependency support (#693202 fixed properly, #701573)
-- fix kill values for LSB-only scripts (#696305, <jbastian@redhat.com>)
+- fix stop values for LSB-only scripts (#696305, <jbastian@redhat.com>)
 - don't apply start deps for services that aren't starting anywhere (#750446)
 
 * Tue Oct 11 2011 Bill Nottingham <notting@redhat.com> 1.3.56-1
@@ -178,7 +182,7 @@ rm -rf %{buildroot}
 * Fri Jul 15 2011 Bill Nottingham <notting@redhat.com> 1.3.53-1
 - ntsysv: change the default to configure runlevels 2/3/4/5 (#709254)
 - alternatives: check whether the --initscript param is a systemd service, act appropriately (#714830)
-- forward chkconfig --del to systemctl disable where necessary
+- forward chkconfig --del to systemctl deactivate where necessary
 
 * Wed Apr 27 2011 Bill Nottingham <notting@redhat.com> 1.3.52-1
 - set state before frobbing dependencies (#693202)
@@ -195,7 +199,7 @@ rm -rf %{buildroot}
 - assorted translation updates
 
 * Tue Nov  9 2010 Bill Nottingham <notting@redhat.com> 1.3.49-1
-- fix abort on free of uninitialized data. (#649227)
+- fix stop on free of uninitialized data. (#649227)
 
 * Wed Oct 27 2010 Bill Nottingham <notting@redhat.com> 1.3.48-1
 - fix install_initd invocation for services that require $local_fs (#632294)
@@ -260,7 +264,7 @@ rm -rf %{buildroot}
 - translation updates: as, bg, bn_IN, bs, ca, de, fr, hi, hu, id, ja,
   ka, ml, ms, nb, or, sk, sl
 - add resetpriorities to the man page (#197399)
-  
+
 * Tue Feb  6 2007 Bill Nottingham <notting@redhat.com> 1.3.33-1
 - various changes from review - support alternate %%{_sbindir}, fix
   summaries, add version to requires, assorted other bits
@@ -314,7 +318,7 @@ rm -rf %{buildroot}
 - don't needlessly rewrite xinetd files (#81008)
 
 * Thu May  5 2005 Bill Nottingham <notting@redhat.com> 1.3.20-1
-- fix deletion of orphaned slave links (#131496, <mitr@redhat.com>)
+- fix deletion of orphaned secondary links (#131496, <mitr@redhat.com>)
 
 * Fri Apr 29 2005 Bill Nottingham <notting@redhat.com> 1.3.19-1
 - build with updated translations
@@ -353,7 +357,7 @@ rm -rf %{buildroot}
 * Fri Jun  4 2004 Bill Nottingham <notting@redhat.com> 1.3.11-1
 - fix LSB comment parsing (#85678)
 
-* Wed May 29 2004 Bill Nottingham <notting@redhat.com> 1.3.10-1
+* Sat May 29 2004 Bill Nottingham <notting@redhat.com> 1.3.10-1
 - mark alternatives help output for translation (#110526)
 
 * Wed Oct 22 2003 Bill Nottingham <notting@redhat.com> 1.3.9-1
@@ -407,10 +411,10 @@ rm -rf %{buildroot}
 - chkconfig/ntsysv (and serviceconf, indirectly): services with
    *no* links in /etc/rc*.d are no longer displayed with --list, or
    available for configuration except via chkconfig command-line options
-- alternatives: fix trying to enable disable a null service
+- alternatives: fix trying to enable deactivate a null service
 
 * Tue Mar  5 2002 Bill Nottingham <notting@redhat.com>
-- alternatives: handle things with different numbers of slave links
+- alternatives: handle things with different numbers of secondary links
 
 * Mon Mar  4 2002 Bill Nottingham <notting@redhat.com>
 - minor alternatives tweaks: don't install the same thing multiple times
@@ -423,7 +427,7 @@ rm -rf %{buildroot}
 * Sun Jan 27 2002 Erik Troan <ewt@redhat.com>
 - reimplemented update-alternatives as just alternatives
 
-* Thu Jan 25 2002 Bill Nottingham <notting@redhat.com>
+* Fri Jan 25 2002 Bill Nottingham <notting@redhat.com>
 - add in update-alternatives stuff (perl ATM)
 
 * Mon Aug 27 2001 Trond Eivind Glomsrød <teg@redhat.com>
@@ -468,10 +472,10 @@ rm -rf %{buildroot}
 * Sun Aug 20 2000 Matt Wilson <msw@redhat.com>
 - new translations
 
-* Tue Aug 16 2000 Nalin Dahyabhai <nalin@redhat.com>
+* Wed Aug 16 2000 Nalin Dahyabhai <nalin@redhat.com>
 - don't worry about extra whitespace on chkconfig: lines (#16150)
 
-* Wed Aug 10 2000 Trond Eivind Glomsrød <teg@redhat.com>
+* Thu Aug 10 2000 Trond Eivind Glomsrød <teg@redhat.com>
 - i18n merge
 
 * Wed Jul 26 2000 Matt Wilson <msw@redhat.com>

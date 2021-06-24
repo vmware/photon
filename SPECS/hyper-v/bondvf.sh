@@ -178,7 +178,7 @@ function create_bond {
 	echo configuring $secondary
 	create_eth_cfg_$distro $secondary $bondname
 
-	echo creating: $bondname with primary slave: $primary
+	echo creating: $bondname with primary secondary: $primary
 	create_bond_cfg_$distro $bondname $primary $secondary
 
 	let bondcnt=bondcnt+1

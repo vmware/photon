@@ -1,8 +1,8 @@
 # Disabling TLS 1.0 to Improve Transport Layer Security
 
-Photon OS includes GnuTLS to help secure the transport layer. [GnuTLS](http://www.gnutls.org/) is a library that implements the SSL and TLS protocols to secure communications. 
+Photon OS includes GnuTLS to help secure the transport layer. [GnuTLS](http://www.gnutls.org/) is a library that implements the SSL and TLS protocols to secure communications.
 
-On Photon OS, SSL 3.0, which contains a known vulnerability, is disabled by default. 
+On Photon OS, SSL 3.0, which contains a known vulnerability, is deactivated by default.
 
 However, TLS 1.0, which also contains known vulnerabilities, is enabled by default.
 
@@ -12,9 +12,9 @@ To turn off TLS 1.0, perform the follwoing steps:
 1. Create a directory named `/etc/gnutls`.
 1. In `/etc/gnutls` create a file named `default-priorities`.
 1. In the `default-priorities` file, specify GnuTLS priority strings that remove TLS 1.0 and SSL 3.0 but retain TLS 1.1 and TLS 1.2.
-1. After adding a new `default-priorities` file or after modifying it, you must restart all applications, including SSH, with an open TLS session for the changes to take effect.  
+1. After adding a new `default-priorities` file or after modifying it, you must restart all applications, including SSH, with an open TLS session for the changes to take effect.
 
-The following is an example of a `default-priorities` file that contains GnuTLS priorities to disable TLS 1.0 and SSL 3.0:  
+The following is an example of a `default-priorities` file that contains GnuTLS priorities to deactivate TLS 1.0 and SSL 3.0:
 
 	cat /etc/gnutls/default-priorities
 	SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL
@@ -23,14 +23,14 @@ In this example, the priority string imposes system-specific policies. The `NONE
 
 On Photon OS, you can verify the system-specific policies in the `default-priorities` file as follows:
 
-1. Concatenate the `default-priorities` file to check its contents: 
-	
+1. Concatenate the `default-priorities` file to check its contents:
+
     ```
 root@photon-rc [ ~ ]# cat /etc/gnutls/default-priorities
 	SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL
 ```
 
-1. Run the following command to check the protocols that are enabled for the system: 	
+1. Run the following command to check the protocols that are enabled for the system:
 
     ```
     root@photon-rc [ /etc/gnutls ]# gnutls-cli --priority @SYSTEM -l
