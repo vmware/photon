@@ -1,9 +1,6 @@
-%global gosc_scripts gosc-scripts
-%define gosc_ver 1.3.1
-
 Summary:        Usermode tools for VmWare virts
 Name:           open-vm-tools
-Version:        11.2.5
+Version:        11.3.0
 Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
@@ -12,17 +9,15 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/vmware/open-vm-tools/archive/%{name}-stable-%{version}.tar.gz
-%define sha1 open-vm-tools=fae156a049b39b79fcf4795f998dd7fc01894ae7
-Source1:        https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/1.3.1/gosc-scripts-1.3.1.tar.gz
-%define sha1 gosc-scripts-1.3.1=d29400a32bc4c0dad41f7e2183b9870fdf640f03
+%define sha1 open-vm-tools=94e744c4b4c2f64cafb41a1b1ca4860f8d76272a
+Source1:        https://gitlab.eng.vmware.com/photon-gosc/gosc-scripts/-/archive/1.3.2/gosc-scripts-1.3.2.tar.gz
+%define sha1 gosc-scripts-1.3.2=eb90b74e9282bc5b80f1f8ae358cb7e9bfdda4cb
 Source2:        vmtoolsd.service
 Source3:        vgauthd.service
 
 # If patch is taken from open-vm-tools repo, prefix it with 'ovt-'
 # If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
 Patch0:     ovt-linux-deployment.patch
-Patch1:     gosc-add-user-section.patch
-Patch2:     gosc-cloud-init-clean.patch
 
 BuildRequires:  glib-devel
 BuildRequires:  libxml2-devel
@@ -69,12 +64,13 @@ The "open-vm-tools-sdmp" package contains a plugin for Service Discovery.
 %build
 cd %{name}
 autoreconf -i
-sh ./configure --prefix=/usr \
-               --without-x \
-               --without-kernel-modules \
-               --without-icu --disable-static \
-               --with-tirpc \
-               --enable-servicediscovery
+%configure --enable-photon-gosc \
+        --without-x \
+        --without-kernel-modules \
+        --without-icu \
+        --disable-static \
+        --with-tirpc \
+        --enable-servicediscovery
 
 make %{?_smp_mflags}
 
@@ -87,7 +83,7 @@ install -p -m 644 %{SOURCE2} %{buildroot}/lib/systemd/system
 install -p -m 644 %{SOURCE3} %{buildroot}/lib/systemd/system
 
 cd %{name}
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm -f %{buildroot}/sbin/mount.vmhgfs
 chmod -x %{buildroot}/etc/pam.d/vmtoolsd
 find %{buildroot}/usr/lib/ -name '*.la' -delete
@@ -128,6 +124,8 @@ fi
 %{_libdir}/%{name}/plugins/common/libhgfsServer.so
 %{_libdir}/%{name}/plugins/common/libvix.so
 %{_libdir}/%{name}/plugins/vmsvc/libappInfo.so
+%{_libdir}/%{name}/plugins/vmsvc/libgdp.so
+%{_libdir}/%{name}/plugins/vmsvc/libguestStore.so
 %{_libdir}/*.so.*
 %{_bindir}/*
 %{_sysconfdir}/*
@@ -142,6 +140,7 @@ fi
 %{_libdir}/*.so
 
 %files sdmp
+%defattr(-,root,root)
 %{_libdir}/%{name}/plugins/vmsvc/libserviceDiscovery.so
 %{_libdir}/%{name}/serviceDiscovery/scripts/get-versions.sh
 %{_libdir}/%{name}/serviceDiscovery/scripts/get-connection-info.sh
@@ -149,8 +148,10 @@ fi
 %{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-perf-metrics.sh
 
 %changelog
-*   Mon Jun 07 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.5.2-1
--   Upgrade to version 11.5.2
+*   Tue Jun 22 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.0-1
+-   Upgrade to version 11.3.0
+*   Mon Jun 07 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.2.5-1
+-   Upgrade to version 11.2.5
 *   Wed May 29 2019 Michelle Wang <michellew@vmware.com> 10.3.10-3
 -   Adding xmlsec1 in Requires
 *   Tue May 21 2019 Keerthana K <keerthanak@vmware.com> 10.3.10-2
