@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.4
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt22
-Release:        12%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -358,6 +358,19 @@ Patch568:        localversion.patch
 Patch600:       0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
 # RT Runtime Greed
 Patch601:       0001-RT-PATCH-sched-rt-RT_RUNTIME_GREED-sched-feature.patch
+
+# Patchset to conditional restart_tick upon idle_exit
+# https://lore.kernel.org/lkml/162091184942.29796.4815200413212139734.tip-bot2@tip-bot2/
+Patch602:       0001-tick-nohz-Evaluate-the-CPU-expression-after-the-stat.patch
+Patch603:       0002-tick-nohz-Conditionally-restart-tick-on-idle-exit.patch
+Patch604:       0003-tick-nohz-Remove-superflous-check-for-CONFIG_VIRT_CP.patch
+Patch605:       0004-tick-nohz-Update-idle_exittime-on-actual-idle-exit.patch
+Patch606:       0005-tick-nohz-Update-nohz_full-Kconfig-help.patch
+Patch607:       0006-tick-nohz-Only-wakeup-a-single-target-cpu-when-kicki.patch
+Patch608:       0007-tick-nohz-Change-signal-tick-dependency-to-wakeup-CP.patch
+Patch609:       0008-tick-nohz-Kick-only-_queued_-task-whose-tick-depende.patch
+Patch610:       0009-tick-nohz-Call-tick_nohz_task_switch-with-interrupts.patch
+Patch611:       0010-MAINTAINERS-Add-myself-as-context-tracking-maintaine.patch
 
 %if 0%{?fips}
 # FIPS canister usage patch
@@ -733,6 +746,16 @@ The Linux package contains the Linux kernel doc files
 
 %patch600 -p1
 %patch601 -p1
+%patch602 -p1
+%patch603 -p1
+%patch604 -p1
+%patch605 -p1
+%patch606 -p1
+%patch607 -p1
+%patch608 -p1
+%patch609 -p1
+%patch610 -p1
+%patch611 -p1
 
 %if 0%{?fips}
 %patch1010 -p1
@@ -953,6 +976,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Jun 24 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-13
+-   Conditional tick_restart upon idle_exit
 *   Wed Jun 16 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-12
 -   Added script to check structure compatibility between fips_canister.o and vmlinux.
 *   Tue Apr 06 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-11
