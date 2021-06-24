@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.270
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -355,6 +355,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jun 24 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.270-3
+-   Correction in CVE-2021-3609 patch
 *   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.270-2
 -   Fix for CVE-2021-3609
 *   Tue Jun 01 2021 Keerthana K <keerthanak@vmware.com> 4.4.270-1

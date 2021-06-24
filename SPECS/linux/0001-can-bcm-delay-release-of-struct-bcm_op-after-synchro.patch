@@ -1,5 +1,5 @@
-From aae9c851de58d5e5b2eeaf6296b688db8885deb9 Mon Sep 17 00:00:00 2001
-From: Sharan Turlapati <sturlapati@vmware.com>
+From 811c8156968b6fd0cd12ded9940fa3f57640f204 Mon Sep 17 00:00:00 2001
+From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 Date: Tue, 22 Jun 2021 06:05:36 +0000
 Subject: [PATCH] can: bcm: delay release of struct bcm_op after
  synchronize_rcu()
@@ -34,10 +34,10 @@ Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/net/can/bcm.c b/net/can/bcm.c
-index c99e7c75eeee..ee9c239c68d7 100644
+index 1f15622d3c65..a62478a740c3 100644
 --- a/net/can/bcm.c
 +++ b/net/can/bcm.c
-@@ -832,6 +832,7 @@ static int bcm_delete_rx_op(struct list_head *ops, struct bcm_msg_head *mh,
+@@ -806,6 +806,7 @@ static int bcm_delete_rx_op(struct list_head *ops, canid_t can_id, int ifindex)
  						  bcm_rx_handler, op);
  
  			list_del(&op->list);
@@ -45,7 +45,7 @@ index c99e7c75eeee..ee9c239c68d7 100644
  			bcm_remove_op(op);
  			return 1; /* done */
  		}
-@@ -1558,9 +1559,12 @@ static int bcm_release(struct socket *sock)
+@@ -1507,9 +1508,12 @@ static int bcm_release(struct socket *sock)
  			can_rx_unregister(NULL, op->can_id,
  					  REGMASK(op->can_id),
  					  bcm_rx_handler, op);
