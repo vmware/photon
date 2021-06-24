@@ -1,0 +1,203 @@
+From ec2ce2b8887d14acb308e1b63750c901600cc666 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Wed, 16 Jun 2021 19:34:42 +0530
+Subject: [PATCH] Tweak grub-mkconfig.in to work better in Photon
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ util/grub-mkconfig.in | 137 +++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 130 insertions(+), 7 deletions(-)
+
+diff --git a/util/grub-mkconfig.in b/util/grub-mkconfig.in
+index f8cbb8d7a..afc0aa639 100644
+--- a/util/grub-mkconfig.in
++++ b/util/grub-mkconfig.in
+@@ -1,4 +1,4 @@
+-#! /bin/sh
++#!/bin/sh
+ set -e
+ 
+ # Generate grub.cfg by inspecting /boot contents.
+@@ -55,15 +55,28 @@ export TEXTDOMAINDIR="@localedir@"
+ # Print the usage.
+ usage () {
+     gettext_printf "Usage: %s [OPTION]\n" "$self"
+-    gettext "Generate a grub config file"; echo
+-    echo
++    gettext_printf "Generate a grub config file\n\n"
++
+     print_option_help "-o, --output=$(gettext FILE)" "$(gettext "output generated config to FILE [default=stdout]")"
++    print_option_help "-p, --photoncfg=$(gettext FILE)" "$(gettext "Generate Photon specific config to FILE [default=stdout]")"
++    print_option_help "-y" "$(gettext "Don't prompt for making changes and proceed")"
+     print_option_help "-h, --help" "$(gettext "print this message and exit")"
+     print_option_help "-V, --version" "$(gettext "print the version information and exit")"
+-    echo
+-    gettext "Report bugs to <bug-grub@gnu.org>."; echo
++
++    gettext_printf "\nReport bugs to <bug-grub@gnu.org>\n"
+ }
+ 
++ShowWarningBanner() {
++  local pound_line="#######################"
++  gettext_printf "\n${pound_line}${pound_line}\n"
++  gettext_printf " Photon OS uses it's own customized grub.cfg\n"
++  gettext_printf "    *** PROCEED WITH CAUTION ***\n\n"
++  usage
++  gettext_printf "${pound_line}${pound_line}\n\n"
++}
++
++ShowWarningBanner
++
+ argument () {
+   opt=$1
+   shift
+@@ -75,6 +88,9 @@ argument () {
+   echo $1
+ }
+ 
++isPhotonCfg=0
++ShowWarning=1
++
+ # Check the arguments.
+ while test $# -gt 0
+ do
+@@ -83,13 +99,16 @@ do
+ 
+     case "$option" in
+     -h | --help)
+-	usage
++       # we are showing help in warning banner
+ 	exit 0 ;;
+     -V | --version)
+ 	echo "$self (${PACKAGE_NAME}) ${PACKAGE_VERSION}"
+ 	exit 0 ;;
+     -o | --output)
+-	grub_cfg=`argument $option "$@"`; shift;;
++       grub_cfg=$(argument $option "$@"); isPhotonCfg=0; shift;;
++    -p | --photoncfg)
++       grub_cfg=$(argument $option "$@"); isPhotonCfg=1; shift;;
++    -y) ShowWarning=0;;
+     --output=*)
+ 	grub_cfg=`echo "$option" | sed 's/--output=//'`
+ 	;;
+@@ -102,6 +121,12 @@ do
+     esac
+ done
+ 
++# for accidental usage of grub2-mkconfig -p -y
++if [ "$grub_cfg" = "-y" ]; then
++  gettext_printf "Invalid output file name: $grub_cfg" 1>&2
++  exit 1
++fi
++
+ if [ "x$EUID" = "x" ] ; then
+   EUID=`id -u`
+ fi
+@@ -123,6 +148,104 @@ if [ "$EUID" != 0 ] ; then
+   fi
+ fi
+ 
++PromptUsr() {
++  local opt="n"
++  local PromptMsg="$1"
++
++  gettext_printf "${PromptMsg}\n"
++
++  while [ "${opt}" != "y" ]; do
++    read -p "Are you sure you want to continue [y/n]? " opt
++    case ${opt} in
++      [y] ) : break;;
++      [n] ) exit 1;;
++      * ) gettext_printf "Please answer y or n";;
++    esac
++  done
++}
++
++if [ $ShowWarning = 1 ]; then
++  if [ $isPhotonCfg = 1 ]; then
++    PromptUsr "This will modify grub.cfg in Photon OS specific way."
++  else
++    PromptUsr "This will modify grub.cfg with default method. Photon specific changes will be overwritten."
++  fi
++fi
++
++# This function takes a copy of existing grub.cfg
++# then modifies it as needed
++HandlePhotonGrubCfg() {
++  local i
++  local oldmask
++
++  # For security reasons, maintain proper umask
++  if test "x${grub_cfg}" != "x"; then
++    rm -f "${grub_cfg}.new"
++    oldumask=$(umask); umask 077
++    # redirecting stdout to ${grub_cfg}.new here, cool idea
++    exec > "${grub_cfg}.new"
++    umask $oldumask
++  fi
++
++  gettext_printf "Generating grub configuration file ...\n" >&2
++
++  # get content of existing grub.cfg
++  cat /boot/grub2/grub.cfg > "${grub_cfg}.new"
++  sed '$d' "${grub_cfg}.new"
++
++  for i in "${grub_mkconfig_dir}"/* ; do
++    # let's process only 01_users & 40_custom
++    # we can add other files on demand basis
++    if [ $i != "${grub_mkconfig_dir}/01_users" ] && \
++       [ $i != "${grub_mkconfig_dir}/40_custom" ]; then
++          continue
++    fi
++    case "$i" in
++      *~) ;;
++      */\#*\#) ;;
++      *)
++        if grub_file_is_not_garbage "$i" && test -x "$i" ; then
++          echo -e "\n### BEGIN $i ###\n"
++          "$i"
++          echo "### END $i ###"
++        fi
++        ;;
++    esac
++  done
++
++  if test "x${grub_cfg}" != "x" ; then
++    if ! ${grub_script_check} ${grub_cfg}.new; then
++      gettext_printf "Syntax errors are detected in generated GRUB config file.
++      Ensure that there are no errors in /etc/grub.d/* files
++      or please file a bug report with %s file attached.\n" "${grub_cfg}.new" >&2
++      exit 1
++    else
++      # none of the children aborted with error, install the new grub.cfg
++      gettext_printf "\n\n# End /boot/grub2/grub.cfg" >> "${grub_cfg}.new"
++      cat ${grub_cfg}.new > ${grub_cfg}
++      rm -f ${grub_cfg}.new
++    fi
++  fi
++
++  gettext_printf "done\n" >&2
++}
++
++if [ $isPhotonCfg = 1 ]; then
++  HandlePhotonGrubCfg
++  exit 0
++fi
++
++# Backup default photon grub.cfg
++if [ "$(realpath $grub_cfg)" = "/boot/grub2/grub.cfg" ]; then
++  if [ ! -f /boot/grub2/photon-grub.cfg ]; then
++    echo "Taking backup of /boot/grub2/grub.cfg as /boot/grub2/photon-grub.cfg"
++    # Preserve original file permissions
++    cp -p /boot/grub2/grub.cfg /boot/grub2/photon-grub.cfg
++  else
++    echo "Backup file /boot/grub2/photon-grub.cfg already exists"
++  fi
++fi
++
+ set $grub_probe dummy
+ if test -f "$1"; then
+     :
+-- 
+2.30.0
+

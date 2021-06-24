@@ -1,63 +1,62 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
+
 Summary:    GRand Unified Bootloader
 Name:       grub2
-Version:    2.06~rc1
+Version:    2.06
 Release:    1%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    ftp://ftp.gnu.org/gnu/grub/grub-%{version}.tar.xz
-%define sha1 grub=7cb2eb385c222e798b279174c9f717ddbe7d4608
-Source1:    gnulib-d271f868a.tar.xz
-%define sha1 gnulib=bfaa70d4657b653e01716e917576f6c4a4aa2126
+Source0:    https://ftp.gnu.org/gnu/grub/grub-%{version}.tar.xz
+%define sha1 grub=c9f93f1e195ec7a5a21d36a13b469788c0b29f0f
 
-# Other security enhancement
-Patch307:   0067-Fix-security-issue-when-reading-username-and-passwor.patch
+Patch0:     Tweak-grub-mkconfig.in-to-work-better-in-Photon.patch
 
 BuildRequires:  device-mapper-devel
 BuildRequires:  xz-devel
 BuildRequires:  systemd-devel
+
 Requires:   xz
 Requires:   device-mapper
+
 %description
 The GRUB package contains the GRand Unified Bootloader.
 
 %package lang
-Summary: Additional language files for grub
-Group: System Environment/Programming
-Requires: %{name} = %{version}
+Summary:    Additional language files for grub
+Group:      System Environment/Programming
+Requires:   %{name} = %{version}
 %description lang
 These are the additional language files of grub.
 
 %ifarch x86_64
 %package pc
-Summary: GRUB Library for BIOS
-Group: System Environment/Programming
-Requires: %{name} = %{version}
+Summary:    GRUB Library for BIOS
+Group:      System Environment/Programming
+Requires:   %{name} = %{version}
 %description pc
 Additional library files for grub
 %endif
 
 %package efi
-Summary: GRUB Library for UEFI
-Group: System Environment/Programming
-Requires: %{name} = %{version}
+Summary:    GRUB Library for UEFI
+Group:      System Environment/Programming
+Requires:   %{name} = %{version}
 %description efi
 Additional library files for grub
 
 %prep
-%setup -qn grub-%{version}
-%patch307 -p1
+%autosetup -p1 -n grub-%{version}
 
 %build
-./autogen.sh
+sh ./autogen.sh
 %ifarch x86_64
 mkdir build-for-pc
 pushd build-for-pc
-../configure \
+sh ../configure \
     --prefix=%{_prefix} \
     --sbindir=/sbin \
     --sysconfdir=%{_sysconfdir} \
@@ -69,13 +68,13 @@ pushd build-for-pc
     --program-transform-name=s,grub,%{name}, \
     --with-bootdir="/boot"
 make %{?_smp_mflags}
-make DESTDIR=$PWD/../install-for-pc install
+make DESTDIR=$PWD/../install-for-pc install %{?_smp_mflags}
 popd
 %endif
 
 mkdir build-for-efi
 pushd build-for-efi
-../configure \
+sh ../configure \
     --prefix=%{_prefix} \
     --sbindir=/sbin \
     --sysconfdir=%{_sysconfdir} \
@@ -87,7 +86,7 @@ pushd build-for-efi
     --program-transform-name=s,grub,%{name}, \
     --with-bootdir="/boot"
 make %{?_smp_mflags}
-make DESTDIR=$PWD/../install-for-efi install
+make DESTDIR=$PWD/../install-for-efi install %{?_smp_mflags}
 popd
 
 # make sure all files are same between two configure except the /usr/lib/grub
@@ -152,6 +151,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_datarootdir}/locale/*
 
 %changelog
+*   Wed Jun 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.06-1
+-   Upgrade to version 2.06
 *   Mon Mar 15 2021 Ajay Kaher <akaher@vmware.com> 2.06~rc1-1
 -   upgrade to 2.06.rc1-1
 *   Mon Mar 01 2021 Alexey Makhalov <amakhalov@vmware.com> 2.04-2
