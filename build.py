@@ -369,13 +369,23 @@ class BuildEnvironmentSetup:
         # docker image with rpm preinstalled
         check_prerequesite["photon_builder_image"] = True
         import docker
+        import io
         dockerClient = docker.from_env(version="auto")
+        dockerfilePath=os.path.join(curDir, "support/package-builder/Dockerfile.photon_builder")
+        dfile=""
+        with open(dockerfilePath, 'r') as f:
+            tmpdfile=f.read()
+            if "photon-docker-image" in configdict["photon-build-param"]:
+                dfile=tmpdfile.replace("photon:latest",configdict["photon-build-param"]["photon-docker-image"])
+            else:
+                dfile = tmpdfile
+
         print("Creating photon builder docker image ...")
         try:
             image = dockerClient.images.build(tag='photon_builder:latest',
-                                       path="./support/package-builder",
-                                       rm=True,
-                                       dockerfile="Dockerfile.photon_builder")
+                                        fileobj=io.BytesIO(dfile.encode()),
+                                        rm=True)
+
             print("Created Image {0}".format(image[0]))
         except Exception as e:
             print("Non-zero tdnf code? Try running `docker pull photon:latest`")
