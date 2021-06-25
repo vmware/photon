@@ -1,19 +1,18 @@
 %define python3_sitelib /usr/lib/python3.9/site-packages
 
 Name:           cloud-init
-Version:        20.4.1
-Release:        2%{?dist}
+Version:        21.2
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
 URL:            http://launchpad.net/cloud-init
-Vendor:         VMware, Inc
+Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 cloud-init=94470675523920c41e74a10497594ca5acbe5acb
-Source1:        99-disable-networking-config.cfg
-Source2:        dscheck_VMwareGuestInfo
+%define sha1 %{name}=1023e9149a109d7709fb94d551489aaa642fa0b3
+Source1:        dscheck_VMwareGuestInfo
 
 Patch0:     photon-distro.patch
 Patch1:     photon-hosts-template.patch
@@ -21,12 +20,13 @@ Patch2:     DataSourceVMwareGuestInfo.patch
 Patch3:     systemd-service-changes.patch
 Patch4:     systemd-resolved-config.patch
 Patch5:     cloud-init-azureds.patch
-Patch6:     ds-identity.patch
+Patch6:     ds-identify.patch
 Patch7:     ds-guestinfo-photon.patch
 Patch8:     cloud-cfg.patch
-Patch9:     passwd-field.patch
-Patch10:    networkd.patch
-Patch11:    fix-make-check.patch
+Patch9:     networkd.patch
+Patch10:    allow-raw-data-switch.patch
+Patch11:    fallback-netcfg.patch
+Patch12:    fix-make-check.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -96,9 +96,7 @@ python3 tools/render-cloudcfg --variant photon > %{buildroot}/%{_sysconfdir}/clo
 mkdir -p %{buildroot}/var/lib/cloud
 mkdir -p %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg.d/
 
-# Disable networking config by cloud-init
-cp -p %{SOURCE1} %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg.d/
-install -m 755 %{SOURCE2} %{buildroot}/%{_bindir}/
+install -m 755 %{SOURCE1} %{buildroot}/%{_bindir}/
 
 %check
 touch vd ud
@@ -111,7 +109,7 @@ conf_file='/etc/ca-certificates.conf'
 echo -e 'line1\nline2\nline3\ncloud-init-ca-certs.crt\n' > "${conf_file}"
 
 pip3 install --upgrade pytest-metadata unittest2 mock httpretty attrs iniconfig
-make check
+make check %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}
@@ -141,7 +139,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/cloud/templates/*
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/05_logging.cfg
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg
-%config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/99-disable-networking-config.cfg
 %{_sysconfdir}/NetworkManager/dispatcher.d/hook-network-manager
 %{_sysconfdir}/dhcp/dhclient-exit-hooks.d/hook-dhclient
 /lib/systemd/system-generators/cloud-init-generator
@@ -157,6 +154,10 @@ rm -rf %{buildroot}
 %dir /var/lib/cloud
 
 %changelog
+*   Mon Jun 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.2-1
+-   Upgrade to version 21.2
+-   Refactored ds-guestinfo-photon.patch to generate netcfg v2
+-   Added fallback-netcfg.patch to handle net configs when no DS present
 *   Tue Apr 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 20.4.1-2
 -   Further fixes to network config handler
 *   Wed Jan 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 20.4.1-1
