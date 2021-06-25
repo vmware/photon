@@ -5,7 +5,7 @@ set -e
 CERTIFICATES_PATH="/etc/ssl/certs/"
 CONCATENATED_CERT_FILE="/etc/pki/tls/certs/ca-bundle.crt"
 
-/usr/bin/c_rehash $CERTIFICATES_PATH
+openssl rehash $CERTIFICATES_PATH
 
 if [ $? != 0 ]; then
     echo "Error while c_rehashing"
