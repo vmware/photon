@@ -1,20 +1,24 @@
-From d7a80d14f246fd563db423e9ce33282031c24ee6 Mon Sep 17 00:00:00 2001
-From: Shreenidhi Shedi <sshedi@vmware.com>
-Date: Mon, 24 Aug 2020 19:46:40 +0530
-Subject: [PATCH] fix make check
-
-Fixes the APIs accordingly as needed after applying instance-dir.patch
-
-Fixes test_net tests after networkd.patch
-
-Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
----
- tests/unittests/test_net.py  | 19 +++++++++++++++++--
- tests/unittests/test_util.py | 12 ++++++------
- 2 files changed, 23 insertions(+), 8 deletions(-)
-
+diff --git a/cloudinit/config/tests/test_resolv_conf.py b/cloudinit/config/tests/test_resolv_conf.py
+index 6546a0b5..5a8b877b 100644
+--- a/cloudinit/config/tests/test_resolv_conf.py
++++ b/cloudinit/config/tests/test_resolv_conf.py
+@@ -15,11 +15,12 @@ EXPECTED_HEADER = """\
+ 
+ class TestGenerateResolvConf:
+     @mock.patch("cloudinit.config.cc_resolv_conf.templater.render_to_file")
++    # Needed because of systemd-resolved-config.patch
+     def test_default_target_fname_is_etc_resolvconf(self, m_render_to_file):
+-        generate_resolv_conf("templates/resolv.conf.tmpl", mock.MagicMock())
++        generate_resolv_conf("templates/systemd.resolved.conf.tmpl", mock.MagicMock())
+ 
+         assert [
+-            mock.call(mock.ANY, "/etc/resolv.conf", mock.ANY)
++            mock.call(mock.ANY, "/etc/systemd/resolved.conf", mock.ANY)
+         ] == m_render_to_file.call_args_list
+ 
+     @mock.patch("cloudinit.config.cc_resolv_conf.templater.render_to_file")
 diff --git a/tests/unittests/test_net.py b/tests/unittests/test_net.py
-index 01119e0a..3a619741 100644
+index 54cc8469..4d21883a 100644
 --- a/tests/unittests/test_net.py
 +++ b/tests/unittests/test_net.py
 @@ -5,7 +5,7 @@ from cloudinit import distros
@@ -25,102 +29,57 @@ index 01119e0a..3a619741 100644
 +    renderers, sysconfig, networkd)
  from cloudinit.sources.helpers import openstack
  from cloudinit import temp_utils
- from cloudinit import util
-@@ -4575,6 +4575,8 @@ class TestNetRenderers(CiTestCase):
-         self.assertRaises(net.RendererNotFoundError, renderers.select,
-                           priority=['sysconfig', 'eni'])
+ from cloudinit import subp
+@@ -4686,23 +4686,28 @@ class TestEniRoundTrip(CiTestCase):
+ class TestRenderersSelect:
  
-+    # needed for networkd.patch
+     @pytest.mark.parametrize(
+-        'renderer_selected,netplan,eni,nm,scfg,sys', (
++        # takes care of networkd.patch
++        'renderer_selected,netplan,eni,nm,scfg,sys,networkd', (
+             # -netplan -ifupdown -nm -scfg -sys raises error
+-            (net.RendererNotFoundError, False, False, False, False, False),
++            (net.RendererNotFoundError, False, False, False, False, False, False),
+             # -netplan +ifupdown -nm -scfg -sys selects eni
+-            ('eni', False, True, False, False, False),
++            ('eni', False, True, False, False, False, False),
+             # +netplan +ifupdown -nm -scfg -sys selects eni
+-            ('eni', True, True, False, False, False),
++            ('eni', True, True, False, False, False, False),
+             # +netplan -ifupdown -nm -scfg -sys selects netplan
+-            ('netplan', True, False, False, False, False),
++            ('netplan', True, False, False, False, False, False),
+             # Ubuntu with Network-Manager installed
+             # +netplan -ifupdown +nm -scfg -sys selects netplan
+-            ('netplan', True, False, True, False, False),
++            ('netplan', True, False, True, False, False, False),
+             # Centos/OpenSuse with Network-Manager installed selects sysconfig
+             # -netplan -ifupdown +nm -scfg +sys selects netplan
+-            ('sysconfig', False, False, True, False, True),
++            ('sysconfig', False, False, True, False, True, False),
++            # Photon with systemd-netword selects networkd
++            # -netplan -ifupdown -nm -scfg -sys +networkd selects networkd
++            ('networkd', False, False, False, False, False, True),
+         ),
+     )
 +    @mock.patch("cloudinit.net.renderers.networkd.available")
      @mock.patch("cloudinit.net.renderers.netplan.available")
      @mock.patch("cloudinit.net.renderers.sysconfig.available")
      @mock.patch("cloudinit.net.renderers.sysconfig.available_sysconfig")
-@@ -4585,7 +4587,8 @@ class TestNetRenderers(CiTestCase):
-                                                              m_eni, m_sys_nm,
-                                                              m_sys_scfg,
-                                                              m_sys_avail,
--                                                             m_netplan):
-+                                                             m_netplan,
-+                                                             m_networkd):
-         """sysconfig only selected on specific distros (rhel/sles)."""
- 
-         # Ubuntu with Network-Manager installed
-@@ -4594,6 +4597,7 @@ class TestNetRenderers(CiTestCase):
-         m_sys_nm.return_value = True      # network-manager is installed
-         m_netplan.return_value = True     # netplan is installed
-         m_sys_avail.return_value = False  # no sysconfig on Ubuntu
-+        m_networkd.return_value = False   # no networkd
-         m_distro.return_value = ('ubuntu', None, None)
-         self.assertEqual('netplan', renderers.select(priority=None)[0])
- 
-@@ -4603,6 +4607,7 @@ class TestNetRenderers(CiTestCase):
-         m_sys_nm.return_value = True     # network-manager is installed
-         m_netplan.return_value = False   # netplan is not installed
-         m_sys_avail.return_value = True  # sysconfig is available on centos
-+        m_networkd.return_value = False  # no networkd
-         m_distro.return_value = ('centos', None, None)
-         self.assertEqual('sysconfig', renderers.select(priority=None)[0])
- 
-@@ -4612,9 +4617,19 @@ class TestNetRenderers(CiTestCase):
-         m_sys_nm.return_value = True     # network-manager is installed
-         m_netplan.return_value = False   # netplan is not installed
-         m_sys_avail.return_value = True  # sysconfig is available on opensuse
-+        m_networkd.return_value = False  # no networkd
-         m_distro.return_value = ('opensuse', None, None)
-         self.assertEqual('sysconfig', renderers.select(priority=None)[0])
- 
-+        m_eni.return_value = False       # no ifupdown (ifquery)
-+        m_sys_scfg.return_value = False  # no sysconfig/ifup/ifdown
-+        m_sys_nm.return_value = False    # no network-manager
-+        m_netplan.return_value = False   # netplan is not installed
-+        m_sys_avail.return_value = False # sysconfig is available on opensuse
-+        m_networkd.return_value = True   # networkd is available
-+        m_distro.return_value = ('photon', None, None)
-+        self.assertEqual('networkd', renderers.select(priority=None)[0])
-+
-     @mock.patch("cloudinit.net.sysconfig.available_sysconfig")
-     @mock.patch("cloudinit.util.get_linux_distro")
-     def test_sysconfig_available_uses_variant_mapping(self, m_distro, m_avail):
-diff --git a/tests/unittests/test_util.py b/tests/unittests/test_util.py
-index 0e71db82..96d7a7b4 100644
---- a/tests/unittests/test_util.py
-+++ b/tests/unittests/test_util.py
-@@ -122,29 +122,29 @@ class TestWriteFile(helpers.TestCase):
-         file_stat = os.stat(path)
-         self.assertEqual(0o666, stat.S_IMODE(file_stat.st_mode))
- 
--    def test_copy_mode_no_existing(self):
--        """Verify that file is created with mode 0o644 if copy_mode
-+    def test_preserve_mode_no_existing(self):
-+        """Verify that file is created with mode 0o644 if preserve_mode
-         is true and there is no prior existing file."""
-         path = os.path.join(self.tmp, "NewFile.txt")
-         contents = "Hey there"
- 
--        util.write_file(path, contents, copy_mode=True)
-+        util.write_file(path, contents, preserve_mode=True)
- 
-         self.assertTrue(os.path.exists(path))
-         self.assertTrue(os.path.isfile(path))
-         file_stat = os.stat(path)
-         self.assertEqual(0o644, stat.S_IMODE(file_stat.st_mode))
- 
--    def test_copy_mode_with_existing(self):
-+    def test_preserve_mode_with_existing(self):
-         """Verify that file is created using mode of existing file
--        if copy_mode is true."""
-+        if preserve_mode is true."""
-         path = os.path.join(self.tmp, "NewFile.txt")
-         contents = "Hey there"
- 
-         open(path, 'w').close()
-         os.chmod(path, 0o666)
- 
--        util.write_file(path, contents, copy_mode=True)
-+        util.write_file(path, contents, preserve_mode=True)
- 
-         self.assertTrue(os.path.exists(path))
-         self.assertTrue(os.path.isfile(path))
--- 
-2.29.2
-
+@@ -4710,7 +4715,7 @@ class TestRenderersSelect:
+     @mock.patch("cloudinit.net.renderers.eni.available")
+     def test_valid_renderer_from_defaults_depending_on_availability(
+         self, m_eni_avail, m_nm_avail, m_scfg_avail, m_sys_avail,
+-        m_netplan_avail, renderer_selected, netplan, eni, nm, scfg, sys
++        m_netplan_avail, m_networkd_avail, renderer_selected, netplan, eni, nm, scfg, sys, networkd
+     ):
+         """Assert proper renderer per DEFAULT_PRIORITY given availability."""
+         m_eni_avail.return_value = eni          # ifupdown pkg presence
+@@ -4718,6 +4723,7 @@ class TestRenderersSelect:
+         m_scfg_avail.return_value = scfg        # sysconfig presence
+         m_sys_avail.return_value = sys          # sysconfig/ifup/down presence
+         m_netplan_avail.return_value = netplan  # netplan presence
++        m_networkd_avail.return_value = networkd # networkd presence
+         if isinstance(renderer_selected, str):
+             (renderer_name, _rnd_class) = renderers.select(
+                 priority=renderers.DEFAULT_PRIORITY

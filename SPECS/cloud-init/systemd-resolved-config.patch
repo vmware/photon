@@ -1,33 +1,59 @@
 diff --git a/cloudinit/config/cc_resolv_conf.py b/cloudinit/config/cc_resolv_conf.py
-index 69f4768a..db21f11d 100644
+index 466dad03..276a0606 100644
 --- a/cloudinit/config/cc_resolv_conf.py
 +++ b/cloudinit/config/cc_resolv_conf.py
-@@ -55,10 +55,10 @@ LOG = logging.getLogger(__name__)
+@@ -48,6 +48,7 @@ are configured correctly.
+ 
+ from cloudinit import log as logging
+ from cloudinit.settings import PER_INSTANCE
++from cloudinit.subp import subp
+ from cloudinit import templater
+ from cloudinit import util
+ 
+@@ -55,7 +56,7 @@ LOG = logging.getLogger(__name__)
  
  frequency = PER_INSTANCE
  
--distros = ['fedora', 'opensuse', 'rhel', 'sles']
-+distros = ['fedora', 'opensuse', 'rhel', 'sles', 'photon']
+-distros = ['alpine', 'fedora', 'opensuse', 'rhel', 'sles']
++distros = ['alpine', 'fedora', 'opensuse', 'photon', 'rhel', 'sles']
  
  
--def generate_resolv_conf(template_fn, params, target_fname="/etc/resolv.conf"):
-+def generate_resolv_conf(template_fn, params, target_fname="/etc/systemd/resolved.conf"):
-     flags = []
-     false_flags = []
- 
-@@ -104,12 +104,13 @@ def handle(name, cfg, cloud, log, _args):
+ def generate_resolv_conf(template_fn, params, target_fname="/etc/resolv.conf"):
+@@ -91,6 +92,10 @@ def handle(name, cfg, cloud, log, _args):
+     @param log: Pre-initialized Python logger object to use for logging.
+     @param args: Any module arguments from cloud.cfg
+     """
++
++    distro_name = ""
++    resolv_conf = "/etc/resolv.conf"
++
+     if "manage_resolv_conf" not in cfg:
+         log.debug(("Skipping module named %s,"
+                    " no 'manage_resolv_conf' key in configuration"), name)
+@@ -104,12 +109,23 @@ def handle(name, cfg, cloud, log, _args):
      if "resolv_conf" not in cfg:
          log.warning("manage_resolv_conf True but no parameters provided!")
  
 -    template_fn = cloud.get_template_filename('resolv.conf')
-+    template_fn = cloud.get_template_filename('systemd.resolved.conf')
++    distro_name = util.get_linux_distro()[0]
++    if distro_name == "photon":
++        resolv_conf = "/etc/systemd/resolved.conf"
++
++    template_fn = cloud.get_template_filename(resolv_conf)
      if not template_fn:
 -        log.warning("No template found, not rendering /etc/resolv.conf")
-+        log.warning("No template found, not rendering /etc/systemd/resolved.conf")
++        log.warning("No template found, not rendering " + resolv_conf)
          return
  
-     generate_resolv_conf(template_fn=template_fn, params=cfg["resolv_conf"])
-+    util.subp(["systemctl", "restart", "systemd-resolved"])
+-    generate_resolv_conf(template_fn=template_fn, params=cfg["resolv_conf"])
++    if distro_name == "photon":
++        generate_resolv_conf(template_fn=template_fn,
++                             params=cfg["resolv_conf"],
++                             target_fname=resolv_conf)
++        subp(['systemctl', 'restart', 'systemd-resolved'])
++    else:
++        generate_resolv_conf(template_fn=template_fn,
++                              params=cfg["resolv_conf"])
      return
  
  # vi: ts=4 expandtab

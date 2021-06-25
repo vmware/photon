@@ -1,19 +1,18 @@
 %define python3_sitelib /usr/lib/python3.7/site-packages
 
 Name:           cloud-init
-Version:        19.4
-Release:        12%{?dist}
+Version:        21.2
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
 URL:            http://launchpad.net/cloud-init
-Vendor:         VMware, Inc
+Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 cloud-init=5f4de38850f9691dc9789bd4db4be512c9717d7b
-Source1:        99-disable-networking-config.cfg
-Source2:        dscheck_VMwareGuestInfo
+%define sha1 %{name}=1023e9149a109d7709fb94d551489aaa642fa0b3
+Source1:        dscheck_VMwareGuestInfo
 
 Patch0:     photon-distro.patch
 Patch1:     photon-hosts-template.patch
@@ -21,17 +20,13 @@ Patch2:     DataSourceVMwareGuestInfo.patch
 Patch3:     systemd-service-changes.patch
 Patch4:     systemd-resolved-config.patch
 Patch5:     cloud-init-azureds.patch
-Patch6:     ds-identity.patch
+Patch6:     ds-identify.patch
 Patch7:     ds-guestinfo-photon.patch
-Patch8:     CVE-2020-8632.patch
-Patch9:     CVE-2020-8631.patch
-Patch10:    cloud-cfg.patch
-Patch11:    Support-update-gc-status.patch
-Patch12:    Default-Custom-Script-Support.patch
-Patch13:    passwd-field.patch
-Patch14:    instance-dir.patch
-Patch15:    networkd.patch
-Patch16:    fix-make-check.patch
+Patch8:     cloud-cfg.patch
+Patch9:     networkd.patch
+Patch10:    allow-raw-data-switch.patch
+Patch11:    fallback-netcfg.patch
+Patch12:    fix-make-check.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -55,6 +50,7 @@ BuildRequires:  python3-jinja2
 BuildRequires:  python3-pip
 BuildRequires:  python3-configobj
 BuildRequires:  python3-jsonpatch
+BuildRequires:  python3-pytest
 %endif
 
 Requires:       systemd
@@ -75,6 +71,7 @@ Requires:       python3-xml
 Requires:       python3-jsonschema
 Requires:       python3-netifaces
 Requires:       dhcp-client
+
 BuildArch:      noarch
 
 %description
@@ -98,17 +95,22 @@ python3 setup.py install -O1 --skip-build --root=%{buildroot} --init-system syst
 python3 tools/render-cloudcfg --variant photon > %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
 
 mkdir -p %{buildroot}/var/lib/cloud
-mkdir -p %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg.d/
+mkdir -p %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg.d
 
-# Disable networking config by cloud-init
-cp -p %{SOURCE1} %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg.d/
-install -m 755 %{SOURCE2} %{buildroot}/%{_bindir}/
+install -m 755 %{SOURCE1} %{buildroot}/%{_bindir}
 
 %check
 touch vd ud
-pip3 install unittest2 mock httpretty nose
-ln -s /usr/bin/nosetests-3.4 /usr/bin/nosetests3
-make check
+
+mkdir -p /usr/share/ca-certificates/
+crt_file='/usr/share/ca-certificates/cloud-init-ca-certs.crt'
+echo -e 'CERT1\nLINE2\nLINE3\nCERT2\nLINE2\nLINE3' > "${crt_file}"
+
+conf_file='/etc/ca-certificates.conf'
+echo -e 'line1\nline2\nline3\ncloud-init-ca-certs.crt\n' > "${conf_file}"
+
+pip3 install --upgrade pytest-metadata unittest2 mock httpretty attrs iniconfig
+make check %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}
@@ -138,7 +140,6 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/cloud/templates/*
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/05_logging.cfg
 %config(noreplace) %{_sysconfdir}/cloud/cloud.cfg
-%config(noreplace) %{_sysconfdir}/cloud/cloud.cfg.d/99-disable-networking-config.cfg
 %{_sysconfdir}/NetworkManager/dispatcher.d/hook-network-manager
 %{_sysconfdir}/dhcp/dhclient-exit-hooks.d/hook-dhclient
 /lib/systemd/system-generators/cloud-init-generator
@@ -154,6 +155,10 @@ rm -rf %{buildroot}
 %dir /var/lib/cloud
 
 %changelog
+*   Mon Jun 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.2-1
+-   Upgrade to version 21.2
+-   Refactored ds-guestinfo-photon.patch to generate netcfg v2
+-   Added fallback-netcfg.patch to handle net configs when no DS present
 *   Tue Apr 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 19.4-12
 -   Further fixes to network config handler
 *   Fri Oct 23 2020 Shreenidhi Shedi <sshedi@vmware.com> 19.4-11

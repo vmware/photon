@@ -1,121 +1,161 @@
+From 1a9bae07993e2394d0b739c84a19290306e25a56 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 22 Jun 2021 11:14:50 +0530
+Subject: [PATCH] Patch VMwareGuestInfo to handle network settings
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ .../sources/DataSourceVMwareGuestInfo.py      | 122 +++++++++++++++++-
+ 1 file changed, 119 insertions(+), 3 deletions(-)
+
 diff --git a/cloudinit/sources/DataSourceVMwareGuestInfo.py b/cloudinit/sources/DataSourceVMwareGuestInfo.py
-index 19d20a2d..407adbd9 100644
+index 19d20a2d..d3a9e751 100644
 --- a/cloudinit/sources/DataSourceVMwareGuestInfo.py
 +++ b/cloudinit/sources/DataSourceVMwareGuestInfo.py
-@@ -140,10 +140,113 @@ class DataSourceVMwareGuestInfo(sources.DataSource):
-         if data_access_method == VMWARE_RPCTOOL and CLEANUP_GUESTINFO in self.metadata:
-             clear_guestinfo_keys(self.metadata[CLEANUP_GUESTINFO])
- 
--        if self.metadata or self.userdata_raw or self.vendordata_raw:
-+        hostname = get_guestinfo_value('hostname')
-+        if hostname:
-+            self.distro.set_hostname(hostname)
+@@ -35,6 +35,7 @@ from cloudinit import log as logging
+ from cloudinit import sources
+ from cloudinit import util
+ from cloudinit import safeyaml
++from cloudinit.net import network_state
+
+ import netifaces
+
+@@ -112,6 +113,106 @@ class DataSourceVMwareGuestInfo(sources.DataSource):
+         if not get_data_access_method():
+             LOG.error("Failed to find vmware-rpctool")
+
++    def get_nwk_cfgs_from_guestinfo(self):
++        net_cfg = {'version': 2, 'ethernets': {}}
++        eth_cfg = net_cfg['ethernets']
 +
 +        dev_index = 0
-+        network_settings = ''
-+
 +        while True:
-+            key_begin = 'interface.' + str(dev_index)
-+            key_iname = key_begin + '.name'
-+            interface_name = get_guestinfo_value(key_iname)
++            key_prefix = 'interface.' + str(dev_index)
 +
-+            if not interface_name:
++            iface_name = get_guestinfo_value(key_prefix + '.name')
++            if not iface_name:
 +                break
 +
-+            network_settings += 'auto ' + interface_name + '\n'
-+            network_settings += 'iface ' + interface_name
-+            key_proto = key_begin + '.dhcp'
-+            dhcp_enabled = get_guestinfo_value(key_proto)
-+            key_address = key_begin + '.address'
-+            address = get_guestinfo_value(key_address)
-+            bootproto = 'dhcp'
++            eth_cfg[iface_name] = {'match': {}}
++            iface_cfg = eth_cfg[iface_name]
++            iface_cfg['match'].update({'name': iface_name})
 +
-+            if dhcp_enabled:
-+                if dhcp_enabled in {'yes', 'ipv4', 'ipv6'}:
-+                    network_settings += ' dhcp\n'
-+                elif dhcp_enabled == 'no':
-+                    network_settings += ' static\n'
-+                    bootproto = 'static'
-+                else:
-+                    LOG.warning("Invalid value for yes/no parameter for %s, setting to dhcp", key_proto)
-+            elif address:
-+                bootproto = 'static'
-+                dhcp_enabled == 'no'
-+                network_settings += ' static\n'
-+            else:
-+                dhcp_enabled == 'yes'
-+                network_settings += ' dhcp\n'
-+                LOG.debug("Setting network bootproto to dhcp by default")
-+
-+            key_mac = key_begin + '.mac'
-+            mac = get_guestinfo_value(key_mac)
-+
-+            if address:
-+                network_settings += 'address ' + address + '\n'
-+
++            mac = get_guestinfo_value(key_prefix + '.mac')
 +            if mac:
-+                network_settings += 'hwaddress ' + mac + '\n'
++                iface_cfg['match'].update({'macaddress': mac})
 +
-+            key_netmask = key_begin + '.netmask'
++            key_proto = key_prefix + '.dhcp'
++            dhcp_val = get_guestinfo_value(key_proto)
 +
-+            netmask = get_guestinfo_value(key_netmask)
-+            if netmask:
-+                 network_settings += 'netmask ' + netmask + '\n'
++            dhcp_cfg_map = {
++                'yes': {'dhcp4': True, 'dhcp6': True},
++                'ipv4': {'dhcp4': True, 'dhcp6': False},
++                'ipv6': {'dhcp4': False, 'dhcp6': True},
++                'no': {'dhcp4': False, 'dhcp6': False},
++            }
 +
-+            key_dnsserver = 'dns.servers'
++            address = get_guestinfo_value(key_prefix + '.address')
++            if dhcp_val and dhcp_val in {'yes', 'ipv4', 'ipv6', 'no'}:
++                iface_cfg.update(dhcp_cfg_map[dhcp_val])
 +
-+            dnsserver = get_guestinfo_value(key_dnsserver)
++            if (dhcp_val and dhcp_val == 'no') or address:
++                if address:
++                    netmask = get_guestinfo_value(key_prefix + '.netmask')
++                    if netmask:
++                        netmask = network_state.mask_to_net_prefix(netmask)
++                        address += '/' + netmask
++
++                    iface_cfg['addresses'] = [address]
++                    iface_cfg.update(dhcp_cfg_map['no'])
++
++            if (not dhcp_val and not address) or \
++                    (dhcp_val == 'no' and not address):
++                LOG.warning("No static IP/DHCP given, using DHCP as default")
++                iface_cfg.update(dhcp_cfg_map['yes'])
++
++            dnsserver = get_guestinfo_value('dns.servers')
 +            if dnsserver:
-+                network_settings += 'dns-nameservers '
-+                dnsserver = dnsserver.split(',')
-+
-+                for d in dnsserver:
-+                    network_settings += d + ' '
-+                network_settings += '\n'
-+
-+            key_dnsdomain = 'dns.domains'
-+
-+            dnsdomain = get_guestinfo_value(key_dnsdomain)
-+            if dnsdomain:
-+                network_settings += 'dns-search '
-+                dnsdomain = dnsdomain.split(',')
++                iface_cfg['nameservers'] = {'addresses': []}
++                dnsdomain = [x.strip() for x in dnsserver.split(',')]
 +                for d in dnsdomain:
-+                    network_settings += d + ' '
-+                network_settings += '\n'
++                    iface_cfg['nameservers']['addresses'].append(d)
++
++            dnsdomain = get_guestinfo_value('dns.domains')
++            if dnsdomain:
++                if 'nameservers' in iface_cfg:
++                    iface_cfg['nameservers'].update({'search': []})
++                else:
++                    iface_cfg['nameservers'] = {'search': []}
++                dnsdomain = [x.strip() for x in dnsdomain.split(',')]
++                for d in dnsdomain:
++                    iface_cfg['nameservers']['search'].append(d)
 +
 +            route_index = 0
 +            default_destination_set = False
 +            while True:
-+                key_route = key_begin + '.route.' + str(route_index)
++                key_route = key_prefix + '.route.' + str(route_index)
 +                route = get_guestinfo_value(key_route)
 +                if not route:
 +                    break
-+                network_settings += "routes.%s " % (route_index)
-+                route = route.split(',')
-+                if len(route) > 2:
-+                    LOG.debug("Route information for %s route in %s device incorrect - ",
-+                                        "expected 2 values", route_index, dev_index)
++                if 'routes' not in iface_cfg:
++                    iface_cfg['routes'] = []
++                route = [x.strip() for x in route.split(',')]
++                len_route = len(route)
++                if len_route > 2:
++                    LOG.debug("Route information for %s route in %s device \
++                              incorrect - expected 2 values",
++                              route_index, dev_index)
 +                    continue
-+                elif len(route) == 2:
-+                    network_settings += route[0] + ' ' + route[1] + '\n'# Gateway Destination
-+                else: #length = 1
++
++                if len_route == 2:
++                    # Gateway Destination
++                    d = {'via': route[0], 'to': route[1]}
++                    iface_cfg['routes'].append(d)
++                else:
++                    #length = 1
 +                    if not default_destination_set:
-+                        network_settings += route[0] + ' 0.0.0.0/0' + '\n'
++                        d = {'via': route[0], 'to': '0.0.0.0'}
 +                        default_destination_set = True
 +                    else:
-+                        LOG.debug("Default destination set previously, not setting route %s", route_index)
++                        LOG.debug("Default destination set previously, not \
++                                  setting route %s", route_index)
 +                route_index += 1
 +            dev_index += 1
 +
-+        if network_settings:
-+            self.distro.apply_network(network_settings, False)
++        return net_cfg if eth_cfg else None
 +
-+        if self.metadata or self.userdata_raw or self.vendordata_raw or hostname or network_settings:
+     def get_data(self):
+         """
+         This method should really be _get_data in accordance with the most
+@@ -140,10 +241,25 @@ class DataSourceVMwareGuestInfo(sources.DataSource):
+         if data_access_method == VMWARE_RPCTOOL and CLEANUP_GUESTINFO in self.metadata:
+             clear_guestinfo_keys(self.metadata[CLEANUP_GUESTINFO])
+
+-        if self.metadata or self.userdata_raw or self.vendordata_raw:
++        # guestinfo.metadata will take precedence over this setting
++        # if the key not present in guestinfo.metadata, then proceed further
++        key = 'local-hostname'
++        if key not in self.metadata or not self.metadata[key]:
++            hostname = get_guestinfo_value('hostname')
++            if hostname:
++                LOG.info('Setting local-hostname: %s', hostname)
++                self.metadata[key] = hostname
++
++        key = 'network'
++        if key not in self.metadata or not self.metadata[key]:
++            net_cfg = self.get_nwk_cfgs_from_guestinfo()
++            if net_cfg:
++                LOG.info('Setting network cfg: %s', net_cfg)
++                self.metadata[key] = {'config': copy.deepcopy(net_cfg)}
++
++        if (self.metadata or self.userdata_raw or self.vendordata_raw):
              return True
 -        else:
 -            return False
 +        return False
-+
- 
+
      def setup(self, is_new_instance):
          """setup(is_new_instance)
+--
+2.32.0
+
