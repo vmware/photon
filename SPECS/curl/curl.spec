@@ -1,18 +1,14 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.75.0
-Release:        2%{?dist}
+Version:        7.77.0
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha1    curl=fbd1e354a5e4e9a4ac07db3d1222d19f84a5e751
-Patch0:         curl-CVE-2021-22876.patch
-Patch1:         curl-CVE-2021-22890.patch
-Patch2:         curl-CVE-2021-22898.patch
-Patch3:         curl-CVE-2021-22901.patch
+%define sha1    curl=fdbb773251bba86ff95a3fe51f9969fd5004bdde
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
@@ -48,10 +44,6 @@ This package contains minimal set of shared curl libraries.
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
 
 %build
 %configure \
@@ -100,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Mon Jun 28 2021 Nitesh Kumar <kunitesh@vmware.com> 7.77.0-1
+-   Upgrade to 7.77.0, Fix for CVE-2021-22897
 *   Fri May 21 2021 Harinadh D <hdommaraju@vmware.com> 7.75.0-2
 -   Fix CVE-2021-22901, CVE-2021-22898
 *   Mon Mar 29 2021 Harinadh D <hdommaraju@vmware.com> 7.75.0-1
