@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.42
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        5.10.46
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -32,7 +32,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=e6346df31e1623af112c154c412f96f59487dbeb
+%define sha1 linux=c20ebd55737540346bc0c3d347fcb6f703768144
 Source1:	config_%{_arch}
 Source2:	initramfs.trigger
 %define ena_version 2.4.0
@@ -98,10 +98,6 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2021-3564
-Patch128:       0001-Bluetooth-fix-the-erroneous-flush_work-order.patch
-# Fix for CVE-2021-3573
-Patch129:       0001-bluetooth-use-correct-lock-to-prevent-UAF-of-hdev-ob.patch
 # Fix for CVE-2021-3609
 Patch130:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
@@ -298,8 +294,6 @@ Python programming language to use the interface to manipulate perf events.
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
-%patch128 -p1
-%patch129 -p1
 %patch130 -p1
 
 %ifarch aarch64
@@ -665,6 +659,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.46-1
+-   Update to version 5.10.46
 *   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.42-3
 -   Fix for CVE-2021-3609
 *   Thu Jun 10 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-2

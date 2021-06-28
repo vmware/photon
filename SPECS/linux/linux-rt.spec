@@ -17,10 +17,10 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        5.10.42
+Version:        5.10.46
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt42
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -30,7 +30,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=e6346df31e1623af112c154c412f96f59487dbeb
+%define sha1 linux=c20ebd55737540346bc0c3d347fcb6f703768144
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
@@ -81,10 +81,6 @@ Patch56:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix for CVE-2019-12379
 Patch101:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2021-3564
-Patch128:       0001-Bluetooth-fix-the-erroneous-flush_work-order.patch
-# Fix for CVE-2021-3573
-Patch129:       0001-bluetooth-use-correct-lock-to-prevent-UAF-of-hdev-ob.patch
 # Fix for CVE-2021-3609
 Patch130:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
@@ -516,8 +512,6 @@ The Linux package contains the Linux kernel doc files
 # CVE
 %patch100 -p1
 %patch101 -p1
-%patch128 -p1
-%patch129 -p1
 %patch130 -p1
 
 # RT
@@ -1043,6 +1037,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.46-1
+-   Update to version 5.10.46
 *   Thu Jun 24 2021 Ankit Jain <ankitja@vmware.com> 5.10.42-4
 -   Conditional tick_restart upon idle_exit
 *   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.42-3
