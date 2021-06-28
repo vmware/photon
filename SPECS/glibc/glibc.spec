@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.22
-Release:        35%{?dist}
+Release:        36%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -67,6 +67,10 @@ Patch39:        0001-Remove-CPU-set-size-checking-from-affinity-functions.patch
 Patch40:        0001-nptl-Add-__pthread_attr_copy-for-copying-pthread_att.patch
 Patch41:        0001-CVE-2021-33574.patch
 Patch42:        0002-CVE-2021-33574.patch
+Patch43:        0001-elf-Refactor-_dl_update_slotinfo-to-avoid-use-after-.patch
+Patch44:        0002-elf-Fix-data-races-in-pthread_create-and-TLS-access-.patch
+Patch45:        0003-elf-Use-relaxed-atomics-for-racy-accesses-BZ-19329.patch
+Patch46:        0004-elf-Add-test-case-for-BZ-19329.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -135,6 +139,10 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch40 -p1
 %patch41 -p1
 %patch42 -p1
+%patch43 -p1
+%patch44 -p1
+%patch45 -p1
+%patch46 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -262,6 +270,8 @@ popd
 %{_datarootdir}/locale/locale.alias
 
 %changelog
+*   Tue Jun 29 2021 Srinidhi Rao <srinidhir@vmware.com> 2.22-36
+-   Fix racy access issues in dl-open & dl-tls.
 *   Thu Jun 03 2021 Ajay Kaher <akaher@vmware.com> 2.22-35
 -   Fix CVE-2021-33574
 *   Thu Mar 11 2021 Keerthana K <keerthanak@vmware.com> 2.22-34
