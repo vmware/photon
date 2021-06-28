@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.270
-Release:       3%{?dist}
+Version:       4.4.273
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:  Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c5d685191cd27092224ab6e02b136a7609e19bb4
+%define sha1 linux=433008d1f8262312411cca45f65c05133b04a1d4
 Source1:       config-esx
 Source2:       pre-preun-postun-tasks.inc
 
@@ -355,6 +355,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.273-1
+-   Update to version 4.4.273
 *   Thu Jun 24 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.270-3
 -   Correction in CVE-2021-3609 patch
 *   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.270-2
