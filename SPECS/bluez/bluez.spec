@@ -1,17 +1,13 @@
 Summary:	Bluetooth utilities
 Name:		bluez
-Version:	5.52
-Release: 	3%{?dist}
+Version:	5.58
+Release: 	1%{?dist}
 License:	GPLv2+
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.kernel.org/pub/linux/bluetooth/bluez-%{version}.tar.xz
-%define sha1 bluez=75e907922a62588c12d5642293403be0625b4d02
-
-Patch1:         0001-HOGP-must-only-accept-data-from-bonded-devices.patch
-Patch2:         0002-HID-accepts-bonded-device-connections-only.patch
-Patch3:         0001-shared-att-Fix-possible-crash-on-disconnect.patch
+%define sha1 bluez=f5f007eb18599ee2fdca113642e177ebab5a8e21
 
 BuildRequires:  libical-devel
 BuildRequires:  glib-devel
@@ -38,9 +34,6 @@ use in Bluetooth applications.
 
 %prep
 %setup -q
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
 
 %build
 %configure \
@@ -54,7 +47,6 @@ use in Bluetooth applications.
 	--enable-experimental \
 	--enable-deprecated \
 	--disable-cups
-
 make %{?_smp_mflags}
 
 %install
@@ -70,7 +62,6 @@ make %{?_smp_mflags} -k check
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-/lib/udev/hid2hci
 %{_libexecdir}/bluetooth/obexd
 %{_libexecdir}/bluetooth/bluetoothd
 %{_datadir}/zsh/site-functions/_bluetoothctl
@@ -81,17 +72,17 @@ make %{?_smp_mflags} -k check
 %{_libdir}/systemd/user/obex.service
 /lib/systemd/system/bluetooth.service
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/bluetooth.conf
-/lib/udev/rules.d/97-hid2hci.rules
 %doc COPYING TODO
 
 %files devel
 %{_includedir}/bluetooth/*.h
-
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %{_datadir}/man/*
 
 %changelog
+* Mon Jun 28 2021 Nitesh Kumar <kunitesh@vmware.com> 5.58-1
+- Upgrade to 5.58, Fixes for CVE-2021-0129
 * Fri Oct 23 2020 Ajay Kaher <akaher@vmware.com> 5.52-3
 - Fix CVE-2020-27153
 * Mon Mar 23 2020 Ajay Kaher <akaher@vmware.com> 5.52-2
