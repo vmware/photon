@@ -1,4 +1,7 @@
 %global security_hardening none
+%ifarch x86_64
+%define arch x86_64
+%define archdir x86
 
 # Set this flag to 0 to build without canister
 %global fips 1
@@ -8,10 +11,17 @@
 %global fips 0
 %endif
 
+%endif
+
+%ifarch aarch64
+%define arch arm64
+%define archdir arm64
+%endif
+
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.61
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -22,7 +32,7 @@ Distribution:   Photon
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
 %define sha1 linux=7bf2b48bccb0a7fce7a2cfaf801929b3e81f8709
-Source1:        config-esx
+Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
@@ -119,7 +129,6 @@ Patch603:       x86-sev-es-load-idt-before-entering-long-mode-to-han-510.patch
 Patch604:       x86-swiotlb-Adjust-SWIOTLB-bounce-buffer-size-for-SE.patch
 Patch605:       x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
 
-BuildArch:     x86_64
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -234,6 +243,7 @@ The Linux package contains the Linux kernel doc files
 %endif
 %endif
 
+%ifarch x86_64
 # SEV
 %patch600 -p1
 %patch601 -p1
@@ -241,6 +251,7 @@ The Linux package contains the Linux kernel doc files
 %patch603 -p1
 %patch604 -p1
 %patch605 -p1
+%endif
 
 %build
 make %{?_smp_mflags} mrproper
@@ -260,7 +271,7 @@ sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .co
 
 %include %{SOURCE4}
 
-make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
+make  %{?_smp_mflags} VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
 
 %if 0%{?fips}
 %include %{SOURCE9}
@@ -286,9 +297,16 @@ install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
-make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
+make %{?_smp_mflags} ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
 
-install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
+%ifarch x86_64
+install -vm 644 arch/%{archdir}/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
+%endif
+
+%ifarch aarch64
+install -vm 644 arch/%{archdir}/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
+%endif
+
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
 cp -r Documentation/*        %{buildroot}%{_docdir}/linux-%{uname_r}
@@ -315,9 +333,9 @@ rm -f %{buildroot}/lib/modules/%{uname_r}/build
 
 # create /use/src/linux-headers-*/ content
 find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
-find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
-find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
-find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/%{archdir}/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/%{archdir}/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 
 # copy .config manually to be where it's expected to be
 cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
@@ -352,6 +370,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Oct 21 2021 Keerthana K <keerthanak@vmware.com> 5.10.61-6
+-   Add arm64 support
 *   Mon Oct 18 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.61-5
 -   initramfs: large files support for newca
 *   Wed Oct 06 2021 Ankit Jain <ankitja@vmware.com> 5.10.61-4
