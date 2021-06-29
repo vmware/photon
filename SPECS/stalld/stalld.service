@@ -8,7 +8,7 @@ EnvironmentFile=/etc/sysconfig/stalld
 
 #In case the regex passed to IT or IP includes C escape sequences,
 #use ${IT} or ${IP} instead of $IT or $IP
-ExecStart=/usr/bin/stalld $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $IT $IP
+ExecStart=/usr/bin/stalld $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $IT $IP $VB
 
 [Install]
 WantedBy=multi-user.target

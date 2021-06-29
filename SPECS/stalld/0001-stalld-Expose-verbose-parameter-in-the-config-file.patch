@@ -1,0 +1,99 @@
+From 02f35db65d4472bbbc1ae113e9d7b16309897da5 Mon Sep 17 00:00:00 2001
+From: "Srivatsa S. Bhat (VMware)" <srivatsa@csail.mit.edu>
+Date: Mon, 28 Jun 2021 19:35:03 -0700
+Subject: [PATCH] stalld: Expose verbose parameter in the config file
+
+Expose the verbose parameter to the stalld config file so that it can
+be used by the stalld service as well.
+
+While at it, replace a few printf() invocations under config_verbose
+with log_msg(), so that they will end up in the journalctl logs,
+if configured.
+
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ redhat/stalld.conf    | 6 ++++++
+ redhat/stalld.service | 2 +-
+ src/stalld.c          | 6 +++---
+ src/utils.c           | 4 ++--
+ 4 files changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/redhat/stalld.conf b/redhat/stalld.conf
+index be0ef0b..037a726 100644
+--- a/redhat/stalld.conf
++++ b/redhat/stalld.conf
+@@ -46,3 +46,9 @@ FG=
+ # Write a pidfile
+ # ex: PF=--pidfile /run/stalld.pid
+ PF="--pidfile /run/stalld.pid"
++
++# Verbose logging
++# ex: VB=-v
++# Note: Setting verbose logging will automatically set
++# config_foreground to 1.
++VB=
+diff --git a/redhat/stalld.service b/redhat/stalld.service
+index a363c94..a85aab7 100644
+--- a/redhat/stalld.service
++++ b/redhat/stalld.service
+@@ -5,7 +5,7 @@ Description=Stall Monitor
+ # Type=simple
+ Type=forking
+ EnvironmentFile=/etc/sysconfig/stalld
+-ExecStart=/usr/bin/stalld $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF
++ExecStart=/usr/bin/stalld $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $VB
+ 
+ [Install]
+ WantedBy=multi-user.target
+diff --git a/src/stalld.c b/src/stalld.c
+index 16298fd..e6f6c58 100644
+--- a/src/stalld.c
++++ b/src/stalld.c
+@@ -800,14 +800,14 @@ void print_waiting_tasks(struct cpu_info *cpu_info)
+ 	time_t now = time(NULL);
+ 	int i;
+ 
+-	printf("CPU %d has %d waiting tasks\n", cpu_info->id, cpu_info->nr_waiting_tasks);
++	log_msg("CPU %d has %d waiting tasks\n", cpu_info->id, cpu_info->nr_waiting_tasks);
+ 	if (!cpu_info->nr_waiting_tasks)
+ 		return;
+ 
+ 	for (i = 0; i < cpu_info->nr_waiting_tasks; i++) {
+ 		task = &cpu_info->starving[i];
+ 
+-		printf("%15s %9d %9d %9d %9ld\n", task->comm, task->pid, task->prio, task->ctxsw, (now - task->since));
++		log_msg("%15s %9d %9d %9d %9ld\n", task->comm, task->pid, task->prio, task->ctxsw, (now - task->since));
+ 	}
+ 
+ 	return;
+@@ -1401,7 +1401,7 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+ 			}
+ 
+ 			if (config_verbose)
+-				printf("\tchecking cpu %d - rt: %d - starving: %d\n",
++				log_msg("\tchecking cpu %d - rt: %d - starving: %d\n",
+ 				       i, cpu->nr_rt_running, cpu->nr_waiting_tasks);
+ 
+ 			if (check_might_starve_tasks(cpu)) {
+diff --git a/src/utils.c b/src/utils.c
+index b4c3ca0..e12404f 100644
+--- a/src/utils.c
++++ b/src/utils.c
+@@ -651,12 +651,12 @@ static void parse_cpu_list(char *cpulist)
+ 
+ 		if (cpu == end_cpu) {
+ 			if (config_verbose)
+-				printf("cpulist: adding cpu %d\n", cpu);
++				log_msg("cpulist: adding cpu %d\n", cpu);
+ 			config_monitored_cpus[cpu] = 1;
+ 		} else {
+ 			for (i = cpu; i <= end_cpu; i++) {
+ 				if (config_verbose)
+-					printf("cpulist: adding cpu %d\n", i);
++					log_msg("cpulist: adding cpu %d\n", i);
+ 				config_monitored_cpus[i] = 1;
+ 			}
+ 		}
+-- 
+2.25.1
+
