@@ -15,7 +15,7 @@
 Summary:        Go
 Name:           go
 Version:        1.16.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -23,6 +23,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
 %define sha1    go=78812c9ee656d3f54b8c9b4f3f78e00e81ba81ad
+Patch0:         CVE-2021-31525.patch
 Requires:       glibc
 %define ExtraBuildRequires go
 
@@ -31,6 +32,7 @@ Go is an open source programming language that makes it easy to build simple, re
 
 %prep
 %setup -qn %{name}
+%patch0 -p1
 
 %build
 export GOHOSTOS=linux
@@ -112,6 +114,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.2-2
+-   Fix for CVE-2021-31525.
 *   Mon May 03 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.2-1
 -   Update to 1.16.2
 *   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.13.15-3

@@ -10,7 +10,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.18.19
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -234,6 +234,8 @@ fi
 %endif
 
 %changelog
+*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.18.19-4
+-   Bump up version to compile with new go
 *   Tue Jun 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-3
 -   Change 10-kubeadm.conf file permission to 644
 *   Wed Jun 02 2021 Piyush Gupta<gpiyush@vmware.com> 1.18.19-2
