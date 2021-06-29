@@ -1,11 +1,12 @@
 Summary:	NetworkManager
 Name:		NetworkManager
 Version:	1.22.10
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 URL:		https://wiki.gnome.org/Projects/NetworkManager
 Source0:	https://download.gnome.org/sources/NetworkManager/1.0/%{name}-%{version}.tar.xz
 %define sha1 NetworkManager=4d39f390d486dbf5aa5fe89d1d05509ada653b59
+Patch0:         nm-CVE-2021-20297.patch
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -51,6 +52,7 @@ NetworkManager is a set of co-operative tools that make networking simple and st
 
 %prep
 %setup -q
+%patch0 -p1
 %build
 ./configure \
 	--prefix=%{_prefix} \
@@ -100,6 +102,8 @@ EOF
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*.pc
 %changelog
+*	Tue Jun 29 2021 Dweep Advani <dadvani@vmware.com> 1.22.10-2
+-	Fixed CVE-2021-20297
 *	Wed Apr 22 2020 Dweep Advani <dadvani@vmware.com> 1.22.10-1
 -	Upgraded to 1.22.10 to address CVE-2018-1000135
 *	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.10-2
