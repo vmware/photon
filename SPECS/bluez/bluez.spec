@@ -14,7 +14,6 @@ BuildRequires:  libical-devel
 BuildRequires:  glib-devel
 BuildRequires:  dbus-devel
 BuildRequires:  systemd-devel
-BuildRequires:  libxml2-devel
 
 Requires:       dbus
 Requires:       glib

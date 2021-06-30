@@ -1,7 +1,7 @@
 Summary:        Libical — an implementation of iCalendar protocols and data formats
 Name:           libical
 Version:        3.0.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MPL-2.0
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -11,6 +11,7 @@ Source0:        https://github.com/libical/libical/releases/download/v%{version}
 BuildRequires:  cmake
 BuildRequires:  glib-devel
 BuildRequires:  libxml2-devel
+Requires:       libxml2
 
 %description
 Libical is an Open Source implementation of the iCalendar protocols and
@@ -60,6 +61,8 @@ make %{?_smp_mflags} -k check
 /usr/local/lib64/pkgconfig/*.pc
 
 %changelog
+* Wed Jun 30 2021 Tapas Kundu <tkundu@vmware.com> 3.0.10-2
+- Need libxml2 in requires
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.0.10-1
 - Automatic Version Bump
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.8-1
