@@ -1,0 +1,140 @@
+From 7836fc615e83290874947da0febd1c0d2db707b5 Mon Sep 17 00:00:00 2001
+From: Szabolcs Nagy <szabolcs.nagy@arm.com>
+Date: Tue, 13 Dec 2016 12:28:41 +0000
+Subject: [PATCH 5/5] elf: Add test case for [BZ #19329]
+
+Test concurrent dlopen and pthread_create when the loaded modules have
+TLS.  This triggers dl-tls assertion failures more reliably than the
+nptl/tst-stack4 test.
+
+The dlopened module has 100 DT_NEEDED dependencies with TLS, they were
+reused from an existing TLS test. The number of created threads during
+dlopen depends on filesystem speed and hardware, but at most 3 threads
+are alive at a time to limit resource usage.
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+---
+ elf/Makefile       |  8 +++++-
+ elf/tst-tls21.c    | 68 ++++++++++++++++++++++++++++++++++++++++++++++
+ elf/tst-tls21mod.c |  1 +
+ 3 files changed, 76 insertions(+), 1 deletion(-)
+ create mode 100644 elf/tst-tls21.c
+ create mode 100644 elf/tst-tls21mod.c
+
+diff --git a/elf/Makefile b/elf/Makefile
+index 0b78721848..2d85f06e74 100644
+--- a/elf/Makefile
++++ b/elf/Makefile
+@@ -189,7 +189,7 @@ tests += restest1 preloadtest loadfail multiload origtest resolvfail \
+ 	 restest2 next dblload dblunload reldep5 reldep6 reldep7 reldep8 \
+ 	 tst-tls4 tst-tls5 \
+ 	 tst-tls10 tst-tls11 tst-tls12 tst-tls13 tst-tls14 tst-tls15 \
+-	 tst-tls16 tst-tls17 tst-tls18 tst-tls19 tst-tls-dlinfo \
++	 tst-tls16 tst-tls17 tst-tls18 tst-tls19 tst-tls21 tst-tls-dlinfo \
+ 	 tst-align tst-align2 \
+ 	 tst-dlmodcount tst-dlopenrpath tst-deep1 \
+ 	 tst-dlmopen1 tst-dlmopen3 \
+@@ -263,6 +263,7 @@ modules-names = testobj1 testobj2 testobj3 testobj4 testobj5 testobj6 \
+ 		tst-tlsmod15a tst-tlsmod15b tst-tlsmod16a tst-tlsmod16b \
+ 		$(tlsmod17a-modules) tst-tlsmod17b $(tlsmod18a-modules) \
+ 		tst-tls19mod1 tst-tls19mod2 tst-tls19mod3 \
++		tst-tls21mod \
+ 		circlemod1 circlemod1a circlemod2 circlemod2a \
+ 		circlemod3 circlemod3a \
+ 		reldep8mod1 reldep8mod2 reldep8mod3 \
+@@ -1052,6 +1053,11 @@ $(patsubst %,$(objpfx)%.so,$(tlsmod18a-modules)): $(objpfx)tst-tlsmod18a%.so: $(
+ $(objpfx)tst-tls19: $(libdl)
+ $(objpfx)tst-tls19.out: $(objpfx)tst-tls19mod1.so
+ 
++# Reuses tst-tls-many-dynamic-modules
++$(objpfx)tst-tls21: $(libdl) $(shared-thread-library)
++$(objpfx)tst-tls21.out: $(objpfx)tst-tls21mod.so
++$(objpfx)tst-tls21mod.so: $(tst-tls-many-dynamic-modules:%=$(objpfx)%.so)
++
+ CFLAGS-tst-align.c += $(stack-align-test-flags)
+ CFLAGS-tst-align2.c += $(stack-align-test-flags)
+ CFLAGS-tst-alignmod.c += $(stack-align-test-flags)
+diff --git a/elf/tst-tls21.c b/elf/tst-tls21.c
+new file mode 100644
+index 0000000000..560bf5813a
+--- /dev/null
++++ b/elf/tst-tls21.c
+@@ -0,0 +1,68 @@
++/* Test concurrent dlopen and pthread_create: BZ 19329.
++   Copyright (C) 2021 Free Software Foundation, Inc.
++   This file is part of the GNU C Library.
++
++   The GNU C Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Lesser General Public
++   License as published by the Free Software Foundation; either
++   version 2.1 of the License, or (at your option) any later version.
++
++   The GNU C Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Lesser General Public License for more details.
++
++   You should have received a copy of the GNU Lesser General Public
++   License along with the GNU C Library; if not, see
++   <http://www.gnu.org/licenses/>.  */
++
++#include <dlfcn.h>
++#include <pthread.h>
++#include <stdio.h>
++#include <stdatomic.h>
++#include <support/xdlfcn.h>
++#include <support/xthread.h>
++
++#define THREADS 10000
++
++static atomic_int done;
++
++static void *
++start (void *a)
++{
++  /* Load a module with many dependencies that each have TLS.  */
++  xdlopen ("tst-tls21mod.so", RTLD_LAZY);
++  atomic_store_explicit (&done, 1, memory_order_release);
++  return 0;
++}
++
++static void *
++nop (void *a)
++{
++  return 0;
++}
++
++static int
++do_test (void)
++{
++  pthread_t t1, t2;
++  int i;
++
++  /* Load a module with lots of dependencies and TLS.  */
++  t1 = xpthread_create (0, start, 0);
++
++  /* Concurrently create lots of threads until dlopen is observably done.  */
++  for (i = 0; i < THREADS; i++)
++    {
++      if (atomic_load_explicit (&done, memory_order_acquire) != 0)
++	break;
++      t2 = xpthread_create (0, nop, 0);
++      xpthread_join (t2);
++    }
++
++  xpthread_join (t1);
++  printf ("threads created during dlopen: %d\n", i);
++  return 0;
++}
++
++#include <support/test-driver.c>
+diff --git a/elf/tst-tls21mod.c b/elf/tst-tls21mod.c
+new file mode 100644
+index 0000000000..206ece4fb3
+--- /dev/null
++++ b/elf/tst-tls21mod.c
+@@ -0,0 +1 @@
++int __thread x;
+-- 
+2.23.3
+

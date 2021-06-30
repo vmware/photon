@@ -1,0 +1,188 @@
+From be811a83469255e9e5ba110bdfceb8d882c6a96b Mon Sep 17 00:00:00 2001
+From: Szabolcs Nagy <szabolcs.nagy@arm.com>
+Date: Wed, 30 Dec 2020 19:19:37 +0000
+Subject: [PATCH 2/5] elf: Fix data races in pthread_create and TLS access [BZ
+ #19329]
+
+DTV setup at thread creation (_dl_allocate_tls_init) is changed
+to take the dlopen lock, GL(dl_load_lock).  Avoiding data races
+here without locks would require design changes: the map that is
+accessed for static TLS initialization here may be concurrently
+freed by dlclose.  That use after free may be solved by only
+locking around static TLS setup or by ensuring dlclose does not
+free modules with static TLS, however currently every link map
+with TLS has to be accessed at least to see if it needs static
+TLS.  And even if that's solved, still a lot of atomics would be
+needed to synchronize DTV related globals without a lock. So fix
+both bug 19329 and bug 27111 with a lock that prevents DTV setup
+running concurrently with dlopen or dlclose.
+
+_dl_update_slotinfo at TLS access still does not use any locks
+so CONCURRENCY NOTES are added to explain the synchronization.
+The early exit from the slotinfo walk when max_modid is reached
+is not strictly necessary, but does not hurt either.
+
+An incorrect acquire load was removed from _dl_resize_dtv: it
+did not synchronize with any release store or fence and
+synchronization is now handled separately at thread creation
+and TLS access time.
+
+There are still a number of racy read accesses to globals that
+will be changed to relaxed MO atomics in a followup patch. This
+should not introduce regressions compared to existing behaviour
+and avoid cluttering the main part of the fix.
+
+Not all TLS access related data races got fixed here: there are
+additional races at lazy tlsdesc relocations see bug 27137.
+
+Reviewed-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+---
+ elf/dl-tls.c | 63 +++++++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 47 insertions(+), 16 deletions(-)
+
+diff --git a/elf/dl-tls.c b/elf/dl-tls.c
+index 0ec25d3032..a318d8067c 100644
+--- a/elf/dl-tls.c
++++ b/elf/dl-tls.c
+@@ -471,14 +471,11 @@ extern dtv_t _dl_static_dtv[];
+ #endif
+ 
+ static dtv_t *
+-_dl_resize_dtv (dtv_t *dtv)
++_dl_resize_dtv (dtv_t *dtv, size_t max_modid)
+ {
+   /* Resize the dtv.  */
+   dtv_t *newp;
+-  /* Load GL(dl_tls_max_dtv_idx) atomically since it may be written to by
+-     other threads concurrently.  */
+-  size_t newsize
+-    = atomic_load_acquire (&GL(dl_tls_max_dtv_idx)) + DTV_SURPLUS;
++  size_t newsize = max_modid + DTV_SURPLUS;
+   size_t oldsize = dtv[-1].counter;
+ 
+   if (dtv == GL(dl_initial_dtv))
+@@ -524,11 +521,14 @@ _dl_allocate_tls_init (void *result)
+   size_t total = 0;
+   size_t maxgen = 0;
+ 
++  /* Protects global dynamic TLS related state.  */
++  __rtld_lock_lock_recursive (GL(dl_load_lock));
++
+   /* Check if the current dtv is big enough.   */
+   if (dtv[-1].counter < GL(dl_tls_max_dtv_idx))
+     {
+       /* Resize the dtv.  */
+-      dtv = _dl_resize_dtv (dtv);
++      dtv = _dl_resize_dtv (dtv, GL(dl_tls_max_dtv_idx));
+ 
+       /* Install this new dtv in the thread data structures.  */
+       INSTALL_DTV (result, &dtv[-1]);
+@@ -596,6 +596,7 @@ _dl_allocate_tls_init (void *result)
+       listp = listp->next;
+       assert (listp != NULL);
+     }
++  __rtld_lock_unlock_recursive (GL(dl_load_lock));
+ 
+   /* The DTV version is up-to-date now.  */
+   dtv[0].counter = maxgen;
+@@ -730,12 +731,29 @@ _dl_update_slotinfo (unsigned long int req_modid)
+ 
+   if (dtv[0].counter < listp->slotinfo[idx].gen)
+     {
+-      /* The generation counter for the slot is higher than what the
+-	 current dtv implements.  We have to update the whole dtv but
+-	 only those entries with a generation counter <= the one for
+-	 the entry we need.  */
++      /* CONCURRENCY NOTES:
++
++	 Here the dtv needs to be updated to new_gen generation count.
++
++	 This code may be called during TLS access when GL(dl_load_lock)
++	 is not held.  In that case the user code has to synchronize with
++	 dlopen and dlclose calls of relevant modules.  A module m is
++	 relevant if the generation of m <= new_gen and dlclose of m is
++	 synchronized: a memory access here happens after the dlopen and
++	 before the dlclose of relevant modules.  The dtv entries for
++	 relevant modules need to be updated, other entries can be
++	 arbitrary.
++
++	 This e.g. means that the first part of the slotinfo list can be
++	 accessed race free, but the tail may be concurrently extended.
++	 Similarly relevant slotinfo entries can be read race free, but
++	 other entries are racy.  However updating a non-relevant dtv
++	 entry does not affect correctness.  For a relevant module m,
++	 max_modid >= modid of m.  */
+       size_t new_gen = listp->slotinfo[idx].gen;
+       size_t total = 0;
++      size_t max_modid  = atomic_load_relaxed (&GL(dl_tls_max_dtv_idx));
++      assert (max_modid >= req_modid);
+ 
+       /* We have to look through the entire dtv slotinfo list.  */
+       listp =  GL(dl_tls_dtv_slotinfo_list);
+@@ -745,12 +763,14 @@ _dl_update_slotinfo (unsigned long int req_modid)
+ 	    {
+ 	      size_t modid = total + cnt;
+ 
++	      /* Later entries are not relevant.  */
++	      if (modid > max_modid)
++		break;
++
+ 	      size_t gen = listp->slotinfo[cnt].gen;
+ 
+ 	      if (gen > new_gen)
+-		/* This is a slot for a generation younger than the
+-		   one we are handling now.  It might be incompletely
+-		   set up so ignore it.  */
++		/* Not relevant.  */
+ 		continue;
+ 
+ 	      /* If the entry is older than the current dtv layout we
+@@ -767,7 +787,7 @@ _dl_update_slotinfo (unsigned long int req_modid)
+ 		    continue;
+ 
+ 		  /* Resize the dtv.  */
+-		  dtv = _dl_resize_dtv (dtv);
++		  dtv = _dl_resize_dtv (dtv, max_modid);
+ 
+ 		  assert (modid <= dtv[-1].counter);
+ 
+@@ -789,8 +809,17 @@ _dl_update_slotinfo (unsigned long int req_modid)
+ 	    }
+ 
+ 	  total += listp->len;
++	  if (total > max_modid)
++	    break;
++
++	  /* Synchronize with _dl_add_to_slotinfo.  Ideally this would
++	     be consume MO since we only need to order the accesses to
++	     the next node after the read of the address and on most
++	     hardware (other than alpha) a normal load would do that
++	     because of the address dependency.  */
++	  listp = atomic_load_acquire (&listp->next);
+ 	}
+-      while ((listp = listp->next) != NULL);
++      while (listp != NULL);
+ 
+       /* This will be the new maximum generation counter.  */
+       dtv[0].counter = new_gen;
+@@ -982,7 +1011,7 @@ _dl_add_to_slotinfo (struct link_map *l, bool do_add)
+ 	 the first slot.  */
+       assert (idx == 0);
+ 
+-      listp = prevp->next = (struct dtv_slotinfo_list *)
++      listp = (struct dtv_slotinfo_list *)
+ 	malloc (sizeof (struct dtv_slotinfo_list)
+ 		+ TLS_SLOTINFO_SURPLUS * sizeof (struct dtv_slotinfo));
+       if (listp == NULL)
+@@ -1005,6 +1034,8 @@ cannot create TLS data structures"));
+       listp->next = NULL;
+       memset (listp->slotinfo, '\0',
+ 	      TLS_SLOTINFO_SURPLUS * sizeof (struct dtv_slotinfo));
++      /* Synchronize with _dl_update_slotinfo.  */
++      atomic_store_release (&prevp->next, listp);
+     }
+ 
+   /* Add the information into the slotinfo data structure.  */
+-- 
+2.23.3
+
