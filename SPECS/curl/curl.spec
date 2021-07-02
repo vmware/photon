@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.75.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -13,6 +13,7 @@ Patch0:         curl-CVE-2021-22876.patch
 Patch1:         curl-CVE-2021-22890.patch
 Patch2:         curl-CVE-2021-22898.patch
 Patch3:         curl-CVE-2021-22901.patch
+Patch4:         curl-CVE-2021-22897.patch
 Requires:       ca-certificates
 BuildRequires:  ca-certificates
 Requires:       openssl
@@ -21,10 +22,10 @@ Requires:       libssh2
 BuildRequires:  libssh2-devel
 
 %description
-The cURL package contains an utility and a library used for 
-transferring files with URL syntax to any of the following 
-protocols: FTP, FTPS, HTTP, HTTPS, SCP, SFTP, TFTP, TELNET, 
-DICT, LDAP, LDAPS and FILE. Its ability to both download and 
+The cURL package contains an utility and a library used for
+transferring files with URL syntax to any of the following
+protocols: FTP, FTPS, HTTP, HTTPS, SCP, SFTP, TFTP, TELNET,
+DICT, LDAP, LDAPS and FILE. Its ability to both download and
 upload files can be incorporated into other programs to support
 functions like streaming media.
 
@@ -35,15 +36,12 @@ sed -i '/--static-libs)/{N;s#echo .*#echo #;}' curl-config.in
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
-./configure \
+%configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --mandir=%{_mandir} \
     --disable-static \
     --enable-threaded-resolver \
     --with-ssl \
@@ -80,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 
 %changelog
+*   Thu Jul 2 2021 Nitesh Kumar <kunitesh@vmware.com> 7.75.0-3
+-   Fix CVE-2021-22897
 *   Fri May 21 2021 Harinadh D <hdommaraju@vmware.com> 7.75.0-2
 -   Fix CVE-2021-22898,CVE-2021-22901
 *   Mon Mar 29 2021 Harinadh D <hdommaraju@vmware.com> 7.75.0-1
