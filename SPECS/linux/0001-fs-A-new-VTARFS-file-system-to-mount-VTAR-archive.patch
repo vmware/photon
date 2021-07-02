@@ -1,4 +1,4 @@
-From de4a369837b9f359a4762cb2149afed81f0fa7bf Mon Sep 17 00:00:00 2001
+From ea31639e672e07431e422e467e46d69869069b7e Mon Sep 17 00:00:00 2001
 From: srinidhira0 <srinidhir@vmware.com>
 Date: Wed, 16 Sep 2020 18:07:58 +0000
 Subject: [PATCH] fs: A new VTARFS file system to mount VTAR archive
@@ -31,10 +31,10 @@ Signed-off-by: srinidhira0 <srinidhir@vmware.com>
  fs/vtarfs/Kconfig               |  21 ++
  fs/vtarfs/Makefile              |   9 +
  fs/vtarfs/README.md             |   3 +
- fs/vtarfs/vtarfs.h              | 175 ++++++++++
- fs/vtarfs/vtarfs_file_dir_ops.c | 480 ++++++++++++++++++++++++++
- fs/vtarfs/vtarfs_inode.c        | 583 ++++++++++++++++++++++++++++++++
- 8 files changed, 1273 insertions(+)
+ fs/vtarfs/vtarfs.h              | 167 +++++++++
+ fs/vtarfs/vtarfs_file_dir_ops.c | 471 +++++++++++++++++++++++++
+ fs/vtarfs/vtarfs_inode.c        | 591 ++++++++++++++++++++++++++++++++
+ 8 files changed, 1264 insertions(+)
  create mode 100644 fs/vtarfs/Kconfig
  create mode 100644 fs/vtarfs/Makefile
  create mode 100644 fs/vtarfs/README.md
@@ -117,10 +117,10 @@ index 000000000000..fe38b05c5320
 \ No newline at end of file
 diff --git a/fs/vtarfs/vtarfs.h b/fs/vtarfs/vtarfs.h
 new file mode 100644
-index 000000000000..12555bb4c1d6
+index 000000000000..536a2ff0020d
 --- /dev/null
 +++ b/fs/vtarfs/vtarfs.h
-@@ -0,0 +1,175 @@
+@@ -0,0 +1,167 @@
 +/*
 + * Filesystem to directly mount vtar archive.
 + *
@@ -140,7 +140,6 @@ index 000000000000..12555bb4c1d6
 +#include<linux/radix-tree.h>
 +
 +#define MAX_PAGES_PER_FILE (MAX_LFS_FILESIZE/PAGE_SIZE)
-+#define ROOT_INO (0)
 +
 +#define DEBUG_PRINT
 +#ifdef DEBUG_PRINT
@@ -169,17 +168,6 @@ index 000000000000..12555bb4c1d6
 +	struct file 		*fp;
 +	struct address_space 	*tarfs_img_map;
 +	struct inode 		*inode;
-+};
-+
-+struct vtarfs_fault_t {
-+	struct inode 		*inode;
-+	struct vtarfs_entry 	*entry;
-+	unsigned long 		pgoff;
-+};
-+
-+struct vtarfs_mount_data_t {
-+	struct vtarfs_img_map_t vtarfs_img_map;
-+	struct vtarfs_fault_t 	vtarfs_fault;
 +};
 +
 +struct vtarfs_mount_opts {
@@ -212,7 +200,6 @@ index 000000000000..12555bb4c1d6
 +};
 +
 +struct vtarfs_entry {
-+
 +	struct vtarfs_header_type	header;
 +	char				*dir_name;
 +	char				*base_name;
@@ -240,10 +227,15 @@ index 000000000000..12555bb4c1d6
 +
 +struct vtarfs_fs_info {
 +	struct vtarfs_entry 		*fs_entry;
-+	struct vtarfs_mount_data_t 	vtarfs_mount_data;
++	struct vtarfs_img_map_t 	vtarfs_img_map;
 +	struct vtarfs_mount_opts 	mount_opts;
++	unsigned long                   root_ino;
 +};
 +
++static inline struct vtarfs_fs_info *VTARFS_SB(struct super_block *sb)
++{
++	return sb->s_fs_info;
++}
 +extern int vtarfs_create(struct inode *dir, struct dentry *dentry, umode_t mode, bool excl);
 +extern int vtarfs_file_release(struct inode *inode, struct file *file);
 +extern int vtarfs_getattr(const struct path *path, struct kstat *stat, u32 request_mask, unsigned int flags);
@@ -298,10 +290,10 @@ index 000000000000..12555bb4c1d6
 +#endif
 diff --git a/fs/vtarfs/vtarfs_file_dir_ops.c b/fs/vtarfs/vtarfs_file_dir_ops.c
 new file mode 100644
-index 000000000000..6c2a0539a92f
+index 000000000000..bbec98665f40
 --- /dev/null
 +++ b/fs/vtarfs/vtarfs_file_dir_ops.c
-@@ -0,0 +1,480 @@
+@@ -0,0 +1,471 @@
 +/*
 + * Filesystem to directly mount vtar archive.
 + *
@@ -491,9 +483,10 @@ index 000000000000..6c2a0539a92f
 +static char *build_lookup_path(struct inode *inode, struct vtarfs_entry *root_entry)
 +{
 +	struct vtarfs_entry *entry = NULL;
++	struct vtarfs_fs_info *info = VTARFS_SB(root_entry->ptr_inode->i_sb);
 +
 +	tarfs_debug("i_ino = %ld", inode->i_ino);
-+	if ( inode->i_ino == ROOT_INO ) {
++	if ( inode->i_ino == info->root_ino ) {
 +		return kzalloc(1, GFP_KERNEL);
 +	}
 +
@@ -509,6 +502,19 @@ index 000000000000..6c2a0539a92f
 +}
 +
 +/*
++ * @brief Ignore all pos beyond file size
++ * @pararm inode: Pointer to inode of the directory
++ *         ctx_pos: requested pos to check
++ * @return non-zero if requested pos is less than the size of inode
++ *         else zero
++ * */
++static int beyond_eof(struct inode *inode, loff_t ctx_pos)
++{
++	loff_t pos = ctx_pos << inode->i_sb->s_blocksize_bits;
++	return pos >= i_size_read(inode);
++}
++
++/*
 + * @brief Emits the contents of a directory.
 + * @param  file: file pointer of a directory
 + *	   ctx: context of fs on how dir entries will be filled.
@@ -517,42 +523,41 @@ index 000000000000..6c2a0539a92f
 +int vtarfs_read_dir(struct file *file, struct dir_context *ctx)
 +{
 +	struct inode *inode = file_inode(file);
-+	struct vtarfs_fs_info *info = (struct vtarfs_fs_info *)inode->i_sb->s_fs_info;
++	struct vtarfs_fs_info *info = VTARFS_SB(inode->i_sb);
 +	struct vtarfs_entry *entry = info->fs_entry;
-+	char *dir_path = build_lookup_path(inode, entry);
++	char *dir_path;
 +	int namelen = 0;
 +
-+	if ( ctx->pos > 0 )
-+		goto err;
-+
-+
-+	tarfs_debug("In vtarfs_read_dir dir_path=%s", dir_path);
-+
++	if (beyond_eof(inode, ctx->pos))
++		return 0;
 +	/* Loop through the entry to find matching entry node with inode */
 +	if ( !dir_emit_dots(file, ctx)) {
-+		goto err;
++		pr_err("%s: %lld",__func__, ctx->pos);
++		return 0;
 +	}
++	tarfs_debug("%s: [%lld] [%d] [%lld]",__func__, ctx->pos, inode->i_sb->s_blocksize_bits, inode->i_size);
++	dir_path = build_lookup_path(inode, entry);
 +	if ( !dir_path ) {
-+		pr_err("\n Failed to get dir path %ld \n", PTR_ERR(dir_path));
++		pr_err("%s: Failed to get dir path %ld",__FUNCTION__, PTR_ERR(dir_path));
 +		return -ENOENT;
 +	}
++	tarfs_debug("In vtarfs_read_dir dir_path=%s", dir_path);
 +
 +	while (entry) {
 +		tarfs_debug("dir_path=%s entry->dir_name = %s base_name=%s",
 +				dir_path, entry->dir_name, entry->base_name );
 +		if (!strcmp(dir_path, entry->dir_name)) {
-+			ctx->pos++;
 +			/* Print all sub dirs by iterating through entry */
 +			namelen = strlen(entry->base_name);
 +			if (!dir_emit(ctx, entry->base_name, namelen,
-+					entry->inode, entry->mode >> 12)){
++					entry->inode, (entry->mode >> 12))){
 +				break;
 +			}
++			ctx->pos++;
 +		}
 +		entry = entry->next;
 +	}
 +	tarfs_debug("return dir_path=%s", dir_path);
-+err:
 +	kfree(dir_path);
 +	return 0;
 +}
@@ -582,7 +587,7 @@ index 000000000000..6c2a0539a92f
 +		return NULL;
 +	}
 +
-+	info = (struct vtarfs_fs_info *)dir->i_sb->s_fs_info;
++	info = VTARFS_SB(dir->i_sb);
 +	entry = info->fs_entry;
 +	dir_path = build_lookup_path(dir, entry);
 +
@@ -618,7 +623,8 @@ index 000000000000..6c2a0539a92f
 +	struct inode *inode = d_inode(path->dentry);
 +
 +	generic_fillattr(inode, stat);
-+	stat->blocks = inode->i_mapping->nrpages << (PAGE_SHIFT - 9);
++	if (stat->blocks == 0)
++		stat->blocks = inode->i_mapping->nrpages << (PAGE_SHIFT - 9);
 +
 +	return 0;
 +}
@@ -634,8 +640,7 @@ index 000000000000..6c2a0539a92f
 +{
 +	struct file *file = iocb->ki_filp;
 +	struct inode *inode  = file_inode(file);
-+	struct vtarfs_fs_info *info =
-+			(struct vtarfs_fs_info *)(inode->i_sb->s_fs_info);
++	struct vtarfs_fs_info *info = VTARFS_SB(inode->i_sb);
 +	struct vtarfs_entry *root_entry = info->fs_entry;
 +	struct vtarfs_entry *entry;
 +	ssize_t count;
@@ -693,26 +698,25 @@ index 000000000000..6c2a0539a92f
 + */
 +vm_fault_t vtarfs_fault_handler(struct vm_fault *vmf)
 +{
-+	struct vtarfs_fault_t *fault_info =
-+			(struct vtarfs_fault_t *)vmf->vma->vm_private_data;
-+	struct vtarfs_entry *entry = fault_info->entry;
-+	struct vtarfs_fs_info *info = (struct vtarfs_fs_info *)(fault_info->inode->i_sb->s_fs_info);
-+	size_t size = vmf->vma->vm_end - vmf->vma->vm_start;
-+	unsigned long pg_off = vmf->pgoff;
-+	int start = 0, end = 0;
++	struct inode *inode = file_inode(vmf->vma->vm_file);
++	struct vtarfs_fs_info *info = VTARFS_SB(inode->i_sb);
++	struct vtarfs_entry *entry, *root_entry = info->fs_entry;
 +
-+	tarfs_debug("Entered , pg_off = %ld", pg_off);
-+	start = pg_off;
-+	end = start + (size >> PAGE_SHIFT);
++	entry = vtarfs_find_by_inode(root_entry, inode->i_ino);
++        if (!entry) {
++                pr_err("%s: No entry found for the file ",__FUNCTION__);
++                return -ENOENT;
++        }
 +
-+	if (pg_off > entry->num_pages) {
-+		pr_err("%s: Exceed number of pages %ld > %d",
-+				__FUNCTION__, pg_off, entry->num_pages);
++	tarfs_debug("[%s][%s][%ld][%lu][%u][%lu]",entry->dir_name, entry->base_name,inode->i_ino, inode->i_mapping->nrpages,entry->fileoffset,vmf->vma->vm_pgoff);
++	if (vmf->pgoff > inode->i_mapping->nrpages) {
++		pr_err("%s: Exceed number of pages %ld > %ld",
++				__FUNCTION__, vmf->pgoff, inode->i_mapping->nrpages);
 +		return -EFAULT;
 +	}
 +
-+	vmf->page = pagecache_get_page(info->vtarfs_mount_data.vtarfs_img_map.tarfs_img_map,
-+			(entry->fileoffset >> PAGE_SHIFT)+pg_off, 0, 0);
++	vmf->page = pagecache_get_page(info->vtarfs_img_map.tarfs_img_map,
++			(entry->fileoffset >> PAGE_SHIFT)+vmf->pgoff, 0, 0);
 +
 +	return VM_FAULT_LOCKED;
 +}
@@ -727,42 +731,21 @@ index 000000000000..6c2a0539a92f
 +int vtarfs_physmem_mmap(struct file *file, struct vm_area_struct *vma)
 +{
 +	struct inode *inode = file_inode(file);
-+	struct vtarfs_fs_info *info =
-+			(struct vtarfs_fs_info *)(inode->i_sb->s_fs_info);
-+	struct vtarfs_entry *entry, *root_entry = info->fs_entry;
-+	size_t size;
-+	unsigned long pgoff;
-+	unsigned int pages;
-+	int start = 0, end = 0, ret = 0;
++	int ret = 0;
 +
-+	tarfs_debug("%s: IN",__FUNCTION__);
-+	entry = vtarfs_find_by_inode(root_entry, inode->i_ino);
-+        if (!entry) {
-+                pr_err("%s: No entry found for the file ",__FUNCTION__);
-+                return -ENOENT;
-+        }
-+	size = vma->vm_end - vma->vm_start;
-+	pgoff = vma->vm_pgoff;
-+	if (pgoff > entry->num_pages) {
-+		tarfs_debug("num_pages=%d > pgoff=%lu",entry->num_pages,pgoff);
++	tarfs_debug("[%ld] [%ld] [%lu]",inode->i_ino, inode->i_mapping->nrpages,vma->vm_pgoff);
++	if (vma->vm_pgoff > inode->i_mapping->nrpages) {
++		tarfs_debug("num_pages=%ld > pgoff=%lu",inode->i_mapping->nrpages,vma->vm_pgoff);
 +		return 0;
 +	}
-+	pages = min(vma_pages(vma), entry->num_pages - pgoff);
-+	start = pgoff;
-+	end = start + (size >> PAGE_SHIFT);
-+
-+	info->vtarfs_mount_data.vtarfs_fault.inode = inode;
-+	info->vtarfs_mount_data.vtarfs_fault.entry = entry;
-+	info->vtarfs_mount_data.vtarfs_fault.pgoff = pgoff;
-+
-+	vma->vm_private_data = &info->vtarfs_mount_data.vtarfs_fault;
 +
 +	file->f_mapping->a_ops = &vtarfs_ram_addr_ops;
-+	ret = generic_file_mmap(file, vma);
++	ret = generic_file_readonly_mmap(file, vma);
 +	if ( ret ) {
 +		pr_err("%s: Failed to do generic mmap %d\n",__FUNCTION__, ret);
 +	}
 +	vma->vm_ops = &vtarfs_ops;
++	tarfs_debug("[%p]",vma->vm_file);
 +	return 0;
 +}
 +EXPORT_SYMBOL(vtarfs_physmem_mmap);
@@ -784,10 +767,10 @@ index 000000000000..6c2a0539a92f
 +EXPORT_SYMBOL(vtarfs_file_release);
 diff --git a/fs/vtarfs/vtarfs_inode.c b/fs/vtarfs/vtarfs_inode.c
 new file mode 100644
-index 000000000000..71daeccd5684
+index 000000000000..85db57867024
 --- /dev/null
 +++ b/fs/vtarfs/vtarfs_inode.c
-@@ -0,0 +1,583 @@
+@@ -0,0 +1,591 @@
 +/*
 + * Filesystem to directly mount vtar archive.
 + *
@@ -844,11 +827,13 @@ index 000000000000..71daeccd5684
 +{
 +
 +	struct inode * inode = new_inode(sb);
++	struct vtarfs_fs_info *info = VTARFS_SB(sb);
 +
 +	if (inode) {
 +		INIT_HLIST_NODE(&inode->i_hash);
 +		pr_debug("%s inode created !!",__FUNCTION__);
-+		inode->i_ino = 0;
++		inode->i_ino = get_next_ino();
++		info->root_ino = inode->i_ino;
 +		inode->i_mode = mode;
 +		inode->i_uid = current_fsuid();
 +		inode->i_gid = current_fsgid();
@@ -857,12 +842,15 @@ index 000000000000..71daeccd5684
 +		mapping_set_gfp_mask(inode->i_mapping, GFP_HIGHUSER);
 +		mapping_set_unevictable(inode->i_mapping);
 +		inode->i_sb = sb;
++		inode->i_size = sb->s_blocksize;
++		inode->i_blocks = (inode->i_size + (1 << 9) - 1) >> 9;
 +
 +		inode->i_op = &vtarfs_dir_inode_operations;
 +		inode->i_fop = &vtarfs_dir_operations;
 +		inode_init_owner(inode, NULL, S_IFDIR | 0555);
 +
 +		/*directory inodes start off with i_nlink=2(for "." entry)*/
++		inc_nlink(inode);
 +		inc_nlink(inode);
 +	}
 +	tarfs_debug("returning inode !!\n");
@@ -902,6 +890,12 @@ index 000000000000..71daeccd5684
 +	inode->i_mtime = entry->mtime;
 +	inode->i_ctime = entry->ctime;
 +	inode->i_sb = sb;
++	inode->i_mapping->a_ops = &vtarfs_ram_addr_ops;
++	mapping_set_gfp_mask(inode->i_mapping, GFP_HIGHUSER);
++	mapping_set_unevictable(inode->i_mapping);
++	inode->i_mapping->nrpages = entry->num_pages;
++	/* measure inode.i_blocks as the generic filesystem */
++	inode->i_blocks = (inode->i_size + (1 << 9) - 1) >> 9;
 +	__insert_inode_hash(inode, dentry_inode->i_ino);
 +	entry->ptr_inode = inode;
 +	switch ( entry->header.typeflag ) {
@@ -909,17 +903,20 @@ index 000000000000..71daeccd5684
 +		case DIRTYPE:
 +				inode->i_op = &vtarfs_dir_inode_operations;
 +				inode->i_fop = &vtarfs_dir_operations;
++				if (inode->i_size == 0)
++					inode->i_size = sb->s_blocksize;
++				inode->i_blocks = (inode->i_size + (1 << 9) - 1) >> 9;
 +				inc_nlink(inode);
 +				break;
 +		case SYMTYPE:
 +				inode->i_op = &vtarfs_symlink_inode_operations;
 +				inode->i_link = entry->header.linkname;
++				inode->i_size = strlen(inode->i_link);
++				inode_nohighmem(inode);
 +				break;
-+
 +		default:
 +				inode->i_op = &vtarfs_file_inode_operations;
 +				inode->i_fop = &vtarfs_file_operations;
-+				inc_nlink(inode);
 +				break;
 +	}
 +	tarfs_debug("Returing %s",__FUNCTION__);
@@ -970,23 +967,20 @@ index 000000000000..71daeccd5684
 +vtarfs_entry *vtarfs_read_entry(struct super_block *sb,
 +			off_t offset)
 +{
-+	struct vtarfs_fs_info *info = (struct vtarfs_fs_info *)sb->s_fs_info;
++	struct vtarfs_fs_info *info = VTARFS_SB(sb);
 +	struct vtarfs_header_type header;
 +	struct vtarfs_entry *entry = NULL;
 +	char *full_name = NULL,*basename=NULL;
 +        struct page *page = NULL;
 +        void *k_mapped_page = NULL;
 +	int i = 0;
-+	off_t pg_off;
 +	struct timespec64 mtime;
 +
 +	tarfs_debug("offset = %ld and img_map = %p",offset,
-+					info->vtarfs_mount_data.vtarfs_img_map.tarfs_img_map);
++					info->vtarfs_img_map.tarfs_img_map);
 +
-+	pg_off = offset >> PAGE_SHIFT;
-+
-+        page = read_mapping_page(info->vtarfs_mount_data.vtarfs_img_map.tarfs_img_map,
-+				pg_off, NULL);
++        page = read_mapping_page(info->vtarfs_img_map.tarfs_img_map,
++				offset >> PAGE_SHIFT, NULL);
 +        if (IS_ERR(page)) {
 +                pr_err("%s: page map failure %ld",__FUNCTION__, PTR_ERR(page));
 +		return NULL;
@@ -1056,7 +1050,7 @@ index 000000000000..71daeccd5684
 +			__FUNCTION__, entry->num_pages, entry->fileoffset);
 +	for ( i = 0; i < entry->num_pages; i++) {
 +		entry->pages[i] = read_mapping_page(
-+					info->vtarfs_mount_data.vtarfs_img_map.tarfs_img_map,
++					info->vtarfs_img_map.tarfs_img_map,
 +				(entry->fileoffset >> PAGE_SHIFT) + i, NULL);
 +		if (IS_ERR(entry->pages[i])) {
 +			pr_err("%s: page map failure %ld",
@@ -1196,9 +1190,9 @@ index 000000000000..71daeccd5684
 +		goto err_fill_super;
 +	}
 +	mutex_lock(&img_map);
-+	info->vtarfs_mount_data.vtarfs_img_map.tarfs_img_map = vtarfs_img_map.tarfs_img_map;
-+	info->vtarfs_mount_data.vtarfs_img_map.inode = vtarfs_img_map.inode;
-+	info->vtarfs_mount_data.vtarfs_img_map.fp = vtarfs_img_map.fp;
++	info->vtarfs_img_map.tarfs_img_map = vtarfs_img_map.tarfs_img_map;
++	info->vtarfs_img_map.inode = vtarfs_img_map.inode;
++	info->vtarfs_img_map.fp = vtarfs_img_map.fp;
 +	mutex_unlock(&img_map);
 +
 +	sb->s_maxbytes	=	MAX_LFS_FILESIZE;
@@ -1210,6 +1204,7 @@ index 000000000000..71daeccd5684
 +	sb->s_flags	|=	MS_RDONLY | MS_NOATIME;/*Read only file system*/
 +	sb->s_magic 	= 	(unsigned long)vtarfs_MAGIC;
 +
++	sb->s_fs_info = info;
 +	inode = vtarfs_get_inode(sb, NULL, S_IFDIR |
 +				info->mount_opts.mode, 0);
 +	sb->s_root = d_make_root(inode);
@@ -1218,11 +1213,8 @@ index 000000000000..71daeccd5684
 +		err = -ENOMEM;
 +		goto err_fill_super;
 +	}
-+	inode->i_op = &vtarfs_dir_inode_operations;
-+	inode->i_fop = &vtarfs_dir_operations;
 +	tarfs_debug("populate_first_entry");
 +	__insert_inode_hash(inode, inode->i_ino);
-+	sb->s_fs_info = info;
 +	entry = vtarfs_open_first_entry(sb);
 +	if (!entry) {
 +		pr_err("%s: Failed to read first entry",__FUNCTION__);
@@ -1289,8 +1281,7 @@ index 000000000000..71daeccd5684
 + */
 +static void vtarfs_kill_super(struct super_block *sb)
 +{
-+	struct vtarfs_fs_info *info =
-+			(struct vtarfs_fs_info *)sb->s_fs_info;
++	struct vtarfs_fs_info *info = VTARFS_SB(sb);
 +	struct vtarfs_entry *entry = info->fs_entry;
 +
 +	struct inode *inode = NULL;
@@ -1298,6 +1289,7 @@ index 000000000000..71daeccd5684
 +	tarfs_debug("Kill super");
 +	while(entry) {
 +		struct vtarfs_entry *next = entry->next;
++		entry->ptr_inode->i_mapping->nrpages = 0;
 +		tarfs_debug("basename=%s dirn=%s",entry->base_name,
 +				entry->dir_name);
 +
@@ -1312,10 +1304,9 @@ index 000000000000..71daeccd5684
 +		entry = next;
 +	}
 +	if (info) {
-+		filp_close(info->vtarfs_mount_data.vtarfs_img_map.fp, NULL);
++		filp_close(info->vtarfs_img_map.fp, NULL);
 +		kfree(info);
 +	}
-+	evict_inodes(sb);
 +	kill_litter_super(sb);
 +}
 +

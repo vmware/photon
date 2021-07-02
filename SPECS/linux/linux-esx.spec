@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.191
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -891,6 +891,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Jun 24 2021 Ankit Jain <ankitja@vmware.com> 4.19.191-4
+-   vtarfs: Fixes fault handler
 *   Thu Jun 24 2021 Ankit Jain <ankitja@vmware.com> 4.19.191-3
 -   vtarfs: Fixed multiple mount executable issue
 *   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.191-2
