@@ -4,7 +4,7 @@
 
 Name: rubygem-fluentd
 Version:        1.11.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -43,7 +43,7 @@ Fluentd is an open source data collector designed to scale and simplify log mana
 It can collect, process and ship many kinds of data in near real-time.
 
 %prep
-%setup -q -c -T
+%autosetup -c
 
 %build
 
@@ -55,6 +55,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Mon Jul 12 2021 Piyush Gupta <gpiyush@vmware.com> 1.11.3-2
+-   Bump up to build with rubygem-bundler upgrade.
 *   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.11.3-1
 -   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 1.11.2-1
