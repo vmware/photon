@@ -1,0 +1,29 @@
+From d61d77e163dbee247819f3d88593ba111577af15 Mon Sep 17 00:00:00 2001
+From: Miroslav Lichvar <mlichvar@redhat.com>
+Date: Fri, 26 Mar 2021 09:57:43 +0100
+Subject: [PATCH 2/2] tc: Fix length of follow-up message of one-step sync.
+
+Convert the length of the generated follow-up message to network order.
+This fixes reading and sending of data past the message buffer.
+
+Signed-off-by: Miroslav Lichvar <mlichvar@redhat.com>
+---
+ tc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tc.c b/tc.c
+index d9e4853..2e3830c 100644
+--- a/tc.c
++++ b/tc.c
+@@ -452,7 +452,7 @@ int tc_fwd_sync(struct port *q, struct ptp_message *msg)
+ 		}
+ 		fup->header.tsmt               = FOLLOW_UP | (msg->header.tsmt & 0xf0);
+ 		fup->header.ver                = msg->header.ver;
+-		fup->header.messageLength      = sizeof(struct follow_up_msg);
++		fup->header.messageLength      = htons(sizeof(struct follow_up_msg));
+ 		fup->header.domainNumber       = msg->header.domainNumber;
+ 		fup->header.sourcePortIdentity = msg->header.sourcePortIdentity;
+ 		fup->header.sequenceId         = msg->header.sequenceId;
+-- 
+2.20.1
+

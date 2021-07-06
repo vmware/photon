@@ -1,0 +1,94 @@
+From a1e63aa3a7304647913707c4df01f3df430806ab Mon Sep 17 00:00:00 2001
+From: Richard Cochran <richardcochran@gmail.com>
+Date: Sat, 17 Apr 2021 15:15:18 -0700
+Subject: [PATCH 1/2] Validate the messageLength field of incoming messages.
+
+The PTP messageLength field is redundant because the length of a PTP
+message is precisely determined by the message type and the appended
+TLVs.  The current implementation validates the sizes of both the main
+message (according to the fixed header length and fixed length by
+type) and the TLVs (by using the 'L' of the TLV).
+
+However, when forwarding a message, the messageLength field is used.
+If a message arrives with a messageLength field larger than the actual
+message size, the code will read and possibly write data beyond the
+allocated buffer.
+
+Fix the issue by validating the field on ingress.  This prevents
+reading and sending data past the message buffer when forwarding a
+management message or other messages when operating as a transparent
+clock, and it also prevents a memory corruption in msg_post_recv()
+after forwarding a management message.
+
+Reported-by: Miroslav Lichvar <mlichvar@redhat.com>
+Signed-off-by: Richard Cochran <richardcochran@gmail.com>
+---
+ msg.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/msg.c b/msg.c
+index dcb397c..c2d358b 100644
+--- a/msg.c
++++ b/msg.c
+@@ -184,7 +184,7 @@ static int suffix_post_recv(struct ptp_message *msg, int len)
+ {
+ 	uint8_t *ptr = msg_suffix(msg);
+ 	struct tlv_extra *extra;
+-	int err;
++	int err, suffix_len = 0;
+ 
+ 	if (!ptr)
+ 		return 0;
+@@ -202,12 +202,14 @@ static int suffix_post_recv(struct ptp_message *msg, int len)
+ 			tlv_extra_recycle(extra);
+ 			return -EBADMSG;
+ 		}
++		suffix_len += sizeof(struct TLV);
+ 		len -= sizeof(struct TLV);
+ 		ptr += sizeof(struct TLV);
+ 		if (extra->tlv->length > len) {
+ 			tlv_extra_recycle(extra);
+ 			return -EBADMSG;
+ 		}
++		suffix_len += extra->tlv->length;
+ 		len -= extra->tlv->length;
+ 		ptr += extra->tlv->length;
+ 		err = tlv_post_recv(extra);
+@@ -217,7 +219,7 @@ static int suffix_post_recv(struct ptp_message *msg, int len)
+ 		}
+ 		msg_tlv_attach(msg, extra);
+ 	}
+-	return 0;
++	return suffix_len;
+ }
+ 
+ static void suffix_pre_send(struct ptp_message *msg)
+@@ -335,7 +337,7 @@ void msg_get(struct ptp_message *m)
+ 
+ int msg_post_recv(struct ptp_message *m, int cnt)
+ {
+-	int pdulen, type, err;
++	int err, pdulen, suffix_len, type;
+ 
+ 	if (cnt < sizeof(struct ptp_header))
+ 		return -EBADMSG;
+@@ -420,9 +422,13 @@ int msg_post_recv(struct ptp_message *m, int cnt)
+ 		break;
+ 	}
+ 
+-	err = suffix_post_recv(m, cnt - pdulen);
+-	if (err)
+-		return err;
++	suffix_len = suffix_post_recv(m, cnt - pdulen);
++	if (suffix_len < 0) {
++		return suffix_len;
++	}
++	if (pdulen + suffix_len != m->header.messageLength) {
++		return -EBADMSG;
++	}
+ 
+ 	return 0;
+ }
+-- 
+2.20.1
+
