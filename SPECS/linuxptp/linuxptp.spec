@@ -1,7 +1,7 @@
 Summary:        The Linux PTP Project
 Name:           linuxptp
 Version:        3.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL v2
 Group:          Productivity/Networking/Other
 Url:            http://linuxptp.sourceforge.net/
@@ -18,6 +18,10 @@ BuildRequires:  systemd
 Requires:       systemd
 Requires:       ethtool
 Requires:       glibc
+# Fix for CVE-2021-3570
+Patch0:         0001-Validate-the-messageLength-field-of-incoming-message.patch
+# Fix for CVE-2021-3571
+Patch1:         0002-tc-Fix-length-of-follow-up-message-of-one-step-sync.patch
 
 %description
 This software is an implementation of the Precision Time Protocol (PTP)
@@ -27,6 +31,8 @@ Application Programming Interfaces (API) offered by the Linux kernel.
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
 
 %build
 make %{?_smp_mflags}
@@ -87,6 +93,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+*   Tue Jul 06 2021 Vikash Bansal <bvikas@vmware.com> 3.1-3
+-   Fix for CVE-2021-3570 and CVE-2021-3571
 *   Wed Apr 14 2021 Vikash Bansal <bvikas@vmware.com> 3.1-2
 -   Disable ptp4l service by default
 *   Mon Nov 09 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.1-1
