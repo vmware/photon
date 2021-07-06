@@ -1,11 +1,11 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
-Version:        7.3.0
+Version:        7.5.0
 Release:        1%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
-%define sha1    libvirt=13e14fde2e5477c9e771b3e06571bc652886fa12
+%define sha1    libvirt=52f7a020ba354e478630cff0e253b32556d70cf3
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -25,6 +25,7 @@ BuildRequires:  libtirpc-devel
 BuildRequires:  libpcap-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  libxslt
+BuildRequires:  lvm2
 BuildRequires:  meson
 BuildRequires:  ninja-build
 BuildRequires:  parted
@@ -46,6 +47,7 @@ Requires:       libselinux
 Requires:       libssh2
 Requires:       libtirpc
 Requires:       libxml2
+Requires:       lvm2
 Requires:       parted
 Requires:       python3
 Requires:       readline
@@ -83,8 +85,10 @@ sed -i  '/rst2man/d' meson.build
 
 %build
 CONFIGURE_OPTS=(
-    --prefix=%{_prefix} \
     -Dapparmor=disabled \
+    -Dapparmor_profiles=disabled \
+    -Dsecdriver_apparmor=disabled \
+    -Dbash_completion=disabled \
     -Daudit=enabled \
     -Dcapng=enabled \
     -Dcurl=enabled \
@@ -93,39 +97,61 @@ CONFIGURE_OPTS=(
     -Ddriver_esx=enabled \
     -Ddriver_interface=disabled \
     -Ddriver_libvirtd=enabled \
+    -Ddriver_hyperv=disabled \
+    -Ddriver_ch=disabled \
+    -Ddriver_qemu=disabled \
+    -Ddriver_libxl=disabled \
     -Ddriver_network=enabled \
     -Ddriver_vmware=enabled \
     -Ddriver_vz=disabled \
     -Ddtrace=disabled \
+    -Dfuse=disabled \
     -Dfirewalld=disabled \
+    -Dfirewalld_zone=disabled \
+    -Dglusterfs=disabled \
     -Dinit_script=systemd \
     -Dlibnl=enabled \
     -Dlibpcap=enabled \
+    -Dlibssh=disabled \
     -Dnss=disabled \
+    -Dnumactl=disabled \
+    -Dnumad=disabled \
+    -Dsasl=enabled \
+    -Dnetcf=disabled \
+    -Dnumactl=disabled \
+    -Dopenwsman=disabled \
+    -Dpciaccess=disabled \
+    -Dsanlock=disabled \
+    -Dyajl=disabled \
     -Dpm_utils=disabled \
     -Dpolkit=enabled \
     -Dremote_default_mode=legacy \
     -Drpath=disabled \
+    -Dpciaccess=disabled \
     -Dselinux=enabled \
+    -Dstorage_iscsi=disabled \
+    -Dstorage_iscsi_direct=disabled \
+    -Dlibiscsi=disabled \
+    -Dstorage_gluster=disabled \
+    -Dstorage_rbd=disabled \
+    -Dstorage_sheepdog=disabled \
+    -Dstorage_zfs=disabled \
+    -Dlibiscsi=disabled \
     -Dstorage_fs=enabled \
+    -Dyajl=disabled \
     -Dudev=disabled \
     )
 
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-
-meson build ${CONFIGURE_OPTS[@]}
-ninja -C build
+%meson "${CONFIGURE_OPTS[@]}"
+%meson_build
 
 %install
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-DESTDIR=%{buildroot} ninja -C build install
+%meson_install
 
 find %{buildroot} -name '*.la' -delete
 
 %check
-ninja -C build test
+%meson_test
 
 %files
 %defattr(-,root,root)
@@ -168,29 +194,31 @@ ninja -C build test
 %{_datadir}/libvirt/test-screenshot.png
 
 %changelog
-*   Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 7.3.0-1
--   Automatic Version Bump
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 7.2.0-1
--   Automatic Version Bump
-*   Fri Mar 19 2021 Susat Sahani <ssahani@vmware.com> 7.1.0-1
--   Bump up version
-*   Mon Aug 19 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 4.7.0-4
--   fix CVE-2019-10166, CVE-2019-10167, CVE-2019-10168,
--   CVE-2019-3840,CVE-2019-20485,CVE-2020-10703
-*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 4.7.0-3
--   Build with python3
--   Mass removal python2
-*   Tue Sep 25 2018 Alexey Makhalov <amakhalov@vmware.com> 4.7.0-2
--   Use libtirpc
-*   Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 4.7.0-1
--   Update to version 4.7.0
-*   Thu Dec 07 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-4
--   Move so files in folder connection-driver and lock-driver to main package.
-*   Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-3
--   Fix CVE-2017-1000256
-*   Wed Aug 23 2017 Rui Gu <ruig@vmware.com> 3.2.0-2
--   Fix missing deps in devel package
-*   Thu Apr 06 2017 Kumar Kaushik <kaushikk@vmware.com> 3.2.0-1
--   Upgrading version to 3.2.0
-*   Fri Feb 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-1
--   Initial version of libvirt package for Photon.
+* Wed Jul 14 2021 Susant Sahani <ssahani@vmware.com> 7.5.0-1
+- Version Bump and switch to meson
+* Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 7.3.0-1
+- Automatic Version Bump
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 7.2.0-1
+- Automatic Version Bump
+* Fri Mar 19 2021 Susat Sahani <ssahani@vmware.com> 7.1.0-1
+- Bump up version
+* Wed Aug 19 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 4.7.0-4
+- fix CVE-2019-10166, CVE-2019-10167, CVE-2019-10168,
+- CVE-2019-3840,CVE-2019-20485,CVE-2020-10703
+* Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 4.7.0-3
+- Build with python3
+- Mass removal python2
+* Tue Sep 25 2018 Alexey Makhalov <amakhalov@vmware.com> 4.7.0-2
+- Use libtirpc
+* Wed Sep 12 2018 Keerthana K <keerthanak@vmware.com> 4.7.0-1
+- Update to version 4.7.0
+* Thu Dec 07 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-4
+- Move so files in folder connection-driver and lock-driver to main package.
+* Mon Dec 04 2017 Xiaolin Li <xiaolinl@vmware.com> 3.2.0-3
+- Fix CVE-2017-1000256
+* Wed Aug 23 2017 Rui Gu <ruig@vmware.com> 3.2.0-2
+- Fix missing deps in devel package
+* Thu Apr 06 2017 Kumar Kaushik <kaushikk@vmware.com> 3.2.0-1
+- Upgrading version to 3.2.0
+* Fri Feb 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-1
+- Initial version of libvirt package for Photon.
