@@ -3,7 +3,7 @@
 Summary:        A powerful, sanity-friendly HTTP client for Python.
 Name:           python3-urllib3
 Version:        1.25.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/urllib3
 License:        MIT
 Group:          Development/Languages/Python
@@ -24,13 +24,14 @@ BuildRequires:  python3-pip
 Requires:       python3
 Requires:       python3-libs
 BuildArch:      noarch
+Patch0:         CVE-2021-33503.patch
 
 %description
 urllib3 is a powerful, sanity-friendly HTTP client for Python.
 Much of the Python ecosystem already uses urllib3 and you should too.
 
 %prep
-%setup -q -n urllib3-%{version}
+%autosetup -p1 -n urllib3-%{version}
 # Dummyserver tests are failing when running in chroot. So disabling the tests.
 rm -rf test/with_dummyserver/
 
@@ -66,6 +67,8 @@ ulimit -n $nofiles
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jul 07 2021 Sujay G <gsujay@vmware.com> 1.25.11-2
+-   Fix CVE-2021-33503
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 1.25.11-1
 -   Automatic Version Bump
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.25.10-2
