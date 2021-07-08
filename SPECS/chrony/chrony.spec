@@ -1,6 +1,6 @@
 Name:           chrony
 Version:        4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An NTP client/server
 License:        GPLv2
 Vendor:         VMware, Inc.
@@ -14,6 +14,10 @@ BuildRequires:  systemd
 BuildRequires:  libcap-devel
 BuildRequires:  nettle-devel
 BuildRequires:  libseccomp-devel
+
+Requires:       nettle
+Requires:       libcap
+Requires:       libseccomp
 
 %description
 chrony is a versatile implementation of the Network Time Protocol (NTP).
@@ -100,6 +104,8 @@ make quickcheck
 %dir %attr(-,root,root) %{_localstatedir}/log/chrony
 
 %changelog
+*  Wed Jul 07 2021 Tapas Kundu <tkundu@vmware.com> 4.0-2
+-  Added requires
 *  Mon Jul 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.0-1
 -  Initial version for Photon
 
