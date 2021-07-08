@@ -1,6 +1,6 @@
 Name:           chrony
 Version:        4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An NTP client/server
 License:        GPLv2
 Vendor:         VMware, Inc.
@@ -15,6 +15,10 @@ BuildRequires:  libcap-devel
 BuildRequires:  nettle-devel
 BuildRequires:  libseccomp-devel
 
+Requires:       nettle
+Requires:       libcap
+Requires:       libseccomp
+
 %description
 chrony is a versatile implementation of the Network Time Protocol (NTP).
 It can synchronise the system clock with NTP servers, reference clocks
@@ -23,7 +27,7 @@ can also operate as an NTPv4 (RFC 5905) server and peer to provide a time
 service to other computers in the network.
 
 %prep
-%setup -qn %{name}-%{version}
+%autosetup
 
 cp examples/chrony.conf.example2 chrony.conf
 
@@ -39,7 +43,7 @@ rm -f getdate.c
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 mkdir -p %{buildroot}%{_sysconfdir}/{sysconfig,logrotate.d}
 mkdir -p %{buildroot}%{_localstatedir}/{lib,log}/chrony
@@ -71,7 +75,7 @@ echo 'chronyd.service' > \
 
 %check
 make %{?_smp_mflags}
-make quickcheck
+make quickcheck %{?_smp_mflags}
 
 %post
 %systemd_post chronyd.service chrony-wait.service
@@ -100,8 +104,9 @@ make quickcheck
 %dir %attr(-,root,root) %{_localstatedir}/log/chrony
 
 %changelog
+*  Wed Jul 07 2021 Tapas Kundu <tkundu@vmware.com> 4.0-3
+-  Added requires
 *  Thu Nov 19 2020 Piyush Gupta <gpiyush@vmware.com> 4.0-2
 -  Make check fix
 *  Mon Jul 06 2020 Siddharth Chandrasekaran <csiddharth@vmware.com> 4.0-1
 -  Initial version for Photon
-
