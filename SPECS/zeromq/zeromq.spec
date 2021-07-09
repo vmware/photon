@@ -1,14 +1,16 @@
 Summary:        library for fast, message-based applications
 Name:           zeromq
-Version:        4.3.3
+Version:        4.3.4
 Release:        1%{?dist}
 URL:            http://www.zeromq.org
 License:        LGPLv3+
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://archive.org/download/zeromq_4.1.4/%{name}-%{version}.tar.gz
-%define sha1    zeromq=d78bc504194d6908df40a2b9e41849b181b02491
+Source0:        https://github.com/zeromq/libzmq/releases/download/v4.3.4/%{name}-%{version}.tar.gz
+%define sha1    zeromq=47277a64749049123d1401600e8cfbab10a3ae28
+
+
 Requires:       libstdc++
 
 %description
@@ -55,8 +57,11 @@ make check
 %{_libdir}/libzmq.so
 %{_libdir}/pkgconfig/libzmq.pc
 %{_includedir}/
+%{_mandir}/*
 
 %changelog
+*   Fri Jul 09 2021 Nitesh Kumar <kunitesh@vmware.com> 4.3.4-1
+-   Upgrade to 4.3.4
 *   Thu Sep 10 2020 Gerrit Photon <photon-checkins@vmware.com> 4.3.3-1
 -   Automatic Version Bump
 *   Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 4.3.2-1
