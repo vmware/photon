@@ -3,7 +3,7 @@
 Summary:        Pure Python Vi Implementation.
 Name:           python3-pyvim
 Version:        3.0.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        UNKNOWN
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -21,6 +21,7 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-pyflakes
 %if %{with_check}
 BuildRequires:  python3-pytest
 BuildRequires:  python3-prompt_toolkit
@@ -35,7 +36,7 @@ BuildRequires:  python3-pip
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-prompt_toolkit
-
+Requires:       python3-pyflakes
 BuildArch:      noarch
 
 %description
@@ -43,7 +44,7 @@ An implementation of Vim in Python.
 
 
 %prep
-%setup -q -n pyvim-%{version}
+%autosetup -n pyvim-%{version}
 #tar -xf %{SOURCE1} --no-same-owner
 
 %build
@@ -63,6 +64,8 @@ PYTHONPATH=./ py.test3
 %{_bindir}/pyvim3
 
 %changelog
+*   Fri Jul 09 2021 Tapas Kundu <tkundu@vmware.com> 3.0.2-3
+-   Fix dependency issue
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.2-2
 -   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.2-1
