@@ -1,7 +1,7 @@
-diff --color -rupN systemd-stable-248/src/udev/udev-builtin-net_id.c systemd-stable-248-enoX-uses/src/udev/udev-builtin-net_id.c
---- systemd-stable-248/src/udev/udev-builtin-net_id.c	2021-03-30 20:59:02.000000000 +0000
-+++ systemd-stable-248-enoX-uses/src/udev/udev-builtin-net_id.c	2021-04-05 08:00:26.464110209 +0000
-@@ -183,6 +183,27 @@ static int dev_pci_onboard(sd_device *de
+diff --color -rupN systemd-stable-249/src/udev/udev-builtin-net_id.c systemd-stable-249-enox/src/udev/udev-builtin-net_id.c
+--- systemd-stable-249/src/udev/udev-builtin-net_id.c	2021-07-07 17:41:29.000000000 +0000
++++ systemd-stable-249-enox/src/udev/udev-builtin-net_id.c	2021-07-12 13:52:35.277320860 +0000
+@@ -194,6 +194,27 @@ static int dev_pci_onboard(sd_device *de
          if (idx == 0 && !naming_scheme_has(NAMING_ZERO_ACPI_INDEX))
                  return -EINVAL;
  
@@ -26,6 +26,6 @@ diff --color -rupN systemd-stable-248/src/udev/udev-builtin-net_id.c systemd-sta
 +                        idx >>= 24;
 +        }
 +
-         /* Some BIOSes report rubbish indexes that are excessively high (2^24-1 is an index VMware likes to
-          * report for example). Let's define a cut-off where we don't consider the index reliable anymore. We
-          * pick some arbitrary cut-off, which is somewhere beyond the realistic number of physical network
+         if (!is_valid_onboard_index(idx))
+                 return -ENOENT;
+ 

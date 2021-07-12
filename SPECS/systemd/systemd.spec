@@ -1,6 +1,6 @@
 Name:             systemd
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
-Version:          248
+Version:          249
 Release:          1%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 Summary:          System and Service Manager
@@ -10,7 +10,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0:          https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha1      systemd=ee3ed03d8a2f7216b5695cb46c5825a9e505ad7c
+%define sha1      systemd=5651f77f3fe94c6a9f6f99a320bbf2ca6ac79744
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          systemd.cfg
@@ -18,8 +18,8 @@ Source4:          99-dhcp-en.network
 Source5:          10-rdrand-rng.conf
 Source6:          10-defaults.preset
 
-Patch0:           systemd-248-enoX-uses-instance-number-for-vmware-hv.patch
-Patch1:           systemd-248-default-dns-from-env.patch
+Patch0:           systemd-249-enoX-uses-instance-number-for-vmware-hv.patch
+Patch1:           systemd-249-default-dns-from-env.patch
 
 Requires:         Linux-PAM
 Requires:         bzip2
@@ -70,6 +70,7 @@ BuildRequires:   pcre-devel
 BuildRequires:   pkg-config
 BuildRequires:   python3-devel
 BuildRequires:   python3-lxml
+BuildRequires:   python3-jinja2
 BuildRequires:   shadow
 BuildRequires:   util-linux-devel
 BuildRequires:   XML-Parser
@@ -606,8 +607,8 @@ udevadm hwdb --update &>/dev/null || :
 %{_libdir}/libnss_resolve.so.2
 %{_libdir}/libnss_systemd.so.2
 %{_libdir}/libsystemd.so.*
+%{_libdir}/libudev.so.1.*
 %{_libdir}/libudev.so.1
-%{_libdir}/libudev.so.1.7.1
 
 %files pam
 %defattr(-,root,root)
@@ -656,6 +657,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+*    Mon Jul 12 2021 Susant Sahani <ssahani@vmware.com>  249-1
+-    Version bump
 *    Mon Apr 5 2021 Susant Sahani <ssahani@vmware.com>  248-1
 -    Version bump
 *    Tue Mar 16 2021 Susant Sahani <ssahani@vmware.com>  247.4-1

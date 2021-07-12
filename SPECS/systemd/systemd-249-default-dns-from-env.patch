@@ -1,6 +1,6 @@
-diff --color -rupN systemd-stable-248/src/resolve/resolved-conf.c systemd-stable-248-dns-env/src/resolve/resolved-conf.c
---- systemd-stable-248/src/resolve/resolved-conf.c	2021-03-30 20:59:02.000000000 +0000
-+++ systemd-stable-248-dns-env/src/resolve/resolved-conf.c	2021-04-01 13:11:12.318731952 +0000
+diff --color -rupN systemd-stable-249/src/resolve/resolved-conf.c systemd-stable-249-dns/src/resolve/resolved-conf.c
+--- systemd-stable-249/src/resolve/resolved-conf.c	2021-07-07 17:41:29.000000000 +0000
++++ systemd-stable-249-dns/src/resolve/resolved-conf.c	2021-07-12 14:06:49.205284151 +0000
 @@ -493,7 +493,7 @@ int manager_parse_config_file(Manager *m
                  return r;
  
