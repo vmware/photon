@@ -1,13 +1,15 @@
 Summary:	initramfs
 Name:		initramfs
 Version:	2.0
-Release:	6%{?dist}
+Release:	7%{?dist}
 Source0:	fscks.conf
 License:	Apache License
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution:	Photon
+
 Provides:	initramfs
+
 Requires:	dracut
 
 %description
@@ -111,6 +113,8 @@ echo "initramfs" %{version}-%{release} "postun" >&2
 %dir %{_localstatedir}/lib/initramfs/kernel
 
 %changelog
+*   Mon Jul 12 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.0-7
+-   Bump version as a part of dracut upgrade
 *   Tue Nov 03 2020 Srinidhi Rao <srinidhir@vmware.com> 2.0-6
 -   Remove the trigger for fipsify
 *   Tue Mar 17 2020 Vikash Bansal <bvikas@vmware.com> 2.0-5

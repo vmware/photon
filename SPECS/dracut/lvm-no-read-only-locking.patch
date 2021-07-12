@@ -1,14 +1,15 @@
-diff -rupN dracut-050/modules.d/90lvm/module-setup.sh lvm-no-read-only-locking/modules.d/90lvm/module-setup.sh
---- dracut-050/modules.d/90lvm/module-setup.sh	2020-03-04 11:43:22.000000000 +0100
-+++ lvm-no-read-only-locking/modules.d/90lvm/module-setup.sh	2020-04-24 06:22:12.361882406 +0200
-@@ -62,10 +62,6 @@ install() {
-     if [[ $hostonly ]] || [[ $lvmconf = "yes" ]]; then
-         if [ -f $dracutsysrootdir/etc/lvm/lvm.conf ]; then
+diff --git a/modules.d/90lvm/module-setup.sh b/modules.d/90lvm/module-setup.sh
+index e1e6c582..10f90a76 100755
+--- a/modules.d/90lvm/module-setup.sh
++++ b/modules.d/90lvm/module-setup.sh
+@@ -61,10 +61,6 @@ install() {
+     if [[ $hostonly ]] || [[ $lvmconf == "yes" ]]; then
+         if [[ -f $dracutsysrootdir/etc/lvm/lvm.conf ]]; then
              inst_simple -H /etc/lvm/lvm.conf
 -            # FIXME: near-term hack to establish read-only locking;
 -            # use command-line lvm.conf editor once it is available
--            sed -i -e 's/\(^[[:space:]]*\)locking_type[[:space:]]*=[[:space:]]*[[:digit:]]/\1locking_type = 4/' ${initdir}/etc/lvm/lvm.conf
--            sed -i -e 's/\(^[[:space:]]*\)use_lvmetad[[:space:]]*=[[:space:]]*[[:digit:]]/\1use_lvmetad = 0/' ${initdir}/etc/lvm/lvm.conf
+-            sed -i -e 's/\(^[[:space:]]*\)locking_type[[:space:]]*=[[:space:]]*[[:digit:]]/\1locking_type = 4/' "${initdir}/etc/lvm/lvm.conf"
+-            sed -i -e 's/\(^[[:space:]]*\)use_lvmetad[[:space:]]*=[[:space:]]*[[:digit:]]/\1use_lvmetad = 0/' "${initdir}/etc/lvm/lvm.conf"
          fi
  
          export LVM_SUPPRESS_FD_WARNINGS=1

@@ -3,25 +3,28 @@
 
 Summary:        dracut to create initramfs
 Name:           dracut
-Version:        050
-Release:        7%{?dist}
+Version:        055
+Release:        1%{?dist}
 Group:          System Environment/Base
-# The entire source code is GPLv2+
-# except install/* which is LGPLv2+
+# The entire source code is GPLv2+; except install/* which is LGPLv2+
 License:        GPLv2+ and LGPLv2+
-URL:            https://dracut.wiki.kernel.org/
+URL:            https://dracut.wiki.kernel.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.kernel.org/pub/linux/utils/boot/dracut/dracut-%{version}.tar.xz
-%define sha1    dracut=44f5b7304976b57ac4fca4dd94e99d1a131e6f62
-Source1:        https://www.gnu.org/licenses/lgpl-2.1.txt
+%define sha1    %{name}=1c0eb80f930dc1e4baac1912239aee233a108bc3
 
-Patch0:         disable-xattr.patch
-Patch1:         fix-initrd-naming-for-photon.patch
-Patch2:         lvm-no-read-only-locking.patch
-Patch3:         fix-hostonly.patch
+# Taken from https://www.gnu.org/licenses/lgpl-2.1.txt
+Source1:        lgpl-2.1.txt
 
-BuildRequires:  bash git
+Patch0:         Add-mkinitrd-support-to-dracut.patch
+Patch1:         disable-xattr.patch
+Patch2:         fix-initrd-naming-for-photon.patch
+Patch3:         lvm-no-read-only-locking.patch
+Patch4:         fix-hostonly.patch
+
+BuildRequires:  bash
+BuildRequires:  git
 BuildRequires:  pkg-config
 BuildRequires:  kmod-devel
 BuildRequires:  asciidoc3
@@ -55,49 +58,52 @@ This package contains tools to assemble the local initrd and host configuration.
 cp %{SOURCE1} .
 
 %build
-%configure --systemdsystemunitdir=%{_unitdir} --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) \
-           --libdir=%{_prefix}/lib   --disable-documentation
+%configure --systemdsystemunitdir=%{_unitdir} \
+           --bashcompletiondir=$(pkg-config --variable=completionsdir bash-completion) \
+           --libdir=%{_prefix}/lib \
+           --disable-documentation
+
 make %{?_smp_mflags}
 
 %install
-rm -rf -- $RPM_BUILD_ROOT
+rm -rf -- %{buildroot}
 make %{?_smp_mflags} install \
-     DESTDIR=$RPM_BUILD_ROOT \
+     DESTDIR=%{buildroot} \
      libdir=%{_prefix}/lib
 
-echo "DRACUT_VERSION=%{version}-%{release}" > $RPM_BUILD_ROOT/%{dracutlibdir}/dracut-version.sh
+echo "DRACUT_VERSION=%{version}-%{release}" > %{buildroot}/%{dracutlibdir}/dracut-version.sh
 
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/01fips
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/02fips-aesni
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/01fips
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/02fips-aesni
 
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/00bootchart
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/00bootchart
 
 # we do not support dash in the initramfs
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/00dash
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/00dash
 
 # remove gentoo specific modules
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/50gensplash
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/50gensplash
 
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/96securityfs
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/97masterkey
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/98integrity
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/96securityfs
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/97masterkey
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/98integrity
 
-mkdir -p $RPM_BUILD_ROOT/boot/dracut
-mkdir -p $RPM_BUILD_ROOT/var/lib/dracut/overlay
-mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log
-mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/opt/dracut/log
-touch $RPM_BUILD_ROOT%{_localstatedir}/opt/dracut/log/dracut.log
-ln -sfv %{_localstatedir}/opt/dracut/log/dracut.log $RPM_BUILD_ROOT%{_localstatedir}/log/
-mkdir -p $RPM_BUILD_ROOT%{_sharedstatedir}/initramfs
+mkdir -p %{buildroot}/boot/dracut
+mkdir -p %{buildroot}/var/lib/dracut/overlay
+mkdir -p %{buildroot}%{_localstatedir}/log
+mkdir -p %{buildroot}%{_localstatedir}/opt/dracut/log
+touch %{buildroot}%{_localstatedir}/opt/dracut/log/dracut.log
+ln -sfv %{_localstatedir}/opt/dracut/log/dracut.log %{buildroot}%{_localstatedir}/log/
+mkdir -p %{buildroot}%{_sharedstatedir}/initramfs
 
-rm -f $RPM_BUILD_ROOT%{_mandir}/man?/*suse*
+rm -f %{buildroot}%{_mandir}/man?/*suse*
 
 # create compat symlink
-mkdir -p $RPM_BUILD_ROOT%{_sbindir}
-ln -sr $RPM_BUILD_ROOT%{_bindir}/dracut $RPM_BUILD_ROOT%{_sbindir}/dracut
+mkdir -p %{buildroot}%{_sbindir}
+ln -sr %{buildroot}%{_bindir}/dracut %{buildroot}%{_sbindir}/dracut
 
 %clean
-rm -rf -- $RPM_BUILD_ROOT
+rm -rf -- %{buildroot}
 
 %files
 %defattr(-,root,root,0755)
@@ -123,6 +129,7 @@ rm -rf -- $RPM_BUILD_ROOT
 %{dracutlibdir}/dracut-initramfs-restore
 %{dracutlibdir}/dracut-install
 %{dracutlibdir}/skipcpio
+%{dracutlibdir}/dracut-util
 %config(noreplace) %{_sysconfdir}/dracut.conf
 %dir %{_sysconfdir}/dracut.conf.d
 %dir %{dracutlibdir}/dracut.conf.d
@@ -156,6 +163,8 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*   Mon Jul 12 2021 Shreenidhi Shedi <sshedi@vmware.com> 055-1
+-   Upgrade to version 055
 *   Wed Jan 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 050-7
 -   Added a command line option to manually override host_only
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 050-6

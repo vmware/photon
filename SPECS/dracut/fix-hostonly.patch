@@ -1,6 +1,6 @@
-From a5b0d59012854f91e51f1624c7fb67a26f351169 Mon Sep 17 00:00:00 2001
+From 6be3e1787050f4dc338134c6204d2228e998d1c0 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
-Date: Wed, 20 Jan 2021 23:50:41 +0530
+Date: Mon, 12 Jul 2021 22:37:18 +0530
 Subject: [PATCH] Adjust host_only flag based on running environment
 
 host_only decides the nature of initrd.
@@ -12,11 +12,11 @@ Added a command line option to manually set/unset host_only value.
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- mkinitrd-dracut.sh | 34 +++++++++++++++++++++++++++++++---
- 1 file changed, 31 insertions(+), 3 deletions(-)
+ mkinitrd-dracut.sh | 33 +++++++++++++++++++++++++++++++--
+ 1 file changed, 31 insertions(+), 2 deletions(-)
 
 diff --git a/mkinitrd-dracut.sh b/mkinitrd-dracut.sh
-index 01c989c3..40472336 100755
+index c1bcf197..0ef65bd0 100755
 --- a/mkinitrd-dracut.sh
 +++ b/mkinitrd-dracut.sh
 @@ -6,6 +6,8 @@ boot_dir="/boot"
@@ -32,22 +32,21 @@ index 01c989c3..40472336 100755
      $cmd "usage: ${0##*/} [--version] [--help] [-v] [-f] [--preload <module>]"
      $cmd "       [--image-version] [--with=<module>]"
      $cmd "       [--nocompress]"
-+    $cmd "       [--set-hostonly]"
-+    $cmd "       [--no-hostonly]"
++    $cmd "       [--set-hostonly] - Generates host specific initrd.img"
++    $cmd "       [--no-hostonly] - Generates generic initrd.img"
      $cmd "       <initrd-image> <kernel-version>"
      $cmd ""
      $cmd "       (ex: ${0##*/} /boot/initramfs-$kver.img $kver)"
-@@ -60,9 +64,6 @@ default_kernel_images() {
- 	kernels="$kernels $kernel_version"
+@@ -58,8 +62,6 @@ default_kernel_images() {
+         kernels="$kernels $kernel_version"
          targets="$targets $boot_dir/initrd.img-$kernel_version"
      done
--
 -    host_only=1
 -    force=1
  }
  
  while (($# > 0)); do
-@@ -85,6 +86,8 @@ while (($# > 0)); do
+@@ -82,6 +84,8 @@ while (($# > 0)); do
          --rootfs|-d) read_arg rootfs "$@" || shift $?
              dracut_args="${dracut_args} --filesystems $rootfs";;
          --nocompress) dracut_args="$dracut_args --no-compress";;
@@ -56,7 +55,7 @@ index 01c989c3..40472336 100755
          --help) usage -n;;
          --builtin) ;;
          --without*) ;;
-@@ -148,6 +151,31 @@ done
+@@ -144,6 +148,31 @@ done
  targets=( $targets )
  [[ $kernels ]] && kernels=( $kernels )
  

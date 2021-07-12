@@ -1,15 +1,20 @@
-diff --color -rupN dracut-050/lsinitrd.sh dracut-050-fix-initrd/lsinitrd.sh
---- dracut-050/lsinitrd.sh	2020-03-04 10:43:22.000000000 +0000
-+++ dracut-050-fix-initrd/lsinitrd.sh	2020-09-23 04:44:37.249016558 +0000
-@@ -95,15 +95,7 @@ if [[ $1 ]]; then
+diff --git a/lsinitrd.sh b/lsinitrd.sh
+index e13929ea..386265a5 100755
+--- a/lsinitrd.sh
++++ b/lsinitrd.sh
+@@ -109,19 +109,7 @@ if [[ $1 ]]; then
          exit 1
      fi
  else
--    [[ -f /etc/machine-id ]] && read MACHINE_ID < /etc/machine-id
+-    [[ -f /etc/machine-id ]] && read -r MACHINE_ID < /etc/machine-id
 -
--    if [[ -d /boot/loader/entries || -L /boot/loader/entries ]] \
+-    if [[ -d /efi/loader/entries || -L /efi/loader/entries ]] \
 -        && [[ $MACHINE_ID ]] \
--        && [[ -d /boot/${MACHINE_ID} || -L /boot/${MACHINE_ID} ]] ; then
+-        && [[ -d /efi/${MACHINE_ID} || -L /efi/${MACHINE_ID} ]]; then
+-        image="/efi/${MACHINE_ID}/${KERNEL_VERSION}/initrd"
+-    elif [[ -d /boot/loader/entries || -L /boot/loader/entries ]] \
+-        && [[ $MACHINE_ID ]] \
+-        && [[ -d /boot/${MACHINE_ID} || -L /boot/${MACHINE_ID} ]]; then
 -        image="/boot/${MACHINE_ID}/${KERNEL_VERSION}/initrd"
 -    else
 -        image="/boot/initramfs-${KERNEL_VERSION}.img"
@@ -18,9 +23,10 @@ diff --color -rupN dracut-050/lsinitrd.sh dracut-050-fix-initrd/lsinitrd.sh
  fi
  
  shift
-diff --color -rupN dracut-050/mkinitrd-dracut.sh dracut-050-fix-initrd/mkinitrd-dracut.sh
---- dracut-050/mkinitrd-dracut.sh	2020-03-04 10:43:22.000000000 +0000
-+++ dracut-050-fix-initrd/mkinitrd-dracut.sh	2020-10-05 07:22:49.590693891 +0000
+diff --git a/mkinitrd-dracut.sh b/mkinitrd-dracut.sh
+index 657e8b29..c1bcf197 100755
+--- a/mkinitrd-dracut.sh
++++ b/mkinitrd-dracut.sh
 @@ -1,5 +1,6 @@
  #!/bin/bash --norc
  kver=$(uname -r)
@@ -28,24 +34,24 @@ diff --color -rupN dracut-050/mkinitrd-dracut.sh dracut-050-fix-initrd/mkinitrd-
  
  boot_dir="/boot"
  quiet=0
-@@ -48,64 +49,18 @@ read_arg() {
+@@ -48,63 +49,14 @@ read_arg() {
      fi
  }
  
 -# Taken over from SUSE mkinitrd
-+# For photon
++# For PhotonOS
  default_kernel_images() {
 -    local regex kernel_image kernel_version version_version initrd_image
 -    local qf='%{NAME}-%{VERSION}-%{RELEASE}\n'
- 
+-
 -    case "${DRACUT_ARCH:-$(uname -m)}" in
 -        s390|s390x)
 -            regex='image'
 -            ;;
--        ppc|ppc64)
+-        ppc*)
 -            regex='vmlinux'
 -            ;;
--        i386|x86_64)
+-        i?86|x86_64)
 -            regex='vmlinuz'
 -            ;;
 -        arm*)
@@ -57,13 +63,12 @@ diff --color -rupN dracut-050/mkinitrd-dracut.sh dracut-050-fix-initrd/mkinitrd-
 -        *)  regex='vmlinu.'
 -            ;;
 -    esac
-+    local kernel_version
- 
+-
 -    # user mode linux
 -    if grep -q UML /proc/cpuinfo; then
 -            regex='linux'
 -    fi
-+    for kernel_version in $(ls $kernel_ver_dir) ; do
++    local kernel_version=
  
 -    kernel_images=""
 -    initrd_images=""
@@ -92,15 +97,14 @@ diff --color -rupN dracut-050/mkinitrd-dracut.sh dracut-050-fix-initrd/mkinitrd-
 -    done
 -    for initrd_image in $initrd_images;do
 -	targets="$targets $initrd_image"
++    for kernel_version in $(ls $kernel_ver_dir); do
 +        # Take this directory as the source of truth
-+	kernels="$kernels $kernel_version"
++        kernels="$kernels $kernel_version"
 +        targets="$targets $boot_dir/initrd.img-$kernel_version"
      done
-+
      host_only=1
      force=1
- }
-@@ -187,7 +142,7 @@ while (($# > 0)); do
+@@ -186,7 +138,7 @@ while (($# > 0)); do
  done
  
  [[ $targets && $kernels ]] || default_kernel_images
@@ -109,7 +113,7 @@ diff --color -rupN dracut-050/mkinitrd-dracut.sh dracut-050-fix-initrd/mkinitrd-
  
  # We can have several targets/kernels, transform the list to an array
  targets=( $targets )
-@@ -196,7 +151,6 @@ targets=( $targets )
+@@ -195,7 +147,6 @@ targets=( $targets )
  [[ $host_only == 1 ]] && dracut_args="${dracut_args} -H"
  [[ $force == 1 ]]     && dracut_args="${dracut_args} -f"
  
@@ -117,7 +121,7 @@ diff --color -rupN dracut-050/mkinitrd-dracut.sh dracut-050-fix-initrd/mkinitrd-
  for ((i=0 ; $i<${#targets[@]} ; i++)); do
  
      if [[ $img_vers ]];then
-@@ -206,21 +160,27 @@ for ((i=0 ; $i<${#targets[@]} ; i++)); d
+@@ -205,21 +156,27 @@ for ((i=0 ; $i<${#targets[@]} ; i++)); do
      fi
      kernel="${kernels[$i]}"
  

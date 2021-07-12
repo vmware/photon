@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2020.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -64,7 +64,6 @@ Requires: libpsl
 Requires: libsoup
 Requires: icu
 
-
 %description libs
 The %{name}-libs provides shared libraries for %{name}.
 
@@ -87,10 +86,7 @@ Requires: %{name}
 GRUB2 integration for OSTree
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1
 
 %build
 env NOCONFIGURE=1 ./autogen.sh
@@ -104,7 +100,7 @@ env NOCONFIGURE=1 ./autogen.sh
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} INSTALL="install -p -c" install
+make %{?_smp_mflags} DESTDIR=%{buildroot} INSTALL="install -p -c" install
 find %{buildroot} -name '*.la' -delete
 install -D -m 0644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system-preset/91-ostree.preset
 install -vdm 755 %{buildroot}/etc/ostree/remotes.d
@@ -162,6 +158,8 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+*   Mon Jul 12 2021 Shreenidhi Shedi <sshedi@vmware.com> 2020.6-2
+-   Bump version as a part of dracut upgrade
 *   Thu Sep 03 2020 Ankit Jain <ankitja@vmware.com> 2020.6-1
 -   Updated to 2020.6
 *   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 2020.4-1

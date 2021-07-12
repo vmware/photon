@@ -301,6 +301,7 @@ def check_for_configure(lines_dict, err):
         ret = False
 
         for opt in opt_list:
+            opt = '--' + opt
             if line.find(opt) >= 0:
                 err_msg = '%s can be omitted when using %%configure' % (opt)
                 err.update_err_dict(sec, err_msg)
@@ -398,6 +399,9 @@ def check_make_smp_flags(lines_dict, err):
 
         _ret = check_for_smp_mflags(line, idx, err)
         ret = True if ret else _ret
+        # if _smp_mflags in the same line  as 'make', break
+        if not ret:
+            break
         while line.endswith('\\'):
             idx += 1
             line = lines[idx]
