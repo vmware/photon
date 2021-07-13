@@ -1,11 +1,11 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
-Version:        3.17.1
-Release:        5%{?dist}
+Version:        3.20.2
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/node
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 calico=55a9683f1a49d1ea3cba24bbd8a9cda266fb5cee
+%define sha1 calico=0b8db768a97c8f6aea0113582bc3c401a4893677
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -38,6 +38,8 @@ sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/do
 /usr/share/calico/docker/fs/*
 
 %changelog
+*   Thu Nov 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.20.2-1
+-   Update calico to 3.20.2
 *   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 3.17.1-5
 -   Bump up version to compile with new go
 *   Tue Oct 05 2021 Piyush Gupta <gpiyush@vmware.com> 3.17.1-4

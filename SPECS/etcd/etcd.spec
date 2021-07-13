@@ -1,14 +1,14 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
-Version:        3.4.13
-Release:        9%{?dist}
+Version:        3.5.1
+Release:        1%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 etcd=dede0ad144e78af0d06643b99bb58331511665e0
+%define sha1 etcd=ff512cc1b3242608a3fbe122d56edb6a2b82553b
 Source1:        etcd.service
 %ifarch aarch64
 Source2:        etcd.sysconfig
@@ -84,6 +84,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+*   Thu Nov 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.5.1-1
+-   Update to version 3.5.1
 *   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 3.4.13-9
 -   Bump up version to compile with new go
 *   Tue Oct 05 2021 Piyush Gupta <gpiyush@vmware.com> 3.4.13-8

@@ -1,16 +1,14 @@
 Summary:        Calico Network Policy for Kubernetes
 Name:           calico-k8s-policy
-Version:        3.17.1
-Release:        7%{?dist}
+Version:        3.21.0
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/k8s-policy
+Source0:        %{name}-%{version}.tar.gz
+%define sha1 calico-k8s-policy=f331429c73fcfe7bb0f2bf4b7612cf2a50df8125
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
-Source0:        %{name}-%{version}.tar.gz
-%define sha1 %{name}=4fa6e670eb2eeae254962a3dc32ab25beec3a6d7
-
 BuildRequires:  git
 BuildRequires:  go
 BuildRequires:  libcalico
@@ -77,6 +75,8 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/controller
 %{_bindir}/controller
 
 %changelog
+* Tue Jan 11 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.21.0-1
+- Update to version 3.21.0
 * Mon Jan 03 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.17.1-7
 - Replace deprecated pycrypto with pycryptodome
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.17.1-6

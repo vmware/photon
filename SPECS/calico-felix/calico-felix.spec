@@ -1,13 +1,13 @@
 Summary:       A per-host daemon for Calico
 Name:          calico-felix
-Version:       3.17.1
-Release:       5%{?dist}
+Version:       3.20.2
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
 URL:           https://github.com/projectcalico/felix
 Source0:       %{name}-%{version}.tar.gz
-%define sha1 calico-felix=7f934f44b20b72efe04e221d0a66851d9d8e9a94
+%define sha1 calico-felix=674591922e47f642f9b5e92adc1a0c664d339562
 Distribution:  Photon
 BuildRequires: git
 BuildRequires: go
@@ -33,6 +33,8 @@ install bin/calico-felix %{buildroot}%{_bindir}/
 %{_bindir}/calico-felix
 
 %changelog
+*   Thu Nov 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.20.2-1
+-   Update calico-felix to v3.20.2
 *   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 3.17.1-5
 -   Bump up version to compile with new go
 *   Tue Oct 05 2021 Piyush Gupta <gpiyush@vmware.com> 3.17.1-4
@@ -53,11 +55,11 @@ install bin/calico-felix %{buildroot}%{_bindir}/
 -   Fix dependency for cloud.google.com-go
 *   Tue Jun 09 2020 Ashwin H <ashwinh@vmware.com> 2.6.0-3
 -   Use cache for dependencies
-*    Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 2.6.0-2
--    Fix CVE-2018-17846 and CVE-2018-17143
-*    Fri Nov 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.0-1
--    Calico Felix v2.6.0.
-*    Tue Sep 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.1-2
--    Build protoc-gen-gogofaster plugin from source.
-*    Sat Aug 19 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.1-1
--    Calico Felix for PhotonOS.
+*   Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 2.6.0-2
+-   Fix CVE-2018-17846 and CVE-2018-17143
+*   Fri Nov 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.0-1
+-   Calico Felix v2.6.0.
+*   Tue Sep 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.1-2
+-   Build protoc-gen-gogofaster plugin from source.
+*   Sat Aug 19 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.1-1
+-   Calico Felix for PhotonOS.

@@ -9,16 +9,17 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.19.15
-Release:        3%{?dist}
+Version:        1.22.4
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=45fed7824f6032d449e37c6b466ff7bb338eabf6
+%define sha1    kubernetes-%{version}.tar.gz=3bf63bafe307f0d715842cf69f0afd5807b6b5fe
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
+
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -72,7 +73,7 @@ make %{?_smp_mflags}
 make WHAT="cmd/cloud-controller-manager" %{?_smp_mflags}
 pushd build/pause
 mkdir -p bin
-gcc -Os -Wall -Werror -static -o bin/pause-%{archname} pause.c
+gcc -Os -Wall -Werror -static -o bin/pause-%{archname} linux/pause.c
 strip bin/pause-%{archname}
 popd
 
@@ -90,6 +91,7 @@ install -m 755 -d %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}
 install -m 755 -d %{buildroot}/opt/vmware/kubernetes/windows/%{archname}
 %endif
 
+# binaries install
 binaries=(cloud-controller-manager kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
@@ -114,6 +116,7 @@ sed -i '/KUBELET_CGROUP_ARGS=--cgroup-driver=systemd/d' %{buildroot}/etc/systemd
 cd ..
 # install config files
 install -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}
+install -d -m 0700 %{buildroot}%{_sysconfdir}/%{name}/manifests
 install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} contrib-0.7.0/init/systemd/environ/*
 cat << EOF >> %{buildroot}%{_sysconfdir}/%{name}/kubeconfig
 apiVersion: v1
@@ -124,8 +127,8 @@ EOF
 sed -i '/KUBELET_API_SERVER/c\KUBELET_API_SERVER="--kubeconfig=/etc/kubernetes/kubeconfig"' %{buildroot}%{_sysconfdir}/%{name}/kubelet
 
 # install service files
-install -d -m 0755 %{buildroot}/usr/lib/systemd/system
-install -m 0644 -t %{buildroot}/usr/lib/systemd/system contrib-0.7.0/init/systemd/*.service
+install -d -m 0755 %{buildroot}%{_unitdir}
+install -m 0644 -t %{buildroot}%{_unitdir} contrib-0.7.0/init/systemd/*.service
 
 # install the place the kubelet defaults to put volumes
 install -dm755 %{buildroot}/var/lib/kubelet
@@ -189,7 +192,6 @@ fi
 %{_bindir}/kube-proxy
 %{_bindir}/kube-scheduler
 %{_bindir}/kubectl
-#%{_bindir}/kubefed
 %{_lib}/systemd/system/kube-apiserver.service
 %{_lib}/systemd/system/kubelet.service
 %{_lib}/systemd/system/kube-scheduler.service
@@ -226,6 +228,8 @@ fi
 %endif
 
 %changelog
+*   Thu Nov 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.22.4-1
+-   Update kubernetes to 1.22.4
 *   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.19.15-3
 -   Bump up version to compile with new go
 *   Sun Oct 03 2021 Piyush Gupta <gpiyush@vmware.com> 1.19.15-2
