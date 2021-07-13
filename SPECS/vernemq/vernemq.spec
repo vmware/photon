@@ -1,39 +1,43 @@
-Summary:        VerneMQ is a high-performance, distributed MQTT message broker
-Name:           vernemq
-Version:        1.12.0
-Release:        1%{?dist}
-License:        Apache License, Version 2.0
-URL:            https://github.com/vernemq/vernemq
-Source0:        https://github.com/%{name}/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1    vernemq=2983c3f1b92080e49467bb32b46b725df3e59c90
-Source1:        %{name}_vendor-%{version}.tar.gz
-%define sha1    vernemq_vendor=8b07a79948f99d34f2f58723931745ea7ac839ea
-Source2:        vars.config
-Source3:        vernemq.service
-Patch0:         local_version.patch
-Group:          Applications/System
-Vendor:         VMware, Inc.
-Distribution:   Photon
+Summary:          VerneMQ is a high-performance, distributed MQTT message broker
+Name:             vernemq
+Version:          1.12.0
+Release:          2%{?dist}
+License:          Apache License, Version 2.0
+URL:              https://github.com/vernemq/vernemq
+Source0:          https://github.com/%{name}/%{name}/archive/%{name}-%{version}.tar.gz
+%define sha1      vernemq=2983c3f1b92080e49467bb32b46b725df3e59c90
+Source1:          %{name}_vendor-%{version}.tar.gz
+%define sha1      vernemq_vendor=8b07a79948f99d34f2f58723931745ea7ac839ea
+Source2:          vars.config
+Source3:          vernemq.service
+Patch0:           local_version.patch
+Group:            Applications/System
+Vendor:           VMware, Inc.
+Distribution:     Photon
 # leveldb(core dependency) build on aarch64 is currently not supported
 # hence vernemq is restricted to x86_64
-BuildArch:      x86_64
-BuildRequires:  erlang
-BuildRequires:  which
-BuildRequires:  make
-BuildRequires:  libstdc++-devel
-BuildRequires:  snappy-devel
-BuildRequires:  systemd
-Requires:       snappy
-Requires:       libstdc++
-Requires:       systemd
-Requires:       openssl
-Requires:       ncurses
+BuildArch:        x86_64
+BuildRequires:    erlang
+BuildRequires:    which
+BuildRequires:    make
+BuildRequires:    libstdc++-devel
+BuildRequires:    snappy-devel
+BuildRequires:    systemd
+Requires:         snappy
+Requires:         libstdc++
+Requires:         systemd
+Requires:         openssl
+Requires:         ncurses
+Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 %description
 A high-performance, distributed MQTT message broker.
 
 %prep
+# Using autosetup is not feasible
 %setup -q
+# Using autosetup is not feasible
 %setup -D -b 1
 %patch0 -p1
 
@@ -41,6 +45,7 @@ A high-performance, distributed MQTT message broker.
 LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 mv ../%{name}_vendor-%{version}/_checkouts _checkouts
 cp %{SOURCE2} ./vars.config
+# make doesn't support _smp_mflags
 make rel
 
 %install
@@ -108,6 +113,8 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %changelog
+*   Tue Jul 13 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.12.0-2
+-   Add Requires on useradd, groupadd for pre and userdel, groupdel for postun
 *   Wed Jun 09 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.12.0-1
 -   Upgrade to 1.12.0 version
 *   Sun Feb 28 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.11.0-1
