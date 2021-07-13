@@ -2,7 +2,7 @@
 Summary:        Net-SNMP is a suite of applications used to implement SNMP v1, SNMP v2c and SNMP v3 using both IPv4 and IPv6.
 Name:           net-snmp
 Version:        5.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD (like)
 URL:            http://net-snmp.sourceforge.net/
 Group:          Productivity/Networking/Other
@@ -39,7 +39,7 @@ Net-SNMP provides a number of Perl modules useful when using the SNMP
 protocol.  Both client and agent support modules are provided.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
@@ -59,7 +59,7 @@ protocol.  Both client and agent support modules are provided.
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 mkdir -p %{buildroot}/lib/systemd/system
 install -m 0644 %{SOURCE1} %{buildroot}/lib/systemd/system/snmpd.service
 install -m 0644 %{SOURCE2} %{buildroot}/lib/systemd/system/snmptrapd.service
@@ -123,6 +123,8 @@ rm -rf %{buildroot}/*
 %exclude /usr/lib/perl5/*/*/perllocal.pod
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.9-3
+-   Bump up release for openssl
 *   Fri Jun 11 2021 Sharan Turlapati <sturlapati@vmware.com> 5.9-2
 -   Include the net-snmp-perl subpackage
 *   Fri Apr 16 2021 Gerrit Photon <photon-checkins@vmware.com> 5.9-1

@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.55.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -62,6 +62,8 @@ rm %{buildroot}%{_docdir}/%{name}/html/.lock %{buildroot}%{_docdir}/%{name}/*.ol
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+* Wed Nov 10 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.55.0-2
+- openssl 3.0.0 compatibility
 * Mon Oct 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.55.0-1
 - Upgrade to 1.54.0
 * Wed Sep 02 2020 Gerrit Photon <photon-checkins@vmware.com> 1.46.0-1

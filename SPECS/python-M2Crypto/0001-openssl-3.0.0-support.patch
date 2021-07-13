@@ -1,0 +1,37 @@
+From 8c8c921b97e0d0ce565e3910d3561457882f43bf Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh Vasamsetty <svasamsetty@vmware.com>
+Date: Tue, 13 Apr 2021 21:27:11 +0530
+Subject: [PATCH] openssl 3.0.0 support
+
+---
+ SWIG/_m2crypto_wrap.c | 1 -
+ SWIG/_rsa.i           | 1 -
+ 2 files changed, 2 deletions(-)
+
+diff --git a/SWIG/_m2crypto_wrap.c b/SWIG/_m2crypto_wrap.c
+index ff75af5..8aa6745 100644
+--- a/SWIG/_m2crypto_wrap.c
++++ b/SWIG/_m2crypto_wrap.c
+@@ -32256,7 +32256,6 @@ SWIG_init(void) {
+   SWIG_addvarlink(SWIG_globals(),(char*)"_dh_err",Swig_var__dh_err_get, Swig_var__dh_err_set);
+   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "no_padding",SWIG_From_int((int)(RSA_NO_PADDING)));
+   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "pkcs1_padding",SWIG_From_int((int)(RSA_PKCS1_PADDING)));
+-  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "sslv23_padding",SWIG_From_int((int)(RSA_SSLV23_PADDING)));
+   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "pkcs1_oaep_padding",SWIG_From_int((int)(RSA_PKCS1_OAEP_PADDING)));
+   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "NID_sha1",SWIG_From_int((int)(NID_sha1)));
+   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "NID_sha224",SWIG_From_int((int)(NID_sha224)));
+diff --git a/SWIG/_rsa.i b/SWIG/_rsa.i
+index 4ffae01..97714f3 100644
+--- a/SWIG/_rsa.i
++++ b/SWIG/_rsa.i
+@@ -23,7 +23,6 @@ extern int RSA_check_key(const RSA *);
+ 
+ %constant int no_padding        = RSA_NO_PADDING;
+ %constant int pkcs1_padding     = RSA_PKCS1_PADDING;
+-%constant int sslv23_padding    = RSA_SSLV23_PADDING;
+ %constant int pkcs1_oaep_padding = RSA_PKCS1_OAEP_PADDING;
+ 
+ %constant int NID_sha1 = NID_sha1;
+-- 
+2.7.4
+

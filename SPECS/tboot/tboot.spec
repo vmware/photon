@@ -1,7 +1,7 @@
 Summary:    Trusted pre-kernel module and tools.
 Name:       tboot
 Version:    1.9.12
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    BSD
 URL:        https://sourceforge.net/projects/tboot/
 Group:      System Environment/Security
@@ -18,13 +18,13 @@ Intel(R) Trusted Execution Technology (Intel(R) TXT) to perform a measured
 and verified launch of an OS kernel/VMM.
 
 %prep
-%setup -q
+%autosetup
 %build
 export CFLAGS
 make debug=y %{?_smp_mflags}
 
 %install
-make debug=y DESTDIR=%{buildroot} install
+make debug=y DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -35,6 +35,8 @@ make debug=y DESTDIR=%{buildroot} install
 %exclude %{_sysconfdir}
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.9.12-2
+-   Bump up release for openssl
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.9.12-1
 -   Automatic Version Bump
 *   Fri Dec 14 2018 Ankit Jain <ankitja@vmware.com> 1.9.7-3

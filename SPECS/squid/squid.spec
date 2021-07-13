@@ -1,7 +1,7 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        5.0.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 Group:          Networking/Web/Proxy
@@ -10,6 +10,7 @@ Distribution:   Photon
 
 Source0:        http://www.squid-cache.org/Versions/v5/%{name}-%{version}.tar.xz
 %define sha1 %{name}=5d4ad671377896a172adac30d98aed1c42bb47be
+Patch0:         0001-openssl-3.0.0-support.patch
 Source1:        squid.sysconfig
 Source2:        squid.pam
 Source3:        squid.service
@@ -213,6 +214,8 @@ done
 %systemd_postun_with_restart squid.service
 
 %changelog
+* Wed Nov 10 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.0.5-4
+- Openssl 3.0.0 compatibility
 * Fri Aug 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.0.5-3
 - Bump version as a part of rpm upgrade
 * Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.0.5-2

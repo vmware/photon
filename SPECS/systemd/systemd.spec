@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd/
 Version:        249.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 
@@ -660,6 +660,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 249.2-3
+- Bump up release for openssl
 * Thu Aug 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 249.2-2
 - Add systemd-rpm-macros to extra build requires
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com>  249.2-1

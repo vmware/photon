@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        14.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -545,6 +545,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/plpython3.so
 
 %changelog
+*   Thu Nov 18 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 14.1-2
+-   Bump up release for openssl
 *   Mon Nov 15 2021 Michael Paquier <mpaquier@vmware.com> 14.1-1
 -   Upgraded to version 14.1.
 *   Wed Oct 20 2021 Michael Paquier <mpaquier@vmware.com> 14.0-3

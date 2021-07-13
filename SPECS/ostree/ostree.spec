@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2021.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -162,6 +162,8 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+* Fri Nov 12 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2021.5-2
+- Bump up for openssl
 * Mon Oct 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 2021.5-1
 - Upgrade to 2021.3
 * Mon Jul 12 2021 Shreenidhi Shedi <sshedi@vmware.com> 2020.6-2

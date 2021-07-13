@@ -1,7 +1,7 @@
 Summary:        An Event notification library.
 Name:           libevent
 Version:        2.1.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            http://libevent.org
 Source0:        https://github.com/%{name}/%{name}/releases/download/release-%{version}-stable/%{name}-%{version}-stable.tar.gz
@@ -27,7 +27,7 @@ Requires:       %{name} = %{version}-%{release}
 The subpackage includes all development related headers and library.
 
 %prep
-%setup -q -n %{name}-%{version}-stable
+%autosetup -n %{name}-%{version}-stable
 
 %build
 %configure --disable-static --disable-libevent-regress
@@ -58,6 +58,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/libevent_extra.pc
 
 %changelog
+*       Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.12-2
+-       Bump up release for openssl
 *       Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 2.1.12-1
 -       Automatic Version Bump
 *       Thu Sep 10 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.8-2

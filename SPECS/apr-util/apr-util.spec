@@ -1,7 +1,7 @@
 Summary:    The Apache Portable Runtime Utility Library
 Name:       apr-util
 Version:    1.6.1
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    Apache License 2.0
 URL:        https://apr.apache.org/
 Group:      System Environment/Libraries
@@ -16,6 +16,8 @@ BuildRequires:   sqlite-devel
 BuildRequires:   openssl-devel
 BuildRequires:   nss-devel
 BuildRequires:   expat-devel
+BuildRequires:   openldap
+BuildRequires:   postgresql-devel >= 10.5
 Requires:   apr
 Requires:   openssl
 Requires:   expat
@@ -31,13 +33,12 @@ Requires: apr-devel
 Requires: expat-devel
 Requires: %{name} = %{version}-%{release}
 %description devel
-This package provides the support files which can be used to 
+This package provides the support files which can be used to
 build applications using the APR utility library.
 
 %package ldap
 Group: Development/Libraries
 Summary: APR utility library LDAP support
-BuildRequires: openldap
 Requires: apr-util
 Requires: openldap
 
@@ -47,7 +48,6 @@ This package provides the LDAP support for the apr-util.
 %package pgsql
 Group: Development/Libraries
 Summary: APR utility library PostgreSQL DBD driver
-BuildRequires: postgresql-devel >= 10.5
 Requires: apr-util
 Requires: postgresql >= 10.5
 
@@ -64,10 +64,9 @@ This package provides the SQLite driver for the apr-util DBD
 (database abstraction) interface.
 
 %prep
-%setup -q
+%autosetup
 %build
 %configure --with-apr=%{_prefix} \
-        --includedir=%{_includedir}/apr-%{apuver} \
         --with-ldap --without-gdbm \
         --with-sqlite3 --with-pgsql \
         --without-sqlite2 \
@@ -75,14 +74,13 @@ This package provides the SQLite driver for the apr-util DBD
         --with-nss \
         --with-crypto
 
-
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
-# Disable smp_flag because of race condition
+# make doesn't support _smp_mflags
 make check
 
 %clean
@@ -121,6 +119,8 @@ rm -rf %{buildroot}
 %{_libdir}/apr-util-%{apuver}/apr_dbd_sqlite*
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.6.1-4
+-   Bump up release for openssl
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.6.1-3
 -   openssl 1.1.1
 *   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 1.6.1-2
@@ -142,11 +142,11 @@ rm -rf %{buildroot}
 *   Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.4-6
 -   remove libexpat files
 *   Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.5.4-5
--   Updated build-requires after creating devel package for apr. 
+-   Updated build-requires after creating devel package for apr.
 *   Wed Sep 16 2015 Xiaolin Li <xiaolinl@vmware.com> 1.5.4-4
 -   Seperate Separate apr-util to apr-util, apr-util-devel, aprutil-ldap, apr-util-pgsql, and apr-utilsqlite.
 *   Wed Jul 15 2015 Sarah Choi <sarahc@vmware.com> 1.5.4-4
--   Use apuver(=1) instead of version for mesos 
+-   Use apuver(=1) instead of version for mesos
 *   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 1.5.2-3
 -   Exclude /usr/lib/debug
 *   Wed Jul 01 2015 Touseef Liaqat <tliaqat@vmware.com> 1.5.2-2

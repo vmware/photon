@@ -1,0 +1,76 @@
+From 7c7b21d1187e1eb64f969c5a4448ecf980d2131c Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh Vasamsetty <svasamsetty@vmware.com>
+Date: Thu, 26 Nov 2020 22:24:07 +0530
+Subject: [PATCH] likewise-open: compatibility with openssl 3.0
+
+
+diff --git a/dcerpc/demos/echo_server/echo_client.c b/dcerpc/demos/echo_server/echo_client.c
+index 7e94fc9..4698202 100644
+--- a/dcerpc/demos/echo_server/echo_client.c
++++ b/dcerpc/demos/echo_server/echo_client.c
+@@ -26,8 +26,9 @@
+ #include <gssapi/gssapi.h>
+ #include <gssapi/gssapi_ext.h>
+ 
++#ifdef LW_BUILD_ESX
+ extern int FIPS_mode_set(int);
+-
++#endif
+ 
+ /* Defines related to GSS authentication */
+ 
+@@ -1322,10 +1323,11 @@ main(
+     args * outargs = NULL;
+     int params = 0;
+     int i = 0;
+-    char *envptr = NULL;
+ 
+     argv0 = argv[0];
+ 
++#ifdef LW_BUILD_ESX
++    char *envptr = NULL;
+     envptr = getenv("FIPS_MODE_SET");
+     if (envptr)
+     {
+@@ -1335,6 +1337,7 @@ main(
+     {
+         FIPS_mode_set(1);
+     }
++#endif
+ 
+     /*
+      * Process the cmd line args
+diff --git a/dcerpc/demos/echo_server/echo_server.c b/dcerpc/demos/echo_server/echo_server.c
+index 4d784a2..595419a 100644
+--- a/dcerpc/demos/echo_server/echo_server.c
++++ b/dcerpc/demos/echo_server/echo_server.c
+@@ -41,8 +41,9 @@ void sigpipe_handler(void);
+ #endif
+ #endif
+ 
++#ifdef LW_BUILD_ESX
+ extern int FIPS_mode_set(int);
+-
++#endif
+ /*
+  *
+  * A template DCE RPC server
+@@ -129,6 +130,8 @@ int main(int argc, char *argv[])
+     int c;
+     int protocol_idx = 0;
+     char * spn = NULL;
++
++#ifdef LW_BUILD_ESX
+     char *envptr = NULL;
+ 
+     envptr = getenv("FIPS_MODE_SET");
+@@ -140,6 +143,7 @@ int main(int argc, char *argv[])
+     {
+         FIPS_mode_set(1);
+     }
++#endif
+ 
+     /*
+      * Process the cmd line args
+-- 
+2.7.4

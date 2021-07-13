@@ -1,7 +1,7 @@
 Summary:        Crypt::SSLeay - OpenSSL support for LWP
 Name:           perl-Crypt-SSLeay
 Version:        0.72
-Release:        6%{?dist}
+Release:        7%{?dist}
 URL:            http://search.cpan.org/dist/Crypt-SSLeay/
 License:        Perl Artistic License 2.0
 Group:          Development/Libraries
@@ -30,7 +30,7 @@ Crypt::SSLeay::X509
 Work on Crypt::SSLeay has been continued only to provide https support for the LWP (libwww-perl) libraries.
 
 %prep
-%setup -q -n Crypt-SSLeay-%{version}
+%autosetup -n Crypt-SSLeay-%{version}
 
 %build
 PERL5LIB=$(pwd) env PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
@@ -38,18 +38,20 @@ sed -i 's/CCCDLFLAGS = /CCCDLFLAGS = -g /' Makefile
 make %{?_smp_mflags}
 
 %install
-make pure_install DESTDIR=%{buildroot}
+make pure_install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot} -type f \( -name .packlist -o \
             -name '*.bs' -size 0 \) -exec rm -f {} ';'
 
 %check
-make test
+make test %{?_smp_mflags}
 
 %files
 %{perl_vendorlib}/*
 %{_mandir}/man?/*
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.72-7
+-   Bump up release for openssl
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.72-6
 -   openssl 1.1.1
 *   Thu Aug 20 2020 Dweep Advani <dadvani@vmware.com> 0.72-5

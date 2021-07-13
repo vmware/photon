@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.7.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
@@ -17,13 +17,14 @@ BuildRequires:  tzdata
 Requires:       ca-certificates
 Requires:       openssl
 Requires:       gmp
+Patch0:         0001-openssl-3.0.0-compatibility.patch
 
 %description
 The Ruby package contains the Ruby development environment.
 This is useful for object-oriented scripting.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 # below loop fixes the files in libexec to point correct ruby
@@ -41,7 +42,7 @@ make %{?_smp_mflags} COPY="cp -p"
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+%make_install
 
 %check
 chmod g+w . -R
@@ -68,6 +69,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 
 %changelog
+*   Fri Jun 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.7.1-3
+-   openssl 3.0.0 support
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.7.1-2
 -   openssl 1.1.1
 *   Tue Sep 01 2020 Sujay G <gsujay@vmware.com> 2.7.1-1

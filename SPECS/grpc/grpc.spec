@@ -1,7 +1,7 @@
 Summary:        Google RPC
 Name:           grpc
 Version:        1.32.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License, Version 2.0
 URL:            https://grpc.io
 Group:          Development/Libraries
@@ -44,7 +44,9 @@ The grpc-devel package contains libraries and header files for
 developing applications that use grpc.
 
 %prep
+# Using autosetup is not feasible
 %setup -q
+# Using autosetup is not feasible
 %setup -q -T -D -a1 -a2
 mkdir -p cmake/build
 
@@ -64,7 +66,7 @@ make  %{_smp_mflags} prefix=%{_prefix} libdir=%{_libdir}
 
 %install
 cd cmake/build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{_smp_mflags}
 # remove libre2 duplicates.
 rm -rf %{buildroot}/usr/lib64
 
@@ -85,6 +87,8 @@ rm -rf %{buildroot}/usr/lib64
 %{_libdir}/*.so
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.32.0-4
+-   Bump up release for openssl
 *   Fri Feb 19 2021 Harinadh D <hdommaraju@vmware.com> 1.32.0-3
 -   Version bump up to build with latest protobuf
 * Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.32.0-2

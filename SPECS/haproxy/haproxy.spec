@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        2.3.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        http://www.haproxy.org/download/2.0/src/%{name}-%{version}.tar.gz
 %define sha1    haproxy=dc1be47af0a661815efeb7c0fbaf04b0eabcfd83
 Patch0:         haproxy-CVE-2021-40346.patch
+Patch1:         0001-openssl-3.0.0-support.patch
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  lua-devel
@@ -60,6 +61,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Wed Nov 10 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.3.10-3
+-   openssl 3.0.0
 *   Fri Sep 17 2021 Nitesh Kumar <kunitesh@vmware.com> 2.3.10-2
 -   Fix CVE-2021-40346
 *   Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 2.3.10-1

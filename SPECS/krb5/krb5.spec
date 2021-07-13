@@ -1,7 +1,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.17.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos/
 Group:          System Environment/Security
@@ -35,7 +35,7 @@ Requires: %{name} = %{version}-%{release}
 These are the additional language files of krb5.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 cd src &&
@@ -63,7 +63,7 @@ make %{?_smp_mflags}
 %install
 cd src
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 for LIBRARY in gssapi_krb5 gssrpc k5crypto kadm5clnt kadm5srv \
                kdb5 krad krb5 krb5support verto ; do
@@ -86,7 +86,7 @@ unset LIBRARY
 # krb5 tests require hostname resolve
 echo "127.0.0.1 $HOSTNAME" >> /etc/hosts
 cd src
-make check
+make check %{?_smp_mflags}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -120,6 +120,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+*   Fri Sep 17 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.17.2-2
+-   Bump up release for openssl
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.17.2-1
 -   Downgrade to 1.17 since PMD RPC call getting failed.
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.18.3-1

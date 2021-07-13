@@ -4,7 +4,7 @@
 Summary:        OpenLdap-2.4.43
 Name:           openldap
 Version:        2.4.58
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenLDAP
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
@@ -31,8 +31,7 @@ over the Internet. The openldap package contains configuration files,
 libraries, and documentation for OpenLDAP.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 autoconf
@@ -44,7 +43,6 @@ export CPPFLAGS="-D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D_AVL_H"
         --disable-slapd      \
         --with-tls=openssl   \
         --enable-debug       \
-        --prefix=/usr        \
         --enable-dynamic     \
         --enable-syslog      \
         --enable-ipv6        \
@@ -58,16 +56,15 @@ export CPPFLAGS="-D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D_AVL_H"
         --with-threads
 sed -i -e 's/ -shared / -Wl,-O1,--as-needed\0/g' libtool
 
-
 if [ %{_host} != %{_build} ]; then
  sed -i '/#define NEED_MEMCMP_REPLACEMENT 1/d' include/portable.h
 fi
-make depend
+make depend %{?_smp_mflags}
 make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 
@@ -106,6 +103,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.58-2
+-   Bump up release for openssl
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.4.58-1
 -   Automatic Version Bump
 *   Mon Dec 14 2020 Dweep Advani <dadvani@vmware.com> 2.4.53-3

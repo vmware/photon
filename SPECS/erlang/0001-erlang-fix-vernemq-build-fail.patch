@@ -1,0 +1,25 @@
+From f59bc4390975e20ec516fabc21e0d7e6a9f376ae Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh <svasamsetty@vmware.com>
+Date: Thu, 6 May 2021 17:30:35 +0530
+Subject: [PATCH] erlang: fix vernemq build fail
+
+---
+ lib/crypto/c_src/openssl_config.h | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/lib/crypto/c_src/openssl_config.h b/lib/crypto/c_src/openssl_config.h
+index 7a04031..bb2b8a7 100644
+--- a/lib/crypto/c_src/openssl_config.h
++++ b/lib/crypto/c_src/openssl_config.h
+@@ -232,9 +232,6 @@
+ # ifdef HAVE_DH
+ #   define HAVE_EDDH
+ # endif
+-# if OPENSSL_VERSION_NUMBER >= (PACKED_OPENSSL_VERSION_PLAIN(1,1,1))
+-#   define HAVE_EDDSA
+-# endif
+ #endif
+ 
+ #if OPENSSL_VERSION_NUMBER >= PACKED_OPENSSL_VERSION(0,9,8,'c')
+-- 
+2.17.1

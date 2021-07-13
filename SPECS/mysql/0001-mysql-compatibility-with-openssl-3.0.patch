@@ -1,0 +1,242 @@
+From 2f960cfd8370f41648c77809a81f9af3eccad9bc Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh <svasamsetty@vmware.com>
+Date: Mon, 8 Nov 2021 16:30:53 +0530
+Subject: [PATCH] openssl 3.0 compatibility
+
+---
+ cmake/ssl.cmake                               |  3 +-
+ mysys/my_md5.cc                               | 13 ++++-
+ .../xcom_network_provider_ssl_native_lib.cc   | 14 ++++-
+ plugin/x/client/xconnection_impl.cc           | 14 ++++-
+ vio/viosslfactories.cc                        | 53 ++++++++++++++++---
+ 5 files changed, 84 insertions(+), 13 deletions(-)
+
+diff --git a/cmake/ssl.cmake b/cmake/ssl.cmake
+index 293281cf..d139432c 100644
+--- a/cmake/ssl.cmake
++++ b/cmake/ssl.cmake
+@@ -231,8 +231,7 @@ MACRO (MYSQL_CHECK_SSL)
+     ENDIF()
+     IF(OPENSSL_INCLUDE_DIR AND
+        OPENSSL_LIBRARY   AND
+-       CRYPTO_LIBRARY      AND
+-       OPENSSL_MAJOR_VERSION STREQUAL "1"
++       CRYPTO_LIBRARY
+       )
+       SET(OPENSSL_FOUND TRUE)
+       FIND_PROGRAM(OPENSSL_EXECUTABLE openssl
+diff --git a/mysys/my_md5.cc b/mysys/my_md5.cc
+index 86203619..625f2761 100644
+--- a/mysys/my_md5.cc
++++ b/mysys/my_md5.cc
+@@ -34,6 +34,7 @@
+ 
+ #include <openssl/crypto.h>
+ #include <openssl/md5.h>
++#include <openssl/evp.h>
+ 
+ static void my_md5_hash(unsigned char *digest, unsigned const char *buf,
+                         int len) {
+@@ -56,7 +57,15 @@ static void my_md5_hash(unsigned char *digest, unsigned const char *buf,
+ int compute_md5_hash(char *digest, const char *buf, int len) {
+   int retval = 0;
+   int fips_mode = 0;
+-  fips_mode = FIPS_mode();
++  OSSL_LIB_CTX *ctx = NULL;
++
++  ctx = OSSL_LIB_CTX_new();
++
++  if (!ctx) {
++    retval = 1;
++    goto err;
++  }
++  fips_mode = EVP_default_properties_is_fips_enabled(ctx);
+   /* If fips mode is ON/STRICT restricted method calls will result into abort,
+    * skipping call. */
+   if (fips_mode == 0) {
+@@ -64,5 +73,7 @@ int compute_md5_hash(char *digest, const char *buf, int len) {
+   } else {
+     retval = 1;
+   }
++err:
++  OSSL_LIB_CTX_free(ctx);
+   return retval;
+ }
+diff --git a/plugin/group_replication/libmysqlgcs/src/bindings/xcom/xcom/network/xcom_network_provider_ssl_native_lib.cc b/plugin/group_replication/libmysqlgcs/src/bindings/xcom/xcom/network/xcom_network_provider_ssl_native_lib.cc
+index 8d4af3c0..684f9ab9 100644
+--- a/plugin/group_replication/libmysqlgcs/src/bindings/xcom/xcom/network/xcom_network_provider_ssl_native_lib.cc
++++ b/plugin/group_replication/libmysqlgcs/src/bindings/xcom/xcom/network/xcom_network_provider_ssl_native_lib.cc
+@@ -322,21 +322,31 @@ static int configure_ssl_fips_mode(const int fips_mode) {
+   int fips_mode_old = -1;
+   char err_string[OPENSSL_ERROR_LENGTH] = {'\0'};
+   unsigned long err_library = 0;
++  OSSL_LIB_CTX *ctx = NULL;
++
++  ctx = OSSL_LIB_CTX_new();
++
++  if (!ctx) {
++    rc = 1;
++    goto EXIT;
++  }
++
+   if (fips_mode > 2) {
+     goto EXIT;
+   }
+-  fips_mode_old = FIPS_mode();
++  fips_mode_old = EVP_default_properties_is_fips_enabled(ctx);
+   if (fips_mode_old == fips_mode) {
+     rc = 1;
+     goto EXIT;
+   }
+-  if (!(rc = FIPS_mode_set(fips_mode))) {
++  if (!(rc = EVP_default_properties_enable_fips(ctx, fips_mode))) {  
+     err_library = ERR_get_error();
+     ERR_error_string_n(err_library, err_string, sizeof(err_string) - 1);
+     err_string[sizeof(err_string) - 1] = '\0';
+     G_ERROR("openssl fips mode set failed: %s", err_string);
+   }
+ EXIT:
++  OSSL_LIB_CTX_free(ctx);
+   return rc;
+ }
+ 
+diff --git a/plugin/x/client/xconnection_impl.cc b/plugin/x/client/xconnection_impl.cc
+index aaf37a1b..4feb9cb4 100644
+--- a/plugin/x/client/xconnection_impl.cc
++++ b/plugin/x/client/xconnection_impl.cc
+@@ -640,20 +640,30 @@ int set_fips_mode(const uint32_t fips_mode,
+   int rc = -1;
+   unsigned int fips_mode_old = -1;
+   unsigned long err_library = 0;
++  OSSL_LIB_CTX *ctx = NULL;
++
++  ctx = OSSL_LIB_CTX_new();
++
++  if (!ctx) {
++    rc = 1;
++    goto EXIT;
++  }
++
+   if (fips_mode > 2) {
+     goto EXIT;
+   }
+-  fips_mode_old = FIPS_mode();
++  fips_mode_old = EVP_default_properties_is_fips_enabled(ctx);
+   if (fips_mode_old == fips_mode) {
+     rc = 1;
+     goto EXIT;
+   }
+-  if (!(rc = FIPS_mode_set(fips_mode))) {
++  if (!(rc = EVP_default_properties_enable_fips(ctx, fips_mode))) {
+     err_library = ERR_get_error();
+     ERR_error_string_n(err_library, err_string, OPENSSL_ERROR_LENGTH - 1);
+     err_string[OPENSSL_ERROR_LENGTH - 1] = '\0';
+   }
+ EXIT:
++  OSSL_LIB_CTX_free(ctx);
+   return rc;
+ }
+ 
+diff --git a/vio/viosslfactories.cc b/vio/viosslfactories.cc
+index 618be151..264d8ad4 100644
+--- a/vio/viosslfactories.cc
++++ b/vio/viosslfactories.cc
+@@ -494,15 +494,25 @@ int set_fips_mode(const uint fips_mode, char err_string[OPENSSL_ERROR_LENGTH]) {
+   int rc = -1;
+   unsigned int fips_mode_old = -1;
+   unsigned long err_library = 0;
++
++  OSSL_LIB_CTX *ctx = NULL;
++
++  ctx = OSSL_LIB_CTX_new();
++
++  if (!ctx) {
++    rc = 1;
++    goto EXIT;
++  }
++
+   if (fips_mode > 2) {
+     goto EXIT;
+   }
+-  fips_mode_old = FIPS_mode();
++  fips_mode_old = EVP_default_properties_is_fips_enabled(ctx);
+   if (fips_mode_old == fips_mode) {
+     rc = 1;
+     goto EXIT;
+   }
+-  if (!(rc = FIPS_mode_set(fips_mode))) {
++  if (!(rc = EVP_default_properties_enable_fips(ctx, fips_mode))) {
+     /*
+       If OS doesn't have FIPS enabled openssl library and user sets FIPS mode
+       ON, It fails with proper error. But in the same time it doesn't allow to
+@@ -510,12 +520,13 @@ int set_fips_mode(const uint fips_mode, char err_string[OPENSSL_ERROR_LENGTH]) {
+       error, setting old working FIPS mode value in the OpenSSL library. It will
+       allow successful cryptographic operation and will not abort the server.
+     */
+-    FIPS_mode_set(fips_mode_old);
++    EVP_default_properties_enable_fips(ctx, fips_mode_old);
+     err_library = ERR_get_error();
+     ERR_error_string_n(err_library, err_string, OPENSSL_ERROR_LENGTH - 1);
+     err_string[OPENSSL_ERROR_LENGTH - 1] = '\0';
+   }
+ EXIT:
++  OSSL_LIB_CTX_free(ctx);
+   return rc;
+ }
+ 
+@@ -524,7 +535,22 @@ EXIT:
+ 
+   @returns openssl current fips mode
+ */
+-uint get_fips_mode() { return FIPS_mode(); }
++uint get_fips_mode() {
++  unsigned int fips_mode = -1;
++  OSSL_LIB_CTX *ctx = NULL;
++
++  ctx = OSSL_LIB_CTX_new();
++
++  if (!ctx) {
++    goto EXIT;
++  }
++
++  fips_mode = EVP_default_properties_is_fips_enabled(ctx);
++
++EXIT:
++  OSSL_LIB_CTX_free(ctx);
++  return fips_mode;
++}
+ 
+ /**
+   Toggle FIPS mode, to see whether it is available with the current SSL library.
+@@ -532,12 +558,27 @@ uint get_fips_mode() { return FIPS_mode(); }
+   @retval non-zero: FIPS is supported.
+ */
+ int test_ssl_fips_mode(char *err_string) {
+-  int ret = FIPS_mode_set(FIPS_mode() == 0 ? 1 : 0);
+-  unsigned long err = (ret == 0) ? ERR_get_error() : 0;
++  OSSL_LIB_CTX *ctx = NULL;
++  int ret;
++  unsigned long err;
++
++  ctx = OSSL_LIB_CTX_new();
++
++  if (!ctx) {
++    ret = 0;
++    goto EXIT;
++  }
++
++  ret = EVP_default_properties_enable_fips(ctx, (EVP_default_properties_is_fips_enabled(ctx) == 0 ? 1 : 0));
++  err = (ret == 0) ? ERR_get_error() : 0;
+ 
+   if (err != 0) {
+     ERR_error_string_n(err, err_string, OPENSSL_ERROR_LENGTH - 1);
+   }
++
++EXIT:
++
++  OSSL_LIB_CTX_free(ctx);
+   return ret;
+ }
+ 
+-- 
+2.17.1

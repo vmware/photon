@@ -1,7 +1,7 @@
 Summary:        Perl extension for using OpenSSL
 Name:           perl-Net-SSLeay
 Version:        1.88
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Perl Artistic License 2.0
 Group:          Development/Libraries
 URL:            http://search.cpan.org/~mikem/Net-SSLeay-%{version}/
@@ -28,7 +28,7 @@ Net::SSLeay module basically comprise of:
 * There is also a related module called Net::SSLeay::Handle included in this distribution that you might want to use instead. It has its own pod documentation.
 
 %prep
-%setup -q -n Net-SSLeay-%{version}
+%autosetup -n Net-SSLeay-%{version}
 
 %build
 %if 0%{?with_fips:1}
@@ -42,7 +42,7 @@ make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
-make pure_install DESTDIR=%{buildroot}
+make pure_install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot} -type f -name .packlist -delete
 find %{buildroot} -type f -name '*.bs' -empty -delete
 
@@ -51,13 +51,15 @@ find %{buildroot} -type f -name '*.bs' -empty -delete
 export PERL_MM_USE_DEFAULT=1
 echo "yes" | cpan -a
 cpan -i Test::Pod Test::Exception Test::Warn Test::NoWarnings
-make test
+make test %{?_smp_mflags}
 
 %files
 %{perl_vendorlib}/*
 %{_mandir}/man?/*
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.88-3
+-   Bump up release for openssl
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.88-2
 -   openssl 1.1.1
 *   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 1.88-1

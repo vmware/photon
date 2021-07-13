@@ -2,7 +2,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.15.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -62,8 +62,7 @@ Requires:       %{name} = %{version}-%{release}
 It contains the documentation and manpages for openvswitch.
 
 %prep
-%setup -q
-
+%autosetup -p1
 %build
 export PYTHON2=no
 
@@ -71,7 +70,7 @@ export PYTHON2=no
 make %{_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{_smp_mflags}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 mkdir -p %{buildroot}/%{python3_sitelib}
 cp -a %{buildroot}/%{_datadir}/openvswitch/python/ovs %{buildroot}/%{python3_sitelib}
@@ -89,7 +88,7 @@ install -p -D -m 0644 rhel/etc_openvswitch_default.conf %{buildroot}/%{_sysconfd
 sed -i '/OVS_USER_ID=.*/c\OVS_USER_ID=' %{buildroot}/%{_sysconfdir}/openvswitch/default.conf
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{_smp_mflags}
 
 %preun
 %systemd_preun %{name}.service
@@ -143,6 +142,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man7/ovs-actions.7.gz
 
 %changelog
+*   Thu Sep 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.15.0-2
+-   Bump up release for openssl
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.15.0-1
 -   Automatic Version Bump
 *   Mon Mar 01 2021 Dweep Advani <dadvani@vmware.com> 2.14.0-4

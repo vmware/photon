@@ -1,7 +1,7 @@
 Summary:        This project is an implementation of the TCG TPM 2.0 specification.
 Name:           ibmtpm
 Version:        1661
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD 2-Clause
 URL:            https://sourceforge.net/projects/ibmswtpm2/files
 Group:          System Environment/Security
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}%{version}.tar.gz
 %define sha1 ibmtpm=4a520d518dafe79422dfb1bafe8ddf463c942205
+Patch0:         0001-ibmtpm-fix-compilation-issue-with-openssl-3.0.patch
 BuildRequires:  openssl-devel curl-devel
 Requires:       openssl curl
 %description
@@ -17,7 +18,7 @@ It is based on the TPM specification Parts 3 and 4 source code donated by Micros
 with additional files to complete the implementation.
 
 %prep
-%setup -cqn %{name}-%{version}
+%autosetup -p1 -cn %{name}-%{version}
 
 %build
 cd src
@@ -27,7 +28,7 @@ make %{?_smp_mflags}
 
 %install
 cd src
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 mkdir -p %{buildroot}/lib/systemd/system
 cat << EOF >> %{buildroot}/lib/systemd/system/ibmtpm_server.service
 [Unit]
@@ -44,6 +45,8 @@ EOF
 /lib/systemd/system/ibmtpm_server.service
 
 %changelog
+*   Thu Jun 03 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1661-2
+-   Compatibility with openssl 3.0
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1661-1
 -   Automatic Version Bump
 *   Thu Oct 08 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1637-3

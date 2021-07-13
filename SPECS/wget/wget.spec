@@ -1,7 +1,7 @@
 Summary:        A network utility to retrieve files from the Web
 Name:           wget
 Version:        1.20.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
@@ -19,21 +19,32 @@ BuildRequires:  perl
 The Wget package contains a utility useful for non-interactive
 downloading of files from the Web.
 %prep
-%setup -q
+%autosetup
 %build
-./configure \
+sh ./configure --host=%{_host} --build=%{_build} \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
-    --disable-silent-rules \
+    --program-prefix= \
+    --disable-dependency-tracking \
     --prefix=%{_prefix} \
+    --exec-prefix=%{_prefix} \
     --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
+    --sbindir=%{_sbindir} \
     --sysconfdir=/etc \
+    --datadir=%{_datadir} \
+    --includedir=%{_includedir} \
+    --libdir=%{_libdir} \
+    --libexecdir=%{_libexecdir} \
+    --localstatedir=%{_localstatedir} \
+    --sharedstatedir=%{_sharedstatedir} \
+    --mandir=%{_mandir} \
+    --infodir=%{_infodir} \
+    --disable-silent-rules \
     --with-ssl=openssl
 make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}/etc
 cat >> %{buildroot}/etc/wgetrc <<-EOF
 #   default root certs location
@@ -55,6 +66,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_mandir}/man1/*
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.20.3-3
+-   Bump up release for openssl
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.20.3-2
 -   openssl 1.1.1
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 1.20.3-1

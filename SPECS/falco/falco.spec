@@ -2,7 +2,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.25.0
-Release:        4%{?kernelsubrelease}%{?dist}
+Release:        5%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/falco/
 Group:          Applications/System
@@ -76,7 +76,7 @@ make %{?_smp_mflags} all KERNELDIR="/lib/modules/%{uname_r}/build"
 
 %install
 cd build
-make install DESTDIR=%{buildroot} KERNELDIR="/lib/modules/%{uname_r}/build"
+make install DESTDIR=%{buildroot} KERNELDIR="/lib/modules/%{uname_r}/build" %{?_smp_mflags}
 mkdir -p %{buildroot}/lib/modules/%{uname_r}/extra
 install -vm 644 driver/falco.ko %{buildroot}/lib/modules/%{uname_r}/extra
 
@@ -108,6 +108,8 @@ rm -rf %{buildroot}/*
 /sbin/depmod -a
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.25.0-5
+-   compile with openssl 3.0.0
 *   Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 0.25.0-4
 -   Patched for CVE-2021-33505.
 *   Fri Feb 19 2021 Harinadh D <hdommaraju@vmware.com> 0.25.0-3

@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        11.3.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -171,6 +171,8 @@ fi
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 11.3.5-5
+- Bump up release for openssl
 * Tue Oct 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.5-4
 - Make GOSC scripts depend on full version of open-vm-tools
 * Mon Oct 25 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.5-3

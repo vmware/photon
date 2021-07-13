@@ -2,7 +2,7 @@
 
 Summary:        Python cryptography library
 Name:           python3-cryptography
-Version:        3.2.1
+Version:        3.3.2
 Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
@@ -10,7 +10,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://pypi.io/packages/source/c/cryptography/cryptography-%{version}.tar.gz
-%define sha1    cryptography=20708a4955dcf7e2bb53d05418273d2bc0f80ab4
+%define sha1    cryptography=eb8be696115458f9368432525e9cae11d0f6bebf
 BuildRequires:  openssl-devel
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -18,7 +18,7 @@ BuildRequires:  python3-libs
 BuildRequires:  python3-cffi
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-
+Patch0:         0001-openssl-3.0.0-support.patch
 %if %{with_check}
 BuildRequires:  python3-pip
 BuildRequires:  curl-devel
@@ -36,9 +36,8 @@ Requires:       python3-asn1crypto
 %description
 Cryptography is a Python library which exposes cryptographic recipes and primitives.
 
-
 %prep
-%setup -q -n cryptography-%{version}
+%autosetup -p1 -n cryptography-%{version}
 
 %build
 python3 setup.py build
@@ -66,6 +65,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Sat Nov 13 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.3.2-1
+-   update to version 3.3.2 and openssl 3.0.0 support
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.1-1
 -   Automatic Version Bump
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.1.1-2

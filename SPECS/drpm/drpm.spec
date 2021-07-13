@@ -1,7 +1,7 @@
 Name:            drpm
 Summary:         A library for making, reading and applying deltarpm packages
 Version:         0.5.0
-Release:         3%{?dist}
+Release:         4%{?dist}
 License:         LGPLv2+ and BSD
 URL:             https://github.com/rpm-software-management/%{name}
 Source0:         https://github.com/rpm-software-management/drpm/releases/download/0.5.0/drpm-%{version}.tar.bz2
@@ -31,7 +31,7 @@ Requires:       %{name} = %{version}-%{release}
 The drpm-devel package provides a C interface (drpm.h) for the drpm library.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 mkdir build
 
 %build
@@ -42,7 +42,7 @@ popd
 
 %install
 pushd build
-make install DESTDIR=%{?buildroot}
+make install DESTDIR=%{?buildroot} %{?_smp_mflags}
 popd
 
 %check
@@ -64,6 +64,8 @@ popd
 %{_lib64dir}/pkgconfig/%{name}.pc
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.5.0-4
+-   Bump up release for openssl
 *   Fri Nov 13 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.5.0-3
 -   make drpm build with zstd
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.5.0-2

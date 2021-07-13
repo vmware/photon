@@ -68,6 +68,7 @@ BuildRequires:  which
 Requires:       icu
 #gallery download scripts will fail without this
 Requires:       zlib-devel
+BuildArch:      aarch64_1
 
 %description
 PowerShell is an automation and configuration management platform.

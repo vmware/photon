@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.27
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -17,6 +17,7 @@ BuildRequires:  libtirpc-devel
 BuildRequires:  rpcsvc-proto-devel
 BuildRequires:  protobuf-devel
 Requires:       protobuf
+Patch0:         0001-mysql-compatibility-with-openssl-3.0.patch
 
 %description
 MySQL is a free, widely used SQL engine. It can be used as a fast database as well as a rock-solid DBMS using a modular engine architecture.
@@ -29,7 +30,7 @@ Requires:       %{name} = %{version}-%{release}
 Development headers for developing applications linking to maridb
 
 %prep
-%autosetup %{name}-boost-%{version}
+%autosetup -p1 %{name}-boost-%{version}
 
 %build
 cmake . \
@@ -78,6 +79,8 @@ make test %{?_smp_mflags}
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Wed Nov 10 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.0.27-2
+-   openssl 3.0.0 compatibility
 *   Wed Oct 27 2021 Tapas Kundu <tkundu@vmware.com> 8.0.27-1
 -   Update to 8.0.27
 *   Mon Aug 02 2021 Shreyas B <shreyasb@vmware.com> 8.0.26-1

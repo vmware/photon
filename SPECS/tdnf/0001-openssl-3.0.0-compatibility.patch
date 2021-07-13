@@ -1,0 +1,25 @@
+From 62ade1db10b0b4a84f96cf9e4cafee57fc1dc1f4 Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh Vasamsetty <svasamsetty@vmware.com>
+Date: Tue, 13 Apr 2021 23:24:31 +0530
+Subject: [PATCH] openssl 3.0.0 compatibility
+
+---
+ client/remoterepo.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/client/remoterepo.c b/client/remoterepo.c
+index 5b112b5..f50fed1 100644
+--- a/client/remoterepo.c
++++ b/client/remoterepo.c
+@@ -172,7 +172,7 @@ TDNFGetDigestForFile(
+         dwError = ERROR_TDNF_CHECKSUM_VALIDATION_FAILED;
+         /*MD5 is not approved in FIPS mode. So, overrriding
+           the dwError to show the right error to the user */
+-        if (FIPS_mode() && !strcasecmp(hash->hash_type, "md5"))
++        if (EVP_default_properties_is_fips_enabled(ctx) && !strcasecmp(hash->hash_type, "md5"))
+         {
+             dwError = ERROR_TDNF_FIPS_MODE_FORBIDDEN;
+         }
+-- 
+2.7.4
+
