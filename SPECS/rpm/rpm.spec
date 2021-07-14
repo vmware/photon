@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -47,6 +47,8 @@ BuildRequires:  file-devel
 BuildRequires:  python3-devel
 BuildRequires:  openssl >= 1.1.1
 BuildRequires:  zstd-devel
+BuildRequires:  systemd-rpm-macros
+
 %description
 RPM package manager
 
@@ -78,6 +80,7 @@ Requires:   lua
 Requires:   %{name}-devel = %{version}-%{release}
 Requires:   elfutils-libelf
 Requires:   cpio
+Requires:   systemd-rpm-macros
 Summary:    Binaries, scripts and libraries needed to build rpms.
 %description build
 Binaries, libraries and scripts to build rpms.
@@ -256,6 +259,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jul 14 2021 Susant Sahani <ssahani@vmware.com> 4.16.1.2-5
+-   Add systemd-rpm-macros to build requires and requires
 *   Fri May 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.2-4
 -   Fix CVE-2021-20266 & CVE-2021-20271
 -   Fix regression introduced in CVE-2021-20271 fix

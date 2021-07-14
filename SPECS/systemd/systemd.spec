@@ -1,7 +1,7 @@
 Name:             systemd
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Version:          249
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 Summary:          System and Service Manager
 
@@ -280,16 +280,11 @@ CONFIGURE_OPTS=(
        $CROSS_COMPILE_CONFIG
 )
 
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-
-meson build ${CONFIGURE_OPTS[@]}
-ninja -C build
+%meson "${CONFIGURE_OPTS[@]}"
+%meson_build
 
 %install
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-DESTDIR=%{buildroot} ninja -C build install
+%meson_install
 
 sed -i '/srv/d' %{buildroot}/usr/lib/tmpfiles.d/home.conf
 sed -i "s:0775 root lock:0755 root root:g" %{buildroot}/usr/lib/tmpfiles.d/legacy.conf
@@ -657,6 +652,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+*    Wed Jul 14 2021 Susant Sahani <ssahani@vmware.com>  249-2
+-    Switch to meson
 *    Mon Jul 12 2021 Susant Sahani <ssahani@vmware.com>  249-1
 -    Version bump
 *    Mon Apr 5 2021 Susant Sahani <ssahani@vmware.com>  248-1
