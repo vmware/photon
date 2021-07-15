@@ -59,6 +59,7 @@ aarch64/mpfr-devel-4.0.1-1.ph3.aarch64.rpm
 aarch64/ncurses-6.0-11.ph2.aarch64.rpm
 aarch64/ncurses-devel-6.0-11.ph2.aarch64.rpm
 aarch64/ncurses-libs-6.0-11.ph2.aarch64.rpm
+aarch64/ncurses-terminfo-6.1-2.ph3.aarch64.rpm
 aarch64/nspr-4.15-1.ph2.aarch64.rpm
 aarch64/nspr-devel-4.15-1.ph2.aarch64.rpm
 aarch64/nss-3.31-3.ph2.aarch64.rpm
@@ -93,11 +94,11 @@ aarch64/xz-5.2.3-2.ph2.aarch64.rpm
 aarch64/xz-libs-5.2.3-2.ph2.aarch64.rpm
 aarch64/zlib-1.2.11-1.ph2.aarch64.rpm
 aarch64/zlib-devel-1.2.11-1.ph2.aarch64.rpm
+aarch64/zstd-1.4.5-1.ph3.aarch64.rpm
+aarch64/zstd-devel-1.4.5-1.ph3.aarch64.rpm
+aarch64/zstd-libs-1.4.5-1.ph3.aarch64.rpm
 noarch/apache-maven-3.3.9-4.ph1.noarch.rpm
 noarch/autoconf-2.69-6.ph2.noarch.rpm
 noarch/automake-1.15-4.ph2.noarch.rpm
 noarch/linux-api-headers-4.9.47-1.ph2.noarch.rpm
 noarch/man-pages-4.10-1.ph2.noarch.rpm
-aarch64/zstd-1.4.5-1.ph3.aarch64.rpm
-aarch64/zstd-libs-1.4.5-1.ph3.aarch64.rpm
-aarch64/zstd-devel-1.4.5-1.ph3.aarch64.rpm
