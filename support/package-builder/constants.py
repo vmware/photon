@@ -143,6 +143,7 @@ class constants(object):
         "ncurses",
         "ncurses-libs",
         "ncurses-devel",
+        "ncurses-terminfo",
         "bash",
         "bzip2",
         "bzip2-libs",
