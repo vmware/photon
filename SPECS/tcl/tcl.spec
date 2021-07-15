@@ -2,7 +2,7 @@ Summary:        Tool Command Language - the language and library.
 Name:           tcl
 Version:        8.6.10
 %define majorver 8.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://tcl.sourceforge.net/
 License:        LGPLv2+
 Group:          System Environment/Libraries
@@ -10,6 +10,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://downloads.sourceforge.net/sourceforge/tcl/tcl-core%{version}-src.tar.gz
 %define sha1    tcl-core=8a51f3cf987e75f859b5e378f27d9182030cc3f7
+Patch0:         tcl-CVE-2021-35331.patch
+
 BuildRequires:  cmake
 
 %description
@@ -30,6 +32,7 @@ Headers and development libraries for tcl
 
 %prep
 %setup -q -n %{name}%{version}
+%patch0 -p1
 
 %build
 cd unix
@@ -96,6 +99,8 @@ make test
 %exclude %{_mandir}/man3/Thread.3.gz
 
 %changelog
+*   Thu Jul 15 2021 Nitesh Kumar <kunitesh@vmware.com> 8.6.10-2
+-   Fix CVE-2021-35331.
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 8.6.10-1
 -   Automatic Version Bump
 *   Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 8.6.8-1
