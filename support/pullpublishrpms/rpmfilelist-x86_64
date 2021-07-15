@@ -66,6 +66,7 @@ x86_64/mpfr-devel-4.1.0-1.ph4.x86_64.rpm
 x86_64/ncurses-6.2-3.ph4.x86_64.rpm
 x86_64/ncurses-devel-6.2-3.ph4.x86_64.rpm
 x86_64/ncurses-libs-6.2-3.ph4.x86_64.rpm
+x86_64/ncurses-terminfo-6.2-3.ph4.x86_64.rpm
 x86_64/nspr-4.29-1.ph4.x86_64.rpm
 x86_64/nspr-devel-4.29-1.ph4.x86_64.rpm
 x86_64/nss-3.57-2.ph4.x86_64.rpm
