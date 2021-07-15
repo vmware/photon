@@ -2,7 +2,7 @@ Summary:        Tool Command Language - the language and library.
 Name:           tcl
 Version:        8.6.6
 %define majorver 8.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            http://tcl.sourceforge.net/
 License:        LGPLv2+
 Group:          System Environment/Libraries
@@ -10,6 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://downloads.sourceforge.net/sourceforge/tcl/tcl-core%{version}-src.tar.gz
 %define sha1    tcl-core=6a1bc424faeef44fed5e44d32198c7ff4ff05658
+Patch0:         tcl-CVE-2021-35331.patch
 
 BuildRequires:  cmake
 
@@ -31,12 +32,11 @@ Headers and development libraries for tcl
 
 %prep
 %setup -q -n %{name}%{version}
+%patch0 -p1
 
 %build
 cd unix
-./configure \
-       --prefix=%{_prefix}  \
-       --mandir=%{_mandir}  \
+%configure \
        --enable-threads     \
        --enable-shared      \
        --disable-static     \
@@ -98,11 +98,13 @@ make test
 
 
 %changelog
+*   Thu Jul 15 2021 Nitesh Kumar <kunitesh@vmware.com> 8.6.6-5
+-   Fix CVE-2021-35331.
 *   Sun Oct 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.6.6-4
 -   Remove obsoletes. Versions before 8.6.6-3 doesnt do requires properly
     for devel so need special case for those versions in upgrades.
 *   Wed Sep 06 2017 Danut Moraru <dmoraru@vmware.com> 8.6.6-3
--   Release 3 obsoletes 1 and 2, as upgrade from rel 1 to rel 2 may bring in conflict files in tcl-devel rel 1 that have 
+-   Release 3 obsoletes 1 and 2, as upgrade from rel 1 to rel 2 may bring in conflict files in tcl-devel rel 1 that have
     been moved to tcl rel 2.
 *   Mon Aug 28 2017 Danut Moraru <dmoraru@vmware.com> 8.6.6-2
 -   Ported previous change from dev to 1.0 branch
