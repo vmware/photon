@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.191
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -107,6 +107,9 @@ Patch62:        0001-net-9p-Enhance-p9_client_read_dotx-and-p9_client_wri.patch
 Patch63:        0002-fs-9p-Add-read_cache_pages_inchunks.patch
 # 9p improve write pages cache
 Patch64:        0001-fs-9p-write-pages-together-if-pages-are-consecutive-.patch
+
+#Fix for CVE-2021-33909
+Patch72:        CVE-2021-33909.patch
 
 # Fix for CVE-2020-16119
 Patch73:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
@@ -481,6 +484,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch62 -p1
 %patch63 -p1
 %patch64 -p1
+%patch72 -p1
 %patch73 -p1
 %patch74 -p1
 %patch75 -p1
@@ -891,6 +895,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 4.19.191-5
+-   Fix for CVE-2021-33909
 *   Thu Jun 24 2021 Ankit Jain <ankitja@vmware.com> 4.19.191-4
 -   vtarfs: Fixes fault handler
 *   Thu Jun 24 2021 Ankit Jain <ankitja@vmware.com> 4.19.191-3

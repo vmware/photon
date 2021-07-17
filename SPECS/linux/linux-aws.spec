@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.191
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -86,6 +86,9 @@ Patch67:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
 
 #Fix for CVE-2021-3609
 Patch68:        0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
+
+#Fix for CVE-2021-33909
+Patch69:        CVE-2021-33909.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -248,6 +251,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch66 -p1
 %patch67 -p1
 %patch68 -p1
+%patch69 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -481,6 +485,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 4.19.191-3
+-   Fix for CVE-2021-33909
 *   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.191-2
 -   Fix for CVE-2021-3609
 *   Tue Jun 01 2021 Keerthana K <keerthanak@vmware.com> 4.19.191-1

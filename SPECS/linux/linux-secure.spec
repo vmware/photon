@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.191
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -89,6 +89,9 @@ Patch69:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
 
 #Fix for CVE-2021-3609
 Patch70:        0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
+
+#Fix for CVE-2021-33909
+Patch71:        CVE-2021-33909.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -261,6 +264,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch68 -p1
 %patch69 -p1
 %patch70 -p1
+%patch71 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -477,6 +481,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 4.19.191-5
+-   Fix for CVE-2021-33909
 *   Fri Jul 02 2021 Keerthana K <keerthanak@vmware.com> 4.19.191-4
 -   HCX custom patches
 -   Enable HCX kernel configs
