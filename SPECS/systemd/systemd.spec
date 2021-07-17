@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          32%{?dist}
+Release:          33%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -62,6 +62,7 @@ Patch42:          ignore-classless-route-gateway.patch
 Patch43:          increase-watchdog-tmo.patch
 Patch44:          timedate-increment-reference-count-of-sd_bus_message.patch
 Patch45:          timedate-defer-the-property-changed-signal-until-job.patch
+Patch46:          systemd-239-CVE-2021-33910.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -315,6 +316,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 239-33
+-    Fix for CVE-2021-33910
 *    Wed May 19 2021 Susant Sahani <ssahani@vmware.com> 239-32
 -    timedate: defer the property changed signal until job of
 -    starting/stopping NTP service is finished
@@ -336,7 +339,7 @@ rm -rf %{buildroot}/*
 *    Sat Jun 06 2020 Susant Sahani <ssahani@vmware.com> 239-24
 -    Fix CVE-2020-13776
 *    Wed May 27 2020 Shreenidhi Shedi <sshedi@vmware.com> 239-23
-*    Added patch to detect vmware hypervisor
+-    Added patch to detect vmware hypervisor
 *    Thu May 21 2020 Tapas Kundu <tkundu@vmware.com> 239-22
 -    systemd: services shouldn't start if there is residual processes left over
 -    Services restart after systemd update
