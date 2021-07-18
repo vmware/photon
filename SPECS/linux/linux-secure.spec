@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.46
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -74,6 +74,8 @@ Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-3609
 Patch103:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
+#Fix for CVE-2021-33909
+Patch104:       CVE-2021-33909.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -179,6 +181,7 @@ The Linux package contains the Linux kernel doc files
 %patch101 -p1
 %patch102 -p1
 %patch103 -p1
+%patch104 -p1
 
 # crypto
 %patch500 -p1
@@ -304,6 +307,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 5.10.46-2
+-   Fix for CVE-2021-33909
 *   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.46-1
 -   Update to version 5.10.46
 *   Thu Jun 24 2021 Loïc <4661917+HacKurx@users.noreply.github.com> 5.10.42-4

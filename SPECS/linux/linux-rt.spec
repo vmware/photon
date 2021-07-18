@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.46
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt42
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -83,6 +83,8 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-3609
 Patch130:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
+#Fix for CVE-2021-33909
+Patch131:       CVE-2021-33909.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/5.10/
@@ -513,6 +515,7 @@ The Linux package contains the Linux kernel doc files
 %patch100 -p1
 %patch101 -p1
 %patch130 -p1
+%patch131 -p1
 
 # RT
 %patch301 -p1
@@ -1037,6 +1040,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 5.10.46-2
+-   Fix for CVE-2021-33909
 *   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.46-1
 -   Update to version 5.10.46
 *   Thu Jun 24 2021 Ankit Jain <ankitja@vmware.com> 5.10.42-4

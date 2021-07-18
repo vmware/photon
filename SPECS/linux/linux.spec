@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.46
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -100,6 +100,8 @@ Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Fix for CVE-2021-3609
 Patch130:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
+#Fix for CVE-2021-33909
+Patch131:        CVE-2021-33909.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -295,6 +297,7 @@ Python programming language to use the interface to manipulate perf events.
 %patch101 -p1
 %patch102 -p1
 %patch130 -p1
+%patch131 -p1
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -659,6 +662,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 5.10.46-2
+-   Fix for CVE-2021-33909
 *   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.46-1
 -   Update to version 5.10.46
 *   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.42-3
