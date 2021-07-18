@@ -1,7 +1,7 @@
 Name:             systemd
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Version:          247.6
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 Summary:          System and Service Manager
 
@@ -21,6 +21,7 @@ Source6:          10-defaults.preset
 Patch0:           systemd-247-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:           systemd-247-default-dns-from-env.patch
 Patch2:           timesync-Make-delaying-attempts-to-contact-servers-c.patch
+Patch3:           CVE-2021-33910.patch
 
 Requires:         Linux-PAM
 Requires:         bzip2
@@ -660,6 +661,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+*    Fri Jul 16 2021 Him Kalyan Bordoloi <bordoloih@vmware.com>  247.6-2
+-    Fix for CVE-2021-33910
 *    Tue Mar 30 2021 Susant Sahani <ssahani@vmware.com>  247.6-1
 -    Add systemd-rpm-macros to extra build requires and update version
 *    Tue Mar 16 2021 Susant Sahani <ssahani@vmware.com>  247.4-1
