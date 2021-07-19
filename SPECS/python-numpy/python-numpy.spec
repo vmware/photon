@@ -4,14 +4,15 @@
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python-numpy
 Version:        1.12.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/numpy
-Source0:        https://pypi.python.org/packages/a5/16/8a678404411842fe02d780b5f0a676ff4d79cd58f0f22acddab1b392e230/numpy-%{version}.zip 
-%define sha1    numpy=50d8a6dc5d95c914119d21b0c047b9761bbccd59 
+Source0:        https://pypi.python.org/packages/a5/16/8a678404411842fe02d780b5f0a676ff4d79cd58f0f22acddab1b392e230/numpy-%{version}.zip
+%define sha1    numpy=50d8a6dc5d95c914119d21b0c047b9761bbccd59
+Patch0:         numpy-CVE-2017-12852.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -19,6 +20,10 @@ BuildRequires:  python-setuptools
 BuildRequires:  python2-devel
 BuildRequires:  lapack-devel
 BuildRequires:  unzip
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 
 Requires:       python2
 Requires:       python2-libs
@@ -28,10 +33,6 @@ NumPy is a general-purpose array-processing package designed to efficiently mani
 
 %package -n     python3-numpy
 Summary:        python-numpy
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -40,6 +41,7 @@ Python 3 version.
 
 %prep
 %setup -q -n numpy-%{version}
+%patch0 -p1
 
 %build
 # xlocale.h has been removed from glibc 2.26
@@ -80,6 +82,8 @@ rm -rf test
 %{_bindir}/f2py3
 
 %changelog
+*   Mon Jul 19 2021 Nitesh Kumar <kunitesh@vmware.com> 1.12.1-6
+-   Patched for CVE-2017-12852
 *   Fri Aug 25 2017 Alexey Makhalov <amakhalov@vmware.com> 1.12.1-5
 -   Fix compilation issue for glibc-2.26
 *   Wed Jul 26 2017 Divya Thaluru <dthaluru@vmware.com> 1.12.1-4
