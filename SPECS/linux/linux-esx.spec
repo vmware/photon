@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.274
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -97,6 +97,8 @@ Patch62:        0002-vfio-pci-Fault-mmaps-to-enable-vma-tracking.patch
 Patch63:        0003-vfio-pci-Invalidate-mmaps-and-block-MMIO-access-on-d.patch
 # Fix for CVE-2019-19377
 Patch68:        0001-btrfs-Don-t-submit-any-btree-write-bio-if-the-fs-has.patch
+#Fix for CVE-2021-33909
+Patch69:        CVE-2021-33909.patch
 
 # For Spectre
 Patch70:        0169-x86-syscall-Clear-unused-extra-registers-on-syscall-.patch
@@ -238,6 +240,7 @@ The Linux package contains the Linux kernel doc files
 %patch62 -p1
 %patch63 -p1
 %patch68 -p1
+%patch69 -p1
 
 %patch70 -p1
 %patch71 -p1
@@ -355,6 +358,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 4.4.274-2
+-   Fix for CVE-2021-33909
 *   Tue Jul 06 2021 Vikash Bansal <bvikas@vmware.com> 4.4.274-1
 -   Update to version 4.4.274
 *   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.273-1

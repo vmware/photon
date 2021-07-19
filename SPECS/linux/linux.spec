@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.274
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -128,6 +128,8 @@ Patch84:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 
 # Fix for CVE-2021-3609
 Patch85:        0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
+#Fix for CVE-2021-33909
+Patch86:        CVE-2021-33909.patch
 
 # Various vmxnet3 driver fixes:
 Patch91:        0001-vmxnet3-Wake-queue-from-reset-work.patch
@@ -288,6 +290,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch83 -p1
 %patch84 -p1
 %patch85 -p1
+%patch86 -p1
 %patch91 -p1
 %patch92 -p1
 %patch93 -p1
@@ -454,6 +457,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 4.4.274-2
+-   Fix for CVE-2021-33909
 *   Tue Jul 06 2021 Vikash Bansal <bvikas@vmware.com> 4.4.274-1
 -   Update to version 4.4.274
 *   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.273-1
