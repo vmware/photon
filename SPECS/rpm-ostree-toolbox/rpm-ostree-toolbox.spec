@@ -1,7 +1,7 @@
 Summary: 	Extra tools for rpm-ostree
 Name: 		rpm-ostree-toolbox
 Version: 	2015.12
-Release: 	3%{?dist}
+Release: 	4%{?dist}
 #VCS: https://github.com/cgwalters/rpm-ostree-toolbox
 # This tarball is generated via "make -C packaging -f Makefile.dist-packaging dist-snapshot"
 # which is really just a wrapper for "git archive".
@@ -79,12 +79,13 @@ fi
 %attr(0755,rpmostreecompose,rpmostreecompose) %{_localstatedir}/lib/%{name}
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2015.12-3
--	GA - Bump release of all rpms
+*   Mon Jul 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 2015.12-4
+-   Bump version as a part of rpm upgrade
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2015.12-3
+-   GA - Bump release of all rpms
 *   Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 2015.12-2
 -   Clean up the spec file.
 *   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 2015.12-1
 -   Updated to version 2015.12
 *   Sat May 24 2014 Colin Walters <walters@verbum.org> - 2014.11-1
 -   Initial package
-
