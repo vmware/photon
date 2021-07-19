@@ -1,0 +1,126 @@
+From 74b1c99521d7a97093ccfdf8ce68a12aff54f639 Mon Sep 17 00:00:00 2001
+From: Susant Sahani <ssahani@vmware.com>
+Date: Wed, 20 Jan 2021 15:30:16 +0100
+Subject: [PATCH] network: Fix crash while dhcp4 address gets update
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+```
+eth0: link_check_ready(): static addresses are not configured.
+veth0: Addresses set
+veth0: link_check_ready(): dynamic addresses or routes are not configured.
+veth99: Remembering foreign address: 192.168.5.16/24 (valid for 1h)
+veth99: link_check_ready(): DHCP4, DHCP6 or IPv4LL is enabled but no dynamic address is assigned yet.
+veth99: Ignoring received foreign route: dst: 192.168.5.16/32, src: n/a, gw: n/a, prefsrc: 192.168.5.5, scope: host, table: local, proto: kernel, type: local
+Assertion 'a' failed at src/network/networkd-address.c:1788, function address_is_ready(). Aborting.
+[11]    670758 IOT instruction  sudo SYSTEMD_LOG_LEVEL=debug ./systemd-networkd
+
+~/tt/network-crash-dhcp/build  network-crash-dhcp*
+   ~/tt/network-crash-dhcp/build on    network-crash-dhcp *13 ?8 ❯ sudo gdb ./systemd-networkd                                                            ↵ IOT 
+(gdb) r
+Starting program: /home/sus/tt/network-crash-dhcp/build/systemd-networkd
+Missing separate debuginfos, use: dnf debuginfo-install glibc-2.32.9000-24.fc34.x86_64
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib64/libthread_db.so.1".
+veth99: Gained IPv6LL
+veth0: Gained IPv6LL
+eth0: Gained IPv6LL
+Enumeration completed
+veth99: DHCPv4 address 192.168.5.16/24 via 192.168.5.1
+Assertion 'a' failed at src/network/networkd-address.c:1788, function address_is_ready(). Aborting.
+
+Program received signal SIGABRT, Aborted.
+0x00007ffff7a64272 in raise () from /lib64/libc.so.6
+Missing separate debuginfos, use: dnf debuginfo-install audit-libs-3.0-1.fc34.x86_64 iptables-libs-1.8.6-1.fc34.x86_64 iptables-libs-1.8.6-5.fc34.x86_64 kmod-libs-28-1.fc34.x86_64 libacl-2.2.53-9.fc34.x86_64 libattr-2.4.48-10.fc33.x86_64 libblkid-2.36-3.fc34.x86_64 libblkid-2.36.1-2.fc34.x86_64 libcap-2.44-1.fc34.x86_64 libcap-ng-0.8.2-1.fc34.x86_64 libeconf-0.3.8-4.fc33.x86_64 libffi-3.1-27.fc34.x86_64 libgcc-11.0.0-0.12.fc34.x86_64 libgcrypt-1.8.7-1.fc34.x86_64 libgpg-error-1.41-1.fc34.x86_64 libibverbs-core-32.0-1.fc34.x86_64 libmount-2.36-3.fc34.x86_64 libmount-2.36.1-2.fc34.x86_64 libnl3-3.5.0-5.fc33.x86_64 libpcap-1.9.1-6.fc34.x86_64 libseccomp-2.5.0-3.fc33.x86_64 libselinux-3.1-6.fc34.x86_64 libxcrypt-4.4.17-1.fc34.x86_64 libzstd-1.4.7-1.fc34.x86_64 lz4-libs-1.9.3-1.fc34.x86_64 p11-kit-0.23.22-1.fc34.x86_64 pam-1.5.1-2.fc34.x86_64 pcre2-10.36-1.fc34.x86_64 sssd-client-2.4.0-6.fc34.x86_64 xz-libs-5.2.5-4.fc34.x86_64 zlib-1.2.11-22.fc33.x86_64 zlib-1.2.11-23.fc34.x86_64
+(gdb) bt
+    func=0x526870 <__PRETTY_FUNCTION__.3> "address_is_ready") at ../src/basic/log.c:863
+(gdb) f 4
+782	        if (address_is_ready(link->dhcp_address)) {
+(gdb) p link->dhcp_address
+$1 = (Address *) 0x0
+
+```
+---
+ src/network/networkd-address.c | 6 ++++++
+ src/network/networkd-address.h | 1 +
+ src/network/networkd-dhcp4.c   | 8 ++++++++
+ 3 files changed, 15 insertions(+)
+
+diff --git a/src/network/networkd-address.c b/src/network/networkd-address.c
+index 549f5f1f82..93bb47f4e9 100644
+--- a/src/network/networkd-address.c
++++ b/src/network/networkd-address.c
+@@ -106,6 +106,9 @@ Address *address_free(Address *address) {
+         if (!address)
+                 return NULL;
+ 
++        if (address->keep_dhcp4_address)
++                return NULL;
++
+         if (address->network) {
+                 assert(address->section);
+                 ordered_hashmap_remove(address->network->addresses_by_section, address->section);
+@@ -117,10 +120,13 @@ Address *address_free(Address *address) {
+                 set_remove(address->link->addresses, address);
+                 set_remove(address->link->addresses_foreign, address);
+                 set_remove(address->link->static_addresses, address);
++
+                 if (address->link->dhcp_address == address)
+                         address->link->dhcp_address = NULL;
++
+                 if (address->link->dhcp_address_old == address)
+                         address->link->dhcp_address_old = NULL;
++
+                 set_remove(address->link->dhcp6_addresses, address);
+                 set_remove(address->link->dhcp6_addresses_old, address);
+                 set_remove(address->link->dhcp6_pd_addresses, address);
+diff --git a/src/network/networkd-address.h b/src/network/networkd-address.h
+index 4764766996..79b5464813 100644
+--- a/src/network/networkd-address.h
++++ b/src/network/networkd-address.h
+@@ -37,6 +37,7 @@ typedef struct Address {
+         union in_addr_union in_addr_peer;
+ 
+         bool scope_set:1;
++        bool keep_dhcp4_address:1;
+         bool ip_masquerade_done:1;
+         AddressFamily duplicate_address_detection;
+ 
+diff --git a/src/network/networkd-dhcp4.c b/src/network/networkd-dhcp4.c
+index 5d3af46d4a..ca5fadc7ce 100644
+--- a/src/network/networkd-dhcp4.c
++++ b/src/network/networkd-dhcp4.c
+@@ -775,6 +775,11 @@ static int dhcp4_address_handler(sd_netlink *rtnl, sd_netlink_message *m, Link *
+         if (r < 0 && r != -EEXIST) {
+                 log_link_message_warning_errno(link, m, r, "Could not set DHCPv4 address");
+                 link_enter_failed(link);
++
++                /* If the dhcp4 address fails then remove the address */
++                address_remove(link->dhcp_address, link, NULL);
++                link->dhcp_address = NULL;
++
+                 return 1;
+         } else if (r >= 0)
+                 (void) manager_rtnl_process_address(rtnl, m, link->manager);
+@@ -788,6 +793,7 @@ static int dhcp4_address_handler(sd_netlink *rtnl, sd_netlink_message *m, Link *
+         } else
+                 link->dhcp_address->callback = dhcp4_address_ready_callback;
+ 
++        link->dhcp_address->keep_dhcp4_address = false;
+         return 1;
+ }
+ 
+@@ -878,7 +884,9 @@ static int dhcp4_update_address(Link *link, bool announce) {
+ 
+         if (!address_equal(link->dhcp_address, ret))
+                 link->dhcp_address_old = link->dhcp_address;
++
+         link->dhcp_address = ret;
++        ret->keep_dhcp4_address = true;
+ 
+         return 0;
+ }
+-- 
+2.30.0
+

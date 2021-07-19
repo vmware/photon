@@ -1,7 +1,7 @@
 Name:             systemd
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
-Version:          247.6
-Release:          2%{?dist}
+Version:          247.7
+Release:          1%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 Summary:          System and Service Manager
 
@@ -10,7 +10,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 
 Source0:          https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha1      systemd=30af650e8cf2109cb2cf1a4ae2025e5ac939cceb
+%define sha1      systemd=360c8fe85bba7afce3f99bf1979cefc216030d7b
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          systemd.cfg
@@ -22,6 +22,8 @@ Patch0:           systemd-247-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:           systemd-247-default-dns-from-env.patch
 Patch2:           timesync-Make-delaying-attempts-to-contact-servers-c.patch
 Patch3:           CVE-2021-33910.patch
+Patch4:           network-Fix-crash-while-dhcp4-address-gets-update.patch
+Patch5:           sd-dhcp-client-tentatively-ignore-FORCERENEW-command.patch
 
 Requires:         Linux-PAM
 Requires:         bzip2
@@ -286,16 +288,11 @@ CONFIGURE_OPTS=(
        $CROSS_COMPILE_CONFIG
 )
 
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-
-meson build ${CONFIGURE_OPTS[@]}
-ninja -C build
+%meson "${CONFIGURE_OPTS[@]}"
+%meson_build
 
 %install
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-DESTDIR=%{buildroot} ninja -C build install
+%meson_install
 
 sed -i '/srv/d' %{buildroot}/usr/lib/tmpfiles.d/home.conf
 sed -i "s:0775 root lock:0755 root root:g" %{buildroot}/usr/lib/tmpfiles.d/legacy.conf
@@ -447,6 +444,7 @@ udevadm hwdb --update &>/dev/null || :
 %{_libdir}/tmpfiles.d/tmp.conf
 %{_libdir}/tmpfiles.d/var.conf
 %{_libdir}/tmpfiles.d/x11.conf
+%{_libdir}/tmpfiles.d/README
 
 %{_libdir}/environment.d/99-environment.conf
 %exclude %{_datadir}/locale
@@ -661,6 +659,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+*    Mon Jul 19 2021 Susant Sahani <ssahani@vmware.com>  247.7-1
+-    Switch to meson, update version, fix netword crash and CVE-2020-13529
 *    Fri Jul 16 2021 Him Kalyan Bordoloi <bordoloih@vmware.com>  247.6-2
 -    Fix for CVE-2021-33910
 *    Tue Mar 30 2021 Susant Sahani <ssahani@vmware.com>  247.6-1
