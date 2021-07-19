@@ -3,7 +3,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.4.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
@@ -15,6 +15,7 @@ Source0:        https://github.com/containerd/containerd/archive/containerd-%{ve
 %define CONTAINERD_GITCOMMIT 05f951a3781f4f2c1911b05e61c160e9c30eaa8e
 
 Patch1:         containerd-service-file-binpath.patch
+Patch2:         containerd-1.4-Use-chmod-path-for-checking-symlink.patch
 Source2:        containerd-config.toml
 Source3:        disable-containerd-by-default.preset
 %define gopath_comp github.com/containerd/containerd
@@ -56,6 +57,7 @@ Documentation for containerd.
 %setup -q -c
 mkdir -p "$(dirname "src/%{gopath_comp}")"
 %patch1 -p1 -d %{name}-%{version}
+%patch2 -p1 -d %{name}-%{version}
 mv %{name}-%{version} src/%{gopath_comp}
 
 %build
@@ -111,6 +113,8 @@ make integration
 %{_mandir}/man8/*
 
 %changelog
+*   Fri Jul 16 2021 Bo Gan <ganb@vmware.com> 1.4.4-2
+-   Fix CVE-2021-32760
 *   Wed May 05 2021 Bo Gan <ganb@vmware.com> 1.4.4-1
 -   Update to 1.4.4
 *   Mon Mar 22 2021 Ankit Jain <ankitja@vmware.com> 1.3.10-1
