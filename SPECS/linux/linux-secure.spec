@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.273
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -91,6 +91,8 @@ Patch56:        0001-drm-edid-Fix-a-missing-check-bug-in-drm_load_edid_fi.patch
 Patch57:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 #Fix for CVE-2019-3900
 Patch59: 0001-vhost-vsock-add-weight-support.patch
+#Fix for CVE-2021-33909
+Patch60:        CVE-2021-33909.patch
 # Fix CVE-2019-18885
 Patch61:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
 Patch62:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
@@ -277,6 +279,7 @@ EOF
 %patch56 -p1
 %patch57 -p1
 %patch59 -p1
+%patch60 -p1
 %patch61 -p1
 %patch62 -p1
 %patch63 -p1
@@ -453,6 +456,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 4.9.273-2
+-   Fix for CVE-2021-33909
 *   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.273-1
 -   Update to version 4.9.273
 *   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.270-2
