@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -16,6 +16,7 @@ Source0:        https://github.com/docker/docker-ce/archive/%{name}-%{version}.t
 Source99:       default-disable.preset
 Patch98:        remove-firewalld.patch
 Patch99:        update-container-binary.patch
+Patch50:        containerd-CVE-2021-32760.patch
 
 BuildRequires:  systemd
 BuildRequires:  device-mapper-devel
@@ -53,6 +54,7 @@ Documentation and vimfiles for docker
 %prep
 %setup -q
 
+%patch50 -p1
 %patch98 -p1
 %patch99 -p1
 
@@ -195,6 +197,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Fri Jul 16 2021 Bo Gan <ganb@vmware.com> 18.09.9-5
+-   Fix containerd CVE-2021-32760
 *   Fri May 14 2021 Bo Gan <ganb@vmware.com> 18.09.9-4
 -   Update bundled containerd to 1.4.4
 -   Require v1.0.0-rc93 version of runc (requested by containerd)
