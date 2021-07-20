@@ -1,7 +1,7 @@
 Summary:        Apache Ant
 Name:           apache-ant
 Version:        1.10.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache
 URL:            http://ant.apache.org
 Group:          Applications/System
@@ -15,6 +15,7 @@ Source1:        http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 Source2:        https://packages.vmware.com/photon/photon_sources/1.0/maven-ant-tasks-2.1.3.tar.gz
 %define sha1 maven-ant-tasks=f38c0cc7b38007b09638366dbaa4ee902d9c255b
 Patch0:         apache-ant-CVE-2020-11979.patch
+Patch1:         apache-ant-CVE-2021-36373-CVE-2021-36374.patch
 Requires:       openjre8
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
@@ -38,6 +39,7 @@ Ant.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 tar xf %{SOURCE1} --no-same-owner
 tar xf %{SOURCE2} --no-same-owner
 
@@ -124,6 +126,8 @@ bootstrap/bin/ant -v run-tests
 %{_bindir}/runant.pl
 
 %changelog
+*   Tue Jul 20 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.8-3
+-   Fix CVE-2021-36373, CVE-2021-36374
 *   Fri Oct 16 2020 Dweep Advani <dadvani@vmware.com> 1.10.8-2
 -   Patched for CVE-2020-11979
 *   Wed May 27 2020 Ankit Jain <ankitja@vmware.com> 1.10.8-1
