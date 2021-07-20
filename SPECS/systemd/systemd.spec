@@ -1,7 +1,7 @@
 Summary:          systemd-239
 Name:             systemd
 Version:          239
-Release:          33%{?dist}
+Release:          34%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -63,6 +63,7 @@ Patch43:          increase-watchdog-tmo.patch
 Patch44:          timedate-increment-reference-count-of-sd_bus_message.patch
 Patch45:          timedate-defer-the-property-changed-signal-until-job.patch
 Patch46:          systemd-239-CVE-2021-33910.patch
+Patch47:          systemd-239-CVE-2020-13529.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -316,6 +317,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Wed Jul 21 2021 Susant Sahani <ssahani@vmware.com> 239-34
+-    Fix for CVE-2020-13529
 *    Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 239-33
 -    Fix for CVE-2021-33910
 *    Wed May 19 2021 Susant Sahani <ssahani@vmware.com> 239-32
