@@ -1,7 +1,7 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
 Version:        14.16.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -9,6 +9,7 @@ Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
 %define         sha1 node=d5d92abc160dc4ca4a27a6d43bcf78c42b7aff06
+Patch0:         CVE-2021-22918.patch
 BuildRequires:  coreutils >= 8.22, zlib
 BuildRequires:  python3
 BuildRequires:  which
@@ -28,16 +29,14 @@ The nodejs-devel package contains libraries, header files and documentation
 for developing applications that use nodejs.
 
 %prep
-%setup -q -n node-v%{version}
+%autosetup -p1 -n node-v%{version}
 
 %build
 sh configure --prefix=%{_prefix}
-
-make %{?_smp_mflags}
+%make_build
 
 %install
-
-make install DESTDIR=$RPM_BUILD_ROOT
+%make_install
 rm -fr %{buildroot}%{_libdir}/dtrace/  # No systemtap support.
 install -m 755 -d %{buildroot}%{_libdir}/node_modules/
 install -m 755 -d %{buildroot}%{_datadir}/%{name}
@@ -68,6 +67,8 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Tue Jul 20 2021 Piyush Gupta <gpiyush@vmware.com> 14.16.0-2
+-   Fix for CVE-2021-22918.
 *   Thu Mar 18 2021 Piyush Gupta <gpiyush@vmware.com> 14.16.0-1
 -   Upgrade to 14.16.0
 *   Sun Mar 14 2021 Prashant S Chauhan <psinghchauha@vmware.com> 14.13.1-2
