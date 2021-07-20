@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.4
-Release:        17%{?kat_build:.kat}%{?dist}
+Release:        18%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -46,7 +46,7 @@ Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
 # TODO: disable this patch, check for regressions
-#Patchx:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
+#Patch:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch1:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch2:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch3:         9p-transport-for-9p.patch
@@ -70,6 +70,12 @@ Patch30:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch31:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch32:        x86-vmware-Fix-steal-time-clock-under-SEV.patch
 Patch33:        x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
+Patch34:        0001-x86-hyper-generalize-hypervisor-type-detection.patch
+Patch35:        0002-arm64-hyper-implement-VMware-hypervisor-features.patch
+Patch36:        0003-scsi-vmw_pvscsi-add-arm64-support.patch
+Patch37:        0004-vmw_vmci-add-arm64-support.patch
+Patch38:        0005-vmw_balloon-add-arm64-support.patch
+Patch39:        0006-vmxnet3-build-only-for-x86-and-arm64.patch
 
 # -esx
 Patch50:        init-do_mounts-recreate-dev-root.patch
@@ -166,8 +172,10 @@ Requires:      %{name} = %{version}-%{release}
 The Linux package contains the Linux kernel doc files
 
 %prep
+# Using autosetup is not feasible
 %setup -q -n linux-%{version}
 %if 0%{?fips}
+# Using autosetup is not feasible
 %setup -D -b 16 -n linux-%{version}
 %endif
 
@@ -193,6 +201,14 @@ The Linux package contains the Linux kernel doc files
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
+%ifarch aarch64
+%patch34 -p1
+%patch35 -p1
+%patch36 -p1
+%patch37 -p1
+%patch38 -p1
+%patch39 -p1
+%endif
 
 # -esx
 %patch50 -p1
@@ -241,6 +257,7 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 %build
+# make doesn't support _smp_mflags
 make mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
@@ -284,7 +301,7 @@ install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
-make ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
+make ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
 
 %ifarch x86_64
 install -vm 644 arch/%{archdir}/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
@@ -357,6 +374,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jul 20 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-18
+-   Arm64 VMware Hypervisor features
+-   Arm64 support for vmw_pvscsi, vmw_vmci and vmw_balloon
+-   vmxnet3: build only for x86 and arm64
 *   Tue Jul 06 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-17
 -   Add arm64 support
 *   Wed Jun 16 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-16
@@ -813,7 +834,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 *   Thu Aug 13 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-3
 -   Added environment file(photon.cfg) for a grub.
 *   Tue Aug 11 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-2
-    Added pci-probe-vmware.patch. Removed unused modules. Decreased boot time.
+-   Added pci-probe-vmware.patch. Removed unused modules. Decreased boot time.
 *   Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-1
-    Initial commit. Use patchset from Clear Linux.
-
+-   Initial commit. Use patchset from Clear Linux.

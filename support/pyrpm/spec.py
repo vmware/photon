@@ -242,7 +242,7 @@ _tags = [
     _NameValue("buildroot", re_tag_compile(r"^BuildRoot\s*:\s*(\S+)")),
     _NameValue("buildarch", re_tag_compile(r"^BuildArch\s*:\s*(\S+)")),
     _ListAndDict("sources", re_tag_compile(r"^(Source\d*\s*):\s*(.+)")),
-    _ListAndDict("patches", re_tag_compile(r"^(Patch\d*\s*):\s*(\S+)")),
+    _ListAndDict("patches", re_tag_compile(r"^([#]*Patch\d*\s*):\s*(\S+)")),
     _List("build_requires", re_tag_compile(r"^BuildRequires\s*:\s*(.+)")),
     _List("requires", re_tag_compile(r"^Requires\s*:\s*(.+)")),
     _List("conflicts", re_tag_compile(r"^Conflicts\s*:\s*(.+)")),

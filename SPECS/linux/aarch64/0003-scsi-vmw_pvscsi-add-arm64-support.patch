@@ -1,0 +1,117 @@
+From 4146b7793bd51c73b8bfc7562952d2660d98dbf1 Mon Sep 17 00:00:00 2001
+From: Cyprien Laplace <claplace@vmware.com>
+Date: Tue, 3 Dec 2019 11:33:57 -0500
+Subject: [PATCH 3/6] scsi: vmw_pvscsi: add arm64 support
+
+Upgrade barriers to virtual machine specific barriers, that will map to
+actual memory barrier instructions for the arm weaker memory model
+ordering.
+
+Disable driver if 16KB or 64KB pages are selected as the VMware hypervisor
+assumes 4KB page size at the moment.
+
+Signed-off-by: Cyprien Laplace <claplace@vmware.com>
+---
+ drivers/scsi/Kconfig      |  3 ++-
+ drivers/scsi/vmw_pvscsi.c | 39 +++++++++++++++++++++++++--------------
+ 2 files changed, 27 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/scsi/Kconfig b/drivers/scsi/Kconfig
+index 701b61ec7..e1d807acb 100644
+--- a/drivers/scsi/Kconfig
++++ b/drivers/scsi/Kconfig
+@@ -552,7 +552,8 @@ config SCSI_MYRS
+ 
+ config VMWARE_PVSCSI
+ 	tristate "VMware PVSCSI driver support"
+-	depends on PCI && SCSI && X86
++	depends on PCI && SCSI && (X86 || ARM64)
++	depends on !ARM64_16K_PAGES && !ARM64_64K_PAGES && !CPU_BIG_ENDIAN
+ 	help
+ 	  This driver supports VMware's para virtualized SCSI HBA.
+ 	  To compile this driver as a module, choose M here: the
+diff --git a/drivers/scsi/vmw_pvscsi.c b/drivers/scsi/vmw_pvscsi.c
+index 081f54ab7..d90571bc7 100644
+--- a/drivers/scsi/vmw_pvscsi.c
++++ b/drivers/scsi/vmw_pvscsi.c
+@@ -648,13 +648,6 @@ static void pvscsi_complete_request(struct pvscsi_adapter *adapter,
+ 	cmd->scsi_done(cmd);
+ }
+ 
+-/*
+- * barrier usage : Since the PVSCSI device is emulated, there could be cases
+- * where we may want to serialize some accesses between the driver and the
+- * emulation layer. We use compiler barriers instead of the more expensive
+- * memory barriers because PVSCSI is only supported on X86 which has strong
+- * memory access ordering.
+- */
+ static void pvscsi_process_completion_ring(struct pvscsi_adapter *adapter)
+ {
+ 	struct PVSCSIRingsState *s = adapter->rings_state;
+@@ -665,20 +658,20 @@ static void pvscsi_process_completion_ring(struct pvscsi_adapter *adapter)
+ 		struct PVSCSIRingCmpDesc *e = ring + (s->cmpConsIdx &
+ 						      MASK(cmp_entries));
+ 		/*
+-		 * This barrier() ensures that *e is not dereferenced while
++		 * This virt_rmb() ensures that *e is not dereferenced while
+ 		 * the device emulation still writes data into the slot.
+ 		 * Since the device emulation advances s->cmpProdIdx only after
+ 		 * updating the slot we want to check it first.
+ 		 */
+-		barrier();
++		virt_rmb();
+ 		pvscsi_complete_request(adapter, e);
+ 		/*
+-		 * This barrier() ensures that compiler doesn't reorder write
++		 * This virt_rmb() ensures that compiler doesn't reorder write
+ 		 * to s->cmpConsIdx before the read of (*e) inside
+ 		 * pvscsi_complete_request. Otherwise, device emulation may
+ 		 * overwrite *e before we had a chance to read it.
+ 		 */
+-		barrier();
++		virt_rmb();
+ 		s->cmpConsIdx++;
+ 	}
+ }
+@@ -763,7 +756,13 @@ static int pvscsi_queue_ring(struct pvscsi_adapter *adapter,
+ 
+ 	e->context = pvscsi_map_context(adapter, ctx);
+ 
+-	barrier();
++	/*
++	 * This virt_wmb() ensures that write to s->reqProdIdx doesn't
++	 * get reordered before any write to (*e) above. Otherwise,
++	 * device emulation may read *e before we had finished to
++	 * write to it.
++	 */
++	virt_wmb();
+ 
+ 	s->reqProdIdx++;
+ 
+@@ -1105,9 +1104,21 @@ static void pvscsi_process_msg_ring(const struct pvscsi_adapter *adapter)
+ 		struct PVSCSIRingMsgDesc *e = ring + (s->msgConsIdx &
+ 						      MASK(msg_entries));
+ 
+-		barrier();
++		/*
++		 * This virt_rmb() ensures that *e is not dereferenced while
++		 * the device emulation still writes data into the slot.
++		 * Since the device emulation advances s->msgProdIdx only after
++		 * updating the slot we want to check it first.
++		 */
++		virt_rmb();
+ 		pvscsi_process_msg(adapter, e);
+-		barrier();
++		/*
++		 * This virt_rmb() ensures that write to s->msgConsIdx doesn't
++		 * get reordered before the read of (*e) inside
++		 * pvscsi_process_msg. Otherwise, device emulation may
++		 * overwrite *e before we had a chance to read it.
++		 */
++		virt_rmb();
+ 		s->msgConsIdx++;
+ 	}
+ }
+-- 
+2.28.0
+
