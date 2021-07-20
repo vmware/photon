@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.61
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -46,7 +46,7 @@ Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
 # TODO: disable this patch, check for regressions
-#Patchx:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
+#Patch:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch1:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch2:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch3:         9p-transport-for-9p.patch
@@ -70,6 +70,12 @@ Patch30:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch31:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch32:        x86-vmware-Fix-steal-time-clock-under-SEV.patch
 Patch33:        x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
+Patch34:        0001-x86-hyper-generalize-hypervisor-type-detection.patch
+Patch35:        0002-arm64-hyper-implement-VMware-hypervisor-features.patch
+Patch36:        0003-scsi-vmw_pvscsi-add-arm64-support.patch
+Patch37:        0004-vmw_vmci-add-arm64-support.patch
+Patch38:        0005-vmw_balloon-add-arm64-support.patch
+Patch39:        0006-vmxnet3-build-only-for-x86-and-arm64.patch
 
 # -esx
 Patch50:        init-do_mounts-recreate-dev-root.patch
@@ -202,6 +208,14 @@ The Linux package contains the Linux kernel doc files
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
+%ifarch aarch64
+%patch34 -p1
+%patch35 -p1
+%patch36 -p1
+%patch37 -p1
+%patch38 -p1
+%patch39 -p1
+%endif
 
 # -esx
 %patch50 -p1
@@ -370,6 +384,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Oct 21 2021 Keerthana K <keerthanak@vmware.com> 5.10.61-7
+-   Arm64 VMware Hypervisor features
+-   Arm64 support for vmw_pvscsi, vmw_vmci and vmw_balloon
+-   vmxnet3: build only for x86 and arm64
 *   Thu Oct 21 2021 Keerthana K <keerthanak@vmware.com> 5.10.61-6
 -   Add arm64 support
 *   Mon Oct 18 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.61-5
