@@ -1,7 +1,7 @@
 Summary:	Apache Ant
 Name:		apache-ant
 Version:	1.10.10
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://ant.apache.org
 Group:		Applications/System
@@ -14,6 +14,7 @@ Source1:	http://hamcrest.googlecode.com/files/hamcrest-1.3.tar.gz
 %define sha1 hamcrest=f0ab4d66186b894a06d89d103c5225cf53697db3
 Source2:    https://packages.vmware.com/photon/photon_sources/1.0//maven-ant-tasks-2.1.3.tar.gz
 %define sha1 maven-ant-tasks=f38c0cc7b38007b09638366dbaa4ee902d9c255b
+Patch0:        apache-ant-CVE-2021-36373-CVE-2021-36374.patch
 Requires:      openjre8
 BuildRequires: openjre8
 BuildRequires: openjdk8
@@ -36,6 +37,7 @@ Ant.
 
 %prep
 %setup -q
+%patch0 -p1
 tar xf %{SOURCE1} --no-same-owner
 tar xf %{SOURCE2} --no-same-owner
 
@@ -121,6 +123,8 @@ bootstrap/bin/ant -v run-tests
 %{_bindir}/runant.pl
 
 %changelog
+*   Tue Jul 20 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.10-2
+-   Fix CVE CVE-2021-36373, CVE-2021-36374
 *   Tue Jun 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.10-1
 -   Bump to version 1.10.10
 *   Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.10.8-3
