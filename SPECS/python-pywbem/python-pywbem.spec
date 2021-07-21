@@ -2,7 +2,7 @@
 
 Name:           python3-pywbem
 Version:        1.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python WBEM Client
 Group:          Development/Libraries
 License:        LGPLv2+
@@ -23,6 +23,11 @@ Requires:       python3-xml
 Requires:       python3-M2Crypto
 Requires:       python3-PyYAML
 Requires:       python3-ply
+Requires:       python3-mock
+Requires:       python3-nocasedict
+Requires:       python3-nocaselist
+Requires:       python3-yamlloader
+Provides:       python3.9dist(pywbem)
 
 %description
 PyWBEM is a Python library for making CIM operations over HTTP using the
@@ -31,7 +36,7 @@ standardised by the Distributed Management Task Force (DMTF) available
 at http://www.dmtf.org/standards/wbem.
 
 %prep
-%setup -q -n pywbem-%{version}
+%autosetup -n pywbem-%{version}
 
 %build
 CFLAGS="%{optflags}" python3 setup.py build
@@ -64,6 +69,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*    Wed Jul 21 2021 Tapas Kundu <tkundu2vmware.com> 1.1.2-2
+-    Fix the install issue
 *    Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.2-1
 -    Automatic Version Bump
 *    Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.2-1
