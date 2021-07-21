@@ -1,7 +1,7 @@
 Summary:          Systemd-228
 Name:             systemd
 Version:          228
-Release:          61%{?dist}
+Release:          62%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -65,6 +65,7 @@ Patch47:          systemd-228-safe-atou32-full.patch
 Patch48:          systemd-228-CVE-2020-13776.patch
 Patch49:          systemd-228-fix-fork-fail-handling.patch
 Patch50:          systemd-228-CVE-2021-33910.patch
+Patch51:          systemd-228-CVE-2020-13529.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -151,6 +152,7 @@ sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
 %patch48 -p1
 %patch49 -p1
 %patch50 -p1
+%patch51 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -291,6 +293,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*    Wed Jul 21 2021 Susant Sahani <ssahani@vmware.com> 228-62
+-    Fix for CVE-2020-13529
 *    Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 228-61
 -    Fix for CVE-2021-33910
 *    Mon Oct 26 2020 Tapas Kundu <tkundu@vmware.com> 228-60
