@@ -167,6 +167,12 @@ def check_for_trailing_spaces(spec_fn, err):
             err.update_err_dict(sec, err_msg)
             ret = True
 
+        if not line.startswith('#') and 'RPM_BUILD_ROOT' in line:
+            err_msg = ('legacy $RPM_BUILD_ROOT found at line: %s\n%s - '
+                       'use %%{buildroot} instead') % (line_num + 1, line)
+            err.update_err_dict('others', err_msg)
+            ret = True
+
         if line.startswith('%prep'):
             key_found = True
         elif line.startswith('%files'):
@@ -494,7 +500,7 @@ def check_specs(files_list):
 
 if __name__ == '__main__':
     files = []
-    dirname = 'SPECS/linux'
+    dirname = 'SPECS/'
     for r, d, fns in os.walk(dirname):
         for fn in fns:
             if fn.endswith('.spec'):
