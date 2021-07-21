@@ -3,7 +3,7 @@
 
 Summary:        Amazon Web Services Library.
 Name:           python3-botocore
-Version:        1.19.13
+Version:        1.21.3
 Release:        1%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://github.com/boto/botocore
 Source0:        https://github.com/boto/botocore/archive/botocore-%{version}.tar.gz
-%define sha1    botocore=91ad6260bbdbef1623af584db9562fb8929c23ee
+%define sha1    botocore=4b794bd1da92920b5c680ff688f7ad1f1857e446
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
@@ -23,14 +23,18 @@ BuildRequires:  python3-urllib3
 %endif
 Requires:       python3
 Requires:       python3-libs
+Requires:       python3-jmespath
+Requires:       python3-dateutil
+Requires:       python3-urllib3
 BuildArch:      noarch
+Provides:       python3.9dist(botocore)
 
 %description
 A low-level interface to a growing number of Amazon Web Services. The botocore package is the foundation for the AWS CLI as well as boto3.
 
 
 %prep
-%setup -q -n botocore-%{version}
+%autosetup -n botocore-%{version}
 
 %build
 python3 setup.py build
@@ -49,6 +53,8 @@ nosetests tests/unit
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 1.21.3-1
+-   Update to 1.21.3
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 1.19.13-1
 -   Automatic Version Bump
 *   Tue Sep 29 2020 Gerrit Photon <photon-checkins@vmware.com> 1.18.10-1

@@ -4,7 +4,7 @@
 Summary:        The AWS SDK for Python
 Name:           python3-boto3
 Version:        1.16.13
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,9 +19,9 @@ BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-botocore
-Requires:       python3-jmespath
-Requires:       python3-dateutil
+Requires:       python3-s3transfer
 BuildArch:      noarch
+Provides:       python3.9dist(boto3)
 
 %description
 Boto3 is the Amazon Web Services (AWS) Software Development Kit (SDK) for Python,
@@ -29,7 +29,7 @@ which allows Python developers to write software that makes use of services like
 Amazon S3 and Amazon EC2
 
 %prep
-%setup -q -n boto3-%{version}
+%autosetup -n boto3-%{version}
 
 %build
 python3 setup.py build
@@ -45,6 +45,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 1.16.13-2
+-   Added s3transfer to requires
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 1.16.13-1
 -   Automatic Version Bump
 *   Tue Sep 29 2020 Gerrit Photon <photon-checkins@vmware.com> 1.15.10-1

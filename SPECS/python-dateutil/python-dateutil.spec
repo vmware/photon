@@ -4,7 +4,7 @@
 Summary:        Extensions to the standard Python datetime module
 Name:           python3-dateutil
 Version:        2.8.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache Software License, BSD License (Dual License)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -21,13 +21,14 @@ Requires:       python3
 Requires:       python3-libs
 Requires:       python3-six
 BuildArch:      noarch
+Provides:       python3.9dist(dateutil)
 
 %description
 The dateutil module provides powerful extensions to the datetime module available in the Python standard library.
 
 
 %prep
-%setup -q -n python-dateutil-%{version}
+%autosetup -n python-dateutil-%{version}
 
 %build
 python3 setup.py build
@@ -43,6 +44,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 2.8.1-2
+-   Added provides
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.8.1-1
 -   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 2.7.3-2
