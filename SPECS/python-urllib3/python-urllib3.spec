@@ -3,7 +3,7 @@
 Summary:        A powerful, sanity-friendly HTTP client for Python.
 Name:           python3-urllib3
 Version:        1.25.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/urllib3
 License:        MIT
 Group:          Development/Languages/Python
@@ -23,8 +23,10 @@ BuildRequires:  python3-pip
 #%endif
 Requires:       python3
 Requires:       python3-libs
+Requires:       ca-certificates
 BuildArch:      noarch
 Patch0:         CVE-2021-33503.patch
+Provides:       python3.9dist(urllib3)
 
 %description
 urllib3 is a powerful, sanity-friendly HTTP client for Python.
@@ -67,6 +69,8 @@ ulimit -n $nofiles
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 1.25.11-3
+-   Add ca-certificates in requires and added provides
 *   Wed Jul 07 2021 Sujay G <gsujay@vmware.com> 1.25.11-2
 -   Fix CVE-2021-33503
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 1.25.11-1

@@ -2,7 +2,7 @@
 
 Name:           python3-six
 Version:        1.15.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Vendor:         VMware, Inc.
@@ -23,7 +23,7 @@ BuildRequires:  curl-devel
 %endif
 Requires:       python3
 Requires:       python3-libs
-
+Provides:       python3.9dist(six)
 BuildArch:      noarch
 
 %description
@@ -31,7 +31,7 @@ Six is a Python 2 and 3 compatibility library. It provides utility functions for
 
 
 %prep
-%setup -n six-%{version}
+%autosetup -n six-%{version}
 
 %build
 python3 setup.py build
@@ -50,6 +50,8 @@ python3 test_six.py
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 1.15.0-3
+-   Added provides
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.15.0-2
 -   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.15.0-1
