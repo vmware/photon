@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.191
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt80
-Release:        4%{?kat_build:.%kat}%{?dist}
+Release:        5%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -478,7 +478,6 @@ Patch610:       0008-timers-Expand-clk-forward-logic-beyond-nohz.patch
 Patch611:       0009-timers-Spare-timer-softirq-until-next-expiry.patch
 Patch612:       0010-timers-Remove-must_forward_clk.patch
 Patch613:       0011-timers-Lower-base-clock-forwarding-threshold.patch
-Patch614:       0001-timers-Recalculate-next-timer-interrupt-only-when-ne.patch
 
 # Patchset to conditional restart_tick upon idle_exit
 # https://lore.kernel.org/lkml/162091184942.29796.4815200413212139734.tip-bot2@tip-bot2/
@@ -962,7 +961,6 @@ The Linux package contains the Linux kernel doc files
 %patch611 -p1
 %patch612 -p1
 %patch613 -p1
-%patch614 -p1
 %patch615 -p1
 %patch616 -p1
 %patch617 -p1
@@ -1162,6 +1160,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Jul 21 2021 Him Kalyan Bordoloi <@vmware.com> 4.19.191-5
+-   Revert patch that is causing regression in cyclictest
 *   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 4.19.191-4
 -   Fix for CVE-2021-33909
 *   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.191-3
