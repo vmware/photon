@@ -1,7 +1,7 @@
 Summary:          systemd-233
 Name:             systemd
 Version:          233
-Release:          30%{?dist}
+Release:          31%{?dist}
 License:          LGPLv2+ and GPLv2+ and MIT
 URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
@@ -50,6 +50,7 @@ Patch31:          systemd-233-safe-atou32-full.patch
 Patch32:          systemd-233-CVE-2020-13776.patch
 Patch33:          systemd-233-ipv6ll.patch
 Patch34:          systemd-233-CVE-2021-33910.patch
+Patch35:          systemd-233-CVE-2020-13529.patch
 
 Requires:         Linux-PAM
 Requires:         libcap
@@ -152,6 +153,8 @@ sed -i "/xlocale.h/d" src/basic/parse-util.c
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
+%patch34 -p1
+%patch35 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
@@ -303,6 +306,8 @@ rm -rf %{buildroot}/*
 %files lang -f %{name}.lang
 
 %changelog
+*    Wed Jul 21 2021 Susant Sahani <ssahani@vmware.com> 233-31
+-    Fix for CVE-2020-13529
 *    Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 233-30
 -    Fix for CVE-2021-33910
 *    Mon May 31 2021 Sujay G <gsujay@vmware.com> 233-29
