@@ -2,7 +2,7 @@
 
 Name:           python3-ply
 Version:        3.11
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Python Lex & Yacc
 License:        BSD-3-Clause
 Group:          Development/Languages/Python
@@ -17,6 +17,7 @@ BuildRequires:  python3-six
 %endif
 Requires:       python3
 BuildArch:      noarch
+Provides:       python3.9dist(ply)
 
 %description
 PLY is yet another implementation of lex and yacc for Python. Some notable
@@ -56,6 +57,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 3.11-5
+-   Added provides
 *   Thu Oct 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 3.11-4
 -   Fix makecheck
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 3.11-3
