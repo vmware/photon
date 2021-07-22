@@ -1,8 +1,8 @@
 diff --git a/config/cloud.cfg.tmpl b/config/cloud.cfg.tmpl
-index 7171aaa5..f617d885 100644
+index 7171aaa5..4846bb68 100644
 --- a/config/cloud.cfg.tmpl
 +++ b/config/cloud.cfg.tmpl
-@@ -11,11 +11,26 @@ syslog_fix_perms: root:root
+@@ -11,11 +11,22 @@ syslog_fix_perms: root:root
  # when a 'default' entry is found it will reference the 'default_user'
  # from the distro configuration specified below
  users:
@@ -16,11 +16,7 @@ index 7171aaa5..f617d885 100644
 +# VMware OVF guest customization.
 +{% if variant in ["photon"] %}
 +disable_vmware_customization: true
-+
-+# If set to true, cloud-init will create fallback netcfg
-+# In Photon, we have default network settings already, hence if network
-+# settings are not explicitly given in metadata, don't use fallback netcfg.
-+use_fallback_netcfg: false
++manage_etc_hosts: false
 +{% endif %}
  
  # If this is set, 'root' will not be able to ssh in and they
@@ -30,7 +26,7 @@ index 7171aaa5..f617d885 100644
  disable_root: false
  {% else %}
  disable_root: true
-@@ -28,7 +43,6 @@ resize_rootfs: noblock
+@@ -28,7 +39,6 @@ resize_rootfs: noblock
  {% endif %}
  resize_rootfs_tmp: /dev
  ssh_pwauth:   0
@@ -38,18 +34,16 @@ index 7171aaa5..f617d885 100644
  {% endif %}
  # This will cause the set+update hostname module to not operate (if true)
  preserve_hostname: false
-@@ -37,6 +51,10 @@ preserve_hostname: false
+@@ -37,6 +47,8 @@ preserve_hostname: false
  # This should not be required, but leave it in place until the real cause of
  # not finding -any- datasources is resolved.
  datasource_list: ['NoCloud', 'ConfigDrive', 'Azure', 'OpenStack', 'Ec2']
 +{% elif variant in ["photon"] %}
-+# OVF has been removed in default list because recent feature addition
-+# introduces a 15 sec delay during boot
 +datasource_list: ['NoCloud', 'OVF', 'ConfigDrive', 'OpenStack', 'VMwareGuestInfo', None]
  {% endif %}
  # Example datasource config
  # datasource:
-@@ -45,6 +63,11 @@ datasource_list: ['NoCloud', 'ConfigDrive', 'Azure', 'OpenStack', 'Ec2']
+@@ -45,6 +57,11 @@ datasource_list: ['NoCloud', 'ConfigDrive', 'Azure', 'OpenStack', 'Ec2']
  #      timeout: 5 # (defaults to 50 seconds)
  #      max_wait: 10 # (defaults to 120 seconds)
  
@@ -61,7 +55,7 @@ index 7171aaa5..f617d885 100644
  
  {% if variant == "amazon" %}
  # Amazon Linux relies on ec2-net-utils for network configuration
-@@ -75,7 +98,9 @@ cloud_init_modules:
+@@ -75,7 +92,9 @@ cloud_init_modules:
   - resolv_conf
  {% endif %}
  {% if not variant.endswith("bsd") %}
@@ -71,7 +65,7 @@ index 7171aaa5..f617d885 100644
   - rsyslog
  {% endif %}
   - users-groups
-@@ -89,11 +114,15 @@ cloud_config_modules:
+@@ -89,11 +108,15 @@ cloud_config_modules:
   - emit_upstart
   - snap
  {% endif %}
@@ -88,18 +82,18 @@ index 7171aaa5..f617d885 100644
   - yum-add-repo
  {% endif %}
  {% if variant in ["ubuntu", "unknown", "debian"] %}
-@@ -120,6 +149,10 @@ cloud_config_modules:
+@@ -120,6 +143,10 @@ cloud_config_modules:
   - byobu
  {% endif %}
  
 +{% if variant in ["photon"] %}
-+unverified_modules: ['yum-add-repo', 'ntp']
++unverified_modules: ['yum-add-repo']
 +{% endif %}
 +
  # The modules that run in the 'final' stage
  cloud_final_modules:
   - package-update-upgrade-install
-@@ -154,8 +187,8 @@ cloud_final_modules:
+@@ -154,8 +181,8 @@ cloud_final_modules:
  system_info:
     # This will affect which distro class gets used
  {% if variant in ["alpine", "amazon", "arch", "centos", "debian",
@@ -110,7 +104,7 @@ index 7171aaa5..f617d885 100644
     distro: {{ variant }}
  {% else %}
     # Unknown/fallback distro.
-@@ -264,6 +297,22 @@ system_info:
+@@ -264,6 +291,28 @@ system_info:
       groups: [wheel]
       sudo: ["ALL=(ALL) NOPASSWD:ALL"]
       shell: /bin/ksh
@@ -126,10 +120,16 @@ index 7171aaa5..f617d885 100644
 +   paths:
 +      cloud_dir: /var/lib/cloud/
 +      templates_dir: /etc/cloud/templates/
++   network:
++      renderers: ['networkd']
++
++   # If set to true, cloud-init will create fallback netcfg
++   # In Photon, we have default network settings already, hence if network
++   # settings are not explicitly given in metadata, don't use fallback netcfg.
++   disable_fallback_netcfg: false
 +
 +   ssh_svcname: sshd
 +
-+#manage_etc_hosts: true
  {% endif %}
  {% if variant in ["freebsd", "netbsd", "openbsd"] %}
     network:
