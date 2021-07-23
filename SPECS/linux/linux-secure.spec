@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.191
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        4.19.198
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c4a7c181cb1344be1c353e3e8bc1d8b0367ae01a
+%define sha1 linux=52501081b334e88c6c2b632b087b347aab59dd17
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -86,12 +86,6 @@ Patch65:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 Patch67:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
 Patch68:        0002-bpf-Fix-32-bit-src-register-truncation-on-div-mod.patch
 Patch69:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
-
-#Fix for CVE-2021-3609
-Patch70:        0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
-
-#Fix for CVE-2021-33909
-Patch71:        CVE-2021-33909.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -263,8 +257,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch67 -p1
 %patch68 -p1
 %patch69 -p1
-%patch70 -p1
-%patch71 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -481,7 +473,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
-*   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 4.19.191-5
+*   Tue Jul 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.198-1
+-   Update to version 4.19.198
+*   Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.191-5
 -   Fix for CVE-2021-33909
 *   Fri Jul 02 2021 Keerthana K <keerthanak@vmware.com> 4.19.191-4
 -   HCX custom patches

@@ -3,8 +3,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux
-Version:        4.19.191
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.198
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c4a7c181cb1344be1c353e3e8bc1d8b0367ae01a
+%define sha1 linux=52501081b334e88c6c2b632b087b347aab59dd17
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -64,8 +64,6 @@ Patch17:        0001-floppy-lower-printk-message-priority.patch
 Patch25:        0001-tools-perf-fix-compilation-error.patch
 Patch26:        4.18-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by-default.patch
 
-# Fix for CVE-2021-3564
-Patch27:       0001-Bluetooth-fix-the-erroneous-flush_work-order.patch
 # Fix CVE-2017-1000252
 Patch28:        kvm-dont-accept-wrong-gsi-values.patch
 # Out-of-tree patches from AppArmor:
@@ -121,15 +119,6 @@ Patch67:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 #Fix for 9p
 Patch70:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
 Patch71:        0001-9p-VDFS-Initialize-fid-iounit-during-creation-of-p9_.patch
-
-# Fix for CVE-2021-3573
-Patch72:        0001-bluetooth-use-correct-lock-to-prevent-UAF-of-hdev-ob.patch
-
-# Fix for CVE-2021-3609
-Patch73:        0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
-
-#Fix for CVE-2021-33909
-Patch74:        CVE-2021-33909.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -573,7 +562,6 @@ This Linux package contains hmac sha generator kernel module.
 
 %patch25 -p1
 %patch26 -p1
-%patch27 -p1
 %patch28 -p1
 %patch29 -p1
 %patch30 -p1
@@ -608,9 +596,6 @@ This Linux package contains hmac sha generator kernel module.
 
 %patch70 -p1
 %patch71 -p1
-%patch72 -p1
-%patch73 -p1
-%patch74 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -1235,7 +1220,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
-*   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 4.19.191-3
+*   Tue Jul 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.198-1
+-   Update to version 4.19.198
+*   Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.191-3
 -   Fix for CVE-2021-33909
 *   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.191-2
 -   Fix for CVE-2021-3609

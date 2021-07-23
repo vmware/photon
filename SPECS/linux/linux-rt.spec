@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.191
+Version:        4.19.198
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt80
-Release:        5%{?kat_build:.%kat}%{?dist}
+%define rt_version rt85
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=c4a7c181cb1344be1c353e3e8bc1d8b0367ae01a
+%define sha1 linux=52501081b334e88c6c2b632b087b347aab59dd17
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
@@ -67,8 +67,6 @@ Patch40:        efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.pat
 #Fix for CVE-2019-19338
 Patch41:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch42:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
-# Fix for CVE-2021-3564
-Patch43:        0001-Bluetooth-fix-the-erroneous-flush_work-order.patch
 # Fix for CVE-2020-16119
 Patch58:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
 Patch59:        0002-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
@@ -88,15 +86,6 @@ Patch66:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 Patch68:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
 Patch69:        0002-bpf-Fix-32-bit-src-register-truncation-on-div-mod.patch
 Patch70:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
-
-# Fix for CVE-2021-3573
-Patch73:        0001-bluetooth-use-correct-lock-to-prevent-UAF-of-hdev-ob.patch
-
-# Fix for CVE-2021-3609
-Patch74:        0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
-
-#Fix for CVE-2021-33909
-Patch75:        CVE-2021-33909.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -457,7 +446,7 @@ Patch535:       0335-Linux-4.19.185-rt76-REBASE.patch
 Patch536:       0336-mm-slub-Don-t-resize-the-location-tracking-cache-on-.patch
 Patch537:       0337-locking-rwsem_rt-Add-__down_read_interruptible.patch
 # Keep rt_version matched up with this patch.
-Patch538:       0338-Linux-4.19.191-rt80-REBASE.patch
+Patch538:       0338-Linux-4.19.198-rt85-REBASE.patch
 
 
 #Photon Specific Changes
@@ -575,7 +564,6 @@ The Linux package contains the Linux kernel doc files
 %patch40 -p1
 %patch41 -p1
 %patch42 -p1
-%patch43 -p1
 %patch58 -p1
 %patch59 -p1
 %patch60 -p1
@@ -588,9 +576,6 @@ The Linux package contains the Linux kernel doc files
 %patch68 -p1
 %patch69 -p1
 %patch70 -p1
-%patch73 -p1
-%patch74 -p1
-%patch75 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -1160,9 +1145,11 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
-*   Wed Jul 21 2021 Him Kalyan Bordoloi <@vmware.com> 4.19.191-5
+*   Tue Jul 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.198-1
+-   Update to version 4.19.198
+*   Wed Jul 21 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.191-5
 -   Revert patch that is causing regression in cyclictest
-*   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 4.19.191-4
+*   Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.191-4
 -   Fix for CVE-2021-33909
 *   Tue Jun 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.191-3
 -   Fix for CVE-2021-3609
