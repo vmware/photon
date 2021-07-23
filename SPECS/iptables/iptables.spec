@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.8.7
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -45,7 +45,6 @@ It contains the libraries and header files to create applications.
 %build
 %configure \
     --disable-silent-rules \
-    --exec-prefix= \
     --with-xtlibdir=%{_libdir}/iptables \
     --with-pkgconfigdir=%{_libdir}/pkgconfig \
     --disable-nftables \
@@ -72,14 +71,14 @@ find %{buildroot} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 
 %post
-%systemd_post iptables.service ip6tables.service
+%systemd_post iptables.service
 
 %preun
-%systemd_preun iptables.service ip6tables.service
+%systemd_preun iptables.service
 
 %postun
 %?ldconfig
-%systemd_postun_with_restart iptables.service ip6tables.service
+%systemd_postun_with_restart iptables.service
 
 %clean
 rm -rf %{buildroot}/*
@@ -105,6 +104,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Fri Jul 23 2021 Susant Sahani <ssahani@vmware.com> 1.8.7-3
+-   Drop ip6tables.service
 *   Tue Mar 30 2021 Susant Sahani <ssahani@vmware.com> 1.8.7-2
 -   Set wait option for iptables calls
 *   Thu Feb 11 2021 Susant Sahani <ssahani@vmware.com> 1.8.7-1
