@@ -1,5 +1,5 @@
 Name:           dbus-broker
-Version:        26
+Version:        29
 Release:        1%{?dist}
 Summary:        Linux D-Bus Message Broker
 License:        ASL 2.0
@@ -9,7 +9,7 @@ Group:          System Environment/Security
 
 URL:            https://github.com/bus1/dbus-broker
 Source0:        https://github.com/bus1/dbus-broker/releases/download/v%{version}/dbus-broker-%{version}.tar.xz
-%define sha1    dbus-broker=401cf35127bed151e171f28538b50429ef760c9c
+%define sha1    dbus-broker=71ad06d15acec061a4c6beacda9c256234da8e50
 
 Provides:       bundled(c-dvar) = 1
 Provides:       bundled(c-ini) = 1
@@ -36,22 +36,17 @@ written for Linux systems, and makes use of many modern features provided by
 recent Linux kernel releases.
 
 %prep
-%setup -n %{name}-%{version}
+%autosetup -p1 %{name}-%{version}
 
 %build
 CONFIGURE_OPTS=(
    --prefix=/usr
 )
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-
-meson build ${CONFIGURE_OPTS[@]}
-ninja -C build
+%meson "${CONFIGURE_OPTS[@]}"
+%meson_build
 
 %install
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-DESTDIR=%{buildroot} ninja -C build install
+%meson_install
 
 %check
 %meson_test
@@ -86,6 +81,8 @@ fi
 %{_userunitdir}/dbus-broker.service
 
 %changelog
+* Fri Jul 23 2021 Susant Sahani <ssahani@vmware.com> 29-1
+- Update version and switch to meson
 * Sat Jan 23 2021 Susant Sahani <ssahani@vmware.com> 26-1
 - Update version
 * Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 24-1
