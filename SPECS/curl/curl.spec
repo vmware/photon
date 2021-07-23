@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.77.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -9,16 +9,16 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
 %define sha1    curl=fdbb773251bba86ff95a3fe51f9969fd5004bdde
+Patch0:         curl-CVE-2021-22924.patch
+Patch1:         curl-CVE-2021-22925.patch
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
 BuildRequires:  libssh2-devel
-BuildRequires:  libmetalink-devel
 Requires:       ca-certificates
 Requires:       openssl
 Requires:       krb5
 Requires:       libssh2
-Requires:       libmetalink
 Requires:       curl-libs = %{version}-%{release}
 
 %description
@@ -44,6 +44,8 @@ This package contains minimal set of shared curl libraries.
 
 %prep
 %setup -q
+%patch0 -p1
+%patch1 -p1
 
 %build
 %configure \
@@ -54,8 +56,7 @@ This package contains minimal set of shared curl libraries.
     --with-ssl \
     --with-gssapi \
     --with-libssh2 \
-    --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt \
-    --with-libmetalink
+    --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
 make %{?_smp_mflags}
 
 %install
@@ -92,6 +93,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Thu Jul 22 2021 Harinadh D <hdommaraju@vmware.com> 7.77.0-2
+-   Fix CVE-2021-22924,CVE-2021-22925
+-   Metalink disabled to fix CVE-2021-22922,CVE-2021-22923
 *   Mon Jun 28 2021 Nitesh Kumar <kunitesh@vmware.com> 7.77.0-1
 -   Upgrade to 7.77.0, Fix for CVE-2021-22897
 *   Fri May 21 2021 Harinadh D <hdommaraju@vmware.com> 7.75.0-2
