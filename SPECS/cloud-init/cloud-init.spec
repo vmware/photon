@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        21.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -159,6 +159,8 @@ rm -rf %{buildroot}
 %dir /var/lib/cloud
 
 %changelog
+*   Mon Jul 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.2-3
+-   Set disable_fallback_netcfg to true
 *   Wed Jul 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.2-2
 -   Support ntp configs
 *   Mon Jun 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.2-1
