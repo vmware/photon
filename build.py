@@ -18,6 +18,7 @@ import shutil
 import traceback
 import glob
 from subprocess import PIPE, Popen
+from distutils.util import strtobool
 from support.check_spec import check_specs
 
 configdict = {}
@@ -759,10 +760,40 @@ class CheckTools:
             raise Exception("Package kpartx not installed. Aborting.")
 
     def check_photon_installer():
+        url = "https://github.com/vmware/photon-os-installer.git"
+        cmd = "pip3 install git+%s" % url
+
+        def install_from_url(cmd):
+            if CommandUtils.runCommandInShell(cmd):
+                raise Exception("Failed to run: %s" % cmd)
+            print("%s - Success" % cmd)
+
         try:
             import photon_installer
-        except:
-            raise Exception("Error: Python3 package photon-installer is not installed.\nPlease use: pip3 install git+https://github.com/vmware/photon-os-installer.git")
+        except Exception as e:
+            print('Warning: %s' % e)
+            install_from_url(cmd)
+            return
+
+        key = 'SKIP_INSTALLER_UPDATE'
+        if key in os.environ and strtobool(os.environ[key]):
+            print('%s is enabled, not checking for updates' % key)
+            return
+
+        if hasattr(photon_installer, '__version__'):
+            local_hash = photon_installer.__version__.split('+')[1]
+
+            remote_hash = 'git ls-remote %s HEAD | cut -f1' % url
+            with Popen(remote_hash, stdout=PIPE, stderr=None, shell=True) as p:
+                remote_hash = p.communicate()[0].decode('utf-8')
+                if p.returncode:
+                    raise Exception("Something went wrong in check_photon_installer")
+
+            if not remote_hash.startswith(local_hash):
+                print("Upstream photon-installer is updated, updating local copy ..")
+                install_from_url(cmd)
+        else:
+            install_from_url(cmd)
 
     def start_docker():
         check_prerequesite["start-docker"]=True
