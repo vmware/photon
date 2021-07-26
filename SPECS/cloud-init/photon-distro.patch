@@ -1,9 +1,9 @@
 diff --git a/cloudinit/distros/photon.py b/cloudinit/distros/photon.py
 new file mode 100644
-index 00000000..45125be7
+index 00000000..f3e5410d
 --- /dev/null
 +++ b/cloudinit/distros/photon.py
-@@ -0,0 +1,138 @@
+@@ -0,0 +1,153 @@
 +#!/usr/bin/env python3
 +# vi: ts=4 expandtab
 +#
@@ -11,6 +11,7 @@ index 00000000..45125be7
 +#
 +# This file is part of cloud-init. See LICENSE file for license information.
 +
++from cloudinit import net
 +from cloudinit import util
 +from cloudinit import subp
 +from cloudinit import distros
@@ -59,6 +60,20 @@ index 00000000..45125be7
 +        except subp.ProcessExecutionError:
 +            util.logexc(LOG, 'Command %s failed', cmd)
 +            return False, None, None
++
++    def generate_fallback_config(self):
++        key = 'disable_fallback_netcfg'
++        disable_fallback_netcfg = self._cfg.get(key, True)
++        LOG.debug('%s value is: %s', key, disable_fallback_netcfg)
++
++        if not disable_fallback_netcfg:
++            return net.generate_fallback_config()
++
++        LOG.info(
++            'Skipping generate_fallback_config. Rely on PhotonOS default '
++            'network config'
++        )
++        return None
 +
 +    def apply_locale(self, locale, out_fn=None):
 +        # This has a dependancy on glibc-i18n, user need to manually install it

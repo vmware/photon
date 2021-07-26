@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        21.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -26,7 +26,11 @@ Patch8:     cloud-cfg.patch
 Patch9:     networkd.patch
 Patch10:    allow-raw-data-switch.patch
 Patch11:    fallback-netcfg.patch
-Patch12:    fix-make-check.patch
+Patch12:    Add-ntp-support-to-Photon.patch
+
+%if %{with_check}
+Patch13:    fix-make-check.patch
+%endif
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -154,6 +158,8 @@ rm -rf %{buildroot}
 %dir /var/lib/cloud
 
 %changelog
+*   Wed Jul 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.2-2
+-   Support ntp configs
 *   Mon Jun 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.2-1
 -   Upgrade to version 21.2
 -   Refactored ds-guestinfo-photon.patch to generate netcfg v2
