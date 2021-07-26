@@ -5,7 +5,11 @@ weight: 17
 
 When you add a secondary network interface to a linux instance in the cloud environment, you need to configure the network parameters for the secondary interface in the linux instance. The configuration ensures that you do not face any routing issues while using the secondary network interface. Configuring the secondary network interface involves several manual processes that include configuring a new routing table, setting up rules in the routing table and so on.
 
+<<<<<<< HEAD:content/en/docs-v5/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
 `cloud-network` automates the whole manual process of configuring the secondary network interface. It configures the network parameters required for any network interfaces that you create or add to the linux instance. In a cloud environment, instances are set to public IPs and private IPs. If you add more than one private IP for the secondary network interface, the IP other than the one provided by DHCP cannot be fetched and configured for your virtual machine. The `cloud-network` project is designed to adapt the cloud-network environments such as Azure, GCP, and Amazon EC2. `cloud-network` fetches the metadata from the metadata server endpoint, parses the metadata, and then assigns IPs and routes. When `cloud-network` is installed, it automatically configures network interfaces in the cloud frameworks. It detects the available interfaces using netlink. Additionally, for all the interfaces, including the primary one, it looks for any secondary IP addresses from the metadata server endpoint and configures them on the interface, if any. 
+=======
+`cloud-network` automates the whole manual process of configuring the secondary network interface. It configures the network parameters required for any network interfaces that you create or add to the linux instance. In a cloud environment, instances are set to public IPs and private IPs. If you add more than one private IP for the secondary network interface, the IP other than the one provided by DHCP cannot be fetched and configured for your virtual machine. The `cloud-network` project is designed to adapt the cloud-network environments such as Azure, GCP, and Amazon EC2. `cloud-network` fetches the metadata from the metadata server endpoint, parses the metadata, and then assigns IPs and routes. When `cloud-network` is installed, it automatically configures network interfaces in the cloud frameworks. It detects the available instances using netlink. Additionally, for all the interfaces, including the primary one, it looks for any secondary IP addresses from the metadata server endpoint and configures them on the interface, if any. 
+>>>>>>> c699a069b (New Topic Added (Cloud Network tool)):content/en/docs/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
 
 A local RESTful JSON server runs on the address 127.0.0.1:5209 and the instance metadata is saved on per link basis in the following directory: `/run/cloud-network`.
 
@@ -13,11 +17,19 @@ The network parameters in the cloud framework are checked periodically for any c
 
 The image below illustrates the communication of `cloud-network` and the instance metadata server:
 
+<<<<<<< HEAD
 <<<<<<< HEAD:content/en/docs/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
 ![Cloud Network tool communicating with the IMDS](/docs/images/Cloud-Network_and_Instance-Metadata-Service_Communication.jpg)
 =======
 ![Cloud Network tool communicating with the IMDS](./images/Cloud-Network_and_Instance-Metadata-Service_Communication.jpg)
 >>>>>>> a59166de2 (big ol v5 merge):content/en/docs-v5/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
+=======
+<<<<<<< HEAD:content/en/docs-v5/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
+![Cloud Network tool communicating with the IMDS](./images/Cloud-Network_and_Instance-Metadata-Service_Communication.jpg)
+=======
+![Cloud Network tool communicating with the IMDS](/docs/images/Cloud-Network_and_Instance-Metadata-Service_Communication.jpg)
+>>>>>>> c699a069b (New Topic Added (Cloud Network tool)):content/en/docs/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
+>>>>>>> 10e291e77 (New Topic Added (Cloud Network tool))
 
 
 <br />
@@ -29,11 +41,19 @@ This functionality is scattered across different scripts/tools that are cloud pr
 
 The image below illustrates how `cloud-network` fetches the network parameters to configure the secondary network interface (eth1) in a cloud instance:
 
+<<<<<<< HEAD
 <<<<<<< HEAD:content/en/docs/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
 ![Cloud Network tool configuring the secondary network instance](/docs/images/Secondary_Interface_Configuration.jpg)
 =======
 ![Cloud Network tool configuring the secondary network instance](./images/Secondary_Interface_Configuration.jpg)
 >>>>>>> a59166de2 (big ol v5 merge):content/en/docs-v5/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
+=======
+<<<<<<< HEAD:content/en/docs-v5/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
+![Cloud Network tool configuring the secondary network instance](./images/Secondary_Interface_Configuration.jpg)
+=======
+![Cloud Network tool configuring the secondary network instance](/docs/images/Secondary_Interface_Configuration.jpg)
+>>>>>>> c699a069b (New Topic Added (Cloud Network tool)):content/en/docs/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
+>>>>>>> 10e291e77 (New Topic Added (Cloud Network tool))
 
 <br />
 
@@ -68,6 +88,7 @@ Specifies the time interval. The time interval indicates the amount of time take
 
 You can set values for the following keys in the `[Network]` section:
 
+<<<<<<< HEAD
 <<<<<<< HEAD:content/en/docs/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
 
 `Address=`  
@@ -80,6 +101,20 @@ Specifies the IP port that the local REST API server listens. Default is `5209`.
 
 Specifies the IP address and the port that the local REST API server listens. You can specify the IP address and the port in the following format `ip:port`. Defaults is `127.0.0.1:5209`.
 >>>>>>> a59166de2 (big ol v5 merge):content/en/docs-v5/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
+=======
+<<<<<<< HEAD:content/en/docs-v5/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
+`Listen=`
+
+Specifies the IP address and the port that the local REST API server listens. You can specify the IP address and the port in the following format `ip:port`. Defaults is `127.0.0.1:5209`.
+=======
+
+`Address=`  
+Specifies the IP address that the local REST API server listens. Default is `127.0.0.1`.
+
+`Port=`  
+Specifies the IP port that the local REST API server listens. Default is `5209`.
+>>>>>>> c699a069b (New Topic Added (Cloud Network tool)):content/en/docs/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
+>>>>>>> 10e291e77 (New Topic Added (Cloud Network tool))
 
 `Supplementary=`  
 A whitespace-separated list of interfaces matching the device name. Specifies the interfaces you want to configure with a default gateway and routing policy rules for each IP address including the primary IP address. No default value is set for this key.
@@ -91,6 +126,7 @@ A whitespace-separated list of interfaces matching the device name. Specifies th
 The following example shows a sample configuration of the key values in the `cloud-network.toml` file:
 
 
+<<<<<<< HEAD
 <<<<<<< HEAD:content/en/docs/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
     > cat /etc/cloud-network/cloud-network.toml
     [System]
@@ -103,6 +139,9 @@ The following example shows a sample configuration of the key values in the `clo
     Port="5209"
     Supplementary="ens3"
 =======
+=======
+<<<<<<< HEAD:content/en/docs-v5/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
+>>>>>>> 10e291e77 (New Topic Added (Cloud Network tool))
 ```
 > cat /etc/cloud-network/cloud-network.toml
 [System]
@@ -114,7 +153,22 @@ LogFormat="text"
 Listen="127.0.0.1:5209"
 Supplementary="eth0"
 ```
+<<<<<<< HEAD
 >>>>>>> a59166de2 (big ol v5 merge):content/en/docs-v5/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
+=======
+=======
+    > cat /etc/cloud-network/cloud-network.toml
+    [System]
+    RefreshTimer="300s"
+    LogLevel="info"
+    LogFormat="text"
+    
+    [Network]
+    Address="127.0.0.1"
+    Port="5209"
+    Supplementary="ens3"
+>>>>>>> c699a069b (New Topic Added (Cloud Network tool)):content/en/docs/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network.md
+>>>>>>> 10e291e77 (New Topic Added (Cloud Network tool))
 
 
 After you set the configuration, use the `sudo systemctl status cloud-network` command to check the network status of the `cloud-network` service. 
