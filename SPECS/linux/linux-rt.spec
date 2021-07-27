@@ -17,10 +17,10 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        5.10.46
+Version:        5.10.52
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt42
-Release:        2%{?kat_build:.kat}%{?dist}
+%define rt_version rt47
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -30,7 +30,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=c20ebd55737540346bc0c3d347fcb6f703768144
+%define sha1 linux=d1c6571f7fdf55939c451e35f02dd2cc7d143d14
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
@@ -81,10 +81,6 @@ Patch56:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix for CVE-2019-12379
 Patch101:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2021-3609
-Patch130:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
-#Fix for CVE-2021-33909
-Patch131:       CVE-2021-33909.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/5.10/
@@ -383,29 +379,35 @@ Patch592:       0292-genirq-Disable-irqpoll-on-rt.patch
 Patch593:       0293-sysfs-Add-sys-kernel-realtime-entry.patch
 Patch594:       0294-Add-localversion-for-RT-release.patch
 Patch595:       0295-net-xfrm-Use-sequence-counter-with-associated-spinlo.patch
-
+Patch596:       0296-sched-Fix-migration_cpu_stop-requeueing.patch
+Patch597:       0297-sched-Simplify-migration_cpu_stop.patch
+Patch598:       0298-sched-Collate-affine_move_task-stoppers.patch
+Patch599:       0299-sched-Optimize-migration_cpu_stop.patch
+Patch600:       0300-sched-Fix-affine_move_task-self-concurrency.patch
+Patch601:       0301-sched-Simplify-set_affinity_pending-refcounts.patch
+Patch602:       0302-sched-Don-t-defer-CPU-pick-to-migration_cpu_stop.patch
 # Keep rt_version matched up with this patch.
-Patch596:       0296-Linux-5.10.41-rt42-REBASE.patch
+Patch603:       0303-Linux-5.10.52-rt47-REBASE.patch
 
 #Photon Specific Changes
-Patch600:       0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
+Patch700:       0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
 
 # RT Runtime Greed
-Patch601:       0001-RT-PATCH-sched-rt-RT_RUNTIME_GREED-sched-feature.patch
-Patch602:       use-kmsg_dump-iterator-for-RT.patch
+Patch701:       0001-RT-PATCH-sched-rt-RT_RUNTIME_GREED-sched-feature.patch
+Patch702:       use-kmsg_dump-iterator-for-RT.patch
 
 # Patchset to conditional restart_tick upon idle_exit
 # https://lore.kernel.org/lkml/162091184942.29796.4815200413212139734.tip-bot2@tip-bot2/
-Patch603:       0001-tick-nohz-Evaluate-the-CPU-expression-after-the-stat.patch
-Patch604:       0002-tick-nohz-Conditionally-restart-tick-on-idle-exit.patch
-Patch605:       0003-tick-nohz-Remove-superflous-check-for-CONFIG_VIRT_CP.patch
-Patch606:       0004-tick-nohz-Update-idle_exittime-on-actual-idle-exit.patch
-Patch607:       0005-tick-nohz-Update-nohz_full-Kconfig-help.patch
-Patch608:       0006-tick-nohz-Only-wakeup-a-single-target-cpu-when-kicki.patch
-Patch609:       0007-tick-nohz-Change-signal-tick-dependency-to-wakeup-CP.patch
-Patch610:       0008-tick-nohz-Kick-only-_queued_-task-whose-tick-depende.patch
-Patch611:       0009-tick-nohz-Call-tick_nohz_task_switch-with-interrupts.patch
-Patch612:       0010-MAINTAINERS-Add-myself-as-context-tracking-maintaine.patch
+Patch703:       0001-tick-nohz-Evaluate-the-CPU-expression-after-the-stat.patch
+Patch704:       0002-tick-nohz-Conditionally-restart-tick-on-idle-exit.patch
+Patch705:       0003-tick-nohz-Remove-superflous-check-for-CONFIG_VIRT_CP.patch
+Patch706:       0004-tick-nohz-Update-idle_exittime-on-actual-idle-exit.patch
+Patch707:       0005-tick-nohz-Update-nohz_full-Kconfig-help.patch
+Patch708:       0006-tick-nohz-Only-wakeup-a-single-target-cpu-when-kicki.patch
+Patch709:       0007-tick-nohz-Change-signal-tick-dependency-to-wakeup-CP.patch
+Patch710:       0008-tick-nohz-Kick-only-_queued_-task-whose-tick-depende.patch
+Patch711:       0009-tick-nohz-Call-tick_nohz_task_switch-with-interrupts.patch
+Patch712:       0010-MAINTAINERS-Add-myself-as-context-tracking-maintaine.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -418,6 +420,8 @@ Patch1003:       0002-FIPS-crypto-self-tests.patch
 Patch1004:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
 Patch1005:       0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+#Patch to not make shash_no_setkey static
+Patch1006:       0001-fips-Continue-to-export-shash_no_setkey.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch1008:       0001-FIPS-canister-binary-usage.patch
@@ -481,13 +485,18 @@ Requires:       python3
 The Linux package contains the Linux kernel doc files
 
 %prep
+# Using autosetup is not feasible
 %setup -q -n linux-%{version}
 %ifarch x86_64
+# Using autosetup is not feasible
 %setup -D -b 6 -n linux-%{version}
+# Using autosetup is not feasible
 %setup -D -b 7 -n linux-%{version}
+# Using autosetup is not feasible
 %setup -D -b 8 -n linux-%{version}
 %endif
 %if 0%{?fips}
+# Using autosetup is not feasible
 %setup -D -b 16 -n linux-%{version}
 %endif
 
@@ -514,8 +523,6 @@ The Linux package contains the Linux kernel doc files
 # CVE
 %patch100 -p1
 %patch101 -p1
-%patch130 -p1
-%patch131 -p1
 
 # RT
 %patch301 -p1
@@ -814,20 +821,27 @@ The Linux package contains the Linux kernel doc files
 %patch594 -p1
 %patch595 -p1
 %patch596 -p1
-
+%patch597 -p1
+%patch598 -p1
+%patch599 -p1
 %patch600 -p1
 %patch601 -p1
 %patch602 -p1
 %patch603 -p1
-%patch604 -p1
-%patch605 -p1
-%patch606 -p1
-%patch607 -p1
-%patch608 -p1
-%patch609 -p1
-%patch610 -p1
-%patch611 -p1
-%patch612 -p1
+
+%patch700 -p1
+%patch701 -p1
+%patch702 -p1
+%patch703 -p1
+%patch704 -p1
+%patch705 -p1
+%patch706 -p1
+%patch707 -p1
+%patch708 -p1
+%patch709 -p1
+%patch710 -p1
+%patch711 -p1
+%patch712 -p1
 
 %patch1000 -p1
 %patch1001 -p1
@@ -835,6 +849,7 @@ The Linux package contains the Linux kernel doc files
 %patch1003 -p1
 %patch1004 -p1
 %patch1005 -p1
+%patch1006 -p1
 %if 0%{?fips}
 %patch1008 -p1
 %else
@@ -856,7 +871,7 @@ pushd ../ice-%{ice_version}
 popd
 
 %build
-make mrproper
+make %{?_smp_mflags} mrproper
 
 %ifarch x86_64
 cp %{SOURCE1} .config
@@ -878,7 +893,7 @@ sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .conf
 
 %include %{SOURCE5}
 
-make V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
+make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
 
 %if 0%{?fips}
 %include %{SOURCE9}
@@ -889,22 +904,22 @@ make V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch}
 # build i40e module
 bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
-make -C src KSRC=$bldroot clean
-make -C src KSRC=$bldroot %{?_smp_mflags}
+make %{?_smp_mflags} -C src KSRC=$bldroot clean
+make %{?_smp_mflags} -C src KSRC=$bldroot %{?_smp_mflags}
 popd
 
 # build iavf module
 bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
-make -C src KSRC=$bldroot clean
-make -C src KSRC=$bldroot %{?_smp_mflags}
+make %{?_smp_mflags} -C src KSRC=$bldroot clean
+make %{?_smp_mflags} -C src KSRC=$bldroot %{?_smp_mflags}
 popd
 
 # build ice module
 bldroot=`pwd`
 pushd ../ice-%{ice_version}
-make -C src KSRC=$bldroot clean
-make -C src KSRC=$bldroot %{?_smp_mflags}
+make %{?_smp_mflags} -C src KSRC=$bldroot clean
+make %{?_smp_mflags} -C src KSRC=$bldroot %{?_smp_mflags}
 popd
 %endif
 
@@ -932,26 +947,26 @@ install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
-make INSTALL_MOD_PATH=%{buildroot} modules_install
+make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
 
 # install i40e module
 bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+make %{?_smp_mflags} -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
 # install iavf module
 bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+make %{?_smp_mflags} -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
 # install ice module
 bldroot=`pwd`
 pushd ../ice-%{ice_version}
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+make %{?_smp_mflags} -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
 # Verify for build-id match
@@ -1040,7 +1055,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
-*   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 5.10.46-2
+*   Fri Jul 23 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.52-1
+-   Update to version 5.10.52
+*   Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.46-2
 -   Fix for CVE-2021-33909
 *   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.46-1
 -   Update to version 5.10.46

@@ -21,11 +21,11 @@ index 2ffaf6a..90543d6 100644
  	int port = xs_get_srcport(transport);
  	unsigned short last;
 +	struct net *net = transport->xprt.xprt_net;
- 
+
  	/*
  	 * If we are asking for any ephemeral port (i.e. port == 0 &&
 @@ -1822,6 +1824,8 @@ static int xs_bind(struct sock_xprt *transport, struct socket *sock)
- 
+
  	memcpy(&myaddr, &transport->srcaddr, transport->xprt.addrlen);
  	do {
 +		if (inet_is_local_reserved_port(net, port))
@@ -34,13 +34,13 @@ index 2ffaf6a..90543d6 100644
  		err = kernel_bind(sock, (struct sockaddr *)&myaddr,
  				transport->xprt.addrlen);
 @@ -1829,6 +1833,7 @@ static int xs_bind(struct sock_xprt *transport, struct socket *sock)
- 			transport->srcport = port;
+ 				transport->srcport = port;
  			break;
  		}
 +next_port:
  		last = port;
  		port = xs_next_srcport(transport, port);
  		if (port > last)
--- 
+--
 1.9.1
 

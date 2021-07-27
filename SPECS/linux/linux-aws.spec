@@ -7,8 +7,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.46
-Release:        2%{?dist}
+Version:        5.10.52
+Release:        1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -19,7 +19,7 @@ Distribution: 	Photon
 
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=c20ebd55737540346bc0c3d347fcb6f703768144
+%define sha1 linux=d1c6571f7fdf55939c451e35f02dd2cc7d143d14
 Source1:	config-aws
 Source2:	initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -57,10 +57,6 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2021-3609
-Patch103:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
-#Fix for CVE-2021-33909
-Patch104:       CVE-2021-33909.patch
 
 #Amazon AWS
 Patch201:       0002-bump-the-default-TTL-to-255.patch
@@ -169,6 +165,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 
 %prep
 #TODO: remove rcN after 5.9 goes out of rc
+# Using autosetup is not feasible
 %setup -q -n linux-%{version}
 
 %patch0 -p1
@@ -193,8 +190,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
-%patch103 -p1
-%patch104 -p1
 
 #Amazon AWS
 %patch201 -p1
@@ -244,14 +239,14 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch501 -p1
 
 %build
-make mrproper
+make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
 
 sed -i 's/CONFIG_LOCALVERSION="-aws"/CONFIG_LOCALVERSION="-%{release}-aws"/' .config
 
 %include %{SOURCE4}
 
-make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
+make %{?_smp_mflags} VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
 
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
@@ -276,7 +271,7 @@ install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
-make INSTALL_MOD_PATH=%{buildroot} modules_install
+make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
 
@@ -397,7 +392,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
-*   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 5.10.46-2
+*   Fri Jul 23 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.52-1
+-   Update to version 5.10.52
+*   Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.46-2
 -   Fix for CVE-2021-33909
 *   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.46-1
 -   Update to version 5.10.46

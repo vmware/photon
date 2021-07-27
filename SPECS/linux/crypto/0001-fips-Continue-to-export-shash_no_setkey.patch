@@ -1,0 +1,38 @@
+From 29929b91c1bd217330ddbde3e461c7dfd5a2cf00 Mon Sep 17 00:00:00 2001
+From: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Date: Mon, 26 Jul 2021 16:25:28 -0700
+Subject: [PATCH] fips: Continue to export shash_no_setkey
+
+Fixes compilation issue caused by https://lkml.org/lkml/2021/7/12/1949
+In versions >= 5.10.50, shash_no_setkey is no longer exported.
+Since the precompiled file fips_canister.o includes a definition of shash_no_setkey,
+it will throw a compilation error unless shash_no_setkey is exported
+
+ld: crypto/fips_canister.o: in function `crypto_shash_alg_needs_key':
+/usr/src/photon/BUILD/linux-5.10.21/./include/crypto/internal/hash.h:88: undefined reference to `shash_no_setkey'
+
+---
+ crypto/shash.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/crypto/shash.c b/crypto/shash.c
+index 0a0a50cb694f..b833a2d903fe 100644
+--- a/crypto/shash.c
++++ b/crypto/shash.c
+@@ -20,11 +20,12 @@
+
+ static const struct crypto_type crypto_shash_type;
+
+-static int shash_no_setkey(struct crypto_shash *tfm, const u8 *key,
++int shash_no_setkey(struct crypto_shash *tfm, const u8 *key,
+ 			   unsigned int keylen)
+ {
+ 	return -ENOSYS;
+ }
++EXPORT_SYMBOL_GPL(shash_no_setkey);
+
+ /*
+  * Check whether an shash algorithm has a setkey function.
+--
+2.17.1
+
