@@ -1,7 +1,7 @@
 Summary:        Library for low-level netlink programming interface to the in-kernel nf_tables subsystem
 Name:           libnftnl
 Version:        1.1.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 License:        GPLv2+
@@ -24,7 +24,7 @@ Requires:   %{name} = %{version}-%{release}
 Development files for %{name}
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure  --disable-static --disable-silent-rules --with-json-parsing
@@ -37,9 +37,7 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 make DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
-%post -p /sbin/ldconfig
-
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %files
 %defattr(-,root,root)
@@ -53,6 +51,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/%{name}
 
 %changelog
+* Tue Jul 27 2021 Susant sahani <ssahani@vmware.com> 1.1.9-2
+- Use ldconfig scriplets and switch autosetup
 * Sun Jan 24 2021 Susant sahani <ssahani@vmware.com> 1.1.9-1
 - Update to 1.1.9
 * Fri Jul 10 2020 Susant sahani <ssahani@vmware.com> 1.1.7-1
