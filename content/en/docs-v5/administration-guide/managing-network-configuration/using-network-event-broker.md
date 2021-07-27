@@ -67,9 +67,13 @@ Specifies whether you want to send the DNS domain details to `systemd-resolved`.
 Specifies whether you want to send the host name to `systemd-hostnamed`. The key takes one of the following values: `true`, `false`. When set to `true`, the host name is sent to `systemd-hostnamed` via DBus. This is applicable only to the DHClient. Default is false.
 
 <<<<<<< HEAD:content/en/docs-v5/administration-guide/managing-network-configuration/using-network-event-broker.md
+<<<<<<< HEAD:content/en/docs-v5/administration-guide/managing-network-configuration/using-network-event-broker.md
 The following example shows a sample configuration of the key values in the `network-broker.toml` file:
 =======
 >>>>>>> 4944dd62b (New Topic added (Network Event)):content/en/docs/administration-guide/managing-network-configuration/using-network-event-broker.md
+=======
+The following example shows a sample configuration of the key values in the `network-broker.toml` file:
+>>>>>>> 4740bd238 (Fixed comments from @ssahani):content/en/docs/administration-guide/managing-network-configuration/using-network-event-broker.md
 
 	❯ sudo cat /etc/network-broker/network-broker.toml 
 	[System]
