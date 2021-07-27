@@ -1,6 +1,8 @@
---- a/jdk/src/share/classes/sun/security/ssl/TrustStoreManager.java	2019-08-07 14:45:14.153223422 +0530
-+++ b/jdk/src/share/classes/sun/security/ssl/TrustStoreManager.java	2019-08-08 18:11:13.141723077 +0530
-@@ -76,6 +76,10 @@ final class TrustStoreManager {
+diff --git a/jdk/src/share/classes/sun/security/ssl/TrustStoreManager.java b/jdk/src/share/classes/sun/security/ssl/TrustStoreManager.java
+index e7b4763d..5e9d1f77 100644
+--- a/jdk/src/share/classes/sun/security/ssl/TrustStoreManager.java
++++ b/jdk/src/share/classes/sun/security/ssl/TrustStoreManager.java
+@@ -72,6 +72,10 @@ final class TrustStoreManager {
       */
      private static final class TrustStoreDescriptor {
          private static final String fileSep = File.separator;
@@ -11,7 +13,7 @@
          private static final String defaultStorePath =
                  GetPropertyAction.privilegedGetProperty("java.home") +
                  fileSep + "lib" + fileSep + "security";
-@@ -131,8 +135,8 @@ final class TrustStoreManager {
+@@ -129,8 +133,8 @@ final class TrustStoreManager {
                  @Override
                  public TrustStoreDescriptor run() {
                      // Get the system properties for trust store.
@@ -22,7 +24,7 @@
                      String storePropType = System.getProperty(
                              "javax.net.ssl.trustStoreType",
                              KeyStore.getDefaultType());
-@@ -144,30 +148,36 @@ final class TrustStoreManager {
+@@ -142,30 +146,36 @@ final class TrustStoreManager {
                      String temporaryName = "";
                      File temporaryFile = null;
                      long temporaryTime = 0L;
@@ -40,54 +42,54 @@
 -                            }
 -
 -                            // Not break, the file is inaccessible.
--                            if (debug != null &&
--                                    Debug.isOn("trustmanager")) {
--                                System.out.println(
--                                    "Inaccessible trust store: " +
--                                    storePropName);
+-                            if (SSLLogger.isOn &&
+-                                    SSLLogger.isOn("trustmanager")) {
+-                                SSLLogger.fine(
+-                                        "Inaccessible trust store: " +
+-                                        storePropName);
 -                            }
 -                        }
 -                    } else {
 -                        temporaryName = storePropName;
 -                    }
 +                    if (!"NONE".equals(storePropName1)) {
-+	                    String storePropName2 = System.getProperty(
++                           String storePropName2 = System.getProperty(
 +                            "javax.net.ssl.trustStore", jsseDefaultStore);
-+ 						if (!"NONE".equals(storePropName2)) {
-+								String[] fileNames =
-+										new String[] {storePropName2, defaultStore};
-+								for (String fileName : fileNames) {
-+									File f = new File(fileName);
-+									if (f.isFile() && f.canRead()) {
-+										temporaryName = fileName;
-+										temporaryFile = f;
-+										temporaryTime = f.lastModified();
++                                               if (!"NONE".equals(storePropName2)) {
++                                                               String[] fileNames =
++                                                                               new String[] {storePropName2, defaultStore};
++                                                               for (String fileName : fileNames) {
++                                                                       File f = new File(fileName);
++                                                                       if (f.isFile() && f.canRead()) {
++                                                                               temporaryName = fileName;
++                                                                               temporaryFile = f;
++                                                                               temporaryTime = f.lastModified();
 +
-+										break;
-+									}
++                                                                               break;
++                                                                       }
 +
-+									// Not break, the file is inaccessible.
-+									if (debug != null &&
-+											Debug.isOn("trustmanager")) {
-+										System.out.println(
-+											"Inaccessible trust store: " +
-+											storePropName2);
-+									}
-+								}
-+							} else {
-+								temporaryName = storePropName2;
-+							}
-+					} else {
++                                                                       // Not break, the file is inaccessible.
++                                                                       if (SSLLogger.isOn &&
++                                                                                       SSLLogger.isOn("trustmanager")) {
++                                                                               SSLLogger.fine(
++                                                                                       "Inaccessible trust store: " +
++                                                                                       storePropName2);
++                                                                       }
++                                                               }
++                                                       } else {
++                                                               temporaryName = storePropName2;
++                                                       }
++                                       } else {
 +                        temporaryName = storePropName1;
-+					}
++                                       }
  
                      return new TrustStoreDescriptor(
                              temporaryName, storePropType, storePropProvider,
-
-diff -r 6b81fd2227d1 -r 3334efeacd83 src/share/classes/sun/security/tools/KeyStoreUtil.java
---- a/jdk/src/share/classes/sun/security/tools/KeyStoreUtil.java	Fri Apr 01 05:33:37 2016 +0100
-+++ b/jdk/src/share/classes/sun/security/tools/KeyStoreUtil.java	Fri Apr 01 06:04:05 2016 +0100
-@@ -87,9 +87,14 @@
+diff --git a/jdk/src/share/classes/sun/security/tools/KeyStoreUtil.java b/jdk/src/share/classes/sun/security/tools/KeyStoreUtil.java
+index fcc77786..60dbb2f1 100644
+--- a/jdk/src/share/classes/sun/security/tools/KeyStoreUtil.java
++++ b/jdk/src/share/classes/sun/security/tools/KeyStoreUtil.java
+@@ -103,9 +103,14 @@ public class KeyStoreUtil {
          throws Exception
      {
          String sep = File.separator;
@@ -105,4 +107,3 @@ diff -r 6b81fd2227d1 -r 3334efeacd83 src/share/classes/sun/security/tools/KeySto
          if (!file.exists()) {
              return null;
          }
-
