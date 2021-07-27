@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.273
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.276
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d88c1888137bf79ff4e495672e80fb11732cb744
+%define sha1 linux=8dd48d184710526c7276bdaf2c3e41165d386599
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -133,9 +133,6 @@ Patch93:        0004-btrfs-tree-checker-Check-chunk-item-at-tree-block-re.patch
 Patch94:        0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch95:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch96:        0007-btrfs-tree-checker-Verify-inode-item.patch
-
-# Fix for CVE-2021-3609
-Patch97:        0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
 # Amazon AWS
 Patch101: 0002-lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
@@ -339,7 +336,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch94 -p1
 %patch95 -p1
 %patch96 -p1
-%patch97 -p1
 
 %patch101 -p1
 %patch102 -p1
@@ -536,6 +532,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Tue Jul 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.276-1
+-   Update to version 4.9.276
 *   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 4.9.273-2
 -   Fix for CVE-2021-33909
 *   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.273-1

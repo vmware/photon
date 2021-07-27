@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.273
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.276
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d88c1888137bf79ff4e495672e80fb11732cb744
+%define sha1 linux=8dd48d184710526c7276bdaf2c3e41165d386599
 Source1:        config
 Source2:        initramfs.trigger
 %define ena_version 1.1.3
@@ -146,9 +146,6 @@ Patch103:       0004-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
 Patch104:       0001-ovl-pass-correct-flags-for-opening-real-directory.patch
 Patch105:       0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch106:       0003-ovl-verify-permissions-in-ovl_path_open.patch
-
-# Fix for CVE-2021-3609
-Patch107:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
 # Fix dummy console function definitions
@@ -320,7 +317,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch104 -p1
 %patch105 -p1
 %patch106 -p1
-%patch107 -p1
 
 %patch111 -p1
 %patch112 -p1
@@ -335,7 +331,6 @@ cp %{SOURCE1} .config
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 # add extra config options
 echo "CONFIG_HYPERV_SOCK=m" >> .config
-echo "CONFIG_HW_RANDOM_RDRAND=m" >> .config
 make LC_ALL= oldconfig
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 make -C tools perf
@@ -495,6 +490,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Tue Jul 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.276-1
+-   Update to version 4.9.276
 *   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 4.9.273-2
 -   Fix for CVE-2021-33909
 *   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.273-1

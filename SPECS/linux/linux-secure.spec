@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.273
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.276
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d88c1888137bf79ff4e495672e80fb11732cb744
+%define sha1 linux=8dd48d184710526c7276bdaf2c3e41165d386599
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -147,9 +147,6 @@ Patch97: 0001-console-Expand-dummy-functions-for-CFI.patch
 Patch99:        LKCM.patch
 
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
-
-#Fix for CVE-2021-3609
-Patch120:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
 
 
 %if 0%{?kat_build:1}
@@ -333,7 +330,6 @@ popd
 %patch111 -p1
 
 #CVE
-%patch120 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -456,6 +452,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jul 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.276-1
+-   Update to version 4.9.276
 *   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 4.9.273-2
 -   Fix for CVE-2021-33909
 *   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.273-1
