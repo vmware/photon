@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.46
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        5.10.52
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -32,7 +32,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=c20ebd55737540346bc0c3d347fcb6f703768144
+%define sha1 linux=d1c6571f7fdf55939c451e35f02dd2cc7d143d14
 Source1:	config_%{_arch}
 Source2:	initramfs.trigger
 %define ena_version 2.4.0
@@ -98,10 +98,6 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2021-3609
-Patch130:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
-#Fix for CVE-2021-33909
-Patch131:        CVE-2021-33909.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -124,6 +120,8 @@ Patch503:       0002-FIPS-crypto-self-tests.patch
 Patch504:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
 Patch505:       0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+#Patch to not make shash_no_setkey static
+Patch506:       0001-fips-Continue-to-export-shash_no_setkey.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch508:       0001-FIPS-canister-binary-usage.patch
@@ -254,16 +252,23 @@ Python programming language to use the interface to manipulate perf events.
 
 %prep
 #TODO: remove rcN after 5.9 goes out of rc
+# Using autosetup is not feasible
 %setup -q -n linux-%{version}
 %ifarch x86_64
+# Using autosetup is not feasible
 %setup -D -b 3 -n linux-%{version}
+# Using autosetup is not feasible
 %setup -D -b 5 -n linux-%{version}
+# Using autosetup is not feasible
 %setup -D -b 10 -n linux-%{version}
+# Using autosetup is not feasible
 %setup -D -b 11 -n linux-%{version}
+# Using autosetup is not feasible
 %setup -D -b 13 -n linux-%{version}
 %endif
 
 %if 0%{?fips}
+# Using autosetup is not feasible
 %setup -D -b 16 -n linux-%{version}
 %endif
 
@@ -296,8 +301,6 @@ Python programming language to use the interface to manipulate perf events.
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
-%patch130 -p1
-%patch131 -p1
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -315,6 +318,7 @@ Python programming language to use the interface to manipulate perf events.
 %patch503 -p1
 %patch504 -p1
 %patch505 -p1
+%patch506 -p1
 %if 0%{?fips}
 %patch508 -p1
 %else
@@ -347,7 +351,7 @@ popd
 %endif
 
 %build
-make mrproper
+make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
@@ -364,7 +368,7 @@ grep -q CONFIG_CROSS_COMPILE= .config && sed -i '/^CONFIG_CROSS_COMPILE=/c\CONFI
 	echo 'CONFIG_CROSS_COMPILE="%{_host}-"' >> .config
 fi
 
-make V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
+make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
 
 %if 0%{?fips}
 %include %{SOURCE9}
@@ -373,44 +377,44 @@ make V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch}
 %ifarch aarch64
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
 %endif
-make ARCH=%{arch} -C tools perf PYTHON=python3 $ARCH_FLAGS
+make %{?_smp_mflags} ARCH=%{arch} -C tools perf PYTHON=python3 $ARCH_FLAGS
 
 %ifarch x86_64
 #build turbostat and cpupower
-make ARCH=%{arch} -C tools turbostat cpupower PYTHON=python3
+make %{?_smp_mflags} ARCH=%{arch} -C tools turbostat cpupower PYTHON=python3
 
 # build ENA module
 bldroot=`pwd`
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
 patch -p4 < %{SOURCE12}
-make -C $bldroot M=`pwd` V=1 modules %{?_smp_mflags}
+make %{?_smp_mflags} -C $bldroot M=`pwd` V=1 modules %{?_smp_mflags}
 popd
 
 # build Intel SGX module
 bldroot=`pwd`
 pushd ../SGXDataCenterAttestationPrimitives-DCAP_%{sgx_version}/driver/linux
-make KDIR=$bldroot ARCH=%{arch} %{?_smp_mflags}
+make %{?_smp_mflags} KDIR=$bldroot ARCH=%{arch} %{?_smp_mflags}
 popd
 
 # build i40e module
 bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
-make -C src KSRC=$bldroot clean
-make -C src KSRC=$bldroot %{?_smp_mflags}
+make %{?_smp_mflags} -C src KSRC=$bldroot clean
+make %{?_smp_mflags} -C src KSRC=$bldroot %{?_smp_mflags}
 popd
 
 # build iavf module
 bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
-make -C src KSRC=$bldroot clean
-make -C src KSRC=$bldroot %{?_smp_mflags}
+make %{?_smp_mflags} -C src KSRC=$bldroot clean
+make %{?_smp_mflags} -C src KSRC=$bldroot %{?_smp_mflags}
 popd
 
 # build ice module
 bldroot=`pwd`
 pushd ../ice-%{ice_version}
-make -C src KSRC=$bldroot clean
-make -C src KSRC=$bldroot %{?_smp_mflags}
+make %{?_smp_mflags} -C src KSRC=$bldroot clean
+make %{?_smp_mflags} -C src KSRC=$bldroot %{?_smp_mflags}
 popd
 %endif
 
@@ -437,13 +441,13 @@ install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/%{name}-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
-make ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
+make %{?_smp_mflags} ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 %ifarch x86_64
 # install ENA module
 bldroot=`pwd`
 pushd ../amzn-drivers-ena_linux_%{ena_version}/kernel/linux/ena
-make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
+make %{?_smp_mflags} -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
 popd
 
 # install Intel SGX module
@@ -458,19 +462,19 @@ popd
 # install i40e module
 bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+make %{?_smp_mflags} -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
 # install iavf module
 bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+make %{?_smp_mflags} -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
 # install ice module
 bldroot=`pwd`
 pushd ../ice-%{ice_version}
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+make %{?_smp_mflags} -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
 popd
 
 # Verify for build-id match
@@ -542,10 +546,10 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 %ifarch aarch64
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
 %endif
-make -C tools ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3 $ARCH_FLAGS
-make -C tools/perf ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} PYTHON=python3 install-python_ext
+make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} perf_install PYTHON=python3 $ARCH_FLAGS
+make %{?_smp_mflags} -C tools/perf ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} PYTHON=python3 install-python_ext
 %ifarch x86_64
-make -C tools ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
+make %{?_smp_mflags} -C tools ARCH=%{arch} DESTDIR=%{buildroot} prefix=%{_prefix} mandir=%{_mandir} turbostat_install cpupower_install PYTHON=python3
 %endif
 
 %include %{SOURCE2}
@@ -662,7 +666,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
-*   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 5.10.46-2
+*   Fri Jul 23 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.52-1
+-   Update to version 5.10.52
+*   Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.46-2
 -   Fix for CVE-2021-33909
 *   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.46-1
 -   Update to version 5.10.46
@@ -1269,4 +1275,3 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 -   Update according to UsrMove.
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.13.3-1
 -   Initial build. First version
-

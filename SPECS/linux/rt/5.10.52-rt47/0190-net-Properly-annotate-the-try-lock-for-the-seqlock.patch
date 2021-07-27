@@ -1,0 +1,69 @@
+From 133810dab068192ca6224ef114887c6d5fce4bde Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Tue, 8 Sep 2020 16:57:11 +0200
+Subject: [PATCH 190/303] net: Properly annotate the try-lock for the seqlock
+
+In patch
+   ("net/Qdisc: use a seqlock instead seqcount")
+
+the seqcount has been replaced with a seqlock to allow to reader to
+boost the preempted writer.
+The try_write_seqlock() acquired the lock with a try-lock but the
+seqcount annotation was "lock".
+
+Opencode write_seqcount_t_begin() and use the try-lock annotation for
+lockdep.
+
+Reported-by: Mike Galbraith <efault@gmx.de>
+Cc: stable-rt@vger.kernel.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/net/net_seq_lock.h |  9 ---------
+ include/net/sch_generic.h  | 10 +++++++++-
+ 2 files changed, 9 insertions(+), 10 deletions(-)
+
+diff --git a/include/net/net_seq_lock.h b/include/net/net_seq_lock.h
+index 95a497a72e51..67710bace741 100644
+--- a/include/net/net_seq_lock.h
++++ b/include/net/net_seq_lock.h
+@@ -6,15 +6,6 @@
+ # define net_seq_begin(__r)		read_seqbegin(__r)
+ # define net_seq_retry(__r, __s)	read_seqretry(__r, __s)
+ 
+-static inline int try_write_seqlock(seqlock_t *sl)
+-{
+-	if (spin_trylock(&sl->lock)) {
+-		write_seqcount_begin(&sl->seqcount);
+-		return 1;
+-	}
+-	return 0;
+-}
+-
+ #else
+ # define net_seqlock_t			seqcount_t
+ # define net_seq_begin(__r)		read_seqcount_begin(__r)
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 5a564a4f6629..9854155a3e88 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -209,8 +209,16 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
+ 		return false;
+ 	}
+ #ifdef CONFIG_PREEMPT_RT
+-	if (try_write_seqlock(&qdisc->running))
++	if (spin_trylock(&qdisc->running.lock)) {
++		seqcount_t *s = &qdisc->running.seqcount.seqcount;
++		/*
++		 * Variant of write_seqcount_t_begin() telling lockdep that a
++		 * trylock was attempted.
++		 */
++		raw_write_seqcount_t_begin(s);
++		seqcount_acquire(&s->dep_map, 0, 1, _RET_IP_);
+ 		return true;
++	}
+ 	return false;
+ #else
+ 	/* Variant of write_seqcount_begin() telling lockdep a trylock
+-- 
+2.30.2
+

@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Summary:	Linux API header files
 Name:		linux-api-headers
-Version:	5.10.46
+Version:	5.10.52
 Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
@@ -9,26 +9,26 @@ Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:	http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=c20ebd55737540346bc0c3d347fcb6f703768144
+%define sha1 linux=d1c6571f7fdf55939c451e35f02dd2cc7d143d14
 BuildArch:	noarch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
 %prep
-%setup -q -n linux-%{version}
+%autosetup -n linux-%{version}
 
 %build
-make mrproper
+make %{?_smp_mflags} mrproper
 %install
 [ "%{_arch}" = "x86_64" ] && ARCH=x86_64
 [ "%{_arch}" = "aarch64" ] && ARCH=arm64
 [ "%{_arch}" = "i686" ] && ARCH=i386
 cd %{_builddir}/linux-%{version}
-make ARCH=$ARCH headers_check
+make %{?_smp_mflags} ARCH=$ARCH headers_check
 # 'make headers_install' needs rsync, but we would prefer not to add
 # that dependency to linux-api-headers. So prepare the headers and
 # copy them using 'cp' instead.
 # make ARCH=$ARCH INSTALL_HDR_PATH=%{buildroot}%{_prefix} headers_install
-make ARCH=$ARCH headers
+make %{?_smp_mflags} ARCH=$ARCH headers
 # Delete extraneous files, if any.
 find usr/include -name '.*' -delete
 rm usr/include/Makefile
@@ -40,6 +40,8 @@ find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -de
 %{_includedir}/*
 
 %changelog
+*   Mon Jul 26 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.52-1
+-   Update to version 5.10.52
 *   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.46-1
 -   Update to version 5.10.46
 *   Thu Jun 03 2021 Keerthana K <keerthanak@vmware.com> 5.10.42-1

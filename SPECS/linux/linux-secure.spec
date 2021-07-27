@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.46
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        5.10.52
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -21,7 +21,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=c20ebd55737540346bc0c3d347fcb6f703768144
+%define sha1 linux=d1c6571f7fdf55939c451e35f02dd2cc7d143d14
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -72,10 +72,6 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
-# Fix for CVE-2021-3609
-Patch103:       0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
-#Fix for CVE-2021-33909
-Patch104:       CVE-2021-33909.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -88,6 +84,8 @@ Patch503:       0002-FIPS-crypto-self-tests.patch
 Patch504:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 # Patch to remove urandom usage in drbg and ecc modules
 Patch505:       0003-FIPS-crypto-drbg-Jitterentropy-RNG-as-the-only-RND.patch
+#Patch to not make shash_no_setkey static
+Patch506:       0001-fips-Continue-to-export-shash_no_setkey.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch508:       0001-FIPS-canister-binary-usage.patch
@@ -142,8 +140,10 @@ Requires:      %{name} = %{version}-%{release}
 The Linux package contains the Linux kernel doc files
 
 %prep
+# Using autosetup is not feasible
 %setup -q -n linux-%{version}
 %if 0%{?fips}
+# Using autosetup is not feasible
 %setup -D -b 16 -n linux-%{version}
 %endif
 
@@ -180,8 +180,6 @@ The Linux package contains the Linux kernel doc files
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
-%patch103 -p1
-%patch104 -p1
 
 # crypto
 %patch500 -p1
@@ -190,6 +188,7 @@ The Linux package contains the Linux kernel doc files
 %patch503 -p1
 %patch504 -p1
 %patch505 -p1
+%patch506 -p1
 %if 0%{?fips}
 %patch508 -p1
 %else
@@ -200,7 +199,7 @@ The Linux package contains the Linux kernel doc files
 %endif
 
 %build
-make mrproper
+make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
@@ -211,7 +210,7 @@ sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"
 
 %include %{SOURCE4}
 
-make V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
+make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 
 %if 0%{?fips}
 %include %{SOURCE9}
@@ -239,7 +238,7 @@ install -vdm 755 %{buildroot}/%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
-make INSTALL_MOD_PATH=%{buildroot} modules_install
+make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
 
 install -vm 644 arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{uname_r}
 install -vm 400 System.map               %{buildroot}/boot/System.map-%{uname_r}
@@ -278,7 +277,6 @@ cp .config %{buildroot}/usr/src/linux-headers-%{uname_r}
 # symling to the build folder
 ln -sf /usr/src/linux-headers-%{uname_r} %{buildroot}/lib/modules/%{uname_r}/build
 
-
 %include %{SOURCE2}
 %include %{SOURCE3}
 
@@ -307,7 +305,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
-*   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 5.10.46-2
+*   Fri Jul 23 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.52-1
+-   Update to version 5.10.52
+*   Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.46-2
 -   Fix for CVE-2021-33909
 *   Mon Jun 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.46-1
 -   Update to version 5.10.46
@@ -637,4 +637,4 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 -   .config: add netfilter_xt_match_{cgroup,ipvs} support
 -   .config: disable /dev/mem
 *   Mon Oct 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-1
-    Initial commit.
+-   Initial commit.
