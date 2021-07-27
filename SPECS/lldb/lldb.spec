@@ -2,7 +2,7 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        10.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %{python2_sitelib}/*
 
 %changelog
+*   Tue Jul 27 2021 Tapas Kundu <tkundu@vmware.com> 10.0.1-2
+-   Rebuild with updated clang
 *   Wed Nov 11 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.0.1-1
 -   Version Bump to 10.0.1
 *   Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.0.1-1

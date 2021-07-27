@@ -3,7 +3,7 @@
 Summary:        Module manipulating metadata files
 Name:           libmodulemd
 Version:        2.4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            https://github.com/fedora-modularity/libmodulemd
 Group:          Applications/System
@@ -23,6 +23,7 @@ BuildRequires:  python3-autopep8
 BuildRequires:  gtk-doc
 BuildRequires:  libyaml-devel
 Requires:       libyaml
+Requires:       clang
 
 %description
 C Library for manipulating module metadata files
@@ -65,6 +66,8 @@ DESTDIR=%{buildroot}/ ninja install
 %{_includedir}/modulemd/*
 
 %changelog
+*   Tue Jul 27 2021 Tapas Kundu <tkundu@vmware.com> 2.4.0-3
+-   Rebuild with updated clang
 *   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 2.4.0-2
 -   Added for ARM Build
 *   Wed May 15 2019 Ankit Jain <ankitja@vmware.com> 2.4.0-1

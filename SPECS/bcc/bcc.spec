@@ -6,7 +6,7 @@
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
 Version:         0.16.0
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         ASL 2.0
 Vendor:          VMware, Inc.
 Distribution:    Photon
@@ -118,6 +118,8 @@ find %{buildroot}/usr/share/bcc/{tools,examples} -type f -exec \
 %{_datadir}/%{name}/man/*
 
 %changelog
+*   Tue Jul 27 2021 Tapas Kundu <tkundu@vmware.com> 0.16.0-2
+-   Rebuild with updated clang
 *   Wed Nov 11 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.16.0-1
 -   Version Bump to 0.16.0
 *   Wed Jun 26 2019  Keerthana K <keerthanak@vmware.com> 0.10.0-1

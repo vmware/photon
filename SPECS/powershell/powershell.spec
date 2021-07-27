@@ -1,7 +1,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        7.1.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -21,10 +21,10 @@ BuildRequires:  dotnet-sdk = 5.0.103
 BuildRequires:  dotnet-runtime = 5.0.3
 BuildRequires:  psmisc
 BuildRequires:  cmake
-BuildRequires:  clang
+BuildRequires:  clang-devel
 BuildRequires:  git
 Requires:       icu
-
+Requires:       clang
 #gallery download scripts will fail without this
 Requires:       zlib-devel
 
@@ -97,6 +97,8 @@ fi
     %{_docdir}/*
 
 %changelog
+*   Tue Jul 27 2021 Tapas Kundu <tkundu@vmware.com> 7.1.2-2
+-   Rebuild with updated clang
 *   Mon Jan 18 2021 Shreyas B <shreyasb@vmware.com> 7.1.2-1
 -   Upgrade powershell to 7.1.2
 *   Wed Jan 13 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.0.3-3
