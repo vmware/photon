@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.75.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -43,6 +43,7 @@ Static libraries and header files for the support library for curl
 Summary: Libraries for curl
 Group:      System Environment/Libraries
 Requires:       ca-certificates-pki
+Requires:       libssh2
 %description libs
 This package contains minimal set of shared curl libraries.
 
@@ -104,6 +105,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Tue Jul 27 2021 Piyush Gupta <gpiyush@vmware.com> 7.75.0-5
+-   Added libssh2 in curl-libs requires.
 *   Thu Jul 22 2021 Harinadh D <hdommaraju@vmware.com> 7.75.0-4
 -   Fix CVE-2021-22924,CVE-2021-22925 ,CVE-2021-22922,CVE-2021-22923
 -   Disabled metalink

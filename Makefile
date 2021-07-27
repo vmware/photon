@@ -500,7 +500,7 @@ photon-docker-image:
 		-e PHOTON_RELEASE_VERSION=$(PHOTON_RELEASE_VERSION) \
 		-v `pwd`:/workspace \
 		photon-build \
-		./support/dockerfiles/photon/make-docker-image.sh tdnf
+		./support/dockerfiles/photon/make-docker-image.sh
 
 k8s-docker-images: start-docker photon-docker-image
 	mkdir -p $(PHOTON_STAGE)/docker_images && \

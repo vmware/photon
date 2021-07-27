@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -27,11 +27,10 @@ Patch5:         Fix-regression-reading-rpm-v3.patch
 Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
-Requires:       libarchive
 Requires:       lua
+Requires:       zstd-libs
 
 BuildRequires:  lua-devel
-BuildRequires:  libarchive-devel
 BuildRequires:  libdb-devel
 BuildRequires:  popt-devel
 BuildRequires:  nss-devel
@@ -127,7 +126,9 @@ sh ./autogen.sh --noconfigure
         --with-vendor=vmware \
         --disable-silent-rules \
         --with-external-db \
-        --enable-zstd
+        --enable-zstd \
+        --without-archive
+
 make %{?_smp_mflags}
 
 pushd python
@@ -163,7 +164,6 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %{_bindir}/rpm
 %{_bindir}/gendiff
-%{_bindir}/rpm2archive
 %{_bindir}/rpm2cpio
 %{_bindir}/rpmdb
 %{_bindir}/rpmgraph
@@ -180,8 +180,6 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/tgpg
 %{_libdir}/rpm/platform
 %{_libdir}/rpm-plugins/*
-%{_libdir}/rpm/python-macro-helper
-%{_libdir}/rpm/pythondistdeps.py
 %{_mandir}/man8/rpm.8.gz
 %{_mandir}/man8/rpm2cpio.8.gz
 %{_mandir}/man8/rpmdb.8.gz
@@ -240,6 +238,8 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/*.prov
 %{_libdir}/rpm/sepdebugcrcfix
 
+%{_libdir}/rpm/python-macro-helper
+%{_libdir}/rpm/pythondistdeps.py
 
 %{_libdir}/rpm/pythondeps.sh
 %{_libdir}/rpm/rpmdeps
@@ -271,6 +271,10 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jul 27 2021 Piyush Gupta <gpiyush@vmware.com> 4.14.2-14
+-   Added zstd-libs in Requires
+-   Remove python dependency from rpm
+-   Build without archive support
 *   Tue Jun 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-13
 -   Invalid signature tag Archivesize (1046) issue fix
 *   Tue May 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-12
