@@ -82,6 +82,7 @@ The following example shows a sample configuration of the key values in the `net
 	UseDNS="true"
 	UseDomain="true"
 <<<<<<< HEAD:content/en/docs-v5/administration-guide/managing-network-configuration/using-network-event-broker.md
+<<<<<<< HEAD:content/en/docs-v5/administration-guide/managing-network-configuration/using-network-event-broker.md
 =======
 
 <br />
@@ -127,3 +128,5 @@ The following example shows a sample configuration of the key values in the `net
 
 
 >>>>>>> 4944dd62b (New Topic added (Network Event)):content/en/docs/administration-guide/managing-network-configuration/using-network-event-broker.md
+=======
+>>>>>>> ceb7fbbd9 (Update using-network-event-broker.md):content/en/docs/administration-guide/managing-network-configuration/using-network-event-broker.md
