@@ -2361,4 +2361,149 @@ nm_restart_ntp_service();
 &lt;ul>
 &lt;li>success: 0&lt;/li>
 &lt;li>failure: exception&lt;/li>
-&lt;/ul></description></item></channel></rss>
+&lt;/ul></description></item><item><title>Docs: Configuring a Secondary Network Interface using Cloud-Network</title><link>/docs/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/configuring-a-secondary-network-interface-using-cloud-network/</guid><description>
+&lt;p>When you add a secondary network interface to a linux instance in the cloud environment, you need to configure the network parameters for the secondary interface in the linux instance. The configuration ensures that you do not face any routing issues while using the secondary network interface. Configuring the secondary network interface involves several manual processes that include configuring a new routing table, setting up rules in the routing table and so on.&lt;/p>
+&lt;p>&lt;code>cloud-network&lt;/code> automates the whole manual process of configuring the secondary network interface. It configures the network parameters required for any network interfaces that you create or add to the linux instance. In a cloud environment, instances are set to public IPs and private IPs. If you add more than one private IP for the secondary network interface, the IP other than the one provided by DHCP cannot be fetched and configured for your virtual machine. The &lt;code>cloud-network&lt;/code> project is designed to adapt the cloud-network environments such as Azure, GCP, and Amazon EC2. &lt;code>cloud-network&lt;/code> fetches the metadata from the metadata server endpoint, parses the metadata, and then assigns IPs and routes. When &lt;code>cloud-network&lt;/code> is installed, it automatically configures network interfaces in the cloud frameworks. It detects the available interfaces using netlink. Additionally, for all the interfaces, including the primary one, it looks for any secondary IP addresses from the metadata server endpoint and configures them on the interface, if any.&lt;/p>
+&lt;p>A local RESTful JSON server runs on the address 127.0.0.1:5209 and the instance metadata is saved on per link basis in the following directory: &lt;code>/run/cloud-network&lt;/code>.&lt;/p>
+&lt;p>The network parameters in the cloud framework are checked periodically for any changes, and in case of a change, the interface is reconfigured accordingly.&lt;/p>
+&lt;p>The image below illustrates the communication of &lt;code>cloud-network&lt;/code> and the instance metadata server:&lt;/p>
+&lt;p>&lt;img src="../../../docs/images/Cloud-Network_and_Instance-Metadata-Service_Communication.jpg" alt="Cloud Network tool communicating with the IMDS">&lt;/p>
+&lt;p>&lt;br />&lt;/p>
+&lt;h2 id="use-case-making-a-secondary-network-interface-work-in-a-cloud-instance">Use Case: Making a secondary network interface work in a cloud instance.&lt;/h2>
+&lt;p>This functionality is scattered across different scripts/tools that are cloud provider dependent. &lt;code>cloud-network&lt;/code> provides a cloud-agnostic mechanism to retrieve the metadata like network parameters, and configure the interfaces. This means that there is no need to manually edit and update the configuration when there are changes in the network parameters. &lt;code>cloud-network&lt;/code> automatically configures the interfaces since it has the metadata information.&lt;/p>
+&lt;p>The image below illustrates how &lt;code>cloud-network&lt;/code> fetches the network parameters to configure the secondary network interface (eth1) in a cloud instance:&lt;/p>
+&lt;p>&lt;img src="../../../docs/images/Secondary_Interface_Configuration.jpg" alt="Cloud Network tool configuring the secondary network instance">&lt;/p>
+&lt;p>&lt;br />&lt;/p>
+&lt;h2 id="installing-cloud-network-setup">Installing Cloud Network Setup&lt;/h2>
+&lt;p>Type the following command to install &lt;code>cloud network&lt;/code> in your system:&lt;/p>
+&lt;p>&lt;code>tdnf install cloud-network-setup&lt;/code>&lt;/p>
+&lt;p>&lt;br />&lt;/p>
+&lt;h2 id="configuration">Configuration&lt;/h2>
+&lt;p>To manage the configuration, use the configuration file named &lt;code>cloud-network.toml&lt;/code> located in the following directory: &lt;code>/etc/cloud-network/&lt;/code>&lt;/p>
+&lt;h3 id="system-section">[System] Section&lt;/h3>
+&lt;p>You can set values for the following keys in the &lt;code>[System]&lt;/code> section:&lt;/p>
+&lt;p>&lt;code>LogLevel=&lt;/code>&lt;br>
+Specifies the log level. The key takes one of the following values: &lt;code>Trace&lt;/code>, &lt;code>Debug&lt;/code>, &lt;code>Info&lt;/code>, &lt;code>Warning&lt;/code>, &lt;code>Error&lt;/code>, &lt;code>Fatal&lt;/code> and &lt;code>Panic&lt;/code>.
+Default is &lt;code>info&lt;/code>.&lt;/p>
+&lt;p>&lt;code>LogFormat=&lt;/code>&lt;br>
+Specifies the log format. The key takes one of the following values:
+text or JSON. Takes one of &lt;code>text&lt;/code> or &lt;code>json&lt;/code>, Default is &lt;code>text&lt;/code>.&lt;/p>
+&lt;p>&lt;code>RefreshTimer=&lt;/code>&lt;br>
+Specifies the time interval. The time interval indicates the amount of time taken to retrieve the data from the metadata endpoint.&lt;/p>
+&lt;h3 id="network-section">[Network] Section&lt;/h3>
+&lt;p>You can set values for the following keys in the &lt;code>[Network]&lt;/code> section:&lt;/p>
+&lt;p>&lt;code>Address=&lt;/code>&lt;br>
+Specifies the IP address that the local REST API server listens. Default is &lt;code>127.0.0.1&lt;/code>.&lt;/p>
+&lt;p>&lt;code>Port=&lt;/code>&lt;br>
+Specifies the IP port that the local REST API server listens. Default is &lt;code>5209&lt;/code>.&lt;/p>
+&lt;p>&lt;code>Supplementary=&lt;/code>&lt;br>
+A whitespace-separated list of interfaces matching the device name. Specifies the interfaces you want to configure with a default gateway and routing policy rules for each IP address including the primary IP address. No default value is set for this key.&lt;/p>
+&lt;p>&lt;strong>Note&lt;/strong> When there are multiple interfaces, the secondary interface becomes unreachable. When you set a value for &lt;code>Supplementary=&lt;/code> key, the default route and routing policy rules are automatically configured.&lt;/p>
+&lt;p>&lt;br />&lt;/p>
+&lt;p>The following example shows a sample configuration of the key values in the &lt;code>cloud-network.toml&lt;/code> file:&lt;/p>
+&lt;pre>&lt;code>&amp;gt; cat /etc/cloud-network/cloud-network.toml
+[System]
+RefreshTimer=&amp;quot;300s&amp;quot;
+LogLevel=&amp;quot;info&amp;quot;
+LogFormat=&amp;quot;text&amp;quot;
+[Network]
+Address=&amp;quot;127.0.0.1&amp;quot;
+Port=&amp;quot;5209&amp;quot;
+Supplementary=&amp;quot;ens3&amp;quot;
+&lt;/code>&lt;/pre>
+&lt;p>After you set the configuration, use the &lt;code>sudo systemctl status cloud-network&lt;/code> command to check the network status of the &lt;code>cloud-network&lt;/code> service.
+Following example shows the command output of the &lt;code>sudo systemctl status cloud-network&lt;/code> command:&lt;/p>
+&lt;pre>&lt;code>❯ &amp;gt; sudo systemctl status cloud-network
+● cloud-network.service - Configures network in cloud enviroment
+Loaded: loaded (/usr/lib/systemd/system/cloud-network.service; disabled; vendor preset: enabled)
+Active: active (running) since Mon 2021-05-31 22:54:50 UTC; 3min 31s ago
+Main PID: 19754 (cloud-network)
+Tasks: 5 (limit: 4400)
+Memory: 8.7M
+CGroup: /system.slice/cloud-network.service
+└─19754 /usr/bin/cloud-network
+May 31 22:54:50 zeus-final-2 systemd[1]: Started Configures network in cloud enviroment.
+&lt;/code>&lt;/pre>
+&lt;p>&lt;br />&lt;/p>
+&lt;h2 id="cnctl">cnctl&lt;/h2>
+&lt;p>Use the &lt;code>cnctl&lt;/code> CLI tool to view the metadata that is retrieved from the endpoint metadata server.
+The Following examples show the output of the &lt;code>cnctl status&lt;/code> command for the network and system:&lt;/p>
+&lt;pre>&lt;code>❯ cnctl status system
+Cloud provider: aws
+AmiID: ami-005f15863xxxxxxxx
+Location: 0
+BlockDeviceMapping: Ami:xvda Root:/dev/xvda
+Hostname: Zeus.us-west-2.compute.internal
+PublicHostname: Zeuspublic.us-west-2.compute.amazonaws.com
+LocalHostname: Zeus.us-west-2.compute.internal
+InstanceAction: none
+InstanceID: i-0c8c1test
+InstanceLifeCycle: on-demand
+InstanceType: t4g.micro
+Placement: AvailabilityZone:us-west-2d AvailabilityZoneID:usw2-az4 Region:us-west-2
+Profile: default-hvm
+Mac Address: 0e:c5:3f:c5:33:a5
+LocalIpv4: 192.31.63.114
+PublicIpv4: 02:42:8d:4c:0c:cf
+Services Domain: amazonaws.com
+Services Partition: aws
+&lt;/code>&lt;/pre>
+&lt;p>&lt;br />&lt;/p>
+&lt;pre>&lt;code>❯ cnctl status network
+Name: ens33
+MAC Address: 00:0c:29:5f:d1:39
+Public IP: 104.42.20.194
+Private IP: 10.0.0.4/24 10.0.0.6/24 10.0.0.7/24
+Subnet: 10.0.0.0
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Using Network Event Broker</title><link>/docs/administration-guide/managing-network-configuration/using-network-event-broker/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/using-network-event-broker/</guid><description>
+&lt;p>&lt;code>network-event-broker&lt;/code> is a daemon that configures network and executes scripts on network events such as &lt;code>systemd-networkd&lt;/code>&amp;rsquo;s DBus events, &lt;code>dhclient&lt;/code> lease gains, and so on.&lt;/p>
+&lt;p>&lt;code>network-event-broker&lt;/code> also detects the following events:&lt;/p>
+&lt;ul>
+&lt;li>An IP address is added/removed/modified&lt;/li>
+&lt;li>A link is added or removed&lt;/li>
+&lt;/ul>
+&lt;p>In the &lt;code>/etc/network-event-broker&lt;/code> directory, &lt;code>network-event-broker&lt;/code> creates the link state directories such as &lt;code>carrier.d&lt;/code>, &lt;code>configured.d&lt;/code>, &lt;code>degraded.d&lt;/code>, &lt;code>no-carrier.d&lt;/code>, &lt;code>routable.d&lt;/code> and manager state directory such as &lt;code>manager.d&lt;/code> . You can also keep the executable scripts in these directories.&lt;/p>
+&lt;h2 id="use-case-running-command-when-a-new-address-is-acquired-via-dhcp">Use Case: Running command when a new address is acquired via DHCP.&lt;/h2>
+&lt;ol>
+&lt;li>
+&lt;p>&lt;code>systemd-networkd&lt;/code>: &lt;code>systemd-networkd&lt;/code>&amp;rsquo;s scripts are executed when the daemon receives the relevant event from &lt;code>systemd-networkd&lt;/code>.&lt;/p>
+&lt;pre>&lt;code> May 14 17:08:13 Zeus cat[273185]: OperationalState=&amp;quot;routable&amp;quot;
+May 14 17:08:13 Zeus cat[273185]: LINK=ens33
+&lt;/code>&lt;/pre>
+&lt;/li>
+&lt;li>
+&lt;p>&lt;code>dhclient&lt;/code>: For &lt;code>dhclient&lt;/code>, scripts are executed in the &lt;code>routable.d&lt;/code> directory when &lt;code>dhclient&lt;/code> modifies the &lt;code>/var/lib/dhclient/dhclient.leases&lt;/code> file and lease information is passed to the scripts as environmental arguments.&lt;/p>
+&lt;/li>
+&lt;/ol>
+&lt;p>Environment variables such as &lt;code>LINK&lt;/code>, &lt;code>LINKINDEX=&lt;/code> and DHCP lease information &lt;code>DHCP_LEASE=&lt;/code> are passed to the scripts.&lt;/p>
+&lt;h2 id="configuration">Configuration&lt;/h2>
+&lt;p>To manage the &lt;code>network-event-broker&lt;/code> configuration, use the configuration file named &lt;code>network-broker.toml&lt;/code> located in the following directory: &lt;code>/etc/network-broker/&lt;/code>&lt;/p>
+&lt;h3 id="system-section">[System] section&lt;/h3>
+&lt;p>You can set values for the following keys in the &lt;code>[System]&lt;/code> section:&lt;/p>
+&lt;p>&lt;code>LogLevel=&lt;/code>&lt;br>
+Specifies the log level. The key takes one of the following values: &lt;code>info&lt;/code>, &lt;code>warn&lt;/code>, &lt;code>error&lt;/code>, &lt;code>debug&lt;/code> and &lt;code>fatal&lt;/code>. Default is &lt;code>info&lt;/code>.&lt;/p>
+&lt;p>&lt;code>Generator=&lt;/code>&lt;br>
+Specifies the network event generator source. The key takes one of the following values: &lt;code>systemd-networkd&lt;/code> or &lt;code>dhclient&lt;/code>. Default is &lt;code>systemd-networkd&lt;/code>.&lt;/p>
+&lt;h3 id="network-section">[Network] section&lt;/h3>
+&lt;p>You can set values for the following keys in the &lt;code>[Network]&lt;/code> section:&lt;/p>
+&lt;p>&lt;code>Links=&lt;/code>&lt;br>
+A whitespace-separated list of links whose events should be monitored. No default value is set for this key.&lt;/p>
+&lt;p>&lt;code>RoutingPolicyRules=&lt;/code>&lt;br>
+A whitespace-separated list of links for which you want to configure the routing policy rules per address. When you set this configuration, &lt;code>network-event-broker&lt;/code> automatically adds the &lt;code>to&lt;/code> and &lt;code>from&lt;/code> routing policy rules in another routing table &lt;code>(ROUTE_TABLE_BASE = 9999 + ifindex)&lt;/code>. When these addresses are removed, the routing policy rules are dropped. No default value is set for this key.&lt;/p>
+&lt;p>&lt;code>UseDNS=&lt;/code>&lt;br>
+Specifies whether you want to send the DNS server details to &lt;code>systemd-resolved&lt;/code>. The key takes one of the following values: &lt;code>true&lt;/code>, &lt;code>false&lt;/code>. When set to &lt;code>true&lt;/code>, the DNS server details are sent to &lt;code>systemd-resolved&lt;/code> via DBus. This is applicable only to the DHClient. Default is false.&lt;/p>
+&lt;p>&lt;code>UseDomain=&lt;/code>&lt;br>
+Specifies whether you want to send the DNS domain details to &lt;code>systemd-resolved&lt;/code>. The key takes one of the following values: &lt;code>true&lt;/code>, &lt;code>false&lt;/code>. When set to &lt;code>true&lt;/code>, the DNS domain details are sent to &lt;code>systemd-resolved&lt;/code> via DBus. This is applicable only to the DHClient. Default is false.&lt;/p>
+&lt;p>&lt;code>UseHostname=&lt;/code>&lt;br>
+Specifies whether you want to send the host name to &lt;code>systemd-hostnamed&lt;/code>. The key takes one of the following values: &lt;code>true&lt;/code>, &lt;code>false&lt;/code>. When set to &lt;code>true&lt;/code>, the host name is sent to &lt;code>systemd-hostnamed&lt;/code> via DBus. This is applicable only to the DHClient. Default is false.&lt;/p>
+&lt;p>The following example shows a sample configuration of the key values in the &lt;code>network-broker.toml&lt;/code> file:&lt;/p>
+&lt;pre>&lt;code>❯ sudo cat /etc/network-broker/network-broker.toml
+[System]
+LogLevel=&amp;quot;debug&amp;quot;
+Generator=&amp;quot;dhclient&amp;quot;
+[Network]
+Links=&amp;quot;ens33 ens37&amp;quot;
+RoutingPolicyRules=&amp;quot;ens33 ens37&amp;quot;
+UseDNS=&amp;quot;true&amp;quot;
+UseDomain=&amp;quot;true&amp;quot;
+&lt;/code>&lt;/pre></description></item></channel></rss>
