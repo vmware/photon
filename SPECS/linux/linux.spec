@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.274
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:    	4.4.276
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=de105cb267a12bf43313ea0033a63bd940205046
+%define sha1 linux=b3d332ac210273700c4d13285a50c80fefb35602
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -125,11 +125,6 @@ Patch82:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 #Fix for CVE-2019-19338
 Patch83:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch84:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
-
-# Fix for CVE-2021-3609
-Patch85:        0001-can-bcm-delay-release-of-struct-bcm_op-after-synchro.patch
-#Fix for CVE-2021-33909
-Patch86:        CVE-2021-33909.patch
 
 # Various vmxnet3 driver fixes:
 Patch91:        0001-vmxnet3-Wake-queue-from-reset-work.patch
@@ -289,8 +284,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch82 -p1
 %patch83 -p1
 %patch84 -p1
-%patch85 -p1
-%patch86 -p1
 %patch91 -p1
 %patch92 -p1
 %patch93 -p1
@@ -457,6 +450,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Mon Jul 26 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.276-1
+-   Update to version 4.4.276
 *   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 4.4.274-2
 -   Fix for CVE-2021-33909
 *   Tue Jul 06 2021 Vikash Bansal <bvikas@vmware.com> 4.4.274-1
