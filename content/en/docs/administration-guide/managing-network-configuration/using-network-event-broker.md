@@ -66,6 +66,7 @@ Specifies whether you want to send the DNS domain details to `systemd-resolved`.
 `UseHostname=`  
 Specifies whether you want to send the host name to `systemd-hostnamed`. The key takes one of the following values: `true`, `false`. When set to `true`, the host name is sent to `systemd-hostnamed` via DBus. This is applicable only to the DHClient. Default is false.
 
+The following example shows a sample configuration of the key values in the `network-broker.toml` file:
 
 	❯ sudo cat /etc/network-broker/network-broker.toml 
 	[System]
