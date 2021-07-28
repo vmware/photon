@@ -888,7 +888,7 @@ class BuildImage:
     def photon_docker_image():
         if not check_prerequesite["create-repo"]:
             RpmBuildTarget.create_repo()
-        if subprocess.Popen(["cd " + configdict["photon-path"] + ";sudo docker build --no-cache --tag photon-build " + curDir + "/support/dockerfiles/photon && sudo docker run --rm --privileged --net=host -e PHOTON_BUILD_NUMBER="+constants.buildNumber + " -e PHOTON_RELEASE_VERSION="+constants.releaseVersion + " -v "+curDir+":/workspace -v "+Build_Config.stagePath+":/workspace/stage photon-build ./support/dockerfiles/photon/make-docker-image.sh tdnf"], shell=True).wait() != 0:
+        if subprocess.Popen(["cd " + configdict["photon-path"] + ";sudo docker build --no-cache --tag photon-build " + curDir + "/support/dockerfiles/photon && sudo docker run --rm --privileged --net=host -e PHOTON_BUILD_NUMBER="+constants.buildNumber + " -e PHOTON_RELEASE_VERSION="+constants.releaseVersion + " -v "+curDir+":/workspace photon-build ./support/dockerfiles/photon/make-docker-image.sh"], shell=True).wait():
             raise Exception("Not able to run photon-docker-image")
 
     def k8s_docker_images(self):

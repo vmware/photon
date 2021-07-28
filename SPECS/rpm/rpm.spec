@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.2
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -29,14 +29,13 @@ Patch5:         Fix-regression-reading-rpm-v3.patch
 Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
-Requires:       libarchive
+Requires:       zstd-libs
 Requires:       lua
 Requires:       openssl >= 1.1.1
 Requires:       libgcrypt
 
 BuildRequires:  libgcrypt-devel
 BuildRequires:  lua-devel
-BuildRequires:  libarchive-devel
 BuildRequires:  libdb-devel
 BuildRequires:  popt-devel
 BuildRequires:  nss-devel
@@ -122,7 +121,9 @@ sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
         --with-vendor=vmware \
         --disable-silent-rules \
         --with-external-db \
-        --enable-zstd
+        --enable-zstd \
+        --without-archive
+
 make %{?_smp_mflags}
 
 pushd python
@@ -160,7 +161,6 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %{_bindir}/rpm
 %{_bindir}/gendiff
-%{_bindir}/rpm2archive
 %{_bindir}/rpm2cpio
 %{_bindir}/rpmdb
 %{_bindir}/rpmgraph
@@ -177,7 +177,6 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/tgpg
 %{_libdir}/rpm/platform
 %{_libdir}/rpm-plugins/*
-%{_libdir}/rpm/pythondistdeps.py
 %{_mandir}/man8/rpm2cpio.8.gz
 %{_mandir}/man8/rpmdb.8.gz
 %{_mandir}/man8/rpmgraph.8.gz
@@ -188,7 +187,6 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-syslog.8.gz
 %{_mandir}/man8/rpm-plugins.8.gz
 %{_mandir}/man8/rpm.8.gz
-%{_mandir}/man8/rpm2archive.8.gz
 %exclude %{_mandir}/fr/man8/*.gz
 %exclude %{_mandir}/ja/man8/*.gz
 %exclude %{_mandir}/ko/man8/*.gz
@@ -235,6 +233,7 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/sepdebugcrcfix
 
 %{_libdir}/rpm/rpmdeps
+%{_libdir}/rpm/pythondistdeps.py
 
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*
@@ -259,6 +258,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jul 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.2-6
+-   Remove python dependency from rpm main package
 *   Wed Jul 14 2021 Susant Sahani <ssahani@vmware.com> 4.16.1.2-5
 -   Add systemd-rpm-macros to build requires and requires
 *   Fri May 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.2-4
