@@ -3,7 +3,7 @@
 Summary:        Tools for password hashing
 Name:           argon2
 Version:        20190702
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -39,10 +39,10 @@ Libraries and Headers for integrating with Argon2
 %autosetup -n phc-winner-%{name}-%{version}
 
 %build
-make LIBRARY_REL=lib %{?_smp_mflags}
+make LIBRARY_REL=lib OPTTARGET=%{_arch} %{?_smp_mflags}
 
 %install
-make install LIBRARY_REL=lib PREFIX=%{buildroot}%{_prefix} %{?_smp_mflags}
+make install LIBRARY_REL=lib OPTTARGET=%{_arch} PREFIX=%{buildroot}%{_prefix} %{?_smp_mflags}
 rm %{buildroot}%{_libdir}/%{libname}.a
 install -Dpm 644 %{libname}.pc %{buildroot}%{_libdir}/pkgconfig/%{libname}.pc
 
@@ -72,5 +72,7 @@ make test %{?_smp_mflags}
 %{_libdir}/pkgconfig/%{libname}.pc
 
 %changelog
+*   Thu Jul 29 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 20190702-2
+-   Pass OPTTARGET=%{_arch} to make to avoid building package for native instruction set
 *   Thu Apr 8 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 20190702-1
 -   Initial package
