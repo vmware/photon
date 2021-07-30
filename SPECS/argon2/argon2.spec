@@ -3,7 +3,7 @@
 Summary:        Tools for password hashing
 Name:           argon2
 Version:        20190702
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -40,10 +40,10 @@ Libraries and Headers for integrating with Argon2
 
 %build
 # parallel build is not supported
-make -j1 LIBRARY_REL=lib
+make -j1 LIBRARY_REL=lib OPTTARGET=%{_arch}
 
 %install
-make install LIBRARY_REL=lib PREFIX=%{buildroot}%{_prefix}
+make install LIBRARY_REL=lib OPTTARGET=%{_arch} PREFIX=%{buildroot}%{_prefix}
 rm %{buildroot}%{_libdir}/%{libname}.a
 install -Dpm 644 %{libname}.pc %{buildroot}%{_libdir}/pkgconfig/%{libname}.pc
 
@@ -74,5 +74,7 @@ make test
 
 
 %changelog
+*   Thu Jul 29 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 20190702-2
+-   Pass OPTTARGET=%{_arch} to make to avoid building package for native instruction set
 *   Thu Apr 8 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 20190702-1
 -   Initial package
