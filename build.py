@@ -17,6 +17,9 @@ import docker
 import shutil
 import traceback
 import glob
+from subprocess import PIPE, Popen
+from support.check_spec import check_specs
+
 configdict = {}
 
 targetList = {
@@ -691,14 +694,28 @@ class CheckTools:
             raise Exception(e)
 
     def check_spec_files():
-        check_prerequesite["check-spec-files"]=True
-        print()
+        command = ("[ -z \"$(git diff-index --name-only HEAD --)\" ] && "
+                   "git diff --name-only @~ || git diff --name-only")
+
         if "base-commit" in configdict["photon-build-param"]:
-            command = ["./tools/scripts/check_spec_files.sh", str(configdict["photon-build-param"].get("base-commit"))]
-        else:
-            command = ["./tools/scripts/check_spec_files.sh"]
-        if subprocess.Popen(command, shell=True).wait() != 0:
-            raise Exception("spec file check failed")
+            commit_id = str(configdict["photon-build-param"].get("base-commit"))
+            if commit_id:
+                command = 'git diff --name-only %s' % commit_id
+
+        with Popen(command, stdout=PIPE, stderr=None, shell=True) as process:
+            files = process.communicate()[0].decode('utf-8').splitlines()
+            if process.returncode:
+                raise Exception("Something went wrong in check_spec_files")
+
+        check_prerequesite["check-spec-files"] = True
+
+        files = [fn for fn in files if fn.endswith('.spec')]
+        if not files:
+            print("No spec files to check for now")
+            return
+
+        if check_specs(files):
+            raise Exception("Spec file check failed")
 
     def check_kpartx():
         check_prerequesite["check-kpartx"]=True
