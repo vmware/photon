@@ -3,7 +3,7 @@
 Summary:        Docker
 Name:           docker
 Version:        19.03.15
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -60,6 +60,8 @@ Requires:       libltdl
 Requires:       device-mapper-libs
 Requires:       systemd
 Requires:       containerd >= 1.2.10, containerd < 1.5.0
+Requires(post): /usr/sbin/groupadd
+Requires(postun): /usr/sbin/groupdel
 
 %description    engine
 Docker is an open source project to build, ship and run any application as a lightweight container.
@@ -286,6 +288,9 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Sat Jul 31 2021 Piyush Gupta <gpiyush@vmware.com> 19.03.15-5
+-   Added Requires(post) groupadd and Requires(postun) groupdel
+-   in docker-engine.
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 19.03.15-4
 -   Bump up version to compile with new go
 *   Tue May 18 2021 Piyush Gupta<gpiyush@vmware.com> 19.03.15-3
