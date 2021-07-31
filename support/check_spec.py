@@ -405,9 +405,9 @@ def check_make_smp_flags(lines_dict, err):
 
         _ret = check_for_smp_mflags(line, idx, err)
         ret = True if ret else _ret
-        # if _smp_mflags in the same line  as 'make', break
+        # if _smp_mflags in the same line  as 'make', continue
         if not ret:
-            break
+            continue
         while line.endswith('\\'):
             idx += 1
             line = lines[idx]
@@ -476,6 +476,10 @@ def check_specs(files_list):
 
         print('Checking spec file: %s' % (spec_fn))
 
+        if not os.path.isfile(spec_fn):
+            print('%s has been deleted in this changeset' % (spec_fn))
+            continue
+
         err = ErrorDict(spec_fn)
         spec = Spec.from_file(spec_fn)
 
@@ -500,11 +504,18 @@ def check_specs(files_list):
 
 if __name__ == '__main__':
     files = []
-    dirname = 'SPECS/'
-    for r, d, fns in os.walk(dirname):
-        for fn in fns:
-            if fn.endswith('.spec'):
-                files.append(os.path.join(r, fn))
+
+    arglen = len(sys.argv)
+    if arglen >= 2:
+        for arg in range(1, arglen):
+            if sys.argv[arg].endswith('.spec'):
+                files.append(sys.argv[arg])
+    else:
+        dirname = 'SPECS/'
+        for r, d, fns in os.walk(dirname):
+            for fn in fns:
+                if fn.endswith('.spec'):
+                    files.append(os.path.join(r, fn))
 
     if check_specs(files):
         print('ERROR: spec check failed')
