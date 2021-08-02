@@ -3,7 +3,7 @@
 Name:           meson
 Summary:        Extremely fast and user friendly build system
 Group:          Development/Tools
-Version:        0.56.2
+Version:        0.59.0
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://mesonbuild.com/
@@ -11,8 +11,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Applications/System
 Source0:        https://github.com/mesonbuild/meson/archive/%{version}/%{name}-%{version}.tar.gz
-%define sha1    meson=88f30be08c968b0b8b9d2c6d3fe950fecff2658f
+%define sha1    meson=766b78fc60a55f4730f83232940683077035889e
 BuildArch:      noarch
+
 BuildRequires:  gcc
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -21,6 +22,7 @@ BuildRequires:  ninja-build
 BuildRequires:  gtest-devel
 BuildRequires:  gmock-devel
 BuildRequires:  gettext
+
 Requires:       ninja-build
 Requires:       python3
 Requires:       python3-setuptools
@@ -59,22 +61,24 @@ python3 ./run_tests.py
 %{_datadir}/polkit-1/actions/com.mesonbuild.install.policy
 
 %changelog
-*   Sat Jan 23 2021 Susant Sahani <ssahani@vmware.com> 0.56.2-1
--   Update to version 0.56.2-1
-*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.55.3-1
--   Automatic Version Bump
-*   Thu Sep 10 2020 Gerrit Photon <photon-checkins@vmware.com> 0.55.2-1
--   Automatic Version Bump
-*   Wed Aug 26 2020 Keerthana K <keerthanak@vmware.com> 0.55.1-3
--   Remove python3-gobject-introspection as it creates a circular
--   dependency for glib build.
-*   Sat Aug 22 2020 Ankit Jain <ankitja@vmware.com> 0.55.1-2
--   Added python3-gobject-introspection requires
-*   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 0.55.1-1
--   Automatic Version Bump
-*   Wed Aug 12 2020 Susant Sahani <ssahani@vmware.com> 0.55.0-1
--   Update to version 0.55.0-1
-*   Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 0.47.2-1
--   Update to version 0.47.2
-*   Wed Dec 27 2017 Anish Swaminathan <anishs@vmware.com> 0.44.0-1
--   Initial packaging
+* Mon Jul 19 2021 Susant Sahani <ssahani@vmware.com> 0.59.0-1
+- Update version
+* Sat Jan 23 2021 Susant Sahani <ssahani@vmware.com> 0.56.2-1
+- Update to version 0.56.2-1
+* Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.55.3-1
+- Automatic Version Bump
+* Thu Sep 10 2020 Gerrit Photon <photon-checkins@vmware.com> 0.55.2-1
+- Automatic Version Bump
+* Wed Aug 26 2020 Keerthana K <keerthanak@vmware.com> 0.55.1-3
+- Remove python3-gobject-introspection as it creates a circular
+- dependency for glib build.
+* Sat Aug 22 2020 Ankit Jain <ankitja@vmware.com> 0.55.1-2
+- Added python3-gobject-introspection requires
+* Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 0.55.1-1
+- Automatic Version Bump
+* Wed Aug 12 2020 Susant Sahani <ssahani@vmware.com> 0.55.0-1
+- Update to version 0.55.0-1
+* Mon Sep 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 0.47.2-1
+- Update to version 0.47.2
+* Wed Dec 27 2017 Anish Swaminathan <anishs@vmware.com> 0.44.0-1
+- Initial packaging
