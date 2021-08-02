@@ -1,7 +1,7 @@
 Summary:        ulogd - The userspace logging daemon for netfilter
 Name:           ulogd
 Version:        2.0.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            https://git.netfilter.org/ulogd2/
 Group:          System Environment/Daemons
@@ -50,10 +50,8 @@ Requires: libpcap
 %description pcap
 ulogd-pcap is a pcap  output plugin for ulogd.
 
-
 %prep
-%setup   -q
-%patch0  -p1
+%autosetup -p1
 
 %build
 %configure --enable-static=no \
@@ -73,7 +71,7 @@ install -vd %{buildroot}/%{_sbindir}/sbin
 install -vd %{buildroot}/%{_mandir}/man8
 install -vd %{buildroot}/%{_libdir}/systemd/system/
 install -vd %{buildroot}/var/log/ulogd/
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm -f %{buildroot}/lib/systemd/system/ulogd.service
 install -p -m 644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/
 install -p -m 644 ulogd.conf %{buildroot}%{_sysconfdir}/ulogd.conf
@@ -114,7 +112,6 @@ rm -rf %{buildroot}
 %defattr(0644,root,root,0755)
 %{_libdir}/ulogd/ulogd_output_MYSQL.so
 
-
 %files sqlite
 %defattr(0644,root,root,0755)
 %{_libdir}/ulogd/ulogd_output_SQLITE3.so
@@ -124,5 +121,7 @@ rm -rf %{buildroot}
 %{_libdir}/ulogd/ulogd_output_PCAP.so
 
 %changelog
+*   Wed Aug 18 2021 Shreyas B<shreyasb@vmware.com> 2.0.7-2
+-   Bump up to consume mysql v8.0.26
 *   Thu Feb 18 2021 Vikash Bansal <bvikas@vmware.com> 2.0.7-1
 -   Added ulogd package to photon-4.0
