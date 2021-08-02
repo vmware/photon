@@ -1,20 +1,20 @@
-Summary:	Netlink Protocol Library Suite
-Name:		  libnl
-Version:	3.5.0
-Release:	1%{?dist}
-License: 	LGPLv2+
-Group: 		System Environment/Libraries
-URL:		  https://github.com/thom311/libnl
-Source0:	https://github.com/thom311/libnl/releases/download/libnl3_5_0/%{name}-%{version}.tar.gz
+Summary:      Netlink Protocol Library Suite
+Name:         libnl
+Version:      3.5.0
+Release:      2%{?dist}
+License:      LGPLv2+
+Group:        System Environment/Libraries
+URL:          https://github.com/thom311/libnl
+Source0:      https://github.com/thom311/libnl/releases/download/libnl3_5_0/%{name}-%{version}.tar.gz
 %define   sha1 libnl=54c476a3103add175a6a055fcf45c0a29d2c0948
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Vendor:        VMware, Inc.
+Distribution:  Photon
 
-BuildRequires:	glib-devel
-BuildRequires:	dbus-devel
+BuildRequires:  glib-devel
+BuildRequires:  dbus-devel
 
-Requires:	glib
-Requires:	dbus
+Requires:   glib
+Requires:   dbus
 
 %description
 The libnl suite is a collection of libraries providing APIs to netlink protocol
@@ -24,14 +24,14 @@ to ioctl to provide mainly networking related kernel configuration and monitorin
 interfaces.
 
 %package devel
-Summary:	Libraries and headers for the libnl
-Requires:	libnl
+Summary:    Libraries and headers for the libnl
+Requires:   libnl
 
 %description devel
 Headers and static libraries for the libnl
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure
@@ -43,8 +43,7 @@ make DESTDIR=%{buildroot} install
 %check
 make %{?_smp_mflags} check
 
-%post	-p /sbin/ldconfig
-%postun	-p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %files
 %defattr(-,root,root)
@@ -63,17 +62,19 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*	Wed May 06 2020 Susant Sahani <ssahani@vmware.com> 3.5.0-1
--	Updated to version 3.5.0
-*	Wed Sep 19 2018 Bo Gan <ganb@vmware.com> 3.4.0-1
--	Updated to version 3.4.0
-*	Tue Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.2.29-1
--	Updated to version 3.2.29.
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2.27-2
--	GA - Bump release of all rpms
+* Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 3.5.0-2
+- Use autosetup and ldconfig scriptlets
+* Wed May 06 2020 Susant Sahani <ssahani@vmware.com> 3.5.0-1
+- Updated to version 3.5.0
+* Wed Sep 19 2018 Bo Gan <ganb@vmware.com> 3.4.0-1
+- Updated to version 3.4.0
+* Tue Apr 11 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.2.29-1
+- Updated to version 3.2.29.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2.27-2
+- GA - Bump release of all rpms
 * Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 3.2.27-1
 - Updated to version 3.2.27
-*	Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.2.25-2
--	Updated build-requires after creating devel package for dbus.
-*	Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 3.2.25-1
--	Initial build.
+* Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.2.25-2
+- Updated build-requires after creating devel package for dbus.
+* Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 3.2.25-1
+- Initial build.

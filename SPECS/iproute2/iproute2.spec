@@ -1,7 +1,7 @@
 Summary:        Basic and advanced IPV4-based networking
 Name:           iproute2
 Version:        5.12.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.kernel.org/pub/linux/utils/net/iproute2
 Group:          Applications/System
@@ -26,11 +26,10 @@ This package contains the header files for %{name}. If you like to develop progr
 you will need to install %{name}-devel.
 
 %prep
-%setup -q
+%autosetup -p1
 sed -i /ARPD/d Makefile
 sed -i 's/arpd.8//' man/man8/Makefile
 sed -i 's/m_ipt.o//' tc/Makefile
-%patch0 -p1
 
 %build
 make CC=%{_host}-gcc VERBOSE=1 %{?_smp_mflags} DESTDIR= LIBDIR=%{_libdir}
@@ -53,8 +52,7 @@ make
 make alltests
 cd ..
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %files
 %defattr(-,root,root)
@@ -72,33 +70,35 @@ cd ..
 %{_mandir}/man3/*
 
 %changelog
-*   Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 5.12.0-1
--   Automatic Version Bump
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 5.11.0-1
--   Automatic Version Bump
-*   Sat Jan 23 2021 Susant Sahani <ssahani@vmware.com> 5.10.0-1
--   Version Bump
-*   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 5.8.0-1
--   Automatic Version Bump
-*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 5.5.0-1
--   Automatic Version Bump
-*   Wed Jul 03 2019 Alexey Makhalov <amakhalov@vmware.com> 4.18.0-3
--   Cross compilation support
-*   Fri Mar 08 2019 Fabio Rapposelli <fabio@vmware.com> 4.18.0-2
--   Added "Provides: iproute" for better compatibility with other distributions
-*   Wed Sep 05 2018 Ankit Jain <ankitja@vmware.com> 4.18.0-1
--   Updated to version 4.18.0
-*   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 4.10.0-3
--   Fix compilation issue for glibc-2.26
-*   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 4.10.0-2
--   Move man3 to devel package.
-*   Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.10.0-1
--   Updated to version 4.10.0
-*   Thu Jun 16 2016 Nick Shi <nshi@vmware.com> 4.2.0-3
--   Replace killall by pkill in ifcfg
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.0-2
--   GA - Bump release of all rpms
-*   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.0-1
--   Updated to version 4.2.0
-*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.12.0-1
--   Initial build. First version
+* Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 5.12.0-1
+- Use autosetup and ldconfig scriptlets
+* Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 5.12.0-1
+- Automatic Version Bump
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 5.11.0-1
+- Automatic Version Bump
+* Sat Jan 23 2021 Susant Sahani <ssahani@vmware.com> 5.10.0-1
+- Version Bump
+* Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 5.8.0-1
+- Automatic Version Bump
+* Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 5.5.0-1
+- Automatic Version Bump
+* Wed Jul 03 2019 Alexey Makhalov <amakhalov@vmware.com> 4.18.0-3
+- Cross compilation support
+* Fri Mar 08 2019 Fabio Rapposelli <fabio@vmware.com> 4.18.0-2
+- Added "Provides: iproute" for better compatibility with other distributions
+* Wed Sep 05 2018 Ankit Jain <ankitja@vmware.com> 4.18.0-1
+- Updated to version 4.18.0
+* Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 4.10.0-3
+- Fix compilation issue for glibc-2.26
+* Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 4.10.0-2
+- Move man3 to devel package.
+* Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.10.0-1
+- Updated to version 4.10.0
+* Thu Jun 16 2016 Nick Shi <nshi@vmware.com> 4.2.0-3
+- Replace killall by pkill in ifcfg
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.0-2
+- GA - Bump release of all rpms
+* Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.2.0-1
+- Updated to version 4.2.0
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.12.0-1
+- Initial build. First version
