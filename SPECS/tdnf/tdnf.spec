@@ -2,7 +2,7 @@
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.1.3
+Version:        3.1.4
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,7 +10,7 @@ License:        LGPLv2.1,GPLv2
 URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=f930afe50c769746089c1ad15862660120ff8368
+%define sha1    %{name}=ac85ed7b6547005aad6055aad83268dbd1ad5793
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
 
@@ -144,7 +144,6 @@ elif [ $1 -eq 2 ]; then
     systemctl daemon-reload >/dev/null 2>&1 || :
 fi
 
-
 # Pre-uninstall
 %preun
 
@@ -249,6 +248,9 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
 
 %changelog
+*   Mon Aug 2 2021 Oliver Kurth <okurth@vmware.com> 3.1.4-1
+-   update to 3.1.4
+-   fix configreader key reading logic
 *   Tue Jun 29 2021 Oliver Kurth <okurth@vmware.com> 3.1.3-1
 -   update to 3.1.3
 *   Wed Jun 23 2021 Oliver Kurth <okurth@vmware.com> 3.1.2-1
@@ -377,4 +379,3 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 -   Proxy support, keepcache fix, valgrind leaks fix
 *   Fri Jan 23 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0
 -   Initial build.  First version
-
