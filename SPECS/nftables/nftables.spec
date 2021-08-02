@@ -3,7 +3,7 @@
 Summary:        Netfilter Tables userspace utillites
 Name:           nftables
 Version:        0.9.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 Group:          Development/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -69,32 +69,32 @@ make %{?_smp_mflags}
 
 %install
 %make_install
-find $RPM_BUILD_ROOT -name '*.la' -exec rm -f {} ';'
+find  %{buildroot} -name '*.la' -exec rm -f {} ';'
 
-rm -f $RPM_BUILD_ROOT/%{_libdir}/libnftables.a
+rm -f  %{buildroot}/%{_libdir}/libnftables.a
 
-mkdir -p $RPM_BUILD_ROOT/%{_unitdir}
-cp -a %{SOURCE1} $RPM_BUILD_ROOT/%{_unitdir}/
+mkdir -p  %{buildroot}/%{_unitdir}
+cp -a %{SOURCE1}  %{buildroot}/%{_unitdir}/
 
-mkdir -p $RPM_BUILD_ROOT/%{_sysconfdir}/sysconfig
-cp -a %{SOURCE2} $RPM_BUILD_ROOT/%{_sysconfdir}/sysconfig/
-chmod 600 $RPM_BUILD_ROOT/%{_sysconfdir}/sysconfig/nftables.conf
+mkdir -p  %{buildroot}/%{_sysconfdir}/sysconfig
+cp -a %{SOURCE2}  %{buildroot}/%{_sysconfdir}/sysconfig/
+chmod 600  %{buildroot}/%{_sysconfdir}/sysconfig/nftables.conf
 
-mkdir -m 700 -p $RPM_BUILD_ROOT/%{_sysconfdir}/nftables
-cp -a %{SOURCE3} $RPM_BUILD_ROOT/%{_sysconfdir}/nftables
-chmod 600 $RPM_BUILD_ROOT/%{_sysconfdir}/nftables/*.nft
-chmod 700 $RPM_BUILD_ROOT/%{_sysconfdir}/nftables
+mkdir -m 700 -p  %{buildroot}/%{_sysconfdir}/nftables
+cp -a %{SOURCE3}  %{buildroot}/%{_sysconfdir}/nftables
+chmod 600  %{buildroot}/%{_sysconfdir}/nftables/*.nft
+chmod 700  %{buildroot}/%{_sysconfdir}/nftables
 
 %post
 %systemd_post nftables.service
-/sbin/ldconfig
 
 %preun
 %systemd_preun nftables.service
 
 %postun
 %systemd_postun_with_restart nftables.service
-/sbin/ldconfig
+
+%ldconfig_scriptlets
 
 %files
 %defattr(-, root, root)
@@ -118,6 +118,8 @@ chmod 700 $RPM_BUILD_ROOT/%{_sysconfdir}/nftables
 %{python3_sitelib}/nftables/
 
 %changelog
+* Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 0.9.8-4
+- Use ldconfig scriptlets
 * Wed May 12 2021 Susant Sahani <ssahani@vmware.com> 0.9.8-3
 - Fixed nftables.conf
 * Thu Feb 11 2021 Susant Sahani <ssahani@vmware.com> 0.9.8-2
