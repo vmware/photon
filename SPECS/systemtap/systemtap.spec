@@ -8,7 +8,7 @@
 %define        with_sqlite    1
 
 Name:          systemtap
-Version:       4.4
+Version:       4.5
 Release:       1%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
@@ -16,7 +16,7 @@ Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://sourceware.org/systemtap/
 Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
-%define sha1 systemtap=f126888adda90a0ec57f43f9db20fde68c8ef356
+%define sha1 systemtap=c549d5fa7aaf6a8cef3371f5757d912d41eae934
 License:       GPLv2+
 
 BuildRequires: elfutils-devel
@@ -138,7 +138,7 @@ sed -i "s#"devel"#"dev"#g" stap-prep
 make
 %install
 [ "%{buildroot}" != / ] && rm -rf ""
-%makeinstall
+%make_install mandir=%{_mandir}
 
 mv %{buildroot}%{_datadir}/systemtap/examples examples
 
@@ -348,6 +348,9 @@ fi
 %{_mandir}/man8/systemtap-service.8*
 
 %changelog
+*   Mon Aug 02 2021 Ankit Jain <ankitja@vmware.com> 4.5-1
+-   Updated to version 4.5
+-   Fixes Null pointer exception issue
 *   Thu Nov 12 2020 Ankit Jain <ankitja@vmware.com> 4.4-1
 -   Updated to version 4.4
 *   Wed Aug 19 2020 Ankit Jain <ankitja@vmware.com> 4.3-3
