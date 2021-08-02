@@ -1,6 +1,6 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd/
-Version:        249.1
+Version:        249.2
 Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha1    systemd=ba1eb93d562cc4b4c0d8013ef7588f713446795e
+%define sha1    systemd=9fdcf03e0c88b3aa98c95626a588311084ef9047
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
 Source3:        systemd.cfg
@@ -276,6 +276,9 @@ CONFIGURE_OPTS=(
        -Doomd=false
        -Dhomed=false
        -Dversion-tag=v%{version}-%{release}
+       -Dsystemd-network-uid=76
+       -Dsystemd-resolve-uid=77
+       -Dsystemd-timesync-uid=78
        $CROSS_COMPILE_CONFIG
 )
 
@@ -651,6 +654,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com>  249.2-1
+- Version bump and define network, resolve timesyc uid
 * Thu Jul 22 2021 Susant Sahani <ssahani@vmware.com>  249.1-1
 - Version bump
 * Wed Jul 14 2021 Susant Sahani <ssahani@vmware.com>  249-2
