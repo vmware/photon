@@ -1,23 +1,27 @@
 Summary:        A library providing GObject bindings for libudev
 Name:           libgudev
-Version:        234
+Version:        236
 Release:        1%{?dist}
 License:        LGPL2.1
 URL:            https://git.gnome.org/browse/libgudev/
 Source0:        https://git.gnome.org/browse/%{name}/snapshot/%{name}-%{version}.tar.xz
-%define sha1 libgudev=003253c2e75f4602193432c45f234c54694e0057
+%define sha1 libgudev=24a73f68868c0e42940663a64bea952d29a71d17
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
+Distribution:   Photon
+
 BuildRequires:  glib >= 2.22.0
 BuildRequires:  glib-devel
 BuildRequires:  gnome-common
-BuildRequires:  gobject-introspection
+BuildRequires:  gobject-introspection-devel
 BuildRequires:  gtk-doc
 BuildRequires:  pkg-config
 BuildRequires:  systemd-devel
 BuildRequires:  which
+BuildRequires:  meson
+BuildRequires:  ninja-build
+
 Requires:       systemd
-Distribution:   Photon
 
 %description
 This is libgudev, a library providing GObject bindings for libudev. It
@@ -32,33 +36,35 @@ Requires:       glib-devel
 libgudev-devel package contains header files for building gudev applications.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-%configure  --disable-umockdev
-make %{?_smp_mflags}
+%meson -Dgtk_doc=false -Dtests=disabled -Dvapi=disabled
+%meson_build
 
 %install
-make DESTDIR=%{buildroot} install
+%meson_install
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+%meson_test
 
-%post	-p /sbin/ldconfig
-
-%postun	-p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %files
 %defattr(-,root,root)
 %{_libdir}/*.so.*
+%{_libdir}/girepository-1.0/GUdev-1.0.typelib
+%{_datadir}/gir-1.0/GUdev-1.0.gir
 
 %files devel
 %{_includedir}/*
-%{_libdir}/*.la
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/gudev-1.0.pc
 
 %changelog
+* Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 236-1
+- Use autosetup, ldconfig scriptlets, switch to meson
+- and version bump
 * Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 234-1
 - Automatic Version Bump
 * Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 233-1
