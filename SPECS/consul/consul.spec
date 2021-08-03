@@ -1,6 +1,6 @@
 Name:           consul
-Version:        1.9.5
-Release:        2%{?dist}
+Version:        1.10.1
+Release:        1%{?dist}
 Summary:        Consul is a tool for service discovery and configuration.
 License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
@@ -9,7 +9,7 @@ Distribution:   Photon
 URL:		    https://github.com/hashicorp/consul/archive/v%{version}.tar.gz
 
 Source0:	    %{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}.tar.gz=938181647aaca5f2ecf8d45454e07253263d34e5
+%define sha1 %{name}-%{version}.tar.gz=89a096489ab993466b437306b201cf7372cde692
 Source1:        %{name}.service
 
 BuildRequires:  unzip
@@ -36,7 +36,7 @@ Consul provides several key features:
 %global debug_package %{nil}
 
 %prep
-%setup -q
+%autosetup
 
 %build
 go build -v -o %{name}
@@ -92,6 +92,8 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/%{name}.d
 
 %changelog
+*   Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 1.10.1-1
+-   Version upgrade to 1.10.1, fixes CVE-2021-32574
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.9.5-2
 -   Bump up version to compile with new go
 *   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.9.5-1
