@@ -376,7 +376,7 @@ PrintUsage(void)
 	        "Valid modes are: nbd, nbdssl, san, hotadd \n");
     printf(" -thumb string : Provides a SSL thumbprint string for validation. "
            "Format: xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx:xx\n");
-    
+
     return 1;
 }
 
@@ -1173,7 +1173,7 @@ DumpBytes(const unsigned char *buf,     // IN
 
    for (i = 0; i < lines; i++) {
       int k, last;
-      printf("%04"FMTSZ"x : ", i * step);
+      printf("%04" FMTSZ "x : ", i * step);
       for (k = 0; n != 0 && k < step; k++, n--) {
          printf("%02x ", buf[i * step + k]);
       }
@@ -1438,7 +1438,7 @@ DoClone(void)
 static void
 DoConvert(void)
 {
-   
+
    appGlobals.diskType = VIXDISKLIB_DISK_MONOLITHIC_SPARSE;
    DoCreate();
    VixError vixError;
@@ -1688,8 +1688,8 @@ DoMountDisk()
    // VixDisk disk(appGlobals.connection, appGlobals.diskPath, appGlobals.openFlags);
 
    // Open Disks
-   err = VixMntapi_OpenDisks(appGlobals.connection, 
-		       diskNames, 
+   err = VixMntapi_OpenDisks(appGlobals.connection,
+		       diskNames,
 		       1, appGlobals.openFlags, &diskSetHandle);
    CHECK_AND_THROW(err);
    err = VixMntapi_GetDiskSetInfo(diskSetHandle, &diskSetInfo);
@@ -1702,7 +1702,7 @@ DoMountDisk()
                                          &numVolumes,
                                          &volumeHandles);
    CHECK_AND_THROW(err);
-   
+
    volInfo = NULL;
    err = VixMntapi_MountVolume(volumeHandles[0], FALSE);
    CHECK_AND_THROW(err);
