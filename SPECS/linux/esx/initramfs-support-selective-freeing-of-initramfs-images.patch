@@ -1,0 +1,150 @@
+From 2ca7c907d77e258befae4a6c6ef425646b59b21a Mon Sep 17 00:00:00 2001
+From: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Date: Sat, 31 Jul 2021 05:33:24 +0000
+Subject: [PATCH] initramfs: support selective freeing of initramfs images
+
+If there is a mix of newc and newca images in initramfs,
+we blindly retain the entire initramfs.
+We track the start and end offsets of each individual newc image,
+while combining adjacent images into larger blobs.
+We can then free these newc encoded sections of the initramfs
+---
+ init/initramfs.c | 68 +++++++++++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 62 insertions(+), 6 deletions(-)
+
+diff --git a/init/initramfs.c b/init/initramfs.c
+index 69fbb2f4e74f..880ab1799ea7 100644
+--- a/init/initramfs.c
++++ b/init/initramfs.c
+@@ -21,6 +21,16 @@ static int __initdata do_retain_initrd;
+ 
+ static __initdata bool panic_on_initramfs_error = false;
+ 
++static __initdata bool end_of_image = false;
++
++static __initdata LIST_HEAD(initramfs_image_list);
++
++struct initramfs_image {
++	struct list_head list;
++	loff_t start_offset;
++	loff_t end_offset;
++};
++
+ static int __init panic_on_initramfs_error_setup(char *__unused)
+ {
+ 	panic_on_initramfs_error = true;
+@@ -298,8 +308,7 @@ static int __init do_header(void)
+ 	}
+ 	if (!memcmp(collected, "0707ca", 6)) {
+ 		if (!newca_found) {
+-			printk(KERN_INFO "Page aligned format detected. Retain initrd.\n");
+-			do_retain_initrd = 1;
++			printk(KERN_INFO "Page aligned format detected\n");
+ 			newca_found = 1;
+ 		}
+ 		page_aligned_fmt = true;
+@@ -396,6 +405,7 @@ static int __init do_name(void)
+ 	state = SkipIt;
+ 	next_state = Reset;
+ 	if (strcmp(collected, "TRAILER!!!") == 0) {
++		end_of_image = true;
+ 		free_hash();
+ 		return 0;
+ 	}
+@@ -524,6 +534,7 @@ static long __init flush_buffer(void *bufv, unsigned long len)
+ static unsigned long my_inptr; /* index of next byte to be processed in inbuf */
+ 
+ #include <linux/decompress/generic.h>
++extern unsigned long initrd_start;
+ 
+ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+ {
+@@ -531,6 +542,7 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+ 	decompress_fn decompress;
+ 	const char *compress_name;
+ 	static __initdata char msg_buf[64];
++	char *buf_start = buf;
+ 
+ 	header_buf = kmalloc(110, GFP_KERNEL);
+ 	symlink_buf = kmalloc(PATH_MAX + N_ALIGN(PATH_MAX) + 1, GFP_KERNEL);
+@@ -549,13 +561,13 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+ 			written = write_buffer(buf, len);
+ 			buf += written;
+ 			len -= written;
+-			continue;
++			goto loopend;
+ 		}
+ 		if (!*buf) {
+ 			buf++;
+ 			len--;
+ 			this_header++;
+-			continue;
++			goto loopend;
+ 		}
+ 		this_header = 0;
+ 		decompress = decompress_method(buf, len, &compress_name);
+@@ -579,6 +591,43 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+ 		this_header = saved_offset + my_inptr;
+ 		buf += my_inptr;
+ 		len -= my_inptr;
++	loopend:
++		if (end_of_image == true) {
++			struct initramfs_image *image = NULL;
++			static loff_t current_image_start_offset = 0;
++
++			end_of_image = false;
++
++			/* We don't need to track this image if:
++			 * it's not a bootloader supplied initramfs
++			 * retain_initrd parameter is set in cmdline
++			 * the image is in page aligned format
++			 */
++			if ((char *)initrd_start !=  buf_start)
++				continue;
++			if (do_retain_initrd)
++				continue;
++			if (page_aligned_fmt) {
++				current_image_start_offset = this_header;
++				continue;
++			}
++
++			/* Get last added image */
++			if (!list_empty(&initramfs_image_list))
++				image = list_last_entry(&initramfs_image_list, struct initramfs_image, list);
++
++			/* Check if we can avoid creating a new element by extending adjacent one */
++			if (!image || image->end_offset + 1 != current_image_start_offset) {
++				image = kmalloc(sizeof(struct initramfs_image), GFP_KERNEL);
++				if (!image)
++					panic("Can't allocate memory to track initramfs image");
++				image->start_offset = current_image_start_offset;
++				list_add_tail(&image->list, &initramfs_image_list);
++			}
++			image->end_offset = this_header - 1;
++			current_image_start_offset = this_header;
++		}
++
+ 	}
+ 	dir_utime();
+ 	kfree(name_buf);
+@@ -708,8 +757,15 @@ static int __init populate_rootfs(void)
+ 	 * If the initrd region is overlapped with crashkernel reserved region,
+ 	 * free only memory that is not part of crashkernel region.
+ 	 */
+-	if (!do_retain_initrd && initrd_start && !kexec_free_initrd())
+-		free_initrd_mem(initrd_start, initrd_end);
++	if (!do_retain_initrd && initrd_start && !kexec_free_initrd()) {
++                struct initramfs_image *image, *tmp;
++                list_for_each_entry_safe(image, tmp, &initramfs_image_list, list) {
++                        free_initrd_mem(initrd_start + image->start_offset, initrd_start + image->end_offset);
++                        list_del(&image->list);
++                        kfree(image);
++                }
++
++        }
+ 	initrd_start = 0;
+ 	initrd_end = 0;
+ 
+-- 
+2.23.3
+

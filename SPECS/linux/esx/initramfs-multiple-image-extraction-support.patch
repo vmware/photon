@@ -1,0 +1,113 @@
+From f9851c1b2b91f0a439d105c5a72973b724cd9f4d Mon Sep 17 00:00:00 2001
+From: Him Kalyan Bordoloi <bordoloih@vmware.com>
+Date: Sat, 31 Jul 2021 04:59:39 +0000
+Subject: [PATCH] initramfs: multiple image extraction support
+
+---
+ init/initramfs.c | 40 +++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 35 insertions(+), 5 deletions(-)
+
+diff --git a/init/initramfs.c b/init/initramfs.c
+index c3a26243c50f..69fbb2f4e74f 100644
+--- a/init/initramfs.c
++++ b/init/initramfs.c
+@@ -17,6 +17,17 @@
+ 
+ static bool page_aligned_fmt __initdata;
+ 
++static int __initdata do_retain_initrd;
++
++static __initdata bool panic_on_initramfs_error = false;
++
++static int __init panic_on_initramfs_error_setup(char *__unused)
++{
++	panic_on_initramfs_error = true;
++	return 1;
++}
++__setup("panic_on_initramfs_error", panic_on_initramfs_error_setup);
++
+ static int __init xadd_pages(struct file *file, const char *p, size_t count, pgoff_t pgoff)
+ {
+ 	struct page *page;
+@@ -280,14 +291,20 @@ static int __init do_collect(void)
+ 
+ static int __init do_header(void)
+ {
++	static bool newca_found = 0;
+ 	if (memcmp(collected, "070707", 6)==0) {
+ 		error("incorrect cpio method used: use -H newc option");
+ 		return 1;
+ 	}
+ 	if (!memcmp(collected, "0707ca", 6)) {
+-		if (!page_aligned_fmt)
++		if (!newca_found) {
+ 			printk(KERN_INFO "Page aligned format detected. Retain initrd.\n");
++			do_retain_initrd = 1;
++			newca_found = 1;
++		}
+ 		page_aligned_fmt = true;
++	} else if (memcmp(collected, "070701", 6)==0) {
++		page_aligned_fmt = false;
+ 	} else if (memcmp(collected, "070701", 6)) {
+ 		error("no cpio magic");
+ 		return 1;
+@@ -361,6 +378,16 @@ static int __init maybe_link(void)
+ 	return 0;
+ }
+ 
++static int __init is_overwrite(char *path)
++{
++	struct kstat st;
++
++	if (!init_stat(path, &st, AT_SYMLINK_NOFOLLOW) && S_ISREG(st.mode)) {
++		return 1;
++	}
++	return 0;
++}
++
+ static __initdata struct file *wfile;
+ static __initdata loff_t wfile_pos;
+ 
+@@ -377,8 +404,11 @@ static int __init do_name(void)
+ 		int ml = maybe_link();
+ 		if (ml >= 0) {
+ 			int openflags = O_WRONLY|O_CREAT;
+-			if (ml != 1)
++			if (ml != 1) {
++				if (panic_on_initramfs_error && is_overwrite(collected))
++					panic("initramfs: file already exists %s", collected);
+ 				openflags |= O_TRUNC;
++			}
+ 			wfile = filp_open(collected, openflags, mode);
+ 			if (IS_ERR(wfile))
+ 				return 0;
+@@ -557,8 +587,6 @@ static char * __init unpack_to_rootfs(char *buf, unsigned long len)
+ 	return message;
+ }
+ 
+-static int __initdata do_retain_initrd;
+-
+ static int __init retain_initrd_param(char *str)
+ {
+ 	if (*str)
+@@ -669,6 +697,8 @@ static int __init populate_rootfs(void)
+ #ifdef CONFIG_BLK_DEV_RAM
+ 		populate_initrd_image(err);
+ #else
++		if (panic_on_initramfs_error)
++			panic("Initramfs unpacking failed: %s", err);
+ 		printk(KERN_EMERG "Initramfs unpacking failed: %s\n", err);
+ #endif
+ 	}
+@@ -678,7 +708,7 @@ static int __init populate_rootfs(void)
+ 	 * If the initrd region is overlapped with crashkernel reserved region,
+ 	 * free only memory that is not part of crashkernel region.
+ 	 */
+-	if (!do_retain_initrd && initrd_start && !page_aligned_fmt && !kexec_free_initrd())
++	if (!do_retain_initrd && initrd_start && !kexec_free_initrd())
+ 		free_initrd_mem(initrd_start, initrd_end);
+ 	initrd_start = 0;
+ 	initrd_end = 0;
+-- 
+2.23.3
+
