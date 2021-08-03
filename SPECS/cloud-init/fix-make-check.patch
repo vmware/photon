@@ -1,24 +1,5 @@
-diff --git a/cloudinit/config/tests/test_resolv_conf.py b/cloudinit/config/tests/test_resolv_conf.py
-index 6546a0b5..5a8b877b 100644
---- a/cloudinit/config/tests/test_resolv_conf.py
-+++ b/cloudinit/config/tests/test_resolv_conf.py
-@@ -15,11 +15,12 @@ EXPECTED_HEADER = """\
- 
- class TestGenerateResolvConf:
-     @mock.patch("cloudinit.config.cc_resolv_conf.templater.render_to_file")
-+    # Needed because of systemd-resolved-config.patch
-     def test_default_target_fname_is_etc_resolvconf(self, m_render_to_file):
--        generate_resolv_conf("templates/resolv.conf.tmpl", mock.MagicMock())
-+        generate_resolv_conf("templates/systemd.resolved.conf.tmpl", mock.MagicMock())
- 
-         assert [
--            mock.call(mock.ANY, "/etc/resolv.conf", mock.ANY)
-+            mock.call(mock.ANY, "/etc/systemd/resolved.conf", mock.ANY)
-         ] == m_render_to_file.call_args_list
- 
-     @mock.patch("cloudinit.config.cc_resolv_conf.templater.render_to_file")
 diff --git a/tests/unittests/test_net.py b/tests/unittests/test_net.py
-index 54cc8469..4d21883a 100644
+index b72a62b8..41ac974c 100644
 --- a/tests/unittests/test_net.py
 +++ b/tests/unittests/test_net.py
 @@ -5,7 +5,7 @@ from cloudinit import distros
@@ -30,7 +11,7 @@ index 54cc8469..4d21883a 100644
  from cloudinit.sources.helpers import openstack
  from cloudinit import temp_utils
  from cloudinit import subp
-@@ -4686,23 +4686,28 @@ class TestEniRoundTrip(CiTestCase):
+@@ -4989,23 +4989,28 @@ class TestEniRoundTrip(CiTestCase):
  class TestRenderersSelect:
  
      @pytest.mark.parametrize(
@@ -66,7 +47,7 @@ index 54cc8469..4d21883a 100644
      @mock.patch("cloudinit.net.renderers.netplan.available")
      @mock.patch("cloudinit.net.renderers.sysconfig.available")
      @mock.patch("cloudinit.net.renderers.sysconfig.available_sysconfig")
-@@ -4710,7 +4715,7 @@ class TestRenderersSelect:
+@@ -5013,7 +5018,7 @@ class TestRenderersSelect:
      @mock.patch("cloudinit.net.renderers.eni.available")
      def test_valid_renderer_from_defaults_depending_on_availability(
          self, m_eni_avail, m_nm_avail, m_scfg_avail, m_sys_avail,
@@ -75,7 +56,7 @@ index 54cc8469..4d21883a 100644
      ):
          """Assert proper renderer per DEFAULT_PRIORITY given availability."""
          m_eni_avail.return_value = eni          # ifupdown pkg presence
-@@ -4718,6 +4723,7 @@ class TestRenderersSelect:
+@@ -5021,6 +5026,7 @@ class TestRenderersSelect:
          m_scfg_avail.return_value = scfg        # sysconfig presence
          m_sys_avail.return_value = sys          # sysconfig/ifup/down presence
          m_netplan_avail.return_value = netplan  # netplan presence

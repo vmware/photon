@@ -19,7 +19,7 @@ void usage(char *progname) {
 Usage: %s [OPTIONS] DIR [CMD [ARG]...]\n\
 Options:\n\
   -b BND    bind host path into container\n\
-  -c        disable console emulation in the container\n\
+  -c        deactivate console emulation in the container\n\
   -g MAP    set the container-to-host GID map\n\
   -i CMD    run a helper child inside the new namespaces\n\
   -n        share the host network unprivileged in the container\n\
@@ -34,7 +34,7 @@ GID and UID maps are specified as START:LOWER:COUNT[,START:LOWER:COUNT]...\n\
 int main(int argc, char **argv) {
   char *gidmap = NULL, *inside = NULL, *outside = NULL, *uidmap = NULL;
   char *bind = NULL;
-  int hostnet = 0, master, option, stdio = 0;
+  int hostnet = 0, primary, option, stdio = 0;
   pid_t child, parent;
 
   while ((option = getopt(argc, argv, "+:b:cg:i:no:u:")) > 0)
@@ -71,6 +71,7 @@ int main(int argc, char **argv) {
   switch (child = fork()) {
     case -1:
       error(1, errno, "fork");
+      break;
     case 0:
       raise(SIGSTOP);
       if (geteuid() != 0)
@@ -101,25 +102,34 @@ int main(int argc, char **argv) {
   kill(child, SIGCONT);
   waitforexit(child);
 
-  setgid(0);
-  setgroups(0, NULL);
-  setuid(0);
+  if (setgid(0)) {
+      error(1, errno, "setgid");
+  }
 
-  master = stdio ? -1 : getconsole();
-  createroot(argv[optind], master, inside, bind);
+  if (setgroups(0, NULL)) {
+      error(1, errno, "setgroups");
+  }
+
+  if (setuid(0)) {
+      error(1, errno, "setuid");
+  }
+
+  primary = stdio ? -1 : getconsole();
+  createroot(argv[optind], primary, inside, bind);
 
   unshare(CLONE_NEWPID);
   switch (child = fork()) {
     case -1:
       error(1, errno, "fork");
+      break;
     case 0:
       mountproc();
       if (!hostnet)
         mountsys();
       enterroot();
 
-      if (master >= 0) {
-        close(master);
+      if (primary >= 0) {
+        close(primary);
         setconsole("/dev/console");
       }
 
@@ -133,5 +143,5 @@ int main(int argc, char **argv) {
       error(1, errno, "exec");
   }
 
-  return supervise(child, master);
+  return supervise(child, primary);
 }

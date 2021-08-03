@@ -85,12 +85,18 @@ void createroot(char *src, int console, char *helper, char *bind) {
   bindnode("/dev/tty", "dev/tty");
   bindnode("/dev/urandom", "dev/urandom");
   bindnode("/dev/zero", "dev/zero");
-  symlink("pts/ptmx", "dev/ptmx");
+
+  if (symlink("pts/ptmx", "dev/ptmx")) {
+      error(1, errno, "symlink-pts/ptmx");
+  }
 
   mkdir("run/shm" , 0777);
   if (mount("tmpfs", "run/shm", "tmpfs", 0, "mode=0777") < 0)
     error(1, 0, "Failed to mount /run/shm tmpfs in new root filesystem");
-  symlink("/run/shm", "dev/shm");
+
+  if (symlink("/run/shm", "dev/shm")) {
+      error(1, errno, "symlink-/run/shm");
+  }
 
 
   while ((bind = binditem(bind, &bindsrc, &binddst)))
@@ -100,9 +106,11 @@ void createroot(char *src, int console, char *helper, char *bind) {
     switch (child = fork()) {
       case -1:
         error(1, errno, "fork");
+        break;
       case 0:
         execlp(SHELL, SHELL, "-c", helper, NULL);
         error(1, errno, "exec %s", helper);
+        break;
       default:
         waitforexit(child);
     }

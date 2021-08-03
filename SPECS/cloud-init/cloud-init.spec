@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        21.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -57,26 +57,27 @@ BuildRequires:  python3-jsonpatch
 BuildRequires:  python3-pytest
 %endif
 
-Requires:       systemd
-Requires:       (net-tools or toybox)
-Requires:       python3
-Requires:       python3-libs
-Requires:       python3-configobj
-Requires:       python3-prettytable
-Requires:       python3-requests
-Requires:       python3-PyYAML
-Requires:       python3-jsonpatch
-Requires:       python3-oauthlib
-Requires:       python3-jinja2
-Requires:       python3-markupsafe
-Requires:       python3-six
-Requires:       python3-setuptools
-Requires:       python3-xml
-Requires:       python3-jsonschema
-Requires:       python3-netifaces
-Requires:       dhcp-client
+Requires:   iproute2
+Requires:   systemd
+Requires:   (net-tools or toybox)
+Requires:   python3
+Requires:   python3-libs
+Requires:   python3-configobj
+Requires:   python3-prettytable
+Requires:   python3-requests
+Requires:   python3-PyYAML
+Requires:   python3-jsonpatch
+Requires:   python3-oauthlib
+Requires:   python3-jinja2
+Requires:   python3-markupsafe
+Requires:   python3-six
+Requires:   python3-setuptools
+Requires:   python3-xml
+Requires:   python3-jsonschema
+Requires:   python3-netifaces
+Requires:   dhcp-client
 
-BuildArch:      noarch
+BuildArch:  noarch
 
 %description
 Cloud-init is a set of init scripts for cloud instances.  Cloud instances
@@ -98,6 +99,12 @@ python3 setup.py install -O1 --skip-build --root=%{buildroot} --init-system syst
 
 python3 tools/render-cloudcfg --variant photon > %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
 
+%if "%{_arch}" == "aarch64"
+# OpenStack DS in aarch64 adds a boot time of ~10 seconds by searching
+# for DS from a remote location, let's remove it.
+sed -i -e "0,/'OpenStack', / s/'OpenStack', //" %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
+%endif
+
 mkdir -p %{buildroot}/var/lib/cloud
 mkdir -p %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg.d
 
@@ -113,7 +120,11 @@ echo -e 'CERT1\nLINE2\nLINE3\nCERT2\nLINE2\nLINE3' > "${crt_file}"
 conf_file='/etc/ca-certificates.conf'
 echo -e 'line1\nline2\nline3\ncloud-init-ca-certs.crt\n' > "${conf_file}"
 
-pip3 install --upgrade pytest-metadata unittest2 mock httpretty attrs iniconfig
+# httpretty >= 1.1.0 has logging error issue
+# https://github.com/gabrielfalcao/HTTPretty/pull/435
+pip3 install httpretty==1.0.5
+
+pip3 install --upgrade pytest-metadata unittest2 mock attrs iniconfig
 make check %{?_smp_mflags}
 
 %clean
@@ -159,6 +170,9 @@ rm -rf %{buildroot}
 %dir /var/lib/cloud
 
 %changelog
+*   Tue Aug 03 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.2-4
+-   Fix hostname handling
+-   Remove OpenStack from aarch64 DS list
 *   Mon Jul 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.2-3
 -   Set disable_fallback_netcfg to true
 *   Wed Jul 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.2-2
