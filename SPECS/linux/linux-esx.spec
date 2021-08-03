@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.4
-Release:        18%{?kat_build:.kat}%{?dist}
+Release:        19%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -93,6 +93,9 @@ Patch60:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
 Patch61:        0001-fs-VTAR-archive-to-TPMFS-extractor.patch
 Patch62:        0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
 Patch63:        halt-on-panic.patch
+Patch64:        initramfs-multiple-image-extraction-support.patch
+Patch65:        initramfs-support-selective-freeing-of-initramfs-images.patch
+
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -225,6 +228,8 @@ The Linux package contains the Linux kernel doc files
 %patch61 -p1
 %patch62 -p1
 %patch63 -p1
+%patch64 -p1
+%patch65 -p1
 
 # CVE
 %patch100 -p1
@@ -374,6 +379,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Aug 09 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.4-19
+-   Port crx patches
 *   Tue Jul 20 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-18
 -   Arm64 VMware Hypervisor features
 -   Arm64 support for vmw_pvscsi, vmw_vmci and vmw_balloon
