@@ -1,4 +1,4 @@
-From 3a2213864fae157231638f34e88bad684facca2e Mon Sep 17 00:00:00 2001
+From 88d9720d2afe72e6f0df17478effd7262be26be2 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Wed, 21 Jul 2021 12:04:46 +0530
 Subject: [PATCH] Add ntp support to Photon
@@ -13,7 +13,7 @@ Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
  create mode 100644 templates/ntp.conf.photon.tmpl
 
 diff --git a/cloudinit/config/cc_ntp.py b/cloudinit/config/cc_ntp.py
-index e183993f..acf3251d 100644
+index e183993f..063fd796 100644
 --- a/cloudinit/config/cc_ntp.py
 +++ b/cloudinit/config/cc_ntp.py
 @@ -24,8 +24,8 @@ LOG = logging.getLogger(__name__)
@@ -22,8 +22,8 @@ index e183993f..acf3251d 100644
  NR_POOL_SERVERS = 4
 -distros = ['alpine', 'centos', 'debian', 'fedora', 'opensuse', 'rhel',
 -           'sles', 'ubuntu']
-+distros = ['almalinux', 'alpine', 'centos', 'debian', 'fedora', 'opensuse',
-+           'photon', 'rhel', 'rocky', 'sles', 'ubuntu']
++distros = ['alpine', 'centos', 'debian', 'fedora', 'opensuse',
++           'photon', 'rhel', 'sles', 'ubuntu']
  
  NTP_CLIENT_CONFIG = {
      'chrony': {
