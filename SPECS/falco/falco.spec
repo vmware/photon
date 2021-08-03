@@ -2,7 +2,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.15.1
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/falco/
 Group:          Applications/System
@@ -15,6 +15,7 @@ Source1:        https://github.com/draios/sysdig/archive/sysdig-0.26.0.tar.gz
 Source2:        http://libvirt.org/sources/libvirt-2.0.0.tar.xz
 %define sha1    libvirt=9a923b06df23f7a5526e4ec679cdadf4eb35a38f
 Patch0:         falco-CMakeLists.txt.patch
+Patch1:         falco-CVE-2021-33505.patch
 BuildArch:      x86_64
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -60,6 +61,7 @@ Sysdig falco is an open source, behavioral activity monitor designed to detect a
 %setup -T -D -a 1
 tar xf %{SOURCE2} --no-same-owner
 %patch0 -p1
+%patch1 -p1
 
 %build
 mv sysdig-0.26.0 ../sysdig
@@ -115,6 +117,8 @@ rm -rf %{buildroot}/*
 /sbin/depmod -a
 
 %changelog
+*   Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 0.15.1-2
+-   Patched to fix CVE-2021-33505
 *   Wed Jun 26 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 0.15.1-1
 -   Updated to fix CVE-2019-8339
 *   Wed Dec 12 2018 Sujay G <gsujay@vmware.com> 0.12.1-4
