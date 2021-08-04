@@ -2,7 +2,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.25.0
-Release:        3%{?kernelsubrelease}%{?dist}
+Release:        4%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/falco/
 Group:          Applications/System
@@ -13,6 +13,7 @@ Source0:        https://github.com/draios/%{name}/archive/%{name}-%{version}.tar
 Source1:        libb64-Fix-Makefile-dependency-for-parallel-make.patch
 Patch0:         build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
 Patch1:         build-fix-libb64-make-errors-during-parallel-make.patch
+Patch2:         falco-CVE-2021-33505.patch
 BuildArch:      x86_64
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -54,9 +55,11 @@ Requires:       c-ares
 Sysdig falco is an open source, behavioral activity monitor designed to detect anomalous activity in your applications. Falco lets you continuously monitor and detect container, application, host, and network activity... all in one place, from one source of data, with one set of customizable rules.
 
 %prep
+# Using autosetup is not feasible
 %setup
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 mkdir patch
 cp %{SOURCE1} patch/
 
@@ -105,6 +108,8 @@ rm -rf %{buildroot}/*
 /sbin/depmod -a
 
 %changelog
+*   Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 0.25.0-4
+-   Patched for CVE-2021-33505.
 *   Fri Feb 19 2021 Harinadh D <hdommaraju@vmware.com> 0.25.0-3
 -   Version bump up to build with latest protobuf
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.25.0-2
