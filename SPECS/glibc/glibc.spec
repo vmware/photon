@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        14%{?dist}
+Release:        15%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -36,6 +36,7 @@ Patch17:        0001-elf-Refactor-_dl_update_slotinfo-to-avoid-use-after-.patch
 Patch18:        0002-elf-Fix-data-races-in-pthread_create-and-TLS-access-.patch
 Patch19:        0003-elf-Use-relaxed-atomics-for-racy-accesses-BZ-19329.patch
 Patch20:        0004-elf-Add-test-case-for-BZ-19329.patch
+Patch21:        CVE-2021-35942.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -110,6 +111,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch18 -p1
 %patch19 -p1
 %patch20 -p1
+%patch21 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -314,6 +316,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 
 %changelog
+*   Wed Aug 04 2021 Keerthana K <keerthanak@vmware.com> 2.28-15
+-   Fix CVE-2021-35942
 *   Thu Jun 24 2021 Srinidhi Rao <srinidhir@vmware.com> 2.28-14
 -   Fix racy access issues in dl-open & dl-tls.
 *   Thu Jun 03 2021 Ajay Kaher <akaher@vmware.com> 2.28-13
