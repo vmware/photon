@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -14,13 +14,15 @@ Source0:        http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
 %define sha1    glibc=71ff0af28bdf4525d7b91ec5d82d1fc002000e91
 Source1:        locale-gen.sh
 Source2:        locale-gen.conf
-Patch0:         http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.31-fhs-1.patch
+#Patch taken from http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.31-fhs-1.patch
+Patch0:         glibc-2.31-fhs-1.patch
 Patch1:         0002-malloc-arena-fix.patch
 Patch2:         Fix_FMA4_detection_in_ifunc.patch
 Patch3:         CVE-2019-25013.patch
 Patch4:         CVE-2021-3326.patch
 Patch5:         CVE-2020-29562.patch
 Patch6:         CVE-2020-27618.patch
+Patch7:         CVE-2021-35942.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %define ExtraBuildRequires python3, python3-libs
@@ -73,15 +75,8 @@ Requires: %{name} = %{version}-%{release}
 Name Service Cache Daemon
 
 %prep
-%setup -q
+%autosetup -p1
 sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -315,6 +310,8 @@ fi
 
 
 %changelog
+*   Wed Aug 04 2021 Keerthana K <keerthanak@vmware.com> 2.32-6
+-   Fix CVE-2021-35942
 *   Thu Apr 01 2021 Ajay Kaher <akaher@vmware.com> 2.32-5
 -   Fix CVE-2020-27618
 *   Thu Mar 11 2021 Ajay Kaher <akaher@vmware.com> 2.32-4
