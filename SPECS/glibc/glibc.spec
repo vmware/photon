@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -28,6 +28,7 @@ Patch10:        0002-elf-Fix-data-races-in-pthread_create-and-TLS-access-.patch
 Patch11:        0003-elf-Use-relaxed-atomics-for-racy-accesses-BZ-19329.patch
 Patch12:        0004-elf-Fix-DTV-gap-reuse-logic-BZ-27135.patch
 Patch13:        0005-elf-Add-test-case-for-BZ-19329.patch
+Patch14:        CVE-2021-35942.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %define ExtraBuildRequires python3, python3-libs
@@ -96,6 +97,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch11 -p1
 %patch12 -p1
 %patch13 -p1
+%patch14 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -329,6 +331,8 @@ fi
 
 
 %changelog
+*   Wed Aug 04 2021 Keerthana K <keerthanak@vmware.com> 2.32-8
+-   Fix CVE-2021-35942
 *   Wed Jun 30 2021 Srinidhi Rao <srinidhir@vmware.com> 2.32-7
 -   Fix racy access issues in dl-open & dl-tls.
 *   Wed Jun 02 2021 Ajay Kaher <akaher@vmware.com> 2.32-6
