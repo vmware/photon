@@ -1,19 +1,22 @@
-Summary:    Library for netfilter related kernel/userspace communication
-Name:       libnfnetlink
-Version:    1.0.1
-Release:    1%{?dist}
-License:    GPLv2+
-URL:        http://www.netfilter.org/projects/libnfnetlink/index.html
-Group:      System Environment/Libraries
-Vendor:     VMware, Inc.
-Distribution:   Photon
-Source0:    http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
+Summary:      Library for netfilter related kernel/userspace communication
+Name:         libnfnetlink
+Version:      1.0.1
+Release:      2%{?dist}
+License:      GPLv2+
+URL:          http://www.netfilter.org/projects/libnfnetlink/index.html
+Group:        System Environment/Libraries
+Vendor:       VMware, Inc.
+Distribution: Photon
+Source0:      http://www.netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
 %define sha1 libnfnetlink=27ae2dfbd976e28cb7a417f9e946c901f512dd9a
 
 BuildRequires:  linux-api-headers
 
 %description
-libnfnetlink is the low-level library for netfilter related kernel/userspace communication. It provides a generic messaging infrastructure for in-kernel netfilter subsystems (such as nfnetlink_log, nfnetlink_queue, nfnetlink_conntrack) and their respective users and/or management tools in userspace.
+libnfnetlink is the low-level library for netfilter related kernel/userspace
+communication. It provides a generic messaging infrastructure for in-kernel
+netfilter subsystems (such as nfnetlink_log, nfnetlink_queue, nfnetlink_conntrack)
+and their respective users and/or management tools in userspace.
 
 %package        devel
 Summary:        Development files for %{name}
@@ -26,7 +29,7 @@ The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure --disable-static
@@ -36,8 +39,7 @@ make %{?_smp_mflags}
 %make_install
 find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %files
 %doc COPYING README
@@ -50,6 +52,7 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 %{_libdir}/*.so
 
 %changelog
+*   Wed Aug 04 2021 Susant Sahani <ssahani@vmware.com> 1.0.1-2
+-   Moderize spec files. Use ldconfig scriptlets and autosetup
 *   Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 1.0.1-1
 -   Initial packaging
-
