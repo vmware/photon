@@ -1,95 +1,99 @@
 Summary:          Programs for basic networking
 Name:             iputils
-Version:          20200821
+Version:          20210722
 Release:          1%{?dist}
 License:          BSD-3 and GPLv2+
 URL:              https://github.com/iputils/iputils
 Group:            Applications/Communications
 Vendor:           VMware, Inc.
 Distribution:     Photon
-#https://github.com/iputils/iputils/archive/s20180629.tar.gz
 Source0:          %{name}-s%{version}.tar.gz
-%define sha1      iputils=2fd13a7fb75184f3a0082aa748fb80ec85e12600
-BuildRequires:    libcap-devel libgcrypt-devel
+%define sha1      iputils=6e1fd3915d10bb5b3f0613e90ea156f3dd408623
+
+BuildRequires:    libcap-devel
+BuildRequires:    libgcrypt-devel
 BuildRequires:    ninja-build
 BuildRequires:    meson
+BuildRequires:    openssl-devel
+BuildRequires:    iproute2
+
 Requires:         libcap
 Requires:         libgcrypt
-Obsoletes:        inetutils
+Requires:         systemd
 
 %description
 The Iputils package contains programs for basic networking.
 
+%package ninfod
+Summary: Node Information Query Daemon
+
+Requires: %{name} = %{version}-%{release}
+Provides: %{_sbindir}/ninfod
+
+%description ninfod
+Node Information Query (RFC4620) daemon. Responds to IPv6 Node Information
+Queries
+
 %prep
-%setup -q -n %{name}-s%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
-meson --prefix /usr --buildtype=plain builddir \
-      -DUSE_IDN=false \
-      -DUSE_GCRYPT=true \
-      -DBUILD_MANS=false \
-      -DBUILD_TRACEROUTE6=true
-ninja -v -C builddir
-#make html
-#make man
+%meson -DBUILD_TRACEROUTE6=true -DUSE_IDN=false -DBUILD_MANS=false -DBUILD_HTML_MANS=false
+%meson_build
 
 %install
-rm -fr %{buildroot}
-mkdir -p %{buildroot}%{_sbindir}
-mkdir -p %{buildroot}%{_bindir}
-mkdir -p %{buildroot}/%{_unitdir}
+%meson_install
 
-cd builddir
-install -c clockdiff %{buildroot}%{_sbindir}/
-install -cp arping %{buildroot}%{_sbindir}/
-install -cp ping/ping %{buildroot}%{_bindir}/
-install -cp rdisc %{buildroot}%{_sbindir}/
-install -cp tracepath %{buildroot}%{_bindir}/
-install -cp traceroute6 %{buildroot}%{_bindir}/
-install -cp ninfod/ninfod %{buildroot}%{_sbindir}/
+%find_lang %{name}
 
-ln -sf /usr/bin/ping %{buildroot}%{_bindir}/ping6
-ln -sf ../bin/tracepath %{buildroot}%{_sbindir}
-ln -sf ../bin/traceroute6 %{buildroot}%{_sbindir}
+ln -sf ../bin/ping %{buildroot}%{_sbindir}/ping
+ln -sf ../bin/ping %{buildroot}%{_sbindir}/ping6
+ln -sf ../bin/traceroute6 %{buildroot}%{_sbindir}/traceroute6
+ln -sf ../bin/tracepath %{buildroot}%{_sbindir}/tracepath
+ln -sf ../bin/tracepath %{buildroot}%{_sbindir}/tracepath6
+ln -sf ../bin/arping %{buildroot}%{_sbindir}/arping
 
-cd ../
-cp Documentation/RELNOTES.old ./
-iconv -f ISO88591 -t UTF8 RELNOTES.old -o RELNOTES.tmp
-touch -r RELNOTES.old RELNOTES.tmp
-mv -f RELNOTES.tmp RELNOTES.old
-
-%files
-%defattr(-,root,root)
-%doc RELNOTES.old
+%files -f %{name}.lang
 %{_sbindir}/rdisc
 %{_sbindir}/ninfod
 %{_sbindir}/tracepath
 %{_sbindir}/traceroute6
+%{_sbindir}/arping
+%{_sbindir}/ping
+%{_sbindir}/ping6
+%{_sbindir}/tracepath6
+
 %{_bindir}/tracepath
 %{_bindir}/traceroute6
-%caps(cap_net_raw=p) %{_sbindir}/clockdiff
-%caps(cap_net_raw=p) %{_sbindir}/arping
-%caps(cap_net_raw=p cap_net_admin=p) %{_bindir}/ping
-%caps(cap_net_raw=p cap_net_admin=p) %{_bindir}/ping6
+
+%attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/clockdiff
+%attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/arping
+%attr(0755,root,root) %caps(cap_net_raw=p) %{_bindir}/ping
+
+%files ninfod
+%attr(0755,root,root) %caps(cap_net_raw=ep) %{_sbindir}/ninfod
+%{_sysconfdir}/init.d/ninfod.sh
 
 %changelog
-*   Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20200821-1
--   Automatic Version Bump
-*   Wed Aug 12 2020 Tapas Kundu <tkundu@vmware.com> 20190709-2
--   Fix variable name collision with libcap update
-*   Mon Jul 06 2020 Gerrit Photon <photon-checkins@vmware.com> 20190709-1
--   Automatic Version Bump
-*   Thu Oct 10 2019 Tapas Kundu <tkundu@vmware.com> 20180629-2
--   Provided ping6 as symlink of ping
-*   Thu Sep 06 2018 Ankit Jain <ankitja@vmware.com> 20180629-1
--   Updated to version 20180629
-*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 20151218-4
--   Remove openssl and gnutls deps
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 20151218-3
--   GA - Bump release of all rpms
-*   Thu Apr 07 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 20151218-2
--   Fixing permissions for binaries
-*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 20151218-1
--   Updated to version 2.4.18
-*   Tue Oct 20 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 20121221-1
--   Initial build.    First version
+* Wed Aug 04 2021 Susant Sahani <ssahani@vmware.com> 20210722-1
+- Update version, modernize spec file. Use ldconfig scriptlets and autosetup
+* Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20200821-1
+- Automatic Version Bump
+* Wed Aug 12 2020 Tapas Kundu <tkundu@vmware.com> 20190709-2
+- Fix variable name collision with libcap update
+* Mon Jul 06 2020 Gerrit Photon <photon-checkins@vmware.com> 20190709-1
+- Automatic Version Bump
+* Thu Oct 10 2019 Tapas Kundu <tkundu@vmware.com> 20180629-2
+- Provided ping6 as symlink of ping
+* Thu Sep 06 2018 Ankit Jain <ankitja@vmware.com> 20180629-1
+- Updated to version 20180629
+* Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 20151218-4
+- Remove openssl and gnutls deps
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 20151218-3
+- GA - Bump release of all rpms
+* Thu Apr 07 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 20151218-2
+- Fixing permissions for binaries
+* Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 20151218-1
+- Updated to version 2.4.18
+* Tue Oct 20 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 20121221-1
+- Initial build. First version
