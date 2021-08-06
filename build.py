@@ -11,6 +11,7 @@ from CommandUtils import CommandUtils
 from builder import Builder
 from Logger import Logger
 from utils import Utils
+from StringUtils import StringUtils
 import subprocess
 import json
 import docker
@@ -19,6 +20,8 @@ import traceback
 import glob
 from subprocess import PIPE, Popen
 from distutils.util import strtobool
+from SpecDeps import SpecDependencyGenerator
+from SpecData import SPECS
 from support.check_spec import check_specs
 
 configdict = {}
@@ -189,8 +192,6 @@ class Utilities:
     global check_prerequesite
 
     def __init__(self):
-
-        from SpecDeps import SpecDependencyGenerator
 
         cmdUtils = CommandUtils()
         self.img = configdict.get("utility", {}).get("img", None)
@@ -425,29 +426,60 @@ class CleanUp:
             if subprocess.Popen([curDir + "/support/package-builder/clean-up-chroot.py", constants.buildRootPath]).wait() != 0:
                 raise Exception("Not able to clean chroot")
 
-    def clean_stage_for_incremental_build():
-        #cd /root/photon;test -z "$(git diff --name-only 84562de @ | grep SPECS)" || \
-        #   /root/photon/support/package-builder/SpecDeps.py  --spec-path SPECS/
-        #                                                     -i remove-upward-deps \
-        #                                                     -p "$(echo `git diff --name-only 84562de @ | grep .spec | xargs -n1 basename 2>/dev/null` | tr ' ' :)"
-        command = "cd %s; \
-                   test -z \"$(git diff --name-only %s @ | grep SPECS)\" || \
-                   %s --spec-path SPECS/ \
-                      -i remove-upward-deps \
-                      -p \"$(echo `git diff --name-only %s @ | grep .spec | xargs -n1 basename 2>/dev/null` | tr ' ' :)\"" % (configdict["photon-path"],
-                                                                                                                              configdict["photon-build-param"]["base-commit"],
-                                                                                                                              "%s/support/package-builder/SpecDeps.py" % (curDir),
-                                                                                                                              configdict["photon-build-param"]["base-commit"])
-        subprocess.Popen(command, shell=True).wait()
-        if subprocess.Popen(command, shell=True).wait() != 0:
-            raise Exception("Not able to run clean_stage_for_incremental_build")
+    def removeUpwardDeps(pkg, display_option):
+        cmdUtils = CommandUtils()
+        specDeps = SpecDependencyGenerator(constants.logPath, constants.logLevel)
+        isToolChainPkg = specDeps.process("is-toolchain-pkg", pkg, display_option)
+        if isToolChainPkg:
+            specDeps.logger.info("Removing all staged RPMs since toolchain packages were modified")
+            cmdUtils.runCommandInShell("rm -rf {}".format(constants.rpmPath))
+        else:
+            whoNeedsList = specDeps.process("get-upward-deps", pkg, display_option)
+            specDeps.logger.info("Removing upward dependencies: " + str(whoNeedsList))
+            for pkg in whoNeedsList:
+                package, version = StringUtils.splitPackageNameAndVersion(pkg)
+                release = SPECS.getData().getRelease(package, version)
+                for p in SPECS.getData().getPackages(package,version):
+                    buildarch=SPECS.getData().getBuildArch(p, version)
+                    rpmFile = os.path.join(constants.rpmPath, buildarch ,p + "-" + version + "-" + release + ".*" + buildarch+".rpm")
+                    cmdUtils.runCommandInShell("rm -f "+rpmFile)
 
-        #test -n "$(git diff --name-only @~1 @ | grep '^support/\(make\|package-builder\|pullpublishrpms\)')" && \
-        # { echo "Remove all staged RPMs"; $(RM) -rf $(PHOTON_RPMS_DIR); } ||:
-        command = "test -n \"$(git diff --name-only @~1 @ | grep '^support/\(make\|package-builder\|pullpublishrpms\)')\" && \
-                   { cd %s; echo \"Remove all staged RPMs\"; /bin/rm -rf ./stage/RPMS; } ||:" % (configdict["photon-path"])
-        if subprocess.Popen(command, shell=True).wait() != 0:
-            raise Exception("Not able to run clean_stage_for_incremental_build")
+
+    def clean_stage_for_incremental_build():
+        rpm_path = constants.rpmPath
+        ph_path = configdict['photon-path']
+        basecommit = configdict['photon-build-param']['base-commit']
+
+        command = ("cd {} && test -n "
+                   "\"$(git diff --name-only @~1 @ | grep '^support/\(make\|package-builder\|pullpublishrpms\)')\""
+                   " && {{ echo 'Remove all staged RPMs'; rm -rf {}; }} || :")
+        command = command.format(ph_path, rpm_path)
+
+        if CommandUtils.runCommandInShell(command):
+            raise Exception('Not able to run clean_stage_for_incremental_build')
+
+        if not os.path.exists(rpm_path):
+            print('{} is empty, return ...'.format(rpm_path))
+            return
+
+        command = ("cd {} && echo `git diff --name-only {} | grep '\.spec' | "
+                   "xargs -n1 basename 2>/dev/null` | tr ' ' :")
+        command = command.format(ph_path, basecommit)
+
+        with Popen(command, stdout=PIPE, stderr=None, shell=True) as process:
+            spec_fns = process.communicate()[0].decode('utf-8')
+            if process.returncode:
+                raise Exception('Error in clean_stage_for_incremental_build')
+
+        if not spec_fns:
+            print('No spec files were changed in this incremental build')
+            return
+
+        try:
+            spec_fns = spec_fns.strip('\n')
+            CleanUp.removeUpwardDeps(spec_fns, 'tree')
+        except Exception as error:
+            print('Error in clean_stage_for_incremental_build: %s' % (error))
 
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -461,8 +493,6 @@ class RpmBuildTarget:
     global check_prerequesite
 
     def __init__(self):
-        from SpecData import SPECS
-
         self.logger = Logger.getLogger("Main", constants.logPath, constants.logLevel)
 
         if not check_prerequesite["check-docker-py"]:
@@ -515,8 +545,6 @@ class RpmBuildTarget:
 
         Builder.get_packages_with_build_options(configdict['photon-build-param']['pkg-build-options'])
 
-        if not check_prerequesite["generate-dep-lists"]:
-            SPECS()
         if constants.buildArch != constants.targetArch:
             # It is cross compilation
             # first build all native packages
@@ -731,7 +759,7 @@ class CheckTools:
             raise Exception(e)
 
     def check_spec_files():
-        command = ("[ -z \"$(git diff-index --name-only HEAD --)\" ] && "
+        command = ("[ -z \"$(git diff --name-only HEAD --)\" ] && "
                    "git diff --name-only @~ || git diff --name-only")
 
         if "base-commit" in configdict["photon-build-param"]:
