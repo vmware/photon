@@ -231,23 +231,7 @@ def main():
     try:
         specDeps = SpecDependencyGenerator(options.log_path, options.log_level)
 
-        if options.input_type == "remove-upward-deps":
-            isToolChainPkg = specDeps.process("is-toolchain-pkg", options.pkg, options.display_option)
-            if isToolChainPkg:
-                logger.info("Removing all staged RPMs since toolchain packages were modified")
-                cmdUtils.runCommandInShell("rm -rf stage/RPMS/")
-            else:
-                whoNeedsList = specDeps.process("get-upward-deps", options.pkg, options.display_option)
-                logger.info("Removing upward dependencies: " + str(whoNeedsList))
-                for pkg in whoNeedsList:
-                    package, version = StringUtils.splitPackageNameAndVersion(pkg)
-                    release = SPECS.getData().getRelease(package, version)
-                    for p in SPECS.getData().getPackages(package,version):
-                        buildarch=SPECS.getData().getBuildArch(p, version)
-                        rpmFile = "stage/RPMS/" + buildarch + "/" + p + "-" + version + "-" + release + ".*" + buildarch+".rpm"
-                        cmdUtils.runCommandInShell("rm -f "+rpmFile)
-
-        elif options.input_type == "print-upward-deps":
+        if options.input_type == "print-upward-deps":
             whoNeedsList = specDeps.process("get-upward-deps", options.pkg, options.display_option)
             logger.info("Upward dependencies: " + str(whoNeedsList))
         # To display/print package dependencies on console
