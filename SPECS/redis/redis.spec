@@ -1,6 +1,6 @@
 Summary:	advanced key-value store
 Name:		redis
-Version:	5.0.12
+Version:	5.0.13
 Release:	1%{?dist}
 License:	BSD
 URL:		http://redis.io/
@@ -8,7 +8,7 @@ Group:		Applications/Databases
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://download.redis.io/releases/%{name}-%{version}.tar.gz
-%define sha1 redis=e492cc3432b4741f2e3d5134a6067f7b7bb0be55
+%define sha1 redis=f07c789f89a472985c28885beafff35688a27017
 Patch0:         redis-conf.patch
 BuildRequires:  gcc
 BuildRequires:  systemd
@@ -83,6 +83,8 @@ exit 0
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
+* Sat Aug 07 2021 Shreyas B. <shreyasb@vmware.com> 5.0.13-1
+- Updated to v5.0.13 to address CVE-2021-32761
 * Fri Apr 09 2021 Shreyas B. <shreyasb@vmware.com> 5.0.12-1
 - Updated to v5.0.12 to address CVE-2021-3470
 * Wed Jun 24 2020 Shreyas B <shreyasb@vmware.com> 5.0.5-2
