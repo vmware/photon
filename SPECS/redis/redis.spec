@@ -1,6 +1,6 @@
 Summary:	advanced key-value store
 Name:		redis
-Version:	6.0.14
+Version:	6.0.15
 Release:	1%{?dist}
 License:	BSD
 URL:		http://redis.io/
@@ -8,7 +8,7 @@ Group:		Applications/Databases
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://download.redis.io/releases/%{name}-%{version}.tar.gz
-%define sha1 redis=c9492ebdc10c9dc8989b05289a24b4c3c601f81d
+%define sha1 redis=432a1fd3b45ee2f35fa9f9db57514b490b8c4724
 Patch0:         redis-conf.patch
 BuildRequires:  gcc
 BuildRequires:  systemd
@@ -23,15 +23,14 @@ Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Redis is an in-memory data structure store, used as database, cache and message broker.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 make %{?_smp_mflags}
 
 %install
 install -vdm 755 %{buildroot}
-make PREFIX=%{buildroot}/usr install
+make PREFIX=%{buildroot}/usr install %{?_smp_mflags}
 install -D -m 0640 %{name}.conf %{buildroot}%{_sysconfdir}/%{name}.conf
 mkdir -p %{buildroot}/var/lib/redis
 mkdir -p %{buildroot}/var/log
@@ -54,7 +53,7 @@ WantedBy=multi-user.target
 EOF
 
 %check
-make check
+make check %{?_smp_mflags}
 
 %pre
 getent group %{name} &> /dev/null || \
@@ -72,7 +71,6 @@ exit 0
 /sbin/ldconfig
 %systemd_postun_with_restart redis.service
 
-
 %files
 %defattr(-,root,root)
 %dir %attr(0750, redis, redis) /var/lib/redis
@@ -83,6 +81,8 @@ exit 0
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
+* Sat Aug 07 2021 Shreyas B <shreyasb@vmware.com> 6.0.15-1
+- Upgrade to v6.0.15 to address CVE-2021-32761
 * Mon Jun 21 2021 Shreyas B <shreyasb@vmware.com> 6.0.14-1
 - Upgrade to v6.0.14 to address CVE-2021-32625
 * Mon May 24 2021 Shreyas B <shreyasb@vmware.com> 6.0.13-1
