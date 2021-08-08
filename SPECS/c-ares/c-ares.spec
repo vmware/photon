@@ -1,7 +1,7 @@
 Summary:        A library that performs asynchronous DNS operations
 Name:           c-ares
 Version:        1.17.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -9,6 +9,7 @@ Distribution:   Photon
 URL:            http://c-ares.haxx.se/
 Source0:        http://c-ares.haxx.se/download/%{name}-%{version}.tar.gz
 %define sha1    c-ares=431d5ff705db752f5d25e610827b7cb3653fc7ff
+Patch0:         CVE-2021-3672.patch
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -29,7 +30,7 @@ This package contains the header files and libraries needed to
 compile applications or shared objects that use c-ares.
 
 %prep
-%setup -q
+%autosetup -p1
 f=CHANGES ; iconv -f iso-8859-1 -t utf-8 $f -o $f.utf8 ; mv $f.utf8 $f
 
 %build
@@ -39,15 +40,15 @@ autoreconf -if
 %{__make} %{?_smp_mflags}
 
 %install
-rm -rf $RPM_BUILD_ROOT
-make DESTDIR=$RPM_BUILD_ROOT install
-rm -f $RPM_BUILD_ROOT/%{_libdir}/libcares.la
+rm -rf %{buildroot}
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
+rm -f %{buildroot}/%{_libdir}/libcares.la
 
 %check
 make %{?_smp_mflags} check
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -69,6 +70,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/ares_*
 
 %changelog
+*   Mon Aug 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.1-2
+-   Fix CVE-2021-3672
 *   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.17.1-1
 -   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.16.1-1
