@@ -1,7 +1,7 @@
 Summary:        A library that performs asynchronous DNS operations
 Name:           c-ares
 Version:        1.16.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -10,7 +10,7 @@ URL:            http://c-ares.haxx.se/
 Source0:        http://c-ares.haxx.se/download/%{name}-%{version}.tar.gz
 %define sha1    c-ares=1111250ae1bf9adea1afc278ada1136091531d72
 Patch0:         CVE-2020-8277.patch
-
+Patch1:         CVE-2021-3672.patch
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  libtool
@@ -33,6 +33,7 @@ compile applications or shared objects that use c-ares.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 f=CHANGES ; iconv -f iso-8859-1 -t utf-8 $f -o $f.utf8 ; mv $f.utf8 $f
 
@@ -70,6 +71,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_mandir}/man3/ares_*
 
 %changelog
+*   Mon Aug 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.16.1-2
+-   Fix CVE-2021-3672
 *   Thu Mar 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.16.1-1
 -   Upgrade to 1.16.1, Fix CVE-2020-8277
 *   Tue Oct 17 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.12.0-2
