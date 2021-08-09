@@ -44,7 +44,7 @@ class PackageManager(object):
         self.logger.info("creating photon builder docker image")
         try:
             image = self.dockerClient.images.build(tag='photon_builder:latest',
-                                       path="./support/package-builder",
+                                       path=os.path.dirname(os.path.realpath(__file__)),
                                        rm=True,
                                        dockerfile="Dockerfile.photon_builder")
             self.logger.debug("Created Image {0}".format(image))

@@ -138,6 +138,7 @@ class ToolChainUtils(object):
             if os.geteuid() != 0:
                 cmd = cmd + "; chown -R {0}:{1} {2}".format(os.geteuid(), os.getegid(), chroot.getID())
             cmd = ("docker run -i -v " + constants.prevPublishRPMRepo + ":" + constants.prevPublishRPMRepo +
+                   " -v " + constants.inputRPMSPath + ":" + constants.inputRPMSPath +
                    " -v " + constants.rpmPath + ":" + constants.rpmPath + " -v " + chroot.getID() + ":" +
                    chroot.getID() + " photon_builder:latest " + "/bin/bash -c \"" + cmd + "\"")
 
