@@ -14,7 +14,8 @@ Source0:        http://ftp.gnu.org/gnu/glibc/%{name}-%{version}.tar.xz
 %define sha1    glibc=ccb5dc9e51a9884df8488f86982439d47b283b2a
 Source1:        locale-gen.sh
 Source2:        locale-gen.conf
-Patch0:         http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.25-fhs-1.patch
+# Patch is taken from http://www.linuxfromscratch.org/patches/downloads/glibc/glibc-2.25-fhs-1.patch
+Patch0:         glibc-2.25-fhs-1.patch
 Patch1:         glibc-2.24-bindrsvport-blacklist.patch
 Patch2:         0002-malloc-arena-fix.patch
 Patch3:         glibc-2.28-CVE-2018-19591.patch
@@ -88,6 +89,7 @@ Requires: %{name} = %{version}-%{release}
 Name Service Cache Daemon
 
 %prep
+# Using autosetup is not feasible
 %setup -q
 sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch0 -p1
@@ -158,7 +160,7 @@ make %{?_smp_mflags} || make %{?_smp_mflags} || make %{?_smp_mflags}
 #       Do not remove static libs
 pushd %{_builddir}/glibc-build
 #       Create directories
-make install_root=%{buildroot} install
+make install_root=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_sysconfdir}/ld.so.conf.d
 install -vdm 755 %{buildroot}/var/cache/nscd
 install -vdm 755 %{buildroot}%{_libdir}/locale
@@ -302,7 +304,6 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %exclude %{_datadir}/i18n/charmaps/ISO-8859-1.gz
 %exclude %{_datadir}/i18n/locales/en_US
 
-
 %files devel
 %defattr(-,root,root)
 # TODO: Excluding for now to remove dependency on PERL
@@ -313,7 +314,6 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 
 %files -f %{name}.lang lang
 %defattr(-,root,root)
-
 
 %changelog
 *   Wed Aug 04 2021 Keerthana K <keerthanak@vmware.com> 2.28-15

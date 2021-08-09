@@ -23,6 +23,7 @@ Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Redis is an in-memory data structure store, used as database, cache and message broker.
 
 %prep
+# Using autosetup is not feasible
 %setup -q
 %patch0 -p1
 
@@ -31,7 +32,7 @@ make %{?_smp_mflags}
 
 %install
 install -vdm 755 %{buildroot}
-make PREFIX=%{buildroot}/usr install
+make PREFIX=%{buildroot}/usr install %{?_smp_mflags}
 install -D -m 0640 %{name}.conf %{buildroot}%{_sysconfdir}/%{name}.conf
 mkdir -p %{buildroot}/var/lib/redis
 mkdir -p %{buildroot}/var/log
@@ -54,7 +55,7 @@ WantedBy=multi-user.target
 EOF
 
 %check
-make check
+make check %{?_smp_mflags}
 
 %pre
 getent group %{name} &> /dev/null || \
@@ -71,7 +72,6 @@ exit 0
 %postun
 /sbin/ldconfig
 %systemd_postun_with_restart redis.service
-
 
 %files
 %defattr(-,root,root)
