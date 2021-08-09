@@ -9,7 +9,7 @@
 
 Name:          systemtap
 Version:       4.5
-Release:       1%{?dist}
+Release:       2%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -63,7 +63,6 @@ Developers can write instrumentation scripts to collect data on
 the operation of the system.  The base systemtap package contains/requires
 the components needed to locally develop and execute systemtap scripts.
 
-
 %package initscript
 Group:         System/Tools
 Summary:       Systemtap Initscript
@@ -102,9 +101,8 @@ Requires:      gzip
 %description server
 SystemTap server is the server component of an instrumentation system for systems running Linux.
 
-
 %prep
-%setup -q
+%autosetup -p1
 sed -i "s#"kernel"#"linux"#g" stap-prep
 sed -i "s#"devel"#"dev"#g" stap-prep
 
@@ -135,7 +133,8 @@ sed -i "s#"devel"#"dev"#g" stap-prep
         --disable-virt \
 	--disable-silent-rules
 
-make
+make %{?_smp_mflags}
+
 %install
 [ "%{buildroot}" != / ] && rm -rf ""
 %make_install mandir=%{_mandir}
@@ -147,7 +146,6 @@ find examples -type f -name '*.stp' -print0 | xargs -0 sed -i -r -e '1s@^#!.+sta
 chmod 755 %{buildroot}%{_bindir}/staprun
 
 install -c -m 755 stap-prep %{buildroot}%{_bindir}/stap-prep
-
 
 mkdir -p %{buildroot}%{_sysconfdir}//rc.d/init.d/
 install -m 755 initscript/systemtap %{buildroot}%{_sysconfdir}/rc.d/init.d/
@@ -348,6 +346,8 @@ fi
 %{_mandir}/man8/systemtap-service.8*
 
 %changelog
+*   Mon Aug 09 2021 Ankit Jain <ankitja@vmware.com> 4.5-2
+-   Fix spec with autosetup and make smp flag
 *   Mon Aug 02 2021 Ankit Jain <ankitja@vmware.com> 4.5-1
 -   Updated to version 4.5
 -   Fixes Null pointer exception issue

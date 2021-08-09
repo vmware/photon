@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.26
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -28,9 +28,8 @@ Requires:       %{name} = %{version}-%{release}
 %description devel
 Development headers for developing applications linking to maridb
 
-
 %prep
-%setup -q %{name}-boost-%{version}
+%autosetup -p1
 
 %build
 cmake . \
@@ -50,10 +49,10 @@ cmake . \
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install
 
 %check
-make test
+make test %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -79,6 +78,8 @@ make test
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Mon Aug 09 2021 Ankit Jain <ankitja@vmware.com> 8.0.26-2
+-   Fix spec with autosetup and make smp flag
 *   Mon Aug 02 2021 Shreyas B <shreyasb@vmware.com> 8.0.26-1
 -   Update to 8.0.26
 *   Mon May 03 2021 Shreyas B <shreyasb@vmware.com> 8.0.24-1
