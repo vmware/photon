@@ -1,7 +1,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        11.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -14,6 +14,7 @@ BuildRequires:  libxml2-devel
 BuildRequires:  libffi-devel
 BuildRequires:  python3
 Requires:       libxml2
+Requires:       libllvm = %{version}-%{release}
 
 %description
 The LLVM Project is a collection of modular and reusable compiler and toolchain technologies.
@@ -30,7 +31,6 @@ for developing applications that use llvm.
 
 %package -n     libllvm
 Summary:        llvm shared library
-Requires:       %{name} = %{version}-%{release}
 Group:          System Environment/Libraries
 %description -n libllvm
 The libllvm package contains shared libraries for llvm
@@ -72,6 +72,9 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 %{_libdir}/*.so
 %{_libdir}/*.so.*
+%exclude %{_libdir}/libLLVM-11.0.1.so
+%exclude %{_libdir}/libLLVM-11.so
+%exclude %{_libdir}/libLLVM.so
 %dir %{_datadir}/opt-viewer
 %{_datadir}/opt-viewer/opt-diff.py
 %{_datadir}/opt-viewer/opt-stats.py
@@ -90,6 +93,10 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
+*   Mon Oct 25 2021 Harinadh D<hdommaraju@vmware.com> 11.0.1-3
+-   remove llvm dependency for libllvm
+-   remove libLLVM.so files from llvm package
+-   add libllvm as requires for llvm
 *   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 11.0.1-2
 -   Replacement of ITS suggested words.
 *   Thu Feb 04 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.0.1-1
