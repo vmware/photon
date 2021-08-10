@@ -4,7 +4,7 @@
 Summary:        Hawkey
 Name:           hawkey
 Version:        2017.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+
 URL:            http://fedoraproject.org/wiki/Features/Hawkey
 Source0:        https://github.com/rpm-software-management/hawkey/archive/%{name}-%{version}.tar.gz
@@ -23,7 +23,7 @@ BuildRequires:  rpm-devel
 Requires:       libsolv
 
 %description
-Hawkey is a library allowing clients to query and resolve dependencies of RPM 
+Hawkey is a library allowing clients to query and resolve dependencies of RPM
 packages based on the current state of RPMDB and yum repositories.
 
 %package devel
@@ -120,6 +120,8 @@ popd
 %exclude %{python_sitearch}/*
 
 %changelog
+*   Tue Aug 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 2017.1-7
+-   Bump version as a part of rpm upgrade
 *   Mon Mar 12 2018 Xiaolin Li <xiaolinl@vmware.com> 2017.1-6
 -   Return severity and reboot_suggested.
 *   Thu Feb 15 2018 Xiaolin Li <xiaolinl@vmware.com> 2017.1-5
