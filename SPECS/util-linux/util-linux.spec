@@ -1,7 +1,7 @@
 Summary:	Utilities for file systems, consoles, partitions, and messages
 Name:		util-linux
 Version:	2.27.1
-Release:	6%{?dist}
+Release:	7%{?dist}
 URL:		http://www.kernel.org/pub/linux/utils/util-linux
 License:	GPLv2+
 Group:		Applications/System
@@ -12,6 +12,7 @@ Source0:	%{name}-%{version}.tar.xz
 Patch0:         CVE-2017-2616.patch
 Patch1:         nilfs2-length-check.patch
 Patch2:         CVE-2016-5011_libblkid_ignore_extended_partition_at_zero_offset.patch
+Patch3:         CVE-2021-37600.patch
 BuildRequires:	ncurses-devel >= 6.0-3
 Requires:	ncurses >= 6.0-3
 %description
@@ -37,22 +38,27 @@ These are the header and library files of util-linux.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 sed -i -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' $(grep -rl '/etc/adjtime' .)
+
 %build
-./configure \
+sh configure \
 	--disable-nologin \
 	--disable-silent-rules \
 	--disable-static \
 	--without-python
 make %{?_smp_mflags}
+
 %install
 install -vdm 755 %{buildroot}%{_sharedstatedir}/hwclock
 make DESTDIR=%{buildroot} install
 chmod 644 $RPM_BUILD_ROOT/usr/share/doc/util-linux/getopt/getopt*.tcsh
 find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
+
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %dir %{_sharedstatedir}/hwclock
@@ -75,6 +81,8 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/*
 
 %changelog
+*   Wed Aug 11 2021 Ankit Jain <ankitja@vmware.com> 2.27.1-7
+-   Fixes CVE-2021-37600
 *   Mon Oct 05 2020 Ajay Kaher <akaher@vmware.com> 2.27.1-6
 -   Fix for CVE-2016-5011
 *   Fri Feb 28 2020 Anish Swaminathan <anishs@vmware.com> 2.27.1-5
