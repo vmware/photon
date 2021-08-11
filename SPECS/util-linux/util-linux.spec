@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.32.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.xz
 %define sha1    util-linux=de9271fb93fb651d21c027e2efb0cf0ac80f2e9a
+Patch0:         CVE-2021-37600.patch
 BuildRequires:  ncurses-devel
 %if %{with_check}
 BuildRequires:  ncurses-terminfo
@@ -40,8 +41,11 @@ Group: Development/Libraries
 These are library files of util-linux.
 
 %prep
+# Using autosetup is not feasible
 %setup -q
+%patch0 -p1
 sed -i -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' $(grep -rl '/etc/adjtime' .)
+
 %build
 %configure \
     --disable-nologin \
@@ -53,8 +57,8 @@ make %{?_smp_mflags}
 
 %install
 install -vdm 755 %{buildroot}%{_sharedstatedir}/hwclock
-make DESTDIR=%{buildroot} install
-chmod 644 $RPM_BUILD_ROOT/usr/share/doc/util-linux/getopt/getopt*.tcsh
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+chmod 644 %{buildroot}/usr/share/doc/util-linux/getopt/getopt*.tcsh
 find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
 
@@ -65,6 +69,7 @@ rm -rf %{buildroot}/lib/systemd/system
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 %dir %{_sharedstatedir}/hwclock
@@ -95,6 +100,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Aug 11 2021 Ankit Jain <ankitja@vmware.com> 2.32.1-4
+-   Fixes CVE-2021-37600
 *   Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.32.1-3
 -   Do not conflict with toybox >= 0.8.2-2
 *   Mon May 04 2020 Sujay G <gsujay@vmware.com> 2.32.1-2
@@ -131,4 +138,3 @@ rm -rf %{buildroot}/lib/systemd/system
 -   Update according to UsrMove.
 *   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.24.1-1
 -   Initial build. First version
-
