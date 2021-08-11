@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.36
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.xz
 %define sha1    util-linux=cf99c3df18cf0a13033ec2d3d1a31587eba825d9
+Patch0:         CVE-2021-37600.patch
 BuildRequires:  ncurses-devel
 BuildRequires:  pkg-config
 
@@ -43,7 +44,7 @@ Group: Development/Libraries
 These are library files of util-linux.
 
 %prep
-%setup -q
+%autosetup -p1
 sed -i -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' $(grep -rl '/etc/adjtime' .)
 %build
 autoreconf -fiv
@@ -57,8 +58,8 @@ make %{?_smp_mflags}
 
 %install
 install -vdm 755 %{buildroot}%{_sharedstatedir}/hwclock
-make DESTDIR=%{buildroot} install
-chmod 644 $RPM_BUILD_ROOT/usr/share/doc/util-linux/getopt/getopt*.tcsh
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+chmod 644 %{buildroot}/usr/share/doc/util-linux/getopt/getopt*.tcsh
 find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
 
@@ -99,6 +100,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Aug 11 2021 Ankit Jain <ankitja@vmware.com> 2.36-3
+-   Fixes CVE-2021-37600
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.36-2
 -   Fix build with new rpm
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.36-1
