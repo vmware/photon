@@ -4,7 +4,7 @@
 Summary:        EdgeX Foundry Go Services
 Name:           edgex
 Version:        1.2.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/edgexfoundry/edgex-go
 Group:          Applications/System
@@ -35,7 +35,7 @@ EdgeX Foundry Go Services:
 - sys-mgmt-agent
 
 %prep
-%setup -c -T -a 0 -n src/github.com/edgexfoundry
+%autosetup -p1 -c -T -a 0 -n src/github.com/edgexfoundry
 mv %{_builddir}/src/github.com/edgexfoundry/edgex-go-%{version} %{_builddir}/src/github.com/edgexfoundry/edgex-go
 
 %build
@@ -82,6 +82,8 @@ sed -i "s/SIGINT/SIGKILL/" %{buildroot}%{_libdir}/systemd/system/edgex-core-data
 %{_var}/log/*
 
 %changelog
+*   Wed Aug 18 2021 Shreyas B<shreyasb@vmware.com> 1.2.1-6
+-   Bump up to consume redis v6.2.5
 *   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.2.1-5
 -   Bump up version to compile with new go
 *   Tue May 25 2021 Shreyas B<shreyasb@vmware.com> 1.2.1-4
