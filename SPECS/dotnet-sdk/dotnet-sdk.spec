@@ -2,7 +2,7 @@
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
 Version:        2.1.403
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -34,6 +34,8 @@ cp LICENSE.txt ThirdPartyNotices.txt %{buildroot}%{_docdir}/%{name}-%{version}
     %{_docdir}/*
 
 %changelog
+*   Wed Aug 11 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.1.403-2
+-   Bump up to use new icu lib.
 *   Mon Jan 14 2019 Dweep Advani <dadvani@vmware.com> 2.1.403-1
 -   upgraded to version 2.1.403
 *   Wed Jan 31 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.4-1

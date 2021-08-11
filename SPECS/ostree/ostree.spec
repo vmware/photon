@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2017.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/ostree/%{version}/%{name}-%{version}.tar.gz
 %define sha1    ostree=eb3546c552849ace2f4e3701bc0b826611f569cc
 Source1:        91-ostree.preset
@@ -78,8 +78,8 @@ env NOCONFIGURE=1 ./autogen.sh
     --enable-gtk-doc \
     --with-dracut \
     --with-mkinitcpio \
-    --enable-libsoup-client-certs  \
-    --prefix=%{_prefix}
+    --enable-libsoup-client-cert
+
 make %{?_smp_mflags}
 
 %install
@@ -138,6 +138,8 @@ rm -rf %{buildroot}
 %{_datadir}/gir-1.0/OSTree-1.0.gir
 
 %changelog
+*   Wed Aug 11 2021 Shreenidhi Shedi <sshedi@vmware.com> 2017.4-5
+-   Bump up to use new icu lib.
 *   Wed Jul 17 2019 Ankit Jain <ankitja@vmware.com> 2017.4-4
 -   Added a patch to implement its own glnx-basename()
 *   Thu Aug 23 2018 Tapas Kundu <tkundu@vmware.com> 2017.4-3

@@ -1,7 +1,7 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
 Version:    2.68.2
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
@@ -101,6 +101,8 @@ ninja test
 %defattr(-,root,root)
 
 %changelog
+*   Wed Aug 11 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.68.2-2
+-   Bump up to use new icu lib.
 *   Wed Oct 16 2019 Prashant S Chauhan <psinghchauha@vmware.com> 2.68.2-1
 -   Package update to version 2.68.2, Fix CVE-2019-17266
 *   Mon May 27 2019 Keerthana K <keerthanak@vmware.com> 2.57.1-5
@@ -124,7 +126,7 @@ ninja test
 *   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 2.50.0-4
 -   Removing la files from packages.
 *   Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 2.50.0-3
--   Addinf libxml2 to Requires 
+-   Add libxml2 to Requires
 *   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 2.50.0-2
 -   Exclude /usr/lib/debug
 *   Fri Jun 5 2015 Touseef Liaqat <tliaqat@vmware.com> 2.50.0-1

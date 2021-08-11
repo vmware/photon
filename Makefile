@@ -86,8 +86,9 @@ VIXDISKUTIL := $(TOOLS_BIN)/vixdiskutil
 IMGCONVERTER := $(TOOLS_BIN)/imgconverter
 
 .PHONY : all iso clean photon-build-machine photon-vagrant-build photon-vagrant-local cloud-image \
-check-tools check-docker check-bison check-g++ check-gawk check-createrepo check-kpartx check-vagrant check-packer check-packer-ovf-plugin check-sanity \
-clean-install clean-chroot build-updated-packages check generate-yaml-files
+check-tools check-docker check-bison check-g++ check-gawk check-createrepo check-kpartx check-vagrant \
+check-packer check-packer-ovf-plugin check-sanity clean-install clean-chroot build-updated-packages \
+check generate-yaml-files
 
 THREADS?=1
 
@@ -230,7 +231,7 @@ who-needs:
 	@cd $(PHOTON_SPECDEPS_DIR) && \
 		$(PHOTON_SPECDEPS) -s $(PHOTON_SPECS_DIR) -i who-needs -p $(pkg)
 
-packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) generate-dep-lists
+packages: check-docker-py check-tools $(PHOTON_STAGE) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_PUBLISH_RPMS) $(PHOTON_SOURCES) $(CONTAIN) check-spec-files generate-dep-lists
 	@echo "Building all RPMS..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
         $(PHOTON_PACKAGE_BUILDER) \
@@ -593,7 +594,7 @@ check: packages
                 $(rpmcheck_stop_on_error) \
                 -t ${THREADS}
 
-%: check-tools $(PHOTON_PUBLISH_RPMS) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_SOURCES) $(CONTAIN) $(eval PKG_NAME = $@)
+%: check-tools $(PHOTON_PUBLISH_RPMS) $(PHOTON_PUBLISH_XRPMS) $(PHOTON_SOURCES) $(CONTAIN) check-spec-files $(eval PKG_NAME = $@)
 	$(eval PKG_NAME = $@)
 	@echo "Building package $(PKG_NAME) ..."
 	@cd $(PHOTON_PKG_BUILDER_DIR) && \
@@ -650,3 +651,7 @@ $(VIXDISKUTIL): $(TOOLS_BIN)
 $(IMGCONVERTER): $(TOOLS_BIN)
 	@cd $(SRCROOT)/tools/src/imgconverter && \
 	make
+
+check-spec-files:
+	@echo ""
+	@./tools/scripts/check_spec_files.sh
