@@ -1,7 +1,7 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
 Version:        2.32.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.xz
 %define sha1    util-linux=de9271fb93fb651d21c027e2efb0cf0ac80f2e9a
+Patch0:         CVE-2021-37600.patch
 BuildRequires:  ncurses-devel
 %if %{with_check}
 BuildRequires:  ncurses-terminfo
@@ -41,7 +42,9 @@ These are library files of util-linux.
 
 %prep
 %setup -q
+%patch0 -p1
 sed -i -e 's@etc/adjtime@var/lib/hwclock/adjtime@g' $(grep -rl '/etc/adjtime' .)
+
 %build
 ./configure \
     --disable-nologin \
@@ -97,6 +100,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Aug 11 2021 Ankit Jain <ankitja@vmware.com> 2.32.1-2
+-   Fixes CVE-2021-37600
 *   Tue Apr 14 2020 Ashwin H <ashwinh@vmware.com> 2.32.1-1
 -   Update to version 2.32.1, fix CVE-2017-2616
 *   Mon Apr 09 2018 Xiaolin Li <xiaolinl@vmware.com> 2.32-1
