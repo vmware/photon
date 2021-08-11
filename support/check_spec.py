@@ -446,23 +446,32 @@ def check_for_unused_files(spec_fn, err):
 
     for r, _, fns in os.walk(dirname):
         for fn in fns:
-            fn = os.path.join(r, fn)
             if not fn.endswith('.spec'):
                 fn = os.path.basename(fn)
                 other_files.append(fn)
                 continue
 
+            fn = os.path.join(r, fn)
             tmp = Spec.from_file(fn)
             populate_list(tmp.sources, source_patch_list)
             populate_list(tmp.patches, source_patch_list)
 
+    # keep only basenames in source list
+    source_patch_list = [os.path.basename(s) for s in source_patch_list]
+
     fns = set(other_files) - set(source_patch_list)
-    if fns:
-        ret = True
-        err_msg = 'List of unused files in: %s' % (dirname)
-        err.update_err_dict(sec, err_msg)
-        for fn in fns:
-            err.update_err_dict(sec, fn)
+    if not fns:
+        check_for_unused_files.prev_ret = ret
+        return ret
+
+    ret = True
+    err_msg = 'List of unused files in: %s' % (dirname)
+    err.update_err_dict(sec, err_msg)
+    for r, _, _fns in os.walk(dirname):
+        for _fn in _fns:
+            if _fn in fns:
+                _fn = os.path.join(r, _fn)
+                err.update_err_dict(sec, _fn)
 
     check_for_unused_files.prev_ret = ret
     return ret

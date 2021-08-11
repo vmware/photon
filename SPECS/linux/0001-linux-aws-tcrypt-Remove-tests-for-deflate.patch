@@ -1,0 +1,36 @@
+From 4427df2632cd8b37326363735b7aaf5e08fdeb0c Mon Sep 17 00:00:00 2001
+From: Vikash Bansal <bvikas@vmware.com>
+Date: Wed, 11 Aug 2021 21:59:01 +0530
+Subject: [PATCH] linux-aws:tcrypt: Remove tests for deflate
+
+---
+ crypto/tcrypt.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/crypto/tcrypt.c b/crypto/tcrypt.c
+index a0e9b8b66..5d5ed7cd8 100644
+--- a/crypto/tcrypt.c
++++ b/crypto/tcrypt.c
+@@ -73,7 +73,7 @@ static char *tvmem[TVMEMSIZE];
+ static char *check[] = {
+ 	"des", "md5", "des3_ede", "rot13", "sha1", "sha224", "sha256", "sm3",
+ 	"blowfish", "twofish", "serpent", "sha384", "sha512", "md4", "aes",
+-	"cast6", "arc4", "michael_mic", "deflate", "crc32c", "tea", "xtea",
++	"cast6", "arc4", "michael_mic", "crc32c", "tea", "xtea",
+ 	"khazad", "wp512", "wp384", "wp256", "tnepres", "xeta",  "fcrypt",
+ 	"camellia", "seed", "salsa20", "rmd128", "rmd160", "rmd256", "rmd320",
+ 	"lzo", "cts", "zlib", "sha3-224", "sha3-256", "sha3-384", "sha3-512",
+@@ -1746,10 +1746,6 @@ static int do_test(const char *alg, u32 type, u32 mask, int m, u32 num_mb)
+ 		ret += tcrypt_test("sha512");
+ 		break;
+ 
+-	case 13:
+-		ret += tcrypt_test("deflate");
+-		break;
+-
+ 	case 14:
+ 		ret += tcrypt_test("ecb(cast5)");
+ 		ret += tcrypt_test("cbc(cast5)");
+-- 
+2.17.1
+

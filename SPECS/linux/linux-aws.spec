@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.198
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -98,9 +98,11 @@ Patch88:        0008-vmxnet3-fix-cksum-offload-issues-for-non-udp-tunnels.patch
 Patch89:        0009-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
-Patch98:        0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
+Patch97:        0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 # Patch to call drbg and dh crypto tests from tcrypt
-Patch99:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+Patch98:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
+# Disable tcrypt from tcrypt
+Patch99:        0001-linux-aws-tcrypt-Remove-tests-for-deflate.patch
 # Patch to perform continuous testing on RNG from Noise Source
 Patch100:       0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
 
@@ -205,7 +207,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %endif
 
 %prep
+# Using autosetup is not feasible
 %setup -q -n linux-%{version}
+# Using autosetup is not feasible
 %setup -D -b 5 -n linux-%{version}
 
 %patch0 -p1
@@ -257,6 +261,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 
 %patch89 -p1
 
+%patch97 -p1
 %patch98 -p1
 %patch99 -p1
 %patch100 -p1
@@ -293,7 +298,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %endif
 
 %build
-make mrproper
+make %{?_smp_mflags} mrproper
 
 %ifarch x86_64
 cp %{SOURCE1} .config
@@ -310,7 +315,7 @@ make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=$
 #build photon-checksum-generator module
 bldroot=`pwd`
 pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
-make -C $bldroot M=`pwd` modules
+make -C $bldroot M=`pwd` modules %{?_smp_mflags}
 popd
 
 %define __modules_install_post \
@@ -339,12 +344,12 @@ install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
-make INSTALL_MOD_PATH=%{buildroot} modules_install
+make INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
 
 #install photon-checksum-generator module
 bldroot=`pwd`
 pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
-make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
+make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
 popd
 
 %ifarch x86_64
@@ -477,6 +482,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Aug 11 2021 Vikash Bansal <bvikas@vmware.com> 4.19.198-2
+-   Remove deflate tests from tcrypt
 *   Tue Jul 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.198-1
 -   Update to version 4.19.198
 *   Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.191-3
