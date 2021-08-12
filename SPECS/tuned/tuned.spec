@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           tuned
 Version:        2.15.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -11,6 +11,7 @@ Source:         tuned-%{version}.tar.gz
 Patch0:         remove_desktop_utils_dependency.patch
 Patch1:         0001-bootloader-plugin-support-for-photon.patch
 Patch2:         0001-tuned-fix-bug-in-sysctl-verify.patch
+Patch3:         0001-Schedule-perf-events-iff-scheduler-per-process-confi.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3-devel
@@ -62,16 +63,13 @@ identify applications that behave power inefficient (many small operations
 instead of fewer large ones).
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1
+
 %build
 #The tuned daemon is written in pure Python. Nothing requires to be built.
 
 %install
-make install DESTDIR=%{buildroot}
-
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 # conditional support for grub2, grub2 is not available on all architectures
 # and tuned is noarch package, thus the following hack is needed
@@ -87,7 +85,7 @@ rm %{buildroot}%{_bindir}/powertop2tuned
 
 %check
 pip3 install unittest2
-make test
+make test %{?_smp_mflags}
 
 %post
 %systemd_post tuned.service
@@ -97,7 +95,6 @@ make test
 
 %postun
 %systemd_postun_with_restart tuned.service
-
 
 %files
 %defattr(-,root,root,-)
@@ -112,6 +109,7 @@ make test
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/com.redhat.tuned.conf
 %config(noreplace) %{_sysconfdir}/modprobe.d/tuned.conf
 %config(noreplace) /boot/tuned.cfg
+%config(noreplace) %{_sysconfdir}/tuned
 %{_libdir}/tmpfiles.d
 %{_unitdir}/tuned.service
 %dir %{_localstatedir}/log/tuned
@@ -120,7 +118,6 @@ make test
 %{_mandir}/man5/tuned*
 %{_mandir}/man8/tuned*
 %{_datadir}/tuned/grub2
-%{_sysconfdir}/tuned
 %{_libdir}/tuned/
 %{_datadir}/doc
 %exclude %{_datadir}/icons/hicolor/scalable/apps/tuned.svg
@@ -144,6 +141,8 @@ make test
 %{_mandir}/man8/scomes.*
 
 %changelog
+*   Thu Aug 12 2021 Keerthana K <keerthanak@vmware.com> 2.15.0-2
+-   Schedule perf events iff scheduler per process configurations are set.
 *   Thu Mar 25 2021 Ankit Jain <ankitja@vmware.com> 2.15.0-1
 -   Update to latest version 2.15.0
 *   Thu Jan 14 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.13.0-4
