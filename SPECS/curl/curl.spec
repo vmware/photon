@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.77.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -43,9 +43,7 @@ Requires:       ca-certificates-pki
 This package contains minimal set of shared curl libraries.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
 
 %build
 %configure \
@@ -61,7 +59,7 @@ make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+%make_install
 install -v -d -m755 %{buildroot}/%{_docdir}/%{name}-%{version}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
@@ -93,6 +91,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Thu Aug 12 2021 Sujay G <gsujay@vmware.com> 7.77.0-3
+-   Fix check_spec errors by replacing %setup with %autosetup
 *   Thu Jul 22 2021 Harinadh D <hdommaraju@vmware.com> 7.77.0-2
 -   Fix CVE-2021-22924,CVE-2021-22925
 -   Metalink disabled to fix CVE-2021-22922,CVE-2021-22923
