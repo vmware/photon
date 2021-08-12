@@ -1,21 +1,14 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.75.0
-Release:        5%{?dist}
+Version:        7.78.0
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha1    curl=fbd1e354a5e4e9a4ac07db3d1222d19f84a5e751
-Patch0:         curl-CVE-2021-22876.patch
-Patch1:         curl-CVE-2021-22890.patch
-Patch2:         curl-CVE-2021-22898.patch
-Patch3:         curl-CVE-2021-22901.patch
-Patch4:         curl-CVE-2021-22897.patch
-Patch5:         curl-CVE-2021-22924.patch
-Patch6:         curl-CVE-2021-22925.patch
+%define sha1    curl=c51b85373ae7b3186ad364e909f29b93043a9c16
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
@@ -48,14 +41,7 @@ Requires:       libssh2
 This package contains minimal set of shared curl libraries.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
+%autosetup -p1
 
 %build
 %configure \
@@ -66,18 +52,20 @@ This package contains minimal set of shared curl libraries.
     --with-ssl \
     --with-gssapi \
     --with-libssh2 \
-    --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt \
-    --with-libmetalink
+    --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
+# make doesn't support _smp_mflags
 make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install
 install -v -d -m755 %{buildroot}/%{_docdir}/%{name}-%{version}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 
 %check
+# make doesn't support _smp_mflags
 make %{?_smp_mflags} check
 
 %post   -p /sbin/ldconfig
@@ -105,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Thu Aug 12 2021 Harinadh D <hdommaraju@vmware.com> 7.78.0-1
+-   Version update
 *   Tue Jul 27 2021 Piyush Gupta <gpiyush@vmware.com> 7.75.0-5
 -   Added libssh2 in curl-libs requires.
 *   Thu Jul 22 2021 Harinadh D <hdommaraju@vmware.com> 7.75.0-4
