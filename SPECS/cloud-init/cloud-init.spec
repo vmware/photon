@@ -2,7 +2,7 @@
 
 Name:           cloud-init
 Version:        21.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -102,7 +102,7 @@ python3 tools/render-cloudcfg --variant photon > %{buildroot}/%{_sysconfdir}/clo
 %if "%{_arch}" == "aarch64"
 # OpenStack DS in aarch64 adds a boot time of ~10 seconds by searching
 # for DS from a remote location, let's remove it.
-sed -ie "0,/'OpenStack', / s/'OpenStack', //" %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
+sed -i -e "0,/'OpenStack', / s/'OpenStack', //" %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
 %endif
 
 mkdir -p %{buildroot}/var/lib/cloud
@@ -170,6 +170,8 @@ rm -rf %{buildroot}
 %dir /var/lib/cloud
 
 %changelog
+*   Fri Aug 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.2-5
+-   Fix a silly mistake in sed command
 *   Tue Aug 03 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.2-4
 -   Fix hostname handling
 -   Remove OpenStack from aarch64 DS list
