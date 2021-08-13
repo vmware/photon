@@ -9,7 +9,7 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.5
-Release:        5%{?dist}
+Release:        6%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -307,6 +307,8 @@ rm -rf %{buildroot}/*
     %{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
+*   Fri Aug 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.0.5-6
+-   Bump version as a part of rpm upgrade
 *   Thu Apr 05 2018 Xiaolin Li <xiaolinl@vmware.com> 0.0.5-5
 -   Rebuild with tdnf 1.2.3.
 *   Thu Nov 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-4
