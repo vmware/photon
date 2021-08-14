@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        13.3
+Version:        13.4
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=7a775f95367613ed5f7e4cd632586f9628475a92
+%define sha1    postgresql=92146ec62ad80e8f5d2959b5cc1766311dc00d64
 
 # Common libraries needed
 BuildRequires:  diffutils
@@ -59,7 +59,7 @@ The postgresql-devel package contains libraries and header files for
 developing applications that use postgresql.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h
@@ -80,8 +80,8 @@ cd contrib && make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot}
-cd contrib && make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
+cd contrib && make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 # For postgresql 10+, commands are renamed
 # Ref: https://wiki.postgresql.org/wiki/New_in_postgres_10
@@ -169,6 +169,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Sat Aug 14 2021 Michael Paquier <mpaquier@vmware.com> 13.4-1
+-   Upgraded to version 13.4
 *   Fri May 14 2021 Michael Paquier <mpaquier@vmware.com> 13.3-1
 -   Upgraded to version 13.3
 *   Fri Feb 19 2021 Michael Paquier <mpaquier@vmware.com> 13.2-1
