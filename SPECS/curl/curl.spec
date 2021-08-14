@@ -1,21 +1,14 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.75.0
-Release:        4%{?dist}
+Version:        7.78.0
+Release:        1%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha1    curl=fbd1e354a5e4e9a4ac07db3d1222d19f84a5e751
-Patch0:         curl-CVE-2021-22876.patch
-Patch1:         curl-CVE-2021-22890.patch
-Patch2:         curl-CVE-2021-22898.patch
-Patch3:         curl-CVE-2021-22901.patch
-Patch4:         curl-CVE-2021-22897.patch
-Patch5:         curl-CVE-2021-22924.patch
-Patch6:         curl-CVE-2021-22925.patch
+%define sha1    curl=c51b85373ae7b3186ad364e909f29b93043a9c16
 Requires:       ca-certificates
 BuildRequires:  ca-certificates
 Requires:       openssl
@@ -32,15 +25,8 @@ upload files can be incorporated into other programs to support
 functions like streaming media.
 
 %prep
-%setup -q
+%autosetup -p1
 sed -i '/--static-libs)/{N;s#echo .*#echo #;}' curl-config.in
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
 
 %build
 %configure \
@@ -82,6 +68,8 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}
 
 %changelog
+*   Thu Aug 12 2021 Harinadh D <hdommaraju@vmware.com> 7.78.0-1
+-   Version update
 *   Thu Jul 22 2021 Harinadh D <hdommaraju@vmware.com> 7.75.0-4
 -   Fix CVE-2021-22924,CVE-2021-22925
 *   Thu Jul 2 2021 Nitesh Kumar <kunitesh@vmware.com> 7.75.0-3
