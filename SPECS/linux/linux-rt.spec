@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.198
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt85
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -105,6 +105,9 @@ Patch91:        0001-ptp-reorder-declarations-in-ptp_ioctl.patch
 Patch92:        0002-ptp-add-PTP_SYS_OFFSET_EXTENDED-ioctl.patch
 Patch93:        0003-ptp-deprecate-gettime64-in-favor-of-gettimex64.patch
 Patch94:        0004-ptp-uapi-change-_IOW-to-IOWR-in-PTP_SYS_OFFSET_EXTEN.patch
+
+# Allow PCI resets to be disabled from vfio_pci module
+Patch100:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/4.19/
@@ -593,6 +596,8 @@ The Linux package contains the Linux kernel doc files
 %patch92 -p1
 %patch93 -p1
 %patch94 -p1
+
+%patch100 -p1
 
 %patch201 -p1
 %patch202 -p1
@@ -1145,6 +1150,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Mon Aug 16 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.198-2
+-   Allow PCI resets disablement from vfio_pci
 *   Tue Jul 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.198-1
 -   Update to version 4.19.198
 *   Wed Jul 21 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.191-5

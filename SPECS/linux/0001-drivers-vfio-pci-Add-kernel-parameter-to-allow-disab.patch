@@ -1,0 +1,178 @@
+From 4d38dd5e556c8dfd17d3eb2bf6f1a9322b975650 Mon Sep 17 00:00:00 2001
+From: Todd Sabin <tsabin@vmware.com>
+Date: Thu, 17 Jun 2021 01:15:41 +0000
+Subject: [PATCH] drivers/vfio/pci: Add kernel parameter to allow disabling of
+ pci resets
+
+Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
+---
+ drivers/vfio/pci/vfio_pci.c         | 61 +++++++++++++++++++++++------
+ drivers/vfio/pci/vfio_pci_config.c  | 22 ++++++++---
+ drivers/vfio/pci/vfio_pci_private.h |  3 ++
+ 3 files changed, 67 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
+index c48e1d84efb6..63b2ca2e9737 100644
+--- a/drivers/vfio/pci/vfio_pci.c
++++ b/drivers/vfio/pci/vfio_pci.c
+@@ -57,8 +57,17 @@ module_param(disable_idle_d3, bool, S_IRUGO | S_IWUSR);
+ MODULE_PARM_DESC(disable_idle_d3,
+ 		 "Disable using the PCI D3 low power state for idle, unused devices");
+ 
++static bool disable_resets;
++module_param(disable_resets, bool, S_IRUGO | S_IWUSR);
++MODULE_PARM_DESC(disable_resets, "Disable the issuing of PCI resets");
++
+ static DEFINE_MUTEX(driver_lock);
+ 
++bool vfio_pci_resets_disabled(void)
++{
++	return disable_resets;
++}
++
+ static inline bool vfio_vga_disabled(void)
+ {
+ #ifdef CONFIG_VFIO_PCI_VGA
+@@ -227,11 +236,16 @@ static int vfio_pci_enable(struct vfio_pci_device *vdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	/* If reset fails because of the device lock, fail this path entirely */
+-	ret = pci_try_reset_function(pdev);
+-	if (ret == -EAGAIN) {
+-		pci_disable_device(pdev);
+-		return ret;
++	if (vfio_pci_resets_disabled()) {
++		dev_info(&pdev->dev, "refusing to reset\n");
++		ret = -EINVAL;
++	} else {
++		/* If reset fails because of the device lock, fail this path entirely */
++		ret = pci_try_reset_function(pdev);
++		if (ret == -EAGAIN) {
++			pci_disable_device(pdev);
++			return ret;
++		}
+ 	}
+ 
+ 	vdev->reset_works = !ret;
+@@ -379,13 +393,17 @@ static void vfio_pci_disable(struct vfio_pci_device *vdev)
+ 	 * We can not use the "try" reset interface here, which will
+ 	 * overwrite the previously restored configuration information.
+ 	 */
+-	if (vdev->reset_works && pci_cfg_access_trylock(pdev)) {
+-		if (device_trylock(&pdev->dev)) {
+-			if (!__pci_reset_function_locked(pdev))
+-				vdev->needs_reset = false;
+-			device_unlock(&pdev->dev);
++	if (vfio_pci_resets_disabled()) {
++		dev_info(&pdev->dev, "refusing reset on disable\n");
++	} else {
++		if (vdev->reset_works && pci_cfg_access_trylock(pdev)) {
++			if (device_trylock(&pdev->dev)) {
++				if (!__pci_reset_function_locked(pdev))
++					vdev->needs_reset = false;
++				device_unlock(&pdev->dev);
++			}
++			pci_cfg_access_unlock(pdev);
+ 		}
+-		pci_cfg_access_unlock(pdev);
+ 	}
+ 
+ 	pci_restore_state(pdev);
+@@ -886,6 +904,12 @@ static long vfio_pci_ioctl(void *device_data,
+ 		if (!vdev->reset_works)
+ 			return -EINVAL;
+ 
++		if (vfio_pci_resets_disabled()) {
++			pr_info("%s: refusing VFIO_DEVICE_RESET request\n",
++				__func__);
++			return -EINVAL;
++		}
++
+ 		vfio_pci_zap_and_down_write_memory_lock(vdev);
+ 		ret = pci_try_reset_function(vdev->pdev);
+ 		up_write(&vdev->memory_lock);
+@@ -982,6 +1006,12 @@ static long vfio_pci_ioctl(void *device_data,
+ 		if (hdr.argsz < minsz || hdr.flags)
+ 			return -EINVAL;
+ 
++		if (vfio_pci_resets_disabled()) {
++			pr_info("%s: refusing VFIO_DEVICE_PCI_HOT_RESET request\n",
++				__func__);
++			return -EINVAL;
++		}
++
+ 		/* Can we do a slot or bus reset or neither? */
+ 		if (!pci_probe_reset_slot(vdev->pdev->slot))
+ 			slot = true;
+@@ -1719,8 +1749,13 @@ static void vfio_pci_try_bus_reset(struct vfio_pci_device *vdev)
+ 			goto put_devs;
+ 	}
+ 
+-	if (needs_reset)
+-		ret = pci_reset_bus(vdev->pdev);
++	if (needs_reset) {
++		if (vfio_pci_resets_disabled()) {
++			pr_info("%s: refusing bus reset\n", __func__);
++		} else {
++			ret = pci_reset_bus(vdev->pdev);
++		}
++	}
+ 
+ put_devs:
+ 	for (i = 0; i < devs.cur_index; i++) {
+diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_pci_config.c
+index a1a26465d224..0f060d0ed882 100644
+--- a/drivers/vfio/pci/vfio_pci_config.c
++++ b/drivers/vfio/pci/vfio_pci_config.c
+@@ -855,9 +855,14 @@ static int vfio_exp_config_write(struct vfio_pci_device *vdev, int pos,
+ 						 &cap);
+ 
+ 		if (!ret && (cap & PCI_EXP_DEVCAP_FLR)) {
+-			vfio_pci_zap_and_down_write_memory_lock(vdev);
+-			pci_try_reset_function(vdev->pdev);
+-			up_write(&vdev->memory_lock);
++			if (vfio_pci_resets_disabled()) {
++				pr_info("%s: refusing reset\n",
++					__func__);
++			} else {
++				vfio_pci_zap_and_down_write_memory_lock(vdev);
++				pci_try_reset_function(vdev->pdev);
++				up_write(&vdev->memory_lock);
++			}
+ 		}
+ 	}
+ 
+@@ -937,9 +942,14 @@ static int vfio_af_config_write(struct vfio_pci_device *vdev, int pos,
+ 						&cap);
+ 
+ 		if (!ret && (cap & PCI_AF_CAP_FLR) && (cap & PCI_AF_CAP_TP)) {
+-			vfio_pci_zap_and_down_write_memory_lock(vdev);
+-			pci_try_reset_function(vdev->pdev);
+-			up_write(&vdev->memory_lock);
++			if (vfio_pci_resets_disabled()) {
++				pr_info("%s: refusing reset\n",
++					__func__);
++			} else {
++				vfio_pci_zap_and_down_write_memory_lock(vdev);
++				pci_try_reset_function(vdev->pdev);
++				up_write(&vdev->memory_lock);
++			}
+ 		}
+ 	}
+ 
+diff --git a/drivers/vfio/pci/vfio_pci_private.h b/drivers/vfio/pci/vfio_pci_private.h
+index 17d2bae5b013..e1af309d12ef 100644
+--- a/drivers/vfio/pci/vfio_pci_private.h
++++ b/drivers/vfio/pci/vfio_pci_private.h
+@@ -173,4 +173,7 @@ static inline int vfio_pci_igd_init(struct vfio_pci_device *vdev)
+ 	return -ENODEV;
+ }
+ #endif
++
++extern bool vfio_pci_resets_disabled(void);
++
+ #endif /* VFIO_PCI_PRIVATE_H */
+-- 
+2.28.0
+
