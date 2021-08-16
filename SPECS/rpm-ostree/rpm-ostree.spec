@@ -1,13 +1,15 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2019.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Group:          Applications/System
+
 Source0:        https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
-%define sha1    rpm-ostree=982c3b335debe04763c0b0b8769f7e43229beebc
+%define sha1    %{name}=982c3b335debe04763c0b0b8769f7e43229beebc
 Source1:        libglnx-470af87.tar.gz
 %define sha1    libglnx=ed1ee84156ff0d9e70b551a7932fda79fb59e8d4
 Source2:        libdnf-d8e481b.tar.gz
@@ -15,8 +17,10 @@ Source2:        libdnf-d8e481b.tar.gz
 Source3:        mk-ostree-host.sh
 Source4:        function.inc
 Source5:        mkostreerepo
+
 Patch0:         rpm-ostree-libdnf-build.patch
 Patch1:         rpm-ostree-disable-selinux.patch
+
 BuildRequires:  autoconf
 BuildRequires:  automake
 BuildRequires:  check
@@ -75,31 +79,32 @@ Requires:       bubblewrap
 This tool takes a set of packages, and commits them to an OSTree
 repository.  At the moment, it is intended for use on build servers.
 
-%package devel
-Summary: Development headers for rpm-ostree
-Group: Development/Libraries
+%package    devel
+Summary:    Development headers for rpm-ostree
+Group:      Development/Libraries
 Requires: %{name} = %{version}-%{release}
 
 %description devel
 Includes the header files for the rpm-ostree library.
 
-%package host
-Summary: File for rpm-ostree-host creation
-Group: Development/Libraries
+%package    host
+Summary:    File for rpm-ostree-host creation
+Group:      Development/Libraries
 Requires: %{name} = %{version}-%{release}
 
 %description host
 Includes the scripts for rpm-ostree host creation
 
-%package repo
-Summary: File for Repo Creation to act as server
-Group: Applications/System
+%package    repo
+Summary:    File for Repo Creation to act as server
+Group:      Applications/System
 Requires: %{name} = %{version}-%{release}
 
 %description repo
 Includes the scripts for rpm-ostree repo creation to act as server
 
 %prep
+# Using autosetup is not feasible
 %setup -q
 tar xf /usr/src/photon/SOURCES/libglnx-470af87.tar.gz --no-same-owner
 tar xf /usr/src/photon/SOURCES/libdnf-d8e481b.tar.gz --no-same-owner
@@ -112,7 +117,7 @@ env NOCONFIGURE=1 ./autogen.sh
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot} INSTALL="install -p -c"
+make install DESTDIR=%{buildroot} INSTALL="install -p -c" %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 install -d %{buildroot}%{_bindir}/rpm-ostree-host
 install -d %{buildroot}%{_bindir}/rpm-ostree-server
@@ -153,6 +158,8 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+*   Wed Aug 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 2019.3-6
+-   Bump version as a part of rpm upgrade
 *   Tue Jun 23 2020 Ankit Jain <ankitja@vmware.com> 2019.3-5
 -   Added sshd and sshd-keygen in units to enable it on bootup
 *   Fri Jun 05 2020 Ankit Jain <ankitja@vmware.com> 2019.3-4

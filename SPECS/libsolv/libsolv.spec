@@ -1,11 +1,16 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.6.35
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
-%define sha1    libsolv=4f53d60467ddab4099cfe5eb91a3fe7260666209
+%define sha1    %{name}=4f53d60467ddab4099cfe5eb91a3fe7260666209
+
 Patch0:         libsolv-xmlparser.patch
 Patch1:         libsolv-rpm4-IndexOoB-fix.patch
 Patch2:         CVE-2019-20387.patch
@@ -13,15 +18,15 @@ Patch3:         CVE-2018-20532-20533-20534.patch
 Patch4:         extend_choicerule_filtering_check.patch
 Patch5:         Refactor_solver_addchoicerules_function.patch
 Patch6:         CVE-2021-3200.patch
-Group:          Development/Tools
-Vendor:         VMware, Inc.
-Distribution:   Photon
+
 Requires:       libdb
 Requires:       expat-libs
+
 BuildRequires:  libdb-devel
 BuildRequires:  cmake
 BuildRequires:  rpm-devel
 BuildRequires:  expat-devel
+
 %description
 Libsolv is a free package management library, using SAT technology to solve requests.
 It supports debian, rpm, archlinux and haiku style distributions.
@@ -37,23 +42,19 @@ The libsolv-devel package contains libraries, header files and documentation
 for developing applications that use libsolv.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
+%autosetup -p1
+
 %build
 cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     -DRPM5=ON \
     -DENABLE_RPMDB=ON \
     -DENABLE_COMPLEX_DEPS=ON
+
 make %{?_smp_mflags}
+
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
 %check
@@ -66,7 +67,6 @@ make %{?_smp_mflags} test
 %{_lib64dir}/libsolvext.so.*
 %{_mandir}/man1/*
 
-
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
@@ -77,6 +77,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Aug 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.6.35-7
+-   Bump version as a part of rpm upgrade
 *   Mon May 31 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.6.35-6
 -   Fix CVE-2021-3200
 *   Mon Nov 16 2020 Tapas Kundu <tkundu@vmware.com> 0.6.35-5

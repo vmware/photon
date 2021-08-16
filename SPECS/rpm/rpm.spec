@@ -3,19 +3,21 @@
 
 Summary:        Package manager
 Name:           rpm
-Version:        4.14.2
-Release:        14%{?dist}
+Version:        4.14.3
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}-release.tar.gz
-%define sha1    rpm=8cd4fb1df88c3c73ac506f8ac92be8c39fa610eb
+%define sha1    %{name}=9a50d601253bac84e2c7418291f7dd5763f8a895
 
 Source1:        macros
 Source2:        brp-strip-debug-symbols
 Source3:        brp-strip-unneeded
+Source4:        macros.python2
+Source5:        macros.python3
 
 Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
 Patch1:         CVE-2021-20271.patch
@@ -99,13 +101,7 @@ Requires:       python3
 Python3 rpm.
 
 %prep
-%setup -q -n rpm-%{name}-%{version}-release
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
+%autosetup -p1 -n rpm-%{name}-%{version}-release
 
 %build
 sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
@@ -137,17 +133,19 @@ python3 setup.py build
 popd
 
 %check
-make check
+make check %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
 # System macros and prefix
 install -dm 755 %{buildroot}%{_sysconfdir}/rpm
-install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm/
-install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm/
-install -vm755 %{SOURCE3} %{buildroot}%{_libdir}/rpm/
+install -vm644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm
+install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm
+install -vm755 %{SOURCE3} %{buildroot}%{_libdir}/rpm
+install -vm644 %{SOURCE4} %{buildroot}%{_libdir}/rpm/macros.d
+install -vm644 %{SOURCE5} %{buildroot}%{_libdir}/rpm/macros.d
 
 pushd python
 python2 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
@@ -271,6 +269,9 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Aug 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.3-1
+-   Version bump to 4.14.3
+-   Add macros for py2 & py3
 *   Tue Jul 27 2021 Piyush Gupta <gpiyush@vmware.com> 4.14.2-14
 -   Added zstd-libs in Requires
 -   Remove python dependency from rpm

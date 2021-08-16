@@ -1,14 +1,16 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.11.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        %{name}-%{version}.tar.gz
-%define sha1    createrepo_c=89040f2c34200ae08876a645b4a160beb03a9298
 URL:            https://github.com/rpm-software-management/createrepo_c
+
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    %{name}=89040f2c34200ae08876a645b4a160beb03a9298
+
 BuildRequires:  cmake
 BuildRequires:  curl-devel
 BuildRequires:  expat-devel
@@ -20,9 +22,11 @@ BuildRequires:  rpm-devel
 BuildRequires:  xz-devel
 BuildRequires:  sqlite-devel
 BuildRequires:  python3-devel
+
 %if %{with_check}
 Requires:       libxml2
 %endif
+
 Obsoletes:      createrepo
 Provides:       createrepo
 Provides:       /bin/mergerepo
@@ -39,7 +43,7 @@ Requires:   %{name} = %{version}-%{release}
 headers and libraries for createrepo_c
 
 %prep
-%setup -q
+%autosetup -p1
 sed -e '/find_package(GTHREAD2/ s/^#*/#/' -i CMakeLists.txt
 sed -i 's|g_thread_init|//g_thread_init|'  src/createrepo_c.c
 sed -i 's|g_thread_init|//g_thread_init|'  src/mergerepo_c.c
@@ -53,18 +57,17 @@ make %{?_smp_mflags}
 
 %install
 cd build
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 ln -sf %{_bindir}/createrepo_c %{buildroot}%{_bindir}/createrepo
 ln -sf %{_bindir}/mergerepo_c %{buildroot}%{_bindir}/mergerepo
 ln -sf %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
 
 %clean
-[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
-
+[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
 
 %files
 %defattr(-, root, root)
-/etc/bash_completion.d/createrepo_c.bash
+%{_sysconfdir}/bash_completion.d/createrepo_c.bash
 %{_bindir}/*
 %{_lib64dir}/*.so.*
 %{_mandir}/*
@@ -77,6 +80,8 @@ ln -sf %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
 %{_lib64dir}/pkgconfig/%{name}.pc
 
 %changelog
+*   Wed Aug 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.11.1-3
+-   Bump version as a part of rpm upgrade
 *   Wed Jun 19 2019 Ankit Jain <ankitja@vmware.com> 0.11.1-2
 -   Added libxml2 as Requires for makecheck.
 *   Tue Sep 04 2018 Keerthana K <keerthanak@vmware.com> 0.11.1-1

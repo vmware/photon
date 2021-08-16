@@ -1,0 +1,84 @@
+%__python /usr/bin/python2
+%python2 %__python2
+%python_sitelib %(%{__python} -Esc "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
+%python_sitearch %(%{__python} -Esc "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")
+%python_version %(%{__python} -Esc "import sys; sys.stdout.write('{0.major}.{0.minor}'.format(sys.version_info))")
+%python_version_nodots %(%{__python} -Esc "import sys; sys.stdout.write('{0.major}{0.minor}'.format(sys.version_info))")
+%python_platform %(%{__python} -Esc "import sysconfig; print(sysconfig.get_platform())")
+%python_platform_triplet %(%{__python} -Esc "import sysconfig; print(sysconfig.get_config_var('MULTIARCH'))")
+%python_ext_suffix %(%{__python} -Esc "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'))")
+
+%py_setup setup.py
+%py_shbang_opts -s
+%py_shbang_opts_nodash %(opts=%{py_shbang_opts}; echo ${opts#-})
+%py_shebang_flags %(opts=%{py_shbang_opts}; echo ${opts#-})
+%py_shebang_fix %{expand:\\\
+  if [ -f /usr/bin/pathfix%{python_version}.py ]; then
+    pathfix=/usr/bin/pathfix%{python_version}.py
+  else
+    # older versions of Python don't have it and must BR /usr/bin/pathfix.py from python3-devel explicitly
+    pathfix=/usr/bin/pathfix.py
+  fi
+  if [ -z "%{?py_shebang_flags}" ]; then
+    shebang_flags="-k"
+  else
+    shebang_flags="-ka%{py_shebang_flags}"
+  fi
+  $pathfix -pni %{__python} $shebang_flags}
+
+# Use the slashes after expand so that the command starts on the same line as
+# the macro
+%py_build() %{expand:\\\
+  CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
+  %{__python} %{py_setup} %{?py_setup_args} build --executable="%{__python} %{py_shbang_opts}" %{?*}
+}
+
+%py_build_egg() %{expand:\\\
+  CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
+  %{__python} %{py_setup} %{?py_setup_args} bdist_egg %{?*}
+}
+
+%py_build_wheel() %{expand:\\\
+  CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
+  %{__python} %{py_setup} %{?py_setup_args} bdist_wheel %{?*}
+}
+
+%py_install() %{expand:\\\
+  CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
+  %{__python} %{py_setup} %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
+  rm -rfv %{buildroot}%{_bindir}/__pycache__
+}
+
+%py_install_egg() %{expand:\\\
+  mkdir -p %{buildroot}%{python_sitelib}
+  %{__python} -m easy_install -m --prefix %{buildroot}%{_prefix} -Z dist/*-py%{python_version}.egg %{?*}
+  rm -rfv %{buildroot}%{_bindir}/__pycache__
+}
+
+%py_install_wheel() %{expand:\\\
+  %{__python} -m pip install -I dist/%{1} --root %{buildroot} --no-deps --no-index --no-warn-script-location
+  rm -rfv %{buildroot}%{_bindir}/__pycache__
+  for distinfo in %{buildroot}%{python_sitelib}/*.dist-info %{buildroot}%{python_sitearch}/*.dist-info; do
+    if [ -f ${distinfo}/direct_url.json ]; then
+      rm -fv ${distinfo}/direct_url.json
+      sed -i '/direct_url.json/d' ${distinfo}/RECORD
+    fi
+  done
+}
+
+# With $PATH and $PYTHONPATH set to the %%buildroot,
+# try to import the given Python module(s).
+# Useful as a smoke test in %%check when running tests is not feasible.
+# Use spaces or commas as separators.
+%py_check_import() %{expand:\\\
+  (cd %{_topdir} &&\\\
+  PATH="%{buildroot}%{_bindir}:$PATH"\\\
+  PYTHONPATH="${PYTHONPATH:-%{buildroot}%{python_sitearch}:%{buildroot}%{python_sitelib}}"\\\
+  PYTHONDONTWRITEBYTECODE=1\\\
+  %{__python} -c "import %{lua:local m=rpm.expand('%{?*}'):gsub('[%s,]+', ', ');print(m)}"
+  )
+}
+
+%python_disable_dependency_generator() \
+%undefine __pythondist_requires \
+%{nil}

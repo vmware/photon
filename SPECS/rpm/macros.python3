@@ -1,0 +1,105 @@
+%__python3 /usr/bin/python3
+%python3 %__python3
+%python3_sitelib %(%{__python3} -Ic "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
+%python3_sitearch %(%{__python3} -Ic "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")
+%python3_version %(%{__python3} -Ic "import sys; sys.stdout.write('{0.major}.{0.minor}'.format(sys.version_info))")
+%python3_version_nodots %(%{__python3} -Ic "import sys; sys.stdout.write('{0.major}{0.minor}'.format(sys.version_info))")
+%python3_platform %(%{__python3} -Ic "import sysconfig; print(sysconfig.get_platform())")
+%python3_platform_triplet %(%{__python3} -Ic "import sysconfig; print(sysconfig.get_config_var('MULTIARCH'))")
+%python3_ext_suffix %(%{__python3} -Ic "import sysconfig; print(sysconfig.get_config_var('EXT_SUFFIX'))")
+%py3dir %{_builddir}/python3-%{name}-%{version}-%{release}
+
+%py3_shbang_opts -s
+%py3_shbang_opts_nodash %(opts=%{py3_shbang_opts}; echo ${opts#-})
+%py3_shebang_flags %(opts=%{py3_shbang_opts}; echo ${opts#-})
+%py3_shebang_fix %{expand:\\\
+  if [ -f /usr/bin/pathfix%{python3_version}.py ]; then
+    pathfix=/usr/bin/pathfix%{python3_version}.py
+  else
+    # older versions of Python don't have it and must BR /usr/bin/pathfix.py from python3-devel explicitly
+    pathfix=/usr/bin/pathfix.py
+  fi
+  if [ -z "%{?py3_shebang_flags}" ]; then
+    shebang_flags="-k"
+  else
+    shebang_flags="-ka%{py3_shebang_flags}"
+  fi
+  $pathfix -pni %{__python3} $shebang_flags}
+
+# Use the slashes after expand so that the command starts on the same line as
+# the macro
+%py3_build() %{expand:\\\
+  CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
+  %{__python3} %{py_setup} %{?py_setup_args} build --executable="%{__python3} %{py3_shbang_opts}" %{?*}
+}
+
+%py3_build_egg() %{expand:\\\
+  CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
+  %{__python3} %{py_setup} %{?py_setup_args} bdist_egg %{?*}
+}
+
+%py3_build_wheel() %{expand:\\\
+  CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
+  %{__python3} %{py_setup} %{?py_setup_args} bdist_wheel %{?*}
+}
+
+%py3_install() %{expand:\\\
+  CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
+  %{__python3} %{py_setup} %{?py_setup_args} install -O1 --skip-build --root %{buildroot} %{?*}
+  rm -rfv %{buildroot}%{_bindir}/__pycache__
+}
+
+%py3_install_egg() %{expand:\\\
+  mkdir -p %{buildroot}%{python3_sitelib}
+  %{__python3} -m easy_install -m --prefix %{buildroot}%{_prefix} -Z dist/*-py%{python3_version}.egg %{?*}
+  rm -rfv %{buildroot}%{_bindir}/__pycache__
+}
+
+%py3_install_wheel() %{expand:\\\
+  %{__python3} -m pip install -I dist/%{1} --root %{buildroot} --no-deps --no-index --no-warn-script-location
+  rm -rfv %{buildroot}%{_bindir}/__pycache__
+  for distinfo in %{buildroot}%{python3_sitelib}/*.dist-info %{buildroot}%{python3_sitearch}/*.dist-info; do
+    if [ -f ${distinfo}/direct_url.json ]; then
+      rm -fv ${distinfo}/direct_url.json
+      sed -i '/direct_url.json/d' ${distinfo}/RECORD
+    fi
+  done
+}
+
+# With $PATH and $PYTHONPATH set to the %%buildroot,
+# try to import the given Python 3 module(s).
+# Useful as a smoke test in %%check when running tests is not feasible.
+# Use spaces or commas as separators.
+%py3_check_import() %{expand:\\\
+  (cd %{_topdir} &&\\\
+  PATH="%{buildroot}%{_bindir}:$PATH"\\\
+  PYTHONPATH="${PYTHONPATH:-%{buildroot}%{python3_sitearch}:%{buildroot}%{python3_sitelib}}"\\\
+  PYTHONDONTWRITEBYTECODE=1\\\
+  %{__python3} -c "import %{lua:local m=rpm.expand('%{?*}'):gsub('[%s,]+', ', ');print(m)}"
+  )
+}
+
+# This only supports Python 3.5+ and will never work with Python 2.
+# Hence, it has no Python version in the name.
+%pycached() %{lua:
+  path = rpm.expand("%{?*}")
+  if (string.sub(path, "-3") ~= ".py") then
+    rpm.expand("%{error:%%pycached can only be used with paths explicitly ending with .py}")
+  else
+    print(path)
+    pyminor = path:match("/python3.(%d+)/") or "*"
+    dirname = path:match("(.*/)")
+    modulename = path:match(".*/([^/]+).py")
+    print("\\n" .. dirname .. "__pycache__/" .. modulename .. ".cpython-3" .. pyminor .. "{,.opt-?}.pyc")
+  end
+}
+
+# This is intended for Python 3 only, hence also no Python version in the name.
+%__pytest /usr/bin/pytest%(test %{python3_pkgversion} == 3 || echo -%{python3_version})
+%pytest %{expand:\\\
+  CFLAGS="${CFLAGS:-${RPM_OPT_FLAGS}}" LDFLAGS="${LDFLAGS:-${RPM_LD_FLAGS}}"\\\
+  PATH="%{buildroot}%{_bindir}:$PATH"\\\
+  PYTHONPATH="${PYTHONPATH:-%{buildroot}%{python3_sitearch}:%{buildroot}%{python3_sitelib}}"\\\
+  PYTHONDONTWRITEBYTECODE=1\\\
+  %{?__pytest_addopts:PYTEST_ADDOPTS="${PYTEST_ADDOPTS:-} %{__pytest_addopts}"}\\\
+  %__pytest}

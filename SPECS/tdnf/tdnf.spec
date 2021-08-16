@@ -3,7 +3,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.1.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -246,6 +246,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
 
 %changelog
+*   Fri Aug 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.1.4-2
+-   Bump version as a part of rpm upgrade
 *   Wed Aug 18 2021 Oliver Kurth <okurth@vmware.com> 3.1.4-1
 -   update to 3.1.4
 -   fix configreader key reading logic

@@ -1,6 +1,6 @@
-From 615c4d87ef74fb3f479eda7bee81f02fd1b62e69 Mon Sep 17 00:00:00 2001
-From: Demi Marie Obenour <demi@invisiblethingslab.com>
-Date: Tue, 11 May 2021 16:33:14 +0530
+From 7975a70e38144a12ba7c5c53f7b06e0cac666482 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 16 Aug 2021 16:20:03 +0530
 Subject: [PATCH] Fix regression reading rpm v3 and other rare packages (#1635)
 
 Commit d6a86b5 introduced far stricter
@@ -23,18 +23,18 @@ Initial workaround patch by Demi Marie Obenour.
 
 Fixes: #1635
 
-[sshedi: modified according to rpm-4.14.2 needs]
+[sshedi: modified according to rpm-4.14.3 needs]
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- lib/package.c | 35 ++++++++++++++++++++---------------
- 1 file changed, 20 insertions(+), 15 deletions(-)
+ lib/package.c | 39 ++++++++++++++++++++-------------------
+ 1 file changed, 20 insertions(+), 19 deletions(-)
 
 diff --git a/lib/package.c b/lib/package.c
-index 326357d44..a49127be8 100644
+index 6ca963b7f..49c6829c8 100644
 --- a/lib/package.c
 +++ b/lib/package.c
-@@ -24,19 +24,20 @@ struct taglate_s {
+@@ -35,19 +35,20 @@ struct taglate_s {
      rpmTagVal stag;
      rpmTagVal xtag;
      rpm_count_t count;
@@ -67,13 +67,17 @@ index 326357d44..a49127be8 100644
      { 0 }
  };
  
-@@ -53,9 +54,13 @@ rpmTagVal headerMergeLegacySigs(Header h, Header sigh, char **msg)
+@@ -64,13 +65,13 @@ rpmTagVal headerMergeLegacySigs(Header h, Header sigh, char **msg)
      struct rpmtd_s td;
  
      for (xl = xlateTags; xl->stag; xl++) {
 -	/* There mustn't be one in the main header */
--	if (headerIsEntry(h, xl->xtag))
+-	if (headerIsEntry(h, xl->xtag)) {
+-	    /* Some tags may exist in either header, but never both */
+-	    if (xl->quirk && !headerIsEntry(sigh, xl->stag))
+-		continue;
 -	    goto exit;
+-	}
 +        /* There mustn't be one in the main header */
 +        if (headerIsEntry(h, xl->xtag)) {
 +            /* Some tags may exist in either header, but never both */

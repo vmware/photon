@@ -8,15 +8,16 @@
 
 Name:          systemtap
 Version:       4.0
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
 Distribution:  Photon
-URL:           http://sourceware.org/systemtap/
-Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
-%define sha1 systemtap=40a21d71b0d42bc216f75befd3fca82701821211
+URL:           http://sourceware.org/systemtap
 License:       GPLv2+
+
+Source0:       http://sourceware.org/systemtap/ftp/releases/systemtap-%{version}.tar.gz
+%define sha1 %{name}=40a21d71b0d42bc216f75befd3fca82701821211
 
 BuildRequires: elfutils-devel
 BuildRequires: glibc-devel
@@ -33,18 +34,22 @@ BuildRequires: python-setuptools
 BuildRequires: nss
 BuildRequires: shadow
 BuildRequires: python2-devel
+BuildRequires: pkg-config
+
 %if %with_boost
 BuildRequires: boost-devel
 %endif
+
 %if %with_crash
 BuildRequires: crash-devel
 BuildRequires: zlib-devel
 Requires:      crash
 %endif
-BuildRequires: pkg-config
+
 %if %with_rpm
 BuildRequires: rpm-devel
 %endif
+
 Requires:      gcc
 Requires:      linux-devel
 Requires:      make
@@ -60,7 +65,6 @@ SystemTap is an instrumentation system for systems running Linux.
 Developers can write instrumentation scripts to collect data on
 the operation of the system.  The base systemtap package contains/requires
 the components needed to locally develop and execute systemtap scripts.
-
 
 %package initscript
 Group:         System/Tools
@@ -107,9 +111,8 @@ Requires:      gzip
 %description server
 SystemTap server is the server component of an instrumentation system for systems running Linux.
 
-
 %prep
-%setup -q
+%autosetup -p1
 sed -i "s#"kernel"#"linux"#g" stap-prep
 sed -i "s#"devel"#"dev"#g" stap-prep
 
@@ -137,10 +140,10 @@ sed -i "s#"devel"#"dev"#g" stap-prep
 	--disable-pie \
 %endif
 	--disable-grapher \
-        --disable-virt \
+    --disable-virt \
 	--disable-silent-rules
 
-make
+make %{?_smp_mflags}
 
 %install
 [ "%{buildroot}" != / ] && rm -rf ""
@@ -153,7 +156,6 @@ find examples -type f -name '*.stp' -print0 | xargs -0 sed -i -r -e '1s@^#!.+sta
 chmod 755 %{buildroot}%{_bindir}/staprun
 
 install -c -m 755 stap-prep %{buildroot}%{_bindir}/stap-prep
-
 
 mkdir -p %{buildroot}%{_sysconfdir}//rc.d/init.d/
 install -m 755 initscript/systemtap %{buildroot}%{_sysconfdir}/rc.d/init.d/
@@ -168,9 +170,11 @@ mkdir -p %{buildroot}%{_localstatedir}/run/systemtap
 mkdir docs.installed
 mv %{buildroot}%{_datadir}/systemtap/*.pdf docs.installed/
 mv %{buildroot}%{_datadir}/systemtap/tapsets docs.installed/
+
 %if %with_publican
 mv %{buildroot}%{_datadir}/systemtap/SystemTap_Beginners_Guide docs.installed/
 %endif
+
 %endif
 
 install -m 755 initscript/stap-server %{buildroot}%{_sysconfdir}/rc.d/init.d/
@@ -356,6 +360,8 @@ fi
 %{_mandir}/man8/systemtap-service.8*
 
 %changelog
+*   Wed Aug 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.0-3
+-   Bump version as a part of rpm upgrade
 *   Mon Jan 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.0-2
 -   Added python2-devel as build requirement
 *   Tue Dec 04 2018 Keerthana K <keerthanak@vmware.com> 4.0-1

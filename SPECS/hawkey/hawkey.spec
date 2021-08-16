@@ -4,22 +4,35 @@
 Summary:        Hawkey
 Name:           hawkey
 Version:        2017.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+
 URL:            http://fedoraproject.org/wiki/Features/Hawkey
+
 Source0:        https://github.com/rpm-software-management/hawkey/archive/%{name}-%{version}.tar.gz
-%define sha1    hawkey=864e83a84f2e2fec24370a3421401c45c900c104
+%define sha1    %{name}=864e83a84f2e2fec24370a3421401c45c900c104
+
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Patch0:         hawkey-corrupt-metadata.patch
 Patch1:         hawkey-allow-downgrade-flag.patch
 Patch2:         hawkey-severity-reboot_suggested.patch
+
 BuildRequires:  libsolv-devel
 BuildRequires:  check
 BuildRequires:  cmake
 BuildRequires:  rpm
 BuildRequires:  rpm-devel
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
+BuildRequires:  python-pip
+BuildRequires:  python-requests
+BuildRequires:  python-setuptools
+BuildRequires:  python-sphinx
+BuildRequires:  python3-devel
+BuildRequires:  python3-sphinx
+
 Requires:       libsolv
 
 %description
@@ -38,12 +51,6 @@ Development files for hawkey.
 %package -n python-hawkey
 Summary:    Python 2 bindings for the hawkey library
 Group:      Development/Languages
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  python-pip
-BuildRequires:  python-requests
-BuildRequires:  python-setuptools
-BuildRequires:  python-sphinx
 Requires:   %{name} = %{version}-%{release}
 Requires:   python2
 
@@ -53,27 +60,22 @@ Python 2 bindings for the hawkey library.
 %package -n python3-%{name}
 Summary:        Python 3 bindings for the hawkey library
 %{?python_provide:%python_provide python3-%{name}}
-BuildRequires:  python3-devel
-BuildRequires:  python3-sphinx
 Requires:       %{name} = %{version}-%{release}
 
 %description -n python3-%{name}
 Python 3 bindings for the hawkey library.
 
 %prep
-%setup -qn hawkey-hawkey-0.6.4-1
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1 -n hawkey-hawkey-0.6.4-1
 sed -i 's/ADD_SUBDIRECTORY (doc)//' CMakeLists.txt
-mkdir build
-mkdir build-py3
+mkdir -p build build-py3
+
 %build
 pushd build
-cmake \
-    -DCMAKE_INSTALL_PREFIX=%{_prefix} ..
+cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} ..
 make %{?_smp_mflags}
 popd
+
 pushd build-py3
 cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
@@ -82,11 +84,11 @@ popd
 
 %install
 pushd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 popd
 pushd build-py3
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 popd
 
@@ -120,6 +122,8 @@ popd
 %exclude %{python_sitearch}/*
 
 %changelog
+*   Wed Aug 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 2017.1-7
+-   Bump version as a part of rpm upgrade
 *   Wed Aug 07 2019 Sujay G <gsujay@vmware.com> 2017.1-6
 -   Set SOLVER_FLAG_ALLOW_DOWNGRADE to true for downgrade operation.
 -   Return severity and reboot_suggested.
