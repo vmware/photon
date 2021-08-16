@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -81,6 +81,7 @@ Requires:   %{name}-devel = %{version}-%{release}
 Requires:   elfutils-libelf
 Requires:   cpio
 Requires:   systemd-rpm-macros
+Requires:   python3-macros
 Summary:    Binaries, scripts and libraries needed to build rpms.
 %description build
 Binaries, libraries and scripts to build rpms.
@@ -259,6 +260,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Aug 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.2-8
+-   Add python3-macros to rpm-build
 *   Wed Jul 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.2-7
 -   Remove python dependency from rpm main package
 -   Build without archive support
