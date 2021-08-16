@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.9.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -10,7 +10,9 @@ Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
 %define sha1    Python=77f4105846f6740297e50d7535a42c02d6b8e7db
 Source1:        macros.python
+
 Patch0:         cgi3.patch
+
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel
@@ -23,6 +25,7 @@ BuildRequires:  sqlite-devel
 BuildRequires:  util-linux-devel
 # cross compilation requires native python3 installed for ensurepip
 %define BuildRequiresNative python3-xml
+
 Requires:       ncurses
 Requires:       openssl
 Requires:       python3-libs = %{version}-%{release}
@@ -56,7 +59,6 @@ Requires:       ncurses
 Requires:       sqlite-libs
 Requires:       bzip2-libs
 Requires:       util-linux-libs
-
 
 %description    libs
 The python interpreter can be embedded into applications wanting to
@@ -153,30 +155,30 @@ You should not need to install this package manually as the various
 python-devel packages require it. So install a python-devel package instead.
 
 %prep
-%setup -q -n Python-%{version}
-%patch0 -p1
+%autosetup -p1 -n Python-%{version}
 
 %build
 export OPT="${CFLAGS}"
 if [ %{_host} != %{_build} ]; then
-  ln -s python3 /bin/python
+  ln -sfv python3 /bin/python
   export ac_cv_buggy_getaddrinfo=no
   export ac_cv_file__dev_ptmx=yes
   export ac_cv_file__dev_ptc=no
 fi
+
 %configure \
-    CFLAGS="%{optflags}" \
-    CXXFLAGS="%{optflags}" \
     --enable-shared \
     --with-system-expat \
     --with-system-ffi \
     --enable-optimizations \
     --with-dbmliborder=gdbm:ndbm
+
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_fixperms} %{buildroot}/*
 
 # Remove unused stuff
@@ -189,7 +191,7 @@ mkdir -p %{buildroot}/usr/lib/rpm/macros.d
 install -m 644 %{SOURCE1} %{buildroot}/usr/lib/rpm/macros.d
 
 %check
-make  %{?_smp_mflags} test
+make %{?_smp_mflags} test
 
 %post
 ln -sf /usr/bin/python3 /usr/bin/python
@@ -203,7 +205,7 @@ if [ $1 -eq 0 ] ; then
     if [ -f "/usr/bin/python2" ]; then
         ln -sf /usr/bin/python2 /usr/bin/python
     else
-        rm /usr/bin/python
+        rm -f /usr/bin/python
     fi
 fi
 /sbin/ldconfig
@@ -300,6 +302,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/rpm/macros.d/macros.python
 
 %changelog
+*   Mon Aug 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.9.1-4
+-   Fix python rpm macros
 *   Sat Mar 27 2021 Tapas Kundu <tkundu@vmware.com> 3.9.1-3
 -   Remove packaging exe files in python3-pip
 *   Sat Jan 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.9.1-2
