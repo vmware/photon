@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        5.7.34
+Version:        5.7.35
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 Source0:        https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=172dc4750e106e6433892cdebb74a11d9eaffebf
+%define         sha1 mysql-boost=9d1b8654453886064f9a9560116f6b8567e0c3ff
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -23,7 +23,6 @@ Requires:       %{name} = %{version}-%{release}
 
 %description devel
 Development headers for developing applications linking to maridb
-
 
 %prep
 %setup -q %{name}-boost-%{version}
@@ -66,6 +65,8 @@ make test
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Mon Aug 16 2021 Shreyas B <shreyasb@vmware.com> 5.7.35-1
+-   Upgrade to version 5.7.35
 *   Mon May 03 2021 Shreyas B <shreyasb@vmware.com> 5.7.34-1
 -   Upgrade to version 5.7.34
 *   Mon Feb 01 2021 Shreyas B <shreyasb@vmware.com> 5.7.33-1
