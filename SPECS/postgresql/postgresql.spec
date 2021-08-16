@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        13.3
+Version:        13.4
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=7a775f95367613ed5f7e4cd632586f9628475a92
+%define sha1    postgresql=92146ec62ad80e8f5d2959b5cc1766311dc00d64
 
 # Macros to be used by find_lang and such.
 %global pgmajorversion 13
@@ -169,7 +169,7 @@ system. The %{name}-pltcl package contains the PL/Tcl language
 for the backend.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h
@@ -200,7 +200,7 @@ make world %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install-world DESTDIR=%{buildroot}
+make install-world DESTDIR=%{buildroot} %{?_smp_mflags}
 # Remove anything related to Python 2.  These have no need to be
 # around as only Python 3 is supported.
 rm -f %{buildroot}/%{_datadir}/postgresql/extension/*plpython2u*
@@ -527,6 +527,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/plpython3.so
 
 %changelog
+*   Sat Aug 14 2021 Michael Paquier <mpaquier@vmware.com> 13.4-1
+-   Upgraded to version 13.4
 *   Fri May 14 2021 Michael Paquier <mpaquier@vmware.com> 13.3-1
 -   Upgraded to version 13.3
 *   Tue Mar 16 2021 Michael Paquier <mpaquier@vmware.com> 13.2-9

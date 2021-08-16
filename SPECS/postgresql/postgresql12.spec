@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql12
-Version:        12.7
+Version:        12.8
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/postgresql-%{version}.tar.bz2
-%define sha1    postgresql=e7071caed1f31a0b6d7579ea66e00342e8ebe146
+%define sha1    postgresql=f3f4ae778036795bdc8f493cc7d0d15d409061e9
 
 # Macros to be used by find_lang and such.
 %global pgmajorversion 12
@@ -170,12 +170,14 @@ system. The %{name}-pltcl package contains the PL/Tcl language
 for the backend.
 
 %prep
-%setup -q -n postgresql-%{version}
+%autosetup -n postgresql-%{version}
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h
 
-%configure \
+# Note that %configure is not used here as this command relies on non-default
+# values.
+sh ./configure \
     --prefix=%{pgbaseinstdir} \
     --enable-dtrace \
     --enable-thread-safety \
@@ -207,7 +209,7 @@ make world %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install-world DESTDIR=%{buildroot}
+make install-world DESTDIR=%{buildroot} %{?_smp_mflags}
 # Remove anything related to Python 2.  These have no need to be
 # around as only Python 3 is supported.
 rm -f %{buildroot}/%{pgbaseinstdir}/share/extension/*plpython2u*
@@ -531,6 +533,8 @@ rm -rf %{buildroot}/*
 %{pgbaseinstdir}/lib/plpython3.so
 
 %changelog
+*   Sat Aug 14 2021 Michael Paquier <mpaquier@vmware.com> 12.8-1
+-   Upgraded to version 12.8.
 *   Fri May 14 2021 Michael Paquier <mpaquier@vmware.com> 12.7-1
 -   Upgraded to version 12.7.
 *   Tue Mar 23 2021 Michael Paquier <mpaquier@vmware.com> 12.6-1
