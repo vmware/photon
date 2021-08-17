@@ -5,7 +5,7 @@
 
 Summary:	Linux Firmware
 Name:		linux-firmware
-Version:	20210209
+Version:	20210817
 Release:	1%{?dist}
 License:	GPL+ and GPLv2+ and MIT and Redistributable, no modification permitted
 URL:		http://www.kernel.org/
@@ -13,14 +13,16 @@ Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 linux=7d4f0fde2fabc33c2a6055dbce6262512ce6d9a7
+%define sha1 linux=172339aee56dddd1680393bb2845eb86df9c5315
+# To avoid unused file spec check
+Source1:        generate-linux-firmware-tarball.sh
 BuildArch:	noarch
 
 %description
 This package includes firmware files required for some devices to operate.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 
@@ -34,6 +36,8 @@ cp -r * %{buildroot}%{_firmwarepath}
 %{_firmwarepath}/*
 
 %changelog
+*   Tue Aug 17 2021 Ajay Kaher <akaher@vmware.com> 20210817-1
+-   Updated to fix rpi wi-fi issue
 *   Tue Feb 09 2021 Ankit Jain <ankitja@vmware.com> 20210209-1
 -   Added firmware for Intel's ice-1.3.2 driver
 *   Wed Dec 02 2020 Ankit Jain <ankitja@vmware.com> 20201202-1
