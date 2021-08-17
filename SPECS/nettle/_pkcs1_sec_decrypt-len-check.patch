@@ -1,0 +1,87 @@
+From 7616541e6eff73353bf682c62e3a68e4fe696707 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Niels=20M=C3=B6ller?= <nisse@lysator.liu.se>
+Date: Thu, 6 May 2021 21:30:23 +0200
+Subject: [PATCH] Add check that message length to _pkcs1_sec_decrypt is valid.
+
+* pkcs1-sec-decrypt.c (_pkcs1_sec_decrypt): Check that message
+length is valid, for given key size.
+* testsuite/rsa-sec-decrypt-test.c (test_main): Add test cases for
+calls to rsa_sec_decrypt specifying a too large message length.
+---
+ ChangeLog                        |  7 +++++++
+ pkcs1-sec-decrypt.c              |  4 +++-
+ testsuite/rsa-sec-decrypt-test.c | 17 ++++++++++++++++-
+ 3 files changed, 26 insertions(+), 2 deletions(-)
+
+diff --git a/ChangeLog b/ChangeLog
+index bb169e86..54701718 100644
+--- a/ChangeLog
++++ b/ChangeLog
+@@ -1,3 +1,10 @@
++2021-05-06  Niels Möller  <nisse@lysator.liu.se>
++
++	* pkcs1-sec-decrypt.c (_pkcs1_sec_decrypt): Check that message
++	length is valid, for given key size.
++	* testsuite/rsa-sec-decrypt-test.c (test_main): Add test cases for
++	calls to rsa_sec_decrypt specifying a too large message length.
++
+ 2021-03-21  Niels Möller  <nisse@lysator.liu.se>
+ 
+ 	* NEWS: NEWS entries for 3.7.2.
+diff --git a/pkcs1-sec-decrypt.c b/pkcs1-sec-decrypt.c
+index 4f13080e..16833691 100644
+--- a/pkcs1-sec-decrypt.c
++++ b/pkcs1-sec-decrypt.c
+@@ -63,7 +63,9 @@ _pkcs1_sec_decrypt (size_t length, uint8_t *message,
+   volatile int ok;
+   size_t i, t;
+ 
+-  assert (padded_message_length >= length);
++  /* Message independent branch */
++  if (length + 11 > padded_message_length)
++    return 0;
+ 
+   t = padded_message_length - length - 1;
+ 
+diff --git a/testsuite/rsa-sec-decrypt-test.c b/testsuite/rsa-sec-decrypt-test.c
+index fb0ed3a1..3419322e 100644
+--- a/testsuite/rsa-sec-decrypt-test.c
++++ b/testsuite/rsa-sec-decrypt-test.c
+@@ -55,6 +55,7 @@ rsa_decrypt_for_test(const struct rsa_public_key *pub,
+ #endif
+ 
+ #define PAYLOAD_SIZE 50
++#define DECRYPTED_SIZE 256
+ void
+ test_main(void)
+ {
+@@ -63,7 +64,7 @@ test_main(void)
+   struct knuth_lfib_ctx random_ctx;
+ 
+   uint8_t plaintext[PAYLOAD_SIZE];
+-  uint8_t decrypted[PAYLOAD_SIZE];
++  uint8_t decrypted[DECRYPTED_SIZE];
+   uint8_t verifybad[PAYLOAD_SIZE];
+   unsigned n_size = 1024;
+   mpz_t gibberish;
+@@ -99,6 +100,20 @@ test_main(void)
+                                     PAYLOAD_SIZE, decrypted, gibberish) == 1);
+       ASSERT (MEMEQ (PAYLOAD_SIZE, plaintext, decrypted));
+ 
++      ASSERT (pub.size > 10);
++      ASSERT (pub.size <= DECRYPTED_SIZE);
++
++      /* Check that too large message length is rejected, largest
++	 valid size is pub.size - 11. */
++      ASSERT (!rsa_decrypt_for_test (&pub, &key, &random_ctx,
++				     (nettle_random_func *) knuth_lfib_random,
++				     pub.size - 10, decrypted, gibberish));
++
++      /* This case used to result in arithmetic underflow and a crash. */
++      ASSERT (!rsa_decrypt_for_test (&pub, &key, &random_ctx,
++				     (nettle_random_func *) knuth_lfib_random,
++				     pub.size, decrypted, gibberish));
++
+       /* bad one */
+       memcpy(decrypted, verifybad, PAYLOAD_SIZE);
+       nettle_mpz_random_size(garbage, &random_ctx,
