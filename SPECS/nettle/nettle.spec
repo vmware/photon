@@ -1,19 +1,26 @@
-Summary:    Low level cryptographic libraries
-Name:       nettle
-Version:    3.7.2
-Release:    1%{?dist}
-License:    LGPLv3+ or GPLv2+
-URL:        http://www.lysator.liu.se/~nisse/nettle/
-Source0:    https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
-%define sha1 nettle=d617fbcf8d301dfd887129c3883629d4d097c579
-Patch0:     Use-EVP_MD_CTX_create.patch
-Group:      Development/Libraries
-Vendor:     VMware, Inc.
+Summary:        Low level cryptographic libraries
+Name:           nettle
+Version:        3.7.2
+Release:        2%{?dist}
+License:        LGPLv3+ or GPLv2+
+URL:            http://www.lysator.liu.se/~nisse/nettle
+Source0:        https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
+%define sha1 %{name}=d617fbcf8d301dfd887129c3883629d4d097c579
+
+Patch0:         Use-EVP_MD_CTX_create.patch
+Patch1:         _pkcs1_sec_decrypt-len-check.patch
+Patch2:         CVE-2021-3580-1.patch
+Patch3:         CVE-2021-3580-2.patch
+
+Group:          Development/Libraries
+Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Provides:   libhogweed.so.6()(64bit)
 Provides:   libhogweed.so.6(HOGWEED_6)(64bit)
 Provides:   libnettle.so.8()(64bit)
 Provides:   libnettle.so.8(NETTLE_8)(64bit)
+
 Requires:   gmp
 
 %description
@@ -41,7 +48,7 @@ developing applications that use nettle.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm %{buildroot}%{_infodir}/*
 
 %check
@@ -62,6 +69,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.7.2-2
+-   Fix CVE-2021-3580
 *   Sat Apr 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.7.2-1
 -   Bump version to 3.7.2 to fix CVE-2021-20305
 *   Thu Oct 17 2019 Shreenidhi Shedi <sshedi@vmware.com> 3.4.1-1
@@ -80,4 +89,3 @@ make %{?_smp_mflags} check
 -   Moving static lib files to devel package.
 *   Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 3.1.1-1
 -   Initial build. First version
-
