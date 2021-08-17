@@ -1,22 +1,24 @@
-Summary:	Low level cryptographic libraries
-Name:		nettle
-Version:	3.7.2
-Release:	1%{?dist}
-License:	LGPLv3+ or GPLv2+
-URL:        http://www.lysator.liu.se/~nisse/nettle/
-Source0: 	https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
-%define sha1 nettle=d617fbcf8d301dfd887129c3883629d4d097c579
-Group: 		Development/Libraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:    Low level cryptographic libraries
+Name:       nettle
+Version:    3.7.3
+Release:    1%{?dist}
+License:    LGPLv3+ or GPLv2+
+URL:        http://www.lysator.liu.se/~nisse/nettle
 
-Provides:	libhogweed.so.6()(64bit)
-Provides:	libhogweed.so.6(HOGWEED_6)(64bit)
+Source0:    https://ftp.gnu.org/gnu/nettle/%{name}-%{version}.tar.gz
+%define sha1 %{name}=9adfadd4ae4104c8aceb38bf16064d65d7edbcce
+
+Group:      Development/Libraries
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
+Provides:   libhogweed.so.6()(64bit)
+Provides:   libhogweed.so.6(HOGWEED_6)(64bit)
 Provides:   libhogweed.so.6(HOGWEED_INTERNAL_6_0)(64bit)
-Provides:	libnettle.so.8()(64bit)
-Provides:	libnettle.so.8(NETTLE_8)(64bit)
+Provides:   libnettle.so.8()(64bit)
+Provides:   libnettle.so.8(NETTLE_8)(64bit)
 Provides:   libnettle.so.8(NETTLE_INTERNAL_8_0)(64bit)
-Requires:	gmp
+Requires:   gmp
 
 %description
 GNettle is a cryptographic library that is designed to fit easily in more
@@ -25,10 +27,10 @@ or less any context: In crypto toolkits for object-oriented languages
 kernel space.
 
 %package devel
-Summary:	Development libraries and header files for nettle
-Requires:	nettle
-Provides:	pkgconfig(hogweed)
-Provides:	pkgconfig(nettle)
+Summary:    Development libraries and header files for nettle
+Requires:   nettle
+Provides:   pkgconfig(hogweed)
+Provides:   pkgconfig(nettle)
 
 %description devel
 The package contains libraries and header files for
@@ -43,15 +45,14 @@ developing applications that use nettle.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm %{buildroot}%{_infodir}/*
 
 %check
 make %{?_smp_mflags} check
 
-%post	-p /sbin/ldconfig
-
-%postun	-p /sbin/ldconfig
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root)
@@ -65,6 +66,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.7.3-1
+-   Bump to version 3.7.3 to fix CVE-2021-3580
 *   Mon Apr 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.7.2-1
 -   Bump version to 3.7.2 to fix CVE-2021-20305
 *   Mon Aug 17 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.6-1

@@ -1,15 +1,19 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.7.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
+
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
 %define sha1    gnutls=5de5d25534ee5910ea9ee6aaeeb6af1af4350c1e
+
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Patch0:         gnutls-3.6.9-default-priority.patch
+
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
 BuildRequires:  libtasn1-devel
@@ -17,6 +21,7 @@ BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  guile-devel
 BuildRequires:  gc-devel
+
 Requires:       nettle
 Requires:       autogen-libopts
 Requires:       libtasn1
@@ -42,8 +47,8 @@ The package contains libraries and header files for
 developing applications that use gnutls.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
+
 %build
 # check for trust store file presence
 [ -f %{_sysconfdir}/pki/tls/certs/ca-bundle.crt ] || exit 1
@@ -58,7 +63,7 @@ developing applications that use gnutls.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm %{buildroot}%{_infodir}/*
 find %{buildroot}%{_libdir} -name '*.la' -delete
 mkdir -p %{buildroot}/etc/%{name}
@@ -69,7 +74,7 @@ EOF
 
 %check
 sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
-make check
+make check %{?_smp_mflags}
 
 %post
 /sbin/ldconfig
@@ -97,6 +102,8 @@ make check
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.7.1-2
+-   Bump version as a part of nettle upgrade
 *   Thu May 20 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.1-1
 -   Update to v3.7.1, Fix CVE-2021-20232
 *   Mon Apr 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.6.15-4
@@ -148,4 +155,3 @@ make check
 -   Removing la files from packages.
 *   Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 3.4.2-1
 -   Initial build. First version
-

@@ -1,17 +1,18 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        4.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
+
 Source0:        http://www.squid-cache.org/Versions/v4/%{name}-%{version}.tar.xz
 %define sha1 squid=4ddc098b5f7c276d19134c7c3b247cdb51d1c88d
 Source1:        squid.sysconfig
 Source2:        squid.pam
-
 Source3:        squid.service
 Source4:        cache_swap.sh
 Source5:        squid.logrotate
+
 Group:          Networking/Web/Proxy
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -55,7 +56,7 @@ lookup program (dnsserver), a program for retrieving FTP data
 (ftpget), and some management and client tools.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %define _confdir %{_sysconfdir}
 %define _squiddatadir /usr/share/squid
@@ -63,56 +64,66 @@ lookup program (dnsserver), a program for retrieving FTP data
 %build
 %define _lto_cflags %{nil}
 
-%configure \
-           --prefix=%{_sysconfdir}/squid \
-           --sysconfdir=%{_confdir}/squid \
-           --libexecdir=%{_libdir}/squid \
-           --datadir=%{_squiddatadir} \
-           --exec_prefix=%{_prefix} \
-           --with-logdir='%{_localstatedir}/log/squid' \
-           --with-pidfile='/run/squid.pid' \
-           --disable-dependency-tracking \
-           --enable-eui \
-           --enable-follow-x-forwarded-for \
-           --enable-auth \
-           --enable-auth-basic="DB,fake,getpwnam,LDAP,NCSA,PAM,POP3,RADIUS,SASL,SMB,SMB_LM" \
-           --enable-auth-ntlm="SMB_LM,fake" \
-           --enable-auth-digest="file,LDAP" \
-           --enable-external-acl-helpers="LDAP_group,unix_group,wbinfo_group" \
-           --enable-cache-digests \
-           --enable-cachemgr-hostname=localhost \
-           --enable-delay-pools \
-           --enable-epoll \
-           --enable-ecap \
-           --enable-icap-client \
-           --enable-ident-lookups \
-           --enable-linux-netfilter \
-           --enable-removal-policies="heap,lru" \
-           --enable-ssl \
-           --enable-ssl-crtd \
-           --enable-diskio \
-           --enable-wccpv2 \
-           --enable-esi \
-           --with-aio \
-           --with-default-user="squid" \
-           --with-dl \
-           --with-openssl \
-           --with-pthreads \
-           --without-mit-krb5 \
-           --without-heimdal-krb5 \
-           --disable-arch-native \
-           --disable-security-cert-validators \
-           --disable-strict-error-checking \
-           --with-swapdir=%{_localstatedir}/spool/squid
+sh ./configure --host=%{_host} --build=%{_build} \
+      --program-prefix= \
+      --disable-dependency-tracking \
+      --bindir=%{_bindir} \
+      --sbindir=%{_sbindir} \
+      --includedir=%{_includedir} \
+      --libdir=%{_libdir} \
+      --localstatedir=%{_localstatedir} \
+      --sharedstatedir=%{_sharedstatedir} \
+      --mandir=%{_mandir} \
+      --infodir=%{_infodir} \
+      --prefix=%{_sysconfdir}/squid \
+      --sysconfdir=%{_confdir}/squid \
+      --libexecdir=%{_libdir}/squid \
+      --datadir=%{_squiddatadir} \
+      --exec-prefix=%{_prefix} \
+      --with-logdir='%{_localstatedir}/log/squid' \
+      --with-pidfile='/run/squid.pid' \
+      --disable-dependency-tracking \
+      --enable-eui \
+      --enable-follow-x-forwarded-for \
+      --enable-auth \
+      --enable-auth-basic="DB,fake,getpwnam,LDAP,NCSA,PAM,POP3,RADIUS,SASL,SMB,SMB_LM" \
+      --enable-auth-ntlm="SMB_LM,fake" \
+      --enable-auth-digest="file,LDAP" \
+      --enable-external-acl-helpers="LDAP_group,unix_group,wbinfo_group" \
+      --enable-cache-digests \
+      --enable-cachemgr-hostname=localhost \
+      --enable-delay-pools \
+      --enable-epoll \
+      --enable-ecap \
+      --enable-icap-client \
+      --enable-ident-lookups \
+      --enable-linux-netfilter \
+      --enable-removal-policies="heap,lru" \
+      --enable-ssl \
+      --enable-ssl-crtd \
+      --enable-diskio \
+      --enable-wccpv2 \
+      --enable-esi \
+      --with-aio \
+      --with-default-user="squid" \
+      --with-dl \
+      --with-openssl \
+      --with-pthreads \
+      --without-mit-krb5 \
+      --without-heimdal-krb5 \
+      --disable-arch-native \
+      --disable-security-cert-validators \
+      --disable-strict-error-checking \
+      --with-swapdir=%{_localstatedir}/spool/squid
 
 mkdir -p src/icmp/tests
 mkdir -p tools/squidclient/tests
 mkdir -p tools/tests
 
-make %{?_smp_flags} DEFAULT_SWAP_DIR=%{_localstatedir}/spool/squid
+make %{?_smp_mflags} DEFAULT_SWAP_DIR=%{_localstatedir}/spool/squid
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 mkdir -p %{buildroot}%{_sysconfdir}/squid
 mkdir -p %{buildroot}%{_sysconfdir}/logrotate.d
@@ -202,6 +213,8 @@ done
 %systemd_postun_with_restart squid.service
 
 %changelog
+* Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16-2
+- Bump version as a part of nettle upgrade
 * Mon Jul 19 2021 Susant Sahani <ssahani@vmware.com> 4.16-1
 - Version update and fix CVE-2021-31806, CVE-2021-33620,
 - CVE-2021-28651, CVE-2021-28662, CVE-2021-31807, CVE-2021-28652,

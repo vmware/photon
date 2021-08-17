@@ -1,20 +1,22 @@
 Summary:    Glib networking modules
 Name:       glib-networking
 Version:    2.66.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/glib-networking
 Group:      System Environment/Development
 Vendor:     VMware, Inc.
 Distribution:   Photon
+
 Source0:    http://ftp.gnome.org/pub/GNOME/sources/glib-networking/2.50/%{name}-%{version}.tar.xz
-%define sha1 glib-networking=1843ede2d02e5f90fca0cf05792122345340e055
-BuildRequires:	nettle-devel
-BuildRequires:	autogen-libopts-devel
-BuildRequires:	libtasn1-devel
-BuildRequires:	ca-certificates
+%define sha1 %{name}=1843ede2d02e5f90fca0cf05792122345340e055
+
+BuildRequires:  nettle-devel
+BuildRequires:  autogen-libopts-devel
+BuildRequires:  libtasn1-devel
+BuildRequires:  ca-certificates
 BuildRequires:  gnutls-devel
-BuildRequires:	openssl-devel
+BuildRequires:  openssl-devel
 BuildRequires:  intltool
 BuildRequires:  glib
 BuildRequires:  glib-devel
@@ -22,32 +24,32 @@ BuildRequires:  glib-schemas
 BuildRequires:  meson
 BuildRequires:  gnome-common
 BuildRequires:  ninja-build
-Requires:	nettle
-Requires:	gnutls
-Requires:	libtasn1
-Requires:	openssl
-Requires:	ca-certificates
+
+Requires:   nettle
+Requires:   gnutls
+Requires:   libtasn1
+Requires:   openssl
+Requires:   ca-certificates
 
 %description
 Glib-netowkring contains networking related gio modules for Glib.
 
-%package lang
-Summary: Additional language files for glib-networking
-Group: System Environment/Development
-Requires: glib-networking
+%package    lang
+Summary:    Additional language files for glib-networking
+Group:      System Environment/Development
+Requires:   glib-networking
 %description lang
 These are the additional language files of glib-networking.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-mkdir build &&
-cd    build &&
-meson --prefix=/usr            \
+mkdir build && cd build && \
+meson --prefix=%{_prefix} \
       -Dlibproxy_support=false \
       -Dgnome_proxy_support=false \
-      -Dpkcs11_support=false .. &&
+      -Dpkcs11_support=false .. && \
 ninja
 
 %install
@@ -70,6 +72,8 @@ ninja test
 %defattr(-,root,root)
 
 %changelog
+*   Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.66.0-3
+-   Bump version as a part of nettle upgrade
 *   Mon Apr 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.66.0-2
 -   Bump version as a part of nettle upgrade
 *   Tue Sep 29 2020 Gerrit Photon <photon-checkins@vmware.com> 2.66.0-1
