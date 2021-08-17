@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.198
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -399,6 +399,9 @@ Patch497:        x86-sev-es-Handle-string-port-IO-to-kernel-memory-properly.patc
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch500:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
+# Add PCI quirk to allow multiple devices under the same virtual PCI bridge
+# to be put into separate IOMMU groups on ESXi.
+Patch501:       0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
 #Patches for i40e driver
 Patch1500:      0001-Add-support-for-gettimex64-interface.patch
@@ -863,6 +866,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch497 -p1
 
 %patch500 -p1
+%patch501 -p1
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -1240,6 +1244,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Tue Aug 24 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.198-4
+-   Add PCI quirk to allow multiple devices under the same virtual
+-   PCI bridge to be put into separate IOMMU groups.
 *   Wed Aug 18 2021 Keerthana K <keerthanak@vmware.com> 4.19.198-3
 -   Update ice driver to v1.6.4
 -   Update i40e driver to v2.15.9

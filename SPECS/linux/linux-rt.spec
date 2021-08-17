@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.198
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt85
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -108,6 +108,9 @@ Patch94:        0004-ptp-uapi-change-_IOW-to-IOWR-in-PTP_SYS_OFFSET_EXTEN.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch100:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
+# Add PCI quirk to allow multiple devices under the same virtual PCI bridge
+# to be put into separate IOMMU groups on ESXi.
+Patch101:       0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/4.19/
@@ -605,6 +608,7 @@ The Linux package contains the Linux kernel doc files
 %patch94 -p1
 
 %patch100 -p1
+%patch101 -p1
 
 %patch201 -p1
 %patch202 -p1
@@ -1166,6 +1170,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Aug 24 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.198-4
+-   Add PCI quirk to allow multiple devices under the same virtual
+-   PCI bridge to be put into separate IOMMU groups.
 *   Wed Aug 18 2021 Keerthana K <keerthanak@vmware.com> 4.19.198-3
 -   Update ice driver to v1.6.4
 -   Update i40e driver to v2.15.9
