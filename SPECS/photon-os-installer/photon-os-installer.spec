@@ -2,19 +2,22 @@
 Summary:    Photon OS Installer
 Name:       photon-os-installer
 Version:    1.0
-Release:    6%{?dist}
+Release:    7%{?dist}
 License:    Apache 2.0 and GPL 2.0
 Group:      System Environment/Base
+Vendor:     VMware, Inc.
+Distribution:   Photon
 URL:        https://github.com/vmware/photon-os-installer
 Source0:    %{name}-%{version}.tar.gz
+%define sha1 %{name}=cc86d22b7ef8495164fec1fb7d96bb97a2fb82c6
 Patch0:     support_insecure_installation.patch
 Patch1:     insecure_randomness.patch
 Patch2:     list_block_devices.patch
 Patch3:     releasever_tdnf_install.patch
 Patch4:     0001-ostree-release-repo-Point-to-4.0.patch
-Vendor:     VMware, Inc.
-Distribution:   Photon
-%define sha1 %{name}=cc86d22b7ef8495164fec1fb7d96bb97a2fb82c6
+Patch5:     ostreeserverselector.patch
+Patch6:     add_version_with_git_commit_hash.patch
+Patch7:     ITS_terminology_fix.patch
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
 BuildRequires: python3-requests
@@ -27,12 +30,7 @@ Requires:      glibc
 This is to create rpm for installer code
 
 %prep
-%setup -n %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
+%autosetup -p1
 
 %build
 pyinstaller --onefile photon-installer.spec
@@ -42,13 +40,16 @@ mkdir -p %{buildroot}%{_bindir}
 cp dist/photon-installer %{buildroot}%{_bindir}
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
 %{_bindir}/photon-installer
 
 %changelog
+*   Tue Aug 17 2021 Piyush Gupta <gpiyush@vmware.com> 1.0-7
+-   Fix <Go Back> option in ostree server selector screen.
+-   Patch to add git commit hash along with version.
 *   Tue Feb 23 2021 Ankit Jain <ankitja@vmware.com> 1.0-6
 -   Update ostree release repo, point to 4.0
 *   Tue Feb 23 2021 Piyush Gupta <gpiyush@vmware.com> 1.0-5

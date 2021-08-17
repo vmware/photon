@@ -1,0 +1,29 @@
+From 871dc56f205b68488dc85ca7613356225c87239d Mon Sep 17 00:00:00 2001
+From: Piyush Gupta <gpiyush@vmware.com>
+Date: Tue, 17 Aug 2021 11:07:12 +0000
+Subject: [PATCH] ostreeserverselector.py: Allow <Go Back> option while
+ selecting menu items.
+
+Change-Id: I25a4201fc0b29dcf0b54d168fff51d017da246c4
+---
+ photon_installer/ostreeserverselector.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/photon_installer/ostreeserverselector.py b/photon_installer/ostreeserverselector.py
+index cb9bb3d..d86b470 100644
+--- a/photon_installer/ostreeserverselector.py
++++ b/photon_installer/ostreeserverselector.py
+@@ -31,8 +31,8 @@ class OSTreeServerSelector(object):
+                                         ("Custom RPM-OSTree Server", self.set_default_repo_installation, False)
+                                     ]
+ 
+-        host_menu = Menu(menu_starty,  maxx, ostree_host_menu_items)
+-        self.window = Window(win_height, win_width, maxy, maxx, 'Select OSTree Server', True, host_menu)
++        host_menu = Menu(menu_starty,  maxx, ostree_host_menu_items, default_selected=0, tab_enable=False)
++        self.window = Window(win_height, win_width, maxy, maxx, 'Select OSTree Server', True, host_menu, can_go_next=True)
+ 
+     def set_default_repo_installation(self,  is_default_repo ):
+         self.install_config['ostree']['default_repo'] = is_default_repo
+-- 
+2.23.3
+

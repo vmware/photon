@@ -1,0 +1,129 @@
+From 198c831161fab32b598491a6e9e9a7f9039d274f Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Mon, 26 Jul 2021 15:53:04 +0530
+Subject: [PATCH 2/3] Add version to installer with git commit hash info
+
+This info will help to check for installer updates in Photon builder.
+
+Change-Id: I24bd6d9039578d9e959c3e0a622d0ff8c9b0e08c
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ photon_installer/__init__.py | 18 ++++++++-----
+ setup.py                     | 13 +++++----
+ version.py                   | 52 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 72 insertions(+), 11 deletions(-)
+ create mode 100644 version.py
+
+diff --git a/photon_installer/__init__.py b/photon_installer/__init__.py
+index 29b84ee..35d9880 100644
+--- a/photon_installer/__init__.py
++++ b/photon_installer/__init__.py
+@@ -1,10 +1,16 @@
+-#/*
+-# * Copyright © 2020 VMware, Inc.
+-# * SPDX-License-Identifier: Apache-2.0 OR GPL-2.0-only
+-# */
+-from os.path import dirname, basename, isfile, join
+-import glob
++#
++# Copyright © 2020-2021 VMware, Inc.
++# SPDX-License-Identifier: Apache-2.0 OR GPL-2.0-only
++#
++
+ import sys
++import glob
++import pkg_resources
++from os.path import dirname, basename, isfile, join
++
++
+ modules = glob.glob(join(dirname(__file__), "*.py"))
+ __all__ = [ basename(f)[:-3] for f in modules if isfile(f) and not f.endswith('__init__.py')]
+ sys.path.append(dirname(__file__))
++
++__version__ = pkg_resources.get_distribution(__name__).version
+diff --git a/setup.py b/setup.py
+index cbf44f7..ccaabc3 100644
+--- a/setup.py
++++ b/setup.py
+@@ -1,12 +1,15 @@
+-#/*
+-# * Copyright © 2020 VMware, Inc.
+-# * SPDX-License-Identifier: Apache-2.0 OR GPL-2.0-only
+-# */
++#
++# Copyright © 2020-2021 VMware, Inc.
++# SPDX-License-Identifier: Apache-2.0 OR GPL-2.0-only
++#
++
++from version import get_installer_version
+ from setuptools import setup, find_packages
+ 
++
+ setup(name='photon-installer',
+-      version='4.0',
+       description='Installer code for photon',
+       packages=find_packages(include=['photon_installer', 'photon_installer.modules']),
+       include_package_data=True,
++      version='1.0+'+get_installer_version(),
+       author_email='gpiyush@vmware.com')
+diff --git a/version.py b/version.py
+new file mode 100644
+index 0000000..91b0241
+--- /dev/null
++++ b/version.py
+@@ -0,0 +1,52 @@
++#!/usr/bin/env python3
++
++#
++# Copyright © 2020-2021 VMware, Inc.
++# SPDX-License-Identifier: Apache-2.0 OR GPL-2.0-only
++#
++
++__all__ = ('get_installer_version')
++
++import os
++from subprocess import Popen, PIPE
++from subprocess import call, STDOUT
++
++def get_version():
++    try:
++        p = Popen(['git', 'rev-parse', '--short', 'HEAD'],
++                  stdout=PIPE, stderr=PIPE)
++        p.stderr.close()
++        line = p.stdout.readlines()[0].decode()
++        return line.strip()
++    except:
++        raise ValueError('Cannot get the version number!')
++
++
++def is_dirty():
++    try:
++        p = Popen(['git', 'diff-index', '--name-only', 'HEAD'],
++                  stdout=PIPE, stderr=PIPE)
++        p.stderr.close()
++        lines = p.stdout.readlines()
++        return len(lines) > 0
++    except:
++        return False
++
++
++def get_installer_version():
++    # if not a git repo, return empty string
++    if call(['git', 'branch'], stderr=STDOUT, stdout=open(os.devnull, 'w')):
++        return ''
++
++    version = get_version()
++    if not version:
++        raise ValueError("Cannot get the version number!")
++
++    if is_dirty():
++        version += '.dirty'
++
++    return version
++
++
++if __name__ == '__main__':
++    print(get_installer_version())
+-- 
+2.23.3
+

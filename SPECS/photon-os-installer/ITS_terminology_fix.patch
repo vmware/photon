@@ -1,0 +1,77 @@
+From 2ede1cc74c74f3465b5e0d42349980a5719def9d Mon Sep 17 00:00:00 2001
+From: Piyush Gupta <gpiyush@vmware.com>
+Date: Mon, 26 Jul 2021 14:23:41 +0000
+Subject: [PATCH 3/3] ITS: Fixed terminologies as suggested by ITS scanner.
+
+Replaced disable with deactivate.
+
+Change-Id: Iafe0dbad5ea1bbef779be61d5109dc3590c05972
+---
+ photon_installer/installer.py     | 8 ++++----
+ photon_installer/ks_config.txt    | 2 +-
+ photon_installer/mk-setup-grub.sh | 2 +-
+ 3 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/photon_installer/installer.py b/photon_installer/installer.py
+index 686d5e2..aea95aa 100755
+--- a/photon_installer/installer.py
++++ b/photon_installer/installer.py
+@@ -403,7 +403,7 @@ class Installer(object):
+             self._setup_grub()
+             self._create_fstab()
+         self._execute_modules(modules.commons.POST_INSTALL)
+-        self._disable_network_in_chroot()
++        self._deactivate_network_in_chroot()
+         self._unmount_all()
+ 
+     def exit_gracefully(self, signal1=None, frame1=None):
+@@ -801,7 +801,7 @@ class Installer(object):
+                 self.logger.error('Error importing module {}'.format(module))
+                 continue
+ 
+-            # the module default is disabled
++            # the module default is deactivate
+             if not hasattr(mod, 'enabled') or mod.enabled is False:
+                 self.logger.info("module {} is not enabled".format(module))
+                 continue
+@@ -983,9 +983,9 @@ class Installer(object):
+         if os.path.exists("/etc/resolv.conf"):
+             shutil.copy("/etc/resolv.conf", self.photon_root + '/etc/.')
+ 
+-    def _disable_network_in_chroot(self):
++    def _deactivate_network_in_chroot(self):
+         """
+-        disable network in chroot
++        deactivate network in chroot
+         """
+         if os.path.exists(self.photon_root + '/etc/resolv.conf'):
+             os.remove(self.photon_root + '/etc/resolv.conf')
+diff --git a/photon_installer/ks_config.txt b/photon_installer/ks_config.txt
+index b7ed03b..c16f788 100644
+--- a/photon_installer/ks_config.txt
++++ b/photon_installer/ks_config.txt
+@@ -56,7 +56,7 @@ Kickstart config file is a json format with following possible parameters:
+ 
+ "insecure_installation" (optional)
+ 	Allow untrusted(selfsigned) https in kickstart iso and
+-	disable ssl cert verification in repo for rpms installation.
++	deactivate ssl cert verification in repo for rpms installation.
+ 	Boolean: true or false
+ 	Default value: false
+ 	Example: { "insecure_installation": false }
+diff --git a/photon_installer/mk-setup-grub.sh b/photon_installer/mk-setup-grub.sh
+index e3a1bd5..1926505 100755
+--- a/photon_installer/mk-setup-grub.sh
++++ b/photon_installer/mk-setup-grub.sh
+@@ -6,7 +6,7 @@
+ 
+ set -o errexit        # exit if error...insurance ;)
+ set -o nounset        # exit if variable not initalized
+-set +h            # disable hashall
++set +h            # deactivate hashall
+ set -x
+ SCRIPT_PATH=$(dirname $(realpath -s $0))
+ 
+-- 
+2.23.3
+
