@@ -1,6 +1,6 @@
 Name:           chrony
 Version:        4.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        An NTP client/server
 License:        GPLv2
 Vendor:         VMware, Inc.
@@ -8,7 +8,7 @@ Distribution:   Photon
 Group:          System Environment/NetworkingPrograms
 URL:            https://chrony.tuxfamily.org
 Source0:        https://download.tuxfamily.org/chrony/chrony-%{version}.tar.gz
-%define sha1    chrony=628340e7ff3311ea5b5a6198bacde2a8b05b6ae4
+%define sha1    %{name}=628340e7ff3311ea5b5a6198bacde2a8b05b6ae4
 
 BuildRequires:  systemd
 BuildRequires:  libcap-devel
@@ -27,7 +27,7 @@ can also operate as an NTPv4 (RFC 5905) server and peer to provide a time
 service to other computers in the network.
 
 %prep
-%autosetup
+%autosetup -p1
 
 cp examples/chrony.conf.example2 chrony.conf
 
@@ -39,7 +39,8 @@ rm -f getdate.c
         --enable-ntp-signd \
         --enable-scfilter \
         --docdir=%{_docdir} \
-        --with-ntp-era=$(date -d '1970-01-01 00:00:00+00:00' +'%s') \
+        --with-ntp-era=$(date -d '1970-01-01 00:00:00+00:00' +'%s')
+
 make %{?_smp_mflags}
 
 %install
@@ -104,6 +105,8 @@ make quickcheck %{?_smp_mflags}
 %dir %attr(-,root,root) %{_localstatedir}/log/chrony
 
 %changelog
+*  Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.0-4
+-  Bump version as a part of nettle upgrade
 *  Wed Jul 07 2021 Tapas Kundu <tkundu@vmware.com> 4.0-3
 -  Added requires
 *  Thu Nov 19 2020 Piyush Gupta <gpiyush@vmware.com> 4.0-2

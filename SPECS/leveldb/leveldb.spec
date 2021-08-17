@@ -1,14 +1,16 @@
 Summary:        A fast and lightweight key/value database library by Google
 Name:           leveldb
 Version:        1.23
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://github.com/google/leveldb
-Source0:        https://github.com/google/leveldb/archive/v%{version}/%{name}-%{version}.tar.gz
-%define sha1    leveldb=042e267eae6ab522fe29274f79ad45cde3977655
 Group:          Development/Libraries/C and C++
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://github.com/google/leveldb/archive/v%{version}/%{name}-%{version}.tar.gz
+%define sha1    %{name}=042e267eae6ab522fe29274f79ad45cde3977655
+
 BuildRequires:  git
 BuildRequires:  cmake
 BuildRequires:  gcc
@@ -40,21 +42,16 @@ Version: %{version}
 Libs: -l%{name}
 EOF
 
-# clone googletest and benchmark which are in .gitmodules
-cd third_party/benchmark
-git clone https://github.com/google/benchmark .
-cd ../googletest/
-git clone https://github.com/google/googletest.git .
-
 %build
-%cmake .
+%cmake -DLEVELDB_BUILD_TESTS:BOOL=OFF \
+       -DLEVELDB_BUILD_BENCHMARKS:BOOL=OFF
 %make_build
 
 %install
 %make_install
+
 mkdir -p %{buildroot}%{_libdir}/pkgconfig
 cp -a %{name}.pc %{buildroot}%{_libdir}/pkgconfig/
-rm -rf %{buildroot}/%{_libdir}/cmake
 
 %check
 ctest -V %{?_smp_mflags}
@@ -62,33 +59,20 @@ ctest -V %{?_smp_mflags}
 %ldconfig_scriptlets
 
 %files
-%defattr(-,root,root)
 %license LICENSE
+%doc AUTHORS README.md NEWS
 %{_libdir}/lib%{name}.so.*
-%{_libdir}/libbenchmark.so.*
-%{_libdir}/libgmock.so.*
-%{_libdir}/libgmock_main.so.*
-%{_libdir}/libbenchmark_main.so.*
-%{_libdir}/libgtest.so.*
-%{_libdir}/libgtest_main.so.*
 
 %files devel
-%defattr(-,root,root)
-%doc doc/
+%doc doc/ CONTRIBUTING.md TODO
 %{_includedir}/%{name}/
-%{_includedir}/benchmark/
-%{_includedir}/gmock/
-%{_includedir}/gtest/
 %{_libdir}/lib%{name}.so
-%{_libdir}/libbenchmark.so
-%{_libdir}/libgmock.so
-%{_libdir}/libgmock_main.so
-%{_libdir}/libbenchmark_main.so
-%{_libdir}/libgtest.so
-%{_libdir}/libgtest_main.so
-%{_libdir}/pkgconfig/*.pc
+%{_libdir}/pkgconfig/%{name}.pc
+%{_libdir}/cmake/%{name}/
 
 %changelog
+*   Wed Aug 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.23-2
+-   Remove test suite and benchmark related files
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 1.23-1
 -   Automatic Version Bump
 *   Wed Jul 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.22-1

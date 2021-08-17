@@ -1,16 +1,20 @@
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
 Version:        2.85
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            http://www.thekelleys.org.uk/dnsmasq/
-Source:         %{name}-%{version}.tar.xz
-%define sha1    dnsmasq=256ec628587ab2b20bba3fc2773046dab8f2874c
+Source0:        %{name}-%{version}.tar.xz
+%define sha1    %{name}=256ec628587ab2b20bba3fc2773046dab8f2874c
+
 Patch0:         enable_dnssec.patch
+
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 BuildRequires:  nettle-devel
+
 Requires:       nettle
 
 %description
@@ -23,7 +27,7 @@ Summary:        Utilities for changing DHCP server leases
 Utilities that use DHCP protocol to query and remove a DHCP server's leases
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 make %{?_smp_mflags}
@@ -92,6 +96,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+*   Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.85-2
+-   Bump version as a part of nettle upgrade
 *   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 2.85-1
 -   Automatic Version Bump
 *   Thu Feb 04 2021 Ankit Jain <ankitja@vmware.com> 2.84-1

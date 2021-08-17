@@ -1,7 +1,7 @@
 Summary:        The GnuTLS Transport Layer Security Library
 Name:           gnutls
 Version:        3.7.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
 Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
@@ -9,6 +9,7 @@ Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel
 BuildRequires:  libtasn1-devel
@@ -16,6 +17,7 @@ BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  guile-devel
 BuildRequires:  gc-devel
+
 Requires:       nettle
 Requires:       autogen-libopts
 Requires:       libtasn1
@@ -41,7 +43,7 @@ The package contains libraries and header files for
 developing applications that use gnutls.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 # check for trust store file presence
@@ -52,10 +54,11 @@ developing applications that use gnutls.
     --with-included-unistring \
     --with-system-priority-file=%{_sysconfdir}/gnutls/default-priorities \
     --with-default-trust-store-file=%{_sysconfdir}/pki/tls/certs/ca-bundle.crt
+
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm %{buildroot}%{_infodir}/*
 find %{buildroot}%{_libdir} -name '*.la' -delete
 mkdir -p %{buildroot}/etc/%{name}
@@ -66,7 +69,7 @@ EOF
 
 %check
 sed -i 's/&&/||/' ./tests/system-override-default-priority-string.sh
-make check
+make check %{?_smp_mflags}
 
 %post
 /sbin/ldconfig
@@ -94,6 +97,8 @@ make check
 %{_mandir}/man3/*
 
 %changelog
+*   Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.7.1-3
+-   Bump version as a part of nettle upgrade
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.7.1-2
 -   Update gnutls with guile 2.2.7
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.7.1-1
