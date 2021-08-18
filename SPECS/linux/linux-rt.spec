@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.198
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt85
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -20,15 +20,15 @@ Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
 Source5:        check_for_config_applicability.inc
-%define i40e_version 2.13.10
+%define i40e_version 2.15.9
 Source6:	https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha1 i40e=126bfdabd708033b38840e49762d7ec3e64bbc96
-%define iavf_version 4.0.2
+%define sha1 i40e=ec8b4794cea15bb3162a74ef3bfe35f2fd08a036
+%define iavf_version 4.2.7
 Source8:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha1 iavf=a53cb104a3b04cbfbec417f7cadda6fddf51b266
-%define ice_version 1.3.2
+%define sha1 iavf=5b0f144a60bdfcc5928f78691dc42cb85c2ed734
+%define ice_version 1.6.4
 Source9:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha1 ice=19507794824da33827756389ac8018aa84e9c427
+%define sha1 ice=9e860bf3cafcabd1d4897e87e749334f73828bad
 
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
@@ -495,7 +495,10 @@ Patch1000:       fips-kat-tests.patch
 Patch1500:      0001-Add-support-for-gettimex64-interface.patch
 
 #Patches for ice driver
-Patch1510:      0001-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1510:      0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+
+#Patches for iavf driver
+Patch1511:      0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 
 BuildArch:      x86_64
 
@@ -537,10 +540,14 @@ Requires:       python3
 The Linux package contains the Linux kernel doc files
 
 %prep
+# Using autosetup is not feasible
 %setup -q -n linux-%{version}
 %ifarch x86_64
+# Using autosetup is not feasible
 %setup -D -b 6 -n linux-%{version}
+# Using autosetup is not feasible
 %setup -D -b 8 -n linux-%{version}
+# Using autosetup is not feasible
 %setup -D -b 9 -n linux-%{version}
 %endif
 
@@ -977,7 +984,13 @@ pushd ../ice-%{ice_version}
 %patch1510 -p1
 popd
 
+#Patches for iavf driver
+pushd ../iavf-%{iavf_version}
+%patch1511 -p1
+popd
+
 %build
+# make doesn't support _smp_mflags
 make mrproper
 
 %ifarch x86_64
@@ -996,6 +1009,7 @@ make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=$
 # build i40e module
 bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
+# make doesn't support _smp_mflags
 make -C src KSRC=$bldroot clean
 make -C src KSRC=$bldroot %{?_smp_mflags}
 popd
@@ -1003,6 +1017,7 @@ popd
 # build iavf module
 bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
+# make doesn't support _smp_mflags
 make -C src KSRC=$bldroot clean
 make -C src KSRC=$bldroot %{?_smp_mflags}
 popd
@@ -1010,6 +1025,7 @@ popd
 # build ice module
 bldroot=`pwd`
 pushd ../ice-%{ice_version}
+# make doesn't support _smp_mflags
 make -C src KSRC=$bldroot clean
 make -C src KSRC=$bldroot %{?_smp_mflags}
 popd
@@ -1042,26 +1058,26 @@ install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_defaultdocdir}/%{name}-%{uname_r}
 install -vdm 755 %{buildroot}/usr/src/%{name}-headers-%{uname_r}
 install -vdm 755 %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}
-make INSTALL_MOD_PATH=%{buildroot} modules_install
+make INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
 
 %ifarch x86_64
 
 # install i40e module
 bldroot=`pwd`
 pushd ../i40e-%{i40e_version}
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
 popd
 
 # install iavf module
 bldroot=`pwd`
 pushd ../iavf-%{iavf_version}
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
 popd
 
 # install ice module
 bldroot=`pwd`
 pushd ../ice-%{ice_version}
-make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
 popd
 
 # Verify for build-id match
@@ -1150,6 +1166,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Aug 18 2021 Keerthana K <keerthanak@vmware.com> 4.19.198-3
+-   Update ice driver to v1.6.4
+-   Update i40e driver to v2.15.9
+-   Update iavf driver to v4.2.7
 *   Mon Aug 16 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.198-2
 -   Allow PCI resets disablement from vfio_pci
 *   Tue Jul 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.198-1

@@ -1,18 +1,18 @@
-From 49215085c6144fec9f84d0f12a1b7ed26d362a45 Mon Sep 17 00:00:00 2001
-From: Ankit Jain <ankitja@vmware.com>
-Date: Mon, 1 Feb 2021 13:45:41 +0000
-Subject: [PATCH] Use PTP_SYS_OFFSET_EXTENDED_IOCTL support
+From 71ec7473677ad1ba4812d781e431de64723e5c84 Mon Sep 17 00:00:00 2001
+From: Keerthana K <keerthanak@vmware.com>
+Date: Wed, 18 Aug 2021 08:18:02 +0000
+Subject: [PATCH] iavf: Use PTP_SYS_OFFSET_EXTENDED_IOCTL support
 
-Signed-off-by: Ankit Jain <ankitja@vmware.com>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
  src/kcompat.h | 22 ----------------------
  1 file changed, 22 deletions(-)
 
 diff --git a/src/kcompat.h b/src/kcompat.h
-index a27dc2b..f25f388 100644
+index 25d4f0f..1830d43 100644
 --- a/src/kcompat.h
 +++ b/src/kcompat.h
-@@ -3144,29 +3144,7 @@ _kc_dev_change_flags(struct net_device *netdev, unsigned int flags,
+@@ -6785,30 +6785,8 @@ _kc_dev_change_flags(struct net_device *netdev, unsigned int flags,
  
  #define dev_change_flags _kc_dev_change_flags
  #endif /* !(RHEL_RELEASE_CODE && RHEL > RHEL(8,0)) */
@@ -21,6 +21,7 @@ index a27dc2b..f25f388 100644
 -      RHEL_RELEASE_CODE < RHEL_RELEASE_VERSION(8,0)) || \
 -     (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,1)))
  #define HAVE_PTP_SYS_OFFSET_EXTENDED_IOCTL
+ #define HAVE_PTP_CLOCK_INFO_GETTIMEX64
 -#else /* RHEL >= 7.7 && RHEL < 8.0 || RHEL >= 8.1 */
 -struct ptp_system_timestamp {
 -	struct timespec64 pre_ts;
@@ -43,5 +44,5 @@ index a27dc2b..f25f388 100644
  #define HAVE_NDO_BRIDGE_SETLINK_EXTACK
  #endif /* RHEL 8.1 */
 -- 
-2.23.1
+2.28.0
 
