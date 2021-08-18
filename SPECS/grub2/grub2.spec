@@ -4,7 +4,7 @@
 Summary:    GRand Unified Bootloader
 Name:       grub2
 Version:    2.06
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv3+
 URL:        http://www.gnu.org/software/grub
 Group:      Applications/System
@@ -194,6 +194,9 @@ EOF
 %{_datarootdir}/locale/*
 
 %changelog
+*   Wed Aug 18 2021 Ankit Jain <ankitja@vmware.com> 2.06-2
+-   Remove prompt message for default -o option
+-   in grub2-mkconfig
 *   Wed Jun 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.06-1
 -   Upgrade to version 2.06
 *   Wed Apr 28 2021 Alexey Makhalov <amakhalov@vmware.com> 2.06~rc1-2
