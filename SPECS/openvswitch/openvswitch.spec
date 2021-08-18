@@ -3,7 +3,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.12.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -14,6 +14,7 @@ Source0:        http://openvswitch.org/releases/%{name}-%{version}.tar.gz
 %define sha1 openvswitch=3ee6da7f52aeaad78b816ec6d61f7e7f163902fd
 Patch0:         openvswitch-CVE-2020-35498.patch
 Patch1:         openvswitch-CVE-2020-27827.patch
+Patch2:         openvswitch-CVE-2021-36980.patch
 
 BuildRequires:  gcc >= 4.0.0
 BuildRequires:  libcap-ng
@@ -113,14 +114,15 @@ Requires:       ovn-common = %{version}-%{release}
 It contains the documentation and manpages for OVN.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
+# AM_INIT_AUTOMAKE macro was generated using automake 1.15.1 and we are using
+# different version of automake, thus, aclocal.m4 needs to be recreated
+%{__aclocal}
+%{__autoconf}
 
 %build
 export PYTHON2=no
 %configure --enable-ssl --enable-shared
-
 make %{_smp_mflags}
 
 %install
@@ -267,6 +269,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man8/ovn-trace.8.gz
 
 %changelog
+*   Tue Aug 17 2021 Dweep Advani <dadvani@vmware.com> 2.12.0-5
+-   Patched for CVE-2021-36980
 *   Thu Apr 01 2021 Dweep Advani <dadvani@vmware.com> 2.12.0-4
 -   Patched for CVE-2020-27827
 *   Thu Feb 25 2021 Dweep Advani <dadvani@vmware.com> 2.12.0-3
