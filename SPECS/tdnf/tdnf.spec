@@ -2,7 +2,7 @@
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.1.0
+Version:        3.1.4
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,9 +10,7 @@ License:        LGPLv2.1,GPLv2
 URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=46a52792eeeffe3f7e353fa963ab108b09856e8d
-
-Patch0:         fix-segfaulting-when-gpgcheck-is-enabled.patch
+%define sha1    %{name}=ac85ed7b6547005aad6055aad83268dbd1ad5793
 
 Requires:       rpm-libs
 Requires:       curl-libs
@@ -144,7 +142,6 @@ elif [ $1 -eq 2 ]; then
     systemctl daemon-reload >/dev/null 2>&1 || :
 fi
 
-
 # Pre-uninstall
 %preun
 
@@ -249,6 +246,12 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
 
 %changelog
+*   Wed Aug 18 2021 Oliver Kurth <okurth@vmware.com> 3.1.4-1
+-   update to 3.1.4
+-   fix configreader key reading logic
+-   set repo expiry to two days
+-   do not refresh metadata twice when installing with the --refresh option
+-   do not fail if tdnf list <scope> returns empty (issue #94)
 *   Wed Jun 09 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.1.0-1
 -   Bump version to 3.1.0
 -   fix segfaulting when gpgcheck is enabled & no key configured
@@ -365,4 +368,3 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 -   Proxy support, keepcache fix, valgrind leaks fix
 *   Fri Jan 23 2015 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0
 -   Initial build.  First version
-
