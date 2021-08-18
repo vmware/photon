@@ -69,7 +69,7 @@ class ErrorDict:
         print('\n')
 
 
-def check_spec_header(spec, err):
+def check_spec_header(spec, err_dict):
     ret = False
     sec = 'hdr_check'
 
@@ -97,13 +97,13 @@ def check_spec_header(spec, err):
 
         if err_msg:
             ret = True
-            err.update_err_dict(sec, err_msg)
+            err_dict.update_err_dict(sec, err_msg)
 
     return ret
 
 
 # check for version in spec header against latest changelog entry
-def check_for_version(spec, err):
+def check_for_version(spec, err_dict):
     ret = False
     sec = 'version_check'
 
@@ -116,25 +116,25 @@ def check_for_version(spec, err):
     if changelog_ver != release_ver:
         err_msg = ('Changelog & Release version mismatch '
                    '%s != %s') % (changelog_ver, release_ver)
-        err.update_err_dict(sec, err_msg)
+        err_dict.update_err_dict(sec, err_msg)
         ret = True
 
     return ret
 
 
-def check_for_dist_tag(spec, err):
+def check_for_dist_tag(spec, err_dict):
     ret = False
     sec = 'dist_tag'
 
     if '%{?dist}' not in spec.release:
         err_msg = '%%{?dist} tag not found in Release: %s' % (spec.release)
-        err.update_err_dict(sec, err_msg)
+        err_dict.update_err_dict(sec, err_msg)
         ret = True
 
     return ret
 
 
-def check_for_trailing_spaces(spec_fn, err):
+def check_for_trailing_spaces(spec_fn, err_dict):
     ret = False
     ret_dict = {}
     sec = 'trailing_space'
@@ -144,7 +144,7 @@ def check_for_trailing_spaces(spec_fn, err):
 
     if lines[-1].isspace():
         err_msg = 'empty last line found, not needed'
-        err.update_err_dict(sec, err_msg)
+        err_dict.update_err_dict(sec, err_msg)
         ret = True
 
     key_found = False
@@ -158,19 +158,19 @@ def check_for_trailing_spaces(spec_fn, err):
         if empty_line_count >= 2:
             err_msg = ('multiple empty lines found at line number'
                        ' %d') % (line_num + 1)
-            err.update_err_dict(sec, err_msg)
+            err_dict.update_err_dict(sec, err_msg)
             empty_line_count = 0
 
         if line.endswith((' ', '\t')):
             err_msg = ('trailing space(s) found at line number: %s:\n'
                        '%s') % (line_num + 1, line)
-            err.update_err_dict(sec, err_msg)
+            err_dict.update_err_dict(sec, err_msg)
             ret = True
 
         if not line.startswith('#') and 'RPM_BUILD_ROOT' in line:
             err_msg = ('legacy $RPM_BUILD_ROOT found at line: %s\n%s - '
                        'use %%{buildroot} instead') % (line_num + 1, line)
-            err.update_err_dict('others', err_msg)
+            err_dict.update_err_dict('others', err_msg)
             ret = True
 
         if line.startswith('%prep'):
@@ -185,14 +185,14 @@ def check_for_trailing_spaces(spec_fn, err):
 
 
 # check against weekday abbreviation for the given date in changelog
-def check_for_bogus_date(line, cur_date, err):
+def check_for_bogus_date(line, cur_date, err_dict):
     ret = False
     sec = 'bogus_date'
 
     day_abbr = calendar.day_abbr[cur_date.weekday()]
     if day_abbr != line[1]:
         err_msg = 'bogus date found at:\n%s' % (line)
-        err.update_err_dict(sec, err_msg)
+        err_dict.update_err_dict(sec, err_msg)
         ret = True
 
     return ret
@@ -202,7 +202,7 @@ def check_for_bogus_date(line, cur_date, err):
 # Changelog lines should start with '*', '-', ' ' or '\t'
 # '-' & ' ' should not be present before '*'
 # Successive lines starting with '*' not allowed
-def check_changelog(spec, err):
+def check_changelog(spec, err_dict):
     ret = False
     hyphen = True
     asterisk = False
@@ -216,7 +216,7 @@ def check_changelog(spec, err):
         err_msg = None
         if not line:
             err_msg = 'empty line in changelog'
-            err.update_err_dict(sec, err_msg)
+            err_dict.update_err_dict(sec, err_msg)
             ret = True
             continue
 
@@ -224,7 +224,7 @@ def check_changelog(spec, err):
             asterisk = True
             if not hyphen:
                 err_msg = 'Successive author & version info at:\n%s' % (line)
-                err.update_err_dict(sec, err_msg)
+                err_dict.update_err_dict(sec, err_msg)
                 ret = True
             hyphen = False
         elif line.startswith('-'):
@@ -232,14 +232,14 @@ def check_changelog(spec, err):
             if not asterisk:
                 err_msg = ('description given before author & version info at:'
                            '\n%s') % (line)
-                err.update_err_dict(sec, err_msg)
+                err_dict.update_err_dict(sec, err_msg)
                 ret = True
             continue
         elif line.startswith((' ', '\t')) and asterisk and hyphen:
             continue
         else:
             err_msg = 'invalid entry in changelog at: %s' % (line)
-            err.update_err_dict(sec, err_msg)
+            err_dict.update_err_dict(sec, err_msg)
             ret = True
             continue
 
@@ -251,18 +251,18 @@ def check_changelog(spec, err):
             cur_date = datetime.strptime(date_text, date_format)
         except ValueError:
             err_msg = '-%s-' % (date_text)
-            err.update_err_dict(sec, err_msg)
+            err_dict.update_err_dict(sec, err_msg)
             ret = True
             continue
 
-        if check_for_bogus_date(line, cur_date, err):
+        if check_for_bogus_date(line, cur_date, err_dict):
             ret = True
 
         # dates should be in chronological order
         if prev_date['date'] and cur_date > prev_date['date']:
             err_msg = ('dates not in chronological order in between:\n'
                        '%s and\n%s') % (line_str, prev_date['entry'])
-            err.update_err_dict(sec, err_msg)
+            err_dict.update_err_dict(sec, err_msg)
             ret = True
 
         prev_date['date'] = cur_date
@@ -271,7 +271,7 @@ def check_changelog(spec, err):
     return ret
 
 
-def check_sub_pkg(spec, err):
+def check_sub_pkg(spec, err_dict):
     ret = False
     sec = 'sub_pkg'
 
@@ -288,12 +288,12 @@ def check_sub_pkg(spec, err):
 
             if err_msg:
                 ret = True
-                err.update_err_dict(sec, err_msg)
+                err_dict.update_err_dict(sec, err_msg)
 
     return ret
 
 
-def check_for_configure(lines_dict, err):
+def check_for_configure(lines_dict, err_dict):
     ret = False
     sec = 'configure'
 
@@ -310,7 +310,7 @@ def check_for_configure(lines_dict, err):
             opt = '--' + opt
             if line.find(opt) >= 0:
                 err_msg = '%s can be omitted when using %%configure' % (opt)
-                err.update_err_dict(sec, err_msg)
+                err_dict.update_err_dict(sec, err_msg)
                 ret = True
 
         return ret
@@ -321,7 +321,7 @@ def check_for_configure(lines_dict, err):
         if line.startswith('./configure') or line.startswith('%configure'):
             if line.startswith('./configure'):
                 err_msg = 'Use %%configure instead of ./configure'
-                err.update_err_dict(sec, err_msg)
+                err_dict.update_err_dict(sec, err_msg)
                 ret = True
 
             prev_line = lines[idx - 1]
@@ -329,7 +329,7 @@ def check_for_configure(lines_dict, err):
                 err_msg = ('Trailing backslash before configure found.'
                            ' Use export instead')
 
-                err.update_err_dict(sec, err_msg)
+                err_dict.update_err_dict(sec, err_msg)
                 ret = True
 
             _ret = check_for_opt(line)
@@ -344,7 +344,7 @@ def check_for_configure(lines_dict, err):
     return ret
 
 
-def check_setup(lines_dict, err):
+def check_setup(lines_dict, err_dict):
     ret = False
     sec = 'setup'
     bypass_str = '# Using autosetup is not feasible'
@@ -362,13 +362,13 @@ def check_setup(lines_dict, err):
                        'If using %%autosetup is not feasible, '
                        'put the following comment \'%s\' right '
                        'above your every %%setup command') % (bypass_str)
-            err.update_err_dict(sec, err_msg)
+            err_dict.update_err_dict(sec, err_msg)
             ret = True
 
     return ret
 
 
-def check_make_smp_flags(lines_dict, err):
+def check_make_smp_flags(lines_dict, err_dict):
     ret = False
     sec = 'smp_mflags'
     bypass_str = '# make doesn\'t support _smp_mflags'
@@ -381,7 +381,7 @@ def check_make_smp_flags(lines_dict, err):
     lines = list(lines_dict.values())
     line_nums = list(lines_dict.keys())
 
-    def check_for_smp_mflags(line, idx, err):
+    def check_for_smp_mflags(line, idx, err_dict):
         _ret = False
         nonlocal err_msg
 
@@ -389,8 +389,8 @@ def check_make_smp_flags(lines_dict, err):
             return _ret
 
         if not line.endswith('\\'):
-            err_msg = err_msg.format(line=line_nums[idx]+1, bstr=bypass_str)
-            err.update_err_dict(sec, err_msg)
+            e_msg = err_msg.format(line=line_nums[idx]+1, bstr=bypass_str)
+            err_dict.update_err_dict(sec, e_msg)
             _ret = True
 
         return _ret
@@ -403,7 +403,7 @@ def check_make_smp_flags(lines_dict, err):
         if lines[lines.index(line) - 1] == bypass_str:
             continue
 
-        _ret = check_for_smp_mflags(line, idx, err)
+        _ret = check_for_smp_mflags(line, idx, err_dict)
         ret = True if ret else _ret
         # if _smp_mflags in the same line  as 'make', continue
         if not ret:
@@ -411,13 +411,13 @@ def check_make_smp_flags(lines_dict, err):
         while line.endswith('\\'):
             idx += 1
             line = lines[idx]
-            _ret = check_for_smp_mflags(line, idx, err)
+            _ret = check_for_smp_mflags(line, idx, err_dict)
             ret = True if ret else _ret
 
     return ret
 
 
-def check_for_unused_files(spec_fn, err):
+def check_for_unused_files(spec_fn, err_dict):
     ret = False
     sec = 'unused_files'
     dirname = os.path.dirname(spec_fn)
@@ -460,9 +460,9 @@ def check_for_unused_files(spec_fn, err):
     if fns:
         ret = True
         err_msg = 'List of unused files in: %s' % (dirname)
-        err.update_err_dict(sec, err_msg)
+        err_dict.update_err_dict(sec, err_msg)
         for fn in fns:
-            err.update_err_dict(sec, fn)
+            err_dict.update_err_dict(sec, fn)
 
     check_for_unused_files.prev_ret = ret
     return ret
@@ -480,24 +480,25 @@ def check_specs(files_list):
             print('%s has been deleted in this changeset' % (spec_fn))
             continue
 
-        err = ErrorDict(spec_fn)
+        err_dict = ErrorDict(spec_fn)
         spec = Spec.from_file(spec_fn)
 
-        ret, lines_dict = check_for_trailing_spaces(spec_fn, err)
+        err, lines_dict = check_for_trailing_spaces(spec_fn, err_dict)
 
-        if any ([check_spec_header(spec, err),
-                check_for_version(spec, err),
-                check_for_dist_tag(spec, err),
-                check_changelog(spec, err),
-                check_sub_pkg(spec, err),
-                check_for_configure(lines_dict, err),
-                check_setup(lines_dict, err),
-                check_make_smp_flags(lines_dict, err),
-                check_for_unused_files(spec_fn, err)]):
+        if any ([check_spec_header(spec, err_dict),
+                check_for_version(spec, err_dict),
+                check_for_dist_tag(spec, err_dict),
+                check_changelog(spec, err_dict),
+                check_sub_pkg(spec, err_dict),
+                check_for_configure(lines_dict, err_dict),
+                check_setup(lines_dict, err_dict),
+                check_make_smp_flags(lines_dict, err_dict),
+                check_for_unused_files(spec_fn, err_dict)]):
+            err = True
+
+        if err:
             ret = True
-
-        if ret:
-            err.print_err_dict()
+            err_dict.print_err_dict()
 
     return ret
 
