@@ -1,15 +1,15 @@
-From ec2ce2b8887d14acb308e1b63750c901600cc666 Mon Sep 17 00:00:00 2001
+From bc75e21a61cebf91c34ba7024d0cac3c84cedc33 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
 Date: Wed, 16 Jun 2021 19:34:42 +0530
 Subject: [PATCH] Tweak grub-mkconfig.in to work better in Photon
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- util/grub-mkconfig.in | 137 +++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 130 insertions(+), 7 deletions(-)
+ util/grub-mkconfig.in | 139 +++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 132 insertions(+), 7 deletions(-)
 
 diff --git a/util/grub-mkconfig.in b/util/grub-mkconfig.in
-index f8cbb8d7a..afc0aa639 100644
+index f8cbb8d..cc262a0 100644
 --- a/util/grub-mkconfig.in
 +++ b/util/grub-mkconfig.in
 @@ -1,4 +1,4 @@
@@ -93,7 +93,7 @@ index f8cbb8d7a..afc0aa639 100644
  if [ "x$EUID" = "x" ] ; then
    EUID=`id -u`
  fi
-@@ -123,6 +148,104 @@ if [ "$EUID" != 0 ] ; then
+@@ -123,6 +148,106 @@ if [ "$EUID" != 0 ] ; then
    fi
  fi
  
@@ -117,7 +117,7 @@ index f8cbb8d7a..afc0aa639 100644
 +  if [ $isPhotonCfg = 1 ]; then
 +    PromptUsr "This will modify grub.cfg in Photon OS specific way."
 +  else
-+    PromptUsr "This will modify grub.cfg with default method. Photon specific changes will be overwritten."
++    gettext_printf "\nThis will modify grub.cfg with default method. Photon specific changes will be overwritten.\n"
 +  fi
 +fi
 +
@@ -187,9 +187,11 @@ index f8cbb8d7a..afc0aa639 100644
 +# Backup default photon grub.cfg
 +if [ "$(realpath $grub_cfg)" = "/boot/grub2/grub.cfg" ]; then
 +  if [ ! -f /boot/grub2/photon-grub.cfg ]; then
-+    echo "Taking backup of /boot/grub2/grub.cfg as /boot/grub2/photon-grub.cfg"
-+    # Preserve original file permissions
-+    cp -p /boot/grub2/grub.cfg /boot/grub2/photon-grub.cfg
++    if [ -f /boot/grub2/grub.cfg ]; then
++      echo "Taking backup of /boot/grub2/grub.cfg as /boot/grub2/photon-grub.cfg"
++      # Preserve original file permissions
++      cp -p /boot/grub2/grub.cfg /boot/grub2/photon-grub.cfg
++    fi
 +  else
 +    echo "Backup file /boot/grub2/photon-grub.cfg already exists"
 +  fi
