@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.7.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://cache.ruby-lang.org/pub/ruby/2.7/%{name}-%{version}.tar.bz2
 %define sha1    ruby=4f4a47465b48a91d43fb557b70e47d79f6727a29
+Patch0:         CVE-2021-32066.patch
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
@@ -23,7 +24,7 @@ The Ruby package contains the Ruby development environment.
 This is useful for object-oriented scripting.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 # below loop fixes the files in libexec to point correct ruby
@@ -41,7 +42,7 @@ make %{?_smp_mflags} COPY="cp -p"
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+%make_install
 
 %check
 chmod g+w . -R
@@ -68,6 +69,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 
 %changelog
+*   Wed Aug 18 2021 Sujay G <gsujay@vmware.com> 2.7.3-2
+-   Fix CVE-2021-32066
 *   Wed Apr 07 2021 Sujay G <gsujay@vmware.com> 2.7.3-1
 -   Bump version to 2.7.3 to fix CVE-2013-1655
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.7.1-2
