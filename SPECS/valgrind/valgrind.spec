@@ -1,13 +1,13 @@
 %global security_hardening none
 Summary:        Memory Management Debugger.
 Name:           valgrind
-Version:        3.16.1
+Version:        3.17.0
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://valgrind.org
 Group:          Development/Debuggers
 Source0:        http://valgrind.org/downloads/%{name}-%{version}.tar.bz2
-%define sha1    valgrind=192bfe53802abb7f23edbb8aad61158a60c34f8a
+%define sha1    valgrind=7770912c7465f93a90c5a9d5c1b1b036ebec04fd
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  pkg-config
@@ -20,14 +20,14 @@ more stable. You can also perform detailed profiling to help speed up your
 programs.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 %configure
-make
+make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %check
 make %{?_smp_mflags} -k check
@@ -43,6 +43,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/doc/valgrind/*
 
 %changelog
+*   Wed Aug 18 2021 Oliver Kurth <okurth@vmware.com> 3.17.0-1
+-   Update to version 3.17.0
 *   Wed Jul 29 2020 Gerrit Photon <photon-checkins@vmware.com> 3.16.1-1
 -   Automatic Version Bump
 *   Tue Jan 07 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.15.0-1
