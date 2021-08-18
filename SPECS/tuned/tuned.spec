@@ -1,16 +1,17 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           tuned
-Version:        2.14.0
-Release:        4%{?dist}
+Version:        2.15.0
+Release:        1%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
 Url:            https://github.com/redhat-performance/tuned
 Source:         tuned-%{version}.tar.gz
-%define         sha1 tuned=53140aba44d956fac19c37c2c0052835c1fdd7e9
+%define         sha1 tuned=bfb3def0b687bbdae2b3e191d2fda46b3ffca1c0
 Patch0:         remove_desktop_utils_dependency.patch
 Patch1:         bootloader-plugin-support-for-photon.patch
 Patch2:         tuned-fix-bug-in-sysctl-verify.patch
+Patch3:         0001-Schedule-perf-events-iff-scheduler-per-process-confi.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3-devel
@@ -63,6 +64,7 @@ instead of fewer large ones).
 
 %prep
 %autosetup -p1
+
 %build
 #The tuned daemon is written in pure Python. Nothing requires to be built.
 
@@ -107,6 +109,7 @@ make test %{?_smp_mflags}
 %config(noreplace) %{_sysconfdir}/dbus-1/system.d/com.redhat.tuned.conf
 %config(noreplace) %{_sysconfdir}/modprobe.d/tuned.conf
 %config(noreplace) /boot/tuned.cfg
+%config(noreplace) %{_sysconfdir}/tuned/
 %{_libdir}/tmpfiles.d
 %{_unitdir}/tuned.service
 %dir %{_localstatedir}/log/tuned
@@ -114,7 +117,6 @@ make test %{?_smp_mflags}
 %{_mandir}/man5/tuned*
 %{_mandir}/man8/tuned*
 %{_datadir}/tuned/grub2
-%{_sysconfdir}/tuned
 %{_libdir}/tuned/
 %{_datadir}/doc
 %exclude %{_datadir}/icons/hicolor/scalable/apps/tuned.svg
@@ -138,6 +140,9 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+*   Thu Sep 23 2021 Keerthana K <keerthanak@vmware.com> 2.15.0-1
+-   Update to version 2.15.0
+-   Schedule perf events iff scheduler per process configurations are set
 *   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 2.14.0-4
 -   Replacement of ITS suggested words.
 *   Fri Oct 09 2020 svasamsetty <svasamsetty@vmware.com> 2.14.0-3

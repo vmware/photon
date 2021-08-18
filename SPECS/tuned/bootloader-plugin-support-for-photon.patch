@@ -1,4 +1,4 @@
-From fda29cd05052c25c48722fb3e20f864eb0a0b6ec Mon Sep 17 00:00:00 2001
+From 223cc69c24da094b01e3b371ea67a994db3f05ae Mon Sep 17 00:00:00 2001
 From: Him Kalyan Bordoloi <bordoloih@vmware.com>
 Date: Thu, 24 Sep 2020 16:45:22 -0700
 Subject: [PATCH] bootloader plugin support for photon
@@ -8,12 +8,12 @@ Subject: [PATCH] bootloader plugin support for photon
  tuned.cfg                          |  3 +++
  tuned/consts.py                    |  3 ++-
  tuned/plugins/plugin_bootloader.py | 11 +++++++++--
- tuned/utils/commands.py            | 16 ++++++++++++++++
- 5 files changed, 31 insertions(+), 3 deletions(-)
+ tuned/utils/commands.py            | 15 +++++++++++++++
+ 5 files changed, 30 insertions(+), 3 deletions(-)
  create mode 100644 tuned.cfg
 
 diff --git a/Makefile b/Makefile
-index 8361682..7c6981d 100644
+index 9ee7bcc..3a51c8c 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -165,6 +165,7 @@ install: install-dirs
@@ -34,7 +34,7 @@ index 0000000..5ea7c08
 +tuned_params=
 +tuned_initrd=
 diff --git a/tuned/consts.py b/tuned/consts.py
-index 733ad51..f803d60 100644
+index f7a082e..18ddb2e 100644
 --- a/tuned/consts.py
 +++ b/tuned/consts.py
 @@ -24,7 +24,7 @@ ERROR_THRESHOLD = 3
@@ -55,7 +55,7 @@ index 733ad51..f803d60 100644
  # scheduler plugin configuration
  # how many times retry to move tasks to parent cgroup on cgroup cleanup
 diff --git a/tuned/plugins/plugin_bootloader.py b/tuned/plugins/plugin_bootloader.py
-index 8ca5b8a..6b4dd85 100644
+index 416df7d..c73c827 100644
 --- a/tuned/plugins/plugin_bootloader.py
 +++ b/tuned/plugins/plugin_bootloader.py
 @@ -20,8 +20,8 @@ class BootloaderPlugin(base.Plugin):
@@ -69,9 +69,9 @@ index 8ca5b8a..6b4dd85 100644
  		super(BootloaderPlugin, self).__init__(*args, **kwargs)
  		self._cmd = commands()
  
-@@ -88,11 +88,15 @@ class BootloaderPlugin(base.Plugin):
- 				cfg_files.append(f)
- 		return cfg_files
+@@ -98,11 +98,15 @@ class BootloaderPlugin(base.Plugin):
+ 		return re.search(r"^\s*GRUB_ENABLE_BLSCFG\s*=\s*\"?\s*[tT][rR][uU][eE]\s*\"?\s*$", grub2_default_env,
+ 			flags = re.MULTILINE) is not None
  
 +	def _patch_photon_tuned_cfg(self, d):
 +		return self._cmd.add_modify_option_woquotes_in_file(consts.PHOTON_TUNED_CFG_FILE, d)
@@ -85,7 +85,7 @@ index 8ca5b8a..6b4dd85 100644
  		if not self._grub2_cfg_file_names:
  			log.info("cannot find grub.cfg to patch")
  			return
-@@ -114,6 +118,7 @@ class BootloaderPlugin(base.Plugin):
+@@ -124,6 +128,7 @@ class BootloaderPlugin(base.Plugin):
  		grub2_cfg = re.sub(r" *\$" + consts.GRUB2_TUNED_VAR, "", cfg, flags = re.MULTILINE)
  		cfg = re.sub(r"^\s*set\s+" + consts.GRUB2_TUNED_INITRD_VAR + "\s*=.*\n", "", grub2_cfg, flags = re.MULTILINE)
  		grub2_cfg = re.sub(r" *\$" + consts.GRUB2_TUNED_INITRD_VAR, "", cfg, flags = re.MULTILINE)
@@ -93,15 +93,15 @@ index 8ca5b8a..6b4dd85 100644
  		cfg = re.sub(consts.GRUB2_TEMPLATE_HEADER_BEGIN + r"\n", "", grub2_cfg, flags = re.MULTILINE)
  		return re.sub(consts.GRUB2_TEMPLATE_HEADER_END + r"\n+", "", cfg, flags = re.MULTILINE)
  
-@@ -125,6 +130,7 @@ class BootloaderPlugin(base.Plugin):
+@@ -135,6 +140,7 @@ class BootloaderPlugin(base.Plugin):
  		s += consts.GRUB2_TEMPLATE_HEADER_END + r"\n"
  		grub2_cfg = re.sub(r"^(\s*###\s+END\s+[^#]+/00_header\s+### *)\n", s, grub2_cfg, flags = re.MULTILINE)
  
-+		grub2_cfg = re.sub(r"(load_env -f /boot/photon.cfg)" , r"\1\nload_env -f /boot/tuned.cfg\n", grub2_cfg)
++		grub2_cfg = re.sub(r"(load_env -f /boot/photon.cfg)" , r"\1\nload_env -f /boot/tuned.cfg", grub2_cfg)
  		d2 = {"linux" : consts.GRUB2_TUNED_VAR, "initrd" : consts.GRUB2_TUNED_INITRD_VAR}
  		for i in d2:
  			# add tuned parameters to all kernels
-@@ -185,6 +191,7 @@ class BootloaderPlugin(base.Plugin):
+@@ -217,6 +223,7 @@ class BootloaderPlugin(base.Plugin):
  
  	def _grub2_update(self):
  		self._grub2_cfg_patch({consts.GRUB2_TUNED_VAR : self._cmdline_val, consts.GRUB2_TUNED_INITRD_VAR : self._initrd_val})
@@ -110,12 +110,12 @@ index 8ca5b8a..6b4dd85 100644
  
  	def _has_bls(self):
 diff --git a/tuned/utils/commands.py b/tuned/utils/commands.py
-index 3799fee..b04e710 100644
+index df695a7..ce34997 100644
 --- a/tuned/utils/commands.py
 +++ b/tuned/utils/commands.py
-@@ -195,6 +195,22 @@ class commands:
- 
- 		return self.write_to_file(f, data)
+@@ -206,6 +206,21 @@ class commands:
+ 		data = self.read_file(f)
+ 		return hashlib.sha256(str(data).encode("utf-8")).hexdigest()
  
 +	def add_modify_option_woquotes_in_file(self, f, d, add = True):
 +		data = self.read_file(f)
@@ -132,10 +132,9 @@ index 3799fee..b04e710 100644
 +
 +		return self.write_to_file(f, data)
 +
-+
  	# returns machine ID or empty string "" in case of error
  	def get_machine_id(self, no_error = True):
  		return self.read_file(consts.MACHINE_ID_FILE, no_error).strip()
 -- 
-2.17.1
+2.23.1
 
