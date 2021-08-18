@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.52
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt47
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -35,15 +35,15 @@ Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
 Source5:        check_for_config_applicability.inc
-%define i40e_version 2.13.10
+%define i40e_version 2.15.9
 Source6:	https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha1 i40e=126bfdabd708033b38840e49762d7ec3e64bbc96
-%define iavf_version 4.0.2
+%define sha1 i40e=ec8b4794cea15bb3162a74ef3bfe35f2fd08a036
+%define iavf_version 4.2.7
 Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
-%define sha1 iavf=a53cb104a3b04cbfbec417f7cadda6fddf51b266
-%define ice_version 1.3.2
+%define sha1 iavf=5b0f144a60bdfcc5928f78691dc42cb85c2ed734
+%define ice_version 1.6.4
 Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
-%define sha1 ice=19507794824da33827756389ac8018aa84e9c427
+%define sha1 ice=9e860bf3cafcabd1d4897e87e749334f73828bad
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.21-3-secure
@@ -433,11 +433,13 @@ Patch1010:       0003-FIPS-broken-kattest.patch
 
 #Patches for i40e driver
 Patch1500:      i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
-Patch1501:      i40e-Fix-minor-compilation-error.patch
-Patch1502:      0001-Add-support-for-gettimex64-interface.patch
+Patch1501:      0001-Add-support-for-gettimex64-interface.patch
 
 #Patches for ice driver
-Patch1510:      0001-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+Patch1510:      0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+
+#Patches for iavf driver
+Patch1511:      0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 
 BuildArch:      x86_64
 
@@ -862,12 +864,16 @@ The Linux package contains the Linux kernel doc files
 pushd ../i40e-%{i40e_version}
 %patch1500 -p1
 %patch1501 -p1
-%patch1502 -p1
 popd
 
 #Patches for ice driver
 pushd ../ice-%{ice_version}
 %patch1510 -p1
+popd
+
+#Patches for iavf driver
+pushd ../iavf-%{iavf_version}
+%patch1511 -p1
 popd
 
 %build
@@ -1055,6 +1061,10 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Aug 18 2021 Keerthana K <keerthanak@vmware.com> 5.10.52-2
+-   Update ice driver to v1.6.4
+-   Update i40e driver to v2.15.9
+-   Update iavf driver to v4.2.7
 *   Fri Jul 23 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.52-1
 -   Update to version 5.10.52
 *   Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.46-2

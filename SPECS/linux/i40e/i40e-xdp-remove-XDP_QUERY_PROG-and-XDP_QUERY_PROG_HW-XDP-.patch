@@ -6,24 +6,27 @@ Subject: [PATCH] xdp: remove XDP_QUERY_PROG and XDP_QUERY_PROG_HW XDP commands
 Original patch from Andrii Nakryiko: lwn.net/Articles/825998
 
 Signed-off-by: Bo Gan <ganb@vmware.com>
+Signed-off-by: Keerthana K <keerthanak@vmware.com> 
 ---
  src/i40e_main.c | 6 ------
  1 file changed, 6 deletions(-)
 
 diff --git a/src/i40e_main.c b/src/i40e_main.c
-index 6750c3c..ac35887 100644
+index 37e7bd9..de5a0aa 100644
 --- a/src/i40e_main.c
 +++ b/src/i40e_main.c
-@@ -13204,12 +13204,6 @@ static int i40e_xdp(struct net_device *dev,
+@@ -13886,14 +13886,6 @@ static int i40e_xdp(struct net_device *dev,
  	switch (xdp->command) {
  	case XDP_SETUP_PROG:
  		return i40e_xdp_setup(vsi, xdp->prog, xdp->extack);
+-#ifdef HAVE_XDP_QUERY_PROG
 -	case XDP_QUERY_PROG:
 -#ifndef NO_NETDEV_BPF_PROG_ATTACHED
 -		xdp->prog_attached = i40e_enabled_xdp_vsi(vsi);
 -#endif /* !NO_NETDEV_BPF_PROG_ATTACHED */
 -		xdp->prog_id = vsi->xdp_prog ? vsi->xdp_prog->aux->id : 0;
 -		return 0;
+-#endif /* HAVE_XDP_QUERY_PROG */
  	default:
  		return -EINVAL;
  	}
