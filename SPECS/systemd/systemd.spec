@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd/
 Version:        249.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 
@@ -77,6 +77,12 @@ BuildRequires:  XML-Parser
 BuildRequires:  xz
 BuildRequires:  xz-devel
 BuildRequires:  zlib-devel
+
+# rpmbuild needs /lib/rpm/macros.d/macros.systemd in order to expand %systemd_* actions.
+# systemd-rpm-macros is not build yet, so consume it from publishrpms, similarly to as
+# openjdk does it for Vivace rpms.
+# Other packages using %system_* pre/post actions must use "BuildRequires: systemd-rpm-macros"
+%define ExtraBuildRequires systemd-rpm-macros
 
 %description
 systemd is a system and service manager that runs as PID 1 and starts
@@ -654,6 +660,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu Aug 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 249.2-2
+- Add systemd-rpm-macros to extra build requires
 * Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com>  249.2-1
 - Version bump and define network, resolve timesyc uid
 * Thu Jul 22 2021 Susant Sahani <ssahani@vmware.com>  249.1-1
