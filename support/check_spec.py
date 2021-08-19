@@ -446,23 +446,32 @@ def check_for_unused_files(spec_fn, err_dict):
 
     for r, _, fns in os.walk(dirname):
         for fn in fns:
-            fn = os.path.join(r, fn)
             if not fn.endswith('.spec'):
                 fn = os.path.basename(fn)
                 other_files.append(fn)
                 continue
 
+            fn = os.path.join(r, fn)
             tmp = Spec.from_file(fn)
             populate_list(tmp.sources, source_patch_list)
             populate_list(tmp.patches, source_patch_list)
 
+    # keep only basenames in source list
+    source_patch_list = [os.path.basename(s) for s in source_patch_list]
+
     fns = set(other_files) - set(source_patch_list)
-    if fns:
-        ret = True
-        err_msg = 'List of unused files in: %s' % (dirname)
-        err_dict.update_err_dict(sec, err_msg)
-        for fn in fns:
-            err_dict.update_err_dict(sec, fn)
+    if not fns:
+        check_for_unused_files.prev_ret = ret
+        return ret
+
+    ret = True
+    err_msg = 'List of unused files in: %s' % (dirname)
+    err_dict.update_err_dict(sec, err_msg)
+    for r, _, _fns in os.walk(dirname):
+        for _fn in _fns:
+            if _fn in fns:
+                _fn = os.path.join(r, _fn)
+                err_dict.update_err_dict(sec, _fn)
 
     check_for_unused_files.prev_ret = ret
     return ret
@@ -470,6 +479,7 @@ def check_for_unused_files(spec_fn, err_dict):
 
 def check_specs(files_list):
     ret = False
+
     for spec_fn in files_list:
         if not spec_fn.endswith('.spec'):
             continue
@@ -485,7 +495,7 @@ def check_specs(files_list):
 
         err, lines_dict = check_for_trailing_spaces(spec_fn, err_dict)
 
-        if any ([check_spec_header(spec, err_dict),
+        if any([check_spec_header(spec, err_dict),
                 check_for_version(spec, err_dict),
                 check_for_dist_tag(spec, err_dict),
                 check_changelog(spec, err_dict),
