@@ -1,7 +1,7 @@
 Summary:        A tool that inspect which pages of a file or files are being cached by the Linux kernel
 Name:           pcstat
 Version:        1
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        Apache
 URL:            https://github.com/tobert/pcstat
 Group:          Development/Debuggers
@@ -18,8 +18,7 @@ Requires:       go
 A tool that inspect which pages of a file or files are being cached by the Linux kernel
 
 %prep
-%setup -qn pcstat-master
-%patch0 -p1
+%autosetup -p1 -n %{name}-master
 
 %build
 cd ..
@@ -27,7 +26,7 @@ unzip %{SOURCE1}
 mkdir -p build/src/github.com/tobert/pcstat
 mkdir -p build/src/golang.org/x/sys
 mkdir -p build/bin
-cp -r pcstat-master/* build/src/github.com/tobert/pcstat/.
+cp -r %{name}-master/* build/src/github.com/tobert/%{name}/.
 cp -r sys-master/* build/src/golang.org/x/sys
 cd build
 export GOPATH=`pwd`
@@ -35,9 +34,9 @@ export GO111MODULE=auto
 cd bin
 export GOBIN=`pwd`
 export PATH=$PATH:$GOBIN
-cd ../src/github.com/tobert/pcstat
+cd ../src/github.com/tobert/%{name}
 go build
-cd pcstat
+cd %{name}
 go build
 go install
 
@@ -53,6 +52,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/pcstat
 
 %changelog
+*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1-14
+-   Bump up version to compile with new go
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1-13
 -   Bump up version to compile with new go
 *   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1-12

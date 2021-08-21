@@ -1,7 +1,7 @@
 Summary:        Container Network Interface (CNI) plugins
 Name:           cni
 Version:        0.8.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/containernetworking/plugins
 Source0:        https://github.com/containernetworking/plugins/archive/%{name}-v%{version}.tar.gz
@@ -18,7 +18,7 @@ libraries for writing plugins to configure network interfaces in Linux container
 along with a number of supported plugins.
 
 %prep
-%setup -n plugins-%{version}
+%autosetup -n plugins-%{version}
 
 %build
 ./build_linux.sh
@@ -28,13 +28,15 @@ install -vdm 755 %{buildroot}%{_default_cni_plugins_dir}
 install -vpm 0755 -t %{buildroot}%{_default_cni_plugins_dir} bin/*
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %files
 %defattr(-,root,root)
 %{_default_cni_plugins_dir}/*
 
 %changelog
+*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 0.8.6-6
+-   Bump up version to compile with new go
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 0.8.6-5
 -   Bump up version to compile with new go
 *   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 0.8.6-4

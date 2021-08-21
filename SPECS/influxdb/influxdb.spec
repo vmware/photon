@@ -1,6 +1,6 @@
 Name:           influxdb
 Version:        1.6.0
-Release:        14%{?dist}
+Release:        15%{?dist}
 Summary:        InfluxDB is an open source time series database
 License:        MIT
 URL:            https://influxdata.com
@@ -101,64 +101,61 @@ InfluxDB is an open source time series database with no external dependencies.
 It's useful for recording metrics, events, and performing analytics.
 
 %prep
-%setup -c -T -a 0 -n build/src/github.com/influxdata
-%setup -D -c -T -a 1 -n build/src/github.com/influxdata
-%setup -D -c -T -a 2 -n build/src/github.com/peterh
-%setup -D -c -T -a 3 -n build/src/github.com/BurntSushi
-%setup -D -c -T -a 4 -n build/src/github.com/RoaringBitmap
-%setup -D -c -T -a 5 -n build/src/github.com/bmizerany
-%setup -D -c -T -a 6 -n build/src/github.com/cespare
-%setup -D -c -T -a 7 -n build/src/github.com/dgrijalva
-%setup -D -c -T -a 8 -n build/src/github.com/dgryski
-%setup -D -c -T -a 9 -n build/src/github.com/golang
-%setup -D -c -T -a 10 -n build/src/github.com/jsternberg
-%setup -D -c -T -a 11 -n build/src/github.com/jwilder
-%setup -D -c -T -a 12 -n build/src/github.com/mattn
-%setup -D -c -T -a 13 -n build/src/github.com/opentracing
-%setup -D -c -T -a 14 -n build/src/github.com/prometheus
-%setup -D -c -T -a 15 -n build/src/github.com/tinylib
-%setup -D -c -T -a 16 -n build/src/github.com/xlab
-%setup -D -c -T -a 17 -n build/src/github.com/retailnext
-%setup -D -c -T -a 18 -n build/src/github.com/boltdb
-%setup -D -c -T -a 19 -n build/src/github.com/klauspost
-%setup -D -c -T -a 20 -n build/src/github.com/paulbellamy
-%setup -D -c -T -a 21 -n build/src/golang.org/
-%setup -D -c -T -a 22 -n build/src/
-%setup -D -c -T -a 23 -n build/src/github.com/gogo
-%setup -D -c -T -a 24 -n build/src/github.com/mattn
-%setup -D -c -T -a 25 -n build/src/github.com/beorn7
-%setup -D -c -T -a 26 -n build/src/github.com/glycerine
-%setup -D -c -T -a 27 -n build/src/github.com/golang
-%setup -D -c -T -a 28 -n build/src/github.com/philhofer
-%setup -D -c -T -a 29 -n build/src/github.com/prometheus
-%setup -D -c -T -a 30 -n build/src/github.com/prometheus
-%setup -D -c -T -a 31 -n build/src/github.com/prometheus
-%setup -D -c -T -a 32 -n build/src/go.uber.org
-%setup -D -c -T -a 33 -n build/src/github.com/klauspost
-%setup -D -c -T -a 34 -n build/src/github.com/klauspost
-%setup -D -c -T -a 35 -n build/src/github.com/matttproud
-%setup -D -c -T -a 36 -n build/src/go.uber.org/
-%setup -D -c -T -a 37 -n build/src/go.uber.org/
-%setup -D -c -T -a 38 -n build/src/github.com/klauspost
-%setup -D -c -T -a 39 -n build/src/github.com/influxdata
+%autosetup -N -c -T -a 0 -n build/src/github.com/influxdata
+%autosetup -N -D -c -T -a 1 -n build/src/github.com/influxdata
+%autosetup -N -D -c -T -a 2 -n build/src/github.com/peterh
+%autosetup -N -D -c -T -a 3 -n build/src/github.com/BurntSushi
+%autosetup -N -D -c -T -a 4 -n build/src/github.com/RoaringBitmap
+%autosetup -N -D -c -T -a 5 -n build/src/github.com/bmizerany
+%autosetup -N -D -c -T -a 6 -n build/src/github.com/cespare
+%autosetup -N -D -c -T -a 7 -n build/src/github.com/dgrijalva
+%autosetup -N -D -c -T -a 8 -n build/src/github.com/dgryski
+%autosetup -N -D -c -T -a 9 -n build/src/github.com/golang
+%autosetup -N -D -c -T -a 10 -n build/src/github.com/jsternberg
+%autosetup -N -D -c -T -a 11 -n build/src/github.com/jwilder
+%autosetup -N -D -c -T -a 12 -n build/src/github.com/mattn
+%autosetup -N -D -c -T -a 13 -n build/src/github.com/opentracing
+%autosetup -N -D -c -T -a 14 -n build/src/github.com/prometheus
+%autosetup -N -D -c -T -a 15 -n build/src/github.com/tinylib
+%autosetup -N -D -c -T -a 16 -n build/src/github.com/xlab
+%autosetup -N -D -c -T -a 17 -n build/src/github.com/retailnext
+%autosetup -N -D -c -T -a 18 -n build/src/github.com/boltdb
+%autosetup -N -D -c -T -a 19 -n build/src/github.com/klauspost
+%autosetup -N -D -c -T -a 20 -n build/src/github.com/paulbellamy
+%autosetup -N -D -c -T -a 21 -n build/src/golang.org/
+%autosetup -N -D -c -T -a 22 -n build/src/
+%autosetup -N -D -c -T -a 23 -n build/src/github.com/gogo
+%autosetup -N -D -c -T -a 24 -n build/src/github.com/mattn
+%autosetup -N -D -c -T -a 25 -n build/src/github.com/beorn7
+%autosetup -N -D -c -T -a 26 -n build/src/github.com/glycerine
+%autosetup -N -D -c -T -a 27 -n build/src/github.com/golang
+%autosetup -N -D -c -T -a 28 -n build/src/github.com/philhofer
+%autosetup -N -D -c -T -a 29 -n build/src/github.com/prometheus
+%autosetup -N -D -c -T -a 30 -n build/src/github.com/prometheus
+%autosetup -N -D -c -T -a 31 -n build/src/github.com/prometheus
+%autosetup -N -D -c -T -a 32 -n build/src/go.uber.org
+%autosetup -N -D -c -T -a 33 -n build/src/github.com/klauspost
+%autosetup -N -D -c -T -a 34 -n build/src/github.com/klauspost
+%autosetup -N -D -c -T -a 35 -n build/src/github.com/matttproud
+%autosetup -N -D -c -T -a 36 -n build/src/go.uber.org/
+%autosetup -N -D -c -T -a 37 -n build/src/go.uber.org/
+%autosetup -N -D -c -T -a 38 -n build/src/github.com/klauspost
+%autosetup -N -D -c -T -a 39 -n build/src/github.com/influxdata
 
-cd influxdb-%{version}
+cd %{name}-%{version}
 %patch0 -p1
 
 %build
-cd ../../../
 export GO111MODULE=auto
-export GOPATH=`pwd`
-mkdir -p bin
-cd bin
-export GOBIN=`pwd`
+export GOPATH=%{_builddir}/build
+mkdir -p %{_builddir}/bin
+export GOBIN=%{_builddir}/build/bin
 export PATH=$PATH:$GOBIN
-cd ../src/github.com/influxdata/
+cd %{_builddir}/build/src/github.com/influxdata
 mv -f %{name}-%{version} %{name}
 cd %{name}
-
-go clean ./...
-go install ./...
+go clean $PWD/...
+go install $PWD/...
 
 %check
 go test -run=TestDatabase . -v
@@ -171,7 +168,7 @@ mkdir -p %{buildroot}%{_prefix}/lib/systemd/system
 mkdir -p %{buildroot}%{_mandir}/man1/
 mkdir -p %{buildroot}%{_sharedstatedir}/influxdb
 mkdir -p %{buildroot}%{_localstatedir}/log/influxdb
-cp -r ../../../bin/* %{buildroot}%{_bindir}
+cp -r %{_builddir}/build/bin/* %{buildroot}%{_bindir}
 cp %{name}/etc/config.sample.toml %{buildroot}%{_sysconfdir}/influxdb/influxdb.conf
 cp %{name}/scripts/logrotate %{buildroot}%{_sysconfdir}/logrotate.d/influxdb
 cp %{name}/scripts/influxdb.service %{buildroot}%{_prefix}/lib/systemd/system
@@ -233,6 +230,8 @@ fi
 %exclude %{_bindir}/test_client
 
 %changelog
+*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.6.0-15
+-   Bump up version to compile with new go
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.6.0-14
 -   Bump up version to compile with new go
 *   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.6.0-13

@@ -3,7 +3,7 @@
 Summary:        CRI tools
 Name:           cri-tools
 Version:        1.17.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache License Version 2.0
 URL:            https://github.com/kubernetes-incubator/cri-tools/archive/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
@@ -19,11 +19,10 @@ crictl: CLI for kubelet CRI.
 critest: validation test suites for kubelet CRI.
 
 %prep
-%setup -qn %{name}-%{version}
+%autosetup
 
 %build
 make %{?_smp_mflags}
-
 
 %install
 rm -rf %{buildroot}
@@ -34,7 +33,7 @@ mkdir -p %{buildroot}/usr/share/doc/cri-tools
 mkdir -p %{buildroot}/usr/share/licenses/cri-tools
 mkdir -p %{buildroot}/man/man1
 
-make install DESTDIR=%{buildroot}
+%make_install
 cp /usr/local/bin/crictl %{buildroot}/usr/bin
 cp /usr/local/bin/critest %{buildroot}/usr/bin
 cp CHANGELOG.md %{buildroot}/usr/share/doc/cri-tools
@@ -59,6 +58,8 @@ cp docs/roadmap.md %{buildroot}/usr/share/doc/cri-tools
 rm -rf %{buildroot}/*
 
 %changelog
+*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.17.0-7
+-   Bump up version to compile with new go
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.17.0-6
 -   Bump up version to compile with new go
 *   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.17.0-5

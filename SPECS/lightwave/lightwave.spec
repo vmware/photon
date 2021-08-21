@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       12%{?dist}
+Release:       13%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -150,7 +150,7 @@ Lightwave Samples
 
 %prep
 
-%setup -qn lightwave-%{version}
+%autosetup
 sed -i 's|/opt/vmware/bin/certool|/usr/bin/certool|' vmidentity/install/src/main/java/com/vmware/identity/configure/LinuxInstallerHelper.java
 sed -i 's|/opt/vmware/sbin/vmware-stsd.sh|/usr/sbin/vmware-stsd.sh|' vmidentity/install/src/main/java/com/vmware/identity/configure/LinuxInstallerHelper.java
 sed -i 's/VMIDENTITY_LIB_DIR=\/opt\/vmware\/lib64/VMIDENTITY_LIB_DIR=\/usr\/jars/' vmidentity/websso/src/main/resources/sso-config.sh
@@ -170,12 +170,12 @@ autoreconf -mif .. &&
     --prefix=%{_prefix} \
     --libdir=%{_lib64dir} \
     --localstatedir=/var/lib/vmware
-make
+make %{?_smp_mflags}
 
 %install
 
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-cd build && make install DESTDIR=%{buildroot}
+cd build && make install DESTDIR=%{buildroot} %{?_smp_mflags}
 mkdir -p %{buildroot}/opt/vmware/share/config
 #find %{buildroot} -name '*.a' -delete
 #find %{buildroot} -name '*.la' -delete
@@ -205,7 +205,6 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             /bin/cp "%{_stsconfdir}/server.xml" "%{_vmsts_dbdir}/server.xml"
             ;;
     esac
-
 
 %pre server
 
@@ -1395,6 +1394,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 # %doc ChangeLog README COPYING
 
 %changelog
+*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.3.1.34-13
+-   Bump up version to compile with new go
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-12
 -   Bump up version to compile with new go
 *   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.3.1.34-11

@@ -1,7 +1,7 @@
 Summary:	Heapster enables Container Cluster Monitoring and Performance Analysis.
 Name:		heapster
 Version:    1.5.4
-Release:    10%{?dist}
+Release:    11%{?dist}
 License:	Apache 2.0
 URL:		https://github.com/wavefrontHQ/cadvisor
 Source0:	https://github.com/kubernetes/heapster/archive/%{name}-%{version}.tar.gz
@@ -21,6 +21,7 @@ BuildRequires:  unzip
 Heapster collects and interprets various signals like compute resource usage, lifecycle events, etc, and exports cluster metrics via REST endpoints.
 
 %prep
+# Using autosetup is not feasible
 %setup -q
 
 pushd vendor/golang.org/x/net
@@ -35,7 +36,7 @@ go env -w GO111MODULE=auto
 mkdir -p $GOPATH/src/k8s.io/heapster
 cp -r . $GOPATH/src/k8s.io/heapster
 cd $GOPATH/src/k8s.io/heapster
-make build
+%make_build
 
 %install
 cd $GOPATH/src/k8s.io/heapster
@@ -45,7 +46,7 @@ install -p -m 0755 eventer %{buildroot}%{_bindir}
 
 %check
 cd $GOPATH/src/k8s.io/heapster
-make test-unit
+make test-unit %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -53,6 +54,8 @@ make test-unit
 %{_bindir}/eventer
 
 %changelog
+*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.5.4-11
+-   Bump up version to compile with new go
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.5.4-10
 -   Bump up version to compile with new go
 *   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.5.4-9

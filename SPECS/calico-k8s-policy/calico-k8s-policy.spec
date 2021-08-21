@@ -1,7 +1,7 @@
 Summary:        Calico Network Policy for Kubernetes
 Name:           calico-k8s-policy
 Version:        1.0.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/k8s-policy
 Source0:        %{name}-%{version}.tar.gz
@@ -61,7 +61,7 @@ Requires:       python-setuptools
 Calico Network Policy enables Calico to enforce network policy on top of Calico BGP, Flannel, or GCE native.
 
 %prep
-%setup -n kube-controllers-%{version}
+%autosetup -n kube-controllers-%{version}
 echo "VERSION='`git describe --tags --dirty`'" > version.py
 
 %build
@@ -88,6 +88,8 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/controller
 %{_bindir}/controller
 
 %changelog
+*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.0.0-11
+-   Bump up version to compile with new go
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.0.0-10
 -   Bump up version to compile with new go
 *   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.0.0-9

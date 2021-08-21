@@ -1,7 +1,7 @@
 Summary:        Kubernetes security benchmarking tool
 Name:           kube-bench
 Version:        0.0.34
-Release:        6%{?dist}
+Release:        7%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache-2.0
@@ -16,23 +16,25 @@ BuildRequires:  go
 The Kubernetes Bench for Security is a Go application that checks whether Kubernetes is deployed according to security best practices
 
 %prep
-%setup -q
+%autosetup
 
 %build
-KUBEBENCH_VERSION=v%{version} make
+KUBEBENCH_VERSION=v%{version} make %{?_smp_mflags}
 
 %install
 mkdir -p %{buildroot}%{_bindir}
 cp kube-bench %{buildroot}%{_bindir}
 
 %check
-make tests
+make tests %{?_smp_mflags}
 
 %files
     %defattr(-,root,root,0755)
     %{_bindir}/kube-bench
 
 %changelog
+*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 0.0.34-7
+-   Bump up version to compile with new go
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 0.0.34-6
 -   Bump up version to compile with new go
 *   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 0.0.34-5

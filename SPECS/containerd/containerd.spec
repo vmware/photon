@@ -3,7 +3,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.4.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
@@ -54,6 +54,7 @@ Requires:       %{name} = %{version}-%{release}
 Documentation for containerd.
 
 %prep
+# Using autosetup is not feasible
 %setup -q -c
 mkdir -p "$(dirname "src/%{gopath_comp}")"
 %patch1 -p1 -d %{name}-%{version}
@@ -72,8 +73,8 @@ install -v -m644 -D -t %{buildroot}%{_datadir}/licenses/%{name} LICENSE
 install -v -m644 -D -t %{buildroot}%{_unitdir} containerd.service
 install -v -m644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/containerd/config.toml
 install -v -m644 -D %{SOURCE3} %{buildroot}%{_presetdir}/50-containerd.preset
-make DESTDIR=%{buildroot}%{_prefix} install
-make DESTDIR=%{buildroot}%{_datadir} install-man
+make %{?_smp_mflags} DESTDIR=%{buildroot}%{_prefix} install
+make %{?_smp_mflags} DESTDIR=%{buildroot}%{_datadir} install-man
 
 %post
 %systemd_post containerd.service
@@ -87,9 +88,9 @@ make DESTDIR=%{buildroot}%{_datadir} install-man
 %check
 export GOPATH="$(pwd)"
 cd src/%{gopath_comp}
-make test
-make root-test
-make integration
+make test %{?_smp_mflags}
+make root-test %{?_smp_mflags}
+make integration %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -114,6 +115,8 @@ make integration
 %{_mandir}/man8/*
 
 %changelog
+*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.4.4-5
+-   Bump up version to compile with new go
 *   Tue Jul 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.4.4-4
 -   Bump up version to compile with new go.
 *   Fri Jul 16 2021 Bo Gan <ganb@vmware.com> 1.4.4-3

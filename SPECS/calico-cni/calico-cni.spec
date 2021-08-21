@@ -1,7 +1,7 @@
 Summary:        Calico networking for CNI
 Name:           calico-cni
 Version:        3.15.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/projectcalico/cni-plugin
 Source0:        %{name}-%{version}.tar.gz
@@ -18,7 +18,7 @@ Requires:       cni
 Project Calico network plugin for CNI. This allows kubernetes to use Calico networking. This repository includes a top-level CNI networking plugin, as well as a CNI IPAM plugin which makes use of Calico IPAM.
 
 %prep
-%setup -n cni-plugin-%{version}
+%autosetup -p1 -n cni-plugin-%{version}
 
 %build
 export GO111MODULE=auto
@@ -42,6 +42,8 @@ install -vpm 0755 -t %{buildroot}/usr/share/calico-cni/k8s/ k8s-install/scripts/
 /usr/share/calico-cni/k8s/calico.conf.default
 
 %changelog
+*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 3.15.2-4
+-   Bump up version to compile with new go
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 3.15.2-3
 -   Bump up version to compile with new go
 *   Wed Jun 02 2021 Piyush Gupta<gpiyush@vmware.com> 3.15.2-2

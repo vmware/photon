@@ -4,7 +4,7 @@
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
 Version:        1.58.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
@@ -68,8 +68,7 @@ Requires:       glib-devel
 Libraries and headers for gobject-introspection.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 rm -rf ../p3dir
 autoreconf -fiv
 cp -a . ../p3dir
@@ -87,20 +86,19 @@ popd
 rm -rf %{buildroot}/*
 
 pushd ../p3dir
-make install DESTDIR=%{buildroot}
+%make_install
 # Move the python3 modules to the correct location
 mkdir -p %{buildroot}/%{python3_sitelib}
 mv %{buildroot}/%{_libdir}/gobject-introspection/giscanner %{buildroot}/%{python3_sitelib}
 popd
 
-make install DESTDIR=%{buildroot}
+%make_install
 # Move the python modules to the correct location
 mkdir -p %{buildroot}/%{python2_sitelib}
 mv %{buildroot}/%{_libdir}/gobject-introspection/giscanner %{buildroot}/%{python2_sitelib}
 
-rm -rf $RPM_BUILD_ROOT/%{_datarootdir}/gtk-doc/html
+rm -rf %{buildroot}/%{_datarootdir}/gtk-doc/html
 find %{buildroot}%{_libdir} -name '*.la' -delete
-
 
 %check
 make  %{?_smp_mflags} check
@@ -108,7 +106,6 @@ make  %{?_smp_mflags} check
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
-
 
 %files
 %defattr(-,root,root,-)
@@ -138,6 +135,8 @@ make  %{?_smp_mflags} check
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.58.0-10
+-   Bump up version to compile with new go
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.58.0-9
 -   Bump up version to compile with new go
 *   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.58.0-8

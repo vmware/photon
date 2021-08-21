@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.2
-Release:        17%{?dist}
+Release:        18%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -67,6 +67,7 @@ Requires:       %{name} = %{version}
 Documentation and vimfiles for docker
 
 %prep
+# Using autosetup is not feasible
 %setup -q -c
 
 %patch99 -p1
@@ -100,7 +101,7 @@ GIT_COMMIT_SHORT=${GIT_COMMIT:0:7}
 cd "$GOPATH/src/github.com/docker"
 
 pushd cli
-DISABLE_WARN_OUTSIDE_CONTAINER=1 make VERSION=%{version} GITCOMMIT=${GIT_COMMIT_SHORT} dynbinary manpages
+DISABLE_WARN_OUTSIDE_CONTAINER=1 make %{?_smp_mflags} VERSION=%{version} GITCOMMIT=${GIT_COMMIT_SHORT} dynbinary manpages
 popd
 
 pushd docker
@@ -242,6 +243,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 18.06.2-18
+-   Bump up version to compile with new go
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 18.06.2-17
 -   Bump up version to compile with new go
 *   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 18.06.2-16

@@ -7,7 +7,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.2.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/coredns/coredns/releases/v%{version}.tar.gz
 Source0:        coredns-%{version}.tar.gz
@@ -23,7 +23,7 @@ BuildRequires:  git
 CoreDNS is a DNS server that chains plugins
 
 %prep -p exit
-%setup -qn coredns-%{version}
+%autosetup -n coredns-%{version}
 
 %build
 export ARCH=%{gohostarch}
@@ -47,7 +47,7 @@ find . -type f -exec sed -i 's|github.com/mholt/caddy|github.com/caddyserver/cad
 sed -i 's#go get -u github.com/caddyserver/caddy#go get -u -d github.com/caddyserver/caddy#' Makefile
 sed -i 's#v0.10.11#v0.10.11 \&\& find . -type f -exec sed -i "s\|github.com/mholt/caddy\|github.com/caddyserver/caddy\|" {} + #g' Makefile
 sed -i 's#go get -u github.com/miekg/dns#go get -u -d github.com/miekg/dns#' Makefile
-make
+make %{?_smp_mflags}
 
 %install
 install -m 755 -d %{buildroot}%{_bindir}
@@ -61,6 +61,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/coredns
 
 %changelog
+*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.2.0-12
+-   Bump up version to compile with new go
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.2.0-11
 -   Bump up version to compile with new go
 *   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.2.0-10

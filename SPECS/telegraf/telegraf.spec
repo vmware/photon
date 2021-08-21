@@ -1,7 +1,7 @@
 Summary:         agent for collecting, processing, aggregating, and writing metrics.
 Name:            telegraf
 Version:         1.16.1
-Release:         5%{?dist}
+Release:         6%{?dist}
 License:         MIT
 URL:             https://github.com/influxdata/telegraf
 Source0:         https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
@@ -30,7 +30,7 @@ the community can easily add support for collecting metrics from well known serv
 Postgres, or Redis) and third party APIs (like Mailchimp, AWS CloudWatch, or Google Analytics).
 
 %prep
-%setup
+%autosetup
 mkdir -p ${GOPATH}/src/github.com/golang/dep
 tar xf %{SOURCE3} --no-same-owner --strip-components 1 -C ${GOPATH}/src/github.com/golang/dep/
 mkdir -p ${GOPATH}/src/github.com/influxdata/telegraf
@@ -58,7 +58,7 @@ pushd ../telegraf-1.4.0
 cp -r *  ${GOPATH}/src/github.com/wavefronthq/telegraf/
 popd
 pushd ${GOPATH}/src/github.com/influxdata/telegraf
-make
+make %{?_smp_mflags}
 popd
 
 %install
@@ -98,6 +98,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
+*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.16.1-6
+-   Bump up version to compile with new go
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.1-5
 -   Bump up version to compile with new go
 *   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.16.1-4

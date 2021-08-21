@@ -14,16 +14,15 @@
 
 Summary:        Go
 Name:           go
-Version:        1.16.2
-Release:        2%{?dist}
+Version:        1.16.7
+Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
-%define sha1    go=78812c9ee656d3f54b8c9b4f3f78e00e81ba81ad
-Patch0:         CVE-2021-31525.patch
+%define sha1    go=94e3f19866c40bb73700d93625489998604d1b15
 Requires:       glibc
 %define ExtraBuildRequires go
 
@@ -31,8 +30,7 @@ Requires:       glibc
 Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.
 
 %prep
-%setup -qn %{name}
-%patch0 -p1
+%autosetup -p1 -n %{name}
 
 %build
 export GOHOSTOS=linux
@@ -74,7 +72,6 @@ mkdir -p %{buildroot}%{gopath}/src/github.com/
 mkdir -p %{buildroot}%{gopath}/src/bitbucket.org/
 mkdir -p %{buildroot}%{gopath}/src/code.google.com/
 mkdir -p %{buildroot}%{gopath}/src/code.google.com/p/
-
 install -vdm755 %{buildroot}/etc/profile.d
 cat >> %{buildroot}/etc/profile.d/go-exports.sh <<- "EOF"
 export GOROOT=%{goroot}
@@ -84,8 +81,6 @@ export GOHOSTARCH=%{gohostarch}
 export GOOS=linux
 EOF
 #chown -R root:root %{buildroot}/etc/profile.d/go-exports.sh
-
-
 #%{_fixperms} %{buildroot}/*
 
 %post -p /sbin/ldconfig
@@ -114,6 +109,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Sat Aug 21 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.7-1
+-   Upgrade to 1.16.7
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.2-2
 -   Fix for CVE-2021-31525.
 *   Mon May 03 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.2-1
