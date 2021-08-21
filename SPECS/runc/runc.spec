@@ -7,7 +7,7 @@
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
 Version:             1.0.0.rc93
-Release:             3%{?dist}
+Release:             4%{?dist}
 License:             ASL 2.0
 URL:                 https://runc.io/
 Source0:             https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
@@ -45,6 +45,7 @@ Requires:            %{name} = %{version}-%{release}
 Documentation for runc
 
 %prep
+# Using autosetup is not feasible
 %setup -q -c
 mkdir -p "$(dirname "src/%{gopath_comp}")"
 mv %{name}-%{RUNC_VERSION} src/%{gopath_comp}
@@ -63,7 +64,7 @@ make %{?_smp_mflags} GIT_BRANCH=%{RUNC_BRANCH} COMMIT_NO=%{RUNC_COMMIT} COMMIT=%
 %install
 cd src/%{gopath_comp}
 install -v -m644 -D -t %{buildroot}%{_datadir}/licenses/%{name} LICENSE
-make DESTDIR=%{buildroot} PREFIX=%{_prefix} BINDIR=%{_bindir} install install-bash install-man
+make DESTDIR=%{buildroot} PREFIX=%{_prefix} BINDIR=%{_bindir} install install-bash install-man %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -76,6 +77,8 @@ make DESTDIR=%{buildroot} PREFIX=%{_prefix} BINDIR=%{_bindir} install install-ba
 %{_mandir}/man8/*
 
 %changelog
+*   Tue Oct 05 2021 Piyush Gupta <gpiyush@vmware.com> 1.0.0.rc93-4
+-   Bump up version to compile with new go
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.0.0.rc93-3
 -   Bump up version to compile with new go
 *   Fri May 14 2021 Bo Gan <ganb@vmware.com> 1.0.0.rc93-2

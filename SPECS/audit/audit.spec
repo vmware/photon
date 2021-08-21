@@ -4,7 +4,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.5
-Release:        8%{?dist}
+Release:        9%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=62fcac8cbd20c796b909b91f8f615f8556b22a24
 Patch0:         audit-2.8.5-gcc-10.patch
@@ -58,8 +58,7 @@ The python3-audit package contains the python2 bindings for libaudit
 and libauparse.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 %configure \
@@ -85,7 +84,7 @@ mkdir -p %{buildroot}/%{_var}/opt/audit/log
 mkdir -p %{buildroot}/%{_var}/log
 mkdir -p %{buildroot}/%{_var}/spool/audit
 ln -sfv %{_var}/opt/audit/log %{buildroot}/%{_var}/log/audit
-make install DESTDIR=%{buildroot}
+%make_install
 
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable auditd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-auditd.preset
@@ -153,6 +152,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Oct 05 2021 Piyush Gupta <gpiyush@vmware.com> 2.8.5-9
+-   Bump up version to compile with new go
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 2.8.5-8
 -   Bump up version to compile with new go
 *   Thu Mar 25 2021 Piyush Gupta<gpiyush@vmware.com> 2.8.5-7

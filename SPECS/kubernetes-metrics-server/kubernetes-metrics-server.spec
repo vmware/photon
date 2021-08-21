@@ -1,7 +1,7 @@
 Summary:        Kubernetes Metrics Server
 Name:           kubernetes-metrics-server
 Version:        0.3.7
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/kubernetes-incubator/metrics-server/%{name}-%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
@@ -20,6 +20,7 @@ These metrics can be either accessed directly by user, for example by using kube
 in the cluster, e.g. Horizontal Pod Autoscaler, to make decisions.
 
 %prep -p exit
+# Using autosetup is not feasible
 %setup -qn metrics-server-%{version}
 
 pushd vendor/golang.org/x/net
@@ -45,12 +46,11 @@ export CGO_ENABLED=0
 mkdir -p ${GOPATH}/src/github.com/kubernetes-incubator/metrics-server
 cp -r * ${GOPATH}/src/github.com/kubernetes-incubator/metrics-server/
 pushd ${GOPATH}/src/github.com/kubernetes-incubator/metrics-server
-make all
+make all %{?_smp_mflags}
 
 %install
 install -m 755 -d %{buildroot}%{_bindir}
 install -pm 755 -t %{buildroot}%{_bindir} ${GOPATH}/src/github.com/kubernetes-incubator/metrics-server/_output/amd64/metrics-server
-
 
 %clean
 rm -rf %{buildroot}/*
@@ -60,6 +60,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/metrics-server
 
 %changelog
+*   Tue Oct 05 2021 Piyush Gupta <gpiyush@vmware.com> 0.3.7-6
+-   Bump up version to compile with new go
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 0.3.7-5
 -   Bump up version to compile with new go
 *   Thu Mar 25 2021 Piyush Gupta<gpiyush@vmware.com> 0.3.7-4

@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       18%{?dist}
+Release:       19%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -156,6 +156,7 @@ Lightwave Samples
 
 %prep
 %autosetup -p1 -n lightwave-%{version}
+
 sed -i 's|/opt/vmware/bin/certool|/usr/bin/certool|' vmidentity/install/src/main/java/com/vmware/identity/configure/LinuxInstallerHelper.java
 sed -i 's|/opt/vmware/sbin/vmware-stsd.sh|/usr/sbin/vmware-stsd.sh|' vmidentity/install/src/main/java/com/vmware/identity/configure/LinuxInstallerHelper.java
 sed -i 's/VMIDENTITY_LIB_DIR=\/opt\/vmware\/lib64/VMIDENTITY_LIB_DIR=\/usr\/jars/' vmidentity/websso/src/main/resources/sso-config.sh
@@ -211,7 +212,6 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             /bin/cp "%{_stsconfdir}/server.xml" "%{_vmsts_dbdir}/server.xml"
             ;;
     esac
-
 
 %pre server
 
@@ -1399,6 +1399,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_stssamplebindir}/*
 
 %changelog
+*   Wed Sep 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-19
+-   Bump up version to compile with new go
 *   Tue Sep 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-18
 -   Fix maven repo urls in build.xml files
 *   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 1.3.1.34-17

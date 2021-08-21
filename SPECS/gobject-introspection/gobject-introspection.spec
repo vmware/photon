@@ -3,7 +3,7 @@
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
 Version:        1.66.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
@@ -55,12 +55,11 @@ Requires:       glib-devel
 Libraries and headers for gobject-introspection.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 meson --prefix=/usr --libdir=lib -Dpython=%{__python3} build
 ninja -C build
-
 
 %install
 rm -rf %{buildroot}/*
@@ -69,9 +68,8 @@ DESTDIR=%{buildroot} ninja -C build install
 # Move the python3 modules to the correct location
 mkdir -p %{buildroot}/%{python3_sitelib}
 mv %{buildroot}%{_libdir}/gobject-introspection/giscanner %{buildroot}/%{python3_sitelib}
-rm -rf $RPM_BUILD_ROOT/%{_datarootdir}/gtk-doc/html
+rm -rf %{buildroot}/%{_datarootdir}/gtk-doc/html
 find %{buildroot}%{_libdir} -name '*.la' -delete
-
 
 %check
 meson test
@@ -79,7 +77,6 @@ meson test
 %post -p /sbin/ldconfig
 
 %postun -p /sbin/ldconfig
-
 
 %files
 %defattr(-,root,root,-)
@@ -104,6 +101,8 @@ meson test
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Tue Oct 05 2021 Piyush Gupta <gpiyush@vmware.com> 1.66.0-6
+-   Bump up version to compile with new go
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.66.0-5
 -   Bump up version to compile with new go
 *   Thu Mar 25 2021 Piyush Gupta<gpiyush@vmware.com> 1.66.0-4
