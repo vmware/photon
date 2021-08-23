@@ -1,7 +1,7 @@
 Summary:	cpio archive utility
 Name:		cpio
 Version:	2.13
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv3+
 URL:        http://www.gnu.org/software/cpio/
 Group:      System Environment/System utilities
@@ -12,6 +12,7 @@ Source0:        http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
 Conflicts:      toybox < 0.8.2-2
 Patch0:         newca-new-archive-format.patch
 Patch1:         cpio-2.12-gcc-10.patch
+Patch2:         cpio-CVE-2021-38185.patch
 BuildRequires:  lua
 Requires:       lua
 
@@ -26,20 +27,18 @@ Requires: %{name} = %{version}-%{release}
 These are the additional language files of cpio
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
 %build
 sed -i -e '/gets is a/d' gnu/stdio.in.h
 %configure \
         --enable-mt   \
         --with-rmt=/usr/libexec/rmt
 make %{?_smp_mflags}
-makeinfo --html            -o doc/html      doc/cpio.texi
-makeinfo --html --no-split -o doc/cpio.html doc/cpio.texi
-makeinfo --plaintext       -o doc/cpio.txt  doc/cpio.texi
+makeinfo  --html            -o doc/html      doc/cpio.texi
+makeinfo  --html --no-split -o doc/cpio.html doc/cpio.texi
+makeinfo  --plaintext       -o doc/cpio.txt  doc/cpio.texi
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 install -v -m755 -d %{buildroot}/%{_docdir}/%{name}-%{version}/html
 install -v -m644    doc/html/* %{buildroot}/%{_docdir}/%{name}-%{version}/html
 install -v -m644    doc/cpio.{html,txt} %{buildroot}/%{_docdir}/%{name}-%{version}
@@ -59,6 +58,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Fri Aug 20 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.13-5
+- Adding security patch for CVE-2021-38185
 * Tue Mar 23 2021 Piyush Gupta <gpiyush@vmware.com> 2.13-4
 - Internal version bump up in order to compile with new lua.
 * Mon Feb 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.13-3
