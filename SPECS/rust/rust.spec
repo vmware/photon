@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.51.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -17,6 +17,7 @@ Patch2:         0001-Turn-may_have_side_effect-into-an-associated-constan.patch
 Patch3:         CVE-2021-28879.patch
 Patch4:         CVE-2021-28878.patch
 Patch5:         CVE-2020-36323.patch
+Patch6:         CVE-2021-29922.patch
 BuildRequires:  git
 BuildRequires:  cmake
 BuildRequires:  glibc
@@ -29,20 +30,14 @@ BuildRequires:  ninja-build
 Rust Programming Language
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
+%autosetup -p1
 
 %build
 sh ./configure --prefix=%{_prefix} --enable-extended --tools="cargo"
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot}%{_libdir} -maxdepth 1 -type f -name '*.so' -exec chmod -v +x '{}' '+'
 rm %{buildroot}%{_docdir}/%{name}/html/.lock
 rm %{buildroot}%{_docdir}/%{name}/*.old
@@ -75,6 +70,8 @@ rm %{buildroot}%{_docdir}/%{name}/*.old
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+*   Mon Aug 23 2021 Ankit Jain <ankitja@vmware.com> 1.51.0-4
+-   Fixes CVE-2021-29922
 *   Tue May 04 2021 Ankit Jain <ankitja@vmware.com> 1.51.0-3
 -   Fixes CVE-2020-36323
 *   Wed Apr 28 2021 Ankit Jain <ankitja@vmware.com> 1.51.0-2
