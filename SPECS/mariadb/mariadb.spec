@@ -1,14 +1,14 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.5.5
-Release:          4%{?dist}
+Version:          10.5.12
+Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Url:              https://mariadb.org/
 Source0:          https://downloads.mariadb.org/f/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define           sha1 mariadb=a341232e8f047a4af5969ba2fbee9d9e4b9310a2
+%define           sha1 mariadb=0e2ca328fdd2821c7a4400f7759cd6882a2c5840
 BuildRequires:    cmake
 BuildRequires:    Linux-PAM-devel
 BuildRequires:    openssl-devel
@@ -18,6 +18,7 @@ BuildRequires:    e2fsprogs-devel
 BuildRequires:    systemd-devel
 BuildRequires:    curl-devel
 BuildRequires:    libxml2-devel
+BuildRequires:    libaio-devel
 Conflicts:        mysql
 
 %description
@@ -33,6 +34,7 @@ plugins and many other tools make it very versatile for a wide variety of use ca
 Summary:          MariaDB server
 Requires:         %{name}-errmsg = %{version}-%{release}
 Requires:         shadow
+Requires:         libaio
 
 %description      server
 The MariaDB server and related files
@@ -59,7 +61,7 @@ Summary:          errmsg for mariadb
 errmsg for maridb
 
 %prep
-%setup -q %{name}-%{version}
+%autosetup -p1 %{name}-%{version}
 # Remove PerconaFT from here because of AGPL licence
 rm -rf storage/tokudb/PerconaFT
 
@@ -90,7 +92,7 @@ make %{?_smp_mflags}
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 mkdir -p %{buildroot}/%{_libdir}/systemd/system
 mv  %{buildroot}/usr/share/systemd/mariadb.service %{buildroot}/%{_libdir}/systemd/system/mariadb.service
 mv  %{buildroot}/usr/share/systemd/mariadb@.service %{buildroot}/%{_libdir}/systemd/system/mariadb@.service
@@ -104,7 +106,7 @@ echo "disable mariadb.service" > %{buildroot}%{_libdir}/systemd/system-preset/50
 
 %check
 cd build
-make test
+make test %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -185,6 +187,7 @@ rm -rf %{buildroot}
 %{_bindir}/mysqlshow
 %{_bindir}/mysqlslap
 %{_bindir}/mariadb_config
+%{_bindir}/mariadb-config
 %{_bindir}/test-connect-t
 %{_bindir}/mysql_client_test
 %{_bindir}/mysql_client_test_embedded
@@ -383,7 +386,6 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/mysql_system_tables.sql
 %{_datadir}/mysql/mysql_system_tables_data.sql
 %{_datadir}/mysql/mysql_test_data_timezone.sql
-%{_datadir}/mysql/mysql_to_mariadb.sql
 %{_datadir}/mysql/mysql_test_db.sql
 %license %{_datadir}/mysql/mroonga/AUTHORS
 %license %{_datadir}/mysql/mroonga/COPYING
@@ -436,6 +438,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Mon Aug 23 2021 Shreyas B <shreyasb@vmware.com> 10.5.12-1
+-   Upgrade to v10.5.12 and adding libaio for Async I/O support
 *   Mon Jun 7 2021 Michelle Wang <michellew@vmware.com> 10.5.5-4
 -   Add shadow as requires for mariadb-server.
 *   Wed Dec 02 2020 Tapas Kundu <tkundu@vmware.com> 10.5.5-3
