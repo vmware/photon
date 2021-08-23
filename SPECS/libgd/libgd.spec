@@ -1,7 +1,7 @@
 Summary:        GD is an open source code library for the dynamic creation of images by programmers.
 Name:           libgd
 Version:        2.2.5
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        MIT
 URL:            https://libgd.github.io/
 Group:          System/Libraries
@@ -18,6 +18,7 @@ Patch3:         libgd-CVE-2018-14553.patch
 Patch4:         libgd-CVE-2017-6363.patch
 Patch5:         libgd-CVE-2019-11038.patch
 Patch6:         libgd-CVE-2019-11038-testcase.patch
+Patch7:         libgd-CVE-2021-38115.patch
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  libpng-devel
 BuildRequires:  libwebp-devel
@@ -35,7 +36,7 @@ GD is written in C, and "wrappers" are available for Perl, PHP and other languag
 Summary:    Header and development files
 Requires:   %{name} = %{version}-%{release}
 %description    devel
-Header & Development files 
+Header & Development files
 %prep
 %setup  -q
 tar xf %{SOURCE1} --no-same-owner
@@ -48,9 +49,9 @@ cp libgd-tests/bug00383.gd2 tests/gd2/
 %patch4 -p1
 %patch5 -p1
 %patch6 -p1
-
+%patch7 -p1
 %build
-./configure --prefix=%{_prefix} --with-webp --with-tiff --with-jpeg --with-png --disable-werror --disable-static
+%configure --with-webp --with-tiff --with-jpeg --with-png --disable-werror --disable-static
 make %{?_smp_mflags}
 %install
 make DESTDIR=%{buildroot} install
@@ -70,6 +71,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Mon Aug 23 2021 Nitesh Kumar <kunitesh@vmware.com>  2.2.5-8
+-   Fix for CVE-2021-38115
 *   Mon Nov 02 2020 Piyush Gupta <gpiyush@vmware.com>  2.2.5-7
 -   Fix for CVE-2019-11038
 *   Tue Mar 24 2020 Ankit Jain <ankitja@vmware.com>  2.2.5-6
