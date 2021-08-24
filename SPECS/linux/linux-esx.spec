@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.198
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -893,6 +893,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Aug 24 2021 Ankit Jain <ankitja@vmware.com> 4.19.198-3
+-   vtarfs: Fix crash in vtarfs_file_read_iter()
 *   Wed Aug 18 2021 Keerthana K <keerthanak@vmware.com> 4.19.198-2
 -   Update ice driver to v1.6.4
 -   Update i40e driver to v2.15.9
