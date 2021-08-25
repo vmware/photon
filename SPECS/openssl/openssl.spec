@@ -1,14 +1,14 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.0.2y
+Version:        1.0.2za
 Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.openssl.org/source/vmware-OpenSSL_1_0_2y.tar.gz
-%define sha1    vmware-OpenSSL_1_0_2y=de813c005cac687ca3e67aa889b6bb8284fef123
+Source0:        http://www.openssl.org/source/vmware-OpenSSL_1_0_2za.tar.gz
+%define sha1    vmware-OpenSSL_1_0_2za=9f29e5179926c25ea03068b8c5e17752d6d903d1
 Source1:        rehash_ca_certificates.sh
 %if 0%{?with_fips:1}
 Source100:      openssl-fips-2.0.20-vmw.tar.gz
@@ -61,7 +61,8 @@ Requires: openssl = %{version}-%{release}
 Perl scripts that convert certificates and keys to various formats.
 
 %prep
-%setup -q -n vmware-OpenSSL_1_0_2y
+# Using autosetup is not feasible
+%setup -q -n vmware-OpenSSL_1_0_2za
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -90,15 +91,18 @@ export CFLAGS="%{optflags}"
     -Wl,-z,noexecstack \
     -Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
 # does not support -j yet
+# make doesn't support _smp_mflags
 make
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+# make doesn't support _smp_mflags
 make INSTALL_PREFIX=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
 ln -sf libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
 ln -sf libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
 
 %check
+# make doesn't support _smp_mflags
 make tests
 
 %post   -p /sbin/ldconfig
@@ -139,6 +143,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/rehash_ca_certificates.sh
 
 %changelog
+*   Tue Aug 24 2021 Srinidhi Rao <srinidhir@vmware.com> 1.0.2za-1
+-   Update to openssl 1.0.2za
 *   Thu Feb 25 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2y-1
 -   Update to openssl 1.0.2y
 *   Fri Dec 18 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2x-2

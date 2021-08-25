@@ -1,6 +1,6 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           nxtgn-openssl
-Version:        1.1.1k
+Version:        1.1.1l
 Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
@@ -8,7 +8,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.openssl.org/source/openssl-%{version}.tar.gz
-%define sha1    openssl=bad9dc4ae6dcc1855085463099b5dacb0ec6130b
+%define sha1    openssl=3b84a0eaac78ae3d21db7184e5a24ae068713fd0
 Source1:        nxtgn-rehash_ca_certificates.sh
 Patch0:         nxtgn-c_rehash.patch
 %if %{with_check}
@@ -50,6 +50,7 @@ Requires: nxtgn-openssl = %{version}-%{release}
 Perl scripts that convert certificates and keys to various formats.
 
 %prep
+# Using autosetup is not feasible
 %setup -q -n openssl-%{version}
 %patch0 -p1
 
@@ -61,9 +62,11 @@ export CFLAGS="%{optflags}"
     --openssldir=%{_sysconfdir}/nxtgn-openssl \
     --shared \
 # does not support -j yet
+# make doesn't support _smp_mflags
 make
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=nxtgn-openssl install
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
 
@@ -74,6 +77,7 @@ ln -sf libssl.so.1.1* %{buildroot}%{_libdir}/libssl.so.1.1.0
 ln -sf libcrypto.so.1.1* %{buildroot}%{_libdir}/libcrypto.so.1.1.0
 
 %check
+# make doesn't support _smp_mflags
 make tests
 
 %post   -p /sbin/ldconfig
@@ -117,6 +121,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/nxtgn-rehash_ca_certificates.sh
 
 %changelog
+*   Tue Aug 24 2021 Srinidhi Rao <srinidhir@vmware.com> 1.1.1l-1
+-   update to openssl 1.1.1l
 *   Mon Mar 29 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1k-1
 -   update to openssl 1.1.1k
 *   Tue Mar 23 2021 Tapas Kundu <tkundu@vmware.com> 1.1.1j-2
