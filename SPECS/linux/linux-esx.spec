@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.61
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -350,6 +350,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Sep 07 2021 Ankit Jain <ankitja@vmware.com> 5.10.61-2
+-   vtarfs: Fix crash in vtarfs_file_read_iter()
 *   Fri Aug 27 2021 Ankit Jain <ankitja@vmware.com> 5.10.61-1
 -   Update to version 5.10.61
 *   Wed Aug 25 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.52-3

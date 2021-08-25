@@ -1,4 +1,4 @@
-From 479d5d8a280fde5ceca0a280fe2d6687b47bd284 Mon Sep 17 00:00:00 2001
+From 64b688900df4ef2c022d2b6c34c1fb759c277397 Mon Sep 17 00:00:00 2001
 From: srinidhira0 <srinidhir@vmware.com>
 Date: Wed, 16 Sep 2020 18:07:58 +0000
 Subject: [PATCH] fs: A new VTARFS file system to mount VTAR archive
@@ -25,6 +25,7 @@ and implemented.
 allocation for file content data.
 
 Signed-off-by: srinidhira0 <srinidhir@vmware.com>
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
 ---
  fs/Kconfig                      |   1 +
  fs/Makefile                     |   1 +
@@ -290,7 +291,7 @@ index 000000000000..536a2ff0020d
 +#endif
 diff --git a/fs/vtarfs/vtarfs_file_dir_ops.c b/fs/vtarfs/vtarfs_file_dir_ops.c
 new file mode 100644
-index 000000000000..bbec98665f40
+index 000000000000..80ebb4bb9946
 --- /dev/null
 +++ b/fs/vtarfs/vtarfs_file_dir_ops.c
 @@ -0,0 +1,471 @@
@@ -646,7 +647,7 @@ index 000000000000..bbec98665f40
 +	ssize_t count;
 +	loff_t pos = iocb->ki_pos;
 +	ssize_t res = 0, copy = 0;
-+	off_t	file_offset, pg_off;
++	off_t pg_off;
 +	int size = 0, i = 0, start = 0, end = 0;
 +
 +        entry = vtarfs_find_by_inode(root_entry, inode->i_ino);
@@ -665,7 +666,6 @@ index 000000000000..bbec98665f40
 +	if ( count > (entry->data_size - pos) )
 +		count = entry->data_size - pos;
 +
-+	file_offset = entry->fileoffset + pos;
 +	size = count;
 +	start = pos >> PAGE_SHIFT;
 +	end = ((pos + count) >> PAGE_SHIFT);
@@ -675,10 +675,11 @@ index 000000000000..bbec98665f40
 +
 +	for ( i = start; i <= end && size > 0; i++) {
 +		pg_off = pos % PAGE_SIZE;
-+		copy = min_t(size_t, size, PAGE_SIZE);
++		copy = min_t(size_t, size, PAGE_SIZE - pg_off);
 +		tarfs_debug("pg_off = %ld, copy = %ld, page[%d]=%p",pg_off,
 +						copy, i, entry->pages[i]);
 +		res = copy_page_to_iter(entry->pages[i], pg_off, copy, to);
++		pos += res;
 +		size -= res;
 +	}
 +	if ( count == size ) {
