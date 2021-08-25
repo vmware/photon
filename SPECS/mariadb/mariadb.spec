@@ -1,14 +1,14 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.5.9
-Release:          2%{?dist}
+Version:          10.5.12
+Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Url:              https://mariadb.org
 Source0:          https://downloads.mariadb.org/f/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define           sha1 %{name}=73767fac3d1c504298259708272fb6a58e644967
+%define           sha1 %{name}=0e2ca328fdd2821c7a4400f7759cd6882a2c5840
 BuildRequires:    cmake
 BuildRequires:    Linux-PAM-devel
 BuildRequires:    openssl-devel
@@ -18,6 +18,7 @@ BuildRequires:    e2fsprogs-devel
 BuildRequires:    systemd-devel
 BuildRequires:    curl-devel
 BuildRequires:    libxml2-devel
+BuildRequires:    libaio-devel
 Conflicts:        mysql
 
 %description
@@ -33,6 +34,7 @@ plugins and many other tools make it very versatile for a wide variety of use ca
 Summary:          MariaDB server
 Requires:         %{name}-errmsg = %{version}-%{release}
 Requires:         shadow
+Requires:         libaio
 
 %description      server
 The MariaDB server and related files
@@ -386,7 +388,6 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/mysql_system_tables.sql
 %{_datadir}/mysql/mysql_system_tables_data.sql
 %{_datadir}/mysql/mysql_test_data_timezone.sql
-%{_datadir}/mysql/mysql_to_mariadb.sql
 %{_datadir}/mysql/mysql_test_db.sql
 %license %{_datadir}/mysql/mroonga/AUTHORS
 %license %{_datadir}/mysql/mroonga/COPYING
@@ -439,6 +440,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Mon Aug 23 2021 Shreyas B <shreyasb@vmware.com> 10.5.12-1
+-   Upgrade to v10.5.12 and adding libaio for Async I/O support
 *   Mon Jun 7 2021 Michelle Wang <michellew@vmware.com> 10.5.9-2
 -   Add shadow as requires for mariadb-server.
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 10.5.9-1
