@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -29,6 +29,7 @@ Patch11:        0003-elf-Use-relaxed-atomics-for-racy-accesses-BZ-19329.patch
 Patch12:        0004-elf-Fix-DTV-gap-reuse-logic-BZ-27135.patch
 Patch13:        0005-elf-Add-test-case-for-BZ-19329.patch
 Patch14:        CVE-2021-35942.patch
+Patch15:        CVE-2021-38604.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %define ExtraBuildRequires python3, python3-libs
@@ -81,6 +82,7 @@ Requires: %{name} = %{version}-%{release}
 Name Service Cache Daemon
 
 %prep
+# Using autosetup is not feasible
 %setup -q
 sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch0 -p1
@@ -98,6 +100,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
+%patch15 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -150,7 +153,7 @@ make %{?_smp_mflags} || make %{?_smp_mflags} || make %{?_smp_mflags}
 #       Do not remove static libs
 pushd %{_builddir}/glibc-build
 #       Create directories
-make install_root=%{buildroot} install
+make install_root=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_sysconfdir}/ld.so.conf.d
 install -vdm 755 %{buildroot}/var/cache/nscd
 install -vdm 755 %{buildroot}%{_libdir}/locale
@@ -331,6 +334,8 @@ fi
 
 
 %changelog
+*   Wed Aug 25 2021 Keerthana K <keerthanak@vmware.com> 2.32-9
+-   Fix CVE-2021-38604
 *   Wed Aug 04 2021 Keerthana K <keerthanak@vmware.com> 2.32-8
 -   Fix CVE-2021-35942
 *   Wed Jun 30 2021 Srinidhi Rao <srinidhir@vmware.com> 2.32-7

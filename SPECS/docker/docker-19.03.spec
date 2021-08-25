@@ -3,7 +3,7 @@
 Summary:        Docker
 Name:           docker
 Version:        19.03.15
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -80,6 +80,7 @@ Requires:       docker = %{version}-%{release}
 Documentation and vimfiles for docker
 
 %prep
+# Using autosetup is not feasible
 %setup -q -c
 mkdir -p "$(dirname "src/%{gopath_comp_engine}")"
 mkdir -p "$(dirname "src/%{gopath_comp_cli}")"
@@ -287,6 +288,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Thu Aug 26 2021 Keerthana K <keerthanak@vmware.com> 19.03.15-4
+-   Bump up version to compile with new glibc
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 19.03.15-3
 -   Bump up version to compile with new go
 *   Thu Mar 25 2021 Piyush Gupta<gpiyush@vmware.com> 19.03.15-2
