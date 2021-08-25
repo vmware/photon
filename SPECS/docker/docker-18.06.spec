@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.2
-Release:        18%{?dist}
+Release:        19%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -243,6 +243,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Thu Aug 26 2021 Keerthana K <keerthanak@vmware.com> 18.06.2-19
+-   Bump up version to compile with new glibc
 *   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 18.06.2-18
 -   Bump up version to compile with new go
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 18.06.2-17
