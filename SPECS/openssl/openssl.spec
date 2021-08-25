@@ -1,14 +1,14 @@
 Summary:    Management tools and libraries relating to cryptography
 Name:       openssl
-Version:    1.0.2y
+Version:    1.0.2za
 Release:    1%{?dist}
 License:    OpenSSL
 URL:        http://www.openssl.org
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
 Distribution:   Photon
-Source0:    http://www.openssl.org/source/vmware-OpenSSL_1_0_2y.tar.gz
-%define sha1 vmware-OpenSSL_1_0_2y=de813c005cac687ca3e67aa889b6bb8284fef123
+Source0:    http://www.openssl.org/source/vmware-OpenSSL_1_0_2za.tar.gz
+%define sha1 vmware-OpenSSL_1_0_2za=9f29e5179926c25ea03068b8c5e17752d6d903d1
 Patch0:     c_rehash.patch
 Patch1:     openssl-ipv6apps.patch
 Patch2:     openssl-init-conslidate.patch
@@ -50,7 +50,7 @@ Requires: openssl = %{version}-%{release}
 Perl scripts that convert certificates and keys to various formats.
 
 %prep
-%setup -q -n vmware-OpenSSL_1_0_2y
+%setup -q -n vmware-OpenSSL_1_0_2za
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
@@ -119,6 +119,8 @@ rm -rf %{buildroot}/*
 /%{_bindir}/c_rehash
 
 %changelog
+*   Tue Aug 24 2021 Srinidhi Rao <srinidhir@vmware.com> 1.0.2za-1
+-   Update to openssl 1.0.2za
 *   Thu Feb 25 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2y-1
 -   update openssl to 1.0.2y
 *   Mon Dec 21 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.2x-2
