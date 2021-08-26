@@ -1,319 +1,42 @@
+From 6b917c9ecb9e8b1b30c32d5c5f83eebea2e1807d Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Wed, 25 Aug 2021 23:52:42 +0530
+Subject: [PATCH] networkd: fix search path
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ cloudinit/net/networkd.py              | 2 +-
+ tests/unittests/test_net_activators.py | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
 diff --git a/cloudinit/net/networkd.py b/cloudinit/net/networkd.py
-new file mode 100644
-index 00000000..9f4c8d8d
---- /dev/null
+index a311572f..6dff154f 100644
+--- a/cloudinit/net/networkd.py
 +++ b/cloudinit/net/networkd.py
-@@ -0,0 +1,160 @@
-+# vi: ts=4 expandtab
-+#
-+# Copyright (C) 2021 VMware Inc.
-+#
-+
-+import os
-+
-+from . import v1tov2
-+from . import renderer
-+from cloudinit import util
-+from cloudinit import subp
-+from distutils.util import strtobool
-+from cloudinit import log as logging
-+
-+
-+LOG = logging.getLogger(__name__)
-+
-+
-+class Renderer(renderer.Renderer):
-+    ''' Renders network information in /etc/systemd/network '''
-+
-+    def __init__(self, config=None):
-+        if not config:
-+            config = {}
-+        self.resolved_conf = config.get('resolved_conf_fn',
-+                                        '/etc/systemd/resolved.conf')
-+        self.network_conf_dir = config.get('network_conf_dir',
-+                                           '/etc/systemd/network/')
-+        self.network_fname_fptr = config.get('network_fname_fptr', '')
-+
-+    def create_network_file(self, content):
-+        ifindex = 10
-+
-+        LOG.debug('Setting Networking Config Version 2')
-+
-+        for k, v in content.items():
-+            if k == 'version' or k != 'ethernets':
-+                continue
-+
-+            for key, val in v.items():
-+                link = key
-+
-+                conf = '[Match]\n'
-+                # Generate [Match] section
-+                if 'match' in val:
-+                    match = val['match']
-+
-+                    for i in match:
-+                        if i == 'macaddress':
-+                            conf += 'MACAddress=%s\n\n' % (match['macaddress'])
-+                        elif i == 'driver':
-+                            conf += 'Driver=%s\n' % (match['driver'])
-+                            conf += 'Name=%s\n\n' % (link)
-+                        elif i == 'name':
-+                            conf += 'Name=%s\n\n' % (match['name'])
-+                else:
-+                    conf += 'Name=%s\n\n' % link
-+
-+                # Generate [Link] section
-+                if ('mtu' in val):
-+                    conf += '[Link]\nMTUBytes=%s\n\n' % (val['mtu'])
-+
-+                # Generate [Network] section
-+                conf += '[Network]\n'
-+
-+                if ('dhcp4' in val and 'dhcp6' in val):
-+                    if (val['dhcp4'] is True and val['dhcp6'] is True):
-+                        conf += 'DHCP=yes\n'
-+                    if (val['dhcp4'] is True and val['dhcp6'] is False):
-+                        conf += 'DHCP=ipv4\n'
-+                    if (val['dhcp4'] is False and val['dhcp6'] is True):
-+                        conf += 'DHCP=ipv6\n'
-+                    if (val['dhcp4'] is False and val['dhcp6'] is False):
-+                        conf += 'DHCP=no\n'
-+                elif ('dhcp4' in val):
-+                    if val['dhcp4'] is True:
-+                        conf += 'DHCP=ipv4\n'
-+                elif ('dhcp6' in val):
-+                    if (val['dhcp6'] is True):
-+                        conf += 'DHCP=ipv6\n'
-+
-+                if ('nameservers' in val):
-+                    nameservers = val['nameservers']
-+
-+                    if ('search' in nameservers):
-+                        s = nameservers['search']
-+                        conf += 'Domains=%s\n' % ' '.join(s)
-+                    if ('addresses' in nameservers):
-+                        s = nameservers['addresses']
-+                        conf += 'DNS=%s\n' % ' '.join(s)
-+
-+                # Generate [DHCPv4 & DHCPv6] section
-+                for item in ['dhcp4domain', 'dhcp6domain']:
-+                    if item not in val:
-+                        continue
-+                    ret = str(val[item]).casefold()
-+                    try:
-+                        ret = strtobool(ret)
-+                        ret = 'yes' if ret else 'no'
-+                    except ValueError:
-+                        if ret != 'route':
-+                            LOG.warning('Invalid dhcp4domain value - %s', ret)
-+                            ret = 'no'
-+                    if item == 'dhcp4domain':
-+                        section = '[DHCPv4]'
-+                    else:
-+                        section = '[DHCPv6]'
-+                    conf += '\n' + section + '\nUseDomains=' + ret + '\n\n'
-+
-+                # Generate [Address] section
-+                if ('addresses' in val):
-+                    for i in val['addresses']:
-+                        conf += '\n[Address]\nAddress=%s\n' % (i)
-+
-+                # Generate [Route] section
-+                if ('gateway4' in val):
-+                    conf += '\n[Route]\nGateway=%s\n' % (val['gateway4'])
-+
-+                if ('gateway6' in val):
-+                    conf += '\n[Route]\nGateway=%s\n' % (val['gateway6'])
-+
-+                if ('routes' in val):
-+                    routes = val['routes']
-+
-+                    for i in routes:
-+                        conf += '\n[Route]\n'
-+                        if (i['via']):
-+                            conf += 'Gateway=%s\n' % (i['via'])
-+                        if (i['to']):
-+                            conf += 'Destination=%s\n' % (i['to'])
-+                        if ('metric' in i and i['metric']):
-+                            conf += 'Metric=%s\n' % (i['metric'])
-+
-+                net_fn = self.network_conf_dir + '10-cloud-init-' + link + \
-+                            '.network'
-+                util.write_file(net_fn, conf)
-+                util.chownbyname(net_fn, 'systemd-network', 'systemd-network')
-+
-+    def render_network_state(self, network_state, templates=None, target=None):
-+        fpnplan = os.path.join(subp.target_path(target), self.network_conf_dir)
-+        util.ensure_dir(os.path.dirname(fpnplan))
-+
-+        content = self._render_content(network_state)
-+        self.create_network_file(content)
-+
-+    def _render_content(self, network_state):
-+        if network_state.version == 2:
-+            LOG.debug('V2 to V2 passthrough')
-+            return network_state.config
-+        if network_state.version == 1:
-+            LOG.debug('Converting from V1 to V2')
-+            return v1tov2.v1tov2(network_state.config)
-+
-+def available(target=None):
-+    expected = ['systemctl']
-+    search = ['/usr/bin', '/bin']
-+    for p in expected:
-+        if not subp.which(p, search=search, target=target):
-+            return False
-+    return True
-diff --git a/cloudinit/net/renderers.py b/cloudinit/net/renderers.py
-index e2de4d55..c3931a98 100644
---- a/cloudinit/net/renderers.py
-+++ b/cloudinit/net/renderers.py
-@@ -4,6 +4,7 @@ from . import eni
- from . import freebsd
- from . import netbsd
- from . import netplan
-+from . import networkd
- from . import RendererNotFoundError
- from . import openbsd
- from . import sysconfig
-@@ -13,12 +14,13 @@ NAME_TO_RENDERER = {
-     "freebsd": freebsd,
-     "netbsd": netbsd,
-     "netplan": netplan,
-+    "networkd": networkd,
-     "openbsd": openbsd,
-     "sysconfig": sysconfig,
- }
+@@ -247,7 +247,7 @@ class Renderer(renderer.Renderer):
  
- DEFAULT_PRIORITY = ["eni", "sysconfig", "netplan", "freebsd",
--                    "netbsd", "openbsd"]
-+                    "netbsd", "openbsd", "networkd"]
+ def available(target=None):
+     expected = ['ip', 'systemctl']
+-    search = ['/usr/bin', '/bin']
++    search = ['/usr/sbin', '/bin']
+     for p in expected:
+         if not subp.which(p, search=search, target=target):
+             return False
+diff --git a/tests/unittests/test_net_activators.py b/tests/unittests/test_net_activators.py
+index 38f2edf2..f63a8b74 100644
+--- a/tests/unittests/test_net_activators.py
++++ b/tests/unittests/test_net_activators.py
+@@ -118,8 +118,8 @@ NETWORK_MANAGER_AVAILABLE_CALLS = [
+ ]
+ 
+ NETWORKD_AVAILABLE_CALLS = [
+-    (('ip',), {'search': ['/usr/bin', '/bin'], 'target': None}),
+-    (('systemctl',), {'search': ['/usr/bin', '/bin'], 'target': None}),
++    (('ip',), {'search': ['/usr/sbin', '/bin'], 'target': None}),
++    (('systemctl',), {'search': ['/usr/sbin', '/bin'], 'target': None}),
+ ]
  
  
- def search(priority=None, target=None, first=False):
-diff --git a/cloudinit/net/v1tov2.py b/cloudinit/net/v1tov2.py
-new file mode 100755
-index 00000000..db9c38a5
---- /dev/null
-+++ b/cloudinit/net/v1tov2.py
-@@ -0,0 +1,120 @@
-+#!/usr/bin/env python3
-+
-+# Copyright (C) 2021 VMware Inc.
-+
-+# Simple module to convert cloud-init network config V1 to V2
-+# This satisfies most of our use cases at the moment
-+# Need to add support to handle all other configs as needed
-+
-+
-+import ipaddress
-+
-+
-+def parse_subnet_routes(cfg, conf):
-+    # place holder for routes inside subnets
-+    pass
-+
-+
-+def parse_subnets(v2cfg, cfg, conf, if_name):
-+    for i in conf:
-+        for k, v in i.items():
-+            if k == 'type':
-+                if v == 'dhcp' or v == 'dhcp4':
-+                    cfg[if_name]['dhcp4'] = True
-+                if v == 'dhcp6':
-+                    cfg[if_name]['dhcp6'] = True
-+                if v == 'static' or v == 'static6':
-+                    cfg[if_name]['dhcp4'] = False
-+                    cfg[if_name]['dhcp6'] = False
-+            elif k == 'address':
-+                cfg[if_name]['addresses'] = [v]
-+            elif k == 'netmask':
-+                pass
-+                # ip4 = ipaddress.IPv4Network((0, v))
-+                # TODO: need to make use of this
-+                # ip4prefixlen = ip4.prefixlen
-+            elif k == 'gateway':
-+                cfg[if_name]['gateway4'] = v
-+            elif k == 'dns_nameservers':
-+                try:
-+                    cfg[if_name]['nameservers'].update({'addresses': v})
-+                except KeyError:
-+                    cfg[if_name]['nameservers'] = {'addresses': v}
-+            elif k == 'dns_search':
-+                try:
-+                    cfg[if_name]['nameservers'].update({'search': v})
-+                except KeyError:
-+                    cfg[if_name]['nameservers'] = {'search': v}
-+            elif k == 'routes':
-+                parse_subnet_routes(cfg, v)
-+
-+    return cfg
-+
-+
-+def parse_phy(v2cfg, conf, if_name):
-+    cfg = {if_name: {}}
-+    cfg[if_name]['set-name'] = if_name
-+    for k, v in conf.items():
-+        if k == 'mac_address':
-+            cfg[if_name]['match'] = {'macaddress': v}
-+        elif k == 'subnets':
-+            subnet_cfgs = parse_subnets(v2cfg, cfg, v, if_name)
-+            cfg[if_name].update(subnet_cfgs)
-+        elif k == 'mtu':
-+            cfg[if_name]['mtu'] = v
-+
-+    return cfg
-+
-+
-+def parse_routes(v2cfg, conf, if_name):
-+    cfg = {}
-+    for k, v in conf.items():
-+        if k == 'destination':
-+            cfg['to'] = v
-+        elif k == 'gateway':
-+            cfg['via'] = v
-+        elif k == 'metric':
-+            cfg[k] = v
-+
-+    return cfg
-+
-+
-+def parse_nameserver(v2cfg, conf, if_name):
-+    cfg = {}
-+    for k, v in conf.items():
-+        if k == 'search':
-+            cfg[k] = v
-+        elif k == 'address':
-+            cfg['addresses'] = v
-+
-+    return cfg
-+
-+
-+def v1tov2(cfg):
-+    key = 'ethernets'
-+    v2cfg = {key: {}}
-+
-+    for conf in cfg:
-+        if 'name' in conf:
-+            if_name = conf['name']
-+        for _, v in conf.items():
-+            if v == 'physical':
-+                ret_cfg = parse_phy(v2cfg, conf, if_name)
-+                try:
-+                    v2cfg[key].update(ret_cfg)
-+                except KeyError:
-+                    v2cfg[key] = ret_cfg
-+            elif v == 'route':
-+                ret_cfg = parse_routes(v2cfg, conf, if_name)
-+                try:
-+                    v2cfg[key][if_name][v + 's'].append(ret_cfg)
-+                except KeyError:
-+                    v2cfg[key][if_name][v + 's'] = [ret_cfg]
-+            elif v == 'nameserver':
-+                ret_cfg = parse_nameserver(v2cfg, conf, if_name)
-+                try:
-+                    v2cfg[key][if_name][v + 's'].update(ret_cfg)
-+                except KeyError:
-+                    v2cfg[key][if_name][v + 's'] = ret_cfg
-+
-+    return v2cfg
+-- 
+2.32.0
+
