@@ -1,37 +1,38 @@
-From d142af405385dd02aa70ff9baefb7960f3c86ac5 Mon Sep 17 00:00:00 2001
+From 2ea315fe4d3c6b5f2f01559b91713adf3358664c Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
-Date: Tue, 22 Jun 2021 11:14:50 +0530
-Subject: [PATCH] Patch VMwareGuestInfo to handle network settings
+Date: Wed, 25 Aug 2021 23:50:44 +0530
+Subject: [PATCH] Patch VMware DS to handle network settings from vmtoolsd
 
 Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
 ---
- .../sources/DataSourceVMwareGuestInfo.py      | 120 +++++++++++++++++-
- 1 file changed, 117 insertions(+), 3 deletions(-)
+ cloudinit/sources/DataSourceVMware.py | 128 +++++++++++++++++++++++++-
+ 1 file changed, 125 insertions(+), 3 deletions(-)
 
-diff --git a/cloudinit/sources/DataSourceVMwareGuestInfo.py b/cloudinit/sources/DataSourceVMwareGuestInfo.py
-index 19d20a2d..0da56386 100644
---- a/cloudinit/sources/DataSourceVMwareGuestInfo.py
-+++ b/cloudinit/sources/DataSourceVMwareGuestInfo.py
-@@ -35,6 +35,7 @@ from cloudinit import log as logging
+diff --git a/cloudinit/sources/DataSourceVMware.py b/cloudinit/sources/DataSourceVMware.py
+index 22ca63de..24ec649f 100644
+--- a/cloudinit/sources/DataSourceVMware.py
++++ b/cloudinit/sources/DataSourceVMware.py
+@@ -74,6 +74,7 @@ from cloudinit import dmi, log as logging
  from cloudinit import sources
  from cloudinit import util
- from cloudinit import safeyaml
+ from cloudinit.subp import subp, ProcessExecutionError
 +from cloudinit.net import network_state
  
  import netifaces
  
-@@ -112,6 +113,116 @@ class DataSourceVMwareGuestInfo(sources.DataSource):
-         if not get_data_access_method():
-             LOG.error("Failed to find vmware-rpctool")
+@@ -85,6 +86,7 @@ NOVAL = "No value found"
  
-+    def set_host_name(self):
-+        hostname = get_guestinfo_value('hostname')
-+        if hostname:
-+            self.distro.set_hostname(hostname)
-+            return True
-+        return False
-+
-+    def configure_network(self):
+ DATA_ACCESS_METHOD_ENVVAR = "envvar"
+ DATA_ACCESS_METHOD_GUESTINFO = "guestinfo"
++DATA_ACCESS_METHOD_VMTOOLSD = "vmtoolsd-guestinfo"
+ 
+ VMWARE_RPCTOOL = find_executable("vmware-rpctool")
+ REDACT = "redact"
+@@ -136,6 +138,106 @@ class DataSourceVMware(sources.DataSource):
+         self.data_access_method = None
+         self.vmware_rpctool = VMWARE_RPCTOOL
+ 
++    def get_nwk_cfgs_from_guestinfo(self):
 +        net_cfg = {'version': 2, 'ethernets': {}}
 +        eth_cfg = net_cfg['ethernets']
 +
@@ -39,7 +40,7 @@ index 19d20a2d..0da56386 100644
 +        while True:
 +            key_prefix = 'interface.' + str(dev_index)
 +
-+            iface_name = get_guestinfo_value(key_prefix + '.name')
++            iface_name = guestinfo(key_prefix + '.name')
 +            if not iface_name:
 +                break
 +
@@ -47,12 +48,12 @@ index 19d20a2d..0da56386 100644
 +            iface_cfg = eth_cfg[iface_name]
 +            iface_cfg['match'].update({'name': iface_name})
 +
-+            mac = get_guestinfo_value(key_prefix + '.mac')
++            mac = guestinfo(key_prefix + '.mac')
 +            if mac:
 +                iface_cfg['match'].update({'macaddress': mac})
 +
 +            key_proto = key_prefix + '.dhcp'
-+            dhcp_val = get_guestinfo_value(key_proto)
++            dhcp_val = guestinfo(key_proto)
 +
 +            dhcp_cfg_map = {
 +                'yes': {'dhcp4': True, 'dhcp6': True},
@@ -61,13 +62,13 @@ index 19d20a2d..0da56386 100644
 +                'no': {'dhcp4': False, 'dhcp6': False},
 +            }
 +
-+            address = get_guestinfo_value(key_prefix + '.address')
++            address = guestinfo(key_prefix + '.address')
 +            if dhcp_val and dhcp_val in {'yes', 'ipv4', 'ipv6', 'no'}:
 +                iface_cfg.update(dhcp_cfg_map[dhcp_val])
 +
 +            if (dhcp_val and dhcp_val == 'no') or address:
 +                if address:
-+                    netmask = get_guestinfo_value(key_prefix + '.netmask')
++                    netmask = guestinfo(key_prefix + '.netmask')
 +                    if netmask:
 +                        netmask = network_state.mask_to_net_prefix(netmask)
 +                        address += '/' + netmask
@@ -80,14 +81,14 @@ index 19d20a2d..0da56386 100644
 +                LOG.warning("No static IP/DHCP given, using DHCP as default")
 +                iface_cfg.update(dhcp_cfg_map['yes'])
 +
-+            dnsserver = get_guestinfo_value('dns.servers')
++            dnsserver = guestinfo('dns.servers')
 +            if dnsserver:
 +                iface_cfg['nameservers'] = {'addresses': []}
 +                dnsdomain = [x.strip() for x in dnsserver.split(',')]
 +                for d in dnsdomain:
 +                    iface_cfg['nameservers']['addresses'].append(d)
 +
-+            dnsdomain = get_guestinfo_value('dns.domains')
++            dnsdomain = guestinfo('dns.domains')
 +            if dnsdomain:
 +                if 'nameservers' in iface_cfg:
 +                    iface_cfg['nameservers'].update({'search': []})
@@ -101,7 +102,7 @@ index 19d20a2d..0da56386 100644
 +            default_destination_set = False
 +            while True:
 +                key_route = key_prefix + '.route.' + str(route_index)
-+                route = get_guestinfo_value(key_route)
++                route = guestinfo(key_route)
 +                if not route:
 +                    break
 +                if 'routes' not in iface_cfg:
@@ -119,7 +120,7 @@ index 19d20a2d..0da56386 100644
 +                    d = {'via': route[0], 'to': route[1]}
 +                    iface_cfg['routes'].append(d)
 +                else:
-+                    #length = 1
++                    # length = 1
 +                    if not default_destination_set:
 +                        d = {'via': route[0], 'to': '0.0.0.0'}
 +                        default_destination_set = True
@@ -129,24 +130,49 @@ index 19d20a2d..0da56386 100644
 +                route_index += 1
 +            dev_index += 1
 +
-+        if net_cfg['ethernets']:
-+            self.distro._write_network_config(net_cfg)
-+            return True
-+        return False
++        return net_cfg if eth_cfg else None
 +
-     def get_data(self):
+     def _get_data(self):
          """
-         This method should really be _get_data in accordance with the most
-@@ -140,10 +251,13 @@ class DataSourceVMwareGuestInfo(sources.DataSource):
-         if data_access_method == VMWARE_RPCTOOL and CLEANUP_GUESTINFO in self.metadata:
-             clear_guestinfo_keys(self.metadata[CLEANUP_GUESTINFO])
+         _get_data loads the metadata, userdata, and vendordata from one of
+@@ -184,6 +286,24 @@ class DataSourceVMware(sources.DataSource):
+                 if md or ud or vd:
+                     self.data_access_method = DATA_ACCESS_METHOD_GUESTINFO
  
--        if self.metadata or self.userdata_raw or self.vendordata_raw:
-+        hostname = self.set_host_name()
-+        net_cfg = self.configure_network()
++        if not self.data_access_method:
++            md = {}
++            key = 'local-hostname'
++            hostname = guestinfo('hostname')
++            if hostname:
++                LOG.info('Setting local-hostname: %s', hostname)
++                md[key] = hostname
 +
-+        if (self.metadata or self.userdata_raw or self.vendordata_raw or
-+                hostname or net_cfg):
++            key = 'network'
++            net_cfg = self.get_nwk_cfgs_from_guestinfo()
++            if net_cfg:
++                LOG.info('Setting network cfg: %s', net_cfg)
++                md[key] = {'config': copy.deepcopy(net_cfg)}
++
++            if md:
++                self.metadata = md
++                self.data_access_method = DATA_ACCESS_METHOD_VMTOOLSD
++
+         if not self.data_access_method:
+             LOG.error("failed to find a valid data access method")
+             return False
+@@ -191,7 +311,8 @@ class DataSourceVMware(sources.DataSource):
+         LOG.info("using data access method %s", self._get_subplatform())
+ 
+         # Get the metadata.
+-        self.metadata = process_metadata(load_json_or_yaml(md))
++        if not self.metadata:
++            self.metadata = process_metadata(load_json_or_yaml(md))
+ 
+         # Get the user data.
+         self.userdata_raw = ud
+@@ -206,8 +327,7 @@ class DataSourceVMware(sources.DataSource):
+         # userdata, or vendordata.
+         if self.metadata or self.userdata_raw or self.vendordata_raw:
              return True
 -        else:
 -            return False
@@ -154,6 +180,15 @@ index 19d20a2d..0da56386 100644
  
      def setup(self, is_new_instance):
          """setup(is_new_instance)
+@@ -243,6 +363,8 @@ class DataSourceVMware(sources.DataSource):
+             get_key_name_fn = get_guestinfo_envvar_key_name
+         elif self.data_access_method == DATA_ACCESS_METHOD_GUESTINFO:
+             get_key_name_fn = get_guestinfo_key_name
++        elif self.data_access_method == DATA_ACCESS_METHOD_VMTOOLSD:
++            get_key_name_fn = get_guestinfo_key_name
+         else:
+             return sources.METADATA_UNKNOWN
+ 
 -- 
 2.32.0
 
