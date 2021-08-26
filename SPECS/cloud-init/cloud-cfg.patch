@@ -1,49 +1,29 @@
+From 37ebe5c83d6fbeec96bad96950f4528a95380aff Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Wed, 25 Aug 2021 19:14:01 +0530
+Subject: [PATCH] Add default DS list & few other changes to cloud.cfg
+
+Comments in the file describe why they are needed
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ config/cloud.cfg.tmpl | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
 diff --git a/config/cloud.cfg.tmpl b/config/cloud.cfg.tmpl
-index 7171aaa5..9fe317f4 100644
+index 825deff4..8847bb7b 100644
 --- a/config/cloud.cfg.tmpl
 +++ b/config/cloud.cfg.tmpl
-@@ -11,11 +11,22 @@ syslog_fix_perms: root:root
- # when a 'default' entry is found it will reference the 'default_user'
- # from the distro configuration specified below
- users:
-+{% if variant in ["photon"] %}
-+   - name: root
-+     lock_passwd: false
-+{% else %}
-    - default
-+{% endif %}
-+
-+# VMware OVF guest customization.
-+{% if variant in ["photon"] %}
-+disable_vmware_customization: true
-+manage_etc_hosts: false
-+{% endif %}
- 
- # If this is set, 'root' will not be able to ssh in and they
- # will get a message to login instead as the default $user
--{% if variant in ["freebsd"] %}
-+{% if variant in ["freebsd", "photon"] %}
- disable_root: false
- {% else %}
- disable_root: true
-@@ -28,7 +39,6 @@ resize_rootfs: noblock
- {% endif %}
- resize_rootfs_tmp: /dev
- ssh_pwauth:   0
--
- {% endif %}
- # This will cause the set+update hostname module to not operate (if true)
- preserve_hostname: false
-@@ -37,6 +47,8 @@ preserve_hostname: false
+@@ -51,6 +51,8 @@ preserve_hostname: false
  # This should not be required, but leave it in place until the real cause of
  # not finding -any- datasources is resolved.
  datasource_list: ['NoCloud', 'ConfigDrive', 'Azure', 'OpenStack', 'Ec2']
 +{% elif variant in ["photon"] %}
-+datasource_list: ['NoCloud', 'OVF', 'ConfigDrive', 'OpenStack', 'VMwareGuestInfo', None]
++datasource_list: ['NoCloud', 'OVF', 'ConfigDrive', 'OpenStack', 'VMware', None]
  {% endif %}
  # Example datasource config
  # datasource:
-@@ -45,6 +57,11 @@ datasource_list: ['NoCloud', 'ConfigDrive', 'Azure', 'OpenStack', 'Ec2']
+@@ -59,6 +61,11 @@ datasource_list: ['NoCloud', 'ConfigDrive', 'Azure', 'OpenStack', 'Ec2']
  #      timeout: 5 # (defaults to 50 seconds)
  #      max_wait: 10 # (defaults to 120 seconds)
  
@@ -55,96 +35,6 @@ index 7171aaa5..9fe317f4 100644
  
  {% if variant == "amazon" %}
  # Amazon Linux relies on ec2-net-utils for network configuration
-@@ -75,7 +92,9 @@ cloud_init_modules:
-  - resolv_conf
- {% endif %}
- {% if not variant.endswith("bsd") %}
-+{% if variant not in ["photon"] %}
-  - ca-certs
-+{% endif %}
-  - rsyslog
- {% endif %}
-  - users-groups
-@@ -89,11 +108,15 @@ cloud_config_modules:
-  - emit_upstart
-  - snap
- {% endif %}
-+{% if variant not in ["photon"] %}
-  - ssh-import-id
-  - locale
-+{% endif %}
-  - set-passwords
--{% if variant in ["rhel", "fedora"] %}
-+{% if variant in ["rhel", "fedora", "photon"] %}
-+{% if variant not in ["photon"] %}
-  - spacewalk
-+{% endif %}
-  - yum-add-repo
- {% endif %}
- {% if variant in ["ubuntu", "unknown", "debian"] %}
-@@ -120,6 +143,10 @@ cloud_config_modules:
-  - byobu
- {% endif %}
- 
-+{% if variant in ["photon"] %}
-+unverified_modules: ['yum-add-repo']
-+{% endif %}
-+
- # The modules that run in the 'final' stage
- cloud_final_modules:
-  - package-update-upgrade-install
-@@ -154,8 +181,8 @@ cloud_final_modules:
- system_info:
-    # This will affect which distro class gets used
- {% if variant in ["alpine", "amazon", "arch", "centos", "debian",
--                  "fedora", "freebsd", "netbsd", "openbsd", "rhel",
--                  "suse", "ubuntu"] %}
-+                  "fedora", "freebsd", "netbsd", "openbsd", "photon",
-+                  "rhel", "suse", "ubuntu"] %}
-    distro: {{ variant }}
- {% else %}
-    # Unknown/fallback distro.
-@@ -264,6 +291,28 @@ system_info:
-      groups: [wheel]
-      sudo: ["ALL=(ALL) NOPASSWD:ALL"]
-      shell: /bin/ksh
-+{% elif variant == "photon" %}
-+   default_user:
-+     name: photon
-+     lock_passwd: True
-+     gecos: PhotonOS
-+     groups: [wheel]
-+     sudo: ["ALL=(ALL) NOPASSWD:ALL"]
-+     shell: /bin/bash
-+   # Other config here will be given to the distro class and/or path classes
-+   paths:
-+      cloud_dir: /var/lib/cloud/
-+      templates_dir: /etc/cloud/templates/
-+   network:
-+      renderers: ['networkd']
-+
-+   # If set to true, cloud-init will not create fallback netcfg
-+   # In Photon, we have default network settings already, hence if network
-+   # settings are not explicitly given in metadata, don't use fallback netcfg.
-+   disable_fallback_netcfg: true
-+
-+   ssh_svcname: sshd
-+
- {% endif %}
- {% if variant in ["freebsd", "netbsd", "openbsd"] %}
-    network:
-diff --git a/tools/render-cloudcfg b/tools/render-cloudcfg
-index ed454840..afbd8f90 100755
---- a/tools/render-cloudcfg
-+++ b/tools/render-cloudcfg
-@@ -5,8 +5,8 @@ import os
- import sys
- 
- VARIANTS = ["alpine", "amazon", "arch", "centos", "debian", "fedora",
--            "freebsd", "netbsd", "openbsd", "rhel", "suse", "ubuntu",
--            "unknown"]
-+            "freebsd", "netbsd", "openbsd", "photon", "rhel", "suse",
-+            "ubuntu", "unknown"]
- 
- 
- if "avoid-pep8-E402-import-not-top-of-file":
+-- 
+2.32.0
+
