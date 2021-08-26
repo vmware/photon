@@ -1,7 +1,7 @@
 Summary:	cpio-2.12
 Name:		cpio
 Version:	2.12
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/cpio/
 Group:		System Environment/System utilities
@@ -10,6 +10,8 @@ Distribution: 	Photon
 Source0:	http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
 %define sha1 cpio=60358408c76db354f6716724c4bcbcb6e18ab642
 Patch0:		cpio-CVE-2019-14866.patch
+Patch1:         cpio-CVE-2021-38185.patch
+Patch2:         cpio-fix_segmentation_fault.patch
 Conflicts:      toybox
 %description
 The cpio package contains tools for archiving.
@@ -22,13 +24,14 @@ Requires: %{name} = %{version}-%{release}
 These are the additional language files of cpio
 
 %prep
+# Using autosetup is not feasible
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
 %build
 sed -i -e '/gets is a/d' gnu/stdio.in.h
-./configure \
-	--prefix=%{_prefix} \
-        --bindir=%{_bindir} \
+%configure \
         --enable-mt   \
         --with-rmt=/usr/libexec/rmt
 make %{?_smp_mflags}
@@ -36,7 +39,7 @@ makeinfo --html            -o doc/html      doc/cpio.texi
 makeinfo --html --no-split -o doc/cpio.html doc/cpio.texi
 makeinfo --plaintext       -o doc/cpio.txt  doc/cpio.texi
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 install -v -m755 -d %{buildroot}/%{_docdir}/%{name}-%{version}/html
 install -v -m644    doc/html/* %{buildroot}/%{_docdir}/%{name}-%{version}/html
 install -v -m644    doc/cpio.{html,txt} %{buildroot}/%{_docdir}/%{name}-%{version}
@@ -56,6 +59,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Fri Aug 20 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.12-6
+- Adding security patch for CVE-2021-38185
 * Thu Jan 23 2020 Siju Maliakkal <smaliakkal@vmware.com> 2.12-5
 - Patch for CVE-2019-14866
 * Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 2.12-4

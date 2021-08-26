@@ -1,0 +1,14 @@
+diff --git a/src/dstring.c b/src/dstring.c
+index 064da33..2349a5c 100644
+--- a/src/dstring.c
++++ b/src/dstring.c
+@@ -28,9 +28,7 @@
+ #include <strings.h>
+ #endif
+ #include "dstring.h"
+-
+-char *xmalloc (unsigned n);
+-char *xrealloc (char *p, unsigned n);
++#include <xalloc.h>
+ 
+ /* Initialiaze dynamic string STRING with space for SIZE characters.  */
