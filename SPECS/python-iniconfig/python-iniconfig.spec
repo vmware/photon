@@ -3,7 +3,7 @@
 Summary:        iniconfig: brain-dead simple config-ini parsing
 Name:           python3-iniconfig
 Version:        1.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://github.com/RonnyPfannschmidt/iniconfig
 Group:          System Environment/Programming
@@ -35,11 +35,11 @@ iniconfig is a small and simple INI-file parser module having a unique set of fe
 %prep
 %autosetup -n iniconfig-%{version}
 
-%install
-python3 setup.py install --skip-build --root %{buildroot}
+%build
+%py3_build
 
-%post
-/sbin/ldconfig
+%install
+%py3_install
 
 %clean
 rm -rf %{buildroot}/*
@@ -47,8 +47,11 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root,-)
 %license LICENSE
+%{python3_sitelib}/iniconfig/*
 %{python3_sitelib}/iniconfig*.egg-info/*
 
 %changelog
-*   Tue Nov 10 2020 Susant Sahani <ssahani@vmware.com> 1.1.1-1
--   Initial rpm release.
+* Thu Aug 26 2021 Susant Sahani <ssahani@vmware.com> 1.1.1-2
+- Use python macros
+* Tue Nov 10 2020 Susant Sahani <ssahani@vmware.com> 1.1.1-1
+- Initial rpm release.
