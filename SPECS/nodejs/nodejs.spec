@@ -1,15 +1,14 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        14.16.0
-Release:        2%{?dist}
+Version:        14.17.5
+Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define         sha1 node=d5d92abc160dc4ca4a27a6d43bcf78c42b7aff06
-Patch0:         CVE-2021-22918.patch
+%define         sha1 node=5c66c638e6dce8b4a4c3760033295c2d7c2d3f34
 BuildRequires:  coreutils >= 8.22, zlib
 BuildRequires:  python3
 BuildRequires:  which
@@ -48,7 +47,7 @@ for FILE in .gitmodules .gitignore .npmignore .travis.yml \*.py[co]; do
 done
 
 %check
-make cctest
+make cctest %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 
@@ -67,6 +66,8 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Thu Aug 26 2021 Ankit Jain <ankitja@vmware.com> 14.17.5-1
+-   Update to 14.17.5
 *   Tue Jul 20 2021 Piyush Gupta <gpiyush@vmware.com> 14.16.0-2
 -   Fix for CVE-2021-22918.
 *   Thu Mar 18 2021 Piyush Gupta <gpiyush@vmware.com> 14.16.0-1

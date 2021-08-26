@@ -31,11 +31,13 @@ fi
 
 mkdir -p tmp/k8dash
 cp ${K8S_DASH_RPM_FILE} tmp/k8dash/
+cp ./Dockerfile.kubernetes-dashboard tmp/k8dash
 pushd ./tmp/k8dash
 rpm2cpio ${K8S_DASH_RPM} | cpio -vid
 mkdir -p img
 cp -p usr/bin/dashboard img/
 cp -p -r opt/k8dashboard/* img/
+cp ./Dockerfile.kubernetes-dashboard img/Dockerfile
 cd img
 docker build --rm -t ${IMG_NAME} .
 docker save -o ${K8S_DASH_TAR} ${IMG_NAME}

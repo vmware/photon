@@ -1,13 +1,13 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
-Version:        2.0.3
-Release:        6%{?dist}
+Version:        2.3.1
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    kubernetes-dashboard=267597cdd64fb20b4aa66e890349b79230e31154
+%define sha1    kubernetes-dashboard=0a9fa17e5c3ea8e142318e850871a515b4a499d2
 Source1:        dashboard-dist-%{version}.tar.gz
-%define sha1    dashboard-dist=f4ac3b53dd1053abeb94836ad3083bc6de3b9f4e
+%define sha1    dashboard-dist=53054d2b0dcd4ef8608d4939007ebab1d28a3175
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -29,7 +29,10 @@ Requires:       openjre8
 Kubernetes Dashboard UI.
 
 %prep
-%setup -q -n dashboard-%{version}
+%autosetup -p1 -n dashboard-%{version}
+# Change the npm default registry to enterprise registry
+#sed -i 's#https://registry.npmjs.org#http://<url>#g' *.json
+#npm config set registry http://<url>
 
 %build
 export PATH=${PATH}:/usr/bin
@@ -68,6 +71,8 @@ cp -p -r ./dist/amd64/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
+*   Thu Aug 26 2021 Ankit Jain <ankitja@vmware.com> 2.3.1-1
+-   Update to 2.3.1
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 2.0.3-6
 -   Bump up version to compile with new go
 *   Thu Mar 25 2021 Piyush Gupta<gpiyush@vmware.com> 2.0.3-5
