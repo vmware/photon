@@ -1,7 +1,7 @@
 Summary:        GD is an open source code library for the dynamic creation of images by programmers.
 Name:           libgd
 Version:        2.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://libgd.github.io/
 Group:          System/Libraries
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/libgd/libgd/releases/download/gd-%{version}/%{name}-%{version}.tar.gz
 %define sha1    libgd=77bf57a17107da22612ed606fc2f941fe7c067f0
+Patch0:         libgd-CVE-2021-38115.patch
 BuildRequires:  libjpeg-turbo-devel
 BuildRequires:  libpng-devel
 BuildRequires:  libwebp-devel
@@ -29,7 +30,10 @@ Requires:   %{name} = %{version}-%{release}
 %description    devel
 Header & Development files
 %prep
+# Using autosetup is not feasible
 %setup -c -n %{name}
+cd %{name}-gd-%{version}
+%patch0 -p1
 
 %build
 cd %{name}-gd-%{version}
@@ -39,7 +43,7 @@ cd %{name}-gd-%{version}
 make %{?_smp_mflags}
 %install
 cd %{name}-gd-%{version}
-make DESTDIR=%{buildroot} install
+%make_install
 
 %check
 make %{?_smp_mflags} -k check
@@ -56,6 +60,8 @@ make %{?_smp_mflags} -k check
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Thu Aug 26 2021 Nitesh Kumar <kunitesh@vmware.com> 2.3.0-2
+-   Fix for CVE-2021-38115.
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.3.0-1
 -   Automatic Version Bump
 *   Thu Mar 05 2020 Ankit Jain <ankitja@vmware.com>  2.2.5-4
