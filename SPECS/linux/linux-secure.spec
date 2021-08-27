@@ -10,7 +10,7 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.52
+Version:        5.10.61
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -21,7 +21,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=d1c6571f7fdf55939c451e35f02dd2cc7d143d14
+%define sha1 linux=7bf2b48bccb0a7fce7a2cfaf801929b3e81f8709
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -305,6 +305,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Aug 27 2021 Ankit Jain <ankitja@vmware.com> 5.10.61-1
+-   Update to version 5.10.61
 *   Fri Jul 23 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.52-1
 -   Update to version 5.10.52
 *   Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.46-2

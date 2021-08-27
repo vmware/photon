@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.52
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        5.10.61
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -32,7 +32,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=d1c6571f7fdf55939c451e35f02dd2cc7d143d14
+%define sha1 linux=7bf2b48bccb0a7fce7a2cfaf801929b3e81f8709
 Source1:	config_%{_arch}
 Source2:	initramfs.trigger
 %define ena_version 2.4.0
@@ -671,6 +671,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Aug 27 2021 Ankit Jain <ankitja@vmware.com> 5.10.61-1
+-   Update to version 5.10.61
 *   Wed Aug 18 2021 Keerthana K <keerthanak@vmware.com> 5.10.52-2
 -   Update ice driver to v1.6.4
 -   Update i40e driver to v2.15.9

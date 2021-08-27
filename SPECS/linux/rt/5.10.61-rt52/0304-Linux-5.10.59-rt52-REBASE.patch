@@ -1,0 +1,19 @@
+From bd91179216099703f95531e2e97289690a7ea408 Mon Sep 17 00:00:00 2001
+From: "Steven Rostedt (VMware)" <rostedt@goodmis.org>
+Date: Wed, 25 Aug 2021 21:16:57 -0400
+Subject: [PATCH 304/304] Linux 5.10.59-rt52 REBASE
+
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 21988f9ad53f..66a5ed8bf3d7 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt34
++-rt52
+-- 
+2.32.0
+

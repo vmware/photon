@@ -1,0 +1,47 @@
+From 57f08bddb35d30930cb2c7bceca597b9ac68b969 Mon Sep 17 00:00:00 2001
+From: Chao Qin <chao.qin@intel.com>
+Date: Mon, 19 Jul 2021 10:26:50 +0800
+Subject: [PATCH 302/304] printk: Enhance the condition check of msleep in
+ pr_flush()
+
+[ Upstream commit 83e9288d9c4295d1195e9d780fcbc42c72ba4a83 ]
+
+There is msleep in pr_flush(). If call WARN() in the early boot
+stage such as in early_initcall, pr_flush() will run into msleep
+when process scheduler is not ready yet. And then the system will
+sleep forever.
+
+Before the system_state is SYSTEM_RUNNING, make sure DO NOT sleep
+in pr_flush().
+
+Fixes: c0b395bd0fe3("printk: add pr_flush()")
+Signed-off-by: Chao Qin <chao.qin@intel.com>
+Signed-off-by: Lili Li <lili.li@intel.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: John Ogness <john.ogness@linutronix.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lore.kernel.org/lkml/20210719022649.3444072-1-chao.qin@intel.com
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ kernel/printk/printk.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/printk/printk.c b/kernel/printk/printk.c
+index f56fd2e34cc7..53d90278494b 100644
+--- a/kernel/printk/printk.c
++++ b/kernel/printk/printk.c
+@@ -3545,7 +3545,9 @@ bool pr_flush(int timeout_ms, bool reset_on_progress)
+ 	u64 diff;
+ 	u64 seq;
+ 
+-	may_sleep = (preemptible() && !in_softirq());
++	may_sleep = (preemptible() &&
++		     !in_softirq() &&
++		     system_state >= SYSTEM_RUNNING);
+ 
+ 	seq = prb_next_seq(prb);
+ 
+-- 
+2.32.0
+
