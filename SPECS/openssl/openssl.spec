@@ -1,14 +1,14 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.1.1k
-Release:        2%{?dist}
+Version:        1.1.1l
+Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.openssl.org/source/openssl-1.1.1k.tar.gz
-%define sha1    openssl=bad9dc4ae6dcc1855085463099b5dacb0ec6130b
+Source0:        http://www.openssl.org/source/openssl-1.1.1l.tar.gz
+%define sha1    openssl=3b84a0eaac78ae3d21db7184e5a24ae068713fd0
 Source1:        rehash_ca_certificates.sh
 %if %{with_check}
 BuildRequires: zlib-devel
@@ -51,6 +51,7 @@ Requires: openssl = %{version}-%{release}
 The package contains openssl doc files.
 
 %prep
+# Using autosetup is not feasible
 %setup -q
 
 %build
@@ -73,9 +74,11 @@ export MACHINE=%{_arch}
     -Wl,-z,noexecstack
 
 # does not support -j yet
+# make doesn't support _smp_mflags
 make
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
 
@@ -85,6 +88,7 @@ ln -sf libcrypto.so.1.1 %{buildroot}%{_libdir}/libcrypto.so.1.1.0
 ln -sf libcrypto.so.1.1 %{buildroot}%{_libdir}/libcrypto.so.1.1.1
 
 %check
+# make doesn't support _smp_mflags
 make tests
 
 %post   -p /sbin/ldconfig
@@ -128,6 +132,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+*   Fri Aug 27 2021 Srinidhi Rao <srinidhir@vmware.com> 1.1.1l-1
+-   update to openssl 1.1.1l
 *   Fri Jun 18 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1k-2
 -   use openssl rehash functionality and remove unused patches
 *   Mon Mar 29 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1k-1
