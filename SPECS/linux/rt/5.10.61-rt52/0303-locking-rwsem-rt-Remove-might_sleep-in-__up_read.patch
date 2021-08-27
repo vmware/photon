@@ -1,0 +1,30 @@
+From 019667401504e7fff3db14f2f4b119c0efb4a1ce Mon Sep 17 00:00:00 2001
+From: Andrew Halaney <ahalaney@redhat.com>
+Date: Tue, 6 Apr 2021 17:19:52 -0500
+Subject: [PATCH 303/304] locking/rwsem-rt: Remove might_sleep() in __up_read()
+
+There's no chance of sleeping here, the reader is giving up the
+lock and possibly waking up the writer who is waiting on it.
+
+Reported-by: Chunyu Hu <chuhu@redhat.com>
+Signed-off-by: Andrew Halaney <ahalaney@redhat.com>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ kernel/locking/rwsem-rt.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/kernel/locking/rwsem-rt.c b/kernel/locking/rwsem-rt.c
+index 274172d5bb3a..b61edc4dcb73 100644
+--- a/kernel/locking/rwsem-rt.c
++++ b/kernel/locking/rwsem-rt.c
+@@ -198,7 +198,6 @@ void __up_read(struct rw_semaphore *sem)
+ 	if (!atomic_dec_and_test(&sem->readers))
+ 		return;
+ 
+-	might_sleep();
+ 	raw_spin_lock_irq(&m->wait_lock);
+ 	/*
+ 	 * Wake the writer, i.e. the rtmutex owner. It might release the
+-- 
+2.32.0
+
