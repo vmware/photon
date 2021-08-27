@@ -3,18 +3,21 @@ From: Vivek Thampi <vithampi@vmware.com>
 Date: Wed, 4 Nov 2020 01:46:06 -0800
 Subject: [PATCH] Add support for gettimex64 interface
 
+[Srinidhi Rao: Ported this patch to kerbel version 4.19.205]
+
 Signed-off-by: Vivek Thampi <vithampi@vmware.com>
 Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
- src/i40e_ptp.c | 24 +++++++++++++++---------
- src/kcompat.h  | 22 +---------------------
- 2 files changed, 16 insertions(+), 30 deletions(-)
+ src/i40e_ptp.c                                 | 24 ++++++++++++++--------
+ src/kcompat.h                                  | 23 +--------------------
+ src/kcompat_std_defs.h                         |  8 +++++++-
+ 3 files changed, 23 insertions(+), 32 deletions(-)
 
 diff --git a/src/i40e_ptp.c b/src/i40e_ptp.c
-index 0244c5a..1b9ee11 100644
+index e9c1318..af1b9de 100644
 --- a/src/i40e_ptp.c
 +++ b/src/i40e_ptp.c
-@@ -266,19 +266,23 @@ static int i40e_ptp_verify(struct ptp_clock_info *ptp, unsigned int pin,
+@@ -290,19 +290,23 @@ static int i40e_ptp_verify(struct ptp_clock_info *ptp, unsigned int pin,
   * i40e_ptp_read - Read the PHC time from the device
   * @pf: Board private structure
   * @ts: timespec structure to hold the current time value
@@ -39,7 +42,7 @@ index 0244c5a..1b9ee11 100644
  	hi = rd32(hw, I40E_PRTTSYN_TIME_H);
  
  	ns = (((u64)hi) << 32) | lo;
-@@ -385,7 +389,7 @@ static void i40e_ptp_set_1pps_signal_hw(struct i40e_pf *pf)
+@@ -409,7 +413,7 @@ static void i40e_ptp_set_1pps_signal_hw(struct i40e_pf *pf)
  	wr32(hw, I40E_PRTTSYN_AUX_1(1), I40E_PRTTSYN_AUX_1_INSTNT);
  	wr32(hw, I40E_PRTTSYN_AUX_0(1), I40E_PRTTSYN_AUX_0_OUT_ENABLE);
  
@@ -48,7 +51,7 @@ index 0244c5a..1b9ee11 100644
  	now.tv_sec += I40E_PTP_2_SEC_DELAY;
  	now.tv_nsec = 0;
  	ns = timespec64_to_ns(&now);
-@@ -434,7 +438,7 @@ static int i40e_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+@@ -458,7 +462,7 @@ static int i40e_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
  		struct timespec64 then, now;
  
  		then = ns_to_timespec64(delta);
@@ -57,7 +60,7 @@ index 0244c5a..1b9ee11 100644
  		now = timespec64_add(now, then);
  		i40e_ptp_write(pf, (const struct timespec64 *)&now);
  		i40e_ptp_set_1pps_signal_hw(pf);
-@@ -445,19 +449,21 @@ static int i40e_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+@@ -469,19 +473,21 @@ static int i40e_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
  }
  
  /**
@@ -82,7 +85,7 @@ index 0244c5a..1b9ee11 100644
  	mutex_unlock(&pf->tmreg_lock);
  	return 0;
  }
-@@ -495,7 +501,7 @@ static int i40e_ptp_gettime32(struct ptp_clock_info *ptp, struct timespec *ts)
+@@ -519,7 +525,7 @@ static int i40e_ptp_gettime32(struct ptp_clock_info *ptp, struct timespec *ts)
  	struct timespec64 ts64;
  	int err;
  
@@ -91,7 +94,7 @@ index 0244c5a..1b9ee11 100644
  	if (err)
  		return err;
  
-@@ -1446,7 +1452,7 @@ static long i40e_ptp_create_clock(struct i40e_pf *pf)
+@@ -1502,7 +1508,7 @@ static long i40e_ptp_create_clock(struct i40e_pf *pf)
  	pf->ptp_caps.adjfreq = i40e_ptp_adjfreq;
  	pf->ptp_caps.adjtime = i40e_ptp_adjtime;
  #ifdef HAVE_PTP_CLOCK_INFO_GETTIME64
@@ -100,7 +103,7 @@ index 0244c5a..1b9ee11 100644
  	pf->ptp_caps.settime64 = i40e_ptp_settime;
  #else
  	pf->ptp_caps.gettime = i40e_ptp_gettime32;
-@@ -1493,7 +1499,7 @@ void i40e_ptp_save_hw_time(struct i40e_pf *pf)
+@@ -1549,7 +1555,7 @@ void i40e_ptp_save_hw_time(struct i40e_pf *pf)
  	if (!(pf->flags & I40E_FLAG_PTP))
  		return;
  
@@ -110,10 +113,10 @@ index 0244c5a..1b9ee11 100644
  	pf->ptp_reset_start = ktime_get();
  }
 diff --git a/src/kcompat.h b/src/kcompat.h
-index a48b6d3..526f99c 100644
+index d785507..40baa6c 100644
 --- a/src/kcompat.h
 +++ b/src/kcompat.h
-@@ -6834,29 +6834,9 @@ _kc_dev_change_flags(struct net_device *netdev, unsigned int flags,
+@@ -6892,30 +6892,9 @@ _kc_dev_change_flags(struct net_device *netdev, unsigned int flags,
  
  #define dev_change_flags _kc_dev_change_flags
  #endif /* !(RHEL_RELEASE_CODE && RHEL > RHEL(8,0)) */
@@ -122,6 +125,7 @@ index a48b6d3..526f99c 100644
 -      RHEL_RELEASE_CODE < RHEL_RELEASE_VERSION(8,0)) || \
 -     (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,1)))
 -#define HAVE_PTP_SYS_OFFSET_EXTENDED_IOCTL
+-#define HAVE_PTP_CLOCK_INFO_GETTIMEX64
 -#else /* RHEL >= 7.7 && RHEL < 8.0 || RHEL >= 8.1 */
 -struct ptp_system_timestamp {
 -	struct timespec64 pre_ts;
@@ -144,6 +148,29 @@ index a48b6d3..526f99c 100644
  #if (RHEL_RELEASE_CODE && (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,1)))
  #define HAVE_NDO_BRIDGE_SETLINK_EXTACK
  #endif /* RHEL 8.1 */
--- 
-1.8.3.1
-
+diff --git a/src/kcompat_std_defs.h b/src/kcompat_std_defs.h
+index 26ca803..b550dc2 100644
+--- a/src/kcompat_std_defs.h
++++ b/src/kcompat_std_defs.h
+@@ -73,7 +73,6 @@
+ 
+ /*****************************************************************************/
+ #if (LINUX_VERSION_CODE < KERNEL_VERSION(5,4,0))
+-#define NEED_SKB_FRAG_OFF_ACCESSORS
+ #define NEED_FLOW_INDR_BLOCK_CB_REGISTER
+ #else /* >= 5.4.0 */
+ #endif /* 5.4.0 */
+@@ -85,6 +84,13 @@
+ #else /* >= 5.9.0 */
+ #endif /* 5.9.0 */
+ 
++/*****************************************************************************/
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,19,201))
++#define NEED_SKB_FRAG_OFF_ACCESSORS
++#else /* >= 4.19.201 */
++#undef NEED_SKB_FRAG_OFF_ACCESSORS
++#endif /* 4.19.201 */
++
+ /*****************************************************************************/
+ #if (LINUX_VERSION_CODE < KERNEL_VERSION(5,10,0))
+ #define NEED_NET_PREFETCH

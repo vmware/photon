@@ -4,9 +4,12 @@ Date: Wed, 18 Aug 2021 07:05:41 +0000
 Subject: [PATCH] ice: Use PTP_SYS_OFFSET_EXTENDED_IOCTL support
 
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
+
+[Srinidhi Rao: Ported this patch to kernel version 4.19.205]
 ---
- src/kcompat.h | 22 ----------------------
- 1 file changed, 22 deletions(-)
+ src/kcompat.h                                  | 22 ----------------------
+ src/kcompat_std_defs.h                         |  8 +++++++-
+ 2 files changed, 7 insertions(+), 23 deletions(-)
 
 diff --git a/src/kcompat.h b/src/kcompat.h
 index 6549382..fba7100 100644
@@ -43,6 +46,27 @@ index 6549382..fba7100 100644
  #if (RHEL_RELEASE_CODE && (RHEL_RELEASE_CODE >= RHEL_RELEASE_VERSION(8,1)))
  #define HAVE_NDO_BRIDGE_SETLINK_EXTACK
  #endif /* RHEL 8.1 */
--- 
-2.28.0
-
+diff --git a/src/kcompat_std_defs.h b/src/kcompat_std_defs.h
+index 94a5e7d..399fa0a 100644
+--- a/src/kcompat_std_defs.h
++++ b/src/kcompat_std_defs.h
+@@ -99,7 +99,6 @@
+ 
+ /*****************************************************************************/
+ #if (LINUX_VERSION_CODE < KERNEL_VERSION(5,4,0))
+-#define NEED_SKB_FRAG_OFF_ACCESSORS
+ #define NEED_FLOW_INDR_BLOCK_CB_REGISTER
+ #else /* >= 5.4.0 */
+ #endif /* 5.4.0 */
+@@ -118,4 +117,11 @@
+ #else /* >= 5.10.0 */
+ #endif /* 5.10.0 */
+ 
++/*****************************************************************************/
++#if (LINUX_VERSION_CODE < KERNEL_VERSION(4,19,201))
++#define NEED_SKB_FRAG_OFF_ACCESSORS
++#else /* >= 4.19.201 */
++#undef NEED_SKB_FRAG_OFF_ACCESSORS
++#endif /* 4.19.201 */
++
+ #endif /* _KCOMPAT_STD_DEFS_H_ */

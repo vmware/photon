@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.198
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.205
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=52501081b334e88c6c2b632b087b347aab59dd17
+%define sha1 linux=f06a4a1fcb195551cde406fe70a7ddba9a948132
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -482,6 +482,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Aug 27 2021 srinidhira0 <srinidhir@vmware.com> 4.19.205-1
+-   Update to version 4.19.205
 *   Wed Aug 11 2021 Vikash Bansal <bvikas@vmware.com> 4.19.198-2
 -   Remove deflate tests from tcrypt
 *   Tue Jul 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.198-1

@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.198
+Version:        4.19.205
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt85
-Release:        4%{?kat_build:.%kat}%{?dist}
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,14 +15,14 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=52501081b334e88c6c2b632b087b347aab59dd17
+%define sha1 linux=f06a4a1fcb195551cde406fe70a7ddba9a948132
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
 Source5:        check_for_config_applicability.inc
-%define i40e_version 2.15.9
+%define i40e_version 2.16.11
 Source6:	https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha1 i40e=ec8b4794cea15bb3162a74ef3bfe35f2fd08a036
+%define sha1 i40e=8fbfb9d0bf8feec0c74a5dc150613b430921fdcd
 %define iavf_version 4.2.7
 Source8:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
 %define sha1 iavf=5b0f144a60bdfcc5928f78691dc42cb85c2ed734
@@ -453,7 +453,6 @@ Patch536:       0336-mm-slub-Don-t-resize-the-location-tracking-cache-on-.patch
 Patch537:       0337-locking-rwsem_rt-Add-__down_read_interruptible.patch
 # Keep rt_version matched up with this patch.
 Patch538:       0338-Linux-4.19.198-rt85-REBASE.patch
-
 
 #Photon Specific Changes
 Patch600:        0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
@@ -1170,6 +1169,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Fri Aug 27 2021 srinidhira0 <srinidhir@vmware.com> 4.19.205-1
+-   Update to version 4.19.205
 *   Tue Aug 24 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.198-4
 -   Add PCI quirk to allow multiple devices under the same virtual
 -   PCI bridge to be put into separate IOMMU groups.

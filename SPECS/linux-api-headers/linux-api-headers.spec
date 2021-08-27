@@ -1,6 +1,6 @@
 Summary:	Linux API header files
 Name:		linux-api-headers
-Version:	4.19.198
+Version:	4.19.205
 Release:	1%{?dist}
 License:	GPLv2
 URL:		http://www.kernel.org/
@@ -8,7 +8,7 @@ Group:		System Environment/Kernel
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=52501081b334e88c6c2b632b087b347aab59dd17
+%define sha1 linux=f06a4a1fcb195551cde406fe70a7ddba9a948132
 
 # Support for PTP_SYS_OFFSET_EXTENDED ioctl
 Patch0:		0001-ptp-reorder-declarations-in-ptp_ioctl.patch
@@ -20,6 +20,7 @@ BuildArch:	noarch
 %description
 The Linux API Headers expose the kernel's API for use by Glibc.
 %prep
+# Using autosetup is not feasible
 %setup -q -n linux-%{version}
 
 %patch0 -p1
@@ -28,16 +29,21 @@ The Linux API Headers expose the kernel's API for use by Glibc.
 %patch3 -p1
 
 %build
+# make doesn't support _smp_mflags
 make mrproper
+# make doesn't support _smp_mflags
 make headers_check
 %install
 cd %{_builddir}/linux-%{version}
+# make doesn't support _smp_mflags
 make INSTALL_HDR_PATH=%{buildroot}%{_prefix} headers_install
 find /%{buildroot}%{_includedir} \( -name .install -o -name ..install.cmd \) -delete
 %files
 %defattr(-,root,root)
 %{_includedir}/*
 %changelog
+*   Fri Aug 27 2021 srinidhira0 <srinidhir@vmware.com> 4.19.205-1
+-   Update to version 4.19.205
 *   Tue Jul 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.198-1
 -   Update to version 4.19.198
 *   Tue Jun 01 2021 Keerthana K <keerthanak@vmware.com> 4.19.191-1

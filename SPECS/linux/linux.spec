@@ -3,8 +3,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux
-Version:        4.19.198
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.205
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=52501081b334e88c6c2b632b087b347aab59dd17
+%define sha1 linux=f06a4a1fcb195551cde406fe70a7ddba9a948132
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -29,9 +29,9 @@ Source8:        https://github.com/vmware/photon-checksum-generator/releases/pho
 Source9:        genhmac.inc
 Source10:	https://github.com/intel/SGXDataCenterAttestationPrimitives/archive/DCAP_1.6.tar.gz
 %define sha1 DCAP=84df31e729c4594f25f4fcb335940e06a2408ffc
-%define i40e_version 2.15.9
+%define i40e_version 2.16.11
 Source11:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
-%define sha1 i40e=ec8b4794cea15bb3162a74ef3bfe35f2fd08a036
+%define sha1 i40e=8fbfb9d0bf8feec0c74a5dc150613b430921fdcd
 %define iavf_version 4.2.7
 Source13:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
 %define sha1 iavf=5b0f144a60bdfcc5928f78691dc42cb85c2ed734
@@ -1244,6 +1244,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Fri Aug 27 2021 srinidhira0 <srinidhir@vmware.com> 4.19.205-1
+-   Update to version 4.19.205
 *   Tue Aug 24 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.198-4
 -   Add PCI quirk to allow multiple devices under the same virtual
 -   PCI bridge to be put into separate IOMMU groups.

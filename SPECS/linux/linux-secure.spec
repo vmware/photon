@@ -2,7 +2,7 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.198
+Version:        4.19.205
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=52501081b334e88c6c2b632b087b347aab59dd17
+%define sha1 linux=f06a4a1fcb195551cde406fe70a7ddba9a948132
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -213,7 +213,9 @@ Enhances:       %{name}
 This Linux package contains hmac sha generator kernel module.
 
 %prep
+# Using autosetup is not feasible
 %setup -q -n linux-%{version}
+# Using autosetup is not feasible
 %setup -D -b 5 -n linux-%{version}
 
 %patch0 -p1
@@ -330,6 +332,7 @@ popd
 # patch vmw_balloon driver
 sed -i 's/module_init/late_initcall/' drivers/misc/vmw_balloon.c
 
+# make doesn't support _smp_mflags
 make mrproper
 cp %{SOURCE1} .config
 sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
@@ -342,13 +345,13 @@ bldroot=`pwd`
 pushd ../LKCM
 sed -i '/#include <asm\/uaccess.h>/d' drv_fips_test.c
 sed -i '/#include <asm\/uaccess.h>/d' fips_test.c
-make -C $bldroot M=`pwd` modules
+make -C $bldroot M=`pwd` modules %{?_smp_mflags}
 popd
 
 #build photon-checksum-generator module
 bldroot=`pwd`
 pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
-make -C $bldroot M=`pwd` modules
+make -C $bldroot M=`pwd` modules %{?_smp_mflags}
 popd
 
 %define __modules_install_post \
@@ -376,17 +379,17 @@ install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_defaultdocdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}/usr/src/linux-headers-%{uname_r}
-make INSTALL_MOD_PATH=%{buildroot} modules_install
+make INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
 # install LKCM module
 bldroot=`pwd`
 pushd ../LKCM
-make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
+make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
 popd
 
 #install photon-checksum-generator module
 bldroot=`pwd`
 pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
-make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install
+make -C $bldroot M=`pwd` INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
 popd
 
 cp -v arch/x86/boot/bzImage    %{buildroot}/boot/vmlinuz-%{uname_r}
@@ -473,6 +476,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Aug 27 2021 srinidhira0 <srinidhir@vmware.com> 4.19.205-1
+-   Update to version 4.19.205
 *   Tue Jul 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.198-1
 -   Update to version 4.19.198
 *   Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.191-5
@@ -830,4 +835,4 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 -   .config: add netfilter_xt_match_{cgroup,ipvs} support
 -   .config: disable /dev/mem
 *   Mon Oct 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.8.0-1
-    Initial commit.
+-   Initial commit.
