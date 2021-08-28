@@ -2,7 +2,7 @@
 
 Summary:        Module manipulating metadata files
 Name:           libmodulemd
-Version:        2.11.0
+Version:        2.13.0
 Release:        1%{?dist}
 License:        MIT
 URL:            https://github.com/fedora-modularity/libmodulemd
@@ -10,7 +10,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/fedora-modularity/libmodulemd/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=54c6f482bda9f3511eacf87e18569aebfb353b01
+%define sha1    %{name}-%{version}=3940cfcd4815843ccef2e58de856408456693e95
 BuildRequires:  meson
 BuildRequires:  clang-devel
 BuildRequires:  gcc
@@ -41,7 +41,7 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files.
 
 %prep
-%setup -q -n %{name}-%{name}-%{version}
+%autosetup -p1 -n %{name}-%{name}-%{version}
 
 %build
 meson -Dprefix=%{_prefix} -Ddeveloper_build=false -Dwith_py2=false \
@@ -71,6 +71,8 @@ DESTDIR=%{buildroot}/ ninja install
 %{_includedir}/modulemd-2.0/*.h
 
 %changelog
+*   Sat Aug 28 2021 Ankit Jain <ankitja@vmware.com> 2.13.0-1
+-   Updated to 2.13.0
 *   Sat Dec 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.11.0-1
 -   Upgrade to v2.11.0
 *   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 2.9.4-1

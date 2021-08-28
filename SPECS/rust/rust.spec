@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
-Version:        1.51.0
-Release:        4%{?dist}
+Version:        1.54.0
+Release:        1%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -10,14 +10,7 @@ Distribution:   Photon
 # Manually created Source tar which is equal to
 # Source0 + .git as it requires git hooks at build time
 Source0:        https://github.com/rust-lang/rust/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=4f3ff7080e3adcbbb336b8569c7a36096ad7e12e
-Patch0:         CVE-2021-31162.patch
-Patch1:         CVE-2021-28876.patch
-Patch2:         0001-Turn-may_have_side_effect-into-an-associated-constan.patch
-Patch3:         CVE-2021-28879.patch
-Patch4:         CVE-2021-28878.patch
-Patch5:         CVE-2020-36323.patch
-Patch6:         CVE-2021-29922.patch
+%define sha1    %{name}-%{version}=febcbf0146a8a67780042f9d3d2178b1a692b41b
 BuildRequires:  git
 BuildRequires:  cmake
 BuildRequires:  glibc
@@ -70,6 +63,8 @@ rm %{buildroot}%{_docdir}/%{name}/*.old
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+*   Sat Aug 28 2021 Ankit Jain <ankitja@vmware.com> 1.54.0-1
+-   Updated to 1.54.0
 *   Mon Aug 23 2021 Ankit Jain <ankitja@vmware.com> 1.51.0-4
 -   Fixes CVE-2021-29922
 *   Tue May 04 2021 Ankit Jain <ankitja@vmware.com> 1.51.0-3

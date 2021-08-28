@@ -1,17 +1,18 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
-Version:        2020.5
-Release:        6%{?dist}
+Version:        2021.10
+Release:        1%{?dist}
 License:        LGPLv2+
+Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
-%define sha1    rpm-ostree=42f76f192b64adb432abd8b1c2a7897e91fa835b
-Source1:        libglnx-5ef78bb.tar.gz
-%define sha1    libglnx=5acb68bdfe9dd9dc9f6c91a34c22fe5693631a7b
-Source2:        libdnf-c87ff63.tar.gz
-%define sha1    libdnf=58c9ebeeabe84ea6b263b1460e3ecb41e29d04c3
+%define sha1    rpm-ostree=be44c8d2b58595b6cc2e25dadb06ae18f765ada5
+Source1:        libglnx-ef502aa.tar.gz
+%define sha1    libglnx=66bcbe5a924d166e37e446de2a99583494bd25a9
+Source2:        libdnf-387bd99.tar.gz
+%define sha1    libdnf=4b81dc1db04866be5166fe1ccad333f6ea9997e0
 Source3:        mk-ostree-host.sh
 Source4:        function.inc
 Source5:        mkostreerepo
@@ -96,6 +97,7 @@ Requires: %{name} = %{version}-%{release}
 Includes the scripts for rpm-ostree repo creation to act as server
 
 %prep
+# Using autosetup is not feasible
 %setup -q
 tar -xf %{SOURCE1} --no-same-owner
 tar -xf %{SOURCE2} --no-same-owner
@@ -107,7 +109,7 @@ env NOCONFIGURE=1 ./autogen.sh
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot} INSTALL="install -p -c"
+make install DESTDIR=%{buildroot} INSTALL="install -p -c" %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 install -d %{buildroot}%{_bindir}/rpm-ostree-host
 install -d %{buildroot}%{_bindir}/rpm-ostree-server
@@ -125,6 +127,7 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_datadir}/dbus-1/system.d/*.conf
 %{_datadir}/dbus-1/system-services/*
 %config(noreplace) %{_sysconfdir}/rpm-ostreed.conf
+%{_unitdir}/rpm-ostree-countme.timer
 %{_libdir}/systemd/system/rpm-ostreed-automatic.timer
 %{_datadir}/bash-completion/completions/rpm-ostree
 %{_datadir}/dbus-1/interfaces/org.projectatomic.rpmostree1.xml
@@ -132,6 +135,7 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_mandir}/man1/rpm-ostree.1.gz
 %{_mandir}/man5/rpm-ostreed*
 %{_mandir}/man8/rpm-ostreed*
+%{_mandir}/man8/rpm-ostree*
 
 %files devel
 %{_libdir}/lib*.so
@@ -148,6 +152,8 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+*   Sat Aug 28 2021 Ankit Jain <ankitja@vmware.com> 2021.10-1
+-   Updated to 2021.10
 *   Fri Jun 11 2021 Oliver Kurth <okurth@vmware.com> 2020.5-6
 -   build with libsolv 0.7.19
 *   Mon Jan 11 2021 Ankit Jain <ankitja@vmware.com> 2020.5-5

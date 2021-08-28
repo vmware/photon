@@ -3,16 +3,15 @@
 
 Summary:        Repodata downloading library
 Name:           librepo
-Version:        1.12.1
-Release:        4%{?dist}
+Version:        1.14.2
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/rpm-software-management/librepo/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=afe3d6902eb0238105e954ab2e99205aba9ea234
-Patch0:         0001-librepo-Fix-the-key-string-parsing.patch
+%define sha1    %{name}-%{version}=c9f39d7497d310ae220df2dfbd8e95f347e2bc8c
 BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  check
@@ -54,8 +53,7 @@ Requires:       %{name} = %{version}-%{release}
 Python 3 bindings for the librepo library.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 mkdir build-py3
 
 %build
@@ -66,7 +64,7 @@ popd
 
 %install
 pushd build-py3
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 popd
 
 %post -p /sbin/ldconfig
@@ -86,6 +84,8 @@ popd
 %{_python3_sitearch}/%{name}/
 
 %changelog
+*   Sat Aug 28 2021 Ankit Jain <ankitja@vmware.com> 1.14.2-1
+-   Updated to 1.14.2
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.12.1-4
 -   Fix build with new rpm
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.12.1-3
