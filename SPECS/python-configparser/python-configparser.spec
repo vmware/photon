@@ -3,7 +3,7 @@
 Summary:        This library brings the updated configparser from Python 3.5 to Python 2.6-3.5.
 Name:           python3-configparser
 Version:        5.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -18,6 +18,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  python3-devel
 BuildRequires:  curl-devel
+BuildRequires:  python3-setuptools_scm
 Requires:       python3
 Requires:       python3-libs
 
@@ -28,7 +29,7 @@ The ancient ConfigParser module available in the standard library 2.x has seen a
 
 
 %prep
-%setup -q -n configparser-%{version}
+%autosetup -p1 -n configparser-%{version}
 
 %build
 python3 setup.py build
@@ -48,6 +49,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Sun Aug 29 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.0.1-3
+-   Add python3-setuptools_scm as BuildRequires to fix 'toml' build failure
 *   Thu Feb 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.0.1-2
 -   Fix make check
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 5.0.1-1
