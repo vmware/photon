@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.48
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -11,6 +11,7 @@ Source0:        http://apache.mirrors.hoobly.com/%{name}/%{name}-%{version}.tar.
 %define sha1    httpd=834876db80fc290e531f0e088d255434828b81b5
 Patch0:         httpd-2.4.48-blfs_layout-1.patch
 Patch1:         httpd-uncomment-ServerName.patch
+Patch2:         httpd-CVE-2021-33193.patch
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -56,25 +57,32 @@ Summary: Tools for httpd
 The httpd-tools of httpd.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
 
 %build
-%configure \
-            --prefix=%{_sysconfdir}/httpd          \
-            --sysconfdir=%{_confdir}/httpd/conf    \
-            --libexecdir=%{_libdir}/httpd/modules  \
-            --datadir=%{_sysconfdir}/httpd         \
-            --enable-authnz-fcgi                   \
-            --enable-mods-shared="all cgi"         \
-            --enable-mpms-shared=all               \
-            --with-apr=%{_prefix}                  \
-            --with-apr-util=%{_prefix}             \
+sh ./configure \
+            --host=%{_host}                          \
+            --build=%{_host}                         \
+            --prefix="%{_sysconfdir}/httpd"          \
+            --exec-prefix="%{_prefix}"               \
+            --libdir=%{_libdir}                      \
+            --bindir="%{_bindir}"                    \
+            --sbindir="%{_sbindir}"                  \
+            --sysconfdir="%{_confdir}/httpd/conf"    \
+            --libexecdir="%{_libdir}/httpd/modules"  \
+            --datadir="%{_sysconfdir}/httpd"         \
+            --includedir="%{_includedir}"            \
+            --mandir="%{_mandir}"                    \
+            --enable-authnz-fcgi                     \
+            --enable-mods-shared="all cgi"           \
+            --enable-mpms-shared=all                 \
+            --with-apr=%{_prefix}                    \
+            --with-apr-util=%{_prefix}               \
             --enable-layout=RPM
 make %{?_smp_mflags}
 
 %install
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install
 install -vdm755 %{buildroot}/usr/lib/systemd/system
 
@@ -185,6 +193,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Mon Sep 13 2021 Dweep Advani <dadvani@vmware.com> 2.4.48-2
+-   Patched for CVE-2021-33193
 *   Mon Jun 21 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.48-1
 -   Update httpd to 2.4.48 to fix CVE-2020-35452, CVE-2020-13950
 -   CVE-2019-17567
