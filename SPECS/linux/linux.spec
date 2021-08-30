@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.276
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -146,6 +146,9 @@ Patch103:       0004-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
 Patch104:       0001-ovl-pass-correct-flags-for-opening-real-directory.patch
 Patch105:       0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch106:       0003-ovl-verify-permissions-in-ovl_path_open.patch
+
+#fix for CVE-2021-22543
+Patch107:       0001-KVM-do-not-allow-mapping-valid-but-non-reference-cou.patch
 
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
 # Fix dummy console function definitions
@@ -317,6 +320,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch104 -p1
 %patch105 -p1
 %patch106 -p1
+%patch107 -p1
 
 %patch111 -p1
 %patch112 -p1
@@ -490,6 +494,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Aug 30 2021 Srinidhi Rao <srinidhir@vmware.com> 4.9.276-2
+-   Fix for CVE-2021-22543
 *   Tue Jul 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.276-1
 -   Update to version 4.9.276
 *   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 4.9.273-2

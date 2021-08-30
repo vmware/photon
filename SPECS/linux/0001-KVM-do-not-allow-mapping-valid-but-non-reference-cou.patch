@@ -1,0 +1,71 @@
+From 6fcf6e634b1ca62f402b422c95593da05b40b9b8 Mon Sep 17 00:00:00 2001
+From: Nicholas Piggin <npiggin@gmail.com>
+Date: Thu, 24 Jun 2021 08:29:04 -0400
+Subject: [PATCH] KVM: do not allow mapping valid but non-reference-counted
+ pages
+
+It's possible to create a region which maps valid but non-refcounted
+pages (e.g., tail pages of non-compound higher order allocations). These
+host pages can then be returned by gfn_to_page, gfn_to_pfn, etc., family
+of APIs, which take a reference to the page, which takes it from 0 to 1.
+When the reference is dropped, this will free the page incorrectly.
+
+Fix this by only taking a reference on valid pages if it was non-zero,
+which indicates it is participating in normal refcounting (and can be
+released with put_page).
+
+This addresses CVE-2021-22543.
+
+[Srinidhi Rao<srinidhir@vmware.com> ported this patch to stable v4.9.281]
+
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Tested-by: Paolo Bonzini <pbonzini@redhat.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+---
+ virt/kvm/kvm_main.c | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
+
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index db859b595dba..2c6315123292 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -1513,6 +1513,13 @@ static bool vma_is_valid(struct vm_area_struct *vma, bool write_fault)
+ 	return true;
+ }
+ 
++static int kvm_try_get_pfn(kvm_pfn_t pfn)
++{
++	if (kvm_is_reserved_pfn(pfn))
++		return 1;
++	return get_page_unless_zero(pfn_to_page(pfn));
++}
++
+ static int hva_to_pfn_remapped(struct vm_area_struct *vma,
+ 			       unsigned long addr, bool *async,
+ 			       bool write_fault, bool *writable,
+@@ -1555,11 +1562,18 @@ static int hva_to_pfn_remapped(struct vm_area_struct *vma,
+ 	 * Whoever called remap_pfn_range is also going to call e.g.
+ 	 * unmap_mapping_range before the underlying pages are freed,
+ 	 * causing a call to our MMU notifier.
+-	 */ 
+-	kvm_get_pfn(pfn);
++	 *
++	 * Certain IO or PFNMAP mappings can be backed with valid
++	 * struct pages, but be allocated without refcounting e.g.,
++	 * tail pages of non-compound higher order allocations, which
++	 * would then underflow the refcount when the caller does the
++	 * required put_page. Don't allow those pages here.
++	 */
++	if (!kvm_try_get_pfn(pfn))
++		r = -EFAULT;
+ 
+ 	*p_pfn = pfn;
+-	return 0;
++	return r;
+ }
+ 
+ /*
+-- 
+2.23.3
+

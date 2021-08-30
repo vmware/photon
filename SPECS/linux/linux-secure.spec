@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.276
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -142,6 +142,9 @@ Patch96: 0007-btrfs-tree-checker-Verify-inode-item.patch
 
 # Fix dummy console function definitions
 Patch97: 0001-console-Expand-dummy-functions-for-CFI.patch
+
+#fix for CVE-2021-22543
+Patch98:       0001-KVM-do-not-allow-mapping-valid-but-non-reference-cou.patch
 
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
@@ -317,6 +320,7 @@ EOF
 %patch95 -p1
 %patch96 -p1
 %patch97 -p1
+%patch98 -p1
 
 # secure
 %patch13 -p1
@@ -452,6 +456,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Aug 30 2021 Srinidhi Rao <srinidhir@vmware.com> 4.9.276-2
+-   Fix for CVE-2021-22543
 *   Tue Jul 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.276-1
 -   Update to version 4.9.276
 *   Thu Jul 15 2021 Him Kalyan Bordoloi <@vmware.com> 4.9.273-2
