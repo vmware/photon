@@ -1,15 +1,14 @@
 Summary:        Ruby
 Name:           ruby
-Version:        2.7.3
-Release:        2%{?dist}
+Version:        2.7.4
+Release:        1%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://cache.ruby-lang.org/pub/ruby/2.7/%{name}-%{version}.tar.bz2
-%define sha1    ruby=4f4a47465b48a91d43fb557b70e47d79f6727a29
-Patch0:         CVE-2021-32066.patch
+%define sha1    ruby=f5bdecded2d68e4f2f0ab1d20137e8b4b0614e52
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
@@ -69,6 +68,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 
 %changelog
+*   Mon Aug 30 2021 Sujay G <gsujay@vmware.com> 2.7.4-1
+-   Bump version to 2.7.4 to fix CVE-2021-31810
 *   Wed Aug 18 2021 Sujay G <gsujay@vmware.com> 2.7.3-2
 -   Fix CVE-2021-32066
 *   Wed Apr 07 2021 Sujay G <gsujay@vmware.com> 2.7.3-1
