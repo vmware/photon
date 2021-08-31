@@ -181,7 +181,7 @@ class Build_Config:
         Build_Config.pullPublishRPMS = pullPublishRPMS
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# class Utilities is used for generating spec dependency, priniting upward dependencies for package..      +
+# class Utilities is used for generating spec dependency, printing upward dependencies for package..      +
 #                                                                                                          +
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class Utilities:
