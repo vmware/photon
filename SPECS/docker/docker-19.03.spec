@@ -2,22 +2,22 @@
 %define __os_install_post %{nil}
 Summary:        Docker
 Name:           docker
-Version:        19.03.10
-Release:        2%{?dist}
+Version:        19.03.15
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/docker/docker-ce/archive/%{name}-%{version}.tar.gz
-%define sha1 docker=e6416ba777ee6aa5ba58a705a787a9121d9bd0f3
+%define sha1 docker=fc0263bef5a47b1b4db2c0fc4eca7d4b294f008e
 # Must be in sync with package version
-%define DOCKER_GITCOMMIT 9424aea
+%define DOCKER_GITCOMMIT 99e3ed8
 %define TINI_GITCOMMIT fec3683
 Source1:        https://github.com/krallin/tini/archive/tini-fec3683.tar.gz
 %define sha1 tini=f7cc697bf7483fbc963c8331ab433d0758b766e9
-Source2:        https://github.com/docker/libnetwork/archive/libnetwork-55685ba.tar.gz
-%define sha1 libnetwork=11f4cce6793ff8f7b6caf5ed4c68a0eb9a33e32f
+Source2:        https://github.com/docker/libnetwork/archive/libnetwork-2fe6352.tar.gz
+%define sha1 libnetwork=7c47626d5870a05a7e5135752adc9b3c83775297
 
 %define gopath_comp_engine github.com/docker/docker
 %define gopath_comp_cli github.com/docker/cli
@@ -284,7 +284,9 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Tue Aug 31 2021 Sujay G <gsujay@vmware.com> 19.03.15-1
+-   Bump version to fix CVE-2021-21284 & CVE-2021-21285
 *   Mon May 10 2021 Bo Gan <ganb@vmware.com> 19.03.10-2
 -   Relax containerd dependency
 *   Fri May 29 2020 Ashwin H <ashwinh@vmware.com> 19.03.10-1
--   Initial version 
+-   Initial version
