@@ -1,17 +1,19 @@
-Summary:	cpio-2.12
+Summary:	cpio-2.13
 Name:		cpio
-Version:	2.12
-Release:	4%{?dist}
+Version:	2.13
+Release:	1%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/cpio/
 Group:		System Environment/System utilities
 Vendor:		VMware, Inc.
 Distribution: 	Photon
 Source0:	http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
-%define sha1 cpio=60358408c76db354f6716724c4bcbcb6e18ab642
-Patch0:		cpio-CVE-2019-14866.patch
-Patch1:         cpio-CVE-2021-38185.patch
-Patch2:         cpio-fix_segmentation_fault.patch
+%define sha1 cpio=4dcefc0e1bc36b11506a354768d82b15e3fe6bb8
+Patch0:         newca-new-archive-format.patch
+Patch1:         cpio-2.12-gcc-10.patch
+Patch2:         cpio-CVE-2021-38185.patch
+Patch3:         cpio-CVE-2021-38185_2.patch
+Patch4:         cpio-CVE-2021-38185_3.patch
 %description
 The cpio package contains tools for archiving.
 %prep
@@ -19,6 +21,8 @@ The cpio package contains tools for archiving.
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
 %build
 sed -i -e '/gets is a/d' gnu/stdio.in.h
 %configure \
@@ -43,6 +47,8 @@ rm -rf %{buildroot}%{_infodir}
 %{_mandir}/man1/*
 %{_docdir}/%{name}-%{version}/*
 %changelog
+*       Thu Sep 02 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.13-1
+-       Updated to version 2.13 along with additional fixes for CVE-2021-38185
 *       Fri Aug 20 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.12-4
 -       Adding security patch for CVE-2021-38185
 *	Thu Jan 23 2020 Siju Maliakkal <smaliakkal@vmware.com> 2.12-3
