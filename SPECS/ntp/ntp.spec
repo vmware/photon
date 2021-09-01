@@ -1,7 +1,7 @@
 Summary:        Network Time Protocol reference implementation
 Name:           ntp
 Version:        4.2.8p15
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NTP
 URL:            http://www.ntp.org/
 Group:          System Environment/NetworkingPrograms
@@ -38,7 +38,6 @@ Requires:       perl-IO-Socket-SSL
 %description    perl
 Perl scripts for ntp.
 
-
 %package -n ntpstat
 Summary:    Utilities
 Group:      Utilities
@@ -47,7 +46,7 @@ ntpstat is a utility which reports the synchronisation
 state of the NTP daemon running on the local machine.
 
 %prep
-%setup -q -a 1
+%autosetup -p1 -a 1
 
 %build
 sh configure \
@@ -62,10 +61,10 @@ sh configure \
     --with-binsubdir=sbin \
     --enable-linuxcaps
 make %{?_smp_mflags}
-make -C ntpstat-master CFLAGS="$CFLAGS"
+make -C ntpstat-master CFLAGS="$CFLAGS" %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -v -m755    -d %{buildroot}%{_datadir}/doc/%{name}-%{version}
 cp -v -R html/*     %{buildroot}%{_datadir}/doc/%{name}-%{version}/
 install -vdm 755 %{buildroot}/etc
@@ -111,7 +110,7 @@ install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable ntpd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ntpd.preset
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck} %{?_smp_mflags}
 
 %pre
 if ! getent group ntp >/dev/null; then
@@ -176,6 +175,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.2.8p15-3
+-   Fix spec checker build failure for ntp
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.2.8p15-2
 -   openssl 1.1.1
 *   Tue Jul 14 2020 Gerrit Photon <photon-checkins@vmware.com> 4.2.8p15-1

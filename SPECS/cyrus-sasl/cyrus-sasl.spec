@@ -1,7 +1,7 @@
 Summary:        Cyrus Simple Authentication Service Layer (SASL) library
 Name:           cyrus-sasl
 Version:        2.1.27
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Custom
 URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
@@ -31,6 +31,7 @@ If its use is negotiated, a security layer is inserted between the
 protocol and the connection.
 
 %prep
+# Using autosetup is not feasible
 %setup -q
 if [ %{_host} != %{_build} ]; then
 %patch0 -p1
@@ -61,11 +62,11 @@ popd
     --enable-shared \
     --enable-fast-install \
     --enable-krb4
-make
+make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 install -D -m644 COPYING %{buildroot}/usr/share/licenses/%{name}/LICENSE
 %{_fixperms} %{buildroot}/*
@@ -135,6 +136,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/saslauthd.8.gz
 
 %changelog
+*   Wed Sep 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.27-5
+-   Fix spec checker build failure for cyrus-sasl
 *   Fri Oct 30 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com>  2.1.27-4
 -   Fix CVE-2019-19906
 *   Mon Oct 05 2020 Tapas Kundu <tkundu@vmware.com> 2.1.27-3
