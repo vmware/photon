@@ -1,11 +1,12 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2021.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
+Group:          Applications/System
 Distribution:   Photon
 
 Source0:        https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
@@ -146,6 +147,8 @@ install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Wed Oct 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 2021.12-2
+- Bump version as a part of rpm upgrade
 * Sat Oct 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 2021.12-1
 - Bump version & changes for open-vm-tools spec refactoring
 - libdnf & libglnx are part of rpm-ostree source.

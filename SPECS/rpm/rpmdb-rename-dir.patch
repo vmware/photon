@@ -1,0 +1,531 @@
+From bde4ceb58576e365f156fc05486f49800e16ca03 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Fri, 13 Aug 2021 17:16:33 +0530
+Subject: [PATCH] lib/rpmdb.c: use a fallback method for renaming directories
+
+While migrating rpm db from BDB to SQLITE in a docker container rename
+function throws EXDEV error.
+
+strace of `rpm --rebuilddb` shows
+```
+...
+rename("/var/lib/rpm", "/var/lib/rpmold.54") = -1 EXDEV (Invalid cross-device link)
+write(2, "error: ", 7error: )                  = 7
+write(2, "failed to replace old database w"..., 50failed to replace old database with new database!
+) = 50
+write(2, "error: ", 7error: )                  = 7
+write(2, "replace files in /var/lib/rpm wi"..., 82replace files in /var/lib/rpm with files from /var/lib/rpmrebuilddb.54 to recover
+) = 82
+fcntl(3, F_SETLK, {l_type=F_UNLCK, l_whence=SEEK_SET, l_start=0, l_len=0}) = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+rt_sigprocmask(SIG_BLOCK, ~[RTMIN RT_1], [], 8) = 0
+rt_sigprocmask(SIG_SETMASK, [], NULL, 8) = 0
+close(3)                                = 0
+exit_group(1)                           = ?
++++ exited with 1 +++
+```
+
+This patch fixes this problem by using a wrapper for rename calls.
+If rename returns with EXDEV error, then we need to use fallback
+rename_dir function to achive the same.
+
+For more info:
+https://github.com/torvalds/linux/blob/master/Documentation/filesystems/overlayfs.rst#renaming-directories
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ lib/rpmdb.c | 304 ++++++++++++++++++++++++++++++++++++++++++++++++----
+ lib/rpmdb.h |  23 ++++
+ 2 files changed, 306 insertions(+), 21 deletions(-)
+
+diff --git a/lib/rpmdb.c b/lib/rpmdb.c
+index 38e1cb5..710c894 100644
+--- a/lib/rpmdb.c
++++ b/lib/rpmdb.c
+@@ -9,6 +9,15 @@
+ #include <errno.h>
+ #include <dirent.h>
+ #include <fcntl.h>
++#include <fts.h>
++#include <stdio.h>
++#include <limits.h>
++#include <string.h>
++#include <stdlib.h>
++#include <unistd.h>
++#include <sys/stat.h>
++#include <sys/types.h>
++#include <sys/errno.h>
+ 
+ #ifndef	DYING	/* XXX already in "system.h" */
+ #include <fnmatch.h>
+@@ -53,6 +62,247 @@
+ 
+ static rpmdb rpmdbUnlink(rpmdb db);
+ 
++static int create_dest_fn_path(const char *src, char *dst, int dstsize)
++{
++    char *fn = NULL;
++    char *buf = NULL;
++    int ret = -1;
++
++    if (src == NULL || dst == NULL || dstsize <= 0) {
++        rpmlog(RPMLOG_ERR, "Invalid input argument(s)\n");
++        return ret;
++    }
++
++    buf = xcalloc(dstsize, 1);
++
++    fn = strrchr(src, '/');
++    if (fn == NULL) {
++        rpmlog(RPMLOG_ERR, "Wrong src path(%s)\n", src);
++        goto end;
++    }
++
++    fn++;
++
++    if (snprintf(buf, dstsize, "%s/%s", dst, fn) < 0) {
++        rpmlog(RPMLOG_ERR, "snprintf failed\n");
++        goto end;
++    }
++    strcpy(dst, buf);
++
++    ret = 0;
++
++end:
++    free(buf);
++    return ret;
++}
++
++int removedir(const char *path)
++{
++    FTS *ftsp = NULL;
++    FTSENT *ent = NULL;
++    int retval = -1;
++    char rpath[PATH_MAX] = {0};
++
++    if (path == NULL) {
++        rpmlog(RPMLOG_ERR, "Invalid input argument(s)\n");
++        return retval;
++    }
++
++    if (realpath(path, rpath) == NULL) {
++        rpmlog(RPMLOG_ERR, "'%s' doesn't exist\n", path);
++        return retval;
++    }
++
++    char *paths[] = {rpath, NULL};
++    ftsp = fts_open(paths, FTS_PHYSICAL, NULL);
++    if (ftsp == NULL) {
++        rpmlog(RPMLOG_ERR, "fts_open: %s\n", strerror(errno));
++        return retval;
++    }
++
++    errno = 0;
++    while ((ent = fts_read(ftsp))) {
++        if (ent->fts_info & FTS_DP) {
++            if (rmdir(ent->fts_path)) {
++                rpmlog(RPMLOG_ERR, "rmdir(%s): %s\n", ent->fts_path,
++                        strerror(errno));
++            }
++        } else if (ent->fts_info & FTS_F){
++            if (unlink(ent->fts_path)) {
++                rpmlog(RPMLOG_ERR, "unlink(%s): %s\n", ent->fts_path,
++                        strerror(errno));
++            }
++        }
++
++        if (errno) {
++            rpmlog(RPMLOG_ERR, "Failed to delete: %s\n", ent->fts_path);
++            goto end;
++        }
++    }
++
++    retval = 0;
++
++end:
++    fts_close(ftsp);
++    return retval;
++}
++
++int copy_file(const char *src, const char *dst)
++{
++    FILE *in = NULL;
++    FILE *out = NULL;
++    int retval = -1;
++    char rbuf[BUFSIZ] = {0};
++
++    if (src == NULL || dst == NULL) {
++        rpmlog(RPMLOG_ERR, "Invalid input argument(s)\n");
++        goto end;
++    }
++
++    in = fopen(src, "rb");
++    out= fopen(dst, "wb");
++    if (in == NULL || out == NULL) {
++        rpmlog(RPMLOG_ERR, "fopen error: %s\n", strerror(errno));
++        goto end;
++    }
++
++    while (1) {
++        size_t bytes_read = fread(rbuf, 1, BUFSIZ, in);
++        if (ferror(in)) {
++            rpmlog(RPMLOG_ERR, "fread error: %s\n", strerror(errno));
++            goto end;
++        }
++
++        if ((fwrite(rbuf, 1, bytes_read, out) != bytes_read) || ferror(out)) {
++            rpmlog(RPMLOG_ERR, "fwrite error: %s\n", strerror(errno));
++            goto end;
++        }
++
++        if (feof(in)) {
++            break;
++        }
++    }
++
++    retval = 0;
++
++end:
++    if (in) {
++        fclose(in);
++    }
++
++    if (out) {
++        fclose(out);
++    }
++
++    return retval;
++}
++
++int rename_dir(const char *src, const char *dst)
++{
++    FTS *ftsp = NULL;
++    FTSENT *ent = NULL;
++    int retval = -1;
++    char srcpath[PATH_MAX] = {0};
++    char dstpath[PATH_MAX] = {0};
++
++    if (src == NULL || dst == NULL) {
++        rpmlog(RPMLOG_ERR, "Invalid input argument(s)\n");
++        goto end;
++    }
++
++    if (realpath(src, srcpath) == NULL) {
++        rpmlog(RPMLOG_ERR, "source directory: '%s' doens't exist\n", src);
++        goto end;
++    }
++
++    if (realpath(dst, dstpath) == NULL) {
++        if (mkdir(dstpath, 0755)) {
++            rpmlog(RPMLOG_ERR,
++                    ("failed to create destination directory '%s'\n"),
++                    dstpath);
++            goto end;
++        }
++    }
++
++    char *paths[] = {srcpath, NULL};
++    ftsp = fts_open(paths, FTS_PHYSICAL, NULL);
++    if (ftsp == NULL) {
++        rpmlog(RPMLOG_ERR, "fts_open: %s\n", strerror(errno));
++        goto end;
++    }
++
++    while ((ent = fts_read(ftsp))) {
++        char *s = NULL;
++        char *cursrc = ent->fts_path;
++
++        if (strcmp(cursrc, srcpath) == 0)
++            continue;
++
++        if (ent->fts_info & FTS_D) {
++            struct stat fstat = {0};
++
++            if (create_dest_fn_path(cursrc, dstpath, sizeof(dstpath))) {
++                rpmlog(RPMLOG_ERR, "FTS_D create_dest_fn_path failed\n");
++                goto end;
++            }
++
++            if (stat(srcpath, &fstat) || mkdir(dstpath, fstat.st_mode)) {
++                if (errno != EEXIST) {
++                    rpmlog(RPMLOG_ERR, "mkdir error: %s\n", strerror(errno));
++                    goto end;
++                }
++            }
++        } else if (ent->fts_info & FTS_DP) {
++            s = strrchr(dstpath, '/');
++            if (s == NULL) {
++                rpmlog(RPMLOG_ERR, "FTS_DP invalid destination path(%s)\n",
++                        dstpath);
++                goto end;
++            }
++
++            *s = '\0';
++        } else if (ent->fts_info & FTS_F) {
++            if (create_dest_fn_path(cursrc, dstpath, sizeof(dstpath))) {
++                rpmlog(RPMLOG_ERR, "FTS_F create_dest_fn_path failed\n");
++                goto end;
++            }
++
++            if (copy_file(cursrc, dstpath)) {
++                rpmlog(RPMLOG_ERR,
++                        ("Unable to copy file: %s to destination %s\n"),
++                        cursrc, dstpath);
++                goto end;
++            }
++            sync();
++
++            s = strrchr(dstpath, '/');
++            if (s == NULL) {
++                rpmlog(RPMLOG_ERR,
++                        ("FTS_F invalid destination path(%s)\n"),
++                        dstpath);
++                goto end;
++            }
++
++            *s = '\0';
++        } else {
++            /* Shouldn't reach here */
++            rpmlog(RPMLOG_ERR, "Other: %s\n", cursrc);
++            goto end;
++        }
++    }
++
++    if (removedir(src)) {
++        rpmlog(RPMLOG_ERR, "Deletion of %s failed\n", src);
++        goto end;
++    }
++
++    retval = 0;
++
++end:
++    fts_close(ftsp);
++    return retval;
++}
++
+ static int buildIndexes(rpmdb db)
+ {
+     int rc = 0;
+@@ -494,7 +744,7 @@ static int openDatabase(const char * prefix,
+ 
+     if (dbp)
+ 	*dbp = NULL;
+-    if ((mode & O_ACCMODE) == O_WRONLY) 
++    if ((mode & O_ACCMODE) == O_WRONLY)
+ 	return 1;
+ 
+     db = newRpmdb(prefix, dbpath, mode, perms, flags);
+@@ -572,7 +822,7 @@ int rpmdbVerify(const char * prefix)
+ 
+     if (db != NULL) {
+ 	int xx;
+-	
++
+ 	if (db->db_pkgs)
+ 	    rc += dbiVerify(db->db_pkgs, 0);
+ 	rc += dbiForeach(db->db_indexes, db->db_ndbi, dbiVerify, 0);
+@@ -585,7 +835,7 @@ int rpmdbVerify(const char * prefix)
+ }
+ 
+ Header rpmdbGetHeaderAt(rpmdb db, unsigned int offset)
+-{   
++{
+     rpmdbMatchIterator mi = rpmdbInitIterator(db, RPMDBI_PACKAGES,
+ 					      &offset, sizeof(offset));
+     Header h = headerLink(rpmdbNextIterator(mi));
+@@ -758,7 +1008,7 @@ static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi,
+     /* No matches on the name, anything else wont match either */
+     if (rc != RPMRC_OK)
+ 	goto exit;
+-    
++
+     /* If we got matches on name and nothing else was specified, we're done */
+     if (epoch < 0 && version == NULL && release == NULL && arch == NULL)
+ 	goto exit;
+@@ -1303,7 +1553,7 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTagVal tag,
+     mi->mi_re = xrealloc(mi->mi_re, (mi->mi_nre + 1) * sizeof(*mi->mi_re));
+     mire = mi->mi_re + mi->mi_nre;
+     mi->mi_nre++;
+-    
++
+     mire->tag = tag;
+     mire->mode = mode;
+     mire->pattern = allpat;
+@@ -1755,7 +2005,7 @@ static rpmdbMatchIterator indexIterInit(rpmdb db, rpmDbiTagVal rpmtag,
+ 	    }
+ 	}
+     }
+-    
++
+     return mi;
+ }
+ 
+@@ -1814,9 +2064,9 @@ rpmdbMatchIterator rpmdbInitPrefixIterator(rpmdb db, rpmDbiTagVal rpmtag,
+  * Convert current tag data to db key
+  * @param tagdata	Tag data container
+  * @retval keylen	Length of key
+- * @return 		Pointer to key value or NULL to signal skip 
++ * @return 		Pointer to key value or NULL to signal skip
+  */
+-static const void * td2key(rpmtd tagdata, unsigned int *keylen) 
++static const void * td2key(rpmtd tagdata, unsigned int *keylen)
+ {
+     const void * data = NULL;
+     unsigned int size = 0;
+@@ -1964,7 +2214,7 @@ int rpmdbIndexIteratorNextTd(rpmdbIndexIterator ii, rpmtd keytd)
+ 	    break;
+ 	}
+     }
+-    
++
+     return rc;
+ }
+ 
+@@ -2042,11 +2292,11 @@ static void logAddRemove(const char *dbiname, int removing, rpmtd tagdata)
+     rpm_count_t c = rpmtdCount(tagdata);
+     if (c == 1 && rpmtdType(tagdata) == RPM_STRING_TYPE) {
+ 	rpmlog(RPMLOG_DEBUG, "%s \"%s\" %s %s index.\n",
+-		removing ? "removing" : "adding", rpmtdGetString(tagdata), 
++		removing ? "removing" : "adding", rpmtdGetString(tagdata),
+ 		removing ? "from" : "to", dbiname);
+     } else if (c > 0) {
+ 	rpmlog(RPMLOG_DEBUG, "%s %d entries %s %s index.\n",
+-		removing ? "removing" : "adding", c, 
++		removing ? "removing" : "adding", c,
+ 		removing ? "from" : "to", dbiname);
+     }
+ }
+@@ -2319,7 +2569,7 @@ int rpmdbAdd(rpmdb db, Header h)
+     ret = pkgdbOpen(db, 0, &dbi);
+     if (ret)
+ 	goto exit;
+-	
++
+     rpmsqBlock(SIG_BLOCK);
+     dbCtrl(db, DB_CTRL_LOCK_RW);
+ 
+@@ -2329,7 +2579,7 @@ int rpmdbAdd(rpmdb db, Header h)
+     dbiCursorFree(dbi, dbc);
+ 
+     /* Add associated data to secondary indexes */
+-    if (ret == 0) {	
++    if (ret == 0) {
+ 	for (int dbix = 0; dbix < db->db_ndbi; dbix++) {
+ 	    rpmDbiTag rpmtag = db->db_tags[dbix];
+ 
+@@ -2375,7 +2625,7 @@ static int rpmdbRemoveFiles(char * pattern)
+ 
+ static int rpmdbRemoveDatabase(const char *dbpath)
+ {
+-    int rc = 0; 
++    int rc = 0;
+     char *pattern;
+ 
+     pattern = rpmGetPath(dbpath, "/*", NULL);
+@@ -2384,11 +2634,23 @@ static int rpmdbRemoveDatabase(const char *dbpath)
+     pattern = rpmGetPath(dbpath, "/.??*", NULL);
+     rc += rpmdbRemoveFiles(pattern);
+     free(pattern);
+-    
++
+     rc += rmdir(dbpath);
+     return rc;
+ }
+ 
++static int rpmdb_rename(const char *oldpath, const char *newpath)
++{
++    int ret;
++
++    ret = rename(oldpath, newpath);
++    if (ret != 0 && errno == EXDEV) {
++        ret = rename_dir(oldpath, newpath);
++    }
++
++    return ret;
++}
++
+ static int rpmdbMoveDatabase(const char * prefix, const char * srcdbpath,
+ 			     const char * dbpath, const char * tmppath)
+ {
+@@ -2401,14 +2663,14 @@ static int rpmdbMoveDatabase(const char * prefix, const char * srcdbpath,
+     char * oldkeys = rpmGetPath(old, "/", "pubkeys", NULL);
+     char * destkeys = rpmGetPath(dest, "/", "pubkeys", NULL);
+ 
+-    xx = rename(dest, old);
++    xx = rpmdb_rename(dest, old);
+     if (xx) {
+ 	goto exit;
+     }
+-    xx = rename(src, dest);
++    xx = rpmdb_rename(src, dest);
+     if (xx) {
+ 	rpmlog(RPMLOG_ERR, _("could not move new database in place\n"));
+-	xx = rename(old, dest);
++	xx = rpmdb_rename(old, dest);
+ 	if (xx) {
+ 	    rpmlog(RPMLOG_ERR, _("could also not restore old database from %s\n"),
+ 		   old);
+@@ -2419,7 +2681,7 @@ static int rpmdbMoveDatabase(const char * prefix, const char * srcdbpath,
+     }
+ 
+     if (access(oldkeys, F_OK ) != -1) {
+-	xx = rename(oldkeys, destkeys);
++	xx = rpmdb_rename(oldkeys, destkeys);
+ 	if (xx) {
+ 	    rpmlog(RPMLOG_ERR, _("Could not get public keys from %s\n"), oldkeys);
+ 	    goto exit;
+@@ -2450,7 +2712,7 @@ static int rpmdbSetPermissions(char * src, char * dest)
+     struct stat st;
+     int xx, rc = -1;
+     char * filepath;
+-    
++
+     if (stat(dest, &st) < 0)
+ 	    goto exit;
+     if (stat(src, &st) < 0)
+@@ -2583,7 +2845,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
+     rpmdbClose(newdb);
+ 
+     if (failed) {
+-	rpmlog(RPMLOG_WARNING, 
++	rpmlog(RPMLOG_WARNING,
+ 		_("failed to rebuild database: original database "
+ 		"remains in place\n"));
+ 
+diff --git a/lib/rpmdb.h b/lib/rpmdb.h
+index 8e3ab5a..eb4dac2 100644
+--- a/lib/rpmdb.h
++++ b/lib/rpmdb.h
+@@ -251,6 +251,29 @@ int rpmdbStat(const char *prefix, struct stat *statbuf);
+  */
+ int rpmdbFStat(rpmdb db, struct stat *statbuf);
+ 
++/** \ingroup rpmdb
++ * Recursively remove a directory
++ * @param               directory path
++ * @return 		0 on success, -1 on error
++ */
++int removedir(const char *path);
++
++/** \ingroup rpmdb
++ * Copy file from source to destination
++ * @param src		source file name
++ * @param dst		destination file name
++ * @return 		0 on success, -1 on error
++ */
++int copy_file(const char *src, const char *dst);
++
++/** \ingroup rpmdb
++ * Rename/Move directory from source to destination
++ * @param src		source directory path
++ * @param dst		destination directory path
++ * @return 		0 on success, -1 on error
++ */
++int rename_dir(const char *src, const char *dst);
++
+ #ifdef __cplusplus
+ }
+ #endif
+-- 
+2.17.1
+

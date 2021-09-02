@@ -1,9 +1,13 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        5.0.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
+Group:          Networking/Web/Proxy
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
 Source0:        http://www.squid-cache.org/Versions/v5/%{name}-%{version}.tar.xz
 %define sha1 %{name}=5d4ad671377896a172adac30d98aed1c42bb47be
 Source1:        squid.sysconfig
@@ -11,10 +15,6 @@ Source2:        squid.pam
 Source3:        squid.service
 Source4:        cache_swap.sh
 Source5:        squid.logrotate
-
-Group:          Networking/Web/Proxy
-Vendor:         VMware, Inc.
-Distribution:   Photon
 
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  autoconf
@@ -213,6 +213,8 @@ done
 %systemd_postun_with_restart squid.service
 
 %changelog
+* Fri Aug 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.0.5-3
+- Bump version as a part of rpm upgrade
 * Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.0.5-2
 - Bump version as a part of nettle upgrade
 * Fri Apr 30 2021 Susant Sahani <ssahani@vmware.com> 5.0.5-1
