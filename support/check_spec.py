@@ -397,7 +397,7 @@ def check_make_smp_flags(lines_dict, err_dict):
 
     for idx, line in enumerate(lines):
 
-        if not line.startswith('make'):
+        if not line.startswith('make '):
             continue
 
         if lines[lines.index(line) - 1] == bypass_str:

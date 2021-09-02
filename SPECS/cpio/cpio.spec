@@ -1,7 +1,7 @@
 Summary:	cpio archive utility
 Name:		cpio
 Version:	2.13
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/cpio/
 Group:		System Environment/System utilities
@@ -11,6 +11,9 @@ Source0:	http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
 %define sha1 cpio=4dcefc0e1bc36b11506a354768d82b15e3fe6bb8
 Conflicts:      toybox < 0.8.2-2
 Patch0:		newca-new-archive-format.patch
+Patch1:         cpio-CVE-2021-38185.patch
+Patch2:         cpio-CVE-2021-38185_2.patch
+Patch3:         cpio-CVE-2021-38185_3.patch
 %description
 The cpio package contains tools for archiving.
 
@@ -22,8 +25,12 @@ Requires: %{name} = %{version}-%{release}
 These are the additional language files of cpio
 
 %prep
+# Using autosetup is not feasible
 %setup -q
 %patch0 -p1
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 %build
 sed -i -e '/gets is a/d' gnu/stdio.in.h
 %configure \
@@ -34,7 +41,7 @@ makeinfo --html            -o doc/html      doc/cpio.texi
 makeinfo --html --no-split -o doc/cpio.html doc/cpio.texi
 makeinfo --plaintext       -o doc/cpio.txt  doc/cpio.texi
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 install -v -m755 -d %{buildroot}/%{_docdir}/%{name}-%{version}/html
 install -v -m644    doc/html/* %{buildroot}/%{_docdir}/%{name}-%{version}/html
 install -v -m644    doc/cpio.{html,txt} %{buildroot}/%{_docdir}/%{name}-%{version}
@@ -54,6 +61,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Wed Sep 01 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.13-3
+- Adding security patch for CVE-2021-38185
 * Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.13-2
 - Do not conflict with toybox >= 0.8.2-2
 * Tue Jun 09 2020 Alexey Makhalov <amakhalov@vmware.com> 2.13-1
