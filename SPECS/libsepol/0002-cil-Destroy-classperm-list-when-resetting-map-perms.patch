@@ -1,0 +1,36 @@
+From 2d35fcc7e9e976a2346b1de20e54f8663e8a6cba Mon Sep 17 00:00:00 2001
+From: James Carter <jwcart2@gmail.com>
+Date: Thu, 8 Apr 2021 13:32:04 -0400
+Subject: [PATCH] cil: Destroy classperm list when resetting map perms
+
+Map perms share the same struct as regular perms, but only the
+map perms use the classperms field. This field is a pointer to a
+list of classperms that is created and added to when resolving
+classmapping rules, so the map permission doesn't own any of the
+data in the list and this list should be destroyed when the AST is
+reset.
+
+When resetting a perm, destroy the classperms list without destroying
+the data in the list.
+
+Signed-off-by: James Carter <jwcart2@gmail.com>
+---
+ cil/src/cil_reset_ast.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/cil/src/cil_reset_ast.c b/cil/src/cil_reset_ast.c
+index befef8f..52cd8c0 100644
+--- a/cil/src/cil_reset_ast.c
++++ b/cil/src/cil_reset_ast.c
+@@ -34,7 +34,7 @@ static void cil_reset_class(struct cil_class *class)
+ 
+ static void cil_reset_perm(struct cil_perm *perm)
+ {
+-	cil_reset_classperms_list(perm->classperms);
++	cil_list_destroy(&perm->classperms, CIL_FALSE);
+ }
+ 
+ static inline void cil_reset_classperms(struct cil_classperms *cp)
+-- 
+2.17.1
+

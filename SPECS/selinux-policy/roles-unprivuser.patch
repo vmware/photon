@@ -1,7 +1,7 @@
-diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/roles/unprivuser.te selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/roles/unprivuser.te
---- selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/roles/unprivuser.te	2020-08-06 21:37:13.731801762 +0530
-+++ selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/roles/unprivuser.te	2020-08-06 22:36:13.955979955 +0530
-@@ -154,144 +154,6 @@
+diff -aur selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules/roles/unprivuser.te selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4_2/policy/modules/roles/unprivuser.te
+--- selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules/roles/unprivuser.te	2021-09-01 22:24:55.445349130 +0530
++++ selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4_2/policy/modules/roles/unprivuser.te	2021-09-01 22:26:52.813346060 +0530
+@@ -163,133 +163,6 @@
  	vlock_run(user_t, user_r)
  ')
  
@@ -36,10 +36,6 @@ diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules
 -
 -	optional_policy(`
 -		games_role(user_r, user_t)
--	')
--
--	optional_policy(`
--		gift_role(user_r, user_t)
 -	')
 -
 -	optional_policy(`
@@ -100,13 +96,6 @@ diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules
 -
 -	optional_policy(`
 -		ssh_role_template(user, user_r, user_t)
--	')
--	optional_policy(`
--		su_role_template(user, user_r, user_t)
--	')
--
--	optional_policy(`
--		sudo_role_template(user, user_r, user_t)
 -	')
 -
 -	optional_policy(`

@@ -1,6 +1,6 @@
-diff -Naurp selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff/policy/modules/admin/usermanage.te selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff_2/policy/modules/admin/usermanage.te
---- selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff/policy/modules/admin/usermanage.te	2020-10-06 10:38:22.928488793 +0530
-+++ selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff_2/policy/modules/admin/usermanage.te	2020-10-06 10:46:10.840511258 +0530
+diff -Naurp selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules/admin/usermanage.te selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4_2/policy/modules/admin/usermanage.te
+--- selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules/admin/usermanage.te	2021-09-02 11:47:40.412089284 +0530
++++ selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4_2/policy/modules/admin/usermanage.te	2021-09-02 11:49:15.840086788 +0530
 @@ -330,6 +330,8 @@ allow passwd_t self:netlink_selinux_sock
  
  allow passwd_t crack_db_t:dir list_dir_perms;
@@ -9,4 +9,4 @@ diff -Naurp selinux-policy-3bdcea7565f55fb338b3c1f936f38b75a62192ff/policy/modul
 +read_lnk_files_pattern(passwd_t, crack_db_t, crack_db_t)
  
  kernel_read_kernel_sysctls(passwd_t)
- kernel_getattr_proc(passwd_t)
+ 

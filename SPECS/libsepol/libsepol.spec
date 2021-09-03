@@ -1,14 +1,17 @@
 Summary:        SELinux binary policy manipulation library
 Name:           libsepol
 Version:        3.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
-Source0:        https://github.com/SELinuxProject/selinux/releases/download/20200710/%{name}-%{version}.tar.gz
-%define sha1    libsepol=9ce0e7c9772a17e5bad6479d80e6bf3b24db5f0c
 URL:            http://www.selinuxproject.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Source0:        https://github.com/SELinuxProject/selinux/releases/download/3.2/%{name}-%{version}.tar.gz
+%define sha1    libsepol=9ce0e7c9772a17e5bad6479d80e6bf3b24db5f0c
+Patch0:         0001-libsepol-cil-Destroy-classperms-list-when-resetting.patch
+Patch1:         0002-cil-Destroy-classperm-list-when-resetting-map-perms.patch
+Patch2:         0003-cil-cil_reset_classperms_set-should-not-reset.patch
 
 %description
 Security-enhanced Linux is a feature of the Linux® kernel and a number
@@ -45,7 +48,7 @@ The libsepol-devel package contains the libraries and header files
 needed for developing applications that manipulate binary policies.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 # TODO: try to remove CFLAGS on next version update
@@ -58,7 +61,7 @@ mkdir -p %{buildroot}%{_includedir}
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_mandir}/man3
 mkdir -p %{buildroot}%{_mandir}/man8
-make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" install
+make %{?_smp_mflags} DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" install
 # do not package ru man page and man pages for missing tools
 rm -rf %{buildroot}%{_mandir}/ru
 rm %{buildroot}%{_mandir}/man8/genpolbools.8
@@ -90,6 +93,8 @@ rm %{buildroot}%{_mandir}/man8/genpolusers.8
 %{_libdir}/libsepol.so.*
 
 %changelog
+* Tue Mar 08 2022 Alexey Makhalov <amakhalov@vmware.com> 3.2-2
+- Fix CVE-2021-36084, CVE-2021-36085, CVE-2021-36086
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.2-1
 - Automatic Version Bump
 * Tue Jan 12 2021 Alexey Makhalov <amakhalov@vmware.com> 3.1-2
