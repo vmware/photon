@@ -1,11 +1,11 @@
 Summary:        SELinux library and simple utilities
 Name:           libselinux
-Version:        3.1
-Release:        2%{?dist}
+Version:        3.2
+Release:        1%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/20200710/%{name}-%{version}.tar.gz
-%define sha1    libselinux=f687894176f0b69a4e0e14b936685c72cb41a084
+%define sha1    libselinux=59d7e9a2db64ba994e2da976b4374871535cd196
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -74,7 +74,7 @@ SELinux applications.
 
 %build
 make %{?_smp_mflags}
-make LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=/usr/bin/python3 pywrap
+make %{?_smp_mflags} LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=/usr/bin/python3 pywrap
 
 %install
 make %{?_smp_mflags} DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" BINDIR="%{_bindir}" SBINDIR="%{_sbindir}" PYTHON=/usr/bin/python3 install install-pywrap
@@ -115,6 +115,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Dec 14 2021 Vikash Bansal <bvikas@vmware.com> 3.2-1
+-   Update to version 3.2
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.1-2
 -   Bump up to compile with python 3.10
 *   Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1

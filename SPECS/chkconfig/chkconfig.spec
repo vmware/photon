@@ -1,7 +1,7 @@
 Summary: A system tool for maintaining the /etc/rc*.d hierarchy
 Name: chkconfig
 Version: 1.9
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPLv2
 Vendor:  VMware, Inc.
 Distribution:   Photon
@@ -91,6 +91,8 @@ rm -rf %{buildroot}
 %{_mandir}/*/ntsysv.8*
 
 %changelog
+* Wed Nov 24 2021 Vikash Bansal <bvikas@vmware.com> 1.9-3
+- Bump up version to compile with new libsepol
 * Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 1.9-2
 - Replace ITS words, Added Vendor, Distribution and fixed bogus date
 * Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com> 1.9-1

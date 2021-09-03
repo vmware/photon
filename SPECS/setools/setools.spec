@@ -1,12 +1,11 @@
 Summary:        Policy analysis tools for SELinux
 Name:           setools
-Version:        4.3.0
-Release:        3%{?dist}
+Version:        4.4.0
+Release:        1%{?dist}
 License:        GPLv2, LGPLv2.1
 Group:          System Environment/Libraries
 Source0:        https://github.com/SELinuxProject/setools/releases/download/%{version}/%{name}-%{version}.tar.bz2
-%define sha1    setools=75ffc1724707b8bc4eb90b118cd29161c43fe568
-Patch0:         fix-build-with-python3.9.patch
+%define sha1    setools=5ee79d660076b5422f8cc4bfddb6f99edad944ca
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -45,10 +44,13 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_bindir}/sedta
 %{_bindir}/seinfo
 %{_bindir}/sediff
+%{_bindir}/sechecker
 %{python3_sitelib}/*
 %{_mandir}/man1/*
 
 %changelog
+* Tue Dec 14 2021 Vikash Bansal <bvikas@vmware.com> 4.4.0-1
+- Update to version 4.4.0
 * Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.3.0-3
 - Update release to compile with python 3.10
 * Fri Nov 06 2020 Tapas Kundu <tkundu@vmware.com> 4.3.0-2

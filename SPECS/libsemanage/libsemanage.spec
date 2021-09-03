@@ -1,11 +1,11 @@
 Summary:        SELinux policy management libraries
 Name:           libsemanage
-Version:        3.1
-Release:        2%{?dist}
+Version:        3.2
+Release:        1%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/20200710/%{name}-%{version}.tar.gz
-%define sha1    libsemanage=2f0cd4a40f9b43d76c5f363518fc0751b8559197
+%define sha1    libsemanage=bc67f9118dcca5032919d25184899f9daf66b70b
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -71,7 +71,7 @@ rm -rf %{buildroot}%{_mandir}/ru
 
 %files
 %defattr(-,root,root,-)
-%{_libdir}/libsemanage.so.1
+%{_libdir}/libsemanage.so.2
 %{_sysconfdir}/selinux/semanage.conf
 %{_mandir}/man5/*
 
@@ -90,6 +90,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+* Tue Dec 14 2021 Vikash Bansal <bvikas@vmware.com> 3.2-1
+- Update to version 3.2
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.1-2
 - Bump up to compile with python 3.10
 * Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1

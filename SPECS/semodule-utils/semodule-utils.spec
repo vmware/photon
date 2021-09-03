@@ -1,11 +1,11 @@
 Summary:        SELinux policy module utils
 Name:           semodule-utils
-Version:        3.1
+Version:        3.2
 Release:        1%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
-Source0:        https://github.com/SELinuxProject/selinux/releases/download/20200710/%{name}-%{version}.tar.gz
-%define sha1    semodule-utils=98d8f781ba466bdbb83c7d87f8bae94479a80190
+Source0:        https://github.com/SELinuxProject/selinux/releases/download/3.2/%{name}-%{version}.tar.gz
+%define sha1    semodule-utils=2e0d3bdc83d2b7bf2426fdf8f71d55f93a4495e3
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -17,13 +17,13 @@ Requires:       libselinux-utils
 semodule-utils is set of tools for SELinux policy module manipulations.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 make %{?_smp_mflags}
 
 %install
-make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" BINDIR="%{_bindir}" SBINDIR="%{_sbindir}" install
+make %{?_smp_mflags} DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" BINDIR="%{_bindir}" SBINDIR="%{_sbindir}" install
 # do not package ru man pages
 rm -rf %{buildroot}%{_mandir}/ru
 
@@ -39,8 +39,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_mandir}/man8/semodule_unpackage.8.gz
 
 %changelog
-* Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1
-- Automatic Version Bump
+* Fri Sep 03 2021 Vikash Bansal <bvikas@vmware.com> 3.2-1
+- Update to version 3.2
 * Sun Jul 05 2020 Vikash Bansal <bvikas@vmware.com> 3.0-2
 - Add libselinux-utils in requires
 * Thu Apr 30 2020 Alexey Makhalov <amakhalov@vmware.com> 3.0-1

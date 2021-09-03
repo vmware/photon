@@ -1,7 +1,7 @@
 Summary:        Provide tools to manage multipath devices
 Name:           device-mapper-multipath
 Version:        0.8.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -101,6 +101,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/kpartx.8.gz
 
 %changelog
+*   Wed Nov 24 2021 Vikash Bansal <bvikas@vmware.com> 0.8.4-2
+-   Bump up version to compile with new libsepol
 *   Wed Oct 07 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.8.4-1
 -   Upgrade to version 0.8.4
 *   Tue Aug 18 2020 Michelle Wang <michellew@vmware.com> 0.8.3-2

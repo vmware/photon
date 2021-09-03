@@ -1,17 +1,15 @@
 Summary:        SELinux policy
 Name:           selinux-policy
-Version:        3.14.7
+Version:        3.14.8
 Release:        1%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
-Source0:        https://github.com/fedora-selinux/%{name}/archive/3bdcea7565f55fb338b3c1f936f38b75a62192ff/%{name}-3bdcea75.tar.gz
-%define sha1 selinux-policy-3b=69996348fb2dbc030d739e71c2279dc499ed6d93
-Source1:        https://github.com/fedora-selinux/%{name}-contrib/archive/b1dcbc59a940c762dfe4e07117cd5615f8b5c99a/%{name}-contrib-b1dcbc59.tar.gz
-%define sha1 selinux-policy-contrib=44f22cfb26974cc79c7ad69d54d811f616ea5363
-Source2:        https://github.com/containers/container-selinux/archive/container-selinux-2.145.0.tar.gz
+Source0:        https://github.com/fedora-selinux/%{name}/archive/db2614cce37245ba4fc5de73b1f6f33cc46686e4/%{name}-db2614cc.tar.gz
+%define sha1 selinux-policy-db=ffba5a771c95d3b6837f8b1d66f2d9ea52661e1c
+Source1:        https://github.com/containers/container-selinux/archive/container-selinux-2.145.0.tar.gz
 %define sha1 container-selinux=93676d051407d4e57ae517dd4dc45239d1369e3d
-Source3:        build.conf
-Source4:        modules.conf
+Source2:        build.conf
+Source3:        modules.conf
 Url:            https://github.com/SELinuxProject/selinux/wiki
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -51,10 +49,10 @@ Requires: m4 checkpolicy
 SELinux policy development
 
 %prep
-%setup -q -b 1 -n %{name}-contrib-b1dcbc59a940c762dfe4e07117cd5615f8b5c99a
-%setup -q -b 2 -n container-selinux-2.145.0
-%setup -qn %{name}-3bdcea7565f55fb338b3c1f936f38b75a62192ff
-cp ../%{name}-contrib-b1dcbc59a940c762dfe4e07117cd5615f8b5c99a/* policy/modules/contrib/
+# Using autosetup is not feasible
+%setup -q -b 1 -n container-selinux-2.145.0
+# Using autosetup is not feasible
+%setup -qn %{name}-db2614cce37245ba4fc5de73b1f6f33cc46686e4
 cp -r ../container-selinux-2.145.0/container.* policy/modules/contrib/
 %patch1 -p1
 %patch2 -p1
@@ -76,16 +74,16 @@ cp -r ../container-selinux-2.145.0/container.* policy/modules/contrib/
 %patch18 -p1
 
 %build
-cp %{SOURCE3} .
-cp %{SOURCE4} policy/
-make %{?_smp_flags}
+cp %{SOURCE2} .
+cp %{SOURCE3} policy/
+make %{?_smp_mflags}
 
 %install
-make %{?_smp_flags} DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 mkdir -p %{buildroot}/var/lib/selinux/default
 # Use priority 100 instead of default 400
-make %{?_smp_flags} DESTDIR=%{buildroot} SEMODULE="%{_sbindir}/semodule -p %{buildroot} -X 100" load
-make %{?_smp_flags} DESTDIR=%{buildroot} install-headers
+make %{?_smp_mflags} DESTDIR=%{buildroot} SEMODULE="%{_sbindir}/semodule -p %{buildroot} -X 100" load
+make %{?_smp_mflags} DESTDIR=%{buildroot} install-headers
 mkdir %{buildroot}%{_datadir}/selinux/devel
 cp doc/Makefile.example %{buildroot}%{_datadir}/selinux/devel/Makefile
 cp config/file_contexts.subs_dist %{buildroot}%{_sysconfdir}/selinux/default/contexts/files/
@@ -119,8 +117,8 @@ fi
 %{_sharedstatedir}/selinux/default
 
 %changelog
-* Thu Aug 06 2020 Vikash Bansal <bvikas@vmware.com> 3.14.7-1
-- Version Bump up to 3.14.7
+* Thu Aug 06 2020 Vikash Bansal <bvikas@vmware.com> 3.14.8-1
+- Version Bump up to 3.14.8
 * Thu Aug 06 2020 Vikash Bansal <bvikas@vmware.com> 3.14.6-1
 - Version Bump up to 3.14.6
 * Fri Jul 31 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-8
@@ -130,7 +128,7 @@ fi
 - Fix motgen "avc:denied" error and removed duplicate rules.
 * Tue Jul 21 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-6
 - Fix "avc:denied" errors for passwd and systemd-timesync
-* Wed Jul 20 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-5
+* Mon Jul 20 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-5
 - Add support of cloudform & redis  module in modules.conf
 * Wed Jul 15 2020 Vikash Bansal <bvikas@vmware.com> 3.14.5-4
 - Added file_contexts.subs_dist

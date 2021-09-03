@@ -1,7 +1,7 @@
 Summary:        Userland logical volume management tools
 Name:           lvm2
 Version:        2.03.10
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2, BSD 2-Clause and LGPLv2.1
 Group:          System Environment/Base
 URL:            http://sources.redhat.com/dm
@@ -150,7 +150,7 @@ This package contains files needed to develop applications that use
 the device-mapper event library.
 
 %prep
-%setup -q -n LVM2.%{version}
+%autosetup -n LVM2.%{version} -N
 %patch0 -p1 -b .preferred_names
 
 %build
@@ -184,11 +184,11 @@ the device-mapper event library.
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
-make install_system_dirs DESTDIR=%{buildroot}
-make install_systemd_units DESTDIR=%{buildroot}
-make install_systemd_generators DESTDIR=%{buildroot}
-make install_tmpfiles_configuration DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
+make install_system_dirs DESTDIR=%{buildroot} %{?_smp_mflags}
+make install_systemd_units DESTDIR=%{buildroot} %{?_smp_mflags}
+make install_systemd_generators DESTDIR=%{buildroot} %{?_smp_mflags}
+make install_tmpfiles_configuration DESTDIR=%{buildroot} %{?_smp_mflags}
 
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable lvm2-activate.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-lvm2.preset
@@ -300,6 +300,8 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 %ghost %{_sysconfdir}/lvm/cache/.cache
 
 %changelog
+*   Wed Nov 24 2021 Vikash Bansal <bvikas@vmware.com> 2.03.10-3
+-   Bump up version to compile with new libsepol
 *   Tue Sep 15 2020 Gerrit Photon <photon-checkins@vmware.com> 2.03.10-2
 -   Add boost as build requires
 *   Fri Aug 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.03.10-1
@@ -341,4 +343,3 @@ echo "disable lvm2-lvmeatd.service" >> %{buildroot}%{_libdir}/systemd/system-pre
 -   Packaging systemd service and configuration files
 *   Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-1
 -   Initial version
-

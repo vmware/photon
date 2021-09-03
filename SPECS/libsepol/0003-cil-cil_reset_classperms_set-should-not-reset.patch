@@ -1,0 +1,39 @@
+From c49a8ea09501ad66e799ea41b8154b6770fec2c8 Mon Sep 17 00:00:00 2001
+From: James Carter <jwcart2@gmail.com>
+Date: Thu, 8 Apr 2021 13:32:06 -0400
+Subject: [PATCH] cil: cil_reset_classperms_set() should not reset
+ classpermission
+
+In struct cil_classperms_set, the set field is a pointer to a
+struct cil_classpermission which is looked up in the symbol table.
+Since the cil_classperms_set does not create the cil_classpermission,
+it should not reset it.
+
+Set the set field to NULL instead of resetting the classpermission
+that it points to.
+
+Signed-off-by: James Carter <jwcart2@gmail.com>
+---
+ cil/src/cil_reset_ast.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/cil/src/cil_reset_ast.c b/cil/src/cil_reset_ast.c
+index 52cd8c0..d8355ee 100644
+--- a/cil/src/cil_reset_ast.c
++++ b/cil/src/cil_reset_ast.c
+@@ -57,7 +57,11 @@ static void cil_reset_classpermission(struct cil_classpermission *cp)
+ 
+ static void cil_reset_classperms_set(struct cil_classperms_set *cp_set)
+ {
+-	cil_reset_classpermission(cp_set->set);
++	if (cp_set == NULL) {
++		return;
++	}
++
++	cp_set->set = NULL;
+ }
+ 
+ static inline void cil_reset_classperms_list(struct cil_list *cp_list)
+-- 
+2.17.1
+

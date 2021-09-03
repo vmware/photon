@@ -1,7 +1,7 @@
-diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/roles/staff.te selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/roles/staff.te
---- selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules/roles/staff.te	2020-08-06 21:37:13.731801762 +0530
-+++ selinux-policy-217d49334447021da909edf8b07007e319540ae3-2/policy/modules/roles/staff.te	2020-08-06 21:41:02.611813282 +0530
-@@ -351,108 +351,6 @@
+diff -aur selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules/roles/staff.te selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4_2/policy/modules/roles/staff.te
+--- selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4/policy/modules/roles/staff.te	2021-08-30 19:31:53.000000000 +0530
++++ selinux-policy-db2614cce37245ba4fc5de73b1f6f33cc46686e4_2/policy/modules/roles/staff.te	2021-09-01 21:07:09.345471181 +0530
+@@ -353,100 +353,6 @@
  	xserver_run(staff_t, staff_r)
  ')
  
@@ -28,10 +28,6 @@ diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules
 -
 -	optional_policy(`
 -		games_role(staff_r, staff_t)
--	')
--
--	optional_policy(`
--		gift_role(staff_r, staff_t)
 -	')
 -
 -	optional_policy(`
@@ -72,10 +68,6 @@ diff -aur selinux-policy-217d49334447021da909edf8b07007e319540ae3/policy/modules
 -
 -	optional_policy(`
 -		spamassassin_role(staff_r, staff_t)
--	')
--
--	optional_policy(`
--		su_role_template(staff, staff_r, staff_t)
 -	')
 -
 -	optional_policy(`
