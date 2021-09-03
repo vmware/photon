@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        8.5p1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -47,13 +47,29 @@ Requires(pre): /usr/sbin/useradd /usr/sbin/groupadd
 This provides the ssh server daemons, utilities, configuration and service files.
 
 %prep
+# Using autosetup is not feasible
 %setup -q
 tar xf %{SOURCE1} --no-same-owner
 %patch0 -p0
 %build
-%configure \
+sh ./configure --host=%{_host} --build=%{_build} \
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
+    --program-prefix= \
+    --disable-dependency-tracking \
+    --prefix=%{_prefix} \
+    --exec-prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --sbindir=%{_sbindir} \
     --sysconfdir=/etc/ssh \
     --datadir=/usr/share/sshd \
+    --includedir=%{_includedir} \
+    --libdir=%{_libdir} \
+    --libexecdir=%{_libexecdir} \
+    --localstatedir=%{_localstatedir} \
+    --sharedstatedir=%{_sharedstatedir} \
+    --mandir=%{_mandir} \
+    --infodir=%{_infodir} \
     --with-md5-passwords \
     --with-privsep-path=/var/lib/sshd \
     --with-pam \
@@ -61,10 +77,10 @@ tar xf %{SOURCE1} --no-same-owner
     --enable-strip=no \
     --with-kerberos5=/usr \
     --with-sandbox=rlimit
-make
+make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm755 %{buildroot}/var/lib/sshd
 echo "AllowTcpForwarding no" >> %{buildroot}/etc/ssh/sshd_config
 echo "ClientAliveCountMax 2" >> %{buildroot}/etc/ssh/sshd_config
@@ -75,7 +91,7 @@ echo "PermitRootLogin no" >> %{buildroot}/etc/ssh/sshd_config
 echo "UsePAM yes" >> %{buildroot}/etc/ssh/sshd_config
 #   Install daemon script
 pushd blfs-systemd-units-20140907
-make DESTDIR=%{buildroot} install-sshd
+make DESTDIR=%{buildroot} install-sshd %{?_smp_mflags}
 popd
 
 install -m644 %{SOURCE2} %{buildroot}/lib/systemd/system/sshd.service
@@ -142,8 +158,6 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/moduli.5.gz
 %{_mandir}/man8/sftp-server.8.gz
 
-
-
 %files clients
 %attr(0755,root,root) %dir %{_sysconfdir}/ssh
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ssh/moduli
@@ -173,6 +187,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5p1-2
+-   Fix spec checker build failure
 *   Wed May 26 2021 Sujay G <gsujay@vmware.com> 8.5p1-1
 -   Bump version to 8.5p1 to fix CVE-2021-28041
 *   Wed Oct 07 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.4p1-2
