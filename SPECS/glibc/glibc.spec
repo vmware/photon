@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -30,6 +30,7 @@ Patch12:        0004-elf-Fix-DTV-gap-reuse-logic-BZ-27135.patch
 Patch13:        0005-elf-Add-test-case-for-BZ-19329.patch
 Patch14:        CVE-2021-35942.patch
 Patch15:        CVE-2021-38604.patch
+Patch16:        0006-glibc-fix-for-semctl-ltp.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %define ExtraBuildRequires python3, python3-libs
@@ -101,6 +102,7 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -334,6 +336,8 @@ fi
 
 
 %changelog
+*   Fri Aug 27 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.32-10
+-   Fix LTP Testcase (semctl) failure issue
 *   Wed Aug 25 2021 Keerthana K <keerthanak@vmware.com> 2.32-9
 -   Fix CVE-2021-38604
 *   Wed Aug 04 2021 Keerthana K <keerthanak@vmware.com> 2.32-8
