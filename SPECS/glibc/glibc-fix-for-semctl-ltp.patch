@@ -1,0 +1,71 @@
+From 574500a108be1d2a6a0dc97a075c9e0a98371aba Mon Sep 17 00:00:00 2001
+From: "Dmitry V. Levin" <ldv@altlinux.org>
+Date: Tue, 29 Sep 2020 14:10:20 -0300
+Subject: [PATCH] sysvipc: Fix SEM_STAT_ANY kernel argument pass [BZ #26637]
+
+Handle SEM_STAT_ANY the same way as SEM_STAT so that the buffer argument
+of SEM_STAT_ANY is properly passed to the kernel and back.
+
+The regression testcase checks for Linux specifix SysV ipc message
+control extension.  For IPC_INFO/SEM_INFO it tries to match the values
+against the tunable /proc values and for SEM_STAT/SEM_STAT_ANY it
+check if the create message queue is within the global list returned
+by the kernel.
+
+Checked on x86_64-linux-gnu and on i686-linux-gnu (Linux v5.4 and on
+Linux v4.15).
+
+Co-authored-by: Adhemerval Zanella  <adhemerval.zanella@linaro.org>
+---
+ sysdeps/unix/sysv/linux/Makefile            |   2 +-
+ sysdeps/unix/sysv/linux/semctl.c            |   6 +
+ sysdeps/unix/sysv/linux/tst-sysvsem-linux.c | 184 ++++++++++++++++++++
+ sysvipc/test-sysvsem.c                      |   1 +
+ 4 files changed, 192 insertions(+), 1 deletion(-)
+ create mode 100644 sysdeps/unix/sysv/linux/tst-sysvsem-linux.c
+
+diff --git a/sysdeps/unix/sysv/linux/Makefile b/sysdeps/unix/sysv/linux/Makefile
+index f71cc39c..89f260f0 100644
+--- a/sysdeps/unix/sysv/linux/Makefile
++++ b/sysdeps/unix/sysv/linux/Makefile
+@@ -45,7 +45,7 @@ sysdep_headers += sys/mount.h sys/acct.h sys/sysctl.h \
+ tests += tst-clone tst-clone2 tst-clone3 tst-fanotify tst-personality \
+ 	 tst-quota tst-sync_file_range tst-sysconf-iov_max tst-ttyname \
+ 	 test-errno-linux tst-memfd_create tst-mlock2 tst-pkey \
+-	 tst-rlimit-infinity tst-ofdlocks
++	 tst-rlimit-infinity tst-ofdlocks tst-sysvsem-linux
+ tests-internal += tst-ofdlocks-compat
+ 
+ 
+diff --git a/sysdeps/unix/sysv/linux/semctl.c b/sysdeps/unix/sysv/linux/semctl.c
+index e2925447..bdf31ca7 100644
+--- a/sysdeps/unix/sysv/linux/semctl.c
++++ b/sysdeps/unix/sysv/linux/semctl.c
+@@ -51,6 +51,7 @@ __new_semctl (int semid, int semnum, int cmd, ...)
+     case IPC_STAT:      /* arg.buf */
+     case IPC_SET:
+     case SEM_STAT:
++    case SEM_STAT_ANY:
+     case IPC_INFO:      /* arg.__buf */
+     case SEM_INFO:
+       va_start (ap, cmd);
+@@ -90,6 +91,7 @@ __old_semctl (int semid, int semnum, int cmd, ...)
+     case IPC_STAT:      /* arg.buf */
+     case IPC_SET:
+     case SEM_STAT:
++    case SEM_STAT_ANY:
+     case IPC_INFO:      /* arg.__buf */
+     case SEM_INFO:
+       va_start (ap, cmd);
+diff --git a/sysvipc/test-sysvsem.c b/sysvipc/test-sysvsem.c
+index a8e9bff0..d1977729 100644
+--- a/sysvipc/test-sysvsem.c
++++ b/sysvipc/test-sysvsem.c
+@@ -20,6 +20,7 @@
+ #include <stdlib.h>
+ #include <errno.h>
+ #include <string.h>
++#include <stdbool.h>
+ #include <sys/types.h>
+ #include <sys/ipc.h>
+ #include <sys/sem.h>

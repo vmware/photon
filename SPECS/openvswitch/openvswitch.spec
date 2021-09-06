@@ -126,7 +126,7 @@ export PYTHON2=no
 make %{_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{_smp_mflags} DESTDIR=%{buildroot} install
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 mkdir -p %{buildroot}/%{python2_sitelib}
 mkdir -p %{buildroot}/%{python3_sitelib}
@@ -146,7 +146,7 @@ install -p -D -m 0644 rhel/etc_openvswitch_default.conf %{buildroot}/%{_sysconfd
 sed -i '/OVS_USER_ID=.*/c\OVS_USER_ID=' %{buildroot}/%{_sysconfdir}/openvswitch/default.conf
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{_smp_mflags} -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %preun
 %systemd_preun %{name}.service
@@ -183,7 +183,6 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %postun -n ovn-controller-vtep
 %systemd_postun ovn-controller-vtep.service
-
 
 %files
 %defattr(-,root,root)
