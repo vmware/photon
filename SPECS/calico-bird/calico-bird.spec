@@ -1,7 +1,7 @@
 Summary:       Project Calico fork of the BIRD Internet Routing Daemon
 Name:          calico-bird
 Version:       0.3.3
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPL
@@ -16,8 +16,7 @@ BuildRequires: autoconf
 Project Calico fork of the BIRD Internet Routing Daemon.
 
 %prep
-%setup -q -n bird-%{version}
-%patch0 -p1
+%autosetup -n bird-%{version} -p1
 
 %build
 mkdir -p dist
@@ -35,14 +34,14 @@ make %{?_smp_mflags} CC="gcc -static"
 cp bird dist/bird6
 cp birdcl dist/birdcl
 # IPv4 bird
-make clean
+make clean %{?_smp_mflags}
 %configure \
     --with-protocols="bgp pipe static" \
     --enable-client=no \
     --enable-pthreads=yes
 make %{?_smp_mflags}
 rm bird
-make CC="gcc -static"
+make CC="gcc -static" %{?_smp_mflags}
 cp bird dist/bird
 
 %install
@@ -61,6 +60,8 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/birdcl
 %{_bindir}/birdcl
 
 %changelog
+*   Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 0.3.3-3
+-   Bump up version to compile with new glibc
 *   Fri Jan 15 2021 Alexey Makhalov <amakhalov@vmware.com> 0.3.3-2
 -   GCC-10 support.
 *   Tue Jun 23 2020 Gerrit Photon <photon-checkins@vmware.com> 0.3.3-1

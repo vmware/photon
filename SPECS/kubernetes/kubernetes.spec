@@ -10,7 +10,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.19.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -63,18 +63,15 @@ Group:          Development/Tools
 A pod setup process that holds a pod's namespace.
 
 %prep -p exit
-%setup -qn %{name}-%{version}
+%autosetup -n %{name}-%{version} -p1
 cd ..
 tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 sed -i '/KUBE_ALLOW_PRIV/d' contrib-0.7.0/init/systemd/kubelet.service
-cd %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
 
 %build
-make
-make WHAT="cmd/cloud-controller-manager"
+make %{?_smp_mflags}
+make WHAT="cmd/cloud-controller-manager" %{?_smp_mflags}
 pushd build/pause
 mkdir -p bin
 gcc -Os -Wall -Werror -static -o bin/pause-%{archname} pause.c
@@ -82,7 +79,7 @@ strip bin/pause-%{archname}
 popd
 
 %ifarch x86_64
-make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/%{archname} windows/%{archname}"
+make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/%{archname} windows/%{archname}" %{?_smp_mflags}
 %endif
 
 %install
@@ -231,6 +228,8 @@ fi
 %endif
 
 %changelog
+*   Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 1.19.10-4
+-   Bump up version to compile with new glibc
 *   Tue Jun 22 2021 Rishabh Jain <rjain3@vmware.com> 1.19.10-3
 -   Change 10-kubeadm.conf file permission to 644
 *   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.19.10-2

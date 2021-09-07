@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -23,6 +23,7 @@ Patch4:         CVE-2021-3326.patch
 Patch5:         CVE-2020-29562.patch
 Patch6:         CVE-2020-27618.patch
 Patch7:         CVE-2021-35942.patch
+Patch8:         CVE-2021-38604.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %define ExtraBuildRequires python3, python3-libs
@@ -129,7 +130,7 @@ make %{?_smp_mflags} || make %{?_smp_mflags} || make %{?_smp_mflags}
 #       Do not remove static libs
 pushd %{_builddir}/glibc-build
 #       Create directories
-make install_root=%{buildroot} install
+make install_root=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}%{_sysconfdir}/ld.so.conf.d
 install -vdm 755 %{buildroot}/var/cache/nscd
 install -vdm 755 %{buildroot}%{_libdir}/locale
@@ -186,7 +187,6 @@ popd
 sed -i 's@#! /bin/bash@#! /bin/sh@' %{buildroot}/usr/bin/ldd
 sed -i 's@#!/bin/bash@#!/bin/sh@' %{buildroot}/usr/bin/tzselect
 
-
 %check
 cd %{_builddir}/glibc-build
 make %{?_smp_mflags} check ||:
@@ -228,7 +228,6 @@ if [ -e /usr/lib64/gconv/gconv-modules.cache ]
 then
     rm /usr/lib64/gconv/gconv-modules.cache
 fi
-
 
 %files
 %defattr(-,root,root)
@@ -296,7 +295,6 @@ fi
 %exclude %{_datadir}/i18n/charmaps/ISO-8859-1.gz
 %exclude %{_datadir}/i18n/locales/en_US
 
-
 %files devel
 %defattr(-,root,root)
 # TODO: Excluding for now to remove dependency on PERL
@@ -308,8 +306,9 @@ fi
 %files -f %{name}.lang lang
 %defattr(-,root,root)
 
-
 %changelog
+*   Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 2.32-7
+-   Fix CVE-2021-38604
 *   Wed Aug 04 2021 Keerthana K <keerthanak@vmware.com> 2.32-6
 -   Fix CVE-2021-35942
 *   Thu Apr 01 2021 Ajay Kaher <akaher@vmware.com> 2.32-5
