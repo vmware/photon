@@ -1,16 +1,14 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        13.8.0
-Release:        5%{?dist}
+Version:        14.17.5
+Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
-Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.xz
-%define         sha1 node=81c3777f1c695f637dad22314fb7acbdd46d761f
-Patch0:         nodejs-CVE-2020-8172.patch
-Patch1:         nodejs-CVE-2020-1967.patch
+Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
+%define         sha1 node=5c66c638e6dce8b4a4c3760033295c2d7c2d3f34
 
 BuildRequires:  coreutils >= 8.22, zlib
 BuildRequires:  python3
@@ -33,18 +31,14 @@ The nodejs-devel package contains libraries, header files and documentation
 for developing applications that use nodejs.
 
 %prep
-%setup -q -n node-v%{version}
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1 -n node-v%{version}
 
 %build
 sh configure --prefix=%{_prefix}
-
-make %{?_smp_mflags}
+%make_build
 
 %install
-
-make install DESTDIR=$RPM_BUILD_ROOT
+%make_install
 rm -fr %{buildroot}%{_libdir}/dtrace/  # No systemtap support.
 install -m 755 -d %{buildroot}%{_libdir}/node_modules/
 install -m 755 -d %{buildroot}%{_datadir}/%{name}
@@ -56,7 +50,7 @@ for FILE in .gitmodules .gitignore .npmignore .travis.yml \*.py[co]; do
 done
 
 %check
-make cctest
+make cctest %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 
@@ -75,6 +69,9 @@ make cctest
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Tue Sep 07 2021 Ankit Jain <ankitja@vmware.com> 14.17.5-1
+-   Updated to v14.17.5 LTS version
+-   Fixes CVE-2021-22931
 *   Thu Feb 25 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 13.8.0-5
 -   Fix second level dependency CVE-2020-1967
 *   Mon Jul 27 2020 Ankit Jain <ankitja@vmware.com> 13.8.0-4
