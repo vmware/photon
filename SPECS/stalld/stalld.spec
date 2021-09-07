@@ -1,7 +1,7 @@
 Summary:        Daemon that finds starving tasks in the system and gives them a temporary boost
 Name:           stalld
 Version:        1.3.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2
 Group:          System/Tools
 URL:            https://git.kernel.org/pub/scm/utils/stalld/stalld.git
@@ -20,8 +20,8 @@ Requires:       systemd
 Patch0:         0001-Support-denylisting-of-tasks-in-stalld.patch
 Patch1:         0001-stalld-Fix-for-failed-to-parse-cpu-info-warning.patch
 Patch2:         0001-stalld-Add-error-handling-for-thread-creation-failur.patch
-Patch3:         0001-stalld-Detect-D-state-processes-and-log-their-stack-.patch
-Patch4:         0001-stalld-Expose-verbose-parameter-in-the-config-file.patch
+Patch3:         0001-stalld-Expose-verbose-parameter-in-the-config-file.patch
+
 %description
 The stalld program monitors the set of system threads, looking for
 threads that are ready-to-run but have not been given CPU time for
@@ -30,12 +30,7 @@ temporary boost using the SCHED_DEADLINE policy. The runtime given to
 such stalled threads is configurable by the user.
 
 %prep
-%setup
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
+%autosetup -p1
 
 %build
 make %{?_smp_mflags}
@@ -70,6 +65,8 @@ rm -rf %{buildroot}
 %license %{_datadir}/licenses/%{name}/gpl-2.0.txt
 
 %changelog
+* Tue Sep 07 2021 Ankit Jain <ankitja@vmware.com> 1.3.0-7
+- Removing D-state task stack dumping changes
 * Mon Jun 28 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 1.3.0-6
 - Expose verbose logging parameter in the config file.
 * Mon Jun 28 2021 Vikash Bansal <bvikas@vmware.com> 1.3.0-5
