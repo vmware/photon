@@ -1,0 +1,43 @@
+From bdfb6693ccf756598c79e83ab2e445dbec5aa485 Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh <svasamsetty@vmware.com>
+Date: Fri, 3 Sep 2021 09:26:42 +0530
+Subject: [PATCH] openssl 3.0.0 compatibility
+
+
+diff --git a/src/lib/ssl_util.c b/src/lib/ssl_util.c
+index 56d299a..0ef78d5 100644
+--- a/src/lib/ssl_util.c
++++ b/src/lib/ssl_util.c
+@@ -486,12 +486,18 @@ static CK_RV do_sig_verify_ec(EVP_PKEY *pkey,
+         CK_BYTE_PTR digest, CK_ULONG digest_len,
+         CK_BYTE_PTR signature, CK_ULONG signature_len) {
+ 
+-    EC_KEY *eckey = EVP_PKEY_get0_EC_KEY(pkey);
++    const EC_KEY *eckey = EVP_PKEY_get0_EC_KEY(pkey);
+     if (!eckey) {
+         LOGE("Expected EC Key");
+         return CKR_GENERAL_ERROR;
+     }
+ 
++    EC_KEY *eckey_local = EC_KEY_dup(eckey);
++    if (!eckey_local) {
++        LOGE("Expected EC Key");
++        return CKR_GENERAL_ERROR;
++    }
++
+     /*
+      * OpenSSL expects ASN1 framed signatures, PKCS11 does flat
+      * R + S signatures, so convert it to ASN1 framing.
+@@ -505,7 +511,8 @@ static CK_RV do_sig_verify_ec(EVP_PKEY *pkey,
+         return rv;
+     }
+ 
+-    int rc = ECDSA_do_verify(digest, digest_len, ossl_sig, eckey);
++    int rc = ECDSA_do_verify(digest, digest_len, ossl_sig, eckey_local);
++    EC_KEY_free(eckey_local);
+     if (rc < 0) {
+         ECDSA_SIG_free(ossl_sig);
+         SSL_UTIL_LOGE("ECDSA_do_verify failed");
+-- 
+2.17.1
+

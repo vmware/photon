@@ -6,7 +6,7 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.7
-Release:        6%{?dist}
+Release:        7%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -120,9 +120,7 @@ export CFLAGS="-Wno-error=unused-but-set-variable -Wno-error=implicit-function-d
 autoreconf -mif &&
 aclocal && libtoolize && automake --add-missing && autoreconf &&
 %configure \
-    LDFLAGS=-ldl \
-    --sysconfdir=/etc \
-    --localstatedir=/var/lib/vmware
+    LDFLAGS=-ldl
 make %{?_smp_mflags}
 
 %install
@@ -135,9 +133,9 @@ rm -f %{buildroot}%{python_sitearch}/pmd.so
 python3 setup.py install --skip-build --root %{buildroot}
 popd
 
-install -d $RPM_BUILD_ROOT/var/log
-install -d $RPM_BUILD_ROOT/var/opt/pmd/log
-ln -sfv /var/opt/pmd/log $RPM_BUILD_ROOT/var/log/pmd
+install -d %{buildroot}/var/log
+install -d %{buildroot}/var/opt/pmd/log
+ln -sfv /var/opt/pmd/log %{buildroot}/var/log/pmd
 install -vdm755 %{buildroot}%{_unitdir}
 install -D -m 444 pmd.service %{buildroot}%{_unitdir}
 install -D -m 444 pmdprivsepd.service %{buildroot}%{_unitdir}
@@ -151,7 +149,7 @@ install -d -m 0755 %{buildroot}/etc/pmd.roles.plugins.d/
 
 # gssapi_unix
 cd ../gssapi-unix-%{gssapi_unix_ver}
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+make DESTDIR=%{buildroot} sysconfdir=/etc localstatedir=/var/lib/vmware install %{?_smp_mflags}
 
 # copy binaries for GSSAPI
 mkdir -p %{buildroot}/%{_libdir}/gssapi_unix
@@ -354,6 +352,8 @@ rm -rf %{buildroot}/*
     %exclude %{_libdir}/gssapi_unix/*.la
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.0.7-7
+-   Bump up release for openssl
 *   Mon Jul 26 2021 Oliver Kurth <okurth@vmware.com> 0.0.7-6
 -   Bump to consume latest tdnf
 *   Thu Jun 03 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.0.7-5

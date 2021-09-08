@@ -1,6 +1,6 @@
 Name:           toybox
 Version:        0.8.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox/
@@ -28,8 +28,7 @@ Requires: toybox = %{version}-%{release}
 The package contains toybox doc files.
 
 %prep
-%setup -q -n toybox-%{version}
-%patch0 -p1
+%autosetup -p1 -n toybox-%{version}
 %build
 cp %{SOURCE1} .config
 NOSTRIP=1 make CFLAGS="-Wall -Wundef -Wno-char-subscripts -Werror=implicit-function-declaration -g"
@@ -550,6 +549,8 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %doc README LICENSE
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.3-3
+-   Bump up release for openssl
 *   Fri Feb 19 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.3-2
 -   Move documents to docs sub-package
 *   Wed Oct 14 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.3-1

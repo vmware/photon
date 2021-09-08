@@ -1,7 +1,7 @@
 Name:          c-rest-engine
 Summary:       minimal http(s) server library
 Version:       1.2
-Release:       7%{?dist}
+Release:       8%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -33,13 +33,7 @@ Requires:  %{name} = %{version}-%{release}
 development libs and header files for c-rest-engine
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
+%autosetup -p1
 
 %build
 cd build
@@ -56,7 +50,7 @@ make %{?_smp_mflags} CFLAGS="-O2 -fcommon -Wno-error=unused-result -Wno-error=st
 %install
 
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-cd build && make install DESTDIR=$RPM_BUILD_ROOT
+cd build && make install DESTDIR=%{buildroot}
 find %{buildroot} -name '*.la' -delete
 
 %post -p  /sbin/ldconfig
@@ -73,6 +67,8 @@ find %{buildroot} -name '*.la' -delete
 # %doc ChangeLog README COPYING
 
 %changelog
+*  Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2-8
+-  Bump up release for openssl
 *  Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 1.2-7
 -  GCC-10 support.
 *  Wed Nov 18 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2-6

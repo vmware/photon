@@ -1,7 +1,7 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
 Version:          10.7.1
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
@@ -446,6 +446,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+* Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 10.7.1-3
+- Bump up release for openssl
 * Wed Nov 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 10.7.1-2
 - Fix file packaging
 * Tue Nov 09 2021 Shreenidhi Shedi <sshedi@vmware.com> 10.7.1-1

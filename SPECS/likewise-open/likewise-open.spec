@@ -1,7 +1,7 @@
 Name:       likewise-open
 Summary:    Likewise Open
 Version:    6.2.11.13
-Release:    6%{?dist}
+Release:    7%{?dist}
 Group:      Development/Libraries
 Vendor:     VMware, Inc.
 License:    GPL 2.0,LGPL 2.1
@@ -13,6 +13,7 @@ Source0:        %{name}-%{version}.tar.gz
 Patch0:         likewise-open-openssl-1.1.1.patch
 Patch1:         likewise-open-openssl-1.1.1-FixV2.patch
 Patch2:         fix_arm_build_dcerpc_lwopen.patch
+Patch3:         0001-likewise-open-compatibility-with-openssl-3.0.patch
 
 Requires:       Linux-PAM
 Requires:       (coreutils >= 8.22 or toybox)
@@ -76,7 +77,7 @@ sh ../configure  --prefix=/opt/likewise \
              --enable-vmdir-provider=yes \
              --disable-static \
              --at-build-string='%{_arch}-unknown-linux-gnu'
-# fails with _smp_mflags
+# make doesn't support _smp_mflags
 make
 
 %install
@@ -185,7 +186,6 @@ case "$1" in
 
     2)
     ## Upgrade
-
 
     try_starting_lwregd_svc=true
 
@@ -310,6 +310,8 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+*   Mon Jul 12 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.2.11.13-7
+-   openssl 3.0.0 compatibility
 *   Mon May 24 2021 Shreenidhi Shedi <sshedi@vmware.com> 6.2.11.13-6
 -   Fix aarch64 build errors
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.13-5

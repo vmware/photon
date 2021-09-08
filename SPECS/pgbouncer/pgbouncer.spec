@@ -1,7 +1,7 @@
 Summary:	Connection pooler for PostgreSQL.
 Name:		pgbouncer
 Version:	1.14.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD
 URL:		https://wiki.postgresql.org/wiki/PgBouncer
 Source0:        https://%{name}.github.io/downloads/files/%{version}/%{name}-%{version}.tar.gz
@@ -22,7 +22,7 @@ Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 Pgbouncer is a light-weight, robust connection pooler for PostgreSQL.
 
 %prep
-%setup
+%autosetup
 
 %build
 %configure
@@ -30,7 +30,7 @@ make %{?_smp_mflags} V=1
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 744 %{buildroot}/var/log/pgbouncer
 install -vdm 755 %{buildroot}/var/run/pgbouncer
 install -p -d %{buildroot}%{_sysconfdir}/
@@ -41,7 +41,7 @@ install -m 0644 %{SOURCE1} %{buildroot}/etc/systemd/system/%{name}.service
 
 %check
 pushd test
-make all
+make all %{?_smp_mflags}
 popd
 
 %pre
@@ -80,6 +80,8 @@ fi
 /usr/share/doc/pgbouncer/*
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.0-3
+-   Bump up release for openssl
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.0-2
 -   openssl 1.1.1
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.0-1

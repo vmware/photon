@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.7.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://cache.ruby-lang.org/pub/ruby/2.7/%{name}-%{version}.tar.bz2
 %define sha1    ruby=f5bdecded2d68e4f2f0ab1d20137e8b4b0614e52
+Patch0:         0001-openssl-3.0.0-compatibility.patch
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
@@ -68,6 +69,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 
 %changelog
+*   Mon Sep 06 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.7.4-2
+-   openssl 3.0.0 support
 *   Mon Aug 30 2021 Sujay G <gsujay@vmware.com> 2.7.4-1
 -   Bump version to 2.7.4 to fix CVE-2021-31810
 *   Wed Aug 18 2021 Sujay G <gsujay@vmware.com> 2.7.3-2

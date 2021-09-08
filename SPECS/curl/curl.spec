@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.78.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -92,6 +92,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Fri Sep 17 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.78.0-3
+-   Bump up release for openssl
 *   Tue Sep 14 2021 Dweep Advani <dadvani@vmware.com> 7.78.0-2
 -   Fixed CVE-2021-22945, CVE-2021-22946, CVE-2021-22947
 *   Mon Aug 23 2021 Harinadh D <hdommaraju@vmware.com> 7.78.0-1

@@ -1,0 +1,29 @@
+From e3034f22aa9be828589b0a83facfffcb34f79037 Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh Vasamsetty <svasamsetty@vmware.com>
+Date: Wed, 25 Nov 2020 22:01:16 +0530
+Subject: [PATCH] ibmtpm: fix compilation issue with openssl 3.0
+
+
+diff --git a/src/TpmToOsslMath.h b/src/TpmToOsslMath.h
+index 9215b26..acb58f7 100644
+--- a/src/TpmToOsslMath.h
++++ b/src/TpmToOsslMath.h
+@@ -76,7 +76,15 @@
+ #if OPENSSL_VERSION_NUMBER >= 0x10200000L
+ // Check the bignum_st definition in crypto/bn/bn_lcl.h and either update the
+ // version check or provide the new definition for this version.
+-#   error Untested OpenSSL version
++struct bignum_st {
++    BN_ULONG *d;                /* Pointer to an array of 'BN_BITS2' bit
++                                 * chunks. */
++    int top;                    /* Index of last used d +1. */
++    /* The next are internal book keeping for bn_expand. */
++    int dmax;                   /* Size of the d array. */
++    int neg;                    /* one if the number is negative */
++    int flags;
++};
+ #elif OPENSSL_VERSION_NUMBER >= 0x10100000L
+ // from crypto/bn/bn_lcl.h
+ struct bignum_st {
+-- 
+2.7.4

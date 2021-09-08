@@ -2,7 +2,7 @@
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.27.0
-Release:        3%{?kernelsubrelease}%{?dist}
+Release:        4%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/
 Group:          Applications/System
@@ -38,7 +38,7 @@ Requires:       protobuf
  Sysdig is open source, system-level exploration: capture system state and activity from a running Linux instance, then save, filter and analyze. Sysdig is scriptable in Lua and includes a command line interface and a powerful interactive UI, csysdig, that runs in your terminal
 
 %prep
-%setup -q
+%autosetup
 
 %build
 # fix for linux-4.9
@@ -59,11 +59,11 @@ cmake \
     -DUSE_BUNDLED_JQ=OFF \
     -DUSE_BUNDLED_NCURSES=OFF ..
 
-make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
+make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build" %{?_smp_mflags}
 
 %install
 cd build
-make install DESTDIR=%{buildroot} KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
+make install DESTDIR=%{buildroot} KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build" %{?_smp_mflags}
 mv %{buildroot}/usr/src/sysdig* %{buildroot}/usr/src/sysdig-%{version}
 mkdir -p %{buildroot}/etc/
 mv %{buildroot}/usr/etc/bash_completion.d %{buildroot}/etc/
@@ -89,6 +89,8 @@ rm -rf %{buildroot}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/sysdig-probe.ko
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.27.0-4
+-   Bump up release for openssl
 *   Fri Feb 19 2021 Harinadh D <hdommaraju@vmware.com> 0.27.0-3
 -   Version bump up to build with latest protobuf
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.27.0-2

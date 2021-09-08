@@ -1,7 +1,7 @@
 Summary:        Packet Analyzer
 Name:           tcpdump
 Version:        4.9.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            http://www.tcpdump.org
 Source0:        http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
@@ -20,16 +20,14 @@ It allows the user to display TCP/IP and other packets being
 transmitted or received over a network to which the computer is attached.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
 
 %build
 %configure
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
 %check
@@ -42,6 +40,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/*
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.9.3-4
+-   Bump up release for openssl
 *   Sun Nov 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.9.3-3
 -   Added patch, fixes CVE-2020-8037
 *   Wed Sep 30 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.9.3-2

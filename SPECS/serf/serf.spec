@@ -1,7 +1,7 @@
 Summary:        A high performance C-based HTTP client library built upon the Apache Portable Runtime (APR) library
 Name:           serf
 Version:        1.3.9
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache License 2.0
 URL:            https://serf.apache.org/
 Group:          System Environment/Libraries
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.apache.org/dist/serf/%{name}-%{version}.tar.bz2
 %define sha1    serf=26015c63e3bbb108c1689bf2090e4c26351db674
+Patch0:         0001-openssl-3.0.0-compatibility.patch
 Requires:       openldap
 BuildRequires:  python3-setuptools
 BuildRequires:  apr-devel
@@ -30,7 +31,7 @@ Requires:       %{name} = %{version}
 It contains the libraries and header files to create serf applications.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 ln -sf /usr/bin/python3 /usr/bin/python
@@ -56,8 +57,9 @@ scons check
 %{_libdir}/libserf-1.so
 %{_libdir}/pkgconfig/*
 
-
 %changelog
+*   Sun Aug 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.3.9-5
+-   openssl 3.0.0 compatibility
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.3.9-4
 -   openssl 1.1.1
 *   Sat Aug 15 2020 Tapas Kundu <tkundu@vmware.com> 1.3.9-3

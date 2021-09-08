@@ -1,7 +1,7 @@
 Summary:        PAM Tacacs+ module
 Name:           pam_tacplus
 Version:        1.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            http://tacplus.sourceforge.net/
 Group:          System
@@ -37,11 +37,10 @@ mkdir -p %{buildroot}/etc/pam.d
 mkdir -p %{buildroot}/%{_lib}/security
 
 install -m 755 .libs/pam_tacplus.so %{buildroot}/%{_lib}/security/
-install -m 644 sample.pam $RPM_BUILD_ROOT/etc/pam.d/tacacs
+install -m 644 sample.pam %{buildroot}/etc/pam.d/tacacs
 
-chmod 755 $RPM_BUILD_ROOT/%{_lib}/security/*.so*
-
-make install DESTDIR=%{buildroot}
+chmod 755 %{buildroot}/%{_lib}/security/*.so*
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot}/usr/lib/ -name '*.la' -delete
 
 %check
@@ -69,6 +68,8 @@ rm -rf %{buildroot}/*
 %doc %{_docdir}/*
 
 %changelog
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.6.1-2
+- Bump up release for openssl
 * Thu Nov 05 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.6.1-1
 - Bump version to 1.6.1, fixes CVE-2020-27743
 * Sat Aug 29 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.5.1-2

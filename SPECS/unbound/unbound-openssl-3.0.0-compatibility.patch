@@ -1,0 +1,24 @@
+From 11caae256b0c82a2002162702fe0697f5396baf9 Mon Sep 17 00:00:00 2001
+From: "W.C.A. Wijngaards" <wouter@nlnetlabs.nl>
+Date: Fri, 30 Jul 2021 13:35:23 +0200
+Subject: [PATCH] - Fix #515: Compilation against openssl 3.0.0 beta2 is
+ failing to   build unbound.
+
+---
+ smallapp/unbound-control.c | 4 +---
+
+diff --git a/smallapp/unbound-control.c b/smallapp/unbound-control.c
+index af72f2a4e..a3df25795 100644
+--- a/smallapp/unbound-control.c
++++ b/smallapp/unbound-control.c
+@@ -499,9 +499,7 @@ static void ssl_path_err(const char* s, const char *path)
+ {
+ 	unsigned long err;
+ 	err = ERR_peek_error();
+-	if (ERR_GET_LIB(err) == ERR_LIB_SYS &&
+-		(ERR_GET_FUNC(err) == SYS_F_FOPEN ||
+-		 ERR_GET_FUNC(err) == SYS_F_FREAD) ) {
++	if (ERR_GET_LIB(err) == ERR_LIB_SYS) {
+ 		fprintf(stderr, "error: %s\n%s: %s\n",
+ 			s, path, ERR_reason_error_string(err));
+ 		exit(1);

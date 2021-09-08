@@ -1,7 +1,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.17
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos/
 Group:          System Environment/Security
@@ -119,6 +119,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+*   Fri Sep 17 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.17-6
+-   Bump up release for openssl
 *   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 1.17-5
 -   Replacement of ITS suggested words.
 *   Mon Nov 02 2020 Tapas Kundu <tkundu@vmware.com> 1.17-4

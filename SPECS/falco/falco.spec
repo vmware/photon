@@ -2,7 +2,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.25.0
-Release:        5%{?kernelsubrelease}%{?dist}
+Release:        6%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/falco/
 Group:          Applications/System
@@ -55,10 +55,7 @@ Requires:       c-ares
 Sysdig falco is an open source, behavioral activity monitor designed to detect anomalous activity in your applications. Falco lets you continuously monitor and detect container, application, host, and network activity... all in one place, from one source of data, with one set of customizable rules.
 
 %prep
-%setup
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1
 mkdir patch
 cp %{SOURCE1} patch/
 
@@ -75,7 +72,7 @@ make %{?_smp_mflags} all KERNELDIR="/lib/modules/%{uname_r}/build"
 
 %install
 cd build
-make install DESTDIR=%{buildroot} KERNELDIR="/lib/modules/%{uname_r}/build"
+make install DESTDIR=%{buildroot} KERNELDIR="/lib/modules/%{uname_r}/build" %{?_smp_mflags}
 mkdir -p %{buildroot}/lib/modules/%{uname_r}/extra
 install -vm 644 driver/falco.ko %{buildroot}/lib/modules/%{uname_r}/extra
 
@@ -107,6 +104,8 @@ rm -rf %{buildroot}/*
 /sbin/depmod -a
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.25.0-6
+-   compile with openssl 3.0.0
 *   Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 0.25.0-5
 -   Patched for CVE-2021-33505.
 *   Tue Mar 23 2021 Piyush Gupta <gpiyush@vmware.com> 0.25.0-4

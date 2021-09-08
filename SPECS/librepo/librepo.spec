@@ -4,7 +4,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.14.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
@@ -84,6 +84,8 @@ popd
 %{_python3_sitearch}/%{name}/
 
 %changelog
+*   Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.2-3
+-   openssl 3.0.0 compatibility
 *   Tue Sep 21 2021 Nitesh Kumar <kunitesh@vmware.com> 1.14.2-2
 -   Remove python dependencies.
 *   Sat Aug 28 2021 Ankit Jain <ankitja@vmware.com> 1.14.2-1

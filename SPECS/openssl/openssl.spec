@@ -1,15 +1,18 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
-Version:        1.1.1l
+Version:        3.0.0
 Release:        1%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://www.openssl.org/source/openssl-1.1.1l.tar.gz
-%define sha1    openssl=3b84a0eaac78ae3d21db7184e5a24ae068713fd0
+Source0:        http://www.openssl.org/source/openssl-3.0.0.tar.gz
+%define sha1    openssl=93b7693e18c9c122ad4e95b509dc856d2e4618ac
 Source1:        rehash_ca_certificates.sh
+%if 0%{?with_fips:1}
+Source2:        sample-fips-enable-openssl.cnf
+%endif
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -27,6 +30,15 @@ Group: Development/Libraries
 Requires: openssl = %{version}-%{release}
 %description devel
 Header files for doing development with openssl.
+
+%if 0%{?with_fips:1}
+%package fips-provider
+Summary: FIPS Libraries for openssl
+Group: Applications/Internet
+Requires: openssl = %{version}-%{release}
+%description fips-provider
+Fips library for enabling fips.
+%endif
 
 %package perl
 Summary: openssl perl scripts
@@ -51,8 +63,7 @@ Requires: openssl = %{version}-%{release}
 The package contains openssl doc files.
 
 %prep
-# Using autosetup is not feasible
-%setup -q
+%autosetup
 
 %build
 if [ %{_host} != %{_build} ]; then
@@ -68,12 +79,15 @@ export MACHINE=%{_arch}
     --prefix=%{_prefix} \
     --libdir=%{_libdir} \
     --openssldir=/%{_sysconfdir}/ssl \
+    --api=1.1.1 \
     --shared \
     --with-rand-seed=os,egd \
     enable-egd \
-    -Wl,-z,noexecstack
+    -Wl,-z,noexecstack \
+%if 0%{?with_fips:1}
+    enable-fips
+%endif
 
-# does not support -j yet
 # make doesn't support _smp_mflags
 make
 %install
@@ -82,17 +96,47 @@ make
 make DESTDIR=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
 
-ln -sf libssl.so.1.1 %{buildroot}%{_libdir}/libssl.so.1.1.0
-ln -sf libssl.so.1.1 %{buildroot}%{_libdir}/libssl.so.1.1.1
-ln -sf libcrypto.so.1.1 %{buildroot}%{_libdir}/libcrypto.so.1.1.0
-ln -sf libcrypto.so.1.1 %{buildroot}%{_libdir}/libcrypto.so.1.1.1
-
 %check
 # make doesn't support _smp_mflags
 make tests
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
+%if 0%{?with_fips:1}
+%post fips-provider
+OPENSSL_CFG='/etc/ssl/openssl.cnf'
+openssl fipsinstall -out /etc/ssl/fipsmodule.cnf -module /usr/lib/ossl-modules/fips.so
+sed -i '/^\[provider_sect\]/ a fips = fips_sect' $OPENSSL_CFG
+sed -i '/^\[provider_sect\]/ a base = base_sect' $OPENSSL_CFG
+sed -i '\|default = default_sect|d' $OPENSSL_CFG
+if grep "/fipsmodule.cnf" $OPENSSL_CFG
+then
+    sed -i '\|/fipsmodule.cnf|d' $OPENSSL_CFG
+fi
+sed -i '/.include fipsmodule.cnf/ a .include /etc/ssl/fipsmodule.cnf' $OPENSSL_CFG
+sed -i '/^fips = fips_sect/ a \[alg_sect\]' $OPENSSL_CFG
+sed -i '/^\[alg_sect\]/ a default_properties = fips=yes' $OPENSSL_CFG
+sed -i '/^fips = fips_sect/ a \[base_sect\]' $OPENSSL_CFG
+sed -i '/^\[base_sect\]/ a activate = 1' $OPENSSL_CFG
+sed -i '/^providers = provider_sect/ a alg_section = alg_sect' $OPENSSL_CFG
+
+%postun fips-provider
+OPENSSL_CFG='/etc/ssl/openssl.cnf'
+if [[ -f /etc/ssl/fipsmodule.cnf ]]; then
+    rm /etc/ssl/fipsmodule.cnf
+fi
+sed -i '\|fips = fips_sect|d' $OPENSSL_CFG
+sed -i '\|base = base_sect|d' $OPENSSL_CFG
+sed -i '/^\[provider_sect\]/ a default = default_sect' $OPENSSL_CFG
+sed -i '\|alg_section = alg_sect|d' $OPENSSL_CFG
+sed -i '\|default_properties = fips=yes|d' $OPENSSL_CFG
+sed -i '/^\[base_sect\]/{N;s/\n.*//;}' $OPENSSL_CFG
+sed -i '\|/etc/ssl/fipsmodule.cnf|d' $OPENSSL_CFG
+sed -i '/^\[base_sect\]/d' $OPENSSL_CFG
+sed -i '/^\[alg_sect\]/d' $OPENSSL_CFG
+%endif
+
 %clean
 rm -rf %{buildroot}/*
 
@@ -107,6 +151,13 @@ rm -rf %{buildroot}/*
 %{_bindir}/openssl
 %{_libdir}/*.so.*
 %{_libdir}/engines*/*
+%{_libdir}/ossl-modules/legacy.so
+
+%if 0%{?with_fips:1}
+%files fips-provider
+%{_libdir}/ossl-modules/fips.so
+%exclude %{_sysconfdir}/ssl/fipsmodule.cnf
+%endif
 
 %files devel
 %{_includedir}/*
@@ -132,6 +183,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+*   Tue Sep 07 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.0-1
+-   update to openssl 3.0.0
 *   Fri Aug 27 2021 Srinidhi Rao <srinidhir@vmware.com> 1.1.1l-1
 -   update to openssl 1.1.1l
 *   Fri Jun 18 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.1k-2

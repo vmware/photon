@@ -3,7 +3,7 @@ Summary:        aws sdk for c++
 Group:          Development/Libraries
 Name:           aws-sdk-cpp
 Version:        1.4.33
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -78,8 +78,7 @@ Requires:       aws-core-libs = %{version}-%{release}
 aws s3 libs
 
 %prep
-%setup
-%patch0 -p1
+%autosetup -p1
 
 %build
 mkdir build
@@ -92,7 +91,6 @@ for component in "core" "kinesis" "s3"; do
   make %{?_smp_mflags}
   cd ..
 done
-
 
 %install
 cd build
@@ -174,6 +172,8 @@ rm -rf %{buildroot}/*
     %{_lib64dir}/libaws-cpp-sdk-s3.so
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.4.33-4
+-   Bump up release for openssl
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.4.33-3
 -   openssl 1.1.1
 *   Fri Apr 03 2020 Alexey Makhalov <amakhalov@vmware.com> 1.4.33-2

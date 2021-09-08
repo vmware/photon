@@ -1,7 +1,7 @@
 Summary:        unbound dns server
 Name:           unbound
 Version:        1.12.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
@@ -16,6 +16,7 @@ BuildRequires:  expat-devel
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 
 Patch0:         patch_cve-2020-28935_unbound.diff
+Patch1:         unbound-openssl-3.0.0-compatibility.patch
 
 %description
 Unbound is a validating, recursive, and caching DNS resolver.
@@ -36,24 +37,22 @@ Group:      Documentation
 unbound dns server docs
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 %configure \
     --with-conf-file=%{_sysconfdir}/%{name}/unbound.conf \
     --disable-static
-
-make
+make %{?_smp_mflags}
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 install -vdm755 %{buildroot}%{_unitdir}
 install -pm 0644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
 
 %check
-make check
+make check %{?_smp_mflags}
 
 %pre
 getent group unbound >/dev/null || groupadd -r unbound
@@ -83,6 +82,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/*
 
 %changelog
+*  Fri Jul 30 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.12.0-2
+-  Fix openssl 3.0.0 beta2 compatibility with unbound
 *  Fri Jul 23 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.12.0-1
 -  Update to 1.12.0 for openssl 3.0 compatibility
 *  Tue Feb 02 2021 Shreyas B. <shryasb@vmware.com> 1.11.0-2
@@ -93,7 +94,7 @@ rm -rf %{buildroot}/*
 -  Fix for CVE-2020-12662 & CVE-2020-12663
 *  Fri Dec 20 2019 Shreyas B. <shryasb@vmware.com> 1.8.0-3
 -  Fix for vulnerability CVE-2019-18934 that can cause shell code
-execution after receiving a specially crafted answer.
+-  execution after receiving a specially crafted answer.
 *  Mon Oct 14 2019 Shreyas B. <shryasb@vmware.com> 1.8.0-2
 -  Fix for CVE-2019-16866.
 *  Mon Sep 10 2018 Michelle Wang <michellew@vmware.com> 1.8.0-1

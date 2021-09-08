@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat Native
 Name:           apache-tomcat-native
 Version:        1.2.24
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache 2.0
 URL:            https://tomcat.apache.org/native-doc/
 Group:          Applications/System
@@ -22,8 +22,7 @@ The Apache Tomcat Native Library is an optional component for use with Apache To
 that allows Tomcat to use certain native resources for performance, compatibility, etc.
 
 %prep
-%setup -q -n tomcat-native-%{version}-src
-%patch0 -p1
+%autosetup -p1 -n tomcat-native-%{version}-src
 
 %build
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
@@ -36,7 +35,7 @@ make %{?_smp_mflags}
 
 %install
 cd native
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}/*
@@ -54,6 +53,8 @@ rm -rf %{buildroot}/*
 %exclude %{_libdir}/libtcnative-1.la
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2.24-3
+-   Bump up release for openssl
 *   Thu Sep 10 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2.24-2
 -   Openssl 1.1.1 compatibility
 *   Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 1.2.24-1

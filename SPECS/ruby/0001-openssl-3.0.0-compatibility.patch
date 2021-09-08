@@ -1,0 +1,23 @@
+From aef0cd29ac8791bf90fa26a46e197dbda92045a9 Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh Vasamsetty <svasamsetty@vmware.com>
+Date: Tue, 13 Apr 2021 18:48:54 +0530
+Subject: [PATCH] openssl 3.0.0 compatibility
+
+---
+ ext/openssl/ossl_pkey_rsa.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/ext/openssl/ossl_pkey_rsa.c b/ext/openssl/ossl_pkey_rsa.c
+index 4800fb2..7b44ff1 100644
+--- a/ext/openssl/ossl_pkey_rsa.c
++++ b/ext/openssl/ossl_pkey_rsa.c
+@@ -939,7 +939,6 @@ Init_ossl_rsa(void)
+     rb_define_method(cRSA, "params", ossl_rsa_get_params, 0);
+ 
+     DefRSAConst(PKCS1_PADDING);
+-    DefRSAConst(SSLV23_PADDING);
+     DefRSAConst(NO_PADDING);
+     DefRSAConst(PKCS1_OAEP_PADDING);
+ 
+-- 
+2.7.4

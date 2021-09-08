@@ -1,7 +1,7 @@
 Summary:          Multipurpose relay (SOcket CAT)
 Name:             socat
 Version:          2.0.0.b9
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          GPL2
 URL:              http://www.dest-unreach.org/socat
 Group:            Applications/Internet
@@ -15,8 +15,7 @@ Patch1:           fix_openssl-1.1.x_compatibility.patch
 Socat is a command line based utility that establishes two bidirectional byte streams and transfers data between them. Because the streams can be constructed from a large set of different types of data sinks and sources (see address types), and because lots of address options may be applied to the streams, socat can be used for many different purposes.
 
 %prep
-%setup -q
-%patch1 -p1
+%autosetup -p1
 
 %build
 %configure
@@ -25,7 +24,7 @@ make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 find %{buildroot} -name '*.a' -delete
 
@@ -41,6 +40,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.0.b9-3
+-   Bump up release for openssl
 *   Fri Jul 24 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.0.b9-2
 -   Add no depreciated option
 *   Wed Sep 19 2018 Srinidhi Rao <srinidhir@vmware.com> 2.0.0.b9-1

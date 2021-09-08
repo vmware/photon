@@ -1,7 +1,7 @@
 Name:         erlang
 Summary:      erlang
 Version:      23.1
-Release:      2%{?dist}
+Release:      3%{?dist}
 Group:        Development/Languages
 Vendor:       VMware, Inc.
 Distribution: Photon
@@ -9,26 +9,25 @@ License:      ASL2.0
 URL:          http://erlang.com
 Source0:      OTP-%{version}.tar.gz
 %define sha1  OTP=2d6eaefe960f52cc79d7614c11256b73174e4161
-Patch1: 0001-crypto-declare-extern-for-BN_GENCB-APIs.patch
+Patch0:       0001-erlang-fix-vernemq-build-fail.patch
+Patch1:       0001-crypto-declare-extern-for-BN_GENCB-APIs.patch
 BuildRequires: unzip
 BuildRequires: openssl-devel
 %description
 erlang programming language
 
 %prep
-%setup -q -n otp-OTP-%{version}
-%patch1 -p1
+%autosetup -p1 -n otp-OTP-%{version}
 
 %build
 export ERL_TOP=`pwd`
+export CFLAGS="-Wno-error=implicit-function-declaration"
 ./otp_build autoconf
 %configure --with-ssl=%{_libdir} --with-ssl-incl=%{_includedir}/openssl --with-ssl-rpath=%{_libdir} --enable-dynamic-ssl-lib
-
-make
+make %{?_smp_mflags}
 
 %install
-
-make install DESTDIR=$RPM_BUILD_ROOT
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 %post
 
@@ -40,6 +39,8 @@ make install DESTDIR=$RPM_BUILD_ROOT
 %exclude %{_libdir}/debug
 
 %changelog
+* Fri Jun 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 23.1-3
+- openssl 3.0.0 support
 * Wed Sep 23 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 23.1-2
 - Make openssl changes
 * Wed Sep 23 2020 Gerrit Photon <photon-checkins@vmware.com> 23.1-1
@@ -64,4 +65,3 @@ make install DESTDIR=$RPM_BUILD_ROOT
 - Updated Version
 * Mon Dec 12 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 19.1-1
 - Initial.
-

@@ -1,7 +1,7 @@
 Summary:        Compressed file format
 Name:           zchunk
 Version:        1.1.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-2-Clause AND MIT
 URL:            https://github.com/zchunk/zchunk
 Group:          Applications/System
@@ -50,7 +50,7 @@ This package contains the headers necessary for building against the zchunk
 library, libzck.
 
 %prep
-%setup -q
+%autosetup
 # Remove bundled sha libraries
 rm -rf src/lib/hash/sha*
 
@@ -84,6 +84,8 @@ DESTDIR=%{buildroot}/ ninja install
 %{_mandir}/man1/*.gz
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.7-2
+-   Bump up release for openssl
 *   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.7-1
 -   Automatic Version Bump
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.1.6-2

@@ -3,7 +3,7 @@
 Summary:        Python cryptography library
 Name:           python3-cryptography
 Version:        3.3.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -18,7 +18,7 @@ BuildRequires:  python3-libs
 BuildRequires:  python3-cffi
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-
+Patch0:         0001-openssl-3.0.0-support.patch
 %if %{with_check}
 BuildRequires:  python3-pip
 BuildRequires:  curl-devel
@@ -38,7 +38,7 @@ Cryptography is a Python library which exposes cryptographic recipes and primiti
 
 
 %prep
-%setup -q -n cryptography-%{version}
+%autosetup -p1 -n cryptography-%{version}
 
 %build
 python3 setup.py build
@@ -66,6 +66,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jul 22 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.3.2-2
+-   openssl 3.0.0 support
 *   Tue May 18 2021 Piyush Gupta <gpiyush@vmware.com> 3.3.2-1
 -   Upgrade to 3.3.2, Fixes CVE-2020-36242.
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.1-1

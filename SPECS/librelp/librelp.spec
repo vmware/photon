@@ -1,7 +1,7 @@
 Summary:	RELP Library
 Name:		librelp
 Version:	1.8.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.librelp.com
 Source0:	http://download.rsyslog.com/librelp/%{name}-%{version}.tar.gz
@@ -29,7 +29,7 @@ The package contains libraries and header files for
 developing applications that use librelp.
 
 %prep
-%setup -q
+%autosetup
 autoreconf -fiv
 
 %build
@@ -37,7 +37,7 @@ autoreconf -fiv
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
 #There are two tests(out of 16) which run under valgrind.
@@ -53,7 +53,7 @@ sed -i '/VALGRIND_TESTS= \\/d' tests/Makefile.am
 sed -i '/duplicate-receiver-vg.sh \\/d' tests/Makefile.am
 sed -i '/basic-sessionbreak-vg.sh/d' tests/Makefile.am
 
-make check
+make check %{?_smp_mflags}
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -69,6 +69,8 @@ make check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.8.0-3
+- Bump up release for openssl
 * Tue Nov 24 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.8.0-2
 - Fix make check
 * Tue Sep 29 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.0-1

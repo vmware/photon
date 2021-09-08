@@ -1,12 +1,13 @@
 Summary:        Caching and forwarding HTTP web proxy
 Name:           squid
 Version:        4.16
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL-2.0-or-later
 URL:            http://www.squid-cache.org
 
 Source0:        http://www.squid-cache.org/Versions/v4/%{name}-%{version}.tar.xz
 %define sha1 squid=4ddc098b5f7c276d19134c7c3b247cdb51d1c88d
+Patch0:         0001-openssl-3.0.0-support.patch
 Source1:        squid.sysconfig
 Source2:        squid.pam
 Source3:        squid.service
@@ -213,6 +214,8 @@ done
 %systemd_postun_with_restart squid.service
 
 %changelog
+* Sat Aug 21 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.16-3
+- Openssl 3.0.0 compatibility
 * Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16-2
 - Bump version as a part of nettle upgrade
 * Mon Jul 19 2021 Susant Sahani <ssahani@vmware.com> 4.16-1

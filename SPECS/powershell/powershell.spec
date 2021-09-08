@@ -46,7 +46,7 @@ Source5:        omi-%{libmi_tag}.tar.gz
 
 Patch0:         Remove-workarounds-for-.NET-5-RTM-builds.patch
 
-BuildArch:      x86_64
+BuildArch:      x86_64_OPENSSL3_NOT_SUPPORTED
 
 BuildRequires:  dotnet-sdk = 5.0.402
 BuildRequires:  dotnet-runtime = 5.0.11

@@ -1,7 +1,7 @@
 Summary:        Fast incremental file transfer.
 Name:           rsync
 Version:        3.2.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            https://rsync.samba.org/
 Source0:        https://download.samba.org/pub/rsync/src/%{name}-%{version}.tar.gz
@@ -30,7 +30,7 @@ Rsync is a fast and extraordinarily versatile file copying tool. It can copy loc
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 mkdir -p %{buildroot}/%{_sysconfdir}
 touch %{buildroot}/%{_sysconfdir}/rsyncd.conf
 
@@ -64,6 +64,8 @@ make %{?_smp_mflags} check
 %{_libdir}/systemd/system/rsyncd.service
 %{_sysconfdir}/rsyncd.conf
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.2.3-3
+-   Bump up release for openssl
 *   Fri Jun 11 2021 Ankit Jain <ankitja@vmware.com> 3.2.3-2
 -   Fix CVE-2020-14387
 *   Fri Aug 14 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.3-1
@@ -86,4 +88,3 @@ make %{?_smp_mflags} check
 -   Updated to version 3.1.2
 *   Mon Dec 14 2015 Xiaolin Li < xiaolinl@vmware.com> 3.1.1-1
 -   Initial build. First version
-

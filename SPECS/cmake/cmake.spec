@@ -1,7 +1,7 @@
 Summary:	Cmake
 Name:		cmake
 Version:	3.18.3
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
 Source0:	http://www.cmake.org/files/v3.16/%{name}-%{version}.tar.gz
@@ -36,14 +36,14 @@ CMake is an extensible, open-source system that manages the build process in an
 operating system and in a compiler-independent manner.
 
 %prep
-%setup -q
+%autosetup
 %build
 ncores="$(/usr/bin/getconf _NPROCESSORS_ONLN)"
 ./bootstrap --prefix=%{_prefix} --system-expat --system-zlib --system-libarchive --system-bzip2 --parallel=$ncores
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 install -Dpm0644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d/macros.cmake
 
@@ -62,6 +62,8 @@ make  %{?_smp_mflags} test
 %{_libdir}/rpm/macros.d/macros.cmake
 
 %changelog
+*       Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.18.3-4
+-       Bump up release for openssl
 *       Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.18.3-3
 -       Fix build with new rpm
 *       Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.18.3-2

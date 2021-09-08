@@ -1,7 +1,7 @@
 Summary:        The Apache Subversion control system
 Name:           subversion
 Version:        1.14.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            http://subversion.apache.org
 Group:          Utilities/System
@@ -58,12 +58,12 @@ make %{?_smp_mflags}
 make %{?_smp_mflags} swig-pl
 
 %install
-# doesn't support _smp_mflags
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install
 %find_lang %{name}
 
 # For Perl bindings
-# doesn't support _smp_mflags
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install-swig-pl
 
 %check
@@ -96,6 +96,8 @@ sudo -u test make check && userdel test -r -f
 %exclude %{_libdir}/perl5/*/*/perllocal.pod
 
 %changelog
+*   Sun Aug 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.1-3
+-   Bump version for openssl 3.0.0
 *   Fri May 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.14.1-2
 -   Bump version as a part of rpm upgrade
 *   Fri Mar 26 2021 Ankit Jain <ankitja@vmware.com> 1.14.1-1

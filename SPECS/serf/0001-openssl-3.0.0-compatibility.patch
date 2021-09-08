@@ -1,0 +1,26 @@
+From c9de9b35b1a5f559b9a6e2a4bf13032cc47f83b6 Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh <svasamsetty@vmware.com>
+Date: Fri, 30 Jul 2021 20:37:32 +0530
+Subject: [PATCH] openssl 3.0.0 compatibility
+
+---
+ buckets/ssl_buckets.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/buckets/ssl_buckets.c b/buckets/ssl_buckets.c
+index b01e535..9801f87 100644
+--- a/buckets/ssl_buckets.c
++++ b/buckets/ssl_buckets.c
+@@ -1325,8 +1325,7 @@ static int ssl_need_client_cert(SSL *ssl, X509 **cert, EVP_PKEY **pkey)
+                 return 0;
+             }
+             else {
+-                printf("OpenSSL cert error: %d %d %d\n", ERR_GET_LIB(err),
+-                       ERR_GET_FUNC(err),
++                printf("OpenSSL cert error: %d %d\n", ERR_GET_LIB(err),
+                        ERR_GET_REASON(err));
+                 PKCS12_free(p12);
+                 bio_meth_free(biom);
+-- 
+2.17.1
+

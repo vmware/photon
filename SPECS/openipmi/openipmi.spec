@@ -3,7 +3,7 @@
 Summary:        A shared library implementation of IPMI and the basic tools
 Name:           openipmi
 Version:        2.0.29
-Release:        4%{?dist}
+Release:        5%{?dist}
 URL:            https://sourceforge.net/projects/openipmi/
 License:        LGPLv2+ and GPLv2+ or BSD
 Group:          System Environment/Base
@@ -71,7 +71,7 @@ Requires:       openipmi = %{version}-%{release}
 This package contains a network IPMI listener.
 
 %prep
-%setup -n OpenIPMI-%{version}
+%autosetup -n OpenIPMI-%{version}
 
 %build
 # USERFIX: Things you might have to add to configure:
@@ -86,9 +86,10 @@ This package contains a network IPMI listener.
     --with-perlinstall=%{perl_vendorarch}   \
     --with-python=/usr/bin/python3.9        \
     --with-pythoninstall=%{python3_sitelib}
-make
+make %{?_smp_mflags}
 
 %install
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install
 install -d %{buildroot}/etc/init.d
 install -d %{buildroot}/etc/sysconfig
@@ -183,6 +184,8 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.29-5
+-   Bump up release for openssl
 *   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 2.0.29-4
 -   Use python 3.9
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.29-3
@@ -200,4 +203,3 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 -   openipmi-devel requires ncurses-devel
 *   Mon Sep 11 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.24-1
 -   Initial build.  First version
-

@@ -1,7 +1,7 @@
 Summary:        Git for operating system binaries
 Name:           ostree
 Version:        2021.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
@@ -63,7 +63,6 @@ Group: Development/Libraries
 Requires: libpsl
 Requires: libsoup
 Requires: icu
-
 
 %description libs
 The %{name}-libs provides shared libraries for %{name}.
@@ -159,6 +158,8 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %{_libexecdir}/libostree/grub2*
 
 %changelog
+*   Thu Sep 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2021.3-2
+-   Bump up for openssl
 *   Sat Aug 28 2021 Ankit Jain <ankitja@vmware.com> 2021.3-1
 -   Updated to 2021.3
 *   Thu Sep 03 2020 Ankit Jain <ankitja@vmware.com> 2020.6-1

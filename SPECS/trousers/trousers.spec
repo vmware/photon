@@ -1,7 +1,7 @@
 Summary:    TCG Software Stack (TSS)
 Name:       trousers
 Version:    0.3.14
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    BSD
 URL:        https://sourceforge.net/projects/trousers/
 Group:      System Environment/Security
@@ -31,9 +31,7 @@ Summary:    TSPI library
 TSPI library
 
 %prep
-%setup -q -c %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1 -c %{name}-%{version}
 
 %build
 %configure \
@@ -42,7 +40,7 @@ TSPI library
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %post
 mkdir -p /var/lib/tpm
@@ -94,6 +92,8 @@ fi
 %exclude %{_libdir}/libtddl.a
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.3.14-5
+-   Bump up release for openssl
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 0.3.14-4
 -   GCC-10 support.
 *   Wed Aug 19 2020 Shreyas B <shreyasb@vmware.com> 0.3.14-3

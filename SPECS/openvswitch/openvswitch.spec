@@ -2,7 +2,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.14.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -147,6 +147,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man7/ovs-actions.7.gz
 
 %changelog
+*   Thu Sep 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.14.0-8
+-   Bump up release for openssl
 *   Wed Sep 01 2021 Sujay G <gsujay@vmware.com> 2.14.0-7
 -   Fix check_spec.py errors
 *   Tue Aug 17 2021 Dweep Advani <dadvani@vmware.com> 2.14.0-6

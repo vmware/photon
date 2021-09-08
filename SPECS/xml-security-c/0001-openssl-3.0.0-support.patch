@@ -1,0 +1,25 @@
+From 57a580d9305a964c5e34c9adbc4d1a040b216bcc Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh Vasamsetty <svasamsetty@vmware.com>
+Date: Mon, 12 Apr 2021 21:37:13 +0530
+Subject: [PATCH] openssl 3.0.0 support
+
+---
+ xsec/enc/OpenSSL/OpenSSLCryptoKeyRSA.cpp | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/xsec/enc/OpenSSL/OpenSSLCryptoKeyRSA.cpp b/xsec/enc/OpenSSL/OpenSSLCryptoKeyRSA.cpp
+index 8196cc0..cc33a08 100644
+--- a/xsec/enc/OpenSSL/OpenSSLCryptoKeyRSA.cpp
++++ b/xsec/enc/OpenSSL/OpenSSLCryptoKeyRSA.cpp
+@@ -413,7 +413,7 @@ OpenSSLCryptoKeyRSA::OpenSSLCryptoKeyRSA(EVP_PKEY *k) :
+     if (k == NULL || EVP_PKEY_id(k) != EVP_PKEY_RSA)
+         return; // Nothing to do with us
+ 
+-    RSA *rsa = EVP_PKEY_get0_RSA(k);
++    const RSA *rsa = EVP_PKEY_get0_RSA(k);
+ 
+     const BIGNUM *n=NULL, *e=NULL, *d=NULL;
+     RSA_get0_key(rsa, &n, &e, &d);
+-- 
+2.7.4
+

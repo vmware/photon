@@ -3,7 +3,7 @@
 Summary:          OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:             tpm2-pkcs11
 Version:          1.6.0
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          BSD 2-Clause
 URL:              https://github.com/tpm2-software/tpm2-pkcs11
 Group:            System Environment/Security
@@ -11,6 +11,7 @@ Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          %{name}-%{version}.tar.gz
 %define sha1      tpm2=3e9e018c0f83c1351cc68ae5f3fcb5f4cf831c5f
+Patch0:           0001-openssl-3.0.0-compatibility.patch
 BuildRequires:    make gcc openssl-devel tpm2-tools tpm2-tss-devel tpm2-abrmd-devel
 BuildRequires:    libyaml-devel libgcrypt-devel sqlite-devel autoconf-archive
 BuildRequires:    python3 python3-cryptography python3-setuptools
@@ -42,7 +43,8 @@ cd tools
 python3 setup.py build
 
 %install
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
+# make doesn't support _smp_mflags
+make DESTDIR=%{buildroot} install
 rm %{buildroot}%{_libdir}/pkgconfig/tpm2-pkcs11.pc
 rm %{buildroot}%{_libdir}/libtpm2_pkcs11.la
 cd tools
@@ -68,5 +70,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Sep 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.6.0-2
+-   openssl 3.0.0 compatibility
 *   Sun Aug 8 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.6.0-1
 -   Initial build. First version

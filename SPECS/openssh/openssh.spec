@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        8.8p1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -190,6 +190,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+*   Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.8p1-2
+-   Bump up for openssl
 *   Mon Oct 04 2021 Ankit Jain <ankitja@vmware.comm> 8.8p1-1
 -   Update to 8.8p1 to fix CVE-2021-41617
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5p1-2

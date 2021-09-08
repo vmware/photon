@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.9.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -305,6 +305,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/rpm/macros.d/macros.python
 
 %changelog
+*   Sat Aug 21 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.9.1-7
+-   Bump up release for openssl
 *   Mon Aug 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.9.1-6
 -   Fix python rpm macros
 *   Tue May 18 2021 Piyush Gupta <gpiyush@vmware.com> 3.9.1-5

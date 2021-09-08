@@ -1,7 +1,7 @@
 Summary:          WPA client
 Name:             wpa_supplicant
 Version:          2.9
-Release:          4%{?dist}
+Release:          5%{?dist}
 License:          BSD
 URL:              https://w1.fi
 Group:            Applications/Communications
@@ -20,10 +20,7 @@ Requires:         openssl
 WPA Supplicant is a Wi-Fi Protected Access (WPA) client and IEEE 802.1X supplicant
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1
 
 %build
 cat > wpa_supplicant/.config << "EOF"
@@ -100,6 +97,8 @@ EOF
 %{_sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.9-5
+-   Bump up release for openssl
 *   Wed Apr 21 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.9-4
 -   Fix CVE-2021-30004
 *   Tue Mar 9 2021 Michelle Wang <michellew@vmware.com> 2.9-3

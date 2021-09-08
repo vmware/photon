@@ -2,7 +2,7 @@
 Summary:        ipmitool - Utility for IPMI control
 Name:           ipmitool
 Version:        1.8.18
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        BSD
 
 Group:          System Environment/Utilities
@@ -41,25 +41,23 @@ Log (SEL), printing Field Replaceable Unit (FRU) information, reading and
 setting LAN configuration, and chassis power control.
 
 %prep
-%setup -q -n %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 ./bootstrap
 %configure --with-kerneldir \
     --with-rpm-distro=
-make
+make %{?_smp_mflags}
 
 %install
-make DESTDIR=$RPM_BUILD_ROOT install-strip
+make DESTDIR=%{buildroot} install-strip %{?_smp_mflags}
 mkdir -p %{buildroot}/lib/systemd/system
 
 %check
 make %{?_smp_mflags} check
 
 %clean
-[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
+[ "%{buildroot}" != "/" ] && rm -rf %{buildroot}
 
 %files
 %defattr(755,root,root)
@@ -70,6 +68,8 @@ make %{?_smp_mflags} check
 %doc %{_datadir}/doc/ipmitool
 
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.8.18-6
+-   Bump up release for openssl
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 1.8.18-5
 -   GCC-10 support.
 *   Fri Jul 24 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.8.18-4

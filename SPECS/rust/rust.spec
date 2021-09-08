@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.56.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -65,6 +65,8 @@ rm %{buildroot}%{_docdir}/%{name}/*.old
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+*   Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.56.0-2
+-   bump up for openssl
 *   Thu Oct 28 2021 Ankit Jain <ankitja@vmware.com> 1.56.0-1
 -   Updated to 1.56.0 and fix CVE-2021-42574
 *   Sat Aug 28 2021 Ankit Jain <ankitja@vmware.com> 1.54.0-1

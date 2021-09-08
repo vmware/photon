@@ -1,0 +1,35 @@
+From 875706356482607f44b24ab5be71aa377643cd40 Mon Sep 17 00:00:00 2001
+From: Satya Naga Rajesh <svasamsetty@vmware.com>
+Date: Thu, 22 Jul 2021 15:31:53 +0530
+Subject: [PATCH] openssl 3.0 support
+
+---
+ lib/tpm2_openssl.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/lib/tpm2_openssl.h b/lib/tpm2_openssl.h
+index c78540c..ee8e1c7 100644
+--- a/lib/tpm2_openssl.h
++++ b/lib/tpm2_openssl.h
+@@ -23,6 +23,18 @@ void RSA_get0_factors(const RSA *r, const BIGNUM **p, const BIGNUM **q);
+ int ECDSA_SIG_set0(ECDSA_SIG *sig, BIGNUM *r, BIGNUM *s);
+ #endif
+ 
++# define SHA1(d, n, md) \
++    (EVP_Q_digest(NULL, "SHA1", NULL, d, n, md, NULL) ? md : NULL)
++
++# define SHA256(d, n, md) \
++    (EVP_Q_digest(NULL, "SHA256", NULL, d, n, md, NULL) ? md : NULL)
++
++# define SHA384(d, n, md) \
++    (EVP_Q_digest(NULL, "SHA384", NULL, d, n, md, NULL) ? md : NULL)
++
++# define SHA512(d, n, md) \
++    (EVP_Q_digest(NULL, "SHA512", NULL, d, n, md, NULL) ? md : NULL)
++
+ /**
+  * Function prototype for a hashing routine.
+  *
+-- 
+2.17.1
+

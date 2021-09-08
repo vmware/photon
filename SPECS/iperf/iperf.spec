@@ -1,7 +1,7 @@
 Summary:        A network performance benchmark tool.
 Name:           iperf
 Version:        3.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 URL:            https://github.com/esnet/iperf
 Group:          Applications/System
@@ -27,8 +27,7 @@ It contains the documentation and manpages for iperf package.
 Requires:       %{name} = %{version}-%{release}
 
 %prep
-%setup -q
-%patch1 -p1
+%autosetup -p1
 
 %build
 echo "VDBG optflags: " %{optflags}
@@ -38,7 +37,7 @@ make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
@@ -55,6 +54,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
+*       Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.9-2
+-       Bump up release for openssl
 *       Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 3.9-1
 -       Automatic Version Bump
 *       Mon Jun 22 2020 Ankit Jain <ankitja@vmware.com> 3.8.1-1

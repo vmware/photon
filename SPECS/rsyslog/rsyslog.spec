@@ -1,7 +1,7 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
 Version:        8.2106.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
@@ -32,9 +32,7 @@ Requires:       librelp
 RSYSLOG is the rocket-fast system for log processing.
 It offers high-performance, great security features and a modular design. While it started as a regular syslogd, rsyslog has evolved into a kind of swiss army knife of logging, being able to accept inputs from a wide variety of sources, transform them, and output to the results to diverse destinations.
 %prep
-%setup -q
-
-
+%autosetup
 autoreconf -fvi
 %build
 sed -i 's/libsystemd-journal/libsystemd/' configure
@@ -51,7 +49,7 @@ sed -i 's/libsystemd-journal/libsystemd/' configure
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vd %{buildroot}%{_libdir}/systemd/system/
 install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 install -vd %{buildroot}%{_sysconfdir}/rsyslog.d
@@ -86,6 +84,8 @@ make %{?_smp_mflags} check
 %{_sysconfdir}/systemd/journald.conf.d/*
 %config(noreplace) %{_sysconfdir}/rsyslog.conf
 %changelog
+*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2106.0-2
+-   Bump up release for openssl
 *   Thu Jun 24 2021 Tapas Kundu <tkundu@vmware.com> 8.2106.0-1
 -   Update to 8.2106.0
 *   Mon Oct 05 2020 Keerthana K <keerthanak@vmware.com> 8.2008.0-2
@@ -137,4 +137,3 @@ make %{?_smp_mflags} check
 -   Update rsyslog to 8.15.0
 *   Wed Jun 17 2015 Divya Thaluru <dthaluru@vmware.com> 8.10.0-1
 -   Initial build. First version
-
