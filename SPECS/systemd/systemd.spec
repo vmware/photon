@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd/
 Version:        247.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 
@@ -656,6 +656,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 247.8-2
+- Replacement of ITS suggested words.
 * Thu Jul 22 2021 Susant Sahani <ssahani@vmware.com>  247.8-1
 - Update to version 247.8-1
 * Mon Jul 19 2021 Susant Sahani <ssahani@vmware.com>  247.7-1
@@ -721,7 +723,7 @@ udevadm hwdb --update &>/dev/null || :
 * Thu Nov 09 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-11
 - Fix CVE-2017-15908 dns packet loop fix.
 * Tue Nov 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  233-10
-- Fix nullptr access during link disable.
+- Fix nullptr access during link deactivate.
 * Mon Sep 18 2017 Anish Swaminathan <anishs@vmware.com>  233-9
 - Backport router solicitation backoff from systemd 234
 * Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  233-8
@@ -747,7 +749,7 @@ udevadm hwdb --update &>/dev/null || :
 * Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 232-3
 - BuildRequires Linux-PAM-devel
 * Thu Dec 01 2016 Xiaolin Li <xiaolinl@vmware.com> 232-2
-- disable-elfutils.
+- deactivate-elfutils.
 * Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  232-1
 - Update systemd to 232
 * Thu Nov 3 2016 Divya Thaluru <dthaluru@vmware.com>  228-32
@@ -771,7 +773,7 @@ udevadm hwdb --update &>/dev/null || :
 * Fri Jun 17 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-23
 - systemd-resolved: Configure initial DNS servers from environment var.
 * Mon Jun 06 2016 Alexey Makhalov <amakhalov@vmware.com>  228-22
-- systemd-resolved: disable LLMNR
+- systemd-resolved: deactivate LLMNR
 * Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 228-21
 - GA - Bump release of all rpms
 * Tue May 17 2016 Anish Swaminathan <anishs@vmware.com>  228-20
@@ -783,7 +785,7 @@ udevadm hwdb --update &>/dev/null || :
 * Thu Apr 21 2016 Mahmoud Bassiouny <mbassiouny@vmware.com>  228-17
 - Set the default.target to the multi-user.target
 * Tue Apr 12 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-16
-- Disable network interface renaming.
+- Deactivate network interface renaming.
 * Thu Mar 31 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-15
 - Patch to query DHCP DUID, IAID.f
 * Wed Mar 30 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-14

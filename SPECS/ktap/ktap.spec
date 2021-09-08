@@ -1,7 +1,7 @@
 Summary: A New Scripting Dynamic Tracing Tool For Linux
 Name:    ktap
 Version: 0.4
-Release: rc1%{?kernelsubrelease}%{?dist}
+Release: rc2%{?kernelsubrelease}%{?dist}
 License: GPLv2
 URL: https://github.com/ktap/ktap
 Source: %{name}-master.zip
@@ -22,13 +22,11 @@ Requires: linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 ktap is a new scripting dynamic tracing tool for Linux, it uses a scripting language and lets users trace the Linux kernel dynamically. ktap is designed to give operational insights with interoperability that allows users to tune, troubleshoot and extend the kernel and applications. It's similar to Linux Systemtap and Solaris Dtrace.
 
 %prep
-%setup -q -n ktap-master
-%patch0 -p1
-%patch1 -p1
+%autosetup -n ktap-master -p1
 
 %build
-make ktap
-# ugly hack: disable security hardening to build kernel module
+make ktap %{?_smp_mflags}
+# ugly hack: deactivate security hardening to build kernel module
 # we need to remove sec hard specs file for that.
 rm -f `dirname $(gcc --print-libgcc-file-name)`/../specs
 #make KVERSION=%{KERNEL_VERSION}-%{KERNEL_RELEASE} mod
@@ -51,8 +49,10 @@ install -vm 755 ktap %{buildroot}%{_bindir}/
 #/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/ktapvm.ko
 
 %changelog
+*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 0.4-rc2
+-   Replacement of ITS suggested words.
 *   Fri Sep 11 2020 Bo Gan <ganb@vmware.com> 0.4-rc1
--   Temporarily disable kernel module build in preparation for kernel update
+-   Temporarily deactivate kernel module build in preparation for kernel update
 *   Tue Dec 26 2017 Alexey Makhalov <amakhalov@vmware.com> 0.4-8
 -   Update to linux-4.14.y. Added support patch
 *   Fri Jun 09 2017 Chang Lee <changlee@vmware.com> 0.4-7
@@ -71,4 +71,3 @@ install -vm 755 ktap %{buildroot}%{_bindir}/
 -   Update to linux-4.4.8
 *   Fri Dec 04 2015 Xiaolin Li <xiaolinl@vmware.com> 0.4-1
 -   Initial build.  First version
-

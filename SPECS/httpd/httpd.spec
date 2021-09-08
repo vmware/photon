@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.47
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org
 Group:          Applications/System
@@ -67,17 +67,30 @@ The httpd-tools of httpd.
 %autosetup -p1
 
 %build
-%configure \
-            --prefix=%{_sysconfdir}/httpd          \
-            --sysconfdir=%{_confdir}/httpd/conf    \
-            --libexecdir=%{_libdir}/httpd/modules  \
-            --datadir=%{_sysconfdir}/httpd         \
-            --enable-authnz-fcgi                   \
-            --enable-mods-shared="all cgi"         \
-            --enable-mpms-shared=all               \
-            --with-apr=%{_prefix}                  \
-            --with-apr-util=%{_prefix}             \
-            --enable-layout=RPM
+sh ./configure --host=%{_host} --build=%{_build} \
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
+    --program-prefix= \
+    --disable-dependency-tracking \
+    --prefix=%{_sysconfdir}/httpd          \
+    --exec-prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --sbindir=%{_sbindir} \
+    --sysconfdir=%{_confdir}/httpd/conf    \
+    --datadir=%{_sysconfdir}/httpd         \
+    --includedir=%{_includedir} \
+    --libdir=%{_libdir} \
+    --libexecdir=%{_libdir}/httpd/modules  \
+    --localstatedir=%{_localstatedir} \
+    --sharedstatedir=%{_sharedstatedir} \
+    --mandir=%{_mandir} \
+    --infodir=%{_infodir}\
+    --enable-authnz-fcgi                   \
+    --enable-mods-shared="all cgi"         \
+    --enable-mpms-shared=all               \
+    --with-apr=%{_prefix}                  \
+    --with-apr-util=%{_prefix}             \
+    --enable-layout=RPM
 
 GCCVERSION=$(gcc --version | grep ^gcc | sed 's/^.* //g')
 $(dirname $(gcc -print-prog-name=cc1))/install-tools/mkheaders
@@ -196,6 +209,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Mon Sep 13 2021 Nitesh Kumar <kunitesh@vmware.com> 2.4.47-2
+-   Replacement of ITS suggested words.
 *   Fri May 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.47-1
 -   Bump to v2.4.47
 *   Tue Mar 23 2021 Piyush Gupta <gpiyush@vmware.com> 2.4.46-6
@@ -231,7 +246,7 @@ fi
 *   Mon Jul 24 2017 Anish Swaminathan <anishs@vmware.com>  2.4.27-1
 -   Updated to version 2.4.27 - Fixes CVE-2017-3167
 *   Wed May 31 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.4.25-3
--   Provide preset file to disable service by default.
+-   Provide preset file to deactivate service by default.
 *   Fri Mar 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-2
 -   Fixing httpd.pid file write issue
 *   Fri Mar 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-1

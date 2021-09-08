@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           tuned
 Version:        2.14.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -62,16 +62,12 @@ identify applications that behave power inefficient (many small operations
 instead of fewer large ones).
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1
 %build
 #The tuned daemon is written in pure Python. Nothing requires to be built.
 
 %install
-make install DESTDIR=%{buildroot}
-
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 # conditional support for grub2, grub2 is not available on all architectures
 # and tuned is noarch package, thus the following hack is needed
@@ -87,7 +83,7 @@ rm %{buildroot}%{_bindir}/powertop2tuned
 
 %check
 pip3 install unittest2
-make test
+make test %{?_smp_mflags}
 
 %post
 %systemd_post tuned.service
@@ -97,7 +93,6 @@ make test
 
 %postun
 %systemd_postun_with_restart tuned.service
-
 
 %files
 %defattr(-,root,root,-)
@@ -143,8 +138,10 @@ make test
 %{_mandir}/man8/scomes.*
 
 %changelog
+*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 2.14.0-4
+-   Replacement of ITS suggested words.
 *   Fri Oct 09 2020 svasamsetty <svasamsetty@vmware.com> 2.14.0-3
--   Re-enable tuned as it was disabled due to openssl 1.1.1
+-   Re-enable tuned as it was deactivated due to openssl 1.1.1
 *   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.14.0-2
 -   Bootloader plugin support for Photon
 -   sysctl plugin verify bug fix

@@ -653,8 +653,8 @@ uint32_t
 **Arguments**
 
 - ``pszInterfaceName`` - interface name
-- ``enableDhcp`` - enable (1) or disable (0) DHCP; enabling configures the interface to acquire a DHCP IPv6 address.
-- ``enableAutoconf`` - enable (1) or disable (0) autoconf; enabling configures the interface to acquire a stateless autoconfiguration IPv6 address.
+- ``enableDhcp`` - enable (1) or deactivate (0) DHCP; enabling configures the interface to acquire a DHCP IPv6 address.
+- ``enableAutoconf`` - enable (1) or deactivate (0) autoconf; enabling configures the interface to acquire a stateless autoconfiguration IPv6 address.
 
 **Returns**
 
@@ -679,8 +679,8 @@ Get the mode for the interface.
 **Arguments**
 
 - ``pszInterfaceName`` - interface name
-- ``pDhcpEnabled`` - returns whether IPv6 DHCP is enabled (1) or disabled (0).
-- ``pAutoconfEnabled`` - returns whether IPv6 stateless autoconfiguration is enabled (1) or disabled (0).
+- ``pDhcpEnabled`` - returns whether IPv6 DHCP is enabled (1) or deactivated (0).
+- ``pAutoconfEnabled`` - returns whether IPv6 stateless autoconfiguration is enabled (1) or deactivated (0).
 
 **Returns**
 

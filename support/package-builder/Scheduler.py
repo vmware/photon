@@ -50,7 +50,7 @@ class DependencyGraphNode(object):
 
         # Internal data-structure used to perform controlled
         # traversals of the dependency graph, as well as certain
-        # sanity checks.
+        # confidence checks.
         self.numVisits = 0
 
         # Internal flag to check if the package is built

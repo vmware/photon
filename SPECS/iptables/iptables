@@ -10,14 +10,14 @@ modprobe xt_LOG
 # Enable broadcast echo Protection
 echo 1 > /proc/sys/net/ipv4/icmp_echo_ignore_broadcasts
 
-# Disable Source Routed Packets
+# deactivate Source Routed Packets
 echo 0 > /proc/sys/net/ipv4/conf/all/accept_source_route
 echo 0 > /proc/sys/net/ipv4/conf/default/accept_source_route
 
 # Enable TCP SYN Cookie Protection
 echo 1 > /proc/sys/net/ipv4/tcp_syncookies
 
-# Disable ICMP Redirect Acceptance
+# deactivate ICMP Redirect Acceptance
 echo 0 > /proc/sys/net/ipv4/conf/default/accept_redirects
 
 # Do not send Redirect Messages
@@ -36,7 +36,7 @@ echo 1 > /proc/sys/net/ipv4/conf/default/log_martians
 # be verbose on dynamic ip-addresses  (not needed in case of static IP)
 echo 2 > /proc/sys/net/ipv4/ip_dynaddr
 
-# disable Explicit Congestion Notification
+# deactivate Explicit Congestion Notification
 # too many routers are still ignorant
 echo 0 > /proc/sys/net/ipv4/tcp_ecn
 

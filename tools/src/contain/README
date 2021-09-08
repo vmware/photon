@@ -87,7 +87,7 @@ The contain utility is invoked as
 
 with options
 
-  -c        disable console emulation in the container
+  -c        deactivate console emulation in the container
   -g MAP    set the container-to-host GID map
   -i CMD    run a helper child inside the new namespaces
   -n        share the host network unprivileged in the container
@@ -113,7 +113,7 @@ can be used to override the defaults.
 The container console is a host pseudo-terminal bound at /dev/console in the
 new /dev filesystem: stdin and stdout are copied to/from this, and it serves
 as stdin, stdout and stderr for the container init process. This console
-emulation can be disabled using the -c option: if -c is used, init is run
+emulation can be deactivated using the -c option: if -c is used, init is run
 directly with the stdin, stdout and stderr of the contain command.
 
 Containers are usually isolated in their own network namespace, with a
@@ -264,13 +264,13 @@ support for creating and updating these files in this format; they are
 likely to become a standard way to delegate sub-users and sub-groups.
 
 Linux 3.19 and later do not allow unprivileged processes to write a GID map
-unless the setgroups() call has been permanently disabled by writing "deny"
+unless the setgroups() call has been permanently deactivated by writing "deny"
 to /proc/PID/setgroups. This is a fix for CVE-2014-8989 which applied to
 strangely-configured systems where group membership implies more restricted
 permissions rather than supplementary permissions.
 
 As a result, when run non-setuid by an unprivileged user, contain and pseudo
-must disable setgroups() in the container. Conversely, when installed setuid
+must deactivate setgroups() in the container. Conversely, when installed setuid
 root, they will use their privilege to bypass this kernel restriction,
 resulting in fully-functional containers which still support setgroups().
 However, this also means that they can be used to bypass restrictions

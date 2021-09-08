@@ -4,7 +4,7 @@
 Summary:	A collection of utilities and DSOs to handle compiled objects
 Name:		elfutils
 Version:	0.181
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:		Development/Tools
 URL:    	https://sourceware.org/elfutils
@@ -200,6 +200,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 0.181-4
+- Replacement of ITS suggested words.
 * Tue Aug 17 2021 Piyush Gupta <gpiyush@vmware.com> 0.181-3
 - Added requires libarchive.
 * Wed Oct 28 2020 Piyush Gupta <gpiyush@vmware.com> 0.181-2
@@ -649,7 +651,7 @@ rm -rf %{buildroot}
 - fix other warnings
 - reenable checks on s390x
 * Sat Jan 11 2003 Karsten Hopp <karsten@redhat.de> 0.72-3
-- temporarily disable checks on s390x, until someone has
+- temporarily deactivate checks on s390x, until someone has
   time to look at it
 * Thu Dec 12 2002 Jakub Jelinek <jakub@redhat.com> 0.72-2
 - update to 0.72

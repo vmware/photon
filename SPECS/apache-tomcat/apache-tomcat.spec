@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.68
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -32,12 +32,11 @@ Requires:       apache-ant
 The Apache Tomcat package contains binaries for the Apache Tomcat servlet container.
 
 %prep
-%setup -qn %{name}-%{version}-src
+%autosetup -n %{name}-%{version}-src -p1
 # remove pre-built binaries and windows files
 find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "*.gz" -o \
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
-%setup -D -b 1 -n %{name}-%{version}-src
-%patch0 -p1
+%autosetup -D -b 1 -n %{name}-%{version}-src -p1
 
 %build
 ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
@@ -101,6 +100,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 8.5.68-2
+-   Replacement of ITS suggested words.
 *   Tue Jul 20 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.68-1
 -   Version Bump to 8.5.68 to fix CVE-2021-30639
 *   Wed Mar 31 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.64-1
@@ -146,7 +147,7 @@ rm -rf %{buildroot}/*
 *   Tue Oct 10 2017 Anish Swaminathan <anishs@vmware.com> 8.5.23-1
 -   Upgraded to version 8.5.23
 *   Wed Sep 27 2017 Alexey Makhalov <amakhalov@vmware.com> 8.5.20-3
--   Offline build, disable javadoc target
+-   Offline build, deactivate javadoc target
 *   Wed Sep 13 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 8.5.20-2
 -   Updated the permissions on directories packaged
 *   Tue Aug 15 2017 Anish Swaminathan <anishs@vmware.com> 8.5.20-1

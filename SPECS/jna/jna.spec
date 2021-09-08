@@ -1,10 +1,10 @@
-#need to disable debuginfo till we bring in x11 deps
+#need to deactivate debuginfo till we bring in x11 deps
 %define debug_package %{nil}
 
 Summary:        Java Native Access
 Name:           jna
 Version:        5.6.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache
 URL:            https://github.com/java-native-access/jna
 Group:          Applications/System
@@ -33,9 +33,7 @@ Requires:   %{name} = %{version}-%{release}
 Sources for JNA
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
 
 %clean
 rm -rf %{buildroot}
@@ -85,6 +83,8 @@ ant
 %{_prefix}/*.aar
 
 %changelog
+*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 5.6.0-3
+-   Replacement of ITS suggested words.
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 5.6.0-2
 -   GCC-10 support.
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 5.6.0-1
@@ -110,7 +110,7 @@ ant
 *   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.4.0-4
 -   Renamed openjdk to openjdk8
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.0-3
--   disable debuginfo temporarily - wait for x11 deps
+-   deactivate debuginfo temporarily - wait for x11 deps
 *   Tue Apr 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.0-2
 -   use java rpm macros to determine versions
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 4.4.0-1

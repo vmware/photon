@@ -118,7 +118,7 @@ You can configure Journald using the conf file located at **/etc/systemd/journal
 #LineMax=48K
 root@photon-4a0e7f2307d4 [ ~ ]#
 ```
-By default `rotate` is disable in Photon. Once the changes are made to the conf file, for the changes to take effect you must restart the systemd-journald by running the `systemctl restart systemd-journald` command.
+By default `rotate` is deactivate in Photon. Once the changes are made to the conf file, for the changes to take effect you must restart the systemd-journald by running the `systemctl restart systemd-journald` command.
 
 ##Cloud-init Logs
 Cloud-init is the industry standard multi-distribution method for cross-platform cloud instance initialisation. 

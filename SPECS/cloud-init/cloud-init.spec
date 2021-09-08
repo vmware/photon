@@ -3,7 +3,7 @@
 
 Name:           cloud-init
 Version:        21.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -153,6 +153,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/cloud-init
 
 %changelog
+* Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 21.3-2
+- Replacement of ITS suggested words.
 * Wed Aug 25 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.3-1
 - Upgrade to version 21.3
 * Tue Aug 03 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.2-4
@@ -211,7 +213,7 @@ rm -rf %{buildroot}
 - Updated DataSourceVMwareGuestInfo.patch (till commit 9e69060 from mainline)
 - Updated dscheck_VMwareGuestInfo and ds-guestinfo-photon.patch
 * Thu Oct 17 2019 Keerthana K <keerthanak@vmware.com> 19.1-2
-- Fix to disable custom script by default in DatasourceOVF.
+- Fix to deactivate custom script by default in DatasourceOVF.
 - add kubeadm module
 * Thu Sep 19 2019 Keerthana K <keerthanak@vmware.com> 19.1-1
 - Update to 19.1
@@ -219,7 +221,7 @@ rm -rf %{buildroot}
 * Thu Sep 05 2019 Keerthana K <keerthanak@vmware.com> 18.3-6
 - Fix socket.getfqdn() in DataSourceVMwareGuestInfo
 - Return False when no data is found in get_data() of DataSourceVMwareGuestInfo.
-- Disable manage_etc_hosts by default as cloud-init tries to write its default template /etc/hosts file if enabled.
+- Deactivate manage_etc_hosts by default as cloud-init tries to write its default template /etc/hosts file if enabled.
 * Mon Aug 12 2019 Keerthana K <keerthanak@vmware.com> 18.3-5
 - Downgrade to 18.3 to fix azure dhcp lease issue.
 * Tue Jul 23 2019 Keerthana K <keerthanak@vmware.com> 19.1-2
@@ -261,7 +263,7 @@ rm -rf %{buildroot}
 * Mon May 22 2017 Kumar Kaushik <kaushikk@vmware.com> 0.7.9-4
 - Making cloud-init to use python3.
 * Mon May 15 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-3
-- Disable networking config by cloud-init
+- Deactivate networking config by cloud-init
 * Thu May 04 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-2
 - Support userdata in vmx guestinfo
 * Thu Apr 27 2017 Anish Swaminathan <anishs@vmware.com> 0.7.9-1

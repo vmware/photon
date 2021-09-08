@@ -1,7 +1,7 @@
 Summary:        Contains programs for compressing and decompressing files
 Name:           bzip2
 Version:        1.0.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            http://www.bzip.org/
 Group:          System Environment/Base
@@ -32,25 +32,24 @@ Group:          System Environment/Libraries
 This package contains minimal set of shared bzip2 libraries.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 sed -i 's@\(ln -s -f \)$(PREFIX)/bin/@\1@' Makefile
 sed -i "s@(PREFIX)/man@(PREFIX)/share/man@g" Makefile
 
 %build
 if [ %{_host} != %{_build} ]; then
   MFLAGS="CC=%{_arch}-unknown-linux-gnu-gcc AR=%{_arch}-unknown-linux-gnu-ar RANLIB=%{_arch}-unknown-linux-gnu-ranlib"
-  # disable buildtime testing
+  # deactivate buildtime testing
   sed -i 's/all: libbz2.a bzip2 bzip2recover test/all: libbz2.a bzip2 bzip2recover/' Makefile
 else
   MFLAGS=
 fi
 make VERBOSE=1 %{?_smp_mflags} -f Makefile-libbz2_so $MFLAGS
-make clean
+make clean %{?_smp_mflags}
 make VERBOSE=1 %{?_smp_mflags} $MFLAGS
 
 %install
-make PREFIX=%{buildroot}/usr install
+make PREFIX=%{buildroot}/usr install %{?_smp_mflags}
 install -vdm 0755 %{buildroot}/%{_lib}
 install -vdm 0755 %{buildroot}/bin
 cp -av libbz2.so* %{buildroot}/%{_lib}
@@ -99,6 +98,8 @@ make %{?_smp_mflags} check
 %{_lib}/libbz2.so.*
 
 %changelog
+*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 1.0.8-4
+-   Replacement of ITS suggested words.
 *   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 1.0.8-3
 -   Do not conflict with toybox >= 0.8.2-2
 *   Tue Nov 26 2019 Alexey Makhalov <amakhalov@vmware.com> 1.0.8-2

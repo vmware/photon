@@ -5,7 +5,7 @@
 
 Name: rubygem-backports
 Version:        3.18.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Backports of Ruby features for older Ruby
 Group:          Development/Languages
 License:        MIT
@@ -26,13 +26,12 @@ Requires:       rubygem-tzinfo
 Requires:       rubygem-thread_safe
 Requires:       rubygem-concurrent-ruby
 
-
 %description
 Essential backports that enable many of the nice features of Ruby 1.8.7 up to
 2.1.0 for earlier versions.
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 %build
 %install
 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
@@ -41,7 +40,7 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 cd %{buildroot}%{gemdir}/gems/backports-%{version}
 # Removal of alias_method_chain method in Rails 5.1 version creates issue
 # since the existing testsuite doesn't reflect the change. To avoid rake
-# to abort and continue the tests following fix is done.
+# to stop and continue the tests following fix is done.
 # ref: https://github.com/marcandre/backports/issues/114
 sed -i "s/^/#/" lib/backports/rails/module.rb
 rake test
@@ -50,8 +49,9 @@ rake test
 %defattr(-,root,root,-)
 %{gemdir}
 
-
 %changelog
+*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 3.18.2-2
+-   Replacement of ITS suggested words.
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.18.2-1
 -   Automatic Version Bump
 *   Fri Nov 23 2018 Sujay G <gsujay@vmware.com> 3.11.4-2

@@ -1,7 +1,7 @@
 Summary:          Highly reliable distributed coordination
 Name:             zookeeper
 Version:          3.6.3
-Release:          1%{?dist}
+Release:          2%{?dist}
 URL:              http://zookeeper.apache.org/
 License:          Apache License, Version 2.0
 Group:            Applications/System
@@ -27,8 +27,7 @@ which make them brittle in the presence of change and difficult to manage.
 Even when done correctly, different implementations of these services lead to management complexity when the applications are deployed.
 
 %prep
-%setup -q -n apache-zookeeper-%{version}-bin
-%patch0 -p1
+%autosetup -n apache-zookeeper-%{version}-bin -p1
 
 %install
 mkdir -p %{buildroot}%{_prefix}
@@ -87,6 +86,8 @@ fi
 %{_prefix}
 
 %changelog
+*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 3.6.3-2
+-   Replacement of ITS suggested words.
 *   Thu May 20 2021 Piyush Gupta <gpiyush@vmware.com> 3.6.3-1
 -   Update to 3.6.3.
 *   Wed Jun 10 2020 Gerrit Photon <photon-checkins@vmware.com> 3.5.8-1
@@ -105,7 +106,7 @@ fi
 *   Thu Jun 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-4
 -   Renamed openjdk to openjdk8.
 *   Wed May 31 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.4.10-3
--   Provide preset to disable service by default
+-   Provide preset to deactivate service by default
 *   Wed May 24 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-2
 -   Used RuntimeDirectory to create folder /var/run/zookeeper.
 *   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 3.4.10-1

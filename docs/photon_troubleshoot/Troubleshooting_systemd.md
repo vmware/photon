@@ -15,7 +15,7 @@ To manage the services run the following commands:
 - `systemctl status unit` : This command displays the status of a unit.
 - `systemctl enable unit` : This command enables a unit to run on startup.
 - `systemctl enable --now unit` : This command enables a unit to run on startup and start immediately.
-- `systemctl disable unit` : This command disables a unit and removes it from the startup program.
+- `systemctl disable unit` : This command deactivates a unit and removes it from the startup program.
 - `systemctl mask unit` : This command masks a unit to make it impossible to start.
 - `systemctl unmask unit` : This command unmasks a unit.
 

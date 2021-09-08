@@ -1,7 +1,7 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.17
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos/
 Group:          System Environment/Security
@@ -34,7 +34,7 @@ Requires: %{name} = %{version}-%{release}
 These are the additional language files of krb5.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 cd src &&
@@ -62,7 +62,7 @@ make %{?_smp_mflags}
 %install
 cd src
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 for LIBRARY in gssapi_krb5 gssrpc k5crypto kadm5clnt kadm5srv \
                kdb5 krad krb5 krb5support verto ; do
@@ -85,7 +85,7 @@ unset LIBRARY
 # krb5 tests require hostname resolve
 echo "127.0.0.1 $HOSTNAME" >> /etc/hosts
 cd src
-make check
+make check %{?_smp_mflags}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -119,6 +119,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 1.17-5
+-   Replacement of ITS suggested words.
 *   Mon Nov 02 2020 Tapas Kundu <tkundu@vmware.com> 1.17-4
 -   Fix krb5 build.
 *   Thu Oct 29 2020 Shreyas B. <shreyasb@vmware.com> 1.17-3
@@ -138,7 +140,7 @@ rm -rf %{buildroot}/*
 *   Thu Sep 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.2-1
 -   Update to version 1.15.2
 *   Mon Jul 10 2017 Alexey Makhalov <amakhalov@vmware.com> 1.15.1-2
--   Fix make check: add /etc/hosts entry, disable parallel check
+-   Fix make check: add /etc/hosts entry, deactivate parallel check
 *   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 1.15.1-1
 -   Updated to version 1.51.1
 *   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 1.14-6

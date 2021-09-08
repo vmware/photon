@@ -1,7 +1,7 @@
 Summary:        Libraries for Transport Independent RPC
 Name:           libtirpc
 Version:        1.2.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Source0:        http://downloads.sourceforge.net/project/libtirpc/libtirpc/0.3.2/%{name}-%{version}.tar.bz2
 %define sha1    libtirpc=f182235e32942fc0ac6b9b5b6fe7e32f69362659
 License:        BSD
@@ -34,7 +34,7 @@ Requires:   krb5-devel
 This package includes header files and libraries necessary for developing programs which use the tirpc library.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure
@@ -43,7 +43,7 @@ sed '/stdlib.h/a#include <stdint.h>' -i src/xdr_sizeof.c
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 %post
 /sbin/ldconfig
@@ -66,6 +66,8 @@ make install DESTDIR=%{buildroot}
 %{_libdir}/*.la
 
 %changelog
+*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 1.2.6-2
+-   Replacement of ITS suggested words.
 *   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.6-1
 -   Automatic Version Bump
 *   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.1.4-2
@@ -83,7 +85,7 @@ make install DESTDIR=%{buildroot}
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.0.1-3
 -   GA - Bump release of all rpms
 *   Mon Feb 08 2016 Anish Swaminathan <anishs@vmware.com>  1.0.1-2
--   Added patch for bindresvport blacklist
+-   Added patch for bindresvport denylist
 *   Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.0.1-1
 -   Updated to version 1.0.1
 *   Thu Jul 23 2015 Divya Thaluru <dthaluru@vmware.com> 0.3.2-1

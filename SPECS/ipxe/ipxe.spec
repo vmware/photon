@@ -5,7 +5,7 @@
 Summary:        iPXE open source boot firmware
 Name:           ipxe
 Version:        1.20.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://ipxe.org
 Group:          System Environment/Daemons
@@ -35,9 +35,7 @@ iPXE is the leading open source network boot firmware. It provides a full
 PXE implementation enhanced with additional features.
 
 %prep
-%setup -q -n %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
+%autosetup -n %{name}-%{version} -p1
 
 %build
 cd src
@@ -67,6 +65,8 @@ install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}/usr/share/ipxe/
 /usr/share/ipxe/rtl8139.rom
 
 %changelog
+*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 1.20.1-3
+-   Replacement of ITS suggested words.
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 1.20.1-2
 -   GCC-10 support.
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 1.20.1-1
@@ -80,7 +80,7 @@ install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}/usr/share/ipxe/
 *   Wed Aug 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> d2063b7-1
 -   Update version to get it to build with gcc 7.3
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  553f485-2
--   disable debuginfo gen
+-   deactivate debuginfo gen
 *   Mon Mar 13 2017 Alexey Makhalov <amakhalov@vmware.com> 553f485-1
 -   Version update to build with gcc-6.3
 -   Removed linux/linux-devel build-time dependency

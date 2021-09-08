@@ -7,11 +7,11 @@ auth      optional    pam_faildelay.so  delay=3000000
 auth      requisite   pam_nologin.so
 
 # Check to make sure that root is allowed to login
-# Disabled by default. You will need to create /etc/securetty
+# Deactivated by default. You will need to create /etc/securetty
 # file for this module to function. See man 5 securetty.
 #auth      required    pam_securetty.so
 
-# Additional group memberships - disabled by default
+# Additional group memberships - deactivated by default
 #auth      optional    pam_group.so
 
 # include the default auth settings
@@ -29,13 +29,13 @@ session   required    pam_env.so
 # Set resource limits for the user
 session   required    pam_limits.so
 
-# Display date of last login - Disabled by default
+# Display date of last login - Deactivated by default
 #session   optional    pam_lastlog.so
 
-# Display the message of the day - Disabled by default
+# Display the message of the day - Deactivated by default
 #session   optional    pam_motd.so
 
-# Check user's mail - Disabled by default
+# Check user's mail - Deactivated by default
 #session   optional    pam_mail.so      standard quiet
 
 # include the default session and password settings

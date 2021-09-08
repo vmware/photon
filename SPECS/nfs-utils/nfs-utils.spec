@@ -1,7 +1,7 @@
 Summary:          NFS client utils
 Name:             nfs-utils
 Version:          2.5.1
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          GPLv2+
 URL:              http://sourceforge.net/projects/nfs
 Group:            Applications/Nfs-utils-client
@@ -41,7 +41,7 @@ Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 The nfs-utils package contains simple nfs client service.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 #not prevent statd to start
 sed -i "/daemon_init/s:\!::" utils/statd/statd.c
 sed '/unistd.h/a#include <stdint.h>' -i support/nsm/rpc.c
@@ -59,7 +59,7 @@ sed -i 's/CFLAGS = -g/CFLAGS = -Wno-error=strict-prototypes/' support/nsm/Makefi
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -v -m644 utils/mount/nfsmount.conf /etc/nfsmount.conf
 mkdir -p %{buildroot}/lib/systemd/system/
 mkdir -p %{buildroot}/etc/default
@@ -86,7 +86,7 @@ echo "disable nfs-server.service" > %{buildroot}/usr/lib/systemd/system-preset/5
 #ignore test that might require additional setup
 sed -i '/check_root/i \
 exit 77' tests/t0001-statd-basic-mon-unmon.sh
-make check
+make check %{?_smp_mflags}
 
 %pre
 if ! getent group nobody >/dev/null; then
@@ -124,6 +124,8 @@ fi
 %{_libdir}/libnfsidmap.so
 %{_libdir}/pkgconfig/libnfsidmap.pc
 %changelog
+*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 2.5.1-3
+-   Replacement of ITS suggested words.
 *   Sun Nov 22 2020 Tapas Kundu <tkundu@vmware.com> 2.5.1-2
 -   Restrict nfs-mountd to start after rpcbind.socket
 *   Thu Jul 16 2020 Tapas Kundu <tkundu@vmware.com> 2.5.1-1
@@ -131,7 +133,7 @@ fi
 -   Use system installed rpcgen
 *   Fri Sep 21 2018 Alexey Makhalov <amakhalov@vmware.com> 2.3.3-2
 -   Fix compilation issue against glibc-2.28
--   Use internal rpcgen, disable librpcsecgss dependency.
+-   Use internal rpcgen, deactivate librpcsecgss dependency.
 *   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.3.3-1
 -   Update to 2.3.3
 *   Thu Jun 07 2018 Anish Swaminathan <anishs@vmware.com> 2.3.1-2

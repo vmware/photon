@@ -1,7 +1,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        11.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -36,7 +36,7 @@ Group:          System Environment/Libraries
 The libllvm package contains shared libraries for llvm
 
 %prep
-%setup -q -n %{name}-%{version}.src
+%autosetup -n %{name}-%{version}.src
 
 %build
 mkdir -p build
@@ -53,13 +53,13 @@ make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 cd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %check
-# disable security hardening for tests
+# deactivate security hardening for tests
 rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
 cd build
 make %{?_smp_mflags} check-llvm
@@ -90,6 +90,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
+*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 11.0.1-2
+-   Replacement of ITS suggested words.
 *   Thu Feb 04 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.0.1-1
 -   Upgrade to v11.0.1
 *   Tue Sep 22 2020 Harinadh D <hdommaraju@vmware.com> 10.0.1-1

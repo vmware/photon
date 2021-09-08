@@ -1,7 +1,7 @@
 Summary:             Certificate Authority certificates
 Name:                ca-certificates
 Version:             20201001
-Release:             1%{?dist}
+Release:             2%{?dist}
 License:             Custom
 URL:                 http://anduin.linuxfromscratch.org/BLFS/other/
 Group:               System Environment/Security
@@ -147,7 +147,7 @@ for tempfile in ${TEMPDIR}/certs/*.tmp; do
   rm -f tempfile.cer "${tempfile}"
   echo "Created ${keyhash}.pem"
 done
-# Remove blacklisted files
+# Remove denylisted files
 # MD5 Collision Proof of Concept CA
 if test -f certs/8f111d69.pem; then
   echo "Certificate 8f111d69 is not trusted!  Removing..."
@@ -251,6 +251,8 @@ exit 0
 /etc/pki/tls/certs/ca-bundle.crt
 
 %changelog
+* Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 20201001-2
+- Replacement of ITS suggested words.
 * Fri Oct 02 2020 Gerrit Photon <photon-checkins@vmware.com> 20201001-1
 - Automatic Version Bump
 * Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 20200924-1

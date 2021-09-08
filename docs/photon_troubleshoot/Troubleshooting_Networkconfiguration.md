@@ -15,10 +15,10 @@ root@photon [ /home/sus ]# networkctl reconfigure eth0
 - The options mentioned in the configuration files are case sensitive.
 - Set `DHCP=yes` to accept IPv4 and IPv6 DHCP requests.
 - Set `DHCP=ipv4` to accept IPv4 DHCP requests.
-- Set LinkLocalAddressing=no to disable IPv6. Please do not disable IPv6 via sysctl. When `LinkLocalAddressing=no` in the .network file, the kernel drops addresses starting with **fe80**, for example **fe80::20c:29ff:fe4c:7eca**. If IPv6LL address is not available networkd will not start IPv6 configurations.
+- Set LinkLocalAddressing=no to deactivate IPv6. Please do not deactivate IPv6 via sysctl. When `LinkLocalAddressing=no` in the .network file, the kernel drops addresses starting with **fe80**, for example **fe80::20c:29ff:fe4c:7eca**. If IPv6LL address is not available networkd will not start IPv6 configurations.
 
 
-To link network configurations using DHCPv4 (IPv6 disabled), run the following command:
+To link network configurations using DHCPv4 (IPv6 deactivated), run the following command:
 ```
 /etc/systemd/network/20-eth0.network
 [Match]

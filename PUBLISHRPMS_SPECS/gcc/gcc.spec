@@ -2,7 +2,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        7.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -85,13 +85,12 @@ An implementation of OpenMP for the C, C++, and Fortran 95 compilers in the GNU 
 This package contains development headers and static library for libgomp
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
-# disable FORTIFY_SOURCE=2 from hardening
+# deactivate FORTIFY_SOURCE=2 from hardening
 sed -i '/*cpp:/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
 sed -i '/Ofast:-D_FORTIFY_SOURCE=2/s/^/# /' `dirname $(gcc --print-libgcc-file-name)`/../specs
-# disable no-pie for gcc binaries
+# deactivate no-pie for gcc binaries
 sed -i '/^NO_PIE_CFLAGS = /s/@NO_PIE_CFLAGS@//' gcc/Makefile.in
 
 install -vdm 755 ../gcc-build
@@ -131,9 +130,9 @@ popd
 
 %check
 ulimit -s 32768
-# disable PCH tests is ASLR is on (due to bug in pch)
+# deactivate PCH tests is ASLR is on (due to bug in pch)
 test `cat /proc/sys/kernel/randomize_va_space` -ne 0 && rm gcc/testsuite/gcc.dg/pch/pch.exp
-# disable security hardening for tests
+# deactivate security hardening for tests
 rm -f $(dirname $(gcc -print-libgcc-file-name))/../specs
 # run only gcc tests
 cd ../gcc-build/gcc
@@ -199,7 +198,6 @@ make %{?_smp_mflags} check-gcc
 %defattr(-,root,root)
 %{_lib64dir}/libgcc_s.so
 
-
 %files -n libstdc++
 %defattr(-,root,root)
 %{_lib64dir}/libstdc++.so.*
@@ -225,6 +223,8 @@ make %{?_smp_mflags} check-gcc
 %{_lib64dir}/libgomp.spec
 
 %changelog
+*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 7.3.0-3
+-   Replacement of ITS suggested words.
 *   Fri Sep 14 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 7.3.0-2
 -   Use download_prerequisites script to statically link gcc with
 -   specific versions of dependent libraries.

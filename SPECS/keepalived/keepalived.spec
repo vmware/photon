@@ -1,7 +1,7 @@
 Summary:        HA monitor built upon LVS, VRRP and services poller
 Name:           keepalived
 Version:        2.1.5
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL
 URL:            http://www.keepalived.org/
 Group:          Applications/System
@@ -35,7 +35,7 @@ failover. So in short keepalived is a userspace daemon for LVS cluster nodes
 healthchecks and LVS directors failover.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 autoreconf -f -i
@@ -46,12 +46,12 @@ autoreconf -f -i
 make %{?_smp_mflags} STRIP=/bin/true
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
 rm -rf %{buildroot}%{_sysconfdir}/%{name}/samples/*
 
 %check
-# A build could silently have LVS support disabled if the kernel includes can't
+# A build could silently have LVS support deactivated if the kernel includes can't
 # be properly found, we need to avoid that.
 if ! grep -q "#define _WITH_LVS_ *1" lib/config.h; then
     %{__echo} "ERROR: We do not want keepalived lacking LVS support."
@@ -85,6 +85,8 @@ fi
 %{_mandir}/man8/%{name}.8*
 
 %changelog
+*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 2.1.5-3
+-   Replacement of ITS suggested words.
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.5-2
 -   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.1.5-1

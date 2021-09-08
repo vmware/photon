@@ -1,7 +1,7 @@
 Summary:    User-space infrastructure for connection tracking helpers
 Name:       libnetfilter_cthelper
 Version:    1.0.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        http://www.netfilter.org/projects/libnetfilter_cthelper/index.html
 Group:      System Environment/Libraries
@@ -14,7 +14,7 @@ BuildRequires:  libmnl-devel
 BuildRequires:  linux-api-headers
 
 %description
-libnetfilter_cthelper is the userspace library that provides the programming interface to the user-space helper infrastructure available since Linux kernel 3.6. With this library, you register, configure, enable and disable user-space helpers.
+libnetfilter_cthelper is the userspace library that provides the programming interface to the user-space helper infrastructure available since Linux kernel 3.6. With this library, you register, configure, enable and deactivate user-space helpers.
 
 %package        devel
 Summary:        Development files for %{name}
@@ -28,7 +28,7 @@ The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure --disable-static
@@ -53,6 +53,7 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 %{_libdir}/*.so
 
 %changelog
+*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 1.0.0-2
+-   Replacement of ITS suggested words.
 *   Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 1.0.0-1
 -   Initial packaging
-

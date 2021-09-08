@@ -1,7 +1,7 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
 Version:        3.4.13
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd/
 Group:          System Environment/Security
@@ -22,7 +22,7 @@ Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 A highly-available key value store for shared configuration and service discovery.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 go mod vendor
@@ -84,6 +84,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 3.4.13-7
+-   Replacement of ITS suggested words.
 *   Wed Jun 23 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.4.13-6
 -   Change etcd data directory ownership to etcd:etcd as per CIS benchmark
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 3.4.13-5
@@ -115,7 +117,7 @@ rm -rf %{buildroot}/*
 *   Sun Aug 27 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.1.5-3
 -   File based configuration for etcd service.
 *   Wed May 31 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.1.5-2
--   Provide preset file to disable service by default
+-   Provide preset file to deactivate service by default
 *   Thu Apr 06 2017 Anish Swaminathan <anishs@vmware.com> 3.1.5-1
 -   Upgraded to version 3.1.5, build from sources
 *   Fri Sep 2 2016 Xiaolin Li <xiaolinl@vmware.com> 3.0.9-1

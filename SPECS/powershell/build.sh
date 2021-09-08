@@ -24,6 +24,6 @@ popd
 touch DELETE_ME_TO_DISABLE_CONSOLEHOST_TELEMETRY
 dotnet publish /property:GenerateFullPaths=true --configuration Linux --framework net5.0 --runtime linux-x64 src/powershell-unix --output bin
 
-# Even after powershell rpm built, dotnet processes are alive, following to kill them:
+# Even after powershell rpm built, dotnet processes are alive, following to stop them:
 killall -15 dotnet
 
