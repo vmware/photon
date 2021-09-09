@@ -1,7 +1,7 @@
 Summary:        library for configuring and customizing font access.
 Name:           fontconfig
 Version:        2.13.93
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD/GPL
 URL:            https://www.freedesktop.org/wiki/Software/fontconfig/
 Group:          System Environment/Libraries
@@ -26,24 +26,22 @@ identify the set of fonts required to completely cover a set of languages.
 Summary:	Header and development files
 Requires:	%{name} = %{version}-%{release}
 Requires:	expat-devel
+Requires:	freetype2-devel
 %description	devel
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q
+%autosetup
 
 %build
 export PYTHON=python3
 %configure \
-        --prefix=/usr \
-	--sysconfdir=/etc \
-	--localstatedir=/var \
         --disable-docs \
 	--docdir=/usr/share/doc/%{name}-%{version} &&
 make
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 install -v -dm755 %{buildroot}/usr/share/{man/man{1,3,5},doc/%{name}-%{version}/fontconfig-devel} &&
 install -v -m644 fc-*/*.1         %{buildroot}/usr/share/man/man1 &&
 install -v -m644 doc/*.3          %{buildroot}/usr/share/man/man3 &&
@@ -53,7 +51,7 @@ install -v -m644 doc/*.{pdf,sgml,txt,html} %{buildroot}/usr/share/doc/%{name}-%{
 find %{buildroot} -name '*.la' -delete
 
 %check
-make -k check
+make %{?_smp_mflags} -k check
 
 %post
 /sbin/ldconfig
@@ -79,6 +77,8 @@ make -k check
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Aug 11 2021 Alexey Makhalov <amakhalov@vmware.com> 2.13.93-2
+-   Add freetype2-devel requires for -devel subpackage.
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 2.13.93-1
 -   Automatic Version Bump
 *   Wed Sep 12 2018 Sujay G <gsujay@vmware.com> 2.13.1-1
