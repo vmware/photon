@@ -1,7 +1,7 @@
-From a06d35843220dfa2c638d31478edf850c216e709 Mon Sep 17 00:00:00 2001
+From fe4852f2c118118d6c223a6a4b6442ab6a94674c Mon Sep 17 00:00:00 2001
 From: Cyprien Laplace <claplace@vmware.com>
 Date: Sun, 8 Dec 2019 20:25:52 -0500
-Subject: [PATCH 6/6] vmxnet3: build only for x86 and arm64
+Subject: [PATCH 4/4] vmxnet3: build only for x86 and arm64
 
 The vmxnet3 is already supporting arm64, so there's only Kconfig
 changes here.
@@ -12,6 +12,7 @@ Disable driver if 16KB or 64KB pages are selected as the VMware
 hypervisor assumes 4KB pages at the moment.
 
 Signed-off-by: Cyprien Laplace <claplace@vmware.com>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
  drivers/net/Kconfig | 6 ++----
  1 file changed, 2 insertions(+), 4 deletions(-)

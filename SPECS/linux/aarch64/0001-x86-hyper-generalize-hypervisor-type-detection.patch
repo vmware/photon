@@ -1,10 +1,9 @@
-From 0bfbcc4710f9b49e2bd9ee1588342c4bffb4ed97 Mon Sep 17 00:00:00 2001
+From bbfcfa0ab2775eeee0f5e959866c0b780c234552 Mon Sep 17 00:00:00 2001
 From: Cyprien Laplace <claplace@vmware.com>
 Date: Wed, 4 Dec 2019 20:15:53 -0500
-Subject: [PATCH 1/6] x86, hyper: generalize hypervisor type detection
+Subject: [PATCH 1/4] x86, hyper: generalize hypervisor type detection
 
-In 2018 VMware has announced it is working on ESXi for arm64. To use
-common driver code for both x86 and arm64, the x86 hypervisor type
+To use common driver code for both x86 and arm64, the x86 hypervisor type
 detection must be generalized:
 - rename x86_hypervisor_type enum to arch_hypervisor_type (as
   hypervisor_type is already used),

@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.78
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -91,6 +91,9 @@ Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
 Patch56:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch57:        x86-vmware-Fix-steal-time-clock-under-SEV.patch
+# arm64 hypervisor detection and kmsg dumper
+Patch58:        0001-x86-hyper-generalize-hypervisor-type-detection.patch
+Patch59:        0002-arm64-hyper-implement-VMware-hypervisor-features.patch
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -296,6 +299,11 @@ Python programming language to use the interface to manipulate perf events.
 %patch55 -p1
 %patch56 -p1
 %patch57 -p1
+%endif
+%ifarch aarch64
+# arm64 hypervisor detection and kmsg dumper
+%patch58 -p1
+%patch59 -p1
 %endif
 
 # CVE
@@ -670,6 +678,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Nov 19 2021 Keerthana K <keerthanak@vmware.com> 5.10.78-3
+-   Add arm64 hypervisor detection and kmsg dumper
 *   Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.10.78-2
 -   compile with openssl 3.0.0
 *   Mon Nov 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.78-1

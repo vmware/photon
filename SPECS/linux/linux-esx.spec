@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.78
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -74,17 +74,21 @@ Patch17:        0001-floppy-lower-printk-message-priority.patch
 #vmxnet3
 Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 
+# aarch64
+Patch21:        0001-x86-hyper-generalize-hypervisor-type-detection.patch
+Patch22:        0002-arm64-hyper-implement-VMware-hypervisor-features.patch
+Patch23:        0003-scsi-vmw_pvscsi-add-arm64-support.patch
+# Current VMCI driver crashes during module load in fusion arm64
+# Commented out these patches till we get a new version of VMCI driver
+#Patch:         0004-vmw_vmci-add-arm64-support.patch
+#Patch:         0005-vmw_balloon-add-arm64-support.patch
+Patch24:        0004-vmxnet3-build-only-for-x86-and-arm64.patch
+
 # VMW:
 Patch30:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch31:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch32:        x86-vmware-Fix-steal-time-clock-under-SEV.patch
 Patch33:        x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
-Patch34:        0001-x86-hyper-generalize-hypervisor-type-detection.patch
-Patch35:        0002-arm64-hyper-implement-VMware-hypervisor-features.patch
-Patch36:        0003-scsi-vmw_pvscsi-add-arm64-support.patch
-Patch37:        0004-vmw_vmci-add-arm64-support.patch
-Patch38:        0005-vmw_balloon-add-arm64-support.patch
-Patch39:        0006-vmxnet3-build-only-for-x86-and-arm64.patch
 
 # -esx
 Patch50:        init-do_mounts-recreate-dev-root.patch
@@ -230,18 +234,19 @@ The Linux package contains the Linux kernel doc files
 #vmxnet3
 %patch20 -p1
 
+%ifarch aarch64
+%patch21 -p1
+%patch22 -p1
+%patch23 -p1
+%patch24 -p1
+%endif
+
 # VMW
+%ifarch x86_64
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
-%ifarch aarch64
-%patch34 -p1
-%patch35 -p1
-%patch36 -p1
-%patch37 -p1
-%patch38 -p1
-%patch39 -p1
 %endif
 
 # -esx
@@ -253,7 +258,9 @@ The Linux package contains the Linux kernel doc files
 %patch55 -p1
 %patch56 -p1
 #%patch57 -p1
+%ifarch x86_64
 %patch58 -p1
+%endif
 %patch59 -p1
 %patch60 -p1
 %patch61 -p1
@@ -480,6 +487,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Nov 19 2021 Keerthana K <keerthanak@vmware.com> 5.10.78-4
+-   Remove vmci and vmw_balloon patches
+-   Update Hypervisor detection patch with review comments addressed
 *   Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.10.78-3
 -   compile with openssl 3.0.0
 *   Mon Nov 08 2021 Keerthana K <keerthanak@vmware.com> 5.10.78-2

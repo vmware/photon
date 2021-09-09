@@ -1,7 +1,7 @@
-From 4146b7793bd51c73b8bfc7562952d2660d98dbf1 Mon Sep 17 00:00:00 2001
+From e43527faba8d50be3023c8185f9bd8890e885d04 Mon Sep 17 00:00:00 2001
 From: Cyprien Laplace <claplace@vmware.com>
 Date: Tue, 3 Dec 2019 11:33:57 -0500
-Subject: [PATCH 3/6] scsi: vmw_pvscsi: add arm64 support
+Subject: [PATCH 3/4] scsi: vmw_pvscsi: add arm64 support
 
 Upgrade barriers to virtual machine specific barriers, that will map to
 actual memory barrier instructions for the arm weaker memory model
@@ -11,6 +11,7 @@ Disable driver if 16KB or 64KB pages are selected as the VMware hypervisor
 assumes 4KB page size at the moment.
 
 Signed-off-by: Cyprien Laplace <claplace@vmware.com>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
  drivers/scsi/Kconfig      |  3 ++-
  drivers/scsi/vmw_pvscsi.c | 39 +++++++++++++++++++++++++--------------

@@ -1,7 +1,7 @@
-From 704c4d8f6fafbef08e4091e37dfef9273295abd7 Mon Sep 17 00:00:00 2001
+From 7ae5964a2b290ae07ff08c706fd6ca249371a05f Mon Sep 17 00:00:00 2001
 From: Keerthana K <keerthanak@vmware.com>
 Date: Tue, 20 Jul 2021 04:07:16 +0000
-Subject: [PATCH] arm64, hyper: implement VMware hypervisor features
+Subject: [PATCH 2/4] arm64, hyper: implement VMware hypervisor features
 
 Implement hypervisor type detection framework for the arm64
 architecture, enabled with the HYPERVISOR_GUEST config option.
@@ -9,37 +9,40 @@ architecture, enabled with the HYPERVISOR_GUEST config option.
 Add VMware hypervisor detection code, using device tree via the
 /hypervisor/compatible node or via DMI serial string signature.
 
-Add TSC read and kmsg_dumper features
+Add kmsg_dumper feature, which dumps kmsg to vmware.log incase of
+kernel panic in guest.
 
 Signed-off-by: Cyprien Laplace <claplace@vmware.com>
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
  MAINTAINERS                         |   9 +
- arch/arm64/Kconfig                  |  10 +
+ arch/arm64/Kconfig                  |  10 ++
  arch/arm64/include/asm/hypervisor.h |  24 +++
+ arch/arm64/include/asm/vmware.h     |  51 ++++++
  arch/arm64/kernel/Makefile          |   1 +
- arch/arm64/kernel/hypervisor.c      |  50 +++++
- arch/arm64/kernel/vmware.c          | 301 ++++++++++++++++++++++++++++
- 6 files changed, 396 insertions(+)
+ arch/arm64/kernel/hypervisor.c      |  51 ++++++
+ arch/arm64/kernel/vmware.c          | 269 ++++++++++++++++++++++++++++
+ 7 files changed, 415 insertions(+)
+ create mode 100644 arch/arm64/include/asm/vmware.h
  create mode 100644 arch/arm64/kernel/hypervisor.c
  create mode 100644 arch/arm64/kernel/vmware.c
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 9cd6686ff..9d443cc32 100644
+index 9cd6686ff..1e960356d 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -18729,6 +18729,15 @@ F:	arch/x86/include/asm/vmware.h
+@@ -18728,6 +18728,15 @@ S:	Supported
+ F:	arch/x86/include/asm/vmware.h
  F:	arch/x86/kernel/cpu/vmware.c
- F:	arch/x86/kernel/cpu/vmw_hc.S
  
 +VMWARE ARM64 HYPERVISOR INTERFACE
-+M:	Cyprien Laplace <claplace@vmware.com>
++M:	Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
++M:	Keerthana K <keerthanak@vmware.com>
 +M:	"VMware, Inc." <pv-drivers@vmware.com>
 +L:	virtualization@lists.linux-foundation.org
-+S:	Supported
-+F:	arch/arm64/kernel/vmware.c
-+F:	arch/arm64/kernel/hypervisor.c
 +F:	arch/arm64/include/asm/hypervisor.h
++F:	arch/arm64/kernel/hypervisor.c
++F:	arch/arm64/kernel/vmware.c
 +
  VMWARE PVRDMA DRIVER
  M:	Adit Ranadive <aditr@vmware.com>
@@ -66,7 +69,7 @@ index a6b5b7ef4..8c2ae491f 100644
  	def_bool y
  	depends on XEN
 diff --git a/arch/arm64/include/asm/hypervisor.h b/arch/arm64/include/asm/hypervisor.h
-index f9cc1d021..6891df096 100644
+index f9cc1d021..58d3529e7 100644
 --- a/arch/arm64/include/asm/hypervisor.h
 +++ b/arch/arm64/include/asm/hypervisor.h
 @@ -4,4 +4,28 @@
@@ -86,7 +89,7 @@ index f9cc1d021..6891df096 100644
 +	const char	*name;
 +
 +	/* Detection routine - returns a priority (highest wins) */
-+	u32		(*detect)(void);
++	uint32_t	(*detect)(void);
 +
 +	/* Hypervisor type */
 +	enum arch_hypervisor_type type;
@@ -98,6 +101,63 @@ index f9cc1d021..6891df096 100644
 +extern const struct hypervisor_arm64 arm64_hyper_vmware;
 +#endif /* CONFIG_HYPERVISOR_GUEST */
  #endif
+diff --git a/arch/arm64/include/asm/vmware.h b/arch/arm64/include/asm/vmware.h
+new file mode 100644
+index 000000000..834986a2c
+--- /dev/null
++++ b/arch/arm64/include/asm/vmware.h
+@@ -0,0 +1,51 @@
++/* SPDX-License-Identifier: GPL-2.0 or MIT */
++/*
++ * Copyright (C) 2021, VMware, Inc.
++ * Author : Cyprien Laplace <claplace@vmware.com>
++ */
++#ifndef _ASM_ARM64_VMWARE_H
++#define _ASM_ARM64_VMWARE_H
++
++#include <asm/memory.h>
++
++/*
++ * Encoding for virtual I/O port translation: HVC 0x86 allows efficient
++ * drop-in replacement for x86 [REP] IN/INS/OUT/OUTS instructions used
++ * for backdoors and virtual devices.
++ */
++#define X86_IO_MAGIC          0x86
++/*
++ * Transfer size, bits [1:0]
++ *    00: 1 byte
++ *    01: 2 bytes
++ *    10: 4 bytes
++ *    11: Invalid value
++ */
++#define X86_IO_W7_SIZE_SHIFT  0
++/*
++ * Transfer direction, bit [2]
++ *    0: Write (OUT/OUTS/REP OUTS instructions)
++ *    1: Read (IN/INS/REP INS instructions)
++ */
++#define X86_IO_W7_DIR         BIT(2)
++/*
++ * Instruction type, bits [4:3]
++ *    00: Non-string instruction (IN/OUT) without DX register
++ *        The port address (8-bit immediate) is set in W7<12:5>.
++ *
++ *    01: Non-string instruction (IN/OUT) with DX register
++ *
++ *    10: String instruction without REP prefix (INS/OUTS)
++ *        The direction flag (EFLAGS.DF) is set in W7<5>.
++ *
++ *    11: String instruction with REP prefix (REP INS/REP OUTS)
++ *        The direction flag (EFLAGS.DF) is set in W7<5>.
++ */
++#define X86_IO_W7_WITH        BIT(3)
++#define X86_IO_W7_STR         BIT(4)
++
++#define VMWARE_HYPERVISOR_PORT    0x5658
++#define VMWARE_HYPERVISOR_PORT_HB 0x5659
++#define VMWARE_HYPERVISOR_MAGIC 0x564D5868
++
++#endif /* _ASM_ARM64_VMWARE_H */
 diff --git a/arch/arm64/kernel/Makefile b/arch/arm64/kernel/Makefile
 index bbaf0bc4a..1efd58857 100644
 --- a/arch/arm64/kernel/Makefile
@@ -112,7 +172,7 @@ index bbaf0bc4a..1efd58857 100644
  obj-$(CONFIG_COMPAT_VDSO)		+= vdso32/
 diff --git a/arch/arm64/kernel/hypervisor.c b/arch/arm64/kernel/hypervisor.c
 new file mode 100644
-index 000000000..e6177720d
+index 000000000..20b1558f9
 --- /dev/null
 +++ b/arch/arm64/kernel/hypervisor.c
 @@ -0,0 +1,51 @@
@@ -169,16 +229,17 @@ index 000000000..e6177720d
 +arch_initcall(init_hypervisor_platform);
 diff --git a/arch/arm64/kernel/vmware.c b/arch/arm64/kernel/vmware.c
 new file mode 100644
-index 000000000..f49a1e660
+index 000000000..22c37d3d9
 --- /dev/null
 +++ b/arch/arm64/kernel/vmware.c
-@@ -0,0 +1,301 @@
+@@ -0,0 +1,269 @@
 +// SPDX-License-Identifier: GPL-2.0 or MIT
 +/*
 + * VMware Detection code.
 + *
 + * Copyright (C) 2021, VMware, Inc.
 + * Author : Cyprien Laplace <claplace@vmware.com>
++ * Author : Keerthana K <keerthanak@vmware.com>
 + */
 +
 +#include <linux/init.h>
@@ -189,6 +250,7 @@ index 000000000..f49a1e660
 +#include <linux/kmsg_dump.h>
 +
 +#include <asm/hypervisor.h>
++#include <asm/vmware.h>
 +
 +#undef pr_fmt
 +#define pr_fmt(fmt)	"vmware: " fmt
@@ -216,59 +278,16 @@ index 000000000..f49a1e660
 +#define VMWARE_CMD_GETVERSION    10
 +#define VMWARE_HB_CMD_MESSAGE    0
 +
-+#define VMWARE_HYPERVISOR_MAGIC 0x564D5868
-+#define VMWARE_HYPERVISOR_PORT    0x5658
-+#define VMWARE_HYPERVISOR_PORT_HB 0x5659
-+
-+#define X86_IO_W7_SIZE_SHIFT  0
-+#define X86_IO_W7_DIR         BIT(2)
-+#define X86_IO_W7_WITH        BIT(3)
-+#define X86_IO_W7_STR         BIT(4)
-+#define X86_IO_MAGIC          0x86
 +#define RPCI_PROTOCOL_NUM       0x49435052 /* 'RPCI' */
 +#define GUESTMSG_FLAG_COOKIE    0x80000000
 +
-+#define VMWARE_CMD(arg0, arg1, arg2, arg3, arg4)			\
-+		__asm__ __volatile__("hvc %5" :				\
-+				"+r" (arg0),				\
-+				"+r" (arg1) :				\
-+				"r"  (arg2),				\
-+				"r"  (arg3),				\
-+				"r"  (arg4),				\
-+				"i"  (X86_IO_MAGIC) :			\
-+				"memory")
-+
-+#define VMWARE_LB_CMD(arg0, arg1, arg2, arg3, arg4, arg5, arg6)		\
-+			__asm__ __volatile__("hvc %7" :			\
-+					"+r" (arg2),			\
-+					"+r" (arg3),			\
-+					"+r" (arg4),			\
-+					"+r" (arg5) :			\
-+					"r"  (arg0),			\
-+					"r"  (arg1),			\
-+					"r"  (arg6),			\
-+					"i"  (X86_IO_MAGIC) :		\
-+					"memory")
-+
-+#define VMWARE_HB_CMD(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)	\
-+			__asm__ __volatile__("hvc %8" :			\
-+					"+r" (arg1),			\
-+					"+r" (arg2),			\
-+					"+r" (arg4) :			\
-+					"r"  (arg0),			\
-+					"r"  (arg3),			\
-+					"r"  (arg5),			\
-+					"r"  (arg6),			\
-+					"r"  (arg7),			\
-+					"i"  (X86_IO_MAGIC))
-+
-+typedef struct {
++struct vmw_msg {
 +	uint32_t id;
-+	uint32_t cookieHigh;
-+	uint32_t cookieLow;
-+} vmw_msg;
++	uint32_t cookie_high;
++	uint32_t cookie_low;
++};
 +
-+static int vmware_log_open(vmw_msg *msg)
++static int vmware_log_open(struct vmw_msg *msg)
 +{
 +	register uint64_t x0 asm("x0") = VMWARE_HYPERVISOR_MAGIC;
 +	register uint64_t x1 asm("x1") = RPCI_PROTOCOL_NUM | GUESTMSG_FLAG_COOKIE;
@@ -281,115 +300,147 @@ index 000000000..f49a1e660
 +					 2 << X86_IO_W7_SIZE_SHIFT;
 +	uint32_t result = 0;
 +
-+	VMWARE_LB_CMD(x0, x1, w2, w3, w4, w5, w7);
-+
++	__asm__ __volatile__ ("hvc %[magic]" :
++			      "+r" (x0),
++			      "+r" (w2),
++			      "+r" (w3),
++			      "+r" (w4),
++			      "+r" (w5) :
++			      "r"  (x1),
++			      "r"  (w7),
++			      [magic] "i"  (X86_IO_MAGIC) :
++			      "memory");
 +	result = w2;
 +	msg->id = w3;
-+	msg->cookieHigh = w4;
-+	msg->cookieLow = w5;
++	msg->cookie_high = w4;
++	msg->cookie_low = w5;
 +
-+	if ((result & MESSAGE_STATUS_SUCCESS) == 0) {
++	if (!(result & MESSAGE_STATUS_SUCCESS))
 +		return 1;
-+	}
 +	return 0;
 +}
 +
-+static int vmware_log_close(vmw_msg *msg)
++static int vmware_log_close(struct vmw_msg *msg)
 +{
 +	register uint64_t x0 asm("x0") = VMWARE_HYPERVISOR_MAGIC;
-+	register uint64_t w1 asm("w1") = 0;
++	register uint64_t x1 asm("x1") = 0;
 +	register uint32_t w2 asm("w2") = VMWARE_CMD_MSG_CLOSE;
 +	register uint32_t w3 asm("w3") = VMWARE_HYPERVISOR_PORT | msg->id;
-+	register uint32_t w4 asm("w4") = msg->cookieHigh;
-+	register uint32_t w5 asm("w5") = msg->cookieLow;
++	register uint32_t w4 asm("w4") = msg->cookie_high;
++	register uint32_t w5 asm("w5") = msg->cookie_low;
 +	register uint32_t w7 asm("w7") = X86_IO_W7_WITH |
 +					 X86_IO_W7_DIR |
 +					 2 << X86_IO_W7_SIZE_SHIFT;
 +	uint32_t result = 0;
 +
-+	VMWARE_LB_CMD(x0, w1, w2, w3, w4, w5, w7);
++	__asm__ __volatile__ ("hvc %[magic]" :
++			      "+r" (x0),
++			      "+r" (w2) :
++			      "r"  (w3),
++			      "r"  (w4),
++			      "r"  (w5),
++			      "r"  (x1),
++			      "r"  (w7),
++			      [magic] "i"  (X86_IO_MAGIC) :
++			      "memory");
 +
 +	result = w2;
-+	if ((result & MESSAGE_STATUS_SUCCESS) == 0) {
++	if (!(result & MESSAGE_STATUS_SUCCESS))
 +		return 1;
-+	}
 +	return 0;
 +}
 +
-+static int vmware_log_send(vmw_msg *msg, const char *string)
++static inline uint64_t vmware_lb_cmd_msg_send(uint64_t cmd, uint64_t str,
++				struct vmw_msg *msg)
 +{
-+	uint64_t result = 0;
-+	uint32_t str;
-+	uint32_t len = strlen(string);
 +	register uint64_t x0 asm("x0") = VMWARE_HYPERVISOR_MAGIC;
-+	register uint32_t w1 asm("w1") = len;
-+	register uint64_t x2 asm("x2") = VMWARE_CMD_MSG_SENDSIZE;
-+	register uint32_t w3 asm("w3") = VMWARE_HYPERVISOR_PORT | msg->id;
-+	register uint64_t x4 asm("x4") = msg->cookieHigh;
-+	register uint32_t w5 asm("w5") = msg->cookieLow;
-+	register uint32_t w6 asm("w6") = 0;
++	register uint64_t x1 asm("x1") = str;
++	register uint64_t x2 asm("x2") = cmd;
++	register uint32_t w3 asm("w3") = VMWARE_HYPERVISOR_PORT |
++					 msg->id;
++	register uint64_t x4 asm("x4") = msg->cookie_high;
++	register uint32_t w5 asm("w5") = msg->cookie_low;
 +	register uint32_t w7 asm("w7") = X86_IO_W7_WITH |
 +					 X86_IO_W7_DIR |
 +					 2 << X86_IO_W7_SIZE_SHIFT;
++	uint64_t ret = 0;
 +
-+retry:
-+	w1 = len;
-+	x2 = VMWARE_CMD_MSG_SENDSIZE;
-+	w3 = VMWARE_HYPERVISOR_PORT | msg->id;
-+	x4 = msg->cookieHigh;
-+	w5 = msg->cookieLow;
-+	w7 = X86_IO_W7_WITH | X86_IO_W7_DIR | 2 << X86_IO_W7_SIZE_SHIFT;
++	__asm__ __volatile__ ("hvc %[magic]" :
++			      "+r" (x0),
++			      "+r" (x2) :
++			      "r"  (w3),
++			      "r"  (x4),
++			      "r"  (w5),
++			      "r"  (x1),
++			      "r"  (w7),
++			      [magic] "i"  (X86_IO_MAGIC) :
++			      "memory");
++	ret = x2;
++	return ret;
++}
 +
-+	VMWARE_LB_CMD(x0, w1, x2, w3, x4, w5, w7);
++static inline uint64_t vmware_hb_cmd_msg_send(uint64_t cmd, uint64_t str,
++				uint64_t len, struct vmw_msg *msg)
++{
++	register uint64_t x0 asm("x0") = VMWARE_HYPERVISOR_MAGIC;
++	register uint32_t w1 asm("w1") = cmd;
++	register uint64_t x2 asm("x2") = len;
++	register uint32_t w3 asm("w3") = VMWARE_HYPERVISOR_PORT_HB |
++					 msg->id;
++	register uint64_t x4 asm("x4") = str;
++	register uint32_t w5 asm("w5") = msg->cookie_low;
++	register uint32_t w6 asm("w6") = msg->cookie_high;
++	register uint32_t w7 asm("w7") = X86_IO_W7_WITH |
++					 X86_IO_W7_STR;
++	uint64_t ret = 0;
 +
-+	result = x2;
++	__asm__ __volatile__ ("hvc %[magic]" :
++			      "+r" (x0),
++			      "+r" (w1) :
++			      "r"  (x2),
++			      "r"  (x4),
++			      "r"  (w3),
++			      "r"  (w5),
++			      "r"  (w6),
++			      "r"  (w7),
++			      [magic] "i" (X86_IO_MAGIC));
++	ret = w1;
++	return ret;
++}
 +
-+	if ((result & MESSAGE_STATUS_SUCCESS) == 0)
-+		return 1;
++static int vmware_log_send(struct vmw_msg *msg, const char *log_str)
++{
++	uint64_t result = 0;
++	uint32_t str;
++	uint32_t len = strlen(log_str);
++	bool retry = 0;
 +
-+	if (result & MESSAGE_STATUS_HB) {
-+		x0 = VMWARE_HYPERVISOR_MAGIC;
-+		w1 = VMWARE_HB_CMD_MSGST_SUCCESS;
-+		x2 = len;
-+		w3 = VMWARE_HYPERVISOR_PORT_HB | msg->id;
-+		x4 = (uint64_t)string;
-+		w5 = msg->cookieLow;
-+		w6 = msg->cookieHigh;
-+		w7 = X86_IO_W7_WITH | X86_IO_W7_STR;
++	do {
++		result = vmware_lb_cmd_msg_send(VMWARE_CMD_MSG_SENDSIZE,
++						len, msg);
++		if (!(result & MESSAGE_STATUS_SUCCESS))
++			return 1;
++		if (result & MESSAGE_STATUS_HB) {
++			result = vmware_hb_cmd_msg_send(VMWARE_HB_CMD_MSGST_SUCCESS,
++							(uint64_t) log_str, len, msg);
++		} else {
++			do {
++				size_t s = len > sizeof(str) ? sizeof(str) : len;
 +
-+		VMWARE_HB_CMD(x0, w1, x2, w3, x4, w5, w6, w7);
++				memcpy(&str, log_str, s);
++				len -= s;
++				log_str += s;
 +
-+		result = w1;
-+	} else {
-+		do {
-+			size_t s = len > sizeof(str) ? sizeof(str) : len;
-+
-+			memcpy(&str, string, s);
-+			len -= s;
-+			string += s;
-+
-+			x0 = VMWARE_HYPERVISOR_MAGIC;
-+			w1 = str;
-+			x2 = VMWARE_CMD_MSG_SEND;
-+			w3 = VMWARE_HYPERVISOR_PORT | msg->id;
-+			x4 = msg->cookieHigh;
-+			w5 = msg->cookieLow;
-+			w7 = X86_IO_W7_WITH |
-+			     X86_IO_W7_DIR |
-+			     2 << X86_IO_W7_SIZE_SHIFT;
-+
-+			VMWARE_LB_CMD(x0, w1, x2, w3, x4, w5, w7);
-+
-+			result = x2;
-+		} while(len && (result & MESSAGE_STATUS_SUCCESS));
-+	}
-+
-+	if ((result & MESSAGE_STATUS_SUCCESS) == 0) {
-+		if (result & MESSAGE_STATUS_CPT)
-+			/* A checkpoint occurred. Retry. */
-+			goto retry;
-+		return 1;
-+	}
++				result = vmware_lb_cmd_msg_send(VMWARE_CMD_MSG_SEND,
++								str, msg);
++			} while (len && (result & MESSAGE_STATUS_SUCCESS));
++		}
++		if (!(result & MESSAGE_STATUS_SUCCESS)) {
++			if (result & MESSAGE_STATUS_CPT)
++				retry = 1;
++			return 1;
++		}
++	} while (retry);
 +	return 0;
 +}
 +
@@ -397,21 +448,16 @@ index 000000000..f49a1e660
 +				enum kmsg_dump_reason reason);
 +
 +static struct kmsg_dumper kmsg_dumper = {
-+		.dump = kmsg_dumper_vmware_log
++	.dump = kmsg_dumper_vmware_log
 +};
 +
 +static void kmsg_dumper_vmware_log(struct kmsg_dumper *dumper,
 +				enum kmsg_dump_reason reason)
 +{
-+	vmw_msg msg;
-+	static char line[1024];
-+	bool fail = false;
++	struct vmw_msg msg;
++	char line[1024] = {'l', 'o', 'g', ' '};
++	int fail = 0;
 +	size_t len = 0;
-+
-+	line[0] = 'l';
-+	line[1] = 'o';
-+	line[2] = 'g';
-+	line[3] = ' ';
 +
 +	while (!fail && kmsg_dump_get_line(dumper, true,
 +	       line + 4, sizeof(line) - 4, &len)) {
@@ -426,24 +472,6 @@ index 000000000..f49a1e660
 +
 +static void __init vmware_platform_setup(void)
 +{
-+	register uint64_t x0 asm("x0") = VMWARE_HYPERVISOR_MAGIC;
-+	register uint64_t x1 asm("x1") = ~VMWARE_HYPERVISOR_MAGIC;
-+	register uint32_t w2 asm("w2") = VMWARE_CMD_GETHZ;
-+	register uint32_t w3 asm("w3") = VMWARE_HYPERVISOR_PORT;
-+	register uint32_t w7 asm("w7") = X86_IO_W7_WITH |
-+					 X86_IO_W7_DIR |
-+					 2 << X86_IO_W7_SIZE_SHIFT;
-+	uint64_t tsc_khz;
-+	uint32_t tscHzHi, tscHzLo;
-+
-+	VMWARE_CMD(x0, x1, w2, w3, w7);
-+	tscHzHi = x1;
-+	tscHzLo = x0;
-+	tsc_khz = (((int64_t) tscHzHi) << 32) | tscHzLo;
-+	do_div(tsc_khz, 1000);
-+	pr_info("TSC freq read from hypervisor : %lu.%03lu MHz\n",
-+		 (unsigned long) tsc_khz / 1000, (unsigned long) tsc_khz % 1000);
-+
 +	kmsg_dump_register(&kmsg_dumper);
 +}
 +

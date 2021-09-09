@@ -1,4 +1,4 @@
-From d9b250aaf2e7eaf252c6d9f1df2559631c26d0d5 Mon Sep 17 00:00:00 2001
+From b934169be7ff51e614e8e78b09a2313d64e32861 Mon Sep 17 00:00:00 2001
 From: Cyprien Laplace <claplace@vmware.com>
 Date: Fri, 29 Nov 2019 16:27:46 -0500
 Subject: [PATCH 4/6] vmw_vmci: add arm64 support
@@ -21,84 +21,21 @@ Tested with open-vm-tools, vmw_balloon and vsock mixedTest on arm64.
 Signed-off-by: Cyprien Laplace <claplace@vmware.com>
 Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
- MAINTAINERS                        |   1 +
- arch/arm64/include/asm/vmware.h    | 122 +++++++++++++++++++++++++++++
- arch/x86/include/asm/vmware.h      |   6 ++
- drivers/misc/vmw_vmci/Kconfig      |   3 +-
- drivers/misc/vmw_vmci/vmci_guest.c |  20 ++---
- include/linux/vmw_vmci_defs.h      |  13 ++-
- 6 files changed, 153 insertions(+), 12 deletions(-)
- create mode 100644 arch/arm64/include/asm/vmware.h
+ arch/arm64/include/asm/vmware.h    | 70 ++++++++++++++++++++++++++++++
+ arch/x86/include/asm/vmware.h      |  6 +++
+ drivers/misc/vmw_vmci/Kconfig      |  3 +-
+ drivers/misc/vmw_vmci/vmci_guest.c | 20 +++++----
+ include/linux/vmw_vmci_defs.h      | 13 +++++-
+ 5 files changed, 100 insertions(+), 12 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 9d443cc32..972fb8e4f 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -18735,6 +18735,7 @@ M:	"VMware, Inc." <pv-drivers@vmware.com>
- L:	virtualization@lists.linux-foundation.org
- S:	Supported
- F:	arch/arm64/kernel/vmware.c
-+F:	arch/arm64/include/asm/vmware.h
- F:	arch/arm64/kernel/hypervisor.c
- F:	arch/arm64/include/asm/hypervisor.h
- 
 diff --git a/arch/arm64/include/asm/vmware.h b/arch/arm64/include/asm/vmware.h
-new file mode 100644
-index 000000000..6a6734eb0
---- /dev/null
+index eef4e2688..24946f144 100644
+--- a/arch/arm64/include/asm/vmware.h
 +++ b/arch/arm64/include/asm/vmware.h
-@@ -0,0 +1,122 @@
-+/* SPDX-License-Identifier: GPL-2.0 or MIT */
-+/*
-+ * Copyright (C) 2021, VMware, Inc.
-+ * Author : Cyprien Laplace <claplace@vmware.com>
-+ */
-+#ifndef _ASM_ARM64_VMWARE_H
-+#define _ASM_ARM64_VMWARE_H
-+
-+#include <asm/memory.h>
-+
-+/*
-+ * Encoding for virtual I/O port translation: HVC 0x86 allows efficient
-+ * drop-in replacement for x86 [REP] IN/INS/OUT/OUTS instructions used
-+ * for backdoors and virtual devices.
-+ */
-+#define X86_IO_MAGIC          0x86
-+/*
-+ * Transfer size, bits [1:0]
-+ *    00: 1 byte
-+ *    01: 2 bytes
-+ *    10: 4 bytes
-+ *    11: Invalid value
-+ */
-+#define X86_IO_W7_SIZE_SHIFT  0
-+/*
-+ * Transfer direction, bit [2]
-+ *    0: Write (OUT/OUTS/REP OUTS instructions)
-+ *    1: Read (IN/INS/REP INS instructions)
-+ */
-+#define X86_IO_W7_DIR         BIT(2)
-+/*
-+ * Instruction type, bits [4:3]
-+ *    00: Non-string instruction (IN/OUT) without DX register
-+ *        The port address (8-bit immediate) is set in W7<12:5>.
-+ *
-+ *    01: Non-string instruction (IN/OUT) with DX register
-+ *
-+ *    10: String instruction without REP prefix (INS/OUTS)
-+ *        The direction flag (EFLAGS.DF) is set in W7<5>.
-+ *
-+ *    11: String instruction with REP prefix (REP INS/REP OUTS)
-+ *        The direction flag (EFLAGS.DF) is set in W7<5>.
-+ */
-+#define X86_IO_W7_WITH        BIT(3)
-+#define X86_IO_W7_STR         BIT(4)
-+#define X86_IO_W7_DF          BIT(5)
-+
-+#define VMWARE_HYPERVISOR_PORT    0x5658
-+#define VMWARE_HYPERVISOR_PORT_HB 0x5659
-+
-+
+@@ -49,4 +49,74 @@
+ #define VMWARE_HYPERVISOR_PORT_HB 0x5659
+ #define VMWARE_HYPERVISOR_MAGIC 0x564D5868
+ 
 +/*
 + * Efficient I/O port accesses for vmware virtual machines. Execute
 + * a single VM exit instead of one per byte. This feature is limitied
@@ -169,7 +106,7 @@ index 000000000..6a6734eb0
 +	__vmw_rep_insb(port, buffer, count);
 +}
 +
-+#endif /* _ASM_ARM64_VMWARE_H */
+ #endif /* _ASM_ARM64_VMWARE_H */
 diff --git a/arch/x86/include/asm/vmware.h b/arch/x86/include/asm/vmware.h
 index e88c50442..0a537d62f 100644
 --- a/arch/x86/include/asm/vmware.h
