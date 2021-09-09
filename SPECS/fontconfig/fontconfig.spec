@@ -1,7 +1,7 @@
 Summary:	library for configuring and customizing font access.
 Name:		fontconfig
 Version:	2.13.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD/GPL
 URL:		https://www.freedesktop.org/wiki/Software/fontconfig/
 Group:		System Environment/Libraries
@@ -21,26 +21,25 @@ Fontconfig can discover new fonts when installed automatically, removing a commo
 Summary:	Header and development files
 Requires:	%{name} = %{version}-%{release}
 Requires:	expat-devel
+Requires:	freetype2-devel
 %description	devel
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure \
-	--sysconfdir=/etc \
-	--localstatedir=/var \
 	--docdir=/usr/share/doc/%{name}-%{version} \
 	--disable-static
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
 %check
-make -k check
+make %{?_smp_mflags} -k check
 
 %post
 /sbin/ldconfig
@@ -66,6 +65,8 @@ make -k check
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Aug 11 2021 Alexey Makhalov <amakhalov@vmware.com> 2.13.1-2
+-   Add freetype2-devel requires for -devel subpackage.
 *   Wed Sep 12 2018 Sujay G <gsujay@vmware.com> 2.13.1-1
 -   Bump version to 2.13.1
 *   Thu Aug 03 2017 Chang Lee <changlee@vmware.com> 2.12.1-3

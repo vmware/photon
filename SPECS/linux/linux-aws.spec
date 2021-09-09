@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.61
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -300,7 +300,7 @@ ln -s vmlinux-%{uname_r} %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlin
 
 cat > %{buildroot}/boot/%{name}-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta nvme_core.io_timeout=4294967295
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet nvme_core.io_timeout=4294967295
 photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
@@ -392,6 +392,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Sep 09 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.61-2
+-   Remove no-vmw-sta as it is not supported in AWS.
 *   Fri Aug 27 2021 Ankit Jain <ankitja@vmware.com> 5.10.61-1
 -   Update to version 5.10.61
 *   Fri Jul 23 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.52-1

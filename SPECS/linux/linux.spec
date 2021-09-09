@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.61
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -185,7 +185,6 @@ This kernel is FIPS certified.
 %package devel
 Summary:        Kernel Dev
 Group:          System Environment/Kernel
-Obsoletes:      linux-dev
 Requires:       %{name} = %{version}-%{release}
 Requires:       python3 gawk
 %description devel
@@ -511,7 +510,7 @@ ln -s vmlinux-%{uname_r} %{buildroot}/usr/lib/debug/lib/modules/%{uname_r}/vmlin
 
 cat > %{buildroot}/boot/%{name}-%{uname_r}.cfg << "EOF"
 # GRUB Environment Block
-photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet no-vmw-sta
+photon_cmdline=init=/lib/systemd/systemd ro loglevel=3 quiet
 photon_linux=vmlinuz-%{uname_r}
 photon_initrd=initrd.img-%{uname_r}
 EOF
@@ -671,6 +670,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Sep 09 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.61-2
+-   .config enable CONFIG_MOUSE_PS2_VMMOUSE and CONFIG_INPUT_UINPUT
+-   Enable sta by default
 *   Fri Aug 27 2021 Ankit Jain <ankitja@vmware.com> 5.10.61-1
 -   Update to version 5.10.61
 *   Wed Aug 18 2021 Keerthana K <keerthanak@vmware.com> 5.10.52-2
