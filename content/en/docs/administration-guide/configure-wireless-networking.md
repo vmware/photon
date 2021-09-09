@@ -16,7 +16,7 @@ Perform the following steps:
 
 1. Ensure that the `wpa_supplicant service` is running on the WLAN interface:
 
-    `Systemctl status wpa_supplicant@<wlan-interface>.service`
+    `systemctl status wpa_supplicant@<wlan-interface>.service`
 
 1. Connect to `wpa_cli`:
     
@@ -72,7 +72,7 @@ Configure `systemd-networkd` to assign IP address to network. Perform the follow
 
 1. Restart `systemd-networkd` using:
 
-    `Systemctl restart systemd-networkd`
+    `systemctl restart systemd-networkd`
 
 
 
