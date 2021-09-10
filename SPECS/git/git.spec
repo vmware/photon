@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.23.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
@@ -12,6 +12,7 @@ Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.t
 Patch0:         CVE-2021-21300-1.patch
 Patch1:         CVE-2021-21300-2.patch
 Patch2:         CVE-2021-21300-3.patch
+Patch3:         CVE-2021-40330.patch
 BuildRequires:  curl-devel
 BuildRequires:  python2
 Requires:       openssl
@@ -42,10 +43,7 @@ Requires: git >= 2.1.2
 These are the additional language files of git.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1
 %build
 %configure \
     CFLAGS="%{optflags}" \
@@ -55,7 +53,7 @@ These are the additional language files of git.
 make %{?_smp_mflags} CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}/usr/share/bash-completion/completions
 install -m 0644 contrib/completion/git-completion.bash %{buildroot}/usr/share/bash-completion/completions/git
 %find_lang %{name}
@@ -96,6 +94,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Fri Sep 10 2021 Nitesh Kumar <kunitesh@vmware.com> 2.23.3-3
+-   Fix CVE-2021-40330
 *   Tue Mar 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.23.3-2
 -   Fix CVE-2021-21300
 *   Tue May 12 2020 Prashant S Chauhan <psinghchauhan@vmware.com> 2.23.3-1
