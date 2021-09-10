@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.23.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com/
 Group:          System Environment/Programming
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.tar.xz
 %define sha1    git=5085682cd06b1fd035e313e50d31b7a7f62e04aa
 Patch0:         CVE-2021-21300.patch
+Patch1:         CVE-2021-40330.patch
 BuildRequires:  curl-devel
 BuildRequires:  python2
 Requires:       openssl
@@ -20,13 +21,13 @@ Requires:       perl-DBI
 Requires:       perl-CGI
 
 %description
-Git is a free and open source, distributed version control system 
+Git is a free and open source, distributed version control system
 designed to handle everything from small to very large projects with
-speed and efficiency. Every Git clone is a full-fledged repository 
-with complete history and full revision tracking capabilities, not 
-dependent on network access or a central server. Branching and 
+speed and efficiency. Every Git clone is a full-fledged repository
+with complete history and full revision tracking capabilities, not
+dependent on network access or a central server. Branching and
 merging are fast and easy to do. Git is used for version control of
-files, much like tools such as Mercurial, Bazaar, 
+files, much like tools such as Mercurial, Bazaar,
 Subversion-1.7.8, CVS-1.11.23, Perforce, and Team Foundation Server.
 
 %package lang
@@ -39,13 +40,11 @@ These are the additional language files of git.
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 %build
-./configure \
+%configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
     --libexec=%{_libexecdir} \
     --with-gitconfig=/etc/gitconfig
 make %{?_smp_mflags} CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
@@ -93,6 +92,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Fri Sep 10 2021 Nitesh Kumar <kunitesh@vmware.com> 2.23.3-3
+-   Fix CVE-2021-40330
 *   Fri Mar 05 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.23.3-2
 -   Fix CVE-2021-21300
 *   Tue May 12 2020 Prashant S Chauhan <psinghchauhan@vmware.com> 2.23.3-1
