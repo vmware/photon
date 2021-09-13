@@ -1,7 +1,7 @@
 Summary:        Fast distributed version control system
 Name:           git
 Version:        2.30.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2
 URL:            http://git-scm.com
 Group:          System Environment/Programming
@@ -13,6 +13,7 @@ Source0:        https://www.kernel.org/pub/software/scm/git/%{name}-%{version}.t
 Patch0:         CVE-2021-21300-1.patch
 Patch1:         CVE-2021-21300-2.patch
 Patch2:         CVE-2021-21300-3.patch
+Patch3:         CVE-2021-40330.patch
 
 BuildRequires:  curl-devel
 BuildRequires:  python3
@@ -101,6 +102,8 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
+*   Fri Sep 10 2021 Nitesh Kumar <kunitesh@vmware.com> 2.30.0-5
+-   Fix CVE-2021-40330
 *   Wed May 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.30.0-4
 -   Bump version as a part of rpm upgrade
 *   Tue Mar 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.30.0-3
