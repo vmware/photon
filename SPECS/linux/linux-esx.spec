@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.205
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -893,6 +893,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Sep 13 2021 Ankit Jain <ankitja@vmware.com> 4.19.205-2
+-   vtarfs: Added support for LongFilename/LongLink
 *   Fri Aug 27 2021 srinidhira0 <srinidhir@vmware.com> 4.19.205-1
 -   Update to version 4.19.205
 *   Tue Aug 24 2021 Ankit Jain <ankitja@vmware.com> 4.19.198-3
