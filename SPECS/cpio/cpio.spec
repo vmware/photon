@@ -1,27 +1,32 @@
 Summary:	cpio-2.13
 Name:		cpio
 Version:	2.13
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/cpio/
 Group:		System Environment/System utilities
 Vendor:		VMware, Inc.
 Distribution: 	Photon
+
 Source0:	http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
-%define sha1 cpio=4dcefc0e1bc36b11506a354768d82b15e3fe6bb8
+%define sha1 %{name}=4dcefc0e1bc36b11506a354768d82b15e3fe6bb8
+
 Patch0:         newca-new-archive-format.patch
 Patch1:         cpio-2.12-gcc-10.patch
 Patch2:         cpio-CVE-2021-38185.patch
 Patch3:         cpio-CVE-2021-38185_2.patch
 Patch4:         cpio-CVE-2021-38185_3.patch
-Conflicts:      toybox
+
+Conflicts:      toybox < 0.7.3-7
+
 %description
 The cpio package contains tools for archiving.
 
-%package lang
-Summary: Additional language files for cpio
-Group:   System Environment/System utilities
-Requires: %{name} = %{version}-%{release}
+%package    lang
+Summary:    Additional language files for cpio
+Group:      System Environment/System utilities
+Requires:   %{name} = %{version}-%{release}
+
 %description lang
 These are the additional language files of cpio
 
@@ -33,15 +38,16 @@ These are the additional language files of cpio
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+
 %build
 sed -i -e '/gets is a/d' gnu/stdio.in.h
-%configure \
-        --enable-mt   \
-        --with-rmt=/usr/libexec/rmt
+%configure --enable-mt --with-rmt=/usr/libexec/rmt
+
 make %{?_smp_mflags}
 makeinfo --html            -o doc/html      doc/cpio.texi
 makeinfo --html --no-split -o doc/cpio.html doc/cpio.texi
 makeinfo --plaintext       -o doc/cpio.txt  doc/cpio.texi
+
 %install
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
 install -v -m755 -d %{buildroot}/%{_docdir}/%{name}-%{version}/html
@@ -63,6 +69,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Mon Sep 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.13-2
+- Conflict only with toybox < 0.7.3-7
 * Thu Sep 02 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.13-1
 - Updated to version 2.13 along with additional fixes for CVE-2021-38185
 * Fri Aug 20 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.12-6

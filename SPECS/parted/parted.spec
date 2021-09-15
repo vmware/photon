@@ -1,23 +1,29 @@
 Summary:	GNU Parted manipulates partition tables
 Name:		parted
 Version:	3.2
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3+
 URL:		http://ftp.gnu.org/gnu/parted/parted-3.2.tar.xz
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution:	Photon
+
 Source0:	http://ftp.gnu.org/gnu/parted/%{name}-%{version}.tar.xz
-%define sha1 parted=8cabb2d6789badec15c857dcc003d0dd931a818b
+%define sha1 %{name}=8cabb2d6789badec15c857dcc003d0dd931a818b
+
+Conflicts:      toybox < 0.7.3-7
+
 %description
 This is useful for creating space for new operating systems,
 reorganizing disk usage, copying data on hard disks and disk imaging.
 The package contains a library, libparted, as well as well as a
 command-line frontend, parted, which can also be used in scripts.
+
 %prep
-%setup -q
+%autosetup -p1
+
 %build
-./configure \
+sh ./configure \
 	--prefix=%{_prefix} \
 	--bindir=%{_bindir} \
 	--infodir=%{_infodir}/%{name}-%{version} \
@@ -25,13 +31,16 @@ command-line frontend, parted, which can also be used in scripts.
 	--disable-debug \
 	--disable-nls \
 	--disable-device-mapper
+
 make %{?_smp_mflags}
+
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
-%files 
+
+%files
 %defattr(-,root,root)
 %{_sbindir}/*
 %{_libdir}/*.a
@@ -42,14 +51,17 @@ make DESTDIR=%{buildroot} install
 %{_includedir}/*
 %{_infodir}/%{name}-%{version}/*
 %{_datadir}/*
+
 %changelog
-*       Wed Aug 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2-5
--       Fix summary and description
-*       Tue Jun 06 2017 ChangLee <changlee@vmware.com> 3.2-4
--       Remove %check
-*       Fri Oct 07 2016 ChangLee <changlee@vmware.com> 3.2-3
--       Modified %check
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2-2
--	GA - Bump release of all rpms
-*	Wed Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.2-1
-	Initial version
+* Mon Sep 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.2-6
+- Conflict only with toybox < 0.7.3-7
+* Wed Aug 16 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2-5
+- Fix summary and description
+* Tue Jun 06 2017 ChangLee <changlee@vmware.com> 3.2-4
+- Remove %check
+* Fri Oct 07 2016 ChangLee <changlee@vmware.com> 3.2-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.2-2
+- GA - Bump release of all rpms
+* Wed Nov 12 2014 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.2-1
+- Initial version

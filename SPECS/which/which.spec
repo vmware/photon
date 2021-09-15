@@ -1,30 +1,40 @@
 Summary:	Program shows full path of (shell) commands
 Name:		which
 Version:	2.21
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	GPLv3+
 URL:		http://savannah.gnu.org/projects/which
-Source0:	http://ftp.gnu.org/gnu/which/%{name}-%{version}.tar.gz
-%define sha1 which=6b6bec3d2b3d4661c164feb81b9b1d22d1359ded
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution: Photon
-Conflicts:      toybox
+
+Source0:	http://ftp.gnu.org/gnu/which/%{name}-%{version}.tar.gz
+%define sha1 %{name}=6b6bec3d2b3d4661c164feb81b9b1d22d1359ded
+
+Conflicts:      toybox < 0.7.3-7
+
 %description
 Program for showing the full the path of (shell) commands.
+
 %prep
-%setup -q
+%autosetup -p1
+
 %build
 %configure
 %make_build
+
 %install
 %make_install
 rm -rf %{buildroot}%{_infodir}
+
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_mandir}/man1/*
+
 %changelog
+* Mon Sep 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.21-6
+- Conflict only with toybox < 0.7.3-7
 * Thu Oct 19 2017 Alexey Makhalov <amakhalov@vmware.com> 2.21-5
 - Remove infodir
 - Use standard configure/build macros

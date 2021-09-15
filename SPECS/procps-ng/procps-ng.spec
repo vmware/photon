@@ -1,38 +1,48 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
 Version:        3.3.15
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
-URL:            http://procps.sourceforge.net/
+URL:            http://procps.sourceforge.net
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
-%define sha1    procps-ng=2929bc64f0cf7b2db997eef79b7187658e47230d
-Patch0:		0001-Revert-ps-Increase-command-selection-field-to-64.patch
+%define sha1    %{name}=2929bc64f0cf7b2db997eef79b7187658e47230d
+
+Patch0:         0001-Revert-ps-Increase-command-selection-field-to-64.patch
+
 BuildRequires:  ncurses-devel
+
 Requires:       ncurses
-Conflicts:      toybox
+
+Conflicts:      toybox < 0.7.3-7
+
 %description
 The Procps package contains programs for monitoring processes.
+
 %package    devel
 Summary:    Header and development files for procps-ng
 Requires:   %{name} = %{version}
-%description    devel
-It contains the libraries and header files to create applications 
 
-%package lang
-Summary: Additional language files for procps-ng
-Group:   Applications/Databases
-Requires: %{name} = %{version}-%{release}
+%description    devel
+It contains the libraries and header files to create applications
+
+%package    lang
+Summary:    Additional language files for procps-ng
+Group:      Applications/Databases
+Requires:   %{name} = %{version}-%{release}
+
 %description lang
 These are the additional language files of procps-ng
 
 %prep
 %setup -q
 %patch0 -p1
+
 %build
-./configure \
+sh ./configure \
     --prefix=%{_prefix} \
     --exec-prefix= \
     --libdir=%{_libdir} \
@@ -40,14 +50,16 @@ These are the additional language files of procps-ng
     --disable-static \
     --disable-kill \
     --disable-silent-rules
+
 make %{?_smp_mflags}
+
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/bin
 install -vdm 755 %{buildroot}/%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}/%{_libdir}/libprocps.so) %{buildroot}/%{_libdir}/libprocps.so
 install -vdm 755 %{buildroot}/%{_sbindir}
-ln -s %{_bindir}/pidof %{buildroot}%{_sbindir}/pidof
+ln -sfv %{_bindir}/pidof %{buildroot}%{_sbindir}/pidof
 find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
 
@@ -56,6 +68,7 @@ make %{?_smp_mflags} check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %files
 %defattr(-,root,root)
 /bin/ps
@@ -80,6 +93,7 @@ make %{?_smp_mflags} check
 %{_mandir}/man5/*
 %{_libdir}/libprocps.so.*
 /sbin/sysctl
+
 %files devel
 %{_includedir}/proc/sig.h
 %{_includedir}/proc/wchan.h
@@ -102,29 +116,31 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
-*   Fri Sep 14 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.3.15-2
--   Revert ps-Increase-command-selection-field-to-64
-*   Fri Aug 10 2018 Tapas Kundu <tkundu@vmware.com> 3.3.15-1
--   Upgrade version to 3.3.15.
--   Fix for CVE-2018-1122 CVE-2018-1123 CVE-2018-1124 CVE-2018-1125
--   Fix for CVE-2018-1126
-*   Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 3.3.12-3
--   Added conflicts toybox
-*   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 3.3.12-2
--   Add lang package.
-*   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 3.3.12-1
--   Upgrade to 3.3.12
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 3.3.11-5
--   Moved man3 to devel subpackage.
-*   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 3.3.11-4
--   Modified %check
-*   Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.11-3
--   Added patch to interpret ASCII sequence correctly
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.11-2
--   GA - Bump release of all rpms
-*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 3.3.11-1
--   Upgrade version
-*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.3.9-2
--   Update according to UsrMove.
-*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.3.9-1
--   Initial build. First version
+* Mon Sep 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.3.15-3
+- Conflict only with toybox < 0.7.3-7
+* Fri Sep 14 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.3.15-2
+- Revert ps-Increase-command-selection-field-to-64
+* Fri Aug 10 2018 Tapas Kundu <tkundu@vmware.com> 3.3.15-1
+- Upgrade version to 3.3.15.
+- Fix for CVE-2018-1122 CVE-2018-1123 CVE-2018-1124 CVE-2018-1125
+- Fix for CVE-2018-1126
+* Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 3.3.12-3
+- Added conflicts toybox
+* Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 3.3.12-2
+- Add lang package.
+* Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 3.3.12-1
+- Upgrade to 3.3.12
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 3.3.11-5
+- Moved man3 to devel subpackage.
+* Mon Oct 03 2016 ChangLee <changLee@vmware.com> 3.3.11-4
+- Modified %check
+* Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.11-3
+- Added patch to interpret ASCII sequence correctly
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.11-2
+- GA - Bump release of all rpms
+* Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 3.3.11-1
+- Upgrade version
+* Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.3.9-2
+- Update according to UsrMove.
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.3.9-1
+- Initial build. First version

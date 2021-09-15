@@ -4,7 +4,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.14.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -28,7 +28,6 @@ Requires:       bash
 Requires:       libdb
 Requires:       rpm-libs = %{version}-%{release}
 Requires:       lua
-Requires:       file
 
 BuildRequires:  lua-devel
 BuildRequires:  libdb-devel
@@ -266,79 +265,81 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Jun 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-1
--   Bump to version 4.14.2
-*   Thu Apr 29 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.13.0.2-5
--   Fix PGP parsing issue
-*   Wed Apr 07 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.13.0.2-4
--   Fix for CVE-2021-20271
-*   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 4.13.0.2-3
--   Use latest sqlite
-*   Mon Aug 19 2019 Kuladeep Rayalla <krayalla@vmware.com> 4.13.0.2-2
--   Enable lua support
-*   Fri Nov 02 2018 Siju Maliakkal <smaliakkal@vmware.com> 4.13.0.2-1
--   Updated to 4.13.0.2 to fix CVE-2017-7500
-*   Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-7
--   Fix CVE-2017-7501
-*   Wed Oct 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.13.0.1-6
--   make python{,3}-rpm depend on current version of librpm
-*   Wed Jun 28 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-5
--   Add file-devel to BuildRequires
-*   Mon Jun 26 2017 Chang Lee <changlee@vmware.com> 4.13.0.1-4
--   Updated %check
-*   Mon Jun 05 2017 Bo Gan <ganb@vmware.com> 4.13.0.1-3
--   Fix Dependency
-*   Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-2
--   Remove python2 from requires of rpm-devel subpackages.
-*   Wed May 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.13.0.1-1
--   Update to 4.13.0.1
-*   Fri Apr 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.13.0-1
--   Update to 4.13.0
-*   Wed Apr 19 2017 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-22
--   Do not allow -debuginfo to own directories to avoid conflicts with
+* Sun Sep 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-2
+- Remove 'file' from Requires
+* Tue Jun 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.14.2-1
+- Bump to version 4.14.2
+* Thu Apr 29 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.13.0.2-5
+- Fix PGP parsing issue
+* Wed Apr 07 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.13.0.2-4
+- Fix for CVE-2021-20271
+* Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 4.13.0.2-3
+- Use latest sqlite
+* Mon Aug 19 2019 Kuladeep Rayalla <krayalla@vmware.com> 4.13.0.2-2
+- Enable lua support
+* Fri Nov 02 2018 Siju Maliakkal <smaliakkal@vmware.com> 4.13.0.2-1
+- Updated to 4.13.0.2 to fix CVE-2017-7500
+* Thu Dec 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-7
+- Fix CVE-2017-7501
+* Wed Oct 04 2017 Alexey Makhalov <amakhalov@vmware.com> 4.13.0.1-6
+- make python{,3}-rpm depend on current version of librpm
+* Wed Jun 28 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-5
+- Add file-devel to BuildRequires
+* Mon Jun 26 2017 Chang Lee <changlee@vmware.com> 4.13.0.1-4
+- Updated %check
+* Mon Jun 05 2017 Bo Gan <ganb@vmware.com> 4.13.0.1-3
+- Fix Dependency
+* Thu May 18 2017 Xiaolin Li <xiaolinl@vmware.com> 4.13.0.1-2
+- Remove python2 from requires of rpm-devel subpackages.
+* Wed May 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.13.0.1-1
+- Update to 4.13.0.1
+* Fri Apr 21 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.13.0-1
+- Update to 4.13.0
+* Wed Apr 19 2017 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-22
+- Do not allow -debuginfo to own directories to avoid conflicts with
     filesystem package and between each other. Patch applied
-*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-21
--   rpm-libs requires nss-libs, xz-libs and bzip2-libs.
-*   Tue Mar 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-20
--   Added python3 packages and moved python2 site packages from devel to python-rpm.
-*   Tue Jan 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-19
--   added buildrequires for xz-devel for PayloadIsLzma cap
-*   Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-18
--   Moved some files from rpm to rpm-build.
-*   Tue Dec 06 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-17
--   Added -lang subpackage.
-*   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-16
--   Move rpmrc and macros into -libs subpackage
--   Move zlib and elfutils-libelf dependency from rpm to rpm-libs
--   Add bzip2 dependency to rpm-libs
-*   Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-15
--   Added -libs subpackage
-*   Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-14
--   Disable lua support
-*   Tue Oct 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-13
--   Apply patch for CVE-2014-8118
-*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.11.2-12
--   Modified %check
-*   Fri Aug 26 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-11
--   find-debuginfo...patch: exclude non existing .build-id from packaging
--   Move all files from rpm-system-configuring-scripts tarball to here
-*   Wed May 25 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-10
--   Exclude .build-id/.1 and .build-id/.1.debug from debuginfo pkg
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-9
--   GA - Bump release of all rpms
-*   Thu May 05 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-8
--   Update rpm version in lock-step with lua update to 5.3.2
-*   Fri Apr 08 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.11.2-7
--   Build rpm with capabilities.
-*   Wed Aug 05 2015 Sharath George <sharathg@vmware.com> 4.11.2-6
--   Moving build utils to a different package.
-*   Sat Jun 27 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-5
--   Update rpm-system-configuring-scripts. Use tar --no-same-owner for rpmbuild.
-*   Thu Jun 18 2015 Anish Swaminathan <anishs@vmware.com> 4.11.2-4
--   Add pkgconfig Provides directive
-*   Thu Jun 18 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-3
--   Do no strip debug info from .debug files
-*   Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 4.11.2-2
--   Removing perl-module-scandeps package from run time required packages
-*   Tue Jan 13 2015 Divya Thaluru <dthaluru@vmware.com> 4.11.2-1
--   Initial build. First version
+* Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-21
+- rpm-libs requires nss-libs, xz-libs and bzip2-libs.
+* Tue Mar 21 2017 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-20
+- Added python3 packages and moved python2 site packages from devel to python-rpm.
+* Tue Jan 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-19
+- added buildrequires for xz-devel for PayloadIsLzma cap
+* Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-18
+- Moved some files from rpm to rpm-build.
+* Tue Dec 06 2016 Xiaolin Li <xiaolinl@vmware.com> 4.11.2-17
+- Added -lang subpackage.
+* Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-16
+- Move rpmrc and macros into -libs subpackage
+- Move zlib and elfutils-libelf dependency from rpm to rpm-libs
+- Add bzip2 dependency to rpm-libs
+* Thu Nov 17 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-15
+- Added -libs subpackage
+* Tue Nov 15 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-14
+- Disable lua support
+* Tue Oct 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-13
+- Apply patch for CVE-2014-8118
+* Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.11.2-12
+- Modified %check
+* Fri Aug 26 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-11
+- find-debuginfo...patch: exclude non existing .build-id from packaging
+- Move all files from rpm-system-configuring-scripts tarball to here
+* Wed May 25 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-10
+- Exclude .build-id/.1 and .build-id/.1.debug from debuginfo pkg
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-9
+- GA - Bump release of all rpms
+* Thu May 05 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11.2-8
+- Update rpm version in lock-step with lua update to 5.3.2
+* Fri Apr 08 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 4.11.2-7
+- Build rpm with capabilities.
+* Wed Aug 05 2015 Sharath George <sharathg@vmware.com> 4.11.2-6
+- Moving build utils to a different package.
+* Sat Jun 27 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-5
+- Update rpm-system-configuring-scripts. Use tar --no-same-owner for rpmbuild.
+* Thu Jun 18 2015 Anish Swaminathan <anishs@vmware.com> 4.11.2-4
+- Add pkgconfig Provides directive
+* Thu Jun 18 2015 Alexey Makhalov <amakhalov@vmware.com> 4.11.2-3
+- Do no strip debug info from .debug files
+* Wed Jun 3 2015 Divya Thaluru <dthaluru@vmware.com> 4.11.2-2
+- Removing perl-module-scandeps package from run time required packages
+* Tue Jan 13 2015 Divya Thaluru <dthaluru@vmware.com> 4.11.2-1
+- Initial build. First version

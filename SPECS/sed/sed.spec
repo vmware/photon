@@ -1,23 +1,26 @@
 Summary:	Stream editor
 Name:		sed
 Version:	4.4
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/sed
 Group:		Applications/Editors
 Vendor:		VMware, Inc.
 Distribution:	Photon
+
 Source0:	http://ftp.gnu.org/gnu/sed/%{name}-%{version}.tar.xz
-%define sha1 sed=a196cd036efd52a8e349cfe88ab4baa555fb29d5
-Conflicts:      toybox
+%define sha1 %{name}=a196cd036efd52a8e349cfe88ab4baa555fb29d5
+
+Conflicts:      toybox < 0.7.3-7
 
 %description
 The Sed package contains a stream editor.
 
-%package lang
-Summary: Additional language files for sed
-Group: System Environment/Programming
-Requires: sed >= 4.4
+%package    lang
+Summary:    Additional language files for sed
+Group:      System Environment/Programming
+Requires:   sed >= 4.4
+
 %description lang
 These are the additional language files of sed.
 
@@ -25,32 +28,30 @@ These are the additional language files of sed.
 %setup -q
 
 %build
-./configure \
-	--prefix=%{_prefix} \
-	--bindir=/bin \
-	--htmldir=%{_defaultdocdir}/%{name}-%{version} \
-	--disable-silent-rules
+%configure --htmldir=%{_defaultdocdir}/%{name}-%{version}
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm -rf %{buildroot}%{_infodir}
 %find_lang %{name}
 
 %check
 sed -i 's|print_ver_ sed|Exit $fail|g' testsuite/panic-tests.sh
 sed -i 's|compare exp-out out|#compare exp-out out|g' testsuite/subst-mb-incomplete.sh
-make check
+make check %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
-/bin/*
+%{_bindir}/*
 %{_mandir}/man1/*
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+* Mon Sep 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.4-4
+- Conflict only with toybox < 0.7.3-7
 * Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4-3
 - Added conflicts toybox
 * Tue Aug 01 2017 Chang Lee <changlee@vmware.com> 4.4-2

@@ -1,27 +1,36 @@
 Summary:	Basic system utilities
 Name:		coreutils
 Version:	8.27
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/coreutils
 Group:		System Environment/Base
 Vendor:		VMware, Inc.
 Distribution: Photon
+
 Source0:	http://ftp.gnu.org/gnu/coreutils/%{name}-%{version}.tar.xz
-%define sha1 coreutils=ee054c8a4c0c924de49e4f03266733f27f986fbb
-Patch0:		http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8.27-i18n-1.patch
-Patch1:		http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8.27-uname-1.patch
+%define sha1 %{name}=ee054c8a4c0c924de49e4f03266733f27f986fbb
+
+# taken from http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8.27-i18n-1.patch
+Patch0:		coreutils-8.27-i18n-1.patch
+# taken from http://www.linuxfromscratch.org/patches/downloads/coreutils/coreutils-8.27-uname-1.patch
+Patch1:		coreutils-8.27-uname-1.patch
+
 Requires:	gmp
+
 Provides:	sh-utils
-Conflicts:      toybox
+
+Conflicts:  toybox < 0.7.3-7
+
 %description
 The Coreutils package contains utilities for showing and setting
 the basic system
 
-%package lang
-Summary: Additional language files for coreutils
-Group: System Environment/Base
-Requires: coreutils >= %{version}
+%package    lang
+Summary:    Additional language files for coreutils
+Group:      System Environment/Base
+Requires:   coreutils >= %{version}
+
 %description lang
 These are the additional language files of coreutils.
 
@@ -29,14 +38,15 @@ These are the additional language files of coreutils.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+
 %build
-export FORCE_UNSAFE_CONFIGURE=1 &&  ./configure \
-	--prefix=%{_prefix} \
-	--enable-no-install-program=kill,uptime \
-	--disable-silent-rules
+export FORCE_UNSAFE_CONFIGURE=1
+%configure --enable-no-install-program=kill,uptime
+
 make %{?_smp_mflags}
+
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}/bin
 install -vdm 755 %{buildroot}%{_sbindir}
 install -vdm 755 %{buildroot}%{_mandir}/man8
@@ -76,6 +86,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %defattr(-,root,root)
 
 %changelog
+* Mon Sep 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 8.27-4
+- Conflict only with toybox < 0.7.3-7
 * Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 8.27-3
 - Added conflicts toybox
 * Wed Aug 09 2017 Rongrong Qiu <rqiu@vmware.com> 8.27-2

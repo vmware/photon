@@ -1,18 +1,23 @@
 Summary:        Contains the utilities for the ext2 file system
 Name:           e2fsprogs
 Version:        1.43.4
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://e2fsprogs.sourceforge.net
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://prdownloads.sourceforge.net/e2fsprogs/%{name}-%{version}.tar.gz
 %define sha1    e2fsprogs=f7cf8c82805103b53f89ad5da641e1085281d411
+
 Requires:       %{name}-libs = %{version}-%{release}
+
 Patch0:         CVE-2019-5094.patch
 Patch1:         CVE-2019-5188-1.patch
 Patch2:         CVE-2019-5188-2.patch
+
+Conflicts:      toybox < 0.7.3-7
 
 %description
 The E2fsprogs package contains the utilities for handling
@@ -27,7 +32,7 @@ It contains the libraries: libss and libcom_err
 Summary:    Header and development files for e2fsprogs
 Requires:   %{name} = %{version}
 %description    devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %package lang
 Summary: Additional language files for e2fsprogs
@@ -37,10 +42,7 @@ Requires: %{name} = %{version}-%{release}
 These are the additional language files of e2fsprogs
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1
 install -vdm 755 build
 sed -i -e 's|^LD_LIBRARY_PATH.*|&:/tools/lib|' tests/test_config
 
@@ -63,8 +65,8 @@ make %{?_smp_mflags}
 
 %install
 pushd build
-make DESTDIR=%{buildroot} install
-make DESTDIR=%{buildroot} install-libs
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+make DESTDIR=%{buildroot} install-libs %{?_smp_mflags}
 chmod -v u+w %{buildroot}/%{_libdir}/{libcom_err,libe2p,libext2fs,libss}.a
 rm -rf %{buildroot}%{_infodir}
 popd
@@ -141,30 +143,31 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
-*   Wed Jan 29 2020 Shreyas B. <shreyasb@vmware.com> 1.43.4-4
--   Fixes for CVE-2019-5188.
-*   Tue Oct 22 2019 Shreyas B. <shreyasb@vmware.com> 1.43.4-3
--   Fixes for CVE-2019-5094.
-*   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 1.43.4-2
--   Add lang package.
-*   Mon Apr 03 2017 Chang Lee <changlee@vmware.com> 1.43.4-1
--   Updated to version 1.43.4
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.42.13-5
--   Moved man3 to devel subpackage.
-*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.42.13-4
--   Create libs subpackage for krb5
-*   Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 1.42.13-3
--   Use symlinks - save a diskspace
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.42.13-2
--   GA - Bump release of all rpms
-*   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 1.42.13-1
--   Updated to version 1.42.13
-*   Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.42.9-4
--   Edit post script.
-*   Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.42.9-3
--   Handled locale files with macro find_lang
-*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.42.9-2
--   Update according to UsrMove.
-*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.42.9-1
--   Initial build. First version
-
+* Mon Sep 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.43.4-5
+- Conflict only with toybox < 0.7.3-7
+* Wed Jan 29 2020 Shreyas B. <shreyasb@vmware.com> 1.43.4-4
+- Fixes for CVE-2019-5188.
+* Tue Oct 22 2019 Shreyas B. <shreyasb@vmware.com> 1.43.4-3
+- Fixes for CVE-2019-5094.
+* Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 1.43.4-2
+- Add lang package.
+* Mon Apr 03 2017 Chang Lee <changlee@vmware.com> 1.43.4-1
+- Updated to version 1.43.4
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.42.13-5
+- Moved man3 to devel subpackage.
+* Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.42.13-4
+- Create libs subpackage for krb5
+* Tue Sep 20 2016 Alexey Makhalov <amakhalov@vmware.com> 1.42.13-3
+- Use symlinks - save a diskspace
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.42.13-2
+- GA - Bump release of all rpms
+* Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 1.42.13-1
+- Updated to version 1.42.13
+* Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 1.42.9-4
+- Edit post script.
+* Tue Nov 10 2015 Xiaolin Li <xiaolinl@vmware.com> 1.42.9-3
+- Handled locale files with macro find_lang
+* Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.42.9-2
+- Update according to UsrMove.
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.42.9-1
+- Initial build. First version

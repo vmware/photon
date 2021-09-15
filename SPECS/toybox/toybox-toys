@@ -1,0 +1,80 @@
+#!/bin/bash
+
+TB=/bin/toybox
+ECHO="$TB echo"
+RM="$TB rm"
+LN="$TB ln -sf"
+READLINK="$TB readlink -f"
+
+do_help()
+{
+  $ECHO "Usage: $@ [OPTION]..."
+  $ECHO "Create and remove toybox symlinks."
+  $ECHO "Available options:"
+  $ECHO " -h, --help        display help message"
+  $ECHO " -i, --install     install symlinks to /bin/toybox"
+  $ECHO " -u, --uninstall   uninstall symlinks"
+  $ECHO " -s, --stat        show symlinks information"
+  exit 0
+}
+
+do_install()
+{
+  local t=
+
+  for t in $($TB --long); do
+    [ ! -e /$t ] && $LN $TB /$t
+  done
+}
+
+do_uninstall()
+{
+  local t=
+  local toys=
+
+  for t in $($TB --long); do
+    [[ $($READLINK /$t) == *toybox ]] && toys="$toys /$t"
+  done
+  [ -n "$toys" ] && $RM $toys
+}
+
+do_stat()
+{
+  local t=
+  local percent=
+  local active_toys=0
+  local total_toys=$($TB | $TB wc -w)
+
+  for t in $($TB --long); do
+    [[ $($READLINK /$t) == *toybox ]] && active_toys=$(($active_toys+1))
+  done
+
+  percent=$(($active_toys*100/$total_toys))
+  $ECHO "$active_toys / $total_toys ($percent%) toys are in use."
+}
+
+[ $# -eq 0 ] && do_help
+
+while (( "$#" )); do
+  case "$1" in
+    -h|--help)
+      do_help
+      ;;
+    -i|--install)
+      do_install
+      ;;
+    -u|--uninstall)
+      do_uninstall
+      ;;
+    -s|--stat)
+      do_stat
+      ;;
+    *)
+      $ECHO "Error: Unsupported flag $1" >&2
+      exit 1
+      ;;
+  esac
+  shift
+done
+
+exit 0
