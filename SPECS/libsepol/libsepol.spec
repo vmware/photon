@@ -1,7 +1,7 @@
-Summary:	SELinux binary policy manipulation library 
+Summary:	SELinux binary policy manipulation library
 Name:		libsepol
 Version:	2.5
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	LGPLv2+
 Group:		System Environment/Libraries
 Source0:	https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20160107/%{name}-%{version}-rc1.tar.gz
@@ -9,6 +9,9 @@ Source0:	https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/rel
 URL:		http://www.selinuxproject.org
 Vendor:		VMware, Inc.
 Distribution:	Photon
+Patch0:         0001-libsepol-cil-Destroy-classperms-list-when-resetting.patch
+Patch1:         0002-cil-Destroy-classperm-list-when-resetting-map-perms.patch
+Patch2:         0003-cil-cil_reset_classperms_set-should-not-reset.patch
 Requires:	systemd
 
 %description
@@ -35,21 +38,24 @@ Provides:	pkgconfig(libsepol)
 
 %description	devel
 The libsepol-devel package contains the libraries and header files
-needed for developing applications that manipulate binary policies. 
+needed for developing applications that manipulate binary policies.
 
 %prep
 %setup -qn %{name}-%{version}-rc1
 sed  -i 's/int rc;/int rc = SEPOL_OK;/' ./cil/src/cil_binary.c
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
 
 %build
 make clean
 make %{?_smp_mflags}
 
 %install
-mkdir -p %{buildroot}/%{_lib} 
-mkdir -p %{buildroot}/%{_libdir} 
-mkdir -p %{buildroot}%{_includedir} 
-mkdir -p %{buildroot}%{_bindir} 
+mkdir -p %{buildroot}/%{_lib}
+mkdir -p %{buildroot}/%{_libdir}
+mkdir -p %{buildroot}%{_includedir}
+mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_mandir}/man3
 mkdir -p %{buildroot}%{_mandir}/man8
 make DESTDIR="%{buildroot}" LIBDIR="%{buildroot}%{_libdir}" SHLIBDIR="%{buildroot}/%{_lib}" install
@@ -85,9 +91,11 @@ exit 0
 %{_lib}/libsepol.so.1
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-2
--	GA - Bump release of all rpms
+*   Mon Sep 13 2021 Vikash Bansal <bvikas@vmware.com> 2.5-3
+-   Fix CVE-2021-36084, CVE-2021-36085, CVE-2021-36086
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.5-2
+-   GA - Bump release of all rpms
 *   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.5-1
 -   Updated to version 2.5
-*	Wed Feb 25 2015 Divya Thaluru <dthaluru@vmware.com> 2.4-1
--	Initial build.	First version
+*   Wed Feb 25 2015 Divya Thaluru <dthaluru@vmware.com> 2.4-1
+-   Initial build. First version
