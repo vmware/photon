@@ -1,6 +1,6 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
-Version:        0.4
+Version:        0.5
 Release:        1%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/vmware/network-config-manager
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/vmware/network-config-manager/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=60e8665ebdb8df3aa7e919ec74964c22ebff4947
+%define sha1    %{name}-%{version}=79210dd092afe3e2848d8541f2db8b64c89cf1ef
 
 BuildRequires:  glib-devel
 BuildRequires:  json-c-devel
@@ -52,15 +52,14 @@ This package contains the headers necessary for building.
 mkdir build
 
 %build
-meson --prefix=%{_prefix} build
-ninja -C build
+%meson
+%meson_build
 
 %install
-DESTDIR=%{buildroot} ninja -C build install
+%meson_install
 mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %files
 %defattr(-,root,root)
@@ -77,6 +76,8 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+*   Wed Sep 15 2021 Susant Sahani <ssahani@vmware.com> 0.5-1
+-   Update to v0.5
 *   Thu Apr 22 2021 Susant Sahani <ssahani@vmware.com> 0.4-1
 -   Update to v0.4
 *   Tue Jan 05 2021 Susant Sahani <ssahani@vmware.com> 0.3-1
