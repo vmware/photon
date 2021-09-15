@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.78.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -9,6 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
 %define sha1    curl=c51b85373ae7b3186ad364e909f29b93043a9c16
+Patch0:         curl-CVE-2021-22945.patch
+Patch1:         curl-CVE-2021-22946.patch
+Patch2:         curl-CVE-2021-22947.patch
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
@@ -43,7 +46,7 @@ This package contains minimal set of shared curl libraries.
 %autosetup -p1
 
 %build
-./configure \
+sh ./configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --prefix=%{_prefix} \
@@ -93,6 +96,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Tue Sep 14 2021 Dweep Advani <dadvani@vmware.com> 7.78.0-2
+-   Fixed CVE-2021-22945, CVE-2021-22946, CVE-2021-22947
 *   Thu Aug 12 2021 Harinadh D <hdommaraju@vmware.com> 7.78.0-1
 -   Version update
 *   Thu Jul 22 2021 Harinadh D <hdommaraju@vmware.com> 7.75.0-4
@@ -110,7 +115,7 @@ rm -rf %{buildroot}/*
 -   Fix for CVE-2020-8231
 *   Wed Jun 17 2020 Ankit Jain <ankitja@vmware.com> 7.59.0-10
 -   Fix for CVE-2020-8177
-*   Thu Sep 23 2019 Dweep Advani <dadvani@vmware.com> 7.59.0-9
+*   Mon Sep 23 2019 Dweep Advani <dadvani@vmware.com> 7.59.0-9
 -   Fix for CVE-2019-5481 and CVE-2019-5482
 *   Thu Jul 11 2019 Siddharth Chandrasekaran <csiddharth@vmware.com> 7.59.0-8
 -   Add patch for CVE-2018-16890
