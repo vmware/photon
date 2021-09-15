@@ -2,7 +2,7 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        8.2.1361
+Version:        8.2.3408
 Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
@@ -10,7 +10,7 @@ Group:          Applications/Editors
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    vim=ef4a27f267515b0c7a85a07c3b0d26ca09321c23
+%define sha1    vim=f53626d97b6d57b2579493f2527fdcf275244017
 BuildRequires:  ncurses-devel
 
 %description
@@ -26,7 +26,7 @@ Conflicts:  toybox < 0.8.2-2
 The vim extra package contains a extra files for powerful text editor.
 
 %prep
-%setup -q
+%autosetup
 
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
 %build
@@ -35,7 +35,7 @@ echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
 make VERBOSE=1 %{?_smp_mflags}
 
 %install
-#cd %{_builddir}/%{name}74
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install
 ln -sv vim %{buildroot}%{_bindir}/vi
 install -vdm 755 %{buildroot}/etc
@@ -74,7 +74,7 @@ sed -i '916d' src/testdir/test_search.vim
 sed -i '454,594d' src/testdir/test_autocmd.vim
 sed -i '1,9d' src/testdir/test_modeline.vim
 sed -i '133d' ./src/testdir/Make_all.mak
-make test
+make test %{?_smp_mflags}
 
 %post
 if ! sed -n -e '0,/[[:space:]]*call[[:space:]]\+system\>/p' %{_sysconfdir}/vimrc | \
@@ -187,6 +187,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+*   Wed Sep 15 2021 Tapas Kundu <tkundu@vmware.com> 8.2.3408-1
+-   Fix CVE-2021-3770
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 8.2.1361-1
 -   Automatic Version Bump
 *   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 8.2.0190-1
