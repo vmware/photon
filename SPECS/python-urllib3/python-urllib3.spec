@@ -3,15 +3,15 @@
 
 Summary:        A powerful, sanity-friendly HTTP client for Python.
 Name:           python-urllib3
-Version:        1.20
-Release:        5%{?dist}
+Version:        1.26.6
+Release:        1%{?dist}
 Url:            https://pypi.python.org/pypi/urllib3
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/shazow/urllib3/archive/urllib3-1.20.tar.gz
-%define sha1    urllib3=2608f2069d3bb1be36da9483c24aa2a0ada38501
+Source0:        https://github.com/shazow/urllib3/archive/urllib3-1.26.6.tar.gz
+%define sha1    urllib3=5b1d645e121049efe19066388b2a42319096a93f
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -87,6 +87,8 @@ ulimit -n $nofiles
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Sep 16 2021 Shreyas B <shreyasb@vmware.com> 1.26.6-1
+-   Upgrade to v1.26.6
 *   Tue Aug 15 2017 Xiaolin Li <xiaolinl@vmware.com> 1.20-5
 -   Increased number of open files per process to 5000 before run make check.
 *   Wed Jul 26 2017 Divya Thaluru <dthaluru@vmware.com> 1.20-4

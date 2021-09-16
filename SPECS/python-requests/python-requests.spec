@@ -4,7 +4,7 @@
 Summary:        Awesome Python HTTP Library That's Actually Usable
 Name:           python-requests
 Version:        2.13.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -88,6 +88,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Sep 17 2021 Shreyas B <shreyasb@vmware.com> 2.13.0-5
+-   Bump up version to compile with python3-urllib3 v1.26.6
 *   Thu Mar 28 2019 Tapas Kundu <tkundu@vmware.com> 2.13.0-4
 -   Fix for CVE-2018-18074
 *   Mon Aug 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.13.0-3
