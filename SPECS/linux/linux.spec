@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.276
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.283
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=8dd48d184710526c7276bdaf2c3e41165d386599
+%define sha1 linux=423b2f58b125977b940478a81727ca9c10cc3c87
 Source1:        config
 Source2:        initramfs.trigger
 %define ena_version 1.1.3
@@ -494,6 +494,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri Sep 17 2021 Keerthana K <keerthanak@vmware.com> 4.9.283-1
+-   Update to version 4.9.283
 *   Mon Aug 30 2021 Srinidhi Rao <srinidhir@vmware.com> 4.9.276-2
 -   Fix for CVE-2021-22543
 *   Tue Jul 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.276-1
