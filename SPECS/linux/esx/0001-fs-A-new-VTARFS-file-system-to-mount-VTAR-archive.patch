@@ -1,4 +1,4 @@
-From 64b688900df4ef2c022d2b6c34c1fb759c277397 Mon Sep 17 00:00:00 2001
+From aad371ee6f9ced27bb44236ca0405a5d496ffbd1 Mon Sep 17 00:00:00 2001
 From: srinidhira0 <srinidhir@vmware.com>
 Date: Wed, 16 Sep 2020 18:07:58 +0000
 Subject: [PATCH] fs: A new VTARFS file system to mount VTAR archive
@@ -29,13 +29,13 @@ Signed-off-by: Ankit Jain <ankitja@vmware.com>
 ---
  fs/Kconfig                      |   1 +
  fs/Makefile                     |   1 +
- fs/vtarfs/Kconfig               |  21 ++
+ fs/vtarfs/Kconfig               |  21 +
  fs/vtarfs/Makefile              |   9 +
  fs/vtarfs/README.md             |   3 +
- fs/vtarfs/vtarfs.h              | 167 +++++++++
- fs/vtarfs/vtarfs_file_dir_ops.c | 471 +++++++++++++++++++++++++
- fs/vtarfs/vtarfs_inode.c        | 591 ++++++++++++++++++++++++++++++++
- 8 files changed, 1264 insertions(+)
+ fs/vtarfs/vtarfs.h              | 172 ++++++++
+ fs/vtarfs/vtarfs_file_dir_ops.c | 470 +++++++++++++++++++++
+ fs/vtarfs/vtarfs_inode.c        | 701 ++++++++++++++++++++++++++++++++
+ 8 files changed, 1378 insertions(+)
  create mode 100644 fs/vtarfs/Kconfig
  create mode 100644 fs/vtarfs/Makefile
  create mode 100644 fs/vtarfs/README.md
@@ -118,10 +118,10 @@ index 000000000000..fe38b05c5320
 \ No newline at end of file
 diff --git a/fs/vtarfs/vtarfs.h b/fs/vtarfs/vtarfs.h
 new file mode 100644
-index 000000000000..536a2ff0020d
+index 000000000000..f53eeb85af51
 --- /dev/null
 +++ b/fs/vtarfs/vtarfs.h
-@@ -0,0 +1,167 @@
+@@ -0,0 +1,172 @@
 +/*
 + * Filesystem to directly mount vtar archive.
 + *
@@ -141,7 +141,7 @@ index 000000000000..536a2ff0020d
 +#include<linux/radix-tree.h>
 +
 +#define MAX_PAGES_PER_FILE (MAX_LFS_FILESIZE/PAGE_SIZE)
-+
++#define MAX_FILE_NAME_SIZE 100
 +#define DEBUG_PRINT
 +#ifdef DEBUG_PRINT
 +#define tarfs_debug(fmt, args...)  do {				\
@@ -160,10 +160,12 @@ index 000000000000..536a2ff0020d
 +#define BLKTYPE  '4'            /* block special */
 +#define DIRTYPE  '5'            /* directory */
 +#define FIFOTYPE '6'            /* FIFO special */
-+#define CONTTYPE '7'            /* reserved */
++#define TAR_TYPE_SHAREDFILE   '7'   /* VMWare custom file type for marking shared files */
++#define TAR_TYPE_GNU_LONGLINK 'K'   /* GNU LongLink extension (long link name) */
++#define TAR_TYPE_GNU_LONGNAME 'L'   /* GNU LongLink extension (long file name) */
 +
 +#define vtarfs_MAGIC "visor  " /* 8 chars and NULL */
-+
++#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 +
 +struct vtarfs_img_map_t {
 +	struct file 		*fp;
@@ -177,33 +179,36 @@ index 000000000000..536a2ff0020d
 +
 +struct vtarfs_header_type
 +{                              /* byte offset */
-+	char name[100];               /*   0 */
-+	char mode[8];                 /* 100 */
-+	char uid[8];                  /* 108 */
-+	char gid[8];                  /* 116 */
-+	char size[12];                /* 124 */
-+	char mtime[12];               /* 136 */
-+	char chksum[8];               /* 148 */
-+	char typeflag;                /* 156 */
-+	char linkname[100];           /* 157 */
-+	char magic[6];                /* 257 */
-+	char version[2];              /* 263 */
-+	char uname[32];               /* 265 */
-+	char gname[32];               /* 297 */
-+	char devmajor[8];             /* 329 */
-+	char devminor[8];             /* 337 */
-+	char prefix[151];             /* 345 */
-+	unsigned int offset;          /* 496 */ // Offset of the file in the archive
-+	unsigned int textOffset;      /* 500 */ // Offset of the text section in the file
-+	unsigned int textSize;        /* 504 */ // Size of text section
-+	unsigned int numFixupPgs;     /* 508 */ // Number of pages affected by relocation
-+                                      /* 512 */
++	char name[MAX_FILE_NAME_SIZE];		/*   0 */
++	char mode[8];                 		/* 100 */
++	char uid[8];                  		/* 108 */
++	char gid[8];                  		/* 116 */
++	char size[12];                		/* 124 */
++	char mtime[12];               		/* 136 */
++	char chksum[8];               		/* 148 */
++	char typeflag;                		/* 156 */
++	char linkname[MAX_FILE_NAME_SIZE]; 	/* 157 */
++	char magic[6];                		/* 257 */
++	char version[2];              		/* 263 */
++	char uname[32];               		/* 265 */
++	char gname[32];              		/* 297 */
++	char devmajor[8];             		/* 329 */
++	char devminor[8];             		/* 337 */
++	char prefix[151];             		/* 345 */
++	unsigned int offset;          		/* 496 */ // Offset of the file in the archive
++	unsigned int textOffset;      		/* 500 */ // Offset of the text section in the file
++	unsigned int textSize;        		/* 504 */ // Size of text section
++	unsigned int numFixupPgs;     		/* 508 */ // Number of pages affected by relocation
++                                                /* 512 */
 +};
++
++#define VTARFS_HDR_SIZE (sizeof(struct vtarfs_header_type))
 +
 +struct vtarfs_entry {
 +	struct vtarfs_header_type	header;
 +	char				*dir_name;
 +	char				*base_name;
++	char				*link_name;
 +	unsigned int			offset;
 +	unsigned int			data_offset;
 +	unsigned int			num_pages;
@@ -291,10 +296,10 @@ index 000000000000..536a2ff0020d
 +#endif
 diff --git a/fs/vtarfs/vtarfs_file_dir_ops.c b/fs/vtarfs/vtarfs_file_dir_ops.c
 new file mode 100644
-index 000000000000..80ebb4bb9946
+index 000000000000..c2d2e895ab43
 --- /dev/null
 +++ b/fs/vtarfs/vtarfs_file_dir_ops.c
-@@ -0,0 +1,471 @@
+@@ -0,0 +1,470 @@
 +/*
 + * Filesystem to directly mount vtar archive.
 + *
@@ -333,9 +338,9 @@ index 000000000000..80ebb4bb9946
 +mode_t tar_type_to_posix(int typeflag)
 +{
 +	switch(typeflag) {
-+		case REGTYPE:
++	case REGTYPE:
 +	case AREGTYPE:
-+	case CONTTYPE:
++	case TAR_TYPE_SHAREDFILE:
 +		return S_IFREG;
 +	case DIRTYPE:
 +		return S_IFDIR;
@@ -439,7 +444,6 @@ index 000000000000..80ebb4bb9946
 +		}
 +
 +	}
-+
 +	return NULL;
 +}
 +
@@ -768,10 +772,10 @@ index 000000000000..80ebb4bb9946
 +EXPORT_SYMBOL(vtarfs_file_release);
 diff --git a/fs/vtarfs/vtarfs_inode.c b/fs/vtarfs/vtarfs_inode.c
 new file mode 100644
-index 000000000000..2efc64616be9
+index 000000000000..20c61cb72b8a
 --- /dev/null
 +++ b/fs/vtarfs/vtarfs_inode.c
-@@ -0,0 +1,591 @@
+@@ -0,0 +1,701 @@
 +/*
 + * Filesystem to directly mount vtar archive.
 + *
@@ -911,7 +915,7 @@ index 000000000000..2efc64616be9
 +				break;
 +		case SYMTYPE:
 +				inode->i_op = &vtarfs_symlink_inode_operations;
-+				inode->i_link = entry->header.linkname;
++				inode->i_link = entry->link_name;
 +				inode->i_size = strlen(inode->i_link);
 +				inode_nohighmem(inode);
 +				break;
@@ -924,31 +928,49 @@ index 000000000000..2efc64616be9
 +	return inode;
 +}
 +
-+static char *build_name(struct vtarfs_header_type *header)
++static char *build_name(struct vtarfs_header_type *header, char *longname, char type)
 +{
-+	char *name;
++	char *name = longname;
++	char *src = header->name;
++	char *prefix_end = memchr(header->prefix, 0, sizeof(header->prefix));
 +	size_t prefix_len;
 +	size_t name_len;
-+	char *prefix_end = memchr(header->prefix, 0, sizeof(header->prefix));
-+	char *name_end = memchr(header->name, 0, sizeof(header->name));
++	char *name_end = NULL;
 +
-+	if (!prefix_end || !name_end) {
-+		pr_err("%s : Header name is not proper!!", __func__);
++	if (!prefix_end) {
++		pr_err("%s : Header name is not proper, prefix_end is NULL!!", __func__);
 +		return NULL;
 +	}
-+	tarfs_debug("Full name length = %ld , %ld\n",prefix_len, name_len);
 +
 +	prefix_len = prefix_end - header->prefix;
-+	name_len = name_end - header->name;
-+	name = kzalloc(prefix_len + name_len + 1, GFP_KERNEL);
-+	if (!name) {
-+		pr_err("\n Unable to allocate memory for full name \n");
-+		return NULL;
++	if (type == TAR_TYPE_GNU_LONGNAME) {
++		name_len = strlen(longname);
++		src = longname;
++		tarfs_debug("[%ld] [%ld] [%c] [%s] [%s]",
++				prefix_len, name_len,type,header->prefix, longname);
++	} else {
++		name_end = memchr(header->name, 0, sizeof(header->name));
++		if (!name_end) {
++			pr_err("%s : Header name is not proper, name_end is NULL!!", __func__);
++			return NULL;
++		}
++		name_len = name_end - header->name;
++		tarfs_debug("[%ld] [%ld] [%c] [%s] [%s]",
++				prefix_len, name_len,header->typeflag,header->prefix, header->name);
++	}
++	if (prefix_len != 0 || type != TAR_TYPE_GNU_LONGNAME) {
++		name = kzalloc(prefix_len + name_len + 1, GFP_KERNEL);
++		if (!name) {
++			pr_err("\n Unable to allocate memory for full name \n");
++			return NULL;
++		}
++		memcpy(name, header->prefix, prefix_len);
++		memcpy(name + prefix_len, src, name_len);
++		if (type == TAR_TYPE_GNU_LONGNAME)
++			kfree(longname);
++		name[prefix_len + name_len] = 0x0;
 +	}
 +
-+	memcpy(name, header->prefix, prefix_len);
-+	memcpy(name + prefix_len, header->name, name_len);
-+	name[prefix_len + name_len] = 0x0;
 +
 +	// The path name ends with a slash if the entry is a directory
 +	if (name[prefix_len + name_len - 1] == '/')
@@ -956,6 +978,40 @@ index 000000000000..2efc64616be9
 +
 +	return name;
 +
++}
++
++/**
++ * @brief Reads a tar header at the \a offset.
++ * @param info the fs_iinfo to read from
++ * @param offset the 512-byte aligned offset
++ * @param header the 512 bytes buffer to fill
++ * @return 0 on success, else 1
++ */
++static int vtarfs_read_header(struct vtarfs_fs_info *info, off_t offset,
++					struct vtarfs_header_type *header)
++{
++        struct page *page = NULL;
++        void *k_mapped_page = NULL;
++        page = read_mapping_page(info->vtarfs_img_map.tarfs_img_map,
++					offset >> PAGE_SHIFT, NULL);
++        if (IS_ERR(page)) {
++                pr_err("%s: page map failure %ld",__FUNCTION__, PTR_ERR(page));
++		return 1;
++        }
++        k_mapped_page = kmap(page);
++        if (!k_mapped_page) {
++                pr_err("%s: kmap failure %ld",__FUNCTION__,
++					PTR_ERR(k_mapped_page));
++		return 1;
++        }
++        if (memcpy(header, k_mapped_page+(offset%PAGE_SIZE),
++			sizeof(struct vtarfs_header_type)) == NULL) {
++                pr_err("%s: read failure",__FUNCTION__);
++                kunmap(k_mapped_page);
++		return 1;
++        }
++        kunmap(k_mapped_page);
++	return 0;
 +}
 +
 +/**
@@ -972,40 +1028,97 @@ index 000000000000..2efc64616be9
 +	struct vtarfs_header_type header;
 +	struct vtarfs_entry *entry = NULL;
 +	char *full_name = NULL,*basename=NULL;
-+        struct page *page = NULL;
-+        void *k_mapped_page = NULL;
-+	int i = 0;
++	char *longname = NULL;
++	size_t namelen = 0;
++	size_t curlen = 0;
++	char typeflag = 0;
 +	struct timespec64 mtime;
++	int i = 0;
 +
 +	tarfs_debug("offset = %ld and img_map = %p",offset,
 +					info->vtarfs_img_map.tarfs_img_map);
 +
-+        page = read_mapping_page(info->vtarfs_img_map.tarfs_img_map,
-+				offset >> PAGE_SHIFT, NULL);
-+        if (IS_ERR(page)) {
-+                pr_err("%s: page map failure %ld",__FUNCTION__, PTR_ERR(page));
++	if (vtarfs_read_header(info, offset, &header) != 0) {
++		pr_err("%s: Header data reading fails!!", __FUNCTION__);
 +		return NULL;
-+        }
-+        k_mapped_page = kmap(page);
-+        if (!k_mapped_page) {
-+                pr_err("%s: kmap failure %ld",__FUNCTION__,
-+				PTR_ERR(k_mapped_page));
-+		return NULL;
-+        }
-+        if (memcpy(&header, k_mapped_page+(offset%PAGE_SIZE),
-+		sizeof(struct vtarfs_header_type)) == NULL) {
-+                pr_err("%s: read failure",__FUNCTION__);
-+		goto err_lvl1;
-+        }
++	}
++	tarfs_debug("Header Data:\n \
++			header.name = [%s]\n \
++			header.mode = [%s]\n \
++			header.uid = [%s]\n \
++			header.gid = [%s]\n \
++			header.size = [%s]\n \
++			header.mtime = [%s]\n \
++			header.chksum = [%s]\n \
++			header.typeflag = [%c]\n \
++			header.linkname = [%s]\n \
++			header.magic = [%s]\n \
++			header.version = [%s]\n \
++			header.uname = [%s]\n \
++			header.gname = [%s]\n \
++			header.devmajor = [%s]\n \
++			header.devminor = [%s]\n \
++			header.prefix = [%s]\n \
++			header.offset = [%u]\n \
++			header.textOffset = [%u]\n \
++			header.textSize = [%u]\n \
++			header.numFixupPgs = [%u]",
++		header.name, header.mode,header.uid, header.gid,header.size,
++		header.mtime,header.chksum,header.typeflag, header.linkname,
++		header.magic, header.version,header.uname, header.gname,
++		header.devmajor, header.devminor,header.prefix, header.offset,
++		header.textOffset, header.textSize,header.numFixupPgs);
++	if (header.typeflag == TAR_TYPE_GNU_LONGLINK || header.typeflag == TAR_TYPE_GNU_LONGNAME) {
++		/**
++		 * 512-byte header.... [@LongLink/LongName] typeflag=K/L hdr.size=strlen(LongName/LongLink)
++		 * 512-byte header.... [Read LongName/LongLink]
++		 * ...                 [Read again 512-bytes header if Name more than 512-bytes ]
++		 * 512-byte header.... [Actual header data, replace hdr.name with @LongName if [L]
++		 *                       else replace hdr.linkname with @LongLink if [K]]
++		 **/
++		if (kstrtouint(header.size, 8, (unsigned int *)&namelen) !=
++									0) {
++			pr_err("%s: failed to read size",__FUNCTION__);
++			return NULL;
++		}
++		typeflag = header.typeflag;
++		longname = kzalloc(namelen + 1, GFP_KERNEL);
++		if (IS_ERR_OR_NULL(longname)) {
++			pr_err("\n%s:Error in allocating mem for longname %ld\n",
++				__FUNCTION__, PTR_ERR(longname));
++			return NULL;
++		}
++		while(curlen < namelen) {
++			offset = offset + VTARFS_HDR_SIZE +
++					ALIGN_SECTOR(VTARFS_HDR_SIZE);
++			if (vtarfs_read_header(info, offset, &header) != 0) {
++				pr_err("%s: Header data reading fails!!", __FUNCTION__);
++				goto err_lvl1;
++			}
++			memcpy(longname + curlen, &header, MIN(namelen - curlen, VTARFS_HDR_SIZE));
++			curlen += VTARFS_HDR_SIZE;
++			tarfs_debug("longname=[%s] len=[%lu] type=[%c]",longname, namelen, typeflag);
++		}
++		offset = offset + VTARFS_HDR_SIZE +
++				ALIGN_SECTOR(VTARFS_HDR_SIZE);
++		if (vtarfs_read_header(info, offset, &header) != 0) {
++			pr_err("%s: Header data reading fails!!", __FUNCTION__);
++			goto err_lvl1;
++		}
++	}
 +
 +	// Check for the header magic value
 +	if (memcmp(header.magic, vtarfs_MAGIC,
-+				sizeof(header.magic)) != 0) {
++			sizeof(header.magic)) != 0) {
 +		pr_err("%s: magic=%s",__FUNCTION__,header.magic);
 +		goto err_lvl1;
 +	}
-+
 +	entry = kzalloc(sizeof(struct vtarfs_entry), GFP_KERNEL);
++	if (IS_ERR_OR_NULL(entry)) {
++		pr_err("\n%s:Error in allocating mem for entry %ld\n",
++			__FUNCTION__, PTR_ERR(entry));
++		goto err_lvl1;
++	}
 +	// Parse the data length from the header
 +	if (kstrtouint(header.size, 8, (unsigned int *)&entry->data_size) !=
 +									0) {
@@ -1045,7 +1158,7 @@ index 000000000000..2efc64616be9
 +	if (IS_ERR_OR_NULL(entry->pages)) {
 +		pr_err("\n%s:Error in allocating mem for pages %ld\n",
 +			__FUNCTION__, PTR_ERR(entry->pages));
-+		goto err_lvl3;
++		goto err_lvl2;
 +	}
 +	pr_debug("%s: After getting page maps, num = %d, fileoffset = %d ",
 +			__FUNCTION__, entry->num_pages, entry->fileoffset);
@@ -1060,7 +1173,7 @@ index 000000000000..2efc64616be9
 +		}
 +	}
 +
-+	full_name = build_name(&header);
++	full_name = build_name(&header, longname, typeflag);
 +	if (!full_name) {
 +		pr_err("%s: name allocation error",__FUNCTION__);
 +		goto err_lvl3;
@@ -1075,14 +1188,13 @@ index 000000000000..2efc64616be9
 +	}
 +	entry->dir_name = full_name;
 +	entry->base_name = basename;
-+	tarfs_debug("full_name = %s | %s ", entry->dir_name, entry->base_name);
 +	entry->header = header;
++	entry->link_name = (typeflag == TAR_TYPE_GNU_LONGLINK) ? (longname) : (entry->header.linkname);
++	tarfs_debug("full_name = [%s] [%s] linkname=[%s]",
++			entry->dir_name, entry->base_name, entry->link_name);
 +	entry->offset = offset;
-+	entry->data_offset = offset + sizeof(header) +
-+						ALIGN_SECTOR(sizeof(header));
-+
-+        kunmap(k_mapped_page);
-+
++	entry->data_offset = offset + VTARFS_HDR_SIZE +
++						ALIGN_SECTOR(VTARFS_HDR_SIZE);
 +	tarfs_debug("%s: Returning entry",__FUNCTION__);
 +	return entry;
 +
@@ -1091,7 +1203,8 @@ index 000000000000..2efc64616be9
 +err_lvl2:
 +	kfree(entry);
 +err_lvl1:
-+	kunmap(k_mapped_page);
++	if (longname)
++		kfree(longname);
 +	return NULL;
 +}
 +
@@ -1202,7 +1315,7 @@ index 000000000000..2efc64616be9
 +	sb->s_op	=	&vtarfs_super_ops;
 +	sb->s_d_op	=	&simple_dentry_operations;
 +	sb->s_time_gran	=	1;
-+	sb->s_flags	|=	SB_RDONLY | SB_NOATIME;/*Read only file system*/
++	sb->s_flags	|=	SB_RDONLY | SB_NOATIME; /*Read only file system*/
 +	sb->s_magic 	= 	(unsigned long)vtarfs_MAGIC;
 +
 +	sb->s_fs_info = info;
@@ -1298,7 +1411,8 @@ index 000000000000..2efc64616be9
 +			kfree(entry->dir_name);
 +		else
 +			kfree(entry->base_name);
-+
++		if (strlen(entry->link_name) > MAX_FILE_NAME_SIZE)
++			kfree(entry->link_name);
 +		inode = ilookup(sb, entry->inode);
 +		iput(inode);
 +		kfree(entry);
