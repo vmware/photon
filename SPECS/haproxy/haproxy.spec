@@ -1,7 +1,7 @@
 Summary:        A fast, reliable HA, load balancing, and proxy solution.
 Name:           haproxy
 Version:        2.3.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            http://www.haproxy.org
 Group:          Applications/System
@@ -9,6 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.haproxy.org/download/2.0/src/%{name}-%{version}.tar.gz
 %define sha1    haproxy=dc1be47af0a661815efeb7c0fbaf04b0eabcfd83
+Patch0:         haproxy-CVE-2021-40346.patch
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  lua-devel
@@ -42,7 +43,7 @@ sed -i "s/192.168.1.22/127.0.0.0/g" examples/transparent_proxy.cfg
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} PREFIX=%{_prefix} DOCDIR=%{_docdir}/haproxy TARGET=linux-glibc install
+make DESTDIR=%{buildroot} PREFIX=%{_prefix} DOCDIR=%{_docdir}/haproxy TARGET=linux-glibc install %{?_smp_mflags}
 install -vDm755 contrib/systemd/haproxy.service \
        %{buildroot}/usr/lib/systemd/system/haproxy.service
 install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/haproxy/haproxy.cfg
@@ -59,6 +60,8 @@ install -vDm644 examples/transparent_proxy.cfg  %{buildroot}/%{_sysconfdir}/hapr
 %{_mandir}/*
 
 %changelog
+*   Fri Sep 17 2021 Nitesh Kumar <kunitesh@vmware.com> 2.3.10-2
+-   Fix CVE-2021-40346
 *   Thu May 06 2021 Gerrit Photon <photon-checkins@vmware.com> 2.3.10-1
 -   Automatic Version Bump
 *   Fri Feb 05 2021 Susant Sahani <ssahani@vmware.com> 2.3.4-1
