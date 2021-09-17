@@ -9,18 +9,16 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.19.10
-Release:        4%{?dist}
+Version:        1.19.15
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=71fd14ebe65f4afce6a7d9ea00e87e33675a25e9
+%define sha1    kubernetes-%{version}.tar.gz=45fed7824f6032d449e37c6b466ff7bb338eabf6
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
-Patch0:         CVE-2021-3121.patch
-Patch1:         CVE-2021-25737.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -228,6 +226,8 @@ fi
 %endif
 
 %changelog
+*   Fri Sep 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.15-1
+-   Update to 1.19.15, Fix CVE-2021-25741
 *   Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 1.19.10-4
 -   Bump up version to compile with new glibc
 *   Tue Jun 22 2021 Rishabh Jain <rjain3@vmware.com> 1.19.10-3
