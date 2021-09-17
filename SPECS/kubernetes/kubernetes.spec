@@ -4,7 +4,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.18.19
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -13,6 +13,7 @@ Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
+Patch0:         CVE-2021-25741.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -58,6 +59,7 @@ A pod setup process that holds a pod's namespace.
 
 %prep -p exit
 %setup -qn %{name}-%{version}
+%patch0 -p1
 cd ..
 tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
@@ -220,11 +222,13 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+*   Fri Sep 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-3
+-   Fix CVE-2021-25741
 *   Tue Jun 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-2
 -   Change 10-kubeadm.conf file permission to 644
 *   Thu Mar 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-1
 -   Update to version 1.18.19, Fix CVE-2020-8565, CVE-2021-25737, CVE-2021-3121
-*   Mon Mar 02 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-2
+*   Tue Mar 02 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-2
 -   Fix CVE-2020-8564, CVE-2020-8566
 *   Wed Sep 16 2020 Ashwin H <ashwinh@vmware.com> 1.17.11-1
 -   Initial version 1.17.11
