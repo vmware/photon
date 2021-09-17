@@ -10,7 +10,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.18.19
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Source0:        kubernetes-%{version}.tar.gz
@@ -19,6 +19,7 @@ Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
+Patch0:         CVE-2021-25741.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -63,7 +64,7 @@ A pod setup process that holds a pod's namespace.
 %global debug_package %{nil}
 
 %prep -p exit
-%autosetup
+%autosetup -p1 -n %{name}-%{version}
 cd ..
 tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
@@ -234,6 +235,8 @@ fi
 %endif
 
 %changelog
+*   Fri Sep 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-7
+-   Fix CVE-2021-25741
 *   Thu Aug 26 2021 Keerthana K <keerthanak@vmware.com> 1.18.19-6
 -   Bump up version to compile with new glibc
 *   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.18.19-5
