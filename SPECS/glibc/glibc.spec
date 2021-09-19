@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -24,6 +24,7 @@ Patch5:         CVE-2020-29562.patch
 Patch6:         CVE-2020-27618.patch
 Patch7:         CVE-2021-35942.patch
 Patch8:         CVE-2021-38604.patch
+Patch9:         glibc-fix-for-semctl-ltp.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %define ExtraBuildRequires python3, python3-libs
@@ -307,6 +308,8 @@ fi
 %defattr(-,root,root)
 
 %changelog
+*   Fri Sep 17 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.32-8
+-   Fix LTP Testcase (semctl) failure issue
 *   Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 2.32-7
 -   Fix CVE-2021-38604
 *   Wed Aug 04 2021 Keerthana K <keerthanak@vmware.com> 2.32-6
