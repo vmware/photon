@@ -1,0 +1,92 @@
+From 017c48e57464b27e1665a12e17a758e5dbe07ade Mon Sep 17 00:00:00 2001
+From: Ankit Jain <ankitja@vmware.com>
+Date: Mon, 20 Sep 2021 06:48:49 +0000
+Subject: [PATCH] stalld: Assign name to stalld thread
+
+Issue:
+- To make distinction in stalld threads is difficult
+  from sched_debug output because
+  by default thread inherit parent process name
+  so all threads name displayed as "stalld"
+  which makes it hard to debug the issue.
+Fix:
+- Name the pthread just after creation as
+  "stalld/cpu-ID" so that it will be easier to
+  identify which stalld thread is created for
+  which cpu.
+
+Signed-off-by: Ankit Jain <ankitja@vmware.com>
+---
+ src/stalld.c | 18 ++++++++++++++++--
+ src/stalld.h |  3 +++
+ 2 files changed, 19 insertions(+), 2 deletions(-)
+
+diff --git a/src/stalld.c b/src/stalld.c
+index b6bb0fcc..8f83a4a7 100644
+--- a/src/stalld.c
++++ b/src/stalld.c
+@@ -1291,6 +1291,7 @@ void aggressive_main(struct cpu_info *cpus, int nr_cpus)
+ 	int i;
+ 	int retval;
+ 	int retry, retry_count = 3;
++	char pth_name[MAX_PTHREAD_NAME_LEN];
+ 
+ 	for (i = 0; i < nr_cpus; i++) {
+ 		if (!should_monitor(i))
+@@ -1301,8 +1302,14 @@ void aggressive_main(struct cpu_info *cpus, int nr_cpus)
+ 
+ 		for (retry = 0; retry < retry_count; retry++) {
+ 			retval = pthread_create(&cpus[i].thread, NULL, cpu_main, &cpus[i]);
+-			if (!retval)
++			if (!retval) {
++				sprintf(pth_name, "stalld/%d", cpus[i].id);
++				retval = pthread_setname_np(cpus[i].thread, pth_name);
++				if (retval != 0) {
++					warn("Not able to set name for pthread of cpu-%d !! error:%d", cpus[i].id, retval);
++				}
+ 				break;
++			}
+ 			if (retval != EAGAIN || retry == retry_count - 1) {
+ 				cpus[i].thread_running = 0;
+ 				die("Failed to create thread for CPU %d error = %d\n", i, retval);
+@@ -1324,6 +1331,7 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+ 	pthread_attr_t dettached;
+ 	struct cpu_info *cpu;
+ 	char *buffer = NULL;
++	char pth_name[MAX_PTHREAD_NAME_LEN];
+ 	int buffer_size = 0;
+ 	int retry_count = 3;
+ 	int retval;
+@@ -1409,8 +1417,14 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+ 				cpus[i].thread_running = 1;
+ 				for (retry = 0; retry < retry_count; retry++) {
+ 					retval = pthread_create(&cpus[i].thread, &dettached, cpu_main, &cpus[i]);
+-					if (!retval)
++					if (!retval) {
++						sprintf(pth_name, "stalld/%d", cpus[i].id);
++						retval = pthread_setname_np(cpus[i].thread, pth_name);
++						if (retval != 0) {
++							warn("Not able to set name for pthread of cpu-%d !! error:%d", cpus[i].id, retval);
++						}
+ 						break;
++					}
+ 					if (retval != EAGAIN || retry == retry_count - 1) {
+ 						cpus[i].thread_running = 0;
+ 						die("Failed to create thread for CPU %d error = %d\n", i, retval);
+diff --git a/src/stalld.h b/src/stalld.h
+index 7c8d653d..32e22200 100644
+--- a/src/stalld.h
++++ b/src/stalld.h
+@@ -42,6 +42,9 @@
+  */
+ #define PROC_PID_FILE_PATH_LEN 30
+ 
++/* This macro define the max len of pthread name */
++#define MAX_PTHREAD_NAME_LEN 16
++
+ /* informnation about running tasks on a cpu */
+ struct task_info {
+        int pid;
+-- 
+2.23.3
+
