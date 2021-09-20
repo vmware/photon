@@ -1,7 +1,7 @@
-Summary:	SELinux binary policy manipulation library 
+Summary:	SELinux binary policy manipulation library
 Name:		libsepol
 Version:	2.8
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	LGPLv2+
 Group:		System Environment/Libraries
 Source0:	https://raw.githubusercontent.com/wiki/SELinuxProject/selinux/files/releases/20161014/%{name}-%{version}.tar.gz
@@ -11,6 +11,9 @@ Source1:        https://sourceforge.net/projects/cunit/files/CUnit-2.1-2-src.tar
 URL:		http://www.selinuxproject.org
 Vendor:		VMware, Inc.
 Distribution:	Photon
+Patch0:         0001-libsepol-cil-Destroy-classperms-list-when-resetting.patch
+Patch1:         0002-cil-Destroy-classperm-list-when-resetting-map-perms.patch
+Patch2:         0003-cil-cil_reset_classperms_set-should-not-reset.patch
 Requires:	systemd
 
 %description
@@ -37,25 +40,25 @@ Provides:	pkgconfig(libsepol)
 
 %description	devel
 The libsepol-devel package contains the libraries and header files
-needed for developing applications that manipulate binary policies. 
+needed for developing applications that manipulate binary policies.
 
 %prep
-%setup -qn %{name}-%{version}
+%autosetup -n %{name}-%{version} -p1
 sed  -i 's/int rc;/int rc = SEPOL_OK;/' ./cil/src/cil_binary.c
 tar xf %{SOURCE1} --no-same-owner
 
 %build
-make clean
+make %{?_smp_mflags} clean
 make %{?_smp_mflags}
 
 %install
-mkdir -p %{buildroot}/%{_lib} 
-mkdir -p %{buildroot}/%{_libdir} 
-mkdir -p %{buildroot}%{_includedir} 
-mkdir -p %{buildroot}%{_bindir} 
+mkdir -p %{buildroot}/%{_lib}
+mkdir -p %{buildroot}/%{_libdir}
+mkdir -p %{buildroot}%{_includedir}
+mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{_mandir}/man3
 mkdir -p %{buildroot}%{_mandir}/man8
-make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" install
+make %{?_smp_mflags} DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" install
 rm -f %{buildroot}%{_bindir}/genpolbools
 rm -f %{buildroot}%{_bindir}/genpolusers
 rm -f %{buildroot}%{_bindir}/chkcon
@@ -63,9 +66,9 @@ rm -rf %{buildroot}%{_mandir}/man8
 
 %check
 pushd CUnit-2.1-2/
-./configure --prefix=/usr
+%configure
 make
-make install
+make %{?_smp_mflags} install
 popd
 
 %clean
@@ -95,6 +98,8 @@ exit 0
 %{_lib}/libsepol.so.1
 
 %changelog
+*       Mon Sep 13 2021 Vikash Bansal <bvikas@vmware.com> 2.8-2
+-       Fix CVE-2021-36084, CVE-2021-36085, CVE-2021-36086
 *       Fri Aug 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.8-1
 -       Update to version 2.8 to get it to build with gcc 7.3
 *       Tue Apr 04 2017 Kumar Kaushik <kaushikk@vmware.com> 2.6-1
