@@ -1,0 +1,97 @@
+From f34d3d30c8325e4847a6b696fe7a3936a8a361f3 Mon Sep 17 00:00:00 2001
+From: James Carter <jwcart2@gmail.com>
+Date: Thu, 8 Apr 2021 13:32:01 -0400
+Subject: [PATCH] libsepol/cil: Destroy classperms list when resetting
+ classpermission
+
+Nicolas Iooss reports:
+  A few months ago, OSS-Fuzz found a crash in the CIL compiler, which
+  got reported as
+  https://bugs.chromium.org/p/oss-fuzz/issues/detail?id=28648 (the title
+  is misleading, or is caused by another issue that conflicts with the
+  one I report in this message). Here is a minimized CIL policy which
+  reproduces the issue:
+
+  (class CLASS (PERM))
+  (classorder (CLASS))
+  (sid SID)
+  (sidorder (SID))
+  (user USER)
+  (role ROLE)
+  (type TYPE)
+  (category CAT)
+  (categoryorder (CAT))
+  (sensitivity SENS)
+  (sensitivityorder (SENS))
+  (sensitivitycategory SENS (CAT))
+  (allow TYPE self (CLASS (PERM)))
+  (roletype ROLE TYPE)
+  (userrole USER ROLE)
+  (userlevel USER (SENS))
+  (userrange USER ((SENS)(SENS (CAT))))
+  (sidcontext SID (USER ROLE TYPE ((SENS)(SENS))))
+
+  (classpermission CLAPERM)
+
+  (optional OPT
+      (roletype nonexistingrole nonexistingtype)
+      (classpermissionset CLAPERM (CLASS (PERM)))
+  )
+
+  The CIL policy fuzzer (which mimics secilc built with clang Address
+  Sanitizer) reports:
+
+  ==36541==ERROR: AddressSanitizer: heap-use-after-free on address
+  0x603000004f98 at pc 0x56445134c842 bp 0x7ffe2a256590 sp
+  0x7ffe2a256588
+  READ of size 8 at 0x603000004f98 thread T0
+      #0 0x56445134c841 in __cil_verify_classperms
+  /selinux/libsepol/src/../cil/src/cil_verify.c:1620:8
+      #1 0x56445134a43e in __cil_verify_classpermission
+  /selinux/libsepol/src/../cil/src/cil_verify.c:1650:9
+      #2 0x56445134a43e in __cil_pre_verify_helper
+  /selinux/libsepol/src/../cil/src/cil_verify.c:1715:8
+      #3 0x5644513225ac in cil_tree_walk_core
+  /selinux/libsepol/src/../cil/src/cil_tree.c:272:9
+      #4 0x564451322ab1 in cil_tree_walk
+  /selinux/libsepol/src/../cil/src/cil_tree.c:316:7
+      #5 0x5644513226af in cil_tree_walk_core
+  /selinux/libsepol/src/../cil/src/cil_tree.c:284:9
+      #6 0x564451322ab1 in cil_tree_walk
+  /selinux/libsepol/src/../cil/src/cil_tree.c:316:7
+      #7 0x5644512b88fd in cil_pre_verify
+  /selinux/libsepol/src/../cil/src/cil_post.c:2510:7
+      #8 0x5644512b88fd in cil_post_process
+  /selinux/libsepol/src/../cil/src/cil_post.c:2524:7
+      #9 0x5644511856ff in cil_compile
+  /selinux/libsepol/src/../cil/src/cil.c:564:7
+
+The classperms list of a classpermission rule is created and filled
+in when classpermissionset rules are processed, so it doesn't own any
+part of the list and shouldn't retain any of it when it is reset.
+
+Destroy the classperms list (without destroying the data in it)  when
+resetting a classpermission rule.
+
+Reported-by: Nicolas Iooss <nicolas.iooss@m4x.org>
+Signed-off-by: James Carter <jwcart2@gmail.com>
+---
+ cil/src/cil_reset_ast.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/cil/src/cil_reset_ast.c b/cil/src/cil_reset_ast.c
+index 06146ca..befef8f 100644
+--- a/cil/src/cil_reset_ast.c
++++ b/cil/src/cil_reset_ast.c
+@@ -52,7 +52,7 @@ static void cil_reset_classpermission(struct cil_classpermission *cp)
+ 		return;
+ 	}
+ 
+-	cil_reset_classperms_list(cp->classperms);
++	cil_list_destroy(&cp->classperms, CIL_FALSE);
+ }
+ 
+ static void cil_reset_classperms_set(struct cil_classperms_set *cp_set)
+-- 
+2.17.1
+
