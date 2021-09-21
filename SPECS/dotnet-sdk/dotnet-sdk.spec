@@ -1,7 +1,7 @@
 %define debug_package %{nil}
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
-Version:        5.0.103
+Version:        5.0.400
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,7 +9,7 @@ License:        MIT
 Url:            https://github.com/dotnet/core
 Group:          Development/Tools
 Source0:        %{name}-%{version}-linux-x64.tar.gz
-%define sha1    dotnet-sdk=896579b12be0c8508525bf11d96946c60080ac73
+%define sha1    dotnet-sdk=87ca6aca124f4d0133ca6e99972a7542f2dd7d82
 BuildArch:      x86_64
 Requires:       dotnet-runtime icu
 
@@ -18,7 +18,7 @@ Requires:       dotnet-runtime icu
 applications, microservices and modern websites.
 
 %prep
-%setup -c dotnet-sdk-%{version}
+%autosetup -c dotnet-sdk-%{version}
 
 %build
 
@@ -34,6 +34,8 @@ cp LICENSE.txt ThirdPartyNotices.txt %{buildroot}%{_docdir}/dotnet-sdk-%{version
     %{_docdir}/*
 
 %changelog
+*   Tue Sep 21 2021 Shreyas B. <shreyasb@vmware.com> 5.0.400-1
+-   upgrade to v5.0.400
 *   Mon Jan 18 2021 Shreyas B. <shreyasb@vmware.com> 5.0.103-1
 -   upgrade to version 5.0.103
 *   Fri Oct 16 2020 Ashwin H <ashwinh@vmware.com> 3.1.201-2

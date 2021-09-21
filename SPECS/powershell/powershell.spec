@@ -1,24 +1,24 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.1.2
-Release:        2%{?dist}
+Version:        7.1.4
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
 Url:            https://microsoft.com/powershell
 Group:          shells
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    powershell=43c08c3f92585c83008867d6b13eae4bdcb194c6
+%define sha1    powershell=2ce2253d6024985e5edb1e0c2c85966c17cf06c0
 Source1:        %{name}-native-7.1.0.tar.gz
 %define sha1    powershell-native=3282480036e54fb12a6c1e1d5c5e1ee9ebf300dc
-Source2:        %{name}-linux-7.1.2-x64.tar.gz
-%define sha1    powershell-linux=76ac47f42d2d04d71b97c80270c3e6c548830e4c
+Source2:        %{name}-linux-7.1.4-x64.tar.gz
+%define sha1    powershell-linux=e5f06f6a63b12a127b3bc7c36b7d7e9a3abd03e2
 Source3:        build.sh
 Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 
 BuildArch:      x86_64
-BuildRequires:  dotnet-sdk = 5.0.103
-BuildRequires:  dotnet-runtime = 5.0.3
+BuildRequires:  dotnet-sdk = 5.0.400
+BuildRequires:  dotnet-runtime = 5.0.9
 BuildRequires:  psmisc
 BuildRequires:  cmake
 BuildRequires:  clang-devel
@@ -33,8 +33,11 @@ PowerShell is an automation and configuration management platform.
 It consists of a cross-platform command-line shell and associated scripting language.
 
 %prep
+# Using autosetup is not feasible
 %setup -qn PowerShell-%{version}
+# Using autosetup is not feasible
 %setup -qcTDa 1 -n PowerShell-Native
+# Using autosetup is not feasible
 %setup -qcTDa 2 -n %{name}-linux-%{version}-x64
 
 %build
@@ -47,7 +50,7 @@ chmod +x ./build.sh
 cd %{_builddir}/PowerShell-Native/powershell-native-7.1.0
 pushd src/libpsl-native
 cmake -DCMAKE_BUILD_TYPE=Debug .
-make -j
+make -j %{?_smp_mflags}
 
 %install
 cd %{_builddir}/PowerShell-%{version}
@@ -72,7 +75,7 @@ cd %{_builddir}/PowerShell-%{version}/test/xUnit
 dotnet test
 export LANG=en_US.UTF-8
 cd %{_builddir}/PowerShell-Native/powershell-native-7.1.0/src/libpsl-native
-make test
+make test %{?_smp_mflags}
 
 %post
 #in case of upgrade, delete the soft links
@@ -97,6 +100,8 @@ fi
     %{_docdir}/*
 
 %changelog
+*   Tue Sep 21 2021 Shreyas B <shreyasb@vmware.com> 7.1.4-1
+-   Upgrade powershell to 7.1.4
 *   Tue Jul 27 2021 Tapas Kundu <tkundu@vmware.com> 7.1.2-2
 -   Rebuild with updated clang
 *   Mon Jan 18 2021 Shreyas B <shreyasb@vmware.com> 7.1.2-1
