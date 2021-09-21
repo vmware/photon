@@ -2,27 +2,21 @@
 %global __os_install_post %{nil}
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
-Version:        3.11.10
-Release:        2%{?dist}
+Version:        4.0.1
+Release:        1%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://archive.apache.org/dist/cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
-%define sha1    apache-cassandra=6ec404a09bea1fd012aad5f87d5358eeb2db9bcc
-# https://search.maven.org/maven2/ch/qos/logback/logback-classic/1.2.0/logback-classic-1.2.0.jar
-# https://search.maven.org/maven2/ch/qos/logback/logback-core/1.2.0/logback-core-1.2.0.jar
-# https://search.maven.org/maven2/org/apache/thrift/libthrift/0.9.3/libthrift-0.9.3.jar
-Source1:        cassandra-libthrift-logback-jars.tar.gz
-%define sha1    cassandra-libthrift-logback-jars=68f9251787cfc5f223f76b9eafcb2bfdf84f32c4
-Source2:        cassandra-jackson-jars.tar.gz
-%define sha1    cassandra-jackson-jars=71f573e2185c79cd8c619ddae179ed880ca8b762
-Source3:        cassandra.service
+%define sha1    apache-cassandra=63c2e267f34e00b477fdd96b9279f3aae7716546
+Source1:        cassandra.service
 BuildRequires:  apache-ant
 BuildRequires:  unzip zip
 BuildRequires:  openjdk8
 BuildRequires:  wget
+BuildRequires:  git
 BuildRequires:  systemd-rpm-macros
 Requires:       openjre8
 Requires:       gawk
@@ -35,23 +29,7 @@ Cassandra is a highly scalable, eventually consistent, distributed, structured k
 Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
 
 %prep
-%setup -qn apache-%{name}-%{version}-src
-sed -i 's#\"logback-core\" version=\"1.1.3\"#\"logback-core\" version=\"1.2.0\"#g' build.xml
-sed -i 's#\"logback-classic\" version=\"1.1.3\"#\"logback-classic\" version=\"1.2.0\"#g' build.xml
-sed -i 's#\"libthrift\" version=\"0.9.2\"#\"libthrift\" version=\"0.9.3.1\"#g' build.xml
-
-rm lib/libthrift-*.jar
-rm lib/logback-*.jar
-rm lib/jackson-*.jar
-
-mv lib/licenses/logback-core-1.1.3.txt lib/licenses/logback-core-1.2.0.txt
-mv lib/licenses/logback-classic-1.1.3.txt lib/licenses/logback-classic-1.2.0.txt
-mv lib/licenses/libthrift-0.9.2.txt lib/licenses/libthrift-0.9.3.txt
-
-tar -xf %{SOURCE1} --no-same-owner
-cp cassandra-libthrift-logback-jars/* lib/
-tar -xf %{SOURCE2} --no-same-owner
-cp cassandra-jackson-jars/* lib/
+%autosetup -p1 -n apache-%{name}-%{version}-src
 
 %build
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
@@ -66,42 +44,22 @@ mkdir -p %{buildroot}%{_datadir}/cassandra
 mkdir -p %{buildroot}%{_sysconfdir}/cassandra
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 mkdir -p %{buildroot}/etc/profile.d
-mkdir -p %{buildroot}/var/opt/cassandra
 
-cp bin/%{name} %{buildroot}%{_sbindir}
-cp bin/%{name}.in.sh %{buildroot}%{_datadir}/cassandra/
-cp bin/nodetool %{buildroot}%{_bindir}/
-cp bin/sstableloader %{buildroot}%{_bindir}/
-cp bin/sstablescrub %{buildroot}%{_bindir}/
-cp bin/sstableupgrade %{buildroot}%{_bindir}/
-cp bin/sstableutil %{buildroot}%{_bindir}/
-cp bin/sstableverify %{buildroot}%{_bindir}/
-cp conf/cassandra-env.sh %{buildroot}%{_sysconfdir}/cassandra/
-cp conf/cassandra.yaml %{buildroot}%{_sysconfdir}/cassandra/
-cp conf/cassandra-jaas.config %{buildroot}%{_sysconfdir}/cassandra/
-cp conf/cassandra-topology.properties %{buildroot}%{_sysconfdir}/cassandra/
-cp conf/jvm.options %{buildroot}%{_sysconfdir}/cassandra/
-cp conf/logback-tools.xml %{buildroot}%{_sysconfdir}/cassandra/
-cp conf/logback.xml %{buildroot}%{_sysconfdir}/cassandra/
-cp conf/metrics-reporter-config-sample.yaml %{buildroot}%{_sysconfdir}/cassandra/
+cp -pr conf/* %{buildroot}%{_sysconfdir}/cassandra/
+
+rm -f bin/cqlsh
+rm -f bin/cqlsh.py
+mv bin/%{name} %{buildroot}%{_sbindir}
+mv bin/%{name}.in.sh %{buildroot}%{_datadir}/cassandra/
+cp -p bin/* %{buildroot}%{_bindir}/
+cp -p tools/bin/* %{buildroot}%{_bindir}/
 cp -r lib %{buildroot}/var/opt/cassandra/
 cp -r build %{buildroot}/var/opt/cassandra/
-cp build/tools/lib/stress.jar %{buildroot}/var/opt/cassandra/lib
-cp build/apache-cassandra-%{version}.jar %{buildroot}/var/opt/cassandra/lib
-cp tools/bin/cassandra-stress %{buildroot}%{_bindir}
-cp tools/bin/cassandra-stressd %{buildroot}%{_bindir}
-cp tools/bin/sstabledump %{buildroot}%{_bindir}/
-cp tools/bin/sstableexpiredblockers %{buildroot}%{_bindir}/sstableexpiredblockers
-cp tools/bin/sstablelevelreset %{buildroot}%{_bindir}/sstablelevelreset
-cp tools/bin/sstablemetadata %{buildroot}%{_bindir}/sstablemetadata
-cp tools/bin/sstableofflinerelevel %{buildroot}%{_bindir}/sstableofflinerelevel
-cp tools/bin/sstablerepairedset %{buildroot}%{_bindir}/sstablerepairedset
-cp tools/bin/sstablesplit %{buildroot}%{_bindir}/sstablesplit
-cp tools/bin/cassandra-stress %{buildroot}%{_bindir}/
-cp tools/bin/cassandra-stressd %{buildroot}%{_bindir}/
+cp -p build/tools/lib/stress.jar %{buildroot}/var/opt/cassandra/lib
+cp -p build/apache-cassandra-%{version}.jar %{buildroot}/var/opt/cassandra/lib
 
-mkdir -p %{buildroot}/lib/systemd/system
-install -p -D -m 644 %{SOURCE3}  %{buildroot}/lib/systemd/system/%{name}.service
+mkdir -p %{buildroot}%{_unitdir}
+install -p -D -m 644 %{SOURCE1}  %{buildroot}%{_unitdir}/%{name}.service
 
 cat >> %{buildroot}/etc/sysconfig/cassandra <<- "EOF"
 CASSANDRA_HOME=/var/opt/cassandra/
@@ -144,11 +102,13 @@ fi
 %{_sbindir}
 %{_sysconfdir}/cassandra
 %{_sysconfdir}/sysconfig/cassandra
-/etc/profile.d/cassandra.sh
-/lib/systemd/system/cassandra.service
+%{_sysconfdir}/profile.d/cassandra.sh
+%{_unitdir}/cassandra.service
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+*   Tue Sep 21 2021 Ankit Jain <ankitja@vmware.com> 4.0.1-1
+-   Update to 4.0.1 to fix second level dependency vuln
 *   Wed Jun 09 2021 Ankit Jain <ankitja@vmware.com> 3.11.10-2
 -   Remove cqlsh and cqlsh.py, since it requires python2 to run
 -   python3-cqlsh is introduced
