@@ -3,7 +3,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.2.3408
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -21,6 +21,7 @@ The Vim package contains a powerful text editor.
 Summary:    Extra files for Vim text editor
 Group:      Applications/Editors
 Requires:   tcsh
+Requires:   %{name} = %{version}-%{release}
 Conflicts:  toybox < 0.8.2-2
 
 %description extra
@@ -98,13 +99,11 @@ fi
 %{_datarootdir}/icons/hicolor/48x48/apps/gvim.png
 %{_datarootdir}/icons/locolor/16x16/apps/gvim.png
 %{_datarootdir}/icons/locolor/32x32/apps/gvim.png
-%{_datarootdir}/vim/vim82/defaults.vim
 %{_datarootdir}/vim/vim82/pack/dist/opt/*
 %exclude %{_datarootdir}/vim/vim82/colors/desert.vim
 %{_datarootdir}/vim/vim82/compiler/*
 %{_datarootdir}/vim/vim82/delmenu.vim
 %{_datarootdir}/vim/vim82/evim.vim
-%{_datarootdir}/vim/vim82/filetype.vim
 %{_datarootdir}/vim/vim82/ftoff.vim
 %{_datarootdir}/vim/vim82/ftplugin.vim
 %{_datarootdir}/vim/vim82/ftplugin/*
@@ -125,7 +124,9 @@ fi
 %{_datarootdir}/vim/vim82/scripts.vim
 %{_datarootdir}/vim/vim82/spell/*
 %{_datarootdir}/vim/vim82/syntax/*
+%exclude %{_datarootdir}/vim/vim82/syntax/nosyntax.vim
 %exclude %{_datarootdir}/vim/vim82/syntax/syntax.vim
+%exclude %{_datarootdir}/vim/vim82/autoload/dist/ft.vim
 %{_datarootdir}/vim/vim82/tools/*
 %{_datarootdir}/vim/vim82/tutor/*
 %{_datarootdir}/vim/vim82/lang/*.vim
@@ -175,9 +176,13 @@ fi
 %files
 %defattr(-,root,root)
 %config(noreplace) /etc/vimrc
-%{_datarootdir}/vim/vim82/syntax/syntax.vim
+%{_datarootdir}/vim/vim82/defaults.vim
+%{_datarootdir}/vim/vim82/filetype.vim
 %{_datarootdir}/vim/vim82/rgb.txt
 %{_datarootdir}/vim/vim82/colors/desert.vim
+%{_datarootdir}/vim/vim82/syntax/nosyntax.vim
+%{_datarootdir}/vim/vim82/syntax/syntax.vim
+%{_datarootdir}/vim/vim82/autoload/dist/ft.vim
 %{_bindir}/ex
 %{_bindir}/vi
 %{_bindir}/view
@@ -187,6 +192,9 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+*   Thu Sep 23 2021 Dweep Advani <davani@vmware.com> 8.2.3408-2
+-   Fix vim startup errors E216, E1187 and E484
+-   vim-extra requires vim
 *   Wed Sep 15 2021 Tapas Kundu <tkundu@vmware.com> 8.2.3408-1
 -   Fix CVE-2021-3770
 *   Fri Jul 03 2020 Prashant S Chauhan <psinghchauha@vmware.com> 8.1.1365-2
