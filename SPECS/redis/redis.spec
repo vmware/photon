@@ -1,7 +1,7 @@
 Summary:	advanced key-value store
 Name:		redis
 Version:	6.2.5
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://redis.io/
 Group:		Applications/Databases
@@ -26,7 +26,7 @@ Redis is an in-memory data structure store, used as database, cache and message 
 %autosetup -p1
 
 %build
-make %{?_smp_mflags}
+make BUILD_TLS=yes %{?_smp_mflags}
 
 %install
 install -vdm 755 %{buildroot}
@@ -81,6 +81,8 @@ exit 0
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
+* Thu Sep 23 2021 Shreyas B. <shreyasb@vmware.com> 6.2.5-2
+- Build with TLS
 * Wed Aug 11 2021 Shreyas B <shreyasb@vmware.com> 6.2.5-1
 - Upgrade to v6.2.5 to address CVE-2021-32761
 * Mon May 24 2021 Shreyas B <shreyasb@vmware.com> 6.2.3-1
