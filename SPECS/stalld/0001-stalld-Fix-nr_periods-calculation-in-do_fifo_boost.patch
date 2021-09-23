@@ -14,6 +14,7 @@ Avoid any potential overflow by using size_t as the datatype
 for nr_periods.
 
 Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
  src/stalld.c | 4 ++--
  src/stalld.h | 3 ++-
@@ -23,17 +24,20 @@ diff --git a/src/stalld.c b/src/stalld.c
 index a12a31f..3fb1ad4 100644
 --- a/src/stalld.c
 +++ b/src/stalld.c
-@@ -1086,8 +1086,8 @@ int restore_policy(int pid, struct sched_attr *attr)
+@@ -1165,11 +1165,11 @@ int restore_policy(int pid, struct sched_attr *attr)
   */
  void do_fifo_boost(int pid, struct sched_attr *old_attr)
  {
--	int i;
 -	int nr_periods = config_boost_duration / config_dl_period;
-+	size_t i;
 +	size_t nr_periods = (config_boost_duration * NS_PER_SEC) / config_dl_period;
- 	struct timespec runtime_ts;
  	struct timespec remainder_ts;
+ 	struct timespec runtime_ts;
  	struct timespec ts;
+-	int i;
++	size_t i;
+ 
+ 	/*
+ 	 * setup the runtime sleep
 diff --git a/src/stalld.h b/src/stalld.h
 index c0fdda6..f4bebe0 100644
 --- a/src/stalld.h

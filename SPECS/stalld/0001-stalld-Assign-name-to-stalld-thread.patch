@@ -16,16 +16,17 @@ Fix:
   which cpu.
 
 Signed-off-by: Ankit Jain <ankitja@vmware.com>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
  src/stalld.c | 18 ++++++++++++++++--
  src/stalld.h |  3 +++
  2 files changed, 19 insertions(+), 2 deletions(-)
 
 diff --git a/src/stalld.c b/src/stalld.c
-index b6bb0fcc..8f83a4a7 100644
+index 18e3543..2a1fe58 100644
 --- a/src/stalld.c
 +++ b/src/stalld.c
-@@ -1291,6 +1291,7 @@ void aggressive_main(struct cpu_info *cpus, int nr_cpus)
+@@ -1618,6 +1618,7 @@ void aggressive_main(struct cpu_info *cpus, int nr_cpus)
  	int i;
  	int retval;
  	int retry, retry_count = 3;
@@ -33,7 +34,7 @@ index b6bb0fcc..8f83a4a7 100644
  
  	for (i = 0; i < nr_cpus; i++) {
  		if (!should_monitor(i))
-@@ -1301,8 +1302,14 @@ void aggressive_main(struct cpu_info *cpus, int nr_cpus)
+@@ -1628,8 +1629,14 @@ void aggressive_main(struct cpu_info *cpus, int nr_cpus)
  
  		for (retry = 0; retry < retry_count; retry++) {
  			retval = pthread_create(&cpus[i].thread, NULL, cpu_main, &cpus[i]);
@@ -49,15 +50,15 @@ index b6bb0fcc..8f83a4a7 100644
  			if (retval != EAGAIN || retry == retry_count - 1) {
  				cpus[i].thread_running = 0;
  				die("Failed to create thread for CPU %d error = %d\n", i, retval);
-@@ -1324,6 +1331,7 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
- 	pthread_attr_t dettached;
- 	struct cpu_info *cpu;
- 	char *buffer = NULL;
-+	char pth_name[MAX_PTHREAD_NAME_LEN];
- 	int buffer_size = 0;
+@@ -1658,6 +1665,7 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+ 	int i;
  	int retry_count = 3;
- 	int retval;
-@@ -1409,8 +1417,14 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+ 	int retry;
++	char pth_name[MAX_PTHREAD_NAME_LEN];
+ 
+ 	buffer = malloc(config_buffer_size);
+ 	if (!buffer)
+@@ -1752,8 +1760,14 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
  				cpus[i].thread_running = 1;
  				for (retry = 0; retry < retry_count; retry++) {
  					retval = pthread_create(&cpus[i].thread, &dettached, cpu_main, &cpus[i]);
@@ -74,7 +75,7 @@ index b6bb0fcc..8f83a4a7 100644
  						cpus[i].thread_running = 0;
  						die("Failed to create thread for CPU %d error = %d\n", i, retval);
 diff --git a/src/stalld.h b/src/stalld.h
-index 7c8d653d..32e22200 100644
+index 8dad861..ec5e77b 100644
 --- a/src/stalld.h
 +++ b/src/stalld.h
 @@ -42,6 +42,9 @@
@@ -84,9 +85,9 @@ index 7c8d653d..32e22200 100644
 +/* This macro define the max len of pthread name */
 +#define MAX_PTHREAD_NAME_LEN 16
 +
- /* informnation about running tasks on a cpu */
- struct task_info {
-        int pid;
+ /* Daemon umask value */
+ #define DAEMON_UMASK  0x133  /* 0644 */
+ 
 -- 
 2.23.3
 

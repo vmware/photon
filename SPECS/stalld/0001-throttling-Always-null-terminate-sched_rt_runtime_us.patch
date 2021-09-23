@@ -1,0 +1,38 @@
+From 807abbd1787ca4c523566a0a5111e1f482e37e3c Mon Sep 17 00:00:00 2001
+From: Fernando Pacheco <fpacheco@redhat.com>
+Date: Thu, 19 Aug 2021 13:08:23 -0700
+Subject: [PATCH] throttling: Always null terminate sched_rt_runtime_us output
+
+Although unlikely, we could end up in a situation where the
+sched_rt_runtime_us output has filled the entire buffer and so
+is not newline terminated. Make sure we still null terminate
+the buffer for such cases.
+
+Signed-off-by: Fernando Pacheco <fpacheco@redhat.com>
+---
+ src/throttling.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/src/throttling.c b/src/throttling.c
+index fc661c2..b2a91ed 100644
+--- a/src/throttling.c
++++ b/src/throttling.c
+@@ -112,11 +112,12 @@ int rt_throttling_is_off(void)
+ 
+ 	close(fd);
+ 
+-	if (ret < sizeof(buffer))
+-	    buffer[ret] = '\0';
+-
+ 	if (buffer[ret-1] == '\n')
+ 		buffer[ret-1] = '\0';
++	else if (ret < sizeof(buffer))
++		buffer[ret] = '\0';
++	else
++		buffer[ret - 1] = '\0';
+ 
+ 	if (strcmp(buffer, "-1") == 0)
+ 		return 1;
+-- 
+2.28.0
+

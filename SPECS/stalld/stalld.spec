@@ -1,30 +1,37 @@
 Summary:        Daemon that finds starving tasks in the system and gives them a temporary boost
 Name:           stalld
-Version:        1.3.0
-Release:        11%{?dist}
+Version:        1.14.1
+Release:        1%{?dist}
 License:        GPLv2
 Group:          System/Tools
 URL:            https://git.kernel.org/pub/scm/utils/stalld/stalld.git
 Source0:        https://git.kernel.org/pub/scm/utils/stalld/stalld.git/snapshot/%{name}-%{version}.tar.gz
-%define sha512  %{name}=3f77809a645ab993d63b4d31efa639c58edc42b8793314b28205104c041fcbb32fc998dcb53ce3b279f12946f07cda5fd1312ac728aaa04106bff2da91fe8554
+%define sha512 stalld=439cd930ae95435415fccc0658f3733b4b7b0cffa91eeb0c72dde8dd805a622a72df617f8b9cb1feb5278e39db9da654ef171e73058d2ab3b7c264a522de818c
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source1:        stalld.conf
-Source2:        stalld.service
-
+Source1:        stalld-tca.conf
 BuildRequires:  glibc-devel
 BuildRequires:  gcc
 BuildRequires:  make
 BuildRequires:  systemd
 Requires:       systemd
-Patch0:         0001-Support-denylisting-of-tasks-in-stalld.patch
-Patch1:         0001-stalld-Fix-for-failed-to-parse-cpu-info-warning.patch
-Patch2:         0001-stalld-Add-error-handling-for-thread-creation-failur.patch
-Patch3:         0001-stalld-Expose-verbose-parameter-in-the-config-file.patch
-Patch4:         0001-stalld-Assign-name-to-stalld-thread.patch
-Patch5:         0001-utils-Add-HRTICK_DL-support.patch
-Patch6:         0001-utils.c-Add-error-handling-for-enabling-HRTICK.patch
-Patch7:         0001-stalld-Fix-nr_periods-calculation-in-do_fifo_boost.patch
+Requires:       bash
+Patch0:         0001-stalld-Fix-for-failed-to-parse-cpu-info-warning.patch
+Patch1:         0001-stalld-Add-error-handling-for-thread-creation-failur.patch
+Patch2:         0001-stalld-Expose-verbose-parameter-in-the-config-file.patch
+Patch3:         0001-stalld-Assign-name-to-stalld-thread.patch
+Patch4:         0001-utils.c-Add-error-handling-for-enabling-HRTICK.patch
+Patch5:         0001-stalld-Fix-nr_periods-calculation-in-do_fifo_boost.patch
+Patch6:         0001-stalld-Fix-gcc-options-in-Makefile.patch
+Patch7:         0001-stalld-Fix-single-threaded-mode-starvation-threshold.patch
+Patch8:         0001-stalld-Add-debug-print-for-starving-tasks.patch
+Patch9:         0001-stalld-change-default-config_granularity-value-to-2s.patch
+Patch10:        0001-stalld-Include-FF-and-CG-config-params-in-service-fi.patch
+Patch11:        0001-stalld-fix-bin-bash.patch
+Patch12:        0001-stalld-Skip-get_cpu_idle_time-warning-for-offline-cp.patch
+Patch13:        0001-throttling-Always-null-terminate-sched_rt_runtime_us.patch
+Patch14:        0001-stalld-print-process-comm-and-cpu-when-boosting.patch
+Patch15:        0001-stalld-Fix-memory-leak-in-print_boosted_info.patch
 
 %description
 The stalld program monitors the set of system threads, looking for
@@ -45,7 +52,8 @@ install -vdm 755 %{buildroot}/%{_sysconfdir}/sysconfig
 cp %{SOURCE1} %{buildroot}/%{_sysconfdir}/sysconfig/stalld
 chmod 644 %{buildroot}/%{_sysconfdir}/sysconfig/stalld
 install -vdm 755 %{buildroot}/%{_unitdir}
-install -vm 644 %{SOURCE2} %{buildroot}/%{_unitdir}
+install -vm 644 redhat/stalld.service %{buildroot}/%{_unitdir}
+install -p scripts/throttlectl.sh %{buildroot}/%{_bindir}/throttlectl
 
 %clean
 rm -rf %{buildroot}
@@ -62,6 +70,7 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 %{_bindir}/%{name}
+%{_bindir}/throttlectl
 %{_unitdir}/%{name}.service
 %config(noreplace) %{_sysconfdir}/sysconfig/stalld
 %doc %{_docdir}/README.md
@@ -69,6 +78,9 @@ rm -rf %{buildroot}
 %license %{_datadir}/licenses/%{name}/gpl-2.0.txt
 
 %changelog
+* Tue Jul 12 2022 Keerthana K <keerthanak@vmware.com> 1.14.1-1
+- Update to version 1.14.1
+- Package TCA's stalld config file as default config
 * Mon Jun 27 2022 Sharan Turlapati <sturlapati@vmware.com> 1.3.0-11
 - Fix nr_periods calculation while boosting using SCHED_FIFO
 - Expose FORCE_FIFO as an option in the conf file
