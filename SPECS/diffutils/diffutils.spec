@@ -1,7 +1,7 @@
 Summary:	Programs that show the differences between files or directories
 Name:		diffutils
 Version:	3.5
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv3+
 URL:		http://www.gnu.org/software/diffutils
 Group:		System Environment/Base
@@ -24,9 +24,7 @@ differences between files or directories.
 sed -i 's:= @mkdir_p@:= /bin/mkdir -p:' po/Makefile.in.in
 
 %build
-./configure \
-	--prefix=%{_prefix} \
-	--disable-silent-rules
+%configure
 make %{?_smp_mflags}
 
 %install
@@ -44,6 +42,8 @@ make %{?_smp_mflags} check
 %{_mandir}/*/*
 
 %changelog
+* Thu Sep 23 2021 Tapas Kundu <tkundu@vmware.com> 3.5-3
+- Fix configure
 * Mon Sep 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.5-2
 - Conflict only with toybox < 0.7.3-7
 * Wed Apr 19 2017 Bo Gan <ganb@vmware.com> 3.5-1
