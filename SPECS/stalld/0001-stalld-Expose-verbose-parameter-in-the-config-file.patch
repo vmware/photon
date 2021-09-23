@@ -11,6 +11,7 @@ with log_msg(), so that they will end up in the journalctl logs,
 if configured.
 
 Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
  redhat/stalld.conf    | 6 ++++++
  redhat/stalld.service | 2 +-
@@ -19,10 +20,10 @@ Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
  4 files changed, 12 insertions(+), 6 deletions(-)
 
 diff --git a/redhat/stalld.conf b/redhat/stalld.conf
-index be0ef0b..037a726 100644
+index db82c5a..936d73b 100644
 --- a/redhat/stalld.conf
 +++ b/redhat/stalld.conf
-@@ -46,3 +46,9 @@ FG=
+@@ -60,3 +60,9 @@ FG=--foreground
  # Write a pidfile
  # ex: PF=--pidfile /run/stalld.pid
  PF="--pidfile /run/stalld.pid"
@@ -33,24 +34,24 @@ index be0ef0b..037a726 100644
 +# config_foreground to 1.
 +VB=
 diff --git a/redhat/stalld.service b/redhat/stalld.service
-index a363c94..a85aab7 100644
+index e0eb4b7..b1988cc 100644
 --- a/redhat/stalld.service
 +++ b/redhat/stalld.service
-@@ -5,7 +5,7 @@ Description=Stall Monitor
- # Type=simple
- Type=forking
- EnvironmentFile=/etc/sysconfig/stalld
--ExecStart=/usr/bin/stalld $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF
-+ExecStart=/usr/bin/stalld $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $VB
+@@ -9,7 +9,7 @@ ExecStartPre=/usr/bin/throttlectl off
  
- [Install]
- WantedBy=multi-user.target
+ # In case the regex passed to IT or IP includes C escape sequences,
+ # use ${IT} or ${IP} instead of $IT or $IP
+-ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $IT $IP
++ExecStart=/usr/bin/stalld --systemd $CLIST $AGGR $BP $BR $BD $THRESH $LOGGING $FG $PF $IT $IP $VB
+ ExecStopPost=/usr/bin/throttlectl on
+ CPUSchedulingPolicy=fifo
+ CPUSchedulingPriority=10
 diff --git a/src/stalld.c b/src/stalld.c
-index 16298fd..e6f6c58 100644
+index 8b6c455..a353918 100644
 --- a/src/stalld.c
 +++ b/src/stalld.c
-@@ -800,14 +800,14 @@ void print_waiting_tasks(struct cpu_info *cpu_info)
- 	time_t now = time(NULL);
+@@ -967,14 +967,14 @@ void print_waiting_tasks(struct cpu_info *cpu_info)
+ 	struct task_info *task;
  	int i;
  
 -	printf("CPU %d has %d waiting tasks\n", cpu_info->id, cpu_info->nr_waiting_tasks);
@@ -66,7 +67,7 @@ index 16298fd..e6f6c58 100644
  	}
  
  	return;
-@@ -1401,7 +1401,7 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
+@@ -1641,7 +1641,7 @@ void conservative_main(struct cpu_info *cpus, int nr_cpus)
  			}
  
  			if (config_verbose)
@@ -76,10 +77,10 @@ index 16298fd..e6f6c58 100644
  
  			if (check_might_starve_tasks(cpu)) {
 diff --git a/src/utils.c b/src/utils.c
-index b4c3ca0..e12404f 100644
+index 5be12c0..b835c3c 100644
 --- a/src/utils.c
 +++ b/src/utils.c
-@@ -651,12 +651,12 @@ static void parse_cpu_list(char *cpulist)
+@@ -796,12 +796,12 @@ static void parse_cpu_list(char *cpulist)
  
  		if (cpu == end_cpu) {
  			if (config_verbose)
@@ -95,5 +96,5 @@ index b4c3ca0..e12404f 100644
  			}
  		}
 -- 
-2.25.1
+2.28.0
 

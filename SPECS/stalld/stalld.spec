@@ -1,27 +1,27 @@
 Summary:        Daemon that finds starving tasks in the system and gives them a temporary boost
 Name:           stalld
-Version:        1.3.0
-Release:        8%{?dist}
+Version:        1.14.1
+Release:        1%{?dist}
 License:        GPLv2
 Group:          System/Tools
 URL:            https://git.kernel.org/pub/scm/utils/stalld/stalld.git
 Source0:        https://git.kernel.org/pub/scm/utils/stalld/stalld.git/snapshot/%{name}-%{version}.tar.gz
-%define sha1 stalld=461f44e36ee4448324d05d1f2ec7cc054aedd62c
+%define sha1 stalld=d13b527c189e32b8d7226e09ed5fd6dce9cce623
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source1:        stalld.conf
-Source2:        stalld.service
-
 BuildRequires:  glibc-devel
 BuildRequires:  gcc
 BuildRequires:  make
 BuildRequires:  systemd
 Requires:       systemd
-Patch0:         0001-Support-denylisting-of-tasks-in-stalld.patch
-Patch1:         0001-stalld-Fix-for-failed-to-parse-cpu-info-warning.patch
-Patch2:         0001-stalld-Add-error-handling-for-thread-creation-failur.patch
-Patch3:         0001-stalld-Expose-verbose-parameter-in-the-config-file.patch
-Patch4:         0001-stalld-Assign-name-to-stalld-thread.patch
+Requires:       bash
+Patch0:         0001-stalld-Fix-for-failed-to-parse-cpu-info-warning.patch
+Patch1:         0001-stalld-Add-error-handling-for-thread-creation-failur.patch
+Patch2:         0001-stalld-Expose-verbose-parameter-in-the-config-file.patch
+Patch3:         0001-stalld-Assign-name-to-stalld-thread.patch
+Patch4:         0001-stalld-Fix-gcc-options-in-Makefile.patch
+Patch5:         0001-stalld-Fix-single-threaded-mode-starvation-threshold.patch
 
 %description
 The stalld program monitors the set of system threads, looking for
@@ -35,6 +35,10 @@ such stalled threads is configurable by the user.
 
 %build
 make %{?_smp_mflags}
+# Add config granularity variable to service
+sed -i 's/.*$IP $VB/& $CG/' redhat/stalld.service
+# bash rpm provides only /bin/bash and /bin is a symbolic link to /usr/bin
+sed -i 's/\/usr\/bin\/bash/\/bin\/bash/' scripts/throttlectl.sh
 
 %install
 %make_install DESTDIR=%{buildroot} DOCDIR=%{_docdir} MANDIR=%{_mandir} BINDIR=%{_bindir} DATADIR=%{_datadir}
@@ -42,7 +46,8 @@ install -vdm 755 %{buildroot}/%{_sysconfdir}/sysconfig
 cp %{SOURCE1} %{buildroot}/%{_sysconfdir}/sysconfig/stalld
 chmod 644 %{buildroot}/%{_sysconfdir}/sysconfig/stalld
 install -vdm 755 %{buildroot}/%{_unitdir}
-install -vm 644 %{SOURCE2} %{buildroot}/%{_unitdir}
+install -vm 644 redhat/stalld.service %{buildroot}/%{_unitdir}
+install -p scripts/throttlectl.sh %{buildroot}/%{_bindir}/throttlectl
 
 %clean
 rm -rf %{buildroot}
@@ -59,6 +64,7 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 %{_bindir}/%{name}
+%{_bindir}/throttlectl
 %{_unitdir}/%{name}.service
 %config(noreplace) %{_sysconfdir}/sysconfig/stalld
 %doc %{_docdir}/README.md
@@ -66,6 +72,9 @@ rm -rf %{buildroot}
 %license %{_datadir}/licenses/%{name}/gpl-2.0.txt
 
 %changelog
+* Tue Oct 12 2021 Keerthana K <keerthanak@vmware.com> 1.14.1-1
+- Update to version 1.14.1
+- Fix Makefile CLFAGS.
 * Mon Sep 20 2021 Ankit Jain <ankitja@vmware.com> 1.3.0-8
 - Assign name to stalld threads.
 * Tue Sep 07 2021 Ankit Jain <ankitja@vmware.com> 1.3.0-7
