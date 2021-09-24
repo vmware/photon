@@ -4,7 +4,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.12.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
@@ -26,11 +26,9 @@ BuildRequires:  zchunk-devel
 BuildRequires:  python3-devel
 BuildRequires:  python3-sphinx
 
-Requires:   python3-packaging
 Requires:   curl-libs
 Requires:   gpgme
 Requires:   zchunk
-Requires:   python3-sphinx
 
 %description
 A library providing C and Python (libcURL like) API to downloading repository
@@ -49,13 +47,14 @@ Development files for librepo.
 Summary:        Python 3 bindings for the librepo library
 Provides:       python3-librepo
 Requires:       %{name} = %{version}-%{release}
+Requires:   	python3-packaging
+Requires:   	python3-sphinx
 
 %description -n python3-librepo
 Python 3 bindings for the librepo library.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 mkdir build-py3
 
 %build
@@ -66,7 +65,7 @@ popd
 
 %install
 pushd build-py3
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 popd
 
 %post -p /sbin/ldconfig
@@ -86,6 +85,8 @@ popd
 %{_python3_sitearch}/%{name}/
 
 %changelog
+*   Fri Sep 24 2021 Nitesh Kumar <kunitesh@vmware.com> 1.12.1-5
+-   Remove python dependencies.
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.12.1-4
 -   Fix build with new rpm
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.12.1-3
