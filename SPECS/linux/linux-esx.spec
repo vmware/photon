@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.61
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -79,6 +79,7 @@ Patch62:        0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
 Patch63:        halt-on-panic.patch
 Patch64:        initramfs-multiple-image-extraction-support.patch
 Patch65:        initramfs-support-selective-freeing-of-initramfs-images.patch
+Patch66:        initramfs-large-files-support-for-newca-format.patch
 
 
 # CVE:
@@ -210,6 +211,7 @@ The Linux package contains the Linux kernel doc files
 %patch63 -p1
 %patch64 -p1
 %patch65 -p1
+%patch66 -p1
 
 # CVE
 %patch100 -p1
@@ -350,6 +352,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Oct 18 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.61-5
+-   initramfs: large files support for newca
 *   Wed Oct 06 2021 Ankit Jain <ankitja@vmware.com> 5.10.61-4
 -   vtarfs: Fix memory allocation for entry pages
 *   Fri Sep 17 2021 Ankit Jain <ankitja@vmware.com> 5.10.61-3
