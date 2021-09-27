@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.205
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -364,6 +364,7 @@ Patch512:        x86-setup-remove-redundant-mem-size-check.patch
 Patch513:        0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
 Patch514:        initramfs-Introduce-kernel-panic-on-initramfs-unpack.patch
 Patch515:        support-selective-freeing-of-initramfs-images.patch
+Patch516:        initramfs-large-files-support-for-newca-format.patch
 
 # Patches for i40e driver
 Patch801:        0001-Add-support-for-gettimex64-interface.patch
@@ -711,6 +712,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch513 -p1
 %patch514 -p1
 %patch515 -p1
+%patch516 -p1
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -893,6 +895,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Sep 27 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.205-3
+-   initramfs: large files support for newca
 *   Mon Sep 13 2021 Ankit Jain <ankitja@vmware.com> 4.19.205-2
 -   vtarfs: Added support for LongFilename/LongLink
 *   Fri Aug 27 2021 srinidhira0 <srinidhir@vmware.com> 4.19.205-1
