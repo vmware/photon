@@ -1,14 +1,15 @@
 Summary:          Advanced Trivial File Transfer Protocol (ATFTP) - TFTP server
 Name:             atftp
-Version:          0.7.4
+Version:          0.7.5
 Release:          1%{?dist}
 URL:              http://sourceforge.net/projects/atftp
 License:          GPLv2+ and GPLv3+ and LGPLv2+
 Group:            System Environment/Daemons
 Vendor:           VMware, Inc.
 Distribution:     Photon
-Source0:          http://sourceforge.net/projects/%{name}/files/latest/download/%{name}-%{version}.tar.gz
-%define sha1      atftp=03f70e64c5195fade430b20c5f47d2c58b249d59
+
+Source0:        http://sourceforge.net/projects/%{name}/files/latest/download/%{name}-%{version}.tar.gz
+%define sha1    %{name}=229b3a934eb82e193219a3c536b405080061d216
 
 BuildRequires:    systemd
 
@@ -18,6 +19,7 @@ Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 Provides:         tftp-server
 Obsoletes:        tftp-server
+
 Provides:         tftp
 Obsoletes:        tftp
 
@@ -28,11 +30,11 @@ Atftpd also support multicast protocol knowed as mtftp, defined in the PXE
 specification. The server supports being started from inetd(8) as well as
 a deamon using init scripts.
 
-%package    client
-Summary: Advanced Trivial File Transfer Protocol (ATFTP) - TFTP client
-Group: Applications/Internet
+%package client
+Summary:    Advanced Trivial File Transfer Protocol (ATFTP) - TFTP client
+Group:      Applications/Internet
 
-%description    client
+%description client
 Advanced Trivial File Transfer Protocol client program for requesting
 files using the TFTP protocol.
 
@@ -42,15 +44,15 @@ sed -i "s/-g -Wall -D_REENTRANT/-g -Wall -D_REENTRANT -std=gnu89/" configure.ac
 
 %build
 %configure
-make %{?_smp_mflags}
+%make_build
 
 %install
 [ -n "%{buildroot}" -a "%{buildroot}" != '/' ] && rm -rf %{buildroot}
 %makeinstall
 
 mkdir -p %{buildroot}/%{_var}/lib/tftpboot
-mkdir -p %{buildroot}/lib/systemd/system
-cat << EOF >> %{buildroot}/lib/systemd/system/atftpd.service
+mkdir -p %{buildroot}/%{_unitdir}
+cat << EOF >> %{buildroot}/%{_unitdir}/atftpd.service
 [Unit]
 Description=The tftp server serves files using the trivial file transfer protocol.
 
@@ -63,7 +65,7 @@ StandardInput=socket
 Also=atftpd.socket
 EOF
 
-cat << EOF >> %{buildroot}/lib/systemd/system/atftpd.socket
+cat << EOF >> %{buildroot}/%{_unitdir}/atftpd.socket
 [Unit]
 Description=Tftp Server Socket
 
@@ -90,8 +92,8 @@ make %{?_smp_mflags} check
 
 %pre
 if [ $1 -eq 1 ] ; then
-    getent group  tftp  >/dev/null || groupadd -r tftp
-    getent passwd tftp  >/dev/null || useradd  -c "tftp" -s /bin/false -g tftp -M -r tftp
+  getent group  tftp  >/dev/null || groupadd -r tftp
+  getent passwd tftp  >/dev/null || useradd  -c "tftp" -s /bin/false -g tftp -M -r tftp
 fi
 
 %preun
@@ -104,12 +106,12 @@ fi
 %postun
 /sbin/ldconfig
 if [ $1 -eq 0 ] ; then
-    if getent passwd tftp >/dev/null; then
-        userdel tftp
-    fi
-    if getent group tftp >/dev/null; then
-        groupdel tftp
-    fi
+  if getent passwd tftp >/dev/null; then
+    userdel tftp
+  fi
+  if getent group tftp >/dev/null; then
+    groupdel tftp
+  fi
 fi
 %systemd_postun_with_restart atftpd.socket
 
@@ -119,11 +121,11 @@ fi
 %files
 %dir %attr(0750,nobody,nobody) %{_var}/lib/tftpboot
 %{_mandir}/man8/atftpd.8.gz
-%{_sbindir}/atftpd
 %{_mandir}/man8/in.tftpd.8.gz
+%{_sbindir}/atftpd
 %{_sbindir}/in.tftpd
-/lib/systemd/system/atftpd.service
-/lib/systemd/system/atftpd.socket
+%{_unitdir}/atftpd.service
+%{_unitdir}/atftpd.socket
 %{_sysconfdir}/sysconfig/atftpd
 
 %files client
@@ -131,26 +133,28 @@ fi
 %{_bindir}/atftp
 
 %changelog
-*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 0.7.4-1
--   Automatic Version Bump
-*   Wed Jan 20 2021 Tapas Kundu <tkundu@vmware.com> 0.7.2-2
--   Fix CVE-2020-6097
-*   Tue Jun 25 2019 Tapas Kundu <tkundu@vmware.com> 0.7.2-1
--   Updated to release 0.7.2
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.1-8
--   Remove shadow from requires and use explicit tools for post actions
-*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-7
--   Fixed logic to restart the active services after upgrade
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.1-6
--   GA - Bump release of all rpms
-*   Fri May 6 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-5
--   Adding post-install run time dependencies
-*   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-4
--   Fixing spec file to handle rpm upgrade scenario correctly
-*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  0.7.1-3
--   Add systemd to Requires and BuildRequires.
--   Use systemctl to enable/disable service.
-*   Mon Nov 23 2015 Xiaolin Li <xiaolinl@vmware.com> 0.7.1-2
--   Chang tftpd from xinetd service to systemd service.
-*   Thu Nov 12 2015 Kumar Kaushik <kaushikk@vmware.com> 0.7.1-1
--   Initial build.  First version
+* Mon Sep 27 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.7.5-1
+- Upgrade to v0.7.5, fixes CVE-2021-41054
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 0.7.4-1
+- Automatic Version Bump
+* Wed Jan 20 2021 Tapas Kundu <tkundu@vmware.com> 0.7.2-2
+- Fix CVE-2020-6097
+* Tue Jun 25 2019 Tapas Kundu <tkundu@vmware.com> 0.7.2-1
+- Updated to release 0.7.2
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.1-8
+- Remove shadow from requires and use explicit tools for post actions
+* Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-7
+- Fixed logic to restart the active services after upgrade
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.1-6
+- GA - Bump release of all rpms
+* Fri May 6 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-5
+- Adding post-install run time dependencies
+* Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  0.7.1-4
+- Fixing spec file to handle rpm upgrade scenario correctly
+* Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  0.7.1-3
+- Add systemd to Requires and BuildRequires.
+- Use systemctl to enable/disable service.
+* Mon Nov 23 2015 Xiaolin Li <xiaolinl@vmware.com> 0.7.1-2
+- Chang tftpd from xinetd service to systemd service.
+* Thu Nov 12 2015 Kumar Kaushik <kaushikk@vmware.com> 0.7.1-1
+- Initial build.  First version
