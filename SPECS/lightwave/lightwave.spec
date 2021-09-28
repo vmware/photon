@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.7
-Release:       5%{?dist}
+Release:       6%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -130,11 +130,13 @@ sed -i 's|/opt/vmware/bin/certool|/usr/bin/certool|' vmidentity/install/src/main
 sed -i 's/VMIDENTITY_LIB_DIR=\/opt\/vmware\/lib64/VMIDENTITY_LIB_DIR=\/usr\/jars/' vmidentity/websso/src/main/resources/sso-config.sh
 sed -i 's,/opt/vmware/bin/ic-join,/usr/bin/ic-join,' config/scripts/domainjoin.sh
 sed -i 's#$COMMONS_DAEMON_HOME#usr#g' configure.ac
-sed -i 's|http://central.maven.org|https://search.maven.org|' vmafd/jdepends/build.xml
-sed -i 's|http://central.maven.org|https://search.maven.org|' vmca/jdepends/build.xml
-sed -i 's|http://central.maven.org|https://search.maven.org|' config/jdepends/build.xml
-%build
+sed -i 's|http://central.maven.org|https://repo1.maven.org|' vmafd/jdepends/build.xml
+sed -i 's|http://central.maven.org|https://repo1.maven.org|' vmca/jdepends/build.xml
+sed -i 's|http://central.maven.org|https://repo1.maven.org|' config/jdepends/build.xml
+sed -i 's|http://central.maven.org|https://repo1.maven.org|' vmidentity/rest/afd/server/settings.xml
+sed -i 's|http://central.maven.org|https://repo1.maven.org|' vmidentity/settings.xml
 
+%build
 cd build
 autoreconf -mif .. &&
 ../configure \
@@ -1141,9 +1143,9 @@ fi
 %{_datadir}/config/post-demote-deads.sh
 %{_datadir}/config/post-telegraf.conf
 
-# %doc ChangeLog README COPYING
-
 %changelog
+*   Tue Sep 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.7-6
+-   Fix maven repo urls in build.xml files
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.3.1.7-5
 -   Bump up version to compile with go 1.13.5-2
 *   Wed Jan 22 2020 Ankit Jain <ankitja@vmware.com> 1.3.1.7-4
