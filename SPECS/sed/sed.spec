@@ -1,7 +1,7 @@
 Summary:	Stream editor
 Name:		sed
 Version:	4.4
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv3
 URL:		http://www.gnu.org/software/sed
 Group:		Applications/Editors
@@ -28,7 +28,12 @@ These are the additional language files of sed.
 %setup -q
 
 %build
-%configure --htmldir=%{_defaultdocdir}/%{name}-%{version}
+sh ./configure \
+	--prefix=%{_prefix} \
+	--bindir=/bin \
+	--htmldir=%{_defaultdocdir}/%{name}-%{version} \
+	--disable-silent-rules
+
 make %{?_smp_mflags}
 
 %install
@@ -43,13 +48,15 @@ make check %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
-%{_bindir}/*
+/bin/*
 %{_mandir}/man1/*
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
+* Tue Sep 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.4-5
+- Fix binary paths
 * Mon Sep 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.4-4
 - Conflict only with toybox < 0.7.3-7
 * Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 4.4-3
