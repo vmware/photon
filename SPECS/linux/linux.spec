@@ -3,7 +3,7 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux
-Version:        4.19.205
+Version:        4.19.208
 Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f06a4a1fcb195551cde406fe70a7ddba9a948132
+%define sha1 linux=2bd7234fd0085d2144b97115780bf38b451ba735
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -95,11 +95,6 @@ Patch45:	secure-boot-patches/0006-efi-Import-certificates-from-UEFI-Secure-Boot.
 #Fix for CVE-2019-19338
 Patch47:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch48:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
-
-# Fix for CVE-2021-3444
-Patch49:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
-Patch50:        0002-bpf-Fix-32-bit-src-register-truncation-on-div-mod.patch
-Patch51:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
 
 # Fix for CVE-2020-16119
 Patch59:        0001-dccp-ccid-move-timers-to-struct-dccp_sock.patch
@@ -594,9 +589,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch45 -p1
 %patch47 -p1
 %patch48 -p1
-%patch49 -p1
-%patch50 -p1
-%patch51 -p1
 %patch59 -p1
 %patch60 -p1
 %patch61 -p1
@@ -1244,6 +1236,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Wed Sep 29 2021 Keerthana K <keerthanak@vmware.com> 4.19.208-1
+-   Update to version 4.19.208
 *   Fri Aug 27 2021 srinidhira0 <srinidhir@vmware.com> 4.19.205-1
 -   Update to version 4.19.205
 *   Tue Aug 24 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.198-4

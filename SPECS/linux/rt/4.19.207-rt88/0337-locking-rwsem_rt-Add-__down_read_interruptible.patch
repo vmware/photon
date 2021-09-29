@@ -1,0 +1,53 @@
+From d0a6c0555a123d61d99482fa09993b99f83a7c1f Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Tue, 19 Jan 2021 18:54:33 +0100
+Subject: [PATCH 337/340] locking/rwsem_rt: Add __down_read_interruptible()
+
+The stable backported a patch which adds __down_read_interruptible() for
+the generic rwsem implementation.
+
+Add RT's version __down_read_interruptible().
+
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+ include/linux/rwsem_rt.h  |  1 +
+ kernel/locking/rwsem-rt.c | 11 +++++++++++
+ 2 files changed, 12 insertions(+)
+
+diff --git a/include/linux/rwsem_rt.h b/include/linux/rwsem_rt.h
+index 2018ff77904a..3fb092b7bcc0 100644
+--- a/include/linux/rwsem_rt.h
++++ b/include/linux/rwsem_rt.h
+@@ -56,6 +56,7 @@ static inline int rwsem_is_contended(struct rw_semaphore *sem)
+ }
+ 
+ extern void __down_read(struct rw_semaphore *sem);
++extern int __down_read_interruptible(struct rw_semaphore *sem);
+ extern int __down_read_killable(struct rw_semaphore *sem);
+ extern int __down_read_trylock(struct rw_semaphore *sem);
+ extern void __down_write(struct rw_semaphore *sem);
+diff --git a/kernel/locking/rwsem-rt.c b/kernel/locking/rwsem-rt.c
+index f518495bd6cc..19ea20be3fd7 100644
+--- a/kernel/locking/rwsem-rt.c
++++ b/kernel/locking/rwsem-rt.c
+@@ -166,6 +166,17 @@ void __down_read(struct rw_semaphore *sem)
+ 	WARN_ON_ONCE(ret);
+ }
+ 
++int __down_read_interruptible(struct rw_semaphore *sem)
++{
++	int ret;
++
++	ret = __down_read_common(sem, TASK_INTERRUPTIBLE);
++	if (likely(!ret))
++		return ret;
++	WARN_ONCE(ret != -EINTR, "Unexpected state: %d\n", ret);
++	return -EINTR;
++}
++
+ int __down_read_killable(struct rw_semaphore *sem)
+ {
+ 	int ret;
+-- 
+2.31.1
+

@@ -1,0 +1,20 @@
+From 3004473e5857e501b7eeb5a28724fe8a39a413af Mon Sep 17 00:00:00 2001
+From: Clark Williams <williams@redhat.com>
+Date: Wed, 22 Sep 2021 09:51:46 -0500
+Subject: [PATCH 340/340] Linux 4.19.207-rt88 REBASE
+
+Signed-off-by: Clark Williams <williams@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index bd5aee366a48..666227d921a3 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt87
++-rt88
+-- 
+2.31.1
+

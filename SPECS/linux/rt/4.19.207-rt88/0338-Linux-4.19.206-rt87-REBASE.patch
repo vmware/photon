@@ -1,0 +1,20 @@
+From 36c6ca643c1f717e6c29a4acad34ff1f418848d7 Mon Sep 17 00:00:00 2001
+From: Clark Williams <williams@redhat.com>
+Date: Fri, 3 Sep 2021 10:24:35 -0500
+Subject: [PATCH 338/340] Linux 4.19.206-rt87 REBASE
+
+Signed-off-by: Clark Williams <williams@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index c1f2720eaf25..bd5aee366a48 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt76
++-rt87
+-- 
+2.31.1
+

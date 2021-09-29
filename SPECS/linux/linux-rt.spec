@@ -2,9 +2,9 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.205
+Version:        4.19.208
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt85
+%define rt_version rt88
 Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f06a4a1fcb195551cde406fe70a7ddba9a948132
+%define sha1 linux=2bd7234fd0085d2144b97115780bf38b451ba735
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
@@ -81,11 +81,6 @@ Patch64:        0005-ovl-check-permission-to-open-real-file.patch
 # Fix for CVE-2019-19770
 Patch65:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch66:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
-
-# Fix for CVE-2021-3444
-Patch68:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
-Patch69:        0002-bpf-Fix-32-bit-src-register-truncation-on-div-mod.patch
-Patch70:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -451,8 +446,10 @@ Patch534:       0334-ptrace-fix-ptrace_unfreeze_traced-race-with-rt-lock.patch
 Patch535:       0335-Linux-4.19.185-rt76-REBASE.patch
 Patch536:       0336-mm-slub-Don-t-resize-the-location-tracking-cache-on-.patch
 Patch537:       0337-locking-rwsem_rt-Add-__down_read_interruptible.patch
+Patch538:       0338-Linux-4.19.206-rt87-REBASE.patch
+Patch539:       0339-locking-rwsem-rt-Remove-might_sleep-in-__up_read.patch
 # Keep rt_version matched up with this patch.
-Patch538:       0338-Linux-4.19.198-rt85-REBASE.patch
+Patch540:       0340-Linux-4.19.207-rt88-REBASE.patch
 
 #Photon Specific Changes
 Patch600:        0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
@@ -585,9 +582,6 @@ The Linux package contains the Linux kernel doc files
 %patch64 -p1
 %patch65 -p1
 %patch66 -p1
-%patch68 -p1
-%patch69 -p1
-%patch70 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -947,6 +941,8 @@ The Linux package contains the Linux kernel doc files
 %patch536 -p1
 %patch537 -p1
 %patch538 -p1
+%patch539 -p1
+%patch540 -p1
 %patch600 -p1
 %patch601 -p1
 %patch602 -p1
@@ -1169,6 +1165,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Sep 29 2021 Keerthana K <keerthanak@vmware.com> 4.19.208-1
+-   Update to version 4.19.208
 *   Fri Aug 27 2021 srinidhira0 <srinidhir@vmware.com> 4.19.205-1
 -   Update to version 4.19.205
 *   Tue Aug 24 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.198-4

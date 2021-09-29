@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.205
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.208
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f06a4a1fcb195551cde406fe70a7ddba9a948132
+%define sha1 linux=2bd7234fd0085d2144b97115780bf38b451ba735
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -84,11 +84,6 @@ Patch45:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 # Fix for CVE-2019-19770
 Patch46:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch47:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
-
-# Fix for CVE-2021-3444
-Patch49:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
-Patch50:        0002-bpf-Fix-32-bit-src-register-truncation-on-div-mod.patch
-Patch51:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
 
 # 9p patches
 Patch54:        0001-fs-9p-Add-opt_metaonly-option.patch
@@ -468,9 +463,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch45 -p1
 %patch46 -p1
 %patch47 -p1
-%patch49 -p1
-%patch50 -p1
-%patch51 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -895,6 +887,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Oct 06 2021 Keerthana K <keerthanak@vmware.com> 4.19.208-1
+-   Update to version 4.19.208
 *   Tue Oct 05 2021 Ankit Jain <ankitja@vmware.com> 4.19.205-4
 -   vtarfs: Fix memory allocation for entry pages
 *   Mon Sep 27 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.205-3

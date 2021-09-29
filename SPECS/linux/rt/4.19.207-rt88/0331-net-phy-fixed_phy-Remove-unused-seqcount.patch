@@ -1,0 +1,88 @@
+From 420c2e1475dd979cddc9183b7224b45ff17c2ea3 Mon Sep 17 00:00:00 2001
+From: "Ahmed S. Darwish" <a.darwish@linutronix.de>
+Date: Wed, 10 Jun 2020 12:53:00 +0200
+Subject: [PATCH 331/340] net: phy: fixed_phy: Remove unused seqcount
+
+[ Upstream commit 6554eac9ef2bd1c968886b31cc7266b49258a463 ]
+
+Commit bf7afb29d545 ("phy: improve safety of fixed-phy MII register
+reading") protected the fixed PHY status with a sequence counter.
+
+Two years later, commit d2b977939b18 ("net: phy: fixed-phy: remove
+fixed_phy_update_state()") removed the sequence counter's write side
+critical section -- neutralizing its read side retry loop.
+
+Remove the unused seqcount.
+
+Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
+Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+(cherry picked from v5.8-rc1 commit 79cbb6bc3332da7162c2581e151659ab8ebaa528)
+Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Tom Zanussi <zanussi@kernel.org>
+---
+ drivers/net/phy/fixed_phy.c | 25 +++++++++----------------
+ 1 file changed, 9 insertions(+), 16 deletions(-)
+
+diff --git a/drivers/net/phy/fixed_phy.c b/drivers/net/phy/fixed_phy.c
+index 59820164502e..953ff54dd5df 100644
+--- a/drivers/net/phy/fixed_phy.c
++++ b/drivers/net/phy/fixed_phy.c
+@@ -23,7 +23,6 @@
+ #include <linux/slab.h>
+ #include <linux/of.h>
+ #include <linux/gpio.h>
+-#include <linux/seqlock.h>
+ #include <linux/idr.h>
+ 
+ #include "swphy.h"
+@@ -36,7 +35,6 @@ struct fixed_mdio_bus {
+ struct fixed_phy {
+ 	int addr;
+ 	struct phy_device *phydev;
+-	seqcount_t seqcount;
+ 	struct fixed_phy_status status;
+ 	int (*link_update)(struct net_device *, struct fixed_phy_status *);
+ 	struct list_head node;
+@@ -62,18 +60,15 @@ static int fixed_mdio_read(struct mii_bus *bus, int phy_addr, int reg_num)
+ 	list_for_each_entry(fp, &fmb->phys, node) {
+ 		if (fp->addr == phy_addr) {
+ 			struct fixed_phy_status state;
+-			int s;
+-
+-			do {
+-				s = read_seqcount_begin(&fp->seqcount);
+-				/* Issue callback if user registered it. */
+-				if (fp->link_update)
+-					fp->link_update(fp->phydev->attached_dev,
+-							&fp->status);
+-				/* Check the GPIO for change in status */
+-				fixed_phy_update(fp);
+-				state = fp->status;
+-			} while (read_seqcount_retry(&fp->seqcount, s));
++
++			/* Issue callback if user registered it. */
++			if (fp->link_update)
++				fp->link_update(fp->phydev->attached_dev,
++						&fp->status);
++
++			/* Check the GPIO for change in status */
++			fixed_phy_update(fp);
++			state = fp->status;
+ 
+ 			return swphy_read_reg(reg_num, &state);
+ 		}
+@@ -131,8 +126,6 @@ int fixed_phy_add(unsigned int irq, int phy_addr,
+ 	if (!fp)
+ 		return -ENOMEM;
+ 
+-	seqcount_init(&fp->seqcount);
+-
+ 	if (irq != PHY_POLL)
+ 		fmb->mii_bus->irq[phy_addr] = irq;
+ 
+-- 
+2.31.1
+

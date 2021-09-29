@@ -2,7 +2,7 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.205
+Version:        4.19.208
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f06a4a1fcb195551cde406fe70a7ddba9a948132
+%define sha1 linux=2bd7234fd0085d2144b97115780bf38b451ba735
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -81,11 +81,6 @@ Patch63:        0005-ovl-check-permission-to-open-real-file.patch
 # Fix for CVE-2019-19770
 Patch64:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch65:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
-
-# Fix for CVE-2021-3444
-Patch67:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
-Patch68:        0002-bpf-Fix-32-bit-src-register-truncation-on-div-mod.patch
-Patch69:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -256,9 +251,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch63 -p1
 %patch64 -p1
 %patch65 -p1
-%patch67 -p1
-%patch68 -p1
-%patch69 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -476,6 +468,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Sep 29 2021 Keerthana K <keerthanak@vmware.com> 4.19.208-1
+-   Update to version 4.19.208
 *   Fri Aug 27 2021 srinidhira0 <srinidhir@vmware.com> 4.19.205-1
 -   Update to version 4.19.205
 *   Tue Jul 27 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.198-1

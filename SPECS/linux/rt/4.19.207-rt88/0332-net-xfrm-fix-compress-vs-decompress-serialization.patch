@@ -1,0 +1,101 @@
+From 36f2a019af90c07df384285e052163b7d2f44960 Mon Sep 17 00:00:00 2001
+From: Davidlohr Bueso <dave@stgolabs.net>
+Date: Tue, 18 Aug 2020 09:20:53 -0700
+Subject: [PATCH 332/340] net: xfrm: fix compress vs decompress serialization
+
+A crash was seen in xfrm when running ltp's 'tcp4_ipsec06' stresser on v4.x
+based RT kernels.
+
+ipcomp_compress() will serialize access to the ipcomp_scratches percpu buffer by
+disabling BH and preventing a softirq from coming in and running ipcom_decompress(),
+which is never called from process context. This of course won't work on RT and
+the buffer can get corrupted; there have been similar issues with in the past with
+such assumptions, ie: ebf255ed6c44 (net: add back the missing serialization in
+ip_send_unicast_reply()).
+
+Similarly, this patch addresses the issue with locallocks allowing RT to have a
+percpu spinlock and do the correct serialization.
+
+Signed-off-by: Davidlohr Bueso <dbueso@suse.de>
+Signed-off-by: Tom Zanussi <zanussi@kernel.org>
+---
+ net/xfrm/xfrm_ipcomp.c | 21 +++++++++++++++------
+ 1 file changed, 15 insertions(+), 6 deletions(-)
+
+diff --git a/net/xfrm/xfrm_ipcomp.c b/net/xfrm/xfrm_ipcomp.c
+index a00ec715aa46..a97997385423 100644
+--- a/net/xfrm/xfrm_ipcomp.c
++++ b/net/xfrm/xfrm_ipcomp.c
+@@ -20,6 +20,7 @@
+ #include <linux/list.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
++#include <linux/locallock.h>
+ #include <linux/percpu.h>
+ #include <linux/slab.h>
+ #include <linux/smp.h>
+@@ -36,6 +37,7 @@ struct ipcomp_tfms {
+ 
+ static DEFINE_MUTEX(ipcomp_resource_mutex);
+ static void * __percpu *ipcomp_scratches;
++static DEFINE_LOCAL_IRQ_LOCK(ipcomp_scratches_lock);
+ static int ipcomp_scratch_users;
+ static LIST_HEAD(ipcomp_tfms_list);
+ 
+@@ -45,12 +47,15 @@ static int ipcomp_decompress(struct xfrm_state *x, struct sk_buff *skb)
+ 	const int plen = skb->len;
+ 	int dlen = IPCOMP_SCRATCH_SIZE;
+ 	const u8 *start = skb->data;
+-	const int cpu = get_cpu();
+-	u8 *scratch = *per_cpu_ptr(ipcomp_scratches, cpu);
+-	struct crypto_comp *tfm = *per_cpu_ptr(ipcd->tfms, cpu);
+-	int err = crypto_comp_decompress(tfm, start, plen, scratch, &dlen);
+-	int len;
++	u8 *scratch;
++	struct crypto_comp *tfm;
++	int err, len;
++
++	local_lock(ipcomp_scratches_lock);
+ 
++	scratch = *this_cpu_ptr(ipcomp_scratches);
++	tfm = *this_cpu_ptr(ipcd->tfms);
++	err = crypto_comp_decompress(tfm, start, plen, scratch, &dlen);
+ 	if (err)
+ 		goto out;
+ 
+@@ -103,7 +108,7 @@ static int ipcomp_decompress(struct xfrm_state *x, struct sk_buff *skb)
+ 	err = 0;
+ 
+ out:
+-	put_cpu();
++	local_unlock(ipcomp_scratches_lock);
+ 	return err;
+ }
+ 
+@@ -146,6 +151,8 @@ static int ipcomp_compress(struct xfrm_state *x, struct sk_buff *skb)
+ 	int err;
+ 
+ 	local_bh_disable();
++	local_lock(ipcomp_scratches_lock);
++
+ 	scratch = *this_cpu_ptr(ipcomp_scratches);
+ 	tfm = *this_cpu_ptr(ipcd->tfms);
+ 	err = crypto_comp_compress(tfm, start, plen, scratch, &dlen);
+@@ -158,12 +165,14 @@ static int ipcomp_compress(struct xfrm_state *x, struct sk_buff *skb)
+ 	}
+ 
+ 	memcpy(start + sizeof(struct ip_comp_hdr), scratch, dlen);
++	local_unlock(ipcomp_scratches_lock);
+ 	local_bh_enable();
+ 
+ 	pskb_trim(skb, dlen + sizeof(struct ip_comp_hdr));
+ 	return 0;
+ 
+ out:
++	local_unlock(ipcomp_scratches_lock);
+ 	local_bh_enable();
+ 	return err;
+ }
+-- 
+2.31.1
+

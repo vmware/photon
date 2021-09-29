@@ -2,7 +2,7 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.205
+Version:        4.19.208
 Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -13,7 +13,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=f06a4a1fcb195551cde406fe70a7ddba9a948132
+%define sha1 linux=2bd7234fd0085d2144b97115780bf38b451ba735
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -78,11 +78,6 @@ Patch61:        0005-ovl-check-permission-to-open-real-file.patch
 # Fix for CVE-2019-19770
 Patch62:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch63:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
-
-# Fix for CVE-2021-3444
-Patch65:        0001-bpf-allocate-0x06-to-new-eBPF-instruction-class-JMP3.patch
-Patch66:        0002-bpf-Fix-32-bit-src-register-truncation-on-div-mod.patch
-Patch67:        0003-bpf-Fix-truncation-handling-for-mod32-dst-reg-wrt-ze.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -245,9 +240,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch61 -p1
 %patch62 -p1
 %patch63 -p1
-%patch65 -p1
-%patch66 -p1
-%patch67 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -482,6 +474,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Sep 29 2021 Keerthana K <keerthanak@vmware.com> 4.19.208-1
+-   Update to version 4.19.208
 *   Fri Aug 27 2021 srinidhira0 <srinidhir@vmware.com> 4.19.205-1
 -   Update to version 4.19.205
 *   Wed Aug 11 2021 Vikash Bansal <bvikas@vmware.com> 4.19.198-2

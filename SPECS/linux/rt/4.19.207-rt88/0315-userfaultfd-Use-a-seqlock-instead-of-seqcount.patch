@@ -1,0 +1,79 @@
+From 1c2011643d45baa9780e7dc544174d25139689dd Mon Sep 17 00:00:00 2001
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Date: Wed, 18 Dec 2019 12:25:09 +0100
+Subject: [PATCH 315/340] userfaultfd: Use a seqlock instead of seqcount
+
+[ Upstream commit dc952a564d02997330654be9628bbe97ba2a05d3 ]
+
+On RT write_seqcount_begin() disables preemption which leads to warning
+in add_wait_queue() while the spinlock_t is acquired.
+The waitqueue can't be converted to swait_queue because
+userfaultfd_wake_function() is used as a custom wake function.
+
+Use seqlock instead seqcount to avoid the preempt_disable() section
+during add_wait_queue().
+
+Cc: stable-rt@vger.kernel.org
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ fs/userfaultfd.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/fs/userfaultfd.c b/fs/userfaultfd.c
+index 23c8efc967af..3f79609511da 100644
+--- a/fs/userfaultfd.c
++++ b/fs/userfaultfd.c
+@@ -56,7 +56,7 @@ struct userfaultfd_ctx {
+ 	/* waitqueue head for events */
+ 	wait_queue_head_t event_wqh;
+ 	/* a refile sequence protected by fault_pending_wqh lock */
+-	struct seqcount refile_seq;
++	seqlock_t refile_seq;
+ 	/* pseudo fd refcounting */
+ 	atomic_t refcount;
+ 	/* userfaultfd syscall flags */
+@@ -1059,7 +1059,7 @@ static ssize_t userfaultfd_ctx_read(struct userfaultfd_ctx *ctx, int no_wait,
+ 			 * waitqueue could become empty if this is the
+ 			 * only userfault.
+ 			 */
+-			write_seqcount_begin(&ctx->refile_seq);
++			write_seqlock(&ctx->refile_seq);
+ 
+ 			/*
+ 			 * The fault_pending_wqh.lock prevents the uwq
+@@ -1085,7 +1085,7 @@ static ssize_t userfaultfd_ctx_read(struct userfaultfd_ctx *ctx, int no_wait,
+ 			list_del(&uwq->wq.entry);
+ 			add_wait_queue(&ctx->fault_wqh, &uwq->wq);
+ 
+-			write_seqcount_end(&ctx->refile_seq);
++			write_sequnlock(&ctx->refile_seq);
+ 
+ 			/* careful to always initialize msg if ret == 0 */
+ 			*msg = uwq->msg;
+@@ -1258,11 +1258,11 @@ static __always_inline void wake_userfault(struct userfaultfd_ctx *ctx,
+ 	 * sure we've userfaults to wake.
+ 	 */
+ 	do {
+-		seq = read_seqcount_begin(&ctx->refile_seq);
++		seq = read_seqbegin(&ctx->refile_seq);
+ 		need_wakeup = waitqueue_active(&ctx->fault_pending_wqh) ||
+ 			waitqueue_active(&ctx->fault_wqh);
+ 		cond_resched();
+-	} while (read_seqcount_retry(&ctx->refile_seq, seq));
++	} while (read_seqretry(&ctx->refile_seq, seq));
+ 	if (need_wakeup)
+ 		__wake_userfault(ctx, range);
+ }
+@@ -1936,7 +1936,7 @@ static void init_once_userfaultfd_ctx(void *mem)
+ 	init_waitqueue_head(&ctx->fault_wqh);
+ 	init_waitqueue_head(&ctx->event_wqh);
+ 	init_waitqueue_head(&ctx->fd_wqh);
+-	seqcount_init(&ctx->refile_seq);
++	seqlock_init(&ctx->refile_seq);
+ }
+ 
+ SYSCALL_DEFINE1(userfaultfd, int, flags)
+-- 
+2.31.1
+
