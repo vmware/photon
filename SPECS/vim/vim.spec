@@ -3,14 +3,16 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.2.3408
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    vim=f53626d97b6d57b2579493f2527fdcf275244017
+%define sha1    %{name}=f53626d97b6d57b2579493f2527fdcf275244017
+
 BuildRequires:  ncurses-devel
 
 %description
@@ -20,17 +22,17 @@ The Vim package contains a powerful text editor.
 Summary:    Extra files for Vim text editor
 Group:      Applications/Editors
 Requires:   tcsh
+Requires:   %{name} = %{version}-%{release}
 Conflicts:  toybox < 0.8.2-2
 
 %description extra
 The vim extra package contains a extra files for powerful text editor.
 
 %prep
-%autosetup
-
+%autosetup -p1
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
-%build
 
+%build
 %configure --enable-multibyte
 make VERBOSE=1 %{?_smp_mflags}
 
@@ -64,7 +66,7 @@ au BufEnter,BufNew *.py set tabstop=4 shiftwidth=4 expandtab
 if ! isdirectory("~/.vim/swap/")
         call system('install -d -m 700 ~/.vim/swap')
 endif
-set directory=~/.vim/swap//
+set directory=~/.vim/swap/
 " End /etc/vimrc
 EOF
 
@@ -78,10 +80,8 @@ make test %{?_smp_mflags}
 
 %post
 if ! sed -n -e '0,/[[:space:]]*call[[:space:]]\+system\>/p' %{_sysconfdir}/vimrc | \
-     grep -q '^[[:space:]]*set[[:space:]]\+shell=/bin/bash'
-then
-    sed -i -e 's#^\([[:space:]]*\)\(call[[:space:]]\+system.*\)$#\1set shell=/bin/bash\n\1\2#g' \
-        %{_sysconfdir}/vimrc
+     grep -q '^[[:space:]]*set[[:space:]]\+shell=/bin/bash'; then
+  sed -i -e 's#^\([[:space:]]*\)\(call[[:space:]]\+system.*\)$#\1set shell=/bin/bash\n\1\2#g' %{_sysconfdir}/vimrc
 fi
 
 %files extra
@@ -98,13 +98,11 @@ fi
 %{_datarootdir}/icons/hicolor/48x48/apps/gvim.png
 %{_datarootdir}/icons/locolor/16x16/apps/gvim.png
 %{_datarootdir}/icons/locolor/32x32/apps/gvim.png
-%{_datarootdir}/vim/vim*/defaults.vim
 %{_datarootdir}/vim/vim*/pack/dist/opt/*
 %exclude %{_datarootdir}/vim/vim*/colors/desert.vim
 %{_datarootdir}/vim/vim*/compiler/*
 %{_datarootdir}/vim/vim*/delmenu.vim
 %{_datarootdir}/vim/vim*/evim.vim
-%{_datarootdir}/vim/vim*/filetype.vim
 %{_datarootdir}/vim/vim*/ftoff.vim
 %{_datarootdir}/vim/vim*/ftplugin.vim
 %{_datarootdir}/vim/vim*/ftplugin/*
@@ -125,7 +123,9 @@ fi
 %{_datarootdir}/vim/vim*/scripts.vim
 %{_datarootdir}/vim/vim*/spell/*
 %{_datarootdir}/vim/vim*/syntax/*
+%exclude %{_datarootdir}/vim/vim82/syntax/nosyntax.vim
 %exclude %{_datarootdir}/vim/vim*/syntax/syntax.vim
+%exclude %{_datarootdir}/vim/vim82/autoload/dist/ft.vim
 %{_datarootdir}/vim/vim*/tools/*
 %{_datarootdir}/vim/vim*/tutor/*
 %{_datarootdir}/vim/vim*/lang/*.vim
@@ -178,6 +178,11 @@ fi
 %{_datarootdir}/vim/vim*/syntax/syntax.vim
 %{_datarootdir}/vim/vim*/rgb.txt
 %{_datarootdir}/vim/vim*/colors/desert.vim
+%{_datarootdir}/vim/vim*/defaults.vim
+%{_datarootdir}/vim/vim*/filetype.vim
+%{_datarootdir}/vim/vim82/syntax/nosyntax.vim
+%{_datarootdir}/vim/vim82/syntax/syntax.vim
+%{_datarootdir}/vim/vim82/autoload/dist/ft.vim
 %{_bindir}/ex
 %{_bindir}/vi
 %{_bindir}/view
@@ -187,47 +192,50 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
-*   Wed Sep 15 2021 Tapas Kundu <tkundu@vmware.com> 8.2.3408-1
--   Fix CVE-2021-3770
-*   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 8.2.1361-1
--   Automatic Version Bump
-*   Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 8.2.0190-1
--   Automatic Version Bump
-*   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 8.1.0388-5
--   Do not conflict with toybox >= 0.8.2-2
-*   Thu Feb 20 2020 Prashant Singh Chauhan <psinghchauha@vmware.com> 8.1.0388-4
--   Fix make check failure
-*   Tue Jan 29 2019 Dweep Advani <dadvani@vmware.com> 8.1.0388-3
--   Fixed swap file creation error for custom login shell
-*   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 8.1.0388-2
--   Add conflicts toybox for vim-extra.
-*   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 8.1.0388-1
--   Update to version 8.1.0388.
-*   Tue Jul 10 2018 Tapas Kundu <tkundu@vmware.com> 8.0.0533-4
--   Fix for CVE-2017-17087 and CVE-2017-1000382.
-*   Mon Aug 14 2017 Chang Lee <changlee@vmware.com>  8.0.0533-3
--   Disabled Test_recover_root_dir in %check.
-*   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com>  8.0.0533-2
--   Remove tcsh requires.
-*   Fri Apr 14 2017 Xiaolin Li <xiaolinl@vmware.com> 8.0.0533-1
--   Updated to version 8.0.0533.
-*   Tue Feb 28 2017 Anish Swaminathan <anishs@vmware.com>  7.4-10
--   Fix for CVE-2017-6349 and CVE-2017-6350.
-*   Fri Feb 17 2017 Anish Swaminathan <anishs@vmware.com>  7.4-9
--   Fix for CVE-2017-5953.
-*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  7.4-8
--   Fix for CVE-2016-1248.
-*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 7.4-7
--   Modified %check.
-*   Wed Aug 24 2016 Alexey Makhalov <amakhalov@vmware.com> 7.4-6
--   vimrc: Added tags search, tab->spaces and some bindings.
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.4-5
--   GA - Bump release of all rpms.
-*   Thu Jul 16 2015 Touseef Liaqat <tliaqat@vmware.com> 7.4-3
--   Added profile related files in minimal vim package.
-*   Tue Jun 30 2015 Touseef Liaqat <tliaqat@vmware.com> 7.4-3
--   Pack extra files separately, to make vim package small.
-*   Fri Jun 19 2015 Alexey Makhalov <amakhalov@vmware.com> 7.4-2
--   Disable debug package. Use 'desert' colorscheme.
-*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 7.4-1
--   Initial build First version.
+* Thu Sep 23 2021 Dweep Advani <davani@vmware.com> 8.2.3408-2
+- Fix vim startup errors E216, E1187 and E484
+- vim-extra requires vim
+* Wed Sep 15 2021 Tapas Kundu <tkundu@vmware.com> 8.2.3408-1
+- Fix CVE-2021-3770
+* Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 8.2.1361-1
+- Automatic Version Bump
+* Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 8.2.0190-1
+- Automatic Version Bump
+* Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 8.1.0388-5
+- Do not conflict with toybox >= 0.8.2-2
+* Thu Feb 20 2020 Prashant Singh Chauhan <psinghchauha@vmware.com> 8.1.0388-4
+- Fix make check failure
+* Tue Jan 29 2019 Dweep Advani <dadvani@vmware.com> 8.1.0388-3
+- Fixed swap file creation error for custom login shell
+* Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 8.1.0388-2
+- Add conflicts toybox for vim-extra.
+* Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 8.1.0388-1
+- Update to version 8.1.0388.
+* Tue Jul 10 2018 Tapas Kundu <tkundu@vmware.com> 8.0.0533-4
+- Fix for CVE-2017-17087 and CVE-2017-1000382.
+* Mon Aug 14 2017 Chang Lee <changlee@vmware.com>  8.0.0533-3
+- Disabled Test_recover_root_dir in %check.
+* Tue May 02 2017 Anish Swaminathan <anishs@vmware.com>  8.0.0533-2
+- Remove tcsh requires.
+* Fri Apr 14 2017 Xiaolin Li <xiaolinl@vmware.com> 8.0.0533-1
+- Updated to version 8.0.0533.
+* Tue Feb 28 2017 Anish Swaminathan <anishs@vmware.com>  7.4-10
+- Fix for CVE-2017-6349 and CVE-2017-6350.
+* Fri Feb 17 2017 Anish Swaminathan <anishs@vmware.com>  7.4-9
+- Fix for CVE-2017-5953.
+* Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  7.4-8
+- Fix for CVE-2016-1248.
+* Wed Oct 05 2016 ChangLee <changlee@vmware.com> 7.4-7
+- Modified %check.
+* Wed Aug 24 2016 Alexey Makhalov <amakhalov@vmware.com> 7.4-6
+- vimrc: Added tags search, tab->spaces and some bindings.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.4-5
+- GA - Bump release of all rpms.
+* Thu Jul 16 2015 Touseef Liaqat <tliaqat@vmware.com> 7.4-3
+- Added profile related files in minimal vim package.
+* Tue Jun 30 2015 Touseef Liaqat <tliaqat@vmware.com> 7.4-3
+- Pack extra files separately, to make vim package small.
+* Fri Jun 19 2015 Alexey Makhalov <amakhalov@vmware.com> 7.4-2
+- Disable debug package. Use 'desert' colorscheme.
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 7.4-1
+- Initial build. First version.
