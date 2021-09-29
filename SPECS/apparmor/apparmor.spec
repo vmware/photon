@@ -1,15 +1,17 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           apparmor
 Version:        3.0.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
-Source0:        https://launchpad.net/apparmor/3.0/3.0/+download/%{name}-%{version}.tar.gz
-%define sha1    apparmor=4e8c7f289fca33d905d204d66b8d37fa464a7c13
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Productivity/Security
+
+Source0:        https://launchpad.net/apparmor/3.0/3.0/+download/%{name}-%{version}.tar.gz
+%define sha1    %{name}=4e8c7f289fca33d905d204d66b8d37fa464a7c13
+
 BuildRequires:  python3
 BuildRequires:  perl
 BuildRequires:  python3-devel
@@ -154,9 +156,7 @@ Requires:   libapparmor = %{version}-%{release}
 This package contains the AppArmor module for perl.
 
 %prep
-%setup -q -n %{name}-%{version}
-
-%patch0 -p1
+%autosetup -n %{name}-%{version} -p1
 
 %build
 #Building libapparmor
@@ -164,13 +164,15 @@ cd ./libraries/libapparmor
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 /sbin/ldconfig
 sh ./autogen.sh
-%configure \
- --with-perl \
- --with-python
+
+%configure --with-perl --with-python
+
 make %{?_smp_mflags}
+
 #Building Binutils
 cd ../../binutils/
 make %{?_smp_mflags}
+
 #Building parser
 cd ../parser
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
@@ -178,15 +180,19 @@ export LIBRARY_PATH="$LIBRARY_PATH:/usr/lib"
 echo $LD_LIBRARY_PATH
 echo $LIBRARY_PATH
 make %{?_smp_mflags}
+
 #Building Utilities
 cd ../utils
 make %{?_smp_mflags}
+
 #Building Apache mod_apparmor
 cd ../changehat/mod_apparmor
 make %{?_smp_mflags}
+
 #Building PAM AppArmor
 cd ../pam_apparmor
 make %{?_smp_mflags}
+
 #Building Profiles
 cd ../../profiles
 make %{?_smp_mflags}
@@ -199,12 +205,15 @@ export PYTHON=/usr/bin/python3
 export PYTHON_VERSION=3.9
 export PYTHON_VERSIONS=python3
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
+
 cd ./libraries/libapparmor
-make check
+make check %{?_smp_mflags}
+
 cd ../../binutils/
-make check
+make check %{?_smp_mflags}
+
 cd ../utils
-make check
+make check %{?_smp_mflags}
 
 %install
 export PYTHONPATH=/usr/lib/python3.9/site-packages
@@ -213,19 +222,20 @@ export PYTHON_VERSION=3.9
 export PYTHON_VERSIONS=python3
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 cd libraries/libapparmor
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../../binutils/
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install
 cd ../parser
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../utils
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../changehat/mod_apparmor
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../pam_apparmor
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../../profiles
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %files -n libapparmor
 %defattr(-,root,root)
@@ -352,30 +362,32 @@ make DESTDIR=%{buildroot} install
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
-*   Fri Nov 06 2020 Tapas Kundu <tkundu@vmware.com> 3.0.0-3
--   Build with python 3.9
-*   Fri Oct 23 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.0.0-2
--   Fix build failure in apparmor on linux 5.9-rc7
-*   Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.0-1
--   Automatic Version Bump
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.13.4-2
--   openssl 1.1.1
-*   Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 2.13.4-1
--   Automatic Version Bump
-*   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 2.13-8
--   Updated using python 3.8 libs
-*   Tue Mar 05 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.13-7
--   Excluded conflicting perllocal.pod
-*   Thu Dec 06 2018 Keerthana K <keerthanak@vmware.com> 2.13-6
--   Fixed make check failures.
-*   Fri Oct 05 2018 Tapas Kundu <tkundu@vmware.com> 2.13-5
--   Updated using python 3.7 libs
-*   Wed Oct 03 2018 Keerthana K <keerthanak@vmware.com> 2.13-4
--   Depcrecated ruby apparmor package.
--   Modified the perl and python path to generic.
-*   Wed Sep 26 2018 Ajay Kaher <akaher@vmware.com> 2.13-3
--   Fix for aarch64
-*   Thu Sep 20 2018 Keerthana K <keerthanak@vmware.com> 2.13-2
--   Updated the ruby packagefor latest version.
-*   Thu Aug 30 2018 Keerthana K <keerthanak@vmware.com> 2.13-1
--   Initial Apparmor package for Photon.
+* Tue Oct 05 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.0.0-4
+- Bump version as a part of httpd upgrade
+* Fri Nov 06 2020 Tapas Kundu <tkundu@vmware.com> 3.0.0-3
+- Build with python 3.9
+* Fri Oct 23 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.0.0-2
+- Fix build failure in apparmor on linux 5.9-rc7
+* Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.0-1
+- Automatic Version Bump
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.13.4-2
+- openssl 1.1.1
+* Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 2.13.4-1
+- Automatic Version Bump
+* Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 2.13-8
+- Updated using python 3.8 libs
+* Tue Mar 05 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.13-7
+- Excluded conflicting perllocal.pod
+* Thu Dec 06 2018 Keerthana K <keerthanak@vmware.com> 2.13-6
+- Fixed make check failures.
+* Fri Oct 05 2018 Tapas Kundu <tkundu@vmware.com> 2.13-5
+- Updated using python 3.7 libs
+* Wed Oct 03 2018 Keerthana K <keerthanak@vmware.com> 2.13-4
+- Depcrecated ruby apparmor package.
+- Modified the perl and python path to generic.
+* Wed Sep 26 2018 Ajay Kaher <akaher@vmware.com> 2.13-3
+- Fix for aarch64
+* Thu Sep 20 2018 Keerthana K <keerthanak@vmware.com> 2.13-2
+- Updated the ruby packagefor latest version.
+* Thu Aug 30 2018 Keerthana K <keerthanak@vmware.com> 2.13-1
+- Initial Apparmor package for Photon.
