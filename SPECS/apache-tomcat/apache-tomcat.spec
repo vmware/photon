@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.60
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -17,6 +17,7 @@ Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
 Patch1:         apache-tomcat-CVE-2021-25122.patch
 Patch2:         apache-tomcat-CVE-2021-25329.patch
 Patch3:         apache-tomcat-CVE-2021-33037.patch
+Patch4:         apache-tomcat-CVE-2021-41079.patch
 BuildRequires:  openjre
 BuildRequires:  openjdk
 BuildRequires:  apache-ant
@@ -44,6 +45,7 @@ find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
@@ -108,6 +110,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Thu Sep 30 2021 Nitesh Kumar <kunitesh@vmware.com> 8.5.60-4
+-   Fix CVE-2021-41079
 *   Fri Jul 23 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.60-3
 -   Fix CVE-2021-33037
 *   Tue Mar 16 2021 Dweep Advani <dadvani@vmware.com> 8.5.60-2
@@ -192,6 +196,6 @@ rm -rf %{buildroot}/*
 *   Mon Nov 16 2015 Sharath George <sharathg@vmware.com> 7.0.63-3
 -   Change path to /var/opt.
 *   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 7.0.63-2
--   Updated dependency after repackaging openjdk. 
+-   Updated dependency after repackaging openjdk.
 *   Wed Jul 8 2015 Sriram Nambakam <snambakam@vmware.com> 7.0.63
 -   Initial build.  First version
