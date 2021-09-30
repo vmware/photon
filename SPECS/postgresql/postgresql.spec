@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        13.4
+Version:        14.0
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,10 +9,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=92146ec62ad80e8f5d2959b5cc1766311dc00d64
+%define sha1    postgresql=23c3ed1f42d2c439316fa978923fef469a8c379d
 
 # Macros to be used by find_lang and such.
-%global pgmajorversion 13
+%global pgmajorversion 14
 
 # Common libraries needed
 # clang-devel is needed for LLVM.
@@ -184,7 +184,7 @@ sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_man
     --with-libxml \
     --with-libxslt \
     --with-llvm \
-    --with-openssl \
+    --with-ssl=openssl \
     --with-gssapi \
     --with-libedit-preferred \
     --with-pam \
@@ -211,6 +211,7 @@ rm -f %{buildroot}/%{_datadir}/postgresql/extension/*_plpythonu.control
 %find_lang ecpglib6-%{pgmajorversion}
 %find_lang initdb-%{pgmajorversion}
 %find_lang libpq5-%{pgmajorversion}
+%find_lang pg_amcheck-%{pgmajorversion}
 %find_lang pg_archivecleanup-%{pgmajorversion}
 %find_lang pg_basebackup-%{pgmajorversion}
 %find_lang pg_checksums-%{pgmajorversion}
@@ -238,7 +239,7 @@ cat pltcl-%{pgmajorversion}.lang >> pg_i18n.lst
 %find_lang psql-%{pgmajorversion}
 cat libpq5-%{pgmajorversion}.lang >> pg_i18n.lst
 cat pg_config-%{pgmajorversion}.lang ecpg-%{pgmajorversion}.lang ecpglib6-%{pgmajorversion}.lang >> pg_i18n.lst
-cat initdb-%{pgmajorversion}.lang pg_ctl-%{pgmajorversion}.lang psql-%{pgmajorversion}.lang pg_dump-%{pgmajorversion}.lang pg_basebackup-%{pgmajorversion}.lang pgscripts-%{pgmajorversion}.lang >> pg_i18n.lst
+cat initdb-%{pgmajorversion}.lang pg_amcheck-%{pgmajorversion}.lang pg_ctl-%{pgmajorversion}.lang psql-%{pgmajorversion}.lang pg_dump-%{pgmajorversion}.lang pg_basebackup-%{pgmajorversion}.lang pgscripts-%{pgmajorversion}.lang >> pg_i18n.lst
 cat postgres-%{pgmajorversion}.lang pg_resetwal-%{pgmajorversion}.lang pg_checksums-%{pgmajorversion}.lang pg_verifybackup-%{pgmajorversion}.lang pg_controldata-%{pgmajorversion}.lang plpgsql-%{pgmajorversion}.lang pg_test_timing-%{pgmajorversion}.lang pg_test_fsync-%{pgmajorversion}.lang pg_archivecleanup-%{pgmajorversion}.lang pg_waldump-%{pgmajorversion}.lang pg_rewind-%{pgmajorversion}.lang pg_upgrade-%{pgmajorversion}.lang >> pg_i18n.lst
 
 %check
@@ -315,6 +316,7 @@ rm -rf %{buildroot}/*
 %files server
 %defattr(-,root,root)
 %{_bindir}/initdb
+%{_bindir}/pg_amcheck
 %{_bindir}/pg_archivecleanup
 %{_bindir}/pg_checksums
 %{_bindir}/pg_controldata
@@ -328,6 +330,7 @@ rm -rf %{buildroot}/*
 %{_bindir}/postgres
 %{_bindir}/postmaster
 %{_mandir}/man1/initdb.*
+%{_mandir}/man1/pg_amcheck.*
 %{_mandir}/man1/pg_archivecleanup.*
 %{_mandir}/man1/pg_checksums.*
 %{_mandir}/man1/pg_controldata.*
@@ -347,6 +350,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/postgresql/information_schema.sql
 %{_datadir}/postgresql/snowball_create.sql
 %{_datadir}/postgresql/sql_features.txt
+%{_datadir}/postgresql/system_constraints.sql
+%{_datadir}/postgresql/system_functions.sql
 %{_datadir}/postgresql/system_views.sql
 %dir %{_datadir}/postgresql/extension
 %{_datadir}/postgresql/extension/plpgsql*
@@ -376,7 +381,6 @@ rm -rf %{buildroot}/*
 %{_bindir}/oid2name
 %{_bindir}/vacuumlo
 %{_bindir}/pg_recvlogical
-%{_bindir}/pg_standby
 %{_datadir}/postgresql/extension/adminpack*
 %{_datadir}/postgresql/extension/amcheck*
 %{_datadir}/postgresql/extension/autoinc*
@@ -401,11 +405,13 @@ rm -rf %{buildroot}/*
 %{_datadir}/postgresql/extension/ltree.control
 %{_datadir}/postgresql/extension/ltree--*.sql
 %{_datadir}/postgresql/extension/moddatetime*
+%{_datadir}/postgresql/extension/old_snapshot*
 %{_datadir}/postgresql/extension/pageinspect*
 %{_datadir}/postgresql/extension/pg_buffercache*
 %{_datadir}/postgresql/extension/pg_freespacemap*
 %{_datadir}/postgresql/extension/pg_prewarm*
 %{_datadir}/postgresql/extension/pg_stat_statements*
+%{_datadir}/postgresql/extension/pg_surgery*
 %{_datadir}/postgresql/extension/pg_trgm*
 %{_datadir}/postgresql/extension/pg_visibility*
 %{_datadir}/postgresql/extension/pgcrypto*
@@ -444,6 +450,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/lo.so
 %{_libdir}/postgresql/ltree.so
 %{_libdir}/postgresql/moddatetime.so
+%{_libdir}/postgresql/old_snapshot.so
 %{_libdir}/postgresql/pageinspect.so
 %{_libdir}/postgresql/passwordcheck.so
 %{_libdir}/postgresql/pgcrypto.so
@@ -453,6 +460,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/pg_freespacemap.so
 %{_libdir}/postgresql/pg_prewarm.so
 %{_libdir}/postgresql/pg_stat_statements.so
+%{_libdir}/postgresql/pg_surgery.so
 %{_libdir}/postgresql/pg_trgm.so
 %{_libdir}/postgresql/pg_visibility.so
 %{_libdir}/postgresql/pgxml.so
@@ -469,7 +477,6 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/uuid-ossp.so
 %{_mandir}/man1/oid2name.*
 %{_mandir}/man1/pg_recvlogical.*
-%{_mandir}/man1/pg_standby.*
 %{_mandir}/man1/vacuumlo.*
 
 %files llvmjit
@@ -527,6 +534,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/plpython3.so
 
 %changelog
+*   Thu Sep 30 2021 Michael Paquier <mpaquier@vmware.com> 14.0-1
+-   Upgraded to version 14.0
 *   Sat Aug 14 2021 Michael Paquier <mpaquier@vmware.com> 13.4-1
 -   Upgraded to version 13.4
 *   Fri May 14 2021 Michael Paquier <mpaquier@vmware.com> 13.3-1
