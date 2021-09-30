@@ -1,14 +1,14 @@
 Summary:	advanced key-value store
 Name:		redis
-Version:	5.0.13
-Release:	2%{?dist}
+Version:	6.0.15
+Release:	1%{?dist}
 License:	BSD
 URL:		http://redis.io/
 Group:		Applications/Databases
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://download.redis.io/releases/%{name}-%{version}.tar.gz
-%define sha1 redis=f07c789f89a472985c28885beafff35688a27017
+%define sha1 redis=432a1fd3b45ee2f35fa9f9db57514b490b8c4724
 Patch0:         redis-conf.patch
 BuildRequires:  gcc
 BuildRequires:  systemd
@@ -23,9 +23,7 @@ Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Redis is an in-memory data structure store, used as database, cache and message broker.
 
 %prep
-# Using autosetup is not feasible
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 make BUILD_TLS=yes %{?_smp_mflags}
@@ -83,6 +81,8 @@ exit 0
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
+* Thu Sep 30 2021 Shreyas B. <shreyasb@vmware.com> 6.0.15-1
+- Upgrading to v6.0.15 to support TLS
 * Thu Sep 23 2021 Shreyas B. <shreyasb@vmware.com> 5.0.13-2
 - Build with TLS
 * Sat Aug 07 2021 Shreyas B. <shreyasb@vmware.com> 5.0.13-1
