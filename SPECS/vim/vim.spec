@@ -3,7 +3,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.0.0533
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -20,6 +20,7 @@ Conflicts:      toybox < 0.7.3-7
 Patch0:         CVE-2017-17087.patch
 Patch1:         vim-CVE-2019-12735.patch
 Patch2:         CVE-2019-20807.patch
+Patch3:         vim-CVE-2021-3778.patch
 
 %description
 The Vim package contains a powerful text editor.
@@ -37,8 +38,7 @@ The vim extra package contains a extra files for powerful text editor.
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
 
 %build
-./configure \
-    --prefix=%{_prefix} \
+%configure \
     --enable-multibyte
 make VERBOSE=1 %{?_smp_mflags}
 
@@ -186,6 +186,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Thu Sep 30 2021 Dweep Advani <dadvani@vmware.com> 8.0.0533-10
+- Fix for CVE-2021-3778
 * Mon Sep 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 8.0.0533-9
 - Conflict only with toybox < 0.7.3-7
 * Wed Jun 03 2020 Anisha Kumari <kanisha@vmwre.com> 8.0.0533-8
