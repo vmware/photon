@@ -2,19 +2,25 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-zope.interface
-Version:        4.3.3
-Release:        2%{?dist}
+Version:        5.1.0
+Release:        1%{?dist}
 Url:            https://github.com/zopefoundation/zope.interface
 Summary:        Interfaces for Python
 License:        ZPL 2.1
 Group:          Development/Languages/Python
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        https://pypi.python.org/packages/source/z/zope.interface/zope.interface-%{version}.tar.gz
-%define sha1    zope.interface=66bd8e4af0f16468914fefc90ba9cca23e66cd9d
+%define sha1    zope.interface=0b8c7f3a489cc02b303de60f6abf94cf509e7aae
 
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
-
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 
@@ -27,11 +33,6 @@ For detailed documentation, please see http://docs.zope.org/zope.interface
 
 %package -n     python3-zope.interface
 Summary:        python-zope.interface
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -71,6 +72,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Sat Oct 02 2021 Piyush Gupta <gpiyush@vmware.com> 5.1.0-1
+-   Update to 5.1.0.
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-2
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1

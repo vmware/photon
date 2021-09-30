@@ -3,20 +3,24 @@
 
 Summary:        A XML/HTML/XHTML Markup safe string for Python.
 Name:           python-markupsafe
-Version:        1.0
-Release:        3%{?dist}
+Version:        1.1.1
+Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/MarkupSafe
-Source0:        https://pypi.python.org/packages/4d/de/32d741db316d8fdb7680822dd37001ef7a448255de9699ab4bfcbdf4172b/MarkupSafe-%{version}.tar.gz 
-%define sha1    MarkupSafe=9072e80a7faa0f49805737a48f3d871eb1c48728
+Source0:        https://pypi.python.org/packages/4d/de/32d741db316d8fdb7680822dd37001ef7a448255de9699ab4bfcbdf4172b/MarkupSafe-%{version}.tar.gz
+%define sha1    MarkupSafe=f70e5fd3c120a1b108d4347ea1115e3962c42026
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
-
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 Requires:       python2
 Requires:       python2-libs
 
@@ -25,11 +29,6 @@ MarkupSafe implements a XML/HTML/XHTML Markup safe string for Python.
 
 %package -n     python3-markupsafe
 Summary:        python-markupsafe
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 
@@ -61,6 +60,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Oct 01 2021 Piyush Gupta <gpiyush@vmware.com> 1.1.1-1
+-   Upgrade to 1.1.1.
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.0-3
 -   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
 *   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.0-2

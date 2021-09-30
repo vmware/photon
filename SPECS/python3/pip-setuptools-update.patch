@@ -1,0 +1,35 @@
+From 21cb789331cfb1fdb74a0fe2848ac54f88f5db52 Mon Sep 17 00:00:00 2001
+From: Piyush Gupta <gpiyush@vmware.com>
+diff --git a/Lib/ensurepip/__init__.py b/Lib/ensurepip/__init__.py
+index 09c572d..ae010ca 100644
+--- a/Lib/ensurepip/__init__.py
++++ b/Lib/ensurepip/__init__.py
+@@ -8,13 +8,13 @@ import tempfile
+ __all__ = ["version", "bootstrap"]
+
+
+-_SETUPTOOLS_VERSION = "40.6.2"
++_SETUPTOOLS_VERSION = "57.4.0"
+
+-_PIP_VERSION = "18.1"
++_PIP_VERSION = "21.2.4"
+
+ _PROJECTS = [
+-    ("setuptools", _SETUPTOOLS_VERSION),
+-    ("pip", _PIP_VERSION),
++    ("setuptools", _SETUPTOOLS_VERSION, 'py3'),
++    ("pip", _PIP_VERSION, 'py3'),
+ ]
+
+
+@@ -92,8 +92,8 @@ def _bootstrap(*, root=None, upgrade=False, user=False,
+         # Put our bundled wheels into a temporary directory and construct the
+         # additional paths that need added to sys.path
+         additional_paths = []
+-        for project, version in _PROJECTS:
+-            wheel_name = "{}-{}-py2.py3-none-any.whl".format(project, version)
++        for project, version, py_tag in _PROJECTS:
++            wheel_name = "{}-{}-{}-none-any.whl".format(project, version, py_tag)
+             whl = pkgutil.get_data(
+                 "ensurepip",
+                 "_bundled/{}".format(wheel_name),
