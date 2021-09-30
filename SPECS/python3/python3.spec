@@ -1,7 +1,9 @@
+%global VER 3.7
+
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.5
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -9,6 +11,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
 %define sha1    Python=860f88886809ae8bfc86afa462536811c347a2a1
+Source1:        pip-setuptools-whl.tar.gz
+%define sha1    pip-setuptools-whl=1e932912469c04ed2188d638b68ba4a2eb210510
 Patch0:         cgi3.patch
 Patch1:         python3-support-photon-platform.patch
 Patch2:         CVE-2019-17514.patch
@@ -20,7 +24,7 @@ Patch7:         CVE-2020-26116.patch
 Patch8:         CVE-2020-27619.patch
 Patch9:         CVE-2021-3177.patch
 Patch10:        CVE-2021-23336.patch
-
+Patch11:        pip-setuptools-update.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel
@@ -135,6 +139,8 @@ The test package contains all regression tests for Python as well as the modules
 
 %prep
 %autosetup -p1 -n Python-%{version}
+rm -r Lib/ensurepip/_bundled/*
+tar -xf %{SOURCE1} -C Lib/ensurepip/_bundled
 
 %build
 export OPT="${CFLAGS}"
@@ -150,9 +156,9 @@ make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
-chmod -v 755 %{buildroot}%{_libdir}/libpython3.7m.so.1.0
+chmod -v 755 %{buildroot}%{_libdir}/libpython%{VER}m.so.1.0
 %{_fixperms} %{buildroot}/*
-ln -sf libpython3.7m.so %{buildroot}%{_libdir}/libpython3.7.so
+ln -sf libpython%{VER}m.so %{buildroot}%{_libdir}/libpython%{VER}.so
 
 # Remove unused stuff
 find %{buildroot}%{_libdir} -name '*.pyc' -delete
@@ -179,65 +185,64 @@ rm -rf %{buildroot}/*
 %{_bindir}/pydoc*
 %{_bindir}/pyvenv*
 %{_bindir}/python3
-%{_bindir}/python3.7
-%{_bindir}/python3.7m
+%{_bindir}/python%{VER}
+%{_bindir}/python%{VER}m
 %{_mandir}/*/*
 
-%dir %{_libdir}/python3.7
-%dir %{_libdir}/python3.7/site-packages
+%dir %{_libdir}/python%{VER}
+%dir %{_libdir}/python%{VER}/site-packages
 
 %{_libdir}/libpython3.so
-%{_libdir}/libpython3.7.so
-%{_libdir}/libpython3.7m.so.1.0
+%{_libdir}/libpython%{VER}.so
+%{_libdir}/libpython%{VER}m.so.1.0
 %ghost %{_bindir}/python
-%exclude %{_libdir}/python3.7/ctypes/test
-%exclude %{_libdir}/python3.7/distutils/tests
-%exclude %{_libdir}/python3.7/sqlite3/test
-%exclude %{_libdir}/python3.7/idlelib/idle_test
-%exclude %{_libdir}/python3.7/test
-%exclude %{_libdir}/python3.7/lib-dynload/_ctypes_test.*.so
+%exclude %{_libdir}/python%{VER}/ctypes/test
+%exclude %{_libdir}/python%{VER}/distutils/tests
+%exclude %{_libdir}/python%{VER}/sqlite3/test
+%exclude %{_libdir}/python%{VER}/idlelib/idle_test
+%exclude %{_libdir}/python%{VER}/test
+%exclude %{_libdir}/python%{VER}/lib-dynload/_ctypes_test.*.so
 %exclude %{_bindir}/pip3
-%exclude %{_bindir}/pip3.7
-%exclude %{_libdir}/python3.7/site-packages/pip/*
-%exclude %{_libdir}/python3.7/site-packages/pip-19.2.3.dist-info/*
+%exclude %{_bindir}/pip%{VER}
+%exclude %{_libdir}/python%{VER}/site-packages/pip/*
+%exclude %{_libdir}/python%{VER}/site-packages/pip-21.2.4.dist-info/*
 
 %files libs
 %defattr(-,root,root)
 %doc LICENSE README.rst
-%{_libdir}/python3.7
-%{_libdir}/python3.7/site-packages/easy_install.py
-%{_libdir}/python3.7/site-packages/README.txt
-%exclude %{_libdir}/python3.7/site-packages/
-%exclude %{_libdir}/python3.7/ctypes/test
-%exclude %{_libdir}/python3.7/distutils/tests
-%exclude %{_libdir}/python3.7/sqlite3/test
-%exclude %{_libdir}/python3.7/idlelib/idle_test
-%exclude %{_libdir}/python3.7/test
-%exclude %{_libdir}/python3.7/lib-dynload/_ctypes_test.*.so
-%exclude %{_libdir}/python3.7/xml
-%exclude %{_libdir}/python3.7/lib-dynload/pyexpat*.so
-%exclude %{_libdir}/python3.7/curses
-%exclude %{_libdir}/python3.7/lib-dynload/_curses*.so
-%exclude %{_libdir}/python3.7/distutils/command/wininst-*.exe
+%{_libdir}/python%{VER}
+%{_libdir}/python%{VER}/site-packages/README.txt
+%exclude %{_libdir}/python%{VER}/site-packages/
+%exclude %{_libdir}/python%{VER}/ctypes/test
+%exclude %{_libdir}/python%{VER}/distutils/tests
+%exclude %{_libdir}/python%{VER}/sqlite3/test
+%exclude %{_libdir}/python%{VER}/idlelib/idle_test
+%exclude %{_libdir}/python%{VER}/test
+%exclude %{_libdir}/python%{VER}/lib-dynload/_ctypes_test.*.so
+%exclude %{_libdir}/python%{VER}/xml
+%exclude %{_libdir}/python%{VER}/lib-dynload/pyexpat*.so
+%exclude %{_libdir}/python%{VER}/curses
+%exclude %{_libdir}/python%{VER}/lib-dynload/_curses*.so
+%exclude %{_libdir}/python%{VER}/distutils/command/wininst-*.exe
 
 %files  xml
-%{_libdir}/python3.7/xml/*
-%{_libdir}/python3.7/lib-dynload/pyexpat*.so
+%{_libdir}/python%{VER}/xml/*
+%{_libdir}/python%{VER}/lib-dynload/pyexpat*.so
 
 %files  curses
-%{_libdir}/python3.7/curses/*
-%{_libdir}/python3.7/lib-dynload/_curses*.so
+%{_libdir}/python%{VER}/curses/*
+%{_libdir}/python%{VER}/lib-dynload/_curses*.so
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/pkgconfig/python-3.7.pc
-%{_libdir}/pkgconfig/python-3.7m.pc
+%{_libdir}/pkgconfig/python-%{VER}.pc
+%{_libdir}/pkgconfig/python-%{VER}m.pc
 %{_libdir}/pkgconfig/python3.pc
-%{_libdir}/libpython3.7m.so
+%{_libdir}/libpython%{VER}m.so
 %{_bindir}/python3-config
-%{_bindir}/python3.7-config
-%{_bindir}/python3.7m-config
+%{_bindir}/python%{VER}-config
+%{_bindir}/python%{VER}m-config
 
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
 %exclude %{_bindir}/2to3*
@@ -246,21 +251,24 @@ rm -rf %{buildroot}/*
 %files tools
 %defattr(-,root,root,755)
 %doc Tools/README
-%{_bindir}/2to3-3.7
+%{_bindir}/2to3-%{VER}
 %exclude %{_bindir}/idle*
 
 %files setuptools
 %defattr(-,root,root,755)
-%{_libdir}/python3.7/site-packages/pkg_resources/*
-%{_libdir}/python3.7/site-packages/setuptools/*
-%{_libdir}/python3.7/site-packages/setuptools-41.2.0.dist-info/*
-%{_bindir}/easy_install-3.7
-%exclude %{_libdir}/python3.9/site-packages/setuptools/*.exe
+%{_libdir}/python%{VER}/site-packages/pkg_resources/*
+%{_libdir}/python%{VER}/site-packages/_distutils_hack/*
+%{_libdir}/python%{VER}/site-packages/distutils-precedence.pth
+%{_libdir}/python%{VER}/site-packages/setuptools/*
+%{_libdir}/python%{VER}/site-packages/setuptools-57.4.0.dist-info/*
+%exclude %{_libdir}/python%{VER}/site-packages/setuptools/*.exe
 
 %files test
 %{_libdir}/python3.7/test/*
 
 %changelog
+*   Thu Oct 28 2021 Piyush Gupta <gpiyush@vmware.com> 3.7.5-14
+-   Update python-pip and setuptools wheel file to 21.2.4 and 57.4.0 respectively.
 *   Wed Oct 06 2021 Tapas Kundu <tkundu@vmware.com> 3.7.5-13
 -   Linked /usr/bin/python to python3.
 -   While uninstalling link to python2 if available.
