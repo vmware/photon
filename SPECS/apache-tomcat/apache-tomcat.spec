@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
 Version:        8.5.60
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -17,6 +17,7 @@ Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
 Patch1:         apache-tomcat-CVE-2021-25122.patch
 Patch2:         apache-tomcat-CVE-2021-25329.patch
 Patch3:         apache-tomcat-CVE-2021-33037.patch
+Patch4:         apache-tomcat-CVE-2021-41079.patch
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
 BuildRequires:  apache-ant
@@ -35,15 +36,11 @@ Requires:       apache-ant
 The Apache Tomcat package contains binaries for the Apache Tomcat servlet container.
 
 %prep
-%setup -qn %{name}-%{version}-src
+%autosetup -n %{name}-%{version}-src -N
 # remove pre-built binaries and windows files
 find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "*.gz" -o \
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
-%setup -D -b 1 -n %{name}-%{version}-src
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%autosetup -D -b 1 -n %{name}-%{version}-src -p1
 
 %build
 ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
@@ -107,6 +104,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Thu Sep 30 2021 Nitesh Kumar <kunitesh@vmware.com> 8.5.60-4
+-   Fix CVE-2021-41079
 *   Fri Jul 23 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.60-3
 -   Fix CVE-2021-33037
 *   Mon Mar 08 2021 Dweep Advani <dadvani@vmware.com> 8.5.60-2
