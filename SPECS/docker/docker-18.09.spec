@@ -3,7 +3,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -27,6 +27,7 @@ Source99:       default-disable.preset
 Patch99:        remove-firewalld-1809.patch
 Patch98:        disable-docker-cli-md2man-install.patch
 Patch97:        tini-disable-git.patch
+Patch100:       CVE-2021-41089.patch
 
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
@@ -96,6 +97,8 @@ tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
 cd %{name}-%{version}
 %patch99 -p1
 %patch98 -p1
+#CVE patches
+%patch100 -p1
 mv components/engine ../src/%{gopath_comp_engine}
 mv components/cli ../src/%{gopath_comp_cli}
 mv components/packaging ../
@@ -288,6 +291,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Thu Sep 30 2021 Bo Gan <ganb@vmware.com> 18.09.9-12
+-   Fix CVE-2021-41089
 *   Thu Aug 26 2021 Keerthana K <keerthanak@vmware.com> 18.09.9-11
 -   Bump up version to compile with new glibc
 *   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 18.09.9-10

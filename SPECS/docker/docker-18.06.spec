@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.2
-Release:        19%{?dist}
+Release:        20%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -21,6 +21,7 @@ Patch13:        CVE-2019-13139.patch
 Patch14:        CVE-2019-13509_1.patch
 Patch15:        CVE-2019-13509_2.patch
 Patch16:        update-runc-containerd-CVE-2019-16884.patch
+Patch17:        CVE-2021-41089-18.06.patch
 Patch99:        remove-firewalld.patch
 
 BuildRequires:  systemd
@@ -88,6 +89,7 @@ pushd docker/docker
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 popd
 
 %build
@@ -243,6 +245,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Thu Sep 30 2021 Bo Gan <ganb@vmware.com> 18.06.2-20
+-   Fix CVE-2021-41089
 *   Thu Aug 26 2021 Keerthana K <keerthanak@vmware.com> 18.06.2-19
 -   Bump up version to compile with new glibc
 *   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 18.06.2-18
