@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.284
+Version:    	4.4.288
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=403afa6e48334dbbfbbd35df2655368714a0229e
+%define sha1 linux=63d62257eec450ac0becd79e44b738bae000e4c7
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -450,6 +450,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Wed Oct 13 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.4.288-1
+-   Update to version 4.4.288
 *   Fri Sep 17 2021 Keerthana K <keerthanak@vmware.com> 4.4.284-1
 -   Update to version 4.4.284
 *   Mon Jul 26 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.276-1
