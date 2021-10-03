@@ -21,6 +21,7 @@ Patch13:        CVE-2019-13139.patch
 Patch14:        CVE-2019-13509_1.patch
 Patch15:        CVE-2019-13509_2.patch
 Patch16:        update-runc-containerd-CVE-2019-16884.patch
+Patch17:        CVE-2021-41089-18.06.patch
 Patch99:        remove-firewalld-18.06.patch
 
 BuildRequires:  systemd
@@ -80,6 +81,7 @@ pushd docker/docker
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
 popd
 
 %build
