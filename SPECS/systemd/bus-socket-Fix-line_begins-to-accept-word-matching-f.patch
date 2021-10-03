@@ -1,0 +1,51 @@
+From 94b18b8123b5d957ed84e4aa8e268b60f5427821 Mon Sep 17 00:00:00 2001
+From: Filipe Brandenburger <filbranden@google.com>
+Date: Tue, 17 Jul 2018 11:32:40 -0700
+Subject: [PATCH] bus-socket: Fix line_begins() to accept word matching full
+ string
+
+The switch to memory_startswith() changed the logic to only look for a space or
+NUL byte after the matched word, but matching the full size should also be
+acceptable.
+
+This changed the behavior of parsing of "AUTH\r\n", where m will be set to 4,
+since even though the word will match, the check for it being followed by ' '
+or NUL will make line_begins() return false.
+
+Tested:
+
+- Using netcat to connect to the private socket directly:
+  $ echo -ne '\0AUTH\r\n' | sudo nc -U /run/systemd/private
+  REJECTED EXTERNAL ANONYMOUS
+
+- Running the Ignition blackbox test:
+  $ sudo sh -c 'PATH=$PWD/bin/amd64:$PATH ./tests.test'
+  PASS
+
+Fixes: d27b725abf64a19a6b2f99332b663f17ad046771
+(cherry picked from commit 3f10c66270b74530339b3f466c43874bb40c210f)
+
+Resolves: #1692991
+---
+ src/libsystemd/sd-bus/bus-socket.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/src/libsystemd/sd-bus/bus-socket.c b/src/libsystemd/sd-bus/bus-socket.c
+index b147a3843a..a5513d1ab5 100644
+--- a/src/libsystemd/sd-bus/bus-socket.c
++++ b/src/libsystemd/sd-bus/bus-socket.c
+@@ -248,10 +248,7 @@ static bool line_begins(const char *s, size_t m, const char *word) {
+         const char *p;
+ 
+         p = memory_startswith(s, m, word);
+-        if (!p)
+-                return false;
+-
+-        return IN_SET(*p, 0, ' ');
++        return p && (p == (s + m) || *p == ' ');
+ }
+ 
+ static int verify_anonymous_token(sd_bus *b, const char *p, size_t l) {
+-- 
+2.32.0
+
