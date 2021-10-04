@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -18,6 +18,7 @@ Patch98:        remove-firewalld.patch
 Patch99:        update-container-binary.patch
 Patch50:        containerd-CVE-2021-32760.patch
 Patch51:        CVE-2021-41089.patch
+Patch52:        containerd-CVE-2021-41103.patch
 
 BuildRequires:  systemd
 BuildRequires:  device-mapper-devel
@@ -57,6 +58,7 @@ Documentation and vimfiles for docker
 
 %patch50 -p1
 %patch51 -p1
+%patch52 -p1
 %patch98 -p1
 %patch99 -p1
 
@@ -199,6 +201,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Fri Oct 01 2021 Bo Gan <ganb@vmware.com> 18.09.9-7
+-   Fix containerd CVE-2021-41103
 *   Thu Sep 30 2021 Bo Gan <ganb@vmware.com> 18.09.9-6
 -   Fix CVE-2021-41089
 *   Fri Jul 16 2021 Bo Gan <ganb@vmware.com> 18.09.9-5
