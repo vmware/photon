@@ -1,7 +1,7 @@
 Summary:	cpio archive utility
 Name:		cpio
 Version:	2.13
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	GPLv3+
 URL:        http://www.gnu.org/software/cpio/
 Group:      System Environment/System utilities
@@ -11,10 +11,11 @@ Source0:        http://ftp.gnu.org/pub/gnu/cpio/%{name}-%{version}.tar.bz2
 %define sha1 cpio=4dcefc0e1bc36b11506a354768d82b15e3fe6bb8
 Conflicts:      toybox < 0.8.2-2
 Patch0:         newca-new-archive-format.patch
-Patch1:         cpio-2.12-gcc-10.patch
-Patch2:         cpio-CVE-2021-38185.patch
-Patch3:         cpio-CVE-2021-38185_2.patch
-Patch4:         cpio-CVE-2021-38185_3.patch
+Patch1:         newca-large-files-support.patch
+Patch2:         cpio-2.12-gcc-10.patch
+Patch3:         cpio-CVE-2021-38185.patch
+Patch4:         cpio-CVE-2021-38185_2.patch
+Patch5:         cpio-CVE-2021-38185_3.patch
 BuildRequires:  lua
 Requires:       lua
 
@@ -60,6 +61,8 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 
 %changelog
+* Mon Oct 04 2021 Alexey Makhalov <amakhalov@vmware.com> 2.13-7
+- newca: large files support
 * Wed Sep 01 2021 Ankit Jain <ankitja@vmware.com> 2.13-6
 - Additional changes to fix CVE-2021-38185
 * Fri Aug 20 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.13-5
