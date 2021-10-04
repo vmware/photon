@@ -1,0 +1,125 @@
+From ece76ae1a0864096b844c8bd624265ba00297b9e Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Mon, 20 Sep 2021 15:21:09 -0700
+Subject: [PATCH] newca: large files support
+
+This is an extension to "newca" format which utilizes unused
+chksum field in the header to hold 63-32 bits of filesize.
+
+No CPIO header changes required to support large files.
+Previously created CPIO images will continue to work.
+
+chksum fiels was not used in "newca" and always contained 0.
+So this change is forward and backward compatibile.
+
+Addition: do not add empty alignmenment page for zero sized files.
+
+Signed-off-by: Alexey Makhalov <amakhalov@vmware.com>
+---
+ src/copyin.c  |  5 ++++-
+ src/copyout.c | 20 ++++++++++++++++----
+ src/cpiohdr.h |  6 ++++--
+ src/util.c    |  2 +-
+ 4 files changed, 25 insertions(+), 8 deletions(-)
+
+diff --git a/src/copyin.c b/src/copyin.c
+index c9ded92..45453a7 100644
+--- a/src/copyin.c
++++ b/src/copyin.c
+@@ -510,7 +510,7 @@ copyin_regular_file (struct cpio_file_stat* file_hdr, int in_file_des)
+ 	error (0, 0, _("cannot swap bytes of %s: odd number of bytes"),
+ 	       file_hdr->c_name);
+     }
+-  if (archive_format == arf_newasciialigned)
++  if (file_hdr->c_filesize && archive_format == arf_newasciialigned)
+     {
+       off_t input_position = input_bytes +
+ 	  (in_buff - input_buffer);
+@@ -1123,6 +1123,9 @@ read_in_new_ascii (struct cpio_file_stat *file_hdr, int in_des)
+   file_hdr->c_rdev_maj = FROM_HEX (ascii_header.c_rdev_maj);
+   file_hdr->c_rdev_min = FROM_HEX (ascii_header.c_rdev_min);
+   file_hdr->c_chksum = FROM_HEX (ascii_header.c_chksum);
++  if (archive_format == arf_newasciialigned)
++    file_hdr->c_filesize |= (off_t) file_hdr->c_chksum << 32;
++
+   read_name_from_file (file_hdr, in_des, FROM_HEX (ascii_header.c_namesize));
+ 
+   /* In SVR4 ASCII format, the amount of space allocated for the header
+diff --git a/src/copyout.c b/src/copyout.c
+index ca50a68..98c54bf 100644
+--- a/src/copyout.c
++++ b/src/copyout.c
+@@ -354,9 +354,15 @@ write_out_new_ascii_header (const char *magic_string,
+   to_ascii_or_warn (p, file_hdr->c_mtime, 8, LG_16, file_hdr->c_name,
+ 		    _("modification time"));
+   p += 8;
+-  if (to_ascii_or_error (p, file_hdr->c_filesize, 8, LG_16, file_hdr->c_name,
+-			 _("file size")))
+-    return 1;
++  if (archive_format == arf_newasciialigned) {
++    if (to_ascii_or_error (p, file_hdr->c_filesize & 0xffffffff, 8, LG_16, file_hdr->c_name,
++			   _("file size low part")))
++      return 1;
++  } else {
++    if (to_ascii_or_error (p, file_hdr->c_filesize, 8, LG_16, file_hdr->c_name,
++			   _("file size")))
++      return 1;
++  }
+   p += 8;
+   if (to_ascii_or_error (p, file_hdr->c_dev_maj, 8, LG_16, file_hdr->c_name,
+ 			 _("device major number")))
+@@ -378,7 +384,13 @@ write_out_new_ascii_header (const char *magic_string,
+ 			 _("name size")))
+     return 1;
+   p += 8;
+-  to_ascii (p, file_hdr->c_chksum & 0xffffffff, 8, LG_16, false);
++  if (archive_format == arf_newasciialigned) {
++    if (to_ascii_or_error (p, file_hdr->c_filesize >> 32, 8, LG_16, file_hdr->c_name,
++			   _("file size high part")))
++      return 1;
++  } else {
++    to_ascii (p, file_hdr->c_chksum & 0xffffffff, 8, LG_16, false);
++  }
+ 
+   tape_buffered_write (ascii_header, out_des, sizeof ascii_header);
+ 
+diff --git a/src/cpiohdr.h b/src/cpiohdr.h
+index ff5f375..8bbdced 100644
+--- a/src/cpiohdr.h
++++ b/src/cpiohdr.h
+@@ -92,7 +92,8 @@ struct old_ascii_header
+ struct new_ascii_header
+ {
+   char c_magic[6];     /* "070701" for "new" portable format
+-			  "070702" for CRC format */
++			  "070702" for CRC format
++			  "0707ca" for "new" portable page aligned format */
+   char c_ino[8];
+   char c_mode[8];
+   char c_uid[8];
+@@ -106,7 +107,8 @@ struct new_ascii_header
+   char c_rdev_min[8];      /* only valid for chr and blk special files */
+   char c_namesize[8];  /* count includes terminating NUL in pathname */
+   char c_chksum[8];    /* 0 for "new" portable format; for CRC format
+-			  the sum of all the bytes in the file  */
++			  the sum of all the bytes in the file; for page
++			  aligned format (63..32 bits) of c_filesize */
+ } ATTRIB_PACKED;
+ 
+ struct cpio_file_stat /* Internal representation of a CPIO header */
+diff --git a/src/util.c b/src/util.c
+index cee3e7d..f284507 100644
+--- a/src/util.c
++++ b/src/util.c
+@@ -479,7 +479,7 @@ copy_files_disk_to_tape (int in_des, int out_des, off_t num_bytes,
+   int rc;
+   off_t original_num_bytes;
+ 
+-  if (archive_format == arf_newasciialigned) {
++  if (num_bytes && archive_format == arf_newasciialigned) {
+     /* Page align file content */
+     size = io_block_size - output_size;
+     if (size) {
+-- 
+2.11.0
+
