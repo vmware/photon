@@ -4,7 +4,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.4.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
@@ -17,6 +17,7 @@ Source0:        https://github.com/containerd/containerd/archive/containerd-%{ve
 
 Patch1:         containerd-service-file-binpath.patch
 Patch2:         containerd-1.4-Use-chmod-path-for-checking-symlink.patch
+Patch3:         containerd-1.4-reduce-directory-permissions.patch
 Source2:        containerd-config.toml
 Source3:        disable-containerd-by-default.preset
 BuildRequires:  btrfs-progs
@@ -53,10 +54,12 @@ Requires:       %{name} = %{version}-%{release}
 Documentation for containerd.
 
 %prep
+# Using autosetup is not feasible
 %setup -q -c
 mkdir -p "$(dirname "src/%{gopath_comp}")"
 %patch1 -p1 -d %{name}-%{version}
 %patch2 -p1 -d %{name}-%{version}
+%patch3 -p1 -d %{name}-%{version}
 mv %{name}-%{version} src/%{gopath_comp}
 
 %build
@@ -71,7 +74,9 @@ install -v -m644 -D -t %{buildroot}%{_datadir}/licenses/%{name} LICENSE
 install -v -m644 -D -t %{buildroot}%{_unitdir} containerd.service
 install -v -m644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/containerd/config.toml
 install -v -m644 -D %{SOURCE3} %{buildroot}%{_presetdir}/50-containerd.preset
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot}%{_prefix} install
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot}%{_datadir} install-man
 
 %post
@@ -86,8 +91,11 @@ make DESTDIR=%{buildroot}%{_datadir} install-man
 %check
 export GOPATH="$(pwd)"
 cd src/%{gopath_comp}
+# make doesn't support _smp_mflags
 make test
+# make doesn't support _smp_mflags
 make root-test
+# make doesn't support _smp_mflags
 make integration
 
 %files
@@ -113,6 +121,8 @@ make integration
 %{_mandir}/man8/*
 
 %changelog
+*   Fri Oct 01 2021 Bo Gan <ganb@vmware.com> 1.4.4-6
+-   Fix CVE-2021-41103
 *   Fri Jul 16 2021 Bo Gan <ganb@vmware.com> 1.4.4-5
 -   Fix CVE-2021-32760
 -   Refactor containerd.service patching and installation
