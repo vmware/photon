@@ -3,7 +3,7 @@
 Summary:    Text editor
 Name:       vim
 Version:    7.4
-Release:    13%{?dist}
+Release:    14%{?dist}
 License:    Charityware
 URL:        http://www.vim.org
 Group:      Applications/Editors
@@ -11,11 +11,12 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 Source0:    %{name}-%{version}.tar.bz2
 %define sha1 vim=601abf7cc2b5ab186f40d8790e542f86afca86b7
-Patch0:         vim-CVE-2016-1248.patch
-Patch1:         vim-7.4-CVE-2017-5953.patch
-Patch2:         vim-7.4-CVE-2017-6349_CVE-2017-6350.patch
+Patch0:		vim-CVE-2016-1248.patch
+Patch1:		vim-7.4-CVE-2017-5953.patch
+Patch2:		vim-7.4-CVE-2017-6349_CVE-2017-6350.patch
 Patch3:		vim-CVE-2019-12735.patch
-Patch4:         CVE-2019-20807.patch
+Patch4:		CVE-2019-20807.patch
+Patch5:		vim-CVE-2021-3796.patch
 BuildRequires:  ncurses-devel >= 6.0-3
 Requires:  ncurses >= 6.0-3
 Requires:   tcsh
@@ -38,10 +39,11 @@ The vim extra package contains a extra files for powerful text editor.
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 echo '#define SYS_VIMRC_FILE "/etc/vimrc"' >> src/feature.h
 
 %build
-./configure \
+sh ./configure \
     --prefix=%{_prefix} \
     --enable-multibyte
 make VERBOSE=1 %{?_smp_mflags}
@@ -171,6 +173,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+*   Tue Oct 05 2021 Tapas Kundu <tkundu@vmware.com> 7.4-14
+-   Fix CVE-2021-3796
 *   Mon Jun 08 2020 Anisha Kumari <kanisha@vmware.com> 7.4-13
 -   Fix for CVE-2019-20807
 *   Thu Jun 06 2019 Siju Maliakkal <smaliakkal@vmware.com> 7.4-12
