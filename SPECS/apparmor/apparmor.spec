@@ -1,15 +1,17 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           apparmor
 Version:        3.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
-Source0:        https://launchpad.net/%{name}/3.0/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1    %{name}=eded344440a1b3bd9fc5b6ac44f41b2294a57b8a
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Productivity/Security
+
+Source0:        https://launchpad.net/%{name}/3.0/%{version}/+download/%{name}-%{version}.tar.gz
+%define sha1    %{name}=eded344440a1b3bd9fc5b6ac44f41b2294a57b8a
+
 BuildRequires:  python3
 BuildRequires:  perl
 BuildRequires:  python3-devel
@@ -348,32 +350,34 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
-*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 3.0.1-1
--   Automatic Version Bump
-*   Fri Nov 06 2020 Tapas Kundu <tkundu@vmware.com> 3.0.0-3
--   Build with python 3.9
-*   Fri Oct 23 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.0.0-2
--   Fix build failure in apparmor on linux 5.9-rc7
-*   Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.0-1
--   Automatic Version Bump
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.13.4-2
--   openssl 1.1.1
-*   Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 2.13.4-1
--   Automatic Version Bump
-*   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 2.13-8
--   Updated using python 3.8 libs
-*   Tue Mar 05 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.13-7
--   Excluded conflicting perllocal.pod
-*   Thu Dec 06 2018 Keerthana K <keerthanak@vmware.com> 2.13-6
--   Fixed make check failures.
-*   Fri Oct 05 2018 Tapas Kundu <tkundu@vmware.com> 2.13-5
--   Updated using python 3.7 libs
-*   Wed Oct 03 2018 Keerthana K <keerthanak@vmware.com> 2.13-4
--   Depcrecated ruby apparmor package.
--   Modified the perl and python path to generic.
-*   Wed Sep 26 2018 Ajay Kaher <akaher@vmware.com> 2.13-3
--   Fix for aarch64
-*   Thu Sep 20 2018 Keerthana K <keerthanak@vmware.com> 2.13-2
--   Updated the ruby packagefor latest version.
-*   Thu Aug 30 2018 Keerthana K <keerthanak@vmware.com> 2.13-1
--   Initial Apparmor package for Photon.
+* Tue Oct 05 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.0.1-2
+- Bump version as a part of httpd upgrade
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 3.0.1-1
+- Automatic Version Bump
+* Fri Nov 06 2020 Tapas Kundu <tkundu@vmware.com> 3.0.0-3
+- Build with python 3.9
+* Fri Oct 23 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.0.0-2
+- Fix build failure in apparmor on linux 5.9-rc7
+* Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 3.0.0-1
+- Automatic Version Bump
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.13.4-2
+- openssl 1.1.1
+* Wed Aug 26 2020 Gerrit Photon <photon-checkins@vmware.com> 2.13.4-1
+- Automatic Version Bump
+* Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 2.13-8
+- Updated using python 3.8 libs
+* Tue Mar 05 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.13-7
+- Excluded conflicting perllocal.pod
+* Thu Dec 06 2018 Keerthana K <keerthanak@vmware.com> 2.13-6
+- Fixed make check failures.
+* Fri Oct 05 2018 Tapas Kundu <tkundu@vmware.com> 2.13-5
+- Updated using python 3.7 libs
+* Wed Oct 03 2018 Keerthana K <keerthanak@vmware.com> 2.13-4
+- Depcrecated ruby apparmor package.
+- Modified the perl and python path to generic.
+* Wed Sep 26 2018 Ajay Kaher <akaher@vmware.com> 2.13-3
+- Fix for aarch64
+* Thu Sep 20 2018 Keerthana K <keerthanak@vmware.com> 2.13-2
+- Updated the ruby packagefor latest version.
+* Thu Aug 30 2018 Keerthana K <keerthanak@vmware.com> 2.13-1
+- Initial Apparmor package for Photon.
