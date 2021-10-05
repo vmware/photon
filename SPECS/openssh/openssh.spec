@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.4p1
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -27,6 +27,7 @@ Patch12:        openssh-CVE-2020-12062-another-case.patch
 Patch13:        openssh-Fix-error-message-close.patch
 Patch14:        openssh-vasnmprintf-fix.patch
 Patch15:        openssh-expose-vasnmprintf.patch
+Patch16:        openssh-CVE-2021-41617.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM
 BuildRequires:  krb5
@@ -36,11 +37,13 @@ Requires:       systemd
 Requires:       openssl
 Requires:       Linux-PAM
 Requires:       shadow
+
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is
-useful for encrypting authentication and subsequent traffic over a 
-network. The ssh and scp commands are secure implementions of telnet 
+useful for encrypting authentication and subsequent traffic over a
+network. The ssh and scp commands are secure implementions of telnet
 and rcp respectively.
+
 %prep
 %setup -q
 tar xf %{SOURCE1}
@@ -60,15 +63,17 @@ tar xf %{SOURCE1}
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
+
 %build
-./configure \
+sh ./configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --libdir=%{_libdir} \
-    --sysconfdir=/etc/ssh \
-    --datadir=/usr/share/sshd \
+    --sysconfdir=%{_sysconfdir}/ssh \
+    --datadir=%{_datadir}/sshd \
     --with-md5-passwords \
     --with-privsep-path=/var/lib/sshd \
     --with-pam \
@@ -76,18 +81,18 @@ tar xf %{SOURCE1}
     --enable-strip=no \
     --with-kerberos5=/usr
 make
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
 install -vdm755 %{buildroot}/var/lib/sshd
-echo "PermitRootLogin no" >> %{buildroot}/etc/ssh/sshd_config
-echo "UsePAM yes" >> %{buildroot}/etc/ssh/sshd_config
+echo "PermitRootLogin no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+echo "UsePAM yes" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
 #   Install daemon script
 pushd blfs-systemd-units-20140907
 make DESTDIR=%{buildroot} install-sshd
 popd
 
-cat << EOF > %{buildroot}/lib/systemd/system/sshd.service
+cat << EOF > %{buildroot}%{_unitdir}/sshd.service
 [Unit]
 Description=OpenSSH Daemon
 After=network.target sshd-keygen.service
@@ -102,7 +107,7 @@ Restart=always
 WantedBy=multi-user.target
 EOF
 
-cat << EOF >> %{buildroot}/lib/systemd/system/sshd-keygen.service
+cat << EOF >> %{buildroot}%{_unitdir}/sshd-keygen.service
 [Unit]
 Description=Generate sshd host keys
 ConditionPathExists=|!/etc/ssh/ssh_host_rsa_key
@@ -156,10 +161,10 @@ rm -rf %{buildroot}/*
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ssh/moduli
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/ssh/ssh_config
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/sshd_config
-/lib/systemd/system/sshd.service
-/lib/systemd/system/sshd.socket
-/lib/systemd/system/sshd@.service
-/lib/systemd/system/sshd-keygen.service
+%{_unitdir}/sshd.service
+%{_unitdir}/sshd.socket
+%{_unitdir}/sshd@.service
+%{_unitdir}/sshd-keygen.service
 %{_bindir}/*
 %{_sbindir}/*
 %{_libexecdir}/*
@@ -168,6 +173,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %attr(700,root,sys)/var/lib/sshd
 %changelog
+*   Tue Oct 05 2021 Ankit Jain <ankitja@vmware.comm> 7.4p1-13
+-   Fix for CVE-2021-14617
 *   Mon Jun 08 2020 Ankit Jain <ankitja@vmware.comm> 7.4p1-12
 -   Fix for CVE-2020-12062
 *   Wed Aug 07 2019 Anish Swaminathan <anishs@vmware.com> 7.4p1-11
