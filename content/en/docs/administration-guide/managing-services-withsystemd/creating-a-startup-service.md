@@ -23,7 +23,7 @@ cat << EOF >> /lib/systemd/system/eth0.service
 
 	[Install]
 	WantedBy=multi-user.target
-	EOF
+EOF
 ```
 
 1. Set the service to auto-start when the system boots:
