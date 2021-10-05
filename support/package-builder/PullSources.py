@@ -1,17 +1,12 @@
-#    pullsources.py
-#    Allows pulling packages'sources from a source repository.
-#
-#    Author(s): Mahmoud Bassiouny (mbassiouny@vmware.com)
-#               Alexey Makhalov (amakhalov@vmware.com)
-#
+#!/usr/bin/env python3
 
-import json
 import os
 import hashlib
 import requests
 import string
 import random
 from CommandUtils import CommandUtils
+
 
 def getFileHash(filepath):
     sha1 = hashlib.sha1()
@@ -21,6 +16,7 @@ def getFileHash(filepath):
     finally:
         f.close()
     return sha1.hexdigest()
+
 
 def get(package, source, sha1, sourcesPath, URLs, logger):
     if not os.path.isdir(sourcesPath):
@@ -35,9 +31,8 @@ def get(package, source, sha1, sourcesPath, URLs, logger):
         if sha1 == getFileHash(sourcePath[0]):
             # Use file from sourcesPath
             return
-        else:
-            logger.info("sha1 of " + sourcePath[0] + " does not match. " + sha1 +
-                        " vs " + getFileHash(sourcePath[0]))
+        logger.info("sha1 of " + sourcePath[0] + " does not match. " + sha1 +
+                    " vs " + getFileHash(sourcePath[0]))
     for baseurl in URLs:
         #form url: https://packages.vmware.com/photon/photon_sources/1.0/<filename>.
         url = '%s/%s' % (baseurl, source)
@@ -46,7 +41,7 @@ def get(package, source, sha1, sourcesPath, URLs, logger):
         try:
             downloadFile(url, destfile)
             if sha1 != getFileHash(destfile):
-                raise Exception('Invalid sha1 for package %s file %s' % package, source)
+                raise Exception('Invalid sha1 for package %s file %s' % (package, source))
             return
         except requests.exceptions.HTTPError as e:
             logger.exception(e)
@@ -55,6 +50,7 @@ def get(package, source, sha1, sourcesPath, URLs, logger):
         except Exception as e:
             logger.exception(e)
     raise Exception("Missing source: " + source)
+
 
 def downloadFile(url, destfile):
     # We need to provide atomicity for file downloads. That is,
@@ -87,4 +83,3 @@ def downloadFile(url, destfile):
         os.rename(temp_file, destfile)
 
     return destfile
-
