@@ -28,7 +28,7 @@ systemctl start sshd
 
 	[Install]
 	WantedBy=multi-user.target
-	EOF
+EOF
 </code></pre><ol><li>Set the service to auto-start when the system boots:</li></ol><pre><code>cd /lib/systemd/system/multi-user.target.wants/
 	ln -s ../eth0.service eth0.service
 </code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-141a8337aedbb0fd60532447b3aa306b>4 - Disabling the Photon OS httpd.service</h1><p>If your application or appliance includes its own HTTP server, you must turn off and disable the HTTP server that comes with Photon OS so that it does not conflict with your own HTTP server.</p><p>To stop it and disable it, run the following commands as root:</p><pre><code>systemctl stop httpd.service
