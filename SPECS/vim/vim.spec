@@ -2,7 +2,7 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        8.2.3408
+Version:        8.2.3428
 Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
@@ -11,7 +11,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=f53626d97b6d57b2579493f2527fdcf275244017
+%define sha1    %{name}=4711feb7d73d6c4ca159e6f8c7d275e5449e15aa
 
 BuildRequires:  ncurses-devel
 
@@ -192,6 +192,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Tue Oct 05 2021 Tapas Kundu <tkundu@vmware.com> 8.2.3428-1
+- Update to 8.2.3428 to fix CVE-2021-3796
 * Thu Sep 23 2021 Dweep Advani <davani@vmware.com> 8.2.3408-1
 - Fix vim startup errors E216, E1187 and E484
 - vim-extra requires vim
