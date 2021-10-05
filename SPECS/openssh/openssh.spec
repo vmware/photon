@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.5p1
-Release:        16%{?dist}
+Release:        17%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -28,13 +28,16 @@ Patch11:        openssh-CVE-2020-12062.patch
 Patch12:        openssh-CVE-2020-12062-another-case.patch
 Patch13:        openssh-Fix-error-message-close.patch
 Patch14:        openssh-expose-vasnmprintf.patch
+Patch15:        openssh-CVE-2021-41617.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 Requires:       openssh-clients = %{version}-%{release}
 Requires:       openssh-server = %{version}-%{release}
+Requires:       systemd
+
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is
 useful for encrypting authentication and subsequent traffic over a
@@ -75,15 +78,17 @@ tar xf %{SOURCE1} --no-same-owner
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
+%patch15 -p1
+
 %build
-./configure \
+sh ./configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --libdir=%{_libdir} \
-    --sysconfdir=/etc/ssh \
-    --datadir=/usr/share/sshd \
+    --sysconfdir=%{_sysconfdir}/ssh \
+    --datadir=%{_datadir}/sshd \
     --with-md5-passwords \
     --with-privsep-path=/var/lib/sshd \
     --with-pam \
@@ -91,26 +96,26 @@ tar xf %{SOURCE1} --no-same-owner
     --enable-strip=no \
     --with-kerberos5=/usr
 make
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install
 install -vdm755 %{buildroot}/var/lib/sshd
-echo "AllowTcpForwarding no" >> %{buildroot}/etc/ssh/sshd_config
-echo "ClientAliveCountMax 2" >> %{buildroot}/etc/ssh/sshd_config
-echo "Compression no" >> %{buildroot}/etc/ssh/sshd_config
-echo "MaxAuthTries 2" >> %{buildroot}/etc/ssh/sshd_config
-#echo "MaxSessions 2" >> %{buildroot}/etc/ssh/sshd_config
-echo "TCPKeepAlive no" >> %{buildroot}/etc/ssh/sshd_config
-echo "AllowAgentForwarding no" >> %{buildroot}/etc/ssh/sshd_config
-echo "PermitRootLogin no" >> %{buildroot}/etc/ssh/sshd_config
-echo "UsePAM yes" >> %{buildroot}/etc/ssh/sshd_config
+echo "AllowTcpForwarding no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+echo "ClientAliveCountMax 2" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+echo "Compression no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+echo "MaxAuthTries 2" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+#echo "MaxSessions 2" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+echo "TCPKeepAlive no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+echo "AllowAgentForwarding no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+echo "PermitRootLogin no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+echo "UsePAM yes" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
 #   Install daemon script
 pushd blfs-systemd-units-20140907
 make DESTDIR=%{buildroot} install-sshd
 popd
 
-install -m644 %{SOURCE2} %{buildroot}/lib/systemd/system/sshd.service
-install -m644 %{SOURCE3} %{buildroot}/lib/systemd/system/sshd-keygen.service
+install -m644 %{SOURCE2} %{buildroot}%{_unitdir}/sshd.service
+install -m644 %{SOURCE3} %{buildroot}%{_unitdir}/sshd-keygen.service
 install -m755 contrib/ssh-copy-id %{buildroot}/%{_bindir}/
 install -m644 contrib/ssh-copy-id.1 %{buildroot}/%{_mandir}/man1/
 
@@ -162,10 +167,10 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/sshd_config
 %attr(700,root,sys)/var/lib/sshd
-/lib/systemd/system/sshd-keygen.service
-/lib/systemd/system/sshd.service
-/lib/systemd/system/sshd.socket
-/lib/systemd/system/sshd@.service
+%{_unitdir}/sshd-keygen.service
+%{_unitdir}/sshd.service
+%{_unitdir}/sshd.socket
+%{_unitdir}/sshd@.service
 %{_sbindir}/sshd
 %{_libexecdir}/sftp-server
 %{_mandir}/man5/sshd_config.5.gz
@@ -202,6 +207,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Tue Oct 05 2021 Ankit Jain <ankitja@vmware.comm> 7.5p1-17
+-   Fix for CVE-2021-14617
 *   Mon Jun 08 2020 Ankit Jain <ankitja@vmware.comm> 7.5p1-16
 -   Fix for CVE-2020-12062
 *   Wed Aug 07 2019 Anish Swaminathan <anishs@vmware.com> 7.5p1-15
