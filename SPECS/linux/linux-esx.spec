@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.205
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -895,6 +895,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Oct 05 2021 Ankit Jain <ankitja@vmware.com> 4.19.205-4
+-   vtarfs: Fix memory allocation for entry pages
 *   Mon Sep 27 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.205-3
 -   initramfs: large files support for newca
 *   Mon Sep 13 2021 Ankit Jain <ankitja@vmware.com> 4.19.205-2
