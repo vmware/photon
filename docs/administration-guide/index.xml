@@ -19,7 +19,7 @@
 &lt;ol>
 &lt;li>
 &lt;p>Ensure that the &lt;code>wpa_supplicant service&lt;/code> is running on the WLAN interface:&lt;/p>
-&lt;p>&lt;code>Systemctl status wpa_supplicant@&amp;lt;wlan-interface&amp;gt;.service&lt;/code>&lt;/p>
+&lt;p>&lt;code>systemctl status wpa_supplicant@&amp;lt;wlan-interface&amp;gt;.service&lt;/code>&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Connect to &lt;code>wpa_cli&lt;/code>:&lt;/p>
@@ -69,7 +69,7 @@ IPv6AcceptRA=no
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Restart &lt;code>systemd-networkd&lt;/code> using:&lt;/p>
-&lt;p>&lt;code>Systemctl restart systemd-networkd&lt;/code>&lt;/p>
+&lt;p>&lt;code>systemctl restart systemd-networkd&lt;/code>&lt;/p>
 &lt;/li>
 &lt;/ol></description></item><item><title>Docs: Managing the Network Configuration</title><link>/docs/administration-guide/managing-network-configuration/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-network-configuration/</guid><description>
 &lt;p>The network service, which is enabled by default, starts when the system boots.&lt;/p></description></item><item><title>Docs: Prioritize eth0 Route Over WLAN</title><link>/docs/administration-guide/prioritize-eth0-route-over-wlan0/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/prioritize-eth0-route-over-wlan0/</guid><description>
