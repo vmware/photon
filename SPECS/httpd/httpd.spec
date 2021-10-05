@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.48
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -15,6 +15,7 @@ Patch2:         httpd-CVE-2021-33193.patch
 Patch3:         httpd-CVE-2021-34798.patch
 Patch4:         httpd-CVE-2021-36160.patch
 Patch5:         httpd-CVE-2021-40438.patch
+Patch6:         httpd-CVE-2021-39275.patch
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -64,6 +65,7 @@ The httpd-tools of httpd.
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 %build
 sh ./configure --prefix=%{_sysconfdir}/httpd \
@@ -190,6 +192,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+*   Tue Oct 05 2021 Dweep Advani <dadvani@vmware.com> 2.4.48-4
+-   Patched for CVE-2021-39275
 *   Wed Sep 29 2021 Dweep Advani <dadvani@vmware.com> 2.4.48-3
 -   Patched for CVE-2021-34798, CVE-2021-36160 and CVE-2021-40438
 *   Fri Aug 27 2021 Dweep Advani <dadvani@vmware.com> 2.4.48-2
