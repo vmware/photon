@@ -1,17 +1,12 @@
-#    pullsources.py
-#    Allows pulling packages'sources from a source repository.
-#
-#    Author(s): Mahmoud Bassiouny (mbassiouny@vmware.com)
-#               Alexey Makhalov (amakhalov@vmware.com)
-#
+#!/usr/bin/env python3
 
-import json
 import os
 import hashlib
 import requests
 import string
 import random
 from CommandUtils import CommandUtils
+
 
 def getFileHash(filepath):
     sha1 = hashlib.sha1()
@@ -22,6 +17,7 @@ def getFileHash(filepath):
         f.close()
     return sha1.hexdigest()
 
+
 def get(package, source, sha1, sourcesPath, URLs, logger):
     if not os.path.isdir(sourcesPath):
         os.mkdir(sourcesPath)
@@ -30,23 +26,22 @@ def get(package, source, sha1, sourcesPath, URLs, logger):
     sourcePath = cmdUtils.findFile(source, sourcesPath)
     if sourcePath is not None and len(sourcePath) > 0:
         if len(sourcePath) > 1:
-            raise Exception("Multiple sources found for source:" + source + "\n" +
-                            ",".join(sourcePath) +"\nUnable to determine one.")
+            raise Exception('Multiple sources found for source:' + source + '\n' +
+                            ','.join(sourcePath) +'\nUnable to determine one.')
         if sha1 == getFileHash(sourcePath[0]):
             # Use file from sourcesPath
             return
-        else:
-            logger.info("sha1 of " + sourcePath[0] + " does not match. " + sha1 +
-                        " vs " + getFileHash(sourcePath[0]))
+        logger.info('sha1 of ' + sourcePath[0] + ' does not match. ' + sha1 +
+                    ' vs ' + getFileHash(sourcePath[0]))
     for baseurl in URLs:
         #form url: https://packages.vmware.com/photon/photon_sources/1.0/<filename>.
         url = '%s/%s' % (baseurl, source)
         destfile = os.path.join(sourcesPath, source)
-        logger.debug("Downloading: " + url)
+        logger.debug('Downloading: ' + url)
         try:
             downloadFile(url, destfile)
             if sha1 != getFileHash(destfile):
-                raise Exception('Invalid sha1 for package %s file %s' % package, source)
+                raise Exception('Invalid sha1 for package %s file %s' % (package, source))
             return
         except requests.exceptions.HTTPError as e:
             logger.exception(e)
@@ -54,7 +49,8 @@ def get(package, source, sha1, sourcesPath, URLs, logger):
             continue
         except Exception as e:
             logger.exception(e)
-    raise Exception("Missing source: " + source)
+    raise Exception('Missing source: ' + source)
+
 
 def downloadFile(url, destfile):
     # We need to provide atomicity for file downloads. That is,
@@ -63,8 +59,8 @@ def downloadFile(url, destfile):
     # download to a temporary location (on the same filesystem)
     # and then rename it to the final destination filename.
 
-    temp_file = destfile + "-" + \
-                "".join([random.choice(
+    temp_file = destfile + '-' + \
+                ''.join([random.choice(
                     string.ascii_letters + string.digits) for _ in range(6)])
 
     response = requests.get(url, stream=True)
@@ -87,4 +83,3 @@ def downloadFile(url, destfile):
         os.rename(temp_file, destfile)
 
     return destfile
-
