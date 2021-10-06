@@ -1,0 +1,47 @@
+From 75c4b0cd625717304727305d43a5dc03d33299e0 Mon Sep 17 00:00:00 2001
+From: Aleksei Besogonov <cyberax@amazon.com>
+Date: Fri, 27 Oct 2017 17:59:18 +0000
+Subject: PM / hibernate: update the resume offset on SNAPSHOT_SET_SWAP_AREA
+
+The SNAPSHOT_SET_SWAP_AREA is supposed to be used to set the hibernation
+offset on a running kernel to enable hibernating to a swap file.
+However, it doesn't actually update the swsusp_resume_block variable. As
+a result, the hibernation fails at the last step (after all the data is
+written out) in the validation of the swap signature in
+mark_swapfiles().
+
+Before this patch, the command line processing was the only place where
+swsusp_resume_block was set.
+
+Signed-off-by: Aleksei Besogonov <cyberax@amazon.com>
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+CR: https://cr.amazon.com/r/8297650/
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ kernel/power/user.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/power/user.c b/kernel/power/user.c
+index 69017a569f30..6bee910e911b 100644
+--- a/kernel/power/user.c
++++ b/kernel/power/user.c
+@@ -379,8 +379,12 @@ static long snapshot_ioctl(struct file *filp, unsigned int cmd,
+ 			if (swdev) {
+ 				offset = swap_area.offset;
+ 				data->swap = swap_type_of(swdev, offset, NULL);
+-				if (data->swap < 0)
++				if (data->swap < 0) {
+ 					error = -ENODEV;
++				} else {
++					swsusp_resume_device = swdev;
++					swsusp_resume_block = offset;
++				}
+ 			} else {
+ 				data->swap = -1;
+ 				error = -EINVAL;
+-- 
+2.14.4
+

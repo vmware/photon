@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.4
-Release:        11%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -27,7 +27,6 @@ Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 %if 0%{?fips}
-Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.4-5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha1 fips-canister=91b5031dc9599c6997931d5cb8982df9a181df7a
@@ -51,9 +50,6 @@ Patch12:        fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 # Out-of-tree patches from AppArmor:
 Patch13:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch14:        apparmor-af_unix-mediation.patch
-
-#vmxnet3
-Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 
 # VMW:
 Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -81,8 +77,6 @@ Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch502:       0001-FIPS-canister-binary-usage.patch
-# Patch to remove urandom usage in rng module
-Patch503:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 %else
 %if 0%{?kat_build:1}
 Patch507:       0001-Skip-rap-plugin-for-aesni-intel-modules.patch
@@ -104,9 +98,6 @@ BuildRequires:  libmspack-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
-%if 0%{?fips}
-BuildRequires:  gdb
-%endif
 Requires:       filesystem kmod
 Requires(pre): (coreutils or toybox)
 Requires(preun): (coreutils or toybox)
@@ -154,9 +145,6 @@ The Linux package contains the Linux kernel doc files
 %patch13 -p1
 %patch14 -p1
 
-#vmxnet3
-%patch20 -p1
-
 %ifarch x86_64
 # VMW x86
 %patch55 -p1
@@ -180,7 +168,6 @@ The Linux package contains the Linux kernel doc files
 %patch501 -p1
 %if 0%{?fips}
 %patch502 -p1
-%patch503 -p1
 %else
 %if 0%{?kat_build:1}
 %patch507 -p1
@@ -203,10 +190,6 @@ sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"
 %include %{SOURCE4}
 
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
-
-%if 0%{?fips}
-%include %{SOURCE9}
-%endif
 
 %define __modules_install_post \
 for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -name *.ko` ; do \
@@ -298,14 +281,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
-*   Wed Jun 30 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-11
--   Added script to check structure compatibility between fips_canister.o and vmlinux.
-*   Thu Jun 24 2021 Loïc <4661917+HacKurx@users.noreply.github.com> 5.10.4-10
--   EMUTRAMP: use the prefix X86_ for error codes
-*   Tue Apr 06 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-9
--   Remove buf_info from device accessible structures in vmxnet3
-*   Mon Mar 01 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.4-8
--   Use jitterentropy rng instead of urandom in rng module.
 *   Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-7
 -   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Tue Feb 02 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-6

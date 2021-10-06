@@ -1,0 +1,79 @@
+From 76d774f53844b7359938732bc7ceaefacf7dbb9f Mon Sep 17 00:00:00 2001
+From: Vallish Vaidyeshwara <vallish@amazon.com>
+Date: Mon, 12 Feb 2018 22:29:56 +0000
+Subject: drivers: introduce AMAZON_DRIVER_UPDATES
+
+This provides a central place to maintain out-of-tree drivers.
+Renamed from VENDOR_AMAZON because the name was no longer appropriate.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Cristian Gafton <gafton@amazon.com>
+Reviewed-by: Guru Anbalagane <guruanb@amazon.com>
+CR: https://cr.amazon.com/r/6834563/
+
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+Reviewed-by: Anchal Agarwal <anchalag@amazon.com>
+Signed-off-by: Vallish Vaidyeshwara <vallish@amazon.com>
+CR: https://cr.amazon.com/r/8244644/
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/Kconfig         |  2 ++
+ drivers/Makefile        |  3 +++
+ drivers/amazon/Kconfig  | 15 +++++++++++++++
+ drivers/amazon/Makefile |  3 +++
+ 4 files changed, 23 insertions(+)
+ create mode 100644 drivers/amazon/Kconfig
+ create mode 100644 drivers/amazon/Makefile
+
+diff --git a/drivers/Kconfig b/drivers/Kconfig
+index ab4d439..c9c374d 100644
+--- a/drivers/Kconfig
++++ b/drivers/Kconfig
+@@ -219,4 +219,6 @@ source "drivers/siox/Kconfig"
+ 
+ source "drivers/slimbus/Kconfig"
+ 
++source "drivers/amazon/Kconfig"
++
+ endmenu
+diff --git a/drivers/Makefile b/drivers/Makefile
+index 578f469..9cb2123 100644
+--- a/drivers/Makefile
++++ b/drivers/Makefile
+@@ -186,3 +186,6 @@ obj-$(CONFIG_MULTIPLEXER)	+= mux/
+ obj-$(CONFIG_UNISYS_VISORBUS)	+= visorbus/
+ obj-$(CONFIG_SIOX)		+= siox/
+ obj-$(CONFIG_GNSS)		+= gnss/
++
++# Amazon driver updates
++obj-$(CONFIG_AMAZON_DRIVER_UPDATES)	+= amazon/
+diff --git a/drivers/amazon/Kconfig b/drivers/amazon/Kconfig
+new file mode 100644
+index 0000000..10ff382
+--- /dev/null
++++ b/drivers/amazon/Kconfig
+@@ -0,0 +1,15 @@
++#
++# Amazon driver updates configuration
++#
++
++config AMAZON_DRIVER_UPDATES
++	bool "Amazon Driver Updates"
++	default y
++	depends on PCI || EXPERIMENTAL
++	---help---
++	  Amazon driver updates includes out-of-tree drivers and/or modifeid
++	  versions of the drivers present in the stable kernel tree.
++
++if AMAZON_DRIVER_UPDATES
++
++endif # AMAZON_DRIVER_UPDATES
+diff --git a/drivers/amazon/Makefile b/drivers/amazon/Makefile
+new file mode 100644
+index 0000000..6b4996d
+--- /dev/null
++++ b/drivers/amazon/Makefile
+@@ -0,0 +1,3 @@
++#
++# Amazon Driver Updates
++#

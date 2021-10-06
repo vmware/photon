@@ -1,0 +1,56 @@
+From 6c12495b7f302ca69ece048f42f42b9c85c1dcb5 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Fri, 24 Jul 2020 18:02:55 +0200
+Subject: [PATCH 35/82] x86/head/64: Make fixup_pointer() static inline
+
+Also move it to a header file so that it can be used in the idt code
+to setup the early IDT.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20200724160336.5435-35-joro@8bytes.org
+---
+ arch/x86/include/asm/setup.h | 10 ++++++++++
+ arch/x86/kernel/head64.c     |  5 -----
+ 2 files changed, 10 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/include/asm/setup.h b/arch/x86/include/asm/setup.h
+index 5c2fd05..8aa6ba0 100644
+--- a/arch/x86/include/asm/setup.h
++++ b/arch/x86/include/asm/setup.h
+@@ -74,6 +74,16 @@ static inline void x86_ce4100_early_setup(void) { }
+ extern struct boot_params boot_params;
+ extern char _text[];
+ 
++/*
++ * This function is used in C code that runs while the kernel still runs on
++ * identity mapped addresses to get the correct address of kernel pointers in
++ * the identity mapping.
++ */
++static __always_inline void *fixup_pointer(void *ptr, unsigned long physaddr)
++{
++	return ptr - (void *)_text + (void *)physaddr;
++}
++
+ static inline bool kaslr_enabled(void)
+ {
+ 	return IS_ENABLED(CONFIG_RANDOMIZE_MEMORY) &&
+diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
+index b0ab562..8703292 100644
+--- a/arch/x86/kernel/head64.c
++++ b/arch/x86/kernel/head64.c
+@@ -82,11 +82,6 @@ static struct desc_ptr startup_gdt_descr = {
+ 
+ #define __head	__section(.head.text)
+ 
+-static void __head *fixup_pointer(void *ptr, unsigned long physaddr)
+-{
+-	return ptr - (void *)_text + (void *)physaddr;
+-}
+-
+ static unsigned long __head *fixup_long(void *ptr, unsigned long physaddr)
+ {
+ 	return fixup_pointer(ptr, physaddr);
+-- 
+2.7.4
+

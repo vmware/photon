@@ -1,0 +1,1169 @@
+diff -Naur LKCM.null/drv_fips_test.c LKCM/drv_fips_test.c
+--- LKCM.null/drv_fips_test.c	1969-12-31 16:00:00.000000000 -0800
++++ LKCM/drv_fips_test.c	2017-10-16 15:41:19.871851118 -0700
+@@ -0,0 +1,185 @@
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/fs.h>
++#include <asm/uaccess.h>
++#include <crypto/hash.h>
++#include <crypto/aes.h>
++#include <crypto/algapi.h>
++#include <linux/crypto.h>
++#include <linux/init.h>
++#include <linux/types.h>
++#include <linux/errno.h>
++#include <linux/err.h>
++#include <linux/crypto.h>
++#include <linux/ctype.h>
++#include <linux/vmalloc.h>
++#include <asm/byteorder.h>
++
++#include "test_harness_ioctl.h"
++#include "fips_test.h"
++
++static test_data_v1_t *user_data;
++static int user_data_size = sizeof(test_data_v1_t) + (1024*1024*3);
++int g_debug_level = TRACE_FUNCTION;
++
++DEFINE_MUTEX(lock);
++
++static bool is_cipher(int algo)
++{
++	switch (algo) {
++        case AESCBC_GEN:
++        case AESCBC_NI:
++        case AESECB:
++        case AESECB_GEN:
++        case AESXTS:
++        case AESXTS_GEN:
++        case TDES_CBC:
++        case TDES_ECB:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static long test_harness_ioctl(struct file *f, unsigned int cmd, unsigned long arg)
++{
++	int ret = -EINVAL;
++	int sz;
++//	trace_debug(TRACE_FUNCTION, "Entered\n");
++//	printk("Inside IOCTL\n");
++
++
++	mutex_lock(&lock);
++	switch(cmd){
++	case IOCTL_SET_VECTOR:
++//		trace_debug(TRACE_DEBUG, "Using Vector\n");
++		if(copy_from_user(user_data, (test_data_v1_t*)arg, sizeof(test_data_v1_t))) {
++			printk("Failed to copy data header from user\n");
++			ret = -EINTR;
++			break;
++		}
++		sz = test_data_v1_sz(user_data);
++		if ((sz <= 0) || (sz > user_data_size)) {
++			printk("invalid data size: %d, valid range (1 to %d)\n", sz, user_data_size);
++			ret = -E2BIG;
++			break;
++		}
++		if(copy_from_user(user_data, (test_data_v1_t*)arg, sz) ){
++			printk("Failed to copy data from user\n");
++			ret = -EINTR;
++			break;
++		}
++		if ((user_data->klen < 0) || (user_data->klen > KEY_SIZE)) {
++			printk("invalid key size: %d, valid range (0 to %d)\n", user_data->klen, KEY_SIZE);
++			ret = -E2BIG;
++			break;
++		}
++		if ((user_data->iv_len < 0) || (user_data->iv_len > MAX_IVLEN)) {
++			printk("invalid iv size: %d, valid range (0 to %d)\n", user_data->iv_len, MAX_IVLEN);
++			ret = -E2BIG;
++			break;
++		}
++
++#if 0
++printk("test_harness_ioctl: algo: %d\n", user_data->algo);
++printk("test_harness_ioctl: mode: %d\n", user_data->mode);
++printk("test_harness_ioctl: key len: %d\n", user_data->klen);
++printk("test_harness_ioctl: data len: %d\n", user_data->data_len);
++printk("test_harness_ioctl: iv size: %d, valid range (0 to %d)\n", user_data->iv_len, MAX_IVLEN);
++#endif
++            
++		if (is_cipher(user_data->algo)) {
++			ret = crypt_test_cipher(user_data->algo, user_data->mode,
++						user_data->test_key, user_data->klen,
++						user_data->test_iv, user_data->iv_len,
++						user_data->test_data, user_data->data_len);
++
++		} else {
++			ret = crypt_test_hash(user_data->algo,
++					      user_data->test_key, user_data->klen,
++					      user_data->test_data, user_data->data_len,
++					      user_data->test_data, &user_data->data_len);
++		}
++		user_data->status = ret;
++        sz = test_data_v1_sz(user_data);        // Update size again (needed when data length output > input)
++		if(copy_to_user((void *) arg, user_data, sz)) {
++			trace_debug(TRACE_ERR, "Failed to copy data from user\n");
++			ret = -EINTR;
++			break;
++		}
++
++		ret = 0;
++	break;
++	}
++	mutex_unlock(&lock);
++	return ret;
++}
++
++static int dev_open(struct inode *inod, struct file *fil)
++{
++	printk("KERN_ALERT device opened");
++	return 0;
++}
++
++static ssize_t dev_read(struct file *filep,char *buf,size_t len,loff_t *off)
++{
++	return -EINVAL;
++}
++
++static ssize_t dev_write(struct file *flip,const char *buf,size_t len,loff_t *off)
++{
++	return -EINVAL;
++}
++
++static int dev_release(struct inode *inod,struct file *fil){
++	printk("KERN_ALERT device closed\n");
++	return 0;
++}
++
++static struct file_operations fops=
++{
++	.read=dev_read,
++	.write=dev_write,
++	.open=dev_open,
++	.release=dev_release,
++	.unlocked_ioctl=test_harness_ioctl,
++};
++
++int init_module(void)
++{
++	int err;
++
++	g_debug_level = TRACE_ALL;
++    trace_debug(TRACE_FUNCTION, "Entering FIPs Test\n");
++
++    err = crypt_init_module();
++	if (err)
++		return err;
++
++	user_data = kmalloc(user_data_size, GFP_KERNEL);
++	if (!user_data) {
++		crypt_cleanup_module();
++		return -ENOMEM;
++	}
++
++	err = register_chrdev(MAJOR_NUM,DEVICE_NAME,&fops);
++	if (err < 0 ){
++		kfree(user_data);
++		crypt_cleanup_module();
++		printk(KERN_ALERT "device registration failed. %d\n", err);
++	}
++
++	return err;
++}
++
++void cleanup_module(void)
++{
++	trace_debug(TRACE_FUNCTION, "Leaving FIPs Test\n");
++	unregister_chrdev(MAJOR_NUM, DEVICE_NAME);
++	kfree(user_data);
++	crypt_cleanup_module();
++}
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("VMware NSBU : Pravin <pshelar@vmware.com>");
+diff -Naur LKCM.null/fips_test.c LKCM/fips_test.c
+--- LKCM.null/fips_test.c	1969-12-31 16:00:00.000000000 -0800
++++ LKCM/fips_test.c	2017-10-16 15:41:33.955850507 -0700
+@@ -0,0 +1,839 @@
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/fs.h>
++#include <asm/uaccess.h>
++#include <crypto/hash.h>
++#include <crypto/aes.h>
++#include <crypto/algapi.h>
++#include <linux/crypto.h>
++#include <linux/init.h>
++#include <linux/types.h>
++#include <linux/errno.h>
++#include <linux/err.h>
++#include <linux/crypto.h>
++#include <linux/ctype.h>
++#include <linux/vmalloc.h>
++#include <asm/byteorder.h>
++#include <linux/scatterlist.h>
++#include <crypto/skcipher.h>
++
++#include "test_harness_ioctl.h"
++#include "fips_test.h"
++
++#define DES_KEY_SIZE 8
++#define DIGEST_SIZE 512
++#define TEXT_SIZE (64 * (1024))
++
++#define VECTOR_TYPE_SIZE 20
++
++typedef struct crypt_test {
++    unsigned int algo;
++    unsigned int mask;
++    char vector_type[VECTOR_TYPE_SIZE];
++    int mode; //Encrypt=1 /Decrypt=2
++    int count;
++    int klen;
++    int data_tot_len;
++    int iv_len;
++    int rlen;
++    unsigned char *key;
++    unsigned char *iv;
++    unsigned char *hash_input;
++    unsigned char *hash_output;
++    struct scatterlist *sgin;
++} crypt_test_t;
++
++crypt_test_t *test_vector;
++static DEFINE_MUTEX(lock);
++static unsigned char txt_output[4096];
++
++static void to_ascii(char *out, int h)
++{
++    if (h <= 9)
++        *out = '0' + h;
++    else
++        *out = 'a' + (h - 10);
++    
++    printk("%c", *out);
++}
++
++static void hexdump_buf(char *alg, char *out, unsigned char *in, unsigned int ilen)
++{
++    int i, j = 0;
++    
++    printk("Result algo (%s): ", alg);
++    for (i = 0; i < ilen; i++) {
++        int u, l;
++        
++        u = in[i] >> 4;
++        l = in[i] & 0x0f;
++        
++        to_ascii(&out[j++], u);
++        to_ascii(&out[j++], l);
++    }
++    printk("\n");
++}
++
++static char char_to_hex(char ch)
++{
++    char ich = tolower(ch);
++    
++    if (ich >= 'a') {
++        return (ich - 'a' ) + 10;
++    } else {
++        return ch - '0';
++    }
++}
++
++static void hexdump(char *prefix, unsigned char *buf, unsigned int len)
++{
++    printk("pbs: klen %d\n", len);
++    print_hex_dump(KERN_EMERG, prefix, DUMP_PREFIX_OFFSET,
++                   16, 1,
++                   buf, len, false);
++}
++
++static void text_to_pack_bin(char *msg, unsigned char out[], unsigned char in[], int len)
++{
++    int i, j = 0;
++    
++    printk("%s len %d :- ", msg, len);
++    for (i = 0; i < len; i += 2) {
++        char p1, p2;
++        
++        p1 = char_to_hex(in[i]);
++        p2 = char_to_hex(in[i + 1]);
++        
++        out[j++] = (p1 << 4) | p2;
++        printk("%02x", out[j-1]);
++    }
++    printk("\n");
++}
++
++static struct scatterlist *sg_kmalloc(unsigned int nents, gfp_t gfp_mask)
++{
++    return kzalloc(nents * sizeof(struct scatterlist), gfp_mask);
++}
++
++static void sg_kfree(struct scatterlist *sg, unsigned int nents)
++{
++    kfree(sg);
++}
++
++/* ----- */
++struct ft_crypt_result {
++    struct completion completion;
++    int err;
++};
++
++static void ft_crypt_complete(struct crypto_async_request *req, int err)
++{
++    struct ft_crypt_result *res = req->data;
++   
++    printk("pbs: async\n");
++    if (err == -EINPROGRESS)
++        return;
++    
++    res->err = err;
++    complete(&res->completion);
++}
++
++static void ft_result_init(struct ft_crypt_result *ft)
++{
++    memset(ft, 0, sizeof(*ft));
++    init_completion(&ft->completion);
++}
++
++int test_hash(crypt_test_t *test_vector)
++{
++    struct crypto_ahash *tfm = NULL;
++    struct ahash_request *req = NULL;
++    struct ft_crypt_result ft_result;
++    struct scatterlist sgin;
++    const char *algo;
++    int ret = -ENOMEM;
++    
++    tfm = crypto_alloc_ahash(test_vector->vector_type, test_vector->algo, test_vector-> mask);
++    if (IS_ERR(tfm)) {
++        printk(KERN_ERR "alg: cipher: Failed to load transform for "
++               "%s: %ld\n", "cbc(aes)", PTR_ERR(tfm));
++        return PTR_ERR(tfm);
++    }
++    
++    algo = crypto_tfm_alg_driver_name(crypto_ahash_tfm(tfm));
++    if (algo) {
++        trace_debug( TRACE_DEBUG, "Algo = %s\n", algo );
++    } else {
++        printk("driver not available\n");
++        ret =  -EINVAL;
++        goto out;
++    }
++    
++    crypto_ahash_clear_flags(tfm, ~0);
++    if (test_vector->klen) {
++        ret = crypto_ahash_setkey(tfm, test_vector->key, test_vector->klen);
++        if (ret) {
++            printk("setting hash key err %d \n", ret);
++            goto out;
++        }
++    }
++    
++    ft_result_init(&ft_result);
++    req = ahash_request_alloc(tfm, GFP_KERNEL);
++    if (!req) {
++        ret = -ENOMEM;
++        printk("hash request alloc error \n");
++        goto out;
++    }
++    
++    ahash_request_set_tfm(req, tfm);
++    ahash_request_set_callback(req, CRYPTO_TFM_REQ_MAY_SLEEP |
++                               CRYPTO_TFM_REQ_MAY_BACKLOG,
++                               ft_crypt_complete, &ft_result);
++    
++    sg_init_one(&sgin, test_vector->hash_input, test_vector->data_tot_len);
++    
++    ahash_request_set_crypt(req, &sgin, test_vector->hash_output, test_vector->data_tot_len);
++    
++    ret = crypto_ahash_digest(req);
++    if (ret == -EINPROGRESS || ret == -EBUSY) {
++        ret = wait_for_completion_interruptible(&ft_result.completion);
++        if (!ret)
++            ret = ft_result.err;
++    }
++    
++    /*crypto_ahash_update() */
++    ahash_request_free(req);
++out:
++    crypto_free_ahash(tfm);
++    return ret;
++}
++
++int crypt_test_hash(int algo,
++                    unsigned char key[], int klen,
++                    unsigned char data[], int data_len,
++                    unsigned char out[], int *output_len)
++{
++    int ret, olen = 0;
++    
++    mutex_lock(&lock);
++    memset(test_vector, 0, sizeof (*test_vector));
++    
++    test_vector->hash_input = data;
++    test_vector->data_tot_len = data_len;
++    if (klen) {
++        test_vector->key = key;
++        test_vector->klen = klen;
++    }
++    test_vector->hash_output = out;
++    
++    switch (algo) {
++        case SHA1:
++            test_vector->algo = CRYPTO_ALG_TYPE_SHASH;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "sha1");
++            olen = 20;
++            break;
++            
++        case SHA224:
++            test_vector->algo = CRYPTO_ALG_TYPE_SHASH;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "sha224");
++            olen = 28;
++            
++            break;
++            
++        case SHA256:
++            test_vector->algo = CRYPTO_ALG_TYPE_SHASH;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "sha256");
++            olen = 32;
++            break;
++            
++        case SHA384:
++            test_vector->algo = CRYPTO_ALG_TYPE_SHASH;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "sha384");
++            olen = 48;
++            break;
++            
++        case SHA512:
++            test_vector->algo = CRYPTO_ALG_TYPE_SHASH;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "sha512");
++            olen = 64;
++            break;
++            
++        case HMAC_SHA1:
++            test_vector->algo = CRYPTO_ALG_TYPE_SHASH;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "hmac(sha1)");
++            olen = 20;
++            break;
++            
++        case HMAC_SHA224:
++            test_vector->algo = CRYPTO_ALG_TYPE_SHASH;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "hmac(sha224)");
++            olen = 28;
++            break;
++            
++        case HMAC_SHA256:
++            test_vector->algo = CRYPTO_ALG_TYPE_SHASH;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "hmac(sha256)");
++            olen = 32;
++            break;
++            
++        case HMAC_SHA384:
++            test_vector->algo = CRYPTO_ALG_TYPE_SHASH;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "hmac(sha384)");
++            olen = 48;
++            break;
++            
++        case HMAC_SHA512:
++            test_vector->algo = CRYPTO_ALG_TYPE_SHASH;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "hmac(sha512)");
++            olen = 64;
++            break;
++            
++        default:
++            printk("hash algo not supported");
++            ret = -EINVAL;
++            goto out;
++            break;
++    }
++    
++    ret = test_hash(test_vector);
++    if (!ret) {
++        *output_len = olen;
++    } else {
++        printk("test_hash (%s) err %d\n", test_vector->vector_type, ret);
++    }
++out:
++    mutex_unlock(&lock);
++    
++    return ret;
++}
++EXPORT_SYMBOL(crypt_test_hash);
++
++int crypt_test_hash_txt(int algo,
++                        unsigned char text_key[], int klen,
++                        unsigned char text_data[], int data_len,
++                        unsigned char text_out[], int *output_len)
++{
++    static unsigned char key[KEY_SIZE];
++    static unsigned char hash_input[TEXT_SIZE];
++    static unsigned char hash_output[DIGEST_SIZE];
++    int ret;
++    
++    if (data_len > (TEXT_SIZE*2))
++        return -E2BIG;
++    
++    text_to_pack_bin("hash input ", hash_input, text_data, data_len);
++    if (klen) {
++        text_to_pack_bin("hash key", key, text_key, klen);
++    }
++    ret = crypt_test_hash(algo, key, klen/2, hash_input, data_len/2,
++                          hash_output, output_len);
++    if (!ret) {
++        hexdump_buf(test_vector->vector_type, text_out, hash_output, *output_len);
++        *output_len = *output_len * 2;
++    } else {
++        printk("test_hash (%s) err %d\n", test_vector->vector_type, ret);
++    }
++    printk("---8<---\n");
++    return ret;
++}
++EXPORT_SYMBOL(crypt_test_hash_txt);
++
++static int test_sync_cipher(crypt_test_t *test_vector)
++{
++    struct crypto_cipher *tfm = NULL;
++    const char *algo;
++    void *data;
++    int ret = -ENOMEM;
++    int k;
++
++    tfm = crypto_alloc_cipher(test_vector->vector_type, test_vector->algo, test_vector->mask);
++    if (IS_ERR(tfm)) {
++        printk(KERN_ERR "sync-cipher: Failed to load transform for "
++               "%s type %x, mask %x: %ld\n", test_vector->vector_type,
++					     test_vector->algo,
++					     test_vector->mask,  PTR_ERR(tfm));
++        return PTR_ERR(tfm);
++    }
++    algo = crypto_tfm_alg_driver_name(crypto_cipher_tfm(tfm));
++    if (algo) {
++        trace_debug( TRACE_DEBUG, "Algo = %s\n", algo );
++    } else {
++        printk("driver not available\n");
++        ret =  -EINVAL;
++        goto out;
++    }
++    
++    crypto_cipher_clear_flags(tfm, ~0);
++    ret = crypto_cipher_setkey(tfm, test_vector->key, test_vector->klen);
++    if (ret) {
++        hexdump("key: ", test_vector->key, test_vector->klen);
++        printk("setting cipher key err %d crt-flags %x\n", ret, crypto_cipher_get_flags(tfm));
++        goto out;
++    }
++    data = sg_virt(test_vector->sgin);
++    for (k = 0; k < test_vector->sgin->length;
++        k += crypto_cipher_blocksize(tfm)) {
++	if (test_vector->mode == ENCRYPT_MSG)
++           crypto_cipher_encrypt_one(tfm, data + k,
++				    data + k);
++	else
++	   crypto_cipher_decrypt_one(tfm, data + k,
++				    data + k);
++    }
++
++out:
++    crypto_free_cipher(tfm);
++    return ret;
++}
++
++static int test_sync_blk_cipher(crypt_test_t *test_vector)
++{
++    struct crypto_blkcipher *tfm = NULL;
++    struct blkcipher_desc desc;
++    const char *algo;
++    int ret = -ENOMEM;
++    
++    tfm = crypto_alloc_blkcipher(test_vector->vector_type, test_vector->algo, test_vector->mask);
++    if (IS_ERR(tfm)) {
++        printk(KERN_ERR "sync-blk-cipher: Failed to load transform for "
++               "%s: %ld\n", test_vector->vector_type, PTR_ERR(tfm));
++        return PTR_ERR(tfm);
++    }
++    
++    algo = crypto_tfm_alg_driver_name(crypto_blkcipher_tfm(tfm));
++    if (algo) {
++//        trace_debug( TRACE_DEBUG, "Algo = %s\n", algo );
++    } else {
++        printk("driver not available\n");
++        ret =  -EINVAL;
++        goto out;
++    }
++
++    crypto_blkcipher_clear_flags(tfm, ~0);
++    ret = crypto_blkcipher_setkey(tfm, test_vector->key, test_vector->klen);
++    if (ret) {
++        hexdump("key: ", test_vector->key, test_vector->klen);
++        printk("setting cipher key err %d crt-flags %x\n", ret, crypto_blkcipher_get_flags(tfm));
++        goto out;
++    }
++
++    if (test_vector->iv_len) {
++        unsigned int iv_len = crypto_blkcipher_ivsize(tfm);
++        if (test_vector->iv_len > iv_len) {
++            unsigned char buf[200];
++            
++            printk(KERN_ERR "Test vector IVLEN  %d more than CIPHER IVLEN %d\n", test_vector->iv_len, iv_len);
++            text_to_pack_bin("16 bytes of Test IV", buf, test_vector->iv, 16);
++        }
++    else
++           crypto_blkcipher_set_iv(tfm, test_vector->iv, test_vector->iv_len);
++     }
++    
++    
++    desc.tfm = tfm;
++    desc.flags = 0;
++ 
++    if (test_vector->mode == ENCRYPT_MSG)
++	ret = crypto_blkcipher_encrypt(&desc,
++				       test_vector->sgin, test_vector->sgin,
++				       test_vector->data_tot_len);
++    else
++	ret = crypto_blkcipher_decrypt(&desc,
++				       test_vector->sgin, test_vector->sgin,
++				       test_vector->data_tot_len);
++   
++out:
++    crypto_free_blkcipher(tfm);
++    return ret;
++}
++
++static int test_async_blk_cipher(crypt_test_t *test_vector)
++{
++    struct crypto_skcipher *tfm = NULL;
++    struct skcipher_request *req = NULL;
++    struct ft_crypt_result ft_result;
++    const char *algo;
++    int ret = -ENOMEM;
++    
++    tfm = crypto_alloc_skcipher(test_vector->vector_type, test_vector->algo, test_vector->mask);
++    if (IS_ERR(tfm)) {
++        printk(KERN_ERR "async-blk-cipher:: Failed to load transform for "
++               "%s: %ld\n", test_vector->vector_type, PTR_ERR(tfm));
++        return PTR_ERR(tfm);
++    }
++    
++    algo = crypto_tfm_alg_driver_name(crypto_skcipher_tfm(tfm));
++    if (algo) {
++        trace_debug( TRACE_DEBUG, "Algo = %s\n", algo );
++    } else {
++        printk("driver not available\n");
++        ret =  -EINVAL;
++        goto out;
++    }
++    
++    crypto_skcipher_clear_flags(tfm, ~0);
++    ret = crypto_skcipher_setkey(tfm, test_vector->key, test_vector->klen);
++    if (ret) {
++        hexdump("key: ", test_vector->key, test_vector->klen);
++        printk("setting cipher key err %d crt-flags %x\n", ret, crypto_skcipher_get_flags(tfm));
++        goto out;
++    }
++    
++    ft_result_init(&ft_result);
++    req = skcipher_request_alloc(tfm, GFP_KERNEL);
++    if (!req) {
++        ret = -ENOMEM;
++        printk("cipher alloc error \n");
++        goto out;
++    }
++    
++    skcipher_request_set_tfm(req, tfm);
++    skcipher_request_set_callback(req, CRYPTO_TFM_REQ_MAY_SLEEP |
++                                    CRYPTO_TFM_REQ_MAY_BACKLOG,
++                                    ft_crypt_complete, &ft_result);
++    
++    
++    skcipher_request_set_crypt(req, test_vector->sgin,
++                                 test_vector->sgin,
++                                 test_vector->data_tot_len,
++                                 test_vector->iv);
++    
++    if (test_vector->mode == ENCRYPT_MSG)
++        ret = crypto_skcipher_encrypt(req);
++    else {
++        ret = crypto_skcipher_decrypt(req);
++    }
++    if (ret == -EINPROGRESS || ret == -EBUSY) {
++        ret = wait_for_completion_interruptible(&ft_result.completion);
++        if (!ret)
++            ret = ft_result.err;
++    }
++    
++    skcipher_request_free(req);
++out:
++    crypto_free_skcipher(tfm);
++    return ret;
++}
++
++static int __crypt_test_cipher(int algo, int mode,
++                               unsigned char key[], int klen,
++                               unsigned char iv[], int iv_len,
++                               struct scatterlist *sgin, int tot_len)
++{
++    bool async = true;
++    int ret;
++    
++    mutex_lock(&lock);
++    memset(test_vector, 0, sizeof (*test_vector));
++    
++    test_vector->key = key;
++    test_vector->klen = klen;
++    test_vector->iv = iv;
++    test_vector->iv_len = iv_len;
++    test_vector->sgin = sgin;
++    test_vector->data_tot_len = tot_len;
++    test_vector->mode = mode;
++    
++    switch (algo) {
++        case AESCBC_NI:
++            test_vector->algo = CRYPTO_ALG_TYPE_BLKCIPHER;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "cbc-aes-aesni");
++            break;
++
++        case AESCBC_GEN:
++	    if (0) {
++                test_vector->algo = CRYPTO_ALG_TYPE_CIPHER;
++                test_vector->mask = 0;
++                strcpy(test_vector->vector_type, "aes-generic");
++	    } else {
++                test_vector->algo = CRYPTO_ALG_TYPE_BLKCIPHER;
++                test_vector->mask = 0;
++                strcpy(test_vector->vector_type, "cbc(aes)");
++	        async = false;
++            }
++            break;
++
++        case AESECB_GEN:
++            test_vector->algo = CRYPTO_ALG_TYPE_BLKCIPHER;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "ecb(aes)");
++	    async = false;
++            break;
++
++        case AESECB:
++            test_vector->algo = CRYPTO_ALG_TYPE_BLKCIPHER;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "ecb-aes-aesni");
++            break;
++
++        case AESXTS:
++            test_vector->algo = CRYPTO_ALG_TYPE_BLKCIPHER;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "xts-aes-aesni");
++            break;
++
++         case AESXTS_GEN:
++            test_vector->algo = CRYPTO_ALG_TYPE_BLKCIPHER;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "xts(aes)");
++            async = false;
++            break;
++            
++        case TDES_CBC:
++            test_vector->algo = CRYPTO_ALG_TYPE_BLKCIPHER;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "cbc(des3_ede)");
++            break;
++        case TDES_ECB:
++            test_vector->algo = CRYPTO_ALG_TYPE_BLKCIPHER;
++            test_vector->mask = 0;
++            strcpy(test_vector->vector_type, "ecb(des3_ede)");
++            break;
++            
++        default:
++            printk("cipher algo not supported");
++            ret = -EINVAL;
++            goto out;
++            break;
++    }
++    if (test_vector->algo == CRYPTO_ALG_TYPE_CIPHER)
++	    ret = test_sync_cipher(test_vector);
++    else {
++	if (async)
++	    ret = test_async_blk_cipher(test_vector);
++	else
++	    ret = test_sync_blk_cipher(test_vector);
++    }
++
++out:
++    mutex_unlock(&lock);
++    return ret;
++}
++
++/* this functions can handle large buffer of input data.
++ * the buffers can be passed as parameter sgin in form of
++ * scatter gather list.
++ * idealy each scatter gather entry should be of size upto 8KB.
++ * last parameter 'sg_size' is number of entries in the sgin array.
++ * Encrypted msg is returned in same buffer. so the sgin
++ * buffer should be writable buffer. */
++
++int crypt_test_cipher_txt_sg(int algo, int mode,
++                             unsigned char text_key[], int klen,
++                             unsigned char text_iv[], int iv_len,
++                             struct scatterlist *sgin, int sg_size)
++{
++    struct scatterlist *sg_data;
++    static unsigned char key[KEY_SIZE];
++    static unsigned char iv[MAX_IVLEN];
++    int tot_len = 0;
++    int i, err;
++    
++    sg_data = sg_kmalloc(sg_size, GFP_KERNEL);
++    if (!sg_data)
++        return -ENOMEM;
++    
++    for (i = 0; i < sg_size; i++) {
++        void *buf;
++        
++        buf = kmalloc(sgin[i].length, GFP_KERNEL);
++        if (!buf) {
++            err = -ENOMEM;
++            goto err;
++        }
++        text_to_pack_bin("cipher input ", buf, sg_virt(&sgin[i]), sgin[i].length);
++        
++        sg_set_buf(&sg_data[i], buf, sgin[i].length / 2);
++        tot_len += sg_data[i].length;
++    }
++    text_to_pack_bin("cipher key", key, text_key, klen);
++    text_to_pack_bin("cipher iv", iv, text_iv, iv_len);
++    
++    err = __crypt_test_cipher(algo, mode, key, klen / 2, iv, iv_len / 2,
++                              sg_data, tot_len);
++    if (!err) {
++        for (i = 0; i < sg_size; i++) {
++            hexdump_buf(test_vector->vector_type, sg_virt(&sgin[i]), sg_virt(&sg_data[i]), sg_data[i].length);
++            kfree(sg_virt(&sg_data[i]));
++        }
++    } else
++        printk("cipher (%s) err %d\n", test_vector->vector_type, err);
++    printk("---8<---\n");
++    sg_kfree(sg_data, sg_size);
++    return err;
++err:
++    for (; i >= 0; i--)
++        kfree(sg_virt(&sg_data[i]));
++    sg_kfree(sg_data, sg_size);
++    
++    return err;
++}
++
++int crypt_test_cipher_txt(int algo, int mode,
++                          unsigned char test_key[], int klen,
++                          unsigned char test_iv[], int iv_len,
++                          unsigned char test_data[], int data_len)
++{
++    struct scatterlist sgin;
++    
++    sg_init_one(&sgin, test_data, data_len);
++    
++    return crypt_test_cipher_txt_sg(algo, mode,
++                                    test_key, klen, test_iv, iv_len,
++                                    &sgin, 1);
++}
++EXPORT_SYMBOL(crypt_test_cipher_txt);
++
++int crypt_test_cipher(int algo, int mode,
++                      unsigned char key[], int klen,
++                      unsigned char iv[], int iv_len,
++                      unsigned char data[], int data_len)
++{
++    struct scatterlist sgin;
++    int err;
++    
++    sg_init_one(&sgin, data, data_len);    
++    err = __crypt_test_cipher(algo, mode, key, klen, iv, iv_len,
++                              &sgin, data_len);
++    if (err)
++        printk("cipher (%s) err %d\n", test_vector->vector_type, err);
++    return err;
++}
++EXPORT_SYMBOL(crypt_test_cipher);
++
++static int module_self_test(void)
++{
++    int olen;
++
++    if (1) {
++        {
++            unsigned char key[] = "00000000000000000000000000000000";
++            unsigned char iv[] = "00000000000000000000000000000000";
++            unsigned char input[] = "9798c4640bad75c7c3227db910174e72";
++            
++            
++            crypt_test_cipher_txt(AESCBC_GEN, ENCRYPT_MSG,
++                                  key, strlen(key), iv, strlen(iv),
++                                  input, strlen(input));
++        }
++        {
++            unsigned char key[] = "00000000000000000000000000000000";
++            unsigned char iv[] = "00000000000000000000000000000000";
++            unsigned char input[] = "9798c4640bad75c7c3227db910174e72";
++            
++            
++            crypt_test_cipher_txt(AESCBC_NI, ENCRYPT_MSG,
++                                  key, strlen(key), iv, strlen(iv),
++                                  input, strlen(input));
++        }
++	return 0;
++        {
++            unsigned char key[] = "00000000000000000000000000000000";
++            unsigned char iv[] = "00000000000000000000000000000000";
++            unsigned char input[] = "f34481ec3cc627bacd5dc3fb08f273e6";
++            
++            
++            crypt_test_cipher_txt(AESECB, ENCRYPT_MSG,
++                                  key, strlen(key), iv, strlen(iv),
++                                  input, strlen(input));
++        }
++         {
++            unsigned char key[] = "00000000000000000000000000000000";
++            unsigned char iv[] = "00000000000000000000000000000000";
++            unsigned char input[] = "f34481ec3cc627bacd5dc3fb08f273e6";
++            
++            
++            crypt_test_cipher_txt(AESECB_GEN, ENCRYPT_MSG,
++                                  key, strlen(key), iv, strlen(iv),
++                                  input, strlen(input));
++        }
++         {
++            unsigned char key[] = "d9ea889d65357515e4137012457468b9fda0a4ff3efd66de889418e07b426336";
++            unsigned char iv[] = "fc504a6e5249451ed0b8d62e2bdd07e1";
++            unsigned char input[] = "2b4dcfa944a32a75d27a47e06e4f650a";
++            
++            crypt_test_cipher_txt(AESXTS, ENCRYPT_MSG,
++                                  key, strlen(key), iv, strlen(iv),
++                                  input, strlen(input));
++        }              
++        {
++            unsigned char key[] = "39f7e4a8a0584d2e0d39fe252866129abfe5d92c52335ea3b6f053bd808e2df22ff669ab27336cf31bf83a15df41157f36956f97004b391667e67eaf445c3a9e";
++            unsigned char iv[] = "99a0ee1bc920eafd02925561be00cd13";
++            unsigned char input[] = "cf786eec36fddc5295dd478dfb16dd321b27812fe2b13d7bb4a9ec56cd70f5f3";
++            
++            crypt_test_cipher_txt(AESXTS, ENCRYPT_MSG,
++                                  key, strlen(key), iv, strlen(iv),
++                                  input, strlen(input));
++        }
++         {
++            unsigned char key[] = "d9ea889d65357515e4137012457468b9fda0a4ff3efd66de889418e07b426336";
++            unsigned char iv[] = "fc504a6e5249451ed0b8d62e2bdd07e1";
++            unsigned char input[] = "2b4dcfa944a32a75d27a47e06e4f650a";
++            
++            crypt_test_cipher_txt(AESXTS_GEN, ENCRYPT_MSG,
++                                  key, strlen(key), iv, strlen(iv),
++                                  input, strlen(input));
++        }
++        {
++            unsigned char key[] = "0101010101010101";
++            unsigned char iv[] = "0000000000000000";
++            unsigned char input1[] = "95f8a5e5dd31d900";
++            unsigned char input2[] = "95f8a5e5dd31d900";
++            unsigned char keya[] = "f46ea8f4491fdfbcaee6e69e345ba24ff46ea8f4491fdfbc";
++            unsigned char inputa[] = "8d980ce5ef807297";
++            
++            crypt_test_cipher_txt(TDES_CBC, ENCRYPT_MSG,
++                                  key, strlen(key), iv, strlen(iv),
++                                  input1, strlen(input1));
++            crypt_test_cipher_txt(TDES_ECB, ENCRYPT_MSG,
++                                  key, strlen(key), iv, strlen(iv),
++                                  input2, strlen(input2));
++            crypt_test_cipher_txt(TDES_ECB, DECRYPT_MSG,
++                                  keya, strlen(keya), iv, strlen(iv),
++                                  inputa, strlen(inputa));
++            
++        }
++    }
++    return 0;
++    crypt_test_hash_txt(SHA1,   NULL, 0, "6b86636e", 8, txt_output, &olen);
++    crypt_test_hash_txt(SHA256, NULL, 0, "7f9c783f05d1c1e5ce86b22612", 26, txt_output, &olen);
++    
++    {
++        char key[] = "d8490f5eb74d5ab458c61d212e278e55";
++        char msg[] = "fba41998f50163dff6be2acab152619252c92dd8bf0147811e19a3c497274f815b299dd5e53f84eb8017441509a8491bf62352d39726d2f19c339621d862a9534452755647652aa9342d648e1521085fa7956e25a5e9c6674900b44011f33eb4bf07e844a3dd1dc01ce9d15d5d2565086d07cbf971b0ea8a2e66444aca44d64d";
++        int klen = strlen(key);
++        int mlen = strlen(msg);
++        
++        crypt_test_hash_txt(HMAC_SHA256, key, klen, msg, mlen, txt_output, &olen);
++    }
++    return 0;
++}
++
++int crypt_init_module(void)
++{
++    test_vector = kmalloc(sizeof (*test_vector), GFP_KERNEL | __GFP_NOWARN);
++    if (!test_vector)
++        return -ENOMEM;
++
++    if (0) 
++        module_self_test();
++    return 0;
++}
++
++void crypt_cleanup_module(void)
++{
++    kfree(test_vector);
++}
+diff -Naur LKCM.null/fips_test.h LKCM/fips_test.h
+--- LKCM.null/fips_test.h	1969-12-31 16:00:00.000000000 -0800
++++ LKCM/fips_test.h	2016-09-14 16:03:53.000000000 -0700
+@@ -0,0 +1,18 @@
++#ifndef CRYPT_TEST_MODULE
++#define CRYPT_TEST_MODULE
++
++int crypt_init_module(void);
++void crypt_cleanup_module(void);
++
++int crypt_test_cipher(int algo, int mode,
++			unsigned char test_key[], int klen,
++			unsigned char test_iv[], int iv_len,
++			unsigned char test_data[], int data_len);
++
++
++int crypt_test_hash(int algo,
++		      unsigned char test_key[], int klen,
++		      unsigned char test_data[], int data_len,
++		      unsigned char test_out[], int *output_len);
++
++#endif
+diff -Naur LKCM.null/Makefile LKCM/Makefile
+--- LKCM.null/Makefile	1969-12-31 16:00:00.000000000 -0800
++++ LKCM/Makefile	2017-10-16 15:43:14.935846124 -0700
+@@ -0,0 +1,3 @@
++obj-m += fips_lkcm.o
++fips_lkcm-objs :=  drv_fips_test.o fips_test.o
++
+diff -Naur LKCM.null/test_harness_ioctl.h LKCM/test_harness_ioctl.h
+--- LKCM.null/test_harness_ioctl.h	1969-12-31 16:00:00.000000000 -0800
++++ LKCM/test_harness_ioctl.h	2016-10-17 15:15:41.000000000 -0700
+@@ -0,0 +1,104 @@
++//
++//  test_harness_ioctl.h
++//
++//  Header file for communication between user-apps and LKCMtest driver module
++//
++//  VMware 9/14/16.
++//
++#ifndef __TEST_HARNESS_H
++#define __TEST_HARNESS_H
++#include <linux/ioctl.h>
++
++#define DEVICE_NAME "lkcm_dev"
++#define MAJOR_NUM 90
++#define USER_LOG_FILE "/tmp/lkcm_log.txt"
++
++#define ENCRYPT_MSG 1
++#define DECRYPT_MSG 2
++
++
++// Crypto Algo Types
++enum {
++	AESCBC_GEN,
++	AESCBC_NI,
++	AESECB,
++	AESECB_GEN,
++	AESXTS,
++	AESXTS_GEN,
++	TDES_CBC,
++	TDES_ECB,
++        HMAC_SHA1,
++        HMAC_SHA224,
++        HMAC_SHA256,
++        HMAC_SHA384,
++        HMAC_SHA512,
++	SHA1,
++	SHA224,
++	SHA256,
++	SHA384,
++	SHA512,
++};
++
++#define KEY_SIZE 256
++#define MAX_IVLEN 32
++#define MAX_DATA_LEN (1024 * 1024 * 10)
++
++typedef struct test_data_v1 {
++	int algo;
++	int mode;
++	int klen;
++	int iv_len;
++	int data_len;
++	int status;
++	unsigned char test_key[KEY_SIZE];
++	unsigned char test_iv[MAX_IVLEN];
++	unsigned char test_data[];
++} test_data_v1_t;
++
++static inline int test_data_v1_sz(struct test_data_v1 *t)
++{
++	return sizeof (*t) + t->data_len;
++}
++
++#define IOCTL_SET_VECTOR _IOWR(MAJOR_NUM, 1, test_data_v1_t*)
++#define QUERY_CLEAR_VALUE _IOWR(MAJOR_NUM, 2)
++#define QUERY_SET_VALUE _IOW(MAJOR_NUM, 3, int *)
++
++
++extern int g_debug_level;
++
++#define TRACE_ERR 0x00000001
++#define TRACE_DEBUG 0x00000002
++#define TRACE_FUNCTION 0x00000004
++#define TRACE_ALL (TRACE_ERR|TRACE_DEBUG|TRACE_FUNCTION)
++
++#ifdef __KERNEL__
++#define trace_debug(level, fmt, args...) \
++{\
++	if ((level & g_debug_level)) {\
++		printk( "[%s:%d] " fmt, __FUNCTION__, __LINE__, ##args); \
++	}\
++}
++#else
++#define trace_debug(level, fmt, args...) \
++{ \
++	FILE * fp = NULL;\
++	if ((level & g_debug_level)) {\
++		struct stat file_stat;\
++		stat(USER_LOG_FILE, &file_stat );\
++		if ( file_stat.st_size > 10000 ) { \
++			fp = fopen(USER_LOG_FILE, "w+"); }\
++		else {\
++			fp = fopen(USER_LOG_FILE, "a+"); }\
++		if ( fp ){\
++			printf("[%s:%d] " fmt, __FUNCTION__, __LINE__, ##args); \
++			fprintf(fp,"[%s:%d] " fmt, __FUNCTION__, __LINE__, ##args); \
++			fclose(fp);\
++		}\
++	}\
++}
++#endif
++
++
++
++#endif

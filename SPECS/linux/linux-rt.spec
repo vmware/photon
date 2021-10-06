@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.4
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt22
-Release:        13%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -47,7 +47,6 @@ Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf
 Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
 %define sha1 ice=19507794824da33827756389ac8018aa84e9c427
 %if 0%{?fips}
-Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.4-5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha1 fips-canister=91b5031dc9599c6997931d5cb8982df9a181df7a
@@ -71,9 +70,6 @@ Patch12:        fork-add-sysctl-to-disallow-unprivileged-CLONE_NEWUSER-by.patch
 # Out-of-tree patches from AppArmor:
 Patch13:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch14:        apparmor-af_unix-mediation.patch
-
-#vmxnet3
-Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 
 # VMW:
 Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
@@ -359,24 +355,9 @@ Patch600:       0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
 # RT Runtime Greed
 Patch601:       0001-RT-PATCH-sched-rt-RT_RUNTIME_GREED-sched-feature.patch
 
-# Patchset to conditional restart_tick upon idle_exit
-# https://lore.kernel.org/lkml/162091184942.29796.4815200413212139734.tip-bot2@tip-bot2/
-Patch602:       0001-tick-nohz-Evaluate-the-CPU-expression-after-the-stat.patch
-Patch603:       0002-tick-nohz-Conditionally-restart-tick-on-idle-exit.patch
-Patch604:       0003-tick-nohz-Remove-superflous-check-for-CONFIG_VIRT_CP.patch
-Patch605:       0004-tick-nohz-Update-idle_exittime-on-actual-idle-exit.patch
-Patch606:       0005-tick-nohz-Update-nohz_full-Kconfig-help.patch
-Patch607:       0006-tick-nohz-Only-wakeup-a-single-target-cpu-when-kicki.patch
-Patch608:       0007-tick-nohz-Change-signal-tick-dependency-to-wakeup-CP.patch
-Patch609:       0008-tick-nohz-Kick-only-_queued_-task-whose-tick-depende.patch
-Patch610:       0009-tick-nohz-Call-tick_nohz_task_switch-with-interrupts.patch
-Patch611:       0010-MAINTAINERS-Add-myself-as-context-tracking-maintaine.patch
-
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch1010:       0001-FIPS-canister-binary-usage.patch
-# Patch to remove urandom usage in rng module
-Patch1011:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 %else
 %if 0%{?kat_build:1}
 Patch1011:       0001-Initialize-jitterentropy-before-ecdh.patch
@@ -407,9 +388,6 @@ BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
-%if 0%{?fips}
-BuildRequires:  gdb
-%endif
 Requires:       filesystem kmod
 Requires(pre): (coreutils or toybox)
 Requires(preun): (coreutils or toybox)
@@ -462,9 +440,6 @@ The Linux package contains the Linux kernel doc files
 %patch12 -p1
 %patch13 -p1
 %patch14 -p1
-
-#vmxnet3
-%patch20 -p1
 
 #VMW
 %patch55 -p1
@@ -746,20 +721,9 @@ The Linux package contains the Linux kernel doc files
 
 %patch600 -p1
 %patch601 -p1
-%patch602 -p1
-%patch603 -p1
-%patch604 -p1
-%patch605 -p1
-%patch606 -p1
-%patch607 -p1
-%patch608 -p1
-%patch609 -p1
-%patch610 -p1
-%patch611 -p1
 
 %if 0%{?fips}
 %patch1010 -p1
-%patch1011 -p1
 %else
 %if 0%{?kat_build:1}
 %patch1011 -p1
@@ -804,10 +768,6 @@ sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .conf
 %include %{SOURCE5}
 
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
-
-%if 0%{?fips}
-%include %{SOURCE9}
-%endif
 
 %ifarch x86_64
 # build XR module
@@ -976,14 +936,6 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
-*   Thu Jun 24 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-13
--   Conditional tick_restart upon idle_exit
-*   Wed Jun 16 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-12
--   Added script to check structure compatibility between fips_canister.o and vmlinux.
-*   Tue Apr 06 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-11
--   Remove buf_info from device accessible structures in vmxnet3
-*   Mon Mar 01 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.4-10
--   Use jitterentropy rng instead of urandom in rng module.
 *   Thu Feb 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-9
 -   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Thu Feb 18 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-8

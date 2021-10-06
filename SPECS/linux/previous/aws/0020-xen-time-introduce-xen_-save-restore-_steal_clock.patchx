@@ -1,0 +1,109 @@
+From 3f983ae0f1178eb325e0aeb3cf18af3e2b76067a Mon Sep 17 00:00:00 2001
+From: Munehisa Kamata <kamatam@amazon.com>
+Date: Thu, 13 Jul 2017 07:22:39 +0000
+Subject: xen/time: introduce xen_{save,restore}_steal_clock
+
+Currently, steal time accounting code in scheduler expects steal clock
+callback to provide monotonically increasing value. If the accounting
+code receives a smaller value than previous one, it uses a negative
+value to calculate steal time and results in incorrectly updated idle
+and steal time accounting. This breaks userspace tools which read
+/proc/stat.
+
+top - 08:05:35 up  2:12,  3 users,  load average: 0.00, 0.07, 0.23
+Tasks:  80 total,   1 running,  79 sleeping,   0 stopped,   0 zombie
+Cpu(s):  0.0%us,  0.0%sy,  0.0%ni,30100.0%id,  0.0%wa,  0.0%hi, 0.0%si,-1253874204672.0%st
+
+This can actually happen when a Xen PVHVM guest gets restored from
+hibernation, because such a restored guest is just a fresh domain from
+Xen perspective and the time information in runstate info starts over
+from scratch.
+
+This patch introduces xen_save_steal_clock() which saves current values
+in runstate info into per-cpu variables. Its couterpart,
+xen_restore_steal_clock(), sets offset if it found the current values in
+runstate info are smaller than previous ones. xen_steal_clock() is also
+modified to use the offset to ensure that scheduler only sees
+monotonically increasing number.
+
+Signed-off-by: Munehisa Kamata <kamatam@amazon.com>
+Signed-off-by: Anchal Agarwal <anchalag@amazon.com>
+Reviewed-by: Munehisa Kamata <kamatam@amazon.com>
+Reviewed-by: Eduardo Valentin <eduval@amazon.com>
+CR: https://cr.amazon.com/r/8273209/
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ drivers/xen/time.c    | 28 +++++++++++++++++++++++++++-
+ include/xen/xen-ops.h |  2 ++
+ 2 files changed, 29 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/xen/time.c b/drivers/xen/time.c
+index 3e741cd..896f231 100644
+--- a/drivers/xen/time.c
++++ b/drivers/xen/time.c
+@@ -23,6 +23,9 @@ static DEFINE_PER_CPU(struct vcpu_runstate_info, xen_runstate);
+ 
+ static DEFINE_PER_CPU(u64[4], old_runstate_time);
+ 
++static DEFINE_PER_CPU(u64, xen_prev_steal_clock);
++static DEFINE_PER_CPU(u64, xen_steal_clock_offset);
++
+ /* return an consistent snapshot of 64-bit time/counter value */
+ static u64 get64(const u64 *p)
+ {
+@@ -149,7 +152,7 @@ bool xen_vcpu_stolen(int vcpu)
+ 	return per_cpu(xen_runstate, vcpu).state == RUNSTATE_runnable;
+ }
+ 
+-u64 xen_steal_clock(int cpu)
++static u64 __xen_steal_clock(int cpu)
+ {
+ 	struct vcpu_runstate_info state;
+ 
+@@ -157,6 +160,30 @@ u64 xen_steal_clock(int cpu)
+ 	return state.time[RUNSTATE_runnable] + state.time[RUNSTATE_offline];
+ }
+ 
++u64 xen_steal_clock(int cpu)
++{
++	return __xen_steal_clock(cpu) + per_cpu(xen_steal_clock_offset, cpu);
++}
++
++void xen_save_steal_clock(int cpu)
++{
++	per_cpu(xen_prev_steal_clock, cpu) = xen_steal_clock(cpu);
++}
++
++void xen_restore_steal_clock(int cpu)
++{
++	u64 steal_clock = __xen_steal_clock(cpu);
++
++	if (per_cpu(xen_prev_steal_clock, cpu) > steal_clock) {
++		/* Need to update the offset */
++		per_cpu(xen_steal_clock_offset, cpu) =
++			per_cpu(xen_prev_steal_clock, cpu) - steal_clock;
++	} else {
++		/* Avoid unnecessary steal clock warp */
++		per_cpu(xen_steal_clock_offset, cpu) = 0;
++	}
++}
++
+ void xen_setup_runstate_info(int cpu)
+ {
+ 	struct vcpu_register_runstate_memory_area area;
+diff --git a/include/xen/xen-ops.h b/include/xen/xen-ops.h
+index d7503ec..cb98070 100644
+--- a/include/xen/xen-ops.h
++++ b/include/xen/xen-ops.h
+@@ -36,6 +36,8 @@ void xen_time_setup_guest(void);
+ void xen_manage_runstate_time(int action);
+ void xen_get_runstate_snapshot(struct vcpu_runstate_info *res);
+ u64 xen_steal_clock(int cpu);
++void xen_save_steal_clock(int cpu);
++void xen_restore_steal_clock(int cpu);
+ 
+ int xen_setup_shutdown_event(void);
+ 
+-- 
+2.14.4
+

@@ -1,0 +1,35 @@
+From 25db9c1a711297d7db6b4f965fa8661775b04c34 Mon Sep 17 00:00:00 2001
+From: Bo Gan <ganb@vmware.com>
+Date: Mon, 14 Sep 2020 04:09:37 -0700
+Subject: [PATCH] xdp: remove XDP_QUERY_PROG and XDP_QUERY_PROG_HW XDP commands
+
+Original patch from Andrii Nakryiko: lwn.net/Articles/825998
+
+Signed-off-by: Bo Gan <ganb@vmware.com>
+---
+ kernel/linux/ena/ena_netdev.c | 6 ------
+ 1 file changed, 6 deletions(-)
+
+diff --git a/kernel/linux/ena/ena_netdev.c b/kernel/linux/ena/ena_netdev.c
+index d597387..761a783 100644
+--- a/kernel/linux/ena/ena_netdev.c
++++ b/kernel/linux/ena/ena_netdev.c
+@@ -610,15 +610,9 @@ static int ena_xdp_set(struct net_device *netdev, struct netdev_bpf *bpf)
+  */
+ static int ena_xdp(struct net_device *netdev, struct netdev_bpf *bpf)
+ {
+-	struct ena_adapter *adapter = netdev_priv(netdev);
+-
+ 	switch (bpf->command) {
+ 	case XDP_SETUP_PROG:
+ 		return ena_xdp_set(netdev, bpf);
+-	case XDP_QUERY_PROG:
+-		bpf->prog_id = adapter->xdp_bpf_prog ?
+-			adapter->xdp_bpf_prog->aux->id : 0;
+-		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+-- 
+2.7.4
+

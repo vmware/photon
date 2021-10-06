@@ -1,0 +1,55 @@
+From a5e2c8a5f6e8bcef5558e11b30f7492bf47efe09 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Fri, 24 Jul 2020 18:02:40 +0200
+Subject: [PATCH 20/82] x86/boot/compressed/64: Call set_sev_encryption_mask
+ earlier
+
+Call set_sev_encryption_mask() while still on the stage 1 #VC-handler,
+because the stage 2 handler needs our own page-tables to be set up, to
+which calling set_sev_encryption_mask() is a prerequisite.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Link: https://lore.kernel.org/r/20200724160336.5435-20-joro@8bytes.org
+---
+ arch/x86/boot/compressed/head_64.S      | 8 +++++++-
+ arch/x86/boot/compressed/ident_map_64.c | 3 ---
+ 2 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index 36f18d5..963bf2c 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -543,9 +543,15 @@ SYM_FUNC_START_LOCAL_NOALIGN(.Lrelocated)
+ 	rep	stosq
+ 
+ /*
+- * Load stage2 IDT and switch to our own page-table
++ * If running as an SEV guest, the encryption mask is required in the
++ * page-table setup code below. When the guest also has SEV-ES enabled
++ * set_sev_encryption_mask() will cause #VC exceptions, but the stage2
++ * handler can't map its GHCB because the page-table is not set up yet.
++ * So set up the encryption mask here while still on the stage1 #VC
++ * handler. Then load stage2 IDT and switch to our own page-table.
+  */
+ 	pushq	%rsi
++	call	set_sev_encryption_mask
+ 	call	load_stage2_idt
+ 	call	initialize_identity_maps
+ 	popq	%rsi
+diff --git a/arch/x86/boot/compressed/ident_map_64.c b/arch/x86/boot/compressed/ident_map_64.c
+index 62e42c11..b4f2a5f 100644
+--- a/arch/x86/boot/compressed/ident_map_64.c
++++ b/arch/x86/boot/compressed/ident_map_64.c
+@@ -105,9 +105,6 @@ static void add_identity_map(unsigned long start, unsigned long end)
+ /* Locates and clears a region for a new top level page table. */
+ void initialize_identity_maps(void)
+ {
+-	/* If running as an SEV guest, the encryption mask is required. */
+-	set_sev_encryption_mask();
+-
+ 	/* Exclude the encryption mask from __PHYSICAL_MASK */
+ 	physical_mask &= ~sme_me_mask;
+ 
+-- 
+2.7.4
+

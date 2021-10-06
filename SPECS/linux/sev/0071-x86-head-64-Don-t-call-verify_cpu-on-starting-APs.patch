@@ -1,0 +1,72 @@
+From 9c81ba27fd83e9df206c0765aefca915b4b56f83 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Fri, 24 Jul 2020 18:03:31 +0200
+Subject: [PATCH 71/82] x86/head/64: Don't call verify_cpu() on starting APs
+
+The APs are not ready to handle exceptions when verify_cpu() is called
+in secondary_startup_64.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20200724160336.5435-71-joro@8bytes.org
+---
+ arch/x86/include/asm/realmode.h |  1 +
+ arch/x86/kernel/head_64.S       | 12 ++++++++++++
+ arch/x86/realmode/init.c        |  6 ++++++
+ 3 files changed, 19 insertions(+)
+
+diff --git a/arch/x86/include/asm/realmode.h b/arch/x86/include/asm/realmode.h
+index 6590394..5c97807 100644
+--- a/arch/x86/include/asm/realmode.h
++++ b/arch/x86/include/asm/realmode.h
+@@ -69,6 +69,7 @@ extern unsigned char startup_32_smp[];
+ extern unsigned char boot_gdt[];
+ #else
+ extern unsigned char secondary_startup_64[];
++extern unsigned char secondary_startup_64_no_verify[];
+ #endif
+ 
+ static inline size_t real_mode_size_needed(void)
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index 8d5bf7c5..a7081076 100644
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -141,6 +141,18 @@ SYM_CODE_START(secondary_startup_64)
+ 	call verify_cpu
+ 
+ 	/*
++	 * The secondary_startup_64_no_verify entry point is only used by
++	 * SEV-ES guests. In those guests the call to verify_cpu() would cause
++	 * #VC exceptions which can not be handled at this stage of secondary
++	 * CPU bringup.
++	 *
++	 * All non SEV-ES systems, especially Intel systems, need to execute
++	 * verify_cpu() above to make sure NX is enabled.
++	 */
++SYM_INNER_LABEL(secondary_startup_64_no_verify, SYM_L_GLOBAL)
++	UNWIND_HINT_EMPTY
++
++	/*
+ 	 * Retrieve the modifier (SME encryption mask if SME is active) to be
+ 	 * added to the initial pgdir entry that will be programmed into CR3.
+ 	 */
+diff --git a/arch/x86/realmode/init.c b/arch/x86/realmode/init.c
+index 61a52b9..df701f8 100644
+--- a/arch/x86/realmode/init.c
++++ b/arch/x86/realmode/init.c
+@@ -46,6 +46,12 @@ static void sme_sev_setup_real_mode(struct trampoline_header *th)
+ 		th->flags |= TH_FLAGS_SME_ACTIVE;
+ 
+ 	if (sev_es_active()) {
++		/*
++		 * Skip the call to verify_cpu() in secondary_startup_64 as it
++		 * will cause #VC exceptions when the AP can't handle them yet.
++		 */
++		th->start = (u64) secondary_startup_64_no_verify;
++
+ 		if (sev_es_setup_ap_jump_table(real_mode_header))
+ 			panic("Failed to update SEV-ES AP Jump Table");
+ 	}
+-- 
+2.7.4
+

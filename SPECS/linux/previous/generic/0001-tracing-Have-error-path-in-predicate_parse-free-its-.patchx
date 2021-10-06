@@ -1,0 +1,40 @@
+From 96c5c6e6a5b6db592acae039fed54b5c8844cd35 Mon Sep 17 00:00:00 2001
+From: Navid Emamdoost <navid.emamdoost@gmail.com>
+Date: Fri, 20 Sep 2019 17:57:59 -0500
+Subject: [PATCH] tracing: Have error path in predicate_parse() free its
+ allocated memory
+
+commmit 96c5c6e6a5b6db592acae039fed54b5c8844cd35 upstream.
+
+In predicate_parse, there is an error path that is not going to
+out_free instead it returns directly which leads to a memory leak.
+
+Link: http://lkml.kernel.org/r/20190920225800.3870-1-navid.emamdoost@gmail.com
+
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ kernel/trace/trace_events_filter.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/kernel/trace/trace_events_filter.c b/kernel/trace/trace_events_filter.c
+index c773b8f..c9a74f8 100644
+--- a/kernel/trace/trace_events_filter.c
++++ b/kernel/trace/trace_events_filter.c
+@@ -452,8 +452,10 @@ predicate_parse(const char *str, int nr_parens, int nr_preds,
+ 
+ 		switch (*next) {
+ 		case '(':					/* #2 */
+-			if (top - op_stack > nr_parens)
+-				return ERR_PTR(-EINVAL);
++			if (top - op_stack > nr_parens) {
++				ret = -EINVAL;
++				goto out_free;
++			}
+ 			*(++top) = invert;
+ 			continue;
+ 		case '!':					/* #3 */
+-- 
+2.7.4
+

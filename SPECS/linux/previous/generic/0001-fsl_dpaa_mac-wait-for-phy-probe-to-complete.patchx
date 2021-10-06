@@ -1,0 +1,73 @@
+From 05b03675109ab2bf55fbc0a33b1b463b06259db7 Mon Sep 17 00:00:00 2001
+From: Alexey Makhalov <amakhalov@vmware.com>
+Date: Fri, 30 Aug 2019 03:12:34 +0000
+Subject: [PATCH] fsl_dpaa_mac: wait for phy probe to complete
+
+Where fsl_dpaa_mac and xgmac_mdio compiled as modules, theirs
+probe() can be run at the same time. Probe of fsl_dpaa_mac
+can fail at mac_dev->init() if phy probe is not done yet.
+
+This is intemittent issue and does not happen every boot.
+
+Here is a log of failed initialization on NXP ls1046a.
+
+ libphy: Freescale XGMAC MDIO Bus: probed
+ fsl_dpaa_mac: of_phy_find_device (PCS PHY) failed
+ fsl_dpaa_mac 1ae0000.ethernet: mac_dev->init() = -22
+ fsl_dpaa_mac: probe of 1ae0000.ethernet failed with error -22
+ fsl_dpaa_mac: of_phy_find_device (PCS PHY) failed
+ fsl_dpaa_mac 1ae8000.ethernet: mac_dev->init() = -22
+ fsl_dpaa_mac: probe of 1ae8000.ethernet failed with error -22
+ libphy: Freescale XGMAC MDIO Bus: probed
+ fsl_dpaa_mac: of_phy_find_device (PCS PHY) failed
+ mdio_bus 1afd000: MDIO device at address 0 is missing.
+ fsl_dpaa_mac 1aea000.ethernet: mac_dev->init() = -22
+ fsl_dpaa_mac: probe of 1aea000.ethernet failed with error -22
+ libphy: Freescale XGMAC MDIO Bus: probed
+ fsl_dpaa_mac: of_phy_find_device (PCS PHY) failed
+ fsl_dpaa_mac 1af2000.ethernet: mac_dev->init() = -22
+ libphy: Freescale XGMAC MDIO Bus: probed
+ libphy: Freescale XGMAC MDIO Bus: probed
+ libphy: Freescale XGMAC MDIO Bus: probed
+ fsl_dpaa_mac: probe of 1af2000.ethernet failed with error -22
+ libphy: Freescale XGMAC MDIO Bus: probed
+ libphy: Freescale XGMAC MDIO Bus: probed
+ libphy: Freescale XGMAC MDIO Bus: probed
+ libphy: Freescale XGMAC MDIO Bus: probed
+
+Solution is to defer probing of fsl_dpaa_mac based on result of
+of_phy_find_device().
+---
+ drivers/net/ethernet/freescale/fman/mac.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
+index a847b9c3b31a..c1a0403934f2 100644
+--- a/drivers/net/ethernet/freescale/fman/mac.c
++++ b/drivers/net/ethernet/freescale/fman/mac.c
+@@ -649,6 +649,22 @@ static int mac_probe(struct platform_device *_of_dev)
+ 		goto _return;
+ 	}
+ 
++	/* wait for phy probe completion */
++	if (priv->internal_phy_node) {
++		struct phy_device *phy;
++
++		phy = of_phy_find_device(priv->internal_phy_node);
++		if (!phy) {
++			dev_dbg(dev, "phy node (0x%x) has not probed yet\n",
++					priv->internal_phy_node->phandle);
++			devm_kfree(dev, priv);
++			devm_kfree(dev, mac_dev);
++			err = -EPROBE_DEFER;
++			goto _return;
++		}
++		put_device(&phy->mdio.dev);
++	}
++
+ 	INIT_LIST_HEAD(&priv->mc_addr_list);
+ 
+ 	/* Get the FM node */
+-- 
+2.14.2
+

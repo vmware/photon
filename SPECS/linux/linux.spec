@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.4
-Release:        19%{?kat_build:.kat}%{?dist}
+Release:        16%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -56,7 +56,6 @@ Source12:       ena-Use-new-API-interface-after-napi_hash_del-.patch
 Source13:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
 %define sha1 ice=19507794824da33827756389ac8018aa84e9c427
 %if 0%{?fips}
-Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.4-5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha1 fips-canister=91b5031dc9599c6997931d5cb8982df9a181df7a
@@ -85,10 +84,6 @@ Patch13:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch14:        apparmor-af_unix-mediation.patch
 # floppy:
 Patch17:        0001-floppy-lower-printk-message-priority.patch
-
-#vmxnet3
-Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
-
 # VMW:
 Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
 Patch56:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
@@ -116,8 +111,6 @@ Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch502:       0001-FIPS-canister-binary-usage.patch
-# Patch to remove urandom usage in rng module
-Patch503:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 %else
 %if 0%{?kat_build:1}
 Patch508:       0001-Initialize-jitterentropy-before-ecdh.patch
@@ -125,6 +118,7 @@ Patch509:       0002-FIPS-crypto-self-tests.patch
 Patch510:       0003-FIPS-broken-kattest.patch
 %endif
 %endif
+
 
 # SEV on VMware:
 Patch600:       0079-x86-sev-es-Disable-BIOS-ACPI-RSDP-probing-if-SEV-ES-.patch
@@ -160,9 +154,6 @@ BuildRequires:  python3-devel
 %ifarch x86_64
 BuildRequires:  pciutils-devel
 BuildRequires:  libcap-devel
-%endif
-%if 0%{?fips}
-BuildRequires:  gdb
 %endif
 Requires:       filesystem kmod
 Requires(pre): (coreutils or toybox)
@@ -277,9 +268,6 @@ Python programming language to use the interface to manipulate perf events.
 %patch14 -p1
 %patch17 -p1
 
-#vmxnet3
-%patch20 -p1
-
 %ifarch x86_64
 # VMW x86
 %patch55 -p1
@@ -304,7 +292,6 @@ Python programming language to use the interface to manipulate perf events.
 %patch501 -p1
 %if 0%{?fips}
 %patch502 -p1
-%patch503 -p1
 %else
 %if 0%{?kat_build:1}
 %patch508 -p1
@@ -356,10 +343,6 @@ grep -q CONFIG_CROSS_COMPILE= .config && sed -i '/^CONFIG_CROSS_COMPILE=/c\CONFI
 fi
 
 make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
-
-%if 0%{?fips}
-%include %{SOURCE9}
-%endif
 
 %ifarch aarch64
 ARCH_FLAGS="EXTRA_CFLAGS=-Wno-error=format-overflow"
@@ -665,12 +648,6 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
-*   Wed Jun 16 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-19
--   Added script to check structure compatibility between fips_canister.o and vmlinux.
-*   Tue Apr 06 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-18
--   Remove buf_info from device accessible structures in vmxnet3
-*   Mon Mar 01 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.4-17
--   Use jitterentropy rng instead of urandom in rng module.
 *   Fri Feb 19 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-16
 -   Fix /boot/photon.cfg symlink when /boot is a separate partition.
 *   Fri Feb 19 2021 Ajay Kaher <akaher@vmware.com> 5.10.4-15

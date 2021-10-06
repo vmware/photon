@@ -1,0 +1,109 @@
+From 52b87b4514ef6779dd73b20d29fd6239af920876 Mon Sep 17 00:00:00 2001
+From: Joerg Roedel <jroedel@suse.de>
+Date: Fri, 24 Jul 2020 18:02:56 +0200
+Subject: [PATCH 36/82] x86/head/64: Load IDT earlier
+
+Load the IDT right after switching to virtual addresses in head_64.S
+so that the kernel can handle #VC exceptions.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Link: https://lore.kernel.org/r/20200724160336.5435-36-joro@8bytes.org
+---
+ arch/x86/include/asm/setup.h |  3 +++
+ arch/x86/kernel/head64.c     |  3 +++
+ arch/x86/kernel/head_64.S    |  5 +++++
+ arch/x86/kernel/idt.c        | 23 +++++++++++++++++++++++
+ 4 files changed, 34 insertions(+)
+
+diff --git a/arch/x86/include/asm/setup.h b/arch/x86/include/asm/setup.h
+index 8aa6ba0..5c09f50 100644
+--- a/arch/x86/include/asm/setup.h
++++ b/arch/x86/include/asm/setup.h
+@@ -50,6 +50,8 @@ extern unsigned long __startup_64(unsigned long physaddr, struct boot_params *bp
+ extern unsigned long __startup_secondary_64(void);
+ extern void startup_64_setup_env(unsigned long physbase);
+ extern int early_make_pgtable(unsigned long address);
++extern void early_idt_setup_early_handler(unsigned long physaddr);
++extern void early_load_idt(void);
+ 
+ #ifdef CONFIG_X86_INTEL_MID
+ extern void x86_intel_mid_early_setup(void);
+@@ -66,6 +68,7 @@ static inline void x86_ce4100_early_setup(void) { }
+ #ifndef _SETUP
+ 
+ #include <asm/espfix.h>
++#include <asm/sections.h>
+ #include <linux/kernel.h>
+ 
+ /*
+diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
+index 8703292..096b09d 100644
+--- a/arch/x86/kernel/head64.c
++++ b/arch/x86/kernel/head64.c
+@@ -286,6 +286,9 @@ unsigned long __head __startup_64(unsigned long physaddr,
+ 		}
+ 	}
+ 
++	/* Setup IDT with early handlers */
++	early_idt_setup_early_handler(physaddr);
++
+ 	/*
+ 	 * Return the SME encryption mask (if SME is active) to be used as a
+ 	 * modifier for the initial pgdir entry programmed into CR3.
+diff --git a/arch/x86/kernel/head_64.S b/arch/x86/kernel/head_64.S
+index a5e1939..28de83f 100644
+--- a/arch/x86/kernel/head_64.S
++++ b/arch/x86/kernel/head_64.S
+@@ -206,6 +206,11 @@ SYM_CODE_START(secondary_startup_64)
+ 	 */
+ 	movq initial_stack(%rip), %rsp
+ 
++	/* Load IDT */
++	pushq	%rsi
++	call	early_load_idt
++	popq	%rsi
++
+ 	/* Check if nx is implemented */
+ 	movl	$0x80000001, %eax
+ 	cpuid
+diff --git a/arch/x86/kernel/idt.c b/arch/x86/kernel/idt.c
+index c197731..e2777cc2 100644
+--- a/arch/x86/kernel/idt.c
++++ b/arch/x86/kernel/idt.c
+@@ -10,6 +10,7 @@
+ #include <asm/proto.h>
+ #include <asm/desc.h>
+ #include <asm/hw_irq.h>
++#include <asm/setup.h>
+ 
+ struct idt_data {
+ 	unsigned int	vector;
+@@ -385,3 +386,25 @@ void __init alloc_intr_gate(unsigned int n, const void *addr)
+ 	if (!WARN_ON(test_and_set_bit(n, system_vectors)))
+ 		set_intr_gate(n, addr);
+ }
++
++void __init early_idt_setup_early_handler(unsigned long physaddr)
++{
++	gate_desc *idt;
++	int i;
++
++	idt = fixup_pointer(idt_table, physaddr);
++
++	for (i = 0; i < NUM_EXCEPTION_VECTORS; i++) {
++		struct idt_data data;
++		gate_desc desc;
++
++		init_idt_data(&data, i, early_idt_handler_array[i]);
++		idt_init_desc(&desc, &data);
++		native_write_idt_entry(idt, i, &desc);
++	}
++}
++
++void early_load_idt(void)
++{
++	load_idt(&idt_descr);
++}
+-- 
+2.7.4
+

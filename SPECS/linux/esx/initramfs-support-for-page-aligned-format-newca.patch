@@ -21,14 +21,14 @@ archive format.
 In addition, initrd memory will not be freed for "newca" as
 it is used by page caches.
 ---
- init/initramfs.c | 53 +++++++++++++++++++++++++++++++++++++++++++++---
- 1 file changed, 50 insertions(+), 3 deletions(-)
+ init/initramfs.c | 60 +++++++++++++++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 57 insertions(+), 3 deletions(-)
 
 diff --git a/init/initramfs.c b/init/initramfs.c
-index 55b74d7e5260..c3a26243c50f 100644
+index dab8d63459f6..7beaaf9149bd 100644
 --- a/init/initramfs.c
 +++ b/init/initramfs.c
-@@ -13,11 +13,47 @@
+@@ -13,12 +13,55 @@
  #include <linux/memblock.h>
  #include <linux/namei.h>
  #include <linux/init_syscalls.h>
@@ -47,7 +47,6 @@ index 55b74d7e5260..c3a26243c50f 100644
 +	for (; pages--; ++pgoff, p += PAGE_SIZE) {
 +		page = virt_to_page(p);
 +
-+
 +		err = add_to_page_cache_lru(page, mapping, pgoff, gfp_mask);
 +		if (err)
 +			goto out;
@@ -57,7 +56,7 @@ index 55b74d7e5260..c3a26243c50f 100644
 +		unlock_page(page);
 +		put_page(page);
 +	}
-+	err = count;
++
 +out:
 +	return err;
 +}
@@ -66,17 +65,26 @@ index 55b74d7e5260..c3a26243c50f 100644
  		loff_t *pos)
  {
  	ssize_t out = 0;
+ 
 +	/* Add ramdisk pages directly to fd's page cache */
 +	if (page_aligned_fmt) {
-+		BUG_ON(*pos & ~PAGE_MASK);
-+		BUG_ON((uintptr_t)p & ~PAGE_MASK);
++		ssize_t rc;
 +
-+		return xadd_pages(file, p, count, *pos >> PAGE_SHIFT);
++		BUG_ON(*pos & PAGE_MASK);
++		BUG_ON((uintptr_t)p & PAGE_MASK);
++
++		rc = xadd_pages(file, p, count, *pos >> PAGE_SHIFT);
++		if (rc)
++			return rc;
++
++		*pos += count;
++		return rc;
 +	}
- 
++
  	/* sys_write only can write MAX_RW_COUNT aka 2G-4K bytes at most */
  	while (count) {
-@@ -248,12 +284,19 @@ static int __init do_header(void)
+ 		ssize_t rv = kernel_write(file, p, count, pos);
+@@ -248,12 +291,19 @@ static int __init do_header(void)
  		error("incorrect cpio method used: use -H newc option");
  		return 1;
  	}
@@ -98,7 +106,15 @@ index 55b74d7e5260..c3a26243c50f 100644
  	next_header = (next_header + 3) & ~3;
  	state = SkipIt;
  	if (name_len <= 0 || name_len > PATH_MAX)
-@@ -366,6 +409,10 @@ static int __init do_name(void)
+@@ -286,6 +336,7 @@ static int __init do_skip(void)
+ 
+ static int __init do_reset(void)
+ {
++	page_aligned_fmt = false;
+ 	while (byte_count && *victim == '\0')
+ 		eat(1);
+ 	if (byte_count && (this_header & 3))
+@@ -366,6 +417,10 @@ static int __init do_name(void)
  
  static int __init do_copy(void)
  {
@@ -109,7 +125,7 @@ index 55b74d7e5260..c3a26243c50f 100644
  	if (byte_count >= body_len) {
  		struct timespec64 t[2] = { };
  		if (xwrite(wfile, victim, body_len, &wfile_pos) != body_len)
-@@ -631,7 +678,7 @@ static int __init populate_rootfs(void)
+@@ -631,7 +686,7 @@ static int __init populate_rootfs(void)
  	 * If the initrd region is overlapped with crashkernel reserved region,
  	 * free only memory that is not part of crashkernel region.
  	 */
@@ -119,5 +135,5 @@ index 55b74d7e5260..c3a26243c50f 100644
  	initrd_start = 0;
  	initrd_end = 0;
 -- 
-2.23.3
+2.11.0
 

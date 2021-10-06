@@ -1,7 +1,4 @@
 %global security_hardening none
-%ifarch x86_64
-%define arch x86_64
-%define archdir x86
 
 # Set this flag to 0 to build without canister
 %global fips 0
@@ -11,17 +8,10 @@
 %global fips 0
 %endif
 
-%endif
-
-%ifarch aarch64
-%define arch arm64
-%define archdir arm64
-%endif
-
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.4
-Release:        19%{?kat_build:.kat}%{?dist}
+Release:        13%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -32,13 +22,12 @@ Distribution:   Photon
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
 %define sha1 linux=62605305a3cbae68780612d35e0585cfc4983afd
-Source1:        config-esx_%{_arch}
+Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 Source5:        modify_kernel_configs.inc
 %if 0%{?fips}
-Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.4-5-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha1 fips-canister=91b5031dc9599c6997931d5cb8982df9a181df7a
@@ -46,7 +35,7 @@ Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
 # TODO: disable this patch, check for regressions
-#Patch:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
+#Patchx:         linux-4.9-watchdog-Disable-watchdog-on-virtual-machines.patch
 Patch1:         SUNRPC-Do-not-reuse-srcport-for-TIME_WAIT-socket.patch
 Patch2:         SUNRPC-xs_bind-uses-ip_local_reserved_ports.patch
 Patch3:         9p-transport-for-9p.patch
@@ -62,20 +51,11 @@ Patch11:        apparmor-af_unix-mediation.patch
 # floppy:
 Patch17:        0001-floppy-lower-printk-message-priority.patch
 
-#vmxnet3
-Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
-
 # VMW:
 Patch30:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
 Patch31:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch32:        x86-vmware-Fix-steal-time-clock-under-SEV.patch
 Patch33:        x86-probe_roms-Skip-OpROM-probing-if-running-as-VMwa.patch
-Patch34:        0001-x86-hyper-generalize-hypervisor-type-detection.patch
-Patch35:        0002-arm64-hyper-implement-VMware-hypervisor-features.patch
-Patch36:        0003-scsi-vmw_pvscsi-add-arm64-support.patch
-Patch37:        0004-vmw_vmci-add-arm64-support.patch
-Patch38:        0005-vmw_balloon-add-arm64-support.patch
-Patch39:        0006-vmxnet3-build-only-for-x86-and-arm64.patch
 
 # -esx
 Patch50:        init-do_mounts-recreate-dev-root.patch
@@ -93,9 +73,6 @@ Patch60:        0001-Remove-OOM_SCORE_ADJ_MAX-limit-check.patch
 Patch61:        0001-fs-VTAR-archive-to-TPMFS-extractor.patch
 Patch62:        0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
 Patch63:        halt-on-panic.patch
-Patch64:        initramfs-multiple-image-extraction-support.patch
-Patch65:        initramfs-support-selective-freeing-of-initramfs-images.patch
-
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -112,8 +89,6 @@ Patch501:       tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch502:       0001-FIPS-canister-binary-usage.patch
-# Patch to remove urandom usage in rng module
-Patch503:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 %else
 %if 0%{?kat_build:1}
 Patch508:       0001-Initialize-jitterentropy-before-ecdh.patch
@@ -131,6 +106,7 @@ Patch604:       x86-swiotlb-Adjust-SWIOTLB-bounce-buffer-size-for-SE.patch
 Patch605:       x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
 Patch606:       x86-sev-es-Handle-string-port-IO-to-kernel-memory-properly.patch
 
+BuildArch:     x86_64
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -143,9 +119,6 @@ BuildRequires: Linux-PAM-devel
 BuildRequires: openssl-devel
 BuildRequires: procps-ng-devel
 BuildRequires: lz4
-%if 0%{?fips}
-BuildRequires: gdb
-%endif
 Requires:      filesystem kmod
 Requires(pre): (coreutils or toybox)
 Requires(preun): (coreutils or toybox)
@@ -175,10 +148,8 @@ Requires:      %{name} = %{version}-%{release}
 The Linux package contains the Linux kernel doc files
 
 %prep
-# Using autosetup is not feasible
 %setup -q -n linux-%{version}
 %if 0%{?fips}
-# Using autosetup is not feasible
 %setup -D -b 16 -n linux-%{version}
 %endif
 
@@ -196,22 +167,11 @@ The Linux package contains the Linux kernel doc files
 %patch11 -p1
 %patch17 -p1
 
-#vmxnet3
-%patch20 -p1
-
 # VMW
 %patch30 -p1
 %patch31 -p1
 %patch32 -p1
 %patch33 -p1
-%ifarch aarch64
-%patch34 -p1
-%patch35 -p1
-%patch36 -p1
-%patch37 -p1
-%patch38 -p1
-%patch39 -p1
-%endif
 
 # -esx
 %patch50 -p1
@@ -228,8 +188,6 @@ The Linux package contains the Linux kernel doc files
 %patch61 -p1
 %patch62 -p1
 %patch63 -p1
-%patch64 -p1
-%patch65 -p1
 
 # CVE
 %patch100 -p1
@@ -241,7 +199,6 @@ The Linux package contains the Linux kernel doc files
 %patch501 -p1
 %if 0%{?fips}
 %patch502 -p1
-%patch503 -p1
 %else
 %if 0%{?kat_build:1}
 %patch508 -p1
@@ -250,7 +207,6 @@ The Linux package contains the Linux kernel doc files
 %endif
 %endif
 
-%ifarch x86_64
 # SEV
 %patch600 -p1
 %patch601 -p1
@@ -259,10 +215,8 @@ The Linux package contains the Linux kernel doc files
 %patch604 -p1
 %patch605 -p1
 %patch606 -p1
-%endif
 
 %build
-# make doesn't support _smp_mflags
 make mrproper
 cp %{SOURCE1} .config
 %if 0%{?fips}
@@ -280,11 +234,7 @@ sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .co
 
 %include %{SOURCE4}
 
-make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=%{arch} %{?_smp_mflags}
-
-%if 0%{?fips}
-%include %{SOURCE9}
-%endif
+make VERBOSE=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
 
 # Do not compress modules which will be loaded at boot time
 # to speed up boot process
@@ -306,16 +256,9 @@ install -vdm 755 %{buildroot}%{_sysconfdir}
 install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
-make ARCH=%{arch} INSTALL_MOD_PATH=%{buildroot} modules_install %{?_smp_mflags}
+make INSTALL_MOD_PATH=%{buildroot} modules_install
 
-%ifarch x86_64
-install -vm 644 arch/%{archdir}/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
-%endif
-
-%ifarch aarch64
-install -vm 644 arch/%{archdir}/boot/Image %{buildroot}/boot/vmlinuz-%{uname_r}
-%endif
-
+install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
 install -vm 644 .config %{buildroot}/boot/config-%{uname_r}
 cp -r Documentation/*        %{buildroot}%{_docdir}/linux-%{uname_r}
@@ -342,9 +285,9 @@ rm -f %{buildroot}/lib/modules/%{uname_r}/build
 
 # create /use/src/linux-headers-*/ content
 find . -name Makefile* -o -name Kconfig* -o -name *.pl | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
-find arch/%{archdir}/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
-find $(find arch/%{archdir} -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
-find arch/%{archdir}/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/x86/include include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find $(find arch/x86 -name include -o -name scripts -type d) -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
+find arch/x86/include Module.symvers include scripts -type f | xargs  sh -c 'cp --parents "$@" %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}' copy
 
 # copy .config manually to be where it's expected to be
 cp .config %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
@@ -379,20 +322,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
-*   Mon Aug 09 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.4-19
--   Port crx patches
-*   Tue Jul 20 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-18
--   Arm64 VMware Hypervisor features
--   Arm64 support for vmw_pvscsi, vmw_vmci and vmw_balloon
--   vmxnet3: build only for x86 and arm64
-*   Tue Jul 06 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-17
--   Add arm64 support
-*   Wed Jun 16 2021 Keerthana K <keerthanak@vmware.com> 5.10.4-16
--   Added script to check structure compatibility between fips_canister.o and vmlinux.
-*   Tue Apr 06 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.4-15
--   Remove buf_info from device accessible structures in vmxnet3
-*   Mon Mar 01 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.4-14
--   Use jitterentropy rng instead of urandom in rng module.
 *   Fri Feb 19 2021 Ankit Jain <ankitja@vmware.com> 5.10.4-13
 -   Enable CONFIG_ISCSI_TCP support
 *   Fri Feb 19 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.4-12
@@ -841,6 +770,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 *   Thu Aug 13 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-3
 -   Added environment file(photon.cfg) for a grub.
 *   Tue Aug 11 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-2
--   Added pci-probe-vmware.patch. Removed unused modules. Decreased boot time.
+    Added pci-probe-vmware.patch. Removed unused modules. Decreased boot time.
 *   Tue Jul 28 2015 Alexey Makhalov <amakhalov@vmware.com> 4.1.3-1
--   Initial commit. Use patchset from Clear Linux.
+    Initial commit. Use patchset from Clear Linux.
+
