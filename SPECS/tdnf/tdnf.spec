@@ -2,7 +2,7 @@
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.1.4
+Version:        3.1.5
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,7 +10,7 @@ License:        LGPLv2.1,GPLv2
 URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=ac85ed7b6547005aad6055aad83268dbd1ad5793
+%define sha1    %{name}=48bc98b57a50a580a56d00988bf3955be5d749a4
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
 
@@ -248,6 +248,10 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
 
 %changelog
+*   Wed Oct 06 2021 Oliver Kurth <okurth@vmware.com> 3.1.5-1
+-   update to 3.1.5
+-   add minversions config option
+-   make pytests arch independent (does not affect functionality)
 *   Mon Aug 2 2021 Oliver Kurth <okurth@vmware.com> 3.1.4-1
 -   update to 3.1.4
 -   fix configreader key reading logic
