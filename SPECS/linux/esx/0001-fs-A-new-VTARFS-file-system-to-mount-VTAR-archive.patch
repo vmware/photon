@@ -1,4 +1,4 @@
-From aad371ee6f9ced27bb44236ca0405a5d496ffbd1 Mon Sep 17 00:00:00 2001
+From c0fd709849ed2e49457f143d4abc9566c5c497c0 Mon Sep 17 00:00:00 2001
 From: srinidhira0 <srinidhir@vmware.com>
 Date: Wed, 16 Sep 2020 18:07:58 +0000
 Subject: [PATCH] fs: A new VTARFS file system to mount VTAR archive
@@ -34,8 +34,8 @@ Signed-off-by: Ankit Jain <ankitja@vmware.com>
  fs/vtarfs/README.md             |   3 +
  fs/vtarfs/vtarfs.h              | 172 ++++++++
  fs/vtarfs/vtarfs_file_dir_ops.c | 470 +++++++++++++++++++++
- fs/vtarfs/vtarfs_inode.c        | 701 ++++++++++++++++++++++++++++++++
- 8 files changed, 1378 insertions(+)
+ fs/vtarfs/vtarfs_inode.c        | 722 ++++++++++++++++++++++++++++++++
+ 8 files changed, 1399 insertions(+)
  create mode 100644 fs/vtarfs/Kconfig
  create mode 100644 fs/vtarfs/Makefile
  create mode 100644 fs/vtarfs/README.md
@@ -296,7 +296,7 @@ index 000000000000..f53eeb85af51
 +#endif
 diff --git a/fs/vtarfs/vtarfs_file_dir_ops.c b/fs/vtarfs/vtarfs_file_dir_ops.c
 new file mode 100644
-index 000000000000..c2d2e895ab43
+index 000000000000..4c62c9bc041f
 --- /dev/null
 +++ b/fs/vtarfs/vtarfs_file_dir_ops.c
 @@ -0,0 +1,470 @@
@@ -663,7 +663,7 @@ index 000000000000..c2d2e895ab43
 +	if ( pos < 0 )
 +		return -EINVAL;
 +	if (pos >= entry->data_size || !count) {
-+                pr_info("%s: File read complete pos=%llu size=%ld \n",
++                tarfs_debug("%s: File read complete pos=%llu size=%ld \n",
 +				__FUNCTION__,pos,entry->data_size);
 +                return 0;
 +        }
@@ -772,10 +772,10 @@ index 000000000000..c2d2e895ab43
 +EXPORT_SYMBOL(vtarfs_file_release);
 diff --git a/fs/vtarfs/vtarfs_inode.c b/fs/vtarfs/vtarfs_inode.c
 new file mode 100644
-index 000000000000..20c61cb72b8a
+index 000000000000..c30b379e2004
 --- /dev/null
 +++ b/fs/vtarfs/vtarfs_inode.c
-@@ -0,0 +1,701 @@
+@@ -0,0 +1,722 @@
 +/*
 + * Filesystem to directly mount vtar archive.
 + *
@@ -998,20 +998,29 @@ index 000000000000..20c61cb72b8a
 +                pr_err("%s: page map failure %ld",__FUNCTION__, PTR_ERR(page));
 +		return 1;
 +        }
++	if (PageError(page)) {
++		pr_err("%s: page error", __FUNCTION__);
++		goto error;
++	}
 +        k_mapped_page = kmap(page);
 +        if (!k_mapped_page) {
 +                pr_err("%s: kmap failure %ld",__FUNCTION__,
 +					PTR_ERR(k_mapped_page));
-+		return 1;
++		goto error;
 +        }
 +        if (memcpy(header, k_mapped_page+(offset%PAGE_SIZE),
 +			sizeof(struct vtarfs_header_type)) == NULL) {
 +                pr_err("%s: read failure",__FUNCTION__);
 +                kunmap(k_mapped_page);
-+		return 1;
++		goto error;
 +        }
 +        kunmap(k_mapped_page);
++	put_page(page);
 +	return 0;
++
++error:
++	put_page(page);
++	return 1;
 +}
 +
 +/**
@@ -1153,7 +1162,7 @@ index 000000000000..20c61cb72b8a
 +	if ( entry->data_size % PAGE_SIZE)
 +		entry->num_pages++;
 +
-+	entry->pages = kzalloc((sizeof(struct page)*(entry->num_pages)),
++	entry->pages = kzalloc((sizeof(struct page *) * (entry->num_pages)),
 +							GFP_KERNEL);
 +	if (IS_ERR_OR_NULL(entry->pages)) {
 +		pr_err("\n%s:Error in allocating mem for pages %ld\n",
@@ -1162,13 +1171,19 @@ index 000000000000..20c61cb72b8a
 +	}
 +	pr_debug("%s: After getting page maps, num = %d, fileoffset = %d ",
 +			__FUNCTION__, entry->num_pages, entry->fileoffset);
-+	for ( i = 0; i < entry->num_pages; i++) {
++	for (i = 0; i < entry->num_pages; i++) {
 +		entry->pages[i] = read_mapping_page(
 +					info->vtarfs_img_map.tarfs_img_map,
 +				(entry->fileoffset >> PAGE_SHIFT) + i, NULL);
 +		if (IS_ERR(entry->pages[i])) {
 +			pr_err("%s: page map failure %ld",
 +				__FUNCTION__, PTR_ERR(entry->pages[i]));
++			goto err_lvl3;
++		}
++		if (PageError(entry->pages[i])) {
++			pr_err("%s: page err while mapping %d page",
++					__FUNCTION__, i);
++			put_page(entry->pages[i]);
 +			goto err_lvl3;
 +		}
 +	}
@@ -1199,6 +1214,8 @@ index 000000000000..20c61cb72b8a
 +	return entry;
 +
 +err_lvl3:
++	for (; i; i--)
++		put_page(entry->pages[i - 1]);
 +	kfree(entry->pages);
 +err_lvl2:
 +	kfree(entry);
@@ -1397,8 +1414,8 @@ index 000000000000..20c61cb72b8a
 +{
 +	struct vtarfs_fs_info *info = VTARFS_SB(sb);
 +	struct vtarfs_entry *entry = info->fs_entry;
-+
 +	struct inode *inode = NULL;
++	int i;
 +
 +	tarfs_debug("Kill super");
 +	while(entry) {
@@ -1413,8 +1430,12 @@ index 000000000000..20c61cb72b8a
 +			kfree(entry->base_name);
 +		if (strlen(entry->link_name) > MAX_FILE_NAME_SIZE)
 +			kfree(entry->link_name);
++		for (i = 0; i < entry->num_pages; i++) {
++			put_page(entry->pages[i]);
++		}
 +		inode = ilookup(sb, entry->inode);
 +		iput(inode);
++		kfree(entry->pages);
 +		kfree(entry);
 +		entry = next;
 +	}
