@@ -1,6 +1,6 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.49
+Version:        2.4.50
 Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org
@@ -8,7 +8,7 @@ Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://apache.mirrors.hoobly.com/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    %{name}=17e8efc1b178ce677202d71678e380459594f697
+%define sha1    %{name}=560cea1589d107aa06ae7eabf144316b00338141
 
 # Patch0 is taken from:
 # https://www.linuxfromscratch.org/patches/blfs/svn/httpd-2.4.47-blfs_layout-1.patch
@@ -211,6 +211,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Thu Oct 07 2021 Dweep Advani <dadvani@vmware.com> 2.4.50-1
+- Upgraded to 2.4.50 for fixing CVE-2021-41524 and CVE-2021-41773
 * Wed Sep 29 2021 Dweep Advani <dadvani@vmware.com> 2.4.49-1
 - Upgraded to 2.4.49 for addressing multiple CVEs
 * Mon Sep 13 2021 Nitesh Kumar <kunitesh@vmware.com> 2.4.47-2
