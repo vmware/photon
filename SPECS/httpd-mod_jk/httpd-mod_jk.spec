@@ -1,7 +1,7 @@
 Summary:    Apache Tomcat Connector
 Name:       httpd-mod_jk
 Version:    1.2.48
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    Apache
 URL:        http://tomcat.apache.org/connectors-doc
 Group:      Applications/System
@@ -47,6 +47,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %config(noreplace) %{_sysconfdir}/httpd/conf/workers.properties
 
 %changelog
+* Thu Oct 07 2021 Dweep Advani <dadvani@vmware.com> 1.2.48-3
+- Rebuild with upgraded httpd 2.4.50
 * Tue Oct 05 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.2.48-2
 - Bump version as a part of httpd upgrade
 * Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.48-1
