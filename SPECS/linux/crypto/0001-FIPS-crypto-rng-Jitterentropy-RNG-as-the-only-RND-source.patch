@@ -15,7 +15,6 @@ with jitterentropy RNG.
 Jitter entropy rng can be accessed by any crypto module
 
 Signed-off-by: srinidhira0 <srinidhir@vmware.com>
-Signed-off-by: Keerthana K <keerthanak@vmware.com>
 ---
  crypto/rng.c | 27 +++++++++++++++++++++++++--
  1 file changed, 25 insertions(+), 2 deletions(-)
@@ -58,10 +57,10 @@ index a888d84b524a..a89aa226e172 100644
  int crypto_rng_reset(struct crypto_rng *tfm, const u8 *seed, unsigned int slen)
  {
  	struct crypto_alg *alg = tfm->base.__crt_alg;
-@@ -58,8 +58,11 @@ int crypto_rng_reset(struct crypto_rng *tfm, const u8 *seed, unsigned int slen)
- 		buf = kmalloc(slen, GFP_KERNEL);
- 		if (!buf)
+@@ -41,8 +61,11 @@ int crypto_rng_reset(struct crypto_rng *tfm, const u8 *seed, unsigned int slen)
+ 			crypto_alg_put(alg);
  			return -ENOMEM;
+ 		}
 -
 -		err = get_random_bytes_wait(buf, slen);
 +		if (fips_enabled) {
@@ -69,8 +68,9 @@ index a888d84b524a..a89aa226e172 100644
 +		} else {
 +			err = get_random_bytes_wait(buf, slen);
 +		}
- 		if (err)
+ 		if (err) {
+ 			crypto_alg_put(alg);
  			goto out;
- 		seed = buf;
 -- 
 2.28.0
+

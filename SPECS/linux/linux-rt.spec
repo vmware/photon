@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.61
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt52
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -426,6 +426,8 @@ Patch1006:       0001-fips-Continue-to-export-shash_no_setkey.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch1008:       0001-FIPS-canister-binary-usage.patch
+# Patch to remove urandom usage in rng module
+Patch1009:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 %else
 %if 0%{?kat_build:1}
 Patch1010:       0003-FIPS-broken-kattest.patch
@@ -856,6 +858,7 @@ The Linux package contains the Linux kernel doc files
 %patch1006 -p1
 %if 0%{?fips}
 %patch1008 -p1
+%patch1009 -p1
 %else
 %if 0%{?kat_build:1}
 %patch1010 -p1
@@ -1063,6 +1066,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Oct 07 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.61-3
+-   Use jitterentropy rng instead of urandom in rng module.
 *   Thu Sep 09 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.61-2
 -   .config enable CONFIG_MOUSE_PS2_VMMOUSE and CONFIG_INPUT_UINPUT
 -   Enable sta by default
