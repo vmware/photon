@@ -3,7 +3,7 @@
 Summary:        Library for interacting with Calico data model.
 Name:           libcalico
 Version:        0.19.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/libcalico
 Source0:        %{name}-%{version}.tar.gz
@@ -71,5 +71,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python2_sitelib}/*
 
 %changelog
+*   Sun Oct 10 2021 Shreyas B <shreyasb@vmware.com> 0.19.0-2
+-   Bump up version to compile with python3-urllib3 v1.26.6
 *   Fri Oct 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.19.0-1
 -   libcalico for PhotonOS.
