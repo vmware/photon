@@ -2,7 +2,7 @@
 
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.1.4
+Version:        3.1.5
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -10,7 +10,7 @@ License:        LGPLv2.1,GPLv2
 URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=ac85ed7b6547005aad6055aad83268dbd1ad5793
+%define sha1    %{name}=48bc98b57a50a580a56d00988bf3955be5d749a4
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
 
@@ -55,9 +55,9 @@ Requires:   libsolv-devel
 %description devel
 Development files for tdnf
 
-%package    cli-libs
-Summary:    Library providing cli libs for tdnf like clients
-Group:      Development/Libraries
+%package	cli-libs
+Summary:	Library providing cli libs for tdnf like clients
+Group:		Development/Libraries
 
 %description cli-libs
 Library providing cli libs for tdnf like clients.
@@ -248,16 +248,25 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
     %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
 
 %changelog
+*   Wed Oct 06 2021 Oliver Kurth <okurth@vmware.com> 3.1.5-1
+-   update to 3.1.5
+-   add minversions config option
+-   make pytests arch independent (does not affect functionality)
 *   Mon Aug 2 2021 Oliver Kurth <okurth@vmware.com> 3.1.4-1
 -   update to 3.1.4
 -   fix configreader key reading logic
--   set repo expiry to two days
-*   Tue Jul 27 2021 Oliver Kurth <okurth@vmware.com> 3.1.2-1
+*   Tue Jun 29 2021 Oliver Kurth <okurth@vmware.com> 3.1.3-1
+-   update to 3.1.3
+*   Wed Jun 23 2021 Oliver Kurth <okurth@vmware.com> 3.1.2-1
 -   update to 3.1.2
+*   Fri Jun 11 2021 Oliver Kurth <okurth@vmware.com> 3.1.0-3
 -   rebuild with libsolv 0.7.19
-*   Thu Jun 03 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.1.0-1
--   Bump version to 3.1.0
+*   Thu Jun 03 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.1.0-2
 -   fix segfaulting when gpgcheck is enabled & no key configured
+*   Tue Jun 01 2021 Oliver Kurth <okurth@vmware.com> 3.1.0-1
+-   update to 3.1.0
+*   Tue Apr 06 2021 Oliver Kurth <okurth@vmware.com> 3.0.2-1
+-   update to 3.0.2
 *   Thu Feb 18 2021 Oliver Kurth <okurth@vmware.com> 3.0.0-5
 -   update to v3.0.0 (GA)
 -   depend on curl-libs instead of curl
