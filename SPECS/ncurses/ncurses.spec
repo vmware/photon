@@ -1,7 +1,7 @@
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
 Version:        6.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://invisible-island.net/ncurses/
 Group:          Applications/System
@@ -11,6 +11,9 @@ Distribution:   Photon
 Source0:        ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-%{ncursessubversion}.tgz
 %define sha1    ncurses=7a5cec2e85878f1d00b71805ece1fb5582fa4435
 Requires:       ncurses-libs = %{version}-%{release}
+
+Patch0:         0001-CVE-2021-39537.patch
+
 %description
 The Ncurses package contains libraries for terminal-independent
 handling of character screens.
@@ -46,15 +49,13 @@ Requires:       %{name} = %{version}-%{release}
 It contains all terminfo files
 
 %prep
-%setup -q -n %{name}-%{version}-%{ncursessubversion}
+%autosetup -n %{name}-%{version}-%{ncursessubversion} -p1
 
 %build
 mkdir v6
 pushd v6
 ln -s ../configure .
 %configure \
-    --prefix=%{_prefix} \
-    --mandir=%{_mandir} \
     --with-shared \
     --without-debug \
     --enable-pc-files \
@@ -69,8 +70,6 @@ mkdir v5
 pushd v5
 ln -s ../configure .
 %configure \
-    --prefix=%{_prefix} \
-    --mandir=%{_mandir} \
     --with-shared \
     --without-debug \
     --enable-pc-files \
@@ -83,8 +82,8 @@ ln -s ../configure .
 make %{?_smp_mflags}
 popd
 %install
-make -C v5 DESTDIR=%{buildroot} install.libs
-make -C v6 DESTDIR=%{buildroot} install
+make -C v5 DESTDIR=%{buildroot} install.libs %{?_smp_mflags}
+make -C v6 DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}/%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libncursesw.so) %{buildroot}%{_libdir}/libncursesw.so
 for lib in ncurses form panel menu ; do \
@@ -183,6 +182,8 @@ make
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+*   Wed Oct 13 2021 Ajay Kaher <akaher@vmware.com> 6.1-3
+-   Fix for CVE-2021-39537
 *   Tue Nov 05 2019 Ajay Kaher <akaher@vmware.com> 6.1-2
 -   Update to version 6.1, subversion 20191102
 -   to fix CVE-2019-17594, CVE-2019-17595
