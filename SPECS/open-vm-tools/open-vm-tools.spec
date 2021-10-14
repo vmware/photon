@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        11.3.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -36,7 +36,6 @@ BuildRequires:  rpcsvc-proto-devel
 BuildRequires:  libtirpc-devel
 
 Requires:       fuse
-Requires:       cloud-init
 Requires:       libmspack
 Requires:       glib
 Requires:       openssl
@@ -160,6 +159,8 @@ fi
 %{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-perf-metrics.sh
 
 %changelog
+* Thu Oct 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.5-2
+- Remove cloud-init from "Requires"
 * Tue Sep 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.5-1
 - Upgrade to version 11.3.5
 * Tue Jun 22 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.0-1
