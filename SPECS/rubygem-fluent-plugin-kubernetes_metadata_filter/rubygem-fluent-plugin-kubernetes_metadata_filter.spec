@@ -2,9 +2,9 @@
 %global gemdir %(IFS=: R=($(gem env gempath)); echo ${R[${#R[@]}-1]})
 %global gem_name fluent-plugin-kubernetes_metadata_filter
 
-Name: rubygem-fluent-plugin-kubernetes_metadata_filter
+Name:           rubygem-fluent-plugin-kubernetes_metadata_filter
 Version:        2.5.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Fluentd Filter plugin to add Kubernetes metadata.
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -14,15 +14,14 @@ URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/%{gem_name}-%{version}.gem
 %define sha1    fluent-plugin-kubernetes_metadata_filter=6e8b3dff1b227a2c22ba2796ad1885ce1fa67a77
 BuildRequires:  ruby >= 2.1
-
-Requires: rubygem-fluentd >= 0.14.0, rubygem-fluentd < 2.0.0
-Requires: rubygem-kubeclient < 5.0
-Requires: rubygem-lru_redux
-BuildArch: noarch
+BuildRequires:  findutils
+Requires:       rubygem-fluentd >= 0.14.0, rubygem-fluentd < 2.0.0
+Requires:       rubygem-kubeclient < 5.0
+Requires:       rubygem-lru_redux
+BuildArch:      noarch
 
 %description
 The Kubernetes metadata plugin filter enriches container log records with pod and namespace metadata.
-
 This plugin derives basic metadata about the container that emitted a given log record using the source
 of the log record. Records from journald provide metadata about the container environment as named fields.
 Records from JSON files encode metadata about the container in the file name. The initial metadata derived
@@ -33,18 +32,21 @@ metadata. This behaviors supports multi-tenant systems that rely on the authenti
 proper log isolation.
 
 %prep
-%setup -q -c -T
+%autosetup -n %{gem_name}-%{version}
 
 %build
 
 %install
 gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
+[ -d %{buildroot}/usr/lib ] && find %{buildroot}/usr/lib -type f -perm /022 -exec chmod go-w {} \;
 
 %files
 %defattr(-,root,root,-)
 %{gemdir}
 
 %changelog
+*   Thu Oct 14 2021 Stanislav Hadjiiski <hadjiiskis@vmware.com> 2.5.2-3
+-   Drop group write permissions for files in /usr/lib to comply with STIG
 *   Tue Sep 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.2-2
 -   Update rubygem-kubeclient version
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 2.5.2-1
