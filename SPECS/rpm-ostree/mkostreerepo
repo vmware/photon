@@ -85,7 +85,7 @@ cat > $JSONFILE << EOF
                      "grub2-efi-image", "shadow", "ncurses", "grub2-theme-ostree",
                      "selinux-policy"],
 
-        "packages-x86_64": ["grub2-pc", "open-vm-tools"],
+        "packages-x86_64": ["grub2-pc", "open-vm-tools-gosc"],
 
         "units": ["sshd-keygen.service", "sshd.service"]
 }

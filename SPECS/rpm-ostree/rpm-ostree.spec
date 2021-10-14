@@ -1,21 +1,19 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2021.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/projectatomic/rpm-ostree/releases/download/v%{version}/rpm-ostree-%{version}.tar.xz
-%define sha1    rpm-ostree=be44c8d2b58595b6cc2e25dadb06ae18f765ada5
-Source1:        libglnx-ef502aa.tar.gz
-%define sha1    libglnx=66bcbe5a924d166e37e446de2a99583494bd25a9
-Source2:        libdnf-387bd99.tar.gz
-%define sha1    libdnf=4b81dc1db04866be5166fe1ccad333f6ea9997e0
-Source3:        mk-ostree-host.sh
-Source4:        function.inc
-Source5:        mkostreerepo
+%define sha1    %{name}=be44c8d2b58595b6cc2e25dadb06ae18f765ada5
+Source1:        mk-ostree-host.sh
+Source2:        function.inc
+Source3:        mkostreerepo
+
 Patch0:         rpm-ostree-libdnf-build.patch
 
 BuildRequires:  autoconf
@@ -97,11 +95,7 @@ Requires: %{name} = %{version}-%{release}
 Includes the scripts for rpm-ostree repo creation to act as server
 
 %prep
-# Using autosetup is not feasible
-%setup -q
-tar -xf %{SOURCE1} --no-same-owner
-tar -xf %{SOURCE2} --no-same-owner
-%patch0 -p0
+%autosetup -p1
 
 %build
 env NOCONFIGURE=1 ./autogen.sh
@@ -113,9 +107,9 @@ make install DESTDIR=%{buildroot} INSTALL="install -p -c" %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 install -d %{buildroot}%{_bindir}/rpm-ostree-host
 install -d %{buildroot}%{_bindir}/rpm-ostree-server
-install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/rpm-ostree-host
-install -p -m 644 -D %{SOURCE4} %{buildroot}%{_bindir}/rpm-ostree-host
-install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
+install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/rpm-ostree-host
+install -p -m 644 -D %{SOURCE2} %{buildroot}%{_bindir}/rpm-ostree-host
+install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/rpm-ostree-server
 
 %files
 %{_bindir}/*
@@ -152,30 +146,33 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
-*   Sat Aug 28 2021 Ankit Jain <ankitja@vmware.com> 2021.10-1
--   Updated to 2021.10
-*   Fri Jun 11 2021 Oliver Kurth <okurth@vmware.com> 2020.5-6
--   build with libsolv 0.7.19
-*   Mon Jan 11 2021 Ankit Jain <ankitja@vmware.com> 2020.5-5
--   Added systemd-udev in mkostreerepo
-*   Tue Nov 03 2020 Ankit Jain <ankitja@vmware.com> 2020.5-4
--   Adding grub2-efi-image for both x86 and aarch64 in mkostreerepo
-*   Mon Oct 05 2020 Ankit Jain <ankitja@vmware.com> 2020.5-3
--   Changing branch to 4.0 in mkostreerepo
-*   Mon Oct 05 2020 Ankit Jain <ankitja@vmware.com> 2020.5-2
--   Re-enabling ostree
-*   Mon Sep 21 2020 Ankit Jain <ankitja@vmware.com> 2020.5-1
--   Updated to 2020.5
-*   Tue Sep 08 2020 Ankit Jain <ankitja@vmware.com> 2020.4-2
--   Updated mkostreerepo as per photon-base.json
-*   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 2020.4-1
--   Updated to 2020.4
-*   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2019.3-4
--   Build with python3
--   Mass removal python2
-*   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 2019.3-3
--   Added for ARM Build
-*   Fri Sep 20 2019 Ankit Jain <ankitja@vmware.com> 2019.3-2
--   Added script to create repo data to act as ostree-server
-*   Tue May 14 2019 Ankit Jain <ankitja@vmware.com> 2019.3-1
--   Initial version of rpm-ostree
+* Sat Oct 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 2021.10-2
+- Bump version as a part of open-vm-tools spec refactoring
+- libdnf & libglnx are part of rpm-ostree source.
+* Sat Aug 28 2021 Ankit Jain <ankitja@vmware.com> 2021.10-1
+- Updated to 2021.10
+* Fri Jun 11 2021 Oliver Kurth <okurth@vmware.com> 2020.5-6
+- build with libsolv 0.7.19
+* Mon Jan 11 2021 Ankit Jain <ankitja@vmware.com> 2020.5-5
+- Added systemd-udev in mkostreerepo
+* Tue Nov 03 2020 Ankit Jain <ankitja@vmware.com> 2020.5-4
+- Adding grub2-efi-image for both x86 and aarch64 in mkostreerepo
+* Mon Oct 05 2020 Ankit Jain <ankitja@vmware.com> 2020.5-3
+- Changing branch to 4.0 in mkostreerepo
+* Mon Oct 05 2020 Ankit Jain <ankitja@vmware.com> 2020.5-2
+- Re-enabling ostree
+* Mon Sep 21 2020 Ankit Jain <ankitja@vmware.com> 2020.5-1
+- Updated to 2020.5
+* Tue Sep 08 2020 Ankit Jain <ankitja@vmware.com> 2020.4-2
+- Updated mkostreerepo as per photon-base.json
+* Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 2020.4-1
+- Updated to 2020.4
+* Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2019.3-4
+- Build with python3
+- Mass removal python2
+* Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 2019.3-3
+- Added for ARM Build
+* Fri Sep 20 2019 Ankit Jain <ankitja@vmware.com> 2019.3-2
+- Added script to create repo data to act as ostree-server
+* Tue May 14 2019 Ankit Jain <ankitja@vmware.com> 2019.3-1
+- Initial version of rpm-ostree

@@ -1,7 +1,7 @@
 Name:           minimal
 Summary:        Metapackage to install minimal profile
 Version:        0.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache 2.0
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
@@ -50,10 +50,7 @@ Requires:       tzdata
 Requires:       util-linux
 Requires:       vim
 Requires:       which
-
-%ifarch x86_64
-Requires:       open-vm-tools
-%endif
+Requires:       open-vm-tools-gosc
 
 %description
 Metapackage to install minimal profile
@@ -66,11 +63,13 @@ Metapackage to install minimal profile
 %defattr(-,root,root,0755)
 
 %changelog
-*   Mon Aug 17 2020 Susant Sahani <ssahani@vmware.com> 0.1-4
--   Add systemd packages, sort requires packages in alphabetical order
-*   Thu Mar 12 2020 Alexey Makhalov <amakhalov@vmware.com> 0.1-3
--   Add grub2 packages
-*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 0.1-2
--   Add open-vm-tools as requires only for x86_64
-*   Tue Oct 30 2018 Anish Swaminathan <anishs@vmware.com> 0.1-1
--   Initial packaging
+* Thu Oct 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.1-5
+- Add open-vm-tools avilable for all platforms
+* Mon Aug 17 2020 Susant Sahani <ssahani@vmware.com> 0.1-4
+- Add systemd packages, sort requires packages in alphabetical order
+* Thu Mar 12 2020 Alexey Makhalov <amakhalov@vmware.com> 0.1-3
+- Add grub2 packages
+* Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 0.1-2
+- Add open-vm-tools as requires only for x86_64
+* Tue Oct 30 2018 Anish Swaminathan <anishs@vmware.com> 0.1-1
+- Initial packaging

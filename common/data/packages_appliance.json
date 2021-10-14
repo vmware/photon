@@ -53,7 +53,7 @@
         "tdnf",
         "rsyslog",
         "audit",
-        "open-vm-tools",
+        "open-vm-tools-gosc",
         "bridge-utils",
         "krb5",
         "which",

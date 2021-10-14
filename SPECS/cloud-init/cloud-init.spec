@@ -3,7 +3,7 @@
 
 Name:           cloud-init
 Version:        21.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -13,7 +13,6 @@ Distribution:   Photon
 
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
 %define sha1 %{name}=1f5cab203032cb676390a66614327d76f8bacb8b
-Source1:        dscheck_VMwareGuestInfo
 
 Patch0:     cloud-init-azureds.patch
 Patch1:     ds-identify.patch
@@ -99,8 +98,6 @@ sed -i -e "0,/'OpenStack', / s/'OpenStack', //" %{buildroot}/%{_sysconfdir}/clou
 mkdir -p %{buildroot}%{_sharedstatedir}/cloud
 mkdir -p %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg.d
 
-install -m 755 %{SOURCE1} %{buildroot}/%{_bindir}
-
 mv %{buildroot}/lib/* %{buildroot}/usr/lib && rmdir %{buildroot}/lib || exit 1
 
 %check
@@ -153,6 +150,8 @@ rm -rf %{buildroot}
 %{_datadir}/bash-completion/completions/cloud-init
 
 %changelog
+* Thu Oct 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.3-3
+- Remove unused dscheck_VMwareGuestInfo
 * Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 21.3-2
 - Replacement of ITS suggested words.
 * Wed Aug 25 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.3-1
