@@ -1,15 +1,16 @@
 Name: 		likewise-open
 Summary: 	Likewise Open
-Version: 	6.2.11.4
-Release:        4%{?dist}
-Group: 		Development/Libraries
-Vendor:     VMware, Inc.
+Version: 	6.2.11.13
+Release: 	1%{?dist}
+Group:   	Development/Libraries
+Vendor: 	VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
 URL: 		https://github.com/vmware/likewise-open
-Source0:        %{name}-%{version}.tar.gz
-%define sha1 likewise-open=6aa4cf11de6747d5f8940666c21adc3e1f7b6a4b
-Patch0:         0002-likewise-domainjoin-recognize-photon.patch
 Distribution:   Photon
+
+Source0: 	%{name}-%{version}.tar.gz
+%define sha1 %{name}=7012d73820c8cbdb8f0fa3b38f7478bce74f59a6
+
 Requires:       Linux-PAM
 Requires:       (coreutils >= 8.22 or toybox)
 Requires:       /bin/grep
@@ -21,6 +22,7 @@ Requires:       openssl >= 1.0.1
 Requires:       (procps-ng or toybox)
 Requires:       /bin/sed
 Requires:       sqlite-libs
+
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  krb5-devel >= 1.12
@@ -45,14 +47,13 @@ Likewise Open 6.1 LWIS
 This package provides files for developing against the Likewise APIs
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 # hack against glibc-2.26 to avoid getopt declaration mismatch
 sed -i '/stdio.h/a#define _GETOPT_CORE_H 1' dcerpc/demos/echo_server/echo_server.c
 cd release
-export CWD=`pwd`
+export CWD=$(pwd)
 
 export LW_BUILD_PHOTON=1
 export LW_FEATURE_LEVEL="auth"
@@ -60,21 +61,24 @@ export LSA_RPC_SERVERS="yes"
 export LW_DEVICE_PROFILE="photon"
 
 export CFLAGS="-Wno-error=unused-but-set-variable -Wno-error=implicit-function-declaration -Wno-error=sizeof-pointer-memaccess -Wno-error=unused-local-typedefs -Wno-error=pointer-sign -Wno-error=address -Wno-unused-but-set-variable -Wno-unused-const-variable -Wno-misleading-indentation"
-../configure  --prefix=/opt/likewise \
+
+sh ../configure  --prefix=/opt/likewise \
              --libdir=/opt/likewise/lib64 \
              --datadir=/opt/likewise/share \
              --datarootdir=/opt/likewise/share \
-             --build-isas=x86_64 \
+             --build-isas=%{_arch} \
              --lw-bundled-libs='libedit' \
              --enable-vmdir-provider=yes \
              --disable-static
+
+# fails with ${_smp_mflags}
 make
 
 %install
 mkdir -p %{buildroot}
 mv release/stage/* %{buildroot}
-install -d $RPM_BUILD_ROOT/var/lib/likewise/db
-install -d $RPM_BUILD_ROOT/var/lib/likewise/rpc
+install -d %{buildroot}/var/lib/likewise/db
+install -d %{buildroot}/var/lib/likewise/rpc
 find %{buildroot} -name '*.in' -delete
 find %{buildroot} -name '*.la' -delete
 find %{buildroot} -name '*.a' -delete
@@ -89,7 +93,18 @@ fi
 
 case "$1" in
     1)
-        if [ -n "`pidof lwsmd`" ]; then
+        #check if we are in chroot
+        #If lwsmd service is running in vm, we still get the pidof lwsmd in chroot
+        #and that causes us to exit with error.
+        if [ "$(stat -c %d:%i /)" != "$(stat -c %d:%i /proc/1/root/.)" ]; then
+            if [ -f /lib/systemd/system/lwsmd.service]; then
+                echo "Likewise server Manager detected in chroot. Exiting."
+                exit 1
+            else
+                echo "Likewise server Manager not detected in chroot."
+                exit 0
+            fi
+        elif [ -n "`pidof lwsmd`" ]; then
             echo "Error: Likewise Service Manager detected. Exiting."
             exit 1
         fi
@@ -290,13 +305,15 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
-*   Mon Nov 5 2018 Sriram Nambakam <snambakam@vmware.com> 6.2.11.4-4
--   Change domain join to recognize Photon release and use systemctl
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-3
--   Requires coreutils/procps-ng or toybox, /bin/grep, /bin/sed
-*   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-2
--   Fix compilation issue for glibc-2.26
-*   Wed Aug 09 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.2.11.4-1
--   Update to 6.2.11.4.
-*   Wed Mar 29 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.2.11-1
--   Initial - spec modified for Photon from likewise-open git repo.
+* Thu Oct 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 6.2.11.13-1
+- Upgrade to version 6.2.11.13
+* Mon Nov 5 2018 Sriram Nambakam <snambakam@vmware.com> 6.2.11.4-4
+- Change domain join to recognize Photon release and use systemctl
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-3
+- Requires coreutils/procps-ng or toybox, /bin/grep, /bin/sed
+* Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 6.2.11.4-2
+- Fix compilation issue for glibc-2.26
+* Wed Aug 09 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.2.11.4-1
+- Update to 6.2.11.4.
+* Wed Mar 29 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 6.2.11-1
+- Initial - spec modified for Photon from likewise-open git repo.

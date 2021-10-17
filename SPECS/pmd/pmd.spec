@@ -1,7 +1,3 @@
-#
-# pmd spec file
-#
-
 %define _mech_file /etc/gss/mech
 %define _mech_id 1.3.6.1.4.1.6876.11711.2.1.2
 %define _python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
@@ -9,12 +5,18 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.5
-Release:        6%{?dist}
+Release:        7%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
 URL:            https://www.github.com/vmware/pmd
 Group:          Applications/System
+
+Source0:        %{name}-%{version}-3.tar.gz
+%define sha1 %{name}=fe9b4b81410497d209fc4b6efb9574a049557b25
+
+Patch0:         pmd-update-to-c-rest-engine-1.1.patch
+
 Requires:       copenapi
 Requires:       c-rest-engine >= 1.1
 Requires:       jansson
@@ -25,6 +27,9 @@ Requires:       tdnf >= 1.2.3
 Requires:       lightwave-client-libs
 Requires:       %{name}-libs = %{version}-%{release}
 Requires:       shadow
+
+BuildRequires: python2-devel >= 2.7
+BuildRequires: python3-devel >= 3.5
 BuildRequires:  copenapi-devel
 BuildRequires:  c-rest-engine-devel >= 1.1
 BuildRequires:  curl-devel
@@ -36,9 +41,6 @@ BuildRequires:  netmgmt-cli-devel
 BuildRequires:  netmgmt-devel
 BuildRequires:  tdnf-devel >= 1.2.3
 BuildRequires:  lightwave-devel
-Source0:        %{name}-%{version}-3.tar.gz
-%define sha1 pmd=fe9b4b81410497d209fc4b6efb9574a049557b25
-Patch0:         pmd-update-to-c-rest-engine-1.1.patch
 
 %description
 Photon Management Daemon
@@ -71,7 +73,6 @@ Summary: Python2 bindings for photon management daemon
 Group: Development/Libraries
 Requires: python2 >= 2.7
 Requires: %{name}-cli = %{version}-%{release}
-BuildRequires: python2-devel >= 2.7
 
 %description python2
 Python2 bindings for photon management daemon
@@ -81,7 +82,6 @@ Summary: Python3 bindings for photon management daemon
 Group: Development/Libraries
 Requires: python3 >= 3.5
 Requires: %{name}-cli = %{version}-%{release}
-BuildRequires: python3-devel >= 3.5
 
 %description python3
 Python3 bindings for photon management daemon
@@ -94,7 +94,8 @@ Python3 bindings for photon management daemon
 sed -i 's/pmd, 0.0.1/pmd, 0.0.5/' configure.ac
 sed -i 's,-lcrypto,-lcrypto -lgssapi_krb5 @top_builddir@/client/libpmdclient.la,' server/Makefile.am
 autoreconf -mif
-./configure \
+
+sh ./configure \
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --libdir=%{_libdir} \
@@ -102,7 +103,8 @@ autoreconf -mif
     --with-likewise=/opt/likewise \
     --enable-python=no \
     --disable-static
-make
+
+make %{?_smp_mflags}
 
 pushd python
 python2 setup.py build
@@ -111,7 +113,7 @@ popd
 
 %install
 cd $RPM_BUILD_DIR/%{name}-%{version}
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm -f %{buildroot}%{_libdir}/*.la
 
 pushd python
@@ -276,57 +278,59 @@ fi
 rm -rf %{buildroot}/*
 
 %files
-    %defattr(-,root,root,0755)
-    %{_bindir}/pmd
-    %{_bindir}/pmdprivsepd
-    /lib/systemd/system/pmd.service
-    /lib/systemd/system/pmdprivsepd.service
-    /etc/pmd/pmd.conf
-    /etc/pmd/api_sddl.conf
-    /etc/pmd/restapispec.json
-    /etc/pmd/restconfig.txt
-    %attr(0766, %{name}, %{name}) %dir /var/log/%{name}
-    %_tmpfilesdir/%{name}.conf
+%defattr(-,root,root,0755)
+%{_bindir}/pmd
+%{_bindir}/pmdprivsepd
+/lib/systemd/system/pmd.service
+/lib/systemd/system/pmdprivsepd.service
+/etc/pmd/pmd.conf
+/etc/pmd/api_sddl.conf
+/etc/pmd/restapispec.json
+/etc/pmd/restconfig.txt
+%attr(0766, %{name}, %{name}) %dir /var/log/%{name}
+%_tmpfilesdir/%{name}.conf
 
 %files libs
-    %{_libdir}/libpmdclient.so*
+%{_libdir}/libpmdclient.so*
 
 %files cli
-    %{_bindir}/pmd-cli
+%{_bindir}/pmd-cli
 
 %files devel
-    %{_includedir}/pmd/*.h
-    %{_libdir}/pkgconfig/pmdclient.pc
+%{_includedir}/pmd/*.h
+%{_libdir}/pkgconfig/pmdclient.pc
 
 %files python2
-    %{python_sitearch}/%{name}/
-    %{python_sitearch}/%{name}_python-*.egg-info
+%{python_sitearch}/%{name}/
+%{python_sitearch}/%{name}_python-*.egg-info
 
 %files python3
-    %{_python3_sitearch}/%{name}/
-    %{_python3_sitearch}/%{name}_python-*.egg-info
+%{_python3_sitearch}/%{name}/
+%{_python3_sitearch}/%{name}_python-*.egg-info
 
 %changelog
-*   Fri Aug 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.0.5-6
--   Bump version as a part of rpm upgrade
-*   Thu Apr 05 2018 Xiaolin Li <xiaolinl@vmware.com> 0.0.5-5
--   Rebuild with tdnf 1.2.3.
-*   Thu Nov 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-4
--   update to use c-rest-engine-1.11
-*   Tue Oct 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-3
--   Bug fixes and net commands fixes
-*   Sat Sep 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-2
--   Apply patch for local rpc connection separation
--   patch for couple of minor coverity scan fixes.
-*   Thu Sep 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-1
--   Update to version 0.0.5
-*   Sat Sep 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.4-1
--   Add privilege separation
-*   Tue Aug 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.3-1
--   Fix REST param handling, CLI locale.
-*   Thu Jun 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.2-1
--   Fix python3 string issues.
-*   Tue May 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-2
--   Changes for lightwave dependencies
-*   Thu May 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-1
--   Initial build.  First version
+* Fri Oct 29 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.0.5-7
+- Bump version as a part of lightwave & likewise upgrade
+* Fri Aug 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.0.5-6
+- Bump version as a part of rpm upgrade
+* Thu Apr 05 2018 Xiaolin Li <xiaolinl@vmware.com> 0.0.5-5
+- Rebuild with tdnf 1.2.3.
+* Thu Nov 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-4
+- update to use c-rest-engine-1.11
+* Tue Oct 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-3
+- Bug fixes and net commands fixes
+* Sat Sep 30 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-2
+- Apply patch for local rpc connection separation
+- patch for couple of minor coverity scan fixes.
+* Thu Sep 28 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.5-1
+- Update to version 0.0.5
+* Sat Sep 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.4-1
+- Add privilege separation
+* Tue Aug 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.3-1
+- Fix REST param handling, CLI locale.
+* Thu Jun 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.2-1
+- Fix python3 string issues.
+* Tue May 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-2
+- Changes for lightwave dependencies
+* Thu May 04 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.0.1-1
+- Initial build.  First version
