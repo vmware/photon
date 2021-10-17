@@ -1,7 +1,7 @@
 Summary:        Connection tracking userspace tools for Linux.
 Name:           conntrack-tools
 Version:        1.4.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2
 URL:            http://conntrack-tools.netfilter.org/
 Source0:        http://netfilter.org/projects/%{name}/files/%{name}-%{version}.tar.bz2
@@ -38,7 +38,7 @@ allow system administrators interact with the Connection Tracking System,
 which is the module that provides stateful packet inspection for iptables.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 autoreconf -fi
@@ -46,7 +46,7 @@ autoreconf -fi
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
 mkdir -p %{buildroot}%{_sysconfdir}/conntrackd
 install -d -m 0755 %{buildroot}%{_unitdir}
@@ -75,6 +75,8 @@ install -m 0644 %{SOURCE2} %{buildroot}%{_unitdir}/
 %systemd_postun conntrackd.service
 
 %changelog
+*  Sun Oct 17 2021 Susant Sahani <ssahani@vmware.com.com> 1.4.6-3
+-  Rename conntrackd.conf eth2 -> eth0
 *  Sat Feb 27 2021 Andrew Williams <andy@tensixtyone.com> 1.4.6-2
 -  Add provide for conntrack
 *  Tue Aug 25 2020 Ashwin H <ashwinh@vmware.com> 1.4.6-1
