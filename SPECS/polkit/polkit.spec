@@ -1,22 +1,26 @@
 Summary:           A toolkit for defining and handling authorizations.
 Name:              polkit
-Version:           0.118
-Release:           2%{?dist}
+Version:           0.120
+Release:           1%{?dist}
 Group:             Applications/System
 Vendor:            VMware, Inc.
 License:           LGPLv2+
 URL:               https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
-Source0:           https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
-%define sha1       polkit=1c53d0ccacc6e6afd49ba14cb39d2514b943933d
 Distribution:      Photon
+
+Source0:           https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
+%define sha1       %{name}=75d5885251eef36b28851e095120bc1f60714160
+
 BuildRequires:     autoconf
 BuildRequires:     expat-devel
 BuildRequires:     glib-devel
 BuildRequires:     gobject-introspection
 BuildRequires:     intltool >= 0.40.0
+# polkit needs mozjs-78.X
 BuildRequires:     mozjs-devel >= 78.3.1
 BuildRequires:     Linux-PAM-devel
 BuildRequires:     systemd-devel
+
 Requires:          mozjs
 Requires:          expat
 Requires:          glib
@@ -39,17 +43,16 @@ Requires:          polkit = %{version}-%{release}
 header files and libraries for polkit
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-%configure \
-    --datadir=%{_datarootdir} \
-    --enable-libsystemd-login=yes \
-    --with-systemdsystemunitdir=%{_libdir}/systemd/system
+%configure --enable-libsystemd-login=yes \
+        --with-systemdsystemunitdir=%{_unitdir}
+
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 install -vdm 755 %{buildroot}/etc/pam.d
 cat > %{buildroot}/etc/pam.d/polkit-1 << "EOF"
@@ -93,11 +96,11 @@ fi
 %{_libdir}/lib%{name}-*.so.*
 %{_libdir}/polkit-1/polkit-agent-helper-1
 %{_libdir}/polkit-1/polkitd
-%{_libdir}/systemd/system/polkit.service
-%{_datarootdir}/dbus-1/system-services/org.freedesktop.PolicyKit1.service
-%{_datarootdir}/locale/*
-%{_datarootdir}/polkit-1/actions/*.policy
-%{_sysconfdir}/dbus-1/system.d/org.freedesktop.PolicyKit1.conf
+%{_unitdir}/polkit.service
+%{_datadir}/dbus-1/system-services/org.freedesktop.PolicyKit1.service
+%{_datadir}/locale/*
+%{_datadir}/polkit-1/actions/*.policy
+%{_datadir}/dbus-1/system.d/org.freedesktop.PolicyKit1.conf
 %{_sysconfdir}/pam.d/polkit-1
 %{_sysconfdir}/polkit-1/rules.d/50-default.rules
 %{_datadir}/gettext/its
@@ -110,23 +113,25 @@ fi
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*   Wed Apr 28 2021 Gerrit Photon <photon-checkins@vmware.com> 0.118-2
--   Bump up release version since mozjs is update to 78.10.0
-*   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.118-1
--   Automatic Version Bump
-*   Tue Aug 25 2020 Ankit Jain <ankitja@vmware.com> 0.117-2
--   This version of polkit build requires specific mozjs version
-*   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 0.117-1
--   Upgraded to 0.117
-*   Sat Oct 26 2019 Ankit Jain <ankitja@vmware.com> 0.116-1
--   Upgraded to 0.116
-*   Thu Jan 10 2019 Dweep Advani <dadvani@vmware.com> 0.113-4
--   Fix for CVE-2018-19788
-*   Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 0.113-3
--   Added pre and postun requires for shadow tools
-*   Thu Oct 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.113-2
--   Enable PAM and systemd.
-*   Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.113-1
--   Upgrade to 0.113-1
-*   Fri May 22 2015 Alexey Makhalov <amakhalov@vmware.com> 0.112-1
--   initial version
+* Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.120-1
+- Bump version as a part of mozjs upgrade
+* Wed Apr 28 2021 Gerrit Photon <photon-checkins@vmware.com> 0.118-2
+- Bump up release version since mozjs is update to 78.10.0
+* Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.118-1
+- Automatic Version Bump
+* Tue Aug 25 2020 Ankit Jain <ankitja@vmware.com> 0.117-2
+- This version of polkit build requires specific mozjs version
+* Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 0.117-1
+- Upgraded to 0.117
+* Sat Oct 26 2019 Ankit Jain <ankitja@vmware.com> 0.116-1
+- Upgraded to 0.116
+* Thu Jan 10 2019 Dweep Advani <dadvani@vmware.com> 0.113-4
+- Fix for CVE-2018-19788
+* Thu Dec 07 2017 Alexey Makhalov <amakhalov@vmware.com> 0.113-3
+- Added pre and postun requires for shadow tools
+* Thu Oct 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.113-2
+- Enable PAM and systemd.
+* Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 0.113-1
+- Upgrade to 0.113-1
+* Fri May 22 2015 Alexey Makhalov <amakhalov@vmware.com> 0.112-1
+- initial version

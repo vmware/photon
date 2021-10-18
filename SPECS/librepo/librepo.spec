@@ -3,16 +3,17 @@
 
 Summary:        Repodata downloading library
 Name:           librepo
-Version:        1.12.1
-Release:        5%{?dist}
+Version:        1.14.2
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/rpm-software-management/librepo/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=afe3d6902eb0238105e954ab2e99205aba9ea234
-Patch0:         0001-librepo-Fix-the-key-string-parsing.patch
+%define sha1    %{name}-%{version}=c9f39d7497d310ae220df2dfbd8e95f347e2bc8c
+
 BuildRequires:  cmake
 BuildRequires:  gcc
 BuildRequires:  check
@@ -85,21 +86,23 @@ popd
 %{_python3_sitearch}/%{name}/
 
 %changelog
-*   Fri Sep 24 2021 Nitesh Kumar <kunitesh@vmware.com> 1.12.1-5
--   Remove python dependencies.
-*   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.12.1-4
--   Fix build with new rpm
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.12.1-3
--   openssl 1.1.1
-*   Mon Sep 07 2020 Ankit Jain <ankitja@vmware.com> 1.12.1-2
--   Fixed string parsing logic
-*   Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 1.12.1-1
--   Automatic Version Bump
-*   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 1.12.0-1
--   Updated to 1.12.0
-*   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 1.10.2-3
--   Mass removal python2
-*   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-2
--   Added for ARM Build
-*   Wed May 15 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-1
--   Initial build. First version
+* Mon Oct 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.14.2-1
+- Bump to verion 1.14.2
+* Fri Sep 24 2021 Nitesh Kumar <kunitesh@vmware.com> 1.12.1-5
+- Remove python dependencies.
+* Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.12.1-4
+- Fix build with new rpm
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.12.1-3
+- openssl 1.1.1
+* Mon Sep 07 2020 Ankit Jain <ankitja@vmware.com> 1.12.1-2
+- Fixed string parsing logic
+* Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 1.12.1-1
+- Automatic Version Bump
+* Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 1.12.0-1
+- Updated to 1.12.0
+* Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 1.10.2-3
+- Mass removal python2
+* Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-2
+- Added for ARM Build
+* Wed May 15 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-1
+- Initial build. First version

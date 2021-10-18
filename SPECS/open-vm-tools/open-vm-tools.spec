@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        11.3.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -36,7 +36,6 @@ BuildRequires:  rpcsvc-proto-devel
 BuildRequires:  libtirpc-devel
 
 Requires:       fuse
-Requires:       cloud-init
 Requires:       libmspack
 Requires:       glib
 Requires:       openssl
@@ -70,6 +69,14 @@ Requires:       %{name} = %{version}-%{release}
 %description    sdmp
 The "open-vm-tools-sdmp" package contains a plugin for Service Discovery.
 
+%package        gosc
+Summary:        GOSC scripts
+Requires:       cloud-init
+Requires:       %{name} = %{version}-%{release}
+
+%description    gosc
+GOSC scripts
+
 %prep
 %autosetup -n %{name}-stable-%{version} -a0 -a1 -p1
 
@@ -89,16 +96,16 @@ make %{?_smp_mflags}
 %install
 #collecting hacks to manually drop the vmhgfs module
 install -vdm 755 %{buildroot}/%{_unitdir}
-install -vdm 755 %{buildroot}/usr/share/open-vm-tools
-cp -r %{gosc_scripts} %{buildroot}/usr/share/open-vm-tools
+install -vdm 755 %{buildroot}%{_datadir}/%{name}
+cp -r %{gosc_scripts} %{buildroot}%{_datadir}/%{name}
 install -p -m 644 %{SOURCE2} %{buildroot}/%{_unitdir}
 install -p -m 644 %{SOURCE3} %{buildroot}/%{_unitdir}
 
 cd %{name}
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
-rm -f %{buildroot}/sbin/mount.vmhgfs
+
 chmod -x %{buildroot}/etc/pam.d/vmtoolsd
-find %{buildroot}/usr/lib/ -name '*.la' -delete
+find %{buildroot}%{_libdir} -name '*.la' -delete
 
 %check
 make %{?_smp_mflags} check
@@ -141,7 +148,7 @@ fi
 %{_libdir}/*.so.*
 %{_bindir}/*
 %{_sysconfdir}/*
-%{_datadir}/*
+%{_datadir}/%{name}/messages
 %{_unitdir}/*
 /lib/*
 
@@ -159,7 +166,13 @@ fi
 %{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-info.sh
 %{_libdir}/%{name}/serviceDiscovery/scripts/get-listening-process-perf-metrics.sh
 
+%files gosc
+%defattr(-,root,root)
+%{_datadir}/%{name}/%{gosc_scripts}
+
 %changelog
+* Thu Oct 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.5-2
+- Move GOSC scripts to sub package
 * Tue Sep 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.5-1
 - Upgrade to version 11.3.5
 * Tue Jun 22 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.0-1

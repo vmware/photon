@@ -1,19 +1,23 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           tuned
 Version:        2.15.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
-Url:            https://github.com/redhat-performance/tuned
-Source:         tuned-%{version}.tar.gz
-%define         sha1 tuned=bfb3def0b687bbdae2b3e191d2fda46b3ffca1c0
-Patch0:         remove_desktop_utils_dependency.patch
-Patch1:         tuned-fix-bug-in-sysctl-verify.patch
+URL:            https://github.com/redhat-performance/tuned
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source:         tuned-%{version}.tar.gz
+%define         sha1 %{name}=bfb3def0b687bbdae2b3e191d2fda46b3ffca1c0
+
+Patch0:         remove_desktop_utils_dependency.patch
+Patch1:         tuned-fix-bug-in-sysctl-verify.patch
+
 BuildRequires:  python3-devel
 BuildRequires:  systemd-devel
+
 Requires:       dbus-python3
 Requires:       ethtool
 Requires:       gawk
@@ -29,6 +33,7 @@ Requires:       linux-python3-perf
 Requires:       irqbalance
 Requires:       systemd
 Requires:       virt-what
+
 %if %{with_check}
 BuildRequires:  curl-devel
 BuildRequires:  python3-pip
@@ -38,6 +43,7 @@ BuildRequires:  python3-decorator
 BuildRequires:  dbus-python3
 BuildRequires:  python3-pygobject
 %endif
+
 BuildArch:      noarch
 
 %description
@@ -61,15 +67,13 @@ identify applications that behave power inefficient (many small operations
 instead of fewer large ones).
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
 
 %build
 #The tuned daemon is written in pure Python. Nothing requires to be built.
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 # conditional support for grub2, grub2 is not available on all architectures
 # and tuned is noarch package, thus the following hack is needed
 mkdir -p %{buildroot}%{_datadir}/tuned/grub2
@@ -84,7 +88,7 @@ rm %{buildroot}%{_bindir}/powertop2tuned
 
 %check
 pip3 install unittest2
-make test
+make test %{?_smp_mflags}
 
 %post
 %systemd_post tuned.service
@@ -138,16 +142,18 @@ make test
 %{_mandir}/man8/scomes.*
 
 %changelog
-*   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.15.0-1
--   Automatic Version Bump
-*   Fri Oct 09 2020 svasamsetty <svasamsetty@vmware.com> 2.14.0-3
--   Re-enable tuned as it was deactivated due to openssl 1.1.1
-*   Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.14.0-2
--   Bootloader plugin support for Photon
--   sysctl plugin verify bug fix
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.14.0-1
--   Automatic Version Bump
-*   Wed May 13 2020 Tapas Kundu <tkundu@vmware.com> 2.13.0-2
--   Replaced requires from python3-perf to linux-python3-perf.
-*   Wed Mar 18 2020 Tapas Kundu <tkundu@vmware.com> 2.13.0-1
--   Initial release.
+* Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.15.0-2
+- Bump version as a part of polkit upgrade
+* Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 2.15.0-1
+- Automatic Version Bump
+* Fri Oct 09 2020 svasamsetty <svasamsetty@vmware.com> 2.14.0-3
+- Re-enable tuned as it was deactivated due to openssl 1.1.1
+* Wed Sep 23 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.14.0-2
+- Bootloader plugin support for Photon
+- sysctl plugin verify bug fix
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.14.0-1
+- Automatic Version Bump
+* Wed May 13 2020 Tapas Kundu <tkundu@vmware.com> 2.13.0-2
+- Replaced requires from python3-perf to linux-python3-perf.
+* Wed Mar 18 2020 Tapas Kundu <tkundu@vmware.com> 2.13.0-1
+- Initial release.

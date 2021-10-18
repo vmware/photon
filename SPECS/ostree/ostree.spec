@@ -1,23 +1,26 @@
 Summary:        Git for operating system binaries
 Name:           ostree
-Version:        2020.6
-Release:        2%{?dist}
+Version:        2021.5
+Release:        1%{?dist}
 License:        LGPLv2+
 URL:            https://ostree.readthedocs.io/en/latest
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-# Manually created Source tar which is equal to
-# Source0 + .git as it requires git hooks at build time
-Source0:        https://github.com/ostreedev/ostree/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=64d0a49d299342877ed5744e3e80133e7962bb31
+
+Source0:        https://github.com/ostreedev/ostree/archive/lib%{name}-%{version}.tar.xz
+%define sha1    lib%{name}-%{version}=20bb1cb059928baddab91a25c360ff84413df1dd
 Source1:        91-ostree.preset
+
 Patch0:         dualboot-support.patch
 Patch1:         0001-ostree-Copying-photon-config-to-boot-directory.patch
 Patch2:         0002-ostree-Adding-load-env-to-menuentry.patch
 
 BuildRequires:  git
-BuildRequires:  autoconf automake libtool which
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  libtool
+BuildRequires:  which
 BuildRequires:  gtk-doc
 BuildRequires:  glib-devel
 BuildRequires:  gobject-introspection
@@ -58,35 +61,35 @@ those levels, offering a blend of the advantages (and disadvantages)
 of both.
 
 %package libs
-Summary: Development headers for %{name}
-Group: Development/Libraries
-Requires: libpsl
-Requires: libsoup
-Requires: icu
+Summary:    Development headers for %{name}
+Group:      Development/Libraries
+Requires:   libpsl
+Requires:   libsoup
+Requires:   icu
 
 %description libs
 The %{name}-libs provides shared libraries for %{name}.
 
 %package devel
-Summary: Development headers for %{name}
-Group: Development/Libraries
-Requires: %{name}-libs
+Summary:    Development headers for %{name}
+Group:      Development/Libraries
+Requires:   %{name}-libs
 
 %description devel
 The %{name}-devel package includes the header files for the %{name} library.
 
 %package grub2
-Summary: GRUB2 integration for OSTree
-Group: Development/Libraries
-Requires: grub2
-Requires: grub2-efi
-Requires: %{name}
+Summary:    GRUB2 integration for OSTree
+Group:      Development/Libraries
+Requires:   grub2
+Requires:   grub2-efi
+Requires:   %{name}
 
 %description grub2
 GRUB2 integration for OSTree
 
 %prep
-%autosetup -p1
+%autosetup -Sgit -p1 -n libostree-%{version}
 
 %build
 env NOCONFIGURE=1 ./autogen.sh
@@ -97,6 +100,7 @@ env NOCONFIGURE=1 ./autogen.sh
      --with-mkinitcpio \
      --with-selinux \
      --enable-libsoup-client-certs
+
 make %{?_smp_mflags}
 
 %install
@@ -158,18 +162,20 @@ install -vdm 755 %{buildroot}/etc/ostree/remotes.d
 %{_libexecdir}/libostree/grub2*
 
 %changelog
-*   Mon Jul 12 2021 Shreenidhi Shedi <sshedi@vmware.com> 2020.6-2
--   Bump version as a part of dracut upgrade
-*   Thu Sep 03 2020 Ankit Jain <ankitja@vmware.com> 2020.6-1
--   Updated to 2020.6
-*   Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 2020.4-1
--   Updated to 2020.4
-*   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2019.2-4
--   Build with gobject-introspection-python3
-*   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 2019.2-3
--   Added for ARM Build
-*   Fri Sep 13 2019 Ankit Jain <ankitja@vmware.com> 2019.2-2
--   Added support to get kernel and systemd commandline param
--   from photon.cfg and systemd.cfg
-*   Tue May 14 2019 Ankit Jain <ankitja@vmware.com> 2019.2-1
--   Initial build. First version
+* Mon Oct 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 2021.5-1
+- Upgrade to 2021.3
+* Mon Jul 12 2021 Shreenidhi Shedi <sshedi@vmware.com> 2020.6-2
+- Bump version as a part of dracut upgrade
+* Thu Sep 03 2020 Ankit Jain <ankitja@vmware.com> 2020.6-1
+- Updated to 2020.6
+* Thu Aug 13 2020 Ankit Jain <ankitja@vmware.com> 2020.4-1
+- Updated to 2020.4
+* Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 2019.2-4
+- Build with gobject-introspection-python3
+* Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 2019.2-3
+- Added for ARM Build
+* Fri Sep 13 2019 Ankit Jain <ankitja@vmware.com> 2019.2-2
+- Added support to get kernel and systemd commandline param
+- from photon.cfg and systemd.cfg
+* Tue May 14 2019 Ankit Jain <ankitja@vmware.com> 2019.2-1
+- Initial build. First version

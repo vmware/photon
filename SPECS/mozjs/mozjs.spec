@@ -3,20 +3,23 @@
 %global	major 78
 Summary:       Mozilla's JavaScript engine.
 Name:          mozjs
-Version:       78.10.0
+Version:       78.15.0
 Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
 URL:           https://developer.mozilla.org/en-US/docs/Mozilla/Projects/SpiderMonkey
+Distribution:  Photon
+
 Source0:       https://ftp.mozilla.org/pub/firefox/releases/%{version}esr/source/firefox-%{version}esr.source.tar.xz
-%define sha1   firefox-%{version}=547bac33732774993bd8223de9acfeedcc69a10d
+%define sha1   firefox-%{version}=34231209e6ec933e86ab010181b1d89ae6e4e894
+
 Patch0:        emitter.patch
 Patch1:        emitter_test.patch
 # Build fixes
 Patch2:        init_patch.patch
 Patch3:        spidermonkey_checks_disable.patch
-Distribution:  Photon
+
 BuildRequires: which
 BuildRequires: python3-xml
 BuildRequires: python3-libs
@@ -26,9 +29,11 @@ BuildRequires: clang-devel
 BuildRequires: icu-devel
 BuildRequires: rust
 BuildRequires: autoconf = 2.13
+
 Requires:      icu
 Requires:      python3
 Requires:      python3-libs
+
 Obsoletes:     mozjs60
 Obsoletes:     js
 
@@ -45,11 +50,7 @@ Requires:      %{name} = %{version}-%{release}
 This contains development tools and libraries for SpiderMonkey.
 
 %prep
-%setup -q -n firefox-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%autosetup -p1 -n firefox-%{version}
 rm -rf modules/zlib
 
 %build
@@ -60,23 +61,18 @@ cd js/src
     --disable-jemalloc \
     --disable-tests \
     --with-system-zlib
+
 make %{?_smp_mflags}
 
 %install
 cd js/src
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 chmod -x %{buildroot}%{_libdir}/pkgconfig/*.pc
 # remove non required files
 rm %{buildroot}%{_libdir}/libjs_static.ajs
-rm -rf %{buildroot}%{_libdir}/debug
-rm -rf %{buildroot}/usr/src
 find %{buildroot} -name '*.la' -delete
 
-%post
-/sbin/ldconfig
-
-%postun
-/sbin/ldconfig
+%ldconfig_scriptlets
 
 %files
 %defattr(-,root,root)
@@ -90,13 +86,15 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/mozjs-%{major}.pc
 
 %changelog
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 78.10.0-1
--   Automatic Version Bump
-*   Fri Feb 19 2021 Alexey Makhalov <amakhalov@vmware.com> 78.3.1-2
--   Remove python2 requirements
-*   Mon Oct 05 2020 Ankit Jain <ankitja@vmware.com> 78.3.1-1
--   Updated to 78.3.1
-*   Tue Aug 25 2020 Ankit Jain <ankitja@vmware.com> 68.11.0-2
--   Removed autoconf213 dependency and obsoletes js
-*   Sat Oct 26 2019 Ankit Jain <ankitja@vmware.com> 68.11.0-1
--   initial version
+* Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 78.15.0-1
+- Version upgrade
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 78.10.0-1
+- Automatic Version Bump
+* Fri Feb 19 2021 Alexey Makhalov <amakhalov@vmware.com> 78.3.1-2
+- Remove python2 requirements
+* Mon Oct 05 2020 Ankit Jain <ankitja@vmware.com> 78.3.1-1
+- Updated to 78.3.1
+* Tue Aug 25 2020 Ankit Jain <ankitja@vmware.com> 68.11.0-2
+- Removed autoconf213 dependency and obsoletes js
+* Sat Oct 26 2019 Ankit Jain <ankitja@vmware.com> 68.11.0-1
+- initial version
