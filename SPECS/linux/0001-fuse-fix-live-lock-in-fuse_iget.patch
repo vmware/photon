@@ -1,0 +1,52 @@
+From 775c5033a0d164622d9d10dd0f0a5531639ed3ed Mon Sep 17 00:00:00 2001
+From: Amir Goldstein <amir73il@gmail.com>
+Date: Thu, 4 Mar 2021 11:09:12 +0200
+Subject: [PATCH] fuse: fix live lock in fuse_iget()
+
+Commit 5d069dbe8aaf ("fuse: fix bad inode") replaced make_bad_inode()
+in fuse_iget() with a private implementation fuse_make_bad().
+
+The private implementation fails to remove the bad inode from inode
+cache, so the retry loop with iget5_locked() finds the same bad inode
+and marks it bad forever.
+
+kmsg snip:
+
+[ ] rcu: INFO: rcu_sched self-detected stall on CPU
+...
+[ ]  ? bit_wait_io+0x50/0x50
+[ ]  ? fuse_init_file_inode+0x70/0x70
+[ ]  ? find_inode.isra.32+0x60/0xb0
+[ ]  ? fuse_init_file_inode+0x70/0x70
+[ ]  ilookup5_nowait+0x65/0x90
+[ ]  ? fuse_init_file_inode+0x70/0x70
+[ ]  ilookup5.part.36+0x2e/0x80
+[ ]  ? fuse_init_file_inode+0x70/0x70
+[ ]  ? fuse_inode_eq+0x20/0x20
+[ ]  iget5_locked+0x21/0x80
+[ ]  ? fuse_inode_eq+0x20/0x20
+[ ]  fuse_iget+0x96/0x1b0
+
+Fixes: 5d069dbe8aaf ("fuse: fix bad inode")
+Cc: stable@vger.kernel.org # 5.10+
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+---
+ fs/fuse/fuse_i.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/fs/fuse/fuse_i.h b/fs/fuse/fuse_i.h
+index 68cca8d4db6e..63d97a15ffde 100644
+--- a/fs/fuse/fuse_i.h
++++ b/fs/fuse/fuse_i.h
+@@ -863,6 +863,7 @@ static inline u64 fuse_get_attr_version(struct fuse_conn *fc)
+ 
+ static inline void fuse_make_bad(struct inode *inode)
+ {
++	remove_inode_hash(inode);
+ 	set_bit(FUSE_I_BAD, &get_fuse_inode(inode)->state);
+ }
+ 
+-- 
+2.23.3
+

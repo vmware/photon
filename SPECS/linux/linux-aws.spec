@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.288
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -190,6 +190,14 @@ Patch146: 0054-Not-for-upstream-PM-hibernate-Speed-up-hibernation-b.patch
 
 # Fix dummy console function definitions
 Patch150: 0001-console-Expand-dummy-functions-for-CFI.patch
+
+# Fix for CVE-2020-36322
+Patch151:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
+Patch152:       0002-fuse-lift-bad-inode-checks-into-callers.patch
+Patch153:       0003-fuse-fix-bad-inode.patch
+
+#fix for CVE-2021-28950
+Patch154:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -393,6 +401,10 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch146 -p1
 
 %patch150 -p1
+%patch151 -p1
+%patch152 -p1
+%patch153 -p1
+%patch154 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -540,6 +552,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Wed Nov 10 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.288-2
+-   Fix for CVE-2020-36322/CVE-2021-28950
 *   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.288-1
 -   Update to version 4.9.288
 *   Thu Oct 21 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.286-2

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.288
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -154,6 +154,13 @@ Patch100:       0001-NFSv4-Initialise-connection-to-the-server-in-nfs4_al.patch
 
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
 
+# Fix for CVE-2020-36322
+Patch112:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
+Patch113:       0002-fuse-lift-bad-inode-checks-into-callers.patch
+Patch114:       0003-fuse-fix-bad-inode.patch
+
+#fix for CVE-2021-28950
+Patch115:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -337,6 +344,10 @@ popd
 %patch100 -p1
 
 %patch111 -p1
+%patch112 -p1
+%patch113 -p1
+%patch114 -p1
+%patch115 -p1
 
 #CVE
 
@@ -461,6 +472,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Nov 10 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.288-2
+-   Fix for CVE-2020-36322/CVE-2021-28950
 *   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.288-1
 -   Update to version 4.9.288-1
 *   Thu Oct 21 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.286-2

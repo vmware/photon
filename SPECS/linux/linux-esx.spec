@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.288
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -133,6 +133,14 @@ Patch94:       0001-NFSv4-Initialise-connection-to-the-server-in-nfs4_al.patch
 # Fix dummy console function definitions
 Patch112:       0001-console-Expand-dummy-functions-for-CFI.patch
 
+# Fix for CVE-2020-36322
+Patch113:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
+Patch114:       0002-fuse-lift-bad-inode-checks-into-callers.patch
+Patch115:       0003-fuse-fix-bad-inode.patch
+
+#fix for CVE-2021-28950
+Patch116:       0001-fuse-fix-live-lock-in-fuse_iget.patch
+
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -255,6 +263,11 @@ The Linux package contains the Linux kernel doc files
 %patch94 -p1
 
 %patch112 -p1
+%patch113 -p1
+%patch114 -p1
+%patch115 -p1
+%patch116 -p1
+
 %build
 
 make mrproper
@@ -349,6 +362,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Nov 10 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.288-2
+-   Fix for CVE-2020-36322/CVE-2021-28950
 *   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.288-1
 -   Update to version 4.9.288
 *   Thu Oct 21 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.286-2
