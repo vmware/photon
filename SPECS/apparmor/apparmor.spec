@@ -1,16 +1,19 @@
 Name:           apparmor
 Version:        2.13
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
-Source0:        https://launchpad.net/apparmor/2.13/2.13.0/+download/%{name}-%{version}.tar.gz
-%define sha1    apparmor=54202cafce24911c45141d66e2d1e037e8aa5746
-Patch0:         apparmor-set-profiles-complain-mode.patch
-Patch1:         apparmor-service-start-fix.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Productivity/Security
+
+Source0:        https://launchpad.net/apparmor/2.13/2.13.0/+download/%{name}-%{version}.tar.gz
+%define sha1    %{name}=54202cafce24911c45141d66e2d1e037e8aa5746
+
+Patch0:         apparmor-set-profiles-complain-mode.patch
+Patch1:         apparmor-service-start-fix.patch
+
 BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
@@ -162,9 +165,7 @@ This package provides the ruby interface to AppArmor. It is used for ruby
 applications interfacing with AppArmor.
 
 %prep
-%setup -q -n %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 export PYTHONPATH=/usr/lib/python3.6/site-packages
@@ -176,7 +177,7 @@ cd ./libraries/libapparmor
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 /sbin/ldconfig
 sh ./autogen.sh
-./configure \
+sh ./configure \
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --libdir=%{_libdir} \
@@ -208,15 +209,14 @@ make %{?_smp_mflags}
 cd ../../profiles
 make %{?_smp_mflags}
 
-
 %check
-make check -C libraries/libapparmor
-make check -C binutils
-make check -C parser
-make check -C utils
-make check -C changehat/mod_apparmor
-make check -C pam_apparmor
-make check -C profiles
+make check -C libraries/libapparmor %{?_smp_mflags}
+make check -C binutils %{?_smp_mflags}
+make check -C parser %{?_smp_mflags}
+make check -C utils %{?_smp_mflags}
+make check -C changehat/mod_apparmor %{?_smp_mflags}
+make check -C pam_apparmor %{?_smp_mflags}
+make check -C profiles %{?_smp_mflags}
 
 %install
 export PYTHONPATH=/usr/lib/python3.6/site-packages
@@ -225,19 +225,20 @@ export PYTHON_VERSION=3.6
 export PYTHON_VERSIONS=python3
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 cd libraries/libapparmor
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../../binutils/
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../parser
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install
 cd ../utils
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../changehat/mod_apparmor
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../pam_apparmor
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../../profiles
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %files -n libapparmor
 %defattr(-,root,root)
@@ -373,13 +374,15 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/ruby/site_ruby/2.5.0/x86_64-linux/LibAppArmor.so
 
 %changelog
-*   Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 2.13-4
--   Increment the release version as part of ruby upgrade
-*   Wed Aug 8 2018 Keerthana K <keerthanak@vmware.com> 2.13-3
--   Updating apparmor.service to start instead of reload during command start.
--   Enabling apparmor service post installation of parser.
-*   Wed Aug 1 2018 Keerthana K <keerthanak@vmware.com> 2.13-2
--   Added apparmor-abstractions a dependency for apparmor-profiles and apparmor-utils.
--   Add apparmor-default-profiles to complain mode after boot.
-*   Thu Jul 19 2018 Keerthana K <keerthanak@vmware.com> 2.13-1
--   Initial Apparmor package for Photon.
+* Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.13-5
+- Bump version as a part of httpd upgrade
+* Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 2.13-4
+- Increment the release version as part of ruby upgrade
+* Wed Aug 8 2018 Keerthana K <keerthanak@vmware.com> 2.13-3
+- Updating apparmor.service to start instead of reload during command start.
+- Enabling apparmor service post installation of parser.
+* Wed Aug 1 2018 Keerthana K <keerthanak@vmware.com> 2.13-2
+- Added apparmor-abstractions a dependency for apparmor-profiles and apparmor-utils.
+- Add apparmor-default-profiles to complain mode after boot.
+* Thu Jul 19 2018 Keerthana K <keerthanak@vmware.com> 2.13-1
+- Initial Apparmor package for Photon.
