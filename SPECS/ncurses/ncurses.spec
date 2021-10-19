@@ -1,7 +1,7 @@
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
 Version:        6.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        MIT
 URL:            http://invisible-island.net/ncurses/
 Group:          Applications/System
@@ -17,6 +17,7 @@ Patch0:         CVE-2018-10754.patch
 Patch1:         0001-Check-for-invalid-hashcode-in-_nc_find_type_entry-an.patch
 # Fix for CVE-2019-17595
 Patch2:         0001-Check-for-missing-character-after-backslash-in-fmt_e.patch
+Patch3:         0001-CVE-2021-39537.patch
 %description
 The Ncurses package contains libraries for terminal-independent
 handling of character screens.
@@ -35,20 +36,19 @@ Summary:    Header and development files for ncurses
 Requires:   %{name} = %{version}-%{release}
 Provides:   pkgconfig(ncurses)
 %description    devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 %prep
 %setup -q -n %{name}-%{version}-%{ncursessubversion}
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 mkdir v6
 pushd v6
 ln -s ../configure .
-./configure \
-    --prefix=%{_prefix} \
-    --mandir=%{_mandir} \
+%configure \
     --with-shared \
     --without-debug \
     --enable-pc-files \
@@ -62,9 +62,7 @@ popd
 mkdir v5
 pushd v5
 ln -s ../configure .
-./configure \
-    --prefix=%{_prefix} \
-    --mandir=%{_mandir} \
+%configure \
     --with-shared \
     --without-debug \
     --enable-pc-files \
@@ -164,6 +162,8 @@ ln -sv %{_lib}/libncursesw.so.5.9 %{buildroot}%{_libdir}/libncurses.so.5
 %{_libdir}/libpanel.so
 %{_libdir}/libmenu.so
 %changelog
+*   Wed Oct 13 2021 Ajay Kaher <akaher@vmware.com> 6.0-11
+-   Fix for CVE-2021-39537
 *   Fri Jan 31 2020 Ajay Kaher <akaher@vmware.com> 6.0-10
 -   Fix for CVE-2019-17594, CVE-2019-17595
 *   Tue Jul 17 2018 Tapas Kundu <tkundu@vmware.com> 6.0-9
