@@ -1,18 +1,24 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+
+%global py_ver 3.7
+
 Name:           apparmor
 Version:        2.13
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
-Source0:        https://launchpad.net/apparmor/2.13/2.13.0/+download/%{name}-%{version}.tar.gz
-%define sha1    apparmor=54202cafce24911c45141d66e2d1e037e8aa5746
-Patch0:         apparmor-set-profiles-complain-mode.patch
-Patch1:         apparmor-service-start-fix.patch
-Patch2:         apparmor-fix-make-check.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Group:          Productivity/Security
+
+Source0:        https://launchpad.net/apparmor/%{version}/%{version}.0/+download/%{name}-%{version}.tar.gz
+%define sha1    apparmor=54202cafce24911c45141d66e2d1e037e8aa5746
+
+Patch0:         apparmor-set-profiles-complain-mode.patch
+Patch1:         apparmor-service-start-fix.patch
+Patch2:         apparmor-fix-make-check.patch
+
 BuildRequires:  python3
 BuildRequires:  perl
 BuildRequires:  python3-devel
@@ -155,25 +161,22 @@ Requires:   libapparmor = %{version}-%{release}
 This package contains the AppArmor module for perl.
 
 %prep
-%setup -q -n %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1 -n %{name}-%{version}
 
 %build
-export PYTHONPATH=/usr/lib/python3.7/site-packages
+export PYTHONPATH=/usr/lib/python%{py_ver}/site-packages
 export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=3.7
+export PYTHON_VERSION=%{py_ver}
 export PYTHON_VERSIONS=python3
 #Building libapparmor
 cd ./libraries/libapparmor
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 /sbin/ldconfig
+
 sh ./autogen.sh
-%configure \
- --with-perl \
- --with-python
+%configure --with-perl --with-python
 make %{?_smp_mflags}
+
 #Building Binutils
 cd ../../binutils/
 make %{?_smp_mflags}
@@ -198,40 +201,41 @@ cd ../../profiles
 make %{?_smp_mflags}
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
+easy_install_3=$(ls /usr/bin | grep easy_install | grep 3)
 $easy_install_3 pyflakes
-export PYTHONPATH=/usr/lib/python3.7/site-packages
+export PYTHONPATH=/usr/lib/python%{py_ver}/site-packages
 export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=3.7
+export PYTHON_VERSION=%{py_ver}
 export PYTHON_VERSIONS=python3
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 cd ./libraries/libapparmor
-make check
+make check %{?_smp_mflags}
 cd ../../binutils/
-make check
+make check %{?_smp_mflags}
 cd ../utils
-make check
+make check %{?_smp_mflags}
 
 %install
-export PYTHONPATH=/usr/lib/python3.7/site-packages
+export PYTHONPATH=/usr/lib/python%{py_ver}/site-packages
 export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=3.7
+export PYTHON_VERSION=%{py_ver}
 export PYTHON_VERSIONS=python3
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 cd libraries/libapparmor
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../../binutils/
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../parser
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install
 cd ../utils
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../changehat/mod_apparmor
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../pam_apparmor
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 cd ../../profiles
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %files -n libapparmor
 %defattr(-,root,root)
@@ -353,18 +357,20 @@ make DESTDIR=%{buildroot} install
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
-*   Tue Mar 05 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.13-7
--   Excluded conflicting perllocal.pod
-*   Thu Dec 06 2018 Keerthana K <keerthanak@vmware.com> 2.13-6
--   Fixed make check failures.
-*   Fri Oct 05 2018 Tapas Kundu <tkundu@vmware.com> 2.13-5
--   Updated using python 3.7 libs
-*   Wed Oct 03 2018 Keerthana K <keerthanak@vmware.com> 2.13-4
--   Depcrecated ruby apparmor package.
--   Modified the perl and python path to generic.
-*   Wed Sep 26 2018 Ajay Kaher <akaher@vmware.com> 2.13-3
--   Fix for aarch64
-*   Thu Sep 20 2018 Keerthana K <keerthanak@vmware.com> 2.13-2
--   Updated the ruby packagefor latest version.
-*   Thu Aug 30 2018 Keerthana K <keerthanak@vmware.com> 2.13-1
--   Initial Apparmor package for Photon.
+* Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.13-8
+- Bump version as a part of httpd upgrade
+* Tue Mar 05 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.13-7
+- Excluded conflicting perllocal.pod
+* Thu Dec 06 2018 Keerthana K <keerthanak@vmware.com> 2.13-6
+- Fixed make check failures.
+* Fri Oct 05 2018 Tapas Kundu <tkundu@vmware.com> 2.13-5
+- Updated using python 3.7 libs
+* Wed Oct 03 2018 Keerthana K <keerthanak@vmware.com> 2.13-4
+- Depcrecated ruby apparmor package.
+- Modified the perl and python path to generic.
+* Wed Sep 26 2018 Ajay Kaher <akaher@vmware.com> 2.13-3
+- Fix for aarch64
+* Thu Sep 20 2018 Keerthana K <keerthanak@vmware.com> 2.13-2
+- Updated the ruby packagefor latest version.
+* Thu Aug 30 2018 Keerthana K <keerthanak@vmware.com> 2.13-1
+- Initial Apparmor package for Photon.

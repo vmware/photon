@@ -1,21 +1,19 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.48
-Release:        4%{?dist}
+Version:        2.4.51
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://apache.mirrors.hoobly.com/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    httpd=834876db80fc290e531f0e088d255434828b81b5
-Patch0:         httpd-2.4.48-blfs_layout-1.patch
+%define sha1    %{name}=d8ae02630f836d7cf60e24f4676e633518f16e2b
+
+Patch0:         httpd-%{version}-blfs_layout-1.patch
 Patch1:         httpd-uncomment-ServerName.patch
-Patch2:         httpd-CVE-2021-33193.patch
-Patch3:         httpd-CVE-2021-34798.patch
-Patch4:         httpd-CVE-2021-36160.patch
-Patch5:         httpd-CVE-2021-40438.patch
-Patch6:         httpd-CVE-2021-39275.patch
+
 BuildRequires:  openssl
 BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
@@ -25,6 +23,7 @@ BuildRequires:  apr-util-devel
 BuildRequires:  openldap
 BuildRequires:  expat-devel
 BuildRequires:  lua-devel
+
 Requires:       pcre
 Requires:       apr-util
 Requires:       openssl
@@ -32,6 +31,7 @@ Requires:       openldap
 Requires:       lua
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
+
 Provides:       apache2
 
 %define _confdir %{_sysconfdir}
@@ -197,73 +197,75 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
-*   Tue Oct 05 2021 Dweep Advani <dadvani@vmware.com> 2.4.48-4
--   Patched for CVE-2021-39275
-*   Wed Sep 29 2021 Dweep Advani <dadvani@vmware.com> 2.4.48-3
--   Patched for CVE-2021-34798, CVE-2021-36160 and CVE-2021-40438
-*   Mon Sep 13 2021 Dweep Advani <dadvani@vmware.com> 2.4.48-2
--   Patched for CVE-2021-33193
-*   Mon Jun 21 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.48-1
--   Update httpd to 2.4.48 to fix CVE-2020-35452, CVE-2020-13950
--   CVE-2019-17567
-*   Mon Aug 10 2020 Dweep Advani <dadvani@vmware.com> 2.4.46-1
--   Upgraded to version 2.4.46 for addressing CVEs
-*   Wed Apr 08 2020 Dweep Advani <dadvani@vmware.com> 2.4.43-2
--   Fixed failed httpd service startup issue on reboots
-*   Mon Apr 06 2020 Shreyas B. <shreyasb@vmware.com> 2.4.43-1
--   Upgrading to 2.4.43 to address following CVEs.
--   (1) CVE-2020-1927 (2) CVE-2020-1934
-*   Mon Sep 30 2019 Shreyas B. <shreyasb@vmware.com> 2.4.41-1
--   Upgrading to 2.4.41 to address following CVEs.
--   (1) CVE-2019-10092 (2) CVE-2019-10098 (3) CVE-2019-10082
--   (4) CVE-2019-10081 (5) CVE-2019-9517
-*   Thu Apr 25 2019 Dweep Advani <dadvani@vmware.com> 2.4.39-1
--   Upgrading to 2.4.39 for fixing multiple CVEs
--   (1) CVE-2018-17189 (2) CVE-2018-17199 (3) CVE-2019-0190
--   (4) CVE-2019-0211 (5) CVE-2019-0215 (6) CVE-2019-0217
-*   Wed Mar 13 2019 Michelle Wang <michellew@vmware.com> 2.4.34-4
--   Fix configure for rel_libexecdir variable with RPMS layout
-*   Thu Mar 7 2019 Michelle Wang <michellew@vmware.com> 2.4.34-3
--   Update build configure for httpd to use RPM layout
-*   Thu Jan 24 2019 Dweep Advani <dadvani@vmware.com> 2.4.34-2
--   Fixed CVE-2018-11763
-*   Wed Aug 29 2018 Tapas Kundu <tkundu@vmware.com> 2.4.34-1
--   Updated to version 2.4.34, fix CVE-2018-1333
-*   Mon Oct 02 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.28-1
--   Updated to version 2.4.28
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.4.27-3
--   Remove shadow from requires and use explicit tools for post actions
-*   Mon Aug 07 2017 Anish Swaminathan <anishs@vmware.com>  2.4.27-2
--   Add shadow to requires for useradd/groupadd
-*   Mon Jul 24 2017 Anish Swaminathan <anishs@vmware.com>  2.4.27-1
--   Updated to version 2.4.27 - Fixes CVE-2017-3167
-*   Wed May 31 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.4.25-3
--   Provide preset file to disable service by default.
-*   Fri Mar 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-2
--   Fixing httpd.pid file write issue
-*   Fri Mar 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-1
--   Updated to version 2.4.25
-*   Tue Dec 27 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.18-8
--   BuildRequires lua, Requires lua.
-*   Wed Dec 21 2016 Anish Swaminathan <anishs@vmware.com>  2.4.18-7
--   Change config file properties for httpd.conf
-*   Thu Jul 28 2016 Divya Thaluru <dthaluru@vmware.com> 2.4.18-6
--   Removed packaging of debug files
-*   Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 2.4.18-5
--   Added patch for CVE-2016-5387
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.18-4
--   GA - Bump release of all rpms
-*   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.4.18-3
--   Adding upgrade support in pre/post/un script.
-*   Mon Mar 21 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.4.18-2
--   Fixing systemd service
-*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.18-1
--   Updated to version 2.4.18
-*   Mon Nov 23 2015 Sharath George <sharathg@vmware.com> 2.4.12-4
--   Add /etc/mime.types
-*   Tue Sep 29 2015 Xiaolin Li <xiaolinl@vmware.com> 2.4.12-3
--   Move perl script to tools package.
-*   Thu Jul 16 2015 Touseef Liaqat <tliaqat@vmware.com> 2.4.12-2
--   Added service file. Changed installation paths.
-*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.4.12-1
--   Initial build. First version
+* Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.51-1
+- Version upgrade to fix CVE-2021-42013
+* Tue Oct 05 2021 Dweep Advani <dadvani@vmware.com> 2.4.48-4
+- Patched for CVE-2021-39275
+* Wed Sep 29 2021 Dweep Advani <dadvani@vmware.com> 2.4.48-3
+- Patched for CVE-2021-34798, CVE-2021-36160 and CVE-2021-40438
+* Mon Sep 13 2021 Dweep Advani <dadvani@vmware.com> 2.4.48-2
+- Patched for CVE-2021-33193
+* Mon Jun 21 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.48-1
+- Update httpd to 2.4.48 to fix CVE-2020-35452, CVE-2020-13950
+- CVE-2019-17567
+* Mon Aug 10 2020 Dweep Advani <dadvani@vmware.com> 2.4.46-1
+- Upgraded to version 2.4.46 for addressing CVEs
+* Wed Apr 08 2020 Dweep Advani <dadvani@vmware.com> 2.4.43-2
+- Fixed failed httpd service startup issue on reboots
+* Mon Apr 06 2020 Shreyas B. <shreyasb@vmware.com> 2.4.43-1
+- Upgrading to 2.4.43 to address following CVEs.
+- (1) CVE-2020-1927 (2) CVE-2020-1934
+* Mon Sep 30 2019 Shreyas B. <shreyasb@vmware.com> 2.4.41-1
+- Upgrading to 2.4.41 to address following CVEs.
+- (1) CVE-2019-10092 (2) CVE-2019-10098 (3) CVE-2019-10082
+- (4) CVE-2019-10081 (5) CVE-2019-9517
+* Thu Apr 25 2019 Dweep Advani <dadvani@vmware.com> 2.4.39-1
+- Upgrading to 2.4.39 for fixing multiple CVEs
+- (1) CVE-2018-17189 (2) CVE-2018-17199 (3) CVE-2019-0190
+- (4) CVE-2019-0211 (5) CVE-2019-0215 (6) CVE-2019-0217
+* Wed Mar 13 2019 Michelle Wang <michellew@vmware.com> 2.4.34-4
+- Fix configure for rel_libexecdir variable with RPMS layout
+* Thu Mar 7 2019 Michelle Wang <michellew@vmware.com> 2.4.34-3
+- Update build configure for httpd to use RPM layout
+* Thu Jan 24 2019 Dweep Advani <dadvani@vmware.com> 2.4.34-2
+- Fixed CVE-2018-11763
+* Wed Aug 29 2018 Tapas Kundu <tkundu@vmware.com> 2.4.34-1
+- Updated to version 2.4.34, fix CVE-2018-1333
+* Mon Oct 02 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.28-1
+- Updated to version 2.4.28
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 2.4.27-3
+- Remove shadow from requires and use explicit tools for post actions
+* Mon Aug 07 2017 Anish Swaminathan <anishs@vmware.com>  2.4.27-2
+- Add shadow to requires for useradd/groupadd
+* Mon Jul 24 2017 Anish Swaminathan <anishs@vmware.com>  2.4.27-1
+- Updated to version 2.4.27 - Fixes CVE-2017-3167
+* Wed May 31 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.4.25-3
+- Provide preset file to disable service by default.
+* Fri Mar 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-2
+- Fixing httpd.pid file write issue
+* Fri Mar 31 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.25-1
+- Updated to version 2.4.25
+* Tue Dec 27 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.18-8
+- BuildRequires lua, Requires lua.
+* Wed Dec 21 2016 Anish Swaminathan <anishs@vmware.com>  2.4.18-7
+- Change config file properties for httpd.conf
+* Thu Jul 28 2016 Divya Thaluru <dthaluru@vmware.com> 2.4.18-6
+- Removed packaging of debug files
+* Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 2.4.18-5
+- Added patch for CVE-2016-5387
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.18-4
+- GA - Bump release of all rpms
+* Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.4.18-3
+- Adding upgrade support in pre/post/un script.
+* Mon Mar 21 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 2.4.18-2
+- Fixing systemd service
+* Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.18-1
+- Updated to version 2.4.18
+* Mon Nov 23 2015 Sharath George <sharathg@vmware.com> 2.4.12-4
+- Add /etc/mime.types
+* Tue Sep 29 2015 Xiaolin Li <xiaolinl@vmware.com> 2.4.12-3
+- Move perl script to tools package.
+* Thu Jul 16 2015 Touseef Liaqat <tliaqat@vmware.com> 2.4.12-2
+- Added service file. Changed installation paths.
+* Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.4.12-1
+- Initial build. First version

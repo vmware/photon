@@ -1,15 +1,17 @@
 Summary:	Apache Tomcat Connector
 Name:		httpd-mod_jk
 Version:	1.2.48
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	Apache
 URL:		http://tomcat.apache.org/connectors-doc
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
+
 Source0:	http://www.apache.org/dist/tomcat/tomcat-connectors/jk/tomcat-connectors-%{version}-src.tar.gz
 %define sha1 tomcat-connectors=d5cec3b63d6b2e21b5ffc0e43102f85a177ddd89
 Requires:	httpd
+
 BuildRequires:	apr-devel
 BuildRequires:	apr-util-devel
 BuildRequires:	httpd-devel
@@ -20,7 +22,7 @@ The Apache Tomcat Connectors project is part of the Tomcat project and provides 
 mod_jk is a module connecting Tomcat and Apache
 
 %prep
-%setup -n tomcat-connectors-%{version}-src
+%autosetup -n tomcat-connectors-%{version}-src
 
 %build
 cd native
@@ -35,7 +37,7 @@ install -D -m 644 conf/workers.properties  %{buildroot}%{_sysconfdir}/httpd/conf
 install -D -m 644 conf/httpd-jk.conf  %{buildroot}%{_sysconfdir}/httpd/conf/httpd_jk.conf
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %files
 %defattr(-,root,root)
@@ -44,12 +46,14 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %config(noreplace) %{_sysconfdir}/httpd/conf/workers.properties
 
 %changelog
-*       Mon Jan 11 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.48-1
--       Automatic Version Bump
--	used %configure instead of ./configure
-*       Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 1.2.44-1
--       Upgrade to latest version
-*	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.42-2
--	Ensure non empty debuginfo
-*	Tue Feb 21 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.42-1
--	Initial build.	First version
+* Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.2.48-2
+- Bump version as a part of httpd upgrade
+* Mon Jan 11 2021 Gerrit Photon <photon-checkins@vmware.com> 1.2.48-1
+- Automatic Version Bump
+- Use %configure instead of ./configure
+* Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 1.2.44-1
+- Upgrade to latest version
+* Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.42-2
+- Ensure non empty debuginfo
+* Tue Feb 21 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.42-1
+- Initial build.	First version
