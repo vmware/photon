@@ -4,9 +4,10 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.5
-Release:        10%{?dist}
+Release:        11%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=62fcac8cbd20c796b909b91f8f615f8556b22a24
+Patch0:         detect_python2_audit.patch
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit/
@@ -64,7 +65,7 @@ The python3-audit package contains the python2 bindings for libaudit
 and libauparse.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure \
@@ -79,7 +80,6 @@ and libauparse.
     --with-golang \
     --enable-systemd \
     --disable-static
-
 make %{?_smp_mflags}
 
 %install
@@ -163,6 +163,8 @@ mkdir -p /var/log/audit
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 2.8.5-11
+-   Fix build with updated python symlink changes
 *   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 2.8.5-10
 -   Bump up version to compile with new go
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 2.8.5-9

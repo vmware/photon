@@ -1,40 +1,41 @@
 Summary:	Program to generate documenation
 Name:		gtk-doc
 Version:	1.29
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.gnome.org/pub/gnome/sources/gtk-doc/1.25/%{name}-%{version}.tar.xz
 %define sha1 gtk-doc=c3dc579d84221c43ce2b0b5f523c46b13525416b
-Group:		Development/Tools
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Requires:	libxslt
-Requires:	docbook-xml
-Requires:	docbook-xsl
-BuildRequires:	docbook-xml >= 4.5
-BuildRequires:	docbook-xsl >= 1.78.1
-BuildRequires:	itstool >= 2.0.2
-BuildRequires:	libxslt >= 1.1.28
-BuildRequires:	itstool
-BuildRequires:	cmake
-BuildRequires:	check
-BuildRequires:	python3-devel
-BuildRequires:	python3-libs
-Requires:	python3
-Provides:	perl(gtkdoc-common.pl)
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+BuildRequires:  docbook-xml >= 4.5
+BuildRequires:  docbook-xsl >= 1.78.1
+BuildRequires:  itstool >= 2.0.2
+BuildRequires:  libxslt >= 1.1.28
+BuildRequires:  itstool
+BuildRequires:  cmake
+BuildRequires:  check
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-libxml2
+Requires:       python3
+Requires:       libxslt
+Requires:       docbook-xml
+Requires:       docbook-xsl
+Provides:       perl(gtkdoc-common.pl)
 BuildArch:      noarch
 
 %description
 The GTK-Doc package contains a code documenter. This is useful for extracting
 specially formatted comments from the code to create API documentation.
 %prep
-%setup -q
+%autosetup -p1
 %build
 %configure
 make %{?_smp_mflags}
 %install
-make DESTDIR=%{buildroot} sysconfdir=%{_sysconfdir} datadir=%{_datadir} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} sysconfdir=%{_sysconfdir} datadir=%{_datadir} install
 
 %check
 cd tests && make check-TESTS
@@ -46,6 +47,8 @@ cd tests && make check-TESTS
 %{_libdir}/cmake/
 
 %changelog
+*   Wed Oct 06 2021 Tapas Kundu <tkundu@vmware.com> 1.29-2
+-   Fix build with updated python symlink changes
 *   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com>  1.29-1
 -   Upgrade to 1.29
 *   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.25-2

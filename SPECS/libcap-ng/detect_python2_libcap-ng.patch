@@ -1,0 +1,50 @@
+From 381e2f00ea421f6deef23acae911497010c3da97 Mon Sep 17 00:00:00 2001
+From: Steve Grubb <sgrubb@redhat.com>
+Date: Sun, 23 Aug 2020 17:50:53 -0400
+Subject: [PATCH] Redo python2 detection
+
+---
+ configure.ac | 19 +++++++++++++++++--
+ 1 file changed, 17 insertions(+), 2 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 09ebc6e..8b46f51 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -120,11 +120,26 @@ AC_ARG_WITH(python,
+ AS_HELP_STRING([--with-python],[enable building python bindings]),
+ use_python=$withval,
+ use_python=auto)
+-if test x$use_python = xno ; then
++if test "x$use_python" = xno ; then
+ 	python_found="no"
+ 	AC_MSG_RESULT(no)
+ else
+ AC_MSG_RESULT(testing)
++
++# Try to find a versioned Python2 interpreter,
++# if not explicitly specified by the user.
++if test "x$PYTHON" = "x"; then
++  AC_MSG_CHECKING([for versioned Python2 interpreter])
++  AC_MSG_RESULT([])
++  for python2 in python2 python2.7 python2.6 python2.5 python2.4 python2.3 python2.2 python2.1 python2.0; do
++    AC_PATH_PROG([PYTHON], [$python2])
++    if test "x$PYTHON" != "x"; then
++      break;
++    fi
++  done
++fi
++
++# Setup Python2 with the interpreter found previously.
+ AM_PATH_PYTHON
+ PYINCLUDEDIR=`python${am_cv_python_version} -c "from distutils import sysconfig; print(sysconfig.get_config_var('INCLUDEPY'))"`
+ if test -f ${PYINCLUDEDIR}/Python.h ; then
+@@ -135,7 +150,7 @@ if test -f ${PYINCLUDEDIR}/Python.h ; then
+ 	AC_MSG_NOTICE(Python bindings will be built)
+ else
+ 	python_found="no"
+-	if test x$use_python = xyes ; then
++	if test "x$use_python" = xyes ; then
+ 		AC_MSG_ERROR([Python explicitly requested and python headers were not found])
+ 	else
+ 		AC_MSG_WARN("Python headers not found - python bindings will not be made")

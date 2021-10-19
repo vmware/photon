@@ -5,7 +5,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.10.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
@@ -62,14 +62,13 @@ Requires:       %{name} = %{version}-%{release}
 Python 3 bindings for the librepo library.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 mkdir build-py2
 mkdir build-py3
 
 %build
 pushd build-py2
-  %cmake -DPYTHON_DESIRED:FILEPATH=/usr/bin/python -DENABLE_PYTHON_TESTS=%{!?with_pythontests:OFF} ..
+  %cmake -DPYTHON_DESIRED:FILEPATH=/usr/bin/python2 -DENABLE_PYTHON_TESTS=%{!?with_pythontests:OFF} ..
   make %{?_smp_mflags}
 popd
 
@@ -107,6 +106,8 @@ popd
 %{_python3_sitearch}/%{name}/
 
 %changelog
+*   Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 1.10.2-4
+-   Fix build with updated python symlink changes
 *   Wed Nov 11 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.2-3
 -   Fix CVE-2020-14352
 *   Thu Oct 24 2019 Ankit Jain <ankitja@vmware.com> 1.10.2-2

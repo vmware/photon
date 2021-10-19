@@ -2,7 +2,7 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        10.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -44,7 +44,7 @@ Requires:       python-six
 The package contains the LLDB Python3 module.
 
 %prep
-%setup -q -n %{name}-%{version}.src
+%autosetup -n %{name}-%{version}.src -p1
 
 %build
 mkdir -p build
@@ -55,13 +55,14 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr           \
       -DLLDB_PATH_TO_CLANG_BUILD=%{_prefix} \
       -DLLVM_DIR=/usr/lib/cmake/llvm        \
       -DLLVM_BUILD_LLVM_DYLIB=ON ..         \
-      -DLLDB_DISABLE_LIBEDIT:BOOL=ON
+      -DLLDB_DISABLE_LIBEDIT:BOOL=ON        \
+      -DPYTHON_EXECUTABLE:STRING=/usr/bin/python2
 make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 cd build
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 #Remove bundled python-six files
 rm -f %{buildroot}%{python2_sitelib}/six.*
@@ -92,6 +93,8 @@ rm -rf %{buildroot}/*
 %{python2_sitelib}/*
 
 %changelog
+*   Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 10.0.1-3
+-   Fix build with updated python symlink changes
 *   Tue Jul 27 2021 Tapas Kundu <tkundu@vmware.com> 10.0.1-2
 -   Rebuild with updated clang
 *   Wed Nov 11 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.0.1-1

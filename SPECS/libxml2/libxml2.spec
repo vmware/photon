@@ -4,7 +4,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -49,26 +49,27 @@ Requires:   %{name} = %{version}
 Static libraries and header files for the support library for libxml
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 %configure \
     --disable-static \
+    --with-python=/usr/bin/python2 \
     --with-history
 make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 
-make clean
+make %{?_smp_mflags} clean
 %configure \
     --disable-static \
     --with-python=/usr/bin/python3
 make %{?_smp_mflags}
-make install DESTDIR=%{buildroot}
+make %{?_smp_mflags} install DESTDIR=%{buildroot}
 
 %check
 make %{?_smp_mflags} check
@@ -87,7 +88,6 @@ rm -rf %{buildroot}/*
 %{_datadir}/gtk-doc/*
 %{_mandir}/man1/*
 
-
 %files python
 %defattr(-,root,root)
 %{python2_sitelib}/*
@@ -104,6 +104,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
 
 %changelog
+*   Wed Oct 06 2021 Tapas Kundu <tkundu@vmware.com> 2.9.11-3
+-   Fix build with updated python symlink changes
 *   Sat Jun 19 2021 Ankit Jain <ankitja@vmware.com> 2.9.11-2
 -   fix for lxml API issue
 *   Mon May 31 2021 Sujay G <gsujay@vmware.com> 2.9.11-1

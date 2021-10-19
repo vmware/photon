@@ -3,7 +3,7 @@
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        3.17.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -64,16 +64,18 @@ Requires:       %{name} = %{version}-%{release}
  needed to build applications using syslog-ng APIs.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 %build
-
-%configure \
+sh ./configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --disable-silent-rules \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --includedir=%{_includedir} \
+    --libdir=%{_libdir} \
     --sysconfdir=/etc/syslog-ng \
     --enable-systemd \
     --with-systemdsystemunitdir=%{_libdir}/systemd/system \
@@ -82,13 +84,18 @@ cp -a . ../p3dir
     --disable-java \
     --disable-redis \
     --with-python=2 \
+    PYTHON=/bin/python2 \
     PKG_CONFIG_PATH=/usr/local/lib/pkgconfig/
 make %{?_smp_mflags}
 pushd ../p3dir
-%configure \
+sh ./configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --disable-silent-rules \
+    --prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --includedir=%{_includedir} \
+    --libdir=%{_libdir} \
     --sysconfdir=/etc/syslog-ng \
     --enable-systemd \
     --with-systemdsystemunitdir=%{_libdir}/systemd/system \
@@ -105,7 +112,7 @@ popd
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 find %{buildroot} -name "*.la" -exec rm -f {} \;
 rm %{buildroot}/%{_libdir}/systemd/system/syslog-ng@.service
 rm -rf %{buildroot}/%{_infodir}
@@ -114,7 +121,7 @@ install -p -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 install -p -m 644 %{SOURCE2} %{buildroot}%{_libdir}/systemd/system/
 %{_fixperms} %{buildroot}/*
 pushd ../p3dir
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 rm %{buildroot}/%{_libdir}/systemd/system/syslog-ng@.service
 rm -rf %{buildroot}/%{_infodir}
 sed -i 's/eventlog//g'  %{buildroot}%{_libdir}/pkgconfig/syslog-ng.pc
@@ -192,6 +199,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 3.17.2-2
+-   Fix build with updated python symlink changes
 *   Wed Oct 10 2018 Ankit Jain <ankitja@vmware.com> 3.17.2-1
 -   Update to version 3.17.2
 *   Mon Sep 11 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.11.1-3

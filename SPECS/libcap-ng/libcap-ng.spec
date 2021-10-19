@@ -4,7 +4,7 @@
 Summary:        POSIX capability Library
 Name:           libcap-ng
 Version:        0.7.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
@@ -12,6 +12,7 @@ Distribution:   Photon
 URL:            http://people.redhat.com/sgrubb/libcap-ng
 Source0:        http://people.redhat.com/sgrubb/libcap-ng/%{name}-%{version}.tar.gz
 %define sha1    libcap-ng=cdff16e6d3b2aec6067f4a12e6517879f12b7775
+Patch0:         detect_python2_libcap-ng.patch
 BuildRequires:  python2-devel
 BuildRequires:  python2-libs
 BuildRequires:  python3-devel
@@ -45,7 +46,7 @@ Requires:   %{name} = %{version}-%{release}
 The libraries and header files needed for libcap_ng development.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
@@ -54,7 +55,7 @@ The libraries and header files needed for libcap_ng development.
 
 make %{?_smp_mflags}
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
 %check
@@ -86,6 +87,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_libdir}/*.a
 
 %changelog
+*   Wed Oct 06 2021 Tapas Kundu <tkundu@vmware.com> 0.7.10-2
+-   Fix build with updated python symlink changes
 *   Thu Oct 17 2019 Ankit Jain <ankitja@vmware.com> 0.7.10-1
 -   Updated to 0.7.10
 *   Thu Sep 13 2018 Siju Maliakkal <smaliakkal@vmware.com> 0.7.9-1
@@ -100,4 +103,3 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 -   GA - Bump release of all rpms
 *   Fri Aug 28 2015 Divya Thaluru <dthaluru@vmware.com> 0.7.7-1
 -   Initial version
-

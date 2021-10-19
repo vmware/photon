@@ -1,7 +1,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.5
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -63,7 +63,6 @@ Requires:       ncurses
 Requires:       sqlite-libs
 Requires:       bzip2-libs
 
-
 %description    libs
 The python interpreter can be embedded into applications wanting to
 use python as an embedded scripting language.  The python-libs package
@@ -121,6 +120,7 @@ Summary:        Download, build, install, upgrade, and uninstall Python packages
 Group:          Development/Tools
 BuildArch:      noarch
 Requires:       python3 = %{version}-%{release}
+Requires:       python3-xml = %{version}-%{release}
 
 %description    setuptools
 setuptools is a collection of enhancements to the Python distutils that allow you to more easily build and distribute Python packages, especially ones that have dependencies on other packages.
@@ -134,18 +134,7 @@ Requires: python3 = %{version}-%{release}
 The test package contains all regression tests for Python as well as the modules test.support and test.regrtest. test.support is used to enhance your tests while test.regrtest drives the testing suite.
 
 %prep
-%setup -q -n Python-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
+%autosetup -p1 -n Python-%{version}
 
 %build
 export OPT="${CFLAGS}"
@@ -160,7 +149,7 @@ make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 chmod -v 755 %{buildroot}%{_libdir}/libpython3.7m.so.1.0
 %{_fixperms} %{buildroot}/*
 ln -sf libpython3.7m.so %{buildroot}%{_libdir}/libpython3.7.so
@@ -174,8 +163,12 @@ rm %{buildroot}%{_bindir}/2to3
 %check
 make  %{?_smp_mflags} test
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%post
+ln -sf /usr/bin/python3 /usr/bin/python
+/sbin/ldconfig
+
+%postun
+/sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
@@ -196,8 +189,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpython3.so
 %{_libdir}/libpython3.7.so
 %{_libdir}/libpython3.7m.so.1.0
-
-
+%ghost %{_bindir}/python
 %exclude %{_libdir}/python3.7/ctypes/test
 %exclude %{_libdir}/python3.7/distutils/tests
 %exclude %{_libdir}/python3.7/sqlite3/test
@@ -269,6 +261,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.7/test/*
 
 %changelog
+*   Wed Oct 06 2021 Tapas Kundu <tkundu@vmware.com> 3.7.5-13
+-   Linked /usr/bin/python to python3.
+-   While uninstalling link to python2 if available.
 *   Sat Mar 27 2021 Tapas Kundu <tkundu@vmware.com> 3.7.5-12
 -   Remove packaging exe files in python3-setuptools
 *   Tue Mar 02 2021 Piyush Gupta <gpiyush@vmware.com> 3.7.5-11

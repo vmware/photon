@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2019.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/projectatomic/rpm-ostree
 Vendor:         VMware, Inc.
@@ -44,6 +44,7 @@ BuildRequires:  rpm-devel
 BuildRequires:  librepo-devel
 BuildRequires:  attr-devel
 BuildRequires:  python2-libs
+BuildRequires:  python3-xml
 BuildRequires:  python2
 BuildRequires:  gobject-introspection-python
 BuildRequires:  autogen
@@ -158,6 +159,8 @@ install -p -m 755 -D %{SOURCE5} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+*   Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 2019.3-7
+-   Added python3-xml as build requires
 *   Wed Aug 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 2019.3-6
 -   Bump version as a part of rpm upgrade
 *   Tue Jun 23 2020 Ankit Jain <ankitja@vmware.com> 2019.3-5
