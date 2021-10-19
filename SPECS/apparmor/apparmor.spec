@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           apparmor
-Version:        3.0.1
-Release:        3%{?dist}
+Version:        3.0.3
+Release:        1%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -10,7 +10,7 @@ Distribution:   Photon
 Group:          Productivity/Security
 
 Source0:        https://launchpad.net/%{name}/3.0/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1    %{name}=eded344440a1b3bd9fc5b6ac44f41b2294a57b8a
+%define sha1    %{name}=ed9df7e6a5877662db4444ba1cae42c10b6d5ad3
 
 BuildRequires:  python3
 BuildRequires:  perl
@@ -350,6 +350,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.0.3-1
+- Upgrade to 3.0.3
 * Thu Oct 07 2021 Dweep Advani <dadvani@vmware.com> 3.0.1-3
 - Rebuild with upgraded httpd 2.4.50
 * Tue Oct 05 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.0.1-2
