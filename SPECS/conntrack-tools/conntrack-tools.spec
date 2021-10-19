@@ -1,7 +1,7 @@
 Summary:        The conntrack-tools are a set of userspace tools for Linux
 Name:           conntrack-tools
 Version:        1.4.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://conntrack-tools.netfilter.org
 Group:          System Environment/Base
@@ -40,8 +40,7 @@ The conntrack-tools package contains two programs:
                 statistics of the firewall use.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 aclocal
 autoconf
@@ -54,7 +53,7 @@ autoconf
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 install -vdm 755 %{buildroot}%{_sysconfdir}/conntrackd
 install -m 0644 doc/stats/conntrackd.conf %{buildroot}%{_sysconfdir}/conntrackd
@@ -65,54 +64,36 @@ install -vdm 755 %{buildroot}%{_sharedstatedir}/conntrackd
 %check
 make %{?_smp_mflags} check
 
-%pre -p /bin/sh
-if ! getent group conntrackd >/dev/null; then
-    groupadd -r conntrackd
-fi
-if ! getent passwd conntrackd >/dev/null; then
-    useradd -r -g conntrackd -d /var/lib/conntrackd -s /sbin/nologin  -c "Conntrack tools User" conntrackd
-fi
-exit 0
-
-
 %post
 /sbin/ldconfig
-chown -R conntrackd:conntrackd /var/lib/conntrackd
-chown -R conntrackd:conntrackd /usr/share/conntrackd
 %systemd_post  conntrackd.service
 
 %preun
 /sbin/ldconfig
 %systemd_preun conntrackd.service
 
-%postun -p /bin/sh
-%systemd_postun_with_restart conntrackd.service
-if [ $1 -eq 0 ] ; then
-   getent passwd conntrackd > /dev/null
-   if [ "$?" == "0" ] ; then
-      userdel conntrackd
-   fi
-   getent group conntrackd >/dev/null
-   if [ "$?" == "0" ] ; then
-      groupdel conntrackd
-   fi
-fi
-exit
+%postun
+/sbin/ldconfig
+%systemd_postun conntrackd.service
 
 %files
-%defattr(-,conntrackd,conntrackd)
+%defattr(-,root,root,-)
 %{_sbindir}/conntrack
 %{_sbindir}/conntrackd
 %{_sbindir}/nfct
 %{_mandir}/man8/*
 %{_mandir}/man5/*
+%dir %{_libdir}/%{name}
 %{_libdir}/%{name}/*.so
+%dir %{_sysconfdir}/conntrackd
 %config(noreplace) %{_sysconfdir}/conntrackd/conntrackd.conf
 %{_unitdir}/conntrackd.service
 %{_datadir}/conntrackd
 %{_sharedstatedir}/conntrackd
 
 %changelog
+*   Tue Oct 19 2021 Ankit Jain <ankitja@vmware.com> 1.4.6-2
+-   Changing files/directory ownership to root
 *   Mon Jan 25 2021 Gerrit Photon <photon-checkins@vmware.com> 1.4.6-1
 -   Automatic Version Bump
 *   Tue Dec 22 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.4.5-3
@@ -121,4 +102,3 @@ exit
 -   Add provides for conntrack
 *   Fri Mar 01 2019 Ankit Jain <ankitja@vmware.com> 1.4.5-1
 -   Initial build. First version
-
