@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        14.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -41,12 +41,9 @@ BuildRequires:  tcl-devel
 BuildRequires:  tzdata
 BuildRequires:  util-linux-libs
 BuildRequires:  zlib-devel
-Requires:       krb5
 Requires:       icu
 Requires:       libedit
 Requires:       libxml2
-Requires:       openldap
-Requires:       openssl
 Requires:       readline
 Requires:       systemd
 Requires:       tzdata
@@ -69,6 +66,9 @@ if you're installing the postgresql-server package.
 %package libs
 Summary:    The shared libraries required for any PostgreSQL clients
 Group:      Applications/Databases
+Requires:   krb5
+Requires:   openldap
+Requires:   openssl
 
 %description libs
 The postgresql-libs package provides the essential shared libraries for any
@@ -116,10 +116,17 @@ Summary:	PostgreSQL development header files and libraries
 Requires:	%{name} = %{version}-%{release}
 Requires:	%{name}-libs = %{version}-%{release}
 Requires:  clang-devel
-Requires:  libxslt
+Requires:  icu-devel
+Requires:  krb5-devel
+Requires:  libedit-devel
+Requires:  libxml2-devel
 Requires:  libxslt-devel
 Requires:  llvm-devel
+Requires:  openldap
+Requires:  openssl-devel
 Requires:  perl-IPC-Run
+Requires:  python3-devel
+Requires:  readline-devel
 
 %description devel
 The postgresql-devel package contains the header files and libraries
@@ -534,6 +541,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/plpython3.so
 
 %changelog
+*   Tue Oct 19 2021 Michael Paquier <mpaquier@vmware.com> 14.0-2
+-   Rework dependency list for -libs and -devel packages.
 *   Thu Sep 30 2021 Michael Paquier <mpaquier@vmware.com> 14.0-1
 -   Upgraded to version 14.0
 *   Sat Aug 14 2021 Michael Paquier <mpaquier@vmware.com> 13.4-1

@@ -1,7 +1,7 @@
 Summary:        Replication Manager for PostgreSQL Clusters
 Name:           repmgr
 Version:        5.1.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GNU Public License (GPL) v3
 URL:            https://repmgr.org/
 Group:          Applications/Databases
@@ -9,21 +9,21 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://repmgr.org/download/%{name}-%{version}.tar.gz
 %define sha1    repmgr=5859789e71f93c1315b9520e197b92fe60693418
-BuildRequires:  postgresql-devel readline-devel openssl-devel zlib-devel cpio libedit-devel
-Requires:       postgresql-libs readline openssl zlib libedit
+BuildRequires:  postgresql-devel cpio
+Requires:       postgresql-libs
 
 %description
 repmgr is an open-source tool suite for managing replication and failover in a cluster of PostgreSQL servers.
 
 %prep
-%setup
+%autosetup
 
 %build
 %configure CFLAGS="%{optflags}" CXXFLAGS="%{optflags}"
 make %{_smp_mflags} CFLAGS="-O2 -g -fcommon"
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{_smp_mflags}
 
 %clean
 rm -rf %{buildroot}/*
@@ -36,6 +36,9 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
+*   Tue Oct 19 2021 Michael Paquier <mpaquier@vmware.com> 5.1.0-5
+-   Rework dependency list with postgresql
+-   Add support for autosetup and _smp_mflags
 *   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 5.1.0-4
 -   GCC-10 support.
 *   Wed Sep 30 2020 Dweep Advani <photon-checkins@vmware.com> 5.1.0-3
