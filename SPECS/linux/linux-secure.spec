@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.61
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -89,12 +89,10 @@ Patch506:       0001-fips-Continue-to-export-shash_no_setkey.patch
 %if 0%{?fips}
 # FIPS canister usage patch
 Patch508:       0001-FIPS-canister-binary-usage.patch
-# Patch to remove urandom usage in rng module
-Patch509:       0001-FIPS-crypto-rng-Jitterentropy-RNG-as-the-only-RND-source.patch
 %else
 %if 0%{?kat_build:1}
-Patch510:       0001-Skip-rap-plugin-for-aesni-intel-modules.patch
-Patch511:       0003-FIPS-broken-kattest.patch
+Patch509:       0001-Skip-rap-plugin-for-aesni-intel-modules.patch
+Patch510:       0003-FIPS-broken-kattest.patch
 %endif
 %endif
 
@@ -193,11 +191,10 @@ The Linux package contains the Linux kernel doc files
 %patch506 -p1
 %if 0%{?fips}
 %patch508 -p1
-%patch509 -p1
 %else
 %if 0%{?kat_build:1}
+%patch509 -p1
 %patch510 -p1
-%patch511 -p1
 %endif
 %endif
 
@@ -308,8 +305,6 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
-*   Thu Oct 07 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.61-3
--   Use jitterentropy rng instead of urandom in rng module.
 *   Thu Sep 09 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.61-2
 -   .config enable CONFIG_MOUSE_PS2_VMMOUSE and CONFIG_INPUT_UINPUT
 -   Enable sta by default
