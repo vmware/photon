@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.214
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt92
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -485,6 +485,14 @@ Patch624:       0010-MAINTAINERS-Add-myself-as-context-tracking-maintaine.patch
 
 #Patch to enable nohz with idle=poll
 Patch625:       0001-Allow-tick-sched-timer-to-be-turned-off-in-idle-poll.patch
+
+#fix for CVE-2020-36322
+Patch626:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
+Patch627:       0002-fuse-lift-bad-inode-checks-into-callers.patch
+Patch628:       0003-fuse-fix-bad-inode.patch
+
+#fix for CVE-2021-28950
+Patch629:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 %if 0%{?kat_build:1}
 Patch1000:       fips-kat-tests.patch
@@ -968,6 +976,10 @@ The Linux package contains the Linux kernel doc files
 %patch623 -p1
 %patch624 -p1
 %patch625 -p1
+%patch626 -p1
+%patch627 -p1
+%patch628 -p1
+%patch629 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -1165,6 +1177,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Fri Oct 29 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.214-2
+-   Fix for CVE-2020-36322/CVE-2021-28950
 *   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.214-1
 -   Update to version 4.19.214
 *   Wed Sep 29 2021 Keerthana K <keerthanak@vmware.com> 4.19.208-1

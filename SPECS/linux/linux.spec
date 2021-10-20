@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.214
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -397,6 +397,14 @@ Patch500:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
 Patch501:       0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+
+#fix for CVE-2020-36322
+Patch502:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
+Patch503:       0002-fuse-lift-bad-inode-checks-into-callers.patch
+Patch504:       0003-fuse-fix-bad-inode.patch
+
+#fix for CVE-2021-28950
+Patch505:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 #Patches for i40e driver
 Patch1500:      0001-Add-support-for-gettimex64-interface.patch
@@ -859,6 +867,10 @@ This Linux package contains hmac sha generator kernel module.
 
 %patch500 -p1
 %patch501 -p1
+%patch502 -p1
+%patch503 -p1
+%patch504 -p1
+%patch505 -p1
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -1236,6 +1248,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Fri Oct 29 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.214-2
+-   Fix for CVE-2020-36322/CVE-2021-28950
 *   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.214-1
 -   Update to version 4.19.214
 *   Wed Sep 29 2021 Keerthana K <keerthanak@vmware.com> 4.19.208-1

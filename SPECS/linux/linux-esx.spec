@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.214
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -363,6 +363,13 @@ Patch513:        0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
 Patch514:        initramfs-Introduce-kernel-panic-on-initramfs-unpack.patch
 Patch515:        support-selective-freeing-of-initramfs-images.patch
 Patch516:        initramfs-large-files-support-for-newca-format.patch
+#fix for CVE-2020-36322
+Patch517:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
+Patch518:       0002-fuse-lift-bad-inode-checks-into-callers.patch
+Patch519:       0003-fuse-fix-bad-inode.patch
+
+#fix for CVE-2021-28950
+Patch520:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 # Patches for i40e driver
 Patch801:        0001-Add-support-for-gettimex64-interface.patch
@@ -713,6 +720,10 @@ This Linux package contains hmac sha generator kernel module.
 %patch514 -p1
 %patch515 -p1
 %patch516 -p1
+%patch517 -p1
+%patch518 -p1
+%patch519 -p1
+%patch520 -p1
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -915,6 +926,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri Oct 29 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.214-2
+-   Fix for CVE-2020-36322/CVE-2021-28950
 *   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.214-1
 -   Update to version 4.19.214
 *   Wed Oct 27 2021 Keerthana K <keerthanak@vmware.com> 4.19.208-2
