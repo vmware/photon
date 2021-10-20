@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        14.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -28,6 +28,7 @@ BuildRequires:  libxslt-devel
 BuildRequires:  linux-api-headers
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  llvm-devel
+BuildRequires:  lz4-devel
 BuildRequires:  openldap
 BuildRequires:  perl
 BuildRequires:  perl-IPC-Run
@@ -44,6 +45,7 @@ BuildRequires:  zlib-devel
 Requires:       icu
 Requires:       libedit
 Requires:       libxml2
+Requires:       lz4
 Requires:       readline
 Requires:       systemd
 Requires:       tzdata
@@ -122,6 +124,7 @@ Requires:  libedit-devel
 Requires:  libxml2-devel
 Requires:  libxslt-devel
 Requires:  llvm-devel
+Requires:  lz4-devel
 Requires:  openldap
 Requires:  openssl-devel
 Requires:  perl-IPC-Run
@@ -191,6 +194,7 @@ sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_man
     --with-libxml \
     --with-libxslt \
     --with-llvm \
+    --with-lz4 \
     --with-ssl=openssl \
     --with-gssapi \
     --with-libedit-preferred \
@@ -541,6 +545,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/plpython3.so
 
 %changelog
+*   Wed Oct 20 2021 Michael Paquier <mpaquier@vmware.com> 14.0-3
+-   Add support for LZ4
 *   Tue Oct 19 2021 Michael Paquier <mpaquier@vmware.com> 14.0-2
 -   Rework dependency list for -libs and -devel packages.
 *   Thu Sep 30 2021 Michael Paquier <mpaquier@vmware.com> 14.0-1
