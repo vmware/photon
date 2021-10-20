@@ -2,14 +2,14 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Name:           python-six
-Version:        1.11.0
-Release:        3%{?dist}
+Version:        1.12.0
+Release:        1%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/packages/source/s/six/six-%{version}.tar.gz
 Source0:        six-%{version}.tar.gz
-%define sha1    six=3647372a0e104e7b53bd477762392024e1083ac0
+%define sha1    six=1957b44942be21822414f4dde936e6c40b687565
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python2
@@ -42,7 +42,7 @@ Requires:       python3-libs
 Python 3 version.
 
 %prep
-%setup -n six-%{version}
+%autosetup -n six-%{version} -p1
 
 %build
 python2 setup.py build
@@ -70,6 +70,8 @@ python3 test_six.py
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Oct 20 2021 Tapas Kundu <tkundu@vmware.com> 1.12.0-1
+-   Update to 1.12.0
 *   Fri Aug 23 2019 Tapas Kundu <tkundu@vmware.com> 1.11.0-3
 -   Fix makecheck
 -   Latest pytest is not compatible with python2
