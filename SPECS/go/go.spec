@@ -14,7 +14,7 @@
 
 Summary:        Go
 Name:           go
-Version:        1.16.7
+Version:        1.17.2
 Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
@@ -22,7 +22,7 @@ Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
-%define sha1    go=94e3f19866c40bb73700d93625489998604d1b15
+%define sha1    go=b78350fa6e4617c1eac66dff656eda8df0a13c1f
 Requires:       glibc
 %define ExtraBuildRequires go
 
@@ -51,7 +51,7 @@ rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{goroot}
 
-cp -R api bin doc favicon.ico lib pkg robots.txt src misc VERSION %{buildroot}%{goroot}
+cp -R api bin doc lib pkg src misc VERSION %{buildroot}%{goroot}
 
 # remove the unnecessary zoneinfo file (Go will always use the system one first)
 rm -rfv %{buildroot}%{goroot}/lib/time
@@ -109,6 +109,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.17.2-1
+-   Upgrade to 1.17.2
 *   Sat Aug 21 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.7-1
 -   Upgrade to 1.16.7
 *   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.2-2
