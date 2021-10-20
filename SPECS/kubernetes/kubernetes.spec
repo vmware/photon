@@ -9,28 +9,25 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.19.15
+Version:        1.23.8
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
-Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=45fed7824f6032d449e37c6b466ff7bb338eabf6
-Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
-%define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
+Source0:        https://github.com/kubernetes/kubernetes/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}-%{version}.tar.gz=e69250fbab9cfa6488ae69040a2f8cd7f269121e954cacdb2478a46bf519bcd05fedf0bca74b482386e44127be462d95488c1ec60be772506a0d7e736751885b
+Source1:        https://github.com/%{name}/contrib/archive/contrib-0.7.0.tar.gz
+%define sha512  contrib-0.7.0=88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
-
-BuildRequires:  go
+BuildRequires:  go >= 1.16.2
 BuildRequires:  rsync
 BuildRequires:  which
-
 Requires:       cni
 Requires:       ebtables
-Requires:       etcd >= 3.0.4
+Requires:       etcd >= 3.5.0
 Requires:       ethtool
 Requires:       iptables
 Requires:       iproute2
@@ -49,7 +46,7 @@ Summary:        kubeadm deployment tool
 Group:          Development/Tools
 Requires:       %{name} = %{version}
 %description    kubeadm
-kubeadm is a tool that enables quick and easy deployment of a kubernetes cluster.
+kubeadm is a tool that enables quick and easy deployment of a %{name} cluster.
 
 %package	kubectl-extras
 Summary:	kubectl binaries for extra platforms
@@ -64,35 +61,39 @@ Group:          Development/Tools
 A pod setup process that holds a pod's namespace.
 
 %prep -p exit
-%autosetup -p1 -n %{name}-%{version} -p1
+%autosetup -p1 -n %{name}-%{version}
 cd ..
 tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
 sed -i '/KUBE_ALLOW_PRIV/d' contrib-0.7.0/init/systemd/kubelet.service
 
 %build
-make %{?_smp_mflags}
-make WHAT="cmd/cloud-controller-manager" %{?_smp_mflags}
+# make doesn't support _smp_mflags
+make -j8
+# make doesn't support _smp_mflags
+make WHAT="cmd/cloud-controller-manager" -j8
 pushd build/pause
 mkdir -p bin
-gcc -Os -Wall -Werror -static -o bin/pause-%{archname} pause.c
+gcc -Os -Wall -Werror -static -o bin/pause-%{archname} linux/pause.c
 strip bin/pause-%{archname}
 popd
 
 %ifarch x86_64
-make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/%{archname} windows/%{archname}" %{?_smp_mflags}
+# make doesn't support _smp_mflags
+make -j8 WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/%{archname} windows/%{archname}"
 %endif
 
 %install
 install -vdm644 %{buildroot}/etc/profile.d
 install -m 755 -d %{buildroot}%{_bindir}
-install -m 755 -d %{buildroot}/opt/vmware/kubernetes
-install -m 755 -d %{buildroot}/opt/vmware/kubernetes/linux/%{archname}
+install -m 755 -d %{buildroot}/opt/vmware/%{name}
+install -m 755 -d %{buildroot}/opt/vmware/%{name}/linux/%{archname}
 %ifarch x86_64
-install -m 755 -d %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}
-install -m 755 -d %{buildroot}/opt/vmware/kubernetes/windows/%{archname}
+install -m 755 -d %{buildroot}/opt/vmware/%{name}/darwin/%{archname}
+install -m 755 -d %{buildroot}/opt/vmware/%{name}/windows/%{archname}
 %endif
 
+# binaries install
 binaries=(cloud-controller-manager kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
@@ -101,10 +102,10 @@ done
 install -p -m 755 -t %{buildroot}%{_bindir} build/pause/bin/pause-%{archname}
 
 # kubectl-extras
-install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/linux/%{archname}/ _output/local/bin/linux/%{archname}/kubectl
+install -p -m 755 -t %{buildroot}/opt/vmware/%{name}/linux/%{archname}/ _output/local/bin/linux/%{archname}/kubectl
 %ifarch x86_64
-install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}/ _output/local/bin/darwin/%{archname}/kubectl
-install -p -m 755 -t %{buildroot}/opt/vmware/kubernetes/windows/%{archname}/ _output/local/bin/windows/%{archname}/kubectl.exe
+install -p -m 755 -t %{buildroot}/opt/vmware/%{name}/darwin/%{archname}/ _output/local/bin/darwin/%{archname}/kubectl
+install -p -m 755 -t %{buildroot}/opt/vmware/%{name}/windows/%{archname}/ _output/local/bin/windows/%{archname}/kubectl.exe
 %endif
 
 # kubeadm install
@@ -117,6 +118,7 @@ sed -i '/KUBELET_CGROUP_ARGS=--cgroup-driver=systemd/d' %{buildroot}/etc/systemd
 cd ..
 # install config files
 install -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}
+install -d -m 0700 %{buildroot}%{_sysconfdir}/%{name}/manifests
 install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} contrib-0.7.0/init/systemd/environ/*
 cat << EOF >> %{buildroot}%{_sysconfdir}/%{name}/kubeconfig
 apiVersion: v1
@@ -124,7 +126,7 @@ clusters:
 - cluster:
     server: http://127.0.0.1:8080
 EOF
-sed -i '/KUBELET_API_SERVER/c\KUBELET_API_SERVER="--kubeconfig=/etc/kubernetes/kubeconfig"' %{buildroot}%{_sysconfdir}/%{name}/kubelet
+sed -i '/KUBELET_API_SERVER/c\KUBELET_API_SERVER="--kubeconfig=/etc/%{name}/kubeconfig"' %{buildroot}%{_sysconfdir}/%{name}/kubelet
 
 # install service files
 install -d -m 0755 %{buildroot}/usr/lib/systemd/system
@@ -132,11 +134,11 @@ install -m 0644 -t %{buildroot}/usr/lib/systemd/system contrib-0.7.0/init/system
 
 # install the place the kubelet defaults to put volumes
 install -dm755 %{buildroot}/var/lib/kubelet
-install -dm755 %{buildroot}/var/run/kubernetes
+install -dm755 %{buildroot}/var/run/%{name}
 
 mkdir -p %{buildroot}/%{_lib}/tmpfiles.d
-cat << EOF >> %{buildroot}/%{_lib}/tmpfiles.d/kubernetes.conf
-d /var/run/kubernetes 0755 kube kube -
+cat << EOF >> %{buildroot}/%{_lib}/tmpfiles.d/%{name}.conf
+d /var/run/%{name} 0755 kube kube -
 EOF
 
 %check
@@ -157,7 +159,7 @@ fi
 
 %post
 chown -R kube:kube /var/lib/kubelet
-chown -R kube:kube /var/run/kubernetes
+chown -R kube:kube /var/run/%{name}
 systemctl daemon-reload
 
 %post kubeadm
@@ -198,10 +200,10 @@ fi
 %{_lib}/systemd/system/kube-scheduler.service
 %{_lib}/systemd/system/kube-controller-manager.service
 %{_lib}/systemd/system/kube-proxy.service
-%{_lib}/tmpfiles.d/kubernetes.conf
+%{_lib}/tmpfiles.d/%{name}.conf
 %dir %{_sysconfdir}/%{name}
 %dir /var/lib/kubelet
-%dir /var/run/kubernetes
+%dir /var/run/%{name}
 %config(noreplace) %{_sysconfdir}/%{name}/config
 %config(noreplace) %{_sysconfdir}/%{name}/apiserver
 %config(noreplace) %{_sysconfdir}/%{name}/controller-manager
@@ -222,13 +224,15 @@ fi
 
 %files kubectl-extras
 %defattr(-,root,root)
-/opt/vmware/kubernetes/linux/%{archname}/kubectl
+/opt/vmware/%{name}/linux/%{archname}/kubectl
 %ifarch x86_64
-/opt/vmware/kubernetes/darwin/%{archname}/kubectl
-/opt/vmware/kubernetes/windows/%{archname}/kubectl.exe
+/opt/vmware/%{name}/darwin/%{archname}/kubectl
+/opt/vmware/%{name}/windows/%{archname}/kubectl.exe
 %endif
 
 %changelog
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.23.8-1
+- Update kubernetes to 1.23.8
 * Fri Sep 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.15-1
 - Update to 1.19.15, Fix CVE-2021-25741
 * Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 1.19.10-4

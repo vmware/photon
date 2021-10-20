@@ -1,12 +1,11 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %define with_golang 0
 
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
-%define sha512    %{name}=9791dfac3e4d9f5cb2a6bb0d04717f93403957cf140d9a5b8beb9e97d15c0a8ed5534bb7781a6f1e70832319325f7f96dc2fcc59519fb00aa402415f8bd91fc5
+%define sha512  %{name}=9791dfac3e4d9f5cb2a6bb0d04717f93403957cf140d9a5b8beb9e97d15c0a8ed5534bb7781a6f1e70832319325f7f96dc2fcc59519fb00aa402415f8bd91fc5
 License:        GPLv2+
 Group:          System Environment/Security
 URL:            http://people.redhat.com/sgrubb/audit
@@ -61,7 +60,7 @@ and libauparse.
 %build
 %configure \
     $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
-    --exec_prefix=/usr \
+    --exec_prefix=%{_usr} \
     --with-python3=yes \
     --with-libwrap \
     --enable-gssapi-krb5=yes \
@@ -74,7 +73,7 @@ and libauparse.
     --enable-systemd \
     --disable-static
 
-make %{?_smp_mflags}
+%make_build
 
 %install
 mkdir -p %{buildroot}/{etc/audispd/plugins.d,etc/audit/rules.d}
@@ -82,7 +81,7 @@ mkdir -p %{buildroot}/%{_var}/opt/audit/log
 mkdir -p %{buildroot}/%{_var}/log
 mkdir -p %{buildroot}/%{_var}/spool/audit
 ln -sfv %{_var}/opt/audit/log %{buildroot}/%{_var}/log/audit
-make install DESTDIR=%{buildroot} %{?_smp_mflags}
+%make_install
 
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable auditd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-auditd.preset
@@ -136,18 +135,20 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 %{_libdir}/*.la
 %{_libdir}/pkgconfig/*.pc
-%if %{with_golang}
+%if 0%{with_golang}
 %{_libdir}/golang/*
 %endif
 %{_includedir}/*.h
 %{_mandir}/man3/*
-/usr/share/aclocal/audit.m4
+%{_datadir}/aclocal/audit.m4
 
 %files -n python3-audit
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 3.0.8-2
+-   Bump up version to compile with new go
 *   Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.0.8-1
 -   Automatic Version Bump
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 3.0.1-2

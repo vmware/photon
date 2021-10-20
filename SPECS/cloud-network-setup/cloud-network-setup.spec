@@ -7,11 +7,11 @@
 Summary:        Configures network interfaces in cloud enviroment
 Name:           cloud-network-setup
 Version:        0.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
-Source0:        cloud-network-setup-%{version}.tar.gz
-%define sha1 %{name}=82abd54c46bf63d9c9490874812ee6fbd21ca832
+Source0:        https://github.com/vmware/%{name}/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}=dc610c2fc491ee4d5e40fd7097c25d9b0f8a03fd88066bf57d1483a2dfa7b322d75dc10bd7a269fbabb36cbe056c2f222c464fd4a57296cc7331292d224f43e8
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -29,6 +29,7 @@ instances are set public IPs and private IPs. If more than one private IP is
 configured then except the IP which is provided by DHCP others can't be fetched
 and configured. This project is adopting towards cloud network environment such
 as Azure, GCP and Amazon EC2.
+
 %prep -p exit
 %autosetup -p1 -n %{name}-%{version}
 
@@ -68,14 +69,6 @@ install -pm 755 -t %{buildroot}%{_unitdir}/ ${GOPATH}/src/github.com/%{name}/%{n
 %clean
 rm -rf %{buildroot}/*
 
-%files
-%defattr(-,root,root)
-%{_bindir}/cloud-network
-%{_bindir}/cnctl
-
-%{_sysconfdir}/cloud-network/cloud-network.toml
-%{_unitdir}/cloud-network.service
-
 %pre
 if ! getent group cloud-network >/dev/null 2>&1; then
     /usr/sbin/groupadd -g 89 cloud-network
@@ -94,7 +87,16 @@ fi
 %postun
 %systemd_postun_with_restart cloud-network.service
 
+%files
+%defattr(-,root,root)
+%{_bindir}/cloud-network
+%{_bindir}/cnctl
+%{_sysconfdir}/cloud-network/cloud-network.toml
+%{_unitdir}/cloud-network.service
+
 %changelog
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-2
+- Bump up version to compile with new go
 * Thu Mar 03 2022 Susant Sahani <ssahani@vmware.com> 0.2.1-1
 - Version bump.
 * Sun Feb 13 2022 Susant Sahani <ssahani@vmware.com> 0.2-1

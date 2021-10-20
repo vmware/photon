@@ -10,8 +10,8 @@
 
 Summary:        Go
 Name:           go
-Version:        1.16.5
-Release:        2%{?dist}
+Version:        1.19
+Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -19,8 +19,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
-%define sha512  %{name}=ba90ce1f3faa39519eb5437009c4b710b493e42764a14b0821292a8a17b714fe5985ef20e6e3c340f71cb521ff63d45a23570d38fd752526a1262448c641d544
-
+%define sha512  go=c4460d54957a0bcf3407ea72cd1c6b3c645ef4ef6cc0fa142a80cb43c06ca4af31d52b0ccd723c81d17a62004bc96559cad23da874a4b668b4d8b168f1da2186
 Requires:       glibc
 
 %define ExtraBuildRequires go
@@ -49,7 +48,7 @@ rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{_bindir} %{buildroot}%{goroot}
 
-cp -R api bin doc favicon.ico lib pkg robots.txt src misc VERSION %{buildroot}%{goroot}
+cp -R api bin doc lib pkg src misc VERSION %{buildroot}%{goroot}
 
 # remove the unnecessary zoneinfo file (Go will always use the system one first)
 rm -rfv %{buildroot}%{goroot}/lib/time
@@ -113,6 +112,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.19-1
+- Upgrade to 1.19
 * Mon Feb 28 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.16.5-2
 - Fix binary path
 * Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.5-1

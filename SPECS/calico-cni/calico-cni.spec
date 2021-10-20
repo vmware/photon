@@ -1,11 +1,11 @@
 Summary:        Calico networking for CNI
 Name:           calico-cni
 Version:        3.15.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/projectcalico/cni-plugin
-Source0:        %{name}-%{version}.tar.gz
-%define sha1 calico-cni=53ff6639c41d62ff88a5129d6523f7ffd9d3fb09
+Source0:        https://github.com/projectcalico/calico/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  calico-cni=2e6aaf5fd82709cccdfe0175379201d8cb0e7ac19c382bcd3b0bbeb69f7f14ea9c2faa210b0c7c2c87afd42fed0fb5f50ab3bb2645a310d98840961e74328525
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -18,7 +18,7 @@ Requires:       cni
 Project Calico network plugin for CNI. This allows kubernetes to use Calico networking. This repository includes a top-level CNI networking plugin, as well as a CNI IPAM plugin which makes use of Calico IPAM.
 
 %prep
-%setup -n cni-plugin-%{version}
+%autosetup -p1 -n cni-plugin-%{version}
 
 %build
 mkdir -p dist
@@ -37,10 +37,12 @@ install -vpm 0755 -t %{buildroot}/usr/share/calico-cni/k8s/ k8s-install/scripts/
 %defattr(-,root,root)
 /opt/cni/bin/calico
 /opt/cni/bin/calico-ipam
-/usr/share/calico-cni/k8s/install-cni.sh
-/usr/share/calico-cni/k8s/calico.conf.default
+%{_datadir}/calico-cni/k8s/install-cni.sh
+%{_datadir}/calico-cni/k8s/calico.conf.default
 
 %changelog
+*   Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 3.15.2-5
+-   Bump up version to compile with new go
 *   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 3.15.2-4
 -   Bump up version to compile with new go
 *   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 3.15.2-3

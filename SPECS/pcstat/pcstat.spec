@@ -1,58 +1,59 @@
 Summary:        A tool that inspect which pages of a file or files are being cached by the Linux kernel
 Name:           pcstat
 Version:        1
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        Apache
-URL:            https://github.com/tobert/pcstat
+URL:            https://github.com/tobert/%{name}
 Group:          Development/Debuggers
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/tobert/pcstat/archive/pcstat-1.zip
-%define sha1    pcstat=cd67c42d291763597dbe3fb19e8e367c54a4a898
+Source0:        https://github.com/tobert/%{name}/archive/%{name}-1.zip
+%define sha512  %{name}=7f62d16447fe5f8e9c126fb4f0e00df697bb253ea0213ece2be2ce0b919ccaa175e009987a4f01252225c35b05c55685da4db684d68b7bd4501fe781163d01d3
 Source1:        https://github.com/golang/sys/golang-sys-08-02-2017.zip
-%define sha1    golang-sys=7f713451011d127755448c6603c15dc907bc47bc
-Patch0:         pcstat-aarch64-support.patch
+%define sha512  golang-sys=0c40f2acd0466637b5b01f75eed593939075fc742c8991b4ff884076852a5c02eb6ed0a162be8539ff73eba665ae04fb011efe739c4bda999f5365241945015a
+Patch0:         %{name}-aarch64-support.patch
 BuildRequires:  unzip go audit git
 Requires:       go
 %description
 A tool that inspect which pages of a file or files are being cached by the Linux kernel
 
 %prep
-%setup -qn pcstat-master
-%patch0 -p1
+%autosetup -p1 -n %{name}-master
 
 %build
 cd ..
 unzip %{SOURCE1}
-mkdir -p build/src/github.com/tobert/pcstat
+mkdir -p build/src/github.com/tobert/%{name}
 mkdir -p build/src/golang.org/x/sys
 mkdir -p build/bin
-cp -r pcstat-master/* build/src/github.com/tobert/pcstat/.
+cp -r %{name}-master/* build/src/github.com/tobert/%{name}/.
 cp -r sys-master/* build/src/golang.org/x/sys
 cd build
 export GOPATH=`pwd`
 cd bin
 export GOBIN=`pwd`
 export PATH=$PATH:$GOBIN
-cd ../src/github.com/tobert/pcstat
+cd ../src/github.com/tobert/%{name}
 export GO111MODULE=auto
 go build
-cd pcstat
+cd %{name}
 go build
 go install
 
 %install
 mkdir -p %{buildroot}/%{_bindir}
-cp ../build/bin/pcstat %{buildroot}/%{_bindir}
+cp ../build/bin/%{name} %{buildroot}/%{_bindir}
 
 %clean
 rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
-%{_bindir}/pcstat
+%{_bindir}/%{name}
 
 %changelog
+*   Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1-10
+-   Bump up version to compile with new go
 *   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1-9
 -   Bump up version to compile with new go
 *   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1-8

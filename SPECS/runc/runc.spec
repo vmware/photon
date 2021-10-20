@@ -9,13 +9,13 @@
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
 Version:             1.1.3
-Release:             1%{?dist}
+Release:             2%{?dist}
 License:             ASL 2.0
 URL:                 https://runc.io
 Group:               Virtualization/Libraries
 Vendor:              VMware, Inc.
 Distribution:        Photon
-Source0:             https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
+Source0:             https://github.com/opencontainers/runc/archive/%{name}-%{version}.tar.gz
 %define sha512       %{name}=27fce2569d0dc710a0f90095957be30c29da24ce1d2b8e115b9dc11d36f5226d98c4b2d8b92ecfa7581eade90bc51c5d9bccaf15fcb2542dafebe4fabc6e1cd9
 BuildRequires:       go
 BuildRequires:       which
@@ -62,6 +62,8 @@ make %{?_smp_mflags} DESTDIR="" PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot
 %{_mandir}/man8/*
 
 %changelog
+* Tue Jul 19 2022 Piyush Gupta <gpiyush@vmware.com> 1.1.3-2
+- Bump up version to compile with new go
 * Tue Jun 07 2022 Gerrit Photon <photon-checkins@vmware.com> 1.1.3-1
 - Automatic Version Bump
 * Sat May 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.1.1-1

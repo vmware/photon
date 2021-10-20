@@ -1,11 +1,11 @@
 Summary:        NGINX Ingress Controller for Kubernetes
 Name:           nginx-ingress
 Version:        1.11.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/nginxinc/kubernetes-ingress
-Source0:        %{name}-%{version}.tar.gz
-%define sha1 nginx-ingress=c54bc93f8992a712a4c402cc43775a743694fce3
+Source0:        https://github.com/nginxinc/kubernetes-ingress/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  nginx-ingress=5e28bc530b546208f720b6add80f2374f1cf4bbc79c6cec56e658a400e1a9f150f3aeda9243f96954488d7dafd914ee003bf09ee2dcbbfe8c20ec602cc60b888
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -15,14 +15,13 @@ BuildRequires:  go >= 1.7
 This is an implementation of kubernetes ingress controller for NGINX.
 
 %prep
-%setup -n kubernetes-ingress-%{version}
+%autosetup -p1 -n kubernetes-ingress-%{version}
 
 %build
 mkdir -p ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress
 cp -r * ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/.
 pushd ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/cmd/nginx-ingress
 CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags "-w -X main.version=%{version}" -o nginx-ingress main.go
-
 
 %install
 pushd ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/cmd/nginx-ingress
@@ -37,9 +36,11 @@ install -vpm 0755 -t %{buildroot}/usr/share/nginx-ingress/docker/ ../../internal
 %files
 %defattr(-,root,root)
 %{_bindir}/nginx-ingress
-/usr/share/nginx-ingress/docker/nginx.*
+%{_datadir}/nginx-ingress/docker/nginx.*
 
 %changelog
+*   Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 1.11.1-3
+-   Bump up version to compile with new go
 *   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.11.1-2
 -   Bump up version to compile with new go
 *   Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 1.11.1-1

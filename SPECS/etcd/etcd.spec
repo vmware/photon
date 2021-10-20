@@ -1,25 +1,21 @@
 Summary:        Distributed reliable key-value store
 Name:           etcd
-Version:        3.4.18
-Release:        2%{?dist}
+Version:        3.5.1
+Release:        1%{?dist}
 License:        Apache License
 URL:            https://github.com/etcd-io/etcd
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
-Source0:        %{name}-%{version}.tar.gz
-%define sha512 %{name}=363961a2e53b61b7fb43476afb1f6e03455508c193d510f6b4aec95e4a11535fdcc876384900cd1edb9df8b8a6ecf329d49d4b884c57ddf8aa438479118fa75e
+Source0:        https://github.com/etcd-io/etcd/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512 etcd=4cf6f3f422c8390287d5eca7518e1e6ab078fca2d1e5708636886cf57dc2901d56f5b5b713d814e16ebe349bc3abe59e0ea021bb33d8038f97d69bd1e76f8e73
 Source1:        etcd.service
-
 %ifarch aarch64
 Source2:        etcd.sysconfig
 %endif
-
 BuildRequires:  go >= 1.12
 BuildRequires:  git
 BuildRequires:  systemd-rpm-macros
-
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires(postun):/usr/sbin/userdel /usr/sbin/groupdel
 
@@ -91,6 +87,8 @@ rm -rf %{buildroot}/*
 %endif
 
 %changelog
+* Fri Jun 17 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.5.1-1
+- Update to 3.5.1
 * Sun May 29 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.4.18-2
 - Fix binary path
 * Mon Apr 18 2022 Gerrit Photon <photon-checkins@vmware.com> 3.4.18-1

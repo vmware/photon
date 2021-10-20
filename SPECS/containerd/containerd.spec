@@ -4,9 +4,9 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.6.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
-URL:            https://containerd.io/docs/
+URL:            https://containerd.io/docs
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -18,7 +18,6 @@ Source0:        https://github.com/containerd/containerd/archive/containerd-%{ve
 Patch1:         containerd-service.patch
 Source2:        containerd-config.toml
 Source3:        disable-containerd-by-default.preset
-
 BuildRequires:  btrfs-progs
 BuildRequires:  btrfs-progs-devel
 BuildRequires:  libseccomp
@@ -27,7 +26,6 @@ BuildRequires:  libseccomp-devel
 BuildRequires:  go >= 1.16
 BuildRequires:  go-md2man
 BuildRequires:  systemd-devel
-
 Requires:       libseccomp
 Requires:       systemd
 # containerd 1.4.5 and above allow to use runc 1.0.0-rc94 and above.
@@ -121,6 +119,8 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+*   Sun Jul 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.6-2
+-   Bump up version to compile with new go.
 *   Wed Jul 20 2022 Tejaswini Jayaramaiah <jtejaswini@vmware.com> 1.6.6-1
 -   Update to version 1.6.6
 *   Mon Dec 13 2021 Nitesh Kumar <kunitesh@vmware.com> 1.4.12-1

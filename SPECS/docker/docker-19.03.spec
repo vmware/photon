@@ -12,7 +12,7 @@
 Summary:        Docker
 Name:           docker
 Version:        19.03.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -304,6 +304,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Fri Jun 17 2022 Piyush Gupta <gpiyush@vmware.com> 19.03.15-2
+- Bump up version to compile with new go
 * Wed Apr 27 2022 Shreenidhi Shedi <sshedi@vmware.com> 19.03.15-1
 - Upgrade to 19.03.15
 - Enable selinux in DOCKER_BUILDTAGS

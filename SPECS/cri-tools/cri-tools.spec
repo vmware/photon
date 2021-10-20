@@ -3,16 +3,14 @@
 Summary:        CRI tools
 Name:           cri-tools
 Version:        1.22.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
-URL:            https://github.com/kubernetes-incubator/cri-tools/archive/%{name}-%{version}.tar.gz
+URL:            https://github.com/kubernetes-incubator/cri-tools
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
-Source0:        %{name}-%{version}.tar.gz
+Source0:        https://github.com/kubernetes-incubator/%{name}/releases/tag/archive/%{name}-%{version}.tar.gz
 %define sha512  %{name}-%{version}.tar.gz=4a2751ebe0b1ed7cb739a71230272ace0cbddc516abba39c6bf07d5e2648bd60e2139935b77a5388028887915162c957f652ea05434ff7865256721d10f863df
-
 BuildRequires:  go
 BuildRequires:  git
 
@@ -43,6 +41,8 @@ make test-e2e %{?_smp_mflags}
 %exclude %{_bindir}/critest
 
 %changelog
+* Tue Jul 19 2022 Piyush Gupta <gpiyush@vmware.com> 1.22.0-2
+- Bump up version to compile with new go
 * Thu May 26 2022 Gerrit Photon <photon-checkins@vmware.com> 1.22.0-1
 - Automatic Version Bump
 * Fri May 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.21.0-3

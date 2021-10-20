@@ -5,23 +5,19 @@
 Summary:        EdgeX Foundry Go Services
 Name:           edgex
 Version:        1.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/edgexfoundry/edgex-go
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
-Source0:    https://github.com/edgexfoundry/edgex-go/archive/refs/tags/%{name}-%{version}.tar.gz
-%define sha512 %{name}=5d83179ef71d56b658c7f632a1225284dd0abc096f59b744f477e80c324854ec0d6173bc8af4138385a5a9dda5ed408b7c41b9c6bfa853d255eb14ab52141b46
-
-Source1: %{name}-template.service
-
+Source0:        https://github.com/edgexfoundry/edgex-go/archive/refs/tags/%{name}-%{version}.tar.gz
+%define sha512  %{name}=5d83179ef71d56b658c7f632a1225284dd0abc096f59b744f477e80c324854ec0d6173bc8af4138385a5a9dda5ed408b7c41b9c6bfa853d255eb14ab52141b46
+Source1:        %{name}-template.service
 BuildRequires:  go
 BuildRequires:  make
 BuildRequires:  systemd-devel
 BuildRequires:  zeromq-devel
-
 Requires:       systemd
 Requires:       zeromq
 Requires:       redis
@@ -102,6 +98,8 @@ sed -i "s/SIGINT/SIGKILL/" %{buildroot}%{_unitdir}/%{name}-core-data.service
 %{_var}/log/*
 
 %changelog
+* Tue Jul 19 2022 Piyush Gupta <gpiyush@vmware.com> 1.3.1-2
+- Bump up version to compile with new go
 * Sat Jul 02 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1-1
 - Upgrade to v1.3.1
 - security-secretstore-read has been removed from upstream
