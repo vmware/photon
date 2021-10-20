@@ -7,7 +7,7 @@
 Summary:        Manages network configuration
 Name:           network-event-broker
 Version:        0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        network-event-broker-%{version}.tar.gz
@@ -80,5 +80,7 @@ rm -rf %{buildroot}/*
 %systemd_postun_with_restart network-broker.service
 
 %changelog
+*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 0.1-2
+-   Bump up version to compile with new go
 * Wed Jun 30 2021 Susant Sahani <ssahani@vmware.com> 0.1-1
 - Initial rpm release.

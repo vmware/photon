@@ -4,7 +4,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.4.4
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
@@ -66,6 +66,7 @@ mv %{name}-%{version} src/%{gopath_comp}
 export GOPATH="$(pwd)"
 cd src/%{gopath_comp}
 go mod init
+go mod vendor
 make %{?_smp_mflags} VERSION=%{version} REVISION=%{CONTAINERD_GITCOMMIT} binaries man
 
 %install
@@ -121,6 +122,8 @@ make integration
 %{_mandir}/man8/*
 
 %changelog
+*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.4.4-8
+-   Bump up version to compile with new go
 *   Tue Oct 05 2021 Piyush Gupta <gpiyush@vmware.com> 1.4.4-7
 -   Bump up version to compile with new go.
 *   Fri Oct 01 2021 Bo Gan <ganb@vmware.com> 1.4.4-6
