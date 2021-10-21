@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.286
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -127,6 +127,9 @@ Patch92:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 #fix for CVE-2021-22543
 Patch93:       0001-KVM-do-not-allow-mapping-valid-but-non-reference-cou.patch
 
+#Fix for CVE-2021-38199
+Patch94:       0001-NFSv4-Initialise-connection-to-the-server-in-nfs4_al.patch
+
 # Fix dummy console function definitions
 Patch112:       0001-console-Expand-dummy-functions-for-CFI.patch
 
@@ -249,6 +252,7 @@ The Linux package contains the Linux kernel doc files
 %patch91 -p1
 %patch92 -p1
 %patch93 -p1
+%patch94 -p1
 
 %patch112 -p1
 %build
@@ -345,6 +349,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Oct 21 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.286-2
+-   Fix for CVE-2021-38199
 *   Wed Oct 13 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.286-1
 -   Update to version 4.9.286
 *   Fri Sep 17 2021 Keerthana K <keerthanak@vmware.com> 4.9.283-1

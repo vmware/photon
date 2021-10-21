@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.286
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -136,6 +136,9 @@ Patch96:        0007-btrfs-tree-checker-Verify-inode-item.patch
 
 #fix for CVE-2021-22543
 Patch97:       0001-KVM-do-not-allow-mapping-valid-but-non-reference-cou.patch
+
+#Fix for CVE-2021-38199
+Patch98:       0001-NFSv4-Initialise-connection-to-the-server-in-nfs4_al.patch
 
 # Amazon AWS
 Patch101: 0002-lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
@@ -340,6 +343,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch95 -p1
 %patch96 -p1
 %patch97 -p1
+%patch98 -p1
 
 %patch101 -p1
 %patch102 -p1
@@ -536,6 +540,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Thu Oct 21 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.286-2
+-   Fix for CVE-2021-38199
 *   Wed Oct 13 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.286-1
 -   Update to version 4.9.286
 *   Fri Sep 17 2021 Keerthana K <keerthanak@vmware.com> 4.9.283-1

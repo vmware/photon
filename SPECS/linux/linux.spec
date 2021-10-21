@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.286
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -149,6 +149,9 @@ Patch106:       0003-ovl-verify-permissions-in-ovl_path_open.patch
 
 #fix for CVE-2021-22543
 Patch107:       0001-KVM-do-not-allow-mapping-valid-but-non-reference-cou.patch
+
+#Fix for CVE-2021-38199
+Patch108:       0001-NFSv4-Initialise-connection-to-the-server-in-nfs4_al.patch
 
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
 # Fix dummy console function definitions
@@ -321,6 +324,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch105 -p1
 %patch106 -p1
 %patch107 -p1
+%patch108 -p1
 
 %patch111 -p1
 %patch112 -p1
@@ -494,6 +498,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Thu Oct 21 2021 Sharan Turlapati <sturlapati@vmware.com> 4.9.286-2
+-   Fix for CVE-2021-38199
 *   Wed Oct 13 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.286-1
 -   Update to version 4.9.286
 *   Fri Sep 17 2021 Keerthana K <keerthanak@vmware.com> 4.9.283-1
