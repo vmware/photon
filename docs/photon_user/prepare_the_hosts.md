@@ -53,5 +53,5 @@ KUBE_LOGTOSTDERR="--logtostderr=true"
 KUBE_LOG_LEVEL="--v=0"
 
 # Should this cluster be allowed to run privileged docker containers
-KUBE_ALLOW_PRIV="--allow_privileged=false"
+KUBE_ALLOW_PRIV="--allow-privileged=false"
 ```
