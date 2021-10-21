@@ -1,11 +1,11 @@
 Summary:	Crypto Libraries
 Name:		libgcrypt
-Version:	1.9.3
+Version:	1.9.4
 Release:	1%{?dist}
 License:        GPLv2+ and LGPLv2+
 URL:            http://www.gnu.org/software/libgcrypt/
 Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
-%define sha1 libgcrypt=6b18f453fee677078586279d96fb88e5df7b3f35
+%define sha1 libgcrypt=1bccc8393482fa1953323ff429c6b5ba5676eb1a
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 BuildRequires:	libgpg-error-devel
@@ -37,7 +37,7 @@ fi
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm -rf %{buildroot}%{_infodir}
 
 %check
@@ -61,6 +61,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/libgcrypt.pc
 
 %changelog
+*   Thu Oct 21 2021 Ankit Jain <ankitja@vmware.com> 1.9.4-1
+-   Updated to version 1.9.4
 *   Mon Jun 21 2021 Ankit Jain <ankitja@vmware.com> 1.9.3-1
 -   Updated to version 1.9.3
 *   Tue Jul 28 2020 Ankit Jain <ankitja@vmware.com> 1.8.6-2
