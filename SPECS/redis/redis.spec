@@ -1,16 +1,15 @@
 Summary:	advanced key-value store
 Name:		redis
-Version:	6.2.5
-Release:	3%{?dist}
+Version:	6.2.6
+Release:	1%{?dist}
 License:	BSD
 URL:		http://redis.io/
 Group:		Applications/Databases
 Vendor:		VMware, Inc.
 Distribution:   Photon
 Source0:	http://download.redis.io/releases/%{name}-%{version}.tar.gz
-%define sha1 redis=b675f5e883f095c2081f605e3ca31a6d5832383c
+%define sha1 redis=e9fb68dfcee194b438bd0af6e4cbc277a2a425e2
 Patch0:         redis-conf.patch
-Patch1:         redis-CVE-2021-32672.patch
 BuildRequires:  gcc
 BuildRequires:  systemd
 BuildRequires:  make
@@ -82,6 +81,10 @@ exit 0
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
+* Thu Oct 21 2021 Nitesh Kumar <kunitesh@vmware.com> 6.2.6-1
+- Upgrade to v6.2.6 to fix following CVE's:
+- 2021-32672, 2021-41099, 2021-32762, 2021-32687
+- 2021-32675, 2021-32628, 2021-32627 and 2021-32626.
 * Wed Oct 13 2021 Nitesh Kumar <kunitesh@vmware.com> 6.2.5-3
 - Fix for CVE-2021-32672
 * Thu Sep 23 2021 Shreyas B. <shreyasb@vmware.com> 6.2.5-2
