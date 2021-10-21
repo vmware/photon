@@ -1,18 +1,19 @@
 Summary:	Crypto Libraries
 Name:		libgcrypt
-Version:	1.8.7
-Release:	2%{?dist}
-License:    GPLv2+ and LGPLv2+
-URL:        http://www.gnu.org/software/libgcrypt/
-Source0:    ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
-%define sha1 libgcrypt=ea79a279b27bf25cb1564f96693128f8fc9f41d6
-Patch0:     libgcrypt-00-ac_cv_sys_symbol_underscore.patch
-Patch1:     0001-cipher-Fix-ElGamal-encryption-for-other-implementati.patch
+Version:	1.8.8
+Release:	1%{?dist}
+License:	GPLv2+ and LGPLv2+
+URL:		http://www.gnu.org/software/libgcrypt/
+Source0:	ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
+%define sha1 libgcrypt=ec927f6e85fe776482c84ec837ef2d9b83dc9c88
+Patch0:		libgcrypt-00-ac_cv_sys_symbol_underscore.patch
+Patch1:		libgcrypt-exponent-binding.patch
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 BuildRequires:	libgpg-error-devel
-Requires:	    libgpg-error
+Requires:	libgpg-error
 Distribution:	Photon
+
 %description
 The libgcrypt package contains a general purpose crypto library based on the code used in GnuPG. The library provides a high level interface to cryptographic building blocks using an extendable and flexible API.
 
@@ -38,7 +39,7 @@ fi
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm -rf %{buildroot}%{_infodir}
 
 %check
@@ -62,6 +63,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/libgcrypt.pc
 
 %changelog
+*   Thu Oct 21 2021 Ankit Jain <ankitja@vmware.com> 1.8.8-1
+-   Update to 1.8.8 and Fix exponent blinding issue
 *   Mon Jun 21 2021 Ankit Jain <ankitja@vmware.com> 1.8.7-2
 -   Fix for CVE-2021-33560
 *   Mon Dec 14 2020 Gerrit Photon <photon-checkins@vmware.com> 1.8.7-1
