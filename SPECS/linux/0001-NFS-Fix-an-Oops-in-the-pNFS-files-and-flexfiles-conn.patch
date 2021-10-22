@@ -1,0 +1,358 @@
+From 9abcb28d24de14a4ca67a9244c847525f9fe05e2 Mon Sep 17 00:00:00 2001
+From: Trond Myklebust <trond.myklebust@primarydata.com>
+Date: Wed, 22 Jun 2016 14:13:12 -0400
+Subject: [PATCH 1/2] NFS: Fix an Oops in the pNFS files and flexfiles
+ connection setup to the DS
+
+[ Upstream commit 5c6e5b60aae4347223f176966455010a5715b863 ]
+
+Chris Worley reports:
+ RIP: 0010:[<ffffffffa0245f80>]  [<ffffffffa0245f80>] rpc_new_client+0x2a0/0x2e0 [sunrpc]
+ RSP: 0018:ffff880158f6f548  EFLAGS: 00010246
+ RAX: 0000000000000000 RBX: ffff880234f8bc00 RCX: 000000000000ea60
+ RDX: 0000000000074cc0 RSI: 000000000000ea60 RDI: ffff880234f8bcf0
+ RBP: ffff880158f6f588 R08: 000000000001ac80 R09: ffff880237003300
+ R10: ffff880201171000 R11: ffffea0000d75200 R12: ffffffffa03afc60
+ R13: ffff880230c18800 R14: 0000000000000000 R15: ffff880158f6f680
+ FS:  00007f0e32673740(0000) GS:ffff88023fc40000(0000) knlGS:0000000000000000
+ CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+ CR2: 0000000000000008 CR3: 0000000234886000 CR4: 00000000001406e0
+ Stack:
+  ffffffffa047a680 0000000000000000 ffff880158f6f598 ffff880158f6f680
+  ffff880158f6f680 ffff880234d11d00 ffff88023357f800 ffff880158f6f7d0
+  ffff880158f6f5b8 ffffffffa024660a ffff880158f6f5b8 ffffffffa02492ec
+ Call Trace:
+  [<ffffffffa024660a>] rpc_create_xprt+0x1a/0xb0 [sunrpc]
+  [<ffffffffa02492ec>] ? xprt_create_transport+0x13c/0x240 [sunrpc]
+  [<ffffffffa0246766>] rpc_create+0xc6/0x1a0 [sunrpc]
+  [<ffffffffa038e695>] nfs_create_rpc_client+0xf5/0x140 [nfs]
+  [<ffffffffa038f31a>] nfs_init_client+0x3a/0xd0 [nfs]
+  [<ffffffffa038f22f>] nfs_get_client+0x25f/0x310 [nfs]
+  [<ffffffffa025cef8>] ? rpc_ntop+0xe8/0x100 [sunrpc]
+  [<ffffffffa047512c>] nfs3_set_ds_client+0xcc/0x100 [nfsv3]
+  [<ffffffffa041fa10>] nfs4_pnfs_ds_connect+0x120/0x400 [nfsv4]
+  [<ffffffffa03d41c7>] nfs4_ff_layout_prepare_ds+0xe7/0x330 [nfs_layout_flexfiles]
+  [<ffffffffa03d1b1b>] ff_layout_pg_init_write+0xcb/0x280 [nfs_layout_flexfiles]
+  [<ffffffffa03a14dc>] __nfs_pageio_add_request+0x12c/0x490 [nfs]
+  [<ffffffffa03a1fa2>] nfs_pageio_add_request+0xc2/0x2a0 [nfs]
+  [<ffffffffa03a0365>] ? nfs_pageio_init+0x75/0x120 [nfs]
+  [<ffffffffa03a5b50>] nfs_do_writepage+0x120/0x270 [nfs]
+  [<ffffffffa03a5d31>] nfs_writepage_locked+0x61/0xc0 [nfs]
+  [<ffffffff813d4115>] ? __percpu_counter_add+0x55/0x70
+  [<ffffffffa03a6a9f>] nfs_wb_single_page+0xef/0x1c0 [nfs]
+  [<ffffffff811ca4a3>] ? __dec_zone_page_state+0x33/0x40
+  [<ffffffffa0395b21>] nfs_launder_page+0x41/0x90 [nfs]
+  [<ffffffff811baba0>] invalidate_inode_pages2_range+0x340/0x3a0
+  [<ffffffff811bac17>] invalidate_inode_pages2+0x17/0x20
+  [<ffffffffa039960e>] nfs_release+0x9e/0xb0 [nfs]
+  [<ffffffffa0399570>] ? nfs_open+0x60/0x60 [nfs]
+  [<ffffffffa0394dad>] nfs_file_release+0x3d/0x60 [nfs]
+  [<ffffffff81226e6c>] __fput+0xdc/0x1e0
+  [<ffffffff81226fbe>] ____fput+0xe/0x10
+  [<ffffffff810bf2e4>] task_work_run+0xc4/0xe0
+  [<ffffffff810a4188>] do_exit+0x2e8/0xb30
+  [<ffffffff8102471c>] ? do_audit_syscall_entry+0x6c/0x70
+  [<ffffffff811464e6>] ? __audit_syscall_exit+0x1e6/0x280
+  [<ffffffff810a4a5f>] do_group_exit+0x3f/0xa0
+  [<ffffffff810a4ad4>] SyS_exit_group+0x14/0x20
+  [<ffffffff8179b76e>] system_call_fastpath+0x12/0x71
+
+Which seems to be due to a call to utsname() when in a task exit context
+in order to determine the hostname to set in rpc_new_client().
+
+In reality, what we want here is not the hostname of the current task, but
+the hostname that was used to set up the metadata server.
+
+Signed-off-by: Trond Myklebust <trond.myklebust@primarydata.com>
+[ Sharan - Backported changes to 4.4.y ]
+Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
+---
+ fs/nfs/client.c         | 22 ++++++++++------------
+ fs/nfs/internal.h       | 16 ++++++++--------
+ fs/nfs/nfs3client.c     |  8 +++++---
+ fs/nfs/nfs4client.c     | 20 ++++++++++++--------
+ include/linux/nfs_xdr.h |  5 ++---
+ 5 files changed, 37 insertions(+), 34 deletions(-)
+
+diff --git a/fs/nfs/client.c b/fs/nfs/client.c
+index ba2cd0bd3894..eb3ba703fffb 100644
+--- a/fs/nfs/client.c
++++ b/fs/nfs/client.c
+@@ -367,8 +367,6 @@ nfs_found_client(const struct nfs_client_initdata *cl_init,
+  */
+ struct nfs_client *
+ nfs_get_client(const struct nfs_client_initdata *cl_init,
+-	       const struct rpc_timeout *timeparms,
+-	       const char *ip_addr,
+ 	       rpc_authflavor_t authflavour)
+ {
+ 	struct nfs_client *clp, *new = NULL;
+@@ -399,7 +397,7 @@ nfs_get_client(const struct nfs_client_initdata *cl_init,
+ 					&nn->nfs_client_list);
+ 			spin_unlock(&nn->nfs_client_lock);
+ 			new->cl_flags = cl_init->init_flags;
+-			return rpc_ops->init_client(new, timeparms, ip_addr);
++			return rpc_ops->init_client(new, cl_init);
+ 		}
+ 
+ 		spin_unlock(&nn->nfs_client_lock);
+@@ -470,7 +468,7 @@ EXPORT_SYMBOL_GPL(nfs_init_timeout_values);
+  * Create an RPC client handle
+  */
+ int nfs_create_rpc_client(struct nfs_client *clp,
+-			  const struct rpc_timeout *timeparms,
++			  const struct nfs_client_initdata *cl_init,
+ 			  rpc_authflavor_t flavor)
+ {
+ 	struct rpc_clnt		*clnt = NULL;
+@@ -479,8 +477,9 @@ int nfs_create_rpc_client(struct nfs_client *clp,
+ 		.protocol	= clp->cl_proto,
+ 		.address	= (struct sockaddr *)&clp->cl_addr,
+ 		.addrsize	= clp->cl_addrlen,
+-		.timeout	= timeparms,
++		.timeout	= cl_init->timeparms,
+ 		.servername	= clp->cl_hostname,
++		.nodename	= cl_init->nodename,
+ 		.program	= &nfs_program,
+ 		.version	= clp->rpc_ops->version,
+ 		.authflavor	= flavor,
+@@ -591,14 +590,12 @@ EXPORT_SYMBOL_GPL(nfs_init_server_rpcclient);
+  * nfs_init_client - Initialise an NFS2 or NFS3 client
+  *
+  * @clp: nfs_client to initialise
+- * @timeparms: timeout parameters for underlying RPC transport
+- * @ip_addr: IP presentation address (not used)
++ * @cl_init: Initialisation parameters
+  *
+  * Returns pointer to an NFS client, or an ERR_PTR value.
+  */
+ struct nfs_client *nfs_init_client(struct nfs_client *clp,
+-		    const struct rpc_timeout *timeparms,
+-		    const char *ip_addr)
++				   const struct nfs_client_initdata *cl_init)
+ {
+ 	int error;
+ 
+@@ -612,7 +609,7 @@ struct nfs_client *nfs_init_client(struct nfs_client *clp,
+ 	 * Create a client RPC handle for doing FSSTAT with UNIX auth only
+ 	 * - RFC 2623, sec 2.3.2
+ 	 */
+-	error = nfs_create_rpc_client(clp, timeparms, RPC_AUTH_UNIX);
++	error = nfs_create_rpc_client(clp, cl_init, RPC_AUTH_UNIX);
+ 	if (error < 0)
+ 		goto error;
+ 	nfs_mark_client_ready(clp, NFS_CS_READY);
+@@ -633,6 +630,7 @@ static int nfs_init_server(struct nfs_server *server,
+ 			   const struct nfs_parsed_mount_data *data,
+ 			   struct nfs_subversion *nfs_mod)
+ {
++	struct rpc_timeout timeparms;
+ 	struct nfs_client_initdata cl_init = {
+ 		.hostname = data->nfs_server.hostname,
+ 		.addr = (const struct sockaddr *)&data->nfs_server.address,
+@@ -640,8 +638,8 @@ static int nfs_init_server(struct nfs_server *server,
+ 		.nfs_mod = nfs_mod,
+ 		.proto = data->nfs_server.protocol,
+ 		.net = data->net,
++		.timeparms = &timeparms,
+ 	};
+-	struct rpc_timeout timeparms;
+ 	struct nfs_client *clp;
+ 	int error;
+ 
+@@ -653,7 +651,7 @@ static int nfs_init_server(struct nfs_server *server,
+ 		set_bit(NFS_CS_NORESVPORT, &cl_init.init_flags);
+ 
+ 	/* Allocate or find a client reference we can use */
+-	clp = nfs_get_client(&cl_init, &timeparms, NULL, RPC_AUTH_UNIX);
++	clp = nfs_get_client(&cl_init, RPC_AUTH_UNIX);
+ 	if (IS_ERR(clp)) {
+ 		dprintk("<-- nfs_init_server() = error %ld\n", PTR_ERR(clp));
+ 		return PTR_ERR(clp);
+diff --git a/fs/nfs/internal.h b/fs/nfs/internal.h
+index 7eeab683a81f..1a3a8c6eb16b 100644
+--- a/fs/nfs/internal.h
++++ b/fs/nfs/internal.h
+@@ -66,13 +66,16 @@ struct nfs_clone_mount {
+ 
+ struct nfs_client_initdata {
+ 	unsigned long init_flags;
+-	const char *hostname;
+-	const struct sockaddr *addr;
++	const char *hostname;			/* Hostname of the server */
++	const struct sockaddr *addr;		/* Address of the server */
++	const char *nodename;			/* Hostname of the client */
++	const char *ip_addr;			/* IP address of the client */
+ 	size_t addrlen;
+ 	struct nfs_subversion *nfs_mod;
+ 	int proto;
+ 	u32 minorversion;
+ 	struct net *net;
++	const struct rpc_timeout *timeparms;
+ };
+ 
+ /*
+@@ -147,9 +150,8 @@ extern void nfs_umount(const struct nfs_mount_request *info);
+ extern const struct rpc_program nfs_program;
+ extern void nfs_clients_init(struct net *net);
+ extern struct nfs_client *nfs_alloc_client(const struct nfs_client_initdata *);
+-int nfs_create_rpc_client(struct nfs_client *, const struct rpc_timeout *, rpc_authflavor_t);
++int nfs_create_rpc_client(struct nfs_client *, const struct nfs_client_initdata *, rpc_authflavor_t);
+ struct nfs_client *nfs_get_client(const struct nfs_client_initdata *,
+-				  const struct rpc_timeout *, const char *,
+ 				  rpc_authflavor_t);
+ int nfs_probe_fsinfo(struct nfs_server *server, struct nfs_fh *, struct nfs_fattr *);
+ void nfs_server_insert_lists(struct nfs_server *);
+@@ -337,8 +339,7 @@ nfs4_label_copy(struct nfs4_label *dst, struct nfs4_label *src)
+ /* proc.c */
+ void nfs_close_context(struct nfs_open_context *ctx, int is_sync);
+ extern struct nfs_client *nfs_init_client(struct nfs_client *clp,
+-			   const struct rpc_timeout *timeparms,
+-			   const char *ip_addr);
++			   const struct nfs_client_initdata *);
+ 
+ /* dir.c */
+ extern void nfs_force_use_readdirplus(struct inode *dir);
+@@ -523,8 +524,7 @@ extern void nfs_direct_set_resched_writes(struct nfs_direct_req *dreq);
+ /* nfs4proc.c */
+ extern void __nfs4_read_done_cb(struct nfs_pgio_header *);
+ extern struct nfs_client *nfs4_init_client(struct nfs_client *clp,
+-			    const struct rpc_timeout *timeparms,
+-			    const char *ip_addr);
++			    const struct nfs_client_initdata *);
+ extern int nfs40_walk_client_list(struct nfs_client *clp,
+ 				struct nfs_client **result,
+ 				struct rpc_cred *cred);
+diff --git a/fs/nfs/nfs3client.c b/fs/nfs/nfs3client.c
+index 9e9fa347a948..0457b4129421 100644
+--- a/fs/nfs/nfs3client.c
++++ b/fs/nfs/nfs3client.c
+@@ -81,14 +81,17 @@ struct nfs_client *nfs3_set_ds_client(struct nfs_client *mds_clp,
+ 		int ds_proto, unsigned int ds_timeo, unsigned int ds_retrans,
+ 		rpc_authflavor_t au_flavor)
+ {
++	struct rpc_timeout ds_timeout;
+ 	struct nfs_client_initdata cl_init = {
+ 		.addr = ds_addr,
+ 		.addrlen = ds_addrlen,
++		.nodename = mds_clp->cl_rpcclient->cl_nodename,
++		.ip_addr = mds_clp->cl_ipaddr,
+ 		.nfs_mod = &nfs_v3,
+ 		.proto = ds_proto,
+ 		.net = mds_clp->cl_net,
++		.timeparms = &ds_timeout,
+ 	};
+-	struct rpc_timeout ds_timeout;
+ 	struct nfs_client *clp;
+ 	char buf[INET6_ADDRSTRLEN + 1];
+ 
+@@ -99,8 +102,7 @@ struct nfs_client *nfs3_set_ds_client(struct nfs_client *mds_clp,
+ 
+ 	/* Use the MDS nfs_client cl_ipaddr. */
+ 	nfs_init_timeout_values(&ds_timeout, ds_proto, ds_timeo, ds_retrans);
+-	clp = nfs_get_client(&cl_init, &ds_timeout, mds_clp->cl_ipaddr,
+-			     au_flavor);
++	clp = nfs_get_client(&cl_init, au_flavor);
+ 
+ 	return clp;
+ }
+diff --git a/fs/nfs/nfs4client.c b/fs/nfs/nfs4client.c
+index 92895f41d9a0..79100f5cedff 100644
+--- a/fs/nfs/nfs4client.c
++++ b/fs/nfs/nfs4client.c
+@@ -349,10 +349,10 @@ static int nfs4_init_client_minor_version(struct nfs_client *clp)
+  * Returns pointer to an NFS client, or an ERR_PTR value.
+  */
+ struct nfs_client *nfs4_init_client(struct nfs_client *clp,
+-				    const struct rpc_timeout *timeparms,
+-				    const char *ip_addr)
++				    const struct nfs_client_initdata *cl_init)
+ {
+ 	char buf[INET6_ADDRSTRLEN + 1];
++	const char *ip_addr = cl_init->ip_addr;
+ 	struct nfs_client *old;
+ 	int error;
+ 
+@@ -370,9 +370,9 @@ struct nfs_client *nfs4_init_client(struct nfs_client *clp,
+ 	__set_bit(NFS_CS_DISCRTRY, &clp->cl_flags);
+ 	__set_bit(NFS_CS_NO_RETRANS_TIMEOUT, &clp->cl_flags);
+ 
+-	error = nfs_create_rpc_client(clp, timeparms, RPC_AUTH_GSS_KRB5I);
++	error = nfs_create_rpc_client(clp, cl_init, RPC_AUTH_GSS_KRB5I);
+ 	if (error == -EINVAL)
+-		error = nfs_create_rpc_client(clp, timeparms, RPC_AUTH_UNIX);
++		error = nfs_create_rpc_client(clp, cl_init, RPC_AUTH_UNIX);
+ 	if (error < 0)
+ 		goto error;
+ 
+@@ -796,10 +796,12 @@ static int nfs4_set_client(struct nfs_server *server,
+ 		.hostname = hostname,
+ 		.addr = addr,
+ 		.addrlen = addrlen,
++		.ip_addr = ip_addr,
+ 		.nfs_mod = &nfs_v4,
+ 		.proto = proto,
+ 		.minorversion = minorversion,
+ 		.net = net,
++		.timeparms = timeparms,
+ 	};
+ 	struct nfs_client *clp;
+ 	int error;
+@@ -812,7 +814,7 @@ static int nfs4_set_client(struct nfs_server *server,
+ 		set_bit(NFS_CS_MIGRATION, &cl_init.init_flags);
+ 
+ 	/* Allocate or find a client reference we can use */
+-	clp = nfs_get_client(&cl_init, timeparms, ip_addr, authflavour);
++	clp = nfs_get_client(&cl_init, authflavour);
+ 	if (IS_ERR(clp)) {
+ 		error = PTR_ERR(clp);
+ 		goto error;
+@@ -850,15 +852,18 @@ struct nfs_client *nfs4_set_ds_client(struct nfs_client* mds_clp,
+ 		int ds_proto, unsigned int ds_timeo, unsigned int ds_retrans,
+ 		u32 minor_version, rpc_authflavor_t au_flavor)
+ {
++	struct rpc_timeout ds_timeout;
+ 	struct nfs_client_initdata cl_init = {
+ 		.addr = ds_addr,
+ 		.addrlen = ds_addrlen,
++		.nodename = mds_clp->cl_rpcclient->cl_nodename,
++		.ip_addr = mds_clp->cl_ipaddr,
+ 		.nfs_mod = &nfs_v4,
+ 		.proto = ds_proto,
+ 		.minorversion = minor_version,
+ 		.net = mds_clp->cl_net,
++		.timeparms = &ds_timeout,
+ 	};
+-	struct rpc_timeout ds_timeout;
+ 	struct nfs_client *clp;
+ 	char buf[INET6_ADDRSTRLEN + 1];
+ 
+@@ -872,8 +877,7 @@ struct nfs_client *nfs4_set_ds_client(struct nfs_client* mds_clp,
+ 	 * (section 13.1 RFC 5661).
+ 	 */
+ 	nfs_init_timeout_values(&ds_timeout, ds_proto, ds_timeo, ds_retrans);
+-	clp = nfs_get_client(&cl_init, &ds_timeout, mds_clp->cl_ipaddr,
+-			     au_flavor);
++	clp = nfs_get_client(&cl_init, au_flavor);
+ 
+ 	dprintk("<-- %s %p\n", __func__, clp);
+ 	return clp;
+diff --git a/include/linux/nfs_xdr.h b/include/linux/nfs_xdr.h
+index 11bbae44f4cb..810c4454fe05 100644
+--- a/include/linux/nfs_xdr.h
++++ b/include/linux/nfs_xdr.h
+@@ -1567,9 +1567,8 @@ struct nfs_rpc_ops {
+ 	int (*have_delegation)(struct inode *, fmode_t);
+ 	int (*return_delegation)(struct inode *);
+ 	struct nfs_client *(*alloc_client) (const struct nfs_client_initdata *);
+-	struct nfs_client *
+-		(*init_client) (struct nfs_client *, const struct rpc_timeout *,
+-				const char *);
++	struct nfs_client *(*init_client) (struct nfs_client *,
++				const struct nfs_client_initdata *);
+ 	void	(*free_client) (struct nfs_client *);
+ 	struct nfs_server *(*create_server)(struct nfs_mount_info *, struct nfs_subversion *);
+ 	struct nfs_server *(*clone_server)(struct nfs_server *, struct nfs_fh *,
+-- 
+2.19.0
+

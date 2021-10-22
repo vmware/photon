@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.288
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -124,6 +124,10 @@ Patch85:        0003-ovl-verify-permissions-in-ovl_path_open.patch
 #Fix for CVE-2019-19338
 Patch86:        0001-KVM-vmx-implement-MSR_IA32_TSX_CTRL-disable-RTM-func.patch
 Patch87:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
+
+#Fix for CVE-2021-38199
+Patch88:        0001-NFS-Fix-an-Oops-in-the-pNFS-files-and-flexfiles-conn.patch
+Patch89:        0002-NFSv4-Initialise-connection-to-the-server-in-nfs4_al.patch
 
 # Various vmxnet3 driver fixes:
 Patch91:        0001-vmxnet3-Wake-queue-from-reset-work.patch
@@ -253,6 +257,8 @@ The Linux package contains the Linux kernel doc files
 %patch85 -p1
 %patch86 -p1
 %patch87 -p1
+%patch88 -p1
+%patch89 -p1
 %patch91 -p1
 %patch92 -p1
 %patch93 -p1
@@ -351,6 +357,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Oct 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.288-2
+-   Fix for CVE-2021-38199
 *   Wed Oct 13 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.4.288-1
 -   Update to version 4.4.288
 *   Fri Sep 17 2021 Keerthana K <keerthanak@vmware.com> 4.4.284-1
