@@ -1,7 +1,7 @@
 Summary:        NGINX Ingress Controller for Kubernetes
 Name:           nginx-ingress
 Version:        1.1.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/nginxinc/kubernetes-ingress
 Source0:        %{name}-%{version}.tar.gz
@@ -12,7 +12,7 @@ Distribution:   Photon
 BuildRequires:  go >= 1.7
 
 %description
-This is an implementation of kubernetes ingress controller for NGINX. 
+This is an implementation of kubernetes ingress controller for NGINX.
 
 %prep
 %setup -n kubernetes-ingress-%{version}
@@ -21,7 +21,7 @@ This is an implementation of kubernetes ingress controller for NGINX.
 mkdir -p ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress
 cp -r * ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/.
 pushd ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/nginx-controller
-CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags "-w -X main.version=%{version}" -o nginx-ingress *.go
+CGO_ENABLED=0 GOOS=linux GO111MODULE=off go build -a -installsuffix cgo -ldflags "-w -X main.version=%{version}" -o nginx-ingress *.go
 
 %install
 pushd ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/nginx-controller
@@ -37,6 +37,8 @@ install -vpm 0755 -t %{buildroot}/usr/share/nginx-ingress/docker/ nginx/template
 /usr/share/nginx-ingress/docker/nginx.*
 
 %changelog
+*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.1.1-6
+-   Bump up version to compile with new go
 *   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.1.1-5
 -   Bump up version to compile with new go
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.1.1-4

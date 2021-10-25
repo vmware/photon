@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -164,7 +164,7 @@ sed -i 's|http://central.maven.org|https://repo1.maven.org|' vmidentity/rest/afd
 sed -i 's|http://central.maven.org|https://repo1.maven.org|' vmidentity/settings.xml
 
 %build
-export GO111MODULE=auto
+export GO111MODULE=off
 cd build
 autoreconf -mif .. &&
 export CFLAGS="-Wall -Werror -Wno-unused-but-set-variable -Wno-pointer-sign -Wno-implicit-function-declaration -Wno-address -Wno-enum-compare"
@@ -1394,6 +1394,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_stssamplebindir}/*
 
 %changelog
+* Tue Nov 30 2021 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-2
+- Bump up version to compile with new go
 * Thu Oct 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-1
 - Upgrade to version 1.3.1.34
 * Tue Sep 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.7-6

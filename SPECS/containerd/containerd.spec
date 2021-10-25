@@ -3,7 +3,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.4.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
@@ -26,7 +26,7 @@ BuildRequires:  btrfs-progs-devel
 BuildRequires:  libseccomp
 BuildRequires:  libseccomp-devel
 # Upstream is unhappy with 1.14. 1.13 or 1.15+ is OK
-BuildRequires:  go >= 1.13, go < 1.14
+BuildRequires:  go
 BuildRequires:  go-md2man
 BuildRequires:  systemd-devel
 Requires:       libseccomp
@@ -64,6 +64,7 @@ mv %{name}-%{version} src/%{gopath_comp}
 
 %build
 export GOPATH="$(pwd)"
+export GO111MODULE=off
 cd src/%{gopath_comp}
 make %{?_smp_mflags} VERSION=%{version} REVISION=%{CONTAINERD_GITCOMMIT} binaries man
 
@@ -115,6 +116,8 @@ make integration
 %{_mandir}/man8/*
 
 %changelog
+*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.4.4-4
+-   Bump up version to compile with new go
 *   Fri Oct 01 2021 Bo Gan <ganb@vmware.com> 1.4.4-3
 -   Fix CVE-2021-41103
 *   Fri Jul 16 2021 Bo Gan <ganb@vmware.com> 1.4.4-2

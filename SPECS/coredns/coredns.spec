@@ -1,7 +1,7 @@
 Summary:        CoreDNS
 Name:           coredns
 Version:        1.2.6
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Apache License 2.0
 URL:            https://github.com/coredns/coredns/archive/v%{version}.tar.gz
 Source0:        coredns-%{version}.tar.gz
@@ -30,6 +30,7 @@ export GOHOSTOS=linux
 export GOROOT=/usr/lib/golang
 export GOPATH=/usr/share/gocode
 export GOBIN=/usr/share/gocode/bin
+export GO111MODULE=off
 export PATH=$PATH:$GOBIN
 mkdir -p ${GOPATH}/src/${PKG}
 cp -rf . ${GOPATH}/src/${PKG}
@@ -53,6 +54,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/coredns
 
 %changelog
+*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.2.6-8
+-   Bump up version to compile with new go
 *   Thu Dec 17 2020 Ankit Jain <ankitja@vmware.com> 1.2.6-7
 -   Repo changed from github.com/mholt/caddy to github.com/caddyserver/caddy
 *   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.2.6-6

@@ -1,7 +1,7 @@
 Summary:        agent for collecting, processing, aggregating, and writing metrics.
 Name:           telegraf
 Version:        1.10.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        MIT
 URL:            https://github.com/influxdata/telegraf
 Source0:        https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
@@ -52,6 +52,7 @@ unzip %{SOURCE1}
 popd
 
 %build
+export GO111MODULE=off
 pushd ${GOPATH}/src/github.com/golang/dep
 CGO_ENABLED=0 GOOS=linux go build -v -ldflags "-s -w" -o ${GOPATH}/bin/dep ./cmd/dep/
 popd
@@ -103,6 +104,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
+*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.10.0-6
+-   Bump up version to compile with new go
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.10.0-5
 -   Bump up version to compile with go 1.13.5-2
 *   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.10.0-4

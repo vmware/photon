@@ -1,7 +1,7 @@
 Summary:        Kubernetes DNS
 Name:           kubernetes-dns
 Version:        1.14.10
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/dns/archive/%{version}.tar.gz
 Source0:        kubernetes-dns-%{version}.tar.gz
@@ -28,6 +28,7 @@ export GOHOSTOS=linux
 export GOROOT=/usr/lib/golang
 export GOPATH=/usr/share/gocode
 export CGO_ENABLED=0
+export GO111MODULE=off
 mkdir -p ${GOPATH}/src/${PKG}
 cp -r * ${GOPATH}/src/${PKG}/
 pushd ${GOPATH}/src/${PKG}
@@ -64,6 +65,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/sidecar-e2e
 
 %changelog
+*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.14.10-5
+-   Bump up version to compile with new go
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.14.10-4
 -   Bump up version to compile with go 1.13.5-2
 *   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.14.10-3

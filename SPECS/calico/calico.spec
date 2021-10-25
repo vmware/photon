@@ -1,7 +1,7 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        3.12.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/node
 Source0:        %{name}-%{version}.tar.gz
@@ -14,7 +14,7 @@ BuildRequires:  go
 BuildRequires:  make
 
 %description
-Calico node is a container that bundles together various components reqiured for networking containers using project calico. This includes key components such as felix agent for programming routes and ACLs, BIRD routing daemon, and confd datastore monitor engine. 
+Calico node is a container that bundles together various components reqiured for networking containers using project calico. This includes key components such as felix agent for programming routes and ACLs, BIRD routing daemon, and confd datastore monitor engine.
 
 %prep
 %setup -n node-%{version}
@@ -38,6 +38,8 @@ sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/do
 /usr/share/calico/docker/fs/*
 
 %changelog
+*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 3.12.3-2
+-   Bump up version to compile with new go
 *   Tue May 25 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.12.3-1
 -   Update to 3.12.3
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 3.6.1-5

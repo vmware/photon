@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        17.06.0
-Release:        18%{?dist}
+Release:        19%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -116,7 +116,7 @@ sed -i '/^\s*git clone.*$/d' docker/docker/hack/dockerfile/install-binaries.sh
 git config --global http.proxy http://localhost:0
 
 %build
-
+go env -w GO111MODULE=off
 export GOPATH="/go"
 export PATH="$PATH:$GOPATH/bin"
 
@@ -240,6 +240,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 17.06.0-19
+-   Bump up version to compile with new go
 *   Tue Jun 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 17.06.0-18
 -   Added statx to whitelist of allowed syscalls
 *   Sat Aug 22 2020 Ashwin H <ashwinh@vmware.com> 17.06.0-17
@@ -295,7 +297,7 @@ rm -rf %{buildroot}/*
 *   Tue Jun 28 2016 Anish Swaminathan <anishs@vmware.com> 1.11.2-1
 -   Upgraded to version 1.11.2
 *   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  1.11.0-6
--   Fixed logic to restart the active services after upgrade 
+-   Fixed logic to restart the active services after upgrade
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11.0-5
 -   GA - Bump release of all rpms
 *   Tue May 10 2016 Anish Swaminathan <anishs@vmware.com> 1.11.0-4

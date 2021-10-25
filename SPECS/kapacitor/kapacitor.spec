@@ -1,6 +1,6 @@
 Name:           kapacitor
 Version:        1.5.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Open source framework for processing, monitoring, and alerting on time series data
 License:        MIT
 URL:            https://www.influxdata.com/time-series-platform/kapacitor
@@ -25,6 +25,7 @@ mkdir -p build/src/github.com/influxdata/kapacitor
 mv %{name}-%{version}/* build/src/github.com/influxdata/%{name}
 cd build
 export GOPATH=`pwd`
+export GO111MODULE=off
 cd src/github.com/influxdata/kapacitor
 go build ./cmd/kapacitor
 go build ./cmd/kapacitord
@@ -88,6 +89,8 @@ fi
 %config(noreplace) %{_sysconfdir}/kapacitor/kapacitor.conf
 
 %changelog
+*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.5.1-6
+-   Bump up version to compile with new go
 *   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.5.1-5
 -   Bump up version to compile with new go
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.5.1-4

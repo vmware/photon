@@ -1,13 +1,11 @@
 Summary:        Calico Network Policy for Kubernetes
 Name:           calico-k8s-policy
 Version:        1.0.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/k8s-policy
 Source0:        %{name}-%{version}.tar.gz
 %define sha1 calico-k8s-policy=612eafdb2afee6ffbfc432e0110c787823b66ccc
-Source1:        go-27704.patch
-Source2:        go-27842.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -65,15 +63,12 @@ Calico Network Policy enables Calico to enforce network policy on top of Calico 
 echo "VERSION='`git describe --tags --dirty`'" > version.py
 
 %build
+export GO111MODULE=off
 mkdir -p /root/.glide
 mkdir -p ${GOPATH}/src/github.com/projectcalico/k8s-policy
 cp -r * ${GOPATH}/src/github.com/projectcalico/k8s-policy
 pushd ${GOPATH}/src/github.com/projectcalico/k8s-policy
 glide install -strip-vendor
-pushd vendor/golang.org/x/net
-patch -p1 < %{SOURCE1}
-patch -p1 < %{SOURCE2}
-popd
 mkdir -p dist
 CGO_ENABLED=0 go build -v -o dist/controller -ldflags "-X main.VERSION=%{version}" ./main.go
 
@@ -87,6 +82,8 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/controller
 %{_bindir}/controller
 
 %changelog
+*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.0.0-7
+-   Bump up version to compile with new go
 *   Fri Sep 17 2021 Shreyas B <shreyasb@vmware.com> 1.0.0-6
 -   Bump up version to compile with python3-urllib3 v1.26.6
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.0.0-5

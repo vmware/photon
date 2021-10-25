@@ -3,7 +3,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -101,6 +101,7 @@ mv components/cli ../src/%{gopath_comp_cli}
 mv components/packaging ../
 
 %build
+export GO111MODULE=off
 export GOPATH="$(pwd)"
 
 CONTAINERD_MIN_VER="1.2.0-beta.1"
@@ -288,6 +289,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 18.09.9-7
+-   Bump up version to compile with new go
 
 *   Thu Sep 30 2021 Bo Gan <ganb@vmware.com> 18.09.9-6
 -   Fix CVE-2021-41089

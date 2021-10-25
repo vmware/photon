@@ -4,7 +4,7 @@
 Name:           gobject-introspection
 Summary:        Introspection system for GObject-based libraries
 Version:        1.52.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 Group:          Development/Libraries
 License:        GPLv2+, LGPLv2+, MIT
 URL:            http://live.gnome.org/GObjectIntrospection
@@ -20,6 +20,12 @@ BuildRequires:  which
 BuildRequires:  glib-devel
 BuildRequires:  libffi-devel
 BuildRequires:  go
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
+BuildRequires:  python-xml
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-xml
 Requires:       libffi
 Requires:       glib >= 2.52.1
 Patch0:         disableFaultyTest.patch
@@ -33,9 +39,6 @@ things.
 Summary:        Python package for handling GObject introspection data
 Group:          Development/Languages
 Requires:       %{name} = %{version}-%{release}
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
-BuildRequires:  python-xml
 Requires:       python2
 Requires:       python-xml
 %description    python
@@ -46,9 +49,6 @@ data from Python.
 Summary:        Python3 package for handling GObject introspection data
 Group:          Development/Languages
 Requires:       %{name} = %{version}-%{release}
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-xml
 Requires:       python3-xml
 Requires:       python3
 %description -n python3-gobject-introspection
@@ -135,6 +135,8 @@ make  %{?_smp_mflags} check
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.52.1-8
+-   Bump up version to compile with new go
 *   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.52.1-7
 -   Bump up version to compile with go 1.13.5-2
 *   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 1.52.1-6

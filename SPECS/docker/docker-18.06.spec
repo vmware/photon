@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.06.2
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -87,7 +87,7 @@ popd
 %build
 export GOPATH="/go"
 export PATH="$PATH:$GOPATH/bin"
-
+export GO111MODULE=off
 GIT_COMMIT=%{DOCKER_GITCOMMIT}
 GIT_COMMIT_SHORT=${GIT_COMMIT:0:7}
 
@@ -236,6 +236,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 18.06.2-12
+-   Bump up version to compile with new go
 *   Sat Aug 22 2020 Ashwin H <ashwinh@vmware.com> 18.06.2-11
 -   Remove hardcoded go dependecy
 *   Thu Apr 30 2020 Ankit Jain <ankitja@vmware.com> 18.06.2-10
