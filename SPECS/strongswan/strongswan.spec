@@ -1,7 +1,7 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
 Version:          5.5.2
-Release:          4%{?dist}
+Release:          5%{?dist}
 License:          GPLv2+
 URL:              https://www.strongswan.org/
 Group:            System Environment/Security
@@ -15,6 +15,7 @@ Patch2:           strongswan-CVE-2017-9023.patch
 Patch3:           strongswan-CVE-2018-5388.patch
 Patch4:           strongswan-CVE-2018-10811.patch
 Patch5:           CVE-2018-16151-16152.patch
+Patch6:           CVE-2021-41991.patch
 BuildRequires:    autoconf
 
 %description
@@ -28,9 +29,10 @@ strongSwan is a complete IPsec implementation for Linux 2.6, 3.x, and 4.x kernel
 %patch3 -p1
 %patch4 -p1
 %patch5 -p1
+%patch6 -p1
 
 %build
-./configure --prefix=%{_prefix} --sysconfdir=%{_sysconfdir}
+%configure
 
 make %{?_smp_mflags}
 %install
@@ -60,6 +62,8 @@ rm -rf %{buildroot}/*
 
 
 %changelog
+*   Mon Oct 25 2021 Tapas Kundu <tkundu@vmware.com> 5.5.2-5
+-   Fix CVE-2021-41991
 *   Thu Jan 03 2019 Keerthana K <keerthanak@vmware.com> 5.5.2-4
 -   Fix for CVE-2018-16151 and CVE-2018-16152.
 *   Thu Aug 16 2018 Tapas Kundu <tkundu@vmware.com> 5.5.2-3
