@@ -1,7 +1,7 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
 Version:          5.6.3
-Release:          4%{?dist}
+Release:          5%{?dist}
 License:          GPLv2+
 URL:              https://www.strongswan.org/
 Group:            System Environment/Security
@@ -14,15 +14,15 @@ BuildRequires:    gmp-devel
 BuildRequires:    systemd-devel
 Patch0:           strongswan-fix-make-check.patch
 Patch1:           CVE-2018-16151-16152.patch
+Patch2:           CVE-2021-41990.patch
+Patch3:           CVE-2021-41991.patch
 %{?systemd_requires}
 
 %description
 strongSwan is a complete IPsec implementation for Linux 2.6, 3.x, and 4.x kernels.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
 
 %build
 %configure --enable-systemd
@@ -31,12 +31,12 @@ make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 find %{buildroot} -name '*.a' -delete
 
 %check
-make check
+make check %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}/*
@@ -65,6 +65,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/strongswan.service
 
 %changelog
+*   Mon Oct 25 2021 Tapas Kundu <tkundu@vmware.com> 5.6.3-5
+-   Fix CVE-2021-41990 and CVE-2021-41991
 *   Tue Jun 08 2021 Tapas Kundu <tkundu@vmware.com> 5.6.3-4
 -   Enable systemd
 *   Fri Dec 21 2018 Keerthana K <keerthanak@vmware.com> 5.6.3-3
