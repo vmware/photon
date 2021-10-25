@@ -1,7 +1,7 @@
 Summary:        Etcd-3.1.5
 Name:           etcd
 Version:        3.4.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License
 URL:            https://github.com/coreos/etcd
 Group:          System Environment/Security
@@ -18,6 +18,7 @@ A highly-available key value store for shared configuration and service discover
 
 %prep
 %setup -q
+go mod vendor
 
 %build
 ./build
@@ -60,6 +61,8 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/etcd/etcd-default-conf.yml
 
 %changelog
+*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 3.4.10-2
+-   Bump up version to compile with new go
 *   Fri Sep 11 2020 Ashwin H <ashwinh@vmware.com> 3.4.10-1
 -   Update to 3.4.x
 *   Thu Sep 03 2020 Ashwin H <ashwinh@vmware.com> 3.3.23-3

@@ -1,7 +1,7 @@
 Summary:       A per-host daemon for Calico
 Name:          calico-felix
 Version:       2.6.0
-Release:       5%{?dist}
+Release:       6%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
@@ -25,6 +25,7 @@ mkdir -p ${GOPATH}/src/github.com/gogo/protobuf
 tar xf %{SOURCE1} --no-same-owner --strip-components 1 -C ${GOPATH}/src/github.com/gogo/protobuf/
 
 %build
+export GO111MODULE=off
 pushd ${GOPATH}/src/github.com/gogo/protobuf
 make install
 popd
@@ -52,6 +53,8 @@ install ${GOPATH}/src/github.com/projectcalico/felix/bin/calico-felix %{buildroo
 %{_bindir}/calico-felix
 
 %changelog
+*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 2.6.0-6
+-   Bump up version to compile with new go
 *   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 2.6.0-5
 -   Bump up version to compile with new go
 *   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 2.6.0-4

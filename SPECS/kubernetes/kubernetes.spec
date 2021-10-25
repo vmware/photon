@@ -1,7 +1,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.17.11
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -231,6 +231,8 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.17.11-6
+- Bump up version to compile with new go
 * Fri Sep 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-5
 - Fix CVE-2021-25741
 * Tue Jun 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-4

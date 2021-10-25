@@ -1,7 +1,7 @@
 Summary:        Kubernetes Dashboard UI
 Name:           kubernetes-dashboard
 Version:        1.8.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/kubernetes/dashboard
 Source0:        %{name}-%{version}.tar.gz
@@ -31,6 +31,7 @@ Kubernetes Dashboard UI.
 %setup -q -n dashboard-%{version}
 
 %build
+export GO111MODULE=off
 export PATH=${PATH}:/usr/bin
 tar xf %{SOURCE1} --no-same-owner
 cp %{SOURCE2} .
@@ -55,6 +56,8 @@ cp -p -r ./src/deploy/Dockerfile %{buildroot}/opt/k8dashboard/
 /opt/k8dashboard/public/*
 
 %changelog
+*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.3-6
+-   Bump up version to compile with new go
 *   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 1.8.3-5
 -   Bump up version to compile with new go version
 *   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 1.8.3-4

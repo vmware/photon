@@ -1,7 +1,7 @@
 Summary:       confd is a lightweight configuration management tool
 Name:          calico-confd
 Version:       0.14.0
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       MIT
@@ -19,6 +19,7 @@ confd is a lightweight configuration management tool that keeps local configurat
 %setup -q -n confd-%{version}
 
 %build
+export GO111MODULE=off
 #mkdir -p /root/.glide
 mkdir -p ${GOPATH}/src/github.com/kelseyhightower/confd
 cp -r * ${GOPATH}/src/github.com/kelseyhightower/confd/.
@@ -35,6 +36,8 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ bin/confd
 %{_bindir}/confd
 
 %changelog
+*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 0.14.0-5
+-   Bump up version to compile with new go
 *   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 0.14.0-4
 -   Bump up version to compile with new go version
 *   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 0.14.0-3

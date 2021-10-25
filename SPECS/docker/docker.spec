@@ -4,7 +4,7 @@
 Summary:        Docker
 Name:           docker
 Version:        18.09.9
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -70,6 +70,7 @@ ln -snrf "$OLDPWD/components/engine" docker/docker
 ln -snrf "$OLDPWD/components/cli" docker/cli
 
 %build
+export GO111MODULE=off
 export GOPATH="/go"
 export TMP_GOPATH="$GOPATH"
 export PATH="$PATH:$GOPATH/bin"
@@ -201,6 +202,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Tue Feb 22 2022 Bo Gan <ganb@vmware.com> 18.09.9-8
+-   Bump up version to build with new go.
 *   Fri Oct 01 2021 Bo Gan <ganb@vmware.com> 18.09.9-7
 -   Fix containerd CVE-2021-41103
 *   Thu Sep 30 2021 Bo Gan <ganb@vmware.com> 18.09.9-6

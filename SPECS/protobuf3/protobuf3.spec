@@ -1,7 +1,7 @@
 Summary:        Google's data interchange format
 Name:           protobuf3
 Version:        3.0.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -18,7 +18,18 @@ BuildRequires:  libstdc++
 BuildRequires:  curl
 BuildRequires:  make
 BuildRequires:  unzip
-Provides:       protobuf
+BuildRequires:  python2
+BuildRequires:  python2-libs
+BuildRequires:  python2-devel
+BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-devel
+BuildRequires:  python-setuptools
+BuildRequires:  chkconfig
+BuildRequires:  openjre >= %{JAVA_VERSION}
+BuildRequires:  openjdk >= %{JAVA_VERSION}
+BuildRequires:  apache-maven >= 3.3.3
 Conflicts:      protobuf < %{version}
 Obsoletes:      protobuf < %{version}
 
@@ -29,7 +40,6 @@ Protocol Buffers (a.k.a., protobuf) are Google's language-neutral, platform-neut
 Summary:        Development files for protobuf
 Group:          Development/Libraries
 Requires:       protobuf3 = %{version}-%{release}
-Provides:       protobuf-devel
 Conflicts:      protobuf-devel < %{version}
 Obsoletes:      protobuf-devel < %{version}
 
@@ -41,7 +51,6 @@ developing applications that use protobuf.
 Summary:        protobuf3 static lib
 Group:          Development/Libraries
 Requires:       protobuf3 = %{version}-%{release}
-Provides:       protobuf-static
 Conflicts:      protobuf-static < %{version}
 Obsoletes:      protobuf-static < %{version}
 
@@ -51,14 +60,9 @@ The protobuf-static package contains static protobuf libraries.
 %package        python
 Summary:        protobuf3 python lib
 Group:          Development/Libraries
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
 Requires:       python2
 Requires:       python2-libs
 Requires:       protobuf3 = %{version}-%{release}
-Provides:       protobuf-python
 Conflicts:      protobuf-python < %{version}
 Obsoletes:      protobuf-python < %{version}
 
@@ -68,14 +72,9 @@ This contains protobuf python libraries.
 %package        python3
 Summary:        protobuf3 python3 lib
 Group:          Development/Libraries
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  python3-devel
-BuildRequires:  python-setuptools
 Requires:       python3
 Requires:       python3-libs
 Requires:       protobuf3 = %{version}-%{release}
-Provides:       protobuf-python3
 Conflicts:      protobuf-python3 < %{version}
 Obsoletes:      protobuf-python3 < %{version}
 
@@ -85,12 +84,7 @@ This contains protobuf python3 libraries.
 %package        java
 Summary:        protobuf3 java
 Group:          Development/Libraries
-BuildRequires:  chkconfig
-BuildRequires:  openjre >= %{JAVA_VERSION}
-BuildRequires:  openjdk >= %{JAVA_VERSION}
-BuildRequires:  apache-maven >= 3.3.3
 Requires:       openjre >= %{JAVA_VERSION}
-Provides:       protobuf-java
 Conflicts:      protobuf-java < %{version}
 Obsoletes:      protobuf-java < %{version}
 
@@ -166,6 +160,8 @@ make check
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Mon Feb 28 2022 Piyush Gupta <gpiyush@vmware.com> 3.0.0-5
+-   Remove Provides: protobuf since it conflicts with itself.
 *   Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 3.0.0-4
 -   Modified the path of JAVA_HOME
 *   Fri Aug 18 2017 Vinay Kulkarni <kulkarniv@vmware.com> 3.0.0-3

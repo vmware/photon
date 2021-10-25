@@ -14,7 +14,7 @@
 
 Summary:        Go
 Name:           go
-Version:        1.13.15
+Version:        1.17.2
 Release:        1%{?dist}
 License:        BSD
 URL:            https://golang.org
@@ -23,8 +23,15 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
-%define sha1    go=54860ef92533677bb1366e6441716a77e5ec6f13
-
+%define sha1    go=b78350fa6e4617c1eac66dff656eda8df0a13c1f
+Patch0:         CVE-2021-41771.patch
+Patch1:         CVE-2021-41772.patch
+Patch2:         CVE-2021-44716.patch
+Patch3:         CVE-2021-44717.patch
+Patch4:         CVE-2021-44717-1.patch
+Patch5:         CVE-2022-23806.patch
+Patch6:         CVE-2022-23772.patch
+Patch7:         CVE-2022-23773.patch
 Requires:       glibc
 %define ExtraBuildRequires go
 
@@ -53,7 +60,7 @@ rm -rf %{buildroot}
 mkdir -p %{buildroot}%{_bindir}
 mkdir -p %{buildroot}%{goroot}
 
-cp -R api bin doc favicon.ico lib pkg robots.txt src misc VERSION %{buildroot}%{goroot}
+cp -R api bin doc lib pkg src misc VERSION %{buildroot}%{goroot}
 
 # remove the unnecessary zoneinfo file (Go will always use the system one first)
 rm -rfv %{buildroot}%{goroot}/lib/time
@@ -113,6 +120,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.17.2-1
+- Update to 1.17.2
 * Thu Sep 10 2020 Ashwin H <ashwinh@vmware.com> 1.13.15-1
 - Update to 1.13.15
 * Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.11.13-5

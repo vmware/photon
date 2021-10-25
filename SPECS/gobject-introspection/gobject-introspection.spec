@@ -3,7 +3,7 @@
 Name:       	gobject-introspection
 Summary:    	Introspection system for GObject-based libraries
 Version:    	1.46.0
-Release:    	5%{?dist}
+Release:    	6%{?dist}
 Group:      	Development/Libraries
 License:    	GPLv2+, LGPLv2+, MIT
 URL:        	http://live.gnome.org/GObjectIntrospection
@@ -99,19 +99,21 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %doc %{_mandir}/man1/*.gz
 
 %changelog
+*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.46.0-6
+-   Bump up version to compile with new go
 *   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 1.46.0-5
 -   Bump up version to compile with new go version
 *   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 1.46.0-4
 -   Bump up version to compile with new go
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.46.0-3
 -   Bump up version to compile with new go
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.46.0-2
--	GA - Bump release of all rpms
-*       Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 1.46.0-1
--       Updated version.
-*       Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 1.43.3-4
--       Moving static lib files to devel package.
-*       Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 1.43.3-3
--       Removing la files from packages.
-*	Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.43.3-2
--	Added more requirements for devel subpackage.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.46.0-2
+-   GA - Bump release of all rpms
+*   Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 1.46.0-1
+-   Updated version.
+*   Mon Oct 12 2015 Xiaolin Li <xiaolinl@vmware.com> 1.43.3-4
+-   Moving static lib files to devel package.
+*   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 1.43.3-3
+-   Removing la files from packages.
+*   Mon Jul 6 2015 Alexey Makhalov <amakhalov@vmware.com> 1.43.3-2
+-   Added more requirements for devel subpackage.

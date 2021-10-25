@@ -4,7 +4,7 @@
 Summary:	A Distributed init System
 Name:		fleet
 Version:	0.11.5
-Release:	6%{?dist}
+Release:	7%{?dist}
 License:	Apache 2.0
 URL:		https://coreos.com/using-coreos/clustering/
 Group:		OS/ClusterManagement
@@ -25,6 +25,7 @@ fleet ties together systemd and etcd into a simple distributed init system.
 %setup -q
 
 %build
+export GO111MODULE=off
 ./build
 
 %install
@@ -83,18 +84,20 @@ getent passwd fleet >/dev/null || /usr/sbin/useradd -c "fleet user" -s /sbin/nol
 /usr/share/polkit-1/rules.d/fleet.rules
 
 %changelog
+*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 0.11.5-7
+-   Bump up version to compile with new go version
 *   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 0.11.5-6
 -   Bump up version to compile with new go version
 *   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 0.11.5-5
 -   Bump up version to compile with new go
 *   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 0.11.5-4
 -   Bump up version to compile with new go
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.11.5-3
--	GA - Bump release of all rpms
-*       Mon May 09 2016 Nick Shi <nshi@vmware.com> 0.11.5-2
--       Configure fleet and add fleet to systemd service.
-*       Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com> 0.11.5-1
--       Updated version.
-*	Mon Jul 13 2015 Danut Moraru <dmoraru@vmware.com> 0.11.1-1
--	Initial build.
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.11.5-3
+-   GA - Bump release of all rpms
+*   Mon May 09 2016 Nick Shi <nshi@vmware.com> 0.11.5-2
+-   Configure fleet and add fleet to systemd service.
+*   Wed Feb 24 2016 Kumar Kaushik <kaushikk@vmware.com> 0.11.5-1
+-   Updated version.
+*   Mon Jul 13 2015 Danut Moraru <dmoraru@vmware.com> 0.11.1-1
+-   Initial build.
 

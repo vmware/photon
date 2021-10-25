@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.5.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=54d2bf161f011b9feb5f4cc18d3ca429ea70f5da
 License:        GPLv2+
@@ -19,6 +19,10 @@ BuildRequires:  libcap-ng-devel
 BuildRequires:  swig
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  systemd
+BuildRequires:  python2-devel
+BuildRequires:  python2-libs
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 Requires:       systemd
 Requires:       krb5
 Requires:       openldap
@@ -41,8 +45,6 @@ The libraries and header files needed for audit development.
 %package        python
 Summary:        Python bindings for libaudit
 License:        LGPLv2+
-BuildRequires:  python2-devel
-BuildRequires:  python2-libs
 Requires:       %{name} = %{version}-%{release}
 Requires:       python2
 
@@ -50,11 +52,9 @@ Requires:       python2
 The audit-python package contains the python2 bindings for libaudit
 and libauparse.
 
-%package  -n    python3-audit
+%package -n     python3-audit
 Summary:        Python3 bindings for libaudit
 License:        LGPLv2+
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 Requires:       %{name} = %{version}-%{release}
 Requires:       python3
 
@@ -66,7 +66,7 @@ and libauparse.
 %setup -q
 
 %build
-./configure \
+sh ./configure \
     --prefix=%{_prefix} \
     --exec_prefix=/usr \
     --sbindir=%{_sbindir} \
@@ -149,6 +149,8 @@ find %{buildroot} -name '*.la' -delete
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 2.5.2-2
+-   Bump up version to compile with new go
 *   Mon May 11 2020 Tapas Kundu <tkundu@vmware.com> 2.5.2-1
 -   Update to 2.5.2
 *   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 2.5-9

@@ -1,7 +1,7 @@
 Summary:       GoBGP based Calico BGP Daemon
 Name:          calico-bgp-daemon
 Version:       0.2.2
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       Apache-2.0
@@ -21,6 +21,7 @@ GoBGP based Calico BGP Daemon, an alternative to BIRD in calico/node.
 %setup -q
 
 %build
+export GO111MODULE=off
 mkdir -p /root/.glide
 mkdir -p ${GOPATH}/src/github.com/projectcalico/calico-bgp-daemon
 cp -r * ${GOPATH}/src/github.com/projectcalico/calico-bgp-daemon/.
@@ -38,6 +39,8 @@ install ${GOPATH}/src/github.com/projectcalico/calico-bgp-daemon/dist/calico-bgp
 %{_bindir}/calico-bgp-daemon
 
 %changelog
+*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.2-5
+-   Bump up version to compile with new go
 *   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 0.2.2-4
 -   Bump up version to compile with new go version
 *   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 0.2.2-3

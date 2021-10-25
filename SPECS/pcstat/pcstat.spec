@@ -1,7 +1,7 @@
 Summary:        A tool that inspect which pages of a file or files are being cached by the Linux kernel
-Name:           pcstat 
+Name:           pcstat
 Version:        1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Apache 
 URL:            https://github.com/tobert/pcstat
 Group:          Development/Debuggers
@@ -23,6 +23,7 @@ mkdir -p build/bin
 cp -r pcstat-master/* build/src/github.com/tobert/pcstat/.
 cd build
 export GOPATH=`pwd`
+export GO111MODULE=off
 cd bin
 export GOBIN=`pwd`
 export PATH=$PATH:$GOBIN
@@ -45,6 +46,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/pcstat
 
 %changelog
+*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1-8
+-   Bump up version to compile with new go
 *   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 1-7
 -   Bump up version to compile with new go version
 *   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 1-6

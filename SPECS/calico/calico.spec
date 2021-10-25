@@ -1,7 +1,7 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
 Version:        3.6.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/calico
 Source0:        %{name}-%{version}.tar.gz
@@ -15,7 +15,7 @@ BuildRequires:  go >= 1.11.9
 BuildRequires:  make
 
 %description
-Calico node is a container that bundles together various components reqiured for networking containers using project calico. This includes key components such as felix agent for programming routes and ACLs, BIRD routing daemon, and confd datastore monitor engine. 
+Calico node is a container that bundles together various components reqiured for networking containers using project calico. This includes key components such as felix agent for programming routes and ACLs, BIRD routing daemon, and confd datastore monitor engine.
 
 %prep
 %setup -n node-%{version}
@@ -28,7 +28,7 @@ pushd ${GOPATH}/src/github.com/projectcalico/node
 glide install --strip-vendor
 mkdir -p dist
 mkdir -p .go-pkg-cache
-CGO_ENABLED=0 go build -v -i -o dist/calico-node cmd/calico-node/main.go
+GO111MODULE=off CGO_ENABLED=0 go build -v -i -o dist/calico-node cmd/calico-node/main.go
 popd
 
 %install
@@ -47,6 +47,8 @@ sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/do
 /usr/share/calico/docker/fs/*
 
 %changelog
+*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 3.6.1-5
+-   Bump up version to compile with new go
 *   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 3.6.1-4
 -   Bump up version to compile with new go version
 *   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 3.6.1-3
