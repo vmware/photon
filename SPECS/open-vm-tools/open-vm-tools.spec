@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        11.3.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -72,7 +72,7 @@ The "open-vm-tools-sdmp" package contains a plugin for Service Discovery.
 %package        gosc
 Summary:        GOSC scripts
 Requires:       cloud-init
-Requires:       %{name} = %{version}
+Requires:       %{name} = %{version}-%{release}
 
 %description    gosc
 GOSC scripts
@@ -171,6 +171,8 @@ fi
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Tue Oct 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.5-4
+- Make GOSC scripts depend on full version of open-vm-tools
 * Mon Oct 25 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.5-3
 - Make GOSC scripts depend only on major version of open-vm-tools
 * Thu Oct 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.5-2
