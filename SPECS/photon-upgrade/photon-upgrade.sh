@@ -68,7 +68,7 @@ function rebuilddb() {
 function ask_for_reboot() {
   read -p "Reboot is recommended after an upgrade. Reboot now(y/n)?" yn
   case $yn in
-    [Yy]* ) reboot;;
+    [Yy]* ) /sbin/reboot;;
     [Nn]* ) exit;;
   esac
 }
