@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.61
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        5.10.75
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -32,7 +32,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=7bf2b48bccb0a7fce7a2cfaf801929b3e81f8709
+%define sha1 linux=9814ef632139d76c856a8ddb6c2ef8185a630abc
 Source1:	config_%{_arch}
 Source2:	initramfs.trigger
 %define ena_version 2.4.0
@@ -670,6 +670,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.75-1
+-   Update to version 5.10.75
 *   Thu Sep 09 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.61-2
 -   .config enable CONFIG_MOUSE_PS2_VMMOUSE and CONFIG_INPUT_UINPUT
 -   Enable sta by default

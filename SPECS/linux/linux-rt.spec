@@ -17,10 +17,10 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        5.10.61
+Version:        5.10.75
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt52
-Release:        2%{?kat_build:.kat}%{?dist}
+%define rt_version rt54
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -30,7 +30,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=7bf2b48bccb0a7fce7a2cfaf801929b3e81f8709
+%define sha1 linux=9814ef632139d76c856a8ddb6c2ef8185a630abc
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
@@ -388,7 +388,7 @@ Patch601:       0301-sched-Don-t-defer-CPU-pick-to-migration_cpu_stop.patch
 Patch602:       0302-printk-Enhance-the-condition-check-of-msleep-in-pr_f.patch
 Patch603:       0303-locking-rwsem-rt-Remove-might_sleep-in-__up_read.patch
 # Keep rt_version matched up with this patch.
-Patch604:       0304-Linux-5.10.59-rt52-REBASE.patch
+Patch604:       0304-Linux-5.10.73-rt54-REBASE.patch
 
 #Photon Specific Changes
 Patch700:       0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
@@ -1063,6 +1063,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.75-1
+-   Update to version 5.10.75
 *   Thu Sep 09 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.61-2
 -   .config enable CONFIG_MOUSE_PS2_VMMOUSE and CONFIG_INPUT_UINPUT
 -   Enable sta by default

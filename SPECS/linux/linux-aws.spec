@@ -7,8 +7,8 @@
 
 Summary:        Kernel
 Name:           linux-aws
-Version:        5.10.61
-Release:        2%{?dist}
+Version:        5.10.75
+Release:        1%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -19,7 +19,7 @@ Distribution: 	Photon
 
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=7bf2b48bccb0a7fce7a2cfaf801929b3e81f8709
+%define sha1 linux=9814ef632139d76c856a8ddb6c2ef8185a630abc
 Source1:	config-aws
 Source2:	initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -392,6 +392,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.75-1
+-   Update to version 5.10.75
 *   Thu Sep 09 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.61-2
 -   Remove no-vmw-sta as it is not supported in AWS.
 *   Fri Aug 27 2021 Ankit Jain <ankitja@vmware.com> 5.10.61-1
