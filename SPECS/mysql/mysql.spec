@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.26
+Version:        8.0.27
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 Source0:        https://dev.mysql.com/get/Downloads/MySQL-8.0/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=fbac872bbc125f0f05ce1f3224dbaeddf368da40
+%define         sha1 mysql-boost=7e466bfcdc78bb019fd23cb7b7ae76c8a5f4f816
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -78,6 +78,8 @@ make test %{?_smp_mflags}
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Wed Oct 27 2021 Tapas Kundu <tkundu@vmware.com> 8.0.27-1
+-   Update to 8.0.27
 *   Mon Aug 02 2021 Shreyas B <shreyasb@vmware.com> 8.0.26-1
 -   Update to 8.0.26
 *   Mon May 03 2021 Shreyas B <shreyasb@vmware.com> 8.0.24-1
