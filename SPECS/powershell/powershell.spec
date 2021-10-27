@@ -44,8 +44,6 @@ Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 Source5:        omi-%{libmi_tag}.tar.gz
 %define sha1    omi-%{libmi_tag}=823cbc445b631a094217d36050d35b59772a1407
 
-Source6:        lsb_release
-
 Patch0:         Remove-workarounds-for-.NET-5-RTM-builds.patch
 
 BuildArch:      x86_64
@@ -88,10 +86,6 @@ It consists of a cross-platform command-line shell and associated scripting lang
 
 %build
 # Build libmi
-cp %{SOURCE6} %{_bindir}
-chmod +x %{_bindir}/lsb_release
-ln -sfv %{_libdir}/libssl.so.1.1 %{_libdir}/libssl.so
-ln -sfv %{_libdir}/libcrypto.so.1.1 %{_libdir}/libcrypto.so
 cd %{_builddir}/omi/omi-%{libmi_tag}/Unix && ./configure && make %{?_smp_mflags}
 mv ./output/lib/libmi.so %{_builddir}/powershell-linux-%{version}
 
