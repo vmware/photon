@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
 Version:        1.51.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -18,6 +18,9 @@ Patch3:         CVE-2021-28879.patch
 Patch4:         CVE-2021-28878.patch
 Patch5:         CVE-2020-36323.patch
 Patch6:         CVE-2021-29922.patch
+Patch7:         0001-Fix-invalid-suggestions-for-non-ASCII-characters-in-.patch
+# CVE-2021-42574
+Patch8:         0002-Lint-against-RTL-unicode-codepoints-in-literals-and-.patch
 BuildRequires:  git
 BuildRequires:  cmake
 BuildRequires:  glibc
@@ -70,6 +73,8 @@ rm %{buildroot}%{_docdir}/%{name}/*.old
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+*   Thu Oct 28 2021 Ankit Jain <ankitja@vmware.com> 1.51.0-5
+-   Fixes CVE-2021-42574
 *   Mon Aug 23 2021 Ankit Jain <ankitja@vmware.com> 1.51.0-4
 -   Fixes CVE-2021-29922
 *   Tue May 04 2021 Ankit Jain <ankitja@vmware.com> 1.51.0-3
