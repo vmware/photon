@@ -1,6 +1,6 @@
 Summary:        Rust Programming Language
 Name:           rust
-Version:        1.54.0
+Version:        1.56.0
 Release:        1%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
@@ -10,7 +10,8 @@ Distribution:   Photon
 # Manually created Source tar which is equal to
 # Source0 + .git as it requires git hooks at build time
 Source0:        https://github.com/rust-lang/rust/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=febcbf0146a8a67780042f9d3d2178b1a692b41b
+%define sha1    %{name}-%{version}=f89514bc0d7ffda0d20552ce1a72b9ff5f3f5a4d
+Patch0:         CVE-2021-42574.patch
 BuildRequires:  git
 BuildRequires:  cmake
 BuildRequires:  glibc
@@ -18,6 +19,7 @@ BuildRequires:  binutils
 BuildRequires:  python3
 BuildRequires:  curl-devel
 BuildRequires:  ninja-build
+BuildRequires:  photon-release
 
 %description
 Rust Programming Language
@@ -63,6 +65,8 @@ rm %{buildroot}%{_docdir}/%{name}/*.old
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+*   Thu Oct 28 2021 Ankit Jain <ankitja@vmware.com> 1.56.0-1
+-   Updated to 1.56.0 and fix CVE-2021-42574
 *   Sat Aug 28 2021 Ankit Jain <ankitja@vmware.com> 1.54.0-1
 -   Updated to 1.54.0
 *   Mon Aug 23 2021 Ankit Jain <ankitja@vmware.com> 1.51.0-4
