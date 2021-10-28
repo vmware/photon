@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.78
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -680,6 +680,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 29 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.78-5
+-   Enable eBPF Net Packet filter support.
 *   Thu Nov 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.78-4
 -   Add PCI quirk to allow multiple devices under the same virtual
 -   PCI bridge to be put into separate IOMMU groups.
