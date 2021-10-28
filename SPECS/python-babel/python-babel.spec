@@ -3,15 +3,18 @@
 
 Name:           python-babel
 Version:        2.4.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        an integrated collection of utilities that assist in internationalizing and localizing Python applications
 License:        BSD3
 Group:          Development/Languages/Python
 Url:            http://babel.pocoo.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://pypi.python.org/packages/92/22/643f3b75f75e0220c5ef9f5b72b619ccffe9266170143a4821d4885198de/Babel-%{version}.tar.gz
 %define sha1    Babel=c3b247d17a34dc600c93f93f8f533029430bccb4
+
+Patch0:         CVE-2021-42771.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-devel
@@ -19,9 +22,18 @@ BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
 BuildRequires:  python-pytz
 BuildRequires:  python-pytest
+
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-pytz
+BuildRequires:  python3-pytest
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-pytz
+
 BuildArch:      noarch
 
 %description
@@ -34,22 +46,15 @@ The functionality Babel provides for internationalization (I18n) and localizatio
 
 %package -n     python3-babel
 Summary:        an integrated collection of utilities that assist in internationalizing and localizing Python applications
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-pytz
-BuildRequires:  python3-pytest
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-pytz
 
 %description -n python3-babel
-
 Python 3 version.
 
 %prep
-%setup -n Babel-%{version}
+%autosetup -p1 -n Babel-%{version}
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -83,9 +88,11 @@ popd
 %{python3_sitelib}/*
 
 %changelog
-*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.0-3
--   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
-*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.0-2
--   Change python to python2 and add python2 scripts to bin directory
-*   Tue Apr 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.0-1
--   Initial
+* Thu Oct 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.0-4
+- Fix CVE-2021-42771
+* Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.0-3
+- Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
+* Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.0-2
+- Change python to python2 and add python2 scripts to bin directory
+* Tue Apr 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.0-1
+- Initial
