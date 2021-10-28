@@ -3,15 +3,18 @@
 
 Name:           python-babel
 Version:        2.6.0
-Release:        3%{?dist}
-Summary:        an integrated collection of utilities that assist in internationalizing and localizing Python applications
+Release:        4%{?dist}
+Summary:        An integrated collection of utilities that assist in internationalizing and localizing Python applications
 License:        BSD3
 Group:          Development/Languages/Python
 Url:            http://babel.pocoo.org
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://pypi.python.org/packages/92/22/643f3b75f75e0220c5ef9f5b72b619ccffe9266170143a4821d4885198de/Babel-%{version}.tar.gz
 %define sha1    Babel=6aed99e4fb8a2a75de7815599f610cdcbb81e3c2
+
+Patch0:         CVE-2021-42771.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-devel
@@ -25,6 +28,7 @@ BuildRequires:  python3-pytz
 BuildRequires:  python3-pytest
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+
 %if %{with_check}
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
@@ -33,9 +37,11 @@ BuildRequires:  python3-six
 BuildRequires:  python-attrs
 BuildRequires:  python3-attrs
 %endif
+
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-pytz
+
 BuildArch:      noarch
 
 %description
@@ -53,11 +59,10 @@ Requires:       python3-libs
 Requires:       python3-pytz
 
 %description -n python3-babel
-
 Python 3 version.
 
 %prep
-%setup -n Babel-%{version}
+%autosetup -n Babel-%{version} -p1
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -95,15 +100,17 @@ popd
 %{python3_sitelib}/*
 
 %changelog
-*   Tue Aug 27 2019 Shreyas B. <shreyasb@vmware.com> 2.6.0-3
--   Fixed make check errors.
-*   Tue Nov 13 2018 Tapas Kundu <tkundu@vmware.com> 2.6.0-2
--   Fixed make check errors.
-*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.6.0-1
--   Update to version 2.6.0
-*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.0-3
--   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
-*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.0-2
--   Change python to python2 and add python2 scripts to bin directory
-*   Tue Apr 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.0-1
--   Initial
+* Thu Oct 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.6.0-4
+- Fix CVE-2021-42771
+* Tue Aug 27 2019 Shreyas B. <shreyasb@vmware.com> 2.6.0-3
+- Fixed make check errors.
+* Tue Nov 13 2018 Tapas Kundu <tkundu@vmware.com> 2.6.0-2
+- Fixed make check errors.
+* Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.6.0-1
+- Update to version 2.6.0
+* Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.4.0-3
+- Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
+* Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.0-2
+- Change python to python2 and add python2 scripts to bin directory
+* Tue Apr 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.4.0-1
+- Initial
