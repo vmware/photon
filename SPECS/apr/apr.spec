@@ -1,7 +1,7 @@
 Summary:        The Apache Portable Runtime
 Name:           apr
 Version:        1.7.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 URL:            https://apr.apache.org/
 Group:          System Environment/Libraries
@@ -12,6 +12,7 @@ Source0:        http://archive.apache.org/dist/%{name}/%{name}-%{version}.tar.gz
 %if %{with_check}
 Patch0:         apr-skip-getservbyname-test.patch
 %endif
+Patch1:         apr-1.7.0-CVE-2021-35940.patch
 %define         aprver  1
 
 %description
@@ -24,20 +25,17 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications.
 
 %prep
-%setup -q
-%if %{with_check}
-%patch0 -p1
-%endif
+%autosetup -p1
 
 %build
-%configure --prefix=/usr \
+%configure \
         --with-installbuilddir=%{_libdir}/apr/build-%{aprver} \
         --with-devrandom=/dev/urandom \
         CC=gcc CXX=g++
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
@@ -64,6 +62,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig
 
 %changelog
+*   Thu Oct 28 2021 Ankit Jain <ankitja@vmware.com> 1.7.0-3
+-   Fix CVE-2021-35940
 *   Tue Feb 16 2021 Ankit Jain <ankitja@vmware.com> 1.7.0-2
 -   Fix make check
 *   Mon Jul 13 2020 Gerrit Photon <photon-checkins@vmware.com> 1.7.0-1
