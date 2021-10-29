@@ -24,7 +24,7 @@ There are two similar ways in which you can replicate the Photon OS kernel logs 
 
 - The second uses an abstraction instead of a hard-coded address so that the same VProbes script can be used for any VM on an ESXi host that you have enabled for VProbe and copied its kernel symbol table (kallsyms) to ESXi.
 
-For more information on VMware VProbes, see [VProbes: Deep Observability Into the ESXi Hypervisor](https://labs.vmware.com/vmtj/vprobes-deep-observability-into-the-esxi-hypervisor) and the [VProbes Programming Reference](http://www.vmware.com/pdf/ws7_f3_vprobes_reference.pdf).
+For more information on VMware VProbes, see [Archived VProbe Toolkit](https://github.com/vmware-archive/vprobe-toolkit) and the [VProbes Programming Reference](http://www.vmware.com/pdf/ws7_f3_vprobes_reference.pdf).
 
 ## Using VProbes Script with a Hard-Coded Address
 
