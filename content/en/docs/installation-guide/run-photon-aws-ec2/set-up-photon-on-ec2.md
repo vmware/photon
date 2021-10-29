@@ -39,23 +39,19 @@ Perform the following steps to set up Photon OS on EC2
 
     When you bundle up an image for EC2, Amazon requires an RSA user signing certificate. You create the certificate by using openssl to first generate a private RSA key and then to generate the RSA certificate that references the private RSA key. Amazon uses the pairing of the private key and the user signing certificate for  handshake verification. 
     
-    1. On Ubuntu 14.04 or another workstation that includes `openssl`, run the following command to generate a private key. If you change the name of the key, keep in mind that you will need to include the name of the key in the next command, which generates the certificate.
+1. On Ubuntu 14.04 or another workstation that includes `openssl`, run the following command to generate a private key. If you change the name of the key, keep in mind that you will need to include the name of the key in the next command, which generates the certificate.
        	
-        ```
-    openssl genrsa 2048 > myprivatersakey.pem
-    ```
+        openssl genrsa 2048 > myprivatersakey.pem
    
-        Make a note of your private key as you will need it again later. 
+    Make a note of your private key as you will need it again later. 
     
-    1. Run the following command to generate the certificate. The command prompts you to provide more information, but because you are generating a user signing certificate, not a server certificate, you can just type `Enter` for each prompt to leave all the fields blank.
+1. Run the following command to generate the certificate. The command prompts you to provide more information, but because you are generating a user signing certificate, not a server certificate, you can just type `Enter` for each prompt to leave all the fields blank.
     	
-        ```
-openssl req -new -x509 -nodes -sha256 -days 365 -key myprivatersakey.pem -outform PEM -out certificate.pem
-```
-   
-        For more information, see the Create a Private Key and the Create the User Signing Certificate sections of [Setting Up the AMI Tools](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html#ami-upload-bundle).
+        openssl req -new -x509 -nodes -sha256 -days 365 -key myprivatersakey.pem -outform PEM -out certificate.pem
+
+    For more information, see the Create a Private Key and the Create the User Signing Certificate sections of [Setting Up the AMI Tools](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html#ami-upload-bundle).
     
-     1. Upload to AWS the certificate value from the `certificate.pem` file that you created in the previous command. Go to the Identity and Access Management console at https://console.aws.amazon.com/iam/, navigate to the name of your user, open the `Security Credentials` section, click `Manage Signing Certificates`, and then click `Upload Signing Certificate`. Open `certificate.pem` in a text editor, copy and paste the contents of the file into the `Certificate Body` field, and then click `Upload Signing Certificate`.
+1. Upload to AWS the certificate value from the `certificate.pem` file that you created in the previous command. Go to the Identity and Access Management console at https://console.aws.amazon.com/iam/, navigate to the name of your user, open the `Security Credentials` section, click `Manage Signing Certificates`, and then click `Upload Signing Certificate`. Open `certificate.pem` in a text editor, copy and paste the contents of the file into the `Certificate Body` field, and then click `Upload Signing Certificate`.
     
     For more information, see the Upload the User Signing Certificate section of [Setting Up the AMI Tools](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html#ami-upload-bundle).
 
@@ -63,15 +59,15 @@ openssl req -new -x509 -nodes -sha256 -days 365 -key myprivatersakey.pem -outfor
 
     Create a security group and set it to allow SSH, HTTP, and HTTPS connections over ports 22, 80, and 443, respectively.
     Connect to the EC2 command-line interface and run the following commands: 
-    
-    	aws ec2 create-security-group --group-name photon-sg --description "My Photon security group"
-    	{
-    	    "GroupId": "sg-d027efb4"
-    	}
-    	aws ec2 authorize-security-group-ingress --group-name photon-sg --protocol tcp --port 22 --cidr 0.0.0.0/0
-    
+
+        aws ec2 create-security-group --group-name photon-sg --description "My Photon security group"
+        {
+            "GroupId": "sg-d027efb4"
+        }
+        aws ec2 authorize-security-group-ingress --group-name photon-sg --protocol tcp --port 22 --cidr 0.0.0.0/0
+
     Make a note of the `GroupId` that is returned by EC2 as you will need it again later.
-    
+
     By using `0.0.0.0/0` for SSH ingress on Port 22, you open the port to all IP addresses--which is not a security best practice but a convenience for the examples in this article. For a production instance or other instances that are anything more than temporary machines, you must authorize only a specific IP address or range of addresses. For more information, see [Authorizing Inbound Traffic for Linux Instances](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html).
     
     Repeat the command to allow incoming traffic on Port 80 and on Port 443: 
@@ -95,7 +91,7 @@ openssl req -new -x509 -nodes -sha256 -days 365 -key myprivatersakey.pem -outfor
 
     Run the `ec2-bundle-image` command to create an instance store-backed Linux AMI from the Photon OS image that you extracted in the previous step. The result of the `ec2-bundle-image` command is a manifest that describes the machine in an XML file. 
     
-    The command uses the certificate path to your PEM-encoded RSA public key certificate file, the path to your PEM-encoded RSA private key file, your EC2 user account ID; the correct architecture for Photon OS, the path to the Photon OS AMI image extracted from its tar file, and the `bundled` directory from the previous step. 
+    The command uses the certificate path to your PEM-encoded RSA public key certificate file, the path to your PEM-encoded RSA private key file, your EC2 user account ID; the    correct architecture for Photon OS, the path to the Photon OS AMI image extracted from its tar file, and the `bundled` directory from the previous step. 
     
     Replace the values of the certificate path, the private key, and the user account with your own values.
     
@@ -164,6 +160,6 @@ openssl req -new -x509 -nodes -sha256 -days 365 -key myprivatersakey.pem -outfor
     
     	$ aws ec2 describe-instances --instance-ids <instance-id> --query 'Reservations[*].Instances[*].PublicIpAddress' --output=text
     
-Optionally, check the cloud-init output log file on EC2 at `/var/log/cloud-init-output.log` to see how EC2 handles the settings in the cloud-init data file. 
+    Optionally, check the cloud-init output log file on EC2 at `/var/log/cloud-init-output.log` to see how EC2 handles the settings in the cloud-init data file. 
     
-For more information on using cloud-init user data on EC2, see [Running Commands on Your Linux Instance at Launch](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html).
+    For more information on using cloud-init user data on EC2, see [Running Commands on Your Linux Instance at Launch](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html).
