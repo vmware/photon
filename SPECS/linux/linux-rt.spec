@@ -2,9 +2,9 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.208
+Version:        4.19.214
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt88
+%define rt_version rt92
 Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=2bd7234fd0085d2144b97115780bf38b451ba735
+%define sha1 linux=0e29837f0d1ce72085e5ee9225927683f2e44ee1
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
@@ -449,7 +449,7 @@ Patch537:       0337-locking-rwsem_rt-Add-__down_read_interruptible.patch
 Patch538:       0338-Linux-4.19.206-rt87-REBASE.patch
 Patch539:       0339-locking-rwsem-rt-Remove-might_sleep-in-__up_read.patch
 # Keep rt_version matched up with this patch.
-Patch540:       0340-Linux-4.19.207-rt88-REBASE.patch
+Patch540:       0340-Linux-4.19.212-rt92-REBASE.patch
 
 #Photon Specific Changes
 Patch600:        0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
@@ -1165,6 +1165,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.214-1
+-   Update to version 4.19.214
 *   Wed Sep 29 2021 Keerthana K <keerthanak@vmware.com> 4.19.208-1
 -   Update to version 4.19.208
 *   Fri Aug 27 2021 srinidhira0 <srinidhir@vmware.com> 4.19.205-1
