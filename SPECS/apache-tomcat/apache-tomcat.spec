@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.60
-Release:        4%{?dist}
+Version:        8.5.72
+Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -9,15 +9,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
 Source0:        https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1    apache-tomcat=4cd25e0585f4df84b963ceb80c03bd228cbd75b2
+%define sha1    apache-tomcat=9514320e5715d81a5b25833e7edbeaefec2078be
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha1    base=912491fe407c6052f4d0b1526f8f310523eecb09
+%define sha1    base=b6f6ebc3f598f0d82dece8d9a491db4a2ae7c908
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
-Patch1:         apache-tomcat-CVE-2021-25122.patch
-Patch2:         apache-tomcat-CVE-2021-25329.patch
-Patch3:         apache-tomcat-CVE-2021-33037.patch
-Patch4:         apache-tomcat-CVE-2021-41079.patch
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
 BuildRequires:  apache-ant
@@ -104,6 +100,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Fri Oct 29 2021 Dweep Advani <dadvani@vmware.com> 8.5.72-1
+-   Upgrade to 8.5.72 to address CVE-2021-42340
 *   Thu Sep 30 2021 Nitesh Kumar <kunitesh@vmware.com> 8.5.60-4
 -   Fix CVE-2021-41079
 *   Fri Jul 23 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.60-3
