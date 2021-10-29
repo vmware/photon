@@ -100,7 +100,7 @@ skip_if_unavailable=True
 
 In this case, `rpm-ostree` is instructed to download its packages in RPM format from the bintray URL, that is the location of an online RPMS repo maintained by the WMware Photon OS team. To make sure those packages are genuine, signed by VMware, the signature is checked against the official VMware public key.
 
-So what's in an RPMS repository? If we point the browser to https://dl.bintray.com/vmware/photon_release_3.0_x86_64, we can see there are three top directories:
+So what's in an RPMS repository? If we point the browser to https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64, we can see there are three top directories:
 * noarch - where all packages that don't depend on the architecture reside. Those may contain scripts, platform neutral source files, configuration.
 * x86_64 - platform dependent packages for Intel 32 and 64 bits CPUs.
 * repodata - internal repo management data, like a catalog of all packages, and for every package its name, id, version, architecture and full path file/directory list. There is also a compressed XML file containing the history of changelogs extracted from github, as packages in RPM format were built by Photon OS team members from sources.
