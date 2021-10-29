@@ -7,7 +7,7 @@ To try out new packages or the latest versions of existing packages as they are 
 
 Perform th following steps:
 
-1. On your Photon OS machine, run the following command as root to create a repository configuration file named `photon-dev.repo`, place it in `/etc/yum.repos.d`, and concatenate the repository information into the file: 
+1. On your Photon OS machine, run the following command as root to create a repository configuration file named `photon-dev.repo`, place it in `/etc/yum.repos.d`, and concatenate the repository information into the file.
 ```
 cat > /etc/yum.repos.d/photon-dev.repo << "EOF" 
     [photon-dev]
@@ -18,7 +18,7 @@ cat > /etc/yum.repos.d/photon-dev.repo << "EOF"
     enabled=1
     skip_if_unavailable=True
     EOF
-``` . 
+```
 
 2. After establishing a new repository, run the following command to update the cached binary metadata for the repositories that `tdnf` polls: 
     
