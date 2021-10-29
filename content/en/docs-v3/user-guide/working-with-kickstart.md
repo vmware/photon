@@ -26,12 +26,14 @@ Photon OS supports the following configurations with kickstart:
 
 The following is a list of allowed JSON fields and their descriptions:
 
-<table style="height: 170px;" border="1" width="250" cellspacing="0" cellpadding="10">
-	<tbody>
+<table>
+	<thead>
 	<tr>
-	<td><b>Field</b></td>
-	<td><b>Description</b></td>
+	<th><b>Field</b></th>
+	<th><b>Description</b></th>
 	</tr>
+	</thead>		
+	<tbody>	
 	<tr>
 	<td>hostname</td>
 	<td>The host name as string. You can also specify the name in printf format. 
@@ -68,12 +70,10 @@ This indicates that the "text" field is plain text. It is then encrypted and use
 <p>]
 <p><b>To create LVM partitions</b>
 <p> Example:<p>[
-                <p>{"mountpoint": "/", "size": 0, "filesystem": "ext4", "lvm":{"vg_name":"vg1", "lv_name":"rootfs"}},
-               <p> {"mountpoint": "/boot", "size": 128, "filesystem": "ext4"},
-
-                <p>{"mountpoint": "/root", "size": 128, "filesystem": "ext4","lvm":{"vg_name":"vg1", "lv_name":"root"}},
-
-                <p>{"size": 128, "filesystem": "swap","lvm":{"vg_name":"vg2", "lv_name":"swap"}}
+	<p>{"mountpoint": "/", "size": 0, "filesystem": "ext4", "lvm":{"vg_name":"vg1", "lv_name":"rootfs"}},
+	<p> {"mountpoint": "/boot", "size": 128, "filesystem": "ext4"},
+	<p>{"mountpoint": "/root", "size": 128, "filesystem": "ext4","lvm":{"vg_name":"vg1", "lv_name":"root"}},
+	<p>{"size": 128, "filesystem": "swap","lvm":{"vg_name":"vg2", "lv_name":"swap"}}
 ]
 <p><b>Note</b>: Mounting '/boot' partition as lvm is not supported.
 </td>
