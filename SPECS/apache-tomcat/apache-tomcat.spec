@@ -1,7 +1,7 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.68
-Release:        2%{?dist}
+Version:        8.5.72
+Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
 Group:          Applications/System
@@ -9,10 +9,10 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
 Source0:        https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1    apache-tomcat=df25edd846c2c5c355f8ed89f4175d457fd92a35
+%define sha1    apache-tomcat=9514320e5715d81a5b25833e7edbeaefec2078be
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha1    base=cecf4cbb8eba1826bed75c42233755f5d6313f31
+%define sha1    base=b6f6ebc3f598f0d82dece8d9a491db4a2ae7c908
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
@@ -100,6 +100,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Fri Oct 29 2021 Dweep Advani <dadvani@vmware.com> 8.5.72-1
+-   Upgrade to 8.5.72 to address CVE-2021-42340
 *   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 8.5.68-2
 -   Replacement of ITS suggested words.
 *   Tue Jul 20 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.68-1
