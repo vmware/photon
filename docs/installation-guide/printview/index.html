@@ -180,127 +180,48 @@ Build completed. RPMS are in '&lt;HOME&gt;/photon/tools/examples/build_spec/simp
 <img src=../../../docs/images/Configure_the_network.png alt="Configure the network">.</p></li></ol></li><li><p>Select the Linux Kernel</p><p>Select a Linux kernel to install.</p><p><img src=../../../docs/installation-guide/images/linuxflavor17.png alt="Linux Kernel"></p><ul><li><strong>Hypervisor optimized</strong> means that any components that are not needed for running under a VMware hypervisor have been removed for faster boot times.</li><li><strong>Generic</strong> means that all components are included.</li></ul><p>Choose <strong>Next</strong> and press the Enter key.</p></li><li><p>Specify the Hostname</p><p>The installer prompts you for a hostname and suggest a randomly generated, unique hostname that you can change if you want.</p><p><img src=../../../docs/installation-guide/images/hostname18.png alt=Hostname></p><p>Press the Enter key.</p></li><li><p>Specify the System root Password</p><p><strong><em>Note</em></strong> <em>: Photon OS will not permit commonly used dictionary words to be set as a root password.</em></p><p>The installer prompts you to enter the system root password. Type the password and press the Enter key.</p><p><img src=../../../docs/installation-guide/images/rootpassword19.png alt="Root password"></p><p>The installer prompts you to confirm the root password by typing it a second time.</p><p><img src=../../../docs/installation-guide/images/confirmrootpassword20.png alt="Password confirmation"></p><p>Press the Enter key. The installer proceeds to install the software. Installation times will vary based on the system hardware and installation options you selected. Most installations complete in less than one minute.</p></li><li><p>Reboot the VM and Log In</p><p>Once finished, the installer displays a confirmation message (which includes how long it took to install Photon OS) and prompts you to press a key on your keyboard to boot the new VM.</p><p><img src=../../../docs/installation-guide/images/installationcomplete22.png alt="Boot VM"></p><p>Press any key on the keyboard and the virtual machine will reboot into Photon OS.</p><p>As the initial boot process begins, the installer displays the Photon splash screen, and then a login prompt.</p><p><img src=../../../docs/installation-guide/images/splashscreen23.png alt="Login prompt"></p><p>At the login prompt, type <strong>root</strong> as the username and provide the password chosen during the installation.</p><p><img src=../../../docs/installation-guide/images/loginprompt24.png alt=Password></p></li></ol><p>You can now use your container runtime environment and deploy a containerized application.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-535d80257a605affbcfa3cd7f4b405c7>8 - Running Photon OS on Amazon Elastic Cloud Compute</h1><p>You can set up Photon OS on Amazon Web Services Elastic Cloud Compute (EC2), customize it with cloud-init, connect to it with SSH.</p><p>After you set up Photon OS, you can run a containerized application.</p></div><div class=td-content><h1 id=pg-7e44b1d49947e5e0f228af5c2d22a820>8.1 - Prerequisites for Running Photon OS on AWS EC2</h1><p>Before you use Photon OS with Amazon Elastic Cloud Compute(AWS EC2), perform the following prerequisite tasks:</p><ol><li><p>Verify that you have the following resources:</p><ul><li><strong>AWS account</strong>. Working with EC2 requires an Amazon account for AWS with valid payment information. Keep in mind that, if you try the examples in this document, you will be charged by Amazon. See <a href=http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/get-set-up-for-amazon-ec2.html>Setting Up with Amazon EC2</a>.</li><li><strong>Amazon tools</strong>. The following examples also assume that you have installed and configured the Amazon AWS CLI and the EC2 CLI and AMI tools, including ec2-ami-tools.</li></ul><p>For more information, see <a href=http://docs.aws.amazon.com/cli/latest/userguide/installing.html>Installing the AWS Command Line Interface</a>, <a href=http://docs.aws.amazon.com/AWSEC2/latest/CommandLineReference/set-up-ec2-cli-linux.html>Setting Up the Amazon EC2 Command Line Interface Tools on Linux</a>, and <a href=http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html>Configuring AWS Command-Line Interface</a>. Also see <a href=http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html>Setting Up the AMI Tools</a>.</p><p>The procedure in this section uses an Ubuntu 14.04 workstation to generate the keys and certificates that AWS requires.</p></li><li><p>Download the Photon OS image for Amazon.</p><p>VMware packages Photon OS as a cloud-ready Amazon machine image (AMI) that you can download for free from <a href=https://packages.vmware.com/photon/>https://packages.vmware.com/photon/</a>.</p><p>Download the Photon OS AMI and save it on your workstation. For more infromation, see <a href=../../downloading-photon/>Downloading Photon OS</a>.</p><p><strong>Note</strong>: The AMI version of Photon is a virtual appliance with the information and packages that Amazon needs to launch an instance of Photon in the cloud. To build the AMI version, VMware starts with the minimal version of Photon OS and adds the sudo and tar packages to it.</p></li></ol></div><div class=td-content style=page-break-before:always><h1 id=pg-13bdc4e2d439d9398ab01daeeb4bb1ec>8.2 - Set Up Photon OS on EC2</h1><p>To run Photon OS on EC2, you must use cloud-init with an EC2 data source. The cloud-init service configures the cloud instance of a Linux image. An <em>instance</em> is a virtual server in the Amazon cloud.</p><p>The examples in this section show how to generate SSH and RSA keys for your Photon instance, upload the Photon OS <code>.ami</code> image to the Amazon cloud, and configure it with cloud-init. In the examples, replace information with your own paths, account details, or other information from Amazon.</p><p>Perform the following steps to set up Photon OS on EC2</p><ol><li><p>Create a key pair.</p><p>Generate SSH keys on, for instance, an Ubuntu workstation:</p><pre><code>ssh-keygen -f ~/.ssh/mykeypair
 </code></pre><p>The command generates a public key in the file with a <code>.pub</code> extension and a private key in a file with no extension. Keep the private key file and remember the name of your key pair. The name is the file name of the two files without an extension. You will need the name later to connect to the Photon instance.</p><p>Change the mode bits of the public key pair file to protect its security. In the command, include the path to the file if you need to.</p><pre><code>chmod 600 mykeypair.pub
 </code></pre><p>Change the mode bits on your private key pair file so that only you can view it:</p><pre><code>chmod 400 mykeypair
-</code></pre><p>To import your public key pair file, but not your private key pair file, connect to the EC2 console at <a href=https://console.aws.amazon.com/ec2/>https://console.aws.amazon.com/ec2/</a> and select the region for the key pair. A key pair works only in one region, and the instance of Photon OS that will be uploaded later must be in the same region as the key pair. Select <code>key pairs</code> under <code>Network & Security</code>, and then import the public key pair file that you generated earlier.</p><p>For more information, see <a href=http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#how-to-generate-your-own-key-and-import-it-to-aws>Importing Your Own Key Pair to Amazon EC2</a>.</p></li><li><p>Generate a certificate.</p><p>When you bundle up an image for EC2, Amazon requires an RSA user signing certificate. You create the certificate by using openssl to first generate a private RSA key and then to generate the RSA certificate that references the private RSA key. Amazon uses the pairing of the private key and the user signing certificate for handshake verification.</p><ol><li><p>On Ubuntu 14.04 or another workstation that includes <code>openssl</code>, run the following command to generate a private key. If you change the name of the key, keep in mind that you will need to include the name of the key in the next command, which generates the certificate.</p><pre><code></code></pre></li></ol><p>openssl genrsa 2048 > myprivatersakey.pem</p><pre><code>
-    Make a note of your private key as you will need it again later. 
+</code></pre><p>To import your public key pair file, but not your private key pair file, connect to the EC2 console at <a href=https://console.aws.amazon.com/ec2/>https://console.aws.amazon.com/ec2/</a> and select the region for the key pair. A key pair works only in one region, and the instance of Photon OS that will be uploaded later must be in the same region as the key pair. Select <code>key pairs</code> under <code>Network & Security</code>, and then import the public key pair file that you generated earlier.</p><p>For more information, see <a href=http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-key-pairs.html#how-to-generate-your-own-key-and-import-it-to-aws>Importing Your Own Key Pair to Amazon EC2</a>.</p></li><li><p>Generate a certificate.</p><p>When you bundle up an image for EC2, Amazon requires an RSA user signing certificate. You create the certificate by using openssl to first generate a private RSA key and then to generate the RSA certificate that references the private RSA key. Amazon uses the pairing of the private key and the user signing certificate for handshake verification.</p></li><li><p>On Ubuntu 14.04 or another workstation that includes <code>openssl</code>, run the following command to generate a private key. If you change the name of the key, keep in mind that you will need to include the name of the key in the next command, which generates the certificate.</p><pre><code> openssl genrsa 2048 &gt; myprivatersakey.pem
+</code></pre><p>Make a note of your private key as you will need it again later.</p></li><li><p>Run the following command to generate the certificate. The command prompts you to provide more information, but because you are generating a user signing certificate, not a server certificate, you can just type <code>Enter</code> for each prompt to leave all the fields blank.</p><pre><code> openssl req -new -x509 -nodes -sha256 -days 365 -key myprivatersakey.pem -outform PEM -out certificate.pem
+</code></pre><p>For more information, see the Create a Private Key and the Create the User Signing Certificate sections of <a href=http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html#ami-upload-bundle>Setting Up the AMI Tools</a>.</p></li><li><p>Upload to AWS the certificate value from the <code>certificate.pem</code> file that you created in the previous command. Go to the Identity and Access Management console at <a href=https://console.aws.amazon.com/iam/,>https://console.aws.amazon.com/iam/,</a> navigate to the name of your user, open the <code>Security Credentials</code> section, click <code>Manage Signing Certificates</code>, and then click <code>Upload Signing Certificate</code>. Open <code>certificate.pem</code> in a text editor, copy and paste the contents of the file into the <code>Certificate Body</code> field, and then click <code>Upload Signing Certificate</code>.</p><p>For more information, see the Upload the User Signing Certificate section of <a href=http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html#ami-upload-bundle>Setting Up the AMI Tools</a>.</p></li><li><p>Create a security group.</p><p>Create a security group and set it to allow SSH, HTTP, and HTTPS connections over ports 22, 80, and 443, respectively.
+Connect to the EC2 command-line interface and run the following commands:</p><pre><code> aws ec2 create-security-group --group-name photon-sg --description &quot;My Photon security group&quot;
+ {
+     &quot;GroupId&quot;: &quot;sg-d027efb4&quot;
+ }
+ aws ec2 authorize-security-group-ingress --group-name photon-sg --protocol tcp --port 22 --cidr 0.0.0.0/0
+</code></pre><p>Make a note of the <code>GroupId</code> that is returned by EC2 as you will need it again later.</p><p>By using <code>0.0.0.0/0</code> for SSH ingress on Port 22, you open the port to all IP addresses&ndash;which is not a security best practice but a convenience for the examples in this article. For a production instance or other instances that are anything more than temporary machines, you must authorize only a specific IP address or range of addresses. For more information, see <a href=http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html>Authorizing Inbound Traffic for Linux Instances</a>.</p><p>Repeat the command to allow incoming traffic on Port 80 and on Port 443:</p><pre><code> aws ec2 authorize-security-group-ingress --group-name photon-sg --protocol tcp --port 80 --cidr 0.0.0.0/0
 
-1. Run the following command to generate the certificate. The command prompts you to provide more information, but because you are generating a user signing certificate, not a server certificate, you can just type `Enter` for each prompt to leave all the fields blank.
-
-    ```
-</code></pre></li></ol><p>openssl req -new -x509 -nodes -sha256 -days 365 -key myprivatersakey.pem -outform PEM -out certificate.pem</p><pre><code>   
-        For more information, see the Create a Private Key and the Create the User Signing Certificate sections of [Setting Up the AMI Tools](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html#ami-upload-bundle).
-    
-     1. Upload to AWS the certificate value from the `certificate.pem` file that you created in the previous command. Go to the Identity and Access Management console at https://console.aws.amazon.com/iam/, navigate to the name of your user, open the `Security Credentials` section, click `Manage Signing Certificates`, and then click `Upload Signing Certificate`. Open `certificate.pem` in a text editor, copy and paste the contents of the file into the `Certificate Body` field, and then click `Upload Signing Certificate`.
-    
-    For more information, see the Upload the User Signing Certificate section of [Setting Up the AMI Tools](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/set-up-ami-tools.html#ami-upload-bundle).
-
-1. Create a security group.
-
-    Create a security group and set it to allow SSH, HTTP, and HTTPS connections over ports 22, 80, and 443, respectively.
-    Connect to the EC2 command-line interface and run the following commands: 
-    
-    	aws ec2 create-security-group --group-name photon-sg --description &quot;My Photon security group&quot;
-    	{
-    	    &quot;GroupId&quot;: &quot;sg-d027efb4&quot;
-    	}
-    	aws ec2 authorize-security-group-ingress --group-name photon-sg --protocol tcp --port 22 --cidr 0.0.0.0/0
-    
-    Make a note of the `GroupId` that is returned by EC2 as you will need it again later.
-    
-    By using `0.0.0.0/0` for SSH ingress on Port 22, you open the port to all IP addresses--which is not a security best practice but a convenience for the examples in this article. For a production instance or other instances that are anything more than temporary machines, you must authorize only a specific IP address or range of addresses. For more information, see [Authorizing Inbound Traffic for Linux Instances](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/authorizing-access-to-an-instance.html).
-    
-    Repeat the command to allow incoming traffic on Port 80 and on Port 443: 
-    
-    	aws ec2 authorize-security-group-ingress --group-name photon-sg --protocol tcp --port 80 --cidr 0.0.0.0/0
-    
-    	aws ec2 authorize-security-group-ingress --group-name photon-sg --protocol tcp --port 443 --cidr 0.0.0.0/0
-    
-    Check your update: 
-    
-    	aws ec2 describe-security-groups --group-names photon-sg
-
-1. Extract the tarball.
-
-    Make a directory to store the image and then extract the Photon OS image from its archive by running the following `tar` command. If required, change the file name to match the version you have.    
-    
-    	mkdir bundled
-    	tar -zxvf ./photon-ami.tar.gz
-
-1. Bundle the image.
-
-    Run the `ec2-bundle-image` command to create an instance store-backed Linux AMI from the Photon OS image that you extracted in the previous step. The result of the `ec2-bundle-image` command is a manifest that describes the machine in an XML file. 
-    
-    The command uses the certificate path to your PEM-encoded RSA public key certificate file, the path to your PEM-encoded RSA private key file, your EC2 user account ID; the correct architecture for Photon OS, the path to the Photon OS AMI image extracted from its tar file, and the `bundled` directory from the previous step. 
-    
-    Replace the values of the certificate path, the private key, and the user account with your own values.
-    
-    	$ ec2-bundle-image --cert certificate.pem --privatekey myprivatersakey.pem --user &lt;EC2 account id&gt;  --arch x86_64 --image photon-ami.raw --destination ./bundled/
-
-1. Put the bundle in a bucket.
-
-    Make an S3 bucket, replacing `&lt;bucket-name&gt;` with the name that you want. The command creates the bucket in the region specified in your Amazon configuration file, which should be the same region in which you are using your key pair file: 
-    
-    	$ aws s3 mb s3://&lt;bucket-name&gt;
-    
-    Upload the bundle to the Amazon S3 cloud. The following command includes the path to the XML file containing the manifest for the Photon OS machine created during the previous step, though you might have to change the file name to match the version you have. The manifest file is typically located in the same directory as the bundle. 
-    
-    The command also includes the name of the Amazon S3 bucket in which the bundle is to be stored; your AWS access key ID; and your AWS secret access key.
-    
-    	$ ec2-upload-bundle --manifest ./bundled/photon-ami.manifest.xml --bucket &lt;bucket-name&gt; --access-key &lt;Account Access Key&gt; --secret-key &lt;Account Secret key&gt;
-
-1. Register the Image
-
-    Run the following command to register the image. The command includes a name for the AMI, its architecture, and its virtualization type. The virtualization type for Photon OS is `hvm`.
-    
-    	$ ec2-register &lt;bucket-name&gt;/photon-ami.manifest.xml --name photon-ami --architecture x86_64 --virtualization-type hvm
-    
-    Once the image is registered, you can launch as many new instances as you require.
-
-1. Run an instance of the image with Cloud-Init.
-
-    In the below command, the `user-data-file` option instructs cloud-init to import the cloud-config data in `user-data.txt`.  
-    
-    Before you run the command, change directories to the directory containing the `mykeypair` file and add the path to the `user-data.txt`. 
-    
-    	$ ec2-run-instances &lt;ami-ID&gt; --instance-type m3.medium -g photon-sg --key mykeypair --user-data-file user-data.txt
-    
-    The command also includes the ID of the AMI, which you can obtain by running `ec2-describe-images`. Replace the instance type of `m3.medium` and the name of key pair with your own values to be able to connect to the instance. 
-    
-    The following are the contents of the `user-data.txt` file that `cloud-init` applies to the machine the first time it boots up in the cloud.  
-    
-    	#cloud-config
-    	hostname: photon-on-01
-    	groups:
-    	- cloud-admins
-    	- cloud-users
-    	users:
-    	- default
-    	- name: photonadmin
-    	   gecos: photon test admin user
-    	   primary-group: cloud-admins
-    	   groups: cloud-users
-    	   lock-passwd: false
-    	   passwd: vmware
-    	- name: photonuser
-    	   gecos: photon test user
-    	   primary-group: cloud-users
-    	   groups: users
-    	   passwd: vmware
-    	packages:
-    	- vim
-
-1. Get the IP address of your image.
-
-    Run the following command to check on the state of the instance that you launched: 
-    
-    	$ ec2-describe-instances
-    
-    Obtain the external IP address of the instance by running the following query: 
-    
-    	$ aws ec2 describe-instances --instance-ids &lt;instance-id&gt; --query 'Reservations[*].Instances[*].PublicIpAddress' --output=text
-    
-Optionally, check the cloud-init output log file on EC2 at `/var/log/cloud-init-output.log` to see how EC2 handles the settings in the cloud-init data file. 
-    
-For more information on using cloud-init user data on EC2, see [Running Commands on Your Linux Instance at Launch](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html).</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-c217b6cbe163c7d25a8803f7e23c0069>8.3 - Deploy a Containerized Application in Photon OS</h1><p>Connect to the Photon instance by using SSH and to launch a web server by running it in Docker.</p><ol><li><p>Connect with SSH</p><p>Connect to the instance over SSH by specifying the private key (.pem) file and the user name for the Photon machine, which is <code>root</code>:</p><pre><code> ssh -i ~/.ssh/mykeypair root@&lt;public-ip-address-of-instance&gt;
+ aws ec2 authorize-security-group-ingress --group-name photon-sg --protocol tcp --port 443 --cidr 0.0.0.0/0
+</code></pre><p>Check your update:</p><pre><code> aws ec2 describe-security-groups --group-names photon-sg
+</code></pre></li><li><p>Extract the tarball.</p><p>Make a directory to store the image and then extract the Photon OS image from its archive by running the following <code>tar</code> command. If required, change the file name to match the version you have.</p><pre><code> mkdir bundled
+ tar -zxvf ./photon-ami.tar.gz
+</code></pre></li><li><p>Bundle the image.</p><p>Run the <code>ec2-bundle-image</code> command to create an instance store-backed Linux AMI from the Photon OS image that you extracted in the previous step. The result of the <code>ec2-bundle-image</code> command is a manifest that describes the machine in an XML file.</p><p>The command uses the certificate path to your PEM-encoded RSA public key certificate file, the path to your PEM-encoded RSA private key file, your EC2 user account ID; the correct architecture for Photon OS, the path to the Photon OS AMI image extracted from its tar file, and the <code>bundled</code> directory from the previous step.</p><p>Replace the values of the certificate path, the private key, and the user account with your own values.</p><pre><code> $ ec2-bundle-image --cert certificate.pem --privatekey myprivatersakey.pem --user &lt;EC2 account id&gt;  --arch x86_64 --image photon-ami.raw --destination ./bundled/
+</code></pre></li><li><p>Put the bundle in a bucket.</p><p>Make an S3 bucket, replacing <code>&lt;bucket-name></code> with the name that you want. The command creates the bucket in the region specified in your Amazon configuration file, which should be the same region in which you are using your key pair file:</p><pre><code> $ aws s3 mb s3://&lt;bucket-name&gt;
+</code></pre><p>Upload the bundle to the Amazon S3 cloud. The following command includes the path to the XML file containing the manifest for the Photon OS machine created during the previous step, though you might have to change the file name to match the version you have. The manifest file is typically located in the same directory as the bundle.</p><p>The command also includes the name of the Amazon S3 bucket in which the bundle is to be stored; your AWS access key ID; and your AWS secret access key.</p><pre><code> $ ec2-upload-bundle --manifest ./bundled/photon-ami.manifest.xml --bucket &lt;bucket-name&gt; --access-key &lt;Account Access Key&gt; --secret-key &lt;Account Secret key&gt;
+</code></pre></li><li><p>Register the Image</p><p>Run the following command to register the image. The command includes a name for the AMI, its architecture, and its virtualization type. The virtualization type for Photon OS is <code>hvm</code>.</p><pre><code> $ ec2-register &lt;bucket-name&gt;/photon-ami.manifest.xml --name photon-ami --architecture x86_64 --virtualization-type hvm
+</code></pre><p>Once the image is registered, you can launch as many new instances as you require.</p></li><li><p>Run an instance of the image with Cloud-Init.</p><p>In the below command, the <code>user-data-file</code> option instructs cloud-init to import the cloud-config data in <code>user-data.txt</code>.</p><p>Before you run the command, change directories to the directory containing the <code>mykeypair</code> file and add the path to the <code>user-data.txt</code>.</p><pre><code> $ ec2-run-instances &lt;ami-ID&gt; --instance-type m3.medium -g photon-sg --key mykeypair --user-data-file user-data.txt
+</code></pre><p>The command also includes the ID of the AMI, which you can obtain by running <code>ec2-describe-images</code>. Replace the instance type of <code>m3.medium</code> and the name of key pair with your own values to be able to connect to the instance.</p><p>The following are the contents of the <code>user-data.txt</code> file that <code>cloud-init</code> applies to the machine the first time it boots up in the cloud.</p><pre><code> #cloud-config
+ hostname: photon-on-01
+ groups:
+ - cloud-admins
+ - cloud-users
+ users:
+ - default
+ - name: photonadmin
+    gecos: photon test admin user
+    primary-group: cloud-admins
+    groups: cloud-users
+    lock-passwd: false
+    passwd: vmware
+ - name: photonuser
+    gecos: photon test user
+    primary-group: cloud-users
+    groups: users
+    passwd: vmware
+ packages:
+ - vim
+</code></pre></li><li><p>Get the IP address of your image.</p><p>Run the following command to check on the state of the instance that you launched:</p><pre><code> $ ec2-describe-instances
+</code></pre><p>Obtain the external IP address of the instance by running the following query:</p><pre><code> $ aws ec2 describe-instances --instance-ids &lt;instance-id&gt; --query 'Reservations[*].Instances[*].PublicIpAddress' --output=text
+</code></pre><p>Optionally, check the cloud-init output log file on EC2 at <code>/var/log/cloud-init-output.log</code> to see how EC2 handles the settings in the cloud-init data file.</p><p>For more information on using cloud-init user data on EC2, see <a href=http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html>Running Commands on Your Linux Instance at Launch</a>.</p></li></ol></div><div class=td-content style=page-break-before:always><h1 id=pg-c217b6cbe163c7d25a8803f7e23c0069>8.3 - Deploy a Containerized Application in Photon OS</h1><p>Connect to the Photon instance by using SSH and to launch a web server by running it in Docker.</p><ol><li><p>Connect with SSH</p><p>Connect to the instance over SSH by specifying the private key (.pem) file and the user name for the Photon machine, which is <code>root</code>:</p><pre><code> ssh -i ~/.ssh/mykeypair root@&lt;public-ip-address-of-instance&gt;
 </code></pre><p>For complete instructions, see <a href=http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/AccessingInstancesLinux.html>Connecting to Your Linux Instance Using SSH</a>.</p></li><li><p>Run Docker</p><p>On the minimal version of Photon OS, the docker engine is enabled and running by default, which you can see by running the following command:</p><pre><code> systemctl status docker
 </code></pre></li><li><p>Start the web server</p><p><strong>Note</strong>: Please make sure that the proper security policies have been enabled on the Amazon AWS side to enable traffic to port 80 on the VM.</p><p>Since Docker is running, you can run an application in a container&ndash;for example, the Nginx Web Server. This example uses the popular open source web server Nginx. The Nginx application has a customized VMware package that the Docker engine can download directly from the Docker Hub.</p><p>To pull Nginx from its Docker Hub and start it, run the following command:</p><pre><code class=language-console data-lang=console>docker run -p 80:80 vmwarecna/nginx
 </code></pre><p>The Nginx web server should be bound to the public DNS value for the instance of Photon OS, that is, the same address with which you connected over SSH.</p></li><li><p>Test the web server</p><p>On your local workstation, open a web browser and go to the the public address of the Photon OS instance running Docker. The following screen should appear, showing that the web server is active:</p><p><img src=../../../docs/installation-guide/images/Nginx.jpg alt=Nginx></p><p>Stop the Docker container by typing <code>Ctrl+c</code> in the SSH console through which you are connected to EC2.</p></li></ol><p>You can now run other containerized applications from the Docker Hub or your own containerized application on Photon OS in the Amazon cloud.</p></div><div class=td-content style=page-break-before:always><h1 id=pg-6ee250fdb6cd3aa3b2089a643ebc99a1>8.4 - Launch the Web Server with Cloud-Init</h1><p>To eliminate the manual effort of running Docker, you can add <code>docker run</code> and its arguments to the cloud-init user data file by using <code>runcmd</code>:</p><pre><code>#cloud-config
