@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:    	4.4.288
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -139,6 +139,14 @@ Patch95:        0005-vmxnet3-fix-incorrect-dereference-when-rxvlan-is-dis.patch
 Patch96:        0006-vmxnet3-set-the-DMA-mask-before-the-first-DMA-map-op.patch
 Patch97:        0007-vmxnet3-use-DMA-memory-barriers-where-required.patch
 Patch98:        0008-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
+
+#fix for CVE-2020-36322
+Patch99:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
+Patch100:      0002-fuse-lift-bad-inode-checks-into-callers.patch
+Patch101:      0003-fuse-fix-bad-inode.patch
+
+#fix for CVE-2021-28950
+Patch102:      0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -298,6 +306,10 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch96 -p1
 %patch97 -p1
 %patch98 -p1
+%patch99 -p1
+%patch100 -p1
+%patch101 -p1
+%patch102 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -456,6 +468,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Fri Oct 29 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.4.288-3
+-   Fix for CVE-2020-36322/CVE-2021-28950
 *   Fri Oct 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.288-2
 -   Fix for CVE-2021-38199
 *   Wed Oct 13 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.4.288-1

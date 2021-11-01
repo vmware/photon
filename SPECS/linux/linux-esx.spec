@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.288
-Release:       2%{?dist}
+Release:       3%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -139,6 +139,14 @@ Patch96:        0006-vmxnet3-set-the-DMA-mask-before-the-first-DMA-map-op.patch
 Patch97:        0007-vmxnet3-use-DMA-memory-barriers-where-required.patch
 Patch98:        0008-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
 
+#fix for CVE-2020-36322
+Patch99:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
+Patch100:      0002-fuse-lift-bad-inode-checks-into-callers.patch
+Patch101:      0003-fuse-fix-bad-inode.patch
+
+#fix for CVE-2021-28950
+Patch102:      0001-fuse-fix-live-lock-in-fuse_iget.patch
+
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -267,6 +275,10 @@ The Linux package contains the Linux kernel doc files
 %patch96 -p1
 %patch97 -p1
 %patch98 -p1
+%patch99 -p1
+%patch100 -p1
+%patch101 -p1
+%patch102 -p1
 
 %build
 # patch vmw_balloon driver
@@ -357,6 +369,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Oct 29 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.4.288-3
+-   Fix for CVE-2020-36322/CVE-2021-28950
 *   Fri Oct 22 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.288-2
 -   Fix for CVE-2021-38199
 *   Wed Oct 13 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.4.288-1
