@@ -1,7 +1,7 @@
 Summary:      Dynamic host configuration protocol
 Name:         dhcp
 Version:      4.4.2
-Release:      4%{?dist}
+Release:      5%{?dist}
 License:      ISC
 Url:          http://isc.org/products/DHCP/
 Source0:      ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
@@ -9,6 +9,7 @@ Source0:      ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
 Source1:      dhclient-script
 Source2:      dhclient.conf
 Source3:      dhcp.service
+Source:       dhcrelay.service
 
 Group:        System Environment/Base
 Vendor:       VMware, Inc.
@@ -93,6 +94,7 @@ install -D -p -m 0755 %{SOURCE2} %{buildroot}%{_sysconfdir}/dhcp/
 
 mkdir -p %{buildroot}/%{_unitdir}
 install -D -p -m 0755 %{SOURCE3} %{buildroot}%{_unitdir}/
+install -D -p -m 0755 %{SOURCE4} %{buildroot}%{_unitdir}/
 
 install -v -dm 755 %{buildroot}%{_localstatedir}/lib/dhclient
 install -v -dm 755 %{buildroot}%{_sysconfdir}/default
@@ -151,6 +153,7 @@ rm -f %{buildroot}%{_sysconfdir}/dhcpd.conf.example
 %{_mandir}/man8/dhcpd.8.gz
 %{_mandir}/man8/dhcrelay.8.gz
 %{_unitdir}/dhcp.service
+%{_unitdir}/dhcrelay.service
 
 %files client
 %defattr(-,root,root)
@@ -165,6 +168,8 @@ rm -f %{buildroot}%{_sysconfdir}/dhcpd.conf.example
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
+* Tue Nov 02 2021 Susant Sahani <ssahani@vmware.com> 4.4.2-5
+- Add unit file dhcrelay.service
 * Tue Aug 24 2021 Susant Sahani <ssahani@vmware.com> 4.4.2-4
 - Fix dhclient script
 * Tue May 25 2021 Dweep Advani <dadvani@vmware.com> 4.4.2-3
