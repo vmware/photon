@@ -1,7 +1,7 @@
 Name: 		likewise-open
 Summary: 	Likewise Open
 Version: 	6.2.11.13
-Release: 	1%{?dist}
+Release: 	2%{?dist}
 Group:   	Development/Libraries
 Vendor: 	VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
@@ -44,7 +44,7 @@ Likewise Open 6.1 LWIS
 This package provides files for developing against the Likewise APIs
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 # hack against glibc-2.26 to avoid getopt declaration mismatch
@@ -71,8 +71,8 @@ make
 %install
 mkdir -p %{buildroot}
 mv release/stage/* %{buildroot}
-install -d $RPM_BUILD_ROOT/var/lib/likewise/db
-install -d $RPM_BUILD_ROOT/var/lib/likewise/rpc
+install -d %{buildroot}/var/lib/likewise/db
+install -d %{buildroot}/var/lib/likewise/rpc
 find %{buildroot} -name '*.in' -delete
 find %{buildroot} -name '*.la' -delete
 find %{buildroot} -name '*.a' -delete
@@ -174,7 +174,6 @@ case "$1" in
 
     2)
     ## Upgrade
-
 
     try_starting_lwregd_svc=true
 
@@ -299,6 +298,8 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 6.2.11.13-2
+-   Version bump up to use libxml2 2.9.11-4.
 *   Fri Aug 23 2019 Tapas Kundu <tkundu@vmware.com> 6.2.11.13-1
 -   Added checks to make sure if we are in chroot or not.
 -   Check pid of lwsmd when we are not in chroot.

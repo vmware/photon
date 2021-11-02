@@ -4,7 +4,7 @@
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.11
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -52,41 +52,32 @@ Static libraries and header files for the support library for libxml
 %autosetup -p1
 
 %build
-%configure \
-    --disable-static \
-    --with-python=/usr/bin/python2 \
-    --with-history
+%configure --disable-static --with-history --with-python=%{_bindir}/python2
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make %{?_smp_mflags} DESTDIR=%{buildroot} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
-%{_fixperms} %{buildroot}/*
 
-make %{?_smp_mflags} clean
-%configure \
-    --disable-static \
-    --with-python=/usr/bin/python3
+make clean %{?_smp_mflags}
+%configure --disable-static --with-history --with-python=%{_bindir}/python3
 make %{?_smp_mflags}
-make %{?_smp_mflags} install DESTDIR=%{buildroot}
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
-%{_docdir}/*
 %{_libdir}/libxml*
 %{_libdir}/xml2Conf.sh
 %{_bindir}/*
-%{_datadir}/aclocal/*
-%{_datadir}/gtk-doc/*
-%{_mandir}/man1/*
 
 %files python
 %defattr(-,root,root)
@@ -102,8 +93,14 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_libdir}/pkgconfig/libxml-2.0.pc
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
+%{_docdir}/*
+%{_datadir}/gtk-doc/*
+%{_mandir}/man1/*
+%{_datadir}/aclocal/*
 
 %changelog
+*   Fri Oct 29 2021 Nitesh Kumar <kunitesh@vmware.com> 2.9.11-4
+-   Moving document, man pages and bins to sub package.
 *   Wed Oct 06 2021 Tapas Kundu <tkundu@vmware.com> 2.9.11-3
 -   Fix build with updated python symlink changes
 *   Sat Jun 19 2021 Ankit Jain <ankitja@vmware.com> 2.9.11-2

@@ -1,7 +1,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.14.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
@@ -565,6 +565,8 @@ done
 
 
 %changelog
+*   Wed Nov 24 2021 Nitesh Kumar <kunitesh@vmware.com> 4.14.10-2
+-   Version bump up to use libxml2 2.9.11-4.
 *   Tue Nov 23 2021 Piyush Gupta <gpiyush@vmware.com> 4.14.10-1
 -   Upgrade to version 4.14.10.
 *   Mon Jun 14 2021 Shreyas B. <shreyasb@vmware.com> 4.14.4-1
