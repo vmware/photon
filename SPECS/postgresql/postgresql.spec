@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        14.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -179,7 +179,7 @@ system. The %{name}-pltcl package contains the PL/Tcl language
 for the backend.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h
@@ -545,6 +545,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/postgresql/plpython3.so
 
 %changelog
+*   Fri Nov 19 2021 Nitesh Kumar <kunitesh@vmware.com> 14.1-3
+-   Release bump up to use libxml2 2.9.12-1.
 *   Thu Nov 18 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 14.1-2
 -   Bump up release for openssl
 *   Mon Nov 15 2021 Michael Paquier <mpaquier@vmware.com> 14.1-1

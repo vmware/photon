@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql12
 Version:        12.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -170,7 +170,7 @@ system. The %{name}-pltcl package contains the PL/Tcl language
 for the backend.
 
 %prep
-%autosetup -n postgresql-%{version}
+%autosetup -n postgresql-%{version} -p1
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h
@@ -533,6 +533,8 @@ rm -rf %{buildroot}/*
 %{pgbaseinstdir}/lib/plpython3.so
 
 %changelog
+*   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 12.9-2
+-   Release bump up to use libxml2 2.9.12-1.
 *   Mon Nov 15 2021 Michael Paquier <mpaquier@vmware.com> 12.9-1
 -   Upgraded to version 12.9.
 *   Sat Aug 14 2021 Michael Paquier <mpaquier@vmware.com> 12.8-1

@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql13
 Version:        13.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -170,7 +170,7 @@ system. The %{name}-pltcl package contains the PL/Tcl language
 for the backend.
 
 %prep
-%autosetup -n postgresql-%{version}
+%autosetup -n postgresql-%{version} -p1
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h
@@ -536,6 +536,8 @@ rm -rf %{buildroot}/*
 %{pgbaseinstdir}/lib/plpython3.so
 
 %changelog
+*   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 13.5-2
+-   Release bump up to use libxml2 2.9.12-1.
 *   Mon Nov 15 2021 Michael Paquier <mpaquier@vmware.com> 13.5-1
 -   Upgraded to version 13.5.
 *   Thu Sep 30 2021 Michael Paquier <mpaquier@vmware.com> 13.4-1

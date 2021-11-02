@@ -1,7 +1,7 @@
 Name: 		likewise-open
 Summary: 	Likewise Open
 Version: 	6.2.11.13
-Release: 	7%{?dist}
+Release: 	8%{?dist}
 Group:   	Development/Libraries
 Vendor: 	VMware, Inc.
 License: 	GPL 2.0,LGPL 2.1
@@ -311,6 +311,8 @@ rm -rf %{buildroot}/*
 /opt/likewise/lib64/pkgconfig/libedit.pc
 
 %changelog
+*   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 6.2.11.13-8
+-   Release bump up to use libxml2 2.9.12-1.
 *   Mon Jul 12 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.2.11.13-7
 -   openssl 3.0.0 compatibility
 *   Mon May 24 2021 Shreenidhi Shedi <sshedi@vmware.com> 6.2.11.13-6

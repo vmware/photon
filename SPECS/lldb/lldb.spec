@@ -3,7 +3,7 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        12.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -45,7 +45,7 @@ Requires:       python3-six
 The package contains the LLDB Python3 module.
 
 %prep
-%setup -q -n %{name}-%{version}.src
+%autosetup -n %{name}-%{version}.src -p1
 
 %build
 mkdir -p build
@@ -62,7 +62,7 @@ make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 cd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 #Remove bundled python-six files
 rm -f %{buildroot}%{python3_sitelib}/six.*
@@ -93,6 +93,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 12.0.0-2
+-   Release bump up to use libxml2 2.9.12-1.
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 12.0.0-1
 -   Automatic Version Bump
 *   Thu Feb 04 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.0.1-1

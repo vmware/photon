@@ -1,7 +1,7 @@
 Summary:        Itstool-2.0.6
 Name:           itstool
 Version:        2.0.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+
 URL:            http://itstool.org
 Source0:        http://files.itstool.org/itstool/%{name}-%{version}.tar.bz2
@@ -23,20 +23,23 @@ Itstool extracts messages from XML files and outputs PO template files, then mer
 translations from MO files to create translated XML files. It determines what
 to translate and how to chunk it into messages using the W3C Internationalization Tag Set (ITS).
 %prep
-%setup -q
+%autosetup -p1
 %build
 export PYTHON=/usr/bin/python3
 %configure
 make %{?_smp_mflags}
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
 %{_bindir}/*
 /usr/share/%{name}/*
 %{_mandir}/man1/*
+
 %changelog
+*   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 2.0.6-3
+-   Release bump up to use libxml2 2.9.12-1.
 *   Mon Jul 20 2020 Tapas Kundu <tkundu@vmware.com> 2.0.6-2
 -   Build with python3
 -   Mass removal python2

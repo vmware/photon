@@ -1,7 +1,7 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.16.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -84,6 +84,8 @@ ln -sf %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
 %{_lib64dir}/pkgconfig/%{name}.pc
 
 %changelog
+* Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 0.16.0-4
+- Release bump up to use libxml2 2.9.12-1.
 * Tue Nov 16 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.16.0-3
 - Bump up release for openssl
 * Fri Aug 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-2

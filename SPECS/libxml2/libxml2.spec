@@ -2,20 +2,17 @@
 
 Summary:        Libxml2
 Name:           libxml2
-Version:        2.9.10
-Release:        6%{?dist}
+Version:        2.9.12
+Release:        1%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://xmlsoft.org/libxml2/%{name}-%{version}.tar.gz
-%define sha1    libxml2=db6592ec9ca9708c4e71bf6bfd907bbb5cd40644
-Patch0:         CVE-2020-7595.patch
-Patch1:         CVE-2020-24977.patch
-Patch2:         fix_build_with_python3.9.patch
-Patch3:         CVE-2019-20388.patch
+%define sha1    libxml2=339fe5bb2a7d0c13f068c26d8f7cd194c13f9a2a
 
+Patch0:         0001-Work-around-lxml-API.patch
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  zlib
@@ -43,48 +40,30 @@ Requires:   %{name} = %{version}
 Static libraries and header files for the support library for libxml
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%autosetup -p1
 
 %build
-%configure \
-    --disable-static \
-    --with-history
+%configure --disable-static --with-history --with-python=%{_bindir}/python3
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
-%{_fixperms} %{buildroot}/*
-
-make clean
-%configure \
-    --disable-static \
-    --with-python=/usr/bin/python3
-make %{?_smp_mflags}
-make install DESTDIR=%{buildroot}
 
 %check
 make %{?_smp_mflags} check
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
-%{_docdir}/*
 %{_libdir}/libxml*
 %{_libdir}/xml2Conf.sh
 %{_bindir}/*
-%{_datadir}/aclocal/*
-%{_datadir}/gtk-doc/*
-%{_mandir}/man1/*
-
 
 %files -n python3-libxml2
 %defattr(-,root,root)
@@ -96,8 +75,14 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_libdir}/pkgconfig/libxml-2.0.pc
 %{_libdir}/cmake/libxml2/libxml2-config.cmake
+%{_docdir}/*
+%{_datadir}/gtk-doc/*
+%{_mandir}/man1/*
+%{_datadir}/aclocal/*
 
 %changelog
+*   Fri Oct 29 2021 Nitesh Kumar <kunitesh@vmware.com> 2.9.12-1
+-   Version Upgrade to 2.9.12 also optmizing the packages.
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.9.10-6
 -   Fix build with new rpm
 *   Sat Nov 07 2020 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.10-5
