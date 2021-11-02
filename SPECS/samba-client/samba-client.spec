@@ -1,7 +1,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.14.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
@@ -96,8 +96,7 @@ This package contains the static libraries and header files needed to
 develop programs which make use of the wbclient programming interface.
 
 %prep
-%setup -n samba-%{version}
-%patch1 -p1
+%autosetup -n samba-%{version} -p1
 
 %build
 echo "^samba4.rpc.echo.*on.*ncacn_np.*with.*object.*nt4_dc" >> selftest/knownfail
@@ -562,6 +561,8 @@ done
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 4.14.4-2
+-   Release bump up to use libxml2 2.9.12-1.
 *   Thu May 06 2021 Shreyas B. <shreyasb@vmware.com> 4.14.4-1
 -   Split libwclient from samba-client and create separate package.
 -   Upgrade to version 4.14.4

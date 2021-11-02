@@ -1,7 +1,7 @@
 Summary:	Command Line XML Toolkit
 Name:   	xmlstarlet
 Version:	1.6.1
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	MIT
 URL:    	http://xmlstar.sourceforge.net/
 Group:  	Text Tools
@@ -26,8 +26,7 @@ plain text files using UNIX grep, sed, awk, diff, patch, join, etc
 commands.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 autoreconf -sif
@@ -37,10 +36,10 @@ autoreconf -sif
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 %check
-make check
+make check %{?_smp_mflags}
 
 %clean
 rm -fr %{buildroot}
@@ -54,5 +53,7 @@ rm -fr %{buildroot}
 
 
 %changelog
+* Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 1.6.1-2
+- Release bump up to use libxml2 2.9.12-1.
 * Wed Aug 12 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.6.1-1
 - Initial Release

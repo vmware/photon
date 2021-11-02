@@ -5,7 +5,7 @@
 Summary:        Nokogiri is an HTML, XML, SAX, and Reader parser.
 Name:           rubygem-nokogiri
 Version:        1.12.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -26,7 +26,7 @@ Requires:       libxslt
 Nokogiri is an HTML, XML, SAX, and Reader parser. Among Nokogiri's many features is the ability to search documents via XPath or CSS3 selectors.
 
 %prep
-%autosetup -c
+%autosetup -c -p1
 
 %build
 
@@ -38,6 +38,8 @@ NOKOGIRI_USE_SYSTEM_LIBRARIES=1 gem install -V --local --force --install-dir %{b
 %{gemdir}
 
 %changelog
+*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 1.12.5-2
+-   Release bump up to use libxml2 2.9.12-1.
 *   Fri Oct 08 2021 Sujay G <gsujay@vmware.com> 1.12.5-1
 -   Bump version to 1.12.5 to fix CVE-2021-41098
 *   Tue Jul 20 2021 Sujay G <gsujay@vmware.com> 1.11.3-1

@@ -1,7 +1,7 @@
 Summary: LTTng is an open source tracing framework for Linux.
 Name:    lttng-tools
 Version: 2.12.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2 and LGPLv2
 URL: https://lttng.org/download/
 Source: %{name}-%{version}.tar.bz2
@@ -25,7 +25,7 @@ Requires:      libxml2
 LTTng is an open source tracing framework for Linux.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 autoreconf -fiv
@@ -34,7 +34,7 @@ autoreconf -fiv
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
 %files
@@ -45,6 +45,8 @@ find %{buildroot} -name '*.la' -delete
 %exclude %{_libdir}/debug
 
 %changelog
+*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 2.12.2-2
+-   Release bump up to use libxml2 2.9.12-1.
 *   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 2.12.2-1
 -   Automatic Version Bump
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 2.12.1-1

@@ -1,7 +1,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        11.0.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -36,7 +36,7 @@ Group:          System Environment/Libraries
 The libllvm package contains shared libraries for llvm
 
 %prep
-%autosetup -n %{name}-%{version}.src
+%autosetup -n %{name}-%{version}.src -p1
 
 %build
 mkdir -p build
@@ -93,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
+*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 11.0.1-4
+-   Release bump up to use libxml2 2.9.12-1.
 *   Mon Oct 25 2021 Harinadh D<hdommaraju@vmware.com> 11.0.1-3
 -   remove llvm dependency for libllvm
 -   remove libLLVM.so files from llvm package

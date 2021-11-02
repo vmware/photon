@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        7.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
@@ -194,6 +194,8 @@ find %{buildroot} -name '*.la' -delete
 %{_datadir}/libvirt/test-screenshot.png
 
 %changelog
+* Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 7.5.0-2
+- Release bump up to use libxml2 2.9.12-1.
 * Wed Jul 14 2021 Susant Sahani <ssahani@vmware.com> 7.5.0-1
 - Version Bump and switch to meson
 * Fri Mar 19 2021 Susat Sahani <ssahani@vmware.com> 7.1.0-1

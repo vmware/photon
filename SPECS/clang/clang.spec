@@ -1,7 +1,7 @@
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
 Version:        11.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NCSA
 URL:            http://clang.llvm.org
 Group:          Development/Tools
@@ -33,7 +33,7 @@ Requires:       %{name} = %{version}-%{release}
 The clang-devel package contains libraries, header files and documentation for developing applications that use clang.
 
 %prep
-%setup -q -n %{name}-%{version}.src
+%autosetup -n %{name}-%{version}.src -p1
 
 %build
 mkdir -p build
@@ -47,14 +47,14 @@ make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 cd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %check
 cd build
-make clang-check
+make clang-check %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}/*
@@ -75,6 +75,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 11.0.1-2
+-   Release bump up to use libxml2 2.9.12-1.
 *   Thu Feb 04 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.0.1-1
 -   Upgrade to v11.0.1
 *   Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 10.0.1-1

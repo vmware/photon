@@ -1,7 +1,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         2.72.0
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
@@ -64,8 +64,7 @@ Requires:        %{name} = %{version}-%{release}
 These are the additional language files of libsoup.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 mkdir build
@@ -104,6 +103,8 @@ ninja test
 %defattr(-,root,root)
 
 %changelog
+*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 2.72.0-2
+-   Release bump up to use libxml2 2.9.12-1.
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.72.0-1
 -   Automatic Version Bump
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.71.1-1
