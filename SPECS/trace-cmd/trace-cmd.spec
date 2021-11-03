@@ -1,15 +1,16 @@
 Summary:        trace-cmd is a user-space front-end command-line tool for Ftrace
 Name:           trace-cmd
 Version:        2.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL-2.0 and LGPL-2.1
 
 Group:          Development/Tools
 URL:            https://git.kernel.org/pub/scm/utils/trace-cmd/trace-cmd.git
-Source0:        https://git.kernel.org/pub/scm/utils/trace-cmd/trace-cmd.git/snapshot/%{name}-v%{version}.tar.gz
-%define sha1 trace-cmd=0938a81d44a87b672460faf2704f63fd124a172c
 Vendor:         VMware, Inc.
 Distribution:   Photon
+Source0:        https://git.kernel.org/pub/scm/utils/trace-cmd/trace-cmd.git/snapshot/%{name}-v%{version}.tar.gz
+%define sha1 trace-cmd=0938a81d44a87b672460faf2704f63fd124a172c
+Patch1:         0001-trace-cmd-Add-option-to-poll-trace-buffers.patch
 BuildRequires:  audit-devel
 BuildRequires:  swig
 BuildRequires:  python3-devel
@@ -33,7 +34,7 @@ other packages in the distro. The libraries include the plugins placed
 in the traceevent/ directory.
 
 %prep
-%setup -q -n %{name}-v%{version}
+%autosetup -p1 -n %{name}-v%{version}
 
 %build
 make %{?_smp_mflags} \
@@ -63,5 +64,7 @@ rm -rf %{buildroot}
 %{_libdir}/traceevent/plugins
 
 %changelog
+* Tue Nov 02 2021 Sharan Turlapati <sturlapati@vmware.com> 2.9-2
+- Include --poll option to trace-cmd
 * Thu Oct 29 2020 Sharan Turlapati <sturlapati@vmware.com>  2.9-1
 - Initial version of trace-cmd for Photon
