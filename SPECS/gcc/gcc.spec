@@ -3,7 +3,7 @@
 Summary:        Contains the GNU compiler collection
 Name:           gcc
 Version:        7.3.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://gcc.gnu.org
 Group:          Development/Tools
@@ -14,6 +14,7 @@ Source0:        http://ftp.gnu.org/gnu/gcc/%{name}-%{version}/%{name}-%{version}
 Patch0:         PLUGIN_TYPE_CAST.patch
 Patch1:         libsanitizer-avoidustat.h-glibc-2.28.patch
 Patch2:         090_all_pr55930-dependency-tracking.patch
+Patch3:         gcc7-pr83227.patch
 Requires:       libstdc++-devel = %{version}-%{release}
 Requires:       libgcc-devel = %{version}-%{release}
 Requires:       libgomp-devel = %{version}-%{release}
@@ -85,19 +86,15 @@ An implementation of OpenMP for the C, C++, and Fortran 95 compilers in the GNU 
 This package contains development headers and static library for libgomp
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1
 
 # disable no-pie for gcc binaries
 sed -i '/^NO_PIE_CFLAGS = /s/@NO_PIE_CFLAGS@//' gcc/Makefile.in
 
 %build
-
 export glibcxx_cv_c99_math_cxx98=yes glibcxx_cv_c99_math_cxx11=yes
 
-SED=sed \
+export SED=sed
 %configure \
     --enable-shared \
     --enable-threads=posix \
@@ -181,7 +178,6 @@ make %{?_smp_mflags} check-gcc
 %defattr(-,root,root)
 %{_lib64dir}/libgcc_s.so
 
-
 %files -n libstdc++
 %defattr(-,root,root)
 %{_lib64dir}/libstdc++.so.*
@@ -208,6 +204,8 @@ make %{?_smp_mflags} check-gcc
 %{_lib64dir}/libgomp.spec
 
 %changelog
+*   Wed Oct 27 2021 Tapas Kundu <tkundu@vmware.com> 7.3.0-5
+-   Fix PR83227 internal compiler error in process_init_constructor_array
 *   Fri Nov 02 2018 Alexey Makhalov <amakhalov@vmware.com> 7.3.0-4
 -   Use nofortify security_hardening instead of sed hacking
 -   Use %configure
