@@ -4,21 +4,22 @@
 
 Summary:        Simplistic port-like solution for developers
 Name:           rubygem-mini_portile2
-Version:        2.1.0
-Release:        2%{?dist}
+Version:        2.6.1
+Release:        1%{?dist}
 Group:          Development/Languages
 License:        MIT
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://rubygems.org/downloads/mini_portile2-%{version}.gem
-%define sha1    mini_portile2=aea77f06baad406f15e156c86098bdcd140756c2
+%define sha1    mini_portile2=2b924663a60e1c67ca09d984fbd3daeebbdbd904
 BuildRequires:  ruby
 Requires:       ruby
 %description
 Simplistic port-like solution for developers. It provides a standard and simplified way to compile against dependency libraries without messing up your system.
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
+
 %build
 
 %install
@@ -29,6 +30,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Fri Nov 5 2021 Sujay G <gsujay@vmware.com> 2.6.1-1
+-   Bump version to 2.6.1 to support nokogiri build
 *   Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 2.1.0-2
 -   Increment the release version as part of ruby upgrade
 *   Wed Mar 22 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.0-1
