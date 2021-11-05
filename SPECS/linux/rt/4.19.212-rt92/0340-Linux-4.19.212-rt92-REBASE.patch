@@ -1,0 +1,20 @@
+From add8247cb121847dcb0de3a3611af0861d5b8f34 Mon Sep 17 00:00:00 2001
+From: Clark Williams <williams@redhat.com>
+Date: Mon, 18 Oct 2021 14:47:54 -0500
+Subject: [PATCH 340/340] Linux 4.19.212-rt92 REBASE
+
+Signed-off-by: Clark Williams <williams@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index bd5aee366a48..4905d52a4828 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt87
++-rt92
+-- 
+2.31.1
+

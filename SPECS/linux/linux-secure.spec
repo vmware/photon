@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.208
-Release:        1%{?kat_build:.kat}%{?dist}
+Version:        4.19.214
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=2bd7234fd0085d2144b97115780bf38b451ba735
+%define sha1 linux=0e29837f0d1ce72085e5ee9225927683f2e44ee1
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -150,6 +150,14 @@ Patch179:        lockdown/security-Add-a-locked-down-LSM-hook.patch
 Patch180:        lockdown/ACPI-Limit-access-to-custom_method-when-the-kernel-i.patch
 Patch181:        lockdown/efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.patch
 Patch182:        lockdown/ACPI-configfs-Disallow-loading-ACPI-tables-when-locked-down.patch
+
+#fix for CVE-2020-36322
+Patch183:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
+Patch184:       0002-fuse-lift-bad-inode-checks-into-callers.patch
+Patch185:       0003-fuse-fix-bad-inode.patch
+
+#fix for CVE-2021-28950
+Patch186:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
@@ -315,6 +323,10 @@ popd
 %patch180 -p1
 %patch181 -p1
 %patch182 -p1
+%patch183 -p1
+%patch184 -p1
+%patch185 -p1
+%patch186 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -468,6 +480,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Oct 29 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.214-2
+-   Fix for CVE-2020-36322/CVE-2021-28950
+*   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.214-1
+-   Update to version 4.19.214
 *   Wed Sep 29 2021 Keerthana K <keerthanak@vmware.com> 4.19.208-1
 -   Update to version 4.19.208
 *   Fri Aug 27 2021 srinidhira0 <srinidhir@vmware.com> 4.19.205-1

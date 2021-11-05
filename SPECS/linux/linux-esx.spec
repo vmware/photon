@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.208
-Release:        1%{?kat_build:.kat}%{?dist}
+Version:        4.19.214
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=2bd7234fd0085d2144b97115780bf38b451ba735
+%define sha1 linux=0e29837f0d1ce72085e5ee9225927683f2e44ee1
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -28,6 +28,9 @@ Source7:       https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e
 %define ice_version 1.6.4
 Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
 %define sha1 ice=9e860bf3cafcabd1d4897e87e749334f73828bad
+%define iavf_version 4.2.7
+Source9:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
+%define sha1 iavf=5b0f144a60bdfcc5928f78691dc42cb85c2ed734
 
 # common
 Patch0:         linux-4.14-Log-kmsg-dump-on-panic.patch
@@ -360,12 +363,22 @@ Patch513:        0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
 Patch514:        initramfs-Introduce-kernel-panic-on-initramfs-unpack.patch
 Patch515:        support-selective-freeing-of-initramfs-images.patch
 Patch516:        initramfs-large-files-support-for-newca-format.patch
+#fix for CVE-2020-36322
+Patch517:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
+Patch518:       0002-fuse-lift-bad-inode-checks-into-callers.patch
+Patch519:       0003-fuse-fix-bad-inode.patch
+
+#fix for CVE-2021-28950
+Patch520:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 # Patches for i40e driver
 Patch801:        0001-Add-support-for-gettimex64-interface.patch
 
 # Patches for ice driver
 Patch802:        0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+
+#Patches for iavf driver
+Patch803:      0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
 
 # ptp_vmw
 Patch811:        0001-ptp-add-VMware-virtual-PTP-clock-driver.patch
@@ -431,6 +444,8 @@ This Linux package contains hmac sha generator kernel module.
 %setup -D -b 7 -n linux-%{version}
 # Using autosetup is not feasible
 %setup -D -b 8 -n linux-%{version}
+# Using autosetup is not feasible
+%setup -D -b 9 -n linux-%{version}
 
 %patch1 -p1
 %patch3 -p1
@@ -705,6 +720,10 @@ This Linux package contains hmac sha generator kernel module.
 %patch514 -p1
 %patch515 -p1
 %patch516 -p1
+%patch517 -p1
+%patch518 -p1
+%patch519 -p1
+%patch520 -p1
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -714,6 +733,11 @@ popd
 # Patches for ice driver
 pushd ../ice-%{ice_version}
 %patch802 -p1
+popd
+
+#Patches for iavf driver
+pushd ../iavf-%{iavf_version}
+%patch803 -p1
 popd
 
 # Patches for ptp_vmw driver
@@ -749,6 +773,14 @@ popd
 # build ice module
 bldroot=`pwd`
 pushd ../ice-%{ice_version}
+# make doesn't support _smp_mflags
+make -C src KSRC=$bldroot clean
+make -C src KSRC=$bldroot %{?_smp_mflags}
+popd
+
+# build iavf module
+bldroot=`pwd`
+pushd ../iavf-%{iavf_version}
 # make doesn't support _smp_mflags
 make -C src KSRC=$bldroot clean
 make -C src KSRC=$bldroot %{?_smp_mflags}
@@ -808,6 +840,12 @@ pushd ../ice-%{ice_version}
 make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
 popd
 
+# install iavf module
+bldroot=`pwd`
+pushd ../iavf-%{iavf_version}
+make -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install %{?_smp_mflags}
+popd
+
 #install photon-checksum-generator module
 bldroot=`pwd`
 pushd ../photon-checksum-generator-%{photon_checksum_generator_version}/kernel
@@ -863,6 +901,7 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %config(noreplace) /boot/linux-%{uname_r}.cfg
 %config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 /lib/modules/*
+/etc/modprobe.d/iavf.conf
 %exclude /lib/modules/%{uname_r}/build
 %exclude /usr/src
 %exclude /lib/modules/%{uname_r}/extra/hmac_generator.ko.xz
@@ -887,6 +926,12 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri Oct 29 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.214-2
+-   Fix for CVE-2020-36322/CVE-2021-28950
+*   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.214-1
+-   Update to version 4.19.214
+*   Wed Oct 27 2021 Keerthana K <keerthanak@vmware.com> 4.19.208-2
+-   Add iavf driver
 *   Wed Oct 06 2021 Keerthana K <keerthanak@vmware.com> 4.19.208-1
 -   Update to version 4.19.208
 *   Tue Oct 05 2021 Ankit Jain <ankitja@vmware.com> 4.19.205-4

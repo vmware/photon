@@ -1,0 +1,196 @@
+From 0a39317ed2ca435e9685d044b2ecae1a2b3014c1 Mon Sep 17 00:00:00 2001
+From: Fabian Wolff <fabian.wolff@alumni.ethz.ch>
+Date: Sat, 31 Jul 2021 14:37:01 +0200
+Subject: [PATCH 1/2] Fix invalid suggestions for non-ASCII characters in byte
+ constants
+
+---
+ .../src/lexer/unescape_error_reporting.rs     | 37 +++++++++++++++----
+ .../ui/attributes/key-value-non-ascii.stderr  | 10 +++--
+ src/test/ui/parser/byte-literals.stderr       | 10 +++--
+ .../ui/parser/byte-string-literals.stderr     | 10 +++--
+ src/test/ui/suggestions/multibyte-escapes.rs  | 18 +++++++++
+ .../ui/suggestions/multibyte-escapes.stderr   | 33 +++++++++++++++++
+ 6 files changed, 98 insertions(+), 20 deletions(-)
+ create mode 100644 src/test/ui/suggestions/multibyte-escapes.rs
+ create mode 100644 src/test/ui/suggestions/multibyte-escapes.stderr
+
+diff --git a/compiler/rustc_parse/src/lexer/unescape_error_reporting.rs b/compiler/rustc_parse/src/lexer/unescape_error_reporting.rs
+index a580f0c55d0..0f76898a912 100644
+--- a/compiler/rustc_parse/src/lexer/unescape_error_reporting.rs
++++ b/compiler/rustc_parse/src/lexer/unescape_error_reporting.rs
+@@ -153,16 +153,37 @@ pub(crate) fn emit_unescape_error(
+         EscapeError::NonAsciiCharInByte => {
+             assert!(mode.is_bytes());
+             let (c, span) = last_char();
+-            handler
+-                .struct_span_err(span, "non-ASCII character in byte constant")
+-                .span_label(span, "byte constant must be ASCII")
+-                .span_suggestion(
++            let mut err = handler.struct_span_err(span, "non-ASCII character in byte constant");
++            err.span_label(span, "byte constant must be ASCII");
++            if (c as u32) <= 0xFF {
++                err.span_suggestion(
+                     span,
+-                    "use a \\xHH escape for a non-ASCII byte",
++                    &format!(
++                        "if you meant to use the unicode code point for '{}', use a \\xHH escape",
++                        c
++                    ),
+                     format!("\\x{:X}", c as u32),
+-                    Applicability::MachineApplicable,
+-                )
+-                .emit();
++                    Applicability::MaybeIncorrect,
++                );
++            } else if matches!(mode, Mode::Byte) {
++                err.span_label(span, "this multibyte character does not fit into a single byte");
++            } else if matches!(mode, Mode::ByteStr) {
++                let mut utf8 = String::new();
++                utf8.push(c);
++                err.span_suggestion(
++                    span,
++                    &format!(
++                        "if you meant to use the UTF-8 encoding of '{}', use \\xHH escapes",
++                        c
++                    ),
++                    utf8.as_bytes()
++                        .iter()
++                        .map(|b: &u8| format!("\\x{:X}", *b))
++                        .fold("".to_string(), |a, c| a + &c),
++                    Applicability::MaybeIncorrect,
++                );
++            }
++            err.emit();
+         }
+         EscapeError::NonAsciiCharInByteString => {
+             assert!(mode.is_bytes());
+diff --git a/src/test/ui/attributes/key-value-non-ascii.stderr b/src/test/ui/attributes/key-value-non-ascii.stderr
+index 1d4b0d5b2b1..01a07ad3b0e 100644
+--- a/src/test/ui/attributes/key-value-non-ascii.stderr
++++ b/src/test/ui/attributes/key-value-non-ascii.stderr
+@@ -2,10 +2,12 @@ error: non-ASCII character in byte constant
+   --> $DIR/key-value-non-ascii.rs:3:19
+    |
+ LL | #[rustc_dummy = b"ﬃ.rs"]
+-   |                   ^
+-   |                   |
+-   |                   byte constant must be ASCII
+-   |                   help: use a \xHH escape for a non-ASCII byte: `\xFB03`
++   |                   ^ byte constant must be ASCII
++   |
++help: if you meant to use the UTF-8 encoding of 'ﬃ', use \xHH escapes
++   |
++LL | #[rustc_dummy = b"/xEF/xAC/x83.rs"]
++   |                   ^^^^^^^^^^^^
+ 
+ error: aborting due to previous error
+ 
+diff --git a/src/test/ui/parser/byte-literals.stderr b/src/test/ui/parser/byte-literals.stderr
+index 55be113e16b..b9fb42088d9 100644
+--- a/src/test/ui/parser/byte-literals.stderr
++++ b/src/test/ui/parser/byte-literals.stderr
+@@ -36,10 +36,12 @@ error: non-ASCII character in byte constant
+   --> $DIR/byte-literals.rs:10:7
+    |
+ LL |     b'é';
+-   |       ^
+-   |       |
+-   |       byte constant must be ASCII
+-   |       help: use a \xHH escape for a non-ASCII byte: `\xE9`
++   |       ^ byte constant must be ASCII
++   |
++help: if you meant to use the unicode code point for 'é', use a \xHH escape
++   |
++LL |     b'\xE9';
++   |       ^^^^
+ 
+ error[E0763]: unterminated byte constant
+   --> $DIR/byte-literals.rs:11:6
+diff --git a/src/test/ui/parser/byte-string-literals.stderr b/src/test/ui/parser/byte-string-literals.stderr
+index 3a5a8b331d3..4f22a16224f 100644
+--- a/src/test/ui/parser/byte-string-literals.stderr
++++ b/src/test/ui/parser/byte-string-literals.stderr
+@@ -24,10 +24,12 @@ error: non-ASCII character in byte constant
+   --> $DIR/byte-string-literals.rs:6:7
+    |
+ LL |     b"é";
+-   |       ^
+-   |       |
+-   |       byte constant must be ASCII
+-   |       help: use a \xHH escape for a non-ASCII byte: `\xE9`
++   |       ^ byte constant must be ASCII
++   |
++help: if you meant to use the unicode code point for 'é', use a \xHH escape
++   |
++LL |     b"\xE9";
++   |       ^^^^
+ 
+ error: raw byte string must be ASCII
+   --> $DIR/byte-string-literals.rs:7:10
+diff --git a/src/test/ui/suggestions/multibyte-escapes.rs b/src/test/ui/suggestions/multibyte-escapes.rs
+new file mode 100644
+index 00000000000..fd5d46a4e92
+--- /dev/null
++++ b/src/test/ui/suggestions/multibyte-escapes.rs
+@@ -0,0 +1,18 @@
++// Regression test for #87397.
++
++fn main() {
++    b'µ';
++    //~^ ERROR: non-ASCII character in byte constant
++    //~| HELP: if you meant to use the unicode code point for 'µ', use a \xHH escape
++    //~| NOTE: byte constant must be ASCII
++
++    b'字';
++    //~^ ERROR: non-ASCII character in byte constant
++    //~| NOTE: this multibyte character does not fit into a single byte
++    //~| NOTE: byte constant must be ASCII
++
++    b"字";
++    //~^ ERROR: non-ASCII character in byte constant
++    //~| HELP: if you meant to use the UTF-8 encoding of '字', use \xHH escapes
++    //~| NOTE: byte constant must be ASCII
++}
+diff --git a/src/test/ui/suggestions/multibyte-escapes.stderr b/src/test/ui/suggestions/multibyte-escapes.stderr
+new file mode 100644
+index 00000000000..bb4f8e8c304
+--- /dev/null
++++ b/src/test/ui/suggestions/multibyte-escapes.stderr
+@@ -0,0 +1,33 @@
++error: non-ASCII character in byte constant
++  --> $DIR/multibyte-escapes.rs:4:7
++   |
++LL |     b'µ';
++   |       ^ byte constant must be ASCII
++   |
++help: if you meant to use the unicode code point for 'µ', use a \xHH escape
++   |
++LL |     b'\xB5';
++   |       ^^^^
++
++error: non-ASCII character in byte constant
++  --> $DIR/multibyte-escapes.rs:9:7
++   |
++LL |     b'字';
++   |       ^^
++   |       |
++   |       byte constant must be ASCII
++   |       this multibyte character does not fit into a single byte
++
++error: non-ASCII character in byte constant
++  --> $DIR/multibyte-escapes.rs:14:7
++   |
++LL |     b"字";
++   |       ^^ byte constant must be ASCII
++   |
++help: if you meant to use the UTF-8 encoding of '字', use \xHH escapes
++   |
++LL |     b"\xE5\xAD\x97";
++   |       ^^^^^^^^^^^^
++
++error: aborting due to 3 previous errors
++
+-- 
+2.23.1
+

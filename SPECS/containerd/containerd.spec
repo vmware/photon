@@ -3,7 +3,7 @@
 Summary:        Containerd
 Name:           containerd
 Version:        1.4.4
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
@@ -117,6 +117,8 @@ make integration %{?_smp_mflags}
 %{_mandir}/man8/*
 
 %changelog
+*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.4.4-7
+-   Bump up version to compile with new go
 *   Fri Oct 01 2021 Bo Gan <ganb@vmware.com> 1.4.4-6
 -   Fix CVE-2021-41103
 *   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.4.4-5

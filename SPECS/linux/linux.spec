@@ -3,8 +3,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux
-Version:        4.19.208
-Release:        1%{?kat_build:.kat}%{?dist}
+Version:        4.19.214
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=2bd7234fd0085d2144b97115780bf38b451ba735
+%define sha1 linux=0e29837f0d1ce72085e5ee9225927683f2e44ee1
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -397,6 +397,14 @@ Patch500:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
 Patch501:       0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+
+#fix for CVE-2020-36322
+Patch502:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
+Patch503:       0002-fuse-lift-bad-inode-checks-into-callers.patch
+Patch504:       0003-fuse-fix-bad-inode.patch
+
+#fix for CVE-2021-28950
+Patch505:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 #Patches for i40e driver
 Patch1500:      0001-Add-support-for-gettimex64-interface.patch
@@ -859,6 +867,10 @@ This Linux package contains hmac sha generator kernel module.
 
 %patch500 -p1
 %patch501 -p1
+%patch502 -p1
+%patch503 -p1
+%patch504 -p1
+%patch505 -p1
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -1236,6 +1248,12 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Fri Oct 29 2021 Srinidhi Rao <srinidhir@vmware.com> 4.19.214-3
+-   Add support for eBPF packet filter
+*   Fri Oct 29 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.214-2
+-   Fix for CVE-2020-36322/CVE-2021-28950
+*   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.214-1
+-   Update to version 4.19.214
 *   Wed Sep 29 2021 Keerthana K <keerthanak@vmware.com> 4.19.208-1
 -   Update to version 4.19.208
 *   Fri Aug 27 2021 srinidhira0 <srinidhir@vmware.com> 4.19.205-1
