@@ -20,7 +20,7 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.75
+Version:        5.10.78
 Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -31,7 +31,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=9814ef632139d76c856a8ddb6c2ef8185a630abc
+%define sha1 linux=fe039fff95130a04d2aac6ae5bb5c67a07605d31
 Source1:        config-esx_%{_arch}
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -384,6 +384,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Nov 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.78-1
+-   Update to version 5.10.78
 *   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.75-1
 -   Update to version 5.10.75
 *   Thu Oct 21 2021 Keerthana K <keerthanak@vmware.com> 5.10.61-7
