@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.51
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org
 Group:          Applications/System
@@ -25,7 +25,9 @@ BuildRequires:  apr-util-devel
 BuildRequires:  openldap
 BuildRequires:  expat-devel
 BuildRequires:  lua-devel
+BuildRequires:  nghttp2-devel
 
+Requires:       nghttp2
 Requires:       pcre
 Requires:       apr-util
 Requires:       openssl >= 1.1.1
@@ -91,7 +93,8 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --enable-mpms-shared=all \
     --with-apr=%{_prefix} \
     --with-apr-util=%{_prefix} \
-    --enable-layout=RPM
+    --enable-layout=RPM \
+    --enable-http2
 
 GCCVERSION=$(gcc --version | grep ^gcc | sed 's/^.* //g')
 $(dirname $(gcc -print-prog-name=cc1))/install-tools/mkheaders
@@ -212,6 +215,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Mon Nov 08 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.51-2
+- Enable mod_http2
 * Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.51-1
 - Version upgrade to fix CVE-2021-42013
 * Thu Oct 07 2021 Dweep Advani <dadvani@vmware.com> 2.4.50-1
