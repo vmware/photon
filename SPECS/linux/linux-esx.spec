@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.78
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -27,6 +27,15 @@ Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
 Source4:        check_for_config_applicability.inc
 Source5:        modify_kernel_configs.inc
+%define i40e_version 2.15.9
+Source6:        https://sourceforge.net/projects/e1000/files/i40e%20stable/%{i40e_version}/i40e-%{i40e_version}.tar.gz
+%define sha1 i40e=ec8b4794cea15bb3162a74ef3bfe35f2fd08a036
+%define iavf_version 4.2.7
+Source7:       https://sourceforge.net/projects/e1000/files/iavf%20stable/%{iavf_version}/iavf-%{iavf_version}.tar.gz
+%define sha1 iavf=5b0f144a60bdfcc5928f78691dc42cb85c2ed734
+%define ice_version 1.6.4
+Source8:       https://sourceforge.net/projects/e1000/files/ice%20stable/%{ice_version}/ice-%{ice_version}.tar.gz
+%define sha1 ice=9e860bf3cafcabd1d4897e87e749334f73828bad
 %if 0%{?fips}
 Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.21-3-secure
@@ -118,6 +127,16 @@ Patch603:       x86-sev-es-load-idt-before-entering-long-mode-to-han-510.patch
 Patch604:       x86-swiotlb-Adjust-SWIOTLB-bounce-buffer-size-for-SE.patch
 Patch605:       x86-sev-es-Do-not-unroll-string-IO-for-SEV-ES-guests.patch
 
+#Patches for i40e driver
+Patch1500:      i40e-xdp-remove-XDP_QUERY_PROG-and-XDP_QUERY_PROG_HW-XDP-.patch
+Patch1501:      0001-Add-support-for-gettimex64-interface.patch
+
+#Patches for ice driver
+Patch1510:      0001-ice-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+
+#Patches for iavf driver
+Patch1511:      0001-iavf-Use-PTP_SYS_OFFSET_EXTENDED_IOCTL-support.patch
+
 BuildArch:     x86_64
 BuildRequires: bc
 BuildRequires: kbd
@@ -165,6 +184,14 @@ The Linux package contains the Linux kernel doc files
 %prep
 # Using autosetup is not feasible
 %setup -q -n linux-%{version}
+%ifarch x86_64
+# Using autosetup is not feasible
+%setup -D -b 6 -n linux-%{version}
+# Using autosetup is not feasible
+%setup -D -b 7 -n linux-%{version}
+# Using autosetup is not feasible
+%setup -D -b 8 -n linux-%{version}
+%endif
 %if 0%{?fips}
 # Using autosetup is not feasible
 %setup -D -b 16 -n linux-%{version}
@@ -241,6 +268,24 @@ The Linux package contains the Linux kernel doc files
 %patch604 -p1
 %patch605 -p1
 
+%ifarch x86_64
+#Patches for i40e driver
+pushd ../i40e-%{i40e_version}
+%patch1500 -p1
+%patch1501 -p1
+popd
+
+#Patches for ice driver
+pushd ../ice-%{ice_version}
+%patch1510 -p1
+popd
+
+#Patches for iavf driver
+pushd ../iavf-%{iavf_version}
+%patch1511 -p1
+popd
+%endif
+
 %build
 make %{?_smp_mflags} mrproper
 cp %{SOURCE1} .config
@@ -265,6 +310,30 @@ make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="phot
 %include %{SOURCE9}
 %endif
 
+%ifarch x86_64
+
+# build i40e module
+bldroot=`pwd`
+pushd ../i40e-%{i40e_version}
+make %{?_smp_mflags} -C src KSRC=$bldroot clean
+make %{?_smp_mflags} -C src KSRC=$bldroot %{?_smp_mflags}
+popd
+
+# build ice module
+bldroot=`pwd`
+pushd ../ice-%{ice_version}
+make %{?_smp_mflags} -C src KSRC=$bldroot clean
+make %{?_smp_mflags} -C src KSRC=$bldroot %{?_smp_mflags}
+popd
+
+# build iavf module
+bldroot=`pwd`
+pushd ../iavf-%{iavf_version}
+make %{?_smp_mflags} -C src KSRC=$bldroot clean
+make %{?_smp_mflags} -C src KSRC=$bldroot %{?_smp_mflags}
+popd
+%endif
+
 # Do not compress modules which will be loaded at boot time
 # to speed up boot process
 %define __modules_install_post \
@@ -286,6 +355,27 @@ install -vdm 755 %{buildroot}/boot
 install -vdm 755 %{buildroot}%{_docdir}/linux-%{uname_r}
 install -vdm 755 %{buildroot}%{_usrsrc}/linux-headers-%{uname_r}
 make %{?_smp_mflags} INSTALL_MOD_PATH=%{buildroot} modules_install
+
+%ifarch x86_64
+
+# install i40e module
+bldroot=`pwd`
+pushd ../i40e-%{i40e_version}
+make %{?_smp_mflags} -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+popd
+
+# install ice module
+bldroot=`pwd`
+pushd ../ice-%{ice_version}
+make %{?_smp_mflags} -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+popd
+
+# install iavf module
+bldroot=`pwd`
+pushd ../iavf-%{iavf_version}
+make %{?_smp_mflags} -C src KSRC=$bldroot INSTALL_MOD_PATH=%{buildroot} INSTALL_MOD_DIR=extra MANDIR=%{_mandir} modules_install mandocs_install
+popd
+%endif
 
 install -vm 644 arch/x86/boot/bzImage %{buildroot}/boot/vmlinuz-%{uname_r}
 install -vm 400 System.map %{buildroot}/boot/System.map-%{uname_r}
@@ -340,10 +430,14 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %config %{_localstatedir}/lib/initramfs/kernel/%{uname_r}
 /lib/modules/*
 %exclude /lib/modules/%{uname_r}/build
+/etc/modprobe.d/iavf.conf
+# ICE driver firmware files are packaged in linux-firmware
+%exclude /lib/firmware/updates/intel/ice
 
 %files docs
 %defattr(-,root,root)
 %{_defaultdocdir}/linux-%{uname_r}/*
+%{_mandir}/*
 
 %files devel
 %defattr(-,root,root)
@@ -351,6 +445,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Nov 08 2021 Keerthana K <keerthanak@vmware.com> 5.10.78-2
+-   Add out-of-tree i40e, iavf and ice drivers.
 *   Mon Nov 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.78-1
 -   Update to version 5.10.78
 *   Tue Oct 26 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.75-1
