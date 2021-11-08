@@ -1,11 +1,11 @@
 Summary:        Domain Name System software
 Name:           bindutils
-Version:        9.16.15
+Version:        9.16.22
 Release:        1%{?dist}
 License:        ISC
 URL:            http://www.isc.org/downloads/bind/
 Source0:        ftp://ftp.isc.org/isc/bind9/%{version}/bind-%{version}.tar.xz
-%define sha1    bind=5d68bbd1ff452708d45f2d4ef832faa3a1690fc7
+%define sha1    bind=0d56f6a88532363757534566598c48a9f7072bfa
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -21,7 +21,7 @@ for the Internet. It is a reference implementation of those protocols, but it is
 also production-grade software, suitable for use in high-volume and high-reliability applications.
 
 %prep
-%setup -qn bind-%{version}
+%autosetup -p1 -n bind-%{version}
 
 %build
 %configure \
@@ -35,7 +35,7 @@ make -C lib/irs %{?_smp_mflags}
 make -C bin/dig %{?_smp_mflags}
 
 %install
-make -C bin/dig DESTDIR=%{buildroot} install
+make -C bin/dig DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 mkdir -p %{buildroot}/%{_sysconfdir}
 mkdir -p %{buildroot}/%{_prefix}/lib/tmpfiles.d
@@ -73,6 +73,8 @@ fi
 %{_prefix}/lib/tmpfiles.d/named.conf
 
 %changelog
+*   Mon Nov 08 2021 Sujay G <gsujay@vmware.com> 9.16.22-1
+-   Bump version to 9.16.22 to fix CVE-2021-25219
 *   Tue Jun 01 2021 Sujay G <gsujay@vmware.com> 9.16.15-1
 -   Bump version to 9.16.15 to fix CVE-2021-25214, CVE-2021-25215, CVE-2021-25216, CVE-2020-8625
 *   Thu Oct 01 2020 Sujay G <gsujay@vmware.com> 9.16.6-1
