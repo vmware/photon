@@ -1,16 +1,19 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.2.51
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
+Vendor:	        VMware, Inc.
+Distribution:	Photon
+
 Source0:        %{name}-%{version}.tar.gz
+%define sha1 %{name}=5534c15cd00d003504d8e9059c4e57b0a1c70f51
+
 Patch0:         photondistroadd.patch
 Patch1:         modify_get_dhcp_pid.patch
-%define sha1 WALinuxAgent=5534c15cd00d003504d8e9059c4e57b0a1c70f51
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Patch2:         Use-python2-for-ExecStart-in-waagent.service.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -18,6 +21,7 @@ BuildRequires:  python-setuptools
 BuildRequires:  python-xml
 BuildRequires:  systemd
 BuildRequires:  python-distro
+
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-xml
@@ -32,6 +36,7 @@ Requires:       iptables
 Requires:       systemd
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+
 BuildArch:      noarch
 
 %description
@@ -40,9 +45,8 @@ VMs in the Windows Azure cloud. This package should be installed on Linux disk
 images that are built to run in the Windows Azure environment.
 
 %prep
-%setup -q -n %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1 -n %{name}-%{version}
+
 %pre -p /bin/sh
 
 %build
@@ -53,7 +57,6 @@ python2 -tt setup.py build -b py2 install --prefix=%{_prefix} --lnx-distro='phot
 mkdir -p  %{buildroot}/%{_localstatedir}/log
 mkdir -p -m 0700 %{buildroot}/%{_sharedstatedir}/waagent
 mkdir -p %{buildroot}/%{_localstatedir}/opt/waagent/log
-mkdir -p %{buildroot}/%{_localstatedir}/log/
 touch %{buildroot}/%{_localstatedir}/opt/waagent/log/waagent.log
 ln -sfv /opt/waagent/log/waagent.log %{buildroot}%{_localstatedir}/log/waagent.log
 
@@ -81,9 +84,11 @@ python2 setup.py check && python2 setup.py test
 %{_localstatedir}/log/waagent.log
 %ghost %{_localstatedir}/opt/waagent/log/waagent.log
 %dir %attr(0700, root, root) %{_sharedstatedir}/waagent
-/usr/lib/python2.7/site-packages/*
+%{_libdir}/python2.7/site-packages/*
 
 %changelog
+* Tue Nov 09 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.2.51-3
+- Fix waagent.service to use python2
 * Thu Mar 04 2021 Tapas Kundu <tkundu@vmware.com> 2.2.51-2
 - Change all implementations of get_dhcp_pid to use run_command
 * Wed Jan 06 2021 Tapas Kundu <tkundu@vmware.com> 2.2.51-1
