@@ -1,0 +1,26 @@
+From 9416cc766a3dbfcdc6f4af34cd3094f4668a3673 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 9 Nov 2021 01:07:14 +0530
+Subject: [PATCH] use python2 for ExecStart in waagent.service
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ init/waagent.service | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/init/waagent.service b/init/waagent.service
+index e91f143..d3fe879 100644
+--- a/init/waagent.service
++++ b/init/waagent.service
+@@ -8,7 +8,7 @@ ConditionPathExists=/etc/waagent.conf
+ 
+ [Service]
+ Type=simple
+-ExecStart=/usr/bin/python -u /usr/sbin/waagent -daemon
++ExecStart=/usr/bin/python2 -u /usr/sbin/waagent -daemon
+ Restart=always
+ RestartSec=5
+ 
+-- 
+2.33.1
+

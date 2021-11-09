@@ -1,0 +1,42 @@
+From 40f10e4bdef40e6d59356cde40c26fbbb1d61b55 Mon Sep 17 00:00:00 2001
+From: Jason Merrill <jason@redhat.com>
+Date: Fri, 16 Feb 2018 09:12:48 -0500
+Subject: [PATCH] PR c++/83227 - C++17 ICE with init-list derived-to-base
+ conversion.
+
+	* call.c (convert_like_real): Don't use the copy-list-initialization
+	shortcut for ck_base.
+
+From-SVN: r257738
+---
+ gcc/cp/ChangeLog                        |  4 ++++
+ gcc/cp/call.c                           |  9 +++++----
+ gcc/testsuite/g++.dg/cpp0x/initlist98.C | 17 +++++++++++++++++
+ 3 files changed, 26 insertions(+), 4 deletions(-)
+ create mode 100644 gcc/testsuite/g++.dg/cpp0x/initlist98.C
+
+--- a/gcc/cp/call.c	2021-11-03 19:39:35.758241049 +0530
++++ b/gcc/cp/call.c	2021-11-03 19:40:41.600326246 +0530
+@@ -6886,6 +6886,11 @@ convert_like_real (conversion *convs, tr
+ 	  && DECL_INHERITED_CTOR (current_function_decl))
+ 	return expr;
+ 
++    if (TREE_CODE (expr) == TARGET_EXPR
++         && TARGET_EXPR_LIST_INIT_P (expr))
++       /* Copy-list-initialization doesn't actually involve a copy.  */
++       return expr;
++
+       /* Fall through.  */
+     case ck_base:
+       if (convs->kind == ck_base && !convs->need_temporary_p)
+@@ -6911,10 +6916,6 @@ convert_like_real (conversion *convs, tr
+ 	flags |= LOOKUP_ONLYCONVERTING;
+       if (convs->rvaluedness_matches_p)
+ 	flags |= LOOKUP_PREFER_RVALUE;
+-      if (TREE_CODE (expr) == TARGET_EXPR
+-	  && TARGET_EXPR_LIST_INIT_P (expr))
+-	/* Copy-list-initialization doesn't actually involve a copy.  */
+-	return expr;
+       expr = build_temp (expr, totype, flags, &diag_kind, complain);
+       if (diag_kind && complain)
+ 	{
