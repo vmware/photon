@@ -1,11 +1,11 @@
 Summary:         agent for collecting, processing, aggregating, and writing metrics.
 Name:            telegraf
-Version:         1.16.1
-Release:         7%{?dist}
+Version:         1.20.3
+Release:         1%{?dist}
 License:         MIT
 URL:             https://github.com/influxdata/telegraf
 Source0:         https://github.com/influxdata/telegraf/archive/%{name}-%{version}.tar.gz
-%define sha1     telegraf=72929c080fe7913b13afd77049468659986292c9
+%define sha1     telegraf=e5f62411fc4bf8b98b10c184b504d3b78181e4c2
 Source1:         https://github.com/wavefrontHQ/telegraf/archive/telegraf-plugin-1.4.0.zip
 %define sha1     telegraf-plugin=51d2bedf6b7892dbe079e7dd948d60c31a2fc436
 Source2:         https://raw.githubusercontent.com/wavefrontHQ/integrations/master/telegraf/telegraf.conf
@@ -98,6 +98,8 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/telegraf.conf
 
 %changelog
+*   Tue Nov 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.20.3-1
+-   Update to version 1.20.3
 *   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.1-7
 -   Bump up version to compile with new go
 *   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.16.1-6
