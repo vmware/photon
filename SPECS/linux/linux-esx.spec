@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.214
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -371,6 +371,9 @@ Patch519:       0003-fuse-fix-bad-inode.patch
 #fix for CVE-2021-28950
 Patch520:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
+# TARFS
+Patch521:        0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
+
 # Patches for i40e driver
 Patch801:        0001-Add-support-for-gettimex64-interface.patch
 
@@ -724,6 +727,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch518 -p1
 %patch519 -p1
 %patch520 -p1
+%patch521 -p1
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -926,6 +930,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Nov 10 2021 Ankit Jain <ankitja@vmware.com> 4.19.214-3
+-   tarfs: A new readonly filesystem to mount tar archive
 *   Fri Oct 29 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.214-2
 -   Fix for CVE-2020-36322/CVE-2021-28950
 *   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.214-1
