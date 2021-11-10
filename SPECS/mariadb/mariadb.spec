@@ -1,7 +1,7 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
 Version:          10.7.1
-Release:          1%{?dist}
+Release:          2%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
@@ -393,6 +393,7 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/mysql_system_tables_data.sql
 %{_datadir}/mysql/mysql_test_data_timezone.sql
 %{_datadir}/mysql/mysql_test_db.sql
+%{_datadir}/mysql/mysql_sys_schema.sql
 %license %{_datadir}/mysql/mroonga/AUTHORS
 %license %{_datadir}/mysql/mroonga/COPYING
 %license %{_datadir}/groonga-normalizer-mysql/lgpl-2.0.txt
@@ -416,7 +417,6 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/mariadb.pc
 %{_libdir}/pkgconfig/libmariadb.pc
 %{_mandir}/man3/*.3.gz
-%{_datadir}/mysql/mysql_sys_schema.sql
 
 %files errmsg
 %{_datadir}/mysql/czech/errmsg.sys
@@ -446,6 +446,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+* Wed Nov 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 10.7.1-2
+- Fix file packaging
 * Tue Nov 09 2021 Shreenidhi Shedi <sshedi@vmware.com> 10.7.1-1
 - Upgrade to v10.7.1
 * Mon Aug 23 2021 Shreyas B <shreyasb@vmware.com> 10.5.12-1
