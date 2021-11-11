@@ -1,7 +1,7 @@
 Summary:	System utilities to list pci devices
 Name:		pciutils
 Version:	3.5.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		https://www.kernel.org/pub/software/utils/pciutils/
 Group:		System Environment/System Utilities
@@ -35,6 +35,9 @@ make DESTDIR=%{buildroot} \
     install install-lib
 chmod -v 766 %{buildroot}%{_libdir}/libpci.so
 
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
 
@@ -52,11 +55,13 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
-*	Wed Mar 29 2017 Robert Qi <qij@vmware.com> 3.5.4-1
--	Upgraded to 3.5.4 version.
-*	Mon Jul 25 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.1-3
--	Added devel package and removed packaging of debug files
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.1-2
--	GA - Bump release of all rpms
-*	Thu Jul 2 2015 Sharath George <sharathg@vmware.com> 3.3.1-1
--	Initial build.	First version
+*   Thu Nov 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.5.4-2
+-   Add missing ldconfig after library installation.
+*   Wed Mar 29 2017 Robert Qi <qij@vmware.com> 3.5.4-1
+-   Upgraded to 3.5.4 version.
+*   Mon Jul 25 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.1-3
+-   Added devel package and removed packaging of debug files
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.1-2
+-   GA - Bump release of all rpms
+*   Thu Jul 2 2015 Sharath George <sharathg@vmware.com> 3.3.1-1
+-   Initial build.	First version
