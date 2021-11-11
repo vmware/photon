@@ -1,14 +1,16 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.3.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
-Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
-%define sha1    openscap=3e303f06aa00e5c2616db606b980389ee0b73883
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
+%define sha1    %{name}=3e303f06aa00e5c2616db606b980389ee0b73883
+
 BuildRequires:  swig libxml2-devel libxslt-devel XML-Parser
 BuildRequires:  rpm-devel
 BuildRequires:  libgcrypt-devel
@@ -21,8 +23,10 @@ BuildRequires:  curl-devel
 BuildRequires:  popt-devel
 BuildRequires:  python3-devel
 BuildRequires:  cmake
+
 Requires:       curl
 Requires:       popt
+
 %description
 SCAP is a multi-purpose framework of specifications that supports automated configuration, vulnerability and patch checking, technical control compliance activities, and security measurement.
 OpenSCAP has received a NIST certification for its support of SCAP 1.2.
@@ -32,6 +36,7 @@ Summary: Development Libraries for openscap
 Group: Development/Libraries
 Requires: openscap = %{version}-%{release}
 Requires: libxml2-devel
+
 %description devel
 Header files for doing development with openscap.
 
@@ -39,6 +44,7 @@ Header files for doing development with openscap.
 Summary: openscap perl scripts
 Requires: perl
 Requires: openscap = %{version}-%{release}
+
 %description perl
 Perl scripts.
 
@@ -46,12 +52,13 @@ Perl scripts.
 Summary: openscap python
 Group: Development/Libraries
 Requires: openscap = %{version}-%{release}
+
 %description python3
 Python bindings.
 
-
 %prep
-%autosetup
+%autosetup -p1
+
 %build
 mkdir build && cd build
 cmake \
@@ -62,17 +69,12 @@ cmake \
 --enable-perl \
 ..
 
-make
+make %{?_smp_mflags}
 
 %install
 cd build
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
-
-#%check
-#make check need BuildRequires per-XML-XPATH and bzip2
-#no per-XML-XPATH so deactivate make check
-#make %{?_smp_mflags} -k check
 
 %files
 %defattr(-,root,root)
@@ -81,8 +83,8 @@ find %{buildroot} -name '*.la' -delete
 %exclude %{_libdir}/debug
 %{_bindir}/*
 %{_mandir}/man8/*
-/usr/share/openscap/*
-/usr/share/perl5/*
+%{_datadir}/openscap/*
+%{_datadir}/perl5/*
 %{_libdir}/libopenscap_sce.so.*
 %{_libdir}/libopenscap.so.*
 
@@ -102,27 +104,29 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/python3.9/*
 
 %changelog
-*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 1.3.4-3
--   Replacement of ITS suggested words.
-*   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 1.3.4-2
--   Build with python3
-*   Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.3.4-1
--   Automatic Version Bump
-*   Mon Jul 27 2020 Vikash Bansal <bvikas@vmware.com> 1.3.3-1
--   Update to 1.3.3
-*   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 1.2.17-3
--   Build with python 3.8
-*   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.2.17-2
--   Mass removal python2
-*   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.2.17-1
--   Update to 1.2.17
-*   Thu Aug 10 2017 Rongrong Qiu <rqiu@vmware.com> 1.2.14-3
--   Deactivate make check which need per-XML-XPATH for bug 1900358
-*   Fri May 5 2017 Alexey Makhalov <amakhalov@vmware.com> 1.2.14-2
--   Remove BuildRequires XML-XPath.
-*   Mon Mar 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.14-1
--   Update to latest version.
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.10-2
--   BuildRequires curl-devel.
-*   Tue Sep 6 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.10-1
--   Initial build. First version
+* Thu Nov 11 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.4-4
+- Bump version as a part of rpm upgrade
+* Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 1.3.4-3
+- Replacement of ITS suggested words.
+* Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 1.3.4-2
+- Build with python3
+* Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.3.4-1
+- Automatic Version Bump
+* Mon Jul 27 2020 Vikash Bansal <bvikas@vmware.com> 1.3.3-1
+- Update to 1.3.3
+* Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 1.2.17-3
+- Build with python 3.8
+* Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 1.2.17-2
+- Mass removal python2
+* Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.2.17-1
+- Update to 1.2.17
+* Thu Aug 10 2017 Rongrong Qiu <rqiu@vmware.com> 1.2.14-3
+- Deactivate make check which need per-XML-XPATH for bug 1900358
+* Fri May 5 2017 Alexey Makhalov <amakhalov@vmware.com> 1.2.14-2
+- Remove BuildRequires XML-XPath.
+* Mon Mar 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.14-1
+- Update to latest version.
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.10-2
+- BuildRequires curl-devel.
+* Tue Sep 6 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.10-1
+- Initial build. First version

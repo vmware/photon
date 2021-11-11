@@ -1,0 +1,62 @@
+From e83afb42f41c4d18d16e704f8e234f4ba9bdc161 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 21 Sep 2021 00:47:56 +0530
+Subject: [PATCH] If rpm is not triggered from tty, rpm transactions won't wait
+ for lock.
+
+This is a special case where rpm commands are triggered fom rpm spec
+sciptlets. In PhotonOS we don't have such things.
+
+Removing this check helps in getting rid of contention between rpm db
+rebuilds and installations simultaneously.
+
+While building packages in chroot, after installing toolchain rpms rpmdb
+gets rebuilt and other rpms will get installed immediately, if rpm
+doesn't wait for db rebuild to finish, rpm installation fails and build
+fails as a whole.
+
+Upstream commit which introduced the lock if tty logic:
+https://github.com/rpm-software-management/rpm/commit/6ce2d43e2533505aa252159bfa8cc799965655bb
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ lib/rpmlock.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/lib/rpmlock.c b/lib/rpmlock.c
+index 1d588b3c5..50a3026db 100644
+--- a/lib/rpmlock.c
++++ b/lib/rpmlock.c
+@@ -117,7 +117,7 @@ rpmlock rpmlockNew(const char *lock_path, const char *descr)
+ {
+     rpmlock lock = rpmlock_new(lock_path, descr);
+     if (!lock) {
+-	rpmlog(RPMLOG_ERR, _("can't create %s lock on %s (%s)\n"), 
++	rpmlog(RPMLOG_ERR, _("can't create %s lock on %s (%s)\n"),
+ 		descr, lock_path, strerror(errno));
+     }
+     return lock;
+@@ -127,18 +127,17 @@ int rpmlockAcquire(rpmlock lock)
+ {
+     int locked = 0; /* assume failure */
+     int myerrno = errno;
+-    int maywait = isatty(STDIN_FILENO); /* dont wait within scriptlets */
+     errno = myerrno;
+ 
+     if (lock) {
+ 	locked = rpmlock_acquire(lock, RPMLOCK_WRITE);
+-	if (!locked && (lock->openmode & RPMLOCK_WRITE) && maywait) {
++	if (!locked && (lock->openmode & RPMLOCK_WRITE)) {
+ 	    rpmlog(RPMLOG_WARNING, _("waiting for %s lock on %s\n"),
+ 		    lock->descr, lock->path);
+ 	    locked = rpmlock_acquire(lock, (RPMLOCK_WRITE|RPMLOCK_WAIT));
+ 	}
+ 	if (!locked) {
+-	    rpmlog(RPMLOG_ERR, _("can't create %s lock on %s (%s)\n"), 
++	    rpmlog(RPMLOG_ERR, _("can't create %s lock on %s (%s)\n"),
+ 		   lock->descr, lock->path, strerror(errno));
+ 	}
+     }
+-- 
+2.31.1
+

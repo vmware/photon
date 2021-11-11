@@ -1,7 +1,7 @@
 Summary:        Commit RPMs to an OSTree repository
 Name:           rpm-ostree
 Version:        2021.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 Group:          Applications/System
 URL:            https://github.com/projectatomic/rpm-ostree
@@ -146,6 +146,8 @@ install -p -m 755 -D %{SOURCE3} %{buildroot}%{_bindir}/rpm-ostree-server
 %{_bindir}/rpm-ostree-server/mkostreerepo
 
 %changelog
+* Mon Nov 15 2021 Shreenidhi Shedi <sshedi@vmware.com> 2021.10-4
+- Bump version as a part of rpm upgrade
 * Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2021.10-3
 - bump up for openssl
 * Sat Oct 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 2021.10-2

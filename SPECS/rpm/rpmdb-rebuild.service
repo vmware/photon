@@ -1,0 +1,19 @@
+[Unit]
+Description=RPM database rebuild
+ConditionPathExists=/var/lib/rpm/.rebuilddb
+
+# This should run before any daemons that may open the rpmdb
+DefaultDependencies=no
+After=sysinit.target
+Before=basic.target shutdown.target
+Conflicts=shutdown.target
+# In case /var is remote-mounted
+RequiresMountsFor=/var
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/rpmdb --rebuilddb
+ExecStartPost=rm -f /var/lib/rpm/.rebuilddb
+
+[Install]
+WantedBy=basic.target

@@ -66,3 +66,11 @@ sed -i 's/$photon_cmdline/init=\/lib\/systemd\/systemd loglevel=3 ro console=tty
 
 # Remove kernel symbols
 rm -f /boot/System.map*
+
+# Added as a part of rpm db migration from BDB to sqlite
+# No harm in cross checking here
+if [ -f /var/lib/rpm/Packages ]; then
+  if ! rpm --rebuilddb; then
+    echo "WARNING: Failed rebuild rpmdb"
+  fi
+fi
