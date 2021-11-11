@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.214
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1248,6 +1248,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Thu Nov 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.214-4
+-   .config: Enable CONFIG_INTEL_RDT, CONFIG_USERFAULTFD, and
+-   CONFIG_NFT_{CHAIN_ROUTE, CHAIN_NAT, MASQ, REDIR}_IPV4.
 *   Fri Oct 29 2021 Srinidhi Rao <srinidhir@vmware.com> 4.19.214-3
 -   Add support for eBPF packet filter
 *   Fri Oct 29 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.214-2

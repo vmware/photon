@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.214
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt92
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1177,6 +1177,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Nov 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.214-3
+-   .config: Enable CONFIG_INTEL_RDT
 *   Fri Oct 29 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.214-2
 -   Fix for CVE-2020-36322/CVE-2021-28950
 *   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.214-1
