@@ -1,7 +1,7 @@
 Summary:	System utilities to list pci devices
 Name:		pciutils
 Version:	3.3.1
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	GPLv2
 URL:		https://www.kernel.org/pub/software/utils/pciutils/
 Group:		System Environment/System Utilities
@@ -27,8 +27,12 @@ make DESTDIR=%{buildroot} \
     install install-lib
 chmod -v 766 %{buildroot}%{_libdir}/libpci.so
 
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files 
 %defattr(-,root,root)
 %{_sbindir}/*
@@ -37,7 +41,10 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 %{_datadir}/misc/*
 %{_mandir}/*
+
 %changelog
+*   Thu Nov 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.3.1-4
+-   Add missing ldconfig after library installation.
 *   Fri Jun 23 2017 Divya Thaluru <dthaluru@vmware.com> 3.3.1-3
 -   Removed packaging of debug files
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.1-2
