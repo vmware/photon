@@ -1,7 +1,7 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
 Version:        2.2.51
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
@@ -13,7 +13,6 @@ Source0:        %{name}-%{version}.tar.gz
 
 Patch0:         photondistroadd.patch
 Patch1:         modify_get_dhcp_pid.patch
-Patch2:         Use-python2-for-ExecStart-in-waagent.service.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -72,7 +71,6 @@ python2 setup.py check && python2 setup.py test
 %postun
 %systemd_postun_with_restart waagent.service
 
-
 %files
 /usr/lib/systemd/system/*
 %defattr(0644,root,root,0755)
@@ -87,6 +85,8 @@ python2 setup.py check && python2 setup.py test
 %{_libdir}/python2.7/site-packages/*
 
 %changelog
+* Thu Nov 11 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.2.51-4
+- Rectify previous fix
 * Tue Nov 09 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.2.51-3
 - Fix waagent.service to use python2
 * Thu Mar 04 2021 Tapas Kundu <tkundu@vmware.com> 2.2.51-2
