@@ -1,30 +1,29 @@
 Name:           WALinuxAgent
 Summary:        The Windows Azure Linux Agent
-Version:        2.2.51
-Release:        4%{?dist}
+Version:        2.4.0.2
+Release:        1%{?dist}
 License:        Apache License Version 2.0
 Group:          System/Daemons
 Url:            https://github.com/Azure/WALinuxAgent
-Vendor:	        VMware, Inc.
-Distribution:	Photon
+Vendor:         VMware, Inc.
+Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 %{name}=5534c15cd00d003504d8e9059c4e57b0a1c70f51
+%define sha1    %{name}=62b2819a63e615c8a9699685d6009820f025f212
 
-Patch0:         photondistroadd.patch
-Patch1:         modify_get_dhcp_pid.patch
+Patch0:         Add-PhotonOS-support.patch
 
-BuildRequires:  python2
-BuildRequires:  python2-libs
-BuildRequires:  python-setuptools
-BuildRequires:  python-xml
+BuildRequires:  python3
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
 BuildRequires:  systemd
-BuildRequires:  python-distro
+BuildRequires:  python3-distro
 
-Requires:       python2
-Requires:       python2-libs
-Requires:       python-xml
-Requires:       python-pyasn1
+Requires:       python3
+Requires:       python3-libs
+Requires:       python3-xml
+Requires:       python3-pyasn1
 Requires:       openssh
 Requires:       openssl
 Requires:       (util-linux or toybox)
@@ -49,18 +48,21 @@ images that are built to run in the Windows Azure environment.
 %pre -p /bin/sh
 
 %build
-python2 setup.py build -b py2
+python3 setup.py build -b py3
 
 %install
-python2 -tt setup.py build -b py2 install --prefix=%{_prefix} --lnx-distro='photonos' --root=%{buildroot} --force
-mkdir -p  %{buildroot}/%{_localstatedir}/log
-mkdir -p -m 0700 %{buildroot}/%{_sharedstatedir}/waagent
-mkdir -p %{buildroot}/%{_localstatedir}/opt/waagent/log
-touch %{buildroot}/%{_localstatedir}/opt/waagent/log/waagent.log
+python3 -tt setup.py build -b py3 install --prefix=%{_prefix} --lnx-distro='photonos' --root=%{buildroot} --force
+
+mkdir -p %{buildroot}%{_localstatedir}/log \
+         %{buildroot}%{_localstatedir}/opt/waagent/log \
+         %{buildroot}%{_localstatedir}/log
+
+mkdir -p -m 0700 %{buildroot}%{_sharedstatedir}/waagent
+touch %{buildroot}%{_localstatedir}/opt/waagent/log/waagent.log
 ln -sfv /opt/waagent/log/waagent.log %{buildroot}%{_localstatedir}/log/waagent.log
 
 %check
-python2 setup.py check && python2 setup.py test
+python3 setup.py check && python3 setup.py test
 
 %post
 %systemd_post waagent.service
@@ -72,9 +74,8 @@ python2 setup.py check && python2 setup.py test
 %systemd_postun_with_restart waagent.service
 
 %files
-/usr/lib/systemd/system/*
+/usr/%{_unitdir}/*
 %defattr(0644,root,root,0755)
-%doc Changelog
 %attr(0755,root,root) %{_bindir}/waagent
 %attr(0755,root,root) %{_bindir}/waagent2.0
 %config %{_sysconfdir}/waagent.conf
@@ -82,9 +83,11 @@ python2 setup.py check && python2 setup.py test
 %{_localstatedir}/log/waagent.log
 %ghost %{_localstatedir}/opt/waagent/log/waagent.log
 %dir %attr(0700, root, root) %{_sharedstatedir}/waagent
-%{_libdir}/python2.7/site-packages/*
+%{python3_sitelib}/*
 
 %changelog
+* Sat Nov 13 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.0.2-1
+- Upgrade to version 2.4.0.2
 * Thu Nov 11 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.2.51-4
 - Rectify previous fix
 * Tue Nov 09 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.2.51-3
