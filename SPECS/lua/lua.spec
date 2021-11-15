@@ -9,12 +9,13 @@
 Summary:        Programming language
 Name:           lua
 Version:        5.4.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://www.lua.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://www.lua.org/ftp/%{name}-%{version}.tar.gz
 %define sha1 %{name}-%{version}=1dda2ef23a9828492b4595c0197766de6e784bc7
 
@@ -24,11 +25,15 @@ Source1:    http://www.lua.org/ftp/lua-%{bootstrap_version}.tar.gz
 %endif
 
 Patch0:	    lua-%{version}-shared-library.patch
+
 %if 0%{?bootstrap}
 Patch1:     lua-%{bootstrap_version}-shared-library.patch
 %endif
 
+Patch2:     CVE-2021-43519.patch
+
 BuildRequires:  readline-devel
+
 Requires:       readline
 
 %description
@@ -58,15 +63,18 @@ prep_lua_src() {
 }
 
 %if 0%{?bootstrap}
+# Using autosetup is not feasible
 %setup -q -a0 -a1 -n %{name}-%{version}
 pushd lua-%{bootstrap_version}
 prep_lua_src %{PATCH1}
 popd
 %else
+# Using autosetup is not feasible
 %setup -q
 %endif
 
 prep_lua_src %{PATCH0}
+prep_lua_src %{PATCH2}
 
 %build
 make VERBOSE=1 %{?_smp_mflags} linux
@@ -142,15 +150,17 @@ make test %{?_smp_mflags}
 %{_libdir}/liblua.so
 
 %changelog
-*   Fri May 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.4.3-1
--   Upgrade to version 5.4.3
-*   Wed Sep 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 5.3.5-1
--   Update to version 5.3.5
-*   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 5.3.4-1
--   Update package version
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.3.2-2
--   GA - Bump release of all rpms
-*   Wed Apr 27 2016 Xiaolin Li <xiaolinl@vmware.com> 5.3.2-1
--   Update to version 5.3.2.
-*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.2.3-1
--   Initial build. First version
+* Mon Nov 15 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.4.3-2
+- Fix CVE-2021-43519
+* Fri May 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.4.3-1
+- Upgrade to version 5.4.3
+* Wed Sep 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 5.3.5-1
+- Update to version 5.3.5
+* Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 5.3.4-1
+- Update package version
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.3.2-2
+- GA - Bump release of all rpms
+* Wed Apr 27 2016 Xiaolin Li <xiaolinl@vmware.com> 5.3.2-1
+- Update to version 5.3.2.
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 5.2.3-1
+- Initial build. First version
