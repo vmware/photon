@@ -1,11 +1,11 @@
 Summary:        Rocket-fast system for log processing
 Name:           rsyslog
-Version:        8.2106.0
+Version:        8.2110.0
 Release:        1%{?dist}
 License:        GPLv3+ and ASL 2.0
 URL:            http://www.rsyslog.com/
 Source0:        http://www.rsyslog.com/files/download/rsyslog/%{name}-%{version}.tar.gz
-%define sha1    rsyslog=84944922e1986de81b1d59668546d75c2c5de509
+%define sha1    rsyslog=ace7abb0946ecdf2946b6970e8a6fa4b946779fc
 Source1:        rsyslog.service
 Source2:        50-rsyslog-journald.conf
 Source3:        rsyslog.conf
@@ -37,7 +37,8 @@ being able to accept inputs from a wide variety of sources, transform them,
 and output to the results to diverse destinations.
 
 %prep
-%setup -q
+%autosetup -p1
+
 autoreconf -fvi
 
 %build
@@ -55,7 +56,7 @@ sed -i 's/libsystemd-journal/libsystemd/' configure
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vd %{buildroot}%{_libdir}/systemd/system/
 install -vd %{buildroot}%{_sysconfdir}/systemd/journald.conf.d/
 install -vd %{buildroot}%{_sysconfdir}/rsyslog.d
@@ -91,6 +92,8 @@ make %{?_smp_mflags} check
 %config(noreplace) %{_sysconfdir}/rsyslog.conf
 
 %changelog
+*   Fri Nov 12 2021 Tapas Kundu <tkundu@vmware.com> 8.2110.0-1
+-   Update to 8.2110.0
 *   Thu Jun 24 2021 Tapas Kundu <tkundu@vmware.com> 8.2106.0-1
 -   Update to 8.2106.0
 *   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 8.2104.0-1
