@@ -2,7 +2,7 @@
 
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
-Version:        5.0.402
+Version:        6.0.100
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -14,10 +14,10 @@ Group:          Development/Tools
 # https://github.com/dotnet/core/tree/main/release-notes
 #
 # For example:
-# https://github.com/dotnet/core/blob/main/release-notes/5.0/5.0.11/5.0.11.md
-# https://download.visualstudio.microsoft.com/download/pr/6788a5a5-1879-4095-948d-72c7fbdf350f/c996151548ec9f24d553817db64c3577/dotnet-sdk-5.0.402-linux-x64.tar.gz
+# https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
+# https://download.visualstudio.microsoft.com/download/pr/17b6759f-1af0-41bc-ab12-209ba0377779/e8d02195dbf1434b940e0f05ae086453/dotnet-sdk-6.0.100-linux-x64.tar.gz
 Source0:        %{name}-%{version}-linux-x64.tar.gz
-%define sha1    %{name}=7d29824b0d6931724765b8dcf0c48b33582928ec
+%define sha1    %{name}=eabf5a5f5b03881e9ddbc2a692288000343622b7
 
 BuildArch:      x86_64
 
@@ -44,6 +44,8 @@ cp LICENSE.txt ThirdPartyNotices.txt %{buildroot}%{_docdir}/dotnet-sdk-%{version
 %{_docdir}/*
 
 %changelog
+* Mon Nov 15 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.0.100-1
+- Upgrade to version 6.0.100
 * Tue Oct 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.0.402-1
 - Upgrade to version 5.0.402
 * Tue Mar 9 2021 Shreyas B. <shreyasb@vmware.com> 5.0.103-1

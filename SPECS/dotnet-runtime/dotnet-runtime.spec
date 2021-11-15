@@ -2,7 +2,7 @@
 
 Summary:        Microsoft .NET Core Runtime
 Name:           dotnet-runtime
-Version:        5.0.11
+Version:        6.0.0
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -14,10 +14,10 @@ Group:          Development/Tools
 # https://github.com/dotnet/core/tree/main/release-notes
 #
 # For example:
-# https://github.com/dotnet/core/blob/main/release-notes/5.0/5.0.11/5.0.11.md
-# https://download.visualstudio.microsoft.com/download/pr/4652f15f-0061-4b13-aa61-0c1d23c3b290/af67e2036f0086a3794ba988233b41ae/dotnet-runtime-5.0.11-linux-x64.tar.gz
+# https://github.com/dotnet/core/blob/main/release-notes/6.0/6.0.0/6.0.0.md
+# https://download.visualstudio.microsoft.com/download/pr/0ce1c34f-0d9e-4d9b-964e-da676c8e605a/7a6c353b36477fa84f85b2821f2350c2/dotnet-runtime-6.0.0-linux-x64.tar.gz
 Source0:        %{name}-%{version}-linux-x64.tar.gz
-%define sha1    %{name}=daea78f07caac8be6137bfdddca7057a9c9a6600
+%define sha1    %{name}=f914cc90e71684034755f334692bad96380ace46
 
 BuildArch:      x86_64
 
@@ -61,6 +61,8 @@ ln -sf %{_libdir}/dotnet/dotnet %{buildroot}%{_bindir}/dotnet
 %{_libdir}/*
 
 %changelog
+* Mon Nov 15 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.0.0-1
+- Upgrade to version 6.0.0
 * Tue Oct 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.0.11-1
 - Upgrade to version 5.0.11
 * Tue Mar 9 2021 Shreyas B. <shreyasb@vmware.com> 5.0.3-1
