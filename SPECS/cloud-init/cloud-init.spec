@@ -1,8 +1,8 @@
 %define python3_sitelib %{_libdir}/python3.7/site-packages
 
 Name:           cloud-init
-Version:        21.3
-Release:        2%{?dist}
+Version:        21.4
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -11,13 +11,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 %{name}=1f5cab203032cb676390a66614327d76f8bacb8b
+%define sha1 %{name}=3f32b123af1fdcf07ce99db6a1ace5094708c1f2
 
 Patch0:     cloud-init-azureds.patch
 Patch1:     ds-identify.patch
 Patch2:     ds-vmware-photon.patch
 Patch3:     cloud-cfg.patch
-Patch4:     networkd.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -93,8 +92,7 @@ python3 tools/render-cloudcfg --variant photon > %{buildroot}/%{_sysconfdir}/clo
 sed -i -e "0,/'OpenStack', / s/'OpenStack', //" %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
 %endif
 
-mkdir -p %{buildroot}/var/lib/cloud
-mkdir -p %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg.d
+mkdir -p %{buildroot}%{_sharedstatedir}/cloud %{buildroot}%{_sysconfdir}/cloud/cloud.cfg.d
 
 %check
 touch vd ud
@@ -128,8 +126,8 @@ rm -rf %{buildroot}
 %{_bindir}/*
 %license LICENSE
 %{python3_sitelib}/*
-%{_docdir}/cloud-init/*
-%{_libdir}/cloud-init/*
+%{_docdir}/%{name}/*
+%{_libdir}/%{name}/*
 %dir %{_sharedstatedir}/cloud
 %dir %{_sysconfdir}/cloud/templates
 %doc %{_sysconfdir}/cloud/cloud.cfg.d/README
@@ -141,10 +139,12 @@ rm -rf %{buildroot}
 %{_unitdir}/*
 %{_systemdgeneratordir}/cloud-init-generator
 %{_udevrulesdir}/66-azure-ephemeral.rules
-%{_udevrulesdir}/10-cloud-init-hook-hotplug.rules
 %{_datadir}/bash-completion/completions/cloud-init
+%{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Mon Nov 15 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.4-1
+- Upgrade to version 21.4
 * Thu Oct 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.3-2
 - Remove unused dscheck_VMwareGuestInfo
 * Wed Aug 25 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.3-1
