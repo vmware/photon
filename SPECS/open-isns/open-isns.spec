@@ -1,7 +1,7 @@
 Summary:        iSNS server and client for Linux
 Name:           open-isns
 Version:        0.101
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2.1
 URL:            https://github.com/open-iscsi/open-isns
 Group:          Applications/System
@@ -23,7 +23,7 @@ Requires: %{name} = %{version}-%{release}
 Header files for doing development with open-isns.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 export CFLAGS="-Werror=unused-result"
@@ -31,9 +31,9 @@ export CFLAGS="-Werror=unused-result"
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
-make DESTDIR=%{buildroot} install_hdrs
-make DESTDIR=%{buildroot} install_lib
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+make DESTDIR=%{buildroot} install_hdrs %{?_smp_mflags}
+make DESTDIR=%{buildroot} install_lib %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -57,5 +57,7 @@ make DESTDIR=%{buildroot} install_lib
 %{_libdir}/libisns.a
 
 %changelog
+* Mon Nov 15 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.101-2
+- Increment for openssl 3.0.0 compatibility
 * Wed Feb 17 2021 Ankit Jain <ankitja@vmware.com> 0.101-1
 - Initial version.
