@@ -1,6 +1,6 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        10.18
+Version:        10.19
 Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=a9f6d96343cc5dcf8b28e6fce5a2955041b14003
+%define sha1    postgresql=f44edcc4d612f6a1b39c233ee7b1e80feb6d0456
 # Common libraries needed
 BuildRequires:  krb5-devel
 BuildRequires:  libxml2-devel
@@ -54,7 +54,7 @@ The postgresql-devel package contains libraries and header files for
 developing applications that use postgresql.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h &&
@@ -74,8 +74,8 @@ cd contrib && make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot}
-cd contrib && make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
+cd contrib && make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 # For postgresql 10+, commands are renamed
 # Ref: https://wiki.postgresql.org/wiki/New_in_postgres_10
@@ -161,6 +161,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Mon Nov 15 2021 Michael Paquier <mpaquier@vmware.com> 10.19-1
+-   update version to 10.19
 *   Sat Aug 14 2021 Michael Paquier <mpaquier@vmware.com> 10.18-1
 -   update version to 10.18
 *   Fri May 14 2021 Michael Paquier <mpaquier@vmware.com> 10.17-1
