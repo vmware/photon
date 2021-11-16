@@ -2,7 +2,7 @@
 Summary:        Sysdig is a universal system visibility tool with native support for containers.
 Name:           sysdig
 Version:        0.27.0
-Release:        4%{?kernelsubrelease}%{?dist}
+Release:        5%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            http://www.sysdig.org/
 Group:          Applications/System
@@ -11,6 +11,7 @@ Distribution:   Photon
 Source0:        https://github.com/draios/sysdig/archive/%{name}-%{version}.tar.gz
 %define sha1    sysdig=bad5831e23e35b3635ca75d3d67e74522f0d7dac
 BuildArch:      x86_64
+Patch0:         0001-sysdig-Fix-build.patch
 BuildRequires:  cmake
 BuildRequires:  linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 BuildRequires:  openssl-devel
@@ -38,7 +39,7 @@ Requires:       protobuf
  Sysdig is open source, system-level exploration: capture system state and activity from a running Linux instance, then save, filter and analyze. Sysdig is scriptable in Lua and includes a command line interface and a powerful interactive UI, csysdig, that runs in your terminal
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 # fix for linux-4.9
@@ -89,6 +90,8 @@ rm -rf %{buildroot}/*
 /lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/sysdig-probe.ko
 
 %changelog
+*   Tue Nov 16 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.27.0-5
+-   Fix build failure
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.27.0-4
 -   Bump up release for openssl
 *   Fri Feb 19 2021 Harinadh D <hdommaraju@vmware.com> 0.27.0-3
