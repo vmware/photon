@@ -4,7 +4,7 @@
 Summary:        EdgeX Foundry Go Services
 Name:           edgex
 Version:        0.7.1
-Release:        13%{?dist}
+Release:        14%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/edgexfoundry/edgex-go
 Group:          Applications/System
@@ -112,6 +112,8 @@ cp -a cmd/config-seed/res/properties %{buildroot}%{_datadir}/%{name}/config-seed
 %{_var}/log/*
 
 %changelog
+*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 0.7.1-14
+-   Bump up version to compile with new go
 *   Wed Oct 27 2021 Piyush Gupta <gpiyush@vmware.com> 0.7.1-13
 -   Bump up version to compile with new go
 *   Tue Oct 26 2021 Nitesh Kumar <kunitesh@vmware.com> 0.7.1-12
