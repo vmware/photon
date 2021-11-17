@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.78
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -98,6 +98,9 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+
+# Allow PCI resets to be disabled from vfio_pci module
+Patch120:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -302,6 +305,9 @@ Python programming language to use the interface to manipulate perf events.
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
+
+# Allow PCI resets to be disabled from vfio_pci module
+%patch120 -p1
 
 %ifarch aarch64
 # Rpi of_configfs patches
@@ -670,6 +676,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Nov 17 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.78-3
+-   Allow PCI resets disablement from vfio_pci
 *   Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.10.78-2
 -   compile with openssl 3.0.0
 *   Mon Nov 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.78-1

@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.78
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt54
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -81,6 +81,9 @@ Patch56:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 # Fix for CVE-2019-12379
 Patch101:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+
+# Allow PCI resets to be disabled from vfio_pci module
+Patch120:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/5.10/
@@ -526,6 +529,8 @@ The Linux package contains the Linux kernel doc files
 # CVE
 %patch100 -p1
 %patch101 -p1
+
+%patch120 -p1
 
 # RT
 %patch301 -p1
@@ -1063,6 +1068,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Nov 17 2021 Sharan Turlapati <sturlapati@vmware.com> 5.10.78-3
+-   Allow PCI resets disablement from vfio_pci
 *   Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.10.78-2
 -   compile with openssl 3.0.0
 *   Mon Nov 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.78-1
