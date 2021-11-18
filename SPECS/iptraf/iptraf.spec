@@ -22,6 +22,7 @@ Patch13: iptraf-3.0.1-ipv6-fix.patch
 Patch14: iptraf-3.0.1-servmon-fix.patch
 Patch15: 0001-fix-strcpy-overlap-memory.patch
 Patch16: iptraf-3.0.1-packet-fix.patch
+Patch17: iptraf-ncurses-Makefile.patch
 
 Group:      Applications/System
 Vendor:     VMware, Inc.
@@ -32,7 +33,8 @@ BuildRequires: ncurses-devel
 IPTraf is a console-based network statistics utility for Linux. It gathers a variety of figures such as TCP connection packet and byte counts, interface statistics and activity indicators, TCP/UDP traffic breakdowns, and LAN station packet and byte counts.
 
 %prep
-%setup -q 
+# Using autosetup is not feasible
+%setup -q
 %patch7 -p1 -b .compile
 %patch12 -p1 -b .ipv6
 %patch13 -p1 -b .ipv6-fix
@@ -49,9 +51,10 @@ IPTraf is a console-based network statistics utility for Linux. It gathers a var
 %patch10 -p0 -b .ifname
 %patch11 -p1 -b .interface
 %patch16 -p1 -b .compile
+%patch17 -p1 -b .Makefile-ncurses
 
 %build
-make -C src CFLAGS="-fno-strict-aliasing" \
+make %{?_smp_mflags} -C src CFLAGS="-fno-strict-aliasing" \
 	TARGET=%{_bindir}
 
 %install

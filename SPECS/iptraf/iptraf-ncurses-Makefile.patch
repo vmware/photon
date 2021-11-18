@@ -1,0 +1,22 @@
+diff --git a/src/Makefile.orig b/src/Makefile
+index d4a3f10..39a2a3f 100644
+--- a/src/Makefile.orig
++++ b/src/Makefile
+@@ -18,7 +18,7 @@ VERSION 	= -DVERSION=\"$(VERNUMBER)\"
+ BINDIR		= ../../iptraf-$(VERNUMBER).bin.$(ARCH)
+ 
+ CC		= gcc
+-LIBS		= -L../support -ltextbox -lpanelw -lncursesw   # in this order!
++LIBS		= -L../support -ltextbox -lpanelw -lncursesw -ltinfo   # in this order!
+ 
+ # comment this one out to omit debug code when done.
+ 
+@@ -178,7 +178,7 @@ dist-bin: all
+ # Just in case anyone needs to link a static binary
+ #
+ static: $(OBJS)
+-	$(CC) -static $(PROC) -o iptraf $(OBJS) ../support/libtextbox.a -lpanelw -lncursesw
++	$(CC) -static $(PROC) -o iptraf $(OBJS) ../support/libtextbox.a -lpanelw -lncursesw -ltinfo
+ 	$(CC) -static -o rvnamed rvnamed.o getpath.o
+ 	$(CC) -static -o rawtime rawtime.c
+ 
