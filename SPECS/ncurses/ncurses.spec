@@ -1,15 +1,15 @@
-%global ncursessubversion 20200822
+%global ncursessubversion 20210807
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
 Version:        6.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://invisible-island.net/ncurses/
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        ftp://ftp.invisible-island.net/ncurses/current/%{name}-%{version}-%{ncursessubversion}.tgz
-%define sha1    ncurses=29dc11e20ffa9dd034595dfdb1b25ee1fbbf9eb9
+%define sha1    ncurses=4e1221ea1cc96ee41466c24199931f4d044467c6
 Requires:       ncurses-libs = %{version}-%{release}
 Requires:       glibc
 
@@ -53,7 +53,7 @@ Requires:       %{name} = %{version}-%{release}
 It contains all terminfo files
 
 %prep
-%setup -q -n %{name}-%{version}-%{ncursessubversion}
+%autosetup -p1 -n %{name}-%{version}-%{ncursessubversion}
 
 %build
 if [ %{_host} != %{_build} ]; then
@@ -69,11 +69,13 @@ ln -s ../configure .
     --with-shared \
     --without-debug \
     --enable-pc-files \
+    --with-pkg-config-libdir=%{_libdir}/pkgconfig \
     --enable-widec \
     --disable-lp64 \
     --with-chtype='long' \
     --with-mmask-t='long' \
-    --disable-silent-rules
+    --disable-silent-rules \
+    --with-termlib=tinfo
 make %{?_smp_mflags}
 popd
 mkdir v5
@@ -84,23 +86,30 @@ ln -s ../configure .
     --with-shared \
     --without-debug \
     --enable-pc-files \
+    --with-pkg-config-libdir=%{_libdir}/pkgconfig \
     --enable-widec \
     --disable-lp64 \
     --with-chtype='long' \
     --with-mmask-t='long' \
     --disable-silent-rules \
+    --with-termlib=tinfo \
     --with-abi-version=5
 make %{?_smp_mflags}
 popd
 
 %install
-make -C v5 DESTDIR=%{buildroot} install.libs
-make -C v6 DESTDIR=%{buildroot} install
+make %{?_smp_mflags} -C v5 DESTDIR=%{buildroot} install.libs
+make %{?_smp_mflags} -C v6 DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libncursesw.so) %{buildroot}%{_libdir}/libncursesw.so
-for lib in ncurses form panel menu ; do \
+for lib in form panel menu ; do \
     rm -vf %{buildroot}%{_libdir}/lib${lib}.so ; \
     echo "INPUT(-l${lib}w)" > %{buildroot}%{_libdir}/lib${lib}.so ; \
+    ln -sfv lib${lib}w.a %{buildroot}%{_libdir}/lib${lib}.a ; \
+done
+for lib in ncurses ; do \
+    rm -vf %{buildroot}%{_libdir}/lib${lib}.so ; \
+    echo "INPUT(-l${lib}w -ltinfo)" > %{buildroot}%{_libdir}/lib${lib}.so ; \
     ln -sfv lib${lib}w.a %{buildroot}%{_libdir}/lib${lib}.a ; \
 done
 ln -sfv libncurses++w.a %{buildroot}%{_libdir}/libncurses++.a
@@ -115,7 +124,7 @@ cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 %check
 cd test
 sh configure
-make
+make %{?_smp_mflags}
 
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
@@ -162,6 +171,7 @@ make
 %{_libdir}/libpanelw.a
 %{_libdir}/libncurses++.a
 %{_libdir}/libmenu.a
+%{_libdir}/libtinfo.a
 %{_libdir}/libpanelw.so
 %{_libdir}/libcurses.so
 %{_libdir}/libformw.so
@@ -171,12 +181,14 @@ make
 %{_libdir}/libcursesw.so
 %{_libdir}/libpanel.so
 %{_libdir}/libmenu.so
-/lib/pkgconfig/formw.pc
-/lib/pkgconfig/menuw.pc
-/lib/pkgconfig/ncurses++w.pc
-/lib/pkgconfig/ncursesw.pc
-/lib/pkgconfig/panelw.pc
-/usr/lib/libncursesw.so
+%{_libdir}/libtinfo.so
+%{_libdir}/pkgconfig/formw.pc
+%{_libdir}/pkgconfig/menuw.pc
+%{_libdir}/pkgconfig/ncurses++w.pc
+%{_libdir}/pkgconfig/ncursesw.pc
+%{_libdir}/pkgconfig/panelw.pc
+%{_libdir}/pkgconfig/tinfo.pc
+%{_libdir}/libncursesw.so
 
 %{_docdir}/ncurses-%{version}/html/*
 %{_docdir}/ncurses-%{version}/*.doc
@@ -188,6 +200,10 @@ make
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+*   Thu Nov 18 2021 Oliver Kurth <okurth@vmware.com> 6.2-4
+-   update to 20210807
+-   add libtinfo
+-   use smp_mflags and autosetup
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 6.2-3
 -   Fix build with new rpm
 *   Fri Aug 28 2020 Gerrit Photon <photon-checkins@vmware.com> 6.2-2
