@@ -1,7 +1,7 @@
 %{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           tuned
 Version:        2.15.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -12,6 +12,7 @@ Patch0:         remove_desktop_utils_dependency.patch
 Patch1:         bootloader-plugin-support-for-photon.patch
 Patch2:         tuned-fix-bug-in-sysctl-verify.patch
 Patch3:         0001-Schedule-perf-events-iff-scheduler-per-process-confi.patch
+Patch4:         0001-realtime-Modify-hung_task-detection-param.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python3-devel
@@ -140,6 +141,9 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+*   Thu Nov 18 2021 Ankit Jain <ankitja@vmware.com> 2.15.0-2
+-   realtime: modified hung_task detection sysctl param
+-   to log D-state tasks
 *   Thu Sep 23 2021 Keerthana K <keerthanak@vmware.com> 2.15.0-1
 -   Update to version 2.15.0
 -   Schedule perf events iff scheduler per process configurations are set
