@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        iniconfig: brain-dead simple config-ini parsing
 Name:           python3-iniconfig
 Version:        1.1.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 URL:            http://github.com/RonnyPfannschmidt/iniconfig
 Group:          System Environment/Programming
@@ -16,10 +14,9 @@ BuildArch:      noarch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
-
 Requires:       python3
 
-Provides:       python3.9dist(iniconfig) = %{version}
+Provides:       python%{python3_version}dist(iniconfig) = %{version}
 
 %description
 iniconfig is a small and simple INI-file parser module having a unique set of features:
@@ -51,6 +48,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/iniconfig*.egg-info/*
 
 %changelog
+* Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.1.1-3
+- Update release to compile with python 3.10
 * Thu Aug 26 2021 Susant Sahani <ssahani@vmware.com> 1.1.1-2
 - Use python macros
 * Tue Nov 10 2020 Susant Sahani <ssahani@vmware.com> 1.1.1-1

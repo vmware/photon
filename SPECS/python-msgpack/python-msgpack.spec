@@ -1,8 +1,8 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
+%define debug_package %{nil}
 
 Summary:        MessagePack (de)serializer.
 Name:           python3-msgpack
-Version:        1.0.0
+Version:        1.0.2
 Release:        1%{?dist}
 License:        Apache Software License
 Group:          Development/Languages/Python
@@ -10,8 +10,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://msgpack.org/
 Source0:        https://pypi.io/packages/source/m/msgpack-python/msgpack-%{version}.tar.gz
-%define sha1    msgpack=d55eda443260ae6af169f007e2dcf4e56529f4f0
-
+%define sha1    msgpack=8329d850c68b435445120518a2dd71a478dcc89f
+Patch0:         support-python3.10.patch
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
@@ -20,9 +20,8 @@ Requires:       python3
 %description
 MessagePack is a fast, compact binary serialization format, suitable for similar data to JSON. This package provides CPython bindings for reading and writing MessagePack data.
 
-
 %prep
-%setup -q -n msgpack-%{version}
+%autosetup -p1 -n msgpack-python-%{version}
 
 %build
 python3 setup.py build
@@ -38,6 +37,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.2-1
+-   Update release to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.0-1
 -   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.5.6-2

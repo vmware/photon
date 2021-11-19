@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-nocasedict
 Version:        1.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A case-insensitive ordered dictionary for Python
 License:        GNU Lesser General Public License v2 or later (LGPLv2+)
 Group:          Development/Languages/Python
@@ -19,7 +17,7 @@ Requires:       python3
 Requires:       python3-libs
 Requires:       python3-setuptools
 BuildArch:      noarch
-Provides:       python3.9dist(nocasedict)
+Provides:       python%{python3_version}dist(nocasedict)
 
 %description
 A case-insensitive ordered dictionary for Python
@@ -42,5 +40,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.2-2
+-   Update release to compile with python 3.10,use python3 macros file
 *   Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 1.0.2-1
 -   Initial packaging for python3-nocasedict

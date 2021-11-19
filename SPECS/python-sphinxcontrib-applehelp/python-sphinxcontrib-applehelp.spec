@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-sphinxcontrib-applehelp
 Version:        1.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A platform independent file lock
 License:        MIT
 Group:          Development/Languages/Python
@@ -19,7 +17,7 @@ BuildRequires:  python3-setuptools
 
 Requires:       python3
 
-Provides: python3.9dist(sphinxcontrib-applehelp)
+Provides: python%{python3_version}dist(sphinxcontrib-applehelp)
 
 %description
 This package contains a single module, which implements a platform independent
@@ -48,5 +46,7 @@ python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/sphinxcontrib/
 
 %changelog
-* Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.0.2-1
-- Initial version
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.2-2
+-   Update release to compile with python 3.10
+*   Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.0.2-1
+-   Initial version

@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-virtualenv
 Version:        20.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Virtual Python Environment builder
 License:        MIT
 Group:          Development/Languages/Python
@@ -18,11 +16,15 @@ BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  curl-devel
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-pip
+BuildRequires:  python3-macros
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-appdirs
 Requires:       python3-distlib
 Requires:       python3-filelock
+Requires:       python3-setuptools
+Requires:       python3-six
 
 %if %{with_check}
 BuildRequires:  python3-pytest
@@ -30,12 +32,11 @@ BuildRequires:  python3-pytest
 
 BuildArch:      noarch
 
-
 %description
 virtualenv is a tool to create isolated Python environment.
 
 %prep
-%setup -n virtualenv-%{version}
+%autosetup -n virtualenv-%{version}
 
 %build
 python3 setup.py build
@@ -52,6 +53,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 20.1.0-3
+-   Add python3-pip as BuildRequires to build with python3.10
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.1.0-2
 -   Fix build with new rpm
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 20.1.0-1

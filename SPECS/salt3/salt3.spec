@@ -9,7 +9,7 @@
 
 Name:           salt3
 Version:        3004
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A parallel remote execution system with python3
 Group:          System Environment/Daemons
 License:        ASL 2.0
@@ -164,7 +164,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %doc $RPM_BUILD_DIR/salt-%{version}/LICENSE
 %{python3_sitelib}/salt/*
-%{python3_sitelib}/salt-*-py?.?.egg-info
+%{python3_sitelib}/salt-*-py%{python3_version}.egg-info
 %{_sysconfdir}/logrotate.d/salt
 %{_var}/cache/salt
 
@@ -301,6 +301,8 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3004-2
+- Update release to compile with python 3.10
 * Mon Oct 18 2021 Bryce Larson <brycel@vmware.com> 3004-1
 - Update to version 3004
 * Wed Aug 11 2021 Bryce Larson <brycel@vmware.com> 3003.3-1

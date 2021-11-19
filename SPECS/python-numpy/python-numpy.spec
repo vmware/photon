@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python3-numpy
-Version:        1.19.4
+Version:        1.21.4
 Release:        1%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
@@ -10,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/numpy
 Source0:        https://pypi.python.org/packages/a5/16/8a678404411842fe02d780b5f0a676ff4d79cd58f0f22acddab1b392e230/numpy-%{version}.zip
-%define sha1    numpy=9b000c77efc890b8267354c51120ca2b07adde1d
+%define sha1    numpy=e7823d436fef320fa5db18320eda84ea8fb7e36a
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -31,7 +29,7 @@ NumPy is a general-purpose array-processing package designed to efficiently mani
 
 
 %prep
-%setup -q -n numpy-%{version}
+%autosetup -n numpy-%{version}
 
 %build
 python3 setup.py build
@@ -42,8 +40,7 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %check
 mkdir test
 pushd test
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 nose pytest
+pip3 install nose pytest
 PYTHONPATH=%{buildroot}%{python3_sitelib} PATH=$PATH:%{buildroot}%{_bindir} python3 -c "import numpy; numpy.test()"
 popd
 
@@ -53,10 +50,12 @@ rm -rf test
 %defattr(-,root,root,-)
 %{_bindir}/f2py3
 %{_bindir}/f2py
-%{_bindir}/f2py3.9
+%{_bindir}/f2py%{python3_version}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.21.4-1
+-   Update to version 1.21.4,compile with python 3.10
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 1.19.4-1
 -   Automatic Version Bump
 *   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 1.19.2-3

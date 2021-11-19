@@ -1,10 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
-
 Summary:        Amazon Web Services Library.
 Name:           python3-boto
 Version:        2.49.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,6 +16,7 @@ BuildRequires:  python3-xml
 %if %{with_check}
 Patch0:         makecheck.patch
 BuildRequires:  python3-requests
+BuildRequires:  python3-pip
 %endif
 Requires:       python3
 Requires:       python3-libs
@@ -30,10 +28,7 @@ BuildArch:      noarch
 Boto is a Python package that provides interfaces to Amazon Web Services. Currently, all features work with Python 2.6 and 2.7. Work is under way to support Python 3.3+ in the same codebase. Modules are being ported one at a time with the help of the open source community, so please check below for compatibility with Python 3.3+.
 
 %prep
-%setup -q -n boto-%{version}
-%if %{with_check}
-%patch0 -p1
-%endif
+%autosetup -p1 -n boto-%{version}
 
 %build
 python3 setup.py build
@@ -45,10 +40,7 @@ for item in %{buildroot}/%{_bindir}/*
 done
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 nose
-$easy_install_3 httpretty
-$easy_install_3 mock
+pip3 install nose httpretty mock
 python3 ./tests/test.py unit
 
 %files
@@ -77,6 +69,8 @@ python3 ./tests/test.py unit
 %{_bindir}/taskadmin-%{python3_version}
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.49.0-4
+-   Update release to compile with python 3.10
 *   Wed Feb 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.49.0-3
 -   Fix makecheck
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 2.49.0-2

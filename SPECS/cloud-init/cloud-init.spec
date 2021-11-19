@@ -1,9 +1,8 @@
-%define python3_sitelib %{_libdir}/python3.9/site-packages
 %define py_setup setup.py
 
 Name:           cloud-init
 Version:        21.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -149,6 +148,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 21.4-2
+- Update release to compile with python 3.10
 * Mon Nov 15 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.4-1
 - Upgrade to version 21.4
 * Thu Oct 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.3-3

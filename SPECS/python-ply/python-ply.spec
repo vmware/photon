@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-ply
 Version:        3.11
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Python Lex & Yacc
 License:        BSD-3-Clause
 Group:          Development/Languages/Python
@@ -17,7 +15,7 @@ BuildRequires:  python3-six
 %endif
 Requires:       python3
 BuildArch:      noarch
-Provides:       python3.9dist(ply)
+Provides:       python%{python3_version}dist(ply)
 
 %description
 PLY is yet another implementation of lex and yacc for Python. Some notable
@@ -31,7 +29,7 @@ PLY is extremely easy to use and provides very extensive error checking.
 It is compatible with both Python 2 and Python 3.
 
 %prep
-%setup -q -n ply-%{version}
+%autosetup -n ply-%{version}
 
 %build
 CFLAGS="%{optflags}" python3 setup.py build
@@ -57,6 +55,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.11-6
+-   Update release to compile with python 3.10
 *   Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 3.11-5
 -   Added provides
 *   Thu Oct 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 3.11-4

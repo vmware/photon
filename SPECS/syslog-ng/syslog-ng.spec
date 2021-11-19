@@ -1,8 +1,7 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Next generation system logger facilty
 Name:           syslog-ng
 Version:        3.29.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPL + LGPL
 URL:            https://syslog-ng.org/
 Group:          System Environment/Daemons
@@ -36,6 +35,9 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  curl-devel
 BuildRequires:  ivykis-devel
+%if %{with_check}
+BuildRequires:  python3-pip
+%endif
 Obsoletes:	eventlog
 
 %description
@@ -118,11 +120,7 @@ install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable syslog-ng.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-syslog-ng.preset
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 unittest2
-$easy_install_3 nose
-$easy_install_3 ply
-$easy_install_3 pep8
+pip3 install unittest2 nose ply pep8
 make %{?_smp_mflags} check
 
 %post
@@ -176,6 +174,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.29.1-5
+-   Update release to compile with python 3.10
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.29.1-4
 -   Bump up release for openssl
 *   Fri Oct 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.29.1-3

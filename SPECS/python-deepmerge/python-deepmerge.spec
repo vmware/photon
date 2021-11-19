@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-deepmerge
 Version:        0.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python toolset to deeply merge python dictionaries.
 Group:          Development/Libraries
 License:        MIT
@@ -16,6 +14,7 @@ BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 BuildRequires:  curl-devel
 BuildRequires:  python3-pyparsing
+BuildRequires:  python3-pip
 %if %{with_check}
 BuildRequires:  python3-pytest
 BuildRequires:  python3-atomicwrites
@@ -32,7 +31,7 @@ BuildArch:      noarch
 A tools to handle merging of nested data structures in python.
 
 %prep
-%setup -q -n deepmerge-%{version}
+%autosetup -n deepmerge-%{version}
 
 %build
 python3 setup.py build
@@ -58,6 +57,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+*  Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.1.1-2
+-  Update release to compile with python 3.10
 *  Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 0.1.1-1
 -  Automatic Version Bump
 *  Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.1.0-1

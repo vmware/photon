@@ -1,10 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
-
 Summary:        Extensions to the standard Python datetime module
 Name:           python3-dateutil
 Version:        2.8.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache Software License, BSD License (Dual License)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -21,14 +18,13 @@ Requires:       python3
 Requires:       python3-libs
 Requires:       python3-six
 BuildArch:      noarch
-Provides:       python3.9dist(dateutil)
+Provides:       python%{python3_version}dist(dateutil)
 
 %description
 The dateutil module provides powerful extensions to the datetime module available in the Python standard library.
 
-
 %prep
-%setup -q -n python-dateutil-%{version}
+%autosetup -p1 -n python-dateutil-%{version}
 
 %build
 python3 setup.py build
@@ -44,6 +40,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.8.1-3
+-   Update release to compile with python 3.10
 *   Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 2.8.1-2
 -   Added provides
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.8.1-1
@@ -54,4 +52,3 @@ python3 setup.py test
 -   Updated to release 2.7.3
 *   Sun Jan 07 2018 Kumar Kaushik <kaushikk@vmware.com> 2.6.1-1
 -   Initial packaging for photon.
-

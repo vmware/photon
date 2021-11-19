@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Core utilities for Python packages
 Name:           python3-packaging
 Version:        20.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://pypi.python.org/pypi/packaging
 License:        BSD or ASL 2.0
 Group:          Development/Languages/Python
@@ -21,6 +19,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  python3-xml
 BuildRequires:  python3-pyparsing
 BuildRequires:  python3-six
+BuildRequires:  python3-pip
 %endif
 
 Requires:       python3
@@ -30,14 +29,14 @@ Requires:       python3-six
 
 BuildArch:      noarch
 
-Provides: python3.9dist(packaging)
+Provides: python%{python3_version}dist(packaging)
 
 %description
 Cryptography is a Python library which exposes cryptographic recipes and primitives.
 
 
 %prep
-%setup -q -n packaging-%{version}
+%autosetup -p1 -n packaging-%{version}
 
 %build
 python3 setup.py build
@@ -46,8 +45,7 @@ python3 setup.py build
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pretend pytest
+pip3 install pretend pytest
 PYTHONPATH=./ pytest
 
 %files
@@ -55,6 +53,8 @@ PYTHONPATH=./ pytest
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 20.4-4
+-   Update release to compile with python 3.10
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.4-3
 -   Fix build with new rpm
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 20.4-2

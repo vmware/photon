@@ -1,0 +1,244 @@
+From: Prashant S Chauhan <psinghchauha@vmware.com>
+Subject: use sysconfig since distutils is depreciated
+diff --git a/configure b/configure
+index a28eb5d..fd539b8 100755
+--- a/configure
++++ b/configure
+@@ -13473,20 +13473,20 @@ variable to configure. See \`\`configure --help'' for reference.
+ 	fi
+ 
+ 	#
+-	# Check if you have distutils, else fail
++	# Check if you have sysconfig, else fail
+ 	#
+-	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for the distutils Python package" >&5
+-$as_echo_n "checking for the distutils Python package... " >&6; }
+-	ac_distutils_result=`$PYTHON -c "import distutils" 2>&1`
+-	if test -z "$ac_distutils_result"; then
++	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for the sysconfig Python package" >&5
++$as_echo_n "checking for the sysconfig Python package... " >&6; }
++	ac_sysconfig_result=`$PYTHON -c "import sysconfig" 2>&1`
++	if test -z "$ac_sysconfig_result"; then
+ 		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+ $as_echo "yes" >&6; }
+ 	else
+ 		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+ $as_echo "no" >&6; }
+-		as_fn_error $? "cannot import Python module \"distutils\".
++		as_fn_error $? "cannot import Python module \"sysconfig\".
+ Please check your Python installation. The error was:
+-$ac_distutils_result" "$LINENO" 5
++$ac_sysconfig_result" "$LINENO" 5
+ 		PYTHON_VERSION=""
+ 	fi
+ 
+@@ -13496,10 +13496,10 @@ $ac_distutils_result" "$LINENO" 5
+ 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Python include path" >&5
+ $as_echo_n "checking for Python include path... " >&6; }
+ 	if test -z "$PYTHON_CPPFLAGS"; then
+-		python_path=`$PYTHON -c "import distutils.sysconfig; \
+-			print (distutils.sysconfig.get_python_inc ());"`
+-		plat_python_path=`$PYTHON -c "import distutils.sysconfig; \
+-			print (distutils.sysconfig.get_python_inc (plat_specific=1));"`
++		python_path=`$PYTHON -c "import sysconfig; \
++			print (sysconfig.get_path('include'));"`
++		plat_python_path=`$PYTHON -c "import sysconfig; \
++			print (sysconfig.get_path('include'));"`
+ 		if test -n "${python_path}"; then
+ 			if test "${plat_python_path}" != "${python_path}"; then
+ 				python_path="-I$python_path -I$plat_python_path"
+@@ -13525,7 +13525,7 @@ $as_echo_n "checking for Python library path... " >&6; }
+ 
+ # join all versioning strings, on some systems
+ # major/minor numbers could be in different list elements
+-from distutils.sysconfig import *
++from sysconfig import *
+ e = get_config_var('VERSION')
+ if e is not None:
+ 	print(e)
+@@ -13551,8 +13551,8 @@ _ACEOF
+ 		ac_python_libdir=`cat<<EOD | $PYTHON -
+ 
+ # There should be only one
+-import distutils.sysconfig
+-e = distutils.sysconfig.get_config_var('LIBDIR')
++import sysconfig
++e = sysconfig.get_config_var('LIBDIR')
+ if e is not None:
+ 	print (e)
+ EOD`
+@@ -13560,8 +13560,8 @@ EOD`
+ 		# Now, for the library:
+ 		ac_python_library=`cat<<EOD | $PYTHON -
+ 
+-import distutils.sysconfig
+-c = distutils.sysconfig.get_config_vars()
++import sysconfig
++c = sysconfig.get_config_vars()
+ if 'LDVERSION' in c:
+ 	print ('python'+c['LDVERSION'])
+ else:
+@@ -13580,9 +13580,9 @@ EOD`
+ 		else
+ 			# old way: use libpython from python_configdir
+ 			ac_python_libdir=`$PYTHON -c \
+-			  "from distutils.sysconfig import get_python_lib as f; \
++			  "from sysconfig import get_path as f; \
+ 			  import os; \
+-			  print (os.path.join(f(plat_specific=1, standard_lib=1), 'config'));"`
++			  print (os.path.join(f('platstdlib'), 'config'));"`
+ 			PYTHON_LIBS="-L$ac_python_libdir -lpython$ac_python_version"
+ 		fi
+ 
+@@ -13603,8 +13603,8 @@ $as_echo "$PYTHON_LIBS" >&6; }
+ 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for Python site-packages path" >&5
+ $as_echo_n "checking for Python site-packages path... " >&6; }
+ 	if test -z "$PYTHON_SITE_PKG"; then
+-		PYTHON_SITE_PKG=`$PYTHON -c "import distutils.sysconfig; \
+-			print (distutils.sysconfig.get_python_lib(0,0));"`
++		PYTHON_SITE_PKG=`$PYTHON -c "import sysconfig; \
++			print (sysconfig.get_path('platlib'));"`
+ 	fi
+ 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON_SITE_PKG" >&5
+ $as_echo "$PYTHON_SITE_PKG" >&6; }
+@@ -13616,8 +13616,8 @@ $as_echo "$PYTHON_SITE_PKG" >&6; }
+ 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking python extra libraries" >&5
+ $as_echo_n "checking python extra libraries... " >&6; }
+ 	if test -z "$PYTHON_EXTRA_LDFLAGS"; then
+-	   PYTHON_EXTRA_LDFLAGS=`$PYTHON -c "import distutils.sysconfig; \
+-                conf = distutils.sysconfig.get_config_var; \
++	   PYTHON_EXTRA_LDFLAGS=`$PYTHON -c "import sysconfig; \
++                conf = sysconfig.get_config_var; \
+                 print (conf('LIBS') + ' ' + conf('SYSLIBS'))"`
+ 	fi
+ 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON_EXTRA_LDFLAGS" >&5
+@@ -13630,8 +13630,8 @@ $as_echo "$PYTHON_EXTRA_LDFLAGS" >&6; }
+ 	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking python extra linking flags" >&5
+ $as_echo_n "checking python extra linking flags... " >&6; }
+ 	if test -z "$PYTHON_EXTRA_LIBS"; then
+-		PYTHON_EXTRA_LIBS=`$PYTHON -c "import distutils.sysconfig; \
+-			conf = distutils.sysconfig.get_config_var; \
++		PYTHON_EXTRA_LIBS=`$PYTHON -c "import sysconfig; \
++			conf = sysconfig.get_config_var; \
+ 			print (conf('LINKFORSHARED'))"`
+ 	fi
+ 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $PYTHON_EXTRA_LIBS" >&5
+diff --git a/m4/ax_python_devel.m4 b/m4/ax_python_devel.m4
+index f18ed8a..c8c5faa 100644
+--- a/m4/ax_python_devel.m4
++++ b/m4/ax_python_devel.m4
+@@ -133,17 +133,17 @@ variable to configure. See ``configure --help'' for reference.
+ 	fi
+ 
+ 	#
+-	# Check if you have distutils, else fail
++	# Check if you have sysconfig, else fail
+ 	#
+-	AC_MSG_CHECKING([for the distutils Python package])
+-	ac_distutils_result=`$PYTHON -c "import distutils" 2>&1`
+-	if test -z "$ac_distutils_result"; then
++	AC_MSG_CHECKING([for the sysconfig Python package])
++	ac_sysconfig_result=`$PYTHON -c "import sysconfig" 2>&1`
++	if test -z "$ac_sysconfig_result"; then
+ 		AC_MSG_RESULT([yes])
+ 	else
+ 		AC_MSG_RESULT([no])
+-		AC_MSG_ERROR([cannot import Python module "distutils".
++		AC_MSG_ERROR([cannot import Python module "sysconfig".
+ Please check your Python installation. The error was:
+-$ac_distutils_result])
++$ac_sysconfig_result])
+ 		PYTHON_VERSION=""
+ 	fi
+ 
+@@ -152,10 +152,10 @@ $ac_distutils_result])
+ 	#
+ 	AC_MSG_CHECKING([for Python include path])
+ 	if test -z "$PYTHON_CPPFLAGS"; then
+-		python_path=`$PYTHON -c "import distutils.sysconfig; \
+-			print (distutils.sysconfig.get_python_inc ());"`
+-		plat_python_path=`$PYTHON -c "import distutils.sysconfig; \
+-			print (distutils.sysconfig.get_python_inc (plat_specific=1));"`
++		python_path=`$PYTHON -c "import sysconfig; \
++			print (sysconfig.get_path('include'));"`
++		plat_python_path=`$PYTHON -c "import sysconfig; \
++			print (sysconfig.get_path('platinclude'));"`
+ 		if test -n "${python_path}"; then
+ 			if test "${plat_python_path}" != "${python_path}"; then
+ 				python_path="-I$python_path -I$plat_python_path"
+@@ -179,7 +179,7 @@ $ac_distutils_result])
+ 
+ # join all versioning strings, on some systems
+ # major/minor numbers could be in different list elements
+-from distutils.sysconfig import *
++from sysconfig import *
+ e = get_config_var('VERSION')
+ if e is not None:
+ 	print(e)
+@@ -202,8 +202,8 @@ EOD`
+ 		ac_python_libdir=`cat<<EOD | $PYTHON -
+ 
+ # There should be only one
+-import distutils.sysconfig
+-e = distutils.sysconfig.get_config_var('LIBDIR')
++import sysconfig
++e = sysconfig.get_config_var('LIBDIR')
+ if e is not None:
+ 	print (e)
+ EOD`
+@@ -211,8 +211,8 @@ EOD`
+ 		# Now, for the library:
+ 		ac_python_library=`cat<<EOD | $PYTHON -
+ 
+-import distutils.sysconfig
+-c = distutils.sysconfig.get_config_vars()
++import sysconfig
++c = sysconfig.get_config_vars()
+ if 'LDVERSION' in c:
+ 	print ('python'+c[['LDVERSION']])
+ else:
+@@ -231,9 +231,9 @@ EOD`
+ 		else
+ 			# old way: use libpython from python_configdir
+ 			ac_python_libdir=`$PYTHON -c \
+-			  "from distutils.sysconfig import get_python_lib as f; \
++			  "from sysconfig import get_path as f; \
+ 			  import os; \
+-			  print (os.path.join(f(plat_specific=1, standard_lib=1), 'config'));"`
++			  print (os.path.join(f('platstdlib'), 'config'));"`
+ 			PYTHON_LIBS="-L$ac_python_libdir -lpython$ac_python_version"
+ 		fi
+ 
+@@ -252,8 +252,8 @@ EOD`
+ 	#
+ 	AC_MSG_CHECKING([for Python site-packages path])
+ 	if test -z "$PYTHON_SITE_PKG"; then
+-		PYTHON_SITE_PKG=`$PYTHON -c "import distutils.sysconfig; \
+-			print (distutils.sysconfig.get_python_lib(0,0));"`
++		PYTHON_SITE_PKG=`$PYTHON -c "import sysconfig; \
++			print (sysconfig.get_path('platlib'));"`
+ 	fi
+ 	AC_MSG_RESULT([$PYTHON_SITE_PKG])
+ 	AC_SUBST([PYTHON_SITE_PKG])
+@@ -263,8 +263,8 @@ EOD`
+ 	#
+ 	AC_MSG_CHECKING(python extra libraries)
+ 	if test -z "$PYTHON_EXTRA_LDFLAGS"; then
+-	   PYTHON_EXTRA_LDFLAGS=`$PYTHON -c "import distutils.sysconfig; \
+-                conf = distutils.sysconfig.get_config_var; \
++	   PYTHON_EXTRA_LDFLAGS=`$PYTHON -c "import sysconfig; \
++                conf = sysconfig.get_config_var; \
+                 print (conf('LIBS') + ' ' + conf('SYSLIBS'))"`
+ 	fi
+ 	AC_MSG_RESULT([$PYTHON_EXTRA_LDFLAGS])
+@@ -275,8 +275,8 @@ EOD`
+ 	#
+ 	AC_MSG_CHECKING(python extra linking flags)
+ 	if test -z "$PYTHON_EXTRA_LIBS"; then
+-		PYTHON_EXTRA_LIBS=`$PYTHON -c "import distutils.sysconfig; \
+-			conf = distutils.sysconfig.get_config_var; \
++		PYTHON_EXTRA_LIBS=`$PYTHON -c "import sysconfig; \
++			conf = sysconfig.get_config_var; \
+ 			print (conf('LINKFORSHARED'))"`
+ 	fi
+ 	AC_MSG_RESULT([$PYTHON_EXTRA_LIBS])

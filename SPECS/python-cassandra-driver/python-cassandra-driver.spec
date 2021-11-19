@@ -1,10 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
-
 Summary:        A modern, feature-rich and highly-tunable Python client library for Apache Cassandra (2.1+)
 Name:           python3-cassandra-driver
 Version:        3.24.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Url:            https://github.com/datastax/python-driver#datastax-python-driver-for-apache-cassandra
 License:        Apache 2.0
 Group:          Development/Languages/Python
@@ -28,6 +25,7 @@ BuildRequires:  python3-packaging
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  iana-etc
+BuildRequires:  python3-pip
 %endif
 
 Requires:       libev
@@ -42,7 +40,7 @@ using exclusively Cassandra's binary protocol and Cassandra Query Language v3. T
 supports Python 2.7, 3.3, 3.4, 3.5, and 3.6.
 
 %prep
-%setup -q -n cassandra-driver-%{version}
+%autosetup -p1 -n cassandra-driver-%{version}
 
 %build
 python3 setup.py build --no-cython
@@ -51,20 +49,7 @@ python3 setup.py build --no-cython
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot} --no-cython
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 nose
-$easy_install_3 scales
-$easy_install_3 mock
-$easy_install_3 ccm
-$easy_install_3 unittest2
-$easy_install_3 pytz
-$easy_install_3 sure
-$easy_install_3 pure-sasl
-$easy_install_3 twisted
-$easy_install_3 gevent
-$easy_install_3 eventlet
-$easy_install_3 packaging
-$easy_install_3 Netbase
+pip3 install nose scales mock ccm unittest2 pytz sure pure-sasl twisted gevent eventlet packaging Netbase
 python3 setup.py gevent_nosetests
 python3 setup.py eventlet_nosetests
 
@@ -73,6 +58,8 @@ python3 setup.py eventlet_nosetests
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.24.0-5
+-   Update release to compile with python 3.10
 *   Fri Jun 11 2021 Ankit Jain <ankitja@vmware.com> 3.24.0-4
 -   Fixed install time dependency
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.24.0-3

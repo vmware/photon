@@ -1,0 +1,39 @@
+From bb2ebbf2412ef9343f50a45868459ffb95fa9081 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Miro=20Hron=C4=8Dok?= <miro@hroncok.cz>
+Date: Mon, 9 Nov 2020 17:35:13 +0100
+Subject: [PATCH] FindPython{Interp,Libs}: Add support for version 3.10
+
+Extend the change from commit 23cd98a66a (FindPython: Add support of
+version 3.10, 2020-10-16, v3.19.0-rc2~25^2) to cover the legacy
+`FindPython{Interp,Libs}` modules too.
+---
+ Modules/FindPythonInterp.cmake | 2 +-
+ Modules/FindPythonLibs.cmake   | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Modules/FindPythonInterp.cmake b/Modules/FindPythonInterp.cmake
+index 1e01a99cbe5..efe0f11901b 100644
+--- a/Modules/FindPythonInterp.cmake
++++ b/Modules/FindPythonInterp.cmake
+@@ -54,7 +54,7 @@ unset(_Python_NAMES)
+ 
+ set(_PYTHON1_VERSIONS 1.6 1.5)
+ set(_PYTHON2_VERSIONS 2.7 2.6 2.5 2.4 2.3 2.2 2.1 2.0)
+-set(_PYTHON3_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
++set(_PYTHON3_VERSIONS 3.10 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
+ 
+ if(PythonInterp_FIND_VERSION)
+     if(PythonInterp_FIND_VERSION_COUNT GREATER 1)
+diff --git a/Modules/FindPythonLibs.cmake b/Modules/FindPythonLibs.cmake
+index d3ec7beec6e..396f0d2ed40 100644
+--- a/Modules/FindPythonLibs.cmake
++++ b/Modules/FindPythonLibs.cmake
+@@ -79,7 +79,7 @@ set(CMAKE_FIND_FRAMEWORK LAST)
+ 
+ set(_PYTHON1_VERSIONS 1.6 1.5)
+ set(_PYTHON2_VERSIONS 2.7 2.6 2.5 2.4 2.3 2.2 2.1 2.0)
+-set(_PYTHON3_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
++set(_PYTHON3_VERSIONS 3.10 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
+ 
+ if(PythonLibs_FIND_VERSION)
+     if(PythonLibs_FIND_VERSION_COUNT GREATER 1)

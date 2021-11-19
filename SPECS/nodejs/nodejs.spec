@@ -1,6 +1,6 @@
 Summary:        A JavaScript runtime built on Chrome's V8 JavaScript engine.
 Name:           nodejs
-Version:        14.17.6
+Version:        17.1.0
 Release:        1%{?dist}
 License:        MIT
 Group:          Applications/System
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/nodejs/node
 Source0:        https://nodejs.org/download/release/v%{version}/node-v%{version}.tar.gz
-%define         sha1 node=6f1730e69ab8e87145b6ca17fa2ff73e28c52d79
+%define         sha1 node=609ec9095bc7e225c0eccdf3b946757c39316249
 BuildRequires:  coreutils >= 8.22, zlib
 BuildRequires:  python3
 BuildRequires:  which
@@ -28,7 +28,7 @@ The nodejs-devel package contains libraries, header files and documentation
 for developing applications that use nodejs.
 
 %prep
-%autosetup -p1 -n node-v%{version}
+%autosetup -p1 -n node-%{version}
 
 %build
 sh configure --prefix=%{_prefix}
@@ -66,6 +66,8 @@ make cctest %{?_smp_mflags}
 %{_datadir}/systemtap/tapset/node.stp
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 17.1.0-1
+-   Update to version 1.17.0, build with python 3.10
 *   Thu Sep 23 2021 Ankit Jain <ankitja@vmware.com> 14.17.6-1
 -   Version bump to build with openssl-1.1.1l
 *   Thu Aug 26 2021 Ankit Jain <ankitja@vmware.com> 14.17.5-1

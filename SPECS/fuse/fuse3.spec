@@ -1,7 +1,7 @@
 Summary:        File System in Userspace (FUSE) utilities
 Name:           fuse3
 Version:        3.9.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPL+
 Url:            http://fuse.sourceforge.net/
 Group:          System Environment/Base
@@ -25,6 +25,7 @@ BuildRequires:  python3-six
 BuildRequires:  python3-attrs
 BuildRequires:  python3-atomicwrites
 BuildRequires:  which
+BuildRequires:  python3-pip
 %endif
 
 %description
@@ -41,7 +42,7 @@ Requires:	systemd-devel
 It contains the libraries and header files to create fuse applications.
 
 %prep
-%setup -qn libfuse-fuse-%{version}
+%autosetup -p1 -n libfuse-fuse-%{version}
 
 %build
 export LANG=en_US.UTF-8
@@ -54,7 +55,6 @@ CONFIGURE_OPTS=(
 
 meson build ${CONFIGURE_OPTS[@]}
 ninja -C build
-
 
 %install
 export LANG=en_US.UTF-8
@@ -73,11 +73,8 @@ rm -f %{buildroot}/%{_libdir}/*.a
 rm -f %{buildroot}%{_sysconfdir}/init.d/fuse3
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pluggy more_itertools
+pip3 install pluggy more_itertools
 python3 -m pytest test/
-
-
 
 %files
 %defattr(-, root, root)
@@ -94,6 +91,8 @@ python3 -m pytest test/
 %{_libdir}/libfuse3.so*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.9.4-4
+-   Update release to compile with python 3.10
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.9.4-3
 -   openssl 1.1.1
 *   Sun Aug 16 2020 Susant Sahani <ssahani@vmware.com> 3.9.4-2

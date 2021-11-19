@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        A XML/HTML/XHTML Markup safe string for Python.
 Name:           python3-markupsafe
 Version:        1.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -17,6 +15,9 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+%if %{with_check}
+BuildRequires:  python3-pip
+%endif
 Requires:       python3
 Requires:       python3-libs
 
@@ -25,7 +26,7 @@ MarkupSafe implements a XML/HTML/XHTML Markup safe string for Python.
 
 
 %prep
-%setup -q -n MarkupSafe-%{version}
+%autosetup -p1 -n MarkupSafe-%{version}
 
 %build
 python3 setup.py build
@@ -34,7 +35,7 @@ python3 setup.py build
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install py
+pip3 install py
 python3 setup.py test
 
 %files
@@ -42,6 +43,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.1.1-2
+-   Update release to compile with python 3.10
 *   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 1.1.1-1
 -   Update to 1.1.1
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 1.0-4

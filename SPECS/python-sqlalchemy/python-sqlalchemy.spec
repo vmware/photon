@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        The Python SQL Toolkit and Object Relational Mapper
 Name:           python3-sqlalchemy
 Version:        1.3.20
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            http://www.sqlalchemy.org
 License:        MIT
 Group:          Development/Languages/Python
@@ -14,6 +12,9 @@ Source0:        https://pypi.python.org/packages/29/18/a78469bc449d9f92f6269cc62
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+%if %{with_check}
+BuildRequires:  python3-pip
+%endif
 Requires:       python3
 Requires:       python3-libs
 
@@ -22,15 +23,13 @@ SQLAlchemy is the Python SQL toolkit and Object Relational Mapper that gives app
 
 
 %prep
-%setup -q -n SQLAlchemy-%{version}
+%autosetup -p1 -n SQLAlchemy-%{version}
 
 %build
 python3 setup.py build
 
 %check
-easy_install apipkg
-easy_install py
-easy_install mock
+pip3 install apipkg py mock
 export PYTHONPATH=$PYTHONPATH:%{_builddir}/SQLAlchemy-%{version}/.eggs/pytest-3.0.3-py2.7.egg
 python3 setup.py test
 
@@ -42,6 +41,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.3.20-2
+-   Update release to compile with python 3.10
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 1.3.20-1
 -   Automatic Version Bump
 *   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.3.19-1

@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Python Build Reasonableness
 Name:           python3-pbr
 Version:        5.5.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -20,6 +18,7 @@ BuildRequires:  python3-xml
 %if %{with_check}
 BuildRequires:  git
 BuildRequires:  gnupg
+BuildRequires:  python3-pip
 %endif
 %endif
 Requires:       python3
@@ -29,8 +28,7 @@ A library for managing setuptools packaging needs in a consistent manner.
 
 
 %prep
-%setup -q -n pbr-%{version}
-%patch0 -p1
+%autosetup -p1 -n pbr-%{version}
 
 %build
 export SKIP_PIP_INSTALL=1
@@ -43,15 +41,7 @@ mv %{buildroot}/%{_bindir}/pbr %{buildroot}/%{_bindir}/pbr3
 %if 0
 %check
 ln -sfv /usr/bin/gpg2 /usr/bin/gpg
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 coverage
-$easy_install_3 hacking
-$easy_install_3 mock
-$easy_install_3 testrepository
-$easy_install_3 testresources
-$easy_install_3 testscenarios
-$easy_install_3 virtualenv
-$easy_install_3 wheel
+pip3 install coverage hacking mock testrepository testresources testscenarios virtualenv wheel
 python3 setup.py test
 
 %endif
@@ -65,6 +55,8 @@ python3 setup.py test
 %{python3_sitelib}/pbr
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.5.1-2
+-   Update release to compile with python 3.10
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 5.5.1-1
 -   Automatic Version Bump
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 5.5.0-1

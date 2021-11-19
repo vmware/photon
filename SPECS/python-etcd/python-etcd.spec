@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-etcd
 Version:        0.4.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Python API for etcd
 License:        MIT
 Group:          Development/Languages/Python
@@ -26,6 +24,7 @@ BuildRequires:  etcd
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:  libffi-devel
+BuildRequires:  python3-pip
 %endif
 Requires:       python3
 Requires:       python3-libs
@@ -37,8 +36,7 @@ Python API for etcd
 
 
 %prep
-%setup -n python-etcd-%{version}
-%patch0 -p1
+%autosetup -p1 -n python-etcd-%{version}
 
 %build
 python3 setup.py build
@@ -47,8 +45,7 @@ python3 setup.py build
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 nose
+pip3 install nose
 python3 setup.py test
 
 %files
@@ -56,6 +53,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.4.5-5
+-   Update release to compile with python 3.10
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.4.5-4
 -   openssl 1.1.1
 *   Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 0.4.5-3

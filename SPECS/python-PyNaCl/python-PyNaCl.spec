@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-PyNaCl
 Version:        1.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        PyNaCl is a Python binding to libsodium
 License:        Apache License, Version 2.0
 Group:          Development/Languages/Python
@@ -17,6 +15,7 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-cffi
 BuildRequires:  python3-xml
+BuildRequires:  python3-pip
 BuildRequires:  curl-devel
 Requires:       python3
 Requires:       python3-libs
@@ -27,7 +26,7 @@ Good password hashing for your software and your servers.
 
 
 %prep
-%setup -n PyNaCl-%{version}
+%autosetup -n PyNaCl-%{version}
 
 %build
 python3 setup.py build
@@ -43,6 +42,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.0-2
+-   Update release to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.0-1
 -   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 1.3.0-2

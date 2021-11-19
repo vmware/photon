@@ -1,8 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Python wrapper module around the OpenSSL library
 Name:           python3-pyOpenSSL
 Version:        19.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://github.com/pyca/pyopenssl
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -28,6 +27,7 @@ BuildRequires:  python3-pyasn1
 BuildRequires:  python3-six
 BuildRequires:  python3-packaging
 BuildRequires:  python3-asn1crypto
+BuildRequires:  python3-pip
 %endif
 Requires:       python3
 Requires:       python3-libs
@@ -41,7 +41,7 @@ High-level wrapper around a subset of the OpenSSL library.
 
 
 %prep
-%setup -q -n pyOpenSSL-%{version}
+%autosetup -n pyOpenSSL-%{version}
 
 %build
 python3 setup.py build
@@ -51,21 +51,19 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 pushd ../p3dir
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pretend
-$easy_install_3 flaky
-$easy_install_3 pytest
+pip3 install pretend flaky pytest
 PATH=%{buildroot}%{_bindir}:${PATH} \
 LANG=en_US.UTF-8  PYTHONPATH=%{buildroot}%{python3_sitelib} \
     pytest
 popd
-
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 19.1.0-3
+-   Update release to compile with python 3.10
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 19.1.0-2
 -   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 19.1.0-1

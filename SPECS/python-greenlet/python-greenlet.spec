@@ -1,16 +1,14 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Lightweight in-process concurrent programming
 Name:           python3-greenlet
-Version:        0.4.17
-Release:        2%{?dist}
+Version:        1.1.2
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://pypi.python.org/pypi/greenlet
 Source0:        greenlet-%{version}.tar.gz
-%define sha1    greenlet=59d0c79e82ac60c3fe00179d355e34493aebae27
+%define sha1    greenlet=959222fc19fffb3849dd50f08aa5fa59ae7e659f
 
 BuildRequires:  python3
 BuildRequires:  python3-libs
@@ -27,7 +25,7 @@ A “greenlet”, on the other hand, is a still more primitive notion of micro-t
 
 
 %prep
-%setup -q -n greenlet-%{version}
+%autosetup -n greenlet-%{version}
 
 %build
 python3 setup.py build
@@ -42,9 +40,11 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
-/usr/include/python3.9/greenlet/greenlet.h
+/usr/include/python%{python3_version}/greenlet/greenlet.h
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.1.2-1
+-   Update to version 1.1.2 to compile with python 3.10
 *   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 0.4.17-2
 -   Use python3.9
 *   Tue Sep 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.4.17-1

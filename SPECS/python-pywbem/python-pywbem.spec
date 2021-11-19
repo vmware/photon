@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-pywbem
 Version:        1.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python WBEM Client
 Group:          Development/Libraries
 License:        LGPLv2+
@@ -27,7 +25,7 @@ Requires:       python3-mock
 Requires:       python3-nocasedict
 Requires:       python3-nocaselist
 Requires:       python3-yamlloader
-Provides:       python3.9dist(pywbem)
+Provides:       python%{python3_version}dist(pywbem)
 
 %description
 PyWBEM is a Python library for making CIM operations over HTTP using the
@@ -69,6 +67,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*    Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.1.2-3
+-    Update release to compile with python 3.10
 *    Wed Jul 21 2021 Tapas Kundu <tkundu2vmware.com> 1.1.2-2
 -    Fix the install issue
 *    Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.2-1

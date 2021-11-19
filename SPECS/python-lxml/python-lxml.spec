@@ -1,8 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        XML and HTML with Python
 Name:           python3-lxml
 Version:        4.6.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
@@ -17,6 +16,7 @@ BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-xml
+BuildRequires:  python3-setuptools
 Requires:       python3
 Requires:       python3-libs
 Requires:       libxslt
@@ -25,9 +25,8 @@ Requires:       python3-xml
 %description
 The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxslt. It is unique in that it combines the speed and XML feature completeness of these libraries with the simplicity of a native Python API, mostly compatible but superior to the well-known ElementTree API.
 
-
 %prep
-%setup -q -n lxml-lxml-%{version}
+%autosetup -n lxml-lxml-%{version}
 
 %build
 python3 setup.py build
@@ -38,7 +37,7 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %check
 export LC_ALL=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
-make test
+make %{?_smp_mflags} test
 
 %clean
 rm -rf %{buildroot}
@@ -48,6 +47,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.6.3-2
+-   Add python3-setuptools as build requires
 *   Mon Jul 26 2021 Shreyas B <shreyasb@vmware.com> 4.6.3-1
 -   Update to v4.6.3 to Address CVE-2021-28957 & CVE-2020-27783
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 4.6.1-1

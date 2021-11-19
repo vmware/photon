@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-yamlloader
 Version:        1.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Ordered YAML loader and dumper for PyYAML.
 License:        MIT License
 Group:          Development/Languages/Python
@@ -19,7 +17,7 @@ Requires:       python3
 Requires:       python3-libs
 Requires:       python3-setuptools
 BuildArch:      noarch
-Provides:       python3.9dist(yamlloader)
+Provides:       python%{python3_version}dist(yamlloader)
 
 %description
 This module provides loaders and dumpers for PyYAML. Currently, an OrderedDict loader/dumper is implemented, allowing to keep items order when loading resp. dumping a file from/to an OrderedDict (Python 3.7+: Also regular dicts are supported and are the default items to be loaded to. As of Python 3.7 preservation of insertion order is a language feature of regular dicts.)
@@ -42,5 +40,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.1.0-2
+-   Update release to compile with python 3.10,use python3 macros file
 *   Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 1.1.0-1
 -   Initial packaging for python3-yamlloader

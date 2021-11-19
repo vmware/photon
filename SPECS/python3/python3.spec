@@ -1,20 +1,17 @@
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.9.1
-Release:        7%{?dist}
+Version:        3.10.0
+Release:        1%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
-%define sha1    Python=77f4105846f6740297e50d7535a42c02d6b8e7db
+%define sha1    Python=c6114b411b7e6d26fc9887c11c0800d9625f1ade
 Source1:        macros.python
 
 Patch0:         cgi3.patch
-Patch1:         CVE-2021-23336.patch
-Patch2:         CVE-2021-3177.patch
-Patch3:         CVE-2021-29921.patch
 
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
@@ -134,7 +131,7 @@ BuildArch:      noarch
 Requires:       python3 = %{version}-%{release}
 Requires:       python3-xml = %{version}-%{release}
 
-Provides:       python3.9dist(setuptools)
+Provides:       python3.10dist(setuptools)
 
 %description    setuptools
 setuptools is a collection of enhancements to the Python distutils that allow you to more easily build and distribute Python packages, especially ones that have dependencies on other packages.
@@ -221,56 +218,56 @@ rm -rf %{buildroot}/*
 %doc LICENSE README.rst
 %{_bindir}/pydoc*
 %{_bindir}/python3
-%{_bindir}/python3.9
+%{_bindir}/python3.10
 %{_mandir}/*/*
 
-%dir %{_libdir}/python3.9
-%{_libdir}/python3.9/site-packages/README.txt
+%dir %{_libdir}/python3.10
+%{_libdir}/python3.10/site-packages/README.txt
 
 %{_libdir}/libpython3.so
-%{_libdir}/libpython3.9.so.1.0
+%{_libdir}/libpython3.10.so.1.0
 
-%exclude %{_libdir}/python3.9/ctypes/test
-%exclude %{_libdir}/python3.9/distutils/tests
-%exclude %{_libdir}/python3.9/sqlite3/test
-%exclude %{_libdir}/python3.9/idlelib/idle_test
-%exclude %{_libdir}/python3.9/test
-%exclude %{_libdir}/python3.9/lib-dynload/_ctypes_test.*.so
+%exclude %{_libdir}/python3.10/ctypes/test
+%exclude %{_libdir}/python3.10/distutils/tests
+%exclude %{_libdir}/python3.10/sqlite3/test
+%exclude %{_libdir}/python3.10/idlelib/idle_test
+%exclude %{_libdir}/python3.10/test
+%exclude %{_libdir}/python3.10/lib-dynload/_ctypes_test.*.so
 
 %files libs
 %defattr(-,root,root)
 %doc LICENSE README.rst
-%{_libdir}/python3.9
-%exclude %{_libdir}/python3.9/lib2to3
-%exclude %{_libdir}/python3.9/site-packages/
-%exclude %{_libdir}/python3.9/ctypes/test
-%exclude %{_libdir}/python3.9/distutils/tests
-%exclude %{_libdir}/python3.9/sqlite3/test
-%exclude %{_libdir}/python3.9/idlelib/idle_test
-%exclude %{_libdir}/python3.9/test
-%exclude %{_libdir}/python3.9/lib-dynload/_ctypes_test.*.so
-%exclude %{_libdir}/python3.9/xml
-%exclude %{_libdir}/python3.9/lib-dynload/pyexpat*.so
-%exclude %{_libdir}/python3.9/curses
-%exclude %{_libdir}/python3.9/lib-dynload/_curses*.so
+%{_libdir}/python3.10
+%exclude %{_libdir}/python3.10/lib2to3
+%exclude %{_libdir}/python3.10/site-packages/
+%exclude %{_libdir}/python3.10/ctypes/test
+%exclude %{_libdir}/python3.10/distutils/tests
+%exclude %{_libdir}/python3.10/sqlite3/test
+%exclude %{_libdir}/python3.10/idlelib/idle_test
+%exclude %{_libdir}/python3.10/test
+%exclude %{_libdir}/python3.10/lib-dynload/_ctypes_test.*.so
+%exclude %{_libdir}/python3.10/xml
+%exclude %{_libdir}/python3.10/lib-dynload/pyexpat*.so
+%exclude %{_libdir}/python3.10/curses
+%exclude %{_libdir}/python3.10/lib-dynload/_curses*.so
 
 %files  xml
-%{_libdir}/python3.9/xml/*
-%{_libdir}/python3.9/lib-dynload/pyexpat*.so
+%{_libdir}/python3.10/xml/*
+%{_libdir}/python3.10/lib-dynload/pyexpat*.so
 
 %files  curses
-%{_libdir}/python3.9/curses/*
-%{_libdir}/python3.9/lib-dynload/_curses*.so
+%{_libdir}/python3.10/curses/*
+%{_libdir}/python3.10/lib-dynload/_curses*.so
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
-%{_libdir}/libpython3.9.so
-%{_libdir}/pkgconfig/python-3.9.pc
+%{_libdir}/libpython3.10.so
+%{_libdir}/pkgconfig/python-3.10.pc
 %{_libdir}/pkgconfig/python3.pc
 %{_bindir}/python3-config
-%{_bindir}/python3.9-config
-%{_libdir}/pkgconfig/python-3.9-embed.pc
+%{_bindir}/python3.10-config
+%{_libdir}/pkgconfig/python-3.10-embed.pc
 %{_libdir}/pkgconfig/python3-embed.pc
 
 %doc Misc/README.valgrind Misc/valgrind-python.supp Misc/gdbinit
@@ -280,31 +277,33 @@ rm -rf %{buildroot}/*
 %files tools
 %defattr(-,root,root,755)
 %doc Tools/README
-%{_libdir}/python3.9/lib2to3
-%{_bindir}/2to3-3.9
+%{_libdir}/python3.10/lib2to3
+%{_bindir}/2to3-3.10
 %exclude %{_bindir}/idle*
 
 %files pip
 %defattr(-,root,root,755)
-%{_libdir}/python3.9/site-packages/pip/*
+%{_libdir}/python3.10/site-packages/pip/*
 %{_bindir}/pip*
-%exclude %{_libdir}/python3.9/site-packages/pip/_vendor/distlib/*.exe
+%exclude %{_libdir}/python3.10/site-packages/pip/_vendor/distlib/*.exe
 
 %files setuptools
 %defattr(-,root,root,755)
-%{_libdir}/python3.9/site-packages/pkg_resources/*
-%{_libdir}/python3.9/site-packages/setuptools/*
-%{_libdir}/python3.9/site-packages/setuptools-49.2.1.dist-info/*
-%{_bindir}/easy_install-3.9
-%exclude %{_libdir}/python3.9/site-packages/setuptools/*.exe
+%{_libdir}/python3.10/site-packages/pkg_resources/*
+%{_libdir}/python3.10/site-packages/setuptools/*
+%{_libdir}/python3.10/site-packages/setuptools-57.4.0.dist-info/*
+%{_libdir}/python3.10/site-packages/_distutils_hack/*
+%exclude %{_libdir}/python3.10/site-packages/setuptools/*.exe
 
 %files test
-%{_libdir}/python3.9/test/*
+%{_libdir}/python3.10/test/*
 
 %files macros
 %{_libdir}/rpm/macros.d/macros.python
 
 %changelog
+*   Fri Nov 12 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.10.0-1
+-   Update to version 3.10.0, removed easy_install because depreciated
 *   Sat Aug 21 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.9.1-7
 -   Bump up release for openssl
 *   Mon Aug 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.9.1-6

@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Attributes without boilerplate.
 Name:           python3-attrs
 Version:        20.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/attrs
 License:        MIT
 Group:          Development/Languages/Python
@@ -30,13 +28,13 @@ Requires:       python3
 Requires:       python3-libs
 
 Provides:       python3dist(attrs) = %{version}-%{release}
-Provides:       python3.9dist(attrs) = %{version}-%{release}
+Provides:       python%{python3_version}dist(attrs) = %{version}-%{release}
 
 %description
 Attributes without boilerplate.
 
 %prep
-%setup -q -n attrs-%{version}
+%autosetup -p1 -n attrs-%{version}
 
 %build
 python3 setup.py build
@@ -54,6 +52,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 20.3.0-3
+-   Update release to compile with python 3.10
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.3.0-2
 -   Fix build with new rpm
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 20.3.0-1

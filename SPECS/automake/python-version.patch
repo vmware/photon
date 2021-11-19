@@ -1,0 +1,87 @@
+From e21d46fddd0753e66a4acda88317670fee07f3e6 Mon Sep 17 00:00:00 2001
+From: "Miro Hron\\v{c}ok" <miro@hroncok.cz>
+Date: Tue, 27 Oct 2020 14:33:46 -0700
+Subject: python: determine Python (3.10) version number correctly.
+
+This change fixes https://bugs.gnu.org/44239
+(and https://bugzilla.redhat.com/show_bug.cgi?id=1889732).
+
+* m4/python.m4: use print('%u.%u' % sys.version_info[:2]) for
+the version number instead of merely sys.version[:3], so the
+numbers are treated as numbers.
+* t/python-vars.sh (PYTHON_VERSION): Likewise.
+* doc/automake.texi: Document it.
+* NEWS: mention it. (Minor tweaks from Karl Berry.)
+---
+ NEWS              |  2 ++
+ doc/automake.texi |  2 +-
+ m4/python.m4      | 12 +++++++-----
+ t/python-vars.sh  |  4 +++-
+ 4 files changed, 13 insertions(+), 7 deletions(-)
+
+#Imported to version 1.16.1
+Signed-off-by: Prashant S Chauhan <psinghchauha@vmware.com>
+
+diff --git a/doc/automake.texi b/doc/automake.texi
+index ed7e2e242..17bc2dae6 100644
+--- a/doc/automake.texi
++++ b/doc/automake.texi
+@@ -7761,7 +7761,7 @@ AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
+ @item PYTHON_VERSION
+ The Python version number, in the form @var{major}.@var{minor}
+ (e.g., @samp{2.5}).  This is currently the value of
+-@samp{sys.version[:3]}.
++@samp{'%u.%u' % sys.version_info[:2]}.
+ 
+ @item PYTHON_PREFIX
+ The string @samp{$@{prefix@}}.  This term may be used in future work
+diff --git a/m4/python.m4 b/m4/python.m4
+index 16c2f4f1a..b2302baa3 100644
+--- a/m4/python.m4
++++ b/m4/python.m4
+@@ -1,7 +1,7 @@
+ ## ------------------------                                 -*- Autoconf -*-
+ ## Python file handling
+ ## From Andrew Dalke
+-## Updated by James Henstridge
++## Updated by James Henstridge and other contributors.
+ ## ------------------------
+ # Copyright (C) 1999-2018 Free Software Foundation, Inc.
+ #
+@@ -86,12 +86,14 @@ AC_DEFUN([AM_PATH_PYTHON],
+     m4_default([$3], [AC_MSG_ERROR([no suitable Python interpreter found])])
+   else
+ 
+-  dnl Query Python for its version number.  Getting [:3] seems to be
+-  dnl the best way to do this; it's what "site.py" does in the standard
+-  dnl library.
++  dnl Query Python for its version number.  Although site.py simply uses
++  dnl sys.version[:3], printing that failed with Python 3.10, since the
++  dnl trailing zero was eliminated. So now we output just the major
++  dnl and minor version numbers, as numbers. Apparently the tertiary
++  dnl version is not of interest.
+ 
+   AC_CACHE_CHECK([for $am_display_PYTHON version], [am_cv_python_version],
+-    [am_cv_python_version=`$PYTHON -c "import sys; sys.stdout.write(sys.version[[:3]])"`])
++    [am_cv_python_version=`$PYTHON -c "import sys; print('%u.%u' % sys.version_info[[:2]])"`])
+   AC_SUBST([PYTHON_VERSION], [$am_cv_python_version])
+ 
+   dnl Use the values of $prefix and $exec_prefix for the corresponding
+diff --git a/t/python-vars.sh b/t/python-vars.sh
+index 5c748bcf1..b53018b37 100644
+--- a/t/python-vars.sh
++++ b/t/python-vars.sh
+@@ -28,7 +28,9 @@ CONFIG_SITE=/dev/null; export CONFIG_SITE
+ # vary among different python installations, so we need more relaxed
+ # and ad-hoc checks for them.  Also, more proper "functional" checks
+ # on them should be done in the 'python-virtualenv.sh' test.
+-PYTHON_VERSION=$($PYTHON -c 'import sys; print(sys.version[:3])') || exit 1
++# 
++# This version identification is duplicated in python.m4 (and the manual).
++PYTHON_VERSION=$($PYTHON -c 'import sys; print("%u.%u" % sys.version_info[:2])') || exit 1
+ PYTHON_PLATFORM=$($PYTHON -c 'import sys; print(sys.platform)') || exit 1
+ PYTHON_EXEC_PREFIX='${exec_prefix}'
+ PYTHON_PREFIX='${prefix}'
+-- 
+cgit v1.2.1
+

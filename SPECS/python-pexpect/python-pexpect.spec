@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Pexpect is a Pure Python Expect-like module
 Name:           python3-pexpect
 Version:        4.8.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ISC
 Url:            https://github.com/pexpect/pexpect
 Group:          Development/Languages/Python
@@ -23,6 +21,7 @@ BuildRequires:  python3-pytest
 BuildRequires:  python3-attrs
 BuildRequires:  python3-ptyprocess
 BuildRequires:  python3-xml
+BuildRequires:  python3-pip
 %endif
 Requires:       python3
 Requires:       python3-libs
@@ -37,20 +36,17 @@ Pexpect allows your script to spawn a child application and control it as if a h
 were typing commands.
 
 %prep
-%setup -q -n pexpect-%{version}
+%autosetup -p1 -n pexpect-%{version}
 
 %build
 python3 setup.py build
-
 
 %install
 rm -rf %{buildroot}
 python3 setup.py install --root=%{buildroot}
 
 %check
-
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pathlib2 funcsigs pluggy more_itertools
+pip3 install pathlib2 funcsigs pluggy more_itertools
 LANG=en_US.UTF-8  PYTHONPATH=%{buildroot}%{python3_sitelib} \
 py.test3
 
@@ -58,6 +54,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.8.0-3
+-   Update release to compile with python 3.10
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.8.0-2
 -   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 4.8.0-1
@@ -74,4 +72,3 @@ py.test3
 -   Adding requires on ptyprocess
 *   Mon Sep 11 2017 Kumar Kaushik <kaushikk@vmware.com> 4.2.1-1
 -   Initial packaging for Photon
-

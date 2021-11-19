@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-filelock
 Version:        3.0.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A platform independent file lock
 License:        MIT
 Group:          Development/Languages/Python
@@ -16,10 +14,9 @@ BuildArch:      noarch
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-devel
 BuildRequires:  python3
-
 Requires:       python3
 
-Provides: python3.9dist(filelock)
+Provides: python%{python3_version}dist(filelock)
 
 %description
 This package contains a single module, which implements a platform independent
@@ -49,5 +46,7 @@ python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 %exclude %{python3_sitelib}/__pycache__/filelock*.py[co]
 
 %changelog
-* Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.0.12-1
-- initial version
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.0.12-2
+-   Update release to compile with python 3.10
+*   Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.0.12-1
+-  initial version

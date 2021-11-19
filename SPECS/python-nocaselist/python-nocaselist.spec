@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-nocaselist
 Version:        1.0.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A case-insensitive list for Python
 License:        Apache Software License (Apache Software License 2.0)
 Group:          Development/Languages/Python
@@ -19,7 +17,7 @@ Requires:       python3
 Requires:       python3-libs
 Requires:       python3-setuptools
 BuildArch:      noarch
-Provides:       python3.9dist(nocaselist)
+Provides:       python%{python3_version }dist(nocaselist)
 
 %description
 A case-insensitive list for Python
@@ -42,5 +40,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.4-2
+-   Update release to compile with python 3.10
 *   Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 1.0.4-1
 -   Initial packaging for python3-nocaselist

@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-toml
 Version:        0.10.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python Library for Tom's Obvious, Minimal Language
 Group:          Development/Libraries
 License:        MIT
@@ -21,7 +19,7 @@ BuildRequires:  python3-setuptools_scm
 Requires:       python3
 
 Provides:       python3dist(toml) = %{version}-%{release}
-Provides:       python3.9dist(toml) = %{version}-%{release}
+Provides:       python%{python3_version}dist(toml) = %{version}-%{release}
 
 %description
 Python Library for Tom's Obvious, Minimal Language
@@ -40,5 +38,7 @@ python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+* Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.10.1-2
+- Update release to compile with python 3.10
 * Mon Sep 21 2020 Susant Sahani <ssahani@vmware.com> 0.10.1-1
 - Initial rpm release

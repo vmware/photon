@@ -1,16 +1,14 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Coroutine-based network library
 Name:           python3-gevent
-Version:        20.9.0
-Release:        3%{?dist}
+Version:        21.8.0
+Release:        1%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/gevent
 Source0:        gevent-%{version}.tar.gz
-%define sha1    gevent=1529da346fcc86b3462d559d0f09440504e0b1d9
+%define sha1    gevent=0aad0632ab8a0b7fd9f9858b196f1d9663de5441
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -18,10 +16,11 @@ BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 %if %{with_check}
-BuildRequires: lsof
-BuildRequires: curl-devel
-BuildRequires: openssl-devel
-BuildRequires: python3-test
+BuildRequires:  lsof
+BuildRequires:  curl-devel
+BuildRequires:  openssl-devel
+BuildRequires:  python3-test
+BuildRequires:  python3-pip
 %endif
 
 Requires:       python3
@@ -39,9 +38,8 @@ Features include:
     DNS queries performed through c-ares or a threadpool.
     Ability to use standard library and 3rd party modules written for standard blocking sockets
 
-
 %prep
-%setup -q -n gevent-%{version}
+%autosetup -n gevent-%{version}
 
 %build
 python3 setup.py build
@@ -50,17 +48,17 @@ python3 setup.py build
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 nose
+pip3 install nose
 python3 setup.py develop
 nosetests
-
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 21.8.0-1
+-   Update release to compile with python 3.10
 *   Tue Feb 23 2021 Tapas Kundu <tkundu@vmware.com> 20.9.0-3
 -   Added requires for python3-zope.event
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 20.9.0-2

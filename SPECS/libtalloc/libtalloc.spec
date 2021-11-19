@@ -1,7 +1,7 @@
 Summary:    Talloc is a hierarchical, reference counted memory pool system
 Name:       libtalloc
 Version:    2.3.1
-Release:    4%{?dist}
+Release:    5%{?dist}
 License:    LGPLv3+
 URL:        https://talloc.samba.org
 Group:      System Environment/Libraries
@@ -42,7 +42,7 @@ Requires: python3-talloc = %{version}-%{release}
 Development libraries for python-talloc
 
 %prep
-%setup -q -n talloc-%{version}
+%autosetup -n talloc-%{version}
 
 %build
 %configure --bundled-libraries=NONE \
@@ -55,7 +55,7 @@ make %{?_smp_mflags} V=1
 rm -f %{buildroot}/usr/share/swig/*/talloc.i
 
 %check
-make check
+make %{_smp_mflags} check
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -73,29 +73,31 @@ make check
 
 %files -n python3-talloc
 %defattr(-,root,root)
-%{_libdir}/python3.9/site-packages/*
+%{_libdir}/python%{python3_version}/site-packages/*
 %ifarch x86_64
-%{_libdir}/libpytalloc-util.cpython-39-x86-64-linux-gnu.so.2
-%{_libdir}/libpytalloc-util.cpython-39-x86-64-linux-gnu.so.2.3.1
+%{_libdir}/libpytalloc-util.cpython-310-x86-64-linux-gnu.so.2
+%{_libdir}/libpytalloc-util.cpython-310-x86-64-linux-gnu.so.2.3.1
 %endif
 %ifarch aarch64
-%{_libdir}/libpytalloc-util.cpython-39-aarch64-linux-gnu.so.2
-%{_libdir}/libpytalloc-util.cpython-39-aarch64-linux-gnu.so.2.3.1
+%{_libdir}/libpytalloc-util.cpython-310-aarch64-linux-gnu.so.2
+%{_libdir}/libpytalloc-util.cpython-310-aarch64-linux-gnu.so.2.3.1
 %endif
 
 %files -n python3-talloc-devel
 %defattr(-,root,root)
 %{_includedir}/pytalloc.h
 %ifarch x86_64
-%{_libdir}/libpytalloc-util.cpython-39-x86-64-linux-gnu.so
-%{_libdir}/pkgconfig/pytalloc-util.cpython-39-x86_64-linux-gnu.pc
+%{_libdir}/libpytalloc-util.cpython-310-x86-64-linux-gnu.so
+%{_libdir}/pkgconfig/pytalloc-util.cpython-310-x86_64-linux-gnu.pc
 %endif
 %ifarch aarch64
-%{_libdir}/libpytalloc-util.cpython-39-aarch64-linux-gnu.so
-%{_libdir}/pkgconfig/pytalloc-util.cpython-39-aarch64-linux-gnu.pc
+%{_libdir}/libpytalloc-util.cpython-310-aarch64-linux-gnu.so
+%{_libdir}/pkgconfig/pytalloc-util.cpython-310-aarch64-linux-gnu.pc
 %endif
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.3.1-5
+-   Update release to compile with python 3.10
 *   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-4
 -   Build with python 3.9
 *   Wed Jul 29 2020 Tapas Kundu <tkundu@vmware.com> 2.3.1-3

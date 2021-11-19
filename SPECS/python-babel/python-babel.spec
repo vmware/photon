@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-babel
 Version:        2.9.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An integrated collection of utilities that assist in internationalizing and localizing Python applications
 License:        BSD3
 Group:          Development/Languages/Python
@@ -25,6 +23,7 @@ BuildRequires:  python3-pytest
 BuildRequires:  openssl-devel
 BuildRequires:  python3-six
 BuildRequires:  python3-attrs
+BuildRequires:  python3-pip
 %endif
 
 Requires:       python3
@@ -52,8 +51,7 @@ The functionality Babel provides for internationalization (I18n) and localizatio
 mv %{buildroot}/%{_bindir}/pybabel %{buildroot}/%{_bindir}/pybabel3
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pytest freezegun funcsigs pathlib2 pluggy utils
+pip3 install pytest freezegun funcsigs pathlib2 pluggy utils
 python3 setup.py test
 
 %files
@@ -62,6 +60,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+* Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.1-2
+- Update release to compile with python 3.10
 * Thu Oct 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.9.1-1
 - Upgrade to v2.9.1 to fix CVE-2021-42771
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.8.0-3

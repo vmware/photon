@@ -1,10 +1,9 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 # Got this spec from http://downloads.sourceforge.net/cracklib/cracklib-2.9.6.tar.gz
 
 Summary:          A password strength-checking library.
 Name:             cracklib
 Version:          2.9.7
-Release:          1%{?dist}
+Release:          2%{?dist}
 Group:            System Environment/Libraries
 Source:           cracklib-%{version}.tar.gz
 %define sha1      cracklib-%{version}=ffe455aba4da8d49fcdbe6964aa35367a7438581
@@ -87,7 +86,7 @@ Group:      System Environment/Libraries
 The CrackLib language pack.
 
 %prep
-%setup -q -n cracklib-%{version}
+%autosetup -n cracklib-%{version}
 chmod -R og+rX .
 mkdir -p dicts
 install %{SOURCE1} dicts/
@@ -103,24 +102,24 @@ export CFLAGS="$RPM_OPT_FLAGS"
 %configure \
   --disable-static \
   --without-python
-make
+make %{_smp_mflags}
 pushd python
 python3 setup.py build
 popd
 
 %install
-rm -rf $RPM_BUILD_ROOT
-make install DESTDIR=$RPM_BUILD_ROOT/
+rm -rf %{buildroot}
+make %{?_smp_mflags} install DESTDIR=%{buildroot}/
 chmod 755 ./util/cracklib-format
 chmod 755 ./util/cracklib-packer
 if [ %{_host} = %{_build} ]; then
 export PATH=./util:$PATH
 fi
-cracklib-format dicts/cracklib* | cracklib-packer $RPM_BUILD_ROOT/%{_datadir}/cracklib/words
-echo password | cracklib-packer $RPM_BUILD_ROOT/%{_datadir}/cracklib/empty
-rm -f $RPM_BUILD_ROOT/%{_datadir}/cracklib/cracklib-small
-ln -s cracklib-format $RPM_BUILD_ROOT/%{_sbindir}/mkdict
-ln -s cracklib-packer $RPM_BUILD_ROOT/%{_sbindir}/packer
+cracklib-format dicts/cracklib* | cracklib-packer %{buildroot}/%{_datadir}/cracklib/words
+echo password | cracklib-packer %{buildroot}/%{_datadir}/cracklib/empty
+rm -f %{buildroot}/%{_datadir}/cracklib/cracklib-small
+ln -s cracklib-format %{buildroot}/%{_sbindir}/mkdict
+ln -s cracklib-packer %{buildroot}/%{_sbindir}/packer
 
 pushd python
 python3 setup.py install --skip-build --root %{buildroot}
@@ -128,11 +127,11 @@ popd
 
 %check
 mkdir -p /usr/share/cracklib
-cp $RPM_BUILD_ROOT%{_datadir}/cracklib/* /usr/share/cracklib/
+cp %{buildroot}%{_datadir}/cracklib/* /usr/share/cracklib/
 make %{?_smp_mflags} test
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %post
 /sbin/ldconfig
@@ -190,6 +189,8 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 %{_datadir}/locale/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.7-2
+-   Update release to compile with python 3.10
 *   Tue Jul 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.9.7-1
 -   Automatic Version Bump
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 2.9.6-10
@@ -218,4 +219,3 @@ rm -f %{_datadir}/cracklib/pw_dict.pwi
 -   Updated to version 2.9.6
 *   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 2.9.2-2
 -   Updated group.
-

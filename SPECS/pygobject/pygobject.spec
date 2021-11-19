@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-pygobject
 Version:        3.38.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python Bindings for GObject
 Group:          Development/Languages
 License:        LGPLv2+
@@ -31,6 +29,7 @@ BuildRequires:  dbus
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
 BuildRequires:  python3-xml
+BuildRequires:  python3-pip
 %endif
 
 %description
@@ -45,8 +44,7 @@ Requires:       python3-pygobject = %{version}-%{release}
 Development files for pygobject.
 
 %prep
-%setup -q -n PyGObject-%{version}
-%patch0 -p1
+%autosetup -p1 -n PyGObject-%{version}
 
 %build
 export PYGOBJECT_WITHOUT_PYCAIRO='True'
@@ -57,8 +55,7 @@ export PYGOBJECT_WITHOUT_PYCAIRO='True'
 python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pytest
+pip3 install pytest
 python3 setup.py test
 
 %clean
@@ -73,6 +70,8 @@ rm -rf %{buildroot}
 %{_includedir}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.38.0-4
+-   Update release to compile with python 3.10
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.38.0-3
 -   Fix build with new rpm
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.38.0-2

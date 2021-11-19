@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Policy analysis tools for SELinux
 Name:           setools
 Version:        4.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2, LGPLv2.1
 Group:          System Environment/Libraries
 Source0:        https://github.com/SELinuxProject/setools/releases/download/%{version}/%{name}-%{version}.tar.bz2
@@ -27,8 +25,7 @@ Requires:       libsepol
 Policy analysis tools for SELinux
 
 %prep
-%setup -qn %{name}
-%patch0 -p1
+%autosetup -p1 -n %{name}
 sed -i "s/, 'networkx>=2.0'//" setup.py
 
 %build
@@ -52,6 +49,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{_mandir}/man1/*
 
 %changelog
+* Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.3.0-3
+- Update release to compile with python 3.10
 * Fri Nov 06 2020 Tapas Kundu <tkundu@vmware.com> 4.3.0-2
 - Build with python 3.9
 * Fri May 01 2020 Alexey Makhalov <amakhalov@vmware.com> 4.3.0-1

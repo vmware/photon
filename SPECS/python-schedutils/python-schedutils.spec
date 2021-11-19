@@ -2,12 +2,10 @@
 # spec file for package python3-schedutils
 #
 
-%{!?python3_sitearch: %define python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-schedutils
 Summary:        Linux scheduler python bindings
 Version:        0.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -42,6 +40,8 @@ python3 setup.py install --skip-build --root %{buildroot}
 %{python3_sitearch}/*.egg-info
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.6-3
+-   Update release to compile with python 3.10
 *   Thu May 28 2020 Shreyas B. <shreyasb@vmware.com> 0.6-2
 -   Remove BuildArch.
 *   Thu Mar 19 2020 Shreyas B. <shreyasb@vmware.com> 0.6-1

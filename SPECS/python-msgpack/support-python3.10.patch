@@ -1,0 +1,173 @@
+From b3f72541925cda3b018942db45a59936184727e3 Mon Sep 17 00:00:00 2001
+From: Inada Naoki <songofacandy@gmail.com>
+Date: Tue, 16 Nov 2021 16:19:47 +0900
+Subject: [PATCH] Support Python 3.10 and Drop Python 3.5 (#487)
+
+* linux: Use manylinux2014
+* mac: Drop Python 3.6 too
+---
+ .github/workflows/linux.yml    | 11 +++++++++++
+ .github/workflows/mac.yml      | 12 ++++++------
+ .github/workflows/windows.yaml | 14 ++++++++++++++
+ Makefile                       |  4 ++--
+ docker/buildwheel.sh           |  4 +++-
+ docker/shared.env              |  2 +-
+ setup.py                       |  4 +---
+ 7 files changed, 38 insertions(+), 13 deletions(-)
+
+diff --git a/.github/workflows/linux.yml b/.github/workflows/linux.yml
+index f9707b1c..811bc13d 100644
+--- a/.github/workflows/linux.yml
++++ b/.github/workflows/linux.yml
+@@ -47,6 +47,17 @@ jobs:
+           pytest -v test
+ 
+ 
++      - name: Set up Python 3.10
++        uses: actions/setup-python@v1
++        with:
++          python-version: "3.10"
++
++      - name: Run test (3.10)
++        run: |
++          pip install pytest
++          pip install -v msgpack --only-binary :all: --no-index -f dist/wheelhouse
++          pytest -v test
++
+       - name: Set up Python 3.9
+         uses: actions/setup-python@v1
+         with:
+diff --git a/.github/workflows/mac.yml b/.github/workflows/mac.yml
+index 78d944cc..4efe2cad 100644
+--- a/.github/workflows/mac.yml
++++ b/.github/workflows/mac.yml
+@@ -35,10 +35,10 @@ jobs:
+           pytest -v test
+ 
+ 
+-      - name: Set up Python 3.9
++      - name: Set up Python 3.10
+         uses: actions/setup-python@v1
+         with:
+-          python-version: "3.9"
++          python-version: "3.10"
+ 
+       - name: Build wheel
+         run: |
+@@ -52,10 +52,10 @@ jobs:
+           pytest -v test
+ 
+ 
+-      - name: Set up Python 3.7
++      - name: Set up Python 3.9
+         uses: actions/setup-python@v1
+         with:
+-          python-version: "3.7"
++          python-version: "3.9"
+ 
+       - name: Build wheel
+         run: |
+@@ -69,10 +69,10 @@ jobs:
+           pytest -v test
+ 
+ 
+-      - name: Set up Python 3.6
++      - name: Set up Python 3.7
+         uses: actions/setup-python@v1
+         with:
+-          python-version: "3.6"
++          python-version: "3.7"
+ 
+       - name: Build wheel
+         run: |
+diff --git a/.github/workflows/windows.yaml b/.github/workflows/windows.yaml
+index 139a5a64..debe0747 100644
+--- a/.github/workflows/windows.yaml
++++ b/.github/workflows/windows.yaml
+@@ -77,6 +77,20 @@ jobs:
+         run: |
+           ci/runtests.sh
+ 
++      - name: Python 3.10 (amd64)
++        env:
++          PYTHON: "py -3.10-64"
++        shell: bash
++        run: |
++          ci/runtests.sh
++
++      - name: Python 3.10 (x86)
++        env:
++          PYTHON: "py -3.10-32"
++        shell: bash
++        run: |
++          ci/runtests.sh
++
+       - name: Upload Wheels
+         uses: actions/upload-artifact@v1
+         with:
+diff --git a/Makefile b/Makefile
+index 6f29aede..b50fa80c 100644
+--- a/Makefile
++++ b/Makefile
+@@ -36,8 +36,8 @@ update-docker:
+ 
+ .PHONY: linux-wheel
+ linux-wheel:
+-	docker run --rm -v `pwd`:/project -w /project quay.io/pypa/manylinux2010_i686   bash docker/buildwheel.sh
+-	docker run --rm -v `pwd`:/project -w /project quay.io/pypa/manylinux2010_x86_64 bash docker/buildwheel.sh
++	docker run --rm -v `pwd`:/project -w /project quay.io/pypa/manylinux2014_i686   bash docker/buildwheel.sh
++	docker run --rm -v `pwd`:/project -w /project quay.io/pypa/manylinux2014_x86_64 bash docker/buildwheel.sh
+ 
+ .PHONY: linux-arm64-wheel
+ linux-arm64-wheel:
+diff --git a/docker/buildwheel.sh b/docker/buildwheel.sh
+index 89a25706..ff34139d 100644
+--- a/docker/buildwheel.sh
++++ b/docker/buildwheel.sh
+@@ -7,10 +7,12 @@ set -e -x
+ ARCH=`uname -p`
+ echo "arch=$ARCH"
+ 
++ls /opt/python
++
+ for V in "${PYTHON_VERSIONS[@]}"; do
+     PYBIN=/opt/python/$V/bin
+     rm -rf build/       # Avoid lib build by narrow Python is used by wide python
+-    $PYBIN/python setup.py bdist_wheel
++    $PYBIN/python -m build -w
+ done
+ 
+ cd dist
+diff --git a/docker/shared.env b/docker/shared.env
+index 3601a075..80274ac6 100644
+--- a/docker/shared.env
++++ b/docker/shared.env
+@@ -1,7 +1,7 @@
+ PYTHON_VERSIONS=(
++    cp310-cp310
+     cp39-cp39
+     cp38-cp38
+     cp37-cp37m
+     cp36-cp36m
+-    cp35-cp35m
+ )
+diff --git a/setup.py b/setup.py
+index 751abff5..01f125fb 100755
+--- a/setup.py
++++ b/setup.py
+@@ -125,14 +125,12 @@ def __init__(self, *args, **kwargs):
+     },
+     license="Apache 2.0",
+     classifiers=[
+-        "Programming Language :: Python :: 2",
+-        "Programming Language :: Python :: 2.7",
+         "Programming Language :: Python :: 3",
+-        "Programming Language :: Python :: 3.5",
+         "Programming Language :: Python :: 3.6",
+         "Programming Language :: Python :: 3.7",
+         "Programming Language :: Python :: 3.8",
+         "Programming Language :: Python :: 3.9",
++        "Programming Language :: Python :: 3.10",
+         "Programming Language :: Python :: Implementation :: CPython",
+         "Programming Language :: Python :: Implementation :: PyPy",
+         "Intended Audience :: Developers",

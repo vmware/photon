@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        provides a pure-Python implementation of immutable URLs
 Name:           python3-hyperlink
 Version:        20.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -22,6 +20,7 @@ Requires:       python3-libs
 BuildRequires:  python3-idna
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
+BuildRequires:  python3-pip
 %endif
 BuildArch:      noarch
 
@@ -29,7 +28,7 @@ BuildArch:      noarch
 Hyperlink provides a pure-Python implementation of immutable URLs. Based on RFC 3986 and 3987, the Hyperlink URL makes working with both URIs and IRIs easy.
 
 %prep
-%setup -q -n hyperlink-%{version}
+%autosetup -p1 -n hyperlink-%{version}
 
 %build
 python3 setup.py build
@@ -39,16 +38,16 @@ python3 setup.py build
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pytest
+pip3 install pytest
 pytest
-
 
 %files
 %defattr(-,root,root)
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 20.0.1-3
+-   Update release to compile with python 3.10
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 20.0.1-2
 -   openssl 1.1.1
 *   Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 20.0.1-1

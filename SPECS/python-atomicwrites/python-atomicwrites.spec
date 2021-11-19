@@ -1,10 +1,7 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Python Atomic file writes
 Name:           python3-atomicwrites
 Version:        1.4.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,6 +16,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  python3-attrs
 BuildRequires:  python3-pytest
 BuildRequires:  python3-six
+BuildRequires:  python3-pip
 %endif
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -29,7 +27,7 @@ BuildArch:      noarch
 Python Atomic file writes
 
 %prep
-%setup -q -n atomicwrites-%{version}
+%autosetup -p1 -n atomicwrites-%{version}
 
 %build
 python3 setup.py build
@@ -38,8 +36,7 @@ python3 setup.py build
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 funcsigs pathlib2 pluggy more-itertools
+pip3 install funcsigs pathlib2 pluggy more-itertools
 cp tests/test_atomicwrites.py .
 python3 test_atomicwrites.py
 
@@ -50,6 +47,8 @@ python3 test_atomicwrites.py
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.0-3
+-   Update release to compile with python 3.10
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.4.0-2
 -   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.4.0-1

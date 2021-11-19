@@ -1,5 +1,3 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Pygments is a syntax highlighting package written in Python.
 Name:           python3-Pygments
 Version:        2.9.0
@@ -34,7 +32,7 @@ a number of output formats, presently HTML, LaTeX, RTF, SVG, all image formats t
 it is usable as a command-line tool and as a library.
 
 %prep
-%setup -q -n Pygments-%{version}
+%autosetup -n Pygments-%{version}
 
 %build
 python3 setup.py build

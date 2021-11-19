@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-six
 Version:        1.15.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python 2 and 3 compatibility utilities
 License:        MIT
 Vendor:         VMware, Inc.
@@ -23,7 +21,7 @@ BuildRequires:  curl-devel
 %endif
 Requires:       python3
 Requires:       python3-libs
-Provides:       python3.9dist(six)
+Provides:       python%{python3_version}dist(six)
 BuildArch:      noarch
 
 %description
@@ -40,8 +38,7 @@ python3 setup.py build
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pytest
+pip3 install pytest
 python3 test_six.py
 
 
@@ -50,6 +47,8 @@ python3 test_six.py
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.15.0-4
+-   Update release to compile with python 3.10
 *   Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 1.15.0-3
 -   Added provides
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.15.0-2

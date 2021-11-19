@@ -1,14 +1,13 @@
 Summary:       A toolkit for defining and handling authorizations.
 Name:          polkit
-Version:       0.118
-Release:       2%{?dist}
+Version:       0.120
+Release:       1%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       LGPLv2+
 URL:           https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
 Source0:       https://www.freedesktop.org/software/polkit/releases/%{name}-%{version}.tar.gz
-%define sha1 polkit=1c53d0ccacc6e6afd49ba14cb39d2514b943933d
-Patch0:        CVE-2021-3560.patch
+%define sha1 polkit=75d5885251eef36b28851e095120bc1f60714160
 Distribution:  Photon
 BuildRequires: autoconf
 BuildRequires: expat-devel
@@ -40,18 +39,16 @@ Requires: polkit = %{version}-%{release}
 header files and libraries for polkit
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 %configure \
-    --datadir=%{_datarootdir} \
     --enable-libsystemd-login=yes \
     --with-systemdsystemunitdir=%{_libdir}/systemd/system
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 install -vdm 755 %{buildroot}/etc/pam.d
 cat > %{buildroot}/etc/pam.d/polkit-1 << "EOF"
@@ -99,7 +96,7 @@ fi
 %{_datarootdir}/dbus-1/system-services/org.freedesktop.PolicyKit1.service
 %{_datarootdir}/locale/*
 %{_datarootdir}/polkit-1/actions/*.policy
-%{_sysconfdir}/dbus-1/system.d/org.freedesktop.PolicyKit1.conf
+%{_datarootdir}/dbus-1/system.d/org.freedesktop.PolicyKit1.conf
 %{_sysconfdir}/pam.d/polkit-1
 %{_sysconfdir}/polkit-1/rules.d/50-default.rules
 %{_datadir}/gettext/its
@@ -112,6 +109,8 @@ fi
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.120-1
+-   Update to version 0.120, to compile with python 3.10
 *   Wed May 26 2021 Siju Maliakkal <smaliakkal@vmware.com> 0.118-2
 -   Fix CVE-2021-3560
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.118-1

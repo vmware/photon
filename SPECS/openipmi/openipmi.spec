@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        A shared library implementation of IPMI and the basic tools
 Name:           openipmi
 Version:        2.0.29
-Release:        5%{?dist}
+Release:        6%{?dist}
 URL:            https://sourceforge.net/projects/openipmi/
 License:        LGPLv2+ and GPLv2+ or BSD
 Group:          System Environment/Base
@@ -13,6 +11,7 @@ Source0:        https://sourceforge.net/projects/openipmi/files/latest/download/
 %define sha1    OpenIPMI=a8dd1a9b877e94926af1da69421e8f2bd642c9c7
 Source1:        openipmi-helper
 Source2:        ipmi.service
+Patch0:         openipmi-sysconfig.patch
 BuildRequires:  systemd
 BuildRequires:  perl
 BuildRequires:  popt-devel
@@ -71,20 +70,21 @@ Requires:       openipmi = %{version}-%{release}
 This package contains a network IPMI listener.
 
 %prep
-%autosetup -n OpenIPMI-%{version}
+%autosetup -p1 -n OpenIPMI-%{version}
 
 %build
 # USERFIX: Things you might have to add to configure:
 #  --with-tclcflags='-I /usr/include/tclN.M' --with-tcllibs=-ltclN.M
 #    Obviously, replace N.M with the version of tcl on your system.
-%configure                                  \
-    --with-tcl=no                           \
-    --disable-static                        \
-    --with-tkinter=no                       \
-    --docdir=%{_docdir}/%{name}-%{version}  \
-    --with-perl=yes                         \
-    --with-perlinstall=%{perl_vendorarch}   \
-    --with-python=/usr/bin/python3.9        \
+autoreconf -f -i
+%configure                                       \
+    --with-tcl=no                            \
+    --disable-static                         \
+    --with-tkinter=no                        \
+    --docdir=%{_docdir}/%{name}-%{version}   \
+    --with-perl=yes                          \
+    --with-perlinstall=%{perl_vendorarch}    \
+    --with-python=/usr/bin/python%{python3_version}\
     --with-pythoninstall=%{python3_sitelib}
 make %{?_smp_mflags}
 
@@ -184,6 +184,8 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.29-6
+-   Fix distutils.sysconfig issue to compile with python3.10
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.29-5
 -   Bump up release for openssl
 *   Tue Oct 13 2020 Tapas Kundu <tkundu@vmware.com> 2.0.29-4

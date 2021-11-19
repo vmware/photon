@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-more-itertools
 Version:        8.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        More routines for operating on Python iterables, beyond itertools
 Group:          Development/Libraries
 License:        MIT
@@ -17,11 +15,10 @@ BuildArch:      noarch
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-setuptools_scm
-
 Requires:       python3
 
 Provides:       python3dist(more-itertools) = %{version}-%{release}
-Provides:       python3.9dist(more-itertools) = %{version}-%{release}
+Provides:       python%{python3_version}dist(more-itertools) = %{version}-%{release}
 
 %description
 Python's itertools library is a gem - you can compose elegant solutions for
@@ -43,5 +40,7 @@ python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
-* Sun Sep 20 2020 Susant Sahani <ssahani@vmware.com> 8.5.0-1
-- Initial rpm release
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 8.5.0-2
+-   Update release to compile with python 3.10
+*   Sun Sep 20 2020 Susant Sahani <ssahani@vmware.com> 8.5.0-1
+-   Initial rpm release

@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        the blessed package to manage your versions by scm tags.
 Name:           python3-setuptools_scm
 Version:        4.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -29,7 +27,7 @@ It also handles file finders for the supported scm’s.
 
 
 %prep
-%setup -q -n setuptools_scm-%{version}
+%autosetup -n setuptools_scm-%{version}
 
 %build
 python3 setup.py build
@@ -45,6 +43,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.1.2-3
+-   Update release to compile with python 3.10
 *   Thu Sep 03 2020 Tapas Kundu <tkundu@vmware.com> 4.1.2-2
 -   Requires python3-setuptools for installation
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 4.1.2-1

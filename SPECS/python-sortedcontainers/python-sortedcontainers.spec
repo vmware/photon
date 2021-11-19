@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Pure Python sorted container types
 Name:           python3-sortedcontainers
 Version:        2.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -19,14 +17,14 @@ BuildRequires:  python3-setuptools
 
 Requires:       python3
 
-Provides:       python3.9dist(sortedcontainers) = %{version}-%{release}
+Provides:       python%{python3_version}dist(sortedcontainers) = %{version}-%{release}
 
 %description
 SortedContainers is an Apache2 licensed sorted collections library, written in \
 pure-Python, and fast as C-extensions.
 
 %prep
-%setup -n sortedcontainers-%{version}
+%autosetup -n sortedcontainers-%{version}
 
 %build
 python3 setup.py build
@@ -48,5 +46,7 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/sortedcontainers/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.2.2-2
+-   Update release to compile with python 3.10
 *   Sat Sep 19 2020 Susant Sahani <ssahaniv@vmware.com> 2.2.2-1
 -   Initial rpm release.

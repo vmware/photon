@@ -1,16 +1,15 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.16.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/rpm-software-management/createrepo_c
-
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    %{name}=dab1acedd6b3f92bccf5448dee432b5ee1d1432f
-
+Patch0:         remove-distutils.patch
 BuildRequires:  cmake
 BuildRequires:  curl-devel
 BuildRequires:  expat-devel
@@ -24,6 +23,7 @@ BuildRequires:  sqlite-devel
 BuildRequires:  python3-devel
 BuildRequires:  drpm-devel
 BuildRequires:  zchunk-devel
+BuildRequires:  doxygen
 
 Requires:       drpm
 Requires:       zchunk-libs
@@ -84,6 +84,8 @@ ln -sf %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
 %{_lib64dir}/pkgconfig/%{name}.pc
 
 %changelog
+* Mon Nov 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.16.0-5
+- Remove deprecated distutils to compile with python 3.10
 * Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 0.16.0-4
 - Release bump up to use libxml2 2.9.12-1.
 * Fri Aug 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-3

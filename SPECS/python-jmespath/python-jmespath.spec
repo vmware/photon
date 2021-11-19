@@ -1,10 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
-
 Summary:        Query Language for JSON
 Name:           python3-jmespath
 Version:        0.10.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -24,7 +21,7 @@ BuildRequires:  curl-devel
 Requires:       python3
 Requires:       python3-libs
 BuildArch:      noarch
-Provides:       python3.9dist(jmespath)
+Provides:       python%{python3_version}dist(jmespath)
 
 %description
 JMESPath (pronounced “james path”) allows you to declaratively specify how to extract elements from a JSON document.
@@ -43,8 +40,7 @@ for item in %{buildroot}/%{_bindir}/*
 done
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 nose
+pip3 install nose
 python3 setup.py test
 
 %files
@@ -53,6 +49,8 @@ python3 setup.py test
 %{_bindir}/jp.py-%{python3_version}
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.10.0-4
+-   Update release to compile with python 3.10
 *   Wed Jul 21 2021 Tapas Kundu <tkundu@vmware.com> 0.10.0-3
 -   Added provides
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.10.0-2

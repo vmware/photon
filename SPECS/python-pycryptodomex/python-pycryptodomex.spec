@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Cryptographic library for Python
 Name:           python3-pycryptodomex
 Version:        3.9.9
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD and Public Domain
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -27,7 +25,7 @@ Requires:  python3-setuptools
 Cryptographic library for Python
 
 %prep
-%setup -q -n pycryptodomex-%{version}
+%autosetup -n pycryptodomex-%{version}
 
 %build
 python3 setup.py build
@@ -38,8 +36,10 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot} --skip-build
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/Cryptodome
-%{python3_sitelib}/pycryptodomex-3.9.9-py3.9.egg-info
+%{python3_sitelib}/pycryptodomex-3.9.9-py%{python3_version}.egg-info
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.9.9-2
+-   Update release to compile with python 3.10
 *   Wed Feb 03 2021 Tapas Kundu <tkundu@vmware.com> 3.9.9-1
 -   Initial packaging for Photon

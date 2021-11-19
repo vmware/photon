@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-argparse
 Version:        1.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.org/project/argparse
 Summary:        Python command-line parsing library
 License:        Python Software Foundation License
@@ -38,7 +36,7 @@ in a number of ways including:
 * providing a much simpler interface for custom types and actions
 
 %prep
-%setup -n argparse-%{version}
+%autosetup -n argparse-%{version}
 
 %build
 python3 setup.py build
@@ -49,8 +47,10 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %files
 %defattr(-,root,root,-)
 %doc NEWS.txt README.txt doc/*
-%python3_sitelib/*
+%{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.0-2
+-   Update release to compile with python 3.10
 *   Tue Feb 23 2021 Tapas Kundu <tkundu@vmware.com> 1.4.0-1
 -   Initial build.  First version

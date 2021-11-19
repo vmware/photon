@@ -1,12 +1,14 @@
 Summary:	Cmake
 Name:		cmake
 Version:	3.18.3
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
 Source0:	http://www.cmake.org/files/v3.16/%{name}-%{version}.tar.gz
 %define sha1    cmake=94c15d9a3bf3f1842f4eec97276441083013d30c
 Source1:	macros.cmake
+Patch0:         find-python-3.10-1.patch
+Patch1:         find-python-3.10-2.patch
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
@@ -36,7 +38,7 @@ CMake is an extensible, open-source system that manages the build process in an
 operating system and in a compiler-independent manner.
 
 %prep
-%autosetup
+%autosetup -p1
 %build
 ncores="$(/usr/bin/getconf _NPROCESSORS_ONLN)"
 ./bootstrap --prefix=%{_prefix} --system-expat --system-zlib --system-libarchive --system-bzip2 --parallel=$ncores
@@ -62,6 +64,8 @@ make  %{?_smp_mflags} test
 %{_libdir}/rpm/macros.d/macros.cmake
 
 %changelog
+*       Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.18.3-5
+-       Add support for python 3.10
 *       Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.18.3-4
 -       Bump up release for openssl
 *       Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.18.3-3

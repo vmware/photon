@@ -2,7 +2,7 @@
 
 Name:       python3-distlib
 Version:    0.3.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 Summary:    Low-level components of distutils2/packaging, augmented with higher-level APIs
 License:    Python
 URL:        https://pypi.org/project/distlib/
@@ -22,7 +22,7 @@ BuildRequires:  unzip
 
 Requires:       python3
 
-Provides:       python3.9dist(distlib) = %{version}-%{release}
+Provides:       python%{python3_version}dist(distlib) = %{version}-%{release}
 
 %description
 Distlib contains the implementations of the packaging PEPs and other low-level
@@ -34,8 +34,7 @@ time saved by not having to reinvent wheels, and improved interoperability
 between tools.
 
 %prep
-%setup -q -n %{srcname}-%{version}
-%patch0 -p1
+%autosetup -p1 -n %{srcname}-%{version}
 
 rm distlib/*.exe
 rm -rf distlib/_backport
@@ -61,5 +60,7 @@ export PYTHONHASHSEED=0
 %license LICENSE.txt
 
 %changelog
+* Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.3.1-2
+- Update release to compile with python 3.10
 * Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.3.1-1
 - initial version

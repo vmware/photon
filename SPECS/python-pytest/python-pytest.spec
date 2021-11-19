@@ -1,9 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
-
 Name:           python3-pytest
 Version:        6.1.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        pytest is a mature full-featured Python testing tool that helps you write better programs
 License:        MIT
 Group:          Development/Languages/Python
@@ -40,7 +37,7 @@ BuildArch:      noarch
 pytest framework makes it easy to write small tests, yet scales to support complex functional testing for applications and libraries.
 
 %prep
-%setup -n pytest-%{version}
+%autosetup -n pytest-%{version}
 
 %build
 python3 setup.py build
@@ -53,7 +50,7 @@ mv %{buildroot}%{_bindir}/py.test %{buildroot}%{_bindir}/py.test%{python3_versio
 ln -snf py.test%{python3_version} %{buildroot}%{_bindir}/py.test3
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{_smp_mflags} -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %files
 %defattr(-,root,root,-)
@@ -64,6 +61,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 6.1.2-3
+-   Update release to compile with python 3.10
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 6.1.2-2
 -   Fix build with new rpm
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 6.1.2-1

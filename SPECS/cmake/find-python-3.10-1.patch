@@ -1,0 +1,22 @@
+From 23cd98a66a3eca1cc8e89a77f4fdf406c4f4c113 Mon Sep 17 00:00:00 2001
+From: Marc Chevrier <marc.chevrier@gmail.com>
+Date: Fri, 16 Oct 2020 11:36:53 +0200
+Subject: [PATCH] FindPython: Add support of version 3.10
+
+---
+ Modules/FindPython/Support.cmake | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Modules/FindPython/Support.cmake b/Modules/FindPython/Support.cmake
+index 7de2d299463..2b911ae7e36 100644
+--- a/Modules/FindPython/Support.cmake
++++ b/Modules/FindPython/Support.cmake
+@@ -22,7 +22,7 @@ if (NOT DEFINED _${_PYTHON_PREFIX}_REQUIRED_VERSION_MAJOR)
+   message (FATAL_ERROR "FindPython: INTERNAL ERROR")
+ endif()
+ if (_${_PYTHON_PREFIX}_REQUIRED_VERSION_MAJOR EQUAL "3")
+-  set(_${_PYTHON_PREFIX}_VERSIONS 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
++  set(_${_PYTHON_PREFIX}_VERSIONS 3.10 3.9 3.8 3.7 3.6 3.5 3.4 3.3 3.2 3.1 3.0)
+ elseif (_${_PYTHON_PREFIX}_REQUIRED_VERSION_MAJOR EQUAL "2")
+   set(_${_PYTHON_PREFIX}_VERSIONS 2.7 2.6 2.5 2.4 2.3 2.2 2.1 2.0)
+ else()

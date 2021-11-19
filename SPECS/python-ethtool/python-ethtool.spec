@@ -1,13 +1,10 @@
 #
 # spec file for package python3-ethtool
 #
-
-%{!?python3_sitearch: %define python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 %global pypi_name ethtool
 Name:           python3-ethtool
-Version:        0.14
-Release:        3%{?dist}
+Version:        0.15
+Release:        1%{?dist}
 Summary:        Python module to interface with ethtool
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -15,8 +12,7 @@ Distribution:   Photon
 License:        GPLv2
 URL:            https://pypi.org/project/ethtool/
 Source0:        python-ethtool-%{version}.tar.gz
-%define sha1 python-ethtool=6e811ede779f2eac9d30950b6dc7abba61372262
-
+%define sha1 python-ethtool=e9ba7af04ded33aff357443512fec38c173cd2c6
 BuildRequires:  gcc
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
@@ -39,7 +35,7 @@ changing of Ethernet card settings, such as speed, port, auto-negotiation, and
 PCI locations.
 
 %prep
-%autosetup -n %{pypi_name}-%{version}
+%autosetup -n python-ethtool-%{version}
 
 %build
 python3 setup.py build
@@ -71,6 +67,8 @@ LANG=en_US.UTF-8 python3 -m unittest discover -v
 %{python3_sitearch}/%{pypi_name}-%{version}-py*.egg-info
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.15-1
+-   Update to version 0.15, compile with python 3.10
 *   Sun Oct 11 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.14-3
 -   Build with updated ethtool release
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 0.14-2

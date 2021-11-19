@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:	The gcovr command provides a utility for managing the use of the GNU gcov utility
 Name:		gcovr
 Version:	4.2
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD Clause-3
 URL:		http://gcovr.com/
 Source0:	https://github.com/gcovr/gcovr/archive/%{name}-%{version}.tar.gz
@@ -22,6 +20,7 @@ BuildRequires:  curl-devel
 BuildRequires:  python3-pytest
 BuildRequires:  python3-six
 BuildRequires:  python3-attrs
+BuildRequires:  python3-pip
 %endif
 Requires:       python3
 Requires:       python3-libs
@@ -30,7 +29,7 @@ Buildarch:	noarch
 The gcovr command provides a utility for managing the use of the GNU gcov utility and generating summarized code coverage results. This command is inspired by the Python coverage.py package, which provides a similar utility in Python. Gcovr produces either compact human-readable summary reports, machine readable XML reports or a simple HTML summary.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 python3 setup.py build
@@ -39,11 +38,9 @@ python3 setup.py build
 python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 mv %{buildroot}/%{_bindir}/gcovr  %{buildroot}/%{_bindir}/gcovr3
 
-
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 funcsigs pathlib2 pluggy utils atomicwrites more_itertools iniconfig
-$easy_install_3 pyutilib
+pip3 install funcsigs pathlib2 pluggy utils atomicwrites more_itertools iniconfig
+pip3 install pyutilib
 python3 setup.py test
 
 %files
@@ -53,11 +50,13 @@ python3 setup.py test
 %{python3_sitelib}*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.2-4
+-   Update release to compile with python 3.10
 *   Mon Nov 16 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.2-3
 -   Fix makecheck, install missing iniconfig module
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.2-2
 -   openssl 1.1.1
-*   Tue Jul 29 2020 Gerrit Photon <photon-checkins@vmware.com> 4.2-1
+*   Wed Jul 29 2020 Gerrit Photon <photon-checkins@vmware.com> 4.2-1
 -   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 4.1-4
 -   Mass removal python2

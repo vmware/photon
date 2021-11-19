@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-bcrypt
 Version:        3.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Good password hashing for your software and your servers.
 License:        Apache License, Version 2.0
 Group:          Development/Languages/Python
@@ -22,6 +20,7 @@ Requires:       python3
 Requires:       python3-libs
 %if %{with_check}
 BuildRequires:  curl-devel
+BuildRequires:  python3-pip
 %endif
 
 %description
@@ -29,7 +28,7 @@ Good password hashing for your software and your servers.
 
 
 %prep
-%setup -n bcrypt-%{version}
+%autosetup -n bcrypt-%{version}
 
 %build
 python3 setup.py build
@@ -38,8 +37,7 @@ python3 setup.py build
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pytest
+pip3 install pytest
 python3 setup.py test
 
 %files
@@ -47,6 +45,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.2.0-2
+-   Update release to compile with python 3.10
 *   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1
 -   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1.7-1

@@ -1,0 +1,13 @@
+diff --git a/asciidoc3.py b/asciidoc3.py
+index d609188..19dc075 100755
+--- a/asciidoc3.py
++++ b/asciidoc3.py
+@@ -5285,7 +5285,7 @@ class Config:
+         directory.
+         cmd is the asciidoc3 command or asciidoc3.py path.
+         """
+-        if float(sys.version[:3]) < float(MIN_PYTHON_VERSION):
++        if float(sys.version[:4].replace('.','')) < float(MIN_PYTHON_VERSION.replace('.','')):
+             message.stderr('FAILED: Python %s or better required' %
+                            MIN_PYTHON_VERSION)
+             sys.exit(1)

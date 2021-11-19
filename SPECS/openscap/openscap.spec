@@ -1,7 +1,7 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.3.4
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Group:          System Environment/Libraries
@@ -101,9 +101,11 @@ find %{buildroot} -name '*.la' -delete
 
 %files python3
 %defattr(-,root,root)
-%{_libdir}/python3.9/*
+%{_libdir}/python%{python3_version}/*
 
 %changelog
+* Mon Nov 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.3.4-6
+- Update release to compile with python 3.10
 * Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 1.3.4-5
 - Release bump up to use libxml2 2.9.12-1.
 * Thu Nov 11 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.4-4

@@ -1,0 +1,33 @@
+From 69b2be23d46a9eb3a03ffff0a990a2ffbc3b63f9 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ale=C5=A1=20Mat=C4=9Bj?= <amatej@redhat.com>
+Date: Tue, 20 Apr 2021 11:33:09 +0200
+Subject: [PATCH] Remove distutils which are deprecated in python3.10
+
+---
+ src/python/CMakeLists.txt          | 2 +-
+ utils/setup_for_python_metadata.py | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/src/python/CMakeLists.txt b/src/python/CMakeLists.txt
+index ecc262d4..a31b14d8 100644
+--- a/src/python/CMakeLists.txt
++++ b/src/python/CMakeLists.txt
+@@ -27,7 +27,7 @@ if (NOT SKBUILD)
+     endif ()
+ endif (NOT SKBUILD)
+ 
+-EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "from sys import stdout; from distutils import sysconfig; stdout.write(sysconfig.get_python_lib(True))" OUTPUT_VARIABLE PYTHON_INSTALL_DIR)
++EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "from sys import stdout; from sysconfig import get_path; stdout.write(get_path('platlib'))" OUTPUT_VARIABLE PYTHON_INSTALL_DIR)
+ INCLUDE_DIRECTORIES (${PYTHON_INCLUDE_PATH})
+ 
+ MESSAGE(STATUS "Python install dir is ${PYTHON_INSTALL_DIR}")
+diff --git a/utils/setup_for_python_metadata.py b/utils/setup_for_python_metadata.py
+index c4bdce02..b1f3bd7e 100644
+--- a/utils/setup_for_python_metadata.py
++++ b/utils/setup_for_python_metadata.py
+@@ -1,4 +1,4 @@
+-from distutils.core import setup
++from setuptools import setup
+ import sys
+ 
+ # This is a simple and fragile way of passing the current version

@@ -1,9 +1,8 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %define debug_package %{nil}
 
 Name:           python3-PyYAML
 Version:        5.4.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        YAML parser and emitter for Python
 Group:          Development/Libraries
 License:        MIT
@@ -22,7 +21,7 @@ Requires:       python3
 Requires:       python3-libs
 Requires:       libyaml
 
-Provides:       python3.9dist(pyyaml)
+Provides:       python%{python3_version}dist(pyyaml)
 
 %description
 YAML is a data serialization format designed for human readability and
@@ -38,15 +37,14 @@ PyYAML is applicable for a broad range of tasks from complex
 configuration files to object serialization and persistence.
 
 %prep
-%setup -q -n PyYAML-%{version}
-
+%autosetup -n PyYAML-%{version}
 
 %build
 python3 setup.py build
 
 %install
-rm -rf $RPM_BUILD_ROOT
-mkdir -p $RPM_BUILD_ROOT/%{_bindir}
+rm -rf %{buildroot}
+mkdir -p %{buildroot}/%{_bindir}
 python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 chmod a-x examples/yaml-highlight/yaml_hl.py
 
@@ -54,15 +52,16 @@ chmod a-x examples/yaml-highlight/yaml_hl.py
 python3 setup.py test
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
 %doc PKG-INFO README LICENSE examples
 %{python3_sitelib}/*
 
-
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.4.1-2
+-   Update release to compile with python 3.10
 *   Wed Jan 27 2021 Tapas Kundu <tkundu@vmware.com> 5.4.1-1
 -   Update to 5.4.1
 *   Wed Dec 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 5.3.1-2

@@ -1,7 +1,6 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           apparmor
 Version:        3.0.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -43,6 +42,7 @@ BuildRequires:  curl-devel
 BuildRequires:  python3-setuptools, python3-xml
 
 Patch0:         fix-build-failure-in-apparmor.patch
+Patch1:         remove-distutils.patch
 
 %description
 AppArmor is a file and network mandatory access control
@@ -198,11 +198,10 @@ cd ../../profiles
 make %{?_smp_mflags}
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pyflakes
-export PYTHONPATH=/usr/lib/python3.9/site-packages
+pip3 install pyflakes
+export PYTHONPATH=%{python3_sitelib}
 export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=3.9
+export PYTHON_VERSION=%{python3_version}
 export PYTHON_VERSIONS=python3
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 
@@ -216,9 +215,9 @@ cd ../utils
 make check %{?_smp_mflags}
 
 %install
-export PYTHONPATH=/usr/lib/python3.9/site-packages
+export PYTHONPATH=%{python3_sitelib}
 export PYTHON=/usr/bin/python3
-export PYTHON_VERSION=3.9
+export PYTHON_VERSION=%{python3_version}
 export PYTHON_VERSIONS=python3
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 cd libraries/libapparmor
@@ -362,6 +361,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.0.0-7
+- Remove deprecated distutils to compile with python 3.10
 * Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.0.0-6
 - Bump version as a part of httpd upgrade
 * Thu Oct 07 2021 Dweep Advani <dadvani@vmware.com> 3.0.0-5

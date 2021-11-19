@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        This library brings the updated configparser from Python 3.5 to Python 2.6-3.5.
 Name:           python3-configparser
 Version:        5.0.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -19,6 +17,7 @@ BuildRequires:  python3-xml
 BuildRequires:  python3-devel
 BuildRequires:  curl-devel
 BuildRequires:  python3-setuptools_scm
+BuildRequires:  python3-pip
 Requires:       python3
 Requires:       python3-libs
 
@@ -26,7 +25,6 @@ BuildArch:      noarch
 
 %description
 The ancient ConfigParser module available in the standard library 2.x has seen a major update in Python 3.2. This is a backport of those changes so that they can be used directly in Python 2.6 - 3.5.
-
 
 %prep
 %autosetup -p1 -n configparser-%{version}
@@ -40,8 +38,7 @@ find %{buildroot}%{python3_sitelib}/ -name '*.pyc' -delete -o \
     -name '*__pycache__' -delete
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 py
+pip3 install py
 python3 setup.py test
 
 %files
@@ -49,6 +46,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.0.1-4
+-   Update release to compile with python 3.10
 *   Sun Aug 29 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.0.1-3
 -   Add python3-setuptools_scm as BuildRequires to fix 'toml' build failure
 *   Thu Feb 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.0.1-2

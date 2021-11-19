@@ -1,9 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
-
 Name:           pycurl3
 Version:        7.43.0.6
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A Python interface to libcurl
 Group:          Development/Languages
 License:        LGPLv2+ and an MIT/X
@@ -22,8 +19,9 @@ BuildRequires:  python3
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 %if %{with_check}
-BuildRequires: python3-setuptools, vsftpd, curl-libs
-BuildRequires: python3-xml
+BuildRequires:  python3-setuptools, vsftpd, curl-libs
+BuildRequires:  python3-xml
+BuildRequires:  python3-pip
 %endif
 Requires:       curl
 Requires:       python3
@@ -67,8 +65,7 @@ chmod 755 %{buildroot}%{python3_sitelib}/pycurl*.so
 
 %check
 export PYCURL_VSFTPD_PATH=vsftpd
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 nose nose-show-skipped bottle==0.12.16 flaky pyflakes
+pip3 install nose nose-show-skipped bottle==0.12.16 flaky pyflakes
 rm -f tests/multi_option_constants_test.py tests/ftp_test.py tests/option_constants_test.py tests/seek_cb_test.py
 LANG=en_US.UTF-8  make test PYTHON=python%{python3_version} NOSETESTS="nosetests-3.4 -v"
 
@@ -84,6 +81,8 @@ rm -rf %{buildroot}
 %doc COPYING-LGPL COPYING-MIT RELEASE-NOTES.rst ChangeLog README.rst examples doc tests
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 7.43.0.6-5
+-   Update release to compile with python 3.10
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.43.0.6-4
 -   Bump up release for openssl
 *   Tue Nov 24 2020 Tapas Kundu <tkundu@vmware.com> 7.43.0.6-3

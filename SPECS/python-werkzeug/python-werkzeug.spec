@@ -1,10 +1,7 @@
-%{!?python2_sitelib: %define python2_sitelib %(python2 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        The Swiss Army knife of Python web development
 Name:           python3-werkzeug
 Version:        1.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -21,6 +18,7 @@ BuildRequires:  python3-xml
 BuildRequires:  python3-requests
 BuildRequires:  curl-devel
 BuildRequires:  openssl-devel
+BuildRequires:  python3-pip
 %endif
 Requires:       python3
 Requires:       python3-libs
@@ -30,7 +28,7 @@ BuildArch:      noarch
 Werkzeug started as simple collection of various utilities for WSGI applications and has become one of the most advanced WSGI utility modules. It includes a powerful debugger, full featured request and response objects, HTTP utilities to handle entity tags, cache control headers, HTTP dates, cookie handling, file uploads, a powerful URL routing system and a bunch of community contributed addon modules.
 
 %prep
-%setup -q -n Werkzeug-%{version}
+%autosetup -p1 -n Werkzeug-%{version}
 
 %build
 python3 setup.py build
@@ -39,8 +37,7 @@ python3 setup.py build
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 23)
-$easy_install_3 pytest hypothesis
+pip3 install pytest hypothesis
 LANG=en_US.UTF-8 PYTHONPATH=./  python3 setup.py test
 
 %files
@@ -48,6 +45,8 @@ LANG=en_US.UTF-8 PYTHONPATH=./  python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.1-3
+-   Update release to compile with python 3.10
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.1-2
 -   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.1-1

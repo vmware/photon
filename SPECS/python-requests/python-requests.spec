@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Awesome Python HTTP Library That's Actually Usable
 Name:           python3-requests
 Version:        2.24.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -27,6 +25,7 @@ BuildRequires:  python3-urllib3
 BuildRequires:  python3-chardet
 BuildRequires:  python3-certifi
 BuildRequires:  python3-idna
+BuildRequires:  python3-pip
 %endif
 Requires:       python3
 Requires:       python3-libs
@@ -62,8 +61,7 @@ Features:
     + Simple URL + HTTP Auth Registry
 
 %prep
-%setup -q -n requests-%{version}
-%patch0 -p1
+%autosetup -p1 -n requests-%{version}
 
 %build
 python3 setup.py build
@@ -72,10 +70,8 @@ python3 setup.py build
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-
-easy_install_3=$(ls /usr/bin |grep easy_install |grep 3)
-$easy_install_3 pathlib2 funcsigs pluggy more_itertools pysocks
-$easy_install_3 pytest-mock pytest-httpbin
+pip3 install pathlib2 funcsigs pluggy more_itertools pysocks
+pip3 install pytest-mock pytest-httpbin
 pytest3 -v -k "not test_https_warnings"
 
 %files
@@ -84,6 +80,8 @@ pytest3 -v -k "not test_https_warnings"
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.24.0-2
+-   Update release to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.24.0-1
 -   Automatic Version Bump
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 2.19.1-5
