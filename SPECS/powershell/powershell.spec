@@ -3,7 +3,7 @@
 
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
-Version:        7.1.5
+Version:        7.2.0
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -16,11 +16,11 @@ Group:          shells
 #
 # For example:
 # git clone https://github.com/PowerShell/PowerShell.git
-# mv PowerShell PowerShell-7.1.5 && cd PowerShell-7.1.5
-# git checkout -b v7.1.5 tags/v7.1.5
-# cd .. && tar czf powershell-7.1.5.tar.gz PowerShell-7.1.5
+# mv PowerShell PowerShell-7.2.0 && cd PowerShell-7.2.0
+# git checkout -b v7.2.0 tags/v7.2.0
+# cd .. && tar czf powershell-7.2.0.tar.gz PowerShell-7.2.0
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=c49308ce4ba68862c1747fae94af2179363e7da1
+%define sha1    %{name}=73ae2fb7fd5ad85258e130435f30f12ddefaa98e
 
 # Same as Source0 but from https://github.com/PowerShell/PowerShell-Native.git
 # And use --> git clone --recurse-submodules https://github.com/PowerShell/PowerShell-Native.git
@@ -30,9 +30,9 @@ Source1:        %{name}-native-%{ps_native_ver}.tar.gz
 
 # This is downloaded from github release page of PowerShell
 # For example:
-# https://github.com/PowerShell/PowerShell/releases/download/v7.1.5/powershell-7.1.5-linux-x64.tar.gz
+# https://github.com/PowerShell/PowerShell/releases/download/v7.2.0/powershell-7.2.0-linux-x64.tar.gz
 Source2:        %{name}-%{version}-linux-x64.tar.gz
-%define sha1    %{name}-%{version}-linux=f27146aa4348b3c7d588f4099e8da5c56533d7c9
+%define sha1    %{name}-%{version}-linux=aa344b7d869454674323d4968479d4a00088cefc
 
 Source3:        build.sh
 Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
@@ -44,12 +44,10 @@ Source4:        Microsoft.PowerShell.SDK.csproj.TypeCatalog.targets
 Source5:        omi-%{libmi_tag}.tar.gz
 %define sha1    omi-%{libmi_tag}=823cbc445b631a094217d36050d35b59772a1407
 
-Patch0:         Remove-workarounds-for-.NET-5-RTM-builds.patch
-
 BuildArch:      x86_64
 
-BuildRequires:  dotnet-sdk = 5.0.402
-BuildRequires:  dotnet-runtime = 5.0.11
+BuildRequires:  dotnet-sdk = 6.0.100
+BuildRequires:  dotnet-runtime = 6.0.0
 BuildRequires:  psmisc
 BuildRequires:  cmake
 BuildRequires:  clang
@@ -68,7 +66,6 @@ BuildRequires:  which
 Requires:       icu
 #gallery download scripts will fail without this
 Requires:       zlib-devel
-BuildArch:      aarch64_1
 
 %description
 PowerShell is an automation and configuration management platform.
@@ -77,7 +74,6 @@ It consists of a cross-platform command-line shell and associated scripting lang
 %prep
 # Using autosetup is not feasible
 %setup -qn PowerShell-%{version}
-%patch0 -p1
 # Using autosetup is not feasible
 %setup -qcTDa 1 -n PowerShell-Native
 # Using autosetup is not feasible
@@ -150,6 +146,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Mon Nov 15 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.2.0-1
+- Upgrade to version 7.2.0
 * Tue Oct 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 7.1.5-1
 - Upgrade to version 7.1.5
 * Tue Mar 9 2021 Shreyas B <shreyasb@vmware.com> 7.1.2-1
