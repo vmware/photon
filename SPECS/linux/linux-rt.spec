@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.78
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt54
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1076,6 +1076,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Nov 18 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 5.10.78-6
+-   Add vhost and vhost-net drivers in config
 *   Thu Nov 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.78-5
 -   Add PCI quirk to allow multiple devices under the same virtual
 -   PCI bridge to be put into separate IOMMU groups.
