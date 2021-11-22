@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -33,6 +33,7 @@ Patch6:         sync-buf-cache.patch
 Patch7:         wait-for-lock.patch
 
 Requires:       bash
+Requires:       procps-ng
 Requires:       zstd-libs
 Requires:       lua
 Requires:       openssl >= 1.1.1
@@ -311,6 +312,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Mon Nov 22 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-2
+- Add procps-ng to Requires
 * Wed Aug 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-1
 - Bump to version 4.16.1.3
 * Mon Aug 16 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.2-8
