@@ -175,4 +175,3 @@ Subject: rename libdcerpc.so to libsmbdcerpc.so to avoid conflicts with libdcerp
 +	public_deps='RPC_NDR_LSA smbdcerpc',
  	deps='samba-security'
  	)
- 

@@ -1,6 +1,6 @@
 Summary:        Samba Client Programs
 Name:           samba-client
-Version:        4.14.4
+Version:        4.14.10
 Release:        1%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.samba.org
 Source0:        https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
-%define sha1 samba=123281ce6b0049648be3bd4fe7094057526d6340
+%define sha1 samba=ebaf3331c6a8ca296de894968cfbe3beeefc7975
 %define samba_ver %{version}-%{release}
 Source1:        smb.conf.vendor
 
@@ -98,8 +98,7 @@ This package contains the static libraries and header files needed to
 develop programs which make use of the wbclient programming interface.
 
 %prep
-%setup -n samba-%{version}
-%patch1 -p1
+%autosetup -p1 -n samba-%{version}
 
 %build
 echo "^samba4.rpc.echo.*on.*ncacn_np.*with.*object.*nt4_dc" >> selftest/knownfail
@@ -448,6 +447,7 @@ done
 %{_libdir}/samba/libcommon-auth-samba4.so
 %{_libdir}/samba/libdbwrap-samba4.so
 %{_libdir}/samba/libdcerpc-samba-samba4.so
+%{_libdir}/samba/libdcerpc-pkt-auth-samba4.so
 %{_libdir}/samba/libevents-samba4.so
 %{_libdir}/samba/libflag-mapping-samba4.so
 %{_libdir}/samba/libgenrand-samba4.so
@@ -565,6 +565,8 @@ done
 
 
 %changelog
+*   Tue Nov 23 2021 Piyush Gupta <gpiyush@vmware.com> 4.14.10-1
+-   Upgrade to version 4.14.10.
 *   Mon Jun 14 2021 Shreyas B. <shreyasb@vmware.com> 4.14.4-1
 -   Upgrade to version 4.14.4
 *   Fri May 07 2021 Shreyas B. <shreyasb@vmware.com> 4.13.4-2
