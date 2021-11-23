@@ -12,11 +12,11 @@ will be sent to user space.
 This will allow cgw daemon to use this method for detecting and managing
 Fou NAT tunnels, instead of trying to monitor conntrack entries.
 ---
- net/ipv4/ipip.c | 550 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 550 insertions(+)
+ net/ipv4/ipip.c | 548 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 548 insertions(+)
 
 diff --git a/net/ipv4/ipip.c b/net/ipv4/ipip.c
-index 2a15f8883..6c9bcb2e8 100644
+index 358f67cb1..6ab4b7068 100644
 --- a/net/ipv4/ipip.c
 +++ b/net/ipv4/ipip.c
 @@ -106,6 +106,8 @@
@@ -36,7 +36,7 @@ index 2a15f8883..6c9bcb2e8 100644
  #include <net/dst_metadata.h>
  
  static bool log_ecn_error = true;
-@@ -133,6 +133,7 @@ static unsigned int ipip_net_id __read_mostly;
+@@ -135,6 +138,7 @@ static unsigned int ipip_net_id __read_mostly;
  
  static int ipip_tunnel_init(struct net_device *dev);
  static struct rtnl_link_ops ipip_link_ops __read_mostly;
@@ -44,7 +44,7 @@ index 2a15f8883..6c9bcb2e8 100644
  
  static int ipip_err(struct sk_buff *skb, u32 info)
  {
-@@ -296,6 +300,9 @@ static int ipip_tunnel_rcv(struct sk_buff *skb, u8 ipproto)
+@@ -265,6 +269,9 @@ static int ipip_tunnel_rcv(struct sk_buff *skb, u8 ipproto)
  		return ip_tunnel_rcv(tunnel, skb, tpi, tun_dst, log_ecn_error);
  	}
  
@@ -54,7 +54,7 @@ index 2a15f8883..6c9bcb2e8 100644
  	return -1;
  
  drop:
-@@ -303,6 +310,527 @@ drop:
+@@ -272,6 +279,527 @@ static int ipip_tunnel_rcv(struct sk_buff *skb, u8 ipproto)
  	return 0;
  }
  
@@ -582,7 +582,7 @@ index 2a15f8883..6c9bcb2e8 100644
  static int ipip_rcv(struct sk_buff *skb)
  {
  	return ipip_tunnel_rcv(skb, IPPROTO_IPIP);
-@@ -601,6 +1129,7 @@ static int ipip_newlink(struct net *src_net, struct net_device *dev,
+@@ -570,6 +1098,7 @@ static int ipip_newlink(struct net *src_net, struct net_device *dev,
  	ipip_netlink_parms(data, &p, &t->collect_md, &fwmark);
  	if (fou_key_multi_port) {
  		ipip_fou_fixup_key(&p, &ipencap);
@@ -590,7 +590,7 @@ index 2a15f8883..6c9bcb2e8 100644
  	}
  	return ip_tunnel_newlink(dev, tb, &p, fwmark);
  }
-@@ -633,6 +1162,10 @@ static int ipip_changelink(struct net_device *dev, struct nlattr *tb[],
+@@ -602,6 +1131,10 @@ static int ipip_changelink(struct net_device *dev, struct nlattr *tb[],
  	    (!(dev->flags & IFF_POINTOPOINT) && p.iph.daddr))
  		return -EINVAL;
  
@@ -601,16 +601,14 @@ index 2a15f8883..6c9bcb2e8 100644
  	return ip_tunnel_changelink(dev, tb, &p, fwmark);
  }
  
-@@ -793,9 +1326,18 @@ static int __init ipip_init(void)
+@@ -762,9 +1295,16 @@ static int __init ipip_init(void)
  	ipip_sysctl_init();
  #endif
  
-+	if (fou_key_multi_port) {
-+		err = genl_register_family(&fou_unknown_genl_family);
-+		if (err)
-+			goto genl_reg_failed;
-+		mod_timer(&ipip_fou_unk_gc_timer, jiffies + msecs_to_jiffies(1000));
-+	}
++	err = genl_register_family(&fou_unknown_genl_family);
++	if (err)
++		goto genl_reg_failed;
++	mod_timer(&ipip_fou_unk_gc_timer, jiffies + msecs_to_jiffies(1000));
 +
  out:
  	return err;
@@ -620,7 +618,7 @@ index 2a15f8883..6c9bcb2e8 100644
  rtnl_link_failed:
  #if IS_ENABLED(CONFIG_MPLS)
  	xfrm4_tunnel_deregister(&mplsip_handler, AF_MPLS);
-@@ -810,6 +1352,10 @@ xfrm_tunnel_ipip_failed:
+@@ -779,6 +1319,10 @@ static int __init ipip_init(void)
  
  static void __exit ipip_fini(void)
  {
@@ -631,7 +629,7 @@ index 2a15f8883..6c9bcb2e8 100644
  	rtnl_link_unregister(&ipip_link_ops);
  	if (xfrm4_tunnel_deregister(&ipip_handler, AF_INET))
  		pr_info("%s: can't deregister tunnel\n", __func__);
-@@ -818,6 +1364,10 @@ static void __exit ipip_fini(void)
+@@ -787,6 +1331,10 @@ static void __exit ipip_fini(void)
  		pr_info("%s: can't deregister tunnel\n", __func__);
  #endif
  	unregister_pernet_device(&ipip_net_ops);
