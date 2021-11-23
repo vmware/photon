@@ -1,21 +1,16 @@
 %global security_hardening none
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
-Version:        0.15.1
-Release:        2%{?kernelsubrelease}%{?dist}
+Version:        0.30.0
+Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
-URL:            http://www.sysdig.org/falco/
+URL:            https://github.com/falcosecurity/%{name}/archive/refs/tags/%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/draios/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1    falco=7c3cf3eecb04690aa087e7c0bfb642fc567ac7c1
-Source1:        https://github.com/draios/sysdig/archive/sysdig-0.26.0.tar.gz
-%define sha1    sysdig=0104006492afeda870b6b08a5d1f8e76d84559ff
-Source2:        http://libvirt.org/sources/libvirt-2.0.0.tar.xz
-%define sha1    libvirt=9a923b06df23f7a5526e4ec679cdadf4eb35a38f
-Patch0:         falco-CMakeLists.txt.patch
-Patch1:         falco-CVE-2021-33505.patch
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    falco=5e06986ef51fe3223b64482b73fa908db65c31e8
+Patch0:         build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
 BuildArch:      x86_64
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -23,8 +18,6 @@ BuildRequires:  curl-devel
 BuildRequires:  zlib-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  linux-devel = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
-BuildRequires:  libgcrypt
-BuildRequires:  sysdig
 BuildRequires:  jq-devel
 BuildRequires:  git
 BuildRequires:  lua-devel
@@ -40,6 +33,7 @@ BuildRequires:  dkms
 BuildRequires:  xz-devel
 BuildRequires:  jq
 %endif
+Requires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 Requires:       zlib
 Requires:       ncurses
 Requires:       openssl
@@ -53,41 +47,30 @@ Requires:       jq
 Requires:       protobuf
 Requires:       c-ares
 
+%define uname_r %{KERNEL_VERSION}-%{KERNEL_RELEASE}
+
 %description
 Sysdig falco is an open source, behavioral activity monitor designed to detect anomalous activity in your applications. Falco lets you continuously monitor and detect container, application, host, and network activity... all in one place, from one source of data, with one set of customizable rules.
 
 %prep
-%setup
-%setup -T -D -a 1
-tar xf %{SOURCE2} --no-same-owner
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
 
 %build
-mv sysdig-0.26.0 ../sysdig
-sed -i 's|../falco/rules|rules|g' userspace/engine/CMakeLists.txt
-sed -i 's|../falco/userspace|userspace|g' userspace/engine/config_falco_engine.h.in
-sed -i '/#include <stdlib.h>/a #include<sys/sysmacros.h>' ../sysdig/userspace/libscap/scap_fds.c
-sed -i '/"${B64_LIB}"/a      "${CURL_LIBRARIES}"' ../sysdig/userspace/libsinsp/CMakeLists.txt
-sed -i 's+OPENSSL=../../openssl-prefix/src/openssl/target/bin/openssl+OPENSSL=/usr/bin/openssl+g' userspace/falco/verify_engine_fields.sh
-cmake \
-    -DCMAKE_INSTALL_PREFIX=%{_prefix} \
-    -DUSE_BUNDLED_OPENSSL=OFF \
-    -DUSE_BUNDLED_CURL=OFF \
-    -DUSE_BUNDLED_JQ=OFF \
-    -DUSE_BUNDLED_GRPC=OFF \
-    -DUSE_BUNDLED_ZLIB=OFF \
-    -DUSE_BUNDLED_CARES=OFF \
-    -DUSE_BUNDLED_PROTOBUF=OFF \
-    -DUSE_BUNDLED_NCURSES=OFF \
-    -DUSE_BUNDLED_LIBYAML=OFF \
-    CMakeLists.txt
-make KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build"
+mkdir build
+cd build
+%{cmake} \
+    -DUSE_BUNDLED_DEPS:BOOL=OFF \
+    -DUSE_BUNDLED_OPENSSL:BOOL=OFF \
+    -DUSE_BUNDLED_JQ:BOOL=OFF \
+    -DUSE_BUNDLED_YAMLCPP:BOOL=ON \
+    ..
+make %{?_smp_mflags} all KERNELDIR="/lib/modules/%{uname_r}/build"
 
 %install
-make install KERNELDIR="/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/build" DESTDIR=%{buildroot}
-mkdir -p %{buildroot}/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra
-mv driver/falco-probe.ko %{buildroot}/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra
+cd build
+make install DESTDIR=%{buildroot} KERNELDIR="/lib/modules/%{uname_r}/build" %{?_smp_mflags}
+mkdir -p %{buildroot}/lib/modules/%{uname_r}/extra
+install -vm 644 driver/falco.ko %{buildroot}/lib/modules/%{uname_r}/extra
 
 #falco requires docker instance and dpkg to pass make check.
 #%check
@@ -106,9 +89,9 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_bindir}/*
 %exclude %{_usrsrc}
-%{_sysconfdir}/*
-%{_datadir}/*
-/lib/modules/%{KERNEL_VERSION}-%{KERNEL_RELEASE}/extra/falco-probe.ko
+%{_sysconfdir}/falco
+%{_datadir}/falco
+/lib/modules/%{uname_r}/extra/falco.ko
 
 %post
 /sbin/depmod -a
@@ -117,6 +100,9 @@ rm -rf %{buildroot}/*
 /sbin/depmod -a
 
 %changelog
+*   Tue Nov 23 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 0.30.0-1
+-   Update to version 0.30.0.
+-   Add missing runtime dependency on linux.
 *   Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 0.15.1-2
 -   Patched to fix CVE-2021-33505
 *   Wed Jun 26 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 0.15.1-1
