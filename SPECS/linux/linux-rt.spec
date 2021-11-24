@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.214
+Version:        4.19.217
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt92
-Release:        3%{?kat_build:.%kat}%{?dist}
+%define rt_version rt95
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=0e29837f0d1ce72085e5ee9225927683f2e44ee1
+%define sha1 linux=4940fcd7c99f012ef1af731d03a9b3c83b2bc113
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
@@ -448,8 +448,10 @@ Patch536:       0336-mm-slub-Don-t-resize-the-location-tracking-cache-on-.patch
 Patch537:       0337-locking-rwsem_rt-Add-__down_read_interruptible.patch
 Patch538:       0338-Linux-4.19.206-rt87-REBASE.patch
 Patch539:       0339-locking-rwsem-rt-Remove-might_sleep-in-__up_read.patch
+Patch540:       0340-Linux-4.19.214-rt93-REBASE.patch
+Patch541:       0341-fscache-fix-initialisation-of-cookie-hash-table-raw-.patch
 # Keep rt_version matched up with this patch.
-Patch540:       0340-Linux-4.19.212-rt92-REBASE.patch
+Patch542:       0342-Linux-4.19.217-rt95-REBASE.patch
 
 #Photon Specific Changes
 Patch600:        0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
@@ -951,6 +953,8 @@ The Linux package contains the Linux kernel doc files
 %patch538 -p1
 %patch539 -p1
 %patch540 -p1
+%patch541 -p1
+%patch542 -p1
 %patch600 -p1
 %patch601 -p1
 %patch602 -p1
@@ -1177,6 +1181,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Nov 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.217-1
+-   Update to version 4.19.217
 *   Thu Nov 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.214-3
 -   .config: Enable CONFIG_INTEL_RDT
 *   Fri Oct 29 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.214-2
