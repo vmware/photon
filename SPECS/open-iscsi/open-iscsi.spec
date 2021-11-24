@@ -1,7 +1,7 @@
 Summary:        iSCSI tools for Linux
 Name:           open-iscsi
 Version:        2.1.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            https://github.com/open-iscsi/open-iscsi
 Group:          Applications/System
@@ -32,14 +32,14 @@ Requires: %{name} = %{version}-%{release}
 Header files for doing development with open-iscsi.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 sed -i 's/lib64/lib/g' libopeniscsiusr/Makefile
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -d %{buildroot}%{_unitdir}
 install -pm 644 etc/systemd/iscsi.service %{buildroot}%{_unitdir}
 install -pm 644 etc/systemd/iscsid.service %{buildroot}%{_unitdir}
@@ -89,5 +89,7 @@ install -pm 644 etc/systemd/iscsiuio.socket %{buildroot}%{_unitdir}
 %{_libdir}/pkgconfig/libopeniscsiusr.pc
 
 %changelog
+* Wed Nov 24 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.1.3-2
+- increment for openssl 3.0.0 compatibility
 * Tue Feb 16 2021 Susant Sahani <ssahani@vmware.com> 2.1.3-1
 - Initial version.
