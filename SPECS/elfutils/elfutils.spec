@@ -4,7 +4,7 @@
 Summary:    A collection of utilities and DSOs to handle compiled objects
 Name:       elfutils
 Version:    0.181
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    GPLv3+ and (GPLv2+ or LGPLv3+)
 Group:      Development/Tools
 URL:        https://sourceware.org/elfutils
@@ -35,6 +35,7 @@ BuildRequires:  libmicrohttpd-devel
 BuildRequires:  curl-devel
 BuildRequires:  libarchive-devel
 BuildRequires:  sqlite-devel
+BuildRequires:  zstd-devel
 
 %description
 Elfutils is a collection of utilities, including ld (a linker),
@@ -204,6 +205,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 
 %changelog
+* Fri Jul 08 2022 Harinadh D <hdommaraju@vmware.com> 0.181-6
+- Add zstd as build requires to fix build error
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.181-5
 - Bump version as a part of sqlite upgrade
 * Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 0.181-4

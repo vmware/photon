@@ -1,14 +1,14 @@
 Summary:        Fast lossless compression algorithm
 Name:           zstd
-Version:        1.4.5
-Release:        2%{?dist}
+Version:        1.5.2
+Release:        1%{?dist}
 License:        BSD and GPLv2
 URL:            https://github.com/facebook/zstd
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/facebook/zstd/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=9c344c2660c990b6d6a9cced73db3a0dfe2b0092
+%define sha512  %{name}-%{version}=e107508a41fca50845cc2494e64adaba93efb95a2fa486fc962510a8ba4b2180d93067cae9870f119e88e5e8b28a046bc2240b0b23cdd8933d1fb1a6a9668c1e
 Requires:       zstd-libs = %{version}-%{release}
 
 %description
@@ -36,17 +36,16 @@ This package contains the headers necessary for building against the zstd
 library, libzstd.
 
 %prep
-%setup -q
-find -name .gitignore -delete
+%autosetup -p1 -n %{name}-%{version}
 
 %build
-make %{?_smp_mflags}
+%make_build
 
 %install
-make DESTDIR=%{buildroot} install PREFIX=%{_prefix} LIBDIR=%{_libdir}
+%make_install PREFIX=%{_prefix}
 
 %check
-make check
+make %{?_smp_mflags} check
 
 %post -n zstd-libs -p /sbin/ldconfig
 %postun -n zstd-libs -p /sbin/ldconfig
@@ -73,7 +72,6 @@ make check
 
 %files devel
 %defattr(-,root,root,-)
-%{_includedir}/zbuff.h
 %{_includedir}/zdict.h
 %{_includedir}/zstd.h
 %{_includedir}/zstd_errors.h
@@ -82,6 +80,8 @@ make check
 %exclude %{_libdir}/libzstd.a
 
 %changelog
+*   Wed Jul 20 2022 Harinadh D <hdommaraju@vmware.com> 1.5.2-1
+-   Fix CVE-2021-24032 and version update
 *   Thu Oct 15 2020 Anisha Kumari <kanisha@vmware.com> 1.4.5-2
 -   Added package libs for zstd and files.
 *   Mon Sep 07 2020 Ankit Jain <ankitja@vmware.com> 1.4.5-1

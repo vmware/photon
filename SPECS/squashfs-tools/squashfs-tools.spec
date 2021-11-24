@@ -1,7 +1,7 @@
 Summary:        Utilities for managing the SQUASHFS filesystem
 Name:           squashfs-tools
 Version:        4.5.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GNU GPLv2
 URL:            https://github.com/plougher/squashfs-tools/
 Group:          System Environment/Base
@@ -48,6 +48,8 @@ make INSTALL_DIR=%{buildroot}%{_bindir} %{?_smp_mflags} install
 %{_bindir}/unsquashfs
 
 %changelog
+* Wed Jun 15 2022 Harinadh D <hdommaraju@vmware.com> 4.5.1-3
+- version bump with zstd
 * Fri May 13 2022 Alexey Makhalov <amakhalov@vmware.com> 4.5.1-2
 - Support xz, lzma, lz4, lzo
 * Tue Mar 22 2022 Shivani Agarwal <shivania2@vmware.com> 4.5.1-1

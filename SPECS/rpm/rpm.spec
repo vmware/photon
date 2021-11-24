@@ -3,7 +3,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -326,6 +326,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Wed Jun 22 2022 Harinadh D <hdommaraju@vmware.com> 4.16.1.3-11
+- version bump with zstd
 * Tue Jun 21 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-10
 - Bump version as a part of sqlite upgrade
 - Add latest perl rpm macros

@@ -1,7 +1,7 @@
 Summary:    Multi-format archive and compression library
 Name:       libarchive
 Version:    3.4.3
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    BSD 2-Clause License
 URL:        http://www.libarchive.org/
 Group:      System Environment/Development
@@ -9,7 +9,7 @@ Vendor:     VMware, Inc.
 Distribution:   Photon
 
 Source0:    http://www.libarchive.org/downloads/%{name}-%{version}.tar.gz
-%define sha1 %{name}=6528f38fa03a44bfcf58435ec8512ffea2851c99
+%define sha512 %{name}=d00167dec6e65a0b17b46a1e3bb0242d85716dbc637afd233360cb515b2750dafe0ff0644b9e01ad23534340b405a8551f496c5e39fba9ee99355a515580d65d
 
 BuildRequires:  xz-libs
 BuildRequires:  xz-devel
@@ -64,6 +64,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Jun 15 2022 Harinadh D <hdommaraju@vmware.com> 3.4.3-6
+- Version bump up with zstd
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.4.3-5
 - Exclude debug symbols properly
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.4.3-4

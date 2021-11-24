@@ -1,16 +1,14 @@
 Name:            drpm
 Summary:         A library for making, reading and applying deltarpm packages
 Version:         0.5.0
-Release:         5%{?dist}
+Release:         6%{?dist}
 License:         LGPLv2+ and BSD
 URL:             https://github.com/rpm-software-management/%{name}
 Vendor:          VMware, Inc.
 Distribution:    Photon
 Group:           System Environment/Base
-
 Source0: https://github.com/rpm-software-management/drpm/releases/download/0.5.0/drpm-%{version}.tar.bz2
 %define sha512 %{name}=9b622de94067e18e5238b67678f746632751ac03a29dd584e7cab3d024a9b9e8f7f1ee80503147614493cf4928eba183bbdc1086c71d4433996b2b9475341cdb
-
 BuildRequires:   cmake
 BuildRequires:   gcc
 BuildRequires:   rpm-devel
@@ -20,7 +18,6 @@ BuildRequires:   bzip2-devel
 BuildRequires:   xz-devel
 BuildRequires:   cmocka-devel
 BuildRequires:   pkg-config
-
 Requires: rpm-libs
 Requires: cmocka
 Requires: openssl
@@ -73,6 +70,8 @@ ctest -VV
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Tue Aug 16 2022 Harinadh D <hdommaraju@vmware.com> 0.5.0-6
+- Version bump to use latest zstd
 * Mon Aug 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.5.0-5
 - Fix cmocka dependecy
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.5.0-4
