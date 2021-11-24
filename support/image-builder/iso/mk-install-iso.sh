@@ -78,6 +78,8 @@ echo "photon-installer" > $INITRD/etc/hostname
 # Importing the pubkey (photon-repos required)
 #chroot ${INITRD} rpm --import /etc/pki/rpm-gpg/*
 
+rm -rf ${INITRD}/var/cache/tdnf
+
 # Move entire /boot from initrd to ISO
 mv ${INITRD}/boot ${WORKINGDIR}/
 

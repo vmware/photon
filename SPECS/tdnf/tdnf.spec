@@ -1,7 +1,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.1.5
-Release:        4%{?dist}
+Version:        3.2.2
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -9,15 +9,13 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=48bc98b57a50a580a56d00988bf3955be5d749a4
-
+%define sha1    %{name}=0b6f7672e62e294190bcfdadbbc1717350030339
 Patch0:         pool_flag_noinstalledobsoletes.patch
-Patch1:         0001-openssl-3.0.0-compatibility.patch
 
 Requires:       rpm-libs >= 4.16.1.3-1
 Requires:       curl-libs
 Requires:       tdnf-cli-libs = %{version}-%{release}
-Requires:       libsolv
+Requires:       libsolv >= 0.7.19
 Requires:       libmetalink
 
 BuildRequires:  popt-devel
@@ -32,7 +30,7 @@ BuildRequires:  gpgme-devel
 BuildRequires:  cmake
 BuildRequires:  python3-devel
 
-%if %{with_check}
+%if 0%{?with_check:1}
 BuildRequires:  createrepo_c
 BuildRequires:  glib
 BuildRequires:  libxml2
@@ -88,7 +86,7 @@ Requires:  %{name} = %{version}-%{release}
 Systemd units that can periodically download package upgrades and apply them.
 
 %prep
-%autosetup -n %{name}-%{version} -p1
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 mkdir build && cd build
@@ -100,7 +98,9 @@ cmake \
 make %{?_smp_mflags} && make python
 
 %check
+%if 0%{?with_check:1}
 cd build && make %{?_smp_mflags} check
+%endif
 
 %install
 cd build && make DESTDIR=%{buildroot} install
@@ -243,6 +243,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
 
 %changelog
+* Fri Dec 10 2021 Oliver Kurth <okurth@vmware.com> 3.2.2-1
+- update to 3.2.2
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.1.5-4
 - Bump up to compile with python 3.10
 * Mon Nov 15 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.1.5-3

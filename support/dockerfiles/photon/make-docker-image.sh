@@ -83,7 +83,9 @@ rm -rf var/log/*
 # set TERM to linux due to stripped terminfo
 echo "export TERM=linux" >> etc/bash.bashrc
 
-#find var/cache/tdnf/photon/rpms -type f -name "*.rpm" -exec rm {} \;
+# clean up tdnf metadata
+rm -rf var/cache/tdnf/
+
 tar cpzf ../$ROOTFS_TAR_FILENAME .
 popd
 
