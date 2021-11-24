@@ -1,19 +1,16 @@
 %global security_hardening none
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
-Version:        0.25.0
-Release:        5%{?kernelsubrelease}%{?dist}
+Version:        0.30.0
+Release:        1%{?kernelsubrelease}%{?dist}
 License:        GPLv2
-URL:            http://www.sysdig.org/falco/
+URL:            https://github.com/falcosecurity/%{name}/archive/refs/tags/%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        https://github.com/draios/%{name}/archive/%{name}-%{version}.tar.gz
-%define sha1    falco=66ae16a08fc2c965580996473cd4d0d75fd31545
-Source1:        libb64-Fix-Makefile-dependency-for-parallel-make.patch
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    falco=5e06986ef51fe3223b64482b73fa908db65c31e8
 Patch0:         build-Distinguish-yamlcpp-in-USE_BUNDLED-macro.patch
-Patch1:         build-fix-libb64-make-errors-during-parallel-make.patch
-Patch2:         falco-CVE-2021-33505.patch
 BuildArch:      x86_64
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -36,6 +33,7 @@ BuildRequires:  dkms
 BuildRequires:  xz-devel
 BuildRequires:  jq
 %endif
+Requires:       linux = %{KERNEL_VERSION}-%{KERNEL_RELEASE}
 Requires:       zlib
 Requires:       ncurses
 Requires:       openssl
@@ -55,13 +53,7 @@ Requires:       c-ares
 Sysdig falco is an open source, behavioral activity monitor designed to detect anomalous activity in your applications. Falco lets you continuously monitor and detect container, application, host, and network activity... all in one place, from one source of data, with one set of customizable rules.
 
 %prep
-# Using autosetup is not feasible
-%setup
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-mkdir patch
-cp %{SOURCE1} patch/
+%autosetup -p1
 
 %build
 mkdir build
@@ -108,6 +100,9 @@ rm -rf %{buildroot}/*
 /sbin/depmod -a
 
 %changelog
+*   Tue Nov 23 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 0.30.0-1
+-   Update to version 0.30.0.
+-   Add missing runtime dependency on linux.
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.25.0-5
 -   compile with openssl 3.0.0
 *   Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 0.25.0-4
