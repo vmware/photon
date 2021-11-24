@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.78
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -110,6 +110,8 @@ Patch64:        initramfs-multiple-image-extraction-support.patch
 Patch65:        initramfs-support-selective-freeing-of-initramfs-images.patch
 Patch66:        initramfs-large-files-support-for-newca-format.patch
 
+#TARFS
+Patch67:	0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -269,6 +271,7 @@ The Linux package contains the Linux kernel doc files
 %patch64 -p1
 %patch65 -p1
 %patch66 -p1
+%patch67 -p1
 
 # CVE
 %patch100 -p1
@@ -487,6 +490,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Nov 23 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.78-5
+-   tarfs: A new readonly filesystem to mount tar archive
 *   Fri Nov 19 2021 Keerthana K <keerthanak@vmware.com> 5.10.78-4
 -   Remove vmci and vmw_balloon patches
 -   Update Hypervisor detection patch with review comments addressed
