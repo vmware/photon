@@ -1,23 +1,15 @@
 %global debug_package %{nil}
 Summary:    Photon OS Installer
 Name:       photon-os-installer
-Version:    1.0
-Release:    7%{?dist}
+Version:    2.0
+Release:    1%{?dist}
 License:    Apache 2.0 and GPL 2.0
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 Distribution:   Photon
 URL:        https://github.com/vmware/photon-os-installer
 Source0:    %{name}-%{version}.tar.gz
-%define sha1 %{name}=cc86d22b7ef8495164fec1fb7d96bb97a2fb82c6
-Patch0:     support_insecure_installation.patch
-Patch1:     insecure_randomness.patch
-Patch2:     list_block_devices.patch
-Patch3:     releasever_tdnf_install.patch
-Patch4:     0001-ostree-release-repo-Point-to-4.0.patch
-Patch5:     ostreeserverselector.patch
-Patch6:     add_version_with_git_commit_hash.patch
-Patch7:     ITS_terminology_fix.patch
+%define sha1 %{name}=0f1164e8eef1fa76990346f22d281e36964404f5
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
 BuildRequires: python3-requests
@@ -47,6 +39,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-installer
 
 %changelog
+*   Wed Nov 24 2021 Piyush Gupta <gpiyush@vmware.com> 2.0-1
+-   Upgrade to 2.0.
 *   Tue Aug 17 2021 Piyush Gupta <gpiyush@vmware.com> 1.0-7
 -   Fix <Go Back> option in ostree server selector screen.
 -   Patch to add git commit hash along with version.
