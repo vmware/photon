@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.219
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -78,6 +78,10 @@ Patch61:        0005-ovl-check-permission-to-open-real-file.patch
 # Fix for CVE-2019-19770
 Patch62:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch63:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
+
+#Fix for CVE-2020-36385
+Patch64:        0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
+Patch65:        0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
@@ -248,6 +252,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch61 -p1
 %patch62 -p1
 %patch63 -p1
+%patch64 -p1
+%patch65 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -486,6 +492,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Dec 14 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.219-2
+-   Fix for CVE-2020-36385
 *   Wed Dec 08 2021 srinidhira0 <srinidhir@vmware.com> 4.19.219-1
 -   Update to version 4.19.219
 *   Wed Nov 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.217-1

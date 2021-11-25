@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.219
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -87,6 +87,10 @@ Patch45:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 # Fix for CVE-2019-19770
 Patch46:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch47:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
+
+#Fix for CVE-2020-36385
+Patch48:        0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
+Patch49:        0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
 # 9p patches
 Patch54:        0001-fs-9p-Add-opt_metaonly-option.patch
@@ -481,6 +485,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch45 -p1
 %patch46 -p1
 %patch47 -p1
+%patch48 -p1
+%patch49 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -930,6 +936,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Dec 14 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.219-3
+-   Fix for CVE-2020-36385
 *   Fri Dec 10 2021 Ankit Jain <ankitja@vmware.com> 4.19.219-2
 -   tarfs: Fix binary execution issue
 *   Wed Dec 08 2021 srinidhira0 <srinidhir@vmware.com> 4.19.219-1
