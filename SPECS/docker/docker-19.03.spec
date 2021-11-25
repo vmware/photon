@@ -1,33 +1,38 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
+
+# Must be in sync with package version
+%define DOCKER_GITCOMMIT 99e3ed8
+%define TINI_GITCOMMIT fec3683
+%define gopath_comp_engine github.com/docker/docker
+%define gopath_comp_cli github.com/docker/cli
+%define gopath_comp_libnetwork github.com/docker/libnetwork
+
 Summary:        Docker
 Name:           docker
 Version:        19.03.15
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/docker/docker-ce/archive/%{name}-%{version}.tar.gz
-%define sha1 docker=fc0263bef5a47b1b4db2c0fc4eca7d4b294f008e
-# Must be in sync with package version
-%define DOCKER_GITCOMMIT 99e3ed8
-%define TINI_GITCOMMIT fec3683
+%define sha1 %{name}=fc0263bef5a47b1b4db2c0fc4eca7d4b294f008e
+
 Source1:        https://github.com/krallin/tini/archive/tini-fec3683.tar.gz
 %define sha1 tini=f7cc697bf7483fbc963c8331ab433d0758b766e9
+
 Source2:        https://github.com/docker/libnetwork/archive/libnetwork-2fe6352.tar.gz
 %define sha1 libnetwork=7c47626d5870a05a7e5135752adc9b3c83775297
 
-%define gopath_comp_engine github.com/docker/docker
-%define gopath_comp_cli github.com/docker/cli
-%define gopath_comp_libnetwork github.com/docker/libnetwork
+Source3:       default-disable.preset
 
-Source99:       default-disable.preset
-Patch99:        remove-firewalld-1809.patch
-Patch98:        disable-docker-cli-md2man-install.patch
-Patch97:        tini-disable-git.patch
-Patch100:       CVE-2021-41089.patch
+Patch0:     tini-disable-git.patch
+Patch1:     disable-docker-cli-md2man-install.patch
+Patch2:     remove-firewalld-1809.patch
+Patch3:     CVE-2021-41089.patch
 
 BuildRequires:  systemd
 BuildRequires:  systemd-devel
@@ -45,6 +50,7 @@ BuildRequires:  sed
 BuildRequires:  jq
 BuildRequires:  libapparmor
 BuildRequires:  libapparmor-devel
+
 Requires:       docker-engine = %{version}-%{release}
 Requires:       docker-cli = %{version}-%{release}
 # bash completion uses awk
@@ -56,7 +62,7 @@ Docker is an open source project to build, ship and run any application as a lig
 %package        engine
 Summary:        Docker Engine
 Requires:       libapparmor
-Requires:       libseccomp
+Requires:       libseccomp >= 2.4.0
 Requires:       libltdl
 Requires:       device-mapper-libs
 Requires:       systemd
@@ -85,28 +91,28 @@ Documentation and vimfiles for docker
 %prep
 # Using autosetup is not feasible
 %setup -q -c
-mkdir -p "$(dirname "src/%{gopath_comp_engine}")"
-mkdir -p "$(dirname "src/%{gopath_comp_cli}")"
-mkdir -p "src/%{gopath_comp_libnetwork}"
-mkdir tini
-mkdir bin
+mkdir -p "$(dirname "src/%{gopath_comp_engine}")" \
+          "$(dirname "src/%{gopath_comp_cli}")" \
+          "src/%{gopath_comp_libnetwork}" \
+          tini bin
+
 tar -C tini -xf %{SOURCE1}
-cd tini
-%patch97 -p1
-cd -
+pushd tini
+%patch0 -p1
+popd
+
 tar -C src/%{gopath_comp_libnetwork} -xf %{SOURCE2}
-cd %{name}-ce-%{version}
-%patch99 -p1
-%patch98 -p1
-#CVE patches
-%patch100 -p1
+pushd %{name}-ce-%{version}
+%patch1 -p1
+%patch2 -p1
+%patch3 -p1
 mv components/engine ../src/%{gopath_comp_engine}
 mv components/cli ../src/%{gopath_comp_cli}
 mv components/packaging ../
+popd
 
 %build
-export GOPATH="$(pwd)"
-export GO111MODULE=auto
+export GOPATH="$(pwd)" GO111MODULE=auto
 CONTAINERD_MIN_VER="1.2.0-beta.1"
 BUILDTIME="$(date -u --rfc-3339 ns | sed -e 's/ /T/')"
 PLATFORM="Docker Engine - Community"
@@ -120,7 +126,7 @@ pushd "src/%{gopath_comp_cli}"
   BUILDTIME="$BUILDTIME" \
   PLATFORM="$PLATFORM" \
   GITCOMMIT=%{DOCKER_GITCOMMIT} \
-  make dynbinary manpages
+  make dynbinary manpages %{?_smp_mflags}
 popd
 
 # Don't use trimpath for now, see https://github.com/golang/go/issues/16860
@@ -150,7 +156,7 @@ pushd tini
   cmake \
     -Dtini_VERSION_GIT:STRING=%{TINI_GITCOMMIT} \
     -Dgit_version_check_ret=0 \
-    . && make tini-static && cp tini-static "$GOPATH/bin/docker-init"
+    . && make tini-static %{?_smp_mflags} && cp tini-static "$GOPATH/bin/docker-init"
 popd
 
 jq -n \
@@ -215,7 +221,7 @@ for cli_file in AUTHORS LICENSE MAINTAINERS NOTICE README.md; do
     cp "src/%{gopath_comp_cli}/$cli_file" "build-docs/cli-$cli_file"
 done
 
-install -v -D -m 0644 %{SOURCE99} %{buildroot}%{_presetdir}/50-docker.preset
+install -v -D -m 0644 %{SOURCE3} %{buildroot}%{_presetdir}/50-docker.preset
 
 %pre engine
 if [ $1 -gt 0 ] ; then
@@ -292,32 +298,34 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 19.03.15-10
--   Bump up version to compile with new go
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 19.03.15-9
--   Bump up version to compile with new go
-*   Thu Sep 30 2021 Bo Gan <ganb@vmware.com> 19.03.15-8
--   Fix CVE-2021-41089
-*   Thu Aug 26 2021 Keerthana K <keerthanak@vmware.com> 19.03.15-7
--   Bump up version to compile with new glibc
-*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 19.03.15-6
--   Bump up version to compile with new go
-*   Sat Jul 31 2021 Piyush Gupta <gpiyush@vmware.com> 19.03.15-5
--   Added Requires(post) groupadd and Requires(postun) groupdel
--   in docker-engine.
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 19.03.15-4
--   Bump up version to compile with new go
-*   Tue May 18 2021 Piyush Gupta<gpiyush@vmware.com> 19.03.15-3
--   Bump up version to compile with new go
-*   Mon May 10 2021 Bo Gan <ganb@vmware.com> 19.03.15-2
--   Relax containerd dependency
-*   Thu Apr 22 2021 Ankit Jain <ankitja@vmware.com> 19.03.15-1
--   Update to 19.03.15
-*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 19.03.10-4
--   Bump up version to compile with new go
-*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 19.03.10-3
--   Bump up version to compile with new go
-*   Mon Jun 15 2020 Alexey Makhalov <amakhalov@vmware.com> 19.03.10-2
--   Requires: gawk
-*   Fri May 29 2020 Ashwin H <ashwinh@vmware.com> 19.03.10-1
--   Initial version
+* Thu Nov 25 2021 Shreenidhi Shedi <sshedi@vmware.com> 19.03.15-11
+- Depend on libseccomp >= 2.4.0
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 19.03.15-10
+- Bump up version to compile with new go
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 19.03.15-9
+- Bump up version to compile with new go
+* Thu Sep 30 2021 Bo Gan <ganb@vmware.com> 19.03.15-8
+- Fix CVE-2021-41089
+* Thu Aug 26 2021 Keerthana K <keerthanak@vmware.com> 19.03.15-7
+- Bump up version to compile with new glibc
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 19.03.15-6
+- Bump up version to compile with new go
+* Sat Jul 31 2021 Piyush Gupta <gpiyush@vmware.com> 19.03.15-5
+- Added Requires(post) groupadd and Requires(postun) groupdel
+- in docker-engine.
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 19.03.15-4
+- Bump up version to compile with new go
+* Tue May 18 2021 Piyush Gupta<gpiyush@vmware.com> 19.03.15-3
+- Bump up version to compile with new go
+* Mon May 10 2021 Bo Gan <ganb@vmware.com> 19.03.15-2
+- Relax containerd dependency
+* Thu Apr 22 2021 Ankit Jain <ankitja@vmware.com> 19.03.15-1
+- Update to 19.03.15
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 19.03.10-4
+- Bump up version to compile with new go
+* Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 19.03.10-3
+- Bump up version to compile with new go
+* Mon Jun 15 2020 Alexey Makhalov <amakhalov@vmware.com> 19.03.10-2
+- Requires: gawk
+* Fri May 29 2020 Ashwin H <ashwinh@vmware.com> 19.03.10-1
+- Initial version
