@@ -4,7 +4,7 @@
 Summary:        Usermode tools for VMware virts
 Name:           open-vm-tools
 Version:        11.3.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/vmware/open-vm-tools
 Group:          Applications/System
@@ -21,6 +21,11 @@ Source3:        vgauthd.service
 # If patch is taken from open-vm-tools repo, prefix it with 'ovt-'
 # If patch is taken from gosc-scripts repo, prefix it with 'gosc-'
 Patch0:     ovt-linux-deployment.patch
+
+%if "%{_arch}" == "aarch64"
+# TODO: This must be removed once VMCI config is enabled in aarch64 kernel
+Patch1:     ovt-unknown-ioctl.patch
+%endif
 
 BuildRequires:  glib-devel
 BuildRequires:  libxml2-devel
@@ -170,6 +175,8 @@ fi
 %{_datadir}/%{name}/%{gosc_scripts}
 
 %changelog
+* Fri Nov 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.5-4
+- Workaround for "Unknown ioctl 1976" issue on aarch64
 * Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 11.3.5-3
 - Bump up release for openssl
 * Thu Oct 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.3.5-2
