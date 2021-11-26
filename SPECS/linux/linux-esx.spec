@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.219
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -382,6 +382,9 @@ Patch520:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 # TARFS
 Patch521:        0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch522:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
 # Patches for i40e driver
 Patch801:        0001-Add-support-for-gettimex64-interface.patch
 
@@ -740,6 +743,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch519 -p1
 %patch520 -p1
 %patch521 -p1
+%patch522 -p1
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -942,6 +946,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Jan 03 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.219-7
+-   Disable md5 algorithm for sctp if fips is enabled.
 *   Thu Dec 23 2021 Keerthana K <keerthanak@vmware.com> 4.19.219-6
 -   FIPS: Fix module signing of crypto modules
 -   Enable AESNI INTEL kernel configs

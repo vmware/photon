@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.219
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt95
-Release:        4%{?kat_build:.%kat}%{?dist}
+Release:        5%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -504,6 +504,9 @@ Patch628:       0003-fuse-fix-bad-inode.patch
 #fix for CVE-2021-28950
 Patch629:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch630:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
 %if 0%{?kat_build:1}
 Patch1000:       fips-kat-tests.patch
 %endif
@@ -996,6 +999,7 @@ The Linux package contains the Linux kernel doc files
 %patch627 -p1
 %patch628 -p1
 %patch629 -p1
+%patch630 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -1193,6 +1197,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Mon Jan 03 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.219-5
+-   Disable md5 algorithm for sctp if fips is enabled.
 *   Mon Dec 20 2021 Harinadh D <hdommaraju@vmware.com> 4.19.219-4
 -   remove lvm in add-drivers list
 -   lvm drivers are built as part of dm-mod

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.219
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -166,6 +166,9 @@ Patch186:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 # Next 2 patches are about to be merged into stable
 Patch187:       0001-mm-fix-panic-in-__alloc_pages.patch
 Patch188:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
+
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch189:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
@@ -339,6 +342,7 @@ popd
 %patch186 -p1
 %patch187 -p1
 %patch188 -p1
+%patch189 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -492,6 +496,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Jan 03 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.219-5
+-   Disable md5 algorithm for sctp if fips is enabled.
 *   Mon Dec 20 2021 Harinadh D <hdommaraju@vmware.com> 4.19.219-4
 -   remove lvm in add-drivers list
 -   lvm drivers are built as part of dm-mod module

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.219
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -140,6 +140,9 @@ Patch155:       0003-fuse-fix-bad-inode.patch
 
 #fix for CVE-2021-28950
 Patch156:       0001-fuse-fix-live-lock-in-fuse_iget.patch
+
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch157:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	fips-kat-tests.patch
@@ -302,6 +305,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch154 -p1
 %patch155 -p1
 %patch156 -p1
+%patch157 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -492,6 +496,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Dec 17 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.219-3
+-   Disable md5 algorithm for sctp if fips is enabled.
 *   Tue Dec 14 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.219-2
 -   Fix for CVE-2020-36385
 *   Wed Dec 08 2021 srinidhira0 <srinidhir@vmware.com> 4.19.219-1

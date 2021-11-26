@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.219
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -413,6 +413,9 @@ Patch504:       0003-fuse-fix-bad-inode.patch
 
 #fix for CVE-2021-28950
 Patch505:       0001-fuse-fix-live-lock-in-fuse_iget.patch
+
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch506:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 #Patches for i40e driver
 Patch1500:      0001-Add-support-for-gettimex64-interface.patch
@@ -883,6 +886,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch503 -p1
 %patch504 -p1
 %patch505 -p1
+%patch506 -p1
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -1260,6 +1264,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Mon Jan 03 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.219-5
+-   Disable md5 algorithm for sctp if fips is enabled.
 *   Mon Dec 20 2021 srinidhira0 <srinidhir@vmware.com> 4.19.219-4
 -   remove lvm ,nvme and nvme-core in add-drivers list
 -   lvm drivers are built as part of dm-mod
