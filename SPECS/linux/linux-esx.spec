@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.83
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -92,6 +92,9 @@ Patch66:        initramfs-large-files-support-for-newca-format.patch
 
 #TARFS
 Patch67:	0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
+
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch68:        0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -242,6 +245,7 @@ The Linux package contains the Linux kernel doc files
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
+%patch68 -p1
 
 # CVE
 %patch100 -p1
@@ -449,6 +453,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Dec 17 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.83-4
+-   Disable md5 algorithm for sctp if fips is enabled.
 *   Tue Dec 14 2021 Harinadh D <hdommaraju@vmware.com> 5.10.83-3
 -   remove lvm in add-drivers list
 -   lvm drivers are built as part of dm-mod

@@ -7,7 +7,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.83
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -49,6 +49,9 @@ Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 # VMW:
 Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
 Patch56:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
+
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch57:        0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -185,6 +188,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 # VMW
 %patch55 -p1
 %patch56 -p1
+
+%patch57 -p1
 
 # CVE
 %patch100 -p1
@@ -392,6 +397,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Dec 17 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.83-4
+-   Disable md5 algorithm for sctp if fips is enabled.
 *   Tue Dec 14 2021 Harinadh D <hdommaraju@vmware.com> 5.10.83-3
 -   remove tmem from add-drivers list
 -   tmem module is no longer exist

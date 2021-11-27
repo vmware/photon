@@ -19,7 +19,7 @@ Name:           linux-rt
 Version:        5.10.83
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt58
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -428,6 +428,9 @@ Patch712:       0010-MAINTAINERS-Add-myself-as-context-tracking-maintaine.patch
 
 #Patch to enable nohz with idle=poll
 Patch713:       0001-Allow-tick-sched-timer-to-be-turned-off-in-idle-poll.patch
+
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch714:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -881,6 +884,7 @@ The Linux package contains the Linux kernel doc files
 %patch711 -p1
 %patch712 -p1
 %patch713 -p1
+%patch714 -p1
 
 %patch1000 -p1
 %patch1001 -p1
@@ -1098,6 +1102,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Fri Dec 17 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.83-4
+-   Disable md5 algorithm for sctp if fips is enabled.
 *   Tue Dec 14 2021 Harinadh D <hdommaraju@vmware.com> 5.10.83-3
 -   remove lvm in add-drivers list
 -   lvm drivers are built as part of dm-mod
