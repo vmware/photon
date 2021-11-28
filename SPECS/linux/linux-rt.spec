@@ -20,7 +20,7 @@ Name:           linux-rt
 Version:        5.10.78
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt54
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -409,6 +409,9 @@ Patch709:       0007-tick-nohz-Change-signal-tick-dependency-to-wakeup-CP.patch
 Patch710:       0008-tick-nohz-Kick-only-_queued_-task-whose-tick-depende.patch
 Patch711:       0009-tick-nohz-Call-tick_nohz_task_switch-with-interrupts.patch
 Patch712:       0010-MAINTAINERS-Add-myself-as-context-tracking-maintaine.patch
+
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch713:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -846,6 +849,7 @@ The Linux package contains the Linux kernel doc files
 %patch710 -p1
 %patch711 -p1
 %patch712 -p1
+%patch713 -p1
 
 %patch1000 -p1
 %patch1001 -p1
@@ -1063,6 +1067,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Nov 25 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.78-3
+-   Disable md5 algorithm for sctp if fips is enabled.
 *   Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.10.78-2
 -   compile with openssl 3.0.0
 *   Mon Nov 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.78-1

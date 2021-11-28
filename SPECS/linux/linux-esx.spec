@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.78
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -112,6 +112,9 @@ Patch66:        initramfs-large-files-support-for-newca-format.patch
 
 #TARFS
 Patch67:	0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
+
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch68:        0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -272,6 +275,7 @@ The Linux package contains the Linux kernel doc files
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
+%patch68 -p1
 
 # CVE
 %patch100 -p1
@@ -490,6 +494,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Dec 01 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.78-7
+-   Disable md5 algorithm for sctp if fips is enabled.
 *   Tue Nov 30 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.78-6
 -   Correct the config file for linux-esx on arm machine
 *   Tue Nov 23 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.78-5

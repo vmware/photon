@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.78
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -50,6 +50,9 @@ Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
 # VMW:
 Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo-510.patch
 Patch56:        x86-vmware-Log-kmsg-dump-on-panic-510.patch
+
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch57:        0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -185,6 +188,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 # VMW
 %patch55 -p1
 %patch56 -p1
+
+%patch57 -p1
 
 # CVE
 %patch100 -p1
@@ -392,6 +397,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Thu Nov 25 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.78-3
+-   Disable md5 algorithm for sctp if fips is enabled.
 *   Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.10.78-2
 -   compile with openssl 3.0.0
 *   Mon Nov 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.78-1

@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.78
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -54,6 +54,9 @@ Patch14:        apparmor-af_unix-mediation.patch
 
 #vmxnet3
 Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
+
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch21:        0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # VMW:
 Patch55:        x86-vmware-Use-Efficient-and-Correct-ALTERNATIVEs-fo.patch
@@ -162,6 +165,8 @@ The Linux package contains the Linux kernel doc files
 
 #vmxnet3
 %patch20 -p1
+
+%patch21 -p1
 
 %ifarch x86_64
 # VMW x86
@@ -305,6 +310,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Thu Nov 25 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.78-3
+-   Disable md5 algorithm for sctp if fips is enabled.
 *   Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.10.78-2
 -   compile with openssl 3.0.0
 *   Mon Nov 08 2021 Vikash Bansal <bvikas@vmware.com> 5.10.78-1

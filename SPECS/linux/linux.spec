@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.78
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -83,6 +83,9 @@ Patch13:        apparmor-patch-to-provide-compatibility-with-v2.x-ne.patch
 Patch14:        apparmor-af_unix-mediation.patch
 # floppy:
 Patch17:        0001-floppy-lower-printk-message-priority.patch
+
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch18:        0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 #vmxnet3
 Patch20:        0001-vmxnet3-Remove-buf_info-from-device-accessible-struc.patch
@@ -290,6 +293,7 @@ Python programming language to use the interface to manipulate perf events.
 %patch13 -p1
 %patch14 -p1
 %patch17 -p1
+%patch18 -p1
 
 #vmxnet3
 %patch20 -p1
@@ -678,6 +682,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Nov 25 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.78-4
+-   Disable md5 algorithm for sctp if fips is enabled.
 *   Fri Nov 19 2021 Keerthana K <keerthanak@vmware.com> 5.10.78-3
 -   Add arm64 hypervisor detection and kmsg dumper
 *   Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.10.78-2
