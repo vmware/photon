@@ -1,7 +1,7 @@
 Summary:        High-performance HTTP server and reverse proxy
 Name:           nginx
 Version:        1.20.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD-2-Clause
 URL:            http://nginx.org/download/nginx-%{version}.tar.gz
 Group:          Applications/System
@@ -20,8 +20,7 @@ BuildRequires:  which
 NGINX is a free, open-source, high-performance HTTP server and reverse proxy, as well as an IMAP/POP3 proxy server.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 pushd ../
 mkdir nginx-njs
 tar -C nginx-njs -xf %{SOURCE2}
@@ -48,7 +47,7 @@ sh configure \
 
 make %{?_smp_mflags}
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm755 %{buildroot}/usr/lib/systemd/system
 install -vdm755 %{buildroot}%{_var}/log
 install -vdm755 %{buildroot}%{_var}/opt/nginx/log
@@ -79,6 +78,8 @@ install -p -m 0644 %{SOURCE1} %{buildroot}/usr/lib/systemd/system/nginx.service
 %{_var}/log/nginx
 
 %changelog
+*   Mon Nov 29 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.20.0-3
+-   Increment for openssl 3.0.0 compatibility
 *   Mon May 24 2021 Keerthana K <keerthanak@vmware.com> 1.20.0-2
 -   Fix for CVE-2021-23017
 *   Tue Apr 20 2021 Gerrit Photon <photon-checkins@vmware.com> 1.20.0-1
