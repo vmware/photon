@@ -63,7 +63,7 @@ sh configure \
 make %{?_smp_mflags}
 make -C ntpstat-master CFLAGS="$CFLAGS" %{?_smp_mflags}
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -v -m755    -d %{buildroot}%{_datadir}/doc/%{name}-%{version}
 cp -v -R html/*     %{buildroot}%{_datadir}/doc/%{name}-%{version}/

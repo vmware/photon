@@ -103,7 +103,7 @@ $(dirname $(gcc -print-prog-name=cc1))/install-tools/mkheaders
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name "*.la" -exec rm -f {} \;
 rm %{buildroot}/%{_libdir}/systemd/system/syslog-ng@.service

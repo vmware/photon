@@ -46,7 +46,7 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr               \
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 cd build
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 

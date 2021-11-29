@@ -43,7 +43,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --with-ssl=openssl
 make %{?_smp_mflags}
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}/etc
 cat >> %{buildroot}/etc/wgetrc <<-EOF

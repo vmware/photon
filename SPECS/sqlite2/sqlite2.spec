@@ -7,8 +7,10 @@ License:        Public Domain
 Group:          System Environment/GeneralLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        ftp://ftp.za.freebsd.org/openbsd/distfiles/sqlite-%{version}.tar.gz
 %define sha1    sqlite=75db1cf3b00ea18ae8528e676fc9fdf698e2fe58
+
 Patch0:         0001-lemon-fix.patch
 
 %description
@@ -23,8 +25,7 @@ Requires: %{name} = %{version}
 Headers and development libraries for sqlite2
 
 %prep
-%setup -q -n sqlite-%{version}
-%patch0 -p1
+%autosetup -p1 -n sqlite-%{version}
 
 %build
 %configure \
@@ -34,11 +35,10 @@ Headers and development libraries for sqlite2
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %files
 %defattr(-,root,root)
@@ -54,9 +54,9 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/libsqlite.so
 
 %changelog
-*   Tue Sep 25 2018 Ajay Kaher <akaher@vmware.com> 2.8.17-3
--   adding patch to fix lemon segmentation fault
-*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 2.8.17-2
--   Use standard configure macros
-*   Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  2.8.17-1
--   Initial build.  First version
+* Tue Sep 25 2018 Ajay Kaher <akaher@vmware.com> 2.8.17-3
+- adding patch to fix lemon segmentation fault
+* Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 2.8.17-2
+- Use standard configure macros
+* Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  2.8.17-1
+- Initial build.  First version

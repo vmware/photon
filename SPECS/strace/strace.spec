@@ -26,12 +26,11 @@ The strace graph is perl script, It displays a graph of invoked subprocesses, an
 useful for finding out what complex commands do
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %ifarch aarch64
-%configure          \
-    --disable-mpers \
+%configure --disable-mpers
 %else
 %configure
 %endif
@@ -43,11 +42,11 @@ sed -i 's/struct ucontext/ucontext_t/g' linux/arm/arch_sigreturn.c
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot}
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 %check
-make -k check
+make -k check %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}/*

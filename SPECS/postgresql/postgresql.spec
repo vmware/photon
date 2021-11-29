@@ -210,7 +210,7 @@ sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_man
 make world %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make install-world DESTDIR=%{buildroot} %{?_smp_mflags}
 # Remove anything related to Python 2.  These have no need to be
 # around as only Python 3 is supported.

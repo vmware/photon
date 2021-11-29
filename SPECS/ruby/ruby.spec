@@ -41,7 +41,7 @@ done
 make %{?_smp_mflags} COPY="cp -p"
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 %make_install
 
 %check

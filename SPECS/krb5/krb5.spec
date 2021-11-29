@@ -62,7 +62,7 @@ make %{?_smp_mflags}
 
 %install
 cd src
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 for LIBRARY in gssapi_krb5 gssrpc k5crypto kadm5clnt kadm5srv \

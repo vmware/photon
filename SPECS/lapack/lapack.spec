@@ -26,7 +26,7 @@ The lapack-devel package contains libraries and header files for
 developing applications that use lapack.
 
 %prep
-%setup
+%autosetup -p1
 
 %build
 mkdir -p build
@@ -41,14 +41,13 @@ cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} \
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 cd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 mkdir %{buildroot}/%{_includedir}/lapacke
 mv %{buildroot}/%{_includedir}/*.h %{buildroot}/%{_includedir}/lapacke/.
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %files
 %defattr(-,root,root)
@@ -67,11 +66,11 @@ mv %{buildroot}/%{_includedir}/*.h %{buildroot}/%{_includedir}/lapacke/.
 %exclude %{_libdir}/cmake/*
 
 %changelog
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.9.1-1
--   Automatic Version Bump
-*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.9.0-1
--   Automatic Version Bump
-*   Thu Sep 20 2018 Ankit Jain <ankitja@vmware.com> 3.8.0-1
--   Updated to version 3.8.0
-*   Fri Mar 03 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.0-1
--   Initial packaging for Photon
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.9.1-1
+- Automatic Version Bump
+* Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 3.9.0-1
+- Automatic Version Bump
+* Thu Sep 20 2018 Ankit Jain <ankitja@vmware.com> 3.8.0-1
+- Updated to version 3.8.0
+* Fri Mar 03 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.0-1
+- Initial packaging for Photon

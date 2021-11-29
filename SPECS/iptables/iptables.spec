@@ -55,8 +55,8 @@ It contains the libraries and header files to create applications.
 make %{?_smp_mflags} V=0
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 ln -sfv ../../sbin/xtables-multi %{buildroot}%{_libdir}/iptables-xml
 #   Install daemon scripts
 install -vdm755 %{buildroot}%{_unitdir}

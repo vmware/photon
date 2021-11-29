@@ -33,21 +33,37 @@ The Linux-PAM-devel package contains libraries, header files and documentation
 for developing applications that use Linux-PAM.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-%configure \
+sh ./configure --host=%{_host} --build=%{_build} \
     $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
-    --includedir=/usr/include/security \
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
+    --program-prefix= \
+    --disable-dependency-tracking \
+    --prefix=%{_prefix} \
+    --exec-prefix=%{_prefix} \
+    --bindir=%{_bindir} \
     --sbindir=/sbin \
+    --sysconfdir=%{_sysconfdir} \
+    --datadir=%{_datadir} \
+    --includedir=/usr/include/security \
+    --libdir=%{_libdir} \
+    --libexecdir=%{_libexecdir} \
+    --localstatedir=%{_localstatedir} \
+    --sharedstatedir=%{_sharedstatedir} \
+    --mandir=%{_mandir} \
+    --infodir=%{_infodir} \
     --enable-selinux \
-    --enable-securedir=/usr/lib/security \
-    --docdir=%{_docdir}/%{name}-%{version}
+    --docdir=%{_docdir}/%{name}-%{version} \
+    --enable-securedir=/usr/lib/security
 
 make %{?_smp_mflags}
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot}
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 chmod -v 4755 %{buildroot}/sbin/unix_chkpwd
 install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
 ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_auth.so

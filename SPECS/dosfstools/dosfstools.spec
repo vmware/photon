@@ -7,13 +7,15 @@ URL:            http://github.com/dosfstools/dosfstools
 Group:          Filesystem Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://github.com/%{name}/%{name}/releases/download/v%{version}/%{name}-%{version}.tar.gz
-%define sha1    dosfstools=1aa7eef62a57339d0a275daf5c31f96d23429c11
+%define sha1    %{name}=1aa7eef62a57339d0a275daf5c31f96d23429c11
+
 %description
 dosfstools contains utilities for making and checking MS-DOS FAT filesystems.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 ./autogen.sh
@@ -21,8 +23,8 @@ dosfstools contains utilities for making and checking MS-DOS FAT filesystems.
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} PREFIX="/usr" install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} PREFIX="/usr" install %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}/*
@@ -34,13 +36,13 @@ rm -rf %{buildroot}/*
 %{_docdir}/dosfstools/*
 
 %changelog
-*  Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 4.2-1
--  Automatic Version Bump
-*  Thu May 04 2017 Chang Lee <changlee@vmware.com> 4.1-2
--  Add .vfat and .msdos symlinks back.
-*  Fri Mar 31 2017 Chang Lee <changlee@vmware.com> 4.1-1
--  Updated package version
-*  Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.26-2
--  GA - Bump release of all rpms
-*  Tue Jul 01 2014 Sharath George <sharathg@vmware.com> 3.0.26-1
--  Initial build. First version
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 4.2-1
+- Automatic Version Bump
+* Thu May 04 2017 Chang Lee <changlee@vmware.com> 4.1-2
+- Add .vfat and .msdos symlinks back.
+* Fri Mar 31 2017 Chang Lee <changlee@vmware.com> 4.1-1
+- Updated package version
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.26-2
+- GA - Bump release of all rpms
+* Tue Jul 01 2014 Sharath George <sharathg@vmware.com> 3.0.26-1
+- Initial build. First version

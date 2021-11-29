@@ -79,7 +79,7 @@ sh ./configure --host=%{_host} --build=%{_build} \
     --with-sandbox=rlimit
 make
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm755 %{buildroot}/var/lib/sshd
 echo "AllowTcpForwarding no" >> %{buildroot}/etc/ssh/sshd_config

@@ -29,7 +29,7 @@ Pgbouncer is a light-weight, robust connection pooler for PostgreSQL.
 make %{?_smp_mflags} V=1
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 744 %{buildroot}/var/log/pgbouncer
 install -vdm 755 %{buildroot}/var/run/pgbouncer
