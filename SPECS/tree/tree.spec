@@ -14,13 +14,13 @@ Source0:        http://mama.indstate.edu/users/ice/tree/src/tree-%{version}.tgz
 Tree is a recursive directory listing command that produces a depth indented listing of files, which is colorized ala dircolors if the LS_COLORS environment variable is set and output is to tty. Tree has been ported and reported to work under the following operating systems: Linux, FreeBSD, OS X, Solaris, HP/UX, Cygwin, HP Nonstop and OS/2.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make install BINDIR=%{buildroot}%{_bindir} \
              MANDIR=%{buildroot}%{_mandir}/man1
 
@@ -30,7 +30,5 @@ make install BINDIR=%{buildroot}%{_bindir} \
 %{_mandir}/man1/*
 
 %changelog
-*   Thu Dec 01 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.0-1
--   Add tree package.
-
-
+* Thu Dec 01 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.0-1
+- Add tree package.

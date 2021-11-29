@@ -10,6 +10,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/shazow/urllib3/archive/urllib3-%{version}.tar.gz
 %define sha1    urllib3=fb096161db7025d6fefd716f7da878e887f91082
 
@@ -22,13 +23,12 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-#%if %{with_check}
+
 BuildRequires:  openssl-devel
 BuildRequires:  curl-devel
 BuildRequires:	python-psutil
 BuildRequires:  python3-pip
 BuildRequires:  python-pip
-#%endif
 
 Requires:       python2
 Requires:       python2-libs
@@ -83,7 +83,6 @@ PYTHONPATH="%{buildroot}%{$python2_sitelib}" pytest \
                 -k "${ignoretestslist}" \
                 urllib3 test
 
-
 PYTHONPATH="%{buildroot}%{$python3_sitelib}" pytest \
                 --ignore=test/appengine \
                 --ignore=test/with_dummyserver/test_proxy_poolmanager.py \
@@ -94,7 +93,6 @@ PYTHONPATH="%{buildroot}%{$python3_sitelib}" pytest \
                 urllib3 test
 ulimit -n $nofiles
 
-
 %files
 %defattr(-,root,root)
 %{python2_sitelib}/*
@@ -104,24 +102,24 @@ ulimit -n $nofiles
 %{python3_sitelib}/*
 
 %changelog
-*   Sat Jul 10 2021 Tapas Kundu <tkundu@vmware.com> 1.25.11-3
--   Add ca-certificates in requires
-*   Wed Jul 07 2021 Sujay G <gsujay@vmware.com> 1.25.11-2
--   Fix CVE-2021-33503
-*   Thu May 27 2021 Shreyas B <shreyasb@vmware.com> 1.25.11-1
--   Update to version 1.25.11 to address
--   CVE-2019-11324, CVE-2020-26137, CVE-2019-11236
-*   Mon Jan 14 2019 Tapas Kundu <tkundu@vmware.com> 1.23-2
--   Fix make check
-*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.23-1
--   Update to version 1.23
-*   Tue Aug 15 2017 Xiaolin Li <xiaolinl@vmware.com> 1.20-5
--   Increased number of open files per process to 5000 before run make check.
-*   Wed Jul 26 2017 Divya Thaluru <dthaluru@vmware.com> 1.20-4
--   Fixed rpm check errors
-*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.20-3
--   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
-*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.20-2
--   Use python2 explicitly
-*   Thu Feb 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.20-1
--   Initial packaging for Photon
+* Sat Jul 10 2021 Tapas Kundu <tkundu@vmware.com> 1.25.11-3
+- Add ca-certificates in requires
+* Wed Jul 07 2021 Sujay G <gsujay@vmware.com> 1.25.11-2
+- Fix CVE-2021-33503
+* Thu May 27 2021 Shreyas B <shreyasb@vmware.com> 1.25.11-1
+- Update to version 1.25.11 to address
+- CVE-2019-11324, CVE-2020-26137, CVE-2019-11236
+* Mon Jan 14 2019 Tapas Kundu <tkundu@vmware.com> 1.23-2
+- Fix make check
+* Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 1.23-1
+- Update to version 1.23
+* Tue Aug 15 2017 Xiaolin Li <xiaolinl@vmware.com> 1.20-5
+- Increased number of open files per process to 5000 before run make check.
+* Wed Jul 26 2017 Divya Thaluru <dthaluru@vmware.com> 1.20-4
+- Fixed rpm check errors
+* Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 1.20-3
+- Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
+* Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.20-2
+- Use python2 explicitly
+* Thu Feb 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.20-1
+- Initial packaging for Photon

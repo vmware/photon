@@ -7,15 +7,19 @@ Vendor:        VMware, Inc.
 Distribution:  Photon
 License:       Apache 2.0
 URL:           http://www.github.com/vmware/c-rest-engine
-Requires:      openssl >= 1.0.1
-BuildRequires: coreutils >= 8.22
-BuildRequires: openssl-devel >= 1.0.1
+
 Source0:       %{name}-%{version}.tar.gz
+%define sha1   c-rest-engine=25aa9d1f2680e26114dee18365c510692552f8e4
+
 Patch0:        c-rest-engine-aarch64.patch
 Patch1:        c-rest-engine-fix-log-file-len.patch
 Patch2:        preprocess-timeout.patch
 Patch3:        fd_leak.patch
-%define sha1   c-rest-engine=25aa9d1f2680e26114dee18365c510692552f8e4
+
+Requires:      openssl >= 1.0.1
+
+BuildRequires: coreutils >= 8.22
+BuildRequires: openssl-devel >= 1.0.1
 
 %description
 c-rest-engine is a minimal embedded http(s) server written in C.
@@ -31,28 +35,23 @@ Requires:  %{name} = %{version}-%{release}
 development libs and header files for c-rest-engine
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%autosetup -p1
 
 %build
 cd build
 autoreconf -mif ..
-../configure \
+sh ../configure \
     --host=%{_host} --build=%{_build} \
     --prefix=%{_prefix} \
     --with-ssl=/usr \
     --enable-debug=%{_enable_debug} \
     --disable-static
 
-make
+make %{?_smp_mflags}
 
 %install
-
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-cd build && make install DESTDIR=$RPM_BUILD_ROOT
+cd build && make install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
 %post -p  /sbin/ldconfig
@@ -66,7 +65,7 @@ find %{buildroot} -name '*.la' -delete
 %{_includedir}/vmrest.h
 %{_libdir}/*.so
 
-# %doc ChangeLog README COPYING
+#%%doc ChangeLog README COPYING
 
 %changelog
 *  Tue Oct 22 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.2-5

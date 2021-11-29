@@ -4,32 +4,33 @@ Version:	9.56
 Release:	1%{?dist}
 License:	BSD
 URL:		http://sourceforge.net/projects/%{name}/
-Source0:	http://downloads.sourceforge.net/hdparm/%{name}-%{version}.tar.gz
-%define sha1 hdparm=9e143065115229c4f929530157627dc92e5f6deb
 Group:		Applications/System
 Vendor:		VMware, Inc.
 Distribution: 	Photon
+
+Source0:	http://downloads.sourceforge.net/hdparm/%{name}-%{version}.tar.gz
+%define sha1 hdparm=9e143065115229c4f929530157627dc92e5f6deb
 
 %description
 The Hdparm package contains a utility that is useful for controlling ATA/IDE
 controllers and hard drives both to increase performance and sometimes to increase stability.
 
 %prep
-%setup -q
+%autosetup -p1
+
 %build
 sed -i 's/STRIP ?= strip/STRIP=$(STRIP)/' Makefile
 sed -i 's/LDFLAGS = -s/LDFLAGS=$(LDFLAGS)/' Makefile
 make %{?_smp_mflags} CFLAGS="%{optflags}" LDFLAGS="" STRIP="/bin/true"
-%install
-make DESTDIR=%{buildroot} binprefix=%{_prefix} install
 
-#%check
-#Commented out %check due to no test existence
+%install
+make DESTDIR=%{buildroot} binprefix=%{_prefix} install %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
 %{_sbindir}/hdparm
 %{_mandir}/man8/hdparm.8*
+
 %changelog
 * Mon Sep 10 2018 Alexey Makhalov <amakhalov@vmware.com> 9.56-1
 - Version update to fix compilation issue againts glibc-2.28

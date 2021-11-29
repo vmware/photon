@@ -45,7 +45,7 @@ sed -i "s/\/run/\/var\/run/g" contrib/systemd/haproxy.service
 sed -i "s/192.168.1.22/127.0.0.0/g" examples/transparent_proxy.cfg
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} PREFIX=%{_prefix} DOCDIR=%{_docdir}/haproxy TARGET=linux2628 install %{?_smp_mflags}
 install -vDm755 contrib/systemd/haproxy.service \
        %{buildroot}/usr/lib/systemd/system/haproxy.service

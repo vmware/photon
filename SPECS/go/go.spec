@@ -9,8 +9,8 @@
 %define __strip /bin/true
 
 # rpmbuild magic to keep from having meta dependency on libc.so.6
-#%define _use_internal_dependency_generator 0
-#%define __find_requires %{nil}
+#%%define _use_internal_dependency_generator 0
+#%%define __find_requires %{nil}
 
 Summary:        Go
 Name:           go
@@ -82,8 +82,9 @@ export GOHOSTOS=linux
 export GOHOSTARCH=%{gohostarch}
 export GOOS=linux
 EOF
+
 #chown -R root:root %{buildroot}/etc/profile.d/go-exports.sh
-#%{_fixperms} %{buildroot}/*
+#%%{_fixperms} %{buildroot}/*
 
 %post -p /sbin/ldconfig
 
@@ -111,27 +112,27 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.17.2-2
--   Fix for CVE-2021-41771, CVE-2021-41772.
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.17.2-1
--   Upgrade to 1.17.2
-*   Sat Aug 21 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.7-1
--   Upgrade to 1.16.7
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.2-2
--   Fix for CVE-2021-31525.
-*   Mon May 03 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.2-1
--   Update to 1.16.2
-*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.13.15-3
--   Fix CVE-2020-28367,CVE-2020-28366
-*   Wed Nov 25 2020 Harinadh D <hdommaraju@vmware.com> 1.13.15-2
--   Fix CVE-2020-28367,CVE-2020-28366
-*   Thu Sep 10 2020 Ashwin H <ashwinh@vmware.com> 1.13.15-1
--   Update to 1.13.15
-*   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.13.3-3
--   Fix CVE-2020-16845
-*   Fri Apr 10 2020 Harinadh D<hdommaraju@vmware.com> 1.13.3-2
--   Fix for CVE-2020-7919
-*   Tue Oct 22 2019 <ashwinh@vmware.com> 1.13.3-1
--   Update to 1.13.3
-*   Wed Sep 11 2019 <ashwinh@vmware.com> 1.13-1
--   Initial build for 1.13
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.17.2-2
+- Fix for CVE-2021-41771, CVE-2021-41772.
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.17.2-1
+- Upgrade to 1.17.2
+* Sat Aug 21 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.7-1
+- Upgrade to 1.16.7
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.2-2
+- Fix for CVE-2021-31525.
+* Mon May 03 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.2-1
+- Update to 1.16.2
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.13.15-3
+- Fix CVE-2020-28367,CVE-2020-28366
+* Wed Nov 25 2020 Harinadh D <hdommaraju@vmware.com> 1.13.15-2
+- Fix CVE-2020-28367,CVE-2020-28366
+* Thu Sep 10 2020 Ashwin H <ashwinh@vmware.com> 1.13.15-1
+- Update to 1.13.15
+* Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.13.3-3
+- Fix CVE-2020-16845
+* Fri Apr 10 2020 Harinadh D<hdommaraju@vmware.com> 1.13.3-2
+- Fix for CVE-2020-7919
+* Tue Oct 22 2019 <ashwinh@vmware.com> 1.13.3-1
+- Update to 1.13.3
+* Wed Sep 11 2019 <ashwinh@vmware.com> 1.13-1
+- Initial build for 1.13

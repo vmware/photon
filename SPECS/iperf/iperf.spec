@@ -27,30 +27,17 @@ It contains the documentation and manpages for iperf package.
 Requires:       %{name} = %{version}-%{release}
 
 %prep
-%setup -q
-%patch1 -p1
+%autosetup -p1
 
 %build
 echo "VDBG optflags: " %{optflags}
 ./bootstrap.sh
-./configure \
-        CFLAGS="%{optflags}" \
-        CXXFLAGS="%{optflags}" \
-        --disable-silent-rules \
-        --prefix=%{_prefix} \
-        --bindir=%{_bindir} \
-        --sbindir=%{_sbindir} \
-        --includedir=%{_includedir} \
-        --libdir=%{_libdir} \
-        --mandir=%{_mandir} \
-        --infodir=%{_infodir} \
-        --datadir=%{_datarootdir} \
-        --sysconfdir=/etc
+%configure
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} check
@@ -67,15 +54,15 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
-*       Wed Sep 05 2018 Ankit Jain <ankitja@vmware.com> 3.6-1
--       Upgraded to version 3.6
-*       Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.1.7-1
--       Upgraded to version 3.1.7
-*       Thu Oct 6 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.1.3-1
--       Upgraded to version 3.1.3
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.2-2
--	GA - Bump release of all rpms
-* 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  3.1.2-1
-- 	Upgrade to 3.1.2
-*       Wed Oct 28 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.7.0-1
--       Add iperf v3.1 package.
+* Wed Sep 05 2018 Ankit Jain <ankitja@vmware.com> 3.6-1
+- Upgraded to version 3.6
+* Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.1.7-1
+- Upgraded to version 3.1.7
+* Thu Oct 6 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.1.3-1
+- Upgraded to version 3.1.3
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.2-2
+- GA - Bump release of all rpms
+* Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  3.1.2-1
+- Upgrade to 3.1.2
+* Wed Oct 28 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.7.0-1
+- Add iperf v3.1 package.

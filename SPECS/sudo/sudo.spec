@@ -7,15 +7,19 @@ URL:            https://www.sudo.ws/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://www.sudo.ws/sudo/dist/%{name}-%{version}.tar.gz
-%define sha1    sudo=1e9fccda4beccca811ecb48866776388c9c377ae
+%define sha1    %{name}=1e9fccda4beccca811ecb48866776388c9c377ae
+
 Patch0:         CVE-2021-3156_1.patch
 Patch1:         CVE-2021-3156_2.patch
 Patch2:         CVE-2021-3156_3.patch
 Patch3:         CVE-2021-3156_4.patch
+
 BuildRequires:  man-db
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  sed
+
 Requires:       Linux-PAM
 Requires:       shadow
 
@@ -24,15 +28,26 @@ The Sudo package allows a system administrator to give certain users (or groups 
 the ability to run some (or all) commands as root or another user while logging the commands and arguments.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
+%autosetup -p1
 
 %build
-%configure \
+sh ./configure --host=%{_host} --build=%{_build} \
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
+    --program-prefix= \
+    --prefix=%{_prefix} \
+    --exec-prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --sbindir=%{_sbindir} \
+    --sysconfdir=%{_sysconfdir} \
+    --datadir=%{_datadir} \
+    --includedir=%{_includedir} \
+    --libdir=%{_libdir} \
     --libexecdir=%{_libdir} \
+    --localstatedir=%{_localstatedir} \
+    --sharedstatedir=%{_sharedstatedir} \
+    --mandir=%{_mandir} \
+    --infodir=%{_infodir} \
     --docdir=%{_docdir}/%{name}-%{version} \
     --with-all-insults \
     --with-env-editor \
@@ -42,8 +57,8 @@ the ability to run some (or all) commands as root or another user while logging 
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot}
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 find %{buildroot}/%{_libdir} -name '*.so~' -delete

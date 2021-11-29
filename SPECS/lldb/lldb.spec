@@ -8,8 +8,10 @@ URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
 %define sha1    lldb=90b946ff7b850bcded598509a10d0795e7da3f63
+
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
 BuildRequires:  clang-devel = %{version}
@@ -18,6 +20,7 @@ BuildRequires:  swig
 BuildRequires:  zlib-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  python2-devel
+
 Requires:       llvm = %{version}
 Requires:       clang = %{version}
 Requires:       ncurses
@@ -60,7 +63,7 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr           \
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 cd build
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
@@ -70,7 +73,7 @@ rm -f %{buildroot}%{python2_sitelib}/six.*
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
-#%check
+#%%check
 #Commented out %check due to no test existence
 
 %clean
@@ -93,22 +96,22 @@ rm -rf %{buildroot}/*
 %{python2_sitelib}/*
 
 %changelog
-*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 10.0.1-4
--   Version bump up to use libxml2 2.9.11-4.
-*   Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 10.0.1-3
--   Fix build with updated python symlink changes
-*   Tue Jul 27 2021 Tapas Kundu <tkundu@vmware.com> 10.0.1-2
--   Rebuild with updated clang
-*   Wed Nov 11 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.0.1-1
--   Version Bump to 10.0.1
-*   Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.0.1-1
--   Update to version 6.0.1 to get it to build with gcc 7.3
--   Make python2_sitelib macro global to fix build error.
-*   Mon Jul 10 2017 Chang Lee <changlee@vmware.com> 4.0.0-3
--   Commented out %check due to no test existence.
-*   Wed Jul 5 2017 Divya Thaluru <dthaluru@vmware.com> 4.0.0-2
--   Added python-lldb package
-*   Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1
--   Version update
-*   Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
--   Initial build.
+* Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 10.0.1-4
+- Version bump up to use libxml2 2.9.11-4.
+* Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 10.0.1-3
+- Fix build with updated python symlink changes
+* Tue Jul 27 2021 Tapas Kundu <tkundu@vmware.com> 10.0.1-2
+- Rebuild with updated clang
+* Wed Nov 11 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.0.1-1
+- Version Bump to 10.0.1
+* Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.0.1-1
+- Update to version 6.0.1 to get it to build with gcc 7.3
+- Make python2_sitelib macro global to fix build error.
+* Mon Jul 10 2017 Chang Lee <changlee@vmware.com> 4.0.0-3
+- Commented out %check due to no test existence.
+* Wed Jul 5 2017 Divya Thaluru <dthaluru@vmware.com> 4.0.0-2
+- Added python-lldb package
+* Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1
+- Version update
+* Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
+- Initial build.

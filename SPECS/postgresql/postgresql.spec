@@ -73,7 +73,7 @@ make %{?_smp_mflags}
 cd contrib && make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make install DESTDIR=%{buildroot} %{?_smp_mflags}
 cd contrib && make install DESTDIR=%{buildroot} %{?_smp_mflags}
 

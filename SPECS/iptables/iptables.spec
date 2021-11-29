@@ -7,6 +7,7 @@ URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://www.netfilter.org/projects/iptables/files/%{name}-%{version}.tar.bz2
 %define sha1    %{name}-%{version}=6df99e90cb4d59032ab2050ebb426fe065249bd3
 Source1:        iptables.service
@@ -34,23 +35,39 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications.
 
 %prep
-%setup -q
+%autosetup -p1
+
 %build
-%configure \
+sh ./configure --host=%{_host} --build=%{_build} \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
-    --disable-silent-rules \
+    --program-prefix= \
+    --disable-dependency-tracking \
+    --prefix=%{_prefix} \
     --exec-prefix= \
+    --bindir=%{_bindir} \
+    --sbindir=%{_sbindir} \
+    --sysconfdir=%{_sysconfdir} \
+    --datadir=%{_datadir} \
+    --includedir=%{_includedir} \
+    --libdir=%{_libdir} \
+    --libexecdir=%{_libexecdir} \
+    --localstatedir=%{_localstatedir} \
+    --sharedstatedir=%{_sharedstatedir} \
+    --mandir=%{_mandir} \
+    --infodir=%{_infodir} \
+    --disable-silent-rules \
     --with-xtlibdir=%{_libdir}/iptables \
     --with-pkgconfigdir=%{_libdir}/pkgconfig \
     --disable-nftables \
     --enable-libipq \
     --enable-devel
 
-make V=0
+make V=0 %{?_smp_mflags}
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 ln -sfv ../../sbin/xtables-multi %{buildroot}%{_libdir}/iptables-xml
 #   Install daemon scripts
 install -vdm755 %{buildroot}%{_unitdir}
@@ -78,6 +95,7 @@ find %{buildroot} -name '*.la' -delete
 
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %config(noreplace) /etc/systemd/scripts/iptables
@@ -100,40 +118,40 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
-*   Wed Mar 31 2021 Susant Sahani <ssahani@vmware.com> 1.8.3-3
--   Allow IPv6 RA and DHCP6
-*   Mon Feb 08 2021 Susant Sahani <ssahani@vmware.com> 1.8.3-2
--   Set wait option for iptables-restore calls
-*   Tue Jul 30 2019 Shreyas B. <shreyasb@vmware.com> 1.8.3-1
--   Updated to version 1.8.3
-*   Tue Feb 26 2019 Alexey Makhalov <amakhalov@vmware.com> 1.8.0-2
--   Flush ip6tables on service stop
-*   Mon Sep 10 2018 Ankit Jain <ankitja@vmware.com> 1.8.0-1
--   Updated to version 1.8.0
-*   Thu Aug 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.1-4
--   fix ip4save script for upgrade issues.
-*   Mon Jul 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.1-3
--   use iptables-restore to reload rules.
-*   Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.6.1-2
--   Add devel package.
-*   Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.6.1-1
--   Updated to version 1.6.1
-*   Wed Jan 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.6.0-6
--   Flush iptables on service stop
-*   Tue Aug 30 2016 Anish Swaminathan <anishs@vmware.com> 1.6.0-5
--   Change config file properties for iptables script
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.0-4
--   GA - Bump release of all rpms
-*   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.6.0-3
--   Adding package support in pre/post/un scripts section.
-*   Thu Apr 21 2016 Divya Thaluru <dthaluru@vmware.com> 1.6.0-2
--   Enabled iptable service. Added iptable rule to accept ssh connections by default.
-*   Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.6.0-1
--   Updated to version 1.6.0
-*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.4.21-3
--   Add systemd to Requires and BuildRequires.
--   Use systemctl to enable/disable service.
-*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.4.21-2
--   Updated group.
-*   Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 1.4.21-1
--   Initial build.  First version
+* Wed Mar 31 2021 Susant Sahani <ssahani@vmware.com> 1.8.3-3
+- Allow IPv6 RA and DHCP6
+* Mon Feb 08 2021 Susant Sahani <ssahani@vmware.com> 1.8.3-2
+- Set wait option for iptables-restore calls
+* Tue Jul 30 2019 Shreyas B. <shreyasb@vmware.com> 1.8.3-1
+- Updated to version 1.8.3
+* Tue Feb 26 2019 Alexey Makhalov <amakhalov@vmware.com> 1.8.0-2
+- Flush ip6tables on service stop
+* Mon Sep 10 2018 Ankit Jain <ankitja@vmware.com> 1.8.0-1
+- Updated to version 1.8.0
+* Thu Aug 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.1-4
+- fix ip4save script for upgrade issues.
+* Mon Jul 24 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.1-3
+- use iptables-restore to reload rules.
+* Fri Jun 23 2017 Xiaolin Li <xiaolinl@vmware.com> 1.6.1-2
+- Add devel package.
+* Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.6.1-1
+- Updated to version 1.6.1
+* Wed Jan 18 2017 Alexey Makhalov <amakhalov@vmware.com> 1.6.0-6
+- Flush iptables on service stop
+* Tue Aug 30 2016 Anish Swaminathan <anishs@vmware.com> 1.6.0-5
+- Change config file properties for iptables script
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.6.0-4
+- GA - Bump release of all rpms
+* Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.6.0-3
+- Adding package support in pre/post/un scripts section.
+* Thu Apr 21 2016 Divya Thaluru <dthaluru@vmware.com> 1.6.0-2
+- Enabled iptable service. Added iptable rule to accept ssh connections by default.
+* Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.6.0-1
+- Updated to version 1.6.0
+* Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.4.21-3
+- Add systemd to Requires and BuildRequires.
+- Use systemctl to enable/disable service.
+* Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.4.21-2
+- Updated group.
+* Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 1.4.21-1
+- Initial build.  First version

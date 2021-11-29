@@ -42,8 +42,9 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr           \
       -DLLVM_ENABLE_RTTI:BOOL=ON            \
       -Wno-dev ..
 make %{?_smp_mflags}
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 cd build
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
@@ -78,22 +79,22 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
-*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 10.0.1-2
--   Version bump up to use libxml2 2.9.11-4.
-*   Wed Nov 11 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.0.1-1
--   Version Bump to 10.0.1
--   Enable LLVM_ENABLE_RTTI
-*   Mon Jan 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 6.0.1-3
--   Added python2 dependency
-*   Wed Jun 26 2019 Keerthana K <keerthanak@vmware.com> 6.0.1-2
--   Enable target BPF
-*   Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.0.1-1
--   Update to version 6.0.1 to get it to build with gcc 7.3
-*   Thu Aug 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-3
--   Make check fix
-*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-2
--   BuildRequires libffi-devel
-*   Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1
--   Version update
-*   Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
--   Initial build.
+* Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 10.0.1-2
+- Version bump up to use libxml2 2.9.11-4.
+* Wed Nov 11 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.0.1-1
+- Version Bump to 10.0.1
+- Enable LLVM_ENABLE_RTTI
+* Mon Jan 06 2020 Prashant S Chauhan <psinghchauha@vmware.com> 6.0.1-3
+- Added python2 dependency
+* Wed Jun 26 2019 Keerthana K <keerthanak@vmware.com> 6.0.1-2
+- Enable target BPF
+* Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.0.1-1
+- Update to version 6.0.1 to get it to build with gcc 7.3
+* Thu Aug 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-3
+- Make check fix
+* Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-2
+- BuildRequires libffi-devel
+* Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1
+- Version update
+* Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
+- Initial build.

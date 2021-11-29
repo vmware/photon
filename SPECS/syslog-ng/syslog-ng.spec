@@ -111,7 +111,7 @@ make %{?_smp_mflags}
 popd
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
 find %{buildroot} -name "*.la" -exec rm -f {} \;
 rm %{buildroot}/%{_libdir}/systemd/system/syslog-ng@.service

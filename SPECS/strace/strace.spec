@@ -7,9 +7,12 @@ URL:      https://strace.io/
 Group:    Development/Debuggers
 Vendor:   VMware, Inc.
 Distribution: Photon
+
 Source0:  https://strace.io/files/%{version}/%{name}-%{version}.tar.xz
-%define sha1 strace=b4a054adb74563fc121bcd19b158f58955a20a33
-BuildRequires:  libacl-devel, libaio-devel
+%define sha1 %{name}=b4a054adb74563fc121bcd19b158f58955a20a33
+
+BuildRequires:  libacl-devel
+BuildRequires:  libaio-devel
 
 %description
 The strace program intercepts and displays the system calls made by a running process. strace also records
@@ -23,12 +26,11 @@ Requires: %{name} = %{version}-%{release}
 The strace graph is perl script , It displays a graph of invoked subprocesses, and is useful for finding out what complex commands do
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %ifarch aarch64
-%configure \
-  --disable-mpers \
+%configure --disable-mpers
 %else
 %configure
 %endif
@@ -40,11 +42,11 @@ sed -i 's/struct ucontext/ucontext_t/g' linux/arm/arch_sigreturn.c
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot}
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 %check
-make -k check
+make -k check %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}/*
@@ -59,26 +61,26 @@ rm -rf %{buildroot}/*
 %{_bindir}/strace-graph
 
 %changelog
-*   Wed Jan 06 2021 Susant Sahani <ssahani@vmware.com> 4.26-1
--   Seperate strace-graph to remove perl dependency
--   Version bump
-*   Tue Nov 13 2018 Srinidhi Rao <srinidhir@vmware.com> 4.25-1
--   Updating to version 4.25
-*   Thu Oct 25 2018 Ajay Kaher <akaher@vmware.com> 4.24-2
--   Fix 4.24 for aarch64
-*   Fri Sep 21 2018 Srinidhi Rao <srinidhir@vmware.com> 4.24-1
--   Updating to version 4.24
-*   Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.16-3
--   Aarch64 support
-*   Wed Aug 23 2017 Alexey Makhalov <amakhalov@vmware.com> 4.16-2
--   Fix compilation issue for glibc-2.26
-*   Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 4.16-1
--   Update to version 4.16
-*   Thu Oct 20 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11-3
--   Exclude perl dependency
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11-2
--   GA - Bump release of all rpms
-*   Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 4.11-1
--   Upgrade version.
-*   Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 4.10-1
--   Initial build. First version
+* Wed Jan 06 2021 Susant Sahani <ssahani@vmware.com> 4.26-1
+- Seperate strace-graph to remove perl dependency
+- Version bump
+* Tue Nov 13 2018 Srinidhi Rao <srinidhir@vmware.com> 4.25-1
+- Updating to version 4.25
+* Thu Oct 25 2018 Ajay Kaher <akaher@vmware.com> 4.24-2
+- Fix 4.24 for aarch64
+* Fri Sep 21 2018 Srinidhi Rao <srinidhir@vmware.com> 4.24-1
+- Updating to version 4.24
+* Tue Nov 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.16-3
+- Aarch64 support
+* Wed Aug 23 2017 Alexey Makhalov <amakhalov@vmware.com> 4.16-2
+- Fix compilation issue for glibc-2.26
+* Wed Apr 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 4.16-1
+- Update to version 4.16
+* Thu Oct 20 2016 Alexey Makhalov <amakhalov@vmware.com> 4.11-3
+- Exclude perl dependency
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.11-2
+- GA - Bump release of all rpms
+* Wed Jan 20 2016 Anish Swaminathan <anishs@vmware.com> 4.11-1
+- Upgrade version.
+* Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 4.10-1
+- Initial build. First version

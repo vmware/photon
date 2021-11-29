@@ -6,10 +6,12 @@ Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPL
 URL:           https://github.com/projectcalico/bird
-Source0:       %{name}-%{version}.tar.gz
 Distribution:  Photon
-BuildRequires: autoconf
+
+Source0:       %{name}-%{version}.tar.gz
 %define sha1 calico-bird=5a74a55574493d467bc940e853c287b458a2e0a4
+
+BuildRequires: autoconf
 
 %description
 Project Calico fork of the BIRD Internet Routing Daemon.
@@ -49,7 +51,7 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/bird
 install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/bird6
 install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/birdcl
 
-#%check
+#%%check
 # No tests available for this pkg
 
 %files
@@ -59,11 +61,11 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/birdcl
 %{_bindir}/birdcl
 
 %changelog
-*   Thu Aug 26 2021 Keerthana K <keerthanak@vmware.com> 0.3.3-2
--   Bump up version to compile with new glibc
-*   Tue May 25 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.3.3-1
--   Update calico-bird to version 0.3.3
-*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.1-2
--   Use standard configure macros
-*   Wed Aug 16 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.3.1-1
--   Calico BIRD routing daemon for PhotonOS.
+* Thu Aug 26 2021 Keerthana K <keerthanak@vmware.com> 0.3.3-2
+- Bump up version to compile with new glibc
+* Tue May 25 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.3.3-1
+- Update calico-bird to version 0.3.3
+* Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.1-2
+- Use standard configure macros
+* Wed Aug 16 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.3.1-1
+- Calico BIRD routing daemon for PhotonOS.

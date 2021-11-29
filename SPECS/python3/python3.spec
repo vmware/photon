@@ -155,7 +155,7 @@ export OPT="${CFLAGS}"
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
 chmod -v 755 %{buildroot}%{_libdir}/libpython%{VER}m.so.1.0
 %{_fixperms} %{buildroot}/*

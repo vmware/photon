@@ -10,9 +10,12 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/Js2Py
+
 Source0:        https://files.pythonhosted.org/packages/source/J/Js2Py/Js2Py-%{version}.tar.gz
 %define         sha1 Js2Py=f6e8d0fc625d28ae196be1db10f800ec56ea68dd
+
 Patch0:         js2py-python3-print.patch
+
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
@@ -22,7 +25,15 @@ BuildRequires:  python-six
 BuildRequires:  python-py
 %if %{with_check}
 BuildRequires:  python-pyjsparser
+BuildRequires:  python3-pyjsparser
 %endif
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-six
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-setuptools_scm
+BuildRequires:  python3-py
+
 Requires:       python2
 Requires:       python2-libs
 Requires:       python-tzlocal
@@ -37,28 +48,17 @@ Everything is done in 100% pure Python so it's extremely easy to install and use
 
 %package -n     python3-Js2Py
 Summary:        python-Js2Py
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-six
-
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-six
 Requires:       python3-tzlocal
 Requires:       python3-pyjsparser
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-setuptools_scm
-BuildRequires:  python3-py
-%if %{with_check}
-BuildRequires:  python3-pyjsparser
-%endif
 
 %description -n python3-Js2Py
 Python 3 version.
 
 %prep
-%setup -q -n Js2Py-%{version}
-%patch0 -p1
+%autosetup -p1 -n Js2Py-%{version}
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -74,7 +74,7 @@ pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
-#%check
+#%%check
 #This package does not come with a test suite.
 
 %files
@@ -86,9 +86,9 @@ popd
 %{python3_sitelib}/*
 
 %changelog
-*   Sun Nov 10 2019 Tapas Kundu <tkundu@vmware.com> 0.66-1
--   Updated to version 0.66
-*   Thu Sep 13 2018 Tapas Kundu <tkundu@vmware.com> 0.59-1
--   Updated to version 0.59
-*   Fri Sep 08 2017 Xiaolin Li <xiaolinl@vmware.com> 0.50-1
--   Initial packaging for Photon
+* Sun Nov 10 2019 Tapas Kundu <tkundu@vmware.com> 0.66-1
+- Updated to version 0.66
+* Thu Sep 13 2018 Tapas Kundu <tkundu@vmware.com> 0.59-1
+- Updated to version 0.59
+* Fri Sep 08 2017 Xiaolin Li <xiaolinl@vmware.com> 0.50-1
+- Initial packaging for Photon

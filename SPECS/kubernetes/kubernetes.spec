@@ -13,19 +13,23 @@ Version:        1.18.19
 Release:        9%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
 Source0:        kubernetes-%{version}.tar.gz
 %define sha1    kubernetes-%{version}.tar.gz=8f736a5f51788b022862d7a2ca268a93a4420d10
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
+
 Patch0:         CVE-2021-25741.patch
-Group:          Development/Tools
-Vendor:         VMware, Inc.
-Distribution:   Photon
+
 BuildRequires:  go >= 1.13.5
 BuildRequires:  rsync
 BuildRequires:  which
+
 Requires:       cni
 Requires:       ebtables
 Requires:       etcd >= 3.0.4
@@ -197,7 +201,7 @@ fi
 %{_bindir}/kube-proxy
 %{_bindir}/kube-scheduler
 %{_bindir}/kubectl
-#%{_bindir}/kubefed
+#%%{_bindir}/kubefed
 %{_lib}/systemd/system/kube-apiserver.service
 %{_lib}/systemd/system/kubelet.service
 %{_lib}/systemd/system/kube-scheduler.service
@@ -235,29 +239,29 @@ fi
 %endif
 
 %changelog
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.18.19-9
--   Bump up version to compile with new go
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.18.19-8
--   Bump up version to compile with new go
-*   Fri Sep 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-7
--   Fix CVE-2021-25741
-*   Thu Aug 26 2021 Keerthana K <keerthanak@vmware.com> 1.18.19-6
--   Bump up version to compile with new glibc
-*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.18.19-5
--   Bump up version to compile with new go
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.18.19-4
--   Bump up version to compile with new go
-*   Tue Jun 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-3
--   Change 10-kubeadm.conf file permission to 644
-*   Wed Jun 02 2021 Piyush Gupta<gpiyush@vmware.com> 1.18.19-2
--   Bump up version to compile with new go
-*   Thu Mar 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-1
--   Update to version 1.18.19, Fix CVE-2020-8565, CVE-2021-25737, CVE-2021-3121
-*   Thu Feb 18 2021 Harinadh D <hdommaraju@vmware.com> 1.17.11-4
--   Bump up version to compile with new go
-*   Wed Feb 03 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-3
--   Fix CVE-2020-8564, CVE-2020-8566
-*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.17.11-2
--   Bump up version to compile with new go
-*   Wed Sep 16 2020 Ashwin H <ashwinh@vmware.com> 1.17.11-1
--   Initial version 1.17.11
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.18.19-9
+- Bump up version to compile with new go
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.18.19-8
+- Bump up version to compile with new go
+* Fri Sep 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-7
+- Fix CVE-2021-25741
+* Thu Aug 26 2021 Keerthana K <keerthanak@vmware.com> 1.18.19-6
+- Bump up version to compile with new glibc
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.18.19-5
+- Bump up version to compile with new go
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.18.19-4
+- Bump up version to compile with new go
+* Tue Jun 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-3
+- Change 10-kubeadm.conf file permission to 644
+* Wed Jun 02 2021 Piyush Gupta<gpiyush@vmware.com> 1.18.19-2
+- Bump up version to compile with new go
+* Thu Mar 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-1
+- Update to version 1.18.19, Fix CVE-2020-8565, CVE-2021-25737, CVE-2021-3121
+* Thu Feb 18 2021 Harinadh D <hdommaraju@vmware.com> 1.17.11-4
+- Bump up version to compile with new go
+* Wed Feb 03 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-3
+- Fix CVE-2020-8564, CVE-2020-8566
+* Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.17.11-2
+- Bump up version to compile with new go
+* Wed Sep 16 2020 Ashwin H <ashwinh@vmware.com> 1.17.11-1
+- Initial version 1.17.11

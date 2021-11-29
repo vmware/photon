@@ -1,66 +1,78 @@
-Summary:	Dynamic host configuration protocol
-Name:		dhcp
-Version:	4.3.5
-Release:	8%{?dist}
-License:	ISC
-Url:      	http://isc.org/products/DHCP/
-Source0:  	ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
+Summary:    Dynamic host configuration protocol
+Name:       dhcp
+Version:    4.3.5
+Release:    8%{?dist}
+License:    ISC
+Url:        http://isc.org/products/DHCP/
+Group:      System Environment/Base
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
+Source0:    ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
 %define sha1 dhcp=6140a0cf6b3385057d76c14278294284ba19e5a5
-Group:		System Environment/Base
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Patch0:		dhcp-4.3.5-client_script-1.patch
-Patch1:		dhcp-4.3.5-missing_ipv6-1.patch
-Patch2:         dhcp-CVE-2017-3144.patch
-Patch3:         dhcp-CVE-2018-5733.patch
-Patch4:         dhcp-nowplusinterval.patch
-Patch5:         dhcp-CVE-2018-5732.patch
-Patch6:         dhcp-CVE-2021-25217.patch
-BuildRequires:	systemd
+
+Patch0:     dhcp-4.3.5-client_script-1.patch
+Patch1:     dhcp-4.3.5-missing_ipv6-1.patch
+Patch2:     dhcp-CVE-2017-3144.patch
+Patch3:     dhcp-CVE-2018-5733.patch
+Patch4:     dhcp-nowplusinterval.patch
+Patch5:     dhcp-CVE-2018-5732.patch
+Patch6:     dhcp-CVE-2021-25217.patch
+
+BuildRequires:  systemd
+
 %description
 The ISC DHCP package contains both the client and server programs for DHCP. dhclient (the client) is used for connecting to a network which uses DHCP to assign network addresses. dhcpd (the server) is used for assigning network addresses on private networks
 
 %package libs
-Summary:	Libraries for dhcp
+Summary:    Libraries for dhcp
 %description libs
 Libraries for the dhcp.
 
 %package devel
-Summary:	Development Libraries and header files for dhcp
-Requires:	dhcp-libs
+Summary:    Development Libraries and header files for dhcp
+Requires:   dhcp-libs
 %description devel
 Headers and libraries for the dhcp.
 
 %package server
-Summary:	Provides the ISC DHCP server
-Requires:	dhcp-libs
+Summary:    Provides the ISC DHCP server
+Requires:   dhcp-libs
 %description server
 dhcpd is the name of a program that operates as a daemon on a server to provide Dynamic Host Configuration Protocol (DHCP) service to a network. Clients may solicit an IP address (IP) from a DHCP server when they need one
 
 %package client
-Summary:	Provides the ISC DHCP client daemon and dhclient-script
-Requires:	dhcp-libs
+Summary:    Provides the ISC DHCP client daemon and dhclient-script
+Requires:   dhcp-libs
 %description client
 The ISC DHCP Client, dhclient, provides a means for configuring one or more network interfaces using the Dynamic Host Configuration Protocol, BOOTP protocol, or if these protocols fail, by statically assigning an address.
 
-
 %prep
-%setup -qn %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
+%autosetup -p1 -n %{name}-%{version}
+
 %build
 export CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'         \
         -D_PATH_DHCPD_CONF='\"/etc/dhcp/dhcpd.conf\"'               \
         -D_PATH_DHCLIENT_CONF='\"/etc/dhcp/dhclient.conf\"'"
 
-%configure \
-    --sysconfdir=/etc/dhcp                                  \
-    --localstatedir=/var                                    \
+sh ./configure --host=%{_host} --build=%{_build} \
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
+    --program-prefix= \
+    --disable-dependency-tracking \
+    --prefix=%{_prefix} \
+    --exec-prefix=%{_prefix} \
+    --bindir=%{_bindir} \
+    --sbindir=%{_sbindir} \
+    --sysconfdir=/etc/dhcp \
+    --datadir=%{_datadir} \
+    --includedir=%{_includedir} \
+    --libdir=%{_libdir} \
+    --libexecdir=%{_libexecdir} \
+    --localstatedir=%{_localstatedir} \
+    --sharedstatedir=%{_sharedstatedir} \
+    --mandir=%{_mandir} \
+    --infodir=%{_infodir} \
     --with-srv-lease-file=/var/lib/dhcpd/dhcpd.leases       \
     --with-srv6-lease-file=/var/lib/dhcpd/dhcpd6.leases     \
     --with-cli-lease-file=/var/lib/dhclient/dhclient.leases \
@@ -73,9 +85,11 @@ export CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'         \
     --enable-log-pid \
     --enable-paranoia --enable-early-chroot
 
-make
+# make doesn't support _smp_mflags
+make -j1
+
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -v -m755 client/scripts/linux %{buildroot}/usr/sbin/dhclient-script
 
 cat > %{buildroot}/etc/dhcp/dhclient.conf << "EOF"
@@ -127,11 +141,11 @@ touch %{buildroot}%{_localstatedir}/lib/dhcpd/dhcpd.leases
 touch %{buildroot}%{_localstatedir}/lib/dhcpd/dhcpd6.leases
 mkdir -p %{buildroot}%{_localstatedir}/lib/dhclient/
 
-#%check
+#%%check
 #Commented out %check due to missing support of ATF.
 
-%post	libs -p /sbin/ldconfig
-%postun	libs -p /sbin/ldconfig
+%post   libs -p /sbin/ldconfig
+%postun libs -p /sbin/ldconfig
 
 %files libs
 %defattr(-,root,root)
@@ -181,30 +195,30 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/dhclient/
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
-*   Tue May 25 2021 Dweep Advani <dadvani@vmware.com> 4.3.5-8
--   Fix CVE-2021-25217
-*   Tue Nov 19 2019 Keerthana K <keerthanak@vmware.com> 4.3.5-7
--   Fix CVE-2018-5732
-*   Thu Sep 19 2019 Keerthana K <keerthanak@vmware.com> 4.3.5-6
--   Fix dhcpd fails with "Unable to set up timer: out of range"
-*   Fri May 10 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.5-5
--   Fix CVE-2017-3144
--   Fix CVE-2018-5733
-*   Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 4.3.5-4
--   Commented out %check due to missing support of ATF.
-*   Thu Apr 20 2017 Divya Thaluru <dthaluru@vmware.com> 4.3.5-3
--   Added default dhcp configuration and lease files
-*   Wed Dec 7 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.5-2
--   Added configuration file for dhcp service
-*   Mon Nov 14 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.3.5-1
--   Upgraded to version 4.3.5.
-*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.3.3-4
--   Modified %check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.3-3
--   GA - Bump release of all rpms
-*   Wed Mar 30 2016 Anish Swaminathan <anishs@vmware.com>  4.3.3-2
--   Add patch for CVE-2016-2774
-*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1
--   Updated to version 4.3.3
-*   Wed Jul 15 2015 Divya Thaluru <dthaluru@vmware.com> 4.3.2-1
--   Initial build.
+* Tue May 25 2021 Dweep Advani <dadvani@vmware.com> 4.3.5-8
+- Fix CVE-2021-25217
+* Tue Nov 19 2019 Keerthana K <keerthanak@vmware.com> 4.3.5-7
+- Fix CVE-2018-5732
+* Thu Sep 19 2019 Keerthana K <keerthanak@vmware.com> 4.3.5-6
+- Fix dhcpd fails with "Unable to set up timer: out of range"
+* Fri May 10 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.5-5
+- Fix CVE-2017-3144
+- Fix CVE-2018-5733
+* Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 4.3.5-4
+- Commented out %check due to missing support of ATF.
+* Thu Apr 20 2017 Divya Thaluru <dthaluru@vmware.com> 4.3.5-3
+- Added default dhcp configuration and lease files
+* Wed Dec 7 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.5-2
+- Added configuration file for dhcp service
+* Mon Nov 14 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.3.5-1
+- Upgraded to version 4.3.5.
+* Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.3.3-4
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.3-3
+- GA - Bump release of all rpms
+* Wed Mar 30 2016 Anish Swaminathan <anishs@vmware.com>  4.3.3-2
+- Add patch for CVE-2016-2774
+* Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1
+- Updated to version 4.3.3
+* Wed Jul 15 2015 Divya Thaluru <dthaluru@vmware.com> 4.3.2-1
+- Initial build.
