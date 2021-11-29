@@ -3,14 +3,15 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        12.0.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
-%define sha1    lldb=00ca5a5e20b228df1022669a08d40ac3b5eef6c3
+%define sha1    %{name}=00ca5a5e20b228df1022669a08d40ac3b5eef6c3
+
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
 BuildRequires:  clang-devel = %{version}
@@ -19,6 +20,9 @@ BuildRequires:  swig
 BuildRequires:  zlib-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  python3-devel
+BuildRequires:  lua-devel
+
+Requires:       lua
 Requires:       llvm = %{version}
 Requires:       clang = %{version}
 Requires:       ncurses
@@ -50,28 +54,25 @@ The package contains the LLDB Python3 module.
 %build
 mkdir -p build
 cd build
-cmake -DCMAKE_INSTALL_PREFIX=/usr           \
-      -DCMAKE_BUILD_TYPE=Release            \
-      -DLLDB_PATH_TO_LLVM_BUILD=%{_prefix}  \
+cmake -DCMAKE_INSTALL_PREFIX=/usr \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DLLDB_PATH_TO_LLVM_BUILD=%{_prefix} \
       -DLLDB_PATH_TO_CLANG_BUILD=%{_prefix} \
-      -DLLVM_DIR=/usr/lib/cmake/llvm        \
-      -DLLVM_BUILD_LLVM_DYLIB=ON ..         \
+      -DLLVM_DIR=/usr/lib/cmake/llvm \
+      -DLLVM_BUILD_LLVM_DYLIB=ON .. \
       -DLLDB_DISABLE_LIBEDIT:BOOL=ON
+
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 cd build
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 #Remove bundled python-six files
 rm -f %{buildroot}%{python3_sitelib}/six.*
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
-
-#%check
-#Commented out %check due to no test existence
+%ldconfig_scriptlets
 
 %clean
 rm -rf %{buildroot}/*
@@ -93,24 +94,26 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
-*   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 12.0.0-2
--   Release bump up to use libxml2 2.9.12-1.
-*   Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 12.0.0-1
--   Automatic Version Bump
-*   Thu Feb 04 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.0.1-1
--   Upgrade to v11.0.1
-*   Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 10.0.1-1
--   Automatic Version Bump
-*   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 6.0.1-2
--   Removed python2
-*   Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.0.1-1
--   Update to version 6.0.1 to get it to build with gcc 7.3
--   Make python2_sitelib macro global to fix build error.
-*   Mon Jul 10 2017 Chang Lee <changlee@vmware.com> 4.0.0-3
--   Commented out %check due to no test existence.
-*   Wed Jul 5 2017 Divya Thaluru <dthaluru@vmware.com> 4.0.0-2
--   Added python-lldb package
-*   Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1
--   Version update
-*   Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
--   Initial build.
+* Mon Nov 29 2021 Shreenidhi Shedi <sshedi@vmware.com> 12.0.0-3
+- Add lua to Requires
+* Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 12.0.0-2
+- Release bump up to use libxml2 2.9.12-1.
+* Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 12.0.0-1
+- Automatic Version Bump
+* Thu Feb 04 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.0.1-1
+- Upgrade to v11.0.1
+* Mon Aug 24 2020 Gerrit Photon <photon-checkins@vmware.com> 10.0.1-1
+- Automatic Version Bump
+* Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 6.0.1-2
+- Removed python2
+* Thu Aug 09 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 6.0.1-1
+- Update to version 6.0.1 to get it to build with gcc 7.3
+- Make python2_sitelib macro global to fix build error.
+* Mon Jul 10 2017 Chang Lee <changlee@vmware.com> 4.0.0-3
+- Commented out %check due to no test existence.
+* Wed Jul 5 2017 Divya Thaluru <dthaluru@vmware.com> 4.0.0-2
+- Added python-lldb package
+* Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1
+- Version update
+* Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
+- Initial build.
