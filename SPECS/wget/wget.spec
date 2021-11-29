@@ -7,16 +7,21 @@ URL:            http://www.gnu.org/software/wget/wget.html
 Group:          System Environment/NetworkingPrograms
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        ftp://ftp.gnu.org/gnu/%{name}/%{name}-%{version}.tar.gz
 %define sha1    wget=2b886eab5b97267cc358ab35e42d14d33d6dfc95
+
 BuildRequires:  openssl-devel
+
 %description
-The Wget package contains a utility useful for non-interactive 
+The Wget package contains a utility useful for non-interactive
 downloading of files from the Web.
+
 %prep
-%setup -q
+%autosetup -p1
+
 %build
-./configure \
+sh ./configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --disable-silent-rules \
@@ -24,11 +29,12 @@ downloading of files from the Web.
     --bindir=%{_bindir} \
     --libdir=%{_libdir} \
     --sysconfdir=/etc \
-    --with-ssl=openssl 
+    --with-ssl=openssl
 make %{?_smp_mflags}
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}/etc
 cat >> %{buildroot}/etc/wgetrc <<-EOF
 #   default root certs location
@@ -38,7 +44,8 @@ rm -rf %{buildroot}/%{_infodir}
 %find_lang %{name}
 %{_fixperms} %{buildroot}/*
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %clean
 rm -rf %{buildroot}/*
 %files -f %{name}.lang
@@ -46,18 +53,19 @@ rm -rf %{buildroot}/*
 %config(noreplace) /etc/wgetrc
 %{_bindir}/*
 %{_mandir}/man1/*
+
 %changelog
-*   Wed May 29 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.20.3-1
--   Updated to latest version. Fix CVE-2019-5953, CVE-2018-20483
-*   Mon Nov 20 2017 Xiaolin Li <xiaolinl@vmware.com> 1.18-3
--   Fix CVE-2017-13089 and CVE-2017-13090
-*   Fri Jun 30 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.18-2
--   Added fix for CVE-2017-6508
-*   Tue Nov 29 2016 Anish Swaminathan <anishs@vmware.com>  1.18-1
--   Upgrade wget versions - fixes CVE-2016-7098
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.17.1-2
--   GA - Bump release of all rpms
-*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.17.1-1
--   Upgrade version
-*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.15-1
--   Initial build.  First version
+* Wed May 29 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.20.3-1
+- Updated to latest version. Fix CVE-2019-5953, CVE-2018-20483
+* Mon Nov 20 2017 Xiaolin Li <xiaolinl@vmware.com> 1.18-3
+- Fix CVE-2017-13089 and CVE-2017-13090
+* Fri Jun 30 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.18-2
+- Added fix for CVE-2017-6508
+* Tue Nov 29 2016 Anish Swaminathan <anishs@vmware.com>  1.18-1
+- Upgrade wget versions - fixes CVE-2016-7098
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.17.1-2
+- GA - Bump release of all rpms
+* Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.17.1-1
+- Upgrade version
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 1.15-1
+- Initial build.  First version

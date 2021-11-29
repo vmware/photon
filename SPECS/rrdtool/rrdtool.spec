@@ -7,8 +7,10 @@ URL:		http://oss.oetiker.ch/rrdtool/
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 Distribution:	Photon
+
 Source0:	https://github.com/oetiker/rrdtool-1.x/releases/download/v1.6.0/%{name}-%{version}.tar.gz
 %define sha1 rrdtool=9866b41bda9416188f236d61d24f185b173fd571
+
 BuildRequires:	pkg-config
 BuildRequires:	libpng-devel
 BuildRequires:	pango-devel
@@ -19,6 +21,7 @@ BuildRequires:	fontconfig-devel
 BuildRequires:	cairo-devel
 BuildRequires:	glib-devel
 BuildRequires:	systemd
+
 Requires:	systemd
 
 %description
@@ -29,28 +32,30 @@ display time-series data.
 Summary:	Header and development files
 Requires:	%{name} = %{version}-%{release}
 %description	devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
-%setup -q 
+%autosetup -p1
+
 %build
-./configure \
+sh ./configure \
 	--prefix=%{_prefix}	\
 	--disable-tcl		\
 	--disable-python 	\
 	--disable-perl		\
 	--disable-lua		\
 	--disable-examples	\
-        --with-systemdsystemunitdir=%{_unitdir} \
-        --disable-docs 		\
+    --with-systemdsystemunitdir=%{_unitdir} \
+    --disable-docs 		\
 	--disable-static
+
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
-#%check
+#%%check
 #make %{?_smp_mflags} -k check
 
 %post
@@ -78,5 +83,5 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
-*       Wed Apr 5 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.6.0-1
--       Initial version
+* Wed Apr 5 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.6.0-1
+- Initial version

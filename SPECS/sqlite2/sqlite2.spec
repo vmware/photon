@@ -22,10 +22,10 @@ Requires: %{name} = %{version}
 Headers and development libraries for sqlite2
 
 %prep
-%setup -q -n sqlite-%{version}
+%autosetup -p1 -n sqlite-%{version}
 
 %build
-./configure \
+sh ./configure \
        --prefix=%{_prefix}  \
        --mandir=%{_mandir}  \
        --enable-threads     \
@@ -34,8 +34,8 @@ Headers and development libraries for sqlite2
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -54,5 +54,5 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/libsqlite.so
 
 %changelog
-*   Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  2.8.17-1
--   Initial build.  First version
+* Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  2.8.17-1
+- Initial build.  First version

@@ -7,8 +7,10 @@ URL:            http://www.python.org/
 Group:          System Environment/Programming
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://www.python.org/ftp/python/%{version}/Python-%{version}.tar.xz
 %define         sha1 Python=05548da58ec75a7af316c4a4cb8fc667ac6ac8f9
+
 Patch0:         cgi3.patch
 Patch1:         sockWarning.patch
 Patch3:         python3-CVE-2018-1000117.patch
@@ -39,17 +41,24 @@ BuildRequires:  ncurses-devel >= 6.0-3
 BuildRequires:  openssl-devel
 BuildRequires:  readline-devel
 BuildRequires:  xz-devel
+BuildRequires:  expat >= 2.2.4
+BuildRequires:  libffi >= 3.0.13
+BuildRequires:  ncurses-devel >= 6.0-3
+BuildRequires:  sqlite-autoconf
+
 Requires:       bzip2
 Requires:       ncurses >= 6.0-3
 Requires:       openssl
 Requires:       python3-libs = %{version}-%{release}
 Requires:       readline
 Requires:       xz
+
 Provides:       python-sqlite
 Provides:       python(abi)
 Provides:       /usr/bin/python
 Provides:       /bin/python
 Provides:       /bin/python3
+
 #Conflicts with pyconfig.h file from earlier devel package
 Conflicts: python3-devel < %{version}-%{release}
 
@@ -62,16 +71,11 @@ code. It is incompatible with Python 2.x releases.
 %package libs
 Summary:        The libraries for python runtime
 Group:          Applications/System
-BuildRequires:  expat >= 2.2.4
-BuildRequires:  libffi >= 3.0.13
-BuildRequires:  ncurses-devel >= 6.0-3
-BuildRequires:  sqlite-autoconf
 Requires:       coreutils
 Requires:       expat >= 2.2.4
 Requires:       libffi >= 3.0.13
 Requires:       ncurses >= 6.0-3
 Requires:       sqlite-autoconf
-
 
 %description libs
 The python interpreter can be embedded into applications wanting to
@@ -106,36 +110,12 @@ Requires: python3 = %{version}-%{release}
 The Python package includes several development tools that are used
 to build python programs.
 
-
 %prep
-%setup -q -n Python-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
-%patch20 -p1
-%patch21 -p1
-%patch22 -p1
-%patch23 -p1
+%autosetup -p1 -n Python-%{version}
 
 %build
 export OPT="${CFLAGS}"
-./configure \
+sh ./configure \
     CFLAGS="%{optflags}" \
     CXXFLAGS="%{optflags}" \
     --prefix=%{_prefix} \
@@ -148,8 +128,8 @@ export OPT="${CFLAGS}"
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 chmod -v 755 %{buildroot}%{_libdir}/libpython3.5m.so.1.0
 %{_fixperms} %{buildroot}/*
 
@@ -160,7 +140,7 @@ find %{buildroot}%{_libdir} -name '*.o' -delete
 rm %{buildroot}%{_bindir}/2to3
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %post
 /sbin/ldconfig
@@ -237,81 +217,81 @@ rm -rf %{buildroot}/*
 %{_bindir}/idle*
 
 %changelog
-*   Thu Nov 05 2020 Tapas Kundu <tkundu@vmware.com> 3.5.6-18
--   Fix CVE-2020-27619
-*   Mon Oct 12 2020 Tapas Kundu <tkundu@vmware.com> 3.5.6-17
--   Fix CVE-2020-26116
-*   Mon Jul 20 2020 Tapas Kundu <tkundu@vmware.com> 3.5.6-16
--   Address CVE-2019-20907
-*   Wed Jul 01 2020 Tapas Kundu <tkundu@vmware.com> 3.5.6-15
--   Address CVE-2020-14422
-*   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 3.5.6-14
--   Fix CVE-2019-18348 and CVE-2020-8492
-*   Wed Feb 12 2020 Tapas Kundu <tkundu@vmware.com> 3.5.6-13
--   Fix for CVE-2019-9674
-*   Tue Nov 05 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-12
--   Fix for CVE-2019-17514
-*   Wed Oct 30 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-11
--   Fix for CVE-2019-16935.
-*   Wed Sep 11 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-10
--   Fix for CVE-2019-16056
-*   Thu Aug 20 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-9
--   Fix libpython3.so conflict
-*   Mon Jul 22 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-8
--   Fix for CVE-2018-20852
--   Excluded windows installer from python3 libs packaging.
-*   Mon Jun 17 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-7
--   Fix for CVE-2019-10160
-*   Mon Jun 03 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-6
--   Fix for CVE-2019-9740, CVE-2019-9947.
-*   Thu May 23 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-5
--   Fix for CVE-2019-5010
-*   Wed Mar 13 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-4
--   Fix for CVE-2019-9636
-*   Mon Feb 11 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-3
--   Fix for CVE-2018-20406
-*   Mon Dec 31 2018 Tapas Kundu <tkundu@vmware.com> 3.5.6-2
--   Fix for CVE-2018-14647
-*   Thu Dec 06 2018 Sujay G <gsujay@vmware.com> 3.5.6-1
--   Upgrade to version 3.5.6
-*   Fri Aug 17 2018 Dweep Advani <dadvani@vmware.com> 3.5.5-2
--   Fix CVE-2018-1060 and CVE-2018-1061
-*   Fri May 11 2018 Xiaolin Li <xiaolinl@vmware.com> 3.5.5-1
--   Upgrading to 3.5.5
-*   Wed Apr 18 2018 Xiaolin Li <xiaolinl@vmware.com> 3.5.4-2
--   Fix CVE-2018-1000117 and CVE-2017-18207
-*   Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 3.5.4-1
--   Upgrading to 3.5.4
-*   Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 3.5.3-7
--   Release bump for expat version update
-*   Thu Sep 14 2017 Kumar Kaushik <kaushikk@vmware.com> 3.5.3-6
--   Adding patch for socket cleanup issue, Bug # 1956257.
-*   Fri Jul 28 2017 Divya Thaluru <dthaluru@vmware.com> 3.5.3-5
--   Fixed dependencies for easy_install-3.5
-*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 3.5.3-4
--   Bump release to built with latest toolchain
-*   Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 3.5.3-3
--   Use specified version of ncurses wich has long chtype and mmask_t
+* Thu Nov 05 2020 Tapas Kundu <tkundu@vmware.com> 3.5.6-18
+- Fix CVE-2020-27619
+* Mon Oct 12 2020 Tapas Kundu <tkundu@vmware.com> 3.5.6-17
+- Fix CVE-2020-26116
+* Mon Jul 20 2020 Tapas Kundu <tkundu@vmware.com> 3.5.6-16
+- Address CVE-2019-20907
+* Wed Jul 01 2020 Tapas Kundu <tkundu@vmware.com> 3.5.6-15
+- Address CVE-2020-14422
+* Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 3.5.6-14
+- Fix CVE-2019-18348 and CVE-2020-8492
+* Wed Feb 12 2020 Tapas Kundu <tkundu@vmware.com> 3.5.6-13
+- Fix for CVE-2019-9674
+* Tue Nov 05 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-12
+- Fix for CVE-2019-17514
+* Wed Oct 30 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-11
+- Fix for CVE-2019-16935.
+* Wed Sep 11 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-10
+- Fix for CVE-2019-16056
+* Tue Aug 20 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-9
+- Fix libpython3.so conflict
+* Mon Jul 22 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-8
+- Fix for CVE-2018-20852
+- Excluded windows installer from python3 libs packaging.
+* Mon Jun 17 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-7
+- Fix for CVE-2019-10160
+* Mon Jun 03 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-6
+- Fix for CVE-2019-9740, CVE-2019-9947.
+* Thu May 23 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-5
+- Fix for CVE-2019-5010
+* Wed Mar 13 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-4
+- Fix for CVE-2019-9636
+* Mon Feb 11 2019 Tapas Kundu <tkundu@vmware.com> 3.5.6-3
+- Fix for CVE-2018-20406
+* Mon Dec 31 2018 Tapas Kundu <tkundu@vmware.com> 3.5.6-2
+- Fix for CVE-2018-14647
+* Thu Dec 06 2018 Sujay G <gsujay@vmware.com> 3.5.6-1
+- Upgrade to version 3.5.6
+* Fri Aug 17 2018 Dweep Advani <dadvani@vmware.com> 3.5.5-2
+- Fix CVE-2018-1060 and CVE-2018-1061
+* Fri May 11 2018 Xiaolin Li <xiaolinl@vmware.com> 3.5.5-1
+- Upgrading to 3.5.5
+* Wed Apr 18 2018 Xiaolin Li <xiaolinl@vmware.com> 3.5.4-2
+- Fix CVE-2018-1000117 and CVE-2017-18207
+* Mon Dec 04 2017 Kumar Kaushik <kaushikk@vmware.com> 3.5.4-1
+- Upgrading to 3.5.4
+* Tue Sep 26 2017 Anish Swaminathan <anishs@vmware.com> 3.5.3-7
+- Release bump for expat version update
+* Thu Sep 14 2017 Kumar Kaushik <kaushikk@vmware.com> 3.5.3-6
+- Adding patch for socket cleanup issue, Bug # 1956257.
+* Fri Jul 28 2017 Divya Thaluru <dthaluru@vmware.com> 3.5.3-5
+- Fixed dependencies for easy_install-3.5
+* Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com> 3.5.3-4
+- Bump release to built with latest toolchain
+* Mon Apr 3 2017 Alexey Makhalov <amakhalov@vmware.com> 3.5.3-3
+- Use specified version of ncurses wich has long chtype and mmask_t
     (see ncurses changelog)
-*   Fri Mar 10 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.3-2
--   Provides /bin/python3.
-*   Tue Feb 28 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.3-1
--   Updated to version 3.5.3
-*   Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-6
--   Patch for CVE-2016-5636
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-5
--   GA - Bump release of all rpms
-*   Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-4
--   Edit scriptlets.
-*   Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-3
--   update python to require python-libs
-*   Thu Apr 07 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.5.1-2
--   Providing python3 binaries instead of the minor versions.
-*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.1-1
--   Updated to version 3.5.1
-*   Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 3.4.3-3
--   Edit post script.
-*   Mon Aug 17 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3-2
--   Remove python.o file, and minor cleanups.
-*   Wed Jul 1 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3
--   Add Python3 package to Photon.
+* Fri Mar 10 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.3-2
+- Provides /bin/python3.
+* Tue Feb 28 2017 Xiaolin Li <xiaolinl@vmware.com> 3.5.3-1
+- Updated to version 3.5.3
+* Thu Oct 27 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-6
+- Patch for CVE-2016-5636
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-5
+- GA - Bump release of all rpms
+* Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 3.5.1-4
+- Edit scriptlets.
+* Wed Apr 13 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.1-3
+- update python to require python-libs
+* Thu Apr 07 2016 Mahmoud Bassiouny <mbassiouny@vmware.com> 3.5.1-2
+- Providing python3 binaries instead of the minor versions.
+* Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.5.1-1
+- Updated to version 3.5.1
+* Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 3.4.3-3
+- Edit post script.
+* Mon Aug 17 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3-2
+- Remove python.o file, and minor cleanups.
+* Wed Jul 1 2015 Vinay Kulkarni <kulkarniv@vmware.com> 3.4.3
+- Add Python3 package to Photon.

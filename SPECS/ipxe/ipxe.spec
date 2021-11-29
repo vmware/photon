@@ -11,9 +11,11 @@ URL:            http://ipxe.org
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 #Download URL:  https://git.ipxe.org/ipxe.git/snapshot/%{commit}.tar.bz2
 Source0:        %{name}-%{version}.tar.bz2
-%define sha1 ipxe=723e1e46b00a7de870065b74f053941f46748062
+%define sha1 %{name}=723e1e46b00a7de870065b74f053941f46748062
+
 BuildRequires:  binutils
 BuildRequires:  binutils-devel
 BuildRequires:  cdrkit
@@ -34,37 +36,37 @@ iPXE is the leading open source network boot firmware. It provides a full
 PXE implementation enhanced with additional features.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
 cd src
 make %{_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-mkdir -p %{buildroot}/usr/share/ipxe
-install -vDm 644 src/bin/ipxe.{dsk,iso,lkrn,usb} %{buildroot}/usr/share/ipxe/
-install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}/usr/share/ipxe/
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+mkdir -p %{buildroot}%{_datadir}/%{name}
+install -vDm 644 src/bin/%{name}.{dsk,iso,lkrn,usb} %{buildroot}%{_datadir}/%{name}/
+install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}%{_datadir}/%{name}/
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %files
 %defattr(-,root,root)
-/usr/share/ipxe/ipxe.dsk
-/usr/share/ipxe/ipxe.iso
-/usr/share/ipxe/ipxe.lkrn
-/usr/share/ipxe/ipxe.usb
-/usr/share/ipxe/10222000.rom
-/usr/share/ipxe/10500940.rom
-/usr/share/ipxe/10ec8139.rom
-/usr/share/ipxe/15ad07b0.rom
-/usr/share/ipxe/1af41000.rom
-/usr/share/ipxe/8086100e.mrom
-/usr/share/ipxe/8086100f.mrom
-/usr/share/ipxe/808610d3.mrom
-/usr/share/ipxe/80861209.rom
-/usr/share/ipxe/rtl8139.rom
+%{_datadir}/%{name}/%{name}.dsk
+%{_datadir}/%{name}/%{name}.iso
+%{_datadir}/%{name}/%{name}.lkrn
+%{_datadir}/%{name}/%{name}.usb
+%{_datadir}/%{name}/10222000.rom
+%{_datadir}/%{name}/10500940.rom
+%{_datadir}/%{name}/10ec8139.rom
+%{_datadir}/%{name}/15ad07b0.rom
+%{_datadir}/%{name}/1af41000.rom
+%{_datadir}/%{name}/8086100e.mrom
+%{_datadir}/%{name}/8086100f.mrom
+%{_datadir}/%{name}/808610d3.mrom
+%{_datadir}/%{name}/80861209.rom
+%{_datadir}/%{name}/rtl8139.rom
 
 %changelog
 *   Wed Jun 06 2018 Xiaolin Li <xiaolinl@vmware.com> 553f485-1

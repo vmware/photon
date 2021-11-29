@@ -7,14 +7,17 @@ URL:            http://clang.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://releases.llvm.org/%{version}/cfe-%{version}.src.tar.xz
 %define sha1    cfe=95e4be54b70f32cf98a8de36821ea5495b84add8
+
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
 BuildRequires:  ncurses-devel
 BuildRequires:  zlib-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  python2-devel
+
 Requires:       libstdc++-devel
 Requires:       ncurses
 Requires:       llvm
@@ -34,7 +37,7 @@ The clang-devel package contains libraries, header files and documentation
 for developing applications that use clang.
 
 %prep
-%setup -q -n cfe-%{version}.src
+%autosetup -p1 -n cfe-%{version}.src
 
 %build
 mkdir -p build
@@ -46,9 +49,9 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr   \
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 cd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -75,5 +78,5 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
-*   Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
--   Initial build.
+* Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
+- Initial build.

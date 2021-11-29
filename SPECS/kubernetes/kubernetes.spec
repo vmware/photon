@@ -4,21 +4,25 @@ Version:        1.17.11
 Release:        5%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
 Source0:        kubernetes-%{version}.tar.gz
 %define sha1    kubernetes-%{version}.tar.gz=f5634a00f087ea6c7d15848de837d6cd0a1b3e3f
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
+
 Patch0:         CVE-2020-8564.patch
 Patch1:         CVE-2020-8565.patch
 Patch2:         CVE-2020-8566.patch
 Patch3:         CVE-2021-25737.patch
 Patch4:         CVE-2021-25741.patch
-Group:          Development/Tools
-Vendor:         VMware, Inc.
-Distribution:   Photon
+
 BuildRequires:  go >= 1.13.5
 BuildRequires:  rsync
 BuildRequires:  which
+
 Requires:       cni
 Requires:       ebtables
 Requires:       etcd >= 3.0.4
@@ -56,6 +60,7 @@ A pod setup process that holds a pod's namespace.
 %global debug_package %{nil}
 
 %prep -p exit
+# Using autosetup is not feasible
 %setup -qn %{name}-%{version}
 cd ..
 tar xf %{SOURCE1} --no-same-owner
@@ -71,14 +76,14 @@ cd %{name}-%{version}
 %patch4 -p1
 
 %build
-make
-make WHAT="cmd/cloud-controller-manager"
+make %{?_smp_mflags}
+make WHAT="cmd/cloud-controller-manager" %{?_smp_mflags}
 pushd build/pause
 mkdir -p bin
 gcc -Os -Wall -Werror -static -o bin/pause-amd64 pause.c
 strip bin/pause-amd64
 popd
-make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/amd64 windows/amd64"
+make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/amd64 windows/amd64" %{?_smp_mflags}
 
 %install
 install -vdm644 %{buildroot}/etc/profile.d
@@ -190,7 +195,7 @@ fi
 %{_bindir}/kube-proxy
 %{_bindir}/kube-scheduler
 %{_bindir}/kubectl
-#%{_bindir}/kubefed
+#%%{_bindir}/kubefed
 %{_lib}/systemd/system/kube-apiserver.service
 %{_lib}/systemd/system/kubelet.service
 %{_lib}/systemd/system/kube-scheduler.service
@@ -226,87 +231,87 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
-*   Fri Sep 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-5
--   Fix CVE-2021-25741
-*   Tue Jun 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-4
--   Fix CVE-2021-25737
-*   Thu Mar 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-3
--   Fix CVE-2020-8565
-*   Tue Mar 02 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-2
--   Fix CVE-2020-8564, CVE-2020-8566
-*   Wed Sep 16 2020 Ashwin H <ashwinh@vmware.com> 1.17.11-1
--   Update to 1.17.x
-*   Mon Aug 03 2020 Ashwin H <ashwinh@vmware.com> 1.13.12-5
--   Fix CVE-2020-8558
-*   Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 1.13.12-4
--   Bump up version to compile with new go version
-*   Thu Apr 09 2020 Shreyas B <shreyasb@vmware.com> 1.13.12-3
--   Fix for CVE-2020-8552
-*   Tue Apr 07 2020 Shreyas B <shreyasb@vmware.com> 1.13.12-2
--   Fix for CVE-2019-11250
-*   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 1.13.12-1
--   Update to 1.13.12 which has fix for CVE-2019-11253
-*   Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 1.12.10-2
--   Bump up version to compile with new go
-*   Tue Sep 10 2019 Ashwin H <ashwinh@vmware.com> 1.12.10-1
--   Update to 1.12.10 and Fix CVE-2019-11247, CVE-2019-11249
-*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-3
--   Bump up version to compile with new go
-*   Wed Jun 26 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-2
--   Fix CVE-2019-11244
-*   Tue May 07 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-1
--   Upgrade to k8s 1.12.7
-*   Thu Dec 20 2018 Ashwin H <ashwinh@vmware.com> 1.9.6-2
--   Fix CVE-2018-1002105
-*   Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.9.6-1
--   k8s v1.9.6 and Cascade Cloud Provider patch
-*   Tue Jan 30 2018 Ashok Chandrasekar <ashokc@vmware.com> 1.8.1-5
--   Fix issue in Cascade cloud provider.
-*   Tue Jan 23 2018 Ashok Chandrasekar <ashokc@vmware.com> 1.8.1-4
--   Add Cascade cloud provider.
-*   Wed Nov 15 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-3
--   Specify --kubeconfig to pass in config file.
-*   Fri Nov 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-2
--   Specify API server via kubeconfig file.
-*   Mon Oct 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-1
--   k8s v1.8.1
-*   Fri Oct 06 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.5-2
--   Add k8s pause.
-*   Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.5-1
--   k8s v1.7.5.
-*   Wed Aug 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-2
--   Split kubeadm into its own pkg.
-*   Fri Jul 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-1
--   Upgrade kubernetes to v1.7.0.
-*   Tue May 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-3
--   Fix kubernetes dependencies.
-*   Thu May 04 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-2
--   Include cloud-controller-manager, kube-aggregator binaries.
-*   Tue Mar 28 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-1
--   Build kubernetes 1.6.0 from source.
-*   Mon Feb 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.5.2-3
--   Added kubeadm, kubefed, dns, discovery to package.
-*   Fri Jan 27 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-2
--   Added /lib/tmpfiles.d/kubernetes.conf.
-*   Thu Jan 19 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-1
--   Upgraded to version 1.5.2
-*   Fri Oct 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.4.4-1
--   Upgraded to version 1.4.4
-*   Wed Sep 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.4.0-1
--   Upgraded to version 1.4.0
-*   Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.4-1
--   Upgraded to version 1.2.4
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.8-4
--   GA - Bump release of all rpms
-*   Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.8-3
--   Fix if syntax
-*   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.1.8-2
--   Adding support to pre/post/un scripts for package upgrade.
-*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.1.8-1
--   Upgraded to version 1.1.8
-*   Mon Aug 3 2015 Tom Scanlan <tscanlan@vmware.com> 1.0.2-1
--   bump up to latest release
-*   Thu Jul 23 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.1-1
--   Upgrade to kubernetes v1.0.1
-*   Tue Mar 10 2015 Divya Thaluru <dthaluru@vmware.com> 0.12.1-1
--   Initial build. First version
+* Fri Sep 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-5
+- Fix CVE-2021-25741
+* Tue Jun 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-4
+- Fix CVE-2021-25737
+* Thu Mar 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-3
+- Fix CVE-2020-8565
+* Tue Mar 02 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-2
+- Fix CVE-2020-8564, CVE-2020-8566
+* Wed Sep 16 2020 Ashwin H <ashwinh@vmware.com> 1.17.11-1
+- Update to 1.17.x
+* Mon Aug 03 2020 Ashwin H <ashwinh@vmware.com> 1.13.12-5
+- Fix CVE-2020-8558
+* Fri Apr 24 2020 Harinadh D <hdommaraju@vmware.com> 1.13.12-4
+- Bump up version to compile with new go version
+* Thu Apr 09 2020 Shreyas B <shreyasb@vmware.com> 1.13.12-3
+- Fix for CVE-2020-8552
+* Tue Apr 07 2020 Shreyas B <shreyasb@vmware.com> 1.13.12-2
+- Fix for CVE-2019-11250
+* Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 1.13.12-1
+- Update to 1.13.12 which has fix for CVE-2019-11253
+* Fri Jan 03 2020 Ashwin H <ashwinh@vmware.com> 1.12.10-2
+- Bump up version to compile with new go
+* Tue Sep 10 2019 Ashwin H <ashwinh@vmware.com> 1.12.10-1
+- Update to 1.12.10 and Fix CVE-2019-11247, CVE-2019-11249
+* Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-3
+- Bump up version to compile with new go
+* Wed Jun 26 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-2
+- Fix CVE-2019-11244
+* Tue May 07 2019 Ashwin H <ashwinh@vmware.com> 1.12.7-1
+- Upgrade to k8s 1.12.7
+* Thu Dec 20 2018 Ashwin H <ashwinh@vmware.com> 1.9.6-2
+- Fix CVE-2018-1002105
+* Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.9.6-1
+- k8s v1.9.6 and Cascade Cloud Provider patch
+* Tue Jan 30 2018 Ashok Chandrasekar <ashokc@vmware.com> 1.8.1-5
+- Fix issue in Cascade cloud provider.
+* Tue Jan 23 2018 Ashok Chandrasekar <ashokc@vmware.com> 1.8.1-4
+- Add Cascade cloud provider.
+* Wed Nov 15 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-3
+- Specify --kubeconfig to pass in config file.
+* Fri Nov 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-2
+- Specify API server via kubeconfig file.
+* Mon Oct 23 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.8.1-1
+- k8s v1.8.1
+* Fri Oct 06 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.5-2
+- Add k8s pause.
+* Mon Sep 11 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.5-1
+- k8s v1.7.5.
+* Wed Aug 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-2
+- Split kubeadm into its own pkg.
+* Fri Jul 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.0-1
+- Upgrade kubernetes to v1.7.0.
+* Tue May 09 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-3
+- Fix kubernetes dependencies.
+* Thu May 04 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-2
+- Include cloud-controller-manager, kube-aggregator binaries.
+* Tue Mar 28 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.6.0-1
+- Build kubernetes 1.6.0 from source.
+* Mon Feb 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.5.2-3
+- Added kubeadm, kubefed, dns, discovery to package.
+* Fri Jan 27 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-2
+- Added /lib/tmpfiles.d/kubernetes.conf.
+* Thu Jan 19 2017 Xiaolin Li <xiaolinl@vmware.com> 1.5.2-1
+- Upgraded to version 1.5.2
+* Fri Oct 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.4.4-1
+- Upgraded to version 1.4.4
+* Wed Sep 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.4.0-1
+- Upgraded to version 1.4.0
+* Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.4-1
+- Upgraded to version 1.2.4
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.8-4
+- GA - Bump release of all rpms
+* Wed May 18 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.8-3
+- Fix if syntax
+* Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 1.1.8-2
+- Adding support to pre/post/un scripts for package upgrade.
+* Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.1.8-1
+- Upgraded to version 1.1.8
+* Mon Aug 3 2015 Tom Scanlan <tscanlan@vmware.com> 1.0.2-1
+- bump up to latest release
+* Thu Jul 23 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.1-1
+- Upgrade to kubernetes v1.0.1
+* Tue Mar 10 2015 Divya Thaluru <dthaluru@vmware.com> 0.12.1-1
+- Initial build. First version

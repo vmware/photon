@@ -1,4 +1,4 @@
-Summary:    administration tool for IP sets 
+Summary:    administration tool for IP sets
 Name:       ipset
 Version:    6.32
 Release:    1%{?dist}
@@ -30,10 +30,10 @@ Requires:   ipset
 Libraries and header files for ipset.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-./configure \
+sh ./configure \
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --libdir=%{_libdir} \
@@ -42,12 +42,11 @@ Libraries and header files for ipset.
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
-#%check
+#%%check
 #make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-
 
 %post
 /sbin/ldconfig
@@ -71,7 +70,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libipset.pc
 
 %changelog
-*   Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 6.32-1
--   Upgrading version to 6.32
-*   Wed Aug 3 2016 Xiaolin Li <xiaolinl@vmware.com> 6.29-1
--   Initial build.  First version
+* Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 6.32-1
+- Upgrading version to 6.32
+* Wed Aug 3 2016 Xiaolin Li <xiaolinl@vmware.com> 6.29-1
+- Initial build.  First version

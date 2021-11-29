@@ -7,10 +7,13 @@ URL:            https://github.com/esnet/iperf
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 #Source download URL: https://github.com/esnet/iperf/archive/3.1.tar.gz
 Source0:        https://github.com/esnet/iperf/archive/%{name}-%{version}.tar.gz
-Patch1:         disablepg.patch
 %define sha1 iperf=b5b1f06428b179cc8769a4deaed38056ad304158
+
+Patch1:         disablepg.patch
+
 BuildRequires:  autoconf
 BuildRequires:  automake
 
@@ -27,13 +30,12 @@ It contains the documentation and manpages for iperf package.
 Requires:       %{name} = %{version}-%{release}
 
 %prep
-%setup -q
-%patch1 -p1
+%autosetup -p1
 
 %build
 echo "VDBG optflags: " %{optflags}
 ./bootstrap.sh
-./configure \
+sh ./configure \
         CFLAGS="%{optflags}" \
         CXXFLAGS="%{optflags}" \
         --disable-silent-rules \
@@ -49,8 +51,8 @@ echo "VDBG optflags: " %{optflags}
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -64,11 +66,11 @@ make DESTDIR=%{buildroot} install
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
-*       Thu Oct 6 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.1.3-1
--       Upgraded to version 3.1.3
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.2-2
--	GA - Bump release of all rpms
-* 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  3.1.2-1
-- 	Upgrade to 3.1.2
-*       Wed Oct 28 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.7.0-1
--       Add iperf v3.1 package.
+* Thu Oct 6 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.1.3-1
+- Upgraded to version 3.1.3
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.2-2
+- GA - Bump release of all rpms
+* Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  3.1.2-1
+- Upgrade to 3.1.2
+* Wed Oct 28 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.7.0-1
+- Add iperf v3.1 package.

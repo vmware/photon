@@ -7,12 +7,16 @@ URL:            https://www.kernel.org/pub/linux/libs/pam/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://linux-pam.org/library/%{name}-%{version}.tar.bz2
 %define sha1 Linux-PAM=3620ab5f5e02272825c426622761a19a1a2facca
+
 BuildRequires:  cracklib-devel
+
 Requires:       cracklib
+
 %description
-The Linux PAM package contains Pluggable Authentication Modules used to 
+The Linux PAM package contains Pluggable Authentication Modules used to
 enable the local system administrator to choose how applications authenticate users.
 
 %package lang
@@ -23,21 +27,22 @@ Requires: Linux-PAM >= 1.2.1
 These are the additional language files of Linux-PAM.
 
 %prep
-%setup -q
-%build
+%autosetup -p1
 
-./configure \
+%build
+sh ./configure \
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --libdir=%{_libdir} \
-    --sysconfdir=/etc   \
-    --enable-securedir=/usr/lib/security \
+    --sysconfdir=%{_sysconfdir} \
+    --enable-securedir=%{_libdir}/security \
     --docdir=%{_docdir}/%{name}-%{version}
 
 make %{?_smp_mflags}
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot}
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 chmod -v 4755 %{buildroot}/sbin/unix_chkpwd
 install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
 ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_auth.so
@@ -50,11 +55,14 @@ find %{buildroot}/usr/lib/ -name '*.la' -delete
 
 %{_fixperms} %{buildroot}/*
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/*
@@ -71,16 +79,16 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 
 %changelog
-*   Fri Feb 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-4
--   Added pam_unix_auth.so, pam_unix_acct.so, pam_unix_passwd.so,
--   and pam_unix_session.so.
-*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 1.2.1-3
--   Packaging pam cracklib module
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-2
--   GA - Bump release of all rpms
-*   Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-1
--   Updated to version 1.2.1
-*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.1.8-2
--   Update according to UsrMove.
-*   Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 1.1.8-1
--   Initial build.  First version
+* Fri Feb 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-4
+- Added pam_unix_auth.so, pam_unix_acct.so, pam_unix_passwd.so,
+- and pam_unix_session.so.
+* Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 1.2.1-3
+- Packaging pam cracklib module
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-2
+- GA - Bump release of all rpms
+* Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-1
+- Updated to version 1.2.1
+* Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.1.8-2
+- Update according to UsrMove.
+* Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 1.1.8-1
+- Initial build.  First version

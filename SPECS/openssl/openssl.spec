@@ -7,15 +7,20 @@ URL:        http://www.openssl.org
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
 Distribution:   Photon
+
 Source0:    http://www.openssl.org/source/vmware-OpenSSL_1_0_2za.tar.gz
 %define sha1 vmware-OpenSSL_1_0_2za=9f29e5179926c25ea03068b8c5e17752d6d903d1
+
 Patch0:     c_rehash.patch
 Patch1:     openssl-ipv6apps.patch
 Patch2:     openssl-init-conslidate.patch
 Patch3:     openssl-drbg-default-read-system-fips.patch
 Patch4:     fips-2.20-vmw.patch
 Patch5:     openssl-optimized-curves.patch
-Requires:   bash glibc libgcc
+
+Requires:   bash
+Requires:   glibc
+Requires:   libgcc
 
 %description
 The OpenSSL package contains management tools and libraries relating
@@ -50,6 +55,7 @@ Requires: openssl = %{version}-%{release}
 Perl scripts that convert certificates and keys to various formats.
 
 %prep
+# Using autosetup is not feasible
 %setup -q -n vmware-OpenSSL_1_0_2za
 %patch0 -p1
 %patch1 -p1
@@ -71,18 +77,24 @@ export CFLAGS="%{optflags}"
     %{?_with_fips} \
     -Wl,-z,noexecstack \
     -Wa,--noexecstack "${CFLAGS}" "${LDFLAGS}"
-# does not support -j yet
+
+# make doesn't support _smp_mflags
 make
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+# make doesn't support _smp_mflags
 make INSTALL_PREFIX=%{buildroot} MANDIR=/usr/share/man MANSUFFIX=ssl install
 ln -sf %{_libdir}/libssl.so.1.0.0 %{buildroot}%{_libdir}/libssl.so.1.0.2
 ln -sf %{_libdir}/libcrypto.so.1.0.0 %{buildroot}%{_libdir}/libcrypto.so.1.0.2
 
 %check
+# make doesn't support _smp_mflags
 make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
 

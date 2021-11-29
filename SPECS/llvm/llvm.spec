@@ -7,11 +7,13 @@ URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
 %define sha1    llvm=6349f3aa23250d6c56d709946415237e665a2d0d
-Patch0:         Install-CheckAtomic.cmake-needed-by-lldb.patch
+
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
+
 Requires:       libxml2
 
 %description
@@ -26,8 +28,7 @@ The llvm-devel package contains libraries, header files and documentation
 for developing applications that use llvm.
 
 %prep
-%setup -q -n %{name}-%{version}.src
-#%patch0 -p1
+%autosetup -p1 -n %{name}-%{version}.src
 
 %build
 mkdir -p build
@@ -40,10 +41,11 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr           \
       -Wno-dev ..
 
 make %{?_smp_mflags}
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 cd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -65,5 +67,5 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
-*   Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
--   Initial build.
+* Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
+- Initial build.

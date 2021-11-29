@@ -4,15 +4,18 @@ Version:	1.7.2
 Release:	4%{?dist}
 License:	BSD
 URL:		https://wiki.postgresql.org/wiki/PgBouncer
-Source0:        https://pgbouncer.github.io/downloads/files/1.7.2/%{name}-%{version}.tar.gz
-%define sha1 pgbouncer=d9bb29da15d90713e2399af3ebf5019da5cbe2d6
 Group:		Application/Databases.
 Vendor:		VMware, Inc.
 Distribution:	Photon
+
+Source0:        https://pgbouncer.github.io/downloads/files/1.7.2/%{name}-%{version}.tar.gz
+%define sha1 pgbouncer=d9bb29da15d90713e2399af3ebf5019da5cbe2d6
+
 BuildRequires:  libevent-devel
 BuildRequires:  openssl-devel
 BuildRequires:  systemd
 BuildRequires:  pkg-config
+
 Requires:		libevent
 Requires:		openssl
 
@@ -20,15 +23,15 @@ Requires:		openssl
 Pgbouncer is a light-weight, robust connection pooler for PostgreSQL.
 
 %prep
-%setup
+%autosetup -p1
 
 %build
-%configure --datadir=%{_datadir}
+%configure
 make %{?_smp_mflags} V=1
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 744 %{buildroot}/var/log/pgbouncer
 install -vdm 755 %{buildroot}/var/run/pgbouncer
 install -p -d %{buildroot}%{_sysconfdir}/
@@ -87,11 +90,11 @@ fi
 /var/run/pgbouncer
 
 %changelog
-*	Thu	Apr 20	2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.2-4
--	Updated the requires + release bump for building with new libevent
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.2-3
--	GA - Bump release of all rpms
-*	Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 1.7.2-2
--	Edit scriptlets.
-*       Thu Apr 28 2016 Kumar Kaushik <kaushikk@vmware.com> 1.7.2-1
--       Initial Version.
+* Thu Apr 20	2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.7.2-4
+- Updated the requires + release bump for building with new libevent
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.7.2-3
+- GA - Bump release of all rpms
+* Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 1.7.2-2
+- Edit scriptlets.
+* Thu Apr 28 2016 Kumar Kaushik <kaushikk@vmware.com> 1.7.2-1
+- Initial Version.

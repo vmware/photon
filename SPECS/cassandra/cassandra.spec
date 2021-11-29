@@ -1,5 +1,6 @@
-#%global debug_package %{nil}
+%global debug_package %{nil}
 %global __os_install_post %{nil}
+
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        3.11.10
@@ -9,6 +10,7 @@ License:        Apache License, Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
 %define sha1    apache-cassandra=6ec404a09bea1fd012aad5f87d5358eeb2db9bcc
 # https://search.maven.org/maven2/ch/qos/logback/logback-classic/1.2.0/logback-classic-1.2.0.jar
@@ -19,27 +21,30 @@ Source1:        cassandra-libthrift-logback-jars.tar.gz
 Source2:        cassandra-jackson-jars.tar.gz
 %define sha1    cassandra-jackson-jars=71f573e2185c79cd8c619ddae179ed880ca8b762
 Source3:        cassandra.service
+
 Patch0:         cassandra-bump-jackson-version.patch
+
 BuildRequires:  apache-ant
 BuildRequires:  unzip zip
 BuildRequires:  openjdk
 BuildRequires:  wget
+
 Requires:       openjre
 Requires:       gawk
 Requires:       shadow
+
 %description
 Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store.
 Cassandra brings together the distributed systems technologies from Dynamo and the log-structured storage engine from Google's BigTable.
 
 %prep
+# Using autosetup is not feasible
 %setup -qn apache-%{name}-%{version}-src
 sed -i 's#\"logback-core\" version=\"1.1.3\"#\"logback-core\" version=\"1.2.0\"#g' build.xml
 sed -i 's#\"logback-classic\" version=\"1.1.3\"#\"logback-classic\" version=\"1.2.0\"#g' build.xml
 sed -i 's#\"libthrift\" version=\"0.9.2\"#\"libthrift\" version=\"0.9.3.1\"#g' build.xml
 
-rm lib/libthrift-*
-rm lib/logback-*
-rm lib/jackson-*
+rm lib/libthrift-* lib/logback-* lib/jackson-*
 
 mv lib/licenses/logback-core-1.1.3.txt lib/licenses/logback-core-1.2.0.txt
 mv lib/licenses/logback-classic-1.1.3.txt lib/licenses/logback-classic-1.2.0.txt
@@ -53,7 +58,7 @@ cp cassandra-jackson-jars/* lib/
 %patch0 -p1
 
 %build
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
+export JAVA_HOME=$(echo /usr/lib/jvm/OpenJDK*)
 
 ant jar javadoc -Drelease=true
 
@@ -148,36 +153,36 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
-*   Mon Feb 08 2021 Ankit Jain <ankitja@vmware.com> 3.11.10-1
--   Update to 3.11.10 to fix CVE-2020-17516
-*   Mon Sep 21 2020 Michelle Wang <michellew@vmware.com> 3.11.8-1
--   Fix CVE-2020-13946
--   Add patch cassandra-bump-jackson-version.patch
-*   Thu Feb 06 2020 Shreyas B. <shreyasb@vmware.com> 3.11.5-2
--   Shadow require by Cassandra for installation.
-*   Tue Jan 21 2020 Michelle Wang <michellew@vmware.com> 3.11.5-1
--   Central maven repository not responding, Updated to 3.11.5
-*   Tue Dec 17 2019 Shreyas B. <shreyasb@vmware.com> 3.11.2-3
--   Bumping up the thrift version to 0.9.3.1 to fix vulnerability.
-*   Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 3.11.2-2
--   Modified the path of JAVA_HOME
-*   Wed Jul 25 2018 Tapas Kundu <tkundu@vmware.com> 3.11.2-1
--   Upgraded cassandra to 3.11.2.
-*   Wed Apr 25 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.11.1-3
--   Remove patch to build on openjdk-1.8.0.162, updated openjdk to 1.8.0.172
-*   Sat Jan 20 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.11.1-2
--   Add patch to build with openjdk-1.8.0.162
-*   Thu Dec 07 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.11.1-1
--   Update to 3.11.1
-*   Tue Aug 15 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-6
--   Remove build/libs directory from cassandra, add gawk requires
-*   Thu Jul 27 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-5
--   Update logback jar (dependency) & remove hadoop jars
-*   Tue Jul 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-4
--   Change cassandra service type as simple
-*   Mon Jul 10 2017 Xiaolin Li <xiaolinl@vmware.com> 3.10-3
--   Remove cqlsh and cqlsh.py.
-*   Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 3.10-2
--   Removed dependency on ANT_HOME
-*   Mon May 08 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-1
--   Initial build. First version
+* Mon Feb 08 2021 Ankit Jain <ankitja@vmware.com> 3.11.10-1
+- Update to 3.11.10 to fix CVE-2020-17516
+* Mon Sep 21 2020 Michelle Wang <michellew@vmware.com> 3.11.8-1
+- Fix CVE-2020-13946
+- Add patch cassandra-bump-jackson-version.patch
+* Thu Feb 06 2020 Shreyas B. <shreyasb@vmware.com> 3.11.5-2
+- Shadow require by Cassandra for installation.
+* Tue Jan 21 2020 Michelle Wang <michellew@vmware.com> 3.11.5-1
+- Central maven repository not responding, Updated to 3.11.5
+* Tue Dec 17 2019 Shreyas B. <shreyasb@vmware.com> 3.11.2-3
+- Bumping up the thrift version to 0.9.3.1 to fix vulnerability.
+* Wed Sep 04 2019 Ankit Jain <ankitja@vmware.com> 3.11.2-2
+- Modified the path of JAVA_HOME
+* Wed Jul 25 2018 Tapas Kundu <tkundu@vmware.com> 3.11.2-1
+- Upgraded cassandra to 3.11.2.
+* Wed Apr 25 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.11.1-3
+- Remove patch to build on openjdk-1.8.0.162, updated openjdk to 1.8.0.172
+* Sat Jan 20 2018 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.11.1-2
+- Add patch to build with openjdk-1.8.0.162
+* Thu Dec 07 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.11.1-1
+- Update to 3.11.1
+* Tue Aug 15 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-6
+- Remove build/libs directory from cassandra, add gawk requires
+* Thu Jul 27 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-5
+- Update logback jar (dependency) & remove hadoop jars
+* Tue Jul 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-4
+- Change cassandra service type as simple
+* Mon Jul 10 2017 Xiaolin Li <xiaolinl@vmware.com> 3.10-3
+- Remove cqlsh and cqlsh.py.
+* Mon Jun 19 2017 Divya Thaluru <dthaluru@vmware.com> 3.10-2
+- Removed dependency on ANT_HOME
+* Mon May 08 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.10-1
+- Initial build. First version

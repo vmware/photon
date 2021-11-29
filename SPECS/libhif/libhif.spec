@@ -7,11 +7,12 @@ Version:   	0.2.2
 Release:   	4%{?dist}
 License:   	LGPLv2+
 URL:       	https://github.com/hughsie/libhif
-Source0:   	http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
-%define sha1 libhif=2816f914e25a1a625503b4b474a8ad63969e8c7e
 Vendor:		VMware, Inc.
 Distribution:	Photon
 Group:          Development/Tools
+
+Source0:   	http://people.freedesktop.org/~hughsient/releases/%{name}-%{version}.tar.xz
+%define sha1 libhif=2816f914e25a1a625503b4b474a8ad63969e8c7e
 
 BuildRequires: 	glib-devel >= 2.16.1
 BuildRequires: 	libtool
@@ -48,8 +49,8 @@ Provides: pkgconfig(libhif)
 GLib headers and libraries for libhif.
 
 %prep
-#%setup -q -n %{libhif_version}
-%setup -q
+#%%setup -q -n %{libhif_version}
+%autosetup -p1
 %build
 
 ./autogen.sh --prefix=/usr \
@@ -62,8 +63,8 @@ GLib headers and libraries for libhif.
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT
-rm -f $RPM_BUILD_ROOT%{_libdir}/libhif*.la
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
+rm -f %{buildroot}%{_libdir}/libhif*.la
 
 %post -p /sbin/ldconfig
 
@@ -83,13 +84,13 @@ rm -f $RPM_BUILD_ROOT%{_libdir}/libhif*.la
 %{_datadir}/gir-1.0/*.gir
 
 %changelog
-*   Tue Jun 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.2.2-4
--   Bump version as a part of rpm upgrade
-*   Fri Sep 29 2017 Alexey Makhalov <amakhalov@vmware.com> 0.2.2-3
--   rpm version update
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2.2-2
--   GA - Bump release of all rpms
-*   Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 0.2.2-1
--   Updated to new version.
-*   Wed Jun 17 2015 Anish Swaminathan <anishs@vmware.com> 0.2.0-1
--   Updated version
+* Tue Jun 01 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.2.2-4
+- Bump version as a part of rpm upgrade
+* Fri Sep 29 2017 Alexey Makhalov <amakhalov@vmware.com> 0.2.2-3
+- rpm version update
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.2.2-2
+- GA - Bump release of all rpms
+* Tue Feb 23 2016 Kumar Kaushik <kaushikk@vmware.com> 0.2.2-1
+- Updated to new version.
+* Wed Jun 17 2015 Anish Swaminathan <anishs@vmware.com> 0.2.0-1
+- Updated version

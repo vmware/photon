@@ -1,4 +1,4 @@
-Summary:	Userland logical volume management tools 
+Summary:	Userland logical volume management tools
 Name:		lvm2
 Version:	2.02.141
 Release:	6%{?dist}
@@ -7,12 +7,14 @@ Group:		System Environment/Base
 URL:		http://sources.redhat.com/dm
 Vendor:		VMware, Inc.
 Distribution:	Photon
+
 Source0:	ftp://sources.redhat.com/pub/lvm2/releases/LVM2.%{version}.tgz
 %define sha1 LVM2=d48b403ca10d407df394889d8dafd167a4bd4819
 Source1:	lvm2-activate.service
+
 Patch0:		lvm2-set-default-preferred_names.patch
-Patch1:		lvm2-enable-lvmetad-by-default.patch
-Patch2:		lvm2-remove-mpath-device-handling-from-udev-rules.patch
+Patch1:		lvm2-remove-mpath-device-handling-from-udev-rules.patch
+
 BuildRequires:	libselinux-devel, libsepol-devel
 BuildRequires:	ncurses-devel
 BuildRequires:	readline-devel
@@ -20,6 +22,7 @@ BuildRequires:	python2-devel
 BuildRequires:	python2-libs
 BuildRequires:	systemd
 BuildRequires:	thin-provisioning-tools
+
 Requires:	device-mapper-libs = %{version}-%{release}
 Requires:	device-mapper-event-libs = %{version}-%{release}
 Requires:       device-mapper-event = %{version}-%{release}
@@ -104,7 +107,7 @@ Requires:	systemd
 %description -n device-mapper-libs
 This package contains the device-mapper shared library, libdevmapper.
 
-%post -n device-mapper-libs 
+%post -n device-mapper-libs
 /sbin/ldconfig
 
 %postun -n device-mapper-libs
@@ -122,7 +125,7 @@ This package contains the dmeventd daemon for monitoring the state
 of device-mapper devices.
 
 %post -n device-mapper-event
-%systemd_post dm-event.service dm-event.socket 
+%systemd_post dm-event.service dm-event.socket
 if [ $1 -eq 1 ];then
     # This is initial installation
     systemctl start dm-event.socket
@@ -165,10 +168,7 @@ This package contains files needed to develop applications that use
 the device-mapper event library.
 
 %prep
-%setup -q -n LVM2.%{version}
-%patch0 -p1 -b .preferred_names
-#%patch1 -p1 -b .enable_lvmetad
-%patch2 -p1 -b .udev_no_mpath
+%autosetup -p1 -n LVM2.%{version}
 
 %build
 %define _default_pid_dir /run
@@ -178,7 +178,6 @@ the device-mapper event library.
 %define _udevdir /lib/udev/rules.d
 
 %configure \
-	--prefix=%{_prefix} \
 	--with-usrlibdir=%{_libdir} \
 	--with-default-dm-run-dir=%{_default_dm_run_dir} \
 	--with-default-run-dir=%{_default_run_dir} \
@@ -201,15 +200,14 @@ the device-mapper event library.
 	--with-cache=internal \
 	--with-cluster=internal --with-clvmd=none
 
-
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
-make install_system_dirs DESTDIR=%{buildroot}
-make install_systemd_units DESTDIR=%{buildroot}
-make install_systemd_generators DESTDIR=%{buildroot}
-make install_tmpfiles_configuration DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
+make install_system_dirs DESTDIR=%{buildroot} %{?_smp_mflags}
+make install_systemd_units DESTDIR=%{buildroot} %{?_smp_mflags}
+make install_systemd_generators DESTDIR=%{buildroot} %{?_smp_mflags}
+make install_tmpfiles_configuration DESTDIR=%{buildroot} %{?_smp_mflags}
 cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 
 %preun
@@ -231,7 +229,6 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 %{_includedir}/lvm2app.h
 %{_includedir}/lvm2cmd.h
 %{_libdir}/pkgconfig/lvm2app.pc
-
 
 %files libs
 %defattr(-,root,root,-)
@@ -424,22 +421,21 @@ cp %{SOURCE1} %{buildroot}/lib/systemd/system/lvm2-activate.service
 /etc/lvm/profile/cache-smq.profile
 
 %changelog
-*   Wed Jun 14 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.02.141-6
--   Fix script error
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.02.141-5
--	GA - Bump release of all rpms
-*   Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.02.141-4
--   Adding upgrade support in pre/post/un scripts.
-*   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-3 
--   Fix post scripts for lvm
-*   Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-2 
--   Adding device mapper event to Requires
-*   Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  2.02.116-4
--   Change config file attributes.
-*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.02.116-3
--   Add systemd to Requires and BuildRequires
-*   Thu Sep 10 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-2
--   Packaging systemd service and configuration files
-*   Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-1
--   Initial version
-
+* Wed Jun 14 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.02.141-6
+- Fix script error
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.02.141-5
+- GA - Bump release of all rpms
+* Thu May 05 2016 Kumar Kaushik <kaushikk@vmware.com> 2.02.141-4
+- Adding upgrade support in pre/post/un scripts.
+* Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-3
+- Fix post scripts for lvm
+* Thu Jan 28 2016 Anish Swaminathan <anishs@vmware.com> 2.02.141-2
+- Adding device mapper event to Requires
+* Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  2.02.116-4
+- Change config file attributes.
+* Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.02.116-3
+- Add systemd to Requires and BuildRequires
+* Thu Sep 10 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-2
+- Packaging systemd service and configuration files
+* Thu Feb 26 2015 Divya Thaluru <dthaluru@vmware.com> 2.02.116-1
+- Initial version

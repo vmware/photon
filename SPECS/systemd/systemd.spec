@@ -7,12 +7,14 @@ URL:              http://www.freedesktop.org/wiki/Software/systemd/
 Group:            System Environment/Security
 Vendor:           VMware, Inc.
 Distribution:     Photon
+
 Source0:          %{name}-%{version}.tar.gz
 %define sha1 systemd=15475d874dc38f8d759f334bbcf7d8aff4b412da
 Source1:          99-vmware-hotplug.rules
 Source2:          50-security-hardening.conf
 Source3:          filesystem.conf
 Source4:          10-rdrand-rng.conf
+
 #patch for ostree
 Patch0:           systemd-228-mount.patch
 Patch1:           01-enoX-uses-instance-number-for-vmware-hv.patch
@@ -92,7 +94,7 @@ BuildRequires:    glib-devel
 Systemd is an init replacement with better process control and security
 
 %prep
-%setup -q
+%autosetup -p1
 cat > config.cache << "EOF"
 KILL=/bin/kill
 HAVE_BLKID=1
@@ -101,65 +103,12 @@ BLKID_CFLAGS="-I/usr/include/blkid"
 cc_cv_CFLAGS__flto=no
 EOF
 sed -i "s:blkid/::" $(grep -rl "blkid/blkid.h")
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
-%patch17 -p1
-%patch18 -p1
-%patch19 -p1
-%patch20 -p1
-%patch21 -p1
-%patch22 -p1
-%patch23 -p1
-%patch24 -p1
-%patch25 -p1
-%patch26 -p1
-%patch27 -p1
-%patch28 -p1
-%patch29 -p1
-%patch30 -p1
-%patch31 -p1
-%patch32 -p1
-%patch33 -p1
-%patch34 -p1
-%patch35 -p1
-%patch36 -p1
-%patch37 -p1
-%patch38 -p1
-%patch39 -p1
-%patch40 -p1
-%patch41 -p1
-%patch42 -p1
-%patch43 -p1
-%patch44 -p1
-%patch45 -p1
-%patch46 -p1
-%patch47 -p1
-%patch48 -p1
-%patch49 -p1
-%patch50 -p1
-%patch51 -p1
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
 
 %build
 ./autogen.sh
-%configure  --sysconfdir=/etc                                                   \
-            --localstatedir=/var                                                \
+%configure \
             --config-cache                                                      \
             --with-rootprefix=                                                  \
             --with-rootlibdir=/usr/lib                                          \
@@ -179,9 +128,10 @@ sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf
             --with-rc-local-script-path-start=/etc/rc.d/rc.local
 
 make %{?_smp_mflags}
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}/sbin
 for tool in runlevel reboot shutdown poweroff halt telinit; do
      ln -sfv ../bin/systemctl %{buildroot}/sbin/${tool}
@@ -208,7 +158,6 @@ sed -i 's/plymouth-quit-wait.service//g' %{buildroot}/lib/systemd/system/console
 rm -f %{buildroot}%{_var}/log/README
 mkdir -p %{buildroot}%{_localstatedir}/log/journal
 
-
 #cp %{buildroot}/usr/share/factory/etc/pam.d/system-auth %{buildroot}%{_sysconfdir}/pam.d/system-auth
 #cp %{buildroot}/usr/share/factory/etc/pam.d/other %{buildroot}%{_sysconfdir}/pam.d/other
 find %{buildroot}%{_libdir} -name '*.la' -delete
@@ -234,8 +183,10 @@ EOF
 /sbin/ldconfig
 %postun
 /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %dir %{_sysconfdir}/systemd
@@ -291,156 +242,155 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 %dir %{_localstatedir}/log/journal
 
-
 %changelog
-*    Wed Jul 21 2021 Susant Sahani <ssahani@vmware.com> 228-62
--    Fix for CVE-2020-13529
-*    Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 228-61
--    Fix for CVE-2021-33910
-*    Mon Oct 26 2020 Tapas Kundu <tkundu@vmware.com> 228-60
--    fix fork() fail handling in exec_spawn
-*    Sat Jun 06 2020 Susant Sahani <ssahani@vmware.com> 228-59
--    Fix CVE-2020-13776
-*    Wed Jun 03 2020 Susant Sahani <ssahani@vmware.com> 228-58
--    Fix CVE-2020-1712
-*    Mon Apr 20 2020 Susant Sahani <ssahani@vmware.com> 228-57
--    Fix CVE-2019-20386
-*    Tue Sep 10 2019 Tapas Kundu <tkundu@vmware.com> 228-56
--    Networkd should not exit if dbus is not active, it should retry.
-*    Fri Aug 02 2019 Susant Sahani <ssahani@vmware.com>  228-55
--    Fix CVE-2019-6454
-*    Thu Jul 25 2019 Susant Sahani <ssahani@vmware.com>  228-54
--    Fix Build upstream #5039 and #8507
-*    Thu Apr 18 2019 Anish Swaminathan <anishs@vmware.com>  228-53
--    Fix CVE-2019-3842
-*    Tue Mar 19 2019 Keerthana K <keerthanak@vmware.com> 228-52
--    Fix CVE-2018-6954
-*    Thu Feb 21 2019 Anish Swaminathan <anishs@vmware.com>  228-51
--    Fix handler typo for route_remove
-*    Thu Jan 10 2019 Anish Swaminathan <anishs@vmware.com>  228-50
--    Fix CVE-2018-16864, CVE-2018-16865, CVE-2018-16866
-*    Fri Jan 04 2019 Anish Swaminathan <anishs@vmware.com> 228-49
--    Fix CVE-2018-15686
-*    Fri Nov 02 2018 Tapas Kundu <tkundu@vmware.com> 228-48
--    Fix CVE-2018-15688
-*    Mon Jul 23 2018 Ankit Jain <ankitja@vmware.com>  228-47
--    Fix CVE-2018-1049.
-*    Thu Jun 28 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 228-46
--    Automatically load rdrand-rng kernel module on every boot.
-*    Thu Mar 15 2018 Xiaolin Li <xiaolinl@vmware.com>  228-45
--    Fix CVE-2017-18078.
-*    Wed Nov 29 2017 Anish Swaminathan <anishs@vmware.com> 228-44
--    Remove the sed replace to autovt (autovt is a symlink to getty service)
-*    Thu Nov 09 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-43
--    Fix CVE-2017-15908 dns packet loop fix.
-*    Tue Nov 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-42
--    Fix nullptr access during link disable.
-*    Fri Nov 03 2017 Anish Swaminathan <anishs@vmware.com> 228-41
--    Fix null pointer dereferencing in resolved - CVE-2017-9217
-*    Fri Nov 03 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-40
--    Fix CVE-2015-7510.
-*    Thu Oct 19 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 228-39
--    add filesystem.conf in tmpfiles.d
-*    Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  228-38
--    Move network file to systemd package
-*    Thu Sep 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-37
--    Fix systemd-logind dbus disconnection issue.
-*    Fri Jul 28 2017 Dheeraj Shetty <dheerajs@vmware.com>  228-36
--    Removed systemd-sysusers.service,plymouth-quit-wait.service and
--    plymouth-start.service from all service files.
-*    Thu Jun 29 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-35
--    Fix for CVE-2017-9445.
-*    Sun Jan 22 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-34
--    Fix for CVE-2016-10156.
-*    Sat Jan 21 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-33
--    Arm watchdog timer more frequently for virtual machine env.
-*    Thu Nov 3 2016 Divya Thaluru <dthaluru@vmware.com>  228-32
--    Added logic to reload services incase of rpm upgrade
-*    Thu Sep 29 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-31
--    Fix a CVE in systemd-notify socket.
-*    Mon Aug 29 2016 Alexey Makhalov <amakhalov@vmware.com>  228-30
--    02-install-general-aliases.patch to create absolute symlinks
-*    Fri Aug 26 2016 Anish Swaminathan <anishs@vmware.com>  228-29
--    Change config file properties for 99-default.link
-*    Tue Aug 16 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-28
--    systemd-resolved: Fix DNS_TRANSACTION_PENDING assert.
-*    Mon Aug 1 2016 Divya Thaluru <dthaluru@vmware.com> 228-27
--    Removed packaging of symlinks and will be created during installation
-*    Tue Jul 12 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-26
--    systemd-resolved: Fix DNS domains resolv.conf search issue for static DNS.
-*    Mon Jul 11 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-25
--    systemd-networkd: Update DUID/IAID config interface to systemd v230 spec.
-*    Tue Jun 21 2016 Anish Swaminathan <anishs@vmware.com>  228-24
--    Change config file properties
-*    Fri Jun 17 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-23
--    systemd-resolved: Configure initial DNS servers from environment var.
-*    Mon Jun 06 2016 Alexey Makhalov <amakhalov@vmware.com>  228-22
--    systemd-resolved: disable LLMNR
-*    Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 228-21
--    GA - Bump release of all rpms
-*    Tue May 17 2016 Anish Swaminathan <anishs@vmware.com>  228-20
--    Added patch for letting kernel handle ndisc
-*    Tue May 17 2016 Divya Thaluru <dthaluru@vmware.com> 228-19
--    Updated systemd-user PAM configuration
-*    Mon May 16 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 228-18
--    Updated the MaxTasks to infinity in system.conf file
-*    Thu Apr 21 2016 Mahmoud Bassiouny <mbassiouny@vmware.com>  228-17
--    Set the default.target to the multi-user.target
-*    Tue Apr 12 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-16
--    Disable network interface renaming.
-*    Thu Mar 31 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-15
--    Patch to query DHCP DUID, IAID.f
-*    Wed Mar 30 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-14
--    Update DHCP DUID, IAID configuration patch.
-*    Wed Mar 30 2016 Kumar Kaushik <kaushikk@vmware.com>  228-13
--    Install the security hardening script as part of systemd.
-*    Tue Mar 29 2016 Kumar Kaushik <kaushikk@vmware.com>  228-12
--    Added patch for timedatectl /etc/adjtime PR2749.
-*    Fri Mar 11 2016 Anish Swaminathan <anishs@vmware.com>  228-11
--    Added patch for dhcp preservation via duid iaid configurability
-*    Fri Mar 11 2016 Anish Swaminathan <anishs@vmware.com>  228-10
--    Added patch for swap disconnect order
-*    Thu Mar 10 2016 XIaolin Li <xiaolinl@vmware.com> 228-9
--    Enable manpages.
-*    Fri Feb 19 2016 Anish Swaminathan <anishs@vmware.com>  228-8
--    Added patch to get around systemd-networkd wait online timeout
-*    Sat Feb 06 2016 Alexey Makhalov <amakhalov@vmware.com>  228-7
--    Added patch: fix-reading-routes.
-*    Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com>  228-6
--    Add hotplug udev rules.
-*    Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  228-5
--    Change config file attributes.
-*    Wed Jan 06 2016 Anish Swaminathan <anishs@vmware.com> 228-4
--    Patches for minor network fixes.
-*    Wed Dec 16 2015 Anish Swaminathan <anishs@vmware.com> 228-3
--    Patch for ostree.
-*    Wed Dec 16 2015 Anish Swaminathan <anishs@vmware.com> 228-2
--    Patch for loopback address.
-*    Fri Dec 11 2015 Anish Swaminathan <anishs@vmware.com> 228-1
--    Upgrade systemd version.
-*    Mon Nov 30 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 216-13
--    Removing the reference of lock user
-*    Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 216-12
--    Removing la files from packages.
-*    Fri Sep 18 2015 Divya Thaluru <dthaluru@vmware.com> 216-11
--    Packaging journal log directory
-*    Thu Sep 10 2015 Alexey Makhalov <amakhalov@vmware.com> 216-10
--    Improve enoX renaming in VMware HV case. Patch is added.
-*    Tue Aug 25 2015 Alexey Makhalov <amakhalov@vmware.com> 216-9
--    Reduce systemd-networkd boot time (exclude if-rename patch).
-*    Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 216-8
--    Adding sysvinit support
-*    Mon Jul 06 2015 Kumar Kaushik <kaushikk@vmware.com> 216-7
--    Fixing networkd/udev race condition for renaming interface.
-*    Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 216-6
--    Remove debug files.
-*    Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 216-5
--    Building compat libs
-*    Mon Jun 1 2015 Alexey Makhalov <amakhalov@vmware.com> 216-4
--    gudev support
-*    Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 216-3
--    Removing packing of PAM configuration files
-*    Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 216-2
--    Update according to UsrMove.
-*    Mon Oct 27 2014 Sharath George <sharathg@vmware.com> 216-1
--    Initial build. First version
+* Wed Jul 21 2021 Susant Sahani <ssahani@vmware.com> 228-62
+- Fix for CVE-2020-13529
+* Thu Jul 15 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 228-61
+- Fix for CVE-2021-33910
+* Mon Oct 26 2020 Tapas Kundu <tkundu@vmware.com> 228-60
+- fix fork() fail handling in exec_spawn
+* Sat Jun 06 2020 Susant Sahani <ssahani@vmware.com> 228-59
+- Fix CVE-2020-13776
+* Wed Jun 03 2020 Susant Sahani <ssahani@vmware.com> 228-58
+- Fix CVE-2020-1712
+* Mon Apr 20 2020 Susant Sahani <ssahani@vmware.com> 228-57
+- Fix CVE-2019-20386
+* Tue Sep 10 2019 Tapas Kundu <tkundu@vmware.com> 228-56
+- Networkd should not exit if dbus is not active, it should retry.
+* Fri Aug 02 2019 Susant Sahani <ssahani@vmware.com>  228-55
+- Fix CVE-2019-6454
+* Thu Jul 25 2019 Susant Sahani <ssahani@vmware.com>  228-54
+- Fix Build upstream #5039 and #8507
+* Thu Apr 18 2019 Anish Swaminathan <anishs@vmware.com>  228-53
+- Fix CVE-2019-3842
+* Tue Mar 19 2019 Keerthana K <keerthanak@vmware.com> 228-52
+- Fix CVE-2018-6954
+* Thu Feb 21 2019 Anish Swaminathan <anishs@vmware.com>  228-51
+- Fix handler typo for route_remove
+* Thu Jan 10 2019 Anish Swaminathan <anishs@vmware.com>  228-50
+- Fix CVE-2018-16864, CVE-2018-16865, CVE-2018-16866
+* Fri Jan 04 2019 Anish Swaminathan <anishs@vmware.com> 228-49
+- Fix CVE-2018-15686
+* Fri Nov 02 2018 Tapas Kundu <tkundu@vmware.com> 228-48
+- Fix CVE-2018-15688
+* Mon Jul 23 2018 Ankit Jain <ankitja@vmware.com>  228-47
+- Fix CVE-2018-1049.
+* Thu Jun 28 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 228-46
+- Automatically load rdrand-rng kernel module on every boot.
+* Thu Mar 15 2018 Xiaolin Li <xiaolinl@vmware.com>  228-45
+- Fix CVE-2017-18078.
+* Wed Nov 29 2017 Anish Swaminathan <anishs@vmware.com> 228-44
+- Remove the sed replace to autovt (autovt is a symlink to getty service)
+* Thu Nov 09 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-43
+- Fix CVE-2017-15908 dns packet loop fix.
+* Tue Nov 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-42
+- Fix nullptr access during link disable.
+* Fri Nov 03 2017 Anish Swaminathan <anishs@vmware.com> 228-41
+- Fix null pointer dereferencing in resolved - CVE-2017-9217
+* Fri Nov 03 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-40
+- Fix CVE-2015-7510.
+* Thu Oct 19 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 228-39
+- add filesystem.conf in tmpfiles.d
+* Fri Sep 15 2017 Anish Swaminathan <anishs@vmware.com>  228-38
+- Move network file to systemd package
+* Thu Sep 07 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-37
+- Fix systemd-logind dbus disconnection issue.
+* Fri Jul 28 2017 Dheeraj Shetty <dheerajs@vmware.com>  228-36
+- Removed systemd-sysusers.service,plymouth-quit-wait.service and
+- plymouth-start.service from all service files.
+* Thu Jun 29 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-35
+- Fix for CVE-2017-9445.
+* Sun Jan 22 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-34
+- Fix for CVE-2016-10156.
+* Sat Jan 21 2017 Vinay Kulkarni <kulkarniv@vmware.com>  228-33
+- Arm watchdog timer more frequently for virtual machine env.
+* Thu Nov 3 2016 Divya Thaluru <dthaluru@vmware.com>  228-32
+- Added logic to reload services incase of rpm upgrade
+* Thu Sep 29 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-31
+- Fix a CVE in systemd-notify socket.
+* Mon Aug 29 2016 Alexey Makhalov <amakhalov@vmware.com>  228-30
+- 02-install-general-aliases.patch to create absolute symlinks
+* Fri Aug 26 2016 Anish Swaminathan <anishs@vmware.com>  228-29
+- Change config file properties for 99-default.link
+* Tue Aug 16 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-28
+- systemd-resolved: Fix DNS_TRANSACTION_PENDING assert.
+* Mon Aug 1 2016 Divya Thaluru <dthaluru@vmware.com> 228-27
+- Removed packaging of symlinks and will be created during installation
+* Tue Jul 12 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-26
+- systemd-resolved: Fix DNS domains resolv.conf search issue for static DNS.
+* Mon Jul 11 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-25
+- systemd-networkd: Update DUID/IAID config interface to systemd v230 spec.
+* Tue Jun 21 2016 Anish Swaminathan <anishs@vmware.com>  228-24
+- Change config file properties
+* Fri Jun 17 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-23
+- systemd-resolved: Configure initial DNS servers from environment var.
+* Mon Jun 06 2016 Alexey Makhalov <amakhalov@vmware.com>  228-22
+- systemd-resolved: disable LLMNR
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 228-21
+- GA - Bump release of all rpms
+* Tue May 17 2016 Anish Swaminathan <anishs@vmware.com>  228-20
+- Added patch for letting kernel handle ndisc
+* Tue May 17 2016 Divya Thaluru <dthaluru@vmware.com> 228-19
+- Updated systemd-user PAM configuration
+* Mon May 16 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 228-18
+- Updated the MaxTasks to infinity in system.conf file
+* Thu Apr 21 2016 Mahmoud Bassiouny <mbassiouny@vmware.com>  228-17
+- Set the default.target to the multi-user.target
+* Tue Apr 12 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-16
+- Disable network interface renaming.
+* Thu Mar 31 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-15
+- Patch to query DHCP DUID, IAID.f
+* Wed Mar 30 2016 Vinay Kulkarni <kulkarniv@vmware.com>  228-14
+- Update DHCP DUID, IAID configuration patch.
+* Wed Mar 30 2016 Kumar Kaushik <kaushikk@vmware.com>  228-13
+- Install the security hardening script as part of systemd.
+* Tue Mar 29 2016 Kumar Kaushik <kaushikk@vmware.com>  228-12
+- Added patch for timedatectl /etc/adjtime PR2749.
+* Fri Mar 11 2016 Anish Swaminathan <anishs@vmware.com>  228-11
+- Added patch for dhcp preservation via duid iaid configurability
+* Fri Mar 11 2016 Anish Swaminathan <anishs@vmware.com>  228-10
+- Added patch for swap disconnect order
+* Thu Mar 10 2016 XIaolin Li <xiaolinl@vmware.com> 228-9
+- Enable manpages.
+* Fri Feb 19 2016 Anish Swaminathan <anishs@vmware.com>  228-8
+- Added patch to get around systemd-networkd wait online timeout
+* Sat Feb 06 2016 Alexey Makhalov <amakhalov@vmware.com>  228-7
+- Added patch: fix-reading-routes.
+* Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com>  228-6
+- Add hotplug udev rules.
+* Tue Jan 12 2016 Anish Swaminathan <anishs@vmware.com>  228-5
+- Change config file attributes.
+* Wed Jan 06 2016 Anish Swaminathan <anishs@vmware.com> 228-4
+- Patches for minor network fixes.
+* Wed Dec 16 2015 Anish Swaminathan <anishs@vmware.com> 228-3
+- Patch for ostree.
+* Wed Dec 16 2015 Anish Swaminathan <anishs@vmware.com> 228-2
+- Patch for loopback address.
+* Fri Dec 11 2015 Anish Swaminathan <anishs@vmware.com> 228-1
+- Upgrade systemd version.
+* Mon Nov 30 2015 Mahmoud Bassiouny <mbassiouny@vmware.com> 216-13
+- Removing the reference of lock user
+* Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 216-12
+- Removing la files from packages.
+* Fri Sep 18 2015 Divya Thaluru <dthaluru@vmware.com> 216-11
+- Packaging journal log directory
+* Thu Sep 10 2015 Alexey Makhalov <amakhalov@vmware.com> 216-10
+- Improve enoX renaming in VMware HV case. Patch is added.
+* Tue Aug 25 2015 Alexey Makhalov <amakhalov@vmware.com> 216-9
+- Reduce systemd-networkd boot time (exclude if-rename patch).
+* Mon Jul 20 2015 Divya Thaluru <dthaluru@vmware.com> 216-8
+- Adding sysvinit support
+* Mon Jul 06 2015 Kumar Kaushik <kaushikk@vmware.com> 216-7
+- Fixing networkd/udev race condition for renaming interface.
+* Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 216-6
+- Remove debug files.
+* Tue Jun 23 2015 Divya Thaluru <dthaluru@vmware.com> 216-5
+- Building compat libs
+* Mon Jun 1 2015 Alexey Makhalov <amakhalov@vmware.com> 216-4
+- gudev support
+* Wed May 27 2015 Divya Thaluru <dthaluru@vmware.com> 216-3
+- Removing packing of PAM configuration files
+* Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 216-2
+- Update according to UsrMove.
+* Mon Oct 27 2014 Sharath George <sharathg@vmware.com> 216-1
+- Initial build. First version

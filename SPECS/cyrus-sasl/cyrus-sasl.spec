@@ -7,39 +7,44 @@ URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
 Vendor:		VMware, Inc.
 Distribution: 	Photon
+
 Source0:	ftp://ftp.cyrusimap.org/cyrus-sasl/%{name}-%{version}.tar.gz
 %define sha1 cyrus-sasl=d6669fb91434192529bd13ee95737a8a5040241c
+
 Patch0:		http://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.26-fixes-3.patch
-Patch1:         cyrus-sasl-mem-leak-fix.patch
-Patch2:         CVE-2019-19906.patch
+Patch1:     cyrus-sasl-mem-leak-fix.patch
+Patch2:     CVE-2019-19906.patch
+
 BuildRequires:  systemd
 BuildRequires:	openssl-devel
 BuildRequires:  krb5 >= 1.12
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  Linux-PAM
+
 Requires:       openssl
 Requires:       krb5 >= 1.12
 Requires:       Linux-PAM
 Requires:       systemd
+
 %description
-The Cyrus SASL package contains a Simple Authentication and Security 
-Layer, a method for adding authentication support to 
+The Cyrus SASL package contains a Simple Authentication and Security
+Layer, a method for adding authentication support to
 connection-based protocols. To use SASL, a protocol includes a command
-for identifying and authenticating a user to a server and for 
+for identifying and authenticating a user to a server and for
 optionally negotiating protection of subsequent protocol interactions.
-If its use is negotiated, a security layer is inserted between the 
+If its use is negotiated, a security layer is inserted between the
 protocol and the connection.
+
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1
+
 %build
 autoreconf -fi
 pushd saslauthd
 autoreconf -fi
 popd
-./configure \
+
+sh ./configure \
 	CFLAGS="%{optflags} -fPIC" \
 	CXXFLAGS="%{optflags}" \
 	--prefix=%{_prefix} \
@@ -64,11 +69,14 @@ popd
     --enable-fast-install \
     --enable-krb4
 
+# make doesn't support _smp_mflags
 make
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install
-find %{buildroot}/%{_libdir} -name '*.la' -delete
+find %{buildroot}%{_libdir} -name '*.la' -delete
 install -D -m644 COPYING %{buildroot}/usr/share/licenses/%{name}/LICENSE
 %{_fixperms} %{buildroot}/*
 
@@ -104,9 +112,10 @@ WantedBy=multi-user.target
 EOF
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+
 %post
-%{_sbindir}/ldconfig 
+%{_sbindir}/ldconfig
 %systemd_post saslauthd.service
 
 %postun
@@ -130,28 +139,29 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 %{_datadir}/licenses/%{name}/LICENSE
 %{_mandir}/man8/saslauthd.8.gz
+
 %changelog
-*   Mon Mar 16 2020 Tapas Kundu <tkundu@vmware.com>  2.1.26-12
--   Enable login and plain
-*   Wed Feb 19 2020 Ashwin H <ashwinh@vmware.com>  2.1.26-11
--   Fix CVE-2019-19906
-*   Tue Nov 21 2017 Anish Swaminathan <anishs@vmware.com>  2.1.26-10
--   Update patch for memory leak fix
-*   Tue Oct 10 2017 Anish Swaminathan <anishs@vmware.com>  2.1.26-9
--   Add patch for memory leak fix
-*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.1.26-8
--   Fixed logic to restart the active services after upgrade 
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.26-7
--   GA - Bump release of all rpms
-*   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  2.1.26-6
--   Fixing spec file to handle rpm upgrade scenario correctly
-*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.1.26-5
--   Add systemd to Requires and BuildRequires.
-*   Wed Nov 11 2015 Xiaolin Li <xiaolinl@vmware.com> 2.1.26-4
--   Add saslauthd service to systemd.
-*   Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.1.26-3
--   Enable CRAM.
-*   Thu Jul 16 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.26-2
--   Disabling parallel threads in make
-*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.1.26-1
--   Initial build.	First version
+* Mon Mar 16 2020 Tapas Kundu <tkundu@vmware.com>  2.1.26-12
+- Enable login and plain
+* Wed Feb 19 2020 Ashwin H <ashwinh@vmware.com>  2.1.26-11
+- Fix CVE-2019-19906
+* Tue Nov 21 2017 Anish Swaminathan <anishs@vmware.com>  2.1.26-10
+- Update patch for memory leak fix
+* Tue Oct 10 2017 Anish Swaminathan <anishs@vmware.com>  2.1.26-9
+- Add patch for memory leak fix
+* Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  2.1.26-8
+- Fixed logic to restart the active services after upgrade
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.1.26-7
+- GA - Bump release of all rpms
+* Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  2.1.26-6
+- Fixing spec file to handle rpm upgrade scenario correctly
+* Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  2.1.26-5
+- Add systemd to Requires and BuildRequires.
+* Wed Nov 11 2015 Xiaolin Li <xiaolinl@vmware.com> 2.1.26-4
+- Add saslauthd service to systemd.
+* Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.1.26-3
+- Enable CRAM.
+* Thu Jul 16 2015 Divya Thaluru <dthaluru@vmware.com> 2.1.26-2
+- Disabling parallel threads in make
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 2.1.26-1
+- Initial build.	First version

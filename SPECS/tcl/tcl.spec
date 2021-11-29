@@ -1,15 +1,18 @@
+%define majorver 8.6
+
 Summary:        Tool Command Language - the language and library.
 Name:           tcl
 Version:        8.6.6
-%define majorver 8.6
 Release:        5%{?dist}
 URL:            http://tcl.sourceforge.net/
 License:        LGPLv2+
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://downloads.sourceforge.net/sourceforge/tcl/tcl-core%{version}-src.tar.gz
 %define sha1    tcl-core=6a1bc424faeef44fed5e44d32198c7ff4ff05658
+
 Patch0:         tcl-CVE-2021-35331.patch
 
 BuildRequires:  cmake
@@ -31,8 +34,7 @@ Requires: %{name} = %{version}-%{release}
 Headers and development libraries for tcl
 
 %prep
-%setup -q -n %{name}%{version}
-%patch0 -p1
+%autosetup -p1 -n %{name}%{version}
 
 %build
 cd unix
@@ -44,8 +46,8 @@ cd unix
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install -C unix
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install -C unix %{?_smp_mflags}
 
 ln -s tclsh%{majorver} %{buildroot}%{_bindir}/tclsh
 
@@ -72,7 +74,7 @@ rm -rf %{buildroot}/%{_datadir}/%{name}%{majorver}/ldAix
 
 %check
 cd unix
-make test
+make test %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -92,25 +94,24 @@ make test
 %defattr(-,root,root)
 %{_includedir}/*
 %{_libdir}/pkgconfig/tcl.pc
-/%{_libdir}/libtclstub8.6.a
+%{_libdir}/libtclstub8.6.a
 %{_mandir}/mann/*
 %{_mandir}/man3/*
 
-
 %changelog
-*   Thu Jul 15 2021 Nitesh Kumar <kunitesh@vmware.com> 8.6.6-5
--   Fix CVE-2021-35331.
-*   Sun Oct 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.6.6-4
--   Remove obsoletes. Versions before 8.6.6-3 doesnt do requires properly
+* Thu Jul 15 2021 Nitesh Kumar <kunitesh@vmware.com> 8.6.6-5
+- Fix CVE-2021-35331.
+* Sun Oct 01 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 8.6.6-4
+- Remove obsoletes. Versions before 8.6.6-3 doesnt do requires properly
     for devel so need special case for those versions in upgrades.
-*   Wed Sep 06 2017 Danut Moraru <dmoraru@vmware.com> 8.6.6-3
--   Release 3 obsoletes 1 and 2, as upgrade from rel 1 to rel 2 may bring in conflict files in tcl-devel rel 1 that have
+* Wed Sep 06 2017 Danut Moraru <dmoraru@vmware.com> 8.6.6-3
+- Release 3 obsoletes 1 and 2, as upgrade from rel 1 to rel 2 may bring in conflict files in tcl-devel rel 1 that have
     been moved to tcl rel 2.
-*   Mon Aug 28 2017 Danut Moraru <dmoraru@vmware.com> 8.6.6-2
--   Ported previous change from dev to 1.0 branch
-*   Thu Jul 13 2017 Alexey Makhalov <amakhalov@vmware.com>  8.6.6-2
--   Package more files (private headers, etc). Took install section from
+* Mon Aug 28 2017 Danut Moraru <dmoraru@vmware.com> 8.6.6-2
+- Ported previous change from dev to 1.0 branch
+* Thu Jul 13 2017 Alexey Makhalov <amakhalov@vmware.com>  8.6.6-2
+- Package more files (private headers, etc). Took install section from
     Fedora: http://pkgs.fedoraproject.org/cgit/rpms/tcl.git/tree/tcl.spec
--   Move init.tcl and other *.tck files to the main package
-*   Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  8.6.6-1
--   Initial build.  First version
+- Move init.tcl and other *.tck files to the main package
+* Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  8.6.6-1
+- Initial build.  First version

@@ -7,6 +7,7 @@ URL:      https://www.gnu.org/software/bash/
 Group:    System Environment/Base
 Vendor:   VMware, Inc.
 Distribution: Photon
+
 Source0:  http://ftp.gnu.org/gnu/bash/bash-4.3.tar.gz
 %define   sha1 bash=45ac3c5727e7262334f4dfadecdf601b39434e84
 
@@ -84,6 +85,7 @@ Requires: %{name} == %{version}-%{release}
 These are the additional language files of bash.
 
 %prep
+# Using autosetup is not feasible
 %setup -q -n bash-4.3
 
 %patch001 -p0
@@ -145,7 +147,7 @@ These are the additional language files of bash.
 %build
 %configure --bindir=/bin \
   --without-bash-malloc \
-  --with-installed-readline 
+  --with-installed-readline
 make %{?_smp_mflags}
 #check if the bash version matches our spec file
 BASHVERSION="$(./bashversion -r).$(./bashversion -v).$(./bashversion -p)"
@@ -155,7 +157,7 @@ if [ "$BASHVERSION" != "%{version}" ]; then
 fi
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 ln -s bash %{buildroot}/bin/sh
 install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/etc/profile.d
@@ -273,7 +275,6 @@ if test -n "$SSH_CONNECTION" -a -z "$PROFILEREAD"; then
 fi
 # End /etc/bash.bashrc
 EOF
-
 
 cat > %{buildroot}/etc/skel/.bash_profile << "EOF"
 # Begin ~/.bash_profile
@@ -417,47 +418,47 @@ fi
 %doc %{_mandir}/*/*
 
 %files lang -f %{name}.lang
-#%defattr(-,root,root)
+#%%defattr(-,root,root)
 
 %changelog
-*   Thu Feb 06 2020 Sujay G <gsujay@vmware.com> 4.3.48-5
--   Fix CVE-2019-18276
-*   Mon Sep 23 2019 Shreyas B. <shreyasb@vmware.com> 4.3.48-4
--   Fix CVE-2012-6711
-*   Wed Apr 24 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.3.48-3
--   Fix CVE-2019-9924
-*   Mon Nov 13 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.48-2
--   Fix CVE-2016-9401.
-*   Thu Oct 19 2017 Bo Gan <ganb@vmware.com> 4.3.48-1
--   Upstream patch level 48 applied
--   Fix rpm version to match upstream patch level
--   Address CVE-2016-0634
-*   Fri Jun 9 2017 Bo Gan <ganb@vmware.com> 4.3.30-10
--   Add post dependency
-*   Fri Jun 2 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-9
--   Added /usr/bin/sh and /bin/sh entries in /etc/shells
-*   Tue Apr 04 2017 Anish Swaminathan <anishs@vmware.com> 4.3.30-8
--   Apply patch for CVE-2016-7543
-*   Tue Feb 7 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-7
--   Added /usr/bin/bash and /bin/bash entries in /etc/shells
-*   Thu Feb 2 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-6
--   Modified bash entry in /etc/shells
-*   Tue Jan 10 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-5
--   Added bash entry to /etc/shells
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.30-4
--   GA - Bump release of all rpms
-*   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  4.3.30-3
--   Fixing spec file to handle rpm upgrade scenario correctly
-*   Thu Mar 10 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.30-2
--   Adding compile options to load bash.bashrc file and
+* Thu Feb 06 2020 Sujay G <gsujay@vmware.com> 4.3.48-5
+- Fix CVE-2019-18276
+* Mon Sep 23 2019 Shreyas B. <shreyasb@vmware.com> 4.3.48-4
+- Fix CVE-2012-6711
+* Wed Apr 24 2019 Siju Maliakkal <smaliakkal@vmware.com> 4.3.48-3
+- Fix CVE-2019-9924
+* Mon Nov 13 2017 Xiaolin Li <xiaolinl@vmware.com> 4.3.48-2
+- Fix CVE-2016-9401.
+* Thu Oct 19 2017 Bo Gan <ganb@vmware.com> 4.3.48-1
+- Upstream patch level 48 applied
+- Fix rpm version to match upstream patch level
+- Address CVE-2016-0634
+* Fri Jun 9 2017 Bo Gan <ganb@vmware.com> 4.3.30-10
+- Add post dependency
+* Fri Jun 2 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-9
+- Added /usr/bin/sh and /bin/sh entries in /etc/shells
+* Tue Apr 04 2017 Anish Swaminathan <anishs@vmware.com> 4.3.30-8
+- Apply patch for CVE-2016-7543
+* Tue Feb 7 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-7
+- Added /usr/bin/bash and /bin/bash entries in /etc/shells
+* Thu Feb 2 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-6
+- Modified bash entry in /etc/shells
+* Tue Jan 10 2017 Divya Thaluru <dthaluru@vmware.com>  4.3.30-5
+- Added bash entry to /etc/shells
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.30-4
+- GA - Bump release of all rpms
+* Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  4.3.30-3
+- Fixing spec file to handle rpm upgrade scenario correctly
+* Thu Mar 10 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.30-2
+- Adding compile options to load bash.bashrc file and
     loading source file during non-inetractive non-login shell
-*   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.30-1
--   Updated to version 4.3.30
-*   Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 4.3-4
--   Adding post unstall section.
-*   Wed Jul 22 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-3
--   Fix segfault in save_bash_input.
-*   Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-2
--   /etc/profile.d permission fix. Pack /etc files into rpm
-*   Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 4.3-1
--   Initial version
+* Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.30-1
+- Updated to version 4.3.30
+* Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 4.3-4
+- Adding post unstall section.
+* Wed Jul 22 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-3
+- Fix segfault in save_bash_input.
+* Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-2
+- /etc/profile.d permission fix. Pack /etc files into rpm
+* Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 4.3-1
+- Initial version

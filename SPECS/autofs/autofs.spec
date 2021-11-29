@@ -8,28 +8,31 @@ URL:            http://www.kernel.org/pub/linux/daemons/autofs
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://www.kernel.org/pub/linux/daemons/%{name}/v5/%{name}-%{version}.tar.xz
 %define sha1    autofs=96074f905c62e205c99e473257b0f461f0c49a60
 
 BuildRequires:  systemd
+
 Requires:       systemd
+
 %description
-Automounting is the process of automatically mounting and unmounting of file systems by a daemon. Autofs includes both a user-space daemon and code in the kernel that assists the daemon. 
+Automounting is the process of automatically mounting and unmounting of file systems by a daemon. Autofs includes both a user-space daemon and code in the kernel that assists the daemon.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-./configure --prefix=/usr           \
+sh ./configure --prefix=/usr           \
             --mandir=/usr/share/man
-make
+make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 mkdir -p -m755 %{buildroot}/lib/systemd/system
 mkdir -p -m755 %{buildroot}/etc/auto.master.d
-make install mandir=%{_mandir} INSTALLROOT=%{buildroot}
-make -C redhat
+make install mandir=%{_mandir} INSTALLROOT=%{buildroot} %{?_smp_mflags}
+make -C redhat %{?_smp_mflags}
 install -m 644 redhat/autofs.service  %{buildroot}/lib/systemd/system/autofs.service
 rm -rf %{buildroot}/etc/rc.d
 
@@ -59,5 +62,5 @@ rm -rf %{buildroot}/etc/rc.d
 /lib/systemd/system/autofs.service
 
 %changelog
-*   Thu Jul 06 2017 Xiaolin Li <xiaolinl@vmware.com> 5.1.3-1
--   Initial build. First version
+* Thu Jul 06 2017 Xiaolin Li <xiaolinl@vmware.com> 5.1.3-1
+- Initial build. First version

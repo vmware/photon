@@ -17,14 +17,14 @@ Requires:       systemd
 The ebtables program is a filtering tool for a Linux-based bridging firewall. It enables transparent filtering of network traffic passing through a Linux bridge. The filtering possibilities are limited to link layer filtering and some basic filtering on higher network layers. Advanced logging, MAC DNAT/SNAT and brouter facilities are also included.
 
 %prep
-%setup -q -n %{name}-v%{version}-4
+%autosetup -p1 -n %{name}-v%{version}-4
 
 %build
 make %{?_smp_mflags} CFLAGS="${RPM_OPT_FLAGS}"
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} BINDIR=%{_sbindir} MANDIR=%{_mandir} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} BINDIR=%{_sbindir} MANDIR=%{_mandir} install %{?_smp_mflags}
 
 mkdir -p %{buildroot}/%{_libdir}/systemd/system
 install -vdm755 %{buildroot}/etc/systemd/scripts
@@ -43,7 +43,6 @@ echo "disable ebtables.service" > %{buildroot}%{_libdir}/systemd/system-preset/5
 %postun
 /sbin/ldconfig
 %systemd_postun_with_restart ebtables.service
-
 
 %check
 make %{?_smp_mflags} check
@@ -65,9 +64,9 @@ rm -rf %{buildroot}/*
 %exclude %{_sysconfdir}/rc.d/init.d/ebtables
 
 %changelog
-*   Tue Oct 24 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.0.10-3
--   Disabled ebtables service by default
-*   Thu Jun 29 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.10-2
--   Added systemd to Requires and BuildRequires.
-*   Wed Jan 18 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.10-1
--   Initial build.
+* Tue Oct 24 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.0.10-3
+- Disabled ebtables service by default
+* Thu Jun 29 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.10-2
+- Added systemd to Requires and BuildRequires.
+* Wed Jan 18 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.10-1
+- Initial build.

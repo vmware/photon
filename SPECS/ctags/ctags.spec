@@ -21,14 +21,14 @@ searched by regular expressions, and its ability to generate emacs-style
 TAGS files.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure
-make
+make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 %makeinstall
 
 %clean
@@ -40,7 +40,7 @@ rm -rf %{buildroot}
 %{_mandir}/man1/ctags*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.8-2
--	GA - Bump release of all rpms
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 5.8-2
+- GA - Bump release of all rpms
 * Tue Jul 14 2015 Luis Zuniga <lzuniga@vmware.com> 5.8-1
 - Initial build for Photon

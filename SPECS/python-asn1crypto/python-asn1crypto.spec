@@ -8,12 +8,19 @@ Summary:        A fast, pure Python library for parsing and serializing ASN.1 st
 License:        MIT
 Group:          Development/Languages/Python
 Url:            https://pypi.python.org/packages/67/14/5d66588868c4304f804ebaff9397255f6ec5559e46724c2496e0f26e68d6/asn1crypto-0.22.0.tar.gz
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
 Source0:        asn1crypto-%{version}.tar.gz
 %define sha1    asn1crypto=c4f60b52dd06e3fd0ed568a741e968aaccd2e3e5
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-tools
 
 Requires:       python2
 Requires:       python2-libs
@@ -25,10 +32,6 @@ A fast, pure Python library for parsing and serializing ASN.1 structures.
 
 %package -n     python3-asn1crypto
 Summary:        A fast, pure Python library for parsing and serializing ASN.1 structures.
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-tools
 Requires:       python3
 Requires:       python3-libs
 
@@ -36,7 +39,7 @@ Requires:       python3-libs
 Python 3 version of asn1crypto
 
 %prep
-%setup -qn asn1crypto-%{version}
+%autosetup -p1 -n asn1crypto-%{version}
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -52,7 +55,7 @@ pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
-#%check
+#%%check
 #Commented out %check due to no test existence
 
 %files
@@ -64,5 +67,5 @@ popd
 %{python3_sitelib}/*
 
 %changelog
-*   Fri Oct 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.22.0-1
--   python asn1crypto for PhotonOS.
+* Fri Oct 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.22.0-1
+- python asn1crypto for PhotonOS.
