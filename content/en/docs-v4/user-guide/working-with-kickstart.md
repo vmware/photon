@@ -434,6 +434,7 @@ In above example **rootfs**,**root** and **swap** are logical volumes in volume 
 
 ## Unattended Installation Through Kickstart
 
+<<<<<<< HEAD
 For an unattended installation, you pass the `ks=<config_file>` parameter to the kernel command. To pass the config file, there are three options: 
 
 1. Provide it in the ISO through a CD-ROM attached to the host.
@@ -441,6 +442,14 @@ For an unattended installation, you pass the `ks=<config_file>` parameter to the
 3. Serving it from an HTTP server. 
 
 The syntax to pass the configuration file to the kernel through the CD-ROM takes the following form:
+=======
+For an unattended installation, you pass the `ks=<config_file>` parameter to the kernel command. To pass the config file, there are two options: 
+
+1. Provide it in the ISO.
+2. Serving it from an HTTP server. 
+
+The syntax to pass the configuration file to the kernel through the ISO takes the following form: 
+>>>>>>> bdeea4277 (Update Packer Examples)
 
 ```console
 ks=cdrom:/<config_file_path>
@@ -452,6 +461,7 @@ For example:
 ks=cdrom:/isolinux/ks.cfg
 ```
 
+<<<<<<< HEAD
 The syntax to pass the configuration file to the kernel through a secondary device takes the following form:
 
 ```console
@@ -464,6 +474,8 @@ For example:
 ks=/dev/sr1:/isolinux/sample_ks.cfg
 ```
 
+=======
+>>>>>>> bdeea4277 (Update Packer Examples)
 The syntax to serve the configuration file to the kernel from a HTTPS server takes the following form: 
 
 ```console
