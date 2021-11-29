@@ -1,4 +1,4 @@
-Summary:    administration tool for IP sets 
+Summary:    administration tool for IP sets
 Name:       ipset
 Version:    6.32
 Release:    1%{?dist}
@@ -7,10 +7,14 @@ URL:        http://ipset.netfilter.org/
 Group:      System Environment/tools
 Vendor:     VMware, Inc.
 Distribution: Photon
+
 Source0:     ipset.netfilter.org/%{name}-%{version}.tar.bz2
 %define sha1 ipset=2c03ac15aa6807c0f0344b61090147d4bfaa4fd2
+
 BuildRequires:    libmnl-devel
+
 Requires:         libmnl
+
 %description
 IP sets are a framework inside the Linux kernel, which can be administered by the ipset utility. Depending on the type, an IP set may store IP addresses, networks, (TCP/UDP) port numbers, MAC addresses, interface names or combinations of them in a way, which ensures lightning speed when matching an entry against a set.
 
@@ -30,24 +34,24 @@ Requires:   ipset
 Libraries and header files for ipset.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-./configure \
+sh ./configure \
     --prefix=%{_prefix} \
     --bindir=%{_bindir} \
     --libdir=%{_libdir} \
     --enable-static=no \
     --with-kmod=no
+
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
-#%check
+#%%check
 #make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
-
 
 %post
 /sbin/ldconfig
@@ -71,7 +75,7 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/libipset.pc
 
 %changelog
-*   Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 6.32-1
--   Upgrading version to 6.32
-*   Wed Aug 3 2016 Xiaolin Li <xiaolinl@vmware.com> 6.29-1
--   Initial build.  First version
+* Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 6.32-1
+- Upgrading version to 6.32
+* Wed Aug 3 2016 Xiaolin Li <xiaolinl@vmware.com> 6.29-1
+- Initial build.  First version

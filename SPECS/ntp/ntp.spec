@@ -25,9 +25,9 @@ Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
 Requires:       openssl
 Requires:       libcap >= 2.24
 %description
-The ntp package contains a client and server to keep the time 
-synchronized between various computers over a network. This 
-package is the official reference implementation of the 
+The ntp package contains a client and server to keep the time
+synchronized between various computers over a network. This
+package is the official reference implementation of the
 NTP protocol.
 
 %package        perl
@@ -39,7 +39,6 @@ Requires:       perl-IO-Socket-SSL
 %description    perl
 Perl scripts for ntp.
 
-
 %package -n ntpstat
 Summary:    Utilities
 Group:      Utilities
@@ -48,26 +47,20 @@ ntpstat is a utility which reports the synchronisation
 state of the NTP daemon running on the local machine.
 
 %prep
-%setup -q -a 1
-%patch0 -p1
+%autosetup -p1 -a 1
 
 %build
-./configure \
-    CFLAGS="%{optflags}" \
-    CXXFLAGS="%{optflags}" \
+%configure \
     --disable-silent-rules \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --mandir=%{_mandir} \
-    --sysconfdir=/etc \
     --with-binsubdir=sbin \
     --enable-linuxcaps
+
 make %{?_smp_mflags}
-make -C ntpstat-master CFLAGS="$CFLAGS"
+make -C ntpstat-master CFLAGS="$CFLAGS" %{?_smp_mflags}
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -v -m755    -d %{buildroot}%{_datadir}/doc/%{name}-%{version}
 cp -v -R html/*     %{buildroot}%{_datadir}/doc/%{name}-%{version}/
 install -vdm 755 %{buildroot}/etc
@@ -112,7 +105,7 @@ install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable ntpd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ntpd.preset
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %pre
 if ! getent group ntp >/dev/null; then
@@ -122,7 +115,7 @@ if ! getent passwd ntp >/dev/null; then
     useradd -c "Network Time Protocol" -d /var/lib/ntp -u 87 -g ntp -s /bin/false ntp
 fi
 %post
-%{_sbindir}/ldconfig 
+%{_sbindir}/ldconfig
 %systemd_post ntpd.service
 
 %preun
@@ -175,41 +168,41 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ntpstat.8*
 
 %changelog
-*   Tue Aug 25 2020 Dweep Advani <dadvani@vmware.com> 4.2.8p14-2
--   Patched for CVE-2020-15025
-*   Wed Apr 29 2020 Dweep Advani <dadvani@vmware.com> 4.2.8p14-1
--   Upgrade to version 4.2.8p14, addresses CVE-2020-11868.
-*   Thu Mar 28 2019 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p13-1
--   Upgrade version to 4.2.8p13.
-*   Wed Aug 22 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p12-1
--   Upgrade version to 4.2.8p12.
-*   Mon Mar 05 2018 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p11-1
--   Upgrade version to 4.2.8p11 and move perl scripts to perl subpackage.
-*   Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.2.8p10-4
--   Remove shadow from requires and use explicit tools for post actions
-*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  4.2.8p10-3
--   Disabled ntpd service by default
-*   Mon Apr 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.8p10-2
--   add noquery to conf
-*   Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 4.2.8p10-1
--   Upgrade version to 4.2.8p10 - fix for CVE-2017-6458, CVE-2017-6460
-*   Tue Jan 24 2017 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p9-1
--   Updated to version 4.2.8p9.
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.8p6-4
--   GA - Bump release of all rpms
-*   Thu May 12 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.8p6-3
--   Adding ntp sysconfig file
-*   Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 4.2.8p6-2
--   Edit scriptlets.
-*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 4.2.8p6-1
--   Upgrade version
-*   Thu Jan 7 2016 Xiaolin Li <xiaolinl@vmware.com>  4.2.8p3-4
--   Add ntpstat package.
-*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  4.2.8p3-3
--   Add systemd to Requires and BuildRequires.
-*   Fri Oct 30 2015 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p3-2
--   Add ntpd to systemd service.
-*   Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 4.2.8p3-1
--   Updating to version 4.2.8p3
-*   Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 4.2.6p5-1
--   Initial build.  First version
+* Tue Aug 25 2020 Dweep Advani <dadvani@vmware.com> 4.2.8p14-2
+- Patched for CVE-2020-15025
+* Wed Apr 29 2020 Dweep Advani <dadvani@vmware.com> 4.2.8p14-1
+- Upgrade to version 4.2.8p14, addresses CVE-2020-11868.
+* Thu Mar 28 2019 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p13-1
+- Upgrade version to 4.2.8p13.
+* Wed Aug 22 2018 Srinidhi Rao <srinidhir@vmware.com> 4.2.8p12-1
+- Upgrade version to 4.2.8p12.
+* Mon Mar 05 2018 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p11-1
+- Upgrade version to 4.2.8p11 and move perl scripts to perl subpackage.
+* Mon Sep 18 2017 Alexey Makhalov <amakhalov@vmware.com> 4.2.8p10-4
+- Remove shadow from requires and use explicit tools for post actions
+* Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  4.2.8p10-3
+- Disabled ntpd service by default
+* Mon Apr 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.8p10-2
+- add noquery to conf
+* Wed Apr 05 2017 Anish Swaminathan <anishs@vmware.com> 4.2.8p10-1
+- Upgrade version to 4.2.8p10 - fix for CVE-2017-6458, CVE-2017-6460
+* Tue Jan 24 2017 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p9-1
+- Updated to version 4.2.8p9.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.2.8p6-4
+- GA - Bump release of all rpms
+* Thu May 12 2016 Divya Thaluru <dthaluru@vmware.com> 4.2.8p6-3
+- Adding ntp sysconfig file
+* Wed May 04 2016 Anish Swaminathan <anishs@vmware.com> 4.2.8p6-2
+- Edit scriptlets.
+* Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 4.2.8p6-1
+- Upgrade version
+* Thu Jan 7 2016 Xiaolin Li <xiaolinl@vmware.com>  4.2.8p3-4
+- Add ntpstat package.
+* Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  4.2.8p3-3
+- Add systemd to Requires and BuildRequires.
+* Fri Oct 30 2015 Xiaolin Li <xiaolinl@vmware.com> 4.2.8p3-2
+- Add ntpd to systemd service.
+* Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 4.2.8p3-1
+- Updating to version 4.2.8p3
+* Fri Oct 10 2014 Divya Thaluru <dthaluru@vmware.com> 4.2.6p5-1
+- Initial build.  First version

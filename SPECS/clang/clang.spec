@@ -7,14 +7,17 @@ URL:            http://clang.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://releases.llvm.org/%{version}/cfe-%{version}.src.tar.xz
 %define sha1    cfe=e2762800c93d9335781ea6a45af3f80845542ef5
+
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
 BuildRequires:  ncurses-devel
 BuildRequires:  zlib-devel
 BuildRequires:  libxml2-devel
 BuildRequires:  python2-devel
+
 Requires:       libstdc++-devel
 Requires:       ncurses
 Requires:       llvm
@@ -34,7 +37,7 @@ The clang-devel package contains libraries, header files and documentation
 for developing applications that use clang.
 
 %prep
-%setup -q -n cfe-%{version}.src
+%autosetup -p1 -n cfe-%{version}.src
 
 %build
 mkdir -p build
@@ -46,16 +49,16 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr   \
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 cd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %check
 cd build
-make clang-check
+make clang-check %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}/*
@@ -76,9 +79,9 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
-*   Wed Jun 28 2017 Chang Lee <changlee@vmware.com> 4.0.0-2
--   Updated %check
-*   Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1
--   Version update
-*   Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
--   Initial build.
+* Wed Jun 28 2017 Chang Lee <changlee@vmware.com> 4.0.0-2
+- Updated %check
+* Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1
+- Version update
+* Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
+- Initial build.

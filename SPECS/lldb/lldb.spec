@@ -8,8 +8,11 @@ URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
 %define sha1    lldb=da78ed1453a5e62ff058bebf0cd91c8f51ec5504
+
+BuildRequires:  python2-devel
 BuildRequires:  cmake
 BuildRequires:  llvm-devel = %{version}
 BuildRequires:  clang-devel = %{version}
@@ -17,6 +20,7 @@ BuildRequires:  ncurses-devel
 BuildRequires:  swig
 BuildRequires:  zlib-devel
 BuildRequires:  libxml2-devel
+
 Requires:       llvm = %{version}
 Requires:       clang = %{version}
 Requires:       ncurses
@@ -37,14 +41,13 @@ for developing applications that use lldb.
 %package -n python-lldb
 Summary:        Python module for lldb
 Requires:       %{name} = %{version}-%{release}
-BuildRequires:  python2-devel
 Requires:       python-six
 
 %description -n python-lldb
 The package contains the LLDB Python module.
 
 %prep
-%setup -q -n %{name}-%{version}.src
+%autosetup -p1 -n %{name}-%{version}.src
 
 %build
 mkdir -p build
@@ -60,18 +63,15 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr           \
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 cd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 #Remove bundled python-six files
 rm -f %{buildroot}%{python2_sitelib}/six.*
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
-
-#%check
-#Commented out %check due to no test existence
 
 %clean
 rm -rf %{buildroot}/*
@@ -92,11 +92,11 @@ rm -rf %{buildroot}/*
 %{python2_sitelib}/*
 
 %changelog
-*   Mon Jul 10 2017 Chang Lee <changlee@vmware.com> 4.0.0-3
--   Commented out %check due to no test existence.
-*   Wed Jul 5 2017 Divya Thaluru <dthaluru@vmware.com> 4.0.0-2
--   Added python-lldb package
-*   Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1
--   Version update
-*   Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
--   Initial build.
+* Mon Jul 10 2017 Chang Lee <changlee@vmware.com> 4.0.0-3
+- Commented out %check due to no test existence.
+* Wed Jul 5 2017 Divya Thaluru <dthaluru@vmware.com> 4.0.0-2
+- Added python-lldb package
+* Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1
+- Version update
+* Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
+- Initial build.

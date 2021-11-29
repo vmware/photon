@@ -7,19 +7,23 @@ Version:        1.18.19
 Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
 Source0:        kubernetes-%{version}.tar.gz
 %define sha1    kubernetes-%{version}.tar.gz=8f736a5f51788b022862d7a2ca268a93a4420d10
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
 %define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
+
 Patch0:         CVE-2021-25741.patch
-Group:          Development/Tools
-Vendor:         VMware, Inc.
-Distribution:   Photon
+
 BuildRequires:  go >= 1.13.5
 BuildRequires:  rsync
 BuildRequires:  which
+
 Requires:       cni
 Requires:       ebtables
 Requires:       etcd >= 3.0.4
@@ -58,8 +62,8 @@ A pod setup process that holds a pod's namespace.
 %global debug_package %{nil}
 
 %prep -p exit
-%setup -qn %{name}-%{version}
-%patch0 -p1
+%autosetup -p1 -n %{name}-%{version}
+
 cd ..
 tar xf %{SOURCE1} --no-same-owner
 sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ/apiserver
@@ -67,14 +71,14 @@ sed -i '/KUBE_ALLOW_PRIV/d' contrib-0.7.0/init/systemd/kubelet.service
 cd %{name}-%{version}
 
 %build
-make
-make WHAT="cmd/cloud-controller-manager"
+make %{?_smp_mflags}
+make WHAT="cmd/cloud-controller-manager" %{?_smp_mflags}
 pushd build/pause
 mkdir -p bin
 gcc -Os -Wall -Werror -static -o bin/pause-amd64 pause.c
 strip bin/pause-amd64
 popd
-make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/amd64 windows/amd64"
+make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/amd64 windows/amd64" %{?_smp_mflags}
 
 %install
 install -vdm644 %{buildroot}/etc/profile.d
@@ -186,7 +190,6 @@ fi
 %{_bindir}/kube-proxy
 %{_bindir}/kube-scheduler
 %{_bindir}/kubectl
-#%{_bindir}/kubefed
 %{_lib}/systemd/system/kube-apiserver.service
 %{_lib}/systemd/system/kubelet.service
 %{_lib}/systemd/system/kube-scheduler.service
@@ -222,15 +225,15 @@ fi
 /opt/vmware/kubernetes/windows/amd64/kubectl.exe
 
 %changelog
-*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.18.19-4
--   Bump up version to compile with new go
-*   Fri Sep 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-3
--   Fix CVE-2021-25741
-*   Tue Jun 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-2
--   Change 10-kubeadm.conf file permission to 644
-*   Thu Mar 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-1
--   Update to version 1.18.19, Fix CVE-2020-8565, CVE-2021-25737, CVE-2021-3121
-*   Tue Mar 02 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-2
--   Fix CVE-2020-8564, CVE-2020-8566
-*   Wed Sep 16 2020 Ashwin H <ashwinh@vmware.com> 1.17.11-1
--   Initial version 1.17.11
+* Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.18.19-4
+- Bump up version to compile with new go
+* Fri Sep 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-3
+- Fix CVE-2021-25741
+* Tue Jun 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-2
+- Change 10-kubeadm.conf file permission to 644
+* Thu Mar 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-1
+- Update to version 1.18.19, Fix CVE-2020-8565, CVE-2021-25737, CVE-2021-3121
+* Tue Mar 02 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.11-2
+- Fix CVE-2020-8564, CVE-2020-8566
+* Wed Sep 16 2020 Ashwin H <ashwinh@vmware.com> 1.17.11-1
+- Initial version 1.17.11

@@ -7,16 +7,19 @@ License:        LGPLv2+ and GPLv2+ or BSD
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://sourceforge.net/projects/openipmi/files/latest/download/%{name}-%{version}.tar.gz
 %define sha1    openipmi=f37656813a826a3147ed557c32408f8daa399c28
 Source1:        openipmi-helper
 Source2:        ipmi.service
+
 BuildRequires:  systemd
 BuildRequires:  perl
 BuildRequires:  popt-devel
 BuildRequires:  ncurses-devel
 BuildRequires:  openssl-devel
 BuildRequires:  swig
+
 Requires:       systemd
 
 %description
@@ -66,13 +69,13 @@ Requires:       openipmi = %{version}-%{release}
 This package contains a network IPMI listener.
 
 %prep
-%setup -n OpenIPMI-%{version}
+%autosetup -p1 -n OpenIPMI-%{version}
 
 %build
 # USERFIX: Things you might have to add to configure:
 #  --with-tclcflags='-I /usr/include/tclN.M' --with-tcllibs=-ltclN.M
 #    Obviously, replace N.M with the version of tcl on your system.
-./configure                                 \
+sh ./configure                              \
     --prefix=/usr                           \
     --with-tcl=no                           \
     --disable-static                        \
@@ -81,9 +84,11 @@ This package contains a network IPMI listener.
     --with-perl=yes                         \
     --with-perlinstall=%{perl_vendorarch}   \
     --sysconfdir=%{_sysconfdir}
-make
+
+make %{?_smp_mflags}
 
 %install
+# make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install
 install -d %{buildroot}/etc/init.d
 install -d %{buildroot}/etc/sysconfig
@@ -99,7 +104,7 @@ install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
 echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ipmi.preset
 
 #The build VM does not support ipmi.
-#%check
+#%%check
 #make %{?_smp_mflags} check
 
 %preun
@@ -178,8 +183,7 @@ echo "disable ipmi.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-ip
 %{_mandir}/man5/ipmi_sim_cmd.5.gz
 
 %changelog
-*   Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.24-2
--   openipmi-devel requires ncurses-devel
-*   Mon Sep 11 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.24-1
--   Initial build.  First version
-
+* Fri Sep 15 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.24-2
+- openipmi-devel requires ncurses-devel
+* Mon Sep 11 2017 Xiaolin Li <xiaolinl@vmware.com> 2.0.24-1
+- Initial build.  First version

@@ -10,6 +10,7 @@ URL:            http://docs.docker.com
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 #Git commits must be in sync with docker/hack/dockerfile/binaries-commits
 Source0:        https://github.com/docker/moby/archive/docker-ce-02c1d87.tar.gz
 %define sha1 docker-ce=40deab51330b39d16abc23831063a6123ff0a570
@@ -20,12 +21,13 @@ Source2:        https://github.com/docker/runc/tree/runc-2d41c04.tar.gz
 Source3:        https://github.com/docker/libnetwork/tree/libnetwork-7b2b1fe.tar.gz
 %define sha1 libnetwork=0afeb8c802998344753fb933f827427da23975f8
 #Source4:        https://github.com/docker/cli/tree/cli-3dfb834.tar.gz
-#%define sha1 cli=9dd33ca7d8e554fe875138000c6767167228e125
+#%%define sha1 cli=9dd33ca7d8e554fe875138000c6767167228e125
 Source4:        https://github.com/krallin/tini/tree/tini-949e6fa.tar.gz
 %define sha1 tini=e1a0e72ff74e1486e0701dd52983014777a7d949
 Source5:        https://github.com/cpuguy83/go-md2man/tree/go-md2man-a65d4d2.tar.gz
 %define sha1 go-md2man=e3d0865c583150f7c76e385a8b4a3f2432ca8ad8
 Source6:        default-disable.preset
+
 Patch0:         remove-firewalld.patch
 Patch1:         CVE-2017-14992.patch
 Patch2:         fix-apparmor-not-being-applied-to-exec-processes.patch
@@ -53,6 +55,7 @@ BuildRequires:  findutils
 BuildRequires:  git
 BuildRequires:  libapparmor
 BuildRequires:  libapparmor-devel
+
 Requires:       libapparmor
 Requires:       libltdl
 Requires:       libgcc
@@ -73,11 +76,17 @@ Requires:       %{name} = %{version}
 Documentation and vimfiles for docker
 
 %prep
+# Using autosetup is not feasible
 %setup -q -c
+# Using autosetup is not feasible
 %setup -T -D -a 1
+# Using autosetup is not feasible
 %setup -T -D -a 2
+# Using autosetup is not feasible
 %setup -T -D -a 3
+# Using autosetup is not feasible
 %setup -T -D -a 4
+# Using autosetup is not feasible
 %setup -T -D -a 5
 
 ln -s docker-ce/components/cli cli
@@ -96,10 +105,10 @@ ln -s docker-ce/components/packaging packaging
 
 mkdir -p /go/src/github.com
 cd /go/src/github.com
-mkdir opencontainers
-mkdir containerd
-mkdir cpuguy83
-mkdir docker
+mkdir -p opencontainers \
+         containerd \
+         cpuguy83 \
+         docker
 
 ln -snrf "$OLDPWD/containerd" containerd/
 ln -snrf "$OLDPWD/engine" docker/docker
@@ -126,7 +135,7 @@ export RUNC_BUILDTAGS="seccomp apparmor"
 cd /go/src/github.com
 
 pushd docker/cli
-make VERSION="$(cat VERSION)" dynbinary manpages
+make VERSION="$(cat VERSION)" dynbinary manpages %{?_smp_mflags}
 popd
 
 pushd docker/docker
@@ -240,88 +249,88 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
-*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 17.06.0-19
--   Bump up version to compile with new go
-*   Tue Jun 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 17.06.0-18
--   Added statx to whitelist of allowed syscalls
-*   Sat Aug 22 2020 Ashwin H <ashwinh@vmware.com> 17.06.0-17
--   Remove hardcoded go dependecy
-*   Wed Apr 29 2020 Harinadh D <hdommaraju@vmware.com> 17.06.0-16
--   Bump up version to compile with go 1.13.5-2
-*   Mon Apr 27 2020 Ankit Jain <ankitja@vmware.com> 17.06.0-15
--   Added Requires shadow
-*   Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 17.06.0-14
--   Bump up version to compile with new go
-*   Thu Nov 28 2019 Ashwin H <ashwinh@vmware.com> 17.06.0-13
--   Fix CVE-2019-14271
-*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 17.06.0-12
--   Bump up version to compile with new go
-*   Wed Aug 14 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 17.06.0-11
--   Version bump to build using go version 1.9.4-6
-*   Mon Jun 10 2019 Bo Gan <ganb@vmware.com> 17.06.0-10
--   Fix CVE-2018-15664
-*   Tue Feb 12 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 17.06.0-9
--   Patch runc for CVE-2019-5736
-*   Wed Sep 19 2018 Bo Gan <ganb@vmware.com> 17.06.0-8
--   Use go 1.9.4 rather than latest go toolchain
-*   Thu Sep 06 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 17.06.0-7
--   Fix AppArmor not being applied to exec processes.
-*   Wed Aug 08 2018 Dweep Advani <dadvani@vmware.com> 17.06.0-6
--   Patching for CVE-2017-14992
-*   Wed Jul 25 2018 Keerthana K <keerthanak@vmware.com> 17.06.0-5
--   Updated BuildTags to include apparmor.
-*   Fri Sep 22 2017 Bo Gan <ganb@vmware.com> 17.06.0-4
--   disable docker service by default
-*   Fri Sep 08 2017 Bo Gan <ganb@vmware.com> 17.06.0-3
--   Fix post scriptlet to invoke systemd_post
-*   Mon Aug 28 2017 Alexey Makhalov <amakhalov@vmware.com> 17.06.0-2
--   Use nopie option to build
-*   Tue Jul 18 2017 Bo Gan <ganb@vmware.com> 17.06.0-1
--   Update to 17.06.0-ce
-*   Thu May 04 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-4
--   Adding build requires GO.
-*   Wed May 03 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-3
--   Fixing docker plugin runc version github issue # 640.
-*   Mon Apr 24 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-2
--   Adding docker group for non-sudo users, GitHub issue # 207.
-*   Tue Apr 11 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-1
--   Building docker from source.
-*   Fri Jan 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.12.6-1
--   Upgraded to version 1.12.6
-*   Wed Sep 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.12.1-1
--   Upgraded to version 1.12.1
-*   Mon Aug 22 2016 Alexey Makhalov <amakhalov@vmware.com> 1.12.0-2
--   Added bash completion file
-*   Tue Aug 09 2016 Anish Swaminathan <anishs@vmware.com> 1.12.0-1
--   Upgraded to version 1.12.0
-*   Tue Jun 28 2016 Anish Swaminathan <anishs@vmware.com> 1.11.2-1
--   Upgraded to version 1.11.2
-*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  1.11.0-6
--   Fixed logic to restart the active services after upgrade
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11.0-5
--   GA - Bump release of all rpms
-*   Tue May 10 2016 Anish Swaminathan <anishs@vmware.com> 1.11.0-4
--   Remove commented post actions
-*   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  1.11.0-3
--   Fixing spec file to handle rpm upgrade scenario correctly
-*   Sat Apr 30 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11.0-2
--   Add $DOCKER_OPTS to start in docker.service
-*   Fri Apr 15 2016 Anish Swaminathan <anishs@vmware.com> 1.11.0-1
--   Updated to version 1.11.0.
-*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10.2-1
--   Upgraded to version 1.10.2
-*   Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.9.0-2
--   Add systemd to Requires and BuildRequires.
--   Use systemctl to enable/disable service.
-*   Fri Nov 06 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.9.0-1
--   Update to version 1.9.0
-*   Mon Aug 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.1-1
--   Update to new version 1.8.1.
-*   Fri Jun 19 2015 Fabio Rapposelli <fabio@vmware.com> 1.7.0-1
--   Update to new version.
-*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.6.0-3
--   Update according to UsrMove.
-*   Fri May 15 2015 Divya Thaluru <dthaluru@vmware.com> 1.6.0-2
--   Updated to version 1.6
-*   Wed Mar 4 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
--   Initial build. First version
+* Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 17.06.0-19
+- Bump up version to compile with new go
+* Tue Jun 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 17.06.0-18
+- Added statx to whitelist of allowed syscalls
+* Sat Aug 22 2020 Ashwin H <ashwinh@vmware.com> 17.06.0-17
+- Remove hardcoded go dependecy
+* Wed Apr 29 2020 Harinadh D <hdommaraju@vmware.com> 17.06.0-16
+- Bump up version to compile with go 1.13.5-2
+* Mon Apr 27 2020 Ankit Jain <ankitja@vmware.com> 17.06.0-15
+- Added Requires shadow
+* Tue Jan 07 2020 Ashwin H <ashwinh@vmware.com> 17.06.0-14
+- Bump up version to compile with new go
+* Thu Nov 28 2019 Ashwin H <ashwinh@vmware.com> 17.06.0-13
+- Fix CVE-2019-14271
+* Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 17.06.0-12
+- Bump up version to compile with new go
+* Wed Aug 14 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 17.06.0-11
+- Version bump to build using go version 1.9.4-6
+* Mon Jun 10 2019 Bo Gan <ganb@vmware.com> 17.06.0-10
+- Fix CVE-2018-15664
+* Tue Feb 12 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 17.06.0-9
+- Patch runc for CVE-2019-5736
+* Wed Sep 19 2018 Bo Gan <ganb@vmware.com> 17.06.0-8
+- Use go 1.9.4 rather than latest go toolchain
+* Thu Sep 06 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 17.06.0-7
+- Fix AppArmor not being applied to exec processes.
+* Wed Aug 08 2018 Dweep Advani <dadvani@vmware.com> 17.06.0-6
+- Patching for CVE-2017-14992
+* Wed Jul 25 2018 Keerthana K <keerthanak@vmware.com> 17.06.0-5
+- Updated BuildTags to include apparmor.
+* Fri Sep 22 2017 Bo Gan <ganb@vmware.com> 17.06.0-4
+- disable docker service by default
+* Fri Sep 08 2017 Bo Gan <ganb@vmware.com> 17.06.0-3
+- Fix post scriptlet to invoke systemd_post
+* Mon Aug 28 2017 Alexey Makhalov <amakhalov@vmware.com> 17.06.0-2
+- Use nopie option to build
+* Tue Jul 18 2017 Bo Gan <ganb@vmware.com> 17.06.0-1
+- Update to 17.06.0-ce
+* Thu May 04 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-4
+- Adding build requires GO.
+* Wed May 03 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-3
+- Fixing docker plugin runc version github issue # 640.
+* Mon Apr 24 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-2
+- Adding docker group for non-sudo users, GitHub issue # 207.
+* Tue Apr 11 2017 Kumar Kaushik <kaushikk@vmware.com> 1.13.1-1
+- Building docker from source.
+* Fri Jan 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.12.6-1
+- Upgraded to version 1.12.6
+* Wed Sep 21 2016 Xiaolin Li <xiaolinl@vmware.com> 1.12.1-1
+- Upgraded to version 1.12.1
+* Mon Aug 22 2016 Alexey Makhalov <amakhalov@vmware.com> 1.12.0-2
+- Added bash completion file
+* Tue Aug 09 2016 Anish Swaminathan <anishs@vmware.com> 1.12.0-1
+- Upgraded to version 1.12.0
+* Tue Jun 28 2016 Anish Swaminathan <anishs@vmware.com> 1.11.2-1
+- Upgraded to version 1.11.2
+* Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com>  1.11.0-6
+- Fixed logic to restart the active services after upgrade
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11.0-5
+- GA - Bump release of all rpms
+* Tue May 10 2016 Anish Swaminathan <anishs@vmware.com> 1.11.0-4
+- Remove commented post actions
+* Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  1.11.0-3
+- Fixing spec file to handle rpm upgrade scenario correctly
+* Sat Apr 30 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.11.0-2
+- Add $DOCKER_OPTS to start in docker.service
+* Fri Apr 15 2016 Anish Swaminathan <anishs@vmware.com> 1.11.0-1
+- Updated to version 1.11.0.
+* Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.10.2-1
+- Upgraded to version 1.10.2
+* Thu Dec 10 2015 Xiaolin Li <xiaolinl@vmware.com>  1.9.0-2
+- Add systemd to Requires and BuildRequires.
+- Use systemctl to enable/disable service.
+* Fri Nov 06 2015 Vinay Kulkarni <kulkarniv@vmware.com> 1.9.0-1
+- Update to version 1.9.0
+* Mon Aug 17 2015 Divya Thaluru <dthaluru@vmware.com> 1.8.1-1
+- Update to new version 1.8.1.
+* Fri Jun 19 2015 Fabio Rapposelli <fabio@vmware.com> 1.7.0-1
+- Update to new version.
+* Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.6.0-3
+- Update according to UsrMove.
+* Fri May 15 2015 Divya Thaluru <dthaluru@vmware.com> 1.6.0-2
+- Updated to version 1.6
+* Wed Mar 4 2015 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
+- Initial build. First version

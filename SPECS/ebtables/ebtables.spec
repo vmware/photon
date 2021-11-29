@@ -7,24 +7,29 @@ URL:            http://ebtables.netfilter.org/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        ftp://ftp.netfilter.org/pub/ebtables/%{name}-v%{version}-4.tar.gz
 %define sha1    ebtables=907d3b82329e8fbb7aaaa98049732bd8dab022f9
+
 Source1:        ebtables_script
 Source2:        ebtables.service
+
 BuildRequires:  systemd
+
 Requires:       systemd
+
 %description
 The ebtables program is a filtering tool for a Linux-based bridging firewall. It enables transparent filtering of network traffic passing through a Linux bridge. The filtering possibilities are limited to link layer filtering and some basic filtering on higher network layers. Advanced logging, MAC DNAT/SNAT and brouter facilities are also included.
 
 %prep
-%setup -q -n %{name}-v%{version}-4
+%autosetup -p1 -n %{name}-v%{version}-4
 
 %build
 make %{?_smp_mflags} CFLAGS="${RPM_OPT_FLAGS}"
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} BINDIR=%{_sbindir} MANDIR=%{_mandir} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} BINDIR=%{_sbindir} MANDIR=%{_mandir} install %{?_smp_mflags}
 
 mkdir -p %{buildroot}/%{_libdir}/systemd/system
 install -vdm755 %{buildroot}/etc/systemd/scripts
@@ -45,9 +50,6 @@ echo "disable ebtables.service" > %{buildroot}%{_libdir}/systemd/system-preset/5
 /sbin/ldconfig
 %systemd_postun_with_restart ebtables.service
 
-#%check
-#Commented out %check due to the limited chroot environment of bind.
-
 %clean
 rm -rf %{buildroot}/*
 
@@ -64,13 +66,12 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/systemd/scripts/ebtables
 %exclude %{_sysconfdir}/rc.d/init.d/ebtables
 
-
 %changelog
-*   Wed Jul 05 2017 Chang Lee <changlee@vmware.com>  2.0.10-4
--   Commented out %check due to the limited chroot environment of bind.
-*   Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.0.10-3
--   Disabled ebtables service by default
-*   Mon May 15 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.10-2
--   Added systemd to Requires and BuildRequires.
-*   Wed Jan 18 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.10-1
--   Initial build.
+* Wed Jul 05 2017 Chang Lee <changlee@vmware.com>  2.0.10-4
+- Commented out %check due to the limited chroot environment of bind.
+* Thu Jun 29 2017 Divya Thaluru <dthaluru@vmware.com>  2.0.10-3
+- Disabled ebtables service by default
+* Mon May 15 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.10-2
+- Added systemd to Requires and BuildRequires.
+* Wed Jan 18 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.10-1
+- Initial build.

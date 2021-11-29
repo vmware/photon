@@ -9,8 +9,8 @@
 %define __strip /bin/true
 
 # rpmbuild magic to keep from having meta dependency on libc.so.6
-#%define _use_internal_dependency_generator 0
-#%define __find_requires %{nil}
+#%%define _use_internal_dependency_generator 0
+#%%define __find_requires %{nil}
 
 Summary:        Go
 Name:           go
@@ -21,20 +21,22 @@ URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://dl.google.com/go/%{name}%{version}.src.tar.gz
 %define sha1    go=b78350fa6e4617c1eac66dff656eda8df0a13c1f
+
 Patch0:         CVE-2021-41771.patch
 Patch1:         CVE-2021-41772.patch
+
 Requires:       glibc
+
 %define ExtraBuildRequires go
 
 %description
 Go is an open source programming language that makes it easy to build simple, reliable, and efficient software.
 
 %prep
-%setup -qn %{name}
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1 -n %{name}
 
 %build
 export GOHOSTOS=linux
@@ -52,8 +54,7 @@ popd
 %install
 rm -rf %{buildroot}
 
-mkdir -p %{buildroot}%{_bindir}
-mkdir -p %{buildroot}%{goroot}
+mkdir -p %{buildroot}%{_bindir} %{buildroot}%{goroot}
 
 cp -R api bin doc lib pkg src misc VERSION %{buildroot}%{goroot}
 
@@ -85,10 +86,9 @@ export GOHOSTOS=linux
 export GOHOSTARCH=%{gohostarch}
 export GOOS=linux
 EOF
+
 #chown -R root:root %{buildroot}/etc/profile.d/go-exports.sh
-
-
-#%{_fixperms} %{buildroot}/*
+#%%{_fixperms} %{buildroot}/*
 
 %post -p /sbin/ldconfig
 
@@ -116,15 +116,15 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
-*   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.17.2-1
--   Update to 1.17.2
-*   Thu Sep 10 2020 Ashwin H <ashwinh@vmware.com> 1.13.15-1
--   Update to 1.13.15
-*   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.13.5-3
--   Fix for CVE-2020-16845
-*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.13.5-2
--   Fix for CVE-2020-7919
-*   Wed Sep 11 2019 Ashwin H <ashwinh@vmware.com> 1.13.5-1
--   Update to 1.13.5
-*   Wed Sep 11 2019 Ashwin H <ashwinh@vmware.com> 1.13-1
--   Initial build for 1.13
+* Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.17.2-1
+- Update to 1.17.2
+* Thu Sep 10 2020 Ashwin H <ashwinh@vmware.com> 1.13.15-1
+- Update to 1.13.15
+* Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.13.5-3
+- Fix for CVE-2020-16845
+* Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.13.5-2
+- Fix for CVE-2020-7919
+* Wed Sep 11 2019 Ashwin H <ashwinh@vmware.com> 1.13.5-1
+- Update to 1.13.5
+* Wed Sep 11 2019 Ashwin H <ashwinh@vmware.com> 1.13-1
+- Initial build for 1.13

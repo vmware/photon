@@ -42,20 +42,14 @@ Requires:	dhcp-libs
 %description client
 The ISC DHCP Client, dhclient, provides a means for configuring one or more network interfaces using the Dynamic Host Configuration Protocol, BOOTP protocol, or if these protocols fail, by statically assigning an address.
 
-
 %prep
-%setup -qn %{name}-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
+%autosetup -p1 -n %{name}-%{version}
+
 %build
 CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'         \
         -D_PATH_DHCPD_CONF='\"/etc/dhcp/dhcpd.conf\"'               \
         -D_PATH_DHCLIENT_CONF='\"/etc/dhcp/dhclient.conf\"'"        \
-./configure \
+sh ./configure \
     --prefix=%{_prefix} \
     --sysconfdir=/etc/dhcp                                  \
     --localstatedir=/var                                    \
@@ -71,9 +65,11 @@ CFLAGS="-D_PATH_DHCLIENT_SCRIPT='\"/sbin/dhclient-script\"'         \
     --enable-log-pid \
     --enable-paranoia --enable-early-chroot
 
-make
+# make doesn't support _smp_mflags
+make -j1
+
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -v -m755 client/scripts/linux %{buildroot}/usr/sbin/dhclient-script
 
 cat > %{buildroot}/etc/dhcp/dhclient.conf << "EOF"
@@ -124,9 +120,6 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/dhcpd/
 touch %{buildroot}%{_localstatedir}/lib/dhcpd/dhcpd.leases
 touch %{buildroot}%{_localstatedir}/lib/dhcpd/dhcpd6.leases
 mkdir -p %{buildroot}%{_localstatedir}/lib/dhclient/
-
-#%check
-#Commented out %check due to missing support of ATF.
 
 %post	libs -p /sbin/ldconfig
 %postun	libs -p /sbin/ldconfig
@@ -179,28 +172,28 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/dhclient/
 %{_mandir}/man8/dhclient.8.gz
 
 %changelog
-*   Tue May 25 2021 Dweep Advani <dadvani@vmware.com> 4.3.5-7
--   Fix CVE-2021-25217
-*   Tue Nov 19 2019 Keerthana K <keerthanak@vmware.com> 4.3.5-6
--   Fix CVE-2018-5732
-*   Mon Mar 25 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.5-5
--   Fix CVE-2017-3144
--   Fix CVE-2018-5733
-*   Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 4.3.5-4
--   Commented out %check due to missing support of ATF.
-*   Thu Apr 20 2017 Divya Thaluru <dthaluru@vmware.com> 4.3.5-3
--   Added default dhcp configuration and lease files
-*   Wed Dec 7 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.5-2
--   Added configuration file for dhcp service
-*   Mon Nov 14 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.3.5-1
--   Upgraded to version 4.3.5.
-*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.3.3-4
--   Modified %check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.3-3
--   GA - Bump release of all rpms
-*   Wed Mar 30 2016 Anish Swaminathan <anishs@vmware.com>  4.3.3-2
--   Add patch for CVE-2016-2774
-*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1
--   Updated to version 4.3.3
-*   Wed Jul 15 2015 Divya Thaluru <dthaluru@vmware.com> 4.3.2-1
--   Initial build.
+* Tue May 25 2021 Dweep Advani <dadvani@vmware.com> 4.3.5-7
+- Fix CVE-2021-25217
+* Tue Nov 19 2019 Keerthana K <keerthanak@vmware.com> 4.3.5-6
+- Fix CVE-2018-5732
+* Mon Mar 25 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.5-5
+- Fix CVE-2017-3144
+- Fix CVE-2018-5733
+* Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 4.3.5-4
+- Commented out %check due to missing support of ATF.
+* Thu Apr 20 2017 Divya Thaluru <dthaluru@vmware.com> 4.3.5-3
+- Added default dhcp configuration and lease files
+* Wed Dec 7 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.5-2
+- Added configuration file for dhcp service
+* Mon Nov 14 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.3.5-1
+- Upgraded to version 4.3.5.
+* Wed Oct 05 2016 ChangLee <changlee@vmware.com> 4.3.3-4
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.3-3
+- GA - Bump release of all rpms
+* Wed Mar 30 2016 Anish Swaminathan <anishs@vmware.com>  4.3.3-2
+- Add patch for CVE-2016-2774
+* Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.3-1
+- Updated to version 4.3.3
+* Wed Jul 15 2015 Divya Thaluru <dthaluru@vmware.com> 4.3.2-1
+- Initial build.

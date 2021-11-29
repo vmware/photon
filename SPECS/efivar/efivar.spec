@@ -7,9 +7,12 @@ URL:		https://github.com/rhinstaller/efivar/
 Group:		System Environment/System Utilities
 Vendor:		VMware, Inc.
 Distribution: Photon
+
 Source0:	https://github.com/rhinstaller/efivar/releases/download/%{version}/%{name}-%{version}.tar.bz2
 %define sha1 efivar=ae5b4c3aeb29fe0ef5212142b0a21d6f003dd266
+
 BuildRequires: popt-devel
+
 %description
 efivar provides a simle CLI to the UEFI variable facility
 
@@ -20,16 +23,18 @@ Requires:   %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q
+%autosetup -p1
+
 %build
 make %{?_smp_mflags} PREFIX=%{_prefix} \
     libdir=%{_libdir} \
-    bindir=%{_bindir}
+    bindir=%{_bindir} %{?_smp_mflags}
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} \
     PREFIX=%{_prefix} \
-    install 
+    install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} test
@@ -37,7 +42,7 @@ make %{?_smp_mflags} test
 %clean
 rm -rf %{buildroot}/*
 
-%files 
+%files
 %defattr(-,root,root)
 %{_bindir}/*
 %{_lib64dir}/*.so.*
@@ -51,11 +56,11 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
-*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 31-1
--   Version update. Added -devel subpackage.
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.20-3
--   GA - Bump release of all rpms
-*   Thu Apr 28 2016 Xiaolin Li <xiaolinl@vmware.com> 0.20-2
--   Fix build for linux 4.4.
-*   Mon Jul 6 2015 Sharath George <sharathg@vmware.com> 0.20-1
--   Initial build.	First version
+* Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 31-1
+- Version update. Added -devel subpackage.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.20-3
+- GA - Bump release of all rpms
+* Thu Apr 28 2016 Xiaolin Li <xiaolinl@vmware.com> 0.20-2
+- Fix build for linux 4.4.
+* Mon Jul 6 2015 Sharath George <sharathg@vmware.com> 0.20-1
+- Initial build.	First version

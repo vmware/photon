@@ -7,9 +7,10 @@ License:        LGPLv2+
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 #https://github.com/librsync/librsync/archive/v2.0.0.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    librsync=c24a623bba5f9eae48bd3b6cb99ee43d2a40b8c6
+%define sha1    %{name}=c24a623bba5f9eae48bd3b6cb99ee43d2a40b8c6
 
 BuildRequires:  cmake
 
@@ -46,7 +47,7 @@ This package contains header files necessary for developing programs
 based on librsync.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 mkdir -p build
@@ -56,13 +57,13 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr   \
       -Wno-dev ..
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 cd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
 cd build
-make test
+make test %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -78,10 +79,8 @@ make test
 %{_includedir}/*
 %{_libdir}/librsync.so
 
-
 %changelog
-*   Wed Jun 28 2017 Chang Lee <changlee@vmware.com>  2.0.0-2
--   Updated %check
-*   Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.0-1
--   Initial build. First version
-
+* Wed Jun 28 2017 Chang Lee <changlee@vmware.com>  2.0.0-2
+- Updated %check
+* Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.0-1
+- Initial build. First version

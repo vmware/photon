@@ -6,19 +6,22 @@ Group:         Development/Tools
 Vendor:	       VMware, Inc.
 Distribution:  Photon
 URL:           http://people.redhat.com/anderson/
+License:       GPL
+
 Source0:       http://people.redhat.com/anderson/crash-%{version}.tar.gz
 %define sha1 crash=bcacab6bdabb4c53cc8b0171011ed50ccaf5310d
 %define CRASH_GCORE_VERSION	1.4.0
 Source1:       http://people.redhat.com/anderson/extensions/crash-gcore-command-1.4.0.tar.gz
 %define sha1 crash-gcore=1434f787d7210516b12c2f28e5b9e5917c5b3eca
 Source2:       gdb-7.6-extra-patch.patch
-License:       GPL
-#Patch0:        gcore-support-linux-4.4.patch
+
 BuildRequires: binutils
 BuildRequires: glibc-devel
 BuildRequires: ncurses-devel
 BuildRequires: zlib-devel
+
 Requires:      binutils
+
 BuildRoot:     %{_tmppath}/%{name}-%{version}-root
 
 %description
@@ -35,16 +38,16 @@ The core analysis suite is a self-contained tool that can be used to investigate
 This package contains libraries and header files need for development.
 
 %prep
+# Using autosetup is not feasible
 %setup -q -n %{name}-%{version}
+# Using autosetup is not feasible
 %setup -a 1
-#cd crash-gcore-command-%{CRASH_GCORE_VERSION}
-#%patch0 -p1
 
 %build
 cat %{SOURCE2} >> gdb-7.6.patch
-make RPMPKG=%{version}-%{release}
+make RPMPKG=%{version}-%{release} %{?_smp_mflags}
 cd crash-gcore-command-%{CRASH_GCORE_VERSION}
-make -f gcore.mk ARCH=SUPPORTED TARGET=X86_64
+make -f gcore.mk ARCH=SUPPORTED TARGET=X86_64 %{?_smp_mflags}
 
 %install
 [ "%{buildroot}" != / ] && rm -rf "%{buildroot}"
@@ -74,18 +77,18 @@ install -pm 755 crash-gcore-command-%{CRASH_GCORE_VERSION}/gcore.so %{buildroot}
 %{_includedir}/crash/*.h
 
 %changelog
-*   Wed Mar 22 2017 Alexey Makhalov <amakhalov@vmware.com> 7.1.8-1
--   Update version to 7.1.8 (it supports linux-4.9)
--   Disable a patch - it requires a verification.
-*   Fri Oct 07 2016 Alexey Makhalov <amakhalov@vmware.com> 7.1.5-2
--   gcore-support-linux-4.4.patch
-*   Fri Sep 30 2016 Alexey Makhalov <amakhalov@vmware.com> 7.1.5-1
--   Update version to 7.1.5 (it supports linux-4.4)
--   Added gcore plugin
--   Remove zlib-devel requirement from -devel subpackage
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.1.4-2
--   GA - Bump release of all rpms
-*   Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 7.1.4-1
--   Updated to version 7.1.4
-*   Wed Nov 18 2015 Anish Swaminathan <anishs@vmware.com> 7.1.3-1
--   Initial build. First version
+* Wed Mar 22 2017 Alexey Makhalov <amakhalov@vmware.com> 7.1.8-1
+- Update version to 7.1.8 (it supports linux-4.9)
+- Disable a patch - it requires a verification.
+* Fri Oct 07 2016 Alexey Makhalov <amakhalov@vmware.com> 7.1.5-2
+- gcore-support-linux-4.4.patch
+* Fri Sep 30 2016 Alexey Makhalov <amakhalov@vmware.com> 7.1.5-1
+- Update version to 7.1.5 (it supports linux-4.4)
+- Added gcore plugin
+- Remove zlib-devel requirement from -devel subpackage
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 7.1.4-2
+- GA - Bump release of all rpms
+* Fri Jan 22 2016 Xiaolin Li <xiaolinl@vmware.com> 7.1.4-1
+- Updated to version 7.1.4
+* Wed Nov 18 2015 Anish Swaminathan <anishs@vmware.com> 7.1.3-1
+- Initial build. First version

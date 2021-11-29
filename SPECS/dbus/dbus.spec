@@ -5,18 +5,23 @@ Release:        2%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
-Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.gz
-%define sha1    dbus=2e2247398abb22115e724b5e955fece2307dddb0
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.gz
+%define sha1    dbus=2e2247398abb22115e724b5e955fece2307dddb0
+
 Patch0:         CVE-2020-12049-1.patch
 Patch1:         CVE-2020-12049-2.patch
+
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
 BuildRequires:  xz-devel
+
 Requires:       expat
 Requires:       systemd
 Requires:       xz
+
 %description
 The dbus package contains dbus.
 
@@ -25,14 +30,13 @@ Summary:    Header and development files
 Requires:   %{name} = %{version}
 Requires:  expat-devel
 %description    devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
+
 %build
-./configure --prefix=%{_prefix}                 \
+sh ./configure --prefix=%{_prefix}                 \
             --sysconfdir=%{_sysconfdir}         \
             --localstatedir=%{_var}             \
             --docdir=%{_datadir}/doc/dbus-1.11.12  \
@@ -40,12 +44,10 @@ It contains the libraries and header files to create applications
             --with-console-auth-dir=/run/console
 
 make %{?_smp_mflags}
+
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm755 %{buildroot}%{_lib}
-#ln -sfv ../../lib/$(readlink %{buildroot}%{_libdir}/libdbus-1.so) %{buildroot}%{_libdir}/libdbus-1.so
-#rm -f %{buildroot}%{_sharedstatedir}/dbus/machine-id
-#ln -sv %{buildroot}%{_sysconfdir}/machine-id %{buildroot}%{_sharedstatedir}/dbus
 
 %check
 make %{?_smp_mflags} check
@@ -61,8 +63,6 @@ make %{?_smp_mflags} check
 %{_docdir}/*
 %{_datadir}/dbus-1
 
-#%{_sharedstatedir}/*
-
 %files  devel
 %defattr(-,root,root)
 %{_includedir}/*
@@ -76,23 +76,23 @@ make %{?_smp_mflags} check
 %{_libdir}/*.so
 
 %changelog
-*   Fri Jun 27 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.11.12-2
--   Added patches, Fix CVE-2020-12049
-*   Fri Apr 21 2017 Bo Gan <ganb@vmware.com> 1.11.12-1
--   Update to 1.11.12
-*   Tue Dec 20 2016 Xiaolin Li <xiaolinl@vmware.com> 1.8.8-8
--   Move all header files to devel subpackage.
-*   Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  1.8.8-7
--   Change systemd dependency
-*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.8.8-6
--   Modified %check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.8-5
--   GA - Bump release of all rpms
-*   Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.8-4
--   Created devel sub-package
-*   Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 1.8.8-3
--   Remove debug files.
-*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.8.8-2
--   Update according to UsrMove.
-*   Sun Apr 06 2014 Sharath George <sharathg@vmware.com> 1.8.8
--   Initial build. First version
+* Sat Jun 27 2020 Prashant S Chauhan <psinghchauha@vmware.com> 1.11.12-2
+- Added patches, Fix CVE-2020-12049
+* Fri Apr 21 2017 Bo Gan <ganb@vmware.com> 1.11.12-1
+- Update to 1.11.12
+* Tue Dec 20 2016 Xiaolin Li <xiaolinl@vmware.com> 1.8.8-8
+- Move all header files to devel subpackage.
+* Fri Nov 18 2016 Anish Swaminathan <anishs@vmware.com>  1.8.8-7
+- Change systemd dependency
+* Wed Oct 05 2016 ChangLee <changlee@vmware.com> 1.8.8-6
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.8.8-5
+- GA - Bump release of all rpms
+* Tue Sep 22 2015 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.8.8-4
+- Created devel sub-package
+* Thu Jun 25 2015 Sharath George <sharathg@vmware.com> 1.8.8-3
+- Remove debug files.
+* Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.8.8-2
+- Update according to UsrMove.
+* Sun Apr 06 2014 Sharath George <sharathg@vmware.com> 1.8.8
+- Initial build. First version

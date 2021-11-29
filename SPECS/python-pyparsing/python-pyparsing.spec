@@ -10,6 +10,7 @@ License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        pyparsing-%{version}.tar.gz
 %define sha1    pyparsing=f8504f4f8baa69de5b63fd2275a0ebf36a2cf74b
 
@@ -19,6 +20,9 @@ BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
+BuildRequires:  python3
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 
 Requires:       python2
 Requires:       python2-libs
@@ -28,9 +32,6 @@ Python parsing module.
 
 %package -n     python3-pyparsing
 Summary:        python-pyparsing
-BuildRequires:  python3
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
 
 Requires:       python3
 Requires:       python3-libs
@@ -40,7 +41,7 @@ Requires:       python3-libs
 Python 3 version.
 
 %prep
-%setup -q -n pyparsing-%{version}
+%autosetup -p1 -n pyparsing-%{version}
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -56,7 +57,7 @@ pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
-#%check
+#%%check
 #Tests are not available
 
 %files
@@ -68,11 +69,11 @@ popd
 %{python3_sitelib}/*
 
 %changelog
-*   Fri Jul 21 2017 Divya Thaluru <dthaluru@vmware.com> 2.2.0-3
--   Disabled check section as tests are not available
-*   Tue Jun 20 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.2.0-2
--   Add build dependency with python-setuptools to handle 1.0 update
-*   Wed Apr 05 2017 Sarah Choi <sarahc@vmware.com> 2.2.0-1
--   Update to 2.2.0 and remove build dependency with python-setuptools
-*   Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.10-1
--   Initial packaging for Photon
+* Fri Jul 21 2017 Divya Thaluru <dthaluru@vmware.com> 2.2.0-3
+- Disabled check section as tests are not available
+* Tue Jun 20 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.2.0-2
+- Add build dependency with python-setuptools to handle 1.0 update
+* Wed Apr 05 2017 Sarah Choi <sarahc@vmware.com> 2.2.0-1
+- Update to 2.2.0 and remove build dependency with python-setuptools
+* Mon Mar 13 2017 Xiaolin Li <xiaolinl@vmware.com> 2.1.10-1
+- Initial packaging for Photon

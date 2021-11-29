@@ -10,12 +10,20 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://python-requests.org
+
 Source0:        http://pypi.python.org/packages/source/r/requests/requests-%{version}.tar.gz
 %define sha1 requests=827f7c8abb5a57d980d9870908724613b8b120c1
+
 Patch0:         CVE-2018-18074.patch
+
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
+BuildRequires:  python3-setuptools
+BuildRequires:  python3-xml
+
 Requires:       python2
 Requires:       python2-libs
 
@@ -47,18 +55,13 @@ Features:
 
 %package -n     python3-requests
 Summary:        python-requests
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
 Requires:       python3
 Requires:       python3-libs
 %description -n python3-requests
 Python 3 version.
 
 %prep
-%setup -q -n requests-%{version}
-%patch0 -p1
+%autosetup -p1 -n requests-%{version}
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -74,7 +77,7 @@ pushd ../p3dir
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 
-#%check
+#%%check
 #Commented out %check due to no test existence
 
 %files
@@ -88,23 +91,23 @@ popd
 %{python3_sitelib}/*
 
 %changelog
-*   Fri Sep 17 2021 Shreyas B <shreyasb@vmware.com> 2.13.0-5
--   Bump up version to compile with python3-urllib3 v1.26.6
-*   Thu Mar 28 2019 Tapas Kundu <tkundu@vmware.com> 2.13.0-4
--   Fix for CVE-2018-18074
-*   Mon Aug 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.13.0-3
--   Disabled check section as tests are not available
-*   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.13.0-2
--   Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
-*   Thu Mar 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.13.0-1
--   Updated to version 2.13.0.
-*   Wed Mar 01 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.1-4
--   Added python3 package.
-*   Tue Oct 04 2016 ChangLee <changlee@vmware.com> 2.9.1-3
--   Modified %check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.1-2
--   GA - Bump release of all rpms
-*   Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9.1-1
--   Updated to version 2.9.1
-*   Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
--   Initial packaging for Photon
+* Fri Sep 17 2021 Shreyas B <shreyasb@vmware.com> 2.13.0-5
+- Bump up version to compile with python3-urllib3 v1.26.6
+* Thu Mar 28 2019 Tapas Kundu <tkundu@vmware.com> 2.13.0-4
+- Fix for CVE-2018-18074
+* Mon Aug 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.13.0-3
+- Disabled check section as tests are not available
+* Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 2.13.0-2
+- Add python3-setuptools and python3-xml to python3 sub package Buildrequires.
+* Thu Mar 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.13.0-1
+- Updated to version 2.13.0.
+* Wed Mar 01 2017 Xiaolin Li <xiaolinl@vmware.com> 2.9.1-4
+- Added python3 package.
+* Tue Oct 04 2016 ChangLee <changlee@vmware.com> 2.9.1-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.9.1-2
+- GA - Bump release of all rpms
+* Tue Feb 23 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 2.9.1-1
+- Updated to version 2.9.1
+* Wed Mar 04 2015 Mahmoud Bassiouny <mbassiouny@vmware.com>
+- Initial packaging for Photon

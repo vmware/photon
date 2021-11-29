@@ -7,11 +7,14 @@ URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
 %define sha1    llvm=aee4524e2407f9fe5afc6f70c753180b907011d0
+
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
 BuildRequires:  libffi-devel
+
 Requires:       libxml2
 
 %description
@@ -26,7 +29,7 @@ The llvm-devel package contains libraries, header files and documentation
 for developing applications that use llvm.
 
 %prep
-%setup -q -n %{name}-%{version}.src
+%autosetup -p1 -n %{name}-%{version}.src
 
 %build
 mkdir -p build
@@ -40,10 +43,11 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr           \
       -Wno-dev ..
 
 make %{?_smp_mflags}
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 cd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -69,11 +73,11 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
-*   Thu Aug 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-3
--   Make check fix
-*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-2
--   BuildRequires libffi-devel
-*   Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1
--   Version update
-*   Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
--   Initial build.
+* Thu Aug 10 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-3
+- Make check fix
+* Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-2
+- BuildRequires libffi-devel
+* Fri Apr 7 2017 Alexey Makhalov <amakhalov@vmware.com> 4.0.0-1
+- Version update
+* Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  3.9.1-1
+- Initial build.

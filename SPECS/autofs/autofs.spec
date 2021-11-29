@@ -17,22 +17,22 @@ Requires:       systemd
 Automounting is the process of automatically mounting and unmounting of file systems by a daemon. Autofs includes both a user-space daemon and code in the kernel that assists the daemon.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-./configure --prefix=/usr           \
+sh ./configure --prefix=/usr \
             --mandir=/usr/share/man
 make %{?_smp_mflags}
 
 %install
 mkdir -p -m755 %{buildroot}/lib/systemd/system
 mkdir -p -m755 %{buildroot}/etc/auto.master.d
-make install mandir=%{_mandir} INSTALLROOT=%{buildroot}
-make -C redhat
+make install mandir=%{_mandir} INSTALLROOT=%{buildroot} %{?_smp_mflags}
+make -C redhat %{?_smp_mflags}
 install -m 644 redhat/autofs.service  %{buildroot}/lib/systemd/system/autofs.service
 rm -rf %{buildroot}/etc/rc.d
 
-#%check
+#%%check
 #This package does not come with a test suite.
 
 %post
@@ -64,5 +64,5 @@ rm -rf %{buildroot}/*
 /lib/systemd/system/autofs.service
 
 %changelog
-*   Thu Jul 06 2017 Xiaolin Li <xiaolinl@vmware.com> 5.1.3-1
--   Initial build. First version
+* Thu Jul 06 2017 Xiaolin Li <xiaolinl@vmware.com> 5.1.3-1
+- Initial build. First version

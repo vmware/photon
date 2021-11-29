@@ -9,7 +9,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=4a329b3bc5e88dccd37cf75955b6f7d5786890af
+%define sha1    %{name}=4a329b3bc5e88dccd37cf75955b6f7d5786890af
+
 # Common libraries needed
 BuildRequires:  krb5-devel
 BuildRequires:  libxml2-devel
@@ -19,6 +20,7 @@ BuildRequires:  readline-devel
 BuildRequires:  openssl-devel
 BuildRequires:  zlib-devel
 BuildRequires:  tzdata
+
 Requires:       krb5
 Requires:       libxml2
 Requires:       openldap
@@ -26,7 +28,6 @@ Requires:       openssl
 Requires:       readline
 Requires:       zlib
 Requires:       tzdata
-
 Requires:   %{name}-libs = %{version}-%{release}
 
 %description
@@ -52,11 +53,11 @@ The postgresql-devel package contains libraries and header files for
 developing applications that use postgresql.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_manual.h &&
-./configure \
+sh ./configure \
     --enable-thread-safety \
     --prefix=%{_prefix} \
     --with-ldap \
@@ -70,8 +71,8 @@ make %{?_smp_mflags}
 cd contrib && make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot}
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 cd contrib && make install DESTDIR=%{buildroot}
 
 %{_fixperms} %{buildroot}/*
@@ -83,6 +84,7 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
 
@@ -152,67 +154,67 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
-*   Mon Nov 15 2021 Michael Paquier <mpaquier@vmware.com> 9.6.24-1
--   Updated to version 9.6.24
-*   Sat Aug 14 2021 Michael Paquier <mpaquier@vmware.com> 9.6.23-1
--   Updated to version 9.6.23
-*   Fri May 14 2021 Michael Paquier <mpaquier@vmware.com> 9.6.22-1
--   Updated to version 9.6.22
-*   Thu Feb 18 2021 Michael Paquier <mpaquier@vmware.com> 9.6.21-1
--   Updated to version 9.6.21
-*   Fri Nov 20 2020 Dweep Advani <dadvani@vmware.com> 9.6.20-1
--   Upgrading to 9.6.20 for addressing multiple CVEs
-*   Tue Sep 01 2020 Dweep Advani <dadvani@vmware.com> 9.6.19-1
--   Upgrading to 9.6.19 for addressing multiple CVEs
-*   Fri Apr 03 2020 Anisha Kumari <kanisha@vmware.com> 9.6.14-3
--   Added patch to fix CVE-2020-1720
-*   Mon Nov 18 2019 Prashant S Chauhan <psinghchauha@vmware.com> 9.6.14-2
--   Added patch to fix CVE-2019-10208
-*   Tue Jun 25 2019 Siju Maliakkal <smaliakkal@vmware.com> 9.6.14-1
--   Upgrade to 9.6.14 for CVE-2019-10164
-*   Tue Aug 21 2018 Keerthana K <keerthanak@vmware.com> 9.6.10-1
--   Updated to version 9.6.10 to fix CVE-2018-10915, CVE-2018-10925.
-*   Tue May 29 2018 Xiaolin Li <xiaolinl@vmware.com> 9.6.9-1
--   Updated to version 9.6.9
-*   Tue Mar 27 2018 Dheeraj Shetty <dheerajs@vmware.com> 9.6.8-1
--   Updated to version 9.6.8 to fix CVE-2018-1058
-*   Mon Feb 12 2018 Dheeraj Shetty <dheerajs@vmware.com> 9.6.7-1
--   Updated to version 9.6.7
-*   Mon Nov 27 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.6-1
--   Updated to version 9.6.6
-*   Fri Sep 08 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.5-1
--   Updated to version 9.6.5
-*   Tue Aug 15 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.4-1
--   Updated to version 9.6.4
-*   Thu Aug 10 2017 Rongrong Qiu <rqiu@vmware.com> 9.6.3-3
--   add sleep 5 when initdb in make check for bug 1900371
-*   Wed Jul 05 2017 Divya Thaluru <dthaluru@vmware.com> 9.6.3-2
--   Added postgresql-devel
-*   Tue Jun 06 2017 Divya Thaluru <dthaluru@vmware.com> 9.6.3-1
--   Upgraded to 9.6.3
-*   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 9.6.2-1
--   Upgrade to 9.6.2 for Photon upgrade bump
-*   Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-6
--   Applied CVE-2016-5423.patch
-*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 9.5.3-5
--   Required krb5-devel.
-*   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 9.5.3-4
--   Modified %check
-*   Thu May 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-3
--   Add tzdata to buildrequires and requires.
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.5.3-2
--   GA - Bump release of all rpms
-*   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 9.5.3-1
--   Updated to version 9.5.3
-*   Wed Apr 13 2016 Michael Paquier <mpaquier@vmware.com> 9.5.2-1
--   Updated to version 9.5.2
-*   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.1-1
--   Updated to version 9.5.1
-*   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.0-1
--   Updated to version 9.5.0
-*   Thu Aug 13 2015 Divya Thaluru <dthaluru@vmware.com> 9.4.4-1
--   Update to version 9.4.4.
-*   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 9.4.1-2
--   Exclude /usr/lib/debug
-*   Fri May 15 2015 Sharath George <sharathg@vmware.com> 9.4.1-1
--   Initial build. First version
+* Mon Nov 15 2021 Michael Paquier <mpaquier@vmware.com> 9.6.24-1
+- Updated to version 9.6.24
+* Sat Aug 14 2021 Michael Paquier <mpaquier@vmware.com> 9.6.23-1
+- Updated to version 9.6.23
+* Fri May 14 2021 Michael Paquier <mpaquier@vmware.com> 9.6.22-1
+- Updated to version 9.6.22
+* Thu Feb 18 2021 Michael Paquier <mpaquier@vmware.com> 9.6.21-1
+- Updated to version 9.6.21
+* Fri Nov 20 2020 Dweep Advani <dadvani@vmware.com> 9.6.20-1
+- Upgrading to 9.6.20 for addressing multiple CVEs
+* Tue Sep 01 2020 Dweep Advani <dadvani@vmware.com> 9.6.19-1
+- Upgrading to 9.6.19 for addressing multiple CVEs
+* Fri Apr 03 2020 Anisha Kumari <kanisha@vmware.com> 9.6.14-3
+- Added patch to fix CVE-2020-1720
+* Mon Nov 18 2019 Prashant S Chauhan <psinghchauha@vmware.com> 9.6.14-2
+- Added patch to fix CVE-2019-10208
+* Tue Jun 25 2019 Siju Maliakkal <smaliakkal@vmware.com> 9.6.14-1
+- Upgrade to 9.6.14 for CVE-2019-10164
+* Tue Aug 21 2018 Keerthana K <keerthanak@vmware.com> 9.6.10-1
+- Updated to version 9.6.10 to fix CVE-2018-10915, CVE-2018-10925.
+* Tue May 29 2018 Xiaolin Li <xiaolinl@vmware.com> 9.6.9-1
+- Updated to version 9.6.9
+* Tue Mar 27 2018 Dheeraj Shetty <dheerajs@vmware.com> 9.6.8-1
+- Updated to version 9.6.8 to fix CVE-2018-1058
+* Mon Feb 12 2018 Dheeraj Shetty <dheerajs@vmware.com> 9.6.7-1
+- Updated to version 9.6.7
+* Mon Nov 27 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.6-1
+- Updated to version 9.6.6
+* Fri Sep 08 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.5-1
+- Updated to version 9.6.5
+* Tue Aug 15 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.4-1
+- Updated to version 9.6.4
+* Thu Aug 10 2017 Rongrong Qiu <rqiu@vmware.com> 9.6.3-3
+- add sleep 5 when initdb in make check for bug 1900371
+* Wed Jul 05 2017 Divya Thaluru <dthaluru@vmware.com> 9.6.3-2
+- Added postgresql-devel
+* Tue Jun 06 2017 Divya Thaluru <dthaluru@vmware.com> 9.6.3-1
+- Upgraded to 9.6.3
+* Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 9.6.2-1
+- Upgrade to 9.6.2 for Photon upgrade bump
+* Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-6
+- Applied CVE-2016-5423.patch
+* Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 9.5.3-5
+- Required krb5-devel.
+* Mon Oct 03 2016 ChangLee <changLee@vmware.com> 9.5.3-4
+- Modified %check
+* Thu May 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-3
+- Add tzdata to buildrequires and requires.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.5.3-2
+- GA - Bump release of all rpms
+* Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 9.5.3-1
+- Updated to version 9.5.3
+* Wed Apr 13 2016 Michael Paquier <mpaquier@vmware.com> 9.5.2-1
+- Updated to version 9.5.2
+* Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.1-1
+- Updated to version 9.5.1
+* Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.0-1
+- Updated to version 9.5.0
+* Thu Aug 13 2015 Divya Thaluru <dthaluru@vmware.com> 9.4.4-1
+- Update to version 9.4.4.
+* Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 9.4.1-2
+- Exclude /usr/lib/debug
+* Fri May 15 2015 Sharath George <sharathg@vmware.com> 9.4.1-1
+- Initial build. First version

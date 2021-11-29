@@ -10,6 +10,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/ntplib/
+
 Source0:        ntplib-%{version}.tar.gz
 %define         sha1 ntplib=403ac0cc01398bacdf608d4aa35e74e36f5ad64d
 
@@ -18,6 +19,8 @@ BuildRequires:  python2-libs
 BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-incremental
+BuildRequires:  python3-devel
+BuildRequires:  python3-libs
 
 Requires:       python2
 Requires:       python2-libs
@@ -31,16 +34,13 @@ It also provides utility functions to translate NTP fields values to text (mode,
 
 %package -n     python3-ntplib
 Summary:        python-ntplib
-BuildRequires:  python3-devel
-BuildRequires:  python3-libs
-
 Requires:       python3
 Requires:       python3-libs
 %description -n python3-ntplib
 Python 3 version.
 
 %prep
-%setup -q -n ntplib-%{version}
+%autosetup -p1 -n ntplib-%{version}
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -54,7 +54,7 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
 python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
-#%check
+#%%check
 #Commented out %check due to no test existence
 
 %files
@@ -66,7 +66,7 @@ python2 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
-*   Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 0.3.3-2
--   Removed %check due to no test existence.
-*   Mon Mar 06 2017 Xiaolin Li <xiaolinl@vmware.com> 0.3.3-1
--   Initial packaging for Photon.
+* Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 0.3.3-2
+- Removed %check due to no test existence.
+* Mon Mar 06 2017 Xiaolin Li <xiaolinl@vmware.com> 0.3.3-1
+- Initial packaging for Photon.

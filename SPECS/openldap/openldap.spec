@@ -8,12 +8,16 @@ URL:            http://cyrusimap.web.cmu.edu/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%{name}-%{version}.tgz
-%define sha1 openldap=1cffa70a3ea8545948041fd113f8f53bc24d6d87
+%define sha1 %{name}=1cffa70a3ea8545948041fd113f8f53bc24d6d87
+
 Patch0:         openldap-2.4.51-consolidated-2.patch
 Patch1:         openldap-2.4.40-gssapi-1.patch
 Patch2:         openldap-CVE-2021-27212.patch
+
 Requires:       openssl >= 1.0.1, cyrus-sasl >= 2.1
+
 BuildRequires:  cyrus-sasl >= 2.1
 BuildRequires:  openssl-devel >= 1.0.1
 BuildRequires:  groff
@@ -29,30 +33,24 @@ over the Internet. The openldap package contains configuration files,
 libraries, and documentation for OpenLDAP.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1
 
 %build
-
 autoconf
-
 sed -i '/6.0.20/ a\\t__db_version_compat' configure
-
 export CPPFLAGS="-D_REENTRANT -DLDAP_CONNECTIONLESS -D_GNU_SOURCE -D_AVL_H"
-
 %configure \
         --disable-static    \
         --disable-debug     \
         --disable-slapd     \
         --with-tls=openssl
 
-make depend
+make depend %{?_smp_mflags}
 make %{?_smp_mflags}
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot}
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 
@@ -60,7 +58,6 @@ find %{buildroot}/%{_libdir} -name '*.la' -delete
 make %{?_smp_mflags} test
 
 %post -p /sbin/ldconfig
-
 %postun -p /sbin/ldconfig
 
 %clean
@@ -78,31 +75,31 @@ rm -rf %{buildroot}/*
 /etc/openldap/*
 
 %changelog
-*   Thu Feb 25 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.57-2
--   Fix CVE CVE-2021-27212
-*   Tue Feb 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.57-1
--   Upgrade to 2.4.57 to fix several crtical CVEs
-*   Mon Dec 14 2020 Dweep Advani <svasamsetty@vmware.com> 2.4.48-3
--   Patched for CVE-2020-25692
-*   Tue May 12 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.48-2
--   Fix CVE-2020-12243
-*   Fri Aug 16 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.48-1
--   upgrade to openldap 2.4.48
-*   Mon Nov 5 2018 Sriram Nambakam <snambakam@vmware.com> 2.4.44-4
--   export CPPFLAGS before invoking configure
-*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 2.4.44-3
--   Use standard configure macros
-*   Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.44-2
--   Applied patch for CVE-2017-9287
-*   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.44-1
--   Update to 2.4.44
-*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.4.43-3
--   Modified %check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.43-2
--   GA - Bump release of all rpms
-*   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.43-1
--   Updated to version 2.4.43
-*   Fri Aug 14 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.40-2
--   Patches for CVE-2015-1545 and CVE-2015-1546.
-*   Wed Oct 08 2014 Divya Thaluru <dthaluru@vmware.com> 2.4.40-1
--   Initial build.        First version
+* Thu Feb 25 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.57-2
+- Fix CVE CVE-2021-27212
+* Tue Feb 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.57-1
+- Upgrade to 2.4.57 to fix several crtical CVEs
+* Mon Dec 14 2020 Dweep Advani <svasamsetty@vmware.com> 2.4.48-3
+- Patched for CVE-2020-25692
+* Tue May 12 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.48-2
+- Fix CVE-2020-12243
+* Fri Aug 16 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.48-1
+- upgrade to openldap 2.4.48
+* Mon Nov 5 2018 Sriram Nambakam <snambakam@vmware.com> 2.4.44-4
+- export CPPFLAGS before invoking configure
+* Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 2.4.44-3
+- Use standard configure macros
+* Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.44-2
+- Applied patch for CVE-2017-9287
+* Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.44-1
+- Update to 2.4.44
+* Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.4.43-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.43-2
+- GA - Bump release of all rpms
+* Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.43-1
+- Updated to version 2.4.43
+* Fri Aug 14 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.40-2
+- Patches for CVE-2015-1545 and CVE-2015-1546.
+* Wed Oct 08 2014 Divya Thaluru <dthaluru@vmware.com> 2.4.40-1
+- Initial build.        First version

@@ -9,8 +9,10 @@ URL:            http://mesos.apache.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://www.apache.org/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
-%define sha1    mesos=a52306af26153b514e44c1fe89c1857b5410c20e
+%define sha1    %{name}=a52306af26153b514e44c1fe89c1857b5410c20e
+
 BuildRequires:  openjre8 >= 1.8.0.45
 BuildRequires:  openjdk8 >= 1.8.0.45
 BuildRequires:  curl-devel
@@ -31,6 +33,7 @@ BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 BuildRequires:  sqlite-devel
 BuildRequires:  utf8proc-devel
+
 Requires:       apr >= 1.5.2
 Requires:       apr-util >= 1.5.4
 Requires:       cyrus-sasl >= 2.1.26
@@ -40,18 +43,18 @@ Requires:       subversion >= 1.8.13
 Requires:       utf8proc
 
 %description
- This package installs mesos services that allow photon to run tasks in mesos
- framework.
+This package installs mesos services that allow photon to run tasks in mesos
+framework.
 
 %package    devel
 Summary:    Header and development files for mesos
 Requires:   %{name} = %{version}
 %description    devel
- mesos-devel package contains header files, pkfconfig files, and libraries
- needed to build applications for mesos.
+mesos-devel package contains header files, pkfconfig files, and libraries
+needed to build applications for mesos.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 sed -i 's/gzip -d -c $^ | tar xf -/tar --no-same-owner -xf $^/' 3rdparty/Makefile.am
@@ -65,13 +68,10 @@ sed -i "/xlocale.h/d" 3rdparty/stout/include/stout/jsonify.hpp
 
 make %{?_smp_mflags}
 
-#%check
-#make
-
 %install
-make DESTDIR=%{buildroot} install
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot}%{_libdir} -name '*.la' -delete
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root)
@@ -102,59 +102,59 @@ find %{buildroot}%{_libdir} -name '*.la' -delete
 %exclude %{_libdir}/debug/
 
 %changelog
-*   Fri Dec 13 2019 Prashant S Chauhan <psinghchauha@vmware.com> 1.5.3-2
--   Removed %{?_smp_mflags} since build was running out of memory
-*   Thu May 30 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.5.3-1
--   Update to 1.5.3 includes fix for CVE-2019-0204
-*   Wed Feb 27 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.2-1
--   Update to 1.5.2. Includes fix for CVE-2018-1330
-*   Tue Jan 23 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.2-2
--   Add serf-devel to BuildRequires.
-*   Tue Oct 10 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.2-1
--   Updated to version 1.2.2
-*   Mon Oct 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.0-7
--   Use multiple cores to build mesos.
-*   Wed Sep 06 2017 Anish Swaminathan <anishs@vmware.com> 1.2.0-6
--   Use system sysconfdir
-*   Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-5
--   Fix compilation issue for glibc-2.26
-*   Thu Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.0-4
--   Disable make check because Segfault in ProcessTest.Spawn with GCC 6+.
--   For more details, please refer to https://issues.apache.org/jira/browse/MESOS-4983.
-*   Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.0-3
--   Use python2_sitelib explicitly
-*   Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.0-2
--   Renamed openjdk to openjdk8
-*   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 1.2.0-1
--   Update package version
-*   Fri Mar 24 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-3
--   Added mesos-sysmacros.patch and -Wno-strict-aliasing CPPFLAGS
+* Fri Dec 13 2019 Prashant S Chauhan <psinghchauha@vmware.com> 1.5.3-2
+- Removed %{?_smp_mflags} since build was running out of memory
+* Thu May 30 2019 Harinadh Dommaraju <hdommaraju@vmware.com> 1.5.3-1
+- Update to 1.5.3 includes fix for CVE-2019-0204
+* Wed Feb 27 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.5.2-1
+- Update to 1.5.2. Includes fix for CVE-2018-1330
+* Tue Jan 23 2018 Xiaolin Li <xiaolinl@vmware.com> 1.2.2-2
+- Add serf-devel to BuildRequires.
+* Tue Oct 10 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.2-1
+- Updated to version 1.2.2
+* Mon Oct 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.2.0-7
+- Use multiple cores to build mesos.
+* Wed Sep 06 2017 Anish Swaminathan <anishs@vmware.com> 1.2.0-6
+- Use system sysconfdir
+* Tue Aug 15 2017 Alexey Makhalov <amakhalov@vmware.com> 1.2.0-5
+- Fix compilation issue for glibc-2.26
+* Thu Aug 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.0-4
+- Disable make check because Segfault in ProcessTest.Spawn with GCC 6+.
+- For more details, please refer to https://issues.apache.org/jira/browse/MESOS-4983.
+* Thu Jun 01 2017 Dheeraj Shetty <dheerajs@vmware.com> 1.2.0-3
+- Use python2_sitelib explicitly
+* Thu May 18 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.0-2
+- Renamed openjdk to openjdk8
+* Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 1.2.0-1
+- Update package version
+* Fri Mar 24 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.0-3
+- Added mesos-sysmacros.patch and -Wno-strict-aliasing CPPFLAGS
     to fix build issues with glibc-2.25
-*   Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.0-2
--   BuildRequires curl-devel.
-*   Tue Dec 13 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.0-1
--   Updated to version 1.1.0
-*   Wed Nov 16 2016 Alexey Makhalov <ppadmavilasom@vmware.com> 0.28.2-3
--   Use sqlite-{devel,libs}
-*   Mon Oct 03 2016 ChangLee <changlee@vmware.com> 0.28.2-2
--   Modified check
-*   Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 0.28.2-1
--   Upgraded to version 0.28.2
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.24.0-3
--   GA - Bump release of all rpms
-*   Tue May 3 2016 Xiaolin Li <xiaolinl@vmware.com> 0.24.0-2
--   Add python-setuptools to build requires.
-*   Fri Sep 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.24.0-1
--   Upgrade to mesos 0.24.0
-*   Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar.com> 0.23.0-3
--   Updated the dependencies after repackaging the openjdk.
-*   Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-2
--   Move headers, pc, dev libs into devel pkg.
-*   Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-1
--   Update to mesos 0.23.0.
-*   Fri Aug 28 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.22.1-3
--   Disable parallel build. Fix Requires.
-*   Thu Jul 16 2015 Alexey Makhalov <amakhalov@vmware.com> 0.22.1-2
--   Untar with --no-same-owner to get it compilable in container.
-*   Fri Jun 26 2015 Sarah Choi <sarahc@vmware.com> 0.22.1-1
--   Initial build. First version
+* Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.0-2
+- BuildRequires curl-devel.
+* Tue Dec 13 2016 Xiaolin Li <xiaolinl@vmware.com> 1.1.0-1
+- Updated to version 1.1.0
+* Wed Nov 16 2016 Alexey Makhalov <ppadmavilasom@vmware.com> 0.28.2-3
+- Use sqlite-{devel,libs}
+* Mon Oct 03 2016 ChangLee <changlee@vmware.com> 0.28.2-2
+- Modified check
+* Fri Jun 24 2016 Xiaolin Li <xiaolinl@vmware.com> 0.28.2-1
+- Upgraded to version 0.28.2
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.24.0-3
+- GA - Bump release of all rpms
+* Tue May 3 2016 Xiaolin Li <xiaolinl@vmware.com> 0.24.0-2
+- Add python-setuptools to build requires.
+* Fri Sep 18 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.24.0-1
+- Upgrade to mesos 0.24.0
+* Wed Sep 16 2015 Harish Udaiya Kumar <hudaiyakumar.com> 0.23.0-3
+- Updated the dependencies after repackaging the openjdk.
+* Tue Sep 08 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-2
+- Move headers, pc, dev libs into devel pkg.
+* Tue Sep 01 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.23.0-1
+- Update to mesos 0.23.0.
+* Fri Aug 28 2015 Vinay Kulkarni <kulkarniv@vmware.com> 0.22.1-3
+- Disable parallel build. Fix Requires.
+* Thu Jul 16 2015 Alexey Makhalov <amakhalov@vmware.com> 0.22.1-2
+- Untar with --no-same-owner to get it compilable in container.
+* Fri Jun 26 2015 Sarah Choi <sarahc@vmware.com> 0.22.1-1
+- Initial build. First version

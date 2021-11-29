@@ -7,8 +7,10 @@ License:        BSD
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://www.netlib.org/lapack/lapack-%{version}.tgz
-%define         sha1 lapack=84c4f7163b52b1bf1f6ca2193f6f48ed3dec0fab
+%define         sha1 %{name}=84c4f7163b52b1bf1f6ca2193f6f48ed3dec0fab
+
 Patch0:         lapack-CVE-2021-4048.patch
 
 BuildRequires:  cmake
@@ -27,8 +29,7 @@ The lapack-devel package contains libraries and header files for
 developing applications that use lapack.
 
 %prep
-%setup
-%patch0 -p1
+%autosetup -p1
 
 %build
 mkdir -p build
@@ -43,11 +44,11 @@ cmake -DCMAKE_INSTALL_PREFIX=%{_prefix} \
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 cd build
-make DESTDIR=%{buildroot} install
-mkdir %{buildroot}/%{_includedir}/lapacke
-mv %{buildroot}/%{_includedir}/*.h %{buildroot}/%{_includedir}/lapacke/.
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+mkdir %{buildroot}%{_includedir}/lapacke
+mv %{buildroot}%{_includedir}/*.h %{buildroot}%{_includedir}/lapacke/.
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -70,7 +71,7 @@ mv %{buildroot}/%{_includedir}/*.h %{buildroot}/%{_includedir}/lapacke/.
 %exclude %{_libdir}/cmake/*
 
 %changelog
-*   Wed Dec 15 2021 Nitesh Kumar <kunitesh@vmware.com> 3.7.1-1
--   Version upgrade to 3.7.1, Fix for CVE-2021-4048.
-*   Fri Mar 03 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.0-1
--   Initial packaging for Photon
+* Wed Dec 15 2021 Nitesh Kumar <kunitesh@vmware.com> 3.7.1-1
+- Version upgrade to 3.7.1, Fix for CVE-2021-4048.
+* Fri Mar 03 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.0-1
+- Initial packaging for Photon

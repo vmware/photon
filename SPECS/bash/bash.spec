@@ -7,19 +7,25 @@ URL:            http://www.gnu.org/software/bash/
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://ftp.gnu.org/gnu/bash/%{name}-4.4.18.tar.gz
 %define sha1    bash=6cf9b3c23930ba8a721fee177d1558e5b7cb6104
 Source1:        bash_completion
+
 Patch0:         bash-4.4.patch
 Patch1:         CVE-2019-18276.patch
+
 Provides:       /bin/sh
 Provides:       /bin/bash
+
 BuildRequires:  readline
+
 Requires:       readline
 Requires(post):    /bin/grep
 Requires(post):    /bin/cp
 Requires(postun):  /bin/grep
 Requires(postun):  /bin/mv
+
 %description
 The package contains the Bourne-Again SHell
 
@@ -37,20 +43,24 @@ Requires: bash >= 4.4
 These are the additional language files of bash.
 
 %prep
+# Using autosetup is not feasible
 %setup -q -n bash-%{version}
 %patch0 -p1
 %patch1 -p1
+
 %build
-./configure \
+sh ./configure \
     "CFLAGS=-fPIC" \
     --prefix=%{_prefix} \
     --bindir=/bin \
     --htmldir=%{_defaultdocdir}/%{name}-%{version} \
     --without-bash-malloc \
     --with-installed-readline
+
 make %{?_smp_mflags}
+
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 ln -s bash %{buildroot}/bin/sh
 install -vdm 755 %{buildroot}/etc
 install -vdm 755 %{buildroot}/etc/profile.d
@@ -193,7 +203,6 @@ fi
 # End /etc/bash.bashrc
 EOF
 
-
 cat > %{buildroot}/etc/skel/.bash_profile << "EOF"
 # Begin ~/.bash_profile
 # Written for Beyond Linux From Scratch
@@ -325,47 +334,46 @@ fi
 %defattr(-,root,root)
 
 %changelog
-*   Thu Feb 06 2020 Sujay G <gsujay@vmware.com> 4.4.18-1
--   Fix CVE-2019-18276
-*   Fri Jan 26 2018 Alexey Makhalov <amakhalov@vmware.com> 4.4.12-3
--   Run bash_completion only for bash interactive shell
-*   Mon Dec 11 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.12-2
--   conditionally apply grep color alias
-*   Mon Nov 13 2017 Xiaolin Li <xiaolinl@vmware.com> 4.4.12-1
--   Upstream patch level 12 applied
-*   Mon Oct 02 2017 Kumar Kaushik <kaushikk@vmware.com> 4.4-6
--   Adding security fix for CVE-2017-5932.
-*   Thu Jun 8 2017 Bo Gan <ganb@vmware.com> 4.4-5
--   Fix dependency again
-*   Wed Jun 7 2017 Divya Thaluru <dthaluru@vmware.com>  4.4-4
--   Added /usr/bin/sh and /bin/sh entries in /etc/shells
-*   Sun Jun 4 2017 Bo Gan <ganb@vmware.com> 4.4-3
--   Fix dependency
-*   Thu Feb 2 2017 Divya Thaluru <dthaluru@vmware.com> 4.4-2
--   Modified bash entry in /etc/shells
-*   Fri Jan 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.4-1
--   Upgraded version to 4.4
-*   Tue Jan 10 2017 Divya Thaluru <dthaluru@vmware.com> 4.3.30-7
--   Added bash entry to /etc/shells
-*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 4.3.30-6
--   Add readline requirements
-*   Fri Aug 19 2016 Alexey Makhalov <amakhalov@vmware.com> 4.3.30-5
--   Enable bash completion support
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.30-4
--   GA - Bump release of all rpms
-*   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  4.3.30-3
--   Fixing spec file to handle rpm upgrade scenario correctly
-*   Thu Mar 10 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.30-2
--   Adding compile options to load bash.bashrc file and
+* Thu Feb 06 2020 Sujay G <gsujay@vmware.com> 4.4.18-1
+- Fix CVE-2019-18276
+* Fri Jan 26 2018 Alexey Makhalov <amakhalov@vmware.com> 4.4.12-3
+- Run bash_completion only for bash interactive shell
+* Mon Dec 11 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.4.12-2
+- conditionally apply grep color alias
+* Mon Nov 13 2017 Xiaolin Li <xiaolinl@vmware.com> 4.4.12-1
+- Upstream patch level 12 applied
+* Mon Oct 02 2017 Kumar Kaushik <kaushikk@vmware.com> 4.4-6
+- Adding security fix for CVE-2017-5932.
+* Thu Jun 8 2017 Bo Gan <ganb@vmware.com> 4.4-5
+- Fix dependency again
+* Wed Jun 7 2017 Divya Thaluru <dthaluru@vmware.com>  4.4-4
+- Added /usr/bin/sh and /bin/sh entries in /etc/shells
+* Sun Jun 4 2017 Bo Gan <ganb@vmware.com> 4.4-3
+- Fix dependency
+* Thu Feb 2 2017 Divya Thaluru <dthaluru@vmware.com> 4.4-2
+- Modified bash entry in /etc/shells
+* Fri Jan 13 2017 Dheeraj Shetty <dheerajs@vmware.com> 4.4-1
+- Upgraded version to 4.4
+* Tue Jan 10 2017 Divya Thaluru <dthaluru@vmware.com> 4.3.30-7
+- Added bash entry to /etc/shells
+* Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 4.3.30-6
+- Add readline requirements
+* Fri Aug 19 2016 Alexey Makhalov <amakhalov@vmware.com> 4.3.30-5
+- Enable bash completion support
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 4.3.30-4
+- GA - Bump release of all rpms
+* Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  4.3.30-3
+- Fixing spec file to handle rpm upgrade scenario correctly
+* Thu Mar 10 2016 Divya Thaluru <dthaluru@vmware.com> 4.3.30-2
+- Adding compile options to load bash.bashrc file and
     loading source file during non-inetractive non-login shell
-*   Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.30-1
--   Updated to version 4.3.30
-*   Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 4.3-4
--   Adding post unstall section.
-*   Wed Jul 22 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-3
--   Fix segfault in save_bash_input.
-*   Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-2
--   /etc/profile.d permission fix. Pack /etc files into rpm
-*   Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 4.3-1
--   Initial version
-
+* Tue Jan 12 2016 Xiaolin Li <xiaolinl@vmware.com> 4.3.30-1
+- Updated to version 4.3.30
+* Wed Aug 05 2015 Kumar Kaushik <kaushikk@vmware.com> 4.3-4
+- Adding post unstall section.
+* Wed Jul 22 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-3
+- Fix segfault in save_bash_input.
+* Tue Jun 30 2015 Alexey Makhalov <amakhalov@vmware.com> 4.3-2
+- /etc/profile.d permission fix. Pack /etc files into rpm
+* Wed Oct 22 2014 Divya Thaluru <dthaluru@vmware.com> 4.3-1
+- Initial version
