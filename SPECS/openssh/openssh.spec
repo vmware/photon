@@ -1,14 +1,14 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
-Version:        8.5p1
-Release:        2%{?dist}
+Version:        8.8p1
+Release:        1%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://ftp.openbsd.org/pub/OpenBSD/OpenSSH/portable/%{name}-%{version}.tar.gz
-%define sha1    openssh=72eadcbe313b07b1dd3b693e41d3cd56d354e24e
+%define sha1    openssh=1eb964897a4372f6fb96c7effeb509ec71c379c9
 Source1:        http://www.linuxfromscratch.org/blfs/downloads/systemd/blfs-systemd-units-20140907.tar.bz2
 %define sha1    blfs-systemd-units=713afb3bbe681314650146e5ec412ef77aa1fe33
 Source2:        sshd.service
@@ -19,10 +19,12 @@ BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  groff
 Requires:       openssh-clients = %{version}-%{release}
 Requires:       openssh-server = %{version}-%{release}
+Requires:       systemd
+
 %description
 The OpenSSH package contains ssh clients and the sshd daemon. This is
 useful for encrypting authentication and subsequent traffic over a
@@ -82,20 +84,20 @@ make
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm755 %{buildroot}/var/lib/sshd
-echo "AllowTcpForwarding no" >> %{buildroot}/etc/ssh/sshd_config
-echo "ClientAliveCountMax 2" >> %{buildroot}/etc/ssh/sshd_config
-echo "Compression no" >> %{buildroot}/etc/ssh/sshd_config
-echo "TCPKeepAlive no" >> %{buildroot}/etc/ssh/sshd_config
-echo "AllowAgentForwarding no" >> %{buildroot}/etc/ssh/sshd_config
-echo "PermitRootLogin no" >> %{buildroot}/etc/ssh/sshd_config
-echo "UsePAM yes" >> %{buildroot}/etc/ssh/sshd_config
+echo "AllowTcpForwarding no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+echo "ClientAliveCountMax 2" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+echo "Compression no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+echo "TCPKeepAlive no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+echo "AllowAgentForwarding no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+echo "PermitRootLogin no" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
+echo "UsePAM yes" >> %{buildroot}%{_sysconfdir}/ssh/sshd_config
 #   Install daemon script
 pushd blfs-systemd-units-20140907
-make DESTDIR=%{buildroot} install-sshd %{?_smp_mflags}
+make DESTDIR=%{buildroot} UNITSDIR=%{buildroot}%{_unitdir} install-sshd %{?_smp_mflags}
 popd
 
-install -m644 %{SOURCE2} %{buildroot}/lib/systemd/system/sshd.service
-install -m644 %{SOURCE3} %{buildroot}/lib/systemd/system/sshd-keygen.service
+install -m644 %{SOURCE2} %{buildroot}%{_unitdir}/sshd.service
+install -m644 %{SOURCE3} %{buildroot}%{_unitdir}/sshd-keygen.service
 install -m755 contrib/ssh-copy-id %{buildroot}/%{_bindir}/
 install -m644 contrib/ssh-copy-id.1 %{buildroot}/%{_mandir}/man1/
 
@@ -147,10 +149,10 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %attr(0600,root,root) %config(noreplace) %{_sysconfdir}/ssh/sshd_config
 %attr(700,root,sys)/var/lib/sshd
-/lib/systemd/system/sshd-keygen.service
-/lib/systemd/system/sshd.service
-/lib/systemd/system/sshd.socket
-/lib/systemd/system/sshd@.service
+%{_unitdir}/sshd-keygen.service
+%{_unitdir}/sshd.service
+%{_unitdir}/sshd.socket
+%{_unitdir}/sshd@.service
 %{_sbindir}/sshd
 %{_libexecdir}/sftp-server
 %{_mandir}/man5/sshd_config.5.gz
@@ -187,6 +189,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-sk-helper.8.gz
 
 %changelog
+*   Mon Nov 29 2021 Satya Naga Vasamsetty <svasamsetty@vmware.comm> 8.8p1-1
+-   Update to 8.8p1
 *   Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5p1-2
 -   Bump up for openssl
 *   Thu Mar 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5p1-1
