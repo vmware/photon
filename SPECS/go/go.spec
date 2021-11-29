@@ -17,11 +17,15 @@ URL:            https://golang.org
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
 %define sha1    go=b78350fa6e4617c1eac66dff656eda8df0a13c1f
+
 Patch0:         CVE-2021-41771.patch
 Patch1:         CVE-2021-41772.patch
+
 Requires:       glibc
+
 %define ExtraBuildRequires go
 
 %description
@@ -79,7 +83,7 @@ export GOHOSTARCH=%{gohostarch}
 export GOOS=linux
 EOF
 #chown -R root:root %{buildroot}/etc/profile.d/go-exports.sh
-#%{_fixperms} %{buildroot}/*
+#%%{_fixperms} %{buildroot}/*
 
 %post -p /sbin/ldconfig
 
@@ -111,21 +115,21 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.17.2-1
--   Upgrade to 1.17.2
-*   Tue Oct 05 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.7-1
--   Upgrade to 1.16.7
-*   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.5-1
--   Update to 1.16.5
-*   Thu Mar 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.2-1
--   Update to 1.16.2
-*   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.15.8-1
--   Update to 1.15.8
-*   Fri Jan 15 2021 Piyush Gupta <gpiyush@vmware.com> 1.15.6-1
--   Update to 1.15.6
-*   Wed Oct 28 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.14.8-2
--   Fix glibc dependency on aarch64
-*   Tue Oct 06 2020 Ashwin H <ashwinh@vmware.com> 1.14.8-1
--   Update to 1.14.8
-*   Thu Mar 05 2020 <ashwinh@vmware.com> 1.14-1
--   Initial build for 1.14
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.17.2-1
+- Upgrade to 1.17.2
+* Tue Oct 05 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.7-1
+- Upgrade to 1.16.7
+* Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.5-1
+- Update to 1.16.5
+* Thu Mar 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.16.2-1
+- Update to 1.16.2
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.15.8-1
+- Update to 1.15.8
+* Fri Jan 15 2021 Piyush Gupta <gpiyush@vmware.com> 1.15.6-1
+- Update to 1.15.6
+* Wed Oct 28 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 1.14.8-2
+- Fix glibc dependency on aarch64
+* Tue Oct 06 2020 Ashwin H <ashwinh@vmware.com> 1.14.8-1
+- Update to 1.14.8
+* Thu Mar 05 2020 <ashwinh@vmware.com> 1.14-1
+- Initial build for 1.14

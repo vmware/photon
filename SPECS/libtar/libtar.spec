@@ -26,6 +26,7 @@ The litar-devel package contains libraries and header files for
 developing applications that use libtar.
 
 %prep
+# Using autosetup is not feasible
 %setup
 %patch0
 %patch1 -p1
@@ -36,10 +37,10 @@ autoreconf -iv
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
-chmod +x %{buildroot}/%{_libdir}/libtar.so.*
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+chmod +x %{buildroot}%{_libdir}/libtar.so.*
 
-#%check
+#%%check
 #Commented out %check due to no test existence
 
 %post   -p /sbin/ldconfig
@@ -58,13 +59,13 @@ chmod +x %{buildroot}/%{_libdir}/libtar.so.*
 %{_libdir}/libtar.la
 
 %changelog
-*   Thu Nov 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.20-5
--   Fix CVE-2013-4420
-*   Thu Jun 29 2017 Chang Lee <changlee@vmware.com> 1.2.20-4
--   Removed %check due to no test existence.
-*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.20-3
--   Ensure non empty debuginfo
-*   Fri Mar 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.20-2
--   Provides libtar.so.0()(64bit).
-*   Fri Mar 03 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.20-1
--   Initial packaging for Photon
+* Thu Nov 02 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.20-5
+- Fix CVE-2013-4420
+* Thu Jun 29 2017 Chang Lee <changlee@vmware.com> 1.2.20-4
+- Removed %check due to no test existence.
+* Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.20-3
+- Ensure non empty debuginfo
+* Fri Mar 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.20-2
+- Provides libtar.so.0()(64bit).
+* Fri Mar 03 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.20-1
+- Initial packaging for Photon

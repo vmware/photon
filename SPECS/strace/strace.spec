@@ -7,10 +7,14 @@ URL:      https://strace.io/
 Group:    Development/Debuggers
 Vendor:   VMware, Inc.
 Distribution: Photon
-Source0:  https://strace.io/files/%{version}/%{name}-%{version}.tar.xz
-%define sha1 strace=8b5ced312f379806406a0ee6551fbe373c55e738
 
-BuildRequires:  gcc gzip libacl-devel libaio-devel
+Source0:  https://strace.io/files/%{version}/%{name}-%{version}.tar.xz
+%define sha1 %{name}=8b5ced312f379806406a0ee6551fbe373c55e738
+
+BuildRequires:  gcc
+BuildRequires:  gzip
+BuildRequires:  libacl-devel
+BuildRequires:  libaio-devel
 
 %description
 strace is a diagnostic, debugging and instructional userspace utility for Linux. It is
@@ -26,12 +30,11 @@ The strace graph is perl script, It displays a graph of invoked subprocesses, an
 useful for finding out what complex commands do
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %ifarch aarch64
-%configure          \
-    --disable-mpers \
+%configure --disable-mpers
 %else
 %configure
 %endif
@@ -43,11 +46,11 @@ sed -i 's/struct ucontext/ucontext_t/g' linux/arm/arch_sigreturn.c
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot}
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 %check
-make -k check
+make -k check %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}/*

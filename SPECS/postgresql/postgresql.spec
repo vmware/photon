@@ -81,7 +81,7 @@ make %{?_smp_mflags}
 cd contrib && make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make install DESTDIR=%{buildroot} %{?_smp_mflags}
 cd contrib && make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
@@ -171,78 +171,78 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
-*   Mon Nov 29 2021 Tapas Kundu <tkundu@vmware.com> 14.1-1
--   Upgraded to version 14.1.
--   Add support for LZ4
-*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 13.5-2
--   Release bump up to use libxml2 2.9.12-1.
-*   Mon Nov 15 2021 Michael Paquier <mpaquier@vmware.com> 13.5-1
--   Upgraded to version 13.5.
-*   Sat Aug 21 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 13.4-2
--   Bump up release for openssl
-*   Sat Aug 14 2021 Michael Paquier <mpaquier@vmware.com> 13.4-1
--   Upgraded to version 13.4
-*   Fri May 14 2021 Michael Paquier <mpaquier@vmware.com> 13.3-1
--   Upgraded to version 13.3
-*   Fri Feb 19 2021 Michael Paquier <mpaquier@vmware.com> 13.2-1
--   Upgraded to version 13.2
-*   Fri Feb 5 2021 Michael Paquier <mpaquier@vmware.com> 13.1-1
--   Fix and reorganize list of BuildRequires
--   Removal of custom patch for CVE-2016-5423 committed in upstream.
--   Upgraded to version 13.1
-*   Wed Sep 30 2020 Dweep Advani <dadvani@vmware.com> 13.0-3
--   Prefer libedit over readline
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 13.0-2
--   openssl 1.1.1
-*   Thu Sep 24 2020 Gerrit Photon <photon-checkins@vmware.com> 13.0-1
--   Automatic Version Bump
-*   Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 12.4-1
--   Automatic Version Bump
-*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 12.3-1
--   Automatic Version Bump
-*   Mon Aug 12 2019 Shreenidhi Shedi <sshedi@vmware.com> 11.5-1
--   Upgraded to version 11.5
-*   Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 10.5-1
--   Updated to version 10.5
-*   Tue Mar 27 2018 Dheeraj Shetty <dheerajs@vmware.com> 9.6.8-1
--   Updated to version 9.6.8 to fix CVE-2018-1058
-*   Mon Feb 12 2018 Dheeraj Shetty <dheerajs@vmware.com> 9.6.7-1
--   Updated to version 9.6.7
-*   Mon Nov 27 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.6-1
--   Updated to version 9.6.6
-*   Fri Sep 08 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.5-1
--   Updated to version 9.6.5
-*   Tue Aug 15 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.4-1
--   Updated to version 9.6.4
-*   Thu Aug 10 2017 Rongrong Qiu <rqiu@vmware.com> 9.6.3-3
--   add sleep 5 when initdb in make check for bug 1900371
-*   Wed Jul 05 2017 Divya Thaluru <dthaluru@vmware.com> 9.6.3-2
--   Added postgresql-devel
-*   Tue Jun 06 2017 Divya Thaluru <dthaluru@vmware.com> 9.6.3-1
--   Upgraded to 9.6.3
-*   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 9.6.2-1
--   Upgrade to 9.6.2 for Photon upgrade bump
-*   Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-6
--   Applied CVE-2016-5423.patch
-*   Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 9.5.3-5
--   Required krb5-devel.
-*   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 9.5.3-4
--   Modified %check
-*   Thu May 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-3
--   Add tzdata to buildrequires and requires.
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.5.3-2
--   GA - Bump release of all rpms
-*   Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 9.5.3-1
--   Updated to version 9.5.3
-*   Wed Apr 13 2016 Michael Paquier <mpaquier@vmware.com> 9.5.2-1
--   Updated to version 9.5.2
-*   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.1-1
--   Updated to version 9.5.1
-*   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.0-1
--   Updated to version 9.5.0
-*   Thu Aug 13 2015 Divya Thaluru <dthaluru@vmware.com> 9.4.4-1
--   Update to version 9.4.4.
-*   Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 9.4.1-2
--   Exclude /usr/lib/debug
-*   Fri May 15 2015 Sharath George <sharathg@vmware.com> 9.4.1-1
--   Initial build. First version
+* Mon Nov 29 2021 Tapas Kundu <tkundu@vmware.com> 14.1-1
+- Upgraded to version 14.1.
+- Add support for LZ4
+* Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 13.5-2
+- Release bump up to use libxml2 2.9.12-1.
+* Mon Nov 15 2021 Michael Paquier <mpaquier@vmware.com> 13.5-1
+- Upgraded to version 13.5.
+* Sat Aug 21 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 13.4-2
+- Bump up release for openssl
+* Sat Aug 14 2021 Michael Paquier <mpaquier@vmware.com> 13.4-1
+- Upgraded to version 13.4
+* Fri May 14 2021 Michael Paquier <mpaquier@vmware.com> 13.3-1
+- Upgraded to version 13.3
+* Fri Feb 19 2021 Michael Paquier <mpaquier@vmware.com> 13.2-1
+- Upgraded to version 13.2
+* Fri Feb 5 2021 Michael Paquier <mpaquier@vmware.com> 13.1-1
+- Fix and reorganize list of BuildRequires
+- Removal of custom patch for CVE-2016-5423 committed in upstream.
+- Upgraded to version 13.1
+* Wed Sep 30 2020 Dweep Advani <dadvani@vmware.com> 13.0-3
+- Prefer libedit over readline
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 13.0-2
+- openssl 1.1.1
+* Thu Sep 24 2020 Gerrit Photon <photon-checkins@vmware.com> 13.0-1
+- Automatic Version Bump
+* Thu Aug 20 2020 Gerrit Photon <photon-checkins@vmware.com> 12.4-1
+- Automatic Version Bump
+* Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 12.3-1
+- Automatic Version Bump
+* Mon Aug 12 2019 Shreenidhi Shedi <sshedi@vmware.com> 11.5-1
+- Upgraded to version 11.5
+* Fri Sep 21 2018 Dweep Advani <dadvani@vmware.com> 10.5-1
+- Updated to version 10.5
+* Tue Mar 27 2018 Dheeraj Shetty <dheerajs@vmware.com> 9.6.8-1
+- Updated to version 9.6.8 to fix CVE-2018-1058
+* Mon Feb 12 2018 Dheeraj Shetty <dheerajs@vmware.com> 9.6.7-1
+- Updated to version 9.6.7
+* Mon Nov 27 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.6-1
+- Updated to version 9.6.6
+* Fri Sep 08 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.5-1
+- Updated to version 9.6.5
+* Tue Aug 15 2017 Xiaolin Li <xiaolinl@vmware.com> 9.6.4-1
+- Updated to version 9.6.4
+* Thu Aug 10 2017 Rongrong Qiu <rqiu@vmware.com> 9.6.3-3
+- add sleep 5 when initdb in make check for bug 1900371
+* Wed Jul 05 2017 Divya Thaluru <dthaluru@vmware.com> 9.6.3-2
+- Added postgresql-devel
+* Tue Jun 06 2017 Divya Thaluru <dthaluru@vmware.com> 9.6.3-1
+- Upgraded to 9.6.3
+* Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 9.6.2-1
+- Upgrade to 9.6.2 for Photon upgrade bump
+* Thu Dec 15 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-6
+- Applied CVE-2016-5423.patch
+* Thu Nov 24 2016 Alexey Makhalov <amakhalov@vmware.com> 9.5.3-5
+- Required krb5-devel.
+* Mon Oct 03 2016 ChangLee <changLee@vmware.com> 9.5.3-4
+- Modified %check
+* Thu May 26 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.3-3
+- Add tzdata to buildrequires and requires.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 9.5.3-2
+- GA - Bump release of all rpms
+* Fri May 20 2016 Divya Thaluru <dthaluru@vmware.com> 9.5.3-1
+- Updated to version 9.5.3
+* Wed Apr 13 2016 Michael Paquier <mpaquier@vmware.com> 9.5.2-1
+- Updated to version 9.5.2
+* Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.1-1
+- Updated to version 9.5.1
+* Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 9.5.0-1
+- Updated to version 9.5.0
+* Thu Aug 13 2015 Divya Thaluru <dthaluru@vmware.com> 9.4.4-1
+- Update to version 9.4.4.
+* Mon Jul 13 2015 Alexey Makhalov <amakhalov@vmware.com> 9.4.1-2
+- Exclude /usr/lib/debug
+* Fri May 15 2015 Sharath George <sharathg@vmware.com> 9.4.1-1
+- Initial build. First version

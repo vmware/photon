@@ -7,12 +7,15 @@ URL:            http://lldb.llvm.org
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://releases.llvm.org/%{version}/%{name}-%{version}.src.tar.xz
 %define sha1    llvm=1a911295260d4e41116b72788eb602702b4bb252
+
 BuildRequires:  cmake
 BuildRequires:  libxml2-devel
 BuildRequires:  libffi-devel
 BuildRequires:  python3
+
 Requires:       libxml2
 Requires:       libllvm = %{version}-%{release}
 
@@ -50,8 +53,9 @@ cmake -DCMAKE_INSTALL_PREFIX=/usr               \
       -DLLVM_ENABLE_RTTI:BOOL=ON                \
       -Wno-dev ..
 make %{?_smp_mflags}
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 cd build
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 

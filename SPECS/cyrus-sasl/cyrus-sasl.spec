@@ -65,7 +65,7 @@ popd
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 install -D -m644 COPYING %{buildroot}/usr/share/licenses/%{name}/LICENSE

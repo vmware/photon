@@ -7,10 +7,13 @@ URL:            https://github.com/esnet/iperf
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 #Source download URL: https://github.com/esnet/iperf/archive/3.8.1.tar.gz
 Source0:        https://github.com/esnet/iperf/archive/%{name}-%{version}.tar.gz
-Patch1:         disablepg.patch
 %define sha1 iperf=52c9e7668d7cd371e5dabf187aab3123d0550145
+
+Patch1:         disablepg.patch
+
 BuildRequires:  autoconf
 BuildRequires:  automake
 
@@ -36,7 +39,7 @@ echo "VDBG optflags: " %{optflags}
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
@@ -54,21 +57,21 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/libiperf.3.gz
 
 %changelog
-*       Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.9-2
--       Bump up release for openssl
-*       Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 3.9-1
--       Automatic Version Bump
-*       Mon Jun 22 2020 Ankit Jain <ankitja@vmware.com> 3.8.1-1
--       Automatic Version Bump
-*       Wed Sep 05 2018 Ankit Jain <ankitja@vmware.com> 3.6-1
--       Upgraded to version 3.6
-*       Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.1.7-1
--       Upgraded to version 3.1.7
-*       Thu Oct 6 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.1.3-1
--       Upgraded to version 3.1.3
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.2-2
--	GA - Bump release of all rpms
-* 	Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  3.1.2-1
-- 	Upgrade to 3.1.2
-*       Wed Oct 28 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.7.0-1
--       Add iperf v3.1 package.
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.9-2
+- Bump up release for openssl
+* Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 3.9-1
+- Automatic Version Bump
+* Mon Jun 22 2020 Ankit Jain <ankitja@vmware.com> 3.8.1-1
+- Automatic Version Bump
+* Wed Sep 05 2018 Ankit Jain <ankitja@vmware.com> 3.6-1
+- Upgraded to version 3.6
+* Tue Mar 28 2017 Dheeraj Shetty <dheerajs@vmware.com> 3.1.7-1
+- Upgraded to version 3.1.7
+* Thu Oct 6 2016 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 3.1.3-1
+- Upgraded to version 3.1.3
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.2-2
+- GA - Bump release of all rpms
+* Tue Feb 23 2016 Anish Swaminathan <anishs@vmware.com>  3.1.2-1
+- Upgrade to 3.1.2
+* Wed Oct 28 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.7.0-1
+- Add iperf v3.1 package.

@@ -7,8 +7,10 @@ URL:            http://lz4.github.io/lz4/
 Group:          Applications
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/lz4/lz4/archive/v%{version}/%{name}-%{version}.tar.gz
 %define sha1    lz4=4dc36f29d7b4e5b45b114be2674068200714abb3
+
 Patch0:         CVE-2021-3520.patch
 
 %description
@@ -23,15 +25,14 @@ Requires:       %{name} = %{version}-%{release}
 Static libraries and header files for the support library for lz4.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 make %{?_smp_mflags} all
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot} LIBDIR=%{_libdir} PREFIX=%{_prefix}
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make install DESTDIR=%{buildroot} LIBDIR=%{_libdir} PREFIX=%{_prefix} %{?_smp_mflags}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -50,17 +51,14 @@ make install DESTDIR=%{buildroot} LIBDIR=%{_libdir} PREFIX=%{_prefix}
 %{_libdir}/pkgconfig/*
 %{_includedir}/*
 
-
 %changelog
-*   Mon Jun 14 2021 Michelle Wang <michellew@vmware.com> 1.9.2-2
--   Add Patch CVE-2021-3520
-*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.9.2-1
--   Automatic Version Bump
-*   Wed Sep 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.8.2-1
--   Update to version 1.8.2
-*   Wed Mar 29 2017 Michelle Wang <michellew@vmware.com> 1.7.5-1
--   Update lz4 package to 1.7.5.
-*   Thu Dec 01 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.4-1
--   Add lz4 package.
-
-
+* Mon Jun 14 2021 Michelle Wang <michellew@vmware.com> 1.9.2-2
+- Add Patch CVE-2021-3520
+* Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.9.2-1
+- Automatic Version Bump
+* Wed Sep 05 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.8.2-1
+- Update to version 1.8.2
+* Wed Mar 29 2017 Michelle Wang <michellew@vmware.com> 1.7.5-1
+- Update lz4 package to 1.7.5.
+* Thu Dec 01 2016 Xiaolin Li <xiaolinl@vmware.com> 1.7.4-1
+- Add lz4 package.

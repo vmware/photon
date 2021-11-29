@@ -8,8 +8,10 @@ License:        LGPLv2+
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://downloads.sourceforge.net/sourceforge/tcl/tcl-core%{version}-src.tar.gz
 %define sha1    tcl-core=8a51f3cf987e75f859b5e378f27d9182030cc3f7
+
 Patch0:         tcl-CVE-2021-35331.patch
 
 BuildRequires:  cmake
@@ -31,8 +33,7 @@ Requires: %{name} = %{version}-%{release}
 Headers and development libraries for tcl
 
 %prep
-%setup -q -n %{name}%{version}
-%patch0 -p1
+%autosetup -p1 -n %{name}%{version}
 
 %build
 cd unix
@@ -44,8 +45,8 @@ cd unix
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install -C unix
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make DESTDIR=%{buildroot} install -C unix %{?_smp_mflags}
 
 ln -s tclsh%{majorver} %{buildroot}%{_bindir}/tclsh
 
@@ -72,7 +73,7 @@ rm -rf %{buildroot}/%{_datadir}/%{name}%{majorver}/ldAix
 
 %check
 cd unix
-make test
+make test %{?_smp_mflags}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -99,15 +100,15 @@ make test
 %exclude %{_mandir}/man3/Thread.3.gz
 
 %changelog
-*   Thu Jul 15 2021 Nitesh Kumar <kunitesh@vmware.com> 8.6.10-2
--   Fix CVE-2021-35331.
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 8.6.10-1
--   Automatic Version Bump
-*   Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 8.6.8-1
--   Update version to 8.6.8.
-*   Thu Jul 13 2017 Alexey Makhalov <amakhalov@vmware.com>  8.6.6-2
--   Package more files (private headers, etc). Took install section from
-    Fedora: http://pkgs.fedoraproject.org/cgit/rpms/tcl.git/tree/tcl.spec
--   Move init.tcl and other *.tck files to the main package
-*   Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  8.6.6-1
--   Initial build.  First version
+* Thu Jul 15 2021 Nitesh Kumar <kunitesh@vmware.com> 8.6.10-2
+- Fix CVE-2021-35331.
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 8.6.10-1
+- Automatic Version Bump
+* Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 8.6.8-1
+- Update version to 8.6.8.
+* Thu Jul 13 2017 Alexey Makhalov <amakhalov@vmware.com>  8.6.6-2
+- Package more files (private headers, etc). Took install section from
+  Fedora: http://pkgs.fedoraproject.org/cgit/rpms/tcl.git/tree/tcl.spec
+- Move init.tcl and other *.tck files to the main package
+* Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  8.6.6-1
+- Initial build.  First version

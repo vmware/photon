@@ -7,9 +7,12 @@ URL:            https://github.com/linux-pam/linux-pam/releases
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha1    Linux-PAM=e26c6594c14680da42ea2875b60664ec159670bf
+%define sha1    %{name}=e26c6594c14680da42ea2875b60664ec159670bf
+
 BuildRequires:  libselinux-devel
+
 Requires:       libselinux
 
 %description
@@ -33,21 +36,37 @@ The Linux-PAM-devel package contains libraries, header files and documentation
 for developing applications that use Linux-PAM.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
-%configure \
+sh ./configure --host=%{_host} --build=%{_build} \
     $(test %{_host} != %{_build} && echo "--with-sysroot=/target-%{_arch}") \
-    --includedir=/usr/include/security \
+    CFLAGS="%{optflags}" \
+    CXXFLAGS="%{optflags}" \
+    --program-prefix= \
+    --disable-dependency-tracking \
+    --prefix=%{_prefix} \
+    --exec-prefix=%{_prefix} \
+    --bindir=%{_bindir} \
     --sbindir=/sbin \
+    --sysconfdir=%{_sysconfdir} \
+    --datadir=%{_datadir} \
+    --includedir=/usr/include/security \
+    --libdir=%{_libdir} \
+    --libexecdir=%{_libexecdir} \
+    --localstatedir=%{_localstatedir} \
+    --sharedstatedir=%{_sharedstatedir} \
+    --mandir=%{_mandir} \
+    --infodir=%{_infodir} \
     --enable-selinux \
-    --enable-securedir=/usr/lib/security \
-    --docdir=%{_docdir}/%{name}-%{version}
+    --docdir=%{_docdir}/%{name}-%{version} \
+    --enable-securedir=/usr/lib/security
 
 make %{?_smp_mflags}
+
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make install DESTDIR=%{buildroot}
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 chmod -v 4755 %{buildroot}/sbin/unix_chkpwd
 install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
 ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_auth.so
@@ -72,8 +91,10 @@ make %{?_smp_mflags} check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/*
@@ -94,28 +115,28 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
-*   Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 1.4.0-2
--   pam_cracklib has been deprecated.
-*   Fri Aug 07 2020 Vikash Bansal <bvikas@vmware.com> 1.4.0-1
--   Version bump up to 1.4.0
-*   Mon Apr 20 2020 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-3
--   Enable SELinux support
-*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-2
--   Cross compilation support
-*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-1
--   Version update.
-*   Fri Feb 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-5
--   Added pam_unix_auth.so, pam_unix_acct.so, pam_unix_passwd.so,
--   and pam_unix_session.so.
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-4
--   Added devel subpackage.
-*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 1.2.1-3
--   Packaging pam cracklib module
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-2
--   GA - Bump release of all rpms
-*   Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-1
--   Updated to version 1.2.1
-*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.1.8-2
--   Update according to UsrMove.
-*   Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 1.1.8-1
--   Initial build.  First version
+* Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 1.4.0-2
+- pam_cracklib has been deprecated.
+* Fri Aug 07 2020 Vikash Bansal <bvikas@vmware.com> 1.4.0-1
+- Version bump up to 1.4.0
+* Mon Apr 20 2020 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-3
+- Enable SELinux support
+* Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-2
+- Cross compilation support
+* Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-1
+- Version update.
+* Fri Feb 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-5
+- Added pam_unix_auth.so, pam_unix_acct.so, pam_unix_passwd.so,
+- and pam_unix_session.so.
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-4
+- Added devel subpackage.
+* Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 1.2.1-3
+- Packaging pam cracklib module
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-2
+- GA - Bump release of all rpms
+* Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-1
+- Updated to version 1.2.1
+* Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.1.8-2
+- Update according to UsrMove.
+* Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 1.1.8-1
+- Initial build.  First version

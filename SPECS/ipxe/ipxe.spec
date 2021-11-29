@@ -42,7 +42,7 @@ cd src
 make %{_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 mkdir -p %{buildroot}/usr/share/ipxe
 install -vDm 644 src/bin/ipxe.{dsk,iso,lkrn,usb} %{buildroot}/usr/share/ipxe/
 install -vDm 644 src/bin/*.{rom,mrom} %{buildroot}/usr/share/ipxe/

@@ -71,7 +71,7 @@ make depend %{?_smp_mflags}
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make install DESTDIR=%{buildroot} %{?_smp_mflags}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
@@ -111,44 +111,44 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
-*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.57-2
--   Bump up release for openssl
-*   Wed Mar 31 2021 Vamsi Krishna Brahmajosyula<vbrahmajosyula@vmware.com> 2.4.57-1
--   Upgrade to 2.4.57 to fix several critical CVEs
--   Fix CVE-2021-27212
-*   Mon Dec 14 2020 Dweep Advani <dadvani@vmware.com> 2.4.53-3
--   Patched for CVE-2020-25692
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.53-2
--   openssl 1.1.1
-*   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.53-1
--   Automatic Version Bump
-*   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.52-1
--   Automatic Version Bump
-*   Wed Aug 26 2020 Piyush Gupta <gpiyush@vmware.com> 2.4.51-2
--   Release bump up
-*   Fri Aug 14 2020 Susant Sahani <ssahani@vmware.com> 2.4.51-1
--   Version Bump and fix build
-*   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.50-1
--   Automatic Version Bump
-*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.4.46-3
--   Cross compilation support
-*   Mon Nov 5 2018 Sriram Nambakam <snambakam@vmware.com> 2.4.46-2
--   export CPPFLAGS before invoking configure
-*   Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.4.46-1
--   Upgrade to 2.4.46
-*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 2.4.44-3
--   Use standard configure macros
-*   Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.44-2
--   Applied patch for CVE-2017-9287
-*   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.44-1
--   Update to 2.4.44
-*   Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.4.43-3
--   Modified %check
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.43-2
--   GA - Bump release of all rpms
-*   Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.43-1
--   Updated to version 2.4.43
-*   Fri Aug 14 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.40-2
--   Patches for CVE-2015-1545 and CVE-2015-1546.
-*   Wed Oct 08 2014 Divya Thaluru <dthaluru@vmware.com> 2.4.40-1
--   Initial build. First version
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.57-2
+- Bump up release for openssl
+* Wed Mar 31 2021 Vamsi Krishna Brahmajosyula<vbrahmajosyula@vmware.com> 2.4.57-1
+- Upgrade to 2.4.57 to fix several critical CVEs
+- Fix CVE-2021-27212
+* Mon Dec 14 2020 Dweep Advani <dadvani@vmware.com> 2.4.53-3
+- Patched for CVE-2020-25692
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.4.53-2
+- openssl 1.1.1
+* Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.53-1
+- Automatic Version Bump
+* Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.52-1
+- Automatic Version Bump
+* Wed Aug 26 2020 Piyush Gupta <gpiyush@vmware.com> 2.4.51-2
+- Release bump up
+* Fri Aug 14 2020 Susant Sahani <ssahani@vmware.com> 2.4.51-1
+- Version Bump and fix build
+* Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.50-1
+- Automatic Version Bump
+* Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 2.4.46-3
+- Cross compilation support
+* Mon Nov 5 2018 Sriram Nambakam <snambakam@vmware.com> 2.4.46-2
+- export CPPFLAGS before invoking configure
+* Mon Sep 10 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 2.4.46-1
+- Upgrade to 2.4.46
+* Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 2.4.44-3
+- Use standard configure macros
+* Tue Jul 11 2017 Divya Thaluru <dthaluru@vmware.com> 2.4.44-2
+- Applied patch for CVE-2017-9287
+* Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.44-1
+- Update to 2.4.44
+* Wed Oct 05 2016 ChangLee <changlee@vmware.com> 2.4.43-3
+- Modified %check
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.43-2
+- GA - Bump release of all rpms
+* Thu Jan 21 2016 Xiaolin Li <xiaolinl@vmware.com> 2.4.43-1
+- Updated to version 2.4.43
+* Fri Aug 14 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.40-2
+- Patches for CVE-2015-1545 and CVE-2015-1546.
+* Wed Oct 08 2014 Divya Thaluru <dthaluru@vmware.com> 2.4.40-1
+- Initial build. First version

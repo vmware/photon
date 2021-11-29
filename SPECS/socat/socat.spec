@@ -23,7 +23,7 @@ Socat is a command line based utility that establishes two bidirectional byte st
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 find %{buildroot} -name '*.a' -delete
@@ -40,19 +40,19 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
-*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.0.b9-3
--   Bump up release for openssl
-*   Fri Jul 24 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.0.b9-2
--   Add no depreciated option
-*   Wed Sep 19 2018 Srinidhi Rao <srinidhir@vmware.com> 2.0.0.b9-1
--   Upgrade to 2.0.0-b9
-*   Tue Sep 19 2017 Bo Gan <ganb@vmware.com> 1.7.3.2-4
--   Disable test 302
-*   Tue Sep 12 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.3.2-3
--   Fix make check issue.
-*   Tue May 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.3.2-2
--   Correct the GPL license version.
-*   Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.3.2-1
--   Update to version 1.7.3.2
-*   Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  1.7.3.1-1
--   Initial build.
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.0.b9-3
+- Bump up release for openssl
+* Fri Jul 24 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.0.b9-2
+- Add no depreciated option
+* Wed Sep 19 2018 Srinidhi Rao <srinidhir@vmware.com> 2.0.0.b9-1
+- Upgrade to 2.0.0-b9
+* Tue Sep 19 2017 Bo Gan <ganb@vmware.com> 1.7.3.2-4
+- Disable test 302
+* Tue Sep 12 2017 Xiaolin Li <xiaolinl@vmware.com> 1.7.3.2-3
+- Fix make check issue.
+* Tue May 02 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.3.2-2
+- Correct the GPL license version.
+* Thu Apr 13 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.7.3.2-1
+- Update to version 1.7.3.2
+* Wed Jan 11 2017 Xiaolin Li <xiaolinl@vmware.com>  1.7.3.1-1
+- Initial build.

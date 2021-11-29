@@ -3,31 +3,37 @@ Name:           krb5
 Version:        1.17
 Release:        7%{?dist}
 License:        MIT
-URL:            http://web.mit.edu/kerberos/
+URL:            http://web.mit.edu/kerberos
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/1.17/%{name}-%{version}.tar.gz
+
+Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/%{version}/%{name}-%{version}.tar.gz
 %define sha1    %{name}=0c404b081db9c996c581f636ce450ee28778f338
+
 Patch0:         krb5-CVE-2020-28196.patch
 Patch1:         krb5-CVE-2021-36222.patch
 Patch2:         krb5-CVE-2021-37750.patch
 %if %{with_check}
 Patch3:         krb5-Make-test-PKINIT-certs-work-with-OpenSSL-3.0.patch
 %endif
+
 Requires:       openssl
 Requires:       e2fsprogs-libs
+
 BuildRequires:  openssl-devel
 BuildRequires:  e2fsprogs-devel
+
 Provides:       pkgconfig(mit-krb5)
 Provides:       pkgconfig(mit-krb5-gssapi)
+
 %description
 Kerberos V5 is a trusted-third-party network authentication system,
 which can improve your network's security by eliminating the insecure
 practice of clear text passwords.
 
 %package devel
-Summary:        Libraries and header files for krb5
+Summary:    Libraries and header files for krb5
 Requires:   %{name} = %{version}-%{release}
 %description devel
 Static libraries and header files for the support library for krb5
@@ -35,7 +41,7 @@ Static libraries and header files for the support library for krb5
 %package lang
 Summary:    Additional language files for krb5
 Group:      System Environment/Security
-Requires: %{name} = %{version}-%{release}
+Requires:   %{name} = %{version}-%{release}
 %description lang
 These are the additional language files of krb5.
 
@@ -43,9 +49,9 @@ These are the additional language files of krb5.
 %autosetup -p1
 
 %build
-cd src &&
+cd src && \
 sed -e 's@\^u}@^u cols 300}@' \
-    -i tests/dejagnu/config/default.exp &&
+    -i tests/dejagnu/config/default.exp && \
 CPPFLAGS="-D_GNU_SOURCE" \
 autoconf
 if [ %{_host} != %{_build} ]; then
@@ -63,26 +69,27 @@ fi
         --enable-pkinit          \
         --enable-shared          \
         --without-tcl
+
 make %{?_smp_mflags}
 
 %install
 cd src
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make install DESTDIR=%{buildroot} %{?_smp_mflags}
-find %{buildroot}/%{_libdir} -name '*.la' -delete
+find %{buildroot}%{_libdir} -name '*.la' -delete
 for LIBRARY in gssapi_krb5 gssrpc k5crypto kadm5clnt kadm5srv \
                kdb5 krad krb5 krb5support verto ; do
     chmod -v 755 %{buildroot}/%{_libdir}/lib$LIBRARY.so
 done
 
-ln -v -sf %{buildroot}/%{_libdir}/libkrb5.so.3.3        /usr/lib/libkrb5.so
-ln -v -sf %{buildroot}/%{_libdir}/libk5crypto.so.3.1    /usr/lib/libk5crypto.so
-ln -v -sf %{buildroot}/%{_libdir}/libkrb5support.so.0.1 /usr/lib/libkrb5support.so
+ln -sfv %{buildroot}%{_libdir}/libkrb5.so.3.3        %{_libdir}/libkrb5.so
+ln -sfv %{buildroot}%{_libdir}/libk5crypto.so.3.1    %{_libdir}/libk5crypto.so
+ln -sfv %{buildroot}%{_libdir}/libkrb5support.so.0.1 %{_libdir}/libkrb5support.so
 
 mv -v %{buildroot}/%{_bindir}/ksu /bin
 chmod -v 755 /bin/ksu
 
-install -v -dm755 %{buildroot}/%{_docdir}/%{name}-%{version}
+install -v -dm755 %{buildroot}%{_docdir}/%{name}-%{version}
 
 unset LIBRARY
 %{_fixperms} %{buildroot}/*
@@ -129,45 +136,45 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
-*   Tue Nov 30 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.17-7
--   Fix for CVE-2020-28196/CVE-2021-36222/CVE-2021-37750
-*   Fri Sep 17 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.17-6
--   Bump up release for openssl
-*   Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 1.17-5
--   Replacement of ITS suggested words.
-*   Mon Nov 02 2020 Tapas Kundu <tkundu@vmware.com> 1.17-4
--   Fix krb5 build.
-*   Thu Oct 29 2020 Shreyas B. <shreyasb@vmware.com> 1.17-3
--   krb5 v1.18.2 is not stable, creating panic for PMD-Client, so downgrading to v1.17.
-*   Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.18.2-1
--   Automatic Version Bump
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.17-3
--   openssl 1.1.1
-*   Fri Nov 01 2019 Alexey Makhalov <amakhalov@vmware.com> 1.17-2
--   Cross compilation support
-*   Thu Oct 03 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.17-1
--   Update to version 1.17
-*   Fri Sep 14 2018 Ankit Jain <ankitja@vmware.com> 1.16.1-1
--   Update to version 1.16.1
-*   Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.16-1
--   Update to version 1.16 to address CVE-2017-15088
-*   Thu Sep 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.2-1
--   Update to version 1.15.2
-*   Mon Jul 10 2017 Alexey Makhalov <amakhalov@vmware.com> 1.15.1-2
--   Fix make check: add /etc/hosts entry, deactivate parallel check
-*   Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 1.15.1-1
--   Updated to version 1.51.1
-*   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 1.14-6
--   Added -lang and -devel subpackages
-*   Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.14-5
--   Use e2fsprogs-libs as runtime deps
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.14-4
--   GA - Bump release of all rpms
-*   Mon Mar 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.14-3
--   Add patch to never unload gssapi mechanisms
-*   Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  1.14-2
--   Add patch for skipping unnecessary mech calls in gss_inquire_cred
-*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.14-1
--   Upgrade version
-*   Tue Oct 07 2014 Divya Thaluru <dthaluru@vmware.com> 1.12.2-1
--   Initial build. First version
+* Tue Nov 30 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.17-7
+- Fix for CVE-2020-28196/CVE-2021-36222/CVE-2021-37750
+* Fri Sep 17 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.17-6
+- Bump up release for openssl
+* Wed Sep 08 2021 Nitesh Kumar <kunitesh@vmware.com> 1.17-5
+- Replacement of ITS suggested words.
+* Mon Nov 02 2020 Tapas Kundu <tkundu@vmware.com> 1.17-4
+- Fix krb5 build.
+* Thu Oct 29 2020 Shreyas B. <shreyasb@vmware.com> 1.17-3
+- krb5 v1.18.2 is not stable, creating panic for PMD-Client, so downgrading to v1.17.
+* Thu Oct 01 2020 Gerrit Photon <photon-checkins@vmware.com> 1.18.2-1
+- Automatic Version Bump
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.17-3
+- openssl 1.1.1
+* Fri Nov 01 2019 Alexey Makhalov <amakhalov@vmware.com> 1.17-2
+- Cross compilation support
+* Thu Oct 03 2019 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.17-1
+- Update to version 1.17
+* Fri Sep 14 2018 Ankit Jain <ankitja@vmware.com> 1.16.1-1
+- Update to version 1.16.1
+* Wed Dec 13 2017 Xiaolin Li <xiaolinl@vmware.com> 1.16-1
+- Update to version 1.16 to address CVE-2017-15088
+* Thu Sep 28 2017 Xiaolin Li <xiaolinl@vmware.com> 1.15.2-1
+- Update to version 1.15.2
+* Mon Jul 10 2017 Alexey Makhalov <amakhalov@vmware.com> 1.15.1-2
+- Fix make check: add /etc/hosts entry, deactivate parallel check
+* Mon Apr 03 2017 Divya Thaluru <dthaluru@vmware.com> 1.15.1-1
+- Updated to version 1.51.1
+* Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 1.14-6
+- Added -lang and -devel subpackages
+* Wed Nov 16 2016 Alexey Makhalov <amakhalov@vmware.com> 1.14-5
+- Use e2fsprogs-libs as runtime deps
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.14-4
+- GA - Bump release of all rpms
+* Mon Mar 21 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com>  1.14-3
+- Add patch to never unload gssapi mechanisms
+* Fri Mar 18 2016 Anish Swaminathan <anishs@vmware.com>  1.14-2
+- Add patch for skipping unnecessary mech calls in gss_inquire_cred
+* Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 1.14-1
+- Upgrade version
+* Tue Oct 07 2014 Divya Thaluru <dthaluru@vmware.com> 1.12.2-1
+- Initial build. First version

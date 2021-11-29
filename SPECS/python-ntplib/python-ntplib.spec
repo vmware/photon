@@ -7,6 +7,7 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/ntplib/
+
 Source0:        ntplib-%{version}.tar.gz
 %define         sha1 ntplib=08c3591bf257d893f455b833064e8be1889ec8bf
 
@@ -26,9 +27,8 @@ This module offers a simple interface to query NTP servers from Python.
 
 It also provides utility functions to translate NTP fields values to text (mode, leap indicator…). Since it’s pure Python, and only depends on core modules, it should work on any platform with a Python implementation.
 
-
 %prep
-%autosetup -n ntplib-%{version}
+%autosetup -p1 -n ntplib-%{version}
 
 %build
 python3 setup.py build
@@ -36,7 +36,7 @@ python3 setup.py build
 %install
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
-#%check
+#%%check
 #Commented out %check due to no test existence
 
 %files
@@ -44,13 +44,13 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.3.4-2
--   Bump up to compile with python 3.10
-*   Wed Oct 14 2020 Tapas Kundu <tkundu@vmware.com> 0.3.4-1
--   Update to 0.3.4
-*   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 0.3.3-3
--   Mass removal python2
-*   Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 0.3.3-2
--   Removed %check due to no test existence.
-*   Mon Mar 06 2017 Xiaolin Li <xiaolinl@vmware.com> 0.3.3-1
--   Initial packaging for Photon.
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.3.4-2
+- Bump up to compile with python 3.10
+* Wed Oct 14 2020 Tapas Kundu <tkundu@vmware.com> 0.3.4-1
+- Update to 0.3.4
+* Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 0.3.3-3
+- Mass removal python2
+* Wed Jul 05 2017 Chang Lee <changlee@vmware.com> 0.3.3-2
+- Removed %check due to no test existence.
+* Mon Mar 06 2017 Xiaolin Li <xiaolinl@vmware.com> 0.3.3-1
+- Initial packaging for Photon.

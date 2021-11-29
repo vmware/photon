@@ -13,6 +13,10 @@ Version:        1.22.4
 Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
+Group:          Development/Tools
+Vendor:         VMware, Inc.
+Distribution:   Photon
+
 Source0:        kubernetes-%{version}.tar.gz
 %define sha1    kubernetes-%{version}.tar.gz=3bf63bafe307f0d715842cf69f0afd5807b6b5fe
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
@@ -20,12 +24,10 @@ Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
 
-Group:          Development/Tools
-Vendor:         VMware, Inc.
-Distribution:   Photon
 BuildRequires:  go
 BuildRequires:  rsync
 BuildRequires:  which
+
 Requires:       cni
 Requires:       ebtables
 Requires:       etcd >= 3.0.4
@@ -228,29 +230,29 @@ fi
 %endif
 
 %changelog
-*   Thu Nov 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.22.4-1
--   Update kubernetes to 1.22.4
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.19.15-3
--   Bump up version to compile with new go
-*   Sun Oct 03 2021 Piyush Gupta <gpiyush@vmware.com> 1.19.15-2
--   Bump up version to compile with new go
-*   Fri Sep 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.15-1
--   Update to version 1.19.15, Fix CVE-2021-25741
-*   Thu Aug 26 2021 Keerthana K <keerthanak@vmware.com> 1.19.10-4
--   Bump up version to compile with new glibc
-*   Tue Jun 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.10-3
--   Change 10-kubeadm.conf file permission to 644
-*   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.19.10-2
--   Bump up version to compile with new go
-*   Tue May 11 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.10-1
--   Update to v1.19.10, fixes CVE-2021-3121. Added patch to fix CVE-2021-25737
-*   Thu Mar 25 2021 Piyush Gupta<gpiyush@vmware.com> 1.19.7-2
--   Bump up version to compile with new go
-*   Tue Feb 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.7-1
--   Update to v1.19.7
-*   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.18.8-3
--   Bump up version to compile with new go
-*   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.18.8-2
--   Bump up version to compile with new go
-*   Wed Aug 26 2020 Ashwin H <ashwinh@vmware.com> 1.18.8-1
--   Initial version
+* Thu Nov 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.22.4-1
+- Update kubernetes to 1.22.4
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.19.15-3
+- Bump up version to compile with new go
+* Sun Oct 03 2021 Piyush Gupta <gpiyush@vmware.com> 1.19.15-2
+- Bump up version to compile with new go
+* Fri Sep 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.15-1
+- Update to version 1.19.15, Fix CVE-2021-25741
+* Thu Aug 26 2021 Keerthana K <keerthanak@vmware.com> 1.19.10-4
+- Bump up version to compile with new glibc
+* Tue Jun 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.10-3
+- Change 10-kubeadm.conf file permission to 644
+* Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.19.10-2
+- Bump up version to compile with new go
+* Tue May 11 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.10-1
+- Update to v1.19.10, fixes CVE-2021-3121. Added patch to fix CVE-2021-25737
+* Thu Mar 25 2021 Piyush Gupta<gpiyush@vmware.com> 1.19.7-2
+- Bump up version to compile with new go
+* Tue Feb 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.19.7-1
+- Update to v1.19.7
+* Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.18.8-3
+- Bump up version to compile with new go
+* Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.18.8-2
+- Bump up version to compile with new go
+* Wed Aug 26 2020 Ashwin H <ashwinh@vmware.com> 1.18.8-1
+- Initial version
