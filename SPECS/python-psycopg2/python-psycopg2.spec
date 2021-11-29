@@ -1,7 +1,7 @@
 Summary:        Python-PostgreSQL Database Adapter
 Name:           python3-psycopg2
 Version:        2.8.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/psycopg2
 License:        LGPL with exceptions or ZPL
 Group:          Development/Languages/Python
@@ -25,7 +25,6 @@ Psycopg is the most popular PostgreSQL database adapter for the Python programmi
 Psycopg 2 is mostly implemented in C as a libpq wrapper, resulting in being both efficient and secure. It features client-side and server-side cursors, asynchronous communication and notifications, “COPY TO/COPY FROM” support. Many Python types are supported out-of-the-box and adapted to matching PostgreSQL data types; adaptation can be extended and customized thanks to a flexible objects adaptation system.
 
 Psycopg 2 is both Unicode and Python 3 friendly.
-
 
 %prep
 %autosetup -n psycopg2-%{version}
@@ -63,6 +62,8 @@ rm -r /home/postgres/data &>/dev/null ||:
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Dec 10 2021 Tapas Kundu <tkundu@vmware.com> 2.8.6-3
+-   Bump up to build with postgresql 14.1
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.8.6-2
 -   Bump up to compile with python 3.10
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.8.6-1

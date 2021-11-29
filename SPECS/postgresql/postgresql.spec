@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        13.5
-Release:        2%{?dist}
+Version:        14.1
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=9321e2b01d1ffb15adae06945cb2c5f9dd671bc9
+%define sha1    postgresql=aacdb4fe70ed6de1b2f3ccbbc242e365c8da989b
 
 # Common libraries needed
 BuildRequires:  diffutils
@@ -25,6 +25,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  tar
 BuildRequires:  tzdata
 BuildRequires:  zlib-devel
+BuildRequires:  lz4-devel
 Requires:       krb5
 Requires:       libedit
 Requires:       libxml2
@@ -33,7 +34,7 @@ Requires:       openssl
 Requires:       readline
 Requires:       tzdata
 Requires:       zlib
-
+Requires:       lz4
 Requires:   %{name}-libs = %{version}-%{release}
 
 %description
@@ -68,7 +69,8 @@ sed -i '/DEFAULT_PGSOCKET_DIR/s@/tmp@/run/postgresql@' src/include/pg_config_man
     --enable-thread-safety \
     --with-ldap \
     --with-libxml \
-    --with-openssl \
+    --with-ssl=openssl \
+    --with-lz4 \
     --with-gssapi \
     --with-libedit-preferred \
     --with-readline \
@@ -103,6 +105,7 @@ rm -rf %{buildroot}/*
 %files
 %defattr(-,root,root)
 %{_bindir}/initdb
+%{_bindir}/pg_amcheck
 %{_bindir}/oid2name
 %{_bindir}/pg_archivecleanup
 %{_bindir}/pg_basebackup
@@ -114,7 +117,6 @@ rm -rf %{buildroot}/*
 %{_bindir}/pg_resetwal
 %{_bindir}/pg_resetxlog
 %{_bindir}/pg_rewind
-%{_bindir}/pg_standby
 %{_bindir}/pg_test_fsync
 %{_bindir}/pg_test_timing
 %{_bindir}/pg_upgrade
@@ -169,6 +171,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Mon Nov 29 2021 Tapas Kundu <tkundu@vmware.com> 14.1-1
+-   Upgraded to version 14.1.
+-   Add support for LZ4
 *   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 13.5-2
 -   Release bump up to use libxml2 2.9.12-1.
 *   Mon Nov 15 2021 Michael Paquier <mpaquier@vmware.com> 13.5-1
