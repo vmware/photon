@@ -1,9 +1,10 @@
 %define debug_package %{nil}
+%global maj_ver vim82
 
 Summary:        Text editor
 Name:           vim
 Version:        8.2.3428
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -12,11 +13,12 @@ Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    %{name}=4711feb7d73d6c4ca159e6f8c7d275e5449e15aa
+Source1:        vimrc
 
 BuildRequires:  ncurses-devel
 
 %description
-The Vim package contains a powerful text editor.
+The VIM package contains a powerful text editor.
 
 %package    extra
 Summary:    Extra files for Vim text editor
@@ -39,36 +41,9 @@ make VERBOSE=1 %{?_smp_mflags}
 %install
 # make doesn't support _smp_mflags
 make DESTDIR=%{buildroot} install
-ln -sv vim %{buildroot}%{_bindir}/vi
-install -vdm 755 %{buildroot}/etc
-cat > %{buildroot}/etc/vimrc << "EOF"
-" Begin /etc/vimrc
-
-set shell=/bin/bash
-set nocompatible
-set backspace=2
-set ruler
-syntax on
-set tags=./tags;/
-color desert
-if (&term == "iterm") || (&term == "putty")
-  set background=dark
-endif
-" Binds
-nmap <F2> :w<CR>
-imap <F2> <Esc>:w<CR>
-nmap <F10> :q!<CR>
-nmap <Esc><Esc> :q<CR>
-" Use 4 space characters instead of tab for python files
-au BufEnter,BufNew *.py set tabstop=4 shiftwidth=4 expandtab
-" Move the swap file location to protect against CVE-2017-1000382
-" More information at http://security.cucumberlinux.com/security/details.php?id=120
-if ! isdirectory("~/.vim/swap/")
-        call system('install -d -m 700 ~/.vim/swap')
-endif
-set directory=~/.vim/swap//
-" End /etc/vimrc
-EOF
+ln -sfv vim %{buildroot}%{_bindir}/vi
+install -vdm 755 %{buildroot}%{_sysconfdir}
+cp %{SOURCE1} %{buildroot}%{_sysconfdir}/vimrc
 
 %check
 sed -i '/source test_recover.vim/d' src/testdir/test_alot.vim
@@ -123,9 +98,9 @@ fi
 %{_datarootdir}/vim/vim*/scripts.vim
 %{_datarootdir}/vim/vim*/spell/*
 %{_datarootdir}/vim/vim*/syntax/*
-%exclude %{_datarootdir}/vim/vim82/syntax/nosyntax.vim
+%exclude %{_datarootdir}/vim/%{maj_ver}/syntax/nosyntax.vim
 %exclude %{_datarootdir}/vim/vim*/syntax/syntax.vim
-%exclude %{_datarootdir}/vim/vim82/autoload/dist/ft.vim
+%exclude %{_datarootdir}/vim/%{maj_ver}/autoload/dist/ft.vim
 %{_datarootdir}/vim/vim*/tools/*
 %{_datarootdir}/vim/vim*/tutor/*
 %{_datarootdir}/vim/vim*/lang/*.vim
@@ -174,15 +149,15 @@ fi
 
 %files
 %defattr(-,root,root)
-%config(noreplace) /etc/vimrc
+%config(noreplace) %{_sysconfdir}/vimrc
 %{_datarootdir}/vim/vim*/syntax/syntax.vim
 %{_datarootdir}/vim/vim*/rgb.txt
 %{_datarootdir}/vim/vim*/colors/desert.vim
 %{_datarootdir}/vim/vim*/defaults.vim
 %{_datarootdir}/vim/vim*/filetype.vim
-%{_datarootdir}/vim/vim82/syntax/nosyntax.vim
-%{_datarootdir}/vim/vim82/syntax/syntax.vim
-%{_datarootdir}/vim/vim82/autoload/dist/ft.vim
+%{_datarootdir}/vim/%{maj_ver}/syntax/nosyntax.vim
+%{_datarootdir}/vim/%{maj_ver}/syntax/syntax.vim
+%{_datarootdir}/vim/%{maj_ver}/autoload/dist/ft.vim
 %{_bindir}/ex
 %{_bindir}/vi
 %{_bindir}/view
@@ -192,6 +167,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Tue Nov 30 2021 Shreenidhi Shedi <sshedi@vmware.com> 8.2.3428-2
+- Move vimrc to source file and add 'set mouse-=a' to /etc/vimrc
 * Tue Oct 05 2021 Tapas Kundu <tkundu@vmware.com> 8.2.3428-1
 - Update to 8.2.3428 to fix CVE-2021-3796
 * Thu Sep 23 2021 Dweep Advani <davani@vmware.com> 8.2.3408-1
