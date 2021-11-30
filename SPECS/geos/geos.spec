@@ -22,7 +22,7 @@ Requires:	%{name} = %{version}-%{release}
 It contains the libraries and header files
 
 %prep
-%setup -q
+%autosetup -p1
 mkdir build
 
 %build
@@ -37,7 +37,9 @@ pushd build
 popd
 
 %check
-make %{?_smp_mflags} check
+pushd build
+        make %{?_smp_mflags} check
+popd
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
