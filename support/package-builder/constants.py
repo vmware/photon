@@ -327,7 +327,8 @@ class constants(object):
         "/bin/cp":"coreutils",
         "/bin/rm":"coreutils",
         "/bin/mv":"coreutils",
-        "/sbin/ldconfig":"glibc"
+        "/sbin/ldconfig":"glibc",
+        "/usr/bin/containerd-shim-runc-v2":"containerd-extras"
     }
 
     @staticmethod
