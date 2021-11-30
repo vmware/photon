@@ -320,7 +320,8 @@ class constants(object):
         "/usr/sbin/useradd":"shadow",
         "/usr/sbin/groupadd":"shadow",
         "/usr/bin/which":"which",
-        "/bin/sed":"sed"
+        "/bin/sed":"sed",
+        "/usr/bin/containerd-shim-runc-v2":"containerd-extras"
     }
 
     @staticmethod
