@@ -1,7 +1,7 @@
 Summary:	advanced key-value store
 Name:		redis
 Version:	6.0.16
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	BSD
 URL:		http://redis.io/
 Group:		Applications/Databases
@@ -81,6 +81,8 @@ exit 0
 %config(noreplace) %attr(0640, %{name}, %{name}) %{_sysconfdir}/redis.conf
 
 %changelog
+* Wed Dec 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.0.16-2
+- Bump up to fix downgrading issue
 * Thu Oct 21 2021 Nitesh Kumar <kunitesh@vmware.com> 6.0.16-1
 - Upgrade to v6.0.16 to fix following CVE's:
 - 2021-32672, 2021-41099, 2021-32762, 2021-32687
