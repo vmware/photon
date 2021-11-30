@@ -1,11 +1,11 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
-Version:        7.5.0
-Release:        2%{?dist}
+Version:        7.10.0
+Release:        1%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
-%define sha1    libvirt=52f7a020ba354e478630cff0e253b32556d70cf3
+%define sha1    libvirt=fcaf7b763bf6e930d8b0a131b32752ebc2b8af9f
 Group:          Virtualization/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -140,6 +140,7 @@ CONFIGURE_OPTS=(
     -Dstorage_fs=enabled \
     -Dyajl=disabled \
     -Dudev=disabled \
+    -Dwireshark_dissector=disabled \
     )
 
 %meson "${CONFIGURE_OPTS[@]}"
@@ -169,7 +170,6 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/libvirt/storage-file/libvirt_storage_file_fs.so
 %{_libdir}/sysctl.d/60-libvirtd.conf
 %{_libdir}/systemd/system/*
-%{_libdir}/wireshark/plugins/3.4/epan/libvirt.so
 
 %{_libexecdir}/libvirt*
 %{_libexecdir}/virt-login-shell-helper
@@ -194,6 +194,8 @@ find %{buildroot} -name '*.la' -delete
 %{_datadir}/libvirt/test-screenshot.png
 
 %changelog
+* Thu Dec 02 2021 Susant Sahani <ssahani@vmware.com> 7.10.0-1
+- Version Bump
 * Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 7.5.0-2
 - Release bump up to use libxml2 2.9.12-1.
 * Wed Jul 14 2021 Susant Sahani <ssahani@vmware.com> 7.5.0-1
