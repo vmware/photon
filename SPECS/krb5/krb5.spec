@@ -1,14 +1,17 @@
 Summary:        The Kerberos newtork authentication system
 Name:           krb5
 Version:        1.17
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://web.mit.edu/kerberos/
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/1.16/%{name}-%{version}.tar.gz
+Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/1.17/%{name}-%{version}.tar.gz
 %define sha1    krb5=0c404b081db9c996c581f636ce450ee28778f338
+Patch0:         krb5-CVE-2020-28196.patch
+Patch1:         krb5-CVE-2021-36222.patch
+Patch2:         krb5-CVE-2021-37750.patch
 Requires:       openssl
 Requires:       e2fsprogs-libs
 BuildRequires:  openssl-devel
@@ -35,7 +38,9 @@ These are the additional language files of krb5.
 
 %prep
 %setup -q
-
+%patch0 -p1
+%patch1 -p1
+%patch2 -p1
 %build
 
 cd src &&
@@ -46,10 +51,7 @@ sed -e 's@\^u}@^u cols 300}@' \
     -i tests/dejagnu/config/default.exp &&
 CPPFLAGS="-D_GNU_SOURCE" \
 autoconf &&
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
+%configure \
     --sysconfdir=/etc \
         --localstatedir=/var/lib \
         --with-system-et         \
@@ -118,6 +120,8 @@ rm -rf %{buildroot}/*
 %{_datarootdir}/locale/*
 
 %changelog
+*   Tue Nov 30 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 1.17-2
+-   Fix for CVE-2020-28196/CVE-2021-36222/CVE-2021-37750
 *   Tue May 28 2019 Sujay G <gsujay@vmware.com> 1.17-1
 -   Update version to 1.17 to address CVE-2018-202017 & CVE-2018-5729
 *   Mon Aug 13 2018 Dweep Advani <dadvani@vmware.com> 1.16-2
