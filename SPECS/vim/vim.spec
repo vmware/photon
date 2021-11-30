@@ -4,7 +4,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.2.3428
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -17,6 +17,8 @@ Source1:        vimrc
 
 Patch0:         vim-CVE-2021-3872.patch
 Patch1:         vim-CVE-2021-3875.patch
+Patch2:         vim-CVE-2021-3973.patch
+Patch3:         vim-CVE-2021-3974.patch
 
 BuildRequires:  ncurses-devel
 
@@ -170,6 +172,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Wed Dec 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.3428-4
+- Fix CVE-2021-3973, CVE-2021-3974
 * Tue Nov 30 2021 Shreenidhi Shedi <sshedi@vmware.com> 8.2.3428-3
 - Enable skip_defaults_vim in vimrc
 * Mon Oct 25 2021 Dweep Advani <dadvani@vmware.com> 8.2.3428-2
