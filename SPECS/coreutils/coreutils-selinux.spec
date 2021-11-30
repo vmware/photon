@@ -1,7 +1,7 @@
 Summary:        Basic system utilities (SELinux enabled)
 Name:           coreutils-selinux
 Version:        8.32
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3
 URL:            http://www.gnu.org/software/coreutils
 Group:          System Environment/Base
@@ -29,6 +29,7 @@ Obsoletes:      coreutils
 SELinux enabled coreutils package.
 
 %prep
+# Using autosetup is not feasible
 %setup -qn coreutils-%{version}
 %patch0 -p1
 %if %{with_check}
@@ -49,7 +50,7 @@ export FORCE_UNSAFE_CONFIGURE=1
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 install -vdm 755 %{buildroot}/bin
 install -vdm 755 %{buildroot}%{_sbindir}
 install -vdm 755 %{buildroot}%{_mandir}/man8
@@ -74,7 +75,7 @@ sed -i 's/)\" = \"10x0/| head -n 1)\" = \"10x0/g' tests/split/r-chunk.sh
 sed  -i '/mb.sh/d' Makefile
 chown -Rv nobody .
 env PATH="$PATH" NON_ROOT_USERNAME=nobody make -k check-root
-make NON_ROOT_USERNAME=nobody check
+make NON_ROOT_USERNAME=nobody check %{?_smp_mflags}
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -89,6 +90,8 @@ make NON_ROOT_USERNAME=nobody check
 %{_mandir}/*/*
 
 %changelog
+* Tue Nov 30 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.32-3
+- Increment version for openssl 3.0.0 compatibility
 * Thu Aug 13 2020 Shreenidhi Shedi <sshedi@vmware.com> 8.32-2
 - Fixed aarch64 build issue
 * Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 8.32-1

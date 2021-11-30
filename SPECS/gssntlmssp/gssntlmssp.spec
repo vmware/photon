@@ -1,7 +1,7 @@
 Summary:        GSSAPI NTLMSSP Mechanism
 Name:           gssntlmssp
 Version:        1.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv3+
@@ -50,7 +50,7 @@ License: LGPLv3+
 Adds a header file with definition for custom GSSAPI extensions for NTLMSSP
 
 %prep
-%setup -q
+%autosetup
 
 %build
 autoreconf -fiv
@@ -70,7 +70,7 @@ install -pm644 examples/mech.ntlmssp %{buildroot}%{_sysconfdir}/gss/mech.d/ntlms
 %{find_lang} %{name}
 
 %check
-make test_gssntlmssp
+make test_gssntlmssp %{?_smp_mflags}
 
 %files -f %{name}.lang
 %config(noreplace) %{_sysconfdir}/gss/mech.d/ntlmssp.conf
@@ -81,5 +81,7 @@ make test_gssntlmssp
 %{_includedir}/gssapi/gssapi_ntlmssp.h
 
 %changelog
+*   Tue Nov 30 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.0.0-2
+-   Increment for openssl 3.0.0 compatibility
 *   Thu May 06 2021 Shreyas B. <shreyasb@vmware.com> 1.0.0-1
 -   Initial version of gssntlmssp spec.

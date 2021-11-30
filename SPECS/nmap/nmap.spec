@@ -1,7 +1,7 @@
 Summary:        Nmap (“Network Mapper”) is a utility for network discovery and security auditing
 Name:           nmap
 Version:        7.91
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Nmap
 URL:            http://nmap.org/
 Source0:        https://nmap.org/dist/%{name}-%{version}.tar.bz2
@@ -64,7 +64,7 @@ uses.
             --enable-dbus
 
 %install
-make DESTDIR=%{buildroot} STRIP=true install
+make DESTDIR=%{buildroot} STRIP=true install %{?_smp_mflags}
 
 rm -f %{buildroot}%{_datadir}/ncat/ca-bundle.crt
 rmdir %{buildroot}%{_datadir}/ncat
@@ -85,5 +85,7 @@ rm -rf %{buildroot}%{_datadir}/man/
 %{_bindir}/ncat
 
 %changelog
+* Tue Nov 30 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.91-2
+- Increment for openssl 3.0.0 compatibility
 * Wed Apr 28 2021 Susant Sahani <ssahani@vmware.com> 7.91-1
 - Initial rpm release

@@ -3,7 +3,7 @@
 Summary:        Service identity verification for pyOpenSSL.
 Name:           python3-service_identity
 Version:        18.1.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -43,7 +43,7 @@ In the simplest case, this means host name verification. However, service_identi
 
 
 %prep
-%setup -q -n service_identity-%{version}
+%autosetup -p1 -n service_identity-%{version}
 tar xf %{SOURCE1} --no-same-owner
 
 %build
@@ -65,6 +65,8 @@ PYTHONPATH="%{buildroot}%{python3_sitelib}" py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Nov 30 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 18.1.0-3
+-   Increment for openssl 3.0.0 compatibility
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 18.1.0-2
 -   Mass removal python2
 *   Mon Jun 01 2020 Tapas Kundu <tkundu@vmware.com> 18.1.0-1
