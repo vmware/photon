@@ -1,7 +1,7 @@
 Summary:        Utility to setup encrypted disks
 Name:           cryptsetup
 Version:        2.3.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+ and LGPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -23,6 +23,7 @@ Requires:       libpwquality
 Requires:       util-linux-libs
 Requires:       openssl
 Requires:       device-mapper-libs
+Requires:       device-mapper
 
 %description
 Cryptsetup is a utility used to conveniently set up disk encryption based
@@ -71,7 +72,7 @@ Requires:       %{name}-libs = %{version}-%{release}
 Utility to perform offline reencryption of LUKS enabled disks.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure --enable-fips --enable-pwquality --enable-libargon2
@@ -130,5 +131,8 @@ rm -rf %{buildroot}%{_libdir}/*.la
 %ghost %attr(700, -, -) %dir /run/cryptsetup
 
 %changelog
+*   Tue Nov 30 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.3.5-2
+-   bump up version for openssl 3.0.0 compatibility
+-   Add device-mapper package dependency
 *   Thu Apr 8 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 2.3.5-1
 -   Initial package
