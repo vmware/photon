@@ -1,0 +1,277 @@
+From abc4ea7f1345398261295345fd9b30243e4f4f8e Mon Sep 17 00:00:00 2001
+From: Jason Gunthorpe <jgg@mellanox.com>
+Date: Tue, 18 Feb 2020 15:45:38 -0400
+Subject: [PATCH] RDMA/ucma: Put a lock around every call to the rdma_cm layer
+
+commit 7c11910783a1ea17e88777552ef146cace607b3c upstream.
+
+The rdma_cm must be used single threaded.
+
+This appears to be a bug in the design, as it does have lots of locking
+that seems like it should allow concurrency. However, when it is all said
+and done every single place that uses the cma_exch() scheme is broken, and
+all the unlocked reads from the ucma of the cm_id data are wrong too.
+
+syzkaller has been finding endless bugs related to this.
+
+Fixing this in any elegant way is some enormous amount of work. Take a
+very big hammer and put a mutex around everything to do with the
+ucma_context at the top of every syscall.
+
+Fixes: 75216638572f ("RDMA/cma: Export rdma cm interface to userspace")
+Link: https://lore.kernel.org/r/20200218210432.GA31966@ziepe.ca
+Reported-by: syzbot+adb15cf8c2798e4e0db4@syzkaller.appspotmail.com
+Reported-by: syzbot+e5579222b6a3edd96522@syzkaller.appspotmail.com
+Reported-by: syzbot+4b628fcc748474003457@syzkaller.appspotmail.com
+Reported-by: syzbot+29ee8f76017ce6cf03da@syzkaller.appspotmail.com
+Reported-by: syzbot+6956235342b7317ec564@syzkaller.appspotmail.com
+Reported-by: syzbot+b358909d8d01556b790b@syzkaller.appspotmail.com
+Reported-by: syzbot+6b46b135602a3f3ac99e@syzkaller.appspotmail.com
+Reported-by: syzbot+8458d13b13562abf6b77@syzkaller.appspotmail.com
+Reported-by: syzbot+bd034f3fdc0402e942ed@syzkaller.appspotmail.com
+Reported-by: syzbot+c92378b32760a4eef756@syzkaller.appspotmail.com
+Reported-by: syzbot+68b44a1597636e0b342c@syzkaller.appspotmail.com
+Signed-off-by: Jason Gunthorpe <jgg@mellanox.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/infiniband/core/ucma.c | 46 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 45 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/infiniband/core/ucma.c b/drivers/infiniband/core/ucma.c
+index bb0d728f4b76..f1a8fe57a440 100644
+--- a/drivers/infiniband/core/ucma.c
++++ b/drivers/infiniband/core/ucma.c
+@@ -89,6 +89,7 @@ struct ucma_context {
+
+ 	struct ucma_file	*file;
+ 	struct rdma_cm_id	*cm_id;
++	struct mutex		mutex;
+ 	u64			uid;
+
+ 	struct list_head	list;
+@@ -198,6 +199,7 @@ static struct ucma_context *ucma_alloc_ctx(struct ucma_file *file)
+ 	init_completion(&ctx->comp);
+ 	INIT_LIST_HEAD(&ctx->mc_list);
+ 	ctx->file = file;
++	mutex_init(&ctx->mutex);
+
+ 	mutex_lock(&mut);
+ 	ctx->id = idr_alloc(&ctx_idr, ctx, 0, 0, GFP_KERNEL);
+@@ -572,6 +574,7 @@ static int ucma_free_ctx(struct ucma_context *ctx)
+ 	}
+
+ 	events_reported = ctx->events_reported;
++	mutex_destroy(&ctx->mutex);
+ 	kfree(ctx);
+ 	return events_reported;
+ }
+@@ -641,7 +644,10 @@ static ssize_t ucma_bind_ip(struct ucma_file *file, const char __user *inbuf,
+ 	if (IS_ERR(ctx))
+ 		return PTR_ERR(ctx);
+
++	mutex_lock(&ctx->mutex);
+ 	ret = rdma_bind_addr(ctx->cm_id, (struct sockaddr *) &cmd.addr);
++	mutex_unlock(&ctx->mutex);
++
+ 	ucma_put_ctx(ctx);
+ 	return ret;
+ }
+@@ -664,7 +670,9 @@ static ssize_t ucma_bind(struct ucma_file *file, const char __user *inbuf,
+ 	if (IS_ERR(ctx))
+ 		return PTR_ERR(ctx);
+
++	mutex_lock(&ctx->mutex);
+ 	ret = rdma_bind_addr(ctx->cm_id, (struct sockaddr *) &cmd.addr);
++	mutex_unlock(&ctx->mutex);
+ 	ucma_put_ctx(ctx);
+ 	return ret;
+ }
+@@ -688,8 +696,10 @@ static ssize_t ucma_resolve_ip(struct ucma_file *file,
+ 	if (IS_ERR(ctx))
+ 		return PTR_ERR(ctx);
+
++	mutex_lock(&ctx->mutex);
+ 	ret = rdma_resolve_addr(ctx->cm_id, (struct sockaddr *) &cmd.src_addr,
+ 				(struct sockaddr *) &cmd.dst_addr, cmd.timeout_ms);
++	mutex_unlock(&ctx->mutex);
+ 	ucma_put_ctx(ctx);
+ 	return ret;
+ }
+@@ -714,8 +724,10 @@ static ssize_t ucma_resolve_addr(struct ucma_file *file,
+ 	if (IS_ERR(ctx))
+ 		return PTR_ERR(ctx);
+
++	mutex_lock(&ctx->mutex);
+ 	ret = rdma_resolve_addr(ctx->cm_id, (struct sockaddr *) &cmd.src_addr,
+ 				(struct sockaddr *) &cmd.dst_addr, cmd.timeout_ms);
++	mutex_unlock(&ctx->mutex);
+ 	ucma_put_ctx(ctx);
+ 	return ret;
+ }
+@@ -735,7 +747,9 @@ static ssize_t ucma_resolve_route(struct ucma_file *file,
+ 	if (IS_ERR(ctx))
+ 		return PTR_ERR(ctx);
+
++	mutex_lock(&ctx->mutex);
+ 	ret = rdma_resolve_route(ctx->cm_id, cmd.timeout_ms);
++	mutex_unlock(&ctx->mutex);
+ 	ucma_put_ctx(ctx);
+ 	return ret;
+ }
+@@ -824,6 +838,7 @@ static ssize_t ucma_query_route(struct ucma_file *file,
+ 	if (IS_ERR(ctx))
+ 		return PTR_ERR(ctx);
+
++	mutex_lock(&ctx->mutex);
+ 	memset(&resp, 0, sizeof resp);
+ 	addr = (struct sockaddr *) &ctx->cm_id->route.addr.src_addr;
+ 	memcpy(&resp.src_addr, addr, addr->sa_family == AF_INET ?
+@@ -847,6 +862,7 @@ static ssize_t ucma_query_route(struct ucma_file *file,
+ 		ucma_copy_iw_route(&resp, &ctx->cm_id->route);
+
+ out:
++	mutex_unlock(&ctx->mutex);
+ 	if (copy_to_user((void __user *)(unsigned long)cmd.response,
+ 			 &resp, sizeof(resp)))
+ 		ret = -EFAULT;
+@@ -990,6 +1006,7 @@ static ssize_t ucma_query(struct ucma_file *file,
+ 	if (IS_ERR(ctx))
+ 		return PTR_ERR(ctx);
+
++	mutex_lock(&ctx->mutex);
+ 	switch (cmd.option) {
+ 	case RDMA_USER_CM_QUERY_ADDR:
+ 		ret = ucma_query_addr(ctx, response, out_len);
+@@ -1004,6 +1021,7 @@ static ssize_t ucma_query(struct ucma_file *file,
+ 		ret = -ENOSYS;
+ 		break;
+ 	}
++	mutex_unlock(&ctx->mutex);
+
+ 	ucma_put_ctx(ctx);
+ 	return ret;
+@@ -1044,7 +1062,9 @@ static ssize_t ucma_connect(struct ucma_file *file, const char __user *inbuf,
+ 		return PTR_ERR(ctx);
+
+ 	ucma_copy_conn_param(ctx->cm_id, &conn_param, &cmd.conn_param);
++	mutex_lock(&ctx->mutex);
+ 	ret = rdma_connect(ctx->cm_id, &conn_param);
++	mutex_unlock(&ctx->mutex);
+ 	ucma_put_ctx(ctx);
+ 	return ret;
+ }
+@@ -1065,7 +1085,9 @@ static ssize_t ucma_listen(struct ucma_file *file, const char __user *inbuf,
+
+ 	ctx->backlog = cmd.backlog > 0 && cmd.backlog < max_backlog ?
+ 		       cmd.backlog : max_backlog;
++	mutex_lock(&ctx->mutex);
+ 	ret = rdma_listen(ctx->cm_id, ctx->backlog);
++	mutex_unlock(&ctx->mutex);
+ 	ucma_put_ctx(ctx);
+ 	return ret;
+ }
+@@ -1088,12 +1110,17 @@ static ssize_t ucma_accept(struct ucma_file *file, const char __user *inbuf,
+ 	if (cmd.conn_param.valid) {
+ 		ucma_copy_conn_param(ctx->cm_id, &conn_param, &cmd.conn_param);
+ 		mutex_lock(&file->mut);
++		mutex_lock(&ctx->mutex);
+ 		ret = rdma_accept(ctx->cm_id, &conn_param);
++		mutex_unlock(&ctx->mutex);
+ 		if (!ret)
+ 			ctx->uid = cmd.uid;
+ 		mutex_unlock(&file->mut);
+-	} else
++	} else {
++		mutex_lock(&ctx->mutex);
+ 		ret = rdma_accept(ctx->cm_id, NULL);
++		mutex_unlock(&ctx->mutex);
++	}
+
+ 	ucma_put_ctx(ctx);
+ 	return ret;
+@@ -1113,7 +1140,9 @@ static ssize_t ucma_reject(struct ucma_file *file, const char __user *inbuf,
+ 	if (IS_ERR(ctx))
+ 		return PTR_ERR(ctx);
+
++	mutex_lock(&ctx->mutex);
+ 	ret = rdma_reject(ctx->cm_id, cmd.private_data, cmd.private_data_len);
++	mutex_unlock(&ctx->mutex);
+ 	ucma_put_ctx(ctx);
+ 	return ret;
+ }
+@@ -1132,7 +1161,9 @@ static ssize_t ucma_disconnect(struct ucma_file *file, const char __user *inbuf,
+ 	if (IS_ERR(ctx))
+ 		return PTR_ERR(ctx);
+
++	mutex_lock(&ctx->mutex);
+ 	ret = rdma_disconnect(ctx->cm_id);
++	mutex_unlock(&ctx->mutex);
+ 	ucma_put_ctx(ctx);
+ 	return ret;
+ }
+@@ -1168,7 +1199,9 @@ static ssize_t ucma_init_qp_attr(struct ucma_file *file,
+ 	resp.qp_attr_mask = 0;
+ 	memset(&qp_attr, 0, sizeof qp_attr);
+ 	qp_attr.qp_state = cmd.qp_state;
++	mutex_lock(&ctx->mutex);
+ 	ret = rdma_init_qp_attr(ctx->cm_id, &qp_attr, &resp.qp_attr_mask);
++	mutex_unlock(&ctx->mutex);
+ 	if (ret)
+ 		goto out;
+
+@@ -1241,7 +1274,9 @@ static int ucma_set_ib_path(struct ucma_context *ctx,
+ 	memset(&sa_path, 0, sizeof(sa_path));
+
+ 	ib_sa_unpack_path(path_data->path_rec, &sa_path);
++	mutex_lock(&ctx->mutex);
+ 	ret = rdma_set_ib_paths(ctx->cm_id, &sa_path, 1);
++	mutex_unlock(&ctx->mutex);
+ 	if (ret)
+ 		return ret;
+
+@@ -1273,7 +1308,9 @@ static int ucma_set_option_level(struct ucma_context *ctx, int level,
+
+ 	switch (level) {
+ 	case RDMA_OPTION_ID:
++		mutex_lock(&ctx->mutex);
+ 		ret = ucma_set_option_id(ctx, optname, optval, optlen);
++		mutex_unlock(&ctx->mutex);
+ 		break;
+ 	case RDMA_OPTION_IB:
+ 		ret = ucma_set_option_ib(ctx, optname, optval, optlen);
+@@ -1333,8 +1370,10 @@ static ssize_t ucma_notify(struct ucma_file *file, const char __user *inbuf,
+ 	if (IS_ERR(ctx))
+ 		return PTR_ERR(ctx);
+
++	mutex_lock(&ctx->mutex);
+ 	if (ctx->cm_id->device)
+ 		ret = rdma_notify(ctx->cm_id, (enum ib_event_type)cmd.event);
++	mutex_unlock(&ctx->mutex);
+
+ 	ucma_put_ctx(ctx);
+ 	return ret;
+@@ -1377,8 +1416,10 @@ static ssize_t ucma_process_join(struct ucma_file *file,
+ 	mc->join_state = join_state;
+ 	mc->uid = cmd->uid;
+ 	memcpy(&mc->addr, addr, cmd->addr_size);
++	mutex_lock(&ctx->mutex);
+ 	ret = rdma_join_multicast(ctx->cm_id, (struct sockaddr *)&mc->addr,
+ 				  join_state, mc);
++	mutex_unlock(&ctx->mutex);
+ 	if (ret)
+ 		goto err2;
+
+@@ -1482,7 +1523,10 @@ static ssize_t ucma_leave_multicast(struct ucma_file *file,
+ 		goto out;
+ 	}
+
++	mutex_lock(&mc->ctx->mutex);
+ 	rdma_leave_multicast(mc->ctx->cm_id, (struct sockaddr *) &mc->addr);
++	mutex_unlock(&mc->ctx->mutex);
++
+ 	mutex_lock(&mc->ctx->file->mut);
+ 	ucma_cleanup_mc_events(mc);
+ 	list_del(&mc->list);
+--
+2.17.1
+

@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.290
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -164,6 +164,11 @@ Patch115:       0003-fuse-fix-bad-inode.patch
 
 #fix for CVE-2021-28950
 Patch116:       0001-fuse-fix-live-lock-in-fuse_iget.patch
+
+#Fix for CVE-2020-36385
+Patch117:       0001-RDMA-ucma-Put-a-lock-around-every-call-to-the-rdma_c.patch
+Patch118:       0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
+Patch119:       0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -340,6 +345,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch114 -p1
 %patch115 -p1
 %patch116 -p1
+%patch117 -p1
+%patch118 -p1
+%patch119 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -510,6 +518,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Nov 29 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.290-2
+-   Fix for CVE-2020-36385
 *   Wed Nov 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.290-1
 -   Update to version 4.9.290
 *   Wed Nov 10 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.288-2

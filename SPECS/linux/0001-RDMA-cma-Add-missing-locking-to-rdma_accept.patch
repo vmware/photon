@@ -1,0 +1,132 @@
+From d114c6feedfe0600c19b9f9479a4026354d1f7fd Mon Sep 17 00:00:00 2001
+From: Jason Gunthorpe <jgg@nvidia.com>
+Date: Tue, 18 Aug 2020 15:05:18 +0300
+Subject: [PATCH] RDMA/cma: Add missing locking to rdma_accept()
+
+In almost all cases rdma_accept() is called under the handler_mutex by
+ULPs from their handler callbacks. The one exception was ucma which did
+not get the handler_mutex.
+
+To improve the understand-ability of the locking scheme obtain the mutex
+for ucma as well.
+
+This improves how ucma works by allowing it to directly use handler_mutex
+for some of its internal locking against the handler callbacks intead of
+the global file->mut lock.
+
+There does not seem to be a serious bug here, other than a DISCONNECT event
+can be delivered concurrently with accept succeeding.
+
+Link: https://lore.kernel.org/r/20200818120526.702120-7-leon@kernel.org
+Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/infiniband/core/cma.c  | 26 +++++++++++++++++++++++---
+ drivers/infiniband/core/ucma.c | 12 ++++++++----
+ include/rdma/rdma_cm.h         |  5 +++++
+ 3 files changed, 36 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/infiniband/core/cma.c b/drivers/infiniband/core/cma.c
+index 149d210c68ab..95cb67cffca1 100644
+--- a/drivers/infiniband/core/cma.c
++++ b/drivers/infiniband/core/cma.c
+@@ -3601,14 +3601,15 @@ static int cma_send_sidr_rep(struct rdma_id_private *id_priv,
+
+ int rdma_accept(struct rdma_cm_id *id, struct rdma_conn_param *conn_param)
+ {
+-	struct rdma_id_private *id_priv;
++	struct rdma_id_private *id_priv =
++		container_of(id, struct rdma_id_private, id);
+ 	int ret;
+
+-	id_priv = container_of(id, struct rdma_id_private, id);
++	lockdep_assert_held(&id_priv->handler_mutex);
+
+ 	id_priv->owner = task_pid_nr(current);
+
+-	if (!cma_comp(id_priv, RDMA_CM_CONNECT))
++	if (READ_ONCE(id_priv->state) != RDMA_CM_CONNECT)
+ 		return -EINVAL;
+
+ 	if (!id->qp && conn_param) {
+@@ -3648,6 +3649,25 @@ int rdma_accept(struct rdma_cm_id *id, struct rdma_conn_param *conn_param)
+ }
+ EXPORT_SYMBOL(rdma_accept);
+
++void rdma_lock_handler(struct rdma_cm_id *id)
++{
++	struct rdma_id_private *id_priv =
++		container_of(id, struct rdma_id_private, id);
++
++	mutex_lock(&id_priv->handler_mutex);
++}
++EXPORT_SYMBOL(rdma_lock_handler);
++
++void rdma_unlock_handler(struct rdma_cm_id *id)
++{
++	struct rdma_id_private *id_priv =
++		container_of(id, struct rdma_id_private, id);
++
++	mutex_unlock(&id_priv->handler_mutex);
++}
++EXPORT_SYMBOL(rdma_unlock_handler);
++
++
+ int rdma_notify(struct rdma_cm_id *id, enum ib_event_type event)
+ {
+ 	struct rdma_id_private *id_priv;
+diff --git a/drivers/infiniband/core/ucma.c b/drivers/infiniband/core/ucma.c
+index f1a8fe57a440..2459b7831999 100644
+--- a/drivers/infiniband/core/ucma.c
++++ b/drivers/infiniband/core/ucma.c
+@@ -1109,16 +1109,20 @@ static ssize_t ucma_accept(struct ucma_file *file, const char __user *inbuf,
+
+ 	if (cmd.conn_param.valid) {
+ 		ucma_copy_conn_param(ctx->cm_id, &conn_param, &cmd.conn_param);
+-		mutex_lock(&file->mut);
+ 		mutex_lock(&ctx->mutex);
++		rdma_lock_handler(ctx->cm_id);
+ 		ret = rdma_accept(ctx->cm_id, &conn_param);
+-		mutex_unlock(&ctx->mutex);
+-		if (!ret)
++		if (!ret) {
++			/* The uid must be set atomically with the handler */
+ 			ctx->uid = cmd.uid;
+-		mutex_unlock(&file->mut);
++		}
++		rdma_unlock_handler(ctx->cm_id);
++		mutex_unlock(&ctx->mutex);
+ 	} else {
+ 		mutex_lock(&ctx->mutex);
++		rdma_lock_handler(ctx->cm_id);
+ 		ret = rdma_accept(ctx->cm_id, NULL);
++		rdma_unlock_handler(ctx->cm_id);
+ 		mutex_unlock(&ctx->mutex);
+ 	}
+
+diff --git a/include/rdma/rdma_cm.h b/include/rdma/rdma_cm.h
+index 81fb1d15e8bb..ff45963c5ac5 100644
+--- a/include/rdma/rdma_cm.h
++++ b/include/rdma/rdma_cm.h
+@@ -275,6 +275,8 @@ int rdma_init_qp_attr(struct rdma_cm_id *id, struct ib_qp_attr *qp_attr,
+  */
+ int rdma_connect(struct rdma_cm_id *id, struct rdma_conn_param *conn_param);
+
++void rdma_lock_handler(struct rdma_cm_id *id);
++void rdma_unlock_handler(struct rdma_cm_id *id);
+ /**
+  * rdma_listen - This function is called by the passive side to
+  *   listen for incoming connection requests.
+@@ -298,6 +300,9 @@ int rdma_listen(struct rdma_cm_id *id, int backlog);
+  * In the case of error, a reject message is sent to the remote side and the
+  * state of the qp associated with the id is modified to error, such that any
+  * previously posted receive buffers would be flushed.
++ *
++ * This function is for use by kernel ULPs and must be called from under the
++ * handler callback.
+  */
+ int rdma_accept(struct rdma_cm_id *id, struct rdma_conn_param *conn_param);
+
+--
+2.17.1
+

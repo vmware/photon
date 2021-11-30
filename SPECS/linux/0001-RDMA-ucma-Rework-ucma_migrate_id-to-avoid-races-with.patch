@@ -1,0 +1,178 @@
+From f5449e74802c1112dea984aec8af7a33c4516af1 Mon Sep 17 00:00:00 2001
+From: Jason Gunthorpe <jgg@nvidia.com>
+Date: Mon, 14 Sep 2020 08:59:56 -0300
+Subject: [PATCH] RDMA/ucma: Rework ucma_migrate_id() to avoid races with
+ destroy
+
+ucma_destroy_id() assumes that all things accessing the ctx will do so via
+the xarray. This assumption violated only in the case the FD is being
+closed, then the ctx is reached via the ctx_list. Normally this is OK
+since ucma_destroy_id() cannot run concurrenty with release(), however
+with ucma_migrate_id() is involved this can violated as the close of the
+2nd FD can run concurrently with destroy on the first:
+
+                CPU0                      CPU1
+        ucma_destroy_id(fda)
+                                  ucma_migrate_id(fda -> fdb)
+                                       ucma_get_ctx()
+        xa_lock()
+         _ucma_find_context()
+         xa_erase()
+        xa_unlock()
+                                       xa_lock()
+                                        ctx->file = new_file
+                                        list_move()
+                                       xa_unlock()
+                                      ucma_put_ctx()
+
+                                   ucma_close(fdb)
+                                      _destroy_id()
+                                      kfree(ctx)
+
+        _destroy_id()
+          wait_for_completion()
+          // boom, ctx was freed
+
+The ctx->file must be modified under the handler and xa_lock, and prior to
+modification the ID must be rechecked that it is still reachable from
+cur_file, ie there is no parallel destroy or migrate.
+
+To make this work remove the double locking and streamline the control
+flow. The double locking was obsoleted by the handler lock now directly
+preventing new uevents from being created, and the ctx_list cannot be read
+while holding fgets on both files. Removing the double locking also
+removes the need to check for the same file.
+
+Fixes: 88314e4dda1e ("RDMA/cma: add support for rdma_migrate_id()")
+Link: https://lore.kernel.org/r/0-v1-05c5a4090305+3a872-ucma_syz_migrate_jgg@nvidia.com
+Reported-and-tested-by: syzbot+cc6fc752b3819e082d0c@syzkaller.appspotmail.com
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+---
+ drivers/infiniband/core/ucma.c | 79 +++++++++++++---------------------
+ 1 file changed, 31 insertions(+), 48 deletions(-)
+
+diff --git a/drivers/infiniband/core/ucma.c b/drivers/infiniband/core/ucma.c
+index bb0d728f4b76..9131dc37f623 100644
+--- a/drivers/infiniband/core/ucma.c
++++ b/drivers/infiniband/core/ucma.c
+@@ -1499,45 +1499,15 @@ static ssize_t ucma_leave_multicast(struct ucma_file *file,
+ 	return ret;
+ }
+
+-static void ucma_lock_files(struct ucma_file *file1, struct ucma_file *file2)
+-{
+-	/* Acquire mutex's based on pointer comparison to prevent deadlock. */
+-	if (file1 < file2) {
+-		mutex_lock(&file1->mut);
+-		mutex_lock_nested(&file2->mut, SINGLE_DEPTH_NESTING);
+-	} else {
+-		mutex_lock(&file2->mut);
+-		mutex_lock_nested(&file1->mut, SINGLE_DEPTH_NESTING);
+-	}
+-}
+-
+-static void ucma_unlock_files(struct ucma_file *file1, struct ucma_file *file2)
+-{
+-	if (file1 < file2) {
+-		mutex_unlock(&file2->mut);
+-		mutex_unlock(&file1->mut);
+-	} else {
+-		mutex_unlock(&file1->mut);
+-		mutex_unlock(&file2->mut);
+-	}
+-}
+-
+-static void ucma_move_events(struct ucma_context *ctx, struct ucma_file *file)
+-{
+-	struct ucma_event *uevent, *tmp;
+-
+-	list_for_each_entry_safe(uevent, tmp, &ctx->file->event_list, list)
+-		if (uevent->ctx == ctx)
+-			list_move_tail(&uevent->list, &file->event_list);
+-}
+-
+ static ssize_t ucma_migrate_id(struct ucma_file *new_file,
+ 			       const char __user *inbuf,
+ 			       int in_len, int out_len)
+ {
+ 	struct rdma_ucm_migrate_id cmd;
+ 	struct rdma_ucm_migrate_resp resp;
++	struct ucma_event *uevent, *tmp;
+ 	struct ucma_context *ctx;
++	LIST_HEAD(event_list);
+ 	struct fd f;
+ 	struct ucma_file *cur_file;
+ 	int ret = 0;
+@@ -1553,40 +1523,53 @@ static ssize_t ucma_migrate_id(struct ucma_file *new_file,
+ 		ret = -EINVAL;
+ 		goto file_put;
+ 	}
++	cur_file = f.file->private_data;
+
+ 	/* Validate current fd and prevent destruction of id. */
+-	ctx = ucma_get_ctx(f.file->private_data, cmd.id);
++	ctx = ucma_get_ctx(cur_file, cmd.id);
+ 	if (IS_ERR(ctx)) {
+ 		ret = PTR_ERR(ctx);
+ 		goto file_put;
+ 	}
+
+-	cur_file = ctx->file;
+-	if (cur_file == new_file) {
+-		resp.events_reported = ctx->events_reported;
+-		goto response;
+-	}
+-
++	rdma_lock_handler(ctx->cm_id);
+ 	/*
+-	 * Migrate events between fd's, maintaining order, and avoiding new
+-	 * events being added before existing events.
++	 * ctx->file can only be changed under the handler & xa_lock. xa_load()
++	 * must be checked again to ensure the ctx hasn't begun destruction
++	 * since the ucma_get_ctx().
+ 	 */
+-	ucma_lock_files(cur_file, new_file);
+ 	mutex_lock(&mut);
+
+-	list_move_tail(&ctx->list, &new_file->ctx_list);
+-	ucma_move_events(ctx, new_file);
++	if (_ucma_find_context(cmd.id, cur_file) != ctx) {
++		mutex_unlock(&mut);
++		ret = -ENOENT;
++		goto err_unlock;
++	}
+ 	ctx->file = new_file;
++	mutex_unlock(&mut);
++
++	mutex_lock(&cur_file->mut);
++	list_del(&ctx->list);
++	/*
++	 * At this point lock_handler() prevents addition of new uevents for
++	 * this ctx.
++	 */
++	list_for_each_entry_safe(uevent, tmp, &cur_file->event_list, list)
++		if (uevent->ctx == ctx)
++			list_move_tail(&uevent->list, &event_list);
+ 	resp.events_reported = ctx->events_reported;
++	mutex_unlock(&cur_file->mut);
+
+-	mutex_unlock(&mut);
+-	ucma_unlock_files(cur_file, new_file);
++	mutex_lock(&new_file->mut);
++	list_add_tail(&ctx->list, &new_file->ctx_list);
++	list_splice_tail(&event_list, &new_file->event_list);
++	mutex_unlock(&new_file->mut);
+
+-response:
+ 	if (copy_to_user((void __user *)(unsigned long)cmd.response,
+ 			 &resp, sizeof(resp)))
+ 		ret = -EFAULT;
+-
++err_unlock:
++	rdma_unlock_handler(ctx->cm_id);
+ 	ucma_put_ctx(ctx);
+ file_put:
+ 	fdput(f);
+--
+2.17.1
+

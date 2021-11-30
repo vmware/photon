@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.290
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -86,21 +86,26 @@ Patch55:        0001-ipv6_sockglue-Fix-a-missing-check-bug-in-ip6_ra_cont.patch
 #Fix for CVE-2019-3900
 Patch57: 0001-vhost-vsock-add-weight-support.patch
 # Fix CVE-2019-18885
-Patch59:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
-Patch60:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
+Patch58:        0001-btrfs-merge-btrfs_find_device-and-find_device.patch
+Patch59:        0002-btrfs-Detect-unbalanced-tree-with-empty-leaf-before-.patch
 #Fix for CVE-2021-33909
-Patch61:        CVE-2021-33909.patch
+Patch60:        CVE-2021-33909.patch
 
 # Fix for CVE-2020-16119
-Patch62:        0001-timer-Prepare-to-change-timer-callback-argument-type.patch
-Patch63:        0002-net-dccp-Convert-timers-to-use-timer_setup.patch
-Patch64:        0003-dccp-ccid-move-timers-to-struct-dccp_sock.patch
-Patch65:        0004-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
+Patch61:        0001-timer-Prepare-to-change-timer-callback-argument-type.patch
+Patch62:        0002-net-dccp-Convert-timers-to-use-timer_setup.patch
+Patch63:        0003-dccp-ccid-move-timers-to-struct-dccp_sock.patch
+Patch64:        0004-Revert-dccp-don-t-free-ccid2_hc_tx_sock-struct-in-dc.patch
 
 #Fix for CVE-2020-16120
-Patch66:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
-Patch67:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
-Patch68:        0003-ovl-verify-permissions-in-ovl_path_open.patch
+Patch65:        0001-ovl-pass-correct-flags-for-opening-real-directory.patch
+Patch66:        0002-ovl-switch-to-mounter-creds-in-readdir.patch
+Patch67:        0003-ovl-verify-permissions-in-ovl_path_open.patch
+
+#Fix for CVE-2020-36385
+Patch68:        0001-RDMA-ucma-Put-a-lock-around-every-call-to-the-rdma_c.patch
+Patch69:        0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
+Patch70:        0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
 # Out-of-tree patches from AppArmor:
 Patch71:        0001-UBUNTU-SAUCE-AppArmor-basic-networking-rules.patch
@@ -313,6 +318,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch54 -p1
 %patch55 -p1
 %patch57 -p1
+%patch58 -p1
 %patch59 -p1
 %patch60 -p1
 %patch61 -p1
@@ -323,6 +329,8 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch66 -p1
 %patch67 -p1
 %patch68 -p1
+%patch69 -p1
+%patch70 -p1
 %patch71 -p1
 %patch72 -p1
 %patch73 -p1
@@ -552,6 +560,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Mon Nov 29 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.290-2
+-   Fix for CVE-2020-36385
 *   Wed Nov 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.290-1
 -   Update to version 4.9.290
 *   Wed Nov 10 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.288-2

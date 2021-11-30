@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.290
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -141,6 +141,11 @@ Patch115:       0003-fuse-fix-bad-inode.patch
 #fix for CVE-2021-28950
 Patch116:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
+#Fix for CVE-2020-36385
+Patch117:       0001-RDMA-ucma-Put-a-lock-around-every-call-to-the-rdma_c.patch
+Patch118:       0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
+Patch119:       0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
+
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -267,6 +272,9 @@ The Linux package contains the Linux kernel doc files
 %patch114 -p1
 %patch115 -p1
 %patch116 -p1
+%patch117 -p1
+%patch118 -p1
+%patch119 -p1
 
 %build
 
@@ -362,6 +370,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Nov 29 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.290-2
+-   Fix for CVE-2020-36385
 *   Wed Nov 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.290-1
 -   Update to version 4.9.290
 *   Wed Nov 10 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.9.288-2
