@@ -1,7 +1,7 @@
 Summary:        Monitoring plugins are used to monitor status of hosts and services on the network
 Name:           monitoring-plugins
 Version:        2.3.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL-3.0
 Group:          Development/Tools
 URL:            https://github.com/%{name}
@@ -25,7 +25,7 @@ current status of hosts and services on your network. Each plugin is a
 stand alone command line tool that provides a specific type to check.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 bash tools/setup
 %configure
 
@@ -33,7 +33,7 @@ bash tools/setup
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 %clean
 rm -rf %{buildroot}
@@ -45,6 +45,8 @@ rm -rf %{buildroot}
 %{_prefix}/share/locale/de
 
 %changelog
+* Tue Nov 30 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.3.1-3
+- bump up version for openssl 3.0.0 compatibility
 * Mon Jun 21 2021 Michelle Wang <michellew@vmware.com> 2.3.1-2
 - Fix source for OSSTP ticket filing.
 * Tue May 11 2021 Sharan Turlapati <sturlapati@vmware.com> 2.3.1-1
