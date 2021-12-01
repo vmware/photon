@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.44
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_44_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
@@ -11,6 +11,7 @@ Source0:        %{name}-%{version}.tar.gz
 %define sha1    nss=11eab8681754472a9d1eb196e3c604d794ebe7f3
 Patch0:         nss-3.44-standalone-1.patch
 Patch1:         nss-CVE-2020-12403.patch
+Patch2:         nss-CVE-2021-43527.patch
 Requires:       nspr
 BuildRequires:  nspr-devel
 BuildRequires:  sqlite-devel
@@ -42,12 +43,10 @@ Requires:   nspr
 This package contains minimal set of shared nss libraries.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
 %build
 cd nss
-# -j is not supported by nss
+# make doesn't support _smp_mflags
 make VERBOSE=1 BUILD_OPT=1 \
     NSPR_INCLUDE_DIR=%{_includedir}/nspr \
     USE_SYSTEM_ZLIB=1 \
@@ -114,6 +113,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+*   Wed Dec 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.44-7
+-   Fix CVE-2021-43527
 *   Fri Jun 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.44-6
 -   Fix CVE-2020-12403
 *   Wed Nov 18 2020 Tapas Kundu <tkundu@vmware.com> 3.44-5
