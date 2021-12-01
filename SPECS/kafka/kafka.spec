@@ -5,13 +5,15 @@
 Summary:       Apache Kafka is publish-subscribe messaging rethought as a distributed commit log.
 Name: 	       kafka
 Version:       3.0.0
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       Apache License, Version 2.0
 Group:         Productivity/Networking/Other
 URL:           http://kafka.apache.org/
 Source0:       %{name}-%{version}-src.tgz
-%define sha1 kafka=4eee044bba66f19be20a189b5d2db9348c0c10cc
+%define sha1   kafka=4eee044bba66f19be20a189b5d2db9348c0c10cc
 Source1:       %{name}.service
+Source2:       %{name}-build-jars-%{version}.tar.gz
+%define sha1   %{name}-build-jars=86ba550a5718a601852131003a1b525265cbb596
 Vendor:	       VMware, Inc.
 Distribution:  Photon
 Provides:      kafka kafka-server
@@ -30,14 +32,16 @@ Kafka is designed to allow a single cluster to serve as the central data backbon
 %autosetup -n %{name}-%{version}-src
 
 %build
-export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
-./gradlew jar
-./gradlew srcJar
-./gradlew javadoc
-./gradlew javadocJar
-./gradlew scaladoc
-./gradlew scaladocJar
-./gradlew docsJar
+tar -xf %{SOURCE2}
+#Keeping the below code for future reference.
+#export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
+#./gradlew jar
+#./gradlew srcJar
+#./gradlew javadoc
+#./gradlew javadocJar
+#./gradlew scaladoc
+#./gradlew scaladocJar
+#./gradlew docsJar
 
 %install
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
@@ -101,6 +105,8 @@ fi
 %doc LICENSE
 
 %changelog
+* Wed Dec 01 2021 Piyush Gupta <gpiyush@vmware.com> 3.0.0-2
+- Bundled build time generated jars into a seperate source.
 * Thu Oct 14 2021 Piyush Gupta <gpiyush@vmware.com> 3.0.0-1
 - Update to 3.0.0.
 * Tue Jun 08 2021 Piyush Gupta <gpiyush@vmware.com> 2.5.0-2
