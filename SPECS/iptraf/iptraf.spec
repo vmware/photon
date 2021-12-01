@@ -1,7 +1,7 @@
 Summary: IPTraf is a console-based network statistics utility
 Name:    iptraf
 Version: 3.0.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPLv2
 URL: ftp://iptraf.seul.org/pub/iptraf/%{name}-%{version}.tar.gz
 Source: %{name}-%{version}.tar.gz
@@ -27,7 +27,7 @@ Patch17: iptraf-ncurses-Makefile.patch
 Group:      Applications/System
 Vendor:     VMware, Inc.
 Distribution:  Photon
-BuildRequires: ncurses-devel
+BuildRequires: ncurses-devel >= 6.1-4
 
 %description
 IPTraf is a console-based network statistics utility for Linux. It gathers a variety of figures such as TCP connection packet and byte counts, interface statistics and activity indicators, TCP/UDP traffic breakdowns, and LAN station packet and byte counts.
@@ -75,8 +75,10 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.1-2
--	GA - Bump release of all rpms
-*   Mon Nov 30 2015 Xiaolin Li <xiaolinl@vmware.com> 3.0.1-1
--   Initial build.  First version
--   Patches from https://github.com/gooselinux/iptraf
+* Wed Dec 1 2021 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.1-3
+- bump to rebuild with ncurses
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0.1-2
+- GA - Bump release of all rpms
+* Mon Nov 30 2015 Xiaolin Li <xiaolinl@vmware.com> 3.0.1-1
+- Initial build.  First version
+- Patches from https://github.com/gooselinux/iptraf
