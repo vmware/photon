@@ -1,7 +1,7 @@
 Summary:        Security client
 Name:           nss
 Version:        3.44
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MPLv2.0
 URL:            http://ftp.mozilla.org/pub/mozilla.org/security/nss/
 Group:          Applications/System
@@ -11,6 +11,7 @@ Source0:        %{name}-%{version}.tar.gz
 %define sha1    nss=11eab8681754472a9d1eb196e3c604d794ebe7f3
 Patch0:         nss-3.44-standalone-1.patch
 Patch1:         nss-CVE-2020-12403.patch
+Patch2:         nss-CVE-2021-43527.patch
 Requires:       nspr
 Requires:       sqlite-autoconf
 BuildRequires:  nspr
@@ -36,6 +37,7 @@ Header files for doing development with Network Security Services.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 %build
 cd nss
 # -j is not supported by nss
@@ -90,6 +92,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Wed Dec 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.44-5
+-   Fix CVE-2021-43527
 *   Fri Jun 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.44-4
 -   Fix CVE-2020-12403
 *   Mon Jun 01 2020 Siju Maliakkal <smaliakkal@vmware.com> 3.44-3
