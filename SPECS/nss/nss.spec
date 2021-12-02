@@ -1,14 +1,14 @@
 Summary:        Security client
 Name:           nss
-Version:        3.66
-Release:        2%{?dist}
+Version:        3.72
+Release:        1%{?dist}
 License:        MPLv2.0
-URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_66_RTM/src/%{name}-%{version}.tar.gz
+URL:            http://ftp.mozilla.org/pub/security/nss/releases/NSS_3_72_RTM/src/%{name}-%{version}.tar.gz
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    nss=c0d452f828e16e3345e891fe2bd016250f1b51e1
+%define sha1    nss=798e3b3a19a101a10bb0dd2fc70e440d6d5f6760
 Patch0:         nss-%{version}-standalone-1.patch
 Patch1:         nss-CVE-2021-43527.patch
 Requires:       nspr
@@ -53,8 +53,7 @@ export NS_USE_GCC=1
 %endif
 
 cd nss
-# make doesn't support _smp_mflags
-make VERBOSE=1 BUILD_OPT=1 \
+make %{?_smp_mflags} VERBOSE=1 BUILD_OPT=1 \
     NSPR_INCLUDE_DIR=%{_includedir}/nspr \
     USE_SYSTEM_ZLIB=1 \
     ZLIB_LIBS=-lz \
@@ -122,6 +121,8 @@ sudo -u test ./all.sh && userdel test -r -f
 %{_libdir}/libsoftokn3.chk
 
 %changelog
+*   Thu Dec 02 2021 Alexey Makhalov <amakhalov@vmware.com> 3.72-1
+-   Version update
 *   Wed Dec 01 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.66-2
 -   Fix CVE-2021-43527
 *   Fri Jun 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.66-1
