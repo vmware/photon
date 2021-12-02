@@ -4,7 +4,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.0.0533
-Release:        12%{?dist}
+Release:        13%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -161,6 +161,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Thu Dec 02 2021 Shreenidhi Shedi <sshedi@vmware.com> 8.0.0533-13
+- Enable skip_defaults_vim in vimrc
 * Tue Nov 30 2021 Shreenidhi Shedi <sshedi@vmware.com> 8.0.0533-12
 - Move vimrc to source file and add 'set mouse-=a' to /etc/vimrc
 * Mon Oct 04 2021 Tapas Kundu <tkundu@vmware.com> 8.0.0533-11
