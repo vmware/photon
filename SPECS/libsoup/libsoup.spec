@@ -1,7 +1,7 @@
 Summary:         libsoup HTTP client/server library
 Name:            libsoup
 Version:         2.72.0
-Release:         2%{?dist}
+Release:         3%{?dist}
 License:         GPLv2
 URL:             http://wiki.gnome.org/LibSoup
 Group:           System Environment/Development
@@ -24,16 +24,14 @@ BuildRequires:   sqlite-devel
 BuildRequires:   libpsl-devel
 BuildRequires:   krb5-devel
 BuildRequires:   httpd
-BuildRequires:   icu-devel
 BuildRequires:   meson >= 0.50
 BuildRequires:   ninja-build
 BuildRequires:   gtk-doc
-%if %{with_check}
-BuildRequires:   krb5-devel
-%endif
 Requires:        libxml2
 Requires:        glib-networking
+Requires:        sqlite-libs
 Requires:        libpsl
+Requires:        krb5
 
 %description
 libsoup is HTTP client/server library for GNOME
@@ -42,7 +40,10 @@ libsoup is HTTP client/server library for GNOME
 Summary:         Header files for libsoup
 Group:           System Environment/Development
 Requires:        %{name} = %{version}-%{release}
+Requires:        glib-devel
 Requires:        libxml2-devel
+Requires:        sqlite-devel
+Requires:        libpsl-devel
 
 %description     devel
 Header files for libsoup.
@@ -103,6 +104,9 @@ ninja test
 %defattr(-,root,root)
 
 %changelog
+*   Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 2.72.0-3
+-   Improve Requires for main and -devel packages
+-   Remove icu dependencies as it will be brought by libpsl
 *   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 2.72.0-2
 -   Release bump up to use libxml2 2.9.12-1.
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 2.72.0-1

@@ -3,7 +3,7 @@
 Summary:        Microsoft .NET Core SDK
 Name:           dotnet-sdk
 Version:        6.0.100
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -22,7 +22,7 @@ Source0:        %{name}-%{version}-linux-x64.tar.gz
 BuildArch:      x86_64
 
 Requires:       dotnet-runtime
-Requires:       icu
+Requires:       icu >= 70.1
 
 %description
 .NET Core is a development platform that you can use to build command-line
@@ -44,6 +44,8 @@ cp LICENSE.txt ThirdPartyNotices.txt %{buildroot}%{_docdir}/dotnet-sdk-%{version
 %{_docdir}/*
 
 %changelog
+* Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 6.0.100-2
+- Release bump to build with icu-70.1
 * Mon Nov 15 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 6.0.100-1
 - Upgrade to version 6.0.100
 * Tue Oct 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 5.0.402-1

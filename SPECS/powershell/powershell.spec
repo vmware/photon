@@ -4,7 +4,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        7.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -62,10 +62,12 @@ BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
 BuildRequires:  e2fsprogs-devel
 BuildRequires:  which
+BuildRequires:  icu-devel >= 70.1
+Requires:       icu >= 70.1
 
-Requires:       icu
 #gallery download scripts will fail without this
-Requires:       zlib-devel
+BuildRequires:  zlib-devel
+Requires:       zlib
 
 %description
 PowerShell is an automation and configuration management platform.
@@ -146,6 +148,8 @@ fi
 %{_docdir}/*
 
 %changelog
+* Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 7.2.0-2
+- Requires specific version of icu
 * Mon Nov 15 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.2.0-1
 - Upgrade to version 7.2.0
 * Tue Oct 26 2021 Shreenidhi Shedi <sshedi@vmware.com> 7.1.5-1
