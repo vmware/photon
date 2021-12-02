@@ -5,7 +5,6 @@ set nocompatible
 set backspace=2
 set ruler
 set tags=./tags;/
-set mouse-=a
 
 syntax on
 color desert
@@ -29,5 +28,7 @@ if ! isdirectory("~/.vim/swap/")
   call system('install -d -m 700 ~/.vim/swap')
 endif
 set directory=~/.vim/swap/
+
+let skip_defaults_vim=1
 
 " End /etc/vimrc
