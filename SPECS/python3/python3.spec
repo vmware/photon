@@ -3,7 +3,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.6.9
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -265,7 +265,6 @@ rm -rf %{buildroot}/*
 %files tools
 %defattr(-,root,root,755)
 %doc Tools/README
-%{_libdir}/python%{VER}/lib2to3
 %{_bindir}/2to3-%{VER}
 %exclude %{_bindir}/idle*
 
@@ -282,6 +281,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python%{VER}/test/*
 
 %changelog
+*   Thu Dec 02 2021 Tapas Kundu <tkundu@vmware.com> 3.6.9-10
+-   Do not package /usr/lib/python3.7/lib2to3 in tools
 *   Wed Sep 29 2021 Piyush Gupta <gpiyush@vmware.com> 3.6.9-9
 -   Remove packaging python3-pip and create seperate spec.
 *   Sat Mar 27 2021 Tapas Kundu <tkundu@vmware.com> 3.6.9-8
