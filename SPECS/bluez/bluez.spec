@@ -1,13 +1,14 @@
-Summary:	Bluetooth utilities
-Name:		bluez
-Version:	5.58
-Release: 	1%{?dist}
-License:	GPLv2+
-Group:		Applications/System
-Vendor:		VMware, Inc.
-Distribution:	Photon
-Source0:	http://www.kernel.org/pub/linux/bluetooth/bluez-%{version}.tar.xz
-%define sha1 bluez=f5f007eb18599ee2fdca113642e177ebab5a8e21
+Summary:        Bluetooth utilities
+Name:           bluez
+Version:        5.58
+Release:        2%{?dist}
+License:        GPLv2+
+Group:          Applications/System
+Vendor:         VMware, Inc.
+Distribution:   Photon
+Source0:        http://www.kernel.org/pub/linux/bluetooth/bluez-%{version}.tar.xz
+%define sha1    bluez=f5f007eb18599ee2fdca113642e177ebab5a8e21
+Patch0:         bluez-CVE-2021-41229.patch
 
 BuildRequires:  libical-devel
 BuildRequires:  glib-devel
@@ -33,7 +34,7 @@ bluez-devel contains development libraries and headers for
 use in Bluetooth applications.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure \
@@ -50,7 +51,7 @@ use in Bluetooth applications.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
 make %{?_smp_mflags} -k check
@@ -81,6 +82,8 @@ make %{?_smp_mflags} -k check
 %{_datadir}/man/*
 
 %changelog
+* Fri Dec 03 2021 Nitesh Kumar <kunitesh@vmware.com> 5.58-2
+- Patched to fix CVE-2021-41229.
 * Mon Jun 28 2021 Nitesh Kumar <kunitesh@vmware.com> 5.58-1
 - Upgrade to 5.58, Fixes for CVE-2021-0129
 * Fri Oct 23 2020 Ajay Kaher <akaher@vmware.com> 5.52-3
@@ -89,5 +92,3 @@ make %{?_smp_mflags} -k check
 - Fix CVE-2020-0556
 * Mon Jan 6 2020 Ajay Kaher <akaher@vmware.com> 5.52-1
 - Initial version
-
-
