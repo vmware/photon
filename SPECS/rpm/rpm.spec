@@ -1,7 +1,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -31,7 +31,6 @@ Patch6:         sync-buf-cache.patch
 Patch7:         wait-for-lock.patch
 
 Requires:       bash
-Requires:       procps-ng
 Requires:       zstd-libs
 Requires:       lua
 Requires:       openssl >= 1.1.1
@@ -78,6 +77,8 @@ Requires:   bzip2-libs
 Requires:   elfutils-libelf
 Requires:   xz-libs
 Requires:   zstd-libs
+Requires:   (coreutils or toybox)
+Conflicts:  libsolv < 0.7.19
 
 %description    libs
 Shared libraries librpm and librpmio
@@ -310,6 +311,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Fri Dec 03 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-4
+- Conflict with libsolv < 0.7.19 to support sqlite
+- Improve rpm-rebuilddb.sh script
 * Mon Nov 29 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.16.1.3-3
 - Update release to compile with python 3.10
 * Mon Nov 22 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-2
