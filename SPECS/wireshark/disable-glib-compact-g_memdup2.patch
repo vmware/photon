@@ -1,0 +1,19 @@
+diff --color -rupN wireshark-3.6.0/wsutil/glib-compat.h wireshark-3.6.0-g_memdup2/wsutil/glib-compat.h
+--- wireshark-3.6.0/wsutil/glib-compat.h	2021-11-22 18:39:27.000000000 +0000
++++ wireshark-3.6.0-g_memdup2/wsutil/glib-compat.h	2021-12-06 04:32:16.317167296 +0000
+@@ -20,6 +20,7 @@
+ extern "C" {
+ #endif /* __cplusplus */
+ 
++#if 0
+ #if !GLIB_CHECK_VERSION(2, 68, 0)
+ static inline gpointer
+ g_memdup2(gconstpointer mem, gsize byte_size)
+@@ -36,6 +37,7 @@ g_memdup2(gconstpointer mem, gsize byte_
+   return new_mem;
+ }
+ #endif
++#endif
+ 
+ #ifdef __cplusplus
+ }
