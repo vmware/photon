@@ -1,11 +1,11 @@
 Summary:        Wireshark is the world's foremost protocol analyzer
 Name:           wireshark
-Version:        3.4.7
+Version:        3.6.0
 Release:        1%{?dist}
 License:        GPL+
 URL:            http://www.wireshark.org/
 Source0:        https://wireshark.org/download/src/%{name}-%{version}.tar.xz
-%define sha1 wireshark=3fa4bb774030442b9908243a9927d38479c52bf5
+%define sha1 wireshark=98248f0e6c19408fbb796398f998cf90d7ed9ca6
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -26,6 +26,7 @@ BuildRequires:  openssl-devel
 BuildRequires:  pcre-devel
 BuildRequires:  systemd-devel
 BuildRequires:  git
+BuildRequires:  python3-devel
 
 Requires:       libpcap
 Requires:       libnl
@@ -59,7 +60,7 @@ and plugins.
 %autosetup -p1
 
 %build
-%cmake -G "Unix Makefiles" \
+%cmake -G "Ninja" \
        -DDISABLE_WERROR=ON \
        -DENABLE_LUA=OFF \
        -DBUILD_mmdbresolve=OFF \
@@ -70,15 +71,12 @@ and plugins.
        -DENABLE_NETLINK=ON \
        -DBUILD_dcerpcidl2wrs=OFF \
        -DBUILD_sdjournal=ON \
-       -DBUILD_=OFF \
-       -G Ninja
+        %{nil}
 
 %ninja_build
 
 %install
-export LANG=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-DESTDIR=%{buildroot} ninja install
+%ninja_install
 
 rm -rf %{buildroot}%{_mandir}
 rm -rf %{buildroot}%{_docdir}
@@ -96,13 +94,17 @@ rm -rf %{buildroot}%{_docdir}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
-*   Tue Aug 03 2021 Susant Sahani <ssahani@vmware.com> 3.4.7-1
--   Update version and fix CVE-2021-22235
-*   Tue Jun 29 2021 Susant Sahani <ssahani@vmware.com> 3.4.6-1
--   Update version and fix CVE-2021-22222
-*   Tue May 11 2021 Susant Sahani <ssahani@vmware.com> 3.4.5-1
--   Update version and fix CVE-2021-22207
-*   Tue Mar 16 2021 Susant Sahani <ssahani@vmware.com> 3.4.4-1
--   Update version and fix CVE-2021-22174 CVE-2021-22173
-*   Mon Jan 25 2021 Susant Sahani <ssahani@vmware.com> 3.4.2-1
--   Initial rpm release
+* Tue Nov 30 2021 Susant Sahani <ssahani@vmware.com> 3.6.0-1
+- Update version and fix CVE-2021-39922, CVE-2021-39923, CVE-2021-3992
+- CVE-2021-39924, CVE-2021-39925, CVE-2021-39926, CVE-2021-39922,
+- CVE-2021-39921, CVE-2021-39920, CVE-2021-39928
+* Tue Aug 03 2021 Susant Sahani <ssahani@vmware.com> 3.4.7-1
+- Update version and fix CVE-2021-22235
+* Tue Jun 29 2021 Susant Sahani <ssahani@vmware.com> 3.4.6-1
+- Update version and fix CVE-2021-22222
+* Tue May 11 2021 Susant Sahani <ssahani@vmware.com> 3.4.5-1
+- Update version and fix CVE-2021-22207
+* Tue Mar 16 2021 Susant Sahani <ssahani@vmware.com> 3.4.4-1
+- Update version and fix CVE-2021-22174 CVE-2021-22173
+* Mon Jan 25 2021 Susant Sahani <ssahani@vmware.com> 3.4.2-1
+- Initial rpm release
