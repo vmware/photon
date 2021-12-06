@@ -4,7 +4,7 @@
 Summary:        dracut to create initramfs
 Name:           dracut
 Version:        050
-Release:        7%{?dist}
+Release:        8%{?dist}
 Group:          System Environment/Base
 # The entire source code is GPLv2+
 # except install/* which is LGPLv2+
@@ -31,6 +31,7 @@ Requires:       (coreutils or toybox)
 Requires:       kmod
 Requires:       (util-linux or toybox)
 Requires:       systemd
+Requires:       systemd-udev
 Requires:       /bin/sed
 Requires:       /bin/grep
 Requires:       (findutils or toybox)
@@ -60,44 +61,44 @@ cp %{SOURCE1} .
 make %{?_smp_mflags}
 
 %install
-rm -rf -- $RPM_BUILD_ROOT
+rm -rf -- %{buildroot}
 make %{?_smp_mflags} install \
-     DESTDIR=$RPM_BUILD_ROOT \
+     DESTDIR=%{buildroot} \
      libdir=%{_prefix}/lib
 
-echo "DRACUT_VERSION=%{version}-%{release}" > $RPM_BUILD_ROOT/%{dracutlibdir}/dracut-version.sh
+echo "DRACUT_VERSION=%{version}-%{release}" > %{buildroot}/%{dracutlibdir}/dracut-version.sh
 
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/01fips
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/02fips-aesni
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/01fips
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/02fips-aesni
 
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/00bootchart
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/00bootchart
 
 # we do not support dash in the initramfs
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/00dash
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/00dash
 
 # remove gentoo specific modules
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/50gensplash
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/50gensplash
 
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/96securityfs
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/97masterkey
-rm -fr -- $RPM_BUILD_ROOT/%{dracutlibdir}/modules.d/98integrity
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/96securityfs
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/97masterkey
+rm -fr -- %{buildroot}/%{dracutlibdir}/modules.d/98integrity
 
-mkdir -p $RPM_BUILD_ROOT/boot/dracut
-mkdir -p $RPM_BUILD_ROOT/var/lib/dracut/overlay
-mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/log
-mkdir -p $RPM_BUILD_ROOT%{_localstatedir}/opt/dracut/log
-touch $RPM_BUILD_ROOT%{_localstatedir}/opt/dracut/log/dracut.log
-ln -sfv %{_localstatedir}/opt/dracut/log/dracut.log $RPM_BUILD_ROOT%{_localstatedir}/log/
-mkdir -p $RPM_BUILD_ROOT%{_sharedstatedir}/initramfs
+mkdir -p %{buildroot}/boot/dracut
+mkdir -p %{buildroot}/var/lib/dracut/overlay
+mkdir -p %{buildroot}%{_localstatedir}/log
+mkdir -p %{buildroot}%{_localstatedir}/opt/dracut/log
+touch %{buildroot}%{_localstatedir}/opt/dracut/log/dracut.log
+ln -sfv %{_localstatedir}/opt/dracut/log/dracut.log %{buildroot}%{_localstatedir}/log/
+mkdir -p %{buildroot}%{_sharedstatedir}/initramfs
 
-rm -f $RPM_BUILD_ROOT%{_mandir}/man?/*suse*
+rm -f %{buildroot}%{_mandir}/man?/*suse*
 
 # create compat symlink
-mkdir -p $RPM_BUILD_ROOT%{_sbindir}
-ln -sr $RPM_BUILD_ROOT%{_bindir}/dracut $RPM_BUILD_ROOT%{_sbindir}/dracut
+mkdir -p %{buildroot}%{_sbindir}
+ln -sr %{buildroot}%{_bindir}/dracut %{buildroot}%{_sbindir}/dracut
 
 %clean
-rm -rf -- $RPM_BUILD_ROOT
+rm -rf -- %{buildroot}
 
 %files
 %defattr(-,root,root,0755)
@@ -156,6 +157,9 @@ rm -rf -- $RPM_BUILD_ROOT
 %dir /var/lib/dracut/overlay
 
 %changelog
+*   Mon Dec 06 2021 Ankit Jain <ankitja@vmware.com> 050-8
+-   Add systemd-udev as requires to successfully
+-   create initrd.img
 *   Wed Jan 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 050-7
 -   Added a command line option to manually override host_only
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 050-6
