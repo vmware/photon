@@ -31,7 +31,7 @@ targetList = {
                 "photon-docker-image", "k8s-docker-images", "all-images", "minimal-iso", "rt-iso"],
 
         "rpmBuild": ["packages", "packages-minimal", "packages-initrd", "packages-docker",
-                "updated-packages", "tool-chain-stage1", "tool-chain-stage2", "check",
+                "updated-packages", "tool-chain-stage1", "tool-chain-stage2", "check-packages",
                 "ostree-repo", "generate-yaml-files", "create-repo", "distributed-build"],
 
         "buildEnvironment": ["packages-cached", "sources", "sources-cached", "publish-rpms",
@@ -601,7 +601,7 @@ class RpmBuildTarget:
         constants.setRpmPath(Build_Config.updatedRpmPath)
         Builder.buildPackagesForAllSpecs(Build_Config.buildThreads, Build_Config.pkgBuildType, Build_Config.pkgInfoFile, self.logger)
 
-    def check(self):
+    def check_packages(self):
         check_prerequesite["check"] = True
         constants.setRPMCheck(True)
         constants.setRpmCheckStopOnError(True)
