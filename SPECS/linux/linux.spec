@@ -21,8 +21,8 @@
 
 Summary:        Kernel
 Name:           linux
-Version:        5.10.78
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        5.10.83
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -32,7 +32,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=fe039fff95130a04d2aac6ae5bb5c67a07605d31
+%define sha1 linux=ed35078ce1be76935205980231c2b565ca84f37a
 Source1:	config_%{_arch}
 Source2:	initramfs.trigger
 %define ena_version 2.4.0
@@ -680,6 +680,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Dec 06 2021 srinidhira0 <srinidhir@vmware.com> 5.10.83-1
+-   Update to version 5.10.83
 *   Mon Nov 29 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.78-5
 -   Enable eBPF Net Packet filter support.
 *   Thu Nov 18 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.78-4

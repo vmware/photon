@@ -1,0 +1,20 @@
+From d85a91f20474ab459a58b949410525b4e23ccfff Mon Sep 17 00:00:00 2001
+From: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Date: Thu, 2 Dec 2021 09:13:56 -0300
+Subject: [PATCH v4.9-rt 315/315] Linux 5.10.83-rt58 REBASE
+
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 21988f9ad53f..f9df2cf089cf 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt34
++-rt58
+-- 
+2.31.1
+

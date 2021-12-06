@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.78
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        5.10.83
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -21,7 +21,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=fe039fff95130a04d2aac6ae5bb5c67a07605d31
+%define sha1 linux=ed35078ce1be76935205980231c2b565ca84f37a
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -449,6 +449,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Dec 06 2021 srinidhira0 <srinidhir@vmware.com> 5.10.83-1
+-   Update to version 5.10.83
 *   Fri Nov 12 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.78-4
 -   tarfs: A new readonly filesystem to mount tar archive
 *   Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.10.78-3
