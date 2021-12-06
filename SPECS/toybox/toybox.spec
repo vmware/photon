@@ -1,19 +1,27 @@
 Name:           toybox
-Version:        0.8.3
-Release:        3%{?dist}
+Version:        0.8.6
+Release:        1%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
-Url:            http://landley.net/toybox/
+Url:            http://landley.net/toybox
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://landley.net/toybox/downloads/%{name}-%{version}.tar.gz
-%define sha1 toybox=4b1959908c017fa75a6915711fc077cff135431f
+%define sha1 %{name}=7198960aa13ce5c79c7c057beb0823703cac69ec
+
 Patch0:         toybox-change-toys-path.patch
+
 Source1:        config-toybox
 Source2:        toybox-toys
-BuildRequires:  openssl-devel zlib-devel
-Requires:       openssl zlib
+
+BuildRequires:  openssl-devel
+BuildRequires:  zlib-devel
+
+Requires:       openssl
+Requires:       zlib
+
 %description
 Toybox combines common Linux command line utilities together into a single
 BSD-licensed executable that's simple, small, fast, reasonably
@@ -21,23 +29,27 @@ standards-compliant, and powerful enough to turn Android into a development
 environment.
 
 %package docs
-Summary: toybox docs
-Group: Documentation
-Requires: toybox = %{version}-%{release}
+Summary:    toybox docs
+Group:      Documentation
+Requires:   %{name} = %{version}-%{release}
+
 %description docs
 The package contains toybox doc files.
 
 %prep
 %autosetup -p1 -n toybox-%{version}
+
 %build
 cp %{SOURCE1} .config
-NOSTRIP=1 make CFLAGS="-Wall -Wundef -Wno-char-subscripts -Werror=implicit-function-declaration -g"
+# If we make NOSTRIP=0, toybox debuginfo rpm will be useless
+NOSTRIP=1 make CFLAGS="-Wall -Wundef -Wno-char-subscripts -Werror=implicit-function-declaration -g" %{?_smp_mflags}
 
 %install
-install -d %{buildroot}/bin
-PREFIX=%{buildroot} make install
-chmod 755 %{buildroot}/bin/toybox
-install -m 0755 %{SOURCE2} %{buildroot}/bin/toybox-toys
+install -d %{buildroot}%{_bindir}
+PREFIX=%{buildroot} make install %{?_smp_mflags}
+mv %{buildroot}/bin/%{name} %{buildroot}%{_bindir}/toybox
+chmod 755 %{buildroot}%{_bindir}/toybox
+install -m 0755 %{SOURCE2} %{buildroot}%{_bindir}/toybox-toys
 
 %check
 # Do not run all tests, skip losetup
@@ -49,13 +61,18 @@ popd
 tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 ./scripts/test.sh $tests_to_run
 
-%define mktoy() /bin/toybox ln -sf /bin/toybox %1
+%define mktoy() %{_bindir}/toybox ln -sf %{_bindir}/toybox %1
 
 %posttrans
-/bin/toybox-toys --install
+%{_bindir}/toybox-toys --install
 
 %preun
-/bin/toybox-toys --uninstall
+%{_bindir}/toybox-toys --uninstall
+
+%triggerpostun -- dos2unix
+[ $2 -eq 0 ] || exit 0
+%mktoy /usr/bin/dos2unix
+%mktoy /usr/bin/unix2dos
 
 %triggerpostun -- bzip2
 [ $2 -eq 0 ] || exit 0
@@ -92,6 +109,7 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %mktoy /bin/touch
 %mktoy /bin/true
 %mktoy /bin/uname
+%mktoy /usr/bin/[
 %mktoy /usr/bin/base64
 %mktoy /usr/bin/basename
 %mktoy /usr/bin/comm
@@ -228,18 +246,18 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 
 %triggerpostun -- procps-ng
 [ $2 -eq 0 ] || exit 0
-%mktoy /bin/pidof
-%mktoy /bin/ps
-%mktoy /bin/vmstat
-%mktoy /sbin/sysctl
+%mktoy /usr/bin/ps
+%mktoy /usr/bin/pidof
 %mktoy /usr/bin/free
+%mktoy /usr/bin/w
 %mktoy /usr/bin/pgrep
-%mktoy /usr/bin/pkill
+%mktoy /usr/bin/uptime
+%mktoy /usr/bin/vmstat
 %mktoy /usr/bin/pmap
 %mktoy /usr/bin/pwdx
 %mktoy /usr/bin/top
-%mktoy /usr/bin/uptime
-%mktoy /usr/bin/w
+%mktoy /usr/bin/pkill
+%mktoy /usr/sbin/sysctl
 
 %triggerpostun -- psmisc
 [ $2 -eq 0 ] || exit 0
@@ -301,12 +319,12 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 
 %files
 %defattr(-,root,root)
-/bin/toybox
-/bin/toybox-toys
+%{_bindir}/toybox
+%{_bindir}/toybox-toys
 
 # bzip2
-%ghost /usr/bin/bunzip2
-%ghost /usr/bin/bzcat
+%ghost %{_bindir}/bunzip2
+%ghost %{_bindir}/bzcat
 
 # coreutils
 %ghost /bin/cat
@@ -337,77 +355,78 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost /bin/touch
 %ghost /bin/true
 %ghost /bin/uname
-%ghost /usr/bin/base64
-%ghost /usr/bin/basename
-%ghost /usr/bin/comm
-%ghost /usr/bin/cut
-%ghost /usr/bin/dirname
-%ghost /usr/bin/du
-%ghost /usr/bin/env
-%ghost /usr/bin/expand
-%ghost /usr/bin/factor
-%ghost /usr/bin/groups
-%ghost /usr/bin/head
-%ghost /usr/bin/id
-%ghost /usr/bin/install
-%ghost /usr/bin/link
-%ghost /usr/bin/logname
-%ghost /usr/bin/md5sum
-%ghost /usr/bin/mkfifo
-%ghost /usr/bin/nl
-%ghost /usr/bin/nohup
-%ghost /usr/bin/nproc
-%ghost /usr/bin/od
-%ghost /usr/bin/paste
-%ghost /usr/bin/printf
-%ghost /usr/bin/readlink
-%ghost /usr/bin/realpath
-%ghost /usr/bin/seq
-%ghost /usr/bin/sha1sum
-%ghost /usr/bin/sha224sum
-%ghost /usr/bin/sha256sum
-%ghost /usr/bin/sha384sum
-%ghost /usr/bin/sha512sum
-%ghost /usr/bin/shred
-%ghost /usr/bin/sort
-%ghost /usr/bin/split
-%ghost /usr/bin/tac
-%ghost /usr/bin/tail
-%ghost /usr/bin/tee
-%ghost /usr/bin/test
-%ghost /usr/bin/timeout
-%ghost /usr/bin/truncate
-%ghost /usr/bin/tty
-%ghost /usr/bin/uniq
-%ghost /usr/bin/unlink
-%ghost /usr/bin/wc
-%ghost /usr/bin/who
-%ghost /usr/bin/whoami
-%ghost /usr/bin/yes
-%ghost /usr/sbin/chroot
+%ghost %{_bindir}/[
+%ghost %{_bindir}/base64
+%ghost %{_bindir}/basename
+%ghost %{_bindir}/comm
+%ghost %{_bindir}/cut
+%ghost %{_bindir}/dirname
+%ghost %{_bindir}/du
+%ghost %{_bindir}/env
+%ghost %{_bindir}/expand
+%ghost %{_bindir}/factor
+%ghost %{_bindir}/groups
+%ghost %{_bindir}/head
+%ghost %{_bindir}/id
+%ghost %{_bindir}/install
+%ghost %{_bindir}/link
+%ghost %{_bindir}/logname
+%ghost %{_bindir}/md5sum
+%ghost %{_bindir}/mkfifo
+%ghost %{_bindir}/nl
+%ghost %{_bindir}/nohup
+%ghost %{_bindir}/nproc
+%ghost %{_bindir}/od
+%ghost %{_bindir}/paste
+%ghost %{_bindir}/printf
+%ghost %{_bindir}/readlink
+%ghost %{_bindir}/realpath
+%ghost %{_bindir}/seq
+%ghost %{_bindir}/sha1sum
+%ghost %{_bindir}/sha224sum
+%ghost %{_bindir}/sha256sum
+%ghost %{_bindir}/sha384sum
+%ghost %{_bindir}/sha512sum
+%ghost %{_bindir}/shred
+%ghost %{_bindir}/sort
+%ghost %{_bindir}/split
+%ghost %{_bindir}/tac
+%ghost %{_bindir}/tail
+%ghost %{_bindir}/tee
+%ghost %{_bindir}/test
+%ghost %{_bindir}/timeout
+%ghost %{_bindir}/truncate
+%ghost %{_bindir}/tty
+%ghost %{_bindir}/uniq
+%ghost %{_bindir}/unlink
+%ghost %{_bindir}/wc
+%ghost %{_bindir}/who
+%ghost %{_bindir}/whoami
+%ghost %{_bindir}/yes
+%ghost %{_sbindir}/chroot
 
 # cpio
 %ghost /bin/cpio
 
 # diffutils
-%ghost /usr/bin/cmp
+%ghost %{_bindir}/cmp
 
 # elixir
-%ghost /usr/bin/mix
+%ghost %{_bindir}/mix
 
 # expect
-%ghost /usr/bin/mkpasswd
+%ghost %{_bindir}/mkpasswd
 
 # e2fsprogs
 %ghost /bin/chattr
 %ghost /bin/lsattr
 
 # file
-%ghost /usr/bin/file
+%ghost %{_bindir}/file
 
 # findutils
-%ghost /usr/bin/find
-%ghost /usr/bin/xargs
+%ghost %{_bindir}/find
+%ghost %{_bindir}/xargs
 
 # grep
 %ghost /bin/egrep
@@ -415,19 +434,19 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost /bin/grep
 
 # gzip
-%ghost /usr/bin/gunzip
-%ghost /usr/bin/gzip
-%ghost /usr/bin/zcat
+%ghost %{_bindir}/gunzip
+%ghost %{_bindir}/gzip
+%ghost %{_bindir}/zcat
 
 # iotop
-%ghost /usr/sbin/iotop
+%ghost %{_sbindir}/iotop
 
 # iputils
-%ghost /usr/bin/ping
-%ghost /usr/bin/ping6
+%ghost %{_bindir}/ping
+%ghost %{_bindir}/ping6
 
 # kbd
-%ghost /usr/bin/chvt
+%ghost %{_bindir}/chvt
 
 # kmod
 %ghost /sbin/insmod
@@ -437,7 +456,7 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 
 # netcat
 %ghost /bin/netcat
-%ghost /usr/bin/nc
+%ghost %{_bindir}/nc
 
 # net-tools
 %ghost /bin/hostname
@@ -448,27 +467,27 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost /sbin/partprobe
 
 # patch
-%ghost /usr/bin/patch
+%ghost %{_bindir}/patch
 
 # pciutils
-%ghost /usr/sbin/lspci
+%ghost %{_sbindir}/lspci
 
 # procps-ng
-%ghost /bin/pidof
-%ghost /bin/ps
-%ghost /bin/vmstat
-%ghost /sbin/sysctl
-%ghost /usr/bin/free
-%ghost /usr/bin/pgrep
-%ghost /usr/bin/pkill
-%ghost /usr/bin/pmap
-%ghost /usr/bin/pwdx
-%ghost /usr/bin/top
-%ghost /usr/bin/uptime
-%ghost /usr/bin/w
+%ghost %{_bindir}/ps
+%ghost %{_bindir}/pidof
+%ghost %{_bindir}/free
+%ghost %{_bindir}/w
+%ghost %{_bindir}/pgrep
+%ghost %{_bindir}/uptime
+%ghost %{_bindir}/vmstat
+%ghost %{_bindir}/pmap
+%ghost %{_bindir}/pwdx
+%ghost %{_bindir}/top
+%ghost %{_bindir}/pkill
+%ghost %{_sbindir}/sysctl
 
 # psmisc
-%ghost /usr/bin/killall
+%ghost %{_bindir}/killall
 
 # sed
 %ghost /bin/sed
@@ -476,13 +495,13 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 # shadow-tools
 %ghost /bin/login
 %ghost /bin/su
-%ghost /usr/bin/passwd
+%ghost %{_bindir}/passwd
 
 # tar
-%ghost /usr/bin/tar
+%ghost %{_bindir}/tar
 
 # usbutils
-%ghost /usr/bin/lsusb
+%ghost %{_bindir}/lsusb
 
 # util-linux
 %ghost /bin/dmesg
@@ -499,87 +518,91 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %ghost /sbin/swapoff
 %ghost /sbin/swapon
 %ghost /sbin/switch_root
-%ghost /usr/bin/cal
-%ghost /usr/bin/eject
-%ghost /usr/bin/fallocate
-%ghost /usr/bin/flock
-%ghost /usr/bin/ionice
-%ghost /usr/bin/renice
-%ghost /usr/bin/rev
-%ghost /usr/bin/setsid
-%ghost /usr/bin/taskset
-%ghost /usr/sbin/fsfreeze
-%ghost /usr/sbin/rfkill
+%ghost %{_bindir}/cal
+%ghost %{_bindir}/eject
+%ghost %{_bindir}/fallocate
+%ghost %{_bindir}/flock
+%ghost %{_bindir}/ionice
+%ghost %{_bindir}/renice
+%ghost %{_bindir}/rev
+%ghost %{_bindir}/setsid
+%ghost %{_bindir}/taskset
+%ghost %{_sbindir}/fsfreeze
+%ghost %{_sbindir}/rfkill
 
 # vim-extra
-%ghost /usr/bin/xxd
+%ghost %{_bindir}/xxd
 
 # which
-%ghost /usr/bin/which
+%ghost %{_bindir}/which
+
+# dos2unix
+%ghost %{_bindir}/dos2unix
+%ghost %{_bindir}/unix2dos
 
 # Non conflicting toybox toys
-/bin/dos2unix
-/bin/fstype
-/bin/fsync
-/bin/help
-/bin/readahead
-/bin/unix2dos
-/sbin/freeramdisk
-/sbin/killall5
-/sbin/oneit
-/sbin/vconfig
-/usr/bin/acpi
-/usr/bin/catv
-/usr/bin/count
-/usr/bin/ftpget
-/usr/bin/ftpput
-/usr/bin/hexedit
-/usr/bin/inotifyd
-/usr/bin/iorenice
-/usr/bin/makedevs
-/usr/bin/microcom
-/usr/bin/nbd-client
-/usr/bin/time
-/usr/bin/tunctl
-/usr/bin/uudecode
-/usr/bin/uuencode
+%{_bindir}/fstype
+%{_bindir}/fsync
+%{_bindir}/help
+%{_bindir}/readahead
+%{_sbindir}/freeramdisk
+%{_sbindir}/killall5
+%{_sbindir}/oneit
+%{_sbindir}/vconfig
+%{_bindir}/acpi
+%{_bindir}/catv
+%{_bindir}/count
+%{_bindir}/ftpget
+%{_bindir}/ftpput
+%{_bindir}/hexedit
+%{_bindir}/inotifyd
+%{_bindir}/iorenice
+%{_bindir}/makedevs
+%{_bindir}/microcom
+%{_bindir}/nbd-client
+%{_bindir}/time
+%{_bindir}/tunctl
+%{_bindir}/uudecode
+%{_bindir}/uuencode
 
 %files docs
 %defattr(-,root,root)
 %doc README LICENSE
 
 %changelog
-*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.3-3
--   Bump up release for openssl
-*   Fri Feb 19 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.3-2
--   Move documents to docs sub-package
-*   Wed Oct 14 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.3-1
--   Version update to 0.8.3
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.2-5
--   openssl 1.1.1
-*   Fri Aug 21 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.2-4
--   Fixed path for the utilities df,iotop,lspci,blkid
-*   Tue Jun 30 2020 Prashant S Chauhan <psinghchauhan@vmware.com> 0.8.2-3
--   Avoid conflicts with other packages by not packaging (%ghost-ing) symlinks
--   Added elixir
-*   Wed Apr 15 2020 Alexey Makhalov <amakhalov@vmware.com> 0.8.2-2
--   Avoid conflicts with other packages by not packaging (%ghost-ing) symlinks
--   Use system zlib as it is installed by tdnf
--   Added gzip, iputils, kmod, tar toys
-*   Wed Oct 30 2019 Alexey Makhalov <amakhalov@vmware.com> 0.8.2-1
--   Version update. Use system libcrypto.
-*   Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 0.7.7-1
--   Version update
-*   Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-6
--   remove strings and usleep to avoid conflict with binutils and initscripts
-*   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-5
--   Move sed to /bin
--   Remove kmod and systemd toys due to incomplete
-*   Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-4
--   Fix compilation issue for glibc-2.26
-*   Thu Jun 01 2017 Chang Lee <changlee@vmware.com> 0.7.3-3
--   Remove pkill test in %check
-*   Thu Apr 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.3-2
--   Ensure debuginfo
-*   Thu Apr 20 2017 Fabio Rapposelli <fabio@vmware.com> 0.7.3-1
--   Initial build.  First version
+* Tue Dec 07 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.8.6-1
+- Upgrade to 0.8.6
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.3-3
+- Bump up release for openssl
+* Fri Feb 19 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.3-2
+- Move documents to docs sub-package
+* Wed Oct 14 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.3-1
+- Version update to 0.8.3
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.2-5
+- openssl 1.1.1
+* Fri Aug 21 2020 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.2-4
+- Fixed path for the utilities df,iotop,lspci,blkid
+* Tue Jun 30 2020 Prashant S Chauhan <psinghchauhan@vmware.com> 0.8.2-3
+- Avoid conflicts with other packages by not packaging (%ghost-ing) symlinks
+- Added elixir
+* Wed Apr 15 2020 Alexey Makhalov <amakhalov@vmware.com> 0.8.2-2
+- Avoid conflicts with other packages by not packaging (%ghost-ing) symlinks
+- Use system zlib as it is installed by tdnf
+- Added gzip, iputils, kmod, tar toys
+* Wed Oct 30 2019 Alexey Makhalov <amakhalov@vmware.com> 0.8.2-1
+- Version update. Use system libcrypto.
+* Mon Oct 01 2018 Alexey Makhalov <amakhalov@vmware.com> 0.7.7-1
+- Version update
+* Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-6
+- remove strings and usleep to avoid conflict with binutils and initscripts
+* Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-5
+- Move sed to /bin
+- Remove kmod and systemd toys due to incomplete
+* Thu Aug 24 2017 Alexey Makhalov <amakhalov@vmware.com> 0.7.3-4
+- Fix compilation issue for glibc-2.26
+* Thu Jun 01 2017 Chang Lee <changlee@vmware.com> 0.7.3-3
+- Remove pkill test in %check
+* Thu Apr 27 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 0.7.3-2
+- Ensure debuginfo
+* Thu Apr 20 2017 Fabio Rapposelli <fabio@vmware.com> 0.7.3-1
+- Initial build.  First version

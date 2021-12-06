@@ -1,78 +1,89 @@
 Summary:        Programs for monitoring processes
 Name:           procps-ng
-Version:        3.3.16
+Version:        3.3.17
 Release:        1%{?dist}
 License:        GPLv2
-URL:            http://procps.sourceforge.net/
+URL:            https://sourceforge.net/projects/procps-ng
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        http://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
-%define sha1    procps-ng=1645168d28b70837d787f4337fd85f6f82f0a251
+
+Source0:        https://sourceforge.net/projects/procps-ng/files/Production/%{name}-%{version}.tar.xz
+%define sha1    %{name}=a52952e8bc6aaab812176c00d25adc4d4e1552e2
+
 BuildRequires:  ncurses-devel
+
 Requires:       ncurses
+
 Conflicts:      toybox < 0.8.2-2
+
 %description
 The Procps package contains programs for monitoring processes.
+
 %package    devel
 Summary:    Header and development files for procps-ng
 Requires:   %{name} = %{version}
+
 %description    devel
 It contains the libraries and header files to create applications
 
 %package lang
-Summary: Additional language files for procps-ng
-Group:   Applications/Databases
-Requires: %{name} = %{version}-%{release}
+Summary:    Additional language files for procps-ng
+Group:      Applications/Databases
+Requires:   %{name} = %{version}-%{release}
+
 %description lang
 These are the additional language files of procps-ng
 
 %prep
-%setup -q
+%autosetup -p1 -n procps-%{version}
+
 %build
 if [ %{_host} != %{_build} ]; then
   export ac_cv_func_malloc_0_nonnull=yes
   export ac_cv_func_realloc_0_nonnull=yes
 fi
-%configure \
-    --bindir=/bin \
-    --sbindir=/sbin \
-    --docdir=%{_defaultdocdir}/%{name}-%{version} \
-    --disable-static \
-    --disable-kill \
-    --disable-silent-rules
+
+%configure --docdir=%{_defaultdocdir}/%{name}-%{version} \
+           --disable-static \
+           --disable-kill \
+           --disable-silent-rules
+
 make %{?_smp_mflags}
+
 %install
-make DESTDIR=%{buildroot} install
-install -vdm 755 %{buildroot}/bin
-install -vdm 755 %{buildroot}/%{_lib}
-ln -sfv ../..%{_lib}/$(readlink %{buildroot}/%{_libdir}/libprocps.so) %{buildroot}/%{_libdir}/libprocps.so
-install -vdm 755 %{buildroot}/%{_sbindir}
-ln -s %{_bindir}/pidof %{buildroot}%{_sbindir}/pidof
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
+install -vdm 755 %{buildroot}%{_bindir}
+install -vdm 755 %{buildroot}%{_lib}
+ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libprocps.so) %{buildroot}%{_libdir}/libprocps.so
+install -vdm 755 %{buildroot}%{_sbindir}
+ln -sfv %{_bindir}/pidof %{buildroot}%{_sbindir}/pidof
 find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
 
 %check
 make %{?_smp_mflags} check
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
+
 %files
 %defattr(-,root,root)
-/bin/ps
-/bin/pidof
-/bin/free
-/bin/w
-/bin/pgrep
-/bin/uptime
-/bin/vmstat
-/bin/pmap
-/bin/tload
-/bin/pwdx
-/bin/top
-/bin/slabtop
-/bin/watch
-/bin/pkill
+%{_bindir}/ps
+%{_bindir}/pidof
+%{_bindir}/free
+%{_bindir}/w
+%{_bindir}/pgrep
+%{_bindir}/uptime
+%{_bindir}/vmstat
+%{_bindir}/pmap
+%{_bindir}/tload
+%{_bindir}/pwdx
+%{_bindir}/top
+%{_bindir}/slabtop
+%{_bindir}/watch
+%{_bindir}/pkill
+%{_bindir}/pwait
+%{_sbindir}/sysctl
 %{_sbindir}/pidof
 %_datadir/locale/*
 %{_docdir}/procps-ng-*/*
@@ -80,7 +91,7 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/*
 %{_mandir}/man5/*
 %{_libdir}/libprocps.so.*
-/sbin/sysctl
+
 %files devel
 %{_includedir}/proc/sig.h
 %{_includedir}/proc/wchan.h
@@ -99,37 +110,46 @@ make %{?_smp_mflags} check
 %{_libdir}/libprocps.so
 %{_mandir}/man3/*
 
+%exclude %{_mandir}/pl/*
+%exclude %{_mandir}/pt_BR/*
+%exclude %{_mandir}/sv/*
+%exclude %{_mandir}/uk/*
+%exclude %{_mandir}/de/*
+%exclude %{_mandir}/fr/*
+
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
-*   Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 3.3.16-1
--   Automatic Version Bump
-*   Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 3.3.15-3
--   Do not conflict with toybox >= 0.8.2-2
-*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 3.3.15-2
--   Cross compilation support
-*   Fri Aug 10 2018 Tapas Kundu <tkundu@vmware.com> 3.3.15-1
--   Upgrade version to 3.3.15.
--   Fix for CVE-2018-1122 CVE-2018-1123 CVE-2018-1124 CVE-2018-1125
--   Fix for CVE-2018-1126
-*   Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 3.3.12-3
--   Added conflicts toybox
-*   Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 3.3.12-2
--   Add lang package.
-*   Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 3.3.12-1
--   Upgrade to 3.3.12
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 3.3.11-5
--   Moved man3 to devel subpackage.
-*   Mon Oct 03 2016 ChangLee <changLee@vmware.com> 3.3.11-4
--   Modified %check
-*   Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.11-3
--   Added patch to interpret ASCII sequence correctly
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.11-2
--   GA - Bump release of all rpms
-*   Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 3.3.11-1
--   Upgrade version
-*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.3.9-2
--   Update according to UsrMove.
-*   Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.3.9-1
--   Initial build. First version
+* Mon Dec 06 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.3.17-1
+- Fix file packaging paths
+* Tue Jun 30 2020 Gerrit Photon <photon-checkins@vmware.com> 3.3.16-1
+- Automatic Version Bump
+* Thu Apr 16 2020 Alexey Makhalov <amakhalov@vmware.com> 3.3.15-3
+- Do not conflict with toybox >= 0.8.2-2
+* Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 3.3.15-2
+- Cross compilation support
+* Fri Aug 10 2018 Tapas Kundu <tkundu@vmware.com> 3.3.15-1
+- Upgrade version to 3.3.15.
+- Fix for CVE-2018-1122 CVE-2018-1123 CVE-2018-1124 CVE-2018-1125
+- Fix for CVE-2018-1126
+* Mon Oct 02 2017 Alexey Makhalov <amakhalov@vmware.com> 3.3.12-3
+- Added conflicts toybox
+* Tue May 02 2017 Anish Swaminathan <anishs@vmware.com> 3.3.12-2
+- Add lang package.
+* Mon Apr 03 2017 Rongrong Qiu <rqiu@vmware.com> 3.3.12-1
+- Upgrade to 3.3.12
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 3.3.11-5
+- Moved man3 to devel subpackage.
+* Mon Oct 03 2016 ChangLee <changLee@vmware.com> 3.3.11-4
+- Modified %check
+* Tue Jun 21 2016 Divya Thaluru <dthaluru@vmware.com> 3.3.11-3
+- Added patch to interpret ASCII sequence correctly
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.3.11-2
+- GA - Bump release of all rpms
+* Thu Jan 21 2016 Anish Swaminathan <anishs@vmware.com> 3.3.11-1
+- Upgrade version
+* Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 3.3.9-2
+- Update according to UsrMove.
+* Wed Nov 5 2014 Divya Thaluru <dthaluru@vmware.com> 3.3.9-1
+- Initial build. First version

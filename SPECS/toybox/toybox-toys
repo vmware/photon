@@ -1,6 +1,6 @@
-#! /bin/bash
+#!/bin/bash
 
-TB=/bin/toybox
+TB=/usr/bin/toybox
 ECHO="$TB echo"
 RM="$TB rm"
 LN="$TB ln -sf"
@@ -11,7 +11,7 @@ do_help() {
   $ECHO "Create and remove toybox symlinks."
   $ECHO "Available options:"
   $ECHO " -h, --help        display help message"
-  $ECHO " -i, --install     install symlinks to /bin/toybox"
+  $ECHO " -i, --install     install symlinks to /usr/bin/toybox"
   $ECHO " -u, --uninstall   uninstall symlinks"
   $ECHO " -s, --stat        show symlinks information"
   exit 0
