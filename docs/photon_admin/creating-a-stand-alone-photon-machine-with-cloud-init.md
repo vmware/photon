@@ -29,7 +29,7 @@ Cloud-init can customize a Photon OS virtual machine by using the `nocloud` data
 
     The ISO now appears in the current directory: 
 
-        ```
+    ```
     steve@ubuntu:~$ ls
 	meta-data seed.iso user-data
     ```
