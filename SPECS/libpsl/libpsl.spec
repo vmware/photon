@@ -1,7 +1,7 @@
 Summary:    libpsl - C library to handle the Public Suffix List
 Name:       libpsl
 Version:    0.21.1
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    MIT
 URL:        https://github.com/rockdaboot/libpsl
 Group:      System Environment/Development
@@ -10,9 +10,9 @@ Distribution:   Photon
 Source0:    https://github.com/rockdaboot/libpsl/releases/download/%{name}-%{version}/%{name}-%{version}.tar.gz
 %define sha1 libpsl=dc5fd26d060b3445386b5a82628df900567654f4
 
-BuildRequires: icu-devel
+BuildRequires: icu-devel >= 70.1
 BuildRequires: python3
-Requires:      icu
+Requires:      icu >= 70.1
 
 %description
 libpsl is a C library to handle the Public Suffix List. A "public suffix" is a
@@ -41,6 +41,7 @@ Libpsl...
 Summary:        Development files for %{name}
 Group:          Development/Libraries
 Requires:       %{name} = %{version}-%{release}
+Requires:       icu-devel >= 70.1
 
 %description    devel
 This package contains libraries and header files for
@@ -94,6 +95,9 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Fri Dec 10 2021 Alexey Makhalov <amakhalov@vmware.com> 0.21.1-3
+-   Requires specific version of icu
+-   Add icu-devel dependency to -devel subpackage
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.21.1-2
 -   Bump up to compile with python 3.10
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 0.21.1-1

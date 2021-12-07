@@ -2,7 +2,7 @@
 Summary:       Mozilla's JavaScript engine.
 Name:          mozjs
 Version:       78.3.1
-Release:       4%{?dist}
+Release:       5%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       GPLv2+ or LGPLv2+ or MPL-2.0
@@ -23,10 +23,10 @@ BuildRequires: python3-libs
 BuildRequires: python3-devel
 BuildRequires: zlib-devel
 BuildRequires: clang-devel
-BuildRequires: icu-devel
+BuildRequires: icu-devel >= 70.1
 BuildRequires: rust
 BuildRequires: autoconf = 2.13
-Requires:      icu
+Requires:      icu >= 70.1
 Requires:      python3
 Requires:      python3-libs
 Obsoletes:     mozjs60
@@ -85,6 +85,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/pkgconfig/mozjs-%{major}.pc
 
 %changelog
+*   Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 78.3.1-5
+-   Require specific version of icu
 *   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 78.3.1-4
 -   Update release to compile with python 3.10
 *   Tue Apr 20 2021 Ankit Jain <ankitja@vmware.com> 78.3.1-3
