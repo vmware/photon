@@ -1,3 +1,27 @@
+From 1d881dd6925a5b1209fcc3da75d1f659239d6f00 Mon Sep 17 00:00:00 2001
+From: Piyush Gupta <gpiyush@vmware.com>
+Date: Mon, 13 Dec 2021 12:55:45 +0000
+Subject: [PATCH] Fixed formatting and testing module errors.
+
+metrics/heapster_test.go: Replaced Fatalf with Errorf and return
+since Fatalf cannot be called from a go subroutine.
+
+common/kafka/glogadapter.go: Added args as sliced parameter since
+it can be of variable length.
+
+events/sinks/riemann/driver.go: metrics/sinks/riemann/driver.go:
+metrics/sources/kubelet/kubelet.go: Added formatters to Warning
+and info msgs as it was missing.
+---
+ common/kafka/glogadapter.go            | 8 ++++----
+ events/sinks/riemann/driver.go         | 4 ++--
+ metrics/heapster_test.go               | 8 ++++++--
+ metrics/sinks/opentsdb/driver_test.go  | 2 +-
+ metrics/sinks/riemann/driver.go        | 4 ++--
+ metrics/sinks/wavefront/driver_test.go | 2 +-
+ metrics/sources/kubelet/kubelet.go     | 2 +-
+ 7 files changed, 17 insertions(+), 13 deletions(-)
+
 diff --git a/common/kafka/glogadapter.go b/common/kafka/glogadapter.go
 index b044d9c..5336e28 100644
 --- a/common/kafka/glogadapter.go
@@ -46,6 +70,27 @@ index 0d7ab90..7fe8461 100644
  			// client will reconnect later
  			sink.client = nil
  		}
+diff --git a/metrics/heapster_test.go b/metrics/heapster_test.go
+index 1f3b17e..73d6ca8 100644
+--- a/metrics/heapster_test.go
++++ b/metrics/heapster_test.go
+@@ -58,10 +58,14 @@ func TestRunSecureServer(t *testing.T) {
+ 
+ 		server, err := app.NewHeapsterApiServer(opt, emptyMetricSink, emptyNodeLister, emptyPodLister)
+ 		if err != nil {
+-			t.Fatalf("Could not create the API server: %v", err)
++			//Replaced Fatalf with Errorf and return since it cannot be called from go subroutine.
++			t.Errorf("Could not create the API server: %v", err)
++			return
+ 		}
+ 		if err := server.RunServer(); err != nil {
+-			t.Fatalf("Error in bringing up the server: %v", err)
++			//Replaced Fatalf with Errorf and return since it cannot be called from go subroutine.
++			t.Errorf("Error in bringing up the server: %v", err)
++			return
+ 		}
+ 	}()
+ 	if err := waitForApiserverUp(serverIP); err != nil {
 diff --git a/metrics/sinks/opentsdb/driver_test.go b/metrics/sinks/opentsdb/driver_test.go
 index 5d270aa..0d6497b 100644
 --- a/metrics/sinks/opentsdb/driver_test.go
@@ -107,3 +152,6 @@ index 1bfe947..5386e97 100644
  			continue metricloop
  		}
  
+-- 
+2.23.3
+

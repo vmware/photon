@@ -46,6 +46,8 @@ install -p -m 0755 heapster %{buildroot}%{_bindir}
 install -p -m 0755 eventer %{buildroot}%{_bindir}
 
 %check
+#keeping GO111MODULE as off in order to use GOPATH.
+export GO111MODULE=off
 cd $GOPATH/src/k8s.io/heapster
 make test-unit %{?_smp_mflags}
 
