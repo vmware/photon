@@ -1,7 +1,7 @@
 Summary:	A full-featured and high-performance event loop
 Name:		libev
 Version:	4.33
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD-2-Clause
 URL:		http://software.schmorp.de/pkg/libev.html
 Source0:	http://dist.schmorp.de/libev/%{name}-%{version}.tar.gz
@@ -25,14 +25,14 @@ Requires:       %{name} = %{version}-%{release}
 The subpackage includes all development related headers and library for libev
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 
 %build
 %configure --disable-static
 make %{?_smp_mflags}
 
 %install
-%makeinstall
+%makeinstall includedir=%{buildroot}%{_includedir}/libev
 find %{buildroot} -name '*.la' -delete
 
 %check
@@ -51,9 +51,11 @@ make %{?_smp_mflags} -k check
 %{_libdir}/*.so
 
 %changelog
-*       Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.33-2
--       openssl 1.1.1
-*       Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 4.33-1
--       Automatic Version Bump
-*	Mon Apr 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.24-1
--       Initial Version.
+*   Wed Jan 05 2022 Dweep Advani <dadvani@vmware.com> 4.33-3
+-   Resolved conflict of /usr/include/event.h with libevent-devel
+*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.33-2
+-   openssl 1.1.1
+*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 4.33-1
+-   Automatic Version Bump
+*   Mon Apr 03 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 4.24-1
+-   Initial Version.

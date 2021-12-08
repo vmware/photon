@@ -149,6 +149,16 @@ class ToolChainUtils(object):
             raise Exception("RPM installation failed")
         self.logger.debug("Successfully installed default toolchain RPMS in Chroot:" + chroot.getID())
 
+        # There is some weird contention with this toolchain package installations and
+        # rpmdb rebuilds. So, let's do it explicitly here.
+        # Once we use latest ova template in our build env, we can remove this.
+        cmd = "[ -f /var/lib/rpm/Packages ]"
+        if not chroot.run(cmd, logfn=self.logger.debug):
+            cmd = "rpmdb --rebuilddb"
+            if chroot.run(cmd, logfn=self.logger.debug):
+                self.logger.error("Failed to rebuild rpmdb")
+                raise Exception("RPM rebuild db failed")
+
         if packageName:
             self.installExtraToolchainRPMS(chroot, packageName, packageVersion)
 

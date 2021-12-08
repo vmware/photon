@@ -1,7 +1,7 @@
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.14.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -121,6 +121,7 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_unitdir}/openvswitch.service
 %{_unitdir}/ovs-vswitchd.service
 %{_unitdir}/ovsdb-server.service
+%exclude %{_libdir}/lib*.a
 %{_libdir}/lib*
 %{_sysconfdir}/openvswitch/default.conf
 %{_sysconfdir}/bash_completion.d/ovs-*-bashcomp.bash
@@ -153,6 +154,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man7/ovs-actions.7.gz
 
 %changelog
+* Wed Jan 05 2022 Dweep Advani <dadvani@vmware.com> 2.14.0-10
+- Package static libs only in openvswitch-devel-static
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.14.0-9
 - Bump up to compile with python 3.10
 * Thu Sep 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.14.0-8

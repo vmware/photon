@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.5
-Release:        11%{?dist}
+Release:        12%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=62fcac8cbd20c796b909b91f8f615f8556b22a24
 Patch0:         audit-2.8.5-gcc-10.patch
@@ -45,7 +45,6 @@ Requires:       %{name} = %{version}-%{release}
 %description    devel
 The libraries and header files needed for audit development.
 
-
 %package  -n    python3-audit
 Summary:        Python3 bindings for libaudit
 License:        LGPLv2+
@@ -79,10 +78,8 @@ make %{?_smp_mflags}
 
 %install
 mkdir -p %{buildroot}/{etc/audispd/plugins.d,etc/audit/rules.d}
-mkdir -p %{buildroot}/%{_var}/opt/audit/log
-mkdir -p %{buildroot}/%{_var}/log
+mkdir -p %{buildroot}/%{_var}/log/audit
 mkdir -p %{buildroot}/%{_var}/spool/audit
-ln -sfv %{_var}/opt/audit/log %{buildroot}/%{_var}/log/audit
 %make_install
 
 install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
@@ -90,6 +87,9 @@ echo "disable auditd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-
 
 %check
 make %{?_smp_mflags} check
+
+%pre
+test -L /var/log/audit && rm /var/log/audit ||:
 
 %post
 /sbin/ldconfig
@@ -113,8 +113,7 @@ make %{?_smp_mflags} check
 %{_mandir}/man5/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
-%dir %{_var}/opt/audit/log
-%{_var}/log/audit
+%dir %{_var}/log/audit
 %{_var}/spool/audit
 %attr(750,root,root) %dir %{_sysconfdir}/audit
 %attr(750,root,root) %dir %{_sysconfdir}/audit/rules.d
@@ -145,12 +144,13 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 /usr/share/aclocal/audit.m4
 
-
 %files -n python3-audit
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Jan 05 2022 Dweep Advani <dadvani@vmware.com> 2.8.5-12
+-   Use /var/log/audit
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.8.5-11
 -   Bump up to compile with python 3.10
 *   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 2.8.5-10
