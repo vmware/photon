@@ -2,7 +2,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.217
+Version:        4.19.219
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt95
 Release:        1%{?kat_build:.%kat}%{?dist}
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=4940fcd7c99f012ef1af731d03a9b3c83b2bc113
+%define sha1 linux=a25a5bf3470daa11c72177756775990866ac91bf
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
@@ -1181,6 +1181,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Dec 08 2021 srinidhira0 <srinidhir@vmware.com> 4.19.219-1
+-   Update to version 4.19.219
 *   Wed Nov 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.217-1
 -   Update to version 4.19.217
 *   Thu Nov 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.214-3

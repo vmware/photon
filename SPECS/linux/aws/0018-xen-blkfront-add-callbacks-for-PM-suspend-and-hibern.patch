@@ -1,7 +1,7 @@
-From 10ec45655d02f685f19984a1a953c2b14f575d1b Mon Sep 17 00:00:00 2001
+From e380d6a847605dbeddeea1b83df57fd00855f2ee Mon Sep 17 00:00:00 2001
 From: Munehisa Kamata <kamatam@amazon.com>
 Date: Thu, 8 Jun 2017 19:15:55 +0000
-Subject: xen-blkfront: add callbacks for PM suspend and hibernation
+Subject: [PATCH] xen-blkfront: add callbacks for PM suspend and hibernation
 
 Add freeze and restore callbacks for PM suspend and hibernation support.
 The freeze handler stops a block-layer queue and disconnect the frontend
@@ -51,14 +51,14 @@ Reviewed-by: Eduardo Valentin <eduval@amazon.com>
 CR: https://cr.amazon.com/r/8297625/
 Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
- drivers/block/xen-blkfront.c | 164 ++++++++++++++++++++++++++++++++++++++++---
+ drivers/block/xen-blkfront.c | 164 +++++++++++++++++++++++++++++++++--
  1 file changed, 156 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/block/xen-blkfront.c b/drivers/block/xen-blkfront.c
-index 429d201..0487e6a 100644
+index bd756b294d30..5af5454a2c14 100644
 --- a/drivers/block/xen-blkfront.c
 +++ b/drivers/block/xen-blkfront.c
-@@ -47,6 +47,8 @@
+@@ -48,6 +48,8 @@
  #include <linux/list.h>
  #include <linux/workqueue.h>
  #include <linux/sched/mm.h>
@@ -67,16 +67,16 @@ index 429d201..0487e6a 100644
  
  #include <xen/xen.h>
  #include <xen/xenbus.h>
-@@ -79,6 +81,8 @@ enum blkif_state {
- 	BLKIF_STATE_DISCONNECTED,
+@@ -81,6 +83,8 @@ enum blkif_state {
  	BLKIF_STATE_CONNECTED,
  	BLKIF_STATE_SUSPENDED,
+ 	BLKIF_STATE_ERROR,
 +	BLKIF_STATE_FREEZING,
 +	BLKIF_STATE_FROZEN
  };
  
  struct grant {
-@@ -220,6 +224,7 @@ struct blkfront_info
+@@ -223,6 +227,7 @@ struct blkfront_info
  	struct list_head requests;
  	struct bio_list bio_list;
  	struct list_head info_list;
@@ -84,7 +84,7 @@ index 429d201..0487e6a 100644
  };
  
  static unsigned int nr_minors;
-@@ -261,6 +266,16 @@ static DEFINE_SPINLOCK(minor_lock);
+@@ -264,6 +269,16 @@ static DEFINE_SPINLOCK(minor_lock);
  static int blkfront_setup_indirect(struct blkfront_ring_info *rinfo);
  static void blkfront_gather_backend_features(struct blkfront_info *info);
  static int negotiate_mq(struct blkfront_info *info);
@@ -101,7 +101,7 @@ index 429d201..0487e6a 100644
  
  static int get_id_from_freelist(struct blkfront_ring_info *rinfo)
  {
-@@ -995,6 +1010,7 @@ static int xlvbd_init_blk_queue(struct gendisk *gd, u16 sector_size,
+@@ -1008,6 +1023,7 @@ static int xlvbd_init_blk_queue(struct gendisk *gd, u16 sector_size,
  	info->sector_size = sector_size;
  	info->physical_sector_size = physical_sector_size;
  	blkif_set_queue_limits(info);
@@ -109,7 +109,7 @@ index 429d201..0487e6a 100644
  
  	return 0;
  }
-@@ -1218,6 +1234,8 @@ static void xlvbd_release_gendisk(struct blkfront_info *info)
+@@ -1231,6 +1247,8 @@ static void xlvbd_release_gendisk(struct blkfront_info *info)
  /* Already hold rinfo->ring_lock. */
  static inline void kick_pending_request_queues_locked(struct blkfront_ring_info *rinfo)
  {
@@ -118,7 +118,7 @@ index 429d201..0487e6a 100644
  	if (!RING_FULL(&rinfo->ring))
  		blk_mq_start_stopped_hw_queues(rinfo->dev_info->rq, true);
  }
-@@ -1341,8 +1359,6 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
+@@ -1354,8 +1372,6 @@ static void blkif_free_ring(struct blkfront_ring_info *rinfo)
  
  static void blkif_free(struct blkfront_info *info, int suspend)
  {
@@ -127,7 +127,7 @@ index 429d201..0487e6a 100644
  	/* Prevent new requests being issued until we fix things up. */
  	info->connected = suspend ?
  		BLKIF_STATE_SUSPENDED : BLKIF_STATE_DISCONNECTED;
-@@ -1350,6 +1366,13 @@ static void blkif_free(struct blkfront_info *info, int suspend)
+@@ -1363,6 +1379,13 @@ static void blkif_free(struct blkfront_info *info, int suspend)
  	if (info->rq)
  		blk_mq_stop_hw_queues(info->rq);
  
@@ -141,7 +141,7 @@ index 429d201..0487e6a 100644
  	for (i = 0; i < info->nr_rings; i++)
  		blkif_free_ring(&info->rinfo[i]);
  
-@@ -1553,8 +1576,10 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+@@ -1566,8 +1589,10 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
  	struct blkfront_ring_info *rinfo = (struct blkfront_ring_info *)dev_id;
  	struct blkfront_info *info = rinfo->dev_info;
  
@@ -154,7 +154,7 @@ index 429d201..0487e6a 100644
  
  	spin_lock_irqsave(&rinfo->ring_lock, flags);
   again:
-@@ -2019,6 +2044,7 @@ static int blkif_recover(struct blkfront_info *info)
+@@ -2064,6 +2089,7 @@ static int blkif_recover(struct blkfront_info *info)
  	struct bio *bio;
  	unsigned int segs;
  
@@ -162,7 +162,7 @@ index 429d201..0487e6a 100644
  	blkfront_gather_backend_features(info);
  	/* Reset limits changed by blk_mq_update_nr_hw_queues(). */
  	blkif_set_queue_limits(info);
-@@ -2045,6 +2071,9 @@ static int blkif_recover(struct blkfront_info *info)
+@@ -2090,6 +2116,9 @@ static int blkif_recover(struct blkfront_info *info)
  		kick_pending_request_queues(rinfo);
  	}
  
@@ -172,7 +172,7 @@ index 429d201..0487e6a 100644
  	list_for_each_entry_safe(req, n, &info->requests, queuelist) {
  		/* Requeue pending requests (flush or discard) */
  		list_del_init(&req->queuelist);
-@@ -2358,6 +2387,7 @@ static void blkfront_connect(struct blkfront_info *info)
+@@ -2402,6 +2431,7 @@ static void blkfront_connect(struct blkfront_info *info)
  
  		return;
  	case BLKIF_STATE_SUSPENDED:
@@ -180,7 +180,7 @@ index 429d201..0487e6a 100644
  		/*
  		 * If we are recovering from suspension, we need to wait
  		 * for the backend to announce it's features before
-@@ -2475,13 +2505,38 @@ static void blkback_changed(struct xenbus_device *dev,
+@@ -2519,13 +2549,38 @@ static void blkback_changed(struct xenbus_device *dev,
  		break;
  
  	case XenbusStateClosed:
@@ -223,7 +223,7 @@ index 429d201..0487e6a 100644
  	}
  }
  
-@@ -2621,6 +2676,96 @@ static void blkif_release(struct gendisk *disk, fmode_t mode)
+@@ -2668,6 +2723,96 @@ static void blkif_release(struct gendisk *disk, fmode_t mode)
  	mutex_unlock(&blkfront_mutex);
  }
  
@@ -320,7 +320,7 @@ index 429d201..0487e6a 100644
  static const struct block_device_operations xlvbd_block_fops =
  {
  	.owner = THIS_MODULE,
-@@ -2643,6 +2788,9 @@ static struct xenbus_driver blkfront_driver = {
+@@ -2690,6 +2835,9 @@ static struct xenbus_driver blkfront_driver = {
  	.resume = blkfront_resume,
  	.otherend_changed = blkback_changed,
  	.is_ready = blkfront_is_ready,
@@ -330,3 +330,6 @@ index 429d201..0487e6a 100644
  };
  
  static void purge_persistent_grants(struct blkfront_info *info)
+-- 
+2.23.3
+

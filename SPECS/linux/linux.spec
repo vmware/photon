@@ -3,7 +3,7 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux
-Version:        4.19.217
+Version:        4.19.219
 Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=4940fcd7c99f012ef1af731d03a9b3c83b2bc113
+%define sha1 linux=a25a5bf3470daa11c72177756775990866ac91bf
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -1248,6 +1248,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Wed Dec 08 2021 srinidhira0 <srinidhir@vmware.com> 4.19.219-1
+-   Update to version 4.19.219
 *   Wed Nov 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.217-1
 -   Update to version 4.19.217
 *   Thu Nov 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.214-4

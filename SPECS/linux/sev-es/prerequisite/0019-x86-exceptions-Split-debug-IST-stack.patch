@@ -1,7 +1,7 @@
-From a38dd06a082911fc81b2149f08918fbf55e5f081 Mon Sep 17 00:00:00 2001
+From fbe0ddc587f2e52ba24afa56b766a12c0af4f799 Mon Sep 17 00:00:00 2001
 From: Thomas Gleixner <tglx@linutronix.de>
 Date: Wed, 10 Jun 2020 13:28:46 +0530
-Subject: [PATCH 19/30] x86-exceptions-Split-debug-IST-stack
+Subject: [PATCH] x86-exceptions-Split-debug-IST-stack
 
 commit 2a594d4ccf3f10f80b77d71bd3dad10813ac0137 upstream.
 
@@ -91,7 +91,7 @@ Link: https://lkml.kernel.org/r/20190414160145.439944544@linutronix.de
  10 files changed, 52 insertions(+), 31 deletions(-)
 
 diff --git a/Documentation/x86/kernel-stacks b/Documentation/x86/kernel-stacks
-index 1b04596..d1bfb0b 100644
+index 1b04596caea9..d1bfb0b95ee0 100644
 --- a/Documentation/x86/kernel-stacks
 +++ b/Documentation/x86/kernel-stacks
 @@ -76,7 +76,7 @@ The currently assigned IST stacks are :-
@@ -116,7 +116,7 @@ index 1b04596..d1bfb0b 100644
  
    Used for interrupt 18 - Machine Check Exception (#MC).
 diff --git a/arch/x86/entry/entry_64.S b/arch/x86/entry/entry_64.S
-index b812794..0202ccc 100644
+index b8127941b3eb..0202ccc531cc 100644
 --- a/arch/x86/entry/entry_64.S
 +++ b/arch/x86/entry/entry_64.S
 @@ -930,7 +930,7 @@ apicinterrupt IRQ_WORK_VECTOR			irq_work_interrupt		smp_irq_work_interrupt
@@ -154,7 +154,7 @@ index b812794..0202ccc 100644
  idtentry stack_segment		do_stack_segment	has_error_code=1
  
 diff --git a/arch/x86/include/asm/cpu_entry_area.h b/arch/x86/include/asm/cpu_entry_area.h
-index 8345038..2051d54 100644
+index 8345038e21cc..2051d545a174 100644
 --- a/arch/x86/include/asm/cpu_entry_area.h
 +++ b/arch/x86/include/asm/cpu_entry_area.h
 @@ -10,25 +10,29 @@
@@ -201,7 +201,7 @@ index 8345038..2051d54 100644
  	ESTACK_MCE,
  	N_EXCEPTION_STACKS
 diff --git a/arch/x86/include/asm/debugreg.h b/arch/x86/include/asm/debugreg.h
-index 4505ac2..79a8796 100644
+index 4505ac2735ad..79a87962254c 100644
 --- a/arch/x86/include/asm/debugreg.h
 +++ b/arch/x86/include/asm/debugreg.h
 @@ -104,11 +104,9 @@ static inline void debug_stack_usage_dec(void)
@@ -217,11 +217,11 @@ index 4505ac2..79a8796 100644
  static inline void debug_stack_reset(void) { }
  static inline void debug_stack_usage_inc(void) { }
 diff --git a/arch/x86/include/asm/page_64_types.h b/arch/x86/include/asm/page_64_types.h
-index e109652..fdd1fb8 100644
+index 83a3c95b67fe..803521621727 100644
 --- a/arch/x86/include/asm/page_64_types.h
 +++ b/arch/x86/include/asm/page_64_types.h
 @@ -22,9 +22,6 @@
- #define EXCEPTION_STACK_ORDER (0 + KASAN_STACK_ORDER)
+ #define EXCEPTION_STACK_ORDER (1 + KASAN_STACK_ORDER)
  #define EXCEPTION_STKSZ (PAGE_SIZE << EXCEPTION_STACK_ORDER)
  
 -#define DEBUG_STACK_ORDER (EXCEPTION_STACK_ORDER + 1)
@@ -231,7 +231,7 @@ index e109652..fdd1fb8 100644
  #define IRQ_STACK_SIZE (PAGE_SIZE << IRQ_STACK_ORDER)
  
 diff --git a/arch/x86/kernel/asm-offsets_64.c b/arch/x86/kernel/asm-offsets_64.c
-index 3b9405e..0a70c2a 100644
+index 3b9405e7ba2b..0a70c2a7bd07 100644
 --- a/arch/x86/kernel/asm-offsets_64.c
 +++ b/arch/x86/kernel/asm-offsets_64.c
 @@ -65,6 +65,8 @@ int main(void)
@@ -244,10 +244,10 @@ index 3b9405e..0a70c2a 100644
  
  #ifdef CONFIG_STACKPROTECTOR
 diff --git a/arch/x86/kernel/cpu/common.c b/arch/x86/kernel/cpu/common.c
-index 056e9fb..873aeb2 100644
+index 5dbe336a53f1..0ccb8e01f50a 100644
 --- a/arch/x86/kernel/cpu/common.c
 +++ b/arch/x86/kernel/cpu/common.c
-@@ -1616,17 +1616,7 @@ void syscall_init(void)
+@@ -1680,17 +1680,7 @@ void syscall_init(void)
  	       X86_EFLAGS_IOPL|X86_EFLAGS_AC|X86_EFLAGS_NT);
  }
  
@@ -265,7 +265,7 @@ index 056e9fb..873aeb2 100644
  DEFINE_PER_CPU(u32, debug_idt_ctr);
  
  void debug_stack_set_zero(void)
-@@ -1778,7 +1768,6 @@ void cpu_init(void)
+@@ -1842,7 +1832,6 @@ void cpu_init(void)
  		t->x86_tss.ist[IST_INDEX_NMI] = __this_cpu_ist_top_va(NMI);
  		t->x86_tss.ist[IST_INDEX_DB] = __this_cpu_ist_top_va(DB);
  		t->x86_tss.ist[IST_INDEX_MCE] = __this_cpu_ist_top_va(MCE);
@@ -274,7 +274,7 @@ index 056e9fb..873aeb2 100644
  
  	t->x86_tss.io_bitmap_base = IO_BITMAP_OFFSET;
 diff --git a/arch/x86/kernel/dumpstack_64.c b/arch/x86/kernel/dumpstack_64.c
-index f6fbd04..fca97bd 100644
+index f6fbd0438f9e..fca97bd3d8ae 100644
 --- a/arch/x86/kernel/dumpstack_64.c
 +++ b/arch/x86/kernel/dumpstack_64.c
 @@ -19,16 +19,18 @@
@@ -321,7 +321,7 @@ index f6fbd04..fca97bd 100644
  	estacks = (unsigned long)__this_cpu_read(cea_exception_stacks);
  
 diff --git a/arch/x86/kernel/nmi.c b/arch/x86/kernel/nmi.c
-index 0f8b9b9..51c8d5c 100644
+index 996eb53f8eb7..5573952d1990 100644
 --- a/arch/x86/kernel/nmi.c
 +++ b/arch/x86/kernel/nmi.c
 @@ -21,13 +21,14 @@
@@ -340,7 +340,7 @@ index 0f8b9b9..51c8d5c 100644
  #include <asm/traps.h>
  #include <asm/mach_traps.h>
  #include <asm/nmi.h>
-@@ -486,6 +487,23 @@ static DEFINE_PER_CPU(unsigned long, nmi_cr2);
+@@ -485,6 +486,23 @@ static DEFINE_PER_CPU(unsigned long, nmi_cr2);
   * switch back to the original IDT.
   */
  static DEFINE_PER_CPU(int, update_debug_stack);
@@ -365,7 +365,7 @@ index 0f8b9b9..51c8d5c 100644
  
  dotraplinkage notrace void
 diff --git a/arch/x86/mm/cpu_entry_area.c b/arch/x86/mm/cpu_entry_area.c
-index f689bf8..ff98f7c 100644
+index f689bf861f22..ff98f7c9c7a0 100644
 --- a/arch/x86/mm/cpu_entry_area.c
 +++ b/arch/x86/mm/cpu_entry_area.c
 @@ -99,10 +99,12 @@ static void __init percpu_setup_exception_stacks(unsigned int cpu)
@@ -383,5 +383,5 @@ index f689bf8..ff98f7c 100644
  	cea_map_stack(MCE);
  }
 -- 
-2.7.4
+2.23.3
 

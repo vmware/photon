@@ -1,4 +1,4 @@
-From 9e47d31d6a57b5babaca36d42b0d11b6db6019b7 Mon Sep 17 00:00:00 2001
+From fc9cc7cd6dd10041673d6319f402439a1560c62c Mon Sep 17 00:00:00 2001
 From: Matthew Garrett <matthewgarrett@google.com>
 Date: Mon, 19 Aug 2019 17:17:38 -0700
 Subject: [PATCH] security: Add a "locked down" LSM hook
@@ -20,7 +20,7 @@ Signed-off-by: James Morris <jmorris@namei.org>
  3 files changed, 45 insertions(+)
 
 diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-index 3833c871f..6c3c67ed5 100644
+index e65dace667d3..4985026ecd32 100644
 --- a/include/linux/lsm_hooks.h
 +++ b/include/linux/lsm_hooks.h
 @@ -1426,6 +1426,11 @@
@@ -34,7 +34,7 @@ index 3833c871f..6c3c67ed5 100644
 + *     @what: kernel feature being accessed
   */
  union security_list_options {
- 	int (*binder_set_context_mgr)(struct task_struct *mgr);
+ 	int (*binder_set_context_mgr)(const struct cred *mgr);
 @@ -1779,6 +1784,7 @@ union security_list_options {
  	int (*bpf_prog_alloc_security)(struct bpf_prog_aux *aux);
  	void (*bpf_prog_free_security)(struct bpf_prog_aux *aux);
@@ -52,7 +52,7 @@ index 3833c871f..6c3c67ed5 100644
  
  /*
 diff --git a/include/linux/security.h b/include/linux/security.h
-index d2240605e..5e2f624fa 100644
+index 273877cf47bf..10e86d4a3502 100644
 --- a/include/linux/security.h
 +++ b/include/linux/security.h
 @@ -73,6 +73,33 @@ enum lsm_event {
@@ -109,7 +109,7 @@ index d2240605e..5e2f624fa 100644
  
  #ifdef CONFIG_SECURITY_NETWORK
 diff --git a/security/security.c b/security/security.c
-index 9478444bf..c84e8dd47 100644
+index fc1410550b79..1460b31595ee 100644
 --- a/security/security.c
 +++ b/security/security.c
 @@ -1800,3 +1800,9 @@ void security_bpf_prog_free(struct bpf_prog_aux *aux)
@@ -123,5 +123,5 @@ index 9478444bf..c84e8dd47 100644
 +}
 +EXPORT_SYMBOL(security_locked_down);
 -- 
-2.17.1
+2.23.3
 
