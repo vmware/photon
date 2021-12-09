@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        An asynchronous networking framework written in Python
 Name:           python3-Twisted
 Version:        20.3.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -46,9 +44,7 @@ license. Twisted runs on Python 2 and an ever growing subset also works with Pyt
 many common network protocols, including SMTP, POP3, IMAP, SSHv2, and DNS.
 
 %prep
-%setup -q -n Twisted-%{version}
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1 -n Twisted-%{version}
 
 %build
 python3 setup.py build
@@ -87,6 +83,8 @@ popd
 %{_bindir}/cftp3
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 20.3.0-3
+-   Bump up to compile with python 3.10
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.3.0-2
 -   Fix build with new rpm
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20.3.0-1

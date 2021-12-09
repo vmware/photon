@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-netifaces
 Version:        0.10.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python library to retrieve information about network interfaces
 Group:          Development/Libraries
 License:        MIT
@@ -23,7 +21,7 @@ from network interfaces.
 
 
 %prep
-%setup -q -n netifaces-%{version}
+%autosetup -n netifaces-%{version}
 
 %build
 
@@ -39,6 +37,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+*  Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.10.9-3
+-  Bump up to compile with python 3.10
 *  Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.10.9-2
 -  Mass removal python2
 *  Tue Jul 23 2019 Tapas Kundu <tkundu@vmware.com> 0.10.9-1

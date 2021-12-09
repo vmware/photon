@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        A tool to check your Python code
 Name:           python3-pycodestyle
 Version:        2.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/python-pam/
 License:        MIT
 Group:          Development/Languages/Python
@@ -26,7 +24,7 @@ pycodestyle is a tool to check your Python code against some of the style conven
 
 
 %prep
-%setup -q -n pycodestyle-%{version}
+%autosetup -n pycodestyle-%{version}
 
 %build
 python3 setup.py build
@@ -43,6 +41,8 @@ python3 setup.py test
 %{_bindir}/pycodestyle
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.6.0-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.6.0-1
 -   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.5.0-2

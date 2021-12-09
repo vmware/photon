@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-zope.interface
 Version:        5.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://github.com/zopefoundation/zope.interface
 Summary:        Interfaces for Python
 License:        ZPL 2.1
@@ -29,7 +27,7 @@ This package provides an implementation of “object interfaces” for Python. I
 For detailed documentation, please see http://docs.zope.org/zope.interface
 
 %prep
-%setup -q -n zope.interface-%{version}
+%autosetup -n zope.interface-%{version}
 
 %build
 python3 setup.py build
@@ -46,6 +44,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.2.0-2
+-   Bump up to compile with python 3.10
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 5.2.0-1
 -   Automatic Version Bump
 *   Wed Sep 30 2020 Gerrit Photon <photon-checkins@vmware.com> 5.1.2-1

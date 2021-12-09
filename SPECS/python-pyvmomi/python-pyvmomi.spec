@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        pyVmomi is the Python SDK for the VMware vSphere API that allows you to manage ESX, ESXi, and vCenter.
 Name:           python3-pyvmomi
 Version:        7.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OSI Approved :: Apache Software License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -27,7 +25,7 @@ BuildArch:      noarch
 pyVmomi is the Python SDK for the VMware vSphere API that allows you to manage ESX, ESXi, and vCenter.
 
 %prep
-%setup -q -n pyvmomi-%{version}
+%autosetup -n pyvmomi-%{version}
 
 %build
 python3 setup.py build
@@ -43,6 +41,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 7.0.1-2
+-   Bump up to compile with python 3.10
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 7.0.1-1
 -   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 7.0-1

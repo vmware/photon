@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Pure Python JavaScript Translator/Interpreter.
 Name:           python3-Js2Py
 Version:        0.70
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -34,7 +32,7 @@ Pure Python JavaScript Translator/Interpreter.
 Everything is done in 100% pure Python so it's extremely easy to install and use. Supports Python 2 & 3. Full support for ECMAScript 5.1, ECMA 6 support is still experimental.
 
 %prep
-%setup -q -n Js2Py-%{version}
+%autosetup -n Js2Py-%{version}
 
 %build
 python3 setup.py build
@@ -50,6 +48,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.70-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.70-1
 -   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.66-2

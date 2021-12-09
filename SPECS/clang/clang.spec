@@ -1,7 +1,7 @@
 Summary:        C, C++, Objective C and Objective C++ front-end for the LLVM compiler.
 Name:           clang
 Version:        11.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NCSA
 URL:            http://clang.llvm.org
 Group:          Development/Tools
@@ -75,6 +75,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 11.0.1-3
+-   Bump up to compile with python 3.10
 *   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 11.0.1-2
 -   Release bump up to use libxml2 2.9.12-1.
 *   Thu Feb 04 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.0.1-1

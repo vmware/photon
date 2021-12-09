@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        It provides common functions for password quality checking
 Name:           libpwquality
 Version:        1.4.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD or GPLv2+
 URL:            https://github.com/libpwquality/libpwquality
 Group:          System Environment/Libraries
@@ -42,7 +40,7 @@ pwquality Python module that provides Python bindings
 for the libpwquality library.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure \
@@ -53,7 +51,7 @@ for the libpwquality library.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %post
 /sbin/ldconfig
@@ -87,6 +85,7 @@ make DESTDIR=%{buildroot} install
 %{python3_sitearch}/*.egg-info
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.4.2-2
+-   Bump up to compile with python 3.10
 *   Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 1.4.2-1
 -   Initial version
-

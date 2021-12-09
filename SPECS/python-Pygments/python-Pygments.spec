@@ -1,7 +1,7 @@
 Summary:        Pygments is a syntax highlighting package written in Python.
 Name:           python3-Pygments
 Version:        2.9.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -54,6 +54,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{_bindir}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.0-2
+-   Bump up to compile with python 3.10
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 2.9.0-1
 -   Update to 2.9.0, Fixes CVE-2021-20270, CVE-2021-27291
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.7.2-2

@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        A free, distributed source control management tool.
 Name:           mercurial
 Version:        5.5.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            https://www.mercurial-scm.org
 Group:          System Environment/Security
@@ -11,7 +9,6 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://www.mercurial-scm.org/release/%{name}-%{version}.tar.gz
 %define sha1    mercurial=c74cbb8446f8279d59104a7212188e8f3021c0d8
-Patch0:         mercurial-disable-zstd.patch
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-devel
@@ -22,7 +19,7 @@ Mercurial is a distributed source control management tool similar to Git and Baz
 Mercurial is written in Python and is used by projects such as Mozilla and Vim.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 ln -sf /usr/bin/python3 /usr/bin/python
@@ -59,6 +56,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.5.1-2
+-   Bump up to compile with python 3.10
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 5.5.1-1
 -   Automatic Version Bump
 *   Thu Jul 16 2020 Gerrit Photon <photon-checkins@vmware.com> 5.5-1
@@ -83,7 +82,7 @@ rm -rf %{buildroot}/*
 -   Apply CVE-2017-9462 patch
 *   Fri Mar 31 2017 Michelle Wang <michellew@vmware.com> 4.1-1
 -   Update package version
-*   Mon Jan 22 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.1-6
+*   Sun Jan 22 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.1-6
 -   Install with setup.py.
 *   Tue Nov 22 2016 Xiaolin Li <xiaolinl@vmware.com> 3.7.1-5
 -   Apply patches for CVE-2016-3068, CVE-2016-3069, CVE-2016-3105

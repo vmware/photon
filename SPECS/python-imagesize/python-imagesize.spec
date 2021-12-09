@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-imagesize
 Version:        1.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        python module to analyze jpeg/jpeg2000/png/gif image header and return image size.
 License:        MIT
 Group:          Development/Languages/Python
@@ -31,7 +29,7 @@ BuildArch:      noarch
 python module to analyze jpeg/jpeg2000/png/gif image header and return image size.
 
 %prep
-%setup -n imagesize-%{version}
+%autosetup -n imagesize-%{version}
 
 %build
 python3 setup.py build
@@ -47,6 +45,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.2.0-3
+-   Bump up to compile with python 3.10
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.2.0-2
 -   Fix build with new rpm
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.2.0-1

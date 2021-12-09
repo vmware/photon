@@ -1,8 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        A library for retrieving information onrunning processes and system utilization
 Name:           python3-psutil
 Version:        5.7.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/psutil
 License:        BSD
 Group:          Development/Languages/Python
@@ -38,6 +37,8 @@ make test CI_TESTING=1 PYTHON=%{__python3} PYTHONPATH=%{buildroot}/%{python3_sit
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.7.3-3
+-   Bump up to compile with python 3.10
 *   Tue Oct 19 2021 Tapas Kundu <tkundu@vmware.com> 5.7.3-2
 -   Requires setuptools for building.
 -   Fixed makecheck

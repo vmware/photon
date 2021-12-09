@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Fast javascript parser (based on esprima.js).
 Name:           python3-pyjsparser
 Version:        2.7.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -25,9 +23,8 @@ BuildArch:      noarch
 %description
 Fast javascript parser (based on esprima.js).
 
-
 %prep
-%setup -q -n pyjsparser-%{version}
+%autosetup -n pyjsparser-%{version}
 
 %build
 python3 setup.py build
@@ -43,6 +40,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.1-3
+-   Bump up to compile with python 3.10
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 2.7.1-2
 -   Mass removal python2
 *   Sun Nov 10 2019 Tapas Kundu <tkundu@vmware.com> 2.7.1-1

@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-click
 Version:        8.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Composable command line interface toolkit
 License:        BSD License
 Vendor:         VMware, Inc.
@@ -15,6 +13,7 @@ Source0:        click-%{version}.tar.gz
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-macros
 Requires:       python3
 Requires:       python3-libs
 
@@ -26,7 +25,7 @@ It's the "Command Line Interface Creation Kit". It’s highly configurable but c
 It aims to make the process of writing command line tools quick and fun while also preventing any frustration caused by the inability to implement an intended CLI API.
 
 %prep
-%setup -n click-%{version}
+%autosetup -n click-%{version}
 
 %build
 python3 setup.py build
@@ -42,5 +41,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 8.0.1-2
+-   Bump up to compile with python 3.10
 *   Fri Jun 11 2021 Ankit Jain <ankitja@vmware.com> 8.0.1-1
 -   Initial packaging for Photon

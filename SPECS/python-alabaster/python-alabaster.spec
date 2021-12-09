@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-alabaster
 Version:        0.7.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A configurable sidebar-enabled Sphinx theme
 License:        BSD
 Group:          Development/Languages/Python
@@ -24,7 +22,7 @@ BuildArch:      noarch
 Alabaster is a visually (c)lean, responsive, configurable theme for the Sphinx documentation system. It is Python 2+3 compatible.
 
 %prep
-%setup -n alabaster-%{version}
+%autosetup -n alabaster-%{version}
 
 %build
 python3 setup.py build
@@ -33,13 +31,15 @@ python3 setup.py build
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.7.12-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.7.12-1
 -   Automatic Version Bump
 *   Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 0.7.11-2

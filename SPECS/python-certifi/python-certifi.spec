@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Python package for providing Mozilla's CA Bundle
 Name:           python3-certifi
 Version:        2020.6.20
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            https://github.com/certifi
 License:        MPL-2.0
 Group:          Development/Languages/Python
@@ -30,7 +28,7 @@ SSL certificates while verifying the identity of TLS hosts
 
 
 %prep
-%setup -q -n certifi-%{version}
+%autosetup -n certifi-%{version}
 
 %build
 python3 setup.py build
@@ -46,6 +44,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2020.6.20-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2020.6.20-1
 -   Automatic Version Bump
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 2018.08.24-2

@@ -1,8 +1,7 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        SELinux library and simple utilities
 Name:           libselinux
 Version:        3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Public Domain
 Group:          System Environment/Libraries
 Source0:        https://github.com/SELinuxProject/selinux/releases/download/20200710/%{name}-%{version}.tar.gz
@@ -71,14 +70,14 @@ The libselinux-python package contains the python3 bindings for developing
 SELinux applications.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 make %{?_smp_mflags}
 make LIBDIR="%{_libdir}" %{?_smp_mflags} PYTHON=/usr/bin/python3 pywrap
 
 %install
-make DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" BINDIR="%{_bindir}" SBINDIR="%{_sbindir}" PYTHON=/usr/bin/python3 install install-pywrap
+make %{?_smp_mflags} DESTDIR="%{buildroot}" LIBDIR="%{_libdir}" SHLIBDIR="/%{_lib}" BINDIR="%{_bindir}" SBINDIR="%{_sbindir}" PYTHON=/usr/bin/python3 install install-pywrap
 
 mkdir -p %{buildroot}/%{_prefix}/lib/tmpfiles.d
 mkdir -p %{buildroot}/var/run/setrans
@@ -116,6 +115,8 @@ rm -rf %{buildroot}%{_mandir}/ru
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.1-2
+-   Bump up to compile with python 3.10
 *   Thu Jul 23 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1-1
 -   Automatic Version Bump
 *   Mon Jun 22 2020 Tapas Kundu <tkundu@vmware.com> 3.0-3

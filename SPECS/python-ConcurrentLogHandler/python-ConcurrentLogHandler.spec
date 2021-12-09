@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-ConcurrentLogHandler
 Version:        0.9.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Concurrent logging handler (drop-in replacement for RotatingFileHandler) Python 2.6+
 License:        Apache-2.0
 Group:          Development/Languages/Python
@@ -15,6 +13,7 @@ Distribution:   Photon
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-macros
 %if %{with_check}
 BuildRequires:  python3-pytest
 %endif
@@ -29,7 +28,7 @@ ConcurrentLogHandler is a module that provides an additional log handler for Pyt
 
 
 %prep
-%setup -n ConcurrentLogHandler-%{version}
+%autosetup -n ConcurrentLogHandler-%{version}
 
 %build
 python3 setup.py build
@@ -49,6 +48,8 @@ python3 stresstest.py
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.9.1-6
+-   Bump up to compile with python 3.10
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.9.1-5
 -   Fix build with new rpm
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.9.1-4

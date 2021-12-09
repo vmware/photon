@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           docker-pycreds3
 Version:        0.4.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python API for docker credentials store
 License:        ASL2.0
 Group:          Development/Languages/Python
@@ -15,6 +13,7 @@ Source0:        docker-pycreds-%{version}.tar.gz
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-macros
 Requires:       python3
 Requires:       python3-libs
 
@@ -24,7 +23,7 @@ BuildArch:      noarch
 Python API for docker credentials store
 
 %prep
-%setup -n docker-pycreds-%{version}
+%autosetup -n docker-pycreds-%{version}
 
 %build
 python3 setup.py build
@@ -37,10 +36,12 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.4.0-2
+-   Bump up to compile with python 3.10
 *   Thu Oct 15 2020 Ashwin H <ashwinh@vmware.com> 0.4.0-1
 -   Upgrade to 0.4.0 release.
 *   Thu Jun 18 2020 Tapas Kundu <tkundu@vmware.com> 0.3.0-2
-=   Mass removal python2
+-   Mass removal python2
 *   Tue Sep 04 2018 Tapas Kundu <tkundu@vmware.com> 0.3.0-1
 -   Upgraded to 0.3.0 version
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.2.1-2

@@ -2,11 +2,9 @@
 # spec file for package python3-linux-procfs
 #
 
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-linux-procfs
 Version:        0.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -50,5 +48,7 @@ LANG=en_US.UTF-8 python3 bitmasklist_test.py
 %license COPYING
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.6.1-2
+-   Bump up to compile with python 3.10
 *   Thu Mar 19 2020 Shreyas B. <shreyasb@vmware.com> 0.6.1-1
 -   Initial version.

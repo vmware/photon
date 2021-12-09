@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        file locking module
 Name:           python3-lockfile
 Version:        0.12.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -28,7 +26,7 @@ as a demonstration of the possibilities it provides than as production-quality c
 
 
 %prep
-%setup -q -n lockfile-%{version}
+%autosetup -n lockfile-%{version}
 
 %build
 python3 setup.py build
@@ -43,6 +41,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/lockfile
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.12.2-5
+-   Bump up to compile with python 3.10
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.12.2-4
 -   Mass removal python2
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 0.12.2-3

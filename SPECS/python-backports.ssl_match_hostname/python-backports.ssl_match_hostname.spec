@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-backports.ssl_match_hostname
 Version:        3.7.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Backported python ssl_match_hostname
 License:        PSFL
 Group:          Development/Languages/Python
@@ -15,6 +13,7 @@ Source0:        https://pypi.python.org/packages/76/21/2dc61178a2038a5cb35d14b61
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-macros
 Requires:       python3
 Requires:       python3-libs
 
@@ -24,7 +23,7 @@ BuildArch:      noarch
 Backported python ssl_match_hostname feature
 
 %prep
-%setup -n backports.ssl_match_hostname-%{version}
+%autosetup -n backports.ssl_match_hostname-%{version}
 
 %build
 python3 setup.py build
@@ -40,6 +39,8 @@ find %{buildroot}%{python3_sitelib}/ -name '*.pyc' -delete -o \
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.0.1-3
+-   Bump up to compile with python 3.10
 *   Wed Oct 28 2020 Dweep Advani <dadvani@vmware.com> 3.7.0.1-2
 -   Fixed install conflicts with python3-configparser
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.7.0.1-1

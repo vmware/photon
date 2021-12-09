@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        ECDSA cryptographic signature library (pure python)
 Name:           python3-ecdsa
 Version:        0.16.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -30,7 +28,7 @@ and signatures are very short, making them easy to handle and incorporate
 into other protocols.
 
 %prep
-%setup -q -n ecdsa-%{version}
+%autosetup -n ecdsa-%{version}
 
 %build
 python3 setup.py build
@@ -52,6 +50,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.16.0-2
+-   Bump up to compile with python 3.10
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 0.16.0-1
 -   Automatic Version Bump
 *   Wed Jul 08 2020 Tapas Kundu <tkundu@vmware.com> 0.15-2

@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           tuna
 Version:        0.14.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Summary:        Application tuning command line utility
 Group:          Applications/System
@@ -24,7 +22,7 @@ a specific application and moving threads and interrupts to a CPU.
 Operations can be done on CPU sockets, understanding CPU topology.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 python3 setup.py build
@@ -64,6 +62,8 @@ done
 %{_datadir}/polkit-1/actions/org.tuna.policy
 
 %changelog
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.14.1-2
+- Bump up to compile with python 3.10
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.14.1-1
 - Automatic Version Bump
 * Tue Jun 16 2020 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 0.14-2

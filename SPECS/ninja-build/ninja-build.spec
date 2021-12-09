@@ -1,7 +1,7 @@
 Name:           ninja-build
 Summary:        Small build system with focus on speed
 Version:        1.10.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://ninja-build.org
 Vendor:         VMware, Inc.
@@ -23,7 +23,7 @@ higher-level build system, and it is designed to run builds
 as fast as possible.
 
 %prep
-%setup -n ninja-%{version}
+%autosetup -n ninja-%{version}
 
 %build
 
@@ -48,6 +48,8 @@ install -Dpm0644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d/macros.ninja
 %{_libdir}/rpm/macros.d/macros.ninja
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.10.2-2
+-   Bump up to compile with python 3.10
 *   Sat Jan 23 2021 Susant Sahani <ssahani@vmware.com> 1.10.2-1
 -   Automatic Version Bump
 *   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 1.10.1-1

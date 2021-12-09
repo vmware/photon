@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-jsonschema
 Version:        3.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An implementation of JSON Schema validation for Python
 License:        MIT
 Group:          Development/Languages/Python
@@ -28,7 +26,7 @@ http://tools.ietf.org/html/draft-zyp-json-schema-03
 
 
 %prep
-%setup -n jsonschema-%{version}
+%autosetup -n jsonschema-%{version}
 
 %build
 python3 setup.py build
@@ -46,6 +44,8 @@ python3 setup test
 %{_bindir}/jsonschema3
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.2.0-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.2.0-1
 -   Automatic Version Bump
 *   Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 2.6.0-2

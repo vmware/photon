@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Symbolic constants in Python.
 Name:           python3-constantly
 Version:        15.1.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Url:            https://pypi.python.org/pypi/constantly
 License:        MIT
 Group:          Development/Languages/Python
@@ -27,7 +25,7 @@ A library that provides symbolic constant support. It includes collections and c
 
 
 %prep
-%setup -q -n constantly-%{version}
+%autosetup -n constantly-%{version}
 
 %build
 python3 setup.py build
@@ -43,6 +41,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 15.1.0-4
+-   Bump up to compile with python 3.10
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 15.1.0-3
 -   Mass removal python2
 *   Wed Jun 07 2017 Xiaolin Li <xiaolinl@vmware.com> 15.1.0-2

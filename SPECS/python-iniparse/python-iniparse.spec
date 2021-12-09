@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-iniparse
 Version:        0.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python Module for Accessing and Modifying Configuration Data in INI files
 Group:          Development/Libraries
 License:        MIT
@@ -32,9 +30,8 @@ files (order of sections & options, indentation, comments, and blank
 lines are preserved when data is updated), and is more convenient to
 use.
 
-
 %prep
-%setup -q -n iniparse-%{version}
+%autosetup -n iniparse-%{version}
 
 %build
 python3 setup.py build
@@ -45,18 +42,17 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 chmod 644 %{buildroot}/usr/share/doc/iniparse-%{version}/index.html
 mv %{buildroot}/usr/share/doc/iniparse-%{version} %{buildroot}/usr/share/doc/python-iniparse-%{version}
 
-
 %check
 python3 runtests.py
-
 
 %files
 %defattr(-,root,root,-)
 %doc  %{_docdir}/python-iniparse-%{version}/*
 %{python3_sitelib}/*
 
-
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.5-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.5-1
 -   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.4-7

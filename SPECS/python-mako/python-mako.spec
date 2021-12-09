@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-mako
 Version:        1.1.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python templating language
 License:        MIT
 Group:          Development/Languages/Python
@@ -15,6 +13,7 @@ Source0:        Mako-%{version}.tar.gz
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-macros
 
 %if %{with_check}
 BuildRequires:  python3-pytest
@@ -29,7 +28,7 @@ BuildArch:      noarch
 A super-fast templating language that borrows the best ideas from the existing templating languages. Mako is a template library written in Python. It provides a familiar, non-XML syntax which compiles into Python modules for maximum performance. Mako’s syntax and API borrows from the best ideas of many others, including Django templates, Cheetah, Myghty, and Genshi.
 
 %prep
-%setup -n Mako-%{version}
+%autosetup -n Mako-%{version}
 
 %build
 python3 setup.py build
@@ -47,6 +46,8 @@ python3 setup.py test
 %{_bindir}/mako-render3
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.1.3-3
+-   Bump up to compile with python 3.10
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.1.3-2
 -   Fix build with new rpm
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.1.3-1

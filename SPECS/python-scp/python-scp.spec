@@ -1,10 +1,9 @@
 %global debug_package %{nil}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        scp module for paramiko
 Name:           python3-scp
 Version:        0.13.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU Library or Lesser General Public License (LGPL) (LGPL)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -18,6 +17,7 @@ BuildRequires:  python3-libs
 BuildRequires:  python3-xml
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-paramiko
+BuildRequires:  python3-macros
 
 Requires:       python3
 Requires:       python3-libs
@@ -29,7 +29,7 @@ This is the protocol as referenced from the openssh scp program, and has only be
 
 
 %prep
-%setup -q -n scp-%{version}
+%autosetup -n scp-%{version}
 
 %build
 python3 setup.py build
@@ -44,6 +44,8 @@ python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.13.3-2
+-   Bump up to compile with python 3.10
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 0.13.3-1
 -   Automatic Version Bump
 *   Wed Aug 12 2020 Tapas Kundu <tkundu@vmware.com> 0.13.2-1

@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        11.0.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -95,6 +93,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 11.0.1-4
+- Bump up to compile with python 3.10
 * Mon Nov 29 2021 Shreenidhi Shedi <sshedi@vmware.com> 11.0.1-3
 - Add lua to Requires
 * Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 11.0.1-2

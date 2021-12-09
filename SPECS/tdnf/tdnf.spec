@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.1.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -245,6 +243,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
 
 %changelog
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.1.5-4
+- Bump up to compile with python 3.10
 * Mon Nov 15 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.1.5-3
 - Bump version as a part of rpm upgrade
 * Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.1.5-2

@@ -1,7 +1,7 @@
 Summary:        C++ tool
 Name:           doxygen
 Version:        1.8.20
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            https://www.doxygen.nl/download.html
 Group:          Build/Tool
@@ -19,7 +19,7 @@ but it also supports other popular programming languages such as C, Objective-C,
 (Corba, Microsoft, and UNO/OpenOffice flavors), Fortran, VHDL, and to some extent D.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 mkdir build
@@ -31,11 +31,11 @@ cmake -DLIBCLANG_BUILD_STATIC=ON \
       -DLLVM_BUILD_LLVM_C_DYLIB=OFF \
       -DLLVM_ENABLE_TERMINFO=OFF \
       ../
-make
+make %{?_smp_mflags}
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %check
 make %{?_smp_mflags} check
@@ -45,5 +45,7 @@ make %{?_smp_mflags} check
 %{_prefix}/local/bin/doxygen
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.8.20-2
+-   Bump up to compile with python 3.10
 *   Mon Oct 5 2020 Michelle Wang <michellew@vmware.com> 1.8.20-1
 -   Initial build and add this for libsigc++ build requires

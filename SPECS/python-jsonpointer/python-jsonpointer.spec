@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-jsonpointer
 Version:        2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
@@ -16,6 +14,7 @@ BuildRequires: python3
 BuildRequires: python3-libs
 BuildRequires: python3-setuptools
 BuildRequires: python3-xml
+BuildRequires: python3-macros
 Requires: python3
 Requires: python3-libs
 
@@ -26,7 +25,7 @@ Library to apply JSON Patches according to RFC 6902.
 
 
 %prep
-%setup -n jsonpointer-%{version}
+%autosetup -n jsonpointer-%{version}
 
 %build
 python3 setup.py build
@@ -43,6 +42,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.0-3
+-   Bump up to compile with python 3.10
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.0-2
 -   Mass removal python2
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.0-1

@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Persistent/Functional/Immutable data structures
 Name:           python3-pyrsistent
 Version:        0.17.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT License (MIT)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -39,7 +37,7 @@ The data structures are designed to share common elements through path copying. 
 and make them as pythonic as possible so that they can be easily integrated into any python program without hassle.
 
 %prep
-%setup -q -n pyrsistent-%{version}
+%autosetup -n pyrsistent-%{version}
 
 %build
 python3 setup.py build
@@ -55,6 +53,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.17.3-3
+-   Bump up to compile with python 3.10
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.17.3-2
 -   Fix build with new rpm
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.17.3-1

@@ -1,5 +1,3 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 %define VER 6.0.0
 Summary:        A Python-based command-line client for running simple CQL commands on a Cassandra cluster.
 Name:           python3-cqlsh
@@ -8,7 +6,7 @@ Name:           python3-cqlsh
 # Thus, to overcome this appended "ga" at the end 6.0.0 to make it latest one
 # Once next version > 6.0.0 is available then we can remove "ga"
 Version:        6.0.0ga
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -53,6 +51,8 @@ python3 setup.py check
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 6.0.0ga-2
+-   Bump up to compile with python 3.10
 *   Wed Sep 22 2021 Ankit Jain <ankitja@vmware.com> 6.0.0ga-1
 -   Update to 6.0.0
 *   Wed Jun 09 2021 Ankit Jain <ankitja@vmware.com> 6.0.0b4-1

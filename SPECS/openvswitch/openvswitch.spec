@@ -1,8 +1,7 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Open vSwitch daemon/database/utilities
 Name:           openvswitch
 Version:        2.14.0
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        ASL 2.0 and LGPLv2+
 URL:            http://www.openvswitch.org/
 Group:          System Environment/Daemons
@@ -147,6 +146,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man7/ovs-actions.7.gz
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.14.0-9
+-   Bump up to compile with python 3.10
 *   Thu Sep 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.14.0-8
 -   Bump up release for openssl
 *   Wed Sep 01 2021 Sujay G <gsujay@vmware.com> 2.14.0-7

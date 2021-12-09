@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Python PAM module using ctypes, py3/py2
 Name:           python3-pam
 Version:        1.8.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/python-pam/
 License:        MIT
 Group:          Development/Languages/Python
@@ -26,7 +24,7 @@ Requires:       python3-libs
 Python PAM module using ctypes, py3/py2.
 
 %prep
-%setup -q -n python-pam-%{version}
+%autosetup -n python-pam-%{version}
 
 %build
 python3 setup.py build
@@ -42,5 +40,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.8.4-2
+-   Bump up to compile with python 3.10
 *   Thu Feb 18 2021 Tapas Kundu <tkundu@vmware.com> 1.8.4-1
 -   Initial packaging for Photon

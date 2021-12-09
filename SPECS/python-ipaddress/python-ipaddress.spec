@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-ipaddress
 Version:        1.0.23
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Port of the 3.3+ ipaddress module to 2.6, 2.7, 3.2
 License:        Python Software Foundation License (Python Software Foundation License)
 Group:          Development/Languages/Python
@@ -15,6 +13,7 @@ Source0:        ipaddress-%{version}.tar.gz
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-macros
 
 Requires:       python3
 Requires:       python3-libs
@@ -25,7 +24,7 @@ BuildArch:      noarch
 IPv4/IPv6 manipulation library
 
 %prep
-%setup -n ipaddress-%{version}
+%autosetup -n ipaddress-%{version}
 
 %build
 python3 setup.py build
@@ -41,6 +40,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.0.23-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.0.23-1
 -   Automatic Version Bump
 *   Wed Jun 17 2020 Tapas Kundu <tkundu@vmware.com> 1.0.22-3

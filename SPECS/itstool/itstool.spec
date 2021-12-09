@@ -1,7 +1,7 @@
 Summary:        Itstool-2.0.6
 Name:           itstool
 Version:        2.0.6
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv3+
 URL:            http://itstool.org
 Source0:        http://files.itstool.org/itstool/%{name}-%{version}.tar.bz2
@@ -39,6 +39,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_mandir}/man1/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.6-4
+-   Bump up to compile with python 3.10
 *   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 2.0.6-3
 -   Release bump up to use libxml2 2.9.12-1.
 *   Mon Jul 20 2020 Tapas Kundu <tkundu@vmware.com> 2.0.6-2

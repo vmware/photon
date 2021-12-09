@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-ipaddr
 Version:        2.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://github.com/google/ipaddr-py
 Summary:        Google's Python IP address manipulation library
 License:        Apache2
@@ -15,6 +13,7 @@ Source0:        https://pypi.python.org/packages/source/i/ipaddr/ipaddr-%{versio
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-macros
 
 Requires:       python3
 Requires:	python3-libs
@@ -24,9 +23,8 @@ BuildArch:      noarch
 %description
 ipaddr.py is a library for working with IP addresses, both IPv4 and IPv6. It was developed by Google for internal use, and is now open source.
 
-
 %prep
-%setup -q -n ipaddr-%{version}
+%autosetup -n ipaddr-%{version}
 
 %build
 python3 setup.py build
@@ -42,6 +40,8 @@ python3 ipaddr_test.py
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.2.0-3
+-   Bump up to compile with python 3.10
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.2.0-2
 -   Mass removal python2
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.2.0-1

@@ -6,7 +6,7 @@
 Summary:        Photon Management Daemon
 Name:           pmd
 Version:        0.0.7
-Release:        7%{?dist}
+Release:        8%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        Apache 2.0
@@ -352,6 +352,8 @@ rm -rf %{buildroot}/*
     %exclude %{_libdir}/gssapi_unix/*.la
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.0.7-8
+-   Bump up to compile with python 3.10
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.0.7-7
 -   Bump up release for openssl
 *   Mon Jul 26 2021 Oliver Kurth <okurth@vmware.com> 0.0.7-6

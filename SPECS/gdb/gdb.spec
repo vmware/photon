@@ -1,7 +1,7 @@
 Summary:        C debugger
 Name:           gdb
 Version:        10.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/%{name}
 Source0:        http://ftp.gnu.org/gnu/gdb/%{name}-%{version}.tar.xz
@@ -30,9 +30,7 @@ GDB, the GNU Project debugger, allows you to see what is going on
 `inside' another program while it executes -- or what
 another program was doing at the moment it crashed.
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1
 
 %build
 mkdir build && cd build
@@ -87,6 +85,8 @@ make %{?_smp_mflags} check || tail gdb/testsuite/gdb.sum  | grep "# of unexpecte
 %{_mandir}/*/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 10.1-2
+-   Bump up to compile with python 3.10
 *   Thu Jan 07 2021 Tapas Kundu <tkundu@vmware.com> 10.1-1
 -   Update to version 10.1
 *   Tue Jan 05 2021 Tapas Kundu <tkundu@vmware.com> 9.2-3

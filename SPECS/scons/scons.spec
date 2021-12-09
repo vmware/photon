@@ -1,7 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           scons
 Version:        4.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        An Open Source software construction tool
 Group:          Development/Tools
 License:        MIT
@@ -14,6 +13,7 @@ Distribution:   Photon
 BuildRequires:  python3
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-macros
 
 Requires:       python3-xml
 Requires:       python3
@@ -27,7 +27,7 @@ with integrated functionality similar to autoconf/automake and compiler caches s
 In short, SCons is an easier, more reliable and faster way to build software.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 python3 setup.py build
@@ -48,6 +48,8 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.0.1-3
+-   Bump up to compile with python 3.10
 *   Fri Sep 18 2020 Susant Sahani <ssahani@vmware.com> 4.0.1-2
 -   Add requires python3-xml
 *   Wed Jul 29 2020 Gerrit Photon <photon-checkins@vmware.com> 4.0.1-1

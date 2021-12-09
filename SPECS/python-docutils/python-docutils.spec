@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Docutils -- Python Documentation Utilities.
 Name:           python3-docutils
 Version:        0.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        public domain, Python, 2-Clause BSD, GPL 3 (see COPYING.txt)
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -28,7 +26,7 @@ Docutils is a modular system for processing documentation into useful formats, s
 
 
 %prep
-%setup -q -n docutils-%{version}
+%autosetup -p1 -n docutils-%{version}
 
 %build
 python3 setup.py build
@@ -68,6 +66,8 @@ python3 test3/alltests.py
 %{_bindir}/rst2html3.py
 %{_bindir}/rst2html4.py
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.16-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.16-1
 -   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.14-2

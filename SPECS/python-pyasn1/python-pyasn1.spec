@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-pyasn1
 Version:        0.4.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Implementation of ASN.1 types and codecs in Python programming language
 License:        BSD
 Group:          Development/Languages/Python
@@ -14,6 +12,7 @@ Source0:        pyasn1-%{version}.tar.gz
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-macros
 Requires:       python3
 Requires:       python3-libs
 BuildArch:      noarch
@@ -24,7 +23,7 @@ It has been first written to support particular protocol (SNMP),
 but then generalized to be suitable for a wide range of protocols based on ASN.1 specification.
 
 %prep
-%setup -n pyasn1-%{version}
+%autosetup -n pyasn1-%{version}
 
 %build
 python3 setup.py build
@@ -40,6 +39,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.4.8-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.4.8-1
 -   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 0.4.4-2

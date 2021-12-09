@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Markdown to reStructuredText converter.
 Name:           python3-m2r
 Version:        0.2.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -41,7 +39,7 @@ I wanted to write sphinx document in markdown, since it’s widely used now and 
 
 
 %prep
-%setup -q -n m2r-%{version}
+%autosetup -n m2r-%{version}
 
 %build
 python3 setup.py build
@@ -60,6 +58,8 @@ python3 setup.py test -s tests
 %{_bindir}/m2r3
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.2.1-3
+-   Bump up to compile with python 3.10
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.2.1-2
 -   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.2.1-1

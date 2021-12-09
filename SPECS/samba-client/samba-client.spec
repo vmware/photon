@@ -1,7 +1,7 @@
 Summary:        Samba Client Programs
 Name:           samba-client
 Version:        4.14.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
@@ -561,6 +561,8 @@ done
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.14.4-3
+-   Bump up to compile with python 3.10
 *   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 4.14.4-2
 -   Release bump up to use libxml2 2.9.12-1.
 *   Thu May 06 2021 Shreyas B. <shreyasb@vmware.com> 4.14.4-1

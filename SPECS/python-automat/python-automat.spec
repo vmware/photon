@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Self-service finite-state machines for the programmer on the go.
 Name:           python3-automat
 Version:        20.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -38,7 +36,7 @@ Self-service finite-state machines for the programmer on the go.
 Automat is a library for concise, idiomatic Python expression of finite-state automata (particularly deterministic finite-state transducers).
 
 %prep
-%setup -q -n Automat-%{version}
+%autosetup -n Automat-%{version}
 
 %build
 python3 setup.py build
@@ -56,6 +54,8 @@ python3 setup.py test
 %{_bindir}/automat-visualize3
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 20.2.0-3
+-   Bump up to compile with python 3.10
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 20.2.0-2
 -   Fix build with new rpm
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 20.2.0-1

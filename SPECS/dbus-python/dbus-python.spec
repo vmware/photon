@@ -1,9 +1,8 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %global __python3 \/usr\/bin\/python3
 
 Name:           dbus-python3
 Version:        1.2.16
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python bindings for D-Bus
 License:        MIT
 Group:          Development/Libraries/Python
@@ -38,19 +37,19 @@ Requires:       dbus-devel
 Developer files for Python bindings for D-Bus.
 
 %prep
-%setup -q -n dbus-python-%{version}
+%autosetup -n dbus-python-%{version}
 
 %build
 %configure PYTHON="%{__python3}"
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 cp -r dbus_python*egg-info %{buildroot}%{python3_sitelib}
 rm -f %{buildroot}%{python3_sitelib}/*.la
 
 %check
-make check
+make %{?_smp_mflags} check
 
 %files
 %defattr(-,root,root)
@@ -67,6 +66,8 @@ make check
 %{_libdir}/pkgconfig/dbus-python.pc
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.2.16-3
+-   Bump up to compile with python 3.10
 *   Mon Dec 14 2020 Susant Sahani <ssahani@vmware.com> 1.2.16-2
 -   Add build requires
 *   Thu Mar 19 2020 Tapas Kundu <tkundu@vmware.com> 1.2.16-1

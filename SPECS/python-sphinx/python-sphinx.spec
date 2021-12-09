@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:       Python documentation generator
 Name:          python3-sphinx
 Version:       3.3.0
-Release:       3%{?dist}
+Release:       4%{?dist}
 Group:         Development/Tools
 License:       BSD-2-Clause
 URL:           http://www.vmware.com
@@ -98,6 +96,8 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{python3_sitelib}/*
 
 %changelog
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.3.0-4
+- Bump up to compile with python 3.10
 * Thu Oct 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.3.0-3
 - Bump version as a part of python-babel upgrade
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.3.0-2

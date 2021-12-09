@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        autopep8 automatically formats Python code
 Name:           python3-autopep8
 Version:        1.5.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/python-autopep8/
 License:        MIT
 Group:          Development/Languages/Python
@@ -32,7 +30,7 @@ formatted.
 
 
 %prep
-%setup -q -n autopep8-%{version}
+%autosetup -n autopep8-%{version}
 
 %build
 python3 setup.py build
@@ -49,6 +47,8 @@ python3 setup.py test
 %{_bindir}/autopep8
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.5.4-3
+-   Bump up to compile with python 3.10
 *   Mon Dec 14 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.5.4-2
 -   Add python3-toml to requires
 *   Tue Aug 11 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.4-1

@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        POSIX capability Library
 Name:           libcap-ng
 Version:        0.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 Group:          System Environment/Libraries
 Vendor:		VMware, Inc.
@@ -35,7 +33,7 @@ Requires:   %{name} = %{version}-%{release}
 The libraries and header files needed for libcap_ng development.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 %configure \
@@ -43,7 +41,7 @@ The libraries and header files needed for libcap_ng development.
 
 make %{?_smp_mflags}
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 
 %check
@@ -72,6 +70,8 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 %{_libdir}/*.a
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.8-2
+-   Bump up to compile with python 3.10
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 0.8-1
 -   Automatic Version Bump
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 0.7.11-1
@@ -94,4 +94,3 @@ sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
 -   GA - Bump release of all rpms
 *   Fri Aug 28 2015 Divya Thaluru <dthaluru@vmware.com> 0.7.7-1
 -   Initial version
-

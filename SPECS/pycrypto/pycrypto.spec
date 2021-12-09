@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        The Python Cryptography Toolkit.
 Name:           python3-pycrypto
 Version:        2.6.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Public Domain and Python
 URL:            http://www.pycrypto.org/
 Source0:        https://ftp.dlitz.net/pub/dlitz/crypto/pycrypto/pycrypto-%{version}.tar.gz
@@ -29,15 +27,7 @@ This is a collection of both secure hash functions (such as SHA256 and RIPEMD160
 
 
 %prep
-%setup -q -n pycrypto-%{version}
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-
+%autosetup -p1 -n pycrypto-%{version}
 
 %build
 python3 setup.py build
@@ -53,6 +43,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.6.1-8
+-   Bump up to compile with python 3.10
 *   Wed Aug 12 2020 Tapas Kundu <tkundu@vmware.com> 2.6.1-7
 -   Require python3-tools for building.
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 2.6.1-6

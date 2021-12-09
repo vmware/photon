@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-configobj
 Version:        5.0.6
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        Config file reading, writing and validation
 License:        BSD
 Group:          Development/Languages/Python
@@ -15,6 +13,7 @@ Source0:        configobj-%{version}.tar.gz
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-macros
 
 Requires:       python3-six
 
@@ -25,7 +24,7 @@ ConfigObj is a simple but powerful config file reader and writer: an ini file ro
 
 
 %prep
-%setup -n configobj-%{version}
+%autosetup -n configobj-%{version}
 
 %build
 python3 setup.py build
@@ -41,6 +40,8 @@ python3 validate.py
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.0.6-6
+-   Bump up to compile with python 3.10
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 5.0.6-5
 -   Mass removal python2
 *   Mon May 15 2017 Kumar Kaushik <kaushikk@vmware.com> 5.0.6-4

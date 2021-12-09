@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Python parsing module.
 Name:           python3-pyparsing
 Version:        2.4.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/pyparsing/%{version}
 License:        MIT
 Group:          Development/Languages/Python
@@ -26,7 +24,7 @@ Requires:       python3-libs
 Python parsing module.
 
 %prep
-%setup -q -n pyparsing-%{version}
+%autosetup -n pyparsing-%{version}
 
 %build
 python3 setup.py build
@@ -42,6 +40,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.4.7-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.4.7-1
 -   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 2.2.0-4

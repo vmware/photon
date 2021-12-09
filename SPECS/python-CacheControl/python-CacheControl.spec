@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        A port of the caching algorithms in httplib2 for use with requests session object.
 Name:           python3-CacheControl
 Version:        0.12.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache Software License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -25,7 +23,7 @@ CacheControl is a port of the caching algorithms in httplib2 for use with reques
 It was written because httplib2's better support for caching is often mitigated by its lack of threadsafety. The same is true of requests in terms of caching.
 
 %prep
-%setup -q -n CacheControl-%{version}
+%autosetup -n CacheControl-%{version}
 
 %build
 python3 setup.py build
@@ -43,6 +41,8 @@ python3 setup.py test
 %{_bindir}/doesitcache3
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.12.6-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.12.6-1
 -   Automatic Version Bump
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 0.12.5-2

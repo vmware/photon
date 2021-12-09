@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Service identity verification for pyOpenSSL.
 Name:           python3-service_identity
 Version:        18.1.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -65,6 +63,8 @@ PYTHONPATH="%{buildroot}%{python3_sitelib}" py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 18.1.0-4
+-   Bump up to compile with python 3.10
 *   Tue Nov 30 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 18.1.0-3
 -   Increment for openssl 3.0.0 compatibility
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 18.1.0-2

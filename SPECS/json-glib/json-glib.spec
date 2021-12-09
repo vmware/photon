@@ -1,7 +1,7 @@
 Summary:        Library providing serialization and deserialization support for the JSON format
 Name:           json-glib
 Version:        1.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 Group:          Development/Libraries
 Source0:        http://ftp.gnome.org/pub/GNOME/sources/json-glib/1.4/%{name}-%{version}.tar.xz
@@ -39,7 +39,7 @@ Requires:       gobject-introspection-devel
 Header files for the json-glib library.
 
 %prep
-%setup -q -n %{name}-%{version}
+%autosetup -n %{name}-%{version}
 
 %build
 export LANG=en_US.UTF-8
@@ -59,7 +59,7 @@ sed -i 's/mesontest/meson test/g' Makefile
 make  %{?_smp_mflags} check
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -84,6 +84,8 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/gtk-doc/html/json-glib/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.6.0-2
+-   Bump up to compile with python 3.10
 *   Fri Sep 25 2020 Gerrit Photon <photon-checkins@vmware.com> 1.6.0-1
 -   Automatic Version Bump
 *   Sun Aug 16 2020 Susant Sahani <ssahani@vmware.com> 1.4.4-3

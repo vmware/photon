@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        A DNS toolkit for Python
 Name:           python3-dnspython
 Version:        2.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/dnspython
 License:        BSD
 Group:          Development/Languages/Python
@@ -31,7 +29,7 @@ dnspython originated at Nominum where it was developed to facilitate the testing
 
 
 %prep
-%setup -q -n dnspython-%{version}
+%autosetup -n dnspython-%{version}
 
 %build
 python3 setup.py build
@@ -47,6 +45,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.0-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.0.0-1
 -   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 1.15.0-4

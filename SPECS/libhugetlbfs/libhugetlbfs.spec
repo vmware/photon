@@ -1,7 +1,7 @@
 Summary:        Preload library to back text, data, malloc() or shared memory with hugepages
 Name:           libhugetlbfs
 Version:        2.23
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPL-2.1
 URL:            https://github.com/libhugetlbfs/libhugetlbfs
 Source0:        https://github.com/libhugetlbfs/libhugetlbfs/releases/download/%{version}/libhugetlbfs-%{version}.tar.gz
@@ -25,15 +25,15 @@ Requires:       %{name} = %{version}-%{release}
 This contains development tools and libraries for libhugetlbfs.
 
 %prep
-%setup -q
+%autosetup
 %build
 make PREFIX=/usr BUILDTYPE=NATIVEONLY LIB32=lib32 LIB64=lib %{?_smp_mflags}
 
 %install
-make PREFIX=/usr BUILDTYPE=NATIVEONLY LIB32=lib32 LIB64=lib DESTDIR=%{buildroot} install
+make %{?_smp_mflags} PREFIX=/usr BUILDTYPE=NATIVEONLY LIB32=lib32 LIB64=lib DESTDIR=%{buildroot} install
 
 %check
-make PREFIX=/usr BUILDTYPE=NATIVEONLY LIB32=lib32 LIB64=lib check
+make %{?_smp_mflags} PREFIX=/usr BUILDTYPE=NATIVEONLY LIB32=lib32 LIB64=lib check
 
 %files
 %defattr(-,root,root)
@@ -52,6 +52,8 @@ make PREFIX=/usr BUILDTYPE=NATIVEONLY LIB32=lib32 LIB64=lib check
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.23-2
+-   Bump up to compile with python 3.10
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.23-1
 -   Automatic Version Bump
 *   Tue Dec 17 2019 Alexey Makhalov <amakhalov@vmware.com> 2.22-1

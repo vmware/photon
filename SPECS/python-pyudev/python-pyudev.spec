@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Python binding for libudev
 Name:           python3-pyudev
 Version:        0.22.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU Library or Lesser General Public License (LGPL) (LGPL 2.1+)
 Group:          Development/Languages/Python
 URL:            https://pypi.org/project/pyudev
@@ -42,7 +40,7 @@ The binding supports CPython 2 (2.6 or newer) and 3 (3.1 or newer), and PyPy 1.5
 151 or newer, earlier versions of udev as found on dated Linux systems may work, but are not officially supported.
 
 %prep
-%setup -q -n pyudev-%{version}
+%autosetup -n pyudev-%{version}
 
 %build
 python3 setup.py build
@@ -60,5 +58,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.22.0-2
+-   Bump up to compile with python 3.10
 *   Thu Mar 19 2020 Tapas Kundu <tkundu@vmware.com> 0.22.0-1
 -   Initial release.

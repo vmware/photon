@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Pure Python Vi Implementation.
 Name:           python3-pyvim
 Version:        3.0.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        UNKNOWN
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -44,7 +42,7 @@ An implementation of Vim in Python.
 
 
 %prep
-%setup -q -n pyvim-%{version}
+%autosetup -n pyvim-%{version}
 #tar -xf %{SOURCE1} --no-same-owner
 
 %build
@@ -64,6 +62,8 @@ PYTHONPATH=./ py.test3
 %{_bindir}/pyvim3
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.0.2-4
+-   Bump up to compile with python 3.10
 *   Fri Jul 09 2021 Tapas Kundu <tkundu@vmware.com> 3.0.2-3
 -   Fix dependency issue
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.2-2

@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-websocket-client
 Version:        0.57.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        WebSocket client for python
 License:        LGPL
 Group:          Development/Languages/Python
@@ -28,7 +26,7 @@ BuildArch:      noarch
 WebSocket client for python
 
 %prep
-%setup -n websocket_client-%{version}
+%autosetup -n websocket_client-%{version}
 
 %build
 python3 setup.py build
@@ -45,6 +43,8 @@ python3 setup.py test
 /usr/bin/wsdump.py
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.57.0-3
+-   Bump up to compile with python 3.10
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.57.0-2
 -   openssl 1.1.1
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.57.0-1

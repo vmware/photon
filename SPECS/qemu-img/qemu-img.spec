@@ -1,9 +1,8 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %global debug_package %{nil}
 Summary:        QEMU disk image utility
 Name:           qemu-img
 Version:        5.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU GPLv2
 URL:            https://www.qemu.org
 Group:          Development/Tools
@@ -19,7 +18,7 @@ BuildRequires:  pixman-devel
 Qemu-img is the tool used to create, manage, convert shrink etc. the disk images of virtual machines.
 
 %prep
-%setup -q -n qemu-%{version}
+%autosetup -n qemu-%{version}
 
 %build
 # Do not build QEMU's ivshmem
@@ -129,7 +128,7 @@ make %{?_smp_mflags}
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 # Removed unnessary files
 find %{buildroot} -name '*.png' -delete
 find %{buildroot} -name '*.bmp' -delete
@@ -149,6 +148,8 @@ make %{?_smp_mflags} check
 /usr/local/share/qemu
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.1.0-2
+-   Bump up to compile with python 3.10
 *   Wed Aug 19 2020 Gerrit Photon <photon-checkins@vmware.com> 5.1.0-1
 -   Automatic Version Bump
 *   Mon Mar 09 2020 Ankit Jain <ankitja@vmware.com> 4.2.0-1

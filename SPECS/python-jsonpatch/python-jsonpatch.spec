@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-jsonpatch
 Version:        1.26
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Applying JSON Patches in Python
 License:        Modified BSD License
 Group:          Development/Languages/Python
@@ -16,6 +14,7 @@ BuildRequires: python3
 BuildRequires: python3-libs
 BuildRequires: python3-setuptools
 BuildRequires: python3-jsonpointer
+BuildRequires: python3-macros
 Requires: python3-jsonpointer
 
 BuildArch:      noarch
@@ -25,7 +24,7 @@ Library to apply JSON Patches according to RFC 6902.
 
 
 %prep
-%setup -n jsonpatch-%{version}
+%autosetup -n jsonpatch-%{version}
 
 %build
 python3 setup.py build
@@ -43,6 +42,8 @@ python3 ext_tests.py && python3 tests.py
 %{python3_sitelib}/*
 
 %changelog
+*       Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.26-2
+-       Bump up to compile with python 3.10
 *       Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.26-1
 -       Automatic Version Bump
 *       Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 1.23-2

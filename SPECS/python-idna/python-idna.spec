@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Internationalized Domain Names in Applications (IDNA).
 Name:           python3-idna
 Version:        2.10
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/idna
 License:        BSD-like
 Group:          Development/Languages/Python
@@ -31,7 +29,7 @@ This acts as a suitable replacement for the “encodings.idna” module that com
 
 
 %prep
-%setup -q -n idna-%{version}
+%autosetup -n idna-%{version}
 
 %build
 python3 setup.py build
@@ -47,6 +45,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.10-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.10-1
 -   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 2.7-2

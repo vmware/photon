@@ -1,7 +1,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.8.9
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -30,14 +30,14 @@ BuildArch:     noarch
 rabbitmq messaging server
 
 %prep
-%setup -q
+%autosetup
 
 %build
 LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT \
+make install DESTDIR=%{buildroot} \
              PREFIX=%{_prefix} \
              RMQ_ROOTDIR=/usr/lib/rabbitmq/
 
@@ -71,7 +71,7 @@ WantedBy=multi-user.target
 EOF
 
 %check
-make tests
+make %{?_smp_mflags} tests
 
 %pre
 if ! getent group rabbitmq >/dev/null; then
@@ -96,7 +96,7 @@ chmod g+s /etc/rabbitmq
 %systemd_postun_with_restart %{name}.service
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
@@ -107,6 +107,8 @@ rm -rf $RPM_BUILD_ROOT
 /var/lib/*
 
 %changelog
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.8.9-2
+- Bump up to compile with python 3.10
 * Thu Sep 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.8.9-1
 - Automatic Version Bump
 * Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 3.8.8-1

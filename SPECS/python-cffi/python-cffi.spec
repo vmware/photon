@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Interface for Python to call C code
 Name:           python3-cffi
 Version:        1.14.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/cffi
 License:        MIT
 Group:          Development/Languages/Python
@@ -33,7 +31,7 @@ Foreign Function Interface for Python, providing a convenient and reliable way o
 
 
 %prep
-%setup -q -n cffi-%{version}
+%autosetup -n cffi-%{version}
 
 %build
 python3 setup.py build
@@ -50,6 +48,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.14.3-3
+-   Bump up to compile with python 3.10
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.3-2
 -   openssl 1.1.1
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 1.14.3-1

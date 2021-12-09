@@ -1,10 +1,9 @@
 # Got the intial spec and patches from Fedora and modified the spec.
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        Python bindings for PAM (Pluggable Authentication Modules).
 Name:           python3-PyPAM
 Version:        0.5.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        LGPLv2
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -34,6 +33,7 @@ Python bindings for PAM (Pluggable Authentication Modules).
 
 
 %prep
+# Using autosetup is not feasible
 %setup -q -n PyPAM-%{version}
 %patch0 -p1
 %patch1 -p1
@@ -58,6 +58,8 @@ python3 tests/PamTest.py
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.5.0-6
+-   Bump up to compile with python 3.10
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 0.5.0-5
 -   Mass removal python2
 *   Thu Jan 10 2019 Alexey Makhalov <amakhalov@vmware.com> 0.5.0-4

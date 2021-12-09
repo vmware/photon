@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-pyflakes
 Version:        2.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A simple program which checks Python source files for errors
 License:        MIT
 Group:          Development/Languages/Python
@@ -46,5 +44,7 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.3.1-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 09 2021 Tapas Kundu <tkundu@vmware.com> 2.3.1-1
 -   Initial packaging for python3-pyflakes

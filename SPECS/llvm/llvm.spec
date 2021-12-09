@@ -1,7 +1,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        11.0.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -93,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libLLVM*.so
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 11.0.1-5
+-   Bump up to compile with python 3.10
 *   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 11.0.1-4
 -   Release bump up to use libxml2 2.9.12-1.
 *   Mon Oct 25 2021 Harinadh D<hdommaraju@vmware.com> 11.0.1-3

@@ -1,10 +1,9 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %define debug_package %{nil}
 
 Summary:        Distro - an OS platform information API
 Name:           python3-distro
 Version:        1.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -17,6 +16,7 @@ BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+BuildRequires:  python3-macros
 %if %{with_check}
 BuildRequires:  python3-pip
 %endif
@@ -29,7 +29,7 @@ Obsoletes:      python-distro
 Distro provides information about the OS distribution it runs on, such as a reliable machine-readable ID, or version information.
 
 %prep
-%setup -q -n distro-%{version}
+%autosetup -n distro-%{version}
 
 %build
 python3 setup.py build
@@ -49,6 +49,8 @@ tox
 /usr/bin/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.5.0-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 1.5.0-1
 -   Automatic Version Bump
 *   Wed Jul 24 2019 Tapas Kundu <tkundu@vmware.com> 1.4.0-3

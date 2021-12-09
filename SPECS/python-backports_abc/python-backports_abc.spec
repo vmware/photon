@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-backports_abc
 Version:        0.5
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A backport of recent additions to the 'collections.abc' module.
 License:        PSFL
 Group:          Development/Languages/Python
@@ -16,6 +14,7 @@ Distribution:   Photon
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-macros
 Requires:       python3
 Requires:       python3-libs
 
@@ -23,10 +22,8 @@ BuildArch:      noarch
 
 %description
 
-
-
 %prep
-%setup -n backports_abc-%{version}
+%autosetup -n backports_abc-%{version}
 
 %build
 python3 setup.py build
@@ -42,6 +39,8 @@ python3 tests.py
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.5-5
+-   Bump up to compile with python 3.10
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.5-4
 -   Mass removal python2
 *   Tue Dec 17 2019 Vinothkumar D <vinothkumard@vmware.com> 0.5-3
@@ -50,4 +49,3 @@ python3 tests.py
 -   Add %check
 *   Wed Nov 29 2017 Padmini Thirumalachar <pthirumalachar@vmware.com> 0.5-1
 -   Initial version of python backports_abc for PhotonOS.
-

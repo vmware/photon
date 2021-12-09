@@ -1,4 +1,3 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %define        with_boost     1
 %define        with_crash     1
 %define        with_docs      0
@@ -9,7 +8,7 @@
 
 Name:          systemtap
 Version:       4.5
-Release:       2%{?dist}
+Release:       3%{?dist}
 Summary:       Programmable system-wide instrumentation system
 Group:         Development/System
 Vendor:	       VMware, Inc.
@@ -346,6 +345,8 @@ fi
 %{_mandir}/man8/systemtap-service.8*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.5-3
+-   Bump up to compile with python 3.10
 *   Mon Aug 09 2021 Ankit Jain <ankitja@vmware.com> 4.5-2
 -   Fix spec with autosetup and make smp flag
 *   Mon Aug 02 2021 Ankit Jain <ankitja@vmware.com> 4.5-1

@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        The fastest markdown parser in pure Python.
 Name:           python3-mistune
 Version:        0.8.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -29,7 +27,7 @@ The fastest markdown parser in pure Python with renderer features, inspired by m
 
 
 %prep
-%setup -q -n mistune-%{version}
+%autosetup -n mistune-%{version}
 
 %build
 python3 setup.py build
@@ -45,6 +43,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.8.4-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.8.4-1
 -   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.8.3-2

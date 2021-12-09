@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-snowballstemmer
 Version:        2.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python stemming library
 License:        BSD
 Group:          Development/Languages/Python
@@ -43,7 +41,7 @@ It includes following language algorithms:
 
 
 %prep
-%setup -n snowballstemmer-%{version}
+%autosetup -n snowballstemmer-%{version}
 
 %build
 python3 setup.py build
@@ -52,13 +50,15 @@ python3 setup.py build
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.0-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.0.0-1
 -   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 1.2.1-3

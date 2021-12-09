@@ -1,10 +1,9 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %define debug_package %{nil}
 
 Summary:        Package for Google Compute Engine Linux images
 Name:           google-compute-engine
 Version:        20191210
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -34,7 +33,7 @@ Summary:        Service files for compute engine package
 Collection of service files for packages installed on Google supported Compute Engine images.
 
 %prep
-%setup -q -n compute-image-packages-%{version}
+%autosetup -n compute-image-packages-%{version}
 
 %build
 cd packages/python-google-compute-engine
@@ -89,6 +88,8 @@ systemctl --no-reload disable google-startup-scripts.service
 %{_libdir}/systemd/system/*.service
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 20191210-3
+-   Bump up to compile with python 3.10
 *   Mon Nov 02 2020 Prashant S Chauhan <psinghchauhau@vmware.com> 20191210-2
 -   Add python3-distro as requires
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 20191210-1

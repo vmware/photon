@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Incremental is a small library that versions your Python projects.
 Name:           python3-incremental
 Version:        17.5.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -26,7 +24,7 @@ BuildArch:      noarch
 Incremental is a small library that versions your Python projects.
 
 %prep
-%setup -q -n incremental-%{version}
+%autosetup -n incremental-%{version}
 
 %build
 python3 setup.py build
@@ -42,6 +40,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 17.5.0-3
+-   Bump up to compile with python 3.10
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 17.5.0-2
 -   Mass removal python2
 *   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 17.5.0-1

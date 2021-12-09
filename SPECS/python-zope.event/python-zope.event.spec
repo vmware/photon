@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-zope.event
 Version:        4.5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Very basic event publishing system
 License:        ZPL-2.1
 Group:          Development/Libraries/Python
@@ -27,7 +25,7 @@ example, a type-based event dispatching system that builds on zope.event
 can be found in zope.component.
 
 %prep
-%setup -q -n zope.event-%{version}
+%autosetup -n zope.event-%{version}
 
 %build
 python setup.py build
@@ -44,5 +42,7 @@ python setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.5.0-2
+-   Bump up to compile with python 3.10
 *   Tue Feb 23 2021 Tapas Kundu <tkundu@vmware.com> 4.5.0-1
 -   Initial build.  First version

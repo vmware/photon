@@ -1,10 +1,9 @@
 %define debug_package %{nil}
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 
 Summary:        YAML parser/emitter.
 Name:           python3-ruamel-yaml
 Version:        0.16.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -34,7 +33,7 @@ Requires:       python3-typing
 ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order
 
 %prep
-%setup -q -n ruamel.yaml-%{version}
+%autosetup -n ruamel.yaml-%{version}
 
 %build
 python3 setup.py build
@@ -55,5 +54,7 @@ find %{buildroot} -name '*.pyc' -delete
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.16.12-2
+-   Bump up to compile with python 3.10
 *   Wed Dec 09 2020 Tapas Kundu <tkundu@vmware.com> 0.16.12-1
 -   Initial packaging for Photon

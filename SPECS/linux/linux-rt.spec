@@ -1,4 +1,3 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %global security_hardening none
 
 %ifarch x86_64
@@ -20,7 +19,7 @@ Name:           linux-rt
 Version:        5.10.83
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt58
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -476,6 +475,7 @@ BuildRequires:  Linux-PAM-devel
 BuildRequires:  openssl-devel
 BuildRequires:  procps-ng-devel
 BuildRequires:  audit-devel
+BuildRequires:  python3-macros
 %if 0%{?fips}
 BuildRequires: gdb
 %endif
@@ -1098,6 +1098,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.10.83-2
+-   Bump up to compile with python 3.10
 *   Mon Dec 06 2021 srinidhira0 <srinidhir@vmware.com> 5.10.83-1
 -   Update to version 5.10.83
 *   Mon Nov 29 2021 Srinidhi Rao <srinidhir@vmware.com> 5.10.78-7

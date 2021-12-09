@@ -1,7 +1,7 @@
 Summary:    Modular initramfs image creation utility
 Name:       mkinitcpio
 Version:    28
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    GPLv2
 URL:        https://projects.archlinux.org/mkinitcpio.git/
 Group:      System Environment/Development
@@ -23,6 +23,7 @@ BuildArch:     noarch
 Multi-format archive and compression library
 
 %prep
+# Using autosetup is not feasible
 %setup -q
 %patch0 -p0
 
@@ -37,7 +38,7 @@ make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}%{_infodir}
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -50,6 +51,8 @@ make DESTDIR=%{buildroot} install
 /usr/share/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 28-2
+-   Bump up to compile with python 3.10
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 28-1
 -   Automatic Version Bump
 *   Sun Jun 21 2020 Tapas Kundu <tkundu@vmware.com> 24-3

@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-py
 Version:        1.9.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python development support library
 License:        MIT
 Group:          Development/Languages/Python
@@ -32,10 +30,8 @@ py.apipkg: explicit API control and lazy-importing
 py.iniconfig: easy parsing of .ini files
 py.code: dynamic code generation and introspection
 
-
 %prep
-%setup -n py-%{version}
-%patch0 -p1
+%autosetup -p1 -n py-%{version}
 
 %build
 python3 setup.py build
@@ -45,13 +41,15 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
 #python-py and python-pytest have circular dependency. Hence not adding tests
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %files
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.9.0-3
+-   Bump up to compile with python 3.10
 *   Mon Jun 21 2021 Dweep Advani <dadvani@vmware.com> 1.9.0-2
 -   Patched for CVE-2020-29651
 *   Tue Jul 28 2020 Tapas Kundu <tkundu@vmware.com> 1.9.0-1

@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        tzinfo object for the local timezone.
 Name:           python3-tzlocal
 Version:        2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT License
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -39,8 +37,7 @@ but you don’t need that when you have the tzinfo file.
 However, if the timezone name is readily available it will be used.
 
 %prep
-%setup -q -n tzlocal-%{version}
-%patch0 -p1
+%autosetup -p1 -n tzlocal-%{version}
 
 %build
 python3 setup.py build
@@ -58,6 +55,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.1-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.1-1
 -   Automatic Version Bump
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 1.5.1-3

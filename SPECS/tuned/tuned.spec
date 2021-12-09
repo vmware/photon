@@ -1,7 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Name:           tuned
 Version:        2.15.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A dynamic adaptive system tuning daemon
 License:        GNU GENERAL PUBLIC LICENSE Version 2
 Group:          System/Base
@@ -141,6 +140,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man8/scomes.*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.15.0-3
+-   Bump up to compile with python 3.10
 *   Thu Nov 18 2021 Ankit Jain <ankitja@vmware.com> 2.15.0-2
 -   realtime: modified hung_task detection sysctl param
 -   to log D-state tasks

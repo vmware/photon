@@ -1,8 +1,7 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Utility tools for control groups of Linux
 Name:           cgroup-utils
 Version:        0.8
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -24,8 +23,7 @@ cgroup-utils provides utility tools and libraries for control groups of Linux. F
 cgutil top is a top-like tool which shows activities of running processes in control groups.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 python3 setup.py build
@@ -45,6 +43,8 @@ python3 test_all.py
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.8-4
+-   Bump up to compile with python 3.10
 *   Tue Feb 23 2021 Tapas Kundu <tkundu@vmware.com> 0.8-3
 -   Add requires for python3-argparse
 *   Tue Jul 14 2020 Tapas Kundu <tkundu@vmware.com> 0.8-2

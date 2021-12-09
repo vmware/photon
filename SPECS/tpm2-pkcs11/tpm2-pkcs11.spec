@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:          OSS implementation of the TCG TPM2 Software Stack (TSS2)
 Name:             tpm2-pkcs11
 Version:          1.6.0
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          BSD 2-Clause
 URL:              https://github.com/tpm2-software/tpm2-pkcs11
 Group:            System Environment/Security
@@ -16,6 +14,7 @@ BuildRequires:    make gcc openssl-devel tpm2-tools tpm2-tss-devel tpm2-abrmd-de
 BuildRequires:    libyaml-devel libgcrypt-devel sqlite-devel autoconf-archive
 BuildRequires:    python3 python3-cryptography python3-setuptools
 BuildRequires:    python3-PyYAML python3-pyasn1-modules
+BuildRequires:    python3-macros
 BuildRequires:    cmocka dbus
 Requires:         openssl tpm2-tools tpm2-tss tpm2-abrmd libyaml sqlite-libs
 %description
@@ -70,6 +69,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.6.0-3
+-   Bump up to compile with python 3.10
 *   Thu Sep 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.6.0-2
 -   openssl 3.0.0 compatibility
 *   Sun Aug 8 2021 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 1.6.0-1

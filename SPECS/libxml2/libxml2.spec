@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Libxml2
 Name:           libxml2
 Version:        2.9.12
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            http://xmlsoft.org/
 Group:          System Environment/General Libraries
@@ -81,6 +79,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/aclocal/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.12-2
+-   Bump up to compile with python 3.10
 *   Fri Oct 29 2021 Nitesh Kumar <kunitesh@vmware.com> 2.9.12-1
 -   Version Upgrade to 2.9.12 also optmizing the packages.
 *   Sat Jun 19 2021 Ankit Jain <ankitja@vmware.com> 2.9.11-2

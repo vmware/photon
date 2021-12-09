@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:	Iotop is a Python program with a top like UI used to show the processes and their corresponding IO activity.
 Name:		iotop
 Version:	0.6
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	GPLv2
 URL:		http://guichaz.free.fr/iotop/
 Group:		System/Monitoring
@@ -13,6 +11,7 @@ Source0:	http://guichaz.free.fr/iotop/files/%{name}-%{version}.tar.gz
 %define sha1 iotop=71a0e7043d83673a40d7ddc57f5b50adab7fff2a
 Patch0:        python3_compatibility_fix.patch
 BuildRequires: python3 python3-libs
+BuildRequires: python3-macros
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-curses
@@ -23,11 +22,11 @@ BuildArch:      noarch
  Iotop is a Python program with a top like UI used to show the processes and their corresponding IO activity.
 
 %prep
-%setup -q
-%patch0 -p1
-%build
+%autosetup -p1
 
+%build
 python3 setup.py build
+
 %install
 
 #!/bin/bash
@@ -49,6 +48,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+*       Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.6-8
+-       Bump up to compile with python 3.10
 *	Mon Oct 12 2020 Sharan Turlapati <sturlapati@vmware.com> 0.6-7
 -	Add python3-curses as Requires
 *	Fri Dec 06 2019 Tapas Kundu <tkundu@vmware.com> 0.6-6

@@ -1,10 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%{!?python3_version: %define python3_version %(python3 -c "import sys; sys.stdout.write(sys.version[:3])")}
-
 Summary:        World timezone definitions, modern and historical
 Name:           python3-pytz
 Version:        2020.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/pytz
 License:        MIT
 Group:          Development/Languages/Python
@@ -39,7 +36,7 @@ Library Reference (``datetime.tzinfo``).
 
 
 %prep
-%setup -q -n pytz-%{version}
+%autosetup -n pytz-%{version}
 
 %build
 python3 setup.py build
@@ -57,6 +54,8 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2020.4-3
+-   Bump up to compile with python 3.10
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2020.4-2
 -   Fix build with new rpm
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 2020.4-1

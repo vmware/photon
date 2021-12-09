@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-prettytable
 Version:        0.7.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        Library for displaying tabular data in a visually appealing ASCII format
 License:        BSD-2-Clause
 Group:          Development/Languages/Python
@@ -34,7 +32,7 @@ specifying a row range.
 
 
 %prep
-%setup -n prettytable-%{version}
+%autosetup -n prettytable-%{version}
 
 %build
 python3 setup.py build
@@ -49,8 +47,9 @@ LANG=en_US.UTF-8 python3 prettytable_test.py
 %defattr(-,root,root,-)
 %{python3_sitelib}/*
 
-
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.7.2-8
+-   Bump up to compile with python 3.10
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.7.2-7
 -   Mass removal python2
 *   Wed Jul 26 2017 Divya Thaluru <dthaluru@vmware.com> 0.7.2-6

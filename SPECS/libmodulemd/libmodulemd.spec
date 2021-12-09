@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib    ;print(get_python_lib())")}
-
 Summary:        Module manipulating metadata files
 Name:           libmodulemd
 Version:        2.13.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 URL:            https://github.com/fedora-modularity/libmodulemd
 Group:          Applications/System
@@ -71,6 +69,8 @@ DESTDIR=%{buildroot}/ ninja install
 %{_includedir}/modulemd-2.0/*.h
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.13.0-2
+-   Bump up to compile with python 3.10
 *   Sat Aug 28 2021 Ankit Jain <ankitja@vmware.com> 2.13.0-1
 -   Updated to 2.13.0
 *   Sat Dec 12 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.11.0-1

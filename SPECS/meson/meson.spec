@@ -1,10 +1,8 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           meson
 Summary:        Extremely fast and user friendly build system
 Group:          Development/Tools
 Version:        0.56.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            https://mesonbuild.com/
 Vendor:         VMware, Inc.
@@ -59,6 +57,8 @@ python3 ./run_tests.py
 %{_datadir}/polkit-1/actions/com.mesonbuild.install.policy
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.56.2-2
+-   Bump up to compile with python 3.10
 *   Sat Jan 23 2021 Susant Sahani <ssahani@vmware.com> 0.56.2-1
 -   Update to version 0.56.2-1
 *   Mon Sep 21 2020 Gerrit Photon <photon-checkins@vmware.com> 0.55.3-1

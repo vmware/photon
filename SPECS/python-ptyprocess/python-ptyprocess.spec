@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Run a subprocess in a pseudo terminal.
 Name:           python3-ptyprocess
 Version:        0.6.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        ISC
 Url:            https://github.com/pexpect/ptyprocess
 Group:          Development/Languages/Python
@@ -32,13 +30,11 @@ BuildArch:      noarch
 Launch a subprocess in a pseudo terminal (pty), and interact with both the
 process and its pty.
 
-
 %prep
-%setup -q -n ptyprocess-%{version}
+%autosetup -n ptyprocess-%{version}
 
 %build
 python3 setup.py build
-
 
 %install
 rm -rf %{buildroot}
@@ -53,6 +49,8 @@ py.test3
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.6.0-7
+-   Bump up to compile with python 3.10
 *   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.6.0-6
 -   openssl 1.1.1
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 0.6.0-5
@@ -67,4 +65,3 @@ py.test3
 -   Update to version 0.6.0
 *   Tue Sep 19 2017 Kumar Kaushik <kaushikk@vmware.com> 0.5.2-1
 -   Initial packaging for Photon
-

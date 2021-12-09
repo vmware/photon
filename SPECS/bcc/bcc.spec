@@ -1,12 +1,10 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 %global debug_package %{nil}
 %global __python3 \/usr\/bin\/python3
 
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
 Version:         0.16.0
-Release:         1%{?dist}
+Release:         2%{?dist}
 License:         ASL 2.0
 Vendor:          VMware, Inc.
 Distribution:    Photon
@@ -29,6 +27,7 @@ BuildRequires:   llvm-devel
 BuildRequires:   clang-devel
 BuildRequires:   pkg-config
 BuildRequires:   ncurses-devel
+BuildRequires:   python3-macros
 
 %description
 BCC is a toolkit for creating efficient kernel tracing and manipulation programs,
@@ -64,7 +63,9 @@ Requires:        python3-%{name} = %{version}-%{release}
 Command line tools for BPF Compiler Collection (BCC)
 
 %prep
+# Using autosetup is not feasible
 %setup -q -n %{name}-%{version}
+# Using autosetup is not feasible
 %setup -D -c -T -a 1 -n %{name}-%{version}/
 cp -rf bcc/* .
 rm -r bcc
@@ -81,7 +82,7 @@ popd
 
 %install
 pushd build
-make install/strip DESTDIR=%{buildroot}
+make %{?_smp_mflags} install/strip DESTDIR=%{buildroot}
 # mangle shebangs
 find %{buildroot}/usr/share/bcc/{tools,examples} -type f -exec \
     sed -i -e '1 s|^#!/usr/bin/python$|#!'%{__python3}'|' \
@@ -118,6 +119,8 @@ find %{buildroot}/usr/share/bcc/{tools,examples} -type f -exec \
 %{_datadir}/%{name}/man/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.16.0-2
+-   Bump up to compile with python 3.10
 *   Wed Jul 22 2020 Gerrit Photon <photon-checkins@vmware.com> 0.16.0-1
 -   Automatic Version Bump
 *   Wed Jun 26 2019  Keerthana K <keerthanak@vmware.com> 0.10.0-1

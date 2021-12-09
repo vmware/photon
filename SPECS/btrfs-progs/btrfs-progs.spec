@@ -1,6 +1,6 @@
 Name:       btrfs-progs
 Version:    5.7
-Release:    2%{?dist}
+Release:    3%{?dist}
 Summary:    Userspace programs for btrfs
 Group:      System Environment/Base
 License:    GPLv2+
@@ -35,7 +35,7 @@ You should install btrfs-progs-devel if you want to develop
 btrfs filesystem-specific programs.
 
 %prep
-%setup -q -n %{name}-v%{version}
+%autosetup -n %{name}-v%{version}
 
 %build
 ./autogen.sh
@@ -46,7 +46,7 @@ make DISABLE_DOCUMENTATION=1 %{?_smp_mflags}
 
 %install
 #disabled the documentation
-make DISABLE_DOCUMENTATION=1 mandir=%{_mandir} bindir=%{_sbindir} libdir=%{_libdir} incdir=%{_includedir} install DESTDIR=%{buildroot}
+make %{?_smp_mflags} DISABLE_DOCUMENTATION=1 mandir=%{_mandir} bindir=%{_sbindir} libdir=%{_libdir} incdir=%{_includedir} install DESTDIR=%{buildroot}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -77,6 +77,8 @@ rm -rf %{buildroot}
 %{_libdir}/libbtrfsutil.so
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.7-3
+-   Bump up to compile with python 3.10
 *   Fri Jul 17 2020 Tapas Kundu <tkundu@vmware.com> 5.7-2
 -   Use asciidoc3
 *   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 5.7-1

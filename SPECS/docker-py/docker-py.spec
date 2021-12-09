@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           docker-py3
 Version:        4.3.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python API for docker
 License:        ASL2.0
 Group:          Development/Languages/Python
@@ -20,6 +18,7 @@ BuildRequires:  python3-requests
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-six
 BuildRequires:  python3-xml
+BuildRequires:  python3-macros
 Requires:       python3
 Requires:       python3-libs
 Requires:       docker-pycreds3
@@ -36,7 +35,7 @@ Python API for docker
 
 
 %prep
-%setup -n docker-py-%{version}-release
+%autosetup -n docker-py-%{version}-release
 
 %build
 python3 setup.py build
@@ -49,6 +48,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.3.1-2
+-   Bump up to compile with python 3.10
 *   Thu Oct 15 2020 Ashwin H <ashwinh@vmware.com> 4.3.1-1
 -   Upgrade to 4.3.1 release.
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 3.5.0-2

@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Python NTP library
 Name:           python3-ntplib
 Version:        0.3.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -30,7 +28,7 @@ It also provides utility functions to translate NTP fields values to text (mode,
 
 
 %prep
-%setup -q -n ntplib-%{version}
+%autosetup -n ntplib-%{version}
 
 %build
 python3 setup.py build
@@ -46,6 +44,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.3.4-2
+-   Bump up to compile with python 3.10
 *   Wed Oct 14 2020 Tapas Kundu <tkundu@vmware.com> 0.3.4-1
 -   Update to 0.3.4
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 0.3.3-3

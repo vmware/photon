@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        XML bomb protection for Python stdlib modules
 Name:           python3-defusedxml
 Version:        0.6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/defusedxml
 License:        PSFL
 Group:          Development/Languages/Python
@@ -32,7 +30,7 @@ None of the issues is new. They have been known for a long time. Billion laughs 
 
 
 %prep
-%setup -q -n defusedxml-%{version}
+%autosetup -n defusedxml-%{version}
 
 %build
 python3 setup.py build
@@ -48,6 +46,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.6.0-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.6.0-1
 -   Automatic Version Bump
 *   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 0.5.0-4

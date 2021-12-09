@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Google's data interchange format
 Name:           protobuf
 Version:        3.14.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD-3-Clause
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -68,7 +66,7 @@ Requires:       openjre8 >= 1.8.0.45
 This contains protobuf java package.
 
 %prep
-%setup
+%autosetup
 
 # This test is incredibly slow on arm
 # https://github.com/google/protobuf/issues/2389
@@ -90,7 +88,7 @@ mvn package
 popd
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 pushd python
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 popd
@@ -135,6 +133,8 @@ popd
 %{_libdir}/java/protobuf/*.jar
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.14.0-2
+-   Bump up to compile with python 3.10
 *   Wed Feb 10 2021 Harinadh D <hdommaraju@vmware.com> 3.14.0-1
 -   Update protobuf
 *   Fri Oct 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.13.0-2

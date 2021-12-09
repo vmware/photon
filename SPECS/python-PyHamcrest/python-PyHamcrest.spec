@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-PyHamcrest
 Version:        2.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python Hamcrest framework for matcher objects
 Group:          Development/Libraries
 License:        BSD License (New BSD)
@@ -23,7 +21,7 @@ PyHamcrest is a framework for writing matcher objects, allowing you to declarati
 
 
 %prep
-%setup -q -n PyHamcrest-%{version}
+%autosetup -n PyHamcrest-%{version}
 
 %build
 python3 setup.py build
@@ -45,6 +43,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+*  Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.0.2-2
+-  Bump up to compile with python 3.10
 *  Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.0.2-1
 -  Automatic Version Bump
 *  Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 1.9.0-2

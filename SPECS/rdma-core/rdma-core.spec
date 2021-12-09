@@ -1,9 +1,7 @@
-%define python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
-
 Summary:        RDMA Core Userspace Libraries and Daemons
 Name:           rdma-core
 Version:        31.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD and MIT and GPLv2 and Creative Commons
 Group:          Applications/System
 URL:            https://github.com/linux-rdma/rdma-core
@@ -151,7 +149,7 @@ Pyverbs is a Cython-based Python API over libibverbs, providing an
 easy, object-oriented access to IB verbs.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 cmake \
@@ -498,6 +496,8 @@ cd build && make %{?_smp_mflags} check
 %{python3_sitearch}/pyverbs
 
 %changelog
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 31.0-2
+- Bump up to compile with python 3.10
 * Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 31.0-1
 - Automatic Version Bump
 * Fri Nov 08 2019 Alexey Makhalov <amakhalov@vmware.com> 26.0-1

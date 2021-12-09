@@ -4,7 +4,7 @@
 Summary:        Build software of any size, quickly and reliably, just as engineers do at Google.
 Name:           bazel
 Version:        3.5.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        Apache License 2.0
 Group:          Development/Tools
 Vendor:         VMware, Inc.
@@ -25,8 +25,7 @@ applications for both Android and iOS platforms. It also provides an extensible
 framework that you can use to develop your own build rules.
 
 %prep
-%setup  -c -n %{name}-%{version}
-%patch0 -p1
+%autosetup -p1 -c -n %{name}-%{version}
 
 %build
 export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK*`
@@ -47,6 +46,8 @@ cp output/bazel %{buildroot}%{_bindir}
 %attr(755,root,root) %{_bindir}/bazel
 
 %changelog
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.5.0-3
+- Bump up to compile with python 3.10
 * Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 3.5.0-2
 - GCC-10 support.
 * Mon Sep 21 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 3.5.0-1

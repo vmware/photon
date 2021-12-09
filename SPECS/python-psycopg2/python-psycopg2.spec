@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Python-PostgreSQL Database Adapter
 Name:           python3-psycopg2
 Version:        2.8.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/psycopg2
 License:        LGPL with exceptions or ZPL
 Group:          Development/Languages/Python
@@ -30,7 +28,7 @@ Psycopg 2 is both Unicode and Python 3 friendly.
 
 
 %prep
-%setup -q -n psycopg2-%{version}
+%autosetup -n psycopg2-%{version}
 
 %build
 python3 setup.py build
@@ -65,6 +63,8 @@ rm -r /home/postgres/data &>/dev/null ||:
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.8.6-2
+-   Bump up to compile with python 3.10
 *   Wed Sep 09 2020 Gerrit Photon <photon-checkins@vmware.com> 2.8.6-1
 -   Automatic Version Bump
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.8.5-1

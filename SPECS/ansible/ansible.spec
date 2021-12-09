@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Configuration-management, application deployment, cloud provisioning system
 Name:           ansible
 Version:        2.9.22
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv3+
 URL:            https://www.ansible.com
 Group:          Development/Libraries
@@ -20,6 +18,7 @@ BuildArch:      noarch
 BuildRequires:  python3
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
+BuildRequires:  python3-macros
 
 Requires:       python3
 Requires:       python3-libs
@@ -40,9 +39,7 @@ BuildRequires:  python3-jinja2
 Ansible is a radically simple IT automation system. It handles configuration-management, application deployment, cloud provisioning, ad-hoc task-execution, and multinode orchestration - including trivializing things like zero downtime rolling updates with load balancers.
 
 %prep
-%setup -q
-
-%patch0 -p2
+%autosetup -p2
 
 %build
 python3 setup.py build
@@ -60,6 +57,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.9.22-2
+-   Bump up to compile with python 3.10
 *   Wed Jun 02 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.9.22-1
 -   Bumpt version to 2.9.22 to fix CVE-2021-20178
 *   Fri Jul 03 2020 Shreendihi Shedi <sshedi@vmware.com> 2.9.10-1

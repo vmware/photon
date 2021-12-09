@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        A Universal Character Encoding Detector in Python
 Name:           python3-chardet
 Version:        3.0.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.org/project/chardet/
 License:        LGPL v2.1
 Group:          Development/Languages/Python
@@ -31,7 +29,7 @@ chardet is a universal character encoding detector in Python.
 
 
 %prep
-%setup -q -n chardet-%{version}
+%autosetup -n chardet-%{version}
 
 %build
 python3 setup.py build
@@ -48,6 +46,8 @@ python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 %{_bindir}/chardetect
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.0.4-3
+-   Bump up to compile with python 3.10
 *   Tue Jun 16 2020 Tapas Kundu <tkundu@vmware.com> 3.0.4-2
 -   Mass removal python2
 *   Thu Sep 27 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 3.0.4-1

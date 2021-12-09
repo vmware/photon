@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-hypothesis
 Version:        5.41.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python library for creating unit tests which are simpler to write and more powerful
 License:        MPLv2.0
 Group:          Development/Languages/Python
@@ -30,7 +28,7 @@ Hypothesis is an advanced testing library for Python. It lets you write tests wh
 and then generates simple and comprehensible examples that make your tests fail. This lets you find more bugs in your code with less work
 
 %prep
-%setup -n hypothesis-%{version}
+%autosetup -n hypothesis-%{version}
 
 %build
 python3 setup.py build
@@ -39,7 +37,7 @@ python3 setup.py build
 python3 setup.py install --prefix=%{_prefix} --root=%{buildroot}
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %files
 %defattr(-,root,root,-)
@@ -47,6 +45,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_bindir}/hypothesis
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.41.1-3
+-   Bump up to compile with python 3.10
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 5.41.1-2
 -   Fix build with new rpm
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 5.41.1-1

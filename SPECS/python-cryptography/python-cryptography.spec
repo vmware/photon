@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Python cryptography library
 Name:           python3-cryptography
 Version:        3.3.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Url:            https://pypi.python.org/pypi/cryptography
 License:        ASL 2.0
 Group:          Development/Languages/Python
@@ -66,6 +64,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.3.2-3
+-   Bump up to compile with python 3.10
 *   Thu Jul 22 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.3.2-2
 -   openssl 3.0.0 support
 *   Tue May 18 2021 Piyush Gupta <gpiyush@vmware.com> 3.3.2-1

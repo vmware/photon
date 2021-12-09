@@ -1,8 +1,6 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Name:           python3-typing
 Version:        3.7.4.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Type Hints for Python
 License:        PSF
 Group:          Development/Tools
@@ -26,7 +24,7 @@ The notation can be used for documenting code in a concise,standard format,
 and it has been designed to also be used by static and runtime type checkers, static analyzers, IDEs and other tools.
 
 %prep
-%setup -q -n typing-%{version}
+%autosetup -n typing-%{version}
 
 %build
 python3 setup.py build
@@ -48,6 +46,8 @@ PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.4.3-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.7.4.3-1
 -   Automatic Version Bump
 *   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 3.6.6-2

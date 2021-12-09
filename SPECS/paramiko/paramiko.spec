@@ -1,8 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 Summary:        Python SSH module
 Name:           python3-paramiko
 Version:        2.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -29,9 +28,8 @@ Requires:       python3-bcrypt
 %description
 "Paramiko" is a combination of the esperanto words for "paranoid" and "friend". It's a module for Python 2.6+ that implements the SSH2 protocol for secure (encrypted and authenticated) connections to remote machines. Unlike SSL (aka TLS), SSH2 protocol does not require hierarchical certificates signed by a powerful central authority.
 
-
 %prep
-%setup -q -n paramiko-%{version}
+%autosetup -n paramiko-%{version}
 
 %build
 python3 setup.py build
@@ -53,6 +51,8 @@ LANG=en_US.UTF-8 python3 test.py
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.2-2
+-   Bump up to compile with python 3.10
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.7.2-1
 -   Automatic Version Bump
 *   Wed Jul 08 2020 Tapas Kundu <tkundu@vmware.com> 2.7.1-2

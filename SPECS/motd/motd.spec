@@ -1,13 +1,14 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 %define commit0 a152954dcf0583a6efd1af31c42f9e27e6a15bea
 
 Summary:        Message of the Day
 Name:           motd
 Version:        0.1.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv3
 URL:            http://github.com/rtnpro/fedora-motd
+Group:          Applications/Internet
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        https://github.com/rtnpro/motdgen/archive/motdgen-a152954.tar.gz
 %define sha1    motdgen-a152954.tar.gz=fd0b535df54515ce5f56933e53b0ed73c77d1137
 Patch0:         strip-dnf.patch
@@ -27,8 +28,7 @@ Requires:       /bin/grep
 Generates Dynamic MOTD.
 
 %prep
-%setup -q -n motdgen-%{commit0}
-%patch0 -p1
+%autosetup -p1 -n motdgen-%{commit0}
 
 %build
 python3 setup.py build
@@ -72,6 +72,8 @@ rm -rf %{_localstatedir}/run/motdgen
 %{_libdir}/tmpfiles.d/motd.conf
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.1.3-7
+-   Bump up to compile with python 3.10
 *   Thu Apr 30 2020 Alexey Makhalov <amakhalov@vmware.com> 0.1.3-6
 -   Systemd to generate runtime directory.
 *   Mon Jun 19 2017 Xiaolin Li <xiaolinl@vmware.com> 0.1.3-5

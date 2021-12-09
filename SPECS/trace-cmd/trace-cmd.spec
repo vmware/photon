@@ -1,7 +1,7 @@
 Summary:        trace-cmd is a user-space front-end command-line tool for Ftrace
 Name:           trace-cmd
 Version:        2.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPL-2.0 and LGPL-2.1
 
 Group:          Development/Tools
@@ -64,6 +64,8 @@ rm -rf %{buildroot}
 %{_libdir}/traceevent/plugins
 
 %changelog
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.9-3
+- Bump up to compile with python 3.10
 * Tue Nov 02 2021 Sharan Turlapati <sturlapati@vmware.com> 2.9-2
 - Include --poll option to trace-cmd
 * Thu Oct 29 2020 Sharan Turlapati <sturlapati@vmware.com>  2.9-1

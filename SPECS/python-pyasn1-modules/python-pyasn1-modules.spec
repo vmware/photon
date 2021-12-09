@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        A collection of ASN.1-based protocols modules.
 Name:           python3-pyasn1-modules
 Version:        0.2.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/pyasn1-modules
 License:        BSD
 Group:          Development/Languages/Python
@@ -38,7 +36,7 @@ Written by Ilya Etingof <ilya@glas.net>.
 
 
 %prep
-%setup -q -n pyasn1-modules-%{version}
+%autosetup -n pyasn1-modules-%{version}
 find . -iname "*.py" | xargs -I file sed -i '1s/python/python3/g' file
 
 %build
@@ -59,6 +57,8 @@ popd
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.2.8-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.2.8-1
 -   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 0.2.2-2

@@ -1,10 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-%define _python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib; import sys; sys.stdout.write(get_python_lib(1))")
-
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.14.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
@@ -81,9 +78,11 @@ popd
 %{_includedir}/%{name}/
 
 %files -n python3-librepo
-%{_python3_sitearch}/%{name}/
+%{python3_sitearch}/%{name}/
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.14.2-4
+-   Bump up to compile with python 3.10
 *   Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.14.2-3
 -   openssl 3.0.0 compatibility
 *   Tue Sep 21 2021 Nitesh Kumar <kunitesh@vmware.com> 1.14.2-2

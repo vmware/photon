@@ -1,10 +1,9 @@
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
 %define with_golang 0
 
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.5
-Release:        10%{?dist}
+Release:        11%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=62fcac8cbd20c796b909b91f8f615f8556b22a24
 Patch0:         audit-2.8.5-gcc-10.patch
@@ -152,6 +151,8 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.8.5-11
+-   Bump up to compile with python 3.10
 *   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 2.8.5-10
 -   Bump up version to compile with new go
 *   Tue Oct 05 2021 Piyush Gupta <gpiyush@vmware.com> 2.8.5-9

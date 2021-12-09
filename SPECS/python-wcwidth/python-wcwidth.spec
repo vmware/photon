@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Measures number of Terminal column cells of wide-character codes.
 Name:           python3-wcwidth
 Version:        0.2.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -26,7 +24,7 @@ BuildArch:      noarch
 This Library is mainly for those implementing a Terminal Emulator, or programs that carefully produce output to be interpreted by one.
 
 %prep
-%setup -q -n wcwidth-%{version}
+%autosetup -n wcwidth-%{version}
 
 %build
 python3 setup.py build
@@ -42,6 +40,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.2.5-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 0.2.5-1
 -   Automatic Version Bump
 *   Thu Jun 11 2020 Tapas Kundu <tkundu@vmware.com> 0.1.7-3

@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Graph visualization dot render
 Name:           python3-graphviz
 Version:        0.14.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -27,7 +25,7 @@ This package facilitates the creation and rendering of graph descriptions in the
 
 
 %prep
-%setup -q -n graphviz-%{version}
+%autosetup -n graphviz-%{version}
 
 %build
 python3 setup.py build
@@ -43,6 +41,8 @@ python3 setup.py test
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.14.2-2
+-   Bump up to compile with python 3.10
 *   Fri Nov 06 2020 Gerrit Photon <photon-checkins@vmware.com> 0.14.2-1
 -   Automatic Version Bump
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 0.14.1-1

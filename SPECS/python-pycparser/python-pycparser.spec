@@ -1,9 +1,7 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        Python C parser
 Name:           python3-pycparser
 Version:        2.20
-Release:        1%{?dist}
+Release:        2%{?dist}
 Url:            https://pypi.python.org/pypi/pycparser
 License:        BSD
 Group:          Development/Languages/Python
@@ -27,7 +25,7 @@ pycparser is a complete parser of the C language, written in pure Python using t
 
 
 %prep
-%setup -q -n pycparser-%{version}
+%autosetup -n pycparser-%{version}
 
 %build
 python3 setup.py build
@@ -44,6 +42,8 @@ python3 all_tests.py
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.20-2
+-   Bump up to compile with python 3.10
 *   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 2.20-1
 -   Automatic Version Bump
 *   Fri Jun 19 2020 Tapas Kundu <tkundu@vmware.com> 2.18-2

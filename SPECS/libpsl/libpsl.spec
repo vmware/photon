@@ -1,7 +1,7 @@
 Summary:    libpsl - C library to handle the Public Suffix List
 Name:       libpsl
 Version:    0.21.1
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    MIT
 URL:        https://github.com/rockdaboot/libpsl
 Group:      System Environment/Development
@@ -56,7 +56,7 @@ for example it checks if domains are public suffixes, checks if cookie-domain
 is acceptable for domains and so on.
 
 %prep
-%setup -q
+%autosetup
 
 %build
 sed -i 's/env python/&3/' src/psl-make-dafsa
@@ -69,7 +69,7 @@ make %{?_smp_mflags}
 install -m0755 src/psl-make-dafsa %{buildroot}%{_bindir}/
 
 %check
-make check
+make %{?_smp_mflags} check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -94,6 +94,8 @@ make check
 %{_libdir}/pkgconfig/*
 
 %changelog
+*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.21.1-2
+-   Bump up to compile with python 3.10
 *   Mon Jul 27 2020 Gerrit Photon <photon-checkins@vmware.com> 0.21.1-1
 -   Automatic Version Bump
 *   Tue Jun 23 2020 Tapas Kundu <tkundu@vmware.com> 0.21.0-1
