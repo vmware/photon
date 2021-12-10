@@ -1,0 +1,38 @@
+From 31c035a393ef2d3cb3df81cb7676816718e43b07 Mon Sep 17 00:00:00 2001
+From: Piyush Gupta <gpiyush@vmware.com>
+Date: Tue, 14 Dec 2021 10:22:46 +0000
+Subject: [PATCH] test_all.py: Fix errors
+
+Added braces around print statement as it doesn't work with python3.
+
+Decode binary string to utf-8 format to use it further in search and
+split function.
+---
+ test_all.py | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/test_all.py b/test_all.py
+index bc83806..ba84437 100644
+--- a/test_all.py
++++ b/test_all.py
+@@ -48,6 +48,8 @@ import cgutils.cgroup as cgroup
+ def parse_help(output):
+     _options = []
+     p = re.compile("^  (-\w), --\w+")
++    #output needs to be decoded before passing it to split and search func.
++    output = output.decode('utf-8')
+     for line in output.split('\n'):
+         m = p.search(line)
+         if m:
+@@ -119,7 +121,7 @@ for cmd in commands:
+ 
+     if cmd in ['configs', 'stats', 'tree']:
+         for subsys in subsystems:
+-            print "%s " % subsys,
++            print("%s " % subsys)
+             _cmdline = cmdline + " -o %s" % subsys
+             allok = test_subsystem(cmd, _cmdline, _options, subsys)
+             if allok:
+-- 
+2.23.3
+

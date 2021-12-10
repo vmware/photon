@@ -14,6 +14,10 @@ Patch0:         cgutil-support-space-in-procname.patch
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
+%if %{with_check}
+Patch1:         make_check_fix.patch
+BuildRequires:  python3-curses
+%endif
 Requires:       python3
 Requires:       python3-curses
 Requires:       python3-argparse
@@ -32,7 +36,13 @@ python3 setup.py build
 python3 setup.py install --single-version-externally-managed -O1 --root=%{buildroot}
 
 %check
+#create mountpoints for cgroup as it doesn't exist in chroot.
+mount -t tmpfs cgroup_root /sys/fs/cgroup
+%{__mkdir} /sys/fs/cgroup/cpu,cpuacct
+mount -t cgroup cpu,cpuacct -o cpu,cpuacct /sys/fs/cgroup/cpu,cpuacct
 python3 test_all.py
+umount /sys/fs/cgroup/cpu,cpuacct
+%{__rm} -r /sys/fs/cgroup/cpu,cpuacct
 
 %clean
 %{__rm} -rf %{buildroot}
