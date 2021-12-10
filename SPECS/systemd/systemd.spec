@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd/
-Version:        249.2
-Release:        3%{?dist}
+Version:        249.7
+Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha1    systemd=9fdcf03e0c88b3aa98c95626a588311084ef9047
+%define sha1    systemd=98f938864a9e8b7d9bbde3a3781fc97b7adf2e5f
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
 Source3:        systemd.cfg
@@ -660,6 +660,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu Dec 09 2021 Susant Sahani <ssahani@vmware.com> 249.7-1
+- Version bump
 * Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 249.2-3
 - Bump up release for openssl
 * Thu Aug 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 249.2-2
