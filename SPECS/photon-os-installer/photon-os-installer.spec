@@ -2,12 +2,13 @@
 Summary:    Photon OS Installer
 Name:       photon-os-installer
 Version:    2.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache 2.0 and GPL 2.0
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
 Distribution:   Photon
 URL:        https://github.com/vmware/photon-os-installer
+Patch0:     error_screen_selectdisk.patch
 Source0:    %{name}-%{version}.tar.gz
 %define sha1 %{name}=0f1164e8eef1fa76990346f22d281e36964404f5
 BuildRequires: python3-devel
@@ -39,6 +40,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-installer
 
 %changelog
+*   Sat Dec 11 2021 Piyush Gupta <gpiyush@vmware.com> 2.0-2
+-   Display error screen in no block device attached.
 *   Wed Nov 24 2021 Piyush Gupta <gpiyush@vmware.com> 2.0-1
 -   Upgrade to 2.0.
 *   Tue Aug 17 2021 Piyush Gupta <gpiyush@vmware.com> 1.0-7
