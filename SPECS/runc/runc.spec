@@ -1,22 +1,21 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 # use major.minor.patch-rcX
-%define RUNC_VERSION 1.0.0-rc92
+%define RUNC_VERSION 1.0.3
 %define RUNC_BRANCH  v%{RUNC_VERSION}
 %define gopath_comp  github.com/opencontainers/runc
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
-Version:             1.0.0.rc92
-Release:             4%{?dist}
+Version:             1.0.3
+Release:             1%{?dist}
 License:             ASL 2.0
 URL:                 https://runc.io/
 Source0:             https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
-%define sha1         runc=b5571f41bcc85be33a56122a30cb1a241476a8d1
-# Must be in sync with package version
-%define RUNC_COMMIT  d736ef14f0288d6993a1845745d6756cfc9ddd5a
+%define sha1         runc=cbd1b1eff60b0d6f61a034cb50a7fe22edd2b140
 Group:               Virtualization/Libraries
 Vendor:              VMware, Inc.
 Distribution:        Photon
+
 BuildRequires:       go
 BuildRequires:       which
 BuildRequires:       go-md2man
@@ -36,19 +35,20 @@ Requires:            %{name} = %{version}-%{release}
 Documentation for runc
 
 %prep
-%setup -q -c
+%autosetup -p1 -c
 mkdir -p "$(dirname "src/%{gopath_comp}")"
 mv %{name}-%{RUNC_VERSION} src/%{gopath_comp}
 
 %build
 export GOPATH="$(pwd)"
 cd src/%{gopath_comp}
-make %{?_smp_mflags} GIT_BRANCH=%{RUNC_BRANCH}COMMIT_NO=%{RUNC_COMMIT} COMMIT=%{RUNC_COMMIT} BUILDTAGS='seccomp apparmor' EXTRA_LDFLAGS=-w runc man
+make %{?_smp_mflags} GIT_BRANCH=%{RUNC_BRANCH} BUILDTAGS='seccomp apparmor' EXTRA_LDFLAGS=-w runc man
 
 %install
 cd src/%{gopath_comp}
+#BINDIR is pointing to absolute path so DESTDIR is not required.
 install -v -m644 -D -t %{buildroot}%{_datadir}/licenses/%{name} LICENSE
-make DESTDIR=%{buildroot} PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot}%{_bindir} install install-bash install-man
+make %{?_smp_mflags} DESTDIR="" PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot}%{_bindir} install install-bash install-man
 
 %files
 %defattr(-,root,root)
@@ -61,6 +61,8 @@ make DESTDIR=%{buildroot} PREFIX=%{buildroot}%{_prefix} BINDIR=%{buildroot}%{_bi
 %{_mandir}/man8/*
 
 %changelog
+*   Mon Dec 13 2021 Nitesh Kumar <kunitesh@vmware.com> 1.0.3-1
+-   Version upgrade to fix CVE-2021-43784.
 *   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.0.0.rc92-4
 -   Bump up version to compile with new go
 *   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.0.0.rc92-3

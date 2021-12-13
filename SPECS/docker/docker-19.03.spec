@@ -3,7 +3,7 @@
 Summary:        Docker
 Name:           docker
 Version:        19.03.10
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -288,6 +288,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+*   Tue Dec 21 2021 Nitesh Kumar <kunitesh@vmware.com> 19.03.10-6
+-   Bump up version to use containerd 1.4.12.
 *   Tue Sep 07 2021 Keerthana K <keerthanak@vmware.com> 19.03.10-5
 -   Bump up version to compile with new glibc
 *   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 19.03.10-4

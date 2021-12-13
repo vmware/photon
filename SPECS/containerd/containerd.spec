@@ -3,18 +3,19 @@
 %define gopath_comp github.com/containerd/containerd
 Summary:        Containerd
 Name:           containerd
-Version:        1.4.4
-Release:        2%{?dist}
+Version:        1.4.12
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha1    containerd=0e49f2b0593adc635b89bbcf2d3f40e0fe217933
+%define sha1    containerd=23b7126e50df745e4b0b4b935dd1fab72d6fb4fa
 Source1:        containerd.service
 Source2:        containerd-config.toml
 Source3:        disable-containerd-by-default.preset
+
 BuildRequires:  btrfs-progs
 BuildRequires:  btrfs-progs-devel
 BuildRequires:  libseccomp
@@ -22,11 +23,11 @@ BuildRequires:  libseccomp-devel
 BuildRequires:  go >= 1.10.7
 BuildRequires:  go-md2man
 BuildRequires:  systemd-devel
+
 Requires:       libseccomp
 Requires:       systemd
-# containerd works only with a specific runc version
-# Refer to containerd/RUNC.md
-Requires:       runc = 1.0.0.rc92
+# containerd 1.4.5 and above allow to use runc 1.0.0-rc94 and above.
+Requires:       runc >= 1.0.0-rc94
 
 %description
 Containerd is an open source project. It is available as a daemon for Linux,
@@ -48,7 +49,7 @@ Requires:       %{name} = %{version}
 Documentation for containerd.
 
 %prep
-%setup -q -c
+%autosetup -p1 -c
 mkdir -p "$(dirname "src/%{gopath_comp}")"
 mv %{name}-%{version} src/%{gopath_comp}
 
@@ -56,7 +57,7 @@ mv %{name}-%{version} src/%{gopath_comp}
 export GOPATH="$(pwd)"
 cd src/%{gopath_comp}
 go mod init
-make %{?_smp_mflags} VERSION=%{version} REVISION=%{CONTAINERD_GITCOMMIT} binaries man
+make %{?_smp_mflags} VERSION=%{version} binaries man
 
 %install
 cd src/%{gopath_comp}
@@ -64,8 +65,8 @@ install -v -m644 -D -t %{buildroot}%{_datadir}/licenses/%{name} LICENSE
 install -v -m644 -D -t %{buildroot}%{_unitdir} %{SOURCE1}
 install -v -m644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/containerd/config.toml
 install -v -m644 -D %{SOURCE3} %{buildroot}%{_presetdir}/50-containerd.preset
-make DESTDIR=%{buildroot}%{_prefix} install
-make DESTDIR=%{buildroot}%{_datadir} install-man
+make %{?_smp_mflags} DESTDIR=%{buildroot}%{_prefix} install
+make %{?_smp_mflags} DESTDIR=%{buildroot}%{_datadir} install-man
 
 %post
 %systemd_post containerd.service
@@ -79,9 +80,9 @@ make DESTDIR=%{buildroot}%{_datadir} install-man
 %check
 export GOPATH="$(pwd)"
 cd src/%{gopath_comp}
-make test
-make root-test
-make integration
+make %{?_smp_mflags} test
+make %{?_smp_mflags} root-test
+make %{?_smp_mflags} integration
 
 %files
 %defattr(-,root,root)
@@ -106,6 +107,8 @@ make integration
 %{_mandir}/man8/*
 
 %changelog
+*   Mon Dec 13 2021 Nitesh Kumar <kunitesh@vmware.com> 1.4.12-1
+-   Upgrading to 1.4.12 to use latest runc.
 *   Fri Jun 11 2021 Piyush Gupta<gpiyush@vmware.com> 1.4.4-2
 -   Bump up version to compile with new go
 *   Mon Mar 22 2021 Ankit Jain <ankitja@vmware.com> 1.4.4-1
