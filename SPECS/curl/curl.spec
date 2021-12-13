@@ -1,7 +1,7 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
 Version:        7.78.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
@@ -52,6 +52,7 @@ This package contains minimal set of shared curl libraries.
     CXXFLAGS="%{optflags}" \
     --disable-static \
     --enable-threaded-resolver \
+    --enable-hidden-symbols \
     --with-ssl \
     --with-gssapi \
     --with-libssh2 \
@@ -92,6 +93,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
+*   Fri Dec 10 2021 Harinadh D<hdommaraju@vmware.com> 7.78.0-4
+-   Fix makecheck issues
 *   Fri Sep 17 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.78.0-3
 -   Bump up release for openssl
 *   Tue Sep 14 2021 Dweep Advani <dadvani@vmware.com> 7.78.0-2
