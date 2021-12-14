@@ -1,11 +1,12 @@
 Summary:        lightweight java application to send metrics to.
 Name:           wavefront-proxy
 Version:        9.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/wavefrontHQ/java
 Source0:        https://github.com/wavefrontHQ/java/archive/wavefront-%{version}.tar.gz
 %define sha1    wavefront=7abb7ff8090559c0ad63aa4908622da97f85be52
+Patch0:         wavefront-proxy-CVE-2021-44228.patch
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -25,7 +26,7 @@ The Wavefront proxy is a light-weight Java application that you send your metric
 It handles authentication and the transmission of your metrics to your Wavefront instance.
 
 %prep
-%setup -n wavefront-proxy-wavefront-%{version}
+%autosetup -n wavefront-proxy-wavefront-%{version}
 
 cat << EOF >>wavefront-proxy.service
 [Unit]
@@ -105,6 +106,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/wavefront-proxy.service
 
 %changelog
+* Tue Dec 14 2021 Dweep Advani <dadvani@vmware.com> 9.7-2
+- Fixed for CVE-2021-44228 in log4j by consuming version 2.16.0
 * Fri Jun 04 2021 Prashant S Chauhan <psinghchauha@vmware.com> 9.7-1
 - Update version to 9.7
 * Wed Aug 26 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.39-3
