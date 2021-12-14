@@ -7,7 +7,7 @@
 Summary:        pm-webd is an open source, super light weight remote management API Gateway
 Name:           pmweb
 Version:        1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        pmweb-%{version}.tar.gz
@@ -62,6 +62,14 @@ rm -rf %{buildroot}/*
 %config(noreplace) %{_sysconfdir}/pm-web/pmweb-auth.conf
 %{_unitdir}/pm-webd.service
 
+%pre
+if ! getent group pm-web >/dev/null; then
+    /sbin/groupadd -r pm-web
+fi
+
+if ! getent passwd pm-web >/dev/null; then
+    /sbin/useradd -g pm-web pm-web -s /sbin/nologin
+fi
 
 %post
 %systemd_post pm-webd.service
@@ -72,6 +80,17 @@ rm -rf %{buildroot}/*
 %postun
 %systemd_postun_with_restart pm-webd.service
 
+if [ $1 -eq 0 ] ; then
+    if getent passwd pm-web >/dev/null; then
+        /sbin/userdel pm-web
+    fi
+    if getent group pm-web >/dev/null; then
+        /sbin/groupdel pm-web
+    fi
+fi
+
 %changelog
+* Tue Dec 14 2021 Susant Sahani <ssahani@vmware.com> 1.0-2
+- Create pm-user
 * Wed Nov 17 2021 Harinadh D <hdommaraju@vmware.com> 1.0-1
 - Initial rpm release.
