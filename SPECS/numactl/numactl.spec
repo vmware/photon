@@ -6,6 +6,9 @@ License:        GPLv2
 URL:            https://github.com/numactl/numactl
 Source0:        https://github.com/numactl/numactl/releases/download/v%{version}/%{name}-%{version}.tar.gz
 %define sha1    %{name}=1325d20027bbfc9ec5b840a599f6773d38b54a00
+%if %{with_check}
+Patch0:         0001-numactl-fix-physcpubind-for-single-cpu.patch
+%endif
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -28,7 +31,7 @@ The package contains libraries and header files for
 developing applications that use libnuma.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 autoreconf -fiv
@@ -36,7 +39,7 @@ autoreconf -fiv
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %check
 make %{?_smp_mflags} check
@@ -69,4 +72,3 @@ make %{?_smp_mflags} check
 - Automatic Version Bump
 * Mon Nov 18 2019 Alexey Makhalov <amakhalov@vmware.com> 2.0.13-1
 - Initial build. First version
-
