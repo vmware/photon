@@ -1,7 +1,7 @@
 Summary:	CLI tool for spawning and running containers per OCI spec.
 Name:		runc
 Version:	1.0.0.rc93
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	ASL 2.0
 URL:		https://runc.io/
 Source0:        https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
@@ -17,6 +17,7 @@ Patch1:         runc-rc93-0002-libct-rootfs-introduce-and-use-mountConfig.patch
 Patch2:         runc-rc93-0003-libct-rootfs-mountCgroupV2-minor-refactor.patch
 Patch3:         runc-rc93-0004-Fix-cgroup2-mount-for-rootless-case.patch
 Patch4:         runc-rc93-0005-rootfs-add-mount-destination-validation.patch
+Patch5:         runc-CVE-2021-43784.patch
 
 %define RUNC_BRANCH v%{RUNC_VERSION}
 %define gopath_comp github.com/opencontainers/runc
@@ -42,6 +43,7 @@ cd src/%{gopath_comp}
 %patch2 -p1
 %patch3 -p1
 %patch4 -p1
+%patch5 -p1
 
 %build
 export GOPATH="$(pwd)"
@@ -60,6 +62,8 @@ make DESTDIR=%{buildroot} PREFIX=%{_prefix} BINDIR=%{_bindir} install install-ba
 %{_datadir}/licenses/%{name}
 
 %changelog
+*   Mon Dec 13 2021 Nitesh Kumar <kunitesh@vmware.com> 1.0.0.rc93-3
+-   Fix for CVE-2021-43784.
 *   Fri May 14 2021 Bo Gan <ganb@vmware.com> 1.0.0.rc93-2
 -   Fix for CVE-2021-30465
 *   Fri May 14 2021 Bo Gan <ganb@vmware.com> 1.0.0.rc93-1
