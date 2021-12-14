@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.219
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -879,7 +879,7 @@ EOF
 # Register myself to initramfs
 mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
 cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "lvm dm-mod"
+--add-drivers "dm-mod"
 EOF
 
 # cleanup dangling symlinks
@@ -942,6 +942,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Dec 20 2021 Harinadh D <hdommaraju@vmware.com> 4.19.219-5
+-   remove lvm in add-drivers list
+-   lvm drivers are built as part of dm-mod module
 *   Wed Dec 15 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.219-4
 -   mm: fix percpu alloacion for memoryless nodes
 -   pvscsi: fix disk detection issue

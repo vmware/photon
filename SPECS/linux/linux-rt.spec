@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.219
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt95
-Release:        3%{?kat_build:.%kat}%{?dist}
+Release:        4%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1140,7 +1140,7 @@ EOF
 # Register myself to initramfs
 mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
 cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "cn lvm dm-mod megaraid_sas"
+--add-drivers "cn dm-mod megaraid_sas"
 EOF
 
 #    Cleanup dangling symlinks
@@ -1193,6 +1193,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Mon Dec 20 2021 Harinadh D <hdommaraju@vmware.com> 4.19.219-4
+-   remove lvm in add-drivers list
+-   lvm drivers are built as part of dm-mod
 *   Wed Dec 15 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.219-3
 -   mm: fix percpu alloacion for memoryless nodes
 -   pvscsi: fix disk detection issue
