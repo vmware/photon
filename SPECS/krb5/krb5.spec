@@ -12,6 +12,9 @@ Source0:        http://web.mit.edu/kerberos/www/dist/%{name}/1.17/%{name}-%{vers
 Patch0:         krb5-CVE-2020-28196.patch
 Patch1:         krb5-CVE-2021-36222.patch
 Patch2:         krb5-CVE-2021-37750.patch
+%if %{with_check}
+Patch3:         krb5-Make-test-PKINIT-certs-work-with-OpenSSL-3.0.patch
+%endif
 Requires:       openssl
 Requires:       e2fsprogs-libs
 BuildRequires:  openssl-devel
@@ -88,7 +91,11 @@ unset LIBRARY
 # krb5 tests require hostname resolve
 echo "127.0.0.1 $HOSTNAME" >> /etc/hosts
 cd src
-make check %{?_smp_mflags}
+pushd tests/dejagnu/pkinit-certs
+sh make-certs.sh
+popd
+# make doesn't support _smp_mflags
+make check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
