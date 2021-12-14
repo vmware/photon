@@ -58,6 +58,7 @@ DESTDIR=%{buildroot} ninja install
 %find_lang %{name}
 
 %check
+cd build
 ninja test
 
 %post   -p /sbin/ldconfig
