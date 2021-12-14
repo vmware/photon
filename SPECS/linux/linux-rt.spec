@@ -19,7 +19,7 @@ Name:           linux-rt
 Version:        5.10.83
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt58
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1045,7 +1045,7 @@ EOF
 # Register myself to initramfs
 mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
 cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "cn lvm dm-mod megaraid_sas"
+--add-drivers "cn dm-mod megaraid_sas"
 EOF
 
 #    Cleanup dangling symlinks
@@ -1098,6 +1098,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Dec 14 2021 Harinadh D <hdommaraju@vmware.com> 5.10.83-3
+-   remove lvm in add-drivers list
+-   lvm drivers are built as part of dm-mod
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 5.10.83-2
 -   Bump up to compile with python 3.10
 *   Mon Dec 06 2021 srinidhira0 <srinidhir@vmware.com> 5.10.83-1

@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.83
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -399,7 +399,7 @@ EOF
 # Register myself to initramfs
 mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
 cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "lvm dm-mod"
+--add-drivers "dm-mod"
 EOF
 
 # cleanup dangling symlinks
@@ -449,6 +449,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Dec 14 2021 Harinadh D <hdommaraju@vmware.com> 5.10.83-3
+-   remove lvm in add-drivers list
+-   lvm drivers are built as part of dm-mod
 *   Wed Dec 08 2021 Ankit Jain <ankitja@vmware.com> 5.10.83-2
 -   tarfs: Fix binary execution issue
 *   Mon Dec 06 2021 srinidhira0 <srinidhir@vmware.com> 5.10.83-1
