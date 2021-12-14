@@ -1,0 +1,26 @@
+From 0b6d0da0adcca42ffc42f33992f8b54aef81435c Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 14 Dec 2021 16:15:34 +0530
+Subject: [PATCH] fix python include path
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index bf060af..c91b211 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -743,7 +743,7 @@ AC_ARG_WITH([python-includes],
+         PYTHON_INCLUDES="-I$withval"
+     ],
+     [
+-        PYTHON_INCLUDES="-I$PYTHON_BASE_PATH/include/python2.7"
++        PYTHON_INCLUDES="-I$PYTHON_BASE_PATH/include/python3.6m"
+     ])
+ 
+ AC_ARG_WITH([python-libs],
+-- 
+2.30.0
+
