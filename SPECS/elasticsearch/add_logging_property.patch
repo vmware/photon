@@ -1,0 +1,21 @@
+From 416629faaf08f89cadaa862b6593a1a58022f937 Mon Sep 17 00:00:00 2001
+From: Chris Hegarty <62058229+ChrisHegarty@users.noreply.github.com>
+Date: Fri, 10 Dec 2021 20:06:19 +0000
+Subject: [PATCH] Add logging property (#81625)
+
+---
+ distribution/src/config/jvm.options | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/distribution/src/config/jvm.options b/distribution/src/config/jvm.options
+index 5eb573c66e219..5cf20509599cb 100644
+--- a/distribution/src/config/jvm.options
++++ b/distribution/src/config/jvm.options
+@@ -91,6 +91,7 @@
+ # log4j 2
+ -Dlog4j.shutdownHookEnabled=false
+ -Dlog4j2.disable.jmx=true
++-Dlog4j2.formatMsgNoLookups=true
+ 
+ -Djava.io.tmpdir=${ES_TMPDIR}
+ 
