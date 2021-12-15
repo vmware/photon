@@ -1,7 +1,7 @@
 Summary:	Docbook-xsl-1.79.1
 Name:		docbook-xsl
 Version:	1.79.1
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	Apache License
 URL:		http://www.docbook.org
 Source0:	http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2
@@ -9,7 +9,9 @@ Source0:	http://downloads.sourceforge.net/docbook/%{name}-%{version}.tar.bz2
 Group:		Development/Tools
 Vendor:		VMware, Inc.
 Distribution:	Photon
+
 Requires:	libxml2
+
 BuildRequires:	libxml2
 BuildRequires:  zip
 BuildArch:      noarch
@@ -19,8 +21,9 @@ The DocBook XML DTD-4.5 package contains document type definitions for
 verification of XML data files against the DocBook rule set. These are
 useful for structuring books and software documentation to a standard
 allowing you to utilize transformations already written for that standard.
+
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 zip -d tools/lib/jython.jar Lib/distutils/command/wininst-6.exe
@@ -91,21 +94,23 @@ fi
 %{_docdir}/*
 
 %changelog
-*       Fri Jan 18 2019 Tapas Kundu <tkundu@vmware.com> 1.79.1-7
--       Removed saxon jar files while installing
-*	Tue Dec 04 2018 Ashwin H<ashwinh@vmware.com> 1.79.1-6
--       Remove windows installers
-*	Fri Aug 18 2017 Rongrong Qiu <rqiu@vmware.com> 1.79.1-5
--	Update make check for bug 1635477
-*	Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.79.1-4
--	Fix arch
-*	Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.79.1-3
--	GA - Bump release of all rpms
-*       Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  1.79.1-2
--	Fixing spec file to handle rpm upgrade scenario correctly
-*       Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 1.79.1-1
--       Updated version.
-*       Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.78.1-2
--       Updated group.
-*	Mon Nov 24 2014 Divya Thaluru <dthaluru@vmware.com> 1.78.1-1
--	Initial build. First version
+*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 1.79.1-8
+-   Version bump up to use libxml2 2.9.11-4.
+*   Fri Jan 18 2019 Tapas Kundu <tkundu@vmware.com> 1.79.1-7
+-   Removed saxon jar files while installing
+*   Tue Dec 04 2018 Ashwin H<ashwinh@vmware.com> 1.79.1-6
+-   Remove windows installers
+*   Fri Aug 18 2017 Rongrong Qiu <rqiu@vmware.com> 1.79.1-5
+-   Update make check for bug 1635477
+*   Tue Apr 25 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.79.1-4
+-   Fix arch
+*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.79.1-3
+-   GA - Bump release of all rpms
+*   Tue May 3 2016 Divya Thaluru <dthaluru@vmware.com>  1.79.1-2
+-   Fixing spec file to handle rpm upgrade scenario correctly
+*   Thu Feb 25 2016 Kumar Kaushik <kaushikk@vmware.com> 1.79.1-1
+-   Updated version.
+*   Wed May 20 2015 Touseef Liaqat <tliaqat@vmware.com> 1.78.1-2
+-   Updated group.
+*   Mon Nov 24 2014 Divya Thaluru <dthaluru@vmware.com> 1.78.1-1
+-   Initial build. First version

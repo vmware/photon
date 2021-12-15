@@ -1,7 +1,7 @@
 Summary:        Library providing support for "XML Signature" and "XML Encryption" standards
 Name:           xmlsec1
 Version:        1.2.29
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -36,7 +36,7 @@ Libraries, includes, etc. you can use to develop applications with XML Digital
 Signatures and XML Encryption support.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 %configure  --disable-static
@@ -44,10 +44,10 @@ make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -86,6 +86,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_prefix}/share/man/man1/xmlsec1-config.1.gz
 
 %changelog
+*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 1.2.29-4
+-   Version bump up to use libxml2 2.9.11-4.
 *   Wed Oct 28 2020 Siju Maliakkal <smaliakkal@vmware.com> 1.2.29-3
 -   Added XSLT requirement
 *   Mon Oct 28 2019 Piyush Gupta <guptapi@vmware.com> 1.2.29-2

@@ -3,7 +3,7 @@
 
 Name:           python-deepmerge
 Version:        0.0.5
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python toolset to deeply merge python dictionaries.
 Group:          Development/Libraries
 License:        MIT
@@ -22,6 +22,8 @@ BuildRequires:  python3-xml
 BuildRequires:  curl-devel
 BuildRequires:  python-pyparsing
 BuildRequires:  python3-pyparsing
+BuildRequires:  python-pip
+BuildRequires:  python3-pip
 Requires:       python2
 Requires:       python2-libs
 %if %{with_check}
@@ -35,8 +37,6 @@ BuildRequires:  python-attrs
 BuildRequires:  python-six
 BuildRequires:  python-requests
 BuildRequires:  python3-requests
-BuildRequires:  python-pip
-BuildRequires:  python3-pip
 %endif
 BuildArch:      noarch
 
@@ -52,7 +52,7 @@ Requires:       python3-libs
 A tools to handle merging of nested data structures in python.
 
 %prep
-%setup -q -n deepmerge-%{version}
+%autosetup -n deepmerge-%{version}
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -97,6 +97,8 @@ rm -rf %{buildroot}/*
 %{python3_sitelib}/*
 
 %changelog
+*  Fri Oct 29 2021 Piyush Gupta <gpiyush@vmware.com> 0.0.5-4
+-  Added python-pip and python3-pip in BuildRequires.
 *  Thu Jul 08 2021 Sujay G <gsujay@vmware.com> 0.0.5-3
 -  Use photon bundled packaging for build deepmerge.
 *  Tue Apr 07 2020 Tapas Kundu <tkundu@vmware.com> 0.0.5-2

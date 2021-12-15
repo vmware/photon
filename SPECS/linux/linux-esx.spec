@@ -2,7 +2,7 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.214
+Version:        4.19.219
 Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=0e29837f0d1ce72085e5ee9225927683f2e44ee1
+%define sha1 linux=a25a5bf3470daa11c72177756775990866ac91bf
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -371,6 +371,9 @@ Patch519:       0003-fuse-fix-bad-inode.patch
 #fix for CVE-2021-28950
 Patch520:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
+# TARFS
+Patch521:        0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
+
 # Patches for i40e driver
 Patch801:        0001-Add-support-for-gettimex64-interface.patch
 
@@ -724,6 +727,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch518 -p1
 %patch519 -p1
 %patch520 -p1
+%patch521 -p1
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -926,6 +930,14 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri Dec 10 2021 Ankit Jain <ankitja@vmware.com> 4.19.219-2
+-   tarfs: Fix binary execution issue
+*   Wed Dec 08 2021 srinidhira0 <srinidhir@vmware.com> 4.19.219-1
+-   Update to version 4.19.219
+*   Wed Nov 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.217-1
+-   Update to version 4.19.217
+*   Wed Nov 10 2021 Ankit Jain <ankitja@vmware.com> 4.19.214-3
+-   tarfs: A new readonly filesystem to mount tar archive
 *   Fri Oct 29 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.214-2
 -   Fix for CVE-2020-36322/CVE-2021-28950
 *   Thu Oct 28 2021 Sharan Turlapati <sturlapati@vmware.com> 4.19.214-1

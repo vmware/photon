@@ -1,8 +1,8 @@
-From 65facfe3fa04b7244d2c3f1fce3845e6771af6c5 Mon Sep 17 00:00:00 2001
+From e044dc5c7dfc14a24006d596571acf84610fafdb Mon Sep 17 00:00:00 2001
 From: Aleksei Besogonov <cyberax@amazon.com>
 Date: Thu, 2 Nov 2017 02:55:51 +0000
-Subject: Not-for-upstream: PM / hibernate: Speed up hibernation by batching
- requests
+Subject: [PATCH] Not-for-upstream: PM / hibernate: Speed up hibernation by
+ batching requests
 
 Hibernate file reading and writing submits individual IO requests for
 each page of the data. This normally is not a big issue, however some
@@ -28,25 +28,25 @@ Reviewed-by: Eduardo Valentin <eduval@amazon.com>
 CR: https://cr.amazon.com/r/8297651/
 Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
 ---
- kernel/power/swap.c | 238 ++++++++++++++++++++++++++++++++++++++++++++--------
- 1 file changed, 203 insertions(+), 35 deletions(-)
+ kernel/power/swap.c | 236 +++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 202 insertions(+), 34 deletions(-)
 
 diff --git a/kernel/power/swap.c b/kernel/power/swap.c
-index c2bcf97..854dd22 100644
+index 9db7f2f93fae..dac6aea4d08f 100644
 --- a/kernel/power/swap.c
 +++ b/kernel/power/swap.c
-@@ -63,6 +63,11 @@ static bool clean_pages_on_decompress;
+@@ -62,6 +62,11 @@ static bool clean_pages_on_decompress;
+ 
  #define MAP_PAGE_ENTRIES	(PAGE_SIZE / sizeof(sector_t) - 1)
  
- /*
++/*
 + * The number of pages in each BIO request
 + */
 +#define HIB_BIO_BATCH_SIZE 63u
 +
-+/*
+ /*
   * Number of free pages that are not high.
   */
- static inline unsigned long low_free_pages(void)
 @@ -228,6 +233,7 @@ struct hib_bio_batch {
  	atomic_t		count;
  	wait_queue_head_t	wait;
@@ -184,7 +184,7 @@ index c2bcf97..854dd22 100644
  		bio_put(bio);
 @@ -296,6 +366,10 @@ static int hib_submit_io(int op, int op_flags, pgoff_t page_off, void *addr,
  
- static blk_status_t hib_wait_io(struct hib_bio_batch *hb)
+ static int hib_wait_io(struct hib_bio_batch *hb)
  {
 +	if (hb->current_bio) {
 +		send_bio(hb, hb->current_bio);
@@ -370,5 +370,5 @@ index c2bcf97..854dd22 100644
  		}
  		asked += i;
 -- 
-2.14.4
+2.23.3
 

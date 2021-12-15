@@ -1,7 +1,7 @@
 Summary:    libsoup HTTP client/server library
 Name:       libsoup
 Version:    2.64.0
-Release:    3%{?dist}
+Release:    4%{?dist}
 License:    GPLv2
 URL:        http://wiki.gnome.org/LibSoup
 Group:      System Environment/Development
@@ -61,8 +61,7 @@ Requires:        %{name} = %{version}-%{release}
 These are the additional language files of libsoup.
 
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 %configure --disable-vala
@@ -70,12 +69,12 @@ make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}%{_infodir}
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %find_lang %{name}
 
 %check
-make  check
+make %{?_smp_mflags} check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -100,6 +99,8 @@ make  check
 %defattr(-,root,root)
 
 %changelog
+*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 2.64.0-4
+-   Version bump up to use libxml2 2.9.11-4.
 *   Fri Oct 16 2020 Ashwin H <ashwinh@vmware.com> 2.64.0-3
 -   Bump up to use new icu lib.
 *   Fri Dec 07 2018 Keerthana <keerthanak@vmware.com> 2.64.0-2

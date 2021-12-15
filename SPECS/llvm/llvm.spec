@@ -1,7 +1,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        10.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -28,7 +28,7 @@ The llvm-devel package contains libraries, header files and documentation
 for developing applications that use llvm.
 
 %prep
-%setup -q -n %{name}-%{version}.src
+%autosetup -n %{name}-%{version}.src -p1
 
 %build
 mkdir -p build
@@ -45,7 +45,7 @@ make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 cd build
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -78,6 +78,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 10.0.1-2
+-   Version bump up to use libxml2 2.9.11-4.
 *   Wed Nov 11 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.0.1-1
 -   Version Bump to 10.0.1
 -   Enable LLVM_ENABLE_RTTI

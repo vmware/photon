@@ -1,7 +1,7 @@
 Summary:        Libxslt-1.1.29
 Name:           libxslt
 Version:        1.1.32
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        MIT
 URL:            http:/http://xmlsoft.org/libxslt/
 Group:          System Environment/General Libraries
@@ -27,12 +27,7 @@ Requires:       libxslt = %{version}-%{release}
 Header files for doing development with libxslt.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
+%autosetup -p1
 sed -i 's/int xsltMaxDepth = 3000/int xsltMaxDepth = 5000/g' libxslt/transform.c
 
 %build
@@ -45,7 +40,7 @@ sh configure \
 make %{?_smp_mflags}
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 %{_fixperms} %{buildroot}/*
 
@@ -74,6 +69,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 1.1.32-8
+-   Version bump up to use libxml2 2.9.11-4.
 *   Fri Mar 13 2020 Shreyas B. <shreyasb@vmware.com> 1.1.32-7
 -   Increase the maximum number of nested template calls for xml.
 *   Tue Dec 17 2019 Shreyas B. <shreyasb@vmware.com> 1.1.32-6

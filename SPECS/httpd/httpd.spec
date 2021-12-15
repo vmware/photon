@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
 Version:        2.4.51
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -23,7 +23,9 @@ BuildRequires:  apr-util-devel
 BuildRequires:  openldap
 BuildRequires:  expat-devel
 BuildRequires:  lua-devel
+BuildRequires:  nghttp2-devel
 
+Requires:       nghttp2
 Requires:       pcre
 Requires:       apr-util
 Requires:       openssl
@@ -40,22 +42,24 @@ Provides:       apache2
 The Apache HTTP Server.
 
 %package devel
-Summary: Header files for httpd
-Group: Applications/System
-Requires: httpd
+Summary:    Header files for httpd
+Group:      Applications/System
+Requires:   httpd
+
 %description devel
 These are the header files of httpd.
 
 %package docs
-Summary: Help files for httpd
-Group: Applications/System
-Requires: httpd
+Summary:    Help files for httpd
+Group:      Applications/System
+Requires:   httpd
+
 %description docs
 These are the help files of httpd.
 
 %package tools
-Group: System Environment/Daemons
-Summary: Tools for httpd
+Group:      System Environment/Daemons
+Summary:    Tools for httpd
 
 %description tools
 The httpd-tools of httpd.
@@ -65,24 +69,26 @@ The httpd-tools of httpd.
 
 %build
 sh ./configure \
-            --host=%{_host}                          \
-            --build=%{_host}                         \
-            --prefix="%{_sysconfdir}/httpd"          \
-            --exec-prefix="%{_prefix}"               \
-            --libdir=%{_libdir}                      \
-            --bindir="%{_bindir}"                    \
-            --sbindir="%{_sbindir}"                  \
-            --sysconfdir="%{_confdir}/httpd/conf"    \
-            --libexecdir="%{_libdir}/httpd/modules"  \
-            --datadir="%{_sysconfdir}/httpd"         \
-            --includedir="%{_includedir}"            \
-            --mandir="%{_mandir}"                    \
-            --enable-authnz-fcgi                     \
-            --enable-mods-shared="all cgi"           \
-            --enable-mpms-shared=all                 \
-            --with-apr=%{_prefix}                    \
-            --with-apr-util=%{_prefix}               \
-            --enable-layout=RPM
+            --host=%{_host} \
+            --build=%{_host} \
+            --prefix="%{_sysconfdir}/httpd" \
+            --exec-prefix="%{_prefix}" \
+            --libdir=%{_libdir} \
+            --bindir="%{_bindir}" \
+            --sbindir="%{_sbindir}" \
+            --sysconfdir="%{_confdir}/httpd/conf" \
+            --libexecdir="%{_libdir}/httpd/modules" \
+            --datadir="%{_sysconfdir}/httpd" \
+            --includedir="%{_includedir}" \
+            --mandir="%{_mandir}" \
+            --enable-authnz-fcgi \
+            --enable-mods-shared="all cgi" \
+            --enable-mpms-shared=all \
+            --with-apr=%{_prefix} \
+            --with-apr-util=%{_prefix} \
+            --enable-layout=RPM \
+            --enable-http2
+
 make %{?_smp_mflags}
 
 %install
@@ -110,8 +116,8 @@ EOF
 install -vdm755 %{buildroot}/usr/lib/systemd/system-preset
 echo "disable httpd.service" > %{buildroot}/usr/lib/systemd/system-preset/50-httpd.preset
 
-ln -s /usr/sbin/httpd %{buildroot}/usr/sbin/apache2
-ln -s /etc/httpd/conf/httpd.conf %{buildroot}/etc/httpd/httpd.conf
+ln -sfv /usr/sbin/httpd %{buildroot}/usr/sbin/apache2
+ln -sfv /etc/httpd/conf/httpd.conf %{buildroot}/etc/httpd/httpd.conf
 
 mkdir -p %{buildroot}%{_libdir}/tmpfiles.d
 cat >> %{buildroot}%{_libdir}/tmpfiles.d/httpd.conf << EOF
@@ -121,21 +127,21 @@ EOF
 %post
 /sbin/ldconfig
 if [ $1 -eq 1 ]; then
-    # this is initial installation
-    if ! getent group apache >/dev/null; then
-        groupadd -g 25 apache
-    fi
-    if ! getent passwd apache >/dev/null; then
-        useradd -c "Apache Server" -d /srv/www -g apache \
-            -s /bin/false -u 25 apache
-    fi
+  # this is initial installation
+  if ! getent group apache >/dev/null; then
+    groupadd -g 25 apache
+  fi
 
-    if [ -h /etc/mime.types ]; then
-        mv /etc/mime.types /etc/mime.types.orig
-    fi
+  if ! getent passwd apache >/dev/null; then
+    useradd -c "Apache Server" -d /srv/www -g apache -s /bin/false -u 25 apache
+  fi
+
+  if [ -h /etc/mime.types ]; then
+    mv /etc/mime.types /etc/mime.types.orig
+  fi
 fi
 
-ln -sf /etc/httpd/conf/mime.types /etc/mime.types
+ln -sfv /etc/httpd/conf/mime.types /etc/mime.types
 systemd-tmpfiles --create httpd.conf
 %systemd_post httpd.service
 
@@ -145,17 +151,17 @@ systemd-tmpfiles --create httpd.conf
 %postun
 /sbin/ldconfig
 if [ $1 -eq 0 ]; then
-    # this is delete operation
-    if getent passwd apache >/dev/null; then
-        userdel apache
-    fi
-    if getent group apache >/dev/null; then
-        groupdel apache
-    fi
+  # this is delete operation
+  if getent passwd apache >/dev/null; then
+    userdel apache
+  fi
+  if getent group apache >/dev/null; then
+    groupdel apache
+  fi
 
-    if [ -f /etc/mime.types.orig ]; then
-        mv /etc/mime.types.orig /etc/mime.types
-    fi
+  if [ -f /etc/mime.types.orig ]; then
+    mv /etc/mime.types.orig /etc/mime.types
+  fi
 fi
 %systemd_postun_with_restart httpd.service
 
@@ -197,6 +203,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Mon Nov 08 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.51-2
+- Enable mod_http2
 * Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.51-1
 - Version upgrade to fix CVE-2021-42013
 * Tue Oct 05 2021 Dweep Advani <dadvani@vmware.com> 2.4.48-4

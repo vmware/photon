@@ -1,0 +1,20 @@
+From ef648a9832e1d8273f9288c82024e392aadab68a Mon Sep 17 00:00:00 2001
+From: Clark Williams <williams@redhat.com>
+Date: Fri, 12 Nov 2021 12:46:23 -0600
+Subject: [PATCH 342/342] Linux 4.19.217-rt95 REBASE
+
+Signed-off-by: Clark Williams <williams@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index e98a1fe050bd..5a28f0a65d16 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt93
++-rt95
+-- 
+2.33.1
+

@@ -2,7 +2,7 @@
 Summary:        A next generation, high-performance debugger.
 Name:           lldb
 Version:        10.0.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -93,6 +93,8 @@ rm -rf %{buildroot}/*
 %{python2_sitelib}/*
 
 %changelog
+*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 10.0.1-4
+-   Version bump up to use libxml2 2.9.11-4.
 *   Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 10.0.1-3
 -   Fix build with updated python symlink changes
 *   Tue Jul 27 2021 Tapas Kundu <tkundu@vmware.com> 10.0.1-2

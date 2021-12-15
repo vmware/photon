@@ -1,7 +1,7 @@
 Summary:	System utilities to list pci devices
 Name:		pciutils
 Version:	3.6.4
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GPLv2
 URL:		https://www.kernel.org/pub/software/utils/pciutils/
 Group:		System Environment/System Utilities
@@ -20,7 +20,8 @@ Requires: pciutils = %{version}-%{release}
 Library files for doing development with pciutils.
 
 %prep
-%setup -q
+%autosetup
+
 %build
 make %{?_smp_mflags} PREFIX=%{_prefix} \
     SHAREDIR=%{_datadir}/misc \
@@ -34,6 +35,9 @@ make DESTDIR=%{buildroot} \
     SHARED=yes \
     install install-lib
 chmod -v 766 %{buildroot}%{_libdir}/libpci.so
+
+%post   -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %clean
 rm -rf %{buildroot}/*
@@ -52,6 +56,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*   Thu Nov 11 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 3.6.4-2
+-   Add missing ldconfig after library installation.
 *   Thu Dec 17 2020 Gerrit Photon <photon-checkins@vmware.com> 3.6.4-1
 -   Automatic Version Bump
 *   Tue Sep 11 2018 Him Kalyan Bordoloi <bordoloih@vmware.com> 3.6.2-1

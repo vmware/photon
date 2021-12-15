@@ -1,7 +1,7 @@
 Summary:	initramfs
 Name:		initramfs
 Version:	2.0
-Release:	5%{?dist}
+Release:	7%{?dist}
 Source0:	fscks.conf
 License:	Apache License
 Group:		System Environment/Base
@@ -18,8 +18,8 @@ mkdir -p %{buildroot}%{_sysconfdir}/dracut.conf.d
 install -D -m644 %{SOURCE0} %{buildroot}%{_sysconfdir}/dracut.conf.d/
 install -d -m755 %{buildroot}%{_localstatedir}/lib/initramfs/kernel
 
-%define watched_path %{_sbindir} %{_libdir}/udev/rules.d %{_libdir}/systemd/system /lib/modules %{_sysconfdir}/dracut.conf.d
-%define watched_pkgs e2fsprogs, systemd, kpartx, device-mapper-multipath fipsify
+%define watched_path %{_sbindir} %{_libdir}/udev/rules.d %{_libdir}/systemd/system /lib/modules %{_sysconfdir}/dracut.conf.d %{_sysconfdir}/hmacgen
+%define watched_pkgs e2fsprogs, systemd, kpartx, device-mapper-multipath fipsify photon-checksum-generator linux-aws-hmacgen linux-secure-hmacgen linux-esx-hmacgen linux-hmacgen
 
 %define removal_action() rm -rf %{_localstatedir}/lib/rpm-state/initramfs
 
@@ -111,6 +111,11 @@ echo "initramfs" %{version}-%{release} "postun" >&2
 %dir %{_localstatedir}/lib/initramfs/kernel
 
 %changelog
+*   Tue Dec 7 2021 Vikash Bansal <bvikas@vmware.com> 2.0-7
+-   Add all flavours of hmacgen package to watched packages list
+-   Add "/etc/hmacgen" to watched paths (for photon-checksum-generator)
+*   Tue Dec 7 2021 Vikash Bansal <bvikas@vmware.com> 2.0-6
+-   Add photon-checksum-generator to watched packages
 *   Tue Mar 17 2020 Vikash Bansal <bvikas@vmware.com> 2.0-5
 -   Added trigger for fipsify
 *   Mon Aug 27 2018 Dheeraj Shetty <dheerajs@vmware.com> 2.0-4

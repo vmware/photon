@@ -1,7 +1,7 @@
 Summary:        Libraries for terminal handling of character screens
 Name:           ncurses
 Version:        6.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            http://invisible-island.net/ncurses/
 Group:          Applications/System
@@ -59,11 +59,13 @@ ln -s ../configure .
     --with-shared \
     --without-debug \
     --enable-pc-files \
+    --with-pkg-config-libdir=%{_libdir}/pkgconfig \
     --enable-widec \
     --disable-lp64 \
     --with-chtype='long' \
     --with-mmask-t='long' \
-    --disable-silent-rules
+    --disable-silent-rules \
+    --with-termlib=tinfo
 make %{?_smp_mflags}
 popd
 mkdir v5
@@ -73,24 +75,31 @@ ln -s ../configure .
     --with-shared \
     --without-debug \
     --enable-pc-files \
+    --with-pkg-config-libdir=%{_libdir}/pkgconfig \
     --enable-widec \
     --disable-lp64 \
     --with-chtype='long' \
     --with-mmask-t='long' \
     --disable-silent-rules \
+    --with-termlib=tinfo \
     --with-abi-version=5
 make %{?_smp_mflags}
 popd
 %install
-make -C v5 DESTDIR=%{buildroot} install.libs %{?_smp_mflags}
-make -C v6 DESTDIR=%{buildroot} install %{?_smp_mflags}
+make %{?_smp_mflags} -C v5 DESTDIR=%{buildroot} install.libs
+make %{?_smp_mflags} -C v6 DESTDIR=%{buildroot} install
 install -vdm 755 %{buildroot}/%{_lib}
 ln -sfv ../..%{_lib}/$(readlink %{buildroot}%{_libdir}/libncursesw.so) %{buildroot}%{_libdir}/libncursesw.so
-for lib in ncurses form panel menu ; do \
+for lib in form panel menu ; do \
     rm -vf %{buildroot}%{_libdir}/lib${lib}.so ; \
     echo "INPUT(-l${lib}w)" > %{buildroot}%{_libdir}/lib${lib}.so ; \
     ln -sfv lib${lib}w.a %{buildroot}%{_libdir}/lib${lib}.a ; \
-    ln -sfv /lib/pkgconfig/${lib}w.pc %{buildroot}/lib/pkgconfig/${lib}.pc
+    ln -sfv %{_libdir}/pkgconfig/${lib}w.pc %{buildroot}/%{_libdir}/pkgconfig/${lib}.pc
+done
+for lib in ncurses ; do \
+    rm -vf %{buildroot}%{_libdir}/lib${lib}.so ; \
+    echo "INPUT(-l${lib}w -ltinfo)" > %{buildroot}%{_libdir}/lib${lib}.so ; \
+    ln -sfv lib${lib}w.a %{buildroot}%{_libdir}/lib${lib}.a ; \
 done
 ln -sfv libncurses++w.a %{buildroot}%{_libdir}/libncurses++.a
 rm -vf %{buildroot}%{_libdir}/libcursesw.so
@@ -105,8 +114,8 @@ cp -v -R doc/* %{buildroot}%{_defaultdocdir}/%{name}-%{version}
 
 %check
 cd test
-%configure
-make
+sh configure
+make %{?_smp_mflags}
 
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
@@ -145,15 +154,6 @@ make
 %{_libdir}/libformw.a
 %{_libdir}/libpanel.a
 %{_libdir}/libmenuw.a
-/lib/pkgconfig/panelw.pc
-/lib/pkgconfig/panel.pc
-/lib/pkgconfig/form.pc
-/lib/pkgconfig/menu.pc
-/lib/pkgconfig/ncursesw.pc
-/lib/pkgconfig/ncurses++w.pc
-/lib/pkgconfig/menuw.pc
-/lib/pkgconfig/formw.pc
-/lib/pkgconfig/ncurses.pc
 %{_libdir}/libncursesw.a
 %{_libdir}/libcursesw.a
 %{_libdir}/libncurses++w.a
@@ -163,6 +163,7 @@ make
 %{_libdir}/libncurses++.a
 %{_libdir}/libmenu.a
 %{_libdir}/libncursesw.so
+%{_libdir}/libtinfo.a
 %{_libdir}/libpanelw.so
 %{_libdir}/libcurses.so
 %{_libdir}/libformw.so
@@ -172,6 +173,18 @@ make
 %{_libdir}/libcursesw.so
 %{_libdir}/libpanel.so
 %{_libdir}/libmenu.so
+%{_libdir}/libtinfo.so
+%{_libdir}/pkgconfig/form.pc
+%{_libdir}/pkgconfig/formw.pc
+%{_libdir}/pkgconfig/menu.pc
+%{_libdir}/pkgconfig/menuw.pc
+%{_libdir}/pkgconfig/ncurses++w.pc
+%{_libdir}/pkgconfig/ncursesw.pc
+%{_libdir}/pkgconfig/panel.pc
+%{_libdir}/pkgconfig/panelw.pc
+%{_libdir}/pkgconfig/tinfo.pc
+%{_libdir}/libncursesw.so
+
 %{_docdir}/ncurses-%{version}/html/*
 %{_docdir}/ncurses-%{version}/*.doc
 %{_mandir}/man3/*
@@ -182,6 +195,9 @@ make
 %exclude %{_datadir}/terminfo/l/linux
 
 %changelog
+*   Thu Nov 18 2021 Oliver Kurth <okurth@vmware.com> 6.1-4
+-   add libtinfo
+-   use smp_mflags and autosetup
 *   Wed Oct 13 2021 Ajay Kaher <akaher@vmware.com> 6.1-3
 -   Fix for CVE-2021-39537
 *   Tue Nov 05 2019 Ajay Kaher <akaher@vmware.com> 6.1-2

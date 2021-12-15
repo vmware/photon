@@ -1,7 +1,7 @@
 Summary:        Virtualization API library that supports KVM, QEMU, Xen, ESX etc
 Name:           libvirt
 Version:        4.7.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        LGPL
 URL:            http://libvirt.org/
 Source0:        http://libvirt.org/sources/%{name}-%{version}.tar.xz
@@ -65,14 +65,8 @@ Requires:       libtirpc-devel
 This contains development tools and libraries for libvirt.
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
+%autosetup -p1
+
 %build
 sh configure \
     --disable-silent-rules \
@@ -85,11 +79,11 @@ sh configure \
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 
 %check
-make check
+make check %{?_smp_mflags}
 
 %files
 %defattr(-,root,root)
@@ -132,6 +126,8 @@ make check
 %{_mandir}/*
 
 %changelog
+*   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 4.7.0-8
+-   Version bump up to use libxml2 2.9.11-4.
 *   Tue Jun 09 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 4.7.0-7
 -   Fix CVE-2019-10161
 *   Tue Jun 09 2020 Harinadh Dommaraju <hdommaraju@vmware.com> 4.7.0-6
