@@ -3,8 +3,8 @@
 %global gem_name bundler
 
 Name:           rubygem-bundler
-Version:        2.2.21
-Release:        2%{?dist}
+Version:        2.2.33
+Release:        1%{?dist}
 Summary:        manages an application's dependencies
 Group:          Development/Languages
 Vendor:         VMware, Inc.
@@ -12,7 +12,7 @@ Distribution:   Photon
 License:        MIT
 URL:            https://rubygems.org/gems/%{gem_name}/versions/%{version}
 Source0:        https://rubygems.org/downloads/bundler-%{version}.gem
-%define sha1    bundler=fc9e4a71393a40420810114194b60e2dadef25b5
+%define sha1    bundler=32c50b62de0112d25d1c3491a8bcbb309ec83ea5
 BuildRequires:  ruby > 2.1.0
 BuildRequires:  findutils
 Provides:       rubygem-bundler = %{version}
@@ -35,6 +35,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Wed Dec 15 2021 Piyush Gupta <gpiyush@vmware.com> 2.2.33-1
+-   Upgrade to 2.2.33.
 *   Mon Nov 01 2021 Stanislav Hadjiiski <hadjiiskis@vmware.com> 2.2.21-2
 -   Drop group write permissions for files in /usr/lib to comply with STIG
 *   Thu Jul 08 2021 Piyush Gupta <gpiyush@vmware.com> 2.2.21-1
