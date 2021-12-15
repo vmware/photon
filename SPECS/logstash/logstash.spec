@@ -1,7 +1,7 @@
 Summary:	Logstash is a tool for managing events and logs.
 Name:           logstash
 Version:        6.8.15
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache License Version 2.0
 Group:          Applications/System
 Vendor:         VMware, Inc.
@@ -11,6 +11,8 @@ Source0:        %{name}-%{version}.tar.gz
 %define sha1 %{name}-%{version}.tar.gz=97af85061109be81f41b023579f80550ff44b73c
 Source1:        %{name}.service
 Source2:        %{name}.conf
+Patch0:         CVE-2021-44228.patch
+Patch1:         CVE-2021-45046.patch
 BuildArch:      x86_64
 BuildRequires:	openjdk8 >= %{JAVA8_VERSION}
 BuildRequires:	ruby
@@ -28,7 +30,7 @@ Logstash is a server-side data processing pipeline that ingests data from a mult
 %define debug_package %{nil}
 
 %prep
-%setup -q
+%autosetup -p1
 #Build only Apache License oss part of logstash
 rm -rf x-pack
 
@@ -115,6 +117,8 @@ fi
 %attr(-,logstash,logstash) /var/log/%{name}
 
 %changelog
+*   Wed Dec 15 2021 Ankit Jain <ankitja@vmware.com> 6.8.15-2
+-   Fix for CVE-2021-44228 and CVE-2021-45046
 *   Wed Apr 07 2021 Piyush Gupta <gpiyush@vmware.com> 6.8.15-1
 -   Update to 6.8.15
 *   Wed Nov 18 2020 Piyush Gupta <gpiyush@vmware.com> 6.8.13-1
