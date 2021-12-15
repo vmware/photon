@@ -35,8 +35,10 @@ f=CHANGES ; iconv -f iso-8859-1 -t utf-8 $f -o $f.utf8 ; mv $f.utf8 $f
 
 %build
 autoreconf -if
-%configure --enable-shared --disable-static \
-           --disable-dependency-tracking
+%configure \
+  --enable-shared \
+  --disable-static \
+  --disable-dependency-tracking
 %{__make} %{?_smp_mflags}
 
 %install
@@ -45,13 +47,16 @@ make %{?_smp_mflags} DESTDIR=%{buildroot} install
 rm -f %{buildroot}/%{_libdir}/libcares.la
 
 %check
-make %{?_smp_mflags} check
+pushd
+  # few of the Live and Mock Tests are network setup dependent, can be skipped
+  # source: https://github.com/c-ares/c-ares/tree/main/test
+  ./arestest --gtest_filter=-*MockChannelTest*
+popd
 
 %clean
 rm -rf %{buildroot}
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
 
 %files
 %defattr(-, root, root)
@@ -70,21 +75,21 @@ rm -rf %{buildroot}
 %{_mandir}/man3/ares_*
 
 %changelog
-*   Mon Aug 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.1-2
--   Fix CVE-2021-3672
-*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.17.1-1
--   Automatic Version Bump
-*   Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.16.1-1
--   Automatic Version Bump
-*   Fri Sep 21 2018 Sujay G <gsujay@vmware.com> 1.14.0-1
--   Bump c-ares version to 1.14.0
-*   Fri Sep 29 2017 Dheeraj Shetty <dheerajs@vmware.com>  1.12.0-2
--   Fix for CVE-2017-1000381
-*   Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com>  1.12.0-1
--   Upgrade to 1.12.0
-*   Wed Oct 05 2016 Xiaolin Li <xiaolinl@vmware.com> 1.10.0-3
--   Apply patch for CVE-2016-5180.
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.10.0-2
--   GA - Bump release of all rpms
-*   Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> - 1.10.0-1
--   Initial version
+* Mon Aug 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.17.1-2
+- Fix CVE-2021-3672
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.17.1-1
+- Automatic Version Bump
+* Mon Jun 22 2020 Gerrit Photon <photon-checkins@vmware.com> 1.16.1-1
+- Automatic Version Bump
+* Fri Sep 21 2018 Sujay G <gsujay@vmware.com> 1.14.0-1
+- Bump c-ares version to 1.14.0
+* Fri Sep 29 2017 Dheeraj Shetty <dheerajs@vmware.com>  1.12.0-2
+- Fix for CVE-2017-1000381
+* Fri Apr 07 2017 Anish Swaminathan <anishs@vmware.com>  1.12.0-1
+- Upgrade to 1.12.0
+* Wed Oct 05 2016 Xiaolin Li <xiaolinl@vmware.com> 1.10.0-3
+- Apply patch for CVE-2016-5180.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.10.0-2
+- GA - Bump release of all rpms
+* Wed Feb 03 2016 Anish Swaminathan <anishs@vmware.com> - 1.10.0-1
+- Initial version
