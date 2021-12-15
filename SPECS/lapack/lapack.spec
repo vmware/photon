@@ -1,6 +1,6 @@
 Summary:        linear algebra package
 Name:           lapack
-Version:        3.7.0
+Version:        3.7.1
 Release:        1%{?dist}
 URL:            http://www.netlib.org/lapack/
 License:        BSD
@@ -8,7 +8,8 @@ Group:          Development/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://www.netlib.org/lapack/lapack-%{version}.tgz
-%define         sha1 lapack=27dbd06bedc76619150f8e28de6412f7df0c649a
+%define         sha1 lapack=84c4f7163b52b1bf1f6ca2193f6f48ed3dec0fab
+Patch0:         lapack-CVE-2021-4048.patch
 
 BuildRequires:  cmake
 BuildRequires:  gfortran
@@ -27,6 +28,7 @@ developing applications that use lapack.
 
 %prep
 %setup
+%patch0 -p1
 
 %build
 mkdir -p build
@@ -55,6 +57,7 @@ mv %{buildroot}/%{_includedir}/*.h %{buildroot}/%{_includedir}/lapacke/.
 %{_libdir}/libblas.so.*
 %{_libdir}/liblapack.so.*
 %{_libdir}/libtmglib.so
+%{_libdir}/liblapacke.so.*
 
 %files devel
 %defattr(-,root,root)
@@ -67,5 +70,7 @@ mv %{buildroot}/%{_includedir}/*.h %{buildroot}/%{_includedir}/lapacke/.
 %exclude %{_libdir}/cmake/*
 
 %changelog
+*   Wed Dec 15 2021 Nitesh Kumar <kunitesh@vmware.com> 3.7.1-1
+-   Version upgrade to 3.7.1, Fix for CVE-2021-4048.
 *   Fri Mar 03 2017 Xiaolin Li <xiaolinl@vmware.com> 3.7.0-1
 -   Initial packaging for Photon
