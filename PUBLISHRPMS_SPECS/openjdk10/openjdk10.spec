@@ -59,6 +59,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
+# Using autosetup is not feasible
 %setup -qn openjdk-%{version}
 %patch0 -p1
 
@@ -88,6 +89,7 @@ make \
 
 %install
 unset JAVA_HOME &&
+# make doesn't support _smp_mflags
 make install
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}

@@ -5,7 +5,7 @@
 Summary:	OpenJDK
 Name:		openjdk11
 Version:	11.0.9
-Release:	1%{?dist}
+Release:	2%{?dist}
 License:	GNU General Public License V2
 URL:		https://openjdk.java.net
 Group:		Development/Tools
@@ -23,11 +23,10 @@ BuildRequires:	ca-certificates
 BuildRequires:	chkconfig
 BuildRequires:  freetype2
 BuildRequires:  fontconfig-devel freetype2-devel glib-devel harfbuzz-devel elfutils-libelf-devel
-BuildRequires:  openjdk10
 Requires:       chkconfig
 Obsoletes:      openjdk <= %{version}
 AutoReqProv: 	no
-%define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel
+%define ExtraBuildRequires icu-devel, cups, cups-devel, xorg-proto-devel, libXtst, libXtst-devel, libXfixes, libXfixes-devel, libXi, libXi-devel, openjdk, openjre, icu, alsa-lib, alsa-lib-devel, xcb-proto, libXdmcp-devel, libXau-devel, util-macros, xtrans, libxcb-devel, proto, libXdmcp, libxcb, libXau, xtrans-devel, libX11, libX11-devel, libXext, libXext-devel, libICE-devel, libSM, libICE, libSM-devel, libXt, libXmu, libXt-devel, libXmu-devel, libXrender, libXrender-devel, libXrandr, libXrandr-devel, openjre10, openjdk10
 %define bootstrapjdkversion 1.8.0.112
 %define jdk_major_version 1.11.0
 
@@ -51,7 +50,7 @@ Requires:       %{name} = %{version}-%{release}
 This package provides the runtime library class sources.
 
 %prep -p exit
-%setup -qn openjdk-%{version}
+%autosetup -n openjdk-%{version}
 
 %build
 chmod a+x ./configur*
@@ -79,6 +78,7 @@ make \
 
 %install
 unset JAVA_HOME &&
+# make doesn't support _smp_mflags
 make install
 
 install -vdm755 %{buildroot}%{_libdir}/jvm/OpenJDK-%{jdk_major_version}
@@ -189,6 +189,8 @@ rm -rf %{_libdir}/jvm/OpenJDK-*
 %{_libdir}/jvm/OpenJDK-%{jdk_major_version}/lib/src.zip
 
 %changelog
+*   Wed Dec 15 2021 Tapas Kundu <tkundu@vmware.com> 11.0.9-2
+-   Use openjdk10 from PublishXrpms
 *   Wed Oct 21 2020 Tapas Kundu <tkundu@vmware.com> 11.0.9-1
 -   Updated to 11.0.9 tag - jdk-11.0.9+10
 *   Tue Aug 11 2020 Ankit Jain <ankitja@vmware.com> 11.0.8-2
