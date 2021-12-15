@@ -1,7 +1,7 @@
 Summary:	Build tool
 Name:		pkg-config
 Version:	0.28
-Release:	4%{?dist}
+Release:	5%{?dist}
 License:	GPLv2+
 URL:		http://www.freedesktop.org/wiki/Software/pkg-config
 Group:		Development/Tools
@@ -12,6 +12,7 @@ Source0:		http://pkgconfig.freedesktop.org/releases/%{name}-%{version}.tar.gz
 Patch0:         pkg-config-glib-CVE-2018-16428.patch
 Patch1:         pkg-config-glib-CVE-2018-16429.patch
 Patch2:		pkg-config-glib-CVE-2020-35457.patch
+Patch3:		pkg-config-glib-CVE-2021-27218.patch
 %description
 Contains a tool for passing the include path and/or library paths
 to build tools during the configure and make file execution.
@@ -22,10 +23,11 @@ cd glib  # patches need to apply to internal glib
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 cd ..
 
 %build
-./configure \
+%configure \
 	--prefix=%{_prefix} \
 	--with-internal-glib \
 	--disable-host-tool \
@@ -43,6 +45,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_docdir}/pkg-config-0.28/pkg-config-guide.html
 %{_mandir}/man1/pkg-config.1.gz
 %changelog
+*	Mon Dec 13 2021 Mukul Sikka <msikka@vmware.com> 0.28-5
+-	Fix internal glib CVE-2021-27218
 *	Thu Jan 14 2021 Siju Maliakkal <smaliakkal@vmware.com> 0.28-4
 -	Fix internal glib CVE-2020-35457
 *	Fri Jan 18 2019 Ajay Kaher <akaher@vmware.com> 0.28-3
