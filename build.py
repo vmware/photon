@@ -18,6 +18,7 @@ import docker
 import shutil
 import traceback
 import glob
+import PullSources as downloader
 from subprocess import PIPE, Popen
 from distutils.util import strtobool
 from SpecDeps import SpecDependencyGenerator
@@ -44,7 +45,7 @@ targetList = {
                 "check-kpartx", "check-sanity", "start-docker", "install-photon-docker-image",
                 "check-spec-files", "check-pyopenssl", "check-photon-installer"],
 
-        "utilities": ["generate-dep-lists", "pkgtree", "imgtree", "who-needs", "print-upward-deps"]
+        "utilities": ["generate-dep-lists", "pkgtree", "imgtree", "who-needs", "print-upward-deps", "pull-stage-rpms"]
         }
 
 photonDir = os.path.dirname(os.path.realpath(__file__))
@@ -192,7 +193,7 @@ class Utilities:
     global configdict
     global check_prerequesite
 
-    def __init__(self):
+    def __init__(self, args):
 
         cmdUtils = CommandUtils()
         self.img = configdict.get("utility", {}).get("img", None)
@@ -200,6 +201,7 @@ class Utilities:
         self.display_option = configdict.get("utility", {}).get("display-option", "json")
         self.input_type = configdict.get("utility", {}).get("input-type", "json")
         self.pkg = configdict.get("utility", {}).get("pkg", None)
+        self.args = args
 
         self.logger = Logger.getLogger("SpecDeps", constants.logPath, constants.logLevel)
         if not os.path.isdir(Build_Config.generatedDataPath):
@@ -207,10 +209,12 @@ class Utilities:
 
         if configdict["targetName"] in ["pkgtree", "who_needs", "print_upward_deps"]:
             if "pkg" not in os.environ:
-                raise Exception("Please provide environment variable pkg as make <target> pkg=<pkg-name>")
+                if args is None or len(args) != 1:
+                    raise Exception("Please provide package name as a parameter or as an environment variable pkg=<pkg-name>")
+                self.pkg = args[0]
             else:
                 self.pkg = os.environ["pkg"]
-                self.display_option = "tree"
+            self.display_option = "tree"
 
         if configdict["targetName"] == "imgtree" and "img" not in os.environ:
             raise Exception("img not present in os.environ")
@@ -250,6 +254,29 @@ class Utilities:
     def print_upward_deps(self):
         whoNeedsList = self.specDepsObject.process("get-upward-deps", self.pkg, self.display_option)
         self.logger.info("Upward dependencies: " + str(whoNeedsList))
+
+    def pull_stage_rpms(self):
+        if self.args is None or len(self.args) != 1:
+            raise Exception("Please provide pull url as a parameter")
+        url = self.args[0]
+        files = self.specDepsObject.listRPMfilenames()
+        notFound = []
+        for f in files:
+            dst = os.path.join(constants.rpmPath, f)
+            if os.path.exists(dst):
+                continue
+            src = url + "/" + f
+            print("Downloading {}".format(f))
+            try:
+                downloader.downloadFile(src, dst)
+            except Exception:
+                self.logger.info("Not found")
+                notFound.append(f)
+        if len(notFound) > 0:
+            self.logger.info("List of missing files: " + str(notFound))
+
+
+
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #  class Buildenvironmentsetup does job like pulling toolchain RPMS and creating stage...                   +
@@ -503,7 +530,7 @@ class RpmBuildTarget:
         if not check_prerequesite["check-spec-files"]:
             CheckTools.check_spec_files()
 
-        a = Utilities()
+        a = Utilities(None)
         a.generate_dep_lists()
 
         if constants.buildArch != constants.targetArch:
@@ -1034,6 +1061,7 @@ def main():
     parser.add_argument("-b", "--branch", dest="photonBranch", default=None)
     parser.add_argument("-c", "--config", dest="configPath", default=None)
     parser.add_argument("-t", "--target", dest="targetName", default=None)
+    parser.add_argument("args", nargs="*")
 
     options = parser.parse_args()
 
@@ -1182,7 +1210,7 @@ def main():
                 attr = getattr(CheckTools, configdict["targetName"])
                 attr()
         elif options.targetName in targetList["utilities"]:
-            utility = Utilities()
+            utility = Utilities(options.args)
             attr = getattr(utility, configdict["targetName"])
             attr()
         else:
