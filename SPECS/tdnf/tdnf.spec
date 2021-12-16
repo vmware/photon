@@ -1,5 +1,3 @@
-%{!?python3_sitelib: %define python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib;print(get_python_lib())")}
-
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.2.2
@@ -9,8 +7,10 @@ Distribution:   Photon
 License:        LGPLv2.1,GPLv2
 URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
+
 Source0:        %{name}-%{version}.tar.gz
 %define sha1    %{name}=0b6f7672e62e294190bcfdadbbc1717350030339
+
 Patch0:         pool_flag_noinstalledobsoletes.patch
 
 Requires:       rpm-libs >= 4.16.1.3-1
@@ -35,6 +35,13 @@ BuildRequires:  python3-devel
 BuildRequires:  createrepo_c
 BuildRequires:  glib
 BuildRequires:  libxml2
+BuildRequires:  photon-release
+BuildRequires:  photon-repos
+BuildRequires:  python3-urllib3
+BuildRequires:  python3-requests
+BuildRequires:  python3-pyOpenSSL
+BuildRequires:  python3-pytest
+BuildRequires:  python3-requests
 %endif
 
 Obsoletes:      yum
@@ -54,9 +61,9 @@ Requires:   libsolv-devel
 %description devel
 Development files for tdnf
 
-%package	cli-libs
-Summary:	Library providing cli libs for tdnf like clients
-Group:		Development/Libraries
+%package    cli-libs
+Summary:    Library providing cli libs for tdnf like clients
+Group:      Development/Libraries
 
 %description cli-libs
 Library providing cli libs for tdnf like clients.
@@ -92,11 +99,13 @@ Systemd units that can periodically download package upgrades and apply them.
 %build
 mkdir build && cd build
 cmake \
--DCMAKE_BUILD_TYPE=Debug \
--DCMAKE_INSTALL_PREFIX=%{_prefix} \
--DCMAKE_INSTALL_LIBDIR:PATH=lib \
-..
-make %{?_smp_mflags} && make python
+  -DCMAKE_BUILD_TYPE=Debug \
+  -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+  -DCMAKE_INSTALL_LIBDIR:PATH=lib \
+  -DSYSTEMD_DIR=%{_unitdir} \
+  ..
+
+make %{?_smp_mflags} && make python %{?_smp_mflags}
 
 %check
 %if 0%{?with_check:1}
@@ -104,149 +113,114 @@ cd build && make %{?_smp_mflags} check
 %endif
 
 %install
-cd build && make DESTDIR=%{buildroot} install
+cd build && make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.a' -delete
-mkdir -p %{buildroot}/var/cache/tdnf
-mkdir -p %{buildroot}/%{_libdir}/systemd/system/
-ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
-ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/yum
-mv %{buildroot}/usr/lib/pkgconfig/tdnfcli.pc %{buildroot}/usr/lib/pkgconfig/tdnf-cli-libs.pc
-mkdir -p %{buildroot}/%{_tdnfpluginsdir}/tdnfrepogpgcheck
-mv %{buildroot}/%{_tdnfpluginsdir}/libtdnfrepogpgcheck.so %{buildroot}/%{_tdnfpluginsdir}/tdnfrepogpgcheck/libtdnfrepogpgcheck.so
-mv %{buildroot}/lib/systemd/system/ %{buildroot}/%{_libdir}/systemd/
+mkdir -p %{buildroot}/var/cache/tdnf %{buildroot}%{_unitdir}
+ln -sfv %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
+ln -sfv %{_bindir}/tdnf %{buildroot}%{_bindir}/yum
+mv %{buildroot}%{_libdir}/pkgconfig/tdnfcli.pc %{buildroot}%{_libdir}/pkgconfig/tdnf-cli-libs.pc
+mkdir -p %{buildroot}%{_tdnfpluginsdir}/tdnfrepogpgcheck
+mv %{buildroot}%{_tdnfpluginsdir}/libtdnfrepogpgcheck.so %{buildroot}%{_tdnfpluginsdir}/tdnfrepogpgcheck/
 
 pushd python
 python3 setup.py install --skip-build --prefix=%{_prefix} --root=%{buildroot}
 popd
 find %{buildroot} -name '*.pyc' -delete
 
-# Pre-install
 %pre
 
-    # First argument is 1 => New Installation
-    # First argument is 2 => Upgrade
-
-# Post-install
 %post
-
-    # First argument is 1 => New Installation
-    # First argument is 2 => Upgrade
-
-    /sbin/ldconfig
-
+/sbin/ldconfig
 %triggerin -- motd
 [ $2 -eq 1 ] || exit 0
 if [ $1 -eq 1 ]; then
-    echo "detected install of tdnf/motd, enabling tdnf-cache-updateinfo.timer" >&2
-    systemctl enable tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
-    systemctl start tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
+  echo "detected install of tdnf/motd, enabling tdnf-cache-updateinfo.timer" >&2
+  systemctl enable tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
+  systemctl start tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 elif [ $1 -eq 2 ]; then
-    echo "detected upgrade of tdnf, daemon-reload" >&2
-    systemctl daemon-reload >/dev/null 2>&1 || :
+  echo "detected upgrade of tdnf, daemon-reload" >&2
+  systemctl daemon-reload >/dev/null 2>&1 || :
 fi
 
-# Pre-uninstall
 %preun
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
-
 %triggerun -- motd
 [ $1 -eq 1 ] && [ $2 -eq 1 ] && exit 0
 echo "detected uninstall of tdnf/motd, disabling tdnf-cache-updateinfo.timer" >&2
 systemctl --no-reload disable tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 systemctl stop tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
-rm -rf /var/cache/tdnf/cached-updateinfo.txt
+rm -f /var/cache/tdnf/cached-updateinfo.txt
 
-# Post-uninstall
 %postun
-
-    /sbin/ldconfig
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
-
+/sbin/ldconfig
 %triggerpostun -- motd
 [ $1 -eq 1 ] && [ $2 -eq 1 ] || exit 0
 echo "detected upgrade of tdnf/motd, restarting tdnf-cache-updateinfo.timer" >&2
 systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 
 %post cli-libs
-
-    # First argument is 1 => New Installation
-    # First argument is 2 => Upgrade
-
-    /sbin/ldconfig
+/sbin/ldconfig
 
 %postun cli-libs
+/sbin/ldconfig
 
-    /sbin/ldconfig
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
+%global automatic_services tdnf-automatic.timer tdnf-automatic-notifyonly.timer tdnf-automatic-install.timer
 
 %post automatic
-%systemd_post %{name}-automatic.timer
-%systemd_post %{name}-automatic-notifyonly.timer
-%systemd_post %{name}-automatic-install.timer
+%systemd_post %{automatic_services}
 
 %preun automatic
-%systemd_preun %{name}-automatic.timer
-%systemd_preun %{name}-automatic-notifyonly.timer
-%systemd_preun %{name}-automatic-install.timer
+%systemd_preun %{automatic_services}
 
 %postun automatic
-%systemd_postun_with_restart %{name}-automatic.timer
-%systemd_postun_with_restart %{name}-automatic-notifyonly.timer
-%systemd_postun_with_restart %{name}-automatic-install.timer
+%systemd_postun_with_restart %{automatic_services}
 
 %files
-    %defattr(-,root,root,0755)
-    %{_bindir}/tdnf
-    %{_bindir}/tyum
-    %{_bindir}/yum
-    %{_bindir}/tdnf-cache-updateinfo
-    %{_libdir}/libtdnf.so.*
-    %config(noreplace) %{_sysconfdir}/tdnf/tdnf.conf
-    %config %{_libdir}/systemd/system/tdnf-cache-updateinfo.service
-    %config(noreplace) %{_libdir}/systemd/system/tdnf-cache-updateinfo.timer
-    %config %{_sysconfdir}/motdgen.d/02-tdnf-updateinfo.sh
-    %dir /var/cache/tdnf
-    %{_datadir}/bash-completion/completions/tdnf
+%defattr(-,root,root,0755)
+%{_bindir}/tdnf
+%{_bindir}/tyum
+%{_bindir}/yum
+%{_bindir}/tdnf-cache-updateinfo
+%{_libdir}/libtdnf.so.*
+%config(noreplace) %{_sysconfdir}/tdnf/tdnf.conf
+%config %{_unitdir}/tdnf-cache-updateinfo.service
+%config(noreplace) %{_unitdir}/tdnf-cache-updateinfo.timer
+%config %{_sysconfdir}/motdgen.d/02-tdnf-updateinfo.sh
+%dir /var/cache/tdnf
+%{_datadir}/bash-completion/completions/tdnf
 
 %files devel
-    %defattr(-,root,root)
-    %{_includedir}/tdnf/*.h
-    %{_libdir}/libtdnf.so
-    %{_libdir}/libtdnfcli.so
-    %exclude %{_libdir}/debug
-    %{_libdir}/pkgconfig/tdnf.pc
-    %{_libdir}/pkgconfig/tdnf-cli-libs.pc
+%defattr(-,root,root)
+%{_includedir}/tdnf/*.h
+%{_libdir}/libtdnf.so
+%{_libdir}/libtdnfcli.so
+%exclude %{_libdir}/debug
+%{_libdir}/pkgconfig/tdnf.pc
+%{_libdir}/pkgconfig/tdnf-cli-libs.pc
 
 %files cli-libs
-    %defattr(-,root,root)
-    %{_libdir}/libtdnfcli.so.*
+%defattr(-,root,root)
+%{_libdir}/libtdnfcli.so.*
 
 %files plugin-repogpgcheck
-    %defattr(-,root,root)
-    %dir %{_sysconfdir}/tdnf/pluginconf.d
-    %config(noreplace) %{_sysconfdir}/tdnf/pluginconf.d/tdnfrepogpgcheck.conf
-    %{_tdnfpluginsdir}/tdnfrepogpgcheck/libtdnfrepogpgcheck.so
+%defattr(-,root,root)
+%dir %{_sysconfdir}/tdnf/pluginconf.d
+%config(noreplace) %{_sysconfdir}/tdnf/pluginconf.d/tdnfrepogpgcheck.conf
+%{_tdnfpluginsdir}/tdnfrepogpgcheck/libtdnfrepogpgcheck.so
 
 %files python
-    %defattr(-,root,root)
-    %{python3_sitelib}/*
+%defattr(-,root,root)
+%{python3_sitelib}/*
 
 %files automatic
-    %defattr(-,root,root,0755)
-    %{_bindir}/%{name}-automatic
-    %config(noreplace) %{_sysconfdir}/%{name}/automatic.conf
-    %{_libdir}/systemd/system/%{name}-automatic.timer
-    %{_libdir}/systemd/system/%{name}-automatic.service
-    %{_libdir}/systemd/system/%{name}-automatic-install.timer
-    %{_libdir}/systemd/system/%{name}-automatic-install.service
-    %{_libdir}/systemd/system/%{name}-automatic-notifyonly.timer
-    %{_libdir}/systemd/system/%{name}-automatic-notifyonly.service
+%defattr(-,root,root,0755)
+%{_bindir}/%{name}-automatic
+%config(noreplace) %{_sysconfdir}/%{name}/automatic.conf
+%{_unitdir}/%{name}-automatic.timer
+%{_unitdir}/%{name}-automatic.service
+%{_unitdir}/%{name}-automatic-install.timer
+%{_unitdir}/%{name}-automatic-install.service
+%{_unitdir}/%{name}-automatic-notifyonly.timer
+%{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
 * Tue Nov 30 2021 Oliver Kurth <okurth@vmware.com> 3.2.2-1

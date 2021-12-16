@@ -1,6 +1,3 @@
-%define python3_sitelib %{_libdir}/python3.9/site-packages
-%define py_setup setup.py
-
 Name:           cloud-init
 Version:        21.4
 Release:        1%{?dist}
@@ -39,7 +36,7 @@ BuildRequires:  python3-jinja2
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  python3-macros
 
-%if %{with_check}
+%if 0%{?with_check:1}
 BuildRequires:  python3-pip
 BuildRequires:  python3-configobj
 BuildRequires:  python3-jsonpatch
@@ -93,12 +90,12 @@ python3 tools/render-cloudcfg --variant photon > %{buildroot}/%{_sysconfdir}/clo
 sed -i -e "0,/'OpenStack', / s/'OpenStack', //" %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
 %endif
 
-mkdir -p %{buildroot}%{_sharedstatedir}/cloud
-mkdir -p %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg.d
+mkdir -p %{buildroot}%{_sharedstatedir}/cloud %{buildroot}%{_sysconfdir}/cloud/cloud.cfg.d
 
-mv %{buildroot}/lib/* %{buildroot}/usr/lib && rmdir %{buildroot}/lib || exit 1
+mv %{buildroot}/lib/* %{buildroot}%{_libdir} && rmdir %{buildroot}/lib || exit 1
 
 %check
+%if 0%{?with_check:1}
 touch vd ud
 
 mkdir -p /usr/share/ca-certificates/
@@ -112,6 +109,7 @@ echo -e 'line1\nline2\nline3\ncloud-init-ca-certs.crt\n' > "${conf_file}"
 
 pip3 install --upgrade %test_pkgs
 make check %{?_smp_mflags}
+%endif
 
 %clean
 rm -rf %{buildroot}
