@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.224
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -49,6 +49,7 @@ Patch10:        9p-file-attributes-caching-support.patch
 # -esx
 Patch11:        fs-9p-support-for-local-file-lock.patch
 Patch12:        serial-8250-do-not-probe-U6-16550A-fifo-size.patch
+Patch13:        revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
 
 # floppy:
 Patch17:        0001-floppy-lower-printk-message-priority.patch
@@ -470,6 +471,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch10 -p1
 %patch11 -p1
 %patch12 -p1
+%patch13 -p1
 %patch17 -p1
 %patch28 -p1
 %patch29 -p1
@@ -944,6 +946,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Sun Jan 09 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.224-2
+-   Reduce kernel .text size by ~40% by removing .entry.text alignment.
 *   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-1
 -   Update to version 4.19.224
 *   Mon Jan 03 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.219-7
