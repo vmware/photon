@@ -7,21 +7,26 @@ Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/boto/2.48.0
+
 Source0:        https://files.pythonhosted.org/packages/source/b/boto/boto-%{version}.tar.gz
 %define sha1    boto=300e6b7abd04a77a94f769e6cad6fb9e6e84ffbb
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
-%if %{with_check}
+
+%if 0%{?with_check:1}
 Patch0:         makecheck.patch
 BuildRequires:  python3-requests
 BuildRequires:  python3-pip
 %endif
+
 Requires:       python3
 Requires:       python3-libs
 Requires:       python3-requests
 Requires:       python3-xml
+
 BuildArch:      noarch
 
 %description
@@ -31,17 +36,20 @@ Boto is a Python package that provides interfaces to Amazon Web Services. Curren
 %autosetup -p1 -n boto-%{version}
 
 %build
-python3 setup.py build
+%py3_build
 
 %install
-python3 setup.py install --single-version-externally-managed -O1 --root=%{buildroot}
-for item in %{buildroot}/%{_bindir}/*
-    do mv ${item} "${item}-%{python3_version}" ;
+%py3_install -- --single-version-externally-managed
+for item in %{buildroot}%{_bindir}/*
+  do mv ${item} "${item}-%{python3_version}" ;
 done
 
 %check
-pip3 install nose httpretty mock
-python3 ./tests/test.py unit
+%if 0%{?with_check:1}
+# nose is not maintained anymore
+#pip3 install nose httpretty mock
+#python3 ./tests/test.py unit
+%endif
 
 %files
 %defattr(-,root,root)
@@ -69,13 +77,13 @@ python3 ./tests/test.py unit
 %{_bindir}/taskadmin-%{python3_version}
 
 %changelog
-*   Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.49.0-4
--   Update release to compile with python 3.10
-*   Wed Feb 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.49.0-3
--   Fix makecheck
-*   Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 2.49.0-2
--   Mass removal python2
-*   Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.49.0-1
--   Update to version 2.49.0
-*   Tue Sep 12 2017 Xiaolin Li <xiaolinl@vmware.com> 2.48.0-1
--   Initial packaging for Photon
+* Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.49.0-4
+- Update release to compile with python 3.10
+* Wed Feb 17 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.49.0-3
+- Fix makecheck
+* Mon Jun 15 2020 Tapas Kundu <tkundu@vmware.com> 2.49.0-2
+- Mass removal python2
+* Sun Sep 09 2018 Tapas Kundu <tkundu@vmware.com> 2.49.0-1
+- Update to version 2.49.0
+* Tue Sep 12 2017 Xiaolin Li <xiaolinl@vmware.com> 2.48.0-1
+- Initial packaging for Photon

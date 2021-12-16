@@ -1,42 +1,40 @@
 %global include_tests 1
 
-%{!?python3_sitelib: %global python3_sitelib %(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%{!?python3_sitearch: %global python3_sitearch %(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(1))")}
-%{!?pythonpath: %global pythonpath %(python3 -c "import os, sys; print(os.pathsep.join(x for x in sys.path if x))")}
-
-%define _salttesting SaltTesting
 %define _salttesting_ver 2016.5.11
 
 Name:           salt3
 Version:        3004
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A parallel remote execution system with python3
 Group:          System Environment/Daemons
 License:        ASL 2.0
 URL:            http://saltstack.org/
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/saltstack/salt/releases/download/v%{version}/salt-%{version}.tar.gz
 %define sha1    salt=28cbec5244ec815e372bc4ce727cb0d768de861b
-Source1:        https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-2016.5.11.tar.gz
+Source1:        https://pypi.python.org/packages/source/S/SaltTesting/SaltTesting-%{_salttesting_ver}.tar.gz
 %define         sha1 SaltTesting=474dbd7029e3d48cdb468be3c63b2262e47556c8
 Source2:        salt-master.service
 Source3:        salt-syndic.service
 Source4:        salt-minion.service
 Source5:        salt-api.service
 Source6:        logrotate.salt
+
 Patch0:         requirements.patch
+
 BuildRoot:      %{_tmppath}/salt-%{version}-%{release}-root-%(%{__id_u} -n)
+
 BuildArch:      noarch
-%ifarch %{ix86} x86_64
-Requires:       dmidecode
-%endif
-Requires:       pciutils
-Requires:       python3-backports_abc
+
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 BuildRequires:  systemd
 BuildRequires:  python3-distro
+
+Requires:       pciutils
+Requires:       python3-backports_abc
 Requires:       python3-pycryptodomex
 Requires:       python3-jinja2
 Requires:       python3-msgpack
@@ -45,6 +43,10 @@ Requires:       python3-requests
 Requires:       python3-zmq
 Requires:       python3-tornado
 Requires:       python3-psutil
+
+%ifarch %{ix86} x86_64
+Requires:       dmidecode
+%endif
 
 %description
 Salt is a distributed remote execution system used to execute commands and
@@ -235,9 +237,10 @@ rm -rf %{buildroot}
 %else
   if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
-    /bin/systemctl --no-reload disable salt-master.service > /dev/null 2>&1 || :
-    /bin/systemctl stop salt-master.service > /dev/null 2>&1 || :
+    %{_bindir}/systemctl --no-reload disable salt-master.service > /dev/null 2>&1 || :
+    %{_bindir}/systemctl stop salt-master.service > /dev/null 2>&1 || :
   fi
+%endif
 
 %preun syndic
 %if 0%{?systemd_preun:1}
@@ -245,8 +248,8 @@ rm -rf %{buildroot}
 %else
   if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
-    /bin/systemctl --no-reload disable salt-syndic.service > /dev/null 2>&1 || :
-    /bin/systemctl stop salt-syndic.service > /dev/null 2>&1 || :
+    %{_bindir}/systemctl --no-reload disable salt-syndic.service > /dev/null 2>&1 || :
+    %{_bindir}/systemctl stop salt-syndic.service > /dev/null 2>&1 || :
   fi
 %endif
 
@@ -256,8 +259,8 @@ rm -rf %{buildroot}
 %else
   if [ $1 -eq 0 ] ; then
     # Package removal, not upgrade
-    /bin/systemctl --no-reload disable salt-minion.service > /dev/null 2>&1 || :
-    /bin/systemctl stop salt-minion.service > /dev/null 2>&1 || :
+    %{_bindir}/systemctl --no-reload disable salt-minion.service > /dev/null 2>&1 || :
+    %{_bindir}/systemctl stop salt-minion.service > /dev/null 2>&1 || :
   fi
 %endif
 
@@ -265,42 +268,43 @@ rm -rf %{buildroot}
 %if 0%{?systemd_post:1}
   %systemd_post salt-master.service
 %else
-  /bin/systemctl daemon-reload &>/dev/null || :
+  %{_bindir}/systemctl daemon-reload &>/dev/null || :
 %endif
 
 %post minion
 %if 0%{?systemd_post:1}
   %systemd_post salt-minion.service
 %else
-  /bin/systemctl daemon-reload &>/dev/null || :
+  %{_bindir}/systemctl daemon-reload &>/dev/null || :
 %endif
 
 %postun master
 %if 0%{?systemd_post:1}
   %systemd_postun salt-master.service
 %else
-  /bin/systemctl daemon-reload &>/dev/null
-  [ $1 -gt 0 ] && /bin/systemctl try-restart salt-master.service &>/dev/null || :
+  %{_bindir}/systemctl daemon-reload &>/dev/null
+  [ $1 -gt 0 ] && %{_bindir}/systemctl try-restart salt-master.service &>/dev/null || :
 %endif
 
 %postun syndic
 %if 0%{?systemd_post:1}
   %systemd_postun salt-syndic.service
 %else
-  /bin/systemctl daemon-reload &>/dev/null
-  [ $1 -gt 0 ] && /bin/systemctl try-restart salt-syndic.service &>/dev/null || :
+  %{_bindir}/systemctl daemon-reload &>/dev/null
+  [ $1 -gt 0 ] && %{_bindir}/systemctl try-restart salt-syndic.service &>/dev/null || :
 %endif
 
 %postun minion
 %if 0%{?systemd_post:1}
   %systemd_postun salt-minion.service
 %else
-  /bin/systemctl daemon-reload &>/dev/null
-  [ $1 -gt 0 ] && /bin/systemctl try-restart salt-minion.service &>/dev/null || :
-%endif
+  %{_bindir}/systemctl daemon-reload &>/dev/null
+  [ $1 -gt 0 ] && %{_bindir}/systemctl try-restart salt-minion.service &>/dev/null || :
 %endif
 
 %changelog
+* Sat Dec 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 3004-3
+- Bump version as a part of requests & chardet upgrade
 * Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3004-2
 - Update release to compile with python 3.10
 * Mon Oct 18 2021 Bryce Larson <brycel@vmware.com> 3004-1

@@ -38,7 +38,7 @@ BuildRequires:  python3-jinja2
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  python3-macros
 
-%if %{with_check}
+%if 0%{?with_check:1}
 BuildRequires:  python3-pip
 BuildRequires:  python3-configobj
 BuildRequires:  python3-jsonpatch
@@ -85,20 +85,20 @@ find systemd -name "cloud*.service*" | xargs sed -i s/StandardOutput=journal+con
 rm -rf %{buildroot}
 %py3_install -- --init-system=systemd
 
-python3 tools/render-cloudcfg --variant photon > %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
+python3 tools/render-cloudcfg --variant photon > %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
 
 %if "%{_arch}" == "aarch64"
 # OpenStack DS in aarch64 adds a boot time of ~10 seconds by searching
 # for DS from a remote location, let's remove it.
-sed -i -e "0,/'OpenStack', / s/'OpenStack', //" %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg
+sed -i -e "0,/'OpenStack', / s/'OpenStack', //" %{buildroot}%{_sysconfdir}/cloud/cloud.cfg
 %endif
 
-mkdir -p %{buildroot}%{_sharedstatedir}/cloud
-mkdir -p %{buildroot}/%{_sysconfdir}/cloud/cloud.cfg.d
+mkdir -p %{buildroot}%{_sharedstatedir}/cloud %{buildroot}%{_sysconfdir}/cloud/cloud.cfg.d
 
-mv %{buildroot}/lib/* %{buildroot}/usr/lib && rmdir %{buildroot}/lib || exit 1
+mv %{buildroot}/lib/* %{buildroot}%{_libdir} && rmdir %{buildroot}/lib || exit 1
 
 %check
+%if 0%{?with_check:1}
 touch vd ud
 
 mkdir -p /usr/share/ca-certificates/
@@ -112,6 +112,7 @@ echo -e 'line1\nline2\nline3\ncloud-init-ca-certs.crt\n' > "${conf_file}"
 
 pip3 install --upgrade %test_pkgs
 make check %{?_smp_mflags}
+%endif
 
 %clean
 rm -rf %{buildroot}

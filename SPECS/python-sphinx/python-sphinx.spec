@@ -35,7 +35,7 @@ BuildRequires: python3-sphinxcontrib-jsmath
 BuildRequires: python3-sphinxcontrib-serializinghtml
 BuildRequires: python3-packaging
 
-%if %{with_check}
+%if 0%{?with_check:1}
 BuildRequires: python3-pytest
 %endif
 
@@ -77,13 +77,15 @@ useful to many other projects.
 
 %install
 %py3_install
-mv %{buildroot}/%{_bindir}/sphinx-quickstart %{buildroot}/%{_bindir}/sphinx-quickstart3
-mv %{buildroot}/%{_bindir}/sphinx-build %{buildroot}/%{_bindir}/sphinx-build3
-mv %{buildroot}/%{_bindir}/sphinx-autogen %{buildroot}/%{_bindir}/sphinx-autogen3
-mv %{buildroot}/%{_bindir}/sphinx-apidoc %{buildroot}/%{_bindir}/sphinx-apidoc3
+mv %{buildroot}%{_bindir}/sphinx-quickstart %{buildroot}%{_bindir}/sphinx-quickstart3
+mv %{buildroot}%{_bindir}/sphinx-build %{buildroot}%{_bindir}/sphinx-build3
+mv %{buildroot}%{_bindir}/sphinx-autogen %{buildroot}%{_bindir}/sphinx-autogen3
+mv %{buildroot}%{_bindir}/sphinx-apidoc %{buildroot}%{_bindir}/sphinx-apidoc3
 
 %check
+%if 0%{?with_check:1}
 make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+%endif
 
 %clean
 
