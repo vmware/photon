@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.219
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -140,6 +140,10 @@ Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 # Patch to perform continuous testing on RNG from Noise Source
 Patch101:        0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
+
+# Next 2 patches are about to be merged into stable
+Patch102:       0001-mm-fix-panic-in-__alloc_pages.patch
+Patch103:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
 
 # Support for PTP_SYS_OFFSET_EXTENDED ioctl
 Patch121:        0001-ptp-reorder-declarations-in-ptp_ioctl.patch
@@ -632,6 +636,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch98 -p1
 %patch100 -p1
 %patch101 -p1
+%patch102 -p1
+%patch103 -p1
 
 %patch121 -p1
 %patch122 -p1
@@ -1254,6 +1260,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Wed Dec 15 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.219-3
+-   mm: fix percpu alloacion for memoryless nodes
+-   pvscsi: fix disk detection issue
 *   Tue Dec 14 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.219-2
 -   Fix for CVE-2020-36385
 *   Wed Dec 08 2021 srinidhira0 <srinidhir@vmware.com> 4.19.219-1

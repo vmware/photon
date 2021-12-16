@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.219
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -130,6 +130,10 @@ Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 # Patch to perform continuous testing on RNG from Noise Source
 Patch101:        0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
+
+# Next 2 patches are about to be merged into stable
+Patch102:       0001-mm-fix-panic-in-__alloc_pages.patch
+Patch103:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
 
 # VDFS 9p recovery changes
 Patch200:	0001-vdfs-9p-Initial-recovery-logic-in-9p.patch
@@ -510,6 +514,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch98 -p1
 %patch100 -p1
 %patch101 -p1
+%patch102 -p1
+%patch103 -p1
 %patch200 -p1
 %patch201 -p1
 %patch202 -p1
@@ -936,6 +942,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Dec 15 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.219-4
+-   mm: fix percpu alloacion for memoryless nodes
+-   pvscsi: fix disk detection issue
 *   Tue Dec 14 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.219-3
 -   Fix for CVE-2020-36385
 *   Fri Dec 10 2021 Ankit Jain <ankitja@vmware.com> 4.19.219-2

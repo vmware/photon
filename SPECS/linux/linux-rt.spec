@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.219
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt95
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        3%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -110,6 +110,10 @@ Patch100:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
 Patch101:       0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+
+# Next 2 patches are about to be merged into stable
+Patch102:       0001-mm-fix-panic-in-__alloc_pages.patch
+Patch103:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/4.19/
@@ -618,6 +622,8 @@ The Linux package contains the Linux kernel doc files
 
 %patch100 -p1
 %patch101 -p1
+%patch102 -p1
+%patch103 -p1
 
 %patch201 -p1
 %patch202 -p1
@@ -1187,6 +1193,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Dec 15 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.219-3
+-   mm: fix percpu alloacion for memoryless nodes
+-   pvscsi: fix disk detection issue
 *   Tue Dec 14 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.219-2
 -   Fix for CVE-2020-36385
 *   Wed Dec 08 2021 srinidhira0 <srinidhir@vmware.com> 4.19.219-1

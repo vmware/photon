@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.219
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -162,6 +162,10 @@ Patch185:       0003-fuse-fix-bad-inode.patch
 
 #fix for CVE-2021-28950
 Patch186:       0001-fuse-fix-live-lock-in-fuse_iget.patch
+
+# Next 2 patches are about to be merged into stable
+Patch187:       0001-mm-fix-panic-in-__alloc_pages.patch
+Patch188:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
@@ -333,6 +337,8 @@ popd
 %patch184 -p1
 %patch185 -p1
 %patch186 -p1
+%patch187 -p1
+%patch188 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -486,6 +492,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Dec 15 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.219-3
+-   mm: fix percpu alloacion for memoryless nodes
+-   pvscsi: fix disk detection issue
 *   Tue Dec 14 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.219-2
 -   Fix for CVE-2020-36385
 *   Wed Dec 08 2021 srinidhira0 <srinidhir@vmware.com> 4.19.219-1
