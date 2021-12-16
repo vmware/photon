@@ -88,6 +88,10 @@ function create_sandbox() {
 function prepare_buildenv() {
   run "Create source folder" in_sandbox mkdir -p /usr/src/photon/SOURCES
   run "Copy sources from $SPECDIR" docker cp $SPECDIR/. $CONTAINER:/usr/src/photon/SOURCES
+  for f in `find $SPECDIR -name "*.patch"`;
+  do
+    test "$(dirname $f)" != "$SPECDIR" && docker cp $f $CONTAINER:/usr/src/photon/SOURCES
+  done
   local br=`sed -n 's/BuildRequires://p' $SPECPATH | sed 's/ \(<\|\)= /=/g;s/>\(=\|\) [^ ]*//g'`
   if [ "$br" != "" ]; then
     run "Install build requirements" in_sandbox tdnf install -y $br 
@@ -96,7 +100,7 @@ function prepare_buildenv() {
 
 function build() {
   echo -ne "\tRun rpmbuild " >&3
-  docker exec $CONTAINER rpmbuild -bb --define "dist .ph$VERSION" /usr/src/photon/SOURCES/$SPECFILE &
+  docker exec $CONTAINER rpmbuild -bb --define "dist .ph$VERSION" --define "with_check 0" /usr/src/photon/SOURCES/$SPECFILE &
   wait_for_result
 }
 
