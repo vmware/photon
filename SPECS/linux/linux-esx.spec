@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.78
-Release:        8%{?kat_build:.kat}%{?dist}
+Release:        9%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -109,12 +109,13 @@ Patch63:        halt-on-panic.patch
 Patch64:        initramfs-multiple-image-extraction-support.patch
 Patch65:        initramfs-support-selective-freeing-of-initramfs-images.patch
 Patch66:        initramfs-large-files-support-for-newca-format.patch
+Patch67:        revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
 
 #TARFS
-Patch67:	0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
+Patch80:	0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
-Patch68:        0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+Patch90:        0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -275,7 +276,8 @@ The Linux package contains the Linux kernel doc files
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
-%patch68 -p1
+%patch80 -p1
+%patch90 -p1
 
 # CVE
 %patch100 -p1
@@ -494,6 +496,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Feb 01 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-9
+- Reduce kernel .text size by ~40% by removing .entry.text alignment.
 * Tue Jan 25 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-8
 - .config: enable squashfs module, enable crypto user api rng.
 * Wed Dec 01 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.78-7
