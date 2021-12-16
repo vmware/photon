@@ -1,7 +1,7 @@
 Summary:	library for configuring and customizing font access.
 Name:		fontconfig
 Version:	2.13.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	BSD/GPL
 URL:		https://www.freedesktop.org/wiki/Software/fontconfig/
 Group:		System Environment/Libraries
@@ -13,6 +13,7 @@ BuildRequires:	freetype2-devel
 BuildRequires:	libxml2
 BuildRequires:	expat-devel
 BuildRequires:	gperf
+Requires:	freetype2
 Provides:	pkgconfig(fontconfig)
 %description
 Fontconfig can discover new fonts when installed automatically, removing a common source of configuration problems, perform font name substitution, so that appropriate alternative fonts can be selected if fonts are missing, identify the set of fonts required to completely cover a set of languages.
@@ -65,6 +66,8 @@ make %{?_smp_mflags} -k check
 %{_mandir}/man3/*
 
 %changelog
+*   Thu Dec 16 2021 Alexey Makhalov <amakhalov@vmware.com> 2.13.1-3
+-   Fix pango -> fontconfig -> freetype2 dependency
 *   Wed Aug 11 2021 Alexey Makhalov <amakhalov@vmware.com> 2.13.1-2
 -   Add freetype2-devel requires for -devel subpackage.
 *   Wed Sep 12 2018 Sujay G <gsujay@vmware.com> 2.13.1-1
