@@ -1,7 +1,7 @@
 Name:         erlang
 Summary:      erlang
 Version:      23.1
-Release:      2%{?dist}
+Release:      3%{?dist}
 Group:        Development/Languages
 Vendor:       VMware, Inc.
 Distribution: Photon
@@ -10,24 +10,26 @@ URL:          http://erlang.com
 Source0:      OTP-%{version}.tar.gz
 %define sha1  OTP=2d6eaefe960f52cc79d7614c11256b73174e4161
 Patch0:       erlang-CVE-2021-29221.patch
+
+Requires:	ncurses-libs
+
 BuildRequires: unzip
 %description
 erlang programming language
 
 %prep
-%setup -q -n otp-OTP-%{version}
-%patch0 -p1
+%autosetup -p1 -n otp-OTP-%{version}
 
 %build
 export ERL_TOP=`pwd`
 ./otp_build autoconf
-sh configure --disable-hipe --prefix=%{_prefix}
+sh configure --disable-hipe --prefix=%{_prefix} --enable-fips
 
 make
 
 %install
 
-make install DESTDIR=$RPM_BUILD_ROOT
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 %post
 
@@ -39,6 +41,8 @@ make install DESTDIR=$RPM_BUILD_ROOT
 %exclude %{_libdir}/debug
 
 %changelog
+* Thu Dec 16 2021 Nitesh Kumar <kunitesh@vmware.com> 23.1-3
+- Enable FIPS, Adding ncurses-libs as Requires.
 * Thu May 06 2021 Harinadh D <hdommaraju@vmware.com> 23.1-2
 - Fix CVE-2021-29221
 * Wed Nov 11 2020 Harinadh D <hdommaraju@vmware.com> 23.1-1
@@ -57,4 +61,3 @@ make install DESTDIR=$RPM_BUILD_ROOT
 - Updated Version
 * Mon Dec 12 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 19.1-1
 - Initial.
-
