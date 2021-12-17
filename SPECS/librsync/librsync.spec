@@ -46,11 +46,12 @@ This package contains header files necessary for developing programs
 based on librsync.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 mkdir -p build
 cd build
+
 %{cmake} -DCMAKE_SKIP_RPATH:BOOL=YES \
          -DCMAKE_SKIP_INSTALL_RPATH:BOOL=YES \
          -DENABLE_STATIC:BOOL=NO ..
@@ -58,11 +59,12 @@ make %{?_smp_mflags}
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %check
 cd build
-make test
+export LD_LIBRARY_PATH="%{buildroot}/%{_libdir}/"
+make %{?_smp_mflags} test
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -91,4 +93,3 @@ make test
 -   Updated %check
 *   Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.0-1
 -   Initial build. First version
-
