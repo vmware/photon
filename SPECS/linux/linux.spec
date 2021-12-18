@@ -22,7 +22,7 @@ Summary:        Kernel
 Name:           linux
 
 Version:        5.10.83
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -101,6 +101,10 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+
+# Next 2 patches are about to be merged into stable
+Patch103:       0001-mm-fix-panic-in-__alloc_pages.patch
+Patch104:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch120:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -312,6 +316,9 @@ Python programming language to use the interface to manipulate perf events.
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
+
+%patch103 -p1
+%patch104 -p1
 
 # Allow PCI resets to be disabled from vfio_pci module
 %patch120 -p1
@@ -684,6 +691,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Dec 17 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.83-5
+-   mm: fix percpu alloacion for memoryless nodes
+-   pvscsi: fix disk detection issue
 *   Fri Dec 17 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.83-4
 -   Disable md5 algorithm for sctp if fips is enabled.
 *   Tue Dec 14 2021 Harinadh D <hdommaraju@vmware.com> 5.10.83-3
