@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       17%{?dist}
+Release:       18%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -885,9 +885,9 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_jarsdir}/httpclient-4.5.1.jar
 %{_jarsdir}/httpcore-4.4.4.jar
 %{_jarsdir}/slf4j-api-1.7.25.jar
-%{_jarsdir}/log4j-api-2.16.0.jar
-%{_jarsdir}/log4j-slf4j-impl-2.16.0.jar
-%{_jarsdir}/log4j-core-2.16.0.jar
+%{_jarsdir}/log4j-api-2.17.0.jar
+%{_jarsdir}/log4j-slf4j-impl-2.17.0.jar
+%{_jarsdir}/log4j-core-2.17.0.jar
 %{_jarsdir}/nimbus-jose-jwt-5.6.jar
 
 %{_webappsdir}/ROOT.war
@@ -1174,6 +1174,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_stssamplebindir}/*
 
 %changelog
+* Sun Dec 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-18
+- Use log4j-2.17.0 to fix CVE-2021-45105
 * Tue Dec 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-17
 - Fix log4j security issue (CVE-2021-44228)
 * Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-16
