@@ -1,7 +1,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -20,6 +20,7 @@ Source7:        macros.ldconfig
 Source8:        rpm-rebuilddb.sh
 Source9:        rpmdb-rebuild.service
 Source10:       rpm.conf
+Source11:       lock.c
 
 Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
 Patch1:         Fix-OpenPGP-parsing-bugs.patch
@@ -77,13 +78,15 @@ Requires:   bzip2-libs
 Requires:   elfutils-libelf
 Requires:   xz-libs
 Requires:   zstd-libs
-Requires:   (coreutils or toybox)
+Requires:   (procps-ng or toybox)
+
 Conflicts:  libsolv < 0.7.19
 
 %description    libs
 Shared libraries librpm and librpmio
 
 %package build
+Summary:    Binaries, scripts and libraries needed to build rpms.
 Requires:   perl
 Requires:   lua
 Requires:   %{name}-devel = %{version}-%{release}
@@ -91,7 +94,6 @@ Requires:   elfutils-libelf
 Requires:   cpio
 Requires:   systemd-rpm-macros
 Requires:   python3-macros
-Summary:    Binaries, scripts and libraries needed to build rpms.
 
 %description build
 Binaries, libraries and scripts to build rpms.
@@ -154,6 +156,9 @@ sh autogen.sh --noconfigure
 
 make %{?_smp_mflags}
 
+gcc -Wall -o lock %{SOURCE11}
+chmod 700 lock
+
 pushd python
 %py3_build
 popd
@@ -181,6 +186,7 @@ install -vm644 %{SOURCE9} %{buildroot}/%{_unitdir}
 
 mkdir -p %{buildroot}%{_sysconfdir}/tdnf/minversions.d
 install -vm644 %{SOURCE10} %{buildroot}%{_sysconfdir}/tdnf/minversions.d
+mv lock %{buildroot}%{_libdir}/rpm
 
 pushd python
 %py3_install
@@ -248,6 +254,7 @@ rm -rf %{buildroot}
 %{_libdir}/rpm/rpmrc
 %{_libdir}/rpm/rpmdb_*
 %{_libdir}/rpm/rpm-rebuilddb.sh
+%{_libdir}/rpm/lock
 %{_bindir}/rpmdb
 %{_unitdir}/rpmdb-rebuild.service
 %{_sysconfdir}/tdnf/minversions.d/%{name}.conf
@@ -311,6 +318,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Tue Dec 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-5
+- Further fix to rpm-rebuilddb.sh
+- Introduced a new locking method to handle contention while rebuilding db
 * Fri Dec 03 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-4
 - Conflict with libsolv < 0.7.19 to support sqlite
 - Improve rpm-rebuilddb.sh script
