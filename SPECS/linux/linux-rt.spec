@@ -19,7 +19,7 @@ Name:           linux-rt
 Version:        5.10.83
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt58
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -945,6 +945,10 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
 
 sed -i 's/CONFIG_LOCALVERSION="-rt"/CONFIG_LOCALVERSION="-%{release}-rt"/' .config
 
+%if 0%{?kat_build:1}
+sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
+%endif
+
 %include %{SOURCE5}
 
 make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH=${arch} %{?_smp_mflags}
@@ -1109,6 +1113,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Mon Dec 20 2021 Keerthana K <keerthanak@vmware.com> 5.10.83-6
+-   crypto_self_test and broken kattest module enhancements
 *   Fri Dec 17 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.83-5
 -   mm: fix percpu alloacion for memoryless nodes
 -   pvscsi: fix disk detection issue

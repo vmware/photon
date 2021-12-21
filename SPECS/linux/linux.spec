@@ -16,13 +16,14 @@
 %ifarch aarch64
 %define arch arm64
 %define archdir arm64
+%global fips 0
 %endif
 
 Summary:        Kernel
 Name:           linux
 
 Version:        5.10.83
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -385,6 +386,10 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
 
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 
+%if 0%{?kat_build:1}
+sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
+%endif
+
 %include %{SOURCE7}
 
 # Set/add CONFIG_CROSS_COMPILE= if needed
@@ -691,6 +696,9 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Dec 20 2021 Keerthana K <keerthanak@vmware.com> 5.10.83-6
+-   Enable crypto related configs in aarch64 similar to x86_64
+-   crypto_self_test and broken kattest module enhancements
 *   Fri Dec 17 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.83-5
 -   mm: fix percpu alloacion for memoryless nodes
 -   pvscsi: fix disk detection issue

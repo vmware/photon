@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        5.10.83
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -220,6 +220,10 @@ sed -i 's/# CONFIG_KALLSYMS_ALL is not set/CONFIG_KALLSYMS_ALL=y/' .config
 %endif
 sed -i 's/CONFIG_LOCALVERSION="-secure"/CONFIG_LOCALVERSION="-%{release}-secure"/' .config
 
+%if 0%{?kat_build:1}
+sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
+%endif
+
 %include %{SOURCE4}
 
 make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
@@ -317,6 +321,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Dec 20 2021 Keerthana K <keerthanak@vmware.com> 5.10.83-5
+-   crypto_self_test and broken kattest module enhancements
 *   Fri Dec 17 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.83-4
 -   mm: fix percpu alloacion for memoryless nodes
 -   pvscsi: fix disk detection issue

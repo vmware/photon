@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.83
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -317,6 +317,10 @@ cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
 %endif
 sed -i 's/CONFIG_LOCALVERSION="-esx"/CONFIG_LOCALVERSION="-%{release}-esx"/' .config
 
+%if 0%{?kat_build:1}
+sed -i '/CONFIG_CRYPTO_SELF_TEST=y/a CONFIG_CRYPTO_BROKEN_KAT=y' .config
+%endif
+
 %include %{SOURCE4}
 
 make %{?_smp_mflags} V=1 KBUILD_BUILD_VERSION="1-photon" KBUILD_BUILD_HOST="photon" ARCH="x86_64" %{?_smp_mflags}
@@ -352,6 +356,10 @@ popd
 # Do not compress modules which will be loaded at boot time
 # to speed up boot process
 %define __modules_install_post \
+    for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -type d -name "crypto" -exec find {} -name *.ko ';'` ; do \
+        ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
+        rm -f $MODULE.{sig,dig} \
+    done \
     find %{buildroot}/lib/modules/%{uname_r} -name "*.ko" \! \"(" -name "*evdev*" -o -name "*mousedev*" -o -name "*sr_mod*"  -o -name "*cdrom*" -o -name "*vmwgfx*" -o -name "*drm_kms_helper*" -o -name "*ttm*" -o -name "*psmouse*" -o -name "*drm*" -o -name "*apa_piix*" -o -name "*vmxnet3*" -o -name "*i2c_core*" -o -name "*libata*" -o -name "*processor*" -o -path "*ipv6*" \")" | xargs xz \
 %{nil}
 
@@ -460,6 +468,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Dec 20 2021 Keerthana K <keerthanak@vmware.com> 5.10.83-6
+-   crypto_self_test and broken kattest module enhancements
+-   FIPS: Add module signing for crypto modules
 *   Fri Dec 17 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.83-5
 -   mm: fix percpu alloacion for memoryless nodes
 -   pvscsi: fix disk detection issue
