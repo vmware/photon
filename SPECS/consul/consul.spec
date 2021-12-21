@@ -1,15 +1,15 @@
 Name:           consul
-Version:        1.10.1
+Version:        1.10.4
 Release:        1%{?dist}
 Summary:        Consul is a tool for service discovery and configuration.
 License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
 Vendor:         VMware, Inc.
 Distribution:   Photon
-URL:		    https://github.com/hashicorp/consul/archive/v%{version}.tar.gz
+URL:            https://github.com/hashicorp/consul/archive/v%{version}.tar.gz
 
-Source0:	    %{name}-%{version}.tar.gz
-%define sha1 %{name}-%{version}.tar.gz=89a096489ab993466b437306b201cf7372cde692
+Source0:        %{name}-%{version}.tar.gz
+%define sha1    %{name}-%{version}.tar.gz=217190fa919474ba18807f7ecdb41a131671ff09
 Source1:        %{name}.service
 
 BuildRequires:  unzip
@@ -92,16 +92,18 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/%{name}.d
 
 %changelog
-*   Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 1.10.1-1
--   Version upgrade to 1.10.1, fixes CVE-2021-32574
-*   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.9.5-2
--   Bump up version to compile with new go
-*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.9.5-1
--   Automatic Version Bump
-*   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.9.1-3
--   Bump up version to compile with new go
-*   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.9.1-2
--   Bump up version to compile with new go
+*  Tue Dec 21 2021 Nitesh Kumar <kunitesh@vmware.com> 1.10.4-1
+-  Version upgrade to 1.10.4, fixes CVE-2021-41805.
+*  Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 1.10.1-1
+-  Version upgrade to 1.10.1, fixes CVE-2021-32574
+*  Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.9.5-2
+-  Bump up version to compile with new go
+*  Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.9.5-1
+-  Automatic Version Bump
+*  Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.9.1-3
+-  Bump up version to compile with new go
+*  Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.9.1-2
+-  Bump up version to compile with new go
 *  Wed Dec 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.9.1-1
 -  Bump version to fix CVE-2020-28053
 *  Tue Nov 17 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.8.5-1
