@@ -1,6 +1,6 @@
 Name:           consul
-Version:        1.9.8
-Release:        4%{?dist}
+Version:        1.9.11
+Release:        1%{?dist}
 Summary:        Consul is a tool for service discovery and configuration.
 License:        Mozilla Public License, version 2.0
 Group:          System Environment/Daemons
@@ -8,11 +8,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://github.com/hashicorp/consul/archive/v%{version}.tar.gz
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}.tar.gz=716fd6229961c2157dd58d1dbe90cea700059d65
+%define sha1    %{name}-%{version}.tar.gz=1260790b0a3d219514f03b3d43034cccb59442ea
 Source1:        %{name}.service
-Patch0:         CVE-2021-3121.patch
-Patch1:         CVE-2021-37219.patch
-Patch2:         CVE-2021-38698.patch
 BuildRequires:  unzip
 BuildRequires:  systemd
 BuildRequires:  go
@@ -93,24 +90,26 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/%{name}.d
 
 %changelog
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.9.8-4
--   Bump up version to compile with new go
-*   Thu Sep 23 2021 Piyush Gupta <gpiyush@vmware.com> 1.9.8-3
--   Bump up version to compile with new go
-*   Tue Sep 21 2021 Piyush Gupta <gpiyush@vmware.com> 1.9.8-2
--   Fix for CVE-2021-37219, CVE-2021-3121, CVE-2021-38698.
-*   Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 1.9.8-1
--   Version upgrade to 1.9.8, fixes CVE-2021-32574
-*   Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.9.5-2
--   Bump up version to compile with new go
-*   Wed Apr 28 2021 Piyush Gupta <gpiyush@vmware.com> 1.9.5-1
--   Upgrade to 1.9.5
-*   Thu Mar 25 2021 Piyush Gupta<gpiyush@vmware.com> 1.9.1-4
--   Bump up version to compile with new go
-*   Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.9.1-3
--   Bump up version to compile with new go
-*   Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.9.1-2
--   Bump up version to compile with new go
+*  Tue Dec 21 2021 Nitesh Kumar <kunitesh@vmware.com> 1.9.11-1
+-  Version upgrade 1.9.11 to fix CVE-2021-41805.
+*  Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.9.8-4
+-  Bump up version to compile with new go
+*  Thu Sep 23 2021 Piyush Gupta <gpiyush@vmware.com> 1.9.8-3
+-  Bump up version to compile with new go
+*  Tue Sep 21 2021 Piyush Gupta <gpiyush@vmware.com> 1.9.8-2
+-  Fix for CVE-2021-37219, CVE-2021-3121, CVE-2021-38698.
+*  Tue Aug 03 2021 Nitesh Kumar <kunitesh@vmware.com> 1.9.8-1
+-  Version upgrade to 1.9.8, fixes CVE-2021-32574
+*  Fri Jun 11 2021 Piyush Gupta <gpiyush@vmware.com> 1.9.5-2
+-  Bump up version to compile with new go
+*  Wed Apr 28 2021 Piyush Gupta <gpiyush@vmware.com> 1.9.5-1
+-  Upgrade to 1.9.5
+*  Thu Mar 25 2021 Piyush Gupta<gpiyush@vmware.com> 1.9.1-4
+-  Bump up version to compile with new go
+*  Fri Feb 05 2021 Harinadh D <hdommaraju@vmware.com> 1.9.1-3
+-  Bump up version to compile with new go
+*  Fri Jan 15 2021 Piyush Gupta<gpiyush@vmware.com> 1.9.1-2
+-  Bump up version to compile with new go
 *  Wed Dec 16 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.9.1-1
 -  Bump version to fix CVE-2020-28053
 *  Tue Nov 17 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.8.5-1
