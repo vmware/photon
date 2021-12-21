@@ -4,7 +4,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.0.0533
-Release:        14%{?dist}
+Release:        15%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -28,6 +28,7 @@ Patch5:         vim-CVE-2021-3875.patch
 Patch6:         vim-CVE-2021-3903.patch
 Patch7:         vim-CVE-2021-3927.patch
 Patch8:         vim-CVE-2021-3928.patch
+Patch9:         vim-CVE-2021-4069.patch
 
 %description
 The VIM package contains a powerful text editor.
@@ -165,6 +166,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Tue Dec 21 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.0.0533-15
+- Fix CVE-2021-4069
 * Wed Dec 15 2021 Mukul Sikka <msikka@vmware.com> 8.0.0533-14
 - Fix for CVE-2021-3872, CVE-2021-3875, CVE-2021-3903, CVE-2021-3927 and CVE-2021-3928
 * Thu Dec 02 2021 Shreenidhi Shedi <sshedi@vmware.com> 8.0.0533-13
