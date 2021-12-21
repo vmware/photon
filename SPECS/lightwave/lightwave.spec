@@ -1,7 +1,7 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       18%{?dist}
+Release:       19%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
@@ -13,6 +13,7 @@ Source0:       %{name}-%{version}.tar.gz
 
 Patch0:     fix-python-include-path.patch
 Patch1:     log4j-security-fix.patch
+Patch2:     upgrade-jackson-jars-to-latest-to-fix-security-issue.patch
 
 Requires:      apache-tomcat >= 8.5.8
 Requires:      boost >= 1.66.0
@@ -876,10 +877,10 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_jarsdir}/commons-lang-2.6.jar
 %{_jarsdir}/commons-lang3-3.3.2.jar
 %{_jarsdir}/commons-logging-1.2.jar
-%{_jarsdir}/jackson-jaxrs-json-provider-2.9.6.jar
-%{_jarsdir}/jackson-core-2.9.6.jar
-%{_jarsdir}/jackson-databind-2.9.6.jar
-%{_jarsdir}/jackson-annotations-2.9.6.jar
+%{_jarsdir}/jackson-jaxrs-json-provider-2.13.0.jar
+%{_jarsdir}/jackson-core-2.13.0.jar
+%{_jarsdir}/jackson-databind-2.13.0.jar
+%{_jarsdir}/jackson-annotations-2.13.0.jar
 %{_jarsdir}/jna-4.2.1.jar
 %{_jarsdir}/json-smart-1.3.1.jar
 %{_jarsdir}/httpclient-4.5.1.jar
@@ -1174,6 +1175,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_stssamplebindir}/*
 
 %changelog
+* Tue Dec 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-19
+- Upgrade jackson jars
 * Sun Dec 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-18
 - Use log4j-2.17.0 to fix CVE-2021-45105
 * Tue Dec 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-17
