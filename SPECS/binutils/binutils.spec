@@ -1,7 +1,7 @@
 Summary:        Contains a linker, an assembler, and other tools
 Name:           binutils
 Version:        2.32
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://www.gnu.org/software/binutils
 Group:          System Environment/Base
@@ -26,6 +26,7 @@ Patch12:        binutils-CVE-2020-35495-CVE-2020-35496-CVE-2020-35507.patch
 Patch13:        binutils-CVE-2020-35494.patch
 Patch14:        binutils-CVE-2020-35493.patch
 Patch15:        binutils-CVE-2021-3487.patch
+Patch16:        binutils-CVE-2021-45078.patch
 
 %description
 The Binutils package contains a linker, an assembler,
@@ -54,6 +55,7 @@ for handling compiled objects.
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
 
 %build
 install -vdm 755 ../binutils-build
@@ -145,6 +147,8 @@ make %{?_smp_mflags} check
 %{_lib64dir}/libiberty.a
 
 %changelog
+*   Wed Dec 22 2021 Nitesh Kumar <kunitesh@vmware.com> 2.32-5
+-   Fix CVE-2021-45078
 *   Wed Apr 28 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.32-4
 -   Fix CVE-2021-3487
 *   Thu Feb 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.32-3
@@ -182,7 +186,7 @@ make %{?_smp_mflags} check
 *   Mon Jan 29 2018 Xiaolin Li <xiaolinl@vmware.com> 2.30-1
 -   Update to version 2.30
 *   Mon Dec 18 2017 Anish Swaminathan <anishs@vmware.com> 2.29.1-4
--   Fix CVEs CVE-2017-17121, CVE-2017-17122, CVE-2017-17123, 
+-   Fix CVEs CVE-2017-17121, CVE-2017-17122, CVE-2017-17123,
 -   CVE-2017-17124, CVE-2017-17125
 *   Mon Dec 4 2017 Anish Swaminathan <anishs@vmware.com> 2.29.1-3
 -   Fix CVEs CVE-2017-16826, CVE-2017-16827, CVE-2017-16828, CVE-2017-16829,
