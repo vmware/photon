@@ -1,7 +1,7 @@
 Summary:	RNG deamon and tools
 Name:		rng-tools
 Version:	5
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2
 URL:		https://sourceforge.net/projects/gkernel/
 Group:          System Environment/Base
@@ -10,21 +10,21 @@ Distribution:	Photon
 Source0:	https://sourceforge.net/projects/gkernel/files/%{name}/%{name}-%{version}.tar.gz
 %define sha1 rng-tools=3092768ac45315a5dcc0170d05566d1d00dbad96
 Source1:        rngd.service
+BuildArch:      x86_64
 BuildRequires:  systemd
 Requires:	systemd
 %description
 The rng-tools is a set of utilities related to random number generation in kernel.
 
 %prep
-%setup -q
+%autosetup
 
 %build
-./configure \
-	--prefix=%{_prefix}
+%configure
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 mkdir -p %{buildroot}%{_libdir}/systemd/system
 install -p -m 644 %{SOURCE1} %{buildroot}%{_libdir}/systemd/system/
 
@@ -50,6 +50,9 @@ make  %{?_smp_mflags} check
 %{_mandir}/*
 
 %changelog
+*       Wed Dec 22 2021 Keerthana K <keerthanak@vmware.com> 5-3
+-       rng-tools is not needed anymore since Kernel 5.6 because /dev/random does not block anymore.
+-       Deprecating the package for aarch64
 *       Thu May 10 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 5-2
 -       Start rngd before cloud-init-local.service to speed up booting.
 *       Wed Oct 26 2016 Alexey Makhalov <amakhalov@vmware.com> 5-1
