@@ -3,7 +3,7 @@
 Summary:    Photon OS Installer
 Name:       photon-os-installer
 Version:    2.0
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    Apache 2.0 and GPL 2.0
 Group:      System Environment/Base
 Vendor:     VMware, Inc.
@@ -14,6 +14,7 @@ Source0:    %{name}-%{version}.tar.gz
 %define sha1 %{name}=0f1164e8eef1fa76990346f22d281e36964404f5
 
 Patch0:     error_screen_selectdisk.patch
+Patch1:     fix-installroot-commands.patch
 
 BuildRequires: python3-devel
 BuildRequires: python3-pyinstaller
@@ -45,6 +46,8 @@ rm -rf %{buildroot}
 %{_bindir}/photon-installer
 
 %changelog
+* Wed Dec 22 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.0-2
+- Fix tdnf installroot commands
 * Sat Dec 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.0-1
 - Bump version as a part of requests & chardet upgrade
 * Tue Jun 01 2021 Piyush Gupta <gpiyush@vmware.com> 1.0-7
