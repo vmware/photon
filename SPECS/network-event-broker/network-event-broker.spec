@@ -6,12 +6,12 @@
 
 Summary:        Manages network configuration
 Name:           network-event-broker
-Version:        0.2
+Version:        0.2.1
 Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        network-event-broker-%{version}.tar.gz
-%define sha1 %{name}=13e6783b56c5f180c3e7f5d19503ea3def0422db
+%define sha1 %{name}=cd820745bc06dd0138db36f552acb17b2f3d888b
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -19,14 +19,16 @@ Distribution:   Photon
 BuildRequires:  go
 BuildRequires:  systemd-rpm-macros
 
-Requires:  systemd
+Requires:         systemd
+Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
 
 %global debug_package %{nil}
 
 %description
-A daemon configures network and executes scripts on network events such as
-systemd-networkd's DBus events, dhclient gains lease lease. It also watches
-when An address getting added/removed/modified, links added/removed.
+A daemon that configures the network and executes scripts on network events such as
+systemd-networkd's DBus events or dhclient gaining a lease. It also watches
+when an address gets added/removed/modified or links get added/removed.
 
 %prep -p exit
 %autosetup -p1 -n %{name}-%{version}
@@ -99,6 +101,8 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %changelog
+* Wed Dec 22 2021 Susant Sahani <ssahani@vmware.com> 0.2.1-1
+- Version bump and add groupadd and useradd to requires.
 * Tue Dec 14 2021 Susant Sahani <ssahani@vmware.com> 0.2-1
 - Version bump.
 * Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 0.1-2
