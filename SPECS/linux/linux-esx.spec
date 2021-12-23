@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.219
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -811,7 +811,7 @@ popd
 # Do not compress modules which will be loaded at boot time
 # to speed up boot process
 %define __modules_install_post \
-    for MODULE in `find %{buildroot}/lib/modules/%{uname_r}/kernel/crypto -name *.ko` ; do \
+    for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -type d -name "crypto" -exec find {} -name *.ko ';'` ; do \
         ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
         rm -f $MODULE.{sig,dig} \
     done \
@@ -942,6 +942,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Dec 23 2021 Keerthana K <keerthanak@vmware.com> 4.19.219-6
+-   FIPS: Fix module signing of crypto modules
+-   Enable AESNI INTEL kernel configs
 *   Mon Dec 20 2021 Harinadh D <hdommaraju@vmware.com> 4.19.219-5
 -   remove lvm in add-drivers list
 -   lvm drivers are built as part of dm-mod module
