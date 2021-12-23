@@ -47,10 +47,10 @@ actual_pkg_list=($(tdnf --installroot $TEMP_CHROOT/ \
 expected_pkg_list=(
   bash.$arch bzip2-libs.$arch ca-certificates.$arch
   ca-certificates-pki.$arch curl.$arch curl-libs.$arch
-  e2fsprogs-libs.$arch elfutils-libelf.$arch expat.$arch
+  e2fsprogs-libs.$arch elfutils-libelf.$arch
   expat-libs.$arch filesystem.$arch glibc.$arch krb5.$arch
   libcap.$arch libdb.$arch libgcc.$arch libgcrypt.$arch
-  libgpg-error.$arch libmetalink.$arch libsolv.$arch libssh2.$arch
+  libgpg-error.$arch libsolv.$arch libssh2.$arch libxml2.$arch
   lua.$arch ncurses-libs.$arch nspr.$arch nss-libs.$arch
   openssl.$arch photon-release.noarch photon-repos.noarch popt.$arch
   readline.$arch rpm-libs.$arch sqlite-libs.$arch tdnf.$arch
@@ -89,7 +89,9 @@ rm -rf var/cache/tdnf/
 tar cpzf ../$ROOTFS_TAR_FILENAME .
 popd
 
-max_size=$(( 16 * 1024 * 1024 ))
+# expected size plus 2% wiggle room
+max_size=17313736
+
 actual_size=$(wc -c $ROOTFS_TAR_FILENAME | cut -d' ' -f1)
 if (( $actual_size > $max_size )); then
   echoerr "ERROR: docker image tarball size is bigger than expected"

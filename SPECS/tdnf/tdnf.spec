@@ -1,6 +1,6 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.2.2
+Version:        3.2.3
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=0b6f7672e62e294190bcfdadbbc1717350030339
+%define sha1    %{name}=ed6b927908323cbeafc084ff672a947baff83060
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
 
@@ -17,14 +17,16 @@ Requires:       rpm-libs >= 4.16.1.3-1
 Requires:       curl-libs
 Requires:       tdnf-cli-libs = %{version}-%{release}
 Requires:       libsolv >= 0.7.19
-Requires:       libmetalink
+Requires:       libxml2
+Requires:       zlib
 
 BuildRequires:  popt-devel
 BuildRequires:  rpm-devel
 BuildRequires:  openssl-devel >= 1.1.1
 BuildRequires:  libsolv-devel >= 0.7.19
 BuildRequires:  curl-devel
-BuildRequires:  libmetalink-devel
+BuildRequires:  libxml2-devel
+BuildRequires:  zlib-devel
 BuildRequires:  systemd
 #plugin repogpgcheck
 BuildRequires:  gpgme-devel
@@ -223,6 +225,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Wed Dec 22 2021 Oliver Kurth <okurth@vmware.com> 3.2.3-1
+- update to 3.2.3
 * Fri Dec 10 2021 Oliver Kurth <okurth@vmware.com> 3.2.2-1
 - update to 3.2.2
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.1.5-4
