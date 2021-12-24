@@ -25,6 +25,11 @@ BuildRequires:  python3-devel
 BuildRequires:  python3-libs
 BuildRequires:  python3-six
 BuildRequires:  python3-xml
+
+%if 0%{?with_check:1}
+BuildRequires:  python3-sortedcontainers
+%endif
+
 Requires:       libgcc-atomic
 Requires:       libcap-ng
 Requires:       openssl
@@ -93,7 +98,9 @@ install -p -D -m 0644 rhel/etc_openvswitch_default.conf %{buildroot}/%{_sysconfd
 sed -i '/OVS_USER_ID=.*/c\OVS_USER_ID=' %{buildroot}/%{_sysconfdir}/openvswitch/default.conf
 
 %check
+%if 0%{?with_check:1}
 make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+%endif
 
 %preun
 %systemd_preun %{name}.service
@@ -146,68 +153,68 @@ make -k check %{?_smp_mflags} |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_mandir}/man7/ovs-actions.7.gz
 
 %changelog
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.14.0-9
--   Bump up to compile with python 3.10
-*   Thu Sep 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.14.0-8
--   Bump up release for openssl
-*   Wed Sep 01 2021 Sujay G <gsujay@vmware.com> 2.14.0-7
--   Fix check_spec.py errors
-*   Tue Aug 17 2021 Dweep Advani <dadvani@vmware.com> 2.14.0-6
--   Patched for CVE-2021-36980
-*   Thu Apr 01 2021 Dweep Advani <dadvani@vmware.com> 2.14.0-5
--   Patched for CVE-2020-27827
-*   Mon Mar 01 2021 Dweep Advani <dadvani@vmware.com> 2.14.0-4
--   Patched for CVE-2020-35498
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.14.0-3
--   openssl 1.1.1
-*   Fri Sep 18 2020 Tapas Kundu <tkundu@vmware.com> 2.14.0-2
--   Packged python bindings in right path
-*   Wed Aug 19 2020 Tapas Kundu <tkundu@vmware.com> 2.14.0-1
--   Updated to 2.14
--   Removed ovn packages.
-*   Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 2.12.0-3
--   Fix fix_dict_change
-*   Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.12.0-2
--   Mass removal python2
-*   Wed Feb 05 2020 Tapas Kundu <tkundu@vmware.com> 2.12.0-1
--   Build with Python3
-*   Tue Nov 13 2018 Anish Swaminathan <anishs@vmware.com> 2.8.2-3
--   Replace with configure macro
-*   Wed Feb 28 2018 Vinay Kulkarni <kulkarniv@vmware.com> 2.8.2-2
--   Setup the default conf file for local ovsdb server.
-*   Tue Feb 27 2018 Vinay Kulkarni <kulkarniv@vmware.com> 2.8.2-1
--   Update to OVS 2.8.2
-*   Tue Oct 10 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.0-9
--   Fix CVE-2017-14970
-*   Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.0-8
--   Fix CVE-2017-9263
-*   Tue Sep 19 2017 Anish Swaminathan <anishs@vmware.com> 2.7.0-7
--   Add gawk to Requires
-*   Tue Aug 29 2017 Sarah Choi <sarahc@vmware.com> 2.7.0-6
--   Add python2/python-six/python-xml to Requires
-*   Thu Jul 13 2017 Nishant Nelogal <nnelogal@vmware.com> 2.7.0-5
--   Created OVN packages and systemd service scripts
-*   Fri Jun 16 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.7.0-4
--   Fix CVE-2017-9214, CVE-2017-9265
-*   Mon Jun 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.7.0-3
--   Fix CVE-2017-9264
-*   Tue May 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.0-2
--   Added python and python3 subpackage.
-*   Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.0-1
--   Update to 2.7.0
-*   Fri Feb 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-2
--   Build ovs shared library
-*   Wed Nov 16 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-1
--   Update to openvswitch 2.6.1
-*   Sat Sep 24 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.5.0-1
--   Update to openvswitch 2.5.0
-*   Fri Sep 09 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.1-1
--   Update to openvswitch 2.4.1
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.0-3
--   GA - Bump release of all rpms
-*   Sat Oct 31 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.0-2
--   OVS requires libatomic.so.1 provided by gcc.
-*   Mon Oct 12 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.0-1
--   Update to OVS v2.4.0
-*   Fri May 29 2015 Kumar Kaushik <kaushikk@vmware.com> 2.3.1-1
--   Initial build. First version
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.14.0-9
+- Bump up to compile with python 3.10
+* Thu Sep 02 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.14.0-8
+- Bump up release for openssl
+* Wed Sep 01 2021 Sujay G <gsujay@vmware.com> 2.14.0-7
+- Fix check_spec.py errors
+* Tue Aug 17 2021 Dweep Advani <dadvani@vmware.com> 2.14.0-6
+- Patched for CVE-2021-36980
+* Thu Apr 01 2021 Dweep Advani <dadvani@vmware.com> 2.14.0-5
+- Patched for CVE-2020-27827
+* Mon Mar 01 2021 Dweep Advani <dadvani@vmware.com> 2.14.0-4
+- Patched for CVE-2020-35498
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.14.0-3
+- openssl 1.1.1
+* Fri Sep 18 2020 Tapas Kundu <tkundu@vmware.com> 2.14.0-2
+- Packged python bindings in right path
+* Wed Aug 19 2020 Tapas Kundu <tkundu@vmware.com> 2.14.0-1
+- Updated to 2.14
+- Removed ovn packages.
+* Sun Jul 26 2020 Tapas Kundu <tkundu@vmware.com> 2.12.0-3
+- Fix fix_dict_change
+* Sat Jun 20 2020 Tapas Kundu <tkundu@vmware.com> 2.12.0-2
+- Mass removal python2
+* Wed Feb 05 2020 Tapas Kundu <tkundu@vmware.com> 2.12.0-1
+- Build with Python3
+* Tue Nov 13 2018 Anish Swaminathan <anishs@vmware.com> 2.8.2-3
+- Replace with configure macro
+* Wed Feb 28 2018 Vinay Kulkarni <kulkarniv@vmware.com> 2.8.2-2
+- Setup the default conf file for local ovsdb server.
+* Tue Feb 27 2018 Vinay Kulkarni <kulkarniv@vmware.com> 2.8.2-1
+- Update to OVS 2.8.2
+* Tue Oct 10 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.0-9
+- Fix CVE-2017-14970
+* Wed Oct 04 2017 Dheeraj Shetty <dheerajs@vmware.com> 2.7.0-8
+- Fix CVE-2017-9263
+* Tue Sep 19 2017 Anish Swaminathan <anishs@vmware.com> 2.7.0-7
+- Add gawk to Requires
+* Tue Aug 29 2017 Sarah Choi <sarahc@vmware.com> 2.7.0-6
+- Add python2/python-six/python-xml to Requires
+* Thu Jul 13 2017 Nishant Nelogal <nnelogal@vmware.com> 2.7.0-5
+- Created OVN packages and systemd service scripts
+* Fri Jun 16 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.7.0-4
+- Fix CVE-2017-9214, CVE-2017-9265
+* Mon Jun 12 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.7.0-3
+- Fix CVE-2017-9264
+* Tue May 23 2017 Xiaolin Li <xiaolinl@vmware.com> 2.7.0-2
+- Added python and python3 subpackage.
+* Sat Apr 15 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.7.0-1
+- Update to 2.7.0
+* Fri Feb 10 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-2
+- Build ovs shared library
+* Wed Nov 16 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.1-1
+- Update to openvswitch 2.6.1
+* Sat Sep 24 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.5.0-1
+- Update to openvswitch 2.5.0
+* Fri Sep 09 2016 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.1-1
+- Update to openvswitch 2.4.1
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.4.0-3
+- GA - Bump release of all rpms
+* Sat Oct 31 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.0-2
+- OVS requires libatomic.so.1 provided by gcc.
+* Mon Oct 12 2015 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.0-1
+- Update to OVS v2.4.0
+* Fri May 29 2015 Kumar Kaushik <kaushikk@vmware.com> 2.3.1-1
+- Initial build. First version
