@@ -35,6 +35,7 @@ Work on Crypt::SSLeay has been continued only to provide https support for the L
 %build
 PERL5LIB=$(pwd) env PERL_MM_USE_DEFAULT=1 perl Makefile.PL INSTALLDIRS=vendor OPTIMIZE="%{optflags}"
 sed -i 's/CCCDLFLAGS = /CCCDLFLAGS = -g /' Makefile
+sed -i -E 's#^([[:space:]]*TEST_FILES[[:space:]]*=[[:space:]]*).*$#\1t/02-live.t t/boilerplate.t t/manifest.t#p' Makefile
 make %{?_smp_mflags}
 
 %install
