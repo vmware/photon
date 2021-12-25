@@ -160,6 +160,7 @@ def check_for_trailing_spaces(spec_fn, err_dict):
                        ' %d') % (line_num + 1)
             err_dict.update_err_dict(sec, err_msg)
             empty_line_count = 0
+            ret = True
 
         if line.endswith((' ', '\t')):
             err_msg = ('trailing space(s) found at line number: %s:\n'
