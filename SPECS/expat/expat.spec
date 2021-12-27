@@ -45,6 +45,7 @@ The package contains expat doc files.
 	--bindir=%{_bindir} \
 	--libdir=%{_libdir} \
 	--disable-static
+
 make %{?_smp_mflags}
 
 %install
@@ -76,7 +77,7 @@ rm -rf %{buildroot}/*
 ## TODO: There's some change in man page build path according to release notes.
 ## https://github.com/libexpat/libexpat/blob/R_2_2_7/expat/Changes
 ## #158 #263  CMake: Build man page in PROJECT_BINARY_DIR not _SOURCE_DIR
-#%{_mandir}/man1/*
+#%%{_mandir}/man1/*
 
 %files devel
 %{_includedir}/*

@@ -1,5 +1,6 @@
-#%global debug_package %{nil}
+%global debug_package %{nil}
 %global __os_install_post %{nil}
+
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
 Version:        4.0.1
@@ -40,29 +41,26 @@ export JAVA_HOME=`echo /usr/lib/jvm/OpenJDK-*`
 ant jar javadoc -Drelease=true
 
 %install
-mkdir -p %{buildroot}/var/opt/%{name}/data
-mkdir -p %{buildroot}/var/log/%{name}
-mkdir -p %{buildroot}%{_bindir}
-mkdir -p %{buildroot}%{_sbindir}
-mkdir -p %{buildroot}%{_datadir}/cassandra
-mkdir -p %{buildroot}%{_sysconfdir}/cassandra
-mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
-mkdir -p %{buildroot}/etc/profile.d
+mkdir -p %{buildroot}/var/opt/%{name}/data \
+         %{buildroot}/var/log/%{name} \
+         %{buildroot}%{_bindir} \
+         %{buildroot}%{_sbindir} \
+         %{buildroot}%{_datadir}/cassandra \
+         %{buildroot}%{_sysconfdir}/cassandra \
+         %{buildroot}%{_sysconfdir}/sysconfig \
+         %{buildroot}/etc/profile.d \
+         %{buildroot}%{_unitdir}
 
 cp -pr conf/* %{buildroot}%{_sysconfdir}/cassandra/
 
-rm -f bin/cqlsh
-rm -f bin/cqlsh.py
+rm -f bin/cqlsh bin/cqlsh.py
 mv bin/%{name} %{buildroot}%{_sbindir}
 mv bin/%{name}.in.sh %{buildroot}%{_datadir}/cassandra/
-cp -p bin/* %{buildroot}%{_bindir}/
-cp -p tools/bin/* %{buildroot}%{_bindir}/
-cp -r lib %{buildroot}/var/opt/cassandra/
-cp -r build %{buildroot}/var/opt/cassandra/
-cp -p build/tools/lib/stress.jar %{buildroot}/var/opt/cassandra/lib
-cp -p build/apache-cassandra-%{version}.jar %{buildroot}/var/opt/cassandra/lib
+cp -p bin/* tools/bin/* %{buildroot}%{_bindir}/
+cp -r lib build %{buildroot}/var/opt/cassandra/
 
-mkdir -p %{buildroot}%{_unitdir}
+cp -p build/tools/lib/stress.jar build/apache-cassandra-%{version}.jar %{buildroot}/var/opt/cassandra/lib
+
 install -p -D -m 644 %{SOURCE1}  %{buildroot}%{_unitdir}/%{name}.service
 
 cat >> %{buildroot}/etc/sysconfig/cassandra <<- "EOF"

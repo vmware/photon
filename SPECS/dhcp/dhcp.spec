@@ -4,16 +4,16 @@ Version:      4.4.2
 Release:      5%{?dist}
 License:      ISC
 Url:          http://isc.org/products/DHCP/
+Group:        System Environment/Base
+Vendor:       VMware, Inc.
+Distribution: Photon
+
 Source0:      ftp://ftp.isc.org/isc/dhcp/${version}/%{name}-%{version}.tar.gz
 %define sha1  dhcp=cb4ba6617e1bc2e3cbf770be5c0443b1ad276db5
 Source1:      dhclient-script
 Source2:      dhclient.conf
 Source3:      dhcp.service
 Source:       dhcrelay.service
-
-Group:        System Environment/Base
-Vendor:       VMware, Inc.
-Distribution: Photon
 
 Patch0:       dhcp-nowplusinterval.patch
 Patch1:       dhcp-4.4.2-fno-common.patch
@@ -115,7 +115,7 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/dhclient/
 rm -f %{buildroot}%{_sysconfdir}/dhclient.conf.example
 rm -f %{buildroot}%{_sysconfdir}/dhcpd.conf.example
 
-#%check
+#%%check
 #Commented out %check due to missing support of ATF.
 
 %ldconfig_scriptlets
