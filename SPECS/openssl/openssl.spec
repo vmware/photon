@@ -1,7 +1,7 @@
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -13,6 +13,7 @@ Source1:        rehash_ca_certificates.sh
 %if 0%{?with_fips:1}
 Source2:        sample-fips-enable-openssl.cnf
 %endif
+Patch0:         openssl-CVE-2021-4044.patch
 %if %{with_check}
 BuildRequires: zlib-devel
 %endif
@@ -63,7 +64,7 @@ Requires: openssl = %{version}-%{release}
 The package contains openssl doc files.
 
 %prep
-%autosetup
+%autosetup -p1
 
 %build
 if [ %{_host} != %{_build} ]; then
@@ -183,6 +184,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+*   Mon Jan 03 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.0-2
+-   Fix CVE-2021-4044
 *   Tue Sep 07 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.0-1
 -   update to openssl 3.0.0
 *   Fri Aug 27 2021 Srinidhi Rao <srinidhir@vmware.com> 1.1.1l-1
