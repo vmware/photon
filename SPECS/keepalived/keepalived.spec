@@ -1,7 +1,7 @@
 Summary:        HA monitor built upon LVS, VRRP and services poller
 Name:           keepalived
 Version:        2.0.18
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            http://www.keepalived.org/
 Group:          Applications/System
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        http://www.keepalived.org/software/%{name}-%{version}.tar.gz
 %define sha1    %{name}-%{version}=86cf8c2ec6df72daa705d2fd59502ca39e8244c9
 Source1:        %{name}.service
+Patch0:         keepalived-CVE-2021-44225.patch
 BuildRequires:  openssl-devel
 BuildRequires:  iptables-devel >= 1.8.3
 Requires:       iptables >= 1.8.3
@@ -35,7 +36,7 @@ failover. So in short keepalived is a userspace daemon for LVS cluster nodes
 healthchecks and LVS directors failover.
 
 %prep
-%setup -q
+%autosetup -p1
 autoreconf -fi
 
 %build
@@ -46,7 +47,7 @@ autoreconf -fi
 make %{?_smp_mflags} STRIP=/bin/true
 
 %install
-make install DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot} %{?_smp_mflags}
 install -p -D -m 0644 %{SOURCE1} %{buildroot}%{_unitdir}/%{name}.service
 rm -rf %{buildroot}%{_sysconfdir}/%{name}/samples/*
 
@@ -85,6 +86,8 @@ fi
 %{_mandir}/man8/%{name}.8*
 
 %changelog
+*   Mon Jan 03 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.18-2
+-   Fix CVE-2021-44225
 *   Thu Oct 17 2019 Ajay Kaher <akaher@vmware.com> 2.0.18-1
 -   Update to v2.0.18
 *   Tue Sep 17 2019 Shreyas B. <shreyasb@vmware.com> 2.0.16-2
