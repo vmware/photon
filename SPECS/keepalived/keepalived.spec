@@ -1,7 +1,7 @@
 Summary:        HA monitor built upon LVS, VRRP and services poller
 Name:           keepalived
 Version:        2.0.16
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPL
 URL:            http://www.keepalived.org/
 Group:          Applications/System
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        http://www.keepalived.org/software/%{name}-%{version}.tar.gz
 %define sha1    keepalived=bbc7bae5266c8a752fb16f32355c41decf460f32
 Source1:        keepalived.service
+Patch0:         keepalived-CVE-2021-44225.patch
 BuildRequires:  openssl-devel
 BuildRequires:  iptables-devel
 BuildRequires:  libmnl-devel
@@ -34,6 +35,7 @@ healthchecks and LVS directors failover.
 
 %prep
 %setup -q
+%patch0 -p1
 autoreconf -fi
 
 %build
@@ -87,6 +89,8 @@ fi
 %{_mandir}/man8/keepalived.8*
 
 %changelog
+*   Mon Jan 03 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.0.16-2
+-   Fix CVE-2021-44225
 *   Fri May 10 2019 Ashwin H <ashwinh@vmware.com> 2.0.16-1
 -   Updated to version 2.0.16
 *   Thu Feb 14 2019 <ashwinh@vmware.com> 1.3.5-3
