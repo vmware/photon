@@ -4,7 +4,7 @@
 
 Name:           ImageMagick
 Version:        7.1.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An X application for displaying and manipulating images
 Group:          Development/Libraries
 Vendor:         VMware, Inc.
@@ -13,6 +13,7 @@ License:        ImageMagick
 Url:            http://www.imagemagick.org/
 Source0:        https://www.imagemagick.org/download/%{name}-%{VER}-%{Patchlevel}.tar.xz
 %define sha1 %{name}=c56851c400f23338a3d285a6f38a0ca23398064f
+Patch0:         CVE-2021-39212.patch
 Epoch:          1
 Requires:       %{name}-libs%{?_isa} = %{epoch}:%{version}-%{release}
 Requires:       libgomp
@@ -35,7 +36,6 @@ and display images. If you want to develop your own applications
 which use ImageMagick code or APIs, you need to install
 ImageMagick-devel as well.
 
-
 %package devel
 Summary:        Library links and header files for ImageMagick app development
 Requires:       pkg-config
@@ -50,13 +50,11 @@ APIs, you need to install ImageMagick-devel as well as ImageMagick.
 You do not need to install it if you just want to use ImageMagick,
 however.
 
-
 %package libs
 Summary:        ImageMagick libraries to link with
 
 %description libs
 This packages contains a shared libraries to use within other applications.
-
 
 %package doc
 Summary:        ImageMagick html documentation
@@ -66,7 +64,6 @@ ImageMagick documentation, this package contains usage (for the
 commandline tools) and API (for the libraries) documentation in html format.
 Note this documentation can also be found on the ImageMagick website:
 http://www.imagemagick.org/
-
 
 %package c++
 Summary:        ImageMagick Magick++ library (C++ bindings)
@@ -82,7 +79,6 @@ This package contains the Magick++ library, a C++ binding to the ImageMagick
 graphics manipulation library.
 
 Install ImageMagick-c++ if you want to use any applications that use Magick++.
-
 
 %package c++-devel
 Summary:        C++ bindings for the ImageMagick library
@@ -102,7 +98,6 @@ You don't need to install it if you just want to use ImageMagick, or if you
 want to develop/compile applications using the ImageMagick C interface,
 however.
 
-
 %prep
 %autosetup -p1 -n %{name}-%{VER}-%{Patchlevel}
 
@@ -113,7 +108,6 @@ cp -p Magick++/demo/*.cpp Magick++/demo/*.miff Magick++/examples
 %build
 %configure
 %make_build
-
 
 %install
 %make_install
@@ -180,5 +174,7 @@ rm PerlMagick/demo/Generic.ttf
 %{_libdir}/libMagick++-%{major_version}.Q16HDRI.so.5*
 
 %changelog
+*   Mon Jan 03 2022 Piyush Gupta <gpiyush@vmware.com> 7.1.0.1-2
+-   Fix for CVE-2021-39212.
 *   Tue Jun 22 2021 Piyush Gupta <gpiyush@vmware.com> 7.1.0.1-1
 -   Initial build for Photon.
