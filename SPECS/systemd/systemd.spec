@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd/
 Version:        247.10
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 
@@ -656,6 +656,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Mon Jan 03 2022 Sujay G <gsujay@vmware.com> 247.10-4
+- Bump version to build with updated python3-lxml
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 247.10-3
 - Bump up to compile with python 3.10
 * Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 247.10-2
