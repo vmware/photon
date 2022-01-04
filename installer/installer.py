@@ -1,8 +1,6 @@
 """
 Photon installer
 """
-#
-#    Author: Mahmoud Bassiouny <mbassiouny@vmware.com>
 
 import subprocess
 import os
@@ -21,12 +19,12 @@ from commandutils import CommandUtils
 from jsonwrapper import JsonWrapper
 from progressbar import ProgressBar
 from window import Window
-from actionresult import ActionResult
 from networkmanager import NetworkManager
 from enum import Enum
 
 BIOSSIZE = 4
 ESPSIZE = 10
+
 
 class PartitionType(Enum):
     SWAP = 1
@@ -34,6 +32,7 @@ class PartitionType(Enum):
     LVM = 3
     ESP = 4
     BIOS = 5
+
 
 class Installer(object):
     """
@@ -99,9 +98,9 @@ class Installer(object):
         self.installer_path = os.path.dirname(os.path.abspath(__file__))
         self.tdnf_conf_path = self.working_directory + "/tdnf.conf"
         self.tdnf_repo_path = self.working_directory + "/photon-local.repo"
-        self.rpm_cache_dir = self.photon_root + '/cache/tdnf/photon-local/rpms'
+        self.rpm_cache_dir = self.photon_root + '/var/cache/tdnf/photon-local/rpms'
         # used by tdnf.conf as cachedir=, tdnf will append the rest
-        self.rpm_cache_dir_short = self.photon_root + '/cache/tdnf'
+        self.rpm_cache_dir_short = self.photon_root + '/var/cache/tdnf'
 
         self.setup_grub_command = os.path.dirname(__file__)+"/mk-setup-grub.sh"
 
@@ -111,7 +110,7 @@ class Installer(object):
     """
     create, append and validate configuration date - install_config
     """
-    def configure(self, install_config, ui_config = None):
+    def configure(self, install_config, ui_config=None):
 
         if install_config and 'release_version' in install_config:
             release_version = install_config.pop('release_version')
@@ -145,7 +144,6 @@ class Installer(object):
             raise Exception(issue)
 
         self.install_config = install_config
-
 
     def execute(self):
         if 'setup_grub_script' in self.install_config:
@@ -236,16 +234,15 @@ class Installer(object):
                 install_config['search_path'].append(dirname)
 
         if 'linux_flavor' not in install_config:
-            if install_config.get('install_linux_esx', False) == True:
+            if install_config.get('install_linux_esx', False):
                 install_config['linux_flavor'] = "linux-esx"
             else:
-                available_flavors=[]
+                available_flavors = []
                 for flavor in self.all_linux_flavors:
                     if flavor in install_config['packages']:
                         available_flavors.append(flavor)
                 if len(available_flavors) == 1:
                     install_config['linux_flavor'] = available_flavors[0]
-
 
         install_config['install_linux_esx'] = False
 
@@ -263,7 +260,7 @@ class Installer(object):
         if len(unknown_keys) > 0:
             return "Unknown install_config keys: " + ", ".join(unknown_keys)
 
-        if not 'disk' in install_config:
+        if 'disk' not in install_config:
             return "No disk configured"
 
         # For Ostree install_config['packages'] will be empty list, because ostree
@@ -482,9 +479,9 @@ class Installer(object):
         """
         # Make the photon_root/installer directory if not exits
         if(self.cmd.run(['mkdir', '-p',
-                            os.path.join(self.photon_root, "installer")]) != 0 or
+                        os.path.join(self.photon_root, "installer")]) != 0 or
            self.cmd.run(['mount', '--bind', self.installer_path,
-                            os.path.join(self.photon_root, "installer")]) != 0):
+                        os.path.join(self.photon_root, "installer")]) != 0):
             self.logger.error("Fail to bind installer")
             self.exit_gracefully()
 
@@ -523,9 +520,9 @@ class Installer(object):
 
     def _get_partuuid(self, path):
         partuuid = subprocess.check_output(['blkid', '-s', 'PARTUUID', '-o', 'value', path],
-                                       universal_newlines=True).rstrip('\n')
+                                           universal_newlines=True).rstrip('\n')
         # Backup way to get uuid/partuuid. Leave it here for later use.
-        #if partuuidval == '':
+        # if partuuidval == '':
         #    sgdiskout = Utils.runshellcommand(
         #        "sgdisk -i 2 {} ".format(disk_device))
         #    partuuidval = (re.findall(r'Partition unique GUID.*',
@@ -536,7 +533,7 @@ class Installer(object):
         return subprocess.check_output(['blkid', '-s', 'UUID', '-o', 'value', path],
                                        universal_newlines=True).rstrip('\n')
 
-    def _create_fstab(self, fstab_path = None):
+    def _create_fstab(self, fstab_path=None):
         """
         update fstab
         """
@@ -636,8 +633,12 @@ class Installer(object):
             self.exit_gracefully()
 
         # Install filesystem rpm
-        tdnf_cmd = "tdnf install filesystem --releasever {0} --installroot {1} --assumeyes -c {2}".format(
-                    self.install_config['release_version'], self.photon_root, self.tdnf_conf_path)
+        tdnf_cmd = ("tdnf install -y filesystem --releasever {0} "
+                    "--installroot {1} -c {2} "
+                    "--setopt=reposdir={3}").format(self.install_config['release_version'],
+                                                    self.photon_root,
+                                                    self.tdnf_conf_path,
+                                                    self.working_directory)
         retval = self.cmd.run(tdnf_cmd)
         if retval != 0:
             retval = self.cmd.run(['docker', 'run',
@@ -657,8 +658,7 @@ class Installer(object):
         }
         for device, (mode, dev_type, major, minor) in devices.items():
             os.mknod(os.path.join(self.photon_root, "dev", device),
-                    mode | dev_type, os.makedev(major, minor))
-
+                     mode | dev_type, os.makedev(major, minor))
 
     def _mount_special_folders(self):
         for d in ["/proc", "/dev", "/dev/pts", "/sys"]:
@@ -728,8 +728,8 @@ class Installer(object):
             retval = self.cmd.run('grub2-install --target=i386-pc --force --boot-directory={} {}'.format(self.photon_root + "/boot", self.install_config['disk']))
             if retval != 0:
                 retval = self.cmd.run(['grub-install', '--target=i386-pc', '--force',
-                                   '--boot-directory={}'.format(self.photon_root + "/boot"),
-                                   self.install_config['disk']])
+                                       '--boot-directory={}'.format(self.photon_root + "/boot"),
+                                       self.install_config['disk']])
                 if retval != 0:
                     raise Exception("Unable to setup grub")
 
@@ -742,11 +742,11 @@ class Installer(object):
             self.cmd.run(['mkdir', '-p', self.photon_root + '/boot/efi/EFI/BOOT'])
             if self.install_config['arch'] == 'aarch64':
                 shutil.copy(self.installer_path + '/EFI_aarch64/BOOT/bootaa64.efi', self.photon_root + '/boot/efi/EFI/BOOT')
-                exe_name='bootaa64.efi'
+                exe_name = 'bootaa64.efi'
             if self.install_config['arch'] == 'x86_64':
                 shutil.copy(self.installer_path + '/EFI_x86_64/BOOT/bootx64.efi', self.photon_root + '/boot/efi/EFI/BOOT')
                 shutil.copy(self.installer_path + '/EFI_x86_64/BOOT/grubx64.efi', self.photon_root + '/boot/efi/EFI/BOOT')
-                exe_name='bootx64.efi'
+                exe_name = 'bootx64.efi'
 
             self.cmd.run(['mkdir', '-p', self.photon_root + '/boot/efi/boot/grub2'])
             with open(os.path.join(self.photon_root, 'boot/efi/boot/grub2/grub.cfg'), "w") as grub_cfg:
@@ -813,6 +813,7 @@ class Installer(object):
         Install slected linux flavor only
         """
         redundant_linux_flavors = []
+
         def filter_packages(package):
             package = package.split('-')
             if len(package) > 1:
@@ -836,7 +837,7 @@ class Installer(object):
                 else:
                     flavor = ""
                 redundant_linux_flavors.append(flavor)
-        self.install_config['packages'] = list(filter(filter_packages,self.install_config['packages']))
+        self.install_config['packages'] = list(filter(filter_packages, self.install_config['packages']))
 
     def _add_packages_to_install(self, package):
         """
@@ -868,8 +869,6 @@ class Installer(object):
             # want input RPMS to be removed after installation.
             if keepcache:
                 conf_file.write("keepcache=1\n")
-            conf_file.write("repodir={}\n".format(self.working_directory))
-            conf_file.write("cachedir={}\n".format(self.rpm_cache_dir_short))
 
     def _install_additional_rpms(self):
         rpms_path = self.install_config.get('additional_rpms_path', None)
@@ -877,7 +876,7 @@ class Installer(object):
         if not rpms_path or not os.path.exists(rpms_path):
             return
 
-        if self.cmd.run([ 'rpm', '--root', self.photon_root, '-U', rpms_path + '/*.rpm' ]) != 0:
+        if self.cmd.run(['rpm', '--root', self.photon_root, '-U', rpms_path + '/*.rpm']) != 0:
             self.logger.info('Failed to install additional_rpms from ' + rpms_path)
             self.exit_gracefully()
 
@@ -891,9 +890,13 @@ class Installer(object):
         packages_to_install = {}
         total_size = 0
         stderr = None
-        tdnf_cmd = "tdnf install --releasever {0} --installroot {1} --assumeyes -c {2} {3}".format(
-                    self.install_config['release_version'], self.photon_root, self.tdnf_conf_path,
-                    " ".join(selected_packages))
+        tdnf_cmd = ("tdnf install -y --releasever {0} --installroot {1} "
+                    "-c {2} --setopt=reposdir={3} "
+                    "{4}").format(self.install_config['release_version'],
+                                  self.photon_root,
+                                  self.tdnf_conf_path,
+                                  self.working_directory,
+                                  " ".join(selected_packages))
         self.logger.debug(tdnf_cmd)
 
         # run in shell to do not throw exception if tdnf not found
@@ -910,7 +913,7 @@ class Installer(object):
                 if state == 0:
                     if output == 'Installing:\n':
                         state = 1
-                elif state == 1: #N A EVR Size(readable) Size(in bytes)
+                elif state == 1:  # N A EVR Size(readable) Size(in bytes)
                     if output == '\n':
                         state = 2
                         self.progress_bar.update_num_items(total_size)
@@ -936,7 +939,7 @@ class Installer(object):
 
                     self.progress_bar.update_message(output)
         else:
-            stdout,stderr = process.communicate()
+            stdout, stderr = process.communicate()
             self.logger.info(stdout.decode())
             retval = process.returncode
             # image creation. host's tdnf might not be available or can be outdated (Photon 1.0)
@@ -946,9 +949,9 @@ class Installer(object):
                 stderr = None
                 self.logger.info("Retry 'tdnf install' using docker image")
                 retval = self.cmd.run(['docker', 'run',
-                                   '-v', self.rpm_cache_dir+':'+self.rpm_cache_dir,
-                                   '-v', self.working_directory+':'+self.working_directory,
-                                   self.install_config['photon_docker_image'], '/bin/sh', '-c', tdnf_cmd])
+                                       '-v', self.rpm_cache_dir+':'+self.rpm_cache_dir,
+                                       '-v', self.working_directory+':'+self.working_directory,
+                                       self.install_config['photon_docker_image'], '/bin/sh', '-c', tdnf_cmd])
 
         # 0 : succeed; 137 : package already installed; 65 : package not found in repo.
         if retval != 0 and retval != 137:
@@ -1024,12 +1027,12 @@ class Installer(object):
         """
         Create logical volumes
         """
-        #Remove LVM logical volumes and volume groups if already exists
-        #Existing lvs & vg should be removed to continue re-installation
-        #else pvcreate command fails to create physical volumes even if executes forcefully
+        # Remove LVM logical volumes and volume groups if already exists
+        # Existing lvs & vg should be removed to continue re-installation
+        # else pvcreate command fails to create physical volumes even if executes forcefully
         retval = self.cmd.run(['bash', '-c', 'pvs | grep {}'. format(vg_name)])
         if retval == 0:
-            #Remove LV's associated to VG and VG
+            # Remove LV's associated to VG and VG
             retval = self.cmd.run(["vgremove", "-f", vg_name])
             if retval != 0:
                 self.logger.error("Error: Failed to remove existing vg before installation {}". format(vg_name))
@@ -1059,12 +1062,12 @@ class Installer(object):
             lv_cmd = ['lvcreate', '-y']
             lv_name = partition['lvm']['lv_name']
             size = partition['size']
-            if partition['size'] == 0:
+            if size == 0:
                 # Each volume group can have only one extensible logical volume
                 if not extensible_logical_volume:
                     extensible_logical_volume = partition
             else:
-                lv_cmd.extend(['-L', '{}M'.format(partition['size']), '-n', lv_name, vg_name ])
+                lv_cmd.extend(['-L', '{}M'.format(size), '-n', lv_name, vg_name])
                 retval = self.cmd.run(lv_cmd)
                 if retval != 0:
                     raise Exception("Error: Failed to create logical volumes , command: {}".format(lv_cmd))
@@ -1076,7 +1079,7 @@ class Installer(object):
 
         lv_name = extensible_logical_volume['lvm']['lv_name']
         lv_cmd = ['lvcreate', '-y']
-        lv_cmd.extend(['-l', '100%FREE', '-n', lv_name, vg_name ])
+        lv_cmd.extend(['-l', '100%FREE', '-n', lv_name, vg_name])
 
         retval = self.cmd.run(lv_cmd)
         if retval != 0:
@@ -1140,7 +1143,7 @@ class Installer(object):
 
         # Add accumulated VG partitions
         for disk, vg_list in vg_partitions.items():
-                ptv[disk].extend(vg_list.values())
+            ptv[disk].extend(vg_list.values())
         return ptv
 
     def _insert_boot_partitions(self):
@@ -1153,7 +1156,7 @@ class Installer(object):
             if ptype == PartitionType.ESP:
                 esp_found = True
 
-       # Adding boot partition required for ostree if already not present in partitions table
+        # Adding boot partition required for ostree if already not present in partitions table
         if 'ostree' in self.install_config:
             mount_points = [partition['mountpoint'] for partition in self.install_config['partitions'] if 'mountpoint' in partition]
             if '/boot' not in mount_points:
@@ -1164,12 +1167,12 @@ class Installer(object):
 
         # Insert efi special partition
         if not esp_found and (bootmode == 'dualboot' or bootmode == 'efi'):
-            efi_partition = { 'size': ESPSIZE, 'filesystem': 'vfat', 'mountpoint': '/boot/efi' }
+            efi_partition = {'size': ESPSIZE, 'filesystem': 'vfat', 'mountpoint': '/boot/efi'}
             self.install_config['partitions'].insert(0, efi_partition)
 
         # Insert bios partition last to be very first
         if not bios_found and (bootmode == 'dualboot' or bootmode == 'bios'):
-            bios_partition = { 'size': BIOSSIZE, 'filesystem': 'bios' }
+            bios_partition = {'size': BIOSSIZE, 'filesystem': 'bios'}
             self.install_config['partitions'].insert(0, bios_partition)
 
     def _partition_disk(self):
@@ -1230,7 +1233,7 @@ class Installer(object):
             # Try to use 'sgdisk -m' to convert GPT to MBR and see whether it works.
             if self.install_config.get('partition_type', 'gpt') == 'msdos':
                 # m - colon separated partitions list
-                m = ":".join([str(i) for i in range(1,part_idx)])
+                m = ":".join([str(i) for i in range(1, part_idx)])
                 retval = self.cmd.run(['sgdisk', '-m', m, disk])
                 if retval != 0:
                     raise Exception("Failed to setup efi partition")
@@ -1288,16 +1291,15 @@ class Installer(object):
                 mkfs_cmd = ['mkfs', '-t', partition['filesystem']]
 
             if 'fs_options' in partition:
-                options = re.sub("[^\S]", " ", partition['fs_options']).split()
+                options = re.sub(r"[^\S]", " ", partition['fs_options']).split()
                 mkfs_cmd.extend(options)
 
             mkfs_cmd.extend([partition['path']])
             retval = self.cmd.run(mkfs_cmd)
 
             if retval != 0:
-                raise Exception(
-                    "Failed to format {} partition @ {}".format(partition['filesystem'],
-                                                         partition['path']))
+                raise Exception("Failed to format {} partition @ {}".format(partition['filesystem'],
+                                partition['path']))
 
     def getfile(self, filename):
         """
@@ -1308,4 +1310,3 @@ class Installer(object):
             if os.path.exists(filepath):
                 return filepath
         raise Exception("File {} not found in the following directories {}".format(filename, self.install_config['search_path']))
-
