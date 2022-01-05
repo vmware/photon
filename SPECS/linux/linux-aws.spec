@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.290
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.296
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d93780b76dc5f13cfad866057439e3e5c811be7a
+%define sha1 linux=fda4475ceac4d2cb6dcc392c38edc078595a69dc
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -203,6 +203,9 @@ Patch153:       0003-fuse-fix-bad-inode.patch
 
 #fix for CVE-2021-28950
 Patch154:       0001-fuse-fix-live-lock-in-fuse_iget.patch
+
+# Fix for CVE-2018-25020
+Patch155:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -413,6 +416,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch152 -p1
 %patch153 -p1
 %patch154 -p1
+%patch155 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -560,6 +564,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.296-1
+-   Update to version 4.9.296
+-   Backport patch to fix CVE-2018-25020
 *   Mon Nov 29 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.290-2
 -   Fix for CVE-2020-36385
 *   Wed Nov 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.290-1

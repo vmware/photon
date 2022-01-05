@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.290
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.296
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d93780b76dc5f13cfad866057439e3e5c811be7a
+%define sha1 linux=fda4475ceac4d2cb6dcc392c38edc078595a69dc
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -166,6 +166,9 @@ Patch115:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 Patch116:       0001-RDMA-ucma-Put-a-lock-around-every-call-to-the-rdma_c.patch
 Patch117:       0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
 Patch118:       0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
+
+# Fix for CVE-2018-25020
+Patch119:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -356,6 +359,7 @@ popd
 %patch116 -p1
 %patch117 -p1
 %patch118 -p1
+%patch119 -p1
 
 #CVE
 
@@ -480,6 +484,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.296-1
+-   Update to version 4.9.296
+-   Backport patch to fix CVE-2018-25020
 *   Mon Nov 29 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.290-2
 -   Fix for CVE-2020-36385
 *   Wed Nov 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.290-1

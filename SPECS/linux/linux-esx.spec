@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.290
-Release:        2%{?dist}
+Version:        4.9.296
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d93780b76dc5f13cfad866057439e3e5c811be7a
+%define sha1 linux=fda4475ceac4d2cb6dcc392c38edc078595a69dc
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -146,6 +146,9 @@ Patch117:       0001-RDMA-ucma-Put-a-lock-around-every-call-to-the-rdma_c.patch
 Patch118:       0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
 Patch119:       0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
+# Fix for CVE-2018-25020
+Patch120:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
+
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -275,6 +278,7 @@ The Linux package contains the Linux kernel doc files
 %patch117 -p1
 %patch118 -p1
 %patch119 -p1
+%patch120 -p1
 
 %build
 
@@ -370,6 +374,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.296-1
+-   Update to version 4.9.296
+-   Backport patch to fix CVE-2018-25020
 *   Mon Nov 29 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.290-2
 -   Fix for CVE-2020-36385
 *   Wed Nov 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.9.290-1

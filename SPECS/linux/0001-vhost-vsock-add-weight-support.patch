@@ -22,7 +22,7 @@ Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
  1 file changed, 10 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/vhost/vsock.c b/drivers/vhost/vsock.c
-index 2e370979..5dc0c7aa 100644
+index e282e8174a5d..4a5e08b5b662 100644
 --- a/drivers/vhost/vsock.c
 +++ b/drivers/vhost/vsock.c
 @@ -86,6 +86,7 @@ vhost_transport_do_send_pkt(struct vhost_vsock *vsock,
@@ -75,7 +75,7 @@ index 2e370979..5dc0c7aa 100644
  		else
  			virtio_transport_free_pkt(pkt);
  
--		vhost_add_used(vq, head, sizeof(pkt->hdr) + len);
+-		vhost_add_used(vq, head, 0);
 +		len += sizeof(pkt->hdr);
 +		vhost_add_used(vq, head, len);
 +		total_len += len;
@@ -86,5 +86,5 @@ index 2e370979..5dc0c7aa 100644
  no_more_replies:
  	if (added)
 -- 
-2.17.1
+2.25.1
 
