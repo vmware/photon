@@ -1011,7 +1011,7 @@ gpgcheck=1
 enabled=1
 skip_if_unavailable=True
 &lt;/code>&lt;/pre>&lt;p>In this case, &lt;code>rpm-ostree&lt;/code> is instructed to download its packages in RPM format from the bintray URL, that is the location of an online RPMS repo maintained by the WMware Photon OS team. To make sure those packages are genuine, signed by VMware, the signature is checked against the official VMware public key.&lt;/p>
-&lt;p>So what&amp;rsquo;s in an RPMS repository? If we point the browser to &lt;a href="https://dl.bintray.com/vmware/photon_release_3.0_x86_64,">https://dl.bintray.com/vmware/photon_release_3.0_x86_64,&lt;/a> we can see there are three top directories:&lt;/p>
+&lt;p>So what&amp;rsquo;s in an RPMS repository? If we point the browser to &lt;a href="https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64,">https://packages.vmware.com/photon/3.0/photon_updates_3.0_x86_64,&lt;/a> we can see there are three top directories:&lt;/p>
 &lt;ul>
 &lt;li>noarch - where all packages that don&amp;rsquo;t depend on the architecture reside. Those may contain scripts, platform neutral source files, configuration.&lt;/li>
 &lt;li>x86_64 - platform dependent packages for Intel 32 and 64 bits CPUs.&lt;/li>
@@ -1477,13 +1477,15 @@ root [ /srv/rpm-ostree ]# rpm-ostree compose tree --repo=repo photon-base.json
 &lt;p>Basically the OSTree repo will switch to a different branch on a different server, following the new server&amp;rsquo;s branch versioning scheme. The net result is that the lots of packages will get changed to newer versions from newer OSTree repo, that has been composed from a newer Photon OS 3.0 RPMS repo. Again, I didn&amp;rsquo;t say &amp;ldquo;upgraded&amp;rdquo;, neither the rebase command output, that lists &amp;ldquo;changed&amp;rdquo; packages. Some obsolete packages will be removed, new packages will be added, either because they didn&amp;rsquo;t exist in 2.0 repo, or because the new config file includes them.&lt;br>
 The OS name is the same (Photon), so the content in /var and /etc will be transferred over.&lt;/p>
 &lt;ol>
-&lt;li>To install fresh, deploy a Photon 1.0 Rev2 host default, as described in &lt;a href="../installing-a-host-against-default-server-repository/">Chapter 2&lt;/a>. Of course, if you already have an existing Photon OS 1.0 host that you want to move to 2.0, skip this step.&lt;/li>
-&lt;li>Edit /ostree/repo/config and substitute the url, providing the IP address for the Photon OS 2.0 RPM-OSTree server installed above. This was explained in &lt;a href="../remotes/#switching-repositories">Chapter 10&lt;/a>.&lt;br>
-ostree should confirm that is the updated server IP for the &amp;ldquo;photon&amp;rdquo; remote.&lt;/li>
-&lt;/ol>
+&lt;li>
+&lt;p>To install fresh, deploy a Photon 1.0 Rev2 host default, as described in &lt;a href="../installing-a-host-against-default-server-repository/">Chapter 2&lt;/a>. Of course, if you already have an existing Photon OS 1.0 host that you want to move to 2.0, skip this step.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>Edit /ostree/repo/config and substitute the url, providing the IP address for the Photon OS 2.0 RPM-OSTree server installed above. This was explained in &lt;a href="../remotes/#switching-repositories">Chapter 10&lt;/a>.&lt;br>
+ostree should confirm that is the updated server IP for the &amp;ldquo;photon&amp;rdquo; remote.&lt;/p>
 &lt;pre>&lt;code>root@ostree-host [ ~ ]# ostree remote show-url photon
 http://10.197.103.175:8000/repo
-&lt;/code>&lt;/pre>&lt;ol start="3">
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Rebase your host to the new 2.0 server and Refspec.&lt;/p>
 &lt;pre>&lt;code>root@ostree-host [ ~ ]# ostree remote add photon-2 http://10.197.103.204:8000/repo --no-gpg-verify

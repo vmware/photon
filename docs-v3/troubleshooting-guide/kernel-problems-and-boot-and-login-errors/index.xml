@@ -32,7 +32,7 @@ ip_tables 24576 2 iptable_filter,iptable_nat
 &lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Boot Process Overview</title><link>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/boot-process-overview/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/boot-process-overview/</guid><description>
 &lt;p>When a Photon OS machine boots, the BIOS initializes the hardware and uses a boot loader to start the kernel. After the kernel starts, &lt;code>systemd&lt;/code> takes over and boots the rest of the operating system.&lt;/p>
 &lt;p>The BIOS checks the memory and initializes the keyboard, the screen, and other peripherals. When the BIOS finds the first hard disk, the boot loader&amp;ndash;GNU GRUB 2.02&amp;ndash;takes over. From the hard disk, GNU GRUB loads the master boot record (MBR) and initializes the root partition of the random-access memory by using initrd. The device manager, udev, provides initrd with the drivers it needs to access the device containing the root file system. Here&amp;rsquo;s what the GNU GRUB edit menu looks like in Photon OS with its default commands to load the boot record and initialize the RAM disk:&lt;/p>
-&lt;p>&lt;img src="images/grub-edit-menu-orig.png" alt="The GNU GRUB edit menu in the full and minimal versions of Photon OS">&lt;/p>
+&lt;p>&lt;img src="../../../docs/images/grub-edit-menu-orig.png" alt="The GNU GRUB edit menu in the full and minimal versions of Photon OS">&lt;/p>
 &lt;p>At this point, the Linux kernel in Photon OS, which is kernel version 4.4.8, takes control. Systemd kicks in, initializes services in parallel, mounts the rest of the file system, and checks the file system for errors.&lt;/p></description></item><item><title>Docs-V3: Blank Screen on Reboot</title><link>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/blank-screen-on-reboot/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/blank-screen-on-reboot/</guid><description>
 &lt;p>If the Photon OS kernel enters a state of panic during a reboot and all you see is a blank screen, note the name of the virtual machine running Photon OS and then power off the VM.&lt;/p>
 &lt;p>In the host, open the &lt;code>vmware.log&lt;/code> file for the VM. When a kernel panics, the guest VM prints the entire kernel log in &lt;code>vmware.log&lt;/code> in the host directory containing the VM. This log file contains the output of the &lt;code>dmesg&lt;/code> command from the guest, and you can analyze it to help identify the cause of the boot problem.&lt;/p>
@@ -64,40 +64,36 @@ here are the available partitions:
 &lt;ol>
 &lt;li>
 &lt;p>Run the following command to check the logs:&lt;/p>
-&lt;pre>&lt;code>`journalctl`
-&lt;/code>&lt;/pre>
-&lt;/li>
+&lt;pre>&lt;code> journalctl
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Run the following command to look at what happened since the penultimate reboot:&lt;/p>
-&lt;p>&lt;code>journalctl --boot=-1&lt;/code>&lt;/p>
-&lt;p>Look at the log from the reboot:&lt;/p>
-&lt;p>&lt;code>journalctl -b&lt;/code>&lt;/p>
-&lt;/li>
+&lt;pre>&lt;code>journalctl --boot=-1
+&lt;/code>&lt;/pre>&lt;p>Look at the log from the reboot:&lt;/p>
+&lt;pre>&lt;code>journalctl -b
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>If required, examine the logs for the kernel:&lt;/p>
-&lt;pre>&lt;code>`journalctl -k`
-&lt;/code>&lt;/pre>
-&lt;/li>
+&lt;pre>&lt;code>journalctl -k
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Check which kernel is in use:&lt;/p>
-&lt;p>&lt;code>uname -r&lt;/code>&lt;/p>
-&lt;p>The kernel version of Photon OS in the full version is 4.4.8. The kernel version of in the OVA version is 4.4.8-esx. With the ESX version of the kernel, some services might not start.&lt;/p>
+&lt;pre>&lt;code>uname -r
+&lt;/code>&lt;/pre>&lt;p>As example for Photon OS 1.0, the kernel version in the full version is 4.4.8. The kernel version of in the OVA version is 4.4.8-esx. With the ESX version of the kernel, some services might not start.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Run this command to check the overall status of services:&lt;/p>
-&lt;p>&lt;code>systemctl status&lt;/code>&lt;/p>
-&lt;p>If a service is in red, check it:&lt;/p>
-&lt;pre>&lt;code> systemctl status service-name
-&lt;/code>&lt;/pre>
-&lt;p>Start it if required:&lt;/p>
-&lt;pre>&lt;code> systemctl start service-name
-&lt;/code>&lt;/pre>
-&lt;/li>
+&lt;pre>&lt;code>systemctl status
+&lt;/code>&lt;/pre>&lt;p>If a service is in red, check it:&lt;/p>
+&lt;pre>&lt;code>systemctl status service-name
+&lt;/code>&lt;/pre>&lt;p>Start it if required:&lt;/p>
+&lt;pre>&lt;code>systemctl start service-name
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>If looking at the journal and checking the status of services does not resolve your error, run the following &lt;code>systemd-analyze&lt;/code> commands to examine the boot time and the speed with which services start.&lt;/p>
 &lt;pre>&lt;code>systemd-analyze time
-emd-analyze blame
-emd-analyze critical-chain
+systemd-analyze blame
+systemd-analyze critical-chain
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;/ol>
 &lt;p>&lt;strong>Note&lt;/strong>: The output of these commands might be misleading because one service might just be waiting for another service to finish initializing.&lt;/p></description></item><item><title>Docs-V3: Investigating the Guest Kernel</title><link>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/investigating-the-guest-kernel/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/troubleshooting-guide/kernel-problems-and-boot-and-login-errors/investigating-the-guest-kernel/</guid><description>
@@ -224,7 +220,7 @@ at arch/x86/include/asm/io.h:316
 &lt;p>The second uses an abstraction instead of a hard-coded address so that the same VProbes script can be used for any VM on an ESXi host that you have enabled for VProbe and copied its kernel symbol table (kallsyms) to ESXi.&lt;/p>
 &lt;/li>
 &lt;/ul>
-&lt;p>For more information on VMware VProbes, see &lt;a href="https://labs.vmware.com/vmtj/vprobes-deep-observability-into-the-esxi-hypervisor">VProbes: Deep Observability Into the ESXi Hypervisor&lt;/a> and the &lt;a href="http://www.vmware.com/pdf/ws7_f3_vprobes_reference.pdf">VProbes Programming Reference&lt;/a>.&lt;/p>
+&lt;p>For more information on VMware VProbes, see &lt;a href="https://github.com/vmware-archive/vprobe-toolkit">Archived VProbe Toolkit&lt;/a> and the &lt;a href="http://www.vmware.com/pdf/ws7_f3_vprobes_reference.pdf">VProbes Programming Reference&lt;/a>.&lt;/p>
 &lt;h2 id="using-vprobes-script-with-a-hard-coded-address">Using VProbes Script with a Hard-Coded Address&lt;/h2>
 &lt;p>Perform the following steps to set a VProbe for an individual VM:&lt;/p>
 &lt;ol>

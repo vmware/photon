@@ -114,7 +114,7 @@ Metadata cache created.
 &lt;p>To try out new packages or the latest versions of existing packages as they are merged into the dev branch of the Photon OS GitHub site, add the &lt;code>dev&lt;/code> repository to your repository list.&lt;/p>
 &lt;p>Perform th following steps:&lt;/p>
 &lt;ol>
-&lt;li>On your Photon OS machine, run the following command as root to create a repository configuration file named &lt;code>photon-dev.repo&lt;/code>, place it in &lt;code>/etc/yum.repos.d&lt;/code>, and concatenate the repository information into the file:&lt;/li>
+&lt;li>On your Photon OS machine, run the following command as root to create a repository configuration file named &lt;code>photon-dev.repo&lt;/code>, place it in &lt;code>/etc/yum.repos.d&lt;/code>, and concatenate the repository information into the file.&lt;/li>
 &lt;/ol>
 &lt;pre>&lt;code>cat &amp;gt; /etc/yum.repos.d/photon-dev.repo &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
 [photon-dev]
@@ -125,10 +125,10 @@ gpgcheck=1
 enabled=1
 skip_if_unavailable=True
 EOF
-``` .
-2. After establishing a new repository, run the following command to update the cached binary metadata for the repositories that `tdnf` polls:
-&lt;/code>&lt;/pre>&lt;p>tdnf makecache&lt;/p>
-&lt;pre>&lt;code>
+&lt;/code>&lt;/pre>&lt;ol start="2">
+&lt;li>After establishing a new repository, run the following command to update the cached binary metadata for the repositories that &lt;code>tdnf&lt;/code> polls:&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code>tdnf makecache
 &lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Standard Syntax for tdnf Commands</title><link>/docs-v3/administration-guide/managing-packages-with-tdnf/standard-syntax-for-tndf/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/administration-guide/managing-packages-with-tdnf/standard-syntax-for-tndf/</guid><description>
 &lt;p>The standard syntax for &lt;code>tdnf&lt;/code> commands is the same as that for DNF and is as follows:&lt;/p>
 &lt;pre>&lt;code>tdnf [options] &amp;lt;command&amp;gt; [&amp;lt;arguments&amp;gt;...]

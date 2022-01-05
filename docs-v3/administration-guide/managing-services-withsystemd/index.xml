@@ -40,7 +40,7 @@ Type=oneshot
 [Install]
 WantedBy=multi-user.target
 EOF
-&lt;/code>&lt;/pre>&lt;ol>
+&lt;/code>&lt;/pre>&lt;ol start="2">
 &lt;li>Set the service to auto-start when the system boots:&lt;/li>
 &lt;/ol>
 &lt;pre>&lt;code>cd /lib/systemd/system/multi-user.target.wants/

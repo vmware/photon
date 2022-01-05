@@ -289,39 +289,33 @@ fe80::42:f0ff:fef7:bd81
 &lt;p>You can turn on network debugging by adding a drop-in file in &lt;code>/etc/systemd&lt;/code> to customize the default systemd configuration in &lt;code>/usr/lib/systemd&lt;/code>.&lt;/p>
 &lt;p>&lt;strong>Procedure&lt;/strong>&lt;/p>
 &lt;ol>
-&lt;li>
-&lt;p>Run the following command as root to create a directory with the name &lt;code>systemd-networkd.service.d&lt;/code>, including the &lt;code>.d&lt;/code> extension:&lt;/p>
-&lt;pre>&lt;code>&lt;/code>&lt;/pre>&lt;/li>
+&lt;li>Run the following command as root to create a directory with the name &lt;code>systemd-networkd.service.d&lt;/code>, including the &lt;code>.d&lt;/code> extension.&lt;/li>
 &lt;/ol>
-&lt;p>mkdir -p /etc/systemd/system/systemd-networkd.service.d/&lt;/p>
-&lt;pre>&lt;code>
-1. Run the following command as root to establish a `systemd` drop-in unit with a debugging configuration for the network service:
-```
-cat &amp;gt; /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
+&lt;pre>&lt;code>mkdir -p /etc/systemd/system/systemd-networkd.service.d/
+&lt;/code>&lt;/pre>&lt;ol start="2">
+&lt;li>Run the following command as root to establish a &lt;code>systemd&lt;/code> drop-in unit with a debugging configuration for the network service.&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code>cat &amp;gt; /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf &amp;lt;&amp;lt; &amp;quot;EOF&amp;quot;
 [Service]
 Environment=SYSTEMD_LOG_LEVEL=debug
 EOF
-&lt;/code>&lt;/pre>&lt;ol>
-&lt;li>
-&lt;p>Reload the &lt;code>systemctl&lt;/code> daemon and restart the &lt;code>systemd-networkd&lt;/code> service for the changes to take effect:&lt;/p>
-&lt;pre>&lt;code>&lt;/code>&lt;/pre>&lt;/li>
+&lt;/code>&lt;/pre>&lt;ol start="3">
+&lt;li>Reload the &lt;code>systemctl&lt;/code> daemon and restart the &lt;code>systemd-networkd&lt;/code> service for the changes to take effect.&lt;/li>
 &lt;/ol>
-&lt;p>systemctl daemon-reload
-systemctl restart systemd-networkd&lt;/p>
-&lt;pre>&lt;code>
-1. Verify your changes:
-```
-systemd-delta --type=extended
-&lt;/code>&lt;/pre>&lt;ol>
-&lt;li>
-&lt;p>View the log files by running this command:&lt;/p>
-&lt;pre>&lt;code>&lt;/code>&lt;/pre>&lt;/li>
+&lt;pre>&lt;code>systemctl daemon-reload
+systemctl restart systemd-networkd
+&lt;/code>&lt;/pre>&lt;ol start="4">
+&lt;li>Verify your changes.&lt;/li>
 &lt;/ol>
-&lt;p>journalctl -u systemd-networkd&lt;/p>
-&lt;pre>&lt;code>
-1. After debugging the network connections, turn debugging off by deleting the drop-in file:
-```
-rm /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf
+&lt;pre>&lt;code>systemd-delta --type=extended
+&lt;/code>&lt;/pre>&lt;ol start="5">
+&lt;li>View the log files by running this command.&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code>journalctl -u systemd-networkd
+&lt;/code>&lt;/pre>&lt;ol start="6">
+&lt;li>After debugging the network connections, turn debugging off by deleting the drop-in file.&lt;/li>
+&lt;/ol>
+&lt;pre>&lt;code>rm /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf
 &lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Mounting a Network File System</title><link>/docs-v3/administration-guide/managing-network-configuration/mounting-a-network-file-system/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/administration-guide/managing-network-configuration/mounting-a-network-file-system/</guid><description>
 &lt;p>To mount a network file system, Photon OS requires &lt;code>nfs-utils&lt;/code>. The &lt;code>nfs-utils&lt;/code> package contains the daemon, userspace server, and client tools for the kernel Network File System (NFS). The tools include &lt;code>mount.nfs&lt;/code>, &lt;code>umount.nfs&lt;/code>, and &lt;code>showmount&lt;/code>.&lt;/p>
 &lt;p>The &lt;code>nfs-utils&lt;/code> package is installed by default in the full version of Photon OS but not in the minimal version. To install &lt;code>nfs-utils&lt;/code> in the minimal version, run the following command as root:&lt;/p>

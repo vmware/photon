@@ -30,7 +30,7 @@
 &lt;pre>&lt;code>rw init=/bin/bash
 &lt;/code>&lt;/pre>
 &lt;p>After you add this code, the GNU GRUB edit menu should look exactly like this:&lt;/p>
-&lt;p>&lt;img src="images/grub-edit-menu-changepw.png" alt="The modified GNU GRUB edit menu">&lt;/p>
+&lt;p>&lt;img src="../../../docs/images/grub-edit-menu-changepw.png" alt="The modified GNU GRUB edit menu">&lt;/p>
 &lt;p>Now type &lt;code>F10&lt;/code>.&lt;/p>
 &lt;p>At the command prompt, type &lt;code>passwd&lt;/code> and then type (and re-enter) a new root password that conforms to the password complexity rules of Photon OS. Remember the password.&lt;/p>
 &lt;p>Next, type the following command:&lt;/p>
@@ -40,7 +40,7 @@
 &lt;pre>&lt;code>reboot -f
 &lt;/code>&lt;/pre>
 &lt;p>This sequence of commands should look like this:&lt;/p>
-&lt;p>&lt;img src="images/resetpw.png" alt="The series of commands to reset the root password">&lt;/p>
+&lt;p>&lt;img src="../../../docs/images/resetpw.png" alt="The series of commands to reset the root password">&lt;/p>
 &lt;p>After the Photon OS machine reboots, log in with the new root password.&lt;/p>
 &lt;h2 id="resetting-the-failed-logon-count">Resetting the failed logon count&lt;/h2>
 &lt;p>Resetting the root password will not reset the failed logon count, if you&amp;rsquo;ve had to many failed attempts, you may not be able to logon after resetting the password.&lt;/p>

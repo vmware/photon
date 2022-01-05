@@ -100,12 +100,14 @@ popd
 &lt;/ul>
 &lt;h2 id="permitted-json-fields">Permitted JSON Fields&lt;/h2>
 &lt;p>The following is a list of allowed JSON fields and their descriptions:&lt;/p>
-&lt;table style="height: 170px;" border="1" width="250" cellspacing="0" cellpadding="10">
-&lt;tbody>
+&lt;table>
+&lt;thead>
 &lt;tr>
-&lt;td>&lt;b>Field&lt;/b>&lt;/td>
-&lt;td>&lt;b>Description&lt;/b>&lt;/td>
+&lt;th>&lt;b>Field&lt;/b>&lt;/th>
+&lt;th>&lt;b>Description&lt;/b>&lt;/th>
 &lt;/tr>
+&lt;/thead>
+&lt;tbody>
 &lt;tr>
 &lt;td>hostname&lt;/td>
 &lt;td>The host name as string. You can also specify the name in printf format.
@@ -144,10 +146,9 @@ This indicates that the "text" field is plain text. It is then encrypted and use
 &lt;p> Example:&lt;p>[
 &lt;p>{"mountpoint": "/", "size": 0, "filesystem": "ext4", "lvm":{"vg_name":"vg1", "lv_name":"rootfs"}},
 &lt;p> {"mountpoint": "/boot", "size": 128, "filesystem": "ext4"},
-&lt;pre>&lt;code> &amp;lt;p&amp;gt;{&amp;quot;mountpoint&amp;quot;: &amp;quot;/root&amp;quot;, &amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;ext4&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg1&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;root&amp;quot;}},
-&amp;lt;p&amp;gt;{&amp;quot;size&amp;quot;: 128, &amp;quot;filesystem&amp;quot;: &amp;quot;swap&amp;quot;,&amp;quot;lvm&amp;quot;:{&amp;quot;vg_name&amp;quot;:&amp;quot;vg2&amp;quot;, &amp;quot;lv_name&amp;quot;:&amp;quot;swap&amp;quot;}}
-&lt;/code>&lt;/pre>
-&lt;p>]&lt;/p>
+&lt;p>{"mountpoint": "/root", "size": 128, "filesystem": "ext4","lvm":{"vg_name":"vg1", "lv_name":"root"}},
+&lt;p>{"size": 128, "filesystem": "swap","lvm":{"vg_name":"vg2", "lv_name":"swap"}}
+]
 &lt;p>&lt;b>Note&lt;/b>: Mounting '/boot' partition as lvm is not supported.
 &lt;/td>
 &lt;/tr>&lt;/tr>

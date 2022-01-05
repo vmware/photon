@@ -75,7 +75,7 @@ Refreshing metadata for: 'VMware Photon Linux 1.0(x86_64)Updates'
 Refreshing metadata for: 'VMware Photon Extras 1.0(x86_64)'
 Refreshing metadata for: 'VMware Photon Linux 1.0(x86_64)'
 Metadata cache created.
-</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-e5a0d6886420253cd7e8d90f45ffcc29>5 - Adding the Dev Repository to Get New Packages from the GitHub Dev Branch</h1><p>To try out new packages or the latest versions of existing packages as they are merged into the dev branch of the Photon OS GitHub site, add the <code>dev</code> repository to your repository list.</p><p>Perform th following steps:</p><ol><li>On your Photon OS machine, run the following command as root to create a repository configuration file named <code>photon-dev.repo</code>, place it in <code>/etc/yum.repos.d</code>, and concatenate the repository information into the file:</li></ol><pre><code>cat &gt; /etc/yum.repos.d/photon-dev.repo &lt;&lt; &quot;EOF&quot; 
+</code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-e5a0d6886420253cd7e8d90f45ffcc29>5 - Adding the Dev Repository to Get New Packages from the GitHub Dev Branch</h1><p>To try out new packages or the latest versions of existing packages as they are merged into the dev branch of the Photon OS GitHub site, add the <code>dev</code> repository to your repository list.</p><p>Perform th following steps:</p><ol><li>On your Photon OS machine, run the following command as root to create a repository configuration file named <code>photon-dev.repo</code>, place it in <code>/etc/yum.repos.d</code>, and concatenate the repository information into the file.</li></ol><pre><code>cat &gt; /etc/yum.repos.d/photon-dev.repo &lt;&lt; &quot;EOF&quot; 
     [photon-dev]
     name=VMware Photon Linux Dev(x86_64)
     baseurl=https://dl.bintray.com/vmware/photon_dev_$basearch
@@ -84,11 +84,7 @@ Metadata cache created.
     enabled=1
     skip_if_unavailable=True
     EOF
-``` . 
-
-2. After establishing a new repository, run the following command to update the cached binary metadata for the repositories that `tdnf` polls: 
-    
-</code></pre><p>tdnf makecache</p><pre><code>
+</code></pre><ol start=2><li>After establishing a new repository, run the following command to update the cached binary metadata for the repositories that <code>tdnf</code> polls:</li></ol><pre><code>tdnf makecache
 </code></pre></div><div class=td-content style=page-break-before:always><h1 id=pg-31b2264775f23ddd8947d654e34f0054>6 - Standard Syntax for tdnf Commands</h1><p>The standard syntax for <code>tdnf</code> commands is the same as that for DNF and is as follows:</p><pre><code>tdnf [options] &lt;command&gt; [&lt;arguments&gt;...]
 </code></pre><p>You can view help information by using the following commands:</p><pre><code>tdnf --help
 tdnf -h</code></pre></div><div class=td-content><h1 id=pg-01e6ca1fe54c76897b029d7521d14a26>6.1 - tndf Commands</h1><p><strong>check</strong>: Checks for problems in installed and available packages for all enabled repositories. The command has no arguments. You can use <code>--enablerepo</code> and <code>--disablerepo</code> to control the repos used. Supported in Photon OS 2.0 (only).</p><p><strong>check-local</strong>: This command resolves dependencies by using the local RPMs to help check RPMs for quality assurance before publishing them. To check RPMs with this command, you must create a local directory and place your RPMs in it. The command, which includes no options, takes the path to the local directory containing the RPMs as its argument. The command does not recursively parse directories. It checks the RPMs only in the directory that you specify. For example, after creating a directory named <code>/tmp/myrpms</code> and placing your RPMs in it, you can run the following command to check them:</p><pre><code>tdnf check-local /tmp/myrpms

@@ -124,7 +124,7 @@ photon.repo
 &lt;/ul>
 &lt;/li>
 &lt;li>
-&lt;p>A local unprivileged user account other than the root account. You should build RPMs as an unprivileged user. Do not build a package as &lt;code>root&lt;/code> becau&amp;ndash;building an RPM with the root account might damage your system.&lt;/p>
+&lt;p>A local unprivileged user account other than the root account. You should build RPMs as an unprivileged user. Do not build a package as &lt;code>root&lt;/code> because building an RPM with the root account might damage your system.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>Take a snapshot of your virtual machine before building the package if you are building a package on a virtual machine running Photon OS in VMware vSphere, VMware Workstation, or VMware Fusion.&lt;/p>
@@ -135,29 +135,24 @@ photon.repo
 &lt;p>Perfrom the following steps to install and build an example package- &lt;code>sed&lt;/code> from its source RPM on Photon OS with an unprivileged account.&lt;/p>
 &lt;ol>
 &lt;li>
-&lt;p>check whether rpmbuild is installed by running the following command:&lt;/p>
+&lt;p>Check whether rpmbuild is installed by running the following command.&lt;/p>
 &lt;pre>&lt;code>rpmbuild --version
+&lt;/code>&lt;/pre>&lt;p>If it is not installed, install it by running the following command as root.&lt;/p>
+&lt;pre>&lt;code>tdnf install rpm-build
 &lt;/code>&lt;/pre>&lt;/li>
-&lt;/ol>
-&lt;pre>&lt;code> If it is not installed, install it by running the following command as root:
-```
-tdnf install rpm-build
-&lt;/code>&lt;/pre>&lt;ol>
 &lt;li>
-&lt;p>Create the directories for building RPMs under your local user account home directory and not under root:&lt;/p>
+&lt;p>Create the directories for building RPMs under your local user account home directory and not under root.&lt;/p>
 &lt;pre>&lt;code>mkdir -p ~/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
 &lt;/code>&lt;/pre>&lt;/li>
-&lt;/ol>
-&lt;pre>&lt;code>
-1. Create a `.rpmmacros` file under your home directory and override the default location of the RPM building tree with the new one. This command overwrites an existing `.rpmmacros` file. Before running the following command, make sure you do not already have a `.rpmmacros file`. If a `.rpmmacros` file exists, back it up under a new name in case you want to restore it later.
-```
-echo '%_topdir %(echo $HOME)/rpmbuild' &amp;gt; ~/.rpmmacros
-&lt;/code>&lt;/pre>&lt;ol>
+&lt;li>
+&lt;p>Create a &lt;code>.rpmmacros&lt;/code> file under your home directory and override the default location of the RPM building tree with the new one. This command overwrites an existing &lt;code>.rpmmacros&lt;/code> file. Before running the following command, make sure you do not already have a &lt;code>.rpmmacros file&lt;/code>. If a &lt;code>.rpmmacros&lt;/code> file exists, back it up under a new name in case you want to restore it later.&lt;/p>
+&lt;pre>&lt;code>echo '%_topdir %(echo $HOME)/rpmbuild' &amp;gt; ~/.rpmmacros
+&lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
 &lt;p>Place the source RPM file that you want to install and build in the &lt;code>/tmp&lt;/code> directory.&lt;/p>
 &lt;/li>
 &lt;li>
-&lt;p>Install the source file, run the following command with your unprivileged user account, replacing the sed example source RPM with the name of the one that you want to install:&lt;/p>
+&lt;p>Install the source file, run the following command with your unprivileged user account, replacing the sed example source RPM with the name of the one that you want to install.&lt;/p>
 &lt;pre>&lt;code>rpm -i /tmp/sed-4.2.2-2.ph1.src.rpm
 &lt;/code>&lt;/pre>&lt;p>The above command unpacks the source RPM and places its &lt;code>.spec&lt;/code> file in your &lt;code>~/rpmbuild/SPECS&lt;/code> directory. In the next step, the &lt;code>rpmbuild&lt;/code> tool uses the &lt;code>.spec&lt;/code> file to build the RPM.&lt;/p>
 &lt;/li>
@@ -165,24 +160,19 @@ echo '%_topdir %(echo $HOME)/rpmbuild' &amp;gt; ~/.rpmmacros
 &lt;p>Build the RPM, run the following commands with your unprivileged user account. Replace the &lt;code>sed.spec&lt;/code> example file with the name of the &lt;code>.spec&lt;/code> file that you want to build.&lt;/p>
 &lt;pre>&lt;code>cd ~/rpmbuild/SPECS
 rpmbuild -ba sed.spec
-&lt;/code>&lt;/pre>&lt;/li>
-&lt;/ol>
-&lt;pre>&lt;code>
-If successful, the rpmbuild -ba command builds the RPM and generates an RPM package file in your ~/rpmbuild/RPMS/x86_64 directory. For example:
-```
-ls RPMS/x86_64/
+&lt;/code>&lt;/pre>&lt;p>If successful, the rpmbuild -ba command builds the RPM and generates an RPM package file in your &lt;code>~/rpmbuild/RPMS/x86_64&lt;/code> directory. For example:&lt;/p>
+&lt;pre>&lt;code>ls RPMS/x86_64/
 sed-4.2.2-2.x86_64.rpm sed-debuginfo-4.2.2-2.x86_64.rpm sed-lang-4.2.2-2.x86_64.rpm
-&lt;/code>&lt;/pre>&lt;pre>&lt;code>The rpmbuild command also generates a new SRPM file and saves it in your ~/rpmbuild/SRPMS directory. For example:
-```
-ls SRPMS/
+&lt;/code>&lt;/pre>&lt;p>The rpmbuild command also generates a new SRPM file and saves it in your &lt;code>~/rpmbuild/SRPMS&lt;/code> directory. For example:&lt;/p>
+&lt;pre>&lt;code>ls SRPMS/
 sed-4.2.2-2.src.rpm
-&lt;/code>&lt;/pre>
-&lt;pre>&lt;code>
-If the rpmbuild command is unsuccessful with an error that it cannot find a library, you must install the RPMs for the library that your source RPM depends on before you can successfully build your source RPM. Iterate through installing the libraries that your source RPM relies on until you can successfully build it.
-1. To install the RPM, run the following command with your unprivileged user account:
-```
-rpm -i RPMS/x86_64/sed-4.2.2-2.x86_64.rpm
-&lt;/code>&lt;/pre></description></item><item><title>Docs-V3: Compiling C++ Code on the Minimal Version of Photon OS</title><link>/docs-v3/administration-guide/photon-os-packages/compiling-c-code-on-the-minimal-version-of-photon-os/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/administration-guide/photon-os-packages/compiling-c-code-on-the-minimal-version-of-photon-os/</guid><description>
+&lt;/code>&lt;/pre>&lt;p>If the rpmbuild command is unsuccessful with an error that it cannot find a library, you must install the RPMs for the library that your source RPM depends on before you can successfully build your source RPM. Iterate through installing the libraries that your source RPM relies on until you can successfully build it.&lt;/p>
+&lt;/li>
+&lt;li>
+&lt;p>To install the RPM, run the following command with your unprivileged user account.&lt;/p>
+&lt;pre>&lt;code>rpm -i RPMS/x86_64/sed-4.2.2-2.x86_64.rpm
+&lt;/code>&lt;/pre>&lt;/li>
+&lt;/ol></description></item><item><title>Docs-V3: Compiling C++ Code on the Minimal Version of Photon OS</title><link>/docs-v3/administration-guide/photon-os-packages/compiling-c-code-on-the-minimal-version-of-photon-os/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs-v3/administration-guide/photon-os-packages/compiling-c-code-on-the-minimal-version-of-photon-os/</guid><description>
 &lt;p>As a minimalist Linux run-time environment, the minimal version of Photon OS lacks the packages that you need to compile the code for a C++ program. For example, without the requisite packages, trying to compile the file containing the following code with the &lt;code>gcc&lt;/code> command will generate errors:&lt;/p>
 &lt;pre>&lt;code>#include &amp;lt;stdio.h&amp;gt;
 int main()
