@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.292
+Version:    	4.4.298
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=dc55b541dfbe26b7e5a11b16ee431ae5437dfc3a
+%define sha1 linux=6b52fcf71a3c3cbc16cf69dc9f2ff62746fb7ecd
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -147,6 +147,9 @@ Patch101:      0003-fuse-fix-bad-inode.patch
 
 #fix for CVE-2021-28950
 Patch102:      0001-fuse-fix-live-lock-in-fuse_iget.patch
+
+# Fix for CVE-2018-25020
+Patch103:      0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -310,6 +313,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
+%patch103 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -468,6 +472,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.298-1
+-   Update to version 4.4.298
+-   Backport patch to fix CVE-2018-25020
 *   Wed Nov 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.4.292-1
 -   Update to version 4.4.292
 *   Fri Oct 29 2021 Sharan Turlapati <sturlapati@vmware.com> 4.4.290-1
