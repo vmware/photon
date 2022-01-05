@@ -3,7 +3,7 @@
 Summary:        A high-level scripting language
 Name:           python3
 Version:        3.7.5
-Release:        14%{?dist}
+Release:        15%{?dist}
 License:        PSF
 URL:            http://www.python.org/
 Group:          System Environment/Programming
@@ -25,6 +25,7 @@ Patch8:         CVE-2020-27619.patch
 Patch9:         CVE-2021-3177.patch
 Patch10:        CVE-2021-23336.patch
 Patch11:        pip-setuptools-update.patch
+Patch12:        CVE-2021-3426.patch
 BuildRequires:  pkg-config >= 0.28
 BuildRequires:  bzip2-devel
 BuildRequires:  ncurses-devel
@@ -267,6 +268,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/python3.7/test/*
 
 %changelog
+*   Wed Jan 05 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.7.5-15
+-   Fix CVE-2021-3426
 *   Thu Oct 28 2021 Piyush Gupta <gpiyush@vmware.com> 3.7.5-14
 -   Update python-pip and setuptools wheel file to 21.2.4 and 57.4.0 respectively.
 *   Wed Oct 06 2021 Tapas Kundu <tkundu@vmware.com> 3.7.5-13
