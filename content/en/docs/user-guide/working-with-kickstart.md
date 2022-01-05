@@ -256,7 +256,7 @@ This indicates that the "text" field is plain text. It is then encrypted and use
 
 ## Sample Configuration File
 
-Here is a sample kickstart configuration file:
+Example kickstart configuration file:
 
 ```json
 {
@@ -267,20 +267,38 @@ Here is a sample kickstart configuration file:
             "text": "changeme"
         },
     "disk": "/dev/sda",
-    "partitions": [
-                        {"mountpoint": "/", "size": 0, "filesystem": "ext4"},
-                        {"mountpoint": "/boot", "size": 128, "filesystem": "ext4"},
-                        {"mountpoint": "/root", "size": 128, "filesystem": "ext4"},
-                        {"size": 128, "filesystem": "swap"}
-                    ],
+    "partitions":[
+		{
+			"mountpoint":"/",
+			"size":0,
+			"filesystem":"ext4"
+		},
+		{
+			"mountpoint":"/boot",
+			"size":128,
+			"filesystem":"ext4"
+		},
+		{
+			"mountpoint":"/root",
+			"size":128,
+			"filesystem":"ext4"
+		},
+		{
+			"size":128,
+			"filesystem":"swap"
+		}
+		],
+	"bootmode": "bios",
     "packagelist_file": "packages_minimal.json",
-    "additional_packages": ["vim"],
+    "additional_packages": [
+		"vim"
+		],
     "postinstall": [
-                		"#!/bin/sh",
-                    	"echo \"Hello World\" > /etc/postinstall"
-                   ],
+		"#!/bin/sh",
+        "echo \"Hello World\" > /etc/postinstall"
+        ],
     "public_key": "<ssh-key-here>",
-    "install_linux_esx": false,
+    "linux_flavor": "linux",
     "network": {
         "type": "dhcp"
     }    
@@ -293,64 +311,115 @@ In the kickstart file modify the **partitions** field to mount root partition as
 
 For example:
 
-
 ```json
-"disk": "/dev/sda"
+"disk":"/dev/sda"
 "partitions":[
-                {"mountpoint": "/", "size": 0, "filesystem": "ext4", "lvm":{"vg_name":"vg1", "lv_name":"rootfs"}},
-                {"mountpoint": "/boot", "size": 128, "filesystem": "ext4"},
-
-                {"mountpoint": "/root", "size": 128, "filesystem": "ext4","lvm":{"vg_name":"vg1", "lv_name":"root"}},
-
-                {"size": 128, "filesystem": "swap","lvm":{"vg_name":"vg2", "lv_name":"swap"}}
+   {
+      "mountpoint":"/",
+      "size":0,
+      "filesystem":"ext4",
+      "lvm":{
+         "vg_name":"vg1",
+         "lv_name":"rootfs"
+      }
+   },
+   {
+      "mountpoint":"/boot",
+      "size":128,
+      "filesystem":"ext4"
+   },
+   {
+      "mountpoint":"/root",
+      "size":128,
+      "filesystem":"ext4",
+      "lvm":{
+         "vg_name":"vg1",
+         "lv_name":"root"
+      }
+   },
+   {
+      "size":128,
+      "filesystem":"swap",
+      "lvm":{
+         "vg_name":"vg2",
+         "lv_name":"swap"
+      }
+   }
 ]
-
 ```
 **Note**:
 
 - vg_name : Volume Group Name
 - lv_name : Logical Volume Name
 
-
 In above example **rootfs**, **root** are logical volumes in the volume group **vg1** and **swap** is logical volume in volume group **vg2**, physical volumes are part of disk **/dev/sda**.
 
 Multiple disks are also supported. For example:
 
-
 ```json
 "disk": "/dev/sda"
 "partitions":[
-                {"mountpoint": "/", "size": 0, "filesystem": "ext4", "lvm":{"vg_name":"vg1", "lv_name":"rootfs"}},
-                {"mountpoint": "/boot", "size": 128, "filesystem": "ext4"},
-
-                {"disk": "/dev/sdb", "mountpoint": "/root", "size": 128, "filesystem": "ext4","lvm":{"vg_name":"vg1", "lv_name":"root"}},
-
-                {"size": 128, "filesystem": "swap","lvm":{"vg_name":"vg1", "lv_name":"swap"}}
+   {
+      "mountpoint":"/",
+      "size":0,
+      "filesystem":"ext4",
+      "lvm":{
+         "vg_name":"vg1",
+         "lv_name":"rootfs"
+      }
+   },
+   {
+      "mountpoint":"/boot",
+      "size":128,
+      "filesystem":"ext4"
+   },
+   {
+      "disk":"/dev/sdb",
+      "mountpoint":"/root",
+      "size":128,
+      "filesystem":"ext4",
+      "lvm":{
+         "vg_name":"vg1",
+         "lv_name":"root"
+      }
+   },
+   {
+      "size":128,
+      "filesystem":"swap",
+      "lvm":{
+         "vg_name":"vg1",
+         "lv_name":"swap"
+      }
+   }
 ]
 ```
 
 If disk name is not specified, the physical volumes will be part of the default disk: **dev/sda**.
+
 In above example **rootfs**,**root** and **swap** are logical volumes in volume group **vg1**, physical volumes are in the disk **/dev/sdb** and partitions are present in **/dev/sda**.
 
 **Note**: Mounting **/boot** partition as LVM is not supported.
 
 ## Unattended Installation Through Kickstart
 
-For an unattended installation, you pass the `ks=<config_file>` parameter to the kernel command. To pass the config file, there are two options: by providing it on the ISO or by serving it from an HTTP server. 
+For an unattended installation, you pass the `ks=<config_file>` parameter to the kernel command. To pass the config file, there are two options: 
 
-The syntax to pass the config-file to the kernel through the ISO takes the following form: 
+1. Provide it in the ISO.
+2. Serving it from an HTTP server. 
+
+The syntax to pass the configuration file to the kernel through the ISO takes the following form: 
 
 ```console
 ks=cdrom:/<config_file_path>
 ```
 
-Here is an example: 
+For example: 
 
 ```console
-ks=cdrom:/isolinux/my_ks.cfg
+ks=cdrom:/isolinux/ks.cfg
 ```
 
-The syntax to serve the config-file to the kernel from a HTTPS server takes the following form: 
+The syntax to serve the configuration file to the kernel from a HTTPS server takes the following form: 
 
 ```console
 ks=https://<server>/<config_file_path>
@@ -358,12 +427,17 @@ ks=https://<server>/<config_file_path>
 
 To use HTTP path or self-signed HTTPS path, you have to enable `insecure_installation` by using insecure_installation=1 along with defining the ks path. The kernel command line argument, `insecure_installation`, acts as a flag that user can set to 1 to allow some operations that are not normally allowed due to security concerns. This is disabled by default and it is up to the user to the ensure security when this options is enabled.
   
-- For HTTP:  `ks=http://<server>/<config_file_path> insecure_installation=1`
-    
-- For HTTPS (self-signed): ` ks=https://<server>/<config_file_path> insecure_installation=1`
+HTTP example:  
 
+```console
+ks=http://<server>/<config_file_path> insecure_installation=1
+```
 
- 
+HTTPS (self-signed) example: 
+
+```console
+ks=https://<server>/<config_file_path> insecure_installation=1
+```
 
 ## Building an ISO with a Kickstart Config File
 
