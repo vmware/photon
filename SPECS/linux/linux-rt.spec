@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.219
+Version:        4.19.224
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt95
-Release:        5%{?kat_build:.%kat}%{?dist}
+%define rt_version rt100
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=a25a5bf3470daa11c72177756775990866ac91bf
+%define sha1 linux=fc24264e8f62a990f25e7cedcca04fefce2cb1b4
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
@@ -113,7 +113,6 @@ Patch101:       0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
 # Next 2 patches are about to be merged into stable
 Patch102:       0001-mm-fix-panic-in-__alloc_pages.patch
-Patch103:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/4.19/
@@ -459,7 +458,7 @@ Patch539:       0339-locking-rwsem-rt-Remove-might_sleep-in-__up_read.patch
 Patch540:       0340-Linux-4.19.214-rt93-REBASE.patch
 Patch541:       0341-fscache-fix-initialisation-of-cookie-hash-table-raw-.patch
 # Keep rt_version matched up with this patch.
-Patch542:       0342-Linux-4.19.217-rt95-REBASE.patch
+Patch542:       0342-Linux-4.19.223-rt100-REBASE.patch
 
 #Photon Specific Changes
 Patch600:        0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
@@ -626,7 +625,6 @@ The Linux package contains the Linux kernel doc files
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
-%patch103 -p1
 
 %patch201 -p1
 %patch202 -p1
@@ -1197,6 +1195,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-1
+-   Update to version 4.19.224
 *   Mon Jan 03 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.219-5
 -   Disable md5 algorithm for sctp if fips is enabled.
 *   Mon Dec 20 2021 Harinadh D <hdommaraju@vmware.com> 4.19.219-4

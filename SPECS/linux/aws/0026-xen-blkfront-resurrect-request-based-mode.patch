@@ -353,16 +353,17 @@ index 5af5454a2c14..08d23d1db37b 100644
  
  	__blkif_free(info);
  }
-@@ -1588,13 +1714,17 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
- 	unsigned long flags;
+@@ -1589,6 +1589,8 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
  	struct blkfront_ring_info *rinfo = (struct blkfront_ring_info *)dev_id;
  	struct blkfront_info *info = rinfo->dev_info;
+ 	unsigned int eoiflag = XEN_EOI_FLAG_SPURIOUS;
 +	spinlock_t *lock;
 +	int error = BLK_STS_OK;
  
  	if (unlikely(info->connected != BLKIF_STATE_CONNECTED)) {
- 		if (info->connected != BLKIF_STATE_FREEZING)
- 			return IRQ_HANDLED;
+ 		if (info->connected != BLKIF_STATE_FREEZING) {
+@@ -1597,7 +1599,9 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+ 		}
  	}
  
 -	spin_lock_irqsave(&rinfo->ring_lock, flags);
@@ -427,14 +428,14 @@ index 5af5454a2c14..08d23d1db37b 100644
  	}
  
  	rinfo->ring.rsp_cons = i;
-@@ -1721,7 +1853,7 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+@@ -1726,7 +1730,7 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
  
  	kick_pending_request_queues_locked(rinfo);
  
 -	spin_unlock_irqrestore(&rinfo->ring_lock, flags);
 +	spin_unlock_irqrestore(lock, flags);
  
- 	return IRQ_HANDLED;
+ 	xen_irq_lateeoi(irq, eoiflag);
  
 @@ -1979,8 +2111,11 @@ static int negotiate_mq(struct blkfront_info *info)
  	backend_max_queues = xenbus_read_unsigned(info->xbdev->otherend,

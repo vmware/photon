@@ -24,13 +24,13 @@ Signed-off-by: Joerg Roedel <jroedel@suse.de>
  10 files changed, 328 insertions(+), 1 deletion(-)
 
 diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 2b1d2eb..3b25d0f 100755
+index be4403a8e1b4..0ebb85abf040 100644
 --- a/arch/x86/Kconfig
 +++ b/arch/x86/Kconfig
-@@ -1488,6 +1488,7 @@ config AMD_MEM_ENCRYPT
- 	bool "AMD Secure Memory Encryption (SME) support"
+@@ -1490,6 +1490,7 @@ config AMD_MEM_ENCRYPT
  	depends on X86_64 && CPU_SUP_AMD
  	select DYNAMIC_PHYSICAL_MASK
+ 	select ARCH_USE_MEMREMAP_PROT
 +	select INSTRUCTION_DECODER
  	---help---
  	  Say yes to enable support for the encryption of system memory.

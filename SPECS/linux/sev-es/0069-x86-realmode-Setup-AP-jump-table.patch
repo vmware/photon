@@ -166,7 +166,7 @@ index 47d0979..c07ba00 100755
  
  struct real_mode_header *real_mode_header;
  u32 *trampoline_cr4_features;
-@@ -112,6 +113,11 @@ static void __init setup_real_mode(void)
+@@ -113,6 +113,11 @@ static void __init setup_real_mode(void)
  	if (sme_active())
  		trampoline_header->flags |= TH_FLAGS_SME_ACTIVE;
  
@@ -176,8 +176,8 @@ index 47d0979..c07ba00 100755
 +	}
 +
  	trampoline_pgd = (u64 *) __va(real_mode_header->trampoline_pgd);
- 	trampoline_pgd[0] = trampoline_pgd_entry.pgd;
- 	trampoline_pgd[511] = init_top_pgt[511].pgd;
+ 
+ 	/* Map the real mode stub as virtual == physical */
 -- 
 2.7.4
 

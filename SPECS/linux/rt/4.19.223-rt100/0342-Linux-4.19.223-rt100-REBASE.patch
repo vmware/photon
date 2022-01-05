@@ -1,0 +1,20 @@
+From f3b15ab8d4351f1fde3a27ef1c0f024e407f7be7 Mon Sep 17 00:00:00 2001
+From: Clark Williams <williams@redhat.com>
+Date: Tue, 4 Jan 2022 15:21:20 -0600
+Subject: [PATCH 342/342] Linux 4.19.223-rt100 REBASE
+
+Signed-off-by: Clark Williams <williams@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index e98a1fe050bd..79d3e2b9f550 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt93
++-rt100
+-- 
+2.33.1
+

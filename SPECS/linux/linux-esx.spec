@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.219
-Release:        7%{?kat_build:.kat}%{?dist}
+Version:        4.19.224
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=a25a5bf3470daa11c72177756775990866ac91bf
+%define sha1 linux=fc24264e8f62a990f25e7cedcca04fefce2cb1b4
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -133,7 +133,6 @@ Patch101:        0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
 
 # Next 2 patches are about to be merged into stable
 Patch102:       0001-mm-fix-panic-in-__alloc_pages.patch
-Patch103:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
 
 # VDFS 9p recovery changes
 Patch200:	0001-vdfs-9p-Initial-recovery-logic-in-9p.patch
@@ -518,7 +517,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
-%patch103 -p1
 %patch200 -p1
 %patch201 -p1
 %patch202 -p1
@@ -946,6 +944,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-1
+-   Update to version 4.19.224
 *   Mon Jan 03 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.219-7
 -   Disable md5 algorithm for sctp if fips is enabled.
 *   Thu Dec 23 2021 Keerthana K <keerthanak@vmware.com> 4.19.219-6

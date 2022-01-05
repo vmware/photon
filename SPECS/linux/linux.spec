@@ -3,8 +3,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux
-Version:        4.19.219
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        4.19.224
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=a25a5bf3470daa11c72177756775990866ac91bf
+%define sha1 linux=fc24264e8f62a990f25e7cedcca04fefce2cb1b4
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -143,7 +143,6 @@ Patch101:        0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
 
 # Next 2 patches are about to be merged into stable
 Patch102:       0001-mm-fix-panic-in-__alloc_pages.patch
-Patch103:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
 
 # Support for PTP_SYS_OFFSET_EXTENDED ioctl
 Patch121:        0001-ptp-reorder-declarations-in-ptp_ioctl.patch
@@ -640,7 +639,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
-%patch103 -p1
 
 %patch121 -p1
 %patch122 -p1
@@ -1264,6 +1262,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-1
+-   Update to version 4.19.224
 *   Mon Jan 03 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.219-5
 -   Disable md5 algorithm for sctp if fips is enabled.
 *   Mon Dec 20 2021 srinidhira0 <srinidhir@vmware.com> 4.19.219-4
