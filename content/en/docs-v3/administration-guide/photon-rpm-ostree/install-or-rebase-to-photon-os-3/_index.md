@@ -33,10 +33,10 @@ The OS name is the same (Photon), so the content in /var and /etc will be transf
 1. To install fresh, deploy a Photon 1.0 Rev2 host default, as described in [Chapter 2](../installing-a-host-against-default-server-repository/). Of course, if you already have an existing Photon OS 1.0 host that you want to move to 2.0, skip this step.
 2. Edit /ostree/repo/config and substitute the url, providing the IP address for the Photon OS 2.0 RPM-OSTree server installed above. This was explained in [Chapter 10](../remotes/#switching-repositories).  
 ostree should confirm that is the updated server IP for the "photon" remote.
-```
-root@ostree-host [ ~ ]# ostree remote show-url photon
-http://10.197.103.175:8000/repo
-```
+    ```
+    root@ostree-host [ ~ ]# ostree remote show-url photon
+    http://10.197.103.175:8000/repo
+    ```
 3. Rebase your host to the new 2.0 server and Refspec.
 
     ```

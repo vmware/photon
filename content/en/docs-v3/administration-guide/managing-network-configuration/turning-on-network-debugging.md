@@ -9,42 +9,42 @@ You can turn on network debugging by adding a drop-in file in `/etc/systemd` to 
 
 **Procedure**
 
-1. Run the following command as root to create a directory with the name `systemd-networkd.service.d`, including the `.d` extension:
+1. Run the following command as root to create a directory with the name `systemd-networkd.service.d`, including the `.d` extension.
 	
-    ```
+```
 mkdir -p /etc/systemd/system/systemd-networkd.service.d/
 ```
 
-1. Run the following command as root to establish a `systemd` drop-in unit with a debugging configuration for the network service:
+2. Run the following command as root to establish a `systemd` drop-in unit with a debugging configuration for the network service.
 
-    ```
+```
 cat > /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf << "EOF"
-	[Service]
-	Environment=SYSTEMD_LOG_LEVEL=debug
-	EOF
+[Service]
+Environment=SYSTEMD_LOG_LEVEL=debug
+EOF
 ```
 
-1. Reload the `systemctl` daemon and restart the `systemd-networkd` service for the changes to take effect: 
+3. Reload the `systemctl` daemon and restart the `systemd-networkd` service for the changes to take effect. 
 	
-    ```
+```
 systemctl daemon-reload
-	systemctl restart systemd-networkd
+systemctl restart systemd-networkd
 ```
 
-1. Verify your changes:
+4. Verify your changes.
 
-    ```
+ ```
 systemd-delta --type=extended
 ```
 
-1. View the log files by running this command: 
+5. View the log files by running this command. 
 	
-    ```
+```
 journalctl -u systemd-networkd
 ```
 
-1. After debugging the network connections, turn debugging off by deleting the drop-in file: 
+6. After debugging the network connections, turn debugging off by deleting the drop-in file.
 	
-    ```
+```
 rm /etc/systemd/system/systemd-networkd.service.d/10-loglevel-debug.conf
 ```

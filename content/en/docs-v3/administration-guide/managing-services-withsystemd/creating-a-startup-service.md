@@ -26,7 +26,7 @@ cat << EOF >> /lib/systemd/system/eth0.service
 	EOF
 ```
 
-1. Set the service to auto-start when the system boots:
+2. Set the service to auto-start when the system boots:
 	
 ```
 cd /lib/systemd/system/multi-user.target.wants/
