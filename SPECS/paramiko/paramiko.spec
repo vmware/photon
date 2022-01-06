@@ -1,7 +1,7 @@
 Summary:        Python SSH module
 Name:           python3-paramiko
 Version:        2.7.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        LGPL
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
@@ -14,12 +14,12 @@ BuildArch:      noarch
 
 BuildRequires:  python3-devel
 BuildRequires:  python3-ecdsa > 0.11
-BuildRequires:  python3-pycrypto > 2.1
+BuildRequires:  python3-pycryptodome
 BuildRequires:  python3-cryptography
 BuildRequires:  python3-setuptools
 BuildRequires:  python3-xml
 Requires:       python3
-Requires:       python3-pycrypto > 2.1
+Requires:       python3-pycryptodome
 Requires:       python3-ecdsa > 0.11
 Requires:       python3-cryptography
 Requires:       python3-PyNaCl
@@ -51,6 +51,8 @@ LANG=en_US.UTF-8 python3 test.py
 %{python3_sitelib}/*
 
 %changelog
+*   Mon Jan 03 2022 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.2-3
+-   Replace deprecated pycrypto with pycryptodome
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.7.2-2
 -   Bump up to compile with python 3.10
 *   Tue Sep 01 2020 Gerrit Photon <photon-checkins@vmware.com> 2.7.2-1

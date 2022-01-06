@@ -1,7 +1,7 @@
 Summary:        Library for interacting with Calico data model.
 Name:           libcalico
 Version:        0.19.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/libcalico
 Group:          Development/Tools
@@ -22,7 +22,7 @@ BuildRequires:  python3-asn1crypto
 BuildRequires:  python3-backports.ssl_match_hostname
 BuildRequires:  python3-ConcurrentLogHandler
 BuildRequires:  python3-cffi
-BuildRequires:  python3-pycrypto
+BuildRequires:  python3-pycryptodome
 BuildRequires:  python3-cryptography
 BuildRequires:  python3-dnspython
 BuildRequires:  python3-docopt
@@ -73,6 +73,8 @@ Library for interacting with Calico data model.
 %{python3_sitelib}/*
 
 %changelog
+* Mon Jan 03 2022 Prashant S Chauhan <psinghchauha@vmware.com> 0.19.0-6
+- Replace deprecated pycrypto with pycryptodome
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.19.0-5
 - Bump up to compile with python 3.10
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 0.19.0-4
