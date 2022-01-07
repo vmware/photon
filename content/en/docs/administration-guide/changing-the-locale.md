@@ -28,7 +28,7 @@ See which keymaps are currently available on your system:
     
 If the response to that command is the all-too-common `Couldn't find any console keymaps`, install the key tables files and utilities:
 
-    tdnf install kbd
+    tdnf install kbd glibc-lang glibc-i18n
     
 You should now be able to find a keymap matching your keyboard. As an example, here I'm searching for the German keyboard layout (so I'm expecting something with `de` in the name) used in Switzerland:
 
