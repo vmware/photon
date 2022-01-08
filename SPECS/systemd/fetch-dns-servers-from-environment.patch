@@ -1,0 +1,32 @@
+From 9b8012758741f2e09bfd672d1294e908ce27ce3c Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Tue, 11 Jan 2022 14:53:57 +0530
+Subject: [PATCH] Fetch dns servers from environment.
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ src/resolve/resolved-conf.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/src/resolve/resolved-conf.c b/src/resolve/resolved-conf.c
+index 7873c363b3..ae5bd66884 100644
+--- a/src/resolve/resolved-conf.c
++++ b/src/resolve/resolved-conf.c
+@@ -487,9 +487,11 @@ int manager_parse_config_file(Manager *m) {
+                 return r;
+ 
+         if (m->need_builtin_fallbacks) {
+-                r = manager_parse_dns_server_string_and_warn(m, DNS_SERVER_FALLBACK, DNS_SERVERS, false);
+-                if (r < 0)
+-                        return r;
++            r = manager_parse_dns_server_string_and_warn(m, DNS_SERVER_FALLBACK,
++                                                         secure_getenv("DEFAULT_DNS_SERVERS") ? : DNS_SERVERS,
++                                                         false);
++            if (r < 0)
++                return r;
+         }
+ 
+ #if !HAVE_OPENSSL_OR_GCRYPT
+-- 
+2.33.1
+
