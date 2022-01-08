@@ -21,7 +21,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.78
-Release:        9%{?kat_build:.kat}%{?dist}
+Release:        10%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -110,6 +110,11 @@ Patch64:        initramfs-multiple-image-extraction-support.patch
 Patch65:        initramfs-support-selective-freeing-of-initramfs-images.patch
 Patch66:        initramfs-large-files-support-for-newca-format.patch
 Patch67:        revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
+
+# Hotplug support without firmware
+Patch68:        0001-vmw_extcfg-hotplug-without-firmware-support.patch
+Patch69:        0002-vmw_extcfg-hotplug-without-firmware-support.patch
+Patch70:        0003-vmw_extcfg-hotplug-without-firmware-support.patch
 
 #TARFS
 Patch80:	0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
@@ -276,6 +281,9 @@ The Linux package contains the Linux kernel doc files
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
+%patch68 -p1
+%patch69 -p1
+%patch70 -p1
 %patch80 -p1
 %patch90 -p1
 
@@ -496,6 +504,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Feb 28 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.78-10
+- Port non-acpi hotplug support patch to 5.10.x
 * Tue Feb 01 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-9
 - Reduce kernel .text size by ~40% by removing .entry.text alignment.
 * Tue Jan 25 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-8
