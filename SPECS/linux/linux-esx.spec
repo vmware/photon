@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.219
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -88,6 +88,10 @@ Patch45:        0001-KVM-vmx-use-MSR_IA32_TSX_CTRL-to-hard-disable-TSX-on.patch
 Patch46:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch47:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 
+#Fix for CVE-2020-36385
+Patch48:        0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
+Patch49:        0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
+
 # 9p patches
 Patch54:        0001-fs-9p-Add-opt_metaonly-option.patch
 Patch55:        0001-p9fs_dir_readdir-offset-support.patch
@@ -126,6 +130,10 @@ Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 # Patch to perform continuous testing on RNG from Noise Source
 Patch101:        0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
+
+# Next 2 patches are about to be merged into stable
+Patch102:       0001-mm-fix-panic-in-__alloc_pages.patch
+Patch103:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
 
 # VDFS 9p recovery changes
 Patch200:	0001-vdfs-9p-Initial-recovery-logic-in-9p.patch
@@ -374,6 +382,9 @@ Patch520:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 # TARFS
 Patch521:        0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch522:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
 # Patches for i40e driver
 Patch801:        0001-Add-support-for-gettimex64-interface.patch
 
@@ -481,6 +492,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch45 -p1
 %patch46 -p1
 %patch47 -p1
+%patch48 -p1
+%patch49 -p1
 %patch54 -p1
 %patch55 -p1
 %patch56 -p1
@@ -504,6 +517,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch98 -p1
 %patch100 -p1
 %patch101 -p1
+%patch102 -p1
+%patch103 -p1
 %patch200 -p1
 %patch201 -p1
 %patch202 -p1
@@ -728,6 +743,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch519 -p1
 %patch520 -p1
 %patch521 -p1
+%patch522 -p1
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -799,7 +815,7 @@ popd
 # Do not compress modules which will be loaded at boot time
 # to speed up boot process
 %define __modules_install_post \
-    for MODULE in `find %{buildroot}/lib/modules/%{uname_r}/kernel/crypto -name *.ko` ; do \
+    for MODULE in `find %{buildroot}/lib/modules/%{uname_r} -type d -name "crypto" -exec find {} -name *.ko ';'` ; do \
         ./scripts/sign-file sha512 certs/signing_key.pem certs/signing_key.x509 $MODULE \
         rm -f $MODULE.{sig,dig} \
     done \
@@ -867,7 +883,7 @@ EOF
 # Register myself to initramfs
 mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
 cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "lvm dm-mod"
+--add-drivers "dm-mod"
 EOF
 
 # cleanup dangling symlinks
@@ -930,6 +946,19 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Jan 03 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.219-7
+-   Disable md5 algorithm for sctp if fips is enabled.
+*   Thu Dec 23 2021 Keerthana K <keerthanak@vmware.com> 4.19.219-6
+-   FIPS: Fix module signing of crypto modules
+-   Enable AESNI INTEL kernel configs
+*   Mon Dec 20 2021 Harinadh D <hdommaraju@vmware.com> 4.19.219-5
+-   remove lvm in add-drivers list
+-   lvm drivers are built as part of dm-mod module
+*   Wed Dec 15 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.219-4
+-   mm: fix percpu alloacion for memoryless nodes
+-   pvscsi: fix disk detection issue
+*   Tue Dec 14 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.219-3
+-   Fix for CVE-2020-36385
 *   Fri Dec 10 2021 Ankit Jain <ankitja@vmware.com> 4.19.219-2
 -   tarfs: Fix binary execution issue
 *   Wed Dec 08 2021 srinidhira0 <srinidhir@vmware.com> 4.19.219-1

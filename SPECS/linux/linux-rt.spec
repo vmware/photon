@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.219
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt95
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        5%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -82,6 +82,10 @@ Patch64:        0005-ovl-check-permission-to-open-real-file.patch
 Patch65:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch66:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 
+#Fix for CVE-2020-36385
+Patch67:        0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
+Patch68:        0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
+
 # Upgrade vmxnet3 driver to version 4
 Patch80:        0000-vmxnet3-turn-off-lro-when-rxcsum-is-disabled.patch
 Patch81:        0001-vmxnet3-prepare-for-version-4-changes.patch
@@ -106,6 +110,10 @@ Patch100:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # Add PCI quirk to allow multiple devices under the same virtual PCI bridge
 # to be put into separate IOMMU groups on ESXi.
 Patch101:       0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
+
+# Next 2 patches are about to be merged into stable
+Patch102:       0001-mm-fix-panic-in-__alloc_pages.patch
+Patch103:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
 
 # Real-Time kernel (PREEMPT_RT patches)
 # Source: http://cdn.kernel.org/pub/linux/kernel/projects/rt/4.19/
@@ -496,6 +504,9 @@ Patch628:       0003-fuse-fix-bad-inode.patch
 #fix for CVE-2021-28950
 Patch629:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch630:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
 %if 0%{?kat_build:1}
 Patch1000:       fips-kat-tests.patch
 %endif
@@ -592,6 +603,8 @@ The Linux package contains the Linux kernel doc files
 %patch64 -p1
 %patch65 -p1
 %patch66 -p1
+%patch67 -p1
+%patch68 -p1
 
 %patch80 -p1
 %patch81 -p1
@@ -612,6 +625,8 @@ The Linux package contains the Linux kernel doc files
 
 %patch100 -p1
 %patch101 -p1
+%patch102 -p1
+%patch103 -p1
 
 %patch201 -p1
 %patch202 -p1
@@ -984,6 +999,7 @@ The Linux package contains the Linux kernel doc files
 %patch627 -p1
 %patch628 -p1
 %patch629 -p1
+%patch630 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -1128,7 +1144,7 @@ EOF
 # Register myself to initramfs
 mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
 cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "cn lvm dm-mod megaraid_sas"
+--add-drivers "cn dm-mod megaraid_sas"
 EOF
 
 #    Cleanup dangling symlinks
@@ -1181,6 +1197,16 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Mon Jan 03 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.219-5
+-   Disable md5 algorithm for sctp if fips is enabled.
+*   Mon Dec 20 2021 Harinadh D <hdommaraju@vmware.com> 4.19.219-4
+-   remove lvm in add-drivers list
+-   lvm drivers are built as part of dm-mod
+*   Wed Dec 15 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.219-3
+-   mm: fix percpu alloacion for memoryless nodes
+-   pvscsi: fix disk detection issue
+*   Tue Dec 14 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.219-2
+-   Fix for CVE-2020-36385
 *   Wed Dec 08 2021 srinidhira0 <srinidhir@vmware.com> 4.19.219-1
 -   Update to version 4.19.219
 *   Wed Nov 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.217-1

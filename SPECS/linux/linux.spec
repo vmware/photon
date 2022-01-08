@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.219
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -111,6 +111,10 @@ Patch65:        0005-ovl-check-permission-to-open-real-file.patch
 Patch66:        0001-block-revert-back-to-synchronous-request_queue-remov.patch
 Patch67:        0002-block-create-the-request_queue-debugfs_dir-on-regist.patch
 
+#Fix for CVE-2020-36385
+Patch68:        0001-RDMA-cma-Add-missing-locking-to-rdma_accept.patch
+Patch69:        0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
+
 #Fix for 9p
 Patch70:        0001-9p-Ensure-seekdir-take-effect-when-entries-in-readdi.patch
 Patch71:        0001-9p-VDFS-Initialize-fid-iounit-during-creation-of-p9_.patch
@@ -136,6 +140,10 @@ Patch98:         0001-Add-drbg_pr_ctr_aes256-test-vectors-and-test-to-test.patch
 Patch100:        0001-tcrypt-disable-tests-that-are-not-enabled-in-photon.patch
 # Patch to perform continuous testing on RNG from Noise Source
 Patch101:        0001-crypto-drbg-add-FIPS-140-2-CTRNG-for-noise-source.patch
+
+# Next 2 patches are about to be merged into stable
+Patch102:       0001-mm-fix-panic-in-__alloc_pages.patch
+Patch103:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
 
 # Support for PTP_SYS_OFFSET_EXTENDED ioctl
 Patch121:        0001-ptp-reorder-declarations-in-ptp_ioctl.patch
@@ -406,6 +414,9 @@ Patch504:       0003-fuse-fix-bad-inode.patch
 #fix for CVE-2021-28950
 Patch505:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
+# Disable md5 algorithm for sctp if fips is enabled.
+Patch506:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
 #Patches for i40e driver
 Patch1500:      0001-Add-support-for-gettimex64-interface.patch
 
@@ -606,6 +617,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
+%patch68 -p1
+%patch69 -p1
 
 %patch70 -p1
 %patch71 -p1
@@ -626,6 +639,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch98 -p1
 %patch100 -p1
 %patch101 -p1
+%patch102 -p1
+%patch103 -p1
 
 %patch121 -p1
 %patch122 -p1
@@ -871,6 +886,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch503 -p1
 %patch504 -p1
 %patch505 -p1
+%patch506 -p1
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -1078,7 +1094,7 @@ EOF
 # Register myself to initramfs
 mkdir -p %{buildroot}/%{_localstatedir}/lib/initramfs/kernel
 cat > %{buildroot}/%{_localstatedir}/lib/initramfs/kernel/%{uname_r} << "EOF"
---add-drivers "tmem xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn lvm dm-mod megaraid_sas nvme nvme-core"
+--add-drivers "tmem xen-scsifront xen-blkfront xen-acpi-processor xen-evtchn xen-gntalloc xen-gntdev xen-privcmd xen-pciback xenfs hv_utils hv_vmbus hv_storvsc hv_netvsc hv_sock hv_balloon cn dm-mod megaraid_sas"
 EOF
 
 #    Cleanup dangling symlinks
@@ -1248,6 +1264,17 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Mon Jan 03 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.219-5
+-   Disable md5 algorithm for sctp if fips is enabled.
+*   Mon Dec 20 2021 srinidhira0 <srinidhir@vmware.com> 4.19.219-4
+-   remove lvm ,nvme and nvme-core in add-drivers list
+-   lvm drivers are built as part of dm-mod
+*   Wed Dec 15 2021 Alexey Makhalov <amakhalov@vmware.com> 4.19.219-3
+-   mm: fix percpu alloacion for memoryless nodes
+-   pvscsi: fix disk detection issue
+*   Tue Dec 14 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.219-2
+-   Fix for CVE-2020-36385
+-   nvme ,nvme-core are in-built modules
 *   Wed Dec 08 2021 srinidhira0 <srinidhir@vmware.com> 4.19.219-1
 -   Update to version 4.19.219
 *   Wed Nov 24 2021 Him Kalyan Bordoloi <bordoloih@vmware.com> 4.19.217-1

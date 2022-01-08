@@ -1,0 +1,102 @@
+From 403e8db4f04f2330c29fa9a26b199e6efed15dc0 Mon Sep 17 00:00:00 2001
+From: Mark Vieira <portugee@gmail.com>
+Date: Fri, 10 Dec 2021 17:03:33 -0800
+Subject: [PATCH] [6.8] Patch log4j JAR to remove JndiLookup class (#81632)
+
+---
+ libs/build.gradle                          | 12 ++++----
+ libs/log4j/build.gradle                    | 34 ++++++++++++++++++++++
+ server/build.gradle                        |  6 ++++
+ server/licenses/log4j-core-2.11.1.jar.sha1 |  2 +-
+ 4 files changed, 47 insertions(+), 7 deletions(-)
+ create mode 100644 libs/log4j/build.gradle
+
+diff --git a/libs/build.gradle b/libs/build.gradle
+index e66788b76ba5d..990a287947c67 100644
+--- a/libs/build.gradle
++++ b/libs/build.gradle
+@@ -17,12 +17,12 @@
+  * under the License.
+  */
+ 
+-subprojects {
+-    /*
+-     * All subprojects are java projects using Elasticsearch's standard build
+-     * tools.
+-     */
+-    apply plugin: 'elasticsearch.build'
++configure(subprojects - project('log4j')) {
++  /*
++   * All subprojects are java projects using Elasticsearch's standard build
++   * tools.
++   */
++  apply plugin: 'elasticsearch.build'
+ 
+     /*
+      * Subprojects may depend on the "core" lib but may not depend on any
+diff --git a/libs/log4j/build.gradle b/libs/log4j/build.gradle
+new file mode 100644
+index 0000000000000..2ea5c9505f98b
+--- /dev/null
++++ b/libs/log4j/build.gradle
+@@ -0,0 +1,34 @@
++import org.elasticsearch.gradle.VersionProperties
++import org.elasticsearch.gradle.BuildPlugin
++
++plugins {
++  id 'base'
++}
++
++configurations {
++  log4j {
++    transitive = false
++  }
++}
++
++BuildPlugin.configureRepositories(project)
++def log4jVersion = VersionProperties.versions.log4j
++dependencies {
++  log4j "org.apache.logging.log4j:log4j-core:${log4jVersion}"
++}
++
++// Strip out JndiLookup class to avoid any possibility of exploitation of CVE-2021-44228
++// See: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-44228
++// See: https://issues.apache.org/jira/browse/LOG4J2-3201
++task patchLog4j(type: Zip) {
++  extension = 'jar'
++  baseName = 'log4j-core'
++  version = log4jVersion
++  from({ zipTree(configurations.log4j.singleFile) }) {
++    exclude '**/JndiLookup.class'
++  }
++}
++
++artifacts {
++  'default'(patchLog4j)
++}
+diff --git a/server/build.gradle b/server/build.gradle
+index 377940a7b05b5..bfda7942b7959 100644
+--- a/server/build.gradle
++++ b/server/build.gradle
+@@ -72,6 +72,12 @@ if (!isEclipse) {
+   }
+ }
+ 
++configurations.all {
++  resolutionStrategy.dependencySubstitution {
++    substitute module("org.apache.logging.log4j:log4j-core") because "patched to remove JndiLookup class" with project(":libs:log4j")
++  }
++}
++
+ dependencies {
+ 
+   compile "org.elasticsearch:elasticsearch-core:${version}"
+diff --git a/server/licenses/log4j-core-2.11.1.jar.sha1 b/server/licenses/log4j-core-2.11.1.jar.sha1
+index 2fb8589380a03..f28de4bb600d8 100644
+--- a/server/licenses/log4j-core-2.11.1.jar.sha1
++++ b/server/licenses/log4j-core-2.11.1.jar.sha1
+@@ -1 +1 @@
+-592a48674c926b01a9a747c7831bcd82a9e6d6e4
+\ No newline at end of file
++fe18be6aecfbf008a8f479397d233dcf089e9643
+\ No newline at end of file

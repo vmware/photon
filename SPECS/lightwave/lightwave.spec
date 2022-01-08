@@ -1,32 +1,37 @@
 Name:          lightwave
 Summary:       VMware Lightwave
 Version:       1.3.1.34
-Release:       16%{?dist}
+Release:       19%{?dist}
 License:       Apache 2.0
 Group:         Applications/System
 Vendor:        VMware, Inc.
-URL: 	       https://github.com/vmware/lightwave
-Source0:       lightwave-%{version}.tar.gz
-%define sha1 lightwave=93cc2c0518753a7ec7efd250bb0988de727067ff
+URL:           https://github.com/vmware/lightwave
 Distribution:  Photon
 
-Requires:  apache-tomcat >= 8.5.8
-Requires:  boost = 1.66.0
-Requires:  commons-daemon >= 1.0.15
-Requires:  (coreutils >= 8.22 or toybox)
-Requires:  cyrus-sasl >= 2.1
-Requires:  e2fsprogs
-Requires:  gawk >= 4.1.3
-Requires:  krb5 >= 1.14
-Requires:  likewise-open >= 6.2.11.4
-Requires:  openjre8
-Requires:  openssl >= 1.0.2
-Requires:  lightwave-client = %{version}-%{release}
-Requires:  lightwave-server = %{version}-%{release}
+Source0:       %{name}-%{version}.tar.gz
+%define        sha1 %{name}=93cc2c0518753a7ec7efd250bb0988de727067ff
+
+Patch0:     fix-python-include-path.patch
+Patch1:     log4j-security-fix.patch
+Patch2:     upgrade-jackson-jars-to-latest-to-fix-security-issue.patch
+
+Requires:      apache-tomcat >= 8.5.8
+Requires:      boost >= 1.66.0
+Requires:      commons-daemon >= 1.0.15
+Requires:      (coreutils >= 8.22 or toybox)
+Requires:      cyrus-sasl >= 2.1
+Requires:      e2fsprogs
+Requires:      gawk >= 4.1.3
+Requires:      krb5 >= 1.14
+Requires:      likewise-open >= 6.2.11.4
+Requires:      openjre8
+Requires:      openssl >= 1.0.2
+Requires:      lightwave-client = %{version}-%{release}
+Requires:      lightwave-server = %{version}-%{release}
 
 BuildRequires: ant-contrib >= 1.0
 BuildRequires: apache-maven >= 3.3.9
-BuildRequires: boost-devel = 1.66.0
+BuildRequires: boost-devel >= 1.66.0
 BuildRequires: c-rest-engine-devel >= 1.1
 BuildRequires: commons-daemon >= 1.0.15
 BuildRequires: copenapi-devel
@@ -38,7 +43,8 @@ BuildRequires: krb5-devel >= 1.14
 BuildRequires: likewise-open-devel >= 6.2.10
 BuildRequires: openjdk8
 BuildRequires: openssl-devel >= 1.0.2
-BuildRequires: python2-devel >= 2.7.8
+BuildRequires: python3-devel
+BuildRequires: python3-libs
 BuildRequires: sqlite-devel >= 3.14
 BuildRequires: cmocka >= 1.1
 BuildRequires: go
@@ -99,58 +105,58 @@ VMware Lightwave Server
 %define _vecsdir %{_vmafd_dbdir}/vecs
 %define _crlsdir %{_vmafd_dbdir}/crl
 
-%package client-libs
-Summary: Lightwave Client libs
+%package       client-libs
+Summary:       Lightwave Client libs
 
-%description client-libs
+%description   client-libs
 Client libraries to communicate with Lightwave Services
 
-%package client
-Summary: Lightwave Client
-Requires: c-rest-engine >= 1.1
-Requires: copenapi
-Requires: coreutils >= 8.22
-Requires: cyrus-sasl >= 2.1
-Requires: openssl >= 1.0.2
-Requires: jansson
-Requires: krb5 >= 1.14
-Requires: likewise-open >= 6.2.9
-Requires: openjre8
-Requires: boost = 1.66.0
-Requires: lightwave-client-libs = %{version}-%{release}
+%package       client
+Summary:       Lightwave Client
+Requires:      c-rest-engine >= 1.1
+Requires:      copenapi
+Requires:      coreutils >= 8.22
+Requires:      cyrus-sasl >= 2.1
+Requires:      openssl >= 1.0.2
+Requires:      jansson
+Requires:      krb5 >= 1.14
+Requires:      likewise-open >= 6.2.9
+Requires:      openjre8
+Requires:      boost >= 1.66.0
+Requires:      lightwave-client-libs = %{version}-%{release}
 
-%description client
+%description   client
 Client utils to communicate with Lightwave Services
 
-%package server
-Summary: Lightwave Server
-Requires: lightwave-client = %{version}-%{release}
+%package       server
+Summary:       Lightwave Server
+Requires:      lightwave-client = %{version}-%{release}
 
-%description server
+%description   server
 Lightwave Services
 
-%package devel
-Summary: Lightwave Client Development Library
-Requires: lightwave-client = %{version}-%{release}
+%package       devel
+Summary:       Lightwave Client Development Library
+Requires:      lightwave-client = %{version}-%{release}
 
-%description devel
+%description   devel
 Development Libraries to communicate with Lightwave Services
 
-%package post
-Summary: Lightwave POST Service
-Requires: lightwave-client = %{version}-%{release}
-%description post
+%package       post
+Summary:       Lightwave POST Service
+Requires:      lightwave-client = %{version}-%{release}
+%description   post
 Lightwave POST service
 
-%package samples
-Summary: Lightwave Samples
-Requires: lightwave-client >= %{version}-%{release}
-%description samples
+%package       samples
+Summary:       Lightwave Samples
+Requires:      lightwave-client >= %{version}-%{release}
+%description   samples
 Lightwave Samples
 
 %prep
+%autosetup -p1 -n lightwave-%{version}
 
-%autosetup
 sed -i 's|/opt/vmware/bin/certool|/usr/bin/certool|' vmidentity/install/src/main/java/com/vmware/identity/configure/LinuxInstallerHelper.java
 sed -i 's|/opt/vmware/sbin/vmware-stsd.sh|/usr/sbin/vmware-stsd.sh|' vmidentity/install/src/main/java/com/vmware/identity/configure/LinuxInstallerHelper.java
 sed -i 's/VMIDENTITY_LIB_DIR=\/opt\/vmware\/lib64/VMIDENTITY_LIB_DIR=\/usr\/jars/' vmidentity/websso/src/main/resources/sso-config.sh
@@ -164,42 +170,29 @@ sed -i 's|http://central.maven.org|https://repo1.maven.org|' vmidentity/settings
 
 %build
 export GO111MODULE=auto
-cd build
-autoreconf -mif .. &&
-../configure \
+cd build && autoreconf -mif .. && \
+sh ../configure \
     CFLAGS="-Wall -Werror -Wno-unused-but-set-variable -Wno-pointer-sign -Wno-implicit-function-declaration -Wno-address -Wno-enum-compare" \
     LDFLAGS=-ldl \
     --prefix=%{_prefix} \
     --libdir=%{_lib64dir} \
     --localstatedir=/var/lib/vmware
+
 make %{?_smp_mflags}
 
 %install
-
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 cd build && make install DESTDIR=%{buildroot} %{?_smp_mflags}
 mkdir -p %{buildroot}/opt/vmware/share/config
-#find %{buildroot} -name '*.a' -delete
-#find %{buildroot} -name '*.la' -delete
 
 %pre
-
     # First argument is 1 => New Installation
     # First argument is 2 => Upgrade
-
     case "$1" in
         1)
-            #
-            # New Installation
-            #
             ;;
-
         2)
-            #
-            # Upgrade
-            #
-            if [ ! -d %{_vmsts_dbdir} ];
-            then
+            if [ ! -d %{_vmsts_dbdir} ]; then
                 /bin/install -d %{_vmsts_dbdir} -o %{_lwuser} -g %{_lwgroup} -m 700
             else
                 chown -R %{_lwuser}:%{_lwgroup} %{_vmsts_dbdir} >/dev/null 2>&1
@@ -209,15 +202,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
     esac
 
 %pre server
-
-    # First argument is 1 => New Installation
-    # First argument is 2 => Upgrade
-
     case "$1" in
         1)
-            #
-            # New Installation
-            #
             if [ ! -f /.dockerenv ]; then
                 # Not in container
                 if [ -z "`pidof lwsmd`" ]; then
@@ -225,27 +211,17 @@ mkdir -p %{buildroot}/opt/vmware/share/config
                 fi
             fi
             ;;
-
         2)
-            #
-            # Upgrade
-            #
             ;;
 
     esac
 
 %pre client
-    # First argument is 1 => New Installation
-    # First argument is 2 => Upgrade
-
     getent group lightwave >/dev/null || groupadd lightwave
     getent passwd lightwave >/dev/null || useradd -g lightwave -d / -s /sbin/nologin -c "Lightwave User" lightwave
 
     case "$1" in
         1)
-            #
-            # New Installation
-            #
             if [ ! -f /.dockerenv ]; then
                 # Not in container
                 if [ -z "`pidof lwsmd`" ]; then
@@ -253,24 +229,13 @@ mkdir -p %{buildroot}/opt/vmware/share/config
                 fi
             fi
             ;;
-
         2)
-            #
-            # Upgrade
-            #
             ;;
     esac
 
 %pre post
-
-    # First argument is 1 => New Installation
-    # First argument is 2 => Upgrade
-
     case "$1" in
         1)
-            #
-            # New Installation
-            #
             if [ ! -f /.dockerenv ]; then
                 # Not in container
                 if [ -z "`pidof lwsmd`" ]; then
@@ -278,19 +243,11 @@ mkdir -p %{buildroot}/opt/vmware/share/config
                 fi
             fi
             ;;
-
         2)
-            #
-            # Upgrade
-            #
             ;;
     esac
 
 %post
-
-    # First argument is 1 => New Installation
-    # First argument is 2 => Upgrade
-
     lw_uid="$(id -u %{_lwuser})"
     lw_gid="$(id -g %{_lwgroup})"
 
@@ -299,9 +256,6 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 
     case "$1" in
         1)
-            #
-            # New Installation
-            #
             if [ ! -f /.dockerenv ]; then
                 # Not in container
                 /bin/systemctl enable vmware-stsd.service
@@ -339,16 +293,9 @@ mkdir -p %{buildroot}/opt/vmware/share/config
                     sleep 1
                 done
             fi
-
             ;;
-
         2)
-            #
-            # Upgrade
-            #
-
             # Note: Upgrades are not handled in container
-
             /bin/systemctl daemon-reload
 
             %{_likewise_open_bindir}/lwregshell upgrade %{_configdir}/idm/idm.reg
@@ -365,7 +312,6 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             if [ ! -f "$ROOTDIR/lightwaveui.war" ]; then
                 rm -rf $ROOTDIR/lightwaveui
             fi
-
             ;;
     esac
 
@@ -380,10 +326,6 @@ mkdir -p %{buildroot}/opt/vmware/share/config
     chown -R %{_lwuser}:%{_lwgroup} %{_ststmpdir} >/dev/null 2>&1
 
 %post server
-
-    # First argument is 1 => New Installation
-    # First argument is 2 => Upgrade
-
     /sbin/ldconfig
 
     if [ ! -f /.dockerenv ]; then
@@ -439,9 +381,6 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 
     case "$1" in
         1)
-            #
-            # New Installation
-            #
             stop_lwsmd=0
             if [ -f /.dockerenv ]; then
                 if [ -z "`pidof lwsmd`" ]; then
@@ -465,16 +404,9 @@ mkdir -p %{buildroot}/opt/vmware/share/config
                     sleep 1
                 done
             fi
-
             ;;
-
         2)
-            #
-            # Upgrade
-            #
-
             # Note: Upgrades are not handled in container
-
             try_starting_lwregd_svc=true
 
             %{_likewise_open_bindir}/lwregshell upgrade %{_datadir}/config/vmdir.reg
@@ -484,7 +416,6 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             sleep 5
 
             chown lightwave:lightwave /var/log/lightwave/vmca.log.* >/dev/null 2>&1
-
             ;;
     esac
 
@@ -498,12 +429,7 @@ mkdir -p %{buildroot}/opt/vmware/share/config
     chown -R lightwave:lightwave %{_integchkdir}
 
 %post client
-
-    # First argument is 1 => New Installation
-    # First argument is 2 => Upgrade
-
     # config firewall service for server/post
-
     if [ ! -f /.dockerenv ]; then
         # Not in container
         /bin/systemctl enable firewall.service
@@ -575,9 +501,6 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 
     case "$1" in
         1)
-            #
-            # New Installation
-            #
             stop_lwsmd=0
             if [ -f /.dockerenv ]; then
                 if [ -z "`pidof lwsmd`" ]; then
@@ -612,16 +535,9 @@ mkdir -p %{buildroot}/opt/vmware/share/config
                     sleep 1
                 done
             fi
-
             ;;
-
         2)
-            #
-            # Upgrade
-            #
-
             # Note: Upgrades are not handled in container
-
             %{_likewise_open_bindir}/lwregshell upgrade %{_datadir}/config/vmafd.reg
             %{_likewise_open_bindir}/lwregshell upgrade %{_datadir}/config/vmdir-client.reg
             %{_likewise_open_bindir}/lwsm -q refresh
@@ -636,12 +552,10 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             fi
             %{_likewise_open_bindir}/lwsm restart vmafd
             %{_bindir}/vecs-cli store permission --name MACHINE_SSL_CERT --user lightwave --grant read >/dev/null
-
             ;;
     esac
 
 %post post
-
     # start the firewall service
     if [ ! -f /.dockerenv ]; then
         # Not in container
@@ -669,9 +583,6 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 
     case "$1" in
         1)
-            #
-            # New Installation
-            #
             stop_lwsmd=0
             if [ -f /.dockerenv ]; then
                 if [ -z "`pidof lwsmd`" ]; then
@@ -693,30 +604,18 @@ mkdir -p %{buildroot}/opt/vmware/share/config
                     sleep 1
                 done
             fi
-
             ;;
-
         2)
-            #
-            # Upgrade
-            #
-
             # Note: Upgrades are not handled in container
-
             %{_likewise_open_bindir}/lwregshell upgrade %{_datadir}/config/post.reg
             %{_likewise_open_bindir}/lwsm -q refresh
             sleep 5
-
             ;;
     esac
 
 %post samples
-
     case "$1" in
         1)
-            #
-            # New Installation
-            #
             if [ ! -f /.dockerenv ]; then
                 # Not in container
                 /bin/systemctl enable vmware-sampled.service
@@ -724,9 +623,6 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             fi
             ;;
         2)
-            #
-            # Upgrade
-            #
             ;;
    esac
 
@@ -735,16 +631,8 @@ mkdir -p %{buildroot}/opt/vmware/share/config
    chmod 600 %{_stssampleconfdir}/vmware-override-java.security
 
 %preun
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
-
     case "$1" in
         0)
-            #
-            # Uninstall
-            #
-
             /bin/systemctl >/dev/null 2>&1
             if [ $? -eq 0 ]; then
                  if [ -f /etc/systemd/system/vmware-stsd.service ]; then
@@ -755,25 +643,13 @@ mkdir -p %{buildroot}/opt/vmware/share/config
                  fi
             fi
             ;;
-
         1)
-            #
-            # Upgrade
-            #
             ;;
     esac
 
 %preun server
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
-
     case "$1" in
         0)
-            #
-            # Uninstall
-            #
-
             %{_likewise_open_bindir}/lwsm info vmca > /dev/null 2>&1
             if [ $? -eq 0 ]; then
                 %{_likewise_open_bindir}/lwsm stop vmca
@@ -805,24 +681,13 @@ mkdir -p %{buildroot}/opt/vmware/share/config
                 /bin/rm -f %{_logconfdir}/vmdnsd-syslog-ng.conf
             fi
             ;;
-
         1)
-            #
-            # Upgrade
-            #
             ;;
     esac
 
 %preun client
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
-
     case "$1" in
         0)
-            #
-            # Uninstall
-            #
             %{_likewise_open_bindir}/lwsm info vmafd > /dev/null 2>&1
             if [ $? -eq 0 ]; then
                 %{_likewise_open_bindir}/lwsm stop vmafd
@@ -845,24 +710,13 @@ mkdir -p %{buildroot}/opt/vmware/share/config
                 /bin/rm -f %{_logconfdir}/vmafdd-syslog-ng.conf
             fi
             ;;
-
         1)
-            #
-            # Upgrade
-            #
             ;;
     esac
 
 %preun post
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
-
     case "$1" in
         0)
-            #
-            # Uninstall
-            #
             %{_likewise_open_bindir}/lwsm info post > /dev/null 2>&1
             if [ $? -eq 0 ]; then
                 %{_likewise_open_bindir}/lwsm stop post
@@ -871,25 +725,13 @@ mkdir -p %{buildroot}/opt/vmware/share/config
                 sleep 5
             fi
             ;;
-
         1)
-            #
-            # Upgrade
-            #
             ;;
     esac
 
 %preun samples
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
-
     case "$1" in
         0)
-            #
-            # Uninstall
-            #
-
             if [ ! -f /.dockerenv ]; then
                 # Not in container
                  if [ -f /etc/systemd/system/vmware-stsd.service ]; then
@@ -900,27 +742,15 @@ mkdir -p %{buildroot}/opt/vmware/share/config
                  fi
             fi
             ;;
-
         1)
-            #
-            # Upgrade
-            #
             ;;
     esac
 
 %postun
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
-
     /sbin/ldconfig
 
     case "$1" in
         0)
-            #
-            # Uninstall
-            #
-
             if [ -x "%{_lwisbindir}/lwregshell" ]
             then
                 %{_lwisbindir}/lwregshell list_keys "[HKEY_THIS_MACHINE\Software\VMware\Identity]" > /dev/null 2>&1
@@ -932,37 +762,22 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             ;;
 
         1)
-            #
-            # Upgrade
-            #
             ;;
     esac
 
 %postun server
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
-
     /sbin/ldconfig
 
     case "$1" in
         0)
-            #
-            # Uninstall
-            #
             if [ -f %{_vmdir_dbdir}/data.mdb ]; then
                 # backup db if exists
                 mv %{_vmdir_dbdir}/data.mdb %{_vmdir_dbdir}/data.mdb.bak
             fi
 
             echo "Existing database files kept at [%{_vmdir_dbdir}]."
-
             ;;
-
         1)
-            #
-            # Upgrade
-            #
             ;;
     esac
 
@@ -971,18 +786,10 @@ mkdir -p %{buildroot}/opt/vmware/share/config
     fi
 
 %postun client
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
-
     /sbin/ldconfig
 
     case "$1" in
         0)
-            #
-            # Uninstall
-            #
-
             # Un-configure SRP/UNIX mech authentication plugins
             SRP_MECH_OID="1.2.840.113554.1.2.10"
             UNIX_MECH_OID="1.3.6.1.4.1.6876.11711.2.1.2"
@@ -1021,35 +828,19 @@ mkdir -p %{buildroot}/opt/vmware/share/config
             if [ -d %{_vmafd_dbdir} ]; then
                 rm -rf %{_vmafd_dbdir}
             fi
-
             ;;
-
         1)
-            #
-            # Upgrade
-            #
             ;;
     esac
 
 %postun post
-
-    # First argument is 0 => Uninstall
-    # First argument is 1 => Upgrade
-
     /sbin/ldconfig
 
     case "$1" in
         0)
-            #
-            # Uninstall
-            #
             echo "Existing database files kept at [%{_post_dbdir}]."
             ;;
-
         1)
-            #
-            # Upgrade
-            #
             ;;
     esac
 
@@ -1058,9 +849,7 @@ mkdir -p %{buildroot}/opt/vmware/share/config
     fi
 
 %files
-
 %defattr(-,root,root,0755)
-
 %{_bindir}/configure-sts
 
 %{_sbindir}/vmware-stsd.sh
@@ -1088,18 +877,18 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_jarsdir}/commons-lang-2.6.jar
 %{_jarsdir}/commons-lang3-3.3.2.jar
 %{_jarsdir}/commons-logging-1.2.jar
-%{_jarsdir}/jackson-jaxrs-json-provider-2.9.6.jar
-%{_jarsdir}/jackson-core-2.9.6.jar
-%{_jarsdir}/jackson-databind-2.9.6.jar
-%{_jarsdir}/jackson-annotations-2.9.6.jar
+%{_jarsdir}/jackson-jaxrs-json-provider-2.13.0.jar
+%{_jarsdir}/jackson-core-2.13.0.jar
+%{_jarsdir}/jackson-databind-2.13.0.jar
+%{_jarsdir}/jackson-annotations-2.13.0.jar
 %{_jarsdir}/jna-4.2.1.jar
 %{_jarsdir}/json-smart-1.3.1.jar
 %{_jarsdir}/httpclient-4.5.1.jar
 %{_jarsdir}/httpcore-4.4.4.jar
 %{_jarsdir}/slf4j-api-1.7.25.jar
-%{_jarsdir}/log4j-api-2.8.2.jar
-%{_jarsdir}/log4j-slf4j-impl-2.8.2.jar
-%{_jarsdir}/log4j-core-2.8.2.jar
+%{_jarsdir}/log4j-api-2.17.0.jar
+%{_jarsdir}/log4j-slf4j-impl-2.17.0.jar
+%{_jarsdir}/log4j-core-2.17.0.jar
 %{_jarsdir}/nimbus-jose-jwt-5.6.jar
 
 %{_webappsdir}/ROOT.war
@@ -1120,9 +909,7 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %config %attr(600, root, root) %{_stsconfdir}/vmsts-telegraf.conf
 
 %files server
-
 %defattr(-,root,root,0755)
-
 %{_bindir}/ic-promote
 %{_bindir}/configure-lightwave-server
 %{_bindir}/test-ldapbind
@@ -1196,9 +983,7 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_lib64dir}/libvmcommon.so*
 
 %files client
-
 %defattr(-,root,root)
-
 %{_bindir}/ic-join
 %{_bindir}/lightwave
 %{_bindir}/cdc-cli
@@ -1271,9 +1056,7 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_sysconfdir}/vmware/java/vmware-override-java.security
 
 %files post
-
 %defattr(-,root,root)
-
 %{_sbindir}/postd
 
 %{_bindir}/postadmintool
@@ -1305,9 +1088,7 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %config %attr(750, root, root) %{_datadir}/config/monitor-core-dump.sh
 
 %files devel
-
 %defattr(-,root,root)
-
 %{_includedir}/vmafd.h
 %{_includedir}/vmafdtypes.h
 %{_includedir}/vmafdclient.h
@@ -1394,66 +1175,72 @@ mkdir -p %{buildroot}/opt/vmware/share/config
 %{_stssamplebindir}/*
 
 %changelog
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-16
--   Bump up version to compile with new go
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-15
--   Bump up version to compile with new go
-*   Tue Sep 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-14
--   Fix maven repo urls in build.xml files
-*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.3.1.34-13
--   Bump up version to compile with new go
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-12
--   Bump up version to compile with new go
-*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.3.1.34-11
--   Bump up version to compile with new go
-*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.3.1.34-10
--   Bump up version to compile with new go
-*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.3.1.34-9
--   Bump up version to compile with new go
-*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.3.1.34-8
--   Bump up version to compile with go 1.13.3-2
-*   Mon Jan 27 2020 Tapas Kundu <tkundu@vmware.com> 1.3.1.34-7
--   Bump up version to compile with openssl
-*   Sun Jan 19 2020 Ankit Jain <ankitja@vmware.com> 1.3.1.34-6
--   Replaced central maven repository
-*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.3.1.34-5
--   Bump up version to compile with go 1.13.3
-*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.3.1.34-4
--   Bump up version to compile with new go
-*   Thu Jan 24 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1.34-3
--   move vmcommon,ssooidc libs from lightwave-client to lightwave-client-libs
-*   Wed Dec 19 2018 Sriram Nambakam <snambakam@vmware.com> 1.3.1.34-2
--   Fix STS Polling during configuration
-*   Tue Dec 18 2018 Sriram Nambakam <snambakam@vmware.com> 1.3.1.34-1
--   Update sources and apply patches to source
-*   Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 1.3.1.7-4
--   Removed dependency on JAVA8_VERSION macro
-*   Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.3.1.7-3
--   Use boost version 1.66.0
-*   Tue Dec 26 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.1.7-2
--   Aarch64 support
-*   Thu Nov 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1.7-1
--   update to lightwave 1.3.1.7 (release 1.3.1-7 in lightwave repo)
-*   Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.1-5
--   Requires coreutils or toybox
-*   Fri Sep 22 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1-4
--   Patch for unix gsssapi creds separation
-*   Tue Aug 22 2017 Rui Gu <ruig@vmware.com> 1.3.1-3
--   Add 'go' to BuildRequires
-*   Thu Aug 17 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1-2
--   Fix version requirement for lightwave-post
-*   Wed Aug 9 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1-1
--   update to 1.3.1
-*   Tue Jul 18 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-5
--   making sure client-libs install gss mechs
--   make sure domainjoin works with just client installed.
-*   Mon Jul 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.1-4
--   Updated the commons-daemon directory path to its new location
-*   Tue Jun 20 2017 Divya Thaluru <dthaluru@vmware.com> 1.2.1-3
--   Fixed apache-maven directory path
-*   Tue Jun 06 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-3
--   fix domainjoin and allow publish of oidc xml
-*   Thu Jun 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.1-2
--   disable java macros and use java alternatives
-*   Mon May 22 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-1
--   Initial - spec modified for Photon from lightwave git repo.
+* Tue Dec 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-19
+- Upgrade jackson jars
+* Sun Dec 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-18
+- Use log4j-2.17.0 to fix CVE-2021-45105
+* Tue Dec 14 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-17
+- Fix log4j security issue (CVE-2021-44228)
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-16
+- Bump up version to compile with new go
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-15
+- Bump up version to compile with new go
+* Tue Sep 28 2021 Shreenidhi Shedi <sshedi@vmware.com> 1.3.1.34-14
+- Fix maven repo urls in build.xml files
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.3.1.34-13
+- Bump up version to compile with new go
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.3.1.34-12
+- Bump up version to compile with new go
+* Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.3.1.34-11
+- Bump up version to compile with new go
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.3.1.34-10
+- Bump up version to compile with new go
+* Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.3.1.34-9
+- Bump up version to compile with new go
+* Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.3.1.34-8
+- Bump up version to compile with go 1.13.3-2
+* Mon Jan 27 2020 Tapas Kundu <tkundu@vmware.com> 1.3.1.34-7
+- Bump up version to compile with openssl
+* Sun Jan 19 2020 Ankit Jain <ankitja@vmware.com> 1.3.1.34-6
+- Replaced central maven repository
+* Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.3.1.34-5
+- Bump up version to compile with go 1.13.3
+* Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.3.1.34-4
+- Bump up version to compile with new go
+* Thu Jan 24 2019 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1.34-3
+- move vmcommon,ssooidc libs from lightwave-client to lightwave-client-libs
+* Wed Dec 19 2018 Sriram Nambakam <snambakam@vmware.com> 1.3.1.34-2
+- Fix STS Polling during configuration
+* Tue Dec 18 2018 Sriram Nambakam <snambakam@vmware.com> 1.3.1.34-1
+- Update sources and apply patches to source
+* Mon Nov 05 2018 Alexey Makhalov <amakhalov@vmware.com> 1.3.1.7-4
+- Removed dependency on JAVA8_VERSION macro
+* Tue Sep 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.3.1.7-3
+- Use boost version 1.66.0
+* Tue Dec 26 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.1.7-2
+- Aarch64 support
+* Thu Nov 23 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1.7-1
+- update to lightwave 1.3.1.7 (release 1.3.1-7 in lightwave repo)
+* Mon Sep 25 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.1-5
+- Requires coreutils or toybox
+* Fri Sep 22 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1-4
+- Patch for unix gsssapi creds separation
+* Tue Aug 22 2017 Rui Gu <ruig@vmware.com> 1.3.1-3
+- Add 'go' to BuildRequires
+* Thu Aug 17 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1-2
+- Fix version requirement for lightwave-post
+* Wed Aug 9 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.3.1-1
+- update to 1.3.1
+* Tue Jul 18 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-5
+- making sure client-libs install gss mechs
+- make sure domainjoin works with just client installed.
+* Mon Jul 10 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.1-4
+- Updated the commons-daemon directory path to its new location
+* Tue Jun 20 2017 Divya Thaluru <dthaluru@vmware.com> 1.2.1-3
+- Fixed apache-maven directory path
+* Tue Jun 06 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-3
+- fix domainjoin and allow publish of oidc xml
+* Thu Jun 01 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.2.1-2
+- disable java macros and use java alternatives
+* Mon May 22 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-1
+- Initial - spec modified for Photon from lightwave git repo.

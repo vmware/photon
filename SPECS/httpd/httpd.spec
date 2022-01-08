@@ -1,7 +1,7 @@
 Summary:        The Apache HTTP Server
 Name:           httpd
-Version:        2.4.51
-Release:        2%{?dist}
+Version:        2.4.52
+Release:        1%{?dist}
 License:        Apache License 2.0
 URL:            http://httpd.apache.org/
 Group:          Applications/System
@@ -9,9 +9,9 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://apache.mirrors.hoobly.com/%{name}/%{name}-%{version}.tar.bz2
-%define sha1    %{name}=d8ae02630f836d7cf60e24f4676e633518f16e2b
+%define sha1    %{name}=6df2f9b30e89526f73449e4e1aa22450ff088408
 
-Patch0:         httpd-%{version}-blfs_layout-1.patch
+Patch0:         httpd-%{version}-blfs_layout.patch
 Patch1:         httpd-uncomment-ServerName.patch
 
 BuildRequires:  openssl
@@ -203,6 +203,8 @@ fi
 %{_bindir}/dbmmanage
 
 %changelog
+* Thu Dec 23 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.52-1
+- Upgrade to v2.4.52 to fix CVE-2021-44790
 * Mon Nov 08 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.51-2
 - Enable mod_http2
 * Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.4.51-1
