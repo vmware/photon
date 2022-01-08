@@ -1,6 +1,6 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
-Version:        3.2.2
+Version:        3.2.3
 Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -9,7 +9,7 @@ URL:            https://github.com/vmware/%{name}
 Group:          Applications/RPM
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=0b6f7672e62e294190bcfdadbbc1717350030339
+%define sha1    %{name}=ed6b927908323cbeafc084ff672a947baff83060
 
 Patch0:         pool_flag_noinstalledobsoletes.patch
 
@@ -17,14 +17,16 @@ Requires:       rpm-libs >= 4.16.1.3-1
 Requires:       curl-libs
 Requires:       tdnf-cli-libs = %{version}-%{release}
 Requires:       libsolv >= 0.7.19
-Requires:       libmetalink
+Requires:       libxml2
+Requires:       zlib
 
 BuildRequires:  popt-devel
 BuildRequires:  rpm-devel
 BuildRequires:  openssl-devel >= 1.1.1
 BuildRequires:  libsolv-devel >= 0.7.19
 BuildRequires:  curl-devel
-BuildRequires:  libmetalink-devel
+BuildRequires:  libxml2-devel
+BuildRequires:  zlib-devel
 BuildRequires:  systemd
 #plugin repogpgcheck
 BuildRequires:  gpgme-devel
@@ -35,13 +37,13 @@ BuildRequires:  python3-devel
 BuildRequires:  createrepo_c
 BuildRequires:  glib
 BuildRequires:  libxml2
+BuildRequires:  python3-pip
 BuildRequires:  photon-release
 BuildRequires:  photon-repos
-BuildRequires:  python3-urllib3
 BuildRequires:  python3-requests
+BuildRequires:  python3-urllib3
 BuildRequires:  python3-pyOpenSSL
 BuildRequires:  python3-pytest
-BuildRequires:  python3-requests
 %endif
 
 Obsoletes:      yum
@@ -61,9 +63,9 @@ Requires:   libsolv-devel
 %description devel
 Development files for tdnf
 
-%package    cli-libs
-Summary:    Library providing cli libs for tdnf like clients
-Group:      Development/Libraries
+%package	cli-libs
+Summary:	Library providing cli libs for tdnf like clients
+Group:		Development/Libraries
 
 %description cli-libs
 Library providing cli libs for tdnf like clients.
@@ -116,8 +118,8 @@ cd build && make %{?_smp_mflags} check
 cd build && make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.a' -delete
 mkdir -p %{buildroot}/var/cache/tdnf %{buildroot}%{_unitdir}
-ln -sfv %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
-ln -sfv %{_bindir}/tdnf %{buildroot}%{_bindir}/yum
+ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/tyum
+ln -sf %{_bindir}/tdnf %{buildroot}%{_bindir}/yum
 mv %{buildroot}%{_libdir}/pkgconfig/tdnfcli.pc %{buildroot}%{_libdir}/pkgconfig/tdnf-cli-libs.pc
 mkdir -p %{buildroot}%{_tdnfpluginsdir}/tdnfrepogpgcheck
 mv %{buildroot}%{_tdnfpluginsdir}/libtdnfrepogpgcheck.so %{buildroot}%{_tdnfpluginsdir}/tdnfrepogpgcheck/
@@ -223,10 +225,16 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
-* Tue Nov 30 2021 Oliver Kurth <okurth@vmware.com> 3.2.2-1
+* Wed Dec 22 2021 Oliver Kurth <okurth@vmware.com> 3.2.3-1
+- update to 3.2.3
+* Fri Dec 10 2021 Oliver Kurth <okurth@vmware.com> 3.2.2-1
 - update to 3.2.2
-* Thu Oct 07 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.1.5-2
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.1.5-4
+- Bump up to compile with python 3.10
+* Mon Nov 15 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.1.5-3
 - Bump version as a part of rpm upgrade
+* Mon Nov 08 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.1.5-2
+- openssl 3.0.0 compatibility
 * Wed Oct 06 2021 Oliver Kurth <okurth@vmware.com> 3.1.5-1
 - update to 3.1.5
 - add minversions config option

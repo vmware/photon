@@ -1,24 +1,25 @@
 Summary:        An URL retrieval utility and library
 Name:           curl
-Version:        7.77.0
-Release:        2%{?dist}
+Version:        7.78.0
+Release:        4%{?dist}
 License:        MIT
 URL:            http://curl.haxx.se
 Group:          System Environment/NetworkingLibraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://curl.haxx.se/download/%{name}-%{version}.tar.gz
-%define sha1    curl=fdbb773251bba86ff95a3fe51f9969fd5004bdde
+%define sha1    curl=c51b85373ae7b3186ad364e909f29b93043a9c16
+Patch0:         curl-CVE-2021-22945.patch
+Patch1:         curl-CVE-2021-22946.patch
+Patch2:         curl-CVE-2021-22947.patch
 BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  krb5-devel
 BuildRequires:  libssh2-devel
-BuildRequires:  libmetalink-devel
 Requires:       ca-certificates
 Requires:       openssl
 Requires:       krb5
 Requires:       libssh2
-Requires:       libmetalink
 Requires:       curl-libs = %{version}-%{release}
 
 %description
@@ -51,15 +52,15 @@ This package contains minimal set of shared curl libraries.
     CXXFLAGS="%{optflags}" \
     --disable-static \
     --enable-threaded-resolver \
+    --enable-hidden-symbols \
     --with-ssl \
     --with-gssapi \
     --with-libssh2 \
-    --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt \
-    --with-libmetalink
+    --with-ca-bundle=/etc/pki/tls/certs/ca-bundle.crt
 make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
 %make_install
 install -v -d -m755 %{buildroot}/%{_docdir}/%{name}-%{version}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
@@ -92,12 +93,25 @@ rm -rf %{buildroot}/*
 %{_libdir}/libcurl.so.*
 
 %changelog
-*   Fri Sep 17 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.77.0-2
+*   Fri Dec 10 2021 Harinadh D<hdommaraju@vmware.com> 7.78.0-4
+-   Fix makecheck issues
+*   Fri Sep 17 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.78.0-3
 -   Bump up release for openssl
+*   Tue Sep 14 2021 Dweep Advani <dadvani@vmware.com> 7.78.0-2
+-   Fixed CVE-2021-22945, CVE-2021-22946, CVE-2021-22947
+*   Mon Aug 23 2021 Harinadh D <hdommaraju@vmware.com> 7.78.0-1
+-   Version update
+*   Thu Aug 12 2021 Sujay G <gsujay@vmware.com> 7.77.0-3
+-   Fix check_spec errors by replacing %setup with %autosetup
+*   Thu Jul 22 2021 Harinadh D <hdommaraju@vmware.com> 7.77.0-2
+-   Fix CVE-2021-22924,CVE-2021-22925
+-   Metalink disabled to fix CVE-2021-22922,CVE-2021-22923
 *   Mon Jun 28 2021 Nitesh Kumar <kunitesh@vmware.com> 7.77.0-1
 -   Upgrade to 7.77.0, Fix for CVE-2021-22897
-*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 7.76.1-1
--   Automatic Version Bump
+*   Fri May 21 2021 Harinadh D <hdommaraju@vmware.com> 7.75.0-2
+-   Fix CVE-2021-22901, CVE-2021-22898
+*   Mon Mar 29 2021 Harinadh D <hdommaraju@vmware.com> 7.75.0-1
+-   Fix CVE-2021-22876, CVE-2021-22890
 *   Wed Jan 13 2021 Siju Maliakkal <smaliakkal@vmware.com> 7.74.0-1
 -   Upgrade to 7.74.0
 *   Mon Dec 07 2020 Dweep Advani <dadvani@vmware.com> 7.72.0-3
