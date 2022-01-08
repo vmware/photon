@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd/
 Version:        247.10
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha1    systemd=62a16d634ddee46ae52c638ae67c064a8aa62224
+%define sha1    %{name}=62a16d634ddee46ae52c638ae67c064a8aa62224
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
 Source3:        systemd.cfg
@@ -22,6 +22,11 @@ Patch0:         systemd-247-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:         systemd-247-default-dns-from-env.patch
 Patch2:         timesync-Make-delaying-attempts-to-contact-servers-c.patch
 Patch3:         network-Fix-crash-while-dhcp4-address-gets-update.patch
+Patch4:         CVE-2021-3997-1.patch
+Patch5:         CVE-2021-3997-2.patch
+Patch6:         CVE-2021-3997-3.patch
+Patch7:         CVE-2021-3997-4.patch
+Patch8:         CVE-2021-3997-5.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -199,7 +204,7 @@ License:       LGPLv2+
 They can be useful to test systemd internals.
 
 %prep
-%autosetup -n %{name}-stable-%{version} -p1
+%autosetup -p1 -n %{name}-stable-%{version}
 
 sed -i "s#\#DefaultTasksMax=512#DefaultTasksMax=infinity#g" src/core/system.conf.in
 
@@ -291,9 +296,9 @@ CONFIGURE_OPTS=(
 %install
 %meson_install
 
-sed -i '/srv/d' %{buildroot}/usr/lib/tmpfiles.d/home.conf
-sed -i "s:0775 root lock:0755 root root:g" %{buildroot}/usr/lib/tmpfiles.d/legacy.conf
-sed -i "s:NamePolicy=kernel database onboard slot path:NamePolicy=kernel database:g" %{buildroot}/usr/lib/systemd/network/99-default.link
+sed -i '/srv/d' %{buildroot}%{_tmpfilesdir}/home.conf
+sed -i "s:0775 root lock:0755 root root:g" %{buildroot}%{_tmpfilesdir}/legacy.conf
+sed -i "s:NamePolicy=kernel database onboard slot path:NamePolicy=kernel database:g" %{buildroot}%{_systemd_util_dir}/network/99-default.link
 sed -i "s:#LLMNR=yes:LLMNR=false:g" %{buildroot}/etc/systemd/resolved.conf
 
 rm -f %{buildroot}%{_var}/log/README
@@ -302,16 +307,16 @@ mkdir -p %{buildroot}%{_localstatedir}/log
 ln -sfv %{_localstatedir}/opt/journal/log %{buildroot}%{_localstatedir}/log/journal
 
 find %{buildroot} -name '*.la' -delete
-install -Dm 0644 %{SOURCE1} %{buildroot}/%{_sysconfdir}/udev/rules.d
+install -Dm 0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/udev/rules.d
 install -m 0644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysctl.d
 install -dm 0755 %{buildroot}/boot/
 install -m 0644 %{SOURCE3} %{buildroot}/boot/
-install -dm 0755 %{buildroot}/%{_sysconfdir}/systemd/network
-install -m 0644 %{SOURCE4} %{buildroot}/%{_sysconfdir}/systemd/network
-install -m 0644 %{SOURCE6} %{buildroot}/%{_libdir}/systemd/system-preset
+install -dm 0755 %{buildroot}%{_sysconfdir}/systemd/network
+install -m 0644 %{SOURCE4} %{buildroot}%{_sysconfdir}/systemd/network
+install -m 0644 %{SOURCE6} %{buildroot}%{_presetdir}
 
-rm %{buildroot}/usr/lib/systemd/system/default.target
-ln -sfv multi-user.target %{buildroot}/usr/lib/systemd/system/default.target
+rm %{buildroot}%{_unitdir}/default.target
+ln -sfv multi-user.target %{buildroot}%{_unitdir}/default.target
 
 %ifarch x86_64
 install -m 0644 %{SOURCE5} %{buildroot}%{_sysconfdir}/modules-load.d
@@ -429,26 +434,26 @@ udevadm hwdb --update &>/dev/null || :
 %{_bindir}/systemd-repart
 %{_bindir}/systemd-dissect
 
-%{_libdir}/tmpfiles.d/etc.conf
-%{_libdir}/tmpfiles.d/home.conf
-%{_libdir}/tmpfiles.d/journal-nocow.conf
-%{_libdir}/tmpfiles.d/legacy.conf
-%{_libdir}/tmpfiles.d/portables.conf
-%{_libdir}/tmpfiles.d/static-nodes-permissions.conf
-%{_libdir}/tmpfiles.d/systemd-nologin.conf
-%{_libdir}/tmpfiles.d/systemd-tmp.conf
-%{_libdir}/tmpfiles.d/systemd.conf
-%{_libdir}/tmpfiles.d/tmp.conf
-%{_libdir}/tmpfiles.d/var.conf
-%{_libdir}/tmpfiles.d/x11.conf
-%{_libdir}/tmpfiles.d/README
+%{_tmpfilesdir}/etc.conf
+%{_tmpfilesdir}/home.conf
+%{_tmpfilesdir}/journal-nocow.conf
+%{_tmpfilesdir}/legacy.conf
+%{_tmpfilesdir}/portables.conf
+%{_tmpfilesdir}/static-nodes-permissions.conf
+%{_tmpfilesdir}/systemd-nologin.conf
+%{_tmpfilesdir}/systemd-tmp.conf
+%{_tmpfilesdir}/systemd.conf
+%{_tmpfilesdir}/tmp.conf
+%{_tmpfilesdir}/var.conf
+%{_tmpfilesdir}/x11.conf
+%{_tmpfilesdir}/README
 
-%{_libdir}/environment.d/99-environment.conf
+%{_environmentdir}/99-environment.conf
 %exclude %{_datadir}/locale
 %{_libdir}/binfmt.d
 %{_libdir}/rpm
 %{_libdir}/sysctl.d
-%{_libdir}/systemd
+%{_systemd_util_dir}
 
 %{_datadir}/bash-completion/*
 %{_datadir}/factory/*
@@ -498,7 +503,7 @@ udevadm hwdb --update &>/dev/null || :
 %{_sysconfdir}/systemd/sleep.conf
 %{_sysconfdir}/systemd/timesyncd.conf
 %{_sysconfdir}/udev/udev.conf
-%{_libdir}/tmpfiles.d/systemd-pstore.conf
+%{_tmpfilesdir}/systemd-pstore.conf
 %{_bindir}/bootctl
 %{_bindir}/kernel-install
 %{_bindir}/systemd-hwdb
@@ -508,71 +513,71 @@ udevadm hwdb --update &>/dev/null || :
 %{_libdir}/kernel
 %{_libdir}/modprobe.d
 %{_libdir}/modules-load.d
-%{_libdir}/systemd/network/99-default.link
-%{_libdir}/systemd/ntp-units.d/80-systemd-timesync.list
-%{_libdir}/systemd/system-generators/systemd-bless-boot-generator
-%{_libdir}/systemd/system-generators/systemd-hibernate-resume-generator
-%{_libdir}/systemd/system-sleep
-%{_libdir}/systemd/system/hibernate.target
-%{_libdir}/systemd/system/hybrid-sleep.target
-%{_libdir}/systemd/system/initrd-udevadm-cleanup-db.service
-%{_libdir}/systemd/system/kmod-static-nodes.service
-%{_libdir}/systemd/system/quotaon.service
-%{_libdir}/systemd/system/sleep.target
-%{_libdir}/systemd/system/sockets.target.wants/systemd-udevd-control.socket
-%{_libdir}/systemd/system/sockets.target.wants/systemd-udevd-kernel.socket
-%{_libdir}/systemd/system/suspend-then-hibernate.target
-%{_libdir}/systemd/system/suspend.target
-%{_libdir}/systemd/system/sysinit.target.wants/kmod-static-nodes.service
-%{_libdir}/systemd/system/sysinit.target.wants/systemd-boot-system-token.service
-%{_libdir}/systemd/system/sysinit.target.wants/systemd-hwdb-update.service
-%{_libdir}/systemd/system/sysinit.target.wants/systemd-modules-load.service
-%{_libdir}/systemd/system/sysinit.target.wants/systemd-random-seed.service
-%{_libdir}/systemd/system/sysinit.target.wants/systemd-tmpfiles-setup-dev.service
-%{_libdir}/systemd/system/sysinit.target.wants/systemd-udevd.service
-%{_libdir}/systemd/system/systemd-backlight@.service
-%{_libdir}/systemd/system/systemd-bless-boot.service
-%{_libdir}/systemd/system/systemd-boot-system-token.service
-%{_libdir}/systemd/system/systemd-fsck-root.service
-%{_libdir}/systemd/system/systemd-fsck@.service
-%{_libdir}/systemd/system/systemd-hibernate-resume@.service
-%{_libdir}/systemd/system/systemd-hibernate.service
-%{_libdir}/systemd/system/systemd-hwdb-update.service
-%{_libdir}/systemd/system/systemd-hybrid-sleep.service
-%{_libdir}/systemd/system/systemd-modules-load.service
-%{_libdir}/systemd/system/systemd-pstore.service
-%{_libdir}/systemd/system/systemd-quotacheck.service
-%{_libdir}/systemd/system/systemd-random-seed.service
-%{_libdir}/systemd/system/systemd-remount-fs.service
-%{_libdir}/systemd/system/systemd-rfkill.service
-%{_libdir}/systemd/system/systemd-rfkill.socket
-%{_libdir}/systemd/system/systemd-suspend-then-hibernate.service
-%{_libdir}/systemd/system/systemd-suspend.service
-%{_libdir}/systemd/system/systemd-timesyncd.service
-%{_libdir}/systemd/system/systemd-tmpfiles-setup-dev.service
-%{_libdir}/systemd/system/systemd-udev-settle.service
-%{_libdir}/systemd/system/systemd-udevd-control.socket
-%{_libdir}/systemd/system/systemd-udevd-kernel.socket
-%{_libdir}/systemd/system/systemd-udevd.service
-%{_libdir}/systemd/system/systemd-vconsole-setup.service
-%{_libdir}/systemd/system/systemd-volatile-root.service
-%{_libdir}/systemd/systemd-backlight
-%{_libdir}/systemd/systemd-bless-boot
-%{_libdir}/systemd/systemd-fsck
-%{_libdir}/systemd/systemd-growfs
-%{_libdir}/systemd/systemd-hibernate-resume
-%{_libdir}/systemd/systemd-makefs
-%{_libdir}/systemd/systemd-modules-load
-%{_libdir}/systemd/systemd-pstore
-%{_libdir}/systemd/systemd-quotacheck
-%{_libdir}/systemd/systemd-random-seed
-%{_libdir}/systemd/systemd-remount-fs
-%{_libdir}/systemd/systemd-rfkill
-%{_libdir}/systemd/systemd-sleep
-%{_libdir}/systemd/systemd-timesyncd
-%{_libdir}/systemd/systemd-udevd
-%{_libdir}/systemd/systemd-vconsole-setup
-%{_libdir}/systemd/systemd-volatile-root
+%{_systemd_util_dir}/network/99-default.link
+%{_systemd_util_dir}/ntp-units.d/80-systemd-timesync.list
+%{_systemd_util_dir}/system-generators/systemd-bless-boot-generator
+%{_systemd_util_dir}/system-generators/systemd-hibernate-resume-generator
+%{_systemd_util_dir}/system-sleep
+%{_unitdir}/hibernate.target
+%{_unitdir}/hybrid-sleep.target
+%{_unitdir}/initrd-udevadm-cleanup-db.service
+%{_unitdir}/kmod-static-nodes.service
+%{_unitdir}/quotaon.service
+%{_unitdir}/sleep.target
+%{_unitdir}/sockets.target.wants/systemd-udevd-control.socket
+%{_unitdir}/sockets.target.wants/systemd-udevd-kernel.socket
+%{_unitdir}/suspend-then-hibernate.target
+%{_unitdir}/suspend.target
+%{_unitdir}/sysinit.target.wants/kmod-static-nodes.service
+%{_unitdir}/sysinit.target.wants/systemd-boot-system-token.service
+%{_unitdir}/sysinit.target.wants/systemd-hwdb-update.service
+%{_unitdir}/sysinit.target.wants/systemd-modules-load.service
+%{_unitdir}/sysinit.target.wants/systemd-random-seed.service
+%{_unitdir}/sysinit.target.wants/systemd-tmpfiles-setup-dev.service
+%{_unitdir}/sysinit.target.wants/systemd-udevd.service
+%{_unitdir}/systemd-backlight@.service
+%{_unitdir}/systemd-bless-boot.service
+%{_unitdir}/systemd-boot-system-token.service
+%{_unitdir}/systemd-fsck-root.service
+%{_unitdir}/systemd-fsck@.service
+%{_unitdir}/systemd-hibernate-resume@.service
+%{_unitdir}/systemd-hibernate.service
+%{_unitdir}/systemd-hwdb-update.service
+%{_unitdir}/systemd-hybrid-sleep.service
+%{_unitdir}/systemd-modules-load.service
+%{_unitdir}/systemd-pstore.service
+%{_unitdir}/systemd-quotacheck.service
+%{_unitdir}/systemd-random-seed.service
+%{_unitdir}/systemd-remount-fs.service
+%{_unitdir}/systemd-rfkill.service
+%{_unitdir}/systemd-rfkill.socket
+%{_unitdir}/systemd-suspend-then-hibernate.service
+%{_unitdir}/systemd-suspend.service
+%{_unitdir}/systemd-timesyncd.service
+%{_unitdir}/systemd-tmpfiles-setup-dev.service
+%{_unitdir}/systemd-udev-settle.service
+%{_unitdir}/systemd-udevd-control.socket
+%{_unitdir}/systemd-udevd-kernel.socket
+%{_unitdir}/systemd-udevd.service
+%{_unitdir}/systemd-vconsole-setup.service
+%{_unitdir}/systemd-volatile-root.service
+%{_systemd_util_dir}/systemd-backlight
+%{_systemd_util_dir}/systemd-bless-boot
+%{_systemd_util_dir}/systemd-fsck
+%{_systemd_util_dir}/systemd-growfs
+%{_systemd_util_dir}/systemd-hibernate-resume
+%{_systemd_util_dir}/systemd-makefs
+%{_systemd_util_dir}/systemd-modules-load
+%{_systemd_util_dir}/systemd-pstore
+%{_systemd_util_dir}/systemd-quotacheck
+%{_systemd_util_dir}/systemd-random-seed
+%{_systemd_util_dir}/systemd-remount-fs
+%{_systemd_util_dir}/systemd-rfkill
+%{_systemd_util_dir}/systemd-sleep
+%{_systemd_util_dir}/systemd-timesyncd
+%{_systemd_util_dir}/systemd-udevd
+%{_systemd_util_dir}/systemd-vconsole-setup
+%{_systemd_util_dir}/systemd-volatile-root
 
 %dir %{_libdir}/udev
 %{_libdir}/udev/ata_id
@@ -619,14 +624,14 @@ udevadm hwdb --update &>/dev/null || :
 %{_bindir}/systemd-nspawn
 %{_bindir}/machinectl
 
-%{_libdir}/systemd/systemd-machined
-%{_libdir}/systemd/system/systemd-machined.service
-%{_libdir}/systemd/system/systemd-nspawn@.service
-%{_libdir}/systemd/system/dbus-org.freedesktop.machine1.service
-%{_libdir}/systemd/system/var-lib-machines.mount
-%{_libdir}/systemd/system/machine.slice
-%{_libdir}/systemd/system/machines.target.wants
-%{_libdir}/tmpfiles.d/systemd-nspawn.conf
+%{_systemd_util_dir}/systemd-machined
+%{_unitdir}/systemd-machined.service
+%{_unitdir}/systemd-nspawn@.service
+%{_unitdir}/dbus-org.freedesktop.machine1.service
+%{_unitdir}/var-lib-machines.mount
+%{_unitdir}/machine.slice
+%{_unitdir}/machines.target.wants
+%{_tmpfilesdir}/systemd-nspawn.conf
 
 %{_datadir}/dbus-1/system.d/org.freedesktop.machine1.conf
 %{_datadir}/dbus-1/system-services/org.freedesktop.machine1.service
@@ -637,25 +642,27 @@ udevadm hwdb --update &>/dev/null || :
 %config(noreplace) %{_sysconfdir}/systemd/journal-upload.conf
 %config(noreplace) %{_sysconfdir}/systemd/journal-remote.conf
 
-%{_libdir}/systemd/systemd-journal-gatewayd
-%{_libdir}/systemd/systemd-journal-remote
-%{_libdir}/systemd/systemd-journal-upload
+%{_systemd_util_dir}/systemd-journal-gatewayd
+%{_systemd_util_dir}/systemd-journal-remote
+%{_systemd_util_dir}/systemd-journal-upload
 
-%{_libdir}/systemd/system/systemd-journal-gatewayd.service
-%{_libdir}/systemd/system/systemd-journal-gatewayd.socket
-%{_libdir}/systemd/system/systemd-journal-remote.service
-%{_libdir}/systemd/system/systemd-journal-remote.socket
-%{_libdir}/systemd/system/systemd-journal-upload.service
+%{_unitdir}/systemd-journal-gatewayd.service
+%{_unitdir}/systemd-journal-gatewayd.socket
+%{_unitdir}/systemd-journal-remote.service
+%{_unitdir}/systemd-journal-remote.socket
+%{_unitdir}/systemd-journal-upload.service
 
 %files rpm-macros
 %{_libdir}/rpm/macros.d
 
 %files tests
-%{_libdir}/systemd/tests
+%{_systemd_util_dir}/tests
 
 %files lang -f ../%{name}.lang
 
 %changelog
+* Sat Jan 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 247.10-5
+- Fix CVE-2021-3997
 * Mon Jan 03 2022 Sujay G <gsujay@vmware.com> 247.10-4
 - Bump version to build with updated python3-lxml
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 247.10-3
