@@ -1,0 +1,37 @@
+From 24ee2023b61fbf0120aacf8584dbb8ed29b96a05 Mon Sep 17 00:00:00 2001
+From: "Darrick J. Wong" <djwong@kernel.org>
+Date: Wed, 22 Dec 2021 14:19:18 -0800
+Subject: [PATCH] xfs: map unwritten blocks in XFS_IOC_{ALLOC,FREE}SP just like
+ fallocate
+
+The old ALLOCSP/FREESP ioctls in XFS can be used to preallocate space at
+the end of files, just like fallocate and RESVSP.  Make the behavior
+consistent with the other ioctls.
+
+Reported-by: Kirill Tkhai <ktkhai@virtuozzo.com>
+Signed-off-by: Darrick J. Wong <djwong@kernel.org>
+Signed-off-by: Darrick J. Wong <darrick.wong@oracle.com>
+Reviewed-by: Dave Chinner <dchinner@redhat.com>
+Reviewed-by: Eric Sandeen <sandeen@redhat.com>
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ fs/xfs/xfs_ioctl.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/fs/xfs/xfs_ioctl.c b/fs/xfs/xfs_ioctl.c
+index e4a4f82ea13f..2e4f78d68b05 100644
+--- a/fs/xfs/xfs_ioctl.c
++++ b/fs/xfs/xfs_ioctl.c
+@@ -729,7 +729,8 @@ xfs_ioc_space(
+ 		flags |= XFS_PREALLOC_CLEAR;
+ 		if (bf->l_start > XFS_ISIZE(ip)) {
+ 			error = xfs_alloc_file_space(ip, XFS_ISIZE(ip),
+-					bf->l_start - XFS_ISIZE(ip), 0);
++					bf->l_start - XFS_ISIZE(ip),
++					XFS_BMAPI_PREALLOC);
+ 			if (error)
+ 				goto out_unlock;
+ 		}
+-- 
+2.25.1
+

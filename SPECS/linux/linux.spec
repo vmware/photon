@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.9.296
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -172,6 +172,13 @@ Patch119:       0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 
 # Fix for CVE-2018-25020
 Patch120:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
+
+# Fix for CVE-2021-4155
+Patch121:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
+
+# Fix for CVE-2021-4204
+Patch122:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
+Patch123:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -352,6 +359,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch118 -p1
 %patch119 -p1
 %patch120 -p1
+%patch121 -p1
+%patch122 -p1
+%patch123 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -522,6 +532,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.296-2
+-   Fix CVE-2021-4155 and CVE-2021-4204
 *   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.296-1
 -   Update to version 4.9.296
 -   Backport patch to fix CVE-2018-25020
