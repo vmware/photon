@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.224
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -168,6 +168,13 @@ Patch187:       0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch189:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
+# Fix for CVE-2021-4155
+Patch190:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
+
+# Fix for CVE-2021-4204
+Patch191:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
+Patch192:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
@@ -341,6 +348,9 @@ popd
 %patch186 -p1
 %patch187 -p1
 %patch189 -p1
+%patch190 -p1
+%patch191 -p1
+%patch192 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -494,6 +504,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-2
+-   Fix CVE-2021-4155 and CVE-2021-4204
 *   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-1
 -   Update to version 4.19.224
 *   Mon Jan 03 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.219-5

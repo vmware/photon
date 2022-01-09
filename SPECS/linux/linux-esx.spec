@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.224
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -385,6 +385,13 @@ Patch521:        0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch522:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
+# Fix for CVE-2021-4155
+Patch523:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
+
+# Fix for CVE-2021-4204
+Patch524:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
+Patch525:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
 # Patches for i40e driver
 Patch801:        0001-Add-support-for-gettimex64-interface.patch
 
@@ -744,6 +751,9 @@ This Linux package contains hmac sha generator kernel module.
 %patch520 -p1
 %patch521 -p1
 %patch522 -p1
+%patch523 -p1
+%patch524 -p1
+%patch525 -p1
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -946,6 +956,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Sun Jan 09 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-3
+-   Fix CVE-2021-4155 and CVE-2021-4204
 *   Sun Jan 09 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.224-2
 -   Reduce kernel .text size by ~40% by removing .entry.text alignment.
 *   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-1

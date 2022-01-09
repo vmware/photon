@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.224
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -143,6 +143,13 @@ Patch156:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch157:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
+# Fix for CVE-2021-4155
+Patch158:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
+
+# Fix for CVE-2021-4204
+Patch159:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
+Patch160:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	fips-kat-tests.patch
@@ -306,6 +313,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch155 -p1
 %patch156 -p1
 %patch157 -p1
+%patch158 -p1
+%patch159 -p1
+%patch160 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -496,6 +506,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-2
+-   Fix CVE-2021-4155 and CVE-2021-4204
 *   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-1
 -   Update to version 4.19.224
 *   Fri Dec 17 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.219-3

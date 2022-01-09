@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.224
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt100
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -506,6 +506,13 @@ Patch629:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch630:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
+# Fix for CVE-2021-4155
+Patch631:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
+
+# Fix for CVE-2021-4204
+Patch632:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
+Patch633:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
 %if 0%{?kat_build:1}
 Patch1000:       fips-kat-tests.patch
 %endif
@@ -998,6 +1005,9 @@ The Linux package contains the Linux kernel doc files
 %patch628 -p1
 %patch629 -p1
 %patch630 -p1
+%patch631 -p1
+%patch632 -p1
+%patch633 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -1195,6 +1205,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-2
+-   Fix CVE-2021-4155 and CVE-2021-4204
 *   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-1
 -   Update to version 4.19.224
 *   Mon Jan 03 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.219-5

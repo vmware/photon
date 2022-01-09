@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.224
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -415,6 +415,13 @@ Patch505:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch506:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
+# Fix for CVE-2021-4155
+Patch507:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
+
+# Fix for CVE-2021-4204
+Patch508:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
+Patch509:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 #Patches for i40e driver
 Patch1500:      0001-Add-support-for-gettimex64-interface.patch
@@ -885,6 +892,9 @@ This Linux package contains hmac sha generator kernel module.
 %patch504 -p1
 %patch505 -p1
 %patch506 -p1
+%patch507 -p1
+%patch508 -p1
+%patch509 -p1
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -1262,6 +1272,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+*   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-2
+-   Fix CVE-2021-4155 and CVE-2021-4204
 *   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-1
 -   Update to version 4.19.224
 *   Mon Jan 03 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 4.19.219-5
