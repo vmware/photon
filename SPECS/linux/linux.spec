@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:    	4.4.298
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Version:        4.4.298
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -150,6 +150,13 @@ Patch102:      0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 # Fix for CVE-2018-25020
 Patch103:      0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
+
+# Fix for CVE-2021-4155
+Patch104:      0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
+
+# Fix for CVE-2021-4204
+Patch105:      0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
+Patch106:      0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -314,6 +321,9 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch101 -p1
 %patch102 -p1
 %patch103 -p1
+%patch104 -p1
+%patch105 -p1
+%patch106 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -472,6 +482,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.298-2
+-   Fix CVE-2021-4155 and CVE-2021-4204
 *   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.298-1
 -   Update to version 4.4.298
 -   Backport patch to fix CVE-2018-25020
