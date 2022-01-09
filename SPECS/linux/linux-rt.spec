@@ -19,7 +19,7 @@ Name:           linux-rt
 Version:        5.10.83
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt58
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -84,6 +84,13 @@ Patch101:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 # Next 2 patches are about to be merged into stable
 Patch103:       0001-mm-fix-panic-in-__alloc_pages.patch
 Patch104:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
+
+# Fix for CVE-2021-4155
+Patch105:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
+
+# Fix for CVE-2021-4204
+Patch106:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
+Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch120:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -556,6 +563,9 @@ The Linux package contains the Linux kernel doc files
 
 %patch103 -p1
 %patch104 -p1
+%patch105 -p1
+%patch106 -p1
+%patch107 -p1
 
 %patch120 -p1
 %patch121 -p1
@@ -1113,6 +1123,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-7
+-   Fix CVE-2021-4155 and CVE-2021-4204
 *   Mon Dec 20 2021 Keerthana K <keerthanak@vmware.com> 5.10.83-6
 -   crypto_self_test and broken kattest module enhancements
 *   Fri Dec 17 2021 Alexey Makhalov <amakhalov@vmware.com> 5.10.83-5

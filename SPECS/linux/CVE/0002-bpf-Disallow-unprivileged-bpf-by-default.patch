@@ -1,0 +1,59 @@
+From 688bca5136f152d9c3f00e70da125219068c60b1 Mon Sep 17 00:00:00 2001
+From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Date: Fri, 29 Oct 2021 12:43:54 -0700
+Subject: [PATCH 2/2] bpf: Disallow unprivileged bpf by default
+
+commit 8a03e56b253e9691c90bc52ca199323d71b96204 upstream.
+
+Disabling unprivileged BPF would help prevent unprivileged users from
+creating certain conditions required for potential speculative execution
+side-channel attacks on unmitigated affected hardware.
+
+A deep dive on such attacks and current mitigations is available here [0].
+
+Sync with what many distros are currently applying already, and disable
+unprivileged BPF by default. An admin can enable this at runtime, if
+necessary, as described in 08389d888287 ("bpf: Add kconfig knob for
+disabling unpriv bpf by default").
+
+  [0] "BPF and Spectre: Mitigating transient execution attacks", Daniel Borkmann, eBPF Summit '21
+      https://ebpf.io/summit-2021-slides/eBPF_Summit_2021-Keynote-Daniel_Borkmann-BPF_and_Spectre.pdf
+
+Signed-off-by: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Mark Rutland <mark.rutland@arm.com>
+Link: https://lore.kernel.org/bpf/0ace9ce3f97656d5f62d11093ad7ee81190c3c25.1635535215.git.pawan.kumar.gupta@linux.intel.com
+Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+---
+ init/Kconfig | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/init/Kconfig b/init/Kconfig
+index 13685bffef37..453253ca8683 100644
+--- a/init/Kconfig
++++ b/init/Kconfig
+@@ -1724,6 +1724,7 @@ config BPF_JIT_DEFAULT_ON
+ 
+ config BPF_UNPRIV_DEFAULT_OFF
+ 	bool "Disable unprivileged BPF by default"
++	default y
+ 	depends on BPF_SYSCALL
+ 	help
+ 	  Disables unprivileged BPF by default by setting the corresponding
+@@ -1732,6 +1733,12 @@ config BPF_UNPRIV_DEFAULT_OFF
+ 	  disable it by setting it to 1 (from which no other transition to
+ 	  0 is possible anymore).
+ 
++	  Unprivileged BPF could be used to exploit certain potential
++	  speculative execution side-channel vulnerabilities on unmitigated
++	  affected hardware.
++
++	  If you are unsure how to answer this question, answer Y.
++
+ source "kernel/bpf/preload/Kconfig"
+ 
+ config USERFAULTFD
+-- 
+2.25.1
+

@@ -7,7 +7,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.83
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,6 @@ Vendor:         VMware, Inc.
 Distribution: 	Photon
 
 %define uname_r %{version}-%{release}-aws
-
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
 %define sha1 linux=ed35078ce1be76935205980231c2b565ca84f37a
@@ -59,6 +58,11 @@ Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
 Patch101:       KVM-Don-t-accept-obviously-wrong-gsi-values-via-KVM_.patch
 # Fix for CVE-2019-12379
 Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
+# Fix for CVE-2021-4155
+Patch103:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
+# Fix for CVE-2021-4204
+Patch104:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
+Patch105:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 #Amazon AWS
 Patch201:       0002-bump-the-default-TTL-to-255.patch
@@ -195,6 +199,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch100 -p1
 %patch101 -p1
 %patch102 -p1
+%patch103 -p1
+%patch104 -p1
+%patch105 -p1
 
 #Amazon AWS
 %patch201 -p1
@@ -237,7 +244,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch238 -p1
 %patch239 -p1
 %patch240 -p1
-
 
 # crypto
 %patch500 -p1
@@ -397,6 +403,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-5
+-   Fix CVE-2021-4155 and CVE-2021-4204
 *   Fri Dec 17 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.83-4
 -   Disable md5 algorithm for sctp if fips is enabled.
 *   Tue Dec 14 2021 Harinadh D <hdommaraju@vmware.com> 5.10.83-3
