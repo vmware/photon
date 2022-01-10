@@ -44,19 +44,14 @@ tdnf --installroot $TEMP_CHROOT/ \
 
 actual_pkg_list=($(tdnf --installroot $TEMP_CHROOT/ \
                         --disablerepo=* -q \
-                        list installed 2>/dev/null | cut -d' ' -f1))
+                        list installed 2>/dev/null | cut -d'.' -f1))
 
 expected_pkg_list=(
-  attr.$arch bash.$arch bzip2.$arch ca-certificates.$arch
-  coreutils.$arch curl.$arch elfutils-libelf.$arch expat.$arch
-  file.$arch filesystem.$arch findutils.$arch glib.$arch glibc.$arch
-  gmp.$arch gpgme.$arch grep.$arch hawkey.$arch libassuan.$arch
-  libcap.$arch libdb.$arch libffi.$arch libgcc.$arch libgpg-error.$arch
-  librepo.$arch libsolv.$arch libssh2.$arch libstdc++.$arch lua.$arch
-  ncurses.$arch nspr.$arch nss.$arch openssl.$arch pcre.$arch
-  photon-release.noarch photon-repos.noarch pkg-config.$arch popt.$arch
-  readline.$arch rpm.$arch sqlite-autoconf.$arch tcsh.$arch tdnf.$arch
-  util-linux.$arch vim.$arch which.$arch xz.$arch zlib.$arch
+  attr bash bzip2 ca-certificates coreutils curl elfutils-libelf expat
+  file filesystem findutils glib glibc gmp gpgme grep hawkey libassuan
+  libcap libdb libffi libgcc libgpg-error librepo libsolv libssh2 libstdc++ lua
+  ncurses nspr nss openssl pcre photon-release photon-repos pkg-config popt
+  readline rpm sqlite-autoconf tcsh tdnf util-linux vim which xz zlib
   )
 
 actual_pkg_count=${#actual_pkg_list[@]}
@@ -79,10 +74,7 @@ pushd $TEMP_CHROOT
 #create /var/run symlink
 ln -sf ../run var/run
 # cleanup anything not needed inside rootfs
-rm -rf usr/src/
-rm -rf home/*
-# rm -rf var/lib/yum/*
-rm -rf var/log/*
+rm -rf usr/src/ home/* var/log/*
 
 #find var/cache/tdnf/photon/rpms -type f -name "*.rpm" -exec rm {} \;
 tar cpjf ../$ROOTFS_TAR_FILENAME .
