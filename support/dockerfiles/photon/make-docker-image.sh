@@ -43,17 +43,14 @@ tdnf \
 
 actual_pkg_list=($(tdnf --installroot $TEMP_CHROOT/ \
                         --disablerepo=* -q \
-                        list installed 2>/dev/null | cut -d' ' -f1))
+                        list installed 2>/dev/null | cut -d'.' -f1))
 
 expected_pkg_list=(
-  bash.$arch bzip2-libs.$arch ca-certificates.$arch ca-certificates-pki.$arch
-  curl.$arch curl-libs.$arch e2fsprogs-libs.$arch elfutils-libelf.$arch
-  expat.$arch expat-libs.$arch filesystem.$arch glibc.$arch krb5.$arch
-  libcap.$arch libdb.$arch libgcc.$arch libmetalink.$arch libsolv.$arch
-  libssh2.$arch lua.$arch ncurses-libs.$arch nspr.$arch nss-libs.$arch
-  openssl.$arch photon-release.noarch photon-repos.noarch popt.$arch
-  readline.$arch rpm-libs.$arch sqlite-libs.$arch tdnf.$arch
-  tdnf-cli-libs.$arch toybox.$arch xz-libs.$arch zlib.$arch zstd-libs.$arch
+  bash bzip2-libs ca-certificates ca-certificates-pki curl curl-libs
+  e2fsprogs-libs elfutils-libelf expat expat-libs filesystem glibc krb5
+  libcap libdb libgcc libmetalink libsolv libssh2 lua ncurses-libs nspr
+  nss-libs openssl photon-release photon-repos popt readline rpm-libs
+  sqlite-libs tdnf tdnf-cli-libs toybox xz-libs zlib zstd-libs
 )
 
 actual_pkg_count=${#actual_pkg_list[@]}
@@ -74,14 +71,10 @@ rpm --root $TEMP_CHROOT/ --import $TEMP_CHROOT/etc/pki/rpm-gpg/*
 
 pushd $TEMP_CHROOT
 # cleanup anything not needed inside rootfs
-rm -rf usr/src/
-rm -rf home/*
-# rm -rf var/lib/yum/*
-rm -rf var/log/*
+rm -rf usr/src/ home/* var/log/*
 # set TERM to linux due to stripped terminfo
 echo "export TERM=linux" >> etc/bash.bashrc
 
-#find var/cache/tdnf/photon/rpms -type f -name "*.rpm" -exec rm {} \;
 tar cpzf ../$ROOTFS_TAR_FILENAME .
 popd
 
