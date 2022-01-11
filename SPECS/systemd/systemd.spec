@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd/
 Version:        250.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 Group:          System Environment/Security
@@ -357,6 +357,9 @@ udevadm hwdb --update &>/dev/null || :
 %postun udev
 %systemd_postun_with_restart systemd-udevd.service
 
+%postun tests
+rm -rf %{_libdir}/systemd/tests
+
 %files
 %defattr(-,root,root)
 %dir %{_sysconfdir}/systemd
@@ -658,6 +661,8 @@ udevadm hwdb --update &>/dev/null || :
 %files lang -f ../%{name}.lang
 
 %changelog
+* Wed Jan 12 2022 Nitesh Kumar <kunitesh@vmware.com> 250.2-2
+- Added postun for systemd-tests.
 * Tue Jan 11 2022 Shreenidhi Shedi <sshedi@vmware.com> 250.2-1
 - Upgrade to v250.2, this fixes CVE-2021-3997
 * Thu Dec 09 2021 Susant Sahani <ssahani@vmware.com> 249.7-1
