@@ -1,7 +1,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.8.14
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -30,14 +30,14 @@ BuildArch:     noarch
 rabbitmq messaging server
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8"
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT \
+make install DESTDIR=%{buildroot} \
              PREFIX=%{_prefix} \
              RMQ_ROOTDIR=/usr/lib/rabbitmq/
 
@@ -71,7 +71,7 @@ WantedBy=multi-user.target
 EOF
 
 %check
-make tests
+make %{?_smp_mflags} tests
 
 %pre
 if ! getent group rabbitmq >/dev/null; then
@@ -96,7 +96,7 @@ chmod g+s /etc/rabbitmq
 %systemd_postun_with_restart %{name}.service
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
@@ -107,6 +107,8 @@ rm -rf $RPM_BUILD_ROOT
 /var/lib/*
 
 %changelog
+* Tue Jan 11 2022 Nitesh Kumar <kunitesh@vmware.com> 3.8.14-2
+- Bump up version to use fips enable erlang.
 * Tue Apr 13 2021 Gerrit Photon <photon-checkins@vmware.com> 3.8.14-1
 - Automatic Version Bump
 * Thu Sep 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.8.9-1
