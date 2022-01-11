@@ -1,4 +1,4 @@
-PhotonOS v3.0 (and greater versions) Copyright © VMware, Inc. 2014-2018
+PhotonOS v3.0 (and greater versions) Copyright © VMware, Inc. 2014-2022
 
 The files of PhotonOS version 3.0 (and greater versions) are licensed under the terms of the Apache License v2.0 or alternatively under the terms of the GNU General Public License (GPL) v2 UNLESS otherwise noted at the beginning of the file or a LICENSE file present in a directory subtree declares a separate license.
 
