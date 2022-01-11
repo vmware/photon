@@ -1,7 +1,7 @@
 Name:         erlang
 Summary:      erlang
 Version:      23.1
-Release:      3%{?dist}
+Release:      4%{?dist}
 Group:        Development/Languages
 Vendor:       VMware, Inc.
 Distribution: Photon
@@ -11,6 +11,9 @@ Source0:      OTP-%{version}.tar.gz
 %define sha1  OTP=2d6eaefe960f52cc79d7614c11256b73174e4161
 Patch0:       0001-erlang-fix-vernemq-build-fail.patch
 Patch1:       0001-crypto-declare-extern-for-BN_GENCB-APIs.patch
+
+Requires:     ncurses-libs
+
 BuildRequires: unzip
 BuildRequires: openssl-devel
 %description
@@ -23,7 +26,13 @@ erlang programming language
 export ERL_TOP=`pwd`
 export CFLAGS="-Wno-error=implicit-function-declaration"
 ./otp_build autoconf
-%configure --with-ssl=%{_libdir} --with-ssl-incl=%{_includedir}/openssl --with-ssl-rpath=%{_libdir} --enable-dynamic-ssl-lib
+%configure \
+    --with-ssl=%{_libdir} \
+    --with-ssl-incl=%{_includedir}/openssl \
+    --with-ssl-rpath=%{_libdir} \
+    --enable-dynamic-ssl-lib \
+    --enable-fips
+
 make %{?_smp_mflags}
 
 %install
@@ -39,6 +48,8 @@ make install DESTDIR=%{buildroot} %{?_smp_mflags}
 %exclude %{_libdir}/debug
 
 %changelog
+* Tue Jan 11 2022 Nitesh Kumar <kunitesh@vmware.com> 23.1-4
+- Enable FIPS, Adding ncurses-libs as Requires.
 * Fri Jun 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 23.1-3
 - openssl 3.0.0 support
 * Wed Sep 23 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 23.1-2

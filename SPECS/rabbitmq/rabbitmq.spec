@@ -1,7 +1,7 @@
 Name:          rabbitmq-server
 Summary:       RabbitMQ messaging server
 Version:       3.8.9
-Release:       2%{?dist}
+Release:       3%{?dist}
 Group:         Applications
 Vendor:        VMware, Inc.
 Distribution:  Photon
@@ -107,6 +107,8 @@ rm -rf %{buildroot}
 /var/lib/*
 
 %changelog
+* Tue Jan 11 2022 Nitesh Kumar <kunitesh@vmware.com> 3.8.9-3
+- Bump up version to use fips enable erlang.
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.8.9-2
 - Bump up to compile with python 3.10
 * Thu Sep 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.8.9-1
