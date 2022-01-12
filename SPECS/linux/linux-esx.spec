@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.83
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -113,6 +113,10 @@ Patch105:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
 # Fix for CVE-2021-4204
 Patch106:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+#Patches for ptp_vmw
+Patch201:      0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
+Patch202:      0002-ptp-ptp_vmw-Add-module-param-to-probe-device-using-h.patch
 
 # Crypto:
 # Patch to add drbg_pr_ctr_aes256 test vectors to testmgr
@@ -268,6 +272,10 @@ The Linux package contains the Linux kernel doc files
 %patch105 -p1
 %patch106 -p1
 %patch107 -p1
+
+#Patches for ptp_vmw
+%patch201 -p1
+%patch202 -p1
 
 # crypto
 %patch500 -p1
@@ -478,6 +486,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Wed Jan 12 2022 Deep Shah <sdeep@vmware.com> 5.10.83-8
+- Update ptp_vmw with provider mode support
 * Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-7
 - Fix CVE-2021-4155 and CVE-2021-4204
 * Mon Dec 20 2021 Keerthana K <keerthanak@vmware.com> 5.10.83-6
