@@ -1,7 +1,7 @@
 Summary:        Free version of the SSH connectivity tools
 Name:           openssh
 Version:        7.8p1
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        BSD
 URL:            https://www.openssh.com/
 Group:          System Environment/Security
@@ -29,6 +29,7 @@ Patch12:        openssh-Fix-error-message-close.patch
 Patch13:        openssh-expose-vasnmprintf.patch
 Patch14:        openssh-fix-ssh-keyscan.patch
 Patch15:        openssh-CVE-2021-41617.patch
+Patch16:        openssh-CVE-2020-14145.patch
 BuildRequires:  openssl-devel
 BuildRequires:  Linux-PAM-devel
 BuildRequires:  krb5-devel
@@ -80,6 +81,7 @@ tar xf %{SOURCE1} --no-same-owner
 %patch13 -p1
 %patch14 -p1
 %patch15 -p1
+%patch16 -p1
 
 %build
 sh ./configure \
@@ -203,6 +205,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/ssh-pkcs11-helper.8.gz
 
 %changelog
+*   Wed Jan 12 2022 Dweep Advani <dadvani@vmware.comm> 7.8p1-11
+-   Fix for CVE-2020-14145
 *   Mon Oct 04 2021 Ankit Jain <ankitja@vmware.comm> 7.8p1-10
 -   Fix for CVE-2021-41617
 *   Mon Oct 05 2020 Keerthana K <keerthanak@vmware.com> 7.8p1-9
