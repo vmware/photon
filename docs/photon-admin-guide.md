@@ -8,13 +8,12 @@
     -   [The Root Account and the sudo and su
         Commands](#the-root-account-and-the-sudo-and-su-commands)
 -   [Quick Start](#quick-start)
-    -   [Obtaining the ISO from Bintray and Creating a Photon OS VM in
+    -   [Obtaining the ISO from Packages URL and Creating a Photon OS VM in
         VMware
-        Workstation](#obtaining-the-iso-from-bintray-and-creating-a-photon-os-vm-in-vmware-workstation)
+        Workstation](#obtaining-the-iso-from-packages-url-and-creating-a-photon-os-vm-in-vmware-workstation)
     -   [Installing the OVA for the Minimal Version in
         vSphere](#installing-the-ova-for-the-minimal-version-in-vsphere)
-    -   [Rapidly Deploying the Photon OS OVA in VMware Workstation 12
-        Pro](#rapidly-deploying-the-photon-os-ova-in-vmware-workstation-12-pro)
+    -   [Rapidly Deploying the Photon OS OVA in VMware Workstation Pro](#rapidly-deploying-the-photon-os-ova-in-vmware-workstation-pro)
     -   [Root Password Rules](#root-password-rules)
     -   [Permitting Root Login with
         SSH](#permitting-root-login-with-ssh)
@@ -35,7 +34,7 @@
     -   [Controlling Services](#controlling-services)
     -   [Creating a Startup Service](#creating-a-startup-service)
     -   [Disabling the Photon OS
-        httpd.service](#disabling-the-photon-os-httpd.service)
+        httpd.service](#disabling-the-photon-os-httpdservice)
     -   [Auditing System Events with
         auditd](#auditing-system-events-with-auditd)
     -   [Analyzing systemd Logs with
@@ -72,7 +71,7 @@
 -   [Kubernetes](#kubernetes)
 -   [RPM-OSTree](#rpm-ostree)
 -   [Disabling TLS 1.0 to Improve Transport Layer
-    Security](#disabling-tls-1.0-to-improve-transport-layer-security)
+    Security](#disabling-tls-10-to-improve-transport-layer-security)
 -   [Building a Package from a Source
     RPM](#building-a-package-from-a-source-rpm)
 -   [References](#references)
@@ -105,7 +104,7 @@ Tdnf keeps the operating system as small as possible while preserving yum's robu
 
 The SPECS directory of the GitHub website for Photon OS contains all the packages that can appear in Photon OS repositories:  
 
-https://github.com/vmware/photon/tree/master/SPECS
+https://github.com/vmware/photon/tree/1.0-kernel-4.4.8/SPECS
 
 To see the version of a package, in the SPECS directory, click the name of the subdirectory of the package that you want to examine, and then click the `.spec` filename in the subdirectory. For example, the version of OpenJDK, which contains the openjre package that installs the Java class library and the javac Java compiler, looks like this: 
 
@@ -142,11 +141,11 @@ The minimal version of Photon OS contains about 50 packages. The full version of
 
 You can view a list of the packages that appear in the minimal version by examining the following file: 
 
-[https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json](https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json)
+[https://github.com/vmware/photon/blob/1.0-kernel-4.4.8/common/data/packages_minimal.json](https://github.com/vmware/photon/blob/1.0-kernel-4.4.8/common/data/packages_minimal.json)
 
 You can view a list of the packages that appear in the minimal version by examining the following file: 
 
-[https://github.com/vmware/photon/blob/master/common/data/packages_full.json](https://github.com/vmware/photon/blob/master/common/data/packages_full.json)
+[https://github.com/vmware/photon/blob/1.0-kernel-4.4.8/common/data/packages_full.json](https://github.com/vmware/photon/blob/1.0-kernel-4.4.8/common/data/packages_full.json)
 
 If the minimal or the full version of Photon OS does not contain a package that you want, you can of course install it with tdnf, which appears in both the minimal and full versions of Photon OS by default. In the full version of Photon OS, you can also install packages by using yum. 
 
@@ -167,26 +166,26 @@ This guide assumes that you are logged in to Photon OS with the root account and
 
 This section helps you get Photon OS up and running quickly and easily. There are several ways to deploy Photon OS for free within a matter of minutes:
 
-* Obtain the ISO from Bintray and use it to create a virtual machine running Photon OS.
+* Obtain the ISO from Packages URL and use it to create a virtual machine running Photon OS.
 * Install the OVA for the minimal version of Photon OS in VMware vSphere.
-* Rapidly deploy the OVA for the minimal version of Photon OS in VMware Workstation 12 Pro. 
+* Rapidly deploy the OVA for the minimal version of Photon OS in VMware Workstation Pro. 
 * Install VMware AppCatalyst for free on a Mac and launch a virtual machine running Photon OS, which is included with AppCatalyst.
 
-### Obtaining the ISO from Bintray and Creating a Photon OS VM in VMware Workstation
+### Obtaining the ISO from Packages URL and Creating a Photon OS VM in VMware Workstation
 
-The full version of Photon OS installs from an ISO in VMware Workstation and other hypervisors in a matter of minutes. Photon OS is a free download from the Bintray web site.
+The full version of Photon OS installs from an ISO in VMware Workstation and other hypervisors in a matter of minutes. Photon OS is a free download from the Packages URL or Download web site.
 
-This section demonstrates how to create a virtual machine running Photon OS in VMware Workstation 12 Pro. If you are using a different hypervisor, the example set by this section should help you install it in your system. If you work on a Mac, see the section on deploying Photon OS on a Mac with VMware AppCatalyst below. For instructions on how to install Photon OS from an ISO in VMware vSphere, see [Installing Photon OS on VMware vSphere from an ISO Image](https://github.com/vmware/photon/wiki/Running-Project-Photon-on-vSphere).
+This section demonstrates how to create a virtual machine running Photon OS in VMware Workstation 12 Pro. If you are using a different hypervisor, the example set by this section should help you install it in your system. If you work on a Mac, see the section on deploying Photon OS on a Mac with VMware AppCatalyst below. For instructions on how to install Photon OS from an ISO in VMware vSphere, see [Installing Photon OS on VMware vSphere from an ISO Image](https://vmware.github.io/photon/assets/files/html/1.0-2.0/Running-Photon-OS-on-vSphere.html).
 
-1. Go to the following Bintray URL and download the ISO for the general availability release of Photon OS:
+1. Go to the following Packages URL and download the ISO for the general availability release of Photon OS:
 
-	https://bintray.com/vmware/photon/iso/view
+	https://packages.vmware.com/photon/1.0/GA/iso
 
 1. In VMware Workstation, type Ctrl+N to create a new virtual machine. 
 
 1. In the New Virtual Machine Wizard, select `Typical`, and then click `Next`.
 
-1. Select `Installer disk image file (iso)`, click `Browse` to locate the Photon OS ISO that you downloaded from Bintray, and then click `Next`.
+1. Select `Installer disk image file (iso)`, click `Browse` to locate the Photon OS ISO that you downloaded from Packages URL, and then click `Next`.
 
 1. For the guest operating system, select `Linux`. From the `Version` drop-down menu, select `VMware Photon 64-bit`. If you have an older version of VMware Workstation and Photon does not appear in the list, select `Other Linux 3.x kernel 64-bit`.
 ![Alt text](images/ws-new-vm.png)
@@ -208,15 +207,15 @@ The installation typically completes in about 150 seconds for the full version a
 
 To connect to Photon OS by SSH, see the section on permitting root login with SSH below.  
 
-You can also build an ISO containing Photon OS from its source code on GitHub by following the instructions in the document on [building Photon OS](https://github.com/vmware/photon/blob/master/docs/build-photon.md). 
+You can also build an ISO containing Photon OS from its source code on GitHub by following the instructions in the document on [building Photon OS](https://github.com/vmware/photon/blob/1.0-kernel-4.4.8/docs/build-photon.md). 
 
 ### Installing the OVA for the Minimal Version in vSphere
 
-You can download the OVA for the minimal version of Photon OS from Bintray and deploy it in vSphere in a matter of seconds. 
+You can download the OVA for the minimal version of Photon OS from Packages URL and deploy it in vSphere in a matter of seconds. 
 
 Download the OVA for the minimal version of Photon OS from the following URL: 
 
-	https://bintray.com/vmware/photon/ova
+	https://packages.vmware.com/photon/1.0/GA/ova
 
 To install the OVA in vSphere, on the File menu, click Deploy OVF Template, and then click Browse to locate the image that you downloaded. Move through the Deploy OVF Template dialog boxes by clicking Next to accept the default settings, and then click Finish. 
 
@@ -224,15 +223,15 @@ In vSphere Client, turn on the power of the Photon OS virtual machine and open a
 
 The default password for the root account is `changeme`, and you must change it when you first login. For security, Photon OS forbids common dictionary words for the root password. 
 
-There are other options for installing Photon OS in vSphere, such as building an ISO from the source code. For more information about the versions of Photon and their installation options, see [Running Photon OS on vSphere](https://github.com/vmware/photon/wiki/Running-Project-Photon-on-vSphere).
+There are other options for installing Photon OS in vSphere, such as building an ISO from the source code. For more information about the versions of Photon and their installation options, see [Running Photon OS on vSphere](https://vmware.github.io/photon/assets/files/html/1.0-2.0/Running-Photon-OS-on-vSphere.html).
 
-### Rapidly Deploying the Photon OS OVA in VMware Workstation 12 Pro
+### Rapidly Deploying the Photon OS OVA in VMware Workstation Pro
 
-Here's how to rapidly deploy the OVA for Photon in VMware Workstation 12 Pro by using an up-to-date version of Firefox. The procedure in other browsers or another version of Workstation might be different. 
+Here's how to rapidly deploy the OVA for Photon in VMware Workstation Pro by using an up-to-date version of Firefox. The procedure in other browsers or another version of Workstation might be different. 
 
 In Firefox, download the OVA for the minimal version of Photon OS from this URL: 
 
-	https://bintray.com/vmware/photon/ova
+	https://packages.vmware.com/photon/1.0/GA/ova
 
 In the download dialog box, select `Open with VMware Workstation (default)`, like this:
 
@@ -333,15 +332,15 @@ If you need to troubleshoot, the log files for AppCatalyst reside here:
 
 	/Users/<your_username>/Library/Logs/VMware
 
-Virtual machines in AppCatalyst can be managed through its API. For more information, see the [AppCatalyst documentation](http://getappcatalyst.com/docs/Tech_Preview_August/) and the [AppCatalyst community site](https://communities.vmware.com/community/vmtn/devops/vmware-appcatalyst).
+Virtual machines in AppCatalyst can be managed through its API. For more information, see the [Blog Archive AppCatalyst](https://blogs.vmware.com/cloudnative/2015/06/22/vmware-appcatalyst) and [Cheatsheet for the entire VMware AppCatalyst API using cURL](https://williamlam.com/2016/01/cheatsheet-for-the-entire-vmware-appcatalyst-api-using-curl.html).
 
 ### PXE Boot
 
-Photon OS works with the Preboot Execution Environment, or PXE, to boot by retrieving software from a PXE server over a network connection. For instructions on how to set Photon OS to boot from a PXE server, see [Network PXE Boot](https://github.com/vmware/photon/blob/master/docs/PXE-boot.md).
+Photon OS works with the Preboot Execution Environment, or PXE, to boot by retrieving software from a PXE server over a network connection. For instructions on how to set Photon OS to boot from a PXE server, see [Network PXE Boot](https://github.com/vmware/photon/blob/1.0-kernel-4.4.8/docs/PXE-boot.md).
 
 ### Kickstart
 
-Photon OS supports kickstart for unattended installations through a CD-ROM or an HTTP server. On Photon OS, kickstart can set the hostname, password, run post-installation scripts, and add public keys for SSH. See [Kickstart Support](https://github.com/vmware/photon/blob/master/docs/kickstart.md).
+Photon OS supports kickstart for unattended installations through a CD-ROM or an HTTP server. On Photon OS, kickstart can set the hostname, password, run post-installation scripts, and add public keys for SSH. See [Kickstart Support](https://github.com/vmware/photon/blob/1.0-kernel-4.4.8/docs/kickstart.md).
 
 ### Checking the Version and Build Number
 
@@ -664,7 +663,7 @@ Looking at one of the `.repo` files reveals the format and information that a ne
 	cat /etc/yum.repos.d/lightwave.repo
 	[lightwave]
 	name=VMware Lightwave 1.0(x86_64)
-	baseurl=https://dl.bintray.com/vmware/lightwave
+	baseurl=https://packages.vmware.com/photon/1.0/lightwave/
 	gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 	gpgcheck=1
 	enabled=1
@@ -780,7 +779,7 @@ Second, set the service to auto-start when the system boots:
 	cd /lib/systemd/system/multi-user.target.wants/
 	ln -s ../eth0.service eth0.service
 
-### Disabling the Photon OS httpd.service 
+### Disabling the Photon OS httpd.service
 
 If your application or appliance includes its own HTTP server, you should turn off and disable the HTTP server that comes with Photon OS so that it does not conflict with your own HTTP server. 
 
@@ -1186,7 +1185,7 @@ The nfs-utils package is installed by default in the full version of Photon OS b
 
 	tdnf install nfs-utils
 
-For instructions on how to use nfs-utils to share files over a network, see [Photon OS nfs-utils](https://github.com/vmware/photon/blob/master/docs/nfs-utils.md).
+For instructions on how to use nfs-utils to share files over a network, see [Photon OS nfs-utils](https://github.com/vmware/photon/blob/1.0-kernel-4.4.8/docs/nfs-utils.md).
 
 ### Installing the Packages for tcpdump and netcat with tdnf
 
@@ -1273,9 +1272,7 @@ Finally, attach the ISO to the Photon OS virtual machine as a CD-ROM and reboot 
 
 ### Customizing a Photon OS Machine on EC2
 
-This section shows you how to upload an `ami` image of Photon OS to Amazon Elastic Compute Cloud, or EC2, and customize the Photon OS machine by using cloud-init with an EC2 data source. The ami version of Photon OS is available as a free download on Bintray:
-
-	https://bintray.com/vmware/photon/
+This section shows you how to upload an `ami` image of Photon OS to Amazon Elastic Compute Cloud, or EC2, and customize the Photon OS machine by using cloud-init with an EC2 data source. The ami version of Photon OS 1.0 GA is available on [Photon OS ami 1.0 Packages URL](https://packages.vmware.com/photon/1.0/GA/ami/).
 
 The cloud-init service is commonly used on EC2 to configure the cloud instance of a Linux image. On EC2, for example, cloud-init typically sets the `.ssh/authorized_keys` file to let you log in with a private key. The cloud-config user-data file that appears in the following example contains abridged SSH authorized keys to show you how to set them for an instance of Photon OS in the Amazon cloud. 
 
@@ -1335,15 +1332,13 @@ Now check the cloud-init output log file on EC2 at `/var/log/cloud-init-output.l
 
 For more information on using cloud-init user data on EC2, see [Running Commands on Your Linux Instance at Launch](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html).
 
-With Photon OS, you can also build cloud images on Google Compute Engine and other cloud providers; for more information, see [Compatible Cloud Images](https://github.com/vmware/photon/blob/master/docs/cloud-images.md).
+With Photon OS, you can also build cloud images on Google Compute Engine and other cloud providers; for more information, see [Compatible Cloud Images](https://github.com/vmware/photon/blob/1.0-kernel-4.4.8/docs/cloud-images.md).
 
 ### Running a Photon OS Machine on GCE
 
 Photon OS comes in a preconfigured image ready for Google Cloud Engine. This section demonstrates how to create a Photon OS instance on Google Cloud Engine with and without cloud-init user data.
 
-This section assumes that you have set up a GCE account and, if you try the examples, are ready to pay Google for its cloud services. The GCE-ready version of Photon OS, however, comes for free. It is, in the parlance of Google cloud services, a private image. You can freely download it without registration from Bintray: 
-
-	https://bintray.com/vmware/photon/gce/view
+This section assumes that you have set up a GCE account and, if you try the examples, are ready to pay Google for its cloud services. The GCE-ready version of Photon OS, however, comes for free. It is, in the parlance of Google cloud services, a private image. You can freely download the gce version of Photon OS 1.0 GA on [Photon OS gce 1.0 Packages URL](https://packages.vmware.com/photon/1.0/GA/gce/).
 
 The GCE-ready image of Photon OS contains packages and scripts that prepare it for the Google cloud to save you time as you implement a compute cluster or develop cloud applications. The GCE-ready version of Photon OS adds the following packages to the [packages installed with the minimal version](https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json): 
 
@@ -1398,7 +1393,7 @@ Photon OS also enables you to run a docker container that, in turn, runs Photon 
 
 ## Kubernetes
 
-The full version of Photon OS includes Kubernetes so you can manage clusters of containers. For more information, see [Running Kubernetes on Photon OS](https://github.com/vmware/photon/blob/master/docs/kubernetes.md).
+The full version of Photon OS includes Kubernetes so you can manage clusters of containers. For more information, see [Running Kubernetes on Photon OS](https://github.com/vmware/photon/blob/1.0-kernel-4.4.8/docs/kubernetes.md).
 
 ## RPM-OSTree
 
@@ -1410,7 +1405,7 @@ When you install Photon OS from its ISO, it offers two installation options to t
 
 The OSTree Server installation option creates an instance of a server that manages the file system tree of the OSTree hosts. Creating a Photon OSTree Server establishes a new repository and management node for the Photon OS OSTree hosts. The Photon OS OSTree Server then manages the hosts as versioned, atomic entities to simply lifecycle management and security on an enterprise scale.   
 
-For more information, see the extensive sections on RPM-OSTree in the [Photon OS wiki](https://github.com/vmware/photon/wiki).
+For more information, see the extensive sections on [RPM-OSTree](https://github.com/vmware/photon/blob/1.0-kernel-4.4.8/docs/rpm-ostree.md).
 
 ## Disabling TLS 1.0 to Improve Transport Layer Security
 
@@ -1458,9 +1453,7 @@ For information about the vulnerabilities in TLS 1.0, see [Guidelines for the Se
 
 ## Building a Package from a Source RPM
 
-This section describes how to install and build a package on the full version of Photon OS from the package's source RPM. You obtain the source RPMs that Photon OS uses from Bintray: 
-
-[https://bintray.com/vmware/photon](https://bintray.com/vmware/photon)
+This section describes how to install and build a package on the full version of Photon OS from the package's source RPM. You obtain the source RPMs that Photon OS uses from [Photon OS srpms 1.0 Packages URL](https://packages.vmware.com/photon/1.0/photon_srpms_1.0_x86_64).
 
 To build a package from its source RPM, or SRPM, Photon OS requires the following packages:  
 
@@ -1523,18 +1516,18 @@ To install the RPM, run the following command with your unprivileged user accoun
 
 ## References
 
-The following technical articles and guides appear in the [Photon OS wiki](https://github.com/vmware/photon/wiki): 
+The following technical articles and guides  are included in the [Photon OS Documentation](https://vmware.github.io/photon/assets/files/html/1.0-2.0): 
 
-* FAQ
-* Running Photon OS on vSphere
-* Running Photon OS on Fusion
-* Running Photon OS on vCloud Air
-* Install and Configure a Swarm Cluster with DNS Service on Photon OS
-* Install and Configure a Production Ready Mesos Cluster on Photon OS
-* Install and Configure Marathon for Mesos Cluster on Photon OS
-* Install and Configure DCOS CLI for Mesos
-* Install and Configure Mesos DNS on a Mesos Cluster
-* RPM OSTree Documentation
+* [FAQ](https://vmware.github.io/photon/assets/files/html/1.0-2.0/Frequently-Asked-Questions.html)
+* [Running Photon OS on vSphere](https://vmware.github.io/photon/assets/files/html/1.0-2.0/Running-Photon-OS-on-vSphere.html)
+* [Running Photon OS on Fusion](https://vmware.github.io/photon/assets/files/html/1.0-2.0/Running-Project-Photon-on-Fusion.html)
+* [Running Photon OS on vCloud Air](https://vmware.github.io/photon/assets/files/html/1.0-2.0/Running-Project-Photon-on-vCloud-Air.html)
+* [Install and Configure a Swarm Cluster with DNS Service on Photon OS](https://vmware.github.io/photon/assets/files/html/1.0-2.0/Install-and-Configure-a-Swarm-Cluster-with-DNS-Service-on-PhotonOS.html)
+* [Install and Configure a Production Ready Mesos Cluster on Photon OS](https://vmware.github.io/photon/assets/files/html/1.0-2.0/Install-and-Configure-a-Production-Ready-Mesos-Cluster-on-Photon-OS.html)
+* [Install and Configure Marathon for Mesos Cluster on Photon OS](https://vmware.github.io/photon/assets/files/html/1.0-2.0/Install-and-Configure-Marathon-for-Mesos-Cluster-on-PhotonOS.html)
+* [Install and Configure DCOS CLI for Mesos](https://vmware.github.io/photon/assets/files/html/1.0-2.0/Install-and-Configure-DCOS-CLI-for-Mesos.html)
+* [Install and Configure Mesos DNS on a Mesos Cluster](https://vmware.github.io/photon/assets/files/html/1.0-2.0/Install-and-Configure-Mesos-DNS-on-a-Mesos-Cluster.html)
+* [RPM OSTree Documentation](https://vmware.github.io/photon/assets/files/html/1.0-2.0/Photon-RPM-OSTree-a-simple-guide.html)
 
 
 
