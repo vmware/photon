@@ -8,13 +8,12 @@
     -   [The Root Account and the sudo and su
         Commands](#the-root-account-and-the-sudo-and-su-commands)
 -   [Quick Start](#quick-start)
-    -   [Obtaining the ISO from https://packages.vmware.com/photon and Creating a Photon OS VM in
+    -   [Obtaining the ISO from Packages URL and Creating a Photon OS VM in
         VMware
-        Workstation](#obtaining-the-iso-from-packages.vmware.com-and-creating-a-photon-os-vm-in-vmware-workstation)
+        Workstation](#obtaining-the-iso-from-packages-url-and-creating-a-photon-os-vm-in-vmware-workstation)
     -   [Installing the OVA for the Minimal Version in
         vSphere](#installing-the-ova-for-the-minimal-version-in-vsphere)
-    -   [Rapidly Deploying the Photon OS OVA in VMware Workstation 12
-        Pro](#rapidly-deploying-the-photon-os-ova-in-vmware-workstation-12-pro)
+    -   [Rapidly Deploying the Photon OS OVA in VMware Workstation Pro](#rapidly-deploying-the-photon-os-ova-in-vmware-workstation-pro)
     -   [Root Password Rules](#root-password-rules)
     -   [Permitting Root Login with
         SSH](#permitting-root-login-with-ssh)
@@ -35,7 +34,7 @@
     -   [Controlling Services](#controlling-services)
     -   [Creating a Startup Service](#creating-a-startup-service)
     -   [Disabling the Photon OS
-        httpd.service](#disabling-the-photon-os-httpd.service)
+        httpd.service](#disabling-the-photon-os-httpdservice)
     -   [Auditing System Events with
         auditd](#auditing-system-events-with-auditd)
     -   [Analyzing systemd Logs with
