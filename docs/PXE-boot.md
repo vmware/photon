@@ -1,6 +1,6 @@
 #Network PXE Boot
 
-Photon supports pxe boot over netwrok, this is describe how you can setup a PXE boot server to install Photon.
+Photon supports pxe boot over network, this is describe how you can setup a PXE boot server to install Photon.
 
 #Server Setup
 
