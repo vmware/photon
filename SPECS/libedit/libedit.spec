@@ -1,18 +1,21 @@
 %define libedit_version 3.1
-%define libedit_release 20191231
+%define libedit_release 20210910
 
 Summary:        The NetBSD Editline library
 Name:           libedit
-Version:        3.1.20191231
-Release:        2%{?dist}
+Version:        3.1.20210910
+Release:        1%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        libedit-%{libedit_release}-%{libedit_version}.tar.gz
-%define sha1    libedit=44891b6ceb0429fec0a118a1245c605410571d7d
 License:        BSD
 Url:            http://www.thrysoee.dk/editline/
 Group:          Applications/Libraries
+
+Source0:        libedit-%{libedit_release}-%{libedit_version}.tar.gz
+%define sha1    %{name}=855747cff17110fb59703b5b957d11c8f76b91ef
+
 Requires:       ncurses
+
 BuildRequires:  ncurses-devel
 
 %description
@@ -29,37 +32,20 @@ Requires:       libedit = %{version}-%{release}
 Development files for libedit
 
 %prep
-%setup -qn libedit-%{libedit_release}-%{libedit_version}
+%autosetup -p1 -n libedit-%{libedit_release}-%{libedit_version}
 
 %build
-%configure \
---prefix=%{_prefix} \
---disable-static
-make %{?_smp_mflags}
+%configure --disable-static
+
+%make_build %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+%make_install
 find %{buildroot} -name '*.la' -delete
 # Remove history.3, a solftlink to editline, which conflicts with readline-devel
 rm -f %{buildroot}/%{_mandir}/man3/history.3
 
-%pre
-# First argument is 1 => New Installation
-# First argument is 2 => Upgrade
-
-%post
-# First argument is 1 => New Installation
-# First argument is 2 => Upgrade
-/sbin/ldconfig
-
-%preun
-# First argument is 0 => Uninstall
-# First argument is 1 => Upgrade
-
-%postun
-/sbin/ldconfig
-# First argument is 0 => Uninstall
-# First argument is 1 => Upgrade
+%ldconfig_scriptlets
 
 %clean
 rm -rf %{buildroot}/*
@@ -77,9 +63,11 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
-*   Wed Sep 02 2020 Dweep Advani <dadvani@vmware.com> 3.1.20191231-2
--   Fix conflict of /usr/share/man/man3/history.3 with readline-devel
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1.20191231-1
--   Automatic Version Bump
-*   Tue Aug 14 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.20180525-1
--   Initial
+* Wed Dec 22 2021 Susant sahani <ssahani@vmware.com> 3.1.20210910-1
+- Version bump
+* Wed Sep 02 2020 Dweep Advani <dadvani@vmware.com> 3.1.20191231-2
+- Fix conflict of /usr/share/man/man3/history.3 with readline-devel
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 3.1.20191231-1
+- Automatic Version Bump
+* Tue Aug 14 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.1.20180525-1
+- Initial

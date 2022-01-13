@@ -1,12 +1,13 @@
 Summary:        Configure and introspect the state of the network
 Name:           network-config-manager
 Version:        0.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache 2.0
 URL:            https://github.com/vmware/network-config-manager
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/vmware/network-config-manager/archive/%{name}-%{version}.tar.gz
 %define sha1    %{name}-%{version}=79210dd092afe3e2848d8541f2db8b64c89cf1ef
 
@@ -48,7 +49,7 @@ Requires:       glib-devel
 This package contains the headers necessary for building.
 
 %prep
-%autosetup
+%autosetup -p1
 mkdir build
 
 %build
@@ -76,15 +77,17 @@ mv %{buildroot}/lib/systemd %{buildroot}/usr/lib/
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
-*   Wed Sep 15 2021 Susant Sahani <ssahani@vmware.com> 0.5-1
--   Update to v0.5
-*   Thu Apr 22 2021 Susant Sahani <ssahani@vmware.com> 0.4-1
--   Update to v0.4
-*   Tue Jan 05 2021 Susant Sahani <ssahani@vmware.com> 0.3-1
--   Update to v0.3
-*   Mon Dec 07 2020 Ankit Jain <ankitja@vmware.com> 0.2-2
--   Added requires for devel package to fix install failure
-*   Sun Nov 15 2020 Susant Sahani <ankitja@vmware.com> 0.2-1
--   Update to v0.2
-*   Wed Sep 30 2020 Ankit Jain <ankitja@vmware.com> 0.1-1
--   Initial build. First version
+* Thu Feb 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.5-2
+- Rebuild with newer libnftnl
+* Wed Sep 15 2021 Susant Sahani <ssahani@vmware.com> 0.5-1
+- Update to v0.5
+* Thu Apr 22 2021 Susant Sahani <ssahani@vmware.com> 0.4-1
+- Update to v0.4
+* Tue Jan 05 2021 Susant Sahani <ssahani@vmware.com> 0.3-1
+- Update to v0.3
+* Mon Dec 07 2020 Ankit Jain <ankitja@vmware.com> 0.2-2
+- Added requires for devel package to fix install failure
+* Sun Nov 15 2020 Susant Sahani <ankitja@vmware.com> 0.2-1
+- Update to v0.2
+* Wed Sep 30 2020 Ankit Jain <ankitja@vmware.com> 0.1-1
+- Initial build. First version

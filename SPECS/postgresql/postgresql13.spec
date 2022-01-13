@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql13
 Version:        13.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -29,14 +29,15 @@ BuildRequires:  openssl-devel
 BuildRequires:  tar
 BuildRequires:  tzdata
 BuildRequires:  zlib-devel
-Requires:       krb5
-Requires:       libedit
-Requires:       libxml2
-Requires:       openldap
-Requires:       openssl
-Requires:       readline
-Requires:       tzdata
-Requires:       zlib
+
+Requires:   krb5
+Requires:   libedit
+Requires:   libxml2
+Requires:   openldap
+Requires:   openssl
+Requires:   readline
+Requires:   tzdata
+Requires:   zlib
 Requires:   %{name}-libs = %{version}-%{release}
 
 %description
@@ -89,24 +90,26 @@ make %{?_smp_mflags}
 cd contrib && make %{?_smp_mflags}
 
 %install
-[ %{buildroot} != "/"] && rm -rf %{buildroot}/*
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make install DESTDIR=%{buildroot} %{?_smp_mflags}
 cd contrib && make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 # For postgresql 10+, commands are renamed
 # Ref: https://wiki.postgresql.org/wiki/New_in_postgres_10
-ln -sf pg_receivewal %{buildroot}%{pgbaseinstdir}/bin/pg_receivexlog
-ln -sf pg_resetwal %{buildroot}%{pgbaseinstdir}/bin/pg_resetxlog
-ln -sf  pg_waldump %{buildroot}%{pgbaseinstdir}/bin/pg_xlogdump
+ln -sfv pg_receivewal %{buildroot}%{pgbaseinstdir}/bin/pg_receivexlog
+ln -sfv pg_resetwal %{buildroot}%{pgbaseinstdir}/bin/pg_resetxlog
+ln -sfv pg_waldump %{buildroot}%{pgbaseinstdir}/bin/pg_xlogdump
 %{_fixperms} %{buildroot}/*
 
 %check
+%if 0%{?with_check:1}
 sed -i '2219s/",/  ; EXIT_STATUS=$? ; sleep 5 ; exit $EXIT_STATUS",/g'  src/test/regress/pg_regress.c
 chown -Rv nobody .
 sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
+%endif
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
+
 %clean
 rm -rf %{buildroot}/*
 
@@ -179,5 +182,7 @@ rm -rf %{buildroot}/*
 %{pgbaseinstdir}/lib/libpgtypes.a
 
 %changelog
-*   Wed Jan 5 2022 Michael Paquier <mpaquier@vmware.com> 13.5-1
--   Addition of new package for PostgreSQL 13
+* Thu Feb 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 13.5-2
+- Rebuild with libedit
+* Wed Jan 5 2022 Michael Paquier <mpaquier@vmware.com> 13.5-1
+- Addition of new package for PostgreSQL 13

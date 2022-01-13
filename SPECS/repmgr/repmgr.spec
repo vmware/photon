@@ -1,7 +1,7 @@
 Summary:        Replication Manager for PostgreSQL Clusters
 Name:           repmgr
 Version:        5.3.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GNU Public License (GPL) v3
 URL:            https://repmgr.org/
 Group:          Applications/Databases
@@ -36,15 +36,17 @@ rm -rf %{buildroot}/*
 %{_datadir}/*
 
 %changelog
-*   Mon Nov 29 2021 Tapas Kundu <tkundu@vmware.com> 5.3.0-1
--   Update to 5.3.0
-*   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 5.1.0-4
--   GCC-10 support.
-*   Wed Sep 30 2020 Dweep Advani <photon-checkins@vmware.com> 5.1.0-3
--   Preferring libedit
-*   Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.1.0-2
--   openssl 1.1.1
-*   Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 5.1.0-1
--   Automatic Version Bump
-*   Thu Apr 09 2020 Stanislav Paskalev <spaskalev@vmware.com> 5.0.0-1
--   Initial build.  First version
+* Mon Jan 31 2022 Susant Sahani  <ssahani@vmware.com> 5.3.0-2
+- Rebuild with libedit
+* Mon Nov 29 2021 Tapas Kundu <tkundu@vmware.com> 5.3.0-1
+- Update to 5.3.0
+* Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 5.1.0-4
+- GCC-10 support.
+* Wed Sep 30 2020 Dweep Advani <photon-checkins@vmware.com> 5.1.0-3
+- Preferring libedit
+* Tue Sep 29 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.1.0-2
+- openssl 1.1.1
+* Fri Jul 24 2020 Gerrit Photon <photon-checkins@vmware.com> 5.1.0-1
+- Automatic Version Bump
+* Thu Apr 09 2020 Stanislav Paskalev <spaskalev@vmware.com> 5.0.0-1
+- Initial build.  First version

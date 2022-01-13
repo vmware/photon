@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
 Version:        14.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -26,6 +26,7 @@ BuildRequires:  tar
 BuildRequires:  tzdata
 BuildRequires:  zlib-devel
 BuildRequires:  lz4-devel
+
 Requires:       krb5
 Requires:       libedit
 Requires:       libxml2
@@ -87,18 +88,20 @@ cd contrib && make install DESTDIR=%{buildroot} %{?_smp_mflags}
 
 # For postgresql 10+, commands are renamed
 # Ref: https://wiki.postgresql.org/wiki/New_in_postgres_10
-ln -sf pg_receivewal %{buildroot}%{_bindir}/pg_receivexlog
-ln -sf pg_resetwal %{buildroot}%{_bindir}/pg_resetxlog
-ln -sf  pg_waldump %{buildroot}%{_bindir}/pg_xlogdump
+ln -sfv pg_receivewal %{buildroot}%{_bindir}/pg_receivexlog
+ln -sfv pg_resetwal %{buildroot}%{_bindir}/pg_resetxlog
+ln -sfv pg_waldump %{buildroot}%{_bindir}/pg_xlogdump
 %{_fixperms} %{buildroot}/*
 
 %check
+%if 0%{?with_check:1}
 sed -i '2219s/",/  ; EXIT_STATUS=$? ; sleep 5 ; exit $EXIT_STATUS",/g'  src/test/regress/pg_regress.c
 chown -Rv nobody .
 sudo -u nobody -s /bin/bash -c "PATH=$PATH make -k check"
+%endif
 
-%post   -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%ldconfig_scriptlets
+
 %clean
 rm -rf %{buildroot}/*
 
@@ -171,6 +174,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+* Mon Jan 31 2022 Susant Sahani <ssahani@vmware.com> 14.1-2
+- Rebuild with libedit
 * Mon Nov 29 2021 Tapas Kundu <tkundu@vmware.com> 14.1-1
 - Upgraded to version 14.1.
 - Add support for LZ4

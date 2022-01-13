@@ -1,17 +1,19 @@
 Summary:        Netfilter Tables userspace utillites
 Name:           nftables
-Version:        0.9.8
-Release:        4%{?dist}
+Version:        1.0.1
+Release:        1%{?dist}
 Group:          Development/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        GPLv2
 URL:            https://netfilter.org/projects/nftables/
 Source0:        %{url}/files/%{name}-%{version}.tar.bz2
-%define sha1    nftables=c15ac5552959c8358975f6b3e15757841c6904c8
+%define sha1    nftables=9183aa8947780bccca98db449e6aec1f47158164
 Source1:        nftables.service
 Source2:        nftables.conf
 Source3:        nft_ruleset_photon.nft
+
+Patch0:         nftables-1.0.1-drop-historyh.patch
 
 BuildRequires:  gcc
 BuildRequires:  flex
@@ -20,10 +22,11 @@ BuildRequires:  libmnl-devel
 BuildRequires:  gmp-devel
 BuildRequires:  readline-devel
 BuildRequires:  libnftnl-devel
-BuildRequires:  systemd
+BuildRequires:  systemd-devel
 BuildRequires:  iptables-devel
 BuildRequires:  jansson-devel
 BuildRequires:  python3-devel
+BuildRequires:  libedit-devel
 
 Requires:       libmnl
 Requires:       gmp
@@ -33,6 +36,7 @@ Requires:       systemd
 Requires:       iptables
 Requires:       jansson
 Requires:       python3
+Requires:       libedit
 
 %description
 Netfilter Tables userspace utilities. nftables is a framework by the
@@ -63,7 +67,7 @@ The nftables python module provides an interface to libnftables via ctypes.
 %build
 %configure --disable-silent-rules --with-xtables --with-json --disable-man-doc \
            --enable-python --with-python-bin=/usr/bin/python3
-make %{?_smp_mflags}
+%make_build %{?_smp_mflags}
 
 %install
 %make_install
@@ -103,6 +107,7 @@ chmod 700 %{buildroot}/%{_sysconfdir}/nftables
 %{_libdir}/libnftables.so.*
 %{_unitdir}/nftables.service
 %{_datadir}/doc/nftables/examples/*
+%{_datadir}/nftables/*
 
 %files devel
 %defattr(-, root, root)
@@ -116,6 +121,8 @@ chmod 700 %{buildroot}/%{_sysconfdir}/nftables
 %{python3_sitelib}/nftables/
 
 %changelog
+* Thu Jan 13 2022 Susant Sahani <ssahani@vmware.com> 1.0.1-1
+- Version bump
 * Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.9.8-4
 - Bump up to compile with python 3.10
 * Wed May 12 2021 Susant Sahani <ssahani@vmware.com> 0.9.8-3
