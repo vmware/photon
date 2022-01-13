@@ -1,4 +1,4 @@
-#FAQ
+# FAQ
 
 #### Why can't I SSH in as root?
 
