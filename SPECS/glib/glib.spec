@@ -1,14 +1,14 @@
 Summary:      Low-level libraries useful for providing data structure handling for C.
 Name:         glib
-Version:      2.69.0
+Version:      2.70.2
 Release:      1%{?dist}
 License:      LGPLv2+
 URL:          https://developer.gnome.org/glib/
 Group:        Applications/System
 Vendor:       VMware, Inc.
 Distribution: Photon
-Source0:  https://gitlab.gnome.org/GNOME/glib/-/releases/2.69/glib-%{version}.tar.bz2
-%define sha1  glib=7d35ae41bd519f3adcb10329cf287380f01b0571
+Source0:  https://gitlab.gnome.org/GNOME/glib/-/releases/2.70.2/glib-%{version}.tar.bz2
+%define sha1  glib=23356ed1bbcfc2036a7cf2dd291eef788d39bcda
 
 BuildRequires:  pcre-devel
 BuildRequires:  libffi-devel
@@ -107,6 +107,8 @@ CONFIGURE_OPTS=(
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+* Mon Dec 13 2021 Susant Sahani <ssahani@vmware.com> 2.70.2-1
+- Update to 2.70.2
 * Mon Jul 19 2021 Susant Sahani <ssahani@vmware.com> 2.69.0-1
 - Update to 2.69.0
 * Fri Mar 26 2021 Ankit Jain <ankitja@vmware.com> 2.68.0-1
