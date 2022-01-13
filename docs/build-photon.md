@@ -72,10 +72,10 @@ $HOME/workspaces/photon/stage/LOGS
 ```
 
 ## Complete build environment using Vagrant
-A `Vagrantfile` is available to ensure a quick standup of a development/build environment for Photon, this Vagrantfile uses a box called `photon-build-machine` box that is created through a [Packer](http://packer.io) template available under `support/packer-templates`, see the [README.md](https://github.com/vmware/photon/blob/master/support/packer-templates/README.md) for more information on how to build `photon-build-machine`.
+A `Vagrantfile` is available to ensure a quick standup of a development/build environment for Photon, this Vagrantfile uses a box called `photon-build-machine` box that is created through a [Packer](http://packer.io) template available under `support/packer-templates`, see the [README.md](https://github.com/vmware/photon/blob/1.0/support/packer-templates/README.md) for more information on how to build `photon-build-machine`.
 
 ## Photon Vagrant box
-As with the build-machine a Packer template is available under `support/packer-templates` to build a Photon based Vagrant box running Docker, see the [README.md](https://github.com/vmware/photon/blob/master/support/packer-templates/README.md) for more information on how to build.
+As with the build-machine a Packer template is available under `support/packer-templates` to build a Photon based Vagrant box running Docker, see the [README.md](https://github.com/vmware/photon/blob/1.0/support/packer-templates/README.md) for more information on how to build.
 
 ## Automated build environment and Vagrant boxes
-Convenience make targets also exist to build both the `photon-build-machine` and the `photon` Packer templates as well as building a fresh ISO using the `photon-build-machine`. See the [README.md](https://github.com/vmware/photon/blob/master/support/packer-templates/README.md) for more details.
+Convenience make targets also exist to build both the `photon-build-machine` and the `photon` Packer templates as well as building a fresh ISO using the `photon-build-machine`. See the [README.md](https://github.com/vmware/photon/blob/1.0/support/packer-templates/README.md) for more details.
