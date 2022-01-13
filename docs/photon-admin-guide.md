@@ -1340,7 +1340,7 @@ Photon OS comes in a preconfigured image ready for Google Cloud Engine. This sec
 
 This section assumes that you have set up a GCE account and, if you try the examples, are ready to pay Google for its cloud services. The GCE-ready version of Photon OS, however, comes for free. It is, in the parlance of Google cloud services, a private image. You can freely download the gce version of Photon OS 1.0 GA on [Photon OS gce 1.0 Packages URL](https://packages.vmware.com/photon/1.0/GA/gce/).
 
-The GCE-ready image of Photon OS contains packages and scripts that prepare it for the Google cloud to save you time as you implement a compute cluster or develop cloud applications. The GCE-ready version of Photon OS adds the following packages to the [packages installed with the minimal version](https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json): 
+The GCE-ready image of Photon OS contains packages and scripts that prepare it for the Google cloud to save you time as you implement a compute cluster or develop cloud applications. The GCE-ready version of Photon OS adds the following packages to the [packages installed with the minimal version](https://github.com/vmware/photon/blob/1.0-kernel-4.4.8/common/data/packages_minimal.json): 
 
 	sudo, tar, which, google-daemon, google-startup-scripts, 
 	kubernetes, perl-DBD-SQLite, perl-DBIx-Simple, perl, ntp
