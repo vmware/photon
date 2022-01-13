@@ -1,7 +1,7 @@
 %global commit 7c3e7c52a3816c82fc8a0ef4bed9cebedc9dd02d
 Summary:        Dynamic Kernel Module Support
 Name:           dkms
-Version:        2.8.4
+Version:        3.0.3
 Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://linux.dell.com/dkms/
