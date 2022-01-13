@@ -1,14 +1,15 @@
 Summary:        Utility to setup encrypted disks
 Name:           cryptsetup
-Version:        2.3.5
-Release:        2%{?dist}
+Version:        2.4.2
+Release:        1%{?dist}
 License:        GPLv2+ and LGPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
 Distribution:   Photon
-Source0:        %{name}-%{version}.tar.xz
-%define sha1    cryptsetup=800fc375b514c4c4cd4f2dcbff7cf413db2ba81c
+Source0:        %{name}-v%{version}.tar.gz
+%define sha1    cryptsetup=00d84178c4d0c51cabe02bd275bc83a806bb50f8
 URL:            https://gitlab.com/cryptsetup/cryptsetup
+Patch0:         CVE-2021-4122.patch
 BuildRequires:  systemd-devel
 BuildRequires:  openssl-devel
 BuildRequires:  popt-devel
@@ -18,6 +19,7 @@ BuildRequires:  make
 BuildRequires:  json-c-devel
 BuildRequires:  libpwquality-devel
 BuildRequires:  libargon2-devel
+BuildRequires:  libssh-devel
 Requires:       cryptsetup-libs = %{version}-%{release}
 Requires:       libpwquality
 Requires:       util-linux-libs
@@ -53,7 +55,6 @@ Shared libraries for Cryptsetup
 Summary:        Utility to set up dm-verity volumes
 Requires:       %{name}-libs = %{version}-%{release}
 
-
 %description -n veritysetup
 Utility to set up dm-verity volumes.
 
@@ -71,10 +72,19 @@ Requires:       %{name}-libs = %{version}-%{release}
 %description -n %{name}-reencrypt
 Utility to perform offline reencryption of LUKS enabled disks.
 
+%package -n     %{name}-ssh-token
+Summary:        Cryptsetup LUKS2 SSH token
+Requires:       %{name}-libs = %{version}-%{release}
+Requires:       libssh
+
+%description ssh-token
+This package contains the LUKS2 SSH token.
+
 %prep
-%autosetup -p1
+%autosetup -p1 -n %{name}-v%{version}
 
 %build
+bash ./autogen.sh
 %configure --enable-fips --enable-pwquality --enable-libargon2
 %make_build
 
@@ -130,7 +140,17 @@ rm -rf %{buildroot}%{_libdir}/*.la
 %{_tmpfilesdir}/cryptsetup.conf
 %ghost %attr(700, -, -) %dir /run/cryptsetup
 
+%files ssh-token
+%license COPYING COPYING.LGPL
+%{_libdir}/%{name}/libcryptsetup-token-ssh.so
+%{_mandir}/man8/cryptsetup-ssh.8.gz
+%{_sbindir}/cryptsetup-ssh
+%exclude %{_libdir}/%{name}/libcryptsetup-token-ssh.la
+
 %changelog
+*   Wed Jan 12 2022 Tapas Kundu <tkundu@vmware.com> 2.4.2-1
+-   Fix CVE-2021-4122
+-   Update to 2.4.2
 *   Tue Nov 30 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.3.5-2
 -   bump up version for openssl 3.0.0 compatibility
 -   Add device-mapper package dependency
