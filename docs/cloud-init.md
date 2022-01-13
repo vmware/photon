@@ -12,27 +12,35 @@ Supported installations
 
 Supported capabilities
 =================
-```Photon``` supports ```cloud-init``` starting with the following capabilities
-<dl>
-<dt>```run commands```</dt>
-<dd>execute a list of commands with output to console.</dd>
-<dt>```configure ssh keys```</dt>
-<dd>add entry to ~/.ssh/authorized_keys for the configured user</dd>
-<dt>```install package```</dt>
-<dd>install additional packages on first boot</dd>
-<dt>```configure networking```</dt>
-<dd>update /etc/hosts, hostname etc</dd>
-<dt>```write files```</dt>
-<dd>write arbitrary file(s) to disk</dd>
-<dt>```add yum repo```</dt>
-<dd>add a yum repository to /etc/yum.repos.d</dd>
-<dt>```create groups and users```</dt>
-<dd>add groups and users to the system. set user/group properties</dd>
-<dt>```run yum upgrade```</dt>
-<dd>upgrade all packages</dd>
-<dt>```reboot```</dt>
-<dd>reboot or power off when done with cloud-init</dd>
-</dl>
+```Photon``` supports ```cloud-init``` starting with the following capabilities:
+
+```run commands```
+execute a list of commands with output to console. 
+
+```configure ssh keys```
+add entry to ~/.ssh/authorized_keys for the configured user 
+
+```install package```
+install additional packages on first boot 
+
+```configure networking```
+update /etc/hosts, hostname etc 
+
+```write files```
+write arbitrary file(s) to disk 
+
+```add yum repo```
+add a yum repository to /etc/yum.repos.d 
+
+```create groups and users```
+add groups and users to the system. set user/group properties 
+
+```run yum upgrade```
+upgrade all packages 
+
+```reboot```
+reboot or power off when done with cloud-init
+
 
 Getting Started
 =================
