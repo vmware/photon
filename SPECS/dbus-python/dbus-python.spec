@@ -2,13 +2,14 @@
 
 Name:           dbus-python3
 Version:        1.2.16
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python bindings for D-Bus
 License:        MIT
 Group:          Development/Libraries/Python
 Url:            http://www.freedesktop.org/wiki/Software/DBusBindings/
 Source0:        http://dbus.freedesktop.org/releases/dbus-python/dbus-python-%{version}.tar.gz
 %define         sha1 dbus-python=de05308c75baa2ce5434de73d60428c005ac0cc1
+Patch0:         fix-deprecated-collections.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
@@ -37,7 +38,7 @@ Requires:       dbus-devel
 Developer files for Python bindings for D-Bus.
 
 %prep
-%autosetup -n dbus-python-%{version}
+%autosetup -p1 -n dbus-python-%{version}
 
 %build
 %configure PYTHON="%{__python3}"
@@ -66,6 +67,8 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/dbus-python.pc
 
 %changelog
+*   Thu Jan 13 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.2.16-4
+-   Add patch to replace deprecated Sequence from collection to collections.abc
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.2.16-3
 -   Bump up to compile with python 3.10
 *   Mon Dec 14 2020 Susant Sahani <ssahani@vmware.com> 1.2.16-2

@@ -1,0 +1,30 @@
+From 6a899a9174c8008ba5fb576238ea4d7c970453c3 Mon Sep 17 00:00:00 2001
+From: Simon McVittie <smcv@collabora.com>
+Date: Tue, 14 Jan 2020 15:29:43 +0000
+Subject: [PATCH] service: Adjust to deprecation of collections.Sequence
+
+Since Python 3.3 the recommended location is collections.abc.Sequence,
+and the collections.Sequence alias will be removed in 3.9.
+
+Signed-off-by: Simon McVittie <smcv@collabora.com>
+---
+ dbus/service.py | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/dbus/service.py b/dbus/service.py
+index fd57054..0c8695a 100644
+--- a/dbus/service.py
++++ b/dbus/service.py
+@@ -32,7 +32,11 @@
+ import logging
+ import threading
+ import traceback
+-from collections import Sequence
++try:
++    from collections.abc import Sequence
++except ImportError:
++    # Python 2 (and 3.x < 3.3, but we don't support those)
++    from collections import Sequence
+ 
+ import _dbus_bindings
+ from dbus import (
