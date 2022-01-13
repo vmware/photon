@@ -1,8 +1,8 @@
-#Kickstart Support
+# Kickstart Support
 
 Photon supports kickstart for unattended installations, the kickstart config file can reside in either the CD attached to the host or served through an http server.
 
-##Kickstart capabilities
+## Kickstart capabilities
 
 Photon supports the following configurations:
 * Setting hostname
@@ -32,12 +32,12 @@ Here is a sample configuration file:
 }
 ```
 
-##Unattended installation though kickstart
+## Unattended installation though kickstart
 To have unattended installation, you have to pass `ks=<config_file>` parameter to the kernel command. The config file should be either:
 * on the iso `ks=cdrom:\<config_file_path>`,
 * or served over http server `ks=http://<server>/<config_file_path>`
 
-##Building an iso with your kickstart config file
+## Building an iso with your kickstart config file
 Given a recent build photon.iso
 ```
 # mount the photon.iso
