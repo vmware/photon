@@ -1,12 +1,12 @@
 #Network PXE Boot
 
-Photon supports pxe boot over netwrok, this is describe how you can setup a PXE boot server to install Photon.
+Photon supports pxe boot over network, this is describe how you can setup a PXE boot server to install Photon.
 
 #Server Setup
 
 To setup PXE server you will need to have:
 * DHCP server to allow hosts to get an IP address.
-* TFTP server which is file transfer protocol which is similar to FTP with no authintication.
+* TFTP server which is file transfer protocol which is similar to FTP with no authentication.
 * Optionally http server, this http server is going to serve the RPMs yum repo, or you can use the official Photon repo on Packages URL. Also this http server can be used if you want to provide kickstart config for unattended installation.
 
 Setting up server instruction is based on an Ubuntu 14.04 machine assuming that it has an static IP adderess `172.16.78.134`.
