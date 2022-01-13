@@ -66,11 +66,11 @@ rm -rf %{buildroot}/*
 %{_unitdir}/photon-mgmtd.service
 
 %pre
-if ! getent group pm-web >/dev/null; then
+if ! getent group photon-mgmt >/dev/null; then
     /sbin/groupadd -r photon-mgmt
 fi
 
-if ! getent passwd pm-web >/dev/null; then
+if ! getent passwd photon-mgmt >/dev/null; then
     /sbin/useradd -g photon-mgmt photon-mgmt -s /sbin/nologin
 fi
 
@@ -87,7 +87,7 @@ if [ $1 -eq 0 ] ; then
     if getent passwd photon-mgmt >/dev/null; then
         /sbin/userdel photon-mgmt
     fi
-    if getent group pm-web >/dev/null; then
+    if getent group photon-mgmt >/dev/null; then
         /sbin/groupdel photon-mgmt
     fi
 fi
