@@ -19,8 +19,8 @@
 &lt;/tbody>
 &lt;/table></description></item><item><title>Docs: Installing photon-mgmtd</title><link>/docs/administration-guide/pmd-nextgen/installation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/installation/</guid><description>
 &lt;p>You can install &lt;code>photon-mgmtd&lt;/code> using the &lt;code>pmd-nextgen&lt;/code> package. The &lt;code>pmd-nextgen&lt;/code> package is included in your Photon OS 4.0 Rev 2 distribution. To install &lt;code>pmd-nextgen&lt;/code>, run the following command:&lt;/p>
-&lt;pre>&lt;code>/# tdnf install pmd-nextgen
-/# pmctl start pmd-nextgen
+&lt;pre>&lt;code># tdnf install pmd-nextgen
+# systemctl start photon-mgmtd.service
 &lt;/code>&lt;/pre></description></item><item><title>Docs: Configuration</title><link>/docs/administration-guide/pmd-nextgen/configuration/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/configuration/</guid><description>
 &lt;p>To configure &lt;code>photon-mgmtd&lt;/code>, use the &lt;code>photon-mgmtd&lt;/code> file located in the following directory: &lt;code>/etc/photon-mgmtd/&lt;/code>&lt;/p>
 &lt;p>You can set values for the following keys in the &lt;code>[System]&lt;/code> section:&lt;/p>
