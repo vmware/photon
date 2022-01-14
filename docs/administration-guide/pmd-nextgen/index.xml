@@ -1,0 +1,157 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– pmd-nextgen Overview</title><link>/docs/administration-guide/pmd-nextgen/</link><description>Recent content in pmd-nextgen Overview on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/administration-guide/pmd-nextgen/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Features</title><link>/docs/administration-guide/pmd-nextgen/feature/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/feature/</guid><description>
+&lt;p>The following table lists the &lt;code>photon-mgmtd&lt;/code> features details:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Feature&lt;/th>
+&lt;th>Details&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>systemd&lt;/td>
+&lt;td>Information, services (start, stop, restart, status), service properties such as CPUShares&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>see information from /proc fs&lt;/td>
+&lt;td>netstat, netdev, memory and much more&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table></description></item><item><title>Docs: Installing photon-mgmtd</title><link>/docs/administration-guide/pmd-nextgen/installation/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/installation/</guid><description>
+&lt;p>You can install &lt;code>photon-mgmtd&lt;/code> using the &lt;code>pmd-nextgen&lt;/code> package. The &lt;code>pmd-nextgen&lt;/code> package is included in your Photon OS 4.0 Rev 2 distribution. To install &lt;code>pmd-nextgen&lt;/code>, run the following command:&lt;/p>
+&lt;pre>&lt;code>/# tdnf install pmd-nextgen
+/# pmctl start pmd-nextgen
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Configuration</title><link>/docs/administration-guide/pmd-nextgen/configuration/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/configuration/</guid><description>
+&lt;p>To configure &lt;code>photon-mgmtd&lt;/code>, use the &lt;code>photon-mgmtd&lt;/code> file located in the following directory: &lt;code>/etc/photon-mgmtd/&lt;/code>&lt;/p>
+&lt;p>You can set values for the following keys in the &lt;code>[System]&lt;/code> section:&lt;/p>
+&lt;p>&lt;code>LogLevel=&lt;/code>&lt;br>
+Specifies the log level. The key takes one of the following:
+values: &lt;code>Trace&lt;/code>, &lt;code>Debug&lt;/code>, &lt;code>Info&lt;/code>, &lt;code>Warning&lt;/code>, &lt;code>Error&lt;/code>, &lt;code>Fatal&lt;/code> and &lt;code>Panic&lt;/code>.
+Default is &lt;code>info&lt;/code>.&lt;/p>
+&lt;p>&lt;code>UseAuthentication=&lt;/code>
+Specifies whether a user needs authentication. This is a boolean key and takes the following values: &lt;code>true&lt;/code>, &lt;code>false&lt;/code>.
+Default is &lt;code>true&lt;/code>.&lt;/p>
+&lt;p>You can set values for the following keys in the &lt;code>[Network]&lt;/code> section:&lt;/p>
+&lt;p>&lt;code>Listen=&lt;/code>
+Specifies the IP address and port that the REST API server listens to.
+When enabled, the default is &lt;code>127.0.0.1:5208&lt;/code>.&lt;/p>
+&lt;p>&lt;code>ListenUnixSocket=&lt;/code>
+Specifies whether you want the server to listen on a unix domain socket &lt;code>/run/photon-mgmtd/photon-mgmtd.sock&lt;/code>. This is a boolean key and takes the following values: &lt;code>true&lt;/code>, &lt;code>false&lt;/code>.
+Default is &lt;code>true&lt;/code>.&lt;/p>
+&lt;p>&lt;strong>Note:&lt;/strong> When you enable both &lt;code>ListenUnixSocket=&lt;/code> and &lt;code>Listen=&lt;/code>, server listens on the unix domain socket by default.&lt;/p>
+&lt;pre>&lt;code>❯ sudo cat /etc/photon-mgmtd/photon-mgmtd.toml
+[System]
+LogLevel=&amp;quot;info&amp;quot;
+UseAuthentication=&amp;quot;false&amp;quot;
+[Network]
+ListenUnixSocket=&amp;quot;true&amp;quot;
+❯ sudo systemctl status photon-mgmtd.service
+● photon-mgmtd.service - A REST API based configuration management microservice gateway
+Loaded: loaded (/usr/lib/systemd/system/photon-mgmtd.service; disabled; vendor preset: disabled)
+Active: active (running) since Thu 2022-01-06 16:32:19 IST; 4s ago
+Main PID: 230041 (photon-mgmtd)
+Tasks: 6 (limit: 15473)
+Memory: 2.9M
+CPU: 7ms
+CGroup: /system.slice/photon-mgmtd.service
+└─230041 /usr/bin/photon-mgmtd
+Jan 06 16:32:19 Zeus systemd[1]: photon-mgmtd.service: Passing 0 fds to service
+Jan 06 16:32:19 Zeus systemd[1]: photon-mgmtd.service: About to execute /usr/bin/photon-mgmtd
+Jan 06 16:32:19 Zeus systemd[1]: photon-mgmtd.service: Forked /usr/bin/photon-mgmtd as 230041
+Jan 06 16:32:19 Zeus systemd[1]: photon-mgmtd.service: Changed failed -&amp;gt; running
+Jan 06 16:32:19 Zeus systemd[1]: photon-mgmtd.service: Job 56328 photon-mgmtd.service/start finished, result=done
+Jan 06 16:32:19 Zeus systemd[1]: Started photon-mgmtd.service - A REST API based configuration management microservice gateway.
+Jan 06 16:32:19 Zeus systemd[230041]: photon-mgmtd.service: Executing: /usr/bin/photon-mgmtd
+Jan 06 16:32:19 Zeus photon-mgmtd[230041]: time=&amp;quot;2022-01-06T16:32:19+05:30&amp;quot; level=info msg=&amp;quot;photon-mgmtd: v0.1 (built go1.18beta1)&amp;quot;
+Jan 06 16:32:19 Zeus photon-mgmtd[230041]: time=&amp;quot;2022-01-06T16:32:19+05:30&amp;quot; level=info msg=&amp;quot;Starting photon-mgmtd... Listening on unix domain socket='/run/photon-mgmtd/photon-mgmtd&amp;gt;
+&lt;/code>&lt;/pre>
+&lt;h2 id="how-to-configure-users">How to Configure Users?&lt;/h2>
+&lt;h3 id="unix-domain-socket">Unix domain socket&lt;/h3>
+&lt;p>When you add users to the &lt;code>photon-mgmtd&lt;/code> group, they can access the unix socket.
+Use the following command to add a user:&lt;br>
+&lt;code># usermod -a -G photon-mgmtd exampleusername&lt;/code>&lt;/p></description></item><item><title>Docs: photon-mgmtd API</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/</guid><description>
+&lt;p>Use &lt;code>photon-mgmtd&lt;/code> REST-APIs to manage, control, configure, and monitor services remotely.&lt;/p>
+&lt;p>You can use &lt;code>photon-mgmtd&lt;/code> to manage the following:&lt;/p>
+&lt;ul>
+&lt;li>Services&lt;/li>
+&lt;li>System&lt;/li>
+&lt;li>Network&lt;/li>
+&lt;li>User, Group, Host&lt;/li>
+&lt;/ul></description></item><item><title>Docs: Writing a Plugin</title><link>/docs/administration-guide/pmd-nextgen/how-to-write-your-plugin/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/how-to-write-your-plugin/</guid><description>
+&lt;p>&lt;code>photon-mgmtd&lt;/code> is designed with a robust plugin-based architecture in mind. You can easily add and remove modules to &lt;code>photon-mgmtd&lt;/code>. The plugins are separate modules with well-defined interfaces that make implementing application features easier. You can create custom versions of an application with minimal source code modifications.&lt;/p>
+&lt;p>You can perform the following steps to write a plugin:&lt;/p>
+&lt;ol>
+&lt;li>Choose a namespace under plugins directory (systemd, system, proc) where you want to put your module.&lt;/li>
+&lt;li>Write the sub router. For example, &lt;code>plugins/systemd/&lt;/code>&lt;/li>
+&lt;li>Write your module: &lt;code>module.go&lt;/code> and &lt;code>module_router.go&lt;/code>&lt;/li>
+&lt;li>Write &lt;code>RegisterRouterModule&lt;/code>&lt;/li>
+&lt;li>Register &lt;code>RegisterRouterModule&lt;/code> with the parent router.
+For example, for login registered with &lt;code>RegisterRouterSystem&lt;/code> under &lt;code>system&lt;/code> namespace, write &lt;code>login.RegisterRouterLogin&lt;/code>.&lt;/li>
+&lt;/ol>
+&lt;p>You can use the &lt;code>pmctl&lt;/code> tool to view and configure system, network, and service status. The following example illustrates how to view the status:&lt;/p>
+&lt;p>Service status:&lt;/p>
+&lt;pre>&lt;code>❯ pmctl service status nginx.service
+Name: nginx.service
+Description: The nginx HTTP and reverse proxy server
+MainPid: 45732
+LoadState: loaded
+ActiveState: active
+SubState: running
+UnitFileState: disabled
+StateChangeTimeStamp: Sun Oct 31 12:02:02 IST 2021
+ActiveEnterTimestamp: Sun Oct 31 12:02:02 IST 2021
+InactiveExitTimestamp: Sun Oct 31 12:02:02 IST 2021
+ActiveExitTimestamp: 0
+InactiveExitTimestamp: Sun Oct 31 12:02:02 IST 2021
+Active: active (running) since Sun Oct 31 12:02:02 IST 2021
+&lt;/code>&lt;/pre>
+&lt;p>System status:&lt;/p>
+&lt;pre>&lt;code>❯ pmctl status system
+System Name: Zeus
+Kernel: Linux (5.14.0-0.rc7.54.fc36.x86_64) #1 SMP Mon Aug 23 13:55:32 UTC 2021
+Chassis: vm
+Hardware Model: VMware Virtual Platform
+Hardware Vendor: VMware, Inc.
+Product UUID: 979e4d56b63718b18534e112e64cb18
+Operating System: VMware Photon OS/Linux
+Operating System Home URL: https://vmware.github.io/photon/
+Systemd Version: v247.10-3.ph4
+Architecture: x86-64
+Virtualization: vmware
+Network State: routable (carrier)
+Network Online State: online
+DNS: 172.16.130.2
+Address: 172.16.130.132/24 on link ens33
+172.16.130.131/24 on link ens33
+fe80::3279:c56d:55f9:aed7/64 on link ens33
+172.16.130.138/24 on link ens37
+Gateway: 172.16.130.2 on link ens37
+172.16.130.2 on link ens33
+Uptime: Running Since (2 days, 3 hours, 8 minutes) Booted (Wed Dec 22 15:57:24 IST 2021) Users (9) Proc (284)
+Memory: Total (13564788736) Used (13564788736) Free (589791232) Available (9723891712)
+&lt;/code>&lt;/pre>
+&lt;p>Network status:&lt;/p>
+&lt;pre>&lt;code>❯ pmctl status network -i ens33
+Name: ens33
+Alternative Names: enp2s1
+Index: 2
+Link File: /usr/lib/systemd/network/99-default.link
+Network File: /etc/systemd/network/10-ens33.network
+Type: ether
+State: routable (configured)
+Driver: e1000
+Vendor: Intel Corporation
+Model: 82545EM Gigabit Ethernet Controller (Copper) (PRO/1000 MT Single Port Adapter)
+Path: pci-0000:02:01.0
+Carrier State: carrier
+Online State: online
+IPv4Address State: routable
+IPv6Address State: degraded
+HW Address: 00:0c:29:5f:d1:39
+MTU: 1500
+OperState: up
+Flags: up|broadcast|multicast
+Addresses: 172.16.130.132/24 172.16.130.131/24 fe80::3279:c56d:55f9:aed7/64
+Gateway: 172.16.130.2
+DNS: 172.16.130.2
+&lt;/code>&lt;/pre></description></item></channel></rss>

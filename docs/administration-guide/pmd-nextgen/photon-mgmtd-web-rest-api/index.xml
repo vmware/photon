@@ -1,0 +1,1507 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>– photon-mgmtd API</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/</link><description>Recent content in photon-mgmtd API on</description><generator>Hugo -- gohugo.io</generator><atom:link href="/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/index.xml" rel="self" type="application/rss+xml"/><item><title>Docs: Service Management</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/service-management/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/service-management/</guid><description>
+&lt;h2 id="post-method">POST Method&lt;/h2>
+&lt;p>To manage the available services and take actions on the services, execute a POST request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&amp;quot;action&amp;quot;:&amp;quot;{command}”,”unit”:”{unit}&amp;quot;}' http://localhost/api/v1/service/systemd
+&lt;/code>&lt;/pre>
+&lt;p>The following table lists the parameters:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Parameter&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Unit&lt;/td>
+&lt;td>The name of the service you want to manage.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Action Commands&lt;/td>
+&lt;td>The action you want to take on the service. Start, stop, restart, try-restart, reload-or-restart, reload, enable, disable, mask, unnmask, kill&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&amp;quot;action&amp;quot;:&amp;quot;start&amp;quot;,&amp;quot;unit&amp;quot;:&amp;quot;nginx.service&amp;quot;}' http://localhost/api/v1/service/systemd
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&amp;quot;action&amp;quot;:&amp;quot;stop&amp;quot;,&amp;quot;unit&amp;quot;:&amp;quot;nginx.service&amp;quot;}' http://localhost/api/v1/service/systemd
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h2 id="get-method">GET Method:&lt;/h2>
+&lt;h3 id="status-of-all-the-services">Status of all the services:&lt;/h3>
+&lt;p>The &lt;code>systemctl list-unit-files&lt;/code> command lists all the services available in the system.
+To fetch the list of services listed in the list-unit files, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/units
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/units
+&lt;/code>&lt;/pre>
+&lt;h3 id="status-of-a-specific-service">Status of a Specific Service:&lt;/h3>
+&lt;p>To receive the status details of a specific service, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/{unit}/status
+&lt;/code>&lt;/pre>
+&lt;p>The following table lists the parameter:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Parameter&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Unit&lt;/td>
+&lt;td>The name of the service for which you want to get the status.&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost:5208/api/v1/service/systemd/nginx.service/status | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 514 100 514 0 0 38298 0 --:--:-- --:--:-- --:--:-- 39538
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response&lt;/strong>:&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:{
+&amp;quot;Property&amp;quot;:&amp;quot;inactive&amp;quot;,
+&amp;quot;Unit&amp;quot;:&amp;quot;nginx.service&amp;quot;,
+&amp;quot;Name&amp;quot;:&amp;quot;nginx.service&amp;quot;,
+&amp;quot;Description&amp;quot;:&amp;quot;Nginx High-performance HTTP server and reverse proxy&amp;quot;,
+&amp;quot;MainPid&amp;quot;:0,
+&amp;quot;LoadState&amp;quot;:&amp;quot;loaded&amp;quot;,
+&amp;quot;ActiveState&amp;quot;:&amp;quot;inactive&amp;quot;,
+&amp;quot;SubState&amp;quot;:&amp;quot;dead&amp;quot;,
+&amp;quot;Followed&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Path&amp;quot;:&amp;quot;/org/freedesktop/systemd1/unit/nginx_2eservice&amp;quot;,
+&amp;quot;JobId&amp;quot;:0,
+&amp;quot;JobType&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;JobPath&amp;quot;:&amp;quot;/&amp;quot;,
+&amp;quot;UnitFileState&amp;quot;:&amp;quot;disabled&amp;quot;,
+&amp;quot;StateChangeTimestamp&amp;quot;:0,
+&amp;quot;InactiveExitTimestamp&amp;quot;:0,
+&amp;quot;ActiveEnterTimestamp&amp;quot;:0,
+&amp;quot;ActiveExitTimestamp&amp;quot;:0,
+&amp;quot;InactiveEnterTimestamp&amp;quot;:0
+},
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="value-of-a-specific-property">Value of a Specific Property&lt;/h3>
+&lt;p>To fetch the value of a specific property, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/manager/property/Version
+&lt;/code>&lt;/pre>
+&lt;p>The following table lists the parameter:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Parameter&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Property&lt;/td>
+&lt;td>Version, Features, Virtualization, Architecture, Tainted.&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://127.0.0.1/api/v1/service/systemd/manager/property/Virtualization
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:{
+&amp;quot;property&amp;quot;:&amp;quot;Virtualization&amp;quot;,
+&amp;quot;value&amp;quot;:&amp;quot;vmware&amp;quot;
+},
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://127.0.0.1/api/v1/service/systemd/manager/property/Architecture
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:{
+&amp;quot;property&amp;quot;:&amp;quot;Architecture&amp;quot;,
+&amp;quot;value&amp;quot;:&amp;quot;x86-64&amp;quot;
+},
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="properties-of-a-specific-service">Properties of a Specific Service&lt;/h3>
+&lt;p>To fetch the property of a specific service, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/{unit}/property
+&lt;/code>&lt;/pre>
+&lt;p>The following table lists the parameter:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Parameter&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Unit&lt;/td>
+&lt;td>The name of the service for which you want to get the properties.&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/nginx.service/property
+&lt;/code>&lt;/pre>
+&lt;h3 id="properties-of-all-services">Properties of All Services&lt;/h3>
+&lt;p>To fetch all the properties of a service, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/{unit}/propertyall
+&lt;/code>&lt;/pre>
+&lt;p>The following table lists the parameter:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Parameter&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Unit&lt;/td>
+&lt;td>The name of the service for which you want to fetch the properties.&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/nginx.service/propertyall | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 9652 0 9652 0 0 1058k 0 --:--:-- --:--:-- --:--:-- 1178k
+&lt;/code>&lt;/pre>
+&lt;h3 id="configuration-details">Configuration Details&lt;/h3>
+&lt;p>To receive the configuration details, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/conf
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/conf
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:{
+&amp;quot;CPUAffinity&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;CapabilityBoundingSe&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;CrashChangeVT&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;CrashReboot&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;CrashShell&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;CtrlAltDelBurstAction&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultBlockIOAccounting&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultCPUAccounting&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultEnvironment&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultIOAccounting&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultIPAccounting&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitAS&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitCORE&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitCPU&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitDATA&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitFSIZE&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitLOCKS&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitMEMLOCK&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitMSGQUEUE&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitNICE&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitNOFILE&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitNPROC&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitRSS&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitRTPRIO&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitRTTIME&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitSIGPENDING&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitSTACK&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultMemoryAccounting&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultRestartSec&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultStandardError&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultStandardOutput&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultStartLimitBurst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultStartLimitIntervalSec&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultTasksAccounting&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultTasksMax&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultTimeoutStartSec&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultTimeoutStopSec&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultTimerAccuracySec&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DumpCore&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;IPAddressAllow&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;IPAddressDeny&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;JoinControllers&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;LogColor&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;LogLevel&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;LogLocation&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;LogTarget&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;RuntimeWatchdogSec&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;ShowStatus&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;ShutdownWatchdogSec&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;SystemCallArchitectures&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;TimerSlackNSec&amp;quot;:&amp;quot;&amp;quot;
+},
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="configuration-update-details">Configuration Update Details&lt;/h3>
+&lt;p>To fetch the details about the configuration updates, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/conf/update
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/service/systemd/conf/update
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:{
+&amp;quot;CPUAffinity&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;CapabilityBoundingSe&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;CrashChangeVT&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;CrashReboot&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;CrashShell&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;CtrlAltDelBurstAction&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultBlockIOAccounting&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultCPUAccounting&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultEnvironment&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultIOAccounting&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultIPAccounting&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitAS&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitCORE&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitCPU&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitDATA&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitFSIZE&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitLOCKS&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitMEMLOCK&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitMSGQUEUE&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitNICE&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitNOFILE&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitNPROC&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitRSS&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitRTPRIO&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitRTTIME&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitSIGPENDING&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultLimitSTACK&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultMemoryAccounting&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultRestartSec&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultStandardError&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultStandardOutput&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultStartLimitBurst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultStartLimitIntervalSec&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultTasksAccounting&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultTasksMax&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultTimeoutStartSec&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultTimeoutStopSec&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DefaultTimerAccuracySec&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DumpCore&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;IPAddressAllow&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;IPAddressDeny&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;JoinControllers&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;LogColor&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;LogLevel&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;LogLocation&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;LogTarget&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;RuntimeWatchdogSec&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;ShowStatus&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;ShutdownWatchdogSec&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;SystemCallArchitectures&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;TimerSlackNSec&amp;quot;:&amp;quot;&amp;quot;
+},
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre></description></item><item><title>Docs: System Management</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/system-management/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/system-management/</guid><description>
+&lt;h2 id="get-method">GET Method&lt;/h2>
+&lt;h3 id="system-information">System Information&lt;/h3>
+&lt;p>To fetch the complete system information, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/describe
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 5588 0 5588 0 0 42133 0 --:--:-- --:--:-- --:--:-- 42015
+&lt;/code>&lt;/pre>
+&lt;h3 id="cpu-information">CPU Information&lt;/h3>
+&lt;p>To fetch information related to CPU, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/cpuinfo
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/cpuinfo
+&lt;/code>&lt;/pre>
+&lt;h3 id="disk-usage-details">Disk Usage Details&lt;/h3>
+&lt;p>To fetch the usage details of the disk, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/diskusage
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/diskusage
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:{
+&amp;quot;path&amp;quot;:&amp;quot;/&amp;quot;,
+&amp;quot;fstype&amp;quot;:&amp;quot;ext2/ext3&amp;quot;,
+&amp;quot;total&amp;quot;:269474643968,
+&amp;quot;free&amp;quot;:241944858624,
+&amp;quot;used&amp;quot;:13769904128,
+&amp;quot;usedPercent&amp;quot;:5.3848686637440935,
+&amp;quot;inodesTotal&amp;quot;:16777216,
+&amp;quot;inodesUsed&amp;quot;:101362,
+&amp;quot;inodesFree&amp;quot;:16675854,
+&amp;quot;inodesUsedPercent&amp;quot;:0.6041646003723145
+},
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="platform--kernel-version-details">Platform &amp;amp; kernel version details&lt;/h3>
+&lt;p>To fetch the details about the platform and kernel versions on which the system is installed.&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/version
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/version
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:{
+&amp;quot;hostname&amp;quot;:&amp;quot;photon-4&amp;quot;,
+&amp;quot;uptime&amp;quot;:10168492,
+&amp;quot;bootTime&amp;quot;:1627041016,
+&amp;quot;procs&amp;quot;:475,
+&amp;quot;os&amp;quot;:&amp;quot;linux&amp;quot;,
+&amp;quot;platform&amp;quot;:&amp;quot;photon&amp;quot;,
+&amp;quot;platformFamily&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;platformVersion&amp;quot;:&amp;quot;4.0&amp;quot;,
+&amp;quot;kernelVersion&amp;quot;:&amp;quot;5.10.46-2.ph4&amp;quot;,
+&amp;quot;kernelArch&amp;quot;:&amp;quot;x86_64&amp;quot;,
+&amp;quot;virtualizationSystem&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;virtualizationRole&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;hostId&amp;quot;:&amp;quot;25a54d56-2249-524d-1355-e97b24e3415a&amp;quot;
+},
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="miscellaneous-hardware-details">Miscellaneous Hardware Details&lt;/h3>
+&lt;p>To fetch miscellaneous harware details, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/misc
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/misc
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:{
+&amp;quot;175&amp;quot;:&amp;quot;agpgart&amp;quot;,
+&amp;quot;183&amp;quot;:&amp;quot;hw_random&amp;quot;,
+&amp;quot;228&amp;quot;:&amp;quot;hpet&amp;quot;,
+&amp;quot;229&amp;quot;:&amp;quot;fuse&amp;quot;,
+&amp;quot;231&amp;quot;:&amp;quot;snapshot&amp;quot;,
+&amp;quot;235&amp;quot;:&amp;quot;autofs&amp;quot;,
+&amp;quot;237&amp;quot;:&amp;quot;loop-control&amp;quot;,
+&amp;quot;60&amp;quot;:&amp;quot;vsock&amp;quot;,
+&amp;quot;61&amp;quot;:&amp;quot;vmci&amp;quot;,
+&amp;quot;62&amp;quot;:&amp;quot;cpu_dma_latency&amp;quot;,
+&amp;quot;63&amp;quot;:&amp;quot;vga_arbiter&amp;quot;
+},
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="user-details">User Details&lt;/h3>
+&lt;p>To fetch the user details, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/userstat
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/userstat
+&lt;/code>&lt;/pre>
+&lt;h3 id="virtual-memory-details">Virtual Memory Details&lt;/h3>
+&lt;p>To fetch the details of the virtual memory, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/virtualmemory
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/virtualmemory
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:{
+&amp;quot;total&amp;quot;:16810287104,
+&amp;quot;available&amp;quot;:15859195904,
+&amp;quot;used&amp;quot;:519139328,
+&amp;quot;usedPercent&amp;quot;:3.0882240427438687,
+&amp;quot;free&amp;quot;:9925554176,
+&amp;quot;active&amp;quot;:4017090560,
+&amp;quot;inactive&amp;quot;:2234974208,
+&amp;quot;wired&amp;quot;:0,
+&amp;quot;laundry&amp;quot;:0,
+&amp;quot;buffers&amp;quot;:171372544,
+&amp;quot;cached&amp;quot;:6194221056,
+&amp;quot;writeBack&amp;quot;:0,
+&amp;quot;dirty&amp;quot;:0,
+&amp;quot;writeBackTmp&amp;quot;:0,
+&amp;quot;shared&amp;quot;:9539584,
+&amp;quot;slab&amp;quot;:440422400,
+&amp;quot;sreclaimable&amp;quot;:370315264,
+&amp;quot;sunreclaim&amp;quot;:70107136,
+&amp;quot;pageTables&amp;quot;:6144000,
+&amp;quot;swapCached&amp;quot;:0,
+&amp;quot;commitLimit&amp;quot;:8405143552,
+&amp;quot;committedAS&amp;quot;:1310273536,
+&amp;quot;highTotal&amp;quot;:0,
+&amp;quot;highFree&amp;quot;:0,
+&amp;quot;lowTotal&amp;quot;:0,
+&amp;quot;lowFree&amp;quot;:0,
+&amp;quot;swapTotal&amp;quot;:0,
+&amp;quot;swapFree&amp;quot;:0,
+&amp;quot;mapped&amp;quot;:126369792,
+&amp;quot;vmallocTotal&amp;quot;:35184372087808,
+&amp;quot;vmallocUsed&amp;quot;:46546944,
+&amp;quot;vmallocChunk&amp;quot;:0,
+&amp;quot;hugePagesTotal&amp;quot;:0,
+&amp;quot;hugePagesFree&amp;quot;:0,
+&amp;quot;hugePageSize&amp;quot;:2097152
+},
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="kernel-module-details">Kernel Module Details&lt;/h3>
+&lt;p>To fetch the details about the kernel module, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/modules
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/modules
+&lt;/code>&lt;/pre>
+&lt;h3 id="network-arp-details">Network ARP Details&lt;/h3>
+&lt;p>To fetch the network ARP details, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/net/arp
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/net/arp
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:[
+{
+&amp;quot;IPAddress&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;HWType&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Flags&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;HWAddress&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Mask&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Device&amp;quot;:&amp;quot;&amp;quot;
+},
+{
+&amp;quot;IPAddress&amp;quot;:&amp;quot;10.197.103.253&amp;quot;,
+&amp;quot;HWType&amp;quot;:&amp;quot;0x1&amp;quot;,
+&amp;quot;Flags&amp;quot;:&amp;quot;0x2&amp;quot;,
+&amp;quot;HWAddress&amp;quot;:&amp;quot;00:00:0c:9f:f4:28&amp;quot;,
+&amp;quot;Mask&amp;quot;:&amp;quot;*&amp;quot;,
+&amp;quot;Device&amp;quot;:&amp;quot;eth0&amp;quot;
+},
+{
+&amp;quot;IPAddress&amp;quot;:&amp;quot;10.197.103.162&amp;quot;,
+&amp;quot;HWType&amp;quot;:&amp;quot;0x1&amp;quot;,
+&amp;quot;Flags&amp;quot;:&amp;quot;0x2&amp;quot;,
+&amp;quot;HWAddress&amp;quot;:&amp;quot;00:0c:29:b1:e6:16&amp;quot;,
+&amp;quot;Mask&amp;quot;:&amp;quot;*&amp;quot;,
+&amp;quot;Device&amp;quot;:&amp;quot;eth0&amp;quot;
+},
+{
+&amp;quot;IPAddress&amp;quot;:&amp;quot;10.197.103.251&amp;quot;,
+&amp;quot;HWType&amp;quot;:&amp;quot;0x1&amp;quot;,
+&amp;quot;Flags&amp;quot;:&amp;quot;0x2&amp;quot;,
+&amp;quot;HWAddress&amp;quot;:&amp;quot;00:35:1a:9d:b8:e3&amp;quot;,
+&amp;quot;Mask&amp;quot;:&amp;quot;*&amp;quot;,
+&amp;quot;Device&amp;quot;:&amp;quot;eth0&amp;quot;
+},
+{
+&amp;quot;IPAddress&amp;quot;:&amp;quot;10.197.103.174&amp;quot;,
+&amp;quot;HWType&amp;quot;:&amp;quot;0x1&amp;quot;,
+&amp;quot;Flags&amp;quot;:&amp;quot;0x2&amp;quot;,
+&amp;quot;HWAddress&amp;quot;:&amp;quot;00:0c:29:d3:c7:00&amp;quot;,
+&amp;quot;Mask&amp;quot;:&amp;quot;*&amp;quot;,
+&amp;quot;Device&amp;quot;:&amp;quot;eth0&amp;quot;
+},
+{
+&amp;quot;IPAddress&amp;quot;:&amp;quot;10.197.103.252&amp;quot;,
+&amp;quot;HWType&amp;quot;:&amp;quot;0x1&amp;quot;,
+&amp;quot;Flags&amp;quot;:&amp;quot;0x2&amp;quot;,
+&amp;quot;HWAddress&amp;quot;:&amp;quot;00:f2:8b:e1:b0:13&amp;quot;,
+&amp;quot;Mask&amp;quot;:&amp;quot;*&amp;quot;,
+&amp;quot;Device&amp;quot;:&amp;quot;eth0&amp;quot;
+},
+{
+&amp;quot;IPAddress&amp;quot;:&amp;quot;10.197.103.91&amp;quot;,
+&amp;quot;HWType&amp;quot;:&amp;quot;0x1&amp;quot;,
+&amp;quot;Flags&amp;quot;:&amp;quot;0x2&amp;quot;,
+&amp;quot;HWAddress&amp;quot;:&amp;quot;00:0c:29:41:07:8b&amp;quot;,
+&amp;quot;Mask&amp;quot;:&amp;quot;*&amp;quot;,
+&amp;quot;Device&amp;quot;:&amp;quot;eth0&amp;quot;
+}
+],
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="partition-details">Partition Details&lt;/h3>
+&lt;p>To fetch the partition details, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/partitions
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/partitions
+&lt;/code>&lt;/pre>
+&lt;h3 id="platform-details">Platform Details&lt;/h3>
+&lt;p>To fetch the details of the platform on which the system is installed, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/platform
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/platform
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Respose:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:{
+&amp;quot;Platform&amp;quot;:&amp;quot;photon&amp;quot;,
+&amp;quot;Family&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Version&amp;quot;:&amp;quot;4.0&amp;quot;
+},
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="swap-memory-details">Swap Memory Details&lt;/h3>
+&lt;p>To fetch the swap memory details, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/swapmemory
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/swapmemory
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:{
+&amp;quot;total&amp;quot;:0,
+&amp;quot;used&amp;quot;:0,
+&amp;quot;free&amp;quot;:0,
+&amp;quot;usedPercent&amp;quot;:0,
+&amp;quot;sin&amp;quot;:0,
+&amp;quot;sout&amp;quot;:0,
+&amp;quot;pgIn&amp;quot;:0,
+&amp;quot;pgOut&amp;quot;:0,
+&amp;quot;pgFault&amp;quot;:0,
+&amp;quot;pgMajFault&amp;quot;:0
+},
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="inputoutput-details-of-all-disk-partitions">Input/Output Details of all Disk Partitions&lt;/h3>
+&lt;p>To fetch the input/output (read/write) details of all the disk partition, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/iocounters
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/proc/iocounters
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:{
+&amp;quot;loop0&amp;quot;:{
+&amp;quot;readCount&amp;quot;:16407,
+&amp;quot;mergedReadCount&amp;quot;:0,
+&amp;quot;writeCount&amp;quot;:0,
+&amp;quot;mergedWriteCount&amp;quot;:0,
+&amp;quot;readBytes&amp;quot;:3999833088,
+&amp;quot;writeBytes&amp;quot;:0,
+&amp;quot;readTime&amp;quot;:6294,
+&amp;quot;writeTime&amp;quot;:0,
+&amp;quot;iopsInProgress&amp;quot;:0,
+&amp;quot;ioTime&amp;quot;:9088,
+&amp;quot;weightedIO&amp;quot;:6294,
+&amp;quot;name&amp;quot;:&amp;quot;loop0&amp;quot;,
+&amp;quot;serialNumber&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;label&amp;quot;:&amp;quot;&amp;quot;
+},
+&amp;quot;sda&amp;quot;:{
+&amp;quot;readCount&amp;quot;:85357,
+&amp;quot;mergedReadCount&amp;quot;:13672,
+&amp;quot;writeCount&amp;quot;:212568,
+&amp;quot;mergedWriteCount&amp;quot;:783168,
+&amp;quot;readBytes&amp;quot;:5029398016,
+&amp;quot;writeBytes&amp;quot;:44981511680,
+&amp;quot;readTime&amp;quot;:54628,
+&amp;quot;writeTime&amp;quot;:17939082,
+&amp;quot;iopsInProgress&amp;quot;:0,
+&amp;quot;ioTime&amp;quot;:301572,
+&amp;quot;weightedIO&amp;quot;:17993710,
+&amp;quot;name&amp;quot;:&amp;quot;sda&amp;quot;,
+&amp;quot;serialNumber&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;label&amp;quot;:&amp;quot;&amp;quot;
+},
+&amp;quot;sda1&amp;quot;:{
+&amp;quot;readCount&amp;quot;:351,
+&amp;quot;mergedReadCount&amp;quot;:0,
+&amp;quot;writeCount&amp;quot;:0,
+&amp;quot;mergedWriteCount&amp;quot;:0,
+&amp;quot;readBytes&amp;quot;:1437696,
+&amp;quot;writeBytes&amp;quot;:0,
+&amp;quot;readTime&amp;quot;:33,
+&amp;quot;writeTime&amp;quot;:0,
+&amp;quot;iopsInProgress&amp;quot;:0,
+&amp;quot;ioTime&amp;quot;:152,
+&amp;quot;weightedIO&amp;quot;:33,
+&amp;quot;name&amp;quot;:&amp;quot;sda1&amp;quot;,
+&amp;quot;serialNumber&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;label&amp;quot;:&amp;quot;&amp;quot;
+},
+&amp;quot;sda2&amp;quot;:{
+&amp;quot;readCount&amp;quot;:128,
+&amp;quot;mergedReadCount&amp;quot;:23,
+&amp;quot;writeCount&amp;quot;:1,
+&amp;quot;mergedWriteCount&amp;quot;:0,
+&amp;quot;readBytes&amp;quot;:916480,
+&amp;quot;writeBytes&amp;quot;:512,
+&amp;quot;readTime&amp;quot;:38,
+&amp;quot;writeTime&amp;quot;:0,
+&amp;quot;iopsInProgress&amp;quot;:0,
+&amp;quot;ioTime&amp;quot;:56,
+&amp;quot;weightedIO&amp;quot;:38,
+&amp;quot;name&amp;quot;:&amp;quot;sda2&amp;quot;,
+&amp;quot;serialNumber&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;label&amp;quot;:&amp;quot;&amp;quot;
+},
+&amp;quot;sda3&amp;quot;:{
+&amp;quot;readCount&amp;quot;:84806,
+&amp;quot;mergedReadCount&amp;quot;:13649,
+&amp;quot;writeCount&amp;quot;:212567,
+&amp;quot;mergedWriteCount&amp;quot;:783168,
+&amp;quot;readBytes&amp;quot;:5025352192,
+&amp;quot;writeBytes&amp;quot;:44981511168,
+&amp;quot;readTime&amp;quot;:54540,
+&amp;quot;writeTime&amp;quot;:17939082,
+&amp;quot;iopsInProgress&amp;quot;:0,
+&amp;quot;ioTime&amp;quot;:301444,
+&amp;quot;weightedIO&amp;quot;:17993623,
+&amp;quot;name&amp;quot;:&amp;quot;sda3&amp;quot;,
+&amp;quot;serialNumber&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;label&amp;quot;:&amp;quot;&amp;quot;
+},
+&amp;quot;sr0&amp;quot;:{
+&amp;quot;readCount&amp;quot;:7,
+&amp;quot;mergedReadCount&amp;quot;:0,
+&amp;quot;writeCount&amp;quot;:0,
+&amp;quot;mergedWriteCount&amp;quot;:0,
+&amp;quot;readBytes&amp;quot;:1024,
+&amp;quot;writeBytes&amp;quot;:0,
+&amp;quot;readTime&amp;quot;:0,
+&amp;quot;writeTime&amp;quot;:0,
+&amp;quot;iopsInProgress&amp;quot;:0,
+&amp;quot;ioTime&amp;quot;:12,
+&amp;quot;weightedIO&amp;quot;:0,
+&amp;quot;name&amp;quot;:&amp;quot;sr0&amp;quot;,
+&amp;quot;serialNumber&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;label&amp;quot;:&amp;quot;&amp;quot;
+}
+},
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre></description></item><item><title>Docs: Network Management</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/network-management/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/network-management/</guid><description>
+&lt;h2 id="get-method">GET Method&lt;/h2>
+&lt;h3 id="network-details">Network Details&lt;/h3>
+&lt;p>To fetch complete network details, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/network/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 5238 0 5238 0 0 88919 0 --:--:-- --:--:-- --:--:-- 90310
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:{
+&amp;quot;NetworDescribe&amp;quot;:{
+&amp;quot;AddressState&amp;quot;:&amp;quot;routable&amp;quot;,
+&amp;quot;CarrierState&amp;quot;:&amp;quot;carrier&amp;quot;,
+&amp;quot;OperationalState&amp;quot;:&amp;quot;routable&amp;quot;,
+&amp;quot;OnlineState&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;IPv4AddressState&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;IPv6AddressState&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;DNS&amp;quot;:[
+&amp;quot;10.142.7.1&amp;quot;,
+&amp;quot;10.132.7.1&amp;quot;,
+&amp;quot;10.166.17.90&amp;quot;
+],
+&amp;quot;Domains&amp;quot;:null,
+&amp;quot;RouteDomains&amp;quot;:null,
+&amp;quot;NTP&amp;quot;:[
+&amp;quot;10.128.152.81&amp;quot;,
+&amp;quot;10.166.1.120&amp;quot;,
+&amp;quot;10.188.26.119&amp;quot;,
+&amp;quot;10.84.55.42&amp;quot;
+]
+},
+&amp;quot;LinksDescribe&amp;quot;:{
+&amp;quot;Interfaces&amp;quot;:[
+{
+&amp;quot;AddressState&amp;quot;:&amp;quot;off&amp;quot;,
+&amp;quot;AlternativeNames&amp;quot;:null,
+&amp;quot;CarrierState&amp;quot;:&amp;quot;carrier&amp;quot;,
+&amp;quot;Driver&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;IPv4AddressState&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;IPv6AddressState&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Index&amp;quot;:1,
+&amp;quot;LinkFile&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Model&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Name&amp;quot;:&amp;quot;lo&amp;quot;,
+&amp;quot;OnlineState&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;OperationalState&amp;quot;:&amp;quot;carrier&amp;quot;,
+&amp;quot;Path&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;SetupState&amp;quot;:&amp;quot;unmanaged&amp;quot;,
+&amp;quot;Type&amp;quot;:&amp;quot;loopback&amp;quot;,
+&amp;quot;Vendor&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Manufacturer&amp;quot;:&amp;quot;&amp;quot;
+},
+{
+&amp;quot;AddressState&amp;quot;:&amp;quot;routable&amp;quot;,
+&amp;quot;AlternativeNames&amp;quot;:null,
+&amp;quot;CarrierState&amp;quot;:&amp;quot;carrier&amp;quot;,
+&amp;quot;Driver&amp;quot;:&amp;quot;vmxnet3&amp;quot;,
+&amp;quot;IPv4AddressState&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;IPv6AddressState&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Index&amp;quot;:2,
+&amp;quot;LinkFile&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Model&amp;quot;:&amp;quot;VMXNET3 Ethernet Controller&amp;quot;,
+&amp;quot;Name&amp;quot;:&amp;quot;eth0&amp;quot;,
+&amp;quot;OnlineState&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;OperationalState&amp;quot;:&amp;quot;routable&amp;quot;,
+&amp;quot;Path&amp;quot;:&amp;quot;pci-0000:0b:00.0&amp;quot;,
+&amp;quot;SetupState&amp;quot;:&amp;quot;configured&amp;quot;,
+&amp;quot;Type&amp;quot;:&amp;quot;ether&amp;quot;,
+&amp;quot;Vendor&amp;quot;:&amp;quot;VMware&amp;quot;,
+&amp;quot;Manufacturer&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;NetworkFile&amp;quot;:&amp;quot;/etc/systemd/network/99-dhcp-en.network&amp;quot;
+}
+]
+},
+&amp;quot;links&amp;quot;:[
+{
+&amp;quot;Index&amp;quot;:1,
+&amp;quot;MTU&amp;quot;:65536,
+&amp;quot;TxQLen&amp;quot;:1000,
+&amp;quot;Name&amp;quot;:&amp;quot;lo&amp;quot;,
+&amp;quot;AlternativeNames&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;HardwareAddr&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Flags&amp;quot;:&amp;quot;up|loopback&amp;quot;,
+&amp;quot;RawFlags&amp;quot;:65609,
+&amp;quot;ParentIndex&amp;quot;:0,
+&amp;quot;MasterIndex&amp;quot;:0,
+&amp;quot;Namespace&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Alias&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Statistics&amp;quot;:{
+&amp;quot;RxPackets&amp;quot;:168,
+&amp;quot;TxPackets&amp;quot;:168,
+&amp;quot;RxBytes&amp;quot;:17146,
+&amp;quot;TxBytes&amp;quot;:17146,
+&amp;quot;RxErrors&amp;quot;:0,
+&amp;quot;TxErrors&amp;quot;:0,
+&amp;quot;RxDropped&amp;quot;:0,
+&amp;quot;TxDropped&amp;quot;:0,
+&amp;quot;Multicast&amp;quot;:0,
+&amp;quot;Collisions&amp;quot;:0,
+&amp;quot;RxLengthErrors&amp;quot;:0,
+&amp;quot;RxOverErrors&amp;quot;:0,
+&amp;quot;RxCrcErrors&amp;quot;:0,
+&amp;quot;RxFrameErrors&amp;quot;:0,
+&amp;quot;RxFifoErrors&amp;quot;:0,
+&amp;quot;RxMissedErrors&amp;quot;:0,
+&amp;quot;TxAbortedErrors&amp;quot;:0,
+&amp;quot;TxCarrierErrors&amp;quot;:0,
+&amp;quot;TxFifoErrors&amp;quot;:0,
+&amp;quot;TxHeartbeatErrors&amp;quot;:0,
+&amp;quot;TxWindowErrors&amp;quot;:0,
+&amp;quot;RxCompressed&amp;quot;:0,
+&amp;quot;TxCompressed&amp;quot;:0
+},
+&amp;quot;Promisc&amp;quot;:0,
+&amp;quot;Xdp&amp;quot;:{
+&amp;quot;Fd&amp;quot;:0,
+&amp;quot;Attached&amp;quot;:false,
+&amp;quot;Flags&amp;quot;:0,
+&amp;quot;ProgId&amp;quot;:0
+},
+&amp;quot;EncapType&amp;quot;:&amp;quot;loopback&amp;quot;,
+&amp;quot;Protinfo&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;OperState&amp;quot;:&amp;quot;unknown&amp;quot;,
+&amp;quot;NetNsID&amp;quot;:0,
+&amp;quot;NumTxQueues&amp;quot;:1,
+&amp;quot;NumRxQueues&amp;quot;:1,
+&amp;quot;GSOMaxSize&amp;quot;:65536,
+&amp;quot;GSOMaxSegs&amp;quot;:65535,
+&amp;quot;Group&amp;quot;:0,
+&amp;quot;Slave&amp;quot;:&amp;quot;&amp;quot;
+},
+{
+&amp;quot;Index&amp;quot;:2,
+&amp;quot;MTU&amp;quot;:1500,
+&amp;quot;TxQLen&amp;quot;:1000,
+&amp;quot;Name&amp;quot;:&amp;quot;eth0&amp;quot;,
+&amp;quot;AlternativeNames&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;HardwareAddr&amp;quot;:&amp;quot;00:0c:29:68:ed:d8&amp;quot;,
+&amp;quot;Flags&amp;quot;:&amp;quot;up|broadcast|multicast&amp;quot;,
+&amp;quot;RawFlags&amp;quot;:69699,
+&amp;quot;ParentIndex&amp;quot;:0,
+&amp;quot;MasterIndex&amp;quot;:0,
+&amp;quot;Namespace&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Alias&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Statistics&amp;quot;:{
+&amp;quot;RxPackets&amp;quot;:179491,
+&amp;quot;TxPackets&amp;quot;:25306,
+&amp;quot;RxBytes&amp;quot;:281174090,
+&amp;quot;TxBytes&amp;quot;:2339627,
+&amp;quot;RxErrors&amp;quot;:0,
+&amp;quot;TxErrors&amp;quot;:0,
+&amp;quot;RxDropped&amp;quot;:120,
+&amp;quot;TxDropped&amp;quot;:0,
+&amp;quot;Multicast&amp;quot;:0,
+&amp;quot;Collisions&amp;quot;:0,
+&amp;quot;RxLengthErrors&amp;quot;:0,
+&amp;quot;RxOverErrors&amp;quot;:0,
+&amp;quot;RxCrcErrors&amp;quot;:0,
+&amp;quot;RxFrameErrors&amp;quot;:0,
+&amp;quot;RxFifoErrors&amp;quot;:0,
+&amp;quot;RxMissedErrors&amp;quot;:0,
+&amp;quot;TxAbortedErrors&amp;quot;:0,
+&amp;quot;TxCarrierErrors&amp;quot;:0,
+&amp;quot;TxFifoErrors&amp;quot;:0,
+&amp;quot;TxHeartbeatErrors&amp;quot;:0,
+&amp;quot;TxWindowErrors&amp;quot;:0,
+&amp;quot;RxCompressed&amp;quot;:0,
+&amp;quot;TxCompressed&amp;quot;:0
+},
+&amp;quot;Promisc&amp;quot;:0,
+&amp;quot;Xdp&amp;quot;:{
+&amp;quot;Fd&amp;quot;:0,
+&amp;quot;Attached&amp;quot;:false,
+&amp;quot;Flags&amp;quot;:0,
+&amp;quot;ProgId&amp;quot;:0
+},
+&amp;quot;EncapType&amp;quot;:&amp;quot;ether&amp;quot;,
+&amp;quot;Protinfo&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;OperState&amp;quot;:&amp;quot;up&amp;quot;,
+&amp;quot;NetNsID&amp;quot;:0,
+&amp;quot;NumTxQueues&amp;quot;:8,
+&amp;quot;NumRxQueues&amp;quot;:8,
+&amp;quot;GSOMaxSize&amp;quot;:65536,
+&amp;quot;GSOMaxSegs&amp;quot;:65535,
+&amp;quot;Group&amp;quot;:0,
+&amp;quot;Slave&amp;quot;:&amp;quot;&amp;quot;
+}
+],
+&amp;quot;Addresses&amp;quot;:[
+{
+&amp;quot;Name&amp;quot;:&amp;quot;lo&amp;quot;,
+&amp;quot;Ifindex&amp;quot;:1,
+&amp;quot;OperState&amp;quot;:&amp;quot;unknown&amp;quot;,
+&amp;quot;Mac&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MTU&amp;quot;:65536,
+&amp;quot;Addresses&amp;quot;:[
+{
+&amp;quot;IP&amp;quot;:&amp;quot;127.0.0.1&amp;quot;,
+&amp;quot;Mask&amp;quot;:8,
+&amp;quot;Label&amp;quot;:&amp;quot;lo&amp;quot;,
+&amp;quot;Flags&amp;quot;:128,
+&amp;quot;Scope&amp;quot;:254,
+&amp;quot;Peer&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Broadcast&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;PreferedLft&amp;quot;:4294967295,
+&amp;quot;ValidLft&amp;quot;:4294967295
+},
+{
+&amp;quot;IP&amp;quot;:&amp;quot;::1&amp;quot;,
+&amp;quot;Mask&amp;quot;:128,
+&amp;quot;Label&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Flags&amp;quot;:128,
+&amp;quot;Scope&amp;quot;:254,
+&amp;quot;Peer&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Broadcast&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;PreferedLft&amp;quot;:4294967295,
+&amp;quot;ValidLft&amp;quot;:4294967295
+}
+]
+},
+{
+&amp;quot;Name&amp;quot;:&amp;quot;eth0&amp;quot;,
+&amp;quot;Ifindex&amp;quot;:2,
+&amp;quot;OperState&amp;quot;:&amp;quot;up&amp;quot;,
+&amp;quot;Mac&amp;quot;:&amp;quot;00:0c:29:68:ed:d8&amp;quot;,
+&amp;quot;MTU&amp;quot;:1500,
+&amp;quot;Addresses&amp;quot;:[
+{
+&amp;quot;IP&amp;quot;:&amp;quot;10.197.103.42&amp;quot;,
+&amp;quot;Mask&amp;quot;:23,
+&amp;quot;Label&amp;quot;:&amp;quot;eth0&amp;quot;,
+&amp;quot;Flags&amp;quot;:0,
+&amp;quot;Scope&amp;quot;:0,
+&amp;quot;Peer&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Broadcast&amp;quot;:&amp;quot;10.197.103.255&amp;quot;,
+&amp;quot;PreferedLft&amp;quot;:3927,
+&amp;quot;ValidLft&amp;quot;:3927
+},
+{
+&amp;quot;IP&amp;quot;:&amp;quot;fe80::20c:29ff:fe68:edd8&amp;quot;,
+&amp;quot;Mask&amp;quot;:64,
+&amp;quot;Label&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Flags&amp;quot;:128,
+&amp;quot;Scope&amp;quot;:253,
+&amp;quot;Peer&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Broadcast&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;PreferedLft&amp;quot;:4294967295,
+&amp;quot;ValidLft&amp;quot;:4294967295
+}
+]
+}
+],
+&amp;quot;Routes&amp;quot;:[
+{
+&amp;quot;LinkName&amp;quot;:&amp;quot;eth0&amp;quot;,
+&amp;quot;LinkIndex&amp;quot;:2,
+&amp;quot;ILinkIndex&amp;quot;:0,
+&amp;quot;Scope&amp;quot;:0,
+&amp;quot;Dst&amp;quot;:{
+&amp;quot;IP&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Mask&amp;quot;:0
+},
+&amp;quot;Src&amp;quot;:&amp;quot;10.197.103.42&amp;quot;,
+&amp;quot;Gw&amp;quot;:&amp;quot;10.197.103.253&amp;quot;,
+&amp;quot;MultiPath&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Protocol&amp;quot;:16,
+&amp;quot;Priority&amp;quot;:1024,
+&amp;quot;Table&amp;quot;:254,
+&amp;quot;Type&amp;quot;:1,
+&amp;quot;Tos&amp;quot;:0,
+&amp;quot;Flags&amp;quot;:null,
+&amp;quot;MPLSDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;NewDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Encap&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MTU&amp;quot;:0,
+&amp;quot;AdvMSS&amp;quot;:0,
+&amp;quot;Hoplimit&amp;quot;:0
+},
+{
+&amp;quot;LinkName&amp;quot;:&amp;quot;eth0&amp;quot;,
+&amp;quot;LinkIndex&amp;quot;:2,
+&amp;quot;ILinkIndex&amp;quot;:0,
+&amp;quot;Scope&amp;quot;:253,
+&amp;quot;Dst&amp;quot;:{
+&amp;quot;IP&amp;quot;:&amp;quot;10.197.102.0&amp;quot;,
+&amp;quot;Mask&amp;quot;:23
+},
+&amp;quot;Src&amp;quot;:&amp;quot;10.197.103.42&amp;quot;,
+&amp;quot;Gw&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MultiPath&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Protocol&amp;quot;:2,
+&amp;quot;Priority&amp;quot;:0,
+&amp;quot;Table&amp;quot;:254,
+&amp;quot;Type&amp;quot;:1,
+&amp;quot;Tos&amp;quot;:0,
+&amp;quot;Flags&amp;quot;:null,
+&amp;quot;MPLSDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;NewDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Encap&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MTU&amp;quot;:0,
+&amp;quot;AdvMSS&amp;quot;:0,
+&amp;quot;Hoplimit&amp;quot;:0
+},
+{
+&amp;quot;LinkName&amp;quot;:&amp;quot;eth0&amp;quot;,
+&amp;quot;LinkIndex&amp;quot;:2,
+&amp;quot;ILinkIndex&amp;quot;:0,
+&amp;quot;Scope&amp;quot;:253,
+&amp;quot;Dst&amp;quot;:{
+&amp;quot;IP&amp;quot;:&amp;quot;10.197.103.253&amp;quot;,
+&amp;quot;Mask&amp;quot;:32
+},
+&amp;quot;Src&amp;quot;:&amp;quot;10.197.103.42&amp;quot;,
+&amp;quot;Gw&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MultiPath&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Protocol&amp;quot;:16,
+&amp;quot;Priority&amp;quot;:1024,
+&amp;quot;Table&amp;quot;:254,
+&amp;quot;Type&amp;quot;:1,
+&amp;quot;Tos&amp;quot;:0,
+&amp;quot;Flags&amp;quot;:null,
+&amp;quot;MPLSDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;NewDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Encap&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MTU&amp;quot;:0,
+&amp;quot;AdvMSS&amp;quot;:0,
+&amp;quot;Hoplimit&amp;quot;:0
+},
+{
+&amp;quot;LinkName&amp;quot;:&amp;quot;lo&amp;quot;,
+&amp;quot;LinkIndex&amp;quot;:1,
+&amp;quot;ILinkIndex&amp;quot;:0,
+&amp;quot;Scope&amp;quot;:0,
+&amp;quot;Dst&amp;quot;:{
+&amp;quot;IP&amp;quot;:&amp;quot;::1&amp;quot;,
+&amp;quot;Mask&amp;quot;:128
+},
+&amp;quot;Src&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Gw&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MultiPath&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Protocol&amp;quot;:2,
+&amp;quot;Priority&amp;quot;:256,
+&amp;quot;Table&amp;quot;:254,
+&amp;quot;Type&amp;quot;:1,
+&amp;quot;Tos&amp;quot;:0,
+&amp;quot;Flags&amp;quot;:null,
+&amp;quot;MPLSDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;NewDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Encap&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MTU&amp;quot;:0,
+&amp;quot;AdvMSS&amp;quot;:0,
+&amp;quot;Hoplimit&amp;quot;:0
+},
+{
+&amp;quot;LinkName&amp;quot;:&amp;quot;eth0&amp;quot;,
+&amp;quot;LinkIndex&amp;quot;:2,
+&amp;quot;ILinkIndex&amp;quot;:0,
+&amp;quot;Scope&amp;quot;:0,
+&amp;quot;Dst&amp;quot;:{
+&amp;quot;IP&amp;quot;:&amp;quot;fe80::&amp;quot;,
+&amp;quot;Mask&amp;quot;:64
+},
+&amp;quot;Src&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Gw&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MultiPath&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Protocol&amp;quot;:2,
+&amp;quot;Priority&amp;quot;:256,
+&amp;quot;Table&amp;quot;:254,
+&amp;quot;Type&amp;quot;:1,
+&amp;quot;Tos&amp;quot;:0,
+&amp;quot;Flags&amp;quot;:null,
+&amp;quot;MPLSDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;NewDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Encap&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MTU&amp;quot;:0,
+&amp;quot;AdvMSS&amp;quot;:0,
+&amp;quot;Hoplimit&amp;quot;:0
+}
+],
+&amp;quot;Dns&amp;quot;:[
+{
+&amp;quot;Link&amp;quot;:&amp;quot;eth0&amp;quot;,
+&amp;quot;Family&amp;quot;:2,
+&amp;quot;Dns&amp;quot;:&amp;quot;10.142.7.1&amp;quot;
+},
+{
+&amp;quot;Link&amp;quot;:&amp;quot;eth0&amp;quot;,
+&amp;quot;Family&amp;quot;:2,
+&amp;quot;Dns&amp;quot;:&amp;quot;10.132.7.1&amp;quot;
+},
+{
+&amp;quot;Link&amp;quot;:&amp;quot;eth0&amp;quot;,
+&amp;quot;Family&amp;quot;:2,
+&amp;quot;Dns&amp;quot;:&amp;quot;10.166.17.90&amp;quot;
+}
+],
+&amp;quot;Domains&amp;quot;:null,
+&amp;quot;NTP&amp;quot;:{
+&amp;quot;ServerName&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Family&amp;quot;:0,
+&amp;quot;ServerAddress&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;SystemNTPServers&amp;quot;:null,
+&amp;quot;LinkNTPServers&amp;quot;:[
+&amp;quot;10.128.152.81&amp;quot;,
+&amp;quot;10.166.1.120&amp;quot;,
+&amp;quot;10.188.26.119&amp;quot;,
+&amp;quot;10.84.55.42&amp;quot;
+]
+}
+},
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="route-details">Route Details&lt;/h3>
+&lt;p>To fetch the route details, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/network/netlink/route
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>root@photon [ ~/4.0/photon ]# curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/network/netlink/route | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 1407 100 1407 0 0 996k 0 --:--:-- --:--:-- --:--:-- 1374k
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:[
+{
+&amp;quot;LinkName&amp;quot;:&amp;quot;eth0&amp;quot;,
+&amp;quot;LinkIndex&amp;quot;:2,
+&amp;quot;ILinkIndex&amp;quot;:0,
+&amp;quot;Scope&amp;quot;:0,
+&amp;quot;Dst&amp;quot;:{
+&amp;quot;IP&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Mask&amp;quot;:0
+},
+&amp;quot;Src&amp;quot;:&amp;quot;10.197.103.42&amp;quot;,
+&amp;quot;Gw&amp;quot;:&amp;quot;10.197.103.253&amp;quot;,
+&amp;quot;MultiPath&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Protocol&amp;quot;:16,
+&amp;quot;Priority&amp;quot;:1024,
+&amp;quot;Table&amp;quot;:254,
+&amp;quot;Type&amp;quot;:1,
+&amp;quot;Tos&amp;quot;:0,
+&amp;quot;Flags&amp;quot;:null,
+&amp;quot;MPLSDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;NewDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Encap&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MTU&amp;quot;:0,
+&amp;quot;AdvMSS&amp;quot;:0,
+&amp;quot;Hoplimit&amp;quot;:0
+},
+{
+&amp;quot;LinkName&amp;quot;:&amp;quot;eth0&amp;quot;,
+&amp;quot;LinkIndex&amp;quot;:2,
+&amp;quot;ILinkIndex&amp;quot;:0,
+&amp;quot;Scope&amp;quot;:253,
+&amp;quot;Dst&amp;quot;:{
+&amp;quot;IP&amp;quot;:&amp;quot;10.197.102.0&amp;quot;,
+&amp;quot;Mask&amp;quot;:23
+},
+&amp;quot;Src&amp;quot;:&amp;quot;10.197.103.42&amp;quot;,
+&amp;quot;Gw&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MultiPath&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Protocol&amp;quot;:2,
+&amp;quot;Priority&amp;quot;:0,
+&amp;quot;Table&amp;quot;:254,
+&amp;quot;Type&amp;quot;:1,
+&amp;quot;Tos&amp;quot;:0,
+&amp;quot;Flags&amp;quot;:null,
+&amp;quot;MPLSDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;NewDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Encap&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MTU&amp;quot;:0,
+&amp;quot;AdvMSS&amp;quot;:0,
+&amp;quot;Hoplimit&amp;quot;:0
+},
+{
+&amp;quot;LinkName&amp;quot;:&amp;quot;eth0&amp;quot;,
+&amp;quot;LinkIndex&amp;quot;:2,
+&amp;quot;ILinkIndex&amp;quot;:0,
+&amp;quot;Scope&amp;quot;:253,
+&amp;quot;Dst&amp;quot;:{
+&amp;quot;IP&amp;quot;:&amp;quot;10.197.103.253&amp;quot;,
+&amp;quot;Mask&amp;quot;:32
+},
+&amp;quot;Src&amp;quot;:&amp;quot;10.197.103.42&amp;quot;,
+&amp;quot;Gw&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MultiPath&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Protocol&amp;quot;:16,
+&amp;quot;Priority&amp;quot;:1024,
+&amp;quot;Table&amp;quot;:254,
+&amp;quot;Type&amp;quot;:1,
+&amp;quot;Tos&amp;quot;:0,
+&amp;quot;Flags&amp;quot;:null,
+&amp;quot;MPLSDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;NewDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Encap&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MTU&amp;quot;:0,
+&amp;quot;AdvMSS&amp;quot;:0,
+&amp;quot;Hoplimit&amp;quot;:0
+},
+{
+&amp;quot;LinkName&amp;quot;:&amp;quot;lo&amp;quot;,
+&amp;quot;LinkIndex&amp;quot;:1,
+&amp;quot;ILinkIndex&amp;quot;:0,
+&amp;quot;Scope&amp;quot;:0,
+&amp;quot;Dst&amp;quot;:{
+&amp;quot;IP&amp;quot;:&amp;quot;::1&amp;quot;,
+&amp;quot;Mask&amp;quot;:128
+},
+&amp;quot;Src&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Gw&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MultiPath&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Protocol&amp;quot;:2,
+&amp;quot;Priority&amp;quot;:256,
+&amp;quot;Table&amp;quot;:254,
+&amp;quot;Type&amp;quot;:1,
+&amp;quot;Tos&amp;quot;:0,
+&amp;quot;Flags&amp;quot;:null,
+&amp;quot;MPLSDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;NewDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Encap&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MTU&amp;quot;:0,
+&amp;quot;AdvMSS&amp;quot;:0,
+&amp;quot;Hoplimit&amp;quot;:0
+},
+{
+&amp;quot;LinkName&amp;quot;:&amp;quot;eth0&amp;quot;,
+&amp;quot;LinkIndex&amp;quot;:2,
+&amp;quot;ILinkIndex&amp;quot;:0,
+&amp;quot;Scope&amp;quot;:0,
+&amp;quot;Dst&amp;quot;:{
+&amp;quot;IP&amp;quot;:&amp;quot;fe80::&amp;quot;,
+&amp;quot;Mask&amp;quot;:64
+},
+&amp;quot;Src&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Gw&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MultiPath&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Protocol&amp;quot;:2,
+&amp;quot;Priority&amp;quot;:256,
+&amp;quot;Table&amp;quot;:254,
+&amp;quot;Type&amp;quot;:1,
+&amp;quot;Tos&amp;quot;:0,
+&amp;quot;Flags&amp;quot;:null,
+&amp;quot;MPLSDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;NewDst&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Encap&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;MTU&amp;quot;:0,
+&amp;quot;AdvMSS&amp;quot;:0,
+&amp;quot;Hoplimit&amp;quot;:0
+}
+],
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="all-interfaces-links-details">All Interfaces Links Details&lt;/h3>
+&lt;p>To fetch all the interfaces links details (such as interface, mac address, and transaction), execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/network/netlink/link
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock http://localhost/api/v1/network/netlink/link
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:[
+{
+&amp;quot;Index&amp;quot;:1,
+&amp;quot;MTU&amp;quot;:65536,
+&amp;quot;TxQLen&amp;quot;:1000,
+&amp;quot;Name&amp;quot;:&amp;quot;lo&amp;quot;,
+&amp;quot;AlternativeNames&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;HardwareAddr&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Flags&amp;quot;:&amp;quot;up|loopback&amp;quot;,
+&amp;quot;RawFlags&amp;quot;:65609,
+&amp;quot;ParentIndex&amp;quot;:0,
+&amp;quot;MasterIndex&amp;quot;:0,
+&amp;quot;Namespace&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Alias&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Statistics&amp;quot;:{
+&amp;quot;RxPackets&amp;quot;:168,
+&amp;quot;TxPackets&amp;quot;:168,
+&amp;quot;RxBytes&amp;quot;:17146,
+&amp;quot;TxBytes&amp;quot;:17146,
+&amp;quot;RxErrors&amp;quot;:0,
+&amp;quot;TxErrors&amp;quot;:0,
+&amp;quot;RxDropped&amp;quot;:0,
+&amp;quot;TxDropped&amp;quot;:0,
+&amp;quot;Multicast&amp;quot;:0,
+&amp;quot;Collisions&amp;quot;:0,
+&amp;quot;RxLengthErrors&amp;quot;:0,
+&amp;quot;RxOverErrors&amp;quot;:0,
+&amp;quot;RxCrcErrors&amp;quot;:0,
+&amp;quot;RxFrameErrors&amp;quot;:0,
+&amp;quot;RxFifoErrors&amp;quot;:0,
+&amp;quot;RxMissedErrors&amp;quot;:0,
+&amp;quot;TxAbortedErrors&amp;quot;:0,
+&amp;quot;TxCarrierErrors&amp;quot;:0,
+&amp;quot;TxFifoErrors&amp;quot;:0,
+&amp;quot;TxHeartbeatErrors&amp;quot;:0,
+&amp;quot;TxWindowErrors&amp;quot;:0,
+&amp;quot;RxCompressed&amp;quot;:0,
+&amp;quot;TxCompressed&amp;quot;:0
+},
+&amp;quot;Promisc&amp;quot;:0,
+&amp;quot;Xdp&amp;quot;:{
+&amp;quot;Fd&amp;quot;:0,
+&amp;quot;Attached&amp;quot;:false,
+&amp;quot;Flags&amp;quot;:0,
+&amp;quot;ProgId&amp;quot;:0
+},
+&amp;quot;EncapType&amp;quot;:&amp;quot;loopback&amp;quot;,
+&amp;quot;Protinfo&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;OperState&amp;quot;:&amp;quot;unknown&amp;quot;,
+&amp;quot;NetNsID&amp;quot;:0,
+&amp;quot;NumTxQueues&amp;quot;:1,
+&amp;quot;NumRxQueues&amp;quot;:1,
+&amp;quot;GSOMaxSize&amp;quot;:65536,
+&amp;quot;GSOMaxSegs&amp;quot;:65535,
+&amp;quot;Group&amp;quot;:0,
+&amp;quot;Slave&amp;quot;:&amp;quot;&amp;quot;
+},
+{
+&amp;quot;Index&amp;quot;:2,
+&amp;quot;MTU&amp;quot;:1500,
+&amp;quot;TxQLen&amp;quot;:1000,
+&amp;quot;Name&amp;quot;:&amp;quot;eth0&amp;quot;,
+&amp;quot;AlternativeNames&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;HardwareAddr&amp;quot;:&amp;quot;00:0c:29:68:ed:d8&amp;quot;,
+&amp;quot;Flags&amp;quot;:&amp;quot;up|broadcast|multicast&amp;quot;,
+&amp;quot;RawFlags&amp;quot;:69699,
+&amp;quot;ParentIndex&amp;quot;:0,
+&amp;quot;MasterIndex&amp;quot;:0,
+&amp;quot;Namespace&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Alias&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;Statistics&amp;quot;:{
+&amp;quot;RxPackets&amp;quot;:226492,
+&amp;quot;TxPackets&amp;quot;:25740,
+&amp;quot;RxBytes&amp;quot;:289546384,
+&amp;quot;TxBytes&amp;quot;:2689948,
+&amp;quot;RxErrors&amp;quot;:0,
+&amp;quot;TxErrors&amp;quot;:0,
+&amp;quot;RxDropped&amp;quot;:120,
+&amp;quot;TxDropped&amp;quot;:0,
+&amp;quot;Multicast&amp;quot;:0,
+&amp;quot;Collisions&amp;quot;:0,
+&amp;quot;RxLengthErrors&amp;quot;:0,
+&amp;quot;RxOverErrors&amp;quot;:0,
+&amp;quot;RxCrcErrors&amp;quot;:0,
+&amp;quot;RxFrameErrors&amp;quot;:0,
+&amp;quot;RxFifoErrors&amp;quot;:0,
+&amp;quot;RxMissedErrors&amp;quot;:0,
+&amp;quot;TxAbortedErrors&amp;quot;:0,
+&amp;quot;TxCarrierErrors&amp;quot;:0,
+&amp;quot;TxFifoErrors&amp;quot;:0,
+&amp;quot;TxHeartbeatErrors&amp;quot;:0,
+&amp;quot;TxWindowErrors&amp;quot;:0,
+&amp;quot;RxCompressed&amp;quot;:0,
+&amp;quot;TxCompressed&amp;quot;:0
+},
+&amp;quot;Promisc&amp;quot;:0,
+&amp;quot;Xdp&amp;quot;:{
+&amp;quot;Fd&amp;quot;:0,
+&amp;quot;Attached&amp;quot;:false,
+&amp;quot;Flags&amp;quot;:0,
+&amp;quot;ProgId&amp;quot;:0
+},
+&amp;quot;EncapType&amp;quot;:&amp;quot;ether&amp;quot;,
+&amp;quot;Protinfo&amp;quot;:&amp;quot;&amp;quot;,
+&amp;quot;OperState&amp;quot;:&amp;quot;up&amp;quot;,
+&amp;quot;NetNsID&amp;quot;:0,
+&amp;quot;NumTxQueues&amp;quot;:8,
+&amp;quot;NumRxQueues&amp;quot;:8,
+&amp;quot;GSOMaxSize&amp;quot;:65536,
+&amp;quot;GSOMaxSegs&amp;quot;:65535,
+&amp;quot;Group&amp;quot;:0,
+&amp;quot;Slave&amp;quot;:&amp;quot;&amp;quot;
+}
+],
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}&lt;/code>&lt;/pre></description></item><item><title>Docs: User, Group, and Host Management</title><link>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/user-group-host-management/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/pmd-nextgen/photon-mgmtd-web-rest-api/user-group-host-management/</guid><description>
+&lt;h2 id="post-method">POST Method&lt;/h2>
+&lt;h3 id="add-a-group">Add a Group&lt;/h3>
+&lt;p>To add a group, execute a POST request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon&amp;quot;,&amp;quot;Gid&amp;quot;:&amp;quot;1125&amp;quot;}' http://localhost/api/v1/system/group/add
+&lt;/code>&lt;/pre>
+&lt;p>The following table lists the parameter:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Parameter&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Gid&lt;/td>
+&lt;td>ID of the group that you want to add.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Name&lt;/td>
+&lt;td>Name of the group that you want to add.&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon&amp;quot;,&amp;quot;Gid&amp;quot;:&amp;quot;1125&amp;quot;}' http://localhost/api/v1/system/group/add
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:&amp;quot;group added&amp;quot;,
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="add-a-user">Add a User&lt;/h3>
+&lt;p>To add a user, execute a POST request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon1&amp;quot;}' http://localhost/api/v1/system/user/add
+&lt;/code>&lt;/pre>
+&lt;p>The following table lists the parameter:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Parameter&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Name&lt;/td>
+&lt;td>Name of the user you want to add.&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request POST --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon1&amp;quot;}' http://localhost/api/v1/system/user/add
+&lt;/code>&lt;/pre>
+&lt;h2 id="delete-method">DELETE Method&lt;/h2>
+&lt;h3 id="remove-a-group">Remove a Group&lt;/h3>
+&lt;p>To remove a group, execute a DELETE request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request DELETE --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon&amp;quot;,&amp;quot;Gid&amp;quot;:&amp;quot;1125&amp;quot;}' http://localhost/api/v1/system/group/remove
+&lt;/code>&lt;/pre>
+&lt;p>The following table lists the parameters:&lt;/p>
+&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>Parameter&lt;/th>
+&lt;th>Description&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>Name&lt;/td>
+&lt;td>Name of the group you want to delete.&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>Gid&lt;/td>
+&lt;td>ID of the group that you want to delete.&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request DELETE --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon22&amp;quot;}' http://localhost/api/v1/system/group/remove
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response:&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:&amp;quot;group removed&amp;quot;,
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h3 id="remove-a-user">Remove a User&lt;/h3>
+&lt;p>To remove a user, execute a DELETE request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request DELETE --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon1&amp;quot;}' http://localhost/api/v1/system/user/remove
+&lt;/code>&lt;/pre>
+&lt;p>&lt;strong>Response&lt;/strong>&lt;/p>
+&lt;pre>&lt;code>{
+&amp;quot;success&amp;quot;:true,
+&amp;quot;message&amp;quot;:&amp;quot;user removed&amp;quot;,
+&amp;quot;errors&amp;quot;:&amp;quot;&amp;quot;
+}
+&lt;/code>&lt;/pre>
+&lt;h2 id="put-method">PUT Method&lt;/h2>
+&lt;h3 id="modify-group">Modify Group&lt;/h3>
+&lt;p>To modify the name of a group, execute a PUT request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request PUT --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon6&amp;quot;,&amp;quot;NewName&amp;quot;:&amp;quot;photon33&amp;quot;}' http://localhost/api/v1/system/group/modify
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request PUT --data '{&amp;quot;Name&amp;quot;:&amp;quot;photon6&amp;quot;,&amp;quot;NewName&amp;quot;:&amp;quot;photon33&amp;quot;}' http://localhost/api/v1/system/group/modify
+&lt;/code>&lt;/pre>
+&lt;h2 id="get-method">GET Method&lt;/h2>
+&lt;h3 id="host-details">Host Details&lt;/h3>
+&lt;p>To fetch the details of the host, execute a GET request in the following format:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/hostname/describe
+&lt;/code>&lt;/pre>
+&lt;p>Example:&lt;/p>
+&lt;pre>&lt;code>curl --unix-socket /run/photon-mgmtd/photon-mgmtd.sock --request GET http://localhost/api/v1/system/hostname/describe | jq % Total % Received % Xferd Average Speed Time Time Time Current Dload Upload Total Spent Left Speed 100 585 100 585 0 0 8374 0 --:--:-- --:--:-- --:--:-- 8478&lt;/code>&lt;/pre></description></item></channel></rss>
