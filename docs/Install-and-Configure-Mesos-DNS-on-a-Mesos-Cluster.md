@@ -69,7 +69,7 @@ client:~/mesos/jobs$ cat mesos-dns-docker.json
 }
 ```
 
-Now we can see in the Marthon and Mesos UI that we launched the application.
+Now we can see in the Marathon and Mesos UI that we launched the application.
 
 
 ### Setup Resolvers and Testing
