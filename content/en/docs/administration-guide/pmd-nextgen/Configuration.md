@@ -62,10 +62,9 @@ Default is `true`.
 	Jan 06 16:32:19 Zeus photon-mgmtd[230041]: time="2022-01-06T16:32:19+05:30" level=info msg="Starting photon-mgmtd... Listening on unix domain socket='/run/photon-mgmtd/photon-mgmtd>
 
 
+## How to Configure Users?
 
-##How to Configure Users?##
-
-###Unix domain socket###
+### Unix domain socket
 
 When you add users to the `photon-mgmtd` group, they can access the unix socket.
 Use the following command to add a user:  
