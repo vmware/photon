@@ -14,9 +14,7 @@
         Workstation](#obtaining-the-iso-and-creating-a-photon-os-vm-in-vmware-workstation)
     -   [Installing the OVA for the Minimal Version in
         vSphere](#installing-the-ova-for-the-minimal-version-in-vsphere)
-    -   [Rapidly Deploying the Photon OS OVA in VMware Workstation
-        12
-        Pro](#rapidly-deploying-the-photon-os-ova-in-vmware-workstation-12-pro)
+    -   [Rapidly Deploying the Photon OS OVA in VMware Workstation Pro](#rapidly-deploying-the-photon-os-ova-in-vmware-workstation-pro)
     -   [Root Password Rules](#root-password-rules)
     -   [Permitting Root Login with
         SSH](#permitting-root-login-with-ssh)
@@ -42,7 +40,7 @@
     -   [Controlling Services](#controlling-services)
     -   [Creating a Startup Service](#creating-a-startup-service)
     -   [Disabling the Photon OS
-        httpd.service](#disabling-the-photon-os-httpd.service)
+        httpd.service](#disabling-the-photon-os-httpdservice)
     -   [Auditing System Events with
         auditd](#auditing-system-events-with-auditd)
     -   [Analyzing systemd Logs with
@@ -95,7 +93,7 @@
     -   [Default Permissions and
         umask](#default-permissions-and-umask)
 -   [Disabling TLS 1.0 to Improve Transport Layer
-    Security](#disabling-tls-1.0-to-improve-transport-layer-security)
+    Security](#disabling-tls-10-to-improve-transport-layer-security)
 -   [Working with Repositories and
     Packages](#working-with-repositories-and-packages)
     -   [Photon OS Package
@@ -137,7 +135,7 @@ Tdnf keeps the operating system as small as possible while preserving yum's robu
 
 The SPECS directory of the GitHub website for Photon OS contains all the packages that can appear in Photon OS repositories:  
 
-https://github.com/vmware/photon/tree/master/SPECS
+https://github.com/vmware/photon/tree/2.0/SPECS
 
 To see the version of a package, in the SPECS directory, click the name of the subdirectory of the package that you want to examine, and then click the `.spec` filename in the subdirectory. For example, the version of OpenJDK, which contains the openjre package that installs the Java class library and the javac Java compiler, looks like this: 
 
@@ -174,11 +172,11 @@ The minimal version of Photon OS contains about 50 packages. As it is installed,
 
 You can view a list of the packages that appear in the minimal version by examining the following file: 
 
-[https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json](https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json)
+[https://github.com/vmware/photon/blob/2.0/common/data/packages_minimal.json](https://github.com/vmware/photon/blob/2.0/common/data/packages_minimal.json)
 
 You can view a list of the packages that appear in the full version by examining the following file: 
 
-[https://github.com/vmware/photon/blob/master/common/data/packages_full.json](https://github.com/vmware/photon/blob/master/common/data/packages_full.json)
+[https://github.com/vmware/photon/blob/2.0/common/data/packages_full.json](https://github.com/vmware/photon/blob/2.0/common/data/packages_full.json)
 
 If the minimal or the full version of Photon OS does not contain a package that you want, you can of course install it with tdnf, which appears in both the minimal and full versions of Photon OS by default. In the full version of Photon OS, you can also install packages by using yum. 
 
@@ -217,17 +215,17 @@ To get started with Photon OS 2.0, refer to the installation instructions for yo
 
 This section helps you get Photon OS up and running quickly and easily. There are several ways to deploy Photon OS for free within a matter of minutes:
 
-* Obtain the ISO from https://packages.vmware.com/photon and use it to create a virtual machine running Photon OS.
+* Obtain the ISO from https://packages.vmware.com/photon/2.0 and use it to create a virtual machine running Photon OS.
 * Install the OVA for the minimal version of Photon OS in VMware vSphere.
-* Rapidly deploy the OVA for the minimal version of Photon OS in VMware Workstation 12 Pro. 
+* Rapidly deploy the OVA for the minimal version of Photon OS in VMware Workstation Pro. 
 
 ### Obtaining the ISO and Creating a Photon OS VM in VMware Workstation
 
-The full version of Photon OS installs from an ISO in VMware Workstation and other hypervisors in a matter of minutes. Photon OS is a free download from the https://packages.vmware.com/photon web site.
+The full version of Photon OS installs from an ISO in VMware Workstation and other hypervisors in a matter of minutes. Photon OS is a free download from the Packages URL or Download web site.
 
 This section demonstrates how to create a virtual machine running Photon OS in VMware Workstation 12 Pro. If you are using a different hypervisor, the example set by this section should help you install it in your system. For instructions on how to install Photon OS from an ISO in VMware vSphere, see [Installing Photon OS on VMware vSphere from an ISO Image](Running-Project-Photon-on-vSphere.md).
 
-1. Go to the following https://packages.vmware.com/photon URL and download the ISO for the general availability release of Photon OS:
+1. Go to the following Packages URL and download the ISO for the general availability release of Photon OS:
 
 	https://packages.vmware.com/photon/2.0/GA/iso
 
@@ -235,7 +233,7 @@ This section demonstrates how to create a virtual machine running Photon OS in V
 
 1. In the New Virtual Machine Wizard, select `Typical`, and then click `Next`.
 
-1. Select `Installer disk image file (iso)`, click `Browse` to locate the Photon OS ISO that you downloaded from https://packages.vmware.com/photon/, and then click `Next`.
+1. Select `Installer disk image file (iso)`, click `Browse` to locate the Photon OS ISO that you downloaded from Packages URL, and then click `Next`.
 
 1. For the guest operating system, select `Linux`. From the `Version` drop-down menu, select `VMware Photon 64-bit`. If you have an older version of VMware Workstation and Photon does not appear in the list, select `Other Linux 3.x kernel 64-bit`.
 ![VMware Photon](images/ws-new-vm.png)
@@ -261,7 +259,7 @@ You can also build an ISO containing Photon OS from its source code on GitHub by
 
 ### Installing the OVA for the Minimal Version in vSphere
 
-You can download the OVA for the minimal version of Photon OS from https://packages.vmware.com/photon/ and deploy it in vSphere in a matter of seconds. Here's how: 
+You can download the OVA for the minimal version of Photon OS from Packages URL and deploy it in vSphere in a matter of seconds. Here's how: 
 
 Download the OVA for the minimal version of Photon OS from the following URL: 
 
@@ -275,9 +273,9 @@ The default password for the root account is `changeme`, and you must change it 
 
 There are other options for installing Photon OS in vSphere, such as building an ISO from the source code. For more information about the versions of Photon and their installation options, see [Running Photon OS on vSphere](Running-Project-Photon-on-vSphere.md).
 
-### Rapidly Deploying the Photon OS OVA in VMware Workstation 12 Pro
+### Rapidly Deploying the Photon OS OVA in VMware Workstation Pro
 
-Here's how to rapidly deploy the OVA for Photon in VMware Workstation 12 Pro by using an up-to-date version of Firefox. The procedure in other browsers or another version of Workstation might be different. 
+Here's how to rapidly deploy the OVA for Photon in VMware Workstation Pro by using an up-to-date version of Firefox. The procedure in other browsers or another version of Workstation might be different. 
 
 In Firefox, download the OVA for the minimal version of Photon OS from this URL: 
 
@@ -1439,9 +1437,7 @@ Finally, attach the ISO to the Photon OS virtual machine as a CD-ROM and reboot 
 
 ### Customizing a Photon OS Machine on EC2
 
-This section illustrates how to upload an `ami` image of Photon OS to Amazon Elastic Compute Cloud (EC2) and customize the Photon OS machine by using cloud-init with an EC2 data source. The Amazon machine image version of Photon OS is available as a free download on https://packages.vmware.com/photon/:
-
-	https://packages.vmware.com/photon/
+This section illustrates how to upload an `ami` image of Photon OS to Amazon Elastic Compute Cloud (EC2) and customize the Photon OS machine by using cloud-init with an EC2 data source. The Amazon machine image version of Photon OS 2.0 GA is available on [Photon OS 2.0 ami Packages URL](https://packages.vmware.com/photon/2.0/GA/ami/).
 
 The cloud-init service is commonly used on EC2 to configure the cloud instance of a Linux image. On EC2, for example, cloud-init typically sets the `.ssh/authorized_keys` file to let you log in with a private key from another computer--that is, a computer besides the workstation that you are already using to connect with the Amazon cloud. The cloud-config user-data file that appears in the following example contains abridged SSH authorized keys to show you how to set them. 
 
@@ -1519,11 +1515,9 @@ With Photon OS, you can also build cloud images on Google Compute Engine and oth
 
 Photon OS comes in a preconfigured image ready for Google Cloud Engine. This section demonstrates how to create a Photon OS instance on Google Cloud Engine with and without cloud-init user data.
 
-This section assumes that you have set up a GCE account and, if you try the examples, are ready to pay Google for its cloud services. The GCE-ready version of Photon OS, however, comes for free. It is, in the parlance of Google cloud services, a private image. You can freely download it without registration from https://packages.vmware.com/photon: 
+This section assumes that you have set up a GCE account and, if you try the examples, are ready to pay Google for its cloud services. The GCE-ready version of Photon OS, however, comes for free. It is, in the parlance of Google cloud services, a private image. You can freely download the gce version of Photon OS 21.0 GA on [Photon OS 2.0 gce Packages URL](https://packages.vmware.com/photon/2.0/GA/gce/).
 
-	https://packages.vmware.com/photon/2.0/GA/gce
-
-The GCE-ready image of Photon OS contains packages and scripts that prepare it for the Google cloud to save you time as you implement a compute cluster or develop cloud applications. The GCE-ready version of Photon OS adds the following packages to the [packages installed with the minimal version](https://github.com/vmware/photon/blob/master/common/data/packages_minimal.json): 
+The GCE-ready image of Photon OS contains packages and scripts that prepare it for the Google cloud to save you time as you implement a compute cluster or develop cloud applications. The GCE-ready version of Photon OS adds the following packages to the [packages installed with the minimal version](https://github.com/vmware/photon/blob/2.0/common/data/packages_minimal.json): 
 
 	sudo, tar, which, google-daemon, google-startup-scripts, 
 	kubernetes, perl-DBD-SQLite, perl-DBIx-Simple, perl, ntp
@@ -1794,7 +1788,7 @@ The default installation of Photon OS includes four yum-compatible repositories 
     photon-updates.repo
     photon.repo 
 
-The Photon ISO repository (`photon-iso.repo`) contains the installation packages for Photon OS. All the packages that Photon builds and publishes reside in the RPMs directory of the ISO when it is mounted. The RPMs directory contains metadata that lets it act as a yum repository. Mounting the ISO gives you all the packages corresponding to a Photon OS build. If, however, you built Photon OS yourself from the source code, the packages correspond only to your build, though they will typically be the latest. In contrast, the ISO that you obtain from the https://packages.vmware.com/photon web site contains only the packages that are in the ISO at the point of publication. As a result, the packages may no longer match those on https://packages.vmware.com/photon, which are updated regularly.  
+The Photon ISO repository (`photon-iso.repo`) contains the installation packages for Photon OS. All the packages that Photon builds and publishes reside in the RPMs directory of the ISO when it is mounted. The RPMs directory contains metadata that lets it act as a yum repository. Mounting the ISO gives you all the packages corresponding to a Photon OS build. If, however, you built Photon OS yourself from the source code, the packages correspond only to your build, though they will typically be the latest. In contrast, the ISO that you obtain from the https://packages.vmware.com/photon/2.0 web site contains only the packages that are in the ISO at the point of publication. As a result, the packages may no longer match those on https://packages.vmware.com/photon/dev, which are updated regularly.  
 
 The main Photon OS repository (`photon.repo`) contains all the packages that are built from the ISO or from another source. This repository points to a static batch of packages and spec files at the point of a release. 
 
@@ -1864,9 +1858,7 @@ The above examples show that the Kubernetes package has not been tampered with.
 
 ### Building a Package from a Source RPM
 
-This section describes how to install and build a package on the full version of Photon OS from the package's source RPM. You obtain the source RPMs that Photon OS uses from https://packages.vmware.com/photon: 
-
-[https://packages.vmware.com/photon/](https://packages.vmware.com/photon/)
+This section describes how to install and build a package on the full version of Photon OS from the package's source RPM. You obtain the source RPMs that Photon OS uses from [Photon OS 2.0 srpms Packages URL](https://packages.vmware.com/photon/2.0/photon_srpms_2.0_x86_64).
 
 To build a package from its source RPM, or SRPM, Photon OS requires the following packages:  
 
