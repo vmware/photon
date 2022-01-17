@@ -4,7 +4,7 @@
 Summary:        Text editor
 Name:           vim
 Version:        8.2.3408
-Release:        14%{?dist}
+Release:        15%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -30,6 +30,9 @@ Patch11:        vim-CVE-2021-4069.patch
 Patch12:        vim-CVE-2021-4136.patch
 Patch13:        vim-CVE-2022-0261.patch
 Patch14:        vim-CVE-2022-0318.patch
+Patch15:        vim-CVE-2021-4166.patch
+Patch16:        vim-CVE-2021-4187.patch
+Patch17:        vim-CVE-2021-4192.patch
 
 BuildRequires:  ncurses-devel >= 6.1-4
 Requires:       ncurses-libs >= 6.1-4
@@ -185,6 +188,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Wed Feb 02 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.3408-15
+- Fix CVE-2021-4166,CVE-2021-4187,CVE-2021-4192
 * Tue Feb 01 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.3408-14
 - Fix CVE-2022-0261, format patch CVE-2022-0318
 * Mon Jan 31 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.3408-13
