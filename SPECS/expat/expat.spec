@@ -1,32 +1,33 @@
-Summary:	An XML parser library
-Name:		expat
-Version:	2.2.9
-Release:	2%{?dist}
-License:	MIT
-URL:		http://expat.sourceforge.net/
-Group:		System Environment/GeneralLibraries
-Vendor:		VMware, Inc.
-Distribution:	Photon
+Summary:        An XML parser library
+Name:           expat
+Version:        2.2.9
+Release:        3%{?dist}
+License:        MIT
+URL:            http://expat.sourceforge.net/
+Group:          System Environment/GeneralLibraries
+Vendor:         VMware, Inc.
+Distribution:   Photon
 Source0:        https://sourceforge.net/projects/%{name}/files/%{name}/%{version}/%{name}-%{version}.tar.xz
 %define sha1 expat=90a361e4c97f8c469479ffadc0de0b121a911fb5
+Patch0:         CVE-2022-22822-27.patch
 Requires:       expat-libs = %{version}-%{release}
 %description
 The Expat package contains a stream oriented C library for parsing XML.
 
-%package    devel
-Summary:    Header and development files for expat
-Requires:   %{name} = %{version}-%{release}
-%description    devel
+%package        devel
+Summary:        Header and development files for expat
+Requires:       %{name} = %{version}-%{release}
+%description devel
 It contains the libraries and header files to create applications
 
-%package libs
-Summary: Libraries for expat
-Group:      System Environment/Libraries
+%package        libs
+Summary:        Libraries for expat
+Group:          System Environment/Libraries
 %description libs
 This package contains minimal set of shared expat libraries.
 
 %prep
-%setup -q
+%autosetup -p1
 %build
 
 %configure \
@@ -39,7 +40,7 @@ make %{?_smp_mflags}
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 rm -rf %{buildroot}/%{_docdir}/%{name}
 %{_fixperms} %{buildroot}/*
@@ -82,6 +83,9 @@ rm -rf %{buildroot}/*
 %{_libdir}/libexpat.so.*
 
 %changelog
+*   Mon Jan 17 2022 Tapas Kundu <tkundu@vmware.com> 2.2.9-3
+-   Fix CVE-2022-22822, CVE-2022-22823, CVE-2022-22824
+-   CVE-2022-22825, CVE-2022-22826, CVE-2022-22827
 *   Mon Jun 29 2020 Tapas Kundu <tkundu@vmware.com> 2.2.9-2
 -   Use ldconfig to resolve dependencies for lib
 *   Tue Oct 29 2019 Tapas Kundu <tkundu@vmware.com> 2.2.9-1
