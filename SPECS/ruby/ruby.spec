@@ -1,7 +1,7 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.5.8
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSDL
 URL:            https://www.ruby-lang.org/en/
 Group:          System Environment/Security
@@ -10,6 +10,7 @@ Distribution:   Photon
 Source0:        http://cache.ruby-lang.org/pub/ruby/2.5/%{name}-%{version}.tar.bz2
 %define sha1    ruby=823b6b009a6e44fef27d2dacb069067fe355d5d8
 Patch0:         CVE-2020-25613.patch
+Patch1:         ruby-CVE-2021-31799.patch
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
@@ -23,8 +24,8 @@ The Ruby package contains the Ruby development environment.
 This is useful for object-oriented scripting.
 
 %prep
-%setup -q
-%patch0 -p1
+
+%autosetup -p1
 
 %build
 %configure \
@@ -35,7 +36,7 @@ make %{?_smp_mflags} COPY="cp -p"
 
 %install
 [ %{buildroot} != "/"] && rm -rf %{buildroot}/*
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 %check
 chmod g+w . -R
 useradd test -G root -m
@@ -60,13 +61,15 @@ rm -rf %{buildroot}/*
 %{_mandir}/man1/*
 
 %changelog
+*   Tue Jan 18 2022 HarinadhD <hdommaraju@vmware.com> 2.5.8-3
+-   Fix CVE-2021-31799
 *   Mon Nov 02 2020 Sujay G <gsujay@vmware.com> 2.5.8-2
 -   Fix CVE-2020-25613
 *   Mon May 11 2020 Sujay G <gsujay@vmware.com> 2.5.8-1
 -   Bump version to 2.5.8 to fix CVE-2020-10933
 *   Fri Dec 13 2019 Sujay G <gsujay@vmware.com> 2.5.7-1
 -   Bump ruby version to 2.5.7, to fix CVE-2019-15845, CVE-2019-16201, CVE-2019-16255
-*   Wed Sep 09 2019 Sujay G <gsujay@vmware.com> 2.5.4-1
+*   Mon Sep 09 2019 Sujay G <gsujay@vmware.com> 2.5.4-1
 -   Bump version to 2.5.4
 -   Utilising latest tests from 2.5.4 fixes make check issues.
 *   Thu Jun 13 2019 Sujay G <gsujay@vmware.com> 2.5.3-2
