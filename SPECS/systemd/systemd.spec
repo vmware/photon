@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd/
-Version:        247.10
-Release:        6%{?dist}
+Version:        247.11
+Release:        1%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 
@@ -10,7 +10,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/systemd/systemd-stable/archive/%{name}-stable-%{version}.tar.gz
-%define sha1    %{name}=62a16d634ddee46ae52c638ae67c064a8aa62224
+%define sha1    %{name}=db23f9af9c9a8be0ab24d71d3747077d8b307c16
 Source1:        99-vmware-hotplug.rules
 Source2:        50-security-hardening.conf
 Source3:        systemd.cfg
@@ -22,11 +22,6 @@ Patch0:         systemd-247-enoX-uses-instance-number-for-vmware-hv.patch
 Patch1:         systemd-247-default-dns-from-env.patch
 Patch2:         timesync-Make-delaying-attempts-to-contact-servers-c.patch
 Patch3:         network-Fix-crash-while-dhcp4-address-gets-update.patch
-Patch4:         CVE-2021-3997-1.patch
-Patch5:         CVE-2021-3997-2.patch
-Patch6:         CVE-2021-3997-3.patch
-Patch7:         CVE-2021-3997-4.patch
-Patch8:         CVE-2021-3997-5.patch
 
 Requires:       Linux-PAM
 Requires:       bzip2
@@ -664,6 +659,8 @@ rm -rf %{_systemd_util_dir}/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Tue Jan 18 2022 Susant Sahani <ssahani@vmware.com>  247.11-1
+- Update to stable version 247.11
 * Mon Jan 10 2022 Nitesh Kumar <kunitesh@vmware.com> 247.10-6
 - Added postun for systemd-tests.
 * Sat Jan 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 247.10-5
