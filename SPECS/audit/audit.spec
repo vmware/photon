@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.5
-Release:        12%{?dist}
+Release:        13%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=62fcac8cbd20c796b909b91f8f615f8556b22a24
 Patch0:         audit-2.8.5-gcc-10.patch
@@ -88,8 +88,11 @@ echo "disable auditd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-
 %check
 make %{?_smp_mflags} check
 
-%pre
-test -L /var/log/audit && rm /var/log/audit ||:
+%pretrans
+if [ "$1" -eq 2 ]; then
+    # upgrading
+    test -L /var/log/audit && rm -f /var/log/audit && rm -rf /var/opt/audit ||:
+fi
 
 %post
 /sbin/ldconfig
@@ -149,6 +152,8 @@ test -L /var/log/audit && rm /var/log/audit ||:
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Jan 20 2022 Dweep Advani <dadvani@vmware.com> 2.8.5-13
+-   Fixed package upgrade issue
 *   Wed Jan 05 2022 Dweep Advani <dadvani@vmware.com> 2.8.5-12
 -   Use /var/log/audit
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 2.8.5-11
