@@ -4,15 +4,15 @@
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python-numpy
 Version:        1.15.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            https://pypi.python.org/pypi/numpy
-Source0:        https://pypi.python.org/packages/a5/16/8a678404411842fe02d780b5f0a676ff4d79cd58f0f22acddab1b392e230/numpy-%{version}.zip 
+Source0:        https://pypi.python.org/packages/a5/16/8a678404411842fe02d780b5f0a676ff4d79cd58f0f22acddab1b392e230/numpy-%{version}.zip
 %define sha1    numpy=2e7548d4972e5366dd8b30ca3639e243dae96af9
-
+Patch0:         CVE-2021-41496.patch
 BuildRequires:  python2
 BuildRequires:  python2-libs
 BuildRequires:  python-setuptools
@@ -43,7 +43,7 @@ Requires:       python3-libs
 Python 3 version.
 
 %prep
-%setup -q -n numpy-%{version}
+%autosetup -p1 -n numpy-%{version}
 
 %build
 # xlocale.h has been removed from glibc 2.26
@@ -85,6 +85,8 @@ rm -rf test
 %{_bindir}/f2py3
 
 %changelog
+*   Thu Jan 20 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.15.1-4
+-   Fix CVE-2021-41496
 *   Fri Aug 23 2019 Tapas Kundu <tkundu@vmware.com> 1.15.1-3
 -   Latest pytest is not compatible with python2.7
 -   Fixed make check
