@@ -1,11 +1,11 @@
 Summary:        Calico node and documentation for project calico.
 Name:           calico
-Version:        3.15.2
-Release:        9%{?dist}
+Version:        3.20.2
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/node
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 calico=269368d04748548fcdd22dccbf2bd81d76535ed3
+%define sha512  calico=9852a9144ac3da6ac2286fe349d3aada199d5926e2b1c1c4efdbd3f9ad9815505da912d6610b2dfc23b9e466a6fbe839702341b55e0aac2f9b5b5df0be82f76e
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -39,51 +39,53 @@ sed -i 's/. startup.env/source \/startup.env/g' %{buildroot}/usr/share/calico/do
 /usr/share/calico/docker/fs/*
 
 %changelog
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 3.15.2-9
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 3.15.2-8
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 3.15.2-7
--   Bump up version to compile with new go
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 3.15.2-6
--   Bump up version to compile with new go
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 3.15.2-5
--   Bump up version to compile with new go
-*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 3.15.2-4
--   Bump up version to compile with new go
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 3.15.2-3
--   Bump up version to compile with new go
-*   Wed Jun 02 2021 Piyush Gupta<gpiyush@vmware.com> 3.15.2-2
--   Bump up version to compile with new go
-*   Tue May 25 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.15.2-1
--   Update to 3.15.2
-*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 3.6.1-7
--   Bump up version to compile with new go
-*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 3.6.1-6
--   Bump up version to compile with new go
-*   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 3.6.1-5
--   Bump up version to compile with new go
-*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 3.6.1-4
--   Bump up version to compile with go 1.13.3-2
-*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-3
--   Bump up version to compile with go 1.13.3
-*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-2
--   Bump up version to compile with new go
-*   Wed May 08 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-1
--   Update to 3.6.1
-*   Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 2.6.7-4
--   Fix CVE-2018-17846 and CVE-2018-17143
-*   Mon Jan 21 2019 Bo Gan <ganb@vmware.com> 2.6.7-3
--   Build using go 1.9.7
-*   Mon Sep 24 2018 Tapas Kundu <tkundu@vmware.com> 2.6.7-2
--   Build using go version 1.9
-*   Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.6.7-1
--   Calico Node v2.6.7.
-*   Tue Dec 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.3-1
--   Calico Node v2.6.3.
-*   Fri Nov 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.2-1
--   Calico Node v2.6.2.
-*   Wed Nov 01 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.5.1-1
--   Calico Node v2.5.1.
-*   Wed Aug 16 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.1-1
--   Calico Node for PhotonOS.
+* Tue May 17 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.20.2-1
+- Update kubernetes to 3.20.2
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 3.15.2-9
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 3.15.2-8
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 3.15.2-7
+- Bump up version to compile with new go
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 3.15.2-6
+- Bump up version to compile with new go
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 3.15.2-5
+- Bump up version to compile with new go
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 3.15.2-4
+- Bump up version to compile with new go
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 3.15.2-3
+- Bump up version to compile with new go
+* Wed Jun 02 2021 Piyush Gupta<gpiyush@vmware.com> 3.15.2-2
+- Bump up version to compile with new go
+* Tue May 25 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.15.2-1
+- Update to 3.15.2
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 3.6.1-7
+- Bump up version to compile with new go
+* Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 3.6.1-6
+- Bump up version to compile with new go
+* Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 3.6.1-5
+- Bump up version to compile with new go
+* Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 3.6.1-4
+- Bump up version to compile with go 1.13.3-2
+* Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-3
+- Bump up version to compile with go 1.13.3
+* Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-2
+- Bump up version to compile with new go
+* Wed May 08 2019 Ashwin H <ashwinh@vmware.com> 3.6.1-1
+- Update to 3.6.1
+* Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 2.6.7-4
+- Fix CVE-2018-17846 and CVE-2018-17143
+* Mon Jan 21 2019 Bo Gan <ganb@vmware.com> 2.6.7-3
+- Build using go 1.9.7
+* Mon Sep 24 2018 Tapas Kundu <tkundu@vmware.com> 2.6.7-2
+- Build using go version 1.9
+* Fri May 18 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 2.6.7-1
+- Calico Node v2.6.7.
+* Tue Dec 05 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.3-1
+- Calico Node v2.6.3.
+* Fri Nov 03 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.6.2-1
+- Calico Node v2.6.2.
+* Wed Nov 01 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.5.1-1
+- Calico Node v2.5.1.
+* Wed Aug 16 2017 Vinay Kulkarni <kulkarniv@vmware.com> 2.4.1-1
+- Calico Node for PhotonOS.

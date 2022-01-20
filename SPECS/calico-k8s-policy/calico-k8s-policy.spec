@@ -1,13 +1,11 @@
 Summary:        Calico Network Policy for Kubernetes
 Name:           calico-k8s-policy
-Version:        1.0.0
-Release:        16%{?dist}
+Version:        3.21.0
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/projectcalico/k8s-policy
 Source0:        %{name}-%{version}.tar.gz
-%define sha1 calico-k8s-policy=612eafdb2afee6ffbfc432e0110c787823b66ccc
-Source1:        go-27704.patch
-Source2:        go-27842.patch
+%define sha512  calico-k8s-policy=c2f9267a1b924935bd7b4c36d47af3f72e24f841a5b46540e17ca8cf15dcaf38b72b3b7bfcdc067f21977439dc88af033d2fffd55465188bfc0be07b40902392
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -65,21 +63,10 @@ Calico Network Policy enables Calico to enforce network policy on top of Calico 
 echo "VERSION='`git describe --tags --dirty`'" > version.py
 
 %build
-export GO111MODULE=auto
-mkdir -p /root/.glide
-mkdir -p ${GOPATH}/src/github.com/projectcalico/k8s-policy
-cp -r * ${GOPATH}/src/github.com/projectcalico/k8s-policy
-pushd ${GOPATH}/src/github.com/projectcalico/k8s-policy
-glide install -strip-vendor
-pushd vendor/golang.org/x/net
-patch -p1 < %{SOURCE1}
-patch -p1 < %{SOURCE2}
-popd
 mkdir -p dist
-CGO_ENABLED=0 go build -v -o dist/controller -ldflags "-X main.VERSION=%{version}" ./main.go
+go build -v -o dist/controller -ldflags "-X main.VERSION=%{version}" ./cmd/kube-controllers/
 
 %install
-pushd ${GOPATH}/src/github.com/projectcalico/k8s-policy
 install -vdm 755 %{buildroot}%{_bindir}
 install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/controller
 
@@ -88,39 +75,39 @@ install -vpm 0755 -t %{buildroot}%{_bindir}/ dist/controller
 %{_bindir}/controller
 
 %changelog
-*   Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.0-16
--   Bump up version to compile with new go
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.0-15
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.0-14
--   Bump up version to compile with new go
-*   Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.0.0-13
--   Bump up version to compile with new go
-*   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.0.0-12
--   Bump up version to compile with new go
-*   Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.0.0-11
--   Bump up version to compile with new go
-*   Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.0.0-10
--   Bump up version to compile with new go
-*   Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.0.0-9
--   Bump up version to compile with new go
-*   Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.0.0-8
--   Bump up version to compile with new go
-*   Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.0.0-7
--   Bump up version to compile with new go
-*   Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.0.0-6
--   Bump up version to compile with new go
-*   Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.0.0-5
--   Bump up version to compile with go 1.13.3-2
-*   Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.0.0-4
--   Bump up version to compile with go 1.13.3
-*   Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.0.0-3
--   Bump up version to compile with new go
-*   Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 1.0.0-2
--   Fix CVE-2018-17846 and CVE-2018-17143
-*   Tue Nov 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.0-1
--   Calico kubernetes policy v1.0.0.
-*   Tue Nov 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.7.0-1
--   Calico kubernetes policy v0.7.0.
-*   Tue Aug 22 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.5.4-1
--   Calico kubernetes policy for PhotonOS.
+* Tue May 17 2022 Prashant S Chauhan <psinghchauha@vmware.com> 3.21.0-1
+- Update to 3.21.0
+* Wed Mar 16 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.0-16
+- Bump up version to compile with new go
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.0-15
+- Bump up version to compile with new go
+* Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.0.0-13
+- Bump up version to compile with new go
+* Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.0.0-12
+- Bump up version to compile with new go
+* Sat Aug 21 2021 Piyush Gupta<gpiyush@vmware.com> 1.0.0-11
+- Bump up version to compile with new go
+* Tue Jun 29 2021 Piyush Gupta <gpiyush@vmware.com> 1.0.0-10
+- Bump up version to compile with new go
+* Mon May 03 2021 Piyush Gupta<gpiyush@vmware.com> 1.0.0-9
+- Bump up version to compile with new go
+* Mon Feb 08 2021 Harinadh D <hdommaraju@vmware.com> 1.0.0-8
+- Bump up version to compile with new go
+* Fri Nov 27 2020 HarinadhD <hdommaraju@vmware.com> 1.0.0-7
+- Bump up version to compile with new go
+* Tue Aug 18 2020 Ashwin H <ashwinh@vmware.com> 1.0.0-6
+- Bump up version to compile with new go
+* Fri Apr 10 2020 Harinadh D <hdommaraju@vmware.com> 1.0.0-5
+- Bump up version to compile with go 1.13.3-2
+* Tue Oct 22 2019 Ashwin H <ashwinh@vmware.com> 1.0.0-4
+- Bump up version to compile with go 1.13.3
+* Fri Aug 30 2019 Ashwin H <ashwinh@vmware.com> 1.0.0-3
+- Bump up version to compile with new go
+* Mon Jan 28 2019 Bo Gan <ganb@vmware.com> 1.0.0-2
+- Fix CVE-2018-17846 and CVE-2018-17143
+* Tue Nov 14 2017 Vinay Kulkarni <kulkarniv@vmware.com> 1.0.0-1
+- Calico kubernetes policy v1.0.0.
+* Tue Nov 07 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.7.0-1
+- Calico kubernetes policy v0.7.0.
+* Tue Aug 22 2017 Vinay Kulkarni <kulkarniv@vmware.com> 0.5.4-1
+- Calico kubernetes policy for PhotonOS.

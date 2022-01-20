@@ -9,32 +9,26 @@
 
 Summary:        Kubernetes cluster management
 Name:           kubernetes
-Version:        1.18.19
-Release:        13%{?dist}
+Version:        1.23.2
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
 Vendor:         VMware, Inc.
 Distribution:   Photon
-
 Source0:        kubernetes-%{version}.tar.gz
-%define sha1    kubernetes-%{version}.tar.gz=8f736a5f51788b022862d7a2ca268a93a4420d10
+%define sha512  kubernetes-%{version}.tar.gz=af67745f84efe1e340187e510d42db231bbeef29d59fae3408b8a560bf5a336d3afa21d4a6bdd6a748ebd018aae0b15edcb4ebda594367aae3f91bae173c3a98
 Source1:        https://github.com/kubernetes/contrib/archive/contrib-0.7.0.tar.gz
-%define sha1    contrib-0.7.0=47a744da3b396f07114e518226b6313ef4b2203c
+%define sha512  contrib-0.7.0=88dc56ae09f821465a133ef65b5f5b458afe549d60bf82335cfba26a734bc991fb694724b343ed1f90cc28ca6974cc017e168740b6610e20441faf4096cf2448
 Source2:        kubelet.service
 Source3:        10-kubeadm.conf
 
-Patch0:         CVE-2021-25741.patch
-Patch1:         CVE-2020-8554-1.patch
-Patch2:         CVE-2020-8554-2.patch
-
-BuildRequires:  go >= 1.13.5
+BuildRequires:  go >= 1.16.2
 BuildRequires:  rsync
 BuildRequires:  which
-
 Requires:       cni
 Requires:       ebtables
-Requires:       etcd >= 3.0.4
+Requires:       etcd >= 3.5.0
 Requires:       ethtool
 Requires:       iptables
 Requires:       iproute2
@@ -84,7 +78,7 @@ make -j8
 make -j8 WHAT="cmd/cloud-controller-manager"
 pushd build/pause
 mkdir -p bin
-gcc -Os -Wall -Werror -static -o bin/pause-%{archname} pause.c
+gcc -Os -Wall -Werror -static -o bin/pause-%{archname} linux/pause.c
 strip bin/pause-%{archname}
 popd
 
@@ -103,6 +97,7 @@ install -m 755 -d %{buildroot}/opt/vmware/kubernetes/darwin/%{archname}
 install -m 755 -d %{buildroot}/opt/vmware/kubernetes/windows/%{archname}
 %endif
 
+# binaries install
 binaries=(cloud-controller-manager kube-apiserver kube-controller-manager kubelet kube-proxy kube-scheduler kubectl)
 for bin in "${binaries[@]}"; do
   echo "+++ INSTALLING ${bin}"
@@ -126,6 +121,7 @@ sed -i '/KUBELET_CGROUP_ARGS=--cgroup-driver=systemd/d' %{buildroot}/etc/systemd
 cd ..
 # install config files
 install -d -m 0755 %{buildroot}%{_sysconfdir}/%{name}
+install -d -m 0700 %{buildroot}%{_sysconfdir}/%{name}/manifests
 install -m 644 -t %{buildroot}%{_sysconfdir}/%{name} contrib-0.7.0/init/systemd/environ/*
 cat << EOF >> %{buildroot}%{_sysconfdir}/%{name}/kubeconfig
 apiVersion: v1
@@ -207,7 +203,6 @@ fi
 %{_bindir}/kube-proxy
 %{_bindir}/kube-scheduler
 %{_bindir}/kubectl
-#%%{_bindir}/kubefed
 %{_lib}/systemd/system/kube-apiserver.service
 %{_lib}/systemd/system/kubelet.service
 %{_lib}/systemd/system/kube-scheduler.service
@@ -245,6 +240,8 @@ fi
 %endif
 
 %changelog
+* Tue May 17 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.23.2-1
+- Update kubernetes to 1.23.2
 * Mon Mar 21 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.18.19-13
 - Remove smp_flags to fix build failure with "out of memory" message
 * Fri Mar 18 2022 Piyush Gupta <gpiyush@vmware.com> 1.18.19-13
