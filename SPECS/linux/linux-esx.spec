@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.93
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -494,6 +494,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Feb 14 2022 Ankit Jain <ankitja@vmware.com> 5.10.93-6
+- vtarfs: fixes multiple issues
+- tarfs: support for hardlink, fixes uid/gid/mode issues
 * Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.93-5
 - Fix for CVE-2022-0435
 * Sat Feb 05 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.93-4

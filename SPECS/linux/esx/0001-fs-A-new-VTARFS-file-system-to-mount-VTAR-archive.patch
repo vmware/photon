@@ -1,4 +1,4 @@
-From c0fd709849ed2e49457f143d4abc9566c5c497c0 Mon Sep 17 00:00:00 2001
+From 21f658eb343139868051ec7db33ff6b412ec1f46 Mon Sep 17 00:00:00 2001
 From: srinidhira0 <srinidhir@vmware.com>
 Date: Wed, 16 Sep 2020 18:07:58 +0000
 Subject: [PATCH] fs: A new VTARFS file system to mount VTAR archive
@@ -32,10 +32,10 @@ Signed-off-by: Ankit Jain <ankitja@vmware.com>
  fs/vtarfs/Kconfig               |  21 +
  fs/vtarfs/Makefile              |   9 +
  fs/vtarfs/README.md             |   3 +
- fs/vtarfs/vtarfs.h              | 172 ++++++++
- fs/vtarfs/vtarfs_file_dir_ops.c | 470 +++++++++++++++++++++
- fs/vtarfs/vtarfs_inode.c        | 722 ++++++++++++++++++++++++++++++++
- 8 files changed, 1399 insertions(+)
+ fs/vtarfs/vtarfs.h              | 173 +++++++
+ fs/vtarfs/vtarfs_file_dir_ops.c | 470 +++++++++++++++++++
+ fs/vtarfs/vtarfs_inode.c        | 780 ++++++++++++++++++++++++++++++++
+ 8 files changed, 1458 insertions(+)
  create mode 100644 fs/vtarfs/Kconfig
  create mode 100644 fs/vtarfs/Makefile
  create mode 100644 fs/vtarfs/README.md
@@ -118,10 +118,10 @@ index 000000000000..fe38b05c5320
 \ No newline at end of file
 diff --git a/fs/vtarfs/vtarfs.h b/fs/vtarfs/vtarfs.h
 new file mode 100644
-index 000000000000..f53eeb85af51
+index 000000000000..9c239c9e1966
 --- /dev/null
 +++ b/fs/vtarfs/vtarfs.h
-@@ -0,0 +1,172 @@
+@@ -0,0 +1,173 @@
 +/*
 + * Filesystem to directly mount vtar archive.
 + *
@@ -253,6 +253,7 @@ index 000000000000..f53eeb85af51
 +extern ssize_t vtarfs_file_read_iter(struct kiocb *iocb, struct iov_iter *to);
 +extern struct  dentry  *vtarfs_lookup(struct inode *inode, struct dentry *dentry, unsigned int flags);
 +extern vm_fault_t vtarfs_fault_handler(struct vm_fault *vmf);
++extern struct vtarfs_entry *vtarfs_find(struct vtarfs_entry *entry, const char *dir_name, const char *base_name);
 +
 +static const struct file_operations vtarfs_file_operations = {
 +	.llseek   = generic_file_llseek,
@@ -772,10 +773,10 @@ index 000000000000..4c62c9bc041f
 +EXPORT_SYMBOL(vtarfs_file_release);
 diff --git a/fs/vtarfs/vtarfs_inode.c b/fs/vtarfs/vtarfs_inode.c
 new file mode 100644
-index 000000000000..c30b379e2004
+index 000000000000..8ef80975c286
 --- /dev/null
 +++ b/fs/vtarfs/vtarfs_inode.c
-@@ -0,0 +1,722 @@
+@@ -0,0 +1,780 @@
 +/*
 + * Filesystem to directly mount vtar archive.
 + *
@@ -863,6 +864,27 @@ index 000000000000..c30b379e2004
 +
 +}
 +
++static char *build_dir_path(const char *link_path, char **link_name)
++{
++	char *dir_path;
++	char *name;
++	int len;
++
++	name = strrchr(link_path, '/');
++	name = (name) ? (name + 1) : (char *)(link_path);
++	*link_name = name;
++	len = strlen(link_path) - strlen(name);
++	len = (len > 0) ? (len) : (1);
++	dir_path = kzalloc(len, GFP_KERNEL);
++	if (!dir_path) {
++		pr_err("%s: Error in allocating memory for dir_path %ld", __func__, PTR_ERR(dir_path));
++		return NULL;
++	}
++	memcpy(dir_path, link_path, len - 1);
++	tarfs_debug("dir_path=[%s]",dir_path);
++	return dir_path;
++}
++
 +/*
 + * vtarfs_create_inode : Allocate inode for file, dir and symlinks
 + * sb : Superblock of the file system
@@ -875,6 +897,9 @@ index 000000000000..c30b379e2004
 +
 +	struct inode * inode = NULL;
 +	struct inode * dentry_inode = d_inode(sb->s_root);
++	struct vtarfs_entry *link_entry = NULL;
++	char *link_name = NULL;
++	char *link_dir_path = NULL;
 +
 +	inode = new_inode(sb);
 +	if ( !inode ) {
@@ -912,6 +937,22 @@ index 000000000000..c30b379e2004
 +					inode->i_size = sb->s_blocksize;
 +				inode->i_blocks = (inode->i_size + (1 << 9) - 1) >> 9;
 +				inc_nlink(inode);
++				break;
++		case LNKTYPE:
++				link_dir_path = build_dir_path(entry->link_name, &link_name);
++				if (link_dir_path) {
++					link_entry = vtarfs_find(VTARFS_SB(sb)->fs_entry, link_dir_path, link_name);
++					kfree(link_dir_path);
++				}
++				tarfs_debug("HARDLINK: [%s] [%s] [%s]", entry->link_name, link_dir_path, link_name);
++				if (link_entry) {
++					tarfs_debug("HARDLINK: [%s]->[%ld]", link_entry->base_name, link_entry->inode);
++					entry->inode = link_entry->inode;
++					entry->ptr_inode = link_entry->ptr_inode;
++				} else {
++					pr_err("%s: HARDLINK: Fail to find the linked file entry!! [%s] [%s] [%s]",
++							__func__, entry->link_name, link_dir_path, link_name);
++				}
 +				break;
 +		case SYMTYPE:
 +				inode->i_op = &vtarfs_symlink_inode_operations;
@@ -951,8 +992,19 @@ index 000000000000..c30b379e2004
 +	} else {
 +		name_end = memchr(header->name, 0, sizeof(header->name));
 +		if (!name_end) {
-+			pr_err("%s : Header name is not proper, name_end is NULL!!", __func__);
-+			return NULL;
++			pr_err("%s : Header name is not proper [%s][%ld][%ld], name_end is NULL!!",
++					__func__, header->name, sizeof(header->name),strlen(header->name));
++			/*
++			 * Handle the case where header->name is exact 100 bytes long and
++			 * thus there is no '\0' char and mode bytes gets appended to header->name
++			 */
++			if ((strlen(header->name) > sizeof(header->name)) &&
++					(memcmp(header->name + sizeof(header->name), header->mode, sizeof(header->mode)) == 0)) {
++				pr_info("%s :Header name is exact 100 bytes long!! Handling it properly!!", __func__);
++				name_end = header->name + sizeof(header->name);
++			} else {
++				return NULL;
++			}
 +		}
 +		name_len = name_end - header->name;
 +		tarfs_debug("[%ld] [%ld] [%c] [%s] [%s]",
@@ -1135,16 +1187,19 @@ index 000000000000..c30b379e2004
 +		goto err_lvl2;
 +	}
 +	if (kstrtouint(header.mode, 8, (unsigned int *)&entry->mode) != 0) {
-+		pr_err("%s: failed to read mode",__FUNCTION__);
-+		goto err_lvl2;
++		pr_err("%s: failed to read mode, mode=%s", __FUNCTION__, header.mode);
++		// Setting default mode as r+w+x for all user
++		entry->mode = 0777;
 +	}
 +	if (kstrtouint(header.uid, 8, (unsigned int *)&entry->uid) != 0) {
-+		pr_err("%s: failed to read uid",__FUNCTION__);
-+		goto err_lvl2;
++		pr_err("%s: failed to read uid, uid=%s",__FUNCTION__, header.uid);
++		// Setting default uid as nobody
++		entry->uid = 0xfffe;
 +	}
 +	if (kstrtouint(header.gid, 8, (unsigned int *)&entry->gid) !=0) {
-+		pr_err("%s: failed to read gid",__FUNCTION__);
-+		goto err_lvl2;
++		pr_err("%s: failed to read gid, gid=%s",__FUNCTION__, header.gid);
++		// Setting default gid as nobody
++		entry->uid = 0xfffd;
 +	}
 +	if (kstrtoul(header.mtime, 8, (long unsigned int *)&mtime.tv_sec) != 0) {
 +		mtime.tv_sec = 0;
@@ -1242,10 +1297,12 @@ index 000000000000..c30b379e2004
 +	struct vtarfs_entry *first = vtarfs_read_entry(sb, 0);
 +	struct inode *alloc_inode = NULL;
 +
-+	alloc_inode = vtarfs_create_inode(sb, first, first->mode);
-+	if (alloc_inode == NULL) {
-+		pr_err("%s: alloc_inode failed !!",__FUNCTION__);
-+		first->inode = 2;
++	if (first) {
++		alloc_inode = vtarfs_create_inode(sb, first, first->mode);
++		if (alloc_inode == NULL) {
++			pr_err("%s: alloc_inode failed !!",__FUNCTION__);
++			first->inode = 2;
++		}
 +	}
 +	return first;
 +}
@@ -1284,6 +1341,9 @@ index 000000000000..c30b379e2004
 +
 +		radix_tree_preload_end();
 +		first->radix_root_key = parent->inode;
++		if (parent->header.typeflag == LNKTYPE)
++			iput(alloc_inode);
++
 +	}while(parent);
 +
 +	return first;
@@ -1332,7 +1392,7 @@ index 000000000000..c30b379e2004
 +	sb->s_op	=	&vtarfs_super_ops;
 +	sb->s_d_op	=	&simple_dentry_operations;
 +	sb->s_time_gran	=	1;
-+	sb->s_flags	|=	SB_RDONLY | SB_NOATIME; /*Read only file system*/
++	sb->s_flags     |=      SB_RDONLY | SB_NOATIME; /*Read only file system*/
 +	sb->s_magic 	= 	(unsigned long)vtarfs_MAGIC;
 +
 +	sb->s_fs_info = info;
@@ -1414,7 +1474,6 @@ index 000000000000..c30b379e2004
 +{
 +	struct vtarfs_fs_info *info = VTARFS_SB(sb);
 +	struct vtarfs_entry *entry = info->fs_entry;
-+	struct inode *inode = NULL;
 +	int i;
 +
 +	tarfs_debug("Kill super");
@@ -1433,8 +1492,8 @@ index 000000000000..c30b379e2004
 +		for (i = 0; i < entry->num_pages; i++) {
 +			put_page(entry->pages[i]);
 +		}
-+		inode = ilookup(sb, entry->inode);
-+		iput(inode);
++		if (entry->header.typeflag != LNKTYPE)
++			iput(entry->ptr_inode);
 +		kfree(entry->pages);
 +		kfree(entry);
 +		entry = next;
