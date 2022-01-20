@@ -45,7 +45,8 @@ targetList = {
                 "check-kpartx", "check-sanity", "start-docker", "install-photon-docker-image",
                 "check-spec-files", "check-pyopenssl", "check-photon-installer"],
 
-        "utilities": ["generate-dep-lists", "pkgtree", "imgtree", "who-needs", "print-upward-deps", "pull-stage-rpms"]
+        "utilities": ["generate-dep-lists", "pkgtree", "imgtree", "who-needs",
+                "print-upward-deps", "pull-stage-rpms", "clean-stage-rpms"]
         }
 
 curDir = os.getcwd()
@@ -274,6 +275,20 @@ class Utilities:
         if len(notFound) > 0:
             self.logger.info("List of missing files: " + str(notFound))
 
+    def clean_stage_rpms(self):
+        keepFiles = self.specDepsObject.listRPMfilenames(True)
+        rpmpath = os.path.join(constants.rpmPath, constants.currentArch)
+        allFiles = [os.path.join(constants.currentArch, f) for f in os.listdir(rpmpath) if os.path.isfile(os.path.join(rpmpath, f))]
+        rpmpath = os.path.join(constants.rpmPath, "noarch")
+        allFiles.extend([os.path.join("noarch", f) for f in os.listdir(rpmpath) if os.path.isfile(os.path.join(rpmpath, f))])
+        removeFiles = list(set(allFiles) - set(keepFiles))
+        for f in removeFiles:
+            filePath = os.path.join(constants.rpmPath, f)
+            print("Removing {}".format(f))
+            try:
+                os.remove(filePath)
+            except Exception as error:
+                print("Error while removing file {0}: {1}".format(filePath, error))
 
 
 
