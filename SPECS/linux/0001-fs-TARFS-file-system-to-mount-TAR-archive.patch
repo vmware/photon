@@ -1,4 +1,4 @@
-From 3a0be710499be4a13c825cf80c70dcf7b795f366 Mon Sep 17 00:00:00 2001
+From 79326107960fa8d98ca62ae89e87c6a408af63ca Mon Sep 17 00:00:00 2001
 From: Ankit Jain <ankitja@vmware.com>
 Date: Wed, 10 Nov 2021 14:07:43 +0000
 Subject: [PATCH] fs: TARFS file system to mount TAR archive
@@ -30,8 +30,8 @@ Signed-off-by: Ashwin Dayanand Kamat <kashwindayan@vmware.com>
  fs/tarfs/README.md            |  64 +++
  fs/tarfs/tarfs.h              | 180 +++++++++
  fs/tarfs/tarfs_file_dir_ops.c | 483 +++++++++++++++++++++++
- fs/tarfs/tarfs_inode.c        | 706 ++++++++++++++++++++++++++++++++++
- 8 files changed, 1469 insertions(+)
+ fs/tarfs/tarfs_inode.c        | 719 ++++++++++++++++++++++++++++++++++
+ 8 files changed, 1482 insertions(+)
  create mode 100644 fs/tarfs/Kconfig
  create mode 100644 fs/tarfs/Makefile
  create mode 100644 fs/tarfs/README.md
@@ -853,10 +853,10 @@ index 000000000000..cccf46ea5a4f
 +
 diff --git a/fs/tarfs/tarfs_inode.c b/fs/tarfs/tarfs_inode.c
 new file mode 100644
-index 000000000000..09732f1f3e26
+index 000000000000..845d55946964
 --- /dev/null
 +++ b/fs/tarfs/tarfs_inode.c
-@@ -0,0 +1,706 @@
+@@ -0,0 +1,719 @@
 +/*
 + * Filesystem to directly mount tar archive.
 + *
@@ -1032,8 +1032,19 @@ index 000000000000..09732f1f3e26
 +	} else {
 +		name_end = memchr(header->name, 0, sizeof(header->name));
 +		if (!name_end) {
-+			tarfs_err("Header name is not proper, name_end is NULL!!");
-+			return NULL;
++			tarfs_err("Header name is not proper [%s][%ld][%ld], name_end is NULL!!",
++					header->name, sizeof(header->name),strlen(header->name));
++			/*
++			 * Handle the case where header->name is exact 100 bytes long and
++			 * thus there is no '\0' char and mode bytes gets appended to header->name
++			 */
++			if ((strlen(header->name) > sizeof(header->name)) &&
++					(memcmp(header->name + sizeof(header->name), header->mode, sizeof(header->mode)) == 0)) {
++				tarfs_info("Header name is exact 100 bytes long!! Handling it properly!!");
++				name_end = header->name + sizeof(header->name);
++			} else {
++				return NULL;
++			}
 +		}
 +		name_len = name_end - header->name;
 +		tarfs_debug("[%ld] [%ld] [%c] [%s] [%s]",
@@ -1236,22 +1247,24 @@ index 000000000000..09732f1f3e26
 +		goto err_lvl1;
 +	}
 +	// Parse the data length from the header
-+	if (kstrtouint(header.size, OCTAL, (unsigned int *)&length) !=
-+			0) {
++	if (kstrtouint(header.size, OCTAL, (unsigned int *)&length) != 0) {
 +		tarfs_err("failed to read size");
 +		goto err_lvl1;
 +	}
 +	if (kstrtouint(header.mode, OCTAL, (unsigned int *)&mode) != 0) {
-+		tarfs_err("failed to read mode");
-+		goto err_lvl1;
++		tarfs_err("failed to read mode, mode=%s", header.mode);
++		/* set default mode as r+w+x for all user */
++		mode = 0777;
 +	}
 +	if (kstrtouint(header.uid, OCTAL, (unsigned int *)&uid) != 0) {
-+		tarfs_err("failed to read uid");
-+		goto err_lvl1;
++		tarfs_err("failed to read uid, uid=%s", header.uid);
++		/* set default uid as nobody */
++		uid = 0xfffe;
 +	}
 +	if (kstrtouint(header.gid, OCTAL, (unsigned int *)&gid) !=0) {
-+		tarfs_err("failed to read gid");
-+		goto err_lvl1;
++		tarfs_err("failed to read gid, gid=%s", header.gid);
++		/* set default gid as nobody */
++		gid = 0xfffd;
 +	}
 +	if (kstrtoul(header.mtime, OCTAL, (long unsigned int *)&mtime.tv_sec) != 0) {
 +		mtime.tv_sec = 0;

@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.224
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -956,6 +956,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Thu Jan 20 2022 Ankit Jain <ankitja@vmware.com> 4.19.224-4
+-   vtarfs: Fixes multiple issues
+-   tarfs: fixes uid/gid/mode parsing and filename size issue
 *   Sun Jan 09 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-3
 -   Fix CVE-2021-4155 and CVE-2021-4204
 *   Sun Jan 09 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.224-2
