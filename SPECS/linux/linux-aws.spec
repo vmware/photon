@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.296
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.297
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=fda4475ceac4d2cb6dcc392c38edc078595a69dc
+%define sha1 linux=44c935680722221759cd6013e7cf7bea484b64e7
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -206,9 +206,6 @@ Patch154:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 # Fix for CVE-2018-25020
 Patch155:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
-
-# Fix for CVE-2021-4155
-Patch156:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
 
 # Fix for CVE-2021-4204
 Patch157:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
@@ -424,7 +421,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch153 -p1
 %patch154 -p1
 %patch155 -p1
-%patch156 -p1
 %patch157 -p1
 %patch158 -p1
 
@@ -574,6 +570,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Fri Jan 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.297-1
+-   Update to version 4.9.297
 *   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.296-2
 -   Fix CVE-2021-4155 and CVE-2021-4204
 *   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.296-1

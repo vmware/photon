@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.9.296
-Release:        2%{?dist}
+Version:        4.9.297
+Release:        1%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=fda4475ceac4d2cb6dcc392c38edc078595a69dc
+%define sha1 linux=44c935680722221759cd6013e7cf7bea484b64e7
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -149,9 +149,6 @@ Patch119:       0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 # Fix for CVE-2018-25020
 Patch120:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 
-# Fix for CVE-2021-4155
-Patch121:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
-
 # Fix for CVE-2021-4204
 Patch122:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch123:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
@@ -286,7 +283,6 @@ The Linux package contains the Linux kernel doc files
 %patch118 -p1
 %patch119 -p1
 %patch120 -p1
-%patch121 -p1
 %patch122 -p1
 %patch123 -p1
 
@@ -384,6 +380,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jan 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.297-1
+-   Update to version 4.9.297
 *   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.296-2
 -   Fix CVE-2021-4155 and CVE-2021-4204
 *   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.296-1
