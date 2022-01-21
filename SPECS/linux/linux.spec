@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.4.298
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Version:        4.4.299
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:    	http://www.kernel.org/pub/linux/kernel/v4.x/%{name}-%{version}.tar.xz
-%define sha1 linux=6b52fcf71a3c3cbc16cf69dc9f2ff62746fb7ecd
+%define sha1 linux=d636382a885447b7d94c52f7b28d6fd12db1db15
 Source1:	config
 %define ena_version 1.1.3
 Source2:    	https://github.com/amzn/amzn-drivers/archive/ena_linux_1.1.3.tar.gz
@@ -150,9 +150,6 @@ Patch102:      0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 # Fix for CVE-2018-25020
 Patch103:      0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
-
-# Fix for CVE-2021-4155
-Patch104:      0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
 
 # Fix for CVE-2021-4204
 Patch105:      0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
@@ -321,7 +318,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch101 -p1
 %patch102 -p1
 %patch103 -p1
-%patch104 -p1
 %patch105 -p1
 %patch106 -p1
 
@@ -482,6 +478,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Fri Jan 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.299-1
+-   Update to version 4.4.299
 *   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.298-2
 -   Fix CVE-2021-4155 and CVE-2021-4204
 *   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.298-1
