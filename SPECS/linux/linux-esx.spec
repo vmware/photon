@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.224
-Release:        4%{?kat_build:.kat}%{?dist}
+Version:        4.19.225
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=fc24264e8f62a990f25e7cedcca04fefce2cb1b4
+%define sha1 linux=dbeb0406b36e4aa516f15f4acca4bf097395f8d4
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -385,9 +385,6 @@ Patch521:        0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch522:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
-# Fix for CVE-2021-4155
-Patch523:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
-
 # Fix for CVE-2021-4204
 Patch524:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch525:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
@@ -751,7 +748,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch520 -p1
 %patch521 -p1
 %patch522 -p1
-%patch523 -p1
 %patch524 -p1
 %patch525 -p1
 
@@ -956,6 +952,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri Jan 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.225-1
+-   Update to version 4.19.225
 *   Thu Jan 20 2022 Ankit Jain <ankitja@vmware.com> 4.19.224-4
 -   vtarfs: Fixes multiple issues
 -   tarfs: fixes uid/gid/mode parsing and filename size issue

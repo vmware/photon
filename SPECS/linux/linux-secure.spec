@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.224
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.225
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=fc24264e8f62a990f25e7cedcca04fefce2cb1b4
+%define sha1 linux=dbeb0406b36e4aa516f15f4acca4bf097395f8d4
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -168,9 +168,6 @@ Patch187:       0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch189:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
-
-# Fix for CVE-2021-4155
-Patch190:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
 
 # Fix for CVE-2021-4204
 Patch191:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
@@ -348,7 +345,6 @@ popd
 %patch186 -p1
 %patch187 -p1
 %patch189 -p1
-%patch190 -p1
 %patch191 -p1
 %patch192 -p1
 
@@ -504,6 +500,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jan 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.225-1
+-   Update to version 4.19.225
 *   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-2
 -   Fix CVE-2021-4155 and CVE-2021-4204
 *   Wed Jan 05 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-1
