@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-secure
-Version:        5.10.83
-Release:        6%{?kat_build:.kat}%{?dist}
+Version:        5.10.93
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -21,7 +21,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=ed35078ce1be76935205980231c2b565ca84f37a
+%define sha1 linux=15dec7ea0779752207fff3ede1ab71a0f024050b
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -68,6 +68,7 @@ Patch91:        0001-NOWRITEEXEC-and-PAX-features-MPROTECT-EMUTRAMP.patch
 Patch92:        0002-Added-PAX_RANDKSTACK.patch
 Patch93:        0003-Added-rap_plugin.patch
 Patch94:        0004-Fix-PAX-function-pointer-overwritten-for-tasklet-cal.patch
+Patch95:        0001-wireguard-Fix-compilation-error-on-linux-secure.patch
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -78,13 +79,8 @@ Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 
 # Next 2 patches are about to be merged into stable
 Patch103:       0001-mm-fix-panic-in-__alloc_pages.patch
-Patch104:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
-
-# Fix for CVE-2021-4155
-Patch105:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
 
 # Fix for CVE-2021-4204
-Patch106:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Crypto:
@@ -191,6 +187,7 @@ The Linux package contains the Linux kernel doc files
 %patch92 -p1
 %patch93 -p1
 %patch94 -p1
+%patch95 -p1
 
 # CVE
 %patch100 -p1
@@ -198,9 +195,6 @@ The Linux package contains the Linux kernel doc files
 %patch102 -p1
 
 %patch103 -p1
-%patch104 -p1
-%patch105 -p1
-%patch106 -p1
 %patch107 -p1
 
 # crypto
@@ -331,6 +325,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Jan 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-1
+-   Update to version 5.10.93
 *   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-6
 -   Fix CVE-2021-4155 and CVE-2021-4204
 *   Mon Dec 20 2021 Keerthana K <keerthanak@vmware.com> 5.10.83-5

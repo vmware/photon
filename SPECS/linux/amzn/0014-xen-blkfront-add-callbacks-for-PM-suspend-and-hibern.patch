@@ -147,20 +147,20 @@ index ff7b62597b52..70ee4d9edd31 100644
 +
  	for_each_rinfo(info, rinfo, i)
  		blkif_free_ring(rinfo);
+
+@@ -1576,8 +1600,10 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
+ 	unsigned int eoiflag = XEN_EOI_FLAG_SPURIOUS;
  
-@@ -1574,8 +1598,10 @@ static irqreturn_t blkif_interrupt(int irq, void *dev_id)
- 	struct blkfront_ring_info *rinfo = (struct blkfront_ring_info *)dev_id;
- 	struct blkfront_info *info = rinfo->dev_info;
- 
--	if (unlikely(info->connected != BLKIF_STATE_CONNECTED))
+ 	if (unlikely(info->connected != BLKIF_STATE_CONNECTED)) {
+-		xen_irq_lateeoi(irq, XEN_EOI_FLAG_SPURIOUS);
 -		return IRQ_HANDLED;
-+	if (unlikely(info->connected != BLKIF_STATE_CONNECTED)) {
-+		if (info->connected != BLKIF_STATE_FREEZING)
++		if (info->connected != BLKIF_STATE_FREEZING) {
++			xen_irq_lateeoi(irq, XEN_EOI_FLAG_SPURIOUS);
 +			return IRQ_HANDLED;
-+	}
++		}
+ 	}
  
  	spin_lock_irqsave(&rinfo->ring_lock, flags);
-  again:
 @@ -2079,6 +2105,7 @@ static int blkif_recover(struct blkfront_info *info)
  	unsigned int segs;
  	struct blkfront_ring_info *rinfo;

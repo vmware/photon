@@ -22,8 +22,8 @@
 Summary:        Kernel
 Name:           linux
 
-Version:        5.10.83
-Release:        7%{?kat_build:.kat}%{?dist}
+Version:        5.10.93
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -33,7 +33,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=ed35078ce1be76935205980231c2b565ca84f37a
+%define sha1 linux=15dec7ea0779752207fff3ede1ab71a0f024050b
 Source1:	config_%{_arch}
 Source2:	initramfs.trigger
 %define ena_version 2.4.0
@@ -105,13 +105,8 @@ Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 
 # Next 2 patches are about to be merged into stable
 Patch103:       0001-mm-fix-panic-in-__alloc_pages.patch
-Patch104:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
-
-# Fix for CVE-2021-4155
-Patch105:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
 
 # Fix for CVE-2021-4204
-Patch106:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
@@ -326,9 +321,6 @@ Python programming language to use the interface to manipulate perf events.
 %patch102 -p1
 
 %patch103 -p1
-%patch104 -p1
-%patch105 -p1
-%patch106 -p1
 %patch107 -p1
 
 # Allow PCI resets to be disabled from vfio_pci module
@@ -706,6 +698,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Fri Jan 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-1
+-   Update to version 5.10.93
 *   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-7
 -   Fix CVE-2021-4155 and CVE-2021-4204
 *   Mon Dec 20 2021 Keerthana K <keerthanak@vmware.com> 5.10.83-6

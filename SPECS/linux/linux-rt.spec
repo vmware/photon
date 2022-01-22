@@ -16,10 +16,10 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        5.10.83
+Version:        5.10.93
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt58
-Release:        7%{?kat_build:.kat}%{?dist}
+%define rt_version rt60
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -29,7 +29,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=ed35078ce1be76935205980231c2b565ca84f37a
+%define sha1 linux=15dec7ea0779752207fff3ede1ab71a0f024050b
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
@@ -83,13 +83,8 @@ Patch101:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 
 # Next 2 patches are about to be merged into stable
 Patch103:       0001-mm-fix-panic-in-__alloc_pages.patch
-Patch104:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
-
-# Fix for CVE-2021-4155
-Patch105:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
 
 # Fix for CVE-2021-4204
-Patch106:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
@@ -415,7 +410,7 @@ Patch612:       0312-irq_work-Allow-irq_work_sync-to-sleep-if-irq_work-no.patch
 Patch613:       0313-irq_work-Handle-some-irq_work-in-a-per-CPU-thread-on.patch
 Patch614:       0314-irq_work-Also-rcuwait-for-IRQ_WORK_HARD_IRQ-on-PREEM.patch
 # Keep rt_version matched up with this patch.
-Patch615:       0315-Linux-5.10.83-rt58-REBASE.patch
+Patch615:       0315-Linux-5.10.90-rt60-REBASE.patch
 
 #Photon Specific Changes
 Patch700:       0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
@@ -562,9 +557,6 @@ The Linux package contains the Linux kernel doc files
 %patch101 -p1
 
 %patch103 -p1
-%patch104 -p1
-%patch105 -p1
-%patch106 -p1
 %patch107 -p1
 
 %patch120 -p1
@@ -1123,6 +1115,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Fri Jan 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-1
+-   Update to version 5.10.93
 *   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-7
 -   Fix CVE-2021-4155 and CVE-2021-4204
 *   Mon Dec 20 2021 Keerthana K <keerthanak@vmware.com> 5.10.83-6

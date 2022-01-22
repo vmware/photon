@@ -1,0 +1,20 @@
+From ab895938b74c1a8d7b7497110a6c1edc65ab8fff Mon Sep 17 00:00:00 2001
+From: "Luis Claudio R. Goncalves" <lgoncalv@redhat.com>
+Date: Wed, 5 Jan 2022 10:29:30 -0300
+Subject: [PATCH 315/315] Linux 5.10.90-rt60 REBASE
+
+Signed-off-by: Luis Claudio R. Goncalves <lgoncalv@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 21988f9ad53f1..66fa05e70f292 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt34
++-rt60
+-- 
+2.33.1
+

@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.83
-Release:        8%{?kat_build:.kat}%{?dist}
+Version:        5.10.93
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -21,7 +21,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=ed35078ce1be76935205980231c2b565ca84f37a
+%define sha1 linux=15dec7ea0779752207fff3ede1ab71a0f024050b
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -105,13 +105,8 @@ Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 
 # Next 2 patches are about to be merged into stable
 Patch103:       0001-mm-fix-panic-in-__alloc_pages.patch
-Patch104:       0001-scsi-vmw_pvscsi-Set-residual-data-length-conditional.patch
-
-# Fix for CVE-2021-4155
-Patch105:       0001-xfs-map-unwritten-blocks-in-XFS_IOC_-ALLOC-FREE-SP-j.patch
 
 # Fix for CVE-2021-4204
-Patch106:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 #Patches for ptp_vmw
@@ -268,9 +263,6 @@ The Linux package contains the Linux kernel doc files
 %patch102 -p1
 
 %patch103 -p1
-%patch104 -p1
-%patch105 -p1
-%patch106 -p1
 %patch107 -p1
 
 #Patches for ptp_vmw
@@ -486,6 +478,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Fri Jan 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-1
+- Update to version 5.10.93
 * Wed Jan 12 2022 Deep Shah <sdeep@vmware.com> 5.10.83-8
 - Update ptp_vmw with provider mode support
 * Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.83-7
