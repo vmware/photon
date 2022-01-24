@@ -1,6 +1,6 @@
 Name:           influxdb
 Version:        1.6.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        InfluxDB is an open source time series database
 License:        MIT
 URL:            https://influxdata.com
@@ -230,6 +230,8 @@ fi
 %exclude %{_bindir}/test_client
 
 %changelog
+*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.6.0-8
+-   Bump up version to compile with new go
 *   Mon Oct 25 2021 Piyush Gupta <gpiyush@vmware.com> 1.6.0-7
 -   Bump up version to compile with new go
 *   Thu Dec 03 2020 Shreenidhi Shedi <sshedi@vmware.com> 1.6.0-6
