@@ -3,7 +3,7 @@
 Summary:        Docker
 Name:           docker
 Version:        20.10.11
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -288,6 +288,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*   Fri Feb 11 2022 Piyush Gupta <gpiyush@vmware.com> 20.10.11-3
+-   Bump up version to compile with new go
 *   Tue Dec 21 2021 Nitesh Kumar <kunitesh@vmware.com> 20.10.11-2
 -   Bump up version to use containerd 1.4.12.
 *   Mon Nov 29 2021 Bo Gan <ganb@vmware.com> 20.10.11-1

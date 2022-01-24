@@ -1,7 +1,7 @@
 Summary:        NGINX Ingress Controller for Kubernetes
 Name:           nginx-ingress
 Version:        1.8.1
-Release:        8%{?dist}
+Release:        9%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/nginxinc/kubernetes-ingress
 Source0:        %{name}-%{version}.tar.gz
@@ -23,7 +23,6 @@ cp -r * ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/.
 pushd ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/cmd/nginx-ingress
 CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags "-w -X main.version=%{version}" -o nginx-ingress main.go
 
-
 %install
 pushd ${GOPATH}/src/github.com/nginxinc/kubernetes-ingress/cmd/nginx-ingress
 install -vdm 755 %{buildroot}%{_bindir}
@@ -40,6 +39,8 @@ install -vpm 0755 -t %{buildroot}/usr/share/nginx-ingress/docker/ ../../internal
 /usr/share/nginx-ingress/docker/nginx.*
 
 %changelog
+*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.8.1-9
+-   Bump up version to compile with new go
 *   Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.8.1-8
 -   Bump up version to compile with new go
 *   Tue Oct 05 2021 Piyush Gupta <gpiyush@vmware.com> 1.8.1-7
