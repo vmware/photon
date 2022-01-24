@@ -7,7 +7,7 @@
 Summary:        Manages network configuration
 Name:           network-event-broker
 Version:        0.2.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        network-event-broker-%{version}.tar.gz
@@ -101,6 +101,8 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %changelog
+*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 0.2.1-2
+-   Bump up version to compile with new go
 * Wed Dec 22 2021 Susant Sahani <ssahani@vmware.com> 0.2.1-1
 - Version bump and add groupadd and useradd to requires.
 * Tue Dec 14 2021 Susant Sahani <ssahani@vmware.com> 0.2-1

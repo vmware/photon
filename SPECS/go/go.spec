@@ -15,7 +15,7 @@
 Summary:        Go
 Name:           go
 Version:        1.17.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD
 URL:            https://golang.org
 Group:          System Environment/Security
@@ -25,6 +25,9 @@ Source0:        https://golang.org/dl/%{name}%{version}.src.tar.gz
 %define sha1    go=b78350fa6e4617c1eac66dff656eda8df0a13c1f
 Patch0:         CVE-2021-41771.patch
 Patch1:         CVE-2021-41772.patch
+Patch2:         CVE-2021-44716.patch
+Patch3:         CVE-2021-44717.patch
+Patch4:         CVE-2021-44717-1.patch
 Requires:       glibc
 %define ExtraBuildRequires go
 
@@ -112,6 +115,8 @@ rm -rf %{buildroot}/*
 %{_bindir}/*
 
 %changelog
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.17.2-3
+- Fix for CVE-2021-44716 and CVE-2021-44717.
 * Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 1.17.2-2
 - Fix for CVE-2021-41771, CVE-2021-41772.
 * Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.17.2-1
