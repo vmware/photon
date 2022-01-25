@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        17%{?dist}
+Release:        18%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -40,6 +40,11 @@ Patch20:        0004-elf-Add-test-case-for-BZ-19329.patch
 Patch21:        CVE-2021-35942.patch
 Patch22:        CVE-2021-38604.patch
 Patch23:        glibc-fix-for-semctl-ltp.patch
+
+Patch24:        0001-socket_Add_the__sockaddr_un_set_function.patch
+Patch25:        CVE-2022-23218.patch
+Patch26:        CVE-2022-23219.patch
+
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -118,6 +123,9 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch21 -p1
 %patch22 -p1
 %patch23 -p1
+%patch24 -p1
+%patch25 -p1
+%patch26 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -320,6 +328,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %defattr(-,root,root)
 
 %changelog
+*   Mon Jan 24 2022 Ajay Kaher <akaher@vmware.com> 2.28-18
+-   Fix CVE-2022-23218, CVE-2022-23219
 *   Mon Sep 06 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.28-17
 -   Fix LTP Testcase (semctl) failure issue
 *   Wed Aug 25 2021 Keerthana K <keerthanak@vmware.com> 2.28-16
