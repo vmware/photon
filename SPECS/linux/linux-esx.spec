@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.297
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -153,6 +153,9 @@ Patch120:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 Patch122:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch123:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
+# Fix for CVE-2022-0330
+Patch124:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
+
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -285,6 +288,7 @@ The Linux package contains the Linux kernel doc files
 %patch120 -p1
 %patch122 -p1
 %patch123 -p1
+%patch124 -p1
 
 %build
 
@@ -380,6 +384,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Jan 25 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.297-2
+-   Fix CVE-2022-0330
 *   Fri Jan 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.297-1
 -   Update to version 4.9.297
 *   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.296-2

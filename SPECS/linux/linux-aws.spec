@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.297
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -210,6 +210,9 @@ Patch155:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 # Fix for CVE-2021-4204
 Patch157:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch158:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# Fix for CVE-2022-0330
+Patch159:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -423,6 +426,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch155 -p1
 %patch157 -p1
 %patch158 -p1
+%patch159 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -570,6 +574,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Tue Jan 25 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.297-2
+-   Fix CVE-2022-0330
 *   Fri Jan 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.297-1
 -   Update to version 4.9.297
 *   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.296-2
