@@ -4,7 +4,7 @@
 Summary:        Hawkey
 Name:           hawkey
 Version:        2017.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        LGPLv2+
 URL:            http://fedoraproject.org/wiki/Features/Hawkey
 
@@ -122,6 +122,8 @@ popd
 %exclude %{python_sitearch}/*
 
 %changelog
+*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 2017.1-8
+-   Version Bump to build with new version of cmake
 *   Wed Aug 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 2017.1-7
 -   Bump version as a part of rpm upgrade
 *   Wed Aug 07 2019 Sujay G <gsujay@vmware.com> 2017.1-6

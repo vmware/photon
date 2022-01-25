@@ -2,7 +2,7 @@
 Summary:	A fast JSON parser/generator for C++ with both SAX/DOM style API
 Name:		rapidjson
 Version:	1.1.0
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	BSD, JSON, MIT
 URL:		https://github.com/gcc-mirror/gcc/blob/master/gcc/gcov.c
 Source0:	https://github.com/miloyip/rapidjson/archive/%{name}-%{version}.tar.gz
@@ -28,9 +28,7 @@ RapidJSON is a header-only JSON parser and generator for C++.
 This package contains development headers and examples.
 
 %prep
-%setup -q
-%patch1 -p1
-%patch2 -p1
+%autosetup -p1
 
 %build
 mkdir build && cd build
@@ -39,11 +37,10 @@ make %{?_smp_mflags}
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %check
-make test
-
+make %{?_smp_mflags} test
 
 %files devel
 %defattr(-,root,root)
@@ -53,6 +50,8 @@ make test
 %{_includedir}
 %{_datadir}
 %changelog
+*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 1.1.0-4
+-   Version Bump to build with new version of cmake
 *   Mon Nov 19 2018 Vasavi Sirnapalli <vsirnapalli@vmware.com> 1.1.0-3
 -   Fix makecheck
 *   Wed Aug 08 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 1.1.0-2

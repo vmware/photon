@@ -2,7 +2,7 @@ Summary:        Tool Command Language - the language and library.
 Name:           tcl
 Version:        8.6.8
 %define majorver 8.6
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://tcl.sourceforge.net/
 License:        LGPLv2+
 Group:          System Environment/Libraries
@@ -96,6 +96,8 @@ make test %{?_smp_mflags}
 %{_mandir}/man3/*
 
 %changelog
+* Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 8.6.8-3
+- Version Bump to build with new version of cmake
 * Thu Jul 15 2021 Nitesh Kumar <kunitesh@vmware.com> 8.6.8-2
 - Fix CVE-2021-35331.
 * Fri Sep 07 2018 Michelle Wang <michellew@vmware.com> 8.6.8-1

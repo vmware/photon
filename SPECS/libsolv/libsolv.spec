@@ -1,7 +1,7 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.6.35
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Group:          Development/Tools
@@ -77,6 +77,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 0.6.35-8
+-   Version Bump to build with new version of cmake
 *   Wed Aug 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.6.35-7
 -   Bump version as a part of rpm upgrade
 *   Mon May 31 2021 Prashant S Chauhan <psinghchauha@vmware.com> 0.6.35-6

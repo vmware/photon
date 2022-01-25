@@ -1,7 +1,7 @@
 Summary:        C library that provide processing for data in the UTF-8 encoding
 Name:           utf8proc
 Version:        2.2.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        MIT
 Group:          System Environment/Libraries
 Url:            https://github.com/JuliaStrings/utf8proc
@@ -25,7 +25,7 @@ The utf8proc-devel package contains libraries, header files and documentation
 for developing applications that use utf8proc.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 mkdir -p build
@@ -38,10 +38,10 @@ make %{?_smp_mflags}
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %check
-make check
+make %{?_smp_mflags} check
 
 %post   -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -57,5 +57,7 @@ make check
 %{_libdir}/libutf8proc.so
 
 %changelog
+*	Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 2.2.0-2
+-	Version Bump to build with new version of cmake
 *       Tue Sep 18 2018 Ankit Jain <ankitja@vmware.com> 2.2.0-1
 -       Initial Version.

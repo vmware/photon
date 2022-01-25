@@ -1,7 +1,7 @@
 Summary:	Very fast, header only, C++ logging library.
 Name:		spdlog
 Version:	1.1.0
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	MIT
 URL:		https://github.com/gabime/spdlog
 Source0:	%{name}-%{version}.tar.gz
@@ -19,7 +19,7 @@ Very fast, header only, C++ logging library.
 %global debug_package %{nil}
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 mkdir -p build
@@ -29,11 +29,11 @@ make %{?_smp_mflags}
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %check
 cd build
-make test
+make %{?_smp_mflags} test
 
 %files
 %defattr(-,root,root)
@@ -42,6 +42,8 @@ make test
 %{_lib64dir}/pkgconfig/spdlog.pc
 
 %changelog
+*    Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 1.1.0-3
+-    Version Bump to build with new version of cmake
 *    Mon Nov 26 2018 Sujay G <gsujay@vmware.com> 1.1.0-2
 -    Added %check section
 *    Fri Sep 21 2018 Srinidhi Rao <srinidhir@vmware.com> 1.1.0-1

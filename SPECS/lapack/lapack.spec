@@ -1,7 +1,7 @@
 Summary:        linear algebra package
 Name:           lapack
 Version:        3.8.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 URL:            http://www.netlib.org/lapack/
 License:        BSD
 Group:          Development/Libraries
@@ -69,6 +69,8 @@ mv %{buildroot}%{_includedir}/*.h %{buildroot}%{_includedir}/lapacke/.
 %exclude %{_libdir}/cmake/*
 
 %changelog
+* Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 3.8.0-3
+- Version Bump to build with new version of cmake
 * Wed Dec 15 2021 Ankit Jain <ankitja@vmware.com> 3.8.0-2
 - Fix CVE-2021-4048
 * Thu Sep 20 2018 Ankit Jain <ankitja@vmware.com> 3.8.0-1

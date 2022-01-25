@@ -1,7 +1,7 @@
 Summary:        Pretty stack trace printer for C++.
 Name:           backward-cpp
 Version:        1.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        MIT
 URL:            https://github.com/bombela/backward-cpp
 Source0:        %{name}-v%{version}.tar.gz
@@ -21,7 +21,7 @@ Backward is a beautiful stack trace pretty printer for C++.
 %global debug_package %{nil}
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 mkdir -p build
@@ -31,7 +31,7 @@ make %{?_smp_mflags}
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 install -vm644 libbackward.so %{buildroot}%{_libdir}/
 
 %check
@@ -41,9 +41,9 @@ cmake -DBUILD_SHARED_LIBS=ON CMakeLists.txt
 # By default builds.sh returns exit status of cmds from do_action()
 # exit 0 added explicitly for clean exit from the script else cmake fails
 echo "exit 0" >> builds.sh
-sh builds.sh cmake make
-make
-make test
+sh builds.sh cmake make %{?_smp_mflags}
+make %{?_smp_mflags}
+make %{?_smp_mflags} test
 
 %files
 %defattr(-,root,root)
@@ -52,6 +52,8 @@ make test
 %{_libdir}/libbackward.so
 
 %changelog
+*    Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 1.4-4
+-    Version Bump to build with new version of cmake
 *    Tue Nov 20 2018 Sujay G <gsujay@vmware.com> 1.4-3
 -    Added %check section
 *    Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 1.4-2

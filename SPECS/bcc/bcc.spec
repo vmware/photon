@@ -6,7 +6,7 @@
 Name:            bcc
 Summary:         BPF Compiler Collection (BCC)
 Version:         0.16.0
-Release:         2%{?dist}
+Release:         3%{?dist}
 License:         ASL 2.0
 Vendor:          VMware, Inc.
 Distribution:    Photon
@@ -64,8 +64,8 @@ Requires:        python3-%{name} = %{version}-%{release}
 Command line tools for BPF Compiler Collection (BCC)
 
 %prep
-%setup -q -n %{name}-%{version}
-%setup -D -c -T -a 1 -n %{name}-%{version}/
+%autosetup -n %{name}-%{version}
+%autosetup -D -c -T -a 1 -n %{name}-%{version}/
 cp -rf bcc/* .
 rm -r bcc
 
@@ -81,7 +81,7 @@ popd
 
 %install
 pushd build
-make install/strip DESTDIR=%{buildroot}
+make %{?_smp_mflags} install/strip DESTDIR=%{buildroot}
 # mangle shebangs
 find %{buildroot}/usr/share/bcc/{tools,examples} -type f -exec \
     sed -i -e '1 s|^#!/usr/bin/python$|#!'%{__python3}'|' \
@@ -118,6 +118,8 @@ find %{buildroot}/usr/share/bcc/{tools,examples} -type f -exec \
 %{_datadir}/%{name}/man/*
 
 %changelog
+*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 0.16.0-3
+-   Version Bump to build with new version of cmake
 *   Tue Jul 27 2021 Tapas Kundu <tkundu@vmware.com> 0.16.0-2
 -   Rebuild with updated clang
 *   Wed Nov 11 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 0.16.0-1

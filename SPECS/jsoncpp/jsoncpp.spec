@@ -1,7 +1,7 @@
 Summary:    A JSON implementation in C++
 Name:       jsoncpp
 Version:    1.7.7
-Release:    1%{?dist}
+Release:    2%{?dist}
 License:    MIT
 URL:        https://github.com/open-source-parsers/jsoncpp
 Source0:    https://github.com/open-source-parsers/jsoncpp/archive/%{name}-%{version}.tar.gz
@@ -24,7 +24,7 @@ The package contains libraries and header files for
 developing applications that use jsoncpp.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 cmake \
@@ -66,6 +66,7 @@ make %{?_smp_mflags} check
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 1.7.7-2
+- Version Bump to build with new version of cmake
 * Fri Nov 15 2019 Alexey Makhalov <amakhalov@vmware.com> 1.7.7-1
 - Initial build. First version
-

@@ -1,7 +1,7 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.11.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -80,6 +80,8 @@ ln -sf %{_bindir}/modifyrepo_c %{buildroot}%{_bindir}/modifyrepo
 %{_lib64dir}/pkgconfig/%{name}.pc
 
 %changelog
+*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 0.11.1-5
+-   Version Bump to build with new version of cmake
 *   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 0.11.1-4
 -   Version bump up to use libxml2 2.9.11-4.
 *   Wed Aug 18 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.11.1-3

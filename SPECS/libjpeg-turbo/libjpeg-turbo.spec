@@ -1,7 +1,7 @@
 Summary:        fork of the original IJG libjpeg which uses SIMD.
 Name:           libjpeg-turbo
 Version:        2.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        IJG
 URL:            http://sourceforge.net/projects/libjpeg-turbo
 Group:          System Environment/Libraries
@@ -24,7 +24,7 @@ Requires:       %{name} = %{version}-%{release}
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 mkdir build
@@ -36,7 +36,7 @@ make %{?_smp_mflags}
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %post
 /sbin/ldconfig
@@ -58,6 +58,8 @@ make DESTDIR=%{buildroot} install
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 2.1.0-2
+-   Version Bump to build with new version of cmake
 *   Mon Jun 14 2021 Sujay G <gsujay@vmware.com> 2.1.0-1
 -   Bump version to 2.1.0 to fix CVE-2020-17541
 *   Mon Jun 08 2020 Sujay G <gsujay@vmware.com> 2.0.0-5
@@ -79,4 +81,3 @@ make DESTDIR=%{buildroot} install
 -   Updated to version 1.5.1
 *   Wed Jul 27 2016 Divya Thaluru <dthaluru@vmware.com> 1.5.0-1
 -   Initial version
-

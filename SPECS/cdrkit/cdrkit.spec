@@ -1,7 +1,7 @@
 Summary: 	Utilities for writing cds.
 Name: 		cdrkit
 Version: 	1.1.11
-Release: 	4%{?dist}
+Release: 	5%{?dist}
 License: 	GPLv2+
 Group: 		System Environment/Base
 Vendor:		VMware, Inc.
@@ -15,28 +15,31 @@ Requires: 	libcap
 BuildRequires: 	cmake
 BuildRequires: 	libcap-devel
 BuildRequires: 	bzip2-devel
+
 %description
 The Cdrtools package contains CD recording utilities. These are useful for reading, creating or writing (burning) Compact Discs.
+
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
 
 %build
 make %{?_smp_mflags}
 
 %install
-env PREFIX=%{buildroot}%{_prefix} make install
+env PREFIX=%{buildroot}%{_prefix} make %{?_smp_mflags} install
 ln -s  genisoimage  %{buildroot}%{_prefix}/bin/mkisofs
 
 %clean
-[ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
-
+[ %{buildroot} != "/" ] && rm -rf %{buildroot}
 
 %files
 %{_bindir}/*
 %{_sbindir}/*
 %{_datadir}/man/*
+
 %changelog
+*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 1.1.11-5
+-   Version Bump to build with new version of cmake
 *   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.11-4
 -   Remove BuildArch
 *   Mon Mar 6 2017 Alexey Makhalov <amakhalov@vmware.com> 1.1.11-3
@@ -45,4 +48,3 @@ ln -s  genisoimage  %{buildroot}%{_prefix}/bin/mkisofs
 -   GA - Bump release of all rpms
 *   Sat Feb 14 2015 Sharath George <sharathg@vmware.com>
 -   first packaging
-

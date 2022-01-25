@@ -3,7 +3,7 @@
 Summary:        Docker
 Name:           docker
 Version:        20.10.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -288,5 +288,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 
 %changelog
+*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 20.10.11-2
+-   Version Bump to build with new version of cmake
 *   Mon Nov 29 2021 Bo Gan <ganb@vmware.com> 20.10.11-1
 -   Initial packaging of 20.10

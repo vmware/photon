@@ -1,7 +1,7 @@
 Summary:	Google's C++ gtest framework
 Name:		gtest
 Version:	1.8.1
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	ASL 2.0
 URL:		https://github.com/google/googletest
 Source0:	https://github.com/google/googletest/archive/googletest-%{version}.tar.gz
@@ -48,18 +48,17 @@ Group:          Development/Tools
 %description -n gmock-static
 This contains libgmock static library.
 
-
 %prep
-%setup -n googletest-release-%{version}
+%autosetup -n googletest-release-%{version}
 
 %build
 cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DBUILD_SHARED_LIBS=OFF .
-make
+make %{?_smp_mflags}
 cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr -DBUILD_SHARED_LIBS=ON .
-make
+make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 install -p -m 644 -t %{buildroot}/usr/lib64 googlemock/libgmock.a
 install -p -m 644 -t %{buildroot}/usr/lib64 googlemock/libgmock_main.a
 install -p -m 644 -t %{buildroot}/usr/lib64 googlemock/gtest/libgtest.a
@@ -101,6 +100,8 @@ find %{buildroot} -name '*.la' -delete
 %{_lib64dir}/libgtest_main.a
 
 %changelog
+*    Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 1.8.1-3
+-    Version Bump to build with new version of cmake
 *    Sun Sep 23 2018 Sharath George <anishs@vmware.com> 1.8.1-2
 -    Add gmock subpackage
 *    Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com> 1.8.1-1

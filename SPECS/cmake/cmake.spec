@@ -1,11 +1,11 @@
-Summary:	Cmake-3.12.1
+Summary:	Cmake-3.13.5
 Name:		cmake
-Version:	3.12.1
-Release:	5%{?dist}
+Version:	3.13.5
+Release:	1%{?dist}
 License:	BSD and LGPLv2+
 URL:		http://www.cmake.org/
-Source0:	http://www.cmake.org/files/v3.12/%{name}-%{version}.tar.gz
-%define sha1 cmake=5359cd2e36051b0746580298d42518b0aef27979
+Source0:	http://www.cmake.org/files/v3.13/%{name}-%{version}.tar.gz
+%define sha1 cmake=09fe8234b02f587bccef961cc0d64282dbf55fa1
 Source1:	macros.cmake
 Patch0:         disableUnstableUT.patch
 Group:		Development/Tools
@@ -42,8 +42,8 @@ Requires:       libuv
 CMake is an extensible, open-source system that manages the build process in an
 operating system and in a compiler-independent manner.
 %prep
-%setup -q
-%patch0 -p1
+%autosetup -p1
+
 %build
 ncores="$(/usr/bin/getconf _NPROCESSORS_ONLN)"
 ./bootstrap \
@@ -59,7 +59,7 @@ ncores="$(/usr/bin/getconf _NPROCESSORS_ONLN)"
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 install -Dpm0644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d/macros.cmake
 
@@ -75,6 +75,8 @@ make  %{?_smp_mflags} test
 %{_libdir}/rpm/macros.d/macros.cmake
 
 %changelog
+*       Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 3.13.5-1
+-       Upgrade to 3.13.5
 *       Fri Mar 20 2020 Dweep Advani <dadvani@vmware.com> 3.12.1-5
 -       Add system provided libs.
 *       Thu Jan 17 2019 Ankit Jain <ankitja@vmware.com> 3.12.1-4

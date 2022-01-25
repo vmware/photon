@@ -1,7 +1,7 @@
 Summary:        A collection of modular and reusable compiler and toolchain technologies.
 Name:           llvm
 Version:        10.0.1
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        NCSA
 URL:            http://lldb.llvm.org
 Group:          Development/Tools
@@ -79,6 +79,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+* Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 10.0.1-3
+- Version Bump to build with new version of cmake
 * Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 10.0.1-2
 - Version bump up to use libxml2 2.9.11-4.
 * Wed Nov 11 2020 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.0.1-1

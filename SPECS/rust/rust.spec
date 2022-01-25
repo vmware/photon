@@ -1,7 +1,7 @@
 Summary:        Rust Programming Language
 Name:           rust
-Version:        1.51.0
-Release:        5%{?dist}
+Version:        1.58.1
+Release:        1%{?dist}
 License:        Apache License Version 2.0 and MIT
 URL:            https://github.com/rust-lang/rust
 Group:          Applications/System
@@ -10,24 +10,19 @@ Distribution:   Photon
 # Manually created Source tar which is equal to
 # Source0 + .git as it requires git hooks at build time
 Source0:        https://github.com/rust-lang/rust/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}-%{version}=4f3ff7080e3adcbbb336b8569c7a36096ad7e12e
-Patch0:         CVE-2021-31162.patch
-Patch1:         CVE-2021-28876.patch
-Patch2:         0001-Turn-may_have_side_effect-into-an-associated-constan.patch
-Patch3:         CVE-2021-28879.patch
-Patch4:         CVE-2021-28878.patch
-Patch5:         CVE-2020-36323.patch
-Patch6:         CVE-2021-29922.patch
-Patch7:         0001-Fix-invalid-suggestions-for-non-ASCII-characters-in-.patch
-# CVE-2021-42574
-Patch8:         0002-Lint-against-RTL-unicode-codepoints-in-literals-and-.patch
+%define sha1    %{name}-%{version}=57aaff24bee94720e936d687c390032acb54114e
 BuildRequires:  git
 BuildRequires:  cmake
 BuildRequires:  glibc
 BuildRequires:  binutils
-BuildRequires:  python2
+BuildRequires:  python3
 BuildRequires:  curl-devel
 BuildRequires:  ninja-build
+
+Requires:  glibc
+Requires:  gcc
+Requires:  libstdc++
+Requires:  openssl
 
 %description
 Rust Programming Language
@@ -73,6 +68,8 @@ rm %{buildroot}%{_docdir}/%{name}/*.old
 %{_sysconfdir}/bash_completion.d/cargo
 
 %changelog
+*   Sat Jan 22 2022 Ankit Jain <ankitja@vmware.com> 1.58.1-1
+-   Updated to 1.58.1 to fix CVE-2022-21658
 *   Thu Oct 28 2021 Ankit Jain <ankitja@vmware.com> 1.51.0-5
 -   Fixes CVE-2021-42574
 *   Mon Aug 23 2021 Ankit Jain <ankitja@vmware.com> 1.51.0-4

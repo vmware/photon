@@ -1,7 +1,7 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
 Version:          10.3.29
-Release:          2%{?dist}
+Release:          3%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
@@ -59,7 +59,7 @@ Summary:          errmsg for mariadb
 errmsg for maridb
 
 %prep
-%setup -q %{name}-%{version}
+%autosetup -n %{name}-%{version}
 # Remove PerconaFT from here because of AGPL licence
 rm -rf storage/tokudb/PerconaFT
 
@@ -90,7 +90,7 @@ make %{?_smp_mflags}
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 mkdir -p %{buildroot}/%{_libdir}/systemd/system
 mv  %{buildroot}/usr/share/systemd/mariadb.service %{buildroot}/%{_libdir}/systemd/system/mariadb.service
 mv  %{buildroot}/usr/share/systemd/mariadb@.service %{buildroot}/%{_libdir}/systemd/system/mariadb@.service
@@ -102,7 +102,7 @@ echo "disable mariadb.service" > %{buildroot}%{_libdir}/systemd/system-preset/50
 
 %check
 cd build
-make test
+make %{?_smp_mflags} test
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -362,6 +362,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 10.3.29-3
+-   Version Bump to build with new version of cmake
 *   Mon Jun 7 2021 Michelle Wang <michellew@vmware.com> 10.3.29-2
 -   Add shadow as requires for mariadb-server.
 *   Tue Jun 01 2021 Dweep Advani <dadvani@vmware.com> 10.3.29-1

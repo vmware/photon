@@ -5,7 +5,7 @@
 Summary:        Repodata downloading library
 Name:           librepo
 Version:        1.10.2
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        LGPLv2+
 URL:            https://github.com/rpm-software-management/librepo
 Group:          Applications/System
@@ -106,6 +106,8 @@ popd
 %{_python3_sitearch}/%{name}/
 
 %changelog
+*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 1.10.2-5
+-   Version Bump to build with new version of cmake
 *   Thu Oct 07 2021 Tapas Kundu <tkundu@vmware.com> 1.10.2-4
 -   Fix build with updated python symlink changes
 *   Wed Nov 11 2020 Satya Naga Vasamsetty <svasamsetty@vmware.com> 1.10.2-3

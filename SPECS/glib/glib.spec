@@ -1,7 +1,7 @@
 Summary:	Low-level libraries useful for providing data structure handling for C.
 Name:		glib
 Version:	2.58.0
-Release:	7%{?dist}
+Release:	8%{?dist}
 License:	LGPLv2+
 URL:		https://developer.gnome.org/glib/
 Group:		Applications/System
@@ -70,31 +70,14 @@ Requires:	glib
 Gsettings schemas compiling tool
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
+%autosetup -p1
 
 %build
 ./autogen.sh
 %configure --with-pcre=system
 make %{?_smp_mflags}
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %post	-p /sbin/ldconfig
 %postun	-p /sbin/ldconfig
@@ -128,6 +111,8 @@ make DESTDIR=%{buildroot} install
 %{_datadir}/glib-2.0/schemas/*
 
 %changelog
+*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 2.58.0-8
+-   Version Bump to build with new version of cmake
 *   Fri Mar 26 2021 Ankit Jain <ankitja@vmware.com> 2.58.0-7
 -   Fix for CVE-2021-28153
 *   Mon Dec 21 2020 Ankit Jain <ankitja@vmware.com> 2.58.0-6
@@ -154,8 +139,8 @@ make DESTDIR=%{buildroot} install
 -   Update glib require for devel to use the same version and release
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 2.47.6-2
 -   GA - Bump release of all rpms
-*   Thu Apr 14 2016	Harish Udaiya Kumar<hudaiyakumar@vmware.com> 2.47.6-1
-    Updated to version 2.47.6
+*   Thu Apr 14 2016 Harish Udaiya Kumar<hudaiyakumar@vmware.com> 2.47.6-1
+-   Updated to version 2.47.6
 *   Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 2.46.2-1
 -   Updated to version 2.46.2
 *   Fri Jun 12 2015 Alexey Makhalov <amakhalov@vmware.com> 2.42.0-3

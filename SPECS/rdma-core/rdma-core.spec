@@ -3,7 +3,7 @@
 Summary:        RDMA Core Userspace Libraries and Daemons
 Name:           rdma-core
 Version:        26.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD and MIT and GPLv2 and Creative Commons
 Group:          Applications/System
 URL:            https://github.com/linux-rdma/rdma-core
@@ -151,7 +151,8 @@ Pyverbs is a Cython-based Python API over libibverbs, providing an
 easy, object-oriented access to IB verbs.
 
 %prep
-%setup -q
+%autosetup -p1
+
 %build
 cmake \
         -DCMAKE_BUILD_TYPE=Release \
@@ -498,5 +499,7 @@ cd build && make %{?_smp_mflags} check
 %{python3_sitearch}/pyverbs
 
 %changelog
+* Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 26.0-2
+- Version Bump to build with new version of cmake
 * Fri Nov 08 2019 Alexey Makhalov <amakhalov@vmware.com> 26.0-1
 - Initial build.

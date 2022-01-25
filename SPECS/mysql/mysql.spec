@@ -1,7 +1,7 @@
 Summary:        MySQL.
 Name:           mysql
 Version:        8.0.27
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
 Vendor:         VMware, Inc.
@@ -27,7 +27,6 @@ Requires:       %{name} = %{version}-%{release}
 
 %description devel
 Development headers for developing applications linking to maridb
-
 
 %prep
 %autosetup -p1
@@ -79,6 +78,8 @@ make test %{?_smp_mflags}
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 8.0.27-2
+-   Version Bump to build with new version of cmake
 *   Wed Oct 27 2021 Tapas Kundu <tkundu@vmware.com> 8.0.27-1
 -   Update to 8.0.27
 *   Mon Aug 02 2021 Shreyas B <shreyasb@vmware.com> 8.0.26-1

@@ -1,7 +1,7 @@
 Summary:        Rsync libraries
 Name:           librsync
 Version:        2.0.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 URL:            http://librsync.sourcefrog.net/
 License:        LGPLv2+
 Group:          System Environment/Libraries
@@ -46,7 +46,7 @@ This package contains header files necessary for developing programs
 based on librsync.
 
 %prep
-%setup -q
+%autosetup -p1
 
 %build
 mkdir -p build
@@ -58,11 +58,11 @@ make %{?_smp_mflags}
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %check
 cd build
-make test
+make %{?_smp_mflags} test
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -81,10 +81,11 @@ make test
 %{_libdir}/*.so
 
 %changelog
+*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 2.0.2-2
+-   Version Bump to build with new version of cmake
 *   Sun Sep 30 2018 Bo Gan <ganb@vmware.com> 2.0.2-1
 -   Update to 2.0.2
 *   Wed Jun 28 2017 Chang Lee <changlee@vmware.com>  2.0.0-2
 -   Updated %check
 *   Wed Apr 12 2017 Xiaolin Li <xiaolinl@vmware.com>  2.0.0-1
 -   Initial build. First version
-

@@ -1,7 +1,7 @@
 Summary:       unit testing framework for C
 Name:          cmocka
 Version:       1.1.2
-Release:       1%{?dist}
+Release:       2%{?dist}
 Group:         Development/Libraries
 Vendor:        VMware, Inc.
 License:       Apache 2.0
@@ -15,7 +15,7 @@ BuildRequires: cmake
 an elegant unit testing framework for C with support for mock objects. It only requires the standard C library, works on a range of computing platforms (including embedded) and with different compilers.
 
 %prep
-%setup
+%autosetup -p1
 
 %build
 mkdir build
@@ -23,11 +23,11 @@ cd build
 cmake \
     -DCMAKE_INSTALL_PREFIX=%{_prefix} \
     ..
-make
+make %{?_smp_mflags}
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %post
 
@@ -46,6 +46,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+*  Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 1.1.2-2
+-  Version Bump to build with new version of cmake
 *  Fri Sep 07 2018 Ajay Kaher <akaher@vmware.com> 1.1.2-1
 -  Upgraded to version 1.1.2
 *  Fri Jun 29 2018 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.1.1-1

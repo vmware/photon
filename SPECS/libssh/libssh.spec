@@ -1,7 +1,7 @@
 Summary:        A library implementing the SSH protocol
 Name:           libssh
 Version:        0.9.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -106,5 +106,7 @@ ctest --output-on-failure
 %attr(0644,root,root) %config(noreplace) %{_sysconfdir}/libssh/libssh_server.config
 
 %changelog
+* Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 0.9.6-2
+- Version Bump to build with new version of cmake
 * Wed Jan 12 2022 Tapas Kundu <tkundu@vmware.com> - 0.9.6-1
 - Initial packaging to photon distro

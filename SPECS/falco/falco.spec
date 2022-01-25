@@ -2,7 +2,7 @@
 Summary:        The Behavioral Activity Monitor With Container Support
 Name:           falco
 Version:        0.30.0
-Release:        1%{?kernelsubrelease}%{?dist}
+Release:        2%{?kernelsubrelease}%{?dist}
 License:        GPLv2
 URL:            https://github.com/falcosecurity/%{name}/archive/refs/tags/%{version}.tar.gz
 Group:          Applications/System
@@ -105,6 +105,8 @@ rm -rf %{buildroot}/*
 /sbin/depmod -a
 
 %changelog
+* Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 0.30.0-2
+- Version Bump to build with new version of cmake
 * Tue Nov 23 2021 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 0.30.0-1
 - Update to version 0.30.0.
 - Add missing runtime dependency on linux.

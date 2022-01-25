@@ -1,7 +1,7 @@
 Summary:	A C++ JSON Parser/Generator
 Name:		json_spirit
 Version:	4.08
-Release:	3%{?dist}
+Release:	4%{?dist}
 License:	MIT
 URL:		https://www.codeproject.com/Articles/20027/JSON-Spirit-A-C-JSON-Parser-Generator-Implemented
 Source0:	https://www.codeproject.com/KB/recipes/JSON_Spirit/json_spirit_v4.08.zip
@@ -30,24 +30,24 @@ Group:          Development/Tools
 This contains development tools and libraries for json_spirit.
 
 %prep
-%setup -n json_spirit_v%{version}
+%autosetup -n json_spirit_v%{version}
 
 %build
 mkdir -p build
 cd build
 # Build static lib
 cmake -DCMAKE_INSTALL_PREFIX=/usr ..
-make CXX_FLAGS='-std=c++98'
+make %{?_smp_mflags} CXX_FLAGS='-std=c++98'
 # Build shared lib
 pushd ../json_spirit
 sed -i s/"json_spirit STATIC"/"json_spirit SHARED"/g CMakeLists.txt
 popd
 cmake ..
-make CXX_FLAGS='-std=c++98 -fPIC'
+make %{?_smp_mflags} CXX_FLAGS='-std=c++98 -fPIC'
 
 %install
 cd build
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 install -v -D json_spirit/libjson_spirit.so -t %{buildroot}/usr/lib/
 
 %check
@@ -65,6 +65,8 @@ json_test/json_test <<< "key_press\n"
 %{_libdir}/libjson_spirit.a
 
 %changelog
+*    Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 4.08-4
+-    Version Bump to build with new version of cmake
 *    Sun Nov 25 2018 Ashwin H <ashwinh@vmware.com> 4.08-3
 -    Add %check
 *    Thu Jun 1  2017 Bo Gan <ganb@vmware.com> 4.08-2

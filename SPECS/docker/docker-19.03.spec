@@ -11,7 +11,7 @@
 Summary:        Docker
 Name:           docker
 Version:        19.03.15
-Release:        11%{?dist}
+Release:        12%{?dist}
 License:        ASL 2.0
 URL:            http://docs.docker.com
 Group:          Applications/File
@@ -298,6 +298,8 @@ rm -rf %{buildroot}/*
 %{_datadir}/vim/vimfiles/syntax/dockerfile.vim
 
 %changelog
+* Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 19.03.15-12
+- Version Bump to build with new version of cmake
 * Thu Nov 25 2021 Shreenidhi Shedi <sshedi@vmware.com> 19.03.15-11
 - Depend on libseccomp >= 2.4.0
 * Tue Nov 16 2021 Piyush Gupta <gpiyush@vmware.com> 19.03.15-10

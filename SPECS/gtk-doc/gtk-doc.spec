@@ -1,7 +1,7 @@
 Summary:	Program to generate documenation
 Name:		gtk-doc
 Version:	1.29
-Release:	2%{?dist}
+Release:	3%{?dist}
 License:	GPLv2+
 URL:		http://www.gnu.org/software/%{name}
 Source0:	http://ftp.gnome.org/pub/gnome/sources/gtk-doc/1.25/%{name}-%{version}.tar.xz
@@ -47,6 +47,8 @@ cd tests && make check-TESTS
 %{_libdir}/cmake/
 
 %changelog
+*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 1.29-3
+-   Version Bump to build with new version of cmake
 *   Wed Oct 06 2021 Tapas Kundu <tkundu@vmware.com> 1.29-2
 -   Fix build with updated python symlink changes
 *   Wed Sep 12 2018 Anish Swaminathan <anishs@vmware.com>  1.29-1

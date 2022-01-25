@@ -3,7 +3,7 @@
 Summary:        dnf/yum equivalent using C libs
 Name:           tdnf
 Version:        3.1.7
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        LGPLv2.1,GPLv2
@@ -232,6 +232,8 @@ systemctl try-restart tdnf-cache-updateinfo.timer >/dev/null 2>&1 || :
 %{_unitdir}/%{name}-automatic-notifyonly.service
 
 %changelog
+* Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 3.1.7-2
+- Version Bump to build with new version of cmake
 * Tue Jan 04 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.1.7-1
 - Upgrade to v3.1.7, this contains installroot config reading feature
 - Fix make check
