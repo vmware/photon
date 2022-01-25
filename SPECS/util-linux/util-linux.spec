@@ -1,15 +1,16 @@
 Summary:        Utilities for file systems, consoles, partitions, and messages
 Name:           util-linux
-Version:        2.36
-Release:        3%{?dist}
+Version:        2.37.2
+Release:        1%{?dist}
 URL:            http://www.kernel.org/pub/linux/utils/util-linux
 License:        GPLv2+
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        %{name}-%{version}.tar.xz
-%define sha1    util-linux=cf99c3df18cf0a13033ec2d3d1a31587eba825d9
-Patch0:         CVE-2021-37600.patch
+Patch0:         0001-libmount-fix-UID-check-for-FUSE-umount-CVE-2021-3995.patch
+Patch1:         0002-libmount-fix-deleted-suffix-issue-CVE-2021-3996.patch
+%define sha1    util-linux=4e85e2f533ef0fe79a4505695453a91f25e87605
 BuildRequires:  ncurses-devel
 BuildRequires:  pkg-config
 
@@ -59,7 +60,7 @@ make %{?_smp_mflags}
 %install
 install -vdm 755 %{buildroot}%{_sharedstatedir}/hwclock
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
-chmod 644 %{buildroot}/usr/share/doc/util-linux/getopt/getopt*.tcsh
+chmod 644 %{buildroot}/usr/share/doc/util-linux/getopt*.tcsh
 find %{buildroot} -name '*.la' -delete
 %find_lang %{name}
 
@@ -81,7 +82,7 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_datadir}/bash-completion/completions/*
-%{_datadir}/doc/util-linux/getopt/*
+%{_datadir}/doc/util-linux/*
 
 %files libs
 %defattr(-,root,root)
@@ -100,6 +101,8 @@ rm -rf %{buildroot}/lib/systemd/system
 %{_mandir}/man3/*
 
 %changelog
+*   Mon Jan 24 2022 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.37.2-1
+-   Fixes CVE-2021-3995/CVE-2021-3996
 *   Wed Aug 11 2021 Ankit Jain <ankitja@vmware.com> 2.36-3
 -   Fixes CVE-2021-37600
 *   Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.36-2
