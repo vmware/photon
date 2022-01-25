@@ -6,7 +6,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.22
-Release:        38%{?dist}
+Release:        39%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -73,6 +73,10 @@ Patch45:        0003-elf-Use-relaxed-atomics-for-racy-accesses-BZ-19329.patch
 Patch46:        0004-elf-Add-test-case-for-BZ-19329.patch
 Patch47:        CVE-2021-35942.patch
 Patch48:        CVE-2021-38604.patch
+Patch49:        0001-socket_Add_the__sockaddr_un_set_function.patch
+Patch50:        CVE-2022-23218.patch
+Patch51:        CVE-2022-23219.patch
+
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %description
@@ -147,6 +151,9 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch46 -p1
 %patch47 -p1
 %patch48 -p1
+%patch49 -p1
+%patch50 -p1
+%patch51 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -274,6 +281,8 @@ popd
 %{_datarootdir}/locale/locale.alias
 
 %changelog
+*   Mon Jan 24 2022 Ajay Kaher <akaher@vmware.com> 2.22-39
+-   Fix CVE-2022-23218, CVE-2022-23219
 *   Wed Aug 25 2021 Keerthana K <keerthanak@vmware.com> 2.22-38
 -   Fix CVE-2021-38604
 *   Wed Aug 04 2021 Keerthana K <keerthanak@vmware.com> 2.22-37
