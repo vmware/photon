@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.4.299
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -154,6 +154,9 @@ Patch103:      0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 # Fix for CVE-2021-4204
 Patch105:      0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch106:      0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# Fix for CVE-2022-0330
+Patch107:      0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -320,6 +323,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch103 -p1
 %patch105 -p1
 %patch106 -p1
+%patch107 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -478,6 +482,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Tue Jan 25 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.299-2
+-   Fix CVE-2022-0330
 *   Fri Jan 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.299-1
 -   Update to version 4.4.299
 *   Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.298-2
