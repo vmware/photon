@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.225
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -419,6 +419,9 @@ Patch506:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 # Fix for CVE-2021-4204
 Patch508:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch509:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
+
+# Fix for CVE-2022-0330
+Patch510:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
 
 #Patches for i40e driver
 Patch1500:      0001-Add-support-for-gettimex64-interface.patch
@@ -891,6 +894,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch506 -p1
 %patch508 -p1
 %patch509 -p1
+%patch510 -p1
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -1268,6 +1272,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Tue Jan 25 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.225-2
+- Fix CVE-2022-0330
 * Fri Jan 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.225-1
 - Update to version 4.19.225
 * Sat Jan 08 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.224-2

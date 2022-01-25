@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.225
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -389,6 +389,9 @@ Patch522:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 Patch524:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch525:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
+# Fix for CVE-2022-0330
+Patch526:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
+
 # Patches for i40e driver
 Patch801:        0001-Add-support-for-gettimex64-interface.patch
 
@@ -750,6 +753,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch522 -p1
 %patch524 -p1
 %patch525 -p1
+%patch526 -p1
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -952,6 +956,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Tue Jan 25 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.225-2
+-   Fix CVE-2022-0330
 *   Fri Jan 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.225-1
 -   Update to version 4.19.225
 *   Thu Jan 20 2022 Ankit Jain <ankitja@vmware.com> 4.19.224-4
