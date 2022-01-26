@@ -22,7 +22,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        5.10.78
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -682,6 +682,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %{python3_sitelib}/*
 
 %changelog
+*   Tue Jan 25 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-5
+-   .config: enable squashfs module, enable crypto user api rng.
 *   Thu Nov 25 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.78-4
 -   Disable md5 algorithm for sctp if fips is enabled.
 *   Fri Nov 19 2021 Keerthana K <keerthanak@vmware.com> 5.10.78-3

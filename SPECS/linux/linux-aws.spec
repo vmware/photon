@@ -8,7 +8,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.78
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -16,7 +16,6 @@ Vendor:         VMware, Inc.
 Distribution: 	Photon
 
 %define uname_r %{version}-%{release}-aws
-
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
 %define sha1 linux=fe039fff95130a04d2aac6ae5bb5c67a07605d31
@@ -238,7 +237,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch239 -p1
 %patch240 -p1
 
-
 # crypto
 %patch500 -p1
 %patch501 -p1
@@ -397,6 +395,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Jan 25 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.78-4
+-   .config: enable zstd compression for squashfs.
 *   Thu Nov 25 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 5.10.78-3
 -   Disable md5 algorithm for sctp if fips is enabled.
 *   Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 5.10.78-2
