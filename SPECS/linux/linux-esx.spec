@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.103
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -495,6 +495,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Apr 05 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.103-4
+- .config: enable squashfs module, enable crypto user api rng.
+- .config: enable CONFIG_EXT2_FS_XATTR
 * Mon Mar 21 2022 Ajay Kaher <akaher@vmware.com> 5.10.103-3
 - Fix for CVE-2022-1016
 * Mon Mar 14 2022 Bo Gan <ganb@vmware.com> 5.10.103-2
