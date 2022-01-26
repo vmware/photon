@@ -1,7 +1,7 @@
 Summary:       A toolkit for defining and handling authorizations.
 Name:          polkit
 Version:       0.113
-Release:       6%{?dist}
+Release:       7%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       LGPLv2+
@@ -24,6 +24,8 @@ Requires:      glib
 Requires:      js
 Requires:      Linux-PAM
 Requires:      systemd
+Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
+Requires(postun):  /usr/sbin/userdel /usr/sbin/groupdel
 %define sha1 polkit=ef855c2d04184dceb38e0940dc7bec9cc3da415c
 
 %description
@@ -113,6 +115,8 @@ fi
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Wed Jan 26 2022 Siju Maliakkal <smaliakkal@vmware.com> 0.113-7
+-   Added useradd,userdel,groupadd,groupdel in Requires
 *   Mon Jan 24 2022 Siju Maliakkal <smaliakkal@vmware.com> 0.113-6
 -   Fixed CVE-2021-4034 by patching
 *   Wed May 26 2021 Siju Maliakkal <smaliakkal@vmware.com> 0.113-5
