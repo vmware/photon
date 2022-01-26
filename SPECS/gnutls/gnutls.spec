@@ -4,11 +4,12 @@ Version:        3.7.2
 Release:        1%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
-Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
-%define sha1    gnutls=02e12259680b6ad3ec973e0df6bf2cf0c5ef1100
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.7/%{name}-%{version}.tar.xz
+%define sha1    %{name}=02e12259680b6ad3ec973e0df6bf2cf0c5ef1100
 
 BuildRequires:  nettle-devel
 BuildRequires:  autogen-libopts-devel

@@ -4,13 +4,16 @@ Version:        0.9.73
 Release:        2%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libmicrohttpd/
-Source0:        https://ftp.gnu.org/gnu/libmicrohttpd/%{name}-%{version}.tar.gz
-%define sha1    libmicrohttpd=5ff80818bbe3f8984e49809f4efeb2c38c7be232
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-BuildRequires:  autoconf, automake, libtool
+Source0:        https://ftp.gnu.org/gnu/libmicrohttpd/%{name}-%{version}.tar.gz
+%define sha1    %{name}=5ff80818bbe3f8984e49809f4efeb2c38c7be232
+
+BuildRequires:  autoconf
+BuildRequires:  automake
+BuildRequires:  libtool
 BuildRequires:  gnutls-devel
 
 Requires:       gnutls
@@ -24,6 +27,7 @@ Key features that distinguish libmicrohttpd from other projects are:
 Summary:        Development files for libmicrohttpd
 Requires:       %{name} = %{version}-%{release}
 Requires:       gnutls-devel
+
 %description devel
 Development files for libmicrohttpd
 
@@ -33,14 +37,14 @@ Development files for libmicrohttpd
 %build
 autoreconf -fi
 %configure --disable-static --with-gnutls --enable-https=yes
-%make_build
+%make_build %{?_smp_mflags}
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 
-rm -f %{buildroot}%{_libdir}/*.la
-rm -f %{buildroot}%{_infodir}/dir
-rm -f %{buildroot}%{_bindir}/demo
+rm -f %{buildroot}%{_libdir}/*.la \
+      %{buildroot}%{_infodir}/dir \
+      %{buildroot}%{_bindir}/demo
 
 %ldconfig_scriptlets
 

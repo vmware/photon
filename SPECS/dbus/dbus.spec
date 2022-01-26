@@ -5,10 +5,12 @@ Release:        1%{?dist}
 License:        GPLv2+ or AFL
 URL:            http://www.freedesktop.org/wiki/Software/dbus
 Group:          Applications/File
-Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
-%define sha1    dbus=721389d265da7eaa644789efac4bcd848b11e313
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        http://dbus.freedesktop.org/releases/dbus/%{name}-%{version}.tar.xz
+%define sha1    %{name}=721389d265da7eaa644789efac4bcd848b11e313
+
 BuildRequires:  expat-devel
 BuildRequires:  systemd-devel
 BuildRequires:  xz-devel
@@ -39,7 +41,7 @@ It contains the libraries and header files to create applications
 %make_build %{?_smp_mflags}
 
 %install
-%make_install
+%make_install %{?_smp_mflags}
 install -vdm755 %{buildroot}%{_lib}
 
 %check
@@ -56,8 +58,6 @@ make %{?_smp_mflags} check
 %{_libexecdir}/*
 %{_docdir}/*
 %{_datadir}/dbus-1
-
-#%%{_sharedstatedir}/*
 
 %files  devel
 %defattr(-,root,root)
