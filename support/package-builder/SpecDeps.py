@@ -155,7 +155,6 @@ class SpecDependencyGenerator(object):
             for version in SPECS.getData().getVersions(base_package):
                 listRPMPackages = SPECS.getData().getRPMPackages(base_package, version)
                 for package in listRPMPackages:
-                    version = SPECS.getData(arch).getHighestVersion(package)
                     release = SPECS.getData(arch).getRelease(package, version)
                     buildarch=SPECS.getData(arch).getBuildArch(package, version)
                     filename = os.path.join(buildarch, package + "-" + version + "-" + release + "." + buildarch + ".rpm")
