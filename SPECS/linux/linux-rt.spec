@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.229
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt102
-Release:        1%{?kat_build:.%kat}%{?dist}
+Release:        2%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1195,6 +1195,9 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Feb 15 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.229-2
+-   .config: enable zstd compression for squashfs.
+-   .config: enable crypto user api rng.
 *   Sat Feb 12 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.229-1
 -   Update to version 4.19.229
 *   Fri Feb 11 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.225-7

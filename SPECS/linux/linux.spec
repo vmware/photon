@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.229
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1259,6 +1259,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Mon Feb 28 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.229-3
+- .config: enable squashfs module, enable crypto user api rng.
 * Fri Feb 25 2022 Ajay Kaher <akaher@vmware.com> 4.19.229-2
 - Fix sev-es exception stack mapping
 * Sat Feb 12 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.229-1

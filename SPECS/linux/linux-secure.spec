@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.229
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -488,6 +488,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Feb 15 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.229-2
+-   .config: enable zstd compression for squashfs.
+-   .config: enable crypto user api rng.
 *   Fri Feb 11 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.229-1
 -   Update to version 4.19.229
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-5

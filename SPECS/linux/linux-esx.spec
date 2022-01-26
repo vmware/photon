@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.229
-Release:        2%{?kat_build:.kat}%{?dist}
+Release:        3%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -943,6 +943,9 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Feb 28 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.229-3
+-   .config: enable squashfs module, enable crypto user api rng.
+-   Reduce kernel .text size by ~40% by removing .entry.text alignment.
 *   Fri Feb 25 2022 Ajay Kaher <akaher@vmware.com> 4.19.229-2
 -   Fix sev-es exception stack mapping
 *   Fri Feb 11 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.229-1
