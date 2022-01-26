@@ -7,7 +7,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        5.10.93
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -62,6 +62,8 @@ Patch102:       consolemap-Fix-a-memory-leaking-bug-in-drivers-tty-v.patch
 Patch105:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 # Fix for CVE-2022-0330
 Patch106:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
+# Fix for CVE-2022-22942
+Patch107:       0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
 
 #Amazon AWS
 Patch201:       0002-bump-the-default-TTL-to-255.patch
@@ -200,6 +202,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch102 -p1
 %patch105 -p1
 %patch106 -p1
+%patch107 -p1
 
 #Amazon AWS
 %patch201 -p1
@@ -401,6 +404,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Tue Jan 25 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.93-3
+-   Fix for CVE-2022-22942
 *   Tue Jan 25 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-2
 -   Fix CVE-2022-0330
 *   Fri Jan 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-1
