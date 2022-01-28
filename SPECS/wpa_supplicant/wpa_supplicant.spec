@@ -1,17 +1,14 @@
 Summary:          WPA client
 Name:             wpa_supplicant
-Version:          2.9
-Release:          5%{?dist}
+Version:          2.10
+Release:          1%{?dist}
 License:          BSD
 URL:              https://w1.fi
 Group:            Applications/Communications
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          https://w1.fi/releases/%{name}-%{version}.tar.gz
-%define sha1      wpa=b784c0e5e56889c81d027757a4623659bf15f9a8
-Patch0:           CVE-2019-16275_AP_Silently_ignore_management_frame_from_unexpected_source_address.patch
-Patch1:           wpa_supplicant-CVE-2021-27803-0001-P2P-Fix-a-corner-case-in-peer-addition-based-on-PD-R.patch
-Patch2:           wpa_supplicant-CVE-2021-30004.patch
+%define sha1      wpa=e295b07d599da4b99c3836d4402ec5746f77e8e8
 BuildRequires:    libnl-devel openssl-devel
 Requires:         libnl
 Requires:         openssl
@@ -97,6 +94,8 @@ EOF
 %{_sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf
 
 %changelog
+*   Fri Jan 28 2022 Ankit Jain <ankitja@vmware.com> 2.10-1
+-   Fix for CVE-2022-23303 and CVE-2022-23304
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.9-5
 -   Bump up release for openssl
 *   Wed Apr 21 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.9-4
