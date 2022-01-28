@@ -1,31 +1,14 @@
 Summary:          WPA client
 Name:             wpa_supplicant
-Version:          2.7
-Release:          6%{?dist}
+Version:          2.10
+Release:          1%{?dist}
 License:          BSD
 URL:              https://w1.fi
 Group:            Applications/Communications
 Vendor:           VMware, Inc.
 Distribution:     Photon
 Source0:          https://w1.fi/releases/%{name}-%{version}.tar.gz
-%define sha1 wpa=3c3c2c6bc493fb32b919d9b410768324f3729e25
-Patch0:           wpa_supplicant-CVE-2019-9496.patch
-Patch1:           wpa_supplicant-CVE-2019-9497.patch
-Patch2:           wpa_supplicant-CVE-2019-9498.patch
-Patch3:           wpa_supplicant-CVE-2019-9499.patch
-Patch4:           wpa_supplicant-CVE-2019-9495-0001-OpenSSL-Use-constant-time-operations-for-private-big.patch
-Patch5:           wpa_supplicant-CVE-2019-9495-0003-OpenSSL-Use-constant-time-selection-for-crypto_bignu.patch
-Patch6:           wpa_supplicant-CVE-2019-9495-0002-Add-helper-functions-for-constant-time-operations.patch
-Patch7:           wpa_supplicant-CVE-2019-9495-0004-EAP-pwd-Use-constant-time-and-memory-access-for-find.patch
-Patch8:           wpa_supplicant-CVE-2019-9494-0005-SAE-Minimize-timing-differences-in-PWE-derivation.patch
-Patch9:           wpa_supplicant-CVE-2019-9494-0006-SAE-Avoid-branches-in-is_quadratic_residue_blind.patch
-Patch10:          wpa_supplicant-CVE-2019-9494-0007-SAE-Mask-timing-of-MODP-groups-22-23-24.patch
-Patch11:          wpa_supplicant-CVE-2019-9494-0008-SAE-Use-const_time-selection-for-PWE-in-FFC.patch
-Patch12:          wpa_supplicant-CVE-2019-9494-0009-SAE-Use-constant-time-operations-in-sae_test_pwd_see.patch
-Patch13:          wpa_supplicant-CVE-2019-11555-0001-EAP-pwd-server-Fix-reassembly-buffer-handling.patch
-Patch14:          wpa_supplicant-CVE-2019-11555-0003-EAP-pwd-peer-Fix-reassembly-buffer-handling.patch
-Patch15:          CVE-2019-16275_AP_Silently_ignore_management_frame_from_unexpected_source_address.patch
-Patch16:          wpa_supplicant-CVE-2021-27803-0001-P2P-Fix-a-corner-case-in-peer-addition-based-on-PD-R.patch
+%define sha1 wpa=e295b07d599da4b99c3836d4402ec5746f77e8e8
 BuildRequires:    libnl-devel openssl-devel
 Requires:         libnl
 Requires:         openssl
@@ -34,24 +17,7 @@ Requires:         openssl
 WPA Supplicant is a Wi-Fi Protected Access (WPA) client and IEEE 802.1X supplicant
 
 %prep
-%setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
-%patch8 -p1
-%patch9 -p1
-%patch10 -p1
-%patch11 -p1
-%patch12 -p1
-%patch13 -p1
-%patch14 -p1
-%patch15 -p1
-%patch16 -p1
+%autosetup -p1
 
 %build
 cat > wpa_supplicant/.config << "EOF"
@@ -128,6 +94,8 @@ EOF
 %{_sysconfdir}/wpa_supplicant/wpa_supplicant-wlan0.conf
 
 %changelog
+*   Fri Jan 28 2022 Ankit Jain <ankitja@vmware.com> 2.10-1
+-   Fix for CVE-2022-23303 and CVE-2022-23304
 *   Tue Mar 9 2021 Michelle Wang <michellew@vmware.com> 2.7-6
 -   Patch for CVE-2021-27803
 *   Wed Oct 23 2019 Shreyas B. <shreyasb@vmware.com> 2.7-5
