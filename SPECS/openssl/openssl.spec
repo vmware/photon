@@ -1,7 +1,10 @@
+# Set this flag to 0 to build without fips provider
+%global fips 1
+
 Summary:        Management tools and libraries relating to cryptography
 Name:           openssl
 Version:        3.0.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        OpenSSL
 URL:            http://www.openssl.org
 Group:          System Environment/Security
@@ -11,9 +14,13 @@ Distribution:   Photon
 Source0:        http://www.openssl.org/source/%{name}-%{version}.tar.gz
 %define sha1    %{name}=33b00311e7a910f99ff041deebc6dd7bb9f459de
 Source1:        rehash_ca_certificates.sh
-%if 0%{?with_fips:1}
-Source2:        sample-fips-enable-openssl.cnf
+Source2:        provider_default.cnf
+%if %{?fips}
+Source3:        provider_fips.cnf
+Source4:        jitterentropy.c
 %endif
+
+Patch0:         openssl-providers.patch
 
 %if 0%{?with_check:1}
 BuildRequires: zlib-devel
@@ -37,7 +44,7 @@ Requires:   %{name} = %{version}-%{release}
 %description devel
 Header files for doing development with openssl.
 
-%if 0%{?with_fips:1}
+%if %{?fips}
 %package fips-provider
 Summary:    FIPS Libraries for openssl
 Group:      Applications/Internet
@@ -89,13 +96,13 @@ export MACHINE=%{_arch}
 ./config \
     --prefix=%{_prefix} \
     --libdir=%{_libdir} \
-    --openssldir=/%{_sysconfdir}/ssl \
+    --openssldir=%{_sysconfdir}/ssl \
     --api=1.1.1 \
     --shared \
     --with-rand-seed=os,egd \
     enable-egd \
     -Wl,-z,noexecstack \
-%if 0%{?with_fips:1}
+%if %{?fips}
     enable-fips
 %endif
 
@@ -105,6 +112,13 @@ make %{?_smp_mflags}
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
 make DESTDIR=%{buildroot} MANDIR=%{_mandir} MANSUFFIX=ssl install %{?_smp_mflags}
 install -p -m 755 -D %{SOURCE1} %{buildroot}%{_bindir}/
+install -p -m 644 -D %{SOURCE2} %{buildroot}%{_sysconfdir}/ssl/
+
+%if %{?fips}
+install -p -m 644 -D %{SOURCE3} %{buildroot}%{_sysconfdir}/ssl/
+gcc -shared -Wall -O2 -g -fPIC -I%{buildroot}%{_includedir} -lcrypto -L%{buildroot}%{_libdir} \
+%{SOURCE4} -o %{buildroot}%{_libdir}/ossl-modules/jitterentropy.so
+%endif
 
 %check
 %if 0%{?with_check:1}
@@ -113,39 +127,19 @@ make tests %{?_smp_mflags}
 
 %ldconfig_scriptlets
 
-%if 0%{?with_fips:1}
+%if %{?fips}
 %post fips-provider
-OPENSSL_CFG='/etc/ssl/openssl.cnf'
+# fips.so was just updated. Temporarily disable fips mode to regenerate new fipsmodule.cnf
+sed -i 's#.include /etc/ssl/provider_fips.cnf#.include /etc/ssl/provider_default.cnf#' /etc/ssl/openssl.cnf
 openssl fipsinstall -out /etc/ssl/fipsmodule.cnf -module %{_libdir}/ossl-modules/fips.so
-sed -i '/^\[provider_sect\]/ a fips = fips_sect' $OPENSSL_CFG
-sed -i '/^\[provider_sect\]/ a base = base_sect' $OPENSSL_CFG
-sed -i '\|default = default_sect|d' $OPENSSL_CFG
-
-if grep "/fipsmodule.cnf" $OPENSSL_CFG; then
-  sed -i '\|/fipsmodule.cnf|d' $OPENSSL_CFG
-fi
-
-sed -i '/.include fipsmodule.cnf/ a .include /etc/ssl/fipsmodule.cnf' $OPENSSL_CFG
-sed -i '/^fips = fips_sect/ a \[alg_sect\]' $OPENSSL_CFG
-sed -i '/^\[alg_sect\]/ a default_properties = fips=yes' $OPENSSL_CFG
-sed -i '/^fips = fips_sect/ a \[base_sect\]' $OPENSSL_CFG
-sed -i '/^\[base_sect\]/ a activate = 1' $OPENSSL_CFG
-sed -i '/^providers = provider_sect/ a alg_section = alg_sect' $OPENSSL_CFG
+sed -i 's#.include /etc/ssl/provider_default.cnf#.include /etc/ssl/provider_fips.cnf#' /etc/ssl/openssl.cnf
 
 %postun fips-provider
-OPENSSL_CFG='/etc/ssl/openssl.cnf'
-if [[ -f /etc/ssl/fipsmodule.cnf ]]; then
-    rm /etc/ssl/fipsmodule.cnf
+# complete uninstall, not an upgrade
+if [ "$1" = 0 ]; then
+test -f /etc/ssl/fipsmodule.cnf && rm /etc/ssl/fipsmodule.cnf
+sed -i 's#.include /etc/ssl/provider_fips.cnf#.include /etc/ssl/provider_default.cnf#' /etc/ssl/openssl.cnf
 fi
-sed -i '\|fips = fips_sect|d' $OPENSSL_CFG
-sed -i '\|base = base_sect|d' $OPENSSL_CFG
-sed -i '/^\[provider_sect\]/ a default = default_sect' $OPENSSL_CFG
-sed -i '\|alg_section = alg_sect|d' $OPENSSL_CFG
-sed -i '\|default_properties = fips=yes|d' $OPENSSL_CFG
-sed -i '/^\[base_sect\]/{N;s/\n.*//;}' $OPENSSL_CFG
-sed -i '\|/etc/ssl/fipsmodule.cnf|d' $OPENSSL_CFG
-sed -i '/^\[base_sect\]/d' $OPENSSL_CFG
-sed -i '/^\[alg_sect\]/d' $OPENSSL_CFG
 %endif
 
 %clean
@@ -157,17 +151,20 @@ rm -rf %{buildroot}/*
 %{_sysconfdir}/ssl/ct_log_list.cnf
 %{_sysconfdir}/ssl/ct_log_list.cnf.dist
 %{_sysconfdir}/ssl/openssl.cnf.dist
-%{_sysconfdir}/ssl/openssl.cnf
+%config(noreplace) %{_sysconfdir}/ssl/openssl.cnf
+%{_sysconfdir}/ssl/provider_default.cnf
 %{_sysconfdir}/ssl/private
 %{_bindir}/openssl
 %{_libdir}/*.so.*
 %{_libdir}/engines*/*
 %{_libdir}/ossl-modules/legacy.so
 
-%if 0%{?with_fips:1}
+%if %{?fips}
 %files fips-provider
 %defattr(-,root,root)
 %{_libdir}/ossl-modules/fips.so
+%{_libdir}/ossl-modules/jitterentropy.so
+%{_sysconfdir}/ssl/provider_fips.cnf
 %exclude %{_sysconfdir}/ssl/fipsmodule.cnf
 %endif
 
@@ -198,6 +195,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man7/*
 
 %changelog
+* Thu Jan 27 2022 Alexey Makhalov <amakhalov@vmware.com> 3.0.1-2
+- Add jitterentropy provider
 * Fri Jan 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.0.1-1
 - Upgrade to v3.0.1 to fix CVE-2021-4044
 * Wed Nov 10 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 3.0.0-1
