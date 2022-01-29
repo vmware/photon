@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.32
-Release:        10%{?dist}
+Release:        11%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -31,6 +31,9 @@ Patch13:        0005-elf-Add-test-case-for-BZ-19329.patch
 Patch14:        CVE-2021-35942.patch
 Patch15:        CVE-2021-38604.patch
 Patch16:        0006-glibc-fix-for-semctl-ltp.patch
+Patch17:        0001-socket_Add_the__sockaddr_un_set_function.patch
+Patch18:        CVE-2022-23218.patch
+Patch19:        CVE-2022-23219.patch
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
 %define ExtraBuildRequires python3, python3-libs
@@ -103,6 +106,9 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch14 -p1
 %patch15 -p1
 %patch16 -p1
+%patch17 -p1
+%patch18 -p1
+%patch19 -p1
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
 %define __find_provides %{_builddir}/%{name}-%{version}/find_provides.sh
@@ -212,7 +218,6 @@ popd
 sed -i 's@#! /bin/bash@#! /bin/sh@' %{buildroot}/usr/bin/ldd
 sed -i 's@#!/bin/bash@#!/bin/sh@' %{buildroot}/usr/bin/tzselect
 
-
 %check
 cd %{_builddir}/glibc-build
 make %{?_smp_mflags} check ||:
@@ -254,7 +259,6 @@ if [ -e /usr/lib64/gconv/gconv-modules.cache ]
 then
     rm /usr/lib64/gconv/gconv-modules.cache
 fi
-
 
 %files
 %defattr(-,root,root)
@@ -322,7 +326,6 @@ fi
 %exclude %{_datadir}/i18n/charmaps/ISO-8859-1.gz
 %exclude %{_datadir}/i18n/locales/en_US
 
-
 %files devel
 %defattr(-,root,root)
 # TODO: Excluding for now to remove dependency on PERL
@@ -334,8 +337,9 @@ fi
 %files -f %{name}.lang lang
 %defattr(-,root,root)
 
-
 %changelog
+*   Mon Jan 24 2022 Ajay Kaher <akaher@vmware.com> 2.32-11
+-   Fix CVE-2022-23218, CVE-2022-23219
 *   Fri Aug 27 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.32-10
 -   Fix LTP Testcase (semctl) failure issue
 *   Wed Aug 25 2021 Keerthana K <keerthanak@vmware.com> 2.32-9
