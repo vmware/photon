@@ -4,7 +4,7 @@
 Summary:        Array processing for numbers, strings, records, and objects
 Name:           python-numpy
 Version:        1.12.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        BSD
 Group:          Development/Languages/Python
 Vendor:         VMware, Inc.
@@ -13,6 +13,7 @@ Url:            https://pypi.python.org/pypi/numpy
 Source0:        https://pypi.python.org/packages/a5/16/8a678404411842fe02d780b5f0a676ff4d79cd58f0f22acddab1b392e230/numpy-%{version}.zip
 %define sha1    numpy=50d8a6dc5d95c914119d21b0c047b9761bbccd59
 Patch0:         numpy-CVE-2017-12852.patch
+Patch1:         numpy-CVE-2021-41496.patch
 
 BuildRequires:  python2
 BuildRequires:  python2-libs
@@ -42,6 +43,7 @@ Python 3 version.
 %prep
 %setup -q -n numpy-%{version}
 %patch0 -p1
+%patch1 -p1
 
 %build
 # xlocale.h has been removed from glibc 2.26
@@ -82,6 +84,8 @@ rm -rf test
 %{_bindir}/f2py3
 
 %changelog
+*   Thu Jan 27 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.12.1-7
+-   Fix CVE-2021-41496
 *   Mon Jul 19 2021 Nitesh Kumar <kunitesh@vmware.com> 1.12.1-6
 -   Patched for CVE-2017-12852
 *   Fri Aug 25 2017 Alexey Makhalov <amakhalov@vmware.com> 1.12.1-5
