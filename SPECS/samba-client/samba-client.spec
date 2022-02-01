@@ -1,18 +1,18 @@
 Summary:        Samba Client Programs
 Name:           samba-client
-Version:        4.14.4
-Release:        3%{?dist}
+Version:        4.14.12
+Release:        1%{?dist}
 License:        GPLv3+ and LGPLv3+
 Group:          Productivity/Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://www.samba.org
 Source0:        https://www.samba.org/ftp/samba/stable/samba-%{version}.tar.gz
-%define sha1 samba=123281ce6b0049648be3bd4fe7094057526d6340
+%define sha1 samba=9d7dfb75ae050013d30dbf0bf0e7fdb8db3457a9
 %define samba_ver %{version}-%{release}
 Source1:        smb.conf.vendor
 
-Patch1:         rename_dcerpc_to_smbdcerpc_%{version}.patch
+Patch1:         rename_dcerpc_to_smbdcerpc.patch
 
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -445,6 +445,7 @@ done
 %{_libdir}/samba/libcommon-auth-samba4.so
 %{_libdir}/samba/libdbwrap-samba4.so
 %{_libdir}/samba/libdcerpc-samba-samba4.so
+%{_libdir}/samba/libdcerpc-pkt-auth-samba4.so
 %{_libdir}/samba/libevents-samba4.so
 %{_libdir}/samba/libflag-mapping-samba4.so
 %{_libdir}/samba/libgenrand-samba4.so
@@ -561,6 +562,8 @@ done
 %{_libdir}/pkgconfig/wbclient.pc
 
 %changelog
+*   Tue Feb 01 2022 Ankit Jain <ankitja@vmware.com> 4.14.12-1
+-   Upgrade to version 4.14.12
 *   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 4.14.4-3
 -   Bump up to compile with python 3.10
 *   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 4.14.4-2
