@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        5.7.36
+Version:        5.7.37
 Release:        1%{?dist}
 License:        GPLv2
 Group:          Applications/Databases
@@ -8,7 +8,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Url:            http://www.mysql.com
 Source0:        https://cdn.mysql.com//Downloads/MySQL-5.7/mysql-boost-%{version}.tar.gz
-%define         sha1 mysql-boost=96ed35a5a1d4dd49bcf383aadd685b75d18f8af5
+%define         sha1 mysql-boost=85cd3271b16bc93807641fe530f8d5e02146b934
 
 BuildRequires:  cmake
 BuildRequires:  openssl-devel
@@ -19,7 +19,7 @@ BuildRequires:  ncurses-devel
 MySQL is a free, widely used SQL engine. It can be used as a fast database as well as a rock-solid DBMS using a modular engine architecture.
 
 %package devel
-Summary:        Development headers for musql
+Summary:        Development headers for mysql
 Requires:       %{name} = %{version}-%{release}
 
 %description devel
@@ -66,6 +66,10 @@ make check
 %{_libdir}/pkgconfig/mysqlclient.pc
 
 %changelog
+*   Mon Jan 31 2022 Nitesh Kumar <kunitesh@vmware.com> 5.7.37-1
+-   Upgrade version to 5.7.37 to fix following CVE's:
+-   CVE-2022-21245, CVE-2022-21304, CVE-2022-21270,
+-   CVE-2022-21367, CVE-2022-21344 and CVE-2022-21303
 *   Mon Nov 08 2021 Tapas Kundu <tkundu@vmware.com> 5.7.36-1
 -   Update to 5.7.36
 *   Mon Aug 16 2021 Shreyas B <shreyasb@vmware.com> 5.7.35-1
