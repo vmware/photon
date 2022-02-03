@@ -3,13 +3,14 @@
 Summary:        XML and HTML with Python
 Name:           python-lxml
 Version:        4.2.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Group:          Development/Libraries
 License:        BSD
 URL:            http://lxml.de
 Source0:        https://pypi.python.org/packages/39/e8/a8e0b1fa65dd021d48fe21464f71783655f39a41f218293c1c590d54eb82/lxml-%{version}.tar.gz
 %define sha1    lxml=4a77c5471dfea2a32fd16475d130350af7d33f85
 Patch0:         lxml-make-check-fix.patch
+Patch1:         lxml-CVE-2021-43818.patch
 Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildRequires:  python2-devel
@@ -25,7 +26,7 @@ Requires:       python2
 Requires:       libxslt
 
 %description
-The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxslt. It is unique in that it combines the speed and XML feature completeness of these libraries with the simplicity of a native Python API, mostly compatible but superior to the well-known ElementTree API. 
+The lxml XML toolkit is a Pythonic binding for the C libraries libxml2 and libxslt. It is unique in that it combines the speed and XML feature completeness of these libraries with the simplicity of a native Python API, mostly compatible but superior to the well-known ElementTree API.
 
 %package -n     python3-lxml
 Summary:        python-lxml
@@ -37,8 +38,7 @@ Requires:       python3-libs
 Python 3 version.
 
 %prep
-%setup -q -n lxml-%{version}
-%patch0 -p1
+%autosetup -p1 -n lxml-%{version}
 rm -rf ../p3dir
 cp -a . ../p3dir
 
@@ -57,9 +57,9 @@ popd
 %check
 export LC_ALL=en_US.UTF-8
 export LANGUAGE=en_US.UTF-8
-make test
+make %{?_smp_mflags} test
 pushd ../p3dir
-make test
+make %{?_smp_mflags} test
 popd
 
 %clean
@@ -75,6 +75,8 @@ rm -rf %{buildroot}
 %{python3_sitelib}/*
 
 %changelog
+*   Thu Feb 03 2022 Harinadh D <tkundu@vmware.com> 4.2.4-3
+-   Fix CVE-2021-43818
 *   Wed Nov 28 2018 Tapas Kundu <tkundu@vmware.com> 4.2.4-2
 -   Fix make check
 -   moved build requires from subpackage
