@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.93
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -112,8 +112,11 @@ Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 # Fix for CVE-2022-0330
 Patch108:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
 
-#Fix for CVE-2022-22942
+# Fix for CVE-2022-22942
 Patch109:       0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
+
+# Fix for CVE-2022-0492
+Patch110:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
 
 #Patches for ptp_vmw
 Patch201:      0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -272,6 +275,7 @@ The Linux package contains the Linux kernel doc files
 %patch107 -p1
 %patch108 -p1
 %patch109 -p1
+%patch110 -p1
 
 #Patches for ptp_vmw
 %patch201 -p1
@@ -486,6 +490,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Sat Feb 05 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.93-4
+- Fix for CVE-2022-0492
 * Tue Jan 25 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.93-3
 - Fix for CVE-2022-22942
 * Tue Jan 25 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 5.10.93-2
