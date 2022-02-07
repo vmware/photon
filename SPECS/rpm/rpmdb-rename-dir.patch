@@ -1,6 +1,6 @@
-From bde4ceb58576e365f156fc05486f49800e16ca03 Mon Sep 17 00:00:00 2001
+From 1f42872d9902c93d66f0494f6ab3a07b0864cc64 Mon Sep 17 00:00:00 2001
 From: Shreenidhi Shedi <sshedi@vmware.com>
-Date: Fri, 13 Aug 2021 17:16:33 +0530
+Date: Mon, 13 Dec 2021 16:41:52 +0530
 Subject: [PATCH] lib/rpmdb.c: use a fallback method for renaming directories
 
 While migrating rpm db from BDB to SQLITE in a docker container rename
@@ -39,7 +39,7 @@ Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
  2 files changed, 306 insertions(+), 21 deletions(-)
 
 diff --git a/lib/rpmdb.c b/lib/rpmdb.c
-index 38e1cb5..710c894 100644
+index 2fa1f00fa..60867119b 100644
 --- a/lib/rpmdb.c
 +++ b/lib/rpmdb.c
 @@ -9,6 +9,15 @@
@@ -306,7 +306,7 @@ index 38e1cb5..710c894 100644
  static int buildIndexes(rpmdb db)
  {
      int rc = 0;
-@@ -494,7 +744,7 @@ static int openDatabase(const char * prefix,
+@@ -492,7 +742,7 @@ static int openDatabase(const char * prefix,
  
      if (dbp)
  	*dbp = NULL;
@@ -315,7 +315,7 @@ index 38e1cb5..710c894 100644
  	return 1;
  
      db = newRpmdb(prefix, dbpath, mode, perms, flags);
-@@ -572,7 +822,7 @@ int rpmdbVerify(const char * prefix)
+@@ -570,7 +820,7 @@ int rpmdbVerify(const char * prefix)
  
      if (db != NULL) {
  	int xx;
@@ -324,7 +324,7 @@ index 38e1cb5..710c894 100644
  	if (db->db_pkgs)
  	    rc += dbiVerify(db->db_pkgs, 0);
  	rc += dbiForeach(db->db_indexes, db->db_ndbi, dbiVerify, 0);
-@@ -585,7 +835,7 @@ int rpmdbVerify(const char * prefix)
+@@ -583,7 +833,7 @@ int rpmdbVerify(const char * prefix)
  }
  
  Header rpmdbGetHeaderAt(rpmdb db, unsigned int offset)
@@ -333,7 +333,7 @@ index 38e1cb5..710c894 100644
      rpmdbMatchIterator mi = rpmdbInitIterator(db, RPMDBI_PACKAGES,
  					      &offset, sizeof(offset));
      Header h = headerLink(rpmdbNextIterator(mi));
-@@ -758,7 +1008,7 @@ static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi,
+@@ -755,7 +1005,7 @@ static rpmRC dbiFindMatches(rpmdb db, dbiIndex dbi,
      /* No matches on the name, anything else wont match either */
      if (rc != RPMRC_OK)
  	goto exit;
@@ -342,7 +342,7 @@ index 38e1cb5..710c894 100644
      /* If we got matches on name and nothing else was specified, we're done */
      if (epoch < 0 && version == NULL && release == NULL && arch == NULL)
  	goto exit;
-@@ -1303,7 +1553,7 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTagVal tag,
+@@ -1300,7 +1550,7 @@ int rpmdbSetIteratorRE(rpmdbMatchIterator mi, rpmTagVal tag,
      mi->mi_re = xrealloc(mi->mi_re, (mi->mi_nre + 1) * sizeof(*mi->mi_re));
      mire = mi->mi_re + mi->mi_nre;
      mi->mi_nre++;
@@ -351,7 +351,7 @@ index 38e1cb5..710c894 100644
      mire->tag = tag;
      mire->mode = mode;
      mire->pattern = allpat;
-@@ -1755,7 +2005,7 @@ static rpmdbMatchIterator indexIterInit(rpmdb db, rpmDbiTagVal rpmtag,
+@@ -1752,7 +2002,7 @@ static rpmdbMatchIterator indexIterInit(rpmdb db, rpmDbiTagVal rpmtag,
  	    }
  	}
      }
@@ -360,10 +360,10 @@ index 38e1cb5..710c894 100644
      return mi;
  }
  
-@@ -1814,9 +2064,9 @@ rpmdbMatchIterator rpmdbInitPrefixIterator(rpmdb db, rpmDbiTagVal rpmtag,
+@@ -1811,9 +2061,9 @@ rpmdbMatchIterator rpmdbInitPrefixIterator(rpmdb db, rpmDbiTagVal rpmtag,
   * Convert current tag data to db key
   * @param tagdata	Tag data container
-  * @retval keylen	Length of key
+  * @param[out] keylen	Length of key
 - * @return 		Pointer to key value or NULL to signal skip 
 + * @return 		Pointer to key value or NULL to signal skip
   */
@@ -372,7 +372,7 @@ index 38e1cb5..710c894 100644
  {
      const void * data = NULL;
      unsigned int size = 0;
-@@ -1964,7 +2214,7 @@ int rpmdbIndexIteratorNextTd(rpmdbIndexIterator ii, rpmtd keytd)
+@@ -1961,7 +2211,7 @@ int rpmdbIndexIteratorNextTd(rpmdbIndexIterator ii, rpmtd keytd)
  	    break;
  	}
      }
@@ -381,7 +381,7 @@ index 38e1cb5..710c894 100644
      return rc;
  }
  
-@@ -2042,11 +2292,11 @@ static void logAddRemove(const char *dbiname, int removing, rpmtd tagdata)
+@@ -2039,11 +2289,11 @@ static void logAddRemove(const char *dbiname, int removing, rpmtd tagdata)
      rpm_count_t c = rpmtdCount(tagdata);
      if (c == 1 && rpmtdType(tagdata) == RPM_STRING_TYPE) {
  	rpmlog(RPMLOG_DEBUG, "%s \"%s\" %s %s index.\n",
@@ -395,7 +395,7 @@ index 38e1cb5..710c894 100644
  		removing ? "from" : "to", dbiname);
      }
  }
-@@ -2319,7 +2569,7 @@ int rpmdbAdd(rpmdb db, Header h)
+@@ -2316,7 +2566,7 @@ int rpmdbAdd(rpmdb db, Header h)
      ret = pkgdbOpen(db, 0, &dbi);
      if (ret)
  	goto exit;
@@ -404,7 +404,7 @@ index 38e1cb5..710c894 100644
      rpmsqBlock(SIG_BLOCK);
      dbCtrl(db, DB_CTRL_LOCK_RW);
  
-@@ -2329,7 +2579,7 @@ int rpmdbAdd(rpmdb db, Header h)
+@@ -2326,7 +2576,7 @@ int rpmdbAdd(rpmdb db, Header h)
      dbiCursorFree(dbi, dbc);
  
      /* Add associated data to secondary indexes */
@@ -413,7 +413,7 @@ index 38e1cb5..710c894 100644
  	for (int dbix = 0; dbix < db->db_ndbi; dbix++) {
  	    rpmDbiTag rpmtag = db->db_tags[dbix];
  
-@@ -2375,7 +2625,7 @@ static int rpmdbRemoveFiles(char * pattern)
+@@ -2372,7 +2622,7 @@ static int rpmdbRemoveFiles(char * pattern)
  
  static int rpmdbRemoveDatabase(const char *dbpath)
  {
@@ -422,7 +422,7 @@ index 38e1cb5..710c894 100644
      char *pattern;
  
      pattern = rpmGetPath(dbpath, "/*", NULL);
-@@ -2384,11 +2634,23 @@ static int rpmdbRemoveDatabase(const char *dbpath)
+@@ -2381,11 +2631,23 @@ static int rpmdbRemoveDatabase(const char *dbpath)
      pattern = rpmGetPath(dbpath, "/.??*", NULL);
      rc += rpmdbRemoveFiles(pattern);
      free(pattern);
@@ -447,7 +447,7 @@ index 38e1cb5..710c894 100644
  static int rpmdbMoveDatabase(const char * prefix, const char * srcdbpath,
  			     const char * dbpath, const char * tmppath)
  {
-@@ -2401,14 +2663,14 @@ static int rpmdbMoveDatabase(const char * prefix, const char * srcdbpath,
+@@ -2398,14 +2660,14 @@ static int rpmdbMoveDatabase(const char * prefix, const char * srcdbpath,
      char * oldkeys = rpmGetPath(old, "/", "pubkeys", NULL);
      char * destkeys = rpmGetPath(dest, "/", "pubkeys", NULL);
  
@@ -465,7 +465,7 @@ index 38e1cb5..710c894 100644
  	if (xx) {
  	    rpmlog(RPMLOG_ERR, _("could also not restore old database from %s\n"),
  		   old);
-@@ -2419,7 +2681,7 @@ static int rpmdbMoveDatabase(const char * prefix, const char * srcdbpath,
+@@ -2416,7 +2678,7 @@ static int rpmdbMoveDatabase(const char * prefix, const char * srcdbpath,
      }
  
      if (access(oldkeys, F_OK ) != -1) {
@@ -474,7 +474,7 @@ index 38e1cb5..710c894 100644
  	if (xx) {
  	    rpmlog(RPMLOG_ERR, _("Could not get public keys from %s\n"), oldkeys);
  	    goto exit;
-@@ -2450,7 +2712,7 @@ static int rpmdbSetPermissions(char * src, char * dest)
+@@ -2447,7 +2709,7 @@ static int rpmdbSetPermissions(char * src, char * dest)
      struct stat st;
      int xx, rc = -1;
      char * filepath;
@@ -483,7 +483,7 @@ index 38e1cb5..710c894 100644
      if (stat(dest, &st) < 0)
  	    goto exit;
      if (stat(src, &st) < 0)
-@@ -2583,7 +2845,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
+@@ -2580,7 +2842,7 @@ int rpmdbRebuild(const char * prefix, rpmts ts,
      rpmdbClose(newdb);
  
      if (failed) {
@@ -493,7 +493,7 @@ index 38e1cb5..710c894 100644
  		"remains in place\n"));
  
 diff --git a/lib/rpmdb.h b/lib/rpmdb.h
-index 8e3ab5a..eb4dac2 100644
+index c8f838cac..bd91060ac 100644
 --- a/lib/rpmdb.h
 +++ b/lib/rpmdb.h
 @@ -251,6 +251,29 @@ int rpmdbStat(const char *prefix, struct stat *statbuf);
@@ -527,5 +527,5 @@ index 8e3ab5a..eb4dac2 100644
  }
  #endif
 -- 
-2.17.1
+2.25.1
 

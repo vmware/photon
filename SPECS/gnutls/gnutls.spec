@@ -59,7 +59,7 @@ developing applications that use gnutls.
 %make_build %{?_smp_mflags}
 
 %install
-%make_install %{?smp_mflags}
+%make_install %{?_smp_mflags}
 
 rm %{buildroot}%{_infodir}/*
 find %{buildroot}%{_libdir} -name '*.la' -delete

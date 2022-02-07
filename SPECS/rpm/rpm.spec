@@ -1,15 +1,18 @@
+%define rpmhome %{_libdir}/rpm
+
 Summary:        Package manager
 Name:           rpm
-Version:        4.16.1.3
-Release:        4%{?dist}
+Version:        4.17.1
+Release:        1%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
 
-Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.gz
-%define sha1    %{name}=7aa50461dc5500ac5c1b5d4f475cc282add2673e
+Source0:        https://github.com/rpm-software-management/rpm/archive/%{name}-%{version}.tar.bz2
+%define sha512  %{name}=d0429510140f25a25b6c9441abe2027d27c485bbd4969752f69e1c843435c9508b9f85e5bb68085dd64b7da533801aa5c04d8c9d962e08d2ddd3199d0265cc85
+
 Source1:        brp-strip-debug-symbols
 Source2:        brp-strip-unneeded
 Source3:        macros
@@ -17,33 +20,30 @@ Source4:        macros.php
 Source5:        macros.perl
 Source6:        macros.vpath
 Source7:        macros.ldconfig
-Source8:        rpm-rebuilddb.sh
-Source9:        rpmdb-rebuild.service
-Source10:       rpm.conf
-Source11:       lock.c
+Source8:        rpmdb-rebuild.sh
+Source9:        rpmdb-migrate.sh
+Source10:       rpmdb-rebuild.service
+Source11:       rpmdb-migrate.service
+Source12:       rpm.conf
+Source13:       lock.c
 
-Patch0:         find-debuginfo-do-not-generate-dir-entries.patch
-Patch1:         Fix-OpenPGP-parsing-bugs.patch
-Patch2:         Header-signatures-alone-are-not-sufficient.patch
-Patch3:         Fix-regression-reading-rpm-v3.patch
-Patch4:         rpmdb-rename-dir.patch
-Patch5:         silence-warning.patch
-Patch6:         sync-buf-cache.patch
-Patch7:         wait-for-lock.patch
+Patch0:         rpmdb-rename-dir.patch
+Patch1:         silence-warning.patch
+Patch2:         sync-buf-cache.patch
+Patch3:         wait-for-lock.patch
+Patch4:         migrate-rpmdb.patch
 
 Requires:       bash
 Requires:       zstd-libs
 Requires:       lua
 Requires:       openssl >= 1.1.1
-Requires:       libgcrypt
 Requires:       %{name}-libs = %{version}-%{release}
 
+BuildRequires:  pandoc-bin
 BuildRequires:  systemd-devel
 BuildRequires:  dbus-devel >= 1.3
 BuildRequires:  systemd-rpm-macros
-BuildRequires:  libgcrypt-devel
 BuildRequires:  lua-devel
-BuildRequires:  libdb-devel
 BuildRequires:  popt-devel
 BuildRequires:  nss-devel
 BuildRequires:  elfutils-devel
@@ -51,9 +51,12 @@ BuildRequires:  libcap-devel
 BuildRequires:  xz-devel
 BuildRequires:  file-devel
 BuildRequires:  python3-devel
-BuildRequires:  openssl >= 1.1.1
+BuildRequires:  openssl-devel >= 1.1.1
 BuildRequires:  zstd-devel
 BuildRequires:  sqlite-devel
+BuildRequires:  debugedit
+BuildRequires:  dwz
+BuildRequires:  python3-setuptools
 
 %description
 RPM package manager
@@ -78,15 +81,15 @@ Requires:   bzip2-libs
 Requires:   elfutils-libelf
 Requires:   xz-libs
 Requires:   zstd-libs
-Requires:   (procps-ng or toybox)
-
+Requires:   (toybox or coreutils-selinux)
+Requires:   (toybox or findutils)
+Requires:   (toybox or sed)
 Conflicts:  libsolv < 0.7.19
 
 %description    libs
 Shared libraries librpm and librpmio
 
 %package build
-Summary:    Binaries, scripts and libraries needed to build rpms.
 Requires:   perl
 Requires:   lua
 Requires:   %{name}-devel = %{version}-%{release}
@@ -94,6 +97,9 @@ Requires:   elfutils-libelf
 Requires:   cpio
 Requires:   systemd-rpm-macros
 Requires:   python3-macros
+Requires:   dwz
+Requires:   debugedit
+Summary:    Binaries, scripts and libraries needed to build rpms.
 
 %description build
 Binaries, libraries and scripts to build rpms.
@@ -110,6 +116,7 @@ These are the additional language files of rpm.
 Summary:    Python 3 bindings for rpm.
 Group:      Development/Libraries
 Requires:   python3
+Requires:   python3-setuptools
 
 %description -n python3-rpm
 Python3 rpm.
@@ -125,22 +132,17 @@ This plugin blocks systemd from entering idle, sleep or shutdown while an rpm
 transaction is running using the systemd-inhibit mechanism.
 
 %prep
-%autosetup -p1 -n rpm-%{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 
 %build
-sed -i '/define _GNU_SOURCE/a #include "../config.h"' tools/sepdebugcrcfix.c
 # pass -L opts to gcc as well to prioritize it over standard libs
 sed -i 's/-Wl,-L//g' python/setup.py.in
 sed -i '/library_dirs/d' python/setup.py.in
 sed -i 's/extra_link_args/library_dirs/g' python/setup.py.in
 
-# set default db to sqlite
-sed -i -e "/_db_backend/ s/ bdb/ sqlite/g" macros.in
-
 sh autogen.sh --noconfigure
 %configure \
     CPPFLAGS='-I/usr/include/nspr -I/usr/include/nss -DLUA_COMPAT_APIINTCASTS' \
-        --program-prefix= \
         --disable-dependency-tracking \
         --disable-static \
         --enable-python \
@@ -151,12 +153,14 @@ sh autogen.sh --noconfigure
         --without-archive \
         --enable-sqlite \
         --enable-bdb-ro \
-        --enable-systemd-inhibit \
-        --enable-plugins
+        --enable-plugins \
+        --with-crypto=openssl \
+        --with-lua \
+        --enable-nls
 
-make %{?_smp_mflags}
+%make_build %{?_smp_mflags}
 
-gcc -Wall -o lock %{SOURCE11}
+gcc -Wall -o lock %{SOURCE13}
 chmod 700 lock
 
 pushd python
@@ -164,28 +168,37 @@ pushd python
 popd
 
 %check
-make check %{?_smp_mflags}
+%if 0%{?with_check}
+make check TESTSUITEFLAGS=%{?_smp_mflags} || (cat tests/rpmtests.log; exit 1)
+make clean %{?_smp_mflags}
+%endif
 
 %install
-make DESTDIR=%{buildroot} install %{?_smp_mflags}
+%make_install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
+
+ln -sfv %{_bindir}/find-debuginfo %{buildroot}%{rpmhome}/find-debuginfo.sh
+
 %find_lang %{name}
+
 # System macros and prefix
 install -dm644 %{buildroot}%{_sysconfdir}/rpm
 install -vm755 %{SOURCE1} %{buildroot}%{_libdir}/rpm
 install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm
 install -vm644 %{SOURCE3} %{buildroot}%{_sysconfdir}/rpm
-install -vm644 %{SOURCE4} %{buildroot}%{_libdir}/rpm/macros.d
-install -vm644 %{SOURCE5} %{buildroot}%{_libdir}/rpm/macros.d
-install -vm644 %{SOURCE6} %{buildroot}%{_libdir}/rpm/macros.d
-install -vm644 %{SOURCE7} %{buildroot}%{_libdir}/rpm/macros.d
+install -vm644 %{SOURCE4} %{buildroot}%{rpmhome}/macros.d
+install -vm644 %{SOURCE5} %{buildroot}%{rpmhome}/macros.d
+install -vm644 %{SOURCE6} %{buildroot}%{rpmhome}/macros.d
+install -vm644 %{SOURCE7} %{buildroot}%{rpmhome}/macros.d
 install -vm755 %{SOURCE8} %{buildroot}%{_libdir}/rpm
+install -vm755 %{SOURCE9} %{buildroot}%{_libdir}/rpm
 
 mkdir -p %{buildroot}%{_unitdir}
-install -vm644 %{SOURCE9} %{buildroot}/%{_unitdir}
+install -vm644 %{SOURCE10} %{buildroot}/%{_unitdir}
+install -vm644 %{SOURCE11} %{buildroot}/%{_unitdir}
 
 mkdir -p %{buildroot}%{_sysconfdir}/tdnf/minversions.d
-install -vm644 %{SOURCE10} %{buildroot}%{_sysconfdir}/tdnf/minversions.d
+install -vm644 %{SOURCE12} %{buildroot}%{_sysconfdir}/tdnf/minversions.d
 mv lock %{buildroot}%{_libdir}/rpm
 
 pushd python
@@ -195,14 +208,27 @@ popd
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
 
-%triggerun -- rpm-libs < 4.16.1.3-1
-if [ -x %{_bindir}/systemctl ]; then
-  systemctl --no-reload preset rpmdb-rebuild || :
+%pre
+# Symlink all rpmdb files to the new location if we're still using /var/lib/rpm
+if [ -d %{_sharedstatedir}/rpm ]; then
+  mkdir -p %{_libdir}/sysimage/rpm
+  rpmdb_files=$(find %{_sharedstatedir}/rpm -maxdepth 1 -type f | sed 's|^/var/lib/rpm/||g' | sort)
+  for fn in ${rpmdb_files[@]}; do
+    ln -sfr %{_sharedstatedir}/rpm/${fn} %{_libdir}/sysimage/rpm/${fn}
+  done
 fi
 
 %posttrans libs
 if [ -f %{_sharedstatedir}/rpm/Packages ]; then
-  nohup bash %{_libdir}/rpm/rpm-rebuilddb.sh &>/dev/null &
+  if [ -x %{_bindir}/systemctl ]; then
+    systemctl --no-reload preset rpmdb-rebuild || :
+  fi
+  nohup bash %{rpmhome}/rpmdb-rebuild.sh &>/dev/null &
+fi
+
+if [ -d %{_sharedstatedir}/rpm ] && [ -x %{_bindir}/systemctl ]; then
+  touch %{_sharedstatedir}/rpm/.migratedb
+  systemctl --no-reload preset rpmdb-migrate || :
 fi
 
 %clean
@@ -217,16 +243,21 @@ rm -rf %{buildroot}
 %{_bindir}/rpmkeys
 %{_bindir}/rpmquery
 %{_bindir}/rpmverify
-%{_libdir}/rpm/rpmpopt-*
-%{_libdir}/rpm/rpm.daily
-%{_libdir}/rpm/rpm.log
-%{_libdir}/rpm/rpm.supp
-%{_libdir}/rpm/rpm2cpio.sh
-%{_libdir}/rpm/tgpg
-%{_libdir}/rpm/platform
+%{rpmhome}/rpmpopt-*
+%{rpmhome}/rpm.daily
+%{rpmhome}/rpm.log
+%{rpmhome}/rpm.supp
+%{rpmhome}/rpm2cpio.sh
+%{rpmhome}/tgpg
+%{rpmhome}/platform
 %{_libdir}/rpm-plugins/ima.so
 %{_libdir}/rpm-plugins/syslog.so
 %{_libdir}/rpm-plugins/prioreset.so
+%{_libdir}/rpm-plugins/fsverity.so
+%exclude %{_libdir}/rpm-plugins/dbus_announce.so
+
+%{_sysconfdir}/dbus-1/system.d/org.rpm.conf
+
 %{_mandir}/man8/rpm2cpio.8.gz
 %{_mandir}/man8/rpmdb.8.gz
 %{_mandir}/man8/rpmgraph.8.gz
@@ -237,6 +268,7 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-syslog.8.gz
 %{_mandir}/man8/rpm-plugins.8.gz
 %{_mandir}/man8/rpm.8.gz
+%{_mandir}/man8/rpm-plugin-dbus-announce.8.gz
 %exclude %{_mandir}/fr/man8/*.gz
 %exclude %{_mandir}/ja/man8/*.gz
 %exclude %{_mandir}/ko/man8/*.gz
@@ -250,14 +282,16 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/rpm/macros
 %{_libdir}/librpmio.so.*
 %{_libdir}/librpm.so.*
-%{_libdir}/rpm/macros
-%{_libdir}/rpm/rpmrc
-%{_libdir}/rpm/rpmdb_*
-%{_libdir}/rpm/rpm-rebuilddb.sh
-%{_libdir}/rpm/lock
+%{rpmhome}/macros
+%{rpmhome}/rpmrc
+%{rpmhome}/rpmdb_*
+%{rpmhome}/rpmdb-rebuild.sh
+%{rpmhome}/rpmdb-migrate.sh
+%{rpmhome}/lock
 %{_bindir}/rpmdb
 %{_unitdir}/rpmdb-rebuild.service
-%{_sysconfdir}/tdnf/minversions.d/%{name}.conf
+%{_unitdir}/rpmdb-migrate.service
+%config(noreplace) %{_sysconfdir}/tdnf/minversions.d/%{name}.conf
 
 %files build
 %{_bindir}/rpmbuild
@@ -265,31 +299,26 @@ rm -rf %{buildroot}
 %{_bindir}/rpmspec
 %{_libdir}/librpmbuild.so
 %{_libdir}/librpmbuild.so.*
-%{_libdir}/rpm/macros.d/*
-%{_libdir}/rpm/perl.req
-%{_libdir}/rpm/find-debuginfo.sh
-%{_libdir}/rpm/find-lang.sh
-%{_libdir}/rpm/find-provides
-%{_libdir}/rpm/find-requires
-%{_libdir}/rpm/brp-*
-%{_libdir}/rpm/fileattrs/*
-%{_libdir}/rpm/script.req
-%{_libdir}/rpm/check-buildroot
-%{_libdir}/rpm/check-files
-%{_libdir}/rpm/check-prereqs
-%{_libdir}/rpm/check-rpaths
-%{_libdir}/rpm/check-rpaths-worker
-%{_libdir}/rpm/debugedit
-%{_libdir}/rpm/elfdeps
-%{_libdir}/rpm/libtooldeps.sh
-%{_libdir}/rpm/mkinstalldirs
-%{_libdir}/rpm/pkgconfigdeps.sh
-%{_libdir}/rpm/ocamldeps.sh
-%{_libdir}/rpm/*.prov
-%{_libdir}/rpm/sepdebugcrcfix
-
-%{_libdir}/rpm/rpmdeps
-%{_libdir}/rpm/pythondistdeps.py
+%{rpmhome}/macros.d/*
+%{rpmhome}/perl.req
+%{rpmhome}/find-lang.sh
+%{rpmhome}/find-provides
+%{rpmhome}/find-requires
+%{rpmhome}/brp-*
+%{rpmhome}/fileattrs/*
+%{rpmhome}/script.req
+%{rpmhome}/check-buildroot
+%{rpmhome}/check-files
+%{rpmhome}/check-prereqs
+%{rpmhome}/check-rpaths
+%{rpmhome}/check-rpaths-worker
+%{rpmhome}/elfdeps
+%{rpmhome}/mkinstalldirs
+%{rpmhome}/pkgconfigdeps.sh
+%{rpmhome}/ocamldeps.sh
+%{rpmhome}/*.prov
+%{rpmhome}/rpmdeps
+%{rpmhome}/find-debuginfo.sh
 
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*
@@ -318,6 +347,10 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Tue Feb 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.17.1-1
+- Upgrade to v4.17.0
+- Migrate rpmdb location to /usr/lib/sysimage/rpm
+- More details at: https://fedoraproject.org/wiki/Changes/RelocateRPMToUsr
 * Tue Dec 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-4
 - Further fix to rpm-rebuilddb.sh
 - Introduced a new locking method to handle contention while rebuilding db

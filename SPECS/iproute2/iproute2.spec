@@ -1,16 +1,19 @@
 Summary:        Basic and advanced IPV4-based networking
 Name:           iproute2
 Version:        5.12.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        GPLv2+
 URL:            http://www.kernel.org/pub/linux/utils/net/iproute2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        http://www.kernel.org/pub/linux/utils/net/iproute2/%{name}-%{version}.tar.xz
-%define sha1    iproute2=4e18c1d72a29f41a5968ac8a9b266470f6ad89a7
-Provides:       iproute
+%define sha512  %{name}=9249beb67b30ceef178b60b2b61a5e6c45277e747ae4c865e739b7ab84192549e8e94ebaee43c0a87c0291037746ffb6936346245220786e369201ee13d60fac
+
 Patch0:         replace_killall_by_pkill.patch
+
+Provides:       iproute
 
 %description
 The IPRoute2 package contains programs for basic and advanced
@@ -32,32 +35,34 @@ sed -i 's/arpd.8//' man/man8/Makefile
 sed -i 's/m_ipt.o//' tc/Makefile
 
 %build
-make CC=%{_host}-gcc VERBOSE=1 %{?_smp_mflags} DESTDIR= LIBDIR=%{_libdir}
+%configure
+%make_build %{?_smp_mflags}
 
 %install
-make    DESTDIR=%{buildroot} \
-    MANDIR=%{_mandir} \
-    LIBDIR=%{_libdir} \
-    DOCDIR=%{_defaultdocdir}/%{name}-%{version} install
+export SBINDIR='%{_sbindir}'
+export LIBDIR='%{_libdir}'
+%make_install %{?_smp_mflags}
 
 %check
+%if 0%{?with_check}
 cd testsuite
 # Fix linking issue in testsuite
 sed -i 's/<libnetlink.h>/\"..\/..\/include\/libnetlink.h\"/g' tools/generate_nlmsg.c
 sed -i 's/\"libnetlink.h\"/"..\/include\/libnetlink.h\"/g' ../lib/libnetlink.c
 cd tools
-make
+make %{?_smp_mflags}
 cd ..
-make
-make alltests
+make %{?_smp_mflags}
+make alltests %{?_smp_mflags}
 cd ..
+%endif
 
 %ldconfig_scriptlets
 
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/%{name}/*
-/sbin/*
+%{_sbindir}/*
 %{_libdir}/tc/*
 %{_mandir}/man7/*
 %{_mandir}/man8/*
@@ -70,7 +75,9 @@ cd ..
 %{_mandir}/man3/*
 
 %changelog
-* Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 5.12.0-1
+* Sat Feb 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 5.12.0-3
+- Drop libdb support
+* Mon Aug 02 2021 Susant Sahani <ssahani@vmware.com> 5.12.0-2
 - Use autosetup and ldconfig scriptlets
 * Mon May 03 2021 Gerrit Photon <photon-checkins@vmware.com> 5.12.0-1
 - Automatic Version Bump

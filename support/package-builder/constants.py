@@ -122,10 +122,11 @@ class constants(object):
         "automake",
         "openssl",
         "zstd",
-        "libdb",
-        "libgpg-error",
-        "libgcrypt",
-        "rpm"]
+        "rpm",
+        "dwz",
+        "debugedit",
+        "pandoc-bin",
+        "help2man"]
 
     # List or RPMS that will be installed in a chroot prior to build each
     # package. This list should be ordered by install order. On a stage1
@@ -216,20 +217,17 @@ class constants(object):
         "openssl",
         "openssl-devel",
         "libcap",
-        "libdb",
-        "libdb-devel",
         "zstd",
         "zstd-libs",
         "zstd-devel",
         "lua",
         "lua-devel",
-        "libgpg-error",
-        "libgcrypt",
         "rpm",
         "rpm-build",
         "rpm-devel",
         "rpm-libs",
-        "cpio"]
+        "cpio",
+        "debugedit"]
 
     # List of packages that will be installed in addition for each
     # package to make check
@@ -266,14 +264,12 @@ class constants(object):
         "net-tools",
         "less",
         "iana-etc",
-        "libdb",
         "rpm-devel",
         "rpm",
         "libxml2",
         "python3-xml",
         "libacl",
         "tzdata",
-        "libgcrypt-devel",
         "Linux-PAM",
         "unzip",
         "systemd-devel",

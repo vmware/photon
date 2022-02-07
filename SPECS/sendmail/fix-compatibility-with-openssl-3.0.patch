@@ -1,21 +1,27 @@
-From 7e3105c0a5126624ce8673d6a6028b57cdf90fba Mon Sep 17 00:00:00 2001
-From: Satya Naga Rajesh Vasamsetty <svasamsetty@vmware.com>
-Date: Thu, 26 Nov 2020 16:40:08 +0530
-Subject: [PATCH] sendmail: fix compatibility with openssl 3.0
+From ffca6997a191a02ef41268d2979909286fe72bea Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Sat, 12 Feb 2022 23:16:27 +0530
+Subject: [PATCH] fix compatibility with openssl 3.0
 
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ sendmail/tls.c | 88 +++++++++++++++++++++++---------------------------
+ 1 file changed, 40 insertions(+), 48 deletions(-)
 
 diff --git a/sendmail/tls.c b/sendmail/tls.c
-index 696d32f..2b74828 100644
+index e2cac76..b31844f 100644
 --- a/sendmail/tls.c
 +++ b/sendmail/tls.c
-@@ -80,31 +80,22 @@ static DH *
+@@ -86,31 +86,26 @@ static DH *
  get_dh512()
  {
  	DH *dh = NULL;
 -#  if MTA_HAVE_DH_set0_pqg
 -	BIGNUM *dhp_bn, *dhg_bn;
 -#  endif
--
++	BIGNUM *p;
++	BIGNUM *g;
+ 
 -	if ((dh = DH_new()) == NULL)
 -		return NULL;
 -#  if MTA_HAVE_DH_set0_pqg
@@ -36,17 +42,19 @@ index 696d32f..2b74828 100644
 -		return NULL;
 -	}
 -#  endif
-+	BIGNUM *p;
-+	BIGNUM *g;
-+
+-	return dh;
 +	dh = DH_new();
 +	p = BN_bin2bn(dh512_p, sizeof(dh512_p), NULL);
 +	g = BN_bin2bn(dh512_g, sizeof(dh512_g), NULL);
-+	if (!dh || !p || !g)
++
++    if (!dh || !p || !g)
 +		goto err;
-+	if (!DH_set0_pqg(dh, p, NULL, g))
++
++    if (!DH_set0_pqg(dh, p, NULL, g))
 +		goto err;
- 	return dh;
++
++ 	return dh;
++
 +err:
 +	DH_free(dh);
 +	BN_free(p);
@@ -55,14 +63,16 @@ index 696d32f..2b74828 100644
  }
  
  #  if 0
-@@ -150,31 +141,22 @@ get_dh2048()
+@@ -155,32 +150,29 @@ get_dh2048()
+ 		0x6C,0x79,0xA2,0x83,
  		};
  	static unsigned char dh2048_g[]={ 0x02, };
++
  	DH *dh;
 -#  if MTA_HAVE_DH_set0_pqg
 -	BIGNUM *dhp_bn, *dhg_bn;
 -#  endif
--
+ 
 -	if ((dh=DH_new()) == NULL)
 -		return(NULL);
 -#  if MTA_HAVE_DH_set0_pqg
@@ -83,17 +93,22 @@ index 696d32f..2b74828 100644
 -		return(NULL);
 -	}
 -#  endif
+-	return(dh);
 +	BIGNUM *p;
 +	BIGNUM *g;
 +
 +	dh = DH_new();
 +	p = BN_bin2bn(dh2048_p,sizeof(dh2048_p),NULL);
 +	g = BN_bin2bn(dh2048_g,sizeof(dh2048_g),NULL);
-+	if (!dh || !p || !g)
++
++    if (!dh || !p || !g)
 +		goto err;
-+	if (!DH_set0_pqg(dh, p, NULL, g))
++
++    if (!DH_set0_pqg(dh, p, NULL, g))
 +		goto err;
- 	return(dh);
++
++    return(dh);
++
 +err:
 +	DH_free(dh);
 +	BN_free(p);
@@ -103,4 +118,5 @@ index 696d32f..2b74828 100644
  # endif /* !NO_DH */
  
 -- 
-2.7.4
+2.25.1
+

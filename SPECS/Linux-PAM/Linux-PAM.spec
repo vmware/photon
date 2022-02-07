@@ -1,7 +1,7 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.5.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD and GPLv2+
 URL:            https://github.com/linux-pam/linux-pam
 Group:          System Environment/Security
@@ -10,6 +10,7 @@ Distribution:   Photon
 
 Source0:        https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{name}-%{version}.tar.xz
 %define sha512 %{name}=fa16350c132d3e5fb82b60d991768fb596582639841b8ece645c684705467305ccf1302a0147ec222ab78c01b2c9114c5496dc1ca565d2b56bf315f29a815144
+
 Source1:        pamtmp.conf
 
 Patch0:         faillock-add-support-to-print-login-failures.patch
@@ -81,16 +82,17 @@ ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_passwd.so
 ln -sfv pam_unix.so %{buildroot}%{_libdir}/security/pam_unix_session.so
 find %{buildroot}%{_libdir} -name '*.la' -delete
 
-install -d -m 755 %{buildroot}/var/run/faillock
+install -d -m 755 %{buildroot}%{_var}/run/faillock
 install -m644 -D %{SOURCE1} %{buildroot}%{_libdir}/tmpfiles.d/pam.conf
 
 %{find_lang} %{name}
+
 %{_fixperms} %{buildroot}/*
 
 %check
 %if 0%{?with_check}
-install -v -m755 -d /etc/pam.d
-cat > /etc/pam.d/other << "EOF"
+install -v -m755 -d %{_sysconfdir}/pam.d
+cat > %{_sysconfdir}/pam.d/other << "EOF"
 auth     required       pam_deny.so
 account  required       pam_deny.so
 password required       pam_deny.so
@@ -116,7 +118,7 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/*
 %{_libdir}/tmpfiles.d/pam.conf
 %{_unitdir}/pam_namespace.service
-%dir /var/run/faillock
+%dir %{_var}/run/faillock
 
 %files lang -f Linux-PAM.lang
 %defattr(-,root,root)
@@ -129,6 +131,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Wed Jul 06 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.5.2-2
+- Remove libdb support from pam
 * Thu Jun 30 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.5.2-1
 - Further fixes to faillock patch
 - Upgrade to v1.5.2

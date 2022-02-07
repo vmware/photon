@@ -1,7 +1,7 @@
 Summary:        Creates a common metadata repository
 Name:           createrepo_c
 Version:        0.16.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 Group:          System Environment/Base
 Vendor:         VMware, Inc.
@@ -86,6 +86,8 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/%{name}.pc
 
 %changelog
+* Thu Jul 07 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-6
+- Bump version as a part of rpm upgrade
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.16.0-5
 - Use cmake macros for build and install
 * Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 0.16.0-4

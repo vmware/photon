@@ -1,6 +1,6 @@
 [Unit]
-Description=RPM database rebuild
-ConditionPathExists=/usr/lib/sysimage/rpm/.rebuilddb
+Description=RPM database migration to /usr
+ConditionPathExists=/var/lib/rpm/.migratedb
 
 # This should run before any daemons that may open the rpmdb
 DefaultDependencies=no
@@ -12,8 +12,7 @@ RequiresMountsFor=/var
 
 [Service]
 Type=oneshot
-ExecStart=/usr/lib/rpm/rpmdb-rebuild.sh
-ExecStartPost=rm -f /usr/lib/sysimage/rpm/.rebuilddb
+ExecStart=/usr/lib/rpm/rpmdb-migrate.sh
 
 [Install]
 WantedBy=basic.target

@@ -1,6 +1,8 @@
 import os.path
-import traceback
 import re
+import time
+import traceback
+
 from CommandUtils import CommandUtils
 from Logger import Logger
 from PackageUtils import PackageUtils
@@ -72,8 +74,10 @@ class ToolChainUtils(object):
             packageVersion = None
             listRPMsToInstall.extend(['binutils-'+constants.targetArch+'-linux-gnu',
                                       'gcc-'+constants.targetArch+'-linux-gnu'])
+
         if packageName:
             listBuildRequiresPackages = self.getListDependentPackages(packageName, packageVersion)
+
         for package in listRPMsToInstall:
             pkgUtils = PackageUtils(self.logName, self.logPath)
             rpmFile = None
@@ -83,7 +87,7 @@ class ToolChainUtils(object):
             for depPkg in listBuildRequiresPackages:
                 depPkgName, depPkgVersion = StringUtils.splitPackageNameAndVersion(depPkg)
                 if depPkgName == package:
-                        version=depPkgVersion
+                        version = depPkgVersion
                         break
 
             if not version:
@@ -147,6 +151,26 @@ class ToolChainUtils(object):
             self.logger.error("Installing toolchain RPMS failed")
             raise Exception("RPM installation failed")
         self.logger.debug("Successfully installed default toolchain RPMS in Chroot:" + chroot.getID())
+
+        # There is some weird contention with this toolchain package installations and
+        # rpmdb rebuilds. So, let's do it explicitly here.
+        # XXX: Once we use latest ova template in our build env, we can remove this.
+        # Ubuntu build machines also use backend db as sqlite to remove this
+        timeout = 900
+        old_epoch = time.time()
+        while True:
+            if chroot.run("[ -f /var/lib/rpm/Packages ]", logfn=self.logger.debug):
+                break
+            time.sleep(1)
+            # retry for 15 min, ideally this should finish quickly
+            # if not, abort after 15 min
+            if time.time() - old_epoch > timeout:
+                self.logger.debug("--- 15 min elapsed trying to rebuild db ---")
+                break
+
+        if time.time() - old_epoch > timeout and not chroot.run("[ -f /var/lib/rpm/Packages ]", logfn=self.logger.debug):
+            self.logger.error("rpmdb conversion failed after multiple retries")
+            raise Exception("RpmDB conversion error")
 
         if packageName:
             self.installExtraToolchainRPMS(chroot, packageName, packageVersion)

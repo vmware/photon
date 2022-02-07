@@ -47,10 +47,9 @@ actual_pkg_list=($(tdnf --installroot $TEMP_CHROOT/ \
 expected_pkg_list=(
   bash bzip2-libs ca-certificates ca-certificates-pki curl curl-libs
   e2fsprogs-libs elfutils-libelf expat-libs filesystem glibc krb5
-  libcap libdb libgcc libgcrypt libgpg-error libsolv libssh2 libxml2
-  lua ncurses-libs nspr nss-libs openssl photon-release photon-repos popt
-  readline rpm-libs sqlite-libs tdnf tdnf-cli-libs toybox xz-libs zlib
-  zstd-libs
+  libcap libgcc libsolv libssh2 libxml2 lua ncurses-libs nspr nss-libs
+  openssl photon-release photon-repos popt readline rpm-libs sqlite-libs
+  tdnf tdnf-cli-libs toybox xz-libs zlib zstd-libs
 )
 
 actual_pkg_count=${#actual_pkg_list[@]}
@@ -68,6 +67,8 @@ if [ $expected_pkg_count -ne $actual_pkg_count ] || [ -n "${pkg_diff}" ]; then
 fi
 
 rpm --root $TEMP_CHROOT/ --import $TEMP_CHROOT/etc/pki/rpm-gpg/*
+
+ln -sfr ${TEMP_CHROOT}/usr/lib/sysimage/rpm ${TEMP_CHROOT}/var/lib/rpm
 
 # cleanup anything not needed inside rootfs
 pushd $TEMP_CHROOT

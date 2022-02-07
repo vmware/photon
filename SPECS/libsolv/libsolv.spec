@@ -1,7 +1,7 @@
 Summary:        A free package dependency solver
 Name:           libsolv
-Version:        0.7.19
-Release:        4%{?dist}
+Version:        0.7.20
+Release:        1%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Group:          Development/Tools
@@ -9,14 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
-%define sha512 %{name}=dfcebea314d549a15bf5af19db775ff1b1850bfc6fb147b68fe094e43bf1541fcfe22d2f6c6607a6393e01905a086cea606d0b25da2e3ce376d100c4ef4fee00
+%define sha512  %{name}=be810a78543509c60fe9be9310cc84b6c75e671b77929a1f914f51d4b3b2364e68398794d4648da46691cde7e5aab3cf57d18969c31f1003692080dc1982e955
 
 Requires:       rpm-libs >= 4.16.1.3
-Requires:       libdb
 Requires:       expat-libs
 Requires:       zlib
 
-BuildRequires:  libdb-devel
 BuildRequires:  cmake
 BuildRequires:  rpm-devel >= 4.16.1.3
 BuildRequires:  expat-devel
@@ -57,6 +55,7 @@ find %{buildroot} -name '*.la' -delete
 
 %if 0%{?with_check}
 %check
+cd %{__cmake_builddir}
 make %{?_smp_mflags} test
 %endif
 
@@ -77,6 +76,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Wed Jul 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.7.20-1
+- Upgrade to v0.7.20
 * Mon Jun 20 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.7.19-4
 - Use cmake macros for build
 * Wed Dec 1 2021 Oliver Kurth <okurth@vmware.com> 0.7.19-3

@@ -42,7 +42,7 @@ Provides:       /usr/bin/python
 Provides:       /bin/python
 Provides:       /bin/python3
 
-%if 0%{with_check}
+%if 0%{?with_check}
 BuildRequires:  iana-etc
 BuildRequires:  tzdata
 BuildRequires:  curl-devel
@@ -193,7 +193,7 @@ rm %{buildroot}%{_bindir}/2to3
 mkdir -p %{buildroot}%{_libdir}/rpm/macros.d
 install -m 644 %{SOURCE1} %{buildroot}%{_libdir}/rpm/macros.d
 
-%if 0%{?with_gdb_hooks:1}
+%if 0%{?with_gdb_hooks}
   DirHoldingGdbPy=%{_libdir}/debug%{_libdir}
   mkdir -p %{buildroot}$DirHoldingGdbPy
   PathOfGdbPy=$DirHoldingGdbPy/libpython%{VER}.so.1.0-%{version}-%{release}.%{_arch}.debug-gdb.py
