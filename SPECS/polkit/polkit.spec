@@ -1,7 +1,7 @@
 Summary:       A toolkit for defining and handling authorizations.
 Name:          polkit
 Version:       0.113
-Release:       8%{?dist}
+Release:       9%{?dist}
 Group:         Applications/System
 Vendor:        VMware, Inc.
 License:       LGPLv2+
@@ -10,6 +10,7 @@ Source0:       https://www.freedesktop.org/software/polkit/releases/%{name}-%{ve
 Patch0:        polkit-CVE-2018-1116_CVE-2018-19788_CVE-2019-6133.patch
 Patch1:	       CVE-2021-3560.patch
 Patch2:        CVE-2021-4034.patch
+Patch3:	       CVE-2021-4115.patch
 Distribution:  Photon
 BuildRequires: autoconf
 BuildRequires: expat-devel
@@ -46,6 +47,7 @@ header files and libraries for polkit
 %patch0 -p1
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
 
 %build
 %configure \
@@ -115,6 +117,8 @@ fi
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*   Mon Feb 07 2022 Siju Maliakkal <smaliakkal@vmware.com> 0.113-9
+-   Fix for CVE-2021-4115
 *   Wed Jan 26 2022 Siju Maliakkal <smaliakkal@vmware.com> 0.113-8
 -   Added Requires for useradd,userdel,groupadd,greoupdel
 *   Mon Jan 24 2022 Siju Maliakkal <smaliakkal@vmware.com> 0.113-7
