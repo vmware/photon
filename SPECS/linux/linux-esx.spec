@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.19.225
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -395,6 +395,9 @@ Patch526:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
 # Fix for CVE-2022-22942
 Patch527:       0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
 
+# Fix for CVE-2022-0492
+Patch528:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
+
 # Patches for i40e driver
 Patch801:        0001-Add-support-for-gettimex64-interface.patch
 
@@ -758,6 +761,7 @@ This Linux package contains hmac sha generator kernel module.
 %patch525 -p1
 %patch526 -p1
 %patch527 -p1
+%patch528 -p1
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -960,6 +964,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Feb 07 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-4
+-   Fix for CVE-2022-0492
 *   Tue Jan 25 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-3
 -   Fix for CVE-2022-22942
 *   Tue Jan 25 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.225-2

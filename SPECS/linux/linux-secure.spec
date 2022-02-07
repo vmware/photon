@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.19.225
-Release:        3%{?kat_build:.kat}%{?dist}
+Release:        4%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -178,6 +178,9 @@ Patch193:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
 
 # Fix for CVE-2022-22942
 Patch194:       0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
+
+# Fix for CVE-2022-0492
+Patch195:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
@@ -355,6 +358,7 @@ popd
 %patch192 -p1
 %patch193 -p1
 %patch194 -p1
+%patch195 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -508,6 +512,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Feb 07 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-4
+-   Fix for CVE-2022-0492
 *   Tue Jan 25 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-3
 -   Fix for CVE-2022-22942
 *   Tue Jan 25 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.225-2
