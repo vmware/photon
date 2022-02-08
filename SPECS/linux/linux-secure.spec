@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.297
-Release:        2%{?kat_build:.%kat_build}%{?dist}
+Release:        3%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -176,6 +176,9 @@ Patch122:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Fix for CVE-2022-0330
 Patch123:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
+
+# Fix for CVE-2022-0492
+Patch124:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -370,6 +373,7 @@ popd
 %patch121 -p1
 %patch122 -p1
 %patch123 -p1
+%patch124 -p1
 
 #CVE
 
@@ -494,6 +498,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Feb 08 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.297-3
+-   Fix for CVE-2022-0492
 *   Tue Jan 25 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.297-2
 -   Fix CVE-2022-0330
 *   Fri Jan 21 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.297-1
