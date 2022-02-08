@@ -1,0 +1,71 @@
+Name:       tinycdb
+Summary:    Utility and library for manipulating constant databases
+Version:    0.78
+Release:    1%{?dist}
+License:    Public Domain
+URL:        http://www.corpit.ru/mjt/tinycdb.html
+Group:      Applications/System
+Vendor:     VMware, Inc.
+Distribution:   Photon
+
+Source0:    http://www.corpit.ru/mjt/%{name}/%{name}-%{version}.tar.gz
+%define sha1 %{name}=ade42ee1e7c56f66a63cb933206c089b9983adba
+Source1:    libcdb.pc
+
+BuildRequires: make
+BuildRequires: gcc
+
+%description
+tinycdb is a small, fast and reliable utility and subroutine library for
+creating and reading constant databases. The database structure is tuned
+for fast reading.
+
+This package contains tinycdb utility and shared library.
+
+%package devel
+Summary:    Development files for tinycdb
+Requires:   %{name} = %{version}-%{release}
+
+%description devel
+tinycdb is a small, fast and reliable utility set and subroutine
+library for creating and reading constant databases.
+
+This package contains tinycdb development library and header file for
+developing applications that use %{name}.
+
+%prep
+%autosetup -p1
+
+%build
+make %{?_smp_mflags} staticlib sharedlib cdb-shared CFLAGS="%{optflags}"
+
+%install
+mkdir -p %{buildroot}%{_libdir}/pkgconfig
+
+make DESTDIR=%{buildroot} prefix=%{_prefix} libdir=%{_libdir} mandir=%{_mandir} \
+    install install-sharedlib INSTALLPROG=cdb-shared CP="cp -p" %{?_smp_mflags}
+
+chmod +x %{buildroot}%{_libdir}/*.so.*
+rm -f %{buildroot}%{_libdir}/lib*.a
+cp -p %{SOURCE1} %{buildroot}%{_libdir}/pkgconfig/
+
+%ldconfig_scriptlets
+
+%files
+%defattr(-,root,root)
+%doc NEWS ChangeLog
+%{_bindir}/cdb
+%{_mandir}/man1/*.1*
+%{_mandir}/man5/*.5*
+%{_libdir}/*.so.*
+
+%files devel
+%defattr(-,root,root)
+%{_includedir}/*.h
+%{_mandir}/man3/*.3*
+%{_libdir}/*.so
+%{_libdir}/pkgconfig/*.pc
+
+%changelog
+* Wed Feb 16 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.78-1
+- Initial version. Needed for sendmail-8.17.1

@@ -1,7 +1,7 @@
 Summary:        A free package dependency solver
 Name:           libsolv
 Version:        0.7.19
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        BSD
 URL:            https://github.com/openSUSE/libsolv
 Group:          Development/Tools
@@ -9,14 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/openSUSE/libsolv/archive/%{name}-%{version}.tar.gz
-%define sha1    libsolv=b4101632c56b00e0bd8f41d772a7998a3d000a74
+%define sha1    %{name}=b4101632c56b00e0bd8f41d772a7998a3d000a74
 
 Requires:       rpm-libs >= 4.16.1.3
-Requires:       libdb
 Requires:       expat-libs
 Requires:       zlib
 
-BuildRequires:  libdb-devel
 BuildRequires:  cmake
 BuildRequires:  rpm-devel >= 4.16.1.3
 BuildRequires:  expat-devel
@@ -74,6 +72,8 @@ make %{?_smp_mflags} test
 %{_mandir}/man3/*
 
 %changelog
+* Sat Feb 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.7.19-4
+- Drop libdb support
 * Wed Dec 1 2021 Oliver Kurth <okurth@vmware.com> 0.7.19-3
 - depend on latest rpm-libs (supports sqlite)
 * Fri Aug 20 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.7.19-2

@@ -37,6 +37,7 @@ class constants(object):
     crossCompiling = False
     currentArch = buildArch
     hostRpmIsNotUsable = False
+    toolChainBuilt = False
 
     noDepsPackageList = [
         "texinfo",
@@ -49,6 +50,12 @@ class constants(object):
         "sqlite",
         "sqlite-devel",
         "sqlite-libs"]
+
+    listExtraPkgsForCorePkgs = [
+        "libdb", "libdb-devel",
+        "libgcrypt",
+        "libgpg-error",
+    ]
 
     # These packages will be built in first order as build-core-toolchain stage
     # Put only main pakage names here. Do not add subpackages such as libgcc
@@ -119,9 +126,6 @@ class constants(object):
         "automake",
         "openssl",
         "zstd",
-        "libdb",
-        "libgpg-error",
-        "libgcrypt",
         "rpm"]
 
     # List or RPMS that will be installed in a chroot prior to build each
@@ -213,15 +217,11 @@ class constants(object):
         "openssl",
         "openssl-devel",
         "libcap",
-        "libdb",
-        "libdb-devel",
         "zstd",
         "zstd-libs",
         "zstd-devel",
         "lua",
         "lua-devel",
-        "libgpg-error",
-        "libgcrypt",
         "rpm",
         "rpm-build",
         "rpm-devel",
@@ -263,14 +263,12 @@ class constants(object):
         "net-tools",
         "less",
         "iana-etc",
-        "libdb",
         "rpm-devel",
         "rpm",
         "libxml2",
         "python3-xml",
         "libacl",
         "tzdata",
-        "libgcrypt-devel",
         "Linux-PAM",
         "unzip",
         "systemd-devel",
@@ -304,6 +302,7 @@ class constants(object):
         "/usr/sbin/useradd":"shadow",
         "/usr/sbin/userdel":"shadow",
         "/usr/sbin/groupadd":"shadow",
+        "/usr/sbin/groupdel":"shadow",
         "/sbin/service":"initscripts",
         "/usr/bin/which":"which",
         "/usr/bin/python":"python3",
@@ -477,3 +476,7 @@ class constants(object):
                 k, v = m.split(' ', 1)
                 macros[k] = v
         return macros
+
+    @staticmethod
+    def isToolChainBuilt(val):
+        constants.toolChainBuilt = val

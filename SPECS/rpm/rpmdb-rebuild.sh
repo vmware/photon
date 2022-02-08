@@ -5,40 +5,21 @@
 #set -x
 
 # log file name
-log_fn="/var/log/rpm-rebuilddb.log"
+log_fn="/var/log/rpmdb-rebuild.log"
 
 # redirect stderr & stdout to log file
 exec > "${log_fn}" 2>&1
 
+rpmdb_dir="/var/lib/rpm"
+
 # this serves as a key for systemd service
 if [ -x /usr/bin/systemctl ]; then
-  touch /var/lib/rpm/.rebuilddb
+  touch "${rpmdb_dir}"/.rebuilddb
 fi
 
-rpm_lock_fn="/var/lib/rpm/.rpm.lock"
+rpm_lock_fn="${rpmdb_dir}/.rpm.lock"
 lock_bin="/usr/lib/rpm/lock"
 lock_flag="/var/run/.lkflg"
-
-# Check if db operation is in progress
-# Timesout after 900 seconds
-check_if_db_operation_in_progress()
-{
-  local retry=900
-
-  while [ "${retry}" -gt 0 ]; do
-    if pgrep -x "tdnf|rpm|rpmdb" &> /dev/null; then
-      echo -e "\nWARNING: tdnf/rpm is still running ..."
-      retry=$((retry-1))
-      sleep 1
-    else
-      echo -e "\nINFO: tdnf/rpm are not running, proceed to next step ..."
-      return 0
-    fi
-  done
-
-  echo -e "\nERROR: tdnf/rpm is running from 15 minutes, retries exceeded ..."
-  return 1
-}
 
 # Sometimes rebuilddb succeeds but rpm options won't work
 # this is a simple sanity check
@@ -64,21 +45,22 @@ lpid=""
 
 unlock()
 {
-  rm -f "${lock_flag}"
+  [ -f "${lock_flag}" ] && rm -f "${lock_flag}"
   kill -9 "${lpid}"
 }
 
 get_lock()
 {
-  local retry=100
+  local retry=1500
 
   # remove "$lock_flag" file to ensure that there is no leftover
-  rm -f "${lock_flag}"
+  [ -f "${lock_flag}" ] && rm -f "${lock_flag}"
 
   "${lock_bin}" "${rpm_lock_fn}" &
   lpid="$!"
 
-  # 20 second max delay
+  # 5 min max delay
+  # while building ova & other images, transactions take time
   while [ "${retry}" -gt 0 ]; do
     if [ -f "${lock_flag}" ]; then
       return 0
@@ -87,7 +69,8 @@ get_lock()
     retry=$((retry-1))
   done
 
-  echo -e "\nERROR: failed to get lock ..."
+  unlock
+  echo -e "\nERROR: failed to get lock"
   exit 1
 }
 
@@ -104,12 +87,11 @@ try_rpm_rebuilddb()
 {
   local retry=10
   local backup_dir=""
-  local rpmdb_dir="/var/lib/rpm"
 
   # need 6 Xs, toybox mktemp doesn't work with 4 Xs
-  backup_dir="$(mktemp -d -p /var/lib .rpmdbXXXXXX)"
+  backup_dir="$(mktemp -d -p ${rpmdb_dir}/.. .rpmdbXXXXXX)"
   if [ "$?" -ne 0 ]; then
-    echo -e "\nERROR: failed to create backup directory ..."
+    echo -e "\nERROR: failed to create backup directory"
     return 1
   fi
 
@@ -124,22 +106,16 @@ try_rpm_rebuilddb()
 
     if ! cp -ar "${rpmdb_dir}"/* "${backup_dir}"; then
       unlock
-      rm -rf "${backup_dir}"
-      echo -e "\nERROR: failed to copy contents to backup directory ..."
+      [ -d "${backup_dir}" ] && rm -rf "${backup_dir}"
+      echo -e "\nERROR: failed to copy contents to backup directory"
       return 1
     fi
     unlock
   fi
 
-  echo -e "\nINFO: took backup of rpmdb at ${backup_dir} ..."
+  echo -e "\nINFO: took backup of rpmdb at ${backup_dir}"
 
   while [ "${retry}" -gt 0 ]; do
-    while true; do
-      if ! pgrep -x "tdnf|rpm|rpmdb" &> /dev/null; then
-        break
-      fi
-      sleep 0.1
-    done
 
     if rpmdb --rebuilddb; then
       if get_lock; then
@@ -147,25 +123,28 @@ try_rpm_rebuilddb()
           unlock
 
           rm -rf "${backup_dir}" "${rpmdb_dir}"/.rebuilddb
-          echo -e "\nINFO: rpmdb --rebuild success ..."
+
+          echo -e "\nINFO: rpmdb --rebuild success"
           return 0
         fi
 
         local err=0
         echo -e "\n--- ERROR: SOMETHING WENT TOTALLY WRONG --"
-        echo "Trying to restore RPMDB from backup directory ..."
+        echo "Trying to restore RPMDB from backup directory"
 
-        rm -rf "${rpmdb_dir}"/*
+        if [ "${rpmdb_dir}" = "/var/lib/rpm" ]; then
+          rm -f "${rpmdb_dir}"/*
+        fi
 
         if ! cp -ar "${backup_dir}"/* "${rpmdb_dir}"; then
           err=1
-          echo -e "\nERROR: failed copy contents from ${backup_dir} to ${rpmdb_dir} ..."
+          echo -e "\nERROR: failed copy contents from ${backup_dir} to ${rpmdb_dir}"
         else
-          rm -rf "${backup_dir}"
+          [ -d "${backup_dir}" ] && rm -rf "${backup_dir}"
         fi
 
         if [ "${err}" -eq 0 ]; then
-          echo -e "\nINFO: Revert from backup directory success ..."
+          echo -e "\nINFO: Revert from backup directory success"
         fi
 
         unlock
@@ -173,9 +152,11 @@ try_rpm_rebuilddb()
       fi
     fi
 
-    rm -rf /var/lib/rpmrebuilddb.*
+    if ls "${rpmdb_dir}"/../rpmrebuilddb.* &> /dev/null; then
+      rm -rf "${rpmdb_dir}"/../rpmrebuilddb.*
+    fi
 
-    echo -e "\nERROR: failed to rebuild rpmdb, retrying ..."
+    echo -e "\nERROR: failed to rebuild rpmdb, retrying"
     retry=$((retry-1))
 
   done
@@ -183,4 +164,4 @@ try_rpm_rebuilddb()
   return 1
 }
 
-check_if_db_operation_in_progress && try_rpm_rebuilddb
+try_rpm_rebuilddb

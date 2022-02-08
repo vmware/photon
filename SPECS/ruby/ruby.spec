@@ -1,20 +1,24 @@
 Summary:        Ruby
 Name:           ruby
 Version:        2.7.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSDL
-URL:            https://www.ruby-lang.org/en/
+URL:            https://www.ruby-lang.org/en
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://cache.ruby-lang.org/pub/ruby/2.7/%{name}-%{version}.tar.bz2
 %define sha1    ruby=f5bdecded2d68e4f2f0ab1d20137e8b4b0614e52
+
 Patch0:         0001-openssl-3.0.0-compatibility.patch
+
 BuildRequires:  openssl-devel
 BuildRequires:  ca-certificates
 BuildRequires:  readline-devel
 BuildRequires:  readline
 BuildRequires:  tzdata
+
 Requires:       ca-certificates
 Requires:       openssl
 Requires:       gmp
@@ -34,22 +38,26 @@ for f in `grep -ril "\/usr\/local\/bin\/ruby" ./libexec/`; do
   sed -i "s|/usr/local/bin/ruby|/usr/bin/ruby|g" $f
   head -1 $f
 done
+
 %configure \
-        --enable-shared \
-        --docdir=%{_docdir}/%{name}-%{version} \
-	--with-compress-debug-sections=no
+  --enable-shared \
+  --docdir=%{_docdir}/%{name}-%{version} \
+  --with-compress-debug-sections=no
+
 make %{?_smp_mflags} COPY="cp -p"
 
 %install
 [ %{buildroot} != "/" ] && rm -rf %{buildroot}/*
-%make_install
+%make_install %{?_smp_mflags}
 
 %check
+%if %{?with_check}
 chmod g+w . -R
 useradd test -G root -m
-sudo -u test  make check TESTS="-v"
+sudo -u test make check TESTS="-v" %{?_smp_mflags}
+%endif
 
-%post   -p /sbin/ldconfig
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %clean
@@ -69,6 +77,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 
 %changelog
+* Sat Feb 12 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.7.4-3
+- Drop libdb support
 * Mon Sep 06 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 2.7.4-2
 - openssl 3.0.0 support
 * Mon Aug 30 2021 Sujay G <gsujay@vmware.com> 2.7.4-1

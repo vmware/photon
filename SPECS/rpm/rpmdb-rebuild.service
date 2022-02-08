@@ -12,7 +12,7 @@ RequiresMountsFor=/var
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/rpmdb --rebuilddb
+ExecStart=/usr/lib/rpm/rpmdb-rebuild.sh
 ExecStartPost=rm -f /var/lib/rpm/.rebuilddb
 
 [Install]

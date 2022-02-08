@@ -1,7 +1,7 @@
 Name:           systemd
 URL:            http://www.freedesktop.org/wiki/Software/systemd/
 Version:        247.11
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        LGPLv2+ and GPLv2+ and MIT
 Summary:        System and Service Manager
 
@@ -43,7 +43,9 @@ Requires:       libselinux
 Requires:       lz4
 Requires:       pcre
 Requires:       xz
+Requires:       libgpg-error
 
+BuildRequires:  libgpg-error-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  curl-devel
 BuildRequires:  docbook-xml
@@ -659,6 +661,8 @@ rm -rf %{_systemd_util_dir}/tests
 %files lang -f ../%{name}.lang
 
 %changelog
+* Thu Feb 10 2022 Shreenidhi Shedi <sshedi@vmware.com> 247.11-2
+- Add libgpg-error-devel to BuildRequires
 * Tue Jan 18 2022 Susant Sahani <ssahani@vmware.com>  247.11-1
 - Update to stable version 247.11
 * Mon Jan 10 2022 Nitesh Kumar <kunitesh@vmware.com> 247.10-6

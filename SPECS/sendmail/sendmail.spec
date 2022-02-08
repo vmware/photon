@@ -1,33 +1,35 @@
 Summary:          Commonly used Mail transport agent (MTA)
 Name:             sendmail
 Version:          8.16.1
-Release:          4%{?dist}
-URL:              http://www.sendmail.org/
+Release:          5%{?dist}
+URL:              http://www.sendmail.org
 License:          BSD and CDDL1.1 and MIT
 Group:            Email/Server/Library
 Vendor:           VMware, Inc.
 Distribution:     Photon
 
-Source0:          http://ftp.vim.org/pub/mail/sendmail/sendmail-r8/sendmail.%{version}.tar.gz
-%define sha1      sendmail.%{version}=748b6dfc47dfbb83ebfdd2e334c87032c4698eab
+Source0:          https://ftp.sendmail.org/sendmail.%{version}.tar.gz
+%define sha1      %{name}.%{version}=748b6dfc47dfbb83ebfdd2e334c87032c4698eab
 
 Patch0:           0001-sendmail-fix-compatibility-with-openssl-3.0.patch
 
-BuildRequires:	  systemd
-BuildRequires:    openldap
-BuildRequires:    openssl-devel
-BuildRequires:    libdb-devel
-BuildRequires:    shadow
+BuildRequires: systemd-devel
+BuildRequires: openldap
+BuildRequires: openssl-devel
+BuildRequires: shadow
+BuildRequires: tinycdb-devel
 
-Requires:         (coreutils or toybox)
-Requires:         systemd
-Requires:         m4
-Requires:         openldap
-Requires(pre):    /usr/sbin/useradd /usr/sbin/groupadd
-Requires(postun): /usr/sbin/userdel /usr/sbin/groupdel
-Requires:         /bin/sed
-Requires:         (net-tools or toybox)
-Requires:         libdb
+Requires: tinycdb
+Requires: (coreutils or toybox)
+Requires: systemd
+Requires: m4
+Requires: openldap
+Requires(pre): /usr/sbin/useradd
+Requires(pre): /usr/sbin/groupadd
+Requires(postun): /usr/sbin/userdel
+Requires(postun): /usr/sbin/groupdel
+Requires: /bin/sed
+Requires: (net-tools or toybox)
 
 %description
 Sendmail is widely used Mail Transport agent which helps in sending
@@ -39,8 +41,8 @@ of email from systems to network and is not just a mail client.
 
 %build
 cat >> devtools/Site/site.config.m4 << "EOF"
-APPENDDEF(`confENVDEF',`-DSTARTTLS -DSASL -DLDAPMAP -DNETINET6')
-APPENDDEF(`confLIBS', `-lssl -lcrypto -lsasl2 -lldap -llber -ldb')
+APPENDDEF(`confENVDEF',`-DSTARTTLS -DSASL -DLDAPMAP -DNETINET6 -DCDB')
+APPENDDEF(`confLIBS', `-lssl -lcrypto -lsasl2 -lldap -llber -lcdb')
 APPENDDEF(`confINCDIRS', `-I/usr/include/sasl')
 APPENDDEF(`confLIBS', `-lresolv')
 define(`confMANGRP',`root')
@@ -50,63 +52,59 @@ define(`confUBINGRP',`root')
 define(`confUBINOWN',`root')
 EOF
 
-sed -i 's|/usr/man/man|/usr/share/man/man|' \
-    devtools/OS/Linux           &&
+sed -i 's|/usr/man/man|/usr/share/man/man|' devtools/OS/Linux
 
-cd sendmail                     &&
-sh Build                        &&
-cd ../cf/cf                     &&
-cp generic-linux.mc sendmail.mc &&
-sh Build sendmail.cf
+cd %{name}
+sh Build
+cd ../cf/cf
+cp generic-linux.mc %{name}.mc
+sh Build %{name}.cf
 
 %install
-groupadd -g 26 smmsp &&
-useradd -c "Sendmail Daemon" -g smmsp -d /dev/null \
-        -s /bin/false -u 26 smmsp                  &&
+groupadd -g 26 smmsp
+useradd -c "Sendmail Daemon" -g smmsp -d /dev/null -s /bin/false -u 26 smmsp
 
-cd cf/cf
-install -v -d -m755 %{buildroot}/etc/mail &&
-sh Build DESTDIR=%{buildroot} install-cf &&
+pushd cf/cf
+install -v -d -m755 %{buildroot}/etc/mail
+sh Build DESTDIR=%{buildroot} install-cf
+popd
 
-cd ../..            &&
-install -v -d -m755 %{buildroot}/usr/bin &&
-install -v -d -m755 %{buildroot}/usr/sbin &&
-install -v -d -m755 %{buildroot}/usr/share/man/man1 &&
-install -v -d -m755 %{buildroot}/usr/share/man/man8 &&
-sh Build DESTDIR=%{buildroot} install    &&
+install -v -d -m755 %{buildroot}%{_bindir}
+install -v -d -m755 %{buildroot}%{_sbindir}
+install -v -d -m755 %{buildroot}%{_mandir}/man1
+install -v -d -m755 %{buildroot}%{_mandir}/man8
+sh Build DESTDIR=%{buildroot} install
 
-install -v -m644 cf/cf/{submit,sendmail}.mc %{buildroot}/etc/mail &&
-cp -v -R cf/* %{buildroot}/etc/mail                               &&
+install -v -m644 cf/cf/{submit,%{name}}.mc %{buildroot}/etc/mail
+cp -v -R cf/* %{buildroot}/etc/mail
 
-install -v -m755 -d %{buildroot}/usr/share/doc/sendmail-8.15.2/{cf,sendmail} &&
+install -v -m755 -d %{buildroot}%{_docdir}/%{name}-%{version}/{cf,%{name}}
 
 install -v -m644 CACerts FAQ KNOWNBUGS LICENSE PGPKEYS README RELEASE_NOTES \
-        %{buildroot}/usr/share/doc/sendmail-8.15.2 &&
+        %{buildroot}%{_docdir}/%{name}-%{version}
 
-install -v -m644 sendmail/{README,SECURITY,TRACEFLAGS,TUNING} \
-        %{buildroot}/usr/share/doc/sendmail-8.15.2/sendmail &&
+install -v -m644 %{name}/{README,SECURITY,TRACEFLAGS,TUNING} \
+        %{buildroot}%{_docdir}/%{name}-%{version}/%{name}
 
-install -v -m644 cf/README %{buildroot}/usr/share/doc/sendmail-8.15.2/cf &&
+install -v -m644 cf/README %{buildroot}%{_docdir}/%{name}-%{version}/cf
 
-for manpage in sendmail editmap mailstats makemap praliases smrsh; do
-    install -v -m644 ${manpage}/${manpage}.8 %{buildroot}/usr/share/man/man8
-done &&
+for manpage in %{name} editmap mailstats makemap praliases smrsh; do
+  install -v -m644 ${manpage}/${manpage}.8 %{buildroot}%{_mandir}/man8
+done
 
-install -v -m644 sendmail/aliases.5    %{buildroot}/usr/share/man/man5 &&
-install -v -m644 sendmail/mailq.1      %{buildroot}/usr/share/man/man1 &&
-install -v -m644 sendmail/newaliases.1 %{buildroot}/usr/share/man/man1 &&
-install -v -m644 vacation/vacation.1   %{buildroot}/usr/share/man/man1
+install -v -m644 %{name}/aliases.5 %{buildroot}%{_mandir}/man5
+install -v -m644 %{name}/mailq.1 %{buildroot}%{_mandir}/man1
+install -v -m644 %{name}/newaliases.1 %{buildroot}%{_mandir}/man1
+install -v -m644 vacation/vacation.1 %{buildroot}%{_mandir}/man1
 
-mkdir -p %{buildroot}/etc/systemd/system/
-mkdir -p %{buildroot}/etc/sysconfig/
+mkdir -p %{buildroot}%{_unitdir} %{buildroot}/etc/sysconfig
 
-cat > %{buildroot}/etc/sysconfig/sendmail <<- "EOF"
+cat > %{buildroot}/etc/sysconfig/%{name} <<- "EOF"
 DAEMON=yes
 QUEUE=1h
-
 EOF
 
-cat > %{buildroot}/etc/systemd/system/sendmail.service <<- "EOF"
+cat > %{buildroot}%{_unitdir}/%{name}.service <<- "EOF"
 [Unit]
 Description=Sendmail Mail Transport Agent
 Wants=network-online.target
@@ -120,7 +118,6 @@ ExecStart=/usr/sbin/sendmail -bd -q $QUEUE $SENDMAIL_OPTARG
 
 [Install]
 WantedBy=multi-user.target
-
 EOF
 
 %check
@@ -130,15 +127,14 @@ make -C test check %{?_smp_mflags}
 
 %pre
 if [ $1 -eq 1 ]; then
-groupadd -g 26 smmsp                               &&
-useradd -c "Sendmail Daemon" -g smmsp -d /dev/null \
-        -s /bin/false -u 26 smmsp                  &&
-chmod -v 1777 /var/mail                            &&
-install -v -m700 -d /var/spool/mqueue
+  groupadd -g 26 smmsp
+  useradd -c "Sendmail Daemon" -g smmsp -d /dev/null -s /bin/false -u 26 smmsp
+  chmod -v 1777 /var/mail
+  install -v -m700 -d /var/spool/mqueue
 fi
 
 %post
-if [ $1 -eq 1 ] ; then
+if [ $1 -eq 1 ]; then
   echo $(hostname -f) > /etc/mail/local-host-names
   cat > /etc/mail/aliases << "EOF"
 postmaster: root
@@ -147,17 +143,16 @@ EOF
   /bin/newaliases
 
   cd /etc/mail
-  m4 m4/cf.m4 sendmail.mc > sendmail.cf
-
+  m4 m4/cf.m4 %{name}.mc > %{name}.cf
 fi
 
 chmod 700 /var/spool/clientmqueue
 chown smmsp:smmsp /var/spool/clientmqueue
 
-%systemd_post sendmail.service
+%systemd_post %{name}.service
 
 %preun
-%systemd_preun sendmail.service
+%systemd_preun %{name}.service
 
 %postun
 if [ $1 -eq 0 ]; then
@@ -166,11 +161,11 @@ if [ $1 -eq 0 ]; then
 
   rm -rf /etc/mail
 fi
-%systemd_postun_with_restart sendmail.service
+%systemd_postun_with_restart %{name}.service
 
 %files
-%config(noreplace)%{_sysconfdir}/mail/sendmail.mc
-%config(noreplace)%{_sysconfdir}/mail/sendmail.cf
+%config(noreplace)%{_sysconfdir}/mail/%{name}.mc
+%config(noreplace)%{_sysconfdir}/mail/%{name}.cf
 %config(noreplace)%{_sysconfdir}/mail/submit.cf
 %config(noreplace)%{_sysconfdir}/mail/submit.mc
 %{_sysconfdir}/mail/feature/*
@@ -183,13 +178,14 @@ fi
 %{_sysconfdir}/mail/domain/*
 %{_sysconfdir}/mail/README
 %{_sysconfdir}/mail/helpfile
-%{_sysconfdir}/mail/sendmail.schema
+%{_sysconfdir}/mail/%{name}.schema
 %{_sysconfdir}/mail/statistics
 %{_bindir}/*
 %{_sbindir}/*
-/var/*
-/etc/systemd/system/sendmail.service
-/etc/sysconfig/sendmail
+%{_datadir}/*
+%{_var}/spool/*
+%{_unitdir}/%{name}.service
+%{_sysconfdir}/sysconfig/%{name}
 %exclude %dir %{_libdir}/debug
 %exclude %dir %{_usrsrc}
 %exclude %{_mandir}/*
@@ -197,6 +193,8 @@ fi
 %exclude %{_sysconfdir}/mail/cf/*
 
 %changelog
+* Thu Mar 24 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.16.1-5
+- Drop libdb support
 * Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 8.16.1-4
 - Exclude debug symbols properly
 * Wed Apr 14 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.16.1-3

@@ -90,6 +90,8 @@ class PackageManager(object):
         return pkgCount
 
     def buildToolChainPackages(self, buildThreads):
+        constants.isToolChainBuilt(False)
+
         pkgCount = self.buildToolChain()
         # Stage 2 makes sence only for native tools
         if not constants.crossCompiling:
@@ -109,6 +111,8 @@ class PackageManager(object):
             # Stage 2 build container
             #TODO: rebuild container only if anything in listToolChainPackages was built
             self._createBuildContainer(False)
+
+        constants.isToolChainBuilt(True)
 
     def buildPackages(self, listPackages, buildThreads):
         if constants.rpmCheck:

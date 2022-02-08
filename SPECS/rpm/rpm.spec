@@ -1,7 +1,9 @@
+%define rpmhome %{_libdir}/rpm
+
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -17,7 +19,7 @@ Source4:        macros.php
 Source5:        macros.perl
 Source6:        macros.vpath
 Source7:        macros.ldconfig
-Source8:        rpm-rebuilddb.sh
+Source8:        rpmdb-rebuild.sh
 Source9:        rpmdb-rebuild.service
 Source10:       rpm.conf
 Source11:       lock.c
@@ -35,15 +37,12 @@ Requires:       bash
 Requires:       zstd-libs
 Requires:       lua
 Requires:       openssl >= 1.1.1
-Requires:       libgcrypt
 Requires:       %{name}-libs = %{version}-%{release}
 
 BuildRequires:  systemd-devel
 BuildRequires:  dbus-devel >= 1.3
 BuildRequires:  systemd-rpm-macros
-BuildRequires:  libgcrypt-devel
 BuildRequires:  lua-devel
-BuildRequires:  libdb-devel
 BuildRequires:  popt-devel
 BuildRequires:  nss-devel
 BuildRequires:  elfutils-devel
@@ -54,6 +53,7 @@ BuildRequires:  python3-devel
 BuildRequires:  openssl >= 1.1.1
 BuildRequires:  zstd-devel
 BuildRequires:  sqlite-devel
+BuildRequires:  python3-setuptools
 
 %description
 RPM package manager
@@ -78,7 +78,6 @@ Requires:   bzip2-libs
 Requires:   elfutils-libelf
 Requires:   xz-libs
 Requires:   zstd-libs
-Requires:   (procps-ng or toybox)
 
 Conflicts:  libsolv < 0.7.19
 
@@ -110,6 +109,7 @@ These are the additional language files of rpm.
 Summary:    Python 3 bindings for rpm.
 Group:      Development/Libraries
 Requires:   python3
+Requires:   python3-setuptools
 
 %description -n python3-rpm
 Python3 rpm.
@@ -153,7 +153,9 @@ sh autogen.sh --noconfigure
         --enable-sqlite \
         --enable-bdb-ro \
         --enable-systemd-inhibit \
-        --enable-plugins
+        --with-crypto=openssl \
+        --enable-plugins \
+        --enable-bdb=no
 
 make %{?_smp_mflags}
 
@@ -176,10 +178,10 @@ install -dm644 %{buildroot}%{_sysconfdir}/rpm
 install -vm755 %{SOURCE1} %{buildroot}%{_libdir}/rpm
 install -vm755 %{SOURCE2} %{buildroot}%{_libdir}/rpm
 install -vm644 %{SOURCE3} %{buildroot}%{_sysconfdir}/rpm
-install -vm644 %{SOURCE4} %{buildroot}%{_libdir}/rpm/macros.d
-install -vm644 %{SOURCE5} %{buildroot}%{_libdir}/rpm/macros.d
-install -vm644 %{SOURCE6} %{buildroot}%{_libdir}/rpm/macros.d
-install -vm644 %{SOURCE7} %{buildroot}%{_libdir}/rpm/macros.d
+install -vm644 %{SOURCE4} %{buildroot}%{rpmhome}/macros.d
+install -vm644 %{SOURCE5} %{buildroot}%{rpmhome}/macros.d
+install -vm644 %{SOURCE6} %{buildroot}%{rpmhome}/macros.d
+install -vm644 %{SOURCE7} %{buildroot}%{rpmhome}/macros.d
 install -vm755 %{SOURCE8} %{buildroot}%{_libdir}/rpm
 
 mkdir -p %{buildroot}%{_unitdir}
@@ -196,14 +198,12 @@ popd
 %post libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
 
-%triggerun -- rpm-libs < 4.16.1.3-1
-if [ -x %{_bindir}/systemctl ]; then
-  systemctl --no-reload preset rpmdb-rebuild || :
-fi
-
 %posttrans libs
 if [ -f %{_sharedstatedir}/rpm/Packages ]; then
-  nohup bash %{_libdir}/rpm/rpm-rebuilddb.sh &>/dev/null &
+  if [ -x %{_bindir}/systemctl ]; then
+    systemctl --no-reload preset rpmdb-rebuild || :
+  fi
+  nohup bash %{rpmhome}/rpmdb-rebuild.sh &>/dev/null &
 fi
 
 %clean
@@ -218,13 +218,13 @@ rm -rf %{buildroot}
 %{_bindir}/rpmkeys
 %{_bindir}/rpmquery
 %{_bindir}/rpmverify
-%{_libdir}/rpm/rpmpopt-*
-%{_libdir}/rpm/rpm.daily
-%{_libdir}/rpm/rpm.log
-%{_libdir}/rpm/rpm.supp
-%{_libdir}/rpm/rpm2cpio.sh
-%{_libdir}/rpm/tgpg
-%{_libdir}/rpm/platform
+%{rpmhome}/rpmpopt-*
+%{rpmhome}/rpm.daily
+%{rpmhome}/rpm.log
+%{rpmhome}/rpm.supp
+%{rpmhome}/rpm2cpio.sh
+%{rpmhome}/tgpg
+%{rpmhome}/platform
 %{_libdir}/rpm-plugins/ima.so
 %{_libdir}/rpm-plugins/syslog.so
 %{_libdir}/rpm-plugins/prioreset.so
@@ -251,11 +251,11 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/rpm/macros
 %{_libdir}/librpmio.so.*
 %{_libdir}/librpm.so.*
-%{_libdir}/rpm/macros
-%{_libdir}/rpm/rpmrc
-%{_libdir}/rpm/rpmdb_*
-%{_libdir}/rpm/rpm-rebuilddb.sh
-%{_libdir}/rpm/lock
+%{rpmhome}/macros
+%{rpmhome}/rpmrc
+%{rpmhome}/rpmdb_*
+%{rpmhome}/rpmdb-rebuild.sh
+%{rpmhome}/lock
 %{_bindir}/rpmdb
 %{_unitdir}/rpmdb-rebuild.service
 %{_sysconfdir}/tdnf/minversions.d/%{name}.conf
@@ -266,31 +266,31 @@ rm -rf %{buildroot}
 %{_bindir}/rpmspec
 %{_libdir}/librpmbuild.so
 %{_libdir}/librpmbuild.so.*
-%{_libdir}/rpm/macros.d/*
-%{_libdir}/rpm/perl.req
-%{_libdir}/rpm/find-debuginfo.sh
-%{_libdir}/rpm/find-lang.sh
-%{_libdir}/rpm/find-provides
-%{_libdir}/rpm/find-requires
-%{_libdir}/rpm/brp-*
-%{_libdir}/rpm/fileattrs/*
-%{_libdir}/rpm/script.req
-%{_libdir}/rpm/check-buildroot
-%{_libdir}/rpm/check-files
-%{_libdir}/rpm/check-prereqs
-%{_libdir}/rpm/check-rpaths
-%{_libdir}/rpm/check-rpaths-worker
-%{_libdir}/rpm/debugedit
-%{_libdir}/rpm/elfdeps
-%{_libdir}/rpm/libtooldeps.sh
-%{_libdir}/rpm/mkinstalldirs
-%{_libdir}/rpm/pkgconfigdeps.sh
-%{_libdir}/rpm/ocamldeps.sh
-%{_libdir}/rpm/*.prov
-%{_libdir}/rpm/sepdebugcrcfix
+%{rpmhome}/macros.d/*
+%{rpmhome}/perl.req
+%{rpmhome}/find-debuginfo.sh
+%{rpmhome}/find-lang.sh
+%{rpmhome}/find-provides
+%{rpmhome}/find-requires
+%{rpmhome}/brp-*
+%{rpmhome}/fileattrs/*
+%{rpmhome}/script.req
+%{rpmhome}/check-buildroot
+%{rpmhome}/check-files
+%{rpmhome}/check-prereqs
+%{rpmhome}/check-rpaths
+%{rpmhome}/check-rpaths-worker
+%{rpmhome}/debugedit
+%{rpmhome}/elfdeps
+%{rpmhome}/libtooldeps.sh
+%{rpmhome}/mkinstalldirs
+%{rpmhome}/pkgconfigdeps.sh
+%{rpmhome}/ocamldeps.sh
+%{rpmhome}/*.prov
+%{rpmhome}/sepdebugcrcfix
 
-%{_libdir}/rpm/rpmdeps
-%{_libdir}/rpm/pythondistdeps.py
+%{rpmhome}/rpmdeps
+%{rpmhome}/pythondistdeps.py
 
 %{_mandir}/man1/gendiff.1*
 %{_mandir}/man8/rpmbuild.8*
@@ -319,6 +319,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Tue Feb 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-7
+- Fix posttrans logic
+- Drop libdb support
 * Mon Feb 07 2022 Dweep Advani <dadvani@vmware.com> 4.16.1.3-6
 - RPM %pre script order fix
 * Tue Dec 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-5
