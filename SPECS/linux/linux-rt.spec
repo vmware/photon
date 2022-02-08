@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.225
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt101
-Release:        5%{?kat_build:.%kat}%{?dist}
+Release:        6%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1217,6 +1217,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Fri Feb 11 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.225-6
+-   .config: Enable CONFIG_NET_ACT_SIMP and CONFIG_NET_ACT_BPF
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-5
 -   Fix for CVE-2022-0435
 *   Mon Feb 07 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-4

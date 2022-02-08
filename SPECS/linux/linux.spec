@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.225
-Release:        5%{?kat_build:.kat}%{?dist}
+Release:        6%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -1284,6 +1284,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Fri Feb 11 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.225-6
+- .config: Enable CONFIG_NET_ACT_SIMP
 * Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-5
 - Fix for CVE-2022-0435
 * Mon Feb 07 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-4
