@@ -1,7 +1,7 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.7.1
-Release:          3%{?dist}
+Version:          10.7.2
+Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
@@ -9,7 +9,7 @@ Distribution:     Photon
 Url:              https://mariadb.org
 
 Source0:          https://rsync.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define           sha1 %{name}=36bd3c7af0ecb15b9e26f1cdb6d53eab63d28929
+%define           sha1 %{name}=2aff20c1e95cd0d05abd6221336de64334f4622c
 
 BuildRequires:    cmake
 BuildRequires:    Linux-PAM-devel
@@ -21,6 +21,7 @@ BuildRequires:    systemd-devel
 BuildRequires:    curl-devel
 BuildRequires:    libxml2-devel
 BuildRequires:    libaio-devel
+BuildRequires:    gnutls-devel
 
 Conflicts:        mysql
 
@@ -71,7 +72,7 @@ rm -rf storage/tokudb/PerconaFT
 %build
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release \
-      -DCMAKE_INSTALL_PREFIX=/usr \
+      -DCMAKE_INSTALL_PREFIX=%{_prefix} \
       -DINSTALL_DOCDIR=share/doc/mariadb-%{version} \
       -DINSTALL_DOCREADMEDIR=share/doc/mariadb-%{version} \
       -DINSTALL_MANDIR=share/man \
@@ -84,8 +85,8 @@ cmake -DCMAKE_BUILD_TYPE=Release \
       -DINSTALL_SCRIPTDIR=bin \
       -DINSTALL_SQLBENCHDIR=share/mysql/bench \
       -DINSTALL_SUPPORTFILESDIR=share \
-      -DMYSQL_DATADIR="%{_var}/lib/mysql" \
-      -DMYSQL_UNIX_ADDR="%{_var}/lib/mysql/mysqld.sock" \
+      -DMYSQL_DATADIR="%{_sharedstatedir}/mysql" \
+      -DMYSQL_UNIX_ADDR="%{_sharedstatedir}/mysql/mysqld.sock" \
       -DWITH_EXTRA_CHARSETS=complex \
       -DWITH_EMBEDDED_SERVER=ON \
       -DSKIP_TESTS=ON \
@@ -97,7 +98,7 @@ make %{?_smp_mflags}
 %install
 cd build
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
-mkdir -p %{buildroot}/%{_unitdir} %{buildroot}/%{_var}/lib/mysql
+mkdir -p %{buildroot}%{_unitdir} %{buildroot}%{_sharedstatedir}/mysql
 mv %{buildroot}%{_datadir}/systemd/mariadb.service \
     %{buildroot}%{_datadir}/systemd/mariadb@.service \
     %{buildroot}%{_datadir}/systemd/mysql.service \
@@ -107,12 +108,14 @@ mv %{buildroot}%{_datadir}/systemd/mariadb.service \
     %{buildroot}%{_unitdir}
 
 rm %{buildroot}%{_sbindir}/rcmysql %{buildroot}%{_libdir}/*.a
-install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
-echo "disable mariadb.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-mariadb.preset
+install -vdm755 %{buildroot}%{_presetdir}
+echo "disable mariadb.service" > %{buildroot}%{_presetdir}/50-mariadb.preset
 
 %check
+%if 0%{?with_check:1}
 cd build
 make test %{?_smp_mflags}
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
@@ -125,7 +128,7 @@ fi
 
 %post server
 /sbin/ldconfig
-chown mysql:mysql %{_var}/lib/mysql || :
+chown mysql:mysql %{_sharedstatedir}/mysql || :
 mysql_install_db --datadir="/var/lib/mysql" --user="mysql" --basedir="/usr" >/dev/null || :
 %systemd_post mariadb.service
 
@@ -280,7 +283,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/my.cnf.d/mysql-clients.cnf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/server.cnf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/provider_bzip2.cnf
-%dir %attr(0750,mysql,mysql) %{_var}/lib/mysql
+%dir %attr(0750,mysql,mysql) %{_sharedstatedir}/mysql
 %{_libdir}/mysql/plugin*
 %{_bindir}/mariadb-install-db
 %{_bindir}/mariadb-backup
@@ -323,7 +326,7 @@ rm -rf %{buildroot}
 %{_sbindir}/*
 %{_unitdir}/*.service
 %{_unitdir}/*.socket
-%{_libdir}/systemd/system-preset/50-mariadb.preset
+%{_presetdir}/50-mariadb.preset
 %{_datadir}/binary-configure
 %{_datadir}/mysql-log-rotate
 %{_datadir}/mysql.server
@@ -446,6 +449,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+* Wed Feb 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.7.2-1
+- Upgrade version to 10.7.2
 * Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 10.7.1-3
 - Bump up release for openssl
 * Wed Nov 10 2021 Shreenidhi Shedi <sshedi@vmware.com> 10.7.1-2
