@@ -19,7 +19,7 @@ Name:           linux-rt
 Version:        5.10.93
 # Keep rt_version matched up with localversion.patch
 %define rt_version rt60
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -95,6 +95,9 @@ Patch109:       0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
 
 # Fix for CVE-2022-0492
 Patch110:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
+
+# Fix for CVE-2022-0435
+Patch111:       0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch120:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -570,6 +573,7 @@ The Linux package contains the Linux kernel doc files
 %patch108 -p1
 %patch109 -p1
 %patch110 -p1
+%patch111 -p1
 
 %patch120 -p1
 %patch121 -p1
@@ -1127,6 +1131,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.93-5
+-   Fix for CVE-2022-0435
 *   Sat Feb 05 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.93-4
 -   Fix for CVE-2022-0492
 *   Tue Jan 25 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.93-3
