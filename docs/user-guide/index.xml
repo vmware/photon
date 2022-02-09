@@ -87,7 +87,7 @@ popd
 &lt;/code>&lt;/pre>&lt;ul>
 &lt;li>Optionally, you can add your ks config file; see &lt;a href="../working-with-kickstart/">Kickstart support&lt;/a> for details.&lt;/li>
 &lt;/ul></description></item><item><title>Docs: Kickstart Support in Photon OS</title><link>/docs/user-guide/working-with-kickstart/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/user-guide/working-with-kickstart/</guid><description>
-&lt;p>Photon OS works with kickstart for unattended, automated installations. The kickstart configuration file can either reside in the CD-ROM attached to the host or be served through an HTTP server.&lt;/p>
+&lt;p>Photon OS works with kickstart for unattended, automated installations. The kickstart configuration file can be served through an HTTP server. You can also provide the kickstart configuration file through a secondary device or a CD-ROM attached to the host.&lt;/p>
 &lt;ul>
 &lt;li>&lt;a href="#kickstart-capabilities">Kickstart Capabilities&lt;/a>&lt;/li>
 &lt;li>&lt;a href="#permitted-json-fields">Permitted JSON Fields&lt;/a>&lt;/li>
@@ -460,15 +460,20 @@ Or logging output will be printed to console - default behavior.
 &lt;p>In above example &lt;strong>rootfs&lt;/strong>,&lt;strong>root&lt;/strong> and &lt;strong>swap&lt;/strong> are logical volumes in volume group &lt;strong>vg1&lt;/strong>, physical volumes are in the disk &lt;strong>/dev/sdb&lt;/strong> and partitions are present in &lt;strong>/dev/sda&lt;/strong>.&lt;/p>
 &lt;p>&lt;strong>Note&lt;/strong>: Mounting &lt;strong>/boot&lt;/strong> partition as LVM is not supported.&lt;/p>
 &lt;h2 id="unattended-installation-through-kickstart">Unattended Installation Through Kickstart&lt;/h2>
-&lt;p>For an unattended installation, you pass the &lt;code>ks=&amp;lt;config_file&amp;gt;&lt;/code> parameter to the kernel command. To pass the config file, there are two options:&lt;/p>
+&lt;p>For an unattended installation, you pass the &lt;code>ks=&amp;lt;config_file&amp;gt;&lt;/code> parameter to the kernel command. To pass the config file, there are three options:&lt;/p>
 &lt;ol>
-&lt;li>Provide it in the ISO.&lt;/li>
+&lt;li>Provide it in the ISO through a CD-ROM attached to the host.&lt;/li>
+&lt;li>Provide it in the ISO through a specified secondary device.&lt;/li>
 &lt;li>Serving it from an HTTP server.&lt;/li>
 &lt;/ol>
-&lt;p>The syntax to pass the configuration file to the kernel through the ISO takes the following form:&lt;/p>
+&lt;p>The syntax to pass the configuration file to the kernel through the CD-ROM takes the following form:&lt;/p>
 &lt;pre>&lt;code class="language-console" data-lang="console">ks=cdrom:/&amp;lt;config_file_path&amp;gt;
 &lt;/code>&lt;/pre>&lt;p>For example:&lt;/p>
 &lt;pre>&lt;code class="language-console" data-lang="console">ks=cdrom:/isolinux/ks.cfg
+&lt;/code>&lt;/pre>&lt;p>The syntax to pass the configuration file to the kernel through a secondary device takes the following form:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">ks=&amp;lt;device-path&amp;gt;:&amp;lt;path-referential-to-device&amp;gt;
+&lt;/code>&lt;/pre>&lt;p>For example:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">ks=/dev/sr1:/isolinux/sample_ks.cfg
 &lt;/code>&lt;/pre>&lt;p>The syntax to serve the configuration file to the kernel from a HTTPS server takes the following form:&lt;/p>
 &lt;pre>&lt;code class="language-console" data-lang="console">ks=https://&amp;lt;server&amp;gt;/&amp;lt;config_file_path&amp;gt;
 &lt;/code>&lt;/pre>&lt;p>To use HTTP path or self-signed HTTPS path, you have to enable &lt;code>insecure_installation&lt;/code> by using insecure_installation=1 along with defining the ks path. The kernel command line argument, &lt;code>insecure_installation&lt;/code>, acts as a flag that user can set to 1 to allow some operations that are not normally allowed due to security concerns. This is disabled by default and it is up to the user to the ensure security when this options is enabled.&lt;/p>
@@ -498,6 +503,8 @@ menu default
 kernel vmlinuz
 append initrd=initrd.img root=/dev/ram0 loglevel=3 photon.media=cdrom
 EOF
+&lt;/code>&lt;/pre>&lt;p>&lt;strong>Note:&lt;/strong> You can specify any mount media through which you want to boot Photon OS. To specify the mount media, specify the path of the mount media device in the &lt;code>photon.media&lt;/code> field. You can specify the path as shown in the following syntax:&lt;/p>
+&lt;pre>&lt;code class="language-console" data-lang="console">photon.media=/dev/&amp;lt;path of the Photon OS ISO&amp;gt;
 &lt;/code>&lt;/pre>&lt;p>Finally, rebuild the ISO so that it includes your kickstart config file:&lt;/p>
 &lt;pre>&lt;code class="language-console" data-lang="console">mkisofs -R -l -L -D -b isolinux/isolinux.bin -c isolinux/boot.cat \
 -no-emul-boot -boot-load-size 4 -boot-info-table -V &amp;quot;PHOTON_$(date +%Y%m%d)&amp;quot; \
