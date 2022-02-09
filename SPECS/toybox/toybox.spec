@@ -1,6 +1,6 @@
 Name:           toybox
 Version:        0.8.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD
 Summary:        Common Linux command line utilities in a single executable
 Url:            http://landley.net/toybox
@@ -552,6 +552,7 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %{_bindir}/acpi
 %{_bindir}/catv
 %{_bindir}/count
+%{_bindir}/devmem
 %{_bindir}/ftpget
 %{_bindir}/ftpput
 %{_bindir}/hexedit
@@ -570,6 +571,8 @@ tests_to_run=`echo  $tests_to_run | sed -e 's/pkill//g'`
 %doc README LICENSE
 
 %changelog
+* Fri Feb 04 2022 Ajay Kaher <akaher@vmware.com> 0.8.6-2
+- Enabled CONFIG_DEVMEM
 * Tue Dec 07 2021 Shreenidhi Shedi <sshedi@vmware.com> 0.8.6-1
 - Upgrade to 0.8.6
 * Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.8.3-3
