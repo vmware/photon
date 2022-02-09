@@ -3,7 +3,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        2.8.5
-Release:        13%{?dist}
+Release:        14%{?dist}
 Source0:        http://people.redhat.com/sgrubb/audit/%{name}-%{version}.tar.gz
 %define sha1    audit=62fcac8cbd20c796b909b91f8f615f8556b22a24
 Patch0:         audit-2.8.5-gcc-10.patch
@@ -88,11 +88,12 @@ echo "disable auditd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-
 %check
 make %{?_smp_mflags} check
 
-%pretrans
-if [ "$1" -eq 2 ]; then
-    # upgrading
-    test -L /var/log/audit && rm -f /var/log/audit && rm -rf /var/opt/audit ||:
-fi
+%pretrans -p <lua>
+path = "/var/log/audit"
+st = posix.stat(path)
+if st and st.type == "link" then
+  os.remove(path)
+end
 
 %post
 /sbin/ldconfig
@@ -152,6 +153,8 @@ fi
 %{python3_sitelib}/*
 
 %changelog
+*   Wed Feb 09 2022 Dweep Advani <dadvani@vmware.com> 2.8.5-14
+-   Fixed pretrans unknown script error during ova build
 *   Thu Jan 20 2022 Dweep Advani <dadvani@vmware.com> 2.8.5-13
 -   Fixed package upgrade issue
 *   Wed Jan 05 2022 Dweep Advani <dadvani@vmware.com> 2.8.5-12

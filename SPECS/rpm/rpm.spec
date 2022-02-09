@@ -1,7 +1,7 @@
 Summary:        Package manager
 Name:           rpm
 Version:        4.16.1.3
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        GPLv2+
 URL:            http://rpm.org
 Group:          Applications/System
@@ -145,6 +145,7 @@ sh autogen.sh --noconfigure
         --disable-static \
         --enable-python \
         --with-cap \
+        --with-lua \
         --with-vendor=vmware \
         --disable-silent-rules \
         --enable-zstd \
@@ -318,6 +319,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/rpm-plugin-systemd-inhibit.8*
 
 %changelog
+* Mon Feb 07 2022 Dweep Advani <dadvani@vmware.com> 4.16.1.3-6
+- RPM %pre script order fix
 * Tue Dec 21 2021 Shreenidhi Shedi <sshedi@vmware.com> 4.16.1.3-5
 - Further fix to rpm-rebuilddb.sh
 - Introduced a new locking method to handle contention while rebuilding db
