@@ -1,0 +1,99 @@
+From 0512602550935519503e93945da7853ff3a2bc81 Mon Sep 17 00:00:00 2001
+From: "Eric W. Biederman" <ebiederm@xmission.com>
+Date: Thu, 20 Jan 2022 11:04:01 -0600
+Subject: [PATCH] cgroup-v1: Require capabilities to set release_agent
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+commit 24f6008564183aa120d07c03d9289519c2fe02af upstream.
+
+The cgroup release_agent is called with call_usermodehelper.  The function
+call_usermodehelper starts the release_agent with a full set fo capabilities.
+Therefore require capabilities when setting the release_agaent.
+
+Reported-by: Tabitha Sable <tabitha.c.sable@gmail.com>
+Tested-by: Tabitha Sable <tabitha.c.sable@gmail.com>
+Fixes: 81a6a5cdd2c5 ("Task Control Groups: automatic userspace notification of idle cgroups")
+Cc: stable@vger.kernel.org # v2.6.24+
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Signed-off-by: Tejun Heo <tj@kernel.org>
+[mkoutny: Adjust for pre-fs_context, duplicate mount/remount check, drop log messages.]
+Acked-by: Michal Koutný <mkoutny@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[ Sharan: Backported the 4.9.y patch to 4.4.y. Instead of accessing struct cgroup_namespace,
+  we will need access to struct uts_namespace ]
+Signed-off-by: Sharan Turlapati <sturlapati@vmware.com>
+---
+ kernel/cgroup.c | 27 +++++++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+
+diff --git a/kernel/cgroup.c b/kernel/cgroup.c
+index 1f5e7dcbfd40..296c2611d024 100644
+--- a/kernel/cgroup.c
++++ b/kernel/cgroup.c
+@@ -1767,6 +1767,7 @@ static int cgroup_remount(struct kernfs_root *kf_root, int *flags, char *data)
+ {
+ 	int ret = 0;
+ 	struct cgroup_root *root = cgroup_root_from_kf(kf_root);
++	struct uts_namespace *ns = current->nsproxy->uts_ns;
+ 	struct cgroup_sb_opts opts;
+ 	unsigned long added_mask, removed_mask;
+ 
+@@ -1786,6 +1787,13 @@ static int cgroup_remount(struct kernfs_root *kf_root, int *flags, char *data)
+ 		pr_warn("option changes via remount are deprecated (pid=%d comm=%s)\n",
+ 			task_tgid_nr(current), current->comm);
+ 
++	/* See cgroup_mount release_agent handling */
++	if (opts.release_agent &&
++	    ((ns->user_ns != &init_user_ns) || !capable(CAP_SYS_ADMIN))) {
++		ret = -EINVAL;
++		goto out_unlock;
++	}
++
+ 	added_mask = opts.subsys_mask & ~root->subsys_mask;
+ 	removed_mask = root->subsys_mask & ~opts.subsys_mask;
+ 
+@@ -2017,6 +2025,7 @@ static struct dentry *cgroup_mount(struct file_system_type *fs_type,
+ 	struct cgroup_subsys *ss;
+ 	struct cgroup_root *root;
+ 	struct cgroup_sb_opts opts;
++	struct uts_namespace *ns = current->nsproxy->uts_ns;
+ 	struct dentry *dentry;
+ 	int ret;
+ 	int i;
+@@ -2135,6 +2144,16 @@ static struct dentry *cgroup_mount(struct file_system_type *fs_type,
+ 		goto out_unlock;
+ 	}
+ 
++	/*
++	 * Release agent gets called with all capabilities,
++	 * require capabilities to set release agent.
++	 */
++	if (opts.release_agent &&
++	    ((ns->user_ns != &init_user_ns) || !capable(CAP_SYS_ADMIN))) {
++		ret = -EINVAL;
++		goto out_unlock;
++	}
++
+ 	root = kzalloc(sizeof(*root), GFP_KERNEL);
+ 	if (!root) {
+ 		ret = -ENOMEM;
+@@ -2839,6 +2858,14 @@ static ssize_t cgroup_release_agent_write(struct kernfs_open_file *of,
+ 
+ 	BUILD_BUG_ON(sizeof(cgrp->root->release_agent_path) < PATH_MAX);
+ 
++        /*
++         * Release agent gets called with all capabilities,
++         * require capabilities to set release agent.
++         */
++        if ((of->file->f_cred->user_ns != &init_user_ns) ||
++            !capable(CAP_SYS_ADMIN))
++                return -EPERM;
++
+ 	cgrp = cgroup_kn_lock_live(of->kn);
+ 	if (!cgrp)
+ 		return -ENODEV;
+-- 
+2.19.0
+
