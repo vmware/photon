@@ -6,7 +6,7 @@ Name: rubygem-fluentd
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Version:        1.7.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        An open source data collector designed to scale and simplify log management
 Group:          Development/Languages
 License:        Apache 2
@@ -24,14 +24,14 @@ Requires: rubygem-cool-io < 2.0.0
 Requires: rubygem-dig_rb > 1.0.0
 Requires: rubygem-http_parser.rb >= 0.5.1
 Requires: rubygem-http_parser.rb < 0.7.0
-Requires: rubygem-msgpack >= 0.5.11
-Requires: rubygem-msgpack < 2
+Requires: rubygem-msgpack >= 1.2.0
+Requires: rubygem-msgpack < 2.0.0
 Requires: rubygem-sigdump >= 0.2.2
 Requires: rubygem-strptime > 0.2.2
 Requires: rubygem-strptime < 1.0.0
 Requires: rubygem-serverengine >= 2.0.4
 Requires: rubygem-serverengine < 3.0.0
-Requires: rubygem-tzinfo >= 1.0.0
+Requires: rubygem-tzinfo >= 2.0.0
 Requires: rubygem-tzinfo-data > 1.0.0
 Requires: rubygem-yajl-ruby >= 1.0
 Requires: rubygem-bundler >= 1.14.0
@@ -55,6 +55,8 @@ gem install -V --local --force --install-dir %{buildroot}/%{gemdir} %{SOURCE0}
 %{gemdir}
 
 %changelog
+*   Thu Feb 03 2022 Harinadh D <hdommaraju@vmware.com> 1.7.1-2
+-   Update dependencies
 *   Thu Feb 03 2022 Harinadh D <hdommaraju@vmware.com> 1.7.1-1
 -   Update to version 1.7.1
 *   Thu Aug 22 2019 Stanislav Hadjiiski <hadjiiskis@vmware.com> 1.6.3-1

@@ -3,8 +3,8 @@
 %global gem_name tzinfo
 
 Name: rubygem-tzinfo
-Version:        1.2.5
-Release:        2%{?dist}
+Version:        2.0.2
+Release:        1%{?dist}
 Summary:        Timezone related support for Ruby.
 Group:          Development/Languages
 License:        MIT
@@ -12,14 +12,15 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 URL:            https://rubygems.org/gems/tzinfo/versions/%{version}
 Source0:        https://rubygems.org/downloads/tzinfo-%{version}.gem
-%define sha1    tzinfo=c63e819a4ef646956bef31acec7d39ddccaff35c
-BuildRequires:  ruby
+%define sha1    tzinfo=24f7381a309ebc405803aa3c05be659982c3c4ae
+BuildRequires:  ruby >= 1.9.3
+Requires:       rubygem-concurrent-ruby > 1.0
 
 %description
 TZInfo provides daylight savings aware transformations between times in different time zones.
 
 %prep
-%setup -q -c -T
+%autosetup -c -T
 
 %build
 
@@ -36,6 +37,8 @@ rake test
 %{gemdir}
 
 %changelog
+*   Wed Feb 09 2022 Harinadh D <hdommaraju@vmware.com> 2.0.2-1
+-   Version update
 *   Tue Nov 27 2018 Sujay G <gsujay@vmware.com> 1.2.5-2
 -   Added %check section
 *   Tue Aug 14 2018 Srinidhi Rao <srinidhir@vmware.com> 1.2.5-1
