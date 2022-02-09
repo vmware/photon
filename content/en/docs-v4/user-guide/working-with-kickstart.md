@@ -441,6 +441,7 @@ For an unattended installation, you pass the `ks=<config_file>` parameter to the
 1. Provide it in the ISO through a CD-ROM attached to the host.
 2. Provide it in the ISO through a specified secondary device.
 3. Serving it from an HTTP server. 
+<<<<<<< HEAD
 
 The syntax to pass the configuration file to the kernel through the CD-ROM takes the following form:
 =======
@@ -452,6 +453,8 @@ For an unattended installation, you pass the `ks=<config_file>` parameter to the
 1. Provide it in the ISO through a CD-ROM attached to the host.
 2. Provide it in the ISO through a specified secondary device.
 3.  Serving it from an HTTP server. 
+=======
+>>>>>>> 18c8f4a6f (Update working-with-kickstart.md)
 
 <<<<<<< HEAD
 The syntax to pass the configuration file to the kernel through the ISO takes the following form: 
