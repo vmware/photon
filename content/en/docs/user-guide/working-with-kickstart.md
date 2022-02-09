@@ -3,7 +3,7 @@ title:  Kickstart Support in Photon OS
 weight: 2
 ---
 
-Photon OS works with kickstart for unattended, automated installations. The kickstart configuration file can either reside in the CD-ROM attached to the host or be served through an HTTP server.
+Photon OS works with kickstart for unattended, automated installations. The kickstart configuration file can be served through an HTTP server. You can also provide the kickstart configuration file through a secondary device or a CD-ROM attached to the host.
 
 * [Kickstart Capabilities](#kickstart-capabilities)
 * [Permitted JSON Fields](#permitted-json-fields)
@@ -402,12 +402,13 @@ In above example **rootfs**,**root** and **swap** are logical volumes in volume 
 
 ## Unattended Installation Through Kickstart
 
-For an unattended installation, you pass the `ks=<config_file>` parameter to the kernel command. To pass the config file, there are two options: 
+For an unattended installation, you pass the `ks=<config_file>` parameter to the kernel command. To pass the config file, there are three options: 
 
-1. Provide it in the ISO.
-2. Serving it from an HTTP server. 
+1. Provide it in the ISO through a CD-ROM attached to the host.
+2. Provide it in the ISO through a specified secondary device.
+3. Serving it from an HTTP server. 
 
-The syntax to pass the configuration file to the kernel through the ISO takes the following form: 
+The syntax to pass the configuration file to the kernel through the CD-ROM takes the following form:
 
 ```console
 ks=cdrom:/<config_file_path>
@@ -417,6 +418,18 @@ For example:
 
 ```console
 ks=cdrom:/isolinux/ks.cfg
+```
+
+The syntax to pass the configuration file to the kernel through a secondary device takes the following form:
+
+```console
+ks=<device-path>:<path-referential-to-device>
+```
+
+For example:
+
+```console
+ks=/dev/sr1:/isolinux/sample_ks.cfg
 ```
 
 The syntax to serve the configuration file to the kernel from a HTTPS server takes the following form: 
@@ -479,6 +492,12 @@ label my_unattended
 	kernel vmlinuz
 	append initrd=initrd.img root=/dev/ram0 loglevel=3 photon.media=cdrom
 EOF
+```
+
+**Note:** You can specify any mount media through which you want to boot Photon OS. To specify the mount media, specify the path of the mount media device in the `photon.media` field. You can specify the path as shown in the following syntax:
+
+```console
+photon.media=/dev/<path of the Photon OS ISO>
 ```
 
 Finally, rebuild the ISO so that it includes your kickstart config file: 
