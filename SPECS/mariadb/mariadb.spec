@@ -1,14 +1,16 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.3.29
-Release:          3%{?dist}
+Version:          10.3.33
+Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
 Vendor:           VMware, Inc.
 Distribution:     Photon
-Url:              https://mariadb.org/
-Source0:          https://downloads.mariadb.org/f/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define           sha1 mariadb=86bbee7bceba4290894f54d1c29e1533821a55f3
+Url:              https://mariadb.org
+
+Source0:          https://rsync.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
+%define           sha1 %{name}=767b8ca8147274b4b4471987ffad6d06c9688e9f
+
 BuildRequires:    cmake
 BuildRequires:    Linux-PAM-devel
 BuildRequires:    openssl-devel
@@ -18,6 +20,8 @@ BuildRequires:    e2fsprogs-devel
 BuildRequires:    systemd-devel
 BuildRequires:    curl-devel
 BuildRequires:    libxml2-devel
+BuildRequires:    systemd-devel
+
 Conflicts:        mysql
 
 %description
@@ -59,75 +63,83 @@ Summary:          errmsg for mariadb
 errmsg for maridb
 
 %prep
-%autosetup -n %{name}-%{version}
+%autosetup -p1 -n %{name}-%{version}
 # Remove PerconaFT from here because of AGPL licence
 rm -rf storage/tokudb/PerconaFT
 
 %build
 mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release                        \
-      -DCMAKE_INSTALL_PREFIX=/usr                       \
-      -DINSTALL_DOCDIR=share/doc/mariadb-10.2.8         \
-      -DINSTALL_DOCREADMEDIR=share/doc/mariadb-10.2.8   \
-      -DINSTALL_MANDIR=share/man                        \
-      -DINSTALL_MYSQLSHAREDIR="share/mysql"           \
-      -DINSTALL_SYSCONFDIR="%{_sysconfdir}"             \
-      -DINSTALL_SYSCONF2DIR="%{_sysconfdir}/my.cnf.d"   \
-      -DINSTALL_MYSQLTESTDIR=share/mysql/test           \
-      -DINSTALL_PLUGINDIR=lib/mysql/plugin              \
-      -DINSTALL_SBINDIR=sbin                            \
-      -DINSTALL_SCRIPTDIR=bin                           \
-      -DINSTALL_SQLBENCHDIR=share/mysql/bench           \
-      -DINSTALL_SUPPORTFILESDIR=share                   \
-      -DMYSQL_DATADIR="%{_var}/lib/mysql"               \
-      -DMYSQL_UNIX_ADDR="%{_var}/lib/mysql/mysqld.sock" \
-      -DWITH_EXTRA_CHARSETS=complex                     \
-      -DWITH_EMBEDDED_SERVER=ON                         \
-      -DSKIP_TESTS=ON                                   \
-      -DTOKUDB_OK=0                                     \
+cmake -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+      -DINSTALL_DOCDIR=share/doc/mariadb-%{version} \
+      -DINSTALL_DOCREADMEDIR=share/doc/mariadb-%{version} \
+      -DINSTALL_MANDIR=share/man \
+      -DINSTALL_MYSQLSHAREDIR="share/mysql" \
+      -DINSTALL_SYSCONFDIR="%{_sysconfdir}" \
+      -DINSTALL_SYSCONF2DIR="%{_sysconfdir}/my.cnf.d" \
+      -DINSTALL_MYSQLTESTDIR=share/mysql/test \
+      -DINSTALL_PLUGINDIR=lib/mysql/plugin \
+      -DINSTALL_SBINDIR=sbin \
+      -DINSTALL_SCRIPTDIR=bin \
+      -DINSTALL_SQLBENCHDIR=share/mysql/bench \
+      -DINSTALL_SUPPORTFILESDIR=share \
+      -DMYSQL_DATADIR="%{_sharedstatedir}/mysql" \
+      -DMYSQL_UNIX_ADDR="%{_sharedstatedir}/mysql/mysqld.sock" \
+      -DWITH_EXTRA_CHARSETS=complex \
+      -DWITH_EMBEDDED_SERVER=ON \
+      -DSKIP_TESTS=ON \
+      -DTOKUDB_OK=0 \
       ..
+
 make %{?_smp_mflags}
 
 %install
 cd build
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
-mkdir -p %{buildroot}/%{_libdir}/systemd/system
-mv  %{buildroot}/usr/share/systemd/mariadb.service %{buildroot}/%{_libdir}/systemd/system/mariadb.service
-mv  %{buildroot}/usr/share/systemd/mariadb@.service %{buildroot}/%{_libdir}/systemd/system/mariadb@.service
-rm %{buildroot}/%{_sbindir}/rcmysql
-rm %{buildroot}/%{_libdir}/*.a
-mkdir -p %{buildroot}/%{_var}/lib/mysql
-install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
-echo "disable mariadb.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-mariadb.preset
+
+mkdir -p %{buildroot}%{_unitdir} \
+         %{buildroot}%{_sharedstatedir}/mysql
+
+mv %{buildroot}%{_datadir}/systemd/mariadb.service \
+   %{buildroot}%{_datadir}/systemd/mariadb@.service \
+   %{buildroot}%{_unitdir}
+
+rm %{buildroot}%{_sbindir}/rcmysql \
+   %{buildroot}%{_libdir}/*.a
+
+install -vdm755 %{buildroot}%{_presetdir}
+echo "disable mariadb.service" > %{buildroot}%{_presetdir}/50-mariadb.preset
 
 %check
+%if 0%{?with_check:1}
 cd build
 make %{?_smp_mflags} test
+%endif
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %pre server
-if [ $1 -eq 1 ] ; then
-    getent group  mysql  >/dev/null || groupadd -r mysql
-    getent passwd mysql  >/dev/null || useradd  -c "mysql" -s /bin/false -g mysql -M -r mysql
+if [ $1 -eq 1 ]; then
+  getent group  mysql >/dev/null || groupadd -r mysql
+  getent passwd mysql >/dev/null || useradd -c "mysql" -s /bin/false -g mysql -M -r mysql
 fi
 
 %post server
 /sbin/ldconfig
-chown  mysql:mysql %{_var}/lib/mysql || :
+chown mysql:mysql %{_sharedstatedir}/mysql || :
 mysql_install_db --datadir="/var/lib/mysql" --user="mysql" --basedir="/usr" >/dev/null || :
-%systemd_post  mariadb.service
+%systemd_post mariadb.service
 
 %postun server
 /sbin/ldconfig
 if [ $1 -eq 0 ] ; then
-    if getent passwd mysql >/dev/null; then
-        userdel mysql
-    fi
-    if getent group mysql >/dev/null; then
-        groupdel mysql
-    fi
+  if getent passwd mysql >/dev/null; then
+    userdel mysql
+  fi
+  if getent group mysql >/dev/null; then
+    groupdel mysql
+  fi
 fi
 %systemd_postun_with_restart mariadb.service
 
@@ -205,10 +217,10 @@ rm -rf %{buildroot}
 %{_datadir}/pam_user_map.so
 %{_datadir}/user_map.conf
 %doc COPYING CREDITS
-%exclude /usr/share/mysql/bench
-%exclude /usr/share/mysql/test
+%exclude %{_datadir}/mysql/bench
+%exclude %{_datadir}/mysql/test
 %exclude /usr/data/test/db.opt
-%exclude /usr/share/doc/mariadb-10.2.8/*
+%exclude %{_docdir}/mariadb-%{version}/*
 %exclude /etc/init.d/mysql
 
 %files server
@@ -218,7 +230,7 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/my.cnf.d/enable_encryption.preset
 %config(noreplace) %{_sysconfdir}/my.cnf.d/mysql-clients.cnf
 %config(noreplace) %{_sysconfdir}/my.cnf.d/server.cnf
-%dir %attr(0750,mysql,mysql) %{_var}/lib/mysql
+%dir %attr(0750,mysql,mysql) %{_sharedstatedir}/mysql
 %{_libdir}/mysql/plugin*
 %{_bindir}/aria_chk
 %{_bindir}/aria_dump_log
@@ -251,9 +263,9 @@ rm -rf %{buildroot}
 %{_bindir}/wsrep_sst_rsync
 %{_bindir}/wsrep_sst_rsync_wan
 %{_sbindir}/*
-%{_libdir}/systemd/system/mariadb.service
-%{_libdir}/systemd/system/mariadb@.service
-%{_libdir}/systemd/system-preset/50-mariadb.preset
+%{_unitdir}/mariadb.service
+%{_unitdir}/mariadb@.service
+%{_presetdir}/50-mariadb.preset
 %{_datadir}/binary-configure
 %{_datadir}/mysql-log-rotate
 %{_datadir}/mysql.server
@@ -362,29 +374,31 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
-*   Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 10.3.29-3
--   Version Bump to build with new version of cmake
-*   Mon Jun 7 2021 Michelle Wang <michellew@vmware.com> 10.3.29-2
--   Add shadow as requires for mariadb-server.
-*   Tue Jun 01 2021 Dweep Advani <dadvani@vmware.com> 10.3.29-1
--   Upgrade to 10.3.29 for addressing CVE-2021-27928
-*   Wed Jan 23 2019 Ajay Kaher <akaher@vmware.com> 10.3.11-2
--   Remove PerconaFT from mariadb pkg because of AGPL licence
-*   Wed Jan 02 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.3.11-1
--   Upgrade to version 10.3.11
-*   Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 10.3.9-3
--   Enabling for aarch64
-*   Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 10.3.9-2
--   Adding BuildArch
-*   Thu Sep 06 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 10.3.9-1
--   Update to version 10.3.9
-*   Tue Nov 07 2017 Xiaolin Li <xiaolinl@vmware.com> 10.2.10-1
--   Update to verion 10.2.10 to address CVE-2017-10378, CVE-2017-10268
-*   Wed Sep 06 2017 Xiaolin Li <xiaolinl@vmware.com> 10.2.8-1
--   Update to 10.2.8 and enable build server.
-*   Thu Aug 31 2017 Xiaolin Li <xiaolinl@vmware.com> 10.1.24-3
--   Fixed make check issue.
-*   Fri Aug 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 10.1.24-2
--   Specify MariaDB conflicts with MySQL
-*   Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 10.1.24-1
--   Initial packaging for Photon
+* Wed Feb 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.3.33-1
+- Upgrade version to fix bunch of CVEs
+* Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 10.3.29-3
+- Version Bump to build with new version of cmake
+* Mon Jun 7 2021 Michelle Wang <michellew@vmware.com> 10.3.29-2
+- Add shadow as requires for mariadb-server.
+* Tue Jun 01 2021 Dweep Advani <dadvani@vmware.com> 10.3.29-1
+- Upgrade to 10.3.29 for addressing CVE-2021-27928
+* Wed Jan 23 2019 Ajay Kaher <akaher@vmware.com> 10.3.11-2
+- Remove PerconaFT from mariadb pkg because of AGPL licence
+* Wed Jan 02 2019 Him Kalyan Bordoloi <bordoloih@vmware.com> 10.3.11-1
+- Upgrade to version 10.3.11
+* Mon Nov 19 2018 Ajay Kaher <akaher@vmware.com> 10.3.9-3
+- Enabling for aarch64
+* Mon Oct 22 2018 Ajay Kaher <akaher@vmware.com> 10.3.9-2
+- Adding BuildArch
+* Thu Sep 06 2018 Srivatsa S. Bhat <srivatsa@csail.mit.edu> 10.3.9-1
+- Update to version 10.3.9
+* Tue Nov 07 2017 Xiaolin Li <xiaolinl@vmware.com> 10.2.10-1
+- Update to verion 10.2.10 to address CVE-2017-10378, CVE-2017-10268
+* Wed Sep 06 2017 Xiaolin Li <xiaolinl@vmware.com> 10.2.8-1
+- Update to 10.2.8 and enable build server.
+* Thu Aug 31 2017 Xiaolin Li <xiaolinl@vmware.com> 10.1.24-3
+- Fixed make check issue.
+* Fri Aug 25 2017 Dheeraj Shetty <dheerajs@vmware.com> 10.1.24-2
+- Specify MariaDB conflicts with MySQL
+* Wed Apr 05 2017 Xiaolin Li <xiaolinl@vmware.com> 10.1.24-1
+- Initial packaging for Photon
