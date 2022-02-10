@@ -3,7 +3,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.19.225
-Release:        4%{?kat_build:.kat}%{?dist}
+Release:        5%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -156,6 +156,9 @@ Patch162:       0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
 
 # Fix for CVE-2022-0492
 Patch163:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
+
+# Fix for CVE-2022-0435
+Patch164:       0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	fips-kat-tests.patch
@@ -324,6 +327,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch161 -p1
 %patch162 -p1
 %patch163 -p1
+%patch164 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -514,6 +518,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-5
+-   Fix for CVE-2022-0435
 *   Mon Feb 07 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-4
 -   Fix for CVE-2022-0492
 *   Tue Jan 25 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-3

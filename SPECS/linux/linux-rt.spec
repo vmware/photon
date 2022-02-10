@@ -5,7 +5,7 @@ Name:           linux-rt
 Version:        4.19.225
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt101
-Release:        4%{?kat_build:.%kat}%{?dist}
+Release:        5%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -519,6 +519,9 @@ Patch635:       0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
 # Fix for CVE-2022-0492
 Patch636:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
 
+# Fix for CVE-2022-0435
+Patch637:       0001-tipc-improve-size-validations-for-received-domain-re.patch
+
 %if 0%{?kat_build:1}
 Patch1000:       fips-kat-tests.patch
 %endif
@@ -1016,6 +1019,7 @@ The Linux package contains the Linux kernel doc files
 %patch634 -p1
 %patch635 -p1
 %patch636 -p1
+%patch637 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -1213,6 +1217,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-5
+-   Fix for CVE-2022-0435
 *   Mon Feb 07 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-4
 -   Fix for CVE-2022-0492
 *   Tue Jan 25 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-3
