@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-secure
 Version:        4.9.297
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -179,6 +179,9 @@ Patch123:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
 
 # Fix for CVE-2022-0492
 Patch124:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
+
+# Fix for CVE-2022-0435
+Patch125:       0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -374,6 +377,7 @@ popd
 %patch122 -p1
 %patch123 -p1
 %patch124 -p1
+%patch125 -p1
 
 #CVE
 
@@ -498,6 +502,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.297-4
+-   Fix for CVE-2022-0435
 *   Tue Feb 08 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.297-3
 -   Fix for CVE-2022-0492
 *   Tue Jan 25 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.297-2

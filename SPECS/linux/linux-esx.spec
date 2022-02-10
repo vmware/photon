@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        4.9.297
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -159,6 +159,9 @@ Patch124:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
 # Fix for CVE-2022-0492
 Patch125:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
 
+# Fix for CVE-2022-0435
+Patch126:       0001-tipc-improve-size-validations-for-received-domain-re.patch
+
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod-devel
@@ -293,6 +296,7 @@ The Linux package contains the Linux kernel doc files
 %patch123 -p1
 %patch124 -p1
 %patch125 -p1
+%patch126 -p1
 
 %build
 
@@ -388,6 +392,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.297-4
+-   Fix for CVE-2022-0435
 *   Tue Feb 08 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.297-3
 -   Fix for CVE-2022-0492
 *   Tue Jan 25 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.297-2

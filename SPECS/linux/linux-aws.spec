@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux-aws
 Version:        4.9.297
-Release:        3%{?kat_build:.%kat_build}%{?dist}
+Release:        4%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -216,6 +216,9 @@ Patch159:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
 
 # Fix for CVE-2022-0492
 Patch160:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
+
+# Fix for CVE-2022-0435
+Patch161:       0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -431,6 +434,7 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch158 -p1
 %patch159 -p1
 %patch160 -p1
+%patch161 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -578,6 +582,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.297-4
+-   Fix for CVE-2022-0435
 *   Tue Feb 08 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.297-3
 -   Fix for CVE-2022-0492
 *   Tue Jan 25 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.9.297-2
