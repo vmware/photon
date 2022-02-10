@@ -1,7 +1,7 @@
 Summary:          The OpenSource IPsec-based VPN Solution
 Name:             strongswan
 Version:          5.9.0
-Release:          3%{?dist}
+Release:          4%{?dist}
 License:          GPLv2+
 URL:              https://www.strongswan.org/
 Group:            System Environment/Security
@@ -15,6 +15,7 @@ BuildRequires:    systemd-devel
 Patch0:           strongswan-fix-make-check.patch
 Patch1:           CVE-2021-41990.patch
 Patch2:           CVE-2021-41991.patch
+Patch3:           CVE-2021-45079.patch
 %{?systemd_requires}
 
 %description
@@ -64,6 +65,8 @@ rm -rf %{buildroot}/*
 %{_unitdir}/strongswan.service
 
 %changelog
+* Thu Feb 10 2022 Tapas Kundu <tkundu@vmware.com> 5.9.0-4
+- Fix CVE-2021-45079
 * Mon Oct 25 2021 Tapas Kundu <tkundu@vmware.com> 5.9.0-3
 - Fix CVE-2021-41990 and CVE-2021-41991.
 * Wed Jun 09 2021 Tapas Kundu <tkundu@vmware.com> 5.9.0-2
