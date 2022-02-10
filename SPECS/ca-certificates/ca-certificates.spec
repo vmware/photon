@@ -1,7 +1,7 @@
 Summary:             Certificate Authority certificates
 Name:                ca-certificates
 Version:             20190521
-Release:             2%{?dist}
+Release:             3%{?dist}
 License:             Custom
 URL:                 http://anduin.linuxfromscratch.org/BLFS/other/
 Group:               System Environment/Security
@@ -232,9 +232,15 @@ install -Dm644 bin/remove-expired-certs.sh %{buildroot}/bin/remove-expired-certs
 %{_fixperms} %{buildroot}/*
 
 %posttrans
-cd /etc/ssl/certs;
-for file in *.pem; do ln -sf $file `openssl x509 -hash -noout -in $file`.0; done
+cd /etc/ssl/certs
+for file in *.pem; do ln -sf "$file" "$(openssl x509 -hash -noout -in "$file")".0; done
+#Cleanup broken symlinks
+find -L /etc/ssl/certs -type l -delete
 exit 0
+
+%preun
+cd /etc/ssl/certs
+for f in *.pem; do rm -f "$(openssl x509 -hash -noout -in "$f")".0; done
 
 %clean
 
@@ -250,6 +256,8 @@ exit 0
 /etc/pki/tls/certs/ca-bundle.crt
 
 %changelog
+* Thu Feb 10 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 20190521-3
+- Clean up broken symlinks for which files are not present
 * Wed May 22 2019 Gerrit Photon <photon-checkins@vmware.com> 20190521-2
 - Fix for OpenSSL CA certs not generated in latest tags (issue#1032)
 - move post to posttrans
