@@ -1,6 +1,6 @@
 Summary:        Apache Tomcat
 Name:           apache-tomcat
-Version:        8.5.68
+Version:        8.5.72
 Release:        1%{?dist}
 License:        Apache
 URL:            http://tomcat.apache.org
@@ -9,11 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 BuildArch:      noarch
 Source0:        https://archive.apache.org/dist/tomcat/tomcat-8/v%{version}/src/%{name}-%{version}-src.tar.gz
-%define sha1    apache-tomcat=df25edd846c2c5c355f8ed89f4175d457fd92a35
+%define sha1    apache-tomcat=9514320e5715d81a5b25833e7edbeaefec2078be
 # base-for-apache-tomcat is a cached -Dbase.path folder
 Source1:        base-for-%{name}-%{version}.tar.gz
-%define sha1    base=cecf4cbb8eba1826bed75c42233755f5d6313f31
+%define sha1    base=b6f6ebc3f598f0d82dece8d9a491db4a2ae7c908
 Patch0:         apache-tomcat-use-jks-as-inmem-keystore.patch
+Patch1:         apache-tomcat-CVE-2022-23181.patch
 BuildRequires:  openjre8
 BuildRequires:  openjdk8
 BuildRequires:  apache-ant
@@ -32,14 +33,11 @@ Requires:       apache-ant
 The Apache Tomcat package contains binaries for the Apache Tomcat servlet container.
 
 %prep
-# Using autosetup is not feasible
-%setup -qn %{name}-%{version}-src
+%autosetup -n %{name}-%{version}-src -p1
 # remove pre-built binaries and windows files
 find . -type f \( -name "*.bat" -o -name "*.class" -o -name Thumbs.db -o -name "*.gz" -o \
    -name "*.jar" -o -name "*.war" -o -name "*.zip" \) -delete
-# Using autosetup is not feasible
-%setup -D -b 1 -n %{name}-%{version}-src
-%patch0 -p1
+%autosetup -D -b 1 -n %{name}-%{version}-src -p1
 
 %build
 ant -Dbase.path="../base-for-%{name}-%{version}" deploy dist-prepare dist-source
@@ -103,6 +101,8 @@ rm -rf %{buildroot}/*
 %{_logsdir}/catalina.out
 
 %changelog
+*   Thu Feb 10 2022 Nitesh Kumar <kunitesh@vmware.com> 8.5.72-1
+-   Upgrade to 8.5.72, Fix CVE-2022-23181
 *   Tue Jul 20 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.68-1
 -   Version Bump to 8.5.68 to fix CVE-2021-30639
 *   Wed Mar 31 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.5.64-1
