@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.297
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.301
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=44c935680722221759cd6013e7cf7bea484b64e7
+%define sha1 linux=42787f12dfc830f0ff18d19890dd443b1a3c3b53
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -143,24 +143,10 @@ Patch96: 0007-btrfs-tree-checker-Verify-inode-item.patch
 # Fix dummy console function definitions
 Patch97: 0001-console-Expand-dummy-functions-for-CFI.patch
 
-#fix for CVE-2021-22543
-Patch98:       0001-KVM-do-not-allow-mapping-valid-but-non-reference-cou.patch
-
 # NSX requirements (should be removed)
 Patch99:        LKCM.patch
 
-#Fix for CVE-2021-38199
-Patch100:       0001-NFSv4-Initialise-connection-to-the-server-in-nfs4_al.patch
-
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
-
-# Fix for CVE-2020-36322
-Patch112:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
-Patch113:       0002-fuse-lift-bad-inode-checks-into-callers.patch
-Patch114:       0003-fuse-fix-bad-inode.patch
-
-#fix for CVE-2021-28950
-Patch115:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 #Fix for CVE-2020-36385
 Patch116:       0001-RDMA-ucma-Put-a-lock-around-every-call-to-the-rdma_c.patch
@@ -173,15 +159,6 @@ Patch119:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 # Fix for CVE-2021-4204
 Patch121:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch122:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-0330
-Patch123:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
-
-# Fix for CVE-2022-0492
-Patch124:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
-
-# Fix for CVE-2022-0435
-Patch125:       0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -351,7 +328,6 @@ EOF
 %patch95 -p1
 %patch96 -p1
 %patch97 -p1
-%patch98 -p1
 
 # secure
 %patch13 -p1
@@ -362,22 +338,13 @@ pushd ..
 %patch99 -p0
 popd
 
-%patch100 -p1
-
 %patch111 -p1
-%patch112 -p1
-%patch113 -p1
-%patch114 -p1
-%patch115 -p1
 %patch116 -p1
 %patch117 -p1
 %patch118 -p1
 %patch119 -p1
 %patch121 -p1
 %patch122 -p1
-%patch123 -p1
-%patch124 -p1
-%patch125 -p1
 
 #CVE
 
@@ -502,6 +469,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Feb 11 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.301-1
+-   Update to version 4.9.301
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.297-4
 -   Fix for CVE-2022-0435
 *   Tue Feb 08 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.297-3

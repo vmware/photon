@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.297
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.301
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=44c935680722221759cd6013e7cf7bea484b64e7
+%define sha1 linux=42787f12dfc830f0ff18d19890dd443b1a3c3b53
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -139,12 +139,6 @@ Patch94:        0005-btrfs-tree-checker-Verify-dev-item.patch
 Patch95:        0006-btrfs-tree-checker-Enhance-chunk-checker-to-validate.patch
 Patch96:        0007-btrfs-tree-checker-Verify-inode-item.patch
 
-#fix for CVE-2021-22543
-Patch97:       0001-KVM-do-not-allow-mapping-valid-but-non-reference-cou.patch
-
-#Fix for CVE-2021-38199
-Patch98:       0001-NFSv4-Initialise-connection-to-the-server-in-nfs4_al.patch
-
 # Amazon AWS
 Patch101: 0002-lib-cpumask-Make-CPUMASK_OFFSTACK-usable-without-deb.patch
 Patch102: 0009-bump-the-default-TTL-to-255.patch
@@ -196,29 +190,12 @@ Patch146: 0054-Not-for-upstream-PM-hibernate-Speed-up-hibernation-b.patch
 # Fix dummy console function definitions
 Patch150: 0001-console-Expand-dummy-functions-for-CFI.patch
 
-# Fix for CVE-2020-36322
-Patch151:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
-Patch152:       0002-fuse-lift-bad-inode-checks-into-callers.patch
-Patch153:       0003-fuse-fix-bad-inode.patch
-
-#fix for CVE-2021-28950
-Patch154:       0001-fuse-fix-live-lock-in-fuse_iget.patch
-
 # Fix for CVE-2018-25020
 Patch155:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 
 # Fix for CVE-2021-4204
 Patch157:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch158:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-0330
-Patch159:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
-
-# Fix for CVE-2022-0492
-Patch160:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
-
-# Fix for CVE-2022-0435
-Patch161:       0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -374,8 +351,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch94 -p1
 %patch95 -p1
 %patch96 -p1
-%patch97 -p1
-%patch98 -p1
 
 %patch101 -p1
 %patch102 -p1
@@ -425,16 +400,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch146 -p1
 
 %patch150 -p1
-%patch151 -p1
-%patch152 -p1
-%patch153 -p1
-%patch154 -p1
 %patch155 -p1
 %patch157 -p1
 %patch158 -p1
-%patch159 -p1
-%patch160 -p1
-%patch161 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -582,6 +550,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Fri Feb 11 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.301-1
+-   Update to version 4.9.301
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.297-4
 -   Fix for CVE-2022-0435
 *   Tue Feb 08 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.297-3

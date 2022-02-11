@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.297
-Release:        4%{?kat_build:.%kat_build}%{?dist}
+Version:        4.9.301
+Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=44c935680722221759cd6013e7cf7bea484b64e7
+%define sha1 linux=42787f12dfc830f0ff18d19890dd443b1a3c3b53
 Source1:        config
 Source2:        initramfs.trigger
 %define ena_version 1.1.3
@@ -147,23 +147,9 @@ Patch104:       0001-ovl-pass-correct-flags-for-opening-real-directory.patch
 Patch105:       0002-ovl-switch-to-mounter-creds-in-readdir.patch
 Patch106:       0003-ovl-verify-permissions-in-ovl_path_open.patch
 
-#fix for CVE-2021-22543
-Patch107:       0001-KVM-do-not-allow-mapping-valid-but-non-reference-cou.patch
-
-#Fix for CVE-2021-38199
-Patch108:       0001-NFSv4-Initialise-connection-to-the-server-in-nfs4_al.patch
-
 Patch111:       9p-trans_fd-extend-port-variable-to-u32.patch
 # Fix dummy console function definitions
 Patch112:       0001-console-Expand-dummy-functions-for-CFI.patch
-
-#fix for CVE-2020-36322
-Patch113:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
-Patch114:       0002-fuse-lift-bad-inode-checks-into-callers.patch
-Patch115:       0003-fuse-fix-bad-inode.patch
-
-#fix for CVE-2021-28950
-Patch116:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 #Fix for CVE-2020-36385
 Patch117:       0001-RDMA-ucma-Put-a-lock-around-every-call-to-the-rdma_c.patch
@@ -176,15 +162,6 @@ Patch120:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 # Fix for CVE-2021-4204
 Patch122:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch123:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-0330
-Patch124:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
-
-# Fix for CVE-2022-0492
-Patch125:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
-
-# Fix for CVE-2022-0435
-Patch126:       0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -352,24 +329,15 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch104 -p1
 %patch105 -p1
 %patch106 -p1
-%patch107 -p1
-%patch108 -p1
 
 %patch111 -p1
 %patch112 -p1
-%patch113 -p1
-%patch114 -p1
-%patch115 -p1
-%patch116 -p1
 %patch117 -p1
 %patch118 -p1
 %patch119 -p1
 %patch120 -p1
 %patch122 -p1
 %patch123 -p1
-%patch124 -p1
-%patch125 -p1
-%patch126 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -540,6 +508,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Fri Feb 11 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.301-1
+-   Update to version 4.9.301
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.297-4
 -   Fix for CVE-2022-0435
 *   Tue Feb 08 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.297-3
