@@ -1,18 +1,29 @@
-From c1601203eef2be95326125916c858d2ab8b2853e Mon Sep 17 00:00:00 2001
+From 2c7a35656e2d69cd158a0d47b3957bdb34aebd8a Mon Sep 17 00:00:00 2001
 From: Vikash Bansal <bvikas@vmware.com>
-Date: Fri, 18 Dec 2020 11:39:49 +0530
+Date: Fri, 11 Feb 2022 22:21:49 +0530
 Subject: [PATCH] fips changes
 
 ---
- modules.d/01fips/fips.sh         | 73 ++++++++++++++++++++++++++++----
- modules.d/01fips/module-setup.sh | 15 +++++--
- 2 files changed, 76 insertions(+), 12 deletions(-)
+ modules.d/01fips/fips.sh         | 57 +++++++++++++++++++++++++++++++++++-----
+ modules.d/01fips/module-setup.sh | 15 ++++++++---
+ 2 files changed, 62 insertions(+), 10 deletions(-)
 
 diff --git a/modules.d/01fips/fips.sh b/modules.d/01fips/fips.sh
-index 9bc089f..2070dd7 100755
+index 9bc089f..bcd11ef 100755
 --- a/modules.d/01fips/fips.sh
 +++ b/modules.d/01fips/fips.sh
-@@ -82,10 +82,43 @@ do_fips()
+@@ -4,6 +4,10 @@ mount_boot()
+ {
+     boot=$(getarg boot=)
+ 
++    if ! [ -n "$boot" ]; then
++        boot="$(sed -nE 's@^([^[:space:]]+)[[:space:]]+/boot[[:space:]]+.*$@\1@p' /sysroot/etc/fstab)"
++    fi
++
+     if [ -n "$boot" ]; then
+         case "$boot" in
+         LABEL=*)
+@@ -82,10 +86,43 @@ do_fips()
  
      info "Loading and integrity checking all crypto modules"
      mv /etc/modprobe.d/fips.conf /etc/modprobe.d/fips.conf.bak
@@ -21,8 +32,7 @@ index 9bc089f..2070dd7 100755
 +        warn "Not able to load hmac_generator"
 +	return 1
 +    fi
-     for _module in $FIPSMODULES; do
--        if [ "$_module" != "tcrypt" ]; then
++    for _module in $FIPSMODULES; do
 +
 +        x=$(find /lib/modules/${KERNEL}/ -name ${_module}.ko.xz)
 +        if [ -z $x ]; then
@@ -43,7 +53,8 @@ index 9bc089f..2070dd7 100755
 +           return 1
 +        fi
 +    done
-+    for _module in $FIPSMODULES; do
+     for _module in $FIPSMODULES; do
+-        if [ "$_module" != "tcrypt" ]; then
 +        if [ "$_module" != "tcrypt" ] && [ "$_module" != "hmac_generator" ]; then
              if ! modprobe "${_module}"; then
 -                # check if kernel provides generic algo
@@ -58,7 +69,7 @@ index 9bc089f..2070dd7 100755
                  _found=0
                  while read _k _s _v || [ -n "$_k" ]; do
                      [ "$_k" != "name" -a "$_k" != "driver" ] && continue
-@@ -99,9 +132,6 @@ do_fips()
+@@ -99,9 +136,6 @@ do_fips()
      done
      mv /etc/modprobe.d/fips.conf.bak /etc/modprobe.d/fips.conf
  
@@ -68,41 +79,23 @@ index 9bc089f..2070dd7 100755
  
      info "Checking integrity of kernel"
      if [ -e "/run/initramfs/live/vmlinuz0" ]; then
-@@ -127,13 +157,38 @@ do_fips()
+@@ -127,13 +161,22 @@ do_fips()
          fi
  
          BOOT_IMAGE_HMAC="/boot/${BOOT_IMAGE_PATH}.${BOOT_IMAGE_NAME}.hmac"
 +        BOOT_IMAGE_KERN="/boot/${BOOT_IMAGE_PATH}${BOOT_IMAGE_NAME}"
          if ! [ -e "${BOOT_IMAGE_HMAC}" ]; then
--            warn "${BOOT_IMAGE_HMAC} does not exist"
--            return 1
-+            found=0
-+            umount /boot/
-+            PARTS=$(find /dev/ -name "sda*")
-+            for part in $PARTS; do
-+                mount -o ro $part /boot
-+                if [ $? -eq 0 ]; then
-+                   if [ -e "/boot/${BOOT_IMAGE}" ]; then
-+                       found=1
-+                       break
-+                   else
-+                       umount /boot/
-+                   fi
-+                fi
-+            done
-+            if [ "$found" = 0 ]; then
-+                warn "${BOOT_IMAGE_HMAC} does not exist"
-+                return 1
-+            fi
-+        fi
+             warn "${BOOT_IMAGE_HMAC} does not exist"
+             return 1
+         fi
+-
+-        sha512hmac -c "${BOOT_IMAGE_HMAC}" || return 1
 +	HMAC_SUM_ORIG=$(cat $BOOT_IMAGE_HMAC | while read a b || [ -n "$a" ]; do printf "%s\n" $b; done)
 +        HMAC_SUM_CALC=$(hmacgen HMAC-SHA256 "FIPS-PH3-VMW2020" $BOOT_IMAGE_KERN )
 +        if [ -z "$HMAC_SUM_ORIG" ] || [ -z "$HMAC_SUM_CALC" ] || [ "${HMAC_SUM_ORIG}" != "${HMAC_SUM_CALC}" ]; then
 +           warn "HMAC sum mismatch"
 +           return 1
-         fi
--
--        sha512hmac -c "${BOOT_IMAGE_HMAC}" || return 1
++        fi
      fi
 +    #integrity check
 +    warn "Self testing crypto algorithms"
@@ -146,5 +139,5 @@ index f3af4d9..7de3270 100755
      inst_simple /etc/system-fips
      [ -c ${initdir}/dev/random ] || mknod ${initdir}/dev/random c 1 8 \
 -- 
-2.17.1
+2.7.4
 
