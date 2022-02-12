@@ -1,0 +1,20 @@
+From 2c1509b73a953289a65874db0d883d54060ed736 Mon Sep 17 00:00:00 2001
+From: Clark Williams <williams@redhat.com>
+Date: Mon, 7 Feb 2022 08:47:07 -0600
+Subject: [PATCH 345/345] Linux 4.19.227-rt102 REBASE
+
+Signed-off-by: Clark Williams <williams@redhat.com>
+---
+ localversion-rt | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/localversion-rt b/localversion-rt
+index 9ea5981fa956..33017cd072bb 100644
+--- a/localversion-rt
++++ b/localversion-rt
+@@ -1 +1 @@
+--rt101
++-rt102
+-- 
+2.34.1
+

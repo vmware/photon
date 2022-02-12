@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.225
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        4.19.229
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=dbeb0406b36e4aa516f15f4acca4bf097395f8d4
+%define sha1 linux=bd022c780bbfcd8b3f145ecfe8925585a2db0d88
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -133,32 +133,12 @@ Patch131: 0035-xen-blkfront-Fixed-blkfront_restore-to-remove-a-call.patch
 Patch133: 0037-x86-tsc-avoid-system-instability-in-hibernation.patch
 Patch152: 0056-Amazon-ENA-driver-Update-to-version-1.6.0.patch
 
-#fix for CVE-2020-36322
-Patch153:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
-Patch154:       0002-fuse-lift-bad-inode-checks-into-callers.patch
-Patch155:       0003-fuse-fix-bad-inode.patch
-
-#fix for CVE-2021-28950
-Patch156:       0001-fuse-fix-live-lock-in-fuse_iget.patch
-
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch157:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # Fix for CVE-2021-4204
 Patch159:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch160:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-0330
-Patch161:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
-
-# Fix for CVE-2022-22942
-Patch162:       0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
-
-# Fix for CVE-2022-0492
-Patch163:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
-
-# Fix for CVE-2022-0435
-Patch164:       0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	fips-kat-tests.patch
@@ -317,17 +297,9 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch131 -p1
 %patch133 -p1
 %patch152 -p1
-%patch153 -p1
-%patch154 -p1
-%patch155 -p1
-%patch156 -p1
 %patch157 -p1
 %patch159 -p1
 %patch160 -p1
-%patch161 -p1
-%patch162 -p1
-%patch163 -p1
-%patch164 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -518,6 +490,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Fri Feb 11 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.229-1
+-   Update to version 4.19.229
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-5
 -   Fix for CVE-2022-0435
 *   Mon Feb 07 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-4

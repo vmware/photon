@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.225
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        4.19.229
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=dbeb0406b36e4aa516f15f4acca4bf097395f8d4
+%define sha1 linux=bd022c780bbfcd8b3f145ecfe8925585a2db0d88
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -371,13 +371,6 @@ Patch513:        0001-fs-A-new-VTARFS-file-system-to-mount-VTAR-archive.patch
 Patch514:        initramfs-Introduce-kernel-panic-on-initramfs-unpack.patch
 Patch515:        support-selective-freeing-of-initramfs-images.patch
 Patch516:        initramfs-large-files-support-for-newca-format.patch
-#fix for CVE-2020-36322
-Patch517:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
-Patch518:       0002-fuse-lift-bad-inode-checks-into-callers.patch
-Patch519:       0003-fuse-fix-bad-inode.patch
-
-#fix for CVE-2021-28950
-Patch520:       0001-fuse-fix-live-lock-in-fuse_iget.patch
 
 # TARFS
 Patch521:        0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
@@ -388,18 +381,6 @@ Patch522:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 # Fix for CVE-2021-4204
 Patch524:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch525:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-0330
-Patch526:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
-
-# Fix for CVE-2022-22942
-Patch527:       0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
-
-# Fix for CVE-2022-0492
-Patch528:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
-
-# Fix for CVE-2022-0435
-Patch529:       0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 # Patches for i40e driver
 Patch801:        0001-Add-support-for-gettimex64-interface.patch
@@ -754,18 +735,10 @@ This Linux package contains hmac sha generator kernel module.
 %patch514 -p1
 %patch515 -p1
 %patch516 -p1
-%patch517 -p1
-%patch518 -p1
-%patch519 -p1
-%patch520 -p1
 %patch521 -p1
 %patch522 -p1
 %patch524 -p1
 %patch525 -p1
-%patch526 -p1
-%patch527 -p1
-%patch528 -p1
-%patch529 -p1
 
 # Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -968,6 +941,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Fri Feb 11 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.229-1
+-   Update to version 4.19.229
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-5
 -   Fix for CVE-2022-0435
 *   Mon Feb 07 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-4

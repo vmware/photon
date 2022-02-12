@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.225
-Release:        5%{?kat_build:.kat}%{?dist}
+Version:        4.19.229
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=dbeb0406b36e4aa516f15f4acca4bf097395f8d4
+%define sha1 linux=bd022c780bbfcd8b3f145ecfe8925585a2db0d88
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -155,14 +155,6 @@ Patch180:        lockdown/ACPI-Limit-access-to-custom_method-when-the-kernel-i.p
 Patch181:        lockdown/efi-Restrict-efivar_ssdt_load-when-the-kernel-is-locked-down.patch
 Patch182:        lockdown/ACPI-configfs-Disallow-loading-ACPI-tables-when-locked-down.patch
 
-#fix for CVE-2020-36322
-Patch183:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
-Patch184:       0002-fuse-lift-bad-inode-checks-into-callers.patch
-Patch185:       0003-fuse-fix-bad-inode.patch
-
-#fix for CVE-2021-28950
-Patch186:       0001-fuse-fix-live-lock-in-fuse_iget.patch
-
 # Next 2 patches are about to be merged into stable
 Patch187:       0001-mm-fix-panic-in-__alloc_pages.patch
 
@@ -172,18 +164,6 @@ Patch189:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 # Fix for CVE-2021-4204
 Patch191:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch192:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-0330
-Patch193:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
-
-# Fix for CVE-2022-22942
-Patch194:       0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
-
-# Fix for CVE-2022-0492
-Patch195:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
-
-# Fix for CVE-2022-0435
-Patch196:       0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 %if 0%{?kat_build:1}
 Patch1000:      fips-kat-tests.patch
@@ -351,18 +331,10 @@ popd
 %patch180 -p1
 %patch181 -p1
 %patch182 -p1
-%patch183 -p1
-%patch184 -p1
-%patch185 -p1
-%patch186 -p1
 %patch187 -p1
 %patch189 -p1
 %patch191 -p1
 %patch192 -p1
-%patch193 -p1
-%patch194 -p1
-%patch195 -p1
-%patch196 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -516,6 +488,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Feb 11 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.229-1
+-   Update to version 4.19.229
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-5
 -   Fix for CVE-2022-0435
 *   Mon Feb 07 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-4

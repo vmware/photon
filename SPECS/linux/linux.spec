@@ -3,8 +3,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux
-Version:        4.19.225
-Release:        6%{?kat_build:.kat}%{?dist}
+Version:        4.19.229
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -14,7 +14,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=dbeb0406b36e4aa516f15f4acca4bf097395f8d4
+%define sha1 linux=bd022c780bbfcd8b3f145ecfe8925585a2db0d88
 Source1:	config
 Source2:	initramfs.trigger
 %define ena_version 1.6.0
@@ -405,32 +405,12 @@ Patch500:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
 # to be put into separate IOMMU groups on ESXi.
 Patch501:       0001-Add-PCI-quirk-for-VMware-PCIe-Root-Port.patch
 
-#fix for CVE-2020-36322
-Patch502:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
-Patch503:       0002-fuse-lift-bad-inode-checks-into-callers.patch
-Patch504:       0003-fuse-fix-bad-inode.patch
-
-#fix for CVE-2021-28950
-Patch505:       0001-fuse-fix-live-lock-in-fuse_iget.patch
-
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch506:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # Fix for CVE-2021-4204
 Patch508:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch509:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-0330
-Patch510:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
-
-# Fix for CVE-2022-22942
-Patch511:       0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
-
-# Fix for CVE-2022-0492
-Patch512:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
-
-# Fix for CVE-2022-0435
-Patch513:       0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 #Patches for i40e driver
 Patch1500:      0001-Add-support-for-gettimex64-interface.patch
@@ -896,17 +876,9 @@ This Linux package contains hmac sha generator kernel module.
 
 %patch500 -p1
 %patch501 -p1
-%patch502 -p1
-%patch503 -p1
-%patch504 -p1
-%patch505 -p1
 %patch506 -p1
 %patch508 -p1
 %patch509 -p1
-%patch510 -p1
-%patch511 -p1
-%patch512 -p1
-%patch513 -p1
 
 #Patches for i40e driver
 pushd ../i40e-%{i40e_version}
@@ -1284,6 +1256,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Sat Feb 12 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.229-1
+- Update to version 4.19.229
 * Fri Feb 11 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.225-6
 - .config: Enable CONFIG_NET_ACT_SIMP
 * Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-5

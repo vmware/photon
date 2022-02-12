@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.225
+Version:        4.19.229
 # Keep rt_version matched up with REBASE.patch
-%define rt_version rt101
-Release:        7%{?kat_build:.%kat}%{?dist}
+%define rt_version rt102
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=dbeb0406b36e4aa516f15f4acca4bf097395f8d4
+%define sha1 linux=bd022c780bbfcd8b3f145ecfe8925585a2db0d88
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
@@ -457,8 +457,11 @@ Patch538:       0338-Linux-4.19.206-rt87-REBASE.patch
 Patch539:       0339-locking-rwsem-rt-Remove-might_sleep-in-__up_read.patch
 Patch540:       0340-Linux-4.19.214-rt93-REBASE.patch
 Patch541:       0341-fscache-fix-initialisation-of-cookie-hash-table-raw-.patch
-# Keep rt_version matched up with this patch.
 Patch542:       0342-Linux-4.19.225-rt101-REBASE.patch
+Patch543:       0343-rt-PREEMPT_RT-safety-net-for-backported-patches.patch
+Patch544:       0344-net-Add-missing-xmit_lock_owner-hunks.patch
+# Keep rt_version matched up with this patch.
+Patch545:       0345-Linux-4.19.227-rt102-REBASE.patch
 
 #Photon Specific Changes
 Patch600:        0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
@@ -495,32 +498,12 @@ Patch624:       0010-MAINTAINERS-Add-myself-as-context-tracking-maintaine.patch
 #Patch to enable nohz with idle=poll
 Patch625:       0001-Allow-tick-sched-timer-to-be-turned-off-in-idle-poll.patch
 
-#fix for CVE-2020-36322
-Patch626:       0001-fuse-Switch-to-using-async-direct-IO-for-FOPEN_DIREC.patch
-Patch627:       0002-fuse-lift-bad-inode-checks-into-callers.patch
-Patch628:       0003-fuse-fix-bad-inode.patch
-
-#fix for CVE-2021-28950
-Patch629:       0001-fuse-fix-live-lock-in-fuse_iget.patch
-
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch630:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # Fix for CVE-2021-4204
 Patch632:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch633:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-0330
-Patch634:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
-
-# Fix for CVE-2022-22942
-Patch635:       0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
-
-# Fix for CVE-2022-0492
-Patch636:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
-
-# Fix for CVE-2022-0435
-Patch637:       0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 %if 0%{?kat_build:1}
 Patch1000:       fips-kat-tests.patch
@@ -984,6 +967,9 @@ The Linux package contains the Linux kernel doc files
 %patch540 -p1
 %patch541 -p1
 %patch542 -p1
+%patch543 -p1
+%patch544 -p1
+%patch545 -p1
 %patch600 -p1
 %patch601 -p1
 %patch602 -p1
@@ -1009,17 +995,9 @@ The Linux package contains the Linux kernel doc files
 %patch623 -p1
 %patch624 -p1
 %patch625 -p1
-%patch626 -p1
-%patch627 -p1
-%patch628 -p1
-%patch629 -p1
 %patch630 -p1
 %patch632 -p1
 %patch633 -p1
-%patch634 -p1
-%patch635 -p1
-%patch636 -p1
-%patch637 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -1217,6 +1195,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Sat Feb 12 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.229-1
+-   Update to version 4.19.229
 *   Fri Feb 11 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.225-7
 -   Add support for eBPF packet filter.
 *   Fri Feb 11 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.225-6
