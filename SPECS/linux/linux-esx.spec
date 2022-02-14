@@ -1,8 +1,8 @@
 %global security_hardening none
 Summary:       Kernel
 Name:          linux-esx
-Version:       4.4.299
-Release:       3%{?dist}
+Version:       4.4.302
+Release:       1%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -12,7 +12,7 @@ Distribution:  Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:       http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=d636382a885447b7d94c52f7b28d6fd12db1db15
+%define sha1 linux=dba520d58b8d941332e884acf277869a2ab76c0c
 Source1:       config-esx
 Source2:       pre-preun-postun-tasks.inc
 
@@ -154,9 +154,6 @@ Patch103:      0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 Patch105:      0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch106:      0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
-# Fix for CVE-2022-0330
-Patch107:      0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
-
 # Fix for CVE-2022-0492
 Patch108:      0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
 
@@ -295,7 +292,6 @@ The Linux package contains the Linux kernel doc files
 %patch103 -p1
 %patch105 -p1
 %patch106 -p1
-%patch107 -p1
 %patch108 -p1
 
 %build
@@ -387,6 +383,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Feb 14 2022 Sharan Turlapati <sturlapati@vmware.com> 4.4.302-1
+-   Update to version 4.4.302
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.4.299-3
 -   Fix for CVE-2022-0492
 *   Tue Jan 25 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.4.299-2
