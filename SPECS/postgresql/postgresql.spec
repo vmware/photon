@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql
-Version:        10.19
-Release:        2%{?dist}
+Version:        10.20
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/%{name}-%{version}.tar.bz2
-%define sha1    postgresql=f44edcc4d612f6a1b39c233ee7b1e80feb6d0456
+%define sha1    postgresql=780d133ea30f654bd5e7c48f8f61fed6dcf47a3a
 # Common libraries needed
 BuildRequires:  krb5-devel
 BuildRequires:  libxml2-devel
@@ -161,6 +161,8 @@ rm -rf %{buildroot}/*
 %{_libdir}/libpgtypes.a
 
 %changelog
+*   Mon Feb 14 2022 Michael Paquier <mpaquier@vmware.com> 10.20-1
+-   Upgraded to version 10.20.
 *   Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 10.19-2
 -   Version bump up to use libxml2 2.9.11-4.
 *   Mon Nov 15 2021 Michael Paquier <mpaquier@vmware.com> 10.19-1
