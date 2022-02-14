@@ -1,7 +1,7 @@
 Summary:        PostgreSQL database engine
 Name:           postgresql13
-Version:        13.5
-Release:        2%{?dist}
+Version:        13.6
+Release:        1%{?dist}
 License:        PostgreSQL
 URL:            www.postgresql.org
 Group:          Applications/Databases
@@ -9,7 +9,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        http://ftp.postgresql.org/pub/source/v%{version}/postgresql-%{version}.tar.bz2
-%define sha1    postgresql=9321e2b01d1ffb15adae06945cb2c5f9dd671bc9
+%define sha1    postgresql=640a00a1b08617a131495507debaaf5c863b2152
 
 # Macros to be used by find_lang and such.
 %global pgmajorversion 13
@@ -536,6 +536,8 @@ rm -rf %{buildroot}/*
 %{pgbaseinstdir}/lib/plpython3.so
 
 %changelog
+*   Mon Feb 14 2022 Michael Paquier <mpaquier@vmware.com> 13.6-1
+-   Upgraded to version 13.6.
 *   Wed Nov 17 2021 Nitesh Kumar <kunitesh@vmware.com> 13.5-2
 -   Release bump up to use libxml2 2.9.12-1.
 *   Mon Nov 15 2021 Michael Paquier <mpaquier@vmware.com> 13.5-1
