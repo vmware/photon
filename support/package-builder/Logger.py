@@ -30,6 +30,13 @@ class Logger(object):
                 chformatter = logging.Formatter('%(asctime)s - %(name)s - %(message)s')
             else:
                 chformatter = logging.Formatter('%(message)s')
+            if mymodule=='werkzeug':
+                import anticrlf
+                if loglevel=="debug":
+                    chformatter = anticrlf.LogFormatter('%(asctime)s - %(name)s - %(message)s')
+                else:
+                    chformatter = logging.Formatter('%(message)s')
+                fhformatter = anticrlf.LogFormatter('%(asctime)s - %(name)s - %(message)s')
             # add formatter to handler
             fhandler.setFormatter(fhformatter)
             #fhandler.setLevel(logging.DEBUG)
