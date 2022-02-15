@@ -1,27 +1,19 @@
 Summary:        unbound dns server
 Name:           unbound
-Version:        1.6.8
-Release:        4%{?dist}
+Version:        1.13.1
+Release:        1%{?dist}
 Group:          System/Servers
 Vendor:         VMware, Inc.
 License:        BSD
 Distribution:   Photon
 URL:            http://www.unbound.net
 Source0:        https://www.unbound.net/downloads/%{name}-%{version}.tar.gz
-%define sha1    unbound=492737be9647c26ee39d4d198f2755062803b412
+%define sha1    unbound=561522b06943f6d1c33bd78132db1f7020fc4fd1
 Source1:        %{name}.service
 Requires:       systemd
 BuildRequires:  systemd
 BuildRequires:  expat-devel
 Requires(pre):  /usr/sbin/useradd /usr/sbin/groupadd
-Patch0:         patch_cve_2020-12662_2020-12663.diff
-Patch1:         patch_cve-2020-28935_unbound.diff
-Patch2:         CVE-2019-25031.diff
-Patch3:         CVE-2019-25034.diff
-Patch4:         CVE-2019-25035.diff
-Patch5:         CVE-2019-25036.diff
-Patch6:         CVE-2019-25037.diff
-Patch7:         CVE-2019-25042.diff
 
 %description
 Unbound is a validating, recursive, and caching DNS resolver.
@@ -41,21 +33,9 @@ unbound dns server docs
 
 %prep
 %setup -q
-%patch0 -p1
-%patch1 -p1
-%patch2 -p1
-%patch3 -p1
-%patch4 -p1
-%patch5 -p1
-%patch6 -p1
-%patch7 -p1
 
 %build
-./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=%{_sysconfdir} \
+%configure \
     --with-conf-file=%{_sysconfdir}/%{name}/unbound.conf \
     --disable-static
 
@@ -86,17 +66,20 @@ rm -rf %{buildroot}/*
 %defattr(-,root,root)
 %{_libdir}/*.so.*
 %{_sbindir}/*
-%{_sysconfdir}/*
+%config(noreplace) %{_sysconfdir}/unbound/unbound.conf
 %{_unitdir}/%{name}.service
 
 %files devel
 %{_includedir}/*
 %{_libdir}/*.so
+%{_libdir}/pkgconfig/*
 
 %files docs
 %{_mandir}/*
 
 %changelog
+*  Tue Feb 15 2022 Nitesh Kumar <kunitesh@vmware.com> 1.13.1-1
+-  Upgrade to 1.13.1 to fix bunch of CVE's
 *  Wed May 05 2021 Shreyas B. <shryasb@vmware.com> 1.6.8-4
 -  Fix for CVE-2019-25031
 -  Fix for CVE-2019-25034
