@@ -4,7 +4,7 @@
 Summary:        Main C library
 Name:           glibc
 Version:        2.28
-Release:        18%{?dist}
+Release:        19%{?dist}
 License:        LGPLv2+
 URL:            http://www.gnu.org/software/libc
 Group:          Applications/System
@@ -44,6 +44,9 @@ Patch23:        glibc-fix-for-semctl-ltp.patch
 Patch24:        0001-socket_Add_the__sockaddr_un_set_function.patch
 Patch25:        CVE-2022-23218.patch
 Patch26:        CVE-2022-23219.patch
+Patch27:        0001-CVE-2020-29573.patch
+Patch28:        0002-CVE-2020-29573.patch
+Patch29:        CVE-2021-43396.patch
 
 Provides:       rtld(GNU_HASH)
 Requires:       filesystem
@@ -126,6 +129,9 @@ sed -i 's/\\$$(pwd)/`pwd`/' timezone/Makefile
 %patch24 -p1
 %patch25 -p1
 %patch26 -p1
+%patch27 -p1
+%patch28 -p1
+%patch29 -p1
 
 install -vdm 755 %{_builddir}/%{name}-build
 # do not try to explicitly provide GLIBC_PRIVATE versioned libraries
@@ -328,6 +334,8 @@ grep "^FAIL: nptl/tst-eintr1" tests.sum >/dev/null && n=$((n+1)) ||:
 %defattr(-,root,root)
 
 %changelog
+*   Wed Feb 16 2022 Ajay Kaher <akaher@vmware.com> 2.28-19
+-   Fix CVE-2020-29573, CVE-2021-43396
 *   Mon Jan 24 2022 Ajay Kaher <akaher@vmware.com> 2.28-18
 -   Fix CVE-2022-23218, CVE-2022-23219
 *   Mon Sep 06 2021 Ashwin Dayanand Kamat <kashwindayan@vmware.com> 2.28-17
