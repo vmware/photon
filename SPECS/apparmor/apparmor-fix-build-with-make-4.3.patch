@@ -1,0 +1,277 @@
+From fc2beaca9d642fb93736066f26e3588ad30ec7a4 Mon Sep 17 00:00:00 2001
+From: Eric Chiang <ericchiang@google.com>
+Date: Thu, 17 Jan 2019 11:02:57 -0800
+Subject: [PATCH 1/4] *: ensure make apparmor_parser is cached
+
+This change updates parser/Makefile to respect target dependencies and
+not rebuild apparmor_parser if nothing's changed. The goal is to allow
+cross-compiled tests #17 to run on a target system without the tests
+attempting to rebuild the parser.
+
+Two changes were made:
+
+* Generate af_names.h in a script so the script timestamp is compared.
+* Use FORCE instead of PHONY for libapparmor_re/libapparmor_re.a
+
+Changes to list_af_names are intended to exactly replicate the old
+behavior.
+
+Signed-off-by: Eric Chiang <ericchiang@google.com>
+(cherry picked from commit cb8c3377babfed4600446d1f60d53d8e2a581578)
+---
+ common/Make.rules                | 21 ---------------------
+ common/list_af_names.sh          | 19 +++++++++++++++++++
+ parser/Makefile                  | 13 +++++--------
+ utils/vim/create-apparmor.vim.py |  2 +-
+ 4 files changed, 25 insertions(+), 30 deletions(-)
+ create mode 100755 common/list_af_names.sh
+
+diff --git a/common/Make.rules b/common/Make.rules
+index d2149fcd4..357bdec85 100644
+--- a/common/Make.rules
++++ b/common/Make.rules
+@@ -87,27 +87,6 @@ CAPABILITIES=$(shell echo "\#include <linux/capability.h>" | cpp -dM | LC_ALL=C
+ list_capabilities: /usr/include/linux/capability.h
+ 	@echo "$(CAPABILITIES)"
+ 
+-# =====================
+-# generate list of network protocols based on
+-# sys/socket.h for use in multiple locations in
+-# the source tree
+-# =====================
+-
+-# These are the families that it doesn't make sense for apparmor
+-# to mediate. We use PF_ here since that is what is required in
+-# bits/socket.h, but we will rewrite these as AF_.
+-
+-FILTER_FAMILIES=PF_UNIX
+-
+-__FILTER=$(shell echo $(strip $(FILTER_FAMILIES)) | sed -e 's/ /\\\|/g')
+-
+-# emits the AF names in a "AF_NAME NUMBER," pattern
+-AF_NAMES=$(shell echo "\#include <sys/socket.h>" | cpp -dM | LC_ALL=C sed -n -e '/$(__FILTER)/d' -e 's/PF_LOCAL/PF_UNIX/' -e 's/^\#define[ \t]\+PF_\([A-Z0-9_]\+\)[ \t]\+\([0-9]\+\).*$$/AF_\1 \2,/p' | sort -n -k2)
+-
+-.PHONY: list_af_names
+-list_af_names:
+-	@echo "$(AF_NAMES)"
+-
+ # =====================
+ # manpages
+ # =====================
+diff --git a/common/list_af_names.sh b/common/list_af_names.sh
+new file mode 100755
+index 000000000..d7987537a
+--- /dev/null
++++ b/common/list_af_names.sh
+@@ -0,0 +1,19 @@
++#!/bin/bash -e
++
++# =====================
++# generate list of network protocols based on
++# sys/socket.h for use in multiple locations in
++# the source tree
++# =====================
++
++# It doesn't make sence for AppArmor to mediate PF_UNIX, filter it out. Search
++# for "PF_" constants since that is what is required in bits/socket.h, but
++# rewrite as "AF_".
++
++echo "#include <sys/socket.h>" | \
++  cpp -dM | \
++  LC_ALL=C sed -n \
++    -e '/PF_UNIX/d' \
++    -e 's/PF_LOCAL/PF_UNIX/' \
++    -e 's/^#define[ \t]\+PF_\([A-Z0-9_]\+\)[ \t]\+\([0-9]\+\).*$/AF_\1 \2,/p' | \
++  sort -n -k2
+diff --git a/parser/Makefile b/parser/Makefile
+index 73e88f5c2..c22d32dac 100644
+--- a/parser/Makefile
++++ b/parser/Makefile
+@@ -281,10 +281,9 @@ parser_version.h: Makefile
+ # as well as the filtering that occurs for network protocols that
+ # apparmor should not mediate.
+ 
+-.PHONY: af_names.h
+-af_names.h:
+-	echo "$(AF_NAMES)" | LC_ALL=C sed -n -e 's/[ \t]\?AF_MAX[ \t]\+[0-9]\+,//g'  -e 's/[ \t]\+\?AF_\([A-Z0-9_]\+\)[ \t]\+\([0-9]\+\),/#ifndef AF_\1\n#  define AF_\1 \2\n#endif\nAA_GEN_NET_ENT("\L\1", \UAF_\1)\n\n/pg' > $@
+-	echo "$(AF_NAMES)" | LC_ALL=C sed -n -e 's/.*,[ \t]\+AF_MAX[ \t]\+\([0-9]\+\),\?.*/#define AA_AF_MAX \1\n/p' >> $@
++af_names.h: ../common/list_af_names.sh
++	../common/list_af_names.sh | LC_ALL=C sed -n -e 's/[ \t]\?AF_MAX[ \t]\+[0-9]\+,//g'  -e 's/[ \t]\+\?AF_\([A-Z0-9_]\+\)[ \t]\+\([0-9]\+\),/#ifndef AF_\1\n#  define AF_\1 \2\n#endif\nAA_GEN_NET_ENT("\L\1", \UAF_\1)\n/pg' > $@
++	../common/list_af_names.sh | LC_ALL=C sed -n -e 's/AF_MAX[ \t]\+\([0-9]\+\),\?.*/\n#define AA_AF_MAX \1\n/p' >> $@
+ 	# cat $@
+ 
+ cap_names.h: /usr/include/linux/capability.h
+@@ -304,10 +303,7 @@ tests: apparmor_parser ${TESTS}
+ 	sh -e -c 'for test in ${TESTS} ; do echo "*** running $${test}" && ./$${test}; done'
+ 	$(Q)$(MAKE) -s -C tst tests
+ 
+-# always need to rebuild.
+-.SILENT: $(AAREOBJECT)
+-.PHONY: $(AAREOBJECT)
+-$(AAREOBJECT):
++$(AAREOBJECT): FORCE
+ 	$(MAKE) -C $(AAREDIR) CFLAGS="$(EXTRA_CXXFLAGS)"
+ 
+ .PHONY: install-rhel4
+@@ -408,3 +404,4 @@ clean: pod_clean
+ 	$(MAKE) -s -C po clean
+ 	$(MAKE) -s -C tst clean
+ 
++FORCE:
+diff --git a/utils/vim/create-apparmor.vim.py b/utils/vim/create-apparmor.vim.py
+index 10bd5b8de..fea134f67 100644
+--- a/utils/vim/create-apparmor.vim.py
++++ b/utils/vim/create-apparmor.vim.py
+@@ -57,7 +57,7 @@ for cap in capabilities:
+         benign_caps.append(cap)
+ 
+ # get network protos list
+-(rc, output) = cmd(['make', '-s', '--no-print-directory', 'list_af_names'])
++(rc, output) = cmd(['../../common/list_af_names.sh'])
+ if rc != 0:
+     sys.stderr.write("make list_af_names failed: " + output)
+     exit(rc)
+-- 
+GitLab
+
+
+From 0d8e4cda3fb5194b82e288cadbcce98998064b7a Mon Sep 17 00:00:00 2001
+From: allgdante <allan.garret@gmail.com>
+Date: Mon, 23 Mar 2020 15:09:15 +0000
+Subject: [PATCH 3/4] Generate CAPABILITIES in a script due to make 4.3
+
+This way we could generate the capabilities in a way that works with
+every version of make.
+Changes to list_capabilities are intended to exactly replicate the old
+behavior.
+
+(cherry picked from commit e92da079ca12e776991bd36524430bd67c1cb72a)
+---
+ common/Make.rules                | 13 -------------
+ common/list_capabilities.sh      | 14 ++++++++++++++
+ parser/Makefile                  |  2 +-
+ utils/Makefile                   |  2 +-
+ utils/vim/create-apparmor.vim.py |  2 +-
+ 5 files changed, 17 insertions(+), 16 deletions(-)
+ create mode 100755 common/list_capabilities.sh
+
+diff --git a/common/Make.rules b/common/Make.rules
+index 357bdec85..ecc6181ab 100644
+--- a/common/Make.rules
++++ b/common/Make.rules
+@@ -74,19 +74,6 @@ endif
+ pod_clean:
+ 	-rm -f ${MANPAGES} *.[0-9].gz ${HTMLMANPAGES} pod2htm*.tmp
+ 
+-# =====================
+-# generate list of capabilities based on
+-# /usr/include/linux/capabilities.h for use in multiple locations in
+-# the source tree
+-# =====================
+-
+-# emits defined capabilities in a simple list, e.g. "CAP_NAME CAP_NAME2"
+-CAPABILITIES=$(shell echo "\#include <linux/capability.h>" | cpp -dM | LC_ALL=C sed -n -e '/CAP_EMPTY_SET/d' -e 's/^\#define[ \t]\+CAP_\([A-Z0-9_]\+\)[ \t]\+\([0-9xa-f]\+\)\(.*\)$$/CAP_\1/p' | LC_ALL=C sort)
+-
+-.PHONY: list_capabilities
+-list_capabilities: /usr/include/linux/capability.h
+-	@echo "$(CAPABILITIES)"
+-
+ # =====================
+ # manpages
+ # =====================
+diff --git a/common/list_capabilities.sh b/common/list_capabilities.sh
+new file mode 100755
+index 000000000..4e37cda73
+--- /dev/null
++++ b/common/list_capabilities.sh
+@@ -0,0 +1,14 @@
++#!/bin/bash -e
++
++# =====================
++# generate list of capabilities based on
++# /usr/include/linux/capabilities.h for use in multiple locations in
++# the source tree
++# =====================
++
++echo "#include <linux/capability.h>" | \
++  cpp -dM | \
++  LC_ALL=C sed -n \
++    -e '/CAP_EMPTY_SET/d' \
++    -e 's/^\#define[ \t]\+CAP_\([A-Z0-9_]\+\)[ \t]\+\([0-9xa-f]\+\)\(.*\)$/CAP_\1/p' | \
++  LC_ALL=C sort
+diff --git a/parser/Makefile b/parser/Makefile
+index c22d32dac..3e50125ac 100644
+--- a/parser/Makefile
++++ b/parser/Makefile
+@@ -287,7 +287,7 @@ af_names.h: ../common/list_af_names.sh
+ 	# cat $@
+ 
+ cap_names.h: /usr/include/linux/capability.h
+-	echo "$(CAPABILITIES)" | LC_ALL=C sed -n -e "s/[ \\t]\\?CAP_\\([A-Z0-9_]\\+\\)/\{\"\\L\\1\", \\UCAP_\\1\},\\n/pg" > $@
++	../common/list_capabilities.sh | LC_ALL=C sed -n -e "s/[ \\t]\\?CAP_\\([A-Z0-9_]\\+\\)/\{\"\\L\\1\", \\UCAP_\\1\},\\n/pg" > $@
+ 
+ tst_lib: lib.c parser.h $(filter-out lib.o, ${TEST_OBJECTS})
+ 	$(CXX) $(TEST_CFLAGS) -o $@ $< $(filter-out $(<:.c=.o), ${TEST_OBJECTS}) $(TEST_LDFLAGS) $(TEST_LDLIBS)
+diff --git a/utils/Makefile b/utils/Makefile
+index 68f8c376d..ea9e0601c 100644
+--- a/utils/Makefile
++++ b/utils/Makefile
+@@ -80,7 +80,7 @@ clean: pod_clean
+ .SILENT: check_severity_db
+ check_severity_db: /usr/include/linux/capability.h severity.db
+ 	# The sed statement is based on the one in the parser's makefile
+-	RC=0 ; for cap in ${CAPABILITIES} ; do \
++	RC=0 ; for cap in $(shell ../common/list_capabilities.sh) ; do \
+ 	    if !  grep -q -w $${cap} severity.db ; then \
+ 		echo "Warning! capability $${cap} not found in severity.db" ; \
+ 		RC=1 ; \
+diff --git a/utils/vim/create-apparmor.vim.py b/utils/vim/create-apparmor.vim.py
+index fea134f67..6a5f02a2f 100644
+--- a/utils/vim/create-apparmor.vim.py
++++ b/utils/vim/create-apparmor.vim.py
+@@ -45,7 +45,7 @@ def cmd(command, input=None, stderr=subprocess.STDOUT, stdout=subprocess.PIPE, s
+     return [sp.returncode, out + outerr]
+ 
+ # get capabilities list
+-(rc, output) = cmd(['make', '-s', '--no-print-directory', 'list_capabilities'])
++(rc, output) = cmd(['../../common/list_capabilities.sh'])
+ if rc != 0:
+     sys.stderr.write("make list_capabilities failed: " + output)
+     exit(rc)
+-- 
+GitLab
+
+
+From af0c288fcd4b9ddbf3a062d6d0e1c9618e8f3c75 Mon Sep 17 00:00:00 2001
+From: Christian Boltz <apparmor@cboltz.de>
+Date: Sun, 29 Mar 2020 00:07:11 +0100
+Subject: [PATCH 4/4] fix capabilities in apparmor.vim
+
+https://gitlab.com/apparmor/apparmor/-/merge_requests/461 /
+e92da079ca12e776991bd36524430bd67c1cb72a changed creating the
+capabilities to use a script.
+
+A side effect is that the list is now separated by \n instead of
+spaces. Adjust create-apparmor.vim.py to the new output.
+
+(cherry picked from commit 60b005788e79c1be7276349242e0cc97b99f7118)
+---
+ utils/vim/create-apparmor.vim.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/utils/vim/create-apparmor.vim.py b/utils/vim/create-apparmor.vim.py
+index 6a5f02a2f..b5df957af 100644
+--- a/utils/vim/create-apparmor.vim.py
++++ b/utils/vim/create-apparmor.vim.py
+@@ -50,7 +50,7 @@ if rc != 0:
+     sys.stderr.write("make list_capabilities failed: " + output)
+     exit(rc)
+ 
+-capabilities = re.sub('CAP_', '', output.strip()).lower().split(" ")
++capabilities = re.sub('CAP_', '', output.strip()).lower().split('\n')
+ benign_caps = []
+ for cap in capabilities:
+     if cap not in danger_caps:
+-- 
+GitLab
+

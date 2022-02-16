@@ -4,7 +4,7 @@
 
 Name:           apparmor
 Version:        2.13
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -18,6 +18,7 @@ Source0:        https://launchpad.net/apparmor/%{version}/%{version}.0/+download
 Patch0:         apparmor-set-profiles-complain-mode.patch
 Patch1:         apparmor-service-start-fix.patch
 Patch2:         apparmor-fix-make-check.patch
+Patch3:         apparmor-fix-build-with-make-4.3.patch
 
 BuildRequires:  python3
 BuildRequires:  perl
@@ -357,6 +358,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %exclude %{perl_archlib}/perllocal.pod
 
 %changelog
+* Wed Feb 16 2022 Tapas Kundu <tkundu@vmware.com> 2.13-9
+- Fix build with make 4.3
 * Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.13-8
 - Bump version as a part of httpd upgrade
 * Tue Mar 05 2019 Siju Maliakkal <smaliakkal@vmware.com> 2.13-7
