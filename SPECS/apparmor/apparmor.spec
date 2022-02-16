@@ -1,6 +1,6 @@
 Name:           apparmor
 Version:        2.13
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        AppArmor is an effective and easy-to-use Linux application security system.
 License:        GNU LGPL v2.1
 URL:            https://launchpad.net/apparmor
@@ -13,6 +13,7 @@ Source0:        https://launchpad.net/apparmor/2.13/2.13.0/+download/%{name}-%{v
 
 Patch0:         apparmor-set-profiles-complain-mode.patch
 Patch1:         apparmor-service-start-fix.patch
+Patch2:         apparmor-fix-build-with-make-4.3.patch
 
 BuildRequires:  python3
 BuildRequires:  python3-devel
@@ -177,14 +178,8 @@ cd ./libraries/libapparmor
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/lib/"
 /sbin/ldconfig
 sh ./autogen.sh
-sh ./configure \
-    --prefix=%{_prefix} \
-    --bindir=%{_bindir} \
-    --libdir=%{_libdir} \
-    --sysconfdir=/etc   \
-    --with-perl         \
-    --with-python       \
-    --with-ruby
+%configure --with-perl --with-python --with-ruby
+
 make %{?_smp_mflags}
 #Building Binutils
 cd ../../binutils/
@@ -198,6 +193,8 @@ echo $LIBRARY_PATH
 make %{?_smp_mflags}
 #Building Utilities
 cd ../utils
+chmod +x ../common/list_capabilities.sh
+chmod +x ../common/list_af_names.sh
 make %{?_smp_mflags}
 #Building Apache mod_apparmor
 cd ../changehat/mod_apparmor
@@ -374,6 +371,8 @@ make DESTDIR=%{buildroot} install %{?_smp_mflags}
 %{_libdir}/ruby/site_ruby/2.5.0/x86_64-linux/LibAppArmor.so
 
 %changelog
+* Wed Feb 16 2022 Tapas Kundu <tkundu@vmware.com> 2.13-6
+- Fix build with make 4.3
 * Tue Oct 19 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.13-5
 - Bump version as a part of httpd upgrade
 * Mon Feb 4 2019 Sujay G <gsujay@vmware.com> 2.13-4
