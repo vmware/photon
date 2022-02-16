@@ -4,13 +4,16 @@ Version:        3.6.15
 Release:        3%{?dist}
 License:        GPLv3+ and LGPLv2+
 URL:            http://www.gnutls.org
-Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
-%define sha1    gnutls=00ef7d93347df586c3d1a00f13c326706c0c59ba
 Group:          System Environment/Libraries
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
+Source0:        https://www.gnupg.org/ftp/gcrypt/gnutls/v3.6/%{name}-%{version}.tar.xz
+%define sha1    %{name}=00ef7d93347df586c3d1a00f13c326706c0c59ba
+
 Patch0:         default-priority.patch
 Patch1:         CVE-2021-20232.patch
+
 BuildRequires:  nettle-devel >= 3.4.1
 BuildRequires:  autogen-libopts-devel
 BuildRequires:  libtasn1-devel
@@ -18,7 +21,6 @@ BuildRequires:  ca-certificates
 BuildRequires:  openssl-devel
 BuildRequires:  guile-devel
 BuildRequires:  gc-devel
-BuildRequires:  git
 
 Requires:       nettle >= 3.4.1
 Requires:       autogen-libopts
@@ -43,7 +45,7 @@ The package contains libraries and header files for
 developing applications that use gnutls.
 
 %prep
-%autosetup -S git -p1
+%autosetup -p1
 
 %build
 # check for trust store file presence
@@ -59,17 +61,20 @@ developing applications that use gnutls.
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 rm %{buildroot}%{_infodir}/*
 find %{buildroot}%{_libdir} -name '*.la' -delete
 mkdir -p %{buildroot}/etc/%{name}
 chmod 755 %{buildroot}/etc/%{name}
+
 cat > %{buildroot}/etc/%{name}/default-priorities << "EOF"
 SYSTEM=NONE:!VERS-SSL3.0:!VERS-TLS1.0:+VERS-TLS1.1:+VERS-TLS1.2:+AES-128-CBC:+RSA:+SHA1:+COMP-NULL
 EOF
 
 %check
+%if 0%{?with_check}
 make %{?_smp_mflags} check
+%endif
 
 %post
 /sbin/ldconfig
@@ -97,49 +102,49 @@ make %{?_smp_mflags} check
 %{_mandir}/man3/*
 
 %changelog
-*   Thu May 20 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.6.15-3
--   Fix CVE-2021-20232
-*   Sat Apr 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.6.15-2
--   Bump version as a part of nettle upgrade
-*   Thu Sep 24 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.6.15-1
--   Upgrade to version 3.6.15, fixes CVE-2020-24659
-*   Tue Jun 09 2020 Tapas Kundu <tkundu@vmware.com> 3.6.14-1
--   Update to 3.6.14
--   Fix CVE-2020-13777
-*   Fri Apr 10 2020 Tapas Kundu <tkundu@vmware.com> 3.6.13-1
--   Update to 3.6.13
--   Fix CVE-2020-11501
-*   Thu Oct 24 2019 Shreenidhi Shedi <sshedi@vmware.com> 3.6.9-2
--   Added default priority patch.
-*   Thu Oct 17 2019 Shreenidhi Shedi <sshedi@vmware.com> 3.6.9-1
--   Upgrade to version 3.6.9
-*   Mon Apr 15 2019 Keerthana K <keerthanak@vmware.com> 3.6.3-3
--   Fix CVE-2019-3829, CVE-2019-3836
-*   Wed Oct 03 2018 Tapas Kundu <tkundu@vmware.com> 3.6.3-2
--   Including default-priority in the RPM packaging.
-*   Thu Sep 06 2018 Anish Swaminathan <anishs@vmware.com> 3.6.3-1
--   Update version to 3.6.3
-*   Fri Feb 09 2018 Xiaolin Li <xiaolinl@vmware.com> 3.5.15-2
--   Add default_priority.patch.
-*   Tue Oct 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.15-1
--   Update to 3.5.15. Fixes CVE-2017-7507
-*   Thu Apr 13 2017 Danut Moraru <dmoraru@vmware.com> 3.5.10-1
--   Update to version 3.5.10
-*   Sun Dec 18 2016 Alexey Makhalov <amakhalov@vmware.com> 3.4.11-4
--   configure to use default trust store file
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 3.4.11-3
--   Moved man3 to devel subpackage.
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.11-2
--   GA - Bump release of all rpms
-*   Wed Apr 27 2016 Xiaolin Li <xiaolinl@vmware.com> 3.4.11-1
--   Updated to version 3.4.11
-*   Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 3.4.9-1
--   Updated to version 3.4.9
-*   Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 3.4.8-1
--   Updated to version 3.4.8
-*   Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 3.4.2-3
--   Edit post script.
-*   Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 3.4.2-2
--   Removing la files from packages.
-*   Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 3.4.2-1
--   Initial build. First version
+* Thu May 20 2021 Prashant S Chauhan <psinghchauha@vmware.com> 3.6.15-3
+- Fix CVE-2021-20232
+* Sat Apr 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 3.6.15-2
+- Bump version as a part of nettle upgrade
+* Thu Sep 24 2020 Shreenidhi Shedi <sshedi@vmware.com> 3.6.15-1
+- Upgrade to version 3.6.15, fixes CVE-2020-24659
+* Tue Jun 09 2020 Tapas Kundu <tkundu@vmware.com> 3.6.14-1
+- Update to 3.6.14
+- Fix CVE-2020-13777
+* Fri Apr 10 2020 Tapas Kundu <tkundu@vmware.com> 3.6.13-1
+- Update to 3.6.13
+- Fix CVE-2020-11501
+* Thu Oct 24 2019 Shreenidhi Shedi <sshedi@vmware.com> 3.6.9-2
+- Added default priority patch.
+* Thu Oct 17 2019 Shreenidhi Shedi <sshedi@vmware.com> 3.6.9-1
+- Upgrade to version 3.6.9
+* Mon Apr 15 2019 Keerthana K <keerthanak@vmware.com> 3.6.3-3
+- Fix CVE-2019-3829, CVE-2019-3836
+* Wed Oct 03 2018 Tapas Kundu <tkundu@vmware.com> 3.6.3-2
+- Including default-priority in the RPM packaging.
+* Thu Sep 06 2018 Anish Swaminathan <anishs@vmware.com> 3.6.3-1
+- Update version to 3.6.3
+* Fri Feb 09 2018 Xiaolin Li <xiaolinl@vmware.com> 3.5.15-2
+- Add default_priority.patch.
+* Tue Oct 10 2017 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.5.15-1
+- Update to 3.5.15. Fixes CVE-2017-7507
+* Thu Apr 13 2017 Danut Moraru <dmoraru@vmware.com> 3.5.10-1
+- Update to version 3.5.10
+* Sun Dec 18 2016 Alexey Makhalov <amakhalov@vmware.com> 3.4.11-4
+- configure to use default trust store file
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 3.4.11-3
+- Moved man3 to devel subpackage.
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.4.11-2
+- GA - Bump release of all rpms
+* Wed Apr 27 2016 Xiaolin Li <xiaolinl@vmware.com> 3.4.11-1
+- Updated to version 3.4.11
+* Tue Feb 23 2016 Xiaolin Li <xiaolinl@vmware.com> 3.4.9-1
+- Updated to version 3.4.9
+* Thu Jan 14 2016 Xiaolin Li <xiaolinl@vmware.com> 3.4.8-1
+- Updated to version 3.4.8
+* Wed Dec 09 2015 Anish Swaminathan <anishs@vmware.com> 3.4.2-3
+- Edit post script.
+* Fri Oct 9 2015 Xiaolin Li <xiaolinl@vmware.com> 3.4.2-2
+- Removing la files from packages.
+* Thu Jun 18 2015 Divya Thaluru <dthaluru@vmware.com> 3.4.2-1
+- Initial build. First version
