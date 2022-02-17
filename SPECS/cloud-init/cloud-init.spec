@@ -1,8 +1,6 @@
-%define py_setup setup.py
-
 Name:           cloud-init
-Version:        21.4
-Release:        2%{?dist}
+Version:        22.1
+Release:        1%{?dist}
 Summary:        Cloud instance init scripts
 Group:          System Environment/Base
 License:        GPLv3
@@ -11,61 +9,61 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://launchpad.net/cloud-init/trunk/%{version}/+download/%{name}-%{version}.tar.gz
-%define sha1 %{name}=3f32b123af1fdcf07ce99db6a1ace5094708c1f2
+%define sha1 %{name}=830185bb5ce87ad86e4d1c0c62329bb255ec1648
 
-Patch0:     cloud-init-azureds.patch
-Patch1:     ds-identify.patch
-Patch2:     ds-vmware-photon.patch
-Patch3:     cloud-cfg.patch
+Patch0: cloud-init-azureds.patch
+Patch1: ds-identify.patch
+Patch2: ds-vmware-photon.patch
+Patch3: cloud-cfg.patch
 
-BuildRequires:  python3
-BuildRequires:  python3-libs
-BuildRequires:  systemd
-BuildRequires:  dbus
-BuildRequires:  python3-ipaddr
-BuildRequires:  iproute2
-BuildRequires:  automake
-BuildRequires:  python3-setuptools
-BuildRequires:  python3-xml
-BuildRequires:  python3-six
-BuildRequires:  python3-requests
-BuildRequires:  python3-PyYAML
-BuildRequires:  python3-urllib3
-BuildRequires:  python3-chardet
-BuildRequires:  python3-certifi
-BuildRequires:  python3-idna
-BuildRequires:  python3-jinja2
-BuildRequires:  systemd-rpm-macros
-BuildRequires:  python3-macros
+BuildRequires: python3
+BuildRequires: python3-libs
+BuildRequires: systemd
+BuildRequires: dbus
+BuildRequires: python3-ipaddr
+BuildRequires: iproute2
+BuildRequires: automake
+BuildRequires: python3-setuptools
+BuildRequires: python3-xml
+BuildRequires: python3-six
+BuildRequires: python3-requests
+BuildRequires: python3-PyYAML
+BuildRequires: python3-urllib3
+BuildRequires: python3-chardet
+BuildRequires: python3-certifi
+BuildRequires: python3-idna
+BuildRequires: python3-jinja2
+BuildRequires: systemd-rpm-macros
+BuildRequires: python3-macros
 
-%if 0%{?with_check:1}
-BuildRequires:  python3-pip
-BuildRequires:  python3-configobj
-BuildRequires:  python3-jsonpatch
-BuildRequires:  python3-pytest
+%if 0%{?with_check}
+BuildRequires: python3-pip
+BuildRequires: python3-configobj
+BuildRequires: python3-jsonpatch
+BuildRequires: python3-pytest
 %endif
 
-Requires:   iproute2
-Requires:   systemd
-Requires:   (net-tools or toybox)
-Requires:   python3
-Requires:   python3-libs
-Requires:   python3-configobj
-Requires:   python3-prettytable
-Requires:   python3-requests
-Requires:   python3-PyYAML
-Requires:   python3-jsonpatch
-Requires:   python3-oauthlib
-Requires:   python3-jinja2
-Requires:   python3-markupsafe
-Requires:   python3-six
-Requires:   python3-setuptools
-Requires:   python3-xml
-Requires:   python3-jsonschema
-Requires:   python3-netifaces
-Requires:   dhcp-client
+Requires: iproute2
+Requires: systemd
+Requires: (net-tools or toybox)
+Requires: python3
+Requires: python3-libs
+Requires: python3-configobj
+Requires: python3-prettytable
+Requires: python3-requests
+Requires: python3-PyYAML
+Requires: python3-jsonpatch
+Requires: python3-oauthlib
+Requires: python3-jinja2
+Requires: python3-markupsafe
+Requires: python3-six
+Requires: python3-setuptools
+Requires: python3-xml
+Requires: python3-jsonschema
+Requires: python3-netifaces
+Requires: dhcp-client
 
-BuildArch:  noarch
+BuildArch: noarch
 
 %description
 Cloud-init is a set of init scripts for cloud instances.  Cloud instances
@@ -98,7 +96,7 @@ mkdir -p %{buildroot}%{_sharedstatedir}/cloud %{buildroot}%{_sysconfdir}/cloud/c
 mv %{buildroot}/lib/* %{buildroot}%{_libdir} && rmdir %{buildroot}/lib || exit 1
 
 %check
-%if 0%{?with_check:1}
+%if 0%{?with_check}
 touch vd ud
 
 mkdir -p /usr/share/ca-certificates/
@@ -149,6 +147,8 @@ rm -rf %{buildroot}
 %{_sysconfdir}/systemd/system/sshd-keygen@.service.d/disable-sshd-keygen-if-cloud-init-active.conf
 
 %changelog
+* Thu Feb 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 22.1-1
+- Upgrade to v22.1
 * Mon Nov 15 2021 Prashant S Chauhan <psinghchauha@vmware.com> 21.4-2
 - Update release to compile with python 3.10
 * Mon Nov 15 2021 Shreenidhi Shedi <sshedi@vmware.com> 21.4-1
