@@ -1,7 +1,7 @@
 Summary:        software font engine.
 Name:           freetype2
 Version:        2.10.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 License:        BSD/GPL
 URL:            http://www.freetype.org/
 Group:          System Environment/Libraries
@@ -9,13 +9,12 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        http://download.savannah.gnu.org/releases/freetype/freetype-%{version}.tar.gz
 %define sha1 freetype=2c53944cd7eaefb9cb207672d8a4368c31aa97c4
-
+Patch0:         CVE-2020-15999.patch
 BuildRequires:	libtool
 BuildRequires:	zlib-devel
 BuildRequires:	glibc
 BuildRequires:	pkg-config
 BuildRequires:	bash
-
 
 %description
 FreeType is a software font engine that is designed to be small, efficient, highly customizable, and portable while capable of producing high-quality output (glyph images). It can be used in graphics libraries, display servers, font conversion tools, text image generation tools, and many other products as well.
@@ -27,19 +26,19 @@ Requires:	freetype2 = %{version}-%{release}
 It contains the libraries and header files to create applications
 
 %prep
-%setup -q -n freetype-%{version}
+%autosetup -n freetype-%{version} -p1
 
 %build
 %configure --with-harfbuzz=no
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make DESTDIR=%{buildroot} install %{?_smp_mflags}
 find %{buildroot} -name '*.la' -delete
 find %{buildroot} -name '*.a' -delete
 
 %check
-make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
+make %{?_smp_mflags} -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 
 %post
 /sbin/ldconfig
@@ -59,6 +58,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+* Thu Feb 17 2022 Tapas Kundu <tkundu@vmware.com> 2.10.2-3
+- Fix CVE-2020-15999
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 2.10.2-2
 - Fix build with new rpm
 * Thu Jun 25 2020 Gerrit Photon <photon-checkins@vmware.com> 2.10.2-1
