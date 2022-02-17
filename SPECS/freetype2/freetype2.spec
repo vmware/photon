@@ -1,7 +1,7 @@
 Summary:	software font engine.
 Name:		freetype2
 Version:	2.7.1
-Release:	5%{?dist}
+Release:	6%{?dist}
 License:	BSD/GPL
 URL:		http://www.freetype.org/
 Group:		System Environment/Libraries
@@ -13,6 +13,7 @@ Patch0:         CVE-2017-7857-and-CVE-2017-7858.patch
 Patch1:         CVE-2017-7864.patch
 Patch2:         CVE-2017-8287.patch
 Patch3:         CVE-2018-6942.patch
+Patch4:         CVE-2020-15999.patch
 BuildRequires:	libtool
 BuildRequires:	zlib-devel
 
@@ -23,7 +24,7 @@ FreeType is a software font engine that is designed to be small, efficient, high
 Summary:	Header and development files
 Requires:	freetype2 = %{version}-%{release}
 %description	devel
-It contains the libraries and header files to create applications 
+It contains the libraries and header files to create applications
 
 %prep
 %setup -q -n freetype-%{version}
@@ -31,11 +32,10 @@ It contains the libraries and header files to create applications
 %patch1 -p1
 %patch2 -p1
 %patch3 -p1
+%patch4 -p1
 
 %build
-./configure \
-	--prefix=%{_prefix} \
-	--with-harfbuzz=no
+%configure --with-harfbuzz=no
 make %{?_smp_mflags}
 
 %install
@@ -65,6 +65,8 @@ make -k check |& tee %{_specdir}/%{name}-check-log || %{nocheck}
 %{_libdir}/pkgconfig/*.pc
 
 %changelog
+*       Thu Feb 17 2022 Tapas Kundu <tkundu@vmware.com> 2.7.1-6
+-       Fix CVE-2020-15999
 *       Tue Jun 12 2018 Tapas Kundu <tkundu@vmware.com> 2.7.1-5
 -       Added the patch macro for CVE-2018-6942
 *       Thu Jun 07 2018 Tapas Kundu <tkundu@vmware.com> 2.7.1-4
