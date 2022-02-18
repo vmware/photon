@@ -1,16 +1,16 @@
 Summary:	Crypto Libraries
 Name:		libgcrypt
-Version:	1.8.1
-Release:	4%{?dist}
+Version:	1.8.8
+Release:	1%{?dist}
 License:        GPLv2+ and LGPLv2+
 URL:            http://www.gnu.org/software/libgcrypt/
 Source0:        ftp://ftp.gnupg.org/gcrypt/libgcrypt/%{name}-%{version}.tar.bz2
-%define sha1 libgcrypt=dd35f00da45602afe81e01f4d60c40bbdd826fe6
-Patch0:         libgcrypt-CVE-2018-0495.patch
+%define sha1 libgcrypt=ec927f6e85fe776482c84ec837ef2d9b83dc9c88
+Patch0:         libgcrypt-00-ac_cv_sys_symbol_underscore.patch
 Patch1:         libgcrypt-CVE-2019-12904-aes-move-tables.patch
 Patch2:         libgcrypt-CVE-2019-12904-prefetch-gcm-table.patch
 Patch3:         libgcrypt-CVE-2019-12904-gcm-move-tables.patch
-Patch4:         0001-cipher-Fix-ElGamal-encryption-for-other-implementati.patch
+Patch4:		libgcrypt-exponent-binding.patch
 Group:		System Environment/Libraries
 Vendor:		VMware, Inc.
 BuildRequires:	libgpg-error-devel
@@ -59,7 +59,10 @@ make %{?_smp_mflags} check
 %defattr(-,root,root)
 %{_includedir}/*.h
 %{_libdir}/*.so
+%{_libdir}/pkgconfig/libgcrypt.pc
 %changelog
+*   Fri Feb 18 2022 Ankit Jain <ankitja@vmware.com> 1.8.8-1
+-   Update to 1.8.8 and Fix exponent blinding issue
 *   Mon Jun 21 2021 Ankit Jain <ankitja@vmware.com> 1.8.1-4
 -   Fix for CVE-2021-33560
 *   Thu Apr 02 2020 Ankit Jain <ankitja@vmware.com> 1.8.1-3
