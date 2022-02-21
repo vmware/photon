@@ -3,7 +3,7 @@
 
 Summary:        Cassandra is a highly scalable, eventually consistent, distributed, structured key-value store
 Name:           cassandra
-Version:        3.11.11
+Version:        3.11.12
 Release:        1%{?dist}
 URL:            http://cassandra.apache.org/
 License:        Apache License, Version 2.0
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://repo1.maven.org/maven2/org/apache/cassandra/apache-cassandra/%{version}/apache-%{name}-%{version}-src.tar.gz
-%define sha1    apache-cassandra=34a6f6ef2de5607fd5130d8dcca20773ae6cbdfd
+%define sha1    apache-cassandra=08180d32795adb6986d57c390555c477509faa76
 Source1:        cassandra.service
 
 Patch0:         0001-build.xml-Upgraded-vuln-jar-version.patch
@@ -108,6 +108,8 @@ fi
 %exclude /var/opt/cassandra/build/lib
 
 %changelog
+* Mon Feb 21 2022 Ankit Jain <ankitja@vmware.com> 3.11.12-1
+- Update to 3.11.12 and fixes CVE-2021-44521
 * Tue Sep 28 2021 Ankit Jain <ankitja@vmware.com> 3.11.11-1
 - Update to 3.11.11 to fix several second level dep vuln.
 * Mon Feb 08 2021 Ankit Jain <ankitja@vmware.com> 3.11.10-1
