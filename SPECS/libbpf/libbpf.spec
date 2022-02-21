@@ -1,7 +1,7 @@
 Summary:        Libbpf library
 Name:           libbpf
 Version:        0.6.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Group:          Development/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -31,38 +31,27 @@ developing applications that use libbpf.
 %autosetup
 
 %build
-%make_build -C ./src DESTDIR=%{buildroot} OBJDIR=%{_builddir}
+%make_build -C ./src DESTDIR=%{buildroot} OBJDIR=%{_builddir} LIBDIR=%{_libdir}
 
 %install
-%make_install -C ./src DESTDIR=%{buildroot} OBJDIR=%{_builddir}
+%make_install -C ./src DESTDIR=%{buildroot} OBJDIR=%{_builddir} LIBDIR=%{_libdir}
 
 %clean
 rm -rf %{buildroot}
 
 %files
-%ifarch aarch64
 %attr(0755,-,-) %{_libdir}/libbpf.so.0.6.0
 %{_libdir}/libbpf.so.0
 %{_libdir}/libbpf.so
-%endif
-%ifarch x86_64
-%attr(0755,-,-) %{_lib64dir}/libbpf.so.0.6.0
-%{_lib64dir}/libbpf.so.0
-%{_lib64dir}/libbpf.so
-%endif
 
 %files devel
 %attr(0644,-,-) /usr/include/bpf/*
-%ifarch aarch64
 %attr(0644,-,-) %{_libdir}/libbpf.a
 %attr(0644,-,-) %{_libdir}/pkgconfig/libbpf.pc
-%endif
-%ifarch x86_64
-%attr(0644,-,-) %{_lib64dir}/libbpf.a
-%attr(0644,-,-) %{_lib64dir}/pkgconfig/libbpf.pc
-%endif
 
 %changelog
+* Mon Feb 21 2022 Mukul Sikka <msikka@vmware.com>  0.6.1-2
+- Fix build error in aarch64 platform
 * Wed Jan 12 2022 Susant Sahani <ssahani@vmware.com>  0.6.1-1
 - Version Bump
 * Thu Apr 29 2021 Gerrit Photon <photon-checkins@vmware.com> 0.3-1
