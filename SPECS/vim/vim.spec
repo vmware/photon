@@ -3,8 +3,8 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        8.2.3428
-Release:        3%{?dist}
+Version:        8.2.4436
+Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -12,7 +12,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=4711feb7d73d6c4ca159e6f8c7d275e5449e15aa
+%define sha1    %{name}=9dca7d651520e097255202167c81671000772aef
 Source1:        vimrc
 
 BuildRequires:  ncurses-devel
@@ -75,6 +75,7 @@ fi
 %{_datarootdir}/icons/locolor/32x32/apps/gvim.png
 %{_datarootdir}/vim/vim*/pack/dist/opt/*
 %exclude %{_datarootdir}/vim/vim*/colors/desert.vim
+%exclude %{_datarootdir}/vim/vim*/colors/lists/default.vim
 %{_datarootdir}/vim/vim*/compiler/*
 %{_datarootdir}/vim/vim*/delmenu.vim
 %{_datarootdir}/vim/vim*/evim.vim
@@ -151,8 +152,8 @@ fi
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/vimrc
 %{_datarootdir}/vim/vim*/syntax/syntax.vim
-%{_datarootdir}/vim/vim*/rgb.txt
 %{_datarootdir}/vim/vim*/colors/desert.vim
+%{_datarootdir}/vim/vim*/colors/lists/default.vim
 %{_datarootdir}/vim/vim*/defaults.vim
 %{_datarootdir}/vim/vim*/filetype.vim
 %{_datarootdir}/vim/%{maj_ver}/syntax/nosyntax.vim
@@ -167,6 +168,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Tue Feb 22 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.4436-1
+- Update to 8.2.4436
 * Thu Dec 02 2021 Shreenidhi Shedi <sshedi@vmware.com> 8.2.3428-3
 - Enable skip_defaults_vim in vimrc
 * Tue Nov 30 2021 Shreenidhi Shedi <sshedi@vmware.com> 8.2.3428-2
