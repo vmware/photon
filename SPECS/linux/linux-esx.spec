@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.93
-Release:        7%{?kat_build:.kat}%{?dist}
+Release:        8%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -41,6 +41,7 @@ Source9:        check_fips_canister_struct_compatibility.inc
 %define fips_canister_version 4.0.1-5.10.21-3-secure
 Source16:       fips-canister-%{fips_canister_version}.tar.bz2
 %define sha1 fips-canister=e793f09579cf7b17608095ed80c973000f5f8407
+Source17:       speedup-algos-registration-in-non-fips-mode.patch
 %endif
 # common
 Patch0:         net-Double-tcp_mem-limits.patch
@@ -89,17 +90,18 @@ Patch63:        halt-on-panic.patch
 Patch64:        initramfs-multiple-image-extraction-support.patch
 Patch65:        initramfs-support-selective-freeing-of-initramfs-images.patch
 Patch66:        initramfs-large-files-support-for-newca-format.patch
+Patch67:        revert-x86-entry-Align-entry-text-section-to-PMD-boundary.patch
 
 #TARFS
-Patch67:	0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
+Patch80:	0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
-Patch68:        0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+Patch85:        0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # Hotplug support without firmware
-Patch69:        0001-vmw_extcfg-hotplug-without-firmware-support.patch
-Patch70:        0002-vmw_extcfg-hotplug-without-firmware-support.patch
-Patch71:        0003-vmw_extcfg-hotplug-without-firmware-support.patch
+Patch90:        0001-vmw_extcfg-hotplug-without-firmware-support.patch
+Patch91:        0002-vmw_extcfg-hotplug-without-firmware-support.patch
+Patch92:        0003-vmw_extcfg-hotplug-without-firmware-support.patch
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -272,10 +274,11 @@ The Linux package contains the Linux kernel doc files
 %patch65 -p1
 %patch66 -p1
 %patch67 -p1
-%patch68 -p1
-%patch69 -p1
-%patch70 -p1
-%patch71 -p1
+%patch80 -p1
+%patch85 -p1
+%patch90 -p1
+%patch91 -p1
+%patch92 -p1
 
 # CVE
 %patch100 -p1
@@ -341,6 +344,8 @@ cp %{SOURCE1} .config
 %if 0%{?fips}
 cp ../fips-canister-%{fips_canister_version}/fips_canister.o crypto/
 cp ../fips-canister-%{fips_canister_version}/fips_canister_wrapper.c crypto/
+# Patch canister wrapper
+patch -p1 < %{SOURCE17}
 # Change m to y for modules that are in the canister
 %include %{SOURCE5}
 %else
@@ -502,6 +507,10 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Tue Mar 01 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.93-8
+- Reduce kernel .text size by ~40% by removing .entry.text alignment
+- Reduce kernel .data section by configuring smaller kernel log buffer
+- Speedup algos registration in non-fips mode
 * Mon Feb 28 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.93-7
 - Port non-acpi hotplug support patch to 5.10.x
 * Mon Feb 14 2022 Ankit Jain <ankitja@vmware.com> 5.10.93-6
