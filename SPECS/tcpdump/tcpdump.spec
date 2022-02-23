@@ -1,13 +1,14 @@
 Summary:        Packet Analyzer
 Name:           tcpdump
 Version:        4.9.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        BSD
 URL:            http://www.tcpdump.org
 Source0:        http://www.tcpdump.org/release/%{name}-%{version}.tar.gz
 %define sha1 tcpdump=59b309f3620ac4b709de2eaf7bf3a83bf04bc048
 Patch0:         CVE-2018-19519.patch
 Patch1:         CVE-2020-8037.patch
+Patch2:         CVE-2018-16301.patch
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -40,6 +41,8 @@ make %{?_smp_mflags} check
 %{_mandir}/man1/*
 
 %changelog
+*   Wed Feb 23 2022 Prashant S Chauhan <psinghchauha@vmware.com> 4.9.3-5
+-   Fix CVE-2018-16301
 *   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 4.9.3-4
 -   Bump up release for openssl
 *   Sun Nov 15 2020 Prashant S Chauhan <psinghchauha@vmware.com> 4.9.3-3
