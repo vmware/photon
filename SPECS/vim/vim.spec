@@ -1,10 +1,10 @@
 %define debug_package %{nil}
-%global maj_ver vim80
+%global maj_ver vim82
 
 Summary:        Text editor
 Name:           vim
-Version:        8.0.0533
-Release:        18%{?dist}
+Version:        8.2.3408
+Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -12,27 +12,40 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=6169cece15cb139db3ceff9c9ba2bf74013b1e02
+%define sha1    %{name}=f53626d97b6d57b2579493f2527fdcf275244017
 Source1:        vimrc
 
 BuildRequires:  ncurses-devel
 
 Conflicts:      toybox < 0.7.3-7
 
-Patch0:         CVE-2017-17087.patch
-Patch1:         vim-CVE-2019-12735.patch
-Patch2:         CVE-2019-20807.patch
-Patch3:         vim-CVE-2021-3778.patch
-Patch4:         vim-CVE-2021-3796.patch
-Patch5:         vim-CVE-2021-3875.patch
+Patch0:         vim-CVE-2021-3778.patch
+Patch1:         vim-CVE-2021-3796.patch
+Patch2:         vim-CVE-2021-3872.patch
+Patch3:         vim-CVE-2021-3875.patch
+Patch4:         vim-CVE-2021-3973.patch
+Patch5:         vim-CVE-2021-3974.patch
 Patch6:         vim-CVE-2021-3903.patch
 Patch7:         vim-CVE-2021-3927.patch
 Patch8:         vim-CVE-2021-3928.patch
-Patch9:         vim-CVE-2021-4069.patch
-Patch10:        vim-CVE-2021-3984.patch
-Patch11:        vim-CVE-2021-4019.patch
-Patch12:        vim-CVE-2022-0318.patch
-Patch13:        vim-CVE-2021-3872.patch
+Patch9:         vim-CVE-2021-3984.patch
+Patch10:        vim-CVE-2021-4019.patch
+Patch11:        vim-CVE-2021-4069.patch
+Patch12:        vim-CVE-2021-4136.patch
+Patch13:        vim-CVE-2022-0261.patch
+Patch14:        vim-CVE-2022-0318.patch
+Patch15:        vim-CVE-2021-4166.patch
+Patch16:        vim-CVE-2021-4187.patch
+Patch17:        vim-CVE-2021-4192.patch
+Patch18:        vim-CVE-2022-0128.patch
+Patch19:        vim-CVE-2021-4173.patch
+Patch20:        vim-CVE-2022-0359.patch
+Patch21:        vim-CVE-2022-0361.patch
+Patch22:        vim-CVE-2022-0408.patch
+Patch23:        vim-CVE-2022-0443.patch
+Patch24:        vim-CVE-2022-0413.patch
+Patch25:        vim-CVE-2022-0392.patch
+Patch26:        vim-CVE-2022-0407.patch
 
 %description
 The VIM package contains a powerful text editor.
@@ -80,18 +93,16 @@ fi
 %{_datarootdir}/vim/%{maj_ver}/autoload/*
 %{_datarootdir}/vim/%{maj_ver}/bugreport.vim
 %{_datarootdir}/vim/%{maj_ver}/colors/*
-%exclude %{_datarootdir}/vim/%{maj_ver}/colors/desert.vim
 %{_datarootdir}/applications/gvim.desktop
 %{_datarootdir}/applications/vim.desktop
 %{_datarootdir}/icons/hicolor/48x48/apps/gvim.png
 %{_datarootdir}/icons/locolor/16x16/apps/gvim.png
 %{_datarootdir}/icons/locolor/32x32/apps/gvim.png
-%{_datarootdir}/vim/%{maj_ver}/defaults.vim
 %{_datarootdir}/vim/%{maj_ver}/pack/dist/opt/*
+%exclude %{_datarootdir}/vim/%{maj_ver}/colors/desert.vim
 %{_datarootdir}/vim/%{maj_ver}/compiler/*
 %{_datarootdir}/vim/%{maj_ver}/delmenu.vim
 %{_datarootdir}/vim/%{maj_ver}/evim.vim
-%{_datarootdir}/vim/%{maj_ver}/filetype.vim
 %{_datarootdir}/vim/%{maj_ver}/ftoff.vim
 %{_datarootdir}/vim/%{maj_ver}/ftplugin.vim
 %{_datarootdir}/vim/%{maj_ver}/ftplugin/*
@@ -112,7 +123,9 @@ fi
 %{_datarootdir}/vim/%{maj_ver}/scripts.vim
 %{_datarootdir}/vim/%{maj_ver}/spell/*
 %{_datarootdir}/vim/%{maj_ver}/syntax/*
+%exclude %{_datarootdir}/vim/%{maj_ver}/syntax/nosyntax.vim
 %exclude %{_datarootdir}/vim/%{maj_ver}/syntax/syntax.vim
+%exclude %{_datarootdir}/vim/%{maj_ver}/autoload/dist/ft.vim
 %{_datarootdir}/vim/%{maj_ver}/tools/*
 %{_datarootdir}/vim/%{maj_ver}/tutor/*
 %{_datarootdir}/vim/%{maj_ver}/lang/*.vim
@@ -139,7 +152,11 @@ fi
 %lang(sk) %{_datarootdir}/vim/%{maj_ver}/lang/sk/LC_MESSAGES/vim.mo
 %lang(sv) %{_datarootdir}/vim/%{maj_ver}/lang/sv/LC_MESSAGES/vim.mo
 %lang(uk) %{_datarootdir}/vim/%{maj_ver}/lang/uk/LC_MESSAGES/vim.mo
+%lang(da) %{_datarootdir}/vim/%{maj_ver}/lang/da/LC_MESSAGES/vim.mo
+%lang(lv) %{_datarootdir}/vim/%{maj_ver}/lang/lv/LC_MESSAGES/vim.mo
+%lang(sr) %{_datarootdir}/vim/%{maj_ver}/lang/sr/LC_MESSAGES/vim.mo
 %lang(vi) %{_datarootdir}/vim/%{maj_ver}/lang/vi/LC_MESSAGES/vim.mo
+%lang(tr) %{_datarootdir}/vim/%{maj_ver}/lang/tr/LC_MESSAGES/vim.mo
 %lang(zh_CN.UTF-8) %{_datarootdir}/vim/%{maj_ver}/lang/zh_CN.UTF-8/LC_MESSAGES/vim.mo
 %lang(zh_CN) %{_datarootdir}/vim/%{maj_ver}/lang/zh_CN/LC_MESSAGES/vim.mo
 %lang(zh_TW.UTF-8) %{_datarootdir}/vim/%{maj_ver}/lang/zh_TW.UTF-8/LC_MESSAGES/vim.mo
@@ -158,9 +175,13 @@ fi
 %files
 %defattr(-,root,root)
 %config(noreplace) /etc/vimrc
-%{_datarootdir}/vim/%{maj_ver}/colors/desert.vim
-%{_datarootdir}/vim/%{maj_ver}/syntax/syntax.vim
+%{_datarootdir}/vim/%{maj_ver}/defaults.vim
+%{_datarootdir}/vim/%{maj_ver}/filetype.vim
 %{_datarootdir}/vim/%{maj_ver}/rgb.txt
+%{_datarootdir}/vim/%{maj_ver}/colors/desert.vim
+%{_datarootdir}/vim/%{maj_ver}/syntax/nosyntax.vim
+%{_datarootdir}/vim/%{maj_ver}/syntax/syntax.vim
+%{_datarootdir}/vim/%{maj_ver}/autoload/dist/ft.vim
 %{_bindir}/ex
 %{_bindir}/vi
 %{_bindir}/view
@@ -170,6 +191,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Wed Feb 23 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.3408-1
+- Upgrade to 8.2.3408 and fix several CVEs
 * Mon Jan 31 2022 Harinadh D <hdommaraju@vmware.com> 8.0.0533-18
 - Fix for CVE-2021-3872
 * Mon Jan 31 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.0.0533-17
