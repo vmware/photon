@@ -1,7 +1,7 @@
 Summary:        Photon repo files, gpg keys
 Name:           photon-repos
 Version:        3.0
-Release:        5%{?dist}
+Release:        6%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
@@ -25,19 +25,19 @@ Photon repo files and gpg keys
 # Nothing to do
 
 %install
-rm -rf $RPM_BUILD_ROOT
-install -d -m 755 $RPM_BUILD_ROOT/etc/yum.repos.d
-install -m 644 %{SOURCE2} $RPM_BUILD_ROOT/etc/yum.repos.d
-install -m 644 %{SOURCE3} $RPM_BUILD_ROOT/etc/yum.repos.d
-install -m 644 %{SOURCE4} $RPM_BUILD_ROOT/etc/yum.repos.d
-install -m 644 %{SOURCE5} $RPM_BUILD_ROOT/etc/yum.repos.d
-install -m 644 %{SOURCE6} $RPM_BUILD_ROOT/etc/yum.repos.d
+rm -rf %{buildroot}
+install -d -m 755 %{buildroot}/etc/yum.repos.d
+install -m 644 %{SOURCE2} %{buildroot}/etc/yum.repos.d
+install -m 644 %{SOURCE3} %{buildroot}/etc/yum.repos.d
+install -m 644 %{SOURCE4} %{buildroot}/etc/yum.repos.d
+install -m 644 %{SOURCE5} %{buildroot}/etc/yum.repos.d
+install -m 644 %{SOURCE6} %{buildroot}/etc/yum.repos.d
 
-install -d -m 755 $RPM_BUILD_ROOT/etc/pki/rpm-gpg
-install -m 644 %{SOURCE1} $RPM_BUILD_ROOT/etc/pki/rpm-gpg
+install -d -m 755 %{buildroot}/etc/pki/rpm-gpg
+install -m 644 %{SOURCE1} %{buildroot}/etc/pki/rpm-gpg
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
@@ -50,6 +50,8 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/yum.repos.d/photon-extras.repo
 
 %changelog
+*   Wed Feb 23 2022 Oliver Kurth <okurth@vmware.com> 3.0-6
+-   add skip_md_filelists=1 option
 *   Thu Mar 26 2020 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 3.0-5
 -   Change baseurl to packages.vmware.com
 *   Sat Jan 04 2020 Neal Gompa <ngompa13@gmail.com> 3.0-4

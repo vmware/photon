@@ -5,3 +5,4 @@ gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY
 gpgcheck=1
 enabled=1
 skip_if_unavailable=True
+skip_md_filelists=1
