@@ -1,0 +1,253 @@
+From 3c173f852bf310c8e2a342032f1d4fcb196d62c9 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Mon, 21 Feb 2022 16:59:38 +0530
+Subject: [PATCH 2/8] eventfs: adding eventfs dir add functions
+
+Adding eventfs_file structure which will hold properties
+of file or dir.
+
+Adding following functions to add dir in eventfs:
+
+eventfs_create_events_dir() will directly create events dir
+with-in tracing folder.
+
+eventfs_add_subsystem_dir() will adds the info of
+subsystem_dir to eventfs and dynamically create
+subsystem_dir as and when requires.
+
+eventfs_add_dir() will add the info of dir (which is
+with-in subsystem_dir) to eventfs and dynamically create
+these dir as and when requires.
+
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+Co-developed-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ fs/tracefs/Makefile      |   1 +
+ fs/tracefs/event_inode.c | 165 +++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/tracefs.h  |  26 ++++++++
+ 3 files changed, 192 insertions(+)
+ create mode 100644 fs/tracefs/event_inode.c
+
+diff --git a/fs/tracefs/Makefile b/fs/tracefs/Makefile
+index 7c35a28..73c56da 100644
+--- a/fs/tracefs/Makefile
++++ b/fs/tracefs/Makefile
+@@ -1,5 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ tracefs-objs	:= inode.o
++tracefs-objs	+= event_inode.o
+ 
+ obj-$(CONFIG_TRACING)	+= tracefs.o
+ 
+diff --git a/fs/tracefs/event_inode.c b/fs/tracefs/event_inode.c
+new file mode 100644
+index 0000000..284979b
+--- /dev/null
++++ b/fs/tracefs/event_inode.c
+@@ -0,0 +1,165 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ *  event_inode.c - part of tracefs, a pseudo file system for activating tracing
++ *
++ *  Copyright (C) 2020-22 VMware Inc, author: Steven Rostedt (VMware) <rostedt@goodmis.org>
++ *  Copyright (C) 2020-22 VMware Inc, author: Ajay Kaher <akaher@vmware.com>
++ *
++ * eventfs is used to show trace events with one set of dentries
++ */
++#include <linux/fsnotify.h>
++#include <linux/fs.h>
++#include <linux/namei.h>
++#include <linux/security.h>
++#include <linux/tracefs.h>
++#include <linux/kref.h>
++#include "internal.h"
++
++static const struct file_operations eventfs_file_operations = {
++};
++
++const struct inode_operations eventfs_root_dir_inode_operations = {
++};
++
++/**
++ * eventfs_create_dir - create the trace event structure
++ * @name: a pointer to a string containing the name of the directory to
++ *        create.
++ * @parent: a pointer to the parent dentry for this file.  This should be a
++ *          directory dentry if set.  If this parameter is NULL, then the
++ *          directory will be created in the root of the tracefs filesystem.
++ *
++ * This function creates the top of the trace event directory.
++ */
++struct dentry *eventfs_create_events_dir(const char *name, struct dentry *parent)
++{
++	struct dentry *dentry = tracefs_start_creating(name, parent);
++	struct eventfs_inode *ei;
++	struct tracefs_inode *ti;
++	struct inode *inode;
++
++	if (IS_ERR(dentry))
++		return NULL;
++
++	ei = kzalloc(sizeof(*ei), GFP_KERNEL);
++	if (!ei)
++		return NULL;
++	inode = tracefs_get_inode(dentry->d_sb);
++	if (unlikely(!inode)) {
++		kfree(ei);
++		return tracefs_failed_creating(dentry);
++	}
++
++	INIT_LIST_HEAD(&ei->e_top_files);
++
++	ti = get_tracefs(inode);
++	ti->flags |= TRACEFS_EVENT_INODE;
++	ti->private = ei;
++
++	inode->i_mode = S_IFDIR | S_IRWXU | S_IRUGO | S_IXUGO;
++	inode->i_op = &eventfs_root_dir_inode_operations;
++	inode->i_fop = &eventfs_file_operations;
++
++	/* directory inodes start off with i_nlink == 2 (for "." entry) */
++	inc_nlink(inode);
++	d_instantiate(dentry, inode);
++	inc_nlink(dentry->d_parent->d_inode);
++	fsnotify_mkdir(dentry->d_parent->d_inode, dentry);
++	return tracefs_end_creating(dentry);
++}
++
++/**
++ * eventfs_add_subsystem_dir - add eventfs subsystem_dir to list to create later
++ * @name: a pointer to a string containing the name of the file to create.
++ * @parent: a pointer to the parent dentry for this dir.
++ *
++ * This function adds eventfs subsystem dir to list.
++ * And all these dirs are created on the fly when they are looked up,
++ * and the dentry and inodes will be removed when they are done.
++ */
++struct eventfs_file *eventfs_add_subsystem_dir(const char *name, struct dentry *parent)
++{
++	struct eventfs_file *ef;
++	struct tracefs_inode *ti_parent;
++	struct eventfs_inode *ei_parent;
++
++	if (!parent)
++		return -EINVAL;
++
++	ti_parent = get_tracefs(parent->d_inode);
++	ei_parent = ti_parent->private;
++
++	ef = kzalloc(sizeof(*ef), GFP_KERNEL);
++	if (!ef)
++		return -ENOMEM;
++
++	ef->ei = kzalloc(sizeof(struct eventfs_inode), GFP_KERNEL);
++	if (!ef->ei) {
++		kfree(ef);
++		return NULL;
++	}
++
++	INIT_LIST_HEAD(&ef->ei->e_top_files);
++
++	ef->name = kstrdup(name, GFP_KERNEL);
++	if (!ef->name) {
++		kfree(ef);
++		return -ENOMEM;
++	}
++
++	ef->mode = S_IFDIR | S_IRWXU | S_IRUGO | S_IXUGO;
++	ef->iop = &eventfs_root_dir_inode_operations;
++	ef->fop =  &eventfs_file_operations;
++	ef->dentry = NULL;
++	ef->created = false;
++	ef->d_parent = parent;
++
++	list_add_tail(&ef->list, &ei_parent->e_top_files);
++	return ef;
++}
++
++/**
++ * eventfs_add_dir - add eventfs dir to list to create later
++ * @name: a pointer to a string containing the name of the file to create.
++ * @eventfs_file: a pointer to the parent eventfs_file for this dir.
++ *
++ * This function adds eventfs dir to list.
++ * And all these dirs are created on the fly when they are looked up,
++ * and the dentry and inodes will be removed when they are done.
++ */
++struct eventfs_file *eventfs_add_dir(const char *name, struct eventfs_file *ef_parent)
++{
++	struct eventfs_file *ef;
++
++	if (!ef_parent)
++		return -EINVAL;
++
++	ef = kzalloc(sizeof(struct eventfs_file), GFP_KERNEL);
++	if (!ef)
++		return -ENOMEM;
++
++	ef->ei = kzalloc(sizeof(struct eventfs_inode), GFP_KERNEL);
++	if (!ef->ei) {
++		kfree(ef);
++		return NULL;
++	}
++
++	INIT_LIST_HEAD(&ef->ei->e_top_files);
++
++	ef->name = kstrdup(name, GFP_KERNEL);
++	if (!ef->name) {
++		kfree(ef->ei);
++		kfree(ef);
++		return -ENOMEM;
++	}
++
++	ef->mode = S_IFDIR | S_IRWXU | S_IRUGO | S_IXUGO;
++	ef->iop = &eventfs_root_dir_inode_operations;
++	ef->fop =  &eventfs_file_operations;
++	ef->created = false;
++	ef->dentry = NULL;
++	ef->d_parent = NULL;
++
++	list_add_tail(&ef->list, &ef_parent->ei->e_top_files);
++	return ef;
++}
+diff --git a/include/linux/tracefs.h b/include/linux/tracefs.h
+index 9991244..88f1dfe 100644
+--- a/include/linux/tracefs.h
++++ b/include/linux/tracefs.h
+@@ -21,6 +21,32 @@ struct file_operations;
+ 
+ #ifdef CONFIG_TRACING
+ 
++struct eventfs_inode {
++        struct list_head                e_top_files;
++};
++
++struct eventfs_file {
++	const char                      *name;
++	struct dentry                   *d_parent;
++	struct dentry                   *dentry;
++	struct list_head                list;
++	struct eventfs_inode            *ei;
++	const struct file_operations    *fop;
++	const struct inode_operations   *iop;
++	void                            *data;
++	umode_t                         mode;
++	bool                            created;
++};
++
++struct dentry *eventfs_create_events_dir(const char *name,
++					 struct dentry *parent);
++
++struct eventfs_file *eventfs_add_subsystem_dir(const char *name,
++					       struct dentry *parent);
++
++struct eventfs_file *eventfs_add_dir(const char *name,
++				     struct eventfs_file *ef_parent);
++
+ struct dentry *tracefs_create_file(const char *name, umode_t mode,
+ 				   struct dentry *parent, void *data,
+ 				   const struct file_operations *fops);
+-- 
+2.7.4
+

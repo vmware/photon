@@ -1,0 +1,215 @@
+From f03e3ff8cb21b807a7ab87a58b7bd9b9720e4656 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Tue, 22 Feb 2022 12:56:03 +0530
+Subject: [PATCH 6/8] eventfs: adding eventfs lookup, read, open functions
+
+Adding following functions to eventfs:
+eventfs_set_ef_status_free()
+eventfs_post_create_dir()
+eventfs_root_lookup()
+eventfs_release()
+dcache_dir_open_wrapper()
+
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+Co-developed-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ fs/tracefs/event_inode.c | 164 +++++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/tracefs.h  |   2 +
+ 2 files changed, 166 insertions(+)
+
+diff --git a/fs/tracefs/event_inode.c b/fs/tracefs/event_inode.c
+index da72bef..ba56377 100644
+--- a/fs/tracefs/event_inode.c
++++ b/fs/tracefs/event_inode.c
+@@ -149,10 +149,174 @@ struct dentry *eventfs_create_dir(const char *name, umode_t mode,
+ 	return eventfs_end_creating(dentry, inode_locked);
+ }
+ 
++/**
++ * eventfs_set_ef_status_free - set the ef->status to free
++ * @dentry: dentry who's status to be freed
++ *
++ * eventfs_set_ef_status_free will be called if no more
++ * reference remains
++ */
++void eventfs_set_ef_status_free(struct dentry *dentry)
++{
++	struct tracefs_inode *ti_parent;
++	struct eventfs_inode *ei_parent;
++	struct eventfs_file *n, *ef;
++
++	ti_parent = get_tracefs(dentry->d_parent->d_inode);
++	ei_parent = ti_parent->private;
++
++	list_for_each_entry_safe(ef, n, &ei_parent->e_top_files, list)
++	{
++		if (!strcmp (ef->name, dentry->d_name.name)) {
++			ef->created = false;
++			ef->dentry = NULL;
++			break;
++		}
++	}
++}
++
++/**
++ * eventfs_post_create_dir - post create dir routine
++ * @eventfs_file: eventfs_file of recently created dir
++ *
++ * Files with-in eventfs dir should know dentry of parent dir
++ */
++void eventfs_post_create_dir(struct eventfs_file *ef)
++{
++	struct eventfs_file *ef_child, *n;
++	struct tracefs_inode *ti;
++	struct eventfs_inode *ei;
++
++	/* fill parent-child relation */
++	list_for_each_entry_safe(ef_child, n, &ef->ei->e_top_files, list) {
++		ef_child->d_parent = ef->dentry;
++	}
++
++	ti = get_tracefs(ef->dentry->d_inode);
++	ti->private = ef->ei;
++}
++
++/**
++ * eventfs_root_lookup - lookup routine to create file/dir
++ * @dir: directory in which lookup to be done
++ * @dentry: file/dir dentry
++ * @flags:
++ *
++ * Used to create dynamic file/dir with-in @dir, search with-in ei
++ * list, if @dentry found go ahead and create the file/dir
++ */
++
++static struct dentry *eventfs_root_lookup(struct inode * dir,
++					  struct dentry * dentry,
++					  unsigned int flags)
++{
++	struct tracefs_inode *ti;
++	struct eventfs_inode *ei;
++	struct eventfs_file *ef, *n;
++	struct dentry *ret = simple_lookup(dir, dentry, flags);
++
++	ti = get_tracefs(dir);
++	if (!(ti->flags & TRACEFS_EVENT_INODE))
++		return NULL;
++
++	ei = ti->private;
++	list_for_each_entry_safe(ef, n, &ei->e_top_files, list) {
++		if (!strcmp (ef->name, dentry->d_name.name)) {
++			if (!ef->ei && ef->created == false) {
++				ef->created = true;
++				ef->dentry = eventfs_create_file(ef->name, ef->mode, ef->d_parent, ef->data, ef->fop, 0, 1);
++				ef->dentry->d_fsdata = ef;
++				dput(ef->dentry);
++				break;
++			}
++			else if (ef->ei && ef->created == false) {
++				ef->created = true;
++				ef->dentry = eventfs_create_dir(ef->name, ef->mode, ef->d_parent, ef->data, ef->fop, ef->iop, 0, 1); // fixme: review
++				eventfs_post_create_dir(ef);
++				ef->dentry->d_fsdata = ef;
++				dput(ef->dentry);
++				break;
++			}
++		}
++	}
++	return ret;
++}
++
++/**
++ * eventfs_release - called to release eventfs file/dir
++ * @inode:
++ * @file:
++ *
++ */
++static int eventfs_release (struct inode *inode, struct file *file)
++{
++	struct dentry *dentry = file_dentry(file);
++	struct tracefs_inode *ti;
++	struct eventfs_inode *ei;
++	struct eventfs_file *ef, *n;
++
++	ti = get_tracefs(inode);
++	if (!(ti->flags & TRACEFS_EVENT_INODE))
++		return -EINVAL;
++
++	ei = ti->private;
++	list_for_each_entry_safe(ef, n, &ei->e_top_files, list) {
++		if (ef->created == true) {
++			dput(ef->dentry);
++		}
++	}
++	return dcache_dir_close(inode, file);
++}
++
++/**
++ * dcache_dir_open_wrapper - eventfs open wrapper
++ * @inode:
++ * @file:
++ *
++ * Used to dynamic create file/dir with-in @file, all the
++ * file/dir will be created. If already created then reference
++ * will be increased
++ */
++int dcache_dir_open_wrapper(struct inode *inode, struct file *file)
++{
++	struct tracefs_inode *ti;
++	struct eventfs_inode *ei;
++	struct eventfs_file *ef, *n;
++	struct inode *f_inode = file_inode(file);
++	struct dentry *dentry = file_dentry(file);
++
++	ti = get_tracefs(f_inode);
++	if (!(ti->flags & TRACEFS_EVENT_INODE))
++		return -EINVAL;
++
++	ei = ti->private;
++	list_for_each_entry_safe(ef, n, &ei->e_top_files, list) {
++		if (!ef->ei && ef->created == false) {
++			ef->created = true;
++			ef->dentry = eventfs_create_file(ef->name, ef->mode, dentry, ef->data, ef->fop, 1, 0);
++			ef->dentry->d_fsdata = ef;
++		} else if (ef->ei && ef->created == false) {
++			ef->created = true;
++			ef->dentry = eventfs_create_dir(ef->name, ef->mode, dentry, ef->data, ef->fop, ef->iop, 1, 1);
++			eventfs_post_create_dir(ef);
++			ef->dentry->d_fsdata = ef;
++                } else {
++			dget(ef->dentry);
++		}
++	}
++	return dcache_dir_open(inode, file);
++}
++
+ static const struct file_operations eventfs_file_operations = {
++	.open           = dcache_dir_open_wrapper,
++	.read		= generic_read_dir,
++	.iterate_shared	= dcache_readdir,
++	.llseek		= generic_file_llseek,
++	.release        = eventfs_release,
+ };
+ 
+ const struct inode_operations eventfs_root_dir_inode_operations = {
++	.lookup		= eventfs_root_lookup,
+ };
+ 
+ /**
+diff --git a/include/linux/tracefs.h b/include/linux/tracefs.h
+index 7b4ddf2..bb47190 100644
+--- a/include/linux/tracefs.h
++++ b/include/linux/tracefs.h
+@@ -66,6 +66,8 @@ int eventfs_add_top_file(const char *name, umode_t mode,
+ 
+ void eventfs_remove(struct eventfs_file *ef);
+ 
++void eventfs_set_ef_status_free(struct dentry *dentry);
++
+ struct dentry *tracefs_create_file(const char *name, umode_t mode,
+ 				   struct dentry *parent, void *data,
+ 				   const struct file_operations *fops);
+-- 
+2.7.4
+

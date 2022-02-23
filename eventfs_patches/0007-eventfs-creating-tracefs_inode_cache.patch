@@ -1,0 +1,97 @@
+From eeac155d65723592101dd960fd2d3d8efa6cd178 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Wed, 23 Feb 2022 10:50:27 +0530
+Subject: [PATCH 7/8] eventfs: creating tracefs_inode_cache
+
+Creating tracefs_inode_cache which is a cache of tracefs_inode.
+Adding helping functions:
+tracefs_alloc_inode()
+tracefs_free_inode()
+
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+Co-developed-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+---
+ fs/tracefs/inode.c | 41 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+
+diff --git a/fs/tracefs/inode.c b/fs/tracefs/inode.c
+index aef763d..96ecc5f 100644
+--- a/fs/tracefs/inode.c
++++ b/fs/tracefs/inode.c
+@@ -21,13 +21,35 @@
+ #include <linux/parser.h>
+ #include <linux/magic.h>
+ #include <linux/slab.h>
++#include "internal.h"
+ 
+ #define TRACEFS_DEFAULT_MODE	0700
++static struct kmem_cache *tracefs_inode_cachep __ro_after_init;
+ 
+ static struct vfsmount *tracefs_mount;
+ static int tracefs_mount_count;
+ static bool tracefs_registered;
+ 
++static struct inode *tracefs_alloc_inode(struct super_block *sb)
++{
++	struct tracefs_inode *ti;
++
++	ti = kmem_cache_alloc(tracefs_inode_cachep, GFP_KERNEL);
++	if (!ti)
++		return NULL;
++
++	ti->flags = 0;
++
++	return &ti->vfs_inode;
++}
++
++static void tracefs_free_inode(struct inode *inode)
++{
++	struct tracefs_inode *ti = get_tracefs(inode);
++
++	kmem_cache_free(tracefs_inode_cachep, get_tracefs(inode));
++}
++
+ static ssize_t default_read_file(struct file *file, char __user *buf,
+ 				 size_t count, loff_t *ppos)
+ {
+@@ -330,6 +352,9 @@ static int tracefs_show_options(struct seq_file *m, struct dentry *root)
+ }
+ 
+ static const struct super_operations tracefs_super_operations = {
++	.alloc_inode    = tracefs_alloc_inode,
++	.free_inode     = tracefs_free_inode,
++	.drop_inode     = generic_delete_inode,
+ 	.statfs		= simple_statfs,
+ 	.remount_fs	= tracefs_remount,
+ 	.show_options	= tracefs_show_options,
+@@ -666,10 +691,26 @@ bool tracefs_initialized(void)
+ 	return tracefs_registered;
+ }
+ 
++static void init_once(void *foo)
++{
++	struct tracefs_inode *ti = (struct tracefs_inode *) foo;
++
++	inode_init_once(&ti->vfs_inode);
++}
++
+ static int __init tracefs_init(void)
+ {
+ 	int retval;
+ 
++	tracefs_inode_cachep = kmem_cache_create("tracefs_inode_cache",
++						 sizeof(struct tracefs_inode),
++						 0, (SLAB_RECLAIM_ACCOUNT|
++						     SLAB_MEM_SPREAD|
++						     SLAB_ACCOUNT),
++						 init_once);
++	if (!tracefs_inode_cachep)
++		return -ENOMEM;
++
+ 	retval = sysfs_create_mount_point(kernel_kobj, "tracing");
+ 	if (retval)
+ 		return -EINVAL;
+-- 
+2.7.4
+
