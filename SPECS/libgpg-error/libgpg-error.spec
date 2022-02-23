@@ -1,7 +1,7 @@
 Summary:      	libgpg-error
 Name:         	libgpg-error
 Version:      	1.27
-Release:      	1%{?dist}
+Release:      	2%{?dist}
 License:      	GPLv2+
 URL:          	ftp://ftp.gnupg.org/gcrypt/alpha/libgpg-error/
 Group:		Development/Libraries
@@ -32,11 +32,11 @@ These are the additional language files of libgpg-error.
 %setup -q
 
 %build
-./configure --prefix=%{_prefix} --bindir=%{_bindir} --libdir=%{_libdir}
+%configure
 make %{?_smp_mflags}
 
 %install
-make DESTDIR=%{buildroot} install
+make %{?_smp_mflags} DESTDIR=%{buildroot} install
 echo $%{_libdir}
 echo $%{_bindir}
 #mkdir -p %{buildroot}%{_libdir}
@@ -48,10 +48,10 @@ rm -rf %{buildroot}/%{_infodir}
 %check
 make %{?_smp_mflags} check
 
-%post 
+%post
 /sbin/ldconfig
 
-%postun 
+%postun
 /sbin/ldconfig
 
 echo %{_libdir}
@@ -59,21 +59,22 @@ echo %{_libdir}
 %defattr(-,root,root)
 %{_bindir}/*
 %{_libdir}/libgpg-error.so*
-%exclude %{_datadir}/aclocal/gpg-error.m4
-%{_mandir}/man1/*
-%exclude %{_datarootdir}/common-lisp/*
+%{_mandir}
 
 %files devel
 %defattr(-,root,root)
 %{_includedir}/*
 %{_datadir}/*
+%exclude %{_mandir}
 
 %files lang -f %{name}.lang
 %defattr(-,root,root)
 
 %changelog
-*	Tue Apr 04 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.27-1
--	Upgraded to new version 1.27
+*   Wed Feb 23 2022 Ankit Jain <ankitja@vmware.com> 1.27-2
+-   Remove packaging of same file in both main and subpackage
+*   Tue Apr 04 2017 Harish Udaiya Kumar <hudaiyakumar@vmware.com> 1.27-1
+-   Upgraded to new version 1.27
 *   Wed Nov 23 2016 Alexey Makhalov <amakhalov@vmware.com> 1.21-3
 -   Added -lang subpackage
 *   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.21-2
