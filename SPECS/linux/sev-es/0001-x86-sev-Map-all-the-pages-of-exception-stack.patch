@@ -1,0 +1,56 @@
+From 06e3a25b1158db7ee3ab6c5ffc0ca333e7ddf7a7 Mon Sep 17 00:00:00 2001
+From: Ajay Kaher <akaher@vmware.com>
+Date: Fri, 25 Feb 2022 14:43:36 +0530
+Subject: [PATCH] x86/sev: Map all the pages of exception stack.
+
+upstream 541ac97186d9ea88491961a46284de3603c914fd commit
+
+The size of the exception stacks was increased by the commit in Fixes,
+resulting in stack sizes greater than a page in size. The #VC exception
+handling was only mapping the first (bottom) page, resulting in an
+SEV-ES guest failing to boot.
+
+Map all the pages of exception stack.
+
+Fixes: 7fae4c24a2b8 ("x86: Increase exception stack sizes")
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Tested-by: Tom Lendacky <thomas.lendacky@amd.com>
+Tested-by: Brijesh Singh <brijesh.singh@amd.com>
+Link: https://lkml.kernel.org/r/YVt1IMjIs7pIZTRR@zn.tnic
+[Ajay: Re-write this patch as per SEV-ES patch set v3]
+Signed-off-by: Ajay Kaher <akaher@vmware.com>
+---
+ arch/x86/kernel/sev-es.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/kernel/sev-es.c b/arch/x86/kernel/sev-es.c
+index 3866472..656970c 100644
+--- a/arch/x86/kernel/sev-es.c
++++ b/arch/x86/kernel/sev-es.c
+@@ -611,6 +611,7 @@ static void __init sev_es_setup_vc_stack(int cpu)
+ 	struct cpu_entry_area *cea;
+ 	struct tss_struct *tss;
+ 	unsigned long size;
++	unsigned int npages;
+ 	char *first_stack;
+ 	int i;
+ 
+@@ -621,9 +622,12 @@ static void __init sev_es_setup_vc_stack(int cpu)
+ 	/* Map the stacks to the cpu_entry_area */
+ 	for (i = 0; i < N_VC_STACKS; i++) {
+ 		void *vaddr = cea->vc_stacks.stacks[i].stack;
+-		phys_addr_t pa = __pa(stack->stacks[i].stack);
++		void *ptr = stack->stacks[i].stack;
+ 
+-		cea_set_pte(vaddr, pa, PAGE_KERNEL);
++		npages = sizeof(stack->stacks[i].stack) / PAGE_SIZE;
++		for( ; npages; npages--, vaddr+= PAGE_SIZE, ptr += PAGE_SIZE) {
++			cea_set_pte(vaddr, __pa(ptr), PAGE_KERNEL);
++		}
+ 	}
+ 
+ 	/*
+-- 
+2.7.4
+

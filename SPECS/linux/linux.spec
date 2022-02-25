@@ -4,7 +4,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.19.229
-Release:        1%{?kat_build:.kat}%{?dist}
+Release:        2%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -389,6 +389,7 @@ Patch482:        0080-x86-boot-Enable-vmw-serial-port-via-Super-I-O.patch
 Patch483:        0081-x86-sev-es-Disable-use-of-WP-via-PAT-for-__sme_early.patch
 Patch484:        0082-x86-sev-es-load-idt-before-entering-long-mode-to-han.patch
 Patch485:        0001-x86-boot-64-Explicitly-map-boot_params-and-command-l.patch
+Patch486:        0001-x86-sev-Map-all-the-pages-of-exception-stack.patch
 
 # SEV-ES: Security Mitigate
 Patch491:        0001-x86-boot-compressed-64-Introduce-sev_status.patch
@@ -866,6 +867,8 @@ This Linux package contains hmac sha generator kernel module.
 %patch483 -p1
 #%%patch484 -p1
 %patch485 -p1
+%patch486 -p1
+
 %patch491 -p1
 %patch492 -p1
 %patch493 -p1
@@ -1256,6 +1259,8 @@ getent group sgx_prv >/dev/null || groupadd -r sgx_prv
 %endif
 
 %changelog
+* Fri Feb 25 2022 Ajay Kaher <akaher@vmware.com> 4.19.229-2
+- Fix sev-es exception stack mapping
 * Sat Feb 12 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.229-1
 - Update to version 4.19.229
 * Fri Feb 11 2022 Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu> 4.19.225-6
