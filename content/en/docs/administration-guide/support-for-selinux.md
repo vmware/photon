@@ -5,9 +5,9 @@ weight: 10
 
 SELinux is a labelling system to implement MAC(mandatory access control) for subjects(user, process) over objects (files, dirs, sockets) and to protect the confidentiality of objects. It is a policy driven system where rules can be mapped to the labels which have been given to subjects, objects. It is an extra level of security provided on top of Linux normal file ownership/permissions.
 
-Photon OS 4.0 offersx support for SELinux. The support covers a minimal set of policies for the container runtime case and it is referred to as the default policy. It is a Multi-Category Security (MCS) policy. So the files on the filesystem can be labeled with multiple categories.The MCS policy is actively used by container runtime as `runc/containerd/docker/kubernetes` to assign the `per-container` category.
+Photon OS 4.0 offers support for SELinux. The support covers a minimal set of policies for the container runtime case and it is referred to as the default policy. It is a Multi-Category Security (MCS) policy. So the files on the filesystem can be labeled with multiple categories. The MCS policy is actively used by container runtime as `runc/containerd/docker/kubernetes` to assign the `per-container` category.
 
-The default policy in Photon OS does not use `user`, `role` (RBAC) and `level` (MLS) fields of the file labels.It operates only with the context and category fields. It consists of several modules loaded with priority as `100`. The user-defined policy can overwrite default modules by using the higher priority.
+The default policy in Photon OS does not use `user`, `role` (RBAC) and `level` (MLS) fields of the file labels. It operates only with the context and category fields. It consists of several modules loaded with priority as `100`. The user-defined policy can overwrite default modules by using the higher priority.
 
 ## Enabling SELinux ##
 
