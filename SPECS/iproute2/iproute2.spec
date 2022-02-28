@@ -1,7 +1,7 @@
 Summary:        Basic and advanced IPV4-based networking
 Name:           iproute2
 Version:        4.18.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        GPLv2+
 URL:            http://www.kernel.org/pub/linux/utils/net/iproute2
 Group:          Applications/System
@@ -13,6 +13,8 @@ Provides:       iproute
 Patch0:         replace_killall_by_pkill.patch
 # Fix for CVE-2019-20795
 Patch1:         0001-ipnetns-use-after-free-problem-in-get_netnsid_from_n.patch
+# Add Support for HCX patches
+Patch2:         0001-iproute2-Add-HCX-patches-to-iproute2.patch
 
 %description
 The IPRoute2 package contains programs for basic and advanced
@@ -28,12 +30,14 @@ This package contains the header files for %{name}. If you like to develop progr
 you will need to install %{name}-devel.
 
 %prep
+# Using autosetup is not feasible
 %setup -q
 sed -i /ARPD/d Makefile
 sed -i 's/arpd.8//' man/man8/Makefile
 sed -i 's/m_ipt.o//' tc/Makefile
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
 
 %build
 make VERBOSE=1 %{?_smp_mflags} DESTDIR= LIBDIR=%{_libdir}
@@ -49,10 +53,10 @@ cd testsuite
 sed -i 's/<libnetlink.h>/\"..\/..\/include\/libnetlink.h\"/g' tools/generate_nlmsg.c
 sed -i 's/\"libnetlink.h\"/"..\/include\/libnetlink.h\"/g' ../lib/libnetlink.c
 cd tools
-make
+make %{?_smp_mflags}
 cd ..
-make
-make alltests
+make %{?_smp_mflags}
+make %{?_smp_mflags} alltests
 cd ..
 
 %post   -p /sbin/ldconfig
@@ -73,6 +77,8 @@ cd ..
 %{_mandir}/man3/*
 
 %changelog
+*   Wed Feb 16 2022 Sharan Turlapati <sturlapati@vmware.com> 4.18.0-4
+-   Add support for HCX patches
 *   Wed May 13 2020 Vikash Bansal <bvikas@vmware.com> 4.18.0-3
 -   Fix for CVE-2019-20795
 *   Fri Mar 08 2019 Fabio Rapposelli <fabio@vmware.com> 4.18.0-2
