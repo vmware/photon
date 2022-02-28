@@ -10,11 +10,19 @@ After you have downloaded the latest Photon OS ISO image into a folder of your c
 
     From the File menu, choose **New Virtual Machine**  to create a new virtual machine.
     
+<<<<<<< HEAD
 <<<<<<< HEAD:content/en/docs/installation-guide/run-photon-on-workstation/installing-photon-os-from-iso-on-workstation.md
     ![New virtual machine](/docs/installation-guide/images/ws-iso-new.png)
 =======
     ![New virtural machine](./installation-guide/images/ws-iso-new.png)
 >>>>>>> a59166de2 (big ol v5 merge):content/en/docs-v4/installation-guide/run-photon-on-workstation/installing-photon-os-from-iso-on-workstation.md
+=======
+<<<<<<< HEAD:content/en/docs-v4/installation-guide/run-photon-on-workstation/installing-photon-os-from-iso-on-workstation.md
+    ![New virtural machine](./installation-guide/images/ws-iso-new.png)
+=======
+    ![New virtual machine](/docs/installation-guide/images/ws-iso-new.png)
+>>>>>>> 4d296895e (Fix various typos in latest docs):content/en/docs/installation-guide/run-photon-on-workstation/installing-photon-os-from-iso-on-workstation.md
+>>>>>>> ce39ab1f0 (Fix various typos in latest docs)
     
     Select **Typical** or **Custom**, and then choose **Next**. These instructions refer to a Typical installation.
     
