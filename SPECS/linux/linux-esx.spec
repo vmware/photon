@@ -11,7 +11,7 @@
 Summary:        Kernel
 Name:           linux-esx
 Version:        5.10.93
-Release:        6%{?kat_build:.kat}%{?dist}
+Release:        7%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -95,6 +95,11 @@ Patch67:	0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 
 # Disable md5 algorithm for sctp if fips is enabled.
 Patch68:        0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
+
+# Hotplug support without firmware
+Patch69:        0001-vmw_extcfg-hotplug-without-firmware-support.patch
+Patch70:        0002-vmw_extcfg-hotplug-without-firmware-support.patch
+Patch71:        0003-vmw_extcfg-hotplug-without-firmware-support.patch
 
 # CVE:
 Patch100:       apparmor-fix-use-after-free-in-sk_peer_label.patch
@@ -268,6 +273,9 @@ The Linux package contains the Linux kernel doc files
 %patch66 -p1
 %patch67 -p1
 %patch68 -p1
+%patch69 -p1
+%patch70 -p1
+%patch71 -p1
 
 # CVE
 %patch100 -p1
@@ -494,6 +502,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+* Mon Feb 28 2022 Vamsi Krishna Brahmajosyula <vbrahmajosyula@vmware.com> 5.10.93-7
+- Port non-acpi hotplug support patch to 5.10.x
 * Mon Feb 14 2022 Ankit Jain <ankitja@vmware.com> 5.10.93-6
 - vtarfs: fixes multiple issues
 - tarfs: support for hardlink, fixes uid/gid/mode issues

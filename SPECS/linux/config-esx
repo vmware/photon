@@ -1689,6 +1689,7 @@ CONFIG_VMWARE_VMCI=y
 # CONFIG_MISC_RTSX_PCI is not set
 # CONFIG_MISC_RTSX_USB is not set
 # CONFIG_HABANA_AI is not set
+CONFIG_VMWARE_EXTCFG=y
 # end of Misc devices
 
 CONFIG_HAVE_IDE=y
