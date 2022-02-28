@@ -9,7 +9,7 @@ Prerequisites
 
 - Ensure that the NFS server is running
 - Ensure that you have the Kubernetes cluster ready that has access to the NFS server 
-- Esure that you have installed Kubernetes package and have `kubeconfig` accessible in the build VM.
+- Ensure that you have installed Kubernetes package and have `kubeconfig` accessible in the build VM.
 
 ## Triggering Distributed Photon Builds ##
 

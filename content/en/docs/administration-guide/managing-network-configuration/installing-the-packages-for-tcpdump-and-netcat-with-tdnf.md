@@ -1,5 +1,5 @@
 ---
-title:  Installing packgages for 'tcpdump' and 'netcat'
+title:  Installing packages for 'tcpdump' and 'netcat'
 weight: 13
 ---
 

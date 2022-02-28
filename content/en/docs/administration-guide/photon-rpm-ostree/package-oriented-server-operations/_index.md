@@ -97,7 +97,7 @@ enabled=1
 skip_if_unavailable=True
 ```
 
-In this case, `rpm-ostree` is instructed to download its packages in RPM format from the VMware Photon Packgaes URL, which is the location of an online RPMS repo maintained by the VMware Photon OS team. To ensure those packages can be validated as being genuine and signed by VMware, the signature is checked against the official VMware public key.
+In this case, `rpm-ostree` is instructed to download its packages in RPM format from the VMware Photon Packages URL, which is the location of an online RPMS repo maintained by the VMware Photon OS team. To ensure those packages can be validated as being genuine and signed by VMware, the signature is checked against the official VMware public key.
 
 So what's in an RPMS repository? If we point the browser to [packages.vmware.com/photon/photon_publish_rpms/](https://packages.vmware.com/photon/photon_publish_rpms/), we can see there are three top directories:
 * noarch - where all packages that don't depend on the architecture reside. Those may contain scripts, platform neutral source files, configuration.
@@ -254,7 +254,7 @@ This takes several minutes. Then why is the RPM-OSTree server installing so fast
 ## Automatic version prefix
 
 If you recall the filetree version explained earlier, this is where it comes into play. When a tree is composed from scratch, the first version (0) associated to the initial commit is going to get that human readable value. Any subsequent compose operation will auto-increment to .1, .2, .3 and so on.  
-It's a good idea to start a versionning scheme of your own, so that your customized Photon builds that may get different packages of your choice don't get the same version numbers as the official Photon team builds coming from VMware's OSTree Packages repository. There is no conflict, it's just confusing to have same name for different commits coming from different repos.  
+It's a good idea to start a versioning scheme of your own, so that your customized Photon builds that may get different packages of your choice don't get the same version numbers as the official Photon team builds coming from VMware's OSTree Packages repository. There is no conflict, it's just confusing to have same name for different commits coming from different repos.  
 So if you work for a company named Big Data Inc., you may want to switch to a new versioning scheme **"automatic_version_prefix": "1.0_bigdata"**.
 
 ## Installing package updates

@@ -10,7 +10,7 @@ After you have downloaded the latest Photon OS ISO image into a folder of your c
 
     From the File menu, choose **New Virtual Machine**  to create a new virtual machine.
     
-    ![New virtural machine](/docs/installation-guide/images/ws-iso-new.png)
+    ![New virtual machine](/docs/installation-guide/images/ws-iso-new.png)
     
     Select **Typical** or **Custom**, and then choose **Next**. These instructions refer to a Typical installation.
     

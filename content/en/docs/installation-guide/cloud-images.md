@@ -111,7 +111,7 @@ The OVA image uses an optimized version of the 4.4.8 Linux kernel. Two ova files
 
 [VDDK 6.0](https://developercenter.vmware.com/web/sdk/60/vddk)
 
-To utilize the VDDK libraries the following procedure may be used, this extracts the libraries and temporarily exports them to the LD_LIBRARY_PATH for the *current session*.  (tested on Ubuntu 1404 & 1604)  If you wish to make this permenant and system-wide then you may want to create a config file in /etc/ld.so.conf.d/.
+To utilize the VDDK libraries the following procedure may be used, this extracts the libraries and temporarily exports them to the LD_LIBRARY_PATH for the *current session*.  (tested on Ubuntu 1404 & 1604)  If you wish to make this permanent and system-wide then you may want to create a config file in /etc/ld.so.conf.d/.
 
     tar -zxf VMware-vix-disklib-6.0.2-3566099.x86_64.tar.gz
     cp -r vmware-vix-disklib-distrib/include/* /usr/include/

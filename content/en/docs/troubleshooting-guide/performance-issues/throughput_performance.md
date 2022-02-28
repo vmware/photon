@@ -3,7 +3,7 @@ title:  Throughput Performance
 weight: 2
 ---
 
-Throughtput performance over TCP might be reduced.
+Throughput performance over TCP might be reduced.
 
 This might occur because timestamps are enabled by default and the parameter `net.ipv4.tcp_timestamps` has a value of 1.
 

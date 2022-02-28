@@ -29,7 +29,7 @@ The repository settings details are as follows:
 
 
 
-- The minimal information needed to establish a repository is an ID and human-readable name of the repository and its base URL. The ID, which appears in square brackets, must be one word that is unique amoung the system's repositories; `.
+- The minimal information needed to establish a repository is an ID and human-readable name of the repository and its base URL. The ID, which appears in square brackets, must be one word that is unique among the system's repositories; `.
 
 
 

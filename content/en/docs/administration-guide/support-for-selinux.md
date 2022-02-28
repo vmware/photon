@@ -38,7 +38,7 @@ To enable SELinux on Photon OS:
 ## Switch SELinux to enforcing mode ##
 
 The three methods to toggle enforcing mode are as follows:
-1. Run the `setenforce 1` command (libselinux-utils rpm), Enforcing mode will be set timmediately, but it is not preserved on reboot.
+1. Run the `setenforce 1` command (libselinux-utils rpm), Enforcing mode will be set immediately, but it is not preserved on reboot.
 2. Edit the `/etc/selinux/config` file to set `SELINUX=enforcing` and reboot.
 3. Add the `enforcing=1` kernel parameter and reboot.
 

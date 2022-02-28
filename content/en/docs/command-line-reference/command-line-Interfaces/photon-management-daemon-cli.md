@@ -513,7 +513,7 @@ Get a list of the configured software repositories.
 pmd-cli pkg repolist
 ```
 
-This command returns a list of the configured software repositories, including the repository ID, repitory name, and status.
+This command returns a list of the configured software repositories, including the repository ID, repository name, and status.
 
 ## pkg search ssh
 

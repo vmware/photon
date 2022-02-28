@@ -99,7 +99,7 @@ Here is the list of error numbers:
 - 4103 - invalid mode
 - 4104 - bad configuration file
 - 4105 - write failed
-- 4106 - timout
+- 4106 - timeout
 - 4107 - DCHP timeout
 
 **Returns**

@@ -13,7 +13,7 @@ You can use a script to build a single Photon OS package without rebuilding all 
 
 The `build-spec.sh` script is located in the `photon/tools/scripts/` folder.
 
-- [Prerequisties](#prerequisites)
+- [Prerequisites](#prerequisites)
 - [Procedure](#procedure)
 - [Example](#example)
 - [Build Logs](#build-logs)
@@ -84,7 +84,7 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 
 ## Build Logs
 
-The followiing logs indicate the steps that the script performs internally:
+The following logs indicate the steps that the script performs internally:
 
 ```
 1. Create sandbox

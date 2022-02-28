@@ -84,7 +84,7 @@ These link files follow the following rules:
 - All configuration files are collectively sorted and processed in lexical order, regardless of the directory it resides in.
 - Files with identical names replace each other.
 
-##Dupliate Matches
+##Duplicate Matches
 If we have multiple configuration files matching an interface, the first (in lexical order) network file matching a given device is applied. All other files are ignored even if they match. The following is an example of matching configuration files:
 ```
 builder@localhost [ ~ ]$ cat /etc/systemd/network/10-eth0.network
