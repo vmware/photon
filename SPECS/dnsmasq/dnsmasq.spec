@@ -1,7 +1,7 @@
 Summary:        DNS proxy with integrated DHCP server
 Name:           dnsmasq
 Version:        2.85
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2 or GPLv3
 Group:          System Environment/Daemons
 URL:            https://thekelleys.org.uk/dnsmasq/doc.html
@@ -37,12 +37,15 @@ make -C contrib/lease-tools %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
-mkdir -p %{buildroot}%{_bindir}
-mkdir -p %{buildroot}%{_sbindir}
-mkdir -p %{buildroot}%{_mandir}/{man1,man8}
-mkdir -p %{buildroot}%{_sharedstatedir}/dnsmasq
-mkdir -p %{buildroot}%{_sysconfdir}/dnsmasq.d
-mkdir -p %{buildroot}%{_sysconfdir}/dbus-1/system.d
+
+mkdir -p %{buildroot}%{_bindir} \
+         %{buildroot}%{_sbindir} \
+         %{buildroot}%{_mandir}/{man1,man8} \
+         %{buildroot}%{_sharedstatedir}/dnsmasq \
+         %{buildroot}%{_sysconfdir}/dnsmasq.d \
+         %{buildroot}%{_sysconfdir}/dbus-1/system.d \
+         %{buildroot}%{_unitdir}
+
 install src/%{name} %{buildroot}%{_sbindir}/%{name}
 install dnsmasq.conf.example %{buildroot}%{_sysconfdir}/dnsmasq.conf
 install dbus/dnsmasq.conf %{buildroot}%{_sysconfdir}/dbus-1/system.d/
@@ -51,7 +54,6 @@ install -D trust-anchors.conf %{buildroot}%{_datadir}/%{name}/trust-anchors.conf
 
 install -m 755 contrib/wrt/lease_update.sh %{buildroot}%{_sbindir}/lease_update.sh
 
-mkdir -p %{buildroot}%{_unitdir}
 cat << EOF >> %{buildroot}%{_unitdir}/dnsmasq.service
 [Unit]
 Description=A lightweight, caching DNS proxy
@@ -81,7 +83,7 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %{_unitdir}/*
-%exclude %{_libdir}/debug
+%exclude %dir %{_libdir}/debug
 %{_sbindir}/*
 %{_mandir}/*
 %{_sysconfdir}/dnsmasq.d
@@ -95,6 +97,8 @@ rm -rf %{buildroot}
 %{_mandir}/man1/*
 
 %changelog
+* Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 2.85-2
+- Exclude debug symbols properly
 * Mon Aug 30 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.85-1
 - Upgrade version to 2.85 to fix CVE-2021-3448
 * Tue Aug 17 2021 Shreenidhi Shedi <sshedi@vmware.com> 2.84-3

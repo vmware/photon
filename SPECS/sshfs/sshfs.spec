@@ -1,7 +1,7 @@
 Summary:    fuse filesystem to access remote ssh servers
 Name:       sshfs
 Version:    3.7.0
-Release:    2%{?dist}
+Release:    3%{?dist}
 License:    GPLv2
 Url:        https://github.com/libfuse/sshfs
 Group:      Filesystemd tools
@@ -41,10 +41,12 @@ DESTDIR=%{buildroot} ninja install
 %defattr(-, root, root)
 %{_bindir}/*
 %{_sbindir}/*
-%exclude %{_libdir}
-%exclude %{_prefix}/src
+%exclude %dir %{_libdir}
+%exclude %dir %{_prefix}/src
 
 %changelog
+* Thu Mar 17 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.0-3
+- Exclude debug symbols properly
 * Tue Mar 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.7.0-2
 - Remove meson from Requires
 * Thu Jul 09 2020 Gerrit Photon <photon-checkins@vmware.com> 3.7.0-1

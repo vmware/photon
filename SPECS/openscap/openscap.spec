@@ -1,7 +1,7 @@
 Summary:        Open Source Security Compliance Solution
 Name:           openscap
 Version:        1.3.4
-Release:        6%{?dist}
+Release:        7%{?dist}
 License:        GPL2+
 URL:            https://www.open-scap.org
 Group:          System Environment/Libraries
@@ -11,12 +11,16 @@ Distribution:   Photon
 Source0:        https://github.com/OpenSCAP/openscap/releases/download/%{version}/openscap-%{version}.tar.gz
 %define sha1    %{name}=3e303f06aa00e5c2616db606b980389ee0b73883
 
-BuildRequires:  swig libxml2-devel libxslt-devel XML-Parser
+BuildRequires:  swig
+BuildRequires:  libxml2-devel
+BuildRequires:  libxslt-devel
+BuildRequires:  XML-Parser
 BuildRequires:  rpm-devel
 BuildRequires:  libgcrypt-devel
 BuildRequires:  pcre-devel
 BuildRequires:  libacl-devel
-BuildRequires:  libselinux-devel libcap-devel
+BuildRequires:  libselinux-devel
+BuildRequires:  libcap-devel
 BuildRequires:  util-linux-devel
 BuildRequires:  bzip2-devel
 BuildRequires:  curl-devel
@@ -79,8 +83,8 @@ find %{buildroot} -name '*.la' -delete
 %files
 %defattr(-,root,root)
 %{_sysconfdir}/*
-%exclude /usr/src/debug
-%exclude %{_libdir}/debug
+%exclude %dir %{_usrsrc}/debug
+%exclude %dir %{_libdir}/debug
 %{_bindir}/*
 %{_mandir}/man8/*
 %{_datadir}/openscap/*
@@ -104,6 +108,8 @@ find %{buildroot} -name '*.la' -delete
 %{_libdir}/python%{python3_version}/*
 
 %changelog
+* Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.3.4-7
+- Exclude debug symbols properly
 * Mon Nov 22 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.3.4-6
 - Update release to compile with python 3.10
 * Thu Nov 18 2021 Nitesh Kumar <kunitesh@vmware.com> 1.3.4-5

@@ -4,7 +4,7 @@
 Summary:        PowerShell is an automation and configuration management platform.
 Name:           powershell
 Version:        7.2.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        MIT
@@ -118,11 +118,13 @@ cp -r %{_builddir}/%{name}-linux-%{version}/Modules/{PSReadLine,PowerShellGet,Pa
   %{buildroot}%{_libdir}/%{name}/Modules
 
 %check
+%if 0%{?with_check}
 cd %{_builddir}/PowerShell-%{version}/test/xUnit
 dotnet test
 export LANG=en_US.UTF-8
 cd %{_builddir}/PowerShell-Native/PowerShell-Native-%{ps_native_ver}/src/libpsl-native
 make test %{?_smp_mflags}
+%endif
 
 %post
 #in case of upgrade, delete the soft links
@@ -142,12 +144,14 @@ fi
 
 %files
 %defattr(-,root,root,0755)
-%exclude %{_libdir}/debug
-%{_libdir}/*
+%exclude %dir %{_libdir}/debug
+%{_libdir}/%{name}/*
 %{_bindir}/pwsh
 %{_docdir}/*
 
 %changelog
+* Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.2.0-3
+- Exclude debug symbols properly
 * Tue Dec 07 2021 Alexey Makhalov <amakhalov@vmware.com> 7.2.0-2
 - Requires specific version of icu
 * Mon Nov 15 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 7.2.0-1

@@ -1,14 +1,16 @@
 Summary:        Library for talking to WWAN modems and devices
 Name:           libmbim
 Version:        1.24.2
-Release:        3%{?dist}
+Release:        4%{?dist}
 URL:            https://www.freedesktop.org
 License:        GPLv2
 Group:          Applications/System
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://www.freedesktop.org/software/libmbim/libmbim-%{version}.tar.xz
-%define sha1    libmbim=1162a4302be250ca3334f3bfd1e7d04770e4b4ff
+%define sha1    %{name}=1162a4302be250ca3334f3bfd1e7d04770e4b4ff
+
 BuildRequires:  libgudev-devel
 BuildRequires:  libgudev
 BuildRequires:  systemd-devel
@@ -43,9 +45,11 @@ make %{?_smp_mflags}
 make %{?_smp_mflags} DESTDIR=%{buildroot} install
 
 %check
+%if 0%{?with_check}
 make %{?_smp_mflags} check
+%endif
 
-%post   -p /sbin/ldconfig
+%post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
@@ -54,7 +58,7 @@ make %{?_smp_mflags} check
 %{_bindir}/mbimcli
 %{_bindir}/mbim-network
 %{_libdir}/libmbim-glib.so*
-%exclude %{_libdir}/debug
+%exclude %dir %{_libdir}/debug
 %{_mandir}/man1/*
 %{_datadir}/bash-completion/*
 
@@ -65,11 +69,13 @@ make %{?_smp_mflags} check
 %{_datadir}/gtk-doc/*
 
 %changelog
-*   Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.24.2-3
--   Bump up to compile with python 3.10
-*   Mon Dec 14 2020 Susant Sahani<ssahani@vmware.com> 1.24.2-2
--   Add build requires
-*   Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.24.2-1
--   Automatic Version Bump
-*   Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.16.2-1
--   Initial build. First version
+* Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.24.2-4
+- Exclude debug symbols properly
+* Thu Dec 09 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.24.2-3
+- Bump up to compile with python 3.10
+* Mon Dec 14 2020 Susant Sahani<ssahani@vmware.com> 1.24.2-2
+- Add build requires
+* Wed Jul 08 2020 Gerrit Photon <photon-checkins@vmware.com> 1.24.2-1
+- Automatic Version Bump
+* Mon Dec 10 2018 Alexey Makhalov <amakhalov@vmware.com> 1.16.2-1
+- Initial build. First version

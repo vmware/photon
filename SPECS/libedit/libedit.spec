@@ -4,7 +4,7 @@
 Summary:        The NetBSD Editline library
 Name:           libedit
 Version:        3.1.20210910
-Release:        1%{?dist}
+Release:        2%{?dist}
 Vendor:         VMware, Inc.
 Distribution:   Photon
 License:        BSD
@@ -43,7 +43,7 @@ Development files for libedit
 %make_install
 find %{buildroot} -name '*.la' -delete
 # Remove history.3, a solftlink to editline, which conflicts with readline-devel
-rm -f %{buildroot}/%{_mandir}/man3/history.3
+rm -f %{buildroot}%{_mandir}/man3/history.3
 
 %ldconfig_scriptlets
 
@@ -52,7 +52,7 @@ rm -rf %{buildroot}/*
 
 %files
 %defattr(-,root,root,0755)
-%exclude %{_libdir}/debug
+%exclude %dir %{_libdir}/debug
 %{_libdir}/*.so.*
 %{_mandir}/*
 
@@ -63,6 +63,8 @@ rm -rf %{buildroot}/*
 %{_includedir}/*
 
 %changelog
+* Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 3.1.20210910-2
+- Exclude debug symbols properly
 * Wed Dec 22 2021 Susant sahani <ssahani@vmware.com> 3.1.20210910-1
 - Version bump
 * Wed Sep 02 2020 Dweep Advani <dadvani@vmware.com> 3.1.20191231-2

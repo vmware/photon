@@ -1,14 +1,16 @@
 Name:         erlang
 Summary:      erlang
 Version:      23.1
-Release:      4%{?dist}
+Release:      5%{?dist}
 Group:        Development/Languages
 Vendor:       VMware, Inc.
 Distribution: Photon
 License:      ASL2.0
 URL:          http://erlang.com
+
 Source0:      OTP-%{version}.tar.gz
 %define sha1  OTP=2d6eaefe960f52cc79d7614c11256b73174e4161
+
 Patch0:       0001-erlang-fix-vernemq-build-fail.patch
 Patch1:       0001-crypto-declare-extern-for-BN_GENCB-APIs.patch
 
@@ -16,6 +18,7 @@ Requires:     ncurses-libs
 
 BuildRequires: unzip
 BuildRequires: openssl-devel
+
 %description
 erlang programming language
 
@@ -23,7 +26,7 @@ erlang programming language
 %autosetup -p1 -n otp-OTP-%{version}
 
 %build
-export ERL_TOP=`pwd`
+export ERL_TOP=$(pwd)
 export CFLAGS="-Wno-error=implicit-function-declaration"
 ./otp_build autoconf
 %configure \
@@ -43,11 +46,13 @@ make install DESTDIR=%{buildroot} %{?_smp_mflags}
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*
-%exclude /usr/src
-%exclude %{_libdir}/debug
+%{_libdir}/%{name}/*
+%exclude %dir %{_usrsrc}
+%exclude %dir %{_libdir}/debug
 
 %changelog
+* Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 23.1-5
+- Exclude debug symbols properly
 * Tue Jan 11 2022 Nitesh Kumar <kunitesh@vmware.com> 23.1-4
 - Enable FIPS, Adding ncurses-libs as Requires.
 * Fri Jun 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 23.1-3

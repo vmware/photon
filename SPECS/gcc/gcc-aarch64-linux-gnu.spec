@@ -8,12 +8,13 @@
 Name:    gcc-aarch64-linux-gnu
 Summary: Cross GCC for Aarch64
 Version: 7.3.0
-Release: 2%{?dist}
+Release: 3%{?dist}
 Group:   Development/Tools
 Vendor:  VMware, Inc.
 Distribution: Photon
 License: GPLv2+
 URL:     http://gcc.gnu.org
+
 Source0: https://ftp.gnu.org/gnu/gcc/gcc-%{version}/gcc-%{version}.tar.xz
 %define sha1 gcc=9689b9cae7b2886fdaa08449a26701f095c04e48
 Source1: https://www.kernel.org/pub/linux/kernel/v4.x/linux-%{linux_kernel_version}.tar.xz
@@ -26,15 +27,20 @@ Source4: https://ftp.gnu.org/gnu/gmp/gmp-6.1.2.tar.xz
 %define sha1 gmp=9dc6981197a7d92f339192eea974f5eca48fcffe
 Source5: https://ftp.gnu.org/gnu/mpc/mpc-1.1.0.tar.gz
 %define sha1 mpc=b019d9e1d27ec5fb99497159d43a3164995de2d0
+
 Patch0:   libsanitizer-avoidustat.h-glibc-2.28.patch
 Patch1:   PLUGIN_TYPE_CAST-gcc7.patch
+
 BuildArch: x86_64
+
 Provides: libgcc_s.so.1
 Provides: libgcc_s.so.1(GCC_3.0)
 Provides: libgcc_s.so.1(GCC_3.3)
 Provides: libgcc_s.so.1(GCC_4.2.0)
 Provides: libgcc_s.so.1(GLIBC_2.0)
+
 BuildRequires: binutils-aarch64-linux-gnu
+
 Requires: binutils-aarch64-linux-gnu
 
 %global target_arch aarch64-unknown-linux-gnu
@@ -46,11 +52,17 @@ The GCC package contains the GNU compiler collection,
 which includes the C and C++ compilers.
 
 %prep
+# Using autosetup is not feasible
 %setup -c -q
+# Using autosetup is not feasible
 %setup -T -D -q -a 1
+# Using autosetup is not feasible
 %setup -T -D -q -a 2
+# Using autosetup is not feasible
 %setup -T -D -q -a 3
+# Using autosetup is not feasible
 %setup -T -D -q -a 4
+# Using autosetup is not feasible
 %setup -T -D -q -a 5
 
 cd gcc-%{version}
@@ -81,11 +93,11 @@ builddir=$RPM_BUILD_DIR/%{name}-%{version}
 echo "Step 1. Building Linux headers"
 
 cd $builddir/linux-%{linux_kernel_version} && \
-make mrproper && \
-make ARCH=%{target_linux_arch} headers_check && \
+make mrproper %{?_smp_mflags} && \
+make ARCH=%{target_linux_arch} headers_check %{?_smp_mflags} && \
 make ARCH=%{target_linux_arch} \
      INSTALL_HDR_PATH=%{sysroot}%{_prefix} \
-     headers_install
+     headers_install %{?_smp_mflags}
 
 ###
 ### Step 2
@@ -105,7 +117,7 @@ $builddir/gcc-%{version}/configure \
     --enable-linker-build-id \
     --disable-multilib && \
 make %{?_smp_mflags} all-gcc && \
-make install-gcc
+make install-gcc %{?_smp_mflags}
 
 ###
 ### Step 3
@@ -124,7 +136,7 @@ $builddir/glibc-%{glibc_version}/configure \
     --with-headers=%{sysroot}/usr/include \
     --disable-multilib \
     libc_cv_forced_unwind=yes && \
-make install-bootstrap-headers=yes install-headers install_root=%{sysroot} && \
+make install-bootstrap-headers=yes install-headers install_root=%{sysroot} %{?_smp_mflags} && \
 make %{?_smp_mflags} csu/subdir_lib && \
 mkdir -p %{sysroot}/usr/lib && \
 install csu/crt1.o csu/crti.o csu/crtn.o \
@@ -159,7 +171,7 @@ $builddir/gcc-%{version}/configure \
     --enable-plugin \
     --with-system-zlib && \
 make %{?_smp_mflags} all-target-libgcc && \
-make install-target-libgcc
+make install-target-libgcc %{?_smp_mflags}
 make %{?_smp_mflags} DESTDIR=%{buildroot} install-target-libgcc
 
 ###
@@ -170,7 +182,7 @@ echo "Step 5. Building full GLIBC"
 
 cd $builddir/build-glibc-%{target_arch} && \
 make %{?_smp_mflags} && \
-make install install_root=%{sysroot}
+make install install_root=%{sysroot} %{?_smp_mflags}
 
 ###
 ### Step 6
@@ -203,15 +215,17 @@ chmod +x $CROSS_TOOLCHAIN_PKG_CONFIG
 %files
 %defattr(-,root,root)
 %{_bindir}/*
-%{_libdir}/*
-%exclude %{_libdir}/debug
+%{_libdir}/gcc/*
+%exclude %dir %{_libdir}/debug
 %{_lib64dir}/*
 %{_libexecdir}/*
 %{_datadir}/*
-%exclude %{_datadir}/info/dir
+%exclude %{_infodir}/dir
 %{_prefix}/%{target_arch}/*
 
 %changelog
+* Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 7.3.0-3
+- Exclude debug symbols properly
 * Tue Dec 15 2020 Shreenidhi Shedi <sshedi@vmware.com> 7.3.0-2
 - Fix build with new rpm
 * Fri Nov 02 2018 Alexey Makhalov <amakhalov@vmware.com> 7.3.0-1

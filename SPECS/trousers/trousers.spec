@@ -1,19 +1,21 @@
 Summary:    TCG Software Stack (TSS)
 Name:       trousers
 Version:    0.3.14
-Release:    5%{?dist}
+Release:    6%{?dist}
 License:    BSD
 URL:        https://sourceforge.net/projects/trousers/
 Group:      System Environment/Security
 Vendor:     VMware, Inc.
 Distribution: Photon
+
 Source0:    %{name}-%{version}.tar.gz
-%define sha1 trousers=9ca2cc9e1179465f6c5d9055e2b855e25031b85a
+%define sha1 %{name}=9ca2cc9e1179465f6c5d9055e2b855e25031b85a
 
 Patch0:     tcsd_fixes.patch
 Patch1:     trousers-0.3.14-fno-common.patch
 
 Requires:   libtspi = %{version}-%{release}
+
 %description
 Trousers is an open-source TCG Software Stack (TSS), released under
 the BSD License. Trousers aims to be compliant with the
@@ -34,8 +36,7 @@ TSPI library
 %autosetup -p1 -c %{name}-%{version}
 
 %build
-%configure \
-    --disable-static
+%configure --disable-static
 
 make %{?_smp_mflags}
 
@@ -43,7 +44,7 @@ make %{?_smp_mflags}
 make DESTDIR=%{buildroot} install %{?_smp_mflags}
 
 %post
-mkdir -p /var/lib/tpm
+mkdir -p %{_sharedstatedir}/tpm
 if [ $1 -eq 1 ]; then
     # this is initial installation
     if ! getent group tss >/dev/null; then
@@ -75,7 +76,7 @@ fi
 %{_sbindir}/*
 %{_mandir}/man5
 %{_mandir}/man8
-%exclude /var
+%exclude %dir %{_var}
 
 %files devel
 %defattr(-,root,root)
@@ -88,17 +89,19 @@ fi
 %files -n libtspi
 %defattr(-,root,root)
 %{_libdir}/libtspi.so.1.2.0
-%exclude %{_libdir}/debug
+%exclude %dir %{_libdir}/debug
 %exclude %{_libdir}/libtddl.a
 
 %changelog
-*   Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.3.14-5
--   Bump up release for openssl
-*   Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 0.3.14-4
--   GCC-10 support.
-*   Wed Aug 19 2020 Shreyas B <shreyasb@vmware.com> 0.3.14-3
--   Fix for CVE-2020-24330, CVE-2020-24331 & CVE-2020-24332
-*   Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.14-2
--   Use standard configure macros
-*   Thu Mar 2 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.14-1
--   Initial build. First version
+* Tue Mar 01 2022 Shreenidhi Shedi <sshedi@vmware.com> 0.3.14-6
+- Exclude debug symbols properly
+* Wed Aug 04 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 0.3.14-5
+- Bump up release for openssl
+* Thu Jan 14 2021 Alexey Makhalov <amakhalov@vmware.com> 0.3.14-4
+- GCC-10 support.
+* Wed Aug 19 2020 Shreyas B <shreyasb@vmware.com> 0.3.14-3
+- Fix for CVE-2020-24330, CVE-2020-24331 & CVE-2020-24332
+* Fri Oct 13 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.14-2
+- Use standard configure macros
+* Thu Mar 2 2017 Alexey Makhalov <amakhalov@vmware.com> 0.3.14-1
+- Initial build. First version
