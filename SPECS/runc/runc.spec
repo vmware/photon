@@ -1,19 +1,16 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
 
-# Must be in sync with package version
-# Current commit-ID is ahead of git tag for CVE-2021-30465 fix. Remove it after version-bump.
-%define RUNC_COMMIT 14faf1c20948688a48edb9b41367ab07ac11ca91
+%define RUNC_COMMIT_SHORT f46b6ba
 # use major.minor.patch-rcX
-%define RUNC_VERSION 1.0.0-rc93
-# CVE-2021-30465 patches on top of rc93
-%define RUNC_BRANCH v%{RUNC_VERSION}
+%define RUNC_VERSION 1.0.3
+%define RUNC_GITTAG v%{RUNC_VERSION}
 %define gopath_comp github.com/opencontainers/runc
 
 Summary:        CLI tool for spawning and running containers per OCI spec.
 Name:           runc
-Version:        1.0.0.rc93
-Release:        11%{?dist}
+Version:        1.0.3
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://runc.io
 Group:          Virtualization/Libraries
@@ -21,14 +18,7 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
-%define sha1    %{name}=e8693109441696536710e5751e0fee6e6fa32590
-
-Patch0:         runc-rc93-0001-libct-newInitConfig-nit.patch
-Patch1:         runc-rc93-0002-libct-rootfs-introduce-and-use-mountConfig.patch
-Patch2:         runc-rc93-0003-libct-rootfs-mountCgroupV2-minor-refactor.patch
-Patch3:         runc-rc93-0004-Fix-cgroup2-mount-for-rootless-case.patch
-Patch4:         runc-rc93-0005-rootfs-add-mount-destination-validation.patch
-Patch5:         runc-CVE-2021-43784.patch
+%define sha1    %{name}=cbd1b1eff60b0d6f61a034cb50a7fe22edd2b140
 
 BuildRequires:  go
 BuildRequires:  which
@@ -50,17 +40,16 @@ Requires:       %{name} = %{version}-%{release}
 Documentation for runc
 
 %prep
-%autosetup -p1 -n %{name}-%{RUNC_VERSION}
-cd .. && mkdir -p "$(dirname "src/%{gopath_comp}")"
+%autosetup -p1 -c
+mkdir -p "$(dirname "src/%{gopath_comp}")"
 mv %{name}-%{RUNC_VERSION} src/%{gopath_comp}
-mkdir %{name}-%{RUNC_VERSION}
-mv src %{name}-%{RUNC_VERSION}
 
 %build
 export GOPATH="$(pwd)"
 export GO111MODULE=auto
 cd src/%{gopath_comp}
-make %{?_smp_mflags} GIT_BRANCH=%{RUNC_BRANCH} COMMIT_NO=%{RUNC_COMMIT} COMMIT=%{RUNC_COMMIT} BUILDTAGS='seccomp apparmor' EXTRA_LDFLAGS=-w runc man
+# Use the format of `git describe --long` as COMMIT
+make %{?_smp_mflags} GIT_BRANCH=%{RUNC_GITTAG} COMMIT=%{RUNC_GITTAG}-0-g%{RUNC_COMMIT_SHORT} BUILDTAGS='seccomp apparmor' EXTRA_LDFLAGS=-w runc man
 
 %install
 cd src/%{gopath_comp}
@@ -78,6 +67,8 @@ make DESTDIR=%{buildroot} PREFIX=%{_prefix} BINDIR=%{_bindir} install install-ba
 %{_mandir}/man8/*
 
 %changelog
+*   Fri Feb 25 2022 Bo Gan <ganb@vmware.com> 1.0.3-1
+-   Update to 1.0.3
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.0.rc93-11
 -   Bump up version to compile with new go
 *   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.0.rc93-10
