@@ -12,7 +12,11 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
 %define sha1    containerd=23b7126e50df745e4b0b4b935dd1fab72d6fb4fa
+# Must be in sync with package version
+%define CONTAINERD_GITCOMMIT 7b11cfaabd73bb80907dd23182b9347b4245eb5d
+
 Patch1:         containerd-service.patch
+Patch2:         containerd-1.4-Use-fs.RootPath-when-mounting-volumes.patch
 Source2:        containerd-config.toml
 Source3:        disable-containerd-by-default.preset
 
@@ -55,13 +59,21 @@ Documentation for containerd.
 %setup -q -c
 mkdir -p "$(dirname "src/%{gopath_comp}")"
 %patch1 -p1 -d %{name}-%{version}
+%patch2 -p1 -d %{name}-%{version}
 mv %{name}-%{version} src/%{gopath_comp}
 
 %build
 export GOPATH="$(pwd)"
+# We still have to use the GOPATH mode, as containerd only supports go.mod
+# starting 1.5.0+ However, this mode might be soon removed --
+# https://github.com/golang/go/wiki/GOPATH
+
+# Also, attempting to create go.mod and re-vendor would be wrong in this case,
+# as it could overwrite patches to vendor/, as well as fetching un-release
+# upstream versions. Typically, embargoed CVEs can cause those versions to be hiddden.
 export GO111MODULE=off
 cd src/%{gopath_comp}
-make %{?_smp_mflags} VERSION=%{version} binaries man
+make %{?_smp_mflags} VERSION=%{version} REVISION=%{CONTAINERD_GITCOMMIT} binaries man
 
 %install
 cd src/%{gopath_comp}
@@ -111,6 +123,9 @@ make %{?_smp_mflags} integration
 %{_mandir}/man8/*
 
 %changelog
+*   Fri Feb 25 2022 Bo Gan <ganb@vmware.com> 1.4.12-3
+-   Fix CVE-2022-23648, disable go.mod (unsupported by 1.4.x)
+-   Restore REVISION= Makefile variable
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.4.12-3
 -   Bump up version to compile with new go
 *   Fri Feb 11 2022 Piyush Gupta <gpiyush@vmware.com> 1.4.12-2

@@ -1,13 +1,15 @@
 %define debug_package %{nil}
 %define __os_install_post %{nil}
+
+%define RUNC_COMMIT_SHORT f46b6ba
 # use major.minor.patch-rcX
 %define RUNC_VERSION 1.0.3
-%define RUNC_BRANCH  v%{RUNC_VERSION}
+%define RUNC_GITTAG v%{RUNC_VERSION}
 %define gopath_comp  github.com/opencontainers/runc
 Summary:             CLI tool for spawning and running containers per OCI spec.
 Name:                runc
 Version:             1.0.3
-Release:             3%{?dist}
+Release:             4%{?dist}
 License:             ASL 2.0
 URL:                 https://runc.io/
 Source0:             https://github.com/opencontainers/runc/archive/runc-%{version}.tar.gz
@@ -43,7 +45,8 @@ cd src/%{gopath_comp}
 %build
 export GOPATH="$(pwd)"
 cd src/%{gopath_comp}
-make %{?_smp_mflags} GIT_BRANCH=%{RUNC_BRANCH} BUILDTAGS='seccomp apparmor' EXTRA_LDFLAGS=-w runc man
+# Use the format of `git describe --long` as COMMIT
+make %{?_smp_mflags} GIT_BRANCH=%{RUNC_GITTAG} COMMIT=%{RUNC_GITTAG}-0-g%{RUNC_COMMIT_SHORT} BUILDTAGS='seccomp apparmor' EXTRA_LDFLAGS=-w runc man
 
 %install
 cd src/%{gopath_comp}
@@ -61,6 +64,8 @@ make DESTDIR=%{buildroot} PREFIX=%{_prefix} BINDIR=%{_bindir} install install-ba
 %{_mandir}/man8/*
 
 %changelog
+*   Fri Feb 25 2022 Bo Gan <ganb@vmware.com> 1.0.3-4
+-   Fix build commit hash and tag
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.3-3
 -   Bump up version to compile with new go
 *   Fri Feb 11 2022 Piyush Gupta <gpiyush@vmware.com> 1.0.3-2
