@@ -2,21 +2,20 @@
 %define __os_install_post %{nil}
 Summary:        Containerd
 Name:           containerd
-Version:        1.4.4
-Release:        6%{?dist}
+Version:        1.4.12
+Release:        1%{?dist}
 License:        ASL 2.0
 URL:            https://containerd.io/docs/
 Group:          Applications/File
 Vendor:         VMware, Inc.
 Distribution:   Photon
 Source0:        https://github.com/containerd/containerd/archive/containerd-%{version}.tar.gz
-%define sha1 containerd=0e49f2b0593adc635b89bbcf2d3f40e0fe217933
+%define sha1    containerd=23b7126e50df745e4b0b4b935dd1fab72d6fb4fa
 # Must be in sync with package version
-%define CONTAINERD_GITCOMMIT 05f951a3781f4f2c1911b05e61c160e9c30eaa8e
+%define CONTAINERD_GITCOMMIT 7b11cfaabd73bb80907dd23182b9347b4245eb5d
 
 Patch1:         containerd-service-file-binpath.patch
-Patch2:         containerd-1.4-Use-chmod-path-for-checking-symlink.patch
-Patch3:         containerd-1.4-reduce-directory-permissions.patch
+Patch2:         containerd-1.4-Use-fs.RootPath-when-mounting-volumes.patch
 Source2:        containerd-config.toml
 Source3:        disable-containerd-by-default.preset
 %define gopath_comp github.com/containerd/containerd
@@ -31,9 +30,9 @@ BuildRequires:  go-md2man
 BuildRequires:  systemd-devel
 Requires:       libseccomp
 Requires:       systemd
-# containerd works only with a specific runc version
-# Refer to containerd/RUNC.md
-Requires:       runc = 1.0.0.rc93
+# containerd 1.4.5 and above allow to use runc 1.0.0-rc94 and above.
+# refer to v1.4.5/RUNC.md
+Requires:       runc >= 1.0.0.rc94
 
 %description
 Containerd is an open source project. It is available as a daemon for Linux,
@@ -59,7 +58,6 @@ Documentation for containerd.
 mkdir -p "$(dirname "src/%{gopath_comp}")"
 %patch1 -p1 -d %{name}-%{version}
 %patch2 -p1 -d %{name}-%{version}
-%patch3 -p1 -d %{name}-%{version}
 mv %{name}-%{version} src/%{gopath_comp}
 
 %build
@@ -116,6 +114,8 @@ make integration
 %{_mandir}/man8/*
 
 %changelog
+*   Fri Feb 25 2022 Bo Gan <ganb@vmware.com> 1.4.12-1
+-   Update to 1.4.12 and fix CVE-2022-23648
 *   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.4.4-6
 -   Bump up version to compile with new go
 *   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.4.4-5
