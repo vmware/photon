@@ -30,7 +30,7 @@ Perform the following steps to install the packages on Ubuntu:
     export LC_ALL="en_US.UTF-8"
     export LC_CTYPE="en_US.UTF-8"
     ```
-4. The default configuration parameters are available in config.json. If you want to csutomize them, then the configuration information is available at the following location:
+4. The default configuration parameters are available in config.json. If you want to customize them, then the configuration information is available at the following location:
     ```
     [https://github.com/vmware/photon/blob/dev/photon-build-config.txt](https://github.com/vmware/photon/blob/dev/photon-build-config.txt)
 

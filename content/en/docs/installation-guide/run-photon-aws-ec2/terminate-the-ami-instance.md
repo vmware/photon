@@ -3,7 +3,7 @@ title:  Terminate the AMI Instance
 weight: 5
 ---
 
-Because Amazon charges you while the instance is running, you must shut it down when you have finsihed using it.  
+Because Amazon charges you while the instance is running, you must shut it down when you have finished using it.  
 
 1. Get the ID of the AMI so you can terminate it:
 	

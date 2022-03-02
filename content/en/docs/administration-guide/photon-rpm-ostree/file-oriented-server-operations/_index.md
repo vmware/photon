@@ -3,7 +3,7 @@ title:  File Oriented Server Operations
 weight: 9
 ---
 
-In this section, we will checkout a filetree into a writable directory structure on disk, make several file changes and commit the changes back into the repository. Then we will download this commit and apply at the host. As you may have guessed, this chapter is mostly about OSTree - the base technology. I've not mentioned anything about packages, although it is quite possible to install packages (afler all, packages are made of files, right?) and commit without the help of rpm-ostree, but it's too much of a headache and not worth the effort, since rpm-ostree does it simpler and better.  
+In this section, we will checkout a filetree into a writable directory structure on disk, make several file changes and commit the changes back into the repository. Then we will download this commit and apply at the host. As you may have guessed, this chapter is mostly about OSTree - the base technology. I've not mentioned anything about packages, although it is quite possible to install packages (after all, packages are made of files, right?) and commit without the help of rpm-ostree, but it's too much of a headache and not worth the effort, since rpm-ostree does it simpler and better.  
 
 When would you want to do that? When you want for all your hosts to get an application or configuration customization that is not encapsulated as part of a package upgrade.
 

@@ -23,7 +23,7 @@ This section describes how to install and build a package on the full version of
 
 VMware recommends that you install and build packages from their source RPMs on the full version of Photon OS. Do not use the minimal version to work with source RPMs.  
 
-Perfrom the following steps to install and build an example package- `sed` from its source RPM on Photon OS with an unprivileged account. 
+Perform the following steps to install and build an example package- `sed` from its source RPM on Photon OS with an unprivileged account. 
 
 1. check whether rpmbuild is installed by running the following command: 
 	

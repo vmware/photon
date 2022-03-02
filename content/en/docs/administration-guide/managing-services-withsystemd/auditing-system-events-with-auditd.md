@@ -5,7 +5,7 @@ weight: 5
 
 To manage security on Photon OS, the Linux auditing service `auditd` is enabled and active by default on the full version of Photon OS.
 
-The folloiwng command shows the security status:
+The following command shows the security status:
 	
 ```
 systemctl status auditd

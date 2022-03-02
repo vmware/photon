@@ -81,7 +81,7 @@ To view a list of all active units run the `systemctl list-units` command.
 
 ##Kernel Statistics
 
-The kernel statitics can be found by running the following commands:
+The kernel statistics can be found by running the following commands:
 
 - `procfs`
 - `sysfs`

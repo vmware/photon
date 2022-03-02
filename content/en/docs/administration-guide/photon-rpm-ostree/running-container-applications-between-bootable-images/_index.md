@@ -177,7 +177,7 @@ CONTAINER ID        IMAGE               COMMAND             CREATED             
 
 ## Rebooting into an existing image
 
-Now let's reboot the machine and select the other image. First, we'll verify that the docker daemon is automaically started.
+Now let's reboot the machine and select the other image. First, we'll verify that the docker daemon is automatically started.
 
 ```console
 root@photon-host-cus1 [ ~ ]# systemctl status docker

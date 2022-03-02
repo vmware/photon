@@ -1480,7 +1480,7 @@ Transaction complete; bootconfig swap: yes; deployment count change: 0
 Run "systemctl reboot" to start a reboot
 ```
     
-If we were to upgrade again, it would bring these packages back, but let's just check the differeneces.
+If we were to upgrade again, it would bring these packages back, but let's just check the differences.
 
 ```console
 root@photon-7c2d910d79e9 [ ~ ]# rpm-ostree upgrade --check-diff
