@@ -3,8 +3,8 @@
 
 Summary:        Text editor
 Name:           vim
-Version:        8.2.3428
-Release:        11%{?dist}
+Version:        8.2.4436
+Release:        1%{?dist}
 License:        Charityware
 URL:            http://www.vim.org
 Group:          Applications/Editors
@@ -12,36 +12,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 
 Source0:        %{name}-%{version}.tar.gz
-%define sha1    %{name}=4711feb7d73d6c4ca159e6f8c7d275e5449e15aa
+%define sha1    %{name}=9dca7d651520e097255202167c81671000772aef
 Source1:        vimrc
-
-Patch0:         vim-CVE-2021-3872.patch
-Patch1:         vim-CVE-2021-3875.patch
-Patch2:         vim-CVE-2021-3973.patch
-Patch3:         vim-CVE-2021-3974.patch
-Patch4:         vim-CVE-2021-4069.patch
-Patch5:         vim-CVE-2021-3984.patch
-Patch6:         vim-CVE-2021-4019.patch
-Patch7:         vim-CVE-2021-4136.patch
-Patch8:         vim-CVE-2021-4166.patch
-Patch9:         vim-CVE-2021-4187.patch
-Patch10:        vim-CVE-2021-4192.patch
-Patch11:        vim-CVE-2021-3903.patch
-Patch12:        vim-CVE-2021-3927.patch
-Patch13:        vim-CVE-2021-3928.patch
-Patch14:        vim-CVE-2022-0261.patch
-Patch15:        vim-CVE-2022-0318.patch
-Patch16:        vim-CVE-2022-0359.patch
-Patch17:        vim-CVE-2022-0361.patch
-Patch18:        vim-CVE-2022-0408.patch
-Patch19:        vim-CVE-2022-0443.patch
-Patch20:        vim-CVE-2022-0413.patch
-Patch21:        vim-CVE-2022-0392.patch
-Patch22:        vim-CVE-2022-0407.patch
-Patch23:        vim-CVE-2022-0128.patch
-Patch24:        vim-CVE-2022-0554.patch
-Patch25:        vim-CVE-2022-0629.patch
-Patch26:        vim-CVE-2022-0685.patch
 
 BuildRequires:  ncurses-devel
 
@@ -103,6 +75,7 @@ fi
 %{_datarootdir}/icons/locolor/32x32/apps/gvim.png
 %{_datarootdir}/vim/vim*/pack/dist/opt/*
 %exclude %{_datarootdir}/vim/vim*/colors/desert.vim
+%exclude %{_datarootdir}/vim/vim*/colors/lists/default.vim
 %{_datarootdir}/vim/vim*/compiler/*
 %{_datarootdir}/vim/vim*/delmenu.vim
 %{_datarootdir}/vim/vim*/evim.vim
@@ -179,8 +152,8 @@ fi
 %defattr(-,root,root)
 %config(noreplace) %{_sysconfdir}/vimrc
 %{_datarootdir}/vim/vim*/syntax/syntax.vim
-%{_datarootdir}/vim/vim*/rgb.txt
 %{_datarootdir}/vim/vim*/colors/desert.vim
+%{_datarootdir}/vim/vim*/colors/lists/default.vim
 %{_datarootdir}/vim/vim*/defaults.vim
 %{_datarootdir}/vim/vim*/filetype.vim
 %{_datarootdir}/vim/%{maj_ver}/syntax/nosyntax.vim
@@ -195,6 +168,8 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Mon Mar 07 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.4436-1
+- Update to 8.2.4436
 * Tue Mar 01 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.3428-11
 - Fix CVE-2022-0629,CVE-2022-0685
 * Mon Feb 21 2022 Satya Naga Vasamsetty <svasamsetty@vmware.com> 8.2.3428-10
