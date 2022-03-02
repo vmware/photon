@@ -1,7 +1,7 @@
 Summary:        Linux kernel packet control tool
 Name:           iptables
 Version:        1.8.7
-Release:        4%{?dist}
+Release:        5%{?dist}
 License:        GPLv2+
 URL:            http://www.netfilter.org/projects/iptables
 Group:          System Environment/Security
@@ -106,6 +106,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man3/*
 
 %changelog
+* Wed Mar 02 2022 Susant Sahani <ssahani@vmware.com> 1.8.7-5
+- Allow IPv6 RA and DHCPv6
 * Thu Feb 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.8.7-4
 - Rebuild with newer libnftnl
 * Fri Jul 23 2021 Susant Sahani <ssahani@vmware.com> 1.8.7-3
