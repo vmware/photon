@@ -79,7 +79,7 @@
 &lt;p>&lt;strong>Result:&lt;/strong> You have a native Photon OS RPM package.&lt;/p>
 &lt;p>The &lt;code>build-spec.sh&lt;/code> script is located in the &lt;code>photon/tools/scripts/&lt;/code> folder.&lt;/p>
 &lt;ul>
-&lt;li>&lt;a href="#prerequisites">Prerequisties&lt;/a>&lt;/li>
+&lt;li>&lt;a href="#prerequisites">Prerequisites&lt;/a>&lt;/li>
 &lt;li>&lt;a href="#procedure">Procedure&lt;/a>&lt;/li>
 &lt;li>&lt;a href="#example">Example&lt;/a>&lt;/li>
 &lt;li>&lt;a href="#build-logs">Build Logs&lt;/a>&lt;/li>
@@ -126,7 +126,7 @@ find %{buildroot}/lib/modules -name '*.ko' -print0 | xargs -0 chmod u+x
 %defattr(-,root,root)
 /lib/modules/*
 &lt;/code>&lt;/pre>&lt;h2 id="build-logs">Build Logs&lt;/h2>
-&lt;p>The followiing logs indicate the steps that the script performs internally:&lt;/p>
+&lt;p>The following logs indicate the steps that the script performs internally:&lt;/p>
 &lt;pre>&lt;code>1. Create sandbox
 Use local build template image OK
 2. Prepare build environment
@@ -257,7 +257,7 @@ Create running VM instances using Azure management portal
 &lt;p>The OVA image uses an optimized version of the 4.4.8 Linux kernel. Two ova files are generated from the build: photon-ova.ova, which is the full version of Photon OS, and photon-custom.ova, which is the minimal version of Photon OS. The password for photon-ova.ova should be changed using guest customization options when you upload it to VMware vCenter. Photon-custom.ova comes with the default password set to &lt;code>changeme&lt;/code>; you must change it the first time you log in.&lt;/p>
 &lt;h4 id="ova-prerequisites">OVA Prerequisites&lt;/h4>
 &lt;p>&lt;a href="https://developercenter.vmware.com/web/sdk/60/vddk">VDDK 6.0&lt;/a>&lt;/p>
-&lt;p>To utilize the VDDK libraries the following procedure may be used, this extracts the libraries and temporarily exports them to the LD_LIBRARY_PATH for the &lt;em>current session&lt;/em>. (tested on Ubuntu 1404 &amp;amp; 1604) If you wish to make this permenant and system-wide then you may want to create a config file in /etc/ld.so.conf.d/.&lt;/p>
+&lt;p>To utilize the VDDK libraries the following procedure may be used, this extracts the libraries and temporarily exports them to the LD_LIBRARY_PATH for the &lt;em>current session&lt;/em>. (tested on Ubuntu 1404 &amp;amp; 1604) If you wish to make this permanent and system-wide then you may want to create a config file in /etc/ld.so.conf.d/.&lt;/p>
 &lt;pre>&lt;code>tar -zxf VMware-vix-disklib-6.0.2-3566099.x86_64.tar.gz
 cp -r vmware-vix-disklib-distrib/include/* /usr/include/
 mkdir /usr/lib/vmware

@@ -349,7 +349,7 @@ Feb 26 21:42:09 photon-machine systemd[1]: Successfully loaded SELinux policy in
 &lt;h2 id="switch-selinux-to-enforcing-mode">Switch SELinux to enforcing mode&lt;/h2>
 &lt;p>The three methods to toggle enforcing mode are as follows:&lt;/p>
 &lt;ol>
-&lt;li>Run the &lt;code>setenforce 1&lt;/code> command (libselinux-utils rpm), Enforcing mode will be set timmediately, but it is not preserved on reboot.&lt;/li>
+&lt;li>Run the &lt;code>setenforce 1&lt;/code> command (libselinux-utils rpm), Enforcing mode will be set immediately, but it is not preserved on reboot.&lt;/li>
 &lt;li>Edit the &lt;code>/etc/selinux/config&lt;/code> file to set &lt;code>SELINUX=enforcing&lt;/code> and reboot.&lt;/li>
 &lt;li>Add the &lt;code>enforcing=1&lt;/code> kernel parameter and reboot.&lt;/li>
 &lt;/ol>

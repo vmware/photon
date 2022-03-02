@@ -104,7 +104,7 @@ systemctl start sendmail
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;/ol></description></item><item><title>Docs: Auditing System Events with auditd</title><link>/docs/administration-guide/managing-services-withsystemd/auditing-system-events-with-auditd/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/managing-services-withsystemd/auditing-system-events-with-auditd/</guid><description>
 &lt;p>To manage security on Photon OS, the Linux auditing service &lt;code>auditd&lt;/code> is enabled and active by default on the full version of Photon OS.&lt;/p>
-&lt;p>The folloiwng command shows the security status:&lt;/p>
+&lt;p>The following command shows the security status:&lt;/p>
 &lt;pre>&lt;code>systemctl status auditd
 * auditd.service - Security Auditing Service
 Loaded: loaded (/usr/lib/systemd/system/auditd.service; enabled; vendor preset: enabled)

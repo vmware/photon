@@ -108,7 +108,7 @@
 &lt;li>
 &lt;p>Start the Installation Process&lt;/p>
 &lt;p>From the File menu, choose &lt;strong>New Virtual Machine&lt;/strong> to create a new virtual machine.&lt;/p>
-&lt;p>&lt;img src="../../../docs/installation-guide/images/ws-iso-new.png" alt="New virtural machine">&lt;/p>
+&lt;p>&lt;img src="../../../docs/installation-guide/images/ws-iso-new.png" alt="New virtual machine">&lt;/p>
 &lt;p>Select &lt;strong>Typical&lt;/strong> or &lt;strong>Custom&lt;/strong>, and then choose &lt;strong>Next&lt;/strong>. These instructions refer to a Typical installation.&lt;/p>
 &lt;p>&lt;img src="../../../docs/installation-guide/images/ws-iso-typical.png" alt="Typical installation">&lt;/p>
 &lt;/li>

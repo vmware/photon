@@ -8,7 +8,7 @@
 pip3 install docker==2.3.0
 </code></pre><p>If you encounter an error for LOCALE when you run these commands, then export the following variables in the terminal:</p><pre><code>export LC_ALL=&quot;en_US.UTF-8&quot;
 export LC_CTYPE=&quot;en_US.UTF-8&quot;
-</code></pre></li><li><p>The default configuration parameters are available in config.json. If you want to csutomize them, then the configuration information is available at the following location:</p><pre><code>[https://github.com/vmware/photon/blob/dev/photon-build-config.txt](https://github.com/vmware/photon/blob/dev/photon-build-config.txt)
+</code></pre></li><li><p>The default configuration parameters are available in config.json. If you want to customize them, then the configuration information is available at the following location:</p><pre><code>[https://github.com/vmware/photon/blob/dev/photon-build-config.txt](https://github.com/vmware/photon/blob/dev/photon-build-config.txt)
 
 </code></pre></li><li><p>Clone`the Photon project:</p><p><code>git clone https://github.com/vmware/photon.git</code>
 <code>cd $HOME/workspaces/photon</code></p></li><li><p>Make ISO as follows:</p><p><code>sudo make iso</code></p></li><li><p>Make Minimal ISO as follows:</p><p><code>sudo make minimal-iso</code></p></li><li><p>Make Real-Time ISO as follows:</p><p><code>sudo make rt-iso</code></p></li></ol><p><strong>Result</strong></p><p>This command first builds all RPMs corresponding to the SPEC files in your Photon repository and then builds a bootable ISO containing those RPMs.</p><p>The RPMs thus built are stored under <code>stage/RPMS/</code> directory within the repository, using the following directory hierarchy:</p><pre><code>$HOME/workspaces/photon/stage/:

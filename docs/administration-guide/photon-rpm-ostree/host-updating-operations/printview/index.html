@@ -1306,7 +1306,7 @@ error: Cannot undeploy currently booted deployment 0
 Moving '820b584a6f90bf6b9b8cb6aad8c093064b88d0ab686be8130baa03d68917ad88.0' to be first deployment
 Transaction complete; bootconfig swap: yes; deployment count change: 0
 Run &quot;systemctl reboot&quot; to start a reboot
-</code></pre><p>If we were to upgrade again, it would bring these packages back, but let&rsquo;s just check the differeneces.</p><pre><code class=language-console data-lang=console>root@photon-7c2d910d79e9 [ ~ ]# rpm-ostree upgrade --check-diff
+</code></pre><p>If we were to upgrade again, it would bring these packages back, but let&rsquo;s just check the differences.</p><pre><code class=language-console data-lang=console>root@photon-7c2d910d79e9 [ ~ ]# rpm-ostree upgrade --check-diff
   ⠚ Receiving metadata objects: 0/(estimating) -/s 0 bytes... 
   Receiving metadata objects: 0/(estimating) -/s 0 bytes... done
   No updates available.

@@ -133,7 +133,7 @@ root@photon-host-cus1 [ ~ ]# docker start  7029a64e7aa3
 root@photon-host-cus1 [ ~ ]# docker ps -a
 CONTAINER ID        IMAGE               COMMAND             CREATED             STATUS                       PORTS               NAMES
 7029a64e7aa3        ubuntu              &quot;/bin/bash&quot;         7 minutes ago       Up 21 seconds                                    gifted_dijkstra
-</code></pre><h2 id=rebooting-into-an-existing-image>Rebooting into an existing image</h2><p>Now let&rsquo;s reboot the machine and select the other image. First, we&rsquo;ll verify that the docker daemon is automaically started.</p><pre><code class=language-console data-lang=console>root@photon-host-cus1 [ ~ ]# systemctl status docker
+</code></pre><h2 id=rebooting-into-an-existing-image>Rebooting into an existing image</h2><p>Now let&rsquo;s reboot the machine and select the other image. First, we&rsquo;ll verify that the docker daemon is automatically started.</p><pre><code class=language-console data-lang=console>root@photon-host-cus1 [ ~ ]# systemctl status docker
 * docker.service - Docker Application Container Engine
    Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: disabled)
    Active: active (running) since Tue 2019-09-10 10:54:32 UTC; 13min ago

@@ -27,6 +27,6 @@
 &lt;/li>
 &lt;/ul>
 &lt;p>The additional tools that you select depend on the clues that your initial investigation reveals. The following tools can also help troubleshoot performance: &lt;code>sysstat&lt;/code>, &lt;code>sar&lt;/code>, &lt;code>systemtap&lt;/code>, and &lt;code>crash&lt;/code>.&lt;/p></description></item><item><title>Docs: Throughput Performance</title><link>/docs/troubleshooting-guide/performance-issues/throughput_performance/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/troubleshooting-guide/performance-issues/throughput_performance/</guid><description>
-&lt;p>Throughtput performance over TCP might be reduced.&lt;/p>
+&lt;p>Throughput performance over TCP might be reduced.&lt;/p>
 &lt;p>This might occur because timestamps are enabled by default and the parameter &lt;code>net.ipv4.tcp_timestamps&lt;/code> has a value of 1.&lt;/p>
 &lt;p>Setting a value of 1 or 2 for this parameter may impact performance. Setting a value of 0 or 2 for this parameter might cause a security vulnerability.&lt;/p></description></item></channel></rss>

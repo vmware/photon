@@ -1936,7 +1936,7 @@ Version: 4.0_minimal
 Moving '820b584a6f90bf6b9b8cb6aad8c093064b88d0ab686be8130baa03d68917ad88.0' to be first deployment
 Transaction complete; bootconfig swap: yes; deployment count change: 0
 Run &amp;quot;systemctl reboot&amp;quot; to start a reboot
-&lt;/code>&lt;/pre>&lt;p>If we were to upgrade again, it would bring these packages back, but let&amp;rsquo;s just check the differeneces.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>If we were to upgrade again, it would bring these packages back, but let&amp;rsquo;s just check the differences.&lt;/p>
 &lt;pre>&lt;code class="language-console" data-lang="console">root@photon-7c2d910d79e9 [ ~ ]# rpm-ostree upgrade --check-diff
 ⠚ Receiving metadata objects: 0/(estimating) -/s 0 bytes...
 Receiving metadata objects: 0/(estimating) -/s 0 bytes... done
@@ -2082,7 +2082,7 @@ AutomaticUpdates: stage; rpm-ostreed-automatic.timer: last run 16min ago
 &lt;/li>
 &lt;/ol>
 &lt;p>Automatic updates are now enabled and will automatically update the host system.&lt;/p></description></item><item><title>Docs: File Oriented Server Operations</title><link>/docs/administration-guide/photon-rpm-ostree/file-oriented-server-operations/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>/docs/administration-guide/photon-rpm-ostree/file-oriented-server-operations/</guid><description>
-&lt;p>In this section, we will checkout a filetree into a writable directory structure on disk, make several file changes and commit the changes back into the repository. Then we will download this commit and apply at the host. As you may have guessed, this chapter is mostly about OSTree - the base technology. I&amp;rsquo;ve not mentioned anything about packages, although it is quite possible to install packages (afler all, packages are made of files, right?) and commit without the help of rpm-ostree, but it&amp;rsquo;s too much of a headache and not worth the effort, since rpm-ostree does it simpler and better.&lt;/p>
+&lt;p>In this section, we will checkout a filetree into a writable directory structure on disk, make several file changes and commit the changes back into the repository. Then we will download this commit and apply at the host. As you may have guessed, this chapter is mostly about OSTree - the base technology. I&amp;rsquo;ve not mentioned anything about packages, although it is quite possible to install packages (after all, packages are made of files, right?) and commit without the help of rpm-ostree, but it&amp;rsquo;s too much of a headache and not worth the effort, since rpm-ostree does it simpler and better.&lt;/p>
 &lt;p>When would you want to do that? When you want for all your hosts to get an application or configuration customization that is not encapsulated as part of a package upgrade.&lt;/p>
 &lt;h2 id="starting-a-fresh-ostree-repo">Starting a fresh OSTree repo&lt;/h2>
 &lt;p>If you want to start fresh with your own branch and/or versioning scheme, you can delete the OSTree repo created during the Photon 3.0 RPM-OSTree server install and re-create it empty.&lt;/p>
@@ -2157,7 +2157,7 @@ photon-debuginfo.repo photon-extras.repo photon-iso.repo photon-updates.repo pho
 &lt;span style="color:#c4a000">gpgcheck&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">1&lt;/span>
 &lt;span style="color:#c4a000">enabled&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">1&lt;/span>
 &lt;span style="color:#c4a000">skip_if_unavailable&lt;/span>&lt;span style="color:#ce5c00;font-weight:bold">=&lt;/span>&lt;span style="color:#4e9a06">True&lt;/span>
-&lt;/code>&lt;/pre>&lt;/div>&lt;p>In this case, &lt;code>rpm-ostree&lt;/code> is instructed to download its packages in RPM format from the VMware Photon Packgaes URL, which is the location of an online RPMS repo maintained by the VMware Photon OS team. To ensure those packages can be validated as being genuine and signed by VMware, the signature is checked against the official VMware public key.&lt;/p>
+&lt;/code>&lt;/pre>&lt;/div>&lt;p>In this case, &lt;code>rpm-ostree&lt;/code> is instructed to download its packages in RPM format from the VMware Photon Packages URL, which is the location of an online RPMS repo maintained by the VMware Photon OS team. To ensure those packages can be validated as being genuine and signed by VMware, the signature is checked against the official VMware public key.&lt;/p>
 &lt;p>So what&amp;rsquo;s in an RPMS repository? If we point the browser to &lt;a href="https://packages.vmware.com/photon/photon_publish_rpms/">packages.vmware.com/photon/photon_publish_rpms/&lt;/a>, we can see there are three top directories:&lt;/p>
 &lt;ul>
 &lt;li>noarch - where all packages that don&amp;rsquo;t depend on the architecture reside. Those may contain scripts, platform neutral source files, configuration.&lt;/li>
@@ -2280,7 +2280,7 @@ No apparent changes since previous commit; use --force-nocache to override
 &lt;/code>&lt;/pre>&lt;p>This takes several minutes. Then why is the RPM-OSTree server installing so fast, in 45 seconds on my SSD? The server doesn&amp;rsquo;t compose the tree, it uses a pre-created OSTree repo that is stored on the CD-ROM. It comes of course at the expense of larger CD-ROM size. This OSTree repo is created from the same set of RPMS on the CD-ROM, so if you compose fresh, you will get the same exact tree, with same commit ID for the &amp;ldquo;minimal&amp;rdquo; ref.&lt;/p>
 &lt;h2 id="automatic-version-prefix">Automatic version prefix&lt;/h2>
 &lt;p>If you recall the filetree version explained earlier, this is where it comes into play. When a tree is composed from scratch, the first version (0) associated to the initial commit is going to get that human readable value. Any subsequent compose operation will auto-increment to .1, .2, .3 and so on.&lt;br>
-It&amp;rsquo;s a good idea to start a versionning scheme of your own, so that your customized Photon builds that may get different packages of your choice don&amp;rsquo;t get the same version numbers as the official Photon team builds coming from VMware&amp;rsquo;s OSTree Packages repository. There is no conflict, it&amp;rsquo;s just confusing to have same name for different commits coming from different repos.&lt;br>
+It&amp;rsquo;s a good idea to start a versioning scheme of your own, so that your customized Photon builds that may get different packages of your choice don&amp;rsquo;t get the same version numbers as the official Photon team builds coming from VMware&amp;rsquo;s OSTree Packages repository. There is no conflict, it&amp;rsquo;s just confusing to have same name for different commits coming from different repos.&lt;br>
 So if you work for a company named Big Data Inc., you may want to switch to a new versioning scheme &lt;strong>&amp;ldquo;automatic_version_prefix&amp;rdquo;: &amp;ldquo;1.0_bigdata&amp;rdquo;&lt;/strong>.&lt;/p>
 &lt;h2 id="installing-package-updates">Installing package updates&lt;/h2>
 &lt;p>If you want to provide hosts with the package updates that VMware periodically releases, all that you need to do is to add the photon-updates.repo to the list of repos in photon-base.json and then re-compose the usual way.&lt;/p>
@@ -2537,7 +2537,7 @@ root@photon-host-cus1 [ ~ ]# docker ps -a
 CONTAINER ID IMAGE COMMAND CREATED STATUS PORTS NAMES
 7029a64e7aa3 ubuntu &amp;quot;/bin/bash&amp;quot; 7 minutes ago Up 21 seconds gifted_dijkstra
 &lt;/code>&lt;/pre>&lt;h2 id="rebooting-into-an-existing-image">Rebooting into an existing image&lt;/h2>
-&lt;p>Now let&amp;rsquo;s reboot the machine and select the other image. First, we&amp;rsquo;ll verify that the docker daemon is automaically started.&lt;/p>
+&lt;p>Now let&amp;rsquo;s reboot the machine and select the other image. First, we&amp;rsquo;ll verify that the docker daemon is automatically started.&lt;/p>
 &lt;pre>&lt;code class="language-console" data-lang="console">root@photon-host-cus1 [ ~ ]# systemctl status docker
 * docker.service - Docker Application Container Engine
 Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: disabled)

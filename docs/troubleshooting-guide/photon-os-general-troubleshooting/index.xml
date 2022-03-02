@@ -236,7 +236,7 @@ These link files follow the following rules:&lt;/p>
 &lt;p>Files with identical names replace each other.&lt;/p>
 &lt;/li>
 &lt;/ul>
-&lt;p>##Dupliate Matches
+&lt;p>##Duplicate Matches
 If we have multiple configuration files matching an interface, the first (in lexical order) network file matching a given device is applied. All other files are ignored even if they match. The following is an example of matching configuration files:&lt;/p>
 &lt;pre>&lt;code>builder@localhost [ ~ ]$ cat /etc/systemd/network/10-eth0.network
 [Match]

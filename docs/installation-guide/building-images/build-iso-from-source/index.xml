@@ -18,7 +18,7 @@ pip3 install docker==2.3.0
 export LC_CTYPE=&amp;quot;en_US.UTF-8&amp;quot;
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>
-&lt;p>The default configuration parameters are available in config.json. If you want to csutomize them, then the configuration information is available at the following location:&lt;/p>
+&lt;p>The default configuration parameters are available in config.json. If you want to customize them, then the configuration information is available at the following location:&lt;/p>
 &lt;pre>&lt;code>[https://github.com/vmware/photon/blob/dev/photon-build-config.txt](https://github.com/vmware/photon/blob/dev/photon-build-config.txt)
 &lt;/code>&lt;/pre>&lt;/li>
 &lt;li>

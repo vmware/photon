@@ -258,7 +258,7 @@ net -v Get the network-config-manager supported version
 &lt;/code>&lt;/pre>&lt;h2 id="pkg-repolist">pkg repolist&lt;/h2>
 &lt;p>Get a list of the configured software repositories.&lt;/p>
 &lt;pre>&lt;code class="language-console" data-lang="console">pmd-cli pkg repolist
-&lt;/code>&lt;/pre>&lt;p>This command returns a list of the configured software repositories, including the repository ID, repitory name, and status.&lt;/p>
+&lt;/code>&lt;/pre>&lt;p>This command returns a list of the configured software repositories, including the repository ID, repository name, and status.&lt;/p>
 &lt;h2 id="pkg-search-ssh">pkg search ssh&lt;/h2>
 &lt;p>Search package details for the given string.&lt;/p>
 &lt;pre>&lt;code class="language-console" data-lang="console">pmd-cli pkg search ssh

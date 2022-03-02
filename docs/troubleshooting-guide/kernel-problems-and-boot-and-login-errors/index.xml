@@ -355,7 +355,7 @@ BOOT_IMAGE=/boot/vmlinuz-4.9.107-1.ph2-esx root=PARTUUID=29194d05-4a6e-4e0c-b1f4
 &lt;p>##Sysctl State&lt;/p>
 &lt;p>To view a list of all active units run the &lt;code>systemctl list-units&lt;/code> command.&lt;/p>
 &lt;p>##Kernel Statistics&lt;/p>
-&lt;p>The kernel statitics can be found by running the following commands:&lt;/p>
+&lt;p>The kernel statistics can be found by running the following commands:&lt;/p>
 &lt;ul>
 &lt;li>&lt;code>procfs&lt;/code>&lt;/li>
 &lt;li>&lt;code>sysfs&lt;/code>&lt;/li>

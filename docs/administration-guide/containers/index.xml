@@ -21,7 +21,7 @@
 &lt;ul>
 &lt;li>Ensure that the NFS server is running&lt;/li>
 &lt;li>Ensure that you have the Kubernetes cluster ready that has access to the NFS server&lt;/li>
-&lt;li>Esure that you have installed Kubernetes package and have &lt;code>kubeconfig&lt;/code> accessible in the build VM.&lt;/li>
+&lt;li>Ensure that you have installed Kubernetes package and have &lt;code>kubeconfig&lt;/code> accessible in the build VM.&lt;/li>
 &lt;/ul>
 &lt;h2 id="triggering-distributed-photon-builds">Triggering Distributed Photon Builds&lt;/h2>
 &lt;p>Perform the following steps in the Photon OS repository:&lt;/p>

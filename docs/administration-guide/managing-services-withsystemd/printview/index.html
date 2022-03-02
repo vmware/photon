@@ -58,7 +58,7 @@ systemctl disable httpd.service
 </code></pre></li><li><p>Verify if Sendmail is enabled:</p><pre><code class=language-console data-lang=console>systemctl status sendmail
 </code></pre></li><li><p>Enable Sendmail if it is disabled and then start it:</p><pre><code class=language-console data-lang=console>systemctl enable sendmail
 systemctl start sendmail
-</code></pre></li></ol></div><div class=td-content style=page-break-before:always><h1 id=pg-483f2401135eb4c2ae692c7468e5aa2b>6 - Auditing System Events with auditd</h1><p>To manage security on Photon OS, the Linux auditing service <code>auditd</code> is enabled and active by default on the full version of Photon OS.</p><p>The folloiwng command shows the security status:</p><pre><code>systemctl status auditd
+</code></pre></li></ol></div><div class=td-content style=page-break-before:always><h1 id=pg-483f2401135eb4c2ae692c7468e5aa2b>6 - Auditing System Events with auditd</h1><p>To manage security on Photon OS, the Linux auditing service <code>auditd</code> is enabled and active by default on the full version of Photon OS.</p><p>The following command shows the security status:</p><pre><code>systemctl status auditd
 	* auditd.service - Security Auditing Service
 	   Loaded: loaded (/usr/lib/systemd/system/auditd.service; enabled; vendor preset: enabled)
 	   Active: active (running) since Fri 2016-04-29 15:08:50 UTC; 1 months 9 days ago

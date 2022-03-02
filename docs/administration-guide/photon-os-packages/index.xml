@@ -131,7 +131,7 @@ photon.repo
 &lt;/ul>
 &lt;h2 id="procedure">Procedure&lt;/h2>
 &lt;p>VMware recommends that you install and build packages from their source RPMs on the full version of Photon OS. Do not use the minimal version to work with source RPMs.&lt;/p>
-&lt;p>Perfrom the following steps to install and build an example package- &lt;code>sed&lt;/code> from its source RPM on Photon OS with an unprivileged account.&lt;/p>
+&lt;p>Perform the following steps to install and build an example package- &lt;code>sed&lt;/code> from its source RPM on Photon OS with an unprivileged account.&lt;/p>
 &lt;ol>
 &lt;li>
 &lt;p>check whether rpmbuild is installed by running the following command:&lt;/p>

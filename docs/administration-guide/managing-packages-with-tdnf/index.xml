@@ -71,7 +71,7 @@ skip_if_unavailable=True
 &lt;p>The repository settings details are as follows:&lt;/p>
 &lt;ul>
 &lt;li>
-&lt;p>The minimal information needed to establish a repository is an ID and human-readable name of the repository and its base URL. The ID, which appears in square brackets, must be one word that is unique amoung the system&amp;rsquo;s repositories; `.&lt;/p>
+&lt;p>The minimal information needed to establish a repository is an ID and human-readable name of the repository and its base URL. The ID, which appears in square brackets, must be one word that is unique among the system&amp;rsquo;s repositories; `.&lt;/p>
 &lt;/li>
 &lt;li>
 &lt;p>The &lt;code>baseurl&lt;/code> is a URL for the repository&amp;rsquo;s repodata directory. For a repository on a local server that can be accessed directly or mounted as a file system, the base URL can be a file referenced by &lt;code>file://&lt;/code>. Example:&lt;/p>
