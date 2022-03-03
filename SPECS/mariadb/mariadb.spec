@@ -1,6 +1,6 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.8.1
+Version:          10.8.2
 Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
@@ -9,7 +9,7 @@ Distribution:     Photon
 Url:              https://mariadb.org
 
 Source0:          https://rsync.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define           sha1 %{name}=052e586295d4caab6e56a9e4748eeb41c491a750
+%define           sha1 %{name}=e264c41c468a0f400eb5b53462398e70d0e4144c
 
 BuildRequires:    cmake
 BuildRequires:    Linux-PAM-devel
@@ -450,6 +450,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+* Thu Mar 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.8.2-1
+- CVE fixes
 * Wed Feb 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.8.1-1
 - Upgrade version 10.8.1
 * Thu Nov 11 2021 Satya Naga Vasamsetty <svasamsetty@vmware.com> 10.7.1-2
