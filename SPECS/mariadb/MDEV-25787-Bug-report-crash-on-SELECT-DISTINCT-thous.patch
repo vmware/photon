@@ -1,0 +1,31 @@
+From 25d9531fb80d24f7e2fb0ea99e48c13d50eb0f13 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Thu, 3 Mar 2022 22:09:33 +0530
+Subject: [PATCH] MDEV-25787 Bug report: crash on SELECT DISTINCT
+ thousands_blob_fields
+
+fix a debug assert to account for not opened temp tables
+
+[sshedi]
+Ported this fix from 10.7.3 to 10.2.43
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ storage/maria/ha_maria.cc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/storage/maria/ha_maria.cc b/storage/maria/ha_maria.cc
+index f1cabfd2..962d0fc1 100644
+--- a/storage/maria/ha_maria.cc
++++ b/storage/maria/ha_maria.cc
+@@ -2688,7 +2688,7 @@ int ha_maria::delete_table(const char *name)
+ 
+ void ha_maria::drop_table(const char *name)
+ {
+-  DBUG_ASSERT(file->s->temporary);
++  DBUG_ASSERT(!file || file->s->temporary);
+   (void) ha_close();
+   (void) maria_delete_table_files(name, 1, 0);
+ }
+-- 
+2.25.1
+
