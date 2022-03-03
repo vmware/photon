@@ -6,12 +6,12 @@
 
 Summary:        Configures network interfaces in cloud enviroment
 Name:           cloud-network-setup
-Version:        0.2
-Release:        3%{?dist}
+Version:        0.2.1
+Release:        1%{?dist}
 License:        Apache-2.0
 URL:            https://github.com/vmware/%{name}/archive/refs/tags/v%{version}.tar.gz
 Source0:        cloud-network-setup-%{version}.tar.gz
-%define sha1 %{name}=6a79514aa15965a2d1bba2a56544e47ba71bf72b
+%define sha1 %{name}=82abd54c46bf63d9c9490874812ee6fbd21ca832
 Group:          Networking
 Vendor:         VMware, Inc.
 Distribution:   Photon
@@ -95,8 +95,10 @@ fi
 %systemd_postun_with_restart cloud-network.service
 
 %changelog
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 0.2-3
--   Bump up version to compile with new go
+* Thu Mar 03 2022 Susant Sahani <ssahani@vmware.com> 0.2.1-1
+- Version bump.
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 0.2-3
+- Bump up version to compile with new go
 * Tue Feb 15 2022 Piyush Gupta <gpiyush@vmware.com> 0.2-2
 - Bump up version to compile with new go
 * Sun Feb 13 2022 Susant Sahani <ssahani@vmware.com> 0.2-1
