@@ -1,6 +1,6 @@
 Summary:          Database servers made by the original developers of MySQL.
 Name:             mariadb
-Version:          10.3.33
+Version:          10.3.34
 Release:          1%{?dist}
 License:          GPLv2
 Group:            Applications/Databases
@@ -9,7 +9,9 @@ Distribution:     Photon
 Url:              https://mariadb.org
 
 Source0:          https://rsync.osuosl.org/pub/mariadb/mariadb-%{version}/source/mariadb-%{version}.tar.gz
-%define           sha1 %{name}=767b8ca8147274b4b4471987ffad6d06c9688e9f
+%define           sha1 %{name}=4084b765b40de13dfee27fd064cf227a4e2149c9
+
+Patch0: MDEV-25787-Bug-report-crash-on-SELECT-DISTINCT-thous.patch
 
 BuildRequires:    cmake
 BuildRequires:    Linux-PAM-devel
@@ -374,6 +376,8 @@ rm -rf %{buildroot}
 %{_datadir}/mysql/hindi/errmsg.sys
 
 %changelog
+* Thu Mar 03 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.3.34-1
+- CVE fixes
 * Wed Feb 09 2022 Shreenidhi Shedi <sshedi@vmware.com> 10.3.33-1
 - Upgrade version to fix bunch of CVEs
 * Mon Jan 24 2022 Ankit Jain <ankitja@vmware.com> 10.3.29-3
