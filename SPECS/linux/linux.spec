@@ -2,7 +2,7 @@
 Summary:        Kernel
 Name:           linux
 Version:        4.4.302
-Release:        1%{?kat_build:.%kat_build}%{?dist}
+Release:        2%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -157,6 +157,9 @@ Patch106:      0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Fix for CVE-2022-0492
 Patch108:      0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
+
+#Fix for CVE-2021-20322
+Patch109:      0001-ipv4-use-siphash-instead-of-Jenkins-in-fnhe_hashfun.patch
 
 %if 0%{?kat_build:1}
 Patch1000:	%{kat_build}.patch
@@ -324,6 +327,7 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch105 -p1
 %patch106 -p1
 %patch108 -p1
+%patch109 -p1
 
 %if 0%{?kat_build:1}
 %patch1000 -p1
@@ -482,6 +486,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/perf-core
 
 %changelog
+*   Fri Mar 04 2022 Srinidhi Rao <srinidhir@vmware.com> 4.4.302-2
+-   Fix for CVE-2021-20322
 *   Mon Feb 14 2022 Sharan Turlapati <sturlapati@vmware.com> 4.4.302-1
 -   Update to version 4.4.302
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.4.299-3

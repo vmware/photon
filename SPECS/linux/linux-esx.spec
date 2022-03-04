@@ -2,7 +2,7 @@
 Summary:       Kernel
 Name:          linux-esx
 Version:       4.4.302
-Release:       1%{?dist}
+Release:       2%{?dist}
 License:       GPLv2
 URL:           http://www.kernel.org/
 Group:         System Environment/Kernel
@@ -157,6 +157,9 @@ Patch106:      0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 # Fix for CVE-2022-0492
 Patch108:      0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
 
+#Fix for CVE-2021-20322
+Patch109:      0001-ipv4-use-siphash-instead-of-Jenkins-in-fnhe_hashfun.patch
+
 BuildRequires: bc
 BuildRequires: kbd
 BuildRequires: kmod
@@ -293,6 +296,7 @@ The Linux package contains the Linux kernel doc files
 %patch105 -p1
 %patch106 -p1
 %patch108 -p1
+%patch109 -p1
 
 %build
 # patch vmw_balloon driver
@@ -383,6 +387,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Fri Mar 04 2022 Srinidhi Rao <srinidhir@vmware.com> 4.4.302-2
+-   Fix for CVE-2021-20322
 *   Mon Feb 14 2022 Sharan Turlapati <sturlapati@vmware.com> 4.4.302-1
 -   Update to version 4.4.302
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.4.299-3
