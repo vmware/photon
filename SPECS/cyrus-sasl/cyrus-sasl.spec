@@ -1,7 +1,7 @@
 Summary:	Cyrus Simple Authentication Service Layer (SASL) library
 Name:		cyrus-sasl
 Version:	2.1.26
-Release:	12%{?dist}
+Release:	13%{?dist}
 License:	Custom
 URL:		http://cyrusimap.web.cmu.edu/
 Group:		System Environment/Security
@@ -11,9 +11,10 @@ Distribution: 	Photon
 Source0:	ftp://ftp.cyrusimap.org/cyrus-sasl/%{name}-%{version}.tar.gz
 %define sha1 cyrus-sasl=d6669fb91434192529bd13ee95737a8a5040241c
 
-Patch0:		http://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.26-fixes-3.patch
-Patch1:     cyrus-sasl-mem-leak-fix.patch
-Patch2:     CVE-2019-19906.patch
+Patch0:         http://www.linuxfromscratch.org/patches/blfs/svn/cyrus-sasl-2.1.26-fixes-3.patch
+Patch1:         cyrus-sasl-mem-leak-fix.patch
+Patch2:         CVE-2019-19906.patch
+Patch3:         CVE-2022-24407.patch
 
 BuildRequires:  systemd
 BuildRequires:	openssl-devel
@@ -141,6 +142,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man8/saslauthd.8.gz
 
 %changelog
+* Fri Mar 04 2022 Nitesh Kumar <kunitesh@vmware.com> 2.1.26-13
+- Fix CVE-2022-24407
 * Mon Mar 16 2020 Tapas Kundu <tkundu@vmware.com>  2.1.26-12
 - Enable login and plain
 * Wed Feb 19 2020 Ashwin H <ashwinh@vmware.com>  2.1.26-11
