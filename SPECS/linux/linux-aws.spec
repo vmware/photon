@@ -2,7 +2,7 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.19.229
+Version:        4.19.232
 Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -13,7 +13,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bd022c780bbfcd8b3f145ecfe8925585a2db0d88
+%define sha1 linux=b5709ae792062b6c175726a88929189ead9df52e
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -137,7 +137,6 @@ Patch152: 0056-Amazon-ENA-driver-Update-to-version-1.6.0.patch
 Patch157:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # Fix for CVE-2021-4204
-Patch159:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch160:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 %if 0%{?kat_build:1}
@@ -298,7 +297,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 %patch133 -p1
 %patch152 -p1
 %patch157 -p1
-%patch159 -p1
 %patch160 -p1
 
 %if 0%{?kat_build:1}
@@ -490,6 +488,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %endif
 
 %changelog
+*   Mon Mar 07 2022 srinidhira0 <srinidhir@vmware.com> 4.19.232-1
+-   Update to version 4.19.232
 *   Fri Feb 11 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.229-1
 -   Update to version 4.19.229
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.19.225-5

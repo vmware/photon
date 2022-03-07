@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.19.229
-Release:        2%{?kat_build:.kat}%{?dist}
+Version:        4.19.232
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bd022c780bbfcd8b3f145ecfe8925585a2db0d88
+%define sha1 linux=b5709ae792062b6c175726a88929189ead9df52e
 Source1:        config-secure
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -162,7 +162,6 @@ Patch187:       0001-mm-fix-panic-in-__alloc_pages.patch
 Patch189:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # Fix for CVE-2021-4204
-Patch191:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch192:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 %if 0%{?kat_build:1}
@@ -333,7 +332,6 @@ popd
 %patch182 -p1
 %patch187 -p1
 %patch189 -p1
-%patch191 -p1
 %patch192 -p1
 
 %if 0%{?kat_build:1}
@@ -488,6 +486,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Mar 07 2022 srinidhira0 <srinidhir@vmware.com> 4.19.232-1
+-   Update to version 4.19.232
 *   Tue Feb 15 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.229-2
 -   .config: enable zstd compression for squashfs.
 -   .config: enable crypto user api rng.

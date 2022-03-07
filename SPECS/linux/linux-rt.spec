@@ -2,10 +2,10 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-rt
-Version:        4.19.229
+Version:        4.19.232
 # Keep rt_version matched up with REBASE.patch
 %define rt_version rt102
-Release:        2%{?kat_build:.%kat}%{?dist}
+Release:        1%{?kat_build:.%kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -15,7 +15,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bd022c780bbfcd8b3f145ecfe8925585a2db0d88
+%define sha1 linux=b5709ae792062b6c175726a88929189ead9df52e
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
@@ -502,7 +502,6 @@ Patch625:       0001-Allow-tick-sched-timer-to-be-turned-off-in-idle-poll.patch
 Patch630:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # Fix for CVE-2021-4204
-Patch632:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch633:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 %if 0%{?kat_build:1}
@@ -996,7 +995,6 @@ The Linux package contains the Linux kernel doc files
 %patch624 -p1
 %patch625 -p1
 %patch630 -p1
-%patch632 -p1
 %patch633 -p1
 
 %if 0%{?kat_build:1}
@@ -1195,6 +1193,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/%{name}-headers-%{uname_r}
 
 %changelog
+*   Mon Mar 07 2022 srinidhira0 <srinidhir@vmware.com> 4.19.232-1
+-   Update to version 4.19.232
 *   Tue Feb 15 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.229-2
 -   .config: enable zstd compression for squashfs.
 -   .config: enable crypto user api rng.

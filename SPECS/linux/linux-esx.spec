@@ -2,8 +2,8 @@
 %global photon_checksum_generator_version 1.2
 Summary:        Kernel
 Name:           linux-esx
-Version:        4.19.229
-Release:        3%{?kat_build:.kat}%{?dist}
+Version:        4.19.232
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -13,7 +13,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=bd022c780bbfcd8b3f145ecfe8925585a2db0d88
+%define sha1 linux=b5709ae792062b6c175726a88929189ead9df52e
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -380,7 +380,6 @@ Patch521:        0001-fs-TARFS-file-system-to-mount-TAR-archive.patch
 Patch522:       0001-disable-md5-algorithm-for-sctp-if-fips-is-enabled.patch
 
 # Fix for CVE-2021-4204
-Patch524:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch525:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 # Patches for i40e driver
@@ -739,7 +738,6 @@ This Linux package contains hmac sha generator kernel module.
 %patch516 -p1
 %patch521 -p1
 %patch522 -p1
-%patch524 -p1
 %patch525 -p1
 
 # Patches for i40e driver
@@ -943,6 +941,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /lib/modules/%{uname_r}/extra/.hmac_generator.ko.xz.hmac
 
 %changelog
+*   Mon Mar 07 2022 srinidhira0 <srinidhir@vmware.com> 4.19.232-1
+-   Update to version 4.19.232
 *   Mon Feb 28 2022 Alexey Makhalov <amakhalov@vmware.com> 4.19.229-3
 -   .config: enable squashfs module, enable crypto user api rng.
 -   Reduce kernel .text size by ~40% by removing .entry.text alignment.
