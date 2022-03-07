@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux
-Version:        4.9.301
+Version:        4.9.304
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=42787f12dfc830f0ff18d19890dd443b1a3c3b53
+%define sha1 linux=99ca94bd6dd31e24ad714a2aac92a1964ca1f3a7
 Source1:        config
 Source2:        initramfs.trigger
 %define ena_version 1.1.3
@@ -160,7 +160,6 @@ Patch119:       0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 Patch120:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 
 # Fix for CVE-2021-4204
-Patch122:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch123:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 %if 0%{?kat_build:1}
@@ -336,7 +335,6 @@ This package contains the 'perf' performance analysis tools for Linux kernel.
 %patch118 -p1
 %patch119 -p1
 %patch120 -p1
-%patch122 -p1
 %patch123 -p1
 
 %if 0%{?kat_build:1}
@@ -508,6 +506,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 /usr/share/doc/*
 
 %changelog
+*   Mon Mar 07 2022 srinidhira0 <srinidhir@vmware.com> 4.9.304-1
+-   Update to version 4.9.304
 *   Fri Feb 11 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.301-1
 -   Update to version 4.9.301
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.297-4

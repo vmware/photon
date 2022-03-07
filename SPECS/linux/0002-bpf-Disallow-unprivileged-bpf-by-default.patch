@@ -1,7 +1,7 @@
-From 39b056343bf7ef46571187a4057e839303c4798f Mon Sep 17 00:00:00 2001
+From 07c8975ec7b24762540daa592902d44425d6e024 Mon Sep 17 00:00:00 2001
 From: Pawan Gupta <pawan.kumar.gupta@linux.intel.com>
 Date: Fri, 29 Oct 2021 12:43:54 -0700
-Subject: [PATCH 2/2] bpf: Disallow unprivileged bpf by default
+Subject: [PATCH] bpf: Disallow unprivileged bpf by default
 
 commit 8a03e56b253e9691c90bc52ca199323d71b96204 upstream.
 
@@ -25,15 +25,16 @@ Acked-by: Daniel Borkmann <daniel@iogearbox.net>
 Acked-by: Mark Rutland <mark.rutland@arm.com>
 Link: https://lore.kernel.org/bpf/0ace9ce3f97656d5f62d11093ad7ee81190c3c25.1635535215.git.pawan.kumar.gupta@linux.intel.com
 Signed-off-by: Srivatsa S. Bhat (VMware) <srivatsa@csail.mit.edu>
+Signed-off-by: srinidhira0 <srinidhir@vmware.com>
 ---
  init/Kconfig | 7 +++++++
  1 file changed, 7 insertions(+)
 
 diff --git a/init/Kconfig b/init/Kconfig
-index adf4de8330e4..a1d8fb20f347 100644
+index 7e09227b976f..b25419b53c55 100644
 --- a/init/Kconfig
 +++ b/init/Kconfig
-@@ -1618,6 +1618,7 @@ config BPF_JIT_ALWAYS_ON
+@@ -1647,6 +1647,7 @@ config ADVISE_SYSCALLS
  
  config BPF_UNPRIV_DEFAULT_OFF
  	bool "Disable unprivileged BPF by default"
@@ -41,7 +42,7 @@ index adf4de8330e4..a1d8fb20f347 100644
  	depends on BPF_SYSCALL
  	help
  	  Disables unprivileged BPF by default by setting the corresponding
-@@ -1626,6 +1627,12 @@ config BPF_UNPRIV_DEFAULT_OFF
+@@ -1655,6 +1656,12 @@ config BPF_UNPRIV_DEFAULT_OFF
  	  disable it by setting it to 1 (from which no other transition to
  	  0 is possible anymore).
  
@@ -51,9 +52,9 @@ index adf4de8330e4..a1d8fb20f347 100644
 +
 +	  If you are unsure how to answer this question, answer Y.
 +
- config SHMEM
- 	bool "Use full shmem filesystem" if EXPERT
- 	default y
+ config USERFAULTFD
+ 	bool "Enable userfaultfd() system call"
+ 	select ANON_INODES
 -- 
-2.25.1
+2.23.3
 

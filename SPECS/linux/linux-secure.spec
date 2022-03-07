@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-secure
-Version:        4.9.301
+Version:        4.9.304
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
@@ -12,7 +12,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-secure
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=42787f12dfc830f0ff18d19890dd443b1a3c3b53
+%define sha1 linux=99ca94bd6dd31e24ad714a2aac92a1964ca1f3a7
 Source1:        config-secure
 Source2:        aufs4.9.tar.gz
 %define sha1 aufs=ebe716ce4b638a3772c7cd3161abbfe11d584906
@@ -157,7 +157,6 @@ Patch118:       0001-RDMA-ucma-Rework-ucma_migrate_id-to-avoid-races-with.patch
 Patch119:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 
 # Fix for CVE-2021-4204
-Patch121:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch122:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 %if 0%{?kat_build:1}
@@ -343,7 +342,6 @@ popd
 %patch117 -p1
 %patch118 -p1
 %patch119 -p1
-%patch121 -p1
 %patch122 -p1
 
 #CVE
@@ -469,6 +467,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 /usr/src/linux-headers-%{uname_r}
 
 %changelog
+*   Mon Mar 07 2022 srinidhira0 <srinidhir@vmware.com> 4.9.304-1
+-   Update to version 4.9.304
 *   Fri Feb 11 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.301-1
 -   Update to version 4.9.301
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.297-4

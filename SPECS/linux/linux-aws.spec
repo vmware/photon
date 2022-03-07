@@ -1,7 +1,7 @@
 %global security_hardening none
 Summary:        Kernel
 Name:           linux-aws
-Version:        4.9.301
+Version:        4.9.304
 Release:        1%{?kat_build:.%kat_build}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
@@ -12,7 +12,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{release}-aws
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v4.x/linux-%{version}.tar.xz
-%define sha1 linux=42787f12dfc830f0ff18d19890dd443b1a3c3b53
+%define sha1 linux=99ca94bd6dd31e24ad714a2aac92a1964ca1f3a7
 Source1:        config-aws
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -194,7 +194,6 @@ Patch150: 0001-console-Expand-dummy-functions-for-CFI.patch
 Patch155:       0001-bpf-fix-truncated-jump-targets-on-heavy-expansions.patch
 
 # Fix for CVE-2021-4204
-Patch157:       0001-bpf-Add-kconfig-knob-for-disabling-unpriv-bpf-by-def.patch
 Patch158:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
 
 %if 0%{?kat_build:1}
@@ -401,7 +400,6 @@ Kernel driver for oprofile, a statistical profiler for Linux systems
 
 %patch150 -p1
 %patch155 -p1
-%patch157 -p1
 %patch158 -p1
 
 %if 0%{?kat_build:1}
@@ -550,6 +548,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 
 
 %changelog
+*   Mon Mar 07 2022 srinidhira0 <srinidhir@vmware.com> 4.9.304-1
+-   Update to version 4.9.304
 *   Fri Feb 11 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.301-1
 -   Update to version 4.9.301
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 4.9.297-4
