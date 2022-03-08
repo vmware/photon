@@ -1,7 +1,7 @@
 Summary:        Photon repo files, gpg keys
 Name:           photon-repos
 Version:        3.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 License:        Apache License
 Group:          System Environment/Base
 URL:            https://vmware.github.io/photon/
@@ -18,7 +18,8 @@ Vendor:         VMware, Inc.
 Distribution:   Photon
 Provides:       photon-repos
 BuildArch:      noarch
-
+# tdnf < 3.0.0 does not support multiple keys
+Conflicts:      tdnf < 3.0.0
 %description
 Photon repo files and gpg keys
 
@@ -42,11 +43,15 @@ install -m 644 %{SOURCE2} %{buildroot}/etc/pki/rpm-gpg
 rm -rf %{buildroot}
 
 %post
-# if the file has not been replaced because it was edited and does not contain
+# If the file has not been replaced because it was edited and does not contain
 # the skip_md_filelists option yet, append it to the file
+# Also make sure we have the 4096 key configured
 for f in /etc/yum.repos.d/photon{,-debuginfo,-iso,-updates,-extras}.repo ; do
     if ! grep -q skip_md_filelists $f ; then
         echo "skip_md_filelists=1" >> $f
+    fi
+    if ! grep -q VMWARE-RPM-GPG-KEY-4096 $f ; then
+        sed -i 's@gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY@gpgkey=file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY file:///etc/pki/rpm-gpg/VMWARE-RPM-GPG-KEY-4096@' $f
     fi
 done
 
@@ -62,6 +67,9 @@ done
 %config(noreplace) /etc/yum.repos.d/photon-extras.repo
 
 %changelog
+*   Tue Mar 8 2022 Oliver Kurth <okurth@vmware.com> 3.0-8
+-   conflicts with tdnf < 3.0.0, which doesn't support multiple keys
+-   make sure 4096 bit key is configured
 *   Wed Mar 2 2022 Oliver Kurth <okurth@vmware.com> 3.0-7
 -   add 4096 bit RSA key
 -   add skip_md_filelists=1 option in %post in case file was not replaced
