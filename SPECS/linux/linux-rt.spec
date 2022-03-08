@@ -16,10 +16,10 @@
 
 Summary:        Kernel
 Name:           linux-rt
-Version:        5.10.93
+Version:        5.10.103
 # Keep rt_version matched up with localversion.patch
-%define rt_version rt60
-Release:        5%{?kat_build:.kat}%{?dist}
+%define rt_version rt62
+Release:        1%{?kat_build:.kat}%{?dist}
 License:    	GPLv2
 URL:        	http://www.kernel.org/
 Group:        	System Environment/Kernel
@@ -29,7 +29,7 @@ Distribution: 	Photon
 %define uname_r %{version}-%{rt_version}-%{release}-rt
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=15dec7ea0779752207fff3ede1ab71a0f024050b
+%define sha1 linux=8f40f4a67d912ffa7763ee0faa1acd3c371cbc63
 Source1:	config-rt
 Source2:	initramfs.trigger
 Source4:        pre-preun-postun-tasks.inc
@@ -86,18 +86,6 @@ Patch103:       0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Fix for CVE-2021-4204
 Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-0330
-Patch108:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
-
-# Fix for CVE-2022-22942
-Patch109:       0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
-
-# Fix for CVE-2022-0492
-Patch110:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
-
-# Fix for CVE-2022-0435
-Patch111:       0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 # Allow PCI resets to be disabled from vfio_pci module
 Patch120:       0001-drivers-vfio-pci-Add-kernel-parameter-to-allow-disab.patch
@@ -421,8 +409,11 @@ Patch611:       0311-drm-i915-gt-Queue-and-wait-for-the-irq_work-item.patch
 Patch612:       0312-irq_work-Allow-irq_work_sync-to-sleep-if-irq_work-no.patch
 Patch613:       0313-irq_work-Handle-some-irq_work-in-a-per-CPU-thread-on.patch
 Patch614:       0314-irq_work-Also-rcuwait-for-IRQ_WORK_HARD_IRQ-on-PREEM.patch
+Patch615:       0315-eventfd-Make-signal-recursion-protection-a-task-bit.patch
+Patch616:       0316-stop_machine-Remove-this_cpu_ptr-from-print_stop_inf.patch
+Patch617:       0317-aio-Fix-incorrect-usage-of-eventfd_signal_allowed.patch
 # Keep rt_version matched up with this patch.
-Patch615:       0315-Linux-5.10.90-rt60-REBASE.patch
+Patch618:       0318-Linux-5.10.100-rt62-REBASE.patch
 
 #Photon Specific Changes
 Patch700:       0000-Revert-clockevents-Stop-unused-clockevent-devices.patch
@@ -570,10 +561,6 @@ The Linux package contains the Linux kernel doc files
 
 %patch103 -p1
 %patch107 -p1
-%patch108 -p1
-%patch109 -p1
-%patch110 -p1
-%patch111 -p1
 
 %patch120 -p1
 %patch121 -p1
@@ -894,6 +881,9 @@ The Linux package contains the Linux kernel doc files
 %patch613 -p1
 %patch614 -p1
 %patch615 -p1
+%patch616 -p1
+%patch617 -p1
+%patch618 -p1
 
 %patch700 -p1
 %patch701 -p1
@@ -1131,6 +1121,8 @@ ln -sf %{name}-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/%{name}-headers-%{uname_r}
 
 %changelog
+*   Tue Mar 08 2022 srinidhira0 <srinidhir@vmware.com> 5.10.103-1
+-   Update to version 5.10.103
 *   Wed Feb 09 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.93-5
 -   Fix for CVE-2022-0435
 *   Sat Feb 05 2022 Sharan Turlapati <sturlapati@vmware.com> 5.10.93-4

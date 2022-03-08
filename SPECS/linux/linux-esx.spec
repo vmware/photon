@@ -10,8 +10,8 @@
 
 Summary:        Kernel
 Name:           linux-esx
-Version:        5.10.93
-Release:        8%{?kat_build:.kat}%{?dist}
+Version:        5.10.103
+Release:        1%{?kat_build:.kat}%{?dist}
 License:        GPLv2
 URL:            http://www.kernel.org/
 Group:          System Environment/Kernel
@@ -21,7 +21,7 @@ Distribution:   Photon
 %define uname_r %{version}-%{release}-esx
 
 Source0:        http://www.kernel.org/pub/linux/kernel/v5.x/linux-%{version}.tar.xz
-%define sha1 linux=15dec7ea0779752207fff3ede1ab71a0f024050b
+%define sha1 linux=8f40f4a67d912ffa7763ee0faa1acd3c371cbc63
 Source1:        config-esx
 Source2:        initramfs.trigger
 Source3:        pre-preun-postun-tasks.inc
@@ -115,18 +115,6 @@ Patch103:       0001-mm-fix-panic-in-__alloc_pages.patch
 
 # Fix for CVE-2021-4204
 Patch107:       0002-bpf-Disallow-unprivileged-bpf-by-default.patch
-
-# Fix for CVE-2022-0330
-Patch108:       0001-drm-i915-Flush-TLBs-before-releasing-backing-store.patch
-
-# Fix for CVE-2022-22942
-Patch109:       0001-drm-vmwgfx-Fix-stale-file-descriptors-on-failed-user.patch
-
-# Fix for CVE-2022-0492
-Patch110:       0001-cgroup-v1-Require-capabilities-to-set-release_agent.patch
-
-# Fix for CVE-2022-0435
-Patch111:       0001-tipc-improve-size-validations-for-received-domain-re.patch
 
 #Patches for ptp_vmw
 Patch201:      0001-ptp-ptp_vmw-Implement-PTP-clock-adjustments-ops.patch
@@ -287,10 +275,6 @@ The Linux package contains the Linux kernel doc files
 
 %patch103 -p1
 %patch107 -p1
-%patch108 -p1
-%patch109 -p1
-%patch110 -p1
-%patch111 -p1
 
 #Patches for ptp_vmw
 %patch201 -p1
@@ -507,6 +491,8 @@ ln -sf linux-%{uname_r}.cfg /boot/photon.cfg
 %{_usrsrc}/linux-headers-%{uname_r}
 
 %changelog
+*   Tue Mar 08 2022 srinidhira0 <srinidhir@vmware.com> 5.10.103-1
+-   Update to version 5.10.103
 * Tue Mar 01 2022 Alexey Makhalov <amakhalov@vmware.com> 5.10.93-8
 - Reduce kernel .text size by ~40% by removing .entry.text alignment
 - Reduce kernel .data section by configuring smaller kernel log buffer
