@@ -1,0 +1,116 @@
+From 3a1599f7f2733049dcc173720fad06e8e16eb988 Mon Sep 17 00:00:00 2001
+From: Shreenidhi Shedi <sshedi@vmware.com>
+Date: Thu, 17 Mar 2022 17:17:14 +0530
+Subject: [PATCH] faillock: add support to print login failures in legacy
+ pam_tally2 style
+
+This is enabled by default. "--nosfos" flag will print failures in newer
+style.
+
+Signed-off-by: Shreenidhi Shedi <sshedi@vmware.com>
+---
+ modules/pam_faillock/main.c | 65 ++++++++++++++++++++++++++-----------
+ 1 file changed, 46 insertions(+), 19 deletions(-)
+
+diff --git a/modules/pam_faillock/main.c b/modules/pam_faillock/main.c
+index c578016..1a723fe 100644
+--- a/modules/pam_faillock/main.c
++++ b/modules/pam_faillock/main.c
+@@ -60,6 +60,8 @@ struct options {
+ 	const char *progname;
+ };
+ 
++static int sfos = 1; /* sfls - Show failure in old style */
++
+ static int
+ args_parse(int argc, char **argv, struct options *opts)
+ {
+@@ -90,6 +92,9 @@ args_parse(int argc, char **argv, struct options *opts)
+ 		else if (strcmp(argv[i], "--reset") == 0) {
+ 			opts->reset = 1;
+ 		}
++        else if (!strcmp(argv[i], "--nosfos")) {
++            sfos = 0;
++        }
+ 		else {
+ 			fprintf(stderr, "%s: Unknown option: %s\n", argv[0], argv[i]);
+ 			return -1;
+@@ -101,8 +106,10 @@ args_parse(int argc, char **argv, struct options *opts)
+ static void
+ usage(const char *progname)
+ {
+-	fprintf(stderr, _("Usage: %s [--dir /path/to/tally-directory] [--user username] [--reset]\n"),
+-		progname);
++	fprintf(stderr,
++            _("Usage: %s [--dir /path/to/tally-directory] "
++              " [--user username] [--reset] [--nosfos]\n"),
++		    progname);
+ }
+ 
+ static int
+@@ -165,25 +172,45 @@ do_user(struct options *opts, const char *user)
+ 			return 5;
+ 		}
+ 
+-		printf("%s:\n", user);
+-		printf("%-19s %-5s %-48s %-5s\n", "When", "Type", "Source", "Valid");
++        if (!sfos) {
++            printf("%s:\n", user);
++            printf("%-19s %-5s %-48s %-5s\n", "When", "Type", "Source", "Valid");
+ 
+-		for (i = 0; i < tallies.count; i++) {
+-			struct tm *tm;
+-			char timebuf[80];
+-			uint16_t status = tallies.records[i].status;
+-			time_t when = tallies.records[i].time;
++            for (i = 0; i < tallies.count; i++) {
++                struct tm *tm;
++                char timebuf[80];
++                uint16_t status = tallies.records[i].status;
++                time_t when = tallies.records[i].time;
+ 
+-			tm = localtime(&when);
+-			strftime(timebuf, sizeof(timebuf), "%Y-%m-%d %H:%M:%S", tm);
+-			printf("%-19s %-5s %-52.52s %s\n", timebuf,
+-				status & TALLY_STATUS_RHOST ? "RHOST" : (status & TALLY_STATUS_TTY ? "TTY" : "SVC"),
+-				tallies.records[i].source, status & TALLY_STATUS_VALID ? "V":"I");
+-		}
+-		free(tallies.records);
+-	}
+-	close(fd);
+-	return 0;
++                tm = localtime(&when);
++                strftime(timebuf, sizeof(timebuf), "%Y-%m-%d %H:%M:%S", tm);
++                printf("%-19s %-5s %-52.52s %s\n", timebuf,
++                        status & TALLY_STATUS_RHOST ? "RHOST" : (status & TALLY_STATUS_TTY ? "TTY" : "SVC"),
++                        tallies.records[i].source, status & TALLY_STATUS_VALID ? "V":"I");
++            }
++        }
++        else {
++            printf(_("Login           Failures    Latest failure         From\n"));
++            printf("%-15.15s ", user);
++            if (tallies.count > 0) {
++                struct tm *tm;
++                char timebuf[80] = {0};
++                int index = tallies.count - 1;
++                time_t when = tallies.records[index].time;
++
++                tm = localtime(&when);
++                strftime(timebuf, sizeof(timebuf), "%Y-%m-%d %H:%M:%S", tm);
++
++                printf("%5hu %25s    %s\n", tallies.count, timebuf, tallies.records[index].source);
++            }
++            else {
++                printf("%5hu\n", tallies.count);
++            }
++        }
++        free(tallies.records);
++    }
++    close(fd);
++    return 0;
+ }
+ 
+ static int
+-- 
+2.35.1
+

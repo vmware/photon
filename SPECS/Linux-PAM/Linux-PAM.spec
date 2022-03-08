@@ -1,15 +1,21 @@
 Summary:        Linux Pluggable Authentication Modules
 Name:           Linux-PAM
 Version:        1.5.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        BSD and GPLv2+
 URL:            https://github.com/linux-pam/linux-pam/releases
 Group:          System Environment/Security
 Vendor:         VMware, Inc.
 Distribution:   Photon
+
 Source0:        https://github.com/linux-pam/linux-pam/releases/download/v%{version}/%{name}-%{version}.tar.xz
-%define sha1    Linux-PAM=ad43b7fbdfdd38886fdf27e098b49f2db1c2a13d
+%define sha1    %{name}=ad43b7fbdfdd38886fdf27e098b49f2db1c2a13d
+Source1:        pamtmp.conf
+
+Patch0:         faillock-add-support-to-print-login-failures.patch
+
 BuildRequires:  libselinux-devel
+
 Requires:       libselinux
 
 %description
@@ -70,13 +76,19 @@ ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_auth.so
 ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_acct.so
 ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_passwd.so
 ln -sf pam_unix.so %{buildroot}/usr/lib/security/pam_unix_session.so
+
+install -d -m 755 %{buildroot}/var/run/faillock
+install -m644 -D %{SOURCE1} %{buildroot}%{_libdir}/tmpfiles.d/pam.conf
+
 find %{buildroot}/%{_libdir} -name '*.la' -delete
 find %{buildroot}/usr/lib/ -name '*.la' -delete
-%{find_lang} Linux-PAM
+
+%{find_lang} %{name}
 
 %{_fixperms} %{buildroot}/*
 
 %check
+%if 0%{?with_check}
 install -v -m755 -d /etc/pam.d
 cat > /etc/pam.d/other << "EOF"
 auth     required       pam_deny.so
@@ -85,13 +97,18 @@ password required       pam_deny.so
 session  required       pam_deny.so
 EOF
 make %{?_smp_mflags} check
+%endif
 
-%post   -p /sbin/ldconfig
+%post -p /sbin/ldconfig
+
 %postun -p /sbin/ldconfig
+
 %clean
 rm -rf %{buildroot}/*
+
 %files
 %defattr(-,root,root)
+%config(noreplace) %{_sysconfdir}/security/*.conf
 %{_sysconfdir}/*
 /sbin/*
 %{_lib}/security/*
@@ -99,6 +116,8 @@ rm -rf %{buildroot}/*
 %{_mandir}/man5/*
 %{_mandir}/man8/*
 %{_lib}/systemd/system/pam_namespace.service
+%dir /var/run/faillock
+%{_libdir}/tmpfiles.d/pam.conf
 
 %files lang -f Linux-PAM.lang
 %defattr(-,root,root)
@@ -110,30 +129,32 @@ rm -rf %{buildroot}/*
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
-*   Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.5.1-1
--   Automatic Version Bump
-*   Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 1.4.0-2
--   pam_cracklib has been deprecated.
-*   Fri Aug 07 2020 Vikash Bansal <bvikas@vmware.com> 1.4.0-1
--   Version bump up to 1.4.0
-*   Mon Apr 20 2020 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-3
--   Enable SELinux support
-*   Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-2
--   Cross compilation support
-*   Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-1
--   Version update.
-*   Fri Feb 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-5
--   Added pam_unix_auth.so, pam_unix_acct.so, pam_unix_passwd.so,
--   and pam_unix_session.so.
-*   Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-4
--   Added devel subpackage.
-*   Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 1.2.1-3
--   Packaging pam cracklib module
-*   Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-2
--   GA - Bump release of all rpms
-*   Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-1
--   Updated to version 1.2.1
-*   Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.1.8-2
--   Update according to UsrMove.
-*   Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 1.1.8-1
--   Initial build.  First version
+* Tue Mar 08 2022 Shreenidhi Shedi <sshedi@vmware.com> 1.5.1-2
+- create /var/run/faillock during install
+* Mon Apr 12 2021 Gerrit Photon <photon-checkins@vmware.com> 1.5.1-1
+- Automatic Version Bump
+* Fri Sep 25 2020 Ankit Jain <ankitja@vmware.com> 1.4.0-2
+- pam_cracklib has been deprecated.
+* Fri Aug 07 2020 Vikash Bansal <bvikas@vmware.com> 1.4.0-1
+- Version bump up to 1.4.0
+* Mon Apr 20 2020 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-3
+- Enable SELinux support
+* Thu Nov 15 2018 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-2
+- Cross compilation support
+* Fri Apr 14 2017 Alexey Makhalov <amakhalov@vmware.com> 1.3.0-1
+- Version update.
+* Fri Feb 10 2017 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-5
+- Added pam_unix_auth.so, pam_unix_acct.so, pam_unix_passwd.so,
+- and pam_unix_session.so.
+* Wed Dec 07 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-4
+- Added devel subpackage.
+* Thu May 26 2016 Divya Thaluru <dthaluru@vmware.com> 1.2.1-3
+- Packaging pam cracklib module
+* Tue May 24 2016 Priyesh Padmavilasom <ppadmavilasom@vmware.com> 1.2.1-2
+- GA - Bump release of all rpms
+* Fri Jan 15 2016 Xiaolin Li <xiaolinl@vmware.com> 1.2.1-1
+- Updated to version 1.2.1
+* Mon May 18 2015 Touseef Liaqat <tliaqat@vmware.com> 1.1.8-2
+- Update according to UsrMove.
+* Thu Oct 09 2014 Divya Thaluru <dthaluru@vmware.com> 1.1.8-1
+- Initial build.  First version
