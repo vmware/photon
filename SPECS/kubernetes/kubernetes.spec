@@ -10,7 +10,7 @@
 Summary:        Kubernetes cluster management
 Name:           kubernetes
 Version:        1.22.4
-Release:        3%{?dist}
+Release:        4%{?dist}
 License:        ASL 2.0
 URL:            https://github.com/kubernetes/kubernetes/archive/v%{version}.tar.gz
 Group:          Development/Tools
@@ -71,8 +71,10 @@ sed -i -e 's|127.0.0.1:4001|127.0.0.1:2379|g' contrib-0.7.0/init/systemd/environ
 sed -i '/KUBE_ALLOW_PRIV/d' contrib-0.7.0/init/systemd/kubelet.service
 
 %build
-make %{?_smp_mflags}
-make WHAT="cmd/cloud-controller-manager" %{?_smp_mflags}
+# make doesn't support _smp_mflags
+make -j8
+# make doesn't support _smp_mflags
+make -j8 WHAT="cmd/cloud-controller-manager"
 pushd build/pause
 mkdir -p bin
 gcc -Os -Wall -Werror -static -o bin/pause-%{archname} linux/pause.c
@@ -80,7 +82,8 @@ strip bin/pause-%{archname}
 popd
 
 %ifarch x86_64
-make WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/%{archname} windows/%{archname}" %{?_smp_mflags}
+# make doesn't support _smp_mflags
+make -j8 WHAT="cmd/kubectl" KUBE_BUILD_PLATFORMS="darwin/%{archname} windows/%{archname}"
 %endif
 
 %install
@@ -144,7 +147,8 @@ EOF
 %check
 export GOPATH=%{_builddir}
 go get golang.org/x/tools/cmd/cover
-make %{?_smp_mflags} check
+# make doesn't support _smp_mflags
+make -j8 check
 
 %clean
 rm -rf %{buildroot}/*
@@ -230,10 +234,12 @@ fi
 %endif
 
 %changelog
-*   Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.22.4-3
--   Bump up version to compile with new go
-*   Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.22.4-2
--   Bump up version to compile with new go
+* Mon Mar 07 2022 Prashant S Chauhan <psinghchauha@vmware.com> 1.22.4-4
+- Remove smp_flags to fix build failure with "out of memory" message
+* Tue Feb 22 2022 Piyush Gupta <gpiyush@vmware.com> 1.22.4-3
+- Bump up version to compile with new go
+* Mon Jan 24 2022 Piyush Gupta <gpiyush@vmware.com> 1.22.4-2
+- Bump up version to compile with new go
 * Thu Nov 18 2021 Prashant S Chauhan <psinghchauha@vmware.com> 1.22.4-1
 - Update kubernetes to 1.22.4
 * Wed Oct 20 2021 Piyush Gupta <gpiyush@vmware.com> 1.19.15-3
