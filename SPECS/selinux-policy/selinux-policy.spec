@@ -1,7 +1,7 @@
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        3.14.8
-Release:        1%{?dist}
+Release:        2%{?dist}
 License:        GPLv2
 Group:          System Environment/Libraries
 Source0:        https://github.com/fedora-selinux/%{name}/archive/db2614cce37245ba4fc5de73b1f6f33cc46686e4/%{name}-db2614cc.tar.gz
@@ -20,17 +20,19 @@ Patch4:         contrib-virt.patch
 Patch5:         kernel-storage.patch
 Patch6:         roles-staff.patch
 Patch7:         roles-unprivuser.patch
-Patch8:         system-authlogin.patch
+Patch8:         motd_t-new-domain-for-motdgen.patch
 Patch9:         system-getty.patch
 Patch10:        system-init.patch
 Patch11:        system-logging.patch
 Patch12:        system-modutils.patch
 Patch13:        system-systemd.patch
-Patch14:        system-systenwork.patch
+Patch14:        system-sysnetwork.patch
 Patch15:        system-udev.patch
 Patch16:        system-userdomain.patch
 Patch17:        admin_usermanage.patch
 Patch18:        system-fstool.patch
+Patch19:        iptables-allow-kernel_t-fifo_files.patch
+
 BuildArch:      noarch
 BuildRequires:  checkpolicy python3 semodule-utils libselinux-utils
 BuildRequires:  policycoreutils
@@ -72,6 +74,7 @@ cp -r ../container-selinux-2.145.0/container.* policy/modules/contrib/
 %patch16 -p1
 %patch17 -p1
 %patch18 -p1
+%patch19 -p1
 
 %build
 cp %{SOURCE2} .
@@ -117,6 +120,8 @@ fi
 %{_sharedstatedir}/selinux/default
 
 %changelog
+* Mon Mar 07 2022 Alexey Makhalov <amakhalov@vmware.com> 3.14.8-2
+- Fix iptables and sshd issues
 * Thu Aug 06 2020 Vikash Bansal <bvikas@vmware.com> 3.14.8-1
 - Version Bump up to 3.14.8
 * Thu Aug 06 2020 Vikash Bansal <bvikas@vmware.com> 3.14.6-1
